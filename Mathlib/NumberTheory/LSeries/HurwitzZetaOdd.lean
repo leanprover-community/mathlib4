@@ -424,7 +424,7 @@ lemma hasSum_nat_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   rcases eq_or_ne n 0 with rfl | h
   · simp
   simp_rw [Int.sign_natCast_of_ne_zero h, Int.cast_one, ofReal_sin, Complex.sin]
-  simp only [← mul_div_assoc, fail_if_not_idempotent push_cast, mul_assoc (Gammaℝ _), ← mul_add]
+  simp only [← mul_div_assoc, push_cast, mul_assoc (Gammaℝ _), ← mul_add]
   congr 3
   rw [mul_one, mul_neg_one, neg_neg, neg_mul I, ← sub_eq_neg_add, ← mul_sub, mul_comm,
     mul_neg, neg_mul]
@@ -439,7 +439,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have hF t (ht : 0 < t) : HasSum (fun n ↦ c n * r n * rexp (-π * (r n) ^ 2 * t))
       (oddKernel a t / 2) := by
     refine ((hasSum_ofReal.mpr (hasSum_int_oddKernel a ht)).div_const 2).congr_fun fun n ↦ ?_
-    simp [r, c, fail_if_not_idempotent push_cast, div_mul_eq_mul_div, -one_div]
+    simp [r, c, push_cast, div_mul_eq_mul_div, -one_div]
   have h_sum : Summable fun i ↦ ‖c i‖ / |r i| ^ s.re := by
     simp_rw [c, ← mul_one_div ‖_‖]
     apply Summable.mul_left
@@ -507,7 +507,7 @@ lemma hasSum_nat_hurwitzZetaOdd_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : �
     (hurwitzZetaOdd a s) := by
   refine (hasSum_nat_hurwitzZetaOdd a hs).congr_fun fun n ↦ ?_
   suffices ∀ b : ℝ, 0 ≤ b → SignType.sign (n + b) / (↑|n + b| : ℂ) ^ s = 1 / (n + b) ^ s by
-    simp only [add_sub_assoc, this a ha.1, this (1 - a) (sub_nonneg.mpr ha.2), fail_if_not_idempotent push_cast]
+    simp only [add_sub_assoc, this a ha.1, this (1 - a) (sub_nonneg.mpr ha.2), push_cast]
   intro b hb
   rw [abs_of_nonneg (by positivity), (by simp : (n : ℂ) + b = ↑(n + b))]
   rcases lt_or_eq_of_le (by positivity : 0 ≤ n + b) with hb | hb

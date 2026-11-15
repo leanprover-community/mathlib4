@@ -335,7 +335,7 @@ lemma completedCosZeta_eq (a : UnitAddCircle) (s : ℂ) :
   congr 1
   · rw [completedCosZeta₀, WeakFEPair.symm, hurwitzEvenFEPair, smul_eq_mul, mul_one, div_div,
       div_mul_cancel₀ _ (two_ne_zero' ℂ)]
-  · simp_rw [WeakFEPair.symm, hurwitzEvenFEPair, fail_if_not_idempotent push_cast, inv_one, smul_eq_mul,
+  · simp_rw [WeakFEPair.symm, hurwitzEvenFEPair, push_cast, inv_one, smul_eq_mul,
       mul_comm _ (if _ then _ else _), mul_div_assoc, div_div, ← sub_div,
       div_mul_cancel₀ _ (two_ne_zero' ℂ), mul_one_div]
 
@@ -468,7 +468,7 @@ lemma completedHurwitzZetaEven_residue_zero (a : UnitAddCircle) :
   have h1 : Tendsto (fun s : ℂ ↦ s * _) (𝓝[≠] 0)
     (𝓝 (-(if a = 0 then 1 else 0))) := (hurwitzEvenFEPair a).Λ_residue_zero
   have : -(if a = 0 then (1 : ℂ) else 0) = (if a = 0 then -1 else 0) := by { split_ifs <;> simp }
-  simp only [this, fail_if_not_idempotent push_cast] at h1
+  simp only [this, push_cast] at h1
   refine (h1.comp <| zero_div (2 : ℂ) ▸ (tendsto_div_two_punctured_nhds 0)).congr (fun s ↦ ?_)
   simp [completedHurwitzZetaEven, div_mul_eq_mul_div, mul_div_assoc]
 

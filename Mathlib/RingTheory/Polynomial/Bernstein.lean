@@ -383,9 +383,9 @@ theorem variance (n : ℕ) :
     _ = _ := Finset.sum_congr rfl fun k m => ?_
     _ = _ := p
     _ = _ := ?_
-  · congr 1; simp only [← natCast_mul, fail_if_not_idempotent push_cast]
+  · congr 1; simp only [← natCast_mul, push_cast]
     cases k <;> · simp; ring
-  · simp only [← natCast_mul, fail_if_not_idempotent push_cast]
+  · simp only [← natCast_mul, push_cast]
     cases n
     · simp
     · simp; ring
