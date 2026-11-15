@@ -55,19 +55,6 @@ theorem IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
 theorem IsBounded.div (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s / t) :=
   div_eq_mul_inv s t ▸ hs.mul ht.inv
 
-@[to_additive isBounded_image_norm_iff]
-lemma isBounded_image_norm_iff' :
-    IsBounded ((‖·‖) '' s) ↔ IsBounded s := by
-  refine ⟨fun hs ↦ ?_, lipschitzWith_one_norm'.isBounded_image⟩
-  rw [isBounded_iff_forall_norm_le']
-  rw [isBounded_iff_bddBelow_bddAbove] at hs
-  simpa [BddAbove, upperBounds] using! hs.2
-
-alias ⟨IsBounded.of_norm', IsBounded.norm'⟩ := isBounded_image_norm_iff'
-
-attribute [to_additive IsBounded.of_norm] IsBounded.of_norm'
-attribute [to_additive IsBounded.norm] IsBounded.norm'
-
 end Bornology
 
 open Bornology
@@ -80,13 +67,26 @@ lemma bddBelow_range_norm' : BddBelow (range (‖·‖ : E → ℝ)) :=
 @[to_additive bddAbove_image_norm_iff]
 lemma bddAbove_image_norm_iff' :
     BddAbove ((‖·‖) '' s) ↔ IsBounded s := by
-  simp [← isBounded_image_norm_iff', isBounded_iff_bddBelow_bddAbove,
-    (bddBelow_range_norm' E).mono (s.image_subset_range (‖·‖))]
+  simp [isBounded_iff_forall_norm_le', bddAbove_def]
 
 alias ⟨BddAbove.isBounded_of_norm', Bornology.IsBounded.bddAbove_norm'⟩ := bddAbove_image_norm_iff'
 
 attribute [to_additive BddAbove.isBounded_of_norm] BddAbove.isBounded_of_norm'
 attribute [to_additive Bornology.IsBounded.bddAbove_norm] Bornology.IsBounded.bddAbove_norm'
+
+namespace Bornology
+
+@[to_additive isBounded_image_norm_iff]
+lemma isBounded_image_norm_iff' : IsBounded ((‖·‖) '' s) ↔ IsBounded s := by
+  rw [isBounded_iff_bddBelow_bddAbove, bddAbove_image_norm_iff']
+  simp [(bddBelow_range_norm' E).mono]
+
+alias ⟨IsBounded.of_norm', IsBounded.norm'⟩ := isBounded_image_norm_iff'
+
+attribute [to_additive IsBounded.of_norm] IsBounded.of_norm'
+attribute [to_additive IsBounded.norm] IsBounded.norm'
+
+end Bornology
 
 end SeminormedGroup
 
