@@ -443,7 +443,7 @@ theorem multiplicity_div (dvd : p ∣ b) : multiplicity p (b / p) = multiplicity
 /-- A version of `padicValRat.pow` for `multiplicity`. -/
 @[simp]
 theorem multiplicity_pow (a n : ℕ) : multiplicity p (a ^ n) = n * multiplicity p a := by
-  simpa only [← @Nat.cast_inj ℤ, fail_if_not_idempotent push_cast] using padicValRat.pow a
+  simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow a
 
 theorem multiplicity_prime_pow (n : ℕ) : multiplicity p (p ^ n) = n := by
   rw [multiplicity_pow p, Nat.Prime.multiplicity_self, mul_one]

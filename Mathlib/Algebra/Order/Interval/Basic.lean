@@ -61,7 +61,7 @@ theorem fst_one : (1 : NonemptyInterval α).fst = 1 :=
 theorem snd_one : (1 : NonemptyInterval α).snd = 1 :=
   rfl
 
-@[to_additive (attr := fail_if_not_idempotent push_cast, simp)]
+@[to_additive (attr := push_cast, simp)]
 theorem coe_one_interval : ((1 : NonemptyInterval α) : Interval α) = 1 :=
   rfl
 
