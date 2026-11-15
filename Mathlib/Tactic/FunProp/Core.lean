@@ -441,7 +441,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       continue
     let type ← instantiateMVars var.type
     let thm? : Option FunctionTheorem ←
-      forallTelescope type fun _ b => do
+      forallTelescope type fun xs b => do
       let b ← whnfR b
       let some (decl, f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
@@ -452,7 +452,9 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
 
       unless isOrderedSubsetOf mainArgs fData.mainArgs do return none
 
-      let dec ← fData.decomposition
+      let form ← withCanUnfoldPred (← getUnfoldPred) <| getTheoremForm xs f
+      trace[Debug.Meta.Tactic.fun_prop] m!"detected form for {var.userName}: {form}"
+
       let thm : FunctionTheorem := {
         funPropName := funPropDecl.funPropName
         thmOrigin := .fvar var.fvarId
@@ -460,7 +462,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
         mainArgs := fData.mainArgs
         appliedArgs := fData.args.size
         priority := eval_prio default
-        form := dec.toTheoremForm
+        form
       }
 
       return some thm
@@ -479,15 +481,36 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
 
   return thms
 
+/-- Decompose the goal so that the given theorem in uncurried form applies directly to the outer
+function. -/
+def decomposeUsingTheorem (thm : FunctionTheorem) (e : Expr)
+    (funProp : Expr → FunPropM (Option Result)):
+    FunPropM (Option (Expr × Expr)) := do
+  let some e ← getFunPropFun? (← instantiateMVars e)
+    | throwError "fun_prop bug: decomposeUsingTheorem called with invalid goal"
+  withNewMCtxDepth do
+    let (xs, p, f, g) ← thm.mkPattern
+    unless ← withReducible <| withCanUnfoldPred (← getUnfoldPred) <|
+        isDefEq e p do
+      trace[Debug.Meta.Tactic.fun_prop]
+        m!"could not decompose the goal to apply {← ppOrigin thm.thmOrigin}"
+      return none
+    let xs' ← getMVars f
+    let xs := xs.filter fun x => xs'.contains x.mvarId!
+    unless ← synthesizeArgs thm.thmOrigin xs funProp do
+      return none
+    let f ← instantiateMVars f
+    let g ← instantiateMVars g
+    if ← hasAssignableMVar f <||> hasAssignableMVar g then
+      trace[Debug.Meta.Tactic.fun_prop]
+        m!"unsolved metavariables when decomposing as ({f}) ∘ ({g})"
+      return none
+    return some (f, g)
 
 /-- Try to apply *function theorems* `thms` to `e`. -/
 def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (thms : Array FunctionTheorem) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
-
-  -- none - decomposition not tried
-  -- some result - result of decomposition
-  let mut dec? : Option DecompositionResult := none
 
   for thm in thms do
 
@@ -509,64 +532,51 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
         if let some r ← tryTheorem? e thm.thmOrigin funProp then
           return r
       else
-
-        if thm.mainArgs.size == fData.mainArgs.size then
-          if dec?.isNone then
-            dec? ← fData.decomposition
-          match dec? with
-          | some (.comp f g) =>
-            trace[Meta.Tactic.fun_prop]
-              s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
-                   ({← ppExpr f}) ∘ ({← ppExpr g})"
-            if let some r ← applyCompRule funPropDecl e f g funProp then
-              return r
-          | some _ =>
-            if let some r ← tryTheorem? e thm.thmOrigin funProp then
-              return r
-          | none => unreachable!
+        let some (f, g) ← decomposeUsingTheorem thm e funProp | continue
+        let idExpr := .lam .anonymous (← mkFreshTypeMVar) (.bvar 0) .default
+        if ← withReducible <| isDefEq g idExpr then
+          if let some r ← tryTheorem? e thm.thmOrigin funProp then
+            return r
         else
-          let some (f, g) ← fData.decompositionOverArgs thm.mainArgs | continue
           trace[Meta.Tactic.fun_prop]
             s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
                  ({← ppExpr f}) ∘ ({← ppExpr g})"
           if let some r ← applyCompRule funPropDecl e f g funProp then
             return r
-      -- todo: decompose if uncurried and arguments do not match exactly
   return none
 
 /-- Prove function property of `fun x ↦ f x₁ ... xₙ` where `f` is free variable. -/
 def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
-  -- fvar theorems are almost exclusively in uncurried form so we decompose if we can
+  let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
+  let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
+  trace[Meta.Tactic.fun_prop]
+    s!"candidate local theorems for {←ppExpr (.fvar id)} \
+        {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
+
+  if let some r ← tryTheorems funPropDecl e fData thms funProp then
+    return r
+
   if let .comp f g ← fData.decomposition then
-    applyCompRule funPropDecl e f g funProp
-  else
-    let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
-    let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
-    trace[Meta.Tactic.fun_prop]
-      s!"candidate local theorems for {←ppExpr (.fvar id)} \
-         {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
+    return ← applyCompRule funPropDecl e f g funProp
 
-    if let some r ← tryTheorems funPropDecl e fData thms funProp then
+  if let some f ← fData.unfoldHeadFVar? then
+    let e' := e.setArg funPropDecl.funArgId f
+    if let some r ← funProp e' then
       return r
 
-    if let some f ← fData.unfoldHeadFVar? then
-      let e' := e.setArg funPropDecl.funArgId f
-      if let some r ← funProp e' then
-        return r
-
-    if (← fData.isMorApplication) != .none then
-      if let some r ← applyMorRules funPropDecl e fData funProp then
-        return r
-
-    if let some r ← applyTransitionRules e funProp then
+  if (← fData.isMorApplication) != .none then
+    if let some r ← applyMorRules funPropDecl e fData funProp then
       return r
 
-    if thms.size = 0 then
-      logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove `{← ppExpr e}`"
+  if let some r ← applyTransitionRules e funProp then
+    return r
 
-    return none
+  if thms.size = 0 then
+    logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove `{← ppExpr e}`"
+
+  return none
 
 
 /-- Prove function property of `fun x ↦ f x₁ ... xₙ` where `f` is declared function. -/

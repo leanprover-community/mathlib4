@@ -204,7 +204,7 @@ lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
 
 @[fun_prop]
 lemma continuousOn_ofComplex_I_mul :
-    ContinuousOn (fun t : ℝ ↦ ofComplex (I * t)) (Set.Ioi 0) := by
+    ContinuousOn (fun t : ℝ ↦ ofComplex (Complex.I * t)) (Set.Ioi 0) := by
   simp only [ofComplex_apply_eq_ite, continuousOn_iff_continuous_domRestrict,
     continuous_induced_rng]
   have : Continuous (fun t : ℝ ↦ Complex.I * t) := by fun_prop

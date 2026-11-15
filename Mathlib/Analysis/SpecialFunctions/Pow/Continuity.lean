@@ -377,6 +377,7 @@ end CpowLimits2
 
 namespace NNReal
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
     ContinuousAt (fun p : ℝ≥0 × ℝ => p.1 ^ p.2) (x, y) := by
   have :

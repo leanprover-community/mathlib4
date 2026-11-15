@@ -624,7 +624,7 @@ end PerformanceTests
 
 /--
 info: Con
-  add_Con, args: [4, 5], form: simple
+  add_Con, args: [4, 5], form: simple (2 arguments)
   add_Con', args: [4, 5], form: compositional
 -/
 #guard_msgs in
@@ -895,3 +895,65 @@ example (g : Nat → Nat → Nat) (h : Con (myP g).val) : Con (myP g).val := by
   fun_prop
 
 end ProjTransparency
+
+namespace UncurriedComp
+
+opaque f : Nat → Nat
+opaque g : Nat → Nat
+opaque h : Nat → Nat
+
+@[fun_prop]
+theorem con_f_g : Con (f ∘ g) := silentSorry
+
+@[fun_prop]
+theorem con_h : Con h := silentSorry
+
+/--
+info: Con
+  con_f_g, args: [0], form: simple
+-/
+#guard_msgs in
+#print_fun_prop_theorems f
+
+/--
+info: Con
+  con_h, args: [0], form: simple
+-/
+#guard_msgs in
+#print_fun_prop_theorems h
+
+example : Con (f ∘ g) := by fun_prop
+example : Con (f ∘ g ∘ h) := by fun_prop
+example {f' g' : Nat → Nat} (hfg' : Con (f' ∘ g')) : Con (f' ∘ g' ∘ h) := by fun_prop
+
+opaque F : Nat → Nat → Nat
+opaque G : Nat → Nat → Nat
+
+@[fun_prop]
+theorem con_FG : Con (fun x : Nat × Nat × Nat => F x.1 (G x.2.1 x.2.2)) := silentSorry
+
+@[fun_prop]
+theorem con_Ff : Con (fun x : Nat × Nat => F (f x.2) x.1) := silentSorry
+
+@[fun_prop]
+theorem con_GG_same : Con (fun x : Nat × Nat => G (G x.1 x.2) x.1) := silentSorry
+
+/--
+info: Con
+  con_FG, args: [0, 1], form: simple (3 arguments)
+  con_Ff, args: [0, 1], form: simple (2 arguments)
+-/
+#guard_msgs in
+#print_fun_prop_theorems F
+
+/--
+info: Con
+  con_GG_same, args: [0, 1], form: simple (2 arguments)
+-/
+#guard_msgs in
+#print_fun_prop_theorems G
+
+example : Con (fun x => F (h x) (G x x)) := by fun_prop
+example : Con (fun x => G (G (h x) (F (f x) (h x))) (h x)) := by fun_prop
+
+end UncurriedComp
