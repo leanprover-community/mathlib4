@@ -97,7 +97,10 @@ elab_rules : tactic
 | `(tactic| fail_if_not_idempotent $tacs) => do
   let goal ← getMainGoal
   let middle ← run goal (evalTactic tacs)
+  let mut newGoals := []
   for g in middle do
-    let _ ← runAndFailIfProgress g (evalTactic tacs)
+    let g' ← runAndFailIfProgress g (evalTactic tacs)
+    newGoals := newGoals ++ g'
+  replaceMainGoal newGoals
 
 end Mathlib.Tactic
