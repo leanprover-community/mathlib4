@@ -756,7 +756,7 @@ theorem Polynomial.roots_X_pow_char_sub_X :
   simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtype_val, this]
     using (splits_X_pow_char_sub_X (⊥ : Subfield F) p).roots_map (⊥ : Subfield F).subtype
 
-@[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-10-29")]
+@[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-11-15")]
 theorem Subfield.splits_bot : Splits (X ^ p - X : (⊥ : Subfield F)[X]) :=
   Polynomial.splits_X_pow_char_sub_X _ p
 
