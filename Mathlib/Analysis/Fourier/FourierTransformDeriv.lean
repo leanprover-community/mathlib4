@@ -102,7 +102,7 @@ namespace Real
 lemma hasDerivAt_fourierChar (x : ℝ) : HasDerivAt (𝐞 · : ℝ → ℂ) (2 * π * I * 𝐞 x) x := by
   have h1 (y : ℝ) : 𝐞 y = fourier 1 (y : UnitAddCircle) := by
     rw [fourierChar_apply, fourier_coe_apply]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
   simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one] using hasDerivAt_fourier 1 1 x
 
@@ -180,7 +180,7 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
   rw [ContinuousLinearMap.comp_apply, neg_apply,
     ContinuousLinearMap.toSpanSingleton_apply, ← smul_assoc, smul_comm,
     ← smul_assoc, real_smul, real_smul, Submonoid.smul_def, smul_eq_mul]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring_nf
 
 lemma norm_fourierSMulRight (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (v : V) :

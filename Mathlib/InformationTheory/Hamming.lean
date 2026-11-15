@@ -352,24 +352,24 @@ variable [Fintype ι] [∀ i, DecidableEq (β i)]
 instance : Dist (Hamming β) :=
   ⟨fun x y => hammingDist (ofHamming x) (ofHamming y)⟩
 
-@[simp, push_cast]
+@[simp, fail_if_not_idempotent push_cast]
 theorem dist_eq_hammingDist (x y : Hamming β) :
     dist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
 
 instance : PseudoMetricSpace (Hamming β) where
   dist_self := by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact mod_cast hammingDist_self
   dist_comm := by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact mod_cast hammingDist_comm
   dist_triangle := by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact mod_cast hammingDist_triangle
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
-    push_cast
+    fail_if_not_idempotent push_cast
     constructor
     · refine fun hs ↦ ⟨1, zero_lt_one, fun hab ↦ hs <| by simpa using hab⟩
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ rfl
@@ -378,11 +378,11 @@ instance : PseudoMetricSpace (Hamming β) where
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by
     ext
-    push_cast
+    fail_if_not_idempotent push_cast
     refine iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => ?_⟩
     exact mod_cast hammingDist_le_card_fintype
 
-@[simp, push_cast]
+@[simp, fail_if_not_idempotent push_cast]
 theorem nndist_eq_hammingDist (x y : Hamming β) :
     nndist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
@@ -394,17 +394,17 @@ instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
 instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
   ⟨fun x => hammingNorm (ofHamming x)⟩
 
-@[simp, push_cast]
+@[simp, fail_if_not_idempotent push_cast]
 theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = hammingNorm (ofHamming x) :=
   rfl
 
 instance [∀ i, AddGroup (β i)] : NormedAddGroup (Hamming β) where
-  dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
+  dist_eq := by fail_if_not_idempotent push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := fun x y => NormedAddGroup.dist_eq x y
 
-@[simp, push_cast]
+@[simp, fail_if_not_idempotent push_cast]
 theorem nnNorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
     ‖x‖₊ = hammingNorm (ofHamming x) := rfl
 

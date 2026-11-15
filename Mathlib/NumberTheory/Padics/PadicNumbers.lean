@@ -943,7 +943,7 @@ theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
       _ = padicNorm p k := eq_padicNorm _
       _ = 1 := mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [padicNormE.mul]
     calc
       _ ≤ ‖(p : ℚ_[p])‖ * 1 :=

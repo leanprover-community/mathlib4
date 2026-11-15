@@ -391,7 +391,7 @@ lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
   have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
     hg.norm.isBoundedUnder_le (tendsto_id'.mpr (by simp))
   rw [← tendsto_ofReal_iff] at hg ⊢
-  push_cast at hg ⊢
+  fail_if_not_idempotent push_cast at hg ⊢
   apply (Complex.tendsto_mul_log_one_add_of_tendsto hg).congr'
   filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by simp)] with x hg1
   rw [Complex.ofReal_log (by linarith), Complex.ofReal_add, Complex.ofReal_one]
@@ -411,7 +411,7 @@ lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
   have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
     hg.norm.isBoundedUnder_le (tendsto_id'.mpr (by simp))
   rw [← tendsto_ofReal_iff] at hg ⊢
-  push_cast at hg ⊢
+  fail_if_not_idempotent push_cast at hg ⊢
   apply (Complex.tendsto_one_add_cpow_exp_of_tendsto hg).congr'
   filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by simp)] with x hg1
   rw [Complex.ofReal_cpow (by linarith), Complex.ofReal_add, Complex.ofReal_one]

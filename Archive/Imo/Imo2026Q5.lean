@@ -91,7 +91,7 @@ lemma iterate_eq_add_mul_displacement (hf : ∀ x > 0, 0 < f x) (h : IsSolution 
   | zero => simp
   | succ n ih =>
     rw [Function.iterate_succ_apply, ih (hf x hx), hstep hx]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring
 
 /-- The displacement `f x - x` is nonnegative at every positive input. -/
@@ -108,7 +108,7 @@ lemma displacement_iterate_eq (hf : ∀ x > 0, 0 < f x) (h : IsSolution f)
     (hx : 0 < x) (n : ℕ) : f (f^[n] x) - f^[n] x = f x - x := by
   rw [show f (f^[n] x) = f^[n.succ] x by simp [Function.iterate_succ_apply']]
   have hsucc := iterate_eq_add_mul_displacement hf h hx n.succ
-  push_cast at hsucc
+  fail_if_not_idempotent push_cast at hsucc
   nlinarith [iterate_eq_add_mul_displacement hf h hx n]
 
 /-- Any two strictly positive displacements are equal. -/

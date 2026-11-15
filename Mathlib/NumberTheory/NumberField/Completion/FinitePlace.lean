@@ -237,7 +237,7 @@ lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_embedding, adicAbv_def,
     WithZeroMulInt.toNNReal_neg_apply _ ((v.valuation K).ne_zero_iff.mpr
       ((FaithfulSMul.algebraMap_eq_zero_iff R K).not.2 h_x_nezero))]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnreal v)).ne']
   fail_if_not_idempotent norm_cast
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]

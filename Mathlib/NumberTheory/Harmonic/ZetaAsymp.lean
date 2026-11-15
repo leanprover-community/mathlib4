@@ -137,7 +137,7 @@ lemma termSum_one (N : ℕ) : termSum 1 N = log (N + 1) - harmonic (N + 1) + 1 :
     unfold termSum at hN ⊢
     rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1),
       term_one (by positivity : 0 < N + 1)]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
 
 @[deprecated (since := "2026-05-27")] alias term_sum_one := termSum_one
@@ -153,7 +153,7 @@ lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
   refine this.congr' (Eventually.of_forall (fun n ↦ ?_))
   simp_rw [Function.comp_apply, eulerMascheroniSeq', reduceCtorEq, ite_false]
-  push_cast
+  fail_if_not_idempotent push_cast
   abel
 
 end s_eq_one
@@ -444,7 +444,7 @@ lemma riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   -- This one's for you, Kevin.
   suffices (γ - Real.log (4 * π)) / 2 ≠ 0 by
     simpa only [riemannZeta_one, ← ofReal_ne_zero, ofReal_log (by positivity : 0 ≤ 4 * π),
-      push_cast]
+      fail_if_not_idempotent push_cast]
   refine div_ne_zero (sub_lt_zero.mpr (lt_trans ?_ ?_ (b := 1))).ne two_ne_zero
   · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
   · rw [Real.lt_log_iff_exp_lt (by positivity)]

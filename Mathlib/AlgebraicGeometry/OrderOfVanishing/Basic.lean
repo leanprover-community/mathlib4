@@ -118,7 +118,7 @@ lemma ord_pow (z : X) (f : X.functionField) (n : ℕ) :
   | zero => simp
   | succ n ih =>
     rw [pow_succ, ord_mul (pow_ne_zero n hf) hf, ih]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring
 
 @[simp]
@@ -129,7 +129,7 @@ lemma ord_zpow (z : X) (f : X.functionField) (n : ℤ) :
     rw [Int.ofNat_eq_natCast, zpow_natCast, ord_pow]
   | negSucc n =>
     rw [zpow_negSucc, ord_inv, ord_pow, Int.negSucc_eq]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring
 
 @[simp]

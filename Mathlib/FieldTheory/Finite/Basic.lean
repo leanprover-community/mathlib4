@@ -492,7 +492,7 @@ theorem Nat.sq_add_sq_zmodEq (p : ℕ) [Fact p.Prime] (x : ℤ) :
   refine ⟨a.valMinAbs.natAbs, b.valMinAbs.natAbs, ZMod.natAbs_valMinAbs_le _,
     ZMod.natAbs_valMinAbs_le _, ?_⟩
   rw [← a.coe_valMinAbs, ← b.coe_valMinAbs] at hx
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [sq_abs, sq_abs, ← ZMod.intCast_eq_intCast_iff]
   exact mod_cast hx
 
@@ -779,7 +779,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
   · rintro ⟨y, rfl⟩
     rw [← pow_two, ← pow_mul, hodd]
     apply_fun Units.val using Units.val_injective
-    push_cast
+    fail_if_not_idempotent push_cast
     exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
   · subst a; intro h
     rw [← Nat.card_eq_fintype_card] at hodd h

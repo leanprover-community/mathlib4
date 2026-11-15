@@ -612,13 +612,13 @@ theorem prod_nndist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
     (hp : p ≠ ∞) (x y : WithLp p (α × β)) :
     nndist x y = (nndist x.fst y.fst ^ p.toReal + nndist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact prod_dist_eq_add (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
 theorem prod_nndist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp ∞ (α × β)) :
     nndist x y = nndist x.fst y.fst ⊔ nndist x.snd y.snd :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact prod_dist_eq_sup _ _
 
 theorem edist_fst_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
@@ -796,7 +796,7 @@ theorem prod_norm_eq_of_L1 (x : WithLp 1 (α × β)) :
 theorem prod_nnNorm_eq_of_L1 (x : WithLp 1 (α × β)) :
     ‖x‖₊ = ‖x.fst‖₊ + ‖x.snd‖₊ :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact prod_norm_eq_of_L1 x
 
 @[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_of_L1 := prod_nnNorm_eq_of_L1
@@ -808,7 +808,7 @@ theorem prod_dist_eq_of_L1 (x y : WithLp 1 (α × β)) :
 theorem prod_nndist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     nndist x y = nndist x.fst y.fst + nndist x.snd y.snd :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact prod_dist_eq_of_L1 _ _
 
 set_option backward.isDefEq.respectTransparency false in
@@ -828,7 +828,7 @@ theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
 theorem prod_nnNorm_eq_of_L2 (x : WithLp 2 (α × β)) :
     ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact prod_norm_eq_of_L2 x
 
 @[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_of_L2 := prod_nnNorm_eq_of_L2
@@ -845,7 +845,7 @@ theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
 theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact prod_dist_eq_of_L2 _ _
 
 theorem prod_edist_eq_of_L2 (x y : WithLp 2 (α × β)) :

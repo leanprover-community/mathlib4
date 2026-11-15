@@ -88,13 +88,13 @@ instance : DecidableRel (G.replaceVertex s t).Adj := inferInstanceAs <| Decidabl
 theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t)) := by
   apply Finset.coe_injective
-  push_cast
+  fail_if_not_idempotent push_cast
   exact G.edgeSet_replaceVertex_of_not_adj hn
 
 theorem edgeFinset_replaceVertex : (G.replaceVertex s t).edgeFinset =
     (G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t))) \ {s(t, t)} := by
   apply Finset.coe_injective
-  push_cast
+  fail_if_not_idempotent push_cast
   exact G.edgeSet_replaceVertex
 
 @[deprecated (since := "2026-10-31")]

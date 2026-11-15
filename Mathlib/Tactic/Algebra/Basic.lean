@@ -126,7 +126,7 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)) :
 /-- Push `algebraMap`s into sums and products and convert `algebraMap`s from `ℕ`, `ℤ` and `ℚ`
 into casts. -/
 def pushCast (e : Expr) : MetaM Simp.Result := do
-  -- collect the available `push_cast` lemmas
+  -- collect the available `fail_if_not_idempotent push_cast` lemmas
   let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   let simps : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
   for thm in simps do
@@ -300,7 +300,7 @@ theorem Int.cast_eq_algebraMap (A : Type*) [CommRing A] (n : ℤ) :
 
 /-- Remove some nonstandard spellings of `algebraMap` such as `Nat.cast` -/
 def preprocess (e : Expr) : MetaM Simp.Result := do
-  -- collect the available `push_cast` lemmas
+  -- collect the available `fail_if_not_idempotent push_cast` lemmas
   let thms : SimpTheorems := {}
   let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap,
     ``Algebra.algebraMap_eq_smul_one].foldlM (·.addConst ·) thms

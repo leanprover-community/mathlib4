@@ -260,7 +260,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
       ofSubset_parts]
     simp only [cast_sum, sum_div, mul_sum, Rat.cast_sum, Rat.cast_div,
       mul_div_left_comm ((1 : ℝ) - _)]
-  push_cast
+  fail_if_not_idempotent push_cast
   apply sum_le_sum
   simp only [and_imp, Prod.forall, mem_product]
   rintro x y hx hy
@@ -296,7 +296,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
       Rel.card_interedges_finpartition _ (ofSubset _ hA rfl) (ofSubset _ hB rfl)]
     simp only [cast_sum, mul_sum, sum_div, Rat.cast_sum, Rat.cast_div,
       mul_div_left_comm ((1 : ℝ) + _)]
-  push_cast
+  fail_if_not_idempotent push_cast
   apply sum_le_sum
   simp only [and_imp, Prod.forall, mem_product, show A.product B = A ×ˢ B by rfl]
   intro x y hx hy

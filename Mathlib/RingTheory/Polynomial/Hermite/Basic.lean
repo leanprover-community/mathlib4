@@ -146,7 +146,7 @@ theorem coeff_hermite_explicit :
     rw [coeff_hermite_explicit n 1, (by grind : 2 * (n + 1) - 1 = 2 * n + 1),
       Nat.doubleFactorial_add_one, Nat.choose_zero_right,
       Nat.choose_one_right, pow_succ]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring
   | n + 1, k + 1 => by
     let hermite_explicit : ℕ → ℕ → ℤ := fun n k =>

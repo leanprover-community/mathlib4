@@ -127,25 +127,25 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
         _ ≤ (k + 1 : ℕ) * α := by gcongr
     have hk2' : ⌊(k + 1 : ℕ) * α⌋ < (k + 1 : ℕ) * 2 := by
       rw [Int.floor_lt]
-      push_cast
+      fail_if_not_idempotent push_cast
       gcongr
     have hk' : ⌊(k + 1 : ℕ) * α⌋ = 2 * k + 1 := by
       by_contra
       rw [show ⌊(k + 1 : ℕ) * α⌋ = 2 * k by lia] at hc
       have hc' : ((k + 1 : ℕ) : ℤ) ∣ ((k + 1 : ℕ) : ℤ) * ((k + 1 : ℕ) : ℤ) - 1 := by
         convert! hc using 1
-        push_cast
+        fail_if_not_idempotent push_cast
         ring
       rw [dvd_sub_right (dvd_mul_right _ _), ← isUnit_iff_dvd_one, Int.isUnit_iff] at hc'
       lia
     rw [hk']
     refine ⟨?_, ?_, h.2⟩
-    · push_cast
+    · fail_if_not_idempotent push_cast
       ring
     · rw [Int.floor_eq_iff] at hk'
       rw [div_le_iff₀ (by norm_cast; lia), mul_comm α]
       convert! hk'.1
-      push_cast
+      fail_if_not_idempotent push_cast
       ring
 
 end Condition

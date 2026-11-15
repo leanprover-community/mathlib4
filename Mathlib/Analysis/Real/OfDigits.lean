@@ -172,7 +172,7 @@ theorem ofDigits_const_last_eq_one (b : ℕ) [NeZero b] :
   rw [Summable.tsum_mul_left]
   · rw [geom_series_succ _ (by simp [inv_lt_one_iff₀, this]),
       tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, NeZero.pos b])]
-    push_cast
+    fail_if_not_idempotent push_cast
     have : (b : ℝ) ≠ 0 := mod_cast NeZero.ne b
     field [*]
   · rw [summable_nat_add_iff (f := fun n ↦ ((b + 1 : ℕ) : ℝ)⁻¹ ^ n) 1]

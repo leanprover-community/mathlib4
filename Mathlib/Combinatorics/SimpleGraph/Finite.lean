@@ -764,7 +764,7 @@ variable [Fintype V] {W : Type*} [Fintype W] [DecidableEq W]
 theorem edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
     (G.map f).edgeFinset = G.edgeFinset.map f.sym2Map := by
   rw [← Finset.coe_inj]
-  push_cast
+  fail_if_not_idempotent push_cast
   exact G.edgeSet_map f
 
 theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :

@@ -485,7 +485,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
   simp_rw [← zpow_natCast, Int.natCast_ediv, Int.ofNat_sub hm]
   generalize (m : ℤ) = m'
   clear hm
-  push_cast
+  fail_if_not_idempotent push_cast
   rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
   · rw [ite_eq_left (by use k; ring), ite_eq_left (by use -k + (M i i'); ring), mul_comm 2 k,
       ← sub_mul]

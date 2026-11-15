@@ -502,15 +502,15 @@ theorem fract_fract (a : R) : fract (fract a) = fract a :=
 
 @[simp]
 theorem fract_fract_add (a b : R) : fract (fract a + b) = fract (a + b) :=
-  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; push_cast; abel⟩
+  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; fail_if_not_idempotent push_cast; abel⟩
 
 @[simp]
 theorem fract_add_fract (a b : R) : fract (a + fract b) = fract (a + b) :=
-  fract_eq_fract.2 ⟨-⌊b⌋, by unfold fract; push_cast; abel⟩
+  fract_eq_fract.2 ⟨-⌊b⌋, by unfold fract; fail_if_not_idempotent push_cast; abel⟩
 
 @[simp]
 theorem fract_fract_sub (a b : R) : fract (fract a - b) = fract (a - b) :=
-  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; push_cast; abel⟩
+  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; fail_if_not_idempotent push_cast; abel⟩
 
 @[simp]
 theorem fract_sub_fract (a b : R) : fract (a - fract b) = fract (a - b) :=

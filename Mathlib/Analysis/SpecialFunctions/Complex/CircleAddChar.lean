@@ -54,7 +54,7 @@ lemma toCircle_intCast (j : ℤ) :
     toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
   rw [toCircle, AddChar.compAddMonoidHom_apply, toCircle_addChar, AddChar.coe_mk,
     AddCircle.toCircle, toAddCircle_intCast, Function.Periodic.lift_coe, Circle.coe_exp]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring_nf
 
 lemma toCircle_natCast (j : ℕ) :
@@ -73,7 +73,7 @@ lemma toCircle_eq_circleExp (j : ZMod N) :
     toCircle j = Circle.exp (2 * π * (j.val / N)) := by
   ext
   rw [toCircle_apply, Circle.coe_exp]
-  push_cast
+  fail_if_not_idempotent push_cast
   congr; ring
 
 lemma injective_toCircle : Injective (toCircle : ZMod N → Circle) :=

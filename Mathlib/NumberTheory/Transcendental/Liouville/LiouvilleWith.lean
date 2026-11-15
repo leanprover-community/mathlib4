@@ -64,7 +64,7 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
   rw [abs_sub_comm, abs_of_pos (sub_pos.2 this), rpow_one, sub_lt_iff_lt_add',
     add_div_eq_mul_add_div _ _ hn'.ne']
   gcongr
-  calc _ ≤ x * n + 1 := by push_cast; gcongr; apply Int.floor_le
+  calc _ ≤ x * n + 1 := by fail_if_not_idempotent push_cast; gcongr; apply Int.floor_le
     _ < x * n + 2 := by linarith
 
 namespace LiouvilleWith
@@ -172,7 +172,7 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   have : (↑(r.den * m + r.num * n : ℤ) / ↑(r.den • id n) : ℝ) = m / n + r := by
     rw [smul_eq_mul, id]
     nth_rewrite 4 [← Rat.num_div_den r]
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [add_div, mul_div_mul_left _ _ (by positivity), mul_div_mul_right _ _ (by positivity)]
   refine ⟨r.den * m + r.num * n, ?_⟩; rw [this, add_sub_add_right_eq_sub]
   refine ⟨by simpa, hlt.trans_le (le_of_eq ?_)⟩
@@ -222,7 +222,7 @@ protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
   refine ⟨-m, by simp [neg_div, hne], ?_⟩
   convert hlt using 1
   rw [abs_sub_comm]
-  congr! 1; push_cast; ring
+  congr! 1; fail_if_not_idempotent push_cast; ring
 
 @[simp]
 theorem neg_iff : LiouvilleWith p (-x) ↔ LiouvilleWith p x :=
@@ -316,7 +316,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     (finite_lt_nat N).eventually_all.2 fun b _hb => eventually_imp_distrib_left.2 (this b)
   rcases (this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
-  lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
+  lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; fail_if_not_idempotent push_cast at hne hlt
   rcases le_or_gt N b with h | h
   · refine (hN b h a hne).not_gt (hlt.trans_le ?_)
     gcongr

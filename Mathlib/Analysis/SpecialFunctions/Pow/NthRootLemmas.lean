@@ -78,7 +78,7 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
     (n := n + 1)
   rw [← sub_nonneg] at h ⊢
   convert h using 1
-  rw [pow_succ]; push_cast; ring1
+  rw [pow_succ]; fail_if_not_idempotent push_cast; ring1
 
 private theorem nthRoot.always_exists (n a : ℕ) :
     ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by

@@ -243,7 +243,7 @@ theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k
 
 theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
     emultiplicity p (choose (p ^ n) k) = ↑(n - multiplicity p k) := by
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [← emultiplicity_choose_prime_pow_add_emultiplicity hp hkn hk0,
     (finiteMultiplicity_iff.2 ⟨hp.ne_one, Nat.pos_of_ne_zero hk0⟩).emultiplicity_eq_multiplicity,
     (finiteMultiplicity_iff.2 ⟨hp.ne_one, choose_pos hkn⟩).emultiplicity_eq_multiplicity]
@@ -279,7 +279,7 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
     have : emultiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.emultiplicity_factorial_mul]
       rw [two_mul]
-      push_cast
+      fail_if_not_idempotent push_cast
       apply WithTop.add_lt_add_right _ (ih hn)
       exact Ne.symm nofun
     cases b

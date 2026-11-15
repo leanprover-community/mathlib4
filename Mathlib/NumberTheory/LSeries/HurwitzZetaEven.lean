@@ -139,7 +139,7 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   induction a using QuotientAddGroup.induction_on with | H a =>
   rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def, jacobiTheta₂_functional_equation]
   have h1 : I * ↑(1 / x) = -1 / (I * x) := by
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [← div_div, mul_one_div, div_I, neg_one_mul, neg_neg]
   have hx' : I * x ≠ 0 := mul_ne_zero I_ne_zero (ofReal_ne_zero.mpr hx.ne')
   have h2 : a * I * x / (I * x) = a := by
@@ -212,7 +212,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     Int.cast_natCast, neg_sq, ← add_mul, add_sub_assoc, ← sub_sub, sub_self, zero_sub,
     ← sub_eq_add_neg, mul_neg] at this
   refine this.congr_fun fun n ↦ ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [Complex.cos, mul_div_cancel₀ _ two_ne_zero]
   congr 3 <;> ring
 
@@ -313,7 +313,7 @@ lemma completedHurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
       completedHurwitzZetaEven₀ a s - (if a = 0 then 1 else 0) / s
     rw [smul_eq_mul, mul_comm, mul_div_assoc, div_div, div_mul_cancel₀ _ two_ne_zero, mul_one_div]
   · change (1 / (↑(1 / 2 : ℝ) - s / 2)) • 1 / 2 = 1 / (1 - s)
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [smul_eq_mul, mul_one, ← sub_div, div_div, div_mul_cancel₀ _ two_ne_zero]
 
 /--
@@ -335,7 +335,7 @@ lemma completedCosZeta_eq (a : UnitAddCircle) (s : ℂ) :
   congr 1
   · rw [completedCosZeta₀, WeakFEPair.symm, hurwitzEvenFEPair, smul_eq_mul, mul_one, div_div,
       div_mul_cancel₀ _ (two_ne_zero' ℂ)]
-  · simp_rw [WeakFEPair.symm, hurwitzEvenFEPair, push_cast, inv_one, smul_eq_mul,
+  · simp_rw [WeakFEPair.symm, hurwitzEvenFEPair, fail_if_not_idempotent push_cast, inv_one, smul_eq_mul,
       mul_comm _ (if _ then _ else _), mul_div_assoc, div_div, ← sub_div,
       div_mul_cancel₀ _ (two_ne_zero' ℂ), mul_one_div]
 
@@ -441,7 +441,7 @@ lemma differentiableAt_completedCosZeta
   · exact div_ne_zero_iff.mpr ⟨hs, two_ne_zero⟩
   · change s / 2 ≠ ↑(1 / 2 : ℝ) ∨ (if a = 0 then 1 else 0) = 0
     refine Or.imp (fun h ↦ ?_) (fun ha ↦ ?_) hs'
-    · simpa [push_cast] using h ∘ (div_left_inj₀ two_ne_zero).mp
+    · simpa [fail_if_not_idempotent push_cast] using h ∘ (div_left_inj₀ two_ne_zero).mp
     · simpa
 
 lemma differentiable_completedCosZeta₀ (a : UnitAddCircle) :
@@ -457,7 +457,7 @@ lemma completedHurwitzZetaEven_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * completedHurwitzZetaEven a s) (𝓝[≠] 1) (𝓝 1) := by
   have h1 : Tendsto (fun s : ℂ ↦ (s - ↑(1 / 2 : ℝ)) * _) (𝓝[≠] ↑(1 / 2 : ℝ))
     (𝓝 ((1 : ℂ) * (1 : ℂ))) := (hurwitzEvenFEPair a).Λ_residue_k
-  simp only [push_cast, one_mul] at h1
+  simp only [fail_if_not_idempotent push_cast, one_mul] at h1
   refine (h1.comp <| tendsto_div_two_punctured_nhds 1).congr (fun s ↦ ?_)
   rw [completedHurwitzZetaEven, Function.comp_apply, ← sub_div, div_mul_eq_mul_div, mul_div_assoc]
 
@@ -468,7 +468,7 @@ lemma completedHurwitzZetaEven_residue_zero (a : UnitAddCircle) :
   have h1 : Tendsto (fun s : ℂ ↦ s * _) (𝓝[≠] 0)
     (𝓝 (-(if a = 0 then 1 else 0))) := (hurwitzEvenFEPair a).Λ_residue_zero
   have : -(if a = 0 then (1 : ℂ) else 0) = (if a = 0 then -1 else 0) := by { split_ifs <;> simp }
-  simp only [this, push_cast] at h1
+  simp only [this, fail_if_not_idempotent push_cast] at h1
   refine (h1.comp <| zero_div (2 : ℂ) ▸ (tendsto_div_two_punctured_nhds 0)).congr (fun s ↦ ?_)
   simp [completedHurwitzZetaEven, div_mul_eq_mul_div, mul_div_assoc]
 
@@ -504,7 +504,7 @@ lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · apply (((summable_one_div_int_add_rpow 0 s.re).mpr hs).div_const 2).of_norm_bounded
     intro i
-    simp only [c, (by { push_cast; ring } : 2 * π * I * a * i = ↑(2 * π * a * i) * I), norm_div,
+    simp only [c, (by { fail_if_not_idempotent push_cast; ring } : 2 * π * I * a * i = ↑(2 * π * a * i) * I), norm_div,
       RCLike.norm_ofNat, Complex.norm_exp_ofReal_mul_I, add_zero, norm_one,
       norm_of_nonneg (by positivity : 0 ≤ |(i : ℝ)| ^ s.re), div_right_comm, le_rfl]
   · simp [c, ← Int.cast_abs, div_right_comm, mul_div_assoc]
@@ -745,7 +745,7 @@ lemma hasSum_nat_cosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   simp_rw [abs_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg, abs_zero, Int.cast_zero,
     zero_cpow (ne_zero_of_one_lt_re hs), div_zero, zero_div, add_zero, ← add_div,
     div_right_comm _ _ (2 : ℂ)] at this
-  simp_rw [push_cast, Complex.cos, neg_mul]
+  simp_rw [fail_if_not_idempotent push_cast, Complex.cos, neg_mul]
   exact this.congr_fun fun n ↦ by rw [show 2 * π * a * n * I = 2 * π * I * a * n by ring]
 
 /-- Reformulation of `hasSum_nat_cosZeta` using `LSeriesHasSum`. -/

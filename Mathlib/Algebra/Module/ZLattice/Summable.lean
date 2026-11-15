@@ -139,7 +139,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     _ = 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range n, (k + 1) ^ (d - 1) * (k + 1 : ℝ) ^ r := by
         simp_rw [Finset.mul_sum]
         congr with k
-        push_cast
+        fail_if_not_idempotent push_cast
         rw [Real.mul_rpow (by positivity) (by positivity), mul_pow]
         group
     _ = 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range n, (↑(k + 1) : ℝ) ^ (d - 1 + r) := by

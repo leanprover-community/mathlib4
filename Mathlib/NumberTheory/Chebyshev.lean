@@ -697,7 +697,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
   -- Rewrite in a form to which Abel summation can be applied
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero, sum_filter]
-  push_cast
+  fail_if_not_idempotent push_cast
   let a : ℕ → ℝ := Set.indicator (Set.ofPred Nat.Prime) (fun n ↦ log n)
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * a n
   · refine sum_congr rfl fun n hn ↦ ?_

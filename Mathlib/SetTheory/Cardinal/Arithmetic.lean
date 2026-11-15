@@ -521,7 +521,7 @@ lemma natCast_mul_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : Cardi
   | 1, _ => simpa using! strictMono_id
   | (n + 1) + 1, hneq1 =>
     intro a μ hlt
-    push_cast
+    fail_if_not_idempotent push_cast
     conv_lhs => rw [add_mul, one_mul]
     conv_rhs => rw [add_mul, one_mul]
     refine Cardinal.add_lt_add ?_ hlt

@@ -69,7 +69,7 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
       ring
     simpa [h1] using isBigO_ofReal_right.mp (Asymptotics.isBigO_const_mul_self
       ((2 * π * I / p) ^ k) (fun (n : ℕ) ↦ (↑(n ^ k) : ℝ)) atTop)
-  push_cast
+  fail_if_not_idempotent push_cast
   convert! hf.mul h0
   ring
 
@@ -238,7 +238,7 @@ lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 :
       simp [eisSummand, H, tsum_mul_left,
         ← tsum_prod_pow_eq_tsum_sigma (k - 1) (norm_exp_two_pi_I_lt_one z), this]
     simp_rw [← Complex.exp_nat_mul]
-    exact tsum_congr₂ (fun m n ↦ by push_cast; ring_nf)
+    exact tsum_congr₂ (fun m n ↦ by fail_if_not_idempotent push_cast; ring_nf)
 
 lemma eisSummand_of_gammaSet_eq_divIntMap (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) :
     eisSummand k v z = ((n : ℂ) ^ k)⁻¹ * eisSummand k (divIntMap n v) z := by

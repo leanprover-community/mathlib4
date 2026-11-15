@@ -114,5 +114,5 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
       _ ≤ (K _ z.2) * edist x y + (K' _ z.2) * (edist x y + edist x y) := by
         simp_rw [edist_dist, dist_comm _ x]
         gcongr <;> linarith [mem_ball.1 hx'.2, (not_lt (α := ℝ)).1 hy', dist_triangle_left y z x]
-      _ = ↑(K _ z.2 + 2 * K' _ z.2) * edist x y := by push_cast; ring
+      _ = ↑(K _ z.2 + 2 * K' _ z.2) * edist x y := by fail_if_not_idempotent push_cast; ring
       _ ≤ _ := by gcongr; exact .trans (by rfl) (t.le_sup hz)

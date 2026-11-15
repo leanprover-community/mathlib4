@@ -36,7 +36,7 @@ lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
   rcases hd with ⟨k, hk⟩
   rw [← ZMod.natCast_eq_zero_iff]
   convert! Iff.rfl
-  push_cast
+  fail_if_not_idempotent push_cast
   congr
   suffices (((ZMod.unitOfCoprime _ ha) ^ z : (ZMod d)ˣ) : ZMod d) =
       (((ZMod.unitOfCoprime _ ha) ^ (n : ℤ) : (ZMod d)ˣ) : ZMod d) by
@@ -166,7 +166,7 @@ lemma ab_add_one_dvd_b_add_one : a * b + 1 ∣ b + 1 := by
   suffices a * b + 1 ∣ a ^ h.large_n_0 + b by
     rw [dvd_pow_iff_of_dvd_sub a_coprime_ab_add_one h.dvd_large_n_0_sub_zero, zpow_zero] at this
     rw [← ZMod.natCast_eq_zero_iff]
-    push_cast
+    fail_if_not_idempotent push_cast
     fail_if_not_idempotent norm_cast at this
   exact h.ab_add_one_dvd_a_pow_large_n_0_add_b
 

@@ -42,12 +42,12 @@ example : (an : ℂ) + bq = ((an + bq) : ℚ) := by fail_if_not_idempotent norm_
 example : (((an : ℤ) : ℚ) : ℝ) + bn = (an + (bn : ℤ)) := by fail_if_not_idempotent norm_cast
 
 example (h : ((an + bn : ℕ) : ℤ) = (an : ℤ) + (bn : ℤ)) : True := by
-  push_cast at h
+  fail_if_not_idempotent push_cast at h
   guard_hyp h : (an : ℤ) + (bn : ℤ) = (an : ℤ) + (bn : ℤ)
   trivial
 
 example (h : ((an * bn : ℕ) : ℤ) = (an : ℤ) * (bn : ℤ)) : True := by
-  push_cast at h
+  fail_if_not_idempotent push_cast at h
   guard_hyp h : (an : ℤ) * (bn : ℤ) = (an : ℤ) * (bn : ℤ)
   trivial
 
@@ -110,21 +110,21 @@ end hidden
 
 example (k : ℕ) {x y : ℕ} :
     (x * x + y * y : ℤ) - ↑((x * y + 1) * k) = ↑y * ↑y - ↑k * ↑x * ↑y + (↑x * ↑x - ↑k) := by
-  push_cast
+  fail_if_not_idempotent push_cast
   ring
 
 example (k : ℕ) {x y : ℕ} (h : ((x + y + k : ℕ) : ℤ) = 0) : x + y + k = 0 := by
-  push_cast at h
+  fail_if_not_idempotent push_cast at h
   guard_hyp h : (x : ℤ) + y + k = 0
   assumption_mod_cast
 
 example (a b : ℕ) (h2 : ((a + b + 0 : ℕ) : ℤ) = 10) :
     ((a + b : ℕ) : ℤ) = 10 := by
-  push_cast
-  push_cast [Int.add_zero] at h2
+  fail_if_not_idempotent push_cast
+  fail_if_not_idempotent push_cast [Int.add_zero] at h2
   exact h2
 
--- example {x : ℚ} : ((x + 42 : ℚ) : ℝ) = x + 42 := by push_cast
+-- example {x : ℚ} : ((x + 42 : ℚ) : ℝ) = x + 42 := by fail_if_not_idempotent push_cast
 
 namespace ENNReal
 lemma half_lt_self_bis {a : ℝ≥0∞} (hz : a ≠ 0) (ht : a ≠ ⊤) : a / 2 < a := by

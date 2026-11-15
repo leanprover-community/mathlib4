@@ -432,7 +432,7 @@ theorem unitCoeff_coe {x : ℤ_[p]} (hx : x ≠ 0) :
 theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
     x = (unitCoeff hx : ℤ_[p]) * (p : ℤ_[p]) ^ x.valuation := by
   apply Subtype.coe_injective
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [unitCoeff_coe, mul_assoc, ← zpow_natCast, ← zpow_add₀]
   · simp
   · exact NeZero.ne _

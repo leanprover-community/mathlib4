@@ -40,7 +40,7 @@ theorem Nat.euler_four_squares (a b c d x y z w : ℕ) :
       ((a : ℤ) * w + b * z - c * y + d * x).natAbs ^ 2 =
       (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) * (x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by
   rw [← Int.natCast_inj]
-  push_cast
+  fail_if_not_idempotent push_cast
   simp only [sq_abs, _root_.euler_four_squares]
 
 namespace Int
@@ -121,7 +121,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
   have natAbs_iff {a b c d : ℤ} {k : ℕ} :
       a.natAbs ^ 2 + b.natAbs ^ 2 + c.natAbs ^ 2 + d.natAbs ^ 2 = k ↔
         a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = k := by
-    rw [← @Nat.cast_inj ℤ]; push_cast [sq_abs]; rfl
+    rw [← @Nat.cast_inj ℤ]; fail_if_not_idempotent push_cast [sq_abs]; rfl
   have hm : ∃ m < p, 0 < m ∧ ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = m * p := by
     obtain ⟨a, b, k, hk₀, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
     refine ⟨k, hkp, hk₀, a, b, 1, 0, ?_⟩
@@ -140,7 +140,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     rw [mul_pos_iff_of_pos_left two_pos] at hm₀
     have hm₂ : m < 2 * m := by simpa [two_mul]
     apply_fun (Nat.cast : ℕ → ℤ) at habcd
-    push_cast [mul_assoc] at habcd
+    fail_if_not_idempotent push_cast [mul_assoc] at habcd
     obtain ⟨_, _, _, _, h⟩ := sum_four_squares_of_two_mul_sum_four_squares habcd
     exact hmin m hm₂ ⟨hm₂.trans hmp, hm₀, _, _, _, _, natAbs_iff.2 h⟩
   · -- For each `x` in `a`, `b`, `c`, `d`, take a number `f x ≡ x [ZMOD m]` with least possible
@@ -155,7 +155,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     obtain ⟨r, hr⟩ :
         m ∣ (f a).natAbs ^ 2 + (f b).natAbs ^ 2 + (f c).natAbs ^ 2 + (f d).natAbs ^ 2 := by
       simp only [← Int.natCast_dvd_natCast, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
-      push_cast [hf_mod, sq_abs]
+      fail_if_not_idempotent push_cast [hf_mod, sq_abs]
       fail_if_not_idempotent norm_cast
       simp [habcd]
     -- The quotient `r` is not zero, because otherwise `f a = f b = f c = f d = 0`, hence

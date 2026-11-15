@@ -384,7 +384,7 @@ theorem tsum_geometric_two' (a : ℝ) : ∑' n : ℕ, a / 2 / 2 ^ n = a :=
 /-- **Sum of a Geometric Series** -/
 theorem NNReal.hasSum_geometric {r : ℝ≥0} (hr : r < 1) : HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ := by
   apply NNReal.hasSum_coe.1
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [NNReal.coe_sub (le_of_lt hr)]
   exact hasSum_geometric_of_lt_one r.coe_nonneg hr
 

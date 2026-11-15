@@ -185,7 +185,7 @@ theorem div_rpow (x y : ℝ≥0) (z : ℝ) : (x / y) ^ z = x ^ z / y ^ z :=
 
 theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
   refine NNReal.eq ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   exact Real.sqrt_eq_rpow x.1
 
 @[simp]
@@ -233,7 +233,7 @@ theorem _root_.Real.list_prod_map_rpow (l : List ℝ) (hl : ∀ x ∈ l, (0 : �
     (l.map (· ^ r)).prod = l.prod ^ r := by
   lift l to List ℝ≥0 using hl
   have := congr(($(NNReal.list_prod_map_rpow l r) : ℝ))
-  push_cast at this
+  fail_if_not_idempotent push_cast at this
   rw [List.map_map] at this ⊢
   exact mod_cast this
 

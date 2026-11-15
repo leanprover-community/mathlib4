@@ -479,7 +479,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   simp only [one_pow, mul_one, Finset.sum_mul]
   fail_if_not_idempotent norm_cast
   rw [← Nat.sum_range_choose m.1]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [Finset.sum_mul]
   have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by grind
   grw [hk']

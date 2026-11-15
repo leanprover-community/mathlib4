@@ -44,12 +44,12 @@ theorem numDerangements_tendsto_inv_e :
     exact expSeries_div_hasSum_exp (-1 : ℝ)
   intro n
   rw [← Int.cast_natCast, numDerangements_sum]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [Finset.sum_div]
   -- get down to individual terms
   refine Finset.sum_congr (refl _) ?_
   intro k hk
   have h_le : k ≤ n := Finset.mem_range_succ_iff.mp hk
   rw [Nat.ascFactorial_eq_div, add_tsub_cancel_of_le h_le]
-  push_cast [Nat.factorial_dvd_factorial h_le]
+  fail_if_not_idempotent push_cast [Nat.factorial_dvd_factorial h_le]
   field

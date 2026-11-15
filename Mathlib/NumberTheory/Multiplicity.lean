@@ -221,7 +221,7 @@ theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p 
     rw [Int.ofNat_sub (Nat.pow_le_pow_left hyx n)]
     rw [← Int.natCast_dvd_natCast] at hxy hx
     rw [Int.natCast_sub hyx] at *
-    push_cast at *
+    fail_if_not_idempotent push_cast at *
     exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
   · simp only [Nat.sub_eq_zero_iff_le.mpr (Nat.pow_le_pow_left hyx n), emultiplicity_zero_right,
     Nat.sub_eq_zero_iff_le.mpr hyx, top_add]
@@ -231,7 +231,7 @@ theorem Nat.emultiplicity_pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p 
     emultiplicity p (x ^ n + y ^ n) = emultiplicity p (x + y) + emultiplicity p n := by
   iterate 2 rw [← Int.natCast_emultiplicity]
   rw [← Int.natCast_dvd_natCast] at hxy hx
-  push_cast at *
+  fail_if_not_idempotent push_cast at *
   exact Int.emultiplicity_pow_add_pow hp hp1 hxy hx hn
 
 end LiftingTheExponent

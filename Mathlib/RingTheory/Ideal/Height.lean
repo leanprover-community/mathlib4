@@ -410,7 +410,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
     refine ⟨J ⊔ Ideal.span {x}, sup_le h₁ ?_, ?_, ?_⟩
     · rwa [Ideal.span_le, Set.singleton_subset_iff]
     · apply Submodule.spanRank_sup_le_sum_spanRank.trans
-      push_cast
+      fail_if_not_idempotent push_cast
       exact add_le_add h₂ ((Submodule.spanRank_span_le_card _).trans (by simp))
     · refine le_iInf₂ (fun p hp ↦ ?_)
       have := hp.isPrime

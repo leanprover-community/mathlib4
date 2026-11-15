@@ -43,7 +43,7 @@ open Lean.Elab.Tactic
 This is often useful since `ℚ` has well-behaved subtraction and division.
 
 `qify` makes use of the `@[zify_simps]` and `@[qify_simps]` attributes to insert casts into
-propositions, and the `push_cast` tactic to simplify the `ℚ`-valued expressions.
+propositions, and the `fail_if_not_idempotent push_cast` tactic to simplify the `ℚ`-valued expressions.
 
 `qify` is in some sense dual to the `lift` tactic. `lift (q : ℚ) to ℤ` will change the type of a
 rational number `q` (in the supertype) to `ℤ` (the subtype), given a proof that `q.den = 1`;
@@ -53,7 +53,7 @@ propositions concerning `q` will still be over `ℚ`. `qify` changes proposition
 * `qify at l1 l2 ...` rewrites at the given locations.
 * `qify [h₁, ..., hₙ]` uses the expressions `h₁`, ..., `hₙ` as extra lemmas for simplification.
   This is especially useful in the presence of nat subtraction or of division: passing arguments of
-  type `· ≤ ·` or `· ∣ ·` will allow `push_cast` to do more work.
+  type `· ≤ ·` or `· ∣ ·` will allow `fail_if_not_idempotent push_cast` to do more work.
 
 Examples:
 ```
@@ -78,7 +78,7 @@ macro_rules
 | `(tactic| qify $[[$simpArgs,*]]? $[at $location]?) =>
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic|
-    simp -decide only [zify_simps, qify_simps, push_cast, $args,*]
+    simp -decide only [zify_simps, qify_simps, fail_if_not_idempotent push_cast, $args,*]
       $[at $location]?)
 
 @[qify_simps] lemma intCast_eq (a b : ℤ) : a = b ↔ (a : ℚ) = (b : ℚ) := by simp only [Int.cast_inj]

@@ -200,7 +200,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
     calc
       _ ≤ ∑ k ∈ range N, ζ / 12 * h ^ 3 := sum_le_sum this
       _ = N * (ζ / 12 * h ^ 3)          := by simp [sum_const]
-      _ = _                             := by push_cast; field
+      _ = _                             := by fail_if_not_idempotent push_cast; field
   intro k hk
   rw [Finset.mem_range] at hk
   have h1 : a ≤ ak k := by simp only [ak, le_add_iff_nonneg_right]; positivity

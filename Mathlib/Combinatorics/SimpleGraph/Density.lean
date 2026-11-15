@@ -211,7 +211,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   fail_if_not_idempotent norm_cast
   refine
     (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   have h₁ := hs₂'.mono hs
   have h₂ := ht₂'.mono ht
   gcongr

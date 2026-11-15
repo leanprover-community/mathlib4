@@ -180,7 +180,7 @@ theorem hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
     100 < ↑4 ^ initialBound ε l * ε ^ 5 := by
   rw [← rpow_natCast 4, ← div_lt_iff₀ (pow_pos hε 5), lt_rpow_iff_log_lt _ zero_lt_four, ←
     div_lt_iff₀, initialBound, Nat.cast_max, Nat.cast_max]
-  · push_cast
+  · fail_if_not_idempotent push_cast
     exact lt_max_of_lt_right (lt_max_of_lt_right <| Nat.lt_floor_add_one _)
   · exact log_pos (by simp)
   · exact div_pos (by simp) (pow_pos hε 5)

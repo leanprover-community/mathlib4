@@ -396,7 +396,7 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
   intro n hn IH
   rw [sum_Ioc_succ_top hn]
   grw [IH]
-  push_cast
+  fail_if_not_idempotent push_cast
   have A : 0 < (n : α) := by simpa using hk.bot_lt.trans_le hn
   field_simp
   linarith

@@ -71,7 +71,7 @@ theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
   have ⟨n, hn⟩ := even_iff_exists_two_nsmul _ |>.mp h
   convert isPrimitiveRoot_exp_rat (n / q.den) using 1
   · nth_rw 1 [← q.num_div_den, hn, Int.nsmul_eq_mul]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
   · rw [← Int.cast_natCast, ← Rat.divInt_eq_div, ← Rat.mk_eq_divInt (nz := by simp)]
     apply Nat.Coprime.coprime_mul_left (k := 2)
@@ -81,7 +81,7 @@ theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
 theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
     IsPrimitiveRoot (exp (π * I * q)) (2 * q.den) := by
   convert isPrimitiveRoot_exp_rat (q / 2) using 1
-  · push_cast
+  · fail_if_not_idempotent push_cast
     ring_nf
   · nth_rw 2 [← q.num_div_den]
     rw [mul_comm, div_div, ← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul,
@@ -177,8 +177,8 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
       rw [mul_neg_one, sub_eq_add_neg]
   split_ifs with h₂
   · convert Complex.arg_cos_add_sin_mul_I _
-    · push_cast; rfl
-    · push_cast; rfl
+    · fail_if_not_idempotent push_cast; rfl
+    · fail_if_not_idempotent push_cast; rfl
     simp only [Int.cast_natCast, Set.mem_Ioc]
     refine ⟨(neg_lt_neg Real.pi_pos).trans_le ?_, ?_⟩
     · rw [neg_zero]
@@ -189,10 +189,10 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
       ((div_le_iff₀' <| mod_cast pos_of_gt h).mpr <| mod_cast h₂)
   rw [← Complex.cos_sub_two_pi, ← Complex.sin_sub_two_pi]
   convert Complex.arg_cos_add_sin_mul_I _
-  · push_cast
+  · fail_if_not_idempotent push_cast
     rw [← sub_one_mul, sub_div, div_self]
     exact mod_cast hn
-  · push_cast
+  · fail_if_not_idempotent push_cast
     rw [← sub_one_mul, sub_div, div_self]
     exact mod_cast hn
   simp only [Int.cast_sub, Int.cast_natCast, Set.mem_Ioc]

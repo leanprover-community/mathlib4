@@ -474,7 +474,7 @@ theorem image_inter_subset [DecidableEq α] (f : α → β) (s t : Finset α) :
 theorem image_inter_of_injOn [DecidableEq α] {f : α → β} (s t : Finset α)
     (hf : Set.InjOn f (s ∪ t)) : (s ∩ t).image f = s.image f ∩ t.image f :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.image_inter_on fun a ha b hb => hf (Or.inr ha) <| Or.inl hb
 
 theorem image_inter [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective f) :

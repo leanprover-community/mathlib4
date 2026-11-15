@@ -1120,7 +1120,7 @@ theorem smul_ball'' : a • ball b r = ball (a • b) r := by
 @[to_additive]
 theorem nnNorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x => ‖x‖₊).sum :=
   NNReal.coe_le_coe.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [Multiset.map_map]
     exact norm_multiset_prod_le _
 
@@ -1130,7 +1130,7 @@ alias nnnorm_multiset_prod_le := nnNorm_multiset_prod_le
 @[to_additive]
 theorem nnNorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖₊ ≤ ∑ a ∈ s, ‖f a‖₊ :=
   NNReal.coe_le_coe.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact norm_prod_le _ _
 
 @[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_prod_le := nnNorm_prod_le

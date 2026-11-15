@@ -130,7 +130,7 @@ lemma hasSum_expZeta_of_one_lt_re (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ cexp (2 * π * I * a * n) / n ^ s) (expZeta a s) := by
   convert! (hasSum_nat_cosZeta a hs).add ((hasSum_nat_sinZeta a hs).mul_left I) using 1
   ext1 n
-  simp only [mul_right_comm _ I, ← cos_add_sin_I, push_cast]
+  simp only [mul_right_comm _ I, ← cos_add_sin_I, fail_if_not_idempotent push_cast]
   rw [add_div, mul_div, mul_comm _ I]
 
 lemma differentiableAt_expZeta (a : UnitAddCircle) (s : ℂ) (hs : s ≠ 1 ∨ a ≠ 0) :
@@ -175,7 +175,7 @@ lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
     (exp (π * I * s / 2) * hurwitzZeta a s + exp (-π * I * s / 2) * hurwitzZeta (-a) s) := by
   have hs' (n : ℕ) : s ≠ -↑n := by
     convert hs (n + 1) using 1
-    push_cast
+    fail_if_not_idempotent push_cast
     ring
   rw [expZeta, cosZeta_one_sub a hs, sinZeta_one_sub a hs', hurwitzZeta, hurwitzZeta,
     hurwitzZetaEven_neg, hurwitzZetaOdd_neg, Complex.cos, Complex.sin]

@@ -590,9 +590,9 @@ the `algebraMap` operations which (which proliferate in the constructed scalar g
 familiar forms: `ℕ`, `ℤ` and `ℚ` casts. -/
 def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
 
-/-- A `Simp.Context` containing `push_cast` and `algebraMapThms` lemmas. -/
+/-- A `Simp.Context` containing `fail_if_not_idempotent push_cast` and `algebraMapThms` lemmas. -/
 def postprocessCtx : MetaM Simp.Context := do
-  -- collect the available `push_cast` lemmas
+  -- collect the available `fail_if_not_idempotent push_cast` lemmas
   let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   -- augment this list with the `algebraMapThms` lemmas, which handle `algebraMap` operations
   for thm in algebraMapThms do
@@ -606,7 +606,7 @@ def postprocessCtx : MetaM Simp.Context := do
 These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
 get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
 most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
-(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas.
+(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `fail_if_not_idempotent push_cast` lemmas.
 The `* 1` tags which the parser marks atoms are also cleared. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   -- run `simp` with these lemmas, and (importantly) *no* simprocs
@@ -706,7 +706,7 @@ instance. If the goal contains a scalar multiplication `(a : R) • (x : M)`, th
 The scalar type for the goals produced by the `match_scalars` tactic is the largest scalar type
 encountered; for example, if `ℕ`, `ℚ` and a characteristic-zero field `K` all occur as scalars, then
 the goals produced are equalities in `K` with the appropriate casts (from `ℕ`, `ℤ`, `ℚ`) and
-`algebraMap`s (otherwise) inserted. Inserted casts are simplified by lemmas tagged `@[push_cast]`.
+`algebraMap`s (otherwise) inserted. Inserted casts are simplified by lemmas tagged `@[fail_if_not_idempotent push_cast]`.
 If the set of scalar types encountered is not totally ordered (in the sense that for all rings `R`,
 `S` encountered, it holds that either `Algebra R S` or `Algebra S R`), then `match_scalars` fails.
 

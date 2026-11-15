@@ -33,7 +33,7 @@ variable {G : Type*} [Fintype G] [AddCommGroup G]
 lemma AddDissociated.randomisation (c : AddChar G ℂ → ℝ) (d : AddChar G ℂ → ℂ)
     (hcd : AddDissociated {ψ | d ψ ≠ 0}) : 𝔼 a, ∏ ψ, (c ψ + (d ψ * ψ a).re) = ∏ ψ, c ψ := by
   refine Complex.ofReal_injective ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   calc
     _ = ∑ t, (𝔼 a, ∏ ψ ∈ t, ((d ψ * ψ a) + conj (d ψ * ψ a)) / 2) * ∏ ψ ∈ tᶜ, (c ψ : ℂ) := by
         simp_rw [expect_mul, ← expect_sum_comm, ← Fintype.prod_add, add_comm,

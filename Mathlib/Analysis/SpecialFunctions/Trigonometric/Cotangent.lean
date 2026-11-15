@@ -369,7 +369,7 @@ private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z �
   rw [tsum_of_add_one_of_neg_add_one (by simpa using aux_summable_add hk z)
     (by simpa [sub_eq_add_neg] using aux_summable_sub hk z),
     tsum_mul_left, Summable.tsum_add (aux_summable_add hk z) (aux_summable_sub hk z)]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring_nf
 
 lemma iteratedDerivWithin_cot_sub_inv_eq_add_mul_tsum {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :

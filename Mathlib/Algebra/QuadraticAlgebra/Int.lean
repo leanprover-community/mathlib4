@@ -96,7 +96,7 @@ theorem exists_nat_smul_mem (z : QuadraticAlgebra ℚ a b) :
       n • z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) := by
   obtain ⟨n, hn, x, y, hx, hy⟩ : ∃ n : ℕ, 0 < n ∧ ∃ x y : ℤ, n * z.re = x ∧ n * z.im = y :=
     ⟨z.re.den * z.im.den, by positivity, z.im.den * z.re.num, z.re.den * z.im.num,
-      by push_cast; grind [← Rat.mul_den_eq_num]⟩
+      by fail_if_not_idempotent push_cast; grind [← Rat.mul_den_eq_num]⟩
   refine ⟨n, hn, x • 1 + y • ω, ?_⟩
   ext <;> simp [hx, hy]
 

@@ -511,7 +511,7 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
         contrapose hs
         rw [← eq_sub_iff_add_eq] at hs
         rw [hs]
-        push_cast
+        fail_if_not_idempotent push_cast
         ring
       · rw [Nat.cast_add, Nat.cast_one, neg_add] at hs'
         linarith

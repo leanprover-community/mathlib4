@@ -58,7 +58,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     refine fun d => ⟨k * d, fun z h => ?_⟩
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
-    push_cast
+    fail_if_not_idempotent push_cast
     gcongr
     exact (hU yS).trans hk.le
   choose f hf using fun d : ℕ =>

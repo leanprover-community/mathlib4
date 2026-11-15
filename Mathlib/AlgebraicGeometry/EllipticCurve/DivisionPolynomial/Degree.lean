@@ -159,10 +159,10 @@ private lemma expDegree_cast {n : ℕ} (hn : n ≠ 0) :
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩
   · rcases n with _ | n
     · contradiction
-    push_cast [expDegree, show (2 * (n + 1)) ^ 2 = 2 * (2 * n * (n + 2)) + 4 by ring1, even_two_mul,
+    fail_if_not_idempotent push_cast [expDegree, show (2 * (n + 1)) ^ 2 = 2 * (2 * n * (n + 2)) + 4 by ring1, even_two_mul,
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos]
     ring1
-  · push_cast [expDegree, show (2 * n + 1) ^ 2 = 2 * (2 * n * (n + 1)) + 1 by ring1,
+  · fail_if_not_idempotent push_cast [expDegree, show (2 * n + 1) ^ 2 = 2 * (2 * n * (n + 1)) + 1 by ring1,
       n.not_even_two_mul_add_one, Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos]
     ring1
 
@@ -173,10 +173,10 @@ private lemma expDegree_rec (m : ℕ) :
       expDegree (m + 4) + 3 * expDegree (m + 2) + (if Even m then 2 * 3 else 0) ∧
     expDegree (2 * (m + 2) + 1) =
       expDegree (m + 1) + 3 * expDegree (m + 3) + (if Even m then 0 else 2 * 3)) := by
-  push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (expDegree _ : ℤ)) two_pos,
+  fail_if_not_idempotent push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (expDegree _ : ℤ)) two_pos,
     mul_add, mul_left_comm (2 : ℤ)]
   repeat rw [expDegree_cast <| by lia]
-  push_cast [Nat.even_add_one, ite_not, even_two_mul]
+  fail_if_not_idempotent push_cast [Nat.even_add_one, ite_not, even_two_mul]
   constructor <;> constructor <;> split_ifs <;> ring1
 
 private def expCoeff (n : ℕ) : ℤ :=
@@ -192,7 +192,7 @@ private lemma expCoeff_rec (m : ℕ) :
     (expCoeff (2 * (m + 2) + 1) =
       expCoeff (m + 4) * expCoeff (m + 2) ^ 3 * (if Even m then 4 ^ 2 else 1) -
         expCoeff (m + 1) * expCoeff (m + 3) ^ 3 * (if Even m then 1 else 4 ^ 2)) := by
-  push_cast [← @Int.cast_inj ℚ, expCoeff_cast, even_two_mul, m.not_even_two_mul_add_one,
+  fail_if_not_idempotent push_cast [← @Int.cast_inj ℚ, expCoeff_cast, even_two_mul, m.not_even_two_mul_add_one,
     Nat.even_add_one, ite_not]
   constructor <;> split_ifs <;> ring1
 
@@ -286,7 +286,7 @@ lemma coeff_preΨ (n : ℤ) : (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 
   | neg ih n =>
     simp_rw [preΨ_neg, coeff_neg, Int.natAbs_neg, even_neg]
     rcases ih n, n.even_or_odd' with ⟨ih, ⟨n, rfl | rfl⟩⟩ <;>
-      push_cast [even_two_mul, Int.not_even_two_mul_add_one, Int.neg_ediv_of_dvd ⟨n, rfl⟩] at * <;>
+      fail_if_not_idempotent push_cast [even_two_mul, Int.not_even_two_mul_add_one, Int.neg_ediv_of_dvd ⟨n, rfl⟩] at * <;>
       rw [ih]
 
 lemma coeff_preΨ_ne_zero {n : ℤ} (h : (n : R) ≠ 0) :
@@ -330,10 +330,10 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
   rcases n with _ | n
   · simp
   have hd : (n + 1) ^ 2 - 1 = 2 * expDegree (n + 1) + if Even (n + 1) then 3 else 0 := by
-    push_cast [← @Nat.cast_inj ℤ, add_sq, expDegree_cast n.succ_ne_zero]
+    fail_if_not_idempotent push_cast [← @Nat.cast_inj ℤ, add_sq, expDegree_cast n.succ_ne_zero]
     split_ifs <;> ring1
   have hc : (n + 1 : ℕ) ^ 2 = expCoeff (n + 1) ^ 2 * if Even (n + 1) then 4 else 1 := by
-    push_cast [← @Int.cast_inj ℚ, expCoeff_cast]
+    fail_if_not_idempotent push_cast [← @Int.cast_inj ℚ, expCoeff_cast]
     split_ifs <;> ring1
   rw [ΨSq_ofNat, hd]
   constructor
@@ -377,11 +377,11 @@ lemma ΨSq_ne_zero [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) : W.ΨSq n �
   by_cases hn : 1 < n.natAbs
   · exact ne_zero_of_natDegree_gt <| W.natDegree_ΨSq_pos hn h
   · rcases hm : n.natAbs with _ | m
-    · push_cast [Int.natAbs_eq_zero.mp hm, ne_self_iff_false] at h
+    · fail_if_not_idempotent push_cast [Int.natAbs_eq_zero.mp hm, ne_self_iff_false] at h
     · rcases Int.natAbs_eq_iff.mp hm with rfl | rfl <;>
         rw [hm, Nat.lt_add_left_iff_pos, Nat.not_lt_eq, Nat.le_zero] at hn <;>
-        push_cast [hn, ΨSq_neg, ΨSq_one] <;>
-        exact fun h' => h <| C_injective <| by push_cast [hn, C_neg, C_1, h', neg_zero, C_0]; rfl
+        fail_if_not_idempotent push_cast [hn, ΨSq_neg, ΨSq_one] <;>
+        exact fun h' => h <| C_injective <| by fail_if_not_idempotent push_cast [hn, C_neg, C_1, h', neg_zero, C_0]; rfl
 
 end ΨSq
 
@@ -396,16 +396,16 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
   rcases n with _ | _ | n
   on_goal 1 2 => simp [natDegree_X_le]
   have hd : (n + 1 + 1) ^ 2 = 1 + 2 * expDegree (n + 2) + if Even (n + 1) then 0 else 3 := by
-    push_cast [← @Nat.cast_inj ℤ, expDegree_cast (n + 1).succ_ne_zero, Nat.even_add_one, ite_not]
+    fail_if_not_idempotent push_cast [← @Nat.cast_inj ℤ, expDegree_cast (n + 1).succ_ne_zero, Nat.even_add_one, ite_not]
     split_ifs <;> ring1
   have hd' : (n + 1 + 1) ^ 2 =
       expDegree (n + 3) + expDegree (n + 1) + if Even (n + 1) then 3 else 0 := by
-    push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (_ ^ 2 : ℤ)) two_pos, mul_add,
+    fail_if_not_idempotent push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (_ ^ 2 : ℤ)) two_pos, mul_add,
       expDegree_cast (n + 2).succ_ne_zero, expDegree_cast n.succ_ne_zero, Nat.even_add_one, ite_not]
     split_ifs <;> ring1
   have hc : (1 : ℤ) = 1 * expCoeff (n + 2) ^ 2 * (if Even (n + 1) then 1 else 4) -
       expCoeff (n + 3) * expCoeff (n + 1) * (if Even (n + 1) then 4 else 1) := by
-    push_cast [← @Int.cast_inj ℚ, expCoeff_cast, Nat.even_add_one, ite_not]
+    fail_if_not_idempotent push_cast [← @Int.cast_inj ℚ, expCoeff_cast, Nat.even_add_one, ite_not]
     split_ifs <;> ring1
   rw [Nat.cast_add, Nat.cast_one, Φ_ofNat]
   constructor

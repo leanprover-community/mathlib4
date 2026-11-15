@@ -309,7 +309,7 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
   refine (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => ?_
   replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹ := by
     rw [← NNReal.coe_lt_coe]
-    push_cast
+    fail_if_not_idempotent push_cast
     exact hg
   rw [LinearMap.ker_eq_bot]
   refine (hK.add_sub_lipschitzWith (LipschitzWith.of_dist_le_mul fun v u => ?_) hg).injective

@@ -745,7 +745,7 @@ theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f
   rw [add_assoc]
   fail_if_not_idempotent norm_cast
   refine map_lt_of_translationNumber_lt_int _ ?_ _
-  push_cast
+  fail_if_not_idempotent push_cast
   exact lt_floor_add_one _
 
 theorem map_lt_add_translationNumber_add_one (x : ℝ) : f x < x + τ f + 1 :=

@@ -232,7 +232,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   -- to apply `fixed_point_of_gt_1`.
   intro x hx
   have H₀ : x * x.den = x.num := x.mul_den_eq_num
-  have H : x * (↑(2 * x.den) : ℚ) = (↑(2 * x.num) : ℚ) := by push_cast; linear_combination 2 * H₀
+  have H : x * (↑(2 * x.den) : ℚ) = (↑(2 * x.num) : ℚ) := by fail_if_not_idempotent push_cast; linear_combination 2 * H₀
   set x2denom := 2 * x.den
   set x2num := 2 * x.num
   have hx2pos : 0 < 2 * x.den := by positivity
@@ -247,4 +247,4 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     _ = x2num := fixed_point_of_gt_1 hx2num_gt_one H1 H2 H4 H5 ha1 hae
     _ = ((x2num : ℚ) : ℝ) := by fail_if_not_idempotent norm_cast
     _ = (↑(x2denom * x) : ℝ) := by congr; linear_combination -H
-    _ = x2denom * x := by push_cast; rfl
+    _ = x2denom * x := by fail_if_not_idempotent push_cast; rfl

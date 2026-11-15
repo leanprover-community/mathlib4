@@ -87,7 +87,7 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
     ((n : ℚ) - i + 1) * (n - i + 1).centralBinom = 2 * (2 * (n - i) + 1) * (n - i).centralBinom :=
       mod_cast Nat.succ_mul_centralBinom_succ (n - i)
   simp only [gosperCatalan]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ← (Nat.add_sub_assoc h 1),
     add_comm]]
   rw [h₁, h₂, h₃, h₄]

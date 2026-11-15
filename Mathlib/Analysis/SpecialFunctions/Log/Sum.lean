@@ -42,7 +42,7 @@ theorem sum_log_eq_log_factorial : ∑ n ∈ Ioc 0 N, log n = log N.factorial :=
 /-- The partial sum of the logarithm, in `Finset.range` form: `∑ n ∈ range N, log (n + 1)`. -/
 theorem sum_log_add_one_eq_log_factorial : ∑ n ∈ range N, log (n + 1) = log N.factorial := by
   rw [Nat.factorial_eq_prod_range_add_one, prod_natCast, log_prod (fun i _ ↦ by positivity)]
-  push_cast
+  fail_if_not_idempotent push_cast
   rfl
 
 /-- A crude upper bound on the partial sum of the logarithm. -/

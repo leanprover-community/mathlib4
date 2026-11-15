@@ -446,7 +446,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
     _ = (√(2 * π * v))⁻¹
         * ∫ x : ℝ, cexp (-(2 * v)⁻¹ * x ^ 2 + (z + μ / v) * x + -μ ^ 2 / (2 * v)) ∂ℙ := by
       unfold gaussianPDFReal
-      push_cast
+      fail_if_not_idempotent push_cast
       simp_rw [mul_assoc, integral_const_mul, ← Complex.exp_add]
       congr with x
       congr 1
@@ -460,7 +460,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
         NNReal.coe_ofNat, ofReal_mul, ofReal_ofNat, neg_neg, div_inv_eq_mul,
         ne_eq, ofReal_eq_zero, rpow_eq_zero, not_false_eq_true]
       rw [Complex.ofReal_cpow (by positivity)]
-      push_cast
+      fail_if_not_idempotent push_cast
       ring_nf
     _ = cexp (z * μ + v * z ^ 2 / 2) := by
       rw [one_mul]

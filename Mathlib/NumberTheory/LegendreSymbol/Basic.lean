@@ -124,7 +124,7 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
       subst p
       rw [legendreSym, quadraticChar_eq_one_of_char_two hc ha]
       revert ha
-      push_cast
+      fail_if_not_idempotent push_cast
       generalize (a : ZMod 2) = b; fin_cases b
       · tauto
       · simp
@@ -250,7 +250,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1) {x y : ℤ}
     (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
   simp_rw [← ZMod.intCast_zmod_eq_zero_iff_dvd] at hxy ⊢
-  push_cast at hxy
+  fail_if_not_idempotent push_cast at hxy
   exact eq_zero_mod_of_eq_neg_one h hxy
 
 end legendreSym

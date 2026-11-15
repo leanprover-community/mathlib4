@@ -115,7 +115,7 @@ theorem arg_exp (z : ℂ) : arg (exp z) = toIocMod Real.two_pi_pos (-π) z.im :=
     arg_mul_cos_add_sin_mul_I (Real.exp_pos z.re) (θ := toIocMod Real.two_pi_pos (-π) z.im) _
     using 1
   · rw [← exp_mul_I, ofReal_exp, toIocMod]
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [exp_mul_I_periodic.sub_zsmul_eq, ← exp_add, re_add_im]
   · convert toIocMod_mem_Ioc ..
     ring
@@ -141,7 +141,7 @@ theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   rw [two_mul, neg_add_cancel_left, ← two_mul, zsmul_eq_mul] at hN
   rw [← norm_mul_cos_add_sin_mul_I z, ← cos_add_int_mul_two_pi _ N, ← sin_add_int_mul_two_pi _ N]
   have := arg_mul_cos_add_sin_mul_I (norm_pos_iff.mpr hz) hN
-  push_cast at this
+  fail_if_not_idempotent push_cast at this
   rwa [this]
 
 @[simp]

@@ -291,7 +291,7 @@ lemma det_vandermonde_id_eq_superFactorial (n : ℕ) :
   | zero => simp
   | succ n hn =>
     rw [Nat.superFactorial, det_vandermonde, Fin.prod_univ_succAbove _ 0]
-    push_cast
+    fail_if_not_idempotent push_cast
     congr
     · simp only [Fin.val_zero, Nat.cast_zero, sub_zero]
       fail_if_not_idempotent norm_cast

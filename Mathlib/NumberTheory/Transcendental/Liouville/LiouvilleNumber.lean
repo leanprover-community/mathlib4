@@ -180,7 +180,7 @@ theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvill
   -- the first `n` terms sum to `p / m ^ k!`
   rcases partialSum_eq_rat (zero_lt_two.trans_le hm) n with ⟨p, hp⟩
   refine ⟨p, m ^ n !, one_lt_pow₀ mZ1 n.factorial_ne_zero, ?_⟩
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [Nat.cast_pow] at hp
   -- separate out the sum of the first `n` terms and the rest
   rw [← partialSum_add_remainder m1 n, ← hp]

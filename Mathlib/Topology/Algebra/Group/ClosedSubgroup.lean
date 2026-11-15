@@ -99,7 +99,7 @@ variable {G : Type u} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by
   rw [normalCore_eq_iInf_comap_conj]
-  push_cast
+  fail_if_not_idempotent push_cast
   apply isClosed_iInter
   intro g
   exact h.preimage (IsTopologicalGroup.continuous_conj g)

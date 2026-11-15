@@ -34,7 +34,7 @@ namespace Complex
 
 lemma exp_rat_mul_pi_mul_I_pow_two_mul_den (q : ℚ) : exp (q * π * I) ^ (2 * q.den) = 1 := by
   nth_rw 1 [← q.num_div_den, ← exp_nat_mul]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [show 2 * q.den * (q.num / q.den * π * I) = q.num * (2 * π * I) by field,
     exp_int_mul_two_pi_mul_I]
 
@@ -111,7 +111,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
   obtain ⟨r, rfl⟩ := hθ
   obtain ⟨k, hk⟩ : 2 * cos (r * π) ∈ Set.range Int.cast := by
     rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).mem_range_ratCast_iff]
-    exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
+    exact ⟨2 * hcos.choose, by fail_if_not_idempotent push_cast; linarith [hcos.choose_spec]⟩
   -- Since k is an integer and `2 * cos (w * pi) = k`, we have $k ∈ {-2, -1, 0, 1, 2}$.
   have hk_values : k ∈ Finset.Icc (-2 : ℤ) 2 := by
     rw [Finset.mem_Icc]
@@ -125,7 +125,7 @@ theorem niven_sin (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, sin θ =
     sin θ ∈ ({-1, -1 / 2, 0, 1 / 2, 1} : Set ℝ) := by
   convert ← niven (θ := θ - π / 2) ?_ ?_ using 1
   · exact cos_sub_pi_div_two θ
-  · exact hθ.imp' (· - 1 / 2) (by intros; push_cast; linarith)
+  · exact hθ.imp' (· - 1 / 2) (by intros; fail_if_not_idempotent push_cast; linarith)
   · simpa [cos_sub_pi_div_two]
 
 /-- Niven's theorem, giving the possible angles for `θ` in the range `0 .. π`. -/
@@ -159,7 +159,7 @@ theorem niven_fract_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) 
     grind [ne_of_lt (Int.fract_lt_one r)]
   refine niven_angle_div_pi_eq (r := Int.fract r) ?_ (by simp [le_of_lt <| Int.fract_lt_one r])
   obtain ⟨q, hq⟩ := hcos
-  exact ⟨(-1) ^ ⌊r⌋ * q, by rw [Int.fract]; push_cast; rw [sub_mul, cos_sub_int_mul_pi, hq]⟩
+  exact ⟨(-1) ^ ⌊r⌋ * q, by rw [Int.fract]; fail_if_not_idempotent push_cast; rw [sub_mul, cos_sub_int_mul_pi, hq]⟩
 
 theorem irrational_cos_rat_mul_pi {r : ℚ} (hr : 3 < r.den) :
     Irrational (cos (r * π)) := by

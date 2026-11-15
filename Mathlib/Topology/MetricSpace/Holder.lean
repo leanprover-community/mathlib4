@@ -168,7 +168,7 @@ lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0} {A : Set X}
     _ ≤ (C₁ * (edist x y) ^ (r : ℝ)) ^ (t₁ : ℝ) * (C₂ * (edist x y) ^ (s : ℝ)) ^ (t₂ : ℝ) := by
         nth_grw 1 [hf₁ x hx y hy, hf₂ x hx y hy]
     _ = ↑(C₁ ^ (t₁ : ℝ) * C₂ ^ (t₂ : ℝ)) * (edist x y) ^ (↑(r * t₁ + s * t₂) : ℝ) := by
-        push_cast
+        fail_if_not_idempotent push_cast
         simp (discharger := positivity) only [ENNReal.mul_rpow_of_nonneg,
           ENNReal.rpow_add_of_nonneg, ENNReal.rpow_mul, ENNReal.coe_rpow_of_nonneg]
         ring

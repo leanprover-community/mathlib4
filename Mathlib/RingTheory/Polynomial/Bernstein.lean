@@ -303,7 +303,7 @@ theorem sum_smul (n : ℕ) :
       · simp
       · rw [bernsteinPolynomial]
         simp only [← natCast_mul, Nat.add_succ_sub_one, add_zero, pow_succ]
-        push_cast
+        fail_if_not_idempotent push_cast
         ring
     rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
@@ -341,7 +341,7 @@ theorem sum_mul_smul (n : ℕ) :
       · simp
       · rw [bernsteinPolynomial]
         simp only [← natCast_mul, Nat.add_succ_sub_one, add_zero, pow_succ]
-        push_cast
+        fail_if_not_idempotent push_cast
         ring
     rw [add_pow, map_sum (pderiv true), map_sum (pderiv true), map_sum (MvPolynomial.aeval e),
       Finset.sum_mul]
@@ -383,9 +383,9 @@ theorem variance (n : ℕ) :
     _ = _ := Finset.sum_congr rfl fun k m => ?_
     _ = _ := p
     _ = _ := ?_
-  · congr 1; simp only [← natCast_mul, push_cast]
+  · congr 1; simp only [← natCast_mul, fail_if_not_idempotent push_cast]
     cases k <;> · simp; ring
-  · simp only [← natCast_mul, push_cast]
+  · simp only [← natCast_mul, fail_if_not_idempotent push_cast]
     cases n
     · simp
     · simp; ring

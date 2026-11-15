@@ -76,7 +76,7 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
     refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩
     · have := r.pos; lia
     · convert @mem_ball_self ℝ _ (r : ℝ) _ _
-      · push_cast
+      · fail_if_not_idempotent push_cast
         -- Workaround for https://github.com/leanprover/lean4/pull/6438; this eliminates an
         -- `Expr.mdata` that would cause `norm_cast` to skip a numeral.
         rw [Eq.refl (2 : ℝ)]

@@ -98,7 +98,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
     rcases lt_or_ge (n + 1) k with H | H
     · have H₀ : (0 : ℝ) ≤ k / (n + 1) := by positivity
       have H₀' : (0 : ℝ) ≤ (n + 1) / k := by positivity
-      have H₁ : (k / (n + 1) : ℂ) = (k / (n + 1) : ℝ) := by push_cast; rfl
+      have H₁ : (k / (n + 1) : ℂ) = (k / (n + 1) : ℝ) := by fail_if_not_idempotent push_cast; rfl
       have H₂ : (n + 1) / k < (1 : ℝ) :=
         (div_lt_one <| mod_cast n.succ_pos.trans H).mpr <| mod_cast H
       simp only [Set.mem_ofPred_eq, H, Set.indicator_of_mem, F]

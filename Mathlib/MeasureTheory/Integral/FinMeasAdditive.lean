@@ -411,7 +411,7 @@ theorem setToSimpleFunc_congr_left (T T' : Set α → E →L[ℝ] F)
 theorem setToSimpleFunc_add_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] F') {f : α →ₛ F} :
     setToSimpleFunc (T + T') f = setToSimpleFunc T f + setToSimpleFunc T' f := by
   simp_rw [setToSimpleFunc, Pi.add_apply]
-  push_cast
+  fail_if_not_idempotent push_cast
   simp_rw [Pi.add_apply, sum_add_distrib]
 
 theorem setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
@@ -423,7 +423,7 @@ theorem setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
     rw [← sum_add_distrib]
     refine Finset.sum_congr rfl fun x hx => ?_
     rw [this x hx]
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [Pi.add_apply]
   intro x hx
   refine

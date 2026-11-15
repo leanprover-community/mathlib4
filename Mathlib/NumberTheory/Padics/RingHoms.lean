@@ -86,7 +86,7 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
   have := congr(($(gcd_eq_gcd_ab r.den p) % p : ZMod p))
   simp only [Int.cast_natCast, CharP.cast_eq_zero, EuclideanDomain.mod_zero, Int.cast_add,
     Int.cast_mul, zero_mul, add_zero] at this
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [mul_right_comm, mul_assoc, ← this]
   suffices rdcp : r.den.Coprime p by
     rw [rdcp.gcd_eq_one]
@@ -411,7 +411,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     split_ifs with h
     · rw [h]
       apply dvd_zero
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [sub_add_eq_sub_sub]
     obtain ⟨c, hc⟩ := ih x
     simp only [map_natCast, ZMod.natCast_self, map_pow, map_mul, ZMod.natCast_val]
@@ -752,7 +752,7 @@ lemma toZModPow_ofIntSeq_of_pow_dvd_sub
     (by simp only [zpow_neg, zpow_natCast, inv_pos]; exact mod_cast Nat.pos_of_neZero _)
   replace hN := hN (N + n) (Nat.le_add_right N n)
   rw [← hs, he, ← Rat.cast_lt (K := ℝ)] at hN
-  push_cast at hN
+  fail_if_not_idempotent push_cast at hN
   simp only [← add_sub, s, CauSeq.mk_apply, Rat.cast_intCast, padicNormE.is_norm,
     ← Int.cast_natCast (R := ℚ_[p]) (x.appr n), ← Int.cast_sub] at hN
   have : ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ ≤ ↑p ^ (-n : ℤ) := by

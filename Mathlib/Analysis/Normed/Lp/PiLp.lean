@@ -629,13 +629,13 @@ theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀
     (hp : p ≠ ∞) (x y : PiLp p β) :
     nndist x y = (∑ i : ι, nndist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact dist_eq_sum (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
 theorem nndist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x y : PiLp ∞ β) :
     nndist x y = ⨆ i, nndist (x i) (y i) :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact dist_eq_iSup _ _
 
 section
@@ -772,7 +772,7 @@ theorem norm_eq_of_L1 (x : PiLp 1 β) : ‖x‖ = ∑ i : ι, ‖x i‖ := by
   simp [norm_eq_sum]
 
 theorem nnNorm_eq_of_L1 (x : PiLp 1 β) : ‖x‖₊ = ∑ i : ι, ‖x i‖₊ :=
-  NNReal.eq <| by push_cast; exact norm_eq_of_L1 x
+  NNReal.eq <| by fail_if_not_idempotent push_cast; exact norm_eq_of_L1 x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq_of_L1 := nnNorm_eq_of_L1
 
@@ -780,7 +780,7 @@ theorem dist_eq_of_L1 (x y : PiLp 1 β) : dist x y = ∑ i, dist (x i) (y i) := 
   simp_rw [dist_eq_norm, norm_eq_of_L1, sub_apply]
 
 theorem nndist_eq_of_L1 (x y : PiLp 1 β) : nndist x y = ∑ i, nndist (x i) (y i) :=
-  NNReal.eq <| by push_cast; exact dist_eq_of_L1 _ _
+  NNReal.eq <| by fail_if_not_idempotent push_cast; exact dist_eq_of_L1 _ _
 
 set_option backward.isDefEq.respectTransparency false in
 theorem edist_eq_of_L1 (x y : PiLp 1 β) : edist x y = ∑ i, edist (x i) (y i) := by
@@ -800,7 +800,7 @@ theorem norm_eq_of_L2 (x : PiLp 2 β) :
 theorem nnNorm_eq_of_L2 (x : PiLp 2 β) :
     ‖x‖₊ = NNReal.sqrt (∑ i : ι, ‖x i‖₊ ^ 2) :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact norm_eq_of_L2 x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq_of_L2 := nnNorm_eq_of_L2
@@ -822,7 +822,7 @@ theorem dist_sq_eq_of_L2 (x y : PiLp 2 β) :
 theorem nndist_eq_of_L2 (x y : PiLp 2 β) :
     nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
   NNReal.eq <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact dist_eq_of_L2 _ _
 
 theorem edist_eq_of_L2 (x y : PiLp 2 β) :

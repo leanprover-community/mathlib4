@@ -161,7 +161,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     rcases h' with h' | h'
     · exact intervalIntegrable_cpow' h'
     · exact intervalIntegrable_cpow (Or.inr h'.2)
-  · rw [(by push_cast; rfl : (r : ℂ) + 1 = ((r + 1 : ℝ) : ℂ))]
+  · rw [(by fail_if_not_idempotent push_cast; rfl : (r : ℂ) + 1 = ((r + 1 : ℝ) : ℂ))]
     simp_rw [div_eq_inv_mul, ← Complex.ofReal_inv, Complex.re_ofReal_mul, Complex.sub_re, rpow_def]
 
 theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
@@ -452,7 +452,7 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
     congr with x : 1
     rw [ofReal_mul, this x t]
   · simp_rw [ofReal_sub, ofReal_div, this a (t + 1), this b (t + 1)]
-    push_cast; rfl
+    fail_if_not_idempotent push_cast; rfl
   · rw [← ofReal_one, ← ofReal_neg, Ne, ofReal_inj]
     exact ht
 

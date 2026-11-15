@@ -336,7 +336,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
     rw [mem_ofPred, abs_sub_comm, ← @Int.cast_lt ℝ,
       ← div_lt_div_iff_of_pos_right (abs_pos_of_pos h0)]
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [← abs_div, abs_sq, sub_div, mul_div_cancel_right₀ _ h0.ne', ← div_pow, h1, ←
       sq_sqrt (Int.cast_pos.mpr h₀).le, sq_sub_sq, abs_mul, ← mul_one_div]
     refine mul_lt_mul'' (((abs_add_le ξ q).trans ?_).trans_lt hM₁) h (abs_nonneg _) (abs_nonneg _)
@@ -365,13 +365,13 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     Prod.ext_iff.mp hqf
   have hd₁ : m ∣ q₁.num * q₂.num - d * (q₁.den * q₂.den) := by
     rw [← Int.natAbs_dvd, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [hq1, hq2, ← sq, ← sq]
     fail_if_not_idempotent norm_cast
     rw [ZMod.intCast_zmod_eq_zero_iff_dvd, Int.natAbs_dvd, Nat.cast_pow, ← h₂]
   have hd₂ : m ∣ q₁.num * q₂.den - q₂.num * q₁.den := by
     rw [← Int.natAbs_dvd, ← ZMod.intCast_eq_intCast_iff_dvd_sub]
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [hq1, hq2]
   replace hm₀ : (m : ℚ) ≠ 0 := Int.cast_ne_zero.mpr hm₀
   refine ⟨(q₁.num * q₂.num - d * (q₁.den * q₂.den)) / m, (q₁.num * q₂.den - q₂.num * q₁.den) / m,

@@ -267,7 +267,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_lt
   have m : (𝓝 l).map ofReal ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
   replace h := (tendsto_map.comp h).mono_right m
   rw [Function.comp_def] at h
-  push_cast at h
+  fail_if_not_idempotent push_cast at h
   replace h := Complex.tendsto_tsum_powerSeries_nhdsWithin_lt h
   rw [tendsto_map'_iff] at h
   rw [Metric.tendsto_nhdsWithin_nhds] at h ⊢

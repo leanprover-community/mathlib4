@@ -384,7 +384,7 @@ theorem count_mul {I I' : FractionalIdeal R⁰ K} (hI : I ≠ 0) (hI' : I' ≠ 0
     count_well_defined K v (mul_ne_zero hI hI') h_prod, ← Associates.mk_mul_mk,
     Associates.count_mul hJ_ne_zero hJ'_ne_zero hv, ← Ideal.span_singleton_mul_span_singleton,
     ← Associates.mk_mul_mk, Associates.count_mul ha_ne_zero ha'_ne_zero hv]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring
 
 /-- For nonzero `I, I'`, `val_v(I*I') = val_v(I) + val_v(I')`. If `I` or `I'` is zero, then

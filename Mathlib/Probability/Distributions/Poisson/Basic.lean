@@ -144,7 +144,7 @@ lemma charFun_map_cast_poissonMeasure (r : ℝ≥0) (t : ℝ) :
   calc ∑' a, (rexp (-r) * r ^ a / a ! : ℝ) * cexp ((a * t : ℝ) * I)
   _ = ∑' a, (rexp (-r)) * ((r * cexp (t * I)) ^ a / a !) := by
       congr with a
-      push_cast
+      fail_if_not_idempotent push_cast
       rw [mul_pow, ← Complex.exp_nat_mul]
       ring_nf
   _ = (rexp (-r)) * ∑' a, ((r * cexp (t * I)) ^ a / a !) := tsum_mul_left
@@ -152,7 +152,7 @@ lemma charFun_map_cast_poissonMeasure (r : ℝ≥0) (t : ℝ) :
       rw [(NormedSpace.expSeries_div_hasSum_exp (r * cexp (t * I))).tsum_eq, exp_eq_exp_ℂ]
   _ = cexp (r * (cexp (t * I) - 1)) := by
       rw [ofReal_exp, ← Complex.exp_add]
-      push_cast
+      fail_if_not_idempotent push_cast
       ring_nf
 
 end CharFun
@@ -168,7 +168,7 @@ private theorem map_cast_poissonMeasure_conv_real (r₁ r₂ : ℝ≥0) :
   apply Measure.ext_of_charFun
   ext t
   simp only [charFun_conv, charFun_map_cast_poissonMeasure, ← Complex.exp_add]
-  congr; push_cast; ring
+  congr; fail_if_not_idempotent push_cast; ring
 
 theorem poissonMeasure_conv_poissonMeasure (r₁ r₂ : ℝ≥0) :
     Po(r₁) ∗ Po(r₂) = Po(r₁ + r₂) := by

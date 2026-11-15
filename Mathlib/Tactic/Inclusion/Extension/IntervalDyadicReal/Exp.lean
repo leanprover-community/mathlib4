@@ -55,7 +55,7 @@ theorem expPartialSumNum_div (a : ℤ) {b : ℕ} (hb : b ≠ 0) (n : ℕ) :
   | zero => simp [expPartialSumNum]
   | succ n ih =>
     rw [sum_range_succ, ← ih, expPartialSumNum, Nat.factorial_succ]
-    push_cast [div_pow]
+    fail_if_not_idempotent push_cast [div_pow]
     field_simp
     ring
 
@@ -72,11 +72,11 @@ theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ 
     rw [abs_div, Nat.abs_cast, div_le_one (by positivity), ← Int.cast_abs, ← Int.natCast_natAbs]
     fail_if_not_idempotent norm_cast
   refine ratBall_mem ?_ prec
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [mul_div_mul_left _ _ (by positivity), expPartialSumNum_div a hb n]
   refine (Real.exp_bound hy hn).trans_eq ?_
   rw [abs_div, Nat.abs_cast, abs_pow, div_pow]
-  push_cast
+  fail_if_not_idempotent push_cast
   field_simp
 
 /-- An enclosure of `exp x` by rewriting as `exp (x / m) ^ m` so that `|x / m| < 1 / 32` to make
@@ -114,7 +114,7 @@ theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint 
   have hm0 : m ≠ 0 := by lia
   have hred : Real.exp x.toReal = Real.exp (x.toRat.num / (x.toRat.den * m : ℕ)) ^ m := by
     rw [← Real.exp_nat_mul, Dyadic.toReal, Rat.cast_def]
-    push_cast
+    fail_if_not_idempotent push_cast
     field_simp
   have hab : x.toRat.num.natAbs ≤ x.toRat.den * m := by
     have := Nat.lt_mul_div_succ (2 * x.toRat.num.natAbs) (Nat.pos_of_ne_zero hb)

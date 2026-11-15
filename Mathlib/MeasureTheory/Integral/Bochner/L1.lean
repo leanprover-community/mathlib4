@@ -91,7 +91,7 @@ theorem weightedSMul_add_measure {m : MeasurableSpace α} (μ ν : Measure α) {
     (hμs : μ s ≠ ∞) (hνs : ν s ≠ ∞) :
     (weightedSMul (μ + ν) s : F →L[ℝ] F) = weightedSMul μ s + weightedSMul ν s := by
   ext1 x
-  push_cast
+  fail_if_not_idempotent push_cast
   simp_rw [Pi.add_apply, weightedSMul_apply]
   rw [measureReal_add_apply, add_smul]
 

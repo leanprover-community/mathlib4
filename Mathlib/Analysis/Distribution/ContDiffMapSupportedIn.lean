@@ -1084,7 +1084,7 @@ where finally
           · exact hgC₀ (k - i) (Nat.sub_le k i) x hx
       _ = ‖B‖ * 2 ^ k * ‖C₀‖ * ((Finset.Iic k).sup fun m ↦ N[𝕜]_{K, n, m}) φ := by
           simp_rw [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose]
-          push_cast
+          fail_if_not_idempotent push_cast
           ring
 
 @[simp]

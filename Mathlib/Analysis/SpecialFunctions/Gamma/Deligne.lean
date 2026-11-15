@@ -89,7 +89,7 @@ lemma Gammaℝ_conj (s : ℂ) : Gammaℝ (conj s) = conj (Gammaℝ s) := by
 /-- The Gamma factor `Γ_ℂ` commutes with complex conjugation. -/
 lemma Gammaℂ_conj (s : ℂ) : Gammaℂ (conj s) = conj (Gammaℂ s) := by
   have h2pi : ((2 : ℂ) * π).arg ≠ π := by
-    rw [show (2 : ℂ) * π = ((2 * π : ℝ) : ℂ) by push_cast; ring,
+    rw [show (2 : ℂ) * π = ((2 * π : ℝ) : ℂ) by fail_if_not_idempotent push_cast; ring,
       arg_ofReal_of_nonneg (by positivity)]
     exact pi_pos.ne
   have h := cpow_conj ((2 : ℂ) * π) (-s) h2pi
@@ -228,7 +228,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
     · rwa [Nat.cast_zero, neg_zero]
     · rw [Ne, sub_eq_iff_eq_add]
       convert hs m using 2
-      push_cast
+      fail_if_not_idempotent push_cast
       ring
   rw [(by ring : 2 - s = 1 - (s - 1)), inv_Gammaℝ_one_sub h',
     (by rw [sub_add_cancel] : Gammaℂ s = Gammaℂ (s - 1 + 1)), Gammaℂ_add_one h,

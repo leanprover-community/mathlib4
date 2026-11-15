@@ -130,7 +130,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
           -- unfold `T` and reformulate the exponents
           simp_rw [T, card_insert_of_notMem hi]
           congr!
-          push_cast
+          fail_if_not_idempotent push_cast
           ring
     _ = ∫⋯∫⁻_s, (fun x ↦ ∫⁻ (t : A i),
             (f (update x i t) ^ (1 - (s.card : ℝ) * p)
@@ -637,7 +637,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
         (hv.continuous_fderiv one_ne_zero).aestronglyMeasurable (Eventually.of_forall h4v) p
     _ = SNormLESNormFDerivOfEqConst F μ p * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [C₂, C₁, C, e, SNormLESNormFDerivOfEqConst]
-      push_cast
+      fail_if_not_idempotent push_cast
       simp_rw [mul_assoc]
 
 

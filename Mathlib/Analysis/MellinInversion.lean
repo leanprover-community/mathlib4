@@ -40,7 +40,7 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     rexp (-x) • cexp (-↑x) ^ (s - 1) • f = cexp (-s * ↑x) • f := by
   change (rexp (-x) : ℂ) • _ = _ • f
   rw [← smul_assoc, smul_eq_mul]
-  push_cast; fail_if_progress push_cast
+  fail_if_not_idempotent push_cast
   conv in cexp _ * _ => lhs; rw [← cpow_one (cexp _)]
   rw [← cpow_add _ _ (Complex.exp_ne_zero _), cpow_def_of_ne_zero (Complex.exp_ne_zero _),
     Complex.log_exp (by simp [pi_pos]) (by simpa using pi_nonneg)]
@@ -62,7 +62,7 @@ theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
       · conv => lhs; rw [← re_add_im s]
         rw [neg_add, add_mul, Complex.exp_add, mul_comm, ← smul_eq_mul, smul_assoc]
         fail_if_not_idempotent norm_cast
-        push_cast; fail_if_progress push_cast
+        fail_if_not_idempotent push_cast
         ring_nf
       congr
       simp [field]
@@ -81,7 +81,7 @@ theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x
     rw [smul_comm, ← Measure.integral_comp_mul_left]
     congr! 3
     rw [cpow_def_of_ne_zero hx0, ← Complex.ofReal_log hx.le]
-    push_cast; fail_if_progress push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
   _ = (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
     simp [fourierInv_eq', mul_comm (Real.log _)]

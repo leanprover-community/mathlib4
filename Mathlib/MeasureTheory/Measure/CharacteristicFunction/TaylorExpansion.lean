@@ -116,7 +116,7 @@ lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : MemLp id n μ) (t : ℝ) :
       = ∑ k ∈ Finset.range (n + 1), (k ! : ℂ)⁻¹ * (t * I) ^ k * ∫ x, x ^ k ∂μ := by
   simp_rw [taylor_within_apply, sub_zero, RCLike.real_smul_eq_coe_mul]
   refine Finset.sum_congr rfl fun k hkn ↦ ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   have hint' : MemLp id k μ := hint.mono_exponent (by simp_all)
   simp [iteratedDeriv_charFun_zero hint', mul_pow, mul_comm, mul_assoc, mul_left_comm]
 

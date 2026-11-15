@@ -213,7 +213,7 @@ theorem _root_.fourier_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
   ext1 t
   simp_rw [fourier_real_eq_integral_exp_smul, smul_eq_mul, ← Complex.exp_add, ← add_assoc]
   have (x : ℝ) : ↑(-2 * π * x * t) * I + -π * b * x ^ 2 + 2 * π * c * x =
-    -π * b * x ^ 2 + (-2 * π * I * t + 2 * π * c) * x + 0 := by push_cast; ring
+    -π * b * x ^ 2 + (-2 * π * I * t + 2 * π * c) * x + 0 := by fail_if_not_idempotent push_cast; ring
   simp_rw [this, integral_cexp_quadratic h, neg_mul, neg_neg]
   congr 2
   · rw [← div_div, div_self <| ofReal_ne_zero.mpr pi_ne_zero, one_div, inv_cpow, ← one_div]

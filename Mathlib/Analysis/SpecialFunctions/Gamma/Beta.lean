@@ -83,7 +83,7 @@ theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   convert ((betaIntegral_convergent_left hv u).comp_add_right 1).symm using 1
   · ext1 x
     conv_lhs => rw [mul_comm]
-    congr 2 <;> · push_cast; ring
+    congr 2 <;> · fail_if_not_idempotent push_cast; ring
   · norm_num
   · simp
 
@@ -117,7 +117,7 @@ theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
   · rw [← mul_cpow_ofReal_nonneg ha.le (div_pos hx.1 ha).le, ofReal_div, mul_div_cancel₀ _ ha']
   · rw [(by norm_cast : (1 : ℂ) - ↑(x / a) = ↑(1 - x / a)), ←
       mul_cpow_ofReal_nonneg ha.le (sub_nonneg.mpr <| (div_le_one ha).mpr hx.2)]
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [mul_sub, mul_one, mul_div_cancel₀ _ ha']
 
 /-- Relation between Beta integral and Gamma function. -/
@@ -134,7 +134,7 @@ theorem Gamma_mul_Gamma_eq_betaIntegral {s t : ℂ} (hs : 0 < re s) (ht : 0 < re
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
   rw [mul_assoc, ← betaIntegral_scaled s t hx, ← intervalIntegral.integral_const_mul]
   congr 1 with y : 1
-  push_cast
+  fail_if_not_idempotent push_cast
   suffices Complex.exp (-x) = Complex.exp (-y) * Complex.exp (-(x - y)) by rw [this]; ring
   rw [← Complex.exp_add]; congr 1; abel
 
@@ -212,7 +212,7 @@ theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) 
     rw [Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one, Nat.cast_zero, add_zero, ←
       mul_div_assoc, ← div_div]
     congr 3 with j : 1
-    push_cast; abel
+    fail_if_not_idempotent push_cast; abel
 
 end Complex
 
@@ -243,7 +243,7 @@ theorem GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
   congr 3
   · rw [cpow_add _ _ (Nat.cast_ne_zero.mpr hn), cpow_one, mul_comm]
   · refine Finset.prod_congr rfl fun x _ => ?_
-    push_cast; ring
+    fail_if_not_idempotent push_cast; ring
   · abel
 
 theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (hn : n ≠ 0) :
@@ -258,7 +258,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
   swap; · exact Nat.cast_ne_zero.mpr hn
   simp_rw [intervalIntegral.integral_of_le zero_le_one]
   refine setIntegral_congr_fun measurableSet_Ioc fun x hx => ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   have hn' : (n : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr hn
   have A : (n : ℂ) ^ s = (n : ℂ) ^ (s - 1) * n := by
     conv_lhs => rw [(by ring : s = s - 1 + 1), cpow_add _ _ hn']
@@ -384,7 +384,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
   have : ∀ j : ℕ, (z + ↑(j + 1)) * (↑1 - z + ↑j) =
       ((j + 1) ^ 2 :) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) := by
     intro j
-    push_cast
+    fail_if_not_idempotent push_cast
     have : (j : ℂ) + 1 ≠ 0 := by rw [← Nat.cast_succ, Nat.cast_ne_zero]; exact Nat.succ_ne_zero j
     field
   simp_rw [this]
@@ -505,7 +505,7 @@ theorem GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
   convert Complex.GammaSeq_tendsto_Gamma s
   ext1 n
   dsimp only [GammaSeq, Function.comp_apply, Complex.GammaSeq]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [Complex.ofReal_cpow n.cast_nonneg, Complex.ofReal_natCast]
 
 /-- Euler's reflection formula for the real Gamma function. -/

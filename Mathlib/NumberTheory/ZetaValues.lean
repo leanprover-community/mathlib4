@@ -76,7 +76,7 @@ theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + 
   rw [bernoulliFun, bernoulliFun_eval_zero, Polynomial.eval_one_map, Polynomial.bernoulli_eval_one]
   split_ifs with h
   · rw [h, bernoulli_one, bernoulli'_one, eq_ratCast]
-    push_cast; ring
+    fail_if_not_idempotent push_cast; ring
   · rw [bernoulli_eq_bernoulli'_of_ne_one h, add_zero, eq_ratCast]
 
 end Evaluation

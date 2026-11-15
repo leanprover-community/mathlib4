@@ -47,7 +47,7 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
     _ = ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / k) := ?_
   · congr 1
     rw [neg_pow, normSq_eq_norm_mul_self, pow_mul, sq]
-    push_cast
+    fail_if_not_idempotent push_cast
     rfl
   · rw [← coe_mul_eq_smul, div_eq_mul_inv]
     fail_if_not_idempotent norm_cast

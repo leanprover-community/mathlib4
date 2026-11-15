@@ -116,14 +116,14 @@ theorem prodMap_map_product {δ : Type*} (f : α ↪ β) (g : γ ↪ δ) (s : Fi
 theorem map_swap_product (s : Finset α) (t : Finset β) :
     (t ×ˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ˢ t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.image_swap_prod _ _
 
 @[simp]
 theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     (t ×ˢ s).image Prod.swap = s ×ˢ t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.image_swap_prod _ _
 
 theorem product_eq_biUnion [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
@@ -331,7 +331,7 @@ theorem diag_inter [DecidableEq α] : (s ∩ t).diag = s.diag ∩ t.diag := by
 
 theorem offDiag_inter [DecidableEq α] : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.offDiag_inter _ _
 
 theorem diag_union [DecidableEq α] : (s ∪ t).diag = s.diag ∪ t.diag := by
@@ -342,7 +342,7 @@ variable {s t}
 theorem offDiag_union [DecidableEq α] (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.offDiag_union (disjoint_coe.2 h)
 
 @[simp]

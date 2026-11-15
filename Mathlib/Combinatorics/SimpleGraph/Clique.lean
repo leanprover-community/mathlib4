@@ -295,7 +295,7 @@ variable [DecidableEq α]
 protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Adj a b) :
     G.IsNClique (n + 1) (insert a s) := by
   constructor
-  · push_cast
+  · fail_if_not_idempotent push_cast
     exact hs.1.insert fun b hb _ => h _ hb
   · rw [card_insert_of_notMem fun ha => (h _ ha).ne rfl, hs.2]
 
@@ -613,7 +613,7 @@ theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : #s < n) : G.CliqueFreeOn s 
 theorem cliqueFreeOn_two : G.CliqueFreeOn s 2 ↔ s.Pairwise (G.Adjᶜ) := by
   classical
   refine ⟨fun h a ha b hb _ hab => h ?_ ⟨by simpa [hab.ne], card_pair hab.ne⟩, ?_⟩
-  · push_cast
+  · fail_if_not_idempotent push_cast
     exact Set.insert_subset_iff.2 ⟨ha, Set.singleton_subset_iff.2 hb⟩
   simp only [CliqueFreeOn, isNClique_iff, card_eq_two, not_and, not_exists]
   rintro h t hst ht a b hab rfl
@@ -624,7 +624,7 @@ theorem CliqueFreeOn.of_succ (hs : G.CliqueFreeOn s (n + 1)) (ha : a ∈ s) :
     G.CliqueFreeOn (s ∩ G.neighborSet a) n := by
   classical
   refine fun t hts ht => hs ?_ (ht.insert fun b hb => (hts hb).2)
-  push_cast
+  fail_if_not_idempotent push_cast
   exact Set.insert_subset_iff.2 ⟨ha, hts.trans Set.inter_subset_left⟩
 
 theorem cliqueFree_induce_iff (s : Set α) (n : ℕ) :
@@ -883,7 +883,7 @@ theorem cliqueFinset_map (f : α ↪ β) (hn : n ≠ 1) :
 @[simp]
 theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) : (G.map e).cliqueFinset n =
       (G.cliqueFinset n).map ⟨map e.toEmbedding, Finset.map_injective _⟩ :=
-  coe_injective <| by push_cast; exact cliqueSet_map_of_equiv _ _ _
+  coe_injective <| by fail_if_not_idempotent push_cast; exact cliqueSet_map_of_equiv _ _ _
 
 end CliqueFinset
 

@@ -147,55 +147,55 @@ theorem image₂_singleton : image₂ f {a} {b} = {f a b} := by simp
 
 theorem image₂_union_left [DecidableEq α] : image₂ f (s ∪ s') t = image₂ f s t ∪ image₂ f s' t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_union_left
 
 theorem image₂_union_right [DecidableEq β] : image₂ f s (t ∪ t') = image₂ f s t ∪ image₂ f s t' :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_union_right
 
 @[simp]
 theorem image₂_insert_left [DecidableEq α] :
     image₂ f (insert a s) t = (t.image fun b => f a b) ∪ image₂ f s t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_insert_left
 
 @[simp]
 theorem image₂_insert_right [DecidableEq β] :
     image₂ f s (insert b t) = (s.image fun a => f a b) ∪ image₂ f s t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_insert_right
 
 theorem image₂_inter_left [DecidableEq α] (hf : Injective2 f) :
     image₂ f (s ∩ s') t = image₂ f s t ∩ image₂ f s' t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_inter_left hf
 
 theorem image₂_inter_right [DecidableEq β] (hf : Injective2 f) :
     image₂ f s (t ∩ t') = image₂ f s t ∩ image₂ f s t' :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_inter_right hf
 
 theorem image₂_inter_subset_left [DecidableEq α] :
     image₂ f (s ∩ s') t ⊆ image₂ f s t ∩ image₂ f s' t :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_inter_subset_left
 
 theorem image₂_inter_subset_right [DecidableEq β] :
     image₂ f s (t ∩ t') ⊆ image₂ f s t ∩ image₂ f s t' :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_inter_subset_right
 
 theorem image₂_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image₂ f s t = image₂ f' s t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_congr h
 
 /-- A common special case of `image₂_congr` -/
@@ -230,12 +230,12 @@ variable {s t}
 
 theorem biUnion_image_left : (s.biUnion fun a => t.image <| f a) = image₂ f s t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.iUnion_image_left _
 
 theorem biUnion_image_right : (t.biUnion fun b => s.image fun a => f a b) = image₂ f s t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.iUnion_image_right _
 
 /-!
@@ -254,19 +254,19 @@ variable [DecidableEq δ]
 theorem image_image₂ (f : α → β → γ) (g : γ → δ) :
     (image₂ f s t).image g = image₂ (fun a b => g (f a b)) s t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image_image2 _ _
 
 theorem image₂_image_left (f : γ → β → δ) (g : α → γ) :
     image₂ f (s.image g) t = image₂ (fun a b => f (g a) b) s t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_image_left _ _
 
 theorem image₂_image_right (f : α → γ → δ) (g : β → γ) :
     image₂ f s (t.image g) = image₂ (fun a b => f a (g b)) s t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_image_right _ _
 
 @[simp]
@@ -284,19 +284,19 @@ theorem image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset
 theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = image₂ (fun a b => f b a) t s :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_swap _ _ _
 
 @[simp]
 theorem image₂_left [DecidableEq α] (h : t.Nonempty) : image₂ (fun x _ => x) s t = s :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_left h
 
 @[simp]
 theorem image₂_right [DecidableEq β] (h : s.Nonempty) : image₂ (fun _ y => y) s t = t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_right h
 
 theorem image₂_assoc {γ : Type*} {u : Finset γ}
@@ -304,7 +304,7 @@ theorem image₂_assoc {γ : Type*} {u : Finset γ}
     {g' : β → γ → ε'} (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
     image₂ f (image₂ g s t) u = image₂ f' s (image₂ g' t u) :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_assoc h_assoc
 
 theorem image₂_comm {g : β → α → γ} (h_comm : ∀ a b, f a b = g b a) : image₂ f s t = image₂ g t s :=
@@ -314,14 +314,14 @@ theorem image₂_left_comm {γ : Type*} {u : Finset γ} {f : α → δ → ε} {
     {f' : α → γ → δ'} {g' : β → δ' → ε} (h_left_comm : ∀ a b c, f a (g b c) = g' b (f' a c)) :
     image₂ f s (image₂ g t u) = image₂ g' t (image₂ f' s u) :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_left_comm h_left_comm
 
 theorem image₂_right_comm {γ : Type*} {u : Finset γ} {f : δ → γ → ε} {g : α → β → δ}
     {f' : α → γ → δ'} {g' : δ' → β → ε} (h_right_comm : ∀ a b c, f (g a b) c = g' (f' a c) b) :
     image₂ f (image₂ g s t) u = image₂ g' (image₂ f' s u) t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_right_comm h_right_comm
 
 theorem image₂_image₂_image₂_comm {γ δ : Type*} {u : Finset γ} {v : Finset δ} [DecidableEq ζ]
@@ -330,14 +330,14 @@ theorem image₂_image₂_image₂_comm {γ δ : Type*} {u : Finset γ} {v : Fin
     (h_comm : ∀ a b c d, f (g a b) (h c d) = f' (g' a c) (h' b d)) :
     image₂ f (image₂ g s t) (image₂ h u v) = image₂ f' (image₂ g' s u) (image₂ h' t v) :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_image2_image2_comm h_comm
 
 theorem image_image₂_distrib {g : γ → δ} {f' : α' → β' → δ} {g₁ : α → α'} {g₂ : β → β'}
     (h_distrib : ∀ a b, g (f a b) = f' (g₁ a) (g₂ b)) :
     (image₂ f s t).image g = image₂ f' (s.image g₁) (t.image g₂) :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image_image2_distrib h_distrib
 
 /-- Symmetric statement to `Finset.image₂_image_left_comm`. -/
@@ -345,7 +345,7 @@ theorem image_image₂_distrib_left {g : γ → δ} {f' : α' → β → δ} {g'
     (h_distrib : ∀ a b, g (f a b) = f' (g' a) b) :
     (image₂ f s t).image g = image₂ f' (s.image g') t :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image_image2_distrib_left h_distrib
 
 /-- Symmetric statement to `Finset.image_image₂_right_comm`. -/
@@ -353,7 +353,7 @@ theorem image_image₂_distrib_right {g : γ → δ} {f' : α → β' → δ} {g
     (h_distrib : ∀ a b, g (f a b) = f' a (g' b)) :
     (image₂ f s t).image g = image₂ f' s (t.image g') :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image_image2_distrib_right h_distrib
 
 /-- Symmetric statement to `Finset.image_image₂_distrib_left`. -/
@@ -374,7 +374,7 @@ theorem image₂_distrib_subset_left {γ : Type*} {u : Finset γ} {f : α → δ
     (h_distrib : ∀ a b c, f a (g b c) = g' (f₁ a b) (f₂ a c)) :
     image₂ f s (image₂ g t u) ⊆ image₂ g' (image₂ f₁ s t) (image₂ f₂ s u) :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.image2_distrib_subset_left h_distrib
 
 /-- The other direction does not hold because of the `u`-`u` cross terms on the RHS. -/
@@ -383,7 +383,7 @@ theorem image₂_distrib_subset_right {γ : Type*} {u : Finset γ} {f : δ → �
     (h_distrib : ∀ a b c, f (g a b) c = g' (f₁ a c) (f₂ b c)) :
     image₂ f (image₂ g s t) u ⊆ image₂ g' (image₂ f₁ s u) (image₂ f₂ t u) :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.image2_distrib_subset_right h_distrib
 
 theorem image_image₂_antidistrib {g : γ → δ} {f' : β' → α' → δ} {g₁ : β → β'} {g₂ : α → α'}
@@ -397,7 +397,7 @@ theorem image_image₂_antidistrib_left {g : γ → δ} {f' : β' → α → δ}
     (h_antidistrib : ∀ a b, g (f a b) = f' (g' b) a) :
     (image₂ f s t).image g = image₂ f' (t.image g') s :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image_image2_antidistrib_left h_antidistrib
 
 /-- Symmetric statement to `Finset.image_image₂_right_anticomm`. -/
@@ -405,7 +405,7 @@ theorem image_image₂_antidistrib_right {g : γ → δ} {f' : β → α' → δ
     (h_antidistrib : ∀ a b, g (f a b) = f' b (g' a)) :
     (image₂ f s t).image g = image₂ f' t (s.image g') :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image_image2_antidistrib_right h_antidistrib
 
 /-- Symmetric statement to `Finset.image_image₂_antidistrib_left`. -/
@@ -480,25 +480,25 @@ variable [DecidableEq α] [DecidableEq β]
 theorem image₂_inter_union_subset_union :
     image₂ f (s ∩ s') (t ∪ t') ⊆ image₂ f s t ∪ image₂ f s' t' :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.image2_inter_union_subset_union
 
 theorem image₂_union_inter_subset_union :
     image₂ f (s ∪ s') (t ∩ t') ⊆ image₂ f s t ∪ image₂ f s' t' :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.image2_union_inter_subset_union
 
 theorem image₂_inter_union_subset {f : α → α → β} {s t : Finset α} (hf : ∀ a b, f a b = f b a) :
     image₂ f (s ∩ t) (s ∪ t) ⊆ image₂ f s t :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_inter_union_subset hf
 
 theorem image₂_union_inter_subset {f : α → α → β} {s t : Finset α} (hf : ∀ a b, f a b = f b a) :
     image₂ f (s ∪ t) (s ∩ t) ⊆ image₂ f s t :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact image2_union_inter_subset hf
 
 end UnionInter

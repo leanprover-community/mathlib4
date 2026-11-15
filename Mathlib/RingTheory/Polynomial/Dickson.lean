@@ -146,7 +146,7 @@ theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.
   | n + 2 => by
     rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.C_add_two,
       dickson_one_one_eq_chebyshev_C (n + 1), dickson_one_one_eq_chebyshev_C n]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring
 
 theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] (n : ℕ) :
@@ -166,7 +166,7 @@ theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.
   | n + 2 => by
     rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.S_add_two,
       dickson_two_one_eq_chebyshev_S (n + 1), dickson_two_one_eq_chebyshev_S n]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring
 
 theorem dickson_two_one_eq_chebyshev_U [Invertible (2 : R)] (n : ℕ) :

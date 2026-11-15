@@ -35,9 +35,9 @@ theorem realSqrt_lt_ratSqrt_add_inv_prec (x : ℕ) {prec : ℕ} (h : 0 < prec) :
   have : (x : ℝ) < ↑((x.ratSqrt prec + 1 / prec) ^ 2 : ℚ) := by fail_if_not_idempotent norm_cast
   have := Real.sqrt_lt_sqrt (by simp) this
   rw [Rat.cast_pow, Real.sqrt_sq] at this
-  · push_cast at this
+  · fail_if_not_idempotent push_cast at this
     exact this
-  · push_cast
+  · fail_if_not_idempotent push_cast
     exact add_nonneg (by simpa using ratSqrt_nonneg _ _) (by simp)
 
 theorem realSqrt_mem_Ico (x : ℕ) {prec : ℕ} (h : 0 < prec) :

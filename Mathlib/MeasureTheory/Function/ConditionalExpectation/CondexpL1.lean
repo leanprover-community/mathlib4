@@ -136,7 +136,7 @@ theorem condExpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
   rw [condExpIndSMul]
   rw [indicatorConstLp_disjoint_union hs ht hμs hμt hst (1 : ℝ)]
   rw [map_add]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [map_add]
   grw [Lp.coeFn_add]
   rfl
@@ -269,7 +269,7 @@ theorem condExpInd_disjoint_union_apply (hs : MeasurableSet s) (ht : MeasurableS
 theorem condExpInd_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (hst : Disjoint s t) : (condExpInd G hm μ (s ∪ t) : G →L[ℝ] α →₁[μ] G) =
     condExpInd G hm μ s + condExpInd G hm μ t := by
-  ext1 x; push_cast; exact condExpInd_disjoint_union_apply hs ht hμs hμt hst x
+  ext1 x; fail_if_not_idempotent push_cast; exact condExpInd_disjoint_union_apply hs ht hμs hμt hst x
 
 variable (G)
 
@@ -430,7 +430,7 @@ theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     exact condExpInd_of_measurable hs ((le_trim hm).trans_lt hμs).ne c
   · intro f g hf hg _ hf_eq hg_eq
     rw [LinearIsometryEquiv.map_add]
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [map_add, hf_eq, hg_eq]
   · refine isClosed_eq ?_ ?_
     · refine (condExpL1CLM F' hm μ).continuous.comp (continuous_induced_dom.comp ?_)

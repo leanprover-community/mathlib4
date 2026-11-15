@@ -1150,7 +1150,7 @@ lemma krullDim_le_of_krullDim_preimage_le :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by
   rw [Order.krullDim_eq_iSup_height, Order.krullDim_eq_iSup_height, iSup_le_iff]
   refine fun x ↦ (WithBot.coe_mono (height_le_of_krullDim_preimage_le f h x)).trans ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   gcongr
   exacts [right_eq_inf.mp rfl, le_iSup_iff.mpr fun b a ↦ a (f x)]
 

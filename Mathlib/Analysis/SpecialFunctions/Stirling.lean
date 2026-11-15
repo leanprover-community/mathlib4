@@ -83,7 +83,7 @@ theorem log_stirlingSeq_sdiff_hasSum (m : ℕ) :
   · ext k
     dsimp only [f]
     rw [← pow_mul, pow_add]
-    push_cast
+    fail_if_not_idempotent push_cast
     field
   · have h (x) (hx : x ≠ (0 : ℝ)) : 1 + x⁻¹ = (x + 1) / x := by field
     simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,

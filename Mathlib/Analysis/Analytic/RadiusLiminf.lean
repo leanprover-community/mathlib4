@@ -55,7 +55,7 @@ theorem radius_eq_liminf :
     · rw [← eventually_map]
       refine
         H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 ?_))
-      push_cast
+      fail_if_not_idempotent push_cast
       exact (le_abs_self _).trans (hn.trans (pow_le_one₀ ha.1.le ha.2.le))
   · refine p.le_radius_of_isBigO <| .of_norm_eventuallyLE ?_
     filter_upwards [eventually_lt_of_lt_liminf hr, eventually_gt_atTop 0] with n hn hn₀

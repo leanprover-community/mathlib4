@@ -189,14 +189,14 @@ theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : 
     have _ := hn.out
     lia
   have hnsub1 : (n - 1 : ℕ) = (n : ℝ) - 1 := by
-    push_cast [hltn]
+    fail_if_not_idempotent push_cast [hltn]
     rfl
   rw [vadd_vadd, vadd_vsub, vsub_vadd_eq_vsub_sub, smul_sub, sub_add, smul_smul, ← sub_smul,
     ← sub_one_mul, show ((n : ℝ)⁻¹ - 1) = -(n - 1) / n by field [hn.out],
     neg_div, neg_mul, hnsub1, div_mul_div_cancel₀' (by simpa [sub_eq_zero] using hn1),
     neg_smul, sub_neg_eq_add, faceOppositeCentroid_eq_smul_vsub_vadd_point,
     ← smul_add, vadd_vsub_assoc, add_add_add_comm, ← smul_add, vsub_add_vsub_cancel, ← add_assoc]
-  push_cast
+  fail_if_not_idempotent push_cast
   have : (n : ℝ)⁻¹ • (s.centroid -ᵥ s.circumcenter) + (s.centroid -ᵥ s.circumcenter) =
       (((n + 1) / n : ℝ)) • (s.centroid -ᵥ s.circumcenter) := by
     rw [add_comm (n : ℝ) 1, add_div, div_self (by simpa using hn.out), add_smul, one_smul, one_div]

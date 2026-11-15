@@ -223,7 +223,7 @@ section Fintype
 variable [Fintype α] [Fintype β] [Fintype γ]
 
 lemma cliqueFinset_eq_image [NoAccidental t] : (graph t).cliqueFinset 3 = t.image toTriangle :=
-  coe_injective <| by push_cast; exact cliqueSet_eq_image _
+  coe_injective <| by fail_if_not_idempotent push_cast; exact cliqueSet_eq_image _
 
 lemma cliqueFinset_eq_map [NoAccidental t] : (graph t).cliqueFinset 3 = t.map toTriangle := by
   simp [cliqueFinset_eq_image, map_eq_image]

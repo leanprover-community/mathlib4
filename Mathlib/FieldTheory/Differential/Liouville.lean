@@ -166,7 +166,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       simp only [map_add, map_sum, map_mul, ← logDeriv_algebraMap, hu₀, ← deriv_algebraMap, hv₀]
       unfold u₁ v₁ c₀
       clear c₀ u₁ u₀ hu₀ v₁ v₀ hv₀
-      push_cast
+      fail_if_not_idempotent push_cast
       rw [Derivation.leibniz_div_const, smul_eq_mul, inv_mul_eq_div]
       case h => simp
       simp only [map_sum, div_mul_eq_mul_div]

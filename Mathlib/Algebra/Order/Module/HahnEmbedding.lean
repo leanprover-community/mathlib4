@@ -494,7 +494,7 @@ theorem coeff_eq_of_mem [IsOrderedAddMonoid R] [Archimedean R] (x : M) {y z : f.
   rw [← HahnSeries.coeff_sub, ← ofLex_sub, ← LinearPMap.map_sub]
   refine coeff_eq_zero_of_mem f ?_ hd
   have : (y - z).val = (y.val - x) - (z.val - x) := by
-    push_cast
+    fail_if_not_idempotent push_cast
     simp
   rw [this]
   exact Submodule.sub_mem _ hy hz

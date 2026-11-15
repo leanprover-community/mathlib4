@@ -121,7 +121,7 @@ private lemma lSeriesSummable : LSeriesSummable ↗f (σ : ℂ) := by
   calc
     _ ≤ ∑ k ∈ .range (2 * n), f k :=
       Finset.sum_le_sum_of_subset_of_nonneg (by grind) fun k _ _ ↦ hpos k
-    _ ≤ _ := (bound (2 * n)).trans_eq (by push_cast; ring)
+    _ ≤ _ := (bound (2 * n)).trans_eq (by fail_if_not_idempotent push_cast; ring)
 
 include hx in
 private lemma fourierChar_neg_mul_log_div {n : ℕ} (hn : n ≠ 0) (t : ℝ) :
@@ -160,12 +160,12 @@ private lemma mul_integral_exp_mul_fourierChar_eq (t : ℝ) :
       ∫ u in Ioi (-log x), cexp (-(σ - 1 + t * I) * u) := by
     rw [integral_Ici_eq_integral_Ioi]
     congr with u
-    push_cast [fourierChar_apply, ← Complex.exp_add]
+    fail_if_not_idempotent push_cast [fourierChar_apply, ← Complex.exp_add]
     congr 1
     field
   rw [this, integral_cexp_neg_mul_Ioi_neg_log hx (by simpa using hσ), ofReal_cpow hx.le,
     mul_div_assoc', ← cpow_add _ _ (mod_cast hx.ne')]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring_nf
 
 include hx hσ in

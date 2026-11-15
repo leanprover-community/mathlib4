@@ -67,9 +67,9 @@ theorem ratBall_mem {x : ℝ} {c r : ℤ} {d : ℕ} (hx : |x - c / d| ≤ r / d)
   obtain ⟨h₁, h₂⟩ := abs_sub_le_iff.mp hx
   refine mem_iff_mem_map.mpr
     (Interval.mem_Icc_of_le (ratCast_mem _ prec) ?_ ?_ (ratCast_mem _ prec))
-  · push_cast [Rat.mkRat_eq_div, sub_div]
+  · fail_if_not_idempotent push_cast [Rat.mkRat_eq_div, sub_div]
     exact sub_le_comm.mp h₂
-  · push_cast [Rat.mkRat_eq_div, add_div]
+  · fail_if_not_idempotent push_cast [Rat.mkRat_eq_div, add_div]
     exact sub_le_iff_le_add'.mp h₁
 
 /-- Efficiently enclose `m / d` in a dyadic interval with precision `prec`. -/

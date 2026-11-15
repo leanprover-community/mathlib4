@@ -603,7 +603,7 @@ theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h 
   convert (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left (j.factorial * r ^ j) using 1
   · funext n
     symm
-    push_cast [Nat.descFactorial_eq_factorial_mul_choose]
+    fail_if_not_idempotent push_cast [Nat.descFactorial_eq_factorial_mul_choose]
     rw [mul_assoc, (Nat.cast_commute ((n + j).choose j) (r ^ j)).symm.left_comm, ← pow_add,
       add_comm j n, mul_assoc]
   · exact sub_eq_self.2 <| Finset.sum_eq_zero fun i hi ↦ by

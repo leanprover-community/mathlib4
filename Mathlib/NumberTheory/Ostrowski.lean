@@ -186,7 +186,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
     _ < x ^ M.logb (1 / 2) := by
       apply rpow_lt_rpow_of_exponent_gt hx0 hx1
       rw [hk]
-      push_cast
+      fail_if_not_idempotent push_cast
       exact lt_add_of_le_of_pos (Nat.le_ceil _) zero_lt_one
     _ ≤ x ^ x.logb (1 / 2) := by
       apply rpow_le_rpow_of_exponent_ge hx0 hx1.le

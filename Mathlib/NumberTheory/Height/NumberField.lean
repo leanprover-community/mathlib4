@@ -538,7 +538,7 @@ lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den :=
   convert mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp
   · rw [← Int.cast_natCast, Int.cast_inj]
-    push_cast
+    fail_if_not_idempotent push_cast
     refine le_antisymm (max_le ?_ ?_) <| ciSup_le fun i ↦ ?_
     · exact Finite.le_ciSup_of_le 0 <| by simp
     · exact Finite.le_ciSup_of_le 1 <| by simp

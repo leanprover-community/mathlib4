@@ -518,7 +518,7 @@ end NormedField
 theorem le_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) (m : ∀ i, E i) :
     ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
   NNReal.coe_le_coe.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact f.le_opNorm m
 
 theorem le_of_opNNNorm_le (f : ContinuousMultilinearMap 𝕜 E G)

@@ -190,10 +190,10 @@ theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
   induction i with
   | zero => dsimp [s, sZMod]; simp
-  | succ i ih => push_cast [s, sZMod, ih]; rfl
+  | succ i ih => fail_if_not_idempotent push_cast [s, sZMod, ih]; rfl
 
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
-  induction i <;> push_cast [← Int.natCast_two_pow_pred p, sMod, sZMod, *] <;> rfl
+  induction i <;> fail_if_not_idempotent push_cast [← Int.natCast_two_pow_pred p, sMod, sZMod, *] <;> rfl
 
 /-- The Lucas-Lehmer residue is `s p (p-2)` in `ZMod (2^p - 1)`. -/
 def lucasLehmerResidue (p : ℕ) : ZMod (2 ^ p - 1) :=
@@ -374,7 +374,7 @@ theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^
   | succ i ih =>
     calc
       (s (i + 1) : X q) = (s i ^ 2 - 2 : ℤ) := rfl
-      _ = (s i : X q) ^ 2 - 2 := by push_cast; rfl
+      _ = (s i : X q) ^ 2 - 2 := by fail_if_not_idempotent push_cast; rfl
       _ = (ω ^ 2 ^ i + ωb ^ 2 ^ i) ^ 2 - 2 := by rw [ih]
       _ = (ω ^ 2 ^ i) ^ 2 + (ωb ^ 2 ^ i) ^ 2 + 2 * (ωb ^ 2 ^ i * ω ^ 2 ^ i) - 2 := by ring
       _ = (ω ^ 2 ^ i) ^ 2 + (ωb ^ 2 ^ i) ^ 2 := by
@@ -563,7 +563,7 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     apply ZMod.neg_one_ne_one h.symm
   · apply orderOf_dvd_iff_pow_eq_one.2
     apply Units.ext
-    push_cast
+    fail_if_not_idempotent push_cast
     exact ω_pow_eq_one p' h
 
 theorem order_ineq (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :

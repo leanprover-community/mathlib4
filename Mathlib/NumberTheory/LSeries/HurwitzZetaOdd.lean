@@ -217,7 +217,7 @@ lemma hasSum_int_oddKernel (a : ℝ) {x : ℝ} (hx : 0 < x) :
     (cexp (-π * a ^ 2 * x))).congr_fun (fun n ↦ ?_)
   rw [jacobiTheta₂'_term, mul_assoc (2 * π * I), mul_div_cancel_left₀ _ two_pi_I_ne_zero, ← add_mul,
     mul_left_comm, jacobiTheta₂_term, ← Complex.exp_add]
-  push_cast
+  fail_if_not_idempotent push_cast
   simp only [← mul_assoc, ← add_mul]
   congrm _ * cexp (?_ * x)
   simp only [mul_right_comm _ I, add_mul, mul_assoc _ I, I_mul_I]
@@ -248,7 +248,7 @@ lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   refine this.congr_fun fun n ↦ ?_
   simp_rw [Int.cast_neg, neg_sq, mul_neg, ofReal_mul, Int.cast_natCast, ofReal_natCast,
       ofReal_ofNat, ← add_mul, ofReal_sin, Complex.sin]
-  push_cast
+  fail_if_not_idempotent push_cast
   congr 1
   rw [← mul_div_assoc, ← div_mul_eq_mul_div, ← div_mul_eq_mul_div, div_self two_ne_zero, one_mul,
     neg_mul, neg_mul, neg_neg, mul_comm _ I, ← mul_assoc, mul_comm _ I, neg_mul,
@@ -374,7 +374,7 @@ lemma completedSinZeta_neg (a : UnitAddCircle) (s : ℂ) :
 theorem completedHurwitzZetaOdd_one_sub (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaOdd a (1 - s) = completedSinZeta a s := by
   rw [completedHurwitzZetaOdd, completedSinZeta,
-    (by { push_cast; ring } : (1 - s + 1) / 2 = ↑(3 / 2 : ℝ) - (s + 1) / 2),
+    (by { fail_if_not_idempotent push_cast; ring } : (1 - s + 1) / 2 = ↑(3 / 2 : ℝ) - (s + 1) / 2),
     ← hurwitzOddFEPair_k, (hurwitzOddFEPair a).functional_equation ((s + 1) / 2),
     hurwitzOddFEPair_ε, one_smul]
 
@@ -394,7 +394,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     cexp (2 * π * I * a * n) / (↑|n| : ℂ) ^ s / 2) (completedSinZeta a s) := by
   let c (n : ℤ) : ℂ := -I * cexp (2 * π * I * a * n) / 2
   have hc (n : ℤ) : ‖c n‖ = 1 / 2 := by
-    simp_rw [c, (by { push_cast; ring } : 2 * π * I * a * n = ↑(2 * π * a * n) * I), norm_div,
+    simp_rw [c, (by { fail_if_not_idempotent push_cast; ring } : 2 * π * I * a * n = ↑(2 * π * a * n) * I), norm_div,
       RCLike.norm_ofNat, norm_mul, norm_neg, norm_I, one_mul, norm_exp_ofReal_mul_I]
   have hF t (ht : 0 < t) :
       HasSum (fun n ↦ c n * n * rexp (-π * n ^ 2 * t)) (sinKernel a t / 2) := by
@@ -424,7 +424,7 @@ lemma hasSum_nat_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   rcases eq_or_ne n 0 with rfl | h
   · simp
   simp_rw [Int.sign_natCast_of_ne_zero h, Int.cast_one, ofReal_sin, Complex.sin]
-  simp only [← mul_div_assoc, push_cast, mul_assoc (Gammaℝ _), ← mul_add]
+  simp only [← mul_div_assoc, fail_if_not_idempotent push_cast, mul_assoc (Gammaℝ _), ← mul_add]
   congr 3
   rw [mul_one, mul_neg_one, neg_neg, neg_mul I, ← sub_eq_neg_add, ← mul_sub, mul_comm,
     mul_neg, neg_mul]
@@ -439,7 +439,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have hF t (ht : 0 < t) : HasSum (fun n ↦ c n * r n * rexp (-π * (r n) ^ 2 * t))
       (oddKernel a t / 2) := by
     refine ((hasSum_ofReal.mpr (hasSum_int_oddKernel a ht)).div_const 2).congr_fun fun n ↦ ?_
-    simp [r, c, push_cast, div_mul_eq_mul_div, -one_div]
+    simp [r, c, fail_if_not_idempotent push_cast, div_mul_eq_mul_div, -one_div]
   have h_sum : Summable fun i ↦ ‖c i‖ / |r i| ^ s.re := by
     simp_rw [c, ← mul_one_div ‖_‖]
     apply Summable.mul_left
@@ -507,7 +507,7 @@ lemma hasSum_nat_hurwitzZetaOdd_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : �
     (hurwitzZetaOdd a s) := by
   refine (hasSum_nat_hurwitzZetaOdd a hs).congr_fun fun n ↦ ?_
   suffices ∀ b : ℝ, 0 ≤ b → SignType.sign (n + b) / (↑|n + b| : ℂ) ^ s = 1 / (n + b) ^ s by
-    simp only [add_sub_assoc, this a ha.1, this (1 - a) (sub_nonneg.mpr ha.2), push_cast]
+    simp only [add_sub_assoc, this a ha.1, this (1 - a) (sub_nonneg.mpr ha.2), fail_if_not_idempotent push_cast]
   intro b hb
   rw [abs_of_nonneg (by positivity), (by simp : (n : ℂ) + b = ↑(n + b))]
   rcases lt_or_eq_of_le (by positivity : 0 ≤ n + b) with hb | hb
@@ -530,7 +530,7 @@ lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have := (hasSum_int_sinZeta a hs).nat_add_neg
   simp_rw [abs_neg, Int.sign_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg, abs_zero,
     Int.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero, zero_div, add_zero] at this
-  simp_rw [push_cast, Complex.sin]
+  simp_rw [fail_if_not_idempotent push_cast, Complex.sin]
   refine this.congr_fun fun n ↦ ?_
   rcases ne_or_eq n 0 with h | rfl
   · simp only [neg_mul, sub_mul, div_right_comm _ (2 : ℂ), Int.sign_natCast_of_ne_zero h,

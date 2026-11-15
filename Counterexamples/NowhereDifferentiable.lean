@@ -182,7 +182,7 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
   have h1 (n : ℕ) : cos (b ^ (n + m) * π * seq b x m) = - (-1) ^ (⌊b ^ m * x + 2⁻¹⌋) :=
     calc
       _ = cos ((b ^ n * (⌊b ^ m * x + 2⁻¹⌋ + 1) : ℤ) * π) := by
-        push_cast
+        fail_if_not_idempotent push_cast
         rw [← seq_mul_pow (by simp [hb0])]
         ring_nf
       _ = ((-1) ^ b ^ n) ^ (⌊b ^ m * x + 2⁻¹⌋) * (-1) ^ b ^ n := by
@@ -196,7 +196,7 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
     calc
       _ = cos (b ^ n * (b ^ m * x - ⌊b ^ m * x + 2⁻¹⌋) * π +
           (b ^ n * (⌊b ^ m * x + 2⁻¹⌋) : ℤ) * π) := by
-        push_cast
+        fail_if_not_idempotent push_cast
         ring_nf
       _ = ((-1) ^ b ^ n) ^ (⌊b ^ m * x + 2⁻¹⌋) *
           cos (b ^ n * (b ^ m * x - ⌊b ^ m * x + 2⁻¹⌋) * π) := by
