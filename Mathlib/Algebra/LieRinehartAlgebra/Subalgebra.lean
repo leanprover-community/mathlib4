@@ -25,8 +25,9 @@ applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ri
 
 ## Remark:
 
-Currently it is assumed that the 'subalgebra' keeps the full `A` and is a subset only on the level
-of `L`.
+Currently it is assumed that the Lie-Rinehart subalgebra of a Lie-Rinehart algebra `(A L)` keeps the
+same `A` and only replaces `L` with a subspace of `L' ⊆ L`. This could be generalized to a
+version of subalgebras `(A' ⊆ A, L' ⊆ L)`, where one passes to a subspace of both `A` and `L`.
 -/
 
 public section

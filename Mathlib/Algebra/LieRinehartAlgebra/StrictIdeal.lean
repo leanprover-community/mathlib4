@@ -16,10 +16,10 @@ This can be defined independently of `R` and of most Lie-Rinehart algebra axioms
 
 ## Main definitions/statements
 
-* `StrictLieRinehartIdeal` as an `A`-submodule of `L` forming an ideal under the Lie bracket, and
-acting trivially on `A`.
+* We define `StrictLieRinehartIdeal` to be an `A`-submodule of `L` forming an ideal under the Lie
+bracket, and acting trivially on `A`.
 
-* The inverse image of a strict ideal under a Lie-Rinehart algebra homomorphism over
+* The inverse image of a strict Lie-Rinehart ideal under a Lie-Rinehart algebra homomorphism over
 `f : L₁ →ₗ⁅.id R A⁆ L₂` is a strict Lie-Rinehart ideal. In particular the kernel of such an `f`
 is a strict ideal.
 
@@ -119,7 +119,7 @@ instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
 
 /- TODO: The below instance might in future be modified to use a typeclass
 `[StrictLieRinehartIdealClass S A L] {s : S}` rather than the current
-{s : StrictLieRinehartIdeal A L}. This would be useful if restrictions of the notion of
+`{s : StrictLieRinehartIdeal A L}`. This would be useful if restrictions of the notion of
 strict Lie-Rinehart ideal are needed.
 -/
 /-- A strict Lie-Rinehart ideal forms a Lie ring. -/
@@ -147,8 +147,8 @@ theorem bracket_coe (x : s) (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
 instance : IsLieTower s L M where
   leibniz_lie x y m := leibniz_lie x.val y m
 
-/-- Given a Lie-Rinehart algebra `L` containing a Lie-Rinehart ideal `s ⊆ L`, together with a
-Lie ring module `M` of `L`, we may regard `M` as a Lie ring module of `s` by restriction. -/
+/-- Given a Lie-Rinehart algebra `L` containing a strict Lie-Rinehart ideal `s ⊆ L`, together with a
+Lie ring module `M` over `L`, we may regard `M` as a Lie ring module over `s` by restriction. -/
 instance lieRingModule : LieRingModule s M where
   add_lie x y m := add_lie (x : L) y m
   lie_add x y m := lie_add (x : L) y m
@@ -195,7 +195,7 @@ section LieModule
 variable {M : Type*} [AddCommGroup M] [LieRingModule L M] [Module R M] [LieModule R L M]
 
 /-- Given a Lie-Rinehart algebra `L` containing a strict Lie-Rinehart ideal `s ⊆ L`, together with a
-Lie module `M` of `L`, we may regard `M` as a Lie module of `s` by restriction. -/
+Lie module `M` over `L`, we may regard `M` as a Lie module over `s` by restriction. -/
 instance lieModule {s : StrictLieRinehartIdeal A L} : LieModule R s M where
   smul_lie t x m := by
     rw [bracket_coe, Submodule.coe_smul_of_tower, smul_lie, bracket_coe]
