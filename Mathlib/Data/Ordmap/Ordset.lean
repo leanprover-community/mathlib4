@@ -98,7 +98,8 @@ theorem Valid'.node {s l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Va
   ⟨⟨hl.1, hr.1⟩, ⟨hs, hl.2, hr.2⟩, ⟨H, hl.3, hr.3⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @Valid' αᵒᵈ _ o₂ (dual t) o₁
+theorem Valid'.dual :
+    ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @Valid' αᵒᵈ _ o₂.toDual (dual t) o₁.toDual
   | .nil, _, _, h => valid'_nil h.1.dual
   | .node _ l _ r, _, _, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
     let ⟨ol', sl', bl'⟩ := Valid'.dual ⟨ol, sl, bl⟩
@@ -107,9 +108,16 @@ theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @
       ⟨by rw [size_dual, size_dual]; exact b.symm, br', bl'⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem Valid'.dual_iff {t : Ordnode α} {o₁ o₂} : Valid' o₁ t o₂ ↔ @Valid' αᵒᵈ _ o₂ (.dual t) o₁ :=
+theorem Valid'.dual_iff {t : Ordnode α} {o₁ o₂} :
+    Valid' o₁ t o₂ ↔ @Valid' αᵒᵈ _ o₂.toDual (.dual t) o₁.toDual :=
   ⟨Valid'.dual, fun h => by
-    have := Valid'.dual h; rwa [dual_dual, OrderDual.Preorder.dual_dual] at this⟩
+    have := Valid'.dual h
+    rw [dual_dual] at this
+    convert this
+    · rfl
+    · rfl
+    · cases o₁ <;> simp; rfl
+    · cases o₂ <;> simp; rfl⟩
 
 theorem Valid.dual {t : Ordnode α} : Valid t → @Valid αᵒᵈ _ (.dual t) :=
   Valid'.dual
@@ -392,8 +400,10 @@ theorem Valid'.eraseMin_aux {s l} {x : α} {r o₁ o₂} (H : Valid' o₁ (.node
     Valid' ↑(findMin' l x) (@eraseMin α (.node' l x r)) o₂ ∧
       size (.node' l x r) = size (eraseMin (.node' l x r)) + 1 := by
   have := H.dual.eraseMax_aux
-  rwa [← dual_node', size_dual, ← dual_eraseMin, size_dual, ← Valid'.dual_iff, findMax'_dual]
-    at this
+  rw [← dual_node', size_dual, ← dual_eraseMin, size_dual, findMax'_dual] at this
+  convert (Valid'.dual_iff.and .rfl).1 this <;> try rfl
+  · rw [dual_dual]
+  · cases o₂ <;> rfl
 
 theorem eraseMin.valid : ∀ {t}, @Valid α _ t → Valid (eraseMin t)
   | nil, _ => valid_nil
@@ -413,7 +423,7 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
     · obtain ⟨v, e⟩ := Valid'.eraseMax_aux hl
       suffices H : _ by
         refine ⟨Valid'.balanceR v (hr.of_gt ?_ ?_) H, ?_⟩
-        · refine findMax'_all (P := fun a : α => Bounded nil (a : WithTop α) o₂)
+        · refine findMax'_all (P := fun a : α => Bounded nil (a : WithBot α) o₂)
             lx lr hl.1.2.to_nil (sep.2.2.imp ?_)
           exact fun x h => hr.1.2.to_nil.mono_left (le_of_lt h.2.1)
         · exact @findMax'_all _ (fun a => All (· > a) (.node rs rl rx rr)) lx lr sep.2.1 sep.2.2
@@ -424,7 +434,7 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
     · obtain ⟨v, e⟩ := Valid'.eraseMin_aux hr
       suffices H : _ by
         refine ⟨Valid'.balanceL (hl.of_lt ?_ ?_) v H, ?_⟩
-        · refine @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithBot α))
+        · refine @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithTop α))
             _ rl rx (sep.2.1.1.imp ?_) hr.1.1.to_nil
           exact fun y h => hl.1.1.to_nil.mono_right (le_of_lt h)
         · exact
@@ -540,13 +550,13 @@ theorem insert'.valid [@Std.Total α (· ≤ ·)] [DecidableLE α]
 
 theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : StrictMono f) {t a₁ a₂}
     (h : Valid' a₁ t a₂) :
-    Valid' (Option.map f a₁) (map f t) (Option.map f a₂) ∧ (map f t).size = t.size := by
+    Valid' (.map f a₁) (map f t) (.map f a₂) ∧ (map f t).size = t.size := by
   induction t generalizing a₁ a₂ with
   | nil =>
     simp only [map, size_nil, and_true]; apply valid'_nil
     cases a₁; · trivial
     cases a₂; · trivial
-    simp only [Option.map, Bounded]
+    simp only [WithBot.map, WithTop.map, Bounded]
     exact f_strict_mono h.ord
   | node _ _ _ _ t_ih_l t_ih_r =>
     have t_ih_l' := t_ih_l h.left

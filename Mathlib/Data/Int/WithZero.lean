@@ -89,7 +89,7 @@ theorem toNNReal_strictMono {e : ℝ≥0} (he : 1 < e) :
 theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤᵐ⁰) (he0 : e ≠ 0) (he1 : e ≠ 1) :
     toNNReal he0 m = 1 ↔ m = 1 := by
   by_cases hm : m = 0
-  · simp only [hm, map_zero, zero_ne_one]
+  · simp [hm]
   · refine ⟨fun h1 ↦ ?_, fun h1 ↦ h1 ▸ map_one _⟩
     rw [toNNReal_neg_apply he0 hm, zpow_eq_one_iff_right₀ _root_.zero_le he1,
       ← toAdd_unzero_eq_log hm, toAdd_eq_zero] at h1

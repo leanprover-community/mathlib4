@@ -35,6 +35,15 @@ variable [Preorder α] {a b : α}
 theorem range_coe : range (some : α → WithTop α) = Iio ⊤ := by
   ext; simp [mem_range, WithTop.lt_top_iff_ne_top, ne_top_iff_exists]
 
+@[to_dual]
+theorem isCompl_range_coe_top : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
+  IsCompl.of_le (fun _ ⟨⟨_, ha⟩, (hn : _ = ⊤)⟩ => WithTop.coe_ne_top (ha.trans hn))
+    fun x _ => WithTop.casesOn x (Or.inr rfl) fun _ => Or.inl <| mem_range_self _
+
+@[to_dual]
+theorem compl_range_coe : (range ((↑) : α → WithTop α))ᶜ = {⊤} :=
+  isCompl_range_coe_top.compl_eq
+
 @[to_dual (attr := simp)]
 theorem preimage_coe_Ioi : (some : α → WithTop α) ⁻¹' Ioi a = Ioi a :=
   ext fun _ => coe_lt_coe

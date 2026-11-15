@@ -847,37 +847,37 @@ instance : LocallyFiniteOrder (WithTop α) where
 
 variable (a b : α)
 
-@[to_dual Icc_bot_coe]
-theorem Icc_coe_top : Icc (a : WithTop α) ⊤ = insertNone (Ici a) :=
-  rfl
+-- @[to_dual Icc_bot_coe]
+-- theorem Icc_coe_top : Icc (a : WithTop α) ⊤ = insertNone (Ici a) :=
+--   rfl
 
-@[to_dual]
-theorem Icc_coe_coe : Icc (a : WithTop α) b = (Icc a b).map Embedding.some :=
-  rfl
+-- @[to_dual]
+-- theorem Icc_coe_coe : Icc (a : WithTop α) b = (Icc a b).map Embedding.some :=
+--   rfl
 
-@[to_dual Ioc_bot_coe]
-theorem Ico_coe_top : Ico (a : WithTop α) ⊤ = (Ici a).map Embedding.some :=
-  rfl
+-- @[to_dual Ioc_bot_coe]
+-- theorem Ico_coe_top : Ico (a : WithTop α) ⊤ = (Ici a).map Embedding.some :=
+--   rfl
 
-@[to_dual]
-theorem Ico_coe_coe : Ico (a : WithTop α) b = (Ico a b).map Embedding.some :=
-  rfl
+-- @[to_dual]
+-- theorem Ico_coe_coe : Ico (a : WithTop α) b = (Ico a b).map Embedding.some :=
+--   rfl
 
-@[to_dual Ico_bot_coe]
-theorem Ioc_coe_top : Ioc (a : WithTop α) ⊤ = insertNone (Ioi a) :=
-  rfl
+-- @[to_dual Ico_bot_coe]
+-- theorem Ioc_coe_top : Ioc (a : WithTop α) ⊤ = insertNone (Ioi a) :=
+--   rfl
 
-@[to_dual]
-theorem Ioc_coe_coe : Ioc (a : WithTop α) b = (Ioc a b).map Embedding.some :=
-  rfl
+-- @[to_dual]
+-- theorem Ioc_coe_coe : Ioc (a : WithTop α) b = (Ioc a b).map Embedding.some :=
+--   rfl
 
-@[to_dual Ioo_bot_coe]
-theorem Ioo_coe_top : Ioo (a : WithTop α) ⊤ = (Ioi a).map Embedding.some :=
-  rfl
+-- @[to_dual Ioo_bot_coe]
+-- theorem Ioo_coe_top : Ioo (a : WithTop α) ⊤ = (Ioi a).map Embedding.some :=
+--   rfl
 
-@[to_dual]
-theorem Ioo_coe_coe : Ioo (a : WithTop α) b = (Ioo a b).map Embedding.some :=
-  rfl
+-- @[to_dual]
+-- theorem Ioo_coe_coe : Ioo (a : WithTop α) b = (Ioo a b).map Embedding.some :=
+--   rfl
 
 end WithTop
 

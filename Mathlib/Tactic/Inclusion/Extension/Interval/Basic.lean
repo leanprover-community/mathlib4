@@ -26,9 +26,8 @@ type represents a possibly unbounded interval with closed endpoints.
 namespace Inclusion
 
 -- local `grind` rules
-attribute [local grind unfold] WithBot.some WithTop.some
 attribute [local grind norm ←] WithBot.coe_zero WithTop.coe_zero
-  WithBot.none_eq_bot WithTop.none_eq_top
+  WithBot.bot_eq_bot WithTop.top_eq_top
 attribute [local grind norm] WithBot.coe_le_coe WithTop.coe_le_coe
 attribute [local grind =] WithBot.coe_le_iff WithTop.le_coe_iff
 
@@ -226,10 +225,10 @@ theorem Interval.hull_mem_right [LinearOrder α] [LinearOrder β] (f : α ↪o �
 /-- Add two intervals. -/
 def Interval.add [Add α] (I J : Interval α) : Interval α where
   lb := match I.lb, J.lb with
-    | some a, some b => some (a + b)
+    | .some a, .some b => .some (a + b)
     | _, _ => ⊥
   ub := match I.ub, J.ub with
-    | some a, some b => some (a + b)
+    | .some a, .some b => .some (a + b)
     | _, _ => ⊤
 
 @[simp]
@@ -248,10 +247,10 @@ theorem Interval.add_mem [AddZero α] [AddCommMonoid β] [Preorder β] [IsOrdere
 /-- Negate an interval. -/
 def Interval.neg [Neg α] (I : Interval α) : Interval α where
   lb := match I.ub with
-    | some a => some (-a)
+    | .some a => .some (-a)
     | ⊤ => ⊥
   ub := match I.lb with
-    | some a => some (-a)
+    | .some a => .some (-a)
     | ⊥ => ⊤
 
 theorem Interval.neg_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrderedAddMonoid β]
@@ -261,16 +260,16 @@ theorem Interval.neg_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrdere
 /-- Take the absolute value of an interval. -/
 def Interval.abs [Zero α] [Neg α] [LinearOrder α] (I : Interval α) : Interval α :=
   match I.lb with
-  | some lb =>
+  | .some lb =>
     if 0 ≤ lb then
       I
     else
       match I.ub with
-      | some ub => if ub ≤ 0 then  ⟨some (-ub), some (-lb)⟩ else ⟨0, some (max (-lb) ub)⟩
+      | .some ub => if ub ≤ 0 then  ⟨.some (-ub), .some (-lb)⟩ else ⟨0, .some (max (-lb) ub)⟩
       | ⊤ => Interval.Ici 0
   | ⊥ =>
     let lb := match I.ub with
-      | some ub => if ub ≤ 0 then some (-ub) else 0
+      | .some ub => if ub ≤ 0 then .some (-ub) else 0
       | ⊤ => 0
     Interval.Ici lb
 
@@ -283,10 +282,10 @@ theorem Interval.abs_mem [Zero α] [Neg α] [LinearOrder α] [AddCommGroup β]
 /-- Subtract one interval from another. -/
 def Interval.sub [Sub α] (I J : Interval α) : Interval α where
   lb := match I.lb, J.ub with
-    | some a, some b => some (a - b)
+    | .some a, .some b => .some (a - b)
     | _, _ => ⊥
   ub := match I.ub, J.lb with
-    | some a, some b => some (a - b)
+    | .some a, .some b => .some (a - b)
     | _, _ => ⊤
 
 theorem Interval.sub_eq_add_neg [AddGroup α] (I J : Interval α) : I.sub J = I.add J.neg := by
@@ -311,34 +310,50 @@ theorem Interval.map_mulBound_le [Mul α] [Zero α] [DecidableEq α] [LE β]
     (f : α → β) (a b : Option α) {z : β}
     (hmul : ∀ x y, a = some x → b = some y → f (x * y) ≤ z)
     (hzero : (a = none ∧ b = some 0 ∨ a = some 0 ∧ b = none) → f 0 ≤ z) :
-    WithBot.map f (Interval.mulBound a b : WithBot α) ≤ z := by
-  cases a <;> cases b <;>
-    grind [Interval.mulBound, WithBot.map_eq_some_iff, WithBot.le_coe_iff]
+    WithBot.map f ((WithBot.toOption α).symm <| Interval.mulBound a b) ≤ z := by
+  cases a <;> cases b
+  · simp [mulBound]
+  · simp [Interval.mulBound, WithBot.map_eq_some_iff, WithBot.le_coe_iff]
+    grind
+  · simp [Interval.mulBound, WithBot.map_eq_some_iff, WithBot.le_coe_iff]
+    grind
+  · simp [Interval.mulBound]
+    grind
 
 /-- Multiply two intervals. -/
 def Interval.mul [Mul α] [Zero α] [LinearOrder α] (I J : Interval α) : Interval α :=
   if 0 ≤ I.lb then
     if 0 ≤ J.lb then
-      ⟨Interval.mulBound I.lb J.lb, Interval.mulBound I.ub J.ub⟩
+      ⟨(WithBot.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.lb.toOption α),
+        (WithTop.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.ub.toOption α)⟩
     else if J.ub ≤ 0 then
-      ⟨Interval.mulBound I.ub J.lb, Interval.mulBound I.lb J.ub⟩
+      ⟨(WithBot.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.lb.toOption α),
+        (WithTop.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.ub.toOption α)⟩
     else
-      ⟨Interval.mulBound I.ub J.lb, Interval.mulBound I.ub J.ub⟩
+      ⟨(WithBot.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.lb.toOption α),
+        (WithTop.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.ub.toOption α)⟩
   else if I.ub ≤ 0 then
     if 0 ≤ J.lb then
-      ⟨Interval.mulBound I.lb J.ub, Interval.mulBound I.ub J.lb⟩
+      ⟨(WithBot.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.ub.toOption α),
+        (WithTop.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.lb.toOption α)⟩
     else if J.ub ≤ 0 then
-      ⟨Interval.mulBound I.ub J.ub, Interval.mulBound I.lb J.lb⟩
+      ⟨(WithBot.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.ub.toOption α),
+        (WithTop.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.lb.toOption α)⟩
     else
-      ⟨Interval.mulBound I.lb J.ub, Interval.mulBound I.lb J.lb⟩
+      ⟨(WithBot.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.ub.toOption α),
+        (WithTop.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.lb.toOption α)⟩
   else
     if 0 ≤ J.lb then
-      ⟨Interval.mulBound I.lb J.ub, Interval.mulBound I.ub J.ub⟩
+      ⟨(WithBot.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.ub.toOption α),
+        (WithTop.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.ub.toOption α)⟩
     else if J.ub ≤ 0 then
-      ⟨Interval.mulBound I.ub J.lb, Interval.mulBound I.lb J.lb⟩
+      ⟨(WithBot.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.lb.toOption α),
+        (WithTop.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.lb.toOption α)⟩
     else
-      ⟨min (Interval.mulBound I.lb J.ub) (Interval.mulBound I.ub J.lb),
-        max (Interval.mulBound I.lb J.lb) (Interval.mulBound I.ub J.ub)⟩
+      ⟨min ((WithBot.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.ub.toOption α))
+          ((WithBot.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.lb.toOption α)),
+        max ((WithTop.toOption α).symm <| Interval.mulBound (I.lb.toOption α) (J.lb.toOption α))
+          ((WithTop.toOption α).symm <| Interval.mulBound (I.ub.toOption α) (J.ub.toOption α))⟩
 
 theorem Interval.mul_mem [Mul α] [Zero α] [LinearOrder α] [Ring β] [LinearOrder β]
     [IsStrictOrderedRing β] (f : α ↪o β) (map_zero : f 0 = 0)
@@ -346,32 +361,42 @@ theorem Interval.mul_mem [Mul α] [Zero α] [LinearOrder α] [Ring β] [LinearOr
     (hx : x ∈ I.map f) (hy : y ∈ J.map f) : x * y ∈ (I.mul J).map f := by
   unfold Interval.mul
   split_ifs <;> constructor
-  · apply Interval.map_mulBound_le <;> grind [mul_le_mul]
-  · apply Interval.le_map_mulBound <;> grind [mul_le_mul]
-  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonneg_of_nonpos]
-  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonneg_of_nonpos]
-  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonneg_of_nonpos]
-  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonneg]
-  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonneg]
-  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonneg]
-  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonpos']
-  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos]
-  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonneg]
-  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos']
-  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonneg'']
-  · apply Interval.le_map_mulBound <;> grind [mul_le_mul]
-  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonneg_of_nonpos']
-  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos]
+  · apply Interval.map_mulBound_le <;> grind [mul_le_mul, WithBot.toOption]
+  · apply Interval.le_map_mulBound <;> grind [mul_le_mul, WithTop.toOption]
+  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonneg_of_nonpos, WithTop.toOption,
+      WithBot.toOption]
+  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonneg_of_nonpos, WithTop.toOption,
+      WithBot.toOption]
+  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonneg_of_nonpos, WithTop.toOption,
+      WithBot.toOption]
+  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonneg, WithTop.toOption]
+  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonneg, WithTop.toOption,
+      WithBot.toOption]
+  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonneg, WithTop.toOption,
+      WithBot.toOption]
+  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonpos', WithTop.toOption]
+  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos, WithBot.toOption]
+  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonneg, WithTop.toOption,
+      WithBot.toOption]
+  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos', WithBot.toOption]
+  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonneg'', WithTop.toOption,
+      WithBot.toOption]
+  · apply Interval.le_map_mulBound <;> grind [mul_le_mul, WithTop.toOption]
+  · apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonneg_of_nonpos', WithTop.toOption,
+      WithBot.toOption]
+  · apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos, WithBot.toOption]
   · by_cases hy0 : 0 ≤ y
     · apply (f.monotone.withBot_map (min_le_left _ _)).trans
-      apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonneg'']
+      apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonpos_of_nonneg'', WithTop.toOption,
+      WithBot.toOption]
     · apply (f.monotone.withBot_map (min_le_right _ _)).trans
-      apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonneg_of_nonpos']
+      apply Interval.map_mulBound_le <;> grind [mul_le_mul_of_nonneg_of_nonpos', WithTop.toOption,
+      WithBot.toOption]
   · by_cases hy0 : 0 ≤ y
     · apply (f.monotone.withTop_map (le_max_right _ _)).trans'
-      apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonneg']
+      apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonneg', WithTop.toOption]
     · apply (f.monotone.withTop_map (le_max_left _ _)).trans'
-      apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos]
+      apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos, WithBot.toOption]
 
 /-- Raise an interval to a natural-number power. -/
 def Interval.pow [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder α]
@@ -381,12 +406,12 @@ def Interval.pow [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder α]
   else if n % 2 = 1 || 0 ≤ I.lb then
     I.map (· ^ n)
   else if I.ub ≤ 0 then
-    let lb := match I.ub with | some ub => some (ub ^ n) | ⊤ => ⊥
-    let ub := match I.lb with | some lb => some (lb ^ n) | ⊥ => ⊤
+    let lb := match I.ub with | .some ub => .some (ub ^ n) | ⊤ => ⊥
+    let ub := match I.lb with | .some lb => .some (lb ^ n) | ⊥ => ⊤
     ⟨lb, ub⟩
   else
     let ub := match I.lb, I.ub with
-      | some lb, some ub => some (max (-lb) ub ^ n)
+      | .some lb, .some ub => .some (max (-lb) ub ^ n)
       | _, _ => ⊤
     ⟨0, ub⟩
 
@@ -431,7 +456,7 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
 def Interval.orderRelFalse (r : α → α → Prop) [DecidableRel r]
     (I J : Interval α) : IntervalBool :=
   match I.lb, J.ub with
-  | some il, some ju => if r il ju then .undetermined else .false
+  | .some il, .some ju => if r il ju then .undetermined else .false
   | _, _ => .undetermined
 
 theorem Interval.orderRelFalse_mem [Preorder β] {r : α → α → Prop} {s : β → β → Prop}
@@ -452,7 +477,7 @@ theorem Interval.orderRelFalse_mem [Preorder β] {r : α → α → Prop} {s : �
 def Interval.orderRel (r : α → α → Prop) [DecidableRel r]
     (I J : Interval α) : IntervalBool :=
   match I.ub, J.lb with
-  | some iu, some jl =>
+  | .some iu, .some jl =>
       if r iu jl then
         .true
       else
@@ -477,15 +502,15 @@ theorem Interval.orderRel_mem [Preorder β] {r : α → α → Prop} {s : β →
 /-- Check if `x ≤ y` is implied (true or false) by `x ∈ I` and `y ∈ J` -/
 def Interval.le [LE α] [DecidableLE α] (I J : Interval α) : IntervalBool :=
   match I.ub, J.lb with
-  | some iu, some jl =>
+  | .some iu, .some jl =>
       if iu ≤ jl then .true
       else
         match I.lb, J.ub with
-        | some il, some ju => if il ≤ ju then .undetermined else .false
+        | .some il, .some ju => if il ≤ ju then .undetermined else .false
         | _, _ => .undetermined
   | _, _ =>
       match I.lb, J.ub with
-      | some il, some ju => if il ≤ ju then .undetermined else .false
+      | .some il, .some ju => if il ≤ ju then .undetermined else .false
       | _, _ => .undetermined
 
 theorem Interval.le_mem [Preorder α] [Preorder β] [DecidableLE α] (f : α ↪o β)
@@ -496,15 +521,15 @@ theorem Interval.le_mem [Preorder α] [Preorder β] [DecidableLE α] (f : α ↪
 /-- Check if `x < y` is implied (true or false) by `x ∈ I` and `y ∈ J`. -/
 def Interval.lt [LT α] [DecidableLT α] (I J : Interval α) : IntervalBool :=
   match I.ub, J.lb with
-  | some iu, some jl =>
+  | .some iu, .some jl =>
       if iu < jl then .true
       else
         match I.lb, J.ub with
-        | some il, some ju => if il < ju then .undetermined else .false
+        | .some il, .some ju => if il < ju then .undetermined else .false
         | _, _ => .undetermined
   | _, _ =>
       match I.lb, J.ub with
-      | some il, some ju => if il < ju then .undetermined else .false
+      | .some il, .some ju => if il < ju then .undetermined else .false
       | _, _ => .undetermined
 
 theorem Interval.lt_mem [Preorder α] [Preorder β] [DecidableLT α] (f : α ↪o β)

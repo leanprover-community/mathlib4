@@ -240,8 +240,8 @@ instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
 @[to_additive]
 instance Interval.commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (Interval α) where
-  mul_comm := fun _ _ => Option.map₂_comm mul_comm
-  mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc
+  mul_comm := fun _ _ => WithBot.map₂_comm mul_comm
+  mul_assoc := fun _ _ _ => WithBot.map₂_assoc mul_assoc
 
 namespace NonemptyInterval
 

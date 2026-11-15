@@ -152,8 +152,8 @@ theorem compl_image_coe (s : Set X) : ((↑) '' s : Set (OnePoint X))ᶜ = (↑)
 theorem ne_infty_iff_exists {x : OnePoint X} : x ≠ ∞ ↔ ∃ y : X, (y : OnePoint X) = x := by
   induction x using OnePoint.rec <;> simp
 
-instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
-  WithTop.canLift
+instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ where
+  prf _ h := Option.ne_none_iff_exists.1 h
 
 theorem notMem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
   rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
@@ -628,7 +628,7 @@ open OnePoint
 to the homeomorphism of their one point compactifications. -/
 @[simps]
 def onePointCongr (h : X ≃ₜ Y) : OnePoint X ≃ₜ OnePoint Y where
-  __ := h.toEquiv.withTopCongr
+  __ := h.toEquiv.optionCongr
   toFun := OnePoint.map h
   invFun := OnePoint.map h.symm
   continuous_toFun := continuous_map (map_continuous h) h.map_coclosedCompact.le

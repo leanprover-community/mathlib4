@@ -25,7 +25,7 @@ def binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β] :
   | 0, I, F => F I
   | n + 1, I, F =>
       match I with
-      | ⟨some l, some u⟩ =>
+      | ⟨.some l, .some u⟩ =>
           if l < u then
             let m := (l + u) / 2
             Coarsen.coarsen β (binarySplitMap n ⟨l, m⟩ F) (binarySplitMap n ⟨m + 1, u⟩ F)
@@ -38,7 +38,7 @@ theorem mem_binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β]
   induction n generalizing I with
   | zero => exact hy I hx
   | succ n ih => match I with
-    | ⟨some l, some u⟩ =>
+    | ⟨.some l, .some u⟩ =>
       rw [binarySplitMap]
       split
       · let m := (l + u) / 2
@@ -47,7 +47,7 @@ theorem mem_binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β]
         · apply Coarsen.mem_coarsen_right
           exact (ih ⟨WithBot.coe_le_coe.mpr (Int.add_one_le_of_lt (lt_of_not_ge hl)), hx.2⟩)
       · exact hy _ hx
-    | ⟨⊥, ⊤⟩ | ⟨⊥, some u⟩ | ⟨some l, ⊤⟩ => exact hy _ hx
+    | ⟨⊥, ⊤⟩ | ⟨⊥, .some u⟩ | ⟨.some l, ⊤⟩ => exact hy _ hx
 
 /-- Cover an integer interval by repeatedly bisecting it to depth `n`. -/
 def binarySplit (n : ℕ) : Cover (Interval ℤ) ℤ where

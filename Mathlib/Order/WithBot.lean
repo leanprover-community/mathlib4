@@ -167,7 +167,7 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
 lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
     map f a = ⊥ ↔ a = ⊥ := by cases a <;> simp
 
-@[to_dual]
+@[to_dual (attr := grind =)]
 theorem map_eq_some_iff {f : α → β} {y : β} {v : WithBot α} :
     WithBot.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := by cases v <;> simp
 

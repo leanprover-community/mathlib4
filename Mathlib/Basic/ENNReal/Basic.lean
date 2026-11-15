@@ -202,9 +202,9 @@ def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C
 
 instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 
-@[simp] theorem none_eq_top : (none : ℝ≥0∞) = ∞ := rfl
+@[simp] theorem none_eq_top : (⊤ : ℝ≥0∞) = ∞ := rfl
 
-@[simp] theorem some_eq_coe (a : ℝ≥0) : (Option.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
+@[simp] theorem some_eq_coe (a : ℝ≥0) : (.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
@@ -215,7 +215,7 @@ lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_
 lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
 
 theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
-theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
+theorem range_coe : range ofNNReal = {∞}ᶜ := WithTop.isCompl_range_coe_top.symm.compl_eq.symm
 
 instance : NNRatCast ℝ≥0∞ where
   nnratCast r := ofNNReal r
@@ -468,8 +468,9 @@ theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
   @iInf_ne_top αᵒᵈ _ _
 
 theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
-    ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
-  (iInf_option f).trans (inf_comm _ _)
+    ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ := by
+  rw [← (WithTop.toOption ℝ≥0).symm.iInf_comp (g := f), iInf_option, inf_comm]
+  rfl
 
 theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨆ n, f n = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
