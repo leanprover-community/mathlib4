@@ -158,14 +158,11 @@ theorem simple_sq (i : B) : M.simple i ^ 2 = 1 :=
 
 @[simp]
 theorem inv_simple (i : B) : (M.simple i)⁻¹ = M.simple i :=
-  (eq_inv_of_mul_eq_one_right (M.simple_mul_simple_self i)).symm
+  inv_eq_of_mul_eq_one_right (M.simple_mul_simple_self i)
 
 @[simp]
-theorem simple_mul_simple_pow (i i' : B) : (M.simple i * M.simple i') ^ M i i' = 1 := by
-  have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
-  have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
-    (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
-  exact this
+theorem simple_mul_simple_pow (i i' : B) : (M.simple i * M.simple i') ^ M i i' = 1 := 
+  (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure ⟨(i, i'), rfl⟩)
 
 @[simp]
 theorem simple_mul_simple_pow' (i i' : B) : (M.simple i' * M.simple i) ^ M i i' = 1 :=
