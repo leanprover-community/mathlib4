@@ -848,10 +848,6 @@ lemma isFiniteRelIndex_of_le_left (L : Subgroup G) [H.IsFiniteRelIndex L] (h : H
   rw [isFiniteRelIndex_iff_finiteIndex] at *
   exact finiteIndex_of_le <| subgroupOf_mono L h
 
-@[deprecated (since := "2026-05-09")] alias isFiniteRelIndex_of_le := isFiniteRelIndex_of_le_left
-@[deprecated (since := "2026-05-09")] alias
-  _root_.AddSubgroup.isFiniteRelIndex_of_le := AddSubgroup.isFiniteRelIndex_of_le_left
-
 variable (H) in
 @[to_additive]
 lemma isFiniteRelIndex_of_le_right (h : K ≤ L) [H.IsFiniteRelIndex L] :

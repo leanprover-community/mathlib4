@@ -410,10 +410,6 @@ theorem mem_normalizer_iff_map_conj_eq {H : Subgroup G} {g : G} :
     g ∈ normalizer H ↔ H.map (MulAut.conj g) = H :=
   .trans mem_normalizer_iff_conj_image_eq (.symm SetLike.ext'_iff)
 
-@[deprecated (since := "2026-05-12")]
-alias _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq :=
-  AddSubgroup.mem_normalizer_iff_addConj_image_eq
-
 @[to_additive]
 theorem normalizer_le_normalizer_closure (s : Set G) : normalizer s ≤ normalizer (closure s) := by
   intro g hg

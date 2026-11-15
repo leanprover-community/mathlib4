@@ -405,19 +405,12 @@ export ConvexSpace (sConvexComb sConvexComb_single)
 
 attribute [simp] sConvexComb_single
 
-@[deprecated (since := "2026-05-04")] alias ConvexSpace.convexCombination := sConvexComb
-
-@[deprecated (since := "2026-05-04")]
-alias ConvexSpace.convexCombination_single := sConvexComb_single
-
 /-- Take a convex combination with the given weight distribution of an indexed family of points. -/
 def iConvexComb (s : StdSimplex R I) (f : I → X) : X := sConvexComb (s.map f)
 
 /-- Take a convex combination of two points. -/
 def convexCombPair (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (hst : s + t = 1) (x y : X) : X :=
   sConvexComb (.duple x y hs ht hst)
-
-@[deprecated (since := "2026-05-15")] alias convexComboPair := convexCombPair
 
 namespace StdSimplex
 
@@ -669,15 +662,11 @@ theorem convexCombPair_zero {x y : X} :
     convexCombPair (0 : R) 1 (by simp) (by simp) (by simp) x y = y := by
   simp [convexCombPair, StdSimplex.duple, StdSimplex.mk_single]
 
-@[deprecated (since := "2026-05-15")] alias convexComboPair_zero := convexCombPair_zero
-
 /-- A binary convex combination with weight 1 on the first point returns the first point. -/
 @[simp]
 theorem convexCombPair_one {x y : X} :
     convexCombPair (1 : R) 0 (by simp) (by simp) (by simp) x y = x := by
   simp [convexCombPair, StdSimplex.duple, StdSimplex.mk_single]
-
-@[deprecated (since := "2026-05-15")] alias convexComboPair_one := convexCombPair_one
 
 /-- A convex combination of a point with itself is that point. -/
 @[simp]
@@ -686,8 +675,6 @@ theorem convexCombPair_same {x : X} :
   unfold convexCombPair
   convert sConvexComb_single x
   simp only [StdSimplex.duple, StdSimplex.single, ← single_add, h]
-
-@[deprecated (since := "2026-05-15")] alias convexComboPair_symm := convexCombPair_same
 
 theorem convexCombPair_symm {x y : X} :
     convexCombPair s t hs ht h x y = convexCombPair t s ht hs ((add_comm _ _).trans h) y x := by

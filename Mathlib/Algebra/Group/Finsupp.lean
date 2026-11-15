@@ -94,13 +94,6 @@ noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+
 @[simp↓ high] lemma uniqueAddEquiv_symm_apply_apply (i : ι) [Subsingleton ι] (m : M) (j : ι) :
     (uniqueAddEquiv i).symm m j = m := by simp [Subsingleton.elim j i]
 
-/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M`
-is isomorphic to `M`. -/
-@[simps!, deprecated uniqueAddEquiv +typeChanged (since := "2026-05-06")]
-noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
-  toEquiv := .finsuppUnique
-  map_add' _ _ := rfl
-
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel congr($h x)
 
@@ -179,11 +172,6 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
     (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by
   refine subset_trans Finsupp.support_add <| union_subset_iff.mpr ⟨?_, ?_⟩ <;>
   exact subset_trans Finsupp.support_single_subset (by simp)
-
-set_option backward.isDefEq.respectTransparency false in
-@[deprecated uniqueAddEquiv_symm_apply +typeChanged (since := "2026-05-06")]
-lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
-    AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
 theorem addCommute_iff_inter [DecidableEq ι] {f g : ι →₀ M} :
     AddCommute f g ↔ ∀ x ∈ f.support ∩ g.support, AddCommute (f x) (g x) where

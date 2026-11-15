@@ -47,27 +47,7 @@ noncomputable def uniqueLinearEquiv [Subsingleton α] (a : α) : (α →₀ M) �
 @[simp↓ high] lemma uniqueLinearEquiv_symm_apply_apply (a : α) [Subsingleton α] (m : M) (b : α) :
     (uniqueLinearEquiv R M a).symm m b = m := by simp [Subsingleton.elim b a]
 
-/-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
-`R`-linearly equivalent to `M`. -/
-@[deprecated uniqueLinearEquiv +typeChanged (since := "2026-05-06")]
-noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →₀ M) ≃ₗ[R] M :=
-  { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
-
 variable {R M}
-
-@[deprecated uniqueLinearEquiv_apply +typeChanged (since := "2026-05-06")]
-theorem LinearEquiv.finsuppUnique_apply (α : Type*) [Unique α] (f : α →₀ M) :
-    LinearEquiv.finsuppUnique R M α f = f default :=
-  rfl
-
-set_option backward.isDefEq.respectTransparency.types false in
-@[deprecated uniqueLinearEquiv_symm_apply +typeChanged (since := "2026-05-06")]
-theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
-    (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
-  ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
-    equivFunOnFinite, Function.update]
 
 end uniqueLinearEquiv
 

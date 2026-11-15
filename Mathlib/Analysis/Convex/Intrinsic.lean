@@ -353,15 +353,6 @@ theorem intrinsicClosure_image (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   intrinsicClosure_image_of_homeomorph_affineSpan
     (fun [_] => e.toHomeomorph) (fun [_] => e.toHomeomorph.isHomeomorph) (fun [_] _ => rfl)
 
-@[deprecated intrinsicInterior_image (since := "2026-05-08")]
-alias image_intrinsicInterior := intrinsicInterior_image
-
-@[deprecated intrinsicFrontier_image (since := "2026-05-08")]
-alias image_intrinsicFrontier := intrinsicFrontier_image
-
-@[deprecated intrinsicClosure_image (since := "2026-05-08")]
-alias image_intrinsicClosure := intrinsicClosure_image
-
 end AffineIsometry
 
 namespace AffineEquiv

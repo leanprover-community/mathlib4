@@ -165,14 +165,8 @@ lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
 
 theorem coe_toRingEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e := rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringEquiv := coe_toRingEquiv
-@[deprecated (since := "2026-05-05")] alias coe_ringEquiv' := coe_toRingEquiv
-
 theorem toRingEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
-
-@[deprecated toRingEquiv_injective (since := "2026-05-05")]
-  alias coe_ringEquiv_injective := toRingEquiv_injective
 
 /-- Interpret an algebra equivalence as an algebra homomorphism.
 
@@ -195,9 +189,6 @@ theorem coe_toAlgHom :  DFunLike.coe e.toAlgHom = e := rfl
 theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
   fun _ _ h => ext <| AlgHom.congr_fun h
 
-@[deprecated (since := "2026-05-05")] alias coe_algHom := coe_toAlgHom
-@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
-
 @[simp, norm_cast]
 lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
   rfl
@@ -205,8 +196,6 @@ lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
 theorem toRingHom_toAlgHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
   rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := toRingHom_toAlgHom
 
 @[simp]
 theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
@@ -496,9 +485,6 @@ theorem toAlgHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h
 theorem ofAlgHom_toAlgHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     ofAlgHom (↑f) g h₁ h₂ = f :=
   ext fun _ => rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_algHom_ofAlgHom := toAlgHom_ofAlgHom
-@[deprecated (since := "2026-05-05")] alias ofAlgHom_coe_algHom := ofAlgHom_toAlgHom
 
 theorem ofAlgHom_symm (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     (ofAlgHom f g h₁ h₂).symm = ofAlgHom g f h₂ h₁ :=

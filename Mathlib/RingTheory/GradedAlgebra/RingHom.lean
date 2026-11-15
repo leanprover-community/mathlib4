@@ -148,8 +148,6 @@ theorem mk_coe (f : 𝒜 →+*ᵍ ℬ) (h₁ h₂ h₃ h₄ h₅) : .mk ⟨⟨�
 theorem toRingHom_injective : (fun f : 𝒜 →+*ᵍ ℬ => (f : A →+* B)).Injective := fun _ _ h =>
   ext <| DFunLike.congr_fun (F := A →+* B) h
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := toRingHom_injective
-
 /-- Graded ring homomorphisms map zero to zero. -/
 protected theorem map_zero (f : 𝒜 →+*ᵍ ℬ) : f 0 = 0 :=
   map_zero f

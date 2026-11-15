@@ -230,9 +230,6 @@ instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) :=
 instance : IsBotZeroClass (WithZero α) where
   isBot_zero _ := bot_le
 
-@[deprecated _root_.zero_le +typeChanged (since := "2026-05-06")]
-protected lemma zero_le (a : WithZero α) : 0 ≤ a := by simp
-
 /-- There is a general version `le_zero_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
 protected lemma nonpos_iff_eq_zero : x ≤ 0 ↔ x = 0 := WithBot.le_bot_iff

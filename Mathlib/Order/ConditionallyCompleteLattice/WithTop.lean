@@ -349,8 +349,6 @@ theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
   rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
 
-@[deprecated (since := "2026-05-04")] alias WithBot.ciSup_empty := WithBot.iSup_empty
-
 @[to_dual]
 theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
     {α : Type*} [CompleteLattice α] (f : ι → α) :

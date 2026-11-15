@@ -82,8 +82,6 @@ theorem of_isIntegral (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
     IsIntegral.isMaximal_of_isMaximal_under p
       (Ideal.IsPrime.isMaximal inferInstance (IsIntegral.under_ne_bot R ne_bot))
 
-@[deprecated (since := "2026-05-08")] alias isIntegralClosure := of_isIntegral
-
 nonrec instance integralClosure [Nontrivial R] [IsDomain A] [Algebra R A] [DimensionLEOne R] :
     DimensionLEOne (integralClosure R A) :=
   DimensionLEOne.of_isIntegral R (integralClosure R A)

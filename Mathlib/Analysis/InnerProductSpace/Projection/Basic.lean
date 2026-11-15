@@ -119,10 +119,6 @@ variable [K.HasOrthogonalProjection]
 /-- The orthogonal projection onto a subspace. -/
 def orthogonalProjectionOnto : E →L[𝕜] K := K.projectionOntoL Kᗮ K.isTopCompl_orthogonal
 
-/-- The orthogonal projection onto a subspace. -/
-@[deprecated orthogonalProjectionOnto (since := "2026-05-05")] abbrev orthogonalProjection :
-    E →L[𝕜] K := K.orthogonalProjectionOnto
-
 variable {K}
 
 /-- The orthogonal projection onto a subspace as a map from the full space to itself,
@@ -148,9 +144,6 @@ lemma starProjection_apply (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (v
 @[simp]
 lemma coe_orthogonalProjectionOnto_apply (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (v : E) :
      U.orthogonalProjectionOnto v = U.starProjection v := rfl
-
-@[deprecated (since := "2026-05-05")]
-alias coe_orthogonalProjection_apply := coe_orthogonalProjectionOnto_apply
 
 @[simp]
 lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (x : E) :
@@ -209,9 +202,6 @@ theorem orthogonalProjectionOnto_orthogonal (u : E) :
     Kᗮ.orthogonalProjectionOnto u =
       ⟨u - K.starProjection u, sub_starProjection_mem_orthogonal _⟩ :=
   Subtype.ext <| starProjection_orthogonal_val _
-
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_orthogonal := orthogonalProjectionOnto_orthogonal
 
 lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
@@ -285,9 +275,6 @@ theorem orthogonalProjectionOnto_mem_subspace_eq_self (v : K) :
   ext
   apply eq_starProjection_of_mem_of_inner_eq_zero <;> simp
 
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_mem_subspace_eq_self := orthogonalProjectionOnto_mem_subspace_eq_self
-
 @[simp]
 theorem starProjection_mem_subspace_eq_self (v : K) :
     K.starProjection v = v := by simp [starProjection_apply]
@@ -327,14 +314,9 @@ theorem orthogonalProjectionOnto_eq_zero_iff {v : E} :
     exact sub_starProjection_mem_orthogonal (K := K) v
   · simpa
 
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_eq_zero_iff := orthogonalProjectionOnto_eq_zero_iff
-
 @[simp]
 theorem ker_orthogonalProjectionOnto : K.orthogonalProjectionOnto.ker = Kᗮ := by
   ext; exact orthogonalProjectionOnto_eq_zero_iff
-
-@[deprecated (since := "2026-05-05")] alias ker_orthogonalProjection := ker_orthogonalProjectionOnto
 
 open ContinuousLinearMap in
 @[simp]
@@ -373,8 +355,6 @@ theorem starProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
 @[simp]
 theorem orthogonalProjectionOnto_bot : (⊥ : Submodule 𝕜 E).orthogonalProjectionOnto = 0 := by ext
 
-@[deprecated (since := "2026-05-05")] alias orthogonalProjection_bot := orthogonalProjectionOnto_bot
-
 @[simp]
 lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
   rw [starProjection, orthogonalProjectionOnto_bot, ContinuousLinearMap.comp_zero]
@@ -386,18 +366,12 @@ theorem orthogonalProjectionOnto_norm_le : ‖K.orthogonalProjectionOnto‖ ≤ 
   refine K.orthogonalProjectionOnto.opNorm_le_bound zero_le_one ?_
   simp [orthogonalProjectionOnto, projectionOntoL, norm_projection_orthogonal_le]
 
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_norm_le := orthogonalProjectionOnto_norm_le
-
 theorem starProjection_norm_le : ‖K.starProjection‖ ≤ 1 :=
   K.orthogonalProjectionOnto_norm_le
 
 theorem norm_orthogonalProjectionOnto_apply {v : E} (hv : v ∈ K) :
     ‖orthogonalProjectionOnto K v‖ = ‖v‖ :=
   congr(‖$(K.starProjection_eq_self_iff.mpr hv)‖)
-
-@[deprecated (since := "2026-05-05")]
-alias norm_orthogonalProjection_apply := norm_orthogonalProjectionOnto_apply
 
 theorem norm_starProjection_apply {v : E} (hv : v ∈ K) :
     ‖K.starProjection v‖ = ‖v‖ :=
@@ -411,9 +385,6 @@ theorem norm_orthogonalProjectionOnto_apply_le (v : E) :
   _ ≤ 1 * ‖v‖ := by gcongr; exact orthogonalProjectionOnto_norm_le K
   _ = _ := by simp
 
-@[deprecated (since := "2026-05-05")]
-alias norm_orthogonalProjection_apply_le := norm_orthogonalProjectionOnto_apply_le
-
 theorem norm_starProjection_apply_le (v : E) :
     ‖K.starProjection v‖ ≤ ‖v‖ := K.norm_orthogonalProjectionOnto_apply_le v
 
@@ -421,9 +392,6 @@ theorem norm_starProjection_apply_le (v : E) :
 theorem lipschitzWith_orthogonalProjectionOnto :
     LipschitzWith 1 (orthogonalProjectionOnto K) :=
   ContinuousLinearMap.lipschitzWith_of_opNorm_le K.orthogonalProjectionOnto_norm_le
-
-@[deprecated (since := "2026-05-05")]
-alias lipschitzWith_orthogonalProjection := lipschitzWith_orthogonalProjectionOnto
 
 theorem lipschitzWith_starProjection :
     LipschitzWith 1 K.starProjection :=
@@ -436,9 +404,6 @@ theorem norm_orthogonalProjectionOnto (hK : K ≠ ⊥) :
   obtain ⟨x, hxK, hx_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hK
   simpa [K.norm_orthogonalProjectionOnto_apply hxK, norm_eq_zero, hx_ne_zero]
     using K.orthogonalProjectionOnto.ratio_le_opNorm x
-
-@[deprecated (since := "2026-05-05")]
-alias norm_orthogonalProjection := norm_orthogonalProjectionOnto
 
 theorem norm_starProjection (hK : K ≠ ⊥) :
     ‖K.starProjection‖ = 1 :=
@@ -490,17 +455,10 @@ theorem orthogonalProjectionOnto_apply_of_mem_orthogonal
     [K.HasOrthogonalProjection] {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjectionOnto v = 0 :=
   orthogonalProjectionOnto_eq_zero_iff.mpr hv
 
-@[deprecated (since := "2026-05-06")] alias
-orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero :=
-  orthogonalProjectionOnto_apply_of_mem_orthogonal
-
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
 theorem IsOrtho.orthogonalProjectionOnto_comp_subtypeL {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] (h : U ⟂ V) : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 := by
   ext v; simp [orthogonalProjectionOnto_apply_of_mem_orthogonal <| h.symm v.prop]
-
-@[deprecated (since := "2026-05-05")]
-alias IsOrtho.orthogonalProjection_comp_subtypeL := IsOrtho.orthogonalProjectionOnto_comp_subtypeL
 
 theorem IsOrtho.starProjection_comp_starProjection {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ⟂ V) :
@@ -516,10 +474,6 @@ theorem orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜
   convert starProjection_inner_eq_zero v u hu
   have : U.orthogonalProjectionOnto v = 0 := congr($h ⟨_, hv⟩)
   rw [starProjection_apply, this, Submodule.coe_zero, sub_zero]
-
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_comp_subtypeL_eq_zero_iff :=
-  orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff
 
 /-- `U.starProjection ∘ V.starProjection = 0` iff `U` and `V` are pairwise orthogonal. -/
 theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
@@ -537,9 +491,6 @@ theorem orthogonalProjectionOnto_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.orthogonalProjectionOnto v = 0 :=
   orthogonalProjectionOnto_apply_of_mem_orthogonal (K.le_orthogonal_orthogonal hv)
 
-@[deprecated (since := "2026-05-06")] alias orthogonalProjection_orthogonal_apply_eq_zero :=
-  orthogonalProjectionOnto_orthogonal_apply_eq_zero
-
 theorem starProjection_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) :
     Kᗮ.starProjection v = 0 := by
@@ -554,9 +505,6 @@ theorem orthogonalProjectionOnto_starProjection_of_le {U V : Submodule 𝕜 E}
     simpa only [sub_eq_zero, map_sub] using
       orthogonalProjectionOnto_apply_of_mem_orthogonal
         (Submodule.orthogonal_le h (sub_starProjection_mem_orthogonal x))
-
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_starProjection_of_le := orthogonalProjectionOnto_starProjection_of_le
 
 theorem starProjection_comp_starProjection_of_le {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ≤ V) :
@@ -583,10 +531,6 @@ theorem orthogonalProjectionOnto_orthogonalComplement_singleton_eq_zero (v : E) 
     (𝕜 ∙ v)ᗮ.orthogonalProjectionOnto v = 0 :=
   orthogonalProjectionOnto_orthogonal_apply_eq_zero
     (Submodule.mem_span_singleton_self v)
-
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_orthogonalComplement_singleton_eq_zero :=
-  orthogonalProjectionOnto_orthogonalComplement_singleton_eq_zero
 
 theorem starProjection_orthogonalComplement_singleton_eq_zero (v : E) :
     (𝕜 ∙ v)ᗮ.starProjection v = 0 := by
@@ -640,17 +584,11 @@ theorem inner_orthogonalProjectionOnto_eq_of_mem_right [K.HasOrthogonalProjectio
       rw [starProjection_inner_eq_zero _ _ (Submodule.coe_mem _), add_zero]
     _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel]
 
-@[deprecated (since := "2026-05-05")]
-alias inner_orthogonalProjection_eq_of_mem_right := inner_orthogonalProjectionOnto_eq_of_mem_right
-
 -- The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
 theorem inner_orthogonalProjectionOnto_eq_of_mem_left [K.HasOrthogonalProjection] (u : K) (v : E) :
     ⟪u, K.orthogonalProjectionOnto v⟫ = ⟪(u : E), v⟫ := by
   rw [← inner_conj_symm, ← inner_conj_symm (u : E), inner_orthogonalProjectionOnto_eq_of_mem_right]
-
-@[deprecated (since := "2026-05-05")]
-alias inner_orthogonalProjection_eq_of_mem_left := inner_orthogonalProjectionOnto_eq_of_mem_left
 
 variable (K)
 

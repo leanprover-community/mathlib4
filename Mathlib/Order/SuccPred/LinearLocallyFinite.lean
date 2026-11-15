@@ -310,18 +310,9 @@ theorem injective_toZ : Function.Injective (toZ i0) :=
 theorem toZ_le_toZ {i j : ι} : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
   toZ_strictMono.le_iff_le
 
-@[deprecated (since := "2026-05-07")]
-alias toZ_le_iff := toZ_le_toZ
-
-@[deprecated toZ_le_toZ +typeChanged (since := "2026-05-06")]
-alias ⟨le_of_toZ_le, toZ_mono⟩ := toZ_le_toZ
-
 @[simp]
 theorem toZ_lt_toZ {i j : ι} : toZ i0 i < toZ i0 j ↔ i < j :=
   toZ_strictMono.lt_iff_lt
-
-@[deprecated (since := "2026-05-07")]
-alias toZ_lt_iff := toZ_lt_toZ
 
 @[simp]
 theorem toZ_inj {i j : ι} : toZ i0 i = toZ i0 j ↔ i = j :=

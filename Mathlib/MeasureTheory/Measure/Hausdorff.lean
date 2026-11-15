@@ -1125,9 +1125,6 @@ theorem hausdorffMeasure_orthogonalProjectionOnto_le [RCLike 𝕜]
     μH[d] (K.orthogonalProjectionOnto '' s) ≤ μH[d] s := by
   simpa using K.lipschitzWith_orthogonalProjectionOnto.hausdorffMeasure_image_le hs s
 
-@[deprecated (since := "2026-05-05")] alias hausdorffMeasure_orthogonalProjection_le :=
-  hausdorffMeasure_orthogonalProjectionOnto_le
-
 end Geometric
 
 end MeasureTheory

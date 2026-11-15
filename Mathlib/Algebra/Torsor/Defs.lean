@@ -86,8 +86,6 @@ instance Group.instTorsor (G : Type*) [Group G] : Torsor G G where
   sdiv_smul' := div_mul_cancel
   smul_sdiv' := mul_div_cancel_right
 
-@[deprecated (since := "2026-05-04")] alias addGroupIsAddTorsor := AddGroup.instAddTorsor
-
 /-- Simplify division for a torsor for a `Group G` over itself. -/
 @[to_additive (attr := simp) /-- Simplify subtraction for a torsor for an `AddGroup G` over
 itself.-/]

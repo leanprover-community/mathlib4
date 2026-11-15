@@ -146,10 +146,6 @@ theorem AffineEquiv.toAffineEquiv_toContinuousAffineEquiv (f : PE ≃ᵃ[𝕜] P
 theorem AffineEquiv.toContinuousAffineEquiv_symm_apply (f : PE ≃ᴬ[𝕜] PF) :
     toContinuousAffineEquiv.symm f = f.toAffineEquiv := rfl
 
-/-- Reinterpret an affine equivalence as a homeomorphism. -/
-def AffineEquiv.toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) : PE ≃ₜ PF :=
-  (toContinuousAffineEquiv f).toHomeomorph
-
 @[simp]
 theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) :
     ⇑f.toHomeomorphOfFiniteDimensional = f :=

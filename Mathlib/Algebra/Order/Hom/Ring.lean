@@ -176,8 +176,6 @@ theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) : f.toOrderMonoidWith
 theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
   rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_coe_ringHom := coe_toRingHom
-
 @[simp]
 theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(f : α →+o β) = f :=
   rfl
@@ -189,8 +187,6 @@ theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(f : α →*₀o 
 @[norm_cast]
 theorem toRingHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a :=
   rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_apply := toRingHom_apply
 
 @[norm_cast]
 theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (f : α →+o β) a = f a :=
@@ -234,8 +230,6 @@ theorem id_apply (a : α) : OrderRingHom.id α a = a :=
 @[simp]
 theorem toRingHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
   rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_id := toRingHom_id
 
 @[simp]
 theorem coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
@@ -370,8 +364,6 @@ theorem refl_apply (x : α) : OrderRingIso.refl α x = x := by
 @[simp]
 theorem toRingEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
   rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_ringEquiv_refl := toRingEquiv_refl
 
 @[simp]
 theorem coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=

@@ -97,8 +97,6 @@ theorem single_of_single_apply (a a' : α) (b : M) :
 @[simp] lemma support_single (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
   ite_eq_right hb
 
-@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
-
 theorem support_single_subset : (single a b).support ⊆ {a} := by
   classical
   grind
@@ -248,13 +246,6 @@ noncomputable def uniqueEquiv (a : α) [Subsingleton α] : (α →₀ M) ≃ M w
 -- We want this lemma to fire before `uniqueEquiv_symm_apply`.
 @[simp↓ high] lemma uniqueEquiv_symm_apply_apply (a : α) [Subsingleton α] (m : M) (b : α) :
     (uniqueEquiv a).symm m b = m := by simp [Subsingleton.elim b a]
-
-/--
-If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
--/
-@[simps!, deprecated uniqueEquiv +typeChanged (since := "2026-05-06")]
-noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
-  Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 
 @[simp]
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :

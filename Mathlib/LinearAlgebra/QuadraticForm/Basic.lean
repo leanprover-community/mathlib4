@@ -1154,8 +1154,6 @@ variable [CommRing R] [AddCommMonoid M] [Module R M]
 def Matrix.toQuadraticForm' (M : Matrix n n R) : QuadraticForm R (n → R) :=
   LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' R M)
 
-@[deprecated (since := "2026-05-15")] alias Matrix.toQuadraticMap' := Matrix.toQuadraticForm'
-
 variable [Invertible (2 : R)]
 
 namespace QuadraticForm
@@ -1186,14 +1184,6 @@ theorem toMatrix'_comp (Q : QuadraticForm R (m → R)) (f : (n → R) →ₗ[R] 
     QuadraticForm.toMatrix' (Q.comp f) =
       (LinearMap.toMatrix' f)ᵀ * Q.toMatrix' * (LinearMap.toMatrix' f) := by
   simp only [QuadraticMap.associated_comp, LinearMap.toMatrix₂'_compl₁₂, toMatrix']
-
-@[deprecated (since := "2026-05-15")] alias QuadraticMap.toMatrix' := QuadraticForm.toMatrix'
-@[deprecated (since := "2026-05-15")] alias QuadraticMap.toMatrix'_smul :=
-  QuadraticForm.toMatrix'_smul
-@[deprecated (since := "2026-05-15")] alias QuadraticMap.isSymm_toMatrix' :=
-  QuadraticForm.isSymm_toMatrix'
-@[deprecated (since := "2026-05-15")] alias QuadraticMap.toMatrix'_comp :=
-  QuadraticForm.toMatrix'_comp
 
 end Rn
 section Basis
@@ -1250,12 +1240,6 @@ theorem discr'_smul (a : R) : (a • Q).discr' = a ^ Fintype.card n * Q.discr' :
 theorem discr'_comp (f : (n → R) →ₗ[R] n → R) :
     QuadraticForm.discr' (Q.comp f) = f.toMatrix'.det * f.toMatrix'.det * Q.discr' := by
   simp [mul_left_comm, toMatrix'_comp, mul_comm, discr']
-
-@[deprecated (since := "2026-05-15")] alias QuadraticMap.discr := QuadraticForm.discr'
-@[deprecated (since := "2026-05-15")] alias QuadraticMap.discr_smul :=
-  QuadraticForm.discr'_smul
-@[deprecated (since := "2026-05-15")] alias QuadraticMap.discr_comp :=
-  QuadraticForm.discr'_comp
 
 end Rn
 

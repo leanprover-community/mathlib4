@@ -809,15 +809,6 @@ instance instCharZero : CharZero Ordinal := by
   refine ⟨fun a b h ↦ ?_⟩
   rwa [← Cardinal.ord_natCast, ← Cardinal.ord_natCast, Cardinal.ord_inj, Nat.cast_inj] at h
 
-@[deprecated Nat.cast_add_one_comm +typeChanged (since := "2026-05-10")]
-theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m :=
-  m.cast_add_one_comm.symm
-
-@[deprecated Nat.cast_add_one_comm +typeChanged (since := "2026-05-10")]
-theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
-    1 + (ofNat(m) : Ordinal) = Order.succ (OfNat.ofNat m : Ordinal) :=
-  m.cast_add_one_comm.symm
-
 @[simp, norm_cast]
 theorem natCast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
   | 0 => by simp

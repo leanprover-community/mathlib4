@@ -796,10 +796,6 @@ theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodul
   obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
   exact hq.isTopCompl_of_finiteDimensional_quotient hp |>.closedComplemented
 
-@[deprecated (since := "2026-05-09")]
-alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
-  Submodule.ClosedComplemented.of_finiteDimensional_quotient
-
 theorem Submodule.ClosedComplemented.of_disjoint_of_finiteDimensional_quotient
     {A B : Submodule 𝕜 E} [B_cofg : FiniteDimensional 𝕜 (E ⧸ B)] (hB : IsClosed (B : Set E))
     (hAB : Disjoint A B) : A.ClosedComplemented := by

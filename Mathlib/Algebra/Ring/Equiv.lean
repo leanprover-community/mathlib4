@@ -629,8 +629,6 @@ in higher generality -/
 theorem toRingHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
   rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_refl := toRingHom_refl
-
 @[simp]
 theorem toMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →* S') = (e₂ : S →* S').comp ↑e₁ :=
@@ -654,8 +652,6 @@ in higher generality -/
 theorem toRingHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
   rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := toRingHom_trans
 
 @[simp]
 theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
@@ -778,8 +774,6 @@ theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
 theorem toRingHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_inj_iff := toRingHom_inj_iff
 
 -- TODO : rename lemma
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
@@ -948,9 +942,6 @@ theorem toRingHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRing
 @[simp]
 theorem ofRingHom_toRingHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
   ext fun _ ↦ rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_ofRingHom := toRingHom_ofRingHom
-@[deprecated (since := "2026-05-05")] alias ofRingHom_coe_ringHom := ofRingHom_toRingHom
 
 @[simp]
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :

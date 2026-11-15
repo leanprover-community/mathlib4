@@ -433,8 +433,6 @@ theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg 
     (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
   ciSup_le' fun i ↦ h i |>.elim <| le_ciSup_of_le hg
 
-@[deprecated (since := "2026-05-03")] alias ciSup_mono' := ciSup_mono_of_forall_exists'
-
 theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
   refine le_antisymm ciSup_exists_le <| ciSup₂_le' fun i hi ↦ ?_
   simp [show Exists p from ⟨i, hi⟩]

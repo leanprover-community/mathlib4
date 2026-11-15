@@ -242,17 +242,11 @@ theorem IsIntegral.under_lt_under {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
 
 @[deprecated (since := "2026-09-03")] alias IsIntegral.comap_lt_comap := IsIntegral.under_lt_under
 
-@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.comap_le_comap :=
-  IsIntegral.under_lt_under
-
 theorem IsIntegral.isMaximal_of_isMaximal_under (I : Ideal A) [I.IsPrime]
     (hI : IsMaximal (I.under R)) : IsMaximal I :=
   isMaximal_of_isIntegral_of_isMaximal_under I hI
 
 @[deprecated (since := "2026-09-03")] alias IsIntegral.isMaximal_of_isMaximal_comap :=
-  IsIntegral.isMaximal_of_isMaximal_under
-
-@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.isMaximal_of_isMaximal_comap :=
   IsIntegral.isMaximal_of_isMaximal_under
 
 theorem IsIntegral.mem_minimalPrimes_map_under (I : Ideal A) [I.IsPrime] :
@@ -271,9 +265,6 @@ theorem IsIntegral.under_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : I ≠ �
 
 @[deprecated (since := "2026-09-03")] alias IsIntegral.comap_ne_bot := IsIntegral.under_ne_bot
 
-@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.comap_ne_bot :=
-  IsIntegral.under_ne_bot
-
 variable (R) in
 theorem IsIntegral.eq_bot_of_under_eq_bot [Nontrivial R] {I : Ideal A} :
     I.under R = ⊥ → I = ⊥ := by
@@ -283,25 +274,11 @@ theorem IsIntegral.eq_bot_of_under_eq_bot [Nontrivial R] {I : Ideal A} :
 @[deprecated (since := "2026-09-03")] alias IsIntegral.eq_bot_of_comap_eq_bot :=
   IsIntegral.eq_bot_of_under_eq_bot
 
-@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.eq_bot_of_comap_eq_bot :=
-    IsIntegral.eq_bot_of_under_eq_bot
-
 end IsIntegral
-
-@[deprecated (since := "2026-05-08")] alias IntegralClosure.comap_lt_comap :=
-  IsIntegral.under_lt_under
-
-@[deprecated (since := "2026-05-08")] alias IntegralClosure.isMaximal_of_isMaximal_comap :=
-  IsIntegral.isMaximal_of_isMaximal_under
 
 section
 
 variable [IsDomain S]
-
-@[deprecated (since := "2026-05-08")] alias IntegralClosure.comap_ne_bot := IsIntegral.under_ne_bot
-
-@[deprecated (since := "2026-05-08")] alias IntegralClosure.eq_bot_of_comap_eq_bot :=
-  IsIntegral.eq_bot_of_under_eq_bot
 
 /-- `comap (algebraMap R S)` is a surjection from the prime spec of `R` to prime spec of `S`.
 `hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/

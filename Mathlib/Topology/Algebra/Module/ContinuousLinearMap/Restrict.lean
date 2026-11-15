@@ -53,9 +53,6 @@ theorem toLinearMap_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M) 
 @[simp]
 theorem coe_subtypeL (p : Submodule R M) : ⇑p.subtypeL = p.subtype := rfl
 
-@[deprecated (since := "2026-05-06")]
-alias coe_subtypeL' := coe_subtypeL
-
 theorem subtypeL_apply (p : Submodule R M) (x : p) : p.subtypeL x = x := by simp
 
 theorem isEmbedding_subtype (p : Submodule R M) : Topology.IsEmbedding p.subtype := .subtypeVal
@@ -65,14 +62,6 @@ theorem isClosedEmbedding_subtype (p : Submodule R M) (hp : IsClosed (p : Set M)
     Topology.IsClosedEmbedding p.subtype := .subtypeVal hp
 theorem isClosedEmbedding_subtypeL (p : Submodule R M) (hp : IsClosed (p : Set M)) :
     Topology.IsClosedEmbedding p.subtypeL := .subtypeVal hp
-
-@[deprecated range_subtype +typeChanged (since := "2026-05-06")]
-theorem range_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).range = p :=
-  Submodule.range_subtype _
-
-@[deprecated ker_subtype +typeChanged (since := "2026-05-06")]
-theorem ker_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).ker = ⊥ :=
-  Submodule.ker_subtype _
 
 end Semiring
 

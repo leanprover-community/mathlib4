@@ -455,8 +455,6 @@ abbrev RespectsIso (P : MorphismProperty C) : Prop := P.Respects (isomorphisms C
 instance RespectsIso.inf (P Q : MorphismProperty C) [P.RespectsIso] [Q.RespectsIso] :
     (P ⊓ Q).RespectsIso where
 
-@[deprecated (since := "2026-05-04")] alias inf := RespectsIso.inf
-
 lemma RespectsIso.sInf {W : Set (MorphismProperty C)} (h : ∀ W' ∈ W, W'.RespectsIso) :
     (sInf W).RespectsIso where
   toRespectsLeft := RespectsLeft.sInf (fun W' hW' ↦ (h W' hW').toRespectsLeft)

@@ -38,18 +38,12 @@ theorem Walk.setOfPred_length_eq_zero (u : V) : {p : G.Walk u u | p.length = 0} 
 @[deprecated (since := "2026-07-09")]
 alias Walk.setOf_length_eq_zero := Walk.setOfPred_length_eq_zero
 
-@[deprecated (since := "2026-05-12")]
-alias set_walk_self_length_zero_eq := Walk.setOfPred_length_eq_zero
-
 theorem Walk.setOfPred_length_eq_zero_of_ne {u v : V} (h : u ≠ v) :
     {p : G.Walk u v | p.length = 0} = ∅ :=
   Set.eq_empty_of_forall_notMem (h <| ·.eq_of_length_eq_zero ·)
 
 @[deprecated (since := "2026-07-09")]
 alias Walk.setOf_length_eq_zero_of_ne := Walk.setOfPred_length_eq_zero_of_ne
-
-@[deprecated (since := "2026-05-12")]
-alias set_walk_length_zero_eq_of_ne := Walk.setOfPred_length_eq_zero_of_ne
 
 theorem Walk.setOfPred_length_eq_add_one (u v : V) (n : ℕ) :
     {p : G.Walk u v | p.length = n + 1} =
@@ -61,9 +55,6 @@ theorem Walk.setOfPred_length_eq_add_one (u v : V) (n : ℕ) :
 
 @[deprecated (since := "2026-07-09")]
 alias Walk.setOf_length_eq_add_one := Walk.setOfPred_length_eq_add_one
-
-@[deprecated (since := "2026-05-12")]
-alias set_walk_length_succ_eq := Walk.setOfPred_length_eq_add_one
 
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/

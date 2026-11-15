@@ -123,10 +123,6 @@ lemma Submodule.projectionOnto_comp_surjective_of_exact
   obtain ⟨a, haq, ha⟩ : g x.val ∈ q.map g := by rwa [hmap]
   exact ⟨x - a, by simp [← ha], by simpa⟩
 
-@[deprecated (since := "2026-05-05")] alias
-  Submodule.linearProjOfIsCompl_comp_surjective_of_exact :=
-  Submodule.projectionOnto_comp_surjective_of_exact
-
 lemma Submodule.projectionOnto_comp_bijective_of_exact
     (hf : Function.Injective f) {p q : Submodule R M} (hpq : IsCompl p q)
     (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
@@ -134,10 +130,6 @@ lemma Submodule.projectionOnto_comp_bijective_of_exact
   refine ⟨?_, Submodule.projectionOnto_comp_surjective_of_exact hfg _ hmap⟩
   rwa [LinearMap.coe_comp, Set.InjOn.injective_iff ↑(LinearMap.range f) _ subset_rfl]
   simpa [← LinearMap.disjoint_ker_iff_injOn, ← hfg.linearMap_ker_eq]
-
-@[deprecated (since := "2026-05-05")] alias
-  Submodule.linearProjOfIsCompl_comp_bijective_of_exact :=
-  Submodule.projectionOnto_comp_bijective_of_exact
 
 lemma LinearMap.linearProjOfIsCompl_comp_bijective_of_exact
     (hf : Function.Injective f) {q : Submodule R M} {E : Type*} [AddCommGroup E] [Module R E]

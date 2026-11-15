@@ -742,30 +742,6 @@ end ModularForm
 
 namespace ModularFormClass
 
-@[deprecated (since := "2026-05-05")]
-protected alias cuspFunction_smul := ModularForm.cuspFunction_smul
-
-@[deprecated (since := "2026-05-05")]
-protected alias cuspFunction_neg := ModularForm.cuspFunction_neg
-
-@[deprecated (since := "2026-05-05")]
-protected alias cuspFunction_add := ModularForm.cuspFunction_add
-
-@[deprecated (since := "2026-05-05")]
-protected alias cuspFunction_sub := ModularForm.cuspFunction_sub
-
-@[deprecated (since := "2026-05-05")]
-protected alias qExpansion_smul := ModularForm.qExpansion_smul
-
-@[deprecated (since := "2026-05-05")]
-protected alias qExpansion_neg := ModularForm.qExpansion_neg
-
-@[deprecated (since := "2026-05-05")]
-protected alias qExpansion_add := ModularForm.qExpansion_add
-
-@[deprecated (since := "2026-05-05")]
-protected alias qExpansion_sub := ModularForm.qExpansion_sub
-
 end ModularFormClass
 
 end ring
