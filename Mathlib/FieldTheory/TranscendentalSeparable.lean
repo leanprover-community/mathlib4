@@ -149,6 +149,13 @@ variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K]
 
 open scoped Polynomial
 
+lemma Ploynomial.isCoprime_of_mul_separable {S : Type*} [CommRing S] {f g : S[X]}
+    (sep : (f * g).Separable) : IsCoprime f g := by
+  rcases sep with ⟨h1, h2, eq⟩
+  simp only [← mul_assoc _ _ g, Polynomial.derivative_mul, mul_add, ← add_assoc] at eq
+  use h2 * g.derivative, h1 * f + h2 * f.derivative
+  rw [add_comm (h2 * g.derivative * f), mul_assoc _ _ f, mul_comm g.derivative f, add_mul, eq]
+
 private lemma Polynomial.isReduced_quotient_of_separable' (S : Type*) [Field S] (f : S[X])
     (sep : f.Separable) : IsReduced (S[X] ⧸ Ideal.span {f}) := by
   generalize deg : f.natDegree = n
@@ -164,13 +171,8 @@ private lemma Polynomial.isReduced_quotient_of_separable' (S : Type*) [Field S] 
     have nu : ¬IsUnit f := Polynomial.not_isUnit_of_natDegree_pos f (by simp [deg])
     rcases WfDvdMonoid.exists_irreducible_factor nu sep.ne_zero with ⟨p, irr, ⟨g, rfl⟩⟩
     rw [← Ideal.span_singleton_mul_span_singleton]
-    have cop : IsCoprime (Ideal.span {p}) (Ideal.span {g}) := by
-      rw [Ideal.isCoprime_span_singleton_iff, Irreducible.coprime_iff_not_dvd irr]
-      by_contra ⟨h, rfl⟩
-      absurd sep.squarefree
-      simp only [Squarefree, not_forall]
-      use p
-      simp [← mul_assoc, irr.not_isUnit]
+    have cop : IsCoprime (Ideal.span {p}) (Ideal.span {g}) :=
+      (Ideal.isCoprime_span_singleton_iff p g).mpr (Ploynomial.isCoprime_of_mul_separable sep)
     have red1 : (Ideal.span {p}).IsPrime := (Ideal.span_singleton_prime irr.ne_zero).mpr irr.prime
     have red2 : IsReduced (S[X] ⧸ Ideal.span {g}) := by
       have : p.natDegree > 0 := Irreducible.natDegree_pos irr
