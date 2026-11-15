@@ -23,9 +23,8 @@ words are cyclic permutations of each other.
 * `FreeGroup.isConj_iff_isRotated`: `x` and `y` are conjugate iff
   `reduceCyclically x.toWord ~r reduceCyclically y.toWord`.
 * `FreeGroup.isConj_mk_iff`: the same, for words that are not necessarily reduced.
-
-The resulting `DecidableRel IsConj` instance is in
-`Mathlib.GroupTheory.FreeGroup.ReduceCyclicallyDirect`.
+* `FreeGroup.instDecidableRelIsConj`: conjugacy in a free group is decidable, and `decide` can
+  evaluate it.
 -/
 
 @[expose] public section
@@ -245,5 +244,9 @@ theorem isConj_mk_iff :
     IsConj (mk L₁) (mk L₂) ↔
       reduceCyclically (reduce L₁) ~r reduceCyclically (reduce L₂) := by
   simp only [isConj_iff_isRotated, FreeGroup.toWord_mk]
+
+/-- Conjugacy in a free group is decidable, via `FreeGroup.isConj_iff_isRotated`. -/
+instance instDecidableRelIsConj : DecidableRel (IsConj : FreeGroup α → FreeGroup α → Prop) :=
+  fun _ _ ↦ decidable_of_iff _ isConj_iff_isRotated.symm
 
 end FreeGroup
