@@ -31,7 +31,7 @@ is given by the multiplication by `(-1) ^ ((n * (n + 1)) / 2)` in degree `n`.
 
 In the case the chain complex above is given by a projective resolution `P`
 of an object `X : C`, we obtain that the `Ext`-group `Ext X Y n` identifies
-to the homology of `(P.complex.linearYonedaObj R Y).homology n`,
+to the homology in degree `n` of `P.complex.linearYonedaObj R Y`,
 see `ProjectiveResolution.extIsoHomologyLinearYonedaObj`.
 (Using this definition is not recommended though: it is advisable to use
 `ProjectiveResolution.extMk` and the related API from the file
@@ -137,9 +137,6 @@ namespace CategoryTheory.ProjectiveResolution
 
 variable [HasExt.{v} C] {X : C} (P : ProjectiveResolution X) {R : Type*} [Ring R] [Linear R C]
 
---/- (Using this definition is not recommended though: it is advisable to use
---`ProjectiveResolution.extMk` and the related API from the file
---`Mathlib/CategoryTheory/Abelian/Projective/Ext.lean` instead) -/
 /-- If `P` is a projective resolution of an object `X` in a `R`-linear category `C` and `Y : C`,
 then the `R`-module `Ext X Y n` identifies to the homology of `P.complex.linearYonedaObj R Y`.
 (It is not recommended to use this definition: it is advisable to use
