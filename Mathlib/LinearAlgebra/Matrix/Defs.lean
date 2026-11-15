@@ -355,13 +355,13 @@ protected theorem map_smulₛₗ [SMul R α] [SMul S β] (f : α → β) (σ : R
 
 /-- The scalar action via `Mul.toSMul` is transformed by the same map as the elements
 of the matrix, when `f` preserves multiplication. -/
-theorem map_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n α)
+theorem map_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix m n α)
     (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂) : (r • A).map f = f r • A.map f :=
   ext fun _ _ => hf _ _
 
 /-- The scalar action via `mul.toOppositeSMul` is transformed by the same map as the
 elements of the matrix, when `f` preserves multiplication. -/
-theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n α)
+theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix m n α)
     (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂) :
     (MulOpposite.op r • A).map f = MulOpposite.op (f r) • A.map f :=
   ext fun _ _ => hf _ _
