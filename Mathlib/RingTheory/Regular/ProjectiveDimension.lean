@@ -181,15 +181,6 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
 
 end ModuleCat
 
-lemma IsSMulRegular.of_free {x : R} (reg : IsSMulRegular R x) (M : Type*) [AddCommGroup M]
-    [Module R M] [free : Module.Free R M] : IsSMulRegular M x := by
-  rcases free with ⟨⟨I, ⟨e⟩⟩⟩
-  rw [e.isSMulRegular_congr]
-  apply IsSMulRegular.of_right_eq_zero_of_smul (fun y hy ↦ ?_)
-  ext i
-  apply reg.right_eq_zero_of_smul
-  rw [← Finsupp.smul_apply, hy, Finsupp.zero_apply]
-
 namespace ModuleCat
 
 open Ideal in
@@ -224,7 +215,7 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
       let S := f.shortComplexKer
       have S_exact := LinearMap.shortExact_shortComplexKer surjf
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
-      have reg2'' : IsSMulRegular S.X₂ x := reg1.of_free S.X₂
+      have reg2'' : IsSMulRegular S.X₂ x := (isLeftRegular_iff_isRegular.mp reg1).isSMulRegular
       have reg2' : IsSMulRegular S.X₁ x := reg2''.submodule _ _
       have surj := Ideal.Quotient.mk_surjective (I := Ideal.span {x})
       let g := (QuotSMulTop.map x (LinearMap.ker f).subtype).extendScalarsOfSurjective surj
