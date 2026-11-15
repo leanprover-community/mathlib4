@@ -1,11 +1,5 @@
 name: Daily CI Workflow
-# This workflow runs daily on `master` and the latest `nightly-testing-YYYY-MM-DD` tag,
-# running some expensive CI checks that we don't want to run on every PR.
-# It reports results via Zulip.
-
-# This script requires that the ZULIP_API_KEY secret is available in both
-# `leanprover-community/mathlib4` and `leanprover-community/mathlib4-nightly-testing`
-# repositories.
+# Run scheduled checks on master and the current Mathlib bump branch, then report to Zulip.
 
 on:
   schedule:
@@ -13,49 +7,94 @@ on:
   workflow_dispatch:
 
 env:
-  DEFAULT_BRANCH: master
-  TAG_PATTERN: '^nightly-testing-[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+  TESTED_REPO: leanprover-community/mathlib4
+  GH_REPO: ${{ github.repository }}
+  # CI uploads the oleans of a `bump/*` commit to the `forks` container, under the commit.
+  # `lake exe cache get` reads `master`, then `forks` at the checked-out commit.
+  # lean-action sets `MATHLIB_CACHE_GET_URL` to the `master` URL when the variable is unset,
+  # and that URL overrides `MATHLIB_CACHE_FROM`. An empty value makes lean-action unset it.
+  MATHLIB_CACHE_GET_URL: ''
+  MATHLIB_CACHE_FROM: master,forks
 
 permissions:
   contents: read
   actions: read
 
 jobs:
-  check-leanchecker:
+  resolve:
+    name: Resolve the current Mathlib bump branch
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      actions: read
+      checks: read
+    outputs:
+      bump_ref: ${{ steps.bump.outputs.ref }}
+      bump_sha: ${{ steps.bump.outputs.sha }}
+      branch_types: ${{ steps.bump.outputs.branch_types }}
+    steps:
+      - name: Resolve branch and commit
+        id: bump
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          read -r _ ref < <(
+            git ls-remote --heads https://github.com/leanprover-community/mathlib4.git \
+              'refs/heads/bump/v4.*.0' | sort -V -k2 | tail -n 1
+          )
+          ref=${ref#refs/heads/}
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+
+          # Test the newest pushed commit whose build succeeded, so that the cache has its oleans.
+          for sha in $(gh run list --workflow build.yml --branch "$ref" --event push --limit 10 \
+              --json headSha --jq '.[].headSha'); do
+            conclusions=$(gh api "repos/$GH_REPO/commits/$sha/check-runs?check_name=ci%20%2F%20Build" \
+              --jq '[.check_runs[].conclusion] | join(",")')
+            if [ "$conclusions" = success ]; then
+              echo "Testing $ref@$sha"
+              {
+                echo "sha=$sha"
+                echo 'branch_types=["master","bump"]'
+              } >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "::warning::No recent commit on $ref has a successful build."
+          echo 'branch_types=["master"]' >> "$GITHUB_OUTPUT"
+
+  notify-resolve:
+    runs-on: ubuntu-latest
+    needs: resolve
+    if: github.repository == 'leanprover-community/mathlib4' && always() && needs.resolve.outputs.bump_sha == ''
+    steps:
+      - name: Post skipped bump branch message on Zulip
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing-mathlib'
+          type: 'stream'
+          topic: 'bump branch'
+          content: |
+            ⚠️ The daily checks [skipped the bump branch](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}): no recent `bump/v4.*.0` commit with a successful build.
+
+  check-leanchecker:
+    runs-on: ubuntu-latest
+    needs: resolve
+    if: github.repository == 'leanprover-community/mathlib4' && !cancelled()
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [master, nightly]
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      # Checkout repository, so that we can fetch tags to decide which branch we want.
-      - name: Checkout branch or tag
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Fetch latest tags (if nightly)
-        if: matrix.branch_type == 'nightly'
-        run: |
-          # When in nightly mode, fetch tags from the nightly-testing repository
-          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
-          git fetch nightly-testing --tags
-          LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
-          echo "LATEST_TAG=${LATEST_TAG}" >> "$GITHUB_ENV"
-
-      - name: Set branch ref
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "BRANCH_REF=${{ env.DEFAULT_BRANCH }}" >> "$GITHUB_ENV"
-          else
-            echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
-          fi
-
-      # Checkout the branch or tag we want to test.
-      - name: Checkout branch or tag
+      - name: Checkout the tested commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
-          ref: ${{ env.BRANCH_REF }}
+          ref: ${{ env.TESTED_SHA }}
 
       - name: Configure Lean
         uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
@@ -74,16 +113,16 @@ jobs:
 
   notify-leanchecker:
     runs-on: ubuntu-latest
-    needs: check-leanchecker
+    needs: [resolve, check-leanchecker]
     if: github.repository == 'leanprover-community/mathlib4' && always()
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [master, nightly]
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
       - name: Get job status and URLs
         id: get-status
         env:
@@ -103,34 +142,6 @@ jobs:
 
           echo "leanchecker_url=${LEANCHECKER_URL}" | tee -a "$GITHUB_OUTPUT"
           echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
-
-      - name: Fetch latest tags (if nightly)
-        if: matrix.branch_type == 'nightly'
-        run: |
-          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
-          git fetch nightly-testing --tags
-          LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
-          echo "LATEST_TAG=${LATEST_TAG}" | tee -a "$GITHUB_ENV"
-
-      - name: Set branch ref
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "BRANCH_REF=${{ env.DEFAULT_BRANCH }}" >> "$GITHUB_ENV"
-          else
-            echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
-          fi
-
-      - name: Identify the commit that was tested
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "TESTED_REPO=${{ github.repository }}" >> "$GITHUB_ENV"
-            echo "TESTED_SHA=${{ github.sha }}" >> "$GITHUB_ENV"
-          else
-            # `github.sha` is this workflow's own checkout of `master`, not the commit the
-            # `nightly` leg tested, so resolve the tag that leg actually checked out.
-            echo "TESTED_REPO=leanprover-community/mathlib4-nightly-testing" >> "$GITHUB_ENV"
-            echo "TESTED_SHA=$(git rev-parse "${LATEST_TAG}^{commit}")" >> "$GITHUB_ENV"
-          fi
 
       - name: Post success message for leanchecker on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
@@ -156,43 +167,112 @@ jobs:
           type: 'stream'
           topic: 'leanchecker failure'
           content: |
-            ❌ leanchecker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+            ❌ leanchecker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
 
-  check-mathlib_test_executable:
+  check-aesop:
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    needs: resolve
+    if: github.repository == 'leanprover-community/mathlib4' && !cancelled()
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [master, nightly]
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      # Checkout repository, so that we can fetch tags to decide which branch we want.
-      - name: Checkout branch or tag
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Fetch latest tags (if nightly)
-        if: matrix.branch_type == 'nightly'
-        run: |
-          # When in nightly mode, fetch tags from the nightly-testing repository
-          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
-          git fetch nightly-testing --tags
-          LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
-          echo "LATEST_TAG=${LATEST_TAG}" >> "$GITHUB_ENV"
-
-      - name: Set branch ref
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "BRANCH_REF=${{ env.DEFAULT_BRANCH }}" >> "$GITHUB_ENV"
-          else
-            echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
-          fi
-
-      # Checkout the branch or tag we want to test.
-      - name: Checkout branch or tag
+      - name: Checkout the tested commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
-          ref: ${{ env.BRANCH_REF }}
+          ref: ${{ env.TESTED_SHA }}
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: true
+          reinstall-transient-toolchain: true
+
+      - name: Build AesopTest # make sure this name is consistent with "Get job status and URLs" in the notify job
+        id: aesop
+        run: |
+          lake build AesopTest
+
+  notify-aesop:
+    runs-on: ubuntu-latest
+    needs: [resolve, check-aesop]
+    if: github.repository == 'leanprover-community/mathlib4' && always()
+    strategy:
+      fail-fast: false
+      matrix:
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
+    steps:
+      - name: Get job status and URLs
+        id: get-status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          JOB_NAME="check-aesop (${{ matrix.branch_type }})"
+
+          # Get URL and conclusion for the specific job
+          JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
+            ".jobs[] | select(.name == \"$JOB_NAME\")")
+
+          AESOP_URL=$(echo "$JOB_DATA" | jq -r \
+            '(.url + (.steps[] | select(.name == "Build AesopTest")
+            | "#step:\(.number):1"))')
+
+          JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
+
+          echo "aesop_url=${AESOP_URL}" | tee -a "$GITHUB_OUTPUT"
+          echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Post success message for AesopTest on Zulip
+        if: steps.get-status.outputs.job_conclusion == 'success'
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing-mathlib'
+          type: 'stream'
+          topic: 'AesopTest'
+          content: |
+            ✅ AesopTest [succeeded](${{ steps.get-status.outputs.aesop_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+
+      - name: Post failure / cancelled message for AesopTest on Zulip
+        if: steps.get-status.outputs.job_conclusion != 'success'
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing-mathlib'
+          type: 'stream'
+          topic: 'AesopTest failure'
+          content: |
+            ❌ AesopTest [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.aesop_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
+
+  check-mathlib_test_executable:
+    runs-on: ubuntu-latest
+    needs: resolve
+    if: github.repository == 'leanprover-community/mathlib4' && !cancelled()
+    strategy:
+      fail-fast: false
+      matrix:
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
+    steps:
+      - name: Checkout the tested commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TESTED_SHA }}
 
       - name: Configure Lean
         uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
@@ -209,16 +289,16 @@ jobs:
 
   notify-mathlib_test_executable:
     runs-on: ubuntu-latest
-    needs: check-mathlib_test_executable
+    needs: [resolve, check-mathlib_test_executable]
     if: github.repository == 'leanprover-community/mathlib4' && always()
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [master, nightly]
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
       - name: Get job status and URLs
         id: get-status
         env:
@@ -238,34 +318,6 @@ jobs:
 
           echo "mathlib_test_executable_url=${MATHLIB_TEST_EXECUTABLE_URL}" | tee -a "$GITHUB_OUTPUT"
           echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
-
-      - name: Fetch latest tags (if nightly)
-        if: matrix.branch_type == 'nightly'
-        run: |
-          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
-          git fetch nightly-testing --tags
-          LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
-          echo "LATEST_TAG=${LATEST_TAG}" | tee -a "$GITHUB_ENV"
-
-      - name: Set branch ref
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "BRANCH_REF=${{ env.DEFAULT_BRANCH }}" >> "$GITHUB_ENV"
-          else
-            echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
-          fi
-
-      - name: Identify the commit that was tested
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "TESTED_REPO=${{ github.repository }}" >> "$GITHUB_ENV"
-            echo "TESTED_SHA=${{ github.sha }}" >> "$GITHUB_ENV"
-          else
-            # `github.sha` is this workflow's own checkout of `master`, not the commit the
-            # `nightly` leg tested, so resolve the tag that leg actually checked out.
-            echo "TESTED_REPO=leanprover-community/mathlib4-nightly-testing" >> "$GITHUB_ENV"
-            echo "TESTED_SHA=$(git rev-parse "${LATEST_TAG}^{commit}")" >> "$GITHUB_ENV"
-          fi
 
       - name: Post success message for mathlib_test_executable on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
@@ -291,43 +343,24 @@ jobs:
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
-            ❌ mathlib_test_executable [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+            ❌ mathlib_test_executable [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
 
   check-nanoda:
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    needs: resolve
+    if: github.repository == 'leanprover-community/mathlib4' && !cancelled()
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [master, nightly]
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      # Checkout repository, so that we can fetch tags to decide which branch we want.
-      - name: Checkout branch or tag
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Fetch latest tags (if nightly)
-        if: matrix.branch_type == 'nightly'
-        run: |
-          # When in nightly mode, fetch tags from the nightly-testing repository
-          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
-          git fetch nightly-testing --tags
-          LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
-          echo "LATEST_TAG=${LATEST_TAG}" >> "$GITHUB_ENV"
-
-      - name: Set branch ref
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "BRANCH_REF=${{ env.DEFAULT_BRANCH }}" >> "$GITHUB_ENV"
-          else
-            echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
-          fi
-
-      # Checkout the branch or tag we want to test.
-      - name: Checkout branch or tag
+      - name: Checkout the tested commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
-          ref: ${{ env.BRANCH_REF }}
+          ref: ${{ env.TESTED_SHA }}
 
       - name: Configure Lean
         uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
@@ -344,11 +377,8 @@ jobs:
         id: nanoda
         run: |
           # Clone and build lean4export
-          # TODO: Once https://github.com/leanprover/lean4export/pull/11 is merged,
-          # switch to leanprover/lean4export and remove the `git checkout` line below.
-          git clone https://github.com/kim-em/lean4export
+          git clone https://github.com/leanprover/lean4export
           cd lean4export
-          git checkout fix-nondep-normalization
           # Match toolchain to mathlib
           cp ../lean-toolchain .
           lake build
@@ -357,7 +387,6 @@ jobs:
           # Clone and build nanoda_lib
           git clone https://github.com/ammkrn/nanoda_lib
           cd nanoda_lib
-          git checkout debug
           cargo build --release
           cd ..
 
@@ -386,16 +415,16 @@ jobs:
 
   notify-nanoda:
     runs-on: ubuntu-latest
-    needs: check-nanoda
+    needs: [resolve, check-nanoda]
     if: github.repository == 'leanprover-community/mathlib4' && always()
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [master, nightly]
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
       - name: Get job status and URLs
         id: get-status
         env:
@@ -415,34 +444,6 @@ jobs:
 
           echo "nanoda_url=${NANODA_URL}" | tee -a "$GITHUB_OUTPUT"
           echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
-
-      - name: Fetch latest tags (if nightly)
-        if: matrix.branch_type == 'nightly'
-        run: |
-          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
-          git fetch nightly-testing --tags
-          LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
-          echo "LATEST_TAG=${LATEST_TAG}" | tee -a "$GITHUB_ENV"
-
-      - name: Set branch ref
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "BRANCH_REF=${{ env.DEFAULT_BRANCH }}" >> "$GITHUB_ENV"
-          else
-            echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
-          fi
-
-      - name: Identify the commit that was tested
-        run: |
-          if [ "${{ matrix.branch_type }}" == "master" ]; then
-            echo "TESTED_REPO=${{ github.repository }}" >> "$GITHUB_ENV"
-            echo "TESTED_SHA=${{ github.sha }}" >> "$GITHUB_ENV"
-          else
-            # `github.sha` is this workflow's own checkout of `master`, not the commit the
-            # `nightly` leg tested, so resolve the tag that leg actually checked out.
-            echo "TESTED_REPO=leanprover-community/mathlib4-nightly-testing" >> "$GITHUB_ENV"
-            echo "TESTED_SHA=$(git rev-parse "${LATEST_TAG}^{commit}")" >> "$GITHUB_ENV"
-          fi
 
       - name: Post success message for nanoda on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
@@ -468,4 +469,4 @@ jobs:
           type: 'stream'
           topic: 'nanoda failure'
           content: |
-            ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+            ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
