@@ -8,6 +8,8 @@ public meta import ImportGraph.Tools
 public meta import Lean.Linter.Sets -- for the definition of linter sets
 public meta import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
+-- For running my experiment.
+public meta import Mathlib.Tactic.FailIfProgress
 public meta import Mathlib.Tactic.Lemma
 public meta import Mathlib.Tactic.Linter.DeclType
 public meta import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
