@@ -34,24 +34,33 @@ initialize registerTraceClass `transport
 
 namespace Test
 
+inductive Rel where
+  | imp | eq | relation | other (e : Expr)
+
+instance : ToMessageData Rel where
+  toMessageData
+    | .imp => m!"_ → _"
+    | .eq => m!"_ = _"
+    | .relation => m!"_ → _ → Prop"
+    | .other rel => m!"{rel}"
+
 inductive RelKind where
   | imp | eq | rel | other
   deriving Inhabited, BEq, Ord
+
+def Rel.toKind : Rel → RelKind
+  | .imp => .imp
+  | .eq => .eq
+  | .relation => .rel
+  | .other _ => .other
 
 /-- `GCongrKey` is the key used in the dictionary for looking up `gcongr` lemmas. -/
 structure TransportKey where
   /-- The kind of relation. -/
   relKind : RelKind
-  /-- The name of the head function. For example, `a + b ≤ a + c` has ``head := `HAdd.hAdd``. -/
-  head : HeadIndex
-  /-- The number of arguments that `head` is applied to.
-  For example, `a + b ≤ a + c` has `arity := 6`, because `HAdd.hAdd` has 6 arguments. -/
-  arity : Nat
-deriving Inhabited, BEq
-
--- TODO: this instance is horrible
-instance : Ord TransportKey where
-  compare a b := compare (hash a.2) (hash b.2) |>.then (compare a.1 b.1) |>.then (compare a.3 b.3)
+  /-- `true` if the relation is used left-to-right. -/
+  forward : Bool
+  deriving Inhabited, BEq, Ord
 
 /-- The data for a "main" hypothesis of a `transport` lemma.
 That is a hypothesis of the form `∀ xs, a xs' ~ b xs'` where `xs'` is a subset of `xs`,
@@ -74,8 +83,7 @@ structure TransportHyp where
 structure TransportLemma where
   /-- The keys under which the lemma is stored. This is usually one key,
   but for `gcongr strict` lemmas, this stores two keys, for the LHS and RHS respectively. -/
-  lhsKey? : Option TransportKey
-  rhsKey? : Option TransportKey
+  keys : List (TransportKey × Array DiscrTree.Key)
   /-- The given priority of the lemma, for example as `@[transport high]`. -/
   prio : Nat
   /--
@@ -93,6 +101,8 @@ structure TransportLemma where
   mainSubgoals : Array TransportHyp
   deriving Inhabited
 
+instance : BEq TransportLemma := ⟨(·.proof == ·.proof)⟩
+
 def TransportLemma.getValue (lem : TransportLemma) : MetaM Expr := do
   if lem.proof.isConst && lem.levelParams.isEmpty then
     let info ← getConstVal lem.proof.constName!
@@ -108,28 +118,22 @@ def TransportLemma.getValue (lem : TransportLemma) : MetaM Expr := do
 A collection of `TransportLemma`, to be stored in the environment extension.
 This includes lemmas for transporting left to right and right to left.
 -/
-abbrev TransportLemmas :=
-  Std.TreeMap TransportKey (List TransportLemma) × Std.TreeMap TransportKey (List TransportLemma)
+abbrev TransportLemmas := Std.TreeMap TransportKey (DiscrTree TransportLemma)
 
 /-- Return `true` if the priority of `a` is less than or equal to the priority of `b`. -/
 def TransportLemma.prioLE (a b : TransportLemma) : Bool :=
   a.prio ≤ b.prio
 
 /-- Insert a `TransportLemma` in a collection of lemmas, making sure they are sorted by priority. -/
-def addTransportLemmaEntry (m : TransportLemmas) (l : TransportLemma) : TransportLemmas :=
-  (l.lhsKey?.elim m.1 fun key ↦ m.1.alter key fun | none => [l] | some es => insert l es,
-  l.rhsKey?.elim m.2 fun key ↦ m.2.alter key fun | none => [l] | some es => insert l es)
-where
-  /--- Insert a `TransportLemma` in the correct place in a list of lemmas. -/
-  insert (l : TransportLemma) : List TransportLemma → List TransportLemma
-    | []     => [l]
-    | l'::ls => if l'.prioLE l then l::l'::ls else l' :: insert l ls
+def addTransportLemmaEntry (m : TransportLemmas) (lem : TransportLemma) : TransportLemmas :=
+  lem.keys.foldl (init := m) fun m (key, keys) ↦
+    m.alter key (·.getD {} |>.insertKeyValue keys lem)
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
 initialize transportExt : SimpleScopedEnvExtension TransportLemma TransportLemmas ←
   registerSimpleScopedEnvExtension {
     addEntry := addTransportLemmaEntry
-    initial := ({}, {})
+    initial := {}
   }
 
 
@@ -239,22 +243,26 @@ where
     | .lam n _ b _ => lambdaBinderNames b (acc.push n)
     | _ => acc
 
-/-- Get the `gcongr` lemmas whose conclusion has the shape
-`relName (head ..) _`, if `forward := true`, or `rel _ (head ..)`, if `forward := false`.
-`arity` is the number of arguments in `..`. This is used by the `grw` tactic. -/
-def findTransportLemmas? (relKind : RelKind) (head : HeadIndex) (forward : Bool) (arity : Nat) :
-    TransportM (List TransportLemma) := do
+def findTransportLemmas? (rel : Rel) (e : Expr) (forward : Bool) :
+    TransportM (Array TransportLemma) := do
   let lemmas := (← read).lemmas
-  let lemmas := if forward then lemmas.1 else lemmas.2
-  return (lemmas.get? { relKind, head, arity }).getD []
+  let some t := lemmas.get? { forward, relKind := rel.toKind } | return #[]
+  let key ←
+    if let .other rel := rel then
+      let mvar ← mkFreshExprMVar none
+      pure <| if forward then mkApp2 rel e mvar else mkApp2 rel mvar e
+    else
+      pure e
+  let candidates ← t.getMatch key
+  return candidates.insertionSort (·.prio > ·.prio)
 
 /-- If `e` is of the form `r a b`, return `(r, a, b)`.
 Note: we assume that `e` does not have an `Expr.mdata` annotation. -/
-def getRel (e : Expr) : MetaM (Option (RelKind × CollectFVars.State × Expr × Expr)) := do
+def getRel (e : Expr) : MetaM (Option (Rel × CollectFVars.State × Expr × Expr)) := do
   match e with
   | mkApp3 (.const ``Eq _) ty lhs rhs => return some (.eq, collectFVars {} ty, lhs, rhs)
-  | mkApp2 r lhs rhs => return some (.other, collectFVars {} r, lhs, rhs)
-  | .forallE _ lhs (.forallE _ rhs (.sort 0) _) _ => return some (.rel, {}, lhs, rhs)
+  | mkApp2 r lhs rhs => return some (.other r, collectFVars {} r, lhs, rhs)
+  | .forallE _ lhs (.forallE _ rhs (.sort 0) _) _ => return some (.relation, {}, lhs, rhs)
   | .forallE _ lhs rhs _ =>
     if !rhs.hasLooseBVars then
       let fvars := collectFVars (collectFVars {} (← inferType lhs)) (← inferType rhs)
@@ -264,34 +272,36 @@ def getRel (e : Expr) : MetaM (Option (RelKind × CollectFVars.State × Expr × 
   | _ => return none
 
 /-- Version of `getRel` that also returns the expression of the relation. -/
-def getRel' (e : Expr) : Option (RelKind × Option Expr × Expr × Expr) :=
+def getRel' (e : Expr) : Option (Rel × Expr × Expr) :=
   match e with
-  | mkApp2 rel@(.app (.const ``Eq _) _) lhs rhs => some (.eq, rel, lhs, rhs)
-  | mkApp2 rel lhs rhs => some (.other, rel, lhs, rhs)
-  | .forallE _ lhs (.forallE _ rhs (.sort 0) _) _ => some (.rel, none, lhs, rhs)
+  | mkApp3 (.const ``Eq _) _ lhs rhs => some (.eq, lhs, rhs)
+  | mkApp2 rel lhs rhs => some (.other rel, lhs, rhs)
+  | .forallE _ lhs (.forallE _ rhs (.sort 0) _) _ => some (.relation, lhs, rhs)
   | .forallE _ lhs rhs _ =>
     if !rhs.hasLooseBVars then
-      some (.imp, none, lhs, rhs)
+      some (.imp, lhs, rhs)
     else
       none
   | _ => none
 
+-- def mkTransportKey (hyps : Array FVarId) (rel : Rel) (e : Expr) (forward : Bool)
+
 /-- Try to construct the `TransportLemma` for a lemma with hypotheses `hyps` and
 conclusion `target`. -/
-def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
+def mkTransportLemmaCore (hyps' : Array Expr) (target : Expr) (proof : Expr)
     (levelParams : Array Name) (dir : Option Bool) (prio : Nat) : MetaM TransportLemma := do
-  let some (relKind, sharedVars, lhs, rhs) ← getRel target
+  let some (rel, sharedVars, lhs, rhs) ← getRel target
     | throwError "`{target}` is not a relation"
   trace[transport] "relating `{lhs}` to `{rhs}`"
-  let hyps := hyps.map (·.fvarId!)
-  if let .fvar fvarId := lhs.getAppFn then
-    if hyps.contains fvarId then
-      throwError "LHS is a variable: {lhs}"
-  if let .fvar fvarId := rhs.getAppFn then
-    if hyps.contains fvarId then
-      throwError "RHS is a variable: {rhs}"
-  let mut mainSubgoals := #[]
+  let hyps := hyps'.map (·.fvarId!)
   let sharedVars := (← sharedVars.addDependencies).fvarSet.filter hyps.contains
+  if let .fvar fvarId := lhs.getAppFn then
+    if hyps.contains fvarId && !sharedVars.contains fvarId then
+      throwError "LHS is an arbitrary variable: `{lhs}`"
+  if let .fvar fvarId := rhs.getAppFn then
+    if hyps.contains fvarId && !sharedVars.contains fvarId then
+      throwError "RHS is an arbitrary variable: `{rhs}`"
+  let mut mainSubgoals := #[]
   let lctx ← getLCtx
   let lhsVars :=
     (← (collectFVars {} lhs).addDependencies).fvarSet.filter fun fvarId ↦
@@ -392,17 +402,31 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
   let lVars ← lVarsRef.get
   let rVars ← rVarsRef.get
   if !lVars.isEmpty || !rVars.isEmpty then
-    logWarning m!"Could not find subgoal(s) relating \
+    throwError "Could not find subgoal(s) relating \
       `{lVars.toList.map Expr.fvar}` and `{rVars.toList.map Expr.fvar}`"
-  let lhsKey := { relKind, head := lhs.toHeadIndex, arity := lhs.headNumArgs }
-  let rhsKey := { relKind, head := rhs.toHeadIndex, arity := rhs.headNumArgs }
+  let mvar ← mkFreshExprMVar none
+  let (lhsKey, rhsKey) :=
+    match rel with
+    | .other rel => (mkApp2 rel lhs mvar, mkApp2 rel mvar rhs)
+    | _ => (lhs, rhs)
+  let keys :=
+    match dir with
+    | some true => [(lhsKey, true)]
+    | some false => [(rhsKey, false)]
+    | none => [(lhsKey, true), (rhsKey, false)]
+  let relKind := rel.toKind
+  let keys ← keys.mapM fun (key, forward) ↦ do
+    let key ← Core.transform key (pre := fun e ↦ do
+      if let .fvar fvarId := e.getAppFn then
+        if hyps.contains fvarId then
+          return .done (DiscrTree.mkNoindexAnnotation e)
+      return .continue e)
+    return ({ forward, relKind }, ← DiscrTree.mkPath key)
   return {
-    lhsKey? := if dir matches some false then none else some lhsKey
-    rhsKey? := if dir matches some true then none else some rhsKey
+    keys
     prio
     levelParams, proof
     numHyps := hyps.size
-    -- relatedTypes
     sharedVars := sharedVars.toList.map hyps.idxOf
     mainSubgoals
   }
@@ -561,9 +585,9 @@ public structure GRewriteResult where
 
 /-- Create the `gcongr` goal corresponding to rewriting `e` by relation `rel?`,
 so that we can apply `gcongr` lemmas to it. -/
-def makeGCongrGoal (rel? : Option Expr) (kind : RelKind) (e : Expr) (forward : Bool) :
-    MetaM (Expr × Expr) := do
-  if let some rel := rel? then
+def makeGCongrGoal (rel : Rel) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
+  match rel with
+  | .other rel =>
     let .forallE _ d₁ (.forallE _ d₂ _ _) _ ← whnf (← inferType rel) | throwFunctionExpected rel
     -- note that `@[gcongr]`'s checks should prevent this happening
     if d₂.hasLooseBVars then throwError "grw: {rel} is a dependent relation"
@@ -573,12 +597,20 @@ def makeGCongrGoal (rel? : Option Expr) (kind : RelKind) (e : Expr) (forward : B
     else
       let mvar ← mkFreshExprMVar d₁
       return (mvar, ← mkFreshExprMVar <| mkApp2 rel mvar e)
-  else
+  | .eq =>
+    let ty ← inferType e
+    let u ← getLevel ty
+    let mvar ← mkFreshExprMVar (← inferType e)
+    let eq :=
+      if forward then mkApp3 (.const ``Eq [u]) ty e mvar else mkApp3 (.const ``Eq [u]) ty mvar e
+    return (mvar, ← mkFreshExprMVar (some eq))
+  | .relation =>
     let mvar ← mkFreshTypeMVar
-    if kind matches .rel then
-      let (α, β) := if forward then (e, mvar) else (mvar, e)
-      let target := .forallE `_ α (.forallE `_ β (.sort 0) .default) .default
-      return (mvar, ← mkFreshExprMVar (some target))
+    let (α, β) := if forward then (e, mvar) else (mvar, e)
+    let target := .forallE `_ α (.forallE `_ β (.sort 0) .default) .default
+    return (mvar, ← mkFreshExprMVar (some target))
+  | .imp =>
+    let mvar ← mkFreshTypeMVar
     let target := if forward then .forallE `_a e mvar .default else .forallE `_a mvar e .default
     return (mvar, ← mkFreshExprMVar (some target))
 
@@ -589,14 +621,14 @@ mutual
 
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
 partial def processTransportHypothesis (goal : MVarId) : TransportM Bool := do
-  let some (relName, rel?, lhs, rhs) := getRel' (← instantiateMVars (← goal.getType)) |
+  let some (rel, lhs, rhs) := getRel' (← instantiateMVars (← goal.getType)) |
     throwError "invalid transport goal {goal}"
   let forward ← match lhs.getAppFn.isMVar, rhs.getAppFn.isMVar with
     | false, true => pure true
     | true, false => pure false
     | _, _ => throwError "expected exactly one of `{lhs}` and `{rhs}` to be unassigned."
   let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
-  let some (result, proof) ← transportCoreOrRfl relName rel? target forward |
+  let some (result, proof) ← transportCoreOrRfl rel target forward |
     return false
   -- Assign any remaining universe variables
   unless ← isDefEq (← inferType mvarApp) (← inferType result) do
@@ -614,11 +646,11 @@ and otherwise closed `by rfl`. If at least one rewrite has happened, we commit t
 and we try to discharge the side goals.
 
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
-partial def processGCongrLemma (e : Expr) (rel? : Option Expr) (relKind : RelKind)
+partial def processGCongrLemma (e : Expr) (rel : Rel)
     (lem : TransportLemma) (forward : Bool) : TransportM (Option (Expr × Expr)) :=
   withTraceNode `transport (fun _ ↦
     return m!"applying transport lemma `{lem.proof}`") do
-  let (mvar, goal) ← makeGCongrGoal rel? relKind e forward
+  let (mvar, goal) ← makeGCongrGoal rel e forward
   let (mainGoals, sideGoals) ←
     try
       applyGCongrLemma goal.mvarId! lem forward
@@ -652,10 +684,10 @@ partial def useTransportHyp (hyp : Expr) (goal : MVarId) (forward : Bool) : Tran
   if type.isAppOfArity ``FunctionRel 8 then
     let (mvars, _, _) ← withDefault <| forallMetaTelescopeReducing type (some 3)
     if ← useTransportHyp (mkAppN hyp mvars) goal forward then
-      let some (relKind, rel?, lhs, rhs) := getRel' (← instantiateMVars (← inferType mvars[2]!))
+      let some (rel, lhs, rhs) := getRel' (← instantiateMVars (← inferType mvars[2]!))
         | return false
       let e := if forward then rhs else lhs
-      let some (result, proof) ← transportCoreOrRfl relKind rel? e forward
+      let some (result, proof) ← transportCoreOrRfl rel e forward
         | return false
       let mvar := if forward then lhs else rhs
       unless ← isDefEq (← inferType result) (← inferType mvar) do
@@ -676,10 +708,9 @@ If `e` itself cannot be rewritten, descend into subexpressions of `e` using `@[g
 unless the relation is `→`: `relName` is `_Implies` and `rel?` is `none`.
 
 Returns the new expression and a proof that it is related to `e`, if a rewrite was found. -/
-partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (forward : Bool)
-    (inSimp := false) :
+partial def transportCore (rel : Rel) (e : Expr) (forward : Bool) (inSimp := false) :
     TransportM (Option (Expr × Expr)) := do
-  if !inSimp && relKind matches .eq then
+  if !inSimp && rel matches .eq then
     if forward then
       transportEqCore e
     else
@@ -689,48 +720,46 @@ partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (f
   if let .fvar fvarId := e.getAppFn then
     if let some hyp := (← read).transportHyps.get? fvarId then
       let mctx ← getMCtx
-      let (mvar, goal) ← makeGCongrGoal rel? relKind e forward
+      let (mvar, goal) ← makeGCongrGoal rel e forward
       -- TODO: try `.applySymm` on the goal if this fails: might be needed for dual relations?
       if ← useTransportHyp (.fvar hyp) goal.mvarId! forward then
         trace[transport] "rewriting `{e}` to `{mvar}`"
         return some (← instantiateMVars mvar, goal)
       setMCtx mctx
   -- Try all applicable `@[transport]` lemmas.
-  let lemmas ← findTransportLemmas? relKind e.toHeadIndex forward e.headNumArgs
+  let lemmas ← findTransportLemmas? rel e forward
   let mctx ← getMCtx
   for gcongrLem in lemmas do
-    if let some (result, proof) ← processGCongrLemma e rel? relKind gcongrLem forward then
+    if let some (result, proof) ← processGCongrLemma e rel gcongrLem forward then
       -- Preserve the binder name/info in a forall.
       match e, result with
       | .forallE n _ _ bi, .forallE _ d b _ => return some (.forallE n d b bi, proof)
       | _, _ => return some (result, proof)
     setMCtx mctx
-  if relKind matches .eq then
+  if rel matches .eq then
     -- Use `Eq.symm`, and then try again to find an applicable lemma
-    let lemmas ← findTransportLemmas? relKind e.toHeadIndex (!forward) e.headNumArgs
+    let lemmas ← findTransportLemmas? rel e (!forward)
     let mctx ← getMCtx
     for gcongrLem in lemmas do
-      if let some (result, proof) ← processGCongrLemma e rel? relKind gcongrLem (!forward) then
+      if let some (result, proof) ← processGCongrLemma e rel gcongrLem (!forward) then
         let proof ← mkAppM ``Eq.symm #[proof]
         -- Preserve the binder name/info in a forall.
         match e, result with
         | .forallE n _ _ bi, .forallE _ d b _ => return some (.forallE n d b bi, proof)
         | _, _ => return some (result, proof)
       setMCtx mctx
-  if relKind matches .imp then
+  if rel matches .imp then
     if let some (e', pf) ← transportEqCore e then
       return some (e', ← mkAppM (if forward then ``Eq.mp else ``Eq.mpr) #[pf])
   return none
 
 partial def transportEqCore (e : Expr) : TransportM (Option (Expr × Expr)) := fun c c' s ↦ do
   withTraceNodeBefore `transport (fun _ ↦
-    return m!"visiting all subexpressions of `{e}` in relation `Eq`") do
+    return m!"visiting all subexpressions of `{e}` in the RHS of `_ = _`") do
   let methods := { pre e := do
     unless e.isApp || e.isForall || e.isFVar do return .continue
-    -- TODO: avoid running `inferType` on each visited expression.
-    let α ← inferType e
     let some (e', pf) ←
-        transportCore .eq (Expr.app (.const `Eq [← getLevel α]) α) e true true c c' s |
+        transportCore .eq e true true c c' s |
       return .continue
     return .done { expr := e', proof? := pf }
     }
@@ -740,27 +769,28 @@ partial def transportEqCore (e : Expr) : TransportM (Option (Expr × Expr)) := f
     return none
   return r.proof?.map (r.expr, ·)
 
-partial def transportCoreOrRfl (relKind : RelKind) (rel? : Option Expr) (e : Expr)
-    (forward : Bool) :
+partial def transportCoreOrRfl (rel : Rel) (e : Expr) (forward : Bool) :
     TransportM (Option (Expr × Expr)) := do
-  withTraceNodeBefore `transport (fun _ ↦ return m!"visiting `{e}` in the \
-    {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
-  if let some result ← transportCore relKind rel? e forward then
+  withTraceNodeBefore `transport (fun _ ↦
+    return m!"visiting `{e}` in the {if forward then "LHS" else "RHS"} of `{rel}`") do
+  if let some result ← transportCore rel e forward then
     trace[transport] "result: `{result.1}`"
     return result
   let transportVars := (← read).transportHyps
   if e.hasAnyFVar transportVars.contains then
     return none
   let pf ←
-    match relKind with
-    | .eq => mkAppM ``Eq.refl #[e]
+    match rel with
+    | .eq =>
+      let ty ← inferType e
+      pure <| mkApp2 (.const ``Eq.refl [← getLevel ty]) ty e
     | .imp => pure <| .lam `_ e (.bvar 0) .default
-    | .rel => pure <| .app (.const ``Eq [← getLevel e]) e
-    | .other =>
-      let mvar ← mkFreshExprMVar (mkApp2 rel?.get! e e)
+    | .relation => pure <| .app (.const ``Eq [← getLevel e]) e
+    | .other rel =>
+      let mvar ← mkFreshExprMVar (mkApp2 rel e e)
       try
         -- Due to an issue in `rfl`, we need this transparency bump. See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/.60with_reducible.20rfl.60.20failing/with/590957602
-        withReducibleAndInstances mvar.mvarId!.applyRfl
+        withImplicit mvar.mvarId!.applyRfl
         instantiateMVars mvar
       catch _ =>
         return none
@@ -800,7 +830,7 @@ elab_rules : tactic
   let lemmas := givenLemmas.foldl addTransportLemmaEntry lemmas
   let type ← instantiateMVars (← mvarId.getType)
   let (some (e, pf), s) ← withReducible <|
-    transportCore .imp none type false |>.run { lemmas } |>.run
+    transportCore .imp type false |>.run { lemmas } |>.run
     | throwError "transport made no progress on `{type}`"
   let newGoal ← mkFreshExprMVar e .syntheticOpaque
   mvarId.assign (pf.app newGoal)

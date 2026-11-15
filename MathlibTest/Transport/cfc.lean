@@ -24,15 +24,12 @@ lemma cfc_real_eq_complex_comp'
 
 end
 
-attribute [transport fun f : R → R ↦ cfc f a] cfc_id'
 attribute [transport fun f : R → R ↦ cfc f a]
-  cfc_add cfc_const_mul cfc_comp' cfc_sub cfc_const_one cfc_pow_id
--- attribute [transport fun f : ℂ → ℂ ↦ cfc f a, fun f : ℝ → ℝ ↦ cfc f a] cfc_real_eq_complex
+  cfc_add cfc_mul cfc_pow cfc_sum cfc_smul cfc_sub cfc_neg cfc_const_one cfc_const_zero
+  cfc_id' cfc_comp'
 
-
-set_option trace.transport true
 theorem foo {A : Type*} [CStarAlgebra A] {a : A} (ha : IsSelfAdjoint a) :
     a + I • cfcₙ (√·) (1 - a ^ 2) = cfc (fun x : ℂ ↦ x + I * ↑√(1 - x.re ^ 2)) a := by
   rw [cfcₙ_eq_cfc]
-  transport [MapRel fun f : ℂ → ℂ ↦ cfc f a, @cfc_id'.transport_1 (a := a)] <;> try infer_param
+  transport [MapRel fun f : ℂ → ℂ ↦ cfc f a] <;> try infer_param
   rfl
