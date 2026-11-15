@@ -302,6 +302,7 @@ def stoppers : Std.HashSet Name :=
     -- The linter ignores the wrapper, but does recurse into the enclosed tactics
     ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticSeq,
+    `Mathlib.Tactic.failIfNotIdempotent,
     ``Lean.Parser.Term.byTactic,
     `by,
     ``Lean.Parser.Tactic.tacticTry_,
