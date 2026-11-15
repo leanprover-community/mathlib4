@@ -24,7 +24,6 @@ This file defines composition for partial maps and rational maps between schemes
 - `Scheme.PartialMap.comp_equiv_of_equiv`: Composition respects equivalence of partial maps.
 - `Scheme.PartialMap.comp_assoc`: Composition of partial maps is associative.
 - `Scheme.RationalMap.comp_assoc`: Composition of rational maps is associative.
-
 -/
 
 @[expose] public section
@@ -142,7 +141,6 @@ lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
   · simp_rw [comp_hom, Hom.toPartialMap_domain, Hom.toPartialMap_hom, compHom_hom, topIso_hom,
       morphismRestrict_ι_assoc, f.domain.isoImage_ι_inv_ι_assoc, isoOfEq_hom]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] : f.comp (PartialMap.id Y) = f := by simp
 
 end PartialMap
@@ -191,11 +189,11 @@ lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [Irr
   apply PartialMap.comp_equiv_of_equiv_right
   rw [toRationalMap_representative]
 
-instance isOver_comp {S : Scheme.{u}} [IrreducibleSpace Y] [Nonempty Z] [X.Over S] [Y.Over S]
-    [Z.Over S] (f : X ⤏ Y) [f.IsDominant] [f.IsOver S] (g : Y ⤏ Z) [g.IsDominant] [g.IsOver S] :
-    (f.comp g).IsOver S := by
+lemma isOver_comp {S : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
+    [IrreducibleSpace Y] [Nonempty Z] (f : X ⤏ Y) [f.IsDominant] (hf : f.IsOver sX sY)
+    (g : Y ⤏ Z) [g.IsDominant] (hg : g.IsOver sY sZ) : (f.comp g).IsOver sX sZ := by
   rw [isOver_iff, ← comp_toRationalMap, comp_assoc, comp_toRationalMap,
-    isOver_iff.mp ‹g.IsOver S›, comp_toRationalMap, RationalMap.isOver_iff.mp ‹f.IsOver S›]
+    isOver_iff.mp hg, comp_toRationalMap, RationalMap.isOver_iff.mp hf]
 
 end RationalMap
 

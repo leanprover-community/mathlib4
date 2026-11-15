@@ -53,7 +53,6 @@ If `β` is a `NormedLinearOrderedField` :
 
 Note that `IsEquivalent` takes the parameters `(l : Filter α) (u v : α → β)` in that order.
 This is to enable `calc` support, as `calc` requires that the last two explicit arguments are `u v`.
-
 -/
 
 public section
@@ -242,7 +241,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
   rcases huv.isBigO.exists_pos with ⟨C, hC, hCuv⟩
   rw [IsEquivalent] at *
   rw [isLittleO_iff] at *
-  rw [IsBigOWith] at hCuv
+  rw [isBigOWith_iff] at hCuv
   simp only [Metric.tendsto_nhds, dist_eq_norm] at hφ
   intro c hc
   specialize hφ (c / 2 / C) (div_pos (div_pos hc zero_lt_two) hC)

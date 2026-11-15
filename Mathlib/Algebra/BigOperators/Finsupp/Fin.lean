@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Data.Finsupp.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finsupp.sum` and `Finsupp.prod` over `Fin`
 

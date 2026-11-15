@@ -10,6 +10,9 @@ public import Mathlib.Order.Filter.AtTopBot.Basic
 
 import Mathlib.Order.Filter.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on products
 -/
@@ -40,8 +43,6 @@ lemma tendsto_finsetProd_atTop :
   · intro b
     use (Finset.image Prod.fst b, Finset.image Prod.snd b)
     exact Finset.subset_product
-
-@[deprecated (since := "2026-04-08")] alias tendsto_finset_prod_atTop := tendsto_finsetProd_atTop
 
 @[to_dual]
 theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]

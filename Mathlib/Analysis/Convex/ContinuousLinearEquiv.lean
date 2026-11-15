@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Pre)images of strict convex sets under continuous linear equivalences
 

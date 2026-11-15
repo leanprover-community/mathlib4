@@ -31,7 +31,6 @@ in terms of pairwise intersections. Our approach is as follows: First, we show t
 for `Type`-valued presheaves. Then we use that composing a presheaf with a limit-preserving and
 isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
 `Mathlib/Topology/Sheaves/Forget.lean`.
-
 -/
 
 @[expose] public section
@@ -245,8 +244,8 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
     · exact le_iSup (fun t : Bool => if t then U₁ else U₂) true
     · exact le_iSup (fun t : Bool => if t then U₁ else U₂) false
   · rintro ⟨_ | _⟩
-    any_goals exact h₁
-    any_goals exact h₂
+    · exact h₂
+    · exact h₁
 
 variable {F} {U} in
 theorem eq_app_of_locally_eq {V : Opens X} {G : Sheaf C X} {f : F ⟶ G}

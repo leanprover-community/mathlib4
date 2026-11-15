@@ -38,7 +38,6 @@ Weyl group.
 ## References:
 * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
-
 -/
 
 @[expose] public section

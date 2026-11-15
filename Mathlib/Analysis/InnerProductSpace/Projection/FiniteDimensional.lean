@@ -53,7 +53,7 @@ variable [FiniteDimensional 𝕜 K]
 
 @[simp]
 theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
-  K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
+  K.isClosed_of_finiteDimensional.submodule_topologicalClosure_eq
 
 @[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
@@ -394,7 +394,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     obtain ⟨l, hl, rfl⟩ :
       ∃ l ∈ supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (linearCombination 𝕜 ((↑) : u → E)) l = y := by
       rw [← Finsupp.mem_span_image_iff_linearCombination]
-      simp [huv, inter_eq_self_of_subset_right, hy]
+      simp [huv, hy]
     exact hu.inner_finsupp_eq_zero hxv' hl
 
 variable [FiniteDimensional 𝕜 E]

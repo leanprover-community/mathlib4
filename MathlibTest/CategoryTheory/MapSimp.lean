@@ -34,7 +34,7 @@ open Lean Meta Elab Term Command
 
 namespace Tests.MapSimpCheck
 
-def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
+meta def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
   simpExtension.getState env |>.lemmaNames.contains <| .decl declName
 
 -- Test that simp attributes are added to all four generated lemmas with

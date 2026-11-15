@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 If a monoid acts on a ring via a `MulSemiringAction`, then `IsInvariantSubring` is
 a predicate on subrings asserting that the subring is fixed elementwise by the
 action.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Hom.End
 public import Mathlib.Algebra.Module.NatInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Module structure and endomorphisms
 

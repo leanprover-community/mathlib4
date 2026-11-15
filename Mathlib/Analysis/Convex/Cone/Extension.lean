@@ -24,7 +24,6 @@ We prove two extension theorems:
   defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
   then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
   for all `x`
-
 -/
 
 public section

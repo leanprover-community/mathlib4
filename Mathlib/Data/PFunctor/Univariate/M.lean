@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.PFunctor.Univariate.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # M-types
 

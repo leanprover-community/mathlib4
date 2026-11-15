@@ -20,7 +20,7 @@ non-linear weights do exist. For example if we take:
 * `M`: the natural two-dimensional representation of `L`,
 
 then there is a single weight and it is non-linear. (See remark following Proposition 9 of
-chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9](bourbaki1975b).)
+chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9][bourbaki1975b].)
 
 We thus introduce a typeclass `LieModule.LinearWeights` to encode the fact that a Lie module does
 have linear weights and provide typeclass instances in the two important cases that `L` is Abelian
@@ -36,7 +36,6 @@ or `R` has characteristic zero.
 * `LieModule.exists_forall_lie_eq_smul`: existence of simultaneous
   eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
   with linear weights.
-
 -/
 
 @[expose] public section

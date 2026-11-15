@@ -13,7 +13,6 @@ import Mathlib.FieldTheory.Finite.Basic
 # Torsion group of `ZMod p` for prime `p`
 
 This file shows that the `ZMod p` has `p - 1` roots-of-unity.
-
 -/
 
 public section

@@ -57,7 +57,7 @@ the canonical injection, see `mfderiv_subtypeVal_Icc_one`.
 Note that one cannot abuse defeqs for this definition: this is *not* the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
 orientation-reversing. -/
-irreducible_def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
+@[no_expose] def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
     TangentSpace (𝓡∂ 1) z :=
   mfderiv[Icc x y] (Set.projIcc x y h.out.le) z 1
 
@@ -214,8 +214,7 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
   simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
   have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
   rw [projIcc_of_mem _ w.2]
-  congr 1
-  convert! mfderivWithin_projIcc_one w.2
+  rfl
 
 lemma mfderiv_subtypeVal_Icc_one (z : Icc x y) :
     mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by

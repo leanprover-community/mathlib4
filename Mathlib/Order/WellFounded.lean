@@ -81,6 +81,15 @@ theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α �
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
   __ := hf.trichotomous_onFun r
 
+theorem of_map {f : α → β} (h : WellFounded (Relation.Map r f f)) : WellFounded r :=
+  .mono inferInstance <| Relation.le_onFun_map f
+
+theorem _root_.Function.Injective.wellFounded_map_iff {f : α → β} (hf : f.Injective) :
+    WellFounded (Relation.Map r f f) ↔ WellFounded r := by
+  refine ⟨of_map, fun h ↦ ⟨fun c ↦ ⟨c, ?_⟩⟩⟩
+  rintro _ ⟨a, b, hab, rfl, rfl⟩
+  exact hf.acc_map_iff.mpr (h.apply a)
+
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
 theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
@@ -273,6 +282,11 @@ theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) 
 @[to_dual apply_le]
 theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) {x} : x ≤ f x :=
   hf.id_le x
+
+@[to_dual]
+theorem StrictMono.isCofinal_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β]
+    (hf : StrictMono f) : IsCofinal (.range f) :=
+  fun x ↦ ⟨f x, Set.mem_range_self x, hf.le_apply⟩
 
 @[to_dual]
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Galois.Action
 
 /-!
-
 # Fiber functors are (faithfully) full
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
@@ -25,7 +24,6 @@ follows easily from the faithfulness of `F`. In this file we show that `H` is al
 The main input for this is that the induced functor `H : C ⥤ Action FintypeCat (Aut F)`
 preserves connectedness, which translates to the fact that `Aut F` acts transitively on
 the fibers of connected objects.
-
 -/
 
 public section
@@ -86,7 +84,7 @@ lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
       simpa [is2, u']
     simp only [h, Iso.inv_hom_id_assoc]
   refine ⟨∐ gZ, Sigma.desc gf, t.symm ≪≫ u' ≪≫ is2.symm, ?_, by simp [heq]⟩
-  · exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
+  exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
 
 /-- The by a fiber functor `F : C ⥤ FintypeCat` induced functor `functorToAction F` to
 finite `Aut F`-sets is full. -/

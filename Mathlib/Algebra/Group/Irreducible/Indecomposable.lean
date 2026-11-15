@@ -25,12 +25,11 @@ written as a product of two others in a non-trivial way. -/
 @[to_additive (attr := simp) /-- Given a family of elements of an additive monoid, a member is said
 to be indecomposable if it cannot be written as a sum of two others in a non-trivial way.-/]
 def IsMulIndecomposable (v : ι → M) (s : Set ι) (i : ι) : Prop :=
-  i ∈ s ∧ ∀ᵉ (j ∈ s) (k ∈ s), v i = v j * v k → v j = 1 ∨ v k = 1
+  i ∈ s ∧ ∀ j ∈ s, ∀ k ∈ s, v i = v j * v k → v j = 1 ∨ v k = 1
 
 @[to_additive]
 protected lemma IsMulIndecomposable.subset (v : ι → M) (s : Set ι) :
-    {i | IsMulIndecomposable v s i} ⊆ s := by
-  aesop
+    {i | IsMulIndecomposable v s i} ⊆ s := fun _ hi ↦ hi.1
 
 @[to_additive]
 lemma isMulIndecomposable_id_univ [Subsingleton Mˣ] {x : M} (hx : x ≠ 1) :
@@ -52,7 +51,7 @@ lemma IsMulIndecomposable.baseOf_subset_one_lt [Monoid S] (v : ι → M) (f : M 
 
 @[to_additive]
 lemma IsMulIndecomposable.image_baseOf_inv_comp_eq [InvolutiveInv ι]
-    [CommGroup S] [IsOrderedMonoid S]
+    [CommGroup S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) :
     v '' baseOf v (invMonoidHom.comp f) = (invMonoidHom ∘ v) '' baseOf v f := by

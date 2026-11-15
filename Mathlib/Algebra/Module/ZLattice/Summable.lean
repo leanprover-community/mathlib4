@@ -21,7 +21,6 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
 - `ZLattice.summable_norm_sub_rpow`: `∑ z ∈ L, ‖z - x‖ʳ` converges when `r < -d`.
 - `ZLattice.tsum_norm_rpow_le`:
   `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
-
 -/
 
 @[expose] public section
@@ -52,7 +51,7 @@ lemma exists_forall_abs_repr_le_norm :
   have : Finite ι := Module.Finite.finite_basis b
   let b' : Basis ι ℝ E := Basis.ofZLatticeBasis ℝ L b
   let e := ((b'.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _).toContinuousLinearEquiv (𝕜 := ℝ))
-  have := e.continuous.1 (Set.univ.pi fun _ ↦ Set.Ioo (-1) 1)
+  have := e.continuous.isOpen_preimage (Set.univ.pi fun _ ↦ Set.Ioo (-1) 1)
     (isOpen_set_pi Set.finite_univ fun _ _ ↦ isOpen_Ioo)
   obtain ⟨ε, hε, hε'⟩ := Metric.isOpen_iff.mp this 0 (by simp)
   refine ⟨ε / 2, by positivity, fun x i ↦ ?_⟩

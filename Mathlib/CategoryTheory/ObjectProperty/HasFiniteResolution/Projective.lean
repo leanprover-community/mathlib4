@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `X` has a projective resolution of length `n` if and only if `X` has projective dimension `≤ n`
 -/

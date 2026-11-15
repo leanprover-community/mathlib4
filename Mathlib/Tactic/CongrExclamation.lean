@@ -8,7 +8,6 @@ module
 public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
-public import Lean.Elab.ConfigEval
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Relation.Rfl

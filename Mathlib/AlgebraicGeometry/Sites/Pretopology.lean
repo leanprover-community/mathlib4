@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck topology defined by a morphism property
 

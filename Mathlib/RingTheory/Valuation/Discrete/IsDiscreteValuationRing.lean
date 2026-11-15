@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 
 /-!
 # Valuations associated to discrete valuation rings
@@ -161,5 +161,27 @@ lemma intValuation_maximalIdeal (x : A) :
     hϖ.maximalIdeal_eq, hϖ, this, ← WithZero.exp_eq_coe_ofAdd]
 
 end IsDiscreteValuationRing
+
+section ValuationSubring
+
+variable {F : Type*} [Field F] (A : ValuationSubring F) [IsDiscreteValuationRing A]
+
+section IsRankOneDiscrete
+
+theorem IsDiscreteValuationRing.maximalIdeal_valuation_isEquiv :
+    ((IsDiscreteValuationRing.maximalIdeal A).valuation F).IsEquiv A.valuation := by
+  rw [Valuation.isEquiv_iff_valuationSubring]
+  apply ValuationSubring.toSubring_injective
+  ext
+  simp [← IsDiscreteValuationRing.map_algebraMap_eq_valuationSubring]
+
+/-- The valuation of a DVR valuation subring is rank-one discrete. -/
+instance ValuationSubring.isRankOneDiscrete_valuation :
+    A.valuation.IsRankOneDiscrete :=
+  .of_isEquiv (IsDiscreteValuationRing.maximalIdeal_valuation_isEquiv A)
+
+end IsRankOneDiscrete
+
+end ValuationSubring
 
 end

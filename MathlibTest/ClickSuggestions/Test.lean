@@ -14,7 +14,7 @@ import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
-This file tests some basic features of `#click_search`
+This file tests some basic features of `#click_suggestions`
 -/
 
 set_option linter.all false
@@ -195,6 +195,6 @@ example (h₁ : n ≤ m) (h₂ : m ≤ k) : n ≤ k := by
   -- This doesn't suggest `Nat.le_trans h₁ h₂`, because that requires a metavariable assignment:
   click_test => "apply Nat.le_trans"
   apply Nat.le_trans
-  click_test => "exact h₁"
+  click_test => "· exact h₁"
   exact h₁
   exact h₂

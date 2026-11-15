@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Simproc.ExistsAndEq
+module
+
+public import Mathlib.Tactic.Simproc.ExistsAndEq
 
 universe u v
 

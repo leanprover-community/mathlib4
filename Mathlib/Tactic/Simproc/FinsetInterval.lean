@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Int.Interval
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Int
-public import Mathlib.Util.Qq
 
 /-!
 # Simproc for intervals of natural numbers

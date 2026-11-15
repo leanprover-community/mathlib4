@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.EssentialImage
 public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.Tactic.CategoryTheory.Slice
+
 /-!
 # Equivalence of categories
 
@@ -52,7 +53,6 @@ if it is full, faithful and essentially surjective.
 ## Notation
 
 We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bundled equivalence.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Data.ZMod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ZMod p` is a field
 -/

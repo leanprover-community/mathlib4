@@ -115,8 +115,6 @@ theorem _root_.BddAbove.range_finsetSup (hf : BddAbove (.range f)) :
 theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
   Finset.sup_le fun _ _ => le_rfl
 
-@[deprecated (since := "2026-03-25")] alias le_inf_const_le := le_inf_const
-
 @[to_dual inf_le]
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
@@ -260,7 +258,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
 -- If we acquire sublattices
 -- the hypotheses should be reformulated as `s : SubsemilatticeSupBot`
 @[to_dual]
-theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s)
+theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ x ∈ s, ∀ y ∈ s, x ⊔ y ∈ s)
     {ι : Type*} (t : Finset ι) (p : ι → α) (h : ∀ i ∈ t, p i ∈ s) : t.sup p ∈ s :=
   @sup_induction _ _ _ _ _ _ (· ∈ s) w₁ w₂ h
 
@@ -603,7 +601,7 @@ theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p 
   | (a₁ : α), (a₂ : α) => exact hp a₁ h₁ a₂ h₂
 
 @[to_dual]
-theorem sup'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s) {ι : Type*}
+theorem sup'_mem (s : Set α) (w : ∀ x ∈ s, ∀ y ∈ s, x ⊔ y ∈ s) {ι : Type*}
     (t : Finset ι) (H : t.Nonempty) (p : ι → α) (h : ∀ i ∈ t, p i ∈ s) : t.sup' H p ∈ s :=
   sup'_induction H p w h
 
@@ -740,9 +738,6 @@ theorem apply_sup_eq_sup_comp_of_nonempty [OrderBot α] [SemilatticeSup β] [Ord
     {g : α → β} (mono_g : Monotone g) (H : s.Nonempty) : g (s.sup f) = s.sup (g ∘ f) := by
   rw [← Finset.sup'_eq_sup H, ← Finset.sup'_eq_sup H]
   exact Finset.apply_sup'_eq_sup'_comp H g (fun x y ↦ Monotone.map_sup mono_g x y)
-
-@[deprecated (since := "2026-03-25")]
-alias comp_sup_eq_sup_comp_of_nonempty := apply_sup_eq_sup_comp_of_nonempty
 
 @[to_dual (attr := simp) inf'_le_iff]
 theorem le_sup'_iff : a ≤ s.sup' H f ↔ ∃ b ∈ s, a ≤ f b := by

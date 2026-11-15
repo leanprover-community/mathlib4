@@ -38,7 +38,6 @@ and convergence in distribution.
 * `TendstoInDistribution.prodMk_of_tendstoInMeasure_const`: **Slutsky's theorem**.
   If `X n` converges in distribution to `Z`, and `Y n` converges in probability to a constant `c`,
   then the pair `(X n, Y n)` converges in distribution to `(Z, c)`.
-
 -/
 
 public section

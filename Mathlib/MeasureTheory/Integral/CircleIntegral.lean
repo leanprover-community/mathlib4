@@ -138,7 +138,7 @@ theorem deriv_circleMap_ne_zero {c : ℂ} {R : ℝ} {θ : ℝ} (hR : R ≠ 0) :
   mt deriv_circleMap_eq_zero_iff.1 hR
 
 theorem lipschitzWith_circleMap (c : ℂ) (R : ℝ) : LipschitzWith (Real.nnabs R) (circleMap c R) :=
-  lipschitzWith_of_nnnorm_deriv_le (differentiable_circleMap _ _) fun θ =>
+  lipschitzWith_of_nnNorm_deriv_le (differentiable_circleMap _ _) fun θ =>
     NNReal.coe_le_coe.1 <| by simp
 
 theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
@@ -191,7 +191,7 @@ theorem circleIntegrable_id (c : ℂ) (R : ℝ) : CircleIntegrable (fun z => z) 
 
 namespace CircleIntegrable
 
-variable {f g : ℂ → E} {c : ℂ} {R : ℝ} {A : Type*} [NormedRing A] {a : A}
+variable {f g : ℂ → E} {c : ℂ} {R : ℝ}
 
 /--
 Analogue of `IntervalIntegrable.abs`: If a real-valued function `f` is circle integrable, then so is
@@ -234,13 +234,14 @@ protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleI
 nonrec theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
   hf.neg
 
+variable
+  {𝕜 F : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
+
 /-- If `f` is circle integrable, then so are its scalar multiples. -/
 @[to_fun (attr := fun_prop) const_fun_smul]
-theorem const_smul {f : ℂ → A} (h : CircleIntegrable f c R) : CircleIntegrable (a • f) c R :=
-  IntervalIntegrable.const_mul h _
-
-variable
-  {𝕜 F : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [NormSMulClass 𝕜 F]
+theorem const_smul {a : 𝕜} {f : ℂ → F} (h : CircleIntegrable f c R) :
+    CircleIntegrable (a • f) c R :=
+  IntervalIntegrable.smul h a
 
 /--
 If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g • f` is
@@ -323,8 +324,6 @@ theorem circleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : Set.EqOn f₁ f₂ (sphere c |R|)) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   intervalIntegrable_congr fun x _ ↦ hf (circleMap_mem_sphere' c R x)
-
-@[deprecated (since := "2026-04-26")] alias crcleIntegrable_congr := circleIntegrable_congr
 
 /--
 Circle integrability is invariant when taking negative radius.

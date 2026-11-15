@@ -24,7 +24,6 @@ asymptotic behavior of the approximated function.
 
 We also prove structural lemmas relating these predicates to `seq` and to the `cons`/`nil`
 constructors.
-
 -/
 
 @[expose] public section

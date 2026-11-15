@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
+
 /-!
 # Tensor products of direct sums
 
@@ -74,8 +75,6 @@ def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[S] ⨁ i, M₁' ⊗[R] 
   TensorProduct.AlgebraTensorModule.congr (DirectSum.lid _ _).symm 1 ≪≫ₗ
   TensorProduct.directSum R S (fun _ : Unit ↦ M₁') M₂ ≪≫ₗ
   DirectSum.lequivCongrLeft S (Equiv.uniqueProd _ _)
-
-@[deprecated (since := "2026-03-04")] alias directSumRight' := directSumRight
 
 variable {M₁ M₁' M₂ M₂'}
 
@@ -162,14 +161,9 @@ lemma restrictScalar_directSumRight :
     (directSumRight R S M₁' M₂).restrictScalars S₀ = directSumRight R S₀ M₁' M₂ :=
   LinearEquiv.restrictScalars_injective R <| LinearEquiv.toLinearMap_injective <| by ext; simp [lof]
 
-@[deprecated (since := "2026-03-04")]
-alias directSumRight'_restrict := restrictScalar_directSumRight
-
 lemma coe_directSumRight :
     ⇑(directSumRight R S M₁' M₂) = directSumRight R R M₁' M₂ :=
   congr($(restrictScalar_directSumRight ..))
-
-@[deprecated (since := "2026-03-04")] alias coe_directSumRight' := coe_directSumRight
 
 end TensorProduct
 

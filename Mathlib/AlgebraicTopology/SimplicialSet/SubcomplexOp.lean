@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # The opposite of a subcomplex
-
 -/
 
 @[expose] public section

@@ -1,5 +1,9 @@
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Data.List.Perm.Lattice
+module
+
+public import Mathlib.Data.List.Perm.Lattice
+public import Mathlib.Tactic.MkIffOfInductiveProp
+
+@[expose] public section
 
 mk_iff_of_inductive_prop List.IsChain test.chain_iff
 example {α : Type _} (R : α → α → Prop) (al : List α) :

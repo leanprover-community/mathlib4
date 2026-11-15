@@ -201,7 +201,7 @@ theorem absNorm_pow_inertiaDeg [Module.Finite R S] [q.IsPrime] [q.LiesOver p]
   have := isPrime_of_liesOver q p
   have := isMaximal_of_isPrime_of_ne_bot p hp
   have := IsMaximal.of_liesOver_isMaximal q p
-  exact cardQuot_pow_inertiaDeg p q
+  rw [absNorm_apply, absNorm_apply, cardQuot_pow_inertiaDeg p q]
 
 @[deprecated (since := "2026-07-03")] alias absNorm_pow_inertiaDeg' := absNorm_pow_inertiaDeg
 

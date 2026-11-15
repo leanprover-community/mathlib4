@@ -28,7 +28,6 @@ for the Bochner integral.
   w.r.t. a parameter
 - `intervalIntegral.continuous_primitive` and friends: primitives of interval integrable
   measurable functions are continuous
-
 -/
 
 public section
@@ -90,7 +89,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
     ∫ a, ∑' i, f i a ∂μ = ∑' i, ∫ a, f i a ∂μ := by
   by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
+  · simp [integral_of_not_completeSpace hG]
   simp only [integral_eq_setToFun]
   exact setToFun_tsum _ hf hf'
 
@@ -98,14 +97,14 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
     (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
     HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE, hasSum_zero]
+  · simp [integral_of_not_completeSpace hE, hasSum_zero]
   rw [integral_tsum (fun i ↦ (hF_int i).1)]
   · exact (hF_sum.of_norm_bounded fun i ↦ norm_integral_le_integral_norm _).hasSum
   have (i : ι) : ∫⁻ a, ‖F i a‖ₑ ∂μ = ‖∫ a, ‖F i a‖ ∂μ‖ₑ := by
-    dsimp [enorm]
-    rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnnorm,
+    dsimp [eNorm]
+    rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnNorm,
       Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
-    simp only [coe_nnnorm]
+    simp only [coe_nnNorm]
   rw [funext this]
   exact ENNReal.tsum_coe_ne_top_iff_summable.2 <| NNReal.summable_coe.1 hF_sum.abs
 
@@ -236,7 +235,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
     (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
     HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by
   by_cases hE : CompleteSpace E; swap
-  · simp [intervalIntegral, integral, hE, hasSum_zero]
+  · simp [intervalIntegral, integral_of_not_completeSpace hE, hasSum_zero]
   apply hasSum_integral_of_dominated_convergence
     (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
     (fun i => (map_continuous <| f i).aestronglyMeasurable)

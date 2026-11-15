@@ -25,7 +25,6 @@ a field structure, and so can all types with prime power cardinalities, and this
   prime power.
 * `Infinite.nonempty_field` : Any infinite type can be endowed a field structure.
 * `Field.nonempty_iff` : There is a field structure on type iff its cardinality is a prime power.
-
 -/
 
 public section

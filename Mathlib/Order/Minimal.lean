@@ -533,8 +533,6 @@ theorem minimal_apply_mem_iff (ht : t ⊆ Set.range f) :
     Minimal (· ∈ t) (f x) ↔ Minimal (fun x ↦ f x ∈ t) x := by
   rw [← f.minimal_apply_mem_inter_range_iff, inter_eq_self_of_subset_left ht]
 
-@[deprecated (since := "2026-04-07")] alias maximal_apply_iff := maximal_apply_mem_iff
-
 theorem image_setOfPred_minimal : f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
   _root_.image_monotone_setOfPred_minimal (by simp [f.le_iff_le])
 

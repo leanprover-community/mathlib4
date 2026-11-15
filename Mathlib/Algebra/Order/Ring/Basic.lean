@@ -60,7 +60,7 @@ attribute [bound] pow_le_one₀ one_le_pow₀
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
-  gcongr <;> try assumption
+  gcongr
   exacts [le_add_of_nonneg_right hb, le_add_of_nonneg_left ha]
 
 end OrderedSemiring

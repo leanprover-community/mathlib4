@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 
 import Mathlib.RingTheory.LocalProperties.Exactness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Meta properties of bijective ring homomorphisms
 

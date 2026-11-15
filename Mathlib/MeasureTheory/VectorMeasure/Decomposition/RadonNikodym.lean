@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Radon-Nikodym derivatives of vector measures
 

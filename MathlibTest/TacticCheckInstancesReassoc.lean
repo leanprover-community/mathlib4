@@ -1,4 +1,8 @@
-import Mathlib.Tactic.CategoryTheory.Reassoc
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+
+@[expose] public section
 
 set_option linter.tacticCheckInstances true
 

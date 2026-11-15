@@ -255,8 +255,6 @@ theorem single_finsetSum [AddCommMonoid M] (s : Finset ι) (f : ι → M) (a : �
   · rw [Multiset.map_map]
     rfl
 
-@[deprecated (since := "2026-04-08")] alias single_finset_sum := single_finsetSum
-
 theorem single_sum [Zero M] [AddCommMonoid N] (s : ι →₀ M) (f : ι → M → N) (a : α) :
     single a (s.sum f) = s.sum fun d c => single a (f d c) :=
   single_finsetSum _ _ _
@@ -270,8 +268,6 @@ theorem finsetSum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ 
     (∑ i ∈ S, f i) a = ∑ i ∈ S, f i a :=
   map_sum (applyAddHom a) _ _
 
-@[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
-
 @[simp]
 theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} {a₂ : β} :
     (f.sum g) a₂ = f.sum fun a₁ b => g a₁ b a₂ :=
@@ -280,8 +276,6 @@ theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M →
 @[simp, norm_cast] theorem coe_finsetSum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
     ⇑(∑ i ∈ S, f i) = ∑ i ∈ S, ⇑(f i) :=
   map_sum (coeFnAddHom : (α →₀ N) →+ _) _ _
-
-@[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
 
 @[simp, norm_cast] theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
     ⇑(f.sum g) = f.sum fun a₁ b => ⇑(g a₁ b) :=
@@ -302,8 +296,6 @@ theorem support_finsetSum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f 
   | cons _ _ _ ih =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
-
-@[deprecated (since := "2026-04-08")] alias support_finset_sum := support_finsetSum
 
 theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a, d = single a 1 := by
   classical
@@ -494,11 +486,6 @@ theorem prod_finsetSum_index [AddCommMonoid M] [CommMonoid N] {s : Finset ι} {g
     (∏ i ∈ s, (g i).prod h) = (∑ i ∈ s, g i).prod h :=
   Finset.cons_induction_on s rfl fun a s has ih => by
     rw [prod_cons, ih, sum_cons, prod_add_index' h_zero h_add]
-
-@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias prod_finset_sum_index := prod_finsetSum_index
 
 @[to_additive]
 theorem prod_sum_index [Zero M] [AddCommMonoid N] [CommMonoid P] {f : α →₀ M}

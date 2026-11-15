@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 public import Mathlib.Topology.UrysohnsLemma
+
 /-!
 # Urysohn's Metrization Theorem
 

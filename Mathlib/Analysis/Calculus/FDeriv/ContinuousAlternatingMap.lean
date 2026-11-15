@@ -54,7 +54,7 @@ theorem ContinuousAlternatingMap.hasStrictFDerivAt_toContinuousMultilinearMap_co
       ContinuousLinearMap.comp_apply, ← map_sub]
     apply LinearMap.isBigOTVS_rev_comp
     simp [isEmbedding_toContinuousMultilinearMap.nhds_eq_comap]
-  · exact (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.comp x h
+  · exact (toContinuousMultilinearMapCLM 𝕜).comp_hasStrictFDerivAt h
 
 section HasFDerivAt
 
@@ -189,17 +189,16 @@ theorem HasFDerivAt.continuousAlternatingMap_apply (hf : HasFDerivAt f f' x)
     HasFDerivAt
       (fun x ↦ f x (g · x))
       (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
-      x :=
-  (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp x hf
-    |>.continuousMultilinearMap_apply hg
+      x := by
+  exact (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp x hf |>.continuousMultilinearMap_apply hg
 
 theorem HasFDerivWithinAt.continuousAlternatingMap_apply (hf : HasFDerivWithinAt f f' s x)
     (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt
       (fun x ↦ f x (g · x))
       (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
-      s x :=
-  (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x hf
+      s x := by
+  exact (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x hf
     |>.continuousMultilinearMap_apply hg
 
 theorem fderivWithin_continuousAlternatingMap_apply (hf : DifferentiableWithinAt 𝕜 f s x)

@@ -21,7 +21,6 @@ embedding in the expected way and deduce that the preadditive Yoneda embedding i
 
 ## TODO
 * The Yoneda embedding is additive itself
-
 -/
 
 @[expose] public section
@@ -48,7 +47,6 @@ def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
       map_add' := fun _ _ => comp_add _ _ _ _ _ _
       map_smul' := fun _ _ => Eq.symm <| Category.assoc _ _ _ }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The Yoneda embedding for preadditive categories sends an object `Y` to the presheaf sending an
 object `X` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End Y`-module

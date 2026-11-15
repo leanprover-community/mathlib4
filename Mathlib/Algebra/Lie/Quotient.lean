@@ -30,6 +30,7 @@ lie algebra, quotient
 
 @[expose] public section
 
+open Function
 
 universe u v w w₁ w₂
 
@@ -209,6 +210,29 @@ lemma toEnd_comp_mk' (x : L) :
 end Quotient
 
 end LieSubmodule
+
+namespace LieIdeal
+
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
+
+/-- The map from a Lie algebra to its quotient by an ideal, as a morphism of Lie algebras. -/
+@[simps!]
+def mkQ : L →ₗ⁅R⁆ L ⧸ I :=
+  { __ := I.toSubmodule.mkQ
+    map_lie' := by simp }
+
+@[simp]
+theorem surjective_mkQ : Surjective I.mkQ := Quot.mk_surjective
+
+@[simp]
+theorem range_mkQ : I.mkQ.range = ⊤ := by simp [LieHom.range_eq_top]
+
+theorem mkQ_eq_zero {x : L} : I.mkQ x = 0 ↔ x ∈ I := Submodule.Quotient.mk_eq_zero I.toSubmodule
+
+@[simp]
+theorem mkQ_ker : I.mkQ.ker = I := by ext; simp
+
+end LieIdeal
 
 namespace LieHom
 

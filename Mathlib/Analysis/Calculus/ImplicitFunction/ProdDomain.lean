@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.Implicit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Implicit function theorem — domain a product space
 

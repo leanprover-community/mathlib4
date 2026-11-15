@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Ring.Subring.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise actions on subalgebras.
 

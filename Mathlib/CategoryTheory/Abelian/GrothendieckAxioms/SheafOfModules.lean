@@ -11,8 +11,6 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.PresheafOfModule
 
 /-!
 # The category of sheaves of modules is Grothendieck abelian
-
-
 -/
 
 universe u

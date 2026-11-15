@@ -18,7 +18,6 @@ on presheaves of modules.
 In case we have a morphism of presheaves of rings `S ⟶ F.op ⋙ R`, we also construct
 a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`, and
 we show that they interact with the composition of morphisms similarly as pseudofunctors.
-
 -/
 
 @[expose] public section
@@ -34,7 +33,6 @@ namespace PresheafOfModules
 
 variable (F : C ⥤ D)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `pushforward₀`. -/
 @[simps]
@@ -52,8 +50,6 @@ def pushforward₀Obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
         -- Work around an instance diamond for `restrictScalarsId'`
         (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
       exact (M.congr_map_apply (F.op.map_comp f g) x).trans (by simp) }
-
-@[deprecated (since := "2026-04-27")] alias pushforward₀_obj := pushforward₀Obj
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward functor on presheaves of modules for a functor `F : C ⥤ D` and

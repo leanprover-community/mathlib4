@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Topology.Bornology.Absorbs
+
 /-!
 # Local convexity
 

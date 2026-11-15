@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 - `LocalizedModule.map_exact`: Localization of modules is an exact functor.
 - `IsLocalizedModule.map_exact`: A variant expressed in terms of `IsLocalizedModule`.
-
 -/
 
 public section

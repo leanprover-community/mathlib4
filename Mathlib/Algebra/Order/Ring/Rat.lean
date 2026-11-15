@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The rational numbers form a linear ordered commutative ring
 

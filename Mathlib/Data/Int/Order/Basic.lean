@@ -11,6 +11,9 @@ public import Mathlib.Order.Defs.LinearOrder
 
 import Mathlib.Basic.Logic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The order relation on the integers
 -/

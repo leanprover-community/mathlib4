@@ -34,7 +34,6 @@ are not prime, and so only at most `φ(k)/k` fraction of the numbers from `k` to
 
 With `open scoped Nat.Prime`, we use the standard notation `π` to represent the prime counting
 function (and `π'` to represent the reindexed version).
-
 -/
 
 @[expose] public section
@@ -54,6 +53,7 @@ def primeCounting' : ℕ → ℕ :=
 /-- The prime counting function: Returns the number of primes less than or equal to the input.
 
 With `open scoped Nat.Prime`, this has notation `π`. -/
+@[oeis A230980]
 def primeCounting (n : ℕ) : ℕ :=
   primeCounting' (n + 1)
 

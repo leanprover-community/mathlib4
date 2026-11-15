@@ -16,7 +16,6 @@ import Mathlib.Algebra.GroupWithZero.Indicator
 
 This file puts algebraic structure (`Group`, `AddGroup`, etc)
 on the type of locally constant functions.
-
 -/
 
 @[expose] public section

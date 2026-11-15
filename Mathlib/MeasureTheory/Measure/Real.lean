@@ -493,7 +493,7 @@ open Lean Meta Qq Function
 @[positivity MeasureTheory.Measure.real _ _]
 meta def evalMeasureReal : PositivityExt where eval {_ _} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let .app (.app _ a) b ← whnfR e | throwError "not measureReal"
+  let .app (.app _ a) b ← whnf e | throwError "not measureReal"
   let p ← mkAppOptM ``MeasureTheory.measureReal_nonneg #[none, none, a, b]
   pure (.nonnegative p)
 

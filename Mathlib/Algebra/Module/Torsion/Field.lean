@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Torsion.Free
 
 import Mathlib.Algebra.GroupWithZero.Action.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vector spaces are torsion-free
 

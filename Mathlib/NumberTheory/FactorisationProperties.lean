@@ -57,20 +57,24 @@ namespace Nat
 variable {n m p : ℕ}
 
 /-- `n : ℕ` is _abundant_ if the sum of the proper divisors of `n` is greater than `n`. -/
+@[oeis A005101]
 def Abundant (n : ℕ) : Prop := n < ∑ i ∈ properDivisors n, i
 deriving Decidable
 
 /-- `n : ℕ` is _deficient_ if the sum of the proper divisors of `n` is less than `n`. -/
+@[oeis A005100]
 def Deficient (n : ℕ) : Prop := ∑ i ∈ properDivisors n, i < n
 deriving Decidable
 
 /-- A positive natural number `n` is _pseudoperfect_ if there exists a subset of the proper
   divisors of `n` such that the sum of that subset is equal to `n`. -/
+@[oeis A005835]
 def Pseudoperfect (n : ℕ) : Prop :=
   0 < n ∧ ∃ s ⊆ properDivisors n, ∑ i ∈ s, i = n
 deriving Decidable
 
 /-- `n : ℕ` is a _weird_ number if and only if it is abundant but not pseudoperfect. -/
+@[oeis A006037]
 def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 deriving Decidable
 

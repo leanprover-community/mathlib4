@@ -13,6 +13,9 @@ public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators over a fintype
 

@@ -28,7 +28,6 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 ## References
 
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
 -/
 
 @[expose] public section
@@ -165,7 +164,7 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 abbrev IsRegular (x : L) : Prop := LieModule.IsRegular R L x
 
 lemma isRegular_def :
-    IsRegular R x ↔ (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := Iff.rfl
+    IsRegular R x ↔ ((ad R L x).charpoly.coeff (rank R L) ≠ 0) := Iff.rfl
 
 lemma isRegular_iff_coeff_polyCharpoly_rank_ne_zero [DecidableEq ι] :
     IsRegular R x ↔

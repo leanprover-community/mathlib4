@@ -10,8 +10,8 @@ public import Mathlib.CategoryTheory.Groupoid.Discrete
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monad.Comonadicity
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
-/-!
 
+/-!
 # Functors into a complete monoidal closed category form a monoidal closed category.
 
 TODO (in progress by Joël Riou): make a more explicit construction of the internal hom in functor

@@ -206,9 +206,6 @@ theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 
 @[simp] theorem valued_toVal (r : R) : Valued.v (toVal v r) = v r := rfl
 
-@[deprecated (since := "2026-03-02")] alias apply_equiv := apply_ofVal
-@[deprecated (since := "2026-03-02")] alias apply_symm_equiv := valued_toVal
-
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
 
@@ -564,13 +561,13 @@ lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
   let u := WithZero.unzero (Units.ne_zero x)
   obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
   simp only [Set.mem_ofPred_eq, RingHom.id_apply]
-  set y₀ := h_val.orderMonoidIso x with hy₀_def
+  set y₀ := h_val.orderMonoidIso₀ x with hy₀_def
   have hy₀_ne_zero : y₀ ≠ 0 := by simp [hy₀_def]
   set y := (Units.mk0 y₀ hy₀_ne_zero) with hy_def
   use y
   intro b hb
-  rwa [← h_val.orderMonoidIso_spec, hy_def, Units.val_mk0, hy₀_def,
-    h_val.orderMonoidIso.strictMono.lt_iff_lt] at hb
+  rwa [← h_val.orderMonoidIso₀_spec, hy_def, Units.val_mk0, hy₀_def,
+    h_val.orderMonoidIso₀.strictMono.lt_iff_lt] at hb
 
 theorem IsEquiv.uniformContinuous_congr (h : v.IsEquiv w) :
     UniformContinuous (WithVal.congr v w (.refl R)) := by

@@ -11,7 +11,6 @@ import Mathlib.Algebra.Category.Grp.EpiMono
 import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 
 /-!
-
 # Category of abelian groups has enough injectives
 
 Given an abelian group `A`, then `i : A ⟶ ∏_{A⋆} ℚ ⧸ ℤ` defined by `i : a ↦ c ↦ c a` is an

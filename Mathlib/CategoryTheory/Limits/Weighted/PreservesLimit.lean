@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # Weighted limits preserve limits on the weight variable
-
 -/
 
 universe w v'' u'' v' u' v u

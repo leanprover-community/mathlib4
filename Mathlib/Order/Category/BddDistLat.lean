@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Category.BddLat
 public import Mathlib.Order.Category.DistLat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of bounded distributive lattices
 
