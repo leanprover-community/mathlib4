@@ -33,7 +33,7 @@ these are the short exact sequences `0 → s → L → L ⧸ s → 0`.
 
 public section
 
-namespace StrictLieRinehartIdeal
+namespace LieRinehartAlgebra
 
 variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
 
@@ -47,38 +47,39 @@ instance : AddCommGroup (L ⧸ s) := Submodule.Quotient.addCommGroup _
 
 instance : Module A (L ⧸ s) := Submodule.Quotient.module _
 
+variable (s) in
 /-- Map associating to an element in a Lie-Rinehart algebra `L`, an element in the quotient
 `L ⧸ s`, where `s` is a strict Lie-Rinehart ideal. -/
 abbrev mk : L → L ⧸ s := Submodule.Quotient.mk
 
 @[simp]
-theorem mk_eq_zero {l : L} : mk (s := s) l = 0 ↔ l ∈ s :=
+theorem mk_eq_zero {l : L} : mk s l = 0 ↔ l ∈ s :=
   Submodule.Quotient.mk_eq_zero s.toSubmodule
 
-theorem mk''_eq_mk (l : L) : Quotient.mk'' l = (mk l : L ⧸ s) := rfl
+theorem mk''_eq_mk (l : L) : Quotient.mk'' l = mk s l := rfl
 
 instance : LieRing (L ⧸ s) where
   bracket x y :=
-    Quotient.liftOn₂' x y (fun x' y' => mk ⁅x', y'⁆) (by
+    Quotient.liftOn₂' x y (fun x' y' => mk s ⁅x', y'⁆) (by
       intro a₁ a₂ b₁ b₂ ha hb
       rw [Submodule.quotientRel_def] at ha hb
       have h : ⁅a₁, a₂⁆ - ⁅b₁, b₂⁆ = ⁅a₁ - b₁, a₂⁆ + ⁅b₁, a₂ - b₂⁆ := by simp
       rw [Submodule.Quotient.eq]
       membership)
-  add_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (add_lie x y z)
-  lie_add := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (lie_add x y z)
-  lie_self := by rintro ⟨x⟩; exact congrArg mk (lie_self x)
-  leibniz_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (leibniz_lie x y z)
+  add_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg (mk s) (add_lie x y z)
+  lie_add := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg (mk s) (lie_add x y z)
+  lie_self := by rintro ⟨x⟩; exact congrArg (mk s) (lie_self x)
+  leibniz_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg (mk s) (leibniz_lie x y z)
 
-theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ s), (mk y : L ⧸ s)⁆ := rfl
+theorem mk_bracket (x y : L) : mk s ⁅x, y⁆ = ⁅mk s x, mk s y⁆ := rfl
 
 instance : Bracket (L ⧸ s) A where
   bracket x a := Quotient.liftOn' x (fun x' => ⁅x', a⁆) fun l l' h => by
     rw [Submodule.quotientRel_def] at h
     rw [← sub_eq_zero, ← sub_lie]
-    exact isotropic h a
+    exact StrictLieRinehartIdeal.isotropic h a
 
-theorem mk_bracket' (x : L) (a : A) : ⁅(mk x : L ⧸ s), a⁆ = ⁅x, a⁆ := rfl
+theorem mk_bracket' (x : L) (a : A) : ⁅mk s x, a⁆ = ⁅x, a⁆ := rfl
 
 instance : LieRingModule (L ⧸ s) A where
   add_lie := by rintro ⟨x⟩ ⟨y⟩ a; exact (add_lie x y a)
@@ -90,7 +91,7 @@ instance [LieRinehartRing A L] : LieRinehartRing A (L ⧸ s) where
   leibniz_mul_right' := by rintro ⟨x⟩ a b; exact (LieRinehartRing.leibniz_mul_right x a b)
   leibniz_smul_right' := by
     rintro ⟨x⟩ ⟨y⟩ a
-    exact congrArg mk (LieRinehartRing.leibniz_smul_right x y a)
+    exact congrArg (mk s) (LieRinehartRing.leibniz_smul_right x y a)
 
 variable {R : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRinehartRing A L]
   [LieRinehartAlgebra R A L]
@@ -98,11 +99,11 @@ variable {R : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRinehartRin
 instance : Module R (L ⧸ s) := Submodule.Quotient.module' _
 
 instance : LieAlgebra R (L ⧸ s) where
-  lie_smul := by rintro r ⟨x⟩ ⟨y⟩; exact congrArg mk (lie_smul r x y)
+  lie_smul := by rintro r ⟨x⟩ ⟨y⟩; exact congrArg (mk s) (lie_smul r x y)
 
 variable (s R) in
 open LieRinehartAlgebra in
-/-- `StrictLieRinehartIdeal.Quotient.mk` as a Lie-Rinehart homomorphism. -/
+/-- `LieRinehartAlgebra.Quotient.mk` as a Lie-Rinehart homomorphism. -/
 def mk' : L →ₗ⁅.id R A⁆ L ⧸ s where
   __ := (s.toSubmodule.restrictScalars R).mkQ
   map_lie' {_ _} := rfl
@@ -110,7 +111,7 @@ def mk' : L →ₗ⁅.id R A⁆ L ⧸ s where
   apply_lie' _ _ := rfl
 
 @[simp]
-lemma mk'_apply {l : L} : mk' s R l = mk l := by rfl
+lemma mk'_apply {l : L} : mk' s R l = mk s l := by rfl
 
 @[simp]
 theorem surjective_mk' : Function.Surjective (mk' s R) := Quot.mk_surjective
@@ -121,4 +122,4 @@ theorem mk'_eq_zero {l : L} : mk' s R l = 0 ↔ l ∈ s := Submodule.Quotient.mk
 theorem ker_mk' : (mk' s R).ker = s := by ext l; simp
 
 end Quotient
-end StrictLieRinehartIdeal
+end LieRinehartAlgebra
