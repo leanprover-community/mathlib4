@@ -411,19 +411,19 @@ def mkTransportLemmaCore (hyps' : Array Expr) (target : Expr) (proof : Expr)
   if !lVars.isEmpty || !rVars.isEmpty then
     throwError "Could not find subgoal(s) relating \
       `{lVars.toList.map Expr.fvar}` and `{rVars.toList.map Expr.fvar}`"
-  let mkKeys (e : Expr) : MetaM (Array DiscrTree.Key) := do
-    let e ← Core.transform e (pre := fun e ↦ do
+  let mkKeys (es : Array Expr) : MetaM (Array DiscrTree.Key) := do
+    let es ← es.mapM <| Core.transform (pre := fun e ↦ do
       if let .fvar fvarId := e.getAppFn then
         if hyps.contains fvarId then
           return .done (DiscrTree.mkNoindexAnnotation e)
       return .continue e)
-    DiscrTree.mkPath e
-  let mut lhsKeys ← mkKeys lhs
-  let mut rhsKeys ← mkKeys rhs
-  if let .other rel := rel then
-    let keys ← mkKeys rel
-    lhsKeys := keys ++ lhsKeys
-    rhsKeys := keys ++ rhsKeys
+    withReducible do
+      DiscrTree.mkPathAux (root := true) es #[] false
+  let (lhsKeys, rhsKeys) ←
+    if let .other rel := rel then
+      pure (← mkKeys #[lhs, rel], ← mkKeys #[rhs, rel])
+    else
+      pure (← mkKeys #[lhs], ← mkKeys #[rhs])
   let relKind := rel.toKind
   let lhsKey := ({ forward := true, relKind }, lhsKeys)
   let rhsKey := ({ forward := false, relKind }, rhsKeys)
