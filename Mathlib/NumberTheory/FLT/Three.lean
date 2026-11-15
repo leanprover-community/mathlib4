@@ -281,7 +281,7 @@ lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have := lambda_pow_four_dvd_c_cube S'
   rw [pow_dvd_iff_le_emultiplicity, emultiplicity_pow hζ.zeta_sub_one_prime',
     hm.emultiplicity_eq_multiplicity] at this
-  norm_cast at this; fail_if_progress norm_cast at this
+  fail_if_not_idempotent norm_cast at this
   exact (FiniteMultiplicity.pow_dvd_iff_le_multiplicity hm).mpr (by lia)
 
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/

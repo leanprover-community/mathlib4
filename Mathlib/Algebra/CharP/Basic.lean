@@ -75,7 +75,7 @@ lemma intCast_injOn_Ico : InjOn (Int.cast : ℤ → R) (Ico 0 p) := by
   rintro a ⟨ha₀, ha⟩ b ⟨hb₀, hb⟩ hab
   lift a to ℕ using ha₀
   lift b to ℕ using hb₀
-  norm_cast at *; fail_if_progress norm_cast at *
+  fail_if_not_idempotent norm_cast at *
   exact natCast_injOn_Iio _ _ ha hb hab
 
 end AddGroupWithOne

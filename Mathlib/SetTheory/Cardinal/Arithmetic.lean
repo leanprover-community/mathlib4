@@ -317,7 +317,7 @@ theorem add_eq_left_iff {a b : Cardinal} : a + b = a ↔ max ℵ₀ b ≤ a ∨ 
     right
     rw [← h, add_lt_aleph0_iff, lt_aleph0, lt_aleph0] at ha
     rcases ha with ⟨⟨n, rfl⟩, ⟨m, rfl⟩⟩
-    norm_cast at h ⊢; fail_if_progress norm_cast at h ⊢
+    fail_if_not_idempotent norm_cast at h ⊢
     rw [← add_right_inj, h, add_zero]
   · rintro (⟨h1, h2⟩ | h3)
     · rw [add_eq_max h1, max_eq_left h2]
@@ -364,7 +364,7 @@ protected theorem eq_of_add_eq_add_left {a b c : Cardinal} (h : a + b = a + c) (
     rcases ha with ⟨n, rfl⟩
     rcases hb with ⟨m, rfl⟩
     rcases hc with ⟨k, rfl⟩
-    norm_cast at h ⊢; fail_if_progress norm_cast at h ⊢
+    fail_if_not_idempotent norm_cast at h ⊢
     apply add_left_cancel h
 
 protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) (hb : b < ℵ₀) :

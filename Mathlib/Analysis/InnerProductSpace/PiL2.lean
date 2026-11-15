@@ -953,7 +953,7 @@ unit length. -/
 theorem OrthonormalBasis.det_to_matrix_orthonormalBasis : ‖a.toBasis.det b‖ = 1 := by
   have := (Matrix.det_of_mem_unitary (a.toMatrix_orthonormalBasis_mem_unitary b)).2
   rw [star_def, RCLike.mul_conj] at this
-  norm_cast at this; fail_if_progress norm_cast at this
+  fail_if_not_idempotent norm_cast at this
   rwa [pow_eq_one_iff_of_nonneg (norm_nonneg _) two_ne_zero] at this
 
 open OrthonormalBasis in

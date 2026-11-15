@@ -90,7 +90,7 @@ lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
     have := LinearIndependent.pair_iff.mp L.indep (m - α) (n - β)
       (by simp; linear_combination e)
     simp only [sub_eq_zero] at this
-    norm_cast at this; fail_if_progress norm_cast at this
+    fail_if_not_idempotent norm_cast at this
     aesop
   · lift α to ℤ using h₁
     lift β to ℤ using h₂
@@ -353,7 +353,7 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     norm_cast
     gcongr
     refine le_trans ?_ (mul_le_mul le_rfl (norm_sub_norm_le _ _) (by linarith) (by linarith))
-    norm_cast at *; fail_if_progress norm_cast at *
+    fail_if_not_idempotent norm_cast at *
     linarith
   · exact pow_pos (by simpa [sub_eq_zero]) _
   · exact Real.rpow_pos_of_pos (by simpa) _

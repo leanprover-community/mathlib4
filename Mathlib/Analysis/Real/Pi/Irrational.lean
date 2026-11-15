@@ -305,7 +305,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
     simp [field, div_pow] at e ⊢
     linear_combination e
   have : (0 : ℝ) < z ∧ (z : ℝ) < 1 := by simp [← hz, ← h, ← this, hn', hn]
-  norm_cast at this; fail_if_progress norm_cast at this
+  fail_if_not_idempotent norm_cast at this
   lia
 
 end

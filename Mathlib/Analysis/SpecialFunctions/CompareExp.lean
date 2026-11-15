@@ -131,7 +131,7 @@ theorem isLittleO_log_norm_re (hl : IsExpCmpFilter l) : (fun z => Real.log ‖z�
           rcases le_total |z.im| z.re with hle | hle
           · rwa [max_eq_left hle]
           · have H : 1 < |z.im| := h₁.trans_le hle
-            norm_cast at *; fail_if_progress norm_cast at *
+            fail_if_not_idempotent norm_cast at *
             rwa [max_eq_right hle, Real.norm_eq_abs, Real.norm_eq_abs, abs_of_pos (Real.log_pos H),
               ← Real.log_pow, Real.log_le_iff_le_exp (pow_pos (one_pos.trans H) _),
               abs_of_pos (one_pos.trans h₁)]

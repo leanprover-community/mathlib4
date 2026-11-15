@@ -297,7 +297,7 @@ protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ <
     exact coe_lt_top _
   lift a₂ to α using ha₂
   lift b₂ to α using hb₂
-  norm_cast at *; fail_if_progress norm_cast at *
+  fail_if_not_idempotent norm_cast at *
   exact CanonicallyOrderedAdd.mul_lt_mul_of_lt_of_lt ha hb
 
 variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
@@ -330,7 +330,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot �
     cases b
     · exact absurd h (bot_lt_coe _).not_ge
     simp only [← coe_mul, coe_le_coe] at *
-    norm_cast at x0; fail_if_progress norm_cast at x0
+    fail_if_not_idempotent norm_cast at x0
     exact mul_le_mul_of_nonneg_left h x0
 
 instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) where
@@ -345,7 +345,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot �
     cases b
     · exact absurd h (bot_lt_coe _).not_ge
     simp only [← coe_mul, coe_le_coe] at *
-    norm_cast at x0; fail_if_progress norm_cast at x0
+    fail_if_not_idempotent norm_cast at x0
     exact mul_le_mul_of_nonneg_right h x0
 
 instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) where
@@ -356,7 +356,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMon
     cases a
     · simp_rw [mul_bot x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
-    norm_cast at x0; fail_if_progress norm_cast at x0
+    fail_if_not_idempotent norm_cast at x0
     exact mul_lt_mul_of_pos_left h x0
 
 instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) where
@@ -367,7 +367,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
     cases a
     · simp_rw [bot_mul x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
-    norm_cast at x0; fail_if_progress norm_cast at x0
+    fail_if_not_idempotent norm_cast at x0
     gcongr
 
 instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) where
@@ -385,7 +385,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
     cases a
     · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
-    norm_cast at x0; fail_if_progress norm_cast at x0
+    fail_if_not_idempotent norm_cast at x0
     exact lt_of_mul_lt_mul_left h x0
 
 instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) where
@@ -403,7 +403,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
     cases a
     · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
-    norm_cast at x0; fail_if_progress norm_cast at x0
+    fail_if_not_idempotent norm_cast at x0
     exact lt_of_mul_lt_mul_right h x0
 
 instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) where
@@ -417,7 +417,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE 
     · rw [mul_bot x0.ne.symm, ← coe_mul] at h
       exact absurd h (bot_lt_coe _).not_ge
     simp only [← coe_mul, coe_le_coe] at *
-    norm_cast at x0; fail_if_progress norm_cast at x0
+    fail_if_not_idempotent norm_cast at x0
     exact le_of_mul_le_mul_left h x0
 
 instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) where
@@ -431,7 +431,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     · rw [bot_mul x0.ne.symm, ← coe_mul] at h
       exact absurd h (bot_lt_coe _).not_ge
     simp only [← coe_mul, coe_le_coe] at *
-    norm_cast at x0; fail_if_progress norm_cast at x0
+    fail_if_not_idempotent norm_cast at x0
     exact le_of_mul_le_mul_right h x0
 
 instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [IsOrderedRing α]

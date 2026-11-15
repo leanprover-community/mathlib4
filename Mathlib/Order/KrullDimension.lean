@@ -251,7 +251,7 @@ lemma height_eq_index_of_length_eq_height_last {p : LTSeries α} (h : p.length =
   intro p' hp'
   have hp'' := length_le_height_last (p := p'.smash (p.drop i) (by simpa))
   simp [← h] at hp''; clear h
-  norm_cast at *; fail_if_progress norm_cast at *
+  fail_if_not_idempotent norm_cast at *
   lia
 
 set_option backward.isDefEq.respectTransparency false in

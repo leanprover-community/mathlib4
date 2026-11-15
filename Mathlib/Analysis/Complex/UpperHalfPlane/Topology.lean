@@ -131,7 +131,7 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
   refine ⟨?_, by simp⟩
   have h : (N * (-n : ℝ) +ᵥ z).re = -N * Int.floor (z.re / N) + z.re := by
     simp only [n, mul_neg, vadd_re, neg_mul]
-  norm_cast at *; fail_if_progress norm_cast at *
+  fail_if_not_idempotent norm_cast at *
   rw [h, add_comm]
   simp only [neg_mul, Int.cast_neg, Int.cast_mul, Int.cast_natCast]
   have hnn : (0 : ℝ) < (N : ℝ) := by norm_cast at *

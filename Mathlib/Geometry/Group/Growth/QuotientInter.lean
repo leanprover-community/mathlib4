@@ -37,7 +37,7 @@ lemma card_pow_quotient_mul_pow_inter_subgroup_le :
   have hφ : Set.InjOn φ (π '' (A ^ m)) := invFunOn_injOn_image ..
   have hφA {a} (ha : a ∈ π '' (A ^ m)) : φ a ∈ A ^ m := by
     have := invFunOn_mem (by simpa using ha)
-    norm_cast at this; fail_if_progress norm_cast at this
+    fail_if_not_idempotent norm_cast at this
     simpa using this
   have hπφ {a} (ha : a ∈ π '' (A ^ m)) : π (φ a) = a := invFunOn_eq (by simpa using ha)
   calc
