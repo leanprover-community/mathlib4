@@ -6,6 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.Relrank
 public import Mathlib.RingTheory.LinearDisjoint
 
 import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
@@ -126,6 +127,12 @@ The following results are related to the equivalent characterizations in
 
 - `IntermediateField.LinearDisjoint.algEquiv_of_isAlgebraic`:
   linear disjointness is preserved by isomorphisms, provided that one of the field is algebraic.
+
+- `IntermediateField.relfinrank_sup_eq_relfinrank_inf`,
+  `IntermediateField.finrank_sup_mul_finrank_inf_eq`:
+  if `A` is a finite Galois extension, then the relative rank of `A ⊔ B` over `A` is equal to
+  the relative rank of `B` over `A ⊓ B`, and so the product of the ranks of `A ⊔ B` and `A ⊓ B`
+  is equal to the product of the ranks of `A` and `B`.
 
 ## Tags
 
@@ -432,6 +439,13 @@ theorem finrank_left_eq_finrank [Module.Finite F A] (h₁ : A.LinearDisjoint B) 
 theorem finrank_right_eq_finrank [Module.Finite F B] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) :
     finrank B E = finrank F A :=
   h₁.symm.finrank_left_eq_finrank (by rwa [sup_comm])
+
+/-- If `A` and `B` are linearly disjoint over `F` and `A` is finite over `F`, then the
+relative `Module.finrank` of `A ⊔ B` over `A` is the `Module.finrank` of `B` over `F`. -/
+theorem relfinrank_sup_left [Module.Finite F A] (H : A.LinearDisjoint B) :
+    relfinrank A (A ⊔ B) = finrank F B := by
+  rw [← mul_right_inj' (finrank_pos (R := F) (M := A)).ne',
+    finrank_bot_mul_relfinrank le_sup_left, H.finrank_sup]
 
 private theorem of_inf_eq_bot_aux [IsGalois F A] [FiniteDimensional F E] (h₁ : A ⊔ B = ⊤)
     (h₂ : A ⊓ B = ⊥) : A.LinearDisjoint B := by
@@ -758,5 +772,58 @@ theorem norm_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h�
   simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr(toSubalgebra $h₂)
 
 end LinearDisjoint
+
+variable (A B) in
+set_option backward.isDefEq.respectTransparency false in
+/-- If `A / F` is finite Galois, then the relative `Module.finrank` of `A ⊔ B` over `A` is the
+relative `Module.finrank` of `B` over `A ⊓ B`. -/
+theorem relfinrank_sup_eq_relfinrank_inf [IsGalois F A] [FiniteDimensional F A] :
+    relfinrank A (A ⊔ B) = relfinrank (A ⊓ B) B := by
+  have : FiniteDimensional F ↥(A ⊓ B) :=
+    FiniteDimensional.of_injective (inclusion inf_le_left).toLinearMap (RingHom.injective _)
+  by_cases hB : FiniteDimensional F B
+  swap
+  · have hsup : finrank F ↥(A ⊔ B) = 0 := finrank_of_not_finite fun _ ↦
+      hB (FiniteDimensional.of_injective (inclusion (le_sup_right : B ≤ A ⊔ B)).toLinearMap
+        (RingHom.injective _))
+    rw [← finrank_bot_mul_relfinrank le_sup_left, mul_eq_zero] at hsup
+    have hB := finrank_of_not_finite hB
+    rw [← finrank_bot_mul_relfinrank inf_le_right, mul_eq_zero] at hB
+    rw [hsup.resolve_left finrank_pos.ne', hB.resolve_left finrank_pos.ne']
+  let A' : IntermediateField ↥(A ⊓ B) E := A.extendScalars (F := A ⊓ B) inf_le_left
+  let B' : IntermediateField ↥(A ⊓ B) E := B.extendScalars (F := A ⊓ B) inf_le_right
+  let e : A ≃ₐ[↥(A ⊓ B)] A' := AlgEquiv.refl
+  let f : B ≃ₐ[↥(A ⊓ B)] B' := AlgEquiv.refl
+  have : FiniteDimensional ↥(A ⊓ B) A := FiniteDimensional.right F _ _
+  have : FiniteDimensional ↥(A ⊓ B) B := FiniteDimensional.right F _ _
+  have : FiniteDimensional ↥(A ⊓ B) A' := Module.Finite.equiv e.toLinearEquiv
+  have : FiniteDimensional ↥(A ⊓ B) B' := Module.Finite.equiv f.toLinearEquiv
+  have : IsGalois ↥(A ⊓ B) A := IsGalois.tower_top_of_isGalois F _ _
+  have : IsGalois ↥(A ⊓ B) A' := IsGalois.of_algEquiv e
+  have h : A' ⊓ B' = ⊥ := by
+    ext
+    simp [A', B', mem_bot]
+  calc relfinrank A (A ⊔ B) = relfinrank A' (A' ⊔ B') := by
+        rw [extendScalars_sup]
+        rfl
+    _ = finrank ↥(A ⊓ B) B := (LinearDisjoint.of_inf_eq_bot h).relfinrank_sup_left
+    _ = relfinrank (A ⊓ B) B := by
+        rw [relfinrank_eq_finrank_of_le inf_le_right]
+        rfl
+
+variable (A B) in
+/-- If `A / F` is Galois, then the product of the `Module.finrank`s of `A ⊔ B` and `A ⊓ B` over
+`F` is the product of the `Module.finrank`s of `A` and `B` over `F`. -/
+theorem finrank_sup_mul_finrank_inf_eq [IsGalois F A] :
+    finrank F ↥(A ⊔ B) * finrank F ↥(A ⊓ B) = finrank F A * finrank F B := by
+  by_cases hA : FiniteDimensional F A
+  swap
+  · have : ¬FiniteDimensional F ↥(A ⊔ B) := fun _ ↦
+      hA (FiniteDimensional.of_injective (inclusion (le_sup_left : A ≤ A ⊔ B)).toLinearMap
+        (RingHom.injective _))
+    rw [finrank_of_not_finite hA, finrank_of_not_finite this, zero_mul, zero_mul]
+  rw [← finrank_bot_mul_relfinrank (le_sup_left : A ≤ A ⊔ B), relfinrank_sup_eq_relfinrank_inf,
+    ← finrank_bot_mul_relfinrank (inf_le_right : A ⊓ B ≤ B)]
+  ring
 
 end IntermediateField
