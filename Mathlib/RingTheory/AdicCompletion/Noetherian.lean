@@ -83,7 +83,8 @@ lemma Polynomial.monomial_mem_of_mem {J : Ideal R} {f : R[X]} (mem : f ∈ J.map
   · simpa [eq] using Ideal.mem_map_C_iff.mp mem n
   · simp only [coeff_monomial_of_ne _ eq, zero_mem]
 
-lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG) :
+lemma exists_monomial_span_of_toAssociatedGraded_fg (J : Ideal R)
+    (fg : (J.toAssociatedGraded I).FG) :
     ∃ (ι : Type u) (f : ι → reesAlgebra I) (deg : ι → ℕ) (coeff : ι → R), Finite ι ∧
       (∀ i : ι, (f i).1 = monomial (deg i) (coeff i)) ∧ (∀ i : ι, coeff i ∈ J) ∧
         (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
@@ -208,7 +209,7 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
   apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
   have := isNoetherianRing_reesAlgebra_quotient fg
   obtain ⟨ι, f, deg, coeff, fin, eq, memJ, span_eq⟩ :=
-    exists_monomial_span_of_fg I J (Ideal.fg_of_isNoetherianRing _)
+    exists_monomial_span_of_toAssociatedGraded_fg I J (Ideal.fg_of_isNoetherianRing _)
   have : Fintype ι := Fintype.ofFinite ι
   have : Fintype (Set.range coeff) := Fintype.ofFinite _
   use (Set.range coeff).toFinset
