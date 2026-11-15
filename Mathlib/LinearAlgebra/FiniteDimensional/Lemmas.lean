@@ -202,14 +202,14 @@ variable {K : Type*} [DivisionRing K] {A B C D E : Type*} [AddCommGroup A] [Modu
   [AddCommGroup B] [Module K B] [AddCommGroup C] [Module K C] [AddCommGroup D] [Module K D]
   [AddCommGroup E] [Module K E] {f : A →ₗ[K] B} {g : B →ₗ[K] C} {h : C →ₗ[K] D} {j : D →ₗ[K] E}
 
-/-- In an exact sequence `A → B → C` of vector spaces, the dimension of `B` is the sum of the ranks
-of the two maps. -/
+/-- In an exact sequence `A → B → C` of vector spaces,
+`dim B = rank (A → B) + rank (B → C)`. -/
 theorem finrank_range_add_finrank_range [Module.Finite K B] (hfg : Exact f g) :
     finrank K (range f) + finrank K (range g) = finrank K B := by
   rw [← g.finrank_range_add_finrank_ker, hfg.linearMap_ker_eq, add_comm]
 
-/-- Over a division ring, the middle term of an exact sequence `A → B → C → D → E` is isomorphic
-to `coker (A → B) × ker (D → E)`. -/
+/-- In an exact sequence `A → B → C → D → E` of vector spaces,
+`C ≃ coker (A → B) × ker (D → E)`. -/
 noncomputable def linearEquivQuotientRangeProdKer (hfg : Exact f g) (hgh : Exact g h)
     (hhj : Exact h j) : C ≃ₗ[K] (B ⧸ range f) × ker j :=
   have hq := (ker h).exists_isCompl.choose_spec
