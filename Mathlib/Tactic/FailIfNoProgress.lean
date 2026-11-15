@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Thomas Murrills. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Murrills
+Authors: Thomas Murrills, Michael Rothgang
 -/
 module
 
@@ -10,9 +10,13 @@ public meta import Lean.Meta.Tactic.Util
 public import Mathlib.Init
 
 /-!
-# Fail if no progress
+# Tactic combinators about making (no) progress
 
-This implements the `fail_if_no_progress` tactic, which fails if no actual progress is made by the
+This implements tactic combinators to check if the following tactic sequence makes actual progress:
+the `fail_if_no_progress` tactic combinator fails if no actual progress is made,
+the `fail_if_progress` combinator fails if actual progress is made, and
+the `fail_if_not_idempotent` combinator fails if running the tactic sequence a second time makes
+progress.
 following tactic sequence.
 
 "Actual progress" means that either the number of goals has changed, that the
@@ -25,8 +29,12 @@ This means that, for example, `1 - 1` changing to `0` does not count as actual p
 example : (1 - 1 = 0) := by with_reducible rfl
 ```
 
-This tactic is useful in situations where we want to stop iterating some tactics if they're not
-having any effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
+`fail_if_no_progress` is useful in situations where we want to stop iterating some tactics if
+they're not having any effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
+
+`fail_if_progress` and `fail_if_not_idempotent` are great for investigating misconfigured
+`norm_cast` lemmas, e.g. `fail_if_not_idempotent norm_cast` can be used to detect bad configuration
+causing non-idempotency.
 -/
 
 public meta section
@@ -34,10 +42,6 @@ public meta section
 namespace Mathlib.Tactic
 
 open Lean Meta Elab Tactic
-
-/-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the main goal
-or the local context at reducible transparency. -/
-syntax (name := failIfNoProgress) "fail_if_no_progress " tacticSeq : tactic
 
 /-- `lctxIsDefEq l₁ l₂` compares two lists of `Option LocalDecl`s (as returned from e.g.
 `(← (← getMainGoal).getDecl).lctx.decls.toList`). It returns `true` if they have the same
@@ -79,10 +83,52 @@ def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List
     return l
   throwError "no progress made on\n{goal}"
 
+/-- Run `tacs : TacticM Unit` on `goal`, and fail if progress is made. -/
+def runAndFailIfProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
+  let l ← run goal tacs
+  try
+    let [newGoal] := l | failure
+    goal.withContext do
+      -- Check that the local contexts are compatible
+      let ctxDecls := (← goal.getDecl).lctx.decls.toList
+      let newCtxDecls := (← newGoal.getDecl).lctx.decls.toList
+      guard <|← withNewMCtxDepth <| withReducible <| lctxIsDefEq ctxDecls newCtxDecls
+      -- They are compatible, so now we can check that the goals are equivalent
+      guard <|← withNewMCtxDepth <| withReducible <| isDefEq (← newGoal.getType) (← goal.getType)
+  catch _ =>
+    throwError "progress made on\n{goal}"
+  return l
+
+/-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the main goal
+or the local context at reducible transparency. -/
+syntax (name := failIfNoProgress) "fail_if_no_progress " tacticSeq : tactic
+
 elab_rules : tactic
 | `(tactic| fail_if_no_progress $tacs) => do
   let goal ← getMainGoal
   let l ← runAndFailIfNoProgress goal (evalTactic tacs)
   replaceMainGoal l
+
+/-- `fail_if_progress tacs` evaluates `tacs`, and fails if progress is made on the main goal
+or the local context at reducible transparency. -/
+syntax (name := failIfProgress) "fail_if_progress " tacticSeq : tactic
+
+elab_rules : tactic
+| `(tactic| fail_if_progress $tacs) => do
+  let goal ← getMainGoal
+  let l ← runAndFailIfProgress goal (evalTactic tacs)
+  replaceMainGoal l
+
+/-- `fail_if_not_idempotent tacs` evaluates `tacs`, then evaluates `tacs` again on any remaining
+goals, and fails if progress is made in the second run (on the main goal
+or the local context at reducible transparency). -/
+syntax (name := failIfNotIdempotent) "fail_if_not_idempotent " tacticSeq : tactic
+
+elab_rules : tactic
+| `(tactic| fail_if_not_idempotent $tacs) => do
+  let goal ← getMainGoal
+  let middle ← run goal (evalTactic tacs)
+  let newGoals := (← middle.mapM (fun g ↦ runAndFailIfProgress g (evalTactic tacs))).flatten
+  replaceMainGoal newGoals
 
 end Mathlib.Tactic
