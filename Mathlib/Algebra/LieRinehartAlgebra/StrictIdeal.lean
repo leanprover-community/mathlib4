@@ -48,7 +48,7 @@ structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module 
   lie_mem_of_left' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier := by membership
   isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0
 
-namespace StrictLieRinehartIdeal
+namespace LieRinehartAlgebra
 
 /-- Forgetting that a strict Lie-Rinehart ideal is also a Lie ideal. -/
 add_decl_doc StrictLieRinehartIdeal.toSubmodule
@@ -56,7 +56,7 @@ add_decl_doc StrictLieRinehartIdeal.toSubmodule
 variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
 
 lemma toSubmodule_injective :
-    (toSubmodule : StrictLieRinehartIdeal A L → Submodule A L).Injective :=
+    (StrictLieRinehartIdeal.toSubmodule : StrictLieRinehartIdeal A L → Submodule A L).Injective :=
   fun ⟨s, _, _⟩ t ↦ by congr!
 
 instance : SetLike (StrictLieRinehartIdeal A L) L where
@@ -93,7 +93,7 @@ theorem ext {s t : StrictLieRinehartIdeal A L} (h : ∀ x : L, x ∈ s ↔ x ∈
   SetLike.ext h
 
 @[simp]
-lemma coe_mk (s : Submodule A L) (h₁) (h₂) : (mk s h₁ h₂ : Set L) = s := rfl
+lemma coe_mk (s : Submodule A L) (h₁) (h₂) : (StrictLieRinehartIdeal.mk s h₁ h₂ : Set L) = s := rfl
 
 @[simp, membership .]
 theorem mem_toSubmodule {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toSubmodule ↔ x ∈ s := .rfl
@@ -182,14 +182,14 @@ theorem toLieIdeal_injective : Function.Injective
 
 @[simp]
 theorem toLieIdeal_inj {s t : StrictLieRinehartIdeal A L} :
-    s.toLieIdeal R = t.toLieIdeal R ↔ s = t := toLieIdeal_injective.eq_iff
+    toLieIdeal R s = toLieIdeal R t ↔ s = t := toLieIdeal_injective.eq_iff
 
 @[simp]
-theorem coe_toLieIdeal {s : StrictLieRinehartIdeal A L} : ((s.toLieIdeal R) : Set L) = s := by
+theorem coe_toLieIdeal {s : StrictLieRinehartIdeal A L} : ((toLieIdeal R s) : Set L) = s := by
   rfl
 
 @[simp]
-theorem mem_toLieIdeal {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toLieIdeal R ↔ x ∈ s := .rfl
+theorem mem_toLieIdeal {s : StrictLieRinehartIdeal A L} {x} : x ∈ toLieIdeal R s ↔ x ∈ s := .rfl
 
 section LieModule
 
@@ -219,7 +219,7 @@ def incl (s : StrictLieRinehartIdeal A L) : s →ₗ⁅.id R A⁆ L where
   apply_lie' a x := rfl
 
 @[simp]
-theorem coe_incl {s : StrictLieRinehartIdeal A L} : ⇑(s.incl R) = ((↑) : s → L) := by rfl
+theorem coe_incl {s : StrictLieRinehartIdeal A L} : ⇑(incl R s) = ((↑) : s → L) := by rfl
 
 variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ A] [LieAlgebra R L₁]
   [LieRing L₂] [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂]
@@ -240,11 +240,7 @@ def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L
 
 @[simp]
 lemma mem_comap {s : StrictLieRinehartIdeal A L₂} {f : L₁ →ₗ⁅.id R A⁆ L₂} {x : L₁} :
-    x ∈ s.comap f ↔ f x ∈ s := .rfl
-
-end StrictLieRinehartIdeal
-
-namespace LieRinehartAlgebra
+    x ∈ comap f s ↔ f x ∈ s := .rfl
 
 namespace Hom
 
@@ -254,7 +250,7 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
 
 /-- The kernel of a Lie-Rinehart homomorphism `f`, which lies over the
 identity of `A`, is a strict Lie-Rinehart ideal. -/
- def ker : StrictLieRinehartIdeal A L₁ := .comap f 0
+ def ker : StrictLieRinehartIdeal A L₁ := comap f 0
 
 @[simp] theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := .rfl
 
