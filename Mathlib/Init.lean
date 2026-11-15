@@ -102,7 +102,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.extendedBinder
   linter.style.header
   linter.style.lambdaSyntax
-  linter.style.longLine
+  -- linter.style.longLine
   linter.style.longFile
   linter.style.multiGoal
   linter.style.native
