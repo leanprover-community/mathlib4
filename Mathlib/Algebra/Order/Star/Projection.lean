@@ -95,14 +95,8 @@ lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
   tfae_have 2 ↔ 6 := this.out 1 5
   tfae_have 2 ↔ 7 := this.out 1 6
   tfae_have 2 → 1 := fun h ↦ by simpa using h.nonneg
-  tfae_have 1 → 8 := fun h ↦ by
-    refine le_antisymm ?_ ?_
-    · rw [← sub_nonneg]
-      convert star_mul_self_nonneg (p - q * p) using 1
-      simp [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq, mul_sub, sub_mul, ← mul_assoc,
-        hp.isIdempotentElem.eq, hq.isIdempotentElem.mul_mul_self]
-    · simpa [hp.isIdempotentElem.mul_mul_self, hp.isIdempotentElem.eq] using
-        hp.isSelfAdjoint.conjugate_le_conjugate h
+  tfae_have 1 → 5 := fun h ↦ hq.mul_right_and_mul_left_of_nonneg_of_le hp.nonneg h |>.2
+  tfae_have 6 → 8 := fun h ↦ by rw [h, hp.isIdempotentElem.eq]
   tfae_have 8 → 6 := fun h ↦ by
     rw [← sub_eq_zero, ← mul_star_self_eq_zero]
     simp [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq, mul_sub, sub_mul, ← mul_assoc,
