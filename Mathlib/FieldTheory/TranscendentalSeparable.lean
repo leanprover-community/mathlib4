@@ -231,18 +231,13 @@ noncomputable def Polynomial.quotientTensorEquiv (f : K[X]) :
             Polynomial.tensorScalarEquiv_algebraMap_eq_map_algebraMap]))
 
 open IntermediateField.algebraAdjoinAdjoin in
-lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isDomain
-    {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
-    [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
-    [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] [IsDomain S] :
-    IsReduced (TensorProduct k K S) := by
+private lemma isDomain_tensorProduct_adjoin_algebraicIndependent {ι : Type*} (f : ι → K)
+    (h : AlgebraicIndependent k f) [IsDomain S] :
+    IsDomain ((IntermediateField.adjoin k (Set.range f)) ⊗[k] S) := by
   set K' := IntermediateField.adjoin k (Set.range f)
-  have : Algebra.IsAlgebraic K' K := isT.isAlgebraic_field
-  have : FiniteDimensional K' K := Algebra.finite_of_essFiniteType_of_isAlgebraic
-  obtain ⟨y, hy⟩ := Field.exists_primitive_element K' K
   let kx := Algebra.adjoin k (Set.range f)
   let e : TensorProduct k kx S ≃ₐ[k] MvPolynomial ι S :=
-    (Algebra.TensorProduct.congr (AlgebraicIndependent.aevalEquiv isT.1).symm AlgEquiv.refl).trans
+    (Algebra.TensorProduct.congr (AlgebraicIndependent.aevalEquiv h).symm AlgEquiv.refl).trans
       ((Algebra.TensorProduct.comm k _ _).trans
         (MvPolynomial.scalarRTensorAlgEquiv.restrictScalars k))
   have isd1 : IsDomain (TensorProduct k kx S) := e.injective.isDomain
@@ -256,8 +251,18 @@ lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isDomain
     simp only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, Submonoid.mem_comap, nz]
     exact fun hx ↦ (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective kx (kx ⊗[k] S))).mpr hx
   have isd2 := @IsLocalization.isDomain_of_le_nonZeroDivisors _ _ _ _ _ _ isl isd1 le_nz
-  have isd3 : IsDomain (K' ⊗[k] S) :=
-    (Algebra.TensorProduct.cancelBaseChange k kx kx K' S).symm.injective.isDomain
+  exact (Algebra.TensorProduct.cancelBaseChange k kx kx K' S).symm.injective.isDomain
+
+lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isDomain
+    {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
+    [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
+    [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] [IsDomain S] :
+    IsReduced (TensorProduct k K S) := by
+  set K' := IntermediateField.adjoin k (Set.range f)
+  have : Algebra.IsAlgebraic K' K := isT.isAlgebraic_field
+  have : FiniteDimensional K' K := Algebra.finite_of_essFiniteType_of_isAlgebraic
+  obtain ⟨y, hy⟩ := Field.exists_primitive_element K' K
+  have isd3 := isDomain_tensorProduct_adjoin_algebraicIndependent k K S f isT.1
   let f := minpoly K' y
   have fsep : f.Separable := sep.1 y
   have fmon : f.Monic := minpoly.monic (Algebra.IsIntegral.isIntegral y)
