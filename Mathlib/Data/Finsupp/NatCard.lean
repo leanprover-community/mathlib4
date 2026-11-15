@@ -26,6 +26,9 @@ is `Nat.choose (Nat.card α + n) n`.
 
 public noncomputable section
 
+
+/-- Equivalence between finitely supported functions on `Option α` whose values sum to `n`
+and finitely supported functions on `α` whose values sum to at most `n`. -/
 def Finsupp.optionSubtypeSumEquiv (α β : Type*)
     [AddCommMonoid β] [LinearOrder β] [Sub β] [OrderedSub β] [CanonicallyOrderedAdd β]
     [AddLeftReflectLE β] (n : β) :
