@@ -20,7 +20,6 @@ group,
 thereby showing that the forgetful functor `forget₂ GrpCat MonCat` preserves filtered colimits.
 In particular, this implies that `forget GrpCat` preserves filtered colimits.
 Similarly for `AddGrpCat`, `CommGrpCat` and `AddCommGrpCat`.
-
 -/
 
 @[expose] public section

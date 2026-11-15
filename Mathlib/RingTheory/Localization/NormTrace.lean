@@ -31,7 +31,6 @@ This file contains results on the combination of `IsLocalization` and `Algebra.n
 ## Tags
 
 field norm, algebra norm, localization
-
 -/
 
 public section

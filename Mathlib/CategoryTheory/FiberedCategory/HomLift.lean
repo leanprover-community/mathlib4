@@ -27,7 +27,6 @@ it is used to make the code more readable.
 The class `IsHomLift` is defined as an inductive with the single constructor
 `.map (φ : a ⟶ b) : IsHomLift p (p.map φ) φ`, similar to how `Eq a b` has the single constructor
 `.rfl (a : α) : Eq a a`.
-
 -/
 
 @[expose] public section

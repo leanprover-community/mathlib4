@@ -29,7 +29,6 @@ Let `M` be a finitely presented `R`-module.
 - `Module.rankAtStalk`: The function `Spec R → ℕ` sending `x` to `rank_{Rₓ} Mₓ`.
 - `Module.isLocallyConstant_rankAtStalk`:
   If `M` is flat over `R`, then `rankAtStalk` is locally constant.
-
 -/
 
 @[expose] public section

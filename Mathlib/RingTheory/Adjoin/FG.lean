@@ -24,7 +24,6 @@ This file develops the basic theory of finitely-generated subalgebras.
 ## Tags
 
 adjoin, algebra, finitely-generated algebra
-
 -/
 
 @[expose] public section

@@ -25,7 +25,6 @@ This file contains lemmas to work with the maximal lengths of chains of arbitrar
 - `Set.chainHeight_mono`: If `s ⊆ t` then `s.chainHeight ≤ t.chainHeight`.
 - `Set.chainHeight_eq_of_relEmbedding`: If `f` is an relation embedding, then
   `(f '' s).chainHeight = s.chainHeight`.
-
 -/
 
 @[expose] public section

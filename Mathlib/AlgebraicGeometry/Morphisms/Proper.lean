@@ -19,7 +19,6 @@ Note that we don't require quasi-compact, since this is implied by universally c
 - `AlgebraicGeometry.finite_appTop_of_universallyClosed`:
   If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
   then `Γ(X, ⊤)` is finite dimensional over `K`.
-
 -/
 
 public section

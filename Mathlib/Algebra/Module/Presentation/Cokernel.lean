@@ -23,7 +23,6 @@ generators of `M₂`. Then, we obtain a presentation
 
 More generally, if we have an exact sequence `M₁ → M₂ → M₃ → 0`,
 we obtain a presentation of `M₃`, see `Presentation.ofExact`.
-
 -/
 
 @[expose] public section

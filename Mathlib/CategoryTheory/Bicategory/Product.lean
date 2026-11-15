@@ -18,7 +18,6 @@ We define:
 * `fst`       : the strict pseudofunctor `⟨X, Y⟩ ↦ X`
 * `snd`       : the strict pseudofunctor `⟨X, Y⟩ ↦ Y`
 * `swap`      : the strict pseudofunctor `B × C ⥤ C × B` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
-
 -/
 
 @[expose] public section

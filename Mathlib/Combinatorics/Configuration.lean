@@ -33,7 +33,6 @@ This file introduces abstract configurations of points and lines, and proves som
 
 Together, these four statements say that any two of the following properties imply the third:
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
-
 -/
 
 @[expose] public section

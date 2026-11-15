@@ -23,7 +23,6 @@ This file studies linear maps on inner product spaces.
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 @[expose] public section

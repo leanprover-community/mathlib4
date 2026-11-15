@@ -21,7 +21,6 @@ import Mathlib.Util.CompileInductive
 This file implements (d)simprocs to compute various objects related to divisors:
 - `Nat.divisors_ofNat`: computes `Nat.divisors n` for explicit values of `n`
 - `Nat.properDivisors_ofNat`: computes `Nat.properDivisors n` for explicit values of `n`
-
 -/
 
 public meta section

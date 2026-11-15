@@ -34,7 +34,6 @@ Gaussian distributions over `EuclideanSpace ℝ ι`.
 ## Tags
 
 multivariate Gaussian distribution
-
 -/
 
 @[expose] public section

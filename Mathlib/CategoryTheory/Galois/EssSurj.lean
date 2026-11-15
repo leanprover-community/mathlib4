@@ -33,7 +33,6 @@ We first show that every finite, discrete `Aut F`-set `Y` has a decomposition in
 components and each connected component is of the form `Aut F ⧸ U` for an open subgroup `U`.
 Since `H` preserves finite coproducts, it hence suffices to treat the case `Y = Aut F ⧸ U`.
 For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Project Tag 0BN4.
-
 -/
 
 @[expose] public section

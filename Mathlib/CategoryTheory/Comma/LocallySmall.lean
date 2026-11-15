@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.EssentiallySmall
 We introduce instances showing that the various comma categories
 are locally small when the relevant categories that are
 involved are locally small.
-
 -/
 
 public section

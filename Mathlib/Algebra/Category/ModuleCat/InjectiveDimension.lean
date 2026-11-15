@@ -31,7 +31,6 @@ all universe level where the ring `R` is small.
 
 * `ModuleCat.injectiveDimension_eq_of_linearEquiv`: `injectiveDimension` is preserved
   under arbitrary linear equivalence.
-
 -/
 
 public section

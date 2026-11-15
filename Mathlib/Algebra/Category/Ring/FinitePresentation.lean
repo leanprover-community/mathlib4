@@ -18,7 +18,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
 
 In this file, we show that finitely presented algebras are finitely presentable in `Under R`,
 i.e. `Hom_R(S, -)` preserves filtered colimits.
-
 -/
 
 public section

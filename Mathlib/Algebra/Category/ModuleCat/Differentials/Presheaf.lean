@@ -34,7 +34,6 @@ derivations for `S ⟶ F.op ⋙ R` identify to derivations
 for `S' ⟶ R` where `S'` is the pullback by `F` of the presheaf of
 commutative rings `S` (the data is the same: it suffices
 to show that the two vanishing conditions `d_app` are equivalent).
-
 -/
 
 @[expose] public section

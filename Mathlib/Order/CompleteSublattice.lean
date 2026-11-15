@@ -23,7 +23,6 @@ invariant submodules of some module with respect to a linear map.
 * `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
 * `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
 * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
-
 -/
 
 @[expose] public section

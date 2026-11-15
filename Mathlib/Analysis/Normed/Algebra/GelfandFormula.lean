@@ -36,7 +36,6 @@ complex Banach algebra has nonempty spectrum.
 Note that it is important here that the complex analysis files are privately imported, since the
 material proven here gets used in contexts that have nothing to do with complex analysis
 (i.e. C⋆-algebras, etc).
-
 -/
 
 @[expose] public section
@@ -188,12 +187,15 @@ theorem spectralRadius_lt_of_forall_lt (a : A) {r : ℝ≥0}
 
 
 open Polynomial in
+omit [Nontrivial A] in
 /-- The **spectral mapping theorem** for polynomials in a Banach algebra over `ℂ`. -/
 theorem map_polynomial_aeval (a : A) (p : ℂ[X]) :
-    spectrum ℂ (aeval a p) = (fun k => eval k p) '' spectrum ℂ a :=
-  map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
+    spectrum ℂ (aeval a p) = (fun k => eval k p) '' spectrum ℂ a := by
+  nontriviality A
+  exact map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
 
 open Polynomial in
+omit [Nontrivial A] in
 /-- A specialization of the spectral mapping theorem for polynomials in a Banach algebra over `ℂ`
 to monic monomials. -/
 protected theorem map_pow (a : A) (n : ℕ) :

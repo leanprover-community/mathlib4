@@ -20,7 +20,6 @@ The main results are the following:
   is the Lie bracket of the pullbacks.
 * `VectorField.leibniz_identity_mlieBracket` is the Leibniz (or Jacobi)
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
-
 -/
 
 public section

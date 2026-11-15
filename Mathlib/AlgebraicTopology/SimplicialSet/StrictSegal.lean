@@ -21,7 +21,6 @@ the nerve of its homotopy category.
 
 `StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
 in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
-
 -/
 
 @[expose] public section

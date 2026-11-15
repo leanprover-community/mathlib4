@@ -65,8 +65,7 @@ theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
   simp only [Finsupp.sum, convexCombination]
   -- Expand convexCombination d using base point b
   conv_lhs =>
-    congr; · skip
-    ext d
+    enter [2, d]
     rw [d.weights.support.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one
         _ _ d.total b, vadd_vsub, Finset.weightedVSubOfPoint_apply]
     simp only [id]

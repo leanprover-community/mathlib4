@@ -64,7 +64,6 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 * `LightCondSet.LocallyConstant.iso`: the functor `LightCondSet.LocallyConstant.functor` is
   isomorphic to the functor `LightCondensed.discrete (Type _)` (the constant sheaf functor from sets
   to light condensed sets).
-
 -/
 
 @[expose] public section

@@ -16,7 +16,6 @@ import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 We construct the explicit coproducts and coequalizers of `LocallyRingedSpace`.
 It then follows that `LocallyRingedSpace` has all colimits, and
 `forgetToSheafedSpace` preserves them.
-
 -/
 
 @[expose] public section

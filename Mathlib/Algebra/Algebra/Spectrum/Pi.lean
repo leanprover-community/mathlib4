@@ -26,7 +26,6 @@ union of the (quasi)spectra.
 ## TODO
 
 + Apply these results to block matrices.
-
 -/
 
 @[expose] public section

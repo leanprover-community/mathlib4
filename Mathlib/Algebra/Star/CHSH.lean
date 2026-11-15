@@ -72,7 +72,6 @@ There is a CHSH tuple in 4-by-4 matrices such that
   *Proposed experiment to test local hidden-variable theories*][zbMATH06785026]
 * [Bell, *On the Einstein Podolsky Rosen Paradox*][MR3790629]
 * [Tsirelson, *Quantum generalizations of Bell's inequality*][MR577178]
-
 -/
 
 public section

@@ -16,7 +16,6 @@ import Mathlib.RingTheory.Localization.Finiteness
 # The meta properties of finitely-presented ring homomorphisms.
 
 The main result is `RingHom.finitePresentation_isLocal`.
-
 -/
 
 public section

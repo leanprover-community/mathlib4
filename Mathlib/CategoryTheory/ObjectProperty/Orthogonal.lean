@@ -15,7 +15,6 @@ We define `P.rightOrthogonal` as the property of objects `Y` such that
 any map `f : X ⟶ Y` vanishes when `P X` holds. Similarly, we define
 `P.leftOrthogonal` as the property of objects `X` such that
 any map `f : X ⟶ Y` vanishes when `P Y` holds.
-
 -/
 
 @[expose] public section

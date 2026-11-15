@@ -24,7 +24,6 @@ which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 * `Padic.withValUniformEquiv`: the uniform space isomorphism between
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
-
 -/
 
 @[expose] public section

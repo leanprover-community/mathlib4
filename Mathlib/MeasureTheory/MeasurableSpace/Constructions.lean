@@ -73,6 +73,24 @@ lemma measurable_up : Measurable (ULift.up : α → ULift α) := fun _ ↦ id
 
 end ULift
 
+section TypeTags
+variable [MeasurableSpace α]
+
+instance : MeasurableSpace (Additive α) := ‹MeasurableSpace α›.map Additive.ofMul
+instance : MeasurableSpace (Multiplicative α) := ‹MeasurableSpace α›.map Multiplicative.ofAdd
+
+lemma measurable_ofMul : Measurable (Additive.ofMul : α → Additive α) := fun _ ↦ id
+lemma measurable_toMul : Measurable (Additive.toMul : Additive α → α) := fun _ ↦ id
+lemma measurable_ofAdd : Measurable (Multiplicative.ofAdd : α → Multiplicative α) := fun _ ↦ id
+lemma measurable_toAdd : Measurable (Multiplicative.toAdd : Multiplicative α → α) := fun _ ↦ id
+
+@[simp] lemma measurableSet_preimage_toMul {s : Set α} :
+    MeasurableSet (Additive.toMul ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+@[simp] lemma measurableSet_preimage_toAdd {s : Set α} :
+    MeasurableSet (Multiplicative.toAdd ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+
+end TypeTags
+
 section Nat
 
 variable {mα : MeasurableSpace α}

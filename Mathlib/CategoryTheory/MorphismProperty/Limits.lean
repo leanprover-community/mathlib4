@@ -23,7 +23,6 @@ We define `P.universally` for the class of morphisms which satisfy `P` after any
 
 We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimitsOfShape`,
 `IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
-
 -/
 
 @[expose] public section

@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Subobject.Limits
 
 We construct an explicit order isomorphism between the categorical subobjects of an `R`-module `M`
 and its submodules. This immediately implies that the category of `R`-modules is well-powered.
-
 -/
 
 @[expose] public section

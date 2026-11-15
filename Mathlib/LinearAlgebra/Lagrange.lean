@@ -690,11 +690,12 @@ theorem sum_nodalWeight_mul_inv_sub_ne_zero (hvs : Set.InjOn v s) (hx : ∀ i �
       (eval_interpolate_not_at_node 1 hx).symm
 
 /-- This is the second barycentric form of the Lagrange interpolant. -/
-theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
-    (hx : ∀ i ∈ s, x ≠ v i) :
+theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hx : ∀ i ∈ s, x ≠ v i) :
     eval x (interpolate s v r) =
       (∑ i ∈ s, nodalWeight s v i * (x - v i)⁻¹ * r i) /
         ∑ i ∈ s, nodalWeight s v i * (x - v i)⁻¹ := by
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp
   rw [← div_one (eval x (interpolate s v r)), ← @eval_one _ _ x, ← interpolate_one hvs hs,
     eval_interpolate_not_at_node r hx, eval_interpolate_not_at_node 1 hx]
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]

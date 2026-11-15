@@ -16,7 +16,6 @@ preserve the correct limits and colimits.
 
 See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
-
 -/
 
 @[expose] public section

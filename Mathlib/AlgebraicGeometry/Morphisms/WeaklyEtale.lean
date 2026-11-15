@@ -25,7 +25,6 @@ morphism of finite presentation is étale.
 - When weakly étale ring homomorphisms are in mathlib, show
   `HasRingHomProperty WeaklyEtale RingHom.WeaklyEtale` (@chrisflav).
 - Deduce from this that weakly étale morphisms of finite presentation are étale (@chrisflav).
-
 -/
 
 public section

@@ -51,7 +51,6 @@ an arbitrary `FintypeCat.{w}`.
 ## References
 
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
-
 -/
 
 @[expose] public section
@@ -284,7 +283,6 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
   `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GrpCat).sections`
 
   which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
-
 -/
 
 -- Local notation for `F` considered as a functor to types instead of finite types.

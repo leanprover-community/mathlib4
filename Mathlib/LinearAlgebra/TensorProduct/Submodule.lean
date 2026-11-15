@@ -33,7 +33,6 @@ mainly used in the definition of linearly disjointness (`Submodule.LinearDisjoin
   `R →ₗ[R] (1 : Submodule R S)` is not defined directly in mathlib yet.
 
 There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in earlier files.
-
 -/
 
 @[expose] public section
