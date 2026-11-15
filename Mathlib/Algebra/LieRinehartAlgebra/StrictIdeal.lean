@@ -207,8 +207,6 @@ end LieModule
 /-- A strict Lie-Rinehart ideal forms a new Lie-Rinehart algebra. -/
 instance {s : StrictLieRinehartIdeal A L} : LieRinehartAlgebra R A s where
 
-open scoped LieRinehartAlgebra
-
 variable (R) in
 /-- The embedding of a strict Lie-Rinehart ideal into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
@@ -250,7 +248,7 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
 
 /-- The kernel of a Lie-Rinehart homomorphism `f`, which lies over the
 identity of `A`, is a strict Lie-Rinehart ideal. -/
- def ker : StrictLieRinehartIdeal A L₁ := comap f 0
+def ker : StrictLieRinehartIdeal A L₁ := comap f 0
 
 @[simp] theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := .rfl
 
