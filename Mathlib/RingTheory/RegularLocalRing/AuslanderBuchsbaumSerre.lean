@@ -24,33 +24,6 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing CategoryTheory RingTheory.Sequence
 
-section
-
-variable {R} (x : R) {M N L : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
-    [Module R M] [Module R N] [Module R L]
-
-/-- The linear map `M⧸xM →ₗ[R] N⧸xN` induced by a linear map `M →ₗ[R] N`. -/
-@[expose]
-def QuotSMulTopMap (f : M →ₗ[R] N) :
-    QuotSMulTop x M →ₗ[R ⧸ Ideal.span {x}] QuotSMulTop x N where
-  __ := Submodule.mapQ _ _ f (fun m hm ↦ by
-    rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hm with ⟨m', _, hm'⟩
-    simpa [← hm'] using Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
-  map_smul' r m := by
-    rcases Ideal.Quotient.mk_surjective r with ⟨s, rfl⟩
-    exact map_smul (Submodule.mapQ _ _ f _) s m
-
-lemma quotSMulTopMap_surjective {f : M →ₗ[R] N} (surj : Function.Surjective f) :
-    Function.Surjective (QuotSMulTopMap x f) :=
-  QuotSMulTop.map_surjective x surj
-
-lemma quotSMulTopMap_exact {f : M →ₗ[R] N} {g : N →ₗ[R] L} (exact : Function.Exact f g)
-    (surj : Function.Surjective g) :
-    Function.Exact (QuotSMulTopMap x f) (QuotSMulTopMap x g) :=
-  QuotSMulTop.map_exact x exact surj
-
-end
-
 variable {R}
 
 lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] [IsNoetherianRing R]
