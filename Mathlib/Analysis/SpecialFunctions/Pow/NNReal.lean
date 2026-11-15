@@ -483,8 +483,8 @@ namespace ENNReal
 for `0` and `⊤` (i.e., `0 ^ x = 0` for `x > 0`, `1` for `x = 0` and `⊤` for `x < 0`, and
 `⊤ ^ x = 1 / 0 ^ x`). -/
 noncomputable def rpow : ℝ≥0∞ → ℝ → ℝ≥0∞
-  | some x, y => if x = 0 ∧ y < 0 then ⊤ else (x ^ y : ℝ≥0)
-  | none, y => if 0 < y then ⊤ else if y = 0 then 1 else 0
+  | .some x, y => if x = 0 ∧ y < 0 then ⊤ else (x ^ y : ℝ≥0)
+  | ⊤, y => if 0 < y then ⊤ else if y = 0 then 1 else 0
 
 noncomputable instance : Pow ℝ≥0∞ ℝ :=
   ⟨rpow⟩
@@ -497,7 +497,7 @@ theorem rpow_eq_pow (x : ℝ≥0∞) (y : ℝ) : rpow x y = x ^ y :=
 theorem rpow_zero {x : ℝ≥0∞} : x ^ (0 : ℝ) = 1 := by
   cases x <;>
     · dsimp only [(· ^ ·), Pow.pow, rpow]
-      simp [← none_eq_top]
+      simp [← top_eq_top]
 
 theorem rpow_zero_pos (x : ℝ≥0∞) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
 
@@ -513,7 +513,7 @@ theorem top_rpow_of_neg {y : ℝ} (h : y < 0) : (⊤ : ℝ≥0∞) ^ y = 0 := by
 
 @[simp]
 theorem zero_rpow_of_pos {y : ℝ} (h : 0 < y) : (0 : ℝ≥0∞) ^ y = 0 := by
-  rw [← ENNReal.coe_zero, ← ENNReal.some_eq_coe]
+  rw [← ENNReal.coe_zero]
   dsimp only [(· ^ ·), rpow, Pow.pow]
   simp [asymm h, ne_of_gt h]
 

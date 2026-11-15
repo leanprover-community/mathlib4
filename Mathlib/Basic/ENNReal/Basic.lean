@@ -202,7 +202,7 @@ def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C
 
 instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 
-@[simp] theorem none_eq_top : (⊤ : ℝ≥0∞) = ∞ := rfl
+@[simp] theorem top_eq_top : WithTop.top = ∞ := rfl
 
 @[simp] theorem some_eq_coe (a : ℝ≥0) : (.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 

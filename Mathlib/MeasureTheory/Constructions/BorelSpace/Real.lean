@@ -215,7 +215,7 @@ theorem measurable_of_measurable_nnreal {f : ℝ≥0∞ → α} (h : Measurable 
 
 /-- `ℝ≥0∞` is `MeasurableEquiv` to `ℝ≥0 ⊕ Unit`. -/
 def ennrealEquivSum : ℝ≥0∞ ≃ᵐ ℝ≥0 ⊕ Unit :=
-  { Equiv.optionEquivSumPUnit ℝ≥0 with
+  { (WithTop.toOption ℝ≥0).trans <| Equiv.optionEquivSumPUnit ℝ≥0 with
     measurable_toFun := measurable_of_measurable_nnreal measurable_inl
     measurable_invFun :=
       measurable_fun_sum measurable_coe_nnreal_ennreal (@measurable_const ℝ≥0∞ Unit _ _ ∞) }
