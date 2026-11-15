@@ -56,7 +56,7 @@ theorem lift_cardinalMk_le_max : lift.{u} #L ≤ lift.{v} #R ⊔ ℵ₀ :=
       (sum_le_sum _ _ fun _ => (Multiset.finite_toSet _).lt_aleph0.le)
     _ = lift.{v} #(R[X]) * ℵ₀ := by rw [sum_const, lift_aleph0]
     _ ≤ lift.{v} (#R ⊔ ℵ₀) ⊔ ℵ₀ ⊔ ℵ₀ := (mul_le_max _ _).trans <| by
-      gcongr; simp only [lift_le, Polynomial.cardinalMk_le_max]
+      gcongr; exact Polynomial.cardinalMk_le_max
     _ = _ := by simp
 
 variable (L : Type u) [CommRing L] [IsDomain L] [Algebra R L]

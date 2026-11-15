@@ -117,7 +117,7 @@ theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
       lift.{u} (Module.rank R p) + lift.{v} (Module.rank R f.ker) := by
   rw [lift_rank_comap]
   gcongr
-  exact lift_le.mpr <| rank_mono (by simp)
+  exact Submodule.rank_mono inf_le_right
 
 omit [HasRankNullity.{u} R] in
 lemma LinearMap.rank_quot_submodule_map_eq [HasRankNullity.{v} R]

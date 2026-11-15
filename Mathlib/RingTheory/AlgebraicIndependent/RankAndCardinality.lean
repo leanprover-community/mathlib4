@@ -83,7 +83,6 @@ theorem IntermediateField.rank_sup_le
   calc
     _ ≤ Cardinal.lift.{v} #F ⊔ Cardinal.lift.{u} (#A ⊔ #B) ⊔ ℵ₀ := by
       gcongr
-      rw [Cardinal.lift_le]
       exact (mk_union_le _ _).trans_eq (by simp)
     _ = _ := by
       simp [lift_mk_le_lift_mk_of_injective (algebraMap F A).injective]

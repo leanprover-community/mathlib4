@@ -153,13 +153,8 @@ theorem rank_prod_fst (f : V × V' →ₗ[K] V'') [Module.Free K (range (f ∘�
 theorem rank_prod_fst_eq_lift_rank_iff [Module.Finite K V] (f : V × V' →ₗ[K] V'')
     [Module.Free K (range (f ∘ₗ inr K V V'))] :
     rank (prod (fst K V V') f) = lift.{v''} (Module.rank K V) ↔ f ∘ₗ inr K V V' = 0 := by
-  have : IsAddLeftRegular (lift.{v''} (Module.rank K V)) :=
-    isAddLeftRegular_iff_lt_aleph0.2 <| lift_lt_aleph0.2 <| Module.rank_lt_aleph0 K V
-  calc _ ↔ lift.{v''} (Module.rank K V) + lift.{v} (rank (f ∘ₗ inr K V V')) =
-        lift.{v''} (Module.rank K V) + 0 := by rw [rank_prod_fst, add_zero]
-    _ ↔ f ∘ₗ inr K V V' = 0 := by
-      rw [this.eq_iff, lift_eq_zero, Module.rank_zero_iff_of_free (R := K), subsingleton_iff_eq_bot,
-        range_eq_bot]
+  simp [rank_prod_fst, Cardinal.add_eq_left_iff, (Module.rank_lt_aleph0 _ _).not_ge, LinearMap.rank,
+    Submodule.rank_eq_zero, range_eq_bot]
 
 theorem rank_prod_snd (f : V' × V →ₗ[K] V'') [Module.Free K (range (f ∘ₗ inl K V' V))] :
     rank (prod (snd K V' V) f) =
@@ -169,13 +164,8 @@ theorem rank_prod_snd (f : V' × V →ₗ[K] V'') [Module.Free K (range (f ∘�
 theorem rank_prod_snd_eq_lift_rank_iff [Module.Finite K V] (f : V' × V →ₗ[K] V'')
     [Module.Free K (range (f ∘ₗ inl K V' V))] :
     rank (prod (snd K V' V) f) = lift.{v''} (Module.rank K V) ↔ f ∘ₗ inl K V' V = 0 := by
-  have : IsAddLeftRegular (lift.{v''} (Module.rank K V)) :=
-    isAddLeftRegular_iff_lt_aleph0.2 <| lift_lt_aleph0.2 <| Module.rank_lt_aleph0 K V
-  calc _ ↔ lift.{v''} (Module.rank K V) + lift.{v} (rank (f ∘ₗ inl K V' V)) =
-        lift.{v''} (Module.rank K V) + 0 := by rw [rank_prod_snd, add_zero]
-    _ ↔ f ∘ₗ inl K V' V = 0 := by
-      rw [this.eq_iff, lift_eq_zero, Module.rank_zero_iff_of_free (R := K), subsingleton_iff_eq_bot,
-        range_eq_bot]
+  simp [rank_prod_snd, Cardinal.add_eq_left_iff, (Module.rank_lt_aleph0 _ _).not_ge, LinearMap.rank,
+    Submodule.rank_eq_zero, range_eq_bot]
 
 end StrongRankCondition
 

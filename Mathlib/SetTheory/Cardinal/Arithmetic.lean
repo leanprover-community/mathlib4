@@ -372,25 +372,6 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
   rw [add_comm a b, add_comm c b] at h
   exact Cardinal.eq_of_add_eq_add_left h hb
 
-theorem isAddLeftRegular_iff_lt_aleph0 {a : Cardinal} : IsAddLeftRegular a ↔ a < ℵ₀ := by
-  refine ⟨fun h ↦ ?_, fun h b c hbc ↦ Cardinal.eq_of_add_eq_add_left hbc h⟩
-  by_contra! ha
-  refine zero_ne_one (α := Cardinal) (h ?_)
-  simp only [add_zero, add_one_eq ha]
-
-theorem isAddRightRegular_iff_lt_aleph0 {a : Cardinal} : IsAddRightRegular a ↔ a < ℵ₀ := by
-  refine ⟨fun h ↦ isAddLeftRegular_iff_lt_aleph0.1 fun b c hbc ↦ h ?_,
-    fun h b c hbc ↦ Cardinal.eq_of_add_eq_add_right hbc h⟩
-  simpa only [add_comm a] using hbc
-
-theorem isAddRegular_iff_lt_aleph0 {a : Cardinal} : IsAddRegular a ↔ a < ℵ₀ := by
-  rw [isAddRegular_iff, isAddLeftRegular_iff_lt_aleph0, isAddRightRegular_iff_lt_aleph0, and_self]
-
-theorem addLECancellable_iff_lt_aleph0 {a : Cardinal} : AddLECancellable a ↔ a < ℵ₀ := by
-  refine ⟨fun h ↦ isAddLeftRegular_iff_lt_aleph0.1 h.isAddLeftRegular, fun h b c hbc ↦ ?_⟩
-  refine le_of_not_gt fun hcb ↦ hcb.ne ?_
-  exact isAddLeftRegular_iff_lt_aleph0.2 h <| le_antisymm (add_le_add_right hcb.le a) hbc
-
 end add
 
 /-- Infinite types permit a relation where fewer elements than its cardinality
