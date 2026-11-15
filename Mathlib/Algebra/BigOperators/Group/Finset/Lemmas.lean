@@ -46,6 +46,7 @@ lemma mulSupport_prod (s : Finset ι) (f : ι → κ → M) :
   simp only [mulSupport_subset_iff', Set.mem_iUnion, not_exists, notMem_mulSupport]
   exact fun x ↦ prod_eq_one
 
+-- TODO : add multiset sum version
 @[to_additive]
 lemma isSquare_prod {s : Finset ι} (f : ι → M) (h : ∀ c ∈ s, IsSquare (f c)) :
     IsSquare (∏ i ∈ s, f i) := by
