@@ -124,7 +124,6 @@ lemma do_something {F : Type*} [EquivLike F A B] [MyIsoClass F A B] (f : F) : so
 This means anything set up for `MyIso`s will automatically work for `CoolerIsoClass`es,
 and defining `CoolerIsoClass` only takes a constant amount of effort,
 instead of linearly increasing the work per `MyIso`-related declaration.
-
 -/
 
 public section

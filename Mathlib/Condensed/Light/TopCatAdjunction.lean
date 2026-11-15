@@ -10,7 +10,6 @@ public import Mathlib.Topology.Category.LightProfinite.Sequence
 public import Mathlib.Topology.Category.Sequential
 
 /-!
-
 # The adjunction between light condensed sets and topological spaces
 
 This file defines the functor `lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u}` which is

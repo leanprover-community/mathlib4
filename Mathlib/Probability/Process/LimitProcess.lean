@@ -9,7 +9,6 @@ public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.Indistinguishable
 
 /-!
-
 # Limit of a stochastic process
 
 Under certain assumptions, classical familes of processes such as martingales converge as time
@@ -32,7 +31,6 @@ under continuous maps.
 Because several properties often rely on the fact that the limit exists, we also define a predicate
 `HasLimitProcess X 𝓕 P` which states that `X` does converge `P`-almost surely towards a
 `⨆ t, 𝓕 t`-strongly measurable function.
-
 -/
 
 public section

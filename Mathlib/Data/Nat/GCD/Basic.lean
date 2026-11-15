@@ -72,6 +72,11 @@ theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
   replace hb : c % b < b := mod_lt c hb
   rw [gcd_rec, pow_sub_one_mod_pow_sub_one, pow_sub_one_gcd_pow_sub_one, ← gcd_rec]
 
+/-- For `1 < a`, the number `a ^ b - 1` divides `a ^ c - 1` if and only if `b` divides `c`. -/
+theorem pow_sub_one_dvd_pow_sub_one_iff (ha : 1 < a) : a ^ b - 1 ∣ a ^ c - 1 ↔ b ∣ c := by
+  rw [dvd_iff_mod_eq_zero, pow_sub_one_mod_pow_sub_one, Nat.sub_eq_zero_iff_le, ← pow_zero a,
+    Nat.pow_le_pow_iff_right ha, Nat.le_zero, dvd_iff_mod_eq_zero]
+
 /-! ### `lcm` and divisibility -/
 
 theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : ℕ) : a ∣ lcm b c :=

@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.IsConnected
 
 This file records the fact that `inclLeft C D : C ⥤ C ⋆ D` is initial if `C` is connected.
 Dually, `inclRight : C ⥤ C ⋆ D` is final if `D` is connected.
-
 -/
 
 @[expose] public section

@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 /-!
 # `FGModuleCat K` is an abelian category.
-
 -/
 
 public section

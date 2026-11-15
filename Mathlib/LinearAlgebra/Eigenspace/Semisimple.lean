@@ -24,7 +24,6 @@ endomorphisms.
   the eigenspaces of a semisimple endomorphism span the whole space.
 * `Module.End.IsSemisimple.eq_zero_iff_forall_eigenvalue`: a semisimple endomorphism over
   an algebraically closed field is zero iff all eigenvalues are zero.
-
 -/
 
 public section

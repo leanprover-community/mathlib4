@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 A measurable function with finite Lebesgue integral can be approximated by simple functions
 whose support has finite measure.
-
 -/
 
 public section

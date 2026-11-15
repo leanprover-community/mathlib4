@@ -29,7 +29,6 @@ Note the relation between `Order/Filter` and `Order/PFilter`: for any type `α`,
 ## Tags
 
 pfilter, filter, ideal, dual
-
 -/
 
 @[expose] public section

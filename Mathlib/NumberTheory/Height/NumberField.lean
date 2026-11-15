@@ -175,11 +175,12 @@ private lemma absNorm_mul_finprod_finitePlace_eq_one_aux [Nonempty ι] (hx : ∀
   have hx' : ⨆ i, span {x i} ≠ ⊥ :=
     iSup_eq_bot.not.mpr <| not_forall.mpr ⟨Classical.ofNonempty, H _⟩
   rw [span_range_eq_iSup, ← finprod_finitePlace_pow_multiplicity hx',
-    map_finprod _ <| hasFiniteMulSupport_fun_pow_multiplicity hx' (·), Nat.cast_finprod',
+    map_finprod _ <| hasFiniteMulSupport_fun_pow_multiplicity (⨆ i, span {x i}) (·),
+    Nat.cast_finprod',
     ← finprod_mul_distrib ?hf <| .iSup (FinitePlace.hasFiniteMulSupport <| mod_cast hx ·)]
   case hf =>
     simp only [map_pow, Nat.cast_pow]
-    exact hasFiniteMulSupport_fun_pow_multiplicity hx' fun v ↦ (v.absNorm : ℝ)
+    exact hasFiniteMulSupport_fun_pow_multiplicity (⨆ i, span {x i}) fun v ↦ (v.absNorm : ℝ)
   refine finprod_eq_one_of_forall_eq_one fun v ↦ ?_
   have hn := absNorm_eq_zero_iff.not.mpr v.maximalIdeal.ne_bot
   have h {m : ℕ} : (0 : ℝ) < ↑(absNorm v.maximalIdeal.asIdeal ^ m) := by positivity
@@ -398,7 +399,7 @@ private lemma finite_setOfPred_isIntegral_nat_mul_and_mulHeight₁_le {n : ℕ} 
   · simp only [Set.mem_ofPred_eq] at ha ⊢
     rw [mul_div_cancel₀ (a : K) hn', mulHeight₁_div_eq_mulHeight]
     exact ⟨a.isIntegral_coe, ha⟩
-  · rwa [div_left_inj' hn', RingOfIntegers.eq_iff] at h
+  · rwa [div_left_inj₀ hn', RingOfIntegers.eq_iff] at h
   · simp only [Set.mem_ofPred_eq, Set.mem_image]
     obtain ⟨a, ha⟩ : ∃ a : 𝓞 K, n * x = a := ⟨⟨_, hx₁⟩, rfl⟩
     refine ⟨a, ?_, (EuclideanDomain.eq_div_of_mul_eq_right hn' ha).symm⟩

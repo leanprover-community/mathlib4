@@ -29,7 +29,6 @@ and is almost everywhere strongly measurable.
 * `MemLp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
   finite `p`-seminorm for the measure `μ` (`eLpNorm f p μ < ∞`)
 * `inhmgELpNorm`: An inhomogeneous version of `eLpNorm`, defined differently for `p < 1`.
-
 -/
 
 @[expose] public section
@@ -69,16 +68,22 @@ prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm` ve
 def eLpNorm' {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
   (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q)
 
-lemma eLpNorm'_eq_lintegral_enorm (f : α → ε) (q : ℝ) (μ : Measure α) :
+lemma eLpNorm'_eq_lintegral_eNorm (f : α → ε) (q : ℝ) (μ : Measure α) :
     eLpNorm' f q μ = (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) :=
   rfl
+
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm'_eq_lintegral_enorm := eLpNorm'_eq_lintegral_eNorm
 
 /-- seminorm for `ℒ∞`, equal to the essential supremum of `‖f‖`. -/
 def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
   essSup (fun x => ‖f x‖ₑ) μ
 
-lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
+lemma eLpNormEssSup_eq_essSup_eNorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
+
+@[deprecated (since := "2026-11-06")]
+alias eLpNormEssSup_eq_essSup_enorm := eLpNormEssSup_eq_essSup_eNorm
 
 @[simp]
 lemma eLpNormEssSup_dirac [MeasurableSingletonClass α] (f : α → ε) (a : α) :
@@ -117,27 +122,36 @@ lemma eLpNorm_nnreal_eq_eLpNorm' [TopologicalSpace ε] {f : α → ε} {p : ℝ�
     eLpNorm f p μ = eLpNorm' f p μ :=
   eLpNorm_eq_eLpNorm' (mod_cast hp) ENNReal.coe_ne_top hf
 
-lemma eLpNorm_eq_lintegral_rpow_enorm_toReal [TopologicalSpace ε]
+lemma eLpNorm_eq_lintegral_rpow_eNorm_toReal [TopologicalSpace ε]
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
-  rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top hf, eLpNorm'_eq_lintegral_enorm]
+  rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top hf, eLpNorm'_eq_lintegral_eNorm]
+
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm_eq_lintegral_rpow_enorm_toReal := eLpNorm_eq_lintegral_rpow_eNorm_toReal
 
 lemma eLpNorm_nnreal_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
   eLpNorm_nnreal_eq_eLpNorm' hp hf
 
-theorem eLpNorm_one_eq_lintegral_enorm [TopologicalSpace ε] {f : α → ε}
+theorem eLpNorm_one_eq_lintegral_eNorm [TopologicalSpace ε] {f : α → ε}
     (hf : AEStronglyMeasurable f μ) :
     eLpNorm f 1 μ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal one_ne_zero ENNReal.coe_ne_top hf,
+  simp_rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal one_ne_zero ENNReal.coe_ne_top hf,
     ENNReal.toReal_one, one_div_one, ENNReal.rpow_one]
 
-theorem lintegral_enorm_le_eLpNorm_one [TopologicalSpace ε] {f : α → ε} :
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm_one_eq_lintegral_enorm := eLpNorm_one_eq_lintegral_eNorm
+
+theorem lintegral_eNorm_le_eLpNorm_one [TopologicalSpace ε] {f : α → ε} :
     ∫⁻ x, ‖f x‖ₑ ∂μ ≤ eLpNorm f 1 μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · simp [eLpNorm_one_eq_lintegral_enorm hf]
+  · simp [eLpNorm_one_eq_lintegral_eNorm hf]
   · simp [eLpNorm_of_not_aestronglyMeasurable, hf]
+
+@[deprecated (since := "2026-11-06")]
+alias lintegral_enorm_le_eLpNorm_one := lintegral_eNorm_le_eLpNorm_one
 
 @[simp]
 theorem eLpNorm_exponent_top [TopologicalSpace ε] {f : α → ε} (hf : AEStronglyMeasurable f μ) :
@@ -166,16 +180,19 @@ lemma MemLp.aemeasurable [MeasurableSpace ε] [TopologicalSpace ε]
     AEMeasurable f μ :=
   hf.aestronglyMeasurable.aemeasurable
 
-theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
+theorem lintegral_rpow_eNorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
     ∫⁻ a, ‖f a‖ₑ ^ q ∂μ = eLpNorm' f q μ ^ q := by
-  rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
+  rw [eLpNorm'_eq_lintegral_eNorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
   exact hq0_lt.ne'
+
+@[deprecated (since := "2026-11-06")]
+alias lintegral_rpow_enorm_eq_rpow_eLpNorm' := lintegral_rpow_eNorm_eq_rpow_eLpNorm'
 
 lemma eLpNorm_nnreal_pow_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ := by
   simp [eLpNorm_eq_eLpNorm' (mod_cast hp) ENNReal.coe_ne_top hf,
-    lintegral_rpow_enorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
+    lintegral_rpow_eNorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
 
 /-- Real-valued `ℒp` seminorm, equal to `0` for `p = 0`, to `(∫ ‖f a‖^p ∂μ) ^ p⁻¹` for `0 < p < ∞`
 and to `essSup ‖f‖ μ` for `p = ∞`.
@@ -228,11 +245,14 @@ theorem inhmgELpNorm_exponent_zero {f : α → ε} (hf : AEStronglyMeasurable f 
     inhmgELpNorm f 0 μ = μ (Function.support fun x ↦ ‖f x‖ₑ) := by
   simp [inhmgELpNorm, hf]
 
-theorem _root_.Function.support_enorm {α ε : Type*}
+theorem _root_.Function.support_eNorm {α ε : Type*}
     [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → ε} :
     Function.support (fun x ↦ ‖f x‖ₑ) = Function.support f := by
   ext
   simp
+
+@[deprecated (since := "2026-11-06")]
+alias _root_.Function.support_enorm := _root_.Function.support_eNorm
 
 theorem inhmgELpNorm_pow_eq_eLpNorm (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} :
     inhmgELpNorm f p μ ^ p.toReal⁻¹ = eLpNorm f p μ := by
@@ -252,7 +272,7 @@ theorem inhmgELpNorm_eq_eLpNorm_pow (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → �
 theorem inhmgELpNorm_eq_lintegral
     (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     inhmgELpNorm f p μ = ∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ := by
-  rw [inhmgELpNorm_eq_eLpNorm_pow hp hp', lintegral_rpow_enorm_eq_rpow_eLpNorm'
+  rw [inhmgELpNorm_eq_eLpNorm_pow hp hp', lintegral_rpow_eNorm_eq_rpow_eLpNorm'
     (ENNReal.toReal_pos hp' (fun _ ↦ by simp_all)),
     eLpNorm_eq_eLpNorm' hp' (fun _ ↦ by simp_all) hf]
 

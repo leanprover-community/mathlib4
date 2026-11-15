@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.CatCommSq
 
 In this file, we show that the vertical composition of Guitart exact squares
 is Guitart exact.
-
 -/
 
 @[expose] public section

@@ -645,7 +645,7 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
       finite := by
         intro i
         simp only [smul_apply, nnreal_smul_coe_apply]
-        exact ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_spanningSets_lt_top μ i)
+        finiteness [measure_spanningSets_lt_top μ i]
       spanning := iUnion_spanningSets μ }⟩
 
 instance [SigmaFinite (μ.restrict s)] [SigmaFinite (μ.restrict t)] :

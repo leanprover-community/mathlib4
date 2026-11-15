@@ -42,7 +42,6 @@ Given two oplax functors `F` and `G`, we define:
   between `F` and `G`, where composition is given by vertical composition. Note that this a scoped
   instance in the `Oplax.StrongTrans` namespace, so you need to run `open scoped Oplax.StrongTrans`
   to access it.
-
 -/
 
 @[expose] public section

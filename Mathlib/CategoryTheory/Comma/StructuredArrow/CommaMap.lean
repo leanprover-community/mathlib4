@@ -50,7 +50,7 @@ def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
       map₂_map_right, homMk_right, CommaMorphism.w] ⟩
 
 /-- The inverse functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
-@[simps]
+@[simps, implicit_reducible]
 def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
     Comma (map₂ (𝟙 _) α) (map₂ X.hom (inv β)) ⥤ StructuredArrow X (Comma.map α β) where
   obj Y := mk (Y := ⟨Y.left.right, Y.right.right, Y.hom.right⟩)
@@ -60,7 +60,6 @@ def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
   map {Y Z} f := homMk ⟨by exact f.left.right, by exact f.right.right,
     by exact congrArg CommaMorphism.right f.w⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The unit establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps!]
 def commaMapEquivalenceUnitIso [IsIso β] (X : Comma L' R') :
@@ -68,7 +67,6 @@ def commaMapEquivalenceUnitIso [IsIso β] (X : Comma L' R') :
       commaMapEquivalenceFunctor α β X ⋙ commaMapEquivalenceInverse α β X :=
   NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The counit functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps!]
 def commaMapEquivalenceCounitIso [IsIso β] (X : Comma L' R') :
@@ -76,10 +74,9 @@ def commaMapEquivalenceCounitIso [IsIso β] (X : Comma L' R') :
       𝟭 (Comma (map₂ (𝟙 (L'.obj X.left)) α) (map₂ X.hom (inv β))) :=
   NatIso.ofComponents (fun _ => Comma.isoMk (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The structured arrow category on the functor `Comma.map α β`, with `β` a natural isomorphism,
 is equivalent to a comma category on two instances of `StructuredArrow.map₂`. -/
+@[implicit_reducible, simps]
 def commaMapEquivalence [IsIso β] (X : Comma L' R') :
     StructuredArrow X (Comma.map α β) ≌ Comma (map₂ (𝟙 _) α) (map₂ X.hom (inv β)) where
   functor := commaMapEquivalenceFunctor α β X

@@ -20,7 +20,6 @@ The file is a place to collect measure-theoretic results about the additive circ
   equal
 * `AddCircle.isAddFundamentalDomain_of_ae_ball`: a ball is a fundamental domain for rational
   angle rotation in the additive circle
-
 -/
 
 public section

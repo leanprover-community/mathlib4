@@ -54,7 +54,6 @@ Most constructions involving `Finset`s have been split off to their own files.
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

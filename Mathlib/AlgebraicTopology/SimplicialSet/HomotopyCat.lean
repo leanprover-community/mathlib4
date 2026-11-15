@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Category.Cat.Terminal
 public import Mathlib.CategoryTheory.Category.ReflQuiv
 
 /-!
-
 # The homotopy category of a simplicial set
 
 The homotopy category of a simplicial set is defined as a quotient of the free category on its

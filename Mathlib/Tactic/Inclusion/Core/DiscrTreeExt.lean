@@ -28,7 +28,6 @@ Investigate the possibility of using this API for other tactics in Mathlib with 
 indexed environment extensions such as `norm_num` and `positivity`. This should perhaps be
 part of a wider investigation into whether more API from the environment extensions of various
 Mathlib tactics could be unified.
-
 -/
 
 public meta section

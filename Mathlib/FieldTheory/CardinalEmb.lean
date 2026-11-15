@@ -61,7 +61,6 @@ To make this straightforward, it is crucial that `(↑i : WithTop ι)⁺ = ↑(i
 The predicate `IsSuccPrelimit` allows us to treat limits and the bottom element uniformly, and
 the only place the bottom element requires special treatment is in `equivLim` (the bijection
 between `E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] Ē` over `j < i`).
-
 -/
 
 @[expose] public section

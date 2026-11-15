@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
-
 # Z-matrices
 
 A matrix whose off-diagonal entries are all non-positive is known as a Z-matrix. Cartan matrices
@@ -18,7 +17,6 @@ are examples of Z-matrices.
 ## Main results:
 * `Matrix.lt_two_mul_of_mul_diagonal_posDef_of_for_le_of_hasEigen`: a spectral bound result for
   Z-matrices satisfying a positive-definiteness condition.
-
 -/
 
 namespace Matrix

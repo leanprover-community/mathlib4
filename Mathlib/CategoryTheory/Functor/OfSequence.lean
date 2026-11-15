@@ -20,7 +20,6 @@ the naturality condition only for morphisms `n ⟶ n + 1`.
 
 The duals of the above for functors `ℕᵒᵖ ⥤ C` are given by `Functor.ofOpSequence` and
 `NatTrans.ofOpSequence`.
-
 -/
 
 @[expose] public section

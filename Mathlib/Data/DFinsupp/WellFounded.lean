@@ -171,14 +171,14 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃i a⦄, ¬s i a 0) [∀ i, WellFounded (
 end Zero
 
 instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellFoundedGT ι]
-    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
+    [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
   Lex.wellFounded' (fun _ _ ↦ not_lt_zero) hι
 
 set_option backward.isDefEq.respectTransparency false in
 instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFoundedLT ι]
-    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
+    [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Colex (Π₀ i, α i)) :=
   Lex.wellFoundedLT (ι := ιᵒᵈ)
@@ -242,7 +242,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
   exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩
 
 instance DFinsupp.wellFoundedLT'
-    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
+    [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
   DFinsupp.wellFoundedLT fun _ _ => not_lt_zero
 

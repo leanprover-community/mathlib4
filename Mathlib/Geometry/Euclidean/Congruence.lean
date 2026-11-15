@@ -26,7 +26,6 @@ then reduces to ASA.
 ## References
 
 * https://en.wikipedia.org/wiki/Congruence_(geometry)
-
 -/
 
 public section

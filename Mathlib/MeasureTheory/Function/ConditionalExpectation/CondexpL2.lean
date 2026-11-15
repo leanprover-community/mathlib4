@@ -29,7 +29,6 @@ However, some lemmas also use `𝕜 : RCLike`:
 * `condExpL2` is defined only for an `InnerProductSpace` for now, and we use `𝕜` for its field.
 * results about scalar multiplication are stated not only for `ℝ` but also for `𝕜` if we happen to
   have `NormedSpace 𝕜 F`.
-
 -/
 
 @[expose] public section
@@ -155,7 +154,7 @@ theorem lintegral_nnNorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
     dsimp only
     simp_rw [hx]
   rw [lintegral_congr_ae hg_nnNorm_eq.symm]
-  refine lintegral_enorm_le_of_forall_fin_meas_integral_eq
+  refine lintegral_eNorm_le_of_forall_fin_meas_integral_eq
     hm (Lp.stronglyMeasurable f) ?_ ?_ ?_ ?_ hs hμs
   · exact integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs
   · exact hg_meas
@@ -185,7 +184,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
     dsimp only
     rw [hx]
     simp
-  · exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
+  · exact (Lp.stronglyMeasurable _).eNorm (ε := ℝ)
 
 theorem lintegral_nnNorm_condExpL2_indicator_le_real (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (ht : MeasurableSet[m] t) (hμt : μ t ≠ ∞) :
@@ -324,7 +323,7 @@ theorem setLIntegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnNorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
-      exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
+      exact (Lp.stronglyMeasurable _).eNorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ := by grw [lintegral_nnNorm_condExpL2_indicator_le_real hs hμs ht hμt]
 
 @[deprecated (since := "2026-10-31")]
@@ -346,8 +345,7 @@ with finite measure is integrable. -/
 theorem integrable_condExpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E') :
     Integrable (ε := E') (condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x)) μ := by
-  refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
-    (ENNReal.mul_lt_top hμs.lt_top ENNReal.coe_lt_top) ?_ ?_
+  refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) (by finiteness) ?_ ?_
   · exact Lp.aestronglyMeasurable _
   · refine fun t ht hμt =>
       (setLIntegral_nnNorm_condExpL2_indicator_le hm hs hμs x ht hμt).trans ?_
@@ -398,7 +396,7 @@ theorem setLIntegral_nnNorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnNorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
-      exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
+      exact (Lp.stronglyMeasurable _).eNorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ := by grw [lintegral_nnNorm_condExpL2_indicator_le_real hs hμs ht hμt]
 
 @[deprecated (since := "2026-10-31")]
@@ -418,8 +416,7 @@ alias lintegral_nnnorm_condExpIndSMul_le := lintegral_nnNorm_condExpIndSMul_le
 with finite measure is integrable. -/
 theorem integrable_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (x : G) : Integrable (condExpIndSMul hm hs hμs x) μ := by
-  refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
-    (ENNReal.mul_lt_top hμs.lt_top ENNReal.coe_lt_top) ?_ ?_
+  refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) (by finiteness) ?_ ?_
   · exact Lp.aestronglyMeasurable _
   · refine fun t ht hμt => (setLIntegral_nnNorm_condExpIndSMul_le hm hs hμs x ht hμt).trans ?_
     gcongr

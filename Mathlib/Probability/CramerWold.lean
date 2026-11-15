@@ -19,7 +19,6 @@ We prove the Cramér-Wold theorem.
 * `tendstoInDistribution_iff_tendstoInDistribution_inner`: For `E`-valued random variables
   `X : ℕ → Ω → E` and `X' : Ω' → E`, convergence in distribution of `X` under `P` to `X'` under
   `P'` is equivalent to convergence in distribution of all their scalar projections.
-
 -/
 
 open MeasureTheory Filter RealInnerProductSpace

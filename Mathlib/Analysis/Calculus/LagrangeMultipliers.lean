@@ -26,7 +26,6 @@ Formalize Karush-Kuhn-Tucker theorem
 ## Tags
 
 lagrange multiplier, local extremum
-
 -/
 
 public section

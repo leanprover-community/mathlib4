@@ -32,7 +32,6 @@ This file provides definitions and proves lemmas about orientations of real inne
 * `Orientation.abs_volumeForm_apply_of_pairwise_orthogonal` states that the result of applying the
   volume form to a set of `n` orthogonal vectors, where `n` is the dimension the inner product
   space, is equal up to sign to the product of the lengths of the vectors.
-
 -/
 
 @[expose] public section

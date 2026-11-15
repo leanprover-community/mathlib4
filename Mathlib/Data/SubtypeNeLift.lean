@@ -14,7 +14,6 @@ import Mathlib.Util.CompileInductive
 
 In this file, we define `Function.subtypeNeLift` which allows to
 extend a (dependent) function defined on the complement of a singleton.
-
 -/
 
 @[expose] public section

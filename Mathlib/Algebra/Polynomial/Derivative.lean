@@ -17,7 +17,6 @@ import Mathlib.Algebra.Polynomial.Degree.Domain
 ## Main definitions
 * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
 * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
-
 -/
 
 @[expose] public section

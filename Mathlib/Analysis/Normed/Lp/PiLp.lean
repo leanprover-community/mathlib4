@@ -702,9 +702,11 @@ lemma isUniformInducing_toLp [Finite ι] [∀ i, PseudoEMetricSpace (β i)] :
 section
 variable {β p}
 
-theorem enorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
+theorem eNorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
     ‖x i‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_apply_le x 0 i
+
+@[deprecated (since := "2026-11-06")] alias enorm_apply_le := eNorm_apply_le
 
 theorem nnNorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
     ‖x i‖₊ ≤ ‖x‖₊ := by
@@ -1236,11 +1238,12 @@ end Basis
 
 open Matrix
 
-nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
-    {𝕜} [SeminormedCommRing 𝕜] (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
-    (A : Matrix ι ι 𝕜) :
+nonrec theorem basis_toMatrix_basisFun_mul {ι' κ : Type*} [Fintype ι]
+    {𝕜} [SeminormedCommRing 𝕜] (b : Basis ι' 𝕜 (PiLp p fun _ : ι => 𝕜))
+    (A : Matrix ι κ 𝕜) :
     b.toMatrix (PiLp.basisFun _ _ _) * A =
       Matrix.of fun i j => b.repr (toLp p (Aᵀ j)) i := by
+  change _ = Matrix.of fun i j => b.repr (toLp p (A.col j)) i
   have := basis_toMatrix_basisFun_mul (b.map (WithLp.linearEquiv _ 𝕜 _)) A
   simp_rw [← PiLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,
     WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp_def, Basis.map_apply,

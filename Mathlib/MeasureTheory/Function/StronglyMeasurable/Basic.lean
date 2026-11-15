@@ -5,9 +5,10 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.MeasureTheory.Function.SimpleFuncDense
+public import Mathlib.MeasureTheory.Function.SimpleFunc
+
+import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -38,7 +39,6 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 @[expose] public section
@@ -731,6 +731,18 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
     exact isSeparable_range hf
   · exact hf.measurable.stronglyMeasurable
 
+/-- A right-continuous function on a second-countable linear order is strongly measurable. -/
+@[to_dual /-- A left-continuous function on a second-countable linear order is strongly
+measurable. -/]
+theorem _root_.IsRightContinuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSpace α]
+    [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [OpensMeasurableSpace α]
+    [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β} (hf : IsRightContinuous f) :
+    StronglyMeasurable f := by
+  borelize β
+  have := hf.separableSpace_range
+  rw [stronglyMeasurable_iff_measurable_separable]
+  exact ⟨hf.measurable, .of_subtype _⟩
+
 /-- A continuous function whose support is contained in a compact set is strongly measurable. -/
 @[to_additive /-- A continuous function whose support is contained in a compact set is strongly
 measurable. -/]
@@ -982,15 +994,17 @@ protected theorem nnNorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCom
 
 @[deprecated (since := "2026-10-31")] protected alias nnnorm := StronglyMeasurable.nnNorm
 
-/-- The `enorm` of a strongly measurable function is measurable.
+/-- The `eNorm` of a strongly measurable function is measurable.
 
 Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnNorm`, this lemma proves measurability,
 **not** strong measurability. This is an intentional decision: for functions taking values in
 ℝ≥0∞, measurability is much more useful than strong measurability. -/
 @[fun_prop]
-protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+protected theorem eNorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
-  (continuous_enorm.comp_stronglyMeasurable hf).measurable
+  (continuous_eNorm.comp_stronglyMeasurable hf).measurable
+
+@[deprecated (since := "2026-11-06")] protected alias enorm := StronglyMeasurable.eNorm
 
 @[fun_prop]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :

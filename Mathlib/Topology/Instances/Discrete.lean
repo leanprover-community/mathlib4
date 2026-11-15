@@ -19,7 +19,6 @@ We prove that the discrete topology is
 
 When importing this file and `Order.SuccPred.Nat`, the instances `SecondCountableTopology ℕ`
 and `OrderTopology ℕ` become available.
-
 -/
 
 public section
