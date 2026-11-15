@@ -590,9 +590,9 @@ the `algebraMap` operations which (which proliferate in the constructed scalar g
 familiar forms: `ℕ`, `ℤ` and `ℚ` casts. -/
 def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
 
-/-- A `Simp.Context` containing `fail_if_not_idempotent push_cast` and `algebraMapThms` lemmas. -/
+/-- A `Simp.Context` containing `push_cast` and `algebraMapThms` lemmas. -/
 def postprocessCtx : MetaM Simp.Context := do
-  -- collect the available `fail_if_not_idempotent push_cast` lemmas
+  -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   -- augment this list with the `algebraMapThms` lemmas, which handle `algebraMap` operations
   for thm in algebraMapThms do
@@ -606,7 +606,7 @@ def postprocessCtx : MetaM Simp.Context := do
 These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
 get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
 most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
-(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `fail_if_not_idempotent push_cast` lemmas.
+(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas.
 The `* 1` tags which the parser marks atoms are also cleared. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   -- run `simp` with these lemmas, and (importantly) *no* simprocs
