@@ -8,8 +8,8 @@ module
 public import Mathlib.Data.Set.Card
 public import Mathlib.Geometry.Group.WordMetric
 
+import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite.List
-import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Growth function of a finitely generated group
@@ -21,7 +21,7 @@ the number of elements of word length at most `n`.
 
 * `Group.Generators.wordBall`: the closed ball of radius `n` in the word metric.
 * `Group.Generators.growth`: the growth function `n ↦ #(wordBall n)`.
-* `Function.GrowthDominates`: `f` dominates `g` if `g n ≤ C * f (α * n)` for some `C, α`.
+* `Function.GrowthDominates`: `f` dominates `g` if `g n ≤ f (α * n)` for some `α`.
 * `Function.GrowthEquivalent`: mutual domination of two functions.
 * `Group.Generators.growth_growthEquivalent`: the growth function is independent of the
   finite generating family, up to `GrowthEquivalent`.
@@ -31,8 +31,8 @@ the number of elements of word length at most `n`.
 * `wordBall` is defined via `wordLength`, so it is compatible with the existing word metric API.
 * When the index type is finite, `wordBall n` is a finite set, hence `growth n` is the actual
   cardinality.
-* Growth comparison uses natural coefficients, which is enough for cardinalities. Open the `Growth`
-  locale for the notations `f ≽ᵍ g` and `f ∼ᵍ g`.
+* Growth comparison uses a linear rescaling of the argument. Open the `Growth` locale for the
+  notations `f ≽ᵍ g` and `f ∼ᵍ g`.
 
 ## Tags
 
@@ -45,7 +45,7 @@ open Set
 
 /-- `f` dominates `g` (written `f ≽ᵍ g`) if `g` is bounded by a rescaling of `f`. -/
 def Function.GrowthDominates (f g : ℕ → ℕ) : Prop :=
-  ∃ C α : ℕ, ∀ n, g n ≤ C * f (α * n)
+  ∃ α : ℕ, ∀ n, g n ≤ f (α * n)
 
 /-- Two functions are growth-equivalent (written `f ∼ᵍ g`) if each dominates the other. -/
 def Function.GrowthEquivalent (f g : ℕ → ℕ) : Prop :=
@@ -60,14 +60,14 @@ scoped[Growth] infix:50 " ∼ᵍ " => Function.GrowthEquivalent
 namespace Function
 
 lemma GrowthDominates.refl (f : ℕ → ℕ) : f.GrowthDominates f :=
-  ⟨1, 1, by simp⟩
+  ⟨1, by simp⟩
 
 lemma GrowthDominates.trans {f g h : ℕ → ℕ} (hfg : f.GrowthDominates g)
     (hgh : g.GrowthDominates h) : f.GrowthDominates h := by
-  obtain ⟨C₁, α₁, h₁⟩ := hfg
-  obtain ⟨C₂, α₂, h₂⟩ := hgh
-  refine ⟨C₂ * C₁, α₁ * α₂, fun n ↦ ?_⟩
-  grw [h₂ n, h₁ (α₂ * n), mul_assoc, mul_assoc]
+  obtain ⟨α₁, h₁⟩ := hfg
+  obtain ⟨α₂, h₂⟩ := hgh
+  refine ⟨α₁ * α₂, fun n ↦ ?_⟩
+  grw [h₂ n, h₁ (α₂ * n), mul_assoc]
 
 lemma GrowthEquivalent.refl (f : ℕ → ℕ) : f.GrowthEquivalent f :=
   ⟨.refl f, .refl f⟩
@@ -78,9 +78,6 @@ lemma GrowthEquivalent.symm {f g : ℕ → ℕ} (h : f.GrowthEquivalent g) : g.G
 lemma GrowthEquivalent.trans {f g h : ℕ → ℕ} (hfg : f.GrowthEquivalent g)
     (hgh : g.GrowthEquivalent h) : f.GrowthEquivalent h :=
   ⟨hfg.1.trans hgh.1, hgh.2.trans hfg.2⟩
-
-lemma GrowthEquivalent.equivalence : Equivalence GrowthEquivalent :=
-  ⟨GrowthEquivalent.refl, GrowthEquivalent.symm, GrowthEquivalent.trans⟩
 
 end Function
 
@@ -101,7 +98,7 @@ lemma mem_wordBall {n : ℕ} {g : G} : g ∈ P.wordBall n ↔ P.wordLength g ≤
 lemma wordBall_eq_image (n : ℕ) :
     P.wordBall n = P.wordProd '' {l : List (ι × Bool) | l.length ≤ n} := by
   ext g
-  simp [mem_image, P.wordLength_le_iff]
+  simp [P.wordLength_le_iff]
 
 @[to_additive]
 lemma one_mem_wordBall (n : ℕ) : 1 ∈ P.wordBall n := by
@@ -110,7 +107,7 @@ lemma one_mem_wordBall (n : ℕ) : 1 ∈ P.wordBall n := by
 @[to_additive (attr := simp)]
 lemma wordBall_zero : P.wordBall 0 = {1} := by
   ext g
-  simp [wordLength_eq_zero_iff]
+  simp
 
 /-- If the generating family is finite, then the word ball of any finite radius is finite. -/
 @[to_additive /-- If the generating family is finite, then the word ball of any finite radius is
@@ -131,35 +128,27 @@ lemma growth_eq_ncard (n : ℕ) : P.growth n = (P.wordBall n).ncard :=
 
 @[to_additive (attr := simp)]
 lemma growth_zero : P.growth 0 = 1 := by
-  simp [growth]
+  simp [growth_eq_ncard]
 
 @[to_additive]
-lemma wordLength_wordProd_le_mul {Q : Group.Generators G ι'} {α : ℕ}
-    (hα : ∀ j, P.wordLength (Q.val j) ≤ α) (l : List (ι' × Bool)) :
-    P.wordLength (Q.wordProd l) ≤ α * l.length := by
+lemma wordLength_le_mul {Q : Group.Generators G ι'} {α : ℕ}
+    (hα : ∀ j, P.wordLength (Q.val j) ≤ α) (g : G) :
+    P.wordLength g ≤ α * Q.wordLength g := by
+  obtain ⟨l, hl, rfl⟩ := Q.exists_isGeodesic g
+  rw [hl.eq]
+  clear hl
   induction l with
   | nil => simp
   | cons x l ih =>
-    rcases x with ⟨j, b⟩
-    have hj : P.wordLength (cond b (Q.val j) (Q.val j)⁻¹) ≤ α := by
-      cases b <;> simpa [wordLength_inv] using hα j
-    calc
-      P.wordLength (Q.wordProd ((j, b) :: l))
-          = P.wordLength (cond b (Q.val j) (Q.val j)⁻¹ * Q.wordProd l) := by
-            rw [wordProd_cons]
-      _ ≤ P.wordLength (cond b (Q.val j) (Q.val j)⁻¹) + P.wordLength (Q.wordProd l) :=
-            P.wordLength_mul_le _ _
-      _ ≤ α + α * l.length := Nat.add_le_add hj ih
-      _ = α * ((j, b) :: l).length := by simp [Nat.mul_succ, Nat.add_comm]
+    grw [← List.singleton_append, wordProd_append, wordLength_mul_le, ih, List.length_append]
+    rcases x with ⟨j, _ | _⟩ <;> simpa [mul_one_add] using hα j
 
 /-- Any two finite generating families yield comparable word lengths. -/
 @[to_additive /-- Any two finite generating families yield comparable word lengths. -/]
 lemma exists_mul_le_wordLength [Finite ι'] (Q : Group.Generators G ι') :
     ∃ α, ∀ g, P.wordLength g ≤ α * Q.wordLength g := by
-  obtain ⟨α, hα⟩ := (finite_range fun j : ι' ↦ P.wordLength (Q.val j)).bddAbove
-  refine ⟨α, fun g ↦ ?_⟩
-  obtain ⟨l, hl, rfl⟩ := Q.exists_isGeodesic g
-  simpa [hl.eq] using P.wordLength_wordProd_le_mul (fun j ↦ hα ⟨j, rfl⟩) l
+  obtain ⟨α, hα⟩ := Finite.exists_le (fun j : ι' ↦ P.wordLength (Q.val j))
+  exact ⟨α, wordLength_le_mul P hα⟩
 
 /-- The growth function of a finite generating family dominates that of any other finite
 generating family. -/
@@ -168,8 +157,7 @@ finite generating family. -/]
 lemma growthDominates_growth [Finite ι] [Finite ι'] (Q : Group.Generators G ι') :
     P.growth.GrowthDominates Q.growth := by
   obtain ⟨α, hα⟩ := P.exists_mul_le_wordLength Q
-  refine ⟨1, α, fun n ↦ ?_⟩
-  rw [one_mul]
+  refine ⟨α, fun n ↦ ?_⟩
   refine ncard_le_ncard (fun g hg ↦ ?_) (P.finite_wordBall (α * n))
   exact (hα g).trans (Nat.mul_le_mul_left α hg)
 
