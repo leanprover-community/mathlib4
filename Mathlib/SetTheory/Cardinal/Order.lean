@@ -607,11 +607,6 @@ theorem lift_eq_natCast_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a 
 @[deprecated (since := "2026-10-20")] alias lift_eq_nat_iff := lift_eq_natCast_iff
 
 @[simp]
-theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    lift.{v} a = ofNat(n) ↔ a = ofNat(n) :=
-  lift_eq_natCast_iff
-
-@[simp]
 theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
   lift_injective.eq_iff' lift_zero
 
@@ -620,16 +615,16 @@ theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
   lift_injective.eq_iff' lift_one
 
 @[simp]
+theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    lift.{v} a = ofNat(n) ↔ a = ofNat(n) :=
+  lift_eq_natCast_iff
+
+@[simp]
 theorem natCast_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
     (n : Cardinal) = lift.{v} a ↔ (n : Cardinal) = a := by
   rw [← lift_natCast.{v, u} n, lift_inj]
 
 @[deprecated (since := "2026-10-20")] alias nat_eq_lift_iff := natCast_eq_lift_iff
-
-@[simp]
-theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    ofNat(n) = lift.{v} a ↔ ofNat(n) = a :=
-  natCast_eq_lift_iff
 
 @[simp]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
@@ -640,6 +635,11 @@ theorem zero_eq_lift_iff {a : Cardinal.{u}} :
 theorem one_eq_lift_iff {a : Cardinal.{u}} :
     1 = lift.{v} a ↔ 1 = a := by
   simp [eqComm]
+
+@[simp]
+theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    ofNat(n) = lift.{v} a ↔ ofNat(n) = a :=
+  natCast_eq_lift_iff
 
 @[simp]
 theorem lift_le_natCast_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
