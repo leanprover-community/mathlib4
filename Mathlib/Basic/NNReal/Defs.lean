@@ -694,6 +694,10 @@ theorem toNNReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q :=
   NNReal.eq <| by simp [mul_max_of_nonneg, hp]
 
+theorem toNNReal_mul' {p q : ℝ} (hq : 0 ≤ q) :
+    Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q := by
+  rw [mul_comm, toNNReal_mul hq, mul_comm]
+
 end ToNNReal
 
 end Real

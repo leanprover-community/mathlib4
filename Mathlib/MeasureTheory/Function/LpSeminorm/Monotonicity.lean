@@ -215,24 +215,44 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {
   · simpa [hp'] using eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' h
   · simpa [hp'] using eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul hg h (ENNReal.toReal_pos h₀ hp')
 
-theorem MemLp.of_nnNorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg : MemLp g p μ)
-    (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : MemLp f p μ :=
-  (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hf hfg p).trans_lt <|
-    ENNReal.mul_lt_top ENNReal.coe_lt_top hg
-
-@[deprecated (since := "2026-10-31")] alias MemLp.of_nnnorm_le_mul := MemLp.of_nnNorm_le_mul
+theorem inhmgELpNorm_zero_le_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {g : α → ε'}
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) :
+    inhmgELpNorm f 0 μ ≤ inhmgELpNorm g 0 μ := by
+  by_cases hg : AEStronglyMeasurable g μ; swap
+  · simp [inhmgELpNorm_of_not_aestronglyMeasurable hg]
+  simp only [inhmgELpNorm, hf, ↓reduceIte, hg]
+  apply measure_mono_ae
+  filter_upwards [h] with x hx h'x
+  simp only [Function.mem_support, ne_eq] at h'x ⊢
+  contrapose h'x
+  simpa [h'x] using hx
 
 theorem MemLp.of_eNorm_le_mul {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
-    (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
-  (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hf hfg p).trans_lt <|
+    (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ := by
+  rcases eq_or_ne p 0 with rfl| hp
+  · exact (inhmgELpNorm_zero_le_of_ae_le_mul hf hfg).trans_lt hg
+  rw [memLp_iff_eLpNorm_of_ne_zero hp] at hg ⊢
+  exact (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hf hfg p).trans_lt <|
     ENNReal.mul_lt_top ENNReal.coe_lt_top hg
 
 @[deprecated (since := "2026-11-06")] alias MemLp.of_enorm_le_mul := MemLp.of_eNorm_le_mul
 
+theorem MemLp.of_nnNorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg : MemLp g p μ)
+    (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : MemLp f p μ := by
+  apply MemLp.of_eNorm_le_mul (c := c) hg hf
+  filter_upwards [hfg] with x hx
+  simp only [eNorm_eq_nnNorm]
+  norm_cast
+
+@[deprecated (since := "2026-10-31")] alias MemLp.of_nnnorm_le_mul := MemLp.of_nnNorm_le_mul
+
 theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p μ)
-    (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : MemLp f p μ :=
-  (eLpNorm_le_mul_eLpNorm_of_ae_le_mul hf hfg p).trans_lt <|
-    ENNReal.mul_lt_top ENNReal.ofReal_lt_top hg
+    (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : MemLp f p μ := by
+  apply MemLp.of_nnNorm_le_mul hg hf (c := c.toNNReal)
+  filter_upwards [hfg] with x hx
+  simp [← norm_toNNReal]
+  have W := Real.toNNReal_mono hx
+  rw [Real.toNNReal_mul'] at W
 
 -- TODO: eventually, deprecate and remove the nnNorm version
 theorem MemLp.of_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)

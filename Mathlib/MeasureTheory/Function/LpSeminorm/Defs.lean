@@ -273,6 +273,11 @@ lemma inhmgELpNorm_le_iff_eLpNorm_le {β ε' : Type*} {hβ : MeasurableSpace β}
     rw [ENNReal.rpow_le_rpow_iff]
     exact ENNReal.toReal_pos hp (by finiteness)
 
+lemma inhmgELpNorm_eq_iff_eLpNorm_eq {β ε' : Type*} {hβ : MeasurableSpace β} {ν : Measure β}
+    [ENorm ε'] [TopologicalSpace ε'] {f : α → ε} {g : β → ε'} (hp : p ≠ 0) :
+    inhmgELpNorm f p μ = inhmgELpNorm g p ν ↔ eLpNorm f p μ = eLpNorm g p ν := by
+  simp [le_antisymm_iff, inhmgELpNorm_le_iff_eLpNorm_le hp]
+
 /-- The property that `f : α → E` is a.e. strongly measurable and `(∫ ‖f a‖ ^ p ∂μ) ^ (1/p)`
 is finite if `0 < p < ∞`, or `essSup ‖f‖ < ∞` if `p = ∞`, or the support of `f` has finite
 measure if `p = 0`. -/
@@ -311,6 +316,10 @@ lemma MemLp.aemeasurable [MeasurableSpace ε]
     {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) :
     AEMeasurable f μ :=
   hf.aestronglyMeasurable.aemeasurable
+
+lemma MemLp.measure_support_lt_top {f : α → ε} (h : MemLp f 0 μ) :
+    μ (Function.support fun x ↦ ‖f x‖ₑ) < ∞ := by
+  rwa [← inhmgELpNorm_exponent_zero h.aestronglyMeasurable]
 
 end Inhomogeneous
 

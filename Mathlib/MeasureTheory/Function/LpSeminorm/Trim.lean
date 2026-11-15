@@ -75,7 +75,17 @@ theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → ε} (hf : AEStronglyMeasurab
     eLpNorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
   exact eLpNorm_trim hm hf.stronglyMeasurable_mk
 
+theorem inhmgELpNorm_trim_ae
+    (hm : m ≤ m0) {f : α → ε} (hf : AEStronglyMeasurable[m] f (μ.trim hm)) :
+    inhmgELpNorm f p (μ.trim hm) = inhmgELpNorm f p μ := by
+  rcases ne_or_eq p 0 with hp | rfl
+  · rw [inhmgELpNorm_eq_iff_eLpNorm_eq hp]
+    exact eLpNorm_trim_ae hm hf
+  have hfμ := aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf
+  simp only [inhmgELpNorm, hf, ↓reduceIte, hfμ]
+  exact trim_nullMeasurableSet_eq hm hf.eNorm.aestronglyMeasurable.nullMeasurableSet_support
+
 theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → ε} (hf : MemLp f p (μ.trim hm)) : MemLp f p μ :=
-  (le_of_eq (eLpNorm_trim_ae hm hf.aestronglyMeasurable).symm).trans_lt hf
+  (le_of_eq (inhmgELpNorm_trim_ae hm hf.aestronglyMeasurable).symm).trans_lt hf
 
 end MeasureTheory
