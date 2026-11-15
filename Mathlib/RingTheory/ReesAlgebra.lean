@@ -163,3 +163,105 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
       | add s1 hs1 s2 hs2 mem1 mem2 => simpa using add_mem mem1 mem2
     apply this
     simpa [pow_succ'] using h i
+
+/-- The canonical morphism from `reesAlgebra` to associated graded ring. -/
+noncomputable abbrev reesAlgebraToAssociatedGraded (I : Ideal R) :
+    (reesAlgebra I) →+* (reesAlgebra I) ⧸ I.map (algebraMap R (reesAlgebra I)) :=
+  Ideal.Quotient.mk (I.map (algebraMap R (reesAlgebra I)))
+
+/-- The ideal `⨁ i, J ⊓ Iⁱ / J ⊓ Iⁱ⁺¹` corresponding to an ideal `J` of `R`. -/
+noncomputable abbrev Ideal.toAssociatedGraded (J I : Ideal R) :
+    Ideal ((reesAlgebra I) ⧸ (I.map (algebraMap R (reesAlgebra I)))) :=
+  ((J.map Polynomial.C).comap (reesAlgebra I).val).map (reesAlgebraToAssociatedGraded I)
+
+lemma Polynomial.monomial_mem_of_mem {J : Ideal R} {f : R[X]} (mem : f ∈ J.map C) (n : ℕ) :
+    monomial n (f.coeff n) ∈ J.map C := by
+  rw [Ideal.mem_map_C_iff]
+  intro m
+  by_cases eq : m = n
+  · simpa [eq] using Ideal.mem_map_C_iff.mp mem n
+  · simp only [coeff_monomial_of_ne _ eq, zero_mem]
+
+lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG) :
+    ∃ (ι : Type u) (f : ι → reesAlgebra I) (deg : ι → ℕ) (coeff : ι → R), Finite ι ∧
+      (∀ i : ι, (f i).1 = monomial (deg i) (coeff i)) ∧ (∀ i : ι, coeff i ∈ J) ∧
+        (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
+          J.toAssociatedGraded I := by
+  obtain ⟨s, hs⟩ := fg
+  have smem : ∀ x ∈ s, x ∈ J.toAssociatedGraded I := fun x hx ↦ by
+    simpa [← hs] using Ideal.subset_span hx
+  have : (J.toAssociatedGraded I).comap (reesAlgebraToAssociatedGraded I) = _ :=
+    (Ideal.comap_map_of_surjective' (reesAlgebraToAssociatedGraded I) Ideal.Quotient.mk_surjective
+      ((J.map Polynomial.C).comap (reesAlgebra I).val)).trans (sup_comm _ _)
+  choose g g_spec using fun (x : s) ↦
+    Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2)
+  let ι := Sigma (fun (x : s) ↦ (g x).1.support)
+  let deg : ι → ℕ := fun ⟨i, j⟩ ↦ j
+  let coeff : ι → R := fun ⟨i, j⟩ ↦ (g i).1.coeff j.1
+  have monomial_mem (i : ι) : monomial (deg i) (coeff i) ∈ reesAlgebra I := by
+    match i with
+    | ⟨i, j⟩ => exact reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp (g i).2 j)
+  have monomial_mem' (i : ι) : monomial (deg i) (coeff i) ∈ J.map C := by
+    match i with
+    | ⟨i, j⟩ => exact Polynomial.monomial_mem_of_mem (g_spec i).1 _
+  let f : ι → reesAlgebra I := fun i ↦ ⟨monomial (deg i) (coeff i), monomial_mem i⟩
+  use ι, f, deg, coeff
+  refine ⟨inferInstance, fun i ↦ rfl, fun ⟨i, j⟩ ↦ ?_, le_antisymm ?_ ?_⟩
+  · have := (g_spec i).1
+    simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff] at this
+    exact this j
+  · simp only [Ideal.map_span, Ideal.span_le, Set.image_subset_iff]
+    rintro x ⟨y, hy⟩
+    apply Ideal.mem_map_of_mem
+    simpa [← hy] using monomial_mem' y
+  · simp only [← hs, Ideal.span_le]
+    intro x hx
+    have : _ = x := (g_spec ⟨x, hx⟩).2
+    rw [← this]
+    apply Ideal.mem_map_of_mem
+    have : g ⟨x, hx⟩ =
+      ∑ j, ⟨monomial (deg ⟨⟨x, hx⟩, j⟩) (coeff ⟨⟨x, hx⟩, j⟩), monomial_mem ⟨⟨x, hx⟩, j⟩⟩ := by
+      apply SetCoe.ext
+      simp only [Finset.univ_eq_attach, AddSubmonoidClass.coe_finsetSum, deg, coeff]
+      rw [(g ⟨x, hx⟩).1.support.sum_attach (fun n ↦ (monomial n) ((g ⟨x, hx⟩).1.coeff n))]
+      exact (sum_monomial_eq (g ⟨x, hx⟩).1).symm
+    rw [this]
+    apply sum_mem (fun i hi ↦ Ideal.subset_span ?_)
+    exact ⟨⟨⟨x, hx⟩, i⟩, rfl⟩
+
+lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
+    (deg : ι → ℕ) (coeff : ι → R) (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i))
+    (span_eq : (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
+      J.toAssociatedGraded I)
+    (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : ι → R),
+    (∀ i : ι, coeff' i ∈ I ^ (n - deg i)) ∧ (∀ i : ι, deg i > n → coeff' i = 0) ∧
+      r - ∑ x : ι, coeff' x * coeff x ∈ I ^ (n + 1) := by
+  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ ∈
+    J.toAssociatedGraded I := by
+    apply Ideal.mem_map_of_mem
+    simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff]
+    intro m
+    by_cases eq : m = n
+    · simpa [eq]
+    · simp only [coeff_monomial_of_ne _ eq, zero_mem]
+  rw [← span_eq, Ideal.map_span, ← Set.range_comp, Ideal.mem_span_range_iff_exists_fun] at this
+  rcases this with ⟨c, hc⟩
+  choose c' c'_spec using fun i ↦ (Ideal.Quotient.mk_surjective (c i))
+  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ =
+    (reesAlgebraToAssociatedGraded I) (∑ i, c' i * f i) := by simp [← hc, c'_spec]
+  rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, mem_map_algebraMap_reesAlgebra_iff] at this
+  have coeff_eq := this n
+  simp only [AddSubgroupClass.coe_sub, AddSubmonoidClass.coe_finsetSum, MulMemClass.coe_mul, eq,
+    coeff_sub, coeff_monomial_same, finsetSum_coeff] at coeff_eq
+  let coeff' : ι → R := fun i ↦ if deg i ≤ n then (c' i).1.coeff (n - (deg i)) else 0
+  have : ∑ i, ((c' i).1 * (monomial (deg i)) (coeff i)).coeff n = ∑ i, (coeff' i) * (coeff i) := by
+    congr
+    ext i
+    rw [← Polynomial.C_mul_X_pow_eq_monomial, ← mul_assoc]
+    simp [coeff_mul_X_pow', coeff']
+  rw [this] at coeff_eq
+  refine ⟨coeff', fun i ↦ ?_, fun i hi ↦ ?_, coeff_eq⟩
+  · by_cases degle : deg i ≤ n
+    · simpa [degle, coeff'] using (mem_reesAlgebra_iff I _).mp (c' i).2 (n - deg i)
+    · simp [degle, coeff']
+  · simp [coeff', hi]
