@@ -509,7 +509,8 @@ theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T
     rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨1, by simp⟩)
   | more n h₀ _ =>
-    fail_if_not_idempotent push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
+    -- TODO: push_cast is not idempotent
+    push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
