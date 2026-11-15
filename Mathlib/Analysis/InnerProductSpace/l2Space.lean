@@ -512,10 +512,6 @@ protected theorem hasSum_eNorm_inner_sq (b : HilbertBasis ι 𝕜 E) (x : E) :
   simp_rw [eNorm_eq_nnNorm, ← ENNReal.coe_pow]
   exact ENNReal.hasSum_coe.mpr (b.hasSum_nnNorm_inner_sq x)
 
-protected theorem summable_eNorm_inner_sq (b : HilbertBasis ι 𝕜 E) (x : E) :
-    Summable fun i => ‖⟪b i, x⟫‖ₑ ^ 2 :=
-  (b.hasSum_eNorm_inner_sq x).summable
-
 /-- **Parseval's identity**, `ℝ≥0∞`-version: the squared eNorm of `x` is the sum of the squared
 eNorms of its coefficients `⟪b i, x⟫` with respect to a Hilbert basis `b`. -/
 protected theorem tsum_eNorm_inner_sq (b : HilbertBasis ι 𝕜 E) (x : E) :
