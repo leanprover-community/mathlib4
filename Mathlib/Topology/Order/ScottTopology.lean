@@ -189,6 +189,14 @@ theorem exists_isLUB_of_mem_closure {s : Set α} {x : α} (hx : x ∈ closure s)
     ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
   closure_subset_setOfPred_isLUB s hx
 
+private theorem continuous_of_image [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
+    {f : α → β} (hf : LeftOrdContinuous f) (H : ∀ s, DirectedOn (· ≤ ·) (f '' s)) :
+    Continuous f := by
+  rw [continuous_iff_image_closure_subset_closure_image]
+  rintro s _ ⟨y, hy, rfl⟩
+  obtain ⟨d, hd, hd₀, hx⟩ := exists_isLUB_of_mem_closure hy
+  exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _) (H d) (hf hd₀ hx)
+
 end univ
 end Preorder
 
@@ -208,12 +216,8 @@ theorem mem_closure_iff_isLUB {s : Set α} {x : α} :
 /-- See `continuous_of_leftOrdContinuous'` for a version that instead requires the codomain to be
 linearly ordered. -/
 theorem continuous_of_leftOrdContinuous [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
-    {f : α → β} (hf : LeftOrdContinuous f) : Continuous f := by
-  rw [continuous_iff_image_closure_subset_closure_image]
-  rintro s _ ⟨y, hy, rfl⟩
-  obtain ⟨d, hd, hd₀, hx⟩ := exists_isLUB_of_mem_closure hy
-  exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
-    (hf.mono.directedOn_le_image d) (hf hd₀ hx)
+    {f : α → β} (hf : LeftOrdContinuous f) : Continuous f :=
+  continuous_of_image hf hf.mono.directedOn_le_image
 
 /-- See `LeftOrdContinuous.continuous'` for a version that instead requires the codomain to be
 linearly ordered. -/
@@ -222,12 +226,8 @@ alias _root_.LeftOrdContinuous.continuous := continuous_of_leftOrdContinuous
 /-- See `continuous_of_leftOrdContinuous` for a version that instead requires the domain to be
 linearly ordered. -/
 theorem continuous_of_leftOrdContinuous' [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
-    {f : β → α} (hf : LeftOrdContinuous f) : Continuous f := by
-  rw [continuous_iff_image_closure_subset_closure_image]
-  rintro s _ ⟨y, hy, rfl⟩
-  obtain ⟨d, hd, hd₀, hx⟩ := exists_isLUB_of_mem_closure hy
-  exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
-    (.of_linearOrder _) (hf hd₀ hx)
+    {f : β → α} (hf : LeftOrdContinuous f) : Continuous f :=
+  continuous_of_image hf fun _ ↦ .of_linearOrder _
 
 /-- See `LeftOrdContinuous.continuous` for a version that instead requires the domain to be
 linearly ordered. -/

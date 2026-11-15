@@ -80,6 +80,16 @@ theorem Antitone.directedOn_le_image [LinearOrder α] [Preorder β] {f : α → 
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
   exact ⟨_, Set.mem_image_of_mem _ (min_rec' _ hx hy), hf (min_le_left x y), hf (min_le_right x y)⟩
 
+@[to_dual directedOn_ge_range]
+theorem Monotone.directedOn_le_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+    DirectedOn (· ≤ ·) (.range f) := by
+  simpa using hf.directedOn_le_image .univ
+
+@[to_dual directedOn_ge_range]
+theorem Antitone.directedOn_le_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+    DirectedOn (· ≤ ·) (.range f) := by
+  simpa using hf.directedOn_le_image .univ
+
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
     (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b → r' a b) : DirectedOn r' s := fun _ hx _ hy =>
   let ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
