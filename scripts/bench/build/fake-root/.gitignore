@@ -1,0 +1,6 @@
+# Everything except the `lean` wrapper is symlinked from the real toolchain by `../run`.
+/*
+!/.gitignore
+!/bin/
+/bin/*
+!/bin/lean

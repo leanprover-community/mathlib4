@@ -72,9 +72,8 @@ _ = ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ
 
 ## TODO
 
-Add a version of the chain rule for the integral form of the contional KL divergence, i.e.
+Add a version of the chain rule for the integral form of the conditional KL divergence, i.e.
 `μ[fun x ↦ klDiv (κ x) (η x)]`.
-
 -/
 
 public section
@@ -121,7 +120,7 @@ lemma integrable_llr_compProd_iff (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
   have h_iff_κ : Integrable (llr μ ν) μ ↔ Integrable (fun x ↦ llr μ ν x.1) (μ ⊗ₘ κ) := by
     rw [Measure.integrable_compProd_iff]
     swap; · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
-    simp only [ne_eq, enorm_ne_top, not_false_eq_true, integrable_const_enorm,
+    simp only [ne_eq, eNorm_ne_top, not_false_eq_true, integrable_const_eNorm,
       Filter.eventually_true, integral_const, probReal_univ, smul_eq_mul, one_mul, true_and]
     rw [← integrable_norm_iff (by fun_prop)]
   rw [h_iff_κ]
@@ -155,7 +154,7 @@ lemma integral_llr_compProd_eq_add (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η)
   have ⟨h_int_μν, h_int_κη⟩ := (integrable_llr_compProd_iff h_ac).mp h_int
   have h_int1 : Integrable (fun p ↦ log ((∂μ/∂ν) p.1).toReal) (μ ⊗ₘ κ) := by
     rw [Measure.integrable_compProd_iff]
-    · simp only [ne_eq, enorm_ne_top, not_false_eq_true, integrable_const_enorm,
+    · simp only [ne_eq, eNorm_ne_top, not_false_eq_true, integrable_const_eNorm,
       Filter.eventually_true, integral_const, probReal_univ, smul_eq_mul, one_mul, true_and]
       rwa [← integrable_norm_iff (by fun_prop)] at h_int_μν
     · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)

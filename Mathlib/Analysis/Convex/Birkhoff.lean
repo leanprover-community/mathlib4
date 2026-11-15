@@ -151,7 +151,7 @@ lemma exists_eq_sum_perm_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R 
   refine ⟨w, hw1, ?_, hw3⟩
   inhabit n
   have : ∑ j, ∑ σ : Equiv.Perm n, w σ • σ.permMatrix R default j = 1 := by
-    simp only [← smul_apply (m := n), ← Finset.sum_apply, hw3]
+    simp only [← Matrix.smul_apply (m := n), ← Finset.sum_apply, hw3]
     rw [sum_row_of_mem_doublyStochastic hM]
   simpa [sum_comm (γ := n), Equiv.toPEquiv_apply] using this
 

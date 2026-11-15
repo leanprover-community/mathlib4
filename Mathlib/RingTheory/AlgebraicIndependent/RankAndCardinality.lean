@@ -23,7 +23,6 @@ This file concerns the cardinality of a transcendence basis.
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
-
 -/
 
 public section

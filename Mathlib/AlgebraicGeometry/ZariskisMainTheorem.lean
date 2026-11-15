@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicGeometry.Normalization
 import Mathlib.RingTheory.Etale.QuasiFinite
 
 /-!
-
 # Zariski's Main Theorem
 
 In this file we prove Grothendieck's reformulation of Zariski's main theorem, namely if
@@ -28,7 +27,6 @@ We then have the following corollaries
 - `IsFinite.of_isProper_of_locallyQuasiFinite`:
   If `f` is proper and quasi-finite, then the map `f.toNormalization : X ⟶ X'` is an isomorphism,
   which implies that `f` itself is finite.
-
 -/
 
 open CategoryTheory Limits
@@ -41,7 +39,6 @@ universe u
 
 variable {X Y S : Scheme.{u}} (f : X ⟶ S) [LocallyOfFiniteType f]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 -- Note: This is weaker than stacks#02LN but is enough to proof Zariski's main.
@@ -108,7 +105,8 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     · exact PrimeSpectrum.ext (Ideal.over_def _ _).symm
     · simp [h]
   · exact ⟨⟨P', ‹_›⟩, heP', rfl⟩
-  · simp [isCompl_iff, disjoint_iff, codisjoint_iff, W₂, SetLike.ext'_iff]
+  · rw [isCompl_iff, disjoint_iff, codisjoint_iff]
+    constructor <;> ext <;> simp [W₂]
   · trans hV.fromSpec ⟨P'.comap Algebra.TensorProduct.includeRight.toRingHom, inferInstance⟩
     · simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, g, reassoc_of% he₁]; rfl
     convert hV.fromSpec_primeIdealOf ⟨x, hxV⟩

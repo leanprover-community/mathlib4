@@ -8,7 +8,6 @@ module
 public import Mathlib.Basic.Real.Basic
 
 /-!
-
 # Predicates on monomials
 
 In this file we define `UnitMonomial`: type to represent monomials without coefficient as a list of

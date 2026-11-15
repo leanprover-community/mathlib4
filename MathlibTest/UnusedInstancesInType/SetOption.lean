@@ -37,6 +37,7 @@ end decidableTest
 
 namespace fintypeTest
 
+set_option linter.concreteInstances false
 set_option linter.unusedFintypeInType true
 
 -- Silenceable

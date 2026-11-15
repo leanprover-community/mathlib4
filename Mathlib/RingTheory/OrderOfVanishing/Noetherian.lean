@@ -136,7 +136,7 @@ we work with the order on `ℕ∞` where the `∞` element is interpreted as a `
 lemma ordFrac_ge_one_of_ne_zero {x : R} (hx : x ≠ 0) :
     1 ≤ ordFrac R (algebraMap R K x) := by
   obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp (ord_ne_top (a := x) (by simpa))
-  simp_rw [ordFrac_eq_ord R hx, ordMonoidWithZeroHom_eq_coe _ (by simpa) hm.symm,
+  simp_rw [ordFrac_eq_ord R, ordMonoidWithZeroHom_eq_coe _ (by simpa) hm.symm,
     WithZero.one_le_coe, ← ofAdd_zero, Multiplicative.ofAdd_le, Nat.cast_nonneg _]
 
 lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
@@ -152,7 +152,7 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
 
 @[simp]
 lemma ordFrac_of_isUnit {x : R} (hx : IsUnit x) : ordFrac R (algebraMap R K x) = 1 := by
-  simp [ordFrac_eq_ord R (IsUnit.ne_zero hx), IsUnit.mem_nonZeroDivisors hx,
+  simp [ordFrac_eq_ord R, IsUnit.mem_nonZeroDivisors hx,
       ordMonoidWithZeroHom_eq_ord, ord_of_isUnit hx]
 
 end ordFrac
@@ -161,14 +161,16 @@ section IsDiscreteValuationRing
 variable [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
-lemma ordMonoidWithZeroHom_eq_intValuation {x : R} (h : x ∈ nonZeroDivisors R) :
+lemma ordMonoidWithZeroHom_eq_intValuation {x : R} :
     (ordMonoidWithZeroHom R) x = ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
-  simp [ordMonoidWithZeroHom_eq_ord h, IsDiscreteValuationRing.intValuation_maximalIdeal]
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  simp [ordMonoidWithZeroHom_eq_ord (mem_nonZeroDivisors_of_ne_zero hx),
+    IsDiscreteValuationRing.intValuation_maximalIdeal]
 
-lemma ordFrac_eq_intValuation {x : R} (h : x ≠ 0) : (ordFrac R) ((algebraMap R K) x) =
+lemma ordFrac_eq_intValuation {x : R} : (ordFrac R) ((algebraMap R K) x) =
     ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
-  rw [ordFrac_eq_ord R h,
-      ordMonoidWithZeroHom_eq_intValuation (mem_nonZeroDivisors_of_ne_zero h)]
+  rw [ordFrac_eq_ord R, ordMonoidWithZeroHom_eq_intValuation]
 
 theorem ordFrac_eq_inverse_comp_valuation :
     ordFrac R = MonoidWithZeroHom.comp MonoidWithZero.inverse
@@ -177,7 +179,7 @@ theorem ordFrac_eq_inverse_comp_valuation :
   by_cases ha : a = 0
   · simp_all
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) a
-  simp_all [ordFrac_eq_intValuation _, IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
+  simp_all [ordFrac_eq_intValuation, IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
     IsDiscreteValuationRing.intValuation_maximalIdeal]
 
 theorem ordFrac_eq_valuation_inv (x : K) :

@@ -90,10 +90,15 @@ instance HasPDF.haveLebesgueDecomposition [HasPDF X ℙ μ] : (map X ℙ).HaveLe
 theorem HasPDF.absolutelyContinuous [HasPDF X ℙ μ] : map X ℙ ≪ μ := HasPDF.absolutelyContinuous'
 
 /-- A random variable that `HasPDF` is quasi-measure-preserving. -/
-theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
-    [HasPDF X ℙ μ] (h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
-  { measurable := h
+theorem HasPDF.quasiMeasurePreserving (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E) [HasPDF X ℙ μ] :
+    QuasiMeasurePreserving X ℙ μ :=
+  { aemeasurable := HasPDF.aemeasurable X ℙ μ
     absolutelyContinuous := HasPDF.absolutelyContinuous .. }
+
+@[deprecated HasPDF.quasiMeasurePreserving +typeChanged (since := "2026-09-06")]
+theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
+    [HasPDF X ℙ μ] (_h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
+  HasPDF.quasiMeasurePreserving X ℙ μ
 
 theorem HasPDF.congr (hXY : X =ᵐ[ℙ] Y) [hX : HasPDF X ℙ μ] : HasPDF Y ℙ μ :=
   ⟨(HasPDF.aemeasurable X ℙ μ).congr hXY, ℙ.map_congr hXY ▸ hX.haveLebesgueDecomposition,
@@ -225,8 +230,8 @@ theorem quasiMeasurePreserving_hasPDF (hg : QuasiMeasurePreserving g μ ν)
     (hmap : (map g (map X ℙ)).HaveLebesgueDecomposition ν) : HasPDF (g ∘ X) ℙ ν := by
   have hgm : AEMeasurable g (map X ℙ) := hg.aemeasurable.mono_ac HasPDF.absolutelyContinuous
   rw [hasPDF_iff, ← AEMeasurable.map_map_of_aemeasurable hgm (HasPDF.aemeasurable X ℙ μ)]
-  refine ⟨hg.measurable.comp_aemeasurable (HasPDF.aemeasurable _ _ μ), hmap, ?_⟩
-  exact (HasPDF.absolutelyContinuous.map hg.1).trans hg.2
+  refine ⟨hgm.comp_aemeasurable (HasPDF.aemeasurable _ _ μ), hmap, ?_⟩
+  exact (HasPDF.absolutelyContinuous.map_of_aemeasurable hg.1).trans hg.2
 
 theorem quasiMeasurePreserving_hasPDF' [SFinite ℙ] [SigmaFinite ν]
     (hg : QuasiMeasurePreserving g μ ν) : HasPDF (g ∘ X) ℙ ν :=
@@ -260,12 +265,12 @@ theorem integral_mul_eq_integral [HasPDF X ℙ] : ∫ x, x * (pdf X ℙ volume x
 theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : pdf X ℙ =ᵐ[volume] g)
     (hgi : ∫⁻ x, ‖f x‖ₑ * g x ≠ ∞) :
     HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
-  rw [hasFiniteIntegral_iff_enorm]
+  rw [hasFiniteIntegral_iff_eNorm]
   have : (fun x => ‖f x‖ₑ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖ₑ := by
     refine ae_eq_trans ((ae_eq_refl _).fun_mul (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
-    simp_rw [← smul_eq_mul, enorm_smul, smul_eq_mul]
+    simp_rw [← smul_eq_mul, eNorm_smul, smul_eq_mul]
     refine .fun_mul (ae_eq_refl _) ?_
-    simp only [Real.enorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
+    simp only [Real.eNorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 
 end Real

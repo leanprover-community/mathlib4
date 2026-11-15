@@ -18,7 +18,6 @@ then the shift functors on the full subcategory associated
 to `P` are additive if the shift functors on `C` are.
 
 This instance is put in a separate file in order to reduce imports.
-
 -/
 
 public section

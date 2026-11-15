@@ -45,7 +45,7 @@ theorem dense_addSubgroupClosure_pair_iff {a b : ℝ} :
   · intro h
     contrapose h
     have := (AddSubgroup.dense_or_isCyclic _).resolve_left h
-    rcases AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq_top _ |>.mp this with ⟨c, hc⟩
+    rcases AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq _ |>.mp this with ⟨c, hc⟩
     have : {a, b} ⊆ range (· • c : ℤ → ℝ) := by
       rw [← AddSubgroup.coe_zmultiples, hc]
       apply AddSubgroup.subset_closure
@@ -83,7 +83,7 @@ theorem dense_addSubgroup_iff_ne_zmultiples {p : ℝ} [Fact (0 < p)] {s : AddSub
     obtain ⟨a, rfl⟩ : ∃ a, s = .zmultiples a := by
       rw [← QuotientAddGroup.dense_preimage_mk, ← QuotientAddGroup.coe_mk',
         ← AddSubgroup.coe_comap, xor_iff_not_iff'.1 (AddSubgroup.dense_xor_isAddCyclic _),
-        AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq_top] at h
+        AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq] at h
       rcases h with ⟨a, ha⟩
       use a
       rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, ha,

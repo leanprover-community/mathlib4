@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Yoneda
 
 /-!
-
 # Profunctors
 
 A profunctor from a category `C` to a category `D` is a functor from `C` to a category of

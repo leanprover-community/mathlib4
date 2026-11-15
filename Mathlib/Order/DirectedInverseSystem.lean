@@ -55,7 +55,6 @@ natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how 
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
 is everything. However, the author chose the `compat` approach in the end because it constructs
 the distinguished bijection that is compatible with the projections to all `X i`.
-
 -/
 
 @[expose] public section
@@ -184,6 +183,16 @@ theorem lift_injective (h : ∀ i, Function.Injective (ih i)) :
   DirectLimit.induction₂ _ fun i x y eq ↦ by simp_rw [lift_def] at eq; rw [h i eq]
 
 end lift
+
+/-- If `m` is an upper bound for the index type, then the direct limit is equivalent to the
+component at `m`. -/
+def equivOfIsTop (m : ι) (hm : IsTop m) : DirectLimit F f ≃ F m where
+  toFun := DirectLimit.lift f (fun i x ↦ f i m (hm i) x) (by simp [map_map'])
+  invFun x := ⟦⟨m, x⟩⟧
+  left_inv z := by
+    induction z using DirectLimit.induction with
+    | _ i x => simp only [lift_def, mk_apply]
+  right_inv := fun _ ↦ by simp only [lift_def, map_self']
 
 section map
 

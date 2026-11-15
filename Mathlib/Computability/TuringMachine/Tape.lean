@@ -25,7 +25,6 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   of `List Γ` by extension by blanks at the end.
 * `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
-
 -/
 
 @[expose] public section

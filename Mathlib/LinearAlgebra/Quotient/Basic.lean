@@ -22,7 +22,6 @@ public import Mathlib.LinearAlgebra.Quotient.Defs
 * `Submodule.liftQ`: lift a map `M → M₂` to a map `M ⧸ p → M₂` if the kernel is contained in `p`
 * `Submodule.mapQ`: lift a map `M → M₂` to a map `M ⧸ p → M₂ ⧸ q` if the image of `p` is contained
   in `q`
-
 -/
 
 @[expose] public section

@@ -37,7 +37,6 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 * `IsFreeGroup.unique_lift`: the universal property of a free group.
 * `FreeGroupBasis.ofUniqueLift`: a group satisfying the universal property of a free group admits
   a free group basis.
-
 -/
 
 @[expose] public section
@@ -236,8 +235,8 @@ variable (G : Type*) [Group G] [IsFreeGroup G]
 def Generators : Type _ := (IsFreeGroup.nonempty_basis (G := G)).choose
 
 /-- Any free group is isomorphic to "the" free group. -/
-@[to_additive /-- Any additive free group is isomorphic to "the" additive free group. -/]
-irreducible_def mulEquiv : FreeGroup (Generators G) ≃* G :=
+@[no_expose, to_additive /-- Any additive free group is isomorphic to "the" additive free group. -/]
+def mulEquiv : FreeGroup (Generators G) ≃* G :=
   (IsFreeGroup.nonempty_basis (G := G)).choose_spec.some.repr.symm
 
 /-- A free group basis of a free group `G`, over the set `Generators G`. -/

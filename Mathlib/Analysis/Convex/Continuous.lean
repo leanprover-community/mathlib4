@@ -323,7 +323,6 @@ lemma ConcaveOn.continuousOn_Ico {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : Concave
   simpa using hf_cnv.neg.continuousOn_Ico hf_cont.neg
 
 lemma ConvexOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn ℝ (Icc y z) f)
-    (hyz : y < z)
     (hfy : ContinuousWithinAt f (Ici y) y) (hfz : ContinuousWithinAt f (Iic z) z) :
     ContinuousOn f (Icc y z) := by
   suffices ContinuousOn f (Ico y z) ∧ ContinuousOn f (Ioc y z) by
@@ -340,9 +339,8 @@ lemma ConvexOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn
   · exact hf_cvx.subset Ioc_subset_Icc_self (convex_Ioc y z)
 
 lemma ConcaveOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : ConcaveOn ℝ (Icc y z) f)
-    (hyz : y < z)
     (hfy : ContinuousWithinAt f (Ici y) y) (hfz : ContinuousWithinAt f (Iic z) z) :
     ContinuousOn f (Icc y z) := by
-  simpa using hf_cnv.neg.continuousOn_Icc hyz hfy.neg hfz.neg
+  simpa using hf_cnv.neg.continuousOn_Icc hfy.neg hfz.neg
 
 end Intervals

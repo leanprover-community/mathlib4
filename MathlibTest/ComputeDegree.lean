@@ -57,13 +57,13 @@ example [Ring R] (g : R[X]) (hg : degree g ≤ 5) : degree (- C (z : R) * X ^ 5 
 
 example {N : WithBot ℕ} (nN : n ≤ N) : degree (- C z * X ^ n) ≤ N := by compute_degree!
 
-example [Ring R] : coeff (1 : R[X]) 0 = 1 := by compute_degree!
+example [Ring R] : (1 : R[X]).coeff 0 = 1 := by compute_degree!
 
-example [Ring R] : coeff (1 : R[X]) 2 = 0 := by compute_degree!
+example [Ring R] : (1 : R[X]).coeff 2 = 0 := by compute_degree!
 
-example [Ring R] : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by compute_degree!
+example [Ring R] : (1 : R[X]).coeff n = if n = 0 then 1 else 0 := by compute_degree!
 
-example [Ring R] (h : (0 : R) = 6) : coeff (1 : R[X]) 1 = 6 := by compute_degree!
+example [Ring R] (h : (0 : R) = 6) : (1 : R[X]).coeff 1 = 6 := by compute_degree!
 
 /-! Test error messages -/
 
@@ -254,3 +254,17 @@ example : (C 1 + X * 3 * (X + 3) ^ 4 : Polynomial ℤ).degree < 10 := by
 variable [CommRing R] in
 example : (X ^ 2 + 2 • X + C 1 : R[X]).natDegree < 3 := by
   compute_degree!
+
+example : natDegree (-1 + X : ℤ[X]) = 1 := by compute_degree!
+
+example : degree (-1 + X : ℤ[X]) = 1 := by compute_degree!
+
+example : natDegree (-1 + 8 * X ^ 7 : ℤ[X]) = 7 := by compute_degree!
+
+example : (-1 + 8 * X ^ 7 : ℤ[X]).coeff 7 = 8 := by compute_degree!
+
+example : natDegree (-X + 8 * X ^ 7 : ℤ[X]) = 7 := by compute_degree!
+
+example : natDegree (-(2 * X) + 8 * X ^ 7 : ℤ[X]) = 7 := by compute_degree!
+
+example : natDegree (-(X ^ 3 - 1) : ℤ[X]) = 3 := by compute_degree!

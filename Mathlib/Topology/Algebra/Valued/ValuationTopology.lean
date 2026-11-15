@@ -21,7 +21,6 @@ values in a group with zero. Other instances are then deduced from this.
 The `Valued` class defined in this file will eventually get replaced with `ValuativeRel`
 from `Mathlib.RingTheory.Valuation.ValuativeRel.Basic`. New developments on valued rings/fields
 should take this into consideration.
-
 -/
 
 @[expose] public section

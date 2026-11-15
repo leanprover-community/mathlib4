@@ -22,7 +22,6 @@ can be used for example to establish variational expressions for the Kullback-Le
 
 * `Measure.tilted μ f`: exponential tilting of `μ` by `f`, equal to
   `μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ))`.
-
 -/
 
 @[expose] public section
@@ -112,8 +111,7 @@ lemma tilted_apply_eq_ofReal_integral' {s : Set α} (f : α → ℝ) (hs : Measu
   · rw [tilted_apply' _ _ hs, ← ofReal_integral_eq_lintegral_ofReal]
     · exact hf.integrableOn.div_const _
     · exact ae_of_all _ (fun _ ↦ by positivity)
-  · simp only [hf, not_false_eq_true, tilted_of_not_integrable, Measure.coe_zero,
-      Pi.zero_apply, integral_undef hf, div_zero, integral_zero, ENNReal.ofReal_zero]
+  · simp [hf, integral_undef hf]
 
 lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α) :
     μ.tilted f s = ENNReal.ofReal (∫ a in s, exp (f a) / ∫ x, exp (f x) ∂μ ∂μ) := by

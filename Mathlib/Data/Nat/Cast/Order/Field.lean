@@ -69,11 +69,11 @@ section LinearOrderedField
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
-theorem one_sub_one_div_cast_nonneg [AddRightMono α] (n : ℕ) : 0 ≤ 1 - 1 / (n : α) := by
+theorem one_sub_one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 - 1 / (n : α) := by
   rw [sub_nonneg, one_div]
   exact cast_inv_le_one n
 
-theorem one_sub_one_div_cast_le_one [AddLeftMono α] (n : ℕ) : 1 - 1 / (n : α) ≤ 1 := by
+theorem one_sub_one_div_cast_le_one (n : ℕ) : 1 - 1 / (n : α) ≤ 1 := by
   rw [sub_le_self_iff]
   exact one_div_cast_nonneg n
 

@@ -28,7 +28,6 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 - `⨆ i, f i`, `⨅ i, f i`: supremum and infimum of an indexed family, respectively;
 - `⋃₀ s`, `⋂₀ s`: union and intersection of a set of sets;
 - `⋃ i, s i`, `⋂ i, s i`: union and intersection of an indexed family of sets.
-
 -/
 
 @[expose] public section

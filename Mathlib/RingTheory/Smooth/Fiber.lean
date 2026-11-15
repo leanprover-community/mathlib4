@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Smooth.Local
 import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
-
 # Flat and smooth fibers imply smooth
 
 ## Main results
@@ -32,7 +31,6 @@ import Mathlib.RingTheory.Flat.Equalizer
 ## Note
 
 For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
-
 -/
 
 open TensorProduct IsLocalRing

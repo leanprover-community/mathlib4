@@ -20,7 +20,6 @@ subgroups.
 
 ## Tags
 subgroup, subgroups
-
 -/
 
 public section

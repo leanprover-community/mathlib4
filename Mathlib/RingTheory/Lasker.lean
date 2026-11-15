@@ -23,7 +23,6 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
   for primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
   `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly the associated primes of `I`.
 - `Submodule.isLasker`: Every Noetherian module is Lasker.
-
 -/
 
 @[expose] public section

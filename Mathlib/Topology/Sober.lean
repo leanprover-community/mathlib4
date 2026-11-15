@@ -22,7 +22,6 @@ stated via `[QuasiSober α] [T0Space α]`.
 * `IsGenericPoint` : `x` is the generic point of `S` if `S` is the closure of `x`.
 * `QuasiSober` : A space is quasi-sober if every irreducible closed subset has a generic point.
 * `genericPoints` : The set of generic points of irreducible components.
-
 -/
 
 @[expose] public section

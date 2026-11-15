@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Sites.Sheafification
 In this file, it is shown that the category of sheaves `Sheaf J A` is a localization
 of the category `Presheaf J A` with respect to the class `J.W` of morphisms
 of presheaves which become isomorphisms after applying the sheafification functor.
-
 -/
 
 universe w

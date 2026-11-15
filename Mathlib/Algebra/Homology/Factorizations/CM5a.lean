@@ -46,7 +46,6 @@ a projective system `ℕᵒᵖ ⥤ CochainComplex C ℤ`
 Degreewise, this projective system is essentially constant, which allows
 to take its limit, which shall be the intermediate object in the
 lemma `cm5a_cof`.
-
 -/
 
 
@@ -111,7 +110,7 @@ variable (K L) in
 noncomputable abbrev mid := S K n₁ ⊞ L
 
 variable (K) in
-/-- The morphim `K ⟶ S K n₁` which in degree `n₁` corresponds to
+/-- The morphism `K ⟶ S K n₁` which in degree `n₁` corresponds to
 the composition `K.X n₁ ⟶ K.opcycles n₁ ⟶ Injective.under (K.opcycles n₁)`. -/
 noncomputable def i : K ⟶ S K n₁ := mkHomToSingle (K.pOpcycles n₁ ≫ Injective.ι _) (by simp)
 
@@ -443,7 +442,7 @@ def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
 variable {f} in
 lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
-    ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.1 ⟶ F.1),
+    ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.obj ⟶ F.obj),
       ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (g.hom.h.f i) := by
   obtain ⟨F₁₂, h₁, h₂⟩ := step F.obj.obj.ι n₀ n₁ F.property
   exact ⟨.mk (.mk { mid := F₁₂.obj.mid, ι := F₁₂.obj.ι, π := F₁₂.obj.π ≫ F.obj.obj.π }
@@ -500,7 +499,6 @@ sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
 noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
   (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :
     IsIso (((functor f n₀).map (homOfLE hq).op).hom.h.f i) := by
   wlog hq' : q₁ + 1 = q₂ generalizing q₁ q₂

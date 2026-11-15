@@ -154,7 +154,7 @@ The proximity function of a constant function `c` for the value `⊤` is the con
   simp [proximity, circleAverage_const]
 
 /--
-If `f` is continuous, then so is its proximitiy function at `⊤`.
+If `f` is continuous, then so is its proximity function at `⊤`.
 -/
 @[fun_prop] theorem continuous_proximity_top (hf : Continuous f) :
     Continuous (proximity f ⊤) := by

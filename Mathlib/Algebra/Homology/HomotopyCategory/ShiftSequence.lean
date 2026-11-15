@@ -18,7 +18,6 @@ the shift: there is a natural isomorphism `(K⟦n⟧).homology a ≅ K.homology 
 when `n + a = a'`. This is summarized by instances
 `(homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ` in the `CochainComplex`
 and `HomotopyCategory` namespaces.
-
 -/
 
 @[expose] public section
@@ -35,7 +34,6 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]
@@ -58,7 +56,6 @@ noncomputable def shiftShortComplexFunctorIso (n i i' : ℤ) (hi : n + i = i') :
 
 variable {C}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shiftShortComplexFunctorIso_zero_add_hom_app (a : ℤ) (K : CochainComplex C ℤ) :
     (shiftShortComplexFunctorIso C 0 a a (zero_add a)).hom.app K =
       (shortComplexFunctor C (ComplexShape.up ℤ) a).map
@@ -108,7 +105,6 @@ lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C �
 end ShiftSequence
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ where
   sequence n := homologyFunctor C (ComplexShape.up ℤ) n
@@ -155,7 +151,6 @@ lemma homologyFunctor_shift (n : ℤ) :
     (homologyFunctor C (ComplexShape.up ℤ) 0).shift n =
       homologyFunctor C (ComplexShape.up ℤ) n := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma liftCycles_shift_homologyπ

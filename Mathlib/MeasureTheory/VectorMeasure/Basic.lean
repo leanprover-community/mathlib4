@@ -14,7 +14,6 @@ import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
-
 # Basic API for vector measures
 
 This file develops the basic consequences of countable additivity for vector measures, equips

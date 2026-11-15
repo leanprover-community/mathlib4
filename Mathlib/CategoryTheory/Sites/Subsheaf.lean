@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subfunctor.Sieves
 
 /-!
-
 # Subsheaf of types
 
 We define the subsheaf of a type-valued presheaf.
@@ -158,7 +157,6 @@ theorem Subfunctor.to_sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsShea
   exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : _ ≤ sheafify _ _)).app _ _).2)
     ((G.family_of_elements_compatible _).map _) _ _).trans (this _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toFunctor ⟶ F')
     (e : Subfunctor.homOfLe (G.le_sheafify J) ≫ l₁ = Subfunctor.homOfLe (G.le_sheafify J) ≫ l₂) :

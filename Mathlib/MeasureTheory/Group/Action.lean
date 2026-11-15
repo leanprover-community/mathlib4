@@ -161,7 +161,7 @@ theorem eventuallyEmptyOrUniv_smul_set_ae (c : G) {s : Set α} :
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by
-  simp only [ae_le_set, ← smul_set_sdiff, measure_smul_eq_zero_iff]
+  simp only [ae_subset, ← smul_set_sdiff, measure_smul_eq_zero_iff]
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by

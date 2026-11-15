@@ -309,13 +309,13 @@ variable {R : Type*} [CommSemiring R]
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
 
 /-- The identity pairing is right-separating. -/
-protected theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+protected theorem SeparatingRight.id : SeparatingRight (.id : (M →ₗ[R] R) →ₗ[R] M →ₗ[R] R) :=
   fun x ↦ (forall_dual_apply_eq_zero_iff R x).mp
 
 alias id_separatingRight := SeparatingRight.id
 
 /-- The identity pairing is non-degenerate. -/
-protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
+protected theorem Nondegenerate.id : Nondegenerate (.id : (M →ₗ[R] R) →ₗ[R] M →ₗ[R] R) :=
   ⟨.id, .id⟩
 
 alias id_nondegenerate := Nondegenerate.id
@@ -417,8 +417,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   rw [← p.liftQ_mkQ K h]
   ext x
   convert! congr($hK' (p.mkQ x))
-  simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
-    smul_eq_mul]
+  simp [L']
 
 end Submodule
 
@@ -492,7 +491,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
     Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦ by
-  rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
+  rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, one_apply_eq_self]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
     Function.RightInverse W.dualLift W.dualRestrict :=
@@ -776,9 +775,12 @@ lemma finrank_ker_add_one_of_ne_zero :
     f.quotKerEquivRange.finrank_eq, this]
   rw [range_eq_top_of_ne_zero hf, finrank_top, finrank_self]
 
+omit hf in
 lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
     (hpf : Disjoint (LinearMap.ker f) p) (hp : p ≠ ⊥) :
     IsCompl (LinearMap.ker f) p := by
+  rcases eq_or_ne f 0 with rfl | hf
+  · simp [hp] at hpf
   refine ⟨hpf, codisjoint_iff.mpr <| eq_of_le_of_finrank_le le_top ?_⟩
   have : finrank K ↑(LinearMap.ker f ⊔ p) = finrank K (LinearMap.ker f) + finrank K p := by
     simp [← Submodule.finrank_sup_add_finrank_inf_eq (LinearMap.ker f) p, hpf.eq_bot]
@@ -798,11 +800,10 @@ lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V
     obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hpy
     have ht : t = 0 := by simpa [hx] using hfy
     simp [ht]
-  have hf : f ≠ 0 := by aesop
   ext v
   obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y ∈ LinearMap.ker f, ∃ z ∈ p, y + z = v := by
     have : v ∈ (⊤ : Submodule K V₁) := Submodule.mem_top
-    rwa [← (isCompl_ker_of_disjoint_of_ne_bot hf hpf hp).sup_eq_top, Submodule.mem_sup] at this
+    rwa [← (isCompl_ker_of_disjoint_of_ne_bot hpf hp).sup_eq_top, Submodule.mem_sup] at this
   have hy' : g y = 0 := by rwa [← LinearMap.mem_ker, ← h]
   replace hy : f y = 0 := by rwa [LinearMap.mem_ker] at hy
   obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hz

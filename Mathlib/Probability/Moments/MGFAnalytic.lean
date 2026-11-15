@@ -24,7 +24,6 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 
 * `analyticOn_cgf`: the cumulant-generating function is analytic on the interior of the interval
   `integrableExpSet X μ`.
-
 -/
 
 public section

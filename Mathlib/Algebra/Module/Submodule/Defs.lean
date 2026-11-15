@@ -8,7 +8,6 @@ module
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!
-
 # Submodules of a module
 
 In this file we define

@@ -1,5 +1,7 @@
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 set_option pp.unicode.fun true
 

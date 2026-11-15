@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 
 /-!
-
 # The constant sheaf
 
 We define the constant sheaf functor (the sheafification of the constant presheaf)
@@ -40,7 +39,6 @@ open Limits Opposite Category CategoryTheory.Functor Sheaf Adjunction
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category* D]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
@@ -62,6 +60,7 @@ variable [HasWeakSheafify J D]
 The functor which maps an object of `D` to the constant sheaf at that object, i.e. the
 sheafification of the constant presheaf.
 -/
+@[implicit_reducible]
 noncomputable def constantSheaf : D ⥤ Sheaf J D := Functor.const Cᵒᵖ ⋙ (presheafToSheaf J D)
 
 /-- The constant sheaf functor is left adjoint to evaluation at a terminal object. -/
@@ -189,8 +188,6 @@ noncomputable def constantCommuteCompose :
 lemma constantCommuteCompose_hom_app_hom (X : D) : ((constantCommuteCompose J U).hom.app X).hom =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
     ((constantCommuteCompose J U).hom.app (F.obj.obj ⟨T⟩)) ≫
@@ -204,7 +201,6 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
   simp [NatTrans.comp_app] -- simp [NatTrans.comp_app] to unfold some definitions
   simp [← map_comp, ← NatTrans.comp_app] -- simp [← NatTrans.comp_app] to simplify some compositions
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isConstant_of_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
     [constantSheaf J B |>.Faithful] [constantSheaf J B |>.Full]
     [(sheafCompose J U).ReflectsIsomorphisms] [((sheafCompose J U).obj F).IsConstant J]

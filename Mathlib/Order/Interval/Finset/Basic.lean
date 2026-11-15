@@ -578,20 +578,28 @@ theorem Icc_sdiff_both (a b : α) : Icc a b \ {a, b} = Ioo a b := by simp [← c
 @[deprecated (since := "2026-06-03")] alias Icc_diff_both := Icc_sdiff_both
 
 @[simp]
-theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
+theorem insert_right_Ico (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
   rw [← coe_inj, coe_insert, coe_Icc, coe_Ico, Set.insert_eq, Set.union_comm, Set.Ico_union_right h]
 
+@[deprecated (since := "2026-11-03")] alias Ico_insert_right := insert_right_Ico
+
 @[simp]
-theorem Ioc_insert_left (h : a ≤ b) : insert a (Ioc a b) = Icc a b := by
+theorem insert_left_Ioc (h : a ≤ b) : insert a (Ioc a b) = Icc a b := by
   rw [← coe_inj, coe_insert, coe_Ioc, coe_Icc, Set.insert_eq, Set.union_comm, Set.Ioc_union_left h]
 
-@[simp]
-theorem Ioo_insert_left (h : a < b) : insert a (Ioo a b) = Ico a b := by
-  rw [← coe_inj, coe_insert, coe_Ioo, coe_Ico, Set.insert_eq, Set.union_comm, Set.Ioo_union_left h]
+@[deprecated (since := "2026-11-03")] alias Ioc_insert_left := insert_left_Ioc
 
 @[simp]
-theorem Ioo_insert_right (h : a < b) : insert b (Ioo a b) = Ioc a b := by
+theorem insert_left_Ioo (h : a < b) : insert a (Ioo a b) = Ico a b := by
+  rw [← coe_inj, coe_insert, coe_Ioo, coe_Ico, Set.insert_eq, Set.union_comm, Set.Ioo_union_left h]
+
+@[deprecated (since := "2026-11-03")] alias Ioo_insert_left := insert_left_Ioo
+
+@[simp]
+theorem insert_right_Ioo (h : a < b) : insert b (Ioo a b) = Ioc a b := by
   rw [← coe_inj, coe_insert, coe_Ioo, coe_Ioc, Set.insert_eq, Set.union_comm, Set.Ioo_union_right h]
+
+@[deprecated (since := "2026-11-03")] alias Ioo_insert_right := insert_right_Ioo
 
 @[simp]
 theorem Icc_sdiff_Ico_self (h : a ≤ b) : Icc a b \ Ico a b = {b} := by simp [← coe_inj, h]
@@ -626,21 +634,21 @@ end DecidableEq
 
 -- Those lemmas are purposefully the other way around
 
-/-- `Finset.cons` version of `Finset.Ico_insert_right`. -/
+/-- `Finset.cons` version of `Finset.insert_right_Ico`. -/
 theorem Icc_eq_cons_Ico (h : a ≤ b) : Icc a b = (Ico a b).cons b right_notMem_Ico := by
-  classical rw [cons_eq_insert, Ico_insert_right h]
+  classical rw [cons_eq_insert, insert_right_Ico h]
 
-/-- `Finset.cons` version of `Finset.Ioc_insert_left`. -/
+/-- `Finset.cons` version of `Finset.insert_left_Ioc`. -/
 theorem Icc_eq_cons_Ioc (h : a ≤ b) : Icc a b = (Ioc a b).cons a left_notMem_Ioc := by
-  classical rw [cons_eq_insert, Ioc_insert_left h]
+  classical rw [cons_eq_insert, insert_left_Ioc h]
 
-/-- `Finset.cons` version of `Finset.Ioo_insert_right`. -/
+/-- `Finset.cons` version of `Finset.insert_right_Ioo`. -/
 theorem Ioc_eq_cons_Ioo (h : a < b) : Ioc a b = (Ioo a b).cons b right_notMem_Ioo := by
-  classical rw [cons_eq_insert, Ioo_insert_right h]
+  classical rw [cons_eq_insert, insert_right_Ioo h]
 
-/-- `Finset.cons` version of `Finset.Ioo_insert_left`. -/
+/-- `Finset.cons` version of `Finset.insert_left_Ioo`. -/
 theorem Ico_eq_cons_Ioo (h : a < b) : Ico a b = (Ioo a b).cons a left_notMem_Ioo := by
-  classical rw [cons_eq_insert, Ioo_insert_left h]
+  classical rw [cons_eq_insert, insert_left_Ioo h]
 
 theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
     {x ∈ Ico a b | x ≤ a} = {a} := by
@@ -738,16 +746,18 @@ theorem Ici_erase [DecidableEq α] (a : α) : (Ici a).erase a = Ioi a := by
   simp_rw [Finset.mem_erase, mem_Ici, mem_Ioi, lt_iff_le_and_ne, and_comm, ne_comm]
 
 @[simp]
-theorem Ioi_insert [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
+theorem insert_Ioi [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
   ext
   simp_rw [Finset.mem_insert, mem_Ici, mem_Ioi, le_iff_lt_or_eq, or_comm, eq_comm]
+
+@[deprecated (since := "2026-11-03")] alias Ioi_insert := insert_Ioi
 
 theorem notMem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
 
 -- Purposefully written the other way around
-/-- `Finset.cons` version of `Finset.Ioi_insert`. -/
+/-- `Finset.cons` version of `Finset.insert_Ioi`. -/
 theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a notMem_Ioi_self := by
-  classical rw [cons_eq_insert, Ioi_insert]
+  classical rw [cons_eq_insert, insert_Ioi]
 
 theorem card_Ioi_eq_card_Ici_sub_one (a : α) : #(Ioi a) = #(Ici a) - 1 := by
   rw [Ici_eq_cons_Ioi, card_cons, Nat.add_sub_cancel_right]
@@ -767,22 +777,27 @@ theorem Iic_erase [DecidableEq α] (b : α) : (Iic b).erase b = Iio b := by
   simp_rw [Finset.mem_erase, mem_Iic, mem_Iio, lt_iff_le_and_ne, and_comm]
 
 @[simp]
-theorem Iio_insert [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
+theorem insert_Iio [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
   ext
   simp_rw [Finset.mem_insert, mem_Iic, mem_Iio, le_iff_lt_or_eq, or_comm]
+
+@[deprecated (since := "2026-11-03")] alias Iio_insert := insert_Iio
 
 theorem notMem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1 h)
 
 -- Purposefully written the other way around
-/-- `Finset.cons` version of `Finset.Iio_insert`. -/
+/-- `Finset.cons` version of `Finset.insert_Iio`. -/
 theorem Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b notMem_Iio_self := by
-  classical rw [cons_eq_insert, Iio_insert]
+  classical rw [cons_eq_insert, insert_Iio]
 
 theorem card_Iio_eq_card_Iic_sub_one (a : α) : #(Iio a) = #(Iic a) - 1 := by
   rw [Iic_eq_cons_Iio, card_cons, Nat.add_sub_cancel_right]
 
 @[simp]
 theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma Iic_one [One α] [IsBotOneClass α] : Iic (1 : α) = {1} := by ext; simp
 
 instance [OrderBot α] : Unique (Iic (⊥ : α)) where
   default := ⟨⊥, by simp⟩
