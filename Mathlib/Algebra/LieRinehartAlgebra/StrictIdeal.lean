@@ -96,7 +96,7 @@ theorem ext {s t : StrictLieRinehartIdeal A L} (h : ∀ x : L, x ∈ s ↔ x ∈
 lemma coe_mk (s : Submodule A L) (h₁) (h₂) : (mk s h₁ h₂ : Set L) = s := rfl
 
 @[simp, membership .]
-theorem mem_toSubmodule {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toSubmodule ↔ x ∈ s := Iff.rfl
+theorem mem_toSubmodule {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toSubmodule ↔ x ∈ s := .rfl
 
 @[simp]
 theorem coe_toSubmodule (s : StrictLieRinehartIdeal A L) : (s.toSubmodule : Set L) = s := rfl
@@ -187,7 +187,7 @@ theorem toLieIdeal_inj {s t : StrictLieRinehartIdeal A L} :
 theorem coe_toLieIdeal {s : StrictLieRinehartIdeal A L} : ((s.toLieIdeal R) : Set L) = s := rfl
 
 @[simp]
-theorem mem_toLieIdeal {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toLieIdeal R ↔ x ∈ s := Iff.rfl
+theorem mem_toLieIdeal {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toLieIdeal R ↔ x ∈ s := .rfl
 
 section LieModule
 
@@ -238,7 +238,7 @@ def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L
 
 @[simp]
 lemma mem_comap {s : StrictLieRinehartIdeal A L₂} {f : L₁ →ₗ⁅.id R A⁆ L₂} {x : L₁} :
-    x ∈ s.comap f ↔ f x ∈ s := Iff.rfl
+    x ∈ s.comap f ↔ f x ∈ s := .rfl
 
 end StrictLieRinehartIdeal
 
@@ -254,7 +254,7 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
 identity of `A`) is a strict Lie-Rinehart ideal. -/
 @[expose] def ker : StrictLieRinehartIdeal A L₁ := .comap f 0
 
-@[simp] theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := Iff.rfl
+@[simp] theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := .rfl
 
 @[simp] theorem coe_ker : (f.ker : Set L₁) = f⁻¹' {0} := rfl
 

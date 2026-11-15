@@ -100,24 +100,21 @@ protected theorem smul_mem (t : A) {x : L} (h : x ∈ L') : t • x ∈ L' :=
 theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈ L' :=
   L'.lie_mem' hx hy
 
-theorem mem_carrier {x : L} : x ∈ L'.carrier ↔ x ∈ (L' : Set L) :=
-  Iff.rfl
+theorem mem_carrier {x : L} : x ∈ L'.carrier ↔ x ∈ (L' : Set L) :=  .rfl
 
 theorem mem_mk_iff (S : Set L) (h₁ h₂ h₃ h₄) {x : L} :
     x ∈ (⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieRinehartSubalgebra A L) ↔ x ∈ S :=
-  Iff.rfl
+  .rfl
 
 @[simp]
-theorem mem_toSubmodule {x : L} : x ∈ L'.toSubmodule ↔ x ∈ L' :=
-  Iff.rfl
+theorem mem_toSubmodule {x : L} : x ∈ L'.toSubmodule ↔ x ∈ L' := .rfl
 
 @[simp]
 theorem mem_mk_iff' (p : Submodule A L) (h) {x : L} :
     x ∈ (⟨p, h⟩ : LieRinehartSubalgebra A L) ↔ x ∈ p :=
-  Iff.rfl
+  .rfl
 
-theorem mem_coe {x : L} : x ∈ (L' : Set L) ↔ x ∈ L' :=
-  Iff.rfl
+theorem mem_coe {x : L} : x ∈ (L' : Set L) ↔ x ∈ L' := .rfl
 
 theorem ext_iff (x y : L') : x = y ↔ (x : L) = y := Subtype.ext_iff
 
