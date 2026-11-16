@@ -59,14 +59,7 @@ lemma of_reindex (e : ι ≃ κ) (h : (M.reindex e e).HasDynkinType) : M.HasDynk
     ext; simp
   unfold HasDynkinType at h ⊢
   simp only [key] at h
-  rcases h with ⟨n, e', h⟩ | ⟨n, e', h⟩ | ⟨n, e', h⟩ | ⟨n, e', h⟩ | ⟨e', h⟩ | ⟨e', h⟩ | ⟨e', h⟩ |
-    ⟨e', h⟩ | ⟨e', h⟩
-  exacts [.inl ⟨n, _, h⟩, .inr <| .inl ⟨n, _, h⟩, .inr <| .inr <| .inl ⟨n, _, h⟩,
-    .inr <| .inr <| .inr <| .inl ⟨n, _, h⟩, .inr <| .inr <| .inr <| .inr <| .inl ⟨_, h⟩,
-    .inr <| .inr <| .inr <| .inr <| .inr <| .inl ⟨_, h⟩,
-    .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inl ⟨_, h⟩,
-    .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inl ⟨_, h⟩,
-    .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inr ⟨_, h⟩]
+  grind
 
 omit [Fintype ι] [DecidableEq ι] [Fintype κ] [DecidableEq κ] in
 @[simp] lemma submatrix_iff (σ : κ ≃ ι) :
@@ -83,6 +76,7 @@ lemma of_eq_submatrix {K : Matrix κ κ ℤ} (σ : ι ≃ κ) (h : M = K.submatr
 
 omit [Fintype ι] [DecidableEq ι] in
 lemma transpose (h : M.HasDynkinType) : Mᵀ.HasDynkinType := by
+  -- `F₄` and `G₂` are transposed by reversing the order of the indices
   have hF : F₄ᵀ.reindex Fin.revPerm Fin.revPerm = F₄ := by decide
   have hG : G₂ᵀ.reindex Fin.revPerm Fin.revPerm = G₂ := by decide
   have key {n : ℕ} (e : ι ≃ Fin n) (e' : Fin n ≃ Fin n) :
@@ -90,21 +84,8 @@ lemma transpose (h : M.HasDynkinType) : Mᵀ.HasDynkinType := by
     ext; simp
   unfold HasDynkinType at h ⊢
   simp only [← transpose_reindex]
-  rcases h with ⟨n, e, h⟩ | ⟨n, e, h⟩ | ⟨n, e, h⟩ | ⟨n, e, h⟩ | ⟨e, h⟩ | ⟨e, h⟩ | ⟨e, h⟩ |
-    ⟨e, h⟩ | ⟨e, h⟩
-  · exact .inl ⟨n, e, by rw [h, A_transpose]⟩
-  · exact .inr <| .inr <| .inl ⟨n, e, by rw [h, B_transpose]⟩
-  · exact .inr <| .inl ⟨n, e, by rw [h, C_transpose]⟩
-  · exact .inr <| .inr <| .inr <| .inl ⟨n, e, by rw [h, D_transpose]⟩
-  · exact .inr <| .inr <| .inr <| .inr <| .inl ⟨e, by rw [h, E_transpose]⟩
-  · exact .inr <| .inr <| .inr <| .inr <| .inr <| .inl ⟨e, by rw [h, E_transpose]⟩
-  · exact .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inl ⟨e, by rw [h, E_transpose]⟩
-  · refine .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inl
-      ⟨e.trans Fin.revPerm, ?_⟩
-    rw [key, h, hF]
-  · refine .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inr <| .inr
-      ⟨e.trans Fin.revPerm, ?_⟩
-    rw [key, h, hG]
+  -- `A`, `D` and `E` are symmetric, while `B` and `C` are transposes of each other
+  grind [A_transpose, B_transpose, C_transpose, D_transpose, E_transpose]
 
 end HasDynkinType
 

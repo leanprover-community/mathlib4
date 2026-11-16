@@ -44,7 +44,6 @@ generators, and it is used to prove that, for a domain `R`, we have
 
 ## TODO
 Prove noetherianity of `MvPowerSeries` in finitely many variables.
-
 -/
 
 public section

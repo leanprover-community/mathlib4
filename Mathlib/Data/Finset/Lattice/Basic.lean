@@ -30,7 +30,6 @@ All the theorems and instances expect `DecidableEq` instance for `α`
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section

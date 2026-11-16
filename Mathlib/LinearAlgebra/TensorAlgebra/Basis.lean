@@ -22,7 +22,6 @@ public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 * `TensorAlgebra.instFreeModule`: the tensor algebra over `M` is free when `M` is
 * `TensorAlgebra.rank_eq`
-
 -/
 
 @[expose] public section

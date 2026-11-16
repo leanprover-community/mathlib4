@@ -19,7 +19,6 @@ public import Mathlib.Topology.Separation.Regular
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
-
 -/
 
 public section

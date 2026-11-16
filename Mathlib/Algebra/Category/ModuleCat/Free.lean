@@ -25,7 +25,6 @@ This file proves results about linear independence and span in exact sequences o
 
 ## Tags
 linear algebra, module, free
-
 -/
 
 @[expose] public section

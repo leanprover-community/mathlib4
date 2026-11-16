@@ -67,7 +67,6 @@ Uniqueness results: if `κ = η.withDensity f + ξ` for measurable `f` and `ξ` 
 ## References
 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
-
 -/
 
 @[expose] public section

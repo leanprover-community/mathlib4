@@ -48,7 +48,6 @@ We develop the basic properties of these notions, notably:
   `AnalyticAt.continuousAt`).
 * In a complete space, the sum of a formal power series with positive radius is well defined on the
   disk of convergence, see `FormalMultilinearSeries.hasFPowerSeriesOnBall`.
-
 -/
 
 @[expose] public section

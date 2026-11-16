@@ -290,8 +290,8 @@ noncomputable def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m 
     rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp]
   hπ :=
     isColimitOfReflects (forget₂ _ AddCommGrpCat) (by
-      refine (CokernelCofork.isColimitMapCoconeEquiv ..).2
-        ((IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+      refine (CokernelCofork.isColimitMapCoconeEquiv ..).invFun
+        ((IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun
           (leftHomologyData' K L n m p hm hp).hπ')
       · refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ (by simp)
         ext (x : Cochain K L n)

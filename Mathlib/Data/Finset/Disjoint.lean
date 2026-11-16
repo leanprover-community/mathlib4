@@ -19,7 +19,6 @@ public import Mathlib.Data.Finset.Insert
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

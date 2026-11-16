@@ -53,17 +53,12 @@ theorem PosDef.map_intCast_real [Finite ι] {A : Matrix ι ι ℤ} (hA : A.PosDe
         b ^ 2 * ((fun i ↦ (x i : ℝ)) ⬝ᵥ (B *ᵥ fun i ↦ (x i : ℝ))) := by
       simp only [dotProduct, mulVec, B, map_apply, Int.cast_sum, Int.cast_mul, hz', mul_sum]
       exact sum_congr rfl fun i _ ↦ sum_congr rfl fun j _ ↦ by ring
-    rw [this] at hz₀
-    have : (0 : ℝ) < b ^ 2 := by positivity
-    exact (mul_nonneg_iff_of_pos_left this).mp hz₀
+    exact nonneg_of_mul_nonneg_right (this ▸ hz₀) (by positivity)
   have hB : B.PosSemidef := by
     refine PosSemidef.of_dotProduct_mulVec_nonneg (hA.isHermitian.map _ fun _ ↦ rfl) fun x ↦ ?_
     rw [star_trivial]
-    have hd : DenseRange fun (x : ι → ℚ) i ↦ (x i : ℝ) :=
-      DenseRange.piMap fun _ ↦ Rat.denseRange_cast
-    refine hd.induction_on (p := fun x : ι → ℝ ↦ 0 ≤ x ⬝ᵥ (B *ᵥ x)) x ?_ hrat
-    exact isClosed_le continuous_const
-      (continuous_id.dotProduct (continuous_const.matrix_mulVec continuous_id))
+    exact (DenseRange.piMap fun _ ↦ Rat.denseRange_cast).induction_on
+      (p := fun x : ι → ℝ ↦ 0 ≤ x ⬝ᵥ (B *ᵥ x)) x (isClosed_le (by fun_prop) (by fun_prop)) hrat
   rw [hB.posDef_iff_det_ne_zero, show B = (Int.castRingHom ℝ).mapMatrix A from rfl,
     ← RingHom.map_det]
   simpa using hA.det_pos.ne'

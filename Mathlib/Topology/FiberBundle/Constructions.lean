@@ -24,7 +24,6 @@ This file contains several standard constructions on fiber bundles:
 ## Tags
 
 fiber bundle, fibre bundle, fiberwise product, pullback
-
 -/
 
 @[expose] public section

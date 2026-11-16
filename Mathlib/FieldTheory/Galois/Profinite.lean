@@ -49,7 +49,6 @@ In a field extension `K/k`
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above.
 
 * `InfiniteGalois.restrictNormalHomContinuous` : Any `restrictNormalHom` is continuous.
-
 -/
 
 @[expose] public section
