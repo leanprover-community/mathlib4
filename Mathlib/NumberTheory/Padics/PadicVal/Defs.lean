@@ -48,7 +48,7 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = multip
     · simp
     · simp [← multiplicity_eq_emultiplicity_of_ne_one, *]
 
-@[deprecated (since := "2026-09-08")] alias maxPowDvdDiv_eq_multiplicity' := fst_maxPowDvdDiv
+@[deprecated (since := "2026-09-08")] alias padicValNat_def' := Nat.fst_maxPowDvdDiv
 
 /-- A simplification of `multiplicity` when one input is prime, by analogy with
 `padicValRat_def`. -/
