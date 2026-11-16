@@ -55,16 +55,12 @@ def signRight (x : R) (p : R[X]) : SignType :=
   SignType.sign (taylor x p).trailingCoeff
 
 theorem signRight_zero (x : R) : signRight x (0 : Polynomial R) = 0 := by
-  rw [signRight, map_zero, trailingCoeff_zero, sign_zero]
-
-theorem signRight_ne_zero {x : R} {p : R[X]} (hp : p ≠ 0) : signRight x p ≠ 0 := by
-  rw [signRight, ne_eq, sign_eq_zero_iff, trailingCoeff_eq_zero, taylor_eq_zero]
-  exact hp
+  simp [signRight]
 
 /-- `signRight x p` can only be `0` if `p` is `0`. -/
 @[simp]
-theorem signRight_eq_zero_iff {x : R} {p : R[X]} : signRight x p = 0 ↔ p = 0 :=
-  ⟨fun h => by_contra fun hp => signRight_ne_zero hp h, fun h => by rw [h, signRight_zero]⟩
+theorem signRight_eq_zero_iff {x : R} {p : R[X]} : signRight x p = 0 ↔ p = 0 := by
+  rw [signRight, sign_eq_zero_iff, trailingCoeff_eq_zero, taylor_eq_zero]
 
 /-- `signRight` of a constant equals the sign of the constant. -/
 @[simp]
@@ -91,7 +87,6 @@ theorem signRight_C_mul [IsStrictOrderedRing R] (x c : R) (p : R[X]) :
 theorem signRight_mul_self [IsStrictOrderedRing R] {x : R} {p : R[X]} (hp : p ≠ 0) :
     signRight x (p * p) = 1 := by
   rw [signRight_mul]
-  have := signRight_ne_zero (x := x) hp
   cases h : signRight x p <;> simp_all
 
 /-- Away from its roots, the sign of `p` to the right of `x` is the sign of `p x`. -/
@@ -113,7 +108,6 @@ theorem signRight_of_eval_eq_zero [IsStrictOrderedRing R] {x : R} {p : R[X]} (h 
 theorem signRight_derivative_mul [IsStrictOrderedRing R] {x : R} {p : R[X]} (hp : p ≠ 0)
     (hev : eval x p = 0) : signRight x (derivative p * p) = 1 := by
   rw [signRight_mul, ← signRight_of_eval_eq_zero hev]
-  have := signRight_ne_zero (x := x) hp
   cases h : signRight x p <;> simp_all
 
 theorem signRight_add {x : R} {p q : R[X]} (hp : eval x p = 0) (hq : eval x q ≠ 0) :
