@@ -578,20 +578,25 @@ section badGCongrLemma
 
 def myId : Nat → Nat := id
 
+/-
+This lemma has a type class that can't be syntesized.
+This test shows that the lemma can still be used by `grw`,
+leaving extra goals in the tactic state.
+-/
 @[gcongr]
 axiom myId_le_myId (a b : Nat) {α : Type} [LE α] : a ≤ b → myId a ≤ myId b
 
 /--
-error: Tactic `grewrite` failed: Did not find a rewrite with
-  a ≤ _
-in the target expression
-  myId a ≤ myId b
-
-Use the command `set_option trace.Meta.grewrite true` to inspect this.
-
-a b : Nat
+error: unsolved goals
+case α
+a b : ℕ
 h : a ≤ b
-⊢ myId a ≤ myId b
+⊢ Type
+
+case inst
+a b : ℕ
+h : a ≤ b
+⊢ LE ?α✝
 -/
 #guard_msgs in
 example (a b : Nat) : a ≤ b → myId a ≤ myId b := by
