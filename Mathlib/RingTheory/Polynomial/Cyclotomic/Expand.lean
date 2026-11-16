@@ -18,8 +18,10 @@ We gather results relating cyclotomic polynomials and `expand`.
 
 * `Polynomial.cyclotomic_expand_eq_cyclotomic_mul` : If `p` is a prime such that `¬ p ∣ n`, then
   `expand R p (cyclotomic n R) = (cyclotomic (n * p) R) * (cyclotomic n R)`.
-* `Polynomial.cyclotomic_expand_eq_cyclotomic` : If `m` is such that `m ∣ n`, then
-  `expand R m (cyclotomic n R) = cyclotomic (m * n) R`.
+* `Polynomial.expand_cyclotomic_of_dvd` : If `m ∣ n`, then
+  `expand R m (cyclotomic n R) = cyclotomic (n * m) R`.
+* `Polynomial.cyclotomic_irreducible_pow_mono` : If `cyclotomic (r ^ n) R` is irreducible, then so
+  is `cyclotomic (r ^ m) R` for all `m ≤ n`.
 * `Polynomial.cyclotomic_mul_prime_eq_pow_of_not_dvd` : If `R` is of characteristic `p` and
   `¬p ∣ n`, then `cyclotomic (n * p) R = (cyclotomic n R) ^ (p - 1)`.
 * `Polynomial.cyclotomic_mul_prime_dvd_eq_pow` : If `R` is of characteristic `p` and `p ∣ n`, then
@@ -82,10 +84,10 @@ lemma cyclotomic_six (R : Type*) [Ring R] : cyclotomic 6 R = X ^ 2 - X + 1 := by
   rw [show 6 = 2 * 3 by rfl, ← cyclotomic_expand_eq_cyclotomic_mul Nat.prime_three (by norm_num1)]
   simp; ring
 
-/-- If `m` is a  natural number such that `m ∣ n`, then
-`expand R m (cyclotomic n R) = cyclotomic (m * n) R`. -/
+/-- If `m` is a natural number such that `m ∣ n`, then
+`expand R m (cyclotomic n R) = cyclotomic (n * m) R`. -/
 @[simp]
-theorem cyclotomic_expand_eq_cyclotomic {m n : ℕ} (hdiv : m ∣ n) (R : Type*)
+theorem expand_cyclotomic_of_dvd {m n : ℕ} (hdiv : m ∣ n) (R : Type*)
     [CommRing R] : expand R m (cyclotomic n R) = cyclotomic (n * m) R := by
   rcases n.eq_zero_or_pos with rfl | hzero
   · simp
@@ -107,8 +109,11 @@ theorem cyclotomic_expand_eq_cyclotomic {m n : ℕ} (hdiv : m ∣ n) (R : Type*)
   · rw [natDegree_expand, natDegree_cyclotomic, natDegree_cyclotomic, mul_comm n,
       Nat.totient_mul_of_dvd hdiv, mul_comm]
 
+@[deprecated (since := "2026-11-16")]
+alias cyclotomic_expand_eq_cyclotomic := expand_cyclotomic_of_dvd
+
 /-- If the `r ^ n`th cyclotomic polynomial is irreducible, so is the `r ^ m`th, for `m ≤ n`. -/
-theorem cyclotomic_irreducible_pow_of_irreducible_pow {R} [CommRing R]
+theorem cyclotomic_irreducible_pow_mono {R} [CommRing R]
     [IsDomain R] (r : ℕ) {n m : ℕ} (hmn : m ≤ n) (h : Irreducible (cyclotomic (r ^ n) R)) :
     Irreducible (cyclotomic (r ^ m) R) := by
   rcases eq_or_ne r 0 with rfl | hr
@@ -123,14 +128,21 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {R} [CommRing R]
   | zero => simpa using h
   | succ k hk =>
     have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
-    rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic <| dvd_pow_self r this] at h
+    rw [Nat.add_succ, pow_succ, ← expand_cyclotomic_of_dvd <| dvd_pow_self r this] at h
     exact hk (by lia) (of_irreducible_expand hr h)
 
-/-- If `Irreducible (cyclotomic (r ^ n) R)` then `Irreducible (cyclotomic m R).` -/
-theorem cyclotomic_irreducible_of_irreducible_pow {R} [CommRing R]
+@[deprecated (since := "2026-11-16")]
+alias cyclotomic_irreducible_pow_of_irreducible_pow := cyclotomic_irreducible_pow_mono
+
+/-- If `Irreducible (cyclotomic (r ^ n) R)` for some `n ≠ 0`, then
+`Irreducible (cyclotomic r R)`. -/
+theorem cyclotomic_irreducible_of_pow {R} [CommRing R]
     [IsDomain R] (r : ℕ) {n : ℕ} (hn : n ≠ 0) (h : Irreducible (cyclotomic (r ^ n) R)) :
     Irreducible (cyclotomic r R) :=
-  pow_one r ▸ cyclotomic_irreducible_pow_of_irreducible_pow r hn.bot_lt h
+  pow_one r ▸ cyclotomic_irreducible_pow_mono r hn.bot_lt h
+
+@[deprecated (since := "2026-11-16")]
+alias cyclotomic_irreducible_of_irreducible_pow := cyclotomic_irreducible_of_pow
 
 section CharP
 
@@ -157,7 +169,7 @@ theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type*) {p n : ℕ} [hp : Fact (Nat.
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
   rw [← ZMod.expand_card, ← map_cyclotomic_int n, ← map_expand,
-    cyclotomic_expand_eq_cyclotomic hn, map_cyclotomic]
+    expand_cyclotomic_of_dvd hn, map_cyclotomic]
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then
 `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`. -/
