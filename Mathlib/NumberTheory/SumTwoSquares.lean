@@ -232,4 +232,4 @@ end Main
 
 instance {n : ℕ} : Decidable (∃ x y, n = x ^ 2 + y ^ 2) :=
   decidable_of_iff' (∀ q ∈ n.primeFactors, q % 4 = 3 → Even (Nat.maxPowDvdDiv q n).1)
-    (by simp_rw [Nat.eq_sq_add_sq_iff, Nat.fst_maxPowDvdDiv])
+    (by simp [Nat.eq_sq_add_sq_iff])
