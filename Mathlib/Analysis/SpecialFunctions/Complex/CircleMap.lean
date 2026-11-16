@@ -132,19 +132,16 @@ lemma circleMap_zero_im (r θ : ℝ) : (circleMap 0 r θ).im = r * Real.sin θ :
 @[simp] lemma circleMap_zero_norm_arg (z : ℂ) : circleMap 0 ‖z‖ z.arg = z := by
   rw [circleMap_zero, norm_mul_exp_arg_mul_I]
 
-private lemma norm_circleMap_zero_sub_circleMap_zero_sq (r s θ φ : ℝ) :
-    ‖circleMap 0 r θ - circleMap 0 s φ‖ ^ 2 =
-      r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) := by
-  rw [← normSq_eq_norm_sq, normSq_sub, conj_circleMap_zero]
-  simp [circleMap_zero_mul, circleMap_zero_re, normSq_eq_norm_sq, sub_eq_add_neg, mul_assoc]
-
 /--
 Law of cosines for the chord between two points `circleMap c r θ` and `circleMap c s φ`.
 -/
 lemma norm_circleMap_sub_circleMap_sq (c : ℂ) (r s θ φ : ℝ) :
     ‖circleMap c r θ - circleMap c s φ‖ ^ 2 =
       r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) := by
-  simpa [circleMap] using norm_circleMap_zero_sub_circleMap_zero_sq ..
+  suffices ‖circleMap 0 r θ - circleMap 0 s φ‖ ^ 2 = r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) by
+    simpa [circleMap] using this ..
+  rw [← normSq_eq_norm_sq, normSq_sub, conj_circleMap_zero]
+  simp [circleMap_zero_mul, circleMap_zero_re, normSq_eq_norm_sq, sub_eq_add_neg, mul_assoc]
 
 /--
 Points of the circle `circleMap 0 r` keep distance at least `r * |sin ((θ - arg a) / 2)|` from any
