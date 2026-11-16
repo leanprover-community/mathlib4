@@ -32,24 +32,19 @@ theorem norm_sum_range_smul_le_of_norm_le_geometric {E : Type*} [NormedAddCommGr
     (h : ∀ k, ‖a k‖ ≤ C * r ^ k) {n : ℕ} (hn : 1 ≤ n) :
     ‖(n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k‖ ≤ (C / (1 - r)) * (n : ℝ)⁻¹ := by
   have hden : 0 < 1 - r := by linarith
-  have hnpos : (0 : ℝ) < n := by
-    have : (0 : ℕ) < n := by omega
-    exact_mod_cast this
+  have hnpos : (0 : ℝ) < n := Nat.cast_pos.mpr hn
   calc ‖(n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k‖
       = (n : ℝ)⁻¹ * ‖∑ k ∈ Finset.range n, a k‖ := by
         rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg (by positivity)]
     _ ≤ (n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, ‖a k‖ :=
-        mul_le_mul_of_nonneg_left (norm_sum_le _ _)
-          (le_of_lt (inv_pos.mpr hnpos))
+        mul_le_mul_of_nonneg_left (norm_sum_le _ _) (inv_nonneg.mpr hnpos.le)
     _ ≤ (n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, C * r ^ k :=
-        mul_le_mul_of_nonneg_left (Finset.sum_le_sum fun k _ => h k)
-          (le_of_lt (inv_pos.mpr hnpos))
+        mul_le_mul_of_nonneg_left (Finset.sum_le_sum fun k _ => h k) (inv_nonneg.mpr hnpos.le)
     _ = C * ((n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, r ^ k) := by
-        simp only [Finset.mul_sum]
-        ring_nf
+        rw [← Finset.mul_sum]
+        ring
     _ ≤ C * ((n : ℝ)⁻¹ * (1 / (1 - r))) := by
-        apply mul_le_mul_of_nonneg_left _ hC
-        apply mul_le_mul_of_nonneg_left _ (le_of_lt (inv_pos.mpr hnpos))
+        gcongr
         rw [le_div_iff₀ hden, geom_sum_mul_neg]
         linarith [pow_nonneg hr0 n]
     _ = (C / (1 - r)) * (n : ℝ)⁻¹ := by ring
@@ -66,7 +61,7 @@ theorem tendsto_sum_range_smul_nhds_zero_of_norm_le_geometric {E : Type*}
     have hninv : Tendsto (fun n : ℕ ↦ ((n : ℝ))⁻¹) atTop (nhds 0) :=
       tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
     simpa using (tendsto_const_nhds (x := C / (1 - r))).mul hninv
-  refine squeeze_zero_norm' (eventually_atTop.2 ⟨1, fun n hn ↦
+  exact squeeze_zero_norm' (eventually_atTop.2 ⟨1, fun n hn ↦
     norm_sum_range_smul_le_of_norm_le_geometric hC hr0 hr1 h hn⟩) hb0
 
 /-- Real-valued special case of
@@ -77,9 +72,7 @@ theorem tendsto_sum_range_div_nhds_zero_of_abs_le_geometric {a : ℕ → ℝ} {C
   have hgen : Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k) atTop
       (nhds 0) :=
     tendsto_sum_range_smul_nhds_zero_of_norm_le_geometric hC hr0 hr1
-      (fun k => by
-        rw [Real.norm_eq_abs]
-        exact h k)
+      (fun k => (Real.norm_eq_abs (a k)).symm ▸ h k)
   refine hgen.congr' ?_
   filter_upwards with n
   simp [smul_eq_mul]
