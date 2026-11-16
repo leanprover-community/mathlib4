@@ -50,7 +50,7 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   map_continuousAt f x
 
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
-  h.map f.2
+  h.map (by fun_prop)
 
 section DiscreteTopology
 variable [DiscreteTopology α]
@@ -195,6 +195,17 @@ def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α�
 @[simp]
 theorem prod_eval (f : C(α, β₁)) (g : C(α, β₂)) (a : α) : (prodMk f g) a = (f a, g a) :=
   rfl
+
+variable (α β₁ β₂) in
+/-- The equivalence `C(α, β₁ × β₂) ≃ C(α, β₁) × C(α, β₂)`, `f ↦ (fst ∘ f, snd ∘ f)`, whose inverse
+is `(f, g) ↦ f.prodMk g`. See `ContinuousMap.prodHomeomorph` and `ContinuousMap.prodHomeomorph'`
+for the corresponding homeomorphisms for the compact-open topologies. -/
+@[simps]
+def prodEquiv : C(α, β₁ × β₂) ≃ C(α, β₁) × C(α, β₂) where
+  toFun f := (fst.comp f, snd.comp f)
+  invFun p := p.1.prodMk p.2
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- `Prod.swap` bundled as a `ContinuousMap`. -/
 @[simps!]
@@ -472,7 +483,8 @@ variable (hf : IsQuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 noncomputable def lift : C(Y, Z) where
   toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
     Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
-  continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
+  continuous_toFun :=
+    Continuous.comp (continuous_quot_lift _ (by fun_prop)) (Homeomorph.continuous _)
 
 /--
 The obvious triangle induced by `IsQuotientMap.lift` commutes:

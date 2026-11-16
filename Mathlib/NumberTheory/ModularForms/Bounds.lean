@@ -52,7 +52,7 @@ lemma exists_bound_fundamental_domain_of_isBigO
     ∃ F, ∀ τ ∈ 𝒟, ‖f τ‖ ≤ F * τ.im ^ t := by
   -- Extract a bound for large `im τ` using `hf_infty`.
   obtain ⟨D, hD, hf_infinity⟩ := hf_infinity.exists_pos
-  rw [IsBigOWith, atImInfty, eventually_comap, eventually_atTop] at hf_infinity
+  rw [isBigOWith_iff, atImInfty, eventually_comap, eventually_atTop] at hf_infinity
   obtain ⟨y, hy⟩ := hf_infinity
   simp only [Real.norm_rpow_of_nonneg (_ : ℍ).im_pos.le,
       Real.norm_of_nonneg (_ : ℍ).im_pos.le] at hy
@@ -98,8 +98,7 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
   by_cases hg : g 1 0 = 0
   · -- If `c = 0`, then `(g • τ).im = τ.im / d ^ 2` and `d ^ 2 ≥ 1`.
     -- (In fact `d = ±1`, but we do not need this stronger statement).
-    have : g 1 1 ≠ 0 := fun hg' ↦ zero_ne_one <| by
-      simpa only [Matrix.det_fin_two, hg, hg', mul_zero, mul_zero, sub_zero] using g.det_coe
+    have : g 1 1 ≠ 0 := d_ne_zero_of_c_eq_zero (R := ℤ) (g := g) hg
     have : (1 : ℝ) ≤ g 1 1 ^ 2 := mod_cast (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs this)
     refine le_trans ?_ <| le_max_left _ _
     rw [show Complex.normSq ((g 1 0) * τ + (g 1 1)) = (g 1 1) ^ 2 by simp [hg, sq]]
@@ -129,7 +128,7 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
       exact ⟨g⁻¹ * h, hgh, (mul_inv_cancel_left g h).symm⟩
     simp [-sl_moeb, hj', mul_smul, hf_inv j⁻¹ (inv_mem hj)]
   have hf'_cont γ : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
-    simp only [sl_moeb, f']
+    simp only [sl_moeb, f', map_inv, Quotient.lift_mk]
     fun_prop
   have hf'_inv τ (g : SL(2, ℤ)) γ : f' (g • τ) (g • γ) = f' τ γ := by
     induction γ using QuotientGroup.induction_on
@@ -420,7 +419,7 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
   generalize h : τ.im = t
   have ht : 0 < t := h ▸ τ.im_pos
   lift t to NNReal using ht.le
-  rw [← coe_nnnorm]
+  rw [← coe_nnNorm]
   norm_cast at ⊢ ht
   rw [(pow_left_mono k).map_max, (pow_left_mono 2).map_max, ← max_div_div_right (by positivity)]
   congr <;> simp [field, ht.ne']
@@ -440,7 +439,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   have hΓ : h ∈ Γ.strictPeriods := Γ.strictWidthInfty_mem_strictPeriods
   obtain ⟨C, Cpos, hC⟩ := hF.exists_pos
   rw [isBigO_iff]
-  rw [IsBigOWith, eventually_comap] at hC
+  rw [isBigOWith_iff, eventually_comap] at hC
   use (1 / Real.exp (-2 * π / h)) * C
   filter_upwards [eventually_gt_atTop 0,
     (tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop).eventually hC] with n hn hn'
@@ -477,7 +476,7 @@ lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup
   simp only [← Real.rpow_intCast]
   apply qExpansion_coeff_isBigO_of_norm_isBigO
   obtain ⟨C, hC⟩ := exists_bound hk f
-  simp_rw [IsBigO, ← Int.cast_neg, Real.rpow_intCast, IsBigOWith, eventually_comap]
+  simp_rw [isBigO_iff, ← Int.cast_neg, Real.rpow_intCast, eventually_comap]
   use C
   filter_upwards [eventually_le_nhds zero_lt_one] with _ hτ τ rfl
   refine (hC τ).trans (le_of_eq ?_)

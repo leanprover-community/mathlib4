@@ -30,7 +30,6 @@ along the localization functor `L`.
 ## References
 
 * https://ncatlab.org/nlab/show/derived+functor
-
 -/
 
 @[expose] public section

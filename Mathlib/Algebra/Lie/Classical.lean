@@ -191,14 +191,14 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
   ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
-    simp [Pso, h, one_apply]
+    simp [Pso, h, Matrix.one_apply]
   · -- x : p, y : q
     simp [Pso]
   · -- x : q, y : p
     simp [Pso]
   · -- x y : q
     by_cases h : x = y <;>
-    simp [Pso, h, hi, one_apply]
+    simp [Pso, h, hi, Matrix.one_apply]
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
 @[instance_reducible]
@@ -210,14 +210,14 @@ theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
   ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h, one_apply]
+    simp [Pso, indefiniteDiagonal, h, Matrix.one_apply]
   · -- x : p, y : q
     simp [Pso, indefiniteDiagonal]
   · -- x : q, y : p
     simp [Pso, indefiniteDiagonal]
   · -- x y : q
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h, hi, one_apply]
+    simp [Pso, indefiniteDiagonal, h, hi, Matrix.one_apply]
 
 /-- An equivalence between the indefinite and definite orthogonal Lie algebras, over a ring
 containing a square root of -1. -/

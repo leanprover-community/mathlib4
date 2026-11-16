@@ -1,4 +1,6 @@
-import Lean.Elab.Tactic.ElabTerm
+module
+
+public meta import Lean.Elab.Tactic.ElabTerm
 
 open Lean Elab Tactic
 

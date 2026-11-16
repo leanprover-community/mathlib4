@@ -82,7 +82,7 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
     (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K₁ v := by
   rw [linearIndependent_iff']
   intro s w hs i hi
-  have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
+  have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, LinearMap.zero_apply]
   have hsum : (s.sum fun j : n ↦ I₁ (w j) • B (v j) (v i)) = I₁ (w i) • B (v i) (v i) := by
     apply Finset.sum_eq_single_of_mem i hi
     intro j _hj hij
@@ -288,11 +288,11 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
     B.IsAlt ↔ B = -B.flip := by
   constructor <;> intro h
   · ext
-    simp_rw [neg_apply, flip_apply]
+    simp_rw [LinearMap.neg_apply, flip_apply]
     exact (h.neg _ _).symm
   intro x
   let h' := congr($h x x)
-  simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
+  simp only [LinearMap.neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 
 end Semiring
@@ -335,7 +335,7 @@ theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp 
     rw [← compl₂_apply, ← comp_apply, h]
 
 theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by
-  simp only [Pi.zero_apply, map_zero, zero_apply]
+  simp only [Pi.zero_apply, map_zero, LinearMap.zero_apply]
 
 theorem isAdjointPair_id : IsAdjointPair B B (_root_.id : M → M) (_root_.id : M → M) :=
   fun _ _ ↦ rfl
@@ -513,11 +513,13 @@ end SelfadjointPair
 
 section Nondegenerate
 
-section CommSemiring
+section SMulCommClass
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
-  [Module R₁ M₁] [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-  {I₁ : R₁ →+* R} {I₂ : R₂ →+* R}
+variable {S₁ S₂ : Type*} [Semiring S₁] [Semiring S₂] [Semiring R₁] [Semiring R₂]
+  [AddCommMonoid M] [Module S₁ M] [Module S₂ M] [SMulCommClass S₂ S₁ M]
+  [AddCommMonoid M₁] [Module R₁ M₁]
+  [AddCommMonoid M₂] [Module R₂ M₂]
+  {I₁ : R₁ →+* S₁} {I₂ : R₂ →+* S₂}
 
 /-- A bilinear map is called left-separating if
 the only element that is left-orthogonal to every other element is `0`; i.e.,
@@ -525,14 +527,11 @@ for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`. 
 def SeparatingLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ x : M₁, (∀ y : M₂, B x y = 0) → x = 0
 
-variable (M₁ M₂ I₁ I₂)
-
+variable (M₁ M₂ I₁ I₂) in
 /-- In a non-trivial module, zero is not non-degenerate. -/
 theorem not_separatingLeft_zero [Nontrivial M₁] : ¬(0 : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M).SeparatingLeft :=
   let ⟨m, hm⟩ := exists_ne (0 : M₁)
   fun h ↦ hm (h m fun _n ↦ rfl)
-
-variable {M₁ M₂ I₁ I₂}
 
 theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
     (h : B.SeparatingLeft) : B ≠ 0 := fun h0 ↦ not_separatingLeft_zero M₁ M₂ I₁ I₂ <| h0 ▸ h
@@ -551,6 +550,7 @@ section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
 
+variable [CommSemiring R] [Module R M]
 variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
@@ -596,52 +596,61 @@ end Linear
 
 variable {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 
+attribute [local instance] SMulCommClass.symm in
 @[simp]
 theorem flip_separatingRight : B.flip.SeparatingRight ↔ B.SeparatingLeft :=
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 
+attribute [local instance] SMulCommClass.symm in
 @[simp]
 theorem flip_separatingLeft : B.flip.SeparatingLeft ↔ SeparatingRight B := by
   rw [← flip_separatingRight, flip_flip]
 
+attribute [local instance] SMulCommClass.symm in
 @[simp]
 theorem flip_nondegenerate : B.flip.Nondegenerate ↔ B.Nondegenerate :=
   Iff.trans and_comm (and_congr flip_separatingRight flip_separatingLeft)
 
 theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
-  · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
+  · simpa only [hB, LinearMap.zero_apply, eq_self_iff_true, forall_const] using h x
   have h' : B x = 0 := by
     ext
-    rw [zero_apply]
+    rw [LinearMap.zero_apply]
     exact hB _
   exact h x h'
 
 theorem separatingRight_iff_linear_flip_nontrivial :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
+  have := SMulCommClass.symm
   rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 
 /-- A bilinear map is left-separating if and only if it has a trivial kernel. -/
 theorem separatingLeft_iff_ker_eq_bot : B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
   Iff.trans separatingLeft_iff_linear_nontrivial LinearMap.ker_eq_bot'.symm
 
+attribute [local instance] SMulCommClass.symm in
 /-- A bilinear map is right-separating if and only if its flip has a trivial kernel. -/
-theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
+theorem separatingRight_iff_flip_ker_eq_bot :
+    B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 
+omit [SMulCommClass S₂ S₁ M] in
 /-- The identity pairing is left-separating. -/
-protected theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
+protected theorem SeparatingLeft.id [SMulCommClass S₁ S₂ M] :
+    SeparatingLeft (.id : (M₁ →ₛₗ[I₁] M) →ₗ[S₂] M₁ →ₛₗ[I₁] M) :=
   separatingLeft_iff_ker_eq_bot.mpr ker_id
 
 alias id_separatingLeft := SeparatingLeft.id
 
 /-- The pairing `Dual.eval` is right-separating. -/
-protected theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight :=
+protected theorem SeparatingRight.eval [CommSemiring R] [Module R M] :
+    (Dual.eval R M).SeparatingRight :=
   id_separatingLeft
 
 alias eval_separatingRight := SeparatingRight.eval
 
-end CommSemiring
+end SMulCommClass
 
 section CommRing
 
@@ -772,9 +781,7 @@ lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
     (B : LinearMap.BilinForm R M) (x y : M) :
     B ((B x y) • x - (B x x) • y) ((B x y) • x - (B x x) • y) =
       (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
-  simp only [map_sub, map_smul, sub_apply, smul_apply, smul_eq_mul, mul_sub,
-    mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
-  abel
+  simp [mul_comm, mul_sub]
 
 variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
@@ -873,7 +880,7 @@ lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x 
     by_cases hs : s = 0; · simp_all
     suffices
         (B (r • x) (r • x)) * (B (s • y) (s • y)) = (B (r • x) (s • y)) * (B (s • y) (r • x)) by
-      simp only [map_smul, smul_apply, smul_eq_mul] at this
+      simp only [map_smul, LinearMap.smul_apply, smul_eq_mul] at this
       rw [show r * (r * (B x) x) * (s * (s * (B y) y)) = (r * r * s * s) * ((B x) x * (B y) y) by
         ring, show s * (r * (B x) y) * (r * (s * (B y) x)) = (r * r * s * s) * ((B x) y * (B y) x)
         by ring] at this

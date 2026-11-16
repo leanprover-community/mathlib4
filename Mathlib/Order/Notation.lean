@@ -7,9 +7,9 @@ module
 
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public meta import Qq
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
-public meta import Qq
 
 /-!
 # Notation classes for lattice operations
@@ -34,7 +34,6 @@ if and only if the order on `α` does not have a `LinearOrder α` instance (wher
 This is so that in a lattice we can use the same underlying constants `max`/`min`
 as in linear orders, while using the more idiomatic notation `x ⊔ y`/`x ⊓ y`.
 Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` respectively.
-
 -/
 
 public section
@@ -84,32 +83,25 @@ private meta def linearOrderToMax (u : Level) : Q((a : Type u) → $(linearOrder
 private meta def linearOrderToMin (u : Level) : Q((a : Type u) → $(linearOrderExpr u) a → Min a) :=
   .const `LinearOrder.toMin [u]
 
-/--
-Return `true` if `LinearOrder` is imported and `inst` comes from a `LinearOrder e` instance.
-
-We use a `try catch` block to make sure there are no surprising errors during delaboration.
--/
+/-- Return `true` if `inst` comes from a `LinearOrder e` instance. -/
 private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type u))
     (toCls : Q((α : Type u) → $(linearOrderExpr u) α → $cls α)) (inst : Q($cls $α)) :
     MetaM Bool := do
-  try
-    withNewMCtxDepth do
-    -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances.
-    -- Unfortunately, the local instances are not present in delaboration.
-    -- See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Bug.3F.20Local.20instances.20not.20populated.20during.20delaboration/with/545766705
-    withLocalInstances (← getLCtx).decls.toList.reduceOption do
-      let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
-      let inst' : Q($cls $α) := q($toCls $α $mvar)
-      withImplicit <| isDefEq inst inst'
-  catch _ =>
-    -- For instance, if `LinearOrder` is not yet imported.
-    return false
+  withNewMCtxDepth do
+  -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances.
+  -- Unfortunately, the local instances are not present in delaboration.
+  -- See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Bug.3F.20Local.20instances.20not.20populated.20during.20delaboration/with/545766705
+  withLocalInstances (← getLCtx).decls.toList.reduceOption do
+    let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
+    let inst' : Q($cls $α) := q($toCls $α $mvar)
+    withImplicit <| isDefEq inst inst'
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
 meta def delabSup : Delab :=
   whenNotPPOption getPPExplicit <|
-  whenPPOption getPPNotation <|
+  whenPPOption getPPNotation do
+  unless (← getEnv).contains `LinearOrder do failure
   withOverApp 4 do
     let_expr f@Max.max α inst _ _ := ← getExpr | failure
     have u := f.constLevels![0]!
@@ -124,7 +116,8 @@ meta def delabSup : Delab :=
 @[delab app.Min.min]
 meta def delabInf : Delab :=
   whenNotPPOption getPPExplicit <|
-  whenPPOption getPPNotation <|
+  whenPPOption getPPNotation do
+  unless (← getEnv).contains `LinearOrder do failure
   withOverApp 4 do
     let_expr f@Min.min α inst _ _ := ← getExpr | failure
     have u := f.constLevels![0]!

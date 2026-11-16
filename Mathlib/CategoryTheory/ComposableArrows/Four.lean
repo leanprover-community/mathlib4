@@ -21,7 +21,6 @@ can be thought of as a `4`-simplex in the simplicial set `nerve C`,
 and its faces (numbered from `0` to `4`) are respectively
 `mk₂ f₂ f₃ f₄`, `mk₂ f₁₂ f₃ f₄`, `mk₂ f₁ f₂₃ f₄`, `mk₂ f₁ f₂ f₃₄` and
 `mk₂ f₁ f₂ f₃`.
-
 -/
 
 @[expose] public section

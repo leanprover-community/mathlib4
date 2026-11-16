@@ -53,7 +53,6 @@ practice.
 
 ## Tags
 local diffeomorphism, manifold
-
 -/
 
 public noncomputable section

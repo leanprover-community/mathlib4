@@ -240,7 +240,7 @@ lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   simp only [sqrt]
   congr
   ext
-  exact_mod_cast NNReal.sqrt_eq_rpow _
+  exact mod_cast NNReal.sqrt_eq_rpow _
 
 lemma sqrt_of_not_nonneg {a : A} (ha : ¬0 ≤ a) : sqrt a = 0 :=
   cfcₙ_apply_of_not_predicate a ha
@@ -346,7 +346,7 @@ end pi
 7. `a = a⁺`
 8. `a` is self-adjoint and `a⁻ = 0`
 9. `a` is self-adjoint and has nonnegative spectrum -/
-theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
+theorem _root_.CStarAlgebra.nonneg_tfae {a : A} :
     [ 0 ≤ a,
       a = sqrt a * sqrt a,
       ∃ b : A, 0 ≤ b ∧ a = b * b,
@@ -368,18 +368,21 @@ theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
   tfae_have 6 → 1 := fun ⟨b, hb⟩ => hb ▸ mul_star_self_nonneg _
   tfae_finish
 
+@[deprecated (since := "2026-10-27")]
+alias _root_.CStarAlgebra.nonneg_TFAE := _root_.CStarAlgebra.nonneg_tfae
+
 theorem _root_.CStarAlgebra.nonneg_iff_eq_sqrt_mul_sqrt {a : A} :
-    0 ≤ a ↔ a = sqrt a * sqrt a := CStarAlgebra.nonneg_TFAE.out 1 2
+    0 ≤ a ↔ a = sqrt a * sqrt a := CStarAlgebra.nonneg_tfae.out 1 2
 theorem _root_.CStarAlgebra.nonneg_iff_exists_nonneg_and_eq_mul_self {a : A} :
-    0 ≤ a ↔ ∃ b, 0 ≤ b ∧ a = b * b := CStarAlgebra.nonneg_TFAE.out 1 3
+    0 ≤ a ↔ ∃ b, 0 ≤ b ∧ a = b * b := CStarAlgebra.nonneg_tfae.out 1 3
 theorem _root_.CStarAlgebra.nonneg_iff_exists_isSelfAdjoint_and_eq_mul_self {a : A} :
-    0 ≤ a ↔ ∃ b, IsSelfAdjoint b ∧ a = b * b := CStarAlgebra.nonneg_TFAE.out 1 4
+    0 ≤ a ↔ ∃ b, IsSelfAdjoint b ∧ a = b * b := CStarAlgebra.nonneg_tfae.out 1 4
 theorem _root_.CStarAlgebra.nonneg_iff_eq_star_mul_self {a : A} :
-    0 ≤ a ↔ ∃ b, a = star b * b := CStarAlgebra.nonneg_TFAE.out 1 5
+    0 ≤ a ↔ ∃ b, a = star b * b := CStarAlgebra.nonneg_tfae.out 1 5
 theorem _root_.CStarAlgebra.nonneg_iff_eq_mul_star_self {a : A} :
-    0 ≤ a ↔ ∃ b, a = b * star b := CStarAlgebra.nonneg_TFAE.out 1 6
+    0 ≤ a ↔ ∃ b, a = b * star b := CStarAlgebra.nonneg_tfae.out 1 6
 theorem _root_.CStarAlgebra.nonneg_iff_isSelfAdjoint_and_negPart_eq_zero {a : A} :
-    0 ≤ a ↔ IsSelfAdjoint a ∧ a⁻ = 0 := CStarAlgebra.nonneg_TFAE.out 1 8
+    0 ≤ a ↔ IsSelfAdjoint a ∧ a⁻ = 0 := CStarAlgebra.nonneg_tfae.out 1 8
 
 end sqrt
 
@@ -461,7 +464,7 @@ lemma rpow_add {a : A} {x y : ℝ} (ha : IsUnit a) :
   simp [NNReal.rpow_add this _ _]
 
 lemma rpow_rpow [IsSemitopologicalRing A] [T2Space A]
-    (a : A) (x y : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
+    (a : A) (x y : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
     (a ^ x) ^ y = a ^ (x * y) := by
   have ha₁' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha.isUnit
   simp only [rpow_def]
@@ -472,7 +475,7 @@ lemma rpow_rpow [IsSemitopologicalRing A] [T2Space A]
 lemma rpow_rpow_inv [IsSemitopologicalRing A] [T2Space A]
     (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
     (a ^ x) ^ x⁻¹ = a := by
-  rw [rpow_rpow a x x⁻¹ hx, mul_inv_cancel₀ hx, rpow_one a ha.nonneg]
+  rw [rpow_rpow a x x⁻¹ ha, mul_inv_cancel₀ hx, rpow_one a ha.nonneg]
 
 lemma rpow_inv_rpow [IsSemitopologicalRing A] [T2Space A]
     (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
@@ -565,7 +568,7 @@ variable {B : Type*} [PartialOrder B] [Ring B] [StarRing B] [TopologicalSpace B]
   [StarOrderedRing B]
   [Algebra ℝ B] [ContinuousFunctionalCalculus ℝ B IsSelfAdjoint]
   [ContinuousFunctionalCalculus ℝ (A × B) IsSelfAdjoint]
-  [IsSemitopologicalRing B] [T2Space B] [StarOrderedRing (A × B)]
+  [IsSemitopologicalRing B] [T2Space B]
   [NonnegSpectrumClass ℝ B] [NonnegSpectrumClass ℝ (A × B)]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -659,16 +662,16 @@ lemma sqrt_eq_one_iff (a : A) (ha : 0 ≤ a := by cfc_tac) :
 lemma sqrt_eq_one_iff' [Nontrivial A] (a : A) :
     sqrt a = 1 ↔ a = 1 := by
   refine ⟨fun h ↦ sqrt_eq_one_iff a ?_ |>.mp h, fun h ↦ by subst h; exact sqrt_one⟩
-  rw [sqrt, cfcₙ] at h
-  cfc_tac
+  contrapose h
+  rw [sqrt, cfcₙ_apply_of_not_predicate _ h]
+  exact zero_ne_one
 
 -- TODO: relate to a strict positivity condition
-lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
-    (hx : x ≠ 0) : sqrt (a ^ x) = a ^ (x / 2) := by
+lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a) : sqrt (a ^ x) = a ^ (x / 2) := by
   by_cases hnonneg : 0 ≤ a
   case pos =>
     have : IsStrictlyPositive a := by grind
-    simp [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow _ _ _ hx]
+    simp [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow _ _ _]
   case neg =>
     simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a hnonneg]
 
@@ -677,7 +680,7 @@ lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
   have : IsStrictlyPositive a := by grind
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
-      rpow_rpow _ _ _ (by simp), inv_mul_eq_div]
+      rpow_rpow _ _ _, inv_mul_eq_div]
 
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
@@ -705,7 +708,7 @@ lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by
     IsUnit (a ^ y) ↔ IsUnit a := by
   rw [nnrpow_eq_rpow (pos_of_ne_zero hy)]
   refine isUnit_rpow_iff a y ?_ ha
-  exact_mod_cast hy
+  exact mod_cast hy
 
 @[aesop safe apply]
 lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y ≠ 0)
@@ -745,10 +748,10 @@ omit [T2Space A] [IsSemitopologicalRing A] in
 lemma _root_.IsStrictlyPositive.rpow (a : A) (y : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
     IsStrictlyPositive (a ^ y) := by grind
 
-lemma inverse_rpow (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
+lemma inverse_rpow (a : A) (x : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
     Ring.inverse (a ^ x) = a ^ (-x) := by
   have : a ^ (-x) = (a ^ x) ^ (-1 : ℝ) := by
-    rw [rpow_rpow (hx := hx) (ha := by grind)]
+    rw [rpow_rpow (ha := by grind)]
     simp
   rw [← inverse_eq_rpow_neg_one (by grind)] at this
   rw [this]
@@ -785,7 +788,7 @@ open Ring in
 lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
   by_cases ha : IsStrictlyPositive a
   · rw [sqrt_eq_rpow, sqrt_eq_rpow, inverse_rpow _ _ (by grind),
-        inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind)]
+        inverse_eq_rpow_neg_one, rpow_rpow _ _ _]
     grind only
   · have ha' : ¬IsUnit (sqrt a) := by rwa [CFC.isUnit_sqrt_iff_isStrictlyPositive]
     obtain (H | H) : ¬0 ≤ a ∨ ¬IsUnit a := by grind
@@ -806,7 +809,7 @@ lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
 7. `a = b * star b` for some invertible `b`,
 8. `0 ≤ a` and `a` is invertible,
 9. `a` is self-adjoint and has positive spectrum. -/
-theorem _root_.CStarAlgebra.isStrictlyPositive_TFAE {a : A} :
+theorem _root_.CStarAlgebra.isStrictlyPositive_tfae {a : A} :
     [IsStrictlyPositive a,
      IsStrictlyPositive (sqrt a) ∧ a = sqrt a * sqrt a,
      IsUnit (sqrt a) ∧ a = sqrt a * sqrt a,
@@ -829,27 +832,30 @@ theorem _root_.CStarAlgebra.isStrictlyPositive_TFAE {a : A} :
   tfae_have 7 → 8 := fun ⟨b, hb, hab⟩ => ⟨hab ▸ mul_star_self_nonneg _, hab ▸ hb.mul hb.star⟩
   tfae_finish
 
+@[deprecated (since := "2026-10-27")]
+alias _root_.CStarAlgebra.isStrictlyPositive_TFAE := _root_.CStarAlgebra.isStrictlyPositive_tfae
+
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isStrictlyPositive_sqrt_and_eq_sqrt_mul_sqrt
     {a : A} : IsStrictlyPositive a ↔ IsStrictlyPositive (sqrt a) ∧ a = sqrt a * sqrt a :=
-  CStarAlgebra.isStrictlyPositive_TFAE.out 1 2
+  CStarAlgebra.isStrictlyPositive_tfae.out 1 2
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isUnit_sqrt_and_eq_sqrt_mul_sqrt
     {a : A} : IsStrictlyPositive a ↔ IsUnit (sqrt a) ∧ a = sqrt a * sqrt a :=
-  CStarAlgebra.isStrictlyPositive_TFAE.out 1 3
+  CStarAlgebra.isStrictlyPositive_tfae.out 1 3
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_exists_isStrictlyPositive_and_eq_mul_self
     {a : A} : IsStrictlyPositive a ↔ ∃ b, IsStrictlyPositive b ∧ a = b * b :=
-  CStarAlgebra.isStrictlyPositive_TFAE.out 1 4
+  CStarAlgebra.isStrictlyPositive_tfae.out 1 4
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_exists_isUnit_and_isSelfAdjoint_and_eq_mul_self
     {a : A} : IsStrictlyPositive a ↔ ∃ b, IsUnit b ∧ IsSelfAdjoint b ∧ a = b * b :=
-  CStarAlgebra.isStrictlyPositive_TFAE.out 1 5
+  CStarAlgebra.isStrictlyPositive_tfae.out 1 5
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
     {a : A} : IsStrictlyPositive a ↔ ∃ b, IsUnit b ∧ a = star b * b :=
-  CStarAlgebra.isStrictlyPositive_TFAE.out 1 6
+  CStarAlgebra.isStrictlyPositive_tfae.out 1 6
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_mul_star_self
     {a : A} : IsStrictlyPositive a ↔ ∃ b, IsUnit b ∧ a = b * star b :=
-  CStarAlgebra.isStrictlyPositive_TFAE.out 1 7
+  CStarAlgebra.isStrictlyPositive_tfae.out 1 7
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isSelfAdjoint_and_spectrum_pos
     {a : A} : IsStrictlyPositive a ↔ IsSelfAdjoint a ∧ ∀ x ∈ spectrum ℝ a, 0 < x :=
-  CStarAlgebra.isStrictlyPositive_TFAE.out 1 9
+  CStarAlgebra.isStrictlyPositive_tfae.out 1 9
 
 end unital_vs_nonunital
 

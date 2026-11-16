@@ -95,7 +95,7 @@ theorem divMaxPow_zero_left (p : ℕ) : divMaxPow 0 p = 0 := by simp [divMaxPow]
 theorem not_dvd_divMaxPow {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) : ¬p ∣ divMaxPow n p := by
   simp [divMaxPow, maxPowDvdDiv, maxPowDvdDiv.go_spec, *]
 
-private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p) (hn : n ≠ 0)
+private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p)
     (hab : p ^ a * b = n) (hb : ¬p ∣ b) : p ^ k ∣ n ↔ k ≤ a := by
   subst hab
   cases Nat.lt_or_ge a k with

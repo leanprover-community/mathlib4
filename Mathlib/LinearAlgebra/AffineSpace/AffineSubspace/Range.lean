@@ -15,7 +15,6 @@ The range of an affine map `f : P₁ →ᵃ[R] P₂` is an affine subspace of `P
 # Implementation note
 
 Follows `LinearMap.range`.
-
 -/
 
 @[expose] public section

@@ -211,9 +211,9 @@ instance : Module ℝ≥0 (StieltjesFunction R) where
   add_smul _ _ _ := ext fun _ ↦ add_mul _ _ _
   zero_smul _ := ext fun _ ↦ zero_mul _
 
-@[simp] lemma zero_apply (x : R) : (0 : StieltjesFunction R) x = 0 := rfl
+@[simp] protected lemma zero_apply (x : R) : (0 : StieltjesFunction R) x = 0 := rfl
 
-@[simp] lemma add_apply (f g : StieltjesFunction R) (x : R) : (f + g) x = f x + g x := rfl
+@[simp] protected lemma add_apply (f g : StieltjesFunction R) (x : R) : (f + g) x = f x + g x := rfl
 
 /-- If a function `f : R → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
 at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
@@ -344,7 +344,7 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
     have e : ⋃ i ∈ (hf.toFinset : Set ℕ), Iotop (c i) (d i) = ⋃ i ∈ s, Iotop (c i) (d i) := by
       simp only [Finset.set_biUnion_coe,
         Finite.mem_toFinset]
-    rw [ENNReal.tsum_eq_iSup_sum]
+    rw [tsum_eq_iSup_sum]
     refine le_trans ?_ (le_iSup _ hf.toFinset)
     exact this hf.toFinset _ (by simpa only [e])
   clear ss b
@@ -403,7 +403,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       (ofReal (f p.2 - f p.1) : ℝ≥0∞) < f.length (s i) + ε' i := by
     intro i
     have hl :=
-      ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_ne_zero.2 (ε'0 i).ne')
+      ENNReal.lt_add_right ((le_tsum _ i).trans_lt h).ne (ENNReal.coe_ne_zero.2 (ε'0 i).ne')
     conv at hl =>
       lhs
       rw [length_eq]
@@ -439,9 +439,9 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     _ ≤ ∑' i, ofReal (f (g i).2 - f (g i).1) + ofReal δ :=
       (add_le_add (f.length_subadditive_Icc_Ioo I_subset) (ENNReal.ofReal_le_ofReal ha'.le))
     _ ≤ ∑' i, (f.length (s i) + ε' i) + δ :=
-      (add_le_add (ENNReal.tsum_le_tsum fun i => (hg i).2.le)
+      (add_le_add (tsum_le_tsum fun i => (hg i).2.le)
         (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
-    _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [ENNReal.tsum_add]
+    _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [tsum_add]
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 
@@ -474,14 +474,14 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
   refine le_iInf fun t => le_iInf fun ht => ENNReal.le_of_forall_pos_le_add fun ε ε0 h => ?_
   rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 ε0).ne' ℕ with ⟨ε', ε'0, hε⟩
   grw [← hε]
-  rw [← ENNReal.tsum_add]
+  rw [← tsum_add]
   choose g hg using
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by
       intro i
       rcases isEmpty_or_nonempty R with hR | hR
       · exact ⟨∅, by simp, MeasurableSet.empty, by simp⟩
       have hl :=
-        ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
+        ENNReal.lt_add_right ((le_tsum _ i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
       conv at hl =>
         lhs
         rw [length_eq]
@@ -502,7 +502,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
   apply iInf_le_of_le (iUnion g) _
   apply iInf_le_of_le (ht.trans <| iUnion_mono fun i => (hg i).1) _
   apply iInf_le_of_le (MeasurableSet.iUnion fun i => (hg i).2.1) _
-  exact le_trans (measure_iUnion_le _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
+  exact le_trans (measure_iUnion_le _) (tsum_le_tsum fun i => (hg i).2.2)
 
 omit [CompactIccSpace R] in
 theorem borel_le_measurable [SecondCountableTopology R] :
@@ -517,7 +517,7 @@ variable [MeasurableSpace R] [BorelSpace R] [SecondCountableTopology R] [Densely
 
 /-- The measure associated to a Stieltjes function, giving mass `f b - f a` to the
 interval `(a, b]`. If there is a bot element, it gives zero mass to it. -/
-protected irreducible_def measure : Measure R where
+@[no_expose] protected def measure : Measure R where
   toOuterMeasure := f.outer
   m_iUnion _s hs := f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ <| by
     borelize R
@@ -767,8 +767,8 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction R) {y : R}
 @[simp]
 lemma measure_const (c : ℝ) : (StieltjesFunction.const R c).measure = 0 := by
   apply Measure.ext_of_Icc _ _ (fun a b hab ↦ ?_)
-  simp only [measure_Icc, const_apply, Measure.coe_zero, Pi.ofNat_apply, ofReal_eq_zero,
-    tsub_le_iff_right, zero_add]
+  simp only [measure_Icc, const_apply, zero_apply, ofReal_eq_zero, tsub_le_iff_right,
+    zero_add]
   rw [ContinuousWithinAt.leftLim_eq]
   · simp
   · exact continuousWithinAt_const
@@ -784,7 +784,7 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
     · simp [leftLim_eq_of_eq_bot _ ha]
     · exact tendsto_nhds_unique ((f + g).mono.tendsto_leftLim a)
         ((f.mono.tendsto_leftLim a).add (g.mono.tendsto_leftLim a))
-  simp only [measure_Icc, add_apply, Measure.coe_add, Pi.add_apply, this]
+  simp only [measure_Icc, StieltjesFunction.add_apply, this, add_apply]
   rw [← ENNReal.ofReal_add (sub_nonneg_of_le (f.mono.leftLim_le h))
     (sub_nonneg_of_le (g.mono.leftLim_le h))]
   ring_nf
@@ -792,7 +792,7 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
 @[simp]
 lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction R) : (c • f).measure = c • f.measure := by
   refine Measure.ext_of_Icc _ _ (fun a b h ↦ ?_)
-  simp only [measure_Icc, Measure.smul_apply]
+  simp only [measure_Icc, smul_apply]
   change ofReal (c * f b - leftLim (c • f) a) = c • ofReal (f b - leftLim f a)
   have : leftLim (c • f) a = c * leftLim f a := by
     rcases Filter.eq_or_neBot (𝓝[<] a) with ha | ha

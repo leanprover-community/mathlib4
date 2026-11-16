@@ -24,7 +24,6 @@ instances for `Prop` and `fun`.
 * `<Top/Bot> α`: Typeclasses to declare the `⊤`/`⊥` notation.
 * `Order<Top/Bot> α`: Order with a top/bottom element.
 * `BoundedOrder α`: Order with a top and bottom element.
-
 -/
 
 @[expose] public section
@@ -179,9 +178,21 @@ theorem top_unique (h : ⊤ ≤ a) : a = ⊤ :=
 theorem eq_top_iff : a = ⊤ ↔ ⊤ ≤ a :=
   top_le_iff.symm
 
-@[to_dual]
+@[to_dual (attr := gcongr)]
 theorem eq_top_mono (h : a ≤ b) (h₂ : a = ⊤) : b = ⊤ :=
   top_unique <| h₂ ▸ h
+
+@[to_dual (attr := gcongr)]
+theorem top_eq_mono (h : a ≤ b) (h₂ : ⊤ = a) : ⊤ = b :=
+  (eq_top_mono h h₂.symm).symm
+
+@[to_dual (attr := gcongr)]
+theorem ne_top_mono (h : b ≤ a) (h₂ : a ≠ ⊤) : b ≠ ⊤ :=
+  mt (eq_top_mono h) h₂
+
+@[to_dual (attr := gcongr)]
+theorem top_ne_mono (h : b ≤ a) (h₂ : ⊤ ≠ a) : ⊤ ≠ b :=
+  mt (top_eq_mono h) h₂
 
 @[to_dual bot_lt_iff_ne_bot, basify_simp]
 theorem lt_top_iff_ne_top : a < ⊤ ↔ a ≠ ⊤ :=

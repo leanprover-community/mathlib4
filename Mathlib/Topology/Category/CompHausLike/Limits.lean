@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.Topology.Category.CompHausLike.Basic
 
 /-!
-
 # Explicit limits and colimits
 
 This file collects some constructions of explicit limits and colimits in `CompHausLike P`,
@@ -155,7 +154,6 @@ lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (finiteCoproduct.ι X a) :=
   .sigmaMk (σ := fun a ↦ X a)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (Sigma.ι X a) := by

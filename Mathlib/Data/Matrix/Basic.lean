@@ -66,9 +66,22 @@ def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → �
 
 end
 
-theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
+@[simp]
+protected theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β)
+    (g : β → Matrix m n α) :
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
   congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
+
+@[simp]
+theorem row_sum [AddCommMonoid α] (s : Finset β) (M : β → Matrix m n α) :
+    (∑ i ∈ s, M i).row = ∑ i ∈ s, (M i).row :=
+  rfl
+
+@[simp]
+theorem col_sum [AddCommMonoid α] (s : Finset β) (M : β → Matrix m n α) :
+    (∑ i ∈ s, M i).col = ∑ i ∈ s, (M i).col := by
+  ext
+  simp
 
 end Matrix
 
@@ -654,7 +667,7 @@ given that its multiplication is commutative. -/
 def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
   invFun M := M.unop.transpose.map op
-  map_mul' _ _ := unop_injective <| by ext; simp [mul_apply]
+  map_mul' _ _ := unop_injective <| by ext; simp [Matrix.mul_apply]
   map_add' _ _ := rfl
 
 end RingEquiv
@@ -668,7 +681,7 @@ theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
     IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
   mp _ :=
   ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
-               fun _ _ ↦ by ext; simp [mul_apply]
+               fun _ _ ↦ by ext; simp [Matrix.mul_apply]
   .of_injective f (map_injective (op_injective.comp op_injective))⟩
   mpr _ := inferInstance
 
@@ -816,6 +829,71 @@ open Matrix
 
 namespace Matrix
 
+section Prod
+
+variable (n m α β)
+
+/-- Matrices over a product are in canonical bijection with product of matrices.
+
+This is available in bundled forms as:
+* `Matrix.prodAddEquiv`
+* `Matrix.prodLinearEquiv`
+* `Matrix.prodRingEquiv`
+* `Matrix.prodAlgEquiv`
+-/
+@[simps!] def prodEquiv : Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β where
+  toFun a := ⟨a.map Prod.fst, a.map Prod.snd⟩
+  invFun a := .of fun i j ↦ ⟨a.1 i j, a.2 i j⟩
+
+/-- `prodEquiv` as an `AddEquiv`. -/
+@[simps!] def prodAddEquiv [Add α] [Add β] :
+    Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β where
+  __ := prodEquiv m n α β
+  map_add' _ _ := rfl
+
+@[simp] theorem toEquiv_prodAddEquiv [Add α] [Add β] :
+    prodAddEquiv m n α β = prodEquiv m n α β := rfl
+
+variable (R)
+
+/-- `prodEquiv` as a `LinearEquiv`. -/
+@[simps!] def prodLinearEquiv [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+    [Module R α] [Module R β] : Matrix m n (α × β) ≃ₗ[R] Matrix m n α × Matrix m n β where
+  __ := prodAddEquiv m n α β
+  map_smul' _ _ := rfl
+
+@[simp] theorem toAddEquiv_prodLinearEquiv [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+    [Module R α] [Module R β] :
+    prodLinearEquiv m n R α β = prodAddEquiv m n α β := rfl
+
+variable [Fintype n]
+
+/-- `prodEquiv` as a `RingEquiv`. -/
+@[simps!] def prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
+    Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β where
+  __ := prodAddEquiv n n α β
+  map_mul' _ _ := by ext <;> simp [Matrix.mul_apply, Prod.fst_sum, Prod.snd_sum]
+
+@[simp] theorem toAddEquiv_prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
+    prodRingEquiv n α β = prodAddEquiv n n α β := rfl
+
+variable [CommSemiring R] [DecidableEq n]
+
+/-- `prodEquiv` as an `AlgEquiv`. -/
+@[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
+    Matrix n n (α × β) ≃ₐ[R] Matrix n n α × Matrix n n β where
+  __ := prodRingEquiv n α β
+  __ := AlgHom.mk' (prodRingEquiv n α β).toRingHom fun _ _ ↦ rfl
+
+@[simp] theorem toRingEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
+    prodAlgEquiv n R α β = prodRingEquiv n α β := rfl
+
+@[simp] theorem toLinearEquiv_prodAlgEquiv [Semiring α] [Algebra R α]
+    [Semiring β] [Algebra R β] :
+    prodAlgEquiv n R α β = prodLinearEquiv n n R α β := rfl
+
+end Prod
+
 section Pi
 
 variable {ι : Type*} {β : ι → Type*}
@@ -831,31 +909,52 @@ This is available in bundled forms as:
 @[simps] def piEquiv : Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i) where
   toFun f i := f.map (· i)
   invFun f := .of fun j k i ↦ f i j k
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- `piEquiv` as an `AddEquiv`. -/
-@[simps!] def piAddEquiv [∀ i, Add (β i)] : Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i) where
+@[simps!] def piAddEquiv [Π i, Add (β i)] : Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i) where
   __ := piEquiv
   map_add' _ _ := rfl
 
+@[simp] theorem toEquiv_piAddEquiv [Π i, Add (β i)] :
+    (piAddEquiv (m := m) (n := n) (ι := ι) (β := β) :
+      Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
+
 /-- `piEquiv` as a `LinearEquiv`. -/
-@[simps] def piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
+@[simps] def piLinearEquiv (R) [Semiring R] [Π i, AddCommMonoid (β i)] [Π i, Module R (β i)] :
     Matrix m n (Π i, β i) ≃ₗ[R] Π i, Matrix m n (β i) where
   __ := piAddEquiv
   map_smul' _ _ := rfl
 
+@[simp] theorem toAddEquiv_piLinearEquiv (R) [Semiring R] [Π i, AddCommMonoid (β i)]
+    [Π i, Module R (β i)] :
+    (piLinearEquiv (m := m) (n := n) (ι := ι) (β := β) R :
+      Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i)) = piAddEquiv := rfl
+
 /-- `piEquiv` as a `RingEquiv`. -/
-@[simps!] def piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
+@[simps!] def piRingEquiv [Π i, AddCommMonoid (β i)] [Π i, Mul (β i)] [Fintype n] :
     Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i) where
   __ := piAddEquiv
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
 
+@[simp] theorem toAddEquiv_piRingEquiv [Π i, AddCommMonoid (β i)] [Π i, Mul (β i)] [Fintype n] :
+    (piRingEquiv (n := n) (ι := ι) (β := β) :
+      Matrix n n (Π i, β i) ≃+ Π i, Matrix n n (β i)) = piAddEquiv := rfl
+
+variable (R) [CommSemiring R] [Π i, Semiring (β i)] [Π i, Algebra R (β i)]
+  [Fintype n] [DecidableEq n]
+
 /-- `piEquiv` as an `AlgEquiv`. -/
-@[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
-    [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
+@[simps!] def piAlgEquiv : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
   commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+
+@[simp] theorem toRingEquiv_piAlgEquiv :
+    (piAlgEquiv (n := n) R (ι := ι) (β := β) :
+       Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i)) = piRingEquiv := rfl
+
+@[simp] theorem toLinearEquiv_piAlgEquiv :
+    (piAlgEquiv (n := n) R (ι := ι) (β := β) :
+      Matrix n n (Π i, β i) ≃ₗ[R] Π i, Matrix n n (β i)) = piLinearEquiv R := rfl
 
 end Pi
 
@@ -865,7 +964,7 @@ open Matrix
 
 variable (m n α)
 
-/-- `Matrix.transpose` as an `AddEquiv` -/
+/-- `Matrix.transpose` as an `AddEquiv`. -/
 @[simps apply]
 def transposeAddEquiv [Add α] : Matrix m n α ≃+ Matrix n m α where
   toFun := transpose
@@ -894,12 +993,17 @@ theorem transpose_sum [AddCommMonoid α] {ι : Type*} (s : Finset ι) (M : ι �
 
 variable (m n R α)
 
-/-- `Matrix.transpose` as a `LinearMap` -/
+/-- `Matrix.transpose` as a `LinearEquiv`. -/
 @[simps apply]
 def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
     Matrix m n α ≃ₗ[R] Matrix n m α where
   __ := transposeAddEquiv m n α
   map_smul' := transpose_smul
+
+@[simp]
+theorem toAddEquiv_transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    transposeLinearEquiv m n R α = transposeAddEquiv m n α :=
+  rfl
 
 @[simp]
 theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
@@ -942,7 +1046,84 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
   __ := transposeRingEquiv m α
   commutes' r := by simp [algebraMap_eq_diagonal]
 
+@[simp]
+theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m]
+    [DecidableEq m] [Algebra R α] :
+    transposeAlgEquiv m R α = transposeRingEquiv m α := rfl
+
 end Transpose
+
+section RowCol
+
+variable (m n R α)
+
+/-- `Matrix.row` as an `AddEquiv` -/
+def rowAddEquiv [Add α] : Matrix m n α ≃+ (m → n → α) where
+  __ := rowEquiv m n α
+  map_add' := row_add
+
+/-- `Matrix.col` as an `AddEquiv` -/
+def colAddEquiv [Add α] : Matrix m n α ≃+ (n → m → α) where
+  __ := colEquiv m n α
+  map_add' := col_add
+
+@[simp]
+theorem coe_rowAddEquiv [Add α] : ⇑(rowAddEquiv m n α) = row :=
+  rfl
+
+@[simp]
+theorem coe_colAddEquiv [Add α] : ⇑(colAddEquiv m n α) = col :=
+  rfl
+
+@[simp]
+theorem toEquiv_rowAddEquiv [Add α] : rowAddEquiv m n α = rowEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toEquiv_colAddEquiv [Add α] : colAddEquiv m n α = colEquiv m n α :=
+  rfl
+
+/-- `Matrix.row` as a `LinearMap` -/
+def rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : Matrix m n α ≃ₗ[R] m → n → α where
+  __ := rowAddEquiv m n α
+  map_smul' := row_smul
+
+/-- `Matrix.col` as a `LinearMap` -/
+def colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : Matrix m n α ≃ₗ[R] n → m → α where
+  __ := colAddEquiv m n α
+  map_smul' := col_smul
+
+@[simp]
+theorem coe_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    ⇑(rowLinearEquiv m n R α) = row :=
+  rfl
+
+@[simp]
+theorem coe_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    ⇑(colLinearEquiv m n R α) = col :=
+  rfl
+
+@[simp]
+theorem toEquiv_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    rowLinearEquiv m n R α = rowEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toEquiv_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    colLinearEquiv m n R α = colEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    rowLinearEquiv m n R α = rowAddEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    colLinearEquiv m n R α = colAddEquiv m n α :=
+  rfl
+
+end RowCol
 
 section NonUnitalNonAssocSemiring
 variable {ι : Type*} [NonUnitalNonAssocSemiring α] [Fintype n]
@@ -950,7 +1131,7 @@ variable {ι : Type*} [NonUnitalNonAssocSemiring α] [Fintype n]
 theorem sum_mulVec (s : Finset ι) (x : ι → Matrix m n α) (y : n → α) :
     (∑ i ∈ s, x i) *ᵥ y = ∑ i ∈ s, x i *ᵥ y := by
   ext
-  simp only [mulVec, dotProduct, sum_apply, Finset.sum_mul, Finset.sum_apply]
+  simp only [mulVec, dotProduct, Matrix.sum_apply, Finset.sum_mul, Finset.sum_apply]
   rw [Finset.sum_comm]
 
 theorem mulVec_sum (x : Matrix m n α) (s : Finset ι) (y : ι → (n → α)) :
@@ -966,7 +1147,7 @@ theorem sum_vecMul (s : Finset ι) (x : ι → (n → α)) (y : Matrix n m α) :
 theorem vecMul_sum (x : n → α) (s : Finset ι) (y : ι → Matrix n m α) :
     x ᵥ* (∑ i ∈ s, y i) = ∑ i ∈ s, x ᵥ* y i := by
   ext
-  simp only [vecMul, dotProduct, sum_apply, Finset.mul_sum, Finset.sum_apply]
+  simp only [vecMul, dotProduct, Matrix.sum_apply, Finset.mul_sum, Finset.sum_apply]
   rw [Finset.sum_comm]
 
 end NonUnitalNonAssocSemiring

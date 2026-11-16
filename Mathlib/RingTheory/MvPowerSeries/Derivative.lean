@@ -32,7 +32,6 @@ See also `PowerSeries.derivative` for the univariate setting.
   derivatives.
 - `MvPowerSeries.pderiv_pow`: power rule.
 - `MvPowerSeries.pderiv_inv`, `MvPowerSeries.pderiv_inv'`: derivative of an inverse.
-
 -/
 
 @[expose] public section

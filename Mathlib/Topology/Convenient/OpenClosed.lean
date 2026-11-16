@@ -17,7 +17,6 @@ Let `X : ι → Type*` be a family of topological spaces.
 If all the opens (resp. closed) subsets of the `X i` are
 `X`-generated, then any open (resp. closed) subset of
 an `X`-generated space is `X`-generated.
-
 -/
 
 public section

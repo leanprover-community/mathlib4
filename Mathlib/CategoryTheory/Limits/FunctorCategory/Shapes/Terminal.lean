@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 We show that if a functor `F : C ⥤ D` is such that `F.obj X`
 is terminal for all `X`, then `F` is a terminal object.
-
 -/
 
 @[expose] public section

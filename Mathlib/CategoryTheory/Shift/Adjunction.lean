@@ -43,7 +43,6 @@ the compatibility condition on `adj.unit` for a fixed `a` in `A` and for isomorp
 Once we have established all this, the compatibility of the commutation isomorphism for
 `F` expressed in `CommShift.zero` and `CommShift.add` immediately implies the similar
 statements for the commutation isomorphisms for `G`.
-
 -/
 
 @[expose] public section

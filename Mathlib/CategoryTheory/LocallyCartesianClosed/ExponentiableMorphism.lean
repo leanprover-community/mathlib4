@@ -23,7 +23,6 @@ the pushforward functor along `f`.
 ### TODO
 
 - Any pullback of an exponentiable morphism is exponentiable.
-
 -/
 
 @[expose] public section

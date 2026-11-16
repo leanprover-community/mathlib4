@@ -22,7 +22,6 @@ given a valuation to `ℝ≥0`.
 ## TODO
 
 Define the valuation on the tilt, and define a characteristic predicate for the tilt.
-
 -/
 
 @[expose] public section
@@ -200,7 +199,7 @@ instance : CommSemiring (Perfection R p) :=
   inferInstanceAs <| CommSemiring (subsemiring R p)
 
 instance : CharP (Perfection R p) p :=
-  CharP.subsemiring _ _ (subsemiring R p)
+  inferInstanceAs <| CharP (subsemiring R p) p
 
 /-- The `n`-th coefficient of an element of the perfection. -/
 def coeff (n : ℕ) : Perfection R p →+* R where

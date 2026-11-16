@@ -22,7 +22,6 @@ the "underlying" category `ForgetEnrichment V C` is equipped with a
 
 Simplicial categories are implemented in `AlgebraicTopology.SimplicialCategory.Basic`
 using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
-
 -/
 
 @[expose] public section

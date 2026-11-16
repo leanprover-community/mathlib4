@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
 # Properties of objects in comma categories
-
 -/
 
 universe w

@@ -33,7 +33,6 @@ This theorem was formalized as part of the Sphere Eversion project.
 
 ## Tags
 convex hull, caratheodory
-
 -/
 
 @[expose] public section

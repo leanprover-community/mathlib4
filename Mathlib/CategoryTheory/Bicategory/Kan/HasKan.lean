@@ -28,7 +28,6 @@ These notations are inspired by
 
 * `ran f g` is the right Kan extension of `g` along `f`, and is denoted by `f⁺⁺ g`.
 * `ranLift f g` is the right Kan lift of `g` along `f`, and is denoted by `f₊₊ g`.
-
 -/
 
 @[expose] public section

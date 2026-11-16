@@ -104,7 +104,7 @@ lemma gaussian_charFunDual_congr [IsFiniteMeasure μ] {m : E}
     simp [h]
   simp only [id_eq, this, Int.cast_zero, zero_mul, add_zero, Complex.ext_iff, sub_re, mul_re,
     ofReal_re, I_re, mul_zero, ofReal_im, I_im, mul_one, sub_self, div_ofNat_re, zero_sub, neg_inj,
-    ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj', sub_im, mul_im, div_ofNat_im,
+    ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj₀, sub_im, mul_im, div_ofNat_im,
     zero_div, sub_zero] at hn
   constructor
   · rw [SeparatingDual.eq_iff_forall_dual_eq (R := ℝ)]

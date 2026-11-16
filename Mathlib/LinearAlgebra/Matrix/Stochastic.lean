@@ -23,7 +23,6 @@ are defined in `Mathlib/Analysis/Convex/DoublyStochasticMatrix.lean`.
   of `Matrix n n R`.
 * `colStochastic R n`: column-stochastic matrices indexed by `n` with entries in `R`, as a
   submonoid of `Matrix n n R`.
-
 -/
 
 @[expose] public section

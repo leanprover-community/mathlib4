@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Opposites
 # Pullbacks and pushouts in `C` and `Cᵒᵖ`
 
 We construct pullbacks and pushouts in the opposite categories.
-
 -/
 
 @[expose] public section
