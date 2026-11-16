@@ -95,7 +95,7 @@ lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
   tfae_have 2 ↔ 6 := this.out 1 5
   tfae_have 2 ↔ 7 := this.out 1 6
   tfae_have 2 → 1 := fun h ↦ by simpa using h.nonneg
-  tfae_have 1 → 5 := fun h ↦ hq.mul_right_and_mul_left_of_nonneg_of_le hp.nonneg h |>.2
+  tfae_have 1 → 7 := fun h ↦ hq.conjugate_of_nonneg_of_le hp.nonneg h
   tfae_have 6 → 8 := fun h ↦ by rw [h, hp.isIdempotentElem.eq]
   tfae_have 8 → 6 := fun h ↦ by
     rw [← sub_eq_zero, ← mul_star_self_eq_zero]
@@ -134,7 +134,10 @@ lemma le_iff_isStarOrtho_sub (hp : IsStarProjection p) (hq : IsStarProjection q)
     p ≤ q ↔ p ⋆⟂ (q - p) :=
   hp.le_tfae hq |>.out 1 4
 
-/-- If `p ≤ q` are star projections, then `q * p * q = p`. -/
+/-- If `p ≤ q` are star projections, then `q * p * q = p`.
+This is a special case of the more general lemma `IsStarProjection.conjugate_of_nonneg_of_le`
+where `p` need only be nonnegative, but we retain it for discoverability and the parallelism
+with `IsStarProjection.conjugate_eq_of_le'`. -/
 alias ⟨conjugate_eq_of_le, _⟩ := le_iff_conjugate_eq
 
 /-- If `p ≤ q` are star projections, then `p * q * p = p`. -/
