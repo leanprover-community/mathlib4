@@ -85,8 +85,7 @@ lemma closure_S : closure S = T := by
       simp only [Prod.mk.injEq, true_and]
       have : ContinuousAt (fun x ↦ sin x⁻¹) x :=
         continuous_sin.continuousAt.comp <| continuousAt_inv₀ h.ne'
-      refine tendsto_nhds_unique ?_ hf_lim.2
-      convert! this.tendsto.comp hf_lim.1 with n
+      refine tendsto_nhds_unique_of_forall (this.tendsto.comp hf_lim.1) hf_lim.2 fun n ↦ ?_
       obtain ⟨y, hy⟩ := hf_mem n
       simp [← hy.2]
   · -- Show that every `p ∈ T` is the limit of a sequence in `S`.
@@ -187,7 +186,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
       exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
     simpa only [a, ← hx_eq] using! hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=
-    (isPreconnected_Icc.image _ <| xcoord_pathContinuous.continuousOn).Icc_subset
+    (isPreconnected_Icc.image _ xcoord_pathContinuous.continuousOn).Icc_subset
       (show 0 ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₀, ⟨le_rfl, ht₁.1.le⟩, ‹_›⟩)
       (show a ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₁, ⟨ht₁.1.le, le_rfl⟩, rfl⟩)
   -- **Step 3**: For every `y ∈ [-1, 1]`, there exists a `t` with `p t = y` and `dist t₀ t < δ`.

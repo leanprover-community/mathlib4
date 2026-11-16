@@ -18,7 +18,6 @@ file `Mathlib/Algebra/Homology/SpectralObject/Homology.lean`.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
-
 -/
 
 @[expose] public section
@@ -66,7 +65,6 @@ lemma toCycles_πE_d
   subst h₁₂ h₃₄
   simp only [d, δ_toCycles_assoc, toCycles_πE_descE]
 
-set_option backward.defeqAttrib.useBackward true in
 include h₃₄ in
 @[reassoc]
 lemma d_ιE_fromOpcycles
@@ -78,7 +76,7 @@ lemma d_ιE_fromOpcycles
   rw [← cancel_epi (X.πE f₃ f₄ f₅ n₀ n₁ n₂ hn₁ hn₂),
     ← cancel_epi (X.toCycles f₃ f₄ f₃₄ h₃₄ n₁),
     X.toCycles_πE_d_assoc f₁ f₂ f₃ f₄ f₅ _ rfl _ _ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃,
-    πE_ιE_assoc .., p_fromOpcycles, toCycles_i_assoc, fromOpcyles_δ ..,
+    πE_ιE_assoc .., p_fromOpcycles, toCycles_i_assoc, fromOpcycles_δ ..,
     πE_ιE_assoc .., pOpcycles_δFromOpcycles, toCycles_i_assoc, ← Functor.map_comp, Eq.comm]
   apply δ_naturality
   simp

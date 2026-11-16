@@ -79,7 +79,6 @@ While `AlgHom R A B` cannot be used in the second approach, `NonUnitalAlgHom R A
 
 You should always use the first approach when working with associative unital algebras, and mimic
 the second approach only when you need to weaken a condition on either `R` or `A`.
-
 -/
 
 @[expose] public section

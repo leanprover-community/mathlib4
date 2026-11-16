@@ -18,7 +18,6 @@ followed by an open quotient map `ψ` satisfying `φ.range = ψ.ker`.
 
 * `TopologicalGroup.IsSES φ ψ`: A predicate stating that `φ` is a closed embedding, `ψ` is an open
   quotient map, and `φ.range = ψ.ker`.
-
 -/
 
 public section

@@ -5,13 +5,11 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.CharZero.AddMonoidHom
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
-public import Mathlib.Tactic.CrossRefAttribute
+
+import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # Number fields
@@ -223,13 +221,13 @@ def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
   toRingHom := mapRingHom f
   commutes' x := SetCoe.ext (AlgHomClass.commutes
-    ((AlgHomClass.toAlgHom f).restrictScalars (𝓞 k)) x)
+    ((AlgHom.ofClass f).restrictScalars (𝓞 k)) x)
 
 /-- The isomorphism of algebras `(𝓞 K) ≃ₐ[𝓞 k] (𝓞 L)` given by restricting
   an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
-  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (AlgEquivClass.toAlgEquiv e : K ≃ₐ[k] L).symm)
+  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (AlgEquiv.ofClass e).symm)
     (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
       (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
 
@@ -448,6 +446,6 @@ namespace AdjoinRoot
 is a number field. -/
 instance {f : Polynomial ℚ} [hf : Fact (Irreducible f)] : NumberField (AdjoinRoot f) where
   to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := by convert! (AdjoinRoot.powerBasis hf.out.ne_zero).finite
+  to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finite
 
 end AdjoinRoot

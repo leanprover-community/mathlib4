@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Tower
+
 /-!
 # Adjoin one single element
 
@@ -15,7 +16,6 @@ This file contains basic results on `Algebra.adjoin`, specifically on adjoining 
 ## Tags
 
 adjoin, algebra, ringhom
-
 -/
 
 @[expose] public section

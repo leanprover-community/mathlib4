@@ -20,7 +20,6 @@ study of strong (inner) anodyne extensions.
 
 ## References
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
-
 -/
 
 @[expose] public section
@@ -96,7 +95,6 @@ lemma le : x ≤ y := by
     ← this]
   exact ⟨(SimplexCategory.δ _).op, rfl⟩
 
-set_option backward.defeqAttrib.useBackward true in
 include hxy in
 lemma unique (f : ⦋d⦌ ⟶ ⦋d + 1⦌) [Mono f]
     (hf : X.map f.op (y.cast (by rw [hxy.dim_eq, hd])).simplex = (x.cast hd).simplex) :
@@ -116,7 +114,6 @@ lemma op : (S.opEquiv.symm x).IsUniquelyCodimOneFace (S.opEquiv.symm y) := by
   obtain ⟨i, rfl⟩ := i.rev_surjective
   simpa [← hxy.δ_eq_iff rfl] using hi
 
-set_option backward.defeqAttrib.useBackward true in
 include hxy in
 lemma of_iso {Y : SSet.{u}} (e : X ≅ Y) :
     (S.mk (e.hom.app _ x.simplex)).IsUniquelyCodimOneFace (S.mk (e.hom.app _ y.simplex)) := by

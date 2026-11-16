@@ -6,14 +6,12 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Retract
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Stability under retracts
 
 Given `P : MorphismProperty C`, we introduce a typeclass `P.IsStableUnderRetracts` which
 is the property that `P` is stable under retracts.
-
 -/
 
 @[expose] public section

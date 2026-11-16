@@ -5,9 +5,8 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Triangularizable linear endomorphisms
@@ -53,7 +52,7 @@ theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M
     (hf : ⨆ μ, f.genEigenspace μ k = ⊤) :
     ∃ μ, f.HasEigenvalue μ := by
   suffices ∃ μ, f.HasUnifEigenvalue μ k by
-    peel this with μ hμ
+    gconvert this with μ hμ
     exact HasUnifEigenvalue.lt zero_lt_one hμ
   simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
 
@@ -77,7 +76,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
   -- We prove the claim by strong induction on the dimension of the vector space.
   suffices ∀ n, finrank K V = n → ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ by exact this _ rfl
   intro n h_dim
-  induction n using Nat.strong_induction_on generalizing V with | h n ih =>
+  induction n using Nat.strong_induction_on generalizing V with | ind n ih
   rcases n with - | n
   -- If the vector space is 0-dimensional, the result is trivial.
   · rw [← top_le_iff]
@@ -181,11 +180,11 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
       simpa only [Nat.cast_le] using Finset.le_sup hμ'
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
       (fun μ ↦ (f - algebraMap K (End K V) μ) ^ l₀) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
-    rw [← this, Module.End.mul_apply, hl₀, _root_.map_zero]
+    rw [← this, mul_apply_eq_comp, hl₀, _root_.map_zero]
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K V ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
     suffices MapsTo (f - algebraMap K (End K V) μ') p p by
-      simp only [Module.End.coe_pow, this.iterate l₀]
+      simp [this.iterate l₀, FunLike.coe_pow_eq_iterate]
     intro x hx
     rw [LinearMap.sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)
@@ -237,7 +236,7 @@ theorem Module.End.genEigenspace_restrict_eq_top
     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V] {k : ℕ∞}
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, f.genEigenspace μ k = ⊤) :
     ⨆ μ, Module.End.genEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
-  have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_genEigenspace k h h')
+  have := congr(Submodule.comap p.subtype $(Submodule.eq_iSup_inf_genEigenspace k h h'))
   have h_inj : Function.Injective p.subtype := Subtype.coe_injective
   simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this

@@ -5,9 +5,9 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-public import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Trace.Basic
+
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Discriminant of a family of vectors
@@ -216,9 +216,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
   congr
   rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diag]
   conv_rhs =>
-    congr
-    rfl
-    ext σ
+    enter [2, σ]
     rw [← aeval_algHom_apply, ← eval_map_algebraMap, ← derivative_map,
       (IsAlgClosed.splits _).eval_root_derivative ((minpoly.monic pb.isIntegral_gen).map _)
       (hroots σ), ← Finset.prod_mk _ (hnodup.erase _)]
@@ -273,10 +271,10 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
     exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
   rw [← H, ← mulVec_smul] at cramer
-  replace cramer := congr_arg (mulVec (traceMatrix K B.basis)⁻¹) cramer
+  replace cramer := congr((mulVec (traceMatrix K B.basis)⁻¹) $cramer)
   rw [mulVec_mulVec, nonsing_inv_mul _ hinv, mulVec_mulVec, nonsing_inv_mul _ hinv, one_mulVec,
     one_mulVec] at cramer
-  rw [← congr_fun cramer i, cramer_apply, det_apply]
+  rw [← congr($cramer i), cramer_apply, det_apply]
   refine
     Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i
@@ -295,7 +293,7 @@ section Int
 /-- Two (finite) ℤ-bases have the same discriminant. -/
 theorem discr_eq_discr (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by
-  convert! Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
+  convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
   · rw [Basis.toMatrix_map_vecMul]
   · suffices IsUnit (b'.toMatrix b).det by
       rw [Int.isUnit_iff, ← sq_eq_one_iff] at this

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
+
 /-!
 # Noetherian domains have unique factorization
 

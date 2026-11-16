@@ -6,10 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Lie.Engel
-public import Mathlib.Algebra.Lie.Normalizer
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Lie.Subalgebra
-public import Mathlib.Data.Finset.NatAntidiagonal
 
 /-!
 # Engel subalgebras
@@ -93,7 +89,7 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   rcases hy with ⟨n, hn⟩
   rw [mem_engel_iff]
   use n + 1
-  rw [pow_succ, Module.End.mul_apply]
+  rw [pow_succ, mul_apply_eq_comp]
   exact hn
 
 variable {R}
@@ -118,7 +114,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
   have aux₂ : ∀ n ∈ N, ⁅x, n⁆ ∈ N := fun n hn ↦ le_normalizer H (aux₁ _ hn)
   let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
   obtain ⟨k, hk⟩ : ∃ a, ∀ b ≥ a, Codisjoint (LinearMap.ker (dx ^ b)) (LinearMap.range (dx ^ b)) :=
-    eventually_atTop.mp <| dx.eventually_codisjoint_ker_pow_range_pow
+    eventually_atTop.mp dx.eventually_codisjoint_ker_pow_range_pow
   specialize hk (k + 1) (Nat.le_add_right k 1)
   rw [← Submodule.map_subtype_top N.toSubmodule, Submodule.map_le_iff_le_comap]
   apply hk
@@ -132,14 +128,14 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     generalize k + 1 = k
     induction k generalizing y with
     | zero =>
-      cases y; intro hy; simp only [pow_zero, Module.End.one_apply]
+      cases y; intro hy; simp only [pow_zero, one_apply_eq_self]
       exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
     | succ k ih => solve_by_elim
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]
     rintro _ ⟨y, rfl⟩
-    simp only [pow_succ', Module.End.mul_apply, Submodule.mem_comap, mem_toSubmodule]
+    simp only [pow_succ', mul_apply_eq_comp, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 

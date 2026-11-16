@@ -37,7 +37,6 @@ This is a continuous nonnegative, strictly convex function on $[0,∞)$, with mi
 * `integral_klFun_rnDeriv`: For two finite measures `μ ≪ ν` such that `llr μ ν` is integrable with
   respect to `μ`,
   `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`.
-
 -/
 
 @[expose] public section

@@ -66,33 +66,32 @@ variable
 
 namespace Homogenization
 
-/- TODO: define the `AddCommGroup` and `Module` instances using `inferInstanceAs` once
-https://github.com/leanprover/lean4/issues/14470 is fixed -/
-
-/-- Auxiliary definition used for defining the module structure on `Homogenization`. -/
-def equivProdAux : Homogenization R P ≃ V × R :=
-  .refl _
-
--- This instance must be exposed to avoid publicly non-defeq instances for `NSMul`.
-instance : AddCommGroup (Homogenization R P) :=
-  equivProdAux.addCommGroup
-
-section SMul
-
 /- The `[IsScalarTower S R V]` assumption implies that this instance does not depend on the
 arbitrary choice made in the definition of `Homogenization`. -/
 @[nolint unusedArguments]
-instance instModule {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V] :
-    Module S (Homogenization R P) :=
-  equivProdAux.addEquiv.module S
+instance instSMul {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V] :
+    SMul S (Homogenization R P) :=
+  inferInstanceAs (SMul S (V × R))
+
+instance : AddCommGroup (Homogenization R P) :=
+  inferInstanceAs (AddCommGroup (V × R))
+
+section SMul
 
 variable
   {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
   {T : Type*} [Semiring T] [Module T R] [Module T V] [IsScalarTower T R V]
-  [SMul S T] [IsScalarTower S T R] [IsScalarTower S T V]
 
-instance : IsScalarTower S T (Homogenization R P) :=
+instance : Module S (Homogenization R P) :=
+  inferInstanceAs (Module S (V × R))
+
+instance [SMul S T] [IsScalarTower S T R] [IsScalarTower S T V] :
+    IsScalarTower S T (Homogenization R P) :=
   inferInstanceAs (IsScalarTower S T (V × R))
+
+instance [SMulCommClass S T R] [SMulCommClass S T V] :
+    SMulCommClass S T (Homogenization R P) :=
+  inferInstanceAs (SMulCommClass S T (V × R))
 
 end SMul
 
@@ -111,7 +110,7 @@ theorem ofPoint_linear : ofPoint.linear = ofVector (R := R) (P := P) :=
 
 @[simp]
 theorem ofVector_vsub (p q : P) : ofVector (R := R) (p -ᵥ q) = ofPoint p - ofPoint q :=
-  ofPoint.linearMap_vsub p q
+  ofPoint.linear_apply_vsub p q
 
 @[simp]
 theorem ofVector_smul {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
@@ -162,14 +161,19 @@ theorem span_range_ofPoint : Submodule.span R (Set.range (ofPoint (R := R) (P :=
   refine Submodule.add_mem _ (Submodule.sub_mem _ ?_ ?_) (Submodule.smul_mem _ _ ?_) <;>
     exact Submodule.mem_span_of_mem <| Set.mem_range_self _
 
-theorem hom_ext {f g : Homogenization R P →ₗ[R] W}
-    (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := by
+section
+
+variable {F : Type*} [FunLike F (Homogenization R P) W] [LinearMapClass F R _ _]
+
+theorem hom_ext {f g : F} (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := by
+  apply LinearMap.ofClass_injective
   rwa [← LinearMap.eqLocus_eq_top, eq_top_iff, ← span_range_ofPoint, Submodule.span_le,
     Set.range_subset_iff]
 
-theorem hom_ext_iff {f g : Homogenization R P →ₗ[R] W} :
-    f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
+theorem hom_ext_iff {f g : F} : f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
   ⟨by rintro rfl _; rfl, hom_ext⟩
+
+end
 
 /-- Auxiliary definition used for defining `Homogenization.lift`. -/
 private def liftAux (f : P →ᵃ[R] W) : Homogenization R P →ₗ[R] W :=

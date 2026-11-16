@@ -5,10 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.Basic
-public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Path objects
@@ -37,7 +34,6 @@ in the lemma `PathObject.exists_very_good`.
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * https://ncatlab.org/nlab/show/path+space+object
-
 -/
 
 @[expose] public section
@@ -78,7 +74,6 @@ def symm : PrepathObject A where
   p₁ := P.p₀
   ι := P.ι
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two pre-path objects. -/
 @[simps]
 noncomputable def trans (P' : PrepathObject A) [HasPullback P.p₁ P'.p₀] :
@@ -335,7 +330,7 @@ protected def Precylinder.op {A : C} (P : Precylinder A) :
   ι_p₀ := Quiver.Hom.unop_inj (by simp)
   ι_p₁ := Quiver.Hom.unop_inj (by simp)
 
-/-- The pre-path object object obtained from a cylinder in the opposite category. -/
+/-- The pre-path object obtained from a cylinder in the opposite category. -/
 @[simps]
 protected def Precylinder.unop {A : Cᵒᵖ} (P : Precylinder A) :
     PrepathObject A.unop where

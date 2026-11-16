@@ -6,9 +6,10 @@ Authors: Yunzhou Xie, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Homology.Embedding.Connect
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 
 /-!
@@ -61,7 +62,7 @@ open CategoryTheory groupCohomology groupHomology
 /-- This is the map from the coinvariants of `M : Rep R G` to the invariants, induced by the map
 `m ↦ ∑ g : G, M.ρ g m`. -/
 def Rep.tateNorm : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
-  (chainsIso₀ M).hom ≫ M.norm.toModuleCatHom ≫ (cochainsIso₀ M).inv
+  (chainsIso₀ M).hom ≫ M.norm.asHom.toModuleCatHom ≫ (cochainsIso₀ M).inv
 
 lemma Rep.tateNorm_eq :
     M.tateNorm = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
@@ -69,7 +70,7 @@ lemma Rep.tateNorm_eq :
   simp_all [tateNorm, chainsIso₀, cochainsIso₀, Unique.eq_default]
 
 @[reassoc (attr := simp), elementwise]
-lemma Rep.norm_comp_d_eq_zero : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by
+lemma Rep.norm_comp_d_eq_zero : M.norm.asHom.toModuleCatHom ≫ d₀₁ M = 0 := by
   ext
   simp [Pi.zero_apply _]
 
@@ -77,7 +78,7 @@ lemma Rep.tateNorm_comp_d : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 :
   simp [tateNorm, eq_d₀₁_comp_inv M]
 
 @[simp]
-lemma Rep.comp_eq_zero : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
+lemma Rep.comp_eq_zero : d₁₀ M ≫ M.norm.asHom.toModuleCatHom = 0 := by
   ext
   simp [d₁₀_single M]
 
@@ -149,7 +150,7 @@ namespace TateCohomology
 section Exact
 
 set_option backward.isDefEq.respectTransparency false in
-instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
+instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
   map_zero X Y := by simp
 
 /-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
@@ -165,8 +166,6 @@ def tateComplex.evalNeg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalComple
     (ComplexShape.up ℤ) (.negSucc n) ≅ chainsFunctor R G ⋙
     HomologicalComplex.eval (ModuleCat R) (ComplexShape.down ℕ) n :=
   .refl _
-
-instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
 
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
     (S.map (tateComplexFunctor R G)).ShortExact := by

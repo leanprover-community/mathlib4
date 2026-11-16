@@ -20,7 +20,6 @@ for a given category `C`, there may be different reasonable choices for the univ
 and if we have two `HasExt.{w₁}` and `HasExt.{w₂}` instances, we would have
 to specify the universe explicitly almost everywhere, which would be an inconvenience.
 So we must be very selective regarding `HasExt` instances.
-
 -/
 
 public section
@@ -36,7 +35,6 @@ namespace CochainComplex
 open HomologicalComplex
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_to_singleFunctor_obj_of_projective
     {P : C} [Projective P] {K : CochainComplex C ℤ} {i : ℤ}
     (π : K ⟶ (CochainComplex.singleFunctor C i).obj P) [K.IsStrictlyLE i] [QuasiIsoAt π i] :

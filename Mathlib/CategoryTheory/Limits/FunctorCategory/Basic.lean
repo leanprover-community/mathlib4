@@ -49,6 +49,10 @@ theorem colimit.ι_desc_app (H : J ⥤ K ⥤ C) [HasColimit H] (c : Cocone H) (j
 it suffices to show that each evaluation cone is a limit. In other words, to prove a cone is
 limiting you can show it's pointwise limiting.
 -/
+@[to_dual
+/-- The evaluation functors jointly reflect colimits: that is, to show a cocone is a colimit of `F`
+it suffices to show that each evaluation cocone is a colimit. In other words, to prove a cocone is
+colimiting you can show it's pointwise colimiting. -/ ]
 def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
     (t : ∀ k : K, IsLimit (((evaluation K C).obj k).mapCone c)) : IsLimit c where
   lift s :=
@@ -65,7 +69,6 @@ def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
       (congr_app (w j) x).trans
         ((t x).fac ⟨s.pt.obj _, whiskerRight s.π ((evaluation K C).obj _)⟩ j).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `F` and a collection of limit cones for each diagram `X ↦ F X k`, we can stitch
 them together to give a cone for the diagram `F`.
 `combinedIsLimit` shows that the new cone is limiting, and `evalCombined` shows it is
@@ -95,29 +98,6 @@ def combinedIsLimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)
   evaluationJointlyReflectsLimits _ fun k =>
     (c k).isLimit.ofIsoLimit (evaluateCombinedCones F c k).symm
 
-set_option backward.defeqAttrib.useBackward true in
-/-- The evaluation functors jointly reflect colimits: that is, to show a cocone is a colimit of `F`
-it suffices to show that each evaluation cocone is a colimit. In other words, to prove a cocone is
-colimiting you can show it's pointwise colimiting.
--/
-def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
-    (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone c)) : IsColimit c where
-  desc s :=
-    { app := fun k => (t k).desc ⟨s.pt.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
-      naturality := fun X Y f =>
-        (t X).hom_ext fun j => by
-          rw [(t X).fac_assoc _ j]
-          erw [← (c.ι.app j).naturality_assoc f]
-          erw [(t Y).fac ⟨s.pt.obj _, whiskerRight s.ι _⟩ j]
-          simp }
-  fac s j := by ext k; exact (t k).fac _ j
-  uniq s m w := by
-    ext x
-    exact (t x).hom_ext fun j =>
-      (congr_app (w j) x).trans
-        ((t x).fac ⟨s.pt.obj _, whiskerRight s.ι ((evaluation K C).obj _)⟩ j).symm
-
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `F` and a collection of colimit cocones for each diagram `X ↦ F X k`, we can stitch
 them together to give a cocone for the diagram `F`.
@@ -148,7 +128,6 @@ def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.
   evaluationJointlyReflectsColimits _ fun k =>
     (c k).isColimit.ofIsoColimit (evaluateCombinedCocones F c k).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 An alternative colimit cocone in the functor category `K ⥤ C` in the case where `C` has
 `J`-shaped colimits, with cocone point `F.flip ⋙ colim`.
@@ -166,7 +145,6 @@ noncomputable def pointwiseCocone [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
       rw [colimit.w] }
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- `pointwiseCocone` is indeed a colimit cocone. -/
 noncomputable def pointwiseIsColimit [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
     IsColimit (pointwiseCocone F) := by
@@ -263,7 +241,6 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
   ext j
   simpa using w j
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Taking a limit after whiskering by `G` is the same as using `G` and then taking a limit. -/
 def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLimitsOfShape J C] :
     limit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ limit F :=
@@ -272,7 +249,6 @@ def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLi
       HasLimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
       (limitObjIsoLimitCompEvaluation F (G.obj j)).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringLeftIsoCompLimit_hom_whiskerLeft_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
     [HasLimitsOfShape J C] (j : J) :
@@ -281,7 +257,6 @@ theorem limitCompWhiskeringLeftIsoCompLimit_hom_whiskerLeft_π (F : J ⥤ K ⥤ 
   ext d
   simp [limitCompWhiskeringLeftIsoCompLimit]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringLeftIsoCompLimit_inv_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
     [HasLimitsOfShape J C] (j : J) :
@@ -354,7 +329,6 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
   ext j
   simpa using w j
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Taking a colimit after whiskering by `G` is the same as using `G` and then taking a colimit. -/
 def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasColimitsOfShape J C] :
     colimit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ colimit F :=
@@ -363,7 +337,6 @@ def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [H
       HasColimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
       (colimitObjIsoColimitCompEvaluation F (G.obj j)).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem ι_colimitCompWhiskeringLeftIsoCompColimit_hom (F : J ⥤ K ⥤ C) (G : D ⥤ K)
     [HasColimitsOfShape J C] (j : J) :
@@ -450,9 +423,9 @@ open CategoryTheory.prod
 the individual limits on objects. -/
 @[simps!]
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
-  NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
+  NatIso.ofComponents (fun k =>
+    limitObjIsoLimitCompEvaluation F k ≪≫ HasLimit.isoOfNatIso (compEvaluation F k))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `limitIsoFlipCompLim` is natural with respect to diagrams. -/
 @[simps!]
 def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
@@ -463,7 +436,6 @@ def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
     intro j
     simp [comp_evaluation, ← NatTrans.comp_app (limMap η)]).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A variant of `limitIsoFlipCompLim` where the arguments of `F` are flipped. -/
 @[simps!]
 def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.flip ≅ F ⋙ lim :=
@@ -471,7 +443,6 @@ def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.fli
     limitObjIsoLimitCompEvaluation F.flip k ≪≫ HasLimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `limitFlipIsoCompLim` is natural with respect to diagrams. -/
 @[simps!]
 def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
@@ -494,9 +465,9 @@ def limitIsoSwapCompLim [HasLimitsOfShape J C] (G : J ⥤ K ⥤ C) :
 the individual colimits on objects. -/
 @[simps!]
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
-  NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
+  NatIso.ofComponents (fun k =>
+    colimitObjIsoColimitCompEvaluation F k ≪≫ HasColimit.isoOfNatIso (compEvaluation F k))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `colimitIsoFlipCompColim` is natural with respect to diagrams. -/
 @[simps!]
 def colimIsoFlipCompWhiskerColim [HasColimitsOfShape J C] :
@@ -507,7 +478,6 @@ def colimIsoFlipCompWhiskerColim [HasColimitsOfShape J C] :
     intro j
     simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap η)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A variant of `colimitIsoFlipCompColim` where the arguments of `F` are flipped. -/
 @[simps!]
 def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colimit F.flip ≅ F ⋙ colim :=
@@ -515,7 +485,6 @@ def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colim
       colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `colimitFlipIsoCompColim` is natural with respect to diagrams. -/
 @[simps!]
 def colimCompFlipIsoWhiskerColim [HasColimitsOfShape J C] :
@@ -535,6 +504,31 @@ def colimitIsoSwapCompColim [HasColimitsOfShape J C] (G : J ⥤ K ⥤ C) :
   colimitIsoFlipCompColim G ≪≫ isoWhiskerRight (flipIsoCurrySwapUncurry _) _
 
 end
+
+variable [HasLimitsOfShape K D] (F : K ⥤ J) (G : C ⥤ J ⥤ D)
+
+/-- If we have `F : K ⥤ J` and `G : C ⥤ J ⥤ D` and `D` has limits of shape `K`,
+this is the limit cone for `F ⋙ G.flip : K ⥤ C ⥤ D` with point the functor
+which sends `X : C`, to the limit of `F ⋙ G.obj X : K ⥤ D`. -/
+@[to_dual (attr := implicit_reducible, simps)
+/-- If we have `F : K ⥤ J` and `G : C ⥤ J ⥤ D` and `D` has colimits of shape `K`,
+this is the colimit cone for `F ⋙ G.flip : K ⥤ C ⥤ D` with point the functor
+which sends `X : C`, to the colimit of `F ⋙ G.obj X : K ⥤ D`. -/ ]
+noncomputable def lim.coneCompFlip : Cone (F ⋙ G.flip) where
+  pt := G ⋙ (Functor.whiskeringLeft _ _ _).obj F ⋙ lim
+  π.app j' := { app X := limit.π (F ⋙ G.obj X) j' }
+  π.naturality j' j'' f := by
+    ext X
+    simp [dsimp% limit.w (F ⋙ G.obj X) f]
+
+/-- If we have `F : K ⥤ J` and `G : C ⥤ J ⥤ D` and `D` has limits of shape `K`,
+then the cone `lim.coneCompFlip F G` is a limit. -/
+@[no_expose, to_dual
+/-- If we have `F : K ⥤ J` and `G : C ⥤ J ⥤ D` and `D` has colimits of shape `K`,
+then the cocone `colim.coconeCompFlip F G` is a colimit. -/ ]
+noncomputable def lim.isLimitConeCompFlip :
+    IsLimit (coneCompFlip F G) :=
+  evaluationJointlyReflectsLimits _ (fun _ ↦ limit.isLimit _)
 
 end Limits
 
