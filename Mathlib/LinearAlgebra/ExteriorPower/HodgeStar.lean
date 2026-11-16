@@ -28,7 +28,6 @@ This file contains a definition of the Hodge star on exterior powers.
 * Develop further theory in the common case that the determinant identity:
   `B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1) = 1`
   holds.
-
 -/
 
 noncomputable section

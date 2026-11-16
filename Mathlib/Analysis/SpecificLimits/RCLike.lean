@@ -11,7 +11,6 @@ import Mathlib.Data.EReal.Inv
 
 /-!
 # A collection of specific limit computations for `RCLike`
-
 -/
 
 public section

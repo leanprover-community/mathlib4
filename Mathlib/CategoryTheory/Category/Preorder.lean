@@ -24,7 +24,6 @@ categories.
 * `homOfLE` and `leOfHom` provide translations between inequalities in the preorder, and
   morphisms in the associated category.
 * `Monotone.functor` is the functor associated to a monotone function.
-
 -/
 
 @[expose] public section
@@ -159,6 +158,11 @@ def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
 
 @[simp]
 theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
+  rfl
+
+@[simp]
+lemma Monotone.functor_map_homOfLE {f : X → Y} (hf : Monotone f) {a b : X} (h : a ≤ b) :
+    hf.functor.map (homOfLE h) = homOfLE (hf h) :=
   rfl
 
 -- Faithfulness is automatic because preorder categories are thin

@@ -43,7 +43,6 @@ Given this data, we define `toAut F G : G →* Aut F` in the natural way.
 
 - Develop further equivalent conditions, in particular, relate the condition `non_trivial` with
   `G` being a `T2Space`.
-
 -/
 
 @[expose] public section

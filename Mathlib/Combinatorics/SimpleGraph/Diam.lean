@@ -25,7 +25,6 @@ This module defines the eccentricity of vertices, the diameter, and the radius o
 - `SimpleGraph.radius`: the graph radius, which is the minimum eccentricity. It is `ℕ∞`-valued.
 
 - `SimpleGraph.center`: the set of vertices with eccentricity equal to the graph's radius.
-
 -/
 
 @[expose] public section

@@ -20,7 +20,6 @@ $$ \sum_{i=0}^{n-1} \left\lfloor x + \frac{i}{n} \right\rfloor = \lfloor n x \rf
 ## Main statements
 
 * `Int.sum_floor_add_div`: Hermite's identity, `∑ i ∈ Finset.range n, ⌊x + i / n⌋ = ⌊n * x⌋`.
-
 -/
 
 namespace Int

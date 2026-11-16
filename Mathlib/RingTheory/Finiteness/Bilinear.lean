@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Finitely generated submodules and bilinear maps
-
 -/
 
 public section

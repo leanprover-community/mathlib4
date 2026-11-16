@@ -18,7 +18,6 @@ This is a relatively niche notion, but is useful for proving Zariski's main theo
 ## References
 
 - https://stacks.math.columbia.edu/tag/00PZ
-
 -/
 
 @[expose] public section

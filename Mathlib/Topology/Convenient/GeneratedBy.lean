@@ -30,7 +30,6 @@ we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
   for homotopy theory*][vogt-1971]
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
-
 -/
 
 @[expose] public section

@@ -30,7 +30,6 @@ a kernel from `α` to `γ`.
 ## Notation
 
 * `η ∘ₖ κ = ProbabilityTheory.Kernel.comp η κ`
-
 -/
 
 @[expose] public section

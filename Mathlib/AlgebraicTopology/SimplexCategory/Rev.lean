@@ -14,7 +14,6 @@ In this file, we introduce the functor `rev : SimplexCategory ⥤ SimplexCategor
 which, via the equivalence between the simplex category and the
 category of nonempty finite linearly ordered types, corresponds to
 the *covariant* functor which sends a type `α` to `αᵒᵈ`.
-
 -/
 
 @[expose] public section

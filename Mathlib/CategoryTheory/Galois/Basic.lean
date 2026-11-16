@@ -43,7 +43,6 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 ## References
 
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
-
 -/
 
 @[expose] public section

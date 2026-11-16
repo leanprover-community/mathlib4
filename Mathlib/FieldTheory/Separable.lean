@@ -21,7 +21,6 @@ properties about separable polynomials here.
   over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
   over `K`.
-
 -/
 
 @[expose] public section

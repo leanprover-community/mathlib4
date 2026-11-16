@@ -23,7 +23,6 @@ of `X`.
 * `variance_tilted_mul`: the variance of `X` under the tilted measure `μ.tilted (t * X ·)`
   is the second derivative of the cumulant-generating function of `X` at `t`.
   `Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t`
-
 -/
 
 public section

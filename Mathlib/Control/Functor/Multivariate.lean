@@ -14,7 +14,6 @@ Features:
 
 * `MvFunctor n` : the type class of multivariate functors
 * `f <$$> x`    : notation for map
-
 -/
 
 @[expose] public section

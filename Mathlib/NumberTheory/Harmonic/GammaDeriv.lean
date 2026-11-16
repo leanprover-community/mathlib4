@@ -16,7 +16,6 @@ import Mathlib.Analysis.Convex.Deriv
 We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 
 `deriv Real.Gamma (n + 1) = Nat.factorial n * (-Real.eulerMascheroniConstant + harmonic n)`
-
 -/
 
 public section

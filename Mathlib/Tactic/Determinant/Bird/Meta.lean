@@ -19,7 +19,6 @@ certificate-chain evaluator.
 ## Main definitions
 
 - `reifyBirdDet`: Parse a call to `BirdDet.birdDet`.
-
 -/
 
 public meta section

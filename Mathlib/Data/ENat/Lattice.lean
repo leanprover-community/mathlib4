@@ -17,7 +17,6 @@ This instance is not in `Data.ENat.Basic` to avoid dependency on `Finset`s.
 
 We also restate some lemmas about `WithTop` for `ENat` to have versions that use `Nat.cast` instead
 of `WithTop.some`.
-
 -/
 
 public section
@@ -56,7 +55,7 @@ lemma natCast_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := W
 @[deprecated (since := "2026-07-17")] alias coe_sSup := natCast_sSup
 
 lemma natCast_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) :=
-  WithTop.coe_sInf hs (OrderBot.bddBelow s)
+  WithTop.coe_sInf hs
 
 @[deprecated (since := "2026-07-17")] alias coe_sInf := natCast_sInf
 

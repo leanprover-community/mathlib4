@@ -15,7 +15,6 @@ over a nontrivial commutative ring, nontrivial commutative ring without zero div
 
 ## Tags
 eigenspace, eigenvector, eigenvalue, spectrum, matrix
-
 -/
 
 public section

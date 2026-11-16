@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Lie.Basic
 Main definitions:
 * `AddEquiv.lieRing` transferring a LieRing structure along an additive equivalence.
 * `LinearEquiv.lieAlgebra` transferring a Lie algebra structure along a linear equivalence.
-
 -/
 
 @[expose] public section

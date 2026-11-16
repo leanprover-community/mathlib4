@@ -37,7 +37,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `p : MvPolynomial σ R`
-
 -/
 
 @[expose] public section

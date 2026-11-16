@@ -69,7 +69,6 @@ none of what we have called `upperCentralSeries G`, `(⊤ : Subgroup G).lowerCen
 the sequences satisfying `IsAscendingCentralSeries` or `IsDescendingCentralSeries`
 are actually central series. Note that the fact that the upper and lower central series
 are not central series if `G` is not nilpotent is a standard abuse of notation.
-
 -/
 
 @[expose] public section

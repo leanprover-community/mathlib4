@@ -27,7 +27,6 @@ that `P` descends along `P'` from a codescent property of ring homomorphisms.
 
 - Show that affine morphisms descend along faithfully-flat morphisms. This will make
   `HasAffineProperty.descendsAlong_of_affineAnd` useful.
-
 -/
 
 public section

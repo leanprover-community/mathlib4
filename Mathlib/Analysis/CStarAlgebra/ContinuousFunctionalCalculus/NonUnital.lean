@@ -41,7 +41,6 @@ encoded in the `ContinuousMapZero.UniqueHom` class.
 ## Main theorems
 
 + `cfcₙ_comp : cfcₙ (x ↦ g (f x)) a = cfcₙ g (cfcₙ f a)`
-
 -/
 
 @[expose] public section

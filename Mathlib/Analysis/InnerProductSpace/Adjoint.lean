@@ -43,7 +43,6 @@ finite-dimensional spaces.
 ## Tags
 
 adjoint
-
 -/
 
 noncomputable section

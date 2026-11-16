@@ -23,7 +23,6 @@ which is `PosMulStrictMono (WithZero α)`.
 
 The type `ℤᵐ⁰ := WithZero (Multiplicative ℤ)` is used a lot in mathlib's valuation
 theory. These instances enable lemmas such as `mul_pos` to fire on `ℤᵐ⁰`.
-
 -/
 
 @[expose] public section

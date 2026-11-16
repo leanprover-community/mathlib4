@@ -42,7 +42,6 @@ and this is reflected in the documentation.
 * `FdRep k G` has all finite colimits.
 * `FdRep k G` is abelian.
 * `FdRep k G ≌ FGModuleCat k[G]`.
-
 -/
 
 @[expose] public section

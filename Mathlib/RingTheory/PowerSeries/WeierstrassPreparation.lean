@@ -86,7 +86,6 @@ such ring has only one maximal ideal, and hence it is a complete local ring.
 ## References
 
 - [Washington, Lawrence C. *Introduction to cyclotomic fields.*][washington_cyclotomic]
-
 -/
 
 @[expose] public section
@@ -99,7 +98,6 @@ variable {A : Type*} [CommRing A]
 
 /-!
 ## Weierstrass division
-
 -/
 
 section IsWeierstrassDivisionAt
@@ -639,7 +637,6 @@ end IsLocalRing
 
 /-!
 ## Weierstrass preparation theorem
-
 -/
 
 /-- If `f` is a polynomial over `A`, `g` and `h` are power series over `A`,

@@ -17,7 +17,6 @@ public import Mathlib.LinearAlgebra.Projection
 
 This file contains results on the `R`-module structure on functions of finite support from a type
 `ι` to an `R`-module `M`, in particular in the case that `R` is a field.
-
 -/
 
 @[expose] public section

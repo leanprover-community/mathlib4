@@ -21,7 +21,6 @@ to the case of univariate power series.
 
 Because of the special API for `PowerSeries`, some results for `MvPowerSeries`
 do not immediately apply and a “primed” version is provided here.
-
 -/
 
 @[expose] public section
