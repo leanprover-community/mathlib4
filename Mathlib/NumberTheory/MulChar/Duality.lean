@@ -27,7 +27,6 @@ where `n` is the exponent of `M`. Then the main results of this file are as foll
 
 * `MulChar.subgroupOrderIsoSubgroupMulChar`: The order reversing bijection that sends a
   subgroup of `Mˣ` to its dual subgroup in `MulChar M R`.
-
 -/
 
 @[expose] public section

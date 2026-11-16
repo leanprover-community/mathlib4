@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.Kernels
 Let `C` be an abelian category. Given `P : ObjectProperty C` which contains
 zero, is closed under kernels, cokernels and finite products, we show that the
 full subcategory defined by `P` is abelian.
-
 -/
 
 public section

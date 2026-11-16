@@ -15,7 +15,6 @@ This file contains properties of filter bases on algebraic structures that also 
 of uniform spaces.
 
 The only result so far is a characterization of Cauchy filters in topological groups.
-
 -/
 
 @[expose] public section

@@ -50,7 +50,6 @@ There are two obstructions, though :
 * The mod `P ^ 2` hypothesis will have to be rephrased to a condition
   in the second symbolic power of `P`. When `P` is a maximal ideal,
   that symbolic power coincides with `P ^ 2`, but not in general.
-
 -/
 
 public section

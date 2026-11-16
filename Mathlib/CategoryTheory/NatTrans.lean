@@ -29,7 +29,6 @@ Introduces notations
   (this and the next require `CategoryTheory.FunctorCat`),
 * `σ ≫ τ` for vertical compositions, and
 * `σ ◫ τ` for horizontal compositions.
-
 -/
 
 @[expose] public section

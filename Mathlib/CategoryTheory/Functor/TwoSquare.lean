@@ -28,7 +28,6 @@ law of those two operations.
 ## TODO
 
 Generalize all of this to double categories.
-
 -/
 
 @[expose] public section

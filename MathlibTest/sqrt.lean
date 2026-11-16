@@ -29,5 +29,4 @@ theorem sqrt_10005 :
   rw [sqrt_10005_approx_eq]
   -- once the test is fixed, consider using `exact mod_cast ...` instead.
   exact_mod_cast realSqrt_mem_Ico 10005 (by norm_num)
-
 -/

@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
 # Functors to `ComposableArrows C 1`
-
 -/
 
 @[expose] public section

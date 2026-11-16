@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 For a closed monoidal category `C`, we construct the isomorphism of internal hom objects
 `C(x ⊗ y, z) ≅ C(y, C(x, z))` for any triple of objects `x y z : C`.
-
 -/
 
 @[expose] public section

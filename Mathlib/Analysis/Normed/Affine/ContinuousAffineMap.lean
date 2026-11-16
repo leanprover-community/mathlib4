@@ -32,7 +32,6 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 * `ContinuousAffineMap.hasNorm`
 * `ContinuousAffineMap.norm_comp_le`
 * `ContinuousAffineMap.toConstProdContinuousLinearMap`
-
 -/
 
 @[expose] public section

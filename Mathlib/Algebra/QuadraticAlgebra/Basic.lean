@@ -284,7 +284,7 @@ theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r)
 
 @[simp]
 theorem norm_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
-    [SMulCommClass S R R] (s : S) (z : QuadraticAlgebra R a b) :
+    (s : S) (z : QuadraticAlgebra R a b) :
     norm (s • z) = s ^ 2 • norm z := by
   simp [norm_def, mul_smul_comm, smul_sub, pow_two, mul_smul, smul_mul_assoc]
 

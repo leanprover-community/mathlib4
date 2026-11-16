@@ -10,7 +10,6 @@ public import Mathlib.Init
 
 /-!
 # `addRelatedDecl`
-
 -/
 
 public meta section

@@ -1322,7 +1322,7 @@ end Ordinal
 /-! ### Sorted lists -/
 
 theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List α}
-    {o : Ordinal} (hl : l.SortedGT) (hm : m.SortedGT) (hmltl : m < l)
+    {o : Ordinal} (hm : m.SortedGT) (hmltl : m < l)
     (hlt : ∀ i ∈ l, Ordinal.typein (α := α) (· < ·) i < o) :
       ∀ i ∈ m, Ordinal.typein (α := α) (· < ·) i < o := by
   replace hmltl : List.Lex (· < ·) m l := hmltl

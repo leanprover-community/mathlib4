@@ -19,7 +19,6 @@ Define the gamma measure over the reals.
 * `gammaPDF`: `ℝ≥0∞`-valued pdf,
   `gammaPDF a r = ENNReal.ofReal (gammaPDFReal a r)`.
 * `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
-
 -/
 
 @[expose] public section

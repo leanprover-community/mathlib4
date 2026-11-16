@@ -16,7 +16,6 @@ Use `open unitInterval` to turn on the notation `I := Set.Icc (0 : ℝ) (1 : ℝ
 
 We provide basic instances, as well as a custom tactic for discharging
 `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` when `x : I`.
-
 -/
 
 @[expose] public section

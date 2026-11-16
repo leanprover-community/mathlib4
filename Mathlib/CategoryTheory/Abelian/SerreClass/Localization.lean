@@ -20,7 +20,6 @@ in the abelian category `C`, then `D` is an abelian category.
 
 We also show that a functor `G : D ⥤ E` to an abelian category is exact iff
 the composition `L ⋙ G` is.
-
 -/
 
 @[expose] public section

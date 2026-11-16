@@ -21,7 +21,6 @@ to the assertion `IsZero S.homology`.
 
 Almost by construction, this notion of exactness is self dual,
 see `Exact.op` and `Exact.unop`.
-
 -/
 
 @[expose] public section

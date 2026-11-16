@@ -18,7 +18,6 @@ This file contains some lemmas on factorials in combination with big operators.
 
 While in terms of semantics they could be in the `Basic.lean` file, importing
 `Algebra.BigOperators.Group.Finset` leads to a cyclic import.
-
 -/
 
 public section

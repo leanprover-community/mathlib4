@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Group.Subgroup
 import Mathlib.Topology.Algebra.Group.Neighborhood
 
 /-!
-
 # Topological (semi)rings
 
 A topological (semi)ring is a (semi)ring equipped with a topology such that all operations are

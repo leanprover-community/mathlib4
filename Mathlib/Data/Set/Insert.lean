@@ -17,7 +17,6 @@ This file provides extra lemmas about `insert`, `singleton`, and `pair`.
 ## Tags
 
 insert, singleton
-
 -/
 
 @[expose] public section
@@ -254,8 +253,8 @@ theorem inter_singleton_eq_empty : s ∩ {a} = ∅ ↔ a ∉ s := by
 @[simp] alias ⟨_, singleton_inter_of_notMem⟩ := singleton_inter_eq_empty
 @[simp] alias ⟨_, inter_singleton_of_notMem⟩ := inter_singleton_eq_empty
 
-@[simp] lemma singleton_inter_of_mem (ha : a ∈ s) : {a} ∩ s = {a} := by simpa
-@[simp] lemma inter_singleton_of_mem (ha : a ∈ s) : s ∩ {a} = {a} := by simpa
+lemma singleton_inter_of_mem (ha : a ∈ s) : {a} ∩ s = {a} := by simpa
+lemma inter_singleton_of_mem (ha : a ∈ s) : s ∩ {a} = {a} := by simpa
 
 theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.Nonempty :=
   nonempty_iff_ne_empty.symm

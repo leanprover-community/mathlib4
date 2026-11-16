@@ -31,7 +31,7 @@ section FiniteMeasure
 theorem setLIntegral_const_lt_top [IsFiniteMeasure μ] (s : Set α) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     ∫⁻ _ in s, c ∂μ < ∞ := by
   rw [lintegral_const]
-  exact ENNReal.mul_lt_top hc.lt_top (measure_lt_top (μ.restrict s) univ)
+  finiteness
 
 theorem lintegral_const_lt_top [IsFiniteMeasure μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : ∫⁻ _, c ∂μ < ∞ := by
   simpa only [Measure.restrict_univ] using setLIntegral_const_lt_top (univ : Set α) hc
@@ -305,9 +305,8 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
     refine ⟨piecewise t ht (const α c) (const α 0), fun x => ?_, ?_, ?_⟩
     · refine indicator_le_indicator_of_subset ts (fun x => ?_) x
       exact zero_le
-    · simp only [ht, const_zero, coe_piecewise, coe_const, FunLike.coe_zero, univ_inter,
-        piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
-        lintegral_const, Measure.restrict_apply', ENNReal.mul_lt_top ENNReal.coe_lt_top t_top]
+    · simp [ht]
+      finiteness
     · simp only [ht, const_zero, coe_piecewise, coe_const, FunLike.coe_zero,
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', univ_inter]

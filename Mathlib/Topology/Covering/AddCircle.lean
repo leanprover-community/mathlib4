@@ -11,7 +11,6 @@ public import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # Covering maps involving `AddCircle`
-
 -/
 
 public section

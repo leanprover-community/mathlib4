@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 The main definition in this file is `HomologicalComplex.homologyFunctorSingleIso`
 which is a natural isomorphism `single C c j ⋙ homologyFunctor C c j ≅ 𝟭 C`.
-
 -/
 
 @[expose] public section

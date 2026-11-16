@@ -85,11 +85,12 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
 lemma coeff_map_eq_comp (p : R[X]) (f : R →+* S) : (p.map f).coeff = f ∘ p.coeff := by
   ext n; exact coeff_map ..
 
-theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.map (g.comp f) :=
-  ext (by simp [coeff_map])
+theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.map (g.comp f) := by
+  ext n; simp [coeff_map]
 
 @[simp]
-theorem map_id : p.map (RingHom.id _) = p := by simp [Polynomial.ext_iff, coeff_map]
+theorem map_id : p.map (RingHom.id _) = p := by
+  simp [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, coeff_map]
 
 /-- The polynomial ring over a finite product of rings is isomorphic to
 the product of polynomial rings over individual rings. -/
@@ -97,13 +98,13 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
     (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
   .ofBijective (RingHom.pi fun i ↦ mapRingHom (Pi.evalRingHom R i))
     ⟨fun p q h ↦ by ext n i; simpa using congr(coeff ($h i) n),
-      fun p ↦ ⟨.ofFinsupp <| .ofCoeff <| .ofSupportFinite (fun n i ↦ coeff (p i) n) <|
+      fun p ↦ ⟨.ofCoeff <| .ofSupportFinite (fun n i ↦ coeff (p i) n) <|
         (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
           simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
           contrapose! hn; exact funext hn, by ext i n; exact coeff_map _ _⟩⟩
 
-theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h =>
-  ext fun m => hf <| by rw [← coeff_map f, ← coeff_map f, h]
+theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h ↦ by
+  ext m; exact hf <| by rw [← coeff_map f, ← coeff_map f, h]
 
 theorem map_injective_iff : Function.Injective (map f) ↔ Function.Injective f :=
   ⟨fun h r r' eq ↦ by simpa using h (a₁ := C r) (a₂ := C r') (by simpa), map_injective f⟩

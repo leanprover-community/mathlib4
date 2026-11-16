@@ -98,7 +98,6 @@ variants) should be formalized.
 ## Tags
 
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
-
 -/
 
 public section

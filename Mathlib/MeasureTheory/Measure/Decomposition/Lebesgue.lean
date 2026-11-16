@@ -682,8 +682,7 @@ theorem rnDeriv_smul_same (ν μ : Measure α) [IsFiniteMeasure ν]
 /-- Radon-Nikodym derivative of a sum of two measures.
 See also `rnDeriv_add'`, which requires sigma-finite `ν₁`, `ν₂` and `μ`. -/
 lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFiniteMeasure ν₂]
-    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ]
-    [(ν₁ + ν₂).HaveLebesgueDecomposition μ] :
+    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ] :
     (ν₁ + ν₂).rnDeriv μ =ᵐ[μ] ν₁.rnDeriv μ + ν₂.rnDeriv μ := by
   rw [← withDensity_eq_iff]
   · suffices (ν₁ + ν₂).singularPart μ + μ.withDensity ((ν₁ + ν₂).rnDeriv μ)

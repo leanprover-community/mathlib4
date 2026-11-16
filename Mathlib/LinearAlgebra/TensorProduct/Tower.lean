@@ -377,7 +377,7 @@ section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
-variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module A P]
 variable [AddCommMonoid P'] [Module A P']

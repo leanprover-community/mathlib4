@@ -10,7 +10,6 @@ public import Mathlib.Data.Set.CoeSort
 
 /-!
 # Additional Expr recognizers needing theory imports
-
 -/
 
 public section

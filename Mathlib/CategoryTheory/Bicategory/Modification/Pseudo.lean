@@ -24,7 +24,6 @@ Given two pseudofunctors `F` and `G`, we define:
   between `F` and `G`, where the morphisms are modifications, and composition is given by vertical
   composition of modifications. Note that this a scoped instance in the `Pseudofunctor.StrongTrans`
   namespace, so you need to run `open scoped Pseudofunctor.StrongTrans` to access it.
-
 -/
 
 @[expose] public section

@@ -22,7 +22,6 @@ We obtain that a morphism between `K`-injective cochain complexes is a quasi-iso
 iff it is a homotopy equivalence. In particular, a morphism between cochain complexes
 indexed by `ℕ` which consist of injective objects is a quasi-isomorphism iff
 it is a homotopy equivalence.
-
 -/
 
 @[expose] public section

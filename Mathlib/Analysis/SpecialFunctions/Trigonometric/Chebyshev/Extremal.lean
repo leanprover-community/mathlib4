@@ -264,7 +264,7 @@ private theorem negOnePow_mul_iterateDerivativeC_nonneg
   · exact Finset.prod_nonneg (fun a _ => by grind [show node n a ≤ 1 from cos_le_one _])
 
 private theorem negOnePow_mul_iterateDerivativeC_pos
-    {n k i : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
+    {n k i : ℕ} (hk : 0 < k) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
     0 < (-1) ^ i * iterateDerivativeC n k x i := by
   rw [iterateDerivativeC, ← mul_assoc]
   refine mul_pos ?_ (Finset.sum_pos' ?_ ?_)
@@ -297,7 +297,7 @@ theorem eval_iterate_derivative_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     (derivative^[k] P).eval x = (derivative^[k] (T ℝ n)).eval x ↔ P = T ℝ n := by
   convert
-    sumNodes_eq_sumNodes_T_iff (fun i hi => negOnePow_mul_iterateDerivativeC_pos hk₁ hk₂ hi hx)
+    sumNodes_eq_sumNodes_T_iff (fun i hi => negOnePow_mul_iterateDerivativeC_pos hk₁ hi hx)
       hPdeg hPbnd using 2
   · rw [sumNodes_eq_eval_iterate_derivative hk₂ x hPdeg]
   · rw [sumNodes_eq_eval_iterate_derivative hk₂ x (le_of_eq (degree_T ℝ n))]

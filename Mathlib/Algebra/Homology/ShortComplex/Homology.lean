@@ -29,7 +29,6 @@ Note: This definition arose by the end of the Liquid Tensor Experiment which
 contained a structure `has_homology` which is quite similar to `S.HomologyData`.
 After the category `ShortComplex C` was introduced by J. Riou, A. Topaz suggested
 such a structure could be used as a basis for the *definition* of homology.
-
 -/
 
 @[expose] public section
@@ -824,8 +823,14 @@ attribute [instance] CategoryWithHomology.hasHomology
 instance [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ :=
   ⟨fun S => HasHomology.mk' S.unop.homologyData.op⟩
 
+instance (priority := low) [CategoryWithHomology C] : HasKernels C where
+  has_limit {X Y} f := ⟨_, (ShortComplex.mk (0 : X ⟶ X) f).cyclesIsKernel⟩
+
+instance (priority := low) [CategoryWithHomology C] : HasCokernels C where
+  has_colimit {X Y} f := ⟨_, (ShortComplex.mk f (0 : Y ⟶ Y)).opcyclesIsCokernel⟩
+
 /-- The homology functor `ShortComplex C ⥤ C` for a category `C` with homology. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def homologyFunctor [CategoryWithHomology C] :
     ShortComplex C ⥤ C where
   obj S := S.homology
@@ -954,6 +959,22 @@ lemma homologyι_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHom
   simp only [← cancel_epi S₁.rightHomologyIso.hom, rightHomologyIso_hom_naturality_assoc φ,
     rightHomologyIso_hom_comp_homologyι, rightHomologyι_naturality]
   simp only [homologyι, assoc, Iso.hom_inv_id_assoc]
+
+variable (C) in
+/-- The morphism `S.homologyπ : S.cycles ⟶ S.homology` for any `S : Shortcomplex C`,
+as a natural transformation`. -/
+@[simps]
+noncomputable def homologyπNatTrans [CategoryWithHomology C] :
+    cyclesFunctor C ⟶ homologyFunctor C where
+  app S := S.homologyπ
+
+variable (C) in
+/-- The morphism `S.homologyπ : S.cycles ⟶ S.homology` for any `S : Shortcomplex C`,
+as a natural transformation`. -/
+@[simps]
+noncomputable def homologyιNatTrans [CategoryWithHomology C] :
+    homologyFunctor C ⟶ opcyclesFunctor C where
+  app S := S.homologyι
 
 @[reassoc (attr := simp)]
 lemma homology_π_ι :

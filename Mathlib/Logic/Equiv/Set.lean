@@ -217,6 +217,9 @@ namespace Set
 protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
 
+@[simp]
+theorem coe_univ (α) : ⇑(Equiv.Set.univ α) = (↑) := rfl
+
 /-- An empty set is equivalent to the `Empty` type. -/
 protected def empty (α) : (∅ : Set α) ≃ Empty :=
   equivEmpty _
@@ -342,7 +345,7 @@ protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (·
   calc
     s ⊕ (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
       (Equiv.Set.union disjoint_sdiff_self_right).symm
-    _ ≃ t := Set.equivOfEq (by simp [union_sdiff_self, union_eq_self_of_subset_left h])
+    _ ≃ t := Set.equivOfEq (by simp [union_eq_self_of_subset_left h])
 
 @[simp]
 theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)] (x : s) :

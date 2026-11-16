@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 In this file, we introduce a definition `Functor.PushoutObjObj.flipTensor`
 which switches the two morphisms involved in pushout-tensor-products
 in a braided category.
-
 -/
 
 @[expose] public section

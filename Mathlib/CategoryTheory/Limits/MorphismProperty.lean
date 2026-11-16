@@ -5,12 +5,12 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 /-!
 # (Co)limits in subcategories of comma categories defined by morphism properties
-
 -/
 
 @[expose] public section
@@ -125,7 +125,7 @@ lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
       P.cancel_left_of_respectsIso]
     exact H _ _ d.prop_diag_obj
 
-lemma CostructuredArrow.closedUnderLimitsOfShape_walkingCospan [HasPullbacks A] [HasPullbacks T]
+lemma CostructuredArrow.closedUnderLimitsOfShape_walkingCospan [HasPullbacks A]
     [PreservesLimitsOfShape WalkingCospan L] (X : T)
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     [P.HasOfPostcompProperty P] :

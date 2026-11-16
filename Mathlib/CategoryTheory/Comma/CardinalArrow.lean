@@ -14,7 +14,6 @@ public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 We obtain various results about the cardinality of `Arrow C`. For example,
 if `C` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
-
 -/
 
 @[expose] public section

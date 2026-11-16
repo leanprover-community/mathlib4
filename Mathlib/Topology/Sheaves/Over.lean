@@ -16,7 +16,6 @@ we show that the category `Over U` (whose objects are the
 `V : Opens X` equipped with a morphism `V ⟶ U`) is equivalent
 to the category `Opens U`.
 This equivalence is bi-continuous, and thus induces an equivalence of sheaf categories.
-
 -/
 
 @[expose] public section

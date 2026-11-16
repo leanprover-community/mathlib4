@@ -24,7 +24,6 @@ is defined by sending `j : J` to the previously defined `enrichedHom`
 for the "restriction" of `F₁` and `F₂` to the category `Under j`.
 The definition `isLimitConeFunctorEnrichedHom` shows that
 `enriched V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
-
 -/
 
 set_option backward.defeqAttrib.useBackward true

@@ -25,7 +25,6 @@ For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lea
   * `isNilpotent_neg_iff`
   * `Commute.isNilpotent_add`
   * `Commute.isNilpotent_sub`
-
 -/
 
 public section

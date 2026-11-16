@@ -48,7 +48,6 @@ and then characteristic.
 
 Prove `alternatingGroup.kleinFour α = commutator (alternatingGroup α)`
 without any assumption on `Nat.card α`.
-
 -/
 
 @[expose] public section

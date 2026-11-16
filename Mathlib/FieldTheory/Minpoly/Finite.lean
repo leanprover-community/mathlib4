@@ -15,7 +15,6 @@ import Mathlib.RingTheory.FiniteType
 
 This file proves the bound on the degree of a minimal polynomial on an algebra
 that is finite as a module.
-
 -/
 
 public section

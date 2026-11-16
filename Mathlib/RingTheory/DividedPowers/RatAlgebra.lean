@@ -45,7 +45,6 @@ In this file we show that, for certain choices of a commutative (semi)ring `A` a
   modules*][Roby-1963]
 
 * [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
-
 -/
 
 @[expose] public section
