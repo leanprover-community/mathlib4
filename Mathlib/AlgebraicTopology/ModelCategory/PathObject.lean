@@ -34,7 +34,6 @@ in the lemma `PathObject.exists_very_good`.
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * https://ncatlab.org/nlab/show/path+space+object
-
 -/
 
 @[expose] public section
@@ -331,7 +330,7 @@ protected def Precylinder.op {A : C} (P : Precylinder A) :
   ι_p₀ := Quiver.Hom.unop_inj (by simp)
   ι_p₁ := Quiver.Hom.unop_inj (by simp)
 
-/-- The pre-path object object obtained from a cylinder in the opposite category. -/
+/-- The pre-path object obtained from a cylinder in the opposite category. -/
 @[simps]
 protected def Precylinder.unop {A : Cᵒᵖ} (P : Precylinder A) :
     PrepathObject A.unop where

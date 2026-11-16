@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.EpiMono
 # Retracts
 
 Defines retracts of objects and morphisms.
-
 -/
 
 @[expose] public section
@@ -91,6 +90,18 @@ attribute [to_dual existing] trans_i
 def ofIso (e : X ≅ Y) : Retract X Y where
   i := e.hom
   r := e.inv
+
+@[reassoc (attr := simp)]
+lemma retract_app {F G : C ⥤ D} (r : Retract F G) (X : C) :
+    r.i.app X ≫ r.r.app X = 𝟙 _ :=
+  congr($(r.retract).app X)
+
+/-- If a functor `F` is a retract of `G`, then for any object `X`,
+`F.obj X` is a retract of `G.obj X`. -/
+@[simps]
+def app {F G : C ⥤ D} (r : Retract F G) (X : C) : Retract (F.obj X) (G.obj X) where
+  i := r.i.app X
+  r := r.r.app X
 
 end Retract
 

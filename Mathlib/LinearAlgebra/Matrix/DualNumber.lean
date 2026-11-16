@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.Data.Matrix.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices
 

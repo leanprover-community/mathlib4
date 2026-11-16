@@ -41,7 +41,6 @@ Semistandard Young tableau
 ## References
 
 <https://en.wikipedia.org/wiki/Young_tableau>
-
 -/
 
 @[expose] public section

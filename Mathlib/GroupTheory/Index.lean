@@ -583,7 +583,6 @@ lemma finite_quotient_of_pretransitive_of_index_ne_zero {X : Type*} [MulAction G
   have := (MulAction.pretransitive_iff_subsingleton_quotient G X).1 inferInstance
   exact finite_quotient_of_finite_quotient_of_index_ne_zero hi
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by

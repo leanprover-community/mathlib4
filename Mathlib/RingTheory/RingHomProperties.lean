@@ -19,7 +19,6 @@ The following meta-properties of predicates on ring homomorphisms are defined
 * `RingHom.StableUnderComposition`: `P` is stable under composition if `P f → P g → P (f ≫ g)`.
 * `RingHom.IsStableUnderBaseChange`: `P` is stable under base change if `P (S ⟶ Y)`
   implies `P (X ⟶ X ⊗[S] Y)`.
-
 -/
 
 @[expose] public section

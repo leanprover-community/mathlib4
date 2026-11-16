@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicity is preserved by ring isomorphisms/surjective ring homomorphisms
 

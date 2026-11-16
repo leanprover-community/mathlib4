@@ -14,6 +14,9 @@ public import Mathlib.Data.Vector.Defs
 import Batteries.Data.Fin.Lemmas
 import Mathlib.Data.List.Nodup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional theorems and definitions about the `Vector` type
 
@@ -417,8 +420,8 @@ def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector
     exact nil
   | succ n ih =>
     rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
-    cases v_property
-    exact cons (ih ⟨v, (add_left_inj 1).mp v_property⟩)
+    · cases v_property
+    · exact cons (ih ⟨v, (add_left_inj 1).mp v_property⟩)
 
 @[simp]
 theorem inductionOn_nil {C : ∀ {n : ℕ}, Vector α n → Sort*}
@@ -447,9 +450,9 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     exact nil
   | succ n ih =>
     rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
-    cases v_property
+    · cases v_property
     rcases w with ⟨_ | ⟨b, w⟩, w_property⟩
-    cases w_property
+    · cases w_property
     apply @cons n _ _ ⟨v, (add_left_inj 1).mp v_property⟩ ⟨w, (add_left_inj 1).mp w_property⟩
     apply ih
 
@@ -468,11 +471,11 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
     exact nil
   | succ n ih =>
     rcases u with ⟨_ | ⟨a, u⟩, u_property⟩
-    cases u_property
+    · cases u_property
     rcases v with ⟨_ | ⟨b, v⟩, v_property⟩
-    cases v_property
+    · cases v_property
     rcases w with ⟨_ | ⟨c, w⟩, w_property⟩
-    cases w_property
+    · cases w_property
     apply
       @cons n _ _ _ ⟨u, (add_left_inj 1).mp u_property⟩ ⟨v, (add_left_inj 1).mp v_property⟩
         ⟨w, (add_left_inj 1).mp w_property⟩
@@ -664,13 +667,12 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     rw [Vector.traverse_def, ih]
     simp [functor_norm, Function.comp_def]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
-  rintro ⟨x, rfl⟩
-  simp!
-  induction x <;> simp! [*, functor_norm]
-  rfl
+  intro x
+  induction x with
+  | nil => rfl
+  | cons ih => simp [Vector.traverse_def, ih, functor_norm]
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 

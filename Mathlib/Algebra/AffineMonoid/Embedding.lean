@@ -12,6 +12,9 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.GroupTheory.MonoidLocalization.Finite
 import Mathlib.LinearAlgebra.FreeModule.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine monoids embed into `ℤⁿ`
 
