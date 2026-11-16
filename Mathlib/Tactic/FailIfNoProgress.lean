@@ -67,8 +67,9 @@ def lctxIsDefEq : (l₁ l₂ : List (Option LocalDecl)) → MetaM Bool
   | [], [] => return true
   | _, _ => return false
 
-/-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. -/
-def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
+/-- Run `tacs : TacticM Unit` on `goal`: return whether `tacs` made progress, and the resulting
+goal(s) after running `tacs`. -/
+def runAndDetectProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (Bool × List MVarId) := do
   let l ← run goal tacs
   try
     let [newGoal] := l | failure
@@ -80,24 +81,22 @@ def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List
       -- They are compatible, so now we can check that the goals are equivalent
       guard <|← withNewMCtxDepth <| withReducible <| isDefEq (← newGoal.getType) (← goal.getType)
   catch _ =>
-    return l
-  throwError "no progress made on\n{goal}"
+    return (true, l,)
+  return (false, [goal])
 
-/-- Run `tacs : TacticM Unit` on `goal`, and fail if progress is made. -/
+/-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made.
+Return the resulting goal(s) after running `tacs`. -/
+def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
+  match ← runAndDetectProgress goal tacs with
+  | (true, new) => return new
+  | (false, _) => throwError "no progress made on\n{goal}"
+
+/-- Run `tacs : TacticM Unit` on `goal`, and fail if progress is made.
+Return the resulting goal(s) after running `tacs`. -/
 def runAndFailIfProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
-  let l ← run goal tacs
-  try
-    let [newGoal] := l | failure
-    goal.withContext do
-      -- Check that the local contexts are compatible
-      let ctxDecls := (← goal.getDecl).lctx.decls.toList
-      let newCtxDecls := (← newGoal.getDecl).lctx.decls.toList
-      guard <|← withNewMCtxDepth <| withReducible <| lctxIsDefEq ctxDecls newCtxDecls
-      -- They are compatible, so now we can check that the goals are equivalent
-      guard <|← withNewMCtxDepth <| withReducible <| isDefEq (← newGoal.getType) (← goal.getType)
-  catch _ =>
-    throwError "progress made on\n{goal}"
-  return l
+  match ← runAndDetectProgress goal tacs with
+  | (true, _) => throwError "progress made on\n{goal}"
+  | (false, _) => return [goal]
 
 /-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the main goal
 or the local context at reducible transparency. -/
@@ -106,8 +105,7 @@ syntax (name := failIfNoProgress) "fail_if_no_progress " tacticSeq : tactic
 elab_rules : tactic
 | `(tactic| fail_if_no_progress $tacs) => do
   let goal ← getMainGoal
-  let l ← runAndFailIfNoProgress goal (evalTactic tacs)
-  replaceMainGoal l
+  replaceMainGoal (← runAndFailIfNoProgress goal (evalTactic tacs))
 
 /-- `fail_if_progress tacs` evaluates `tacs`, and fails if progress is made on the main goal
 or the local context at reducible transparency. -/
@@ -116,8 +114,7 @@ syntax (name := failIfProgress) "fail_if_progress " tacticSeq : tactic
 elab_rules : tactic
 | `(tactic| fail_if_progress $tacs) => do
   let goal ← getMainGoal
-  let l ← runAndFailIfProgress goal (evalTactic tacs)
-  replaceMainGoal l
+  replaceMainGoal (← runAndFailIfProgress goal (evalTactic tacs))
 
 /-- `fail_if_not_idempotent tacs` evaluates `tacs`, then evaluates `tacs` again on any remaining
 goals, and fails if progress is made in the second run (on the main goal
