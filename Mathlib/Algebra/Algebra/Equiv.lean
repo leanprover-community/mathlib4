@@ -186,9 +186,6 @@ instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) where coe := toRingEqu
 theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
   rfl
 
-@[deprecated "syntactic tatuology" (since := "2026-11-14")]
-theorem toRingEquiv_eq_coe : e.toRingEquiv = e := rfl
-
 @[simp]
 lemma toRingEquiv_toRingHom {A₁ A₂ : Type*} [Semiring R] [NonAssocSemiring A₁] [NonAssocSemiring A₂]
     [Module R A₁] [Module R A₂] (e : A₁ ≃ₐ[R] A₂) : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
@@ -207,6 +204,8 @@ theorem commutes {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semirin
     [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂) : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
   AlgHomClass.commutes e
 
+@[deprecated (since := "2026-11-16")] alias commutes' := commutes
+
 section toAlgHom
 variable {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
   [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
@@ -216,6 +215,9 @@ lemma ofCommutes_apply (e' : A₁ ≃+* A₂) (h_comm) (x : A₁) :
 
 lemma ofCommutes_symm_apply (e' : A₁ ≃+* A₂) (h_comm) (x : A₂) :
     (ofCommutes e' h_comm : A₁ ≃ₐ[R] A₂).symm x = e'.symm x := rfl
+
+lemma toEquiv_ofCommutes (e' : A₁ ≃+* A₂) (h_comm) :
+    (ofCommutes e' h_comm : A₁ ≃ₐ[R] A₂).toEquiv = e'.toEquiv := rfl
 
 @[deprecated toRingEquiv_injective (since := "2026-05-05")]
   alias coe_ringEquiv_injective := toRingEquiv_injective
@@ -602,7 +604,7 @@ theorem toLinearEquiv_injective : Function.Injective (toLinearEquiv : _ → A₁
   fun _ _ h => ext <| LinearEquiv.congr_fun h
 
 /-- Interpret an algebra equivalence as a linear map. -/
-def toLinearMap : A₁ →ₗ[R] A₂ :=
+abbrev toLinearMap : A₁ →ₗ[R] A₂ :=
   e.toLinearEquiv.toLinearMap
 
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
@@ -681,6 +683,7 @@ variable {R A₁ A₂ : Type*} [Semiring R]
 variable [NonUnitalNonAssocSemiring A₁] [NonUnitalNonAssocSemiring A₂]
 variable [Module R A₁] [Module R A₂] (e : A₁ ≃ₐ[R] A₂)
 variable (l : A₁ ≃ₗ[R] A₂) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
+
 /--
 Upgrade a linear equivalence to an algebra equivalence,
 given that it distributes over multiplication and the identity
@@ -714,14 +717,10 @@ end OfLinearEquiv
 
 section OfRingEquiv
 
-/-- Promotes a linear `RingEquiv` to an `AlgEquiv`. -/
-@[simps apply symm_apply toEquiv]
-def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ (r : R) x, f (r • x) = r • f x) :
-    A₁ ≃ₐ[R] A₂ :=
-  { f with
-    toFun := f
-    invFun := f.symm
-    map_smul' := hf }
+@[deprecated (since := "2026-11-16")] alias ofRingEquiv := ofCommutes
+@[deprecated (since := "2026-11-16")] alias ofRingEquiv_apply := ofCommutes_apply
+@[deprecated (since := "2026-11-16")] alias ofRingEquiv_symm_apply := ofCommutes_symm_apply
+@[deprecated (since := "2026-11-16")] alias ofRingEquiv_toEquiv := toEquiv_ofCommutes
 
 end OfRingEquiv
 
