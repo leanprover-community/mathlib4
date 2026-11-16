@@ -443,6 +443,7 @@ public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.PNatPowAssoc
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.Pi.Units
@@ -821,6 +822,8 @@ public import Mathlib.Algebra.Module.GradedModule
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Lattice
+public import Mathlib.Algebra.Module.Lattice.Basic
+public import Mathlib.Algebra.Module.Lattice.Full
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
@@ -1156,6 +1159,7 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Round
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Order.Star.Conjneg
+public import Mathlib.Algebra.Order.Star.Conjugate
 public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.Algebra.Order.Star.Prod
@@ -1370,6 +1374,7 @@ public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.MonoidHom
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.Algebra.Star.NonUnitalSubsemiring
+public import Mathlib.Algebra.Star.Orthogonal
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Algebra.Star.Prod
@@ -2357,6 +2362,7 @@ public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
+public import Mathlib.Analysis.Normed.Unbundled.GelfandRadiusNorm
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
@@ -3740,6 +3746,7 @@ public import Mathlib.Combinatorics.Configuration
 public import Mathlib.Combinatorics.Derangements.Basic
 public import Mathlib.Combinatorics.Derangements.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
+public import Mathlib.Combinatorics.Design.Defs
 public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.Digraph.Orientation
 public import Mathlib.Combinatorics.Enumerative.Bell
@@ -4799,6 +4806,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.ConvexSpace.ToSSet
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Segment
@@ -5413,6 +5421,7 @@ public import Mathlib.LinearAlgebra.Matrix.StdBasis
 public import Mathlib.LinearAlgebra.Matrix.Stochastic
 public import Mathlib.LinearAlgebra.Matrix.Swap
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Symmetrizable
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.Matrix.Trace
@@ -6065,6 +6074,7 @@ public import Mathlib.NumberTheory.LSeries.PrimesInAP
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.LSeries.RiemannZetaLogDeriv
 public import Mathlib.NumberTheory.LSeries.SumCoeff
+public import Mathlib.NumberTheory.LSeries.WeakPNT
 public import Mathlib.NumberTheory.LSeries.WienerIkehara
 public import Mathlib.NumberTheory.LSeries.ZMod
 public import Mathlib.NumberTheory.LSeries.ZetaZeros
@@ -6156,6 +6166,7 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
+public import Mathlib.NumberTheory.NumberField.HeckeLFunction
 public import Mathlib.NumberTheory.NumberField.House
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic

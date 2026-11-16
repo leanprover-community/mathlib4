@@ -151,7 +151,6 @@ section HasSheafCompose
 
 variable (adj₂ : G₂ ⊣ sheafToPresheaf J B) [J.HasSheafCompose F]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation
 `(whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F`
 when `F : A ⥤ B` is such that `J.HasSheafCompose F`, and that `G₁` and `G₂` are
@@ -169,7 +168,6 @@ def sheafComposeNatTrans :
     dsimp at this ⊢
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
@@ -188,7 +186,6 @@ lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
   rw [← hα]
   apply adj₂.homEquiv_unit
 
-set_option backward.isDefEq.respectTransparency false in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions_of_hasSheafCompose :
     J.PreservesSheafification F ↔ IsIso (sheafComposeNatTrans J F adj₁ adj₂) := by
   rw [J.preservesSheafification_iff_of_adjunctions F adj₁ adj₂,
