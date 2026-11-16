@@ -282,7 +282,7 @@ theorem prodEquivOfIsCompl_symm_apply (hpq : IsCompl p q) (x : E) :
 theorem toLinearMap_prodEquivOfIsCompl_symm (hpq : IsCompl p q) :
     (p.prodEquivOfIsCompl q hpq).symm.toLinearMap =
       (p.projectionOnto q hpq).prod (q.projectionOnto p hpq.symm) :=
-  LinearMap.ext <| by simp [prodEquivOfIsCompl_symm_apply]
+  LinearMap.ext <| by simp
 
 theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x ∈ q := by
   rw [← projection_eq_self_sub_projection h]
