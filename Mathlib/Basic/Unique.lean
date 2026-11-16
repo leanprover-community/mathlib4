@@ -51,7 +51,6 @@ set_option genInjectivity false in
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
 for good definitional properties of the default term. -/
-@[ext]
 structure Unique (α : Sort u) extends Inhabited α where
   /-- In a `Unique` type, every term is equal to the default element (from `Inhabited`). -/
   uniq : ∀ a : α, a = default
