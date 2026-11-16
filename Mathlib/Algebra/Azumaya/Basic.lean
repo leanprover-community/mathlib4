@@ -25,7 +25,6 @@ over itself where `R` is a commutative ring.
 
 ## Tags
 Noncommutative algebra, Azumaya algebra, Brauer Group
-
 -/
 
 public section

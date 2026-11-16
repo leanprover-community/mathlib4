@@ -27,7 +27,7 @@ We also define `rootMultiplicity`.
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 open Finset
 

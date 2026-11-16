@@ -714,6 +714,12 @@ theorem Dense.sdiff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set
 
 @[deprecated (since := "2026-06-03")] alias Dense.diff_finite := Dense.sdiff_finite
 
+/-- In an infinite `T1Space`, every dense set is infinite. -/
+theorem Dense.infinite [T1Space X] [Infinite X] {s : Set X} (hs : Dense s) : s.Infinite := by
+  intro hf
+  rw [hf.isClosed.dense_iff] at hs
+  exact infinite_univ (hs ▸ hf)
+
 /-- If a function to a `T1Space` tends to some limit `y` at some point `x`, then necessarily
 `y = f x`. -/
 theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}
@@ -726,6 +732,16 @@ theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X
 theorem Filter.Tendsto.eventually_ne {X} [TopologicalSpace Y] [T1Space Y] {g : X → Y}
     {l : Filter X} {b₁ b₂ : Y} (hg : Tendsto g l (𝓝 b₁)) (hb : b₁ ≠ b₂) : ∀ᶠ z in l, g z ≠ b₂ :=
   hg.eventually (isOpen_compl_singleton.eventually_mem hb)
+
+theorem Filter.Tendsto.ne_const {X} [TopologicalSpace Y] [T1Space Y] {f : X → Y}
+    {l : Filter X} [l.NeBot] {b₁ b₂ : Y} (hf : Tendsto f l (𝓝 b₁)) (hb : b₁ ≠ b₂) :
+    f ≠ fun _ ↦ b₂ :=
+  Function.ne_iff.mpr (hf.eventually_ne hb).exists
+
+@[to_additive]
+theorem Filter.Tendsto.ne_one {X} [TopologicalSpace Y] [T1Space Y] [One Y] {f : X → Y}
+    {l : Filter X} [l.NeBot] {b : Y} (hf : Tendsto f l (𝓝 b)) (hb : b ≠ 1) : f ≠ 1 :=
+  hf.ne_const hb
 
 theorem ContinuousAt.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y} {x : X} {y : Y}
     (hg1 : ContinuousAt g x) (hg2 : g x ≠ y) : ∀ᶠ z in 𝓝 x, g z ≠ y :=

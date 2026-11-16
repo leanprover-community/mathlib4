@@ -16,7 +16,6 @@ public import Mathlib.Data.List.AList
 * `Finsupp.toAList`
 * `AList.lookupFinsupp`: converts an association list into a finitely supported function
   via `AList.lookup`, sending absent keys to zero.
-
 -/
 
 @[expose] public section

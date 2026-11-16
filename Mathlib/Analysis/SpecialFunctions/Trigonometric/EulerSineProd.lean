@@ -81,11 +81,14 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
   · apply Continuous.intervalIntegrable (by fun_prop)
   · apply Continuous.intervalIntegrable <| by fun_prop
 
-theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
+variable (z) in
+theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) :
     (∫ x in (0 : ℝ)..π / 2, Complex.sin (2 * z * x) * sin x * (cos x : ℂ) ^ (n - 1)) =
       (n / (2 * z) * ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) -
         (n - 1) / (2 * z) *
           ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (n - 2) := by
+  rcases eq_or_ne z 0 with rfl | hz
+  · simp
   have der1 :
     ∀ x : ℝ,
       x ∈ uIcc 0 (π / 2) →
@@ -137,7 +140,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
   have nne : (n : ℂ) ≠ 0 := by
     contrapose! hn; rw [Nat.cast_eq_zero] at hn; rw [hn]; exact zero_lt_two
   have := integral_cos_mul_cos_pow_aux hn hz
-  rw [integral_sin_mul_sin_mul_cos_pow_eq hn hz, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
+  rw [integral_sin_mul_sin_mul_cos_pow_eq z hn, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
     at this
   convert congr(-$this * (2 * z) ^ 2 / n ^ 2) using 1 <;> field
 

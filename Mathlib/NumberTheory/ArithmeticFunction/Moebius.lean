@@ -34,7 +34,6 @@ import Mathlib.Algebra.Order.Ring.Abs
 ## Tags
 
 arithmetic functions, dirichlet convolution, divisors
-
 -/
 
 @[expose] public section

@@ -563,16 +563,25 @@ theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Icc.2 hab)]
 
 @[to_dual (attr := simp)]
-theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
+theorem insert_right_Ico (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
   rw [insert_eq, union_comm, Ico_union_right h]
 
-@[to_dual (attr := simp)]
-theorem Ioo_insert_left (h : a < b) : insert a (Ioo a b) = Ico a b := by
-  rw [insert_eq, union_comm, Ioo_union_left h]
+@[to_dual (attr := deprecated (since := "2026-11-03"))]
+alias Ico_insert_right := insert_right_Ico
 
 @[to_dual (attr := simp)]
-theorem Iio_insert : insert a (Iio a) = Iic a :=
+theorem insert_left_Ioo (h : a < b) : insert a (Ioo a b) = Ico a b := by
+  rw [insert_eq, union_comm, Ioo_union_left h]
+
+@[to_dual (attr := deprecated (since := "2026-11-03"))]
+alias Ioo_insert_left := insert_left_Ioo
+
+@[to_dual (attr := simp)]
+theorem insert_Iio : insert a (Iio a) = Iic a :=
   ext fun _ => le_iff_eq_or_lt.symm
+
+@[to_dual (attr := deprecated (since := "2026-11-03"))]
+alias Iio_insert := insert_Iio
 
 @[to_dual]
 theorem mem_Iic_Iio_of_subset_of_subset {s : Set α} (ho : Iio a ⊆ s) (hc : s ⊆ Iic a) :

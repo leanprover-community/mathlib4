@@ -197,10 +197,6 @@ theorem iSup_Iio_add_one {a : Ordinal.{u}} {f : Iio a → Ordinal.{u}}
   have := ha.noMaxOrder_Iio
   exact iSup_add_one hf
 
-section bsup
-
-end bsup
-
 end Ordinal
 
 /-! ### Results about injectivity and surjectivity -/

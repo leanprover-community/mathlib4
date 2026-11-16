@@ -58,7 +58,6 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
   both variables (i.e., continuous in its uncurried form) on this set of pairs when the function
   space is equipped with the topology of uniform convergence on `s`.
 + Versions of all of the above for non-unital algebras, and versions over `ℝ≥0` as well.
-
 -/
 
 public section

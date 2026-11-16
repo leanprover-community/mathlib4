@@ -57,7 +57,6 @@ which sometimes makes their proofs longer than they would be with the instance.
 
 * Higgs' theorem : if the generalized continuum hypothesis holds,
   then every matroid is `InvariantCardinalRank`.
-
 -/
 
 @[expose] public section

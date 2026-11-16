@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Separable
 
 /-!
-
 # Perfect fields and rings
 
 In this file we define perfect fields, together with a generalisation to (commutative) rings in
@@ -30,7 +29,6 @@ prime characteristic.
 * `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
   if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
   and `L` is also a perfect field.
-
 -/
 
 @[expose] public section

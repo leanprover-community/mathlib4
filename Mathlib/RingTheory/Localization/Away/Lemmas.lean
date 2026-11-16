@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Localization.Submodule
 # More lemmas on localization away
 
 This file contains lemmas on localization away from an element requiring more imports.
-
 -/
 
 @[expose] public section

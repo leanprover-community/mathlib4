@@ -35,7 +35,6 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 ## Tags
 
 matrix group, group, unitary group, orthogonal group
-
 -/
 
 @[expose] public section
@@ -347,7 +346,6 @@ theorem mem_specialOrthogonalGroup_iff :
     A ∈ specialOrthogonalGroup n R ↔ A ∈ orthogonalGroup n R ∧ A.det = 1 :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
     !![a, b; c, d] ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔

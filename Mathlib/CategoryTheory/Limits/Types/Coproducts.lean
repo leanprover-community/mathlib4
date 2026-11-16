@@ -14,7 +14,6 @@ If `F : J → Type max v u` (with `J : Type v`), we show that the coproduct
 of `F` exists in `Type max v u` and identifies to the sigma type `Σ j, F j`.
 Similarly, the binary coproduct of two types `X` and `Y` identifies to
 `X ⊕ Y`, and the initial object of `Type u` if `PEmpty`.
-
 -/
 
 @[expose] public section

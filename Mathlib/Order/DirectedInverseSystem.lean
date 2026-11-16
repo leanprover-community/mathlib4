@@ -55,7 +55,6 @@ natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how 
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
 is everything. However, the author chose the `compat` approach in the end because it constructs
 the distinguished bijection that is compatible with the projections to all `X i`.
-
 -/
 
 @[expose] public section

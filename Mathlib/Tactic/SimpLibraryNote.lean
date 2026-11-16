@@ -13,7 +13,6 @@ import Mathlib.Init
 /-! # Simp Lemmas With Weak Keys Library Note
 
 This file contains a library note explaining how to handle `simp` lemmas that have "weak keys".
-
 -/
 
 @[expose] public section

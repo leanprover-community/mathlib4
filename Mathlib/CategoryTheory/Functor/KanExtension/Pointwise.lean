@@ -26,7 +26,6 @@ A dual API for pointwise right Kan extension is also formalized.
 
 ## References
 * https://ncatlab.org/nlab/show/Kan+extension
-
 -/
 
 @[expose] public section

@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.VectorMeasure.Operations
 
 /-!
-
 # Order structure on vector measures
 
 This file defines the pointwise order on vector measures, comparison after restriction to a set,

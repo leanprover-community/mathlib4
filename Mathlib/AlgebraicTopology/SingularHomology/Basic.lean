@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 In this file, we define the singular chain complex and singular homology of a topological space.
 We also calculate the homology of a totally disconnected space as an example.
-
 -/
 
 @[expose] public section
@@ -78,7 +77,6 @@ lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
   simp [stdSimplexToTop]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C) (X : TopCat) (i) :
     Sigma.ι _ i ≫ ((singularChainComplexFunctorAdjunction C n).counit.app F).app X =
       F.map i.down := by

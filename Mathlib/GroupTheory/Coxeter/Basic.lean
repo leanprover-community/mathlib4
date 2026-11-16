@@ -81,7 +81,6 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 ## Tags
 
 coxeter system, coxeter group
-
 -/
 
 @[expose] public section
@@ -106,11 +105,10 @@ def relationsSet : Set (FreeGroup B) := range <| uncurry M.relation
 
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
-protected def Group : Type _ := PresentedGroup M.relationsSet
-deriving Group
+protected abbrev Group : Type _ := PresentedGroup M.relationsSet
 
 /-- The simple reflection of the Coxeter group `M.Group` at the index `i`. -/
-def simple (i : B) : M.Group := PresentedGroup.of i
+abbrev simple (i : B) : M.Group := PresentedGroup.of i
 
 theorem reindex_relationsSet :
     (M.reindex e).relationsSet =
@@ -140,6 +138,9 @@ theorem reindexGroupEquiv_apply_simple (i : B') :
 
 theorem reindexGroupEquiv_symm_apply_simple (i : B) :
     (M.reindexGroupEquiv e).symm (M.simple i) = (M.reindex e).simple (e i) := rfl
+
+theorem subgroupClosure_range_simple : Subgroup.closure (range M.simple) = ⊤ :=
+  PresentedGroup.closure_range_of _
 
 end CoxeterMatrix
 
@@ -185,7 +186,12 @@ protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEq
 /-! ### Simple reflections -/
 
 /-- The simple reflection of `W` at the index `i`. -/
-def simple (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
+def simple (i : B) : W := cs.mulEquiv.symm (M.simple i)
+
+@[simp] theorem mulEquiv_symm_simple (i : B) : cs.mulEquiv.symm (M.simple i) = cs.simple i := rfl
+
+@[simp] theorem mulEquiv_simple (i : B) : cs.mulEquiv (cs.simple i) = M.simple i :=
+  cs.mulEquiv.apply_symm_apply _
 
 @[simp]
 theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
@@ -197,14 +203,11 @@ theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
 
 local prefix:100 "s" => cs.simple
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
-  have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
-  have : (PresentedGroup.mk _ (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
+  have : .of i * .of i ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
+  have : PresentedGroup.mk _ (.of i * .of i) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
-  unfold simple
-  rw [← map_mul, PresentedGroup.of, map_mul]
   exact map_mul_eq_one cs.mulEquiv.symm this
 
 @[simp]
@@ -221,32 +224,36 @@ theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := b
 theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
   (eq_inv_of_mul_eq_one_right (cs.simple_mul_simple_self i)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
   have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
-  unfold simple
-  rw [← map_mul, ← map_pow]
+  simp_rw [← mulEquiv_symm_simple, ← map_mul, ← map_pow]
   exact (MulEquiv.map_eq_one_iff cs.mulEquiv.symm).mpr this
 
 @[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   M.symmetric i' i ▸ cs.simple_mul_simple_pow i' i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The simple reflections of `W` generate `W` as a group. -/
-theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤ := by
-  have : cs.simple = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
-  rw [this, Set.range_comp, ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
-    PresentedGroup.closure_range_of, Subgroup.map_top]
+theorem subgroupClosure_range_simple : Subgroup.closure (range cs.simple) = ⊤ := by
+  unfold simple
+  rw [Set.range_comp', ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
+    CoxeterMatrix.subgroupClosure_range_simple, Subgroup.map_top]
   exact MonoidHom.range_eq_top.2 (MulEquiv.surjective _)
 
+@[deprecated (since := "2026-11-08")]
+alias subgroup_closure_range_simple := subgroupClosure_range_simple
+
+open scoped Pointwise in
 /-- The simple reflections of `W` generate `W` as a monoid. -/
-theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by
+theorem submonoidClosure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by
   have : range cs.simple = range cs.simple ∪ (range cs.simple)⁻¹ := by
     simp_rw [inv_range, inv_simple, union_self]
-  rw [this, ← Subgroup.closure_toSubmonoid, subgroup_closure_range_simple, Subgroup.top_toSubmonoid]
+  rw [this, ← Subgroup.closure_toSubmonoid, subgroupClosure_range_simple, Subgroup.top_toSubmonoid]
+
+@[deprecated (since := "2026-11-08")]
+alias submonoid_closure_range_simple := submonoidClosure_range_simple
 
 /-! ### Induction principles for Coxeter systems -/
 
@@ -254,7 +261,7 @@ theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = �
 preserved under multiplication, then it holds for all elements of `W`. -/
 theorem simple_induction {p : W → Prop} (w : W) (simple : ∀ i : B, p (s i)) (one : p 1)
     (mul : ∀ w w' : W, p w → p w' → p (w * w')) : p w := by
-  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  have := cs.submonoidClosure_range_simple.symm ▸ Submonoid.mem_top w
   exact Submonoid.closure_induction (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one (fun _ _ _ _ ↦ mul _ _)
     this
 
@@ -264,7 +271,7 @@ theorem simple_induction_left {p : W → Prop} (w : W) (one : p 1)
     (mul_simple_left : ∀ (w : W) (i : B), p w → p (s i * w)) : p w := by
   let p' : (w : W) → w ∈ Submonoid.closure (Set.range cs.simple) → Prop :=
     fun w _ ↦ p w
-  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  have := cs.submonoidClosure_range_simple.symm ▸ Submonoid.mem_top w
   induction this using Submonoid.closure_induction_left with
   | one => exact one
   | mul_left i mi y my ih =>
@@ -277,7 +284,7 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
     (mul_simple_right : ∀ (w : W) (i : B), p w → p (w * s i)) : p w := by
   let p' : ((w : W) → w ∈ Submonoid.closure (Set.range cs.simple) → Prop) :=
     fun w _ ↦ p w
-  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  have := cs.submonoidClosure_range_simple.symm ▸ Submonoid.mem_top w
   induction this using Submonoid.closure_induction_right with
   | one => exact one
   | mul_right y my i mi ih =>
@@ -289,7 +296,7 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
 /-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
 theorem ext_simple {G : Type*} [MulOneClass G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
     φ₁ = φ₂ :=
-  MonoidHom.eq_of_eqOn_denseM cs.submonoid_closure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
+  MonoidHom.eq_of_eqOn_denseM cs.submonoidClosure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
 
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
 corresponding to the matrix `M`. -/
@@ -302,11 +309,9 @@ private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsL
   rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
   exact hf i i'
 
-set_option backward.privateInPublic true in
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
   (PresentedGroup.toGroup (relations_liftable hf)).comp cs.mulEquiv.toMonoidHom
 
-set_option backward.privateInPublic true in
 private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     Gˣ where
   val := f i
@@ -314,19 +319,10 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
-set_option backward.isDefEq.respectTransparency false in
-private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)) :
-    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
-    ((MulEquiv.symm cs.mulEquiv) a) = a := calc
-  _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
-  _ = _ := by rw [MulEquiv.apply_symm_apply]
-
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
 monoid homomorphisms `f' : W → G`. -/
+@[no_expose]
 def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G) where
   toFun f := MonoidHom.comp (Units.coeHom G) (cs.groupLift
     (show ∀ i i', ((restrictUnit f.property) i * (restrictUnit f.property) i') ^ M i i' = 1 from
@@ -335,32 +331,26 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     rw [comp_apply, comp_apply, ← map_mul, ← map_pow, simple_mul_simple_pow, map_one]⟩
   left_inv f := by
     ext i
-    simp only [MonoidHom.comp_apply, comp_apply, groupLift, simple]
-    rw [← MonoidHom.toFun_eq_coe, toMonoidHom_apply_symm_apply, PresentedGroup.toGroup.of,
-      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply, restrictUnit]
+    simp [groupLift, restrictUnit]
   right_inv ι := by
     apply cs.ext_simple
-    intro i
-    dsimp only
-    rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
-      PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
-    simp only [comp_apply, simple]
+    simp [groupLift, restrictUnit]
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     cs.lift ⟨f, hf⟩ (s i) = f i := congr($(cs.lift.left_inv ⟨f, hf⟩).val i)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
 and the same simple reflection map `B → W`, then they are identical. -/
-theorem simple_determines_coxeterSystem :
-    Injective (simple : CoxeterSystem M W → B → W) := by
+theorem injective_simple : Injective (simple : CoxeterSystem M W → B → W) := by
   intro cs1 cs2 h
   apply CoxeterSystem.ext
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
   nth_rw 2 [h]
-  simp [simple]
+  simp
+
+@[deprecated (since := "2026-11-08")] alias simple_determines_coxeterSystem := injective_simple
 
 /-! ### Words -/
 

@@ -439,7 +439,8 @@ private lemma sum_pow_add_indicator_eq_zero {p : ℕ} (l : ℕ) [Fact p.Prime] :
 
 /- The subring of rationals that are `p`-integral, i.e. the valuation subring of the `p`-adic
 valuation. -/
-private abbrev pIntegrals (p : ℕ) [Fact p.Prime] : Subring ℚ := (Rat.padicValuation p).integer
+private noncomputable abbrev pIntegrals (p : ℕ) [Fact p.Prime] : Subring ℚ :=
+  (Rat.padicValuation p).integer
 
 private lemma mem_pIntegrals_iff_not_dvd_den {p : ℕ} [Fact p.Prime] {x : ℚ} :
     x ∈ pIntegrals p ↔ ¬ p ∣ x.den :=

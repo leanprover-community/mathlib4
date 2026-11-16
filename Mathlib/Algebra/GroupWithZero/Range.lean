@@ -109,11 +109,11 @@ abbrev ValueGroup₀ := WithZero (valueGroup f)
 lemma mem_valueMonoid {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueMonoid f := by
   tauto
 
-lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
+lemma mem_valueGroup {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueGroup f := by
   suffices b ∈ valueMonoid f from Subgroup.mem_closure.mpr fun _ a ↦ a this
   exact mem_valueMonoid _ hb
 
-lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGroup f :=
+lemma inv_mem_valueGroup {b : Bˣ} (hb : b.val ∈ range f) : b⁻¹ ∈ valueGroup f :=
   Subgroup.inv_mem _ (mem_valueGroup f hb)
 
 end MonoidWithZeroHom

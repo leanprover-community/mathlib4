@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.EqToHom
 
 /-!
-
 # Prelax functors
 
 This file defines lax prefunctors and prelax functors between bicategories. The point of these
@@ -36,7 +35,6 @@ associated prefunctors between the hom types are all functors. In other words, i
 
 `mkOfHomFunctor`: constructs a `PrelaxFunctor` from a map on objects and functors between the
 corresponding hom types.
-
 -/
 
 @[expose] public section

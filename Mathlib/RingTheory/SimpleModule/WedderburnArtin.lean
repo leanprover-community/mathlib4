@@ -38,7 +38,6 @@ import Mathlib.RingTheory.SimpleRing.Matrix
   If the base ring is an algebraically closed field, the only finite-dimensional division algebra
   over it is itself, and we obtain `IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed` and
   `IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed` (in a later file).
-
 -/
 
 public section

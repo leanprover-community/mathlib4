@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
 /-!
-
 # Localization over left Ore sets.
 
 This file defines the localization of a monoid over a left Ore set and proves its universal
@@ -44,7 +43,6 @@ Also see https://github.com/leanprover-community/mathlib4/pull/31862.
 We shall investigate if there are ways to improve performances. For example by introducing
 typeclasses to unify the two constructions on this and `LocalizedModule`, or by marking some
 downstream constructions (e.g. `Spec.structureSheaf`) as irreducible.
-
 -/
 
 @[expose] public section

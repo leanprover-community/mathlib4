@@ -18,7 +18,6 @@ then `[CatCommSq T L R B]` contains the datum of an isomorphism `T ⋙ R ≅ L �
 
 Future work: using this notion in the development of the localization of categories
 (e.g. localization of adjunctions).
-
 -/
 
 @[expose] public section

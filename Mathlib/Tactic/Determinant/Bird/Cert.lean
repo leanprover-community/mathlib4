@@ -10,7 +10,6 @@ public meta import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Determinant.Bird.Meta
 
 /-!
-
 # Certificate-chain evaluator for `BirdDet.birdDet`
 
 This file contains an evaluator that computes the ring tactic normal form of

@@ -18,7 +18,6 @@ then the composition `L₁ ⋙ L₂ : C₁ ⥤ C₃` is a localization functor f
 if and only if `L₂ : C₂ ⥤ C₃` is a localization functor for `W₂`.
 The two implications are the lemmas `Functor.IsLocalization.comp` and
 `Functor.IsLocalization.of_comp`.
-
 -/
 
 @[expose] public section

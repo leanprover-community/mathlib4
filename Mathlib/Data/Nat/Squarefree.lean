@@ -22,7 +22,6 @@ A number is squarefree when it is not divisible by any squares except the square
 
 ## Tags
 squarefree, multiplicity
-
 -/
 
 @[expose] public section
@@ -599,5 +598,4 @@ unsafe def eval_squarefree : expr → tactic (expr × expr)
 end NormNum
 
 end Tactic
-
 -/

@@ -45,7 +45,6 @@ and `q` is notation for the cardinality of `K`.
 While `Fintype Kˣ` can be inferred from `Fintype K` in the presence of `DecidableEq K`,
 in this file we take the `Fintype Kˣ` argument directly to reduce the chance of typeclass
 diamonds, as `Fintype` carries data.
-
 -/
 
 @[expose] public section
@@ -385,7 +384,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
       have := congr($eq x)
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
-      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr(coeff $h 1)
+      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr($(h).coeff 1)
     refine this.not_gt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
       (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
@@ -697,31 +696,77 @@ theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
   rw [← fieldRange_castHom_eq_bot p,
     ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
 
+/-- The prime subfield `⊥ : Subfield F` as a `Finset F`. -/
+def Polynomial.primeSubfieldFinset : Finset F :=
+  univ.map ⟨_, (ZMod.castHom dvd_rfl F).injective⟩
+
+@[simp]
+theorem Polynomial.mem_primeSubfieldFinset {x : F} :
+    x ∈ primeSubfieldFinset F p ↔ x ∈ (⊥ : Subfield F) := by
+  simp [primeSubfieldFinset, ← fieldRange_castHom_eq_bot p]
+
+/-- `primeSubfieldFinset`, coerced to a `Set`, equals the `⊥` subfield coerced to a `Set`. -/
+@[simp]
+theorem Polynomial.coe_primeSubfieldFinset :
+    (primeSubfieldFinset F p : Set F) = (⊥ : Subfield F) := by
+  ext; simp
+
+@[simp]
+theorem Polynomial.card_primeSubfieldFinset : (primeSubfieldFinset F p).card = p := by
+  simp [primeSubfieldFinset]
+
 /-- The prime subfield is finite. -/
 @[instance_reducible]
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
-  Fintype.subtype (univ.map ⟨_, (ZMod.castHom (m := p) dvd_rfl F).injective⟩)
-    fun _ ↦ by simp_rw [Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl
+  Fintype.ofFinset _ fun _ ↦ Polynomial.mem_primeSubfieldFinset ..
+
+theorem Subfield.natCard_bot : Nat.card (⊥ : Subfield F) = p := by
+  let := Subfield.fintypeBot F p
+  rw [Nat.card_eq_fintype_card]
+  exact (Fintype.card_ofFinset ..).trans (Polynomial.card_primeSubfieldFinset ..)
+
+theorem Subfield.fintypeCard_bot [Fintype (⊥ : Subfield F)] :
+    Fintype.card (⊥ : Subfield F) = p := by
+  rw [← Nat.card_eq_fintype_card, natCard_bot]
+
+@[simp]
+theorem Polynomial.primeSubfieldFinset_eq_univ [Subsingleton (Subfield F)] [Fintype F] :
+    primeSubfieldFinset F p = .univ := by
+  have : (⊥ : Subfield F) = ⊤ := by subsingleton
+  ext
+  simp [this]
 
 open Polynomial
 
-theorem Subfield.roots_X_pow_char_sub_X_bot :
-    letI := Subfield.fintypeBot F p
+theorem Subfield.roots_X_pow_char_sub_X_bot [Fintype (⊥ : Subfield F)] :
     (X ^ p - X : (⊥ : Subfield F)[X]).roots = Finset.univ.val := by
-  let _ := Subfield.fintypeBot F p
   conv_lhs => rw [← card_bot F p, ← Fintype.card_eq_nat_card]
   exact FiniteField.roots_X_pow_card_sub_X _
 
-theorem Subfield.splits_bot :
-    Splits (X ^ p - X : (⊥ : Subfield F)[X]) := by
+theorem Polynomial.splits_X_pow_char_sub_X : Splits ((X : F[X]) ^ p - X) := by
+  suffices (X ^ p - X : (⊥ : Subfield F)[X]).Splits by simpa using this.map (⊥ : Subfield F).subtype
   let _ := Subfield.fintypeBot F p
-  rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
-    natDegree_X_pow_sub_X (Fact.out (p := p.Prime)).one_lt, Fintype.card_eq_nat_card, card_bot F p]
+  rw [splits_iff_card_roots, Subfield.roots_X_pow_char_sub_X_bot, Finset.card_val, Finset.card_univ,
+    Fintype.card_eq_nat_card, Subfield.card_bot F p,
+    natDegree_X_pow_sub_X (Nat.Prime.one_lt Fact.out)]
+
+theorem Polynomial.roots_X_pow_char_sub_X :
+    (X ^ p - X : F[X]).roots = (primeSubfieldFinset F p).val := by
+  classical
+  have := Subfield.fintypeBot F p
+  have : (univ : Finset (⊥ : Subfield F)).image Subtype.val = primeSubfieldFinset F p := by
+    ext; simp
+  simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtype_val, this]
+    using (splits_X_pow_char_sub_X (⊥ : Subfield F) p).roots_map (⊥ : Subfield F).subtype
+
+@[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-11-15")]
+theorem Subfield.splits_bot : Splits (X ^ p - X : (⊥ : Subfield F)[X]) :=
+  Polynomial.splits_X_pow_char_sub_X _ p
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
-  have := roots_X_pow_char_sub_X_bot F p ▸
-      (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
-  simpa [sub_eq_zero, iff_comm, X_pow_sub_X_ne_zero (Fact.out : p.Prime).one_lt]
+  rw [← Polynomial.mem_primeSubfieldFinset, ← mem_val, ← roots_X_pow_char_sub_X, mem_roots]
+  · simp [sub_eq_zero]
+  · exact X_pow_sub_X_ne_zero (Nat.Prime.one_lt Fact.out)
 
 end prime_subfield
 

@@ -104,25 +104,25 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [Finite ι] [Fintype ι'] [Decida
   rw [hbi]
   exact affineCombination_mem_affineSpan hAi p
 
-variable [Fintype ι] (b₂ : AffineBasis ι k P)
-
 /-- A change of basis formula for barycentric coordinates.
 
 See also `AffineBasis.toMatrix_inv_vecMul_toMatrix`. -/
 @[simp]
-theorem toMatrix_vecMul_coords (x : P) : b₂.coords x ᵥ* b.toMatrix b₂ = b.coords x := by
+theorem toMatrix_vecMul_coords [Fintype ι'] (b₂ : AffineBasis ι' k P) (x : P) :
+    b₂.coords x ᵥ* b.toMatrix b₂ = b.coords x := by
   ext j
   change _ = b.coord j x
   conv_rhs => rw [← b₂.affineCombination_coord_eq_self x]
   rw [Finset.map_affineCombination _ _ _ (b₂.sum_coord_apply_eq_one x)]
   simp [Matrix.vecMul, dotProduct, toMatrix_apply, coords]
 
-variable [DecidableEq ι]
-
-theorem toMatrix_mul_toMatrix : b.toMatrix b₂ * b₂.toMatrix b = 1 := by
+theorem toMatrix_mul_toMatrix [Fintype ι] [DecidableEq ι'] (b₂ : AffineBasis ι' k P) :
+    b.toMatrix b₂ * b₂.toMatrix b = 1 := by
   ext l m
   change (b.coords (b₂ l) ᵥ* b₂.toMatrix b) m = _
   rw [toMatrix_vecMul_coords, coords_apply, ← toMatrix_apply, toMatrix_self]
+
+variable [Fintype ι] [DecidableEq ι] (b₂ : AffineBasis ι k P)
 
 theorem isUnit_toMatrix : IsUnit (b.toMatrix b₂) :=
   ⟨{  val := b.toMatrix b₂

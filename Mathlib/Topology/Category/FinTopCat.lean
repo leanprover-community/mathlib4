@@ -13,7 +13,6 @@ public import Mathlib.Topology.Category.TopCat.Basic
 
 Definition of the category of finite topological spaces with the canonical
 forgetful functors.
-
 -/
 
 @[expose] public section

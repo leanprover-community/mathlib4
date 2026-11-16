@@ -10,52 +10,45 @@ public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 /-!
 # `LiesOver` instances for completions of number fields
 
-If `L` and `K` are number fields such that `Algebra K L` then this algebra extends
-naturally to the completions of `K` and `L` at places, whenever the place of `L` lies
-over the place of `K`. This file contains the relevant instances and properties of this extension
-as `scoped` instances. These are scoped because they create non-defeq instance diamonds when
-`K = L`.
+This file is deprecated: use `AbsoluteValue.Completion.map` and
+`AbsoluteValue.Completion.algebraOfLiesOver` instead, together with
+`AbsoluteValue.Completion.algebra_eq_of_liesOver` for uniqueness of the algebra structure.
 -/
+
+deprecated_module
+  "Use `AbsoluteValue.Completion.map` and `AbsoluteValue.Completion.algebraOfLiesOver`."
+  (since := "2026-10-30")
 
 public section
 
 namespace NumberField.LiesOver
 
-open InfinitePlace InfinitePlace.Completion
+open InfinitePlace
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) (w : InfinitePlace L)
 variable [w.LiesOver v]
 
-/-- The ring homomorphism `v.Completion →+* w.Completion` induced by `algebraMap K L`, when `w`
-lies over `v`. -/
-noncomputable def completionMap : v.Completion →+* w.Completion :=
-  ((Completion.equiv w).symm.toRingHom.comp <| AbsoluteValue.Completion.map v.1 w.1).comp
-    (Completion.equiv v).toRingHom
+@[deprecated (since := "2026-10-30")] alias completionMap := AbsoluteValue.Completion.map
 
-theorem continuous_completionMap : Continuous (completionMap v w) :=
-  (continuous_ofCompletion w).comp <|
-    (AbsoluteValue.Completion.continuous_map v.1 w.1).comp (continuous_toCompletion v)
+@[deprecated (since := "2026-10-30")] alias continuous_completionMap :=
+  AbsoluteValue.Completion.continuous_map
 
+@[deprecated AbsoluteValue.Completion.map_coe +typeChanged (since := "2026-10-30")]
 theorem completionMap_coe (x : WithAbs v.1) :
-    completionMap v w (x : v.Completion) =
+    AbsoluteValue.Completion.map v.1 w.1 (x : v.Completion) =
       ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) : w.Completion) :=
-  Completion.ext <| AbsoluteValue.Completion.map_coe v.1 w.1 x
+  AbsoluteValue.Completion.map_coe v.1 w.1 x
 
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
-noncomputable scoped instance : Algebra v.Completion w.Completion := (completionMap v w).toAlgebra
+noncomputable scoped instance : Algebra v.Completion w.Completion :=
+  AbsoluteValue.Completion.algebraOfLiesOver v.1 w.1
 
 scoped instance : IsScalarTower K v.Completion w.Completion :=
-  .of_algebraMap_eq fun x ↦ by
-    have h : algebraMap K v.Completion x = ((WithAbs.toAbs v.1 x : WithAbs v.1) : v.Completion) :=
-      Completion.algebraMap_apply v x
-    rw [RingHom.algebraMap_toAlgebra, h, completionMap_coe]
-    apply Completion.ext
-    rw [Completion.algebraMap_toCompletion]
-    apply AbsoluteValue.Completion.toCompletion_injective
-    rw [AbsoluteValue.Completion.toCompletion_algebraMap, UniformSpace.Completion.algebraMap_def]
-    simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
+  inferInstanceAs <| letI := AbsoluteValue.Completion.algebraOfLiesOver v.1 w.1
+    IsScalarTower K v.Completion w.Completion
 
-scoped instance : ContinuousSMul v.Completion w.Completion where
-  continuous_smul := ((continuous_completionMap v w).comp continuous_fst).mul continuous_snd
+scoped instance : ContinuousSMul v.Completion w.Completion :=
+  inferInstanceAs <| letI := AbsoluteValue.Completion.algebraOfLiesOver v.1 w.1
+    ContinuousSMul v.Completion w.Completion
 
 end NumberField.LiesOver

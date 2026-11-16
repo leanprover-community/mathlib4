@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Opposites
 
 For every semigroup `M`, we construct an equivalence between subsemigroups of `M` and that of
 `Mᵐᵒᵖ`.
-
 -/
 
 @[expose] public section

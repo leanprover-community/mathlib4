@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Monoidal.Functor
 Natural transformations between (lax) monoidal functors must satisfy
 an additional compatibility relation with the tensorators:
 `F.μ X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ X Y`.
-
 -/
 
 @[expose] public section

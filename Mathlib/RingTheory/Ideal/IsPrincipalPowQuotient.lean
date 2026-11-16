@@ -25,7 +25,6 @@ synthesis like `Module 𝒪[K] 𝓀[k]`, so the plain equiv versions are provide
 
 These equivs are defined here as opposed to in the quotients file since they cannot be
 formed as ring equivs.
-
 -/
 
 @[expose] public section

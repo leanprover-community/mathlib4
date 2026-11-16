@@ -27,7 +27,6 @@ corresponding property `isDenseAt F` of objects of `D`.
 
 ## References
 * https://ncatlab.org/nlab/show/dense+functor
-
 -/
 
 @[expose] public section
