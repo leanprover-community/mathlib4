@@ -723,6 +723,15 @@ lemma weightedHomogeneousComponent_mem_of_mem [DecidableEq M] {I : Ideal (MvPoly
     (m : M) : (weightedHomogeneousComponent w m p) ∈ I :=
   (mem_iff_weightedHomogeneousComponent_mem R w h p).mp hp m
 
+variable {R w} in
+lemma weightedHomogeneousComponent_mul_of_isWeightedHomogeneous_right [PartialOrder M]
+    [CanonicallyOrderedAdd M] [Sub M] [OrderedSub M] [AddLeftReflectLE M] {i n : M}
+    {f q : MvPolynomial σ R} (hq : q.IsWeightedHomogeneous w i) (hin : i ≤ n) :
+    weightedHomogeneousComponent w n (f * q) = weightedHomogeneousComponent w (n - i) f * q := by
+  classical
+  simp_rw [← weightedDecomposition.decompose'_apply]
+  exact DirectSum.coe_decompose_mul_of_right_mem_of_le _ hq hin
+
 end GradedAlgebra
 
 end MvPolynomial

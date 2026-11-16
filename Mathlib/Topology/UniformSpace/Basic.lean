@@ -985,6 +985,11 @@ theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : U
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
+@[simp]
+theorem uniformContinuous_prodMk {f₁ : α → β} {f₂ : α → γ} :
+    (UniformContinuous fun a => (f₁ a, f₂ a)) ↔ UniformContinuous f₁ ∧ UniformContinuous f₂ :=
+  ⟨fun h ↦ ⟨uniformContinuous_fst.comp h, uniformContinuous_snd.comp h⟩, fun h ↦ h.1.prodMk h.2⟩
+
 theorem UniformContinuous.prodMk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
     UniformContinuous fun a => f (a, b) :=
   h.comp (uniformContinuous_id.prodMk uniformContinuous_const)

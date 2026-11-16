@@ -194,8 +194,10 @@ theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z�
   simp [← sub_neg_eq_add, ← map_neg]
 
 @[simp]
-theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
+theorem mahlerMeasure_C_mul_X_add_C (a b : ℂ) :
     (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp
   simp only [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
     mahlerMeasure_mul, mahlerMeasure_const, ← coe_nnNorm, mahlerMeasure_X_add_C]
   norm_cast
@@ -204,7 +206,7 @@ theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
 theorem mahlerMeasure_of_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) :
     p.mahlerMeasure = max ‖p.coeff 1‖ ‖p.coeff 0‖ := by
   rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
-  simp [mahlerMeasure_C_mul_X_add_C (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
+  simp
 
 /-- The logarithmic Mahler measure of a polynomial is the `log` of the absolute value of its leading
   coefficient plus the sum of the `log`s of the absolute values of its roots lying outside the unit
