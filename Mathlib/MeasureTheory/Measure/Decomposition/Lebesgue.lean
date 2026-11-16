@@ -1051,9 +1051,9 @@ lemma rnDeriv_add' (ν₁ ν₂ μ : Measure α) [ν₁.HaveLebesgueDecompositio
     ← ν₁.haveLebesgueDecomposition_add μ, ← ν₂.haveLebesgueDecomposition_add μ]
 
 lemma rnDeriv_add_of_mutuallySingular (ν₁ ν₂ μ : Measure α)
-    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ] [SigmaFinite μ]
-    (h : ν₂ ⟂ₘ μ) :
+    [ν₁.HaveLebesgueDecomposition μ] [SigmaFinite μ] (h : ν₂ ⟂ₘ μ) :
     (ν₁ + ν₂).rnDeriv μ =ᵐ[μ] ν₁.rnDeriv μ := by
+  have := h.haveLebesgueDecomposition
   filter_upwards [rnDeriv_add' ν₁ ν₂ μ, (rnDeriv_eq_zero ν₂ μ).mpr h] with x hx_add hx_zero
   simp [hx_add, hx_zero]
 

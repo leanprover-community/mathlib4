@@ -257,7 +257,7 @@ variable (μ' ν' : Measure G) [SFinite μ'] [SigmaFinite ν'] [IsMulLeftInvaria
 for any s-finite left-invariant measure in place of the first `ν'`. -/
 @[to_additive /-- Auxiliary lemma for `ae_measure_preimage_add_right_lt_top`, which proves the same
 statement for any s-finite left-invariant measure in place of the first `ν'`. -/]
-theorem ae_measure_preimage_mul_right_lt_top_self (hνs : ν' s ≠ ∞) :
+private theorem ae_measure_preimage_mul_right_lt_top_self (hνs : ν' s ≠ ∞) :
     ∀ᵐ x ∂ν', ν' ((· * x) ⁻¹' s) < ∞ := by
   wlog sm : MeasurableSet s generalizing s
   · filter_upwards [this ((measure_toMeasurable _).trans_ne hνs) (measurableSet_toMeasurable ..)]

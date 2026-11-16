@@ -351,13 +351,6 @@ lemma mutuallySingular_of_mutuallySingular_compProd {ξ : Measure α}
   · exact hs.compl
   · exact hs
 
-/-- Mutual singularity of composition-products only depends on the null sets of the measures. -/
-lemma mutuallySingular_compProd_congr {μ' ν' : Measure α} [SFinite μ] [SFinite ν] [SFinite μ']
-    [SFinite ν'] (hμ : μ ≪ μ') (hμ' : μ' ≪ μ) (hν : ν ≪ ν') (hν' : ν' ≪ ν) :
-    μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ η ↔ μ' ⊗ₘ κ ⟂ₘ ν' ⊗ₘ η :=
-  ⟨fun h ↦ h.mono_ac (hμ'.compProd_left κ) (hν'.compProd_left η),
-    fun h ↦ h.mono_ac (hμ.compProd_left κ) (hν.compProd_left η)⟩
-
 lemma mutuallySingular_compProd_left_iff [SFinite μ] [SFinite ν]
     [IsSFiniteKernel κ] [hκ : ∀ x, NeZero (κ x)] :
     μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ κ ↔ μ ⟂ₘ ν := by
@@ -371,10 +364,10 @@ lemma mutuallySingular_compProd_left_iff [SFinite μ] [SFinite ν]
     · exact withDensity_absolutelyContinuous _ _
     simp_rw [MutuallySingular.self_iff, (hκ _).ne] at hh
     exact ae_eq_bot.mp (Filter.eventually_false_iff_eq_bot.mp hh)
-  rw [mutuallySingular_compProd_congr .rfl .rfl (absolutelyContinuous_toFinite ν)
-    (toFinite_absolutelyContinuous ν), key]
-  exact ⟨fun h ↦ h.mono_ac .rfl (absolutelyContinuous_toFinite ν),
-    fun h ↦ h.mono_ac .rfl (toFinite_absolutelyContinuous ν)⟩
+  rw [MutuallySingular.congr_ac .rfl .rfl ((absolutelyContinuous_toFinite ν).compProd_left κ)
+    ((toFinite_absolutelyContinuous ν).compProd_left κ), key]
+  exact (MutuallySingular.congr_ac .rfl .rfl (absolutelyContinuous_toFinite ν)
+    (toFinite_absolutelyContinuous ν)).symm
 
 lemma AbsolutelyContinuous.mutuallySingular_compProd_iff [SFinite ν] (hμν : μ ≪ ν) :
     μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ η ↔ μ ⊗ₘ κ ⟂ₘ μ ⊗ₘ η := by
@@ -388,12 +381,13 @@ lemma AbsolutelyContinuous.mutuallySingular_compProd_iff [SFinite ν] (hμν : �
     refine ⟨fun h ↦ h.mono_ac .rfl ?_, fun h ↦ h.mono_ac .rfl ?_⟩
     · exact (absolutelyContinuous_withDensity_rnDeriv hμν).compProd_left _
     · exact (withDensity_absolutelyContinuous μ (ν.rnDeriv μ)).compProd_left _
-  refine (mutuallySingular_compProd_congr (absolutelyContinuous_toFinite μ)
-    (toFinite_absolutelyContinuous μ) .rfl .rfl).trans
+  refine (MutuallySingular.congr_ac ((absolutelyContinuous_toFinite μ).compProd_left κ)
+    ((toFinite_absolutelyContinuous μ).compProd_left κ) .rfl .rfl).trans
     ((key _ ((toFinite_absolutelyContinuous μ).trans hμν)).trans ?_)
-  exact (mutuallySingular_compProd_congr (absolutelyContinuous_toFinite μ)
-    (toFinite_absolutelyContinuous μ) (absolutelyContinuous_toFinite μ)
-    (toFinite_absolutelyContinuous μ)).symm
+  exact (MutuallySingular.congr_ac ((absolutelyContinuous_toFinite μ).compProd_left κ)
+    ((toFinite_absolutelyContinuous μ).compProd_left κ)
+    ((absolutelyContinuous_toFinite μ).compProd_left η)
+    ((toFinite_absolutelyContinuous μ).compProd_left η)).symm
 
 lemma mutuallySingular_compProd_iff [SFinite μ] [SFinite ν] :
     μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ η ↔ ∀ ξ, SFinite ξ → ξ ≪ μ → ξ ≪ ν → ξ ⊗ₘ κ ⟂ₘ ξ ⊗ₘ η := by
@@ -410,9 +404,10 @@ lemma mutuallySingular_compProd_iff [SFinite μ] [SFinite ν] :
       · infer_instance
       · exact absolutelyContinuous_of_le (withDensity_rnDeriv_le _ _)
       · exact withDensity_absolutelyContinuous ν (μ.rnDeriv ν)
-  rw [mutuallySingular_compProd_congr (absolutelyContinuous_toFinite μ)
-    (toFinite_absolutelyContinuous μ) (absolutelyContinuous_toFinite ν)
-    (toFinite_absolutelyContinuous ν), key]
+  rw [MutuallySingular.congr_ac ((absolutelyContinuous_toFinite μ).compProd_left κ)
+    ((toFinite_absolutelyContinuous μ).compProd_left κ)
+    ((absolutelyContinuous_toFinite ν).compProd_left η)
+    ((toFinite_absolutelyContinuous ν).compProd_left η), key]
   refine forall_congr' fun ξ ↦ forall_congr' fun _ ↦ ?_
   exact imp_congr ⟨fun h ↦ h.trans (toFinite_absolutelyContinuous μ),
       fun h ↦ h.trans (absolutelyContinuous_toFinite μ)⟩

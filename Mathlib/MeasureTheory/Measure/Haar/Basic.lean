@@ -50,7 +50,7 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
   it is invariant and gives finite mass to compact sets and positive mass to nonempty open sets.
 * `haar` : some choice of a Haar measure, on a locally compact Hausdorff group, constructed as
   `haarMeasure K` where `K` is some arbitrary choice of a compact set with nonempty interior.
-* `haarMeasure_unique`: Every σ-finite left invariant measure on a second-countable locally compact
+* `haarMeasure_unique`: Every s-finite left invariant measure on a second-countable locally compact
   Hausdorff group is a scalar multiple of the Haar measure.
 
 ## References
