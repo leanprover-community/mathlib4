@@ -29,6 +29,7 @@ variable {α β : Type*}
 
 /-! ### Supremum of a family of ordinals -/
 
+@[simp]
 theorem bddAbove_of_small {s : Set Ordinal.{u}} [Small.{u} s] : BddAbove s := by
   obtain ⟨a, ha⟩ := Cardinal.bddAbove_of_small (s := (succ ∘ card) '' s)
   refine ⟨a.ord, fun b hb ↦ le_of_lt ?_⟩
