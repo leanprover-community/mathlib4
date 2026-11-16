@@ -872,6 +872,15 @@ theorem extendScalars_le_iff (E' : IntermediateField F L) :
 theorem le_extendScalars_iff (E' : IntermediateField F L) :
     E' ≤ extendScalars h ↔ E'.restrictScalars K ≤ E := Iff.rfl
 
+/-- The identity map from `E` to `extendScalars h`, as a `K`-algebra isomorphism. -/
+@[simps]
+def extendScalarsAlgEquiv : E ≃ₐ[K] extendScalars h where
+  toFun x := ⟨x, x.2⟩
+  invFun x := ⟨x, x.2⟩
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
 variable (F)
 
 /-- `IntermediateField.extendScalars.orderIso` bundles `IntermediateField.extendScalars`

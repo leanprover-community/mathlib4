@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.FieldTheory.Relrank
 public import Mathlib.RingTheory.LinearDisjoint
 
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 
 /-!
@@ -113,10 +114,9 @@ The following results are related to the equivalent characterizations in
   if `A` and `B` are linearly disjoint,
   then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`.
 
-- `IntermediateField.LinearDisjoint.relrank_sup_left`,
-  `IntermediateField.LinearDisjoint.relfinrank_sup_left`:
-  if `A` and `B` are linearly disjoint and one of them is algebraic, then the relative rank of
-  `A ⊔ B` over `A` is equal to the rank of `B`.
+- `IntermediateField.LinearDisjoint.relfinrank_sup_left`:
+  if `A` and `B` are linearly disjoint, then the relative rank of `A ⊔ B` over `A` is equal to
+  the rank of `B`.
 
 - `IntermediateField.LinearDisjoint.of_finrank_sup`:
   conversely, if `A` and `B` are finite extensions,
@@ -133,11 +133,11 @@ The following results are related to the equivalent characterizations in
 - `IntermediateField.LinearDisjoint.algEquiv_of_isAlgebraic`:
   linear disjointness is preserved by isomorphisms, provided that one of the field is algebraic.
 
-- `IntermediateField.relfinrank_sup_eq_relfinrank_inf`,
+- `IntermediateField.relfinrank_sup_eq_finrank_inf`,
   `IntermediateField.finrank_sup_mul_finrank_inf_eq`:
   if `A` is a Galois extension, then the product of the ranks of `A ⊔ B` and `A ⊓ B` is equal to
-  the product of the ranks of `A` and `B`, and if moreover `A` is finite, then the relative rank of
-  `A ⊔ B` over `A` is equal to the relative rank of `B` over `A ⊓ B`.
+  the product of the ranks of `A` and `B`, and if moreover `A` is finite, then the relative rank
+  of `A ⊔ B` over `A` is equal to the rank of `B` over `A ⊓ B`.
 
 ## Tags
 
@@ -399,7 +399,7 @@ theorem of_le' {A' : IntermediateField F E} (H : A.LinearDisjoint L)
 
 /--
 If `A` and `B` are linearly disjoint over `F`, then their intersection is equal to `F`.
-This is actually an equivalence if `A/F` and `B/F` are finite dimensional, and `A/F` is Galois,
+This is actually an equivalence if `A/F` is finite dimensional and Galois,
 see `IntermediateField.LinearDisjoint.iff_inf_eq_bot`.
 -/
 theorem inf_eq_bot (H : A.LinearDisjoint B) :
@@ -445,11 +445,29 @@ theorem finrank_right_eq_finrank [Module.Finite F B] (h₁ : A.LinearDisjoint B)
     finrank B E = finrank F A :=
   h₁.symm.finrank_left_eq_finrank (by rwa [sup_comm])
 
-private theorem of_inf_eq_bot_aux [IsGalois F A] [FiniteDimensional F E] (h₁ : A ⊔ B = ⊤)
+/-- If `A` is finite over `F`, `A ⊔ B = ⊤` and the degree of `E` over `B` is the degree of `A`
+over `F`, then `A` and `B` are linearly disjoint. -/
+theorem of_finrank_right_eq_finrank [FiniteDimensional F A] (h₁ : A ⊔ B = ⊤)
+    (h : finrank B E = finrank F A) : A.LinearDisjoint B := by
+  refine IntermediateField.LinearDisjoint.of_basis_left (Module.finBasis F A) <|
+    linearIndependent_of_top_le_span_of_card_eq_finrank ?_ (by simp [h])
+  have := congr_arg Subalgebra.toSubmodule <| congr_arg toSubalgebra h₁
+  rw [top_toSubalgebra, Algebra.top_toSubmodule, ← restrictScalars_adjoin_intermediateField,
+    restrictScalars_toSubalgebra, Subalgebra.restrictScalars_toSubmodule,
+    adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right,
+    Submodule.restrictScalars_eq_top_iff] at this
+  exact (this.symm.trans
+    (Subalgebra.adjoin_eq_span_basis B A.toSubalgebra (Module.finBasis F A))).le
+
+private theorem of_inf_eq_bot_aux [IsGalois F A] [FiniteDimensional F A] (h₁ : A ⊔ B = ⊤)
     (h₂ : A ⊓ B = ⊥) : A.LinearDisjoint B := by
-  apply LinearDisjoint.of_finrank_sup
-  rw [h₁, finrank_top', ← Module.finrank_mul_finrank F B E, mul_comm, mul_left_inj'
-    Module.finrank_pos.ne']
+  apply of_finrank_right_eq_finrank h₁
+  have : FiniteDimensional B E := by
+    have : FiniteDimensional B (⊤ : IntermediateField B E) := by
+      have h : adjoin B (A : Set E) = ⊤ := restrictScalars_injective F <| by
+        rw [restrictScalars_adjoin_intermediateField, h₁, restrictScalars_top]
+      exact h ▸ inferInstance
+    exact LinearEquiv.finiteDimensional IntermediateField.topEquiv.toLinearEquiv
   have : IsGalois B E := IsGalois.sup_right A B h₁
   rw [← IsGalois.card_aut_eq_finrank, ← IsGalois.card_aut_eq_finrank]
   exact Nat.card_congr <| Equiv.ofBijective (restrictRestrictAlgEquivMapHom _ _ _ _)
@@ -457,11 +475,11 @@ private theorem of_inf_eq_bot_aux [IsGalois F A] [FiniteDimensional F E] (h₁ :
       restrictRestrictAlgEquivMapHom_surjective _ _ h₂⟩
 
 /--
-If `A` and `B` are finite extensions of `F`, with `A/F` Galois, such that `A ⊓ B = F`, then
-`A` and `B` are linearly disjoint over `F`.
+If `A` is a finite Galois extension of `F` such that `A ⊓ B = F`, then `A` and `B` are linearly
+disjoint over `F`.
 -/
-theorem of_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional F B]
-    (h : A ⊓ B = ⊥) : A.LinearDisjoint B := by
+theorem of_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] (h : A ⊓ B = ⊥) :
+    A.LinearDisjoint B := by
   let C : IntermediateField F E := A ⊔ B
   let A' : IntermediateField F C := A.restrict le_sup_left
   let B' : IntermediateField F C := B.restrict le_sup_right
@@ -473,10 +491,11 @@ theorem of_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional 
   have h₂ : A' ⊓ B' = ⊥ := by
     rw [← lift_inj, lift_bot, lift_inf, lift_restrict le_sup_left, lift_restrict le_sup_right, h]
   have : IsGalois F A' := IsGalois.of_algEquiv <| restrictAlgEquiv ..
+  have : FiniteDimensional F A' := Module.Finite.equiv (restrictAlgEquiv ..).toLinearEquiv
   exact of_inf_eq_bot_aux h₁ h₂
 
 @[simp]
-theorem iff_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional F B] :
+theorem iff_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] :
     A.LinearDisjoint B ↔ A ⊓ B = ⊥ :=
   ⟨fun h ↦ inf_eq_bot h, fun h ↦ of_inf_eq_bot h⟩
 
@@ -596,6 +615,24 @@ theorem adjoin_rank_eq_rank_right_of_isAlgebraic_right (H : A.LinearDisjoint L)
       subset_adjoin L (A : Set E))) = Module.rank F L :=
   H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inr ‹_›)
 
+/-- If `A` and `L` are linearly disjoint over `F`, then `[L(A) : A] = [L : F]` as
+`Module.finrank`. -/
+theorem adjoin_finrank_eq_finrank_right (H : A.LinearDisjoint L) :
+    finrank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
+      subset_adjoin L (A : Set E))) = finrank F L := by
+  by_cases hL : FiniteDimensional F L
+  · simp only [finrank, H.adjoin_rank_eq_rank_right_of_isAlgebraic_right]
+  rw [finrank_of_not_finite hL, finrank_of_not_finite]
+  contrapose hL
+  have : Finite (Free.ChooseBasisIndex F L) := by
+    refine LinearIndependent.finite (R := A)
+      (f := (extendScalarsAlgEquiv (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
+        subset_adjoin L (A : Set E)) ∘
+          algebraMap L (adjoin L (A : Set E)) ∘ (Module.Free.chooseBasis F L))) ?_
+    exact (H.linearIndependent_right' (Module.Basis.linearIndependent _)).of_comp
+      (extendScalars _).val.toLinearMap
+  exact Module.Finite.of_basis (Module.Free.chooseBasis F L)
+
 /-- The same-universe version of
 `IntermediateField.LinearDisjoint.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic`. -/
 theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisjoint L)
@@ -615,19 +652,12 @@ theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic_right (H : A.LinearDisjoint
 
 end
 
-/-- If `A` and `B` are linearly disjoint over `F` and one of them is algebraic over `F`, then the
-relative rank of `A ⊔ B` over `A` is the rank of `B` over `F`. -/
-theorem relrank_sup_left (H : A.LinearDisjoint B)
-    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F B) :
-    relrank A (A ⊔ B) = Module.rank F B := by
-  rw [← H.adjoin_rank_eq_rank_right_of_isAlgebraic halg, ← relrank_eq_rank_of_le,
-    restrictScalars_adjoin_eq_sup, adjoin_self, sup_comm]
-
-/-- If `A` and `B` are linearly disjoint over `F` and `A` is algebraic over `F`, then the
-relative `Module.finrank` of `A ⊔ B` over `A` is the `Module.finrank` of `B` over `F`. -/
-theorem relfinrank_sup_left (H : A.LinearDisjoint B) [Algebra.IsAlgebraic F A] :
+/-- If `A` and `B` are linearly disjoint over `F`, then the relative `Module.finrank` of `A ⊔ B`
+over `A` is the `Module.finrank` of `B` over `F`. -/
+theorem relfinrank_sup_left (H : A.LinearDisjoint B) :
     relfinrank A (A ⊔ B) = finrank F B := by
-  rw [relfinrank_eq_toNat_relrank, H.relrank_sup_left (.inl ‹_›), finrank]
+  rw [← H.adjoin_finrank_eq_finrank_right, ← relfinrank_eq_finrank_of_le,
+    restrictScalars_adjoin_intermediateField]
 
 /-- If `A` and `L` have coprime degree over `F`, then they are linearly disjoint. -/
 theorem of_finrank_coprime (H : (finrank F A).Coprime (finrank F L)) : A.LinearDisjoint L :=
@@ -786,49 +816,28 @@ theorem norm_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h�
 end LinearDisjoint
 
 variable (A B) in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A / F` is finite Galois, then the relative `Module.finrank` of `A ⊔ B` over `A` is the
-relative `Module.finrank` of `B` over `A ⊓ B`. -/
-theorem relfinrank_sup_eq_relfinrank_inf [IsGalois F A] [FiniteDimensional F A] :
-    relfinrank A (A ⊔ B) = relfinrank (A ⊓ B) B := by
-  have : FiniteDimensional F ↥(A ⊓ B) :=
-    FiniteDimensional.of_injective (inclusion inf_le_left).toLinearMap (RingHom.injective _)
-  by_cases hB : ¬FiniteDimensional F B
-  · have hsup : finrank F ↥(A ⊔ B) = 0 := finrank_of_not_finite fun _ ↦
-      hB (FiniteDimensional.of_injective (inclusion (le_sup_right : B ≤ A ⊔ B)).toLinearMap
-        (RingHom.injective _))
-    rw [← finrank_bot_mul_relfinrank le_sup_left, mul_eq_zero] at hsup
-    have hB := finrank_of_not_finite hB
-    rw [← finrank_bot_mul_relfinrank inf_le_right, mul_eq_zero] at hB
-    rw [hsup.resolve_left finrank_pos.ne', hB.resolve_left finrank_pos.ne']
-  rw [not_not] at hB
-  let A' : IntermediateField ↥(A ⊓ B) E := A.extendScalars (F := A ⊓ B) inf_le_left
-  let B' : IntermediateField ↥(A ⊓ B) E := B.extendScalars (F := A ⊓ B) inf_le_right
-  have : FiniteDimensional ↥(A ⊓ B) A' := FiniteDimensional.right F ↥(A ⊓ B) A
-  have : FiniteDimensional ↥(A ⊓ B) B' := FiniteDimensional.right F ↥(A ⊓ B) B
-  have : IsGalois ↥(A ⊓ B) A' := IsGalois.tower_top_of_isGalois F ↥(A ⊓ B) A
-  have h : A' ⊓ B' = ⊥ := by
-    ext
-    simp [A', B', mem_bot]
-  calc relfinrank A (A ⊔ B) = relfinrank A' (A' ⊔ B') := by
-        rw [extendScalars_sup]
-        rfl
-    _ = finrank ↥(A ⊓ B) B := (LinearDisjoint.of_inf_eq_bot h).relfinrank_sup_left
-    _ = relfinrank (A ⊓ B) B := (relfinrank_eq_finrank_of_le inf_le_right).symm
+`Module.finrank` of `B` over `A ⊓ B`. -/
+theorem relfinrank_sup_eq_finrank_inf [IsGalois F A] [FiniteDimensional F A] :
+    relfinrank A (A ⊔ B) = finrank ↑(A ⊓ B) B := by
+  let A' : IntermediateField ↑(A ⊓ B) E := A.extendScalars (F := A ⊓ B) inf_le_left
+  let B' : IntermediateField ↑(A ⊓ B) E := B.extendScalars (F := A ⊓ B) inf_le_right
+  have : FiniteDimensional ↑(A ⊓ B) A' := FiniteDimensional.right F ↑(A ⊓ B) A
+  have : IsGalois ↑(A ⊓ B) A' := IsGalois.tower_top_of_isGalois F ↑(A ⊓ B) A
+  calc
+    _ = relfinrank A' (A' ⊔ B') := by rw [extendScalars_sup]; rfl
+    _ = finrank ↑(A ⊓ B) B := (LinearDisjoint.of_inf_eq_bot ?_).relfinrank_sup_left
+  ext
+  simp [A', B', mem_bot]
 
 variable (A B) in
 /-- If `A / F` is Galois, then the product of the `Module.finrank`s of `A ⊔ B` and `A ⊓ B` over
 `F` is the product of the `Module.finrank`s of `A` and `B` over `F`. -/
 theorem finrank_sup_mul_finrank_inf_eq [IsGalois F A] :
-    finrank F ↥(A ⊔ B) * finrank F ↥(A ⊓ B) = finrank F A * finrank F B := by
-  by_cases hA : ¬FiniteDimensional F A
-  · have : ¬FiniteDimensional F ↥(A ⊔ B) := fun _ ↦
-      hA (FiniteDimensional.of_injective (inclusion (le_sup_left : A ≤ A ⊔ B)).toLinearMap
-        (RingHom.injective _))
-    simp [finrank_of_not_finite hA, finrank_of_not_finite this]
-  rw [not_not] at hA
-  rw [← finrank_bot_mul_relfinrank (le_sup_left : A ≤ A ⊔ B), relfinrank_sup_eq_relfinrank_inf,
-    ← finrank_bot_mul_relfinrank (inf_le_right : A ⊓ B ≤ B)]
-  ring
+    finrank F ↑(A ⊔ B) * finrank F ↑(A ⊓ B) = finrank F A * finrank F B := by
+  rw [← finrank_bot_mul_relfinrank (le_sup_left : A ≤ A ⊔ B)]
+  by_cases hA : FiniteDimensional F A
+  · rw [relfinrank_sup_eq_finrank_inf, mul_right_comm, mul_assoc, finrank_mul_finrank]
+  · simp [finrank_of_not_finite hA]
 
 end IntermediateField

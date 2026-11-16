@@ -198,6 +198,11 @@ theorem adjoin_rank_le_of_isAlgebraic_right (L : IntermediateField F K)
     Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L :=
   adjoin_rank_le_of_isAlgebraic E L (Or.inr halg)
 
+instance finiteDimensional_adjoin_intermediateField (L : IntermediateField F K)
+    [FiniteDimensional F L] : FiniteDimensional E (adjoin E (L : Set K)) :=
+  Module.rank_lt_aleph0_iff.mp <|
+    (adjoin_rank_le_of_isAlgebraic_right E L).trans_lt (Module.rank_lt_aleph0 F L)
+
 end Tower
 
 open Set CompleteLattice
