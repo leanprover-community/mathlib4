@@ -75,6 +75,10 @@ theorem signRight_X_sub_C_pow [IsOrderedRing R] [Nontrivial R] (a : R) (n : ℕ)
     signRight a ((X - C a) ^ n) = 1 := by
   rw [signRight, taylor_pow, taylor_X_sub_C, trailingCoeff_X_pow, sign_one]
 
+theorem signRight_X_sub_C [IsOrderedRing R] [Nontrivial R] (a : R) :
+    signRight a ((X - C a)) = 1 := by
+  rw [<- pow_one (X - C a), signRight_X_sub_C_pow]
+
 /-- `signRight` is a multiplicative function. -/
 theorem signRight_mul [IsStrictOrderedRing R] (x : R) (p q : R[X]) :
     signRight x (p * q) = signRight x p * signRight x q := by
