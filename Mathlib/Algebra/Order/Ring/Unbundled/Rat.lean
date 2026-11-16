@@ -107,8 +107,6 @@ instance instDistribLattice : DistribLattice ℚ := inferInstance
 instance instLattice : Lattice ℚ := inferInstance
 instance instSemilatticeInf : SemilatticeInf ℚ := inferInstance
 instance instSemilatticeSup : SemilatticeSup ℚ := inferInstance
-instance instInf : Min ℚ := inferInstance
-instance instSup : Max ℚ := inferInstance
 instance instPartialOrder : PartialOrder ℚ := inferInstance
 instance instPreorder : Preorder ℚ := inferInstance
 

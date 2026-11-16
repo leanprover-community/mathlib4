@@ -823,9 +823,11 @@ theorem BEx.elim {b : Prop} : (∃ x h, P x h) → (∀ a h, P a h → b) → b
 theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x), P x h :=
   ⟨a, h₁, h₂⟩
 
+@[deprecated forall₂_imp +typeChanged (since := "2026-11-16")]
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
 
+@[deprecated Exists₂.imp +typeChanged (since := "2026-11-16")]
 theorem BEx.imp_right (H : ∀ x h, P x h → Q x h) : (∃ x h, P x h) → ∃ x h, Q x h
   | ⟨_, _, h'⟩ => ⟨_, _, H _ _ h'⟩
 
