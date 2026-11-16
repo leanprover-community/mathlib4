@@ -437,12 +437,12 @@ lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [Std.S
   le_antisymm (h a b hab) (h b a <| symm hab)
 
 @[to_dual self]
-theorem map_le_of_le_of_map_le_of_lt [PartialOrder α] [Preorder β] {x y : α}
+theorem map_le_of_lt_imp_le_of_le [PartialOrder α] [Preorder β] {x y : α}
     {f : α → β} (h : x < y → f x ≤ f y) (hxy : x ≤ y) : f x ≤ f y :=
   hxy.eq_or_lt.elim (fun h ↦ h ▸ le_rfl) h
 
 @[to_dual self]
-theorem map_le_of_ge_of_map_le_of_gt [PartialOrder α] [Preorder β] {x y : α}
+theorem map_le_of_lt_imp_ge_of_ge [PartialOrder α] [Preorder β] {x y : α}
     {f : α → β} (h : y < x → f x ≤ f y) (hxy : y ≤ x) : f x ≤ f y :=
   hxy.eq_or_lt.elim (fun h ↦ h ▸ le_rfl) h
 
