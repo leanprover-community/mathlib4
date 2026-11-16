@@ -292,12 +292,7 @@ lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isReduced
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] [IsReduced S] :
     IsReduced (TensorProduct k K S) := by
   have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
-  have h (x : k) (y : S) : (MinimalPrimes.piLocalizationMap S) (x • y) =
-    x • (MinimalPrimes.piLocalizationMap S) y := by
-    ext p
-    simp [Algebra.smul_def, map_mul, MinimalPrimes.piLocalizationMap,
-      ← IsScalarTower.algebraMap_apply k S]
-  let g := AlgHom.mk' (MinimalPrimes.piLocalizationMap S) h
+  let g := AlgHom.mk' _ (MinimalPrimes.piLocalizationMap_map_smul (R := k) (S := S))
   have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
     Module.Flat.lTensor_preserves_injective_linearMap _
       (IsReduced.piLocalizationMap_injective S)

@@ -95,3 +95,10 @@ lemma IsReduced.piLocalizationMap_injective (S : Type*) [CommRing S] [IsReduced 
     rw [hx, Pi.zero_apply]
   simp only [MinimalPrimes.piLocalizationMap, RingHom.pi_apply] at this
   simp [this]
+
+lemma MinimalPrimes.piLocalizationMap_map_smul {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] (x : R) (y : S) : (MinimalPrimes.piLocalizationMap S) (x • y) =
+    x • (MinimalPrimes.piLocalizationMap S) y := by
+  ext p
+  simp [Algebra.smul_def, map_mul, MinimalPrimes.piLocalizationMap,
+    ← IsScalarTower.algebraMap_apply R S]
