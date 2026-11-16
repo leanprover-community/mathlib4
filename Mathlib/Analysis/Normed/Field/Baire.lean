@@ -71,9 +71,7 @@ theorem minpoly.bddAbove_natDegree_of_baireSpace [BaireSpace E] :
   refine ⟨(minpoly K a).natDegree * n, forall_mem_range.2 fun x ↦ ?_⟩
   -- Translate a small nonzero multiple of x into the interior of a degree sublevel set.
   obtain ⟨c, hc, hx⟩ := (dense_compl_singleton (0 : K)).exists_mem_open
-    (isOpen_interior.preimage
-      (continuous_const.add (continuous_id.smul continuous_const) :
-        Continuous fun c : K ↦ a + c • x))
+    (isOpen_interior.preimage (by fun_prop : Continuous fun c : K ↦ a + c • x))
     ⟨0, by simpa using ha⟩
   refine (minpoly.natDegree_le_mul_of_mem_adjoin_pair
     (Algebra.IsIntegral.isIntegral a) (Algebra.IsIntegral.isIntegral (a + c • x)) ?_).trans
