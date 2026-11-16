@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Bool.Basic
+
 import Mathlib.Tactic.CrossRefAttribute
 
 /-!

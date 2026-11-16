@@ -10,10 +10,11 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.Separation.Hausdorff
+
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Pi
-public import Mathlib.Topology.Separation.Hausdorff
-public import Mathlib.Tactic.Peel
 
 /-!
 # Type of functions with locally finite support
@@ -335,8 +336,6 @@ Assign a function with locally finite support within `U` to a function in the su
 @[simps]
 def mk_of_mem_addSubgroup [AddGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubgroup U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
-
-@[deprecated (since := "2026-03-06")] alias mk_of_mem := mk_of_mem_addSubgroup
 
 instance [AddGroup Y] : Neg (locallyFinsuppWithin U Y) where
   neg D := mk_of_mem_addSubgroup (-D) <| neg_mem D.memAddSubgroup
@@ -688,7 +687,7 @@ lemma restrictOrderMonoidHom_apply [AddCommGroup Y] [LinearOrder Y] {V : Set X}
     restrictOrderMonoidHom h D = D.restrict h := by rfl
 
 /--
-Present a function with with finite support as a finsum of singleton indicator functions.
+Present a function with finite support as a finsum of singleton indicator functions.
 -/
 @[simp] lemma sum_apply_smul_single_eq_self [DecidableEq X] [AddCommMonoid Y] {U : Set X}
     {F : Function.locallyFinsuppWithin U Y} (h : F.support.Finite) :

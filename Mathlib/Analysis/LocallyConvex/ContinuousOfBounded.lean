@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
+
 import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
@@ -18,7 +19,6 @@ if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ
 ## References
 
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-
 -/
 
 @[expose] public section

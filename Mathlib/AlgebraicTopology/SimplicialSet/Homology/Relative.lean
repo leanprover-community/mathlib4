@@ -5,11 +5,12 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-import Mathlib.Algebra.Homology.HomologicalComplexKernels
 public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.SSetPair
+
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+import Mathlib.Algebra.Homology.HomologicalComplexKernels
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
@@ -25,7 +26,6 @@ this is the relative homology of the pair, which is related to the homology
 of simplicial sets `P.left` and `P.right` via a long homology sequence
 (see the lemmas `SSetPair.homology_exact₁`, `SSetPair.homology_exact₂` and
 `SSetPair.homology_exact₃`),
-
 -/
 
 @[expose] public section

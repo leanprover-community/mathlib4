@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.Basic
+
 import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
@@ -31,7 +32,6 @@ when constructing the truncation `K.truncGE e` when `e.IsTruncGE`.
 In the case of `embeddingUpIntGE p`, we show that `0 : ℕ` is the
 only element in this lower boundary. Similarly, we define
 `Embedding.BoundaryLE`.
-
 -/
 
 @[expose] public section

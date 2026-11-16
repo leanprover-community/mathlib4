@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Yunzhou Xie
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+
 import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
@@ -37,7 +38,6 @@ relation and that isomorphic algebras are Morita equivalent.
 ## Tags
 
 Morita Equivalence, Category Theory, Noncommutative Ring, Module Theory
-
 -/
 
 @[expose] public section

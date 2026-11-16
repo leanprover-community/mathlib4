@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.List.Infix
+public import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Preparations for defining operations on `Finset`.

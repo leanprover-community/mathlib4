@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Basic
 public import Mathlib.Data.Set.Finite.Lattice
+
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!

@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.LinearAlgebra.Ray
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Ray
 
 /-!
 # Orientations of modules
@@ -30,7 +30,6 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 ## References
 
 * https://en.wikipedia.org/wiki/Orientation_(vector_space)
-
 -/
 
 @[expose] public section
@@ -153,7 +152,7 @@ theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orie
   induction x using Module.Ray.ind with | h g hg =>
   rw [Orientation.map_apply, smul_rayOfNeZero, ray_eq_iff, Units.smul_def,
     (g.compLinearMap f.symm).eq_smul_basis_det e, g.eq_smul_basis_det e,
-    AlternatingMap.compLinearMap_apply, AlternatingMap.smul_apply,
+    AlternatingMap.compLinearMap_apply, _root_.smul_apply,
     show (fun i ↦ (LinearEquiv.symm f).toLinearMap (e i)) = (LinearEquiv.symm f).toLinearMap ∘ e
     by rfl, Basis.det_comp, Basis.det_self, mul_one, smul_eq_mul, mul_comm, mul_smul,
     LinearEquiv.coe_inv_det]

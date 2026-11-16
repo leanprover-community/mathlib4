@@ -46,7 +46,6 @@ statement is clearer.
 * Develop Galois cohomology to extend Noether's result to infinite Galois extensions.
 * "Additive Hilbert 90": let `L/K` be a finite Galois extension. Then $H^n(Gal(L/K), L)$ is trivial
   for all $1 ≤ n.$
-
 -/
 
 @[expose] public section
@@ -120,7 +119,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
 `(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
 theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
-    (toMul <| toAdditive ((Rep.ofAlgebraAutOnUnits K L).norm.hom
+    (toMul <| toAdditive ((Rep.ofAlgebraAutOnUnits K L).norm.asHom.hom
       (toAdditive.symm <| ofMul x))).1 = algebraMap K L (Algebra.norm K (x : L)) := by
   simp [Algebra.norm_eq_prod_automorphisms, Representation.norm]
 

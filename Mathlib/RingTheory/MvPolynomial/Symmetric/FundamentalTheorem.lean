@@ -5,11 +5,12 @@ Authors: Junyan Xu
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-import Mathlib.RingTheory.MvPolynomial.Tower
+
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Algebra.MvPolynomial.Variables
+import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials
@@ -50,7 +51,6 @@ We actually only define `Fin.accumulate` in the case `σ := Fin m` rather than a
 with a linear order; we show that `esymmAlgHom` is in fact surjective whenever `m ≤ n` and
 injective whenever `n ≤ m`, and then transfer the results to any Fintype `σ`. See
 `MvPolynomial.injective_esymmAlgHom` and `MvPolynomial.esymmAlgHom_surjective`.
-
 -/
 
 @[expose] public section

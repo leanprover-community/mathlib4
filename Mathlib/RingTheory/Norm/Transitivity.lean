@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -18,7 +18,6 @@ about the roots of the minimal polynomial of `s` over `R`.
 ## References
 
 * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
-
 -/
 
 @[expose] public section

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
+
 import Mathlib.Algebra.Order.Ring.Finset
 
 /-!
@@ -81,7 +82,7 @@ theorem expand_mul (q : ℕ) (φ : MvPolynomial σ R) : φ.expand (p * q) = (φ.
 lemma coeff_expand_smul (hp : p ≠ 0) (φ : MvPolynomial σ R) (m : σ →₀ ℕ) :
     (expand p φ).coeff (p • m) = φ.coeff m := by
   classical
-  induction φ using induction_on' <;> simp [*, nsmul_right_inj hp]
+  induction φ using induction_on' <;> simp [*]
 
 @[simp]
 lemma coeff_expand_zero (hp : p ≠ 0) (φ : MvPolynomial σ R) :

@@ -5,11 +5,15 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.Analysis.Complex.UnitDisc.Basic
+public import Mathlib.Topology.Connected.LocallyPathConnected
+
 import Mathlib.Analysis.Complex.CoveringMap
 import Mathlib.Topology.Homotopy.Lifting
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Branches of logarithm and `n`th root on simply connected domains

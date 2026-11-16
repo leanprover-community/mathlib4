@@ -5,9 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Order.CompleteLattice.Basic
+
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-! # Complete lattices and groups -/
 

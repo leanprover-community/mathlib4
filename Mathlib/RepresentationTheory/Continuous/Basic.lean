@@ -6,9 +6,10 @@ Authors: Edison Xie
 module
 
 public import Mathlib.RepresentationTheory.Intertwining
-public import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
+public import Mathlib.Topology.ContinuousMap.Algebra
+
+import Mathlib.CategoryTheory.Category.Init
 
 /-!
 # Continuous representations

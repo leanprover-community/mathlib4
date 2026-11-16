@@ -5,12 +5,12 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Norm
 
-/-!
+import Mathlib.Algebra.CharZero.Infinite
 
+/-!
 # Fractional ideals of number fields
 
 Prove some results on the fractional ideals of number fields.

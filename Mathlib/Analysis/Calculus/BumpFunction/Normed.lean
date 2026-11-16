@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.BumpFunction.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed bump function
 

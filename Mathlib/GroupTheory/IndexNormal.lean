@@ -5,10 +5,11 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Nat.Prime.Factorial
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Order.Atoms
+
+import Mathlib.Data.Finite.Perm
 
 /-! # Subgroups of small index are normal
 
@@ -19,7 +20,6 @@ public import Mathlib.Order.Atoms
   (This does not require `G` to be finite.)
 
 * `Subgroup.isCoatom_of_index_prime`: a subgroup of prime index is maximal.
-
 -/
 
 public section

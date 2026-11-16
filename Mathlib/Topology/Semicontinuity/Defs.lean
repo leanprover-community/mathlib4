@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker, Jireh Lor
 module
 
 public import Mathlib.Topology.Constructions.SumProd
+
 import Mathlib.Topology.ContinuousOn
 
 /-!
@@ -55,7 +56,6 @@ We also define variants of these two notions for `On`/`At`/`WithinAt`.
 
 * <https://en.wikipedia.org/wiki/Semi-continuity>
 * <https://en.wikipedia.org/wiki/Hemicontinuity>
-
 -/
 
 @[expose] public section

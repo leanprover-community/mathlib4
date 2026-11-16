@@ -5,10 +5,11 @@ Authors: Yuma Mizuno, Ralf Stephan
 -/
 module
 
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Inverse
+
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Exponential Power Series
@@ -85,7 +86,7 @@ variable {A : Type*}
 
 The proof uses induction on coefficients: if `f' = f` and `f(0) = 1`, then
 `coeff (n+1) f * (n+1) = coeff n f`, which determines all coefficients uniquely. -/
-theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [IsAddTorsionFree A]
+theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [HasUniqueDiv A]
     {f : PowerSeries A} (hd : d⁄dX f = f) (hc : constantCoeff f = 1) :
     f = exp A := by
   ext n

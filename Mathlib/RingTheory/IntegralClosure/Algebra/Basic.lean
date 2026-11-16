@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral closure of a subring.
 
@@ -36,6 +39,10 @@ theorem Subalgebra.isIntegral_iff (S : Subalgebra R B) :
     Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
   Algebra.isIntegral_def.trans <| .trans
     (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
+
+instance Subalgebra.isIntegral [Algebra.IsIntegral R B] (S : Subalgebra R B) :
+    Algebra.IsIntegral R S :=
+  S.isIntegral_iff.mpr fun x _ => Algebra.IsIntegral.isIntegral x
 
 section
 

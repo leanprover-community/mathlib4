@@ -5,8 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Order.Partition.Equipartition
+
+import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # Equitabilising a partition

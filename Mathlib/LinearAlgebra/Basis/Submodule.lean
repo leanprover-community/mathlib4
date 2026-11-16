@@ -201,7 +201,7 @@ end RestrictScalars
 
 section AddSubgroup
 
-variable {M R : Type*} [Ring R] [Nontrivial R] [IsAddTorsionFree R]
+variable {M R : Type*} [Ring R] [Nontrivial R] [HasUniqueDiv R]
   [AddCommGroup M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
 
 /--

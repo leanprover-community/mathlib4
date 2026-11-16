@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.DocString
+public import Mathlib.Init
 
 /-!
 # `extend_doc` command

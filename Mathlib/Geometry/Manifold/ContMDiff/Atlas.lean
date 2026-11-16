@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-!
 # Smoothness of charts and local structomorphisms

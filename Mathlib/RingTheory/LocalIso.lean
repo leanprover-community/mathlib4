@@ -6,6 +6,7 @@ Authors: Jiedong Jiang, Christian Merten
 module
 
 public import Mathlib.RingTheory.RingHom.OpenImmersion
+
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!

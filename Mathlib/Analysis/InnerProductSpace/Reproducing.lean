@@ -76,11 +76,21 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 variable [RKHS 𝕜 H X V]
 
+/-
+It is essential for performance that synthesizing `FunLike` instances is fast.
+So, we need to be careful with the following generic `FunLike` instance.
+To ensure that it fails quickly, we ensure its first subgoal is `RKHS 𝕜 H X V` instead of
+something like `RCLike 𝕜` (which has many more available instances and will fail slowly).
+Lean's algorithm that determines this synth order mistakenly rejects this,
+so we have to set `synthInstance.checkSynthOrder` to false.
+-/
+set_option synthInstance.checkSynthOrder false in
 /--
 Each element of a reproducing kernel Hilbert space may be coerced into a function.
 -/
 @[macro_inline]
-instance instFunLike : FunLike H X V where
+instance {𝕜 H X V : Type*} {_ : RCLike 𝕜} {_ : NormedAddCommGroup V} {_ : InnerProductSpace 𝕜 V}
+    {_ : NormedAddCommGroup H} {_ : InnerProductSpace 𝕜 H} [RKHS 𝕜 H X V] : FunLike H X V where
   coe f := coeCLM 𝕜 f
   coe_injective := coeCLM_injective
 

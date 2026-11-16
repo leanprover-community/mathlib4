@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
-import Mathlib.Tactic.FinCases
 
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Tactic.FinCases
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -623,9 +623,9 @@ lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
     fun i ↦ by obtain rfl := Subsingleton.elim i 0; simpa⟩).not_gt (by simp), ?_⟩
-  · rintro H ⟨_ | n, l, h⟩
-    · simp
-    · cases H (l 0) (l 1) (h 0)
+  rintro H ⟨_ | n, l, h⟩
+  · simp
+  · cases H (l 0) (l 1) (h 0)
 
 lemma krullDim_nonpos_iff_forall_isMin : krullDim α ≤ 0 ↔ ∀ x : α, IsMin x := by
   simp only [krullDim_nonpos_iff_forall_isMax, IsMax, IsMin]
@@ -1113,7 +1113,7 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
     Order.height x ≤ (m + 1) * Order.height (f x) + m := by
   generalize h' : Order.height (f x) = n
   cases n with | top => simp | coe n =>
-    induction n using Nat.strong_induction_on generalizing x with | h n ih =>
+    induction n using Nat.strong_induction_on generalizing x with | ind n ih
     refine height_le_iff.mpr fun p hp ↦ le_of_not_gt fun h_len ↦ ?_
     let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
     suffices h'' : f (p i) < f x by

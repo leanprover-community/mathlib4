@@ -5,9 +5,10 @@ Authors: Alex J. Best
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Nilpotent.Lemmas
+
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!

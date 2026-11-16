@@ -5,13 +5,13 @@ Authors: Kexing Ying
 -/
 module
 
+public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
-public import Mathlib.Probability.Martingale.Basic
+
 import Mathlib.Tactic.AdaptationNote
 
 /-!
-
 # Doob's upcrossing estimate
 
 Given a discrete real-valued submartingale $(f_n)_{n \in \mathbb{N}}$, denoting by $U_N(a, b)$ the
@@ -53,7 +53,6 @@ convergence theorems.
 ### References
 
 We mostly follow the proof from [Kallenberg, *Foundations of modern probability*][kallenberg2021]
-
 -/
 
 @[expose] public section
@@ -68,7 +67,6 @@ namespace MeasureTheory
 variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 /-!
-
 ## Proof outline
 
 In this section, we will denote by $U_N(a, b)$ the number of upcrossings of $(f_n)$ from below $a$
@@ -128,7 +126,6 @@ $$
 as required.
 
 To obtain the general case, we simply apply the above to $((f_n - a)^+)_n$.
-
 -/
 
 
@@ -368,7 +365,8 @@ theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
     ∑ k ∈ Finset.range N, ({n | lowerCrossingTime a b f N k ω ≤ n} ∩
       {n | n < upperCrossingTime a b f N (k + 1) ω}).indicator 1 n
   refine Finset.stronglyMeasurable_fun_sum _ fun i _ =>
-    stronglyMeasurable_const.indicator ?_
+    stronglyMeasurable_const.indicator
+      (s := {ω | lowerCrossingTime a b f N i ω ≤ n ∧ n < upperCrossingTime a b f N (i + 1) ω}) ?_
   have hl := hf.isStoppingTime_lowerCrossingTime (a := a) (b := b) (N := N) (n := i) n
   have hu := hf.isStoppingTime_upperCrossingTime (a := a) (b := b) (N := N) (n := i + 1) n
   simp only [ENat.some_eq_natCast, Nat.cast_le] at hl hu
@@ -686,7 +684,6 @@ theorem Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part [IsFin
       (integral_nonneg fun ω => posPart_nonneg _)
 
 /-!
-
 ### Variant of the upcrossing estimate
 
 Now, we would like to prove a variant of the upcrossing estimate obtained by taking the supremum
@@ -707,7 +704,6 @@ $$
 $$
 $U_N(a, b)$ is measurable as $\{U_N(a, b) < N\}$ is a measurable set since $U_N(a, b)$ is a
 stopping time.
-
 -/
 
 
@@ -743,8 +739,8 @@ theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f
     ext ω
     exact upcrossingsBefore_eq_sum hab
   rw [this]
-  refine Finset.measurable_fun_sum _ fun i _ => Measurable.indicator measurable_const <|
-    ℱ.le N _ ?_
+  refine Finset.measurable_fun_sum _ fun i _ => Measurable.indicator
+    (s := {ω | upperCrossingTime a b f N i ω < N}) measurable_const <| ℱ.le N _ ?_
   simpa only [ENat.some_eq_natCast, Nat.cast_lt] using!
     hf.isStoppingTime_upperCrossingTime.measurableSet_lt_of_pred N
 

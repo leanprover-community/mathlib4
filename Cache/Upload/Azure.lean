@@ -5,20 +5,14 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Cache.Upload.Dest
 public import Cache.Upload.Curl
 
 /-!
 # The Azure Blob Storage backend
 
-The complete azure upload path: the destination resolution
-(`azureUploadDestFrom`), the credential resolution (`azureAuthFrom`), the
-request signing (`azureBearerCurlArgs`), and the transfer entry point
-(`azurePutStaged`). rclone signs only S3 requests, so the backend always
-transfers with the curl tool.
-
-The storage account URL and the container model live in `Cache/Infra.lean`,
-because the read side uses them too.
+The azure upload path: the credential (`azureAuthFrom`), the request signing
+(`azureBearerCurlArgs`), and the transfer (`azurePutStaged`). The tool always
+uploads with curl on this backend, because rclone signs only S3 requests.
 -/
 
 public section
@@ -26,22 +20,6 @@ public section
 namespace Cache.Requests
 
 open System (FilePath)
-
-/--
-The upload destination for the azure backend: the chosen `--container` on the
-`lakecache` Azure storage account, or on the base
-`MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as `MATHLIB_CACHE_BASE_URL`
-rebases reads. A missing container errors: an upload targets exactly one
-container.
--/
-def azureUploadDestFrom (putBase? : Option String) (container? : Option Container)
-    (repo : String) (scope? : Option String) : Except String StagedUploadDest :=
-  match container? with
-  | some c => .ok (containerUploadDest (putBase?.getD azureAccountURL) c repo scope?)
-  | none => .error
-      s!"an upload targets one container: pass --container=NAME (known: \
-      {", ".intercalate (Container.all.map Container.name)}), or set \
-      MATHLIB_CACHE_PUT_URL for a flat upload"
 
 /-- The api-version header that every bearer-authenticated Azure request
 sends. Bearer authentication requires an api-version that supports OAuth. -/
@@ -77,9 +55,8 @@ def azureAuthFrom (bearer? : Option String) : Except String String :=
   match bearer? with
   | some token => .ok token
   | none => .error
-      "the azure backend (the default) uploads with an Azure OIDC bearer token: \
-      set MATHLIB_CACHE_AZURE_BEARER_TOKEN, or pass --backend=s3 to upload \
-      with the S3 credential pair"
+      "the azure backend needs an Azure OIDC bearer token: \
+      set MATHLIB_CACHE_AZURE_BEARER_TOKEN"
 
 /-- Retrieves the azure upload credential from the environment via
 `azureAuthFrom`. -/
@@ -90,9 +67,8 @@ def getAzureAuth : IO String := do
 The staged put on the azure backend: the curl tool against `dest`, each
 request signed with the bearer token (`azureBearerCurlArgs`).
 -/
-def azurePutStaged (dest : StagedUploadDest) (token : String) (srcDir : FilePath)
-    (fileNames : Array String) (overwrite : Bool) (markerSha? : Option String) :
-    IO Unit :=
-  putStagedViaCurl dest (azureBearerCurlArgs token) srcDir fileNames overwrite markerSha?
+def azurePutStaged (dest : Location) (token : String) (srcDir : FilePath)
+    (fileNames : Array String) (overwrite : Bool) : IO Unit :=
+  putStagedViaCurl dest (azureBearerCurlArgs token) srcDir fileNames overwrite
 
 end Cache.Requests

@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Indization.Equalizers
 public import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
+
 import Mathlib.CategoryTheory.Limits.Indization.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 

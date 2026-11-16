@@ -6,9 +6,9 @@ Authors: Johan Commelin, Kim Morrison
 module
 
 public import Mathlib.Algebra.Homology.ComplexShape
-public import Mathlib.CategoryTheory.Subobject.Limits
-public import Mathlib.CategoryTheory.GradedObject
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.GradedObject
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Homological complexes.

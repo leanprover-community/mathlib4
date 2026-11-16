@@ -6,9 +6,10 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.Topology.Sets.CompactOpenCovered
+
 import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.Topology.Sets.CompactOpenCovered
 
 /-!
 # Quasi-compact covers

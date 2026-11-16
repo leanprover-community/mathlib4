@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+
 import Mathlib.Geometry.Manifold.Notation
 
 /-! # Tangent bundles
@@ -464,7 +465,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact ContMDiffWithinAt.contDiffWithinAt <|
       (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ h
-  · apply Bundle.contMDiffWithinAt_totalSpace.2
+  · apply contMDiffWithinAt_totalSpace_iff.2
     refine ⟨contMDiffWithinAt_id, ?_⟩
     convert! h.contMDiffWithinAt with y
     simp

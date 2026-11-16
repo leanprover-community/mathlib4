@@ -6,12 +6,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Algebra.Group.ContinuousDiv
-import Mathlib.Topology.Algebra.Group.Subgroup
 public import Mathlib.Topology.Maps.Proper.Basic
+
+import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # Pointwise operations on sets in topological groups
-
 -/
 
 public section

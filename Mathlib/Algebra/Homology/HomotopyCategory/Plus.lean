@@ -8,15 +8,15 @@ module
 public import Mathlib.Algebra.Homology.CochainComplexPlus
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.Precylinder
-import Mathlib.CategoryTheory.Localization.OfQuotient
 public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
+
+import Mathlib.CategoryTheory.Localization.OfQuotient
 
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy
 
 In this file, we introduce the triangulated full subcategory `HomotopyCategory.Plus C`
 of `HomotopyCategory C (.up ℤ)` consisting of bounded below cochain complexes.
-
 -/
 
 @[expose] public section
@@ -32,7 +32,6 @@ open HomologicalComplex
 
 variable {C} [HasBinaryBiproducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
@@ -139,7 +138,7 @@ abbrev Plus := (plus C).FullSubcategory
 namespace Plus
 
 /-- The inclusion of the homotopy category of bounded below cochain complexes
-in the homotopy category category of all cochain complexes. -/
+in the homotopy category of all cochain complexes. -/
 abbrev ι : Plus C ⥤ HomotopyCategory C (.up ℤ) := (plus C).ι
 
 /-- The inclusion functor

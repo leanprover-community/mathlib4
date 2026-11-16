@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
+
 import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.Normed.Operator.Prod
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!

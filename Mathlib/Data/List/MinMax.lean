@@ -6,10 +6,11 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 module
 
 public import Mathlib.Data.List.Basic
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Data.List.Induction
-import Mathlib.Order.MinMax
 public import Mathlib.Order.WithBot
+
+import Mathlib.Data.List.Induction
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.MinMax
 
 /-!
 # Minimum and maximum of lists
@@ -136,26 +137,18 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     · simp
     dsimp
     rw [← apply_ite, ← apply_ite]
-    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727, this was
-    `grind -abstractProof`, with a note that plain `grind` made `@[to_dual]` fail. The
-    grind proof term now contains a `Classical.byContradiction` that `@[to_dual]` cannot
-    insert a cast into, with or without `-abstractProof`, so the case analysis is spelled
-    out instead; the six `@[to_dual]` failures further down this file all cascade from
-    here. -/
-    dsimp only
-    split_ifs <;> simp_all only [not_lt, Option.some.injEq] <;>
-      first
-        | rfl
-        | exact absurd (‹f a < f m›.trans ‹f m < f tl›) (not_lt.2 ‹f tl ≤ f a›)
-        | exact absurd (‹f a < f tl›.trans_le ‹f tl ≤ f m›) (not_lt.2 ‹f m ≤ f a›)
+    split_ifs <;> grind -- Without `split_ifs`, `to_dual` gives an error.
 
 variable [DecidableEq α]
 
 @[to_dual]
 theorem index_of_argmax :
-    ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.idxOf m ≤ l.idxOf a
-  | [], m, _, _, _, _ => by simp
-  | hd :: tl, m, hm, a, ha, ham => by
+    ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, f m ≤ f a → l.idxOf m ≤ l.idxOf a
+  | [], m, _, _, _ => by simp
+  | hd :: tl, m, hm, a, ham => by
+    by_cases ha : a ∉ hd :: tl
+    · exact idxOf_of_notMem ha ▸ idxOf_le_length
+    rw [not_not] at ha
     simp only [idxOf_cons, argmax_cons, Option.mem_def] at hm ⊢
     cases h : argmax f tl
     · rw [h] at hm
@@ -167,7 +160,7 @@ theorem index_of_argmax :
     · cases not_le_of_gt ‹_› ‹_›
     · rw [ite_eq_left rfl]
     · rw [ite_eq_right, ite_eq_right]
-      · exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
+      · exact Nat.succ_le_succ (index_of_argmax h ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne
     · rw [ite_eq_left rfl]
@@ -177,14 +170,14 @@ theorem index_of_argmax :
 theorem mem_argmax_iff :
     m ∈ argmax f l ↔
       m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.idxOf m ≤ l.idxOf a :=
-  ⟨fun hm => ⟨argmax_mem hm, fun _ ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
+  ⟨fun hm => ⟨argmax_mem hm, fun _ ha => le_of_mem_argmax ha hm, fun _ _ => index_of_argmax hm⟩,
     by
       rintro ⟨hml, ham, hma⟩
       rcases harg : argmax f l with - | n
       · simp_all
       · have :=
           Nat.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
-            (index_of_argmax harg hml (ham _ (argmax_mem harg)))
+            (index_of_argmax harg (ham _ (argmax_mem harg)))
         rw [(idxOf_inj hml).1 this, Option.mem_def]⟩
 
 @[to_dual]
@@ -348,8 +341,8 @@ lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.max
     | some z =>
       have : Std.Antisymm (α := α) (· ≤ ·) := ⟨fun _ _ => _root_.le_antisymm⟩
       rw [List.max?_eq_some_iff] at hz
-      · rw [Option.getD_some]
-        exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
+      rw [Option.getD_some]
+      exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
 
 end LinearOrder
 

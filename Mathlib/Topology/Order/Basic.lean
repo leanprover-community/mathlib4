@@ -359,7 +359,7 @@ theorem nhdsGE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopol
 @[to_dual nhdsLE_basis_of_exists_lt]
 theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
-  nhdsGE_eq_iInf_principal ha ▸ hasBasis_biInf_principal
+  nhdsGE_eq_iInf_principal ha ▸ hasBasis_biInf_principal (S := {u | a < u})
     (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
       Ico_subset_Ico_right (min_le_right _ _)⟩) ha
 
@@ -540,16 +540,10 @@ theorem SuccOrder.hasBasis_nhds_Ioc_of_exists_lt [SuccOrder α] {a : α} (ha : �
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ha
 
-@[deprecated (since := "2026-04-19")]
-alias PredOrder.hasBasis_nhds_Ioc_of_exists_gt := PredOrder.hasBasis_nhds_Ico_of_exists_gt
-
 @[to_dual]
 theorem SuccOrder.hasBasis_nhds_Ioc [SuccOrder α] {a : α} [NoMinOrder α] :
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
-
-@[deprecated (since := "2026-04-19")]
-alias PredOrder.hasBasis_nhds_Ioc := PredOrder.hasBasis_nhds_Ico
 
 variable (α) in
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then

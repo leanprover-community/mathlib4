@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
-public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-! # Formal power series - Inverses
 
@@ -23,7 +23,6 @@ Formal (univariate) power series over a local ring form a local ring.
 Formal (univariate) power series over a field form a discrete valuation ring, and a normalization
 monoid. The definition `residueFieldOfPowerSeries` provides the isomorphism between the residue
 field of `k⟦X⟧` and `k`, when `k` is a field.
-
 -/
 
 @[expose] public section
@@ -58,25 +57,8 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff x.1 φ * coeff x.2 (inv.aux a φ) else 0 := by
   rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
-  simp only [Finsupp.single_eq_zero]
-  split_ifs; · rfl
-  congr 1
-  symm
-  apply Finset.sum_nbij' (fun (a, b) ↦ (single () a, single () b))
-    fun (f, g) ↦ (f (), g ())
-  · aesop
-  · aesop
-  · aesop
-  · aesop
-  · rintro ⟨i, j⟩ _hij
-    obtain H | H := le_or_gt n j
-    · aesop
-    rw [ite_eq_left H, ite_eq_left]
-    · rfl
-    refine ⟨?_, fun hh ↦ H.not_ge ?_⟩
-    · rintro ⟨⟩
-      simpa [Finsupp.single_eq_same] using le_of_lt H
-    · simpa [Finsupp.single_eq_same] using hh ()
+  simp_rw [lt_iff_le_not_ge]
+  simp
 
 /-- A formal power series is invertible if the constant coefficient is invertible. -/
 def invOfUnit (φ : R⟦X⟧) (u : Rˣ) : R⟦X⟧ :=
@@ -273,15 +255,9 @@ variable {k : Type*} [Field k]
 
 open IsDiscreteValuationRing
 
-theorem hasUnitMulPowIrreducibleFactorization :
-    HasUnitMulPowIrreducibleFactorization k⟦X⟧ :=
-  ⟨X, And.intro X_irreducible
-      (by
-        intro f hf
-        use f.order.toNat
-        use Unit_of_divided_by_X_pow_order f
-        simp only [Unit_of_divided_by_X_pow_order_nonzero hf]
-        exact X_pow_order_mul_divXPowOrder)⟩
+theorem hasUnitMulPowIrreducibleFactorization : HasUnitMulPowIrreducibleFactorization k⟦X⟧ := by
+  refine ⟨X, irreducible_X, fun {f} hf ↦ ⟨f.order.toNat, Unit_of_divided_by_X_pow_order f, ?_⟩⟩
+  rw [Unit_of_divided_by_X_pow_order_nonzero hf, X_pow_order_mul_divXPowOrder]
 
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid
@@ -297,7 +273,7 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
     rw [Ideal.isMaximal_iff]
     constructor
     · rw [Ideal.mem_span_singleton]
-      exact Prime.not_dvd_one X_prime
+      exact prime_X.not_dvd_one
     · intro I f hI hfX hfI
       rw [Ideal.mem_span_singleton, X_dvd_iff] at hfX
       have hfI0 : C (f 0) ∈ I := by
@@ -335,13 +311,15 @@ theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
 open UniqueFactorizationMonoid
 
 open scoped Classical in
-theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
+theorem normalized_count_X_eq_of_coe (P : k[X]) :
     Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
       Multiset.count Polynomial.X (normalizedFactors P) := by
+  rcases eq_or_ne P 0 with rfl | hP
+  · simp
   apply eq_of_forall_le_iff
   simp only [← Nat.cast_le (α := ℕ∞)]
   rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← emultiplicity_eq_count_normalizedFactors
-    irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors X_irreducible] <;>
+    Polynomial.irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors irreducible_X] <;>
   simp only [← pow_dvd_iff_le_emultiplicity, Polynomial.X_pow_dvd_iff,
     PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true, ne_eq, coe_eq_zero_iff, hP,
     not_false_eq_true]

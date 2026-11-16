@@ -5,13 +5,13 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
+public import Batteries.Data.List.Lemmas
 public import Mathlib.Basic.Unique
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
-public import Mathlib.Tactic.Common
-public import Batteries.Data.List.Lemmas
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Basic properties of lists
@@ -960,8 +960,6 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
 @[simp]
 theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
   filter_sublist.subset
-
-@[deprecated (since := "2026-04-24")] alias filter_subset' := filter_subset_self
 
 theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 

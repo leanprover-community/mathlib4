@@ -7,6 +7,7 @@ Authors: Matteo Cipollina, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
+
 import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 
 /-!

@@ -5,18 +5,18 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Nat.Factorial.Basic
+
+import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
 
 Main declarations:
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
-
 -/
 
 @[expose] public section

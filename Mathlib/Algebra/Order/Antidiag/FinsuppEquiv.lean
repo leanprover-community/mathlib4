@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Data.Finsupp.Multiset
+
 import Mathlib.Data.Sym.Card
 
 /-!
-
 # Equivalence between `Finset.finsuppAntidiag` and `Sym`
 
 This file collects further results about equivalence and cardinality related to

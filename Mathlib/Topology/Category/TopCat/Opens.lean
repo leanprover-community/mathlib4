@@ -6,11 +6,15 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.GaloisConnection
-import Mathlib.CategoryTheory.Limits.Preorder
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Sets.Opens
-public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
+
+import Mathlib.CategoryTheory.Limits.Preorder
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of open sets in a topological space.
@@ -501,7 +505,6 @@ theorem map_functor_eq {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     ((Opens.map U.inclusion').obj <| U.isOpenEmbedding.functor.obj V) = V :=
   TopologicalSpace.Opens.map_functor_eq' _ U.isOpenEmbedding V
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     U.isOpenEmbedding.isOpenMap.adjunction.counit.app (U.isOpenEmbedding.functor.obj V) =

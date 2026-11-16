@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Order.UpperLower.Closure
+
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Matroids
@@ -669,7 +670,7 @@ theorem IsBase.exchange_isBase_of_indep (hB : M.IsBase B) (hf : f ∉ B)
   rw [h, encard_singleton, encard_eq_one] at hcard
   obtain ⟨x, hx⟩ := hcard
   obtain (rfl : f = x) := hx.subset ⟨hfB, hf⟩
-  simp_rw [← h, ← singleton_union, ← hx, _root_.sdiff_sdiff_right_self, inf_eq_inter, inter_comm B,
+  simp_rw [← h, ← singleton_union, ← hx, _root_.sdiff_sdiff_right_self, inter_comm B,
     sdiff_union_inter]
   exact hB'
 

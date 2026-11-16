@@ -5,9 +5,10 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 -/
 module
 
-import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
+
+import Mathlib.Algebra.Order.Pi
 
 /-!
 # Seminorms
@@ -132,7 +133,7 @@ instance instZero : Zero (Seminorm 𝕜 E) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
     smul' := fun _ _ => (mul_zero _).symm }⟩
 
-instance : IsZeroApply (Seminorm 𝕜 E) E ℝ where
+instance : IsZeroApply (Seminorm 𝕜 E) where
 
 @[deprecated (since := "2026-06-22")] alias coe_zero := FunLike.coe_zero
 
@@ -152,7 +153,7 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         rw [map_smul_eq_mul, mul_left_comm] }
 
-instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : IsSMulApply R (Seminorm 𝕜 E) E ℝ where
+instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : IsSMulApply R (Seminorm 𝕜 E) where
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
@@ -168,7 +169,7 @@ instance instAdd : Add (Seminorm 𝕜 E) where
       toFun := fun x => p x + q x
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
-instance : IsAddApply (Seminorm 𝕜 E) E ℝ where
+instance : IsAddApply (Seminorm 𝕜 E) where
 
 @[deprecated (since := "2026-06-22")] alias coe_add := FunLike.coe_add
 
@@ -672,14 +673,14 @@ theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Non
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons _ _ _ hs ih =>
-    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, inf_eq_inter, ih]
+    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, ih]
 
 theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E)
     (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons _ _ _ hs ih =>
-    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, inf_eq_inter, ih]
+    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, ih]
 
 @[gcongr]
 theorem ball_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : p.ball x r₁ ⊆ p.ball x r₂ :=
@@ -1013,10 +1014,7 @@ variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E)
 
 /-- Seminorm-balls are convex. -/
 theorem convex_ball : Convex ℝ (ball p x r) := by
-  convert (p.convexOn.translate_left (-x)).convex_lt r
-  ext y
-  rw [preimage_univ, sep_univ, p.mem_ball, sub_eq_add_neg]
-  rfl
+  simpa [ball, sub_eq_add_neg] using (p.convexOn.translate_left (-x)).convex_lt r
 
 /-- Closed seminorm-balls are convex. -/
 theorem convex_closedBall : Convex ℝ (closedBall p x r) := by

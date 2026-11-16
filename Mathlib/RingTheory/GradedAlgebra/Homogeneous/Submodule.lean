@@ -5,8 +5,8 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
-public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Homogeneous submodules of a graded module

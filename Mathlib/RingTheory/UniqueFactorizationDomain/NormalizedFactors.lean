@@ -66,7 +66,7 @@ theorem prime_of_normalized_factor {a : α} : ∀ x : α, x ∈ normalizedFactor
   rw [normalizedFactors, factors]
   split_ifs with ane0; · simp
   intro x hx; rcases Multiset.mem_map.1 hx with ⟨y, ⟨hy, rfl⟩⟩
-  rw [(normalize_associated _).prime_iff]
+  rw [prime_normalize_iff]
   exact (Classical.choose_spec (UniqueFactorizationMonoid.exists_prime_factors a ane0)).1 y hy
 
 theorem irreducible_of_normalized_factor {a : α} :
@@ -92,7 +92,7 @@ theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
   rwa [← normalize_normalized_factor p p_mem, normalize_eq_normalize_iff, dvd_dvd_iff_associated]
 
 theorem normalizedFactors_eq_of_dvd (a : α) :
-    ∀ᵉ (p ∈ normalizedFactors a) (q ∈ normalizedFactors a), p ∣ q → p = q := by
+    ∀ p ∈ normalizedFactors a, ∀ q ∈ normalizedFactors a, p ∣ q → p = q := by
   intro p hp q hq hdvd
   convert
     normalize_eq_normalize hdvd
@@ -348,11 +348,8 @@ bijection between the `normalizedFactors` of `a` and of `f a`.
 def normalizedFactorsEquiv (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
     {x // x ∈ normalizedFactors a} ≃ {y // y ∈ normalizedFactors (f a)} :=
   Equiv.subtypeEquiv f fun x ↦ by
-    rcases eq_or_ne a 0 with rfl | ha
-    · simp
-    · simp [mem_normalizedFactors_iff' ha,
-        mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
-        MulEquiv.irreducible_iff, he]
+    obtain rfl | ha := eq_or_ne a 0 <;>
+      simp [mem_normalizedFactors_iff', MulEquiv.irreducible_iff, *]
 
 @[simp]
 theorem normalizedFactorsEquiv_apply (he : ∀ x, normalize (f x) = f (normalize x))

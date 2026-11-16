@@ -10,11 +10,12 @@ public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Order.OrderIsoNat
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
 public import Mathlib.Tactic.TFAE
+
+import Mathlib.Order.OrderIsoNat
 
 /-!
 # Compactness properties for complete lattices
@@ -52,6 +53,8 @@ We also show well-founded lattices are compactly generated
 
 complete lattice, well-founded, compact
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -558,7 +561,7 @@ lemma disjoint_biSup_of_finite_disjoint_biSup {ι : Type*} {f : ι → α} {s : 
   simp_rw [disjoint_iff, iSup_subtype', ← sSup_range, inf_comm, inf_sSup_eq_iSup_inf_sup_finset,
     iSup_eq_bot]
   intro u hu
-  obtain ⟨t, ht, ht', htu⟩ : ∃ᵉ (t ⊆ s) (hu : t.Finite), f '' t = u :=
+  obtain ⟨t, ht, ht', htu⟩ : ∃ t ⊆ s, ∃ hu : t.Finite, f '' t = u :=
     Set.Finite.exists_subset_finite_image_eq u.finite_toSet <| by rwa [Set.image_eq_range f s]
   replace htu : u.sup id = ⨆ i ∈ t, f i := by
     simp only [Finset.sup_eq_iSup, id_eq, ← Finset.mem_coe, ← htu, iSup_image]
@@ -640,8 +643,8 @@ theorem iSupIndep.iInf {ι : Type*} {κ : ι → Type*} (f : (i : ι) → κ i �
   intro s
   induction s using Finset.strongInduction with
   | H s ih =>
-    by_cases hs : 1 < s.card; swap
-    · by_cases hcard0 : s.card = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
+    by_cases hs : 1 < #s; swap
+    · by_cases hcard0 : #s = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
     · obtain ⟨k₁, k₂, _, _, h⟩ := Finset.one_lt_card_iff.mp hs
       obtain ⟨i, hi⟩ : ∃ i : ι, k₁ i ≠ k₂ i := Function.ne_iff.mp h
       classical

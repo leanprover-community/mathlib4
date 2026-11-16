@@ -18,7 +18,6 @@ This file defines oriented angles in Euclidean affine spaces.
 
 * `EuclideanGeometry.oangle`, with notation `∡`, is the oriented angle determined by three
   points.
-
 -/
 
 @[expose] public section
@@ -270,6 +269,53 @@ theorem oangle_eq_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p₂ �
   · simp [-neg_vsub_eq_vsub_rev, hlt]
   · simp [hlt]
 
+/-- If twice of alternate angles or consecutive interior angles are equal,
+corresponding pairs of points in two angles have the same vector span. -/
+theorem vectorSpan_eq_of_two_zsmul_oangle {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (h₂₃ : p₂ ≠ p₃) (h₃₄ : p₃ ≠ p₄)
+    (h : (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₃ p₂) :
+    vectorSpan ℝ ({p₁, p₂} : Set P) = vectorSpan ℝ ({p₃, p₄} : Set P) := by
+  simp_rw [vectorSpan_pair]
+  rw [← vsub_eq_zero_iff_eq.ne] at h₁₂ h₂₃ h₃₄
+  rw [oangle, oangle, o.oangle_rev (p₃ -ᵥ p₂) (p₁ -ᵥ p₂), o.oangle_rev (p₂ -ᵥ p₃) (p₄ -ᵥ p₃),
+    ← neg_vsub_eq_vsub_rev p₂ p₃, ← neg_vsub_eq_vsub_rev p₃ p₄,
+    o.oangle_neg_left h₂₃ h₁₂, o.oangle_neg_right h₂₃ h₃₄, neg_add, neg_add, smul_add, smul_add,
+    add_left_inj, smul_neg, smul_neg, neg_inj] at h
+  apply o.span_eq_of_two_zsmul_oangle_right h₂₃ h₁₂ h₃₄
+  exact h
+
+/-- Twice of alternate angles or consecutive interior angles are equal if and only if
+corresponding pairs of points in two angles have the same vector span. -/
+theorem two_zsmul_oangle_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (h₂₃ : p₂ ≠ p₃) (h₃₄ : p₃ ≠ p₄) :
+    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₃ p₂ ↔
+      vectorSpan ℝ ({p₁, p₂} : Set P) = vectorSpan ℝ ({p₃, p₄} : Set P) := by
+  constructor <;> intro h
+  · exact vectorSpan_eq_of_two_zsmul_oangle h₁₂ h₂₃ h₃₄ h
+  · rw [Set.pair_comm p₃ p₄] at h
+    apply two_zsmul_oangle_of_vectorSpan_eq h
+    rw [Set.pair_comm]
+
+/-- If twice of alternate angles or consecutive interior angles are equal,
+the lines determined by corresponding pairs of points in two angles are parallel. -/
+theorem parallel_of_two_zsmul_oangle {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (h₂₃ : p₂ ≠ p₃) (h₃₄ : p₃ ≠ p₄)
+    (h : (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₃ p₂) :
+    line[ℝ, p₁, p₂] ∥ line[ℝ, p₃, p₄] := by
+  rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq]
+  exact vectorSpan_eq_of_two_zsmul_oangle h₁₂ h₂₃ h₃₄ h
+
+/-- Twice of alternate angles or consecutive interior angles are equal if and only if
+the lines determined by corresponding pairs of points in two angles are parallel. -/
+theorem two_zsmul_oangle_iff_parallel {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (h₂₃ : p₂ ≠ p₃) (h₃₄ : p₃ ≠ p₄) :
+    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₃ p₂ ↔ line[ℝ, p₁, p₂] ∥ line[ℝ, p₃, p₄] := by
+  constructor <;> intro h
+  · exact parallel_of_two_zsmul_oangle h₁₂ h₂₃ h₃₄ h
+  · rw [Set.pair_comm p₃ p₄] at h
+    apply two_zsmul_oangle_of_parallel h
+    rw [Set.pair_comm]
+
 /-- Given three points not equal to `p`, the angle between the first and the second at `p` plus
 the angle between the second and the third equals the angle between the first and the third. -/
 @[simp]
@@ -417,6 +463,24 @@ lemma angle_eq_iff_oangle_eq_neg_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ :
     ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ ↔ ∡ p₁ p₂ p₃ = -∡ p₄ p₅ p₆ :=
   o.angle_eq_iff_oangle_eq_neg_of_sign_eq_neg (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃)
     (vsub_ne_zero.2 hp₄) (vsub_ne_zero.2 hp₆) hs
+
+/-- If two oriented angles are equal, and the four endpoint pairs are nondegenerate, then the
+corresponding unoriented angles are equal. -/
+theorem angle_eq_of_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆)
+    (hp₁ : p₁ ≠ p₂) (hp₃ : p₃ ≠ p₂) (hp₄ : p₄ ≠ p₅) (hp₆ : p₆ ≠ p₅) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ :=
+  (angle_eq_iff_oangle_eq_of_sign_eq hp₁ hp₃ hp₄ hp₆ (by rw [h])).2 h
+
+/-- If two oriented angles are equal, and the first triple is not collinear, then the
+corresponding unoriented angles are equal. -/
+theorem angle_eq_of_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆) (hnc₁₂₃ : ¬ Collinear ℝ {p₁, p₂, p₃}) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
+  have hnc₄₅₆ : ¬ Collinear ℝ {p₄, p₅, p₆} :=
+    (collinear_iff_of_two_zsmul_oangle_eq (by rw [h])).not.mp hnc₁₂₃
+  exact angle_eq_of_oangle_eq h
+    (ne₁₂_of_not_collinear hnc₁₂₃) (ne₂₃_of_not_collinear hnc₁₂₃).symm
+    (ne₁₂_of_not_collinear hnc₄₅₆) (ne₂₃_of_not_collinear hnc₄₅₆).symm
 
 /-- The oriented angle between three points equals the unoriented angle if the sign is
 positive. -/
@@ -890,7 +954,7 @@ lemma angle_eq_angle_div_two_of_oangle_eq_of_sSameSide {p₁ p₂ p₃ p₄ : P}
     rw [angle_eq_abs_oangle_toReal h₁₂ h₃₂, angle_eq_abs_oangle_toReal h₁₂ h₄₂, this, abs_div]
     simp
   have hadd := oangle_add h₁₂ h₃₂ h₄₂
-  rw [div_left_inj' (by simp), ← hadd]
+  rw [div_left_inj₀ (by simp), ← hadd]
   have h : ∡ p₁ p₂ p₃ ≠ π := fun h ↦ hs.left_notMem ((oangle_eq_zero_or_eq_pi_iff_collinear.1
     (.inr h)).mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) h₁₂)
   refine (Real.Angle.toReal_add_eq_toReal_add_toReal h (ha ▸ h) (.inr ?_)).symm

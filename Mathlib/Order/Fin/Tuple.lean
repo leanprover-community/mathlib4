@@ -6,8 +6,8 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 module
 
 public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Order.PiLex
 public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.PiLex
 
 /-!
 # Order properties on tuples
