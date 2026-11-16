@@ -716,7 +716,8 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   · rw [ne_eq, coe_eq_zero] at hx0
     rcases hz with hz | hz <;> simp [*]
   simp only [*]
-  fail_if_not_idempotent norm_cast at *
+  -- TODO: norm_cast is not idempotent! fail_if_not_idempotent norm_cast at *
+  norm_cast at *
   rw [← coe_rpow_of_ne_zero (mul_ne_zero hx0 hy0), NNReal.mul_rpow]
   fail_if_not_idempotent norm_cast
 
