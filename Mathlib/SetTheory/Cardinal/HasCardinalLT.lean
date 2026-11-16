@@ -137,8 +137,8 @@ lemma hasCardinalLT_union
 
 /-- The particular case of `hasCardinalLT_sigma` when all the inputs are in the
 same universe `w`. It is used to prove the general case. -/
-lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
+private lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w})
+    [Fact κ.IsRegular] (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
     HasCardinalLT (Σ i, α i) κ := by
   simp only [hasCardinalLT_iff_cardinal_mk_lt] at hι hα ⊢
   rw [Cardinal.mk_sigma]
@@ -177,7 +177,7 @@ lemma hasCardinalLT_iUnion
 
 /-- The particular case of `hasCardinalLT_prod` when all the inputs are in the
 same universe `w`. It is used to prove the general case. -/
-lemma hasCardinalLT_prod' {T₁ T₂ : Type w} {κ : Cardinal.{w}} (hκ : Cardinal.aleph0 ≤ κ)
+private lemma hasCardinalLT_prod' {T₁ T₂ : Type w} {κ : Cardinal.{w}} (hκ : Cardinal.aleph0 ≤ κ)
     (h₁ : HasCardinalLT T₁ κ) (h₂ : HasCardinalLT T₂ κ) :
     HasCardinalLT (T₁ × T₂) κ := by
   rw [hasCardinalLT_iff_cardinal_mk_lt] at h₁ h₂ ⊢

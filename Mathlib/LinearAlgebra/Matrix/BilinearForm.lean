@@ -315,6 +315,7 @@ open Matrix
 variable {n : Type*} [Fintype n]
 variable (J J₃ A A' : Matrix n n R₂)
 
+@[deprecated Matrix.isAdjointPair_equiv +typeChanged (since := "2026-11-16")]
 theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₂) (h : IsUnit P) :
     (Pᵀ * J * P).IsAdjointPair (Pᵀ * J * P) A A' ↔
       J.IsAdjointPair J (P * A * P⁻¹) (P * A' * P⁻¹) :=
@@ -322,24 +323,29 @@ theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₂) (h : I
 
 variable [DecidableEq n]
 
+@[deprecated mem_pairSelfAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_pairSelfAdjointMatricesSubmodule' :
     A ∈ pairSelfAdjointMatricesSubmodule J J₃ ↔ Matrix.IsAdjointPair J J₃ A A := by
   simp only [mem_pairSelfAdjointMatricesSubmodule]
 
 /-- The submodule of self-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
+@[deprecated selfAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 def selfAdjointMatricesSubmodule' : Submodule R₂ (Matrix n n R₂) :=
   pairSelfAdjointMatricesSubmodule J J
 
+@[deprecated mem_selfAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_selfAdjointMatricesSubmodule' :
     A ∈ selfAdjointMatricesSubmodule J ↔ J.IsSelfAdjoint A := by
   simp only [mem_selfAdjointMatricesSubmodule]
 
 /-- The submodule of skew-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
+@[deprecated skewAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 def skewAdjointMatricesSubmodule' : Submodule R₂ (Matrix n n R₂) :=
   pairSelfAdjointMatricesSubmodule (-J) J
 
+@[deprecated mem_skewAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_skewAdjointMatricesSubmodule' :
     A ∈ skewAdjointMatricesSubmodule J ↔ J.IsSkewAdjoint A := by
   simp only [mem_skewAdjointMatricesSubmodule]
