@@ -1104,8 +1104,7 @@ def getProjectionExprs (ref : Syntax) (tgt : Expr) (rhs : Expr) :
         expr := expr.instantiateLambdasOrApps params
         projNrs := proj.projNrs.tail })
 
-/-- Add a lemma `declName` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
-`args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
+/-- Add a lemma specified by the `SimpsLemmaData`. -/
 private def addProjection (s : SimpsLemmaData) : SimpsM Unit :=
   -- Enable `backward.defeqAttrib.useBackward` so the dsimp/simp normalization
   -- below still uses `@[backward_defeq]`-only theorems (which would have been
@@ -1198,13 +1197,7 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   trace[simps.debug] "Structure-eta-reduce:{indentExpr e}\nto{indentExpr reduct}"
   headStructureEtaReduce reduct
 
-/-- Derive lemmas specifying the projections of the declaration.
-`nm`: name of the lemma
-If `todo` is non-empty, it will generate exactly the names in `todo`.
-`toApply` is non-empty after a custom projection that is a composition of multiple projections
-was just used. In that case we need to apply these projections before we continue changing `lhs`.
-`simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
--/
+/-- Derive lemmas that specify the projections of a declaration, as encoded by the `SimpsData`. -/
 private partial def addProjections (s : SimpsData) : SimpsM Unit := do
   let cfg := (← read).cfg
   trace[simps.debug] "Type of the Expression before normalizing: {s.type}"
@@ -1342,7 +1335,6 @@ open Simps
 
 /-- `simpsTac` derives `simp` lemmas for all (nested) non-Prop projections of the declaration.
 If `todo` is non-empty, it will generate exactly the names in `todo`.
-If `shortNm` is true, the generated names will only use the last projection name.
 If `trc` is true, trace as if `trace.simps` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
     (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
