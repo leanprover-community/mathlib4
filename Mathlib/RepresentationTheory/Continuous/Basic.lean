@@ -672,8 +672,16 @@ along `1 : Unit →ₜ* G` of the trivial representation of the trivial group on
 `f ↦ fun g ↦ π g (f g⁻¹)`. -/
 def coindEquivCoind₁ (π : ContRepresentation R G V)
     (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
-    ((trivial R Unit V).coind (1 : Unit →ₜ* G)).Equiv π.coind₁ :=
+    ((trivial R Unit V).coind (1 : PUnit →ₜ* G)).Equiv π.coind₁ :=
   .mk (coindLEquivCoind₁ π hπ) fun g ↦ by ext; simp
+
+/-- The equivalence between `coind₁` and `coind` of the trivial representation of trivial
+  subgroup of `G`. -/
+@[deprecated coindEquivCoind₁ +typeChanged (since := "2026-11-16")]
+def coind₁Equivcoind : (coind₁ (.trivial R (⊥ : Subgroup G) V)).Equiv
+    (coind 1 (.trivial R G V)) :=
+  (coindEquivCoind₁ _ (by simpa using continuous_snd)).symm.trans <|
+    .mk (ContinuousLinearEquiv.ofEq _ _ (by ext; simp)) fun _ ↦ rfl
 
 section coind₁ResMap
 
