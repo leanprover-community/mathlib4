@@ -5,8 +5,12 @@ Authors: Scott Carnahan
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.RingTheory.FilteredAlgebra.Basic
-public import Mathlib.RingTheory.GradedAlgebra.Basic
+
+import Mathlib.Algebra.Algebra.Operations
 
 /-!
 # Relations between graded rings and filtered rings
@@ -16,6 +20,7 @@ ordered additive commutative monoid.
 
 ## TODO
 
+* Define Rees algebra `⨁ i, F i` of a filtered ring (possibly generalizing away from rings)
 * Define associated graded
 
 -/
@@ -30,49 +35,21 @@ variable {ι : Type v} {R : Type w} {A : Type u}
 
 section
 
-variable [DecidableEq ι] [AddCommMonoid ι] [PartialOrder ι] [IsOrderedAddMonoid ι] [CommSemiring R]
-  [Semiring A] [Algebra R A] (F : ι → Submodule R A) [GradedAlgebra F]
+variable [AddCommMonoid ι] [PartialOrder ι] [CommSemiring R]
+  [Semiring A] [Algebra R A] (F : ι → Submodule R A) [SetLike.GradedMonoid F]
 
-open DirectSum
-
-lemma isRingFiltration_of_graded :
+lemma isRingFiltration_of_graded [AddLeftMono ι] :
     IsRingFiltration (fun i ↦ ⨆ j ≤ i, F j) (fun i ↦ ⨆ j < i, F j) where
-  mono _ j h := by
-    simp only [iSup_le_iff]
-    intro i hi
-    refine le_iSup_of_le i ?_
-    rw [le_iSup_iff]
-    have : i ≤ j := hi.trans h
-    tauto
-  is_le {_ j} h := by
-    simp only [iSup_le_iff]
-    intro i hi
-    refine le_iSup_of_le i ?_
-    rw [le_iSup_iff]
-    have : i < j := lt_of_le_of_lt hi h
-    tauto
-  is_sup _ _ h := by
-    simp only [iSup_le_iff]
-    intro i hi
-    simp only [iSup_le_iff] at h
-    exact h i hi i (Std.IsPreorder.le_refl i)
-  one_mem := mem_of_le_of_mem (S := F 0)
-    (le_iSup_iff.mpr fun _ h ↦ (by simpa using h 0)) (SetLike.one_mem_graded F)
-  mul_mem {i j} gi gj hi hj := by
-    classical
-    obtain ⟨fgi, hgi⟩ := (Submodule.mem_biSup_iff_exists_dfinsupp R (fun k ↦ k ≤ i) F gi).mp hi
-    obtain ⟨fgj, hgj⟩ := (Submodule.mem_biSup_iff_exists_dfinsupp R (fun k ↦ k ≤ j) F gj).mp hj
-    rw [← hgi, ← hgj]
-    simp only [DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply, DFinsupp.sum,
-      DFinsupp.support_filter, DFinsupp.filter_apply, LinearMap.toAddMonoidHom_coe,
-      Submodule.subtype_apply, Finset.sum_mul_sum]
-    refine sum_mem fun k hk ↦ sum_mem fun l hl ↦ ?_
-    have hki : k ≤ i := by grind
-    have hlj : l ≤ j := by grind
-    simp only [hki, ↓reduceIte, hlj]
-    refine Set.mem_of_subset_of_mem (SetLike.coe_subset_coe.mpr (le_sSup ?_)) <|
-      SetLike.mul_mem_graded (Submodule.coe_mem (fgi k)) (Submodule.coe_mem (fgj l))
-    use k + l
-    simp [add_le_add hki hlj]
+  mono _ j h := biSup_mono fun _ hk ↦ hk.trans h
+  is_le {_ j} h := biSup_mono fun _ hk ↦ hk.trans_lt h
+  is_sup _ _ h :=
+    iSup₂_le fun k hk ↦ (le_iSup₂ (f := fun j (_ : j ≤ k) ↦ F j) k le_rfl).trans (h k hk)
+  one_mem := le_iSup₂ (f := fun j (_ : j ≤ 0) ↦ F j) 0 le_rfl (SetLike.one_mem_graded F)
+  mul_mem {i j} _ _ hx hy := by
+    suffices (⨆ k ≤ i, F k) * (⨆ l ≤ j, F l) ≤ ⨆ m ≤ i + j, F m from
+      this (Submodule.mul_mem_mul hx hy)
+    simp_rw [Submodule.iSup_mul, Submodule.mul_iSup, iSup_le_iff]
+    exact fun k hk l hl ↦ le_iSup₂_of_le (k + l) (add_le_add hk hl)
+      (Submodule.mul_le.mpr fun _ ha _ hb ↦ SetLike.mul_mem_graded ha hb)
 
 end
