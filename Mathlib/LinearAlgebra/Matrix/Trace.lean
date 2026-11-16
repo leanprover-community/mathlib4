@@ -132,7 +132,7 @@ lemma trace_comp (M : Matrix n n (Matrix m m R)) : trace (comp n n m m R M) = tr
 lemma trace_trace_comp_symm (M : Matrix (n × m) (n × m) R) :
     trace (trace ((comp n n m m R).symm M)) = trace M := by
   rw [← trace_comp]
-  simp
+  rfl
 
 end AddCommMonoid
 
