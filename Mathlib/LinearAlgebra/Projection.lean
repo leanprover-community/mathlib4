@@ -272,17 +272,15 @@ lemma projection_eq_id_sub_projection (hpq : IsCompl p q) :
     p.projection q hpq x = x ↔ x ∈ p := by
   rw [eq_comm, ← sub_eq_zero, ← projection_eq_self_sub_projection, projection_apply_eq_zero_iff]
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply (hpq : IsCompl p q) (x : E) :
     (p.prodEquivOfIsCompl q hpq).symm x =
       (p.projectionOnto q hpq x, q.projectionOnto p hpq.symm x) :=
   Prod.ext rfl congr(($(prodComm_trans_prodEquivOfIsCompl p q hpq).symm x).1)
 
-@[simp]
 theorem toLinearMap_prodEquivOfIsCompl_symm (hpq : IsCompl p q) :
     (p.prodEquivOfIsCompl q hpq).symm.toLinearMap =
       (p.projectionOnto q hpq).prod (q.projectionOnto p hpq.symm) :=
-  LinearMap.ext <| by simp
+  LinearMap.ext <| by simp [prodEquivOfIsCompl_symm_apply]
 
 theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x ∈ q := by
   rw [← projection_eq_self_sub_projection h]
@@ -379,17 +377,17 @@ variable {p q}
 
 @[simp]
 theorem ofIsCompl_apply_left (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (u : p) :
-    ofIsCompl h φ ψ (u : E) = φ u := by simp [ofIsCompl]
+    ofIsCompl h φ ψ (u : E) = φ u := by simp [ofIsCompl, prodEquivOfIsCompl_symm_apply]
 
 @[simp]
 theorem ofIsCompl_apply_right (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (v : q) :
-    ofIsCompl h φ ψ (v : E) = ψ v := by simp [ofIsCompl]
+    ofIsCompl h φ ψ (v : E) = ψ v := by simp [ofIsCompl, prodEquivOfIsCompl_symm_apply]
 
 theorem ofIsCompl_eq (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
     (hφ : ∀ u, φ u = χ u) (hψ : ∀ u, ψ u = χ u) : ofIsCompl h φ ψ = χ := by
   ext x
   obtain ⟨_, _, rfl, _⟩ := existsUnique_add_of_isCompl h x
-  simp [ofIsCompl, hφ, hψ]
+  simp [ofIsCompl, hφ, hψ, prodEquivOfIsCompl_symm_apply]
 
 theorem ofIsCompl_eq' (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
     (hφ : φ = χ.comp p.subtype) (hψ : ψ = χ.comp q.subtype) : ofIsCompl h φ ψ = χ :=
@@ -736,9 +734,9 @@ variable {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E] {p q
 theorem prodEquivOfIsCompl_symm_conj (h : IsCompl p q) {f : Module.End R E}
     (hp : f ∈ p.compatibleMaps p) (hq : f ∈ q.compatibleMaps q) :
     (prodEquivOfIsCompl p q h).symm.conj f = (f.restrict hp).prodMap (f.restrict hq) := by
-  refine LinearMap.prod_ext (LinearMap.ext fun x ↦ ?_) (LinearMap.ext fun y ↦ ?_) <;>
-  simp [LinearEquiv.conj_apply, LinearEquiv.symm_apply_eq, -toLinearMap_prodEquivOfIsCompl_symm,
-    -prodEquivOfIsCompl_symm_apply] <;> rfl
+  refine LinearMap.prod_ext (LinearMap.ext fun x ↦ ?_) (LinearMap.ext fun y ↦ ?_)
+  · simp [LinearEquiv.conj_apply, LinearEquiv.symm_apply_eq, ← LinearMap.coe_restrict_apply hp]
+  · simp [LinearEquiv.conj_apply, LinearEquiv.symm_apply_eq, ← LinearMap.coe_restrict_apply hq]
 
 end Submodule
 
