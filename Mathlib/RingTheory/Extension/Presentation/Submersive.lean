@@ -46,7 +46,6 @@ For a presubmersive presentation `P` of `S` over `R` we make the following defin
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
-
 -/
 
 @[expose] public section
@@ -167,7 +166,7 @@ lemma isUnit_jacobian_iff_aevalDifferential_bijective :
 lemma isUnit_jacobian_of_linearIndependent_of_span_eq_top
     (hli : LinearIndependent S (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j)))
     (hsp : Submodule.span S
-      (Set.range <| (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
+      (Set.range (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
     IsUnit P.jacobian := by
   classical
   rw [isUnit_jacobian_iff_aevalDifferential_bijective]
@@ -202,7 +201,7 @@ lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} 
   rw [jacobian_eq_jacobiMatrix_det, jacobian_eq_jacobiMatrix_det]
   simp only [ofAlgEquiv_toPresentation, Presentation.ofAlgEquiv_toGenerators,
     jacobiMatrix_ofAlgEquiv, Generators.algebraMap_apply, Generators.ofAlgEquiv_val,
-    ← AlgHom.coe_coe e, MvPolynomial.comp_aeval_apply]
+    ← AlgHom.coe_ofClass e, MvPolynomial.comp_aeval_apply]
   simp [Function.comp_def]
 
 /-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
@@ -304,7 +303,6 @@ In this section we compute the Jacobian of the composition of `Q` and `P` to be
 the product of the Jacobians. For this we use a block decomposition of the Jacobi matrix and show
 that the upper-right block vanishes, the upper-left block has determinant Jacobian of `Q` and
 the lower-right block has determinant Jacobian of `P`.
-
 -/
 
 variable [Fintype σ] [Fintype σ']
@@ -392,7 +390,7 @@ lemma comp_jacobian_eq_jacobian_smul_jacobian [Finite σ] [Finite σ'] :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = P.jacobian • Q.jacobian
   · simp only [Generators.algebraMap_apply, ← map_mul]
     congr
-    convert!
+    convert
       Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
         (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
   · rw [jacobiMatrix_comp_₁₁_det, jacobiMatrix_comp_₂₂_det, mul_comm, Algebra.smul_def]
@@ -557,7 +555,7 @@ noncomputable def comp : SubmersivePresentation R T (ι' ⊕ ι) (σ' ⊕ σ) wh
   __ := Q.toPreSubmersivePresentation.comp P.toPreSubmersivePresentation
   jacobian_isUnit := by
     rw [comp_jacobian_eq_jacobian_smul_jacobian, Algebra.smul_def, IsUnit.mul_iff]
-    exact ⟨RingHom.isUnit_map _ <| P.jacobian_isUnit, Q.jacobian_isUnit⟩
+    exact ⟨RingHom.isUnit_map _ P.jacobian_isUnit, Q.jacobian_isUnit⟩
 
 end Composition
 
@@ -624,7 +622,7 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) 
   haveI : Fintype σ := Fintype.ofFinite σ
   have :
       IsUnit (LinearMap.toMatrix (Pi.basisFun S σ) (Pi.basisFun S σ) P.aevalDifferential).det := by
-    convert! P.jacobian_isUnit
+    convert P.jacobian_isUnit
     rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
       aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]
     simp [RingHom.map_det]

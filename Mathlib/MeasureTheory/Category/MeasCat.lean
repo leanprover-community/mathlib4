@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.CategoryTheory.Monad.Algebra
+public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
@@ -62,6 +62,7 @@ instance : LargeCategory MeasCat where
   id X := ⟨id, measurable_id⟩
   comp f g := ⟨g.1 ∘ f.1, g.2.comp f.2⟩
 
+@[macro_inline]
 instance (X Y : MeasCat) : FunLike ({ f : X → Y // Measurable f }) X Y where
   coe f := f
   coe_injective _ _ := Subtype.ext
@@ -117,7 +118,7 @@ end MeasCat
 
 instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} where
   forget₂.obj X := @MeasCat.of _ (borel X)
-  forget₂.map f := ⟨f.1, f.hom.2.borel_measurable⟩
+  forget₂.map f := ⟨f.1, Continuous.borel_measurable (by fun_prop)⟩
 
 /-- The Borel functor, the canonical embedding of topological spaces into measurable spaces. -/
 abbrev Borel : TopCat.{u} ⥤ MeasCat.{u} :=

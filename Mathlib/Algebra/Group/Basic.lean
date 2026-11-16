@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Init
@@ -196,6 +196,14 @@ lemma mul_left_iterate_apply (a b : M) : (a * ·)^[n] b = a ^ n * b := by simp
 /-- Version of `mul_right_iterate` that is fully applied, for `rw`. -/
 @[to_additive /-- Version of `add_right_iterate` that is fully applied, for `rw`. -/ ]
 lemma mul_right_iterate_apply (a b : M) : (· * a)^[n] b = b * a ^ n := by simp
+
+@[to_additive]
+lemma mul_left_iterate_apply_self (a : M) (n : ℕ) : (a * ·)^[n] a = a ^ (n + 1) := by
+  rw [pow_succ, mul_left_iterate_apply]
+
+@[to_additive]
+lemma mul_right_iterate_apply_self (a : M) (n : ℕ) : (· * a)^[n] a = a ^ (n + 1) := by
+  rw [pow_succ', mul_right_iterate_apply]
 
 @[to_additive]
 lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp

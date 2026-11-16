@@ -7,10 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Data.Nat.Prime.Defs
-public import Mathlib.Tactic.Zify
 
 import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Tactic.Zify
 
 /-!
 # Factorial with big operators
@@ -19,7 +18,6 @@ This file contains some lemmas on factorials in combination with big operators.
 
 While in terms of semantics they could be in the `Basic.lean` file, importing
 `Algebra.BigOperators.Group.Finset` leads to a cyclic import.
-
 -/
 
 public section

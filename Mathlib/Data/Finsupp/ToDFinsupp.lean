@@ -255,7 +255,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `Finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
   toFun f := ⟨split f, Trunc.mk ⟨(splitSupport f : Finset ι).val, fun i => by
-          rw [← Finset.mem_def, mem_splitSupport_iff_nonzero]
+          rw [← Finset.mem_def, mem_splitSupport_iff_ne_zero]
           exact (em _).symm⟩⟩
   invFun f := by
     haveI := Classical.decEq ι
@@ -287,7 +287,7 @@ theorem sigmaFinsuppEquivDFinsupp_support [DecidableEq ι] [Zero N]
     (sigmaFinsuppEquivDFinsupp f).support = Finsupp.splitSupport f := by
   ext
   rw [DFinsupp.mem_support_toFun]
-  exact (Finsupp.mem_splitSupport_iff_nonzero _ _).symm
+  exact (Finsupp.mem_splitSupport_iff_ne_zero _ _).symm
 
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σ i, η i) (n : N) :

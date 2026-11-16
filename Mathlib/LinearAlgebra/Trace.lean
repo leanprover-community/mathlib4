@@ -8,11 +8,11 @@ module
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.Finiteness.Prod
-public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 import Mathlib.RingTheory.SimpleRing.Matrix
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Trace of a linear map
@@ -299,7 +299,8 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     have := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
-  · rw [trace, trace, dite_eq_right hM, dite_eq_right ?_, zero_apply, zero_apply]
+  · rw [trace, trace, dite_eq_right hM, dite_eq_right ?_, LinearMap.zero_apply,
+      LinearMap.zero_apply]
     rintro ⟨s, ⟨b⟩⟩
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
       ((e.symm.toEquiv.image s).trans (Set.equivOfEq Finset.coe_image.symm))⟩⟩
@@ -307,7 +308,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
 @[simp] theorem trace_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W]
     [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)] [AlgEquivClass F K _ _]
     (f : F) (x : End K V) : (f x).trace K W = x.trace K V :=
-  have ⟨_, h⟩ := (AlgEquivClass.toAlgEquiv f).eq_linearEquivConjAlgEquiv
+  have ⟨_, h⟩ := (AlgEquiv.ofClass f).eq_linearEquivConjAlgEquiv
   (by simpa using congr($h x)) ▸ trace_conj' _ _
 
 @[simp] theorem _root_.Matrix.trace_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
@@ -315,13 +316,13 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).trace = x.trace := by
   simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
     LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans
-      (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
+      (AlgEquiv.ofClass f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
 @[simp] theorem _root_.Matrix.trace_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
     (f x).trace = x.trace := by
   by_cases! Nonempty m
-  · exact Matrix.trace_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
+  · exact Matrix.trace_map (AlgEquiv.ofBijective _ (AlgHom.ofClass f).bijective) x
   · simp
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
@@ -387,7 +388,7 @@ end
 
 end LinearMap
 
-/-- If `S` is an `R-algebra that is free of rank `1` over `R`, the map `R →+* S` is an
+/-- If `S` is an `R`-algebra that is free of rank `1` over `R`, the map `R →+* S` is an
 isomorphism. -/
 lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing R] [Ring S]
     [Algebra R S] [Nontrivial R] [Free R S] (h : finrank R S = 1) :

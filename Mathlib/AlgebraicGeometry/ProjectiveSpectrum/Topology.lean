@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Sets.Opens
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Projective spectrum of a graded ring
@@ -126,7 +125,7 @@ theorem gc_ideal :
       (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
-set_option backward.isDefEq.respectTransparency.types false in
+attribute [local implicit_reducible] OrderDual in
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
@@ -288,7 +287,7 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
       let f : Zs → Set _ := fun i => Classical.choose (h i.2)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
-      convert! H using 2
+      convert H using 2
       funext i
       exact (Classical.choose_spec (h i.2)).symm)
     (by
@@ -296,8 +295,8 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
       exact ⟨_, (union_zeroLocus 𝒜 s t).symm⟩)
 
 /-- The underlying topology of `Proj` is the projective spectrum of graded ring `A`. -/
-def top : TopCat :=
-  ↧(ProjectiveSpectrum 𝒜)
+@[implicit_reducible]
+def top : TopCat := ↧(ProjectiveSpectrum 𝒜)
 
 theorem isOpen_iff (U : Set (ProjectiveSpectrum 𝒜)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus 𝒜 s := by
   simp only [@eq_comm _ Uᶜ]; rfl
@@ -331,7 +330,7 @@ section BasicOpen
 /-- `basicOpen r` is the open subset containing all prime ideals not containing `r`. -/
 def basicOpen (r : A) : TopologicalSpace.Opens (ProjectiveSpectrum 𝒜) where
   carrier := { x | r ∉ x.asHomogeneousIdeal }
-  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
+  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans Classical.not_not.symm⟩
 
 @[simp]
 theorem mem_basicOpen (f : A) (x : ProjectiveSpectrum 𝒜) :

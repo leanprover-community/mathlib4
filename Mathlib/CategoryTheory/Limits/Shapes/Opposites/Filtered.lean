@@ -5,14 +5,14 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Filtered
+
+import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # Filtered colimits and cofiltered limits in `C` and `Cᵒᵖ`
 
 We construct filtered colimits and cofiltered limits in the opposite categories.
-
 -/
 
 public section
