@@ -351,7 +351,7 @@ theorem map_surjective (hf : Function.Surjective f) :
 
 /-- For a local ring hom `f : R →+* S`, the kernel of `GL n R →* GL n S` is in bijection with the
 matrices with entries in `RingHom.ker f`, via `g ↦ g - 1`. -/
-@[simps!]
+@[simps]
 noncomputable def kerMapEquivMatrixKer :
     (map (n := n) f).ker ≃ Matrix n n (RingHom.ker f) where
   toFun g := .of fun i j ↦ ⟨(g.1 - 1 : Matrix n n R) i j, by
