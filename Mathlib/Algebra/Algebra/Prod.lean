@@ -122,8 +122,9 @@ variable {S T A B : Type*} [Semiring A] [Semiring B]
   [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
 
 /-- Product of algebra isomorphisms. -/
-def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
-  .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
+def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B where
+  __ := RingEquiv.prodCongr l r
+  map_smul' := by simp
 
 variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
 
