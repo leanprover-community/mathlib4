@@ -91,7 +91,7 @@ then `FreeAddCommGroup α` is isomorphic to `ℤ`.
 One can think of `FreeAddCommGroup α` as the functions `α →₀ ℤ` with finite support,
 and addition given pointwise.
 
-TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
+TODO: introduce a multiplicative version
 -/
 def FreeAddCommGroup : Type u :=
   Additive <| Group.Abelianization <| FreeGroup α
