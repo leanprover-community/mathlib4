@@ -274,17 +274,29 @@ variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype 
 def reindex (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
 
 @[simp]
-theorem symm_reindexMulEquiv (e : m ≃ n) :
+theorem symm_reindex (e : m ≃ n) :
     (reindex R e).symm = reindex R e.symm :=
   rfl
 
 @[simp]
-theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
+theorem reindex_trans_reindex (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindex R e) (reindex R e') = reindex R (.trans e e') :=
   rfl
 
 @[simp]
-theorem reindexMulEquiv_refl : reindex R (.refl n) = .refl (GL n R) := rfl
+theorem reindex_refl : reindex R (.refl n) = .refl (GL n R) := rfl
+
+theorem reindex_map (e : m ≃ n) (f : R →+* S) (a : GL m R) :
+    reindex S e (map f a) = map f (reindex R e a) :=
+  rfl
+
+theorem reindex_comp_map (e : m ≃ n) (f : R →+* S) :
+    (reindex S e : GL m S →* GL n S).comp (map f) = (map f).comp (reindex R e) :=
+  rfl
+
+theorem reindex_trans_mapEquiv (e : m ≃ n) (f : R ≃+* S) :
+    (reindex R e).trans (mapEquiv n f) = (mapEquiv m f).trans (reindex S e) :=
+  rfl
 
 end Reindex
 
