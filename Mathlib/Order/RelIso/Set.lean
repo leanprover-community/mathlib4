@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Embedding.Set
 public import Mathlib.Order.Directed
+public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.RelIso.Basic
 
 import Mathlib.Logic.Equiv.Set
@@ -156,3 +157,8 @@ theorem wellFounded_iff_wellFounded_subrel {r : α → α → Prop} [IsTrans α 
     WellFounded r ↔ ∀ b, WellFounded (Subrel r (r · b)) where
   mp h _ := InvImage.wf Subtype.val h
   mpr h := ⟨fun a ↦ ⟨_, fun b hr ↦ ((h a).apply _).of_subrel ⟨b, hr⟩⟩⟩
+
+@[to_dual]
+theorem wellFoundedLT_iff_forall_wellFoundedLT_Iio [Preorder α] :
+    WellFoundedLT α ↔ ∀ b : α, WellFoundedLT (Set.Iio b) :=
+  wellFounded_iff_wellFounded_subrel

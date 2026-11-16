@@ -478,13 +478,15 @@ can be regarded as the set of all strictly smaller ordinals, allowing to apply o
 
 variable (I)
 
+-- TODO: deprecate in favor of using `Ordinal.typein` directly.
 /-- A term of `I` regarded as an ordinal. -/
-def ord (i : I) : Ordinal := Ordinal.typein ((· < ·) : I → I → Prop) i
+def ord (i : I) : Ordinal := Ordinal.typein i
 
+-- TODO: deprecate in favor of using `Ordinal.enum` directly.
 /-- An ordinal regarded as a term of `I`. -/
 noncomputable
 def term {o : Ordinal} (ho : o < Ordinal.type ((· < ·) : I → I → Prop)) : I :=
-  Ordinal.enum ((· < ·) : I → I → Prop) ⟨o, ho⟩
+  Ordinal.enum ⟨o, Set.mem_Iio.2 ho⟩
 
 variable {I}
 
