@@ -135,7 +135,7 @@ lemma circleMap_zero_im (r θ : ℝ) : (circleMap 0 r θ).im = r * Real.sin θ :
 private lemma norm_circleMap_zero_sub_circleMap_zero_sq (r s θ φ : ℝ) :
     ‖circleMap 0 r θ - circleMap 0 s φ‖ ^ 2 =
       r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) := by
-  rw [← ofReal_inj, ← normSq_eq_norm_sq, normSq_sub, conj_circleMap_zero]
+  rw [← normSq_eq_norm_sq, normSq_sub, conj_circleMap_zero]
   simp [circleMap_zero_mul, circleMap_zero_re, normSq_eq_norm_sq, sub_eq_add_neg, mul_assoc]
 
 /--
