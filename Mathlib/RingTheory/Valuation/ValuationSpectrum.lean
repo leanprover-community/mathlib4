@@ -5,11 +5,11 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.ValuativeRel.Comap
-public import Mathlib.RingTheory.Valuation.Quotient
-public import Mathlib.RingTheory.Valuation.ExtendToLocalization
-public import Mathlib.Topology.Order
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Valuation.ExtendToLocalization
+public import Mathlib.RingTheory.Valuation.Quotient
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Comap
+public import Mathlib.Topology.Order
 
 /-!
 # The Valuation Spectrum of a Ring
