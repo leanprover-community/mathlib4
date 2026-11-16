@@ -183,24 +183,10 @@ theorem toRat_shiftRight_nat : (d >>> n).toRat = d.toRat / 2 ^ n :=
 end toRat
 
 @[simp] theorem shiftLeft_inj : x <<< a = y <<< a ↔ x = y := by
-  simp_rw [← toRat_inj, toRat_shiftLeft]
-  refine ⟨fun h => ?_, fun h => congr($h * 2 ^ a)⟩
-  calc
-    _ = _ := by
-      rw [Rat.mul_assoc, ← Rat.zpow_add (by decide), Int.add_right_neg, Rat.zpow_zero, Rat.mul_one]
-    _ = _ := congr($h * 2 ^ (-a))
-    _ = _ := by
-      rw [Rat.mul_assoc, ← Rat.zpow_add (by decide), Int.add_right_neg, Rat.zpow_zero, Rat.mul_one]
+  cases x <;> cases y <;> simp
 
 @[simp] theorem shiftRight_inj : x >>> a = y >>> a ↔ x = y := by
-  simp_rw [← toRat_inj, toRat_shiftRight]
-  refine ⟨fun h => ?_, fun h => congr($h * 2 ^ (-a))⟩
-  calc
-    _ = _ := by
-      rw [Rat.mul_assoc, ← Rat.zpow_add (by decide), Int.add_left_neg, Rat.zpow_zero, Rat.mul_one]
-    _ = _ := congr($h * 2 ^ a)
-    _ = _ := by
-      rw [Rat.mul_assoc, ← Rat.zpow_add (by decide), Int.add_left_neg, Rat.zpow_zero, Rat.mul_one]
+  cases x <;> cases y <;> simp
 
 @[simp] theorem shiftLeft_eq_zero : d <<< a = 0 ↔ d = 0 := by
   simpa using shiftLeft_inj d 0 a
