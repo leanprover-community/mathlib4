@@ -63,8 +63,7 @@ theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank
     exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
   rw [LinearMap.det_eq_of_isCompl K.isCompl_orthogonal _ (reflection_mem_compatibleMaps _)
     (reflection_mem_compatibleMaps_orthogonalComplement _), restrict_reflection_eq_one,
-    restrict_reflection_orthogonalComplement_eq_neg_one, ← neg_one_smul 𝕜 (1 : Module.End 𝕜 Kᗮ),
-    LinearMap.det_smul]
+    restrict_reflection_orthogonalComplement_eq_neg_one, ← neg_one_smul 𝕜, LinearMap.det_smul]
   simp
 
 @[simp]
