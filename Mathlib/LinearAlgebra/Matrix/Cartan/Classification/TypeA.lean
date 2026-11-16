@@ -88,24 +88,22 @@ private lemma hasDynkinType_addLeaf_A_end {u : Fin n} {a b : ℤ} (hu : u.val + 
     (addLeaf (A n) u a b).HasDynkinType := by
   rcases hab with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
   -- single bond: `Aₙ₊₁`
-  · rw [addLeaf_A_end_eq_A u hu]; exact hasDynkinType_A _
+  · exact addLeaf_A_end_eq_A u hu ▸ hasDynkinType_A _
   -- double bond pointing to the leaf: `Cₙ₊₁`
-  · rw [addLeaf_A_end_eq_C u hu]; exact hasDynkinType_C _
+  · exact addLeaf_A_end_eq_C u hu ▸ hasDynkinType_C _
   -- double bond pointing to the path: `Bₙ₊₁`
-  · rw [addLeaf_A_end_eq_B u hu]; exact hasDynkinType_B _
+  · exact addLeaf_A_end_eq_B u hu ▸ hasDynkinType_B _
   -- triple bond on two nodes: `G₂` after swapping them; on more nodes: four bonds at `u`
   · obtain hn | hn : n = 1 ∨ 2 ≤ n := by lia
     · subst hn
       obtain rfl : u = 0 := Subsingleton.elim _ _
-      have : addLeaf (A 1) 0 (-1) (-3) = G₂.submatrix (Equiv.swap 0 1) (Equiv.swap 0 1) := by
-        decide
-      rw [this, HasDynkinType.submatrix_iff]; exact hasDynkinType_G₂
+      exact .of_eq_submatrix (Equiv.swap 0 1) (by decide) hasDynkinType_G₂
     · exact absurd h (not_isFiniteCartan_addLeaf_A_end_triple hu hn (by norm_num))
   -- triple bond on two nodes: `G₂`; on more nodes: four bonds at `u`
   · obtain hn | hn : n = 1 ∨ 2 ≤ n := by lia
     · subst hn
       obtain rfl : u = 0 := Subsingleton.elim _ _
-      rw [show addLeaf (A 1) 0 (-3) (-1) = G₂ by decide]; exact hasDynkinType_G₂
+      exact .of_eq_submatrix (.refl _) (by decide) hasDynkinType_G₂
     · exact absurd h (not_isFiniteCartan_addLeaf_A_end_triple hu hn (by norm_num))
 
 /-! ### The leaf at an interior node -/
@@ -154,12 +152,9 @@ private lemma hasDynkinType_addLeaf_A_E (u : Fin n) (hu : u.val + 3 = n) (h2 : 2
   simp only at hu h2 h4
   subst hu
   interval_cases k
-  · change (addLeaf (A 5) 2 (-1) (-1)).HasDynkinType
-    rw [addLeaf_A_five_eq, HasDynkinType.submatrix_iff]; exact hasDynkinType_E_six
-  · change (addLeaf (A 6) 3 (-1) (-1)).HasDynkinType
-    rw [addLeaf_A_six_eq, HasDynkinType.submatrix_iff]; exact hasDynkinType_E_seven
-  · change (addLeaf (A 7) 4 (-1) (-1)).HasDynkinType
-    rw [addLeaf_A_seven_eq, HasDynkinType.submatrix_iff]; exact hasDynkinType_E_eight
+  · exact .of_eq_submatrix _ addLeaf_A_five_eq hasDynkinType_E_six
+  · exact .of_eq_submatrix _ addLeaf_A_six_eq hasDynkinType_E_seven
+  · exact .of_eq_submatrix _ addLeaf_A_seven_eq hasDynkinType_E_eight
 
 /-- Arms `(1, 2, p)` with `p ≥ 5` contain affine `E₈`, which has a null vector. -/
 private lemma not_isFiniteCartan_addLeaf_A_affine_E8 {u : Fin n} (hu0 : 5 ≤ u.val)
@@ -197,7 +192,7 @@ theorem IsFiniteCartan.hasDynkinType_addLeaf_A {u : Fin n} {a b : ℤ}
   · exact absurd h (not_isFiniteCartan_addLeaf_A_interior_multiple (by lia) hint hm)
   -- arms `(1, 1, p)`: `Dₙ₊₁`
   obtain h1 | h2 | h3 : u.val + 2 = n ∨ u.val + 3 = n ∨ u.val + 3 < n := by lia
-  · rw [addLeaf_A_penultimate_eq_D u (by lia) h1]; exact hasDynkinType_D _
+  · exact addLeaf_A_penultimate_eq_D u (by lia) h1 ▸ hasDynkinType_D _
   -- arms `(1, 2, p)`: `E₆, E₇, E₈` for `p ≤ 4`, contains affine `E₈` for `p ≥ 5`
   · obtain h4 | h5 : u.val < 5 ∨ 5 ≤ u.val := by lia
     · exact hasDynkinType_addLeaf_A_E u h2 (by lia) (by lia)
