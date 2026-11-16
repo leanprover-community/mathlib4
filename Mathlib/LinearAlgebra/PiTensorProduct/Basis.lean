@@ -61,7 +61,7 @@ theorem Basis.piTensorProduct_apply [Finite ι] (b : Π i, Basis (κ i) R (M i))
   refine (Basis.piTensorProduct b).ext_elem (fun q ↦ ?_)
   simp [Finsupp.single_apply, Fintype.prod_ite_zero, ← funext_iff]
 
-instance Free [Finite ι] [∀ i, Free R (M i)] : Free R (⨂[R] (i : ι), M i) :=
+instance Free [Finite ι] [∀ i, Free R (M i)] : Free R (⨂[R] i, M i) :=
   Free.of_basis (Basis.piTensorProduct fun i ↦ Free.chooseBasis R (M i))
 
 end PiTensorProduct
