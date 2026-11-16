@@ -270,19 +270,12 @@ open Unitization
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma nnNorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
-  have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
-      ‖ψ x‖₊ ≤ ‖x‖₊ := by
-    suffices ∀ {s}, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
-      refine nonneg_le_nonneg_of_sq_le_sq zero_le ?_
-      simp_rw [← nnNorm_star_mul_self, ← map_star, ← map_mul]
-      exact this <| .star_mul_self x
-    intro s hs
-    suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
-      rwa [(hs.map ψ).spectralRadius_eq_nnNorm, hs.spectralRadius_eq_nnNorm, coe_le_coe]
-        at this
-    exact iSup_le_iSup_of_subset (NonUnitalAlgHom.quasispectrum_apply_subset ψ s)
-  simpa [nnNorm_inr] using
-    h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (ofClass φ : A →⋆ₙₐ[ℂ] B))) a
+  let ψ := starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (ofClass φ : A →⋆ₙₐ[ℂ] B))
+  suffices ∀ x, ‖ψ x‖₊ ≤ ‖x‖₊ by simpa [ψ, nnNorm_inr] using this a
+  refine nnNorm_apply_le_of_isSelfAdjoint ψ fun s hs ↦ ?_
+  suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
+    rwa [(hs.map ψ).spectralRadius_eq_nnNorm, hs.spectralRadius_eq_nnNorm, coe_le_coe] at this
+  exact iSup_le_iSup_of_subset (NonUnitalAlgHom.quasispectrum_apply_subset ψ s)
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_apply_le := nnNorm_apply_le
 

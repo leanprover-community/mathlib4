@@ -17,6 +17,10 @@ show that every C⋆-algebra is a `RegularNormedAlgebra`.
 In addition, we show that in a `RegularNormedAlgebra` which is a `StarRing` for which the
 involution is isometric, that multiplication on the right is also an isometry (i.e.,
 `Isometry (ContinuousLinearMap.mul 𝕜 E).flip`).
+
+Finally, we show that a continuous non-unital star algebra homomorphism between C⋆-rings is norm
+contractive (`NonUnitalStarAlgHom.norm_apply_le_of_continuous`). For complex C⋆-algebras the
+continuity is automatic, see `NonUnitalStarAlgHom.norm_apply_le`.
 -/
 
 public section
@@ -186,3 +190,50 @@ noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCo
     CommCStarAlgebra (Unitization ℂ A) where
 
 end CStarProperty
+
+namespace NonUnitalStarAlgHom
+
+variable {F A B : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
+variable [NonUnitalNormedRing B] [StarRing B] [CStarRing B] [FunLike F A B] [StarHomClass F A B]
+
+/-- A non-unital star algebra homomorphism between C⋆-rings which is continuous is, in fact, a
+contraction.
+
+In a complex C⋆-algebra, such morphisms can be shown to be contractive, and so also continuous,
+using the fact that the norm coincides with the spectral radius for elements of the form
+`star x * x`. See `NonUnitalStarAlgHom.nnNorm_apply_le`. -/
+lemma nnNorm_apply_le_of_continuous {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 A]
+    [NormedSpace 𝕜 B] [NonUnitalAlgHomClass F 𝕜 A B] (φ : F) (hφ : Continuous φ) (a : A) :
+    ‖φ a‖₊ ≤ ‖a‖₊ := by
+  /- bundle `φ` as a continuous linear map `Φ`, and note that because we are working over C⋆-rings,
+  it suffices to prove this for selfadjoint elements. -/
+  let Φ : A →L[𝕜] B := ⟨LinearMap.ofClass φ, hφ⟩
+  refine nnNorm_apply_le_of_isSelfAdjoint φ (fun s hs ↦ ?_) a
+  /- `‖φ s‖ ^ 2 ^ n = ‖(φ s) ^ 2 ^ n‖ = ‖φ (s ^ 2 ^ n)‖ ≤ ‖Φ‖ * ‖s ^ 2 ^ n‖ = ‖Φ‖ * ‖s‖ ^ 2 ^ n`,
+  for each `n`,  where the  first and last equalities hold because `φ s` and `s` are selfadjoint.
+  Since this holds for all `n`, we conclude `‖φ s‖ ≤ ‖s‖`. -/
+  by_contra! h
+  have hs₀ : 0 < ‖s‖₊ := norm_pos_iff.mpr fun _ ↦ by simp_all
+  have h₁ : 1 < ‖φ s‖₊ / ‖s‖₊ := (one_lt_div hs₀).mpr h
+  obtain ⟨n, hn⟩ := pow_unbounded_of_one_lt ‖Φ‖₊ h₁
+  apply hn.not_ge
+  grw [pow_le_pow_right₀ h₁.le Nat.lt_two_pow_self.le, div_pow, div_le_iff₀ (by positivity)]
+  calc
+    ‖φ s‖₊ ^ 2 ^ n = ‖φ ((fun x ↦ x * x)^[n] s)‖₊ := by
+      rw [Function.Semiconj.iterate_right (gb := fun x ↦ x * x) (fun x ↦ map_mul φ x x) n s,
+        (hs.map φ).nnNorm_iterate_mul_self]
+    _ ≤ ‖Φ‖₊ * ‖(fun x ↦ x * x)^[n] s‖₊ := Φ.le_opNNNorm _
+    _ = ‖Φ‖₊ * ‖s‖₊ ^ 2 ^ n := by rw [hs.nnNorm_iterate_mul_self]
+
+/-- A non-unital star algebra homomorphism between C⋆-rings which is continuous is, in fact, a
+contraction.
+
+In a complex C⋆-algebra, such morphisms can be shown to be contractive, and so also continuous,
+using the fact that the norm coincides with the spectral radius for elements of the form
+`star x * x`. See `NonUnitalStarAlgHom.norm_apply_le`. -/
+lemma norm_apply_le_of_continuous {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 A]
+    [NormedSpace 𝕜 B] [NonUnitalAlgHomClass F 𝕜 A B] (φ : F) (hφ : Continuous φ) (a : A) :
+    ‖φ a‖ ≤ ‖a‖ :=
+  mod_cast nnNorm_apply_le_of_continuous (𝕜 := 𝕜) φ hφ a
+
+end NonUnitalStarAlgHom

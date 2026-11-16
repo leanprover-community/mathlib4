@@ -141,9 +141,13 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E where
 theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ :=
   le_antisymm ((norm_mul_le _ _).trans (by rw [norm_star])) (CStarRing.norm_mul_self_le x)
 
+theorem norm_sq {x : E} : ‖x‖ ^ 2 = ‖x⋆ * x‖ := sq ‖x‖ ▸ norm_star_mul_self.symm
+
 theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
   nth_rw 1 [← star_star x]
   simp only [norm_star_mul_self, norm_star]
+
+theorem norm_sq' {x : E} : ‖x‖ ^ 2 = ‖x * x⋆‖ := sq ‖x‖ ▸ norm_self_mul_star.symm
 
 theorem norm_star_mul_self' {x : E} : ‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖ := by rw [norm_star_mul_self, norm_star]
 
@@ -152,10 +156,14 @@ theorem nnNorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖�
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_self_mul_star := nnNorm_self_mul_star
 
+theorem nnNorm_sq' {x : E} : ‖x‖₊ ^ 2 = ‖x * x⋆‖₊ := sq ‖x‖₊ ▸ nnNorm_self_mul_star.symm
+
 theorem nnNorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊ :=
   Subtype.ext norm_star_mul_self
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_star_mul_self := nnNorm_star_mul_self
+
+theorem nnNorm_sq {x : E} : ‖x‖₊ ^ 2 = ‖x⋆ * x‖₊ := sq ‖x‖₊ ▸ nnNorm_star_mul_self.symm
 
 lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖ = ‖x‖ ^ 2 := by
@@ -273,6 +281,8 @@ end CStarRing
 
 section SelfAdjoint
 
+section Unital
+
 variable [NormedRing E] [StarRing E] [CStarRing E]
 
 theorem IsSelfAdjoint.nnNorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
@@ -288,6 +298,51 @@ alias IsSelfAdjoint.nnnorm_pow_two_pow := IsSelfAdjoint.nnNorm_pow_two_pow
 theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖ = ‖x‖ ^ 2 ^ n :=
   congr($(hx.nnNorm_pow_two_pow n))
+
+end Unital
+
+section NonUnital
+
+/-- This should be deprecated in favor of a version using `PNat` powers when we have those
+in semigroups. -/
+lemma IsSelfAdjoint.iterate_mul_self {R : Type*} [Mul R] [StarMul R] {x : R}
+    (hx : IsSelfAdjoint x) (n : ℕ) :
+    IsSelfAdjoint ((fun y ↦ y * y)^[n] x) := by
+  induction n with
+  | zero => simpa
+  | succ n ih =>
+    rw [Function.iterate_succ_apply']
+    simpa only [ih.star_eq] using IsSelfAdjoint.star_mul_self ((fun y ↦ y * y)^[n] x)
+
+variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
+
+/-- A non-unital version of `IsSelfAdjoint.nnNorm_pow_two_pow`.
+
+This should be deprecated in favor of a version using `PNat` powers when we have those
+in semigroups. -/
+lemma IsSelfAdjoint.nnNorm_iterate_mul_self {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
+    ‖(fun y ↦ y * y)^[n] x‖₊ = ‖x‖₊ ^ 2 ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Function.iterate_succ_apply', pow_succ, pow_mul, ← ih,
+      (hx.iterate_mul_self n).nnNorm_mul_self]
+
+/-- A non-unital version of `IsSelfAdjoint.norm_pow_two_pow`.
+
+This should be deprecated in favor of a version using `PNat` powers when we have those
+in semigroups. -/
+lemma IsSelfAdjoint.norm_iterate_mul_self {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
+    ‖(fun y ↦ y * y)^[n] x‖ = ‖x‖ ^ 2 ^ n :=
+  congr(($(hx.nnNorm_iterate_mul_self n) : ℝ))
+
+lemma NonUnitalStarAlgHom.nnNorm_apply_le_of_isSelfAdjoint {F E' : Type*} [NonUnitalNormedRing E']
+    [StarRing E'] [CStarRing E'] [FunLike F E E'] [MulHomClass F E E'] [StarHomClass F E E'] (φ : F)
+    (h : ∀ x : E, IsSelfAdjoint x → ‖φ x‖₊ ≤ ‖x‖₊) (a : E) : ‖φ a‖₊ ≤ ‖a‖₊ := by
+  rw [← sq_le_sq₀ (by positivity) (by positivity)]
+  simpa [CStarRing.nnNorm_sq, map_star] using h _ <| .star_mul_self a
+
+end NonUnital
 
 end SelfAdjoint
 
