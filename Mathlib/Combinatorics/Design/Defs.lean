@@ -159,7 +159,7 @@ theorem IsUniform.finite_block {d : IncidenceSystem α β}
 of exactly `l` blocks. -/
 @[mk_iff]
 structure IsBalanced (d : IncidenceSystem α β) (t l : ℕ) where
-  balanced (s : Set α) (hs : s ⊆ d.carrier) (hs : s.ncard = t) :
+  balanced (s : Set α) (hsd : s ⊆ d.carrier) (hst : s.ncard = t) :
     {b ∈ d.blockSet | s ⊆ d.block b}.ncard = l
 
 @[simp, grind .]
