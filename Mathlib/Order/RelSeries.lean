@@ -1054,6 +1054,18 @@ instance [DecidableLT α] : Fintype (LTSeries α) where
     simp_rw [Finset.mem_map, Finset.mem_univ, true_and, Subtype.exists]
     use ⟨⟨l, bl⟩, f⟩, Fin.strictMono_iff_lt_succ.mpr mf; rfl
 
+instance (priority := low) {α} [Preorder α] [Nonempty α] [Finite (LTSeries α)] :
+    FiniteDimensionalOrder α where
+  exists_longest_relSeries := by
+    have : Fintype (LTSeries α) := .ofFinite _
+    obtain ⟨s, h⟩ := (Finset.univ (α := LTSeries α)).exists_mem_eq_sup' (by simp) RelSeries.length
+    exact ⟨s, fun _ ↦ h.2 ▸ Finset.le_sup' _ (by simp)⟩
+
+instance {α} [Preorder α] [Nonempty α] [Finite α] : FiniteDimensionalOrder α :=
+  open Classical in
+  have : Fintype α := .ofFinite _
+  inferInstance
+
 end Fintype
 
 end LTSeries
