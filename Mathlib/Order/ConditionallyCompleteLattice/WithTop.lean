@@ -26,6 +26,10 @@ variable {α β γ : Type*} {ι : Sort*}
 
 namespace WithTop
 
+@[to_dual]
+theorem isCompl_range_coe : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
+  eq_compl_iff_isCompl.1 <| Set.ext fun _ ↦ ne_top_iff_exists.symm
+
 section LE
 
 /-!
@@ -113,10 +117,6 @@ theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
 @[to_dual (attr := deprecated (since := "2026-10-27"))] alias sSup_empty := sSup_empty
 
 end LE
-
-@[to_dual]
-theorem isCompl_range_coe : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
-  eq_compl_iff_isCompl.1 <| Set.ext fun _ ↦ ne_top_iff_exists.symm
 
 section Preorder
 
