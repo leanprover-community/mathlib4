@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -339,6 +340,31 @@ lemma map_scalar (u : Rˣ) : map f (scalar n u) = scalar n (Units.map f u) := by
   ext
   simp [Matrix.diagonal_apply]
   split <;> simp
+
+section IsLocalHom
+
+variable (f : R →+* S) [IsLocalHom f]
+
+theorem map_surjective (hf : Function.Surjective f) :
+    Function.Surjective (GeneralLinearGroup.map f : GL n R → GL n S) :=
+  IsLocalRing.surjective_units_map_of_local_ringHom _ hf.comp_left.comp_left inferInstance
+
+/-- For a local ring hom `f : R →+* S`, the kernel of `GL n R →* GL n S` is in bijection with the
+matrices with entries in `RingHom.ker f`, via `g ↦ g - 1`. -/
+@[simps!]
+noncomputable def kerMapEquivMatrixKer :
+    (map (n := n) f).ker ≃ Matrix n n (RingHom.ker f) where
+  toFun g := .of fun i j ↦ ⟨(g.1 - 1 : Matrix n n R) i j, by
+   simpa [RingHom.mem_ker, sub_eq_zero, Matrix.one_apply]
+      using Matrix.ext_iff.mpr (Units.ext_iff.mp (MonoidHom.mem_ker.mp g.2)) i j⟩
+  invFun A :=
+    have hA : (1 + A.map (↑) : Matrix n n R).map f = 1 := by
+      ext i j; simp [Matrix.one_apply, apply_ite f, RingHom.mem_ker.mp (A i j).2]
+    ⟨mk'' _ <| (isUnit_map_iff f _).mp <| by simp [RingHom.map_det, hA], Units.ext hA⟩
+  left_inv g := by ext; simp
+  right_inv A := by ext; simp
+
+end IsLocalHom
 
 section kronecker
 variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]

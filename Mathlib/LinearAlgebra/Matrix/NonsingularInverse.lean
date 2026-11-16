@@ -151,6 +151,19 @@ theorem det_ne_zero_of_right_inverse [Nontrivial α] (h : A * B = 1) : A.det ≠
 
 end Invertible
 
+section IsLocalHom
+
+variable {R S : Type*} [Fintype n] [DecidableEq n] [CommRing R] [CommRing S]
+  (f : R →+* S) [IsLocalHom f]
+
+/-- A local ring homorphism `f : R →+* S` induces a local ring homorphism on the matrix rings. -/
+instance isLocalHom_mapMatrix : IsLocalHom (f.mapMatrix : Matrix n n R →+* Matrix n n S) where
+  map_nonunit M hM := by
+    rw [isUnit_iff_isUnit_det] at hM ⊢
+    exact (isUnit_map_iff f _).mp (by simpa [RingHom.map_det])
+
+end IsLocalHom
+
 section Inv
 
 variable [Fintype n] [DecidableEq n] [CommRing α]
