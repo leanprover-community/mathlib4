@@ -103,7 +103,7 @@ theorem mk_freeAddCommGroup [Nonempty α] : #(FreeAddCommGroup α) = max #α ℵ
   rw [Cardinal.mk_congr (FreeAddCommGroup.equivFinsupp α).toEquiv]
   simp
 
-@[deprecated (since := "2026-11-11")] alias Cardinal.mk_freeAbelianGroup :=
+@[deprecated (since := "2026-11-11")] alias mk_freeAbelianGroup :=
   Cardinal.mk_freeAddCommGroup
 
 @[simp]
