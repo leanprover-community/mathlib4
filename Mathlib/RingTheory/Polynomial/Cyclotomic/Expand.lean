@@ -136,13 +136,13 @@ alias cyclotomic_irreducible_pow_of_irreducible_pow := cyclotomic_irreducible_po
 
 /-- If `Irreducible (cyclotomic (r ^ n) R)` for some `n ≠ 0`, then
 `Irreducible (cyclotomic r R)`. -/
-theorem cyclotomic_irreducible_of_pow {R} [CommRing R]
+theorem irreducible_cyclotomic_of_pow {R} [CommRing R]
     [IsDomain R] (r : ℕ) {n : ℕ} (hn : n ≠ 0) (h : Irreducible (cyclotomic (r ^ n) R)) :
     Irreducible (cyclotomic r R) :=
   pow_one r ▸ cyclotomic_irreducible_pow_mono r hn.bot_lt h
 
 @[deprecated (since := "2026-11-16")]
-alias cyclotomic_irreducible_of_irreducible_pow := cyclotomic_irreducible_of_pow
+alias cyclotomic_irreducible_of_irreducible_pow := irreducible_cyclotomic_of_pow
 
 section CharP
 
