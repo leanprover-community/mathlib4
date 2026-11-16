@@ -101,7 +101,7 @@ protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
   forall_comm
 
 @[simp]
-theorem BlockTriangular.zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
+protected theorem BlockTriangular.zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
 
 @[deprecated (since := "2026-11-16")]
 alias blockTriangular_zero := BlockTriangular.zero
@@ -117,10 +117,11 @@ protected theorem BlockTriangular.neg [NegZeroClass R] {M : Matrix m m R}
     (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
   fun _ _ h => by rw [Matrix.neg_apply, hM h, neg_zero]
 
-theorem BlockTriangular.add [AddZeroClass R] (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
-    BlockTriangular (M + N) b := fun i j h => by simp_rw [Matrix.add_apply, hM h, hN h, zero_add]
+protected theorem BlockTriangular.add [AddZeroClass R] (hM : BlockTriangular M b)
+    (hN : BlockTriangular N b) : BlockTriangular (M + N) b :=
+  fun i j h => by simp_rw [Matrix.add_apply, hM h, hN h, zero_add]
 
-theorem BlockTriangular.sub [SubNegZeroMonoid R]
+protected theorem BlockTriangular.sub [SubNegZeroMonoid R]
     (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b := fun i j h => by simp_rw [Matrix.sub_apply, hM h, hN h, sub_zero]
 
@@ -136,16 +137,16 @@ lemma BlockTriangular.sub_iff_right [AddGroup R] (hM : BlockTriangular M b) :
 lemma BlockTriangular.sub_iff_left [AddGroup R] (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b ↔ BlockTriangular M b := ⟨(by simpa using ·.add hN), (·.sub hN)⟩
 
-lemma BlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S] [ZeroHomClass F R S] (f : F)
-    (h : BlockTriangular M b) : BlockTriangular (M.map f) b :=
+protected lemma BlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S] [ZeroHomClass F R S]
+    (f : F) (h : BlockTriangular M b) : BlockTriangular (M.map f) b :=
   fun i j lt ↦ by simp [h lt]
 
-lemma BlockTriangular.smul {S} [Zero R] [SMulZeroClass S R]
+protected lemma BlockTriangular.smul {S} [Zero R] [SMulZeroClass S R]
     (h : M.BlockTriangular b) (c : S) : (c • M).BlockTriangular b :=
   fun _ _ hij => by simp [h hij]
 
-lemma BlockTriangular.comp [Zero R] {M : Matrix m m (Matrix n n R)} (h : BlockTriangular M b) :
-    BlockTriangular (M.comp m m n n R) fun i ↦ b i.1 :=
+protected lemma BlockTriangular.comp [Zero R] {M : Matrix m m (Matrix n n R)}
+    (h : BlockTriangular M b) : BlockTriangular (M.comp m m n n R) fun i ↦ b i.1 :=
   fun i j lt ↦ by simp [h lt]
 
 end LT
@@ -192,7 +193,7 @@ protected theorem strictBlockTriangular_transpose_iff {b : m → αᵒᵈ} :
   forall_comm
 
 @[simp]
-theorem StrictBlockTriangular.zero : StrictBlockTriangular (0 : Matrix m m R) b :=
+protected theorem StrictBlockTriangular.zero : StrictBlockTriangular (0 : Matrix m m R) b :=
   fun _ _ _ => rfl
 
 instance decidableStrictBlockTriangular [DecidableEq R] [Fintype m] [DecidableLE α] :
@@ -205,11 +206,11 @@ end Zero
 protected theorem StrictBlockTriangular.neg [NegZeroClass R] (hM : M.StrictBlockTriangular b) :
     (-M).StrictBlockTriangular b := fun _ _ h => by rw [Matrix.neg_apply, hM h, neg_zero]
 
-theorem StrictBlockTriangular.add [AddZeroClass R]
+protected theorem StrictBlockTriangular.add [AddZeroClass R]
     (hM : M.StrictBlockTriangular b) (hN : N.StrictBlockTriangular b) :
     (M + N).StrictBlockTriangular b := fun _ _ h => by simp [hM h, hN h]
 
-theorem StrictBlockTriangular.sub [SubNegZeroMonoid R]
+protected theorem StrictBlockTriangular.sub [SubNegZeroMonoid R]
     (hM : M.StrictBlockTriangular b) (hN : N.StrictBlockTriangular b) :
     (M - N).StrictBlockTriangular b := fun _ _ h => by simp [hM h, hN h]
 
@@ -229,17 +230,17 @@ lemma StrictBlockTriangular.sub_iff_left [AddGroup R] (hN : N.StrictBlockTriangu
     (M - N).StrictBlockTriangular b ↔ M.StrictBlockTriangular b :=
   ⟨(by simpa using ·.add hN), (·.sub hN)⟩
 
-lemma StrictBlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S] [ZeroHomClass F R S]
-    (f : F) (h : M.StrictBlockTriangular b) : (M.map f).StrictBlockTriangular b :=
+protected lemma StrictBlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S]
+    [ZeroHomClass F R S] (f : F) (h : M.StrictBlockTriangular b) :
+    (M.map f).StrictBlockTriangular b :=
   fun _ _ hij => by simp [h hij]
 
-lemma StrictBlockTriangular.smul {S} [Zero R] [SMulZeroClass S R]
+protected lemma StrictBlockTriangular.smul {S} [Zero R] [SMulZeroClass S R]
     (h : M.StrictBlockTriangular b) (c : S) : (c • M).StrictBlockTriangular b :=
   fun _ _ hij => by simp [h hij]
 
-lemma StrictBlockTriangular.comp [Zero R] {M : Matrix m m (Matrix n n R)}
-    (h : M.StrictBlockTriangular b) :
-    (M.comp m m n n R).StrictBlockTriangular fun i ↦ b i.1 :=
+protected lemma StrictBlockTriangular.comp [Zero R] {M : Matrix m m (Matrix n n R)}
+    (h : M.StrictBlockTriangular b) : (M.comp m m n n R).StrictBlockTriangular fun i ↦ b i.1 :=
   fun _ _ hij => by simp [h hij]
 
 end LE
@@ -329,7 +330,7 @@ section LinearOrder
 
 variable [LinearOrder α]
 
-theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
+protected theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
     {M N : Matrix m m R} (hM : BlockTriangular M b)
     (hN : BlockTriangular N b) : BlockTriangular (M * N) b := by
   intro i j hij
@@ -359,7 +360,7 @@ theorem BlockTriangular.mul_strictBlockTriangular [Fintype m] [NonUnitalNonAssoc
   · simp_rw [hM hki, zero_mul]
   · simp_rw [hN (hij.trans hki), mul_zero]
 
-theorem StrictBlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
+protected theorem StrictBlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
     (hM : M.StrictBlockTriangular b) (hN : N.StrictBlockTriangular b) :
     (M * N).StrictBlockTriangular b :=
   hM.mul_blockTriangular hN.blockTriangular
@@ -381,8 +382,8 @@ theorem mem_blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R]
     M ∈ blockTriangularSubsemiring R b ↔ BlockTriangular M b :=
   Iff.rfl
 
-theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R] (hM : BlockTriangular M b)
-    (n : ℕ) : BlockTriangular (M ^ n) b :=
+protected theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R]
+    (hM : BlockTriangular M b) (n : ℕ) : BlockTriangular (M ^ n) b :=
   pow_mem (S := blockTriangularSubsemiring R b) hM n
 
 theorem blockTriangular_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
