@@ -147,9 +147,9 @@ theorem isLUB_coe_iff {s : Set (WithTop α)} {a : α} :
 
 @[to_dual]
 theorem isGLB_top_iff {s : Set (WithTop α)} :
-    IsGLB s ⊤ ↔ s ⊆ {⊤} :=
-  ⟨fun h _ hx ↦ WithTop.top_le_iff.mp (h.1 hx),
-    fun h ↦ ⟨fun _ hx ↦ le_of_eq (h hx).symm, fun _ _ ↦ le_top⟩⟩
+    IsGLB s ⊤ ↔ s ⊆ {⊤} where
+  mp h _ hx := WithTop.top_le_iff.mp (h.1 hx)
+  mpr h := ⟨fun _ hx ↦ le_of_eq (h hx).symm, fun _ _ ↦ le_top⟩
 
 @[to_dual]
 theorem isLUB_top_iff {s : Set (WithTop α)} :
@@ -159,23 +159,21 @@ theorem isLUB_top_iff {s : Set (WithTop α)} :
 
 @[to_dual]
 instance instOrderSupSet [OrderSupSet α] : OrderSupSet (WithTop α) where
-  isLUB_sSup_of_isLUB s a h := by
-    cases a with
-    | top => rwa [sSup_eq_top_iff.2 (isLUB_top_iff.1 h)]
-    | coe a =>
-      rw [isLUB_coe_iff] at h
-      rw [sSup_eq h.1 h.2.bddAbove, isLUB_coe_iff]
-      exact ⟨h.1, h.2.isLUB_sSup⟩
+  isLUB_sSup_of_isLUB
+  | s, ⊤, h => by rwa [sSup_eq_top_iff.2 (isLUB_top_iff.1 h)]
+  | s, (a : α), h => by
+    rw [isLUB_coe_iff] at h
+    rw [sSup_eq h.1 h.2.bddAbove, isLUB_coe_iff]
+    exact ⟨h.1, h.2.isLUB_sSup⟩
 
 @[to_dual]
 instance instOrderInfSet [OrderInfSet α] : OrderInfSet (WithTop α) where
-  isGLB_sInf_of_isGLB s a h := by
-    cases a with
-    | top => rwa [sInf_eq_top_iff.2 (.inl (isGLB_top_iff.1 h))]
-    | coe a =>
-      obtain ⟨hs, h'⟩ := isGLB_coe_iff.mp h
-      rw [sInf_eq hs ⟨_, h.1⟩, isGLB_coe_iff]
-      exact ⟨hs, h'.isGLB_sInf⟩
+  isGLB_sInf_of_isGLB
+  | s, ⊤, h => by rwa [sInf_eq_top_iff.2 (.inl (isGLB_top_iff.1 h))]
+  | s, (a : α), h => by
+    obtain ⟨hs, h'⟩ := isGLB_coe_iff.mp h
+    rw [sInf_eq hs ⟨_, h.1⟩, isGLB_coe_iff]
+    exact ⟨hs, h'.isGLB_sInf⟩
 
 @[to_dual (attr := norm_cast)]
 theorem coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
