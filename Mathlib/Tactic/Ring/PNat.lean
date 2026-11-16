@@ -10,6 +10,9 @@ public meta import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Tactic.Ring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional instances for `ring` over `PNat`
 

@@ -10,6 +10,9 @@ public import Mathlib.Order.Minimal
 
 import Mathlib.Order.Hom.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite preorders and finite sets in a preorder
 
@@ -150,12 +153,6 @@ lemma Finite.exists_le_maximal (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
   {x | p x}.toFinite.exists_le_maximal h
 
 end Preorder
-
-@[elab_as_elim, deprecated "Use `WellFoundedLT.induction _ h` instead." (since := "2026-04-10")]
-lemma LinearOrder.strong_induction_of_finite
-    {α : Type*} [LinearOrder α] [Finite α] {motive : α → Prop}
-    (h : ∀ (j : α) (_ : ∀ (k : α), k < j → motive k), motive j) (i : α) :
-    motive i := WellFoundedLT.induction _ h
 
 lemma OrderEmbedding.range_eq_iff
     {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]

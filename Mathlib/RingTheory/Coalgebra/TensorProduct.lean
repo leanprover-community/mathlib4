@@ -24,7 +24,6 @@ as a coalgebra morphism.
 
 In particular, when `R = S` we get tensor products of coalgebras, and when `A = S` we get
 the base change `S ⊗[R] B` as an `S`-coalgebra.
-
 -/
 
 @[expose] public section

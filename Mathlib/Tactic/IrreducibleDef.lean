@@ -27,7 +27,6 @@ irreducible_def frobnicate (a b : Nat) :=
 example : frobnicate a 0 = a := by
   simp [frobnicate_def]
 ```
-
 -/
 
 public meta section

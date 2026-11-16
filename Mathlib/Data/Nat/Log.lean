@@ -80,7 +80,7 @@ theorem log_of_lt {b n : ℕ} (hb : n < b) : log b n = 0 := by
   | case1 => rfl
   | case2 => fun_cases log.go with grind
 
-private theorem log.go_aux {n b fuel : ℕ} (hb : 1 < b) (hfuel : n < b ^ (fuel + 1)) (hbn : b ≤ n) :
+private theorem log.go_aux {n b fuel : ℕ} (hfuel : n < b ^ (fuel + 1)) (hbn : b ≤ n) :
     n < (b * b) ^ fuel := by
   obtain hfuel₀ : fuel ≠ 0 := by rintro rfl; simp [Nat.not_lt_of_le hbn] at hfuel
   rw [← Nat.pow_two, ← Nat.pow_mul]
@@ -96,7 +96,7 @@ lemma log.go_spec {b n fuel : ℕ} (hb : 1 < b) (hn : n ≠ 0) (hfuel : n < b ^ 
     | inl hnb =>
       simp [go, hnb, one_le_iff_ne_zero, hn]
     | inr hnb =>
-      rcases ih (Nat.one_mul 1 ▸ Nat.mul_lt_mul_of_lt_of_lt hb hb) (go_aux hb hfuel hnb)
+      rcases ih (Nat.one_mul 1 ▸ Nat.mul_lt_mul_of_lt_of_lt hb hb) (go_aux hfuel hnb)
         with ⟨ih₁, ih₂, ih₃⟩
       simp_all only [go, ite_eq_right (Nat.not_lt_of_le hnb), ← Nat.pow_two, ← Nat.pow_mul,
         Nat.div_lt_iff_lt_mul, Nat.pow_pos (Nat.zero_lt_of_lt hb), Nat.div_div_eq_div_mul,
@@ -246,17 +246,19 @@ theorem log_monotone {b : ℕ} : Monotone (log b) := by
 theorem log_mono_right {b n m : ℕ} (h : n ≤ m) : log b n ≤ log b m :=
   log_monotone h
 
-theorem log_lt_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
+theorem log_lt_log_succ_iff (b : ℕ) {n : ℕ} (hn : n ≠ 0) :
     log b n < log b (n + 1) ↔ b ^ log b (n + 1) = n + 1 := by
+  rcases le_or_gt b 1 with hb | hb
+  · simp [log_of_left_le_one hb, hn]
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · apply le_antisymm _ (Nat.lt_pow_of_log_lt hb H)
     exact Nat.pow_log_le_self b (Ne.symm (Nat.zero_ne_add_one n))
   · apply Nat.log_lt_of_lt_pow hn
     simp [H]
 
-theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
+theorem log_eq_log_succ_iff (b : ℕ) {n : ℕ} (hn : n ≠ 0) :
     log b n = log b (n + 1) ↔ b ^ log b (n + 1) ≠ n + 1 := by
-  rw [ne_eq, ← log_lt_log_succ_iff hb hn, not_lt]
+  rw [ne_eq, ← log_lt_log_succ_iff b hn, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ log_monotone (le_add_right n 1)
 
@@ -373,7 +375,7 @@ theorem clog.go_spec {n b fuel} (hn : 1 < n) (hb : 1 < b) (hfuel : n < b ^ fuel)
     | inr hbn => simp_all [go]
     | inl hbn =>
       rcases ih (Nat.one_mul 1 ▸ Nat.mul_lt_mul_of_lt_of_lt hb hb)
-        (log.go_aux hb hfuel (Nat.le_of_lt hbn)) with ⟨ih₁, ih₂, ih₃⟩
+        (log.go_aux hfuel (Nat.le_of_lt hbn)) with ⟨ih₁, ih₂, ih₃⟩
       simp_all only [go, ite_eq_right (Nat.not_le_of_gt hbn), ← Nat.pow_two, ← Nat.pow_mul,
         Nat.div_lt_iff_lt_mul (Nat.zero_lt_of_lt hbn), Nat.div_div_eq_div_mul,
         Nat.mul_comm n b, Nat.mul_add_one, @Nat.pow_add_one' _ (2 * _ + 1),
@@ -432,8 +434,10 @@ theorem pow_lt_of_lt_clog {b x y : ℕ} (h : y < clog b x) : b ^ y < x :=
 theorem clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
   eq_of_forall_ge_iff fun z ↦ by rw [clog_le_iff_le_pow hb, Nat.pow_le_pow_iff_right hb]
 
-theorem pow_pred_clog_lt_self {b : ℕ} (hb : 1 < b) {x : ℕ} (hx : 1 < x) :
+theorem pow_pred_clog_lt_self (b : ℕ) {x : ℕ} (hx : 1 < x) :
     b ^ (clog b x).pred < x := by
+  rcases le_or_gt b 1 with hb | hb
+  · simpa [clog_of_left_le_one hb] using hx
   rw [← lt_clog_iff_pow_lt hb]
   exact pred_lt (clog_pos hb hx).ne'
 

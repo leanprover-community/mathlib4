@@ -5,6 +5,7 @@ Authors: Paul Cadman
 -/
 module
 
+public import Mathlib.LinearAlgebra.Matrix.Array
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 

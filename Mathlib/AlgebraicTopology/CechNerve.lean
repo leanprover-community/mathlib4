@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.Tactic.ApplyFun
 
 /-!
-
 # The Čech Nerve
 
 This file provides a definition of the Čech nerve associated to an arrow, provided
@@ -28,7 +27,6 @@ We end the file with a description of the Čech nerve of an arrow `X ⟶ ⊤_ C`
 object, when `C` has finite products. We call this `cechNerveTerminalFrom`. When `C` is
 `G`-Set this gives us `EG` (the universal cover of the classifying space of `G`) as a simplicial
 `G`-set, which is useful for group cohomology.
-
 -/
 
 @[expose] public section
@@ -56,7 +54,6 @@ def cechNerve : SimplicialObject C where
   map g := WidePullback.lift (WidePullback.base _)
     (fun i => WidePullback.π _ (g.unop.toOrderHom i)) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism between Čech nerves associated to a morphism of arrows. -/
 @[simps]
 def mapCechNerve {f g : Arrow C}
@@ -93,7 +90,6 @@ namespace SimplicialObject
 variable
   [∀ (n : ℕ) (f : Arrow C), HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def cechNerve : Arrow C ⥤ SimplicialObject C where

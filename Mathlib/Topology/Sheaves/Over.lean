@@ -16,7 +16,6 @@ we show that the category `Over U` (whose objects are the
 `V : Opens X` equipped with a morphism `V ⟶ U`) is equivalent
 to the category `Opens U`.
 This equivalence is bi-continuous, and thus induces an equivalence of sheaf categories.
-
 -/
 
 @[expose] public section
@@ -31,7 +30,6 @@ variable {X : Type u} [TopologicalSpace X] (U : Opens X) {A : Type*} [Category* 
 
 namespace Opens
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `X` is a topological space and `U : Opens X`,
 then the category `Over U` is equivalent to `Opens ↥U`. -/
 @[simps!]

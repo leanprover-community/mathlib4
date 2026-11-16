@@ -18,7 +18,6 @@ public import Mathlib.Algebra.Module.Submodule.Lattice
 
 * We introduce the notation `R ∙ v` for the span of a singleton, `Submodule.span R {v}`.  This is
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
-
 -/
 
 @[expose] public section
@@ -74,7 +73,7 @@ theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_span_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ span R s := subset_span hx
 
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
@@ -271,7 +270,7 @@ theorem span_empty : span R (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : span R (univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_span
+  eq_top_iff.2 fun _ _ ↦ subset_span (mem_univ _)
 
 @[simp]
 theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=

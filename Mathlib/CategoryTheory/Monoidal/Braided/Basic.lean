@@ -28,7 +28,6 @@ The rationale is that we are not carrying any additional data, just requiring a 
 ## References
 
 * [Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, *Tensor categories*][egno15]
-
 -/
 
 @[expose] public section
@@ -137,7 +136,6 @@ theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ₘ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ₘ f) :=
   CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In a braided monoidal category, the functors `tensorLeft X` and
 `tensorRight X` are isomorphic. -/
 @[simps]
@@ -146,7 +144,6 @@ def tensorLeftIsoTensorRight (X : C) :
   hom := { app Y := (β_ X Y).hom }
   inv := { app Y := (β_ X Y).inv }
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The braiding isomorphism as a natural isomorphism of bifunctors `C ⥤ C ⥤ C`. -/
 @[simps!]
@@ -391,7 +388,6 @@ attribute [reassoc] braided
 
 instance id : (𝟭 C).LaxBraided where
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
     (F ⋙ G).LaxBraided where
   braided X Y := by
@@ -710,7 +706,6 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
         X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by monoidal
     _ = _ := by rw [← whisker_exchange]; monoidal
 
-set_option backward.defeqAttrib.useBackward true in
 instance tensorMonoidal : (tensor C).Monoidal :=
     Functor.CoreMonoidal.toMonoidal
       { εIso := (λ_ (𝟙_ C)).symm

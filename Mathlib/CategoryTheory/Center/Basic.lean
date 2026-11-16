@@ -16,7 +16,6 @@ type of endomorphisms of the identity functor of `C`.
 
 ## References
 * https://ncatlab.org/nlab/show/center+of+a+category
-
 -/
 
 public section

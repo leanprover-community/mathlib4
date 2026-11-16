@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 In this file, we construct the functor `uliftFunctor.{v, u} : TopCat.{u} ⥤ TopCat.{max u v}`
 which sends a topological space `X : Type u` to a homeomorphic space in `Type (max u v)`.
-
 -/
 
 @[expose] public section

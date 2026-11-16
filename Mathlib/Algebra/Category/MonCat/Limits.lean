@@ -17,7 +17,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
-
 -/
 
 @[expose] public section
@@ -333,19 +332,19 @@ noncomputable instance forget_createsLimit :
   exact createsLimitOfNatIso e.symm
 
 @[to_additive]
-noncomputable instance forget_createsLimitsOfShape :
-    CreatesLimitsOfShape J (forget MonCat.{u}) where
+noncomputable instance forget_createsLimitsOfShape [UnivLE.{v, u}] :
+    CreatesLimitsOfShape J (forget CommMonCat.{u}) where
   CreatesLimit := inferInstance
 
 /-- The forgetful functor from commutative monoids to types preserves all limits. -/
 @[to_additive
 /-- The forgetful functor from commutative additive monoids to types preserves all limits. -/]
-noncomputable instance forget_createsLimitsOfSize :
-    CreatesLimitsOfSize.{w, v} (forget MonCat.{u}) where
+noncomputable instance forget_createsLimitsOfSize [UnivLE.{v, u}] :
+    CreatesLimitsOfSize.{w, v} (forget CommMonCat.{u}) where
   CreatesLimitsOfShape := inferInstance
 
 @[to_additive]
-noncomputable instance forget_createsLimits : CreatesLimits (forget MonCat.{u}) :=
+noncomputable instance forget_createsLimits : CreatesLimits (forget CommMonCat.{u}) :=
   CommMonCat.forget_createsLimitsOfSize.{u, u}
 
 end CommMonCat

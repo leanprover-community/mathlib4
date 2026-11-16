@@ -21,7 +21,6 @@ additional structures.
 We define stability classes under associators, unitors, and braidings, and use
 them to construct monoidal, braided, and symmetric structures on
 `WideSubcategory P`.
-
 -/
 
 public section

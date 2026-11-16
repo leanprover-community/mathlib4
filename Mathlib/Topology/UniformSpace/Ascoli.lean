@@ -90,9 +90,9 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     (UniformFun.uniformSpace X α).comap F =
     (Pi.uniformSpace _).comap F := by
   -- The `≤` inequality is trivial
-  refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
+  refine le_antisymm (UniformSpace.comap_monotone UniformFun.uniformContinuous_toFun) ?_
   -- A bit of rewriting to get a nice intermediate statement.
-  simp_rw [UniformSpace.comap, UniformSpace.le_def, uniformity_comap, Pi.uniformity,
+  simp_rw [UniformSpace.le_def, uniformity_comap, Pi.uniformity,
     Filter.comap_iInf, comap_comap, Function.comp_def]
   refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr ?_
   -- Core of the proof: we need to show that, for any entourage `U` in `α`,

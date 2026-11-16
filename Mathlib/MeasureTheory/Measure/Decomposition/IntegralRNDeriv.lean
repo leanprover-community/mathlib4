@@ -23,7 +23,6 @@ import Mathlib.Probability.Kernel.Composition.RadonNikodym
   `ν.real univ * f (μ.real univ / ν.real univ) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
 * `ConvexOn.integrable_apply_rnDeriv_of_integrable_compProd`: for `f` a convex function on `[0, ∞)`,
   if `f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b))` is integrable, then `f (μ.rnDeriv ν a)` is integrable.
-
 -/
 
 public section
@@ -35,6 +34,10 @@ open scoped ENNReal
 namespace MeasureTheory
 
 variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ ν : Measure 𝓧} {f : ℝ → ℝ}
+
+@[fun_prop]
+lemma Measure.integrable_rnDeriv [IsFiniteMeasure μ] : Integrable (μ.rnDeriv ν) ν :=
+  ⟨(Measure.measurable_rnDeriv _ _).aestronglyMeasurable, Measure.lintegral_rnDeriv_lt_top _ _⟩
 
 @[fun_prop]
 lemma Measure.integrable_toReal_rnDeriv [IsFiniteMeasure μ] :

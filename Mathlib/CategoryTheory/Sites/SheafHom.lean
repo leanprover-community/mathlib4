@@ -23,7 +23,6 @@ TODO:
   the product functor with `F`, i.e. for all `X` and `Y`, there is a
   natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
 - use these results in order to show that the category of sheaves of types is Cartesian closed
-
 -/
 
 @[expose] public section
@@ -39,7 +38,6 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable (F G : Cᵒᵖ ⥤ A)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given two presheaves `F` and `G` on a category `C` with values in a category `A`,
 this `presheafHom F G` is the presheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
@@ -132,7 +130,6 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
-set_option backward.defeqAttrib.useBackward true in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
     ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),

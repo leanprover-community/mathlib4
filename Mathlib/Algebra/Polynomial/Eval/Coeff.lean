@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Data.Set.Finite.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluation of polynomials
 
@@ -76,17 +79,18 @@ variable (f : R →+* S)
 
 @[simp]
 theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
-  rw [map, eval₂_def, coeff_sum, sum]
+  rw [map, eval₂_eq_sum, coeff_sum, sum]
   simp_all
 
 lemma coeff_map_eq_comp (p : R[X]) (f : R →+* S) : (p.map f).coeff = f ∘ p.coeff := by
   ext n; exact coeff_map ..
 
-theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.map (g.comp f) :=
-  ext (by simp [coeff_map])
+theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.map (g.comp f) := by
+  ext n; simp [coeff_map]
 
 @[simp]
-theorem map_id : p.map (RingHom.id _) = p := by simp [Polynomial.ext_iff, coeff_map]
+theorem map_id : p.map (RingHom.id _) = p := by
+  simp [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, coeff_map]
 
 /-- The polynomial ring over a finite product of rings is isomorphic to
 the product of polynomial rings over individual rings. -/
@@ -94,13 +98,13 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
     (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
   .ofBijective (RingHom.pi fun i ↦ mapRingHom (Pi.evalRingHom R i))
     ⟨fun p q h ↦ by ext n i; simpa using congr(coeff ($h i) n),
-      fun p ↦ ⟨.ofFinsupp <| .ofCoeff <| .ofSupportFinite (fun n i ↦ coeff (p i) n) <|
+      fun p ↦ ⟨.ofCoeff <| .ofSupportFinite (fun n i ↦ coeff (p i) n) <|
         (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
           simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
           contrapose! hn; exact funext hn, by ext i n; exact coeff_map _ _⟩⟩
 
-theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h =>
-  ext fun m => hf <| by rw [← coeff_map f, ← coeff_map f, h]
+theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h ↦ by
+  ext m; exact hf <| by rw [← coeff_map f, ← coeff_map f, h]
 
 theorem map_injective_iff : Function.Injective (map f) ↔ Function.Injective f :=
   ⟨fun h r r' eq ↦ by simpa using h (a₁ := C r) (a₂ := C r') (by simpa), map_injective f⟩
@@ -214,7 +218,7 @@ theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →
 
 variable [CommSemiring R] [CommSemiring S] (f : R →+* S)
 
-theorem IsRoot.map {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
+theorem IsRoot.map (f : R →+* S) {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
   rw [IsRoot, eval_map, eval₂_hom, h.eq_zero, f.map_zero]
 
 theorem IsRoot.of_map {R} [Ring R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot (p.map f) (f x))
@@ -223,7 +227,7 @@ theorem IsRoot.of_map {R} [Ring R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoo
 
 theorem isRoot_map_iff {R : Type*} [CommRing R] {f : R →+* S} {x : R} {p : R[X]}
     (hf : Function.Injective f) : IsRoot (p.map f) (f x) ↔ IsRoot p x :=
-  ⟨fun h => h.of_map hf, fun h => h.map⟩
+  ⟨fun h => h.of_map hf, fun h => h.map f⟩
 
 end Map
 

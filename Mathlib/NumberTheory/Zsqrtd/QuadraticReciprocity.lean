@@ -15,7 +15,6 @@ public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 `prime_iff_mod_four_eq_three_of_nat_prime`
 A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
-
 -/
 
 public section

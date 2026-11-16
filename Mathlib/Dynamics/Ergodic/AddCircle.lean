@@ -27,7 +27,6 @@ This file contains proofs of ergodicity for maps of the additive circle.
   self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_nsmul_add`: given `n : ℕ` such that `1 < n` and `x : AddCircle T`, the
   self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
-
 -/
 
 public section
@@ -115,7 +114,7 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
         rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.natCast_pow, Int.natCast_natAbs, ← abs_pow,
           abs_dvd]
       have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j =>
-        (vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)).eventuallyEq
+        .of_eq <| vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)
       have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
         simp_rw [hu₀]; exact tendsto_pow_atTop_atTop_of_one_lt hn
       rw [eventuallyEmptyOrUniv_iff']
@@ -134,7 +133,7 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
   replace h : n - 1 ≠ 0 := by
     rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
   have hnx : n • DivisibleBy.div x (n - 1) = x + DivisibleBy.div x (n - 1) := by
-    conv_rhs => congr; rw [← DivisibleBy.div_cancel x h]
+    conv_rhs => enter [1]; rw [← DivisibleBy.div_cancel x h]
     rw [sub_smul, one_smul, sub_add_cancel]
   ext y
   simp only [f, e, hnx, MeasurableEquiv.coe_addLeft, MeasurableEquiv.symm_addLeft, comp_apply,
