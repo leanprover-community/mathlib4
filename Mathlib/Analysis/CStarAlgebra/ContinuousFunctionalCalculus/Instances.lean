@@ -228,6 +228,9 @@ open ContinuousMapZero Unitization
 variable {𝕜 A : Type*} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A]
 variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 variable [StarModule 𝕜 A] {p : A → Prop} {p₁ : Unitization 𝕜 A → Prop}
+
+section Basic
+
 variable [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
 
 namespace Unitization
@@ -316,6 +319,72 @@ instance Unitization.instContinuousFunctionalCalculusIsSelfAdjoint [NormedSpace 
   continuousFunctionalCalculus fun _ ↦ isSelfAdjoint_iff_snd
 
 end StandardInstances
+
+end Basic
+
+section ClosedEmbedding
+
+variable [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 𝕜 A p]
+
+namespace Unitization
+
+variable (x : Unitization 𝕜 A) (hx : p x.snd)
+
+open scoped NonUnitalContinuousFunctionalCalculus in
+lemma isClosedEmbedding_cfcAux : IsClosedEmbedding (cfcAux x hx) := by
+  /- `cfcAux x hx` is `starMap (cfcₙHom hx)` precomposed with a homeomorphism, and under the
+  identification `Unitization 𝕜 B ≃ₜ 𝕜 × B`, `starMap (cfcₙHom hx)` is `Prod.map id (cfcₙHom hx)`.
+  -/
+  let e : C(σ 𝕜 x, 𝕜) ≃ₜ Unitization 𝕜 C(σₙ 𝕜 x.snd, 𝕜)₀ :=
+    { toEquiv := (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeoSpectrum x)).trans
+        (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm
+      continuous_toFun := Unitization.continuous_iff.mpr ⟨continuous_eval_const _,
+        ContinuousMap.continuous_toContinuousMapZero.comp (ContinuousMap.continuous_precomp _)⟩
+      continuous_invFun := (ContinuousMap.continuous_precomp _).comp <|
+        (ContinuousMap.continuous_const'.comp Unitization.continuous_fst).add
+          (ContinuousMapZero.isEmbedding_toContinuousMap.continuous.comp
+            Unitization.continuous_snd) }
+  change IsClosedEmbedding (starMap (cfcₙHom hx) ∘ e)
+  refine .comp ?_ e.isClosedEmbedding
+  rw [← uniformEquivProd.toHomeomorph.comp_isClosedEmbedding_iff]
+  convert (IsClosedEmbedding.id.prodMap (cfcₙHom_isClosedEmbedding hx (R := 𝕜))).comp
+    uniformEquivProd.toHomeomorph.isClosedEmbedding using 1
+  ext y
+  · exact fst_starMap _ y
+  · exact snd_starMap _ y
+
+open scoped NonUnitalContinuousFunctionalCalculus in
+theorem closedEmbeddingContinuousFunctionalCalculus
+    (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) :
+    ClosedEmbeddingContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁ where
+  toContinuousFunctionalCalculus := continuousFunctionalCalculus hp₁
+  isClosedEmbedding y hy := by
+    let := continuousFunctionalCalculus hp₁
+    rw [cfcHom_eq_of_continuous_of_map_id hy (cfcAux y ((hp₁ y).mp hy)) (continuous_cfcAux ..)
+      (cfcAux_id ..)]
+    exact isClosedEmbedding_cfcAux ..
+
+end Unitization
+
+section StandardInstances
+
+variable {A : Type*} [NonUnitalNormedRing A] [StarRing A]
+
+instance Unitization.instClosedEmbeddingContinuousFunctionalCalculusIsStarNormal
+    [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
+    [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℂ A IsStarNormal] :
+    ClosedEmbeddingContinuousFunctionalCalculus ℂ (Unitization ℂ A) IsStarNormal :=
+  closedEmbeddingContinuousFunctionalCalculus fun _ ↦ isStarNormal_iff_snd
+
+instance Unitization.instClosedEmbeddingContinuousFunctionalCalculusIsSelfAdjoint
+    [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [StarModule ℝ A]
+    [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint] :
+    ClosedEmbeddingContinuousFunctionalCalculus ℝ (Unitization ℝ A) IsSelfAdjoint :=
+  closedEmbeddingContinuousFunctionalCalculus fun _ ↦ isSelfAdjoint_iff_snd
+
+end StandardInstances
+
+end ClosedEmbedding
 
 end RCLikeUnitization
 

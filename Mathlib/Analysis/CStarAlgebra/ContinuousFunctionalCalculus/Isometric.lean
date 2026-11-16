@@ -474,6 +474,10 @@ The instances for `ℝ` and `ℂ` can be found in
 `Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean`, as those require an actual
 `CStarAlgebra` instance on `A`, whereas the one for `ℝ≥0` is simply inherited from an existing
 instance for `ℝ`.
+
+We also provide `Unitization.isometricContinuousFunctionalCalculus`: when `A` is a complete
+non-unital C⋆-ring (over `𝕜`, not necessarily `ℂ`) with a non-unital continuous functional calculus,
+then the (unital) continuous functional calculus on `Unitization 𝕜 A` is isometric.
 -/
 
 section Instances
@@ -506,6 +510,85 @@ instance Nonneg.instNonUnitalIsometricContinuousFunctionalCalculus :
     NNReal.isometry_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 end NonUnital
+
+section Unitization
+
+open ContinuousMapZero Unitization
+
+variable {𝕜 A : Type*} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
+variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
+variable [StarModule 𝕜 A] {p : A → Prop} {p₁ : Unitization 𝕜 A → Prop}
+variable [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
+
+namespace Unitization
+
+open scoped NonUnitalContinuousFunctionalCalculus
+
+attribute [local instance] compactSpace_spectrum
+
+variable (x : Unitization 𝕜 A) (hx : p x.snd)
+
+/-- `cfcAux` is norm contractive. This holds for any continuous star algebra homomorphism from
+`C(X, 𝕜)` into a C⋆-ring, because the norm of a selfadjoint element `s` of a C⋆-ring satisfies
+`‖s ^ (2 ^ n)‖ = ‖s‖ ^ (2 ^ n)`. -/
+lemma norm_cfcAux_le (f : C(σ 𝕜 x, 𝕜)) : ‖cfcAux x hx f‖ ≤ ‖f‖ := by
+  set φ := cfcAux x hx
+  let L : C(σ 𝕜 x, 𝕜) →L[𝕜] Unitization 𝕜 A := ⟨φ.toLinearMap, continuous_cfcAux x hx⟩
+  have key {s : C(σ 𝕜 x, 𝕜)} (hs : IsSelfAdjoint s) : ‖φ s‖ ≤ ‖s‖ := by
+    by_contra! h
+    have hs₀ : 0 < ‖s‖ := (norm_nonneg s).lt_of_ne' fun h₀ ↦ by simp [norm_eq_zero.mp h₀] at h
+    have h₁ : 1 < ‖φ s‖ / ‖s‖ := (one_lt_div hs₀).mpr h
+    obtain ⟨n, hn⟩ := pow_unbounded_of_one_lt ‖L‖ h₁
+    refine hn.not_ge <| (pow_le_pow_right₀ h₁.le Nat.lt_two_pow_self.le).trans ?_
+    rw [div_pow, div_le_iff₀ (by positivity)]
+    calc
+      ‖φ s‖ ^ 2 ^ n = ‖φ (s ^ 2 ^ n)‖ := by rw [map_pow, (hs.map φ).norm_pow_two_pow]
+      _ ≤ ‖L‖ * ‖s ^ 2 ^ n‖ := L.le_opNorm _
+      _ ≤ ‖L‖ * ‖s‖ ^ 2 ^ n := by gcongr; exact norm_pow_le' _ (by positivity)
+  have := key (.star_mul_self f)
+  rw [map_mul, map_star, CStarRing.norm_star_mul_self, CStarRing.norm_star_mul_self] at this
+  exact mul_self_le_mul_self_iff (norm_nonneg _) (norm_nonneg _) |>.mpr this
+
+variable [CompleteSpace A]
+
+lemma norm_cfcAux (f : C(σ 𝕜 x, 𝕜)) : ‖cfcAux x hx f‖ = ‖f‖ := by
+  refine le_antisymm (norm_cfcAux_le x hx f) ?_
+  refine (ContinuousMap.norm_le _ (norm_nonneg _)).mpr fun y ↦ ?_
+  exact spectrum.norm_le_norm_of_mem (a := cfcAux x hx f) <| spectrum_cfcAux x hx f ▸ ⟨y, rfl⟩
+
+lemma isometry_cfcAux : Isometry (cfcAux x hx) :=
+  AddMonoidHomClass.isometry_of_norm _ (norm_cfcAux x hx)
+
+theorem isometricContinuousFunctionalCalculus (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) :
+    IsometricContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁ where
+  toContinuousFunctionalCalculus := continuousFunctionalCalculus hp₁
+  isometric y hy := by
+    let := continuousFunctionalCalculus hp₁
+    rw [cfcHom_eq_of_continuous_of_map_id hy (cfcAux y ((hp₁ y).mp hy)) (continuous_cfcAux ..)
+      (cfcAux_id ..)]
+    exact isometry_cfcAux y ((hp₁ y).mp hy)
+
+end Unitization
+
+section StandardInstances
+
+variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
+
+instance Unitization.instIsometricContinuousFunctionalCalculusIsStarNormal
+    [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
+    [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal] :
+    IsometricContinuousFunctionalCalculus ℂ (Unitization ℂ A) IsStarNormal :=
+  isometricContinuousFunctionalCalculus fun _ ↦ isStarNormal_iff_snd
+
+instance Unitization.instIsometricContinuousFunctionalCalculusIsSelfAdjoint
+    [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [StarModule ℝ A]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] :
+    IsometricContinuousFunctionalCalculus ℝ (Unitization ℝ A) IsSelfAdjoint :=
+  isometricContinuousFunctionalCalculus fun _ ↦ isSelfAdjoint_iff_snd
+
+end StandardInstances
+
+end Unitization
 
 end Instances
 
