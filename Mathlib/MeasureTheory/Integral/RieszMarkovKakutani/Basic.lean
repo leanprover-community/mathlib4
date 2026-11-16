@@ -26,7 +26,6 @@ literature.
 ## References
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
-
 -/
 
 @[expose] public section

@@ -17,7 +17,6 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 * `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$.
 
 ## Tags
-
 -/
 
 @[expose] public section

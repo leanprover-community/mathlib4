@@ -35,7 +35,6 @@ functoriality of these constructions with respect to functors on the base catego
 
 We define corresponding pseudofunctors `WithTerminal.pseudofunctor` and `WithInitial.pseudofunctor`
 from `Cat` to `Cat`.
-
 -/
 
 @[expose] public section

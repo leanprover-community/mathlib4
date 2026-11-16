@@ -18,7 +18,6 @@ admits a `Fintype` instance.
 To construct the `Fintype` instance, a function lifting a `Multiset α`
 to the `Multiset (List α)` is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
-
 -/
 
 @[expose] public section

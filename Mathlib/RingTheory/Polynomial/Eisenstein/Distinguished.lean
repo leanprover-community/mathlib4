@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.PowerSeries.Order
 
 In this file we define the predicate `Polynomial.IsDistinguishedAt`
 and develop the most basic lemmas about it.
-
 -/
 
 public section

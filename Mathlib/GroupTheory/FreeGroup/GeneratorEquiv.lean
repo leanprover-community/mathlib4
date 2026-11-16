@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
 # Isomorphisms between free groups imply equivalences of their generators
-
 -/
 
 @[expose] public section

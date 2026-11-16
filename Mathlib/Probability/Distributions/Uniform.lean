@@ -31,7 +31,6 @@ with `0` probability for elements not in the set.
 
 `ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
 Each probability is given by the count of the element divided by the size of the `Multiset`
-
 -/
 
 @[expose] public section

@@ -53,7 +53,6 @@ For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 
 We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`,
 `IsZariskiLocalAtTarget P`, `IsZariskiLocalAtSource P`.
-
 -/
 
 @[expose] public section

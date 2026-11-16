@@ -58,7 +58,6 @@ the last section, various properties of matrices are explored.
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
-
 -/
 
 @[expose] public section
@@ -1235,12 +1234,14 @@ end Matrix
 local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (toLp 2 x) (toLp 2 y)
 
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
-theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
+theorem inner_matrix_row_row {m' : Type*} [Fintype n] (A : Matrix m' n 𝕜) (B : Matrix m n 𝕜)
+    (i : m') (j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
   simp [PiLp.inner_apply, dotProduct, mul_apply']
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
-theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
+theorem inner_matrix_col_col {n' : Type*} [Fintype m] (A : Matrix m n' 𝕜) (B : Matrix m n 𝕜)
+    (i : n') (j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 

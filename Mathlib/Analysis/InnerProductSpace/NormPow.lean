@@ -17,7 +17,6 @@ an inner product space and for a real number `p > 1`.
 
 ## TODO
 * `x ↦ ‖x‖ ^ p` should be `C^n` for `p > n`.
-
 -/
 
 public section

@@ -18,7 +18,6 @@ the shift: there is a natural isomorphism `(K⟦n⟧).homology a ≅ K.homology 
 when `n + a = a'`. This is summarized by instances
 `(homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ` in the `CochainComplex`
 and `HomotopyCategory` namespaces.
-
 -/
 
 @[expose] public section
@@ -91,13 +90,11 @@ noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
       (ShortComplex.homologyFunctor C) ≪≫
     (homologyFunctorIso C (ComplexShape.up ℤ) a').symm
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
   simp [shiftIso, HomologicalComplex.homology]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
@@ -105,7 +102,6 @@ lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C �
 
 end ShiftSequence
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance :
     (homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ where
   sequence n := homologyFunctor C (ComplexShape.up ℤ) n
