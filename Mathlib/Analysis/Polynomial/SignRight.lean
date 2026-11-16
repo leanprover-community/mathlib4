@@ -91,7 +91,7 @@ theorem signRight_C_mul [IsStrictOrderedRing R] (x c : R) (p : R[X]) :
 theorem signRight_mul_self [IsStrictOrderedRing R] {x : R} {p : R[X]} (hp : p ≠ 0) :
     signRight x (p * p) = 1 := by
   rw [signRight_mul]
-  cases h : signRight x p <;> simp_all
+  exact SignType.mul_self_eq_one_iff.mpr (fun h => hp (signRight_eq_zero_iff.mp h))
 
 /-- Away from its roots, the sign of `p` to the right of `x` is the sign of `p x`. -/
 theorem signRight_of_eval_ne_zero {x : R} {p : R[X]} (h : eval x p ≠ 0) :
@@ -111,8 +111,7 @@ theorem signRight_of_eval_eq_zero [IsStrictOrderedRing R] {x : R} {p : R[X]} (h 
 
 theorem signRight_derivative_mul [IsStrictOrderedRing R] {x : R} {p : R[X]} (hp : p ≠ 0)
     (hev : eval x p = 0) : signRight x (derivative p * p) = 1 := by
-  rw [signRight_mul, ← signRight_of_eval_eq_zero hev]
-  cases h : signRight x p <;> simp_all
+  rw [signRight_mul, ← signRight_of_eval_eq_zero hev, <- signRight_mul, signRight_mul_self hp]
 
 theorem signRight_add {x : R} {p q : R[X]} (hp : eval x p = 0) (hq : eval x q ≠ 0) :
     signRight x (p + q) = signRight x q := by
@@ -150,9 +149,8 @@ theorem eventually_sign_eq_signRight (x : R) (p : R[X]) :
   rw [nhds_discrete SignType, tendsto_pure] at hg_near
   -- and to the right of `x`, `(y - x) ^ m` is positive
   filter_upwards [hg_near.filter_mono nhdsWithin_le_nhds, self_mem_nhdsWithin] with y hy hxy
-  rw [hsign, hpg, eval_mul, sign_mul, eval_pow, eval_sub, eval_X, eval_C,
+  rwa [hsign, hpg, eval_mul, sign_mul, eval_pow, eval_sub, eval_X, eval_C,
     sign_pos (pow_pos (sub_pos.mpr hxy) m), one_mul]
-  exact hy
 
 /-- Immediately to the right of `x`, a polynomial has a constant sign. -/
 theorem exists_eventually_sign_eq (x : R) (p : R[X]) :
