@@ -283,6 +283,19 @@ protected theorem uniformContinuous_fst : UniformContinuous (fun x : Unitization
 protected theorem uniformContinuous_snd : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
   uniformContinuous_snd.comp Unitization.uniformEquivProd.uniformContinuous
 
+protected theorem uniformContinuous_iff {X : Type*} [UniformSpace X] {f : X → Unitization 𝕜 A} :
+    UniformContinuous f ↔
+      (UniformContinuous fun x ↦ (f x).fst) ∧ UniformContinuous fun x ↦ (f x).snd :=
+  uniformEquivProd.comp_uniformContinuous_iff.symm.trans uniformContinuous_prodMk
+
+protected theorem uniformContinuous_inl : UniformContinuous (inl : 𝕜 → Unitization 𝕜 A) :=
+  Unitization.uniformContinuous_iff.mpr
+    ⟨uniformContinuous_id, by simpa using uniformContinuous_const⟩
+
+protected theorem uniformContinuous_inr : UniformContinuous (inr : A → Unitization 𝕜 A) :=
+  Unitization.uniformContinuous_iff.mpr
+    ⟨by simpa using uniformContinuous_const, uniformContinuous_id⟩
+
 @[fun_prop]
 protected theorem continuous_fst : Continuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
   Unitization.uniformContinuous_fst.continuous
@@ -297,11 +310,11 @@ protected theorem continuous_iff {X : Type*} [TopologicalSpace X] {f : X → Uni
 
 @[fun_prop]
 protected theorem continuous_inl : Continuous (inl : 𝕜 → Unitization 𝕜 A) :=
-  Unitization.continuous_iff.mpr ⟨by simpa using continuous_id', by simpa using continuous_const⟩
+  Unitization.uniformContinuous_inl.continuous
 
 @[fun_prop]
 protected theorem continuous_inr : Continuous (inr : A → Unitization 𝕜 A) :=
-  Unitization.continuous_iff.mpr ⟨by simpa using continuous_const, by simpa using continuous_id'⟩
+  Unitization.uniformContinuous_inr.continuous
 
 end
 
