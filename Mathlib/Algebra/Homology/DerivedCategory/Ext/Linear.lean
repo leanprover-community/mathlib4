@@ -16,7 +16,6 @@ public import Mathlib.LinearAlgebra.BilinearMap
 In this file, we show that if `C` is an `R`-linear abelian category,
 then there is an `R`-module structure on the groups `Ext X Y n`
 for `X` and `Y` in `C` and `n : ℕ`.
-
 -/
 
 @[expose] public section
@@ -28,6 +27,36 @@ namespace CategoryTheory
 namespace Abelian
 
 namespace Ext
+
+section End
+
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] {A G : C} {n : ℕ}
+
+noncomputable instance smulEndRight : SMul (End G) (Ext A G n) where
+  smul r x := x.comp (mk₀ r.asHom) (add_zero n)
+
+lemma smul_end_def (r : End G) (x : Ext A G n) : r • x = x.comp (mk₀ r.asHom) (add_zero n) := rfl
+
+lemma mk₀_end_smul {A G : C} (r : End G) (f : A ⟶ G) :
+    mk₀ (r • f) = r • mk₀ f := by
+  rw [smul_end_def, End.smul_right, mk₀_comp_mk₀]
+
+@[simp]
+lemma comp_end_smul {X Y G : C} {a b : ℕ} (α : Ext X Y a) (β : Ext Y G b)
+    {c : ℕ} (h : a + b = c) (r : End G) :
+    α.comp (r • β) h = r • α.comp β h := by
+  rw [smul_end_def, smul_end_def, comp_assoc_of_third_deg_zero]
+
+attribute [local simp] smul_end_def in
+noncomputable instance moduleEndRight : Module (End G) (Ext A G n) where
+  one_smul x := by simp
+  mul_smul r s x := by simp
+  smul_zero r := by simp
+  zero_smul x := by simp
+  smul_add r x y := by simp
+  add_smul r s x := by simp [mk₀_add]
+
+end End
 
 section Ring
 
@@ -94,6 +123,14 @@ noncomputable def linearEquiv₀ :
 lemma mk₀_linearEquiv₀_apply (f : Ext X Y 0) :
     mk₀ (linearEquiv₀ (R := R) f) = f :=
   addEquiv₀.left_inv f
+
+/-! The `R`-module structure and the `End Y`-module structure on `Ext X Y n` are compatible. -/
+
+instance : IsScalarTower R (End Y) (Ext X Y n) where
+  smul_assoc r e x := by rw [smul_end_def, smul_end_def, End.smul_asHom, mk₀_smul, comp_smul]
+
+instance : SMulCommClass R (End Y) (Ext X Y n) where
+  smul_comm r e x := by rw [smul_end_def, smul_end_def, smul_comp]
 
 end Ring
 

@@ -24,7 +24,6 @@ We define the total variation distance between two vector measures `μ, ν` as
 
 * `etvDist_self`, `etvDist_eq_zero_iff`, `etvDist_comm`, `etvDist_triangle`: the total
   variation distance between vector measures is a distance.
-
 -/
 
 @[expose] public section

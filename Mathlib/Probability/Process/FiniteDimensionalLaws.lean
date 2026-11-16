@@ -28,7 +28,6 @@ finite-dimensional distributions.
   their finite-dimensional distributions are equal.
 * `map_eq_of_forall_ae_eq`: if two processes are modifications of each other, then they have the
   same law.
-
 -/
 
 public section

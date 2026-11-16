@@ -18,7 +18,6 @@ public import Mathlib.SetTheory.Cardinal.Finsupp
   Two free modules are isomorphic iff they have the same dimension.
 - `Module.finBasis`:
   An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
-
 -/
 
 @[expose] public section

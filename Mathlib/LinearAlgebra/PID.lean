@@ -20,7 +20,6 @@ algebra import hierarchy have to depend on the theory of PIDs.
 
 ## Main results:
 * `LinearMap.trace_restrict_eq_of_forall_mem`
-
 -/
 
 public section

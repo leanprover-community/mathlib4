@@ -99,7 +99,6 @@ In the prime spectrum of a commutative semiring:
 
 * `PrimeSpectrum.isIdempotentElemEquivClopens`: (if the semiring is a ring) clopen subsets
   correspond to idempotents in the ring.
-
 -/
 
 @[expose] public section

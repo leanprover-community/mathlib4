@@ -25,7 +25,6 @@ proof of Kolmogorov's extension theorem.
   cylinder.
 * `isCompactSystem_closedCompactCylinders`: cylinders with compact closed bases form a compact
   system.
-
 -/
 
 @[expose] public section

@@ -31,7 +31,6 @@ Simplicial objects equipped with a splitting form a category
 
 ## References
 * [Stacks: Splitting simplicial objects] https://stacks.math.columbia.edu/tag/017O
-
 -/
 
 @[expose] public section

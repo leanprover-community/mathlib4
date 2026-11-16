@@ -24,7 +24,6 @@ than the dimension.
 
 * `integrable_one_add_norm`: the function $(1 + |x|)^{-r}$ is integrable
 * `integrable_jap` the Japanese bracket is integrable
-
 -/
 
 public section

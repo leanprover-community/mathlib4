@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Noetherian.Defs
 We prove finiteness of minimal primes above an ideal.
 
 This is proved without reference to `PrimeSpectrum` to avoid heavy imports.
-
 -/
 
 public section

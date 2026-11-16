@@ -189,6 +189,20 @@ alias countable_setOf_isolated_right_within := countable_setOfPred_isolated_righ
 @[deprecated (since := "2026-07-09")]
 alias countable_setOf_isolated_left_within := countable_setOfPred_isolated_left_within
 
+@[to_dual]
+theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology α] (s : Set α) :
+    ∃ d ⊆ s, d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Ici x) := by
+  obtain ⟨d, hdc, hd⟩ := exists_countable_dense s
+  refine ⟨(↑) '' d ∪ {x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥}, by grind, ?_, fun x hxs ↦ ?_⟩
+  · exact (hdc.image _).union countable_setOfPred_isolated_right_within
+  refine mem_closure_iff.2 fun u hu hxu ↦ ?_
+  rcases (u ∩ (s ∩ Ioi x)).eq_empty_or_nonempty with h | ⟨y, hyu, hys, hyx⟩
+  · exact ⟨x, hxu, .inr ⟨hxs, empty_mem_iff_bot.1 <| h ▸ inter_mem
+      (mem_nhdsWithin_of_mem_nhds (hu.mem_nhds hxu)) self_mem_nhdsWithin⟩, le_rfl⟩
+  · obtain ⟨z, hzd, hz⟩ := hd.exists_mem_open
+      ((hu.inter isOpen_Ioi).preimage continuous_subtype_val) ⟨⟨y, hys⟩, hyu, hyx⟩
+    exact ⟨z, hz.1, .inl ⟨z, hzd, rfl⟩, hz.2.le⟩
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
 @[to_dual /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval

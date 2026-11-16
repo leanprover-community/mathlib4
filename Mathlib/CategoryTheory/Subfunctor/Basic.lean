@@ -16,7 +16,6 @@ We define subfunctors of a type-valued functors.
 ## Main definition
 
 `CategoryTheory.Subfunctor` : A subfunctor of a type-valued functor.
-
 -/
 
 @[expose] public section

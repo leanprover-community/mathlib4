@@ -68,7 +68,27 @@ The embedding from `R` is called `C`. -/
 @[wikidata Q43260]
 abbrev Polynomial (R : Type*) [Semiring R] : Type _ := AddMonoidAlgebra R ℕ
 
-@[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
+namespace Polynomial
+
+-- We parse `[`, `X`, `]` as separate tokens (`&"X"` matches the identifier `X` without making it a
+-- keyword) rather than introducing a `[X]` token, as the latter would make `simp [X]` lex as
+-- `simp` + `[X]`. The priority makes `R[X]` (where `R` is a variable) win over `GetElem` notation
+-- `xs[i]` (where `xs` and `i` are variables) and over the `AddMonoidAlgebra` notation `R[M]`
+-- (where `R` and `M` are variables) which has priority `high`.
+@[inherit_doc Polynomial]
+scoped syntax:9000 (priority := high + 1) term:max noWs "[" noWs &"X" noWs "]" : term
+
+scoped macro_rules
+  | `($R[X]) => `(Polynomial $R)
+
+open Lean PrettyPrinter in
+/-- Unexpander for `Polynomial`. -/
+@[scoped app_unexpander Polynomial]
+meta def unexpander : Unexpander
+  | `($_ $R) => `($R[X])
+  | _ => throw ()
+
+end Polynomial
 
 open AddMonoidAlgebra Finset Module
 open Finsupp hiding single
@@ -497,13 +517,8 @@ theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
 @[deprecated coeff_one_zero +typeChanged (since := "2026-10-25")]
 protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
 
--- `simp [X]` parses as `simp` + `[X]` (where `[X]` is the token coming from `Polynomial` notation)
--- instead of the expected `simp` + `[` + `X` + `]` because the former is a longer match!
-@[simp]
-theorem coeff_X_one : coeff (X : R[X]) 1 = 1 := by simp [X,]
-
-@[simp]
-theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 := by simp [X,]
+@[simp] lemma coeff_X_zero : coeff (X : R[X]) 0 = 0 := by simp [X]
+@[simp] lemma coeff_X_one : coeff (X : R[X]) 1 = 1 := by simp [X]
 
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp
 

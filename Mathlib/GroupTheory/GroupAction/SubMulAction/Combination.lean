@@ -34,7 +34,6 @@ This induces a `MulAction G (powersetCard α n)` instance. Then:
 
 * `Set.powersetCard.mulActionHom_singleton`:
   The obvious map from `α` to `powersetCard α 1`, as an equivariant map.
-
 -/
 
 @[expose] public section

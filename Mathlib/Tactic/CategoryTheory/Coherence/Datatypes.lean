@@ -33,7 +33,6 @@ The operations of these datatypes are defined in a monad `m` with the correspond
 For example, a monad `m` with `[MonadMor₂ m]` provides the operation
 `MonadMor₂.comp₂M : Mor₂Iso → Mor₂Iso → m Mor₂Iso`, which constructs the expression for the
 composition `η ≫ θ` of 2-morphisms `η` and `θ` in the monad `m`.
-
 -/
 
 public meta section

@@ -47,7 +47,7 @@ namespace Nonneg
 def unitsEquivPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
     [IsStrictOrderedRing R] [PosMulReflectLT R] :
     (Nonneg R)ˣ ≃* { r : R // 0 < r } where
-  toFun r := ⟨r, lt_of_le_of_ne r.1.2 (Subtype.val_injective.ne r.ne_zero.symm)⟩
+  toFun r := ⟨r, lt_of_le_of_ne r.val.2 (Subtype.val_injective.ne r.ne_zero.symm)⟩
   invFun r := ⟨⟨r.1, r.2.le⟩, ⟨r.1⁻¹, inv_nonneg.mpr r.2.le⟩,
     by ext; simp [r.2.ne'], by ext; simp [r.2.ne']⟩
   left_inv r := by ext; rfl

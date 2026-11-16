@@ -20,7 +20,6 @@ In this file, we declare a `MonoidalCategory` instance on the category of bialge
 fields given by the definitions in `Mathlib/RingTheory/Bialgebra/TensorProduct.lean`, and Prop
 fields proved by pulling back the `MonoidalCategory` instance on the category of algebras,
 using `Monoidal.induced`.
-
 -/
 
 @[expose] public section
@@ -36,9 +35,9 @@ variable (R : Type u) [CommRing R]
 noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (BialgCat R) where
   tensorObj X Y := of R (X ⊗[R] Y)
-  whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
-  whiskerRight f X := ofHom (f.1.rTensor X)
-  tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.1 g.1)
+  whiskerLeft X _ _ f := ofHom (f.toBialgHom'.lTensor X)
+  whiskerRight f X := ofHom (f.toBialgHom'.rTensor X)
+  tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.toBialgHom' g.toBialgHom')
   tensorUnit := of R R
   associator X Y Z := (Bialgebra.TensorProduct.assoc R R X Y Z).toBialgIso
   leftUnitor X := (Bialgebra.TensorProduct.lid R X).toBialgIso

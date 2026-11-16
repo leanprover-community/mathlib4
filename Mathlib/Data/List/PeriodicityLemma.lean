@@ -21,7 +21,6 @@ Equivalent characterizations in terms of indices and modular arithmetic are also
 ## Tags
 
 periodicity lemma, Fine-Wilf theorem, period, periodicity
-
 -/
 
 @[expose] public section

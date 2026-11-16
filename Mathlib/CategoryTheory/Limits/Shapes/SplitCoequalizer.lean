@@ -26,7 +26,6 @@ These definitions and constructions are useful in particular for the monadicity 
 
 This file has been adapted to `Mathlib/CategoryTheory/Limits/Shapes/SplitEqualizer.lean`. Please try
 to keep them in sync.
-
 -/
 
 @[expose] public section

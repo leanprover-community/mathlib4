@@ -17,7 +17,6 @@ the obvious morphism `(F.obj X₁).obj Y₂ ⨿ (F.obj Y₁).obj X₂ ⟶ (F.obj
 and show that it is a colimit when both coforks are colimit, the cokernel of `f₁`
 is preserved by `F.obj c₁.pt` and the cokernel of `f₂` is preserved by
 `F.flip.obj X₁` and `F.flip.obj Y₁`.
-
 -/
 
 @[expose] public section

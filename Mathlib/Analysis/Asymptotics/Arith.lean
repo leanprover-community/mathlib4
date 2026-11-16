@@ -14,7 +14,6 @@ import Mathlib.Analysis.Normed.Ring.Basic
 
 This file develops the behavior of `IsBigOWith`, `IsBigO`, and `IsLittleO` under absolute values,
 negation, addition, subtraction, zero, constants, and finite sums.
-
 -/
 
 @[expose] public section

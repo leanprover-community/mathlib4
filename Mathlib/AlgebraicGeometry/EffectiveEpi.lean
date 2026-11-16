@@ -30,7 +30,6 @@ epimorphism, see the file `Mathlib.AlgebraicGeometry.Sites.Fpqc`.
 ## Reference
 
 * https://stacks.math.columbia.edu/tag/023Q
-
 -/
 
 public section

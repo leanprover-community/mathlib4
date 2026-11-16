@@ -16,7 +16,6 @@ import Mathlib.Analysis.Normed.Operator.NormedSpace
 When `α` is a topological space equipped with a finite Borel measure, there is a bounded linear map
 from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p μ`. We construct this
 as `BoundedContinuousFunction.toLp`.
-
 -/
 
 @[expose] public section

@@ -559,8 +559,10 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
 
 /-- If `(a : ℕ)` is a root of `cyclotomic n (ZMod p)`, where `p` is a prime, then `a` and `p` are
 coprime. -/
-theorem coprime_of_root_cyclotomic {n : ℕ} (hpos : 0 < n) {p : ℕ} [hprime : Fact p.Prime] {a : ℕ}
+theorem coprime_of_root_cyclotomic {n : ℕ} {p : ℕ} [hprime : Fact p.Prime] {a : ℕ}
     (hroot : IsRoot (cyclotomic n (ZMod p)) (Nat.castRingHom (ZMod p) a)) : a.Coprime p := by
+  rcases n.eq_zero_or_pos with rfl | hpos
+  · simp at hroot
   apply Nat.Coprime.symm
   rw [hprime.1.coprime_iff_not_dvd]
   intro h
@@ -579,9 +581,11 @@ section Order
 
 /-- If `(a : ℕ)` is a root of `cyclotomic n (ZMod p)`, then the multiplicative order of `a` modulo
 `p` divides `n`. -/
-theorem orderOf_root_cyclotomic_dvd {n : ℕ} (hpos : 0 < n) {p : ℕ} [Fact p.Prime] {a : ℕ}
+theorem orderOf_root_cyclotomic_dvd {n : ℕ} {p : ℕ} [Fact p.Prime] {a : ℕ}
     (hroot : IsRoot (cyclotomic n (ZMod p)) (Nat.castRingHom (ZMod p) a)) :
-    orderOf (ZMod.unitOfCoprime a (coprime_of_root_cyclotomic hpos hroot)) ∣ n := by
+    orderOf (ZMod.unitOfCoprime a (coprime_of_root_cyclotomic hroot)) ∣ n := by
+  rcases n.eq_zero_or_pos with rfl | hpos
+  · simp
   apply orderOf_dvd_of_pow_eq_one
   suffices hpow : eval (Nat.castRingHom (ZMod p) a) (X ^ n - 1 : (ZMod p)[X]) = 0 by
     simp only [eval_X, eval_one, eval_pow, eval_sub, eq_natCast] at hpow

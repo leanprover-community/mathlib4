@@ -24,7 +24,6 @@ one minimal prime ideal, equivalently, whose spectrum is an irreducible topologi
 ## Tags
 
 polynomial, irreducible ring, nilradical, prime ideal
-
 -/
 
 public section

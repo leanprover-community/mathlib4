@@ -397,7 +397,6 @@ to be a function `r` such that
 
 The proof is mostly based on
 [Russel A. Gordon, *The integrals of Lebesgue, Denjoy, Perron, and Henstock*][Gordon55].
-
 -/
 namespace Integrable
 

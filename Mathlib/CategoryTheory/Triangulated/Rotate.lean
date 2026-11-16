@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Triangulated.Basic
 
 This file adds the ability to rotate triangles and triangle morphisms.
 It also shows that rotation gives an equivalence on the category of triangles.
-
 -/
 
 @[expose] public section

@@ -26,7 +26,6 @@ This file defines the topological abelianization of a topological group.
 
 ## Tags
 group, topological abelianization
-
 -/
 
 public section

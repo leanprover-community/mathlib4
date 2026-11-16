@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 - `derivationToSquareZeroOfLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
-
 -/
 
 @[expose] public section

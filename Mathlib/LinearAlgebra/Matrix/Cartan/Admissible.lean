@@ -145,8 +145,7 @@ theorem isAdmissible_cartanGram : (cartanGram M).IsAdmissible := by
       field_simp
       rw [Real.sq_sqrt (by norm_num)]
   · rw [cartanGram_apply_of_ne _ h]
-    have : 0 ≤ √((M i j * M j i : ℤ) : ℝ) := Real.sqrt_nonneg _
-    linarith
+    linarith [Real.sqrt_nonneg ((M i j * M j i : ℤ) : ℝ)]
   · refine ⟨(M i j * M j i).toNat, ?_, ?_⟩
     · have := hM.mul_lt_four h; lia
     · rw [hM.four_mul_cartanGram_sq h]
@@ -174,8 +173,7 @@ omit [Fintype ι] [DecidableEq ι] in
 /-- Two joined nodes meet at an angle of at least `120°`. -/
 lemma le_neg_half {i j : ι} (hij : i ≠ j) (h : A i j ≠ 0) : A i j ≤ -1 / 2 := by
   obtain ⟨k, -, hk⟩ := hA.four_mul_sq i j hij
-  have hk₀ : k ≠ 0 := by rintro rfl; simp_all
-  have : (1 : ℝ) ≤ k := by exact_mod_cast Nat.one_le_iff_ne_zero.mpr hk₀
+  have : (1 : ℝ) ≤ k := by exact_mod_cast Nat.one_le_iff_ne_zero.mpr (by rintro rfl; simp_all)
   nlinarith [hA.offDiag_nonpos i j hij]
 
 omit [Fintype ι] [DecidableEq ι] in
@@ -204,12 +202,11 @@ omit [Fintype ι] in
 at most `2 · (-1/2)`, which cancels the new diagonal term `1`. -/
 lemma sum_insert_le {S : Finset ι} {x s : ι} (hx : x ∉ S) (hs : s ∈ S) (h : A s x ≠ 0) :
     ∑ i ∈ insert x S, ∑ j ∈ insert x S, A i j ≤ ∑ i ∈ S, ∑ j ∈ S, A i j := by
-  have hsx : s ≠ x := by rintro rfl; exact hx hs
   have hcross : ∑ t ∈ S, A t x ≤ -1 / 2 := by
     rw [← add_sum_erase _ _ hs]
     have : ∑ t ∈ S.erase s, A t x ≤ 0 :=
-      sum_nonpos fun t ht ↦ hA.offDiag_nonpos t x (by rintro rfl; exact hx (mem_of_mem_erase ht))
-    linarith [hA.le_neg_half hsx h]
+      sum_nonpos fun t ht ↦ hA.offDiag_nonpos t x (ne_of_mem_of_not_mem (mem_of_mem_erase ht) hx)
+    linarith [hA.le_neg_half (ne_of_mem_of_not_mem hs hx) h]
   rw [hA.sum_insert_eq hx]
   linarith
 
@@ -224,7 +221,7 @@ theorem sum_sq_lt_one [Finite ι] {S N : Finset ι} (hS : S.Nonempty)
   have := Fintype.ofFinite ι
   set b : ι → ℝ := fun j ↦ ∑ s ∈ S, A s j
   have hb (j : ι) (hj : j ∈ N) : b j ≤ 0 :=
-    sum_nonpos fun s hs ↦ hA.offDiag_nonpos s j fun h ↦ disjoint_left.mp hSN hs (h ▸ hj)
+    sum_nonpos fun s hs ↦ hA.offDiag_nonpos s j (disjoint_iff_ne.mp hSN s hs j hj)
   set u : ι → ℝ := fun k ↦ if k ∈ S then 1 else 0
   set w : ι → ℝ := fun k ↦ if k ∈ N then b k else 0
   have hx : u - w ≠ 0 := by
@@ -273,7 +270,7 @@ lemma cartanGram_sum_insert_le {S : Finset ι} {x s : ι} (hx : x ∉ S) (hs : s
     (h : M s x ≠ 0) :
     ∑ i ∈ insert x S, ∑ j ∈ insert x S, cartanGram M i j ≤ ∑ i ∈ S, ∑ j ∈ S, cartanGram M i j :=
   hM.isAdmissible_cartanGram.sum_insert_le hx hs <| by
-    rwa [Ne, hM.cartanGram_eq_zero_iff (by rintro rfl; exact hx hs)]
+    rwa [Ne, hM.cartanGram_eq_zero_iff (ne_of_mem_of_not_mem hs hx)]
 
 /-- **Master inequality.** If `‖∑_{s ∈ S} εₛ‖ ≤ 1` and `N` is disjoint from the non-empty set `S`,
 then the bonds between `S` and `N` number fewer than four. -/
@@ -281,8 +278,7 @@ theorem sum_mul_lt_four {S N : Finset ι} (hS : S.Nonempty)
     (hq : ∑ i ∈ S, ∑ j ∈ S, cartanGram M i j ≤ 1) (hSN : Disjoint S N) :
     ∑ j ∈ N, ∑ s ∈ S, M s j * M j s < 4 := by
   have hA := hM.isAdmissible_cartanGram
-  have hne {s j : ι} (hs : s ∈ S) (hj : j ∈ N) : s ≠ j :=
-    fun h ↦ disjoint_left.mp hSN hs (h ▸ hj)
+  have hne {s j : ι} (hs : s ∈ S) (hj : j ∈ N) : s ≠ j := disjoint_iff_ne.mp hSN s hs j hj
   have key : ∑ j ∈ N, ∑ s ∈ S, cartanGram M s j ^ 2 < 1 := by
     refine lt_of_le_of_lt (sum_le_sum fun j hj ↦ ?_) (hA.sum_sq_lt_one hS hq hSN)
     have := sum_sq_le_sq_sum_of_nonneg (s := S) (f := fun s ↦ -cartanGram M s j)
@@ -290,13 +286,10 @@ theorem sum_mul_lt_four {S N : Finset ι} (hS : S.Nonempty)
     simpa [sum_neg_distrib] using this
   have : ((∑ j ∈ N, ∑ s ∈ S, M s j * M j s : ℤ) : ℝ) =
       4 * ∑ j ∈ N, ∑ s ∈ S, cartanGram M s j ^ 2 := by
-    push_cast
-    rw [mul_sum]
-    refine sum_congr rfl fun j hj ↦ ?_
-    rw [mul_sum]
-    exact sum_congr rfl fun s hs ↦ by rw [hM.four_mul_cartanGram_sq (hne hs hj)]; push_cast; ring
-  have : ((∑ j ∈ N, ∑ s ∈ S, M s j * M j s : ℤ) : ℝ) < 4 := by linarith
-  exact_mod_cast this
+    simp only [Int.cast_sum, mul_sum]
+    exact sum_congr rfl fun j hj ↦ sum_congr rfl fun s hs ↦
+      (hM.four_mul_cartanGram_sq (hne hs hj)).symm
+  exact_mod_cast (this.trans_lt (by linarith) : _ < (4 : ℝ))
 
 /-- **Step (4) of Humphreys.** A node carries fewer than four bonds in total. -/
 theorem sum_mul_lt_four_of_notMem {i : ι} {N : Finset ι} (hi : i ∉ N) :

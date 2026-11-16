@@ -20,7 +20,6 @@ A monad "is just" a monoid in the category of endofunctors.
 2. `monadToMon` is the functorial version of `toMon`.
 3. `ofMon` associates a monad on `C` to any monoid object in `C ⥤ C`.
 4. `monadMonEquiv` is the equivalence between `Monad C` and `Mon (C ⥤ C)`.
-
 -/
 
 @[expose] public section

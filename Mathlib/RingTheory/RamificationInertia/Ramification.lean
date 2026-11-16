@@ -31,7 +31,6 @@ an `Sq`-module.
 * `ramificationIdx'_eq_ramificationIdx`: The ramification index agrees with the usual definition in
   the case of Dedekind domains.
 * `ramificationIdx_tower`: Ramification index is multiplicative in towers.
-
 -/
 
 @[expose] public section

@@ -49,7 +49,6 @@ import Mathlib.SetTheory.Cardinal.NatCard
 ## TODO
 * Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
-
 -/
 
 @[expose] public section

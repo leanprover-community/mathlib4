@@ -18,7 +18,6 @@ of `X` over `I`.
 
 In particular, if `C` is cartesian closed, then for all objects `I` in `C`, `toOver I : C ⥤ Over I`
 has a right adjoint.
-
 -/
 
 @[expose] public section

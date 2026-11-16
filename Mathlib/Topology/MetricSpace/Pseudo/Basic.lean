@@ -13,7 +13,6 @@ public import Mathlib.Topology.Metrizable.Basic
 # Pseudo-metric spaces
 
 Further results about pseudo-metric spaces.
-
 -/
 
 public section

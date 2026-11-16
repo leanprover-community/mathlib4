@@ -89,7 +89,6 @@ The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
 ## Tags
 
 elliptic curve, weierstrass equation, normal form
-
 -/
 
 @[expose] public section
