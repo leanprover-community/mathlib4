@@ -78,9 +78,8 @@ theorem exists_pos (h : LiouvilleWith p x) :
     ∃ (C : ℝ) (_h₀ : 0 < C),
       ∃ᶠ n : ℕ in atTop, 1 ≤ n ∧ ∃ m : ℤ, x ≠ m / n ∧ |x - m / n| < C / n ^ p := by
   rcases h with ⟨C, hC⟩
-  refine ⟨max C 1, zero_lt_one.trans_le <| le_max_right _ _, ?_⟩
-  refine ((eventually_ge_atTop 1).and_frequently hC).mono ?_
-  rintro n ⟨hle, m, hne, hlt⟩
+  refine ⟨max C 1, zero_lt_one.trans_le <| le_max_right _ _, hC.mp ?_⟩
+  filter_upwards [eventually_ge_atTop 1] with n hle ⟨m, hne, hlt⟩
   refine ⟨hle, m, hne, hlt.trans_le ?_⟩
   gcongr
   apply le_max_left
@@ -102,8 +101,8 @@ theorem frequently_lt_rpow_neg (h : LiouvilleWith p x) (hlt : q < p) :
     simpa only [(· ∘ ·), neg_sub, one_div] using
       ((tendsto_rpow_atTop (sub_pos.2 hlt)).comp tendsto_natCast_atTop_atTop).eventually
         (eventually_gt_atTop C)
-  refine (this.and_frequently hC).mono ?_
-  rintro n ⟨hnC, hn, m, hne, hlt⟩
+  apply hC.mp
+  filter_upwards [this] with n hnC ⟨hn, m, hne, hlt⟩
   replace hn : (0 : ℝ) < n := Nat.cast_pos.2 hn
   refine ⟨m, hne, hlt.trans <| (div_lt_iff₀ <| rpow_pos_of_pos hn _).2 ?_⟩
   rwa [mul_comm, ← rpow_add hn, ← sub_eq_add_neg]
@@ -326,8 +325,8 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
 /-- A Liouville number is a Liouville number with any real exponent. -/
 protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x := by
   suffices LiouvilleWith ⌈p⌉₊ x from this.mono (Nat.le_ceil p)
-  refine ⟨1, ((eventually_gt_atTop 1).and_frequently (hx.frequently_exists_num ⌈p⌉₊)).mono ?_⟩
-  rintro b ⟨_hb, a, hne, hlt⟩
+  refine ⟨1, (hx.frequently_exists_num ⌈p⌉₊).mp ?_⟩
+  filter_upwards [eventually_gt_atTop 1] with b _hb ⟨a, hne, hlt⟩
   refine ⟨a, hne, ?_⟩
   rwa [rpow_natCast]
 

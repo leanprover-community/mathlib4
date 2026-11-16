@@ -319,10 +319,9 @@ theorem AnalyticAt.preimage_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (h
   rw [eventuallyConst_iff_exists_eventuallyEq]
   use f x
   rw [EventuallyEq, ← hfx.frequently_eq_iff_eventually_eq analyticAt_const]
-  apply ((frequently_imp_distrib_right.2 h).and_eventually
-    (eventually_nhdsWithin_of_eventually_nhds this)).mono
-  intro z ⟨h₁z, h₂z⟩
-  rw [Set.mem_insert_iff] at h₂z
+  apply (frequently_imp_distrib_right.2 h).mp
+  filter_upwards [eventually_nhdsWithin_of_eventually_nhds this] with z h₁z h₂z
+  rw [Set.mem_insert_iff] at h₁z
   tauto
 
 /-- Preimages of codiscrete sets, local filter version: if `f` is analytic at `x` and not locally

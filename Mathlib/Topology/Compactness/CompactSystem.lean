@@ -215,9 +215,10 @@ protected theorem supClosure (hS : IsCompactSystem S) :
   -- if `A` is `F`-frequent, then so is `A ∩ a` for some `a ∈ L n`
   have step (n : ℕ) (A : Set α) (hA : ∃ᶠ x in F, x ∈ A) :
       ∃ a ∈ L n, ∃ᶠ x in F, x ∈ A ∩ a := by
-    refine (frequently_exists_finset (L n)).1 <| (hA.and_eventually (hFC n)).mono fun x hx ↦ ?_
-    obtain ⟨a, ha, hxa⟩ : x ∈ ⋃₀ ↑(L n) := hCL n ▸ hx.2
-    exact ⟨a, ha, hx.1, hxa⟩
+    refine (frequently_exists_finset (L n)).1 (hA.mp ?_)
+    filter_upwards [hFC n] with x hxC hxA
+    obtain ⟨a, ha, hxa⟩ : x ∈ ⋃₀ ↑(L n) := hCL n ▸ hxC
+    exact ⟨a, ha, hxA, hxa⟩
   choose! f hfL hf using step
   -- build the sequence `K n = f n (A n)`, where `A n = ⋂ k < n, K k` is the running intersection
   let A : ℕ → Set α := fun n ↦ Nat.rec univ (fun n A ↦ A ∩ f n A) n
