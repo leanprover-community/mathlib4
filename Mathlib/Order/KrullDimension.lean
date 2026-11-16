@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
+public import Mathlib.Order.Sum.Order
 
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Tactic.FinCases
@@ -1027,30 +1028,18 @@ set_option backward.isDefEq.respectTransparency false in
   rw [← height_orderIso (WithBot.toDualTopEquiv (α := α))] at this
   exact this
 
+lemma height_toLex_sum_inl {α β : Type*} [Preorder α] [Preorder β] {a : α} :
+    Order.height (toLex (Sum.inl a : α ⊕ β)) = Order.height a := by
+  rw [← WithBot.coe_eq_coe, Order.height_eq_krullDim_Iic, Order.height_eq_krullDim_Iic]
+  exact krullDim_eq_of_orderIso <| .symm <| .ofSurjective
+    { toFun a := ⟨toLex <| .inl a.val, by grind [Sum.Lex.toLex_le_toLex]⟩
+      -- `show _ by` is for type-correctness under `implicit` transparency
+      inj' := show _ by simp [Function.Injective]
+      map_rel_iff' := by simp } <| by simp [Function.Surjective]
+
 @[simp] lemma height_coe_withTop (x : α) : height (x : WithTop α) = height x := by
-  apply le_antisymm
-  · apply height_le
-    intro p hlast
-    -- essentially p' := p.map untop
-    let p' : LTSeries α := {
-      length := p.length
-      toFun := fun i => (p i).untop (by
-        apply WithTop.lt_top_iff_ne_top.mp
-        apply lt_of_le_of_lt
-        · exact p.monotone (Fin.le_last _)
-        · rw [RelSeries.last] at hlast
-          simp [hlast])
-      step := fun i => by simpa [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
-    have hlast' : p'.last = x := by
-      simp only [p', RelSeries.last, WithTop.untop_eq_iff, ← hlast]
-    suffices p'.length ≤ height p'.last by
-      rw [hlast'] at this
-      simpa [p'] using this
-    apply length_le_height_last
-  · apply height_le
-    intro p hlast
-    let p' := p.map _ WithTop.coe_strictMono
-    apply le_iSup₂_of_le p' (by simp [p', hlast]) (by simp [p'])
+  rw [← height_orderIso WithTop.orderIsoSumLexPUnit.{_, 0}, WithTop.orderIsoSumLexPUnit_toLex,
+    height_toLex_sum_inl]
 
 /--
 For preorders `α` and `β`, if there is a strictly monotone function `f : WithTop α → β`, then if
