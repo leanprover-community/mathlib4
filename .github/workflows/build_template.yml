@@ -136,9 +136,8 @@ jobs:
       - name: check the cache tool is recent
         # Canonical repo only. This nudge targets human fork-PR / dev-branch
         # contributors who run `lake exe cache get` locally. The nightly-testing
-        # repo's branches (nightly-testing, bump/*, batteries-pr-testing-*) are
-        # machine-managed and don't merge master the same way, so "merge master
-        # and push" is the wrong remedy there; never fail their CI on it.
+        # repo's `batteries-pr-testing-*` branches are machine-managed, so
+        # "merge master and push" is the wrong remedy there.
         if: github.repository == 'leanprover-community/mathlib4'
         shell: bash
         run: |
@@ -287,7 +286,7 @@ jobs:
 
       # The three checks ask Lake whether each target is up to date and free
       # of warnings, so each target reports its own outcome to the staging
-      # gates, the test gate and the nightly-testing comment. They only read.
+      # gates, the test gate and the Batteries PR comment. They only read.
       - parallel:
           - name: check that Archive built
             id: archive
@@ -1084,6 +1083,11 @@ jobs:
           ## for non-PR builds (push to master / bors); the consumer then falls
           ## back to the commit's associated PRs.
           printf '%s' "${{ github.event.pull_request.number }}" > "$RUNNER_TEMP/import-graph/pr_number.txt"
+          ## Executing this runs the export and writes `crossrefs.json` into the artifact
+          ## directory, which doubles as a smoke test of the `export_crossrefs.yml` workflow.
+          ## The post-build `crossref-diff` workflow diffs it against the build at the PR's
+          ## merge base.
+          CROSSREFS_OUT="$RUNNER_TEMP/import-graph/crossrefs.json" lake env lean scripts/export_crossrefs.lean
 
       - name: get cache for Archive and Counterexamples
         run: |
@@ -1202,8 +1206,8 @@ jobs:
             exit 1
           fi
           ## The outputs written above, so that a missing one fails this build rather than
-          ## `decls-diff.yml` for every PR based on this commit. New outputs need not be listed.
-          for f in api.jsonl imports.json import_graph.dot pr_number.txt; do
+          ## `decls-diff.yml` or `crossrefs-diff.yml` for every PR based on this commit. New outputs need not be listed.
+          for f in api.jsonl imports.json import_graph.dot pr_number.txt crossrefs.json; do
             if [ ! -f "$DIR/$f" ]; then
               echo "Refusing to upload: $f is missing." >&2
               exit 1
@@ -1228,9 +1232,6 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
-          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
-          lake env lean scripts/export_crossrefs.lean
           lake exe check-title-labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
@@ -1238,12 +1239,6 @@ jobs:
         # and that miscellaneous executables still work
         run: |
           lake build Batteries Qq Aesop ProofWidgets Plausible
-
-      - name: build AesopTest (nightly-testing only)
-        # Only run on the mathlib4-nightly-testing repository
-        if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
-        run: |
-          lake build AesopTest
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `daily.yml`.
