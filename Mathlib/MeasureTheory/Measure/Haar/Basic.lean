@@ -641,9 +641,9 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
 
 section SecondCountable_SigmaFinite
 /-! In this section, we investigate uniqueness of left-invariant measures without assuming that
-the measure is finite on compact sets, but assuming σ-finiteness instead. We also rely on
+the measure is finite on compact sets, but assuming s-finiteness instead. We also rely on
 second-countability, to ensure that the group operations are measurable: in this case, one can
-bypass all topological arguments, and conclude using uniqueness of σ-finite left-invariant measures
+bypass all topological arguments, and conclude using uniqueness of s-finite left-invariant measures
 in measurable groups.
 
 For more general uniqueness statements without second-countability assumptions,
@@ -653,19 +653,19 @@ see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 variable [SecondCountableTopology G]
 
 /-- **Uniqueness of left-invariant measures**: In a second-countable locally compact group, any
-  σ-finite left-invariant measure is a scalar multiple of the Haar measure.
+  s-finite left-invariant measure is a scalar multiple of the Haar measure.
   This is slightly weaker than assuming that `μ` is a Haar measure (in particular we don't require
   `μ ≠ 0`).
   See also `isMulLeftInvariant_eq_smul_of_regular`
   for a statement not assuming second-countability. -/
 @[to_additive
 /-- **Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
-  any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
+  any s-finite left-invariant measure is a scalar multiple of the additive Haar measure.
   This is slightly weaker than assuming that `μ` is an additive Haar measure (in particular we don't
   require `μ ≠ 0`).
   See also `isAddLeftInvariant_eq_smul_of_regular`
   for a statement not assuming second-countability. -/]
-theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
+theorem haarMeasure_unique (μ : Measure G) [SFinite μ] [IsMulLeftInvariant μ]
     (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ := by
   have A : Set.Nonempty (interior (closure (K₀ : Set G))) :=
     K₀.interior_nonempty.mono (interior_mono subset_closure)
@@ -673,11 +673,11 @@ theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant
     (measure_pos_of_nonempty_interior _ A).ne' K₀.isCompact.closure.measure_ne_top
   rwa [haarMeasure_closure_self, div_one, K₀.isCompact.measure_closure] at this
 
-/-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the Haar measure
+/-- Let `μ` be an s-finite left invariant measure on `G`. Then `μ` is equal to the Haar measure
 defined by `K₀` iff `μ K₀ = 1`. -/
-@[to_additive /-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the
+@[to_additive /-- Let `μ` be an s-finite left invariant measure on `G`. Then `μ` is equal to the
 additive Haar measure defined by `K₀` iff `μ K₀ = 1`. -/]
-theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFinite μ]
+theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SFinite μ]
     [IsMulLeftInvariant μ] :
     haarMeasure K₀ = μ ↔ μ K₀ = 1 :=
   ⟨fun h => h.symm ▸ haarMeasure_self, fun h => by rw [haarMeasure_unique μ K₀, h, one_smul]⟩
@@ -686,12 +686,12 @@ example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : Posi
     μ = μ K₀.1 • haarMeasure K₀ :=
   haarMeasure_unique μ K₀
 
-/-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite
+/-- To show that an invariant s-finite measure is regular it is sufficient to show that it is finite
   on some compact set with non-empty interior. -/
 @[to_additive
-/-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is
+/-- To show that an invariant s-finite measure is regular it is sufficient to show that it is
   finite on some compact set with non-empty interior. -/]
-theorem regular_of_isMulLeftInvariant {μ : Measure G} [SigmaFinite μ] [IsMulLeftInvariant μ]
+theorem regular_of_isMulLeftInvariant {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
     {K : Set G} (hK : IsCompact K) (h2K : (interior K).Nonempty) (hμK : μ K ≠ ∞) : Regular μ := by
   rw [haarMeasure_unique μ ⟨⟨K, hK⟩, h2K⟩]; exact Regular.smul hμK
 
