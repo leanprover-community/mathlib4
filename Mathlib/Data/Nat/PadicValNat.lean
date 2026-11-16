@@ -33,7 +33,7 @@ theorem divMaxPow_mul_pow_fst_maxPowDvdDiv (p n : ℕ) :
   divMaxPow_mul_pow_fst_maxPowDvdDiv
 
 @[simp]
-theorem fst_maxPowDvdDiv {p n : ℕ} : (maxPowDvdDiv p n).fst = multiplicity p n := by
+theorem fst_maxPowDvdDiv (p n : ℕ) : (maxPowDvdDiv p n).fst = multiplicity p n := by
   by_cases hn : n = 0
   · simp [maxPowDvdDiv, hn]
   by_cases hp : p = 1
@@ -128,7 +128,7 @@ theorem maxPowDvdDiv_of_pow_mul_eq {p n k l : ℕ} (hn : n ≠ 0) (h : p ^ k * l
       · rw [fst_maxPowDvdDiv, ← pow_dvd_iff_le_multiplicity hp.ne' hn,
           pow_dvd_iff_le_of_spec hp h hl]
       · rw [← pow_dvd_iff_le_of_spec hp h hl, pow_dvd_iff_le_multiplicity hp.ne' hn]
-        exact fst_maxPowDvdDiv.le
+        exact (fst_maxPowDvdDiv p n).le
     rw [← pow_multiplicity_mul_divMaxPow p n, hk, ← fst_maxPowDvdDiv,
       Nat.mul_left_cancel_iff] at h
     · exact Prod.ext hk.symm h.symm
