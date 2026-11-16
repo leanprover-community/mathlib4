@@ -307,6 +307,11 @@ variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
 
+/-- If M and N are both R- and A-modules and their actions on them commute,
+and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
+canonical group homomorphism from `M ⊗[A] N` to `M ⊗[R] N`. A version of this containing the
+compatibility with any ring acting on `M` in a way compatible with the `R` and `A` actions is given
+in `mapOfCompatibleSMul` below. -/
 def mapOfCompatibleSMulAddHom : M ⊗[A] N →ₙ+ M ⊗[R] N where
   __ :=
     lift (σ₁₂ := RingHom.id A)
@@ -335,7 +340,7 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
     := rfl
 
 lemma toAddHom_mapOfCompatibleSMul :
-    mapOfCompatibleSMulAddHom R A M N = mapOfCompatibleSMulAddHom R A M N := rfl
+    mapOfCompatibleSMul R A S M N = mapOfCompatibleSMulAddHom R A M N := rfl
 
 /-- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
 `TensorProduct.AlgebraTensorModule.ker_mapOfCompatibleSMul`. -/
