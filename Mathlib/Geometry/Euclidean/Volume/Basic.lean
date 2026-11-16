@@ -5,6 +5,7 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.NormDet
 public import Mathlib.Geometry.Euclidean.Volume.Def
 
 import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
@@ -21,7 +22,7 @@ height and $b$ is the volume of the face.
 
 public section
 
-open MeasureTheory Measure
+open MeasureTheory Measure Module
 
 namespace Affine.Simplex
 
@@ -57,6 +58,14 @@ theorem volume_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
   induction n with
   | zero => simp
   | succ n ih => simp [volume_eq _ 0, height_map, faceOpposite_map, ih]
+
+theorem volume_map_of_finrank_eq [FiniteDimensional ℝ V] {n : ℕ} (hn : finrank ℝ V = n)
+    (s : Simplex ℝ P n) {f : P →ᵃ[ℝ] P₂} (hf : Function.Injective f) :
+    (s.map f hf).volume = f.linear.normDet * s.volume := by
+  borelize P P₂
+  simp_rw [volume_eq_euclideanHausdorffMeasure_real_closedInterior, closedInterior_map, ← hn,
+    Measure.real_def, f.euclideanHausdorffMeasure_image]
+  simp [f.linear.normDet_nonneg]
 
 @[simp]
 theorem volume_restrict {n : ℕ} (s : Simplex ℝ P n) {S : AffineSubspace ℝ P}
