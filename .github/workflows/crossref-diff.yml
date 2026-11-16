@@ -33,7 +33,7 @@ jobs:
     # The build never runs on a `pull_request` event: non-fork PRs build via
     # `build.yml` on `push` (head_branch = the PR branch), fork PRs via
     # `build_fork.yml` on `pull_request_target`. Accept both, and for `push`
-    # exclude master and the non-PR maintenance branches.
+    # exclude master.
     if: >-
       github.repository == 'leanprover-community/mathlib4'
       && github.event.workflow_run.conclusion == 'success'
@@ -42,7 +42,6 @@ jobs:
         || (
           github.event.workflow_run.event == 'push'
           && github.event.workflow_run.head_branch != 'master'
-          && github.event.workflow_run.head_branch != 'nightly-testing'
         )
       )
     runs-on: ubuntu-latest
@@ -79,7 +78,7 @@ jobs:
           echo "merge-base=$MB" | tee -a "$GITHUB_OUTPUT"
 
       - name: Download new-side artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: import-graph
           path: ./new-artifact
@@ -149,7 +148,7 @@ jobs:
 
       - name: Download master-side artifact
         if: steps.master-run.outputs.found == 'true'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: import-graph
           path: ./ref-artifact
