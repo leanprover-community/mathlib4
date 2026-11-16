@@ -21,6 +21,15 @@ This file develops the theory of commuting elements in a free group.
 * `IsFreeGroup.isCyclic_centralizer`: the centralizer of a non-unit element is a cyclic subgroup.
 * `IsFreeGroup.commute_iff_exists_zpow`: two elements of a free group commute iff they are powers of
   the same element.
+
+## Implementation
+
+We show that, in a free group with at least two generators `a` and `b`, the center is trivial, by
+showing directly in `FreeGroup.centralizer_of` that the elements that commute with `a` are exactly
+its powers. It follows that the center of a free group is either everything (in the cyclic case) or
+reduced to the identity. We deduce that the centralizer of a nontrivial element `v` is cyclic:
+`centralizer {v}` is a free group which has a nontrivial center (as it contains `v`), so it is
+cyclic.
 -/
 
 public section
@@ -98,8 +107,8 @@ theorem center_eq_bot_or_top : center G = ⊥ ∨ center G = ⊤ := by
 
 @[to_additive]
 theorem isCyclic_centralizer {g : G} (ha : g ≠ 1) : IsCyclic (centralizer {g}) := by
-  rw [IsFreeGroup.isCyclic_iff_isMulCommutative, ← center_eq_top_iff]
-  apply IsFreeGroup.center_eq_bot_or_top.resolve_left
+  rw [isCyclic_iff_isMulCommutative, ← center_eq_top_iff]
+  apply center_eq_bot_or_top.resolve_left
   contrapose ha
   have : ⟨g, mem_centralizer_singleton_iff.mpr rfl⟩ ∈ center (centralizer {g}) := by
     simp [mem_center_iff, mem_centralizer_singleton_iff, commute_iff_eq]
