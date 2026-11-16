@@ -5,9 +5,9 @@ Authors: Felix Weilacher
 -/
 module
 
-public import Mathlib.Topology.Perfect
-public import Mathlib.Topology.MetricSpace.Polish
 public import Mathlib.Topology.MetricSpace.CantorScheme
+public import Mathlib.Topology.MetricSpace.Polish
+public import Mathlib.Topology.Perfect
 
 import Mathlib.Topology.Metrizable.Real
 

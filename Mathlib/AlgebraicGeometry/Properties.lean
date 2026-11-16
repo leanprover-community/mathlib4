@@ -6,9 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
-public import Mathlib.RingTheory.Ideal.Height
 
 /-!
 # Basic properties of schemes
@@ -394,7 +394,7 @@ variable {X} in
 lemma krullDimLE_of_coheight_le
     {z : X} {n : ℕ} (hz : coheight z ≤ n) : Ring.KrullDimLE n (X.presheaf.stalk z) := by
   rw [Ring.krullDimLE_iff, ringKrullDim_stalk_eq_coheight z]
-  exact_mod_cast hz
+  exact mod_cast hz
 
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by

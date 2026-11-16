@@ -5,13 +5,12 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.RingTheory.WittVector.Truncated
 public import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.RingTheory.WittVector.Truncated
 
 import Mathlib.RingTheory.WittVector.Identities
 
 /-!
-
 # Comparison isomorphism between `WittVector p (ZMod p)` and `ℤ_[p]`
 
 We construct a ring isomorphism between `WittVector p (ZMod p)` and `ℤ_[p]`.

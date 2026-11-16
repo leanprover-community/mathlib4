@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 public import Mathlib.Topology.Algebra.Module.Alternating.Basic
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
 # Topology on continuous alternating maps

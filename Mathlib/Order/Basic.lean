@@ -9,12 +9,12 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.Spread
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -824,11 +824,11 @@ theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) < ⟨y, hy⟩ ↔ x < y :=
   Iff.rfl
 
-@[simp, norm_cast, gcongr, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self, grind _=_]
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=
   Iff.rfl
 
-@[simp, norm_cast, gcongr, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self, grind _=_]
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
 

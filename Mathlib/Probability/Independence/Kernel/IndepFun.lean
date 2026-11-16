@@ -5,12 +5,15 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
-import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.Constructions.Cylinders
+import Mathlib.MeasureTheory.MeasurableSpace.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Independence of random variables with respect to a kernel and a measure
@@ -178,12 +181,10 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
   have A i (hi : i ∈ S) : (κ a) (g i ⁻¹' sets i) = (κ a) (f i ⁻¹' sets i) := by
     apply measure_congr
     filter_upwards [ha i hi] with ω hω
-    change (g i ω ∈ sets i) = (f i ω ∈ sets i)
     simp [hω]
   have B : (κ a) (⋂ i ∈ S, g i ⁻¹' sets i) = (κ a) (⋂ i ∈ S, f i ⁻¹' sets i) := by
     apply measure_congr
     filter_upwards [(ae_ball_iff (Finset.countable_toSet S)).2 ha] with ω hω
-    change (ω ∈ ⋂ i ∈ S, g i ⁻¹' sets i) = (ω ∈ ⋂ i ∈ S, f i ⁻¹' sets i)
     simp +contextual [hω]
   convert! h'a using 2 with i hi
   exact A i hi
@@ -236,8 +237,8 @@ theorem IndepFun.congr' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     IndepFun f' g' κ μ := by
   rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   filter_upwards [hf, hg, hfg _ _ ⟨_, hA, rfl⟩ ⟨_, hB, rfl⟩] with a hf' hg' hfg'
-  have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.fun_comp (· ∈ A)
-  have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp (· ∈ B)
+  have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.preimage A
+  have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.preimage B
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
 
 theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
@@ -646,12 +647,6 @@ theorem iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f κ μ)
     (hf_Indep.indepFun_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp
       h_meas_left h_meas_right
 
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_sum_of_notMem := iIndepFun.indepFun_finsetSum_of_notMem
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_prod_of_notMem := iIndepFun.indepFun_finsetProd_of_notMem
-
 @[to_additive]
 theorem iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
@@ -668,13 +663,6 @@ theorem iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f κ μ
     simp only [Finset.prod_apply]
     exact Finset.prod_congr rfl fun i hi ↦ (hω ⟨i, hi⟩).symm
   · exact Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk.symm
-
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_sum_of_notMem₀ := iIndepFun.indepFun_finsetSum_of_notMem₀
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_prod_of_notMem₀ := iIndepFun.indepFun_finsetProd_of_notMem₀
-
 
 @[to_additive]
 theorem iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β}

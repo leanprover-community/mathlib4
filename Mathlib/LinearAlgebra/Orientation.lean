@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.LinearAlgebra.Ray
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Ray
 
 /-!
 # Orientations of modules
@@ -30,7 +30,6 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 ## References
 
 * https://en.wikipedia.org/wiki/Orientation_(vector_space)
-
 -/
 
 @[expose] public section

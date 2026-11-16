@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.Splitting
 
-import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
+import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 
 /-!
 # Homotopy equivalences between chain complexes
@@ -17,7 +17,6 @@ If `0 ⟶ K₁ ⟶ K₂ ⟶ K₃ ⟶ 0` is a degreewise short exact sequence of
 chain complexes, we show that `K₁ ⟶ K₂` is a homotopy equivalence
 iff `K₃` is contractible, and `K₂ ⟶ K₃` is a homotopy equivalence
 iff `K₁`.
-
 -/
 
 @[expose] public section

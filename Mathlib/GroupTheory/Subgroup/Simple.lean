@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Order.Atoms
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Order.Atoms
 
 /-!
 # Simple groups
@@ -20,7 +20,6 @@ subgroups.
 
 ## Tags
 subgroup, subgroups
-
 -/
 
 public section

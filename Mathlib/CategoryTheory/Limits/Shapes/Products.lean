@@ -709,24 +709,14 @@ noncomputable def Pi.constCompPiIsoConst [HasProductsOfShape α C] {I : α → T
       (Functor.const _).obj (∏ᶜ X) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-/-- The functor `C ⥤ (Type w)ᵒᵖ ⥤ C` which sends `X : C` and `α : Type w` to
-the product of copies of `X` indexed by `α`. -/
-@[simps]
-def piFunctor [HasProducts.{w} C] :
-    C ⥤ Type wᵒᵖ ⥤ C where
-  obj X :=
-    { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
-      map f := Pi.map' f.unop (fun _ ↦ 𝟙 _) }
-  map f := { app T := Pi.map (fun _ ↦ f) }
+@[deprecated (since := "2026-10-07")] alias piFunctor := piConst
+@[deprecated (since := "2026-10-07")] alias piFunctor_obj_obj := piConst_obj_obj
+@[deprecated (since := "2026-10-07")] alias piFunctor_obj_map := piConst_obj_map
+@[deprecated (since := "2026-10-07")] alias piFunctor_map_app := piConst_map_app
 
-/-- The functor `C ⥤ Type w ⥤ C` which sends `X : C` and `α : Type w` to
-the coproduct of copies of `X` indexed by `α`. -/
-@[simps]
-def sigmaFunctor [HasCoproducts.{w} C] :
-    C ⥤ Type w ⥤ C where
-  obj X :=
-    { obj α := ∐ (fun (t : α) ↦ X)
-      map f := Sigma.map' f (fun _ ↦ 𝟙 _) }
-  map f := { app T := Sigma.map (fun _ ↦ f) }
+@[deprecated (since := "2026-10-07")] alias sigmaFunctor := sigmaConst
+@[deprecated (since := "2026-10-07")] alias sigmaFunctor_obj_obj := sigmaConst_obj_obj
+@[deprecated (since := "2026-10-07")] alias sigmaFunctor_obj_map := sigmaConst_obj_map
+@[deprecated (since := "2026-10-07")] alias sigmaFunctor_map_app := sigmaConst_map_app
 
 end CategoryTheory.Limits

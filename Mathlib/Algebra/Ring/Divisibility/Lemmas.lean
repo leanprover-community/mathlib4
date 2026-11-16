@@ -5,9 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.Algebra.GCDMonoid.Basic
 
 /-!
 # Lemmas about divisibility in rings

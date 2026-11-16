@@ -8,8 +8,8 @@ module
 public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 
-import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 import Mathlib.Analysis.InnerProductSpace.Affine
+import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 
 /-!
 # Altitudes of a simplex
@@ -28,7 +28,6 @@ This file defines the altitudes of a simplex and their feet.
 ## References
 
 * <https://en.wikipedia.org/wiki/Altitude_(triangle)>
-
 -/
 
 @[expose] public section

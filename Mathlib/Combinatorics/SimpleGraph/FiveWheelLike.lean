@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 
 import Mathlib.Tactic.Linarith
+
 /-!
 # Five-wheel like graphs
 

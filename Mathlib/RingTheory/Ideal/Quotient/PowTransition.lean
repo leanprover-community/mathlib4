@@ -6,8 +6,8 @@ Authors: Nailin Guan, Jiedong Jiang
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`

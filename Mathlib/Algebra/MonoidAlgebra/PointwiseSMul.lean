@@ -14,7 +14,6 @@ public import Mathlib.Data.Finset.SMulAntidiagonal
 Given sets `G` and `P`, with a left-cancellative scalar-multiplication (or vector-addition) of `G`
 on `P`, together with a module `V` over a semiring `R`, we define a convolution action of the monoid
 algebra `R[G]` on the set of functions `P → V`.
-
 -/
 
 public section

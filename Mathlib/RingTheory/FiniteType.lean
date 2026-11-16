@@ -20,7 +20,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 - `Algebra.FiniteType`, `RingHom.FiniteType`, `AlgHom.FiniteType`
   all of these express that some object is finitely generated *as an algebra* over some base ring.
-
 -/
 
 @[expose] public section
@@ -136,8 +135,8 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
-    apply mem_top
+    rw [← AlgHom.mem_range, ← adjoin_eq_range, hs]
+    exact mem_top
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
@@ -197,6 +196,9 @@ lemma adjoin_of_finite {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} (h
     FiniteType R (Algebra.adjoin R t) := by
   rw [← Subalgebra.fg_iff_finiteType]
   exact ⟨h.toFinset, by simp⟩
+
+instance {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} [Finite t] :
+    FiniteType R (Algebra.adjoin R t) := adjoin_of_finite t.toFinite
 
 end FiniteType
 

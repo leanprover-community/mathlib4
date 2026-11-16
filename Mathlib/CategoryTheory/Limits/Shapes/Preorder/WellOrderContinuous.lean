@@ -22,7 +22,6 @@ Let `F : J ⥤ C` be a functor from a well-ordered type `J`.
 We introduce the typeclass `F.IsWellOrderContinuous`
 to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
-
 -/
 
 @[expose] public section
@@ -63,7 +62,6 @@ instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
 instance {n : ℕ} (F : Fin n ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit _ hj := (Order.not_isSuccLimit_of_isSuccArchimedean hj).elim
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
     G.IsWellOrderContinuous where
   nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=

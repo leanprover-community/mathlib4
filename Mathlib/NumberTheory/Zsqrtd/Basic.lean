@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
 
@@ -18,7 +18,6 @@ as well as an integral domain.
 
 We provide the universal property, that ring homomorphisms `ℤ√d →+* R` correspond
 to choices of square roots of `d` in `R`.
-
 -/
 
 @[expose] public section

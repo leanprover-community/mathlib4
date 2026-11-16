@@ -5,8 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
+public import Mathlib.CategoryTheory.Monoidal.Grp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of commutative groups in a Cartesian monoidal category

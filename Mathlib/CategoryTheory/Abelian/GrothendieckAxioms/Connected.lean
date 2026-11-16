@@ -6,6 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
@@ -23,7 +25,6 @@ only get `hom_ext` for morphisms *from* a colimit, so this is something a bit sp
 The connectedness assumption on `J` is necessary: take `C` to be the category of abelian groups,
 let `f : ℤ → ℤ ⊕ ℤ` be the diagonal map, and let `g := 𝟙 (ℤ ⊕ ℤ)`. Then the hypotheses of
 `IsColimit.pullback_zero_ext` are satisfied, but `f ≫ g` is not zero.
-
 -/
 
 @[expose] public section
@@ -34,7 +35,6 @@ namespace CategoryTheory.Limits
 
 variable {J : Type w} [Category.{w'} J] [IsConnected J] {C : Type u} [Category.{v} C]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 If `c` is a cocone over a functor `J ⥤ C` and `f : X ⟶ c.pt`, then for every `j : J` we can take
 the pullback of `c.ι.app j` and `f`. This gives a new cocone with cone point `X`, and this cocone
@@ -71,7 +71,6 @@ theorem IsColimit.pullback_zero_ext [HasZeroMorphisms C] [HasPullbacks C] [HasCo
   suffices f ≫ g = f ≫ 0 by simpa
   exact hc.pullback_hom_ext (by simpa using hf)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 If `c` is a cone over a functor `J ⥤ C` and `f : c.pt ⟶ X`, then for every `j : J` we can take
 the pushout of `c.π.app j` and `f`. This gives a new cone with cone point `X`, and this cone is
