@@ -172,13 +172,15 @@ theorem replicateRow_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] 
 theorem mulVec_replicateCol_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
     v ᵥ* replicateCol ι w = Function.const _ (v ⬝ᵥ w) := rfl
 
-theorem replicateRow_mul_replicateCol [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
-    replicateRow ι v * replicateCol ι w = of fun _ _ => v ⬝ᵥ w :=
+theorem replicateRow_mul_replicateCol {κ : Type*} [Fintype m] [Mul α] [AddCommMonoid α]
+    (v w : m → α) :
+    replicateRow ι v * replicateCol κ w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
 @[simp]
-theorem replicateRow_mul_replicateCol_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α)
-    (i j) : (replicateRow ι v * replicateCol ι w) i j = v ⬝ᵥ w :=
+theorem replicateRow_mul_replicateCol_apply {κ : Type*} [Fintype m] [Mul α] [AddCommMonoid α]
+    (v w : m → α) (i : ι) (j : κ) :
+    (replicateRow ι v * replicateCol κ w) i j = v ⬝ᵥ w :=
   rfl
 
 @[simp]

@@ -470,13 +470,11 @@ noncomputable def Scheme.coprodPresheafObjIso (U : (X ⨿ Y).Opens) :
     ((X ⨿ Y).sheaf.isProductOfDisjoint _ _ h₂).conePointUniqueUpToIso (limit.isLimit _) ≪≫
     prod.mapIso (ι₁.appIso _) (ι₂.appIso _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Scheme.coprodPresheafObjIso_hom_fst (U : (X ⨿ Y).Opens) :
     (coprodPresheafObjIso U).hom ≫ prod.fst = (coprod.inl (C := Scheme)).app U := by
   simp [coprodPresheafObjIso, Hom.appIso_hom, ← Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Scheme.coprodPresheafObjIso_hom_snd (U : (X ⨿ Y).Opens) :
     (coprodPresheafObjIso U).hom ≫ prod.snd = (coprod.inr (C := Scheme)).app U := by

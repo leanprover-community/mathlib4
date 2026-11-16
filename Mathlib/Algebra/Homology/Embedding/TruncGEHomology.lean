@@ -124,7 +124,6 @@ instance (i' : ι') : (K.truncGE e).HasHomology i' := by
   dsimp [truncGE]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The right homology data which allows to show that `K.πTruncGE e`
 induces an isomorphism in homology in degrees `j'` such that `e.f j = j'` for some `j`. -/
