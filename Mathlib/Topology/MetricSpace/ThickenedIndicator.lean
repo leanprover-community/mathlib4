@@ -31,7 +31,6 @@ members of the approximating sequence are nonnegative bounded continuous functio
     unbundled `ℝ≥0∞`-valued functions.
   - `thickenedIndicator_tendsto_indicator_closure`: The version is for the bundled `ℝ≥0`-valued
     bounded continuous functions.
-
 -/
 
 @[expose] public section

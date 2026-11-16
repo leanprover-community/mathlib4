@@ -12,7 +12,6 @@ import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Conditionally complete lattices and groups.
-
 -/
 
 public section

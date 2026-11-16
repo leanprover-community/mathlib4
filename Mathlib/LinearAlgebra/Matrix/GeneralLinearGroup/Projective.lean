@@ -27,7 +27,6 @@ If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 
 * `Matrix.ProjectiveSpecialLinearGroup.isoPSLOfAlgClosed` is an isomorphism between
   `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field.
-
 -/
 
 open scoped MatrixGroups

@@ -48,7 +48,6 @@ namely Polish spaces.
 ## Tags
 
 accumulation point, perfect set, dense-in-itself, cantor-bendixson.
-
 -/
 
 @[expose] public section

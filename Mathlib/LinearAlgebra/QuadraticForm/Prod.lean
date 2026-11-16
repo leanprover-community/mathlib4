@@ -28,7 +28,6 @@ public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 Many of the lemmas in this file could be generalized into results about sums of positive and
 non-negative elements, and would generalize to any map `Q` where `Q 0 = 0`, not just quadratic
 forms specifically.
-
 -/
 
 @[expose] public section

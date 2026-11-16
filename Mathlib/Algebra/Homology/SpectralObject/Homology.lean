@@ -20,7 +20,6 @@ for this short complex where:
 * the cycles are `E^n(f₂ ≫ f₃, f₄, f₅)`;
 * the opcycles are `E^n(f₃, f₄, f₅ ≫ f₆)`;
 * the homology is `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`.
-
 -/
 
 @[expose] public section

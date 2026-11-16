@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Groupoid
 
 /-!
-
 # Discrete categories are groupoids
 -/
 

@@ -15,7 +15,6 @@ the diagonal is an entourage of itself.
 It induces the discrete topology.
 
 It is complete.
-
 -/
 
 public section

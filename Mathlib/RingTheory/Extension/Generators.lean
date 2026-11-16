@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
-
 # Generators of algebras
 
 ## Main definition
@@ -36,7 +35,6 @@ public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 - `Algebra.Generators.mvPolynomial`: The canonical `R`-generators of the polynomial algebra
   `MvPolynomial ι R`, indexed by `ι` via the variables `X`.
-
 -/
 
 @[expose] public section

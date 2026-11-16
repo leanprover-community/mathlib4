@@ -48,7 +48,6 @@ Given a functor `F : J ⥤ Type v`:
 ## Tags
 
 Mittag-Leffler, surjective, eventual range, inverse system,
-
 -/
 
 @[expose] public section

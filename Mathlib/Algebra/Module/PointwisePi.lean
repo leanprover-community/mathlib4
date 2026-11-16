@@ -17,7 +17,6 @@ This file contains lemmas about pointwise actions on sets in Pi types.
 ## Tags
 
 set multiplication, set addition, pointwise addition, pointwise multiplication, pi
-
 -/
 
 public section

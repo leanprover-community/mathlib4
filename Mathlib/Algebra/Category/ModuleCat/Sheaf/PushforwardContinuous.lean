@@ -18,7 +18,6 @@ Then, if `φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R` is
 a morphism of sheaves of rings, we construct the pushforward functor
 `pushforward φ : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S`, and
 we show that they interact with the composition of morphisms similarly as pseudofunctors.
-
 -/
 
 @[expose] public section

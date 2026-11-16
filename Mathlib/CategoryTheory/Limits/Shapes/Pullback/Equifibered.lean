@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
-
 # Equifibered natural transformation
 
 ## Main definition
@@ -22,7 +21,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
   G(X) → G(Y)
   ```
 - `CategoryTheory.NatTrans.Coequifibered`: The dual notion.
-
 -/
 
 @[expose] public section

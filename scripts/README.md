@@ -40,6 +40,13 @@ file used by the library's own linters.
 
   **Requirements:** `gh` (GitHub CLI) installed and authenticated (`gh auth login`).
 
+- `dup_decls_report.lean`
+  Runs the `Mathlib.Tactic.DuplicateDecls` linter
+  (`lintDuplicateDeclarations`) for theorems, instances, and defs, logging any duplicate
+  declarations found. Run in CI by the `duplicate_decls_report.yml` workflow
+  (see [docs/workflows.md](../docs/workflows.md)). Run locally with
+  `lake env lean scripts/dup_decls_report.lean`.
+
 **Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
@@ -239,8 +246,8 @@ to module `Foo.Bar` (no `srcDir` indirection).
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `export_crossrefs.lean`
-  Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`,
-  `@[kerodon]`, `@[lmfdb]`, `@[dlmf]`, or `@[oeis]` (declaration name, source file, line number, and the cross-reference ids).
+  Exports a JSON dictionary of every declaration with a `CrossRef.Tag` attribute (e.g.: `@[stacks]`)
+  with declaration name, source file, line number, cross-reference ids and resolved url(s).
   It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
   so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
   The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded

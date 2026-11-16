@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.Sites.Subcanonical
 import Mathlib.CategoryTheory.Sites.SubcanonicalOver
 
 /-!
-
 # The pro-étale site
 
 In this file we define the big and small pro-étale site. The big pro-étale site is
@@ -30,7 +29,6 @@ over `S` and equip it with the induced topology.
 ## References
 
 - [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
-
 -/
 
 @[expose] public section

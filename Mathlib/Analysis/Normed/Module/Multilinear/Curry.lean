@@ -424,9 +424,12 @@ theorem ContinuousMultilinearMap.fin0_apply_norm (f : G [×0]→L[𝕜] G') {x :
   simpa [-Matrix.zero_empty] using this
 
 @[simp]
-theorem ContinuousMultilinearMap.fin0_apply_enorm (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
+theorem ContinuousMultilinearMap.fin0_apply_eNorm (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
     ‖f x‖ₑ = ‖f‖ₑ := by
   simp_rw [← ofReal_norm, fin0_apply_norm]
+
+@[deprecated (since := "2026-11-06")]
+alias ContinuousMultilinearMap.fin0_apply_enorm := ContinuousMultilinearMap.fin0_apply_eNorm
 
 theorem ContinuousMultilinearMap.curry0_norm (f : G [×0]→L[𝕜] G') : ‖f.curry0‖ = ‖f‖ := by simp
 

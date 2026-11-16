@@ -38,7 +38,6 @@ The proof is done by induction, using two standard constructions
 
 
 ## Reference : [Becker-Weispfenning1993]
-
 -/
 
 @[expose] public section

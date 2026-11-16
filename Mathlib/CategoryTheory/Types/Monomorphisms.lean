@@ -22,7 +22,6 @@ will also be inferred automatically.
 
 (The stability by retracts holds in any category: it is shown
 in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
-
 -/
 
 public section

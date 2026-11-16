@@ -17,7 +17,6 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 * `prodProdProdComm`: `LinearEquiv.prodProdProdComm` as a continuous linear equivalence.
 * `prodUnique`: `Equiv.prodUnique` as a continuous linear equivalence.
 * `uniqueProd`: `Equiv.uniqueProd` as a continuous linear equivalence.
-
 -/
 
 @[expose] public section

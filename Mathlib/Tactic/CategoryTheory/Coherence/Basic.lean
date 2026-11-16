@@ -22,7 +22,6 @@ and bicategories. Using `main`, we will define the following tactics:
 The `main` first normalizes the both sides using `eval`, then compares the corresponding components.
 It closes the goal at non-structural parts with `rfl` and the goal at structural parts by
 `pureCoherence`.
-
 -/
 
 public meta section

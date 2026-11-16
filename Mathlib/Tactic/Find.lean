@@ -22,7 +22,6 @@ The `#find` command finds definitions & lemmas using pattern matching on the typ
 ```
 Inside tactic proofs, there is a `#find` tactic with the same syntax,
 or the `find` tactic which looks for lemmas which are `apply`able against the current goal.
-
 -/
 
 public meta section

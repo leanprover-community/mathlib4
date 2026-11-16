@@ -15,7 +15,6 @@ import Mathlib.Control.Traversable.Instances
 import Mathlib.Tactic.AdaptationNote
 
 /-!
-
 # List folds generalized to `Traversable`
 
 Informally, we can think of `foldl` as a special case of `traverse` where we do not care about the

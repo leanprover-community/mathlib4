@@ -37,7 +37,6 @@ with polynomials, but would be an issue when working with a number field over it
 
 When inferring the base ring, we assume that any two rings `R` and `S` that appear are comparable,
 in the sense that either `R` is an `S`-algebra or `S` is an `R`-algebra.
-
 -/
 
 open Lean hiding Module

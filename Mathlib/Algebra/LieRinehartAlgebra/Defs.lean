@@ -20,7 +20,6 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
 * [Rinehart, G. S., Differential forms on general commutative algebras. Zbl 0113.26204
   Trans. Am. Math. Soc. 108, 195-222 (1963).][rinehart_1963]
-
 -/
 
 @[expose] public section

@@ -18,7 +18,6 @@ the `W`-weighted limit of `J` is the limit of the functor
 
 ## References
 * https://ncatlab.org/nlab/show/weighted+limit
-
 -/
 
 @[expose] public section

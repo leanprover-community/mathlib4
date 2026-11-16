@@ -21,7 +21,6 @@ There are two main results here:
 - `BoundedContinuousFunction.exists_norm_eq_domRestrict_eq`: when mapping into a finite-dimensional
   normed vector space over `ℝ` (or `ℂ`), the extension can be chosen to preserve the norm of the
   bounded continuous function it extends.
-
 -/
 
 public section

@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Subfunctor.OfSection
 Given a simplicial set `X`, this file defines the type `X.Subcomplex`
 of subcomplexes of `X` as an abbreviation for `Subfunctor X`.
 It also introduces a coercion from `X.Subcomplex` to `SSet`.
-
 -/
 
 @[expose] public section

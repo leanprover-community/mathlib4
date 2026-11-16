@@ -32,7 +32,6 @@ Partially defined maps are currently used in `Mathlib` to prove the Hahn-Banach 
 and its variations. Namely, `LinearPMap.sSup` implies that every chain of `LinearPMap`s
 is bounded above.
 They are also the basis for the theory of unbounded operators.
-
 -/
 
 @[expose] public section

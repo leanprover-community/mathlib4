@@ -77,13 +77,13 @@ theorem contMDiffWithinAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) 
       CMDiffAt[s] n (fun x ↦ (f x).1) x₀ ∧
         CMDiffAt[s] n
           (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  contMDiffWithinAt_totalSpace
+  contMDiffWithinAt_totalSpace_iff
 
 theorem contMDiffAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {x₀ : M} :
     CMDiffAt n f x₀ ↔
       CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ CMDiffAt n
         (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  contMDiffAt_totalSpace
+  contMDiffAt_totalSpace_iff
 
 end
 
@@ -191,7 +191,7 @@ lemma ContMDiffWithinAt.continuousAlternatingMap_apply_of_inCoordinates
     intro i
     rw [contMDiffWithinAt_insert_self]
     exact hv i
-  simp_rw [contMDiffWithinAt_totalSpace] at hv ⊢
+  simp_rw [contMDiffWithinAt_totalSpace_iff] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (ContMDiffWithinAt.continuousAlternatingMap_apply hϕ
     (fun i ↦ (hv i).2)).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)

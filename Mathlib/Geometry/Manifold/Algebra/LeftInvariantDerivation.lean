@@ -9,7 +9,6 @@ public import Mathlib.Geometry.Manifold.DerivationBundle
 public import Mathlib.RingTheory.Derivation.Lie
 
 /-!
-
 # Left invariant derivations
 
 In this file we define the concept of left invariant derivations for a Lie group. The concept is

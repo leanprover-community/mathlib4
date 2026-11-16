@@ -24,7 +24,6 @@ of a simplicial sets. We also introduce typeclasses
 ## References:
 
 - [Kerodon 00G5: Connected Components of Simplicial Sets](https://kerodon.net/tag/00G5)
-
 -/
 
 @[expose] public section

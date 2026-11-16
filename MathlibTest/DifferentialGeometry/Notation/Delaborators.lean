@@ -8,7 +8,6 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 # Tests for the differential geometry delaborators
 
 Specific tests for the delaborators corresponding to the custom elaborators.
-
 -/
 
 set_option pp.unicode.fun true

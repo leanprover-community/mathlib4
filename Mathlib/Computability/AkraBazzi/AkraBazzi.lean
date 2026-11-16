@@ -56,7 +56,6 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 * Mohamad Akra and Louay Bazzi, On the solution of linear recurrence equations
 * Tom Leighton, Notes on better master theorems for divide-and-conquer recurrences
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
-
 -/
 
 public section

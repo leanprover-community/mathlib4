@@ -34,7 +34,7 @@ We also provide `positivity` extensions to handle floor and ceil.
 * `⌈a⌉` is `Int.ceil a`.
 
 The index `₊` in the notations for `Nat.floor` and `Nat.ceil` is used in analogy to the notation
-for `nnnorm`.
+for `nnNorm`.
 
 ## TODO
 

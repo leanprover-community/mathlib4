@@ -38,7 +38,6 @@ for each constructor and then use `(i : Fin n) × ULift (C i)` for the total pro
 typeclass inference is not good at finding instances for such a type even if there are instances
 for each `C i`. One seems to need to add, for example, an explicit `[∀ i, Fintype (C i)]`
 instance given `∀ i, Fintype (C i)`.
-
 -/
 
 public meta section

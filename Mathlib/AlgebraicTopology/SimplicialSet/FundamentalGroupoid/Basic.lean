@@ -27,7 +27,6 @@ If `f : X ⟶ Y` is a morphism of simplicial sets and `x : X _⦋0⦌`,
 this allows to obtain the equality
 `(mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x)`
 by `with_implicit rfl`.
-
 -/
 
 @[expose] public section

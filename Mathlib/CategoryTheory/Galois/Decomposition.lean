@@ -31,7 +31,6 @@ is represented by a Galois object.
 ## References
 
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
-
 -/
 
 public section
@@ -55,7 +54,6 @@ we proceed by induction on the cardinality of the fiber under an arbitrary fiber
 
 If `X` is connected, there is nothing to show. If not, we can write `X` as the sum of two
 non-trivial subobjects which have strictly smaller fiber and conclude by the induction hypothesis.
-
 -/
 
 /-- The trivial case if `X` is connected. -/
@@ -180,7 +178,6 @@ that has at each index `x : F.obj X` the element `x`.
 This `A` is Galois and evaluation at `a` is bijective.
 
 Reference: [lenstraGSchemes, 3.14]
-
 -/
 
 variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
