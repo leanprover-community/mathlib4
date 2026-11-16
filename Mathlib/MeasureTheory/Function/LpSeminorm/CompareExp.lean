@@ -550,11 +550,19 @@ theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E
     apply (eLpNorm_le_eLpNorm_mul_eLpNorm b c hb
       hf.aestronglyMeasurable hg.aestronglyMeasurable h (p := p) (q := q)).trans_lt
     finiteness [hf, hg]
-  · simp [hb.comp_aestronglyMeasurable₂ hf.aestronglyMeasurable hg.aestronglyMeasurable]
-    rcases HolderTriple.zero_iff.1 hpqr with rfl | rfl
-
-
-
+  simp only [memLp_zero_iff,
+    hb.comp_aestronglyMeasurable₂ hf.aestronglyMeasurable hg.aestronglyMeasurable, true_and]
+  rcases HolderTriple.zero_iff.1 hpqr with rfl | rfl
+  · apply (measure_mono_ae ?_).trans_lt hf.measure_support_lt_top
+    filter_upwards [h] with x hx
+    simp only [Function.mem_support, ne_eq, eNorm_eq_zero, not_imp_not]
+    intro h'x
+    simpa [h'x] using hx
+  · apply (measure_mono_ae ?_).trans_lt hg.measure_support_lt_top
+    filter_upwards [h] with x hx
+    simp only [Function.mem_support, ne_eq, eNorm_eq_zero, not_imp_not]
+    intro h'x
+    simpa [h'x] using hx
 
 end Bilinear
 
@@ -650,8 +658,9 @@ protected lemma MemLp.prod (hf : ∀ i ∈ s, MemLp (f i) (p i) μ) :
     MemLp (∏ i ∈ s, f i) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
   induction s using cons_induction with
   | empty =>
-    by_cases hμ : μ = 0 <;>
-      simp [MemLp, eLpNormEssSup_const, hμ, aestronglyMeasurable_const, Pi.one_def]
+    simp only [prod_empty, sum_empty, ENNReal.inv_zero, ne_eq, top_ne_zero, not_false_eq_true,
+      memLp_iff_eLpNorm_of_ne_zero, eLpNorm, aestronglyMeasurable_one, ↓reduceIte]
+    by_cases hμ : μ = 0 <;> simp [eLpNormEssSup_const, hμ, Pi.one_def]
   | cons i s hi ih =>
     rw [prod_cons]
     exact (hf i <| mem_cons_self ..).mul (ih <| forall_of_forall_cons hf) (hpqr := ⟨by simp⟩)
