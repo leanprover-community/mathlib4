@@ -11,8 +11,6 @@ public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.PowMod
 public import Mathlib.Tactic.ReduceModChar.Ext
 
-import Mathlib.Tactic.NormNum.DivMod
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
