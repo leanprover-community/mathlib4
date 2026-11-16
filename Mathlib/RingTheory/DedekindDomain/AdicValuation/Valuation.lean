@@ -448,6 +448,18 @@ theorem valuationSubring_valuation_injective :
 
 variable {K}
 
+section IsTrivialOn
+
+variable (k : Type*) [Field k] [Algebra k R] [Algebra k K] [IsScalarTower k R K]
+
+/-- The `v`-adic valuation on `K` is trivial on any subfield of `R`. -/
+instance : (v.valuation K).IsTrivialOn k :=
+  .of_le_one _ fun a ↦ by
+    rw [IsScalarTower.algebraMap_apply k R K]
+    exact valuation_le_one v _
+
+end IsTrivialOn
+
 section Localization
 
 open Localization
