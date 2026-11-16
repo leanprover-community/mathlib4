@@ -5,11 +5,13 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Polynomial.Subring
+
+import Mathlib.Algebra.Ring.Hom.InjSurj
+import Mathlib.RingTheory.Artinian.Algebra
 
 /-!
 # Algebraic elements and integral elements
@@ -89,6 +91,8 @@ theorem Algebra.IsAlgebraic.of_isIntegralClosure (R B C : Type*) [CommRing R] [N
 
 end Field
 
+open scoped nonZeroDivisors
+
 section
 
 variable (K L R : Type*) {A : Type*}
@@ -112,6 +116,18 @@ end Ring
 section Field
 
 variable {K L} [Field K] [Ring A] [Algebra K A]
+
+theorem Transcendental.of_mem_nonZeroDivisors_of_not_isUnit {a : A} (ha : a ∈ A⁰)
+    (hu : ¬ IsUnit a) : Transcendental K a :=
+  fun h ↦ hu (IsArtinianRing.isUnit_of_isIntegral_of_nonZeroDivisor h.isIntegral ha)
+
+theorem Transcendental.of_not_isUnit [IsDomain A] {a : A} (h0 : a ≠ 0) (hu : ¬ IsUnit a) :
+    Transcendental K a :=
+  .of_mem_nonZeroDivisors_of_not_isUnit (mem_nonZeroDivisors_of_ne_zero h0) hu
+
+theorem Transcendental.of_mem_ne_top [IsDomain A] {I : Ideal A} (hI : I ≠ ⊤) {a : A} (h0 : a ≠ 0)
+    (ha : a ∈ I) : Transcendental K a :=
+  .of_not_isUnit h0 fun hu ↦ hI (I.eq_top_of_isUnit_mem ha hu)
 
 /-- If `K` is a field, `r : A` and `f : K[X]`, then `Polynomial.aeval r f` is
 transcendental over `K` if and only if `r` and `f` are both transcendental over `K`.
@@ -170,15 +186,14 @@ theorem of_smul_isIntegral {y : R} (hy : ¬ IsNilpotent y)
     (h : IsIntegral R (y • z)) : IsAlgebraic R z := by
   have ⟨p, monic, eval0⟩ := h
   refine ⟨p.comp (C y * X), fun h ↦ ?_, by simpa [aeval_comp, Algebra.smul_def] using! eval0⟩
-  apply_fun (coeff · p.natDegree) at h
+  apply_fun (·.coeff p.natDegree) at h
   have hy0 : y ≠ 0 := by rintro rfl; exact hy .zero
   rw [coeff_zero, ← mul_one p.natDegree, ← natDegree_C_mul_X y hy0,
     coeff_comp_degree_mul_degree, monic, one_mul, leadingCoeff_C_mul_X] at h
   · exact hy ⟨_, h⟩
   · rw [natDegree_C_mul_X _ hy0]; rintro ⟨⟩
 
-theorem of_smul {y : R} (hy : y ∈ nonZeroDivisors R)
-    (h : IsAlgebraic R (y • z)) : IsAlgebraic R z :=
+theorem of_smul {y : R} (hy : y ∈ R⁰) (h : IsAlgebraic R (y • z)) : IsAlgebraic R z :=
   have ⟨p, hp, eval0⟩ := h
   ⟨_, mt (comp_C_mul_X_eq_zero_iff hy).mp hp, by simpa [aeval_comp, Algebra.smul_def] using eval0⟩
 
@@ -237,7 +252,7 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
   cases subsingleton_or_nontrivial R
   · have := Module.subsingleton R S
     exact (is_transcendental_of_subsingleton _ _ h).elim
-  have ⟨r, hr, _, e⟩ := (int.1 s).isAlgebraic.exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
+  have ⟨r, hr, _, e⟩ := (int.1 s).isAlgebraic.exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
   refine .of_smul_isIntegral (y := r) (by rwa [isNilpotent_iff_eq_zero]) ?_
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R S,
     e, ← Algebra.smul_def, mul_comm, mul_smul]
@@ -255,7 +270,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   have := Algebra.nontrivial_of_isAlgebraic R S
   have : IsDomain R := NoZeroDivisors.to_isDomain _
   classical
-  have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
+  have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image p.coeff)
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by
     obtain ⟨n, hn, rfl⟩ := mem_coeffs_iff.mp hs
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)
@@ -423,9 +438,9 @@ theorem Algebra.isAlgebraic_adjoin_singleton_iff [NoZeroDivisors R] {s : S} :
     (adjoin R {s}).IsAlgebraic ↔ IsAlgebraic R s :=
   (isAlgebraic_adjoin_of_nonempty <| Set.singleton_nonempty s).trans forall_eq
 
-theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivisors S)
+theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ S⁰)
     (alg_y : IsAlgebraic R y) (alg_yz : IsAlgebraic R (y * z)) : IsAlgebraic R z := by
-  have ⟨t, ht, r, hr, eq⟩ := alg_y.exists_nonzero_eq_adjoin_mul hy
+  have ⟨t, ht, r, hr, eq⟩ := alg_y.exists_ne_zero_eq_adjoin_mul hy
   have := alg_yz.mul (Algebra.isAlgebraic_adjoin_singleton_iff.mpr alg_y _ ht)
   rw [mul_right_comm, eq, ← Algebra.smul_def] at this
   exact this.of_smul (mem_nonZeroDivisors_of_ne_zero hr)
@@ -498,8 +513,6 @@ protected theorem IsAlgebraic.transcendental_iff [Algebra.IsAlgebraic R S] :
 
 end Algebra
 
-open scoped nonZeroDivisors
-
 namespace Algebra.IsAlgebraic
 
 section IsFractionRing
@@ -511,7 +524,7 @@ instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
   have := (FaithfulSMul.algebraMap_injective R S).noZeroDivisors _ (map_zero _) (map_mul _)
   (IsLocalization.iff_of_le_of_exists_dvd _ S⁰
     (map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective ..) le_rfl)
-    fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.1 s).exists_nonzero_dvd hs
+    fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.1 s).exists_ne_zero_dvd hs
     ⟨_, ⟨r, mem_nonZeroDivisors_of_ne_zero ne, rfl⟩, eq⟩).mpr inferInstance
 
 variable [Algebra R S'] [IsScalarTower R S S']
@@ -565,6 +578,11 @@ attribute [local instance] FractionRing.liftAlgebra in
 /-- Tower law for `Module.finrank` in a tower of domains `R → S → T`. This is a variant of
 `Module.finrank_mul_finrank` that assumes the rings are domains instead of the modules being
 free. -/
+@[deprecated
+  "Use the more general theorem `Module.IsTorsionFree.finrank_mul_finrank` instead.
+  (Note that this theorem's hypotheses imply `IsDomain S`, and hence `NoZeroDivisors S`, via
+  `IsDomain.of_faithfulSMul S T`.)"
+  +typeChanged (since := "2026-09-20")]
 theorem Module.finrank_mul_finrank' (T : Type*) [CommRing T] [IsDomain T]
     [Algebra S T] [Algebra R T] [IsScalarTower R S T] [FaithfulSMul S T] :
     Module.finrank R S * Module.finrank S T = Module.finrank R T := by
@@ -634,7 +652,7 @@ instance [NoZeroDivisors S] : Algebra.IsAlgebraic R[X] S[X] := by
 
 theorem Polynomial.exists_dvd_map_of_isAlgebraic [NoZeroDivisors S] {f : S[X]} (hf : f ≠ 0) :
     ∃ g : R[X], g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
-  (Algebra.IsAlgebraic.isAlgebraic f).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero hf)
+  (Algebra.IsAlgebraic.isAlgebraic f).exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hf)
 
 instance {σ} [NoZeroDivisors R] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) :=
   Algebra.IsPushout.isAlgebraic R S ..
@@ -648,7 +666,7 @@ instance {σ} [NoZeroDivisors S] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPo
 theorem MvPolynomial.exists_dvd_map_of_isAlgebraic {σ}
     [NoZeroDivisors S] {f : MvPolynomial σ S} (hf : f ≠ 0) :
     ∃ g : MvPolynomial σ R, g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
-  (Algebra.IsAlgebraic.isAlgebraic f).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero hf)
+  (Algebra.IsAlgebraic.isAlgebraic f).exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hf)
 
 variable [IsDomain S] [FaithfulSMul R S]
 

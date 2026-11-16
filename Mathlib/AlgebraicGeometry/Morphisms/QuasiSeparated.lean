@@ -5,11 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
-public import Mathlib.Topology.QuasiSeparated
-public import Mathlib.Topology.Sheaves.CommRingCat
+
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 # Quasi-separated morphisms
@@ -28,7 +26,6 @@ and is stable under compositions and base-changes.
 ## Main result
 - `AlgebraicGeometry.isLocalization_basicOpen_of_qcqs` (**Qcqs lemma**):
   If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
-
 -/
 
 public section
@@ -314,7 +311,6 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
     ← CommRingCat.comp_apply] at e ⊢
   rw [e]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : X.Opens)
     (hU : IsCompact U.1) (hU' : IsQuasiSeparated U.1) (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by

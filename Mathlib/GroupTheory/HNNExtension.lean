@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Int.Units
-public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.Coprod.Basic
 
 /-!
 # HNN Extensions of Groups
@@ -29,7 +29,6 @@ and Hanna Neumann.
 - `HNNExtension.of_injective` : The canonical embedding `G →* HNNExtension G A B φ` is injective.
 - `HNNExtension.ReducedWord.toList_eq_nil_of_mem_of_range` : Britton's Lemma. If an element of
   `G` is represented by a reduced word, then this reduced word does not contain `t`.
-
 -/
 
 @[expose] public section
@@ -591,7 +590,7 @@ theorem prod_injective : Injective
   (equiv φ d).symm.injective
 
 instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
+  ⟨fun h => by simpa using congr($(h empty).prod φ)⟩
 
 end NormalWord
 
@@ -644,7 +643,7 @@ theorem exists_normalWord_prod_eq
         simp only [Cancels, group_smul_head, group_smul_toList, Option.map_eq_some_iff,
           Prod.exists, exists_and_right, exists_eq_right, not_and, not_exists]
         intro hS x hx
-        have hx' := congr_arg (Option.map Prod.fst) hx
+        have hx' := congr(Option.map Prod.fst $hx)
         rw [← List.head?_map, hw'2, List.head?_map, Option.map_some] at hx'
         have : w'.head ∈ toSubgroup A B a.fst := by
           simpa using hw'3 _ hx'

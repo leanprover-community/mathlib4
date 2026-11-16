@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.Fintype.List
 public import Mathlib.Data.Fintype.OfMap
-public import Mathlib.Data.Fin.Basic
+
+import Mathlib.Data.Fin.Basic
 
 /-!
 # Cycles of a list
@@ -21,7 +22,6 @@ We also define a representation of concrete cycles, available when viewing them 
 via `#eval`, when over representable types. For example, the cycle `(2 1 4 3)` will be shown
 as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their internal representation
 is different.
-
 -/
 
 @[expose] public section
@@ -163,7 +163,7 @@ theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
   · simp
   · simp [hy, hx]
 
-theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
+theorem next_getLast_cons (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
     (hx : x = getLast (y :: l) (cons_ne_nil _ _)) (hl : Nodup l) : next (y :: l) x h = y := by
   rw [next, get, ← dropLast_append_getLast (cons_ne_nil y l), hx, nextOr_concat]
   subst hx
@@ -374,12 +374,12 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
       length_reverse, Nat.mod_eq_of_lt (Nat.sub_lt lpos Nat.succ_pos'),
       Nat.sub_sub_self (Nat.succ_le_of_lt lpos)]
     rw [getElem_eq_getElem_reverse]
-    · simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
+    simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
   · simpa
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     next l.reverse x (mem_reverse.mpr hx) = prev l x hx := by
-  convert! (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x (mem_reverse.mpr hx)).symm
+  convert (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x (mem_reverse.mpr hx)).symm
   exact (reverse_reverse l).symm
 
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :

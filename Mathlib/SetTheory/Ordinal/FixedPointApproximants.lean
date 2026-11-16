@@ -54,7 +54,7 @@ theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
   have h := lift_mk_le_lift_mk_of_injective <| injOn_iff_injective.1 h_inj
   have mk_initialSeg_subtype :
       #(Iio (ord <| succ #α)) = lift.{u + 1} (succ #α) := by
-    simpa only [coe_ofPred, card_typein, card_ord] using mk_Iio_ordinal (ord <| succ #α)
+    simpa only [coe_ofPred, card_typein, card_ord] using cardinalMk_Iio (ord <| succ #α)
   rw [mk_initialSeg_subtype, lift_lift, lift_le] at h
   exact not_le_of_gt (Order.lt_succ #α) h
 
@@ -81,8 +81,6 @@ theorem lfpApprox_mono_right : Monotone (lfpApprox f x) := by
   rw [lfpApprox, lfpApprox]
   apply sup_le_sup_left (iSup₂_mono' _)
   grind
-
-@[deprecated (since := "2026-03-30")] alias lfpApprox_monotone := lfpApprox_mono_right
 
 theorem lfpApprox_zero : lfpApprox f x 0 = x := by
   rw [lfpApprox]
@@ -265,8 +263,6 @@ theorem gfpApprox_zero : gfpApprox f x 0 = x := by
 
 theorem gfpApprox_anti_right : Antitone (gfpApprox f x) :=
   lfpApprox_mono_right f.dual
-
-@[deprecated (since := "2026-03-30")] alias gfpApprox_antitone := gfpApprox_anti_right
 
 theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox f.dual

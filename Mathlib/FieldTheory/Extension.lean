@@ -20,7 +20,6 @@ extends to an embedding of E/F into K/F.
 
 [Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly
-
 -/
 
 @[expose] public section
@@ -210,13 +209,11 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
   have I2 := (minpoly.degree_pos h1).ne'
   letI : Algebra x.carrier K := x.emb.toRingHom.toAlgebra
   let carrier := x.carrier⟮s⟯.restrictScalars F
-  letI : Algebra x.carrier carrier := x.carrier⟮s⟯.toSubalgebra.algebra
   let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
     ⟨rootOfSplits h2 (by rwa [degree_map]), by
       rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
       exact (eval_map _ _).symm.trans (eval_rootOfSplits _ _)⟩)
-  ⟨⟨carrier, (@algHomEquivSigma F x.carrier carrier K _ _ _ _ _ _ _ _
-      (IsScalarTower.of_algebraMap_eq fun _ ↦ rfl)).symm ⟨x.emb, φ⟩⟩,
+  ⟨⟨carrier, algHomEquivSigma.symm ⟨x.emb, φ⟩⟩,
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
     mem_adjoin_simple_self x.carrier s⟩
 
@@ -244,7 +241,7 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
   have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
   · obtain ⟨y, h1, h2⟩ := this
     exact (hφ h1).1 h2
-  · convert! (hK s h).2; ext; apply hfφ.2
+  · convert (hK s h).2; ext; apply hfφ.2
 
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
   (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits)
@@ -264,15 +261,15 @@ theorem exists_algHom_adjoin_of_splits' :
       let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
       refine Eq.trans congr($hφ y) ?_
       simp only [AlgHom.coe_comp, Function.comp_apply, f']
-      exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+      congrm f $(AlgEquiv.symm_apply_apply ..)
   let : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
-  convert! (hK s hs).2
+  convert (hK s hs).2
   ext
   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
     AlgHom.coe_comp, Function.comp_apply, f']
-  exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+  congrm f $(AlgEquiv.symm_apply_apply ..)
 
 include hK in
 theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
@@ -325,7 +322,7 @@ theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] 
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
   obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
     ⟨y, mem_aroots.mpr ⟨minpoly.ne_zero ix, hy⟩⟩) (adjoin_simple_le_iff.mpr hx)
-  exact ⟨φ, (DFunLike.congr_fun hφ <| AdjoinSimple.gen F x).trans <|
+  exact ⟨φ, congr($hφ (AdjoinSimple.gen F x)).trans <|
     algHomAdjoinIntegralEquiv_symm_apply_gen F ix _⟩
 
 include hS in

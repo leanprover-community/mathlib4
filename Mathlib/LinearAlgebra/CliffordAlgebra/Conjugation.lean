@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-public import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Conjugations
@@ -29,7 +28,6 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 * `CliffordAlgebra.reverse_involute_commute`
 * `CliffordAlgebra.involute_mem_evenOdd_iff`
 * `CliffordAlgebra.reverse_mem_evenOdd_iff`
-
 -/
 
 @[expose] public section

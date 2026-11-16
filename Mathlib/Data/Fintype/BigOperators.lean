@@ -9,10 +9,12 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.Option
 public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Big operators over a fintype

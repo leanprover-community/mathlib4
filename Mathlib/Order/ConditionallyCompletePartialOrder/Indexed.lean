@@ -6,14 +6,14 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
-public import Mathlib.Order.GaloisConnection.Basic
+
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Indexed sup / inf in conditionally complete lattices
 
 This file proves lemmas about `iSup` and `iInf` for functions valued in a conditionally complete
 partial order, as opposed to a conditionally complete lattice.
-
 -/
 
 public section

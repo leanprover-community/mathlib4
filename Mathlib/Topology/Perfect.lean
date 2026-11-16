@@ -48,7 +48,6 @@ namely Polish spaces.
 ## Tags
 
 accumulation point, perfect set, dense-in-itself, cantor-bendixson.
-
 -/
 
 @[expose] public section
@@ -128,14 +127,14 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
   exact hx
 
 /-
-Open subsects in perfect spaces are preperfect.
+Open subsets in perfect spaces are preperfect.
 -/
 theorem IsOpen.preperfect [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
     Preperfect U := by
   simpa using PerfectSpace.univ_preperfect.open_inter hU
 
 /-
-Closures of open subsects in perfect spaces are preperfect, hence perfect.
+Closures of open subsets in perfect spaces are preperfect, hence perfect.
 -/
 theorem IsOpen.perfect_closure [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
     Perfect (closure U) :=
@@ -250,7 +249,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       apply xD.2
       exact mem_biUnion this xU
     by_contra! h
-    exact absurd (Countable.mono h (Set.countable_singleton _)) this
+    exact this <| (Set.countable_singleton x).mono fun y hy ↦ h y hy
   · rw [inter_comm, inter_union_sdiff]
 
 /-- Any uncountable closed set in a second countable space contains a nonempty perfect subset. -/

@@ -6,8 +6,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.Multiset.Basic
+public import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Deduplicating Multisets to make Finsets
@@ -17,7 +17,6 @@ This file concerns `Multiset.dedup` and `List.dedup` as a way to create `Finset`
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

@@ -5,8 +5,8 @@ Authors: Junyan Xu, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 public import Mathlib.CategoryTheory.Sites.Pullback
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # functors between categories of sheaves
@@ -22,7 +22,6 @@ topological spaces X and Y.
 - `TopCat.Sheaf.pullback`: The pullback functor between sheaf categories over topological spaces.
 - `TopCat.Sheaf.pullbackPushforwardAdjunction`:
   The adjunction between pullback and pushforward for sheaves on topological spaces.
-
 -/
 
 @[expose] public section

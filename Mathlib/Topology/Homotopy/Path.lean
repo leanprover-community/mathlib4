@@ -5,9 +5,9 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Basic
-public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.Homotopy.Basic
 
 /-!
 # Homotopy between paths
@@ -28,7 +28,6 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 * `Path.Homotopic p₀ p₁` is the relation saying that there is a homotopy between `p₀` and `p₁`
 * `Path.Homotopic.setoid x₀ x₁` is the setoid on `Path`s from `Path.Homotopic`
 * `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
-
 -/
 
 @[expose] public section
@@ -417,8 +416,8 @@ set_option backward.isDefEq.respectTransparency false in
 -- Porting note: we didn't previously need the `α := ...` and `β := ...` hints.
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
     HEq (α := Path.Homotopic.Quotient _ _) ⟦p₁⟧ (β := Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
-  obtain rfl : x₀ = x₂ := by convert! hp 0 <;> simp
-  obtain rfl : x₁ = x₃ := by convert! hp 1 <;> simp
+  obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
+  obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
   rw [heq_iff_eq]; congr; ext t; exact hp t
 
 end Homotopic

@@ -5,12 +5,13 @@ Authors: Gaëtan Serré, Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
+
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Sigmoid function
@@ -254,7 +255,6 @@ lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
   exact Real.sigmoid_neg x
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma range_sigmoid : range unitInterval.sigmoid = Ioo 0 1 := by
   rw [sigmoid, Subtype.range_coind, Real.range_sigmoid]

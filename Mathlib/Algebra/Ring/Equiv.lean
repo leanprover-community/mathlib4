@@ -84,31 +84,22 @@ add_decl_doc RingEquiv.toMulEquiv
 /-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
 You should extend this class when you extend `RingEquiv`. -/
 class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S] : Prop
-  extends MulEquivClass F R S where
-  /-- By definition, a ring isomorphism preserves the additive structure. -/
-  map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
+  extends MulEquivClass F R S, AddEquivClass F R S where
 
 namespace RingEquivClass
 
 variable [EquivLike F R S]
 
 -- See note [lower instance priority]
-instance (priority := 100) toAddEquivClass [Mul R] [Add R]
-    [Mul S] [Add S] [h : RingEquivClass F R S] : AddEquivClass F R S :=
-  { h with }
+attribute [instance 100] toAddEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
-    [h : RingEquivClass F R S] : RingHomClass F R S :=
-  { h with
-    map_zero := map_zero
-    map_one := map_one }
+    [RingEquivClass F R S] : RingHomClass F R S where
 
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
-    [NonUnitalNonAssocSemiring S] [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
-  { h with
-    map_zero := map_zero }
+    [NonUnitalNonAssocSemiring S] [RingEquivClass F R S] : NonUnitalRingHomClass F R S where
 
 /-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
 `RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
@@ -749,10 +740,14 @@ theorem toNonUnitalRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
   rfl
 
 @[simp]
-theorem toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom (e : R ≃+* S) :
+theorem toNonUnitalRingHom_comp_symm_toNonUnitalRingHom (e : R ≃+* S) :
     e.toNonUnitalRingHom.comp e.symm.toNonUnitalRingHom = NonUnitalRingHom.id _ := by
   ext
   simp
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom :=
+  toNonUnitalRingHom_comp_symm_toNonUnitalRingHom
 
 @[simp]
 theorem symm_toNonUnitalRingHom_comp_toNonUnitalRingHom (e : R ≃+* S) :
@@ -803,9 +798,11 @@ abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
 
 -- TODO : rename lemma
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
-theorem toAddMonoidMom_commutes (f : R ≃+* S) :
+theorem toAddMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
+
+@[deprecated (since := "2026-09-17")] alias toAddMonoidMom_commutes := toAddMonoidHom_commutes
 
 -- TODO : rename lemma
 /-- The two paths coercion can take to a `MonoidHom` are equivalent -/

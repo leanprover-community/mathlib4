@@ -25,7 +25,6 @@ and morphisms `fst : X ⟶ P`, `snd : X ⟶ Q`, `inl : P ⟶ X` and `inr : X ⟶
 such that `inl ≫ fst = 𝟙 P`, `inl ≫ snd = 0`, `inr ≫ fst = 0`, and `inr ≫ snd = 𝟙 Q`.
 Such a `BinaryBicone` is a biproduct if the cone is a limit cone, and the cocone is a colimit
 cocone.
-
 -/
 
 @[expose] public section
@@ -150,7 +149,7 @@ instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full w
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
-    BinaryBiconeMorphism.ext f g <| F.map_injective <| congr_arg BinaryBiconeMorphism.hom h
+    BinaryBiconeMorphism.ext f g <| F.map_injective congr(BinaryBiconeMorphism.hom $h)
 
 end BinaryBicones
 

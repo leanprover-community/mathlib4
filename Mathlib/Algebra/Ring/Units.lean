@@ -5,13 +5,12 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
 
 /-!
 # Units in semirings and rings
-
 -/
 
 public section

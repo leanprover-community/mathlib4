@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equifibered
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 

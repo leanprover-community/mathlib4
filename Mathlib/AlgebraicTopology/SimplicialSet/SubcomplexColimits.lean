@@ -19,7 +19,6 @@ the `U i` along the `V i j`.
 
 Similarly, bicartesian squares in the lattice `Subcomplex X` give pushout
 squares in the category of simplicial sets.
-
 -/
 
 @[expose] public section

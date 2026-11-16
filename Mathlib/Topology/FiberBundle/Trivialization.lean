@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Bundle
-public import Mathlib.Data.Set.Image
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 public import Mathlib.Topology.Order.Basic
@@ -105,7 +104,7 @@ lemma toPartialEquiv_injective [Nonempty F] :
     Injective (toPartialEquiv : Pretrivialization F proj → PartialEquiv Z (B × F)) := by
   refine fun e e' h ↦ ext' _ _ h ?_
   simpa only [fst_image_prod, univ_nonempty, target_eq]
-    using congr_arg (Prod.fst '' PartialEquiv.target ·) h
+    using congr(Prod.fst '' PartialEquiv.target $h)
 
 @[simp, mfld_simps]
 theorem coe_coe : ⇑e.toPartialEquiv = e :=
@@ -293,7 +292,7 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
     simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
     rw [dite_eq_left hx]; exact e.map_target' hx
   left_inv' z hz := by
-    dsimp only; rw [dite_eq_left] <;> all_goals simp_rw [← e.proj_toFun _ hz]
+    dsimp only; rw [dite_eq_left] <;> simp_rw [← e.proj_toFun _ hz]
     exacts [Subtype.ext (e.left_inv' hz), e.map_source' hz]
   right_inv' x hx := Subtype.val_injective.prodMap injective_id <| by
     simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
@@ -946,8 +945,8 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
         exact H.le_bot ⟨hx.1.1, hx.2.1⟩)
   baseSet := e.baseSet ∪ e'.baseSet
   open_baseSet := IsOpen.union e.open_baseSet e'.open_baseSet
-  source_eq := congr_arg₂ (· ∪ ·) e.source_eq e'.source_eq
-  target_eq := (congr_arg₂ (· ∪ ·) e.target_eq e'.target_eq).trans union_prod.symm
+  source_eq := congr($e.source_eq ∪ $e'.source_eq)
+  target_eq := congr($e.target_eq ∪ $e'.target_eq).trans union_prod.symm
   proj_toFun := by
     rintro p (hp | hp')
     · change (e.source.piecewise e e' p).1 = proj p

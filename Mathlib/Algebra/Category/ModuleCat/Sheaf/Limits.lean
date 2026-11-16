@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
-public import Mathlib.CategoryTheory.Sites.Limits
 
 /-! # Limits in categories of sheaves of modules
 
@@ -16,7 +15,6 @@ limits exist in the category `SheafOfModules R`.
 
 ## TODO
 * do the same for colimits (which requires constructing the associated sheaf of modules functor)
-
 -/
 
 public section

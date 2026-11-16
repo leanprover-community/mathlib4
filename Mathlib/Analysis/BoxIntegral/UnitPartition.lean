@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Analysis.BoxIntegral.Integrability
-public import Mathlib.Analysis.BoxIntegral.Partition.Measure
-public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
 /-!
 # Unit Partition
@@ -51,7 +49,6 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 * `tendsto_card_div_pow_atTop_volume'`: a version of `tendsto_card_div_pow_atTop_volume` where we
   assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
   `card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
-
 -/
 
 @[expose] public section
@@ -134,8 +131,8 @@ variable [NeZero n]
 
 theorem tag_injective : Function.Injective (fun ν : ι → ℤ ↦ tag n ν) := by
   refine fun _ _ h ↦ funext_iff.mpr fun i ↦ ?_
-  have := congr_arg (fun x ↦ x i) h
-  simp_rw [tag_apply, div_left_inj' (c := (n : ℝ)) (Nat.cast_ne_zero.mpr (NeZero.ne n)),
+  have := congr($h i)
+  simp_rw [tag_apply, div_left_inj₀ (c := (n : ℝ)) (Nat.cast_ne_zero.mpr (NeZero.ne n)),
     add_left_inj, Int.cast_inj] at this
   exact this
 

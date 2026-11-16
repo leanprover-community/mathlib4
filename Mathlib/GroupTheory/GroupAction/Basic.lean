@@ -10,11 +10,12 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.Subgroup.Centralizer
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Basic properties of group actions
@@ -29,7 +30,6 @@ of `•` belong elsewhere.
 * `MulAction.fixedPoints`
 * `MulAction.fixedBy`
 * `MulAction.stabilizer`
-
 -/
 
 @[expose] public section
@@ -247,6 +247,17 @@ lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
     IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
   simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_comm (α := G)]
 
+section Order
+variable [PartialOrder α] [CovariantClass G α HSMul.hSMul LE.le]
+
+@[simp]
+lemma stabilizer_bot [OrderBot α] : stabilizer G (⊥ : α) = ⊤ := by ext; simp
+
+@[simp]
+lemma stabilizer_top [OrderTop α] : stabilizer G (⊤ : α) = ⊤ := by ext; simp
+
+end Order
+
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 @[to_additive /-- If the stabilizer of `a` is `S`, then the stabilizer of `g +ᵥ a` is `g+S-g`. -/]
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
@@ -353,7 +364,8 @@ theorem stabilizer_subgroupOf (H : Subgroup G) (a : α) :
 @[to_additive (attr := simp)]
 theorem stabilizer_comap_conj_eq_centralizer_singleton (g : G) :
     (stabilizer (MulAut G) g).comap MulAut.conj = Subgroup.centralizer {g} := by
-  simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul]
+  simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul,
+    commute_iff_eq]
 
 @[to_additive]
 theorem orbit_range_conj_eq_conjugatesOf (g : G) :

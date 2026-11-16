@@ -43,7 +43,6 @@ in this file.
 * [Hazewinkel, *Witt Vectors*][Haze09]
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
-
 -/
 
 @[expose] public section
@@ -71,7 +70,7 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 namespace mapFun
 
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) :=
-  fun _ _ h => ext fun n => hf (congr_arg (fun x => coeff x n) h :)
+  fun _ _ h => ext fun n => hf congr(coeff $h n)
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,

@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.Diffeomorph
-public import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Local diffeomorphisms between manifolds
@@ -54,7 +53,6 @@ practice.
 
 ## Tags
 local diffeomorphism, manifold
-
 -/
 
 public noncomputable section

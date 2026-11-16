@@ -9,13 +9,10 @@ public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
-
 -/
 
 public section
@@ -41,7 +38,7 @@ variable (R M N ι)
 
 theorem finsuppLinearMap_injective :
     Function.Injective (finsuppLinearMap S : (ι →₀ M →ₗ[R] N) → M →ₗ[R] ι →₀ N) :=
-  fun _ _ eq ↦ by ext i m; exact congr($eq m i)
+  fun _ _ eq ↦ by ext i m; congrm $eq m i
 
 theorem finsuppLinearMap_bijective_of_moduleFinite [Module.Finite R M] :
     Function.Bijective (finsuppLinearMap S : (ι →₀ M →ₗ[R] N) → M →ₗ[R] ι →₀ N) := by

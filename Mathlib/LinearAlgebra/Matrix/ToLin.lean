@@ -9,14 +9,14 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.Matrix.Block
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Basis.SMul
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.StdBasis
 public import Mathlib.RingTheory.AlgebraTower
-public import Mathlib.RingTheory.Ideal.Span
+
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Linear maps and matrices
@@ -483,7 +483,7 @@ theorem LinearMap.toMatrix'_algebraMap (x : R) :
     LinearMap.toMatrix' (algebraMap R (Module.End R (n → R)) x) = scalar n x := by
   simp [Module.algebraMap_end_eq_smul_id, smul_eq_diagonal_mul]
 
-theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix n n R} :
+theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix m n R} :
     LinearMap.ker (Matrix.toLin' M) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 :=
   Matrix.ker_mulVecLin_eq_bot_iff
 
@@ -586,7 +586,7 @@ def LinearMap.toMatrix : (M₁ →ₗ[R] M₂) ≃ₗ[R] Matrix m n R :=
 /-- `LinearMap.toMatrix'` is a particular case of `LinearMap.toMatrix`, for the standard basis
 `Pi.basisFun R n`. -/
 @[simp] theorem LinearMap.toMatrix_eq_toMatrix' :
-    LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R n) = LinearMap.toMatrix' :=
+    LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R m) = LinearMap.toMatrix' :=
   rfl
 
 /-- Given bases of two modules `M₁` and `M₂` over a commutative ring `R`, we get a linear
@@ -643,8 +643,9 @@ theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
   LinearMap.toMatrix_id v₁
 
 @[simp]
-lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) (i j : ι) :
-    f.toMatrix (.singleton ι R) (.singleton ι R) i j = f 1 := by
+lemma LinearMap.toMatrix_singleton {ι ι' : Type*} [Unique ι] [Unique ι'] (f : R →ₗ[R] R)
+    (i : ι') (j : ι) :
+    f.toMatrix (.singleton ι R) (.singleton ι' R) i j = f 1 := by
   simp [toMatrix, Subsingleton.elim j default]
 
 @[simp]
@@ -990,7 +991,7 @@ theorem smul_leftMulMatrix {G} [Group G] [DistribMulAction G S]
     leftMulMatrix (g • b) x = leftMulMatrix b x := by
   ext
   simp_rw [leftMulMatrix_apply, LinearMap.toMatrix_apply, coe_lmul_eq_mul, LinearMap.mul_apply',
-    Basis.repr_smul, Basis.smul_apply, LinearEquiv.trans_apply,
+    Basis.repr_smul, smul_apply, LinearEquiv.trans_apply,
     DistribMulAction.toLinearEquiv_symm_apply, mul_smul_comm, inv_smul_smul]
 
 variable {A M n : Type*} [Fintype n] [DecidableEq n]
@@ -1113,8 +1114,8 @@ lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Modu
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
   refine b.ext fun k ↦ ?_
-  simp only [Ring.lie_def, LinearMap.sub_apply, End.mul_apply, LinearMap.smul_apply,
-    Basis.end_apply_apply, smul_ite, smul_zero, sub_smul]
+  simp only [Ring.lie_def, LinearMap.sub_apply, mul_apply_eq_comp, end_apply_apply, sub_smul,
+    LinearMap.smul_apply, smul_ite, smul_zero]
   rcases eq_or_ne j k with rfl | hjk
   · simp [hs, Basis.end_apply_apply]
   · simp [hs, Basis.end_apply_apply, hjk]
@@ -1156,7 +1157,7 @@ def endVecRingEquivMatrixEnd :
   right_inv m := by ext; simp [Pi.single_apply, apply_ite]
   map_mul' f g := by
     ext
-    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
+    simp only [mul_apply_eq_comp, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
       LinearMap.coe_sum, Finset.sum_apply]
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl

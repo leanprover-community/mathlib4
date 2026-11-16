@@ -5,13 +5,13 @@ Authors: Nailin Guan, Yongle Hu
 -/
 module
 
-public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.KrullDimension.Module
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
-/-!
+import Mathlib.RingTheory.Flat.TorsionFree
 
+/-!
 # Krull Dimension of quotient regular sequence
 
 ## Main results

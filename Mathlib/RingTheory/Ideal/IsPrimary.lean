@@ -6,8 +6,6 @@ Authors: Kenny Lau, Yakov Pechersky
 module
 
 public import Mathlib.RingTheory.IsPrimary
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary ideals
@@ -21,7 +19,6 @@ A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical
 ## Implementation details
 
 Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing usage.
-
 -/
 
 public section

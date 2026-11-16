@@ -13,7 +13,6 @@ public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 If `X ⟶ Y` is a monomorphism, and the cardinality of `Subobject Y`
 is `< κ`, then the cardinality of `Subobject X` is also `< κ`.
-
 -/
 
 public section

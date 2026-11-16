@@ -30,7 +30,6 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 ## References
 
 * [R. Borcherds, *Vertex Algebras, Kac-Moody Algebras, and the Monster*][borcherds1986vertex]
-
 -/
 
 @[expose] public section
@@ -80,7 +79,7 @@ theorem isPWO_support_coeff (A : HVertexOperator Γ R V W) (v : V) :
 theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W →ₗ[R] Γ → (V →ₗ[R] W)) := by
   intro _ _ h
   ext v n
-  exact congrFun (congrArg DFunLike.coe (congrFun h n)) v
+  congrm $h n v
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
