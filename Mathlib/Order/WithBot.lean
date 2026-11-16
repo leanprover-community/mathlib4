@@ -8,6 +8,7 @@ module
 public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
+public import Mathlib.Data.Set.Image
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.TypeTags
@@ -276,6 +277,9 @@ lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β}
 lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := by cases x <;> simp
 
 @[to_dual]
+lemma ne_bot_iff_exists' {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, x = ↑a := by cases x <;> simp
+
+@[to_dual]
 lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x := by cases x <;> simp
 
 @[to_dual]
@@ -353,6 +357,12 @@ lemma unbotA_eq_unbot [Nonempty α] {a : WithBot α} (ha : a ≠ ⊥) : unbotA a
   cases a with
   | bot => contradiction
   | coe a => simp
+
+@[to_dual]
+theorem range_eq (f : WithBot α → β) :
+    Set.range f = insert (f ⊥) (Set.range (f ∘ WithBot.some : α → β)) := by
+  rw [← EquivLike.range_comp f (toOption α).symm, Option.range_eq]
+  simp [Function.comp_assoc]
 
 end WithBot
 

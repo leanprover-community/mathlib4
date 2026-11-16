@@ -63,25 +63,47 @@ theorem untopD_one (d : α) : (1 : WithTop α).untopD d = 1 :=
   rfl
 attribute [to_dual existing] untopD_zero
 
-@[to_dual (attr := to_additive (attr := simp, norm_cast) coe_nonneg)]
+@[to_additive (attr := simp, norm_cast) coe_nonneg]
 theorem one_le_coe [LE α] {a : α} : 1 ≤ (a : WithTop α) ↔ 1 ≤ a :=
   coe_le_coe
-attribute [to_dual existing] coe_nonneg
 
-@[to_dual (attr := to_additive (attr := simp, norm_cast) coe_le_zero)]
+@[to_additive (attr := simp, norm_cast) coe_nonneg]
+theorem _root_.WithBot.one_le_coe [LE α] {a : α} : 1 ≤ (a : WithBot α) ↔ 1 ≤ a :=
+  WithBot.coe_le_coe
+
+@[to_additive (attr := simp, norm_cast) coe_le_zero]
 theorem coe_le_one [LE α] {a : α} : (a : WithTop α) ≤ 1 ↔ a ≤ 1 :=
   coe_le_coe
-attribute [to_dual existing] coe_le_zero
 
-@[to_dual (attr := to_additive (attr := simp, norm_cast) coe_pos)]
+@[to_additive (attr := simp, norm_cast) coe_le_zero]
+theorem _root_.WithBot.coe_le_one [LE α] {a : α} : (a : WithBot α) ≤ 1 ↔ a ≤ 1 :=
+  WithBot.coe_le_coe
+
+attribute [to_dual existing coe_le_one] one_le_coe
+attribute [to_dual existing coe_le_zero] coe_nonneg
+attribute [to_dual existing one_le_coe] coe_le_one
+attribute [to_dual existing coe_nonneg] coe_le_zero
+
+@[to_additive (attr := simp, norm_cast) coe_pos]
 theorem one_lt_coe [LT α] {a : α} : 1 < (a : WithTop α) ↔ 1 < a :=
   coe_lt_coe
-attribute [to_dual existing] coe_pos
 
-@[to_dual (attr := to_additive (attr := simp, norm_cast) coe_lt_zero)]
+@[to_additive (attr := simp, norm_cast) coe_pos]
+theorem _root_.WithBot.one_lt_coe [LT α] {a : α} : 1 < (a : WithBot α) ↔ 1 < a :=
+  WithBot.coe_lt_coe
+
+@[to_additive (attr := simp, norm_cast) coe_lt_zero]
 theorem coe_lt_one [LT α] {a : α} : (a : WithTop α) < 1 ↔ a < 1 :=
   coe_lt_coe
-attribute [to_dual existing] coe_lt_zero
+
+@[to_additive (attr := simp, norm_cast) coe_lt_zero]
+theorem _root_.WithBot.coe_lt_one [LT α] {a : α} : (a : WithBot α) < 1 ↔ a < 1 :=
+  WithBot.coe_lt_coe
+
+attribute [to_dual existing coe_lt_one] one_lt_coe
+attribute [to_dual existing coe_lt_zero] coe_pos
+attribute [to_dual existing one_lt_coe] coe_lt_one
+attribute [to_dual existing coe_pos] coe_lt_zero
 
 @[to_dual (attr := to_additive (attr := simp))]
 protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 : WithTop β) :=
@@ -206,8 +228,6 @@ instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (With
 instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithTop α) where
   elim x y z := by
     cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_right
-
-
 
 @[to_dual existing]
 instance _root_.WithBot.addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithBot α) where
@@ -386,9 +406,19 @@ end AddMonoid
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
 
+section NatCast
+variable [NatCast α]
+
 @[to_dual]
-instance natCast [NatCast α] : NatCast (WithTop α) :=
+instance natCast : NatCast (WithTop α) :=
   ⟨fun n => ↑(n : α)⟩
+
+@[to_dual (attr := simp)] lemma untopD_natCast (d : α) (n : ℕ) : untopD d n = n := rfl
+
+@[to_dual (attr := simp)]
+lemma untopD_ofNat (d : α) (n : ℕ) [n.AtLeastTwo] : untopD d ofNat(n) = ofNat(n) := rfl
+
+end NatCast
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]

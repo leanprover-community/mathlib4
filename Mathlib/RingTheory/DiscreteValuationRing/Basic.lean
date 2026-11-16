@@ -578,13 +578,15 @@ def remainder (x y : R) : R :=
 
 /-- A modification of the valuation, sending `0` to `⊥` instead of `⊤`. -/
 def toWithBotNat (x : R) : WithBot ℕ :=
-  addVal R x
+  (WithBot.toOption ℕ).symm <| WithTop.toOption ℕ <| addVal R x
 
-@[simp] lemma toWithBotNat_zero : toWithBotNat (R := R) 0 = ⊥ :=
-  addVal_zero
+@[simp] lemma toWithBotNat_zero : toWithBotNat (R := R) 0 = ⊥ := by
+  simp [toWithBotNat, show (⊤ : ℕ∞) = (⊤ : WithTop ℕ) from rfl]
 
-@[simp] lemma toWithBotNat_eq_bot_iff (x : R) : toWithBotNat x = ⊥ ↔ x = 0 :=
-  addVal_eq_top_iff
+@[simp] lemma toWithBotNat_eq_bot_iff (x : R) : toWithBotNat x = ⊥ ↔ x = 0 := by
+  simp only [toWithBotNat, WithBot.symm_toOption_eq_bot_iff]
+  convert! WithTop.toOption_eq_none_iff
+  convert! addVal_eq_top_iff.symm
 
 @[simp] lemma bot_lt_toWithBotNat_iff (x : R) : ⊥ < toWithBotNat x ↔ x ≠ 0 := by
   rw [bot_lt_iff_ne_bot]; simp

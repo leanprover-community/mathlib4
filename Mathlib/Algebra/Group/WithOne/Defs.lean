@@ -100,6 +100,13 @@ theorem recOneCoe_coe {C : WithOne α → Sort*} (d : C 1) (f : ∀ a : α, C a)
   rfl
 
 @[to_additive]
+def _root_.Equiv.withOne_congr {β} (e : α ≃ β) : WithOne α ≃ WithOne β where
+  toFun | 1 => 1 | coe x => e x
+  invFun | 1 => 1 | coe x => e.symm x
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+@[to_additive]
 def toOption (α : Type*) : WithOne α ≃ Option α where
   toFun | one => none | some x => .some x
   invFun | none => one | .some x => some x
