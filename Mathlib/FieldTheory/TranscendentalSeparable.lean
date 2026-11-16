@@ -514,13 +514,7 @@ lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algeb
       letI := h.isPrime
       IsReduced (K ⊗[k] (Localization.AtPrime p))) :
     IsReduced (K ⊗[k] S) := by
-  have (x : k) (y : S) : (MinimalPrimes.piLocalizationMap S) (x • y) =
-    x • (MinimalPrimes.piLocalizationMap S) y := by
-    rw [Algebra.smul_def, map_mul]
-    ext p
-    rw [Pi.mul_apply, Pi.smul_apply, Algebra.smul_def, IsScalarTower.algebraMap_apply k S]
-    rfl
-  let g := AlgHom.mk' (MinimalPrimes.piLocalizationMap S) this
+  let g := AlgHom.mk' _ (MinimalPrimes.piLocalizationMap_map_smul (R := k) (S := S))
   have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
     Module.Flat.lTensor_preserves_injective_linearMap _
       (IsReduced.piLocalizationMap_injective S)
