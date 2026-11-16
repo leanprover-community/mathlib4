@@ -981,7 +981,7 @@ theorem eNorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
 
 /--
 Length of the chord from `exp (I * x)` to `1`. For the chord between two arbitrary points, see
-`Complex.law_cos_half_angle`.
+`Complex.norm_sub_sq_eq_norm_sub_norm_sq_add`.
 -/
 theorem norm_exp_I_mul_ofReal_sub_one (x : ℝ) : ‖exp (I * x) - 1‖ = ‖2 * Real.sin (x / 2)‖ := by
   rw [show ‖2 * Real.sin (x / 2)‖ = ‖2 * sin (x / 2)‖ by norm_cast, two_sin]
