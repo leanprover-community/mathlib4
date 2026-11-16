@@ -733,7 +733,7 @@ variable {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E] {p q
 
 /-- Conjugating an endomorphism that preserves two complementary submodules `p` and `q` by
 `(p.prodEquivOfIsCompl q h).symm` gives the product of its restrictions to `p` and `q`. -/
-theorem prodEquivOfIsCompl_symm_conj (h : IsCompl p q) (f : Module.End R E)
+theorem prodEquivOfIsCompl_symm_conj (h : IsCompl p q) {f : Module.End R E}
     (hp : f ∈ p.compatibleMaps p) (hq : f ∈ q.compatibleMaps q) :
     (prodEquivOfIsCompl p q h).symm.conj f = (f.restrict hp).prodMap (f.restrict hq) := by
   refine LinearMap.prod_ext (LinearMap.ext fun x ↦ ?_) (LinearMap.ext fun y ↦ ?_) <;>
