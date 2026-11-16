@@ -44,8 +44,8 @@ variable (R) in
 /-- Equivalence between subsemirings with zero support in a ring `R`
     and partially ordered ring structures on `R`. -/
 noncomputable def isPointedPartialOrderEquiv :
-    Equiv {C : Subsemiring R // C.IsPointed}
-          {_o : PartialOrder R // IsOrderedRing R} where
+    {C : Subsemiring R // C.IsPointed} ≃
+      {_o : PartialOrder R // IsOrderedRing R} where
   toFun := fun ⟨_, hC⟩ ↦ ⟨.ofAddSubmonoid hC, .ofSubsemiring _⟩
   invFun := fun ⟨_, _⟩ ↦ ⟨.nonneg R, .nonneg _⟩
   left_inv := fun ⟨_, _⟩ ↦ by ext; simp
@@ -65,8 +65,8 @@ open Classical in
 /-- Equivalence between maximal subsemirings with zero support in a ring `R`
     and linearly ordered ring structures on `R`. -/
 noncomputable def isPointedLinearOrderEquiv :
-    Equiv {C : Subsemiring R // C.IsPointed ∧ C.IsSpanning}
-          {_o : LinearOrder R // IsOrderedRing R} where
+    {C : Subsemiring R // C.IsPointed ∧ C.IsSpanning} ≃
+      {_o : LinearOrder R // IsOrderedRing R} where
   toFun := fun ⟨C, hC⟩ ↦ ⟨.ofAddSubmonoid hC.1 hC.2, .ofSubsemiring _⟩
   invFun := fun ⟨_, _⟩ ↦ ⟨.nonneg R, .nonneg _, .nonneg _⟩
   left_inv := fun ⟨_, _, _⟩ ↦ by ext; simp

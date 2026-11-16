@@ -75,8 +75,8 @@ variable (G) in
   /-- Equivalence between submonoids with zero support in an abelian group `G`
     and partially ordered group structures on `G`. -/]
 noncomputable def submonoidPartialOrderEquiv :
-    Equiv {C : Submonoid G // C.IsMulPointed}
-          {_o : PartialOrder G // IsOrderedMonoid G} where
+    {C : Submonoid G // C.IsMulPointed} ≃
+      {_o : PartialOrder G // IsOrderedMonoid G} where
   toFun := fun ⟨_, hC⟩ ↦ ⟨.ofSubmonoid hC, .ofSubmonoid _⟩
   invFun := fun ⟨_, _⟩ ↦ ⟨.oneLE G, .oneLE _⟩
   left_inv := fun ⟨_, _⟩ ↦ by ext; simp
@@ -99,8 +99,8 @@ variable (G) in
   /-- Equivalence between maximal submonoids with zero support in an abelian group `G`
     and linearly ordered group structures on `G`. -/]
 noncomputable def submonoidLinearOrderEquiv :
-    Equiv {C : Submonoid G // C.IsMulPointed ∧ C.IsMulSpanning}
-          {_o : LinearOrder G // IsOrderedMonoid G} where
+    {C : Submonoid G // C.IsMulPointed ∧ C.IsMulSpanning} ≃
+      {_o : LinearOrder G // IsOrderedMonoid G} where
   toFun := fun ⟨C, hC⟩ ↦ ⟨.ofSubmonoid hC.1 hC.2, .ofSubmonoid _⟩
   invFun := fun ⟨_, _⟩ ↦ ⟨.oneLE G, .oneLE _, .oneLE _⟩
   left_inv := fun ⟨_, _, _⟩ ↦ by ext; simp
