@@ -82,7 +82,7 @@ private lemma not_isFiniteCartan_addLeaf_D_last_multiple {n : ℕ} (hn : 4 ≤ n
     (hm : 2 ≤ a * b) : ¬ (addLeaf (D n) ⟨n - 1, by lia⟩ a b).IsFiniteCartan := fun h ↦ by
   have := h.path_bonds_lt_four
     ![(⟨n - 3, by lia⟩ : Fin n).castSucc, (⟨n - 1, by lia⟩ : Fin n).castSucc]
-    (fun x y hxy ↦ by fin_cases x <;> fin_cases y <;> simp_all [Fin.ext_iff] <;> lia)
+    (injective_pair_iff_ne.mpr (by simp [Fin.ext_iff]; lia))
     (fun i ↦ by fin_cases i; simp [-Fin.castSucc_mk, D, Fin.ext_iff]; lia)
     [(0, (⟨n - 4, by lia⟩ : Fin n).castSucc), (0, (⟨n - 2, by lia⟩ : Fin n).castSucc),
       (1, Fin.last n)]
@@ -165,8 +165,7 @@ theorem IsFiniteCartan.hasDynkinType_addLeaf_D {n : ℕ} {u : Fin n} {a b : ℤ}
   -- `D₂ = A₁ × A₁` is not indecomposable
   · simp only [D_two, reduceIsIndecomposable] at hD
   -- `D₃ ≅ A₃`
-  · have h3 : D 3 = (A 3).submatrix c[0, 1] c[0, 1] := by
-      rw [← D_three']; ext; simp
+  · have h3 : D 3 = (A 3).submatrix c[0, 1] c[0, 1] := by decide
     rw [h3, addLeaf_submatrix] at h ⊢
     simp only [IsFiniteCartan.submatrix_equiv_iff, HasDynkinType.submatrix_iff] at h ⊢
     exact h.hasDynkinType_addLeaf_A hab
