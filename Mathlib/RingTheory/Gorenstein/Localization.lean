@@ -28,11 +28,11 @@ section
 variable {R} in
 lemma isGoresteinLocalRing_localization [IsGorensteinLocalRing R] [IsNoetherianRing R]
     (p : Ideal R) [p.IsPrime] : IsGorensteinLocalRing (Localization.AtPrime p) := by
-  rw [isGorensteinLocalRing_def]
+  rw [isGorensteinLocalRing_iff]
   have le := (ModuleCat.of R R).injectiveDimension_le_injectiveDimension_of_isLocalizedModule
     p.primeCompl
   have : injectiveDimension ((ModuleCat.of R R).localizedModule p.primeCompl) ≠ ⊤ :=
-    ne_top_of_le_ne_top ((isGorensteinLocalRing_def R).mp ‹_›) le
+    ne_top_of_le_ne_top ((isGorensteinLocalRing_iff R).mp ‹_›) le
   let e' : LocalizedModule p.primeCompl R ≃ₗ[R] Localization.AtPrime p :=
     IsLocalizedModule.linearEquiv p.primeCompl
     (LocalizedModule.mkLinearMap p.primeCompl R) (Algebra.linearMap R (Localization.AtPrime p))
@@ -54,7 +54,7 @@ end
 
 section
 
-lemma isGorensteinRing_iff [IsNoetherianRing R] : IsGorensteinRing R ↔
+lemma isGorensteinRing_iff'' [IsNoetherianRing R] : IsGorensteinRing R ↔
     ∀ m : Ideal R, ∀ (_ : m.IsMaximal), IsGorensteinLocalRing (Localization.AtPrime m) := by
   refine ⟨fun ⟨h⟩ ↦ fun m hm ↦ h m (Ideal.IsMaximal.isPrime hm), fun h ↦ ⟨fun p hp ↦  ?_⟩⟩
   rcases Ideal.exists_le_maximal p (Ideal.IsPrime.ne_top hp) with ⟨m, hm, le⟩
@@ -85,9 +85,9 @@ open IsLocalRing
 
 lemma IsGorensteinRing.of_isGorensteinLocalRing [IsGorensteinLocalRing R]
     [IsNoetherianRing R] : IsGorensteinRing R := by
-  apply (isGorensteinRing_iff R).mpr (fun m hm ↦ ?_)
+  apply (isGorensteinRing_iff'' R).mpr (fun m hm ↦ ?_)
   have := IsLocalization.of_le_isUnit (S := m.primeCompl)
-    (fun x hx ↦ by simpa [eq_maximalIdeal hm] using! hx)
+    (fun x hx ↦ by simpa [IsUnit.mem_submonoid_iff, eq_maximalIdeal hm] using hx)
   let e := (IsLocalization.algEquiv m.primeCompl R (Localization.AtPrime m)).toRingEquiv
   exact IsGorensteinLocalRing.of_ringEquiv e
 
@@ -95,7 +95,7 @@ lemma IsGorensteinLocalRing.of_isLocalRing_of_isGorensteinRing [IsLocalRing R]
     [IsGorensteinRing R] : IsGorensteinLocalRing R := by
   have := IsLocalization.of_le_isUnit (S := (maximalIdeal R).primeCompl)
     (fun x hx ↦ by simpa using! hx)
-  have := (isGorensteinRing_def R).mp ‹_› (maximalIdeal R) inferInstance
+  have := (isGorensteinRing_iff R).mp ‹_› (maximalIdeal R) inferInstance
   let e := (IsLocalization.algEquiv (maximalIdeal R).primeCompl R
     (Localization.AtPrime (maximalIdeal R))).toRingEquiv
   exact IsGorensteinLocalRing.of_ringEquiv e.symm
