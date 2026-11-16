@@ -108,7 +108,7 @@ section Mul
 
 variable [Mul α]
 
-instance : Mul (SetSemiring α) := fast_instance% toSetEquiv.mul
+instance : Mul (SetSemiring α) where mul s t := ofSet (s.toSet * t.toSet)
 
 lemma mul_def (s t : SetSemiring α) : s * t = ofSet (s.toSet * t.toSet) := rfl
 @[simp] lemma toSet_mul (s t : SetSemiring α) : (s * t).toSet = s.toSet * t.toSet := rfl
