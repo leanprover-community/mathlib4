@@ -71,9 +71,10 @@ def compareWithSynthesized (e : Expr) : MetaM (Option MessageData) := do
 global instances, and compare each of its projections with the instance that is found by
 type class search. -/
 def findDiamonds (declName : Name) : MetaM (Option MessageData) := do
-  unless ← isInstance declName do return none
-  let cinfo ← getConstInfo declName
-  if cinfo.isTheorem then return none
+  let env ← getEnv
+  unless isInstanceCore env declName do return none
+  if wasOriginallyTheorem env declName then return none
+  let cinfo ← getConstVal declName
   withoutModifyingEnv do withExporting do withReducible do
   let s ← (instanceExtension.getState (← getEnv)).erase declName
   modifyEnv (instanceExtension.modifyState · fun _ => s)
@@ -100,7 +101,7 @@ implicit transparency. -/
 public def instanceDiamonds : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "No bad instance diamonds"
   errorsFound := "FOUND BAD INSTANCE DIAMONDS"
-  test := fun declName => do
+  test declName := do
     if declName.isInternal then return none
     findDiamonds declName
 
