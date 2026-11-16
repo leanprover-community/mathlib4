@@ -28,7 +28,7 @@ attribute [transport] mt Or.imp Exists.imp forall_imp
   Mathlib.Tactic.GCongr.imp_mono
   Mathlib.Tactic.GCongr.and_mono
 
-namespace TransportTest
+namespace Transport
 
 section Class
 
@@ -619,7 +619,7 @@ example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f)
   transport [MapRel f]
   exact hX
 
-end TransportTest
+end Transport
 
 /-
 Let's say a commutative ring is local if it has exactly one maximal ideal.

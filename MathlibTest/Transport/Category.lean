@@ -5,7 +5,7 @@ import Mathlib.Tactic.Transport.Test
 
 namespace TransportYoneda
 
-open CategoryTheory MonoidalCategory CartesianMonoidalCategory MonObj TransportTest
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory MonObj Transport
 
 variable {C : Type*} [Category* C] [CartesianMonoidalCategory C] {A : C}
 

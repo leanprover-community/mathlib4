@@ -13,9 +13,7 @@ import all Lean.Meta.DiscrTree.Main
 ## haha
 -/
 
-
--- TODO: version of `getRel` that checks that the relation is a transport relation.
-namespace TransportTest
+namespace Transport
 
 @[expose]
 public def FunctionRel {α β : Type*} (r : α → β → Prop) {γ : β → Type*} {δ : α → Type*}
@@ -24,11 +22,11 @@ public def FunctionRel {α β : Type*} (r : α → β → Prop) {γ : β → Typ
 
 @[expose] public def MapRel {α β : Type*} (map : α → β) (a : α) (b : β) : Prop := map a = b
 
-end TransportTest
+end Transport
 
 meta section
 
-open Mathlib Tactic TransportTest
+open Mathlib Tactic Transport
 
 open Lean Meta GCongr
 
@@ -168,22 +166,6 @@ def withTransportHyps {α} (hyps : List (FVarId × FVarId)) (goal : MVarId)
       (fun c ↦ { c with transportHyps := c.transportHyps.insert fvarId hRel })
       (withTransportHyps hyps goal k)
 
--- structure LCtx where
---   lctx : LocalContext
---   linsts : LocalInstances
-
--- def LCtx.add (l : LCtx) (fvarId : FVarId) : MetaM LCtx := do
---   let decl ← fvarId.getDecl
---   return {
---     lctx := l.lctx.addDecl decl
---     linsts :=
---       if let some className := ← isClass? decl.type then
---         l.linsts.push { fvar := .fvar fvarId, className }
---       else
---         l.linsts
---   }
--- #check LocalContext.addDecl
--- #check withLocalDecl
 /-- Apply generalized congruence lemma `lem` to goal `g`, throwing an error if it fails.
 Return an array of main subgoals and an array of side goals.
 For each main subgoal, also return whether the sides of the relation are swapped
@@ -263,23 +245,28 @@ where
         result ← DiscrTree.getMatchRoot d k (#[e] ++ args) result
       return result
 
-/-- If `e` is of the form `r a b`, return `(r, a, b)`.
-Note: we assume that `e` does not have an `Expr.mdata` annotation. -/
-def getRel (e : Expr) : MetaM (Option (Rel × CollectFVars.State × Expr × Expr)) := do
+/--
+If `e` is of the form `r a b`, return `(r, fvarIds, a, b)`, where `fvarIds`
+are the free variables apprearing in `r`.
+Note: we assume that `e` does not have an `Expr.mdata` annotation.
+-/
+def getRel' (e : Expr) : MetaM (Option (Rel × CollectFVars.State × Expr × Expr)) := do
   match e with
   | mkApp3 (.const ``Eq _) ty lhs rhs => return some (.eq, collectFVars {} ty, lhs, rhs)
   | mkApp2 r lhs rhs => return some (.other r, collectFVars {} r, lhs, rhs)
   | .forallE _ lhs (.forallE _ rhs (.sort 0) _) _ => return some (.relation, {}, lhs, rhs)
   | .forallE _ lhs rhs _ =>
     if !rhs.hasLooseBVars then
-      let fvars := collectFVars (collectFVars {} (← inferType lhs)) (← inferType rhs)
-      return some (.imp, fvars, lhs, rhs)
+      return some (.imp, {}, lhs, rhs)
     else
       return none
   | _ => return none
 
-/-- Version of `getRel` that also returns the expression of the relation. -/
-def getRel' (e : Expr) : Option (Rel × Expr × Expr) :=
+/--
+If `e` is of the form `r a b`, return `(r, a, b)`.
+Note: we assume that `e` does not have an `Expr.mdata` annotation.
+-/
+def getRel (e : Expr) : Option (Rel × Expr × Expr) :=
   match e with
   | mkApp3 (.const ``Eq _) _ lhs rhs => some (.eq, lhs, rhs)
   | mkApp2 rel lhs rhs => some (.other rel, lhs, rhs)
@@ -297,17 +284,17 @@ def getRel' (e : Expr) : Option (Rel × Expr × Expr) :=
 conclusion `target`. -/
 def mkTransportLemmaCore (hyps' : Array Expr) (target : Expr) (proof : Expr)
     (levelParams : Array Name) (dir : Option Bool) (prio : Nat) : MetaM TransportLemma := do
-  let some (rel, sharedVars, lhs, rhs) ← getRel target
+  let some (rel, sharedVars, lhs, rhs) ← getRel' target
     | throwError "`{target}` is not a relation"
   trace[transport] "relating `{lhs}` to `{rhs}`"
   let hyps := hyps'.map (·.fvarId!)
   let sharedVars := (← sharedVars.addDependencies).fvarSet.filter hyps.contains
   if let .fvar fvarId := lhs.getAppFn then
     if hyps.contains fvarId && !sharedVars.contains fvarId then
-      throwError "LHS is an arbitrary variable: `{lhs}`"
+      throwError "LHS `{lhs}` in `{target}` is an arbitrary variable.`"
   if let .fvar fvarId := rhs.getAppFn then
     if hyps.contains fvarId && !sharedVars.contains fvarId then
-      throwError "RHS is an arbitrary variable: `{rhs}`"
+      throwError "RHS `{rhs}` in `{target}` is an arbitrary variable.`"
   let mut mainSubgoals := #[]
   let lctx ← getLCtx
   let lhsVars :=
@@ -409,8 +396,8 @@ def mkTransportLemmaCore (hyps' : Array Expr) (target : Expr) (proof : Expr)
   let lVars ← lVarsRef.get
   let rVars ← rVarsRef.get
   if !lVars.isEmpty || !rVars.isEmpty then
-    throwError "Could not find subgoal(s) relating \
-      `{lVars.toList.map Expr.fvar}` and `{rVars.toList.map Expr.fvar}`"
+    throwError "Could not find subgoal(s) relating `{lVars.toList.map Expr.fvar}` and \
+      `{rVars.toList.map Expr.fvar}` in the conclusion `{target}`"
   let mkKeys (es : Array Expr) : MetaM (Array DiscrTree.Key) := do
     let es ← es.mapM <| Core.transform (pre := fun e ↦ do
       if let .fvar fvarId := e.getAppFn then
@@ -453,13 +440,13 @@ def mkTransportLemma (type proof : Expr) (levelParams : Array Name) (dir : Optio
   try
     -- Add a `transport` lemma in the "normal" way.
     mkTransportLemmaCore xs type proof levelParams dir prio
-  catch e => try
-    let some x := xs.back? | failure
+  catch e =>
+    let some x := xs.back? | throw e
     let type ← mkForallFVars #[x] type
-    mkTransportLemmaCore xs.pop type proof levelParams dir prio
-  catch _ =>
-    -- If none of the methods work, we throw the error thrown by the "normal" attempt.
-    throw e
+    try
+      mkTransportLemmaCore xs.pop type proof levelParams dir prio
+    catch e' =>
+      throwError "{e.toMessageData}\n\n{e'.toMessageData}"
 
 def preprocessTransportLemma (proof : Expr) (fs : Array Syntax) :
     MetaM (Option Expr) := do
@@ -478,11 +465,11 @@ def preprocessTransportLemma (proof : Expr) (fs : Array Syntax) :
           throwError "`{b}` contains a loose bound varialbe"
         return (d, b, f)
       Elab.Term.synthesizeSyntheticMVarsNoPostponing
-      mkLambdaFVars xs <| ← go xs type 0 #[] fs changed
+      go xs type 0 #[] fs changed
   catch _ =>
     return none
 where
-  go (xs : Array Expr) (type : Expr) (i : Nat) (hs : Array (Expr × Expr))
+  go (xs : Array Expr) (type : Expr) (i : Nat) (hs : Array (FVarId × FVarId × Expr))
       (fs : Array (Expr × Expr × Expr)) (changed : Bool) : MetaM Expr := do
     if h : i < xs.size then
       let x := xs[i]
@@ -495,21 +482,26 @@ where
           let eq ← mkAppOptM ``Eq #[xType', f.beta #[x], x']
           let rel ← mkAppOptM ``MapRel #[xType, xType', f, x, x']
           withLocalDeclD (xName.appendBefore "h") rel fun hx ↦ do
-            let proof ← go xs type (i + 1) (hs.push (hx, eq)) fs changed
-            if proof.containsFVar hx.fvarId! then
-              mkLambdaFVars #[x', hx] proof
-            else
-              pure proof
+            go xs type (i + 1) (hs.push (x'.fvarId!, hx.fvarId!, eq)) fs changed
       else
         go xs type (i + 1) hs fs changed
     else
       let mut simpTheorems : SimpTheoremsArray := {}
-      for (h, eq) in hs do
-        simpTheorems ← simpTheorems.addTheorem (.fvar h.fvarId!) (mkExpectedPropHint h eq)
+      for (_, h, eq) in hs do
+        simpTheorems ← simpTheorems.addTheorem (.fvar h) (mkExpectedPropHint (.fvar h) eq)
       let ctx ← Simp.mkContext Simp.neutralConfig simpTheorems
       let (r, _) ← simp type ctx
+      let proof := mkAppN proof xs
+      let mut xs := xs
+      -- put `x` and `h` as early in the list of hypotheses as possible.
+      for (x, h, eq) in hs do
+        if r.proof?.any (·.containsFVar h) then
+          let fvarIds := (collectFVars {} eq).fvarSet
+          let i := xs.size - xs.reverse.findIdx (fvarIds.contains ·.fvarId!)
+          xs := xs.insertIdx i (.fvar h)
+          xs := xs.insertIdx! i (.fvar x)
       let mut type' := r.expr
-      let mut proof ← mkAppM ``Eq.mp #[← r.getProof, mkAppN proof xs]
+      let mut proof ← mkAppM ``Eq.mp #[← r.getProof, proof]
       match_expr type' with
       | Iff lhs rhs =>
         type' := mkApp3 (.const ``Eq [1]) (.sort 0) lhs rhs
@@ -527,7 +519,7 @@ where
       | _ => pure ()
       if !changed && type' == type then
         throwError "`{type}` was not changed "
-      return mkExpectedPropHint proof type'
+      mkLambdaFVars xs <| mkExpectedPropHint proof type'
 
 def mkTransportLemmaFromConst (declName : Name) (dir : Option Bool) (prio : Nat) :
     MetaM TransportLemma := do
@@ -562,7 +554,7 @@ def elabTransportTheorem (stx : Syntax) (dir : Option Bool) : Elab.TermElabM Tra
   mkTransportLemmaFromExpr proof levelParams dir
 
 /-- Attribute marking transport lemmas and relations. -/
-syntax (name := transportAttr) "transport" (ppSpace prio)? term,* : attr
+syntax (name := transportAttr) "transport" atomic(ppSpace prio)? term,* : attr
 
 /-- Mark `declName` with the `transport` attribute. -/
 def addTransportLemma (declName : Name) (stx : Syntax) (kind : AttributeKind) : MetaM Unit :=
@@ -639,7 +631,7 @@ mutual
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
 partial def processTransportHypothesis (fromEq : Bool) (goal : MVarId) : TransportM Bool := do
   let goalType ← instantiateMVars (← goal.getType)
-  let some (rel, lhs, rhs) := getRel' goalType |
+  let some (rel, lhs, rhs) := getRel goalType |
     throwError "invalid transport goal {goal}"
   let forward ← match lhs.getAppFn.isMVar, rhs.getAppFn.isMVar with
     | false, true => pure true
@@ -706,7 +698,7 @@ partial def useTransportHyp (hyp : Expr) (goal : MVarId) (forward : Bool) : Tran
   if type.isAppOfArity ``FunctionRel 8 then
     let (mvars, _, _) ← withDefault <| forallMetaTelescopeReducing type (some 3)
     if ← useTransportHyp (mkAppN hyp mvars) goal forward then
-      let some (rel, lhs, rhs) := getRel' (← instantiateMVars (← inferType mvars[2]!))
+      let some (rel, lhs, rhs) := getRel (← instantiateMVars (← inferType mvars[2]!))
         | return false
       let e := if forward then rhs else lhs
       let some (result, proof) ← transportCore rel e forward (noRfl := false)
@@ -861,7 +853,18 @@ elab_rules : tactic
   let (_, newGoal) ← newGoal.mvarId!.introNP intros
   newGoal.setTag tag
   let mctx ← getMCtx
-  replaceMainGoal ((s.newGoals.filter mctx.decls.contains).toList ++ [newGoal])
+  let newGoals := s.newGoals.filter mctx.decls.contains
+  let newGoals ← newGoals.filterM fun goal ↦ do
+    let type ← goal.getType
+    if let some (.const tacticDecl ..) := type.getAutoParamTactic? then
+      goal.setType type.consumeTypeAnnotations
+      if let .ok tacticSyntax := evalSyntaxConstant (← getEnv) (← getOptions) tacticDecl then
+        let mctx ← getMCtx
+        if (← runTactic' goal tacticSyntax) matches [] then
+          return false
+        setMCtx mctx
+    return true
+  replaceMainGoal (newGoals.toList ++ [newGoal])
 
 
 end Test
