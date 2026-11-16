@@ -525,7 +525,7 @@ theorem IsLittleOTVS.listSum {L : List (α → E)} (h : ∀ f ∈ L, f =o[𝕜; 
 
 theorem IsLittleOTVS.multisetSum {s : Multiset (α → E)} (h : ∀ f ∈ s, f =o[𝕜; l] g) :
     s.sum =o[𝕜; l] g := by
-  cases s using Quotient.inductionOn with
+  induction s using Quotient.inductionOn with
   | _ L => exact listSum h
 
 @[to_fun]
@@ -550,7 +550,7 @@ theorem IsBigOTVS.listSum {L : List (α → E)} (h : ∀ f ∈ L, f =O[𝕜; l] 
 
 theorem IsBigOTVS.multisetSum {s : Multiset (α → E)} (h : ∀ f ∈ s, f =O[𝕜; l] g) :
     s.sum =O[𝕜; l] g := by
-  cases s using Quotient.inductionOn with
+  induction s using Quotient.inductionOn with
   | _ L => exact listSum h
 
 @[to_fun]

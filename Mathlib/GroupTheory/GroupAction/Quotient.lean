@@ -370,13 +370,13 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive G X]
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
-    cases y using Quotient.inductionOn'
+    induction y using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'']
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     convert mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq G _ x).choose_spec]
   right_inv := fun g ↦ by
-    cases g using Quotient.inductionOn' with | _ g
+    induction g using Quotient.inductionOn' with | _ g
     simp only [Quotient.liftOn'_mk'', QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
