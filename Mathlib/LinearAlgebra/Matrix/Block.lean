@@ -101,7 +101,10 @@ protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
   forall_comm
 
 @[simp]
-theorem blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
+theorem BlockTriangular.zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
+
+@[deprecated (since := "2026-11-16")]
+alias blockTriangular_zero := BlockTriangular.zero
 
 instance decidableBlockTriangular [DecidableEq R] [Fintype m] [DecidableLT α] :
     Decidable (M.BlockTriangular b) :=
@@ -189,7 +192,7 @@ protected theorem strictBlockTriangular_transpose_iff {b : m → αᵒᵈ} :
   forall_comm
 
 @[simp]
-theorem strictBlockTriangular_zero : StrictBlockTriangular (0 : Matrix m m R) b :=
+theorem StrictBlockTriangular.zero : StrictBlockTriangular (0 : Matrix m m R) b :=
   fun _ _ _ => rfl
 
 instance decidableStrictBlockTriangular [DecidableEq R] [Fintype m] [DecidableLE α] :
@@ -367,7 +370,7 @@ variable (R b) in
 def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] :
     Subsemiring (Matrix m m R) where
   carrier := {M | BlockTriangular M b}
-  zero_mem' := blockTriangular_zero
+  zero_mem' := BlockTriangular.zero
   one_mem' := blockTriangular_one
   mul_mem' := .mul
   add_mem' := .add
