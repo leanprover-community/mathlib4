@@ -1083,6 +1083,11 @@ jobs:
           ## for non-PR builds (push to master / bors); the consumer then falls
           ## back to the commit's associated PRs.
           printf '%s' "${{ github.event.pull_request.number }}" > "$RUNNER_TEMP/import-graph/pr_number.txt"
+          ## Executing this runs the export and writes `crossrefs.json` into the artifact
+          ## directory, which doubles as a smoke test of the `export_crossrefs.yml` workflow.
+          ## The post-build `crossref-diff` workflow diffs it against the build at the PR's
+          ## merge base.
+          CROSSREFS_OUT="$RUNNER_TEMP/import-graph/crossrefs.json" lake env lean scripts/export_crossrefs.lean
 
       - name: get cache for Archive and Counterexamples
         run: |
@@ -1201,8 +1206,8 @@ jobs:
             exit 1
           fi
           ## The outputs written above, so that a missing one fails this build rather than
-          ## `decls-diff.yml` for every PR based on this commit. New outputs need not be listed.
-          for f in api.jsonl imports.json import_graph.dot pr_number.txt; do
+          ## `decls-diff.yml` or `crossrefs-diff.yml` for every PR based on this commit. New outputs need not be listed.
+          for f in api.jsonl imports.json import_graph.dot pr_number.txt crossrefs.json; do
             if [ ! -f "$DIR/$f" ]; then
               echo "Refusing to upload: $f is missing." >&2
               exit 1
@@ -1227,9 +1232,6 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
-          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
-          lake env lean scripts/export_crossrefs.lean
           lake exe check-title-labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
