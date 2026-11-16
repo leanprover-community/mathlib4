@@ -535,7 +535,7 @@ end Real
 
 /-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
 `f (r ^ n) = (f r) ^ n`. -/
-def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
+def IsPowMul {R S : Type*} [Pow R ℕ] [Pow S ℕ] (f : R → S) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
 
 lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
