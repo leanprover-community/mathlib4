@@ -194,11 +194,10 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
   rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z, ← tsum_G2Term_eq_tsum',
   tsum_G2Term_eq_tsum]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
-  simp_rw [SL_slash_def, modular_T_smul z]
-  simp [G2_eq_tsum_cexp, T, denom_apply, ← exp_periodic.nat_mul 1 (2 * π * I * z)]
+  simp [SL_slash_def, modular_T_smul z, G2_eq_tsum_cexp, denom_apply, coe_T,
+    ← exp_periodic.nat_mul 1 (2 * π * I * z)]
   grind
 
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by

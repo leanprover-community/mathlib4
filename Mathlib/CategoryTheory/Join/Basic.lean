@@ -446,7 +446,6 @@ section mapPairComp
 
 variable (Fₗ : C ⥤ E) (Fᵣ : D ⥤ E') (Gₗ : E ⥤ J) (Gᵣ : E' ⥤ K)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapPairComp_hom_app_left (c : C) :
@@ -454,7 +453,6 @@ lemma mapPairComp_hom_app_left (c : C) :
   dsimp [mapPairComp]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapPairComp_hom_app_right (d : D) :

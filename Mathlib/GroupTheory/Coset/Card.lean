@@ -35,6 +35,10 @@ instance (priority := 100) finite [Finite α] : Finite (α ⧸ s) :=
   Quotient.finite _
 
 @[to_additive]
+instance countable [Countable α] : Countable (α ⧸ s) :=
+  Quotient.countable
+
+@[to_additive]
 instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
     Fintype (Quotient (QuotientGroup.rightRel s)) :=
   .ofEquiv (α ⧸ s) (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm

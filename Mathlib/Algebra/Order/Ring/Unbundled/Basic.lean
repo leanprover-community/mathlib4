@@ -731,29 +731,28 @@ variable [Ring R] [LinearOrder R] {a b : R}
 -- TODO: Can the following five lemmas be generalised to
 -- `[Semiring R] [LinearOrder R] [ExistsAddOfLE R] ..`?
 
-lemma mul_neg_iff [PosMulStrictMono R] [MulPosStrictMono R]
-    [AddLeftReflectLT R] [AddLeftStrictMono R] :
+lemma mul_neg_iff [PosMulStrictMono R] [MulPosStrictMono R] [AddLeftStrictMono R] :
     a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
   rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff (R := R), neg_pos, neg_lt_zero]
 
 lemma mul_nonpos_iff [MulPosStrictMono R] [PosMulStrictMono R]
-    [AddLeftReflectLE R] [AddLeftMono R] :
+    [AddLeftMono R] :
     a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
   rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff (R := R), neg_nonneg, neg_nonpos]
 
 lemma mul_nonneg_iff_neg_imp_nonpos [PosMulStrictMono R] [MulPosStrictMono R]
-    [AddLeftMono R] [AddLeftReflectLE R] :
+    [AddLeftMono R] :
     0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
   rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg (R := R)]; simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_pos_imp_nonpos [PosMulStrictMono R] [MulPosStrictMono R]
-    [AddLeftMono R] [AddLeftReflectLE R] :
+    [AddLeftMono R] :
     a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
   rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg (R := R)]
   simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_neg_imp_nonneg [PosMulStrictMono R] [MulPosStrictMono R]
-    [AddLeftMono R] [AddLeftReflectLE R] :
+    [AddLeftMono R] :
     a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
   rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg (R := R)]
   simp only [neg_pos, neg_nonneg]

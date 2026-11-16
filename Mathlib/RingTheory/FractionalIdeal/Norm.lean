@@ -105,7 +105,7 @@ theorem coeIdeal_absNorm (I₀ : Ideal R) :
 
 section IsLocalization
 
-variable [IsLocalization (Algebra.algebraMapSubmonoid R ℤ⁰) K] [Algebra ℚ K]
+variable [Algebra ℚ K]
 
 theorem abs_det_basis_change [IsDomain K] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι ℤ R) (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :

@@ -404,7 +404,7 @@ end Module
 section Injective
 
 variable {R S A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-  [CommSemiring S] [Algebra S A] [SMulCommClass R S A]
+  [CommSemiring S] [Algebra S A]
 
 namespace Algebra.TensorProduct
 

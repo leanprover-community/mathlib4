@@ -402,6 +402,10 @@ theorem dense_iff_closure_eq : Dense s ↔ closure s = univ :=
 
 alias ⟨Dense.closure_eq, _⟩ := dense_iff_closure_eq
 
+/-- A closed set is dense if and only if it is the whole space. -/
+theorem IsClosed.dense_iff (hs : IsClosed s) : Dense s ↔ s = univ := by
+  rw [dense_iff_closure_eq, hs.closure_eq]
+
 theorem interior_eq_empty_iff_dense_compl : interior s = ∅ ↔ Dense sᶜ := by
   rw [dense_iff_closure_eq, closure_compl, compl_univ_iff]
 

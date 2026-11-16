@@ -1313,8 +1313,6 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
   · refine 𝒲.hom_ext _ _ fun j ↦ ?_
     simp [F, Cover.ι_glueMorphisms_assoc, hak]; rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Hom_S(-, X)` sends a cofiltered limit of qcqs `S`-schemes with affine transition maps
 to a filtered colimit if `X` is locally of finite presentation over `X`. -/
 instance Scheme.preservesColimit_yoneda (D : I ⥤ Over S) [IsCofiltered I]

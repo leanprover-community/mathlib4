@@ -389,7 +389,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
     rfl
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh
 
-theorem liftR_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
+theorem liftR_map_last' {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
     (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id ::: f) <$$> x) x := by
   have := liftR_map_last R x f id hh
   rwa [appendFun_id_id, MvFunctor.id_map] at this

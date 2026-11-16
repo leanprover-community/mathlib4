@@ -106,8 +106,6 @@ theorem pullback_diagonal_map_snd_snd_fst :
   conv_rhs => rw [← Category.comp_id (pullback.fst _ _)]
   rw [← diagonal_snd f, pullback.condition_assoc, pullback.lift_snd]
 
-variable [HasPullback i₁ i₂]
-
 /-- The underlying map of `pullbackDiagonalIso` -/
 abbrev pullbackDiagonalMapIso.hom :
     pullback (diagonal f)
@@ -210,10 +208,6 @@ end
 section
 
 variable {S T : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S)
-variable [HasPullback i i] [HasPullback f g] [HasPullback (f ≫ i) (g ≫ i)]
-variable
-  [HasPullback (diagonal i)
-      (pullback.map (f ≫ i) (g ≫ i) i i f g (𝟙 _) (Category.comp_id _) (Category.comp_id _))]
 
 /-- This iso witnesses the fact that
 given `f : X ⟶ T`, `g : Y ⟶ T`, and `i : T ⟶ S`, the diagram

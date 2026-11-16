@@ -800,7 +800,7 @@ variable [HasImageMap sq']
 def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map sq'
 
 @[simp]
-theorem image.map_comp [HasImageMap (sq ≫ sq')] :
+theorem image.map_comp :
     image.map (sq ≫ sq') = image.map sq ≫ image.map sq' :=
   show (HasImageMap.imageMap (sq ≫ sq')).map = (imageMapComp sq sq').map by
     congr; simp only [eq_iff_true_of_subsingleton]
@@ -816,7 +816,7 @@ morphism `𝟙 f` in the arrow category. -/
 def imageMapId : ImageMap (𝟙 f) where map := 𝟙 (image f.hom)
 
 @[simp]
-theorem image.map_id [HasImageMap (𝟙 f)] : image.map (𝟙 f) = 𝟙 (image f.hom) :=
+theorem image.map_id : image.map (𝟙 f) = 𝟙 (image f.hom) :=
   show (HasImageMap.imageMap (𝟙 f)).map = (imageMapId f).map by
     congr; simp only [eq_iff_true_of_subsingleton]
 

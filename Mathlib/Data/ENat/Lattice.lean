@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.SuccPred.ENat
 

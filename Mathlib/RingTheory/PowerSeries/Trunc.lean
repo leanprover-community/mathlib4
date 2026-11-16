@@ -43,19 +43,20 @@ private def truncAux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
 
 private theorem coeff_truncAux (m) (n) (φ : R⟦X⟧) :
     (truncAux n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [truncAux, Polynomial.coeff_monomial]
+  simp [truncAux, Finsupp.single_apply]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The `n`th truncation of a formal power series to a polynomial. -/
 def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
   toFun := truncAux n
-  map_add' φ ψ := Polynomial.ext fun m => by
+  map_add' φ ψ := by
+    ext m
     simp only [coeff_truncAux, Polynomial.coeff_add]
     split_ifs with H
     · rfl
     · rw [zero_add]
-  map_smul' t φ := by ext; simp [truncAux, Polynomial.coeff_monomial]
+  map_smul' t φ := by ext; simp [truncAux, Finsupp.single_apply]
 
 lemma trunc_apply (n : ℕ) (φ : R⟦X⟧) :
     trunc n φ = ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ) := rfl
@@ -65,15 +66,14 @@ theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
   simp [trunc, coeff_truncAux]
 
 @[simp]
-theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
-  Polynomial.ext fun m => by
-    grind [PowerSeries.coeff_trunc, PowerSeries.coeff_one, Polynomial.coeff_one]
+theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 := by
+  ext m; grind [PowerSeries.coeff_trunc, PowerSeries.coeff_one, Polynomial.coeff_one]
 
 @[simp]
-theorem trunc_C (n) (a : R) : trunc (n + 1) (C a) = Polynomial.C a :=
-  Polynomial.ext fun m => by
-    rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
-    split_ifs with H <;> first | rfl | simp_all
+theorem trunc_C (n) (a : R) : trunc (n + 1) (C a) = Polynomial.C a := by
+  ext m
+  rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
+  split_ifs with H <;> first | rfl | simp_all
 
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
     trunc n.succ f = trunc n f + Polynomial.monomial n (coeff n f) := by

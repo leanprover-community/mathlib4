@@ -711,14 +711,14 @@ lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle �
     exact FiberBundle.mem_baseSet_trivializationAt' x₀
   suffices CMDiff[t.baseSet] k (fun x ↦ (t ⟨x, extend F σ₀ x⟩).2) by
     intro x hx
-    rw [t.contMDiffWithinAt_section _ hx]
+    rw [t.contMDiffWithinAt_section_iff _ hx]
     exact this x hx
   let w : F := (t ⟨x₀, σ₀⟩).2
   have : CMDiff[t.baseSet] k (fun (_x : M) ↦ w) := contMDiffOn_const
   exact this.congr (fun x hx ↦ by simp [extend, t, w, hx])
 
 lemma contMDiffAt_extend {x : M} (σ₀ : V x) : CMDiffAt k (T% (extend F σ₀)) x := by
-  rw [contMDiffAt_section]
+  rw [contMDiffAt_section_iff]
   set t := trivializationAt F V x
   let w : F := (t ⟨x, σ₀⟩).2
   have : CMDiffAt k (fun (_x : M) ↦ w) x := contMDiffAt_const

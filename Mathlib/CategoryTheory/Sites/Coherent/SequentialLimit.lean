@@ -113,7 +113,6 @@ lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
 
 include h in
 lemma epi_π_app_zero_of_epi [HasSheafify (coherentTopology C) (Type v)]
-    [Balanced (Sheaf (coherentTopology C) (Type v))]
     [(coherentTopology C).WEqualsLocallyBijective (Type v)]
     {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)}
     {c : Cone F} (hc : IsLimit c)

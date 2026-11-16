@@ -62,7 +62,7 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   let g' : A' ⟶ B' := CompHausLike.ofHom _ ⟨g,hg⟩
   have : Epi g' := by rwa [CompHaus.epi_iff_surjective]
   obtain ⟨h, hh⟩ := Projective.factors f' g'
-  refine ⟨h, h.hom.hom.2, ?_⟩
+  refine ⟨h, by fun_prop, ?_⟩
   ext t
   apply_fun (fun e => e t) at hh
   exact hh

@@ -50,7 +50,6 @@ noncomputable def shrinkMap {F G : C ⥤ Type w'} (τ : F ⟶ G) [FunctorToTypes
     shrink.{w} F ⟶ shrink.{w} G where
   app X := ↾(equivShrink.{w} _ ∘ τ.app X ∘ (equivShrink.{w} _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Shrinking `F` to `Type w` followed by universe lifting is the same as shrinking to
 `Type (max w w')`. -/
 @[simps! hom_app inv_app]
@@ -148,7 +147,6 @@ lemma shrinkYonedaEquiv_symm_app {X : C} {P : Cᵒᵖ ⥤ Type w}
     (shrinkYonedaEquiv.{w}.symm x).app Y f =
     P.map (shrinkYonedaObjObjEquiv f).op x := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)
     (g : Y ⟶ X) : P.map g.op (shrinkYonedaEquiv f) =
@@ -221,7 +219,6 @@ def shrinkYonedaIsoYoneda : shrinkYoneda.{v} ≅ yoneda (C := C) :=
     (by intros; ext; simp [shrinkYonedaObjObjEquiv_map_app])
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- `shrinkYoneda` is compatible with `uliftFunctor`. -/
 noncomputable
 def shrinkYonedaUliftFunctorIso [LocallySmall.{max w w'} C] :
@@ -274,7 +271,6 @@ lemma uliftYonedaIsoShrinkYoneda_hom_app_comp_shrinkYoneda_symm
   simp [← cancel_epi (uliftYonedaIsoShrinkYoneda.{w'}.inv.app X.unop),
     uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm.{w'}]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `shrinkYoneda.{w}` followed by the evaluation
 at `Y : Cᵒᵖ` and `uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed
 by `uliftFunctor.{w}`. -/
@@ -482,7 +478,6 @@ def shrinkCoyonedaIsoCoyoneda : shrinkCoyoneda.{v} ≅ coyoneda (C := C) :=
     (by intros; ext; simp [shrinkYonedaObjObjEquiv_obj_map])
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- `shrinkCoyoneda` is compatible with `uliftFunctor`. -/
 noncomputable
 def shrinkCoyonedaUliftFunctorIso [LocallySmall.{max w w'} C] :
@@ -502,7 +497,6 @@ noncomputable def uliftYonedaIsoShrinkCoyoneda :
       ext
       exact (shrinkCoyoneda_map_app_shrinkCoyonedaObjObjEquiv_symm _ _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `shrinkCoyoneda.{w}` followed by the evaluation
 at `Y : C` and `uliftFunctor.{v}` identifies to `yoneda.obj Y` followed
 by `uliftFunctor.{w}`. -/

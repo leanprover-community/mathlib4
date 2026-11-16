@@ -714,6 +714,12 @@ theorem Dense.sdiff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set
 
 @[deprecated (since := "2026-06-03")] alias Dense.diff_finite := Dense.sdiff_finite
 
+/-- In an infinite `T1Space`, every dense set is infinite. -/
+theorem Dense.infinite [T1Space X] [Infinite X] {s : Set X} (hs : Dense s) : s.Infinite := by
+  intro hf
+  rw [hf.isClosed.dense_iff] at hs
+  exact infinite_univ (hs ▸ hf)
+
 /-- If a function to a `T1Space` tends to some limit `y` at some point `x`, then necessarily
 `y = f x`. -/
 theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}

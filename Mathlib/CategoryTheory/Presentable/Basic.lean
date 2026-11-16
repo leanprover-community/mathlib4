@@ -199,7 +199,6 @@ instance : (isCardinalPresentable C κ).IsClosedUnderIsomorphisms where
     rw [isCardinalPresentable_iff] at hX ⊢
     exact isCardinalPresentable_of_iso e _
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isCardinalPresentable_of_equivalence
     {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
     IsCardinalPresentable (e.functor.obj X) κ := by

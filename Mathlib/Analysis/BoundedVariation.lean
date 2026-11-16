@@ -88,7 +88,7 @@ lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg :
 @[to_fun eVariationOn_fun_smul_le]
 lemma eVariationOn_smul_le {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
     [NormedRing 𝕜] [NormedAlgebra ℝ 𝕜] [Module 𝕜 F]
-    [NormSMulClass 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+    [NormSMulClass 𝕜 F]
     {C D : ℝ≥0∞} {s : Set α} (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D) :
     eVariationOn (f • g) s ≤ C * eVariationOn g s + D * eVariationOn f s := by
   apply (eVariationOn_bilinear_comp_le hf hg (B := ContinuousLinearMap.lsmul ℝ 𝕜)).trans
@@ -118,7 +118,7 @@ lemma BoundedVariationOn.bilinear_comp
 @[to_fun]
 lemma BoundedVariationOn.smul {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
     [NormedRing 𝕜] [NormedAlgebra ℝ 𝕜] [Module 𝕜 F]
-    [NormSMulClass 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+    [NormSMulClass 𝕜 F]
     {s : Set α} (hf : BoundedVariationOn f s) (hg : BoundedVariationOn g s) :
     BoundedVariationOn (f • g) s :=
   hf.bilinear_comp hg (B := ContinuousLinearMap.lsmul ℝ 𝕜)
@@ -137,7 +137,7 @@ lemma LocallyBoundedVariationOn.bilinear_comp (hf : LocallyBoundedVariationOn f 
 @[to_fun]
 lemma LocallyBoundedVariationOn.smul {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
     [NormedRing 𝕜] [NormedAlgebra ℝ 𝕜] [Module 𝕜 F]
-    [NormSMulClass 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+    [NormSMulClass 𝕜 F]
     {s : Set α} (hf : LocallyBoundedVariationOn f s) (hg : LocallyBoundedVariationOn g s) :
     LocallyBoundedVariationOn (f • g) s :=
   hf.bilinear_comp hg (B := ContinuousLinearMap.lsmul ℝ 𝕜)

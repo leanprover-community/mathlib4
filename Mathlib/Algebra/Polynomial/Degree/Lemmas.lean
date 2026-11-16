@@ -17,10 +17,7 @@ Some of the main results include
 
 public section
 
-
-open Polynomial
-
-open Finset
+open AddMonoidAlgebra Finset Polynomial
 
 namespace Polynomial
 

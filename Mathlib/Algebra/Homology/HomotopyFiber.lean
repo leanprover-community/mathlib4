@@ -172,7 +172,6 @@ variable
   [HasHomotopyCofiber (biprod.lift (𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op))
     (-𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op)))]
   [HasHomotopyCofiber ((H.op.mapHomologicalComplex c.symm).map (biprod.lift (𝟙 K.op) (-𝟙 K.op)))]
-  [∀ (i : α), HasBinaryBiproduct (K.op.X i) (K.op.X i)]
 
 variable (hc : ∀ (i : α), ∃ j, c.Rel i j)
 

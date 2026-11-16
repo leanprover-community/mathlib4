@@ -22,28 +22,22 @@ Defines the uniform distribution for any set with finite measure.
 
 ## Uniform probability mass functions
 
-This file defines a number of uniform `PMF` distributions from various inputs,
-  uniformly drawing from the corresponding object.
+This file defines a number of uniform distributions from various inputs,
+uniformly drawing from the corresponding object.
 
 ### Main definitions
-`PMF.uniformOfFinset` gives each element in the set equal probability,
-  with `0` probability for elements not in the set.
+`uniformOfFinset` gives each element in the set equal probability,
+with `0` probability for elements not in the set.
 
-`PMF.uniformOfFintype` gives all elements equal probability,
-  equal to the inverse of the size of the `Fintype`.
+`ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
+Each probability is given by the count of the element divided by the size of the `Multiset`
 
-`PMF.ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
-  Each probability is given by the count of the element divided by the size of the `Multiset`
-
-## TODO
-* Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
 @[expose] public section
 
 open scoped Finset MeasureTheory NNReal ENNReal
 
--- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` scope :(
 open TopologicalSpace MeasureTheory.Measure PMF ProbabilityTheory
 
 noncomputable section
@@ -220,7 +214,7 @@ theorem uniformOfFinset_apply_singleton (a : α) :
     simp
     grind
 
-@[deprecated (since := "2026-10-04")] alias _root_.uniformOfFinset_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.uniformOfFinset_apply :=
   uniformOfFinset_apply_singleton
 
 theorem uniformOfFinset_apply_singleton_of_mem (ha : a ∈ s) :

@@ -44,8 +44,10 @@ since it is a step towards the proof of `MDifferentiable.slash` which is more ge
 private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDiff f)
     (k : ℤ) {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     MDiff (f ∣[k] g) := by
+  simp only [slash_def]
   refine .mul (.mul ?_ mdifferentiable_const) (mdifferentiable_denom_zpow g _)
-  simpa only [σ, hg, ↓reduceIte] using! hf.comp (mdifferentiable_smul hg)
+  simpa only [σ, hg, ↓reduceIte, Function.comp_def, ContinuousAlgEquiv.refl_apply]
+    using hf.comp (mdifferentiable_smul hg)
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
     f ∣[k] J = fun τ : ℍ ↦ conj (f <| ofComplex <| -(conj ↑τ)) := by

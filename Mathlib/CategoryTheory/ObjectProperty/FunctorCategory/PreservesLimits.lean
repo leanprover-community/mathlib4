@@ -98,12 +98,15 @@ abbrev preservesLimitsOfShape : ObjectProperty (J ⥤ C) := PreservesLimitsOfSha
 lemma preservesLimitsOfShape_iff (F : J ⥤ C) :
     preservesLimitsOfShape K F ↔ PreservesLimitsOfShape K F := Iff.rfl
 
-lemma preservesLimitsOfShape_eq_iSup :
+lemma preservesLimitsOfShape_eq_iInf :
     preservesLimitsOfShape (J := J) (C := C) K =
       ⨅ (F : K ⥤ J), preservesLimit F := by
   ext G
   simp only [preservesLimitsOfShape_iff, iInf_apply, preservesLimit_iff, iInf_Prop_eq]
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨inferInstance⟩⟩
+
+@[deprecated (since := "2026-10-31")] alias preservesLimitsOfShape_eq_iSup :=
+  preservesLimitsOfShape_eq_iInf
 
 variable (J C) {K K'} in
 lemma congr_preservesLimitsOfShape (e : K ≌ K') :
@@ -114,11 +117,11 @@ lemma congr_preservesLimitsOfShape (e : K ≌ K') :
     fun _ ↦ preservesLimitsOfShape_of_equiv e.symm _⟩
 
 instance : (preservesLimitsOfShape (J := J) (C := C) K).IsClosedUnderIsomorphisms := by
-  rw [preservesLimitsOfShape_eq_iSup]
+  rw [preservesLimitsOfShape_eq_iInf]
   infer_instance
 
 instance : (preservesLimitsOfShape (J := J) (C := C) K).IsStableUnderRetracts := by
-  rw [preservesLimitsOfShape_eq_iSup]
+  rw [preservesLimitsOfShape_eq_iInf]
   infer_instance
 
 /-- The property of objects in the functor category `J ⥤ C`
@@ -129,12 +132,15 @@ abbrev preservesColimitsOfShape : ObjectProperty (J ⥤ C) := PreservesColimitsO
 lemma preservesColimitsOfShape_iff (F : J ⥤ C) :
     preservesColimitsOfShape K F ↔ PreservesColimitsOfShape K F := Iff.rfl
 
-lemma preservesColimitsOfShape_eq_iSup :
+lemma preservesColimitsOfShape_eq_iInf :
     preservesColimitsOfShape (J := J) (C := C) K =
       ⨅ (F : K ⥤ J), preservesColimit F := by
   ext G
   simp only [preservesColimitsOfShape_iff, iInf_apply, preservesColimit_iff, iInf_Prop_eq]
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨inferInstance⟩⟩
+
+@[deprecated (since := "2026-10-31")] alias preservesColimitsOfShape_eq_iSup :=
+  preservesColimitsOfShape_eq_iInf
 
 variable (J C) {K K'} in
 lemma congr_preservesColimitsOfShape (e : K ≌ K') :
@@ -145,11 +151,11 @@ lemma congr_preservesColimitsOfShape (e : K ≌ K') :
     fun _ ↦ preservesColimitsOfShape_of_equiv e.symm _⟩
 
 instance : (preservesColimitsOfShape (J := J) (C := C) K).IsClosedUnderIsomorphisms := by
-  rw [preservesColimitsOfShape_eq_iSup]
+  rw [preservesColimitsOfShape_eq_iInf]
   infer_instance
 
 instance : (preservesColimitsOfShape (J := J) (C := C) K).IsStableUnderRetracts := by
-  rw [preservesColimitsOfShape_eq_iSup]
+  rw [preservesColimitsOfShape_eq_iInf]
   infer_instance
 
 /-- The property of objects in the functor category `J ⥤ C`
@@ -163,15 +169,18 @@ lemma preservesFiniteLimits_iff (F : J ⥤ C) :
 instance : (preservesFiniteLimits (J := J) (C := C)).IsClosedUnderIsomorphisms where
   of_iso e _ := preservesFiniteLimits_of_natIso e
 
-lemma preservesFiniteLimits_eq_iSup :
+lemma preservesFiniteLimits_eq_iInf :
     preservesFiniteLimits (J := J) (C := C) =
       ⨅ (K : Type) (_ : SmallCategory K) (_ : FinCategory K), preservesLimitsOfShape K := by
   ext F
   simp only [preservesFiniteLimits_iff, iInf_apply, preservesLimitsOfShape_iff, iInf_Prop_eq]
   exact ⟨fun _ _ _ _ ↦ inferInstance, fun h ↦ ⟨fun _ _ _ ↦ h _ _ inferInstance⟩⟩
 
+@[deprecated (since := "2026-10-31")] alias preservesFiniteLimits_eq_iSup :=
+  preservesFiniteLimits_eq_iInf
+
 instance : (preservesFiniteLimits (J := J) (C := C)).IsStableUnderRetracts := by
-  rw [preservesFiniteLimits_eq_iSup]
+  rw [preservesFiniteLimits_eq_iInf]
   infer_instance
 
 /-- The property of objects in the functor category `J ⥤ C`
@@ -185,15 +194,18 @@ instance : (preservesFiniteColimits (J := J) (C := C)).IsClosedUnderIsomorphisms
 lemma preservesFiniteColimits_iff (F : J ⥤ C) :
     preservesFiniteColimits F ↔ PreservesFiniteColimits F := Iff.rfl
 
-lemma preservesFiniteColimits_eq_iSup :
+lemma preservesFiniteColimits_eq_iInf :
     preservesFiniteColimits (J := J) (C := C) =
       ⨅ (K : Type) (_ : SmallCategory K) (_ : FinCategory K), preservesColimitsOfShape K := by
   ext F
   simp only [preservesFiniteColimits_iff, iInf_apply, preservesColimitsOfShape_iff, iInf_Prop_eq]
   exact ⟨fun _ _ _ _ ↦ inferInstance, fun h ↦ ⟨fun _ _ _ ↦ h _ _ inferInstance⟩⟩
 
+@[deprecated (since := "2026-10-31")] alias preservesFiniteColimits_eq_iSup :=
+  preservesFiniteColimits_eq_iInf
+
 instance : (preservesFiniteColimits (J := J) (C := C)).IsStableUnderRetracts := by
-  rw [preservesFiniteColimits_eq_iSup]
+  rw [preservesFiniteColimits_eq_iInf]
   infer_instance
 
 instance (F : K ⥤ J) [HasColimitsOfShape K' C] :
@@ -232,7 +244,7 @@ instance (F : K ⥤ J) [HasColimitsOfShape K' C] :
 instance [HasColimitsOfShape K' C] :
     ObjectProperty.IsClosedUnderColimitsOfShape
       (preservesColimitsOfShape K : ObjectProperty (J ⥤ C)) K' := by
-  rw [preservesColimitsOfShape_eq_iSup]
+  rw [preservesColimitsOfShape_eq_iInf]
   infer_instance
 
 instance [HasFiniteColimits C] :

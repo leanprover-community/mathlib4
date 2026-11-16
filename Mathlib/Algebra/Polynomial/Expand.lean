@@ -91,7 +91,7 @@ theorem derivative_expand (f : R[X]) : Polynomial.derivative (expand R p f) =
 theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
     (expand R p f).coeff n = if p ∣ n then f.coeff (n / p) else 0 := by
   simp only [expand_eq_sum]
-  simp_rw [coeff_sum, ← pow_mul, C_mul_X_pow_eq_monomial, coeff_monomial, sum]
+  simp_rw [coeff_sum, ← pow_mul, C_mul_X_pow_eq_monomial, coeff_monomial, Finsupp.single_apply, sum]
   split_ifs with h
   · rw [Finset.sum_eq_single (n / p), Nat.mul_div_cancel' h, ite_eq_left rfl]
     · intro b _ hb2
@@ -117,8 +117,8 @@ theorem coeff_expand_mul' {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
     (expand R p f).coeff (p * n) = f.coeff n := by rw [mul_comm, coeff_expand_mul hp]
 
 /-- Expansion is injective. -/
-theorem expand_injective {n : ℕ} (hn : 0 < n) : Function.Injective (expand R n) := fun g g' H =>
-  ext fun k => by rw [← coeff_expand_mul hn, H, coeff_expand_mul hn]
+theorem expand_injective {n : ℕ} (hn : 0 < n) : Function.Injective (expand R n) := fun g g' H => by
+  ext; rw [← coeff_expand_mul hn, H, coeff_expand_mul hn]
 
 theorem expand_inj {p : ℕ} (hp : 0 < p) {f g : R[X]} : expand R p f = expand R p g ↔ f = g :=
   (expand_injective hp).eq_iff
@@ -186,8 +186,8 @@ noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
 
 theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     (contract p f).coeff n = f.coeff (n * p) := by
-  simp only [contract, coeff_monomial, sum_ite_eq', finsetSum_coeff, mem_range, not_lt,
-    ite_eq_left_iff]
+  simp only [contract, coeff_monomial, Finsupp.single_apply, sum_ite_eq', finsetSum_coeff,
+    mem_range, not_lt, ite_eq_left_iff]
   intro hn
   apply (coeff_eq_zero_of_natDegree_lt _).symm
   calc
@@ -196,15 +196,15 @@ theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     _ ≤ n * p := by gcongr; exact hp.bot_lt
 
 theorem map_contract {p : ℕ} (hp : p ≠ 0) {f : R →+* S} {q : R[X]} :
-    (q.contract p).map f = (q.map f).contract p := ext fun n ↦ by
-  simp only [coeff_map, coeff_contract hp]
+    (q.contract p).map f = (q.map f).contract p := by
+  ext; simp [coeff_contract hp]
 
 theorem contract_expand {f : R[X]} (hp : p ≠ 0) : contract p (expand R p f) = f := by
   ext
   simp [coeff_contract hp, coeff_expand hp.bot_lt, Nat.mul_div_cancel _ hp.bot_lt]
 
-theorem contract_one {f : R[X]} : contract 1 f = f :=
-  ext fun n ↦ by rw [coeff_contract one_ne_zero, mul_one]
+theorem contract_one {f : R[X]} : contract 1 f = f := by
+  ext; rw [coeff_contract one_ne_zero, mul_one]
 
 @[simp] theorem contract_C (r : R) : contract p (C r) = C r := by simp [contract]
 

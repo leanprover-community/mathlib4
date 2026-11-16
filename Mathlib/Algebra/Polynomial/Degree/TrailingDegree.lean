@@ -26,7 +26,7 @@ end of a polynomial
 
 noncomputable section
 
-open Function Polynomial Finset
+open AddMonoidAlgebra Function Polynomial Finset
 
 open scoped Polynomial
 

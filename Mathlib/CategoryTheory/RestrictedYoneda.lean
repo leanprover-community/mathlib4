@@ -53,8 +53,6 @@ that is equivalent to `F.obj X ⟶ Y`. -/
 def restrictedULiftYoneda (F : C ⥤ D) : D ⥤ Cᵒᵖ ⥤ Type max w v' :=
     uliftYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ _).obj F.op
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_comp_uliftYonedaEquiv_down (F : C ⥤ D) {E : D} {X Y : C} (f : X ⟶ Y)
     (g : uliftYoneda.{max w v'}.obj Y ⟶ (restrictedULiftYoneda.{max w v} F).obj E) :

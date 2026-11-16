@@ -818,7 +818,7 @@ variable {C : Type*} [Category* C] [Abelian C]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_liftCycles_iff (K : CochainComplex C ℕ) {X : C} (φ : X ⟶ K.X 0)
-    [K.HasHomology 0] (hφ : φ ≫ K.d 0 1 = 0) :
+    (hφ : φ ≫ K.d 0 1 = 0) :
     IsIso (K.liftCycles φ 1 (by simp) hφ) ↔
       (ShortComplex.mk _ _ hφ).Exact ∧ Mono φ := by
   suffices ∀ (i : ℕ) (hx : (ComplexShape.up ℕ).next 0 = i)
@@ -840,7 +840,7 @@ variable {C : Type*} [Category* C] [Abelian C]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_descOpcycles_iff (K : ChainComplex C ℕ) {X : C} (φ : K.X 0 ⟶ X)
-    [K.HasHomology 0] (hφ : K.d 1 0 ≫ φ = 0) :
+    (hφ : K.d 1 0 ≫ φ = 0) :
     IsIso (K.descOpcycles φ 1 (by simp) hφ) ↔
       (ShortComplex.mk _ _ hφ).Exact ∧ Epi φ := by
   suffices ∀ (i : ℕ) (hx : (ComplexShape.down ℕ).prev 0 = i)

@@ -640,7 +640,7 @@ end BiproductToPushoutIsCokernel
 
 section EpiPullback
 
-variable [Limits.HasPullbacks C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism.
     Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
@@ -729,7 +729,7 @@ end EpiPullback
 
 section MonoPushout
 
-variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+variable {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
