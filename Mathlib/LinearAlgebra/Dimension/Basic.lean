@@ -76,10 +76,6 @@ theorem rank_le_card : Module.rank R M ≤ #M :=
 instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s} :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
 
-theorem LinearIndepOn.cardinal_le_rank {s : Set M} (hs : LinearIndepOn R id s) :
-    #s ≤ Module.rank R M :=
-  le_ciSup (ι := {s : Set M // LinearIndepOn R id s}) bddAbove_of_small ⟨s, hs⟩
-
 end
 
 namespace LinearIndependent
@@ -90,7 +86,9 @@ variable [Nontrivial R]
 theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
-  grw [← hv.linearIndepOn_id.cardinal_le_rank, Cardinal.mk_range_eq_of_injective hv.injective]
+  rw [Module.rank]
+  refine le_trans ?_ (lift_le.mpr <| le_ciSup bddAbove_of_small ⟨_, hv.linearIndepOn_id⟩)
+  exact lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
 
 lemma aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
     (hv : LinearIndependent R v) : ℵ₀ ≤ Module.rank R M :=
