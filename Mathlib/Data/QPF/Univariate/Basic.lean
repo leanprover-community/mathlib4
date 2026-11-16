@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
-
 # Quotients of Polynomial Functors
 
 We assume the following:
@@ -36,7 +35,6 @@ The present theory focuses on the univariate case for qpfs
 
 * [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial
   Functors*][avigad-carneiro-hudon2019]
-
 -/
 
 @[expose] public section
@@ -63,7 +61,6 @@ variable {F : Type u → Type v} [q : QPF F]
 
 open Functor (Liftp Liftr)
 
-set_option backward.isDefEq.respectTransparency false in
 /-
 Show that every qpf is a lawful functor.
 
@@ -231,7 +228,6 @@ def Fix.mk (x : F (Fix F)) : Fix F :=
 def Fix.dest : Fix F → F (Fix F) :=
   Fix.rec (Functor.map Fix.mk)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
     Fix.rec g (Fix.mk x) = g (Fix.rec g <$> x) := by
   have : recF g ∘ fixToW = Fix.rec g := by
@@ -414,7 +410,6 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     rw [h _ _ r'xy]
   right; exact rxy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
     (h : ∀ x y, r x y → Liftr r (Cofix.dest x) (Cofix.dest y)) : ∀ x y, r x y → x = y := by
   apply Cofix.bisim_rel

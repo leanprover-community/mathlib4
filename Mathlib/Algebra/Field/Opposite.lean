@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Data.Int.Cast.Lemmas
+
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Field structure on the multiplicative/additive opposite

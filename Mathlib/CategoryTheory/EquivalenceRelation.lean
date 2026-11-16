@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
-
 # Equivalence relations
 
 We define internal equivalence relations (sometimes called congruences) in any category `C`, as a
@@ -23,7 +22,6 @@ In general, kernel pairs in any category are internal equivalence relations.
 ## References
 
 * <https://ncatlab.org/nlab/show/congruence>
-
 -/
 
 @[expose] public section
@@ -165,8 +163,8 @@ lemma jointlyMono₂ :
     JointlyMono₂ (p₁OfRel φ) (p₂OfRel φ) where
   right_cancellation Y f g h₁ h₂ := by
     ext y
-    · exact congr($h₁ y)
-    · exact congr($h₂ y)
+    · congrm $h₁ y
+    · congrm $h₂ y
 
 /-- Standard reflexive relations on types are internal reflexive relations in the category of
 types. -/

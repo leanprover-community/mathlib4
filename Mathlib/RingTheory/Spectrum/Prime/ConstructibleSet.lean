@@ -5,14 +5,12 @@ Authors: Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Order.SuccPred.WithBot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Constructible sets in the prime spectrum
 
 This file provides tooling for manipulating constructible sets in the prime spectrum of a ring.
-
 -/
 
 @[expose] public section

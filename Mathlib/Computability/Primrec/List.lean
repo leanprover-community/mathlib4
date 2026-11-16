@@ -64,7 +64,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
   let F := fun (a : α) (n : ℕ) => (G a)^[n] (g a, f a)
   have hF : Primrec fun a => (F a (encode (f a))).1 :=
     (fst.comp <|
-      nat_iterate (encode_iff.2 hf) (pair hg hf) <|
+      nat_iterate (encode_iff.2 hf) (pair hg hf)
       hG)
   suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
     refine hF.of_eq fun a => ?_
@@ -131,7 +131,7 @@ instance list : Primcodable (List α) :=
         · rfl
         · injection IH
         · injection IH
-        · exact congr_arg (fun k => (Nat.pair (encode a) k).succ.succ) (Nat.succ.inj IH)⟩
+        · congrm (Nat.pair (encode a) $(Nat.succ.inj IH)).succ.succ⟩
 end Primcodable
 
 namespace Primrec
@@ -253,7 +253,7 @@ theorem listFilterMap {f : α → List β} {g : α → β → Option σ}
 variable {p : α → Prop} [DecidablePred p]
 
 theorem list_length : Primrec (@List.length α) :=
-  (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ <| (succ.comp <| snd.comp snd).to₂).of_eq
+  (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ (succ.comp <| snd.comp snd).to₂).of_eq
     fun l => by dsimp; induction l <;> simp [*]
 
 /-- Filtering a list for elements that satisfy a decidable predicate is primitive recursive. -/
@@ -268,6 +268,25 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
   (list_foldr hf (const 0) <|
         to₂ <| cond (hp.comp fst <| fst.comp snd) (const 0) (succ.comp <| snd.comp snd)).of_eq
     fun a => by dsimp; induction f a <;> simp_all [List.findIdx_cons, Bool.cond_eq_ite]
+
+/-- `List.all` of a primitive recursive predicate is primitive recursive. -/
+theorem list_all {f : α → List β} {p : α → β → Bool}
+    (hf : Primrec f) (hp : Primrec₂ p) : Primrec fun a => (f a).all (p a) :=
+  (list_foldr hf (const true) <|
+        to₂ <| Primrec.and.comp (hp.comp fst <| fst.comp snd) (snd.comp snd)).of_eq
+    fun a => by dsimp; induction f a <;> simp [*]
+
+/-- `List.any` of a primitive recursive predicate is primitive recursive. -/
+theorem list_any {f : α → List β} {p : α → β → Bool}
+    (hf : Primrec f) (hp : Primrec₂ p) : Primrec fun a => (f a).any (p a) :=
+  (list_foldr hf (const false) <|
+        to₂ <| Primrec.or.comp (hp.comp fst <| fst.comp snd) (snd.comp snd)).of_eq
+    fun a => by dsimp; induction f a <;> simp [*]
+
+theorem list_sum {f : α → List ℕ} (hf : Primrec f) : Primrec fun a => (f a).sum :=
+  (list_foldr hf (const 0) <|
+        to₂ <| Primrec.nat_add.comp (fst.comp snd) (snd.comp snd)).of_eq
+    fun a => by dsimp; induction f a <;> simp [*]
 
 theorem list_idxOf [DecidableEq α] : Primrec₂ (@List.idxOf α _) :=
   to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂

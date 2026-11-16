@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
+
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
@@ -56,11 +57,6 @@ symmetric. -/
 lemma isSymmetric_toEuclideanLin_iff [Fintype n] [DecidableEq n] :
     A.toEuclideanLin.IsSymmetric ↔ A.IsHermitian :=
   isSymmetric_toLin_iff (EuclideanSpace.basisFun n 𝕜)
-
-@[deprecated isSymmetric_toEuclideanLin_iff "use isSymmetric_toEuclideanLin_iff.symm"
-  (since := "2026-03-30")]
-lemma isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] :
-    IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := isSymmetric_toEuclideanLin_iff.symm
 
 lemma IsHermitian.im_star_dotProduct_mulVec_self [Fintype n] (hA : A.IsHermitian) (x : n → 𝕜) :
      RCLike.im (star x ⬝ᵥ A *ᵥ x) = 0 := by

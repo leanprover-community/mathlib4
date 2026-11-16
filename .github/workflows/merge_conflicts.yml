@@ -14,8 +14,7 @@ jobs:
     steps:
       - name: Generate app token
         id: app-token
-        # TODO: Replace this testing branch ref with a pinned mathlib-ci commit SHA.
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_MERGE_CONFLICTS_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}

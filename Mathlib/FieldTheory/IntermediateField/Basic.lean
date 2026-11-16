@@ -65,7 +65,7 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
-instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L) L
+instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L)
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   change -x ∈ S.toSubalgebra; simpa
@@ -739,6 +739,15 @@ theorem restrictScalars_inj {E E' : IntermediateField L' L} :
     E.restrictScalars K = E'.restrictScalars K ↔ E = E' :=
   (restrictScalars_injective K).eq_iff
 
+instance (E : IntermediateField L' L) : Algebra L' (E.restrictScalars K) :=
+  inferInstanceAs (Algebra L' E)
+
+instance (E : IntermediateField L' L) : IsScalarTower L' (E.restrictScalars K) L :=
+  inferInstanceAs (IsScalarTower L' E L)
+
+instance (E : IntermediateField L' L) : IsScalarTower K L' (E.restrictScalars K) :=
+  inferInstanceAs (IsScalarTower K L' E)
+
 end RestrictScalars
 
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
@@ -754,7 +763,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 /-- Construct an algebra isomorphism from an equality of intermediate fields. -/
 @[simps! apply]
 def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
-  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
+  Subalgebra.equivOfEq _ _ congr(toSubalgebra $h)
 
 @[simp]
 theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :

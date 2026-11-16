@@ -6,9 +6,10 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Algebra.Order.Module.Defs
+
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Embedding of archimedean groups into reals
@@ -134,13 +135,13 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     · have hk' : 1 + (k • a.num • 1 - k • a.den • y) ≤ k • a.den • x - 1 := by
         rw [smul_add, smul_sub, smul_add, le_sub_iff_add_le, ← sub_le_iff_le_add] at hk
         rw [le_sub_iff_add_le]
-        convert! hk using 1
+        convert hk using 1
         abel
       have : k • a.num • 1 - k • a.den • y < m • 1 :=
         lt_of_lt_of_le (lt_add_of_pos_left _ zero_lt_one) (by simpa using hk'.trans hm1)
       rw [mkRat_mem_ratLt hka0, sub_smul, sub_lt_comm, ← smul_smul, ← smul_smul, natCast_zsmul]
       exact this
-    · rw [Rat.mkRat_add_mkRat_of_den _ _ hka0]
+    · rw [Rat.mkRat_add_mkRat_of_den]
       rw [add_sub_cancel, Rat.mkRat_mul_left hk0, Rat.mkRat_num_den']
   · -- `u ∈ ratLt 1 x`, `v ∈ ratLt 1 y` → `u + v ∈ ratLt 1 (x + y)`
     intro ⟨u, hu, v, hv, huv⟩

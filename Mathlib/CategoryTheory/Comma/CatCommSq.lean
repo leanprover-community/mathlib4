@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Comma.Arrow
 
 /-!
 # 2-commutative squares of categories of arrows
-
 -/
 
 public section

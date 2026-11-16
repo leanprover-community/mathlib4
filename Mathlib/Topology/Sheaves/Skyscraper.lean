@@ -5,9 +5,10 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.Sheaves.PUnit
-public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.Topology.Sheaves.Functors
+public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Topology.Sheaves.PUnit
 
 /-!
 # Skyscraper (pre)sheaves
@@ -34,7 +35,6 @@ TODO: generalize universe level when calculating stalks, after generalizing univ
 TODO(@joelriou): refactor the definitions in this file so as to make them
 particular cases of general constructions for points of sites from
 `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.
-
 -/
 
 @[expose] public section
@@ -133,7 +133,6 @@ section
 -- We need to restrict universe level.
 variable {C : Type v} [Category.{u} C] (A : C) [HasTerminal C]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone at `A` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∈ closure {p₀}`
 -/
@@ -147,8 +146,7 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
         change dite _ _ _ ≫ _ = _; rw [dite_eq_left]
         swap
         · exact h.mem_open V.unop.1.2 V.unop.2
-        · simp only [Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj, unop_op,
-            Functor.const_obj_obj, eqToHom_trans, Functor.const_obj_map, Category.comp_id] }
+        · simp }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -161,7 +159,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
   desc c := eqToHom (ite_eq_left trivial).symm ≫ c.ι.app (op ⊤)
   fac c U := by
     dsimp
-    rw [← c.w (homOfLE <| (le_top : unop U ≤ _)).op]
+    rw [← c.w (homOfLE (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dite_eq_left]
     · simp only [eqToHom_trans_assoc,
@@ -230,11 +228,12 @@ noncomputable def skyscraperPresheafStalkOfNotSpecializes [HasColimits C] {y : X
 -/
 def skyscraperPresheafStalkOfNotSpecializesIsTerminal [HasColimits C] {y : X} (h : ¬p₀ ⤳ y) :
     IsTerminal ((skyscraperPresheaf p₀ A).stalk y) :=
-  IsTerminal.ofIso terminalIsTerminal <| (skyscraperPresheafStalkOfNotSpecializes _ _ h).symm
+  IsTerminal.ofIso terminalIsTerminal (skyscraperPresheafStalkOfNotSpecializes _ _ h).symm
 
 theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
-  classical exact
-    (Presheaf.isSheaf_iso_iff (eqToIso <| skyscraperPresheaf_eq_pushforward p₀ A)).mpr <|
+  classical
+  exact
+    (Presheaf.isSheaf_iso_iff (eqToIso <| skyscraperPresheaf_eq_pushforward p₀ A)).mpr
       (Sheaf.pushforward_sheaf_of_sheaf _
         (Presheaf.isSheaf_on_punit_of_isTerminal _ (by
           dsimp [skyscraperPresheaf]
@@ -286,14 +285,13 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
     · split_ifs
       exact ((ite_eq_right hV).symm.ndrec terminalIsTerminal).hom_ext ..
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : 𝓕 ⟶ skyscraperPresheaf p₀ c` is a natural transformation, then there is a morphism
 `𝓕.stalk p₀ ⟶ c` defined as the morphism from colimit to cocone at `c`.
 -/
 def fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) : 𝓕.stalk p₀ ⟶ c :=
   let χ : Cocone ((OpenNhds.inclusion p₀).op ⋙ 𝓕) :=
-    Cocone.mk c <|
+    Cocone.mk c
       { app := fun U => f.app ((OpenNhds.inclusion p₀).op.obj U) ≫ eqToHom (ite_eq_left U.unop.2)
         naturality := fun U V inc => by
           dsimp only [Functor.const_obj_map, Functor.const_obj_obj, Functor.comp_map,
