@@ -31,7 +31,6 @@ We also define predicates about affine schemes and affine open sets.
 * `AlgebraicGeometry.IsAffineOpen`: An open subset of a scheme is affine if the open subscheme is
   affine.
 * `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
-
 -/
 
 @[expose] public section

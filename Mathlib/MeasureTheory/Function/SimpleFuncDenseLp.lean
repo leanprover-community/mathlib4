@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+public import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
 # Density of simple functions
@@ -319,8 +320,7 @@ theorem memLp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
   refine ENNReal.rpow_lt_top_of_nonneg (by simp) (ENNReal.sum_lt_top.mpr fun y _ => ?_).ne
   by_cases hy0 : y = 0
   · simp [hy0, ENNReal.toReal_pos hp0 hp_top]
-  · refine ENNReal.mul_lt_top ?_ (hf y hy0)
-    exact ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg ENNReal.coe_ne_top
+  · finiteness [hf y hy0]
 
 theorem memLp_iff {f : α →ₛ E} (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp f p μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ :=

@@ -25,7 +25,6 @@ Basic definitions and properties of the above ideas are provided in this file.
   * `LieAlgebra.rootSpaceWeightSpaceProduct`
   * `LieAlgebra.rootSpaceProduct`
   * `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
-
 -/
 
 @[expose] public section

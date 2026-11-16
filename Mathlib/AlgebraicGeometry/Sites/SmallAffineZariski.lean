@@ -24,7 +24,6 @@ which gives an equivalence of categories of sheaves (`sheafEquiv`).
 
 Note that this differs from the definition on stacks project where the arrows in the small affine
 Zariski site are arbitrary inclusions.
-
 -/
 
 @[expose] public section

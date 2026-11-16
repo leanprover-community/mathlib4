@@ -46,7 +46,6 @@ separable closure, separably closed
 
 - `Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed`: an algebraic extension of a separably
   closed field is purely inseparable.
-
 -/
 
 @[expose] public section

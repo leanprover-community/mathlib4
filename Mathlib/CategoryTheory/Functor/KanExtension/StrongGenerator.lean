@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Generator.StrongGenerator
 ## References
 
 * https://ncatlab.org/nlab/show/dense+subcategory
-
 -/
 
 @[expose] public section

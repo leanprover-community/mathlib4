@@ -27,7 +27,6 @@ The conditional expectation of an `L²` function is defined in
 ## Main definitions
 
 * `condExpL1`: Conditional expectation of a function as a linear map from `L1` to itself.
-
 -/
 
 @[expose] public section

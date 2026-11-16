@@ -33,7 +33,6 @@ unitary).
   bicategories, strictly unitary pseudofunctors and icons.
 * Construct the Duskin nerve of a bicategory using lax-composable arrows
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
-
 -/
 
 @[expose] public section

@@ -21,7 +21,6 @@ and families of seminorms.
 * `PolynormableSpace.isLittleOTVS_iff`
 * `WithSeminorms.isBigOTVS_iff`
 * `WithSeminorms.isLittleOTVS_iff`
-
 -/
 
 @[expose] public section

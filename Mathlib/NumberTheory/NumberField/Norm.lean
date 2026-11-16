@@ -16,12 +16,11 @@ Given a finite extension of number fields, we define the norm morphism as a func
 rings of integers.
 
 ## Main definitions
-* `RingOfIntegers.norm K` : `Algebra.norm` as a morphism `(𝓞 L) →* (𝓞 K)`.
+* `NumberField.RingOfIntegers.norm K` : `Algebra.norm` as a morphism `(𝓞 L) →* (𝓞 K)`.
 
 ## Main results
-* `RingOfIntegers.dvd_norm` : if `L/K` is a finite Galois extension of fields, then, for all
-  `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
-
+* `NumberField.RingOfIntegers.dvd_norm` : if `L/K` is a finite Galois extension of fields, then,
+  for all `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
 -/
 
 @[expose] public section
@@ -43,7 +42,7 @@ theorem Algebra.coe_trace_int : (Algebra.trace ℤ _ x : ℚ) = Algebra.trace �
 
 end Rat
 
-namespace RingOfIntegers
+namespace NumberField.RingOfIntegers
 
 variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L]
 
@@ -112,4 +111,23 @@ theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x :
     _ ↔ IsUnit (x ^ finrank F L) := congr(IsUnit $(norm_algebraMap F _)).to_iff
     _ ↔ IsUnit x := isUnit_pow_iff (pos_iff_ne_zero.mp finrank_pos)
 
-end RingOfIntegers
+end NumberField.RingOfIntegers
+
+@[deprecated (since := "2026-11-08")] alias RingOfIntegers.norm := NumberField.RingOfIntegers.norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.coe_norm := NumberField.RingOfIntegers.coe_norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.coe_algebraMap_norm := NumberField.RingOfIntegers.coe_algebraMap_norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.algebraMap_norm_algebraMap :=
+  NumberField.RingOfIntegers.algebraMap_norm_algebraMap
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.norm_algebraMap := NumberField.RingOfIntegers.norm_algebraMap
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.dvd_norm := NumberField.RingOfIntegers.dvd_norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isUnit_norm_of_isGalois := NumberField.RingOfIntegers.isUnit_norm_of_isGalois
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.norm_norm := NumberField.RingOfIntegers.norm_norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isUnit_norm := NumberField.RingOfIntegers.isUnit_norm

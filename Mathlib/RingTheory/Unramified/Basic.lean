@@ -31,7 +31,6 @@ under `R`-algebra homomorphisms and compositions.
 
 We show that unramified is stable under algebra isomorphisms, composition and
 localization at an element.
-
 -/
 
 public section

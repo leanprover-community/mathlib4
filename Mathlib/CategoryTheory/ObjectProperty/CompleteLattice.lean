@@ -11,7 +11,6 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # ObjectProperty is a complete lattice
-
 -/
 
 public section

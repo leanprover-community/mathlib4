@@ -35,7 +35,6 @@ This file defines filtrations of a measurable space and σ-finite filtrations.
 ## Tags
 
 filtration, stochastic process
-
 -/
 
 @[expose] public section

@@ -28,7 +28,6 @@ properties:
 
 Also provides API for showing the standard locality and stability properties for these
 types of properties.
-
 -/
 
 @[expose] public section

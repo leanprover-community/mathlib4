@@ -32,7 +32,6 @@ import Mathlib.RingTheory.Ideal.Operations
   if for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of power series `f` are
   in ideal `I`, then for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of `f * g` are
   in `I`.
-
 -/
 
 public section

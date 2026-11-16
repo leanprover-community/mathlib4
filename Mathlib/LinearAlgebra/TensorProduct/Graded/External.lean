@@ -41,7 +41,6 @@ multiplication follows trivially from this after some point-free nonsense.
 
 * https://math.stackexchange.com/q/202718/1896
 * [*Algebra I*, Bourbaki : Chapter III, §4.7, example (2)][bourbaki1989]
-
 -/
 
 @[expose] public section

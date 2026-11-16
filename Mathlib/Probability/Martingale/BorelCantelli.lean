@@ -31,7 +31,6 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
 - `MeasureTheory.ae_mem_limsup_atTop_iff`: Lévy's generalized Borel-Cantelli:
   given a filtration `ℱ` and a sequence of sets `s` such that `s n ∈ ℱ n` for all `n`,
   `limsup atTop s` is almost everywhere equal to the set for which `∑ ℙ[s (n + 1)∣ℱ n] = ∞`.
-
 -/
 
 @[expose] public section

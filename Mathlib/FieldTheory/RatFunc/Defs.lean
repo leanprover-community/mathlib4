@@ -45,7 +45,6 @@ the codomain is not a field or even an integral domain.
 * [Kleiman, *Misconceptions about $K_X$*][kleiman1979]
 * https://freedommathdance.blogspot.com/2012/11/misconceptions-about-kx.html
 * https://stacks.math.columbia.edu/tag/01X1
-
 -/
 
 @[expose] public section

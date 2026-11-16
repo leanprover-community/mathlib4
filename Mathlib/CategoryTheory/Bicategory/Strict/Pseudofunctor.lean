@@ -20,7 +20,6 @@ associativity.
 Secondly, given a commutative square `t ≫ r = l ≫ b` in `B`, we construct an
 isomorphism `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`
 (see `Pseudofunctor.isoMapOfCommSq`).
-
 -/
 
 @[expose] public section

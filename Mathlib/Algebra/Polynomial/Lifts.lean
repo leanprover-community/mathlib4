@@ -39,7 +39,6 @@ In general `R` and `S` are semirings, so `lifts` is a semiring. In the case of r
 
 Since we do not assume `R` to be commutative, we cannot say in general that the set of polynomials
 that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
-
 -/
 
 @[expose] public section

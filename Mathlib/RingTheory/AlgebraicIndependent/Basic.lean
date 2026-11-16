@@ -24,7 +24,6 @@ This file contains basic results on algebraic independence of a family of elemen
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
-
 -/
 
 @[expose] public section

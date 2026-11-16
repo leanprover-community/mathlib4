@@ -21,7 +21,6 @@ we show that every Kan complex is a quasicategory.
 ## TODO
 
 - Show that the singular simplicial set of a topological space is a Kan complex.
-
 -/
 
 public section

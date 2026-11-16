@@ -20,7 +20,6 @@ having the right lifting property with respect to horn inclusions.
 We have an instance `mono_of_cofibration` (but only a lemma `cofibration_of_mono`).
 Then, when stating lemmas about cofibrations of simplicial sets, it is advisable
 to use the assumption `[Mono f]` instead of `[Cofibration f]`.
-
 -/
 
 @[expose] public section

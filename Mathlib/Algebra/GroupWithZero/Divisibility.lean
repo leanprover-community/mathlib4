@@ -15,7 +15,6 @@ import Mathlib.Data.Nat.Basic
 # Divisibility in groups with zero.
 
 Lemmas about divisibility in groups and monoids with zero.
-
 -/
 
 @[expose] public section

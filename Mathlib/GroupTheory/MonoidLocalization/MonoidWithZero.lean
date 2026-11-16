@@ -12,7 +12,6 @@ import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
-
 -/
 
 @[expose] public section

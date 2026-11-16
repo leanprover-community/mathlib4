@@ -24,7 +24,6 @@ topology for flat morphisms.
 - `fpqcPrecoverage`: The precoverage given by quasi-compact, jointly-surjective families of
   flat morphisms.
 - The fpqc topology is subcanonical. This is available by `inferInstance`.
-
 -/
 
 @[expose] public section

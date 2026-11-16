@@ -16,7 +16,6 @@ relation to decidable propositions.
 
 ## Tags
 bool, boolean, Bool, De Morgan
-
 -/
 
 @[expose] public section

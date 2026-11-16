@@ -15,7 +15,6 @@ In this temporary file, we provide a helper instance
 for `Valued R Γ` derived from a `ValuativeRel R`,
 so that downstream files can refer to `ValuativeRel R`,
 to facilitate a refactor.
-
 -/
 
 public section

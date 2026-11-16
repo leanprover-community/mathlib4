@@ -58,7 +58,6 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
   pages 4--5, 13--15
 
 * [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
-
 -/
 
 @[expose] public section

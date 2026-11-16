@@ -15,7 +15,6 @@ A morphism is an open immersion if the underlying map of spaces is an open embed
 
 Most of the theories are developed in `AlgebraicGeometry/OpenImmersion`, and we provide the
 remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
-
 -/
 
 public section

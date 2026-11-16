@@ -32,7 +32,6 @@ able to directly write that the residue field functor preserves colimits.
 
 * `CommRingCat.FilteredColimit.isColimitResidueFieldCocone` : the residue field of a filtered
   colimit of local rings via local homomorphisms is the colimit of the residue fields.
-
 -/
 
 @[expose] public section
@@ -59,7 +58,7 @@ lemma isLocalHom_ι (hc : IsColimit c) (j : J) :
     IsLocalHom (c.ι.app j).hom := by
   apply IsLocalHom.mk
   rintro x ⟨y, hy⟩
-  obtain ⟨j1, z, hz⟩ := Concrete.isColimit_exists_rep F hc (y⁻¹).1
+  obtain ⟨j1, z, hz⟩ := Concrete.isColimit_exists_rep F hc (y⁻¹).val
   obtain ⟨j2, f', g', -⟩ := IsFilteredOrEmpty.cocone_objs j j1
   have : (c.ι.app j2).hom ((F.map f' x) * (F.map g' z)) = (c.ι.app j2).hom 1 := by simp [← hy, hz]
   obtain ⟨j3, f3, g3, hfg3⟩ := Concrete.isColimit_exists_of_rep_eq F hc _ _ this

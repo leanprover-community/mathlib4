@@ -18,7 +18,6 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 public section

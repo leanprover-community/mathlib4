@@ -75,7 +75,6 @@ as possible is phrased internally to `C`.
 * `relativelyRepresentable.isStableUnderBaseChange`: Being relatively representable is stable under
   base change.
 * `relativelyRepresentable.of_isIso`: Isomorphisms are relatively representable.
-
 -/
 
 @[expose] public section

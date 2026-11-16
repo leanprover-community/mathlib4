@@ -16,7 +16,6 @@ A projective resolution `P : ProjectiveResolution Z` of an object `Z : C` consis
 an `ℕ`-indexed chain complex `P.complex` of projective objects,
 along with a quasi-isomorphism `P.π` from `C` to the chain complex consisting just
 of `Z` in degree zero.
-
 -/
 
 @[expose] public section

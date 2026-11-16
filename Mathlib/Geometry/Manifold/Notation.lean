@@ -91,7 +91,6 @@ These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
 
 If you would like to work on any of these, please coordinate with Michael Rothgang (@grunweg)
 to avoid duplicating or conflicting work.
-
 -/
 
 public meta section

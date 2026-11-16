@@ -21,7 +21,6 @@ import Mathlib.Probability.Independence.InfinitePi
 * `IdentDistrib.pi`: if `(X i)` and `(Y i)` are families of independent random variables indexed by
   a countable type `ι`, such that for each `i`, `X i` and `Y i` are identically distributed, then
   the products `X` and `Y` are identically distributed.
-
 -/
 
 public section

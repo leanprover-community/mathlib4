@@ -13,7 +13,6 @@ public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 # Lemmas about the composition of a measure and a kernel
 
 Basic lemmas about the composition `κ ∘ₘ μ` of a kernel `κ` and a measure `μ`.
-
 -/
 
 public section

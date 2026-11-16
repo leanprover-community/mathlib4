@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Unramified.Basic
 
 - `Algebra.FormallyUnramified.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-smooth
   if and only if each `A i` is `R`-formally-smooth.
-
 -/
 
 public section

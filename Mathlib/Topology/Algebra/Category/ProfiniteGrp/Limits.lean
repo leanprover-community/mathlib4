@@ -31,7 +31,6 @@ its quotients by open normal subgroups.
 
 * `OpenNormalSubgroupSubClopenNhdsOfOne` : For any open neighborhood of `1` there is an
   open normal subgroup contained in it.
-
 -/
 
 @[expose] public section

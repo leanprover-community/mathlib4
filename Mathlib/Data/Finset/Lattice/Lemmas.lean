@@ -17,7 +17,6 @@ interaction between union, intersection, empty set and inserting elements.
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section

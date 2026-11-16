@@ -42,7 +42,6 @@ The Mathlib definition of a valuation ring requires `IsDomain A` even though the
 does not mention zero divisors. Thus, there is a technical `PreValuationRing A` that
 is defined in further generality that can be used in places where the ring cannot be a domain.
 The `ValuationRing` class is kept to be in sync with the literature.
-
 -/
 
 @[expose] public section

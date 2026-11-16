@@ -17,7 +17,6 @@ for all `Y : Over X`. Then, as it is stated in SGA 4 III 5.2.1, a sieve of `Y : 
 is covering for `J.over X` if and only if the corresponding sieve of `Y.left`
 is covering for `J`. As a result, the forgetful functor
 `Over.forget X : Over X ⥤ X` is both cover-preserving and cover-lifting.
-
 -/
 
 @[expose] public section
