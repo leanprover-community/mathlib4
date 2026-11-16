@@ -334,22 +334,13 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
   fun x ↦ x.inductionOn (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
 
-section
-
-variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
-
 lemma toAddMonoidHom_mapOfCompatibleSMul_eq :
-    (mapOfCompatibleSMul R A S M N).toAddMonoidHom =
-      (mapOfCompatibleSMul R A S' M N).toAddMonoidHom := rfl
+    (mapOfCompatibleSMul R A S M N).toAddMonoidHom = mapOfCompatibleSMul R A ℕ M N := rfl
 
-lemma mem_ker_mapOfCompatibleSMul_iff (x : M ⊗[A] N) :
-    x ∈ (mapOfCompatibleSMul R A S M N).ker ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker :=
-  Iff.of_eq rfl
-
-lemma restrictScalars_mapOfCompatibleSMul [LinearMap.CompatibleSMul (M ⊗[A] N) (M ⊗[R] N) S' S] :
-    (mapOfCompatibleSMul R A S M N).restrictScalars S' = mapOfCompatibleSMul R A S' M N := rfl
-
-end
+lemma restrictScalars_mapOfCompatibleSMul {S' : Type*} [CommSemiring S'] [Module S' M]
+    [SMulCommClass R S' M] [SMulCommClass A S' M]
+    [LinearMap.CompatibleSMul (M ⊗[A] N) (M ⊗[R] N) S' S] :
+    mapOfCompatibleSMul R A S M N = mapOfCompatibleSMul R A S' M N := rfl
 
 attribute [local instance] SMulCommClass.symm
 
