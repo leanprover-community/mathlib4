@@ -228,15 +228,15 @@ theorem natCast_mul_cpow (a : ℕ) (b r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
   mul_cpow (by simp [neg_pi_lt_arg, arg_le_pi]) r
 
 theorem ofNat_mul_cpow (a : ℕ) [a.AtLeastTwo] (b r : ℂ) :
-    (ofNat(a) * b) ^ r = ofNat(a) ^ r * b ^ r := by
-  simpa using natCast_mul_cpow ofNat(a) b r
+    (ofNat(a) * b) ^ r = ofNat(a) ^ r * b ^ r :=
+  natCast_mul_cpow ofNat(a) b r
 
 theorem mul_natCast_cpow (a : ℂ) (b : ℕ) (r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
   mul_cpow (by simp [neg_pi_lt_arg, arg_le_pi]) r
 
 theorem mul_ofNat_cpow (a : ℂ) (b : ℕ) [b.AtLeastTwo] (r : ℂ) :
-    (a * ofNat(b)) ^ r = a ^ r * ofNat(b) ^ r := by
-  simpa using mul_natCast_cpow a ofNat(b) r
+    (a * ofNat(b)) ^ r = a ^ r * ofNat(b) ^ r :=
+  mul_natCast_cpow a ofNat(b) r
 
 @[deprecated natCast_mul_cpow +typeChanged (since := "2026-11-11")]
 lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
