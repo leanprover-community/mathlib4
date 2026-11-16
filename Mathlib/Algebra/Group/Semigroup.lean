@@ -22,6 +22,8 @@ supporting lemmas and instances.
 
 public section
 
+universe u
+
 open Function
 
 variable {G : Type*}
@@ -163,6 +165,11 @@ variable [Semigroup G]
 @[to_additive]
 theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
+
+@[to_additive]
+instance : Semigroup PEmpty.{u + 1} where
+  mul x _ := by cases x
+  mul_assoc x y z := by cases x
 
 end Semigroup
 
@@ -346,7 +353,6 @@ add_decl_doc RightCancelSemigroup.toIsRightCancelMul
 
 /-- Any `AddRightCancelSemigroup` satisfies `IsRightCancelAdd`. -/
 add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
-
 
 /-! We initialize the projections for the semigroup structures for `@[simps]` here. -/
 initialize_simps_projections Semigroup

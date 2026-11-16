@@ -162,19 +162,15 @@ theorem compl_eq_empty_iff (s : Finset α) : sᶜ = ∅ ↔ s = univ :=
 theorem compl_eq_univ_iff (s : Finset α) : sᶜ = univ ↔ s = ∅ :=
   compl_eq_top
 
-@[simp]
 theorem union_compl (s : Finset α) : s ∪ sᶜ = univ :=
   sup_compl_eq_top
 
-@[simp]
 theorem inter_compl (s : Finset α) : s ∩ sᶜ = ∅ :=
   inf_compl_eq_bot
 
-@[simp]
 theorem compl_union (s t : Finset α) : (s ∪ t)ᶜ = sᶜ ∩ tᶜ :=
   compl_sup
 
-@[simp]
 theorem compl_inter (s t : Finset α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ :=
   compl_inf
 
@@ -218,9 +214,9 @@ theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f
 theorem image_univ_equiv [Fintype β] (f : β ≃ α) : univ.image f = univ :=
   Finset.image_univ_of_surjective f.surjective
 
-@[simp] lemma univ_inter (s : Finset α) : univ ∩ s = s := by ext a; simp
+lemma univ_inter (s : Finset α) : univ ∩ s = s := by simp
 
-@[simp] lemma inter_univ (s : Finset α) : s ∩ univ = s := by rw [inter_comm, univ_inter]
+lemma inter_univ (s : Finset α) : s ∩ univ = s := by simp
 
 @[simp] lemma inter_eq_univ : s ∩ t = univ ↔ s = univ ∧ t = univ := inf_eq_top_iff
 

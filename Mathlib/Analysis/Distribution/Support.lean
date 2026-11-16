@@ -27,7 +27,6 @@ compactly supported) and all basic properties are proved in an abstract setting 
 ## Main statements
 * `dsupport_delta`: The support of the delta distribution is a single point. Available for tempered
   and classical distributions.
-
 -/
 
 @[expose] public noncomputable section

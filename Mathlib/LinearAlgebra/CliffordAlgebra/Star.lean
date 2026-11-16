@@ -21,7 +21,6 @@ Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.s
 ## Main definitions
 
 * `CliffordAlgebra.instStarRing`
-
 -/
 
 public section

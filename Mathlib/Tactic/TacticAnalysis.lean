@@ -6,10 +6,10 @@ Authors: Anne Baanen
 module
 
 public meta import Lean.Compiler.IR.CompilerM
+public meta import Lean.Elab.Command
 public meta import Lean.Elab.InfoTree.Util
 public meta import Lean.Util.Heartbeats
 public meta import Mathlib.Lean.Elab.Tactic.Meta
-public meta import Lean.Elab.Command
 public import Mathlib.Lean.ContextInfo
 
 /-! # Tactic analysis framework

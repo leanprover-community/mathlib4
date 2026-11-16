@@ -25,7 +25,6 @@ Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`. In this situation,
 we construct a cocycle in `Cocycle Q K 1` and show that there exists
 a lifting `B ⟶ X` if this cocycle is a coboundary.
-
 -/
 
 @[expose] public section
@@ -57,7 +56,6 @@ cokernel of `i : A ⟶ B` and `K` a kernel of `p : X ⟶ Y` (see `cocycle₁`). 
 def cocycle₁' : Cocycle B X 1 :=
   Cocycle.mk (δ 0 1 (cochain₀ sq hsq)) 2 (by simp) (by simp [δ_δ])
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     (cocycle₁' sq hsq).1.v n m hnm ≫ p.f m = 0 := by
@@ -66,7 +64,6 @@ lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
   simp [cocycle₁', -HomologicalComplex.Hom.comm,
     ← p.comm, fac_right, reassoc_of% fac_right, b.comm]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma comp_coe_cocycle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     i.f n ≫ (cocycle₁' sq hsq).1.v n m hnm = 0 := by
@@ -80,17 +77,16 @@ alias comp_coe_cocyle₁'_v_eq_zero := comp_coe_cocycle₁'_v_eq_zero
 @[deprecated (since := "2026-10-13")]
 alias comp_coe_cocyle₁'_v_eq_zero_assoc := comp_coe_cocycle₁'_v_eq_zero_assoc
 
-set_option backward.defeqAttrib.useBackward true in
 include hQ hK in
 lemma exists_hom (n m : ℤ) (hnm : n + 1 = m := by lia) :
     ∃ (φ : Q.X n ⟶ K.X m), π.f n ≫ φ ≫ ι.f m = (cocycle₁' sq hsq).1.v n m hnm := by
   have : Epi π := Cofork.IsColimit.epi hQ
   obtain ⟨l, hl⟩ := CokernelCofork.IsColimit.desc'
-    ((CokernelCofork.isColimitMapCoconeEquiv _ _).1
+    ((CokernelCofork.isColimitMapCoconeEquiv _ _).toFun
     (isColimitOfPreserves (HomologicalComplex.eval _ _ n) hQ))
     ((cocycle₁' sq hsq).1.v n m hnm) (by simp)
   dsimp [CokernelCofork.map] at l hl
-  obtain ⟨l', hl'⟩ := KernelFork.IsLimit.lift' ((KernelFork.isLimitMapConeEquiv _ _).1
+  obtain ⟨l', hl'⟩ := KernelFork.IsLimit.lift' ((KernelFork.isLimitMapConeEquiv _ _).toFun
     (isLimitOfPreserves (HomologicalComplex.eval _ _ m) hK)) l (by
       simp [← cancel_epi (π.f n), reassoc_of% hl])
   exact ⟨l', by cat_disch⟩
@@ -128,7 +124,6 @@ lemma comp_coe_cocycle₁_comp :
   ext n m hnm
   simp [cocycle₁]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Consider a commutative square in the category `CochainComplex C ℤ`
 where `C` is an abelian category.

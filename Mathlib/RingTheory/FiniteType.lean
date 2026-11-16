@@ -20,7 +20,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 - `Algebra.FiniteType`, `RingHom.FiniteType`, `AlgHom.FiniteType`
   all of these express that some object is finitely generated *as an algebra* over some base ring.
-
 -/
 
 @[expose] public section

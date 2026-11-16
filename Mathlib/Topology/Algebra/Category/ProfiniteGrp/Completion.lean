@@ -165,7 +165,6 @@ noncomputable def lift (f : G ⟶ ↧P) : completion G ⟶ P :=
   }⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[to_additive (attr := reassoc (attr := simp))]
 lemma lift_eta (f : G ⟶ ↧P) : eta G ≫ (forget₂ _ _).map (lift f) = f := by
   let e := isoLimittoFiniteQuotientFunctor P

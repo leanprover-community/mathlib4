@@ -21,7 +21,6 @@ This file deals with the factors of natural numbers.
 
 - `Nat.primeFactorsList n`: the prime factorization of `n`
 - `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
-
 -/
 
 @[expose] public section

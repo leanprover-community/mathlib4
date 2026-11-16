@@ -1,4 +1,6 @@
-import Mathlib.FieldTheory.IntermediateField.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
 
 #adaptation_note /-- This is currently broken by changes to Lean.
 The test case doesn't seem to be essential elsewhere in Mathlib.

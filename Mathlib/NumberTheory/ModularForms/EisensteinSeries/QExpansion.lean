@@ -35,7 +35,6 @@ are defined as sums over coprime integer pairs, we also need to relate these to 
 of integers, which is done in `tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries`. This then
 gives the q-expansion with a Riemann zeta factor, which we simplify using the formula for
 `ζ(k)` in terms of Bernoulli numbers to get the final result.
-
 -/
 
 public section
@@ -316,7 +315,7 @@ lemma EisensteinSeries.summable_sigma_mul_cexp_pow {k : ℕ} (hk : 1 ≤ k) (z :
   intro n
   simp only [norm_mul, Complex.norm_natCast, norm_pow]
   gcongr
-  exact_mod_cast (ArithmeticFunction.sigma_le_pow_succ (k - 1) n).trans_eq (by congr 1; omega)
+  exact mod_cast (ArithmeticFunction.sigma_le_pow_succ (k - 1) n).trans_eq (by congr 1; omega)
 
 /-- The q-expansion coefficients of the normalised Eisenstein series `E k`: the constant term is
 `1` and for `m ≥ 1` the `m`-th coefficient is `-(2k / B_k) * σ_{k-1}(m)` where `B_k` is the

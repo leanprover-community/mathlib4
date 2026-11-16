@@ -18,7 +18,6 @@ This file defines properties of simplices in a `NormedAddTorsor`.
 * `Affine.Simplex.Scalene`
 * `Affine.Simplex.Equilateral`
 * `Affine.Simplex.Regular`
-
 -/
 
 @[expose] public section

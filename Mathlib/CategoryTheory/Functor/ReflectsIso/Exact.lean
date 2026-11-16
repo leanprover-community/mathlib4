@@ -23,7 +23,6 @@ between short complexes or homological complexes in `C`.
 `Mathlib/Algebra/Homology/QuasiIso.lean` and
 `ShortComplex.quasiIso_map_iff_of_preservesLeftHomology`
 `Mathlib/Algebra/Homology/ShortComplex/PreservesHomology.lean`.)
-
 -/
 
 public section
@@ -73,7 +72,7 @@ end
 
 section
 
-variable [Abelian C] [∀ i, Abelian (D i)] [CategoryWithHomology C]
+variable [Abelian C] [∀ i, Abelian (D i)]
   [∀ i, PreservesFiniteLimits (F i)] [∀ i, PreservesFiniteColimits (F i)]
 
 lemma shortExact_iff (S : ShortComplex C) :

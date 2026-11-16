@@ -41,7 +41,6 @@ on a terminal object and `Functor.sectionsFunctor`.
 * Generalise `Sheaf.ΓNatIsoSectionsFunctor` and `Sheaf.ΓNatIsoCoyoneda` from `Type max u v` to
   `Type max u v w`. This should hopefully be doable by relaxing the universe constraints of
   `instHasSheafifyOfHasFiniteLimits`.
-
 -/
 
 @[expose] public section

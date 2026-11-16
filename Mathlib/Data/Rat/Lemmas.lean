@@ -12,7 +12,6 @@ public import Mathlib.Data.PNat.Defs
 
 /-!
 # Further lemmas for the Rational Numbers
-
 -/
 
 @[expose] public section

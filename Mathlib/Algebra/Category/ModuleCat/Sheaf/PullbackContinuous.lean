@@ -25,7 +25,6 @@ modules commutes with the sheafification.
 
 From the compatibility of `pushforward` with respect to composition, we deduce
 similar pseudofunctor-like properties of the `pullback` functors.
-
 -/
 
 @[expose] public section
@@ -72,7 +71,6 @@ variable [(PresheafOfModules.pushforward.{v} φ.hom).IsRightAdjoint]
 
 namespace PullbackConstruction
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a left adjoint to the functor `pushforward.{v} φ` by using the
 pullback of presheaves of modules and the sheafification. -/

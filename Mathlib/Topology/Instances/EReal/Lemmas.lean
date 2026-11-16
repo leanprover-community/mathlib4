@@ -518,20 +518,14 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
     simp only [Set.mem_prod, Set.mem_Ioi] at p_in_prod
     rcases p_in_prod with ⟨p1_gt, p2_gt⟩
     have p1_pos : 0 < p.1 := by
-      apply lt_of_le_of_lt _ p1_gt
-      rw [EReal.coe_nonneg]
-      apply mul_nonneg _ (le_of_lt (inv_pos_of_pos h))
-      simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, le_max_iff, le_refl, or_true]
-    have a2_pos : 0 < ((a / 2 : ℝ) : EReal) := by rw [EReal.coe_pos]; linarith
-    have lock := mul_le_mul_of_nonneg_right (le_of_lt p1_gt) (le_of_lt a2_pos)
-    have key := mul_le_mul_of_nonneg_left (le_of_lt p2_gt) (le_of_lt p1_pos)
-    replace lock := le_trans lock key
+     apply lt_of_le_of_lt _ p1_gt
+     positivity
+    have lock : ↑(2 * max (x + 1) 0 / a) * ↑(a / 2) ≤ p.1 * p.2 := by gcongr
     apply lt_of_lt_of_le _ lock
     rw [← EReal.coe_mul, EReal.coe_lt_coe_iff, _root_.div_mul_div_comm, mul_comm,
       ← _root_.div_mul_div_comm, mul_div_right_comm]
-    simp only [ne_eq, Ne.symm (ne_of_lt h), not_false_eq_true, _root_.div_self, OfNat.ofNat_ne_zero,
-      one_mul, lt_max_iff, lt_add_iff_pos_right, zero_lt_one, true_or]
-  · exact IsOpen.prod isOpen_Ioi isOpen_Ioi
+    simp [h.ne']
+  · exact isOpen_Ioi.prod isOpen_Ioi
   · simp
   · simp [h]
 

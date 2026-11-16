@@ -73,6 +73,24 @@ lemma measurable_up : Measurable (ULift.up : α → ULift α) := fun _ ↦ id
 
 end ULift
 
+section TypeTags
+variable [MeasurableSpace α]
+
+instance : MeasurableSpace (Additive α) := ‹MeasurableSpace α›.map Additive.ofMul
+instance : MeasurableSpace (Multiplicative α) := ‹MeasurableSpace α›.map Multiplicative.ofAdd
+
+lemma measurable_ofMul : Measurable (Additive.ofMul : α → Additive α) := fun _ ↦ id
+lemma measurable_toMul : Measurable (Additive.toMul : Additive α → α) := fun _ ↦ id
+lemma measurable_ofAdd : Measurable (Multiplicative.ofAdd : α → Multiplicative α) := fun _ ↦ id
+lemma measurable_toAdd : Measurable (Multiplicative.toAdd : Multiplicative α → α) := fun _ ↦ id
+
+@[simp] lemma measurableSet_preimage_toMul {s : Set α} :
+    MeasurableSet (Additive.toMul ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+@[simp] lemma measurableSet_preimage_toAdd {s : Set α} :
+    MeasurableSet (Multiplicative.toAdd ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+
+end TypeTags
+
 section Nat
 
 variable {mα : MeasurableSpace α}
@@ -107,7 +125,7 @@ theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred 
   refine measurable_findGreatest' fun k hk => ?_
   simp only [Nat.findGreatest_eq_iff, ofPred_and, ofPred_forall, ← compl_ofPred]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
-    MeasurableSet.compl, hN] <;> try intros
+    MeasurableSet.compl, hN] <;> intros
 
 @[simp, measurability]
 protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
@@ -375,6 +393,12 @@ def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableS
 instance Prod.instMeasurableSpace {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] :
     MeasurableSpace (α × β) :=
   m₁.prod m₂
+
+/-- The product σ-algebra is monotone in both factors. -/
+@[gcongr]
+theorem MeasurableSpace.prod_mono {mα mα' : MeasurableSpace α} {mβ mβ' : MeasurableSpace β}
+    (hα : mα ≤ mα') (hβ : mβ ≤ mβ') : mα.prod mβ ≤ mα'.prod mβ' :=
+  sup_le_sup (comap_mono hα) (comap_mono hβ)
 
 theorem measurable_fst {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     Measurable (Prod.fst : α × β → α) :=

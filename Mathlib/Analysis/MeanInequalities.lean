@@ -104,7 +104,6 @@ less than or equal to the sum of the maximum values of the summands.
   is to define `StrictConvexOn` functions.
 - generalized mean inequality with any `p ≤ q`, including negative numbers;
 - prove that the power mean tends to the geometric mean as the exponent tends to zero.
-
 -/
 
 public section
@@ -488,9 +487,10 @@ namespace Real
 
 /-- **HM-GM inequality**: The harmonic mean is less than or equal to the geometric mean, weighted
 version for real-valued nonnegative functions. -/
-theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw : ∀ i ∈ s, 0 < w i)
+theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i ∈ s, w i / z i)⁻¹ ≤ ∏ i ∈ s, z i ^ w i := by
+  have hs : s.Nonempty := Finset.nonempty_of_sum_ne_zero (by rw [hw']; exact one_ne_zero)
   have : ∏ i ∈ s, (1 / z) i ^ w i ≤ ∑ i ∈ s, w i * (1 / z) i :=
     geom_mean_le_arith_mean_weighted s w (1 / z) (fun i hi ↦ le_of_lt (hw i hi)) hw'
     (fun i hi ↦ one_div_nonneg.2 (le_of_lt (hz i hi)))
@@ -509,10 +509,10 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
 
 
 /-- **HM-GM inequality**: The harmonic mean is less than or equal to the geometric mean. -/
-theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w : ι → ℝ)
+theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ)
     (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i ∈ s, w i) / (∑ i ∈ s, w i / z i) ≤ (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹ := by
-  have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z hs ?_ ?_ hz
+  have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z ?_ ?_ hz
   · set n := ∑ i ∈ s, w i
     nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by simp), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
     simp_rw [inv_mul_eq_div n ((w _) / (z _)), div_right_comm _ _ n]
@@ -933,7 +933,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
   push_cast at this
   exact this
 
--- for some reason `exact_mod_cast` can't replace this argument
+-- for some reason `exact mod_cast` can't replace this argument
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `Real`-valued functions. -/
 theorem Lp_add_le (hp : 1 ≤ p) :

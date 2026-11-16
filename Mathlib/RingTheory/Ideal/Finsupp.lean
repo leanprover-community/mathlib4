@@ -9,9 +9,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
-
 # Lemmas for action of ideals on submodules of `Finsupp`
-
 -/
 
 public section

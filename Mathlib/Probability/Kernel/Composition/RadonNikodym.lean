@@ -31,7 +31,6 @@ If `α` is countable or `β` is countably generated, the kernels have a Radon-Ni
   product of `∂μ/∂ν` and `∂κ/∂η`.
 * `rnDeriv_measure_compProd_right`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`
   (with the same measure) equals `∂κ/∂η`.
-
 -/
 
 

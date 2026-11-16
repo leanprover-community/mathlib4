@@ -19,7 +19,6 @@ The skeleton of a monoidal category is a monoid.
 
 * `Skeleton.instMonoid`, for monoidal categories.
 * `Skeleton.instCommMonoid`, for braided monoidal categories.
-
 -/
 
 @[expose] public section

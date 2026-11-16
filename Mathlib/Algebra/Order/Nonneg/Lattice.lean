@@ -9,7 +9,6 @@ public import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Lattice structures on the type of nonnegative elements
-
 -/
 
 @[expose] public section
@@ -52,7 +51,6 @@ protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCo
   inferInstanceAs <| ConditionallyCompleteLinearOrder (Ici a)
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.
@@ -62,7 +60,6 @@ protected noncomputable abbrev conditionallyCompleteLinearOrderBot
     [ConditionallyCompleteLinearOrder α] (a : α) :
     ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    csSup_empty := by
-      rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }
+    csSup_empty := @IsLUB.sSup_eq _ _ (.chooseBot _) _ _ isLUB_empty }
 
 end Nonneg

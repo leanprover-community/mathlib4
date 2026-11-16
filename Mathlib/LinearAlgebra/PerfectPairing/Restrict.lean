@@ -21,7 +21,6 @@ We provide API for restricting perfect pairings to submodules and for restrictin
   subring.
 * `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
   of a perfect pairing with coefficients in a field.
-
 -/
 
 public section

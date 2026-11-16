@@ -27,12 +27,12 @@ Delaborator that prints the current application with universe parameters on the 
 unless `pp.universes` is explicitly set to `false`.
 -/
 def delabWithUniv : Delab :=
-  whenPPOption (·.get pp.universes.name true) <|
-  let enablePPUnivOnHead subExpr :=
-    let expr := subExpr.expr
-    let expr := mkAppN (expr.getAppFn.setOption pp.universes.name true) expr.getAppArgs
-    { subExpr with expr }
-  withTheReader SubExpr enablePPUnivOnHead delabApp
+  whenPPOption (·.get pp.universes.name true) do
+  let pos := (← getPos).pushNaryFn (← getExpr).getAppNumArgs
+  let enablePPUnivOnHead (ctx : Delaborator.Context) :=
+    let optionsPerPos := ctx.optionsPerPos.insertAt pos pp.universes.name true
+    { ctx with optionsPerPos }
+  withReader enablePPUnivOnHead delabApp
 
 /--
 `attribute [pp_with_univ] Ordinal` instructs the pretty-printer to

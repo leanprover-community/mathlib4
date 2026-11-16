@@ -21,7 +21,6 @@ of the bounded below homotopy category `HomotopyCategory.Plus C`
 with respect to quasi-isomorphisms. We also show that it is the
 localization of the category `CochainComplex.Plus C` of bounded
 below cochain complexes with respect to quasi-isomorphisms.
-
 -/
 
 @[expose] public section
@@ -40,7 +39,6 @@ abbrev subcategoryAcyclic :
     ObjectProperty (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_eq_subcategoryAcyclic_trW :
     HomotopyCategory.Plus.quasiIso C = (subcategoryAcyclic C).trW := by
   ext K L f
@@ -78,8 +76,8 @@ instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
-    (_ : CochainComplex.IsKInjective L.1.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) := by
-  have := CochainComplex.IsKInjective.Qh_map_bijective K.1 L.1.as
+    (_ : CochainComplex.IsKInjective L.obj.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) := by
+  have := CochainComplex.IsKInjective.Qh_map_bijective K.obj L.obj.as
   rw [← Function.Bijective.of_comp_iff _
     ((HomotopyCategory.Plus.fullyFaithfulι C).map_bijective _ _)] at this
   rwa [← Function.Bijective.of_comp_iff' (t.plus.fullyFaithfulι.map_bijective _ _)]
@@ -178,12 +176,12 @@ abbrev IsLE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsLE X n
 lemma isGE_ι_obj_iff (X : Plus C) (n : ℤ) :
     (ι.obj X).IsGE n ↔ X.IsGE n := by
   constructor
-  all_goals exact fun h ↦ ⟨h.1⟩
+  all_goals exact fun h ↦ ⟨h.ge⟩
 
 lemma isLE_ι_obj_iff (X : Plus C) (n : ℤ) :
     (ι.obj X).IsLE n ↔ X.IsLE n := by
   constructor
-  all_goals exact fun h ↦ ⟨h.1⟩
+  all_goals exact fun h ↦ ⟨h.le⟩
 
 instance (X : Plus C) (n : ℤ) [X.IsGE n] : (ι.obj X).IsGE n := by
   rw [isGE_ι_obj_iff]
