@@ -78,7 +78,7 @@ private lemma rnDeriv_measure_compProd_left_of_ac (hμν : μ ≪ ν) (κ : Kern
 
 /-- Auxiliary lemma for `rnDeriv_measure_compProd_left`. -/
 lemma rnDeriv_compProd_withDensity_rnDeriv (μ ν : Measure α) (κ η : Kernel α β)
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] [IsFiniteKernel η] :
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel η] :
     (ν.withDensity (μ.rnDeriv ν) ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) := by
   conv_rhs => rw [Measure.haveLebesgueDecomposition_add μ ν]
   rw [Measure.compProd_add_left]
