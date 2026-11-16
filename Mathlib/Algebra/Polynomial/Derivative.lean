@@ -451,24 +451,26 @@ lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivativ
   norm_cast
   congr <;> lia
 
-lemma natTrailingDegree_derivative (hp : p.natTrailingDegree ≠ 0) :
-    (derivative p).natTrailingDegree = p.natTrailingDegree - 1 := by
-  have hp0 : p ≠ 0 := by rintro rfl; simp at hp
-  have hmem : p.natTrailingDegree - 1 ∈ (derivative p).support := by
-    rw [mem_support_derivative, Nat.sub_add_cancel (by lia)]
-    exact natTrailingDegree_mem_support_of_ne_zero hp0
+lemma natTrailingDegree_derivative' (hp : p.natTrailingDegree ≠ 0) :
+    (derivative p).natTrailingDegree + 1 = p.natTrailingDegree := by
+  obtain ⟨n, hn⟩ := Nat.exists_eq_add_one_of_ne_zero hp
+  have hmem : n ∈ (derivative p).support := by
+    rw [mem_support_derivative, ← hn]
+    exact natTrailingDegree_mem_support_of_ne_zero (by aesop)
+  rw [hn, add_left_inj]
   refine le_antisymm (natTrailingDegree_le_of_mem_supp _ hmem)
-    (le_natTrailingDegree (fun h => by simp [h] at hmem) fun j hj => ?_)
+    (le_natTrailingDegree (fun h ↦ by aesop) fun j hj ↦ ?_)
   rw [coeff_derivative, coeff_eq_zero_of_lt_natTrailingDegree (by lia), zero_mul]
 
-@[simp]
+lemma natTrailingDegree_derivative (hp : p.natTrailingDegree ≠ 0) :
+    (derivative p).natTrailingDegree = p.natTrailingDegree - 1 := by
+  rw [← natTrailingDegree_derivative' hp]
+  lia
+
 lemma trailingCoeff_derivative (hp : p.natTrailingDegree ≠ 0) :
     (derivative p).trailingCoeff = p.trailingCoeff * p.natTrailingDegree := by
-  rw [trailingCoeff, natTrailingDegree_derivative hp, coeff_derivative, trailingCoeff,
-    Nat.sub_add_cancel (by lia)]
+  simp only [trailingCoeff, ← natTrailingDegree_derivative' hp, coeff_derivative]
   norm_cast
-  congr
-  lia
 
 @[deprecated derivative_eq_zero +typeChanged (since := "2026-06-03")]
 alias ⟨natDegree_eq_zero_of_derivative_eq_zero, _⟩ := derivative_eq_zero
