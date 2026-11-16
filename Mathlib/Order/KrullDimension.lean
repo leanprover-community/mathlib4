@@ -938,9 +938,12 @@ lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [Krul
 instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
 
 @[simp]
-lemma krullDimLE_iff_orderDual {n : ℕ} {α : Type*} [Preorder α] :
+lemma krullDimLE_orderDual_iff {n : ℕ} {α : Type*} [Preorder α] :
     Order.KrullDimLE n αᵒᵈ ↔ Order.KrullDimLE n α := by
   rw [Order.krullDimLE_iff, Order.krullDimLE_iff, krullDim_orderDual]
+
+instance {n : ℕ} {α : Type*} [Preorder α] [Order.KrullDimLE n α] :
+    Order.KrullDimLE n αᵒᵈ := krullDimLE_orderDual_iff.mpr inferInstance
 
 @[to_dual]
 lemma krullDimLE_iff_le_coheight_imp_isMin {X : Type*} [Preorder X] {n : ℕ} :
@@ -956,12 +959,12 @@ lemma krullDimLE_iff_le_coheight_imp_isMin {X : Type*} [Preorder X] {n : ℕ} :
     have : coheight x ≤ n := by
       rw [coheight_le_coe_iff]
       intro y hxy
-      by_contra! hn
-      exact (h y hn).not_lt hxy
+      contrapose! hxy
+      exact (h y hxy).not_lt
     exact_mod_cast this
 
 @[to_dual]
-lemma KrullDimLE.isMin_of_le_coheight {X : Type*} [Preorder X] {n : ℕ}
+lemma isMin_of_le_coheight_of_krullDimLE {X : Type*} [Preorder X] {n : ℕ}
     [Order.KrullDimLE n X] {x : X} (hx : n ≤ coheight x) : IsMin x :=
   krullDimLE_iff_le_coheight_imp_isMin.mp ‹_› x hx
 
