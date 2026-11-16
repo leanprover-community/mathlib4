@@ -98,7 +98,8 @@ This operation is a ring hom.
 def join₂ : MvPolynomial σ (MvPolynomial σ R) →+* MvPolynomial σ R :=
   eval₂Hom (RingHom.id _) X
 
-@[deprecated "this is now a syntactic equality" (since := "2026-09-02")]
+@[deprecated "`bind₁` is deprecated. After replacing `bind₁` with its suggested replacement,
+the statement of this theorem becomes a syntactic equality." (since := "2026-09-02")]
 theorem aeval_eq_bind₁ (f : σ → MvPolynomial τ R) : aeval f = bind₁ f :=
   rfl
 
@@ -106,7 +107,8 @@ theorem aeval_eq_bind₁ (f : σ → MvPolynomial τ R) : aeval f = bind₁ f :=
 theorem eval₂Hom_C_eq_bind₁ (f : σ → MvPolynomial τ R) : eval₂Hom C f = bind₁ f :=
   rfl
 
-@[deprecated "this is now a syntactic equality" (since := "2026-09-02")]
+@[deprecated "`bind₂` is deprecated. After replacing `bind₂` with its suggested replacement,
+the statement of this theorem becomes a syntactic equality." (since := "2026-09-02")]
 theorem eval₂Hom_eq_bind₂ (f : R →+* MvPolynomial σ S) : eval₂Hom f X = bind₂ f :=
   rfl
 
@@ -114,7 +116,8 @@ section
 
 variable (σ R)
 
-@[deprecated "this is now a syntactic equality" (since := "2026-09-02")]
+@[deprecated "`join₁` is deprecated. After replacing `join₁` with its suggested replacement,
+the statement of this theorem becomes a syntactic equality." (since := "2026-09-02")]
 theorem aeval_id_eq_join₁ : aeval id = @join₁ σ R _ :=
   rfl
 
@@ -178,7 +181,9 @@ theorem join₁_rename (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     join₁ (rename f φ) = bind₁ f φ :=
   aeval_id_rename _ _
 
-@[deprecated "this is now a syntactic equality" (since := "2026-09-02")]
+@[deprecated "`bind₁` and `join₁` are deprecated.
+After replacing `bind₁` and `join₁` with their suggested replacements,
+the statement of this theorem becomes a syntactic equality." (since := "2026-09-02")]
 theorem bind₁_id : bind₁ (@id (MvPolynomial σ R)) = join₁ :=
   rfl
 
@@ -301,8 +306,7 @@ theorem aeval_bind₂ [Algebra S T] (f : σ → T) (g : R →+* MvPolynomial σ 
     aeval f (bind₂ g φ) = eval₂Hom ((↑(aeval f : _ →ₐ[S] _) : _ →+* _).comp g) f φ :=
   eval₂Hom_bind₂ _ _ _ _
 
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated "this is now a syntactic equality" (since := "2026-09-02")]
+@[deprecated coe_aeval_eq_eval₂Hom +typeChanged (since := "2026-09-02")]
 alias eval₂Hom_C_left := eval₂Hom_C_eq_bind₁
 
 @[deprecated aeval_monomial +typeChanged (since := "2026-09-02")]
