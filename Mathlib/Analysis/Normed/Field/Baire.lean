@@ -55,7 +55,7 @@ theorem minpoly.isClosed_setOf_natDegree_le (n : ℕ) :
     IsClosed {x : E | (minpoly K x).natDegree ≤ n} := by
   convert (isOpen_setOfPred_linearIndependent (𝕜 := K) (E := E) (ι := Fin (n + 1))
     |>.preimage (continuous_pi fun i : Fin (n + 1) ↦
-      (continuous_id : Continuous (id : E → E)).pow (i : ℕ))).isClosed_compl using 1
+      continuous_pow (i : ℕ))).isClosed_compl using 1
   ext x
   simp [linearIndependent_pow_iff (Algebra.IsIntegral.isIntegral (R := K) x)]
 
