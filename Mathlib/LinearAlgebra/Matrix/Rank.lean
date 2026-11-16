@@ -99,9 +99,11 @@ lemma cRank_le_card_width [StrongRankCondition R] [Fintype n] (A : Matrix m n R)
 /-- The rank of a matrix, defined as the dimension of its column space, as a term in `ℕ∞`. -/
 noncomputable def eRank (A : Matrix m n R) : ℕ∞ := A.cRank.toENat
 
+@[simp] theorem toENat_cRank (A : Matrix m n R) : A.cRank.toENat = A.eRank := rfl
+
 @[simp]
 theorem eRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.eRank = 1 := by
-  simp [eRank]
+  simp [← toENat_cRank]
 
 lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
     A.eRank.toNat = Module.finrank R (span R (range A.col)) :=
@@ -161,12 +163,12 @@ theorem cRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
 
 @[simp] theorem eRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (eRank (1 : Matrix m m R)) = ENat.card m := by
-  simp [eRank, Cardinal.toENat_mk]
+  simp [← toENat_cRank, Cardinal.toENat_mk]
 
 @[simp]
 theorem rank_one [Fintype n] [Semiring R] [DecidableEq n] [StrongRankCondition R] :
     rank (1 : Matrix n n R) = Fintype.card n := by
-  simp [rank]
+  simp [← eRank_toNat_eq_rank]
 
 @[simp]
 theorem cRank_zero {m n : Type*} [Semiring R] [Nontrivial R] : cRank (0 : Matrix m n R) = 0 := by
@@ -176,11 +178,11 @@ theorem cRank_zero {m n : Type*} [Semiring R] [Nontrivial R] : cRank (0 : Matrix
 
 @[simp]
 theorem eRank_zero {m n : Type*} [Semiring R] [Nontrivial R] : eRank (0 : Matrix m n R) = 0 := by
-  simp [eRank]
+  simp [← toENat_cRank]
 
 @[simp]
 theorem rank_zero [Semiring R] [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
-  simp [rank]
+  simp [← eRank_toNat_eq_rank]
 
 theorem rank_le_card_width [Fintype n] [Semiring R] [StrongRankCondition R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card n := by
@@ -496,7 +498,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
 
 theorem eRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).eRank = {i | (w i) ≠ 0}.encard := by
-  simp [eRank, cRank_diagonal, encard_ofPred]
+  simp [← toENat_cRank, cRank_diagonal, encard_ofPred]
 
 end Field
 
