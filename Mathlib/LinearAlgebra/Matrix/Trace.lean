@@ -119,6 +119,13 @@ lemma trace_blockDiagonal' [DecidableEq p] {m : p → Type*} [∀ i, Fintype (m 
     trace (blockDiagonal' M) = ∑ i, trace (M i) := by
   simp [blockDiagonal', trace, Finset.sum_sigma']
 
+lemma trace_fromBlocks (A : Matrix n n R) (B : Matrix n m R) (C : Matrix m n R) (D : Matrix m m R) :
+    trace (fromBlocks A B C D) = trace A + trace D := by
+  simp [trace, fromBlocks]
+
+lemma trace_comp (M : Matrix n n (Matrix m m R)) : trace (comp n n m m R M) = trace (trace M) := by
+  simp [trace, Fintype.sum_prod_type, Finset.sum_comm (α := n)]
+
 end AddCommMonoid
 
 section AddCommGroup
