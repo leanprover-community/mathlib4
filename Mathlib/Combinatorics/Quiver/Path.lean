@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Kim Morrison, Matteo Cipollina, Runtian Zhou, Mingkai Su
+Authors: David Wärn, Kim Morrison, Matteo Cipollina, Runtian Zhou
 -/
 module
 
@@ -9,7 +9,6 @@ public import Batteries.Data.List.Basic
 public import Mathlib.Basic.Logic.Lemmas
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Order.Defs.PartialOrder
 public import Mathlib.Util.CompileInductive
 
 set_option doc.verso true
@@ -21,8 +20,7 @@ set_option doc.verso.suggestions false
 Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an inductive
 family. We define composition of paths and the action of prefunctors on paths.
 
-We also define `Quiver.Reachable a b`, the existence of a directed path from `a` to `b`,
-and prove monotonicity along paths.
+We also define `Quiver.Reachable a b`, the existence of a directed path from `a` to `b`.
 -/
 
 @[expose] public section
@@ -318,30 +316,6 @@ end BoundedPath
 
 end Path
 
-namespace Path
-
-variable {V : Type u} [Quiver V] {α : Type*} [Preorder α] {f : V → α}
-
-theorem le_of_hom_imp_le (hf : ∀ {x y}, (x ⟶ y) → f x ≤ f y)
-    {a b : V} (p : Path a b) : f a ≤ f b := by
-  induction p with
-  | nil => rfl
-  | cons _ e ih => exact le_trans ih (hf e)
-
-theorem lt_of_hom_imp_lt (hf : ∀ {x y}, (x ⟶ y) → f x < f y)
-    {a b : V} (p : Path a b) (hp : 0 < p.length) : f a < f b := by
-  cases p with
-  | nil => cases hp
-  | cons q e => exact lt_of_le_of_lt (le_of_hom_imp_le (fun e' ↦ le_of_lt (hf e')) q) (hf e)
-
-theorem eq_nil_of_hom_imp_lt (hf : ∀ {x y}, (x ⟶ y) → f x < f y)
-    {a : V} (p : Path a a) : p = .nil := by
-  cases p with
-  | nil => rfl
-  | cons q e => exact absurd (lt_of_hom_imp_lt hf (q.cons e) (Nat.succ_pos _)) (lt_irrefl _)
-
-end Path
-
 section Reachable
 
 variable {V : Type u} [Quiver V]
@@ -376,25 +350,6 @@ protected theorem Path.reachable (p : Path a b) : Reachable a b := ⟨p⟩
 
 /-- An arrow witnesses that its target is reachable from its source. -/
 protected theorem Hom.reachable (e : a ⟶ b) : Reachable a b := ⟨e.toPath⟩
-
-variable {α : Type*} [Preorder α] {f : V → α}
-
-theorem Reachable.le_of_hom_imp_le (hf : ∀ {x y}, (x ⟶ y) → f x ≤ f y)
-    {a b : V} (hab : Reachable a b) : f a ≤ f b :=
-  hab.elim fun p ↦ p.le_of_hom_imp_le hf
-
-theorem Reachable.antisymm_of_hom_imp_lt (hf : ∀ {x y}, (x ⟶ y) → f x < f y)
-    {a b : V} (hab : Reachable a b) (hba : Reachable b a) : a = b := by
-  obtain ⟨p⟩ := hab
-  obtain ⟨q⟩ := hba
-  have hlen : (p.comp q).length = 0 :=
-    congr_arg Path.length (Path.eq_nil_of_hom_imp_lt hf (p.comp q))
-  rw [Path.length_comp] at hlen
-  exact p.eq_of_length_zero (Nat.eq_zero_of_add_eq_zero_right hlen)
-
-theorem Reachable.isPartialOrder_of_hom_imp_lt (hf : ∀ {x y}, (x ⟶ y) → f x < f y) :
-    IsPartialOrder V Reachable where
-  antisymm _ _ := Reachable.antisymm_of_hom_imp_lt hf
 
 end Reachable
 
