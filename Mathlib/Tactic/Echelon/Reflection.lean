@@ -104,9 +104,7 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
   induction h generalizing i with
   | nil hz =>
     simp only [List.map_const'] at hz
-    simp only [pivotOfList, List.length_nil, not_lt_zero, not_false_eq_true, getElem?_neg,
-      WithTop.symm_toOption_apply_none, WithTop.coe_lt_top, List.getD_eq_getElem?_getD,
-      forall_const, WithTop.top_ne_coe, ne_eq, IsEmpty.forall_iff, implies_true, and_true]
+    simp [pivotOfList]
     grind
   | @cons k ks row rows d suffix hrow hd h ih =>
     cases i with

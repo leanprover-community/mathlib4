@@ -311,14 +311,7 @@ theorem Interval.map_mulBound_le [Mul α] [Zero α] [DecidableEq α] [LE β]
     (hmul : ∀ x y, a = some x → b = some y → f (x * y) ≤ z)
     (hzero : (a = none ∧ b = some 0 ∨ a = some 0 ∧ b = none) → f 0 ≤ z) :
     WithBot.map f ((WithBot.toOption α).symm <| Interval.mulBound a b) ≤ z := by
-  cases a <;> cases b
-  · simp [mulBound]
-  · simp [Interval.mulBound, WithBot.map_eq_some_iff, WithBot.le_coe_iff]
-    grind
-  · simp [Interval.mulBound, WithBot.map_eq_some_iff, WithBot.le_coe_iff]
-    grind
-  · simp [Interval.mulBound]
-    grind
+  cases a <;> cases b <;> simp_all [mulBound, WithBot.map_eq_some_iff, WithBot.le_coe_iff]
 
 /-- Multiply two intervals. -/
 def Interval.mul [Mul α] [Zero α] [LinearOrder α] (I J : Interval α) : Interval α :=

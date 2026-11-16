@@ -6,13 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Basic.Nontrivial.Basic
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Data.Set.Image
-public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Order.TypeTags
-public import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -34,9 +30,9 @@ variable {a b : α}
 
 @[to_dual]
 def toOption (α : Type*) : WithBot α ≃ Option α where
-  toFun | ⊥ => none | some x => .some x
-  invFun | none => ⊥ | .some x => some x
-  left_inv | ⊥ => rfl | some _ => rfl
+  toFun | ⊥ => none | (x : α) => .some x
+  invFun | none => ⊥ | .some x => x
+  left_inv | ⊥ => rfl | (_ : α) => rfl
   right_inv | none => rfl | .some _ => rfl
 
 @[to_dual (attr := simp)] lemma toOption_apply_coe (x : α) : toOption α x = x := rfl
@@ -150,8 +146,8 @@ theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
 @[to_dual
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/]
 def map (f : α → β) : WithBot α → WithBot β
-  | some x => some (f x)
   | ⊥ => ⊥
+  | (x : α) => f x
 
 @[to_dual (attr := simp)]
 theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
@@ -168,7 +164,7 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
 lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
     map f a = ⊥ ↔ a = ⊥ := by cases a <;> simp
 
-@[to_dual (attr := grind =)]
+@[to_dual]
 theorem map_eq_some_iff {f : α → β} {y : β} {v : WithBot α} :
     WithBot.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := by cases v <;> simp
 
@@ -214,29 +210,16 @@ Mathematically this should be thought of as the image of the corresponding funct
 
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/]
 def map₂ (f : α → β → γ) : WithBot α → WithBot β → WithBot γ
-  | some a => map (f a)
   | ⊥ => ⊥
+  | (a : α) => map (f a)
 
 @[to_dual]
 lemma map₂_eq_comp_comp {f : α → β → γ} (a : WithBot α) (b : WithBot β) :
     map₂ f a b = (toOption γ).symm (Option.map₂ f (toOption α a) (toOption β b)) := by
   cases a <;> cases b <;> rfl
 
-@[to_dual]
-lemma map₂_assoc {ε ε' : Type*} {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
-    (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c))
-    {x : WithBot α} {y : WithBot β} {z : WithBot γ} :
-    map₂ f (map₂ g x y) z = map₂ f' x (map₂ g' y z) := by
-  rw [map₂_eq_comp_comp x y, map₂_eq_comp_comp _ z, map₂_eq_comp_comp y z, map₂_eq_comp_comp x]
-  simp [Option.map₂_assoc h_assoc]
-
-@[to_dual]
-lemma map₂_comm {f : α → β → γ} {g : β → α → γ} {x : WithBot α} {y : WithBot β}
-    (h_comm : ∀ a b, f a b = g b a) : map₂ f x y = map₂ g y x := by
-  rw [map₂_eq_comp_comp x y, map₂_eq_comp_comp y x]
-  simp [Option.map₂_comm h_comm]
-
-@[to_dual] lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
+@[to_dual (attr := simp)]
+lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
 
 @[to_dual (attr := simp)]
 lemma map₂_bot_left (f : α → β → γ) (b) : map₂ f ⊥ b = ⊥ := rfl
@@ -248,11 +231,22 @@ lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map
 @[to_dual (attr := simp)]
 lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by cases a <;> rfl
 
+@[to_dual]
+lemma map₂_assoc {ε ε' : Type*} {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
+    (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c))
+    {x : WithBot α} {y : WithBot β} {z : WithBot γ} :
+    map₂ f (map₂ g x y) z = map₂ f' x (map₂ g' y z) := by
+  cases x <;> cases y <;> cases z <;> simp [h_assoc]
+
+@[to_dual]
+lemma map₂_comm {f : α → β → γ} {g : β → α → γ} {x : WithBot α} {y : WithBot β}
+    (h_comm : ∀ a b, f a b = g b a) : map₂ f x y = map₂ g y x := by
+  cases x <;> cases y <;> simp [h_comm]
+
 @[to_dual (attr := simp)]
 lemma map₂_eq_some_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} {c : γ} :
-    map₂ f a b = some c ↔ ∃ (a' : α), ∃ (b' : β), a = some a' ∧ b = some b' ∧ f a' b' = c := by
-  rw [map₂_eq_comp_comp, Equiv.symm_apply_eq]
-  simp
+    map₂ f a b = ↑c ↔ ∃ (a' : α), ∃ (b' : β), a = ↑a' ∧ b = ↑b' ∧ f a' b' = c := by
+  cases a <;> cases b <;> simp
 
 @[to_dual]
 lemma map₂_left_identity {f : α → β → β} (h : ∀ b, f a b = b) (y : WithBot β) :
@@ -264,14 +258,8 @@ lemma map₂_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
 
 @[to_dual (attr := simp)]
 lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
-    map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ where
-  mp h := by
-    contrapose! h
-    cases a <;> cases b
-    rotate_right
-    · simp
-    all_goals grind
-  mpr h := by cases h <;> simp_all
+    map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
+  cases a <;> cases b <;> simp
 
 @[to_dual]
 lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := by cases x <;> simp
@@ -360,9 +348,8 @@ lemma unbotA_eq_unbot [Nonempty α] {a : WithBot α} (ha : a ≠ ⊥) : unbotA a
 
 @[to_dual]
 theorem range_eq (f : WithBot α → β) :
-    Set.range f = insert (f ⊥) (Set.range (f ∘ WithBot.some : α → β)) := by
-  rw [← EquivLike.range_comp f (toOption α).symm, Option.range_eq]
-  simp [Function.comp_assoc]
+    Set.range f = insert (f ⊥) (Set.range (f ∘ WithBot.some : α → β)) :=
+  Set.ext fun _ => WithBot.exists.trans <| eq_comm.or Iff.rfl
 
 end WithBot
 
@@ -992,8 +979,8 @@ See `WithBot.toDualTopEquiv` for the related order-iso. -/
 /-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
 See `WithTop.toDualBotEquiv` for the related order-iso. -/]
 protected def toDual : WithBot α ≃ WithTop αᵒᵈ where
-  toFun | ⊥ => ⊤ | some x => WithTop.some (OrderDual.toDual x)
-  invFun | ⊤ => ⊥ | WithTop.some x => some (OrderDual.ofDual x)
+  toFun | ⊥ => ⊤ | (x : α) => (OrderDual.toDual x : αᵒᵈ)
+  invFun | ⊤ => ⊥ | (x : αᵒᵈ) => (OrderDual.ofDual x : α)
   left_inv x := by cases x <;> rfl
   right_inv x := by cases x <;> rfl
 
@@ -1004,8 +991,8 @@ See `WithBot.ofDualTopEquiv` for the related order-iso.
 /-- `WithTop.ofDual` is the equivalence sending `⊤` to `⊥` and any `a : αᵒᵈ` to `ofDual a : α`.
 See `WithTop.toDualBotEquiv` for the related order-iso. -/]
 protected def ofDual : WithBot αᵒᵈ ≃ WithTop α where
-  toFun | ⊥ => ⊤ | some x => WithTop.some (OrderDual.ofDual x)
-  invFun | ⊤ => ⊥ | WithTop.some x => some (OrderDual.toDual x)
+  toFun | ⊥ => ⊤ | (x : αᵒᵈ) => (OrderDual.ofDual x : α)
+  invFun | ⊤ => ⊥ | (x : α) => (OrderDual.toDual x : αᵒᵈ)
   left_inv x := by cases x <;> rfl
   right_inv x := by cases x <;> rfl
 
@@ -1048,13 +1035,6 @@ theorem toDual_map (f : α → β) (a : WithBot α) :
 theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
     WithBot.ofDual (map f a) = WithTop.map (ofDual ∘ f ∘ toDual) (WithBot.ofDual a) := by
   cases a <;> simp
-
-@[to_dual]
-lemma toDual_unbot {x : WithBot α} (hx : x ≠ ⊥) :
-    toDual (x.unbot hx) =
-      (WithBot.toDual x).untop (toDual_bot ▸ WithBot.toDual.injective.ne hx) := by
-  obtain ⟨a, rfl⟩ := ne_bot_iff_exists.1 hx
-  simp
 
 section LE
 variable [LE α]
