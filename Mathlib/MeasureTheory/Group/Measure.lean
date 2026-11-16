@@ -803,7 +803,7 @@ theorem IsHaarMeasure.smul [MeasurableConstSMul G G] {c : ℝ≥0∞} (cpos : c 
 @[to_additive IsAddHaarMeasure.nnreal_smul]
 lemma IsHaarMeasure.nnreal_smul [MeasurableConstSMul G G] {c : ℝ≥0} (hc : c ≠ 0) :
     IsHaarMeasure (c • μ) :=
-  .smul _ (by simp [hc]) (Option.some_ne_none _)
+  .smul _ (by simp [hc]) WithTop.coe_ne_top
 
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
 it is a Haar measure. -/
