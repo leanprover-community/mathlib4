@@ -52,9 +52,10 @@ alias ⟨le_of_inv_le_one, inv_le_one_of_le⟩ := inv_le_one
 alias ⟨le_of_one_le_inv_mul, one_le_inv_mul_of_le⟩ := one_le_inv_mul
 alias ⟨le_of_inv_mul_le_one, inv_mul_le_one_of_le⟩ := inv_mul_le_one
 
+-- See note [lower instance priority]
 @[to_additive]
-instance {M : Type*} [Monoid M] [PartialOrder M] [MulLeftMono M] [IsBotOneClass M] :
-    Unique Mˣ where
+instance (priority := 100) {M : Type*} [Monoid M] [PartialOrder M] [MulLeftMono M]
+    [IsBotOneClass M] : Unique Mˣ where
   uniq a := Units.ext <| (mul_eq_one_iff_of_one_le one_le one_le).mp a.val_inv |>.1
 
 end MulLeftMono
@@ -82,9 +83,10 @@ alias ⟨mul_le_of_le_mul_inv, le_mul_inv_of_mul_le⟩ := le_mul_inv_iff
 alias ⟨le_of_one_le_mul_inv, one_le_mul_inv_of_le⟩ := one_le_mul_inv
 alias ⟨le_of_mul_inv_le_one, mul_inv_le_one_of_le⟩ := mul_inv_le_one
 
+-- See note [lower instance priority]
 @[to_additive]
-instance {M : Type*} [Monoid M] [PartialOrder M] [MulRightMono M] [IsBotOneClass M] :
-    Unique Mˣ where
+instance (priority := 100) {M : Type*} [Monoid M] [PartialOrder M] [MulRightMono M]
+    [IsBotOneClass M] : Unique Mˣ where
   uniq a := Units.ext <| (mul_eq_one_iff_of_one_le' one_le one_le).mp a.val_inv |>.1
 
 end MulRightMono
