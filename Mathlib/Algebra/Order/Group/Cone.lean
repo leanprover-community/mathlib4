@@ -74,7 +74,7 @@ variable (G) in
 @[to_additive
   /-- Equivalence between positive cones in an abelian group `G`
     and partially ordered group structures on `G`. -/]
-noncomputable def submonoidPartialOrderEquiv :
+noncomputable def conePartiallyOrderedGroupEquiv :
     {C : Submonoid G // C.IsMulPointed} ≃
       {_o : PartialOrder G // IsOrderedMonoid G} where
   toFun := fun ⟨_, hC⟩ ↦ ⟨.ofSubmonoid hC, .ofSubmonoid _⟩
@@ -83,13 +83,13 @@ noncomputable def submonoidPartialOrderEquiv :
   right_inv := fun ⟨v, p⟩ ↦ by ext; simp +instances
 
 @[to_additive (attr := simp)]
-theorem submonoidPartialOrderEquiv_apply
+theorem conePartiallyOrderedGroupEquiv_apply
     (C : Submonoid G) (h : C.IsMulPointed) :
-    submonoidPartialOrderEquiv G ⟨C, h⟩ = PartialOrder.ofSubmonoid h := rfl
+    conePartiallyOrderedGroupEquiv G ⟨C, h⟩ = PartialOrder.ofSubmonoid h := rfl
 
 @[to_additive (attr := simp)]
-theorem submonoidPartialOrderEquiv_symm_apply (o : PartialOrder G) (h : IsOrderedMonoid G) :
-    (submonoidPartialOrderEquiv G).symm ⟨o, h⟩ = Submonoid.oneLE G := rfl
+theorem conePartiallyOrderedGroupEquiv_symm_apply (o : PartialOrder G) (h : IsOrderedMonoid G) :
+    (conePartiallyOrderedGroupEquiv G).symm ⟨o, h⟩ = Submonoid.oneLE G := rfl
 
 open Classical in
 variable (G) in
@@ -98,7 +98,7 @@ variable (G) in
 @[to_additive
   /-- Equivalence between spanning positive cones in an abelian group `G`
     and linearly ordered group structures on `G`. -/]
-noncomputable def submonoidLinearOrderEquiv :
+noncomputable def coneLinearlyOrderedGroupEquiv :
     {C : Submonoid G // C.IsMulPointed ∧ C.IsMulSpanning} ≃
       {_o : LinearOrder G // IsOrderedMonoid G} where
   toFun := fun ⟨C, hC⟩ ↦ ⟨.ofSubmonoid hC.1 hC.2, .ofSubmonoid _⟩
@@ -108,13 +108,13 @@ noncomputable def submonoidLinearOrderEquiv :
 
 open Classical in
 @[to_additive (attr := simp)]
-theorem submonoidLinearOrderEquiv_apply
+theorem coneLinearlyOrderedGroupEquiv_apply
     (C : Submonoid G) (h : C.IsMulPointed ∧ C.IsMulSpanning) :
-    submonoidLinearOrderEquiv G ⟨C, h⟩ = LinearOrder.ofSubmonoid h.1 h.2 := rfl
+    coneLinearlyOrderedGroupEquiv G ⟨C, h⟩ = LinearOrder.ofSubmonoid h.1 h.2 := rfl
 
 @[to_additive (attr := simp)]
-theorem submonoidLinearOrderEquiv_symm_apply (l : LinearOrder G) (h : IsOrderedMonoid G) :
-    (submonoidLinearOrderEquiv G).symm ⟨l, h⟩ = Submonoid.oneLE G := rfl
+theorem coneLinearlyOrderedGroupEquiv_symm_apply (l : LinearOrder G) (h : IsOrderedMonoid G) :
+    (coneLinearlyOrderedGroupEquiv G).symm ⟨l, h⟩ = Submonoid.oneLE G := rfl
 
 end CommGroup
 

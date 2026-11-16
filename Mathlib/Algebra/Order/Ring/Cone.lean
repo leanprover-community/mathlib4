@@ -43,7 +43,7 @@ namespace Ring
 variable (R) in
 /-- Equivalence between positive cones in a ring `R`
     and partially ordered ring structures on `R`. -/
-noncomputable def subsemiringPartialOrderEquiv :
+noncomputable def conePartiallyOrderedRingEquiv :
     {C : Subsemiring R // C.IsPointed} ≃
       {_o : PartialOrder R // IsOrderedRing R} where
   toFun := fun ⟨_, hC⟩ ↦ ⟨.ofAddSubmonoid hC, .ofSubsemiring _⟩
@@ -52,19 +52,19 @@ noncomputable def subsemiringPartialOrderEquiv :
   right_inv := fun ⟨_, _⟩ ↦ by ext; simp +instances
 
 @[simp]
-theorem subsemiringPartialOrderEquiv_apply
+theorem conePartiallyOrderedRingEquiv_apply
     (C : Subsemiring R) (h : C.IsPointed) :
-    subsemiringPartialOrderEquiv R ⟨C, h⟩ = PartialOrder.ofAddSubmonoid h := rfl
+    conePartiallyOrderedRingEquiv R ⟨C, h⟩ = PartialOrder.ofAddSubmonoid h := rfl
 
 @[simp]
-theorem subsemiringPartialOrderEquiv_symm_apply (o : PartialOrder R) (h : IsOrderedRing R) :
-    (subsemiringPartialOrderEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
+theorem conePartiallyOrderedRingEquiv_symm_apply (o : PartialOrder R) (h : IsOrderedRing R) :
+    (conePartiallyOrderedRingEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
 
 variable (R) in
 open Classical in
 /-- Equivalence between spanning positive cones in a ring `R`
     and linearly ordered ring structures on `R`. -/
-noncomputable def subsemiringLinearOrderEquiv :
+noncomputable def coneLinearlyOrderedRingEquiv :
     {C : Subsemiring R // C.IsPointed ∧ C.IsSpanning} ≃
       {_o : LinearOrder R // IsOrderedRing R} where
   toFun := fun ⟨C, hC⟩ ↦ ⟨.ofAddSubmonoid hC.1 hC.2, .ofSubsemiring _⟩
@@ -74,13 +74,13 @@ noncomputable def subsemiringLinearOrderEquiv :
 
 open Classical in
 @[simp]
-theorem subsemiringLinearOrderEquiv_apply
+theorem coneLinearlyOrderedRingEquiv_apply
     (C : Subsemiring R) (h : C.IsPointed ∧ C.IsSpanning) :
-    subsemiringLinearOrderEquiv R ⟨C, h⟩ = LinearOrder.ofAddSubmonoid h.1 h.2 := rfl
+    coneLinearlyOrderedRingEquiv R ⟨C, h⟩ = LinearOrder.ofAddSubmonoid h.1 h.2 := rfl
 
 @[simp]
-theorem subsemiringLinearOrderEquiv_symm_apply (o : LinearOrder R) (h : IsOrderedRing R) :
-    (subsemiringLinearOrderEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
+theorem coneLinearlyOrderedRingEquiv_symm_apply (o : LinearOrder R) (h : IsOrderedRing R) :
+    (coneLinearlyOrderedRingEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
 
 end Ring
 
