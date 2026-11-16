@@ -466,8 +466,10 @@ def preprocessTransportLemma (proof : Expr) (fs : Array Syntax) :
   let type ← instantiateMVars (← inferType proof)
   unless ← isProp type do
     return none
+  let type' ← etaReduceAll type
+  let changed := type != type'
   try
-    some <$> forallTelescope type fun xs type ↦ do
+    some <$> forallTelescope type' fun xs type ↦ do
       Elab.Term.TermElabM.run' do
       let fs ← fs.mapM fun f ↦ withRef f do
         let f ← Elab.Term.elabTerm f none
@@ -476,49 +478,54 @@ def preprocessTransportLemma (proof : Expr) (fs : Array Syntax) :
           throwError "`{b}` contains a loose bound varialbe"
         return (d, b, f)
       Elab.Term.synthesizeSyntheticMVarsNoPostponing
-      mkLambdaFVars xs <| ← go xs type 0 #[] fs
+      mkLambdaFVars xs <| ← go xs type 0 #[] fs changed
   catch _ =>
     return none
 where
   go (xs : Array Expr) (type : Expr) (i : Nat) (hs : Array (Expr × Expr))
-      (fs : Array (Expr × Expr × Expr)) : MetaM Expr := do
+      (fs : Array (Expr × Expr × Expr)) (changed : Bool) : MetaM Expr := do
     if h : i < xs.size then
       let x := xs[i]
       let xType ← inferType x
       if let some (_, xType', f) ← fs.findM? fun (t, _) ↦ isDefEq t xType then
+        let xType' ← instantiateMVars xType'
+        let f ← instantiateMVars f
         let xName ← x.fvarId!.getUserName
         withLocalDeclD (xName.appendAfter "'") xType' fun x' ↦ do
           let eq ← mkAppOptM ``Eq #[xType', f.beta #[x], x']
           let rel ← mkAppOptM ``MapRel #[xType, xType', f, x, x']
           withLocalDeclD (xName.appendBefore "h") rel fun hx ↦ do
-            let proof ← go xs type (i + 1) (hs.push (hx, eq)) fs
+            let proof ← go xs type (i + 1) (hs.push (hx, eq)) fs changed
             if proof.containsFVar hx.fvarId! then
               mkLambdaFVars #[x', hx] proof
             else
               pure proof
       else
-        go xs type (i + 1) hs fs
+        go xs type (i + 1) hs fs changed
     else
       let mut simpTheorems : SimpTheoremsArray := {}
       for (h, eq) in hs do
         simpTheorems ← simpTheorems.addTheorem (.fvar h.fvarId!) (mkExpectedPropHint h eq)
       let ctx ← Simp.mkContext Simp.neutralConfig simpTheorems
       let (r, _) ← simp type ctx
-      let type' ← Mathlib.Tactic.etaReduceAll r.expr
-      let proof ← mkAppM ``Eq.mp #[← r.getProof, mkAppN proof xs]
-      let (type', proof) ← id do
-        match_expr type' with
-        | eq@Eq α lhs rhs =>
-          for (d, b, f) in fs do
-            let mvar ← mkFreshExprMVar d
-            if ← isDefEq (f.beta #[mvar]) lhs then
-              return (← mkAppOptM ``MapRel #[d, b, f, ← instantiateMVars mvar, rhs], proof)
-            if ← isDefEq (f.beta #[mvar]) rhs then
-              let proof ← mkAppM ``Eq.symm #[proof]
-              return (← mkAppOptM ``MapRel #[d, b, f, ← instantiateMVars mvar, lhs], proof)
-          return (type', proof)
-        | _ => pure (type', proof)
-      if type' == type then
+      let mut type' := r.expr
+      let mut proof ← mkAppM ``Eq.mp #[← r.getProof, mkAppN proof xs]
+      match_expr type' with
+      | Iff lhs rhs =>
+        type' := mkApp3 (.const ``Eq [1]) (.sort 0) lhs rhs
+        proof := mkApp3 (.const ``propext []) lhs rhs proof
+      | _ => pure ()
+      match_expr type' with
+      | eq@Eq α lhs rhs =>
+        for (d, b, f) in fs do
+          let mvar ← mkFreshExprMVar d
+          if ← isDefEq (f.beta #[mvar]) lhs then
+            type' ← mkAppOptM ``MapRel #[d, b, f, ← instantiateMVars mvar, rhs]
+          if ← isDefEq (f.beta #[mvar]) rhs then
+            proof ← mkAppM ``Eq.symm #[proof]
+            type' ← mkAppOptM ``MapRel #[d, b, f, ← instantiateMVars mvar, lhs]
+      | _ => pure ()
+      if !changed && type' == type then
         throwError "`{type}` was not changed "
       return mkExpectedPropHint proof type'
 
@@ -554,7 +561,7 @@ def elabTransportTheorem (stx : Syntax) (dir : Option Bool) : Elab.TermElabM Tra
       return (#[], e)
   mkTransportLemmaFromExpr proof levelParams dir
 
-/-- Attribute marking transport lemmas. -/
+/-- Attribute marking transport lemmas and relations. -/
 syntax (name := transportAttr) "transport" (ppSpace prio)? term,* : attr
 
 /-- Mark `declName` with the `transport` attribute. -/
@@ -630,15 +637,19 @@ mutual
 /-- Recursively call `transportCore` to process a subgoal of a `gcongr` lemma.
 
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
-partial def processTransportHypothesis (goal : MVarId) : TransportM Bool := do
-  let some (rel, lhs, rhs) := getRel' (← instantiateMVars (← goal.getType)) |
+partial def processTransportHypothesis (fromEq : Bool) (goal : MVarId) : TransportM Bool := do
+  let goalType ← instantiateMVars (← goal.getType)
+  let some (rel, lhs, rhs) := getRel' goalType |
     throwError "invalid transport goal {goal}"
   let forward ← match lhs.getAppFn.isMVar, rhs.getAppFn.isMVar with
     | false, true => pure true
     | true, false => pure false
     | _, _ => throwError "expected exactly one of `{lhs}` and `{rhs}` to be unassigned."
   let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
-  let some (result, proof) ← transportCoreOrRfl rel target forward |
+  -- Heuristic: if the outer relation was `Eq`, and we are looking for a relation,
+  -- don't consider `Eq` again, since this can simply be done with (equality) congruence.
+  let noRfl := fromEq && rel matches .relation
+  let some (result, proof) ← transportCore rel target forward (noRfl := noRfl) |
     return false
   -- Assign any remaining universe variables
   unless ← isDefEq (← inferType mvarApp) (← inferType result) do
@@ -670,7 +681,8 @@ partial def processGCongrLemma (e : Expr) (rel : Rel)
   -- Recursively rewrite in the main subgoals
   for (goal, relHyps) in mainGoals do
     let success ←
-      goal.withContext <| withTransportHyps relHyps goal <| processTransportHypothesis
+      goal.withContext <| withTransportHyps relHyps goal <|
+        processTransportHypothesis (rel matches .eq)
     unless success do
       return none
   let result ← instantiateMVars mvar
@@ -697,7 +709,7 @@ partial def useTransportHyp (hyp : Expr) (goal : MVarId) (forward : Bool) : Tran
       let some (rel, lhs, rhs) := getRel' (← instantiateMVars (← inferType mvars[2]!))
         | return false
       let e := if forward then rhs else lhs
-      let some (result, proof) ← transportCoreOrRfl rel e forward
+      let some (result, proof) ← transportCore rel e forward (noRfl := false)
         | return false
       let mvar := if forward then lhs else rhs
       unless ← isDefEq (← inferType result) (← inferType mvar) do
@@ -718,7 +730,7 @@ If `e` itself cannot be rewritten, descend into subexpressions of `e` using `@[g
 unless the relation is `→`: `relName` is `_Implies` and `rel?` is `none`.
 
 Returns the new expression and a proof that it is related to `e`, if a rewrite was found. -/
-partial def transportCore (rel : Rel) (e : Expr) (forward : Bool) (inSimp := false) :
+partial def transportCoreAux (rel : Rel) (e : Expr) (forward : Bool) (inSimp := false) :
     TransportM (Option (Expr × Expr)) := do
   if !inSimp && rel matches .eq then
     if forward then
@@ -769,7 +781,7 @@ partial def transportEqCore (e : Expr) : TransportM (Option (Expr × Expr)) := f
   let methods := { pre e := do
     unless e.isApp || e.isForall || e.isFVar do return .continue
     let some (e', pf) ←
-        transportCore .eq e true true c c' s |
+        transportCoreAux .eq e true true c c' s |
       return .continue
     return .done { expr := e', proof? := pf }
     }
@@ -779,13 +791,15 @@ partial def transportEqCore (e : Expr) : TransportM (Option (Expr × Expr)) := f
     return none
   return r.proof?.map (r.expr, ·)
 
-partial def transportCoreOrRfl (rel : Rel) (e : Expr) (forward : Bool) :
+partial def transportCore (rel : Rel) (e : Expr) (forward noRfl : Bool) :
     TransportM (Option (Expr × Expr)) := do
   withTraceNodeBefore `transport (fun _ ↦
     return m!"visiting `{e}` in the {if forward then "LHS" else "RHS"} of `{rel}`") do
-  if let some result ← transportCore rel e forward then
+  if let some result ← transportCoreAux rel e forward then
     trace[transport] "result: `{result.1}`"
     return result
+  if noRfl then
+    return none
   let transportVars := (← read).transportHyps
   if e.hasAnyFVar transportVars.contains then
     return none
@@ -840,7 +854,7 @@ elab_rules : tactic
   let lemmas := givenLemmas.foldl addTransportLemmaEntry lemmas
   let type ← instantiateMVars (← mvarId.getType)
   let (some (e, pf), s) ← withReducible <|
-    transportCore .imp type false |>.run { lemmas } |>.run
+    transportCore .imp type false true |>.run { lemmas } |>.run
     | throwError "transport made no progress on `{type}`"
   let newGoal ← mkFreshExprMVar e .syntheticOpaque
   mvarId.assign (pf.app newGoal)

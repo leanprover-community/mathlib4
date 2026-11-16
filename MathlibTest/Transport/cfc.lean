@@ -5,12 +5,6 @@ public import Mathlib.Tactic.Transport.Test
 
 open Complex TransportTest
 
-section
-variable
-  {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
-  [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
-  [Algebra R A] [ContinuousFunctionalCalculus R A p]
-
 @[transport fun f : ℂ → ℂ ↦ cfc f a, fun f : ℝ → ℝ ↦ cfc f a]
 lemma cfc_real_eq_complex_comp'
     {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
@@ -21,8 +15,6 @@ lemma cfc_real_eq_complex_comp'
     (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc (fun x ↦ (g (f x.re) : ℂ)) a = cfc g (cfc f a) := by
   rw [← cfc_comp' g f a hg hf ha , ← cfc_real_eq_complex (fun x ↦ g (f x)) ha]
-
-end
 
 attribute [transport fun f : R → R ↦ cfc f a]
   cfc_add cfc_mul cfc_pow cfc_sum cfc_smul cfc_sub cfc_neg cfc_const_one cfc_const_zero

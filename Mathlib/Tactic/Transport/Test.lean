@@ -24,7 +24,7 @@ How to transfer from `Set` to `Finset`?
 
 -/
 
-attribute [transport] mt Or.imp -- exists_imp forall_imp
+attribute [transport] mt Or.imp Exists.imp forall_imp
   Mathlib.Tactic.GCongr.imp_mono
   Mathlib.Tactic.GCongr.and_mono
 
@@ -64,30 +64,30 @@ theorem forall_transport [LeftTotal r]
     (∀ b, q b) → (∀ a, p a) :=
   fun h' a ↦ (leftTotal r a).rec fun b hb ↦ h hb (h' b)
 
--- @[transport]
+@[transport]
 theorem forall_transport' [RightTotal r] (h : ∀ {a b}, r a b → p a → q b) :
     (∀ a, p a) → (∀ b, q b) :=
   forall_transport (flip r) h
 
 @[transport]
 theorem forall_transport_eq [LeftTotal r] [RightTotal r] (h : ∀ {a b}, r a b → p a = q b) :
-    (∀ a, p a) = (∀ b, q b) :=
-  propext ⟨forall_transport' r (h · |>.mp), forall_transport r (h · |>.mpr)⟩
+    (∀ a, p a) ↔ (∀ b, q b) :=
+  ⟨forall_transport' r (h · |>.mp), forall_transport r (h · |>.mpr)⟩
 
 @[transport]
 theorem exists_transport [LeftTotal r] (h : ∀ {a b}, r a b → p a → q b) :
-    Exists p → Exists q :=
+    (∃ a, p a) → (∃ b, q b) :=
   fun ⟨a, ha⟩ ↦ (leftTotal r a).rec fun b hb ↦ ⟨b, h hb ha⟩
 
 @[transport]
 theorem exists_transport' [RightTotal r] (h : ∀ {a b}, r a b → q b → p a) :
-    Exists q → Exists p :=
+    (∃ b, q b) → (∃ a, p a) :=
   exists_transport (flip r) h
 
 @[transport]
 theorem exists_transport_eq [LeftTotal r] [RightTotal r] (h : ∀ {a b}, r a b → p a = q b) :
-    Exists p = Exists q :=
-  propext ⟨exists_transport r (h · |>.mp), exists_transport' r (h · |>.mpr)⟩
+    (∃ a, p a) ↔ (∃ b, q b) :=
+  ⟨exists_transport r (h · |>.mp), exists_transport' r (h · |>.mpr)⟩
 
 end
 
@@ -112,21 +112,21 @@ lemma rightUnique [RightUnique r] (h : r a b) (h' : r a b') : b = b' :=
 lemma leftUnique [LeftUnique r] (h : r a b) (h' : r a' b) : a = a' :=
   RightUnique.unique (r := flip r) h h'
 
--- @[transport]
+@[transport]
 theorem eq_transport [RightUnique r]
     (h : r a b) (h' : r a' b') : a = a' → b = b' := by
   rintro rfl
   exact rightUnique h h'
 
--- @[transport]
+@[transport]
 theorem eq_transport' [LeftUnique r]
     (h : r a b) (h' : r a' b') : b = b' → a = a' :=
   eq_transport (r := flip r) h h'
 
 @[transport]
 theorem eq_transport_eq [RightUnique r] [LeftUnique r]
-    (h : r a b) (h' : r a' b') : (a = a') = (b = b') :=
-  propext ⟨eq_transport h h', eq_transport' h h'⟩
+    (h : r a b) (h' : r a' b') : a = a' ↔ b = b' :=
+  ⟨eq_transport h h', eq_transport' h h'⟩
 
 @[transport]
 theorem ne_transport [RightUnique r]
@@ -141,8 +141,8 @@ theorem ne_transport' [LeftUnique r]
 
 @[transport]
 theorem ne_transport_eq [RightUnique r] [LeftUnique r]
-    (h : r a b) (h' : r a' b') : (a ≠ a') = (b ≠ b') :=
-  (eq_transport_eq h h').to_iff.ne.eq
+    (h : r a b) (h' : r a' b') : a ≠ a' ↔ b ≠ b' :=
+  (eq_transport_eq h h').ne
 
 end
 
@@ -408,7 +408,7 @@ variable {α β : Type*}
 
 @[transport]
 def SetRel (r : α → β → Prop) (t : Set β) (s : Set α) : Prop :=
-  ∀ {a b}, r a b → (a ∈ s) = (b ∈ t)
+  ∀ {a b}, r a b → (a ∈ s ↔ b ∈ t)
 
 variable (r : α → β → Prop)
 
@@ -451,7 +451,7 @@ instance [RightTotal r] : LeftUnique (SetRel r) where
 --     exact congr($(map_eq_of_rel h) ∈ s)
 --   map_eq_of_rel {g f} h := by
 --     ext a
---     exact (h (rel_map a)).symm.to_iff
+--     exact (h (rel_map a)).symm
 
 -- instance [SurjMapClass r] : InjMapClass (Set β) (Set α) where
 --   map_injective g g' h := by
@@ -469,13 +469,13 @@ variable {r} {s t : Set α} {s' t' : Set β}
 
 @[transport]
 theorem Set.transport_mem (hs : SetRel r s' s) {a a'} (ha : r a a') :
-    (a ∈ s) = (a' ∈ s') :=
+    a ∈ s ↔ a' ∈ s' :=
   hs ha
 
 -- TODO: remove this lemma
 @[transport]
 theorem Set.transport_mem' (hs : SetRel r s' s) {a a'} (ha : r a a') :
-    (a' ∈ s') = (a ∈ s) :=
+    a' ∈ s' ↔ a ∈ s :=
   hs ha |>.symm
 
 @[transport] theorem Set.transport_univ : SetRel r .univ .univ := by simp [SetRel]
@@ -491,7 +491,7 @@ theorem Set.transport_mem' (hs : SetRel r s' s) {a a'} (ha : r a a') :
 @[transport]
 theorem Set.transport_subset [LeftTotal r] [RightTotal r]
     (hs : SetRel r s' s) (ht : SetRel r t' t) :
-    (s ⊆ t) = (s' ⊆ t') := by
+    s ⊆ t ↔ s' ⊆ t' := by
   simp_rw [Set.subset_def]
   transport [hs, ht, → r]
   rfl
@@ -499,7 +499,7 @@ theorem Set.transport_subset [LeftTotal r] [RightTotal r]
 @[transport]
 theorem Set.transport_ssubset [LeftTotal r] [RightTotal r]
     (hs : SetRel r s' s) (ht : SetRel r t' t) :
-    (s ⊂ t) = (s' ⊂ t') := by
+    s ⊂ t ↔ s' ⊂ t' := by
   simp_rw [Set.ssubset_def]
   transport [hs, ht, → r]
   rfl
@@ -536,52 +536,11 @@ instance {A B : Type*} [SetLike A B] : InjMapClass (@MapRel A (Set B) SetLike.co
 
 variable {α : Type*}
 
-@[transport]
+attribute [transport SetLike.coe (A := Finset α)] Finset.coe_univ Finset.coe_empty
+  Finset.coe_singleton Finset.coe_union Finset.coe_inter Finset.coe_subset Finset.coe_ssubset
+  Finset.coe_insert Finset.coe_erase Finset.coe_nonempty Finset.mem_coe
+
 abbrev FinsetToSetRel : Finset α → Set α → Prop := MapRel (↑)
-
-variable {s t : Finset α} {s' t' : Set α}
-
-@[transport]
-theorem Finset.transport_subset (hs : FinsetToSetRel s s') (ht : FinsetToSetRel t t') :
-    (s ⊆ t) = (s' ⊆ t') := by
-  subst hs ht; simp
-
-@[transport]
-theorem Finset.transport_ssubset (hs : FinsetToSetRel s s') (ht : FinsetToSetRel t t') :
-    (s ⊂ t) = (s' ⊂ t') := by
-  subst hs ht; simp
-
-@[transport]
-theorem Finset.transport_empty : FinsetToSetRel (∅ : Finset α) ∅ := by simp [FinsetToSetRel, MapRel]
-
-@[transport]
-theorem Finset.transport_singleton {a a' : α} (h : a = a') :
-    FinsetToSetRel ({a} : Finset α) {a'} := by
-  simp [h, FinsetToSetRel, MapRel]
-
-variable [DecidableEq α]
-
-@[transport]
-theorem Finset.transport_insert {a a' : α} (ha : a = a') (hs : FinsetToSetRel s s') :
-    FinsetToSetRel (insert a s) (insert a' s') := by
-  simp_all [FinsetToSetRel, MapRel]
-
-@[transport]
-theorem Finset.transport_erase {a a' : α} (ha : a = a') (hs : FinsetToSetRel s s') :
-    FinsetToSetRel (s.erase a) (s' \ {a'}) := by
-  simp_all [FinsetToSetRel, MapRel]
-
-@[transport]
-theorem Finset.transport_union (hs : FinsetToSetRel s s') (ht : FinsetToSetRel t t') :
-    FinsetToSetRel (s ∪ t) (s' ∪ t') := by
-  simp_all [FinsetToSetRel, MapRel]
-
-@[transport]
-theorem Finset.transport_inter (hs : FinsetToSetRel s s') (ht : FinsetToSetRel t t') :
-    FinsetToSetRel (s ∩ t) (s' ∩ t') := by
-  simp_all [FinsetToSetRel, MapRel]
-
--- TODO: Nonempty, membership, cardinality.
 
 end Finset
 
@@ -650,7 +609,7 @@ theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [MapTransport r 
     (hf : Continuous map) {s : Set X} {t : Set Y} (h : SetRel r t s) : IsOpen t → IsOpen s := by
   convert IsOpen.preimage hf
   ext x
-  exact (h (rel_map r x)).to_iff
+  exact h (rel_map r x)
 
 -- Yay, this now works!!!
 example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f)
