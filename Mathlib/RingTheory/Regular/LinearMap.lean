@@ -25,7 +25,6 @@ This is the case if `Depth[I](M) = 0`.
 
 * `IsSMulRegular.subsingleton_linearMap_iff` : for `R` module `N M`, `Hom(N, M) = 0`
   iff there is a `M`-regular in `Module.annihilator R N`.
-
 -/
 
 public section

@@ -38,7 +38,6 @@ These are defined earlier, but most of their API should be in this file.
   4. The coborder `(closure s \ s)ᶜ` is open.
   5. `s` is the intersection of an open set and `closure s`.
   6. `s` is open in the closure of `s`.
-
 -/
 
 public section

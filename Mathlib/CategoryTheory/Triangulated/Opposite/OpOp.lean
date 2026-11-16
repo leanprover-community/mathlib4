@@ -15,7 +15,6 @@ the functors `opOp C : C ⥤ Cᵒᵖᵒᵖ` and `unopUnop C : Cᵒᵖᵒᵖ ⥤ 
 We also show that the unit and counit isomorphisms of the equivalence
 `opOpEquivalence C : Cᵒᵖᵒᵖ ≌ C` are compatible with shifts, which is summarized
 by the property `(opOpEquivalence C).IsTriangulated`.
-
 -/
 
 @[expose] public section

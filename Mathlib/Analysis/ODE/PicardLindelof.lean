@@ -62,7 +62,6 @@ The public-facing existence theorems stated using the integral curve API are in
 
 differential equation, dynamical system, initial value problem, Picard-Lindelöf theorem,
 Cauchy-Lipschitz theorem
-
 -/
 
 @[expose] public section

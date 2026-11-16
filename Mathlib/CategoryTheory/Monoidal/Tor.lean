@@ -20,7 +20,6 @@ by left-deriving in the first factor, instead.
 For now we define `Tor'` by left-deriving in the first factor,
 but showing `Tor C n ≅ Tor' C n` will require a bit more theory!
 Possibly it's best to axiomatize delta functors, and obtain a unique characterisation?
-
 -/
 
 @[expose] public section

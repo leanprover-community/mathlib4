@@ -293,7 +293,7 @@ theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d �
   rw [dvd_iff_le_div_mul n d]
   by_contra h2
   obtain ⟨p, hp⟩ := exists_factorization_lt_of_lt (mul_ne_zero h1 hd) (not_le.mp h2)
-  rwa [factorization_mul h1 hd, add_apply, ← lt_tsub_iff_right, h, tsub_apply,
+  rwa [factorization_mul h1 hd, Finsupp.add_apply, ← lt_tsub_iff_right, h, tsub_apply,
     lt_self_iff_false] at hp
 
 theorem ordProj_dvd_ordProj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b) (p : ℕ) :

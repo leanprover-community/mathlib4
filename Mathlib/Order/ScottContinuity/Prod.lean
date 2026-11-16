@@ -16,7 +16,6 @@ public import Mathlib.Order.ScottContinuity
 - `ScottContinuous_prod_of_ScottContinuous`: A function is Scott continuous on a product space if it
   is Scott continuous in each variable.
 - `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
-
 -/
 
 public section

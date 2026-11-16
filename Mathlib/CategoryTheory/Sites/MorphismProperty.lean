@@ -17,7 +17,6 @@ whose elements satisfy `P`.
 
 Standard examples of pretopologies in algebraic geometry, such as the étale site, are obtained from
 this construction by intersecting with the pretopology of surjective families.
-
 -/
 
 @[expose] public section

@@ -36,7 +36,6 @@ is a generalization of `Algebra.Polynomial.Eval`.
 
 * `smeval_neg` and `smeval_intCast` for `R` a ring and `S` an `AddCommGroup`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
-
 -/
 
 @[expose] public section

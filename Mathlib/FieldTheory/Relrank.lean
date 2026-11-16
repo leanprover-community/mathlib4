@@ -23,7 +23,6 @@ This file contains basics about the relative rank of subfields and intermediate 
   the `Nat` version of `Subfield.relrank A B` and `IntermediateField.relrank A B`, respectively.
   If `B / A ⊓ B` is an infinite extension, then it is zero.
   This is similar to `Subgroup.relIndex`.
-
 -/
 
 @[expose] public section

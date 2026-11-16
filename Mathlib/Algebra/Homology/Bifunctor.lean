@@ -19,7 +19,6 @@ Then, when `K₁ : HomologicalComplex C₁ c₁`, `K₂ : HomologicalComplex C�
 a typeclass `HasMapBifunctor K₁ K₂ F c` which allows to define
 `mapBifunctor K₁ K₂ F c : HomologicalComplex D c` as the total complex of the
 bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
-
 -/
 
 @[expose] public section
@@ -113,7 +112,8 @@ variable {I₁ I₂ J : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I
 
 /-- The condition that `((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂` has
 a total complex. -/
-abbrev HasMapBifunctor := (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).HasTotal c
+@[reducible]
+def HasMapBifunctor := (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).HasTotal c
 
 variable [HasMapBifunctor K₁ K₂ F c] [HasMapBifunctor L₁ L₂ F c] [DecidableEq J]
 
@@ -121,7 +121,8 @@ variable [HasMapBifunctor K₁ K₂ F c] [HasMapBifunctor L₁ L₂ F c] [Decida
 a bifunctor `F : C₁ ⥤ C₂ ⥤ D` and a complex shape `ComplexShape J` such that we have
 `[TotalComplexShape c₁ c₂ c]`, this `mapBifunctor K₁ K₂ F c : HomologicalComplex D c`
 is the total complex of the bicomplex obtained by applying `F` to `K₁` and `K₂`. -/
-noncomputable abbrev mapBifunctor : HomologicalComplex D c :=
+@[reducible]
+noncomputable def mapBifunctor : HomologicalComplex D c :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).total c
 
 /-- The inclusion of a summand of `(mapBifunctor K₁ K₂ F c).X j`. -/

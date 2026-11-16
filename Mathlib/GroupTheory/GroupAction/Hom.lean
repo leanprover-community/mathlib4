@@ -52,7 +52,6 @@ When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notat
 The notation for `MulActionHom` and `AddActionHom` is the same, because it is unlikely
 that it could lead to confusion — unless one needs types `M` and `X` with simultaneous
 instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
-
 -/
 
 @[expose] public section

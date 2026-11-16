@@ -30,7 +30,6 @@ This file defines the Lie algebra structure the Product of two Lie algebras
 Extend to further functionality from `LinearMap.prod`, e.g.
 - Lie Equivalences related to products
 - Lie Submodule statements
-
 -/
 
 @[expose] public section

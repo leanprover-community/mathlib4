@@ -58,7 +58,6 @@ about the need for a non-manifold version of `SmoothPartitionOfUnity`.
   vector bundle by smooth sections.
 - If needed, specialize to `M = U` an open subset of a normed space `E`
   (we currently do `M = E` only).
-
 -/
 
 public section

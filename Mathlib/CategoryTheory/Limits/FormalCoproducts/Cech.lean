@@ -16,7 +16,6 @@ functor `cechFunctor : FormalCoproduct C ⥤ SimplicialObject (FormalCoproduct C
 which sends a formal coproduct of objects `U j` (for `j : ι`) to the simplicial object
 which sends `⦋n⦌` to the formal coproduct, indexed by `i : Fin (n + 1) → ι`,
 of the products of the objects `U (i a)` for all `a : Fin (n + 1)`.
-
 -/
 
 @[expose] public section

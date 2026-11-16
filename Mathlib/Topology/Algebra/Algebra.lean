@@ -28,7 +28,6 @@ algebra homomorphisms between the topological `R`-algebras `A` and `B` is denote
 
 See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of isomorphisms between
 the topological `R`-algebras `A` and `B`.
-
 -/
 
 @[expose] public section

@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.RingHom.Smooth
 
 In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism `f : R →+* S`,
 `I` an ideal of `R` which is square zero, if `R ⧸ I →+* S ⧸ IS` is formally smooth, so is `f`.
-
 -/
 
 public section

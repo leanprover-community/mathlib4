@@ -36,7 +36,6 @@ suitable conditions.
 
 * `RingHom.isLocalRing_pullback`: The pullback of `f : R →+* T` and `g : S →+* T` is a
   local ring, provided that `R` is a local ring and `g` is a local homomorphism.
-
 -/
 
 public section

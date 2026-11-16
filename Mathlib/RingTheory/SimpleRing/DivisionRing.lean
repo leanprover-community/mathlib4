@@ -25,7 +25,6 @@ This file contains some results about simple modules over division rings.
 
 ## Tags
 Noncommutative algebra, simple module, division ring
-
 -/
 
 public section

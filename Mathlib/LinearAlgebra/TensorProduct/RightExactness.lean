@@ -82,7 +82,6 @@ to compute some kernels.
   [Grillet-1969b], Pierre-Antoine Grillet,
   *The tensor product of commutative semigroups*,
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
-
 -/
 
 @[expose] public section

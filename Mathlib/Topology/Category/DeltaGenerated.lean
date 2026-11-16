@@ -22,7 +22,6 @@ for all `n : ℕ`.
 
 ## References
 * https://ncatlab.org/nlab/show/Delta-generated+topological+space
-
 -/
 
 @[expose] public section

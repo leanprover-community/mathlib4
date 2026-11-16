@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Semisimple
 
 This file is a place to gather results related to semisimplicity of linear operators on inner
 product spaces.
-
 -/
 
 public section

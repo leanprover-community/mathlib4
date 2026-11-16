@@ -44,7 +44,6 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
   property `IsRatCondKernelCDF`, then `stieltjesOfMeasurableRat f` is a function
   `α × β → StieltjesFunction ℝ` with the property `IsCondKernelCDF`.
 * `ProbabilityTheory.compProd_toKernel`: for `hf : IsCondKernelCDF f κ ν`, `ν ⊗ₖ hf.toKernel f = κ`.
-
 -/
 
 @[expose] public section

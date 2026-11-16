@@ -18,7 +18,6 @@ potentially too big to exist in `Type u`.
 
 As this functor is fully faithful, we also deduce that it creates `u`-small limits and
 colimits.
-
 -/
 
 @[expose] public section

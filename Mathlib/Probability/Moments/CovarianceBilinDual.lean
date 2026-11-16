@@ -35,7 +35,6 @@ Let `μ` be a finite measure on a normed space `E` with the Borel σ-algebra. We
 ## Implementation notes
 
 The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in the code.
-
 -/
 
 @[expose] public section

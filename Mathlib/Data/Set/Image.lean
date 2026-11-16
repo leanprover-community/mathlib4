@@ -30,7 +30,6 @@ public import Mathlib.Data.Set.SymmDiff
 ## Tags
 
 set, sets, image, preimage, pre-image, range
-
 -/
 
 public section

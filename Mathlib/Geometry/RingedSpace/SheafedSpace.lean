@@ -54,6 +54,7 @@ instance coeSort : CoeSort (SheafedSpace C) Type* where
   coe X := X.1
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
+@[implicit_reducible]
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 

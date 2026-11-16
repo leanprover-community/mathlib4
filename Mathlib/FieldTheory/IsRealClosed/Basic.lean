@@ -36,7 +36,6 @@ TODO (Artie Khovanov) : real algebraic numbers, hyperreals form a real closed fi
 ## Tags
 
 real closed, rcf
-
 -/
 
 public section

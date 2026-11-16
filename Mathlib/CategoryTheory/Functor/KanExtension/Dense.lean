@@ -26,7 +26,6 @@ that the range of a dense functor is a strong generator.
 ## References
 
 * https://ncatlab.org/nlab/show/dense+subcategory
-
 -/
 
 @[expose] public section

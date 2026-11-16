@@ -72,7 +72,6 @@ manifold, interior, boundary
   manifolds; this will require e.g. the homology of spheres.
 - submersions send interior points to interior points. This should be an easy consequence of
   `MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv` once submersions are defined.
-
 -/
 
 @[expose] public section

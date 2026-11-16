@@ -58,7 +58,6 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 ## Tags
 
 perfect ring, perfect closure, purely inseparable
-
 -/
 
 @[expose] public section

@@ -20,7 +20,6 @@ a homeomorphism
 `Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s ≃ₜ Sᶜ.domRestrict '' s × Π i : S, α i`.
 `Sᶜ.domRestrict '' s` is a compact space since `s` is compact, and the lemma applies,
 with `X = Sᶜ.domRestrict '' s` and `Y = Π i : S, α i`.
-
 -/
 
 @[expose] public section

@@ -18,7 +18,6 @@ truncations of `K` relative to `e`.
 
 In order to achieve this, we dualize the constructions from the file
 `Embedding.TruncGE`.
-
 -/
 
 @[expose] public section

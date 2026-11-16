@@ -12,7 +12,6 @@ public import Mathlib.Order.SuccPred.Archimedean
 # Successor and predecessor on type tags
 
 This file declares successor and predecessor orders on type tags.
-
 -/
 
 public section

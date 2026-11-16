@@ -47,7 +47,6 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 ## References
 
 We follow [Wielandt-1964].
-
 -/
 
 @[expose] public section

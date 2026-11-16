@@ -49,7 +49,6 @@ If we further assume that `C` and `D` are abelian categories, then we have:
   2. for every exact sequence `A ⟶ B ⟶ C`, `F(A) ⟶ F(B) ⟶ F(C)` is exact.
   3. `F` preserves homology.
   4. `F` preserves both finite limits and finite colimits.
-
 -/
 
 public section
@@ -133,7 +132,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
   tfae_have 2 → 3
   | hF, X, Y, f => by
     refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f) ?_
-    apply (KernelFork.isLimitMapConeEquiv _ F).2
+    apply (KernelFork.isLimitMapConeEquiv _ F).invFun
     let S := ShortComplex.mk _ _ (kernel.condition f)
     let hS := hF S ⟨exact_kernel f, inferInstance⟩
     have : Mono (S.map F).f := hS.2
@@ -192,7 +191,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
   tfae_have 2 → 3
   | hF, X, Y, f => by
     refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f) ?_
-    apply (CokernelCofork.isColimitMapCoconeEquiv _ F).2
+    apply (CokernelCofork.isColimitMapCoconeEquiv _ F).invFun
     let S := ShortComplex.mk _ _ (cokernel.condition f)
     let hS := hF S ⟨exact_cokernel f, inferInstance⟩
     have : Epi (S.map F).g := hS.2

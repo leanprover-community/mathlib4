@@ -38,7 +38,6 @@ theorems.
 * `MeasureTheory.Integrable.tendsto_eLpNorm_condExp`: part c the L¹ martingale convergence theorem:
   given a `⨆ n, ℱ n`-measurable function `g` where `ℱ` is a filtration, `𝔼[g | ℱ n]` converges in
   L¹ to `g`.
-
 -/
 
 public section
@@ -100,7 +99,6 @@ Furthermore, we introduce `Filtration.limitProcess` which chooses the limiting r
 of a stochastic process if it exists, otherwise returning 0. Hence, instead of showing an
 existence statement, we phrase the a.e. martingale convergence theorem by showing that a
 submartingale converges to its `limitProcess` almost everywhere.
-
 -/
 
 
@@ -298,7 +296,6 @@ limiting process, we phrase the L¹-martingale convergence theorem by proving th
 does converge in L¹ to its `limitProcess`. However, in contrast to the a.e. martingale convergence
 theorem, we do not need to introduce an L¹ version of `Filtration.limitProcess` as the L¹ limit
 and the a.e. limit of a submartingale coincide.
-
 -/
 
 

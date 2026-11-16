@@ -12,7 +12,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 We show that the canonical map `X(Π Rᵢ) ⟶ Π X(Rᵢ)` (`AlgebraicGeometry.pointsPi`)
 is injective and surjective under various assumptions.
-
 -/
 
 @[expose] public section

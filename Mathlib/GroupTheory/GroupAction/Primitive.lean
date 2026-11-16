@@ -67,7 +67,6 @@ import Mathlib.Order.Setoid.Partition.Card
 - `MulAction.IsPreprimitive.exists_mem_smul_and_notMem_smul` : **Theorem of Rudio**.
   For a preprimitive action, a subset which is neither empty nor full has a translate
   which contains a given point and avoids another one.
-
 -/
 
 public section
