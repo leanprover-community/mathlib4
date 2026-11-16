@@ -69,10 +69,10 @@ def LinearOrder.ofSubmonoid (hMs : M.IsMulSpanning) [dec : DecidablePred (· ∈
 namespace CommGroup
 
 variable (G) in
-/-- Equivalence between submonoids with zero support in an abelian group `G`
+/-- Equivalence between positive cones in an abelian group `G`
     and partially ordered group structures on `G`. -/
 @[to_additive
-  /-- Equivalence between submonoids with zero support in an abelian group `G`
+  /-- Equivalence between positive cones in an abelian group `G`
     and partially ordered group structures on `G`. -/]
 noncomputable def submonoidPartialOrderEquiv :
     {C : Submonoid G // C.IsMulPointed} ≃
@@ -93,10 +93,10 @@ theorem submonoidPartialOrderEquiv_symm_apply (o : PartialOrder G) (h : IsOrdere
 
 open Classical in
 variable (G) in
-/-- Equivalence between maximal submonoids with zero support in an abelian group `G`
+/-- Equivalence between spanning positive cones in an abelian group `G`
     and linearly ordered group structures on `G`. -/
 @[to_additive
-  /-- Equivalence between maximal submonoids with zero support in an abelian group `G`
+  /-- Equivalence between spanning positive cones in an abelian group `G`
     and linearly ordered group structures on `G`. -/]
 noncomputable def submonoidLinearOrderEquiv :
     {C : Submonoid G // C.IsMulPointed ∧ C.IsMulSpanning} ≃

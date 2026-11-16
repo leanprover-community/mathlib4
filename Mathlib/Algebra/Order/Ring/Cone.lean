@@ -41,7 +41,7 @@ theorem IsOrderedRing.ofSubsemiring :
 namespace Ring
 
 variable (R) in
-/-- Equivalence between subsemirings with zero support in a ring `R`
+/-- Equivalence between positive cones in a ring `R`
     and partially ordered ring structures on `R`. -/
 noncomputable def isPointedPartialOrderEquiv :
     {C : Subsemiring R // C.IsPointed} ≃
@@ -62,7 +62,7 @@ theorem isPointedPartialOrderEquiv_symm_apply (o : PartialOrder R) (h : IsOrdere
 
 variable (R) in
 open Classical in
-/-- Equivalence between maximal subsemirings with zero support in a ring `R`
+/-- Equivalence between spanning positive cones in a ring `R`
     and linearly ordered ring structures on `R`. -/
 noncomputable def isPointedLinearOrderEquiv :
     {C : Subsemiring R // C.IsPointed ∧ C.IsSpanning} ≃
