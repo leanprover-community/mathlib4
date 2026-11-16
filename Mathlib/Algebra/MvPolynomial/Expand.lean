@@ -132,8 +132,7 @@ theorem expand_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
 @[simp]
 theorem map_expand (f : R →+* S) (φ : MvPolynomial σ R) :
     map f (expand p φ) = expand p (map f φ) := by
-  rw [coe_expand, coe_expand, map_eval₂]
-  simp [Function.comp_def, Pi.pow_def]
+  simp [coe_expand, map_eval₂, Function.comp_def, Pi.pow_def]
 
 @[simp]
 theorem rename_comp_expand (f : σ → τ) :
