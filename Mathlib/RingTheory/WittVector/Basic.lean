@@ -222,11 +222,8 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   right_inv := by
     intro x
     ext n
-    have := aeval_xInTermsOfW_wittPolynomial p R n
-    apply_fun aeval x at this
-    simp_rw [ghostFun, aeval_wittPolynomial]
-    simp_rw [comp_aeval_apply, aeval_wittPolynomial, aeval_X] at this
-    exact this
+    simpa [ghostFun, aeval_wittPolynomial] using
+      congrArg (aeval x) (aeval_xInTermsOfW_wittPolynomial p R n)
 
 variable [Fact p.Prime]
 
