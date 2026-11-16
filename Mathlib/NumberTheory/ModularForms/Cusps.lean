@@ -395,13 +395,11 @@ end Ring
 lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictPeriods (Γ : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 := by
   ext x
-  simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix,
-    map_apply_coe]
+  simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix]
   refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr($hg 0 1)⟩, ?_⟩
   rintro ⟨m, rfl⟩
   refine ⟨ModularGroup.T ^ m, zpow_mem hΓ m, ?_⟩
-  ext i j
-  fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow]
+  simp [-map_zpow, ModularGroup.coe_T_zpow, ← Matrix.ext_iff, Fin.forall_fin_two]
 
 @[simp] lemma strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
   simpa [MonoidHom.range_eq_map] using strictPeriods_eq_zmultiples_one_of_T_mem (mem_top _)

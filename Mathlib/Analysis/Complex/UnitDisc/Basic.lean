@@ -417,9 +417,6 @@ theorem coe_closedBall_smul (z : 𝕔𝔻) (w : 𝔻) : ↑(z • w) = (z * w : 
 theorem coe_circle_smul (z : Circle) (w : 𝕔𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
 
-instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
-  SMulCommClass.symm _ _ _
-
 @[simp, norm_cast]
 theorem coe_pow (z : 𝕔𝔻) (n : ℕ) : ((z ^ n : 𝕔𝔻) : ℂ) = z ^ (n : ℕ) := rfl
 

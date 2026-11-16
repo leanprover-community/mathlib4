@@ -263,6 +263,12 @@ theorem star_right_conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     c * a * star c ≤ c * b * star c := by
   simpa only [star_star] using star_left_conjugate_le_conjugate hab (star c)
 
+lemma monotone_conjugate_star_left (r : R) : Monotone (fun x : R ↦ star r * x * r) :=
+  fun _ _ h ↦ star_left_conjugate_le_conjugate h r
+
+lemma monotone_conjugate_star_right (r : R) : Monotone (fun x : R ↦ r * x * star r) :=
+  fun _ _ h ↦ star_right_conjugate_le_conjugate h r
+
 protected theorem IsSelfAdjoint.conjugate_le_conjugate {a b : R} (hab : a ≤ b) {c : R}
     (hc : IsSelfAdjoint c) : c * a * c ≤ c * b * c := by
   simpa only [hc.star_eq] using star_left_conjugate_le_conjugate hab c
