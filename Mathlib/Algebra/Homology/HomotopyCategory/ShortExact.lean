@@ -19,7 +19,6 @@ we construct a quasi-isomorphism `descShortComplex S : mappingCone S.f ⟶ S.X�
 We obtain this by comparing the homology sequence of `S` and the homology
 sequence of the homology functor on the homotopy category, applied to the
 distinguished triangle attached to the mapping cone of `S.f`.
-
 -/
 
 @[expose] public section
@@ -80,7 +79,6 @@ end
 
 variable {S}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (homologyFunctor C (up ℤ) 0).homologySequenceδ (triangleh S.f) n₀ n₁ h =

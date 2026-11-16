@@ -810,8 +810,6 @@ namespace Submodule
   projection_apply_eq_zero_iff
 @[deprecated (since := "2026-05-05")] alias linearProjOfIsCompl_apply_of_mem_right :=
   projectionOnto_apply_of_mem_right
-@[deprecated (since := "2026-04-27")] alias linearProjOfIsCompl_apply_right' :=
-  projectionOnto_apply_of_mem_right
 @[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_of_mem_right :=
   projection_apply_of_mem_right
 @[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_apply_right :=

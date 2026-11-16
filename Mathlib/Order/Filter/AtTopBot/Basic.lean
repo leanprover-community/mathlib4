@@ -169,6 +169,13 @@ theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (
 
 end IsDirected
 
+theorem Tendsto.exists_le_lt_succ [LinearOrder α] [NoMaxOrder α] {c : ℕ → α}
+    (hc : Tendsto c atTop atTop) {a : ℕ} {x : α} (hx : c a ≤ x) :
+    ∃ k ≥ a, c k ≤ x ∧ x < c (k + 1) := by
+  by_contra! h
+  obtain ⟨k, hak, hk⟩ := exists_lt_of_tendsto_atTop hc a x
+  exact (Nat.le_induction (motive := fun k _ ↦ c k ≤ x) hx h k hak).not_gt hk
+
 section IsDirected
 variable [Nonempty α] [Preorder α] [IsDirectedOrder α] {f : α → β} {l : Filter β}
 

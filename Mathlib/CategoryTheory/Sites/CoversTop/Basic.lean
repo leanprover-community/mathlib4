@@ -20,7 +20,6 @@ and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.existsUnique_section
 which asserts that if a presheaf of types is a sheaf, then any compatible
 family of elements on objects `Y` which cover the final object extends to
 a section of this presheaf.
-
 -/
 
 @[expose] public section

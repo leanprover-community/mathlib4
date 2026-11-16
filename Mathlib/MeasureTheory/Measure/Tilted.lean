@@ -22,7 +22,6 @@ can be used for example to establish variational expressions for the Kullback-Le
 
 * `Measure.tilted μ f`: exponential tilting of `μ` by `f`, equal to
   `μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ))`.
-
 -/
 
 @[expose] public section

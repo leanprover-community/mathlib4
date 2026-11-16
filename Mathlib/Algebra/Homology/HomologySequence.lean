@@ -28,7 +28,6 @@ the Liquid Tensor Experiment.
 ## References
 
 * https://stacks.math.columbia.edu/tag/0111
-
 -/
 
 @[expose] public section
@@ -86,7 +85,6 @@ lemma opcyclesToCycles_naturality :
 
 variable (C c)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.opcyclesToCycles i j : K.opcycles i ⟶ K.cycles j` for all
 `K : HomologicalComplex C c`. -/
 @[simps]
@@ -218,7 +216,6 @@ variable {S : ShortComplex (HomologicalComplex C c)}
 
 namespace HomologySequence
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a short exact short complex `S : HomologicalComplex C c`, and degrees `i` and `j`
 such that `c.Rel i j`, this is the snake diagram whose four lines are respectively
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
@@ -293,7 +290,6 @@ lemma comp_δ : HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
 lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₂'_exact
 
-set_option backward.isDefEq.respectTransparency false in
 include hS in
 /-- Exactness of `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i`. -/
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)

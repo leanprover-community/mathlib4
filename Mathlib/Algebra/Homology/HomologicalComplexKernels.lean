@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # Kernels and cokernels in categories of homological complexes
-
 -/
 
 public section

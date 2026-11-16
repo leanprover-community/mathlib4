@@ -40,7 +40,6 @@ defined by `(n, χ) ↦ χ n`.
 - `IsCyclotomicExtension.Rat.mem_intermediateFieldEquivSubgroupChar_iff_conductor_dvd`: assume that
   `m ∣ n`, then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `intermediateFieldEquivSubgroupChar` is the set of
   characters whose conductor divides `m`.
-
 -/
 
 @[expose] public section

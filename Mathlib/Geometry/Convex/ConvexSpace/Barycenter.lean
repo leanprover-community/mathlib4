@@ -9,7 +9,6 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
 /-!
 # The barycenter of the standard simplex
-
 -/
 
 @[expose] public section

@@ -38,7 +38,6 @@ is used to prove Shapiro's lemma in
   `A : Rep k G`, this is a natural isomorphism between the functor sending `B : Rep k H` to
   `(Ind(φ)(A) ⊗ B)_H` and the one sending `B` to `(A ⊗ Res(φ)(B))_G`. Used to prove Shapiro's
   lemma.
-
 -/
 
 @[expose] public section
@@ -127,7 +126,7 @@ variable (B : Rep k H)
 
 /-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
-the `G`-representation morphisms `A ⟶ B`. -/
+the `G`-representation morphisms `A ⟶ res φ B`. -/
 @[simps]
 noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H) :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B) where
