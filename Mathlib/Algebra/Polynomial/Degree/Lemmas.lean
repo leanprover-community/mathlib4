@@ -459,6 +459,10 @@ theorem comp_neg_X_eq_of_natDegree_eq_zero [Ring R] {p : R[X]} (hp : p.natDegree
 theorem comp_neg_X_eq_C_iff [Ring R] {p : R[X]} {a : R} : p.comp (-X) = C a ↔ p = C a := by
   grind [comp_neg_X_eq_of_natDegree_eq_zero, natDegree_C, natDegree_comp_neg_X]
 
+@[simp]
+theorem comp_neg_X_eq_one_iff [Ring R] {p : R[X]} : p.comp (-X) = 1 ↔ p = 1 := by
+  simpa using comp_neg_X_eq_C_iff (p := p) (a := 1)
+
 section DivisionRing
 
 variable {K : Type*} [DivisionRing K]
