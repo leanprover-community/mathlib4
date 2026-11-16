@@ -96,9 +96,6 @@ lemma SpecMap_iff {R S : CommRingCat} {φ : R ⟶ S} :
   exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
     (arrowIsoΓSpecOfIsAffine φ).symm, inferInstance]
 
-set_option backward.isDefEq.respectTransparency.types false in
-instance : IsMultiplicative @IsIntegralHom where
-
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsIntegralHom f] [IsIntegralHom g] :
     IsIntegralHom (Limits.coprod.desc f g) := by
   refine hasAffineProperty.coprodDesc_affineAnd RingHom.isIntegral_respectsIso ?_ _ _ ‹_› ‹_›
