@@ -29,8 +29,9 @@ theorem divMaxPow_mul_pow_fst_maxPowDvdDiv (p n : ℕ) :
   | case1 h => exact go_spec h |>.1
   | case2 h => simp
 
-@[deprecated (since := "2026-11-02")] alias divMaxPow_mul_pow_padicValNat :=
-  divMaxPow_mul_pow_fst_maxPowDvdDiv
+@[deprecated divMaxPow_mul_pow_fst_maxPowDvdDiv +typeChanged (since := "2026-11-16")]
+theorem divMaxPow_mul_pow_padicValNat (p n : ℕ) : divMaxPow n p * p ^ padicValNat p n = n :=
+  divMaxPow_mul_pow_fst_maxPowDvdDiv p n
 
 @[simp]
 theorem fst_maxPowDvdDiv (p n : ℕ) : (maxPowDvdDiv p n).fst = multiplicity p n := by
@@ -46,7 +47,8 @@ theorem fst_maxPowDvdDiv (p n : ℕ) : (maxPowDvdDiv p n).fst = multiplicity p n
   rw [pow_add_one', mul_dvd_mul_iff_right (pow_ne_zero (maxPowDvdDiv p n).1 hp0)]
   exact not_dvd_divMaxPow (Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨hp0, hp⟩) hn
 
-@[deprecated (since := "2026-11-02")] alias padicValNat_def := fst_maxPowDvdDiv
+@[deprecated fst_maxPowDvdDiv +typeChanged (since := "2026-11-16")]
+theorem padicValNat_def {p n : ℕ} : padicValNat p n = multiplicity p n := fst_maxPowDvdDiv p n
 
 @[deprecated (since := "2026-10-28")] alias _root_.padicValNat_zero_left := multiplicity_zero_left
 @[deprecated (since := "2026-10-28")] alias _root_.padicValNat_one_left := multiplicity_one_left
