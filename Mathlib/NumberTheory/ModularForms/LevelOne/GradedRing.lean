@@ -9,7 +9,6 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.RingTheory.MvPolynomial.Groebner
-import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-!
 # The graded ring of level-1 modular forms
@@ -23,7 +22,7 @@ and `E₄` and `E₆` are algebraically independent.
 
 * `ModularForm.evalE₄E₆`: the evaluation homomorphism
   `ℂ[X₀, X₁] →ₐ[ℂ] ⨁ k, ModularForm 𝒮ℒ k` sending `X₀ ↦ E₄` and `X₁ ↦ E₆`.
-* `ModularForm.mvPolynomialEquivModularForms`: the `ℂ`-algebra isomorphism
+* `ModularForm.mvPolynomialEquiv`: the `ℂ`-algebra isomorphism
   `ℂ[X₀, X₁] ≃ₐ[ℂ] ⨁ k, ModularForm 𝒮ℒ k` given by `evalE₄E₆`.
 
 ## Main results
@@ -149,9 +148,16 @@ lemma evalE₄E₆_X_zero : evalE₄E₆ (MvPolynomial.X 0) = DirectSum.of (Modu
 lemma evalE₄E₆_X_one : evalE₄E₆ (MvPolynomial.X 1) = DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ :=
   MvPolynomial.aeval_X _ 1
 
+private def discriminantPoly : MvPolynomial (Fin 2) ℂ :=
+  (1 / 1728 : ℂ) • (MvPolynomial.X 0 ^ 3 - MvPolynomial.X 1 ^ 2)
+
+private lemma evalE₄E₆_discriminantPoly : evalE₄E₆ discriminantPoly =
+    DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant := by
+  simp [discriminantPoly, discriminant_eq_E₄_cube_sub_E₆_sq_graded]
+
 private lemma discriminant_mem_range : DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant ∈
     evalE₄E₆.range :=
-  ⟨(1 / 1728 : ℂ) • (.X 0 ^ 3 - .X 1 ^ 2), by simp [discriminant_eq_E₄_cube_sub_E₆_sq_graded]⟩
+  ⟨discriminantPoly, evalE₄E₆_discriminantPoly⟩
 
 private lemma exists_mem_range_coeff_zero_eq_one {k : ℕ} (hk : Even k) (h2 : k ≠ 2) :
     ∃ m : ModularForm 𝒮ℒ k, DirectSum.of _ _ m ∈ evalE₄E₆.range ∧ (qExpansion 1 m).coeff 0 = 1 := by
@@ -214,13 +220,6 @@ instance : IsNoetherianRing (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
 
 /-! ### `E₄` and `E₆` are algebraically independent -/
 
-private def discriminantPoly : MvPolynomial (Fin 2) ℂ :=
-  (1 / 1728 : ℂ) • (MvPolynomial.X 0 ^ 3 - MvPolynomial.X 1 ^ 2)
-
-private lemma evalE₄E₆_discriminantPoly : evalE₄E₆ discriminantPoly =
-    DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant := by
-  simp [discriminantPoly, discriminant_eq_E₄_cube_sub_E₆_sq_graded]
-
 private lemma weight_four_six_apply (d : Fin 2 →₀ ℕ) :
     Finsupp.weight (![4, 6] : Fin 2 → ℕ) d = d 0 * 4 + d 1 * 6 := by
   simp [Finsupp.weight_eq_sum]
@@ -273,30 +272,6 @@ private lemma constantCoeff_qExpansionAlgHom_evalE₄E₆ (p : MvPolynomial (Fin
     · simpa [hp] using congr(MvPolynomial.eval 1 p * $(E_qExpansion_coeff_zero _ ⟨2, rfl⟩))
     · simpa [hp] using congr(MvPolynomial.eval 1 p * $(E_qExpansion_coeff_zero _ ⟨3, rfl⟩))
 
-attribute [local instance] MvPolynomial.weightedGradedAlgebra in
-private lemma weightedHomogeneousComponent_mul_of_isWeightedHomogeneous_right {σ R : Type*}
-    [CommSemiring R] {w : σ → ℕ} {i n : ℕ} {f q : MvPolynomial σ R}
-    (hq : q.IsWeightedHomogeneous w i) (hin : i ≤ n) :
-    MvPolynomial.weightedHomogeneousComponent w n (f * q) =
-      MvPolynomial.weightedHomogeneousComponent w (n - i) f * q := by
-  simp_rw [← MvPolynomial.weightedDecomposition.decompose'_apply]
-  exact DirectSum.coe_decompose_mul_of_right_mem_of_le _ hq hin
-
-private lemma div_single_of_isWeightedHomogeneous {σ R : Type*} [CommRing R] (m : MonomialOrder σ)
-    {w : σ → ℕ} {i n : ℕ} {b f : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff b))
-    (hbi : b.IsWeightedHomogeneous w i) (hf : f.IsWeightedHomogeneous w n) (hin : i ≤ n) :
-    ∃ g r : MvPolynomial σ R, g.IsWeightedHomogeneous w (n - i) ∧ r.IsWeightedHomogeneous w n ∧
-      f = g * b + r ∧ ∀ c ∈ r.support, ¬m.degree b ≤ c := by
-  obtain ⟨g, r, hgr, -, hr⟩ := m.div_single hb f
-  -- Take weight-`n` components in `f = g * b + r`.
-  apply_fun MvPolynomial.weightedHomogeneousComponent w n at hgr
-  rw [hf.weightedHomogeneousComponent_same, map_add,
-    weightedHomogeneousComponent_mul_of_isWeightedHomogeneous_right hbi hin] at hgr
-  refine ⟨_, _, MvPolynomial.weightedHomogeneousComponent_isWeightedHomogeneous (n - i) g,
-    MvPolynomial.weightedHomogeneousComponent_isWeightedHomogeneous n r, hgr, fun c hc ↦ ?_⟩
-  rw [MvPolynomial.support_weightedHomogeneousComponent, Finset.mem_filter] at hc
-  exact hr c hc.1
-
 private lemma lex_degree_discriminantPoly : MonomialOrder.lex.degree discriminantPoly =
     Finsupp.single 0 3 := by
   -- The leading monomial of `X₀ ^ 3 - X₁ ^ 2` is `X₀ ^ 3`, as `X₁ ^ 2 < X₀ ^ 3` lexicographically.
@@ -312,7 +287,7 @@ private lemma exists_eq_reduced_add_discriminantPoly_mul {n : ℕ} {p : MvPolyno
       p = r + discriminantPoly * s ∧ ∀ d ∈ r.support, d 0 < 3 := by
   -- Divide by `discriminantPoly`, whose leading monomial for the lexicographic order is `X₀ ^ 3`:
   -- every monomial of the remainder `r` then has `X₀`-degree `< 3`.
-  obtain ⟨s, r, hs, hr, rfl, hr_red⟩ := div_single_of_isWeightedHomogeneous .lex
+  obtain ⟨s, r, hs, hr, rfl, hr_red⟩ := MonomialOrder.lex.div_single_of_isWeightedHomogeneous
     (MonomialOrder.isUnit_leadingCoeff.mpr <| MonomialOrder.lex.ne_zero_of_degree_ne_zero <| by
       simp [lex_degree_discriminantPoly])
     discriminantPoly_isWeightedHomogeneous hp hn
@@ -343,9 +318,9 @@ private lemma evalE₄E₆_apply_eq_zero_of_discriminantPoly_mul_eq_zero {n : �
     {s : MvPolynomial (Fin 2) ℂ} (hs : s.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n)
     (hds : evalE₄E₆ (discriminantPoly * s) = 0) : evalE₄E₆ s n = 0 := by
   rw [map_mul, evalE₄E₆_discriminantPoly, evalE₄E₆_eq_of_isWeightedHomogeneous hs,
-    DirectSum.of_mul_of, map_eq_zero_iff _ (DirectSum.of_injective _)] at hds
+    directSum_of_mul_of, map_eq_zero_iff _ (DirectSum.of_injective _)] at hds
   -- Now `hds : Δ * g = 0` with `g = (evalE₄E₆ s) n`, and `Δ` has no zeros on `ℍ`.
-  simpa [DFunLike.ext_iff, discriminant_ne_zero, GradedMonoid.GMul.mul] using hds
+  simpa [DFunLike.ext_iff, discriminant_ne_zero] using hds
 
 private lemma eq_zero_of_isWeightedHomogeneous_of_evalE₄E₆_apply_eq_zero {n : ℕ}
     {p : MvPolynomial (Fin 2) ℂ} (hp : p.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n)
@@ -371,7 +346,7 @@ private lemma eq_zero_of_isWeightedHomogeneous_of_evalE₄E₆_apply_eq_zero {n 
 
 /-- The evaluation homomorphism `evalE₄E₆` is injective, i.e. `E₄` and `E₆` are algebraically
 independent over `ℂ` in the graded ring `⨁ k, ModularForm 𝒮ℒ k`. Together with
-`evalE₄E₆_surjective`, this gives the isomorphism `mvPolynomialEquivModularForms`. -/
+`evalE₄E₆_surjective`, this gives the isomorphism `mvPolynomialEquiv`. -/
 theorem evalE₄E₆_injective : Function.Injective evalE₄E₆ := by
   refine (injective_iff_map_eq_zero _).2 fun p hp ↦ ?_
   rw [← MvPolynomial.sum_weightedHomogeneousComponent ![4, 6] p]
@@ -390,26 +365,32 @@ theorem algebraicIndependent_E₄_E₆ : AlgebraicIndependent ℂ ![DirectSum.of
 /-- The `ℂ`-algebra isomorphism `ℂ[X₀, X₁] ≃ₐ[ℂ] ⨁ k, ModularForm 𝒮ℒ k` given by `evalE₄E₆`,
 sending `X₀` to `E₄` (in weight `4`) and `X₁` to `E₆` (in weight `6`). Its inverse writes each
 element of the graded ring of level-1 modular forms uniquely as a polynomial in `E₄` and `E₆`. -/
-def mvPolynomialEquivModularForms : MvPolynomial (Fin 2) ℂ ≃ₐ[ℂ] DirectSum ℤ (ModularForm 𝒮ℒ) :=
+def mvPolynomialEquiv : MvPolynomial (Fin 2) ℂ ≃ₐ[ℂ] DirectSum ℤ (ModularForm 𝒮ℒ) :=
   AlgEquiv.ofBijective evalE₄E₆ ⟨evalE₄E₆_injective, evalE₄E₆_surjective⟩
 
-/-- As a function, `mvPolynomialEquivModularForms` is the evaluation map `evalE₄E₆`, so `simp`
+/-- As a function, `mvPolynomialEquiv` is the evaluation map `evalE₄E₆`, so `simp`
 computes it on explicit polynomials via `evalE₄E₆_X_zero` and `evalE₄E₆_X_one`. -/
 @[simp]
-lemma mvPolynomialEquivModularForms_apply (p : MvPolynomial (Fin 2) ℂ) :
-    mvPolynomialEquivModularForms p = evalE₄E₆ p :=
+lemma mvPolynomialEquiv_apply (p : MvPolynomial (Fin 2) ℂ) :
+    mvPolynomialEquiv p = evalE₄E₆ p :=
   AlgEquiv.ofBijective_apply _ _ p
 
-/-- `mvPolynomialEquivModularForms.symm` inverts the evaluation map `evalE₄E₆`. -/
+/-- `mvPolynomialEquiv.symm` inverts the evaluation map `evalE₄E₆`. -/
 @[simp]
-lemma mvPolynomialEquivModularForms_symm_evalE₄E₆ (p : MvPolynomial (Fin 2) ℂ) :
-    mvPolynomialEquivModularForms.symm (evalE₄E₆ p) = p :=
+lemma mvPolynomialEquiv_symm_evalE₄E₆ (p : MvPolynomial (Fin 2) ℂ) :
+    mvPolynomialEquiv.symm (evalE₄E₆ p) = p :=
   AlgEquiv.ofBijective_symm_apply_apply _ _ p
+
+/-- `evalE₄E₆` inverts `mvPolynomialEquiv.symm`. -/
+@[simp]
+lemma evalE₄E₆_mvPolynomialEquiv_symm (x : DirectSum ℤ (ModularForm 𝒮ℒ)) :
+    evalE₄E₆ (mvPolynomialEquiv.symm x) = x :=
+  mvPolynomialEquiv.apply_symm_apply x
 
 /-- The graded ring `⨁ k, ModularForm 𝒮ℒ k` of level-1 modular forms is an integral domain. -/
 instance : IsDomain (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
   -- The graded ring is isomorphic to the polynomial ring `ℂ[X₀, X₁]`, which is a domain.
-  mvPolynomialEquivModularForms.symm.toMulEquiv.isDomain _
+  mvPolynomialEquiv.symm.toMulEquiv.isDomain _
 
 end ModularForm
 
