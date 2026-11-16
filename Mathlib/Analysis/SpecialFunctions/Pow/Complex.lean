@@ -265,7 +265,7 @@ theorem cpow_conj (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x ^ conj n = conj (c
   rw [conj_cpow _ _ hx, conj_conj]
 
 lemma natCast_add_one_cpow_ne_zero (n : ℕ) (z : ℂ) : (n + 1 : ℂ) ^ z ≠ 0 :=
-  mt (cpow_eq_zero_iff ..).mp fun H ↦ by fail_if_not_idempotent norm_cast at H
+  mt (cpow_eq_zero_iff ..).mp fun H ↦ by fail_if_not_idempotent norm_cast at H; exact H.1
 
 end Complex
 
