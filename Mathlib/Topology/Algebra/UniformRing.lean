@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.Topology.Algebra.Ring.Ideal.Basic
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!

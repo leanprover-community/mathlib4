@@ -6761,7 +6761,6 @@ public import Mathlib.RingTheory.AdicCompletion.Completeness
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.AdicCompletion.LocalRing
-public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.AdicCompletion.Topology
 public import Mathlib.RingTheory.Adjoin.Basic
@@ -8131,7 +8130,8 @@ public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Ring.Compact
-public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.Topology.Algebra.Ring.Ideal.Basic
+public import Mathlib.Topology.Algebra.Ring.Ideal.Noetherian
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Algebra.Semigroup
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic

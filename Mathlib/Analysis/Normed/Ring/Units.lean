@@ -6,7 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.Topology.Algebra.Ring.Ideal.Basic
 
 /-!
 # The group of units of a complete normed ring
