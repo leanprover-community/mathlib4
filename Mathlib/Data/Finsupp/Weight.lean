@@ -63,7 +63,6 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
 * Maybe `Finsupp.weight w` and `Finsupp.degree` should have similar types,
   both `AddMonoidHom` or both functions.
-
 -/
 
 @[expose] public section

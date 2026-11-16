@@ -47,7 +47,6 @@ itself, or simply Artinian if it is both left and right Artinian.
 ## Tags
 
 Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian module
-
 -/
 
 @[expose] public section

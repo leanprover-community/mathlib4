@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Unramified.Basic
 
@@ -40,7 +41,6 @@ Let `S/R` be formally unramified and essentially of finite type.
 ## References
 
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
 -/
 
 @[expose] public section

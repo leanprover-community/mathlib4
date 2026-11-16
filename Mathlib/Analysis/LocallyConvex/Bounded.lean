@@ -34,7 +34,6 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 ## References
 
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-
 -/
 
 @[expose] public section

@@ -18,7 +18,6 @@ as well as an integral domain.
 
 We provide the universal property, that ring homomorphisms `ℤ√d →+* R` correspond
 to choices of square roots of `d` in `R`.
-
 -/
 
 @[expose] public section

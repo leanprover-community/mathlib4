@@ -13,7 +13,6 @@ public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 # Angles in circles and spheres
 
 This file proves results about angles in circles and spheres.
-
 -/
 
 public section
