@@ -150,18 +150,15 @@ lemma norm_circleMap_sub_circleMap_sq (c : ℂ) (r s θ φ : ℝ) :
 Points of the circle `circleMap 0 r` keep distance at least `r * |sin ((θ - arg a) / 2)|` from any
 point `a`. The bound is sharp: equality holds for `a = 0` and `θ = π`.
 -/
-theorem mul_abs_sin_le_norm_circleMap_zero_sub {r : ℝ} (hr : 0 ≤ r) (θ : ℝ) (a : ℂ) :
+theorem mul_abs_sin_le_norm_circleMap_zero_sub (r θ : ℝ) (a : ℂ) :
     r * |Real.sin ((θ - a.arg) / 2)| ≤ ‖circleMap 0 r θ - a‖ := by
+  obtain hr | hr := le_total r 0
+  · exact (mul_nonpos_of_nonpos_of_nonneg hr (abs_nonneg _)).trans (norm_nonneg _)
   refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
-  have h := Real.sin_sq_eq_half_sub ((θ - a.arg) / 2)
-  rw [show 2 * ((θ - a.arg) / 2) = θ - a.arg by ring] at h
   conv_rhs => rw [← circleMap_zero_norm_arg a, norm_circleMap_sub_circleMap_sq]
-  rw [mul_pow, sq_abs, show Real.cos (θ - a.arg) = 1 - 2 * Real.sin ((θ - a.arg) / 2) ^ 2 by
-    linarith]
-  linarith [mul_nonneg (sub_nonneg.2 (Real.sin_sq_le_one ((θ - a.arg) / 2)))
-      (sq_nonneg (r - ‖a‖)),
-    mul_nonneg (mul_nonneg (sq_nonneg (Real.sin ((θ - a.arg) / 2))) (norm_nonneg a))
-      (by positivity : (0 : ℝ) ≤ 2 * r + ‖a‖)]
+  rw [mul_pow, sq_abs, Real.sin_sq_eq_half_sub, mul_div_cancel₀ _ two_ne_zero]
+  nlinarith [Real.cos_le_one (θ - a.arg), Real.neg_one_le_cos (θ - a.arg), norm_nonneg a,
+    sq_nonneg (r - ‖a‖), mul_nonneg hr (norm_nonneg a)]
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
