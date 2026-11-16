@@ -129,7 +129,6 @@ lemma mono_homologyMap_τ₃ (i : ι)
     apply epi_homologyMap_of_epi_of_not_rel
     simpa using hi
 
-set_option backward.defeqAttrib.useBackward true in
 lemma epi_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₂ i))
     (h₂ : ∀ j, c.Rel i j → Epi (homologyMap φ.τ₁ j))
