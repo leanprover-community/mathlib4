@@ -25,7 +25,6 @@ this construction yields all finite-dimensional simple Lie algebras up to isomor
   `LieAlgebra.IsKilling.rootSystem` is left inverse to `RootPairing.GeckConstruction.lieAlgebra`.
 * `RootPairing.GeckConstruction.equivLieAlgebra`: up to equivalence,
   `LieAlgebra.IsKilling.rootSystem` is right inverse to `RootPairing.GeckConstruction.lieAlgebra`.
-
 -/
 
 @[expose] public section

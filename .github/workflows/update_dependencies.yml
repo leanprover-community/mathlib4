@@ -2,7 +2,7 @@ name: Update Mathlib Dependencies
 
 on:
   schedule:
-    - cron: '0 * * * *'  # This will run every hour
+    - cron: '17 0 * * *'  # Daily at 00:17 UTC
   workflow_dispatch:
 
 jobs:
@@ -192,10 +192,11 @@ jobs:
           # branch_stale : working tree differs from branch tip → CPR would push
           #
           # States (checked in priority order):
+          #   IDLE       : no open PR + !needs_update → skip CPR
           #   SUPERSEDED : open PR + !needs_update  → call CPR to close PR
           #   CONFLICT   : merge-conflict label     → call CPR to rebase
           #   STALE      : open PR + branch_stale   → call CPR to update branch
-          #   ABSENT     : no branch or no open PR  → call CPR to create/clean up
+          #   ABSENT     : needs_update + (no branch or no open PR) → call CPR to create PR
           #   PENDING    : open PR + needs_update + !branch_stale → skip CPR
 
           # ── inputs ──────────────────────────────────────────────────────────
@@ -222,7 +223,9 @@ jobs:
           echo "merge_conflict=$merge_conflict"
 
           # ── state ───────────────────────────────────────────────────────────
-          if [ "$pr_open" == "true" ] && [ "$needs_update" == "false" ]; then
+          if [ "$pr_open" != "true" ] && [ "$needs_update" == "false" ]; then
+            state="IDLE"
+          elif [ "$pr_open" == "true" ] && [ "$needs_update" == "false" ]; then
             state="SUPERSEDED"
           elif [ "$merge_conflict" == "true" ]; then
             state="CONFLICT"
@@ -237,7 +240,7 @@ jobs:
           echo "State: $state"
           echo "state=$state" >> "$GITHUB_OUTPUT"
 
-          if [ "$state" == "PENDING" ]; then
+          if [ "$state" == "PENDING" ] || [ "$state" == "IDLE" ]; then
             create_pr=false
           else
             create_pr=true

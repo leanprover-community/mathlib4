@@ -19,7 +19,6 @@ typeclass `ContinuousSMul` to express the latter condition.
 
 Any non-unital subalgebra of a non-unital topological algebra is itself a non-unital
 topological algebra, and its closure is again a non-unital subalgebra.
-
 -/
 
 @[expose] public section

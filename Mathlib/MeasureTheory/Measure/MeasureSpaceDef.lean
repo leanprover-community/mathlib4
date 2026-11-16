@@ -204,6 +204,14 @@ theorem exists_measurable_superset (μ : Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s := by
   simpa only [← measure_eq_trim] using! μ.toOuterMeasure.exists_measurable_superset_eq_trim s
 
+/-- For every subset `s` of a measurable set `t` there exists a measurable set `u` with
+`s ⊆ u ⊆ t` of the same measure as `s`. -/
+theorem exists_measurable_superset_of_subset (μ : Measure α) (hst : s ⊆ t)
+    (ht : MeasurableSet t) : ∃ u, s ⊆ u ∧ u ⊆ t ∧ MeasurableSet u ∧ μ u = μ s := by
+  obtain ⟨v, hsv, hv, hvs⟩ := exists_measurable_superset μ s
+  exact ⟨v ∩ t, subset_inter hsv hst, inter_subset_right, hv.inter ht,
+    le_antisymm (hvs ▸ measure_mono inter_subset_left) (measure_mono (subset_inter hsv hst))⟩
+
 /-- For every set `s` and a countable collection of measures `μ i` there exists a measurable
 superset `t ⊇ s` such that each measure `μ i` takes the same value on `s` and `t`. -/
 theorem exists_measurable_superset_forall_eq [Countable ι] (μ : ι → Measure α) (s : Set α) :

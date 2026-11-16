@@ -26,7 +26,6 @@ a cokernel cofork.
 
 ## References
 * [Posur, S., *A constructive approach to Freyd categories*][posur2021Freyd]
-
 -/
 
 @[expose] public section

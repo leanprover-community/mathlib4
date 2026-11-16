@@ -22,7 +22,6 @@ group with zero itself with natural inclusions.
 
 TODO: Give `GrpWithZero` instances of `HasBinaryProducts` and `HasBinaryCoproducts`,
 as well as a terminal object.
-
 -/
 
 @[expose] public section

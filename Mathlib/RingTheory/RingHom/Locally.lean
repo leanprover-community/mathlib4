@@ -38,7 +38,6 @@ composition, base change, etc., so is `Locally P`.
   composition with localization away maps if `P` is.
 - `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
-
 -/
 
 @[expose] public section

@@ -112,10 +112,6 @@ namespace Cardinal
 theorem mk_ordinal : #Ordinal = univ.{u, u + 1} :=
   (lift_id _).symm
 
-@[deprecated mk_ordinal +typeChanged (since := "2026-04-22")]
-theorem univ_id : univ.{u, u + 1} = #Ordinal :=
-  lift_id _
-
 @[simp]
 theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
   lift_lift _

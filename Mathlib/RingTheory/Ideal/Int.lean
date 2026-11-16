@@ -27,7 +27,6 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 * `Int.absNorm_under_dvd_absNorm`: `absNorm (under ℤ I)` divides the norm of `I`.
 
 * `Nat.absNorm_under_prime`: If `P` is a prime ideal, then `absNorm (under ℤ P)` is a prime number.
-
 -/
 
 public section

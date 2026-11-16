@@ -89,8 +89,8 @@ theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f
     (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : f'.range = ⊤) :
     map f (𝓝 a) = 𝓝 (f a) := by
   let f'symm := f'.nonlinearRightInverseOfSurjective h
-  set c : ℝ≥0 := f'symm.nnnorm⁻¹ / 2 with hc
-  have f'symm_pos : 0 < f'symm.nnnorm := f'.nonlinearRightInverseOfSurjective_nnnorm_pos h
+  set c : ℝ≥0 := f'symm.nnNorm⁻¹ / 2 with hc
+  have f'symm_pos : 0 < f'symm.nnNorm := f'.nonlinearRightInverseOfSurjective_nnNorm_pos h
   have cpos : 0 < c := by simp [hc, inv_pos, f'symm_pos]
   obtain ⟨s, s_nhds, hs⟩ : ∃ s ∈ 𝓝 a, ApproximatesLinearOn f f' s c :=
     hf.approximates_deriv_on_nhds (Or.inr cpos)
@@ -106,7 +106,7 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
   refine ((nhds_basis_opens a).exists_iff fun s t => ApproximatesLinearOn.mono_set).1 ?_
   exact
     hf.approximates_deriv_on_nhds <|
-      f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
+      f'.subsingleton_or_nnNorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
 
 variable (f)
 variable [CompleteSpace E]
@@ -120,7 +120,7 @@ def toOpenPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ApproximatesLinearOn.toOpenPartialHomeomorph f
     (Classical.choose hf.approximates_deriv_on_open_nhds)
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2
-    (f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' =>
+    (f'.subsingleton_or_nnNorm_symm_pos.imp id fun hf' =>
       NNReal.half_lt_self <| ne_of_gt <| inv_pos.2 hf')
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.1
 

@@ -14,7 +14,6 @@ import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
 In this file, we collect several integrals over `ℝ` or `ℂ` that evaluate in terms of the
 `Real.Gamma` function.
-
 -/
 
 public section

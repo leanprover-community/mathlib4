@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 Given `Φ : SuccStruct C`, we show by transfinite induction
 that for any element `j` in a well-ordered set `J`,
 the type `Φ.Iteration j` is nonempty.
-
 -/
 
 @[expose] public section
@@ -110,7 +109,6 @@ lemma arrowMap_functor_to_top (i : J) (hi : i < j) :
 
 end mkOfLimit
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 open mkOfLimit in
 /-- When `j` is a limit element, this is the element in `Φ.Iteration j`

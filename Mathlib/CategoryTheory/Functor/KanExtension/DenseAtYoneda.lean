@@ -29,7 +29,6 @@ also stated using `Functor.IsDense` instances.
 ## References
 
 * https://ncatlab.org/nlab/show/dense+subcategory
-
 -/
 
 @[expose] public section

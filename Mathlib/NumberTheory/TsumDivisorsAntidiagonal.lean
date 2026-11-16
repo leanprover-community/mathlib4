@@ -19,7 +19,6 @@ We then prove some identities about the infinite sums over this antidiagonal, su
 `∑' n : ℕ+, n ^ k * r ^ n / (1 - r ^ n) = ∑' n : ℕ+, σ k n * r ^ n`
 which are used for Eisenstein series and their q-expansions. This is also a special case of
 Lambert series.
-
 -/
 
 @[expose] public section

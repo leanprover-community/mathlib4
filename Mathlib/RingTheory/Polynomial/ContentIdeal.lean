@@ -37,7 +37,6 @@ Let `p : R[X]`.
 ## TODO
 
 - Prove the Dedekind-Mertens lemma, see https://www.cse.chalmers.se/~coquand/mertens.pdf
-
 -/
 
 @[expose] public section

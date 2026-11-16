@@ -220,14 +220,18 @@ theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.v.norm x := by
   exact norm_eq_norm' p
 
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends that on `PadicAlgCl p`. -/
-theorem nnnorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
+theorem nnNorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
   ext
   exact norm_extends p x
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_extends := nnNorm_extends
+
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends the norm on `ℚ_[p]`. -/
-theorem nnnorm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
+theorem nnNorm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
   ext
   simp
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_extends' := nnNorm_extends'
 
 /-- The norm on `ℂ_[p]` is nontrivial. -/
 instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where

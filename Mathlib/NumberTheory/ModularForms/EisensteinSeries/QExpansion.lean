@@ -35,7 +35,6 @@ are defined as sums over coprime integer pairs, we also need to relate these to 
 of integers, which is done in `tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries`. This then
 gives the q-expansion with a Riemann zeta factor, which we simplify using the formula for
 `ζ(k)` in terms of Bernoulli numbers to get the final result.
-
 -/
 
 public section

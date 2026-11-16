@@ -8,14 +8,12 @@ module
 public import Mathlib.Data.TypeVec
 
 /-!
-
 # Functors between the category of tuples of types, and the category Type
 
 Features:
 
 * `MvFunctor n` : the type class of multivariate functors
 * `f <$$> x`    : notation for map
-
 -/
 
 @[expose] public section

@@ -12,7 +12,6 @@ import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # Pointwise operations on sets in topological groups
-
 -/
 
 public section

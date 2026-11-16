@@ -29,7 +29,6 @@ infimum.
 
 The list of properties in this file is copied and adapted from the file about `SupClosed`.
 We should keep these files in sync.
-
 -/
 
 public section

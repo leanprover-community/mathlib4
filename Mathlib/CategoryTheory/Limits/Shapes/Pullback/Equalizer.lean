@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 # Equalizers as pullbacks of products
 
 Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar results.
-
 -/
 
 public section

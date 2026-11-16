@@ -27,7 +27,6 @@ In this file we construct the category of formal coproducts given a category.
 ## TODO
 
 * `FormalCoproduct.incl C : C ⥤ FormalCoproduct.{w} C` probably preserves every limit?
-
 -/
 
 @[expose] public section

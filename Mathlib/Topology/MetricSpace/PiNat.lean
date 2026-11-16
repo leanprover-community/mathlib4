@@ -55,7 +55,6 @@ in general), and `ι` is countable.
 * `PiNatEmbed` gives an equivalence between a space and itself in a sequence of spaces
 * `Metric.PiNatEmbed.metricSpace` proves that a topological `X` separated by countably many
   continuous functions to metric spaces, can be embedded inside their product.
-
 -/
 
 open scoped Finset

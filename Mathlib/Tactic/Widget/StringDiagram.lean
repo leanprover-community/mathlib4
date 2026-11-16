@@ -58,7 +58,6 @@ will sometimes refer to objects and morphisms in monoidal categories as 1-morphi
 respectively, borrowing the terminology of bicategories. Note that the relation between monoidal
 categories and bicategories is formalized in `Mathlib/CategoryTheory/Bicategory/SingleObj.lean`,
 although the string diagram widget does not use it directly.
-
 -/
 
 public meta section

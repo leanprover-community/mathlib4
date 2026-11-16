@@ -29,7 +29,6 @@ and then as a right-rigid monoidal category.
 ## Future work
 
 * Show that `FGModuleCat R` is abelian when `R` is (left)-Noetherian.
-
 -/
 
 @[expose] public section

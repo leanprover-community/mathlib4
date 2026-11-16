@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 
 /-!
-
 # The `RestrictScalars` type alias
 
 See the documentation attached to the `RestrictScalars` definition for advice on how and when to

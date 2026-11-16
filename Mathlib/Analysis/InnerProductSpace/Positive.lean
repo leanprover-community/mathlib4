@@ -386,8 +386,8 @@ variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : E →ₗ[𝕜] F) : (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 F
   simpa [← isPositive_toContinuousLinearMap_iff] using!
     ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
 
@@ -499,6 +499,19 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E]
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
+
+theorem norm_map_le_norm_map_iff_le {G : Type*}
+    [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
+    (p : E →L[𝕜] F) (q : E →L[𝕜] G) :
+    (∀ x : E, ‖p x‖ ≤ ‖q x‖) ↔ adjoint p ∘L p ≤ adjoint q ∘L q := by
+  simp [le_def, isPositive_iff', isSelfAdjoint_iff, star_eq_adjoint, inner_sub_left,
+    adjoint_inner_left, ← RCLike.ofReal_pow, -map_pow, sq_le_sq₀]
+
+theorem norm_map_le_norm_iff_le [CompleteSpace E] [CompleteSpace F]
+    (p : E →L[𝕜] F) :
+    (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ .id 𝕜 E := by
+  simpa [adjoint_id] using norm_map_le_norm_map_iff_le p (.id 𝕜 E)
 
 /-- A star projection operator is positive.
 

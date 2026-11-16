@@ -23,7 +23,6 @@ satisfying relations associated to the Cartan matrix of the input root system.
 * `RootPairing.GeckConstruction.lie_h_f`: an interaction relation between different `sl₂` triples.
 * `RootPairing.GeckConstruction.lie_e_f_ne`: an interaction relation between different `sl₂`
   triples.
-
 -/
 
 public section

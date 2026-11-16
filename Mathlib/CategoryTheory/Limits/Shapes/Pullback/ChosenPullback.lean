@@ -17,7 +17,6 @@ pullback of `f₁` and `f₂`.
 ## TODO
 * relate this to `ChosenPullbacksAlong` which is defined in
 `LocallyCartesianClosed.ChosenPullbacksAlong`.
-
 -/
 
 @[expose] public section

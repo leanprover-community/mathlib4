@@ -28,7 +28,6 @@ This file equips a smooth manifold with the structure of a locally ringed space.
 
 - Show that every morphism of locally ringed spaces between two smooth manifolds is induced
   by a smooth map via `ChartedSpace.locallyRingedSpaceMap`.
-
 -/
 
 @[expose] public section

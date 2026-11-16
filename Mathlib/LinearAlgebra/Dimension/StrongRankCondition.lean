@@ -41,7 +41,6 @@ For modules over rings with invariant basis number
 
 * `Algebra.IsQuadraticExtension`: An extension of rings `R ⊆ S` is quadratic if `S` is a
   free `R`-algebra of rank `2`.
-
 -/
 
 @[expose] public section

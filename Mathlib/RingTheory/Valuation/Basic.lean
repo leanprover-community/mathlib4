@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Algebra.Order.Ring.Basic
 
 /-!
-
 # The basics of valuation theory.
 
 The basic theory of valuations (non-archimedean norms) on a commutative ring,

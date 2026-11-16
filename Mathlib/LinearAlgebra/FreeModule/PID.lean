@@ -43,7 +43,6 @@ In this section, `M` is a free and finitely generated `R`-module, and
 ## Tags
 
 free module, finitely generated module, rank, structure theorem
-
 -/
 
 @[expose] public section

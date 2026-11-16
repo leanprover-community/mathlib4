@@ -59,7 +59,6 @@ We prove the following results characterizing the weak topology:
   it suffices that its compositions with pairing with `B` at all points `y : F` is continuous.
 * `LinearMap.IsWeak.tendsto_iff_forall_eval_tendsto`: Convergence in `WeakBilin B` can be
   characterized in terms of convergence of the evaluations at all points `y : F`.
-
 -/
 
 @[expose] public section

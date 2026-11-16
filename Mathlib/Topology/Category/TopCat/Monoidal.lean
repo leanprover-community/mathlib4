@@ -14,7 +14,6 @@ public import Mathlib.Topology.UnitInterval
 
 We define the cartesian monoidal category structure on `TopCat`.
 We also introduce the unit interval as an object `TopCat.I` of `TopCat`.
-
 -/
 
 @[expose] public section

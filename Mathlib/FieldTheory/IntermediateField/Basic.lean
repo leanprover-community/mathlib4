@@ -739,6 +739,15 @@ theorem restrictScalars_inj {E E' : IntermediateField L' L} :
     E.restrictScalars K = E'.restrictScalars K ↔ E = E' :=
   (restrictScalars_injective K).eq_iff
 
+instance (E : IntermediateField L' L) : Algebra L' (E.restrictScalars K) :=
+  inferInstanceAs (Algebra L' E)
+
+instance (E : IntermediateField L' L) : IsScalarTower L' (E.restrictScalars K) L :=
+  inferInstanceAs (IsScalarTower L' E L)
+
+instance (E : IntermediateField L' L) : IsScalarTower K L' (E.restrictScalars K) :=
+  inferInstanceAs (IsScalarTower K L' E)
+
 end RestrictScalars
 
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/

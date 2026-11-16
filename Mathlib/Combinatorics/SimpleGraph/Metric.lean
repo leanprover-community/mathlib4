@@ -33,7 +33,6 @@ ball in the graph extended metric.
 ## Tags
 
 graph metric, distance, ball
-
 -/
 
 @[expose] public section

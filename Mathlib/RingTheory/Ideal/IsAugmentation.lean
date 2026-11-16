@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 * `Ideal.isAugmentation_subalgebra_iff` : If `S` is a subalgebra of an `R`-algebra `A`,
   then an ideal `I`of `A` is an augmentation ideal for the `R`-algebra structure if and only if
   it is an augmentation ideal for the `S`-algebra structure.
-
 -/
 
 @[expose] public section

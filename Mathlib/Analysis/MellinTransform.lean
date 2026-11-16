@@ -22,7 +22,6 @@ differentiable in a suitable vertical strip.
   (analogous to `HasSum`).
 - `mellin_differentiableAt_of_isBigO_rpow` : if `f` is `O(x ^ (-a))` at infinity, and
   `O(x ^ (-b))` at 0, then `mellin f` is holomorphic on the domain `b < re s < a`.
-
 -/
 
 @[expose] public section

@@ -22,7 +22,6 @@ for all `n : ℕ`.
 
 ## References
 * https://ncatlab.org/nlab/show/Delta-generated+topological+space
-
 -/
 
 @[expose] public section
@@ -57,8 +56,6 @@ abbrev deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
 /-- `deltaGeneratedToTop` is fully faithful. -/
 abbrev fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
   GeneratedByTopCat.fullyFaithfulToTopCat _
-
-@[deprecated (since := "2026-04-23")] alias topToDeltaGenerated := TopCat.toDeltaGenerated
 
 /-- The adjunction between the forgetful functor `DeltaGenerated ⥤ TopCat` and its coreflector. -/
 abbrev coreflectorAdjunction : deltaGeneratedToTop ⊣ TopCat.toDeltaGenerated :=

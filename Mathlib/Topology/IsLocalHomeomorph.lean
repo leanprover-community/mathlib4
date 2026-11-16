@@ -27,7 +27,6 @@ Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
 ## Main results
 * local homeomorphisms are locally injective open maps
 * more!
-
 -/
 
 @[expose] public section
