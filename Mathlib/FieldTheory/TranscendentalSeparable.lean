@@ -353,7 +353,7 @@ lemma isReduced_tensorProduct_of_isSeparablyGenerated_of_isReduced
       have isT' : IsTranscendenceBasis k f' := isT.of_comp M'.val Subtype.val_injective
       have : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f')) M' := by
         let := (IntermediateField.inclusion Mle).toRingHom.toAlgebra
-        let : IsScalarTower M M' K := IsScalarTower.of_algebraMap_eq' rfl
+        have : IsScalarTower M M' K := IsScalarTower.of_algebraMap_eq' rfl
         have : Algebra.IsSeparable M M' := Algebra.isSeparable_tower_bot_of_isSeparable M M' K
         have eq : (IntermediateField.adjoin k (Set.range f')).map M'.val = M := by
           simp [IntermediateField.adjoin_map, f', M, imagef']
@@ -395,14 +395,10 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
   have li' := Module.Flat.linearIndependent_one_tmul (S := (AdjoinPthRoots k)) li
   let rooty := Finsupp.mapRange.addMonoidHom (AdjoinPthRoots.root k).toAddMonoidHom y
   have : Fact (Nat.Prime p) := ⟨hp⟩
-  let : Nontrivial (AdjoinPthRoots k ⊗[k] K) := by
+  have : Nontrivial (AdjoinPthRoots k ⊗[k] K) := by
     apply Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_left
     exact RingHom.injective _
-  have : CharP (AdjoinPthRoots k ⊗[k] K) p := by
-    apply (Algebra.charP_iff k _ p).mp
-    induction ‹ExpChar k p› with
-    | zero => exact (Nat.not_prime_one hp).elim
-    | prime hq => assumption
+  have : ExpChar (AdjoinPthRoots k ⊗[k] K) p := ExpChar.of_injective_algebraMap' k p
   have rooty_supp : rooty.support = y.support :=
     Finsupp.support_mapRange_of_injective (map_zero _) y (AdjoinPthRoots.root k).injective
   have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) := AdjoinPthRoots.root_pow p _
