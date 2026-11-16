@@ -250,15 +250,9 @@ theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p 
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : MemLp f p μ := by
   apply MemLp.of_nnNorm_le_mul hg hf (c := c.toNNReal)
   filter_upwards [hfg] with x hx
-  simp [← norm_toNNReal]
-  have W := Real.toNNReal_mono hx
-  rw [Real.toNNReal_mul'] at W
+  simpa [Real.toNNReal_mul', ← norm_toNNReal] using Real.toNNReal_mono hx
 
--- TODO: eventually, deprecate and remove the nnNorm version
-theorem MemLp.of_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
-    (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
-  (eLpNorm_le_mul_eLpNorm_of_ae_le_mul' hf hfg p).trans_lt <|
-    ENNReal.mul_lt_top ENNReal.coe_lt_top hg
+@[deprecated (since := "2026-11-16")] alias MemLp.of_le_mul' := MemLp.of_eNorm_le_mul
 
 end Monotonicity
 
@@ -282,12 +276,25 @@ theorem eLpNorm_star {p : ℝ≥0∞} {f : α → R} :
     simp [eLpNorm_of_not_aestronglyMeasurable, hf, this]
 
 @[simp]
-theorem AEEqFun.eLpNorm_star {p : ℝ≥0∞} {f : α →ₘ[μ] R} : eLpNorm (star f : α →ₘ[μ] R) p μ =
-    eLpNorm f p μ :=
+theorem AEEqFun.eLpNorm_star {p : ℝ≥0∞} {f : α →ₘ[μ] R} :
+    eLpNorm (star f : α →ₘ[μ] R) p μ = eLpNorm f p μ :=
   (eLpNorm_congr_ae (coeFn_star f)).trans MeasureTheory.eLpNorm_star
 
+@[simp]
+theorem inhmgELpNorm_star {p : ℝ≥0∞} {f : α → R} :
+    inhmgELpNorm (star f) p μ = inhmgELpNorm f p μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · exact inhmgELpNorm_congr_norm_ae hf.star hf <| .of_forall <| by simp
+  · have : ¬ AEStronglyMeasurable (star f) μ := by simpa using hf
+    simp [inhmgELpNorm_of_not_aestronglyMeasurable, hf, this]
+
+@[simp]
+theorem AEEqFun.inhmgELpNorm_star {p : ℝ≥0∞} {f : α →ₘ[μ] R} :
+    inhmgELpNorm (star f : α →ₘ[μ] R) p μ = inhmgELpNorm f p μ :=
+  (inhmgELpNorm_congr_ae (coeFn_star f)).trans MeasureTheory.inhmgELpNorm_star
+
 protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) : MemLp (star f) p μ := by
-  simpa [MemLp, eLpNorm_star] using hf
+  simpa [MemLp] using hf
 
 end Star
 
