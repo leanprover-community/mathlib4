@@ -43,7 +43,7 @@ namespace Ring
 variable (R) in
 /-- Equivalence between positive cones in a ring `R`
     and partially ordered ring structures on `R`. -/
-noncomputable def isPointedPartialOrderEquiv :
+noncomputable def subsemiringPartialOrderEquiv :
     {C : Subsemiring R // C.IsPointed} ≃
       {_o : PartialOrder R // IsOrderedRing R} where
   toFun := fun ⟨_, hC⟩ ↦ ⟨.ofAddSubmonoid hC, .ofSubsemiring _⟩
@@ -52,19 +52,19 @@ noncomputable def isPointedPartialOrderEquiv :
   right_inv := fun ⟨_, _⟩ ↦ by ext; simp +instances
 
 @[simp]
-theorem isPointedPartialOrderEquiv_apply
+theorem subsemiringPartialOrderEquiv_apply
     (C : Subsemiring R) (h : C.IsPointed) :
-    isPointedPartialOrderEquiv R ⟨C, h⟩ = PartialOrder.ofAddSubmonoid h := rfl
+    subsemiringPartialOrderEquiv R ⟨C, h⟩ = PartialOrder.ofAddSubmonoid h := rfl
 
 @[simp]
-theorem isPointedPartialOrderEquiv_symm_apply (o : PartialOrder R) (h : IsOrderedRing R) :
-    (isPointedPartialOrderEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
+theorem subsemiringPartialOrderEquiv_symm_apply (o : PartialOrder R) (h : IsOrderedRing R) :
+    (subsemiringPartialOrderEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
 
 variable (R) in
 open Classical in
 /-- Equivalence between spanning positive cones in a ring `R`
     and linearly ordered ring structures on `R`. -/
-noncomputable def isPointedLinearOrderEquiv :
+noncomputable def subsemiringLinearOrderEquiv :
     {C : Subsemiring R // C.IsPointed ∧ C.IsSpanning} ≃
       {_o : LinearOrder R // IsOrderedRing R} where
   toFun := fun ⟨C, hC⟩ ↦ ⟨.ofAddSubmonoid hC.1 hC.2, .ofSubsemiring _⟩
@@ -74,13 +74,13 @@ noncomputable def isPointedLinearOrderEquiv :
 
 open Classical in
 @[simp]
-theorem isPointedLinearOrderEquiv_apply
+theorem subsemiringLinearOrderEquiv_apply
     (C : Subsemiring R) (h : C.IsPointed ∧ C.IsSpanning) :
-    isPointedLinearOrderEquiv R ⟨C, h⟩ = LinearOrder.ofAddSubmonoid h.1 h.2 := rfl
+    subsemiringLinearOrderEquiv R ⟨C, h⟩ = LinearOrder.ofAddSubmonoid h.1 h.2 := rfl
 
 @[simp]
-theorem isPointedLinearOrderEquiv_symm_apply (o : LinearOrder R) (h : IsOrderedRing R) :
-    (isPointedLinearOrderEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
+theorem subsemiringLinearOrderEquiv_symm_apply (o : LinearOrder R) (h : IsOrderedRing R) :
+    (subsemiringLinearOrderEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
 
 end Ring
 
