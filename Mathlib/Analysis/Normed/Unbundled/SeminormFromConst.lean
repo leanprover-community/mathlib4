@@ -70,7 +70,6 @@ theorem seminormFromConst_seq_zero : seminormFromConst_seq c f 0 = 0 := by
   ext n
   simp [seminormFromConst_seq]
 
-/-- `seminormFromConst_seq c f 0` is the constant sequence zero. -/
 theorem seminormFromConst_seq_apply_zero (x : R) : seminormFromConst_seq c f x 0 = f x := by
   simp [seminormFromConst_seq]
 
@@ -84,7 +83,6 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
   · grw [seminormFromConst_seq, pow_succ, ← mul_assoc, map_mul_le_mul, pow_succ,
       mul_div_mul_right _ _ hc, seminormFromConst_seq]
 
-/-- `seminormFromConst_seq c f x` is antitone. -/
 theorem seminormFromConst_le (x : R) (n : ℕ) : seminormFromConst_seq c f x n ≤ f x :=
   (seminormFromConst_seq_antitone c f x n.zero_le).trans_eq (seminormFromConst_seq_apply_zero c f x)
 
