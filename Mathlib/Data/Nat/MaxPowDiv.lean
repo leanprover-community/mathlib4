@@ -13,10 +13,10 @@ import Mathlib.Data.Nat.Notation
 Here we introduce `p.maxPowDvd n` which returns the maximal `k : ℕ` for
 which `p ^ k ∣ n` with the convention that `maxPowDvd 1 n = 0` for all `n`.
 
-We prove enough about `maxPowDvd` in this file to show equality with `Nat.padicValNat` in
-`padicValNat.padicValNat_eq_maxPowDvd`.
+We prove enough about `maxPowDvd` in this file to show equality with `multiplicity` in
+`Nat.fst_maxPowDvdDiv`.
 
-The implementation of `maxPowDvd` improves on the speed of `padicValNat`.
+The implementation of `maxPowDvd` improves on the speed of `multiplicity`.
 -/
 
 @[expose] public section
