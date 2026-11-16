@@ -51,6 +51,7 @@ instance (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R 
 
 /-- Auxiliary construction for `ModuleCat.ExtendScalars'.obj`,
 turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`. -/
+@[implicit_reducible]
 noncomputable def ExtendScalars'.obj' [UnivLE.{v, v'}] [Small.{v'} S]
     (M : ModuleCat.{v} R) : ModuleCat.{v'} S :=
   ModuleCat.of S (Shrink.{v'} (TensorProduct R S M))
@@ -83,6 +84,7 @@ variable (R) in
 /-- A version of `ModuleCat.extendScalars` with more general universe level,
 turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`,
 sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with composition of `Shrink.linearEquiv`. -/
+@[implicit_reducible]
 noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] :
     (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) where
   obj := ExtendScalars'.obj' S
@@ -92,14 +94,12 @@ noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] :
 
 variable [UnivLE.{v, v'}] [Small.{v'} S]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (extendScalars' R S).Additive where
   map_add {X Y} f g := by
     simp only [extendScalars', ExtendScalars'.map', hom_add, LinearMap.baseChange_add]
     ext x
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma extendScalars'_map_exact [Module.Flat R S]
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
     (T.map (extendScalars' R S)).Exact := by
@@ -123,7 +123,6 @@ instance [Module.Flat R S] : Limits.PreservesFiniteColimits (extendScalars' R S)
 
 namespace Algebra'
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 scoped instance extendScalars'_linear :
     letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
@@ -228,7 +227,6 @@ lemma ModuleCat.extendScalars'.mapExtLinearMap_eq_mapExt [Module.Flat R S]
 
 open ModuleCat
 
-set_option backward.isDefEq.respectTransparency false in
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
     IsBaseChange S (extendScalars'.mapExtLinearMap.{v, v'} S M N n) := by
