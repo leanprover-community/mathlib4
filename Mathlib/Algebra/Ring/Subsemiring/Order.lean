@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.

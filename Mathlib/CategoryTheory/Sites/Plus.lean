@@ -8,14 +8,12 @@ module
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
-
 # The plus construction for presheaves.
 
 This file contains the construction of `P⁺`, for a presheaf `P : Cᵒᵖ ⥤ D`
 where `C` is endowed with a Grothendieck topology `J`.
 
 See <https://stacks.math.columbia.edu/tag/00W1> for details.
-
 -/
 
 @[expose] public section

@@ -62,18 +62,24 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : 
   have : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
 
+instance [IsIntegral X] {U : X.Opens} (x : U) : FaithfulSMul Γ(X, U) (X.presheaf.stalk x) :=
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (germ_injective_of_isIntegral X x x.2)
+
 theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonempty U] :
     Function.Injective (X.germToFunctionField U) :=
   germ_injective_of_isIntegral _ _ _
+
+instance [IsIntegral X] (U : X.Opens) [Nonempty U] : FaithfulSMul Γ(X, U) X.functionField :=
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (X.germToFunctionField_injective U)
 
 theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
     f (genericPoint X) = genericPoint Y := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert! (genericPoint_spec X).image f.continuous
+  convert (genericPoint_spec X).image f.continuous
   symm
   rw [← Set.univ_subset_iff]
-  convert! subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
+  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
   · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
@@ -115,7 +121,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Spec R).functionField := by
-  convert! StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
+  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
   delta IsFractionRing IsLocalization.AtPrime
   -- Porting note: `congr` does not work for `Iff`
   apply Eq.to_iff
@@ -149,7 +155,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
     (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
   delta IsFractionRing Scheme.functionField
-  convert!
+  convert
     hU.isLocalization_stalk
       ⟨genericPoint X,
         (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩

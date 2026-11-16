@@ -14,7 +14,6 @@ These are weak limits for diagrams of shape `WalkingCospan`.
 
 If a category has binary products and weak equalizers, then it has weak pullbacks
 (see `hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakEqualizers`).
-
 -/
 
 @[expose] public section
@@ -62,7 +61,6 @@ abbrev weakPullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasWeakPullb
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ weakPullback f g :=
   weakLimit.lift _ (PullbackCone.mk h k w)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma weakPullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g]
     (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) :
     ∃ (l : W ⟶ weakPullback f g),

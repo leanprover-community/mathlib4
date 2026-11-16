@@ -5,14 +5,13 @@ Authors: Paul Lezeau
 -/
 module
 
-public import Mathlib.Data.Fin.Tuple.Reflection
 public meta import Mathlib.Util.Qq
+public import Mathlib.Data.Fin.Tuple.Reflection
 
 
 /-! # The vecPerm simproc
 
 The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
-
 -/
 
 namespace Mathlib.Tactic.FinVec

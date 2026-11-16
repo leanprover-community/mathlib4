@@ -52,7 +52,7 @@ instance : SetLike (FiniteIndexNormalSubgroup G) G where
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive]
-instance : PartialOrder (FiniteIndexNormalSubgroup G) := .ofSetLike (FiniteIndexNormalSubgroup G) G
+instance : PartialOrder (FiniteIndexNormalSubgroup G) := .ofSetLike (FiniteIndexNormalSubgroup G)
 
 @[to_additive]
 instance : SubgroupClass (FiniteIndexNormalSubgroup G) G where

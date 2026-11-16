@@ -14,7 +14,9 @@ public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 
 This is an intermediate file that proves the pentagonal number theorem in a general topological ring
 modulo summability and multipliability. The complete proof for formal power series is in
-`Mathlib/RingTheory/PowerSeries/Pentagonal.lean`. TODO: also prove for real/complex numbers.
+`Mathlib/RingTheory/PowerSeries/Pentagonal.lean`. For normed ring, the proof is in
+`Mathlib/Combinatorics/Enumerative/Pentagonal/PowerSeries.lean`. For a normed ring, the proof is in
+`Mathlib/Combinatorics/Enumerative/Pentagonal/EulerFunction.lean`.
 
 ## Declarations
 
@@ -24,7 +26,6 @@ modulo summability and multipliability. The complete proof for formal power seri
 ## References
 
 https://math.stackexchange.com/questions/55738/how-to-prove-eulers-pentagonal-theorem-some-hints-will-help
-
 -/
 
 namespace Pentagonal

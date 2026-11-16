@@ -6,8 +6,9 @@ Authors: Justus Springer
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.SetLike
+
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Morphism properties from object properties
@@ -15,7 +16,6 @@ public import Mathlib.Tactic.SetLike
 Given two object properties `P` and `Q`, we introduce a morphism property
 `ofObjectProperty P Q`, given by all morphisms whose source satisfies `P` and
 target satisfies `Q`.
-
 -/
 
 @[expose] public section

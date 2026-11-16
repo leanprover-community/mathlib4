@@ -24,7 +24,6 @@ conditions for the map `d.multispan.descColimitType c : d.multispan.ColimitType 
 We deduce a definition `Set.isColimitOfMulticoequalizerDiagram` which shows
 that given `X : Type u`, a `MulticoequalizerDiagram` in `Set X` gives
 a multicoequalizer in the category of types.
-
 -/
 
 @[expose] public section

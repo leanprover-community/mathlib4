@@ -63,6 +63,7 @@ public import Archive.Imo.Imo2024Q3
 public import Archive.Imo.Imo2024Q5
 public import Archive.Imo.Imo2024Q6
 public import Archive.Imo.Imo2025Q3
+public import Archive.Imo.Imo2026Q5
 public import Archive.Kuratowski
 public import Archive.MinimalSheffer
 public import Archive.MiuLanguage.Basic
@@ -70,6 +71,7 @@ public import Archive.MiuLanguage.DecisionNec
 public import Archive.MiuLanguage.DecisionSuf
 public import Archive.OxfordInvariants.Summer2021.Week3P1
 public import Archive.RiemannStieltjes
+public import Archive.Robbins
 public import Archive.Sensitivity
 public import Archive.Wiedijk100Theorems.AbelRuffini
 public import Archive.Wiedijk100Theorems.AreaOfACircle
@@ -79,7 +81,6 @@ public import Archive.Wiedijk100Theorems.BirthdayProblem
 public import Archive.Wiedijk100Theorems.BuffonsNeedle
 public import Archive.Wiedijk100Theorems.CubingACube
 public import Archive.Wiedijk100Theorems.FriendshipGraphs
-public import Archive.Wiedijk100Theorems.HeronsFormula
 public import Archive.Wiedijk100Theorems.InverseTriangleSum
 public import Archive.Wiedijk100Theorems.Konigsberg
 public import Archive.Wiedijk100Theorems.PerfectNumbers

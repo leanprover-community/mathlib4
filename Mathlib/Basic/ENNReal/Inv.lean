@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Basic.ENNReal.Operations
 
+import Mathlib.Tactic.Basify.Attr
+
 /-!
 # Results about division in extended non-negative reals
 
@@ -52,7 +54,7 @@ protected theorem div_right_comm : a / b / c = a / c / b := by
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 
-@[simp] theorem inv_top : ∞⁻¹ = 0 :=
+@[simp, basify_simp] theorem inv_top : ∞⁻¹ = 0 :=
   bot_unique <| le_of_forall_gt_imp_ge_of_dense fun a (h : 0 < a) => sInf_le <| by
     simp [*, h.ne', top_mul]
 
@@ -63,7 +65,7 @@ theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
       apply NNReal.inv_le_of_le_mul
       rwa [← coe_mul, ← coe_one, coe_le_coe] at hb
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ :=
   coe_inv_le.antisymm <| sInf_le <| mem_ofPred.2 <| by rw [← coe_mul, mul_inv_cancel₀ hr, coe_one]
 
@@ -73,7 +75,7 @@ theorem coe_inv' [NeZero r] : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ := coe_inv 
 @[norm_cast]
 theorem coe_inv_two : ((2⁻¹ : ℝ≥0) : ℝ≥0∞) = 2⁻¹ := by rw [coe_inv _root_.two_ne_zero, coe_two]
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
   rw [div_eq_mul_inv, div_eq_mul_inv, coe_mul, coe_inv hr]
 
@@ -174,6 +176,10 @@ protected lemma div_mul_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 
 /-- See `ENNReal.div_mul_cancel'` for a stronger version. -/
 protected lemma div_mul_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : b / a * a = b :=
   ENNReal.div_mul_cancel' (by simp [ha₀]) (by simp [ha])
+
+protected lemma div_mul_div_cancel (hb₀ : b ≠ 0) (hb : b ≠ ∞) :
+    a / b * (b / c) = a / c := by
+  rw [← mul_div_assoc, ENNReal.div_mul_cancel hb₀ hb]
 
 /-- See `ENNReal.mul_div_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
 protected lemma mul_div_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) : a * (b / a) = b := by
@@ -330,8 +336,9 @@ theorem _root_.OrderIso.invENNReal_symm_apply (a : ℝ≥0∞ᵒᵈ) :
     OrderIso.invENNReal.symm a = (OrderDual.ofDual a)⁻¹ :=
   rfl
 
-@[simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
+@[simp, basify_simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
 
+@[basify_simp]
 theorem top_div : ∞ / a = if a = ∞ then 0 else ∞ := by simp [div_eq_mul_inv, top_mul']
 
 theorem top_div_of_ne_top (h : a ≠ ∞) : ∞ / a = ∞ := by simp [top_div, h]
@@ -561,7 +568,7 @@ protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 :=
   ENNReal.div_pos h ofNat_ne_top
 
 protected theorem one_half_lt_one : (2⁻¹ : ℝ≥0∞) < 1 :=
-  ENNReal.inv_lt_one.2 <| one_lt_two
+  ENNReal.inv_lt_one.2 one_lt_two
 
 protected theorem half_lt_self (hz : a ≠ 0) (ht : a ≠ ∞) : a / 2 < a := by
   lift a to ℝ≥0 using ht
@@ -599,12 +606,11 @@ lemma le_mul_of_forall_lt {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h
     (h _ (ENNReal.lt_inv_iff_lt_inv.1 ha') _ (ENNReal.lt_inv_iff_lt_inv.1 hb')).trans_eq
     (ENNReal.mul_inv (Or.inr hb'.ne_top) (Or.inl ha'.ne_top)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The birational order isomorphism between `ℝ≥0∞` and the unit interval `Set.Iic (1 : ℝ≥0∞)`. -/
 @[simps! apply_coe]
 def orderIsoIicOneBirational : ℝ≥0∞ ≃o Iic (1 : ℝ≥0∞) := by
   refine StrictMono.orderIsoOfRightInverse
-    (fun x => ⟨(x⁻¹ + 1)⁻¹, ENNReal.inv_le_one.2 <| le_add_self⟩)
+    (fun x => ⟨(x⁻¹ + 1)⁻¹, ENNReal.inv_le_one.2 le_add_self⟩)
     (fun x y hxy => ?_) (fun x => (x.1⁻¹ - 1)⁻¹) fun x => Subtype.ext ?_
   · simpa only [Subtype.mk_lt_mk, ENNReal.inv_lt_inv, ENNReal.add_lt_add_iff_right one_ne_top]
   · have : (1 : ℝ≥0∞) ≤ x.1⁻¹ := ENNReal.one_le_inv.2 x.2
@@ -615,7 +621,6 @@ theorem orderIsoIicOneBirational_symm_apply (x : Iic (1 : ℝ≥0∞)) :
     orderIsoIicOneBirational.symm x = (x.1⁻¹ - 1)⁻¹ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Order isomorphism between an initial interval in `ℝ≥0∞` and an initial interval in `ℝ≥0`. -/
 @[simps! apply_coe]
 def orderIsoIicCoe (a : ℝ≥0) : Iic (a : ℝ≥0∞) ≃o Iic a :=
@@ -634,7 +639,7 @@ theorem orderIsoIicCoe_symm_apply_coe (a : ℝ≥0) (b : Iic a) :
 
 /-- An order isomorphism between the extended nonnegative real numbers and the unit interval. -/
 def orderIsoUnitIntervalBirational : ℝ≥0∞ ≃o Icc (0 : ℝ) 1 :=
-  orderIsoIicOneBirational.trans <| (orderIsoIicCoe 1).trans <| (NNReal.orderIsoIccZeroCoe 1).symm
+  orderIsoIicOneBirational.trans <| (orderIsoIicCoe 1).trans (NNReal.orderIsoIccZeroCoe 1).symm
 
 @[simp]
 theorem orderIsoUnitIntervalBirational_apply_coe (x : ℝ≥0∞) :
