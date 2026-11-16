@@ -119,6 +119,7 @@ lemma trace_blockDiagonal' [DecidableEq p] {m : p → Type*} [∀ i, Fintype (m 
     trace (blockDiagonal' M) = ∑ i, trace (M i) := by
   simp [blockDiagonal', trace, Finset.sum_sigma']
 
+@[simp]
 lemma trace_fromBlocks (A : Matrix n n R) (B : Matrix n m R) (C : Matrix m n R) (D : Matrix m m R) :
     trace (fromBlocks A B C D) = trace A + trace D := by
   simp [trace, fromBlocks]
