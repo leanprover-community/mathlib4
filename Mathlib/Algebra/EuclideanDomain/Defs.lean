@@ -199,10 +199,10 @@ xgcdAux (r, s, t) (r', s', t') = xgcdAux (r' % r, s' - (r' / r) * s, t' - (r' / 
 ```
 -/
 def xgcdAux (r s t r' s' t' : R) : R × R × R :=
-  if _hr : r = 0 then (r', s', t')
+  if hr : r = 0 then (r', s', t')
   else
     let q := r' / r
-    have _ := mod_lt r' _hr
+    have := mod_lt r' hr
     xgcdAux (r' % r) (s' - q * s) (t' - q * t) r s t
 termination_by r
 
