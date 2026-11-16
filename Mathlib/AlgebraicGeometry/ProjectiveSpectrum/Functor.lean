@@ -112,7 +112,6 @@ lemma germ_map_sectionInBasicOpen {p : ProjectiveSpectrum ℬ}
       (sectionInBasicOpen ℬ p (c.map _ le_rfl)) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma val_sectionInBasicOpen_apply (p : ProjectiveSpectrum.top 𝒜)
     (c : NumDenSameDeg 𝒜 p.1.toIdeal.primeCompl)
     (q : ProjectiveSpectrum.basicOpen 𝒜 c.den) :
