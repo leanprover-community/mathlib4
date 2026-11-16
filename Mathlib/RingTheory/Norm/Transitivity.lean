@@ -47,13 +47,13 @@ lemma auxMat_blockTriangular : (auxMat M k).BlockTriangular (· ≠ k) :=
 
 lemma auxMat_toSquareBlock_ne : (auxMat M k).toSquareBlock (· ≠ k) True = M k k • 1 := by
   ext i j
-  simp [auxMat, toSquareBlock_def, ite_eq_right (of_eq_true i.2), ite_eq_right (of_eq_true j.2),
+  simp [auxMat, ite_eq_right (of_eq_true i.2), ite_eq_right (of_eq_true j.2),
     Matrix.one_apply, Subtype.ext_iff]
 
 lemma auxMat_toSquareBlock_eq : (auxMat M k).toSquareBlock (· ≠ k) False = 1 := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rw [eq_iff_iff, iff_false, not_not] at hi hj
-  simp [auxMat, toSquareBlock_def, ite_eq_left hi, ite_eq_left hj, Matrix.one_apply,
+  simp [auxMat, ite_eq_left hi, ite_eq_left hj, Matrix.one_apply,
     ite_eq_left (hj ▸ hi)]
 
 variable [Fintype m]
@@ -75,7 +75,7 @@ lemma mul_auxMat_toSquareBlock_eq :
     (M * auxMat M k).toSquareBlock (· = k) True = M k k • 1 := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rw [eq_iff_iff, iff_true] at hi hj
-  simp [toSquareBlock_def, hi, hj, mul_auxMat_corner]
+  simp [hi, hj, mul_auxMat_corner]
 
 set_option quotPrecheck false in
 /-- The upper-left block of `M * aux M k`. -/
@@ -90,9 +90,6 @@ lemma det_mul_corner_pow :
   rw [(mul_auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop, mul_auxMat_toSquareBlock_eq]
   simp_rw [det_smul_of_tower, eq_iff_iff, iff_true, Fintype.card_unique,
     pow_one, det_one, smul_eq_mul, mul_one]
-  -- `Decidable (P = Q)` diamond induced by `Prop.linearOrder`, which is classical, when `P` and `Q`
-  -- are themselves decidable.
-  convert rfl
 
 /-- A matrix with X added to the corner. -/
 noncomputable def cornerAddX : Matrix m m S[X] :=
