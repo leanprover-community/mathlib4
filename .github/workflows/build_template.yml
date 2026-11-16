@@ -1207,7 +1207,7 @@ jobs:
             exit 1
           fi
           ## The outputs written above, so that a missing one fails this build rather than
-          ## `decls-diff.yml` for every PR based on this commit. New outputs need not be listed.
+          ## `decls-diff.yml` or `crossrefs-diff.yml` for every PR based on this commit. New outputs need not be listed.
           for f in api.jsonl imports.json import_graph.dot pr_number.txt crossrefs.json; do
             if [ ! -f "$DIR/$f" ]; then
               echo "Refusing to upload: $f is missing." >&2
