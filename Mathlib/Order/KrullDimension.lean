@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Set.Card
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
 
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -937,6 +939,8 @@ end typeclass
 
 /-!
 ## Concrete calculations
+
+TODO: simplify some proofs with `height_of_linearOrder` when we have needed lemmas for `Set.encard`.
 -/
 
 section calculations
@@ -959,20 +963,38 @@ variable {α : Type*} [Preorder α]
     simp +contextual only [ih, Nat.cast_lt, implies_true]
   · exact length_le_height_last (p := LTSeries.range n)
 
+lemma krullDim_fin {n} (hn : n ≠ 0) : Order.krullDim (Fin n) = (n - 1 : ℕ) := by
+  rw [← ENat.WithBot.coe_eq_natCast, ← height_nat, height_eq_krullDim_Iic,
+    krullDim_eq_of_orderIso Fin.orderIsoSubtype]
+  exact krullDim_eq_of_orderIso (Subtype.orderIso (by grind))
+
+lemma krullDim_of_linearOrder {α} [LinearOrder α] [Nonempty α] :
+    Order.krullDim α = (ENat.card α - 1 : ℕ∞) := by
+  by_cases! Infinite α
+  · simp [krullDim_eq_top]
+  have : Fintype α := .ofFinite _
+  rw [← krullDim_eq_of_orderIso (Fintype.orderIsoFinOfCardEq α (Eq.refl _)),
+    krullDim_fin Fintype.card_ne_zero, ENat.card_eq_coe_fintype_card, ← ENat.natCast_one,
+    ← ENat.natCast_sub, WithBot.coe_natCast]
+
+lemma height_of_linearOrder {α} [LinearOrder α] (a : α) :
+    Order.height a = (Set.Iio a).encard := by
+  rw [← WithBot.coe_eq_coe, Order.height_eq_krullDim_Iic, krullDim_of_linearOrder]
+  simp [← Set.insert_Iio, Set.encard_insert_of_notMem Set.self_notMem_Iio,
+    AddLECancellable.add_tsub_cancel_right (ENat.natCast_one ▸ ENat.addLECancellable_natCast 1)]
+
+lemma coheight_of_linearOrder {α} [LinearOrder α] (a : α) :
+    Order.coheight a = (Set.Ioi a).encard := by
+  rw [← height_toDual, ← Set.encard_preimage_of_bijective OrderDual.ofDual.bijective,
+    ← Set.Iio_toDual, Order.height_of_linearOrder]
+
 @[simp] lemma coheight_of_noMaxOrder [NoMaxOrder α] (a : α) : coheight a = ⊤ := by
   obtain ⟨f, hstrictmono⟩ := Nat.exists_strictMono ↑(Set.Ioi a)
-  apply coheight_eq_top_iff.mpr
-  intro m
-  use { length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
-  case h => simp [RelSeries.head]
-  case step =>
-    intro ⟨i, hi⟩
-    by_cases hzero : i = 0
-    · subst i
-      exact (f 1).prop
-    · suffices f i < f (i + 1) by simp [Fin.ext_iff, hzero, this]
-      apply hstrictmono
-      lia
+  rw [← top_le_iff]
+  apply le_trans' (b := coheight (f 0).val) (coheight_anti <| by grind)
+  apply le_trans' <|
+    coheight_le_coheight_apply_of_strictMono _ (Subtype.strictMono_coe _ |>.comp hstrictmono) 0
+  rw [coheight_of_linearOrder, Set.encard_eq_top_iff.mpr (Set.Ioi_infinite _), top_le_iff]
 
 @[simp] lemma height_of_noMinOrder [NoMinOrder α] (a : α) : height a = ⊤ :=
   -- Implementation note: Here it's a bit easier to define the coheight variant first
