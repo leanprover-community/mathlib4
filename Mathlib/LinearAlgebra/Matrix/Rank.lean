@@ -599,7 +599,10 @@ theorem finrank_span_range_row [Field R] [Finite m] [Finite n] (A : Matrix m n R
   cases nonempty_fintype m
   rw [← rank_transpose, ← finrank_span_range_col, col_transpose]
 
-@[deprecated (since := "2026-10-21")] alias rank_eq_finrank_span_row := finrank_span_range_row
+@[deprecated finrank_span_range_row +typeChanged (since := "2026-11-16")]
+theorem rank_eq_finrank_span_row [Field R] [Finite m] [Finite n] (A : Matrix m n R) :
+    A.rank = finrank R (Submodule.span R (Set.range A.row)) :=
+  A.finrank_span_range_row.symm
 
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m] [Finite n]
     {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
