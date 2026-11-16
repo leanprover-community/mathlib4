@@ -402,8 +402,7 @@ protected alias ⟨_, isVonNBounded⟩ := Topology.IsInducing.isVonNBounded_iff
 /-- If the topology on `E` is induced by a family of linear maps, then a set `s : Set E` is von
 Neumann bounded if and only if its image under each map is von Neumann bounded. -/
 protected lemma isVonNBounded_pi_iff
-    (hf : Topology.IsInducing (fun x i ↦ f i x))
-    (s : Set E) :
+    (hf : Topology.IsInducing (fun x i ↦ f i x)) {s : Set E} :
     IsVonNBounded 𝕜 s ↔ ∀ i, IsVonNBounded 𝕜 (f i '' s) := by
   replace hf : IsInducing (LinearMap.pi f) := hf
   simpa [isVonNBounded_pi_iff, Set.image_image] using hf.isVonNBounded_iff
