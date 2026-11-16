@@ -153,6 +153,13 @@ variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K]
 
 open scoped Polynomial
 
+lemma Ploynomial.isCoprime_of_mul_separable {S : Type*} [CommRing S] {f g : S[X]}
+    (sep : (f * g).Separable) : IsCoprime f g := by
+  rcases sep with ⟨h1, h2, eq⟩
+  simp only [← mul_assoc _ _ g, Polynomial.derivative_mul, mul_add, ← add_assoc] at eq
+  use h2 * g.derivative, h1 * f + h2 * f.derivative
+  rw [add_comm (h2 * g.derivative * f), mul_assoc _ _ f, mul_comm g.derivative f, add_mul, eq]
+
 private lemma Polynomial.isReduced_quotient_of_separable' (S : Type*) [Field S] (f : S[X])
     (sep : f.Separable) : IsReduced (S[X] ⧸ Ideal.span {f}) := by
   generalize deg : f.natDegree = n
@@ -168,18 +175,12 @@ private lemma Polynomial.isReduced_quotient_of_separable' (S : Type*) [Field S] 
     have nu : ¬IsUnit f := Polynomial.not_isUnit_of_natDegree_pos f (by simp [deg])
     rcases WfDvdMonoid.exists_irreducible_factor nu sep.ne_zero with ⟨p, irr, ⟨g, rfl⟩⟩
     rw [← Ideal.span_singleton_mul_span_singleton]
-    have cop : IsCoprime (Ideal.span {p}) (Ideal.span {g}) := by
-      rw [Ideal.isCoprime_span_singleton_iff, Irreducible.coprime_iff_not_dvd irr]
-      by_contra ⟨h, rfl⟩
-      absurd sep.squarefree
-      simp only [Squarefree, not_forall]
-      use p
-      simp [← mul_assoc, irr.not_isUnit]
+    have cop : IsCoprime (Ideal.span {p}) (Ideal.span {g}) :=
+      (Ideal.isCoprime_span_singleton_iff p g).mpr (Ploynomial.isCoprime_of_mul_separable sep)
     have red1 : (Ideal.span {p}).IsPrime := (Ideal.span_singleton_prime irr.ne_zero).mpr irr.prime
     have red2 : IsReduced (S[X] ⧸ Ideal.span {g}) := by
-      have : p.natDegree > 0 := Irreducible.natDegree_pos irr
       have := deg.symm.trans (p.natDegree_mul irr.ne_zero (right_ne_zero_of_mul sep.ne_zero))
-      exact ih g.natDegree (by linarith) g sep.of_mul_right rfl
+      exact ih g.natDegree (by linarith [irr.natDegree_pos]) g sep.of_mul_right rfl
     exact isReduced_of_injective _ (Ideal.quotientMulEquivQuotientProd _ _ cop).injective
 
 variable (S : Type*) [CommRing S] [Algebra k S]
@@ -207,7 +208,7 @@ noncomputable def Polynomial.tensorScalarEquiv : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[
           ((polyEquivTensor' k (K ⊗[k] S)).symm.restrictScalars K)
 
 lemma Polynomial.tensorScalarEquiv_algebraMap_eq_map_algebraMap (f : K[X]) :
-    (Polynomial.tensorScalarEquiv k K S) ((algebraMap K[X] (K[X] ⊗[k] S)) f) =
+    (Polynomial.tensorScalarEquiv k K S) (algebraMap K[X] (K[X] ⊗[k] S) f) =
       f.map (algebraMap K (K ⊗[k] S)) := by
   obtain ⟨g, rfl⟩ := (polyEquivTensor' k K).symm.surjective f
   induction g with
@@ -233,18 +234,13 @@ noncomputable def Polynomial.quotientTensorEquiv (f : K[X]) :
             Polynomial.tensorScalarEquiv_algebraMap_eq_map_algebraMap]))
 
 open IntermediateField.algebraAdjoinAdjoin in
-lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isDomain
-    {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
-    [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
-    [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] [IsDomain S] :
-    IsReduced (TensorProduct k K S) := by
+private lemma isDomain_tensorProduct_adjoin_algebraicIndependent {ι : Type*} (f : ι → K)
+    (h : AlgebraicIndependent k f) [IsDomain S] :
+    IsDomain ((IntermediateField.adjoin k (Set.range f)) ⊗[k] S) := by
   set K' := IntermediateField.adjoin k (Set.range f)
-  have : Algebra.IsAlgebraic K' K := isT.isAlgebraic_field
-  have : FiniteDimensional K' K := Algebra.finite_of_essFiniteType_of_isAlgebraic
-  obtain ⟨y, hy⟩ := Field.exists_primitive_element K' K
   let kx := Algebra.adjoin k (Set.range f)
   let e : TensorProduct k kx S ≃ₐ[k] MvPolynomial ι S :=
-    (Algebra.TensorProduct.congr (AlgebraicIndependent.aevalEquiv isT.1).symm AlgEquiv.refl).trans
+    (Algebra.TensorProduct.congr (AlgebraicIndependent.aevalEquiv h).symm AlgEquiv.refl).trans
       ((Algebra.TensorProduct.comm k _ _).trans
         (MvPolynomial.scalarRTensorAlgEquiv.restrictScalars k))
   have isd1 : IsDomain (TensorProduct k kx S) := e.injective.isDomain
@@ -258,8 +254,18 @@ lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isDomain
     simp only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, Submonoid.mem_comap, nz]
     exact fun hx ↦ (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective kx (kx ⊗[k] S))).mpr hx
   have isd2 := @IsLocalization.isDomain_of_le_nonZeroDivisors _ _ _ _ _ _ isl isd1 le_nz
-  have isd3 : IsDomain (K' ⊗[k] S) :=
-    (Algebra.TensorProduct.cancelBaseChange k kx kx K' S).symm.injective.isDomain
+  exact (Algebra.TensorProduct.cancelBaseChange k kx kx K' S).symm.injective.isDomain
+
+lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isDomain
+    {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
+    [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
+    [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] [IsDomain S] :
+    IsReduced (TensorProduct k K S) := by
+  set K' := IntermediateField.adjoin k (Set.range f)
+  have : Algebra.IsAlgebraic K' K := isT.isAlgebraic_field
+  have : FiniteDimensional K' K := Algebra.finite_of_essFiniteType_of_isAlgebraic
+  obtain ⟨y, hy⟩ := Field.exists_primitive_element K' K
+  have isd3 := isDomain_tensorProduct_adjoin_algebraicIndependent k K S f isT.1
   let f := minpoly K' y
   have fsep : f.Separable := sep.1 y
   have fmon : f.Monic := minpoly.monic (Algebra.IsIntegral.isIntegral y)
@@ -290,12 +296,7 @@ lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isReduced
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] [IsReduced S] :
     IsReduced (TensorProduct k K S) := by
   have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
-  have h (x : k) (y : S) : (MinimalPrimes.piLocalizationMap S) (x • y) =
-    x • (MinimalPrimes.piLocalizationMap S) y := by
-    ext p
-    simp [Algebra.smul_def, map_mul, MinimalPrimes.piLocalizationMap,
-      ← IsScalarTower.algebraMap_apply k S]
-  let g := AlgHom.mk' (MinimalPrimes.piLocalizationMap S) h
+  let g := AlgHom.mk' _ (MinimalPrimes.piLocalizationMap_map_smul (R := k) (S := S))
   have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
     Module.Flat.lTensor_preserves_injective_linearMap _
       (IsReduced.piLocalizationMap_injective S)
@@ -356,7 +357,7 @@ lemma isReduced_tensorProduct_of_isSeparablyGenerated_of_isReduced
       have isT' : IsTranscendenceBasis k f' := isT.of_comp M'.val Subtype.val_injective
       have : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f')) M' := by
         let := (IntermediateField.inclusion Mle).toRingHom.toAlgebra
-        let : IsScalarTower M M' K := IsScalarTower.of_algebraMap_eq' rfl
+        have : IsScalarTower M M' K := IsScalarTower.of_algebraMap_eq' rfl
         have : Algebra.IsSeparable M M' := Algebra.isSeparable_tower_bot_of_isSeparable M M' K
         have eq : (IntermediateField.adjoin k (Set.range f')).map M'.val = M := by
           simp [IntermediateField.adjoin_map, f', M, imagef']
@@ -398,14 +399,10 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
   have li' := Module.Flat.linearIndependent_one_tmul (S := (AdjoinPthRoots k)) li
   let rooty := Finsupp.mapRange.addMonoidHom (AdjoinPthRoots.root k).toAddMonoidHom y
   have : Fact (Nat.Prime p) := ⟨hp⟩
-  let : Nontrivial (AdjoinPthRoots k ⊗[k] K) := by
+  have : Nontrivial (AdjoinPthRoots k ⊗[k] K) := by
     apply Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_left
     exact RingHom.injective _
-  have : CharP (AdjoinPthRoots k ⊗[k] K) p := by
-    apply (Algebra.charP_iff k _ p).mp
-    induction ‹ExpChar k p› with
-    | zero => exact (Nat.not_prime_one hp).elim
-    | prime hq => assumption
+  have : ExpChar (AdjoinPthRoots k ⊗[k] K) p := ExpChar.of_injective_algebraMap' k p
   have rooty_supp : rooty.support = y.support :=
     Finsupp.support_mapRange_of_injective (map_zero _) y (AdjoinPthRoots.root k).injective
   have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) := AdjoinPthRoots.root_pow p _
@@ -423,8 +420,6 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
   exact (map_eq_zero_iff (Finsupp.mapRange.addMonoidHom (AdjoinPthRoots.root k).toAddMonoidHom)
     (Finsupp.mapRange_injective _ (map_zero _) (AdjoinPthRoots.root k).injective)).mp
     ((map_eq_zero_iff _ li').mp this)
-
-instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
 
 lemma isReduced_adjoinPthRoots_tensorProduct_of_isReduced_algebraicClosure_tensorProduct
     (red : IsReduced (AlgebraicClosure k ⊗[k] K)) : IsReduced (AdjoinPthRoots k ⊗[k] K) := by
