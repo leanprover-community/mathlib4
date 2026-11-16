@@ -659,6 +659,28 @@ theorem default_def (r : α → α → Prop) : default = RelIso.refl r :=
 @[simp] lemma apply_symm_apply (e : r ≃r s) (x : β) : e (e.symm x) = x := e.right_inv x
 @[simp] lemma symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x := e.left_inv x
 
+/-- Build a relation isomorphism from a bijective map that preserves and reflects the relation. -/
+@[simps toEquiv]
+noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) :
+    r ≃r s where
+  toEquiv := .ofBijective f hf
+  map_rel_iff' := hf' ..
+
+@[simp, grind =] lemma coe_ofBijective (f : α → β) (hf) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) :
+    ⇑(ofBijective f hf hf') = f := rfl
+
+@[simp] lemma ofBijective_coe (e : r ≃r s) :
+    ofBijective e e.bijective (fun _ _ => e.map_rel_iff) = e := by ext; rfl
+
+lemma ofBijective_apply_symm_apply (f : α → β) (hf) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) (b : β) :
+    f ((ofBijective f hf hf').symm b) = b :=
+  (ofBijective ..).apply_symm_apply _
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : α → β) (hf) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) (a : α) :
+    (ofBijective f hf hf').symm (f a) = a :=
+  (ofBijective ..).symm_apply_apply _
+
 @[simp] lemma symm_comp_self (e : r ≃r s) : e.symm ∘ e = id := funext e.symm_apply_apply
 @[simp] lemma self_comp_symm (e : r ≃r s) : e ∘ e.symm = id := funext e.apply_symm_apply
 

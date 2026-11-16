@@ -300,9 +300,8 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Eleme
   apply uliftYonedaEquiv.{max w v₂}.injective
   dsimp only [coconeApp]
   rw [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality, Equiv.apply_symm_apply]
-  simp only [op_unop, Functor.comp_obj, Functor.op_obj, Functor.comp_map, Functor.op_map,
-    uliftYoneda_obj_obj, yoneda_obj_obj, ← eq₃, ← eq₄, ← eq₂, ← eq₁, Functor.map_comp,
-    NatTrans.comp_app, comp_apply]
+  simp only [Functor.comp_obj, Functor.op_obj, Functor.comp_map, Functor.op_map,
+    ← eq₃, ← eq₄, ← eq₂, ← eq₁, Functor.map_comp, NatTrans.comp_app, comp_apply]
   simp [uliftYoneda]
 
 set_option backward.isDefEq.respectTransparency false in
