@@ -361,6 +361,10 @@ variable {a b : ℝ} {ha : 0 ≤ a} {hb : 0 ≤ b}
 
 @[simp] theorem mk_lt_one : NNReal.mk a ha < 1 ↔ a < 1 := Iff.rfl
 
+@[simp] theorem mk_le_natCast {n : ℕ} : NNReal.mk a ha ≤ n ↔ a ≤ n := Iff.rfl
+
+@[simp] theorem mk_lt_natCast {n : ℕ} : NNReal.mk a ha < n ↔ a < n := Iff.rfl
+
 @[simp] theorem mk_le_ofNat {n : ℕ} [n.AtLeastTwo] : NNReal.mk a ha ≤ ofNat(n) ↔ a ≤ ofNat(n) :=
   Iff.rfl
 

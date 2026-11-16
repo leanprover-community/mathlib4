@@ -569,6 +569,9 @@ open NNReal
 /-- The coercion from `I` to `ℝ≥0`. -/
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
+@[simp]
+theorem toNNReal_mk (x : ℝ) (hx : x ∈ Set.Icc _ _) : toNNReal ⟨x, hx⟩ = NNReal.mk x hx.1 := rfl
+
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
 
 @[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
