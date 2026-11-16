@@ -47,7 +47,6 @@ Special cases :
 
 * `normal_iff_isGalois` : The fixing subgroup of an intermediate field `L` is normal if and only if
   `L` is Galois.
-
 -/
 
 @[expose] public section

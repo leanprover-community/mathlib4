@@ -19,7 +19,6 @@ import Mathlib.RingTheory.Ideal.Finsupp
 Let `M` be a finitely presented module over a commutative ring `R`. If `x` is in the
 Jacobson radical of `R` and `x` is `M`-regular, then `M/xM` is free over `R/(x)` if and only if
 `M` is free over `R`.
-
 -/
 
 public section

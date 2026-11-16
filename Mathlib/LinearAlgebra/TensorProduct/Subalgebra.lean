@@ -30,7 +30,6 @@ mainly used in the definition of linearly disjointness.
   and `Algebra.TensorProduct.rid`, as `i(R)` is not necessarily isomorphic to `R`.
 
   They are `Subalgebra` versions of `Submodule.lTensorOne` and `Submodule.rTensorOne`.
-
 -/
 
 @[expose] public section

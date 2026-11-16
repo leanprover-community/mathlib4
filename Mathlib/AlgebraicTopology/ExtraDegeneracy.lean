@@ -46,7 +46,6 @@ simplicial objects in any category.
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 * [M. Barr, J. Kennison, J. and R. Robert,
   *Contractible simplicial objects*][barr-kennison-robert-2019]
-
 -/
 
 set_option backward.defeqAttrib.useBackward true

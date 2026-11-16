@@ -35,7 +35,6 @@ Together, these two results prove the Galois correspondence.
 
 - Instances for `Algebra.IsQuadraticExtension`: a quadratic extension is Galois (if separable)
   with cyclic and thus abelian Galois group.
-
 -/
 
 @[expose] public section

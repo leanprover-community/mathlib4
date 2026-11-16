@@ -45,7 +45,6 @@ Later files endow it with a topological structure, see the docstring of
 * `M →L⋆[σ] N`: the type of conjugate-linear (antilinear) continuous maps from `M` to `N`;
 * `f ∘L g`: the composition of two continuous linear maps;
 * `f ∘SL g`: the composition of two continuous semilinear maps.
-
 -/
 
 @[expose] public section

@@ -33,7 +33,6 @@ in the lemma `Cylinder.exists_very_good`.
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * https://ncatlab.org/nlab/show/cylinder+object
-
 -/
 
 @[expose] public section

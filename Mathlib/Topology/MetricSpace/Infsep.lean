@@ -24,7 +24,6 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 ## Main definitions
 * `Set.einfsep`: Extended infimum separation of a set.
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
-
 -/
 
 @[expose] public section

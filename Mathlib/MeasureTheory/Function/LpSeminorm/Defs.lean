@@ -29,7 +29,6 @@ and is almost everywhere strongly measurable.
 * `MemLp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
   finite `p`-seminorm for the measure `μ` (`eLpNorm f p μ < ∞`)
 * `inhmgELpNorm`: An inhomogeneous version of `eLpNorm`, defined differently for `p < 1`.
-
 -/
 
 @[expose] public section

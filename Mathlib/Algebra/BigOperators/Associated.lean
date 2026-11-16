@@ -15,7 +15,6 @@ import Mathlib.Algebra.Group.Submonoid.Membership
 
 This file contains some theorems relating definitions in `Algebra.Associated`
 and products of multisets, finsets, and finsupps.
-
 -/
 
 public section

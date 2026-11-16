@@ -19,7 +19,6 @@ we relate the homology of `K : HomologicalComplex C c'` and of
 The main result is that `K.πTruncGE e : K ⟶ K.truncGE e` induces a
 quasi-isomorphism in degree `e.f i` for all `i`. (Note that the complex
 `K.truncGE e` is exact in degrees that are not in the image of `e.f`.)
-
 -/
 
 @[expose] public section
@@ -125,7 +124,6 @@ instance (i' : ι') : (K.truncGE e).HasHomology i' := by
   dsimp [truncGE]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The right homology data which allows to show that `K.πTruncGE e`
 induces an isomorphism in homology in degrees `j'` such that `e.f j = j'` for some `j`. -/

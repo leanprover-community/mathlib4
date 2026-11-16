@@ -14,7 +14,6 @@ We say that a functor `F` is left exact if it preserves finite limits, it is rig
 preserves finite colimits, and it is exact if it is both left exact and right exact.
 
 In this file, we define the categories of bundled left exact, right exact and exact functors.
-
 -/
 
 @[expose] public section

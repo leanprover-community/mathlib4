@@ -27,7 +27,6 @@ We define and prove basic properties about flasque sheaves on topological spaces
 
 * `TopCat.Sheaf.IsFlasque.of_shortExact_of_isFlasque₁₂ `: Given a short exact sequence of
   sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque, then `𝓗` is flasque.
-
 -/
 
 public section

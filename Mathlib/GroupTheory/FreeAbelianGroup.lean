@@ -64,7 +64,6 @@ allowed to be in different universes), so `(map f).map_add`
 etc. can be used to prove that `FreeAbelianGroup.map` preserves addition. The
 functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_apply`
 are about `FreeAbelianGroup.map`.
-
 -/
 
 @[expose] public section

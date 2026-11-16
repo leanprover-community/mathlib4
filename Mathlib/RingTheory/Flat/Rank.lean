@@ -24,7 +24,6 @@ bijectivity of `R → S` with the rank of `S` over `R`.
   isomorphism iff the rank of `S` is at most `1` at all primes.
 - `Module.algebraMap_bijective_iff_rankAtStalk`: `S` is of constant `R`-rank `1` if and only if
   `S` is isomorphic to `R`.
-
 -/
 
 public section

@@ -29,7 +29,6 @@ TODO: Implement the latter.
   `eventuallyMeasurableSpace`.
 * `EventuallyMeasurable`: A `Prop` for functions which are measurable with respect to some
   `eventuallyMeasurableSpace` on the domain.
-
 -/
 
 @[expose] public section

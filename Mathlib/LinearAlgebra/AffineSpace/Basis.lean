@@ -44,7 +44,6 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 ## TODO
 
 * Construct the affine equivalence between `P` and `finsuppAffineCoords ι k`.
-
 -/
 
 open scoped Finset

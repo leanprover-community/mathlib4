@@ -53,7 +53,6 @@ convergence theorems.
 ### References
 
 We mostly follow the proof from [Kallenberg, *Foundations of modern probability*][kallenberg2021]
-
 -/
 
 @[expose] public section
@@ -127,7 +126,6 @@ $$
 as required.
 
 To obtain the general case, we simply apply the above to $((f_n - a)^+)_n$.
-
 -/
 
 
@@ -706,7 +704,6 @@ $$
 $$
 $U_N(a, b)$ is measurable as $\{U_N(a, b) < N\}$ is a measurable set since $U_N(a, b)$ is a
 stopping time.
-
 -/
 
 
