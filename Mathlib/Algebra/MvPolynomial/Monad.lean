@@ -361,28 +361,4 @@ theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R)
     (h : j ∈ (bind₁ f φ).vars) : ∃ i : σ, i ∈ φ.vars ∧ j ∈ (f i).vars :=
   mem_vars_aeval f φ h
 
-instance monad : Monad fun σ => MvPolynomial σ R where
-  map f p := rename f p
-  pure := X
-  bind p f := aeval f p
-
-instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R where
-  map_const := by intros; rfl
-  id_map := by intros; simp [(· <$> ·)]
-  comp_map := by intros; simp [(· <$> ·)]
-
-instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R where
-  pure_bind := by intros; simp [pure, bind]
-  bind_assoc := by intros; simp [bind, comp_aeval_apply]
-  seqLeft_eq _ _ := by
-    simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), aeval_rename]
-    simp [rename_eq_aeval, Function.comp_def]
-  seqRight_eq := by
-    intros
-    simp [SeqRight.seqRight, Seq.seq, (· <$> ·),
-      aeval_rename, Function.comp_def]
-  pure_seq := by intros; simp [(· <$> ·), pure, Seq.seq]
-  bind_pure_comp _ _ := congr(⇑$((rename_eq_aeval ..).symm) _)
-  bind_map := by aesop
-
 end MvPolynomial
