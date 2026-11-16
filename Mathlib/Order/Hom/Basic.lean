@@ -494,7 +494,7 @@ def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) :
     map_rel_iff' := by aesop }
 
 /-- `Equiv.subtypeEquivRight` as an order isomorphism. -/
-@[simps!]
+@[simps! apply_coe]
 def _root_.Subtype.orderIso {p q : α → Prop} (h : ∀ a, p a ↔ q a) :
     {x // p x} ≃o {x // q x} :=
   { Equiv.subtypeEquivRight h with
