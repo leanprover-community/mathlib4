@@ -431,7 +431,7 @@ initialize
       return false
     -- We allow `set_option linter.style.header...` to be used to change this linter.
     -- We also allow `set_option doc.verso...` before the module doc-string.
-    if let `(Parser.Command.set_option| set_option $opt $_) := stx then
+    if let `(set_option $opt $_) := stx then
       if opt.getId matches `doc.verso | `doc.verso.suggestions | `doc.verso.module
           | `linter.style.header | `linter.style.header.license | `linter.style.header.imports then
         return true
