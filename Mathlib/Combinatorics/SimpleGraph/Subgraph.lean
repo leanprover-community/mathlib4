@@ -1269,11 +1269,11 @@ lemma le_induce_union : G'.induce s ⊔ G'.induce s' ≤ G'.induce (s ∪ s') :=
   · simp only [sup_adj, induce_adj, Set.mem_union]
     rintro v w (h | h) <;> simp [h]
 
-lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') := by
-  exact (sup_le_iff.mp le_induce_union).1
+lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') :=
+  (sup_le_iff.mp le_induce_union).1
 
-lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
-  exact (sup_le_iff.mp le_induce_union).2
+lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') :=
+  (sup_le_iff.mp le_induce_union).2
 
 variable (G') in
 theorem le_induce_iUnion (s : ι → Set V) : ⨆ i, G'.induce (s i) ≤ G'.induce (⋃ i, s i) :=

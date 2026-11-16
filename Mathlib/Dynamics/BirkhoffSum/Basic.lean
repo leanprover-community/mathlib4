@@ -95,8 +95,8 @@ theorem map_comp_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N]
   funext <| map_birkhoffSum g' f g n
 
 theorem birkhoffSum_comp_apply (f : α → α) (g : α → M) (n : ℕ) (x : α) :
-    birkhoffSum f (g ∘ f) n x = birkhoffSum f g n (f x) := by
-  exact Finset.sum_congr rfl fun k _ => congrArg g (Function.Commute.iterate_self f k x).symm
+    birkhoffSum f (g ∘ f) n x = birkhoffSum f g n (f x) :=
+  Finset.sum_congr rfl fun k _ => congrArg g (Function.Commute.iterate_self f k x).symm
 
 theorem birkhoffSum_comp (f : α → α) (g : α → M) (n : ℕ) :
     birkhoffSum f (g ∘ f) n = (birkhoffSum f g n) ∘ f :=
