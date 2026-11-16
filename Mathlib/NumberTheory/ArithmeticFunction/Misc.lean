@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.Data.Nat.Totient
 public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 
 /-!
@@ -20,6 +21,7 @@ functions are in separate files.
 * `σ k` is the arithmetic function such that `σ k x = ∑ y ∈ divisors x, y ^ k` for `0 < x`.
 * `pow k` is the arithmetic function such that `pow k x = x ^ k` for `0 < x`.
 * `id` is the identity arithmetic function on `ℕ`.
+* `totient` is Euler's totient function `φ`, seen as an arithmetic function.
 * `ω n` is the number of distinct prime factors of `n`.
 * `Ω n` is the number of prime factors of `n` counted with multiplicity.
 
@@ -255,6 +257,33 @@ theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
   rw [← sigma_one_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
   exact prod_congr n.support_factorization fun _ h =>
     sigma_one_apply_prime_pow <| prime_of_mem_primeFactors h
+
+section Totient
+
+/-- Euler's totient function `φ` as an arithmetic function. -/
+def totient : ArithmeticFunction ℕ :=
+  ⟨Nat.totient, Nat.totient_zero⟩
+
+@[simp]
+theorem totient_apply {n : ℕ} : totient n = n.totient := rfl
+
+@[arith_mult]
+theorem isMultiplicative_totient : IsMultiplicative totient :=
+  ⟨by simp, fun h ↦ by simp [Nat.totient_mul h]⟩
+
+/-- Gauss's identity `∑ d ∣ n, φ d = n`, as an identity of arithmetic functions. -/
+theorem totient_mul_zeta : totient * ζ = .id := by
+  ext n
+  rw [mul_zeta_apply, id_apply]
+  simpa using Nat.sum_totient n
+
+/-- The product of the totients of the lcm and of the gcd of two natural numbers is the product
+of their totients. -/
+theorem _root_.Nat.totient_lcm_mul_totient_gcd (m n : ℕ) :
+    (m.lcm n).totient * (m.gcd n).totient = m.totient * n.totient :=
+  isMultiplicative_totient.lcm_apply_mul_gcd_apply
+
+end Totient
 
 /-- `Ω n` is the number of prime factors of `n`. -/
 @[oeis A001222 "the sequence skips `n = 0`"]

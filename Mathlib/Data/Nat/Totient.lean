@@ -22,6 +22,9 @@ This file defines [Euler's totient function](https://en.wikipedia.org/wiki/Euler
 We prove the divisor sum formula, namely that `n` equals `φ` summed over the divisors of `n`. See
 `sum_totient`. We also prove two lemmas to help compute totients, namely `totient_mul` and
 `totient_prime_pow`.
+
+See `Nat.totient_lcm_mul_totient_gcd` in `Mathlib.NumberTheory.ArithmeticFunction.Misc` for the
+identity `φ (lcm m n) * φ (gcd m n) = φ m * φ n`.
 -/
 
 @[expose] public section
