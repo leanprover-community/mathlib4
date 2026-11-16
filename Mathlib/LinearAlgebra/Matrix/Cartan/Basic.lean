@@ -508,8 +508,6 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι] (M : 
     extends IsGeneralizedCartan M where
   exists_posDef' : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ x ≠ 0, 0 < x ⬝ᵥ ((diagonal d * M) *ᵥ x)
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ}
-
 namespace CartanMatrix
 
 /-- The pairs `(Mᵢⱼ, Mⱼᵢ)` that can occur between two distinct joined indices of a finite Cartan
@@ -537,6 +535,8 @@ lemma eq_neg_one_or_two_le_mul (h : IsBond a b) : a = -1 ∧ b = -1 ∨ 2 ≤ a 
 end IsBond
 
 end CartanMatrix
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ}
 
 namespace Matrix.IsFiniteCartan
 
@@ -742,16 +742,7 @@ section Submatrix
 
 variable {κ : Type*} [Fintype κ] [DecidableEq κ]
 
-/-- A principal submatrix of a finite Cartan matrix is a finite Cartan matrix. -/
-protected lemma submatrix {f : κ → ι} (hf : Function.Injective f) :
-    (M.submatrix f f).IsFiniteCartan := by
-  obtain ⟨d, hd, hdM⟩ := hM.exists_posDef
-  refine ⟨fun i ↦ hM.diag _, fun i j h ↦ hM.offDiag_nonpos _ _ (hf.ne h),
-    fun i j ↦ hM.zero_comm _ _, d ∘ f, fun i ↦ hd _, ?_⟩
-  convert hdM.submatrix hf using 1
-  ext i j
-  simp [diagonal_mul]
-
+/-- A relabelling of a finite Cartan matrix is a finite Cartan matrix. -/
 protected lemma reindex (e : ι ≃ κ) : (M.reindex e e).IsFiniteCartan :=
   hM.submatrix e.symm.injective
 
@@ -762,11 +753,6 @@ omit hM in
   simpa using h.submatrix σ.symm.injective
 
 end Submatrix
-
-/-- The symmetrising weights: `dᵢ Mᵢⱼ = dⱼ Mⱼᵢ`. -/
-lemma exists_symmetrizer : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ i j, d i * M i j = d j * M j i := by
-  obtain ⟨d, hd, hdM⟩ := hM.exists_posDef
-  exact ⟨d, hd, fun i j ↦ by simpa using hdM.isHermitian.apply j i⟩
 
 /-- Two distinct indices are joined by at most three bonds: the `2 × 2` principal minor
 `4 - Mᵢⱼ Mⱼᵢ` is positive. -/
