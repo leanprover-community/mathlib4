@@ -79,6 +79,11 @@ instance : MonoidHomClass (ContRepresentation R G V) G (V →L[R] V) where
 lemma ContRepresentation.toMonoidHom_apply (π : ContRepresentation R G V) (g : G) :
     π.toMonoidHom g = π g := rfl
 
+@[simp]
+lemma ContRepresentation.apply_inv_apply {G : Type*} [Group G] (π : ContRepresentation R G V)
+    (g : G) (v : V) : π g (π g⁻¹ v) = v := by
+  rw [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self]
+
 /-- Every continuous representation "is" a representation. -/
 abbrev ContRepresentation.toRepresentation (π : ContRepresentation R G V) :
     Representation R G V :=
@@ -458,7 +463,7 @@ def trivial : ContRepresentation R G V := ofMonoidHom 1
 lemma trivial_apply (g : G) (v : V) : trivial R G V g v = v := rfl
 
 lemma apply_apply (π : ContRepresentation R G V) (g h : G) (v : V) :
-    π g (π h v) = π (g * h) v := by rw [map_mul, mul_apply_eq_comp]
+    π g (π h v) = π (g * h) v := by simp
 
 /-- The restriction of a continuous representation along a monoid homomorphism. -/
 @[implicit_reducible]
@@ -636,7 +641,7 @@ def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
 
 omit [TopologicalSpace R] in
 /-- Continuity of the twist `f ↦ fun g ↦ π g (f g⁻¹)` underlying `coindEquivCoind₁`. -/
-lemma continuous_coindEquivCoind₁_aux (π : ContRepresentation R G V)
+private lemma continuous_coindEquivCoind₁_aux (π : ContRepresentation R G V)
     (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
     Continuous fun F : C(G, V) ↦ ContinuousMap.mk (fun g ↦ π g (F g⁻¹))
       (hπ.comp <| continuous_id.prodMk <| F.continuous.comp continuous_inv) :=
@@ -649,17 +654,17 @@ coinduction along `1 : Unit →ₜ* G` of the trivial representation of `Unit` o
 linearly equivalent to `C(G, V)`, via the twist `f ↦ fun g ↦ π g (f g⁻¹)` in both directions. -/
 @[simps]
 def coindLEquivCoind₁ (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
-    ↥(coindV (G := Unit) (H := G) 1 (trivial R Unit V)) ≃L[R] C(G, V) where
+    (trivial R Unit V).coindV (1 : Unit →ₜ* G) ≃L[R] C(G, V) where
   toFun f := ⟨fun g ↦ π g (f.1 g⁻¹),
       hπ.comp <| continuous_id.prodMk <| f.1.continuous.comp continuous_inv⟩
   invFun f' := ⟨⟨fun g ↦ π g (f' g⁻¹),
       hπ.comp <| continuous_id.prodMk <| f'.continuous.comp continuous_inv⟩, by simp⟩
-  left_inv _ := by ext; simp [apply_apply]
-  right_inv _ := by ext; simp [apply_apply]
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-  continuous_toFun := (continuous_coindEquivCoind₁_aux π hπ).comp continuous_subtype_val
-  continuous_invFun := (continuous_coindEquivCoind₁_aux π hπ).subtype_mk (by simp)
+  continuous_toFun := by exact (continuous_coindEquivCoind₁_aux π hπ).comp continuous_subtype_val
+  continuous_invFun := by exact (continuous_coindEquivCoind₁_aux π hπ).subtype_mk (by simp)
 
 /-- If the action map `G × V → V`, `(g, v) ↦ π g v` is (jointly) continuous, then the coinduction
 along `1 : Unit →ₜ* G` of the trivial representation of the trivial group on `V` is equivalent to
@@ -667,14 +672,16 @@ along `1 : Unit →ₜ* G` of the trivial representation of the trivial group on
 `f ↦ fun g ↦ π g (f g⁻¹)`. -/
 def coindEquivCoind₁ (π : ContRepresentation R G V)
     (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
-    ((trivial R Unit V).coind (1 : Unit →ₜ* G)).Equiv π.coind₁ :=
-  .mk (coindLEquivCoind₁ π hπ) fun g ↦ by
-    ext
-    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe,
-      coindLEquivCoind₁_apply_apply, coind_apply_coe, comp_apply, coe_mulRight, coind₁_apply_apply,
-      map_mul, mul_inv_rev, inv_inv, mul_apply_eq_comp]
-    simp_rw [apply_apply]
-    simp
+    ((trivial R Unit V).coind (1 : PUnit →ₜ* G)).Equiv π.coind₁ :=
+  .mk (coindLEquivCoind₁ π hπ) fun g ↦ by ext; simp
+
+/-- The equivalence between `coind₁` and `coind` of the trivial representation of trivial
+  subgroup of `G`. -/
+@[deprecated coindEquivCoind₁ +typeChanged (since := "2026-11-16")]
+def coind₁Equivcoind : (coind₁ (.trivial R (⊥ : Subgroup G) V)).Equiv
+    (coind 1 (.trivial R G V)) :=
+  (coindEquivCoind₁ _ (by simpa using continuous_snd)).symm.trans <|
+    .mk (ContinuousLinearEquiv.ofEq _ _ (by ext; simp)) fun _ ↦ rfl
 
 section coind₁ResMap
 

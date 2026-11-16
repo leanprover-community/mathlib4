@@ -365,12 +365,12 @@ theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
   rw [← transpose_apply (adjMatrix α G) x v, transpose_adjMatrix]
 
 @[simp]
-theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
+theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V W α) (v : V) (w : W) :
     (G.adjMatrix α * M) v w = ∑ u ∈ G.neighborFinset v, M u w := by
   simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter]
 
 @[simp]
-theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
+theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix W V α) (v : W) (w : V) :
     (M * G.adjMatrix α) v w = ∑ u ∈ G.neighborFinset w, M v u := by
   simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 
