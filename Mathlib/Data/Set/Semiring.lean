@@ -87,6 +87,11 @@ instance : AddCommMonoid (SetSemiring α) where
 instance : AddLeftMono (SetSemiring α) where
   elim _ _ _ := union_subset_union_right _
 
+instance : CanonicallyOrderedAdd (SetSemiring α) where
+  exists_add_of_le {_ b} ab := ⟨b, SetSemiring.ext (union_eq_right.2 ab).symm⟩
+  le_add_self _ _ := subset_union_right
+  le_self_add _ _ := subset_union_left
+
 section One
 
 variable [One α]
@@ -127,9 +132,9 @@ instance [Semigroup α] : Semigroup (SetSemiring α) := fast_instance% toSetEqui
 instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
   fast_instance% toSetEquiv.commSemigroup
 
-instance [Monoid α] : Monoid (SetSemiring α) where
+instance [Monoid α] : Monoid (SetSemiring α) := fast_instance% toSetEquiv.monoid
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) where
+instance [CommMonoid α] : CommMonoid (SetSemiring α) := fast_instance% toSetEquiv.commMonoid
 
 instance [Mul α] : NonUnitalNonAssocSemiring (SetSemiring α) where
   zero_mul _ := SetSemiring.ext empty_mul
@@ -146,11 +151,6 @@ instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
 instance [Monoid α] : IdemSemiring (SetSemiring α) where
 
 instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
-
-instance : CanonicallyOrderedAdd (SetSemiring α) where
-  exists_add_of_le {_ b} ab := ⟨b, SetSemiring.ext (union_eq_right.2 ab).symm⟩
-  le_add_self _ _ := subset_union_right
-  le_self_add _ _ := subset_union_left
 
 instance [CommMonoid α] : IsOrderedRing (SetSemiring α) where
 
