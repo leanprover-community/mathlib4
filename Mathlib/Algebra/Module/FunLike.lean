@@ -45,6 +45,11 @@ theorem toAddMonoidHom_coeLinearMap [IsZeroApply F] :
     (coeLinearMap R F).toAddMonoidHom = coeAddMonoidHom F α β :=
   rfl
 
+@[simp]
+theorem toAddHom_coeLinearMap [IsZeroApply F] :
+    (coeLinearMap R F).toAddHom = coeAddHom F α β :=
+  rfl
+
 variable (R F) in
 /-- Evaluation as a linear map. -/
 @[expose]
@@ -56,6 +61,11 @@ theorem evalLinearMap_apply (x : α) (f : F) : evalLinearMap R F x f = f x := rf
 @[simp]
 theorem toAddMonoidHom_evalLinearMap [IsZeroApply F] (x : α) :
     (evalLinearMap R F x).toAddMonoidHom = evalAddMonoidHom F x := rfl
+
+@[simp]
+theorem toAddHom_evalLinearMap [IsZeroApply F] (x : α) :
+    (evalLinearMap R F x).toAddHom = evalAddHom F x :=
+  rfl
 
 end LinearMap
 

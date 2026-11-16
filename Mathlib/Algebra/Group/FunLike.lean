@@ -91,9 +91,9 @@ theorem coeMonoidHom_injective : Function.Injective (coeMonoidHom F α β) := by
   exact DFunLike.coe_injective
 
 variable (F) in
-/-- Evaluation as a multiplicative homomorphism. -/
+/-- Evaluation as a monoid homomorphism. -/
 @[to_additive
-/-- Evaluation as an additive homomorphism. -/]
+/-- Evaluation as an additive monoid homomorphism. -/]
 def evalMonoidHom (x : α) : F →* β := (Pi.evalMonoidHom _ x).comp (coeMonoidHom F α β)
 
 @[to_additive (attr := simp)]
