@@ -133,7 +133,7 @@ theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (lo
     rw [neg_add_eq_sub, ← neg_sub, ← Int.ofNat_one, ← Int.ofNat_sub this, zpow_neg, zpow_natCast,
       lt_inv_comm₀ hr (pow_pos (Nat.cast_pos.mpr <| zero_lt_one.trans hb) _), ← Nat.cast_pow]
     refine Nat.lt_ceil.1 ?_
-    exact Nat.pow_pred_clog_lt_self hb <| Nat.one_lt_cast.1 <| hcri.trans_le <| Nat.le_ceil _
+    exact Nat.pow_pred_clog_lt_self b <| Nat.one_lt_cast.1 <| hcri.trans_le <| Nat.le_ceil _
 
 @[simp]
 theorem log_zero_right (b : ℕ) : log b (0 : R) = 0 :=
@@ -250,8 +250,11 @@ theorem neg_log_inv_eq_clog (b : ℕ) (r : R) : -log b r⁻¹ = clog b r := by r
 
 theorem neg_clog_inv_eq_log (b : ℕ) (r : R) : -clog b r⁻¹ = log b r := by rw [clog_inv, neg_neg]
 
+omit [IsStrictOrderedRing R] in
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : clog b r = 0 := by
-  rw [← neg_log_inv_eq_clog, log_of_left_le_one hb, neg_zero]
+  obtain rfl | rfl : b = 0 ∨ b = 1 := by lia
+  · simp
+  · simp
 
 theorem self_le_zpow_clog {b : ℕ} (hb : 1 < b) (r : R) : r ≤ (b : R) ^ clog b r := by
   rcases le_or_gt r 0 with hr | hr
