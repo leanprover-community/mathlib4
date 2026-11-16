@@ -267,7 +267,7 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η
     intro h
     dsimp at hg
     rw [h] at hg
-    simp only [coe_zero, Pi.zero_apply, not_true] at hg
+    simp only [zero_apply, not_true_eq_false] at hg
   left_inv f := by ext; simp [split]
   right_inv f := by ext; simp [split]
 

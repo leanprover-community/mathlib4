@@ -116,7 +116,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
   replace hj := Finset.mem_range.1 hj
   rw [← Fin.val_mk hj, ← B.basis_eq_pow, Algebra.smul_def, IsScalarTower.algebraMap_apply R S A, ←
     Algebra.smul_def, map_smul]
-  simp only [algebraMap_smul, Finsupp.coe_smul, Pi.smul_apply, B.basis.repr_self_apply]
+  simp only [algebraMap_smul, smul_apply, B.basis.repr_self_apply]
   by_cases hij : (⟨j, hj⟩ : Fin _) = i
   · simp only [hij, ite_true]
     rw [Algebra.smul_def, mul_one]
@@ -135,10 +135,10 @@ theorem repr_mul_isIntegral (hB : IsIntegral R B.gen) {x y : A}
   rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, ← Finset.sum_product',
     map_sum, Finset.sum_apply']
   refine IsIntegral.sum _ fun I _ => ?_
-  simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, map_smulₛₗ, RingHom.id_apply,
-    Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul]
+  simp only [coe_basis, Algebra.mul_smul_comm, Algebra.smul_mul_assoc, map_smul, smul_apply,
+    smul_eq_mul]
   refine (hy _).mul ((hx _).mul ?_)
-  simp only [coe_basis, ← pow_add]
+  simp only [← pow_add]
   exact repr_gen_pow_isIntegral hB hmin _ _
 
 /-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element

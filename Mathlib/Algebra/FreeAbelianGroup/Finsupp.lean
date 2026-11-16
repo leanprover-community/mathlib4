@@ -96,7 +96,7 @@ variable {X}
 /-- `coeff x` is the additive group homomorphism `FreeAbelianGroup X →+ ℤ`
 that sends `a` to the multiplicity of `x : X` in `a`. -/
 def coeff (x : X) : FreeAbelianGroup X →+ ℤ :=
-  (Finsupp.applyAddHom x).comp toFinsupp
+  (FunLike.evalAddMonoidHom (X →₀ ℤ) x).comp toFinsupp
 
 /-- `support a` for `a : FreeAbelianGroup X` is the finite set of `x : X`
 that occur in the formal sum `a`. -/

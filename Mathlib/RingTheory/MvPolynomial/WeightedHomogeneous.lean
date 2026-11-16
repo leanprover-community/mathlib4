@@ -132,7 +132,7 @@ def weightedHomogeneousSubmodule (w : σ → M) (m : M) : Submodule R (MvPolynom
     exact ha (right_ne_zero_of_mul hc)
   zero_mem' _ hd := False.elim (hd <| by simp)
   add_mem' {a} {b} ha hb c hc := by
-    rw [coeff_add, Finsupp.add_apply] at hc
+    rw [coeff_add, add_apply] at hc
     obtain h | h : a.coeff c ≠ 0 ∨ b.coeff c ≠ 0 := by
       contrapose! hc
       simp only [hc, add_zero]
@@ -575,7 +575,7 @@ theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [HasUniqueDi
     simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.linearCombination_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]
-    simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
+    simp only [DFunLike.ext_iff, zero_apply, not_forall] at hd
     obtain ⟨i, hi⟩ := hd
     exact ⟨i, hi, hw i⟩
 

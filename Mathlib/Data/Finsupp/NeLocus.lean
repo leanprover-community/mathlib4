@@ -68,7 +68,7 @@ theorem neLocus_comm : f.neLocus g = g.neLocus f := by
 @[simp]
 theorem neLocus_zero_right : f.neLocus 0 = f.support := by
   ext
-  rw [mem_neLocus, mem_support_iff, coe_zero, Pi.zero_apply]
+  rw [mem_neLocus, mem_support_iff, zero_apply]
 
 @[simp]
 theorem neLocus_zero_left : (0 : α →₀ N).neLocus f = f.support :=
