@@ -529,7 +529,6 @@ lemma Strategy.ForcesWinIn.mono (s : Strategy N) {k₁ k₂ : ℕ} (h : s.Forces
 
 /-! ### Proof of lower bound with constructions used therein -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrary choice of monster positions, which is modified to put selected monsters in
 desired places. -/
 def baseMonsterData (N : ℕ) : MonsterData N where
@@ -546,7 +545,6 @@ def baseMonsterData (N : ℕ) : MonsterData N where
 def monsterData12 (hN : 2 ≤ N) (c₁ c₂ : Fin (N + 1)) : MonsterData N :=
   ((baseMonsterData N).setValue (row2 hN) c₂).setValue (row1 hN) c₁
 
-set_option backward.isDefEq.respectTransparency false in
 lemma monsterData12_apply_row2 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
     monsterData12 hN c₁ c₂ (row2 hN) = c₂ := by
   rw [monsterData12, Function.Embedding.setValue_eq_of_ne]
