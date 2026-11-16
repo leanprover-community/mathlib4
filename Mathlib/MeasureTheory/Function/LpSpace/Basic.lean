@@ -381,6 +381,11 @@ theorem norm_le_norm_of_ae_le {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂�
   rw [norm_def, norm_def]
   exact ENNReal.toReal_mono (by finiteness) (eLpNorm_mono_ae (Lp.aestronglyMeasurable f) h)
 
+theorem norm_eq_norm_of_ae_eq {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
+    ‖f‖ = ‖g‖ := by
+  rw [norm_def, norm_def,
+    eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g) h]
+
 theorem mem_Lp_of_nnNorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : f ∈ Lp E p μ :=
   mem_Lp_iff_memLp.2 <| MemLp.of_nnNorm_le_mul (Lp.memLp g) f.aestronglyMeasurable h
@@ -861,15 +866,9 @@ theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ �
 
 theorem norm_compLp_of_isometry {L : E →SL[σ] F} (hL : Isometry L) (f : Lp E p μ) :
     ‖L.compLp f‖ = ‖f‖ := by
-  have hle : ‖L.compLp f‖ ≤ ‖f‖ := by
-    apply Lp.norm_le_norm_of_ae_le
-    filter_upwards [L.coeFn_compLp f] with x hx
-    rw [hx]; exact ((AddMonoidHomClass.isometry_iff_norm L).1 hL (f x)).le
-  have hge : ‖f‖ ≤ ‖L.compLp f‖ := by
-    apply Lp.norm_le_norm_of_ae_le
-    filter_upwards [L.coeFn_compLp f] with x hx
-    rw [hx]; exact ((AddMonoidHomClass.isometry_iff_norm L).1 hL (f x)).ge
-  exact le_antisymm hle hge
+  apply Lp.norm_eq_norm_of_ae_eq
+  filter_upwards [L.coeFn_compLp f] with x hx
+  rw [hx, (AddMonoidHomClass.isometry_iff_norm L).1 hL]
 
 variable (μ p)
 
