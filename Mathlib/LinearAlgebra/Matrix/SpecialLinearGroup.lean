@@ -155,7 +155,7 @@ theorem coe_mk {A : Matrix n n R} (h : det A = 1) : SpecialLinearGroup.mk A h = 
 @[simp]
 theorem mk_inj {A B : Matrix n n R} (hA : det A = 1) (hB : det B = 1) :
     SpecialLinearGroup.mk A hA = .mk B hB ↔ A = B :=
-  ⟨fun h ↦ by injection h, fun h ↦ (ext_iff (.mk ..) (.mk ..)).mpr fun _ ↦ congrFun (congrFun h _)⟩
+  Subtype.mk_eq_mk
 
 @[simp]
 theorem coe_inv : ↑ₘ(A⁻¹) = adjugate A :=
