@@ -131,13 +131,13 @@ theorem shiftLeft_add_int : d <<< (a + b) = d <<< a <<< b := by
   induction d <;> simp [Int.sub_sub]
 
 theorem shiftLeft_add_nat : d <<< (m + n) = d <<< m <<< n := by
-  simp only [← shiftLeft_natCast, Nat.cast_add, shiftLeft_add_int]
+  simp only [← shiftLeft_natCast, Int.natCast_add, shiftLeft_add_int]
 
 theorem shiftRight_add_int : d >>> (a + b) = d >>> a >>> b := by
   induction d <;> simp [Int.add_assoc]
 
 theorem shiftRight_add_nat : d >>> (m + n) = d >>> m >>> n := by
-  simp only [← shiftRight_natCast, Nat.cast_add, shiftRight_add_int]
+  simp only [← shiftRight_natCast, Int.natCast_add, shiftRight_add_int]
 
 @[simp] theorem shiftLeft_neg : d <<< (-a) = d >>> a := by
   induction d <;> simp
@@ -161,17 +161,18 @@ section toRat
 
 @[simp]
 theorem toRat_shiftLeft : (d <<< a).toRat = d.toRat * 2 ^ a := by
-  rcases d with _ | ⟨d, k, hd⟩
-  · simp
-  · norm_num [toRat_ofOdd_eq_mul_two_pow, sub_eq_add_neg, zpow_add₀]
-    ac_rfl
+  cases d with
+  | zero => simp
+  | ofOdd d k hd =>
+    simp_rw [ofOdd_shiftLeft, toRat_ofOdd_eq_mul_two_pow, neg_sub, sub_eq_add_neg]
+    rw [Int.add_comm, Rat.mul_assoc, Rat.zpow_add (by decide +kernel)]
 
 theorem toRat_shiftRight : (d >>> a).toRat = d.toRat * 2 ^ (-a) := by
   rw [← shiftLeft_neg, toRat_shiftLeft]
 
 @[simp]
 theorem toRat_shiftRight' : (d >>> a).toRat = d.toRat / 2 ^ a := by
-  rw [toRat_shiftRight, zpow_neg, div_eq_mul_inv]
+  rw [toRat_shiftRight, Rat.zpow_neg, Rat.div_def]
 
 theorem toRat_shiftLeft_nat : (d <<< n).toRat = d.toRat * 2 ^ n :=
   toRat_shiftLeft d n
@@ -206,7 +207,7 @@ theorem add_shiftLeft_nat : (x + y) <<< m = x <<< m + y <<< m :=
   add_shiftLeft_int x y m
 
 theorem add_shiftRight_int : (x + y) >>> a = x >>> a + y >>> a := by
-  simp [← toRat_inj, add_div]
+  simp [← toRat_inj, Rat.div_def, Rat.add_mul]
 
 theorem add_shiftRight_nat : (x + y) >>> m = x >>> m + y >>> m :=
   add_shiftRight_int x y m
