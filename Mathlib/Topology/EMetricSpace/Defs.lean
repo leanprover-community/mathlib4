@@ -829,6 +829,15 @@ instance EMetricSpace.toWeakEMetricSpace (α : Type u) [EMetricSpace α] :
     WeakEMetricSpace α where
   eq_of_edist_eq_zero := eq_of_edist_eq_zero
 
+/-- `WeakEMetricSpace` can be induced backwards. -/
+abbrev WeakEMetricSpace.of_isInducing {α β : Type*} [e : TopologicalSpace α]
+    [n : TopologicalSpace β] {f : α → β} (hf1 : IsInducing f) (hf2 : Function.Injective f)
+    (m : WeakEMetricSpace β) :
+    WeakEMetricSpace α :=
+  { WeakPseudoEMetricSpace.IsInducing hf1 m.toWeakPseudoEMetricSpace with
+    eq_of_edist_eq_zero := fun h => hf2 (m.eq_of_edist_eq_zero h) }
+
+
 variable {γ : Type w} [TopologicalSpace γ] [WeakEMetricSpace γ]
 
 export WeakEMetricSpace (eq_of_edist_eq_zero)
