@@ -28,7 +28,7 @@ theorem Module.IsTorsion.finrank_eq_zero {R M : Type*} [Semiring R] [AddCommMono
 variable {R M : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
 
 lemma Module.rank_eq_zero_iff_isTorsion : Module.rank R M = 0 ↔ Module.IsTorsion R M := by
-  simp [IsTorsion, rank_eq_zero_iff]
+  simp [IsTorsion, Module.rank_eq_zero_iff_forall_exists_smul_eq_zero]
 
 @[deprecated (since := "2026-07-14")] alias
 rank_eq_zero_iff_isTorsion := Module.rank_eq_zero_iff_isTorsion

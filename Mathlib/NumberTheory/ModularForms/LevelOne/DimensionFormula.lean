@@ -161,7 +161,7 @@ lemma ModularForm.levelOne_odd_weight_eq_zero (hk : Odd k) (f : ModularForm 𝒮
 /-- Modular forms of odd weight for `𝒮ℒ` are zero-dimensional. -/
 lemma ModularForm.levelOne_odd_weight_rank_zero (hk : Odd k) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) = 0 :=
-  rank_zero_iff_forall_zero.mpr (levelOne_odd_weight_eq_zero hk)
+  Module.rank_eq_zero_iff_forall_zero.mpr (levelOne_odd_weight_eq_zero hk)
 
 /-- Cusp forms of weight `k < 12` for `𝒮ℒ` are zero-dimensional. -/
 lemma CuspForm.rank_eq_zero_of_weight_lt_twelve (hk : k < 12) :
@@ -255,7 +255,7 @@ private lemma weight_two_qExpansion_eq_zero (f : ModularForm 𝒮ℒ 2) : qExpan
 
 /-- Modular forms of weight 2 for `𝒮ℒ` are zero. -/
 theorem levelOne_weight_two_rank_zero : Module.rank ℂ (ModularForm 𝒮ℒ 2) = 0 := by
-  simpa [rank_zero_iff_forall_zero, ModularForm.qExpansion_eq_zero_iff]
+  simpa [Module.rank_eq_zero_iff_forall_zero, ModularForm.qExpansion_eq_zero_iff]
     using weight_two_qExpansion_eq_zero
 
 /-- The dimension formula for `𝒮ℒ` modular forms of even weight. -/
@@ -305,7 +305,7 @@ theorem sturm_bound_levelOne_nat {k : ℕ} {f : ModularForm 𝒮ℒ (k : ℤ)}
   suffices CuspForm.discriminantEquiv (toCuspForm f h0) = 0 by
     simpa [CuspForm.discriminantEquiv.map_eq_zero_iff, DFunLike.ext_iff]
   rcases lt_or_ge k 12 with hk12 | hk12
-  · apply rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia))
+  · apply Module.rank_eq_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia))
   · rw [← mcast_eq_zero_iff (b := ↑(k - 12)) (by lia) rfl]
     refine ih (k - 12) (by lia) ?_
     have hsucc : k / 12 = (k - 12) / 12 + 1 := by lia
@@ -319,7 +319,7 @@ Corollary of the natural-weight version `sturm_bound_levelOne_nat`. -/
 theorem sturm_bound_levelOne {k : ℤ} {f : ModularForm 𝒮ℒ k}
     (h : (↑(k.toNat / 12) : ℕ∞) < (qExpansion 1 f).order) : f = 0 := by
   rcases lt_or_ge k 0 with hk | hk
-  · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f
+  · exact Module.rank_eq_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f
   · lift k to ℕ using hk
     exact sturm_bound_levelOne_nat (mod_cast h)
 

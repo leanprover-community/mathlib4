@@ -45,7 +45,7 @@ connected. -/
 theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     (h : 1 < Module.rank ℝ E) {s : Set E} (hs : s.Countable) :
     IsPathConnected sᶜ := by
-  have : Nontrivial E := (rank_pos_iff_nontrivial (R := ℝ)).1 (zero_lt_one.trans h)
+  have : Nontrivial E := (Module.rank_pos_iff_nontrivial (R := ℝ)).1 (zero_lt_one.trans h)
   -- the set `sᶜ` is dense, therefore nonempty. Pick `a ∈ sᶜ`. We have to show that any
   -- `b ∈ sᶜ` can be joined to `a`.
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := (hs.dense_compl ℝ).nonempty

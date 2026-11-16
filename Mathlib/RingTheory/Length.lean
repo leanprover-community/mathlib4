@@ -260,7 +260,7 @@ lemma Module.length_of_free [Module.Free R M] :
   nontriviality R
   nontriviality M
   by_cases H : Module.length R R = ⊤
-  · simp [b.repr.length_eq, H, rank_pos.ne']
+  · simp [b.repr.length_eq, H, Module.rank_pos.ne']
   rw [← ne_eq, Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian] at H
   cases H
   let b := Module.Free.chooseBasis R M

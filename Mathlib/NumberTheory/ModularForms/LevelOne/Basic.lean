@@ -120,5 +120,5 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
 
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) = 0 := by
-  refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
+  refine Module.rank_eq_zero_iff_forall_exists_smul_eq_zero.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
   simpa [← FunLike.coe_zero_iff] using levelOne_neg_weight_eq_zero hk f

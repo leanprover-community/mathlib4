@@ -495,7 +495,7 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
     Module.finrank R M = 0 ↔ Subsingleton M := by
   have := Module.rank_lt_aleph0 R M
   rw [← not_le] at this
-  simp [Module.finrank, this, rank_zero_iff]
+  simp [Module.finrank, this, Module.rank_eq_zero_iff_subsingleton]
 
 @[nontriviality]
 theorem finrank_eq_zero_of_subsingleton [Subsingleton M] :

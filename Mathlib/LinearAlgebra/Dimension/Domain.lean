@@ -182,7 +182,8 @@ theorem IsTorsionFree.erank_mul_erank [IsTorsionFree S M] :
       map_le_nonZeroDivisors_of_injective _ h.algebraMap_injective le_rfl
     let : Field FS := fieldOfFiniteDimensional FR FS
     simpa using congr($(lift_rank_mul_lift_rank_of_field_isLocalization R S FS M).toENat)
-  · rw [toENat_eq_top.mpr hRS, ENat.top_mul (by simpa using rank_pos.ne'), eq_comm, toENat_eq_top]
+  · rw [toENat_eq_top.mpr hRS, ENat.top_mul (by simpa using Module.rank_pos.ne'),
+      eq_comm, toENat_eq_top]
     have ⟨m, hm⟩ := exists_ne (0 : M)
     have hRSM := LinearMap.toSpanSingleton S M m |>.restrictScalars R
       |>.lift_rank_le_of_injective <| smul_left_injective _ hm

@@ -154,13 +154,13 @@ private lemma exists_mem_range_coeff_zero_eq_one {k : ℕ} (hk : Even k) (h2 : k
 private lemma directSum_of_mem_range (k : ℤ) (f : ModularForm 𝒮ℒ k) :
     DirectSum.of _ k f ∈ evalE₄E₆.range := by
   induction k using Int.strongRec (m := 0) with
-  | lt k hk => simp [rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f]
+  | lt k hk => simp [Module.rank_eq_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f]
   | ge k hk ih =>
     lift k to ℕ using hk
     by_cases hodd : Odd k
     · simp [levelOne_odd_weight_eq_zero hodd.natCast f]
     obtain rfl | h2 := eq_or_ne k 2
-    · simp [rank_zero_iff_forall_zero.mp levelOne_weight_two_rank_zero f]
+    · simp [Module.rank_eq_zero_iff_forall_zero.mp levelOne_weight_two_rank_zero f]
     -- `f` minus its constant term times `m` is a cusp form `g`, and `g` is `Δ` times the form
     -- `g / Δ` of weight `k - 12`, which lies in the range by `ih`.
     obtain ⟨m, hm, hm1⟩ := exists_mem_range_coeff_zero_eq_one (Nat.not_odd_iff_even.mp hodd) h2

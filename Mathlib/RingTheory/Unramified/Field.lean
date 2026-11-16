@@ -160,8 +160,9 @@ theorem range_eq_top_of_isPurelyInseparable
     [IsPurelyInseparable K L] : (algebraMap K L).range = ⊤ := by
   classical
   have : Nontrivial (L ⊗[K] L) := by
-    rw [← not_subsingleton_iff_nontrivial, ← rank_zero_iff (R := K), rank_tensorProduct',
-      mul_eq_zero, or_self, rank_zero_iff, not_subsingleton_iff_nontrivial]
+    rw [← not_subsingleton_iff_nontrivial, ← Module.rank_eq_zero_iff_subsingleton (R := K),
+      rank_tensorProduct', mul_eq_zero, or_self,
+      Module.rank_eq_zero_iff_subsingleton, not_subsingleton_iff_nontrivial]
     infer_instance
   rw [← top_le_iff]
   intro x _

@@ -266,7 +266,7 @@ open WithTop
 
 lemma eq_bot_of_not_nonempty (hi : ¬ Nonempty (Iio i)) : filtration i = ⊥ := by
   cases i
-  · have := mk_ne_zero_iff.mp (rank_pos.trans_eq (mk_ord_toType <| Module.rank F E).symm).ne'
+  · have := mk_ne_zero_iff.mp (Module.rank_pos.trans_eq (mk_ord_toType <| Module.rank F E).symm).ne'
     rw [← range_coe] at hi; exact (hi inferInstance).elim
   · exact bot_unique <| adjoin_le_iff.mpr fun _ ⟨j, hj, _⟩ ↦ (hi ⟨j, coe_lt_coe.mpr hj⟩).elim
 

@@ -287,9 +287,9 @@ def finInsepDegree : ℕ := finrank (separableClosure F E) E
 
 theorem finInsepDegree_def' : finInsepDegree F E = Cardinal.toNat (insepDegree F E) := rfl
 
-instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨rank_pos.ne'⟩
+instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨Module.rank_pos.ne'⟩
 
-instance instNeZeroInsepDegree : NeZero (insepDegree F E) := ⟨rank_pos.ne'⟩
+instance instNeZeroInsepDegree : NeZero (insepDegree F E) := ⟨Module.rank_pos.ne'⟩
 
 instance instNeZeroFinInsepDegree [FiniteDimensional F E] :
     NeZero (finInsepDegree F E) := ⟨finrank_pos.ne'⟩

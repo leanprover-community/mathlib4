@@ -326,13 +326,13 @@ variable [StrongRankCondition R] [Module.Finite R M]
 /-- A finite rank torsion-free module has positive `finrank` iff it has a nonzero element. -/
 theorem Module.finrank_pos_iff_exists_ne_zero [IsDomain R] [IsTorsionFree R M] :
     0 < finrank R M ↔ ∃ x : M, x ≠ 0 := by
-  rw [← @rank_pos_iff_exists_ne_zero R M, ← finrank_eq_rank]
+  rw [← @Module.rank_pos_iff_exists_ne_zero R M, ← finrank_eq_rank]
   norm_cast
 
 /-- An `R`-finite torsion-free module has positive `finrank` iff it is nontrivial. -/
 theorem Module.finrank_pos_iff [IsDomain R] [IsTorsionFree R M] :
     0 < finrank R M ↔ Nontrivial M := by
-  rw [← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
+  rw [← Module.rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
   norm_cast
 
 /-- A nontrivial finite-dimensional space has positive `finrank`. -/
@@ -343,14 +343,14 @@ theorem Module.finrank_pos [IsDomain R] [IsTorsionFree R M] [h : Nontrivial M] :
 /-- See `Module.finrank_zero_iff` for the stronger version with `IsTorsionFree R M`. -/
 theorem Module.finrank_eq_zero_iff :
     finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
-  rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
+  rw [← Module.rank_eq_zero_iff_forall_exists_smul_eq_zero (R := R), ← finrank_eq_rank]
   norm_cast
 
 /-- A finite-dimensional space has zero `finrank` iff it is a subsingleton.
-This is the `finrank` version of `rank_zero_iff`. -/
+This is the `finrank` version of `Module.rank_eq_zero_iff_subsingleton`. -/
 theorem Module.finrank_zero_iff [IsDomain R] [IsTorsionFree R M] :
     finrank R M = 0 ↔ Subsingleton M := by
-  rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
+  rw [← Module.rank_eq_zero_iff_subsingleton (R := R), ← finrank_eq_rank]
   norm_cast
 
 /-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
