@@ -296,9 +296,6 @@ theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
 
 instance : Functor.Additive (AdditiveFunctor.forget C D) where map_add := rfl
 
-instance (F : C ⥤+ D) : Functor.Additive F.1 :=
-  F.2
-
 end
 
 section Exact

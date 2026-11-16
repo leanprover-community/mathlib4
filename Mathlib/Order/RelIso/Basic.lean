@@ -640,12 +640,12 @@ def Simps.symm_apply (h : r ≃r s) : β → α :=
 initialize_simps_projections RelIso (toFun → apply, invFun → symm_apply)
 
 /-- Identity map is a relation isomorphism. -/
-@[refl, simps! apply]
+@[refl, simps! toEquiv apply]
 protected def refl (r : α → α → Prop) : r ≃r r :=
   ⟨Equiv.refl _, Iff.rfl⟩
 
 /-- Composition of two relation isomorphisms is a relation isomorphism. -/
-@[simps! apply]
+@[simps! toEquiv apply]
 protected def trans (f₁ : r ≃r s) (f₂ : s ≃r t) : r ≃r t :=
   ⟨f₁.toEquiv.trans f₂.toEquiv, f₂.map_rel_iff.trans f₁.map_rel_iff⟩
 
@@ -836,6 +836,16 @@ def relEmbeddingCongr {α₁ β₁ α₂ β₂}
 
 attribute [simps! -isSimp apply_apply symm_apply_apply] relEmbeddingCongr
 
+@[simp] lemma relEmbeddingCongr_refl : relEmbeddingCongr (.refl r) (.refl s) = .refl (r ↪r s) := rfl
+
+@[simp]
+lemma relEmbeddingCongr_trans_relEmbeddingCongr {α₁ β₁ α₂ β₂ α₃ β₃ : Type*}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    {r₃ : α₃ → α₃ → Prop} {s₃ : β₃ → β₃ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) (e₁' : r₂ ≃r r₃) (e₂' : s₂ ≃r s₃) :
+    (relEmbeddingCongr e₁ e₂).trans (relEmbeddingCongr e₁' e₂') =
+      relEmbeddingCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
+
 /-- Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
 
 This is `Equiv.equivCongr` for `RelIso`. -/
@@ -850,6 +860,15 @@ def relIsoCongr {α₁ β₁ α₂ β₂}
   right_inv f₂ := by ext; simp
 
 attribute [simps! -isSimp apply_apply symm_apply_apply] relIsoCongr
+
+@[simp] lemma relIsoCongr_refl : relIsoCongr (.refl r) (.refl s) = .refl (r ≃r s) := rfl
+
+@[simp] lemma relIsoCongr_trans_relIsoCongr {α₁ β₁ α₂ β₂ α₃ β₃ : Type*}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    {r₃ : α₃ → α₃ → Prop} {s₃ : β₃ → β₃ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) (e₁' : r₂ ≃r r₃) (e₂' : s₂ ≃r s₃) :
+    (relIsoCongr e₁ e₂).trans (relIsoCongr e₁' e₂') =
+      relIsoCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.
