@@ -123,6 +123,14 @@ instance : MulLeftMono (SetSemiring α) where
 instance : MulRightMono (SetSemiring α) where
   elim _ _ _ := mul_subset_mul_right
 
+variable [One α]
+
+instance : Pow (SetSemiring α) ℕ where pow s n := ofSet (s.toSet ^ n)
+
+lemma pow_def (s : SetSemiring α) (n : ℕ) : s ^ n = ofSet (s.toSet ^ n) := rfl
+@[simp] lemma toSet_pow (s : SetSemiring α) (n : ℕ) : (s ^ n).toSet = s.toSet ^ n := rfl
+@[simp] lemma ofSet_pow (s : Set α) (n : ℕ) : ofSet (s ^ n) = ofSet s ^ n := rfl
+
 end Mul
 
 instance [MulOneClass α] : MulOneClass (SetSemiring α) := fast_instance% toSetEquiv.mulOneClass
