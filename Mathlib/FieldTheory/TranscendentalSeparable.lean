@@ -426,8 +426,6 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     (Finsupp.mapRange_injective _ (map_zero _) (AdjoinPthRoots.root k).injective)).mp
     ((map_eq_zero_iff _ li').mp this)
 
-instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
-
 lemma isReduced_adjoinPthRoots_tensorProduct_of_isReduced_algebraicClosure_tensorProduct
     (red : IsReduced (AlgebraicClosure k ⊗[k] K)) : IsReduced (AdjoinPthRoots k ⊗[k] K) := by
   let f : (AdjoinPthRoots k) →ₐ[k] (AlgebraicClosure k) :=
