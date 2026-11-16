@@ -28,6 +28,8 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 ## Main Results
 
+* `PadicAlgCl.not_completeSpace` : the algebraic closure of `ℚ_[p]` is not complete with respect
+  to the `p`-adic norm.
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
 * `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
@@ -143,15 +145,13 @@ theorem not_finiteDimensional : ¬ FiniteDimensional ℚ_[p] (PadicAlgCl p) := b
   exact Nat.not_dvd_of_pos_of_lt Module.finrank_pos (Nat.lt_succ_self _)
     (Int.natCast_dvd_natCast.mp ⟨_, hx.symm⟩)
 
-open AlgebraicClosure
-
 /-- The algebraic closure of `ℚ_[p]` is not a Baire space with respect to the `p`-adic norm. -/
 theorem not_baireSpace : ¬ BaireSpace (PadicAlgCl p) :=
-  (baireSpace_iff_finiteDimensional ℚ_[p]).1.mt (not_finiteDimensional p)
+  (baireSpace_iff_finiteDimensional ℚ_[p] (PadicAlgCl p)).1.mt (not_finiteDimensional p)
 
 /-- The algebraic closure of `ℚ_[p]` is not complete with respect to the `p`-adic norm. -/
 theorem not_completeSpace : ¬ CompleteSpace (PadicAlgCl p) :=
-  (completeSpace_iff_finiteDimensional ℚ_[p]).1.mt (not_finiteDimensional p)
+  (completeSpace_iff_finiteDimensional ℚ_[p] (PadicAlgCl p)).1.mt (not_finiteDimensional p)
 
 end PadicAlgCl
 

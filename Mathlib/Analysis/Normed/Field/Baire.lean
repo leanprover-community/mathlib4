@@ -5,17 +5,19 @@ Authors: Yijun Yuan
 -/
 module
 
-public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.FieldTheory.Minpoly.Bounds
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Topology.Baire.CompleteMetrizable
+import Mathlib.Topology.Baire.Lemmas
 
 /-!
-# Baire spaces and algebraic closures
+# Baire spaces and algebraic normed extensions
 
-An algebraic closure of a complete nontrivially normed nonarchimedean field, equipped with the
-spectral norm, is a Baire space if and only if it is finite-dimensional over the base field.
+A perfect algebraic normed extension of a complete nontrivially normed field is a Baire space
+if and only if it is finite-dimensional over the base field, and is complete if and only if it
+is finite-dimensional.
 
 ## Main results
 
@@ -24,10 +26,10 @@ spectral norm, is a Baire space if and only if it is finite-dimensional over the
   degrees of minimal polynomials.
 * `PerfectField.finiteDimensional_of_baireSpace`: a Baire algebraic normed extension into a
   perfect field is finite-dimensional.
-* `AlgebraicClosure.baireSpace_iff_finiteDimensional`: the algebraic closure with the spectral norm
-  is a Baire space if and only if it is finite-dimensional over the base field.
-* `AlgebraicClosure.completeSpace_iff_finiteDimensional`: the algebraic closure with the spectral
-  norm is complete if and only if it is finite-dimensional over the base field.
+* `baireSpace_iff_finiteDimensional`: a perfect algebraic normed extension is a Baire space
+  if and only if it is finite-dimensional over the complete base field.
+* `completeSpace_iff_finiteDimensional`: a perfect algebraic normed extension is complete
+  if and only if it is finite-dimensional over the complete base field.
 
 ## Proof strategy
 
@@ -37,7 +39,7 @@ degree bound, which implies finite-dimensionality when the extension field is pe
 
 ## Tags
 
-Baire space, algebraic closure, nonarchimedean field, spectral norm, minimal polynomial
+Baire space, algebraic extension, perfect field, complete field, minimal polynomial
 -/
 
 public section
@@ -80,41 +82,27 @@ theorem minpoly.bddAbove_natDegree_of_baireSpace [BaireSpace E] :
     (K⟮a, a + c • x⟯.sub_mem (mem_adjoin_pair_right K a (a + c • x))
       (mem_adjoin_pair_left K a (a + c • x))) (x := c⁻¹)
 
+variable [PerfectField E]
+
 /-- A Baire algebraic normed extension of a complete field is finite-dimensional if the extension
 field is perfect. -/
-instance PerfectField.finiteDimensional_of_baireSpace [PerfectField E] [BaireSpace E] :
-    FiniteDimensional K E :=
+instance (priority := low) PerfectField.finiteDimensional_of_baireSpace
+    [BaireSpace E] : FiniteDimensional K E :=
   PerfectField.finiteDimensional_of_bddAbove_natDegree_minpoly K E
     (minpoly.bddAbove_natDegree_of_baireSpace K E)
 
-end NormedExtension
-
-namespace AlgebraicClosure
-
-noncomputable section
-
-variable (K : Type*) [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
-
-/-- The normed field structure on the algebraic closure induced by the spectral norm. -/
-local instance spectralNormedField : NormedField (AlgebraicClosure K) :=
-  spectralNorm.normedField K (AlgebraicClosure K)
-
-/-- The normed algebra structure on the algebraic closure induced by the spectral norm. -/
-local instance spectralNormedAlgebra : NormedAlgebra K (AlgebraicClosure K) :=
-  spectralNorm.normedAlgebra K (AlgebraicClosure K)
-
-/-- The algebraic closure with the spectral norm is a Baire space if and only if it is
-finite-dimensional over the base field. -/
+/-- A perfect algebraic normed extension of a complete field is a Baire space if and only if
+it is finite-dimensional over the base field. -/
 theorem baireSpace_iff_finiteDimensional :
-    BaireSpace (AlgebraicClosure K) ↔ FiniteDimensional K (AlgebraicClosure K) :=
-  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+    BaireSpace E ↔ FiniteDimensional K E :=
+  ⟨fun _ ↦ PerfectField.finiteDimensional_of_baireSpace K E,
+   fun _ ↦ have := FiniteDimensional.completeSpace K E; inferInstance⟩
 
-/-- The algebraic closure of a complete nontrivially normed nonarchimedean field, equipped with
-the spectral norm, is complete if and only if it is finite-dimensional over the base field. -/
+/-- A perfect algebraic normed extension of a complete field is complete if and only if
+it is finite-dimensional over the base field. -/
 theorem completeSpace_iff_finiteDimensional :
-    CompleteSpace (AlgebraicClosure K) ↔ FiniteDimensional K (AlgebraicClosure K) :=
-  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+    CompleteSpace E ↔ FiniteDimensional K E :=
+  ⟨fun _ ↦ PerfectField.finiteDimensional_of_baireSpace K E,
+   fun _ ↦ FiniteDimensional.completeSpace K E⟩
 
-end
-
-end AlgebraicClosure
+end NormedExtension
