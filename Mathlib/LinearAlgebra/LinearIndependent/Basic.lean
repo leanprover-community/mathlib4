@@ -223,6 +223,16 @@ theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     LinearIndependent R ((↑) : Finset.map (Embedding.subtype (· ∈ s)) t → M) :=
   li.comp (fun _ ↦ ⟨_, by aesop⟩) <| by intro; simp
 
+/-- See also `linearIndependent_unique_iff` for the case of a torsion free module over a domain. -/
+lemma linearIndependent_unique_iff_injective [Unique ι] :
+    LinearIndependent R v ↔ Injective (· • v default : R → M) := by
+  simp [linearIndependent_iff_injective_fintypeLinearCombination,
+    ← (Equiv.funUnique ι R).symm.injective_comp, Function.comp_def, Fintype.linearCombination_apply]
+
+lemma linearIndepOn_singleton_iff_injective {i : ι} :
+    LinearIndepOn R v {i} ↔ Injective (· • v i : R → M) :=
+  linearIndependent_unique_iff_injective
+
 section Indexed
 
 theorem linearIndepOn_of_finite (s : Set ι) (H : ∀ t ⊆ s, Set.Finite t → LinearIndepOn R v t) :
@@ -584,14 +594,12 @@ variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFr
   {v : ι → M} {i : ι}
 
 lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v default ≠ 0 := by
-  refine ⟨?_, .of_subsingleton _⟩
-  simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
-    Unique.forall_iff, or_imp] using fun h hv ↦ by simpa using h (.single default 1) hv
+  simp [linearIndependent_unique_iff_injective, smul_left_injective_iff_ne_zero]
 
 variable (R) in
 @[simp]
 theorem linearIndepOn_singleton_iff : LinearIndepOn R v {i} ↔ v i ≠ 0 :=
-  ⟨fun h ↦ h.ne_zero rfl, .singleton⟩
+  linearIndependent_unique_iff
 
 @[simp]
 theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M) :

@@ -198,13 +198,21 @@ lemma Module.isTorsionFree_iff_smul_eq_zero [IsDomain R] :
   mp _ _ _ := smul_eq_zero.1
   mpr := .of_smul_eq_zero
 
+theorem smul_left_injective_iff_smul_eq_zero {m : M} :
+    ((· • m) : R → M).Injective ↔ ∀ c : R, c • m = 0 → c = 0 :=
+  ⟨fun h c hcm ↦ h <| by simp [hcm],
+    fun h c₁ c₂ hcm ↦ sub_eq_zero.mp <| h _ <| by simp [sub_smul, hcm]⟩
+
+lemma smul_left_injective_iff_ne_zero [IsDomain R] [IsTorsionFree R M] :
+    ((· • m) : R → M).Injective ↔ m ≠ 0 := by
+  rw [iff_not_comm]
+  simp [smul_left_injective_iff_smul_eq_zero, exists_ne]
+
 variable [IsCancelMulZero R] [IsTorsionFree R M]
 
 variable (R) in
 lemma smul_left_injective (hm : m ≠ 0) : ((· • m) : R → M).Injective := by
-  rintro r₁ r₂ hr
-  dsimp at hr
-  rwa [← sub_eq_zero, ← sub_smul, smul_eq_zero_iff_left hm, sub_eq_zero] at hr
+  simp [smul_left_injective_iff_smul_eq_zero, hm]
 
 @[simp] lemma smul_left_inj (hm : m ≠ 0) : r₁ • m = r₂ • m ↔ r₁ = r₂ :=
   (smul_left_injective _ hm).eq_iff
