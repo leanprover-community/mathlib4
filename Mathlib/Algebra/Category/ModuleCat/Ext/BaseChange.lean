@@ -5,17 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
-public import Mathlib.Algebra.FiveLemma
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.RingTheory.Flat.Localization
-public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeRightExact
 
 /-!
