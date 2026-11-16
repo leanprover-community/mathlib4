@@ -128,6 +128,12 @@ lemma trace_fromBlocks (A : Matrix n n R) (B : Matrix n m R) (C : Matrix m n R) 
 lemma trace_comp (M : Matrix n n (Matrix m m R)) : trace (comp n n m m R M) = trace (trace M) := by
   simp [trace, Fintype.sum_prod_type, Finset.sum_comm (α := n)]
 
+@[simp]
+lemma trace_trace_comp_symm (M : Matrix (n × m) (n × m) R) :
+    trace (trace ((comp n n m m R).symm M)) = trace M := by
+  rw [← trace_comp]
+  simp
+
 end AddCommMonoid
 
 section AddCommGroup
