@@ -68,31 +68,6 @@ protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : 
 
 end GroupWithZero
 
-section DistribMulAction
-variable [Group G] [AddMonoid A]
-variable (A)
-
-/-- Each element of the group defines an additive monoid isomorphism.
-
-This is a stronger version of `MulAction.toPerm`. -/
-@[simps +simpRhs]
-def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
-  __ := DistribSMul.toAddMonoidHom A x
-  __ := MulAction.toPermHom G A x
-
-variable (G)
-
-/-- Each element of the group defines an additive monoid isomorphism.
-
-This is a stronger version of `MulAction.toPermHom`. -/
-@[simps]
-def DistribMulAction.toAddAut [DistribMulAction G A] : G →* Multiplicative (AddAut A) where
-  toFun := toAddEquiv _
-  map_one' := AddEquiv.ext (one_smul _)
-  map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
-
-end DistribMulAction
-
 /-- Scalar multiplication as a monoid homomorphism with zero. -/
 @[simps]
 def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActionWithZero M₀ N₀]

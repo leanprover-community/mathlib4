@@ -454,8 +454,7 @@ lemma getElem_succ_leftInvSeq_alternatingWord
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp [h]),
     cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp; lia)]
   simp only [MulAut.conj, listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc,
-    mul_inv_rev, inv_simple, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk,
-    mul_right_inj, mul_left_inj]
+    mul_inv_rev, inv_simple, MulEquiv.coe_mk, Equiv.coe_fn_mk, mul_right_inj, mul_left_inj]
   rw [getElem_alternatingWord_swapIndices i j (2 * p) k]
   lia
 
