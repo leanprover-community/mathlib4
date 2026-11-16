@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.Transvection
-public import Mathlib.LinearAlgebra.Matrix.UpdateSubmatrix
 
 /-!
 # Block matrices and their determinant
@@ -33,7 +32,6 @@ matrices built out of blocks.
 ## Tags
 
 matrix, diagonal, det, block triangular
-
 -/
 
 @[expose] public section
@@ -312,6 +310,7 @@ theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B :
 
 /-! ### Determinant -/
 
+
 variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
 theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
@@ -321,6 +320,7 @@ theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] 
       (toSquareBlockProp M q)
         -- Removed `@[simp]` attribute,
         -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
+
 
 -- Removed `@[simp]` attribute,
 -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
@@ -442,6 +442,7 @@ theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
 
 /-! ### Invertible -/
+
 
 theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) (k : α) :

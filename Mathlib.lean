@@ -5364,6 +5364,7 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 public import Mathlib.LinearAlgebra.Matrix.ElementaryRowOperations
+public import Mathlib.LinearAlgebra.Matrix.ExtendSubmatrix
 public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
@@ -5413,7 +5414,6 @@ public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.Unique
-public import Mathlib.LinearAlgebra.Matrix.UpdateSubmatrix
 public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.Matrix.WithConv
 public import Mathlib.LinearAlgebra.Matrix.ZMatrix

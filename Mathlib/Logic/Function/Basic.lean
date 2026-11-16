@@ -913,8 +913,16 @@ lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsT
   funext fun a => hf.extend_apply e' a
 
 @[simp]
+lemma extend_comp_self (f : α → β) (g : β → γ) : extend f (g ∘ f) g = g := by
+  funext b
+  by_cases hb : ∃ a, f a = b
+  · obtain ⟨-, rfl⟩ := hb
+    exact FactorsThrough.extend_apply (fun _ _ h ↦ congrArg g h) ..
+  · exact extend_apply' _ _ _ hb
+
+@[simp]
 lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=
-  funext fun _ ↦ open scoped Classical in ite_id _
+  extend_comp_self f (fun _ ↦ c)
 
 @[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
