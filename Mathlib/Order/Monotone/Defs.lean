@@ -269,7 +269,7 @@ theorem monotoneOn_iff_forall_lt :
 theorem antitoneOn_iff_forall_lt :
     AntitoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b ≤ f a :=
   ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
-   fun hf _ ha _ hb ↦ map_le_of_lt_imp_ge_of_ge (hf ha hb)⟩
+   fun hf _ ha _ hb ↦ map_le_of_gt_imp_le_of_ge (hf ha hb)⟩
 
 -- `Preorder α` isn't strong enough: if the preorder on `α` is an equivalence relation,
 -- then `StrictMono f` is vacuously true.
