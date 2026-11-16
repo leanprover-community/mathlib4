@@ -99,9 +99,12 @@ theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by
     · simp
 
 @[simp]
-theorem mk_FreeAddCommGroup [Nonempty α] : #(FreeAddCommGroup α) = max #α ℵ₀ := by
+theorem mk_freeAddCommGroup [Nonempty α] : #(FreeAddCommGroup α) = max #α ℵ₀ := by
   rw [Cardinal.mk_congr (FreeAddCommGroup.equivFinsupp α).toEquiv]
   simp
+
+@[deprecated (since := "2026-11-11")] alias Cardinal.mk_freeAbelianGroup :=
+  Cardinal.mk_freeAddCommGroup
 
 @[simp]
 theorem mk_freeRing : #(FreeRing α) = max #α ℵ₀ := by
