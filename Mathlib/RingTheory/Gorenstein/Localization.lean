@@ -6,8 +6,8 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.RingTheory.Gorenstein.Defs
-public import Mathlib.RingTheory.Localization.LocalizationLocalization
 public import Mathlib.RingTheory.LocalProperties.InjectiveDimension
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 
