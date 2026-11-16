@@ -441,6 +441,24 @@ lemma degree_comp [Semiring R] [NoZeroDivisors R] {p q : R[X]} (hq : 0 < q.degre
   rw [degree_eq_natDegree (by simp [hp]), degree_eq_natDegree hp, Nat.cast_inj,
     natDegree_comp_eq_of_mul_ne_zero (by simp [hp]), natDegree_neg, natDegree_X, mul_one]
 
+@[simp]
+lemma natDegree_comp_neg_X [Ring R] {p : R[X]} : (p.comp (-X)).natDegree = p.natDegree :=
+  natDegree_eq_natDegree degree_comp_neg_X
+
+theorem comp_neg_X_eq_of_degree_le_zero [Ring R] {p : R[X]} (hp : p.degree ≤ 0) :
+    p.comp (-X) = p := by
+  rw [eq_C_of_degree_le_zero (show (p.comp (-X)).degree ≤ 0 by simp [hp]),
+    eq_C_of_degree_le_zero hp]
+  simp
+
+theorem comp_neg_X_eq_of_natDegree_eq_zero [Ring R] {p : R[X]} (hp : p.natDegree = 0) :
+    p.comp (-X) = p :=
+  comp_neg_X_eq_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.mp hp)
+
+@[simp]
+theorem comp_neg_X_eq_C_iff [Ring R] {p : R[X]} {a : R} : p.comp (-X) = C a ↔ p = C a := by
+  grind [comp_neg_X_eq_of_natDegree_eq_zero, natDegree_C, natDegree_comp_neg_X]
+
 section DivisionRing
 
 variable {K : Type*} [DivisionRing K]

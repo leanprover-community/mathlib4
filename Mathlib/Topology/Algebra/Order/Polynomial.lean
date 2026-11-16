@@ -109,7 +109,7 @@ theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
   rw [tendsto_atTop_nhds_iff]
   grind [degree_le_zero_iff, leadingCoeff, leadingCoeff_C]
 
-theorem tendsto_nhds_of_degree_le_zero [TopologicalSpace F] [OrderTopology F]
+theorem tendsto_atTop_nhds_of_degree_le_zero [TopologicalSpace F] [OrderTopology F]
     (h : P.degree ≤ 0) : Tendsto P.eval atTop (𝓝 P.leadingCoeff) := by
   rw [tendsto_atTop_nhds_iff]
   grind [degree_le_zero_iff, leadingCoeff]
@@ -136,6 +136,15 @@ theorem isBoundedUnder_abs_atBot_iff :
 
 theorem abs_tendsto_atBot_iff : Tendsto (|P.eval ·|) atBot atTop ↔ 0 < P.degree := by
   simpa [← tendsto_comp_neg_atTop_iff] using (P.comp (-X)).abs_tendsto_atTop_iff
+
+theorem tendsto_atBot_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
+    Tendsto P.eval atBot (𝓝 c) ↔ P = C c := by
+  simpa [← tendsto_comp_neg_atTop_iff] using (P.comp (-X)).tendsto_atTop_nhds_iff (c := c)
+
+theorem tendsto_atBot_nhds_of_degree_le_zero [TopologicalSpace F] [OrderTopology F]
+    (h : P.degree ≤ 0) : Tendsto P.eval atBot (𝓝 P.leadingCoeff) := by
+  simpa [← tendsto_comp_neg_atTop_iff, natDegree_eq_zero_iff_degree_le_zero.mpr h] using
+    (P.comp (-X)).tendsto_atTop_nhds_of_degree_le_zero (by simpa using h)
 
 end PolynomialAtBot
 
