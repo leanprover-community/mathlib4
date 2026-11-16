@@ -40,6 +40,8 @@ namespace CategoryTheory.Inserter
 
 universe w
 
+open Limits
+
 namespace Accessible
 
 variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
@@ -52,13 +54,13 @@ public instance (X : Inserter F G)
     IsCardinalPresentable X κ := by
   apply IsCardinalPresentable.mk
   intro I _ _ B b hb
-  have : Limits.HasColimitsOfShape I K := HasCardinalFilteredColimits.hasColimitsOfShape _ κ I
-  have : Limits.PreservesColimitsOfShape I F :=
+  have : HasColimitsOfShape I K := HasCardinalFilteredColimits.hasColimitsOfShape _ κ I
+  have : PreservesColimitsOfShape I F :=
     Functor.IsCardinalAccessible.preservesColimitOfShape κ I
-  have : Limits.PreservesColimitsOfShape I G :=
+  have : PreservesColimitsOfShape I G :=
     Functor.IsCardinalAccessible.preservesColimitOfShape κ I
-  let hcolimG := Limits.isColimitOfPreserves (proj F G ⋙ G) hb
-  let hcolim := Limits.isColimitOfPreserves (proj F G) hb
+  let hcolimG := isColimitOfPreserves (proj F G ⋙ G) hb
+  let hcolim := isColimitOfPreserves (proj F G) hb
   refine ⟨fun f ↦ ?_, fun i f₁ f₂ h ↦ ?_⟩
   · obtain ⟨i, f', hf'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolim f.hom
     dsimp at f' hf'
