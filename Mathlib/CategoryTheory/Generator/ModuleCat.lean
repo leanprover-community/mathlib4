@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.CategoryTheory.Generator.StrongGenerator
-public import Mathlib.LinearAlgebra.Span.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.FinitelyPresentable
 
 /-!
 # As a module over itself, a ring is a strong generator
@@ -28,20 +28,6 @@ universe w
 namespace ModuleCat
 
 variable (R : Type w) [Ring R]
-
-/-- The forget functor `ModuleCat R ⥤ Type _` is corepresentable by `R` as a module over itself. -/
-@[expose, simps! +dsimpLhs]
-def corepresentableByForget : (forget (ModuleCat.{w} R)).CorepresentableBy (.of R R) where
-  homEquiv :=
-    { toFun f := f.hom 1
-      invFun x := ModuleCat.ofHom (LinearMap.toSpanSingleton _ _ x)
-      left_inv _ := by cat_disch
-      right_inv _ := by simp }
-
-/-- The forget functor `ModuleCat R ⥤ Type _` is corepresentable by `R` as a module over itself. -/
-@[expose, simps! +dsimpLhs]
-def coyonedaObjIsoForget : coyoneda.obj (op (ModuleCat.of R R)) ≅ forget _ :=
-  NatIso.ofComponents (fun M ↦ (corepresentableByForget R).homEquiv.toIso)
 
 lemma isSeparating_singleton :
     (ObjectProperty.singleton (ModuleCat.of R R)).IsSeparating := by
