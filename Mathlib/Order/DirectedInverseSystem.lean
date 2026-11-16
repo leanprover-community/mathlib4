@@ -361,7 +361,6 @@ theorem piEquivSucc_self {x} :
 
 variable {equiv e}
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem isNatEquiv_piEquivSucc [InverseSystem f] (H : ∀ x, (e x).1 = f (le_succ i) x)
     (nat : IsNatEquiv f equiv) : IsNatEquiv f (piEquivSucc equiv e hi) := fun j k hj hk h x ↦ by
   have lt_succ {j} := (lt_succ_iff_of_not_isMax (b := j) hi).mpr
@@ -457,7 +456,6 @@ theorem pEquivOn_apply_eq (h : IsLowerSet (s ∩ t))
        (e₂.restrict inter_subset_right).equiv ⟨i, his, hit⟩ from
   congr_fun (congr_arg _ <| unique_pEquivOn h) _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Extend a partial family of bijections by one step. -/
 def pEquivOnSucc [InverseSystem f] (hi : ¬IsMax i) (e : PEquivOn f equivSucc (Iic i))
     (H : ∀ ⦃i⦄ (hi : ¬ IsMax i) x, (equivSucc hi x).1 = f (le_succ i) x) :
