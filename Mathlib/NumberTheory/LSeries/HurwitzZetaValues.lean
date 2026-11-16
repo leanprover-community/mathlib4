@@ -206,7 +206,7 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
       * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
   convert congr(($((hasSum_zeta_nat hk).tsum_eq) : ℂ))
   · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by lia)]
-    simp [fail_if_not_idempotent push_cast]
+    simp [push_cast]
   · fail_if_not_idempotent norm_cast
 
 /-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ`, in terms of the Bernoulli number
@@ -224,14 +224,14 @@ theorem riemannZeta_two_mul_nat' {k : ℕ} :
 theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
   convert congr(($hasSum_zeta_two.tsum_eq : ℂ))
   · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two]
-    simp [fail_if_not_idempotent push_cast]
+    simp [push_cast]
   · fail_if_not_idempotent norm_cast
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
   convert congr(($hasSum_zeta_four.tsum_eq : ℂ))
   · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by simp,
       zeta_nat_eq_tsum_of_gt_one (by simp : 1 < 4)]
-    simp only [fail_if_not_idempotent push_cast]
+    simp only [push_cast]
   · fail_if_not_idempotent norm_cast
 
 /-- Value of Riemann zeta at `-ℕ` in terms of `bernoulli'`. -/

@@ -444,7 +444,7 @@ lemma riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   -- This one's for you, Kevin.
   suffices (γ - Real.log (4 * π)) / 2 ≠ 0 by
     simpa only [riemannZeta_one, ← ofReal_ne_zero, ofReal_log (by positivity : 0 ≤ 4 * π),
-      fail_if_not_idempotent push_cast]
+      push_cast]
   refine div_ne_zero (sub_lt_zero.mpr (lt_trans ?_ ?_ (b := 1))).ne two_ne_zero
   · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
   · rw [Real.lt_log_iff_exp_lt (by positivity)]
