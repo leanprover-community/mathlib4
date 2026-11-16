@@ -221,26 +221,21 @@ theorem IsFiniteCartan.hasDynkinType_and_sum_le_one (n : ℕ) :
   have honly (w : ι) (hwv : w ≠ v) (hwu : w ≠ u) : M w v = 0 :=
     hM.eq_zero_of_cartanGram_sum_le_one huv hu hwv hwu hq
   refine ⟨?_, ?_⟩
-  · rcases hXD with ⟨k, e, he⟩ | ⟨k, e, he⟩ | ⟨k, e, he⟩ | ⟨k, e, he⟩ | ⟨e, he⟩ | ⟨e, he⟩ |
+  · -- `M` is a listed matrix with the leaf `v` attached: apply the step for that matrix
+    have hleaf {k : ℕ} {K : Matrix (Fin k) (Fin k) ℤ} :=
+      hM.hasDynkinType_of_leaf (K := K) huv hu honly
+    rcases hXD with ⟨k, e, he⟩ | ⟨k, e, he⟩ | ⟨k, e, he⟩ | ⟨k, e, he⟩ | ⟨e, he⟩ | ⟨e, he⟩ |
       ⟨e, he⟩ | ⟨e, he⟩ | ⟨e, he⟩
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun _ _ _ hab h ↦
-        h.hasDynkinType_addLeaf_A hab
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun _ _ _ hab h ↦
-        h.hasDynkinType_addLeaf_B hab
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun _ _ _ hab h ↦
-        h.hasDynkinType_addLeaf_C hab
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun _ _ _ hab h ↦
+    · exact hleaf e he fun _ _ _ hab h ↦ h.hasDynkinType_addLeaf_A hab
+    · exact hleaf e he fun _ _ _ hab h ↦ h.hasDynkinType_addLeaf_B hab
+    · exact hleaf e he fun _ _ _ hab h ↦ h.hasDynkinType_addLeaf_C hab
+    · exact hleaf e he fun _ _ _ hab h ↦
         h.hasDynkinType_addLeaf_D hab (IsFiniteCartan.isIndecomposable_of_reindex hX' e he)
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun _ _ _ hab h ↦
-        h.hasDynkinType_addLeaf_E hab (by simp)
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun _ _ _ hab h ↦
-        h.hasDynkinType_addLeaf_E hab (by simp)
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun _ _ _ hab h ↦
-        h.hasDynkinType_addLeaf_E hab (by simp)
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun u' _ _ hab h ↦
-        (not_isFiniteCartan_addLeaf_F₄ u' hab h).elim
-    · exact hM.hasDynkinType_of_leaf huv hu honly e he fun u' _ _ hab h ↦
-        (not_isFiniteCartan_addLeaf_G₂ u' hab h).elim
+    · exact hleaf e he fun _ _ _ hab h ↦ h.hasDynkinType_addLeaf_E hab (by simp)
+    · exact hleaf e he fun _ _ _ hab h ↦ h.hasDynkinType_addLeaf_E hab (by simp)
+    · exact hleaf e he fun _ _ _ hab h ↦ h.hasDynkinType_addLeaf_E hab (by simp)
+    · exact hleaf e he fun u' _ _ hab h ↦ (not_isFiniteCartan_addLeaf_F₄ u' hab h).elim
+    · exact hleaf e he fun u' _ _ hab h ↦ (not_isFiniteCartan_addLeaf_G₂ u' hab h).elim
   · rw [← insert_erase (mem_univ v)]
     exact (hM.cartanGram_sum_insert_le (notMem_erase v univ) (s := u) (by simp [huv]) hu).trans hq
 

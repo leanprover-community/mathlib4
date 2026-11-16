@@ -41,7 +41,7 @@ private lemma not_isFiniteCartan_addLeaf_E_three {n : ℕ} {u : Fin n} {a b : �
 private lemma not_isFiniteCartan_addLeaf_E_two {n : ℕ} {u : Fin n} {a b : ℤ} (hn : 6 ≤ n)
     (hu : u.val = 2) (hab : IsBond a b) : ¬ (addLeaf (E n) u a b).IsFiniteCartan := fun h ↦ by
   have := h.path_bonds_lt_four ![Fin.castSucc ⟨2, by lia⟩, Fin.castSucc ⟨3, by lia⟩]
-    (fun i j hij ↦ by fin_cases i <;> fin_cases j <;> simp_all [Fin.ext_iff])
+    (injective_pair_iff_ne.mpr (by simp [Fin.ext_iff]))
     (by simp [-Fin.castSucc_mk, E])
     [(0, Fin.castSucc ⟨0, by lia⟩), (0, Fin.last n), (1, Fin.castSucc ⟨1, by lia⟩),
       (1, Fin.castSucc ⟨4, by lia⟩)]
@@ -86,7 +86,7 @@ private lemma not_isFiniteCartan_addLeaf_E_one_of_two_le_mul {n : ℕ} {u : Fin 
     (hn : 6 ≤ n) (hu : u.val = 1) (hm : 2 ≤ a * b) :
     ¬ (addLeaf (E n) u a b).IsFiniteCartan := fun h ↦ by
   have := h.path_bonds_lt_four ![Fin.castSucc ⟨1, by lia⟩, Fin.castSucc ⟨3, by lia⟩]
-    (fun i j hij ↦ by fin_cases i <;> fin_cases j <;> simp_all [Fin.ext_iff])
+    (injective_pair_iff_ne.mpr (by simp [Fin.ext_iff]))
     (by simp [-Fin.castSucc_mk, E])
     [(0, Fin.last n), (1, Fin.castSucc ⟨2, by lia⟩), (1, Fin.castSucc ⟨4, by lia⟩)]
     (by simp [Fin.ext_iff, List.nodup_cons]; lia)
