@@ -712,7 +712,7 @@ lemma isCompl_span_singleton_of_isCoatom_of_notMem (hs : IsCoatom s) (hx : x ∉
   rw [← covBy_top_iff] at hs
   simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
 
-theorem isCoatom_iff_not_exists_isCompl_span_singleton :
+theorem isCoatom_iff_exists_notMem_isCompl_span_singleton :
     IsCoatom s ↔ ∃ x ∉ s, IsCompl s (K ∙ x) := by
   refine ⟨fun hs ↦ ?_, fun ⟨x, hx, hc⟩ ↦ ?_⟩
   · have ⟨b, hb⟩ := SetLike.exists_notMem_of_ne_top s hs.ne_top
