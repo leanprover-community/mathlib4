@@ -353,38 +353,37 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
     refine ⟨J₂, hJ₂, J₁, hJ₁, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₂ hJ₁] at hJ
 
-set_option backward.isDefEq.respectTransparency false in
+open scoped Classical in
 /-- Create a `BoxIntegral.Prepartition` from a collection of possibly empty boxes by filtering out
 the empty one if it exists. -/
 def ofWithBot (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) :
     Prepartition I where
-  boxes := Finset.eraseNone boxes
+  boxes := Finset.eraseNone (boxes.image (WithBot.toOption _))
   le_of_mem' J hJ := by
-    rw [mem_eraseNone] at hJ
+    simp only [mem_eraseNone, Finset.mem_image, WithBot.toOption_eq_some_iff, exists_eq_right] at hJ
     simpa only [WithBot.some_eq_coe, WithBot.coe_le_coe] using le_of_mem _ hJ
   pairwiseDisjoint J₁ h₁ J₂ h₂ hne := by
-    simp only [mem_coe, mem_eraseNone] at h₁ h₂
-    exact Box.disjoint_coe.1 (pairwise_disjoint h₁ h₂ (mt Option.some_inj.1 hne))
+    simp only [coe_eraseNone, coe_image, Set.mem_preimage, mem_image_equiv,
+      WithBot.symm_toOption_apply_some, SetLike.mem_coe] at h₁ h₂
+    exact Box.disjoint_coe.1 (pairwise_disjoint h₁ h₂ (mt WithBot.coe_inj.1 hne))
 
 @[simp]
 theorem mem_ofWithBot {boxes : Finset (WithBot (Box ι))} {h₁ h₂} :
-    J ∈ (ofWithBot boxes h₁ h₂ : Prepartition I) ↔ (J : WithBot (Box ι)) ∈ boxes :=
-  mem_eraseNone
+    J ∈ (ofWithBot boxes h₁ h₂ : Prepartition I) ↔ (J : WithBot (Box ι)) ∈ boxes := by
+  simp [← mem_boxes, ofWithBot]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iUnion_ofWithBot (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) :
     (ofWithBot boxes le_of_mem pairwise_disjoint).iUnion = ⋃ J ∈ boxes, ↑J := by
   suffices ⋃ (J : Box ι) (_ : ↑J ∈ boxes), ↑J = ⋃ J ∈ boxes, (J : Set (ι → ℝ)) by
-    simpa [ofWithBot, Prepartition.iUnion]
+    simpa [Prepartition.iUnion]
   simp only [← Box.biUnion_coe_eq_coe, @iUnion_comm _ _ (Box ι), @iUnion_comm _ _ (@Eq _ _ _),
     iUnion_iUnion_eq_right]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofWithBot_le {boxes : Finset (WithBot (Box ι))}
     {le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I}
     {pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint}
@@ -392,7 +391,7 @@ theorem ofWithBot_le {boxes : Finset (WithBot (Box ι))}
     ofWithBot boxes le_of_mem pairwise_disjoint ≤ π := by
   have : ∀ J : Box ι, ↑J ∈ boxes → ∃ J' ∈ π, J ≤ J' := fun J hJ => by
     simpa only [WithBot.coe_le_coe] using H J hJ WithBot.coe_ne_bot
-  simpa [ofWithBot, le_def]
+  simpa [le_def]
 
 theorem le_ofWithBot {boxes : Finset (WithBot (Box ι))}
     {le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I}
@@ -417,8 +416,11 @@ theorem sum_ofWithBot {M : Type*} [AddCommMonoid M] (boxes : Finset (WithBot (Bo
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) (f : Box ι → M) :
     (∑ J ∈ (ofWithBot boxes le_of_mem pairwise_disjoint).boxes, f J) =
-      ∑ J ∈ boxes, Option.elim' 0 f J :=
-  Finset.sum_eraseNone _ _
+      ∑ J ∈ boxes, WithBot.rec 0 f J := by
+  simp only [ofWithBot, sum_eraseNone, EmbeddingLike.apply_eq_iff_eq, implies_true,
+    injOn_of_eq_iff_eq, sum_image]
+  congr with x
+  cases x <;> rfl
 
 open scoped Classical in
 /-- Restrict a prepartition to a box. -/
@@ -453,16 +455,15 @@ theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : �
 theorem monotone_restrict : Monotone fun π : Prepartition I => restrict π J :=
   fun _ _ => restrict_mono
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Restricting to a larger box does not change the set of boxes. We cannot claim equality
 of prepartitions because they have different types. -/
 theorem restrict_boxes_of_le (π : Prepartition I) (h : I ≤ J) : (π.restrict J).boxes = π.boxes := by
   classical
   simp only [restrict, ofWithBot, eraseNone_eq_biUnion]
-  refine Finset.image_biUnion.trans ?_
+  refine Finset.image_biUnion.trans (Finset.image_biUnion.trans ?_)
   refine (Finset.biUnion_congr rfl ?_).trans Finset.biUnion_singleton_eq_self
   intro J' hJ'
-  rw [inf_of_le_right, ← WithBot.some_eq_coe, Option.toFinset_some]
+  rw [inf_of_le_right, WithBot.toOption_apply_coe, Option.toFinset_some]
   exact WithBot.coe_le_coe.2 ((π.le_of_mem hJ').trans h)
 
 @[simp]

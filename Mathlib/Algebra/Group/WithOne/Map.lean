@@ -33,7 +33,7 @@ def map (f : α → β) : WithOne α → WithOne β
   | some x => some (f x)
 
 @[to_additive (attr := simp)]
-theorem map_one (f : α → β) : map f 1 = 1 :=
+protected theorem map_one (f : α → β) : map f 1 = 1 :=
   rfl
 
 @[to_additive (attr := simp)]

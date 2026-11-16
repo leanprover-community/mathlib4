@@ -553,7 +553,7 @@ instance [DenselyOrdered X] : DenselyOrdered (Additive X) :=
 
 lemma WithZero.denselyOrdered_iff {M : Type*} [Preorder M] [NoMinOrder M] :
     DenselyOrdered (WithZero M) ↔ DenselyOrdered M :=
-  WithBot.denselyOrdered_iff
+  (denselyOrdered_iff_of_orderIsoClass (toWithBot_orderIso M)).trans WithBot.denselyOrdered_iff
 
 instance {X : Type*} [Preorder X] [NoMinOrder X] [DenselyOrdered X] :
     DenselyOrdered (WithZero X) :=
@@ -567,7 +567,30 @@ lemma not_denselyOrdered_withZero_int : ¬ DenselyOrdered ℤᵐ⁰ :=
 
 lemma WithZero.denselyOrdered_set_iff_subsingleton {X : Type*} [LinearOrder X]
     [LocallyFiniteOrder X] {s : Set (WithZero X)} :
-    DenselyOrdered s ↔ s.Subsingleton :=
-  WithBot.denselyOrdered_set_iff_subsingleton
+    DenselyOrdered s ↔ s.Subsingleton := by
+  refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
+  rw [← Set.subsingleton_coe, ← not_nontrivial_iff_subsingleton, nontrivial_iff_lt]
+  suffices DenselyOrdered (((↑) : X →  WithZero X) ⁻¹' s) by
+    rintro ⟨x, y, H⟩
+    rw [_root_.denselyOrdered_set_iff_subsingleton] at this
+    obtain ⟨z, hz, hz'⟩ := exists_between H
+    have hz0 : (0 : WithZero X) < z := by simp [(Subtype.coe_lt_coe.mpr hz).trans_le']
+    replace hz' : WithZero.unzero hz0.ne' < WithZero.unzero (hz0.trans hz').ne' := by
+      rwa [← WithZero.coe_lt_coe, WithZero.coe_unzero, WithZero.coe_unzero]
+    refine absurd (this ?_ ?_) hz'.ne <;>
+    simp
+  constructor
+  simp only [Subtype.exists, mem_preimage, Subtype.forall, Subtype.mk_lt_mk, exists_and_right,
+    exists_prop]
+  intro x hx y hy hxy
+  have : (⟨_, hx⟩ : s) < ⟨_, hy⟩ := by simp [hxy]
+  obtain ⟨z, hz, hz'⟩ := exists_between this
+  simp only [← Subtype.coe_lt_coe] at hz hz'
+  refine ⟨WithZero.unzero (hz.trans_le' (by simp)).ne', ⟨?_, ?_⟩, ?_⟩
+  · simp
+  · rw [← WithZero.coe_lt_coe]
+    simp [hz.trans_le]
+  · rw [← WithZero.coe_lt_coe]
+    simp [hz'.trans_le']
 
 end DenselyOrdered

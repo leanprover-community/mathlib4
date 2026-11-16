@@ -54,7 +54,7 @@ theorem lexOrder_eq_top_iff_eq_zero (φ : MvPowerSeries σ R) :
   unfold lexOrder
   split_ifs with h
   · simp only [h]
-  · simp only [h, WithTop.coe_ne_top]
+  · simp only [h]
 
 @[simp] theorem lexOrder_zero : lexOrder (0 : MvPowerSeries σ R) = ⊤ := by
   unfold lexOrder

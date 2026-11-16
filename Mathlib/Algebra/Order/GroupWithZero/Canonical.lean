@@ -217,6 +217,11 @@ variable [LE α] {x y : WithZero α} {a b : α}
 instance (priority := 10) le : LE (WithZero α) :=
     ((toOption α).trans (WithBot.toOption α).symm).le
 
+variable (α) in
+def toWithBot_orderIso : WithZero α ≃o WithBot α where
+  toEquiv := (toOption α).trans (WithBot.toOption α).symm
+  map_rel_iff' := by intros; rfl
+
 lemma le_def' : x ≤ y ↔
     (WithBot.toOption α).symm (toOption α x) ≤ (WithBot.toOption α).symm (toOption α y) :=
   (Equiv.le_def _ _ _).symm
