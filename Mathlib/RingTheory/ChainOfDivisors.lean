@@ -244,7 +244,6 @@ open DivisorChain
 
 set_option linter.overlappingInstances false
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_image_of_prime_by_factor_orderIso_dvd
     {m p : Associates M} {n : Associates N} (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
@@ -278,7 +277,6 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
     simpa [Subtype.mk_le_mk] using hc₁''.2 ⟨i, rfl⟩
   exact ne_zero_of_dvd_ne_zero hn (Subtype.prop (d ⟨c₁ 1 ^ s, _⟩))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
