@@ -70,6 +70,7 @@ mkDeclAndDepr () {
       for(i=1; i<=NF; i++) {
         strip=$i
         gsub(/^[+-]*/, "", strip)
+        if (strip ~ "private") { break }
         if (strip ~ regex) { old=$(i+1); break }
       }
     }

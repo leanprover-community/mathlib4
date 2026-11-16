@@ -50,7 +50,6 @@ results deal with the general case `K/F`, where `K` is totally complex, `F` is t
 `K` is a quadratic extension of `F`, and live in the `NumberField.CMExtension` namespace. Note that
 results for the general case can be deduced for the CM case by using the isomorphism
 `equivMaximalRealSubfield` between `F` and `K⁺` mentioned above.
-
 -/
 
 @[expose] public section

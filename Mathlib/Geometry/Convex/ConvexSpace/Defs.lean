@@ -37,7 +37,6 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 The design follows a monadic structure where `StdSimplex R` forms a monad and `convexCombination`
 is a monadic algebra. This eliminates the need for explicit extensionality axioms and resolves
 universe issues with indexed families.
-
 -/
 
 @[expose] public noncomputable section

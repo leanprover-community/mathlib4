@@ -24,7 +24,6 @@ Given a list `l`,
 
 * if `l` is sorted w.r.t. `(<)`, then `List.SortedLT.getIso` is the same bijection reinterpreted
   as an `OrderIso`.
-
 -/
 
 @[expose] public section

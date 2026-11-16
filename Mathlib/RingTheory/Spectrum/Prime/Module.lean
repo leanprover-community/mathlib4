@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Support
 
 ## TODO
 - If `M` is finitely presented, the complement of `Supp M` is quasi-compact. (stacks#051B)
-
 -/
 
 public section

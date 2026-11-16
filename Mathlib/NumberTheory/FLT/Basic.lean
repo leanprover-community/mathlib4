@@ -40,7 +40,6 @@ finally solved by Andrew Wiles, assisted by Richard Taylor, in 1994 (see
 [R. Taylor and A. Wiles, *Ring-theoretic properties of certain Hecke algebras*][Taylor-Wiles-FLT]).
 An ongoing Lean formalisation of the proof, using mathlib as a dependency, is taking place at
 https://github.com/ImperialCollegeLondon/FLT .
-
 -/
 
 @[expose] public section
@@ -132,7 +131,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     refine h (a.num * b.den * c.den) (a.den * b.num * c.den) (a.den * b.den * c.num)
       (by positivity) (by positivity) (by positivity) ?_
     have : (a.den * b.den * c.den : ℚ) ^ n ≠ 0 := by positivity
-    refine Int.cast_injective <| (div_left_inj' this).1 ?_
+    refine Int.cast_injective <| (div_left_inj₀ this).1 ?_
     push_cast
     simp only [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),

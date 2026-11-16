@@ -47,7 +47,6 @@ in the set), but we have the following inequality:
 ## References
 
 * [R. Vershynin, *High-dimensional probability*][vershynin2018high]
-
 -/
 
 @[expose] public section

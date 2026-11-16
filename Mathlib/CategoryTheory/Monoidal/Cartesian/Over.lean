@@ -17,7 +17,6 @@ public import Mathlib.CategoryTheory.Monoidal.Grp
 
 We provide a `CartesianMonoidalCategory (Over X)` instance via pullbacks, and provide simp lemmas
 for the induced `MonoidalCategory (Over X)` instance.
-
 -/
 
 public noncomputable section

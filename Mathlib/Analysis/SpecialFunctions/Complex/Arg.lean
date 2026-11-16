@@ -533,6 +533,26 @@ lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
 
 alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
 
+lemma arg_mul_eq_add_arg_sub_two_pi_iff {x y : ℂ} :
+    (x * y).arg = x.arg + y.arg - 2 * π ↔ π < arg x + arg y := by
+  by_cases! h : x = 0 ∨ y = 0
+  · grind [arg_zero, arg_le_pi, Real.pi_pos]
+  rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle h.1 h.2, ← Real.Angle.coe_add,
+    Real.Angle.toReal_coe_eq_self_sub_two_pi_iff]
+  grind [arg_le_pi]
+
+alias ⟨_, arg_mul_of_pi_lt⟩ := arg_mul_eq_add_arg_sub_two_pi_iff
+
+lemma arg_mul_eq_add_arg_add_two_pi_iff {x y : ℂ} :
+    (x * y).arg = x.arg + y.arg + 2 * π ↔ arg x + arg y ≤ -π := by
+  by_cases! h : x = 0 ∨ y = 0
+  · grind [arg_zero, neg_pi_lt_arg]
+  rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle h.1 h.2, ← Real.Angle.coe_add,
+    Real.Angle.toReal_coe_eq_self_add_two_pi_iff]
+  grind [neg_pi_lt_arg]
+
+alias ⟨_, arg_mul_of_le_neg_pi⟩ := arg_mul_eq_add_arg_add_two_pi_iff
+
 section slitPlane
 
 open ComplexOrder in

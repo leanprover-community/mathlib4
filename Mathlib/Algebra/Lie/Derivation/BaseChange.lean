@@ -20,7 +20,6 @@ both these procedures are Lie algebra homomorphisms themselves.
 ## Tags
 
 lie algebra, extension of scalars, base change, derivation
-
 -/
 
 @[expose] public section

@@ -45,7 +45,6 @@ The flatness assumption in `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat
 is stronger than the `Tor`-vanishing conditions required in the full statement of
 [Stacks Project, 00S2], this should be refactored and generalized once more API
 for `Tor` modules is available.
-
 -/
 
 @[expose] public section

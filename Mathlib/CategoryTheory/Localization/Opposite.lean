@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Localization.Equivalence
 
 If a functor `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`, it
 is shown in this file that `L.op : Cᵒᵖ ⥤ Dᵒᵖ` is also a localization functor.
-
 -/
 
 @[expose] public section

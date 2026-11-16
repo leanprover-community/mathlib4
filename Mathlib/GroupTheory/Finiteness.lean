@@ -39,7 +39,6 @@ the more general `IsMulFG`.
 
 Previously the subobject predicates `Submonoid.FG` and `Subgroup.FG` were used to define the more
 general `Monoid.FG` and `Group.FG`, but the new `IsMulFG` defines the general predicate directly.
-
 -/
 
 open scoped Finset

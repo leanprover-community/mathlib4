@@ -61,7 +61,6 @@ the polynomial being represented.
 ## Tags
 
 polynomial, multivariate polynomial, multivariable polynomial
-
 -/
 
 @[expose] public section

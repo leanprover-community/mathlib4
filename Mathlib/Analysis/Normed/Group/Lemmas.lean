@@ -17,7 +17,6 @@ This file contains further lemmas about normed groups, requiring heavier imports
 ## TODO
 
 - Move lemmas from `Basic` to other places, including this file.
-
 -/
 
 public section

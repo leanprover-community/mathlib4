@@ -21,7 +21,6 @@ obtained by `X a ↦ a`.
   `MvPolynomial A R →ₐ[R] A` obtained by `X a ↦ a`
 * `MvPolynomial.counit` is an “absolute” variant with `R = ℤ`
 * `MvPolynomial.counitNat` is an “absolute” variant with `R = ℕ`
-
 -/
 
 @[expose] public section

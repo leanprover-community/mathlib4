@@ -57,7 +57,6 @@ This file contains basics about the (relative) separable closure of a field exte
 ## Tags
 
 separable degree, degree, separable closure
-
 -/
 
 @[expose] public section

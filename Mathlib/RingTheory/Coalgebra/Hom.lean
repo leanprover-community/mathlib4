@@ -22,7 +22,6 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 ## Notation
 
 * `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
-
 -/
 
 @[expose] public section

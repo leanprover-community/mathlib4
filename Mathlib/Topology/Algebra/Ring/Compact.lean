@@ -31,7 +31,6 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 ## Future projects
 Show that compact Hausdorff rings are totally disconnected and linearly topologized.
 See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
-
 -/
 
 public section

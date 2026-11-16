@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 If an additive concrete category `C` has an additive forgetful functor to `Ab`
 which preserves homology, then a short complex `S` in `C` is exact
 if and only if it is so after applying the functor `forget₂ C Ab`.
-
 -/
 
 @[expose] public section
@@ -142,7 +141,6 @@ namespace SnakeInput
 
 variable (D : SnakeInput C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma allows the computation of the connecting homomorphism
 `D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
 lemma δ_apply (x₃ : ToType (D.L₀.X₃)) (x₂ : ToType (D.L₁.X₂)) (x₁ : ToType (D.L₂.X₁))

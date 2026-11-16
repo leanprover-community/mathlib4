@@ -25,6 +25,11 @@ A naive definition of `Filter.EventuallyConst f l` is `∃ y, ∀ᶠ x in l, f x
 However, this proposition is false for empty `α`, `β`.
 Instead, we say that `Filter.map f l` is supported on a subsingleton.
 This allows us to drop `[Nonempty _]` assumptions here and there.
+
+## TODO
+
+Link this to `Function.IsConst` and `Function.IsConstOn`.
+
 -/
 
 @[expose] public section

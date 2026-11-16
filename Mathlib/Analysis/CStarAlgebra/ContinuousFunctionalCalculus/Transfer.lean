@@ -22,7 +22,6 @@ of the continuous functional calculus.
   calculus instance through a continuous (in only one direction) `StarAlgEquiv`.
 + `cfc_eq_cfc_transfer`: the equality between a functional calculus and its transferred instance.
 + `cfcₙ_eq_cfcₙ_transfer`: the equality between a functional calculus and its transferred instance.
-
 -/
 
 @[expose] public section

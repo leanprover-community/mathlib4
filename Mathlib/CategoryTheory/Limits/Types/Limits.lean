@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 # Limits in the category of types.
 
 We show that the category of types has all limits, by providing the usual concrete models.
-
 -/
 
 @[expose] public section

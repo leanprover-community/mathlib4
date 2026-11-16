@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
 In this file, we introduce the closure of a property of objects under
 binary (co)products.
-
 -/
 
 public section

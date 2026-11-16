@@ -37,7 +37,6 @@ small colimits.
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.3.
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 * https://stacks.math.columbia.edu/tag/00XI
-
 -/
 
 @[expose] public section
@@ -149,7 +148,6 @@ then `G.op.ran.obj F` is a sheaf. In order to do this, we use the "multifork"
 characterization of sheaves which involves limits in the category `A`.
 As `G.op.ran.obj F` is the chosen right Kan extension of `F` along `G.op : Cᵒᵖ ⥤ Dᵒᵖ`,
 we actually verify that any pointwise right Kan extension of `F` along `G.op` is a sheaf.
-
 -/
 
 variable {C D : Type*} [Category* C] [Category* D] (G : C ⥤ D)
@@ -303,7 +301,6 @@ left adjoint to `G.sheafPushforwardCocontinuous A J K`. This adjunction may repl
 `Functor.sheafAdjunctionCocontinuous` below, and then, it could be shown that if
 `G` is also continuous, then we have an isomorphism
 `G.sheafPullbackCocontinuous A J K ≅ G.sheafPushforwardContinuous A J K` (TODO).
-
 -/
 
 namespace Functor

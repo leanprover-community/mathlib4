@@ -43,7 +43,6 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 ## References
 
 * [P. R. Halmos, *Measure theory*, 17.3 and 30.11][halmos1950measure]
-
 -/
 
 @[expose] public section

@@ -29,7 +29,6 @@ In this file we use the following type variables:
 ## Tags
 
 bilinear form, bilin form, BilinearForm, matrix, basis
-
 -/
 
 @[expose] public section

@@ -213,24 +213,11 @@ theorem A_submatrix_revPerm :
 theorem D_submatrix_swap (hn : 2 ≤ n) :
     (D n).submatrix (Equiv.swap ⟨n - 2, by lia⟩ ⟨n - 1, by lia⟩)
       (Equiv.swap ⟨n - 2, by lia⟩ ⟨n - 1, by lia⟩) = D n := by
-  set p : Fin n := ⟨n - 2, by lia⟩ with hp
-  set q : Fin n := ⟨n - 1, by lia⟩ with hq
-  -- the swap fixes the nodes `i < n - 2` and exchanges `p` and `q`
-  have key (i : Fin n) : Equiv.swap p q i = i ∧ (i : ℕ) < n - 2 ∨
-      i = p ∧ Equiv.swap p q i = q ∨ i = q ∧ Equiv.swap p q i = p := by
-    obtain hi | hi | hi : (i : ℕ) < n - 2 ∨ i = p ∨ i = q := by
-      simp only [hp, hq, Fin.ext_iff]; lia
-    · exact .inl ⟨Equiv.swap_apply_of_ne_of_ne (by simp [hp, Fin.ext_iff]; lia)
-        (by simp [hq, Fin.ext_iff]; lia), hi⟩
-    · exact .inr (.inl ⟨hi, hi ▸ Equiv.swap_apply_left _ _⟩)
-    · exact .inr (.inr ⟨hi, hi ▸ Equiv.swap_apply_right _ _⟩)
   ext i j
-  rw [Matrix.submatrix_apply]
-  obtain ⟨hi, hi'⟩ | ⟨rfl, hi⟩ | ⟨rfl, hi⟩ := key i <;>
-    obtain ⟨hj, hj'⟩ | ⟨rfl, hj⟩ | ⟨rfl, hj⟩ := key j <;>
-    simp only [hi, hj, D_diag] <;>
-    simp only [hp, hq, D, Matrix.of_apply, Fin.ext_iff] <;>
-    simp (disch := lia) only [ite_eq_right, Nat.sub_add_cancel, true_or, or_true, and_true]
+  simp only [D, submatrix_apply, of_apply, Equiv.swap_apply_def, Fin.ext_iff]
+  by_cases hi1 : (i : ℕ) = n - 2 <;> by_cases hi2 : (i : ℕ) = n - 1 <;>
+    by_cases hj1 : (j : ℕ) = n - 2 <;> by_cases hj2 : (j : ℕ) = n - 1 <;>
+    simp only [hi1, hi2, hj1, hj2, ite_true, ite_false] <;> grind
 
 /-! ### Small cases -/
 
@@ -629,9 +616,7 @@ lemma exists_symmetrizer : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ i j, d i
 /-- Two distinct indices are joined by at most three bonds: the `2 × 2` principal minor
 `4 - Mᵢⱼ Mⱼᵢ` is positive. -/
 lemma mul_lt_four {i j : ι} (hij : i ≠ j) : M i j * M j i < 4 := by
-  have hf : Function.Injective ![i, j] := by
-    intro a b h; fin_cases a <;> fin_cases b <;> simp_all [eq_comm]
-  have h := (hM.submatrix hf).det_pos
+  have h := (hM.submatrix (injective_pair_iff_ne.mpr hij)).det_pos
   rw [det_fin_two] at h
   simp [hM.diag] at h
   linarith
@@ -650,11 +635,9 @@ lemma apply_cases {i j : ι} (hij : i ≠ j) :
   have h' : M j i ≠ 0 := by simpa [hM.zero_comm] using h
   have : -3 ≤ M i j := by nlinarith [show M j i ≤ -1 by lia]
   have : -3 ≤ M j i := by nlinarith [show M i j ≤ -1 by lia]
-  have hu : M i j = -1 ∨ M i j = -2 ∨ M i j = -3 := by lia
-  have hv : M j i = -1 ∨ M j i = -2 ∨ M j i = -3 := by lia
   right
   unfold CartanMatrix.IsBond
-  rcases hu with hu | hu | hu <;> rcases hv with hv | hv | hv <;> simp_all
+  interval_cases M i j <;> interval_cases M j i <;> lia
 
 end Matrix.IsFiniteCartan
 

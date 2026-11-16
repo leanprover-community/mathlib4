@@ -35,7 +35,6 @@ associated prefunctors between the hom types are all functors. In other words, i
 
 `mkOfHomFunctor`: constructs a `PrelaxFunctor` from a map on objects and functors between the
 corresponding hom types.
-
 -/
 
 @[expose] public section

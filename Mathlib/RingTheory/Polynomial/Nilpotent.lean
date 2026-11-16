@@ -19,7 +19,6 @@ This file is a place for results related to nilpotency in (single-variable) poly
 ## Main results:
 * `Polynomial.isNilpotent_iff`
 * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
-
 -/
 
 public section

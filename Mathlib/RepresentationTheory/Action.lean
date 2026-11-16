@@ -10,14 +10,13 @@ public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 
 /-!
-## Main Purpose
-This file is the preliminary for the `linearize` functor from `Action (Type w) G` to `Rep k G`,
-constructing the functor from the `Representation` would reduce the amount of DefEq abuses that we
-currently are doing in the `Rep` file.
+# Linearization of `G`-sets as representations
 
-TODO (Edison) : Refactor `Rep` to be a concrete category of `Representation` and
-reconstruct the current `linearize` functor using this file.
-
+Given a `G`-set `X`, the action on `X` induces a `G`-representation of the free `k`-module `k[X.V]`
+on `X.V`. This file builds this construction directly in terms of `Representation` and
+`IntertwiningMap`, as a preliminary to the `linearize` functor
+`Action (Type w) G ⥤ Rep k G`. Working with `Representation` here avoids the defeq abuse
+currently present in `Mathlib/RepresentationTheory/Rep.lean`.
 -/
 
 universe w w' u u' v v'
