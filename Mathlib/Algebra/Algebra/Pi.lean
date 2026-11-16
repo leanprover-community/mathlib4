@@ -244,7 +244,7 @@ variable (S : Type*) [Semiring S] [Algebra R S]
 variable (ι R) in
 /-- If `ι` has a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
 def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
-  .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
+  .ofCommutes (e := .piUnique (fun i : ι ↦ S)) (by simp)
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]
