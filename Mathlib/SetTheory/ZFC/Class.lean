@@ -5,7 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.SetTheory.ZFC.Ordinal
+public import Mathlib.Data.Set.BooleanAlgebra -- Used only by deprecated declarations
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # ZFC classes
@@ -561,15 +562,5 @@ noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} 
   left_inv := private Function.rightInverse_of_injective_of_leftInverse (by intro _ _; simp)
     fun s ↦ Subtype.coe_injective <| coe_equiv_aux s.2
   right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.2
-
-/-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-theorem isOrdinal_notCMem_univ : {x | IsOrdinal x} ᶜ∉ (.univ : ZFClass.{u}) := by
-  rintro ⟨x, hx, -⟩
-  suffices IsOrdinal x by
-    apply ZFClass.cmem_irrefl (A := (x : ZFClass.{u}))
-    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred_eq]
-  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;>
-    rw [← SetLike.mem_coe, hx, Set.mem_ofPred_eq] at *
-  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet
