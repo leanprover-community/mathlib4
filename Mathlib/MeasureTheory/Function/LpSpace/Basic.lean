@@ -859,6 +859,18 @@ theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMu
 theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
   LipschitzWith.norm_compLp_le _ _ _
 
+theorem norm_compLp_of_isometry {L : E →SL[σ] F} (hL : Isometry L) (f : Lp E p μ) :
+    ‖L.compLp f‖ = ‖f‖ := by
+  have hle : ‖L.compLp f‖ ≤ ‖f‖ := by
+    apply Lp.norm_le_norm_of_ae_le
+    filter_upwards [L.coeFn_compLp f] with x hx
+    rw [hx]; exact ((AddMonoidHomClass.isometry_iff_norm L).1 hL (f x)).le
+  have hge : ‖f‖ ≤ ‖L.compLp f‖ := by
+    apply Lp.norm_le_norm_of_ae_le
+    filter_upwards [L.coeFn_compLp f] with x hx
+    rw [hx]; exact ((AddMonoidHomClass.isometry_iff_norm L).1 hL (f x)).ge
+  exact le_antisymm hle hge
+
 variable (μ p)
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a `𝕜`-linear map on `Lp E p μ`. -/
@@ -902,6 +914,10 @@ theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'
 
 theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=
   LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
+
+theorem isometry_compLpL [Fact (1 ≤ p)] {L : E →SL[σ] F} (hL : Isometry L) :
+    Isometry (L.compLpL p μ) :=
+  AddMonoidHomClass.isometry_of_norm _ (norm_compLp_of_isometry hL)
 
 section Bilinear
 
