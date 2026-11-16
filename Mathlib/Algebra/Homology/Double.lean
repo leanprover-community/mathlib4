@@ -15,7 +15,6 @@ Given `c : ComplexShape ι`, distinct indices `i₀` and `i₁` such that `hi₀
 we construct a homological complex `double f hi₀₁` for any morphism `f : X₀ ⟶ X₁`.
 It consists of the objects `X₀` and `X₁` in degrees `i₀` and `i₁`, respectively,
 with the differential `X₀ ⟶ X₁` given by `f`, and zero everywhere else.
-
 -/
 
 @[expose] public section

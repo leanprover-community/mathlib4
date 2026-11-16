@@ -8,7 +8,6 @@ module
 public import Mathlib.Condensed.Light.Module
 
 /-!
-
 # Equivalence of light condensed objects with sheaves on a small site
 -/
 

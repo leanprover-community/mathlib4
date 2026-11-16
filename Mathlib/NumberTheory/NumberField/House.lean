@@ -40,7 +40,7 @@ def house (α : K) : ℝ := ‖canonicalEmbedding K α‖
 /-- The house is the largest of the modulus of the conjugates of an algebraic number. -/
 theorem house_eq_sup' (α : K) :
     house α = univ.sup' univ_nonempty (fun φ : K →+* ℂ ↦ ‖φ α‖₊) := by
-  rw [house, ← coe_nnnorm, nnnorm_eq, ← sup'_eq_sup univ_nonempty]
+  rw [house, ← coe_nnNorm, nnNorm_eq, ← sup'_eq_sup univ_nonempty]
 
 theorem house_sum_le_sum_house {ι : Type*} (s : Finset ι) (α : ι → K) :
     house (∑ i ∈ s, α i) ≤ ∑ i ∈ s, house (α i) := by
@@ -58,7 +58,7 @@ theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
   simp only [house, map_add]; apply norm_add_le
 
 theorem house_pow (α : K) (i : ℕ) : house (α ^ i) = house α ^ i := by
-  simp_rw [house_eq_sup', map_pow, nnnorm_pow]
+  simp_rw [house_eq_sup', map_pow, nnNorm_pow]
   rw [← Function.comp_def (· ^ i),
     ← Finset.apply_sup'_eq_sup'_comp _ _ fun _ _ ↦ (pow_left_mono (M := NNReal) i).map_max,
     NNReal.coe_pow]
@@ -152,7 +152,7 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
       exact norm_sum_le_of_le _ fun _ _ ↦ (norm_mul _ _).le
     _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * ‖σ (algebraMap (𝓞 K) K α) j‖ := by
       gcongr
-      exact norm_entry_le_entrywise_sup_norm ((basisMatrix K).transpose)⁻¹
+      exact norm_apply_le_norm ((basisMatrix K).transpose)⁻¹
     _ ≤ ∑ _ : K →+* ℂ, ‖fun i j => ((basisMatrix K).transpose)⁻¹ i j‖
         * house (algebraMap (𝓞 K) K α) := by
       gcongr with j

@@ -17,7 +17,6 @@ Let `Fᵢ : C ⥤ Dᵢ` be a family of functors. The family is said to jointly r
 isomorphisms (resp. monomorphisms, resp. epimorphisms) if every `f : X ⟶ Y`
 in `C` for which `Fᵢ.map f` is an isomorphism (resp. monomorphism, resp. epimorphism)
 for all `i` is an isomorphism.
-
 -/
 
 public section
@@ -50,7 +49,6 @@ structure JointlyFaithful (F : ∀ i, C ⥤ D i) : Prop where
 
 variable {F : ∀ i, C ⥤ D i}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma JointlyFaithful.of_jointly_reflects_isIso_of_mono [HasEqualizers C]
     [∀ i, PreservesLimitsOfShape WalkingParallelPair (F i)]
     (hF : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) [Mono f],

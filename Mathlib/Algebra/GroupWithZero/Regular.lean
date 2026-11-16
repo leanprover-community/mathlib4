@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Tactic.Push
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about `IsRegular` and `0`
 -/

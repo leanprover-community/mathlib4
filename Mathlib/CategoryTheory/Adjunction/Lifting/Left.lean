@@ -111,7 +111,6 @@ We will show that this coequalizer exists and that it forms the object map for a
 def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
   F'.map (U.map (F.map (adj₂.unit.app _) ≫ adj₁.counit.app _)) ≫ adj₂.counit.app _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
 this pair has a coequalizer.
 -/
@@ -168,7 +167,6 @@ noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.c
 
 attribute [local simp] Adjunction.homEquiv_counit
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) : B ⥤ A := by
   refine Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ h Y X) ?_

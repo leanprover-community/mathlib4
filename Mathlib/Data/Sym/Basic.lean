@@ -26,7 +26,6 @@ needs a fleshed-out interface.
 ## Tags
 
 symmetric powers
-
 -/
 
 @[expose] public section
