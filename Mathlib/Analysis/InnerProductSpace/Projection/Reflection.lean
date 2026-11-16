@@ -161,14 +161,14 @@ theorem reflection_mem_compatibleMaps_orthogonalComplement :
 variable (K) in
 /-- The restriction of the reflection in `K` to `K` is the identity. -/
 theorem restrict_reflection_eq_one :
-    K.reflection.toLinearMap.restrict (reflection_mem_compatibleMaps K) = 1 :=
+    K.reflection.toLinearMap.restrict (reflection_mem_compatibleMaps K) = .id :=
   LinearMap.ext fun x ↦ Subtype.ext (reflection_mem_subspace_eq_self x.2)
 
 variable (K) in
 /-- The restriction of the reflection in `K` to `Kᗮ` is minus the identity. -/
 theorem restrict_reflection_orthogonalComplement_eq_neg_one :
     K.reflection.toLinearMap.restrict (p := Kᗮ) (q := Kᗮ)
-      (reflection_mem_compatibleMaps_orthogonalComplement K) = -1 :=
+      (reflection_mem_compatibleMaps_orthogonalComplement K) = -.id :=
   LinearMap.ext fun x ↦
     Subtype.ext (reflection_mem_subspace_orthogonalComplement_eq_neg x.2)
 
