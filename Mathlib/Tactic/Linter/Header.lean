@@ -433,7 +433,8 @@ initialize
     -- We also allow `set_option doc.verso...` before the module doc-string.
     if let `(set_option $opt $_) := stx then
       if opt.getId matches `doc.verso | `doc.verso.suggestions | `doc.verso.module
-          | `linter.style.header | `linter.style.header.license | `linter.style.header.imports then
+          | `linter.style.header | `linter.style.header.license | `linter.style.header.imports
+          | `linter.all then
         return true
     headerLinter stx
     return false)
