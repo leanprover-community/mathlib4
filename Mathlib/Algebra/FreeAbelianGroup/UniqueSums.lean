@@ -19,5 +19,5 @@ public section
 
 assert_not_exists Cardinal StarModule
 
-instance {σ : Type*} : TwoUniqueSums (FreeAbelianGroup σ) :=
-  (FreeAbelianGroup.equivFinsupp σ).twoUniqueSums_iff.mpr inferInstance
+instance {σ : Type*} : TwoUniqueSums (FreeAddCommGroup σ) :=
+  (FreeAddCommGroup.equivFinsupp σ).twoUniqueSums_iff.mpr inferInstance
