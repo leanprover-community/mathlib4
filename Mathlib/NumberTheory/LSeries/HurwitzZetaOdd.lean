@@ -530,7 +530,7 @@ lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have := (hasSum_int_sinZeta a hs).nat_add_neg
   simp_rw [abs_neg, Int.sign_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg, abs_zero,
     Int.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero, zero_div, add_zero] at this
-  simp_rw [fail_if_not_idempotent push_cast, Complex.sin]
+  simp_rw [push_cast, Complex.sin]
   refine this.congr_fun fun n ↦ ?_
   rcases ne_or_eq n 0 with h | rfl
   · simp only [neg_mul, sub_mul, div_right_comm _ (2 : ℂ), Int.sign_natCast_of_ne_zero h,
