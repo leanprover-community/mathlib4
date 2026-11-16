@@ -32,7 +32,6 @@ L-series.
   `(∑ k ∈ Icc 1 n, f k) / n` tends to some complex number `l` when `n → ∞` and that the L-series
   `LSeries f` converges for all `s : ℝ` such that `1 < s`. Then `(s - 1) * LSeries f s` tends
   to `l` when `s → 1` with `1 < s`.
-
 -/
 
 public section
@@ -55,7 +54,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
     exact hs.le
   have h₃ (t : ℝ) (ht : t ∈ Set.Ici 1) : DifferentiableAt ℝ (fun x : ℝ ↦ ‖(x : ℂ) ^ (-s)‖) t :=
     have ht' : t ≠ 0 := (zero_lt_one.trans_le ht).ne'
-    (differentiableAt_id.ofReal_cpow_const ht' h₁).norm ℝ <|
+    (differentiableAt_id.ofReal_cpow_const (-s) ht').norm ℝ <|
       (cpow_ne_zero_iff_of_exponent_ne_zero h₁).mpr <| ofReal_ne_zero.mpr ht'
   have h₄ : (deriv fun t : ℝ ↦ ‖(t : ℂ) ^ (-s)‖) =ᶠ[atTop] fun t ↦ -s.re * t ^ (-(s.re + 1)) := by
     filter_upwards [eventually_gt_atTop 0] with t ht
@@ -104,9 +103,8 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1)) := by
   have h₁ : (-s - 1).re + r < -1 := by
     rwa [sub_re, one_re, neg_re, neg_sub_left, neg_add_lt_iff_lt_add, add_neg_cancel_comm]
-  have h₂ : s ≠ 0 := ne_zero_of_re_pos (hr.trans_lt hs)
   have h₃ (t : ℝ) (ht : t ∈ Set.Ici 1) : DifferentiableAt ℝ (fun x : ℝ ↦ (x : ℂ) ^ (-s)) t :=
-    differentiableAt_id.ofReal_cpow_const (zero_lt_one.trans_le ht).ne' (neg_ne_zero.mpr h₂)
+    differentiableAt_id.ofReal_cpow_const (-s) (zero_lt_one.trans_le ht).ne'
   have h₄ : ∀ n, ∑ k ∈ Icc 0 n, f k = ∑ k ∈ Icc 1 n, f k := fun n ↦ by
     rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert (by aesop), hf, zero_add, zero_add]
   simp_rw [← h₄] at hO
@@ -118,9 +116,8 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
       ?_ ?_ (integrableAtFilter_rpow_atTop_iff.mpr h₁)
   · rw [zero_sub, ← integral_neg]
     refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
-    rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄]
-    · ring_nf
-    · exact neg_ne_zero.mpr <| ne_zero_of_re_pos (hr.trans_lt hs)
+    rw [deriv_ofReal_cpow_const (-s) (zero_lt_one.trans ht).ne', h₄]
+    ring_nf
   · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi <|
       integrableOn_Ioi_deriv_ofReal_cpow zero_lt_one
         (by simpa using! hr.trans_lt hs)).locallyIntegrableOn

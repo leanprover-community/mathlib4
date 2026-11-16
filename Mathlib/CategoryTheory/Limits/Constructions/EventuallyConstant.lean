@@ -18,7 +18,6 @@ Under this assumption, it is shown that `F` admits `F.obj j` as a limit
 
 A typeclass `Cofiltered.IsEventuallyConstant` is also introduced, and
 the dual results for filtered categories and colimits are also obtained.
-
 -/
 
 @[expose] public section

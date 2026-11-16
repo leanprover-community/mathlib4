@@ -345,8 +345,8 @@ theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b
   simp only [eq_univ_iff_forall, mem_sUnion]
 
 theorem iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set α} (h : f i = ∅) :
-    ⋂ j, f j = ∅ :=
-  subset_eq_empty (iInter_subset _ i) h
+    ⋂ j, f j = ∅ := by
+  grw [iInter_subset _ i, h]
 
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by

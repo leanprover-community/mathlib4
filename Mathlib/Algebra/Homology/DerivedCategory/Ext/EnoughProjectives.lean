@@ -20,7 +20,6 @@ for a given category `C`, there may be different reasonable choices for the univ
 and if we have two `HasExt.{w₁}` and `HasExt.{w₂}` instances, we would have
 to specify the universe explicitly almost everywhere, which would be an inconvenience.
 So we must be very selective regarding `HasExt` instances.
-
 -/
 
 public section

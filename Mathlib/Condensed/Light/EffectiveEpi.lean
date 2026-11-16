@@ -10,7 +10,6 @@ public import Mathlib.Condensed.Light.Epi
 import Mathlib.CategoryTheory.Sites.RegularEpi
 
 /-!
-
 # The functor from light profinite sets to light condensed sets preserves effective epimorphisms
 -/
 
