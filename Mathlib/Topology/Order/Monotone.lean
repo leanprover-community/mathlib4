@@ -14,7 +14,6 @@ public import Mathlib.Topology.Order.IsLUB
 This file contains lemmas about limits and continuity for monotone / antitone functions on
 linearly-ordered sets (with the order topology). For example, we prove that a monotone function
 has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.tendsto_nhdsGT`).
-
 -/
 
 public section

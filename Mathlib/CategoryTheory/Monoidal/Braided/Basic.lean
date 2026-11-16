@@ -28,7 +28,6 @@ The rationale is that we are not carrying any additional data, just requiring a 
 ## References
 
 * [Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, *Tensor categories*][egno15]
-
 -/
 
 @[expose] public section

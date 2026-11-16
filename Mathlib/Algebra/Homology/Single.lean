@@ -18,7 +18,6 @@ In `ChainComplex.toSingle₀Equiv` we characterize chain maps to an
 `{ f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 }`.
 (This is useful translating between a projective resolution and
 an augmented exact complex of projectives.)
-
 -/
 
 @[expose] public section

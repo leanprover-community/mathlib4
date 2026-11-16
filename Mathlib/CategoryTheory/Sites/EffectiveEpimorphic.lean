@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
-
 # Effective epimorphic sieves
 
 We define the notion of effective epimorphic (pre)sieves and provide some API for relating the
@@ -19,7 +18,6 @@ More precisely, if `f` is a morphism, then `f` is an effective epi if and only i
 it generates is effective epimorphic; see `CategoryTheory.Sieve.effectiveEpimorphic_singleton`.
 The analogous statement for a family of morphisms is in the theorem
 `CategoryTheory.Sieve.effectiveEpimorphic_family`.
-
 -/
 
 universe w v u

@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 
@@ -105,7 +106,7 @@ theorem exists_d_comp_eq_d {G : C} (hG : IsSeparator G) {A} (B : C) [Injective B
   let l₂ : A ⟶ B := Injective.factorThru l₁ (Limits.image.ι (d g))
   refine ⟨l₂, ?_⟩
   simp only [l₂, l₁]
-  conv_lhs => congr; rw [← Limits.image.fac (d g)]
+  conv_lhs => enter [1]; rw [← Limits.image.fac (d g)]
   simp [-Limits.image.fac]
 
 end GabrielPopescuAux

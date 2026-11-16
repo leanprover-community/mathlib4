@@ -11,7 +11,6 @@ public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Separation.Connected
 
 /-!
-
 # Category of Profinite Groups
 
 We say `G` is a profinite group if it is a topological group which is compact and totally
@@ -27,7 +26,6 @@ disconnected.
   profinite group.
 
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
-
 -/
 
 @[expose] public section
@@ -299,7 +297,6 @@ In this section, we construct limits in the category of profinite groups.
 * `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`.
 
 * `ProfiniteGrp.limitConeIsLimit`: `ProfiniteGrp.limitCone` is a limit cone.
-
 -/
 
 section Limits

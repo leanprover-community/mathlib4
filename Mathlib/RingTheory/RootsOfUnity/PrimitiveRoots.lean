@@ -350,11 +350,11 @@ section DivisionCommMonoid
 variable {ζ : G}
 
 theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 := by
-  exact_mod_cast h.pow_eq_one
+  exact mod_cast h.pow_eq_one
 
 theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 ↔ (k : ℤ) ∣ l := by
   by_cases h0 : 0 ≤ l
-  · lift l to ℕ using h0; exact_mod_cast h.pow_eq_one_iff_dvd l
+  · lift l to ℕ using h0; exact mod_cast h.pow_eq_one_iff_dvd l
   · have : 0 ≤ -l := (Int.neg_pos_of_neg <| Int.lt_of_not_ge h0).le
     lift -l to ℕ using this with l' hl'
     rw [← dvd_neg, ← hl']
@@ -376,7 +376,7 @@ theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 
     IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : 0 ≤ i
   · lift i to ℕ using h0
-    exact_mod_cast h.pow_of_coprime i hi
+    exact mod_cast h.pow_of_coprime i hi
   have : 0 ≤ -i := (Int.neg_pos_of_neg <| Int.lt_of_not_ge h0).le
   lift -i to ℕ using this with i' hi'
   rw [← inv_iff, ← zpow_neg, ← hi', zpow_natCast]
@@ -483,16 +483,19 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         rfl)
 
 @[simp]
-theorem zmodEquivZPowers_apply_coe_int (i : ℤ) :
+theorem zmodEquivZPowers_apply_intCast (i : ℤ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   rw [zmodEquivZPowers, AddEquiv.ofBijective_apply] -- Porting note: Original proof didn't have `rw`
   exact AddMonoidHom.liftOfRightInverse_comp_apply _ _ ZMod.intCast_rightInverse _ _
+
+@[deprecated (since := "2026-10-27")]
+alias zmodEquivZPowers_apply_coe_int := zmodEquivZPowers_apply_intCast
 
 @[simp]
 theorem zmodEquivZPowers_apply_natCast (i : ℕ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   have : (i : ZMod k) = (i : ℤ) := by norm_cast
-  simp only [this, zmodEquivZPowers_apply_coe_int, zpow_natCast]
+  simp only [this, zmodEquivZPowers_apply_intCast, zpow_natCast]
 
 @[deprecated (since := "2026-10-13")]
 alias zmodEquivZPowers_apply_coe_nat := zmodEquivZPowers_apply_natCast
@@ -500,7 +503,7 @@ alias zmodEquivZPowers_apply_coe_nat := zmodEquivZPowers_apply_natCast
 @[simp]
 theorem zmodEquivZPowers_symm_apply_zpow (i : ℤ) :
     h.zmodEquivZPowers.symm (Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ)) = i := by
-  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_coe_int]
+  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_intCast]
 
 @[simp]
 theorem zmodEquivZPowers_symm_apply_zpow' (i : ℤ) : h.zmodEquivZPowers.symm ⟨ζ ^ i, i, rfl⟩ = i :=

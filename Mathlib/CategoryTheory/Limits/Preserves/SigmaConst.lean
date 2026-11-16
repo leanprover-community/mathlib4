@@ -15,7 +15,6 @@ Given an object `R` in a category `C` with coproducts of size `w`,
 the functor `sigmaConst.obj R : Type w ⥤ C` which sends
 a type `T` to the coproduct of copies of `R` indexed by `T`
 preserves all colimits.
-
 -/
 
 @[expose] public section
@@ -26,7 +25,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-set_option backward.defeqAttrib.useBackward true in
 /- If the morphisms in `C` were in `Type w`, the functor
 `sigmaConst.{w}`
 would be a left adjoint (see `sigmaConstAdj`). In general, we cannot
@@ -119,7 +117,7 @@ section
 variable [HasCoproducts.{w} C] [HasCoproducts.{w} D]
   (F : C ⥤ D) [∀ (T : Type w), PreservesColimitsOfShape (Discrete T) F] (X : C)
 
-/-- The isomophism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
+/-- The isomorphism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
 preserves coproducts. -/
 noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X) :=
   NatIso.ofComponents (fun _ ↦ PreservesCoproduct.iso _ _) (fun {T₁ T₂} f ↦ by

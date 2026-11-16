@@ -9,13 +9,11 @@ public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
-
 # Extending valuations to a localization
 
 We show that, given a valuation `v` taking values in a linearly ordered commutative *group*
 with zero `Γ`, and a submonoid `S` of `v.supp.primeCompl`, the valuation `v` can be naturally
 extended to the localization `S⁻¹A`.
-
 -/
 
 @[expose] public section

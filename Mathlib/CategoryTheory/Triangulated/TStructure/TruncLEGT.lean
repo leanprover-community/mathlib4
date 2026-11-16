@@ -15,7 +15,6 @@ In this file, for any `n : ℤ`, we introduce the truncation functors
 `t.truncLE n : C ⥤ C` and `t.truncGT n : C ⥤ C`, as variants of the functors
 `t.truncLT n : C ⥤ C` and `t.truncGE n : C ⥤ C` introduced in the file
 `Mathlib/CategoryTheory/Triangulated/TStructure/TruncLTGE.lean`.
-
 -/
 
 @[expose] public section
@@ -337,7 +336,7 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGT b).obj X) a := by
   dsimp [truncGT]
   infer_instance
 
-/-- The composition `t.truncGE a ⋙ t.truncGE b`. -/
+/-- The composition `t.truncGE a ⋙ t.truncLE b`. -/
 noncomputable abbrev truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLE b
 
 /-- The composition `t.truncLE b ⋙ t.truncGE a`. -/
@@ -373,10 +372,6 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] :
 instance (X : C) (a b : ℤ) [t.IsLE X b] :
     t.IsLE ((t.truncGT a).obj X) b := by
   dsimp [truncGT]; infer_instance
-
-instance (X : C) (a b : ℤ) [t.IsGE X a] :
-    t.IsGE ((t.truncLE b).obj X) a := by
-  dsimp [truncLE]; infer_instance
 
 instance (X : C) (a b : ℤ) :
     t.IsLE ((t.truncGELE a b).obj X) b := by

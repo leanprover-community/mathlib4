@@ -18,7 +18,6 @@ the associated distinguished triangle in the derived category:
 * when the canonical t-structure on the derived category is formalized, refactor
   this definition to make it a particular case of the triangle induced by a short
   exact sequence in the heart of a t-structure
-
 -/
 
 @[expose] public section

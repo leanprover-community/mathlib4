@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 import Mathlib.Topology.UrysohnsLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals of continuous functions with respect to regular measures
 
