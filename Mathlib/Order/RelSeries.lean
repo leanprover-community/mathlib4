@@ -1067,7 +1067,7 @@ lemma ofOrderEmbedding_apply_last :
   convert (RelSeries.apply_last _).symm
   simp [ofOrderEmbedding_apply_apply, Finset.max'_eq_iff, ← OrderIso.symm_apply_le, Fin.le_last]
 
-instance {α} [LinearOrder α] [Infinite α] : InfiniteDimensionalOrder α where
+instance (priority := low) {α} [LinearOrder α] [Infinite α] : InfiniteDimensionalOrder α where
   exists_relSeries_with_length n := by
     have ⟨emb⟩ := nonempty_orderEmbedding_of_finite_infinite (Fin (n + 1)) α
     use LTSeries.ofOrderEmbedding emb
