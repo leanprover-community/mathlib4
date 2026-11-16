@@ -12,6 +12,8 @@ public import Mathlib.Algebra.MvPolynomial.Variables
 
 This file contains several results about operations on `MvPolynomial`
 which can be thought of in terms of the monad structure on `MvPolynomial`.
+
+TODO: move these results to other places, and deprecate this file.
 -/
 
 @[expose] public section
