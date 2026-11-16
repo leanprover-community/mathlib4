@@ -44,12 +44,10 @@ def comap (φ : A →+* B) (v : ValuativeRel B) : ValuativeRel A where
   vle_mul_comm := by simp only [map_mul]; exact v.vle_mul_comm
 
 /-- The relation pulled back along `φ` compares images under `φ`. -/
-@[simp]
 theorem comap_vle (φ : A →+* B) (v : ValuativeRel B) (a₁ a₂ : A) :
     (comap φ v).vle a₁ a₂ ↔ v.vle (φ a₁) (φ a₂) := Iff.rfl
 
 /-- The strict relation pulled back along `φ` compares images under `φ`. -/
-@[simp]
 theorem comap_vlt (φ : A →+* B) (v : ValuativeRel B) (a₁ a₂ : A) :
     (comap φ v).vlt a₁ a₂ ↔ v.vlt (φ a₁) (φ a₂) := Iff.rfl
 
