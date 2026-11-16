@@ -1295,11 +1295,22 @@ theorem eLpNorm_comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : AES
     (hf : MeasurePreserving f μ ν) : eLpNorm (g ∘ f) p μ = eLpNorm g p ν :=
   Eq.symm <| hf.map_eq ▸ eLpNorm_map_measure (hf.map_eq ▸ hg) hf.aemeasurable
 
+theorem inhmgELpNorm_comp_measurePreserving
+    {ν : MeasureTheory.Measure β} (hg : AEStronglyMeasurable g ν) (hf : MeasurePreserving f μ ν) :
+    inhmgELpNorm (g ∘ f) p μ = inhmgELpNorm g p ν :=
+  Eq.symm <| hf.map_eq ▸ inhmgELpNorm_map_measure (hf.map_eq ▸ hg) hf.aemeasurable
+
 theorem AEEqFun.eLpNorm_compMeasurePreserving {ν : MeasureTheory.Measure β} (g : β →ₘ[ν] E)
     (hf : MeasurePreserving f μ ν) :
     eLpNorm (g.compMeasurePreserving f hf) p μ = eLpNorm g p ν := by
   rw [eLpNorm_congr_ae (g.coeFn_compMeasurePreserving _)]
   exact eLpNorm_comp_measurePreserving g.aestronglyMeasurable hf
+
+theorem AEEqFun.inhmgELpNorm_compMeasurePreserving {ν : MeasureTheory.Measure β} (g : β →ₘ[ν] E)
+    (hf : MeasurePreserving f μ ν) :
+    inhmgELpNorm (g.compMeasurePreserving f hf) p μ = inhmgELpNorm g p ν := by
+  rw [inhmgELpNorm_congr_ae (g.coeFn_compMeasurePreserving _)]
+  exact inhmgELpNorm_comp_measurePreserving g.aestronglyMeasurable hf
 
 theorem MemLp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : MemLp g p ν)
     (hf : MeasurePreserving f μ ν) : MemLp (g ∘ f) p μ :=
