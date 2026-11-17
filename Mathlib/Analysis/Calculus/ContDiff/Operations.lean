@@ -320,8 +320,8 @@ theorem ContDiff.sub {f g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff �
 
 /-- Translations preserve `C^n` regularity within a set at a point. -/
 theorem contDiffWithinAt_comp_add_iff {k : E} :
-    ContDiffWithinAt 𝕜 n (fun y ↦ f (y + k)) s x
-      ↔ ContDiffWithinAt 𝕜 n f {t | t - k ∈ s} (x + k) := by
+    ContDiffWithinAt 𝕜 n (fun y ↦ f (y + k)) s x ↔
+      ContDiffWithinAt 𝕜 n f {t | t - k ∈ s} (x + k) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [show f = (fun y ↦ f (y + k)) ∘ fun z ↦ (z - k) by simp [Function.comp_def]]
     exact ContDiffWithinAt.comp (x + k) (by simpa) (by fun_prop)
