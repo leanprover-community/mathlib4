@@ -143,8 +143,7 @@ theorem lift_unique (g : FreeCommGroup α →* β) (hg : ∀ x, g (of x) = f x) 
     g x = lift f x :=
   congr($(lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _)
 
-/-- See note [partially-applied ext lemmas]. -/
-@[to_additive (attr := ext high) /-- See note [partially-applied ext lemmas]. -/]
+@[to_additive (attr := ext high)]
 theorem lift_ext (g h : FreeCommGroup α →* β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H
 
@@ -157,6 +156,52 @@ theorem lift_comp_apply {α β γ} [CommGroup β] [CommGroup γ]
 end lift
 
 end FreeCommGroup
+
+section AdditiveEquiv
+
+/-- Multiplicative free commutative groups are isomorphic to `Multiplicative` additive free
+commutative groups. -/
+def FreeCommGroup.freeCommGroupEquivMultiplicative :
+    FreeCommGroup α ≃* Multiplicative (FreeAddCommGroup α) :=
+    MonoidHom.toMulEquiv
+    (FreeCommGroup.lift (fun x ↦ Multiplicative.ofAdd (FreeAddCommGroup.of x)))
+    (FreeAddCommGroup.lift (fun x ↦ Additive.ofMul (FreeCommGroup.of x))).toMultiplicativeLeft
+    (by ext; simp)
+    (by ext; simp)
+
+/-- Additive free commutative groups are isomorphic to `Additive` multiplicative free
+commutative groups. -/
+def FreeAddCommGroup.freeAddCommGroupEquivAdditive :
+    FreeAddCommGroup α ≃+ Additive (FreeCommGroup α) :=
+    AddMonoidHom.toAddEquiv
+    (FreeAddCommGroup.lift (fun x ↦ Additive.ofMul (FreeCommGroup.of x)))
+    (FreeCommGroup.lift (fun x ↦ Multiplicative.ofAdd (FreeAddCommGroup.of x))).toAdditiveLeft
+    (by ext; simp)
+    (by ext; simp)
+
+-- simp lemmas: what it does on `of x`, in both directions
+@[simp]
+theorem FreeCommGroup.freeCommGroupEquivMultiplicative_of (x : α) :
+    freeCommGroupEquivMultiplicative (of x) = Multiplicative.ofAdd (FreeAddCommGroup.of x) :=
+  rfl
+
+@[simp]
+theorem FreeCommGroup.freeCommGroupEquivMultiplicative_symm_ofAdd_of (x : α) :
+    freeCommGroupEquivMultiplicative.symm (Multiplicative.ofAdd (FreeAddCommGroup.of x)) =
+      of x :=
+  rfl
+
+@[simp]
+theorem FreeAddCommGroup.freeAddCommGroupEquivAdditive_of (x : α) :
+    freeAddCommGroupEquivAdditive (of x) = Additive.ofMul (FreeCommGroup.of x) :=
+  rfl
+
+@[simp]
+theorem FreeAddCommGroup.freeAddCommGroupEquivAdditive_symm_ofMul_of (x : α) :
+    freeAddCommGroupEquivAdditive.symm (Additive.ofMul (FreeCommGroup.of x)) = of x :=
+  rfl
+
+end AdditiveEquiv
 
 section
 
