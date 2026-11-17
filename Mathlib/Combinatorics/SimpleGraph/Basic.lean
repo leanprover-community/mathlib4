@@ -8,10 +8,10 @@ module
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Data.Sym.Sym2.Card
 public import Mathlib.Order.CompleteBooleanAlgebra
 
-import Mathlib.Data.Set.Lattice.Disjoint
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Simple graphs
@@ -633,6 +633,22 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
     Fintype (G₁ \ G₂).edgeSet := by
   rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
+
+variable {G} in
+@[simp]
+theorem finite_edgeSet_iff_finite_support : G.edgeSet.Finite ↔ G.support.Finite := by
+  refine ⟨fun hfin ↦ ?_, (·.sym2.subset <| edgeSet_subset_sym2_iff.mpr subset_rfl)⟩
+  have : Finite G.edgeSet := hfin
+  classical
+  suffices G.support = ⋃ e : G.edgeSet, e.val.toFinset by rw [this]; apply Set.finite_iUnion; simp
+  ext
+  simp [mem_support, Sym2.mem_iff_exists]
+
+variable {G} in
+@[simp]
+theorem infinite_edgeSet_iff_infinite_support : G.edgeSet.Infinite ↔ G.support.Infinite := by
+  contrapose!
+  exact finite_edgeSet_iff_finite_support
 
 end EdgeSet
 
