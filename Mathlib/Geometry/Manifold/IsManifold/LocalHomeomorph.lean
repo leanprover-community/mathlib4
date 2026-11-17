@@ -90,6 +90,20 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
     obtain ⟨⟨h1, h2⟩, h3⟩ := hx
     rw [(hf.localInverseAt (g y)).right_inv h2, (chartAt H (g y)).right_inv h1, I.right_inv h3]
 
+lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
+    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiffAt I I n (hf.localInverseAt (g y)).symm (g y) := by
+  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  rw [contMDiffAt_iff]
+  constructor
+  · apply OpenPartialHomeomorph.continuousAt
+    simp
+  ·
+    rw [show (hf.localInverseAt (g y)).symm (g y) = y by
+      sorry]
+
+    sorry
+
 variable {H' : Type*} [TopologicalSpace H']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
@@ -174,8 +188,23 @@ lemma IsLocalHomeomorph.isContMDiffOfRightInverse
     :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I I n f := by
-
-  sorry
+  intro _ p
+  set q := g (f p)
+  have aux : f p = f q := by
+    simp [q, hg (f p)]
+  specialize h p q aux
+  obtain ⟨σ, hσ1, hσ2, hσ3⟩ := h
+  have h' : f =ᶠ[𝓝 p] (hf.localInverseAt q).symm ∘ σ := by
+    apply Filter.EventuallyEq.trans (g:= f ∘ σ) hσ3.symm
+    have h1 : f =ᶠ[𝓝 q] (hf.localInverseAt q).symm := by
+      simp
+    refine h1.comp_tendsto ?_
+    have := hσ2.continuousAt.tendsto
+    rwa [← hσ1]
+  apply ContMDiffAt.congr_of_eventuallyEq (h₁:=h')
+  refine ContMDiffAt.comp (I':=I) p ?_ hσ2
+  rw [hσ1]
+  exact contMDiffAt_localInverseAt_symm_rightInverse hf hg (f p)
 
 /-- Suppose `F : M → N` is invariant under `f`
 and the map `F ∘ g : M' → N` is `C^n`, then so is `F`. -/
