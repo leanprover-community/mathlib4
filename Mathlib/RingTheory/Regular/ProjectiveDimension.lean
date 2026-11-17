@@ -5,16 +5,15 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-public import Mathlib.RingTheory.LocalRing.Module
-public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.RegularSequence
 
-/-!
+import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.Regular.Category
 
+/-!
 # ProjectiveDimension of quotient by regular element
 
 For `M` a finitely generated module over Noetherian local ring `R` and an `M`-regular element `x`
@@ -26,7 +25,6 @@ The analogous version for quotient regular sequence is also provided.
 * `ModuleCat.projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular` : For `M` a finitely
   generated module over Noetherian local ring `R` and an `M`-regular element `x` contained in
   the unique maximal ideal of `R`, `projdim(M/xM) = projdim(M) + 1`
-
 -/
 
 public section
@@ -83,7 +81,6 @@ end
 
 variable [IsLocalRing R] [IsNoetherianRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
@@ -116,7 +113,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
         (hasProjectiveDimensionLT_of_ge M (n + 1) (n + 2) (Nat.le_add_right _ 1))⟩
       apply hasProjectiveDimensionLT_of_forall_finite
       intro L _
-      have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
+      have zero := HasProjectiveDimensionLT.subsingleton ↧(QuotSMulTop x M)
         (n + 2) _ (le_refl _) L
       have exac := Ext.contravariant_sequence_exact₁' hS L (n + 1) (n + 2) (add_comm 1 (n + 1))
       have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ zero).eq_zero_of_tgt _)
@@ -162,7 +159,7 @@ lemma projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular (M : ModuleC
       rw [Nat.cast_add, Nat.cast_one, projectiveDimension_eq_of_iso
         (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x rs').toModuleIso, add_comm _ 1,
         ← add_assoc, ← projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular M x reg.1 mem.1,
-        ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' reg.2 mem.2 len]
+        ← hn ↧(QuotSMulTop x M) rs' reg.2 mem.2 len]
 
 lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
     projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
@@ -176,7 +173,7 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
       nth_rw 1 [← (Ideal.ofList rs).mul_top, ← smul_eq_mul, Submodule.map_smul'']
       simp )))
   rw [projectiveDimension_eq_of_iso e.toModuleIso,
-    projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular (ModuleCat.of R (Shrink.{v} R)) rs
+    projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular ↧(Shrink.{v} R) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
     ModuleCat.projectiveDimension_eq_zero_of_projective, zero_add]
 

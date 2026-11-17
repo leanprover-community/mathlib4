@@ -6,11 +6,10 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Data.Seq.Basic
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 
 /-!
-
 # Multiseries definitions
 
 In this file, we define the multiseries and its main properties: sortedness and approximation.
@@ -36,7 +35,6 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 * `Multiseries basis_hd basis_tl` is defined as a `Seq (ℝ × MultiseriesExpansion basis_tl)`, so
   we need to port some `Seq` API to `Multiseries`.
-
 -/
 
 @[expose] public section
@@ -316,10 +314,8 @@ theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Bas
       x = cons exp coef (op c x') ∧ y = cons exp coef (op c y') ∧ motive x' y') :
     x = y := by
   apply Seq.FriendlyOperationClass.eq_of_bisim (op := op) motive base
-  peel step with x y ih h
-  obtain h | ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩ := h
-  · simp [h]
-  right
+  unfold Multiseries at step
+  gconvert step using 4 with x y ih ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩
   use (exp, coef), x', y', c
   simpa [cons]
 

@@ -6,7 +6,11 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Set.Subsingleton
+
 import Batteries.Data.List.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about `List.find?`

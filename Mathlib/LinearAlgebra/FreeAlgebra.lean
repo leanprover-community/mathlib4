@@ -5,13 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.LinearAlgebra.Basis.Cardinality
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+
+import Mathlib.SetTheory.Cardinal.Free
 
 /-!
 # Linear algebra properties of `FreeAlgebra R X`
@@ -48,7 +45,7 @@ end
 theorem rank_eq [CommRing R] [Nontrivial R] :
     Module.rank R (FreeAlgebra R X) = Cardinal.lift.{u} (Cardinal.mk (List X)) := by
   rw [← (Basis.mk_eq_rank'.{_, _, _, u} (basisFreeMonoid R X)).trans (Cardinal.lift_id _),
-    Cardinal.lift_umax.{v, u}, FreeMonoid]
+    Cardinal.lift_umax.{v, u}, Cardinal.mk_freeMonoid_eq_mk_list]
 
 end FreeAlgebra
 

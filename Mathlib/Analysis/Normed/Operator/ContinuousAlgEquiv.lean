@@ -5,11 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 
 /-!
@@ -66,7 +62,8 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       ContinuousLinearMap.ext_iff, not_forall, smulRight_apply, zero_apply,
       smul_eq_zero_iff_left hu]
     exact ⟨u, huv⟩
-  set T := applyₗ 𝕜 _ z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightₗ' 𝕜 _ _ v
+  set T := apply 𝕜 _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L
+    smulRightL 𝕜 _ _ _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply_eq_comp, ← map_mul]
@@ -78,9 +75,10 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       apply f.injective <| ContinuousLinearMap.ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp [← this, hxy]
-    simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
+    simpa [huv.isUnit.smul_left_cancel] using congr($h_smul u)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
-  set T' := applyₗ _ _ u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightₗ' 𝕜 _ _ d
+  set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
+    smulRightL 𝕜 _ _ _ _ d
   set TL : V ≃L[𝕜] W := { Tₗ with
     continuous_toFun := T.continuous
     continuous_invFun := by
@@ -234,7 +232,7 @@ public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W �
     OrderIsoClass F _ _ where
   map_le_map_iff f x y := by
     obtain ⟨U, hU⟩ := StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
-      (StarAlgEquivClass.toStarAlgEquiv f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
+      (.ofClass f) (map_continuous f)
     have this a : f a = U.conjStarAlgEquiv a := by simpa using! congr($hU a)
     simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, this]
     exact LinearMap.isPositive_linearIsometryEquiv_conj_iff U

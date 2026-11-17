@@ -5,15 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Algebra.NonUnitalHom
-public import Mathlib.Algebra.Star.Module
-public import Mathlib.Algebra.Star.StarProjection
-public import Mathlib.Algebra.Star.NonUnitalSubalgebra
-public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.Algebra.Star.StarProjection
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Unitization of a non-unital algebra
@@ -242,6 +239,11 @@ theorem toProd_add [Add R] [Add A] (x₁ x₂ : Unitization R A) :
 
 @[simp]
 theorem toProd_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).toProd = -x.toProd :=
+  rfl
+
+@[simp]
+theorem toProd_sub [Sub R] [Sub A] (x₁ x₂ : Unitization R A) :
+    (x₁ - x₂).toProd = x₁.toProd - x₂.toProd :=
   rfl
 
 @[simp]
@@ -655,6 +657,19 @@ theorem algebraMap_eq_inl : ⇑(algebraMap R (Unitization R A)) = inl :=
 theorem algebraMap_eq_inlRingHom : algebraMap R (Unitization R A) = inlRingHom R A :=
   rfl
 
+variable {S R A}
+
+@[simp]
+protected theorem fst_algebraMap (s : S) :
+    (algebraMap S (Unitization R A) s).fst = algebraMap S R s :=
+  rfl
+
+@[simp]
+protected theorem snd_algebraMap (s : S) : (algebraMap S (Unitization R A) s).snd = 0 :=
+  rfl
+
+variable (S R A)
+
 /-- The canonical `R`-algebra projection `Unitization R A → R`. -/
 @[simps]
 def fstHom : Unitization R A →ₐ[R] R where
@@ -790,8 +805,8 @@ variable [Semiring C] [Algebra R C] [StarRing C]
 /-- See note [partially-applied ext lemmas] -/
 @[ext]
 theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
-    (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
-      (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
+    (h : φ.toNonUnitalStarAlgHom.comp (Unitization.inrNonUnitalStarAlgHom R A) =
+      ψ.toNonUnitalStarAlgHom.comp (Unitization.inrNonUnitalStarAlgHom R A)) :
     φ = ψ :=
   Unitization.algHom_ext'' <| DFunLike.congr_fun h
 
@@ -843,6 +858,12 @@ lemma starMap_inl (φ : A →⋆ₙₐ[R] B) (r : R) :
     starMap φ (inl r) = algebraMap R (Unitization R B) r := by
   simp
 
+lemma fst_starMap (φ : A →⋆ₙₐ[R] B) (x : Unitization R A) : (starMap φ x).fst = x.fst := by
+  simp
+
+lemma snd_starMap (φ : A →⋆ₙₐ[R] B) (x : Unitization R A) : (starMap φ x).snd = φ x.snd := by
+  simp
+
 /-- If `φ : A →⋆ₙₐ[R] B` is injective, the lift `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B`
 is also injective. -/
 lemma starMap_injective {φ : A →⋆ₙₐ[R] B} (hφ : Function.Injective φ) :
@@ -875,6 +896,22 @@ lemma starMap_id : starMap (NonUnitalStarAlgHom.id R B) = StarAlgHom.id R (Uniti
 
 end StarMap
 
+section IsSelfAdjointInl
+
+variable {R A : Type*} [Star R] [AddMonoid A] [StarAddMonoid A] {r : R}
+
+@[simp]
+lemma isSelfAdjoint_inl : IsSelfAdjoint (inl r : Unitization R A) ↔ IsSelfAdjoint r := by
+  simp only [isSelfAdjoint_iff, ← inl_star, inl_injective.eq_iff]
+
+alias ⟨_root_.IsSelfAdjoint.of_inl, _⟩ := isSelfAdjoint_inl
+
+variable (A) in
+lemma _root_.IsSelfAdjoint.inl (hr : IsSelfAdjoint r) : IsSelfAdjoint (inl r : Unitization R A) :=
+  isSelfAdjoint_inl.mpr hr
+
+end IsSelfAdjointInl
+
 section StarNormal
 
 variable {R A : Type*} [Semiring R]
@@ -891,6 +928,15 @@ variable (R) in
 lemma _root_.IsSelfAdjoint.inr (ha : IsSelfAdjoint a) : IsSelfAdjoint (a : Unitization R A) :=
   isSelfAdjoint_inr.mpr ha
 
+lemma isSelfAdjoint_iff_fst_snd {x : Unitization R A} :
+    IsSelfAdjoint x ↔ IsSelfAdjoint x.fst ∧ IsSelfAdjoint x.snd :=
+  Unitization.ext_iff
+
+@[simp]
+lemma isSelfAdjoint_iff_snd [TrivialStar R] {x : Unitization R A} :
+    IsSelfAdjoint x ↔ IsSelfAdjoint x.snd := by
+  rw [isSelfAdjoint_iff_fst_snd, and_iff_right (.all _)]
+
 variable [AddCommMonoid A] [Mul A] [SMulWithZero R A]
 
 @[simp]
@@ -905,6 +951,16 @@ instance instIsStarNormal (a : A) [IsStarNormal a] :
   isStarNormal_inr.mpr ‹_›
 
 end StarNormal
+
+section StarNormalSnd
+
+variable {R A : Type*} [CommMagma R] [Star R] [NonUnitalNonAssocRing A] [Star A] [SMul R A]
+
+@[simp]
+lemma isStarNormal_iff_snd {x : Unitization R A} : IsStarNormal x ↔ IsStarNormal x.snd := by
+  simp [isStarNormal_iff, commute_iff_eq, Unitization.ext_iff, mul_comm, add_comm]
+
+end StarNormalSnd
 
 @[simp]
 lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]

@@ -46,8 +46,6 @@ theorem le_lift_cof_iff {c : Cardinal.{max u v}} :
 theorem le_cof_iff {c : Cardinal} : c ≤ cof α ↔ ∀ s : Set α, IsCofinal s → c ≤ #s := by
   simpa using @le_lift_cof_iff.{u, u} α _ c
 
-@[deprecated (since := "2026-02-18")] alias le_cof := le_cof_iff
-
 variable (α) in
 /-- Every well-order has a cofinal subset of cardinal `cof α`. -/
 theorem exists_cof_eq : ∃ s : Set α, IsCofinal s ∧ #s = cof α := by
@@ -181,15 +179,8 @@ theorem OrderIso.lift_cof_congr (f : α ≃o β) :
     Cardinal.lift.{v} (Order.cof α) = Cardinal.lift.{u} (Order.cof β) :=
   f.to_galoisConnection.cof_le_lift.antisymm (f.symm.to_galoisConnection.cof_le_lift)
 
-@[deprecated (since := "2026-03-20")] alias OrderIso.lift_cof_eq := OrderIso.lift_cof_congr
-
 theorem OrderIso.cof_congr (f : α ≃o γ) : Order.cof α = Order.cof γ := by
   simpa using f.lift_cof_congr
-
-@[deprecated (since := "2026-03-20")] alias OrderIso.cof_eq := OrderIso.cof_congr
-
-@[deprecated (since := "2026-02-18")] alias RelIso.cof_eq_lift := OrderIso.lift_cof_congr
-@[deprecated (since := "2026-02-18")] alias RelIso.cof_eq := OrderIso.cof_congr
 
 end Congr
 

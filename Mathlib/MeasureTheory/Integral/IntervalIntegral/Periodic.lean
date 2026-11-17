@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Measure.Haar.Quotient
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
@@ -170,7 +170,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
   simp only [measurableEquivIoc, equivIoc, QuotientAddGroup.equivIocMod, MeasurableEquiv.symm_mk,
     MeasurableEquiv.coe_mk, Equiv.coe_fn_symm_mk] at this
   rw [← (AddCircle.measurePreserving_mk T t).map_eq]
-  convert! this.symm using 1
+  convert this.symm using 1
   · rw [← map_comap_subtype_coe m _]
     exact MeasurableEmbedding.lintegral_map (MeasurableEmbedding.subtype_coe m) _
   · congr 1
@@ -305,7 +305,7 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T)
   apply IntervalIntegrable.trans_iterate
   -- Show integrability over a shifted period
   intro k hk
-  convert! (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T) enorm_ne_top) using 1
+  convert (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T) eNorm_ne_top) using 1
   · funext x
     simpa using (h₁f.sub_int_mul_eq (k - n₁)).symm
   · simp [a, Nat.cast_add]
@@ -459,8 +459,8 @@ theorem tendsto_atTop_intervalIntegral_of_pos'
 tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos'
     (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in 0..t, g x) atBot atBot := by
-  exact hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
+    Tendsto (fun t => ∫ x in 0..t, g x) atBot atBot :=
+  hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 end RealValued
 

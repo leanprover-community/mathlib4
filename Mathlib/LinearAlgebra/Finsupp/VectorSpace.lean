@@ -6,12 +6,10 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.Algebra.MonoidAlgebra.Defs
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Finsupp.Span
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Projection
 
 /-!
@@ -19,7 +17,6 @@ public import Mathlib.LinearAlgebra.Projection
 
 This file contains results on the `R`-module structure on functions of finite support from a type
 `ι` to an `R`-module `M`, in particular in the case that `R` is a field.
-
 -/
 
 @[expose] public section
@@ -214,12 +211,12 @@ theorem Module.Basis.repr_smul' (i : ι) (r : R) (s : S) :
 
 end Algebra
 
-namespace FreeAbelianGroup
+namespace FreeAddCommGroup
 
-instance {σ : Type*} : Module.Free ℤ (FreeAbelianGroup σ) where
-  exists_basis := ⟨σ, ⟨(FreeAbelianGroup.equivFinsupp _).toIntLinearEquiv⟩⟩
+instance {σ : Type*} : Module.Free ℤ (FreeAddCommGroup σ) where
+  exists_basis := ⟨σ, ⟨(FreeAddCommGroup.equivFinsupp _).toIntLinearEquiv⟩⟩
 
-end FreeAbelianGroup
+end FreeAddCommGroup
 
 namespace AddMonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
@@ -234,10 +231,3 @@ variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S
 instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 
 end MonoidAlgebra
-
-namespace Polynomial
-variable {R : Type*} [Semiring R]
-
-instance : Module.Free R R[X] := .of_equiv (Polynomial.toFinsuppIsoLinear _).symm
-
-end Polynomial

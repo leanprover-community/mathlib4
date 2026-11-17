@@ -5,12 +5,16 @@ Authors: Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Data.Finset.Lattice.Prod
+
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `Finset.sup` in a group
@@ -30,7 +34,7 @@ variable {α : Type*} [DecidableEq α]
   | n + 1, _ => by
     by_cases h : n = 0
     · rw [h, zero_add, one_nsmul]
-    · rw [add_nsmul, toFinset_add, one_nsmul, toFinset_nsmul s n h, Finset.union_idempotent]
+    · rw [add_nsmul, toFinset_add, one_nsmul, toFinset_nsmul s n h, Finset.union_self]
 
 lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
     s.toFinset = {a} ↔ card s ≠ 0 ∧ s = card s • {a} := by

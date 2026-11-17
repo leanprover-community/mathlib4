@@ -132,11 +132,11 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     obtain ⟨x, rfl⟩ := hp x
     constructor
     · rintro ⟨y, hy, e'⟩
-      obtain ⟨y, rfl⟩ := H ⟨_, ⟨x, rfl⟩, (e'.trans (congr_fun h x)).symm⟩
-      rw [← hg ((congr_fun h y).trans e')]
+      obtain ⟨y, rfl⟩ := H ⟨_, ⟨x, rfl⟩, (e'.trans congr($h x)).symm⟩
+      rw [← hg (congr($h y).trans e')]
       exact e.le hy
     · intro H
-      exact ⟨f x, e.ge H, congr_fun h.symm x⟩
+      exact ⟨f x, e.ge H, congr($h.symm x)⟩
   · rintro ⟨V, hV, rfl⟩
     refine ⟨_, hV, ?_⟩
     simp_rw [← Set.preimage_comp, h]

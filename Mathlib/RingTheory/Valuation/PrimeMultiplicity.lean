@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.Valuation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `multiplicity` of a prime in an integral domain as an additive valuation
 -/
@@ -18,7 +21,7 @@ variable {R : Type*} [CommRing R] [IsDomain R] {p : R}
 
 /-- `multiplicity` of a prime in an integral domain as an additive valuation to `ℕ∞`. -/
 noncomputable def multiplicity_addValuation (hp : Prime p) : AddValuation R ℕ∞ :=
-  AddValuation.of (emultiplicity p) (emultiplicity_zero _)
+  AddValuation.of (emultiplicity p) (emultiplicity_zero_right _)
     (emultiplicity_of_one_right hp.not_isUnit)
       (fun _ _ => min_le_emultiplicity_add) fun _ _ => emultiplicity_mul hp
 

@@ -5,8 +5,8 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.MeasureTheory.Function.SimpleFunc
 
 /-!
 # Density of simple functions

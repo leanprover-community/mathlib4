@@ -152,25 +152,25 @@ variable {A B : Type*} [CommSemiring A] {I : Ideal A} {hI : DividedPowers I} [Co
 theorem span_isSubDPIdeal_iff {S : Set A} (hS : S ⊆ I) :
     IsSubDPIdeal hI (span S) ↔ ∀ {n : ℕ} (_ : n ≠ 0), ∀ s ∈ S, hI.dpow n s ∈ span S := by
   refine ⟨fun hhI n hn s hs ↦ hhI.dpow_mem n hn (subset_span hs), fun hhI ↦ ?_⟩
-  · -- interesting direction
-    have hSI := span_le.mpr hS
-    apply IsSubDPIdeal.mk hSI
-    intro m hm z hz
-    induction hz using Submodule.span_induction generalizing m hm with
-    | mem x h => exact hhI hm x h
-    | zero =>
-        rw [hI.dpow_eval_zero hm]
-        exact (span S).zero_mem
-    | add x y hxI hyI hx hy =>
-        rw [hI.dpow_add' (hSI hxI) (hSI hyI)]
-        apply Submodule.sum_mem (span S)
-        intro m _
-        by_cases hm0 : m = 0
-        · exact hm0 ▸ mul_mem_left (span S) _ (hy _ hm)
-        · exact mul_mem_right _ (span S) (hx _ hm0)
-    | smul a x hxI hx =>
-        rw [smul_eq_mul, hI.dpow_mul (hSI hxI)]
-        exact mul_mem_left (span S) (a ^ m) (hx m hm)
+  -- interesting direction
+  have hSI := span_le.mpr hS
+  apply IsSubDPIdeal.mk hSI
+  intro m hm z hz
+  induction hz using Submodule.span_induction generalizing m hm with
+  | mem x h => exact hhI hm x h
+  | zero =>
+      rw [hI.dpow_eval_zero hm]
+      exact (span S).zero_mem
+  | add x y hxI hyI hx hy =>
+      rw [hI.dpow_add' (hSI hxI) (hSI hyI)]
+      apply Submodule.sum_mem (span S)
+      intro m _
+      by_cases hm0 : m = 0
+      · exact hm0 ▸ mul_mem_left (span S) _ (hy _ hm)
+      · exact mul_mem_right _ (span S) (hx _ hm0)
+  | smul a x hxI hx =>
+      rw [smul_eq_mul, hI.dpow_mul (hSI hxI)]
+      exact mul_mem_left (span S) (a ^ m) (hx m hm)
 
 theorem isSubDPIdeal_sup {J K : Ideal A} (hJ : IsSubDPIdeal hI J) (hK : IsSubDPIdeal hI K) :
     IsSubDPIdeal hI (J ⊔ K) := by
@@ -237,7 +237,7 @@ instance : SetLike (SubDPIdeal hI) A where
     rw [SetLike.coe_set_eq] at h
     cases p; cases q; congr
 
-instance : PartialOrder (SubDPIdeal hI) := .ofSetLike (SubDPIdeal hI) A
+instance : PartialOrder (SubDPIdeal hI) := .ofSetLike (SubDPIdeal hI)
 
 /-- The coercion from `SubDPIdeal` to `Ideal`. -/
 @[coe]
@@ -267,7 +267,7 @@ def prod (J : Ideal A) : SubDPIdeal hI where
     induction hx using Submodule.smul_induction_on' generalizing m with
     | smul a ha b hb =>
       rw [smul_eq_mul, smul_eq_mul, mul_comm a b, hI.dpow_mul ha, mul_comm]
-      exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m (zero_lt_iff.mpr hm))
+      exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m hm.pos)
         (hI.dpow_mem hm ha)
     | add x hx y hy hx' hy' =>
       rw [hI.dpow_add' (mul_le_left hx) (mul_le_left hy)]
@@ -346,7 +346,6 @@ instance : SupSet (SubDPIdeal hI) :=
 
 theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup ((toIdeal) '' S) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (SubDPIdeal hI) := by
   refine Function.Injective.completeLattice (fun J : SubDPIdeal hI ↦ (J : Set.Iic I))
     (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h)
@@ -359,7 +358,7 @@ instance : CompleteLattice (SubDPIdeal hI) := by
       ((⨆ (_ : J ∈ S), (J : Set.Iic I) : Set.Iic I) : Ideal A) = ⨆ (_ : J ∈ S), (J : Ideal A) := by
       by_cases hJ : J ∈ S
       · simp [ciSup_pos hJ]
-      · simp [hJ, not_false_eq_true, iSup_neg, Set.Iic.coe_bot]
+      · simp [hJ, Set.Iic.coe_bot]
     simp_rw [this]
     rfl
   · conv_rhs => rw [iInf]
@@ -369,7 +368,7 @@ instance : CompleteLattice (SubDPIdeal hI) := by
     apply iInf_congr (fun J ↦ ?_)
     by_cases hJ : J ∈ S
     · rw [ciInf_pos hJ, ciInf_pos hJ]; rfl
-    · simp [hJ, iInf_neg, le_top, inf_of_le_left, Set.Iic.coe_top]; rfl
+    · simp [hJ, le_top, inf_of_le_left, Set.Iic.coe_top]; rfl
 
 end CompleteLattice
 

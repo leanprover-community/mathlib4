@@ -38,7 +38,6 @@ and convergence in distribution.
 * `TendstoInDistribution.prodMk_of_tendstoInMeasure_const`: **Slutsky's theorem**.
   If `X n` converges in distribution to `Z`, and `Y n` converges in probability to a constant `c`,
   then the pair `(X n, Y n)` converges in distribution to `(Z, c)`.
-
 -/
 
 public section
@@ -67,8 +66,7 @@ structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i 
   forall_aemeasurable : ∀ i, AEMeasurable (X i) (μ i)
   aemeasurable_limit : AEMeasurable Z μ' := by fun_prop
   tendsto : Tendsto (β := ProbabilityMeasure E)
-      (fun n ↦ ⟨(μ n).map (X n), Measure.isProbabilityMeasure_map (forall_aemeasurable n)⟩) l
-      (𝓝 ⟨μ'.map Z, Measure.isProbabilityMeasure_map aemeasurable_limit⟩)
+      (fun n ↦ ⟨(μ n).map (X n), inferInstance⟩) l (𝓝 ⟨μ'.map Z, inferInstance⟩)
 
 theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
     (𝕜 : Type*) [RCLike 𝕜] [OpensMeasurableSpace E]
@@ -214,8 +212,6 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
   · simp only [LipschitzWith.zero_iff] at hF_lip
     specialize hF_lip x₀
     simp only [← hF_lip, integral_const, smul_eq_mul]
-    have h_prob n : IsProbabilityMeasure (μ''.map (Y n)) := Measure.isProbabilityMeasure_map (hY n)
-    have : IsProbabilityMeasure (μ'.map Z) := Measure.isProbabilityMeasure_map hZ
     simpa using! tendsto_const_nhds
   -- now `F` is `L`-Lipschitz with `L > 0`
   simp_rw [Metric.tendsto_nhds, Real.dist_eq]
@@ -269,11 +265,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
         · exact fun x hx ↦ hF_lip.norm_sub_le_of_le hx.le
       · refine setIntegral_mono h_int_sub.integrableOn integrableOn_const fun a ↦ ?_
         rw [← dist_eq_norm]
-        convert!
-          hF_bounded _
-            _
-              -- The goal is now a simple computation
-
+        convert hF_bounded _ _
     -- The goal is now a simple computation
     _ = L * (ε / 2) * μ''.real {x | ‖Y n x - X n x‖ < ε / 2}
         + M * μ''.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖} := by
