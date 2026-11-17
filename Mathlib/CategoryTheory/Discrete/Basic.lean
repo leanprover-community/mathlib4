@@ -338,7 +338,7 @@ lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
   simp [discreteEquiv]
 
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :
     (J → C) ≌ (Discrete J ⥤ C) where
   functor :=
