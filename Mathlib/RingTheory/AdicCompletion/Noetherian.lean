@@ -65,42 +65,70 @@ instance (priority := 100) {A : Type*} [CommRing A] [IsArtinianRing A] [IsLocalR
 
 open Polynomial
 
-lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
-    (deg : ι → ℕ) (coeff : ι → R) (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i))
-    (span_eq : (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
-      J.toAssociatedGraded I)
-    (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : ι → R),
-    (∀ i : ι, coeff' i ∈ I ^ (n - deg i)) ∧ (∀ i : ι, deg i > n → coeff' i = 0) ∧
-      r - ∑ x : ι, coeff' x * coeff x ∈ I ^ (n + 1) := by
-  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ ∈
-    J.toAssociatedGraded I := by
-    apply Ideal.mem_map_of_mem
-    simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff]
-    intro m
-    by_cases eq : m = n
-    · simpa [eq]
-    · simp only [coeff_monomial_of_ne _ eq, zero_mem]
-  rw [← span_eq, Ideal.map_span, ← Set.range_comp, Ideal.mem_span_range_iff_exists_fun] at this
-  rcases this with ⟨c, hc⟩
-  choose c' c'_spec using fun i ↦ (Ideal.Quotient.mk_surjective (c i))
-  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ =
-    (reesAlgebraToAssociatedGraded I) (∑ i, c' i * f i) := by simp [← hc, c'_spec]
+section
+
+variable {I} (n : ℕ) {J : Ideal R} {ι : Type u} {f : ι → reesAlgebra I}
+  (span_eq : (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
+    J.toAssociatedGraded I) (deg : ι → ℕ)
+
+include span_eq
+
+private lemma reesAlgebraToAssociatedGraded_monomial_mem_span
+    {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) :
+    (reesAlgebraToAssociatedGraded I) ⟨(monomial n) r, reesAlgebra.monomial_mem.mpr mem_pow⟩ ∈
+      Ideal.span (Set.range (⇑(reesAlgebraToAssociatedGraded I) ∘ f)):= by
+  rw [Set.range_comp, ← Ideal.map_span, span_eq]
+  apply Ideal.mem_map_of_mem
+  simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff]
+  intro m
+  by_cases eq : m = n
+  · simpa [eq]
+  · simp only [coeff_monomial_of_ne _ eq, zero_mem]
+
+variable [Fintype ι]
+
+private noncomputable def coeffsOfMemAux {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) :
+    ι → (reesAlgebra I) :=
+  (Function.surjInv Ideal.Quotient.mk_surjective).comp
+    (Classical.choose (Ideal.mem_span_range_iff_exists_fun.mp
+      (reesAlgebraToAssociatedGraded_monomial_mem_span n span_eq mem_J mem_pow)))
+
+private noncomputable def coeffsOfMem {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) : ι → R :=
+  fun i ↦ if deg i ≤ n then (coeffsOfMemAux n span_eq mem_J mem_pow i).1.coeff (n - (deg i)) else 0
+
+private lemma coeffsOfMemAux_spec {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) :
+    (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr mem_pow⟩ =
+    (reesAlgebraToAssociatedGraded I) (∑ i, coeffsOfMemAux n span_eq mem_J mem_pow i * f i) := by
+  simpa [coeffsOfMemAux, Function.surjInv_eq]
+    using (Classical.choose_spec (Ideal.mem_span_range_iff_exists_fun.mp
+      (reesAlgebraToAssociatedGraded_monomial_mem_span n span_eq mem_J mem_pow))).symm
+
+private lemma coeffsOfMem_mem_pow {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) (i : ι) :
+    coeffsOfMem n span_eq deg mem_J mem_pow i ∈ I ^ (n - deg i) := by
+  by_cases degle : deg i ≤ n
+  · simpa [degle, coeffsOfMem, mem_reesAlgebra_iff] using
+      (coeffsOfMemAux n span_eq mem_J mem_pow i).2 (n - deg i)
+  · simp [degle, coeffsOfMem]
+
+private lemma coeffsOfMem_eq_zero_of_lt {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) (i : ι) :
+    n < deg i → coeffsOfMem n span_eq deg mem_J mem_pow i = 0 := by
+  simp only [coeffsOfMem, ite_eq_right_iff, ← not_le]
+  tauto
+
+private lemma sub_sum_coeffsOfMem_mem_pow {coeff : ι → R}
+    (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i)){r : R} (mem_J : r ∈ J)
+    (mem_pow : r ∈ I ^ n) :
+    r - ∑ x : ι, coeffsOfMem n span_eq deg mem_J mem_pow x * coeff x ∈ I ^ (n + 1) := by
+  have := coeffsOfMemAux_spec n span_eq mem_J mem_pow
   rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, mem_map_algebraMap_reesAlgebra_iff] at this
   have coeff_eq := this n
   simp only [AddSubgroupClass.coe_sub, AddSubmonoidClass.coe_finsetSum, MulMemClass.coe_mul, eq,
     coeff_sub, coeff_monomial_same, finsetSum_coeff] at coeff_eq
-  let coeff' : ι → R := fun i ↦ if deg i ≤ n then (c' i).1.coeff (n - (deg i)) else 0
-  have : ∑ i, ((c' i).1 * (monomial (deg i)) (coeff i)).coeff n = ∑ i, (coeff' i) * (coeff i) := by
-    congr
-    ext i
-    rw [← Polynomial.C_mul_X_pow_eq_monomial, ← mul_assoc]
-    simp [coeff_mul_X_pow', coeff']
-  rw [this] at coeff_eq
-  refine ⟨coeff', fun i ↦ ?_, fun i hi ↦ ?_, coeff_eq⟩
-  · by_cases degle : deg i ≤ n
-    · simpa [degle, coeff'] using (mem_reesAlgebra_iff I _).mp (c' i).2 (n - deg i)
-    · simp [degle, coeff']
-  · simp [coeff', hi]
+  convert coeff_eq
+  rw [← Polynomial.C_mul_X_pow_eq_monomial, ← mul_assoc]
+  simp [coeff_mul_X_pow', coeffsOfMem]
+
+end
 
 lemma exists_coeffs_isAdicCauchy (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
     (deg : ι → ℕ) (coeff : ι → R) (memJ : ∀ i, coeff i ∈ J)
@@ -109,24 +137,22 @@ lemma exists_coeffs_isAdicCauchy (J : Ideal R) (ι : Type u) [Fintype ι] (f : �
       J.toAssociatedGraded I) (r : R) (hr : r ∈ J) :
     ∃ (g : ι → ℕ → R), (∀ i, AdicCompletion.IsAdicCauchy I R (g i)) ∧
       ∀ n, r - ∑ x : ι, g x n * coeff x ∈ I ^ (n + 1) := by
-  have exist (n : ℕ) := exists_coeffs_sub_mem I n J ι f deg coeff eq span_eq
   have memJ' (g' : ι → R) : r - ∑ x, g' x * coeff x ∈ J :=
     sub_mem hr (sum_mem (fun i _ ↦ (Ideal.mul_mem_left _ _ (memJ i))))
   let coeffs' (n : ℕ) : {f : (ι → R) // r - ∑ x, f x * coeff x ∈ I ^ (n + 1)} := by
     induction n with
-    | zero =>
-      exact ⟨Classical.choose (exist 0 r hr (by simp)),
-        (Classical.choose_spec (exist 0 r hr (by simp))).2.2⟩
-    | succ n coeffs'n =>
-      refine ⟨coeffs'n + Classical.choose (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2), ?_⟩
-      simp only [gt_iff_lt, Pi.add_apply, add_mul, Finset.sum_add_distrib, ← sub_sub]
-      exact (Classical.choose_spec (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2)).2.2
+    | zero => exact ⟨coeffsOfMem 0 span_eq deg hr (by simp),
+        sub_sum_coeffsOfMem_mem_pow 0 span_eq deg eq hr (by simp)⟩
+    | succ n c =>
+      refine ⟨c + coeffsOfMem (n + 1) span_eq deg (memJ' c.1) c.2, ?_⟩
+      simp only [Pi.add_apply, add_mul, Finset.sum_add_distrib, ← sub_sub]
+      exact sub_sum_coeffsOfMem_mem_pow (n + 1) span_eq deg eq (memJ' c.1) c.2
   have coeffs'_spec_aux (n : ℕ) : (coeffs' (n + 1)).1 = (coeffs' n).1 +
-      Classical.choose (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2) := rfl
+    coeffsOfMem (n + 1) span_eq deg (memJ' (coeffs' n).1) (coeffs' n).2 := rfl
   have coeffs'_spec (n : ℕ) :
     ∀ i, (coeffs' (n + 1)).1 i - (coeffs' n).1 i ∈ I ^ (n + 1 - deg i) := by
     simpa [coeffs'_spec_aux]
-      using (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).1
+      using coeffsOfMem_mem_pow (n + 1) span_eq deg (memJ' (coeffs' n).1) (coeffs' n).2
   let d := ∑ i, deg i
   use fun i n ↦ (coeffs' (d + n)).1 i
   refine ⟨fun i ↦ ?_, fun n ↦ Ideal.pow_le_pow_right (by omega) (coeffs' (d + n)).2⟩
