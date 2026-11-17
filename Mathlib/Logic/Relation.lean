@@ -54,8 +54,6 @@ the bundled version, see `Rel`.
 * `Relation.IsConfluent`: Confluence. If `a` rewrites in zero or more steps to both `b`
   and `c`, then there is some `d` to which both `b` and `c` can be rewritten in zero or
   more steps.
-* `Relation.IsChurchRosser`: The Church-Rosser property. If `a` and `b` are equivalent,
-  then they can both be rewritten in zero or more steps to some `c`.
 -/
 
 @[expose] public section
@@ -906,8 +904,7 @@ lemma reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
 end EqvGen
 
 /-- A reflexive-transitive chain induces a relation in the equivalence closure. -/
-theorem ReflTransGen.to_eqvGen {r : α → α → Prop} {a b : α} :
-    ReflTransGen r a b → EqvGen r a b :=
+theorem ReflTransGen.to_eqvGen : ReflTransGen r a b → EqvGen r a b :=
   EqvGen.reflTransGen_le_eqvGen r a b
 
 /-- The join of a relation on a single type is a new relation for which
@@ -915,7 +912,7 @@ pairs of terms are related if there is a third term they are both
 related to.  For example, if `r` is a relation representing rewrites
 in a term rewriting system, then *confluence* is the property that if
 `a` rewrites to both `b` and `c`, then `join r` relates `b` and `c`
-(see `Relation.isConfluent_of_reflGen_reflTransGen`).
+(see `Relation.IsConfluent.of_reflGen_reflTransGen`).
 -/
 def Join (r : α → α → Prop) : α → α → Prop := fun a b ↦ ∃ c, r a c ∧ r b c
 
@@ -929,37 +926,26 @@ and `c`, there exists a `d` to which both `b` and `c` can be rewritten in zero o
 abbrev IsConfluent (r : α → α → Prop) : Prop :=
   IsDiamond (ReflTransGen r)
 
-/-- A relation has the Church-Rosser property if, whenever `a` and `b` are equivalent,
-there exists a `c` to which both can be rewritten in zero or more steps. -/
-class IsChurchRosser (r : α → α → Prop) : Prop where
-  eqvGen_le_join_reflTransGen : EqvGen r ≤ Join (ReflTransGen r)
-
-namespace Join
-
 /-- Joinability by reflexive-transitive chains is contained in the equivalence closure. -/
-theorem le_eqvGen (r : α → α → Prop) : Join (ReflTransGen r) ≤ EqvGen r := by
+theorem join_reflTransGen_le_eqvGen (r : α → α → Prop) : Join (ReflTransGen r) ≤ EqvGen r := by
   intro a b h
   rcases h with ⟨c, hac, hbc⟩
   exact hac.to_eqvGen.trans a c b hbc.to_eqvGen.symm
 
-end Join
+/-- Confluence is equivalent to the Church-Rosser property.
 
-/-- Under the Church-Rosser property, joinability by reflexive-transitive chains coincides
-with the equivalence closure. -/
-theorem IsChurchRosser.join_reflTransGen_eq_eqvGen {r : α → α → Prop} [IsChurchRosser r] :
-    Join (ReflTransGen r) = EqvGen r :=
-  Subrelation.antisymm (Join.le_eqvGen r) IsChurchRosser.eqvGen_le_join_reflTransGen
-
-/-- The Church-Rosser property implies confluence. -/
-theorem IsChurchRosser.isConfluent {r : α → α → Prop} [IsChurchRosser r] : IsConfluent r where
-  join_of_rel_of_rel a b c hab hac := by
-    apply IsChurchRosser.eqvGen_le_join_reflTransGen
-    exact hab.to_eqvGen.symm.trans b a c hac.to_eqvGen
-
-/-- A confluent relation has the Church-Rosser property. -/
-theorem IsConfluent.isChurchRosser {r : α → α → Prop} [IsConfluent r] : IsChurchRosser r where
-  eqvGen_le_join_reflTransGen := by
-    intro a b hab
+A relation `r` has the Church-Rosser property if, whenever `a` and `b` are connected
+by zero or more rewrite steps, each taken in either direction, there exists a `c` to which
+both can be rewritten in zero or more forward steps.
+This property is expressed as `EqvGen r ≤ Join (ReflTransGen r)`. -/
+theorem eqvGen_le_join_reflTransGen_iff :
+    EqvGen r ≤ Join (ReflTransGen r) ↔ IsConfluent r := by
+  constructor
+  · intro h
+    refine ⟨?_⟩
+    intro a b c hab hac
+    exact h b c (hab.to_eqvGen.symm.trans b a c hac.to_eqvGen)
+  · intro h a b hab
     induction hab with
     | rel a b hab =>
         exact ⟨b, ReflTransGen.single hab, ReflTransGen.refl⟩
@@ -971,8 +957,15 @@ theorem IsConfluent.isChurchRosser {r : α → α → Prop} [IsConfluent r] : Is
     | trans a b c _ _ hab hbc =>
         rcases hab with ⟨u, hau, hbu⟩
         rcases hbc with ⟨v, hbv, hcv⟩
-        rcases IsDiamond.join_of_rel_of_rel hbu hbv with ⟨w, huw, hvw⟩
+        rcases h.join_of_rel_of_rel hbu hbv with ⟨w, huw, hvw⟩
         exact ⟨w, hau.trans huw, hcv.trans hvw⟩
+
+/-- For a confluent relation, joinability by reflexive-transitive chains coincides with
+the equivalence closure. -/
+theorem join_reflTransGen_eq_eqvGen [IsConfluent r] :
+    Join (ReflTransGen r) = EqvGen r :=
+  Subrelation.antisymm (join_reflTransGen_le_eqvGen r)
+    (eqvGen_le_join_reflTransGen_iff.mpr inferInstance)
 
 section Join
 
@@ -980,7 +973,7 @@ open ReflTransGen ReflGen
 
 /-- A relation is confluent if, whenever `a` rewrites in one step to both `b` and `c`, there
 exists a `d` to which `b` can be rewritten in at most one step and `c` in zero or more steps. -/
-theorem isConfluent_of_reflGen_reflTransGen
+theorem IsConfluent.of_reflGen_reflTransGen
     (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :
     IsConfluent r where
   join_of_rel_of_rel a b c hab hac := by
@@ -1004,10 +997,10 @@ theorem isConfluent_of_reflGen_reflTransGen
       | refl => exact ⟨b, hea, hcb⟩
       | single hba => exact ⟨a, hea, hcb.tail hba⟩
 
-@[deprecated isConfluent_of_reflGen_reflTransGen +typeChanged (since := "2026-09-08")]
+@[deprecated IsConfluent.of_reflGen_reflTransGen +typeChanged (since := "2026-09-08")]
 theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d)
     (hab : ReflTransGen r a b) (hac : ReflTransGen r a c) : Join (ReflTransGen r) b c :=
-  (isConfluent_of_reflGen_reflTransGen h).join_of_rel_of_rel hab hac
+  (IsConfluent.of_reflGen_reflTransGen h).join_of_rel_of_rel hab hac
 
 theorem le_join_of_refl [Std.Refl r] : r ≤ Join r :=
   fun _ b hab ↦ ⟨b, hab, refl b⟩
@@ -1035,7 +1028,7 @@ theorem equivalence_join [IsPreorder α r] (h : ∀ a b c, r a b → r a c → J
 theorem equivalence_join_reflTransGen
     (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :
     Equivalence (Join (ReflTransGen r)) :=
-  equivalence_join (isConfluent_of_reflGen_reflTransGen h).join_of_rel_of_rel
+  equivalence_join (IsConfluent.of_reflGen_reflTransGen h).join_of_rel_of_rel
 
 theorem join_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) (h : r' ≤ r) :
     Join r' ≤ r :=
