@@ -167,7 +167,7 @@ lemma comap_comap (hf' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (hg 
       comap_apply _ (hg.comp hf) (fun t ht ↦ image_comp g f _ ▸ hg' _ <| hf' _ ht) _ hs, image_comp]
   · rw [comap, dite_eq_right <| mt And.left hf, comap, dite_eq_right fun h ↦ hf h.1.of_comp]
 
-theorem comap_sum_of_countable {ι : Type*} [Countable ι] {μ : ι → Measure β}
+theorem comap_sum {ι : Type*} [Countable ι] {μ : ι → Measure β}
     (hf : ∀ i s, MeasurableSet s → NullMeasurableSet (f '' s) (μ i)) :
     comap f (sum μ) = sum fun i ↦ comap f (μ i) := by
   by_cases hfi : Injective f

@@ -78,7 +78,7 @@ instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
 
 instance [SFinite μ] (f : β → α) : SFinite (μ.comap f) := by
   by_cases hf : ∀ t, MeasurableSet t → NullMeasurableSet (f '' t) μ
-  · rw [← sum_sfiniteSeq μ, comap_sum_of_countable]
+  · rw [← sum_sfiniteSeq μ, comap_sum]
     · exact sfinite_sum_of_countable _
     · exact fun n t ht ↦ (hf t ht).mono (sfiniteSeq_le _ _)
   · rw [comap_undef (mt And.right hf)]
@@ -683,6 +683,14 @@ theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable 
           measure_spanningSets_lt_top],
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
 
+/-- The pullback of a σ-finite measure along a measurable function is a σ-finite measure.
+
+This theorem is not true without the measurability assumption.
+For example, let `β` be `ℕ` with σ-algebra `⊥`, i.e., only `∅` and `Set.univ` are measurable.
+Let `α` be `ℕ` with the discrete σ-algebra `⊤`, let `f = id`, let `μ` be the counting measure.
+Then `μ.comap f = ⊤` since the only nonempty measurable set has measure infinity,
+and this is not a σ-finite measure.
+-/
 protected theorem SigmaFinite.comap (μ : Measure α) [SigmaFinite μ] {f : β → α}
     (hf : Measurable f) : SigmaFinite (μ.comap f) :=
   ⟨⟨μ.toFiniteSpanningSetsIn.comap (mapsTo_univ _ _) fun n ↦
