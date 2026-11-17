@@ -71,6 +71,28 @@ lemma norm_mul_cos_arg (x : ℂ) : ‖x‖ * Real.cos (arg x) = x.re := by
 lemma norm_mul_sin_arg (x : ℂ) : ‖x‖ * Real.sin (arg x) = x.im := by
   simpa [-norm_mul_cos_add_sin_mul_I] using! congr(im $(norm_mul_cos_add_sin_mul_I x))
 
+/--
+**Law of cosines** in `ℂ`: the squared distance between `a` and `b` is expressed in terms of their
+norms and the angle `a.arg - b.arg` between them. See `Complex.norm_sub_sq_eq_norm_sub_norm_sq_add`
+for the half-angle form.
+-/
+theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub (a b : ℂ) :
+    ‖a - b‖ ^ 2 = ‖a‖ ^ 2 + ‖b‖ ^ 2 - 2 * ‖a‖ * ‖b‖ * Real.cos (a.arg - b.arg) := by
+  rw [Real.cos_sub, ← normSq_eq_norm_sq, ← normSq_eq_norm_sq, ← normSq_eq_norm_sq, normSq_sub]
+  simp only [mul_re, conj_re, conj_im, mul_neg, sub_neg_eq_add, mul_assoc]
+  simp only [← norm_mul_cos_arg, ← norm_mul_sin_arg, mul_add]
+  ring
+
+/--
+**Law of cosines** in `ℂ`, half-angle form: the squared distance between `a` and `b` is expressed in
+terms of their norms and the half-angle `(a.arg - b.arg) / 2`. See
+`Complex.norm_sub_sq_eq_norm_sq_add_norm_sq_sub` for the standard form, and
+`Complex.norm_exp_I_mul_ofReal_sub_one` for the chord from a point of the unit circle to `1`.
+-/
+theorem norm_sub_sq_eq_norm_sub_norm_sq_add (a b : ℂ) :
+    ‖a - b‖ ^ 2 = (‖a‖ - ‖b‖) ^ 2 + 4 * ‖a‖ * ‖b‖ * Real.sin ((a.arg - b.arg) / 2) ^ 2 := by
+  rw [norm_sub_sq_eq_norm_sq_add_norm_sq_sub, Real.sin_sq_eq_half_sub]; ring_nf
+
 theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) = z := by
   refine ⟨fun hz => ⟨arg z, ?_⟩, ?_⟩
   · calc
@@ -532,6 +554,26 @@ lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
       Real.Angle.toReal_coe_eq_self_iff_mem_Ioc]
 
 alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
+
+lemma arg_mul_eq_add_arg_sub_two_pi_iff {x y : ℂ} :
+    (x * y).arg = x.arg + y.arg - 2 * π ↔ π < arg x + arg y := by
+  by_cases! h : x = 0 ∨ y = 0
+  · grind [arg_zero, arg_le_pi, Real.pi_pos]
+  rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle h.1 h.2, ← Real.Angle.coe_add,
+    Real.Angle.toReal_coe_eq_self_sub_two_pi_iff]
+  grind [arg_le_pi]
+
+alias ⟨_, arg_mul_of_pi_lt⟩ := arg_mul_eq_add_arg_sub_two_pi_iff
+
+lemma arg_mul_eq_add_arg_add_two_pi_iff {x y : ℂ} :
+    (x * y).arg = x.arg + y.arg + 2 * π ↔ arg x + arg y ≤ -π := by
+  by_cases! h : x = 0 ∨ y = 0
+  · grind [arg_zero, neg_pi_lt_arg]
+  rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle h.1 h.2, ← Real.Angle.coe_add,
+    Real.Angle.toReal_coe_eq_self_add_two_pi_iff]
+  grind [neg_pi_lt_arg]
+
+alias ⟨_, arg_mul_of_le_neg_pi⟩ := arg_mul_eq_add_arg_add_two_pi_iff
 
 section slitPlane
 

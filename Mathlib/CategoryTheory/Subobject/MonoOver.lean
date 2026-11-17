@@ -34,7 +34,6 @@ and prove their basic properties and relationships.
 
 This development originally appeared in Bhavik Mehta's "Topos theory for Lean" repository,
 and was ported to mathlib by Kim Morrison.
-
 -/
 
 @[expose] public section

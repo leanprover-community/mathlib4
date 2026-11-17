@@ -58,7 +58,6 @@ the above cases, it is necessary to temporarily instantiate `C⋆ᵐᵒᵈ(A, E)
 `CStarModule.normedAddCommGroup`, show the resulting type is bilipschitz equivalent to `E` via
 `WithCStarModule.equiv` (in the first and last case, this map is actually trivially an isometry),
 and then replace the uniformity and bornology with the correct ones.
-
 -/
 
 @[expose] public section

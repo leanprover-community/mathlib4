@@ -29,7 +29,6 @@ and adapted. We also give an equivalent characterization of predictability for d
 ## Tags
 
 predictable, previsible
-
 -/
 
 @[expose] public section

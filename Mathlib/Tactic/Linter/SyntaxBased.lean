@@ -9,6 +9,8 @@ module
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+import Batteries.Util.ExtendedBinder
+
 /-!
 # Syntax based linters
 
@@ -180,6 +182,42 @@ def obtainLinter (stx : Syntax) : CommandElabM Unit := do
   if stx[3].isNone then
     Linter.logLint linter.oldObtain stx m!"Please remove stream-of-consciousness `obtain` syntax"
 
+/-!
+### The extended binder linter
+
+In mathlib we prefer writing the basic `∀`/`∃` binders over `∀ᵉ`/`∃ᵉ`. This is because the latter
+was used quite infrequently, so the cost of needing to learn this notation was greater
+than the benefit.
+-/
+
+/--
+The `extendedBinder` linter flags uses of the `∀ᵉ`/`∃ᵉ` notation for combining universal and
+existential binders. Mathlib prefers basic `∀`/`∃` notation.
+-/
+public register_option linter.style.extendedBinder : Bool := {
+  defValue := false
+  descr := "enable the `extendedBinder` linter"
+}
+
+open Batteries.ExtendedBinder in
+/-- Run the `extendedBinder` linter, given that `stx` has kind `«term∃ᵉ_,_»` or `«term∀ᵉ_,_»`. -/
+partial def extendedBinderLinter (stx : Syntax) (symbol : String) : CommandElabM Unit := do
+  if stx[1].isAntiquot then return -- `∃ᵉ` can be used to define other notation, like `{_ | _}`.
+  let binders := match stx[1] with
+    | `(extBinders| $[($binders)]*) => binders.toList
+    | `(extBinder| $b) => [b]
+  let source := (← getFileMap).source
+  let suggestion := String.intercalate ", " <| binders.map fun b ↦
+    match b.raw.getRange? with
+    | none => s!"{symbol} {b.raw.reprint}"
+    | some { start, stop } => s!"{symbol} {start.extract source stop}"
+  if let some start := stx[0].getPos? then
+    if let some stop := stx[2].getPos? then
+      let ref := .ofRange { start, stop }
+      let sugg ← Elab.Command.liftCoreM <| Meta.Hint.mkSuggestionsMessage
+        #[{ toTryThisSuggestion := suggestion, diffGranularity := .char }] ref none false
+      logWarningAt ref m!"Try this:{sugg}\n\n\
+        The basic `{symbol}` syntax is preferred over `{symbol}ᵉ`."
 
 /-! ### The combined syntax linter -/
 
@@ -193,6 +231,8 @@ partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
     | ``«term_$__» => dollarLinter stx
     | ``Lean.Parser.Term.fun => lambdaLinter stx
     | ``Lean.Parser.Tactic.obtain => obtainLinter stx
+    | ``Batteries.ExtendedBinder.«term∃ᵉ_,_» => extendedBinderLinter stx "∃"
+    | ``Batteries.ExtendedBinder.«term∀ᵉ_,_» => extendedBinderLinter stx "∀"
     | _ => pure ()
   | _ => pure ()
 

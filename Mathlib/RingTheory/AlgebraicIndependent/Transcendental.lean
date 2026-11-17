@@ -19,7 +19,6 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 
 ## Tags
 transcendence
-
 -/
 
 public section

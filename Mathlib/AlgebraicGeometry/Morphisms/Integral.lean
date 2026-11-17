@@ -17,7 +17,6 @@ of an arbitrary affine open subset of `Y` is affine and the induced ring map is 
 
 It is equivalent to ask only that `Y` is covered by affine opens whose preimage is affine
 and the induced ring map is integral.
-
 -/
 
 public section
@@ -96,9 +95,6 @@ lemma SpecMap_iff {R S : CommRingCat} {φ : R ⟶ S} :
   rw [HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom), and_iff_right]
   exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
     (arrowIsoΓSpecOfIsAffine φ).symm, inferInstance]
-
-set_option backward.isDefEq.respectTransparency.types false in
-instance : IsMultiplicative @IsIntegralHom where
 
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsIntegralHom f] [IsIntegralHom g] :
     IsIntegralHom (Limits.coprod.desc f g) := by

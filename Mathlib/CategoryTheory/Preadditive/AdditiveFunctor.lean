@@ -26,7 +26,6 @@ We also define the category of bundled additive functors.
 
 `Functor.Additive` is a `Prop`-valued class, defined by saying that for every two objects `X` and
 `Y`, the map `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of abelian groups.
-
 -/
 
 @[expose] public section
@@ -296,9 +295,6 @@ theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
   rfl
 
 instance : Functor.Additive (AdditiveFunctor.forget C D) where map_add := rfl
-
-instance (F : C ⥤+ D) : Functor.Additive F.1 :=
-  F.2
 
 end
 
