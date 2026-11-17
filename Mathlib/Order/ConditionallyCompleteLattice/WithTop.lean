@@ -26,6 +26,7 @@ variable {α β γ : Type*} {ι : Sort*}
 
 namespace WithTop
 
+-- TODO: find a better home for this lemma.
 @[to_dual]
 theorem isCompl_range_coe : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
   eq_compl_iff_isCompl.1 <| Set.ext fun _ ↦ ne_top_iff_exists.symm
