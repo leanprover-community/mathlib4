@@ -54,7 +54,7 @@ the Taylor polynomial of `p` centered at `x`. -/
 def signRight (x : R) (p : R[X]) : SignType :=
   SignType.sign (taylor x p).trailingCoeff
 
-theorem signRight_zero (x : R) : signRight x (0 : Polynomial R) = 0 := by
+@[simp] theorem signRight_zero (x : R) : signRight x (0 : R[X]) = 0 := by
   simp [signRight]
 
 /-- `signRight x p` can only be `0` if `p` is `0`. -/
