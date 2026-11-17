@@ -62,7 +62,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       ContinuousLinearMap.ext_iff, not_forall, smulRight_apply, zero_apply,
       smul_eq_zero_iff_left hu]
     exact ⟨u, huv⟩
-  set T := apply 𝕜 _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L
+  set T := applyₗ _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L
     smulRightL 𝕜 _ _ _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
@@ -77,7 +77,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       simp [← this, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr($h_smul u)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
-  set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
+  set T' := applyₗ _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
     smulRightL 𝕜 _ _ _ _ d
   set TL : V ≃L[𝕜] W := { Tₗ with
     continuous_toFun := T.continuous
