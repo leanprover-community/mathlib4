@@ -117,6 +117,11 @@ protected theorem BlockTriangular.neg [NegZeroClass R] {M : Matrix m m R}
     (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
   fun _ _ h => by rw [Matrix.neg_apply, hM h, neg_zero]
 
+@[simp]
+theorem blockTriangular_neg_iff [SubtractionMonoid R] :
+    (-M).BlockTriangular b ↔ M.BlockTriangular b := by
+  simp only [BlockTriangular, Matrix.neg_apply, neg_eq_zero]
+
 protected theorem BlockTriangular.add [AddZeroClass R] (hM : BlockTriangular M b)
     (hN : BlockTriangular N b) : BlockTriangular (M + N) b :=
   fun i j h => by simp_rw [Matrix.add_apply, hM h, hN h, zero_add]
@@ -144,6 +149,17 @@ protected lemma BlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S] [Zer
 protected lemma BlockTriangular.smul {S} [Zero R] [SMulZeroClass S R]
     (h : M.BlockTriangular b) (c : S) : (c • M).BlockTriangular b :=
   fun _ _ hij => by simp [h hij]
+
+lemma blockTriangular_smul_iff_of_isSMulRegular {S} [Zero R] [SMulZeroClass S R]
+    {c : S} (hc : IsSMulRegular R c) : (c • M).BlockTriangular b ↔ M.BlockTriangular b := by
+  refine ⟨fun h i j hij => hc ?_, fun h => h.smul c⟩
+  simp only [smul_zero]
+  exact h hij
+
+@[simp]
+lemma blockTriangular_smul_iff {S} [Zero R] [SMulZeroClass S R] [IsLeftCancelSMul S R]
+    (c : S) : (c • M).BlockTriangular b ↔ M.BlockTriangular b :=
+  blockTriangular_smul_iff_of_isSMulRegular (IsSMulRegular.all c)
 
 protected lemma BlockTriangular.comp [Zero R] {M : Matrix m m (Matrix n n R)}
     (h : BlockTriangular M b) : BlockTriangular (M.comp m m n n R) fun i ↦ b i.1 :=
@@ -206,6 +222,11 @@ end Zero
 protected theorem StrictBlockTriangular.neg [NegZeroClass R] (hM : M.StrictBlockTriangular b) :
     (-M).StrictBlockTriangular b := fun _ _ h => by rw [Matrix.neg_apply, hM h, neg_zero]
 
+@[simp]
+theorem strictBlockTriangular_neg_iff [SubtractionMonoid R] :
+    (-M).StrictBlockTriangular b ↔ M.StrictBlockTriangular b := by
+  simp only [StrictBlockTriangular, Matrix.neg_apply, neg_eq_zero]
+
 protected theorem StrictBlockTriangular.add [AddZeroClass R]
     (hM : M.StrictBlockTriangular b) (hN : N.StrictBlockTriangular b) :
     (M + N).StrictBlockTriangular b := fun _ _ h => by simp [hM h, hN h]
@@ -238,6 +259,18 @@ protected lemma StrictBlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S
 protected lemma StrictBlockTriangular.smul {S} [Zero R] [SMulZeroClass S R]
     (h : M.StrictBlockTriangular b) (c : S) : (c • M).StrictBlockTriangular b :=
   fun _ _ hij => by simp [h hij]
+
+lemma strictBlockTriangular_smul_iff_of_isSMulRegular {S} [Zero R] [SMulZeroClass S R]
+    {c : S} (hc : IsSMulRegular R c) :
+    (c • M).StrictBlockTriangular b ↔ M.StrictBlockTriangular b := by
+  refine ⟨fun h i j hij => hc ?_, fun h => h.smul c⟩
+  simp only [smul_zero]
+  exact h hij
+
+@[simp]
+lemma strictBlockTriangular_smul_iff {S} [Zero R] [SMulZeroClass S R] [IsLeftCancelSMul S R]
+    (c : S) : (c • M).StrictBlockTriangular b ↔ M.StrictBlockTriangular b :=
+  strictBlockTriangular_smul_iff_of_isSMulRegular (IsSMulRegular.all c)
 
 protected lemma StrictBlockTriangular.comp [Zero R] {M : Matrix m m (Matrix n n R)}
     (h : M.StrictBlockTriangular b) : (M.comp m m n n R).StrictBlockTriangular fun i ↦ b i.1 :=
