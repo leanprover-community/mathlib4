@@ -527,7 +527,7 @@ def smulRightL : (E →L[𝕜] S) →L[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
       obtain ⟨f, hf', rfl⟩ := hr k hk.le hf
       simpa [L, smul_comm (c x) k] using huv <| Set.mk_mem_prod (hc hx) hf' }
 
-@[simp] lemma toLinearMap_smulRightL (c : E →L[𝕜] S) :
+@[simp] lemma toLinearMap_smulRightL_apply (c : E →L[𝕜] S) :
     (smulRightL 𝕜 𝕜₂ S E F c : F →L[𝕜₂] E →L[𝕜] F).toLinearMap = c.smulRightₗ := rfl
 
 end smulRightL
