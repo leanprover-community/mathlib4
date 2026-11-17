@@ -630,7 +630,7 @@ protected theorem reindex_reindex {ι'' : Type*} (b : HilbertBasis ι 𝕜 E) (e
   simp
 
 @[simp]
-theorem reindex_toOrthonormalBasis [Fintype ι] [Fintype ι'] (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
+theorem toOrthonormalBasis_reindex [Fintype ι] [Fintype ι'] (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
     (b.reindex e).toOrthonormalBasis = b.toOrthonormalBasis.reindex e := by
   apply DFunLike.coe_injective
   simp
