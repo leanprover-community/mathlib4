@@ -47,18 +47,20 @@ def sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
 
 theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : Dyadic.toReal lb ≤ x) :
     Dyadic.toReal (lowerSqrt lb prec) ≤ √x := by
-  unfold lowerSqrt
-  unfold Dyadic.toReal at *
-  by_cases hlb : 0 ≤ lb
+  rcases le_or_gt 0 lb.toRat with hlb | hlb
   · apply Real.le_sqrt_of_sq_le
-    norm_num [Dyadic.toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, ← pow_mul, mul_comm, field]
-    grw [Dyadic.toRat_shiftLeft_nat, sq, ← Nat.cast_mul, ⌊lb.toRat * 2 ^ (prec * 2)⌋₊.sqrt_le,
-      ← Rat.cast_natCast, Nat.floor_le (by simp; simpa [← Dyadic.toRat_zero])]
-    simpa using hx
+    have h : ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt ^ 2 ≤ (lb <<< (2 * prec)).toRat := by
+      grw [← Nat.cast_pow, Nat.sqrt_le', Nat.floor_le (by rw [toRat_shiftLeft_nat]; positivity)]
+    grw [← hx]
+    simp only [lowerSqrt, Dyadic.toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow,
+      ← Rat.cast_pow, Rat.cast_le]
+    generalize ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt = m at h ⊢
+    rw [toRat_shiftLeft_nat, mul_comm 2, mul_comm] at h
+    simpa [mul_pow, ← pow_mul, field] using h
   · have : (lb <<< (2 * prec)).toRat < 0 := by
       rw [toRat_shiftLeft_nat]
-      exact mul_neg_of_neg_of_pos (by simp [← Dyadic.toRat_zero]; simpa using hlb) (by simp)
-    simp [Nat.floor_eq_zero.mpr <| zero_lt_one.trans' this]
+      exact mul_neg_of_neg_of_pos hlb (by positivity)
+    simp [lowerSqrt, Nat.floor_eq_zero.mpr <| zero_lt_one.trans' this, Dyadic.toReal]
 
 theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ Dyadic.toReal ub) :
     √x ≤ Dyadic.toReal (upperSqrt ub prec) := by
