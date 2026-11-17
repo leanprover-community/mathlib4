@@ -363,7 +363,7 @@ def ofWithBot (boxes : Finset (WithBot (Box ι)))
   boxes := Finset.eraseNone (boxes.image (WithBot.toOption _))
   le_of_mem' J hJ := by
     simp only [mem_eraseNone, Finset.mem_image, WithBot.toOption_eq_some_iff, exists_eq_right] at hJ
-    simpa only [WithBot.some_eq_coe, WithBot.coe_le_coe] using le_of_mem _ hJ
+    simpa only [WithBot.coe_le_coe] using le_of_mem _ hJ
   pairwiseDisjoint J₁ h₁ J₂ h₂ hne := by
     simp only [coe_eraseNone, coe_image, Set.mem_preimage, mem_image_equiv,
       WithBot.symm_toOption_apply_some, SetLike.mem_coe] at h₁ h₂
