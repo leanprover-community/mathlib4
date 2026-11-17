@@ -808,10 +808,10 @@ def sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) 
     rw [Polynomial.mem_degreeLT]
     refine (degree_add_le _ _).trans_lt (max_lt ?_ ?_)
     · by_cases hf' : f = 0; · simp_all
-      exact (degree_mul_le _ _).trans_lt (WithBot.add_lt_add_of_le_of_lt (by simpa)
+      exact (degree_mul_le _ _).trans_lt (WithBot.add_lt_add_of_le_of_lt (by simp)
         (degree_le_of_natDegree_le hf) (by simpa using hq))
     · by_cases hg' : g = 0; · simp_all
-      exact (degree_mul_le _ _).trans_lt ((WithBot.add_lt_add_of_le_of_lt (by simpa)
+      exact (degree_mul_le _ _).trans_lt ((WithBot.add_lt_add_of_le_of_lt (by simp)
         (degree_le_of_natDegree_le hg) (by simpa using hp)).trans_eq (add_comm _ _))⟩
   map_add' _ _ := by ext1; dsimp; ring
   map_smul' _ _ := by ext1; simp

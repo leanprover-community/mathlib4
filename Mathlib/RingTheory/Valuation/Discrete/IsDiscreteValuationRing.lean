@@ -150,7 +150,7 @@ noncomputable def equivValuationSubring :
 
 lemma intValuation_maximalIdeal (x : A) :
     (maximalIdeal A).intValuation x =
-      (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd <| Nat.cast · ) (addVal A x))⁻¹ := by
+      (ENat.recTopCoe 0 (WithZero.some <| Multiplicative.ofAdd <| Nat.cast · ) (addVal A x))⁻¹ := by
   by_cases hx : x = 0
   · simp [hx]
   obtain ⟨ϖ, hϖ⟩ := exists_irreducible A

@@ -31,7 +31,7 @@ variable [Add α]
 /-- Making an additive monoid multiplicative then adding a zero is the same as adding a bottom
 element then making it multiplicative. -/
 def toMulBot : WithZero (Multiplicative α) ≃* Multiplicative (WithBot α) where
-  toFun | 0 => .ofAdd ⊥ | coe x => .ofAdd x.toAdd
+  toFun | 0 => .ofAdd ⊥ | some x => .ofAdd x.toAdd
   invFun x := match x.toAdd with
     | ⊥ => 0
     | (x : α) => (.ofAdd x : Multiplicative α)

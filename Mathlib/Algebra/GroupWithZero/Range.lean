@@ -220,7 +220,7 @@ lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ 
     rw [← valueMonoid_eq_valueGroup'] at hu
     obtain ⟨v, hv⟩ := hu
     use v
-    simp [restrict₀_apply, hv, Units.ne_zero, WithZero.coe]
+    simp [restrict₀_apply, hv, Units.ne_zero]
 
 open Function
 

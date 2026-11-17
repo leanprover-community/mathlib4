@@ -48,7 +48,7 @@ lemma ordMonoidHom_eq_ord (x : R⁰) : (ordMonoidHom x).toAdd = Ring.ord R x :=
 
 @[simp]
 lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
-    .coe (.ofAdd ((ordMonoidHom x).toAdd : ℤ)) = ordMonoidWithZeroHom R x := by
+    .some (.ofAdd ((ordMonoidHom x).toAdd : ℤ)) = ordMonoidWithZeroHom R x := by
   simp only [SetLike.coe_mem, ordMonoidWithZeroHom_eq_ord, ordMonoidHom, MonoidHom.coe_mk,
     OneHom.coe_mk, toAdd_ofAdd]
   rw [← ENat.natCast_lift (ord R x.1) (ord_lt_top x.2), ENat.recTopCoe_natCast,
