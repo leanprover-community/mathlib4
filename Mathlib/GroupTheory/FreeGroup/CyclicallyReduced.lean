@@ -104,7 +104,7 @@ theorem IsReduced.append_flatten_replicate_append (h₁ : IsCyclicallyReduced L�
 `L₁`, stopping at the first position where it isn't. -/
 def cancelPrefixLength [DecidableEq α] : List (α × Bool) → List (α × Bool) → ℕ
   | a :: L₁, b :: L₂ =>
-    if b.1 = a.1 ∧ (!b.2) = a.2 then cancelPrefixLength L₁ L₂ + 1 else 0
+    if a.1 = b.1 ∧ a.2 ≠ b.2 then cancelPrefixLength L₁ L₂ + 1 else 0
   | _, _ => 0
 
 theorem min_cancelPrefixLength_append [DecidableEq α] {L₁ L₂ : List (α × Bool)}
@@ -151,7 +151,7 @@ protected theorem singleton {a : α × Bool} : reduceCyclically [a] = [a] := by
 @[to_additive]
 protected theorem cons_append {a b : α × Bool} (L : List (α × Bool)) :
     reduceCyclically (a :: (L ++ [b])) =
-    if b.1 = a.1 ∧ (!b.2) = a.2 then reduceCyclically L else a :: L ++ [b] := by
+    if a.1 = b.1 ∧ a.2 ≠ b.2 then reduceCyclically L else a :: L ++ [b] := by
   have hrev : (a :: (L ++ [b])).reverse = b :: (L.reverse ++ [a]) := by simp
   have hlen : (a :: (L ++ [b])).length = L.length + 2 := by simp
   unfold reduceCyclically
@@ -180,7 +180,7 @@ theorem isCyclicallyReduced (h : IsReduced L) : IsCyclicallyReduced (reduceCycli
     case isTrue => exact ih (h.infix ⟨[a], [b], rfl⟩)
     case isFalse h' =>
       rw [isCyclicallyReduced_cons_append_iff]
-      exact ⟨h, by simpa using h'⟩
+      exact ⟨h, by grind⟩
 
 /-- Partner function to `reduceCyclically`.
 See `reduceCyclically.conj_conjugator_reduceCyclically`. -/
@@ -190,7 +190,7 @@ def conjugator : List (α × Bool) → List (α × Bool) :=
   List.bidirectionalRec
     (nil := [])
     (singleton := fun _ => [])
-    (cons_append := fun a _ b rCC => if b.1 = a.1 ∧ (!b.2) = a.2 then a :: rCC else [] )
+    (cons_append := fun a _ b rCC => if a.1 = b.1 ∧ a.2 ≠ b.2 then a :: rCC else [] )
 
 @[to_additive (attr := simp)]
 protected theorem conjugator.nil : conjugator ([] : List (α × Bool)) = [] := by simp [conjugator]
@@ -200,7 +200,7 @@ protected theorem conjugator.singleton {a : α × Bool} : conjugator [a] = [] :=
 
 @[to_additive]
 protected theorem conjugator.cons_append {a b : α × Bool} (L : List (α × Bool)) :
-    conjugator (a :: (L ++ [b])) = if b.1 = a.1 ∧ (!b.2) = a.2 then a :: conjugator L else [] := by
+    conjugator (a :: (L ++ [b])) = if a.1 = b.1 ∧ a.2 ≠ b.2 then a :: conjugator L else [] := by
   simp [conjugator]
 
 @[to_additive]
@@ -214,7 +214,7 @@ theorem conj_conjugator_reduceCyclically (L : List (α × Bool)) :
     split
     case isTrue h =>
       nth_rw 4 [← eq]
-      simp [invRev, h.1.symm, h.2.symm]
+      simp [invRev, h.1, Prod.ext_iff, Bool.eq_not_iff.mpr h.2.symm]
     case isFalse => simp
 
 @[to_additive]

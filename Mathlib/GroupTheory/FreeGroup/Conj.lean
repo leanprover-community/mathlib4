@@ -89,7 +89,7 @@ theorem IsCyclicallyReduced.reduceCyclically_eq (h : IsCyclicallyReduced L) :
     rw [← cons_append, isCyclicallyReduced_cons_append_iff] at h
     grind [reduceCyclically.cons_append]
 
-theorem reduceCyclically.append_append_invRev (L₁ L₂ : List (α × Bool)) :
+theorem reduceCyclically_append_append_invRev (L₁ L₂ : List (α × Bool)) :
     reduceCyclically (L₁ ++ L₂ ++ invRev L₁) = reduceCyclically L₂ := by
   induction L₁ with
   | nil => simp
