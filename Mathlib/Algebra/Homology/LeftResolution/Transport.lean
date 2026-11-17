@@ -14,7 +14,6 @@ If `ι : C ⥤ A` is equipped with `Λ : LeftResolution ι` and
 `ι' : C' ⥤ A'` is a functor which corresponds to `ι` via
 equivalences of categories `A' ≌ A` and `C' ≌ C`, we
 define `Λ.transport .. : LeftResolution ι'`.
-
 -/
 
 @[expose] public section

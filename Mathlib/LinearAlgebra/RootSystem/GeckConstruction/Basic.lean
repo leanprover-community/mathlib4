@@ -47,7 +47,6 @@ We comment on these as follows:
 
 There seems to be no known construction of a Lie algebra from a root system without first choosing
 a base: https://mathoverflow.net/questions/495434/
-
 -/
 
 @[expose] public section

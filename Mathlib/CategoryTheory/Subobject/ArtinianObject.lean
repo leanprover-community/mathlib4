@@ -24,7 +24,6 @@ closed under subobjects.
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
   with `IsNoetherianObject` in `Cᵒᵖ`.
-
 -/
 
 @[expose] public section

@@ -49,7 +49,6 @@ The file also contains an identification between the definitions in
 
 * The relationship between `H2` and group extensions
 * Nonabelian group cohomology
-
 -/
 
 @[expose] public section
@@ -813,6 +812,7 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
 def isoCocycles₁ : cocycles A 1 ≅ ↧(cocycles₁ A) :=
   cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
 
+attribute [local implicit_reducible] cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_hom_comp_i :
     (isoCocycles₁ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
@@ -863,6 +863,7 @@ def isoShortComplexH2 :
 def isoCocycles₂ : cocycles A 2 ≅ ↧(cocycles₂ A) :=
   cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
 
+attribute [local implicit_reducible] cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_hom_comp_i :
     (isoCocycles₂ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =

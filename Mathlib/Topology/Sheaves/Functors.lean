@@ -22,7 +22,6 @@ topological spaces X and Y.
 - `TopCat.Sheaf.pullback`: The pullback functor between sheaf categories over topological spaces.
 - `TopCat.Sheaf.pullbackPushforwardAdjunction`:
   The adjunction between pullback and pushforward for sheaves on topological spaces.
-
 -/
 
 @[expose] public section

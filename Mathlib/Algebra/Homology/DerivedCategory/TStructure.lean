@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
 In this file, we introduce the canonical t-structure on the
 derived category of an abelian category.
-
 -/
 
 @[expose] public section

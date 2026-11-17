@@ -71,7 +71,6 @@ Under the `X.IsFirstQuadrant` assumption, we obtain
 `X.E₂SpectralSequenceNat` which is a first quadrant `E₂`-spectral
 sequence (the objects in the pages are indexed by `ℕ × ℕ` instead
 of `ℤ × ℤ`).
-
 -/
 
 @[expose] public section

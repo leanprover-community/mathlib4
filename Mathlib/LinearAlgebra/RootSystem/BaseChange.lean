@@ -25,7 +25,6 @@ extension of scalars.
 * Extension of scalars
 * Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
   `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
-
 -/
 
 @[expose] public section
