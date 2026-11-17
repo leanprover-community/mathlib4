@@ -206,7 +206,7 @@ lemma BlockTriangular.charpoly_eq {α : Type*} {b : n → α} [LinearOrder α]
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 
 @[deprecated (since := "2026-11-03")]
-alias BlockTriangular.charpoly := BlockTriangular.charpoly_eq
+protected alias BlockTriangular.charpoly := BlockTriangular.charpoly_eq
 
 lemma StrictBlockTriangular.charpoly_eq {α : Type*} {b : n → α} [LinearOrder α]
     (hM : M.StrictBlockTriangular b) : M.charpoly = X ^ Fintype.card n := by
