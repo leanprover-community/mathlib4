@@ -177,6 +177,7 @@ variable (W)
 /-- A chosen equivalence of categories `W.Localization ≅ D` for a functor
 `L : C ⥤ D` which satisfies `L.IsLocalization W`. This shall be used in
 order to deduce properties of `L` from properties of `W.Q`. -/
+@[local implicit_reducible]
 def equivalenceFromModel : W.Localization ≌ D :=
   (Localization.Construction.lift L (inverts L W)).asEquivalence
 
@@ -205,12 +206,11 @@ theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
 
 /-- The functor `(D ⥤ E) ⥤ W.functors_inverting E` induced by the composition
 with a localization functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
+@[implicit_reducible]
 def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ E).obj L)
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
   let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj
     (equivalenceFromModel L W).functor ⋙
@@ -231,6 +231,7 @@ instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
 /-- The equivalence of categories `(D ⥤ E) ≌ (W.FunctorsInverting E)` induced by
 the composition with a localization functor `L : C ⥤ D` with respect to
 `W : MorphismProperty C`. -/
+@[implicit_reducible]
 def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
   (whiskeringLeftFunctor L W E).asEquivalence
 

@@ -59,7 +59,7 @@ variable {D : Type*} [Category* D] (L : C₂ ⥤ D) [L.IsLocalization W₂]
 a morphism `y : L.obj X₂ ⟶ X₃`, this is the functor which sends `R : Φ.RightResolution d` to
 `(isoOfHom L W₂ R.w R.hw).inv ≫ y` in the category `w.CostructuredArrowDownwards y`
 where `w` is `TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _) (Functor.rightUnitor _).inv`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def fromRightResolution :
     Φ.RightResolution X₂ ⥤ (TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _)
       (Functor.rightUnitor _).inv).CostructuredArrowDownwards y where
@@ -72,8 +72,6 @@ noncomputable def fromRightResolution :
       isoOfHom_hom, isoOfHom_hom_inv_id_assoc, assoc, ← L.map_comp_assoc,
       φ.comm, isoOfHom_hom_inv_id_assoc])
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isConnected :
     IsConnected ((TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _)
       (Functor.rightUnitor _).inv).CostructuredArrowDownwards y) := by

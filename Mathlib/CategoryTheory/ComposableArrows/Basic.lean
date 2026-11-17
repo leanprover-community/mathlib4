@@ -116,7 +116,7 @@ lemma naturality' (φ : F ⟶ G) (i j : ℕ) (hij : i ≤ j := by valid)
   φ.naturality _
 
 /-- Constructor for `ComposableArrows C 0`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mk₀ (X : C) : ComposableArrows C 0 := (Functor.const (Fin 1)).obj X
 
 namespace Mk₁
@@ -516,20 +516,20 @@ def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
   map f := Functor.whiskerLeft Φ f
 
 /-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.succ`. -/
-@[simps]
+@[simps, implicit_reducible]
 def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   obj i := i.succ
   map {_ _} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
 
 /-- The functor `Fin (l + 1) ⥤ Fin (n + 1)` which sends `i` to `k + i` -/
-@[simps!]
+@[simps!, implicit_reducible]
 def _root_.Fin.natAddLEFunctor {n k l : ℕ} (h : k + l ≤ n) : Fin (l + 1) ⥤ Fin (n + 1) where
   obj := fun ⟨i, _⟩ => ⟨k + i , by lia⟩
   map {_ _} hij := homOfLE (by rw [Fin.le_iff_val_le_val]; simpa using (leOfHom hij))
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows C l` obtained by precomposition with
 the functor `Fin.natAddLEFunctor`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def natAddLEFunctor {n k l : ℕ} (h : k + l ≤ n) :
     ComposableArrows C n ⥤ ComposableArrows C l :=
   whiskerLeftFunctor (Fin.natAddLEFunctor h)
@@ -998,6 +998,7 @@ lemma mk₅_surjective (X : ComposableArrows C 5) :
     ext₅ rfl rfl rfl rfl rfl rfl (by simp) (by simp) (by simp) (by simp) (by simp)⟩
 
 /-- The `i`th arrow of `F : ComposableArrows C n`. -/
+@[implicit_reducible]
 def arrow (i : ℕ) (hi : i < n := by valid) :
     ComposableArrows C 1 := mk₁ (F.map' i (i + 1))
 

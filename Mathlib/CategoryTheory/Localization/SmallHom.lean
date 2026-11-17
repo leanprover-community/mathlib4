@@ -97,6 +97,7 @@ end
 /-- The type of morphisms from `X` to `Y` in the localized category
 with respect to `W : MorphismProperty C` that is shrunk to `Type w`
 when `HasSmallLocalizedHom.{w} W X Y` holds. -/
+@[local implicit_reducible]
 def SmallHom (X Y : C) [HasSmallLocalizedHom.{w} W X Y] : Type w :=
   Shrink.{w} (W.Q.obj X ⟶ W.Q.obj Y)
 
@@ -111,7 +112,6 @@ noncomputable def equiv (L : C ⥤ D) [L.IsLocalization W] {X Y : C}
   letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
   (equivShrink _).symm.trans (homEquiv W W.Q L)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_equiv_symm (L : C ⥤ D) [L.IsLocalization W]
     (L' : C ⥤ D') [L'.IsLocalization W] (G : D ⥤ D')
     (e : L ⋙ G ≅ L') {X Y : C} [HasSmallLocalizedHom.{w} W X Y]
@@ -127,7 +127,6 @@ noncomputable def mk {X Y : C} [HasSmallLocalizedHom.{w} W X Y] (f : X ⟶ Y) :
     SmallHom.{w} W X Y :=
   (equiv.{w} W W.Q).symm (W.Q.map f)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mk (L : C ⥤ D) [L.IsLocalization W] {X Y : C}
     [HasSmallLocalizedHom.{w} W X Y] (f : X ⟶ Y) :
@@ -141,7 +140,6 @@ noncomputable def mkInv {X Y : C} (f : Y ⟶ X) (hf : W f) [HasSmallLocalizedHom
     SmallHom.{w} W X Y :=
   (equiv.{w} W W.Q).symm (Localization.isoOfHom W.Q W f hf).inv
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mkInv (L : C ⥤ D) [L.IsLocalization W] {X Y : C} (f : Y ⟶ X) (hf : W f)
     [HasSmallLocalizedHom.{w} W X Y] :
@@ -156,7 +154,6 @@ noncomputable def comp {X Y Z : C} [HasSmallLocalizedHom.{w} W X Y]
     SmallHom.{w} W X Z :=
   (equiv W W.Q).symm (equiv W W.Q α ≫ equiv W W.Q β)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocalizedHom.{w} W X Y]
     [HasSmallLocalizedHom.{w} W Y Z] [HasSmallLocalizedHom.{w} W X Z]
     (α : SmallHom.{w} W X Y) (β : SmallHom.{w} W Y Z) :

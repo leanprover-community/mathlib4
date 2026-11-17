@@ -81,7 +81,7 @@ end MorphismProperty
 to `W : MorphismProperty C` which satisfies `W.IsMonoidal`, and a choice
 of object `unit : D` with an isomorphism `L.obj (𝟙_ C) ≅ unit`, this is a
 type synonym for `D` on which we define the localized monoidal category structure. -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, implicit_reducible]
 def LocalizedMonoidal (L : C ⥤ D) (W : MorphismProperty C)
     [W.IsMonoidal] [L.IsLocalization W] {unit : D} (_ : L.obj (𝟙_ C) ≅ unit) :=
   D
@@ -97,6 +97,7 @@ namespace Monoidal
 
 /-- The monoidal functor from a monoidal category `C` to
 its localization `LocalizedMonoidal L W ε`. -/
+@[implicit_reducible]
 def toMonoidalCategory : C ⥤ LocalizedMonoidal L W ε := L
 
 /-- The isomorphism `ε : L.obj (𝟙_ C) ≅ unit`,
@@ -107,7 +108,6 @@ local notation "L'" => toMonoidalCategory L W ε
 
 instance : (L').IsLocalization W := inferInstanceAs (L.IsLocalization W)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isInvertedBy₂ :
     MorphismProperty.IsInvertedBy₂ W W
       (curriedTensor C ⋙ (Functor.whiskeringRight C C D).obj L') := by
@@ -117,7 +117,6 @@ lemma isInvertedBy₂ :
   dsimp
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The localized tensor product, as a bifunctor. -/
 noncomputable def tensorBifunctor :
     LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
@@ -136,12 +135,10 @@ noncomputable abbrev tensorBifunctorIso :
   Lifting₂.iso L' L' W W (curriedTensor C ⋙ (Functor.whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε)
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (X : C) :
     Lifting L' W (tensorLeft X ⋙ L') ((tensorBifunctor L W ε).obj ((L').obj X)) := by
   apply Lifting₂.liftingLift₂ (hF := isInvertedBy₂ L W ε)
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (Y : C) :
     Lifting L' W (tensorRight Y ⋙ L') ((tensorBifunctor L W ε).flip.obj ((L').obj Y)) := by
   apply Lifting₂.liftingLift₂Flip (hF := isInvertedBy₂ L W ε)
@@ -207,28 +204,24 @@ lemma μ_inv_natural_right (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :
       (L').map (X ◁ g) ≫ (μ L W ε X Y₂).inv := by
   simp [Iso.eq_comp_inv]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_hom_app (Y : C) :
     (λ_ ((L').obj Y)).hom =
       (ε' L W ε).inv ▷ (L').obj Y ≫ (μ _ _ _ _ _).hom ≫ (L').map (λ_ Y).hom := by
   dsimp +instances [monoidalCategoryStruct, leftUnitor]
-  rw [liftNatTrans_app]
+  simp only [liftNatIso_hom, Iso.trans_hom, Functor.isoWhiskerRight_hom, liftNatTrans_app]
   dsimp
-  rw [assoc]
+  simp only [leftUnitorNatIso_hom_app, assoc]
   change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_hom_app (X : C) :
     (ρ_ ((L').obj X)).hom =
       (L').obj X ◁ (ε' L W ε).inv ≫ (μ _ _ _ _ _).hom ≫
         (L').map (ρ_ X).hom := by
   dsimp +instances [monoidalCategoryStruct, rightUnitor]
-  rw [liftNatTrans_app]
+  simp only [liftNatIso_hom, Iso.trans_hom, Functor.isoWhiskerRight_hom, liftNatTrans_app]
   dsimp
-  rw [assoc]
+  rw [rightUnitorNatIso_hom_app, assoc]
   change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 

@@ -407,7 +407,7 @@ end
 set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The functor `C ⥤ Triangle C` which sends `X` to `contractibleTriangle X`. -/
-@[simps]
+@[simps, implicit_reducible]
 def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] : C ⥤ Triangle C where
   obj X := contractibleTriangle X
   map f :=

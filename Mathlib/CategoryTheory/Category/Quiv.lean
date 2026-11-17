@@ -202,7 +202,7 @@ def isoOfEquiv : Quiv.of V ≅ Quiv.of W where
 end
 
 /-- Any prefunctor into a category lifts to a functor from the path category. -/
-@[simps]
+@[simps, implicit_reducible]
 def lift {V : Type u} [Quiver.{v} V] {C : Type u₁} [Category.{v₁} C]
     (F : Prefunctor V C) : Paths V ⥤ C where
   obj X := F.obj X
