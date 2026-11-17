@@ -497,8 +497,6 @@ protected abbrev _root_.StrongDual.smulRightL : StrongDual 𝕜 E' →L[𝕜] F�
 @[deprecated (since := "2026-11-12")] alias smulRightLₗ := StrongDual.smulRightL
 @[deprecated (since := "2026-11-12")] alias smulRightLₗ_apply_apply := smulRightL_apply_apply
 
-@[simp] lemma toLinearMap_smulRightL : (smulRightL 𝕜 E Fₗ).toLinearMap = smulRightₗ' 𝕜 E Fₗ := rfl
-
 end ContinuousLinearMap
 
 end SemiNormed
