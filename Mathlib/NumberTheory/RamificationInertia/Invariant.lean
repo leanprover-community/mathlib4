@@ -57,24 +57,28 @@ lemma Submodule.baseChange_le_comap_liftBaseChange_iff
   rw [Submodule.baseChange_le_iff_le_comap, Submodule.restrictScalars_comap, ← Submodule.comap_comp,
     h]
 
-namespace LinearMap
-
-variable {R M N : Type*} (A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
-
-variable {A} in
-lemma Submodule.baseChange_le_comap_liftBaseChange_iff
-    {l : M →ₗ[R] N} {p : Submodule R M} {q : Submodule A N} :
-    p.baseChange A ≤ q.comap (l.liftBaseChange A) ↔ p ≤ (q.restrictScalars R).comap l := by
-  -- seems like we're missing some API lemma for `LinearMap.liftBaseChangeEquiv_symm`
-  have h : (l.liftBaseChange A).restrictScalars R ∘ₗ TensorProduct.mk R A M 1 = l :=
-    (LinearMap.liftBaseChangeEquiv A).symm_apply_apply l
-  rw [Submodule.baseChange_le_iff_le_comap, Submodule.restrictScalars_comap,
-    ← Submodule.comap_comp, h]
-
-end LinearMap
-
 end LiftBaseChange
+
+theorem MulAction.smul_sum_quotient_of_fixed {G M : Type*} [Group G] [AddCommMonoid M]
+    [DistribMulAction G M] (H : Subgroup G) [Fintype (G ⧸ H)] (x : M)
+    (hx : ∀ h : H, h • x = x) (g : G) :
+    g • (∑ q : G ⧸ H, q.out • x) = ∑ q : G ⧸ H, q.out • x := by
+  classical
+  rw [Finset.smul_sum]
+  refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
+  obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
+  rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
+  simp [hh, mul_smul, ← Subgroup.smul_def, hx]
+
+@[to_additive (attr := simp)]
+theorem QuotientGroup.mk_eq_one_iff {G : Type*} [Group G] {H : Subgroup G} {g : G} :
+    (g : G ⧸ H) = (1 : G) ↔ g ∈ H := by
+  rw [← Set.mem_singleton_iff, ← Set.mem_preimage, QuotientGroup.preimage_mk_one, SetLike.mem_coe]
+
+@[to_additive (attr := simp)]
+theorem QuotientGroup.out_mem_iff {G : Type*} [Group G] {H : Subgroup G} {g : G ⧸ H} :
+    g.out ∈ H ↔ g = (1 : G) := by
+  rw [← mk_eq_one_iff, QuotientGroup.out_eq']
 
 namespace Algebra.FormallyUnramified
 
@@ -130,15 +134,10 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     intro x hx
     let y := x * groupIdempotent A B H
     let z := ∑ q : G ⧸ H, q.out • y
-    have hz (g : G) : g • z = z := by
-      simp only [z, Finset.smul_sum]
-      refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
-      obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
-      rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
-      have hy : (h : G) • y = y := by
-        simpa only [y, smul_mul', ← Subgroup.smul_def,
-          smul_groupIdempotent] using smul_mul_groupIdempotent A h x
-      simp [hh, mul_smul, hy]
+    have hy (h : H) : (h : G) • y = y := by
+      simpa only [y, smul_mul', ← Subgroup.smul_def,
+        smul_groupIdempotent] using smul_mul_groupIdempotent A h x
+    have hz (g : G) : g • z = z := MulAction.smul_sum_quotient_of_fixed H y hy g
     have hzI : z ∈ I := I.sum_mem fun q _ ↦
       hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I (I.mul_mem_right _ hx)
     obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) z hz
@@ -150,22 +149,18 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
 lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] :
     Ideal.Quotient.mk Q (descentMultiplier A B (Q.inertia G)) = 1 := by
   classical
-  simp [descentMultiplier, mk_inertiaIdempotent, ite_mul,
-    ← SetLike.mem_coe, ← QuotientGroup.preimage_mk_one]
+  simp [descentMultiplier, mk_inertiaIdempotent]
 
 theorem map_comap_eq_of_isInvariant [Algebra.IsInvariant A B G]
     (I : Ideal B) (hI : ∀ g : G, g • I = I) :
     (I.comap (algebraMap A B)).map (algebraMap A B) = I := by
-  classical
   set J := (I.comap (algebraMap A B)).map (algebraMap A B)
   apply le_antisymm Ideal.map_comap_le
   rw [← Submodule.colon_eq_top_iff_le]
   by_contra hJ
   obtain ⟨m, hm, hKm⟩ := Ideal.exists_le_maximal (J.colon (I : Set B)) hJ
-  let : m.IsMaximal := hm
-  have := Ideal.Quotient.eq_zero_iff_mem.mpr
-    (hKm (descentMultiplier_mem_colon A B (m.inertia G) I hI))
-  rw [mk_descentMultiplier_inertia A] at this
-  exact one_ne_zero this
+  specialize hKm (descentMultiplier_mem_colon A B (m.inertia G) I hI)
+  rw [← Ideal.Quotient.eq_zero_iff_mem, mk_descentMultiplier_inertia] at hKm
+  exact one_ne_zero hKm
 
 end Algebra.FormallyUnramified
