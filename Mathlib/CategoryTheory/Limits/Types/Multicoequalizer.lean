@@ -34,7 +34,6 @@ namespace CategoryTheory.Functor.CoconeTypes
 
 open Limits
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isMulticoequalizer_iff {J : MultispanShape.{w, w'}} {d : MultispanIndex J (Type u)}
     (c : d.multispan.CoconeTypes) :
     c.IsColimit ↔

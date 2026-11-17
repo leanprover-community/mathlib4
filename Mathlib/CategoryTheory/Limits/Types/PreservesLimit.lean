@@ -65,7 +65,6 @@ noncomputable def coconePtToShrinkYoneda :
     c'.pt ⟶ shrinkYoneda.{w}.obj c.pt.unop :=
   hc'.desc (shrinkYoneda.{w}.mapCocone (coconeLeftOpOfCone c))
 
-set_option backward.defeqAttrib.useBackward true in
 variable {P} in
 @[reassoc]
 lemma coconePtToShrinkYoneda_comp (x : P.obj c.pt) :
@@ -73,8 +72,8 @@ lemma coconePtToShrinkYoneda_comp (x : P.obj c.pt) :
       (coconeCompShrinkYonedaHomEquiv hc').symm
         (Types.sectionOfCone (P.mapCone c) x) := by
   refine hc'.hom_ext (fun _ ↦ ?_)
-  dsimp [coconePtToShrinkYoneda, coconeCompShrinkYonedaHomEquiv_symm_apply]
-  rw [hc'.fac_assoc, hc'.fac]
+  dsimp [coconePtToShrinkYoneda]
+  rw [coconeCompShrinkYonedaHomEquiv_symm_apply, hc'.fac_assoc, hc'.fac]
   exact (shrinkYonedaEquiv_symm_map _ _).symm
 
 lemma nonempty_isLimit_mapCone_iff :

@@ -662,7 +662,7 @@ end Fubini
 
 variable (α) in
 /-- The functor `(f : α → C) ↦ ∏ᶜ f`. -/
-@[to_dual (attr := simps) /-- The functor `(f : α → C) ↦ ∐ f`. -/]
+@[to_dual (attr := simps, implicit_reducible) /-- The functor `(f : α → C) ↦ ∐ f`. -/]
 noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
   obj f := ∏ᶜ f
   map {f g} t := Pi.map t

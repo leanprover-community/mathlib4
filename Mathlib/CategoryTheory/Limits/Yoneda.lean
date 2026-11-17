@@ -32,17 +32,13 @@ namespace Coyoneda
 
 variable {C : Type u} [Category.{v} C]
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The colimit cocone over `coyoneda.obj X`, with cocone point `PUnit`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
   ι := { app _ := ↾fun _ ↦ by cat_disch }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
 @[simps]

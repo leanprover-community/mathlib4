@@ -35,8 +35,6 @@ over a base `X`. Here `Q = ⊤`.
   is setup in the general case to allow for a later generalization if needed.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 namespace CategoryTheory.MorphismProperty
@@ -264,7 +262,7 @@ def isoMk [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W} (l : X.left �
 variable (L R P Q W)
 
 /-- The forgetful functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def forget : P.Comma L R Q W ⥤ Comma L R where
   obj X := X.toComma
   map f := f.hom
@@ -328,6 +326,7 @@ variable {P P' : MorphismProperty T} {Q Q' : MorphismProperty A} {W W' : Morphis
 variable [Q.IsMultiplicative] [Q'.IsMultiplicative] [W.IsMultiplicative] [W'.IsMultiplicative]
 
 /-- Weaken the conditions on all components. -/
+@[implicit_reducible]
 def changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
   obj X := ⟨X.toComma, hP _ X.2⟩
   map f := ⟨f.toCommaMorphism, hQ _ f.2, hW _ f.3⟩
@@ -352,7 +351,7 @@ variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 
 /-- Lift a functor `F : C ⥤ Comma L R` to the subcategory `P.Comma L R Q W` under
 suitable assumptions on `F`. -/
-@[simps obj_toComma map_hom]
+@[simps obj_toComma map_hom, implicit_reducible]
 def lift {C : Type*} [Category* C] (F : C ⥤ Comma L R)
     (hP : ∀ X, P (F.obj X).hom)
     (hQ : ∀ {X Y} (f : X ⟶ Y), Q (F.map f).left)
@@ -368,13 +367,12 @@ def lift {C : Type*} [Category* C] (F : C ⥤ Comma L R)
 
 variable (R) in
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mapLeft (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom)) :
     P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W :=
   lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapLeft R l) hl
     (fun f ↦ f.prop_hom_left) (fun f ↦ f.prop_hom_right)
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (L R) in
 /-- The functor `P.Comma L R Q W ⥤ P.Comma L R Q W` induced by the identity natural transformation
 on `L` is naturally isomorphic to the identity functor. -/
@@ -383,7 +381,6 @@ def mapLeftId [Q.RespectsIso] [W.RespectsIso] :
     mapLeft (P := P) (Q := Q) (W := W) R (𝟙 L) (fun X ↦ by simpa using X.prop) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- The functor `P.Comma L₁ R Q W ⥤ P.Comma L₃ R Q W` induced by the composition of two natural
 transformations `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the
@@ -397,7 +394,6 @@ def mapLeftComp [Q.RespectsIso] [W.RespectsIso] (l : L₁ ⟶ L₂) (l' : L₂ �
       mapLeft R l' hl' ⋙ mapLeft R l hl :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
 `P.Comma L₁ R Q W ⥤ P.Comma L₂ R Q W`. -/
@@ -433,13 +429,12 @@ def mapLeftIso [P.RespectsIso] [Q.RespectsIso] [W.RespectsIso]
 
 variable (L) in
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mapRight (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right)) :
     P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W :=
   lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapRight L r) hr
     (fun f ↦ f.prop_hom_left) (fun f ↦ f.prop_hom_right)
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (L R) in
 /-- The functor `P.Comma L R Q W ⥤ P.Comma L R Q W` induced by the identity natural transformation
 on `R` is naturally isomorphic to the identity functor. -/
@@ -448,7 +443,6 @@ def mapRightId [Q.RespectsIso] [W.RespectsIso] :
     mapRight (P := P) (Q := Q) (W := W) L (𝟙 R) (fun X ↦ by simpa using X.prop) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (L) in
 /-- The functor `P.Comma L R₁ Q W ⥤ P.Comma L R₃ Q W` induced by the composition of the natural
 transformations `r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the
@@ -462,7 +456,6 @@ def mapRightComp [Q.RespectsIso] [W.RespectsIso] (r : R₁ ⟶ R₂) (r' : R₂ 
       mapRight L r hr ⋙ mapRight L r' hr' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (L) in
 /-- Two equal natural transformations `R₁ ⟶ R₂` yield naturally isomorphic functors
 `P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W`. -/
@@ -475,7 +468,7 @@ def mapRightEq [Q.RespectsIso] [W.RespectsIso] (r r' : R₁ ⟶ R₂) (h : r = r
 variable (L) in
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
 `P.Comma L R₁ Q W ≌ P.Comma L R₂ Q W`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mapRightIso [P.RespectsIso] [Q.RespectsIso] [W.RespectsIso]
       (e : R₁ ≅ R₂) :
     P.Comma L R₁ Q W ≌ P.Comma L R₂ Q W where
@@ -537,7 +530,7 @@ def Arrow.Hom.mk {A B : P.Arrow Q W} (f : (Arrow.forget _ _ _).obj A ⟶ (Arrow.
   prop_hom_right := hfr
 
 /-- Make an object of `P.Arrow Q X` from a morphism `f : A ⟶ B` and a proof of `P f`. -/
-@[simps hom left]
+@[simps hom left, implicit_reducible]
 protected def Arrow.mk {A B : T} (f : A ⟶ B) (hf : P f) : P.Arrow Q W where
   left := A
   right := B
@@ -632,7 +625,7 @@ def Over.Hom.mk {A B : P.Over Q X}
 
 variable (Q) in
 /-- Make an object of `P.Over Q X` from a morphism `f : A ⟶ X` and a proof of `P f`. -/
-@[simps hom left]
+@[simps hom left, implicit_reducible]
 protected def Over.mk {A : T} (f : A ⟶ X) (hf : P f) : P.Over Q X where
   left := A
   right := ⟨⟨⟩⟩
@@ -718,7 +711,7 @@ def Under.Hom.mk {A B : P.Under Q X}
 
 variable (Q) in
 /-- Make an object of `P.Under Q X` from a morphism `f : A ⟶ X` and a proof of `P f`. -/
-@[simps hom left]
+@[simps hom left, implicit_reducible]
 protected def Under.mk {A : T} (f : X ⟶ A) (hf : P f) : P.Under Q X where
   left := ⟨⟨⟩⟩
   right := A
@@ -745,7 +738,6 @@ lemma Under.Hom.ext {A B : P.Under Q X} {f g : A ⟶ B} (h : f.right = g.right) 
   · simp
   · exact h
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
     A.hom ≫ f.right = B.hom := by
@@ -766,7 +758,7 @@ section CostructuredArrow
 
 variable {P F X} in
 /-- Construct an object of `P.CostructuredArrow Q F X` from a morphism `F.obj A ⟶ X`. -/
-@[simps left hom]
+@[simps left hom, implicit_reducible]
 protected def CostructuredArrow.mk {A : C} (f : F.obj A ⟶ X) (hf : P f) :
     P.CostructuredArrow Q F X where
   left := A
@@ -809,7 +801,7 @@ protected abbrev CostructuredArrow.forget :
   Comma.forget _ _ _ _ _
 
 /-- Reinterpreting an `F`-costructured arrow `F.obj A ⟶ X` as an arrow over `X`. -/
-@[simps]
+@[simps, implicit_reducible]
 protected def CostructuredArrow.toOver : P.CostructuredArrow ⊤ F X ⥤ P.Over ⊤ X where
   obj A := Over.mk _ A.hom A.prop
   map f := Over.homMk (F.map f.left) _
@@ -820,7 +812,6 @@ instance [F.Faithful] : (CostructuredArrow.toOver P F X).Faithful := by
   ext
   exact F.map_injective congr($(hfg).left)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [F.Full] : (CostructuredArrow.toOver P F X).Full := by
   constructor
   intro A B f

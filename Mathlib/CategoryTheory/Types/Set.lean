@@ -25,7 +25,7 @@ namespace Set
 
 /-- Given `X : Type u`, this is the functor `Set X ⥤ Type u` which sends `A`
 to its underlying type. -/
-@[simps obj map]
+@[simps obj map, implicit_reducible]
 def functorToTypes {X : Type u} : Set X ⥤ Type u where
   obj S := S
   map {S T} f := ↾fun ⟨x, hx⟩ ↦ ⟨x, leOfHom f hx⟩

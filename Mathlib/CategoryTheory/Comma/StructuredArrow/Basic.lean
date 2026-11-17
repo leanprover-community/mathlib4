@@ -528,9 +528,10 @@ end
 
 
 /-- The obvious projection functor from costructured arrows. -/
-@[implicit_reducible, simps!]
-def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
-  Comma.fst _ _
+@[implicit_reducible, simps]
+def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C where
+  obj X := X.left
+  map f := f.left
 
 /-- The `hom` field of costructured arrows in `CostructuredArrow S T`,
 as a natural transformation `proj S T ⋙ S ⟶ (Functor.const _).obj T`. -/
@@ -922,7 +923,7 @@ the obvious triangles involving all `F.map (G.map g)` commute.
 
 This is of course the same as providing a cone over `F ⋙ G` with cone point `X`, see
 `Functor.toStructuredArrowIsoToStructuredArrow`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toStructuredArrow (G : E ⥤ C) (X : D) (F : C ⥤ D) (f : (Y : E) → X ⟶ F.obj (G.obj Y))
     (h : ∀ {Y Z : E} (g : Y ⟶ Z), f Y ≫ F.map (G.map g) = f Z) : E ⥤ StructuredArrow X F where
   obj Y := StructuredArrow.mk (f Y)
@@ -947,7 +948,7 @@ making the obvious triangles involving all `F.map (G.map g)` commute.
 
 This is of course the same as providing a cocone over `F ⋙ G` with cocone point `X`, see
 `Functor.toCostructuredArrowIsoToCostructuredArrow`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toCostructuredArrow (G : E ⥤ C) (F : C ⥤ D) (X : D) (f : (Y : E) → F.obj (G.obj Y) ⟶ X)
     (h : ∀ {Y Z : E} (g : Y ⟶ Z), F.map (G.map g) ≫ f Z = f Y) : E ⥤ CostructuredArrow F X where
   obj Y := CostructuredArrow.mk (f Y)
