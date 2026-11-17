@@ -264,7 +264,7 @@ theorem _root_.MeasureTheory.measureReal_prod_prod (s : Set α) (t : Set β) :
 omit hν in
 lemma _root_.MeasureTheory.measurePreserving_fst [IsProbabilityMeasure ν] :
     MeasurePreserving Prod.fst (μ.prod ν) μ :=
-  ⟨measurable_fst, by rw [map_fst_prod, measure_univ, one_smul]⟩
+  ⟨measurable_fst.aemeasurable, by rw [map_fst_prod, measure_univ, one_smul]⟩
 
 @[simp] lemma map_snd_prod : Measure.map Prod.snd (μ.prod ν) = (μ univ) • ν := by
   ext s hs
@@ -272,7 +272,7 @@ lemma _root_.MeasureTheory.measurePreserving_fst [IsProbabilityMeasure ν] :
 
 lemma _root_.MeasureTheory.measurePreserving_snd [IsProbabilityMeasure μ] :
     MeasurePreserving Prod.snd (μ.prod ν) ν :=
-  ⟨measurable_snd, by rw [map_snd_prod, measure_univ, one_smul]⟩
+  ⟨measurable_snd.aemeasurable, by rw [map_snd_prod, measure_univ, one_smul]⟩
 
 instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsOpenPosMeasure μ] {m' : MeasurableSpace Y}
@@ -722,7 +722,7 @@ theorem prod_swap : map Prod.swap (μ.prod ν) = ν.prod μ := by
   simp_rw [map_apply measurable_swap (hs.prod ht), preimage_swap_prod, prod_prod, mul_comm]
 
 theorem measurePreserving_swap : MeasurePreserving Prod.swap (μ.prod ν) (ν.prod μ) :=
-  ⟨measurable_swap, prod_swap⟩
+  ⟨measurable_swap.aemeasurable, prod_swap⟩
 
 theorem prod_apply_symm {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = ∫⁻ y, μ ((fun x => (x, y)) ⁻¹' s) ∂ν := by
@@ -904,7 +904,7 @@ thus the choice of a name.
 theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
-  have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prodMk hgm
+  have : AEMeasurable (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) := by fun_prop
   use this
   /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
     to deduce `SFinite μd`. -/
@@ -916,8 +916,8 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
     infer_instance
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
   ext s hs
-  rw [map_apply this hs, Measure.prod_apply (this hs), Measure.prod_apply hs,
-    ← hf.lintegral_comp (measurable_measure_prodMk_left hs)]
+  rw [map_apply_of_aemeasurable this hs, Measure.prod_apply₀ (this.nullMeasurable hs),
+    Measure.prod_apply hs, ← hf.lintegral_comp (measurable_measure_prodMk_left hs)]
   apply lintegral_congr_ae
   filter_upwards [hg] with a ha
   rw [← ha, map_apply hgm.of_uncurry_left (measurable_prodMk_left hs), preimage_preimage,
@@ -925,11 +925,11 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
 
 /-- If `f : α → β` sends the measure `μa` to `μb` and `g : γ → δ` sends the measure `μc` to `μd`,
 then `Prod.map f g` sends `μa.prod μc` to `μb.prod μd`. -/
-protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → δ}
+protected theorem prod [SFinite μc] {f : α → β} {g : γ → δ}
     (hf : MeasurePreserving f μa μb) (hg : MeasurePreserving g μc μd) :
     MeasurePreserving (Prod.map f g) (μa.prod μc) (μb.prod μd) :=
-  have : Measurable (uncurry fun _ : α => g) := hg.1.comp measurable_snd
-  hf.skew_product this <| ae_of_all _ fun _ => hg.map_eq
+  ⟨by fun_prop, by
+    rw [← map_prod_map_of_aemeasurable _ _ hf.aemeasurable hg.aemeasurable, hf.map_eq, hg.map_eq]⟩
 
 end MeasurePreserving
 
@@ -1283,7 +1283,7 @@ theorem _root_.MeasureTheory.measurePreserving_prodAssoc (μa : Measure α) (μb
     (μc : Measure γ) [SFinite μb] [SFinite μc] :
     MeasurePreserving (MeasurableEquiv.prodAssoc : (α × β) × γ ≃ᵐ α × β × γ)
       ((μa.prod μb).prod μc) (μa.prod (μb.prod μc)) where
-  measurable := MeasurableEquiv.prodAssoc.measurable
+  aemeasurable := MeasurableEquiv.prodAssoc.measurable.aemeasurable
   map_eq := by
     ext s hs
     have A (x : α) : MeasurableSet (Prod.mk x ⁻¹' s) := measurable_prodMk_left hs

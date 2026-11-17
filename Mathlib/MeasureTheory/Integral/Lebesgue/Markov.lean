@@ -146,10 +146,15 @@ theorem lintegral_strict_mono {f g : α → ℝ≥0∞} (hμ : μ ≠ 0) (hg : A
   refine lintegral_strict_mono_of_ae_le_of_ae_lt_on hg hfi (ae_le_of_ae_lt h) hμ ?_
   simpa using h
 
+theorem setLIntegral_strict_mono₀ {f g : α → ℝ≥0∞} {s : Set α} (hsm : NullMeasurableSet s μ)
+    (hs : μ s ≠ 0) (hg : AEMeasurable g (μ.restrict s)) (hfi : ∫⁻ x in s, f x ∂μ ≠ ∞)
+    (h : ∀ᵐ x ∂μ, x ∈ s → f x < g x) : ∫⁻ x in s, f x ∂μ < ∫⁻ x in s, g x ∂μ :=
+  lintegral_strict_mono (by simp [hs]) hg hfi ((ae_restrict_iff'₀ hsm).mpr h)
+
 theorem setLIntegral_strict_mono {f g : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hs : μ s ≠ 0) (hg : Measurable g) (hfi : ∫⁻ x in s, f x ∂μ ≠ ∞)
     (h : ∀ᵐ x ∂μ, x ∈ s → f x < g x) : ∫⁻ x in s, f x ∂μ < ∫⁻ x in s, g x ∂μ :=
-  lintegral_strict_mono (by simp [hs]) hg.aemeasurable hfi ((ae_restrict_iff' hsm).mpr h)
+  setLIntegral_strict_mono₀ hsm.nullMeasurableSet hs hg.aemeasurable hfi h
 
 theorem ae_lt_top' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
     ∀ᵐ x ∂μ, f x < ∞ := by

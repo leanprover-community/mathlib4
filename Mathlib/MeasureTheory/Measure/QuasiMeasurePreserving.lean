@@ -374,4 +374,8 @@ theorem comp_quasiMeasurePreserving {g : β → γ} (hg : AEMeasurable g μb)
     (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable (g ∘ f) μa :=
   (hg.mono_ac hf.absolutelyContinuous).comp_aemeasurable hf.aemeasurable
 
+theorem map_map_of_quasiMeasurePreserving {g : β → γ} (hg : AEMeasurable g μb)
+    (hf : QuasiMeasurePreserving f μa μb) : (μa.map f).map g = μa.map (g ∘ f) :=
+  (hg.mono_ac hf.absolutelyContinuous).map_map_of_aemeasurable hf.aemeasurable
+
 end AEMeasurable

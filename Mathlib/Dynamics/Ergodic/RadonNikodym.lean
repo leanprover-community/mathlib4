@@ -42,7 +42,8 @@ protected theorem singularPart [SigmaFinite ν] {f : X → X}
   convert hfμ.restrict_preimage hsm using 1
   · refine singularPart_eq_restrict ?_ (hfν.preimage_null hνs)
     rw [← mem_ae_iff, ← Filter.eventuallyEqSet_univ,
-      ae_eq_univ_iff_measure_eq (hfμ.measurable hsm).nullMeasurableSet]
+      ae_eq_univ_iff_measure_eq ((hfμ.aemeasurable.nullMeasurableSet_preimage hsm).mono
+        (singularPart_le μ ν))]
     calc
       μ.singularPart ν (f ⁻¹' s) = (ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν) (f ⁻¹' s) := by
         rw [← hfν.measure_preimage hsm.nullMeasurableSet] at hνs
@@ -60,10 +61,11 @@ with respect to a σ-finite invariant measure is an invariant measure. -/
 protected theorem withDensity_rnDeriv [SigmaFinite ν] {f : X → X}
     (hfμ : MeasurePreserving f μ μ) (hfν : MeasurePreserving f ν ν) :
     MeasurePreserving f (ν.withDensity (μ.rnDeriv ν)) (ν.withDensity (μ.rnDeriv ν)) := by
-  use hfμ.measurable
+  have hfm := hfμ.aemeasurable.mono_measure (withDensity_rnDeriv_le μ ν)
+  use hfm
   ext s hs
-  rw [← ENNReal.add_left_inj (measure_ne_top (μ.singularPart ν) s), map_apply hfμ.measurable hs,
-    ← add_apply, rnDeriv_add_singularPart,
+  rw [← ENNReal.add_left_inj (measure_ne_top (μ.singularPart ν) s),
+    map_apply₀ hfm hs.nullMeasurableSet, ← add_apply, rnDeriv_add_singularPart,
     ← (hfμ.singularPart hfν).measure_preimage hs.nullMeasurableSet, ← add_apply,
     rnDeriv_add_singularPart, hfμ.measure_preimage hs.nullMeasurableSet]
 
@@ -81,10 +83,10 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   set s := {a | μ.rnDeriv ν a < c}
   have hsm : MeasurableSet s := measurable_rnDeriv _ _ measurableSet_Iio
   have hμ_sdiff : μ (f ⁻¹' s \ s) = μ (s \ f ⁻¹' s) :=
-    measure_sdiff_symm (hfμ.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
+    measure_sdiff_symm (hfμ.aemeasurable.nullMeasurableSet_preimage hsm) hsm.nullMeasurableSet
       (hfμ.measure_preimage hsm.nullMeasurableSet) (by finiteness)
   have hν_sdiff : ν (f ⁻¹' s \ s) = ν (s \ f ⁻¹' s) :=
-    measure_sdiff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
+    measure_sdiff_symm (hfν.aemeasurable.nullMeasurableSet_preimage hsm) hsm.nullMeasurableSet
       (hfν.measure_preimage hsm.nullMeasurableSet) (by finiteness)
   suffices f ⁻¹' s =ᵐ[ν] s from this.mem_iff
   suffices ν (f ⁻¹' s \ s) = 0 from (ae_subset.mpr this).antisymm (ae_subset.mpr <| hν_sdiff ▸ this)
@@ -93,8 +95,9 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   calc
     μ (s \ f ⁻¹' s) = ∫⁻ a in s \ f ⁻¹' s, μ.rnDeriv ν a ∂ν := (setLIntegral_rnDeriv hμν _).symm
     _ < ∫⁻ _ in s \ f ⁻¹' s, c ∂ν := by
-      apply setLIntegral_strict_mono (hsm.diff (hfμ.measurable hsm)) (hν_sdiff ▸ h₀)
-        measurable_const
+      apply setLIntegral_strict_mono₀
+        (hsm.nullMeasurableSet.diff (hfν.aemeasurable.nullMeasurableSet_preimage hsm))
+        (hν_sdiff ▸ h₀) aemeasurable_const
       · rw [setLIntegral_rnDeriv hμν]
         finiteness
       · exact .of_forall fun x hx ↦ hx.1

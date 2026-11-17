@@ -118,7 +118,7 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
       have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
         simp_rw [hu₀]; exact tendsto_pow_atTop_atTop_of_one_lt hn
       rw [eventuallyEmptyOrUniv_iff']
-      exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hs.nullMeasurableSet hu₁ hu₂
+      exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hs hu₁ hu₂
 
 theorem ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n • y :=
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)
