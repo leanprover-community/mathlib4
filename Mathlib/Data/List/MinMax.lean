@@ -278,8 +278,7 @@ theorem maximum_mono {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₁.maximum �
 set_option backward.isDefEq.respectTransparency false in
 @[to_dual]
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
-  rw [maximum, ← WithBot.some_eq_coe, Equiv.symm_apply_eq, WithBot.toOption_apply_coe,
-    argmax_eq_some_iff]
+  rw [maximum, Equiv.symm_apply_eq, WithBot.toOption_apply_coe, argmax_eq_some_iff]
   simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
   intro _ h a hal hma
   rw [_root_.le_antisymm hma (h a hal)]
