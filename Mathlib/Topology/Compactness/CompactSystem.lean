@@ -18,8 +18,6 @@ This file defines compact systems of sets.
 
 * `IsCompactSystem`: A set of sets is a compact system if, whenever a countable subfamily has empty
   intersection, then finitely many of them already have empty intersection.
-* `compactClosedSquareCylinders`: The square cylinders in a product space whose sides are
-  compact and closed.
 
 ## Main results
 
@@ -247,9 +245,8 @@ protected theorem countableInfClosure (hS : IsCompactSystem S) :
   simp only [mem_countableInfClosure_iff_iInf, iInf_eq_iInter] at hD
   choose t ht hDt using hD
   obtain rfl : D = fun i ↦ ⋂ n, t i n := funext fun i ↦ (hDt i).symm
-  obtain ⟨n, hn⟩ := hS (fun k ↦ t k.unpair.1 k.unpair.2) (fun k ↦ ht _ _)
-    (by rwa [iInter_unpair])
-  refine ⟨n, subset_eq_empty (fun x hx ↦ ?_) hn⟩
+  gconvert hS (fun k ↦ t k.unpair.1 k.unpair.2) (fun k ↦ ht _ _) (by rwa [iInter_unpair])
+  intro x hx
   simp only [mem_dissipate, mem_iInter] at hx ⊢
   exact fun k hk ↦ hx _ ((unpair_left_le k).trans hk) _
 
@@ -340,22 +337,3 @@ protected theorem sigma {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSyst
   exact hN i y (antitone_dissipate (Finset.le_sup hi0) hiy)
 
 end IsCompactSystem
-
-section CompactClosedSquareCylinders
-
-variable {ι : Type*} (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
-
-/-- The set of sets of the form `s.pi t`, where `s : Finset ι` and `t i` is both closed and
-compact for all `i ∈ s`. -/
-def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
-  MeasureTheory.squareCylinders fun i ↦ {t : Set (α i) | IsCompact t ∧ IsClosed t}
-
-/-- Compact and closed square cylinders form a compact system. -/
-theorem isCompactSystem_compactClosedSquareCylinders :
-    IsCompactSystem (compactClosedSquareCylinders α) := by
-  refine (IsCompactSystem.pi fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)).mono ?_
-  rintro _ ⟨s, t, ht, rfl⟩
-  classical
-  exact ⟨fun i ↦ if i ∈ s then t i else univ, by grind⟩
-
-end CompactClosedSquareCylinders

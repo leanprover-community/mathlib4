@@ -49,7 +49,6 @@ provided.
 * `TopCat.GlueData.preimage_image_eq_image`: The preimage of the image of some `U ⊆ U i` is
     given by XXX.
 * `TopCat.GlueData.ι_isOpenEmbedding`: Each of the `ι i`s are open embeddings.
-
 -/
 
 @[expose] public section
@@ -428,7 +427,7 @@ def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (Equiv.ofBijective (fromOpenSubsetsGlue U)
       ⟨fromOpenSubsetsGlue_injective U,
         Set.range_eq_univ.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩)
-    (fromOpenSubsetsGlue U).hom.2 (fromOpenSubsetsGlue_isOpenMap U)
+    (map_continuous (fromOpenSubsetsGlue U).hom) (fromOpenSubsetsGlue_isOpenMap U)
 
 end GlueData
 

@@ -76,12 +76,17 @@ lemma nat_clog_zero_left (b n : Nat) (hb : Nat.ble b 1 = true) :
 lemma nat_clog_zero_right (b n : Nat) (hn : Nat.ble n 1 = true) :
     Nat.clog b n = 0 := Nat.clog_of_right_le_one (Nat.le_of_ble_eq_true hn) b
 
-theorem nat_clog_helper {b m n : ℕ} (hb : Nat.blt 1 b = true)
+theorem nat_clog_helper {b m n : ℕ}
     (h₁ : Nat.blt (b ^ m) n = true) (h₂ : Nat.ble n (b ^ (m + 1)) = true) :
     Nat.clog b n = m + 1 := by
-  rw [Nat.blt_eq] at hb
-  rw [Nat.blt_eq, ← Nat.lt_clog_iff_pow_lt hb] at h₁
-  rw [Nat.ble_eq, ← Nat.clog_le_iff_le_pow hb] at h₂
+  rw [Nat.blt_eq] at h₁
+  rw [Nat.ble_eq] at h₂
+  have hb : 1 < b := by
+    grind =>
+      have : b = 0 ∨ b = 1
+      finish
+  rw [← Nat.lt_clog_iff_pow_lt hb] at h₁
+  rw [← Nat.clog_le_iff_le_pow hb] at h₂
   lia
 
 theorem isNat_clog : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
@@ -110,10 +115,9 @@ def proveNatClog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.clog $eb $en = $ek) :
       have ek : Q(ℕ) := mkRawNatLit k
       have ek1 : Q(ℕ) := mkRawNatLit (k + 1)
       have _ : $ek1 =Q $ek + 1 := ⟨⟩
-      have hb : Q(Nat.blt 1 $eb = true) := reflBoolTrue
       have hl : Q(Nat.blt ($eb ^ $ek) $en = true) := reflBoolTrue
       have hh : Q(Nat.ble $en ($eb ^ ($ek + 1)) = true) := reflBoolTrue
-      ⟨ek1, q(nat_clog_helper $hb $hl $hh)⟩
+      ⟨ek1, q(nat_clog_helper $hl $hh)⟩
 
 /--
 Evaluates the `Nat.clog` function.

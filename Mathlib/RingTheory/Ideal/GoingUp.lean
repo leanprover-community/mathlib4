@@ -73,11 +73,9 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
         le_comap_map := by
   refine quotientMap_injective' (le_of_eq ?_)
   rw [comap_map_of_surjective (mapRingHom (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))))
-      (map_surjective (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))) Ideal.Quotient.mk_surjective)]
-  refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
-  refine fun p hp =>
-    polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp ?_
-  simpa only [coeff_map, coe_mapRingHom] using! ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
+      (map_surjective (Quotient.mk (P.comap (C : R →+* R[X]))) Quotient.mk_surjective), sup_eq_left]
+  refine fun p hp ↦ polynomial_mem_ideal_of_coeff_mem_ideal P p fun n ↦ ?_
+  simpa [Quotient.eq_zero_iff_mem] using congr($(hp).coeff n)
 
 /-- The identity in this lemma asserts that the "obvious" square
 ```

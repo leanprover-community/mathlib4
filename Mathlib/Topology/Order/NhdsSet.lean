@@ -38,20 +38,20 @@ variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopolog
 @[simp] theorem nhdsSet_Ioo : 𝓝ˢ (Ioo a b) = 𝓟 (Ioo a b) := isOpen_Ioo.nhdsSet_eq
 
 theorem nhdsSet_Ici : 𝓝ˢ (Ici a) = 𝓝 a ⊔ 𝓟 (Ioi a) := by
-  rw [← Ioi_insert, nhdsSet_insert, nhdsSet_Ioi]
+  rw [← insert_Ioi, nhdsSet_insert, nhdsSet_Ioi]
 
 theorem nhdsSet_Iic : 𝓝ˢ (Iic a) = 𝓝 a ⊔ 𝓟 (Iio a) := nhdsSet_Ici (α := αᵒᵈ)
 
 theorem nhdsSet_Ico (h : a < b) : 𝓝ˢ (Ico a b) = 𝓝 a ⊔ 𝓟 (Ioo a b) := by
-  rw [← Ioo_insert_left h, nhdsSet_insert, nhdsSet_Ioo]
+  rw [← insert_left_Ioo h, nhdsSet_insert, nhdsSet_Ioo]
 
 theorem nhdsSet_Ioc (h : a < b) : 𝓝ˢ (Ioc a b) = 𝓝 b ⊔ 𝓟 (Ioo a b) := by
-  rw [← Ioo_insert_right h, nhdsSet_insert, nhdsSet_Ioo]
+  rw [← insert_right_Ioo h, nhdsSet_insert, nhdsSet_Ioo]
 
 theorem nhdsSet_Icc (h : a ≤ b) : 𝓝ˢ (Icc a b) = 𝓝 a ⊔ 𝓝 b ⊔ 𝓟 (Ioo a b) := by
   rcases h.eq_or_lt with rfl | hlt
   · simp
-  · rw [← Ioc_insert_left h, nhdsSet_insert, nhdsSet_Ioc hlt, sup_assoc]
+  · rw [← insert_left_Ioc h, nhdsSet_insert, nhdsSet_Ioc hlt, sup_assoc]
 
 /-!
 ### Lemmas about `Ixi _ ∈ 𝓝ˢ (Set.Ici _)`

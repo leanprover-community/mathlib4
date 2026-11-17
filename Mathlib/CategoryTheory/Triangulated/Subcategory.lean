@@ -34,7 +34,6 @@ of an additive category is not closed under isomorphisms.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-
 -/
 
 @[expose] public section
@@ -419,11 +418,6 @@ lemma extensionProductIter_le_of_isTriangulatedClosed₂ {Q : ObjectProperty C}
     [Q.IsTriangulatedClosed₂] [Q.IsClosedUnderIsomorphisms] (h : P ≤ Q) (n : ℕ) :
     P.extensionProductIter n ≤ Q :=
   Q.isoClosure_eq_self ▸ P.extensionProductIter_le_of_isTriangulatedClosed₂' h n
-
-instance [P.IsStableUnderShift ℤ] (n : ℕ) : (P.extensionProductIter n).IsStableUnderShift ℤ := by
-  induction n with
-  | zero => rwa [extensionProductIter_zero]
-  | succ n H => rw [extensionProductIter_succ]; infer_instance
 
 lemma extensionProductIter_retractClosure_le {n : ℕ} :
     (P.retractClosure.extensionProductIter n) ≤ (P.extensionProductIter n).retractClosure := by

@@ -13,7 +13,6 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 
 /-!
-
 # Weierstrass preparation theorem for power series over a complete local ring
 
 In this file we define Weierstrass division, Weierstrass factorization, and prove
@@ -87,7 +86,6 @@ such ring has only one maximal ideal, and hence it is a complete local ring.
 ## References
 
 - [Washington, Lawrence C. *Introduction to cyclotomic fields.*][washington_cyclotomic]
-
 -/
 
 @[expose] public section
@@ -99,9 +97,7 @@ namespace PowerSeries
 variable {A : Type*} [CommRing A]
 
 /-!
-
 ## Weierstrass division
-
 -/
 
 section IsWeierstrassDivisionAt
@@ -640,9 +636,7 @@ alias zero_weierstrassMod := weierstrassMod_zero_left
 end IsLocalRing
 
 /-!
-
 ## Weierstrass preparation theorem
-
 -/
 
 /-- If `f` is a polynomial over `A`, `g` and `h` are power series over `A`,

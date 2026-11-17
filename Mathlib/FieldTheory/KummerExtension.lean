@@ -53,7 +53,6 @@ TODO: treat the case where the characteristic `p` of the field divides `n`, so t
 contains a primitive `n`-th root of unity.
 For the Galois group part, this is Artin-Schreier theory;
 it also holds that `X ^ p - C a` is irreducible iff `a` is not a `p`-th power in `K`.
-
 -/
 
 @[expose] public section
@@ -528,7 +527,7 @@ lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
       mul_comm, pow_mul, hζ.pow_eq_one, one_pow, one_smul]
   · -- Since `σ` does not fix `K⟮α⟯`, `K⟮α⟯` is `L`.
     apply IsGalois.intermediateFieldEquivSubgroup.injective
-    rw [map_top, eq_top_iff]
+    rw [TopHomClass.map_top, eq_top_iff]
     intro σ' hσ'
     obtain ⟨n, rfl : σ ^ n = σ'⟩ := mem_powers_iff_mem_zpowers.mpr (hσ σ')
     have := hσ' ⟨v, IntermediateField.mem_adjoin_simple_self K v⟩

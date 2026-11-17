@@ -31,7 +31,6 @@ We also define predicates about affine schemes and affine open sets.
 * `AlgebraicGeometry.IsAffineOpen`: An open subset of a scheme is affine if the open subscheme is
   affine.
 * `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
-
 -/
 
 @[expose] public section
@@ -835,6 +834,18 @@ theorem isLocalization_stalk (x : U) :
   clear_value y
   subst this
   exact hU.isLocalization_stalk' y hx
+
+/-- A section lies outside the prime ideal attached to a point of an affine open precisely when
+it does not vanish there, i.e. when the point lies in its basic open set. This is the
+chart-level form of `PrimeSpectrum.mem_basicOpen`. -/
+theorem mem_basicOpen_iff_notMem_primeIdealOf (x : U) (f : Γ(X, U)) :
+    (x : X) ∈ X.basicOpen f ↔ f ∉ (hU.primeIdealOf x).asIdeal := by
+  have := hU.isLocalization_stalk x
+  have h := IsLocalization.AtPrime.isUnit_to_map_iff
+    (X.presheaf.stalk (x : X)) (hU.primeIdealOf x).asIdeal f
+  rw [TopCat.Presheaf.stalk_open_algebraMap] at h
+  rw [X.mem_basicOpen' f x]
+  exact h
 
 lemma stalkMap_injective (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U) (x : X)
     (hx : f x ∈ U)

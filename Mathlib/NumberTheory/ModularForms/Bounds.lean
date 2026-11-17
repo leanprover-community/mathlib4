@@ -98,8 +98,7 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
   by_cases hg : g 1 0 = 0
   · -- If `c = 0`, then `(g • τ).im = τ.im / d ^ 2` and `d ^ 2 ≥ 1`.
     -- (In fact `d = ±1`, but we do not need this stronger statement).
-    have : g 1 1 ≠ 0 := fun hg' ↦ zero_ne_one <| by
-      simpa only [Matrix.det_fin_two, hg, hg', mul_zero, mul_zero, sub_zero] using g.det_coe
+    have : g 1 1 ≠ 0 := d_ne_zero_of_c_eq_zero (R := ℤ) (g := g) hg
     have : (1 : ℝ) ≤ g 1 1 ^ 2 := mod_cast (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs this)
     refine le_trans ?_ <| le_max_left _ _
     rw [show Complex.normSq ((g 1 0) * τ + (g 1 1)) = (g 1 1) ^ 2 by simp [hg, sq]]
@@ -114,7 +113,6 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
     have : (1 : ℝ) ≤ g 1 0 ^ 2 := mod_cast (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs hg)
     nlinarith
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A function on `ℍ` which is invariant under a finite-index subgroup of `SL(2, ℤ)`, and satisfies
 an `O((im τ) ^ t)` bound at all cusps for some `0 ≤ t`, is in fact uniformly bounded by a multiple
 of `(max (im τ) (1 / im τ)) ^ t`. -/
@@ -130,7 +128,7 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
       exact ⟨g⁻¹ * h, hgh, (mul_inv_cancel_left g h).symm⟩
     simp [-sl_moeb, hj', mul_smul, hf_inv j⁻¹ (inv_mem hj)]
   have hf'_cont γ : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
-    simp only [sl_moeb, f', Quotient.lift_mk]
+    simp only [sl_moeb, f', map_inv, Quotient.lift_mk]
     fun_prop
   have hf'_inv τ (g : SL(2, ℤ)) γ : f' (g • τ) (g • γ) = f' τ γ := by
     induction γ using QuotientGroup.induction_on
@@ -421,7 +419,7 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
   generalize h : τ.im = t
   have ht : 0 < t := h ▸ τ.im_pos
   lift t to NNReal using ht.le
-  rw [← coe_nnnorm]
+  rw [← coe_nnNorm]
   norm_cast at ⊢ ht
   rw [(pow_left_mono k).map_max, (pow_left_mono 2).map_max, ← max_div_div_right (by positivity)]
   congr <;> simp [field, ht.ne']

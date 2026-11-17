@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 In this file we show that the supremum of two subalgebras that are finitely generated as modules,
 is again finitely generated.
-
 -/
 
 public section
