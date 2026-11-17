@@ -757,10 +757,10 @@ FreeAddCommGroup.lift
   FreeAbelianGroup.lift_neg := FreeAddCommGroup.lift_neg
 @[deprecated (since := "2026-11-11")] alias
   FreeAbelianGroup.lift_neg_apply := FreeAddCommGroup.lift_neg_apply
-@[deprecated (since := "2026-11-11")] protected alias FreeAbelianGroup.induction_on' :=
-  FreeAddCommGroup.induction_on'
 set_option linter.deprecated.deprecatedTarget false in
 section
+@[deprecated (since := "2026-11-11")] protected alias FreeAbelianGroup.induction_on' :=
+  FreeAddCommGroup.induction_on'
 @[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.map_pure :=
   FreeAddCommGroup.map_pure
 @[deprecated (since := "2026-11-11")] protected alias FreeAbelianGroup.map_zero :=
