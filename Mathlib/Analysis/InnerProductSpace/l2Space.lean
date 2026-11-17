@@ -600,10 +600,7 @@ variable {𝕜 E} {ι' : Type*}
 /-- For a HilbertBasis `b` indexed by `ι`, `b.reindex (e : ι ≃ ι')` is a `HilbertBasis` indexed
 by `ι'`. -/
 protected def reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') : HilbertBasis ι' 𝕜 E :=
-  HilbertBasis.mk (b.orthonormal.comp _ e.symm.injective)
-    (by
-      rw [e.symm.surjective.range_comp]
-      exact b.dense_span.ge)
+  HilbertBasis.mk (b.orthonormal.comp _ e.symm.injective) (by simp)
 
 @[simp]
 protected theorem coe_reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
