@@ -51,7 +51,7 @@ which preserves zero morphisms. -/]
 def map : KernelFork (G.map f) :=
   KernelFork.ofι (G.map c.ι) (c.map_condition G)
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) map_π]
 lemma map_ι : (c.map G).ι = G.map c.ι := rfl
 
 /-- The underlying cone of a kernel fork is mapped to a limit cone if and only if
