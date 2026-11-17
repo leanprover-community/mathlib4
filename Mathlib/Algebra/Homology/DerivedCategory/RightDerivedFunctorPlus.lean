@@ -83,6 +83,7 @@ instance : F.rightDerivedFunctorPlus.IsTriangulated :=
   (localizerMorphism_derives _).isTriangulated_of_isRightDerivedFunctor
     F.rightDerivedFunctorPlusUnith
 
+set_option backward.privateInPublic true in
 /-- A natural transformation that is part of the data of the right derived functor
 `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
 when `F : C ⥤ D` is an additive functor between abelian categories and
