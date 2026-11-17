@@ -298,13 +298,13 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
       have h1 : EqOn (c.symm ≫ₕ f ≫ₕ c').symm e.symm (e.target ∩ e.target) := by
         apply EqOn.symm
         refine e.isImage_source_target.symm_eqOn_of_inter_eq_of_eqOn ?_ ?_
-        · rw [inter_self, inter_eq_right.mpr h2e]
+        · rw [inter_self, inter_eq_right_iff.mpr h2e]
         · rw [inter_self]; exact hef.symm
       have h2 : e.target ⊆ (c.symm ≫ₕ f ≫ₕ c').target := by
         intro x hx; rw [← e.right_inv hx, ← hef (e.symm.mapsTo hx)]
         exact OpenPartialHomeomorph.mapsTo _ (h2e <| e.symm.mapsTo hx)
       rw [inter_self] at h1
-      rwa [inter_eq_right.mpr]
+      rwa [inter_eq_right_iff.mpr]
       refine h2.trans ?_
       mfld_set_tac
     refine ⟨e.symm, StructureGroupoid.symm _ he, h3e, ?_⟩

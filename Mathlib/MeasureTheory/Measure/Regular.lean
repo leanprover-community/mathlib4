@@ -547,7 +547,7 @@ lemma restrict (h : InnerRegularWRT μ p (fun s ↦ MeasurableSet s ∧ μ s ≠
   _ = μ.restrict (toMeasurable μ (s ∩ A)) K := by
     rw [restrict_apply' (measurableSet_toMeasurable μ (s ∩ A))]
     congr
-    apply (inter_eq_left.2 ?_).symm
+    apply (inter_eq_left_iff.2 ?_).symm
     exact K_subs.trans inter_subset_left
   _ = μ.restrict (s ∩ A) K := by rwa [restrict_toMeasurable]
   _ ≤ μ.restrict A K := Measure.le_iff'.1 (restrict_mono inter_subset_right le_rfl) K

@@ -51,10 +51,10 @@ lemma Shatters.mono_right (h : t ⊆ s) (hs : 𝒜.Shatters s) : 𝒜.Shatters t
   obtain ⟨v, hv, rfl⟩ := hs (hu.trans h); exact ⟨v, hv, inf_congr_right hu <| inf_le_of_left_le h⟩
 
 lemma Shatters.exists_superset (h : 𝒜.Shatters s) : ∃ t ∈ 𝒜, s ⊆ t :=
-  let ⟨t, ht, hst⟩ := h Subset.rfl; ⟨t, ht, inter_eq_left.1 hst⟩
+  let ⟨t, ht, hst⟩ := h Subset.rfl; ⟨t, ht, inter_eq_left_iff.1 hst⟩
 
 lemma shatters_of_forall_subset (h : ∀ t, t ⊆ s → t ∈ 𝒜) : 𝒜.Shatters s :=
-  fun t ht ↦ ⟨t, h _ ht, inter_eq_right.2 ht⟩
+  fun t ht ↦ ⟨t, h _ ht, inter_eq_right_iff.2 ht⟩
 
 protected lemma Shatters.nonempty (h : 𝒜.Shatters s) : 𝒜.Nonempty :=
   let ⟨t, ht, _⟩ := h Subset.rfl; ⟨t, ht⟩
@@ -88,7 +88,7 @@ def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   fun _ ↦ by simpa using Shatters.mono_left h
 
 lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜.shatterer :=
-  fun _s hs ↦ mem_shatterer.2 fun t ht ↦ ⟨t, h ht hs, inter_eq_right.2 ht⟩
+  fun _s hs ↦ mem_shatterer.2 fun t ht ↦ ⟨t, h ht hs, inter_eq_right_iff.2 ht⟩
 
 @[simp] lemma isLowerSet_shatterer (𝒜 : Finset (Finset α)) :
     IsLowerSet (𝒜.shatterer : Set (Finset α)) := fun s t ↦ by simpa using Shatters.mono_right

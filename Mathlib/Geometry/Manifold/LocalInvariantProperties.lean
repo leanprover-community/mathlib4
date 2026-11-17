@@ -662,7 +662,7 @@ theorem _root_.OpenPartialHomeomorph.isLocalStructomorphWithinAt_iff' {G : Struc
   rw [f.isLocalStructomorphWithinAt_iff hx]
   refine imp_congr_right fun _ ↦ exists_congr fun e ↦ and_congr_right fun _ ↦ ?_
   refine and_congr_right fun h2e ↦ ?_
-  rw [inter_eq_right.mpr (h2e.trans hs)]
+  rw [inter_eq_right_iff.mpr (h2e.trans hs)]
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is an open partial homeomorph
 and the set we're considering is `f.source`. -/

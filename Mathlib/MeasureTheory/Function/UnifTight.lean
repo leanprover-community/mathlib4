@@ -95,7 +95,7 @@ theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} 
   refine eventually_smallSets.2 ⟨sᶜ, ?_, fun t hts htm i ↦ ?_⟩
   · rwa [Measure.compl_mem_cofinite, lt_top_iff_ne_top]
   · have : t.indicator (f i) = t.indicator (sᶜ.indicator (f i)) := by
-      rw [indicator_indicator, inter_eq_left.2 hts]
+      rw [indicator_indicator, inter_eq_left_iff.2 hts]
     rw [this]
     have A i : MemLp (sᶜ.indicator (f i)) p μ := (hfs i).trans_lt h'ε
     apply (eLpNorm_mono ((A i).aestronglyMeasurable.indicator htm) <|

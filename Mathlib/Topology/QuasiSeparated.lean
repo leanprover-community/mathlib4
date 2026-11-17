@@ -64,21 +64,21 @@ theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated
     (H (f ⁻¹' U) (f ⁻¹' V) ?_ (h.continuous.1 _ hU') ?_ ?_ (h.continuous.1 _ hV') ?_).image
       h.continuous
   · symm
-    rw [← Set.preimage_inter, Set.image_preimage_eq_inter_range, Set.inter_eq_left]
+    rw [← Set.preimage_inter, Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff]
     exact Set.inter_subset_left.trans (hU.trans (Set.image_subset_range _ _))
   · intro x hx
     rw [← h.injective.injOn.mem_image_iff (Set.subset_univ _) trivial]
     exact hU hx
   · rw [h.isCompact_iff]
     convert hU''
-    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
+    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff]
     exact hU.trans (Set.image_subset_range _ _)
   · intro x hx
     rw [← h.injective.injOn.mem_image_iff (Set.subset_univ _) trivial]
     exact hV hx
   · rw [h.isCompact_iff]
     convert hV''
-    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
+    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff]
     exact hV.trans (Set.image_subset_range _ _)
 
 theorem IsQuasiSeparated.of_subset {s t : Set α} (ht : IsQuasiSeparated t) (h : s ⊆ t) :

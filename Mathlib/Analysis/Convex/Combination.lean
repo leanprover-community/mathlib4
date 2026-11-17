@@ -538,8 +538,8 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
   have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, *]
   replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w <| by
     simp only [w, sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
-      Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht₁, Finset.inter_eq_right.2 ht₂, h₃w₂,
-      sub_self]
+      Finset.filter_mem_eq_inter, Finset.inter_eq_right_iff.2 ht₁, Finset.inter_eq_right_iff.2 ht₂,
+      h₃w₂, sub_self]
   have ht (x) (hx₁ : x ∈ t₁) (hx₂ : x ∉ t₂) : w₁ x = 0 := by
     simpa [w, hx₁, hx₂] using hs _ (ht₁ hx₁)
   refine ⟨w₁, ?_, ?_, ?_⟩

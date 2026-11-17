@@ -463,7 +463,7 @@ Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
       by_contra h; exact (disjoint h).le_bot ⟨idx_U .., inv_U _ _⟩ }
   have open_preim {W} (hWV : W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
     convert isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)
-    rw [← Set.inter_iUnion, eq_comm, Set.inter_eq_left]
+    rw [← Set.inter_iUnion, eq_comm, Set.inter_eq_left_iff]
     exact (Set.preimage_mono hWV).trans exhaustive'
   have open_source : IsOpen F.source := open_preim subset_rfl open_V
   have cont_f : ContinuousOn f F.source := (continuousOn_open_iff open_source).mpr

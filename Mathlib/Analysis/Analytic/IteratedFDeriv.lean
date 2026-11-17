@@ -136,7 +136,7 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
   have I : insert x s ∩ Metric.eball x r = s := by
     rw [Set.insert_eq_of_mem hx]
-    exact Set.inter_eq_left.2 h's
+    exact Set.inter_eq_left_iff.2 h's
   have fcont : ContDiffOn 𝕜 (↑n) f s := by
     apply AnalyticOn.contDiffOn _ hs
     simpa [I] using h'
