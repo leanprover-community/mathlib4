@@ -66,8 +66,10 @@ along with the projection function's constant name (which is recorded in the inf
 Note that the projection name from the `expr` is guaranteed to be the projection function Lean has
 actually found for the projection syntax being used.
 
-Note also that not every projection goes through the `elabProj` elaborator, and so we do not gate
-on that.
+Note also that not every projection goes through the `elabProj` elaborator which is resposible for
+elaborating projection syntax like `a.1`. In particular, syntax including: `a.1 x` (surprisingly),
+the inner `a.1` in `a.1.2`, `@a.1`, `a |>.1`, and so on all do not record the `elabProj` elaborator
+as responsible for their elaboration in the infotrees. As such, we do not gate on this.
 -/
 @[inline] def numericProjFn? (i : TermInfo) : Option (Lean.Syntax × Name) := do
   guard <| i.stx.isOfKind Parser.Term.identProjKind
