@@ -107,7 +107,7 @@ theorem eval_singleton (a : α) : M.eval [a] = M.step M.start a :=
 
 @[simp]
 theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.step (M.eval x) a :=
-  evalFrom_append_singleton _ _ _ _
+  evalFrom_append_singleton ..
 
 theorem evalFrom_of_append (start : σ) (x y : List α) :
     M.evalFrom start (x ++ y) = M.evalFrom (M.evalFrom start x) y :=
@@ -208,11 +208,7 @@ theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval
 
 @[simp]
 theorem accepts_comap (f : α' → α) : (M.comap f).accepts = ⟨List.map f ⁻¹' M.accepts.toSet⟩ := by
-  ext x
-  conv =>
-    rhs
-    rw [Set.mem_preimage, Language.mem_toSet, mem_accepts]
-  simp [mem_accepts]
+  ext; simp [mem_accepts]
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/
 @[simps apply_step apply_start apply_accept]
