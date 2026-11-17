@@ -934,8 +934,8 @@ abbrev freeLiftLEquiv :
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
 
 lemma free_ext (f g : free k G α ⟶ A)
-    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g := by
-  exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
+    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g :=
+  (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
 
 variable {A}
 section
