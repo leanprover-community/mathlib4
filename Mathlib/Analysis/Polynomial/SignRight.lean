@@ -80,8 +80,8 @@ theorem signRight_X_sub_C_pow [IsOrderedRing R] [Nontrivial R] (a : R) (n : ℕ)
   rw [signRight, taylor_pow, taylor_X_sub_C, trailingCoeff_X_pow, sign_one]
 
 theorem signRight_X_sub_C [IsOrderedRing R] [Nontrivial R] (a : R) :
-    signRight a ((X - C a)) = 1 := by
-  rw [<- pow_one (X - C a), signRight_X_sub_C_pow]
+    signRight a (X - C a) = 1 := by
+  rw [← pow_one (X - C a), signRight_X_sub_C_pow]
 
 /-- `signRight` is a multiplicative function. -/
 theorem signRight_mul [IsStrictOrderedRing R] (x : R) (p q : R[X]) :
@@ -114,7 +114,7 @@ theorem signRight_of_eval_eq_zero [IsStrictOrderedRing R] {x : R} {p : R[X]} (h 
 
 theorem signRight_derivative_mul [IsStrictOrderedRing R] {x : R} {p : R[X]} (hp : p ≠ 0)
     (hev : eval x p = 0) : signRight x (derivative p * p) = 1 := by
-  rw [signRight_mul, ← signRight_of_eval_eq_zero hev, <- signRight_mul, signRight_mul_self hp]
+  rw [signRight_mul, ← signRight_of_eval_eq_zero hev, ← signRight_mul, signRight_mul_self hp]
 
 theorem signRight_add {x : R} {p q : R[X]} (hp : eval x p = 0) (hq : eval x q ≠ 0) :
     signRight x (p + q) = signRight x q := by
