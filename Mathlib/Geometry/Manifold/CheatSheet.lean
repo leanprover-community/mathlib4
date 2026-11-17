@@ -1,4 +1,5 @@
 import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.LeviCivita
+import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Trivial
 
 /-!
 # Differential geometry cheat sheet
@@ -6,6 +7,8 @@ import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.LeviCivita
 How do I say certain basic things in Lean?
 For each of them, include a variable block. Can verso do this already?
 -/
+
+open Set
 
 open scoped ContDiff -- needed for ∞ and ω notation for smooth and analytic
 
@@ -165,11 +168,17 @@ end
 
 section
 
--- `f` is differentiable at `x`
+-- `f` is differentiable at `x` within `s`
 #check MDifferentiableWithinAt I I' f s x -- or `MDiffAt[s] f x`
+
+-- `f` is differentiable on `s`
+#check MDifferentiableOn I I' f s  -- or `MDiff[s] f`
 
 -- `f` is differentiable at `x`
 #check MDifferentiableAt I I' f x -- or `MDiffAt f x`
+
+-- `f` is differentiable everywhere
+#check MDifferentiable I I' f -- or `MDiff f`
 
 -- the derivative of `f` at `x`
 #check mfderiv I I' f x -- or `mfderiv% f x`
@@ -190,6 +199,12 @@ example (h : MDiffAt f x) : MDiffAt[s] f x := h.mdifferentiableWithinAt
 
 -- The converse holds for interior points
 example (h : MDiffAt[s] f x) (hxs : s ∈ 𝓝 x) : MDiffAt f x := h.mdifferentiableAt hxs
+
+example : MDiff[s] f ↔ ∀ x ∈ s, MDiffAt[s] f x := Iff.rfl
+
+example : MDiffAt f x ↔ MDiffAt[univ] f x := Iff.rfl
+
+example : MDiff f ↔ ∀ x, MDiffAt f x := Iff.rfl
 
 /-
 When the target is a vector space `E'`, one can post-compose `mfderiv` by
@@ -254,26 +269,115 @@ example (hf : MDiffAt f x) {y : M'} (hy : f x = y) (hg : MDiffAt g y) : MDiffAt 
 
 end
 
-/-! ## Continuously differentiable maps -/
+/-! ## Continuously differentiable maps
+
+We now consider maps with class C^n.
+
+TODO: check we don’t have a definition saying n times differentiable without being n times
+*continuously* differentiable.
+-/
 section
 variable (n : WithTop ℕ∞) -- regularity parameter, including ∞ and ω, with notation in `ContDiff`
 
+-- `f` is `n` times continuously differentiable at `x`
+#check ContMDiffAt I I' n f x -- or `CMDiffAt n f x`
 
--- f is n times continuously differentiable
+-- `f` is `n` times continuously differentiable at `x` within `s`
+#check ContMDiffWithinAt I I' n f s x -- or `CMDiffAt[s] n f`
+
+-- `f` is `n` times continuously differentiable on `s`
+#check ContMDiffOn I I' n f s -- or `CMDiff[s] n f`
+
+-- `f` is `n` times continuously differentiable everywhere
 #check ContMDiff I I' n f -- or `CMDiff n f`
 
--- FIXME: It seems we don’t have a delaborator for CMDiff
-
+-- FIXME: It seems we don’t have a delaborator for all those!
 
 /-
 Important note: the definition of `ContMDiff I I' n` does not assume the source and target
 manifolds are C^n. See the corresponding note about `MDifferentiableAt I I' n` .
+
+The pointwise version `ContMDiffAt` and  `ContMDiffWithinAt` are a bit tricky
+because of course iterated derivatives at `x` require differentiability near `x`.
+However this “near x” can depend on the order of differentiation, which matters when `n`
+is `∞` (but not when `n` is `ω` because in that case we require a neighborhood that works for the
+whole power series). Note also the assumptions that `M` and `M'` are of class C^n, without which
+this would be a junk claim anyway.
 -/
 
-variable
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  (g : M → F) (n : WithTop ℕ∞) in
-#check ContMDiff I 𝓘(𝕜, F) n g  -- g is n times continuously differentiable
+example [IsManifold I n M] [IsManifold I' n M']
+    (h : CMDiffAt n f x) (hn : n ≠ ∞) : ∀ᶠ x' in 𝓝 x, CMDiffAt n f x' :=
+  (contMDiffAt_iff_contMDiffAt_nhds hn).mp h
+
+-- The absolute version is stronger than the relative one
+example (h : CMDiffAt n f x) : CMDiffAt[s] n f x := h.contMDiffWithinAt
+
+-- The converse holds for interior points
+example (h : CMDiffAt[s] n f x) (hxs : s ∈ 𝓝 x) : CMDiffAt n f x := h.contMDiffAt hxs
+
+example : CMDiff[s] n f ↔ ∀ x ∈ s, CMDiffAt[s] n f x := Iff.rfl
+
+example : CMDiffAt n f x ↔ CMDiffAt[univ] n f x := Iff.rfl
+
+example : CMDiff n f ↔ ∀ x, CMDiffAt n f x := Iff.rfl
+
+-- All those conditions are antitone in `n`, and the corresponding lemma is always called `of_le`,
+-- in the relvant namespace. For instance:
+
+-- `n ↦ CMDiffAt[s] n` in antitone
+example (h : CMDiffAt[s] n f x) {n' : WithTop ℕ∞} (hnn' : n' ≤ n) : CMDiffAt[s] n' f x :=
+  h.of_le hnn'
+
+-- `n ↦ CMDiffAt n` in antitone
+example (h : CMDiffAt n f x) {n' : WithTop ℕ∞} (hnn' : n' ≤ n) : CMDiffAt n' f x :=
+  h.of_le hnn'
+
+-- They also propagate to `tangentMap` with the corresponding regularity. The following is that
+-- global version. Other versions are a bit more tricky to state (and versions within a set `s`
+-- exclude the junk case where function don’t have unique derivatives on `s`). Some versions seem to
+-- be missing as well. Explore around the lemma quoted below for more information.
+
+example [IsManifold I 1 M] [IsManifold I' 1 M']
+    (h : CMDiff n f) {n' : WithTop ℕ∞} (hnn' : n' + 1 ≤ n) : CMDiff n' (tangentMap% f) :=
+  h.contMDiff_tangentMap hnn'
+
+-- There is a corresponding family of statements for `mvfderiv` where the target is a vector space,
+-- except we only have some of them, as can be seen in the proof below.
+-- FIXME: it seems `T% (d% g)` doesn’t work
+-- FIXME: `CMDiff` elaborator fails in the statement below
+-- FIXME: the shape of the next lemma is inconsistent with the above one
+-- FIXME: we really need to find a way to get rid of those multiple `IsManifold I ? M` assumptions.
+
+-- Note the conditions on `𝕜` and `E` below
+open Bundle TotalSpace in
+example [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+    [IsManifold I 1 M] [IsManifold I (n + 1) M]
+    {g : M → E'} (h : CMDiff (n + 1) g)
+    : ContMDiff I (I.prod 𝓘(𝕜, E →L[𝕜] E')) n (fun x ↦ mk' (E →L[𝕜] E') x (d% g x)) :=
+  fun x ↦ (h x).mvfderiv'
+
+-- All those conditions imply the corresponding continuity condition. For instance:
+
+example (h : CMDiff n f) : Continuous f := h.continuous
+
+example (h : CMDiffAt n f x) : ContinuousAt f x := h.continuousAt
+
+-- And they imply differentiability if `n ≠ 0`. For instance:
+
+example (h : CMDiff n f) (hnn' : n ≠ 0) : MDiff f :=
+  h.mdifferentiable hnn'
+
+example (h : CMDiff[s] n f) (hnn' : n ≠ 0) : MDiff[s] f :=
+  h.mdifferentiableOn hnn'
+
+-- When the source and targets are vector spaces, we get back the elementary notions. For instance:
+
+example (f : E → E') (u : Set E) (e : E) : CMDiffAt[u] n f e ↔ ContDiffWithinAt 𝕜 n f u e :=
+  contMDiffWithinAt_iff_contDiffWithinAt
+
+example (g : E → E') (e : E) : CMDiffAt n g e ↔ ContDiffAt 𝕜 n g e :=
+  contMDiffAt_iff_contDiffAt
+
 end
 end
 

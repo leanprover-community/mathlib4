@@ -198,7 +198,7 @@ lemma _root_.IsOpen.mvfderivWithin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     : d[s] g x = d% g x :=
   mvfderivWithin_of_mem_nhds g <| hs.mem_nhds hx
 
-lemma Bundle.Trivial.contMDiffWithinAt_section_iff
+lemma _root_.Bundle.Trivial.contMDiffWithinAt_section_iff
     {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
@@ -209,7 +209,7 @@ lemma Bundle.Trivial.contMDiffWithinAt_section_iff
   rw [Bundle.contMDiffWithinAt_section_iff]
   rfl
 
-lemma Bundle.Trivial.contMDiffAt_section_iff
+lemma _root_.Bundle.Trivial.contMDiffAt_section_iff
     {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
