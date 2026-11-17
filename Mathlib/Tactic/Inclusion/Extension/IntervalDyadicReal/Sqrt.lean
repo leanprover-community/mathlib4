@@ -64,18 +64,17 @@ theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : Dyadic.toReal lb
 
 theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ Dyadic.toReal ub) :
     √x ≤ Dyadic.toReal (upperSqrt ub prec) := by
-  unfold upperSqrt
-  set ub' : ℕ := ⌈(ub <<< (2 * prec)).toRat⌉₊
-  have H {n : ℕ} (hn : ub' ≤ n ^ 2) :
-      √x ≤ Dyadic.toReal (Dyadic.ofIntWithPrec n prec) := by
-    replace hn : _ ≤ (n : ℚ) ^ 2 := Nat.le_ceil (ub <<< (2 * prec)).toRat |>.trans (mod_cast hn)
-    rw [toRat_shiftLeft_nat, mul_comm 2] at hn
-    apply Real.sqrt_le_iff.mpr ⟨by simp [toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow], ?_⟩
-    grw [hx, toReal, toReal, ← Rat.cast_pow, Rat.cast_le, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow]
-    simpa [mul_pow, ← pow_mul, field] using hn
-  by_cases hub' : ub' ≤ ub'.sqrt ^ 2 <;> simp only [hub', ↓reduceIte]
-  · exact H hub'
-  · exact H ub'.lt_succ_sqrt'.le
+  set n := ⌈(ub <<< (2 * prec)).toRat⌉₊
+  suffices H : ∀ m : ℕ, n ≤ m ^ 2 → √x ≤ Dyadic.toReal (Dyadic.ofIntWithPrec m prec) by
+    dsimp only [upperSqrt]
+    split_ifs with h
+    exacts [H _ h, H _ n.lt_succ_sqrt'.le]
+  intro m hm
+  replace hm : _ ≤ (m : ℚ) ^ 2 := (Nat.le_ceil _).trans (mod_cast hm)
+  rw [Real.sqrt_le_left (by simp [toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow])]
+  grw [hx]
+  simp only [Dyadic.toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, ← Rat.cast_pow, Rat.cast_le]
+  simpa [← pow_mul, field, toRat_shiftLeft_nat, mul_comm 2] using hm
 
 @[inclusion_op interval_dyadic_real]
 theorem sqrt_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : √x ∈ sqrt I prec := by
