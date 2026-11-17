@@ -54,13 +54,12 @@ is continuous in both variables. -/
 theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
     Continuous fun gf : Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν} ↦
       compMeasurePreserving gf.2.1 gf.2.2 gf.1 := by
-  have hp₀ : p ≠ 0 := (one_pos.trans_le Fact.out).ne'
   refine continuous_prod_of_dense_continuous_lipschitzWith _ 1
     (MeasureTheory.Lp.simpleFunc.dense hp) ?_ fun f ↦
       (isometry_compMeasurePreserving f.2).lipschitzWith
   intro f hf
   lift f to Lp.simpleFunc E p ν using hf
-  induction f using Lp.simpleFunc.induction hp₀ hp with
+  induction f using Lp.simpleFunc.induction hp with
   | add hfp hgp _ ihf ihg => exact ihf.add ihg
   | @indicatorConst c s hs hνs =>
     dsimp only [Lp.simpleFunc.coe_indicatorConst, Lp.indicatorConstLp_compMeasurePreserving]

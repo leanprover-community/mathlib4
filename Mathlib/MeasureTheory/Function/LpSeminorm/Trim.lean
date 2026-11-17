@@ -85,6 +85,10 @@ theorem inhmgELpNorm_trim_ae
   simp only [inhmgELpNorm, hf, ↓reduceIte, hfμ]
   exact trim_nullMeasurableSet_eq hm hf.eNorm.aestronglyMeasurable.nullMeasurableSet_support
 
+theorem inhmgELpNorm_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
+    inhmgELpNorm f p (μ.trim hm) = inhmgELpNorm f p μ :=
+  inhmgELpNorm_trim_ae hm hf.aestronglyMeasurable
+
 theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → ε} (hf : MemLp f p (μ.trim hm)) : MemLp f p μ :=
   (le_of_eq (inhmgELpNorm_trim_ae hm hf.aestronglyMeasurable).symm).trans_lt hf
 

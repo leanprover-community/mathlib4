@@ -134,11 +134,11 @@ theorem memLp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   have hf : AEStronglyMeasurable[m] f μ :=
     mem_lpMeasSubgroup_iff_aestronglyMeasurable.mp hf_meas
   change MemLp (hf.mk f) p (μ.trim hm)
-  rw [memLp_iff, eLpNorm_trim hm hf.stronglyMeasurable_mk]
-  have heq : eLpNorm (hf.mk f) p μ = eLpNorm (f : α → F) p μ :=
-    eLpNorm_congr_ae hf.ae_eq_mk.symm
+  rw [memLp_iff, inhmgELpNorm_trim hm hf.stronglyMeasurable_mk]
+  have heq : inhmgELpNorm (hf.mk f) p μ = inhmgELpNorm (f : α → F) p μ :=
+    inhmgELpNorm_congr_ae hf.ae_eq_mk.symm
   rw [heq]
-  exact Lp.eLpNorm_lt_top f
+  exact Lp.inhmgELpNorm_lt_top f
 
 /-- If `f` belongs to `Lp` for the measure `μ.trim hm`, then it belongs to the subgroup
 `lpMeasSubgroup F m p μ`. -/

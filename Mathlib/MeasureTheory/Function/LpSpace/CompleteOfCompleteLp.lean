@@ -47,6 +47,16 @@ lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α �
 variable (E p μ) in
 lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] : Nontrivial (Lp ℝ p μ) := by
   obtain ⟨f, hf⟩ : ∃ f : Lp E p μ, f ≠ 0 := exists_ne 0
+  have : MemLp (fun x ↦ ‖f x‖) p μ := (Lp.memLp f).norm
+  refine ⟨0, this.toLp, ?_⟩
+  rw [ne_eq, eq_comm]
+  contrapose hf
+
+
+
+
+#exit
+
   have hfne : ¬ (f =ᵐ[μ] 0) := by
     contrapose hf
     ext
