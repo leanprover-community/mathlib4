@@ -883,6 +883,10 @@ theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
 theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
+@[simp]
+theorem ofNat_lt_omega0 (n : ℕ) [n.AtLeastTwo] : ofNat(n) < ω :=
+  natCast_lt_omega0 n
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
@@ -934,7 +938,7 @@ theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
   obtain ⟨b, hb', hb⟩ := (lt_add_iff omega0_ne_zero).1 ha
   obtain ⟨m, rfl⟩ := lt_omega0.1 hb'
   apply hb.trans_lt
-  exact_mod_cast natCast_lt_omega0 (n + m)
+  exact mod_cast natCast_lt_omega0 (n + m)
 
 theorem one_add_omega0 : 1 + ω = ω :=
   mod_cast natCast_add_omega0 1

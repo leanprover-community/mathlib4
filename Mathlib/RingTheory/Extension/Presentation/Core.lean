@@ -19,7 +19,6 @@ such that `S` is isomorphic to `R ⊗[R₀] S₀`.
 
 If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In this case,
 this API can be used to remove Noetherian hypothesis in certain cases.
-
 -/
 
 @[expose] public section

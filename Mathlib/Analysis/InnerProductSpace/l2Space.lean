@@ -480,7 +480,7 @@ protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : Ort
     (by
       refine Eq.ge ?_
       classical
-      have := (span 𝕜 (Finset.univ.image b : Set E)).closed_of_finiteDimensional
+      have := (span 𝕜 (Finset.univ.image b : Set E)).isClosed_of_finiteDimensional
       simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ, HilbertBasis.dense_span] using
         this.submodule_topologicalClosure_eq.symm)
 

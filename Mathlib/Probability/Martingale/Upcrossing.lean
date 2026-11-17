@@ -12,7 +12,6 @@ public import Mathlib.Probability.Process.HittingTime
 import Mathlib.Tactic.AdaptationNote
 
 /-!
-
 # Doob's upcrossing estimate
 
 Given a discrete real-valued submartingale $(f_n)_{n \in \mathbb{N}}$, denoting by $U_N(a, b)$ the
@@ -54,7 +53,6 @@ convergence theorems.
 ### References
 
 We mostly follow the proof from [Kallenberg, *Foundations of modern probability*][kallenberg2021]
-
 -/
 
 @[expose] public section
@@ -69,7 +67,6 @@ namespace MeasureTheory
 variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 /-!
-
 ## Proof outline
 
 In this section, we will denote by $U_N(a, b)$ the number of upcrossings of $(f_n)$ from below $a$
@@ -129,7 +126,6 @@ $$
 as required.
 
 To obtain the general case, we simply apply the above to $((f_n - a)^+)_n$.
-
 -/
 
 
@@ -688,7 +684,6 @@ theorem Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part [IsFin
       (integral_nonneg fun ω => posPart_nonneg _)
 
 /-!
-
 ### Variant of the upcrossing estimate
 
 Now, we would like to prove a variant of the upcrossing estimate obtained by taking the supremum
@@ -709,7 +704,6 @@ $$
 $$
 $U_N(a, b)$ is measurable as $\{U_N(a, b) < N\}$ is a measurable set since $U_N(a, b)$ is a
 stopping time.
-
 -/
 
 

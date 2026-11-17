@@ -35,7 +35,6 @@ For the definitions, see `Mathlib.Order.Defs.Lattice`.
 ## Tags
 
 semilattice, lattice
-
 -/
 
 @[expose] public section

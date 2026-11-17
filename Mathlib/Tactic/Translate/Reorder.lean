@@ -48,7 +48,6 @@ The universe reordering is always inferred automatically, using `guessUnivReorde
 Permutation are stored as their disjoint cycle representation (`Permutation`).
 This allows efficiently permuting an array/list of arguments/universes
 (`Permutation.permute!`/`Permutation.permuteList!`).
-
 -/
 
 public meta section

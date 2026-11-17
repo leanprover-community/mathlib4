@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Canonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on a list in ordered rings
 

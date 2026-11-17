@@ -18,7 +18,6 @@ The file is a home for results about the bilinear forms on exterior powers of a 
   exterior powers.
 * `LinearMap.BilinForm.bijective_exteriorPower`: if a module carries a bijective bilinear form,
   the induced bilinear forms on its exterior powers is also bijective.
-
 -/
 
 noncomputable section

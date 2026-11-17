@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Homological complexes in full subcategories
-
 -/
 
 @[expose] public section

@@ -18,7 +18,6 @@ public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 
 - move definitions of `Lp.posPart` and `Lp.negPart` to this file, and define them as
   `PosPart.pos` and `NegPart.neg` given by the lattice structure.
-
 -/
 
 public section

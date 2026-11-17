@@ -164,7 +164,6 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
   rw [← cocone_naturality F f]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit monoid. -/
 def colimitCocone : Cocone F where
   pt := colimit F

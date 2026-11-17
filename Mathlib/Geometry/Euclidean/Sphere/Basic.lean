@@ -32,7 +32,6 @@ Euclidean affine spaces.
 
 * `EuclideanGeometry.Concyclic` is the property of a set of points being cospherical and
   coplanar.
-
 -/
 
 @[expose] public section

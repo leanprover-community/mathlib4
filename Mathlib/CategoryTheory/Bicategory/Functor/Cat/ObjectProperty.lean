@@ -22,7 +22,6 @@ to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
   `IsClosedUnderMapObj` saying that if an object locally satisfies
   the property, then it satisfies the property. Assuming this, show that
   `P.fullsubcategory` is a stack if the original pseudofunctor was.
-
 -/
 
 @[expose] public section

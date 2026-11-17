@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 
 /-!
-
 # The constant sheaf
 
 We define the constant sheaf functor (the sheafification of the constant presheaf)
@@ -40,7 +39,6 @@ open Limits Opposite Category CategoryTheory.Functor Sheaf Adjunction
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category* D]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
