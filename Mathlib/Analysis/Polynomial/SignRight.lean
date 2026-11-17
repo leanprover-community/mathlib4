@@ -94,8 +94,7 @@ theorem signRight_C_mul [IsStrictOrderedRing R] (x c : R) (p : R[X]) :
 
 theorem signRight_mul_self [IsStrictOrderedRing R] {x : R} {p : R[X]} (hp : p ≠ 0) :
     signRight x (p * p) = 1 := by
-  rw [signRight_mul]
-  exact SignType.mul_self_eq_one_iff.mpr (fun h => hp (signRight_eq_zero_iff.mp h))
+  rw [signRight_mul, SignType.mul_self_eq_one_iff.mpr (fun h => hp (signRight_eq_zero_iff.mp h))]
 
 /-- Away from its roots, the sign of `p` to the right of `x` is the sign of `p x`. -/
 theorem signRight_of_eval_ne_zero {x : R} {p : R[X]} (h : eval x p ≠ 0) :
