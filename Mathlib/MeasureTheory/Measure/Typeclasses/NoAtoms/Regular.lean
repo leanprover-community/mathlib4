@@ -40,26 +40,18 @@ namespace NoAtoms
 and vanishes on singletons has no atoms.
 See https://math.stackexchange.com/questions/3881683/does-mu-x-0-imply-non-atomic-for-radon-measure
 
-Proof sketch: an atom `s` has finite measure by σ-finiteness and thus by
-`MeasurableSet.exists_forall_nhds_measure_pos` contains some `x ∈ s` such that `s ∩ U` has positive
-(hence full) measure for every neighborhood `U` of `x`. Now `s \ {x}` contains a compact `L` of
-positive measure, and separating `x` from `L` by disjoint open sets yields two disjoint subsets of
-`s` of full measure, a contradiction. -/
+Proof sketch: an atom `s` has finite measure by `Measure.IsAtom.measure_ne_top`, and thus by
+`MeasurableSet.exists_forall_nhds_measure_pos` contains some `x ∈ s` such that `s ∩ U` has
+positive (hence full) measure for every neighborhood `U` of `x`. Now `s \ {x}` contains a compact
+`L` of positive measure, and separating `x` from `L` by disjoint open sets yields two disjoint
+subsets of `s` of full measure, a contradiction. -/
 theorem of_innerRegularCompactLTTop [OpensMeasurableSpace α] [NullSingletonClass μ]
     [μ.InnerRegularCompactLTTop] [SigmaFinite μ] : NoAtoms μ := by
   refine ⟨fun s hs ↦ ?_⟩
   -- every subset of `s` of positive measure has full measure
   have full {t} (hts : t ⊆ s) (ht : μ t ≠ 0) : μ t = μ s :=
     (hs.measure_eq_zero_or_eq hts).resolve_left ht
-  -- `s` has finite measure
-  have hfin : μ s ≠ ∞ := by
-    obtain ⟨n, hn⟩ : ∃ n, μ (s ∩ spanningSets μ n) ≠ 0 := by
-      by_contra! h
-      apply hs.measure_ne_zero
-      rw [← inter_univ s, ← iUnion_spanningSets μ, inter_iUnion]
-      exact measure_iUnion_null h
-    rw [← full inter_subset_left hn]
-    exact (measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top μ n) |>.ne
+  have hfin : μ s ≠ ∞ := hs.measure_ne_top
   -- a point all of whose neighborhoods meet `s` in positive measure
   obtain ⟨x, -, hx⟩ := hs.measurableSet.exists_forall_nhds_measure_pos hfin hs.pos
   -- a compact subset of `s \ {x}` of positive measure
