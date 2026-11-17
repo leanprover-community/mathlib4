@@ -30,7 +30,7 @@ generalizes the Jensen formula from the circle centre to an arbitrary interior p
 
 public section
 
-open Filter MeromorphicAt MeasureTheory MeromorphicOn Metric Real Set Topology
+open Filter Function MeromorphicAt MeasureTheory MeromorphicOn Metric Real Set Topology
 open scoped ComplexConjugate
 
 
@@ -234,15 +234,30 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log {w ρ c : ℂ} {R : ℝ} (h
 /--
 Let `D : ℂ → ℤ` be a function with locally finite support within the closed ball with center `c` and
 radius `R`, such as the zero- and pole divisor of a meromorphic function.  Then, the circle average
-of the function `∑ᶠ u, (D u * log ‖· - u‖)` over the boundary of the ball equals
+of the function `log ‖factorizedRational D ·‖` over the boundary of the ball equals
 `∑ᶠ u, D u * log R`.
 -/
 @[simp]
 lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
     (D : Function.locallyFinsuppWithin (closedBall c |R|) ℤ) :
-    circleAverage (∑ᶠ u, (D u * log ‖· - u‖)) c R = ∑ᶠ u, D u * log R := by
+    circleAverage (log ‖factorizedRational D ·‖) c R = ∑ᶠ u, D u * log R := by
   have h := D.finiteSupport (isCompact_closedBall c |R|)
-  calc circleAverage (∑ᶠ u, (D u * log ‖· - u‖)) c R
+  -- Trivial case: the radius is zero
+  by_cases hR : R = 0
+  · subst hR
+    by_cases hc : D c = 0
+    · have : (D : ℂ → ℤ) = 0 := by
+        ext u
+        by_cases hu : u = c
+        · simp [hu, hc]
+        · exact D.apply_eq_zero_of_notMem (by simpa using hu)
+      simp [this, factorizedRational]
+    · simp [FactorizedRational.eq_zero h hc]
+  -- General case: replace `log ‖factorizedRational D ·‖` by a sum of logarithms and compute
+  calc circleAverage (log ‖factorizedRational D ·‖) c R
+  _ = circleAverage (∑ᶠ u, (D u * log ‖· - u‖)) c R :=
+    circleAverage_congr_codiscreteWithin (codiscreteWithin_mono sphere_subset_closedBall
+      (FactorizedRational.log_norm_eventuallyEq_codiscreteWithin D)) hR
   _ = circleAverage (∑ u ∈ h.toFinset, (D u * log ‖· - u‖)) c R := by
     rw [finsum_eq_sum_of_support_subset]
     intro u
@@ -269,8 +284,8 @@ lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
 /--
 Let `D : ℂ → ℤ` be a function with locally finite support within the circle with center `c` and
 radius `R`, such as the zero- and pole divisor of a meromorphic function on the circle. Then, the
-Poisson integral of the function `∑ᶠ u, (D u * log ‖· - u‖)` at a point `w` of the open ball equals
-`∑ᶠ u, D u * log ‖w - u‖`.
+Poisson integral of the function `log ‖factorizedRational D ·‖` at a point `w` of the open ball
+equals `∑ᶠ u, D u * log ‖w - u‖`.
 
 This is the analogue of `circleAverage_log_norm_factorizedRational` for the Poisson integral, and
 generalizes `circleAverage_poissonKernel_smul_log` from a single point `ρ` to a divisor on the
@@ -278,11 +293,19 @@ circle.
 -/
 theorem circleAverage_poissonKernel_smul_log_norm_factorizedRational {R : ℝ} {c w : ℂ}
     (D : Function.locallyFinsuppWithin (sphere c R) ℤ) (hw : w ∈ ball c R) :
-    circleAverage (poissonKernel c w • ∑ᶠ u, (D u * log ‖· - u‖)) c R
+    circleAverage (poissonKernel c w • (log ‖factorizedRational D ·‖)) c R
       = ∑ᶠ u, D u * log ‖w - u‖ := by
+  have hR : 0 < R := pos_of_mem_ball hw
   have hD := D.finiteSupport (isCompact_sphere c R)
   have hw' : w ∉ sphere c |R| := by grind [mem_sphere, mem_ball, le_abs_self R]
-  rw [finsum_eq_sum_of_support_subset (s := hD.toFinset) _ (fun u ↦ by contrapose; aesop),
+  -- Replace `log ‖factorizedRational D ·‖` by a sum of logarithms and compute
+  have h₁ : poissonKernel c w • (log ‖factorizedRational D ·‖) =ᶠ[codiscreteWithin (sphere c |R|)]
+      poissonKernel c w • ∑ᶠ u, (D u * log ‖· - u‖) := by
+    rw [abs_of_pos hR]
+    filter_upwards [FactorizedRational.log_norm_eventuallyEq_codiscreteWithin D] with a ha
+    simp [ha]
+  rw [circleAverage_congr_codiscreteWithin h₁ hR.ne',
+    finsum_eq_sum_of_support_subset (s := hD.toFinset) _ (fun u ↦ by contrapose; aesop),
     finsum_eq_sum_of_support_subset (s := hD.toFinset) _ (fun u ↦ by aesop),
     Finset.smul_sum, circleAverage_sum (fun i _ ↦ by fun_prop)]
   refine Finset.sum_congr rfl fun u hu ↦ ?_
@@ -350,10 +373,10 @@ theorem Complex.ECanonicalDecomp.circleAverage_poissonKernel_smul_log_norm {h : 
       = ∑ᶠ u, (divisor f (sphere 0 R)) u * Real.log ‖w - u‖ + Real.log ‖h w‖ := by
   have hR : 0 < R := pos_of_mem_ball hw
   have h₃w : w ∉ sphere 0 |R| := by grind [mem_sphere, mem_ball, le_abs_self R]
-  -- Replace `log ‖f‖` by the boundary sum plus `log ‖h‖` and integrate term by term, using the
-  -- Poisson formula for the harmonic function `log ‖h‖`.
+  -- Replace `log ‖f‖` by the contribution of the boundary divisor plus `log ‖h‖` and integrate term
+  -- by term, using the Poisson formula for the harmonic function `log ‖h‖`.
   rw [circleAverage_congr_codiscreteWithin (f₂ := poissonKernel 0 w •
-      (∑ᶠ u, (divisor f (sphere 0 R) u * Real.log ‖· - u‖) + (Real.log ‖h ·‖))) ?_ hR.ne',
+      ((Real.log ‖factorizedRational (divisor f (sphere 0 R)) ·‖) + (Real.log ‖h ·‖))) ?_ hR.ne',
     smul_add, circleAverage_add (by fun_prop) ?_,
     circleAverage_poissonKernel_smul_log_norm_factorizedRational _ hw,
     InnerProductSpace.HarmonicOnNhd.circleAverage_poissonKernel_smul
@@ -416,11 +439,12 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     -- Extract zeros & poles and compute
     obtain ⟨g, h₁g, h₂g, h₃g⟩ := h₁f.extract_zeros_poles (by simp_all) h₃f
     calc circleAverage (log ‖f ·‖) c R
-    _ = circleAverage ((∑ᶠ u, (divisor f CB u * log ‖· - u‖)) + (log ‖g ·‖)) c R := by
-      have h₄g := extract_zeros_poles_log h₂g h₃g
+    _ = circleAverage ((log ‖factorizedRational (divisor f CB) ·‖) + (log ‖g ·‖)) c R := by
+      have h₄g := log_norm_extract_zeros_poles h₂g h₃g
       rw [circleAverage_congr_codiscreteWithin (codiscreteWithin_mono sphere_subset_closedBall h₄g)
         hR]
-    _ = circleAverage (∑ᶠ u, (divisor f CB u * log ‖· - u‖)) c R + circleAverage (log ‖g ·‖) c R :=
+    _ = circleAverage (log ‖factorizedRational (divisor f CB) ·‖) c R
+        + circleAverage (log ‖g ·‖) c R :=
       circleAverage_add (by fun_prop)
         ((h₁g.mono sphere_subset_closedBall).meromorphicOn.circleIntegrable_log_norm)
     _ = ∑ᶠ u, divisor f CB u * log R + log ‖g c‖ := by

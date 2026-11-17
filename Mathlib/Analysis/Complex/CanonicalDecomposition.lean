@@ -15,7 +15,7 @@ import Mathlib.Analysis.Normed.Module.Connected
 
 If a function `f` is meromorphic on a compact set `U`, then it has only finitely many zeros and
 poles on the disk, and the theorem `MeromorphicOn.extract_zeros_poles` can be used to re-write `f`
-as `(∏ᶠ u, (· - u) ^ divisor f U u) • g`, where `g` is analytic without zeros on `U`. In case where
+as `factorizedRational (divisor f U) • g`, where `g` is analytic without zeros on `U`. In case where
 `U` is a disk, one consider a similar decomposition, called *Finite Canonical Decomposition* or
 *Finite Blaschke Product* that replaces the factors `(· - u)` by canonical factors that take only
 values of norm one on the boundary of the disk. This file introduces the canonical factors and
@@ -482,7 +482,7 @@ structure ECanonicalDecomp (f g : ℂ → E) (R : ℝ) where
   -/
   eventuallyEq : f =ᶠ[codiscreteWithin (closedBall 0 R)]
     ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u))
-    * (∏ᶠ v, (· - v) ^ (divisor f (sphere 0 R)) v)) • g
+    * factorizedRational (divisor f (sphere 0 R))) • g
 
 /--
 **Extended canonical decomposition:** A meromorphic function on a closed disk is equal, up to
@@ -532,7 +532,8 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
     ne_zero := (h₂h ⟨·, ·⟩)
     eventuallyEq := by
       filter_upwards [D.eventuallyEq, h₃h] with a h₁a h₂a
-      simp_rw [← D.divisor_eq_divisor hR]
+      rw [(funext fun _ ↦ (D.divisor_eq_divisor hR).symm :
+        ⇑(divisor f (sphere 0 R)) = divisor g (closedBall 0 R))]
       simp_all [← smul_assoc]
     }
 
@@ -561,7 +562,7 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
     _ = ((∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
       * ∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
       • meromorphicTrailingCoeffAt (((∏ᶠ (u : ℂ), canonicalFactor R u ^ (-(divisor f B₀R) u))
-        * ∏ᶠ (v : ℂ), (· - v) ^ (divisor f S₀R) v) • h) w := by
+        * factorizedRational (divisor f S₀R)) • h) w := by
       rw [meromorphicTrailingCoeffAt_congr_nhdsNE
         ((D.meromorphicOn w hw).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
         (by fun_prop) hw ?η₁ D.eventuallyEq)]
@@ -572,7 +573,7 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
       * ∏ i ∈ t₁, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
       • meromorphicTrailingCoeffAt (((∏ i ∈ t₂, canonicalFactor R i ^ (-(divisor f B₀R) i))
         * ∏ i ∈ t₁, (· - i) ^ (divisor f S₀R) i) • h) w := by
-      rw [finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
+      rw [factorizedRational, finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
         finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _,
         finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
         finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _]
@@ -688,20 +689,20 @@ lemma ECanonicalDecomp.log_norm_eq
 /--
 Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
 decomposition, the function `log ‖f‖` agrees on the circle `sphere 0 R`, up to modification over a
-discrete set, with `∑ᶠ u, (divisor f (sphere 0 R) u * log ‖· - u‖) + log ‖h ·‖`. The canonical
+discrete set, with `log ‖factorizedRational (divisor f (sphere 0 R)) ·‖ + log ‖h ·‖`. The canonical
 factors do not contribute because they have norm one on the circle.
 -/
 lemma ECanonicalDecomp.log_norm_eventuallyEq {f h : ℂ → E} (D : ECanonicalDecomp f h R) :
     (Real.log ‖f ·‖) =ᶠ[codiscreteWithin (sphere 0 R)]
-      ∑ᶠ u, (divisor f (sphere 0 R) u * Real.log ‖· - u‖) + (Real.log ‖h ·‖) := by
+      (Real.log ‖factorizedRational (divisor f (sphere 0 R)) ·‖) + (Real.log ‖h ·‖) := by
   -- The Blaschke product has norm one on the circle
   have h₀ {u : ℂ} (hu : u ∈ sphere 0 R) :
       ‖(∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) u‖ = 1 :=
     norm_finprod_canonicalFactor_zpow_eq_one
       (fun _ hu ↦ (divisor f (ball 0 R)).supportWithinDomain (by simpa using hu)) hu
   -- Rewrite the extended canonical decomposition as an instance of the setting of
-  -- `MeromorphicOn.extract_zeros_poles_log`, with the Blaschke product absorbed into `h`.
-  have h₁ : f =ᶠ[codiscreteWithin (sphere 0 R)] (∏ᶠ v, (· - v) ^ (divisor f (sphere 0 R)) v) •
+  -- `MeromorphicOn.log_norm_extract_zeros_poles`, with the Blaschke product absorbed into `h`.
+  have h₁ : f =ᶠ[codiscreteWithin (sphere 0 R)] factorizedRational (divisor f (sphere 0 R)) •
       ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) • h) := by
     filter_upwards [D.eventuallyEq.filter_mono (codiscreteWithin_mono sphere_subset_closedBall)]
       with a ha
@@ -713,7 +714,7 @@ lemma ECanonicalDecomp.log_norm_eventuallyEq {f h : ℂ → E} (D : ECanonicalDe
     apply smul_ne_zero _ (D.ne_zero u (sphere_subset_closedBall hu))
     rw [← norm_ne_zero_iff, h₀ hu]
     exact one_ne_zero
-  filter_upwards [MeromorphicOn.extract_zeros_poles_log h₂ h₁, self_mem_codiscreteWithin _]
+  filter_upwards [MeromorphicOn.log_norm_extract_zeros_poles h₂ h₁, self_mem_codiscreteWithin _]
     with a ha h₂a
   rw [ha]
   simp only [Pi.add_apply, Pi.smul_apply', norm_smul, h₀ h₂a, one_mul]
