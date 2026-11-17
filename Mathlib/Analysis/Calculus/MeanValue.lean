@@ -858,6 +858,6 @@ theorem hasStrictDerivAt_of_hasDerivAt_of_continuousAt {f f' : 𝕜 → G} {x : 
     (hder : ∀ᶠ y in 𝓝 x, HasDerivAt f (f' y) y) (hcont : ContinuousAt f' x) :
     HasStrictDerivAt f (f' x) x :=
   hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt (hder.mono fun _ hy => hy.hasFDerivAt) <|
-    (smulRightL 𝕜 𝕜 G 1).continuous.continuousAt.comp hcont
+    (StrongDual.smulRightL 𝕜 𝕜 G 1).continuous.continuousAt.comp hcont
 
 end RCLike

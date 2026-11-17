@@ -29,7 +29,6 @@ The canonical way of writing an element `r` of `R` in `QuadraticAlgebra R a b` i
 ## Tags
 
 Quadratic algebra, quadratic extension
-
 -/
 
 @[expose] public section

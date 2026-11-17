@@ -21,7 +21,6 @@ of the bounded below homotopy category `HomotopyCategory.Plus C`
 with respect to quasi-isomorphisms. We also show that it is the
 localization of the category `CochainComplex.Plus C` of bounded
 below cochain complexes with respect to quasi-isomorphisms.
-
 -/
 
 @[expose] public section
@@ -75,7 +74,6 @@ instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
     (_ : CochainComplex.IsKInjective L.obj.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) := by
   have := CochainComplex.IsKInjective.Qh_map_bijective K.obj L.obj.as

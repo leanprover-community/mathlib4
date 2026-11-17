@@ -35,7 +35,6 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
   **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian local rings.
 - `Ideal.iInf_pow_eq_bot_of_isDomain`:
   **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
-
 -/
 
 @[expose] public section

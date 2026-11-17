@@ -31,7 +31,7 @@ Some other constructions are naturally equivalent to `α →₀ M` with some `α
 in a different way in the library:
 
 * `Multiset α ≃+ α →₀ ℕ`;
-* `FreeAbelianGroup α ≃+ α →₀ ℤ`.
+* `FreeAddCommGroup α ≃+ α →₀ ℤ`.
 
 Most of the theory assumes that the range is a commutative additive monoid. This gives us the big
 sum operator as a powerful way to construct `Finsupp` elements, which is defined in
@@ -71,7 +71,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 ## TODO
 
 * Expand the list of definitions and important lemmas to the module docstring.
-
 -/
 
 @[expose] public section

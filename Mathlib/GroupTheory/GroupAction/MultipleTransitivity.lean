@@ -58,7 +58,6 @@ import Mathlib.SetTheory.Cardinal.Embedding
 
 These results are results about actions on types `n ↪ α` induced by an action
 on `α`, and some results are developed in this context.
-
 -/
 
 @[expose] public section
@@ -359,7 +358,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
       simp [ofStabilizer.snoc_last]
     use ⟨g, hg⟩
     ext i
-    simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+    simp only [smul_apply, SetLike.val_smul, subgroup_smul_def]
     rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc]
   · -- gx • x = x1 :: a
     obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
@@ -370,7 +369,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     use gy⁻¹ * g * gx
     ext i
     simp only [mul_smul, smul_apply, inv_smul_eq_iff]
-    simp only [← smul_apply _ _ i, hgy, hgx]
+    simp only [← smul_apply, hgy, hgx]
     simp only [smul_apply]
     rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
     · simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]

@@ -17,7 +17,6 @@ In this file we construct the relative algebraic closure of a field extension.
 
 - `algebraicClosure F E` is the relative algebraic closure (i.e. the maximal algebraic subextension)
   of the field extension `E / F`, which is defined to be the integral closure of `F` in `E`.
-
 -/
 
 @[expose] public section

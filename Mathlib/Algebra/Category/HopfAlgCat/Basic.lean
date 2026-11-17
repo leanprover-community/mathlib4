@@ -15,7 +15,6 @@ We introduce the bundled category `HopfAlgCat` of Hopf algebras over a fixed com
 `R` along with the forgetful functor to `BialgCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section

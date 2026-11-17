@@ -28,7 +28,6 @@ locally representable.
 
 ## References
 * https://stacks.math.columbia.edu/tag/01JJ
-
 -/
 
 @[expose] public section

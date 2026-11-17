@@ -28,7 +28,6 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
   Affine morphisms are stable under base change.
 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
-
 -/
 
 public section

@@ -126,7 +126,6 @@ Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is mi
 ## Tags
 
 Bochner integral, simple function, function space, Lebesgue dominated convergence theorem
-
 -/
 
 @[expose] public section

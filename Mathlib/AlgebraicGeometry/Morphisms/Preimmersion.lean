@@ -15,7 +15,6 @@ A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of t
 is an embedding and the induced morphisms of stalks are all surjective. This is not a concept seen
 in the literature but it is useful for generalizing results on immersions to other maps including
 `Spec 𝒪_{X, x} ⟶ X` and inclusions of fibers `κ(x) ×ₓ Y ⟶ Y`.
-
 -/
 
 public section

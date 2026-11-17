@@ -17,7 +17,6 @@ affine map.
 ## Main definitions
 
 * `AffineSubspace.subtypeA` is `AffineSubspace.subtype` as a `ContinuousAffineMap`.
-
 -/
 
 @[expose] public section

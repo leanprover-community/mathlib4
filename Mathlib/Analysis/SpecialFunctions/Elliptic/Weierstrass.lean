@@ -43,7 +43,6 @@ import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 ## tags
 
 Weierstrass p-functions, Weierstrass p functions
-
 -/
 
 @[expose] public section

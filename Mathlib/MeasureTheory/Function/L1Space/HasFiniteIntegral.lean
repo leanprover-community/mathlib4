@@ -25,7 +25,6 @@ predicate `Integrable` in the corresponding file.
 ## Tags
 
 finite integral
-
 -/
 
 @[expose] public section

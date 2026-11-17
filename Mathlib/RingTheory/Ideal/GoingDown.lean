@@ -27,7 +27,6 @@ of `S` lying above `q`, there exists a prime `P ≤ Q` of `S` lying above `p`.
 
 - For the fact that an integral extension of domains with normal base satisfies going down,
   see `Mathlib/RingTheory/IntegralClosure/GoingDown.lean`.
-
 -/
 
 public section

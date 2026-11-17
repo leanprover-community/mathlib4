@@ -22,7 +22,6 @@ So far, I don't see a way to state nicely what we really want:
 The problem is that the limits API doesn't promise you any particular model of the cokernel,
 and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 (and hence making `cokernel.π f` arbitrarily large in norm), obtaining another categorical cokernel.
-
 -/
 
 @[expose] public section
