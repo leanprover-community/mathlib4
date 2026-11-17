@@ -142,7 +142,6 @@ end Cardinal
 
 namespace Cardinal
 
-set_option backward.isDefEq.respectTransparency false in
 instance small_Iic (a : Cardinal.{u}) : Small.{u} (Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
@@ -334,12 +333,9 @@ protected theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
 @[simp] lemma ofNat_lt_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) < ℵ₀ := natCast_lt_aleph0
 @[simp] lemma ofNat_le_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) ≤ ℵ₀ := natCast_le_aleph0
 
-@[simp]
-theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using natCast_lt_aleph0 (n := 1)
-
-@[simp]
-theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
-  one_lt_aleph0.le
+@[simp] theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using natCast_lt_aleph0 (n := 1)
+@[simp] theorem aleph0_ne_one : ℵ₀ ≠ 1 := one_lt_aleph0.ne'
+@[simp] theorem one_le_aleph0 : 1 ≤ ℵ₀ := one_lt_aleph0.le
 
 theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
   ⟨fun h => by

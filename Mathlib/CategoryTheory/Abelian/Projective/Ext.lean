@@ -18,7 +18,6 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Extend
 Given a projective resolution `R` of an object `X` in an abelian category `C`,
 we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.complex` and to make computations in the `Ext`-group.
-
 -/
 
 @[expose] public section
@@ -326,7 +325,7 @@ lemma extMk_comp_extClass
   refine ⟨((Cochain.toSingleEquiv (neg_add_cancel _)).symm
     ((R.cochainComplexXIso (-n) n (by lia)).hom ≫ f₂)).comp (mappingCocone.inl _) (by lia), ?_⟩
   dsimp
-  simp only [Cocycle.comp_coe, Cocycle.toSingleMk_coe]
+  simp only [Cocycle.toSingleMk_coe]
   ext p q hpq
   by_cases! hq : q = 0 ∨ q = 1
   · obtain rfl | rfl := hq

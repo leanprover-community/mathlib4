@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Order.ProjIcc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous bundled maps on intervals
 

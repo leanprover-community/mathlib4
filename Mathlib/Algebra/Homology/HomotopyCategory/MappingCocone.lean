@@ -14,7 +14,6 @@ Given a morphism `φ : K ⟶ L` of cochain complexes, the mapping cone
 allows to obtain a triangle `K ⟶ L ⟶ mappingCone φ ⟶ ...`. In this
 file, we define the mapping cocone, which fits in a rotated triangle:
 `mappingCocone φ ⟶ K ⟶ L ⟶ ...`.
-
 -/
 
 @[expose] public section
@@ -30,7 +29,7 @@ variable {C : Type*} [Category* C] [Preadditive C]
 
 /-- The mapping cocone of a morphism `φ : K ⟶ L` of cochain complexes: it is
 `(mappingCone φ)⟦(-1 : ℤ)⟧`. -/
-@[no_expose]
+@[no_expose, local implicit_reducible]
 noncomputable def mappingCocone [HasHomotopyCofiber φ] :
     CochainComplex C ℤ := (mappingCone φ)⟦(-1 : ℤ)⟧
 
@@ -119,7 +118,6 @@ lemma ext_to_iff (i j : ℤ) (hij : i + -1 = j) {A : C} (f g : A ⟶ (mappingCoc
   · rintro ⟨h₁, h₂⟩
     exact ext_to φ i j hij h₁ h₂
 
-attribute [local implicit_reducible] mappingCocone in
 open HomComplex in
 lemma ext_from (i j : ℤ) (hij : i + 1 = j) {A : C} {f g : (mappingCocone φ).X j ⟶ A}
     (h₁ : (inl φ).v j j (add_zero j) ≫ f = (inl φ).v j j (add_zero j) ≫ g)
@@ -152,7 +150,6 @@ lemma inl_v_d (i j : ℤ) (hij : i + 1 = j) :
     mappingCone.inl_v_d _ (j + -1) (j + -1 + -1) j (by lia) (by lia),
     Cochain.rightShift_v (n := -1) _ (-1) 0 (by lia) j j (by lia) (j + -1) (by lia),
     Cochain.rightShift_v (n := 0) _ (-1) 1 (by lia) (j + -1) j (by lia) (j + -1) (by lia)]
-  rfl
 
 @[reassoc]
 lemma inr_v_d (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
@@ -162,7 +159,6 @@ lemma inr_v_d (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
   simp [inr, mappingCocone,
     Cochain.rightShift_v (n := 0) _ (-1) 1 (by lia) i (k + -1) (by lia) i (by lia),
     Cochain.rightShift_v (n := 0) _ (-1) 1 (by lia) (k + -1) k (by lia) (k + -1) (by lia)]
-  rfl
 
 @[reassoc]
 lemma d_fst_v (i j : ℤ) :
@@ -223,7 +219,6 @@ lemma inr_comp_descCochain :
   ext p q hpq
   simp [Cochain.comp_v (n₂ := m) _ _ _ _ (p + 1) q rfl (by lia)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ m n (descCochain φ α β h) =
       (Cochain.ofHom (fst φ)).comp
@@ -322,7 +317,6 @@ lemma liftCochain_comp_snd :
   simp [Cochain.comp_v (n₁ := n) (n₂ := -1) (n₁₂ := m) _ _ _ p _ _ (by lia)
     (Int.add_neg_cancel_right q 1)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ n n' (liftCochain φ α β h) =
       (δ n n' α).comp (inl φ) (add_zero _) -

@@ -115,7 +115,7 @@ namespace HeightOneSpectrum
 
 /-- The norm of a maximal ideal is `> 1` -/
 lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
-  rw [Nat.one_lt_iff_ne_zero_and_ne_one, ne_eq, absNorm_eq_zero_iff', ne_eq, absNorm_eq_one_iff]
+  rw [Nat.one_lt_iff_ne_zero_and_ne_one, ne_eq, absNorm_eq_zero_iff, ne_eq, absNorm_eq_one_iff]
   exact ⟨v.ne_bot, v.isPrime.ne_top⟩
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
@@ -366,12 +366,12 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
   fun_prop
 
-lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
-    (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
+lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M]
+    (I : Ideal (𝓞 K)) (f : Ideal (𝓞 K) → M) :
     (fun v : FinitePlace K ↦
       f v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport :=
   UniqueFactorizationMonoid.hasFiniteMulSupport_fun_pow_multiplicity _
-    (asIdeal_injective.comp maximalIdeal_injective) (fun v ↦ v.maximalIdeal.irreducible) hI
+    (asIdeal_injective.comp maximalIdeal_injective) (fun v ↦ v.maximalIdeal.irreducible)
 
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :
@@ -442,7 +442,7 @@ instance : Module.Finite Kv Lw :=
     rintro _ ⟨l, rfl⟩
     exact ⟨1 ⊗ₜ l, by simp [Φ, Algebra.algHom]⟩
   .of_surjective Φ (by
-    rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
+    rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.isClosed_of_finiteDimensional.closure_eq]
     exact h_dense.closure_range)
 
 end HeightOneSpectrum

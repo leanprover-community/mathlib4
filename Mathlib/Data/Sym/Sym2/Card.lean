@@ -10,6 +10,9 @@ public import Mathlib.Data.Sym.Sym2
 
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of `Sym2`
 
@@ -91,7 +94,7 @@ theorem encard_diagSet : (@diagSet α).encard = ENat.card α :=
 variable (α) in
 theorem two_mul_encard_diagSet_compl_add_enatCard :
     2 * (@diagSet α)ᶜ.encard + ENat.card α = ENat.card α * ENat.card α := by
-  simpa [ENat.card] using congr($(two_mul_cardinalMk_diagSet_compl_add_cardinalMk α).toENat)
+  simpa using congr($(two_mul_cardinalMk_diagSet_compl_add_cardinalMk α).toENat)
 
 open scoped Classical in
 private noncomputable def boolProdSym2Equiv : Bool × Sym2 α ≃ α × Option α where

@@ -41,8 +41,8 @@ if and only if it is fundamental, see `Pell.pos_generator_iff_fundamental`.
 
 ## References
 
-* [K. Ireland, M. Rosen, *A classical introduction to modern number theory* (Section 17.5)]
-  [IrelandRosen1990]
+* [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
+  (Section 17.5)][IrelandRosen1990]
 
 ## Tags
 
@@ -591,7 +591,7 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
 theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
     (hay : 0 ≤ a.y) : ∃ n : ℕ, a = a₁ ^ n := by
   lift a.x to ℕ using hax.le with ax hax'
-  induction ax using Nat.strong_induction_on generalizing a with | h x ih =>
+  induction ax using Nat.strong_induction_on generalizing a with | ind x ih
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine ⟨0, ?_⟩

@@ -32,7 +32,6 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 * [CoLoR](https://github.com/fblanqui/color), a Coq library on rewriting theory and termination.
   Our code here is inspired by their formalization and the theorem is called `mOrd_wf` in the file
   [MultisetList.v](https://github.com/fblanqui/color/blob/1.8.5/Util/Multiset/MultisetOrder.v).
-
 -/
 
 @[expose] public section

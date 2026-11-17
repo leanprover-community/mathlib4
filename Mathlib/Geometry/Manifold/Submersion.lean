@@ -80,13 +80,12 @@ The implementation strategy is identical to the one for immersions. See the impl
 
 ## References
 
-* [Alexander Schmeding, *An introduction to infinite-dimensional differential geometry*]
-  [schmeding2023]
+* [Alexander Schmeding, *An introduction to infinite-dimensional differential
+  geometry*][schmeding2023]
 * Note that Margelef-Roig and Dominguez have a slightly different definition of submersions.
 
 **Please talk** to Michael Rothgang before working on this file, to avoid duplicate work.
 The above TODOs are the topic of Samantha Naranjo's master's thesis; it's nicer to coordinate.
-
 -/
 
 public noncomputable section
@@ -515,7 +514,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     |>.isSubmersionAt
 
 /-- If `f` is a submersion at `x`, then `f` is `C^n` on its domain chart's source,
-in particular on an open neighbourhood of `x`.`
+in particular on an open neighbourhood of `x`.
 
 Prefer using `IsSubmersionAt.contMDiffAt` instead -/
 theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=

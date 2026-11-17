@@ -17,7 +17,6 @@ and `(D, K)`. Let `Φ` be a point of `(D, K)`. Assume `hF : CoverPreserving J K 
 In this file, we define a point `Φ.comap F hF` of the site `(C, J)` and
 construct an isomorphism
 `(Φ.comap F hF).sheafFiber ≅ F.sheafPullback A J K ⋙ Φ.sheafFiber`.
-
 -/
 
 @[expose] public section
