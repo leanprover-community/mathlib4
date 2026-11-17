@@ -12,7 +12,6 @@ import Mathlib.Data.EReal.Operations
 
 /-!
 # The standard simplex is compact
-
 -/
 
 public section

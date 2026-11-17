@@ -31,9 +31,9 @@ variable (R : Type u) [CommRing R]
 @[simps] noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (HopfAlgCat R) where
   tensorObj X Y := of R (X ⊗[R] Y)
-  whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
-  whiskerRight f X := ofHom (f.1.rTensor X)
-  tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.1 g.1)
+  whiskerLeft X _ _ f := ofHom (f.toBialgHom'.lTensor X)
+  whiskerRight f X := ofHom (f.toBialgHom'.rTensor X)
+  tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.toBialgHom' g.toBialgHom')
   tensorUnit := of R R
   associator X Y Z := (Bialgebra.TensorProduct.assoc R R X Y Z).toHopfAlgIso
   leftUnitor X := (Bialgebra.TensorProduct.lid R X).toHopfAlgIso

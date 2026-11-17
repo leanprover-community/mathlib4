@@ -796,6 +796,28 @@ theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
 theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g :=
   DFunLike.coe_injective h
 
+/-- Build an order isomorphism from a bijective map that preserves and reflects `≤`. -/
+noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b, f a ≤ f b ↔ a ≤ b) :
+    α ≃o β :=
+  RelIso.ofBijective f hf hf'
+
+@[simp] lemma toEquiv_ofBijective (f : α → β) (hf hf') :
+    (ofBijective f hf hf').toEquiv = .ofBijective f hf := rfl
+
+@[simp, grind =] lemma coe_ofBijective (f : α → β) (hf hf') : ⇑(ofBijective f hf hf') = f := rfl
+
+@[simp] lemma ofBijective_coe (e : α ≃o β) :
+    ofBijective e e.bijective (by simp) = e := ext rfl
+
+lemma ofBijective_apply_symm_apply (f : α → β) (hf hf') (x : β) :
+    f ((ofBijective f hf hf').symm x) = x :=
+  (ofBijective f hf hf').apply_symm_apply x
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : α → β) (hf hf') (x : α) :
+    (ofBijective f hf hf').symm (f x) = x :=
+  (ofBijective f hf hf').symm_apply_apply x
+
 /-- Reinterpret an order isomorphism as an order embedding. -/
 def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
   e.toRelEmbedding
@@ -889,7 +911,7 @@ theorem coe_trans (e : α ≃o β) (e' : β ≃o γ) : ⇑(e.trans e') = e' ∘ 
   rfl
 
 @[simp]
-theorem trans_toEquiv (e : α ≃o β) (e' : β ≃o γ) :
+theorem toEquiv_trans (e : α ≃o β) (e' : β ≃o γ) :
     (e.trans e').toEquiv = e.toEquiv.trans e'.toEquiv :=
   rfl
 
@@ -955,7 +977,7 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
     (e₁ : α₁ ≃o α₂) (e₁' : β₁ ≃o β₂) (e₂ : α₂ ≃o α₃) (e₂' : β₂ ≃o β₃) :
     arrowCongr (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂') := rfl
 
-@[simp, grind =] lemma arrowCongr_symm {α₁ α₂ β₁ β₂ : Type*} [Preorder α₁] [Preorder α₂]
+@[simp, grind =] lemma symm_arrowCongr {α₁ α₂ β₁ β₂ : Type*} [Preorder α₁] [Preorder α₂]
     [Preorder β₁] [Preorder β₂] (e₁ : α₁ ≃o α₂) (e₂ : β₁ ≃o β₂) :
     (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm := rfl
 
@@ -989,20 +1011,17 @@ theorem orderEmbeddingCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ↪o
     orderEmbeddingCongr f g h = .trans (.trans f.symm h) g :=
   rfl
 
-@[simp]
-theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ↪o δ) :
-    (orderEmbeddingCongr f g).symm h = .trans (.trans f h) g.symm :=
-  rfl
-
 @[simp, grind =]
-lemma orderEmbeddingCongr_symm (f : α ≃o γ) (g : β ≃o δ) :
+lemma symm_orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) :
     (orderEmbeddingCongr f g).symm = orderEmbeddingCongr f.symm g.symm := rfl
 
 @[simp]
 lemma orderEmbeddingCongr_refl :
     orderEmbeddingCongr (.refl α) (.refl β) = Equiv.refl (α ↪o β) := rfl
 
-@[simp]
+-- We want this lemma to have higher priority than
+-- `RelIso.relEmbeddingCongr_trans_relEmbeddingCongr`
+@[simp high]
 lemma orderEmbeddingCongr_trans {ε ζ : Type*} [LE ε] [LE ζ]
     (f : α ≃o γ) (g : β ≃o δ) (f' : γ ≃o ε) (g' : δ ≃o ζ) :
     (orderEmbeddingCongr f g).trans (orderEmbeddingCongr f' g') =
@@ -1014,7 +1033,8 @@ This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
 abbrev orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
   RelIso.relIsoCongr f g
 
-@[simp]
+-- We want this lemma to have higher priority than `RelIso.relIsoCongr_apply`
+@[simp high]
 theorem orderIsoCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ≃o β) :
     orderIsoCongr f g h = .trans (.trans f.symm h) g :=
   rfl
@@ -1025,13 +1045,14 @@ theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o 
   rfl
 
 @[simp, grind =]
-lemma orderIsoCongr_symm (f : α ≃o γ) (g : β ≃o δ) :
+lemma symm_orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) :
     (orderIsoCongr f g).symm = orderIsoCongr f.symm g.symm := rfl
 
 @[simp] lemma orderIsoCongr_refl : orderIsoCongr (.refl α) (.refl β) = .refl (α ≃o β) := rfl
 
-@[simp]
-lemma orderIsoCongr_trans {ε ζ : Type*} [LE ε] [LE ζ]
+-- We want this lemma to have higher priority than `RelIso.relIsoCongr_trans_relIsoCongr`
+@[simp high]
+lemma orderIsoCongr_trans_orderIsoCongr {ε ζ : Type*} [LE ε] [LE ζ]
     (e₁ : α ≃o γ) (e₂ : β ≃o δ) (e₁' : γ ≃o ε) (e₂' : δ ≃o ζ) :
     (orderIsoCongr e₁ e₂).trans (orderIsoCongr e₁' e₂') =
       orderIsoCongr (e₁.trans e₁') (e₂.trans e₂') := rfl

@@ -114,7 +114,7 @@ section Seminorm
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {E : ι → Type wE} {E₁ : ι → Type wE₁}
   {E' : ι' → Type wE'} {G : Type wG} {G' : Type wG'}
-  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)]
+  [Fintype ι'] [NontriviallyNormedField 𝕜] {σ : 𝕜 →+* 𝕜} [∀ i, SeminormedAddCommGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)] [∀ i, SeminormedAddCommGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
   [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
@@ -134,7 +134,7 @@ then `f m` has norm `0`.
 Note that we cannot drop the continuity assumption because `f (m : Unit → E) = f (m ())`,
 where the domain has zero norm and the codomain has a nonzero norm
 does not satisfy this condition. -/
-lemma norm_map_coord_zero (f : (Π i, E i) →ₘₗ[𝕜] G) (hf : Continuous f)
+lemma norm_map_coord_zero (f : (Π i, E i) →ₘₛₗ[σ] G) (hf : Continuous f)
     {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) : ‖f m‖ = 0 := by
   classical
   rw [← inseparable_zero_iff_norm] at hi ⊢
@@ -204,7 +204,7 @@ The bound reads
 `‖f m - f m'‖ ≤
   C * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
 where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
-theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : (Π i, E i) →ₘₗ[𝕜] G) {C : ℝ} (hC : 0 ≤ C)
+theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : (Π i, E i) →ₘₛₗ[σ] G) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ C * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
   have A :
@@ -246,7 +246,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : (Π i, E i) →ₘₗ[
 using the multilinearity. Here, we give a usable but not very precise version. See
 `norm_image_sub_le_of_bound'` for a more precise but less usable version. The bound is
 `‖f m - f m'‖ ≤ C * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`. -/
-theorem norm_image_sub_le_of_bound (f : (Π i, E i) →ₘₗ[𝕜] G)
+theorem norm_image_sub_le_of_bound (f : (Π i, E i) →ₘₛₗ[σ] G)
     {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ C * Fintype.card ι * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ := by
   classical
@@ -276,7 +276,7 @@ theorem norm_image_sub_le_of_bound (f : (Π i, E i) →ₘₗ[𝕜] G)
 
 /-- If a multilinear map satisfies an inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, then it is
 continuous. -/
-theorem continuous_of_bound (f : (Π i, E i) →ₘₗ[𝕜] G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
+theorem continuous_of_bound (f : (Π i, E i) →ₘₛₗ[σ] G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
     Continuous f := by
   let D := max C 1
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
@@ -308,7 +308,7 @@ theorem coe_mkContinuous (f : (Π i, E i) →ₘₗ[𝕜] G) (C : ℝ) (H : ∀ 
 /-- Given a multilinear map in `n` variables, if one restricts it to `k` variables putting `z` on
 the other coordinates, then the resulting restricted function satisfies an inequality
 `‖f.restr v‖ ≤ C * ‖z‖^(n-k) * Π ‖v i‖` if the original function satisfies `‖f v‖ ≤ C * Π ‖v i‖`. -/
-theorem restr_norm_le {k n : ℕ} (f : (Fin n → G) →ₘₗ[𝕜] G') (s : Finset (Fin n))
+theorem restr_norm_le {k n : ℕ} (f : (Fin n → G) →ₘₛₗ[σ] G') (s : Finset (Fin n))
     (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (v : Fin k → G) :
     ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
   rw [mul_right_comm, mul_assoc]
@@ -953,7 +953,7 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
       map_update_smul' := fun m i c x => by
         ext1
         simp only [FunLike.coe_smul, ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
-          LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk] }
+          LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk, RingHom.id_apply] }
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
       exact LinearMap.mkContinuous_norm_le _ (by positivity) _

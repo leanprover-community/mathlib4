@@ -39,7 +39,6 @@ only the periodicity is relevant here.)
   given by its order at infinity.
 * `UpperHalfPlane.orderAtInfty_eq_top_iff_eq_zero`: the order is infinite iff the function is zero.
 * `UpperHalfPlane.orderAtInfty_mul_of_holo`: the order of a product equals the sum of the orders.
-
 -/
 
 open Real Function Asymptotics

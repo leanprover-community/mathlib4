@@ -21,7 +21,6 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
-
 -/
 
 @[expose] public section
@@ -164,8 +163,8 @@ def orderEmbedding : Ideal S ↪o Ideal R where
 
 include M in
 theorem under_le_under_iff {I J : Ideal S} :
-    I.under R ≤ J.under R ↔ I ≤ J := by
-  exact (IsLocalization.orderEmbedding M S).le_iff_le
+    I.under R ≤ J.under R ↔ I ≤ J :=
+  (IsLocalization.orderEmbedding M S).le_iff_le
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M`.
@@ -205,8 +204,8 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   exact ⟨hp, hd⟩
 
 include M S in
-lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal := by
-  exact ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
+lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal :=
+  ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
 
 theorem isMaximal_of_isMaximal_disjoint (I : Ideal R) [hI : I.IsMaximal]
     (h : Disjoint (M : Set R) (I : Set R)) : (I.map (algebraMap R S)).IsMaximal := by

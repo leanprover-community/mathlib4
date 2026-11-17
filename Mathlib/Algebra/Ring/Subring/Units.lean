@@ -13,7 +13,6 @@ import Mathlib.Algebra.Group.Submonoid.Units
 
 /-!
 # Unit subgroups of a ring
-
 -/
 
 @[expose] public section
