@@ -144,9 +144,7 @@ theorem eventually_sign_eq_signRight (x : K) (p : K[X]) :
   have hpg : p = (X - C x) ^ m * g := (pow_mul_divByMonic_rootMultiplicity_eq p x).symm
   -- algebraically, `signRight x p` is the sign of `g` at `x`
   have hsign : signRight x p = sign (g.eval x) := by
-    rw [signRight, hpg, taylor_mul, taylor_pow, taylor_X_sub_C, trailingCoeff_mul,
-      trailingCoeff_X_pow, one_mul, trailingCoeff_eq_coeff_zero (by rwa [taylor_coeff_zero]),
-      taylor_coeff_zero]
+    rw [hpg, signRight_mul, signRight_X_sub_C_pow, one_mul, signRight_of_eval_ne_zero hg]
   -- near `x`, `g` keeps the sign it has at `x`
   have hg_near := (continuousAt_sign_of_ne_zero hg).tendsto.comp (g.continuous.tendsto x)
   rw [nhds_discrete SignType, tendsto_pure] at hg_near
