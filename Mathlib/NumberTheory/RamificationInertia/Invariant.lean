@@ -128,7 +128,7 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     (LinearMap.mulLeft A (groupIdempotent A B H))
   have hT : I.restrictScalars A ≤ (J.restrictScalars A).comap T := by
     intro x hx
-    let y := groupIdempotent A B H * x
+    let y := x * groupIdempotent A B H
     let z := ∑ q : G ⧸ H, q.out • y
     have hz (g : G) : g • z = z := by
       simp only [z, Finset.smul_sum]
@@ -136,14 +136,14 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
       obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
       rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
       have hy : (h : G) • y = y := by
-        simpa only [y, mul_comm _ x, smul_mul', ← Subgroup.smul_def,
+        simpa only [y, smul_mul', ← Subgroup.smul_def,
           smul_groupIdempotent] using smul_mul_groupIdempotent A h x
       simp [hh, mul_smul, hy]
     have hzI : z ∈ I := I.sum_mem fun q _ ↦
-      hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I (I.mul_mem_left _ hx)
+      hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I (I.mul_mem_right _ hx)
     obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) z hz
     have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hzI)
-    simpa [T, y, z, ha] using this
+    simpa [T, y, z, ha, mul_comm] using this
   simpa [Submodule.mem_colon, IsConcreteLE.le_iff, descentMultiplier, T,
     Finset.sum_mul, mul_assoc] using le_comap_extendScalars T I J hT
 
