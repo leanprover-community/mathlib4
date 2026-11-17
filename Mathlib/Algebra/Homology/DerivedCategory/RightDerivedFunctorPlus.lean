@@ -83,7 +83,6 @@ instance : F.rightDerivedFunctorPlus.IsTriangulated :=
   (localizerMorphism_derives _).isTriangulated_of_isRightDerivedFunctor
     F.rightDerivedFunctorPlusUnith
 
-set_option backward.privateInPublic true in
 /-- A natural transformation that is part of the data of the right derived functor
 `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
 when `F : C ⥤ D` is an additive functor between abelian categories and
@@ -92,7 +91,7 @@ bounded below homotopy categories, this natural transformation allows to say
 that it is also the derived functor of the functor
 `F.mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D`,
 postcomposed with `DerivedCategory.Plus.Q`. -/
-@[no_expose, simps! -isSimp app]
+@[irreducible, simps! -isSimp app]
 noncomputable def rightDerivedFunctorPlusUnit :
     F.mapCochainComplexPlus ⋙ DerivedCategory.Plus.Q ⟶
     DerivedCategory.Plus.Q ⋙ F.rightDerivedFunctorPlus :=
@@ -103,7 +102,7 @@ noncomputable def rightDerivedFunctorPlusUnit :
     (associator _ _ _).inv ≫ whiskerRight (DerivedCategory.Plus.quotientCompQhIso C).hom _
 
 instance : NatTrans.CommShift F.rightDerivedFunctorPlusUnit ℤ := by
-  dsimp [rightDerivedFunctorPlusUnit]
+  unfold rightDerivedFunctorPlusUnit
   infer_instance
 
 instance (K : CochainComplex.Plus (InjectiveObject C)) :
