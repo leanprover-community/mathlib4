@@ -116,15 +116,18 @@ theorem signRight_derivative_mul [IsStrictOrderedRing R] {x : R} {p : R[X]} (hp 
     (hev : eval x p = 0) : signRight x (derivative p * p) = 1 := by
   rw [signRight_mul, ← signRight_of_eval_eq_zero hev, ← signRight_mul, signRight_mul_self hp]
 
+/-- Away from the roots, `signRight x` only depends on the value at `x`. -/
+theorem signRight_eq_of_eval_eq {x : R} {p q : R[X]} (h : p.eval x = q.eval x)
+    (hq : q.eval x ≠ 0) : signRight x p = signRight x q := by
+  rw [signRight_of_eval_ne_zero (h.trans_ne hq), signRight_of_eval_ne_zero hq, h]
+
 theorem signRight_add {x : R} {p q : R[X]} (hp : eval x p = 0) (hq : eval x q ≠ 0) :
-    signRight x (p + q) = signRight x q := by
-  have h : eval x (p + q) ≠ 0 := by rw [eval_add, hp, zero_add]; exact hq
-  rw [signRight_of_eval_ne_zero h, signRight_of_eval_ne_zero hq, eval_add, hp, zero_add]
+    signRight x (p + q) = signRight x q :=
+  signRight_eq_of_eval_eq (by simp [hp]) hq
 
 theorem signRight_mod {K : Type*} [Field K] [LinearOrder K] {x : K} {p q : K[X]}
-    (hp : p.eval x = 0) (hq : q.eval x ≠ 0) : signRight x (q % p) = signRight x q := by
-  have h : (q % p).eval x = q.eval x := eval_mod_eq_self_of_root hp
-  rw [signRight_of_eval_ne_zero (h ▸ hq), signRight_of_eval_ne_zero hq, h]
+    (hp : p.eval x = 0) (hq : q.eval x ≠ 0) : signRight x (q % p) = signRight x q :=
+  signRight_eq_of_eval_eq (eval_mod_eq_self_of_root hp) hq
 
 section OrderedField
 
