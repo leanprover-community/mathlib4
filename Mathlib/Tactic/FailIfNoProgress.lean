@@ -67,9 +67,37 @@ def lctxIsDefEq : (l₁ l₂ : List (Option LocalDecl)) → MetaM Bool
   | [], [] => return true
   | _, _ => return false
 
+/-- Given two metavariable IDs `m` and `m'`, `m.isDefEqWithLCtx m'` checks that the
+local contexts for `m` and `m'` are compatible, and `m` and `m'` have equivalent types. -/
+def _root_.Lean.MVarId.isDefEqWithLCtx (m₁ m₂ : MVarId) : MetaM Bool :=
+  withNewMCtxDepth <| m₁.withContext do
+    -- Check that the local contexts are compatible
+    let ldecls₁ := (← m₁.getDecl).lctx.decls.toList
+    let ldecls₂ := (← m₂.getDecl).lctx.decls.toList
+    unless ← lctxIsDefEq ldecls₁ ldecls₂ do
+      return false
+    -- They are compatible, so now we can check that the goals are equivalent
+    isDefEq (← m₁.getType) (← m₂.getType)
+
+/-- Run `tacs : TacticM Unit` in the current local context, and return if `tacs` made progress
+(in the sense of the number of goals changing, the number or presence of expressions in the context
+changing, or that the type of some expression in the context or the type of the goal is no longer
+definitionally equal to what it used to be at reducible transparency.
+-/
+def runAndDetectProgress (tacs : TacticM Unit) : TacticM Bool := do
+  let goals₁ ← getUnsolvedGoals
+  tacs
+  let goals₂ ← getUnsolvedGoals
+  -- XXX: is there better API for "zip if equal length, error otherwise"?
+  unless goals₁.length = goals₂.length do
+    return false
+  let goalPairs := goals₁.zip goals₂
+  withReducible <| goalPairs.anyM fun (goal₁, goal₂) ↦ do
+    return !(← goal₁.isDefEqWithLCtx goal₂)
+
 /-- Run `tacs : TacticM Unit` on `goal`: return whether `tacs` made progress, and the resulting
 goal(s) after running `tacs`. -/
-def runAndDetectProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (Bool × List MVarId) := do
+def runAndDetectProgress2 (goal : MVarId) (tacs : TacticM Unit) : TacticM (Bool × List MVarId) := do
   let l ← run goal tacs
   try
     let [newGoal] := l | failure
@@ -87,14 +115,14 @@ def runAndDetectProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (Bool �
 /-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made.
 Return the resulting goal(s) after running `tacs`. -/
 def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
-  match ← runAndDetectProgress goal tacs with
-  | (true, new) => return new
-  | (false, _) => throwError "no progress made on\n{goal}"
+    match ← runAndDetectProgress2 goal tacs with
+    | (true, new) => return new
+    | (false, _) => throwError "no progress made on\n{goal}"
 
 /-- Run `tacs : TacticM Unit` on `goal`, and fail if progress is made.
 Return the resulting goal(s) after running `tacs`. -/
 def runAndFailIfProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
-  match ← runAndDetectProgress goal tacs with
+  match ← runAndDetectProgress2 goal tacs with
   | (true, _) => throwError "progress made on\n{goal}"
   | (false, _) => return [goal]
 
