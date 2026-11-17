@@ -47,6 +47,8 @@ lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale 
   congr!
   conv_rhs => rw [← RingHom.Flat.ulift_iff.{u₁, u₂}]
   rw [TensorProduct.lmul'_ulift, AlgHom.toRingHom_eq_coe]
+  #adaptation_note
+  /-- After https://github.com/leanprover-community/mathlib4/pull/45954, `erw` is needed here. -/
   erw [AlgHom.comp_toRingHom]
   exact RingHom.Flat.comp_iff_of_bijective_right (Equiv.bijective _)
 

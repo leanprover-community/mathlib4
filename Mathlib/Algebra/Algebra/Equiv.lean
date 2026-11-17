@@ -276,10 +276,12 @@ end bijective
 
 section refl
 
+#adaptation_note /-- After generalizing `AlgEquiv` to non-unital in
+https://github.com/leanprover-community/mathlib4/pull/45954, `@[refl]` stopped working. -/
 /-- Algebra equivalences are reflexive. -/
 -- @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
-  { (.refl _ : A₁ ≃+* A₁) with map_smul' := fun _ _ => rfl }
+  { (.refl _ : A₁ ≃+* A₁) with map_smul' _ _ := rfl }
 
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
@@ -301,10 +303,9 @@ section symm
 @[symm]
 def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
   { e.toRingEquiv.symm with
-    map_smul' := fun r a => by
-      change e.toEquiv.symm (r • a) = r • e.toEquiv.symm a
+    map_smul' r a := show e.toEquiv.symm (r • a) = r • e.toEquiv.symm a by
       rw [← e.toEquiv.symm_apply_apply (r • e.toEquiv.symm a)]
-      simp [map_smul] }
+      simp }
 
 theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
   rfl
@@ -433,7 +434,7 @@ section trans
 @[trans]
 def trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : A₁ ≃ₐ[R] A₃ :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
-    map_smul' := fun r _ => by simp }
+    map_smul' := by simp }
 
 @[simp]
 theorem coe_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
@@ -804,11 +805,11 @@ instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A�
   SMulCommClass.symm _ _ _
 
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
-  smul := fun f => Units.map f
-  one_smul := fun x => by ext; rfl
-  mul_smul := fun x y z => by ext; rfl
-  smul_mul := fun x y z => by ext; exact map_mul x _ _
-  smul_one := fun x => by ext; exact map_one x
+  smul f := Units.map f
+  one_smul _ := by ext; rfl
+  mul_smul _ _ _ := by ext; rfl
+  smul_mul _ _ _ := by ext; exact map_mul ..
+  smul_one _ := by ext; exact map_one ..
 
 @[simp]
 theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
@@ -861,11 +862,11 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
   toFun := fun f ↦
     { (f : S →ₐ[R] S) with
       invFun := ↑(f⁻¹)
-      left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_cancel]; rfl)
-      right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_cancel]; rfl)
+      left_inv x := show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_cancel]; rfl
+      right_inv x := show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_cancel]; rfl
       map_smul' := by simp }
-  invFun := fun f ↦ ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
-  map_mul' := fun _ _ ↦ rfl
+  invFun f := ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
+  map_mul' _ _ := rfl
 
 /-- See also `Finite.algHom` -/
 instance _root_.Finite.algEquiv {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂]
