@@ -4654,6 +4654,7 @@ public import Mathlib.Data.WSeq.Relation
 public import Mathlib.Data.ZMod.Aut
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.Data.ZMod.Coprime
+public import Mathlib.Data.ZMod.CoprimeSpiralTwist
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Data.ZMod.Factorial
 public import Mathlib.Data.ZMod.IntUnitsPower
