@@ -598,7 +598,10 @@ section reindex
 variable {𝕜 E} {ι' : Type*}
 
 /-- For a HilbertBasis `b` indexed by `ι`, `b.reindex (e : ι ≃ ι')` is a `HilbertBasis` indexed
-by `ι'`. -/
+by `ι'`.
+
+TODO: Prove this using `LinearIsometryEquiv.lpCongrLeft`, like `OrthonormalBasis.reindex`, once
+that equivalence exists. -/
 protected def reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') : HilbertBasis ι' 𝕜 E :=
   HilbertBasis.mk (b.orthonormal.comp _ e.symm.injective) (by simp)
 
