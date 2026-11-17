@@ -169,21 +169,21 @@ section AdditiveEquiv
 commutative groups. -/
 def FreeCommGroup.freeCommGroupEquivMultiplicative :
     FreeCommGroup α ≃* Multiplicative (FreeAddCommGroup α) :=
-    MonoidHom.toMulEquiv
-      (FreeCommGroup.lift (Multiplicative.ofAdd ∘ FreeAddCommGroup.of))
-      (FreeAddCommGroup.lift (Additive.ofMul ∘ FreeCommGroup.of)).toMultiplicativeLeft
-      (by ext; simp)
-      (by ext; simp)
+  MonoidHom.toMulEquiv
+    (FreeCommGroup.lift (Multiplicative.ofAdd ∘ FreeAddCommGroup.of))
+    (FreeAddCommGroup.lift (Additive.ofMul ∘ FreeCommGroup.of)).toMultiplicativeLeft
+  (by ext; simp)
+  (by ext; simp)
 
 /-- Additive free commutative groups are isomorphic to `Additive` multiplicative free
 commutative groups. -/
 def FreeAddCommGroup.freeAddCommGroupEquivAdditive :
     FreeAddCommGroup α ≃+ Additive (FreeCommGroup α) :=
-    AddMonoidHom.toAddEquiv
+  AddMonoidHom.toAddEquiv
     (FreeAddCommGroup.lift (fun x ↦ Additive.ofMul (FreeCommGroup.of x)))
     (FreeCommGroup.lift (fun x ↦ Multiplicative.ofAdd (FreeAddCommGroup.of x))).toAdditiveLeft
-    (by ext; simp)
-    (by ext; simp)
+  (by ext; simp)
+  (by ext; simp)
 
 @[simp]
 theorem FreeCommGroup.freeCommGroupEquivMultiplicative_of (x : α) :
