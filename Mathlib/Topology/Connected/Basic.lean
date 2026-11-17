@@ -87,16 +87,13 @@ theorem isPreconnected_of_forall {s : Set α} (x : α)
   have xs : x ∈ s := by
     rcases H y ys with ⟨t, ts, xt, -, -⟩
     exact ts xt
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `wlog xu : x ∈ u := hs xs using u v y z, v u z y`
-  cases hs xs with
-  | inl xu =>
-    rcases H y ys with ⟨t, ts, xt, yt, ht⟩
+  wlog xu : x ∈ u
+  · rw [inter_comm u]
+    rw [union_comm] at hs
+    exact this _ H v u hv hu hs _ ys yv _ zs zu xs ((hs xs).resolve_right xu)
+  · rcases H y ys with ⟨t, ts, xt, yt, ht⟩
     have := ht u v hu hv (ts.trans hs) ⟨x, xt, xu⟩ ⟨y, yt, yv⟩
     exact this.imp fun z hz => ⟨ts hz.1, hz.2⟩
-  | inr xv =>
-    rcases H z zs with ⟨t, ts, xt, zt, ht⟩
-    have := ht v u hv hu (ts.trans <| by rwa [union_comm]) ⟨x, xt, xv⟩ ⟨z, zt, zu⟩
-    exact this.imp fun _ h => ⟨ts h.1, h.2.2, h.2.1⟩
 
 /-- If any two points of a set are contained in a preconnected subset,
 then the original set is preconnected as well. -/
