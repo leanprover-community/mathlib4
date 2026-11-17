@@ -527,7 +527,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     · ring_nf
     rw [← zpow_sub₀ ha]
     congr 3
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
     lia
 
 end Field

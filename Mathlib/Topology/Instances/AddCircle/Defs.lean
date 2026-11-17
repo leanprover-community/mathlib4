@@ -578,7 +578,7 @@ instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by simp
   div_cancel {n} x hn := by
-    replace hn : (n : 𝕜) ≠ 0 := by norm_cast
+    replace hn : (n : 𝕜) ≠ 0 := by fail_if_not_idempotent norm_cast
     change n • QuotientAddGroup.mk' _ ((n : 𝕜)⁻¹ * ↑(equivIco p 0 x)) = x
     rw [← map_zsmul, ← smul_mul_assoc, zsmul_eq_mul, mul_inv_cancel₀ hn, one_mul]
     exact (equivIco p 0).symm_apply_apply x
@@ -627,7 +627,7 @@ theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.na
 
 theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) = q.den := by
   have : (↑(q.den : ℤ) : 𝕜) ≠ 0 := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact q.pos.ne.symm
   rw [← q.num_divInt_den, Rat.cast_divInt_of_ne_zero _ this, Int.cast_natCast, Rat.num_divInt_den,
     addOrderOf_div_of_gcd_eq_one' q.pos q.reduced]

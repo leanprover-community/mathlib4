@@ -311,7 +311,7 @@ theorem norm_of_cyclotomic_irreducible [IsDomain L] [IsCyclotomicExtension {n} K
   split_ifs with hn
   · subst hn
     rw [norm_eq_neg_one_pow (K := K) hζ, IsCyclotomicExtension.finrank _ hirr]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   · exact hζ.norm_eq_one hn hirr
 
 end CommRing

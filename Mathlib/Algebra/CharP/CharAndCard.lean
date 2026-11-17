@@ -42,7 +42,7 @@ theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p 
   · intro h
     rcases (hp.coprime_iff_not_dvd.mpr h).isCoprime with ⟨a, b, hab⟩
     apply_fun ((↑) : ℤ → R) at hab
-    push_cast at hab
+    fail_if_not_idempotent push_cast at hab
     rw [hch, mul_zero, add_zero, mul_comm] at hab
     exact .of_mul_eq_one a hab
 

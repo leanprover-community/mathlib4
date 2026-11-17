@@ -319,7 +319,7 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
   { addEquivBoundedOfCompact α E with
     map_smul' := fun c f => by
       ext
-      norm_cast
+      fail_if_not_idempotent norm_cast
     norm_map' := fun _ => rfl }
 
 end

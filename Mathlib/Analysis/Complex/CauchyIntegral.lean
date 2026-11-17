@@ -989,7 +989,7 @@ lemma circleIntegral_one_div_sub_pow_smul_of_differentiable_on_off_countable
         rw [EventuallyEq.deriv_eq ((isOpen_ball.eventually_mem hw).mono fun _ ↦ ih),
           deriv_fun_const_smul_field, ← iteratedDeriv_succ, smul_smul, Nat.factorial_succ]
         congr 1
-        push_cast
+        fail_if_not_idempotent push_cast
         field
 
 /-- **Cauchy integral formula for derivatives**, assuming `f` is continuous on a closed ball and

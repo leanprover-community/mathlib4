@@ -199,7 +199,7 @@ lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0}
     obtain ⟨m, ⟨t, ht₁, rfl⟩, hm₂⟩ :
         ∃ x ∈ {m | ∃ t, m = μ t + ν tᶜ}, x < ε * (1 / 2 : ℝ≥0∞) ^ n := by
       refine exists_lt_of_csInf_lt ⟨ν univ, ∅, by simp⟩ <| h₁ ▸ ENNReal.mul_pos ?_ (by simp)
-      norm_cast
+      fail_if_not_idempotent norm_cast
       exact hε.ne.symm
     exact ⟨t, hm₂⟩
   choose t ht₂ using h₂
@@ -220,7 +220,7 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
       -- this tweak is needed due to the known issue of `norm_cast` with numeric fractions
       enter [1, 1]
       equals ((1 : ℝ≥0) / (2 : ℝ≥0)) => rfl
-    norm_cast
+    fail_if_not_idempotent norm_cast
     ring
   choose s hs₂ hs₃ using h'
   refine Measure.MutuallySingular.mk (t := (⋃ n, s n)ᶜ) (measure_iUnion_null hs₂) ?_ ?_

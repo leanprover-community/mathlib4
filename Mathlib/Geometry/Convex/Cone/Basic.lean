@@ -156,7 +156,7 @@ instance : Bot (ConvexCone R M) :=
 @[simp, norm_cast] lemma coe_bot : ↑(⊥ : ConvexCone R M) = (∅ : Set M) := rfl
 
 @[simp, norm_cast]
-lemma coe_eq_empty : (C : Set M) = ∅ ↔ C = ⊥ := by rw [← coe_bot (R := R)]; norm_cast
+lemma coe_eq_empty : (C : Set M) = ∅ ↔ C = ⊥ := by rw [← coe_bot (R := R)]; fail_if_not_idempotent norm_cast
 
 instance : CompleteLattice (ConvexCone R M) where
   bot := ⊥

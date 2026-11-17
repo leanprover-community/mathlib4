@@ -1100,7 +1100,7 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
   refine ⟨s, fun n ↦ ⟨(hs n).1, (le_trim hm).trans_lt (hs n).2.1, fun x hx ↦ ?_⟩, hs_univ⟩
   have hx_nnNorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
   rw [← coe_nnNorm]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 end StronglyMeasurable
 

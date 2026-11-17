@@ -47,7 +47,7 @@ protected theorem add_smul (y z : R[S⁻¹]) (x : X[S⁻¹]) :
   clear q
   have hs₃rasb : sb * ra * s₃ ∈ S := by
     rw [mul_assoc, ← ha]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     apply SetLike.coe_mem
   rw [OreLocalization.expand _ _ _ hs₃rasb]
   have ha' : ↑((sb * sa) * s₂) = sb * ra * s₃ := by simp [ha, mul_assoc]
@@ -149,7 +149,7 @@ def universalHom : R[S⁻¹] →+* T :=
       congr 1
       rw [← mul_assoc]
       congr 1
-      norm_cast at h₃
+      fail_if_not_idempotent norm_cast at h₃
       have h₃' := Subtype.coe_eq_of_eq_mk h₃
       rw [← Units.val_mul, ← mul_inv_rev, ← fS.map_mul, h₃']
       rw [Units.inv_mul_eq_iff_eq_mul, Units.eq_mul_inv_iff_mul_eq, ← hf, ← hf]

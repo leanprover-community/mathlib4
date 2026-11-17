@@ -175,7 +175,7 @@ lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
     (exp (π * I * s / 2) * hurwitzZeta a s + exp (-π * I * s / 2) * hurwitzZeta (-a) s) := by
   have hs' (n : ℕ) : s ≠ -↑n := by
     convert hs (n + 1) using 1
-    push_cast
+    fail_if_not_idempotent push_cast
     ring
   rw [expZeta, cosZeta_one_sub a hs, sinZeta_one_sub a hs', hurwitzZeta, hurwitzZeta,
     hurwitzZetaEven_neg, hurwitzZetaOdd_neg, Complex.cos, Complex.sin]

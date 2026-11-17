@@ -385,7 +385,7 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
       meas_ge_le_mul_pow_eLpNorm_eNorm μ two_ne_zero ENNReal.ofNat_ne_top
         (f := X - fun _ ↦ μ[X]) A (by simp)
     using 1
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
   rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal two_ne_zero ENNReal.ofNat_ne_top (hX.sub B)]
   simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
   rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]

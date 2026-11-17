@@ -81,7 +81,7 @@ lemma iInf_eq_natCast_iff {f : ι → ℕ∞} {n : ℕ} : ⨅ i, f i = n ↔ (�
 lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   cases isEmpty_or_nonempty ι
   · simp
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
 
 @[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
   simpa [Order.lt_one_iff] using iInf_lt_iff (α := ℕ∞) (a := 1)

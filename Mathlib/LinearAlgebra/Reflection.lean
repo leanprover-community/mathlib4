@@ -200,7 +200,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     -- Expand out all the reflections and use `hf`, `hg`.
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [← Int.mul_ediv_add_emod m 2]
     set k : ℤ := m / 2
     set e : ℤ := m % 2

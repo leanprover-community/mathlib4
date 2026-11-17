@@ -203,7 +203,7 @@ theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
     ((ofDigits b L : ℕ) : α) = ofDigits (b : α) L := by
   induction L with
   | nil => simp [ofDigits]
-  | cons d L ih => dsimp [ofDigits]; push_cast; rw [ih]
+  | cons d L ih => dsimp [ofDigits]; fail_if_not_idempotent push_cast; rw [ih]
 
 theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
     ∀ {L : List ℕ} (_ : ofDigits b L = 0), ∀ l ∈ L, l = 0

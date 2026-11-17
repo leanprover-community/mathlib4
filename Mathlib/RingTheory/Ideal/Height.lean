@@ -157,7 +157,7 @@ lemma Ideal.exists_isMaximal_height [FiniteRingKrullDim R] :
   trans (l.last.asIdeal.height : WithBot ℕ∞)
   · rw [Ideal.height_eq_primeHeight]
     exact LTSeries.height_last_longestOf.symm.le
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     exact height_mono hle
 
 /-- For all `n ≤ dim R`, there exists a prime ideal `p` with `n ≤ ht p`. -/
@@ -175,7 +175,7 @@ theorem Ideal.ringKrullDim_eq_top_iff :
     exact ⟨p, IsPrime.ne_top', hp₂⟩
   · obtain ⟨I, h₁, h₂⟩ := h m
     grw [← Ideal.height_le_ringKrullDim_of_ne_top h₁]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 instance (priority := 900) Ideal.finiteHeight_of_finiteRingKrullDim {I : Ideal R}
     [FiniteRingKrullDim R] : I.FiniteHeight := by
@@ -335,7 +335,7 @@ lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : With
   refine ⟨fun h m hm ↦ h hm.isPrime, fun h p hp ↦ ?_⟩
   obtain ⟨m, hm, hle⟩ := p.exists_le_maximal hp.ne_top
   refine le_trans ?_ (h hm)
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact Ideal.height_mono hle
 
 private theorem IsLocalization.height_under_eq_of_isPrime (S : Submonoid R) {A : Type*} [CommRing A]
@@ -403,14 +403,14 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
         have := hr.trans (Ideal.height_mono e)
         rw [Set.Finite.mem_toFinset] at hK
         rw [hK.2, ← not_lt] at this
-        norm_cast at this
+        fail_if_not_idempotent norm_cast at this
         exact this r.lt_succ_self
     simp_rw [Set.not_subset, Set.mem_iUnion, not_exists, Set.Finite.mem_toFinset] at this
     obtain ⟨x, hx₁, hx₂⟩ := this
     refine ⟨J ⊔ Ideal.span {x}, sup_le h₁ ?_, ?_, ?_⟩
     · rwa [Ideal.span_le, Set.singleton_subset_iff]
     · apply Submodule.spanRank_sup_le_sum_spanRank.trans
-      push_cast
+      fail_if_not_idempotent push_cast
       exact add_le_add h₂ ((Submodule.spanRank_span_le_card _).trans (by simp))
     · refine le_iInf₂ (fun p hp ↦ ?_)
       have := hp.isPrime

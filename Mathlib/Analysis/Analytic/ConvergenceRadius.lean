@@ -207,7 +207,7 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
   lift a to ℝ≥0 using ha.1.le
   have : (r : ℝ) < r / a := by
     simpa only [div_one] using (div_lt_div_iff_of_pos_left h₀ zero_lt_one ha.1).2 ha.2
-  norm_cast at this
+  fail_if_not_idempotent norm_cast at this
   rw [← ENNReal.coe_lt_coe] at this
   refine this.trans_le (p.le_radius_of_bound C fun n => ?_)
   rw [NNReal.coe_div, div_pow, ← mul_div_assoc, div_le_iff₀ (pow_pos ha.1 n)]
@@ -265,7 +265,7 @@ theorem summable_norm_apply (p : FormalMultilinearSeries 𝕜 E F) {x : E}
 theorem summable_nnNorm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
     Summable fun n : ℕ => ‖p n‖₊ * r ^ n := by
   rw [← NNReal.summable_coe]
-  push_cast
+  fail_if_not_idempotent push_cast
   exact p.summable_norm_mul_pow h
 
 @[deprecated (since := "2026-10-31")] alias summable_nnnorm_mul_pow := summable_nnNorm_mul_pow

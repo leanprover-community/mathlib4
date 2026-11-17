@@ -42,7 +42,7 @@ theorem beta_eq_betaIntegralReal (α β : ℝ) (hα : 0 < α) (hβ : 0 < β) :
     beta α β = (betaIntegral α β).re := by
   rw [betaIntegral_eq_Gamma_mul_div]
   · simp_rw [beta, ← ofReal_add α β, Gamma_ofReal]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   all_goals simpa
 
 /-- The probability density function of the beta distribution with shape parameters `α` and `β`.
@@ -114,7 +114,7 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
       betaIntegral, intervalIntegral.integral_of_le (by simp),
       ← integral_Ioc_eq_integral_Ioo, ← RCLike.re_to_complex, ← integral_re]
     · refine setIntegral_congr_fun measurableSet_Ioc fun x ⟨hx1, hx₂⟩ ↦ ?_
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow, RCLike.re_to_complex,
         Complex.re_mul_ofReal, Complex.ofReal_re]
       all_goals linarith

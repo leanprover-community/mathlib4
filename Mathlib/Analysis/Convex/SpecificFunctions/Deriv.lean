@@ -105,9 +105,10 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
   rw [mem_Ioi] at hx
   rw [iter_deriv_zpow]
   refine mul_pos ?_ (zpow_pos hx _)
-  norm_cast
+  fail_if_not_idempotent norm_cast
   refine int_prod_range_pos (by decide) fun hm => ?_
   rw [← Finset.coe_Ico] at hm
+  -- TODO: norm_cast is not idempotent fail_if_not_idempotent norm_cast at hm
   norm_cast at hm
   fin_cases hm <;> simp_all
 

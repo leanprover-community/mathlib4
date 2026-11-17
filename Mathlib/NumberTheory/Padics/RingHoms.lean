@@ -86,7 +86,7 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
   have := congr(($(gcd_eq_gcd_ab r.den p) % p : ZMod p))
   simp only [Int.cast_natCast, CharP.cast_eq_zero, EuclideanDomain.mod_zero, Int.cast_add,
     Int.cast_mul, zero_mul, add_zero] at this
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [mul_right_comm, mul_assoc, ← this]
   suffices rdcp : r.den.Coprime p by
     rw [rdcp.gcd_eq_one]
@@ -108,6 +108,7 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
       Int.cast_sub]
     apply Subtype.coe_injective
     simp only [coe_mul, coe_natCast]
+    -- TODO: norm_cast is not idempotent! fail_if_not_idempotent norm_cast
     norm_cast
     simp
   exact norm_sub_modPart_aux r h
@@ -333,7 +334,7 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     rw [← sub_zero x] at h
     dsimp [toZMod, toZModHom]
     convert zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
     · apply sub_zmodRepr_mem
 
 @[simp]
@@ -411,7 +412,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     split_ifs with h
     · rw [h]
       apply dvd_zero
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [sub_add_eq_sub_sub]
     obtain ⟨c, hc⟩ := ih x
     simp only [map_natCast, ZMod.natCast_self, map_pow, map_mul, ZMod.natCast_val]
@@ -564,7 +565,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   -- Need to do beta reduction first, as `norm_cast` doesn't.
   -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
   beta_reduce
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
   exact mod_cast pow_dvd_nthHom_sub f_compat r k j hj
 
@@ -630,7 +631,7 @@ theorem limNthHom_spec (r : R) :
   intro n hn
   apply _root_.lt_trans _ hε'
   change (padicNormE _ : ℝ) < _
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact hN _ hn
 
 theorem limNthHom_zero : limNthHom f_compat 0 = 0 := by simp [limNthHom]; rfl
@@ -752,7 +753,7 @@ lemma toZModPow_ofIntSeq_of_pow_dvd_sub
     (by simp only [zpow_neg, zpow_natCast, inv_pos]; exact mod_cast Nat.pos_of_neZero _)
   replace hN := hN (N + n) (Nat.le_add_right N n)
   rw [← hs, he, ← Rat.cast_lt (K := ℝ)] at hN
-  push_cast at hN
+  fail_if_not_idempotent push_cast at hN
   simp only [← add_sub, s, CauSeq.mk_apply, Rat.cast_intCast, padicNormE.is_norm,
     ← Int.cast_natCast (R := ℚ_[p]) (x.appr n), ← Int.cast_sub] at hN
   have : ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ ≤ ↑p ^ (-n : ℤ) := by

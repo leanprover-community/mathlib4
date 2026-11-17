@@ -85,7 +85,7 @@ private lemma one_le_valuation_factor (hne : {p : K[X] | v p < 1 ∧ p ≠ 0}.No
   have hda : a.degree < πᵥ.degree := by
     have hbpos := degree_pos_of_ne_zero_of_nonunit hab.2.2 hb
     simp_rw [hπᵥ, degree_mul, degree_eq_natDegree hab.2.1, degree_eq_natDegree hab.2.2] at hbpos ⊢
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simpa using hbpos
   have hlea := imp_not_comm.mp (degree_lt_wf.not_lt_min _) hda
   grind

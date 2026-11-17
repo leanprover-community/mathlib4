@@ -57,7 +57,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
     | zero => simp
     | succ n hn =>
       rw [cast_succ, hder_rec (n + 1) (by positivity), hn, harmonic_succ]
-      push_cast
+      fail_if_not_idempotent push_cast
       ring
   suffices -deriv f 1 = γ by rw [hder_nat n, ← this, neg_neg]
   -- Use convexity to show derivative of `f` at `n + 1` is between `log n` and `log (n + 1)`

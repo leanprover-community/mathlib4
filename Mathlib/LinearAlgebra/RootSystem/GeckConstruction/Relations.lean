@@ -239,7 +239,7 @@ private lemma lie_e_f_ne_aux₁ :
         b.abs_cartanMatrix_apply, Base.cartanMatrix, Base.cartanMatrixIn_def]
       have aux₁ := b.chainTopCoeff_eq_of_ne hij.symm
       have aux₂ := chainTopCoeff_of_add (b.linearIndependent_pair_of_ne hij.symm) hm
-      norm_cast
+      fail_if_not_idempotent norm_cast
       aesop
     · have aux : ∀ x ∈ Finset.univ,
           ¬ (P.root x = P.root i + P.root j ∧ P.root i = P.root x - P.root j) := by
@@ -331,7 +331,7 @@ lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
       ite_eq_left (⟨hm, by rw [hm, hk]; abel⟩),
       ite_eq_left ⟨by rw [hl', add_comm], by rw [hl', hk]⟩]
     have := chainBotCoeff_mul_chainTopCoeff i.property j.property hij' hl'.symm hm.symm h₅
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 end lie_e_f_ne
 

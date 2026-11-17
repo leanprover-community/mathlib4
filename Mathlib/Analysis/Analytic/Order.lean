@@ -348,7 +348,7 @@ theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : 
     refine (hf' ?_).elim
     rw [EventuallyEq.deriv_eq h, deriv_const]
   | coe r =>
-    norm_cast
+    fail_if_not_idempotent norm_cast
     obtain ⟨F, hFa, hFne, hfF⟩ := (analyticOrderAt_eq_natCast (by fun_prop)).mp h
     apply eq_of_ge_of_le
     · by_contra! hr
@@ -401,7 +401,7 @@ lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNor
     have hf : AnalyticAt 𝕜 f z₀ := by
       by_contra h
       have h0 : (n : ℕ∞) = 0 := Hn.trans (analyticOrderAt_eq_zero.mpr (.inl h))
-      norm_cast at h0
+      fail_if_not_idempotent norm_cast at h0
       lia
     rw [Function.iterate_succ']
     have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by

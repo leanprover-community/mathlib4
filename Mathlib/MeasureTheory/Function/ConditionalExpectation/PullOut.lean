@@ -90,7 +90,7 @@ theorem condExp_stronglyMeasurable_bilin_of_bound [CompleteSpace E]
   have hfs_tendsto : ∀ᵐ ω ∂μ, Tendsto (fs · ω) atTop (𝓝 (f ω)) :=
     hf.tendsto_approxBounded_ae hf_bound
   by_cases hμ : μ = 0
-  · simp only [hμ, ae_zero]; norm_cast
+  · simp only [hμ, ae_zero]; fail_if_not_idempotent norm_cast
   have : (ae μ).NeBot := ae_neBot.2 hμ
   have hc : 0 ≤ c := by
     rcases hf_bound.exists with ⟨_, h⟩

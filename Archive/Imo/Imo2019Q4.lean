@@ -55,7 +55,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       linarith
     · apply sub_le_self
       positivity
-  norm_cast
+  fail_if_not_idempotent norm_cast
   calc ∏ _ ∈ range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
     _ < (∑ i ∈ range n, i)! := ?_
     _ ≤ k ! := by gcongr
@@ -88,7 +88,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
   -- We know that n < 6.
   have := Imo2019Q4.upper_bound hk h
   interval_cases n <;>
-  simp_rw [prod_range_succ, prod_range_zero, Int.reducePow, Int.reduceSub] at h <;> norm_cast at h
+  simp_rw [prod_range_succ, prod_range_zero, Int.reducePow, Int.reduceSub] at h <;> fail_if_not_idempotent norm_cast at h
   -- n = 1
   · rw [mul_one, factorial_eq_one] at h
     simp [le_antisymm h hk]

@@ -222,7 +222,7 @@ theorem toZ_of_lt (hi : i < i0) :
 @[simp]
 theorem toZ_of_eq : toZ i0 i0 = 0 := by
   rw [toZ_of_ge le_rfl]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← nonpos_iff_eq_zero]
   apply Nat.find_le
   rw [Function.iterate_zero, id]
@@ -248,7 +248,7 @@ theorem toZ_neg (hi : i < i0) : toZ i0 i < 0 := by
 
 theorem toZ_iterate_succ_le (n : ℕ) : toZ i0 (succ^[n] i0) ≤ n := by
   rw [toZ_of_ge (le_succ_iterate _ _)]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact Nat.find_min' _ rfl
 
 theorem toZ_iterate_pred_ge (n : ℕ) : -(n : ℤ) ≤ toZ i0 (pred^[n] i0) := by
@@ -258,7 +258,7 @@ theorem toZ_iterate_pred_ge (n : ℕ) : -(n : ℤ) ≤ toZ i0 (pred^[n] i0) := b
     lia
   · rw [toZ_of_lt h]
     refine Int.neg_le_neg ?_
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact Nat.find_min' _ rfl
 
 theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :

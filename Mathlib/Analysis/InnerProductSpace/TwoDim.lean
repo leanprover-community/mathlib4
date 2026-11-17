@@ -175,7 +175,7 @@ theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationA
     LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
     LinearIsometryEquiv.coe_symm_toLinearEquiv]
   rw [InnerProductSpace.toDual_symm_apply]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 @[simp]
 theorem inner_rightAngleRotationAux₁_right (x y : E) :
@@ -454,7 +454,7 @@ theorem kahler_mul (a x y : E) : o.kahler x a * o.kahler a y = ‖a‖ ^ 2 * o.k
         Complex.mul_im, Complex.mul_re, Complex.ofReal_im, Complex.ofReal_re, Complex.real_smul]
       rw [real_inner_comm a x, o.areaForm_swap x a]
       linear_combination o.inner_mul_areaForm_sub a x y
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
 
 theorem normSq_kahler (x y : E) : Complex.normSq (o.kahler x y) = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
   simpa [kahler_apply_apply, Complex.normSq, sq] using o.inner_sq_add_areaForm_sq x y

@@ -173,7 +173,7 @@ private theorem sumNodes_eq_coeff {n : ℕ} {P : ℝ[X]} (hP : P.degree ≤ n) :
   have : P.degree < (Finset.range (n + 1)).card := by
     rw [Finset.card_range]
     grw [hP]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
   convert! (Lagrange.coeff_eq_sum (strictAntiOn_node n).injOn this).symm using 2
   · exact Eq.symm (Nat.range_succ_eq_Iic n)

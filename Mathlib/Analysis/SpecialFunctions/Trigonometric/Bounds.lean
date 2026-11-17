@@ -200,7 +200,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   have deriv_pos (y : ℝ) (hy : y ∈ interior U) : 0 < deriv (fun y' : ℝ => tan y' - y') y := by
     have := cos_pos (interior_subset hy)
     simp only [deriv_tan_sub_id y this.ne', one_div, gt_iff_lt, sub_pos]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     have bd2 : cos y ^ 2 < 1 := by
       apply lt_of_le_of_ne y.cos_sq_le_one
       rw [cos_sq']

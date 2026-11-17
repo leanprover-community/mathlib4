@@ -64,7 +64,7 @@ lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
     ← Complex.exp_add]
   rw [← add_div, ← add_div, ← neg_add, ← neg_add]
   congr 3
-  norm_cast
+  fail_if_not_idempotent norm_cast
   have h1 : (L.comp (.rotation θ)).comp (.inl ℝ E E)
       = Real.cos θ • L.comp (.inl ℝ E E) - Real.sin θ • L.comp (.inr ℝ E E) := by
     ext x

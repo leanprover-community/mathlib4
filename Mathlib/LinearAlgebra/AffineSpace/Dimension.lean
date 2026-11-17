@@ -90,7 +90,7 @@ theorem dim_eq_rank (h : s ≠ ⊥) : dim s = Module.rank R s.direction := by
 
 theorem finDim_eq_finrank (h : s ≠ ⊥) : finDim s = Module.finrank R s.direction := by
   simp [finDim, dim_eq_rank h]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 @[simp]
 theorem dim_toAffineSubspace (s : Submodule R V) : s.toAffineSubspace.dim = Module.rank R s := by
@@ -137,7 +137,7 @@ theorem finDim_eq_map_dim_toNat : finDim s = (dim s).map Cardinal.toNat := by
 theorem dim_eq_finDim_unbot (hs : s ≠ ⊥) [StrongRankCondition R] [Module.Finite R s.direction] :
     dim s = (finDim s).unbot (by simpa) := by
   simp only [dim_eq_rank hs, finDim, WithBot.map_coe, WithBot.unbot_coe]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact Cardinal.cast_toNat_of_lt_aleph0 (Module.rank_lt_aleph0 _ _) |>.symm
 
 @[gcongr]
@@ -193,7 +193,7 @@ theorem finDim_map_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective f)
   by_cases hs : map f s = ⊥
   · simp_all
   rw [finDim_eq_finrank hs, finDim_eq_finrank (by simp_all), map_direction]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   refine LinearEquiv.finrank_eq (Submodule.equivMapOfInjective _ ?_ _).symm
   exact f.linear_injective_iff.mpr hf
 

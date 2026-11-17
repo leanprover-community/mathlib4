@@ -177,7 +177,7 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       obtain ⟨b, fr⟩ := ifp_n
       rcases Decidable.em (fr = 0) with fr_zero | fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
-      · have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
+      · have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by fail_if_not_idempotent norm_cast
         have coe_of_fr := coe_of_rat_eq this
         simpa [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_ne_zero]
 

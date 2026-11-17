@@ -217,7 +217,7 @@ lemma hasSum_int_oddKernel (a : ℝ) {x : ℝ} (hx : 0 < x) :
     (cexp (-π * a ^ 2 * x))).congr_fun (fun n ↦ ?_)
   rw [jacobiTheta₂'_term, mul_assoc (2 * π * I), mul_div_cancel_left₀ _ two_pi_I_ne_zero, ← add_mul,
     mul_left_comm, jacobiTheta₂_term, ← Complex.exp_add]
-  push_cast
+  fail_if_not_idempotent push_cast
   simp only [← mul_assoc, ← add_mul]
   congrm _ * cexp (?_ * x)
   simp only [mul_right_comm _ I, add_mul, mul_assoc _ I, I_mul_I]
@@ -248,7 +248,7 @@ lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   refine this.congr_fun fun n ↦ ?_
   simp_rw [Int.cast_neg, neg_sq, mul_neg, ofReal_mul, Int.cast_natCast, ofReal_natCast,
       ofReal_ofNat, ← add_mul, ofReal_sin, Complex.sin]
-  push_cast
+  fail_if_not_idempotent push_cast
   congr 1
   rw [← mul_div_assoc, ← div_mul_eq_mul_div, ← div_mul_eq_mul_div, div_self two_ne_zero, one_mul,
     neg_mul, neg_mul, neg_neg, mul_comm _ I, ← mul_assoc, mul_comm _ I, neg_mul,
@@ -374,7 +374,7 @@ lemma completedSinZeta_neg (a : UnitAddCircle) (s : ℂ) :
 theorem completedHurwitzZetaOdd_one_sub (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaOdd a (1 - s) = completedSinZeta a s := by
   rw [completedHurwitzZetaOdd, completedSinZeta,
-    (by { push_cast; ring } : (1 - s + 1) / 2 = ↑(3 / 2 : ℝ) - (s + 1) / 2),
+    (by { fail_if_not_idempotent push_cast; ring } : (1 - s + 1) / 2 = ↑(3 / 2 : ℝ) - (s + 1) / 2),
     ← hurwitzOddFEPair_k, (hurwitzOddFEPair a).functional_equation ((s + 1) / 2),
     hurwitzOddFEPair_ε, one_smul]
 
@@ -394,7 +394,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     cexp (2 * π * I * a * n) / (↑|n| : ℂ) ^ s / 2) (completedSinZeta a s) := by
   let c (n : ℤ) : ℂ := -I * cexp (2 * π * I * a * n) / 2
   have hc (n : ℤ) : ‖c n‖ = 1 / 2 := by
-    simp_rw [c, (by { push_cast; ring } : 2 * π * I * a * n = ↑(2 * π * a * n) * I), norm_div,
+    simp_rw [c, (by { fail_if_not_idempotent push_cast; ring } : 2 * π * I * a * n = ↑(2 * π * a * n) * I), norm_div,
       RCLike.norm_ofNat, norm_mul, norm_neg, norm_I, one_mul, norm_exp_ofReal_mul_I]
   have hF t (ht : 0 < t) :
       HasSum (fun n ↦ c n * n * rexp (-π * n ^ 2 * t)) (sinKernel a t / 2) := by

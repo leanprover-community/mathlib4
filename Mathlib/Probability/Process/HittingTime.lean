@@ -329,7 +329,7 @@ lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter
   intro E F hEF ω
   simp only [hittingAfter_def]
   split_ifs with hF hE hE
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     gcongr
     exact ⟨n, by simp only [mem_lowerBounds]; grind⟩
   · simp
@@ -376,7 +376,7 @@ lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingA
   intro n m hnm ω
   simp only [hittingAfter]
   split_ifs with h_n h_m h_m
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     gcongr
     exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
   · simp

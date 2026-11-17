@@ -122,7 +122,7 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
     rw [Finset.sum_range_succ, mul_add, pow_succ', mul_assoc, ih, ofDigitsTerm, digits, ← pow_succ',
       mul_left_comm, mul_inv_cancel₀ (by positivity), mul_one, mul_comm x, pow_succ', mul_assoc]
     set y := (b : ℝ) ^ n * x
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by lia),
       Fin.val_ofNat, Nat.div_add_mod]
 
@@ -172,7 +172,7 @@ theorem ofDigits_const_last_eq_one (b : ℕ) [NeZero b] :
   rw [Summable.tsum_mul_left]
   · rw [geom_series_succ _ (by simp [inv_lt_one_iff₀, this]),
       tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, NeZero.pos b])]
-    push_cast
+    fail_if_not_idempotent push_cast
     have : (b : ℝ) ≠ 0 := mod_cast NeZero.ne b
     field [*]
   · rw [summable_nat_add_iff (f := fun n ↦ ((b + 1 : ℕ) : ℝ)⁻¹ ^ n) 1]

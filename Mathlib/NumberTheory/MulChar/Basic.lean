@@ -170,7 +170,7 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
         · simp only [hy, dite_eq_left]
           have hm : (hx.mul hy).unit = hx.unit * hy.unit := Units.ext rfl
           rw [hm, map_mul]
-          norm_cast
+          fail_if_not_idempotent norm_cast
         · simp only [hy, not_false_iff, dite_eq_right, mul_zero]
       · simp only [hx, IsUnit.mul_iff, false_and, not_false_iff, dite_eq_right, zero_mul]
   map_nonunit' := by
@@ -364,7 +364,7 @@ theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ 
 lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
     equivToUnitHom (χ₁ * χ₂) a = equivToUnitHom χ₁ a * equivToUnitHom χ₂ a := by
   apply_fun ((↑) : R'ˣ → R') using Units.val_injective
-  push_cast
+  fail_if_not_idempotent push_cast
   simp_rw [coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply]
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups

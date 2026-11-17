@@ -502,15 +502,15 @@ theorem fract_fract (a : R) : fract (fract a) = fract a :=
 
 @[simp]
 theorem fract_fract_add (a b : R) : fract (fract a + b) = fract (a + b) :=
-  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; push_cast; abel⟩
+  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; fail_if_not_idempotent push_cast; abel⟩
 
 @[simp]
 theorem fract_add_fract (a b : R) : fract (a + fract b) = fract (a + b) :=
-  fract_eq_fract.2 ⟨-⌊b⌋, by unfold fract; push_cast; abel⟩
+  fract_eq_fract.2 ⟨-⌊b⌋, by unfold fract; fail_if_not_idempotent push_cast; abel⟩
 
 @[simp]
 theorem fract_fract_sub (a b : R) : fract (fract a - b) = fract (a - b) :=
-  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; push_cast; abel⟩
+  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; fail_if_not_idempotent push_cast; abel⟩
 
 @[simp]
 theorem fract_sub_fract (a b : R) : fract (a - fract b) = fract (a - b) :=
@@ -601,12 +601,14 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   have hn' : 0 < (n : k) := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
   refine fract_eq_iff.mpr ⟨?_, ?_, m / n, ?_⟩
   · positivity
   · simpa only [div_lt_one hn', Nat.cast_lt] using m.mod_lt hn
   · rw [sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne', mul_div_cancel₀ _ hn'.ne', mul_add,
       mul_div_cancel₀ _ hn'.ne']
+    -- TODO: norm_cast is not idempotent!
+    -- fail_if_not_idempotent norm_cast
     norm_cast
     rw [← Nat.cast_add, Nat.mod_add_div m n]
 
@@ -614,7 +616,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
-  replace hn : 0 < (n : k) := by norm_cast
+  replace hn : 0 < (n : k) := by fail_if_not_idempotent norm_cast
   have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
     intro l hl
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg

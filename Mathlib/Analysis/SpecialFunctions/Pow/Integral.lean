@@ -127,7 +127,7 @@ lemma integrableOn_ball_of_norm_le_rpow (hd : 1 ≤ Module.finrank ℝ E) {f : E
     move_mul [C]
     rw [← Real.rpow_natCast y (Module.finrank ℝ E - 1), ← Real.rpow_add hy]
     congr
-    norm_cast
+    fail_if_not_idempotent norm_cast
   rw [← integrableOn_fun_norm_addHaar μ] at hint
   exact Integrable.mono' hint h_meas.restrict h_decay
 

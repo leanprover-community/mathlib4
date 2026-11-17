@@ -342,7 +342,7 @@ theorem cauchy_schwarz_aux (x y : F) : normSqF (⟪x, y⟫ • x - ⟪x, x⟫ �
   simp only [inner_sub_sub_self, inner_smul_left, inner_smul_right, conj_ofReal, mul_sub, ←
     ofReal_normSq_eq_inner_self x, ← ofReal_normSq_eq_inner_self y]
   rw [← mul_assoc, mul_conj, RCLike.conj_mul, mul_left_comm, ← inner_conj_symm y, mul_conj]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring
 
 /-- **Cauchy–Schwarz inequality**.

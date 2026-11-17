@@ -73,6 +73,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
     congr 1
     rw [add_comm, add_choose]
     simp only [Int.natCast_ediv, cast_mul, eq_intCast]
+    -- TODO: norm_cast is not idempotent! fail_if_not_idempotent norm_cast
     norm_cast
     rw [mul_comm, ← Nat.mul_div_assoc]
     · rw [mul_comm, Nat.mul_div_mul_right _ _ (by positivity)]
@@ -92,7 +93,7 @@ theorem coeff_shiftedLegendre (n k : ℕ) :
   refine le_antisymm ?_ (le_degree_of_ne_zero ?_)
   · rw [degree_le_iff_coeff_zero]
     intro k h
-    norm_cast at h
+    fail_if_not_idempotent norm_cast at h
     simp [coeff_shiftedLegendre, choose_eq_zero_of_lt h]
   · simp [coeff_shiftedLegendre, (choose_pos (show n ≤ n + n by simp)).ne']
 

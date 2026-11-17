@@ -446,7 +446,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
     _ = (√(2 * π * v))⁻¹
         * ∫ x : ℝ, cexp (-(2 * v)⁻¹ * x ^ 2 + (z + μ / v) * x + -μ ^ 2 / (2 * v)) ∂ℙ := by
       unfold gaussianPDFReal
-      push_cast
+      fail_if_not_idempotent push_cast
       simp_rw [mul_assoc, integral_const_mul, ← Complex.exp_add]
       congr with x
       congr 1
@@ -460,7 +460,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
         NNReal.coe_ofNat, ofReal_mul, ofReal_ofNat, neg_neg, div_inv_eq_mul,
         ne_eq, ofReal_eq_zero, rpow_eq_zero, not_false_eq_true]
       rw [Complex.ofReal_cpow (by positivity)]
-      push_cast
+      fail_if_not_idempotent push_cast
       ring_nf
     _ = cexp (z * μ + v * z ^ 2 / 2) := by
       rw [one_mul]
@@ -491,7 +491,7 @@ theorem mgf_gaussianReal (hX : HasLaw X (gaussianReal μ v) p) (t : ℝ) :
   suffices (mgf X p t : ℂ) = rexp (μ * t + ↑v * t ^ 2 / 2) from mod_cast this
   rw [← mgf_id_map hX.aemeasurable, ← complexMGF_ofReal, hX.map_eq, complexMGF_id_gaussianReal,
     mul_comm μ]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem mgf_fun_id_gaussianReal :
     mgf (fun x ↦ x) (gaussianReal μ v) = fun t ↦ rexp (μ * t + v * t ^ 2 / 2) := by

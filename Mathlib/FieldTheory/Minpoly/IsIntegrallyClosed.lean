@@ -104,7 +104,7 @@ theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} {p : R[X]}
   by_cases! hs : ¬IsIntegral R s
   · simp [minpoly, hs]
   rw [degree_eq_natDegree (minpoly.ne_zero hs), degree_eq_natDegree hp0]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
 
 /-- If `x` is a root of an irreducible polynomial `p`, then `x` is integral

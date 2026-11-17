@@ -78,7 +78,7 @@ theorem dist_point_faceOppositeCentroid [NeZero n] (s : Simplex ℝ P n) (i : Fi
     (n + 1) * dist s.centroid (s.faceOppositeCentroid i) := by
   simp_rw [dist_eq_norm_vsub, s.point_vsub_faceOppositeCentroid_eq_smul_vsub i,
     norm_smul]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 end Simplex
 
@@ -103,7 +103,7 @@ lemma acuteAngled_iff_angle_lt {t : Triangle ℝ P} : t.AcuteAngled ↔
 theorem dist_point_centroid (t : Affine.Triangle ℝ P) (i : Fin 3) :
     dist (t.points i) t.centroid = 2 * dist t.centroid (t.faceOppositeCentroid i) := by
   rw [Affine.Simplex.dist_point_centroid]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 /-- In a triangle, the distance from a vertex to the `faceOppositeCentroid` equals three times the
 distance from the `centroid` to the `faceOppositeCentroid`. -/
@@ -111,7 +111,7 @@ theorem dist_point_faceOppositeCentroid (t : Affine.Triangle ℝ P) (i : Fin 3) 
     dist (t.points i) (t.faceOppositeCentroid i) =
       3 * dist t.centroid (t.faceOppositeCentroid i) := by
   rw [Affine.Simplex.dist_point_faceOppositeCentroid]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 end Triangle
 

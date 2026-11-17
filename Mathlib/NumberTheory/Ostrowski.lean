@@ -186,7 +186,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
     _ < x ^ M.logb (1 / 2) := by
       apply rpow_lt_rpow_of_exponent_gt hx0 hx1
       rw [hk]
-      push_cast
+      fail_if_not_idempotent push_cast
       exact lt_add_of_le_of_pos (Nat.le_ceil _) zero_lt_one
     _ ≤ x ^ x.logb (1 / 2) := by
       apply rpow_le_rpow_of_exponent_ge hx0 hx1.le
@@ -198,7 +198,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   apply lt_irrefl (1 : ℝ)
   calc
   1 = f 1 := (map_one f).symm
-  _ = f (a * p ^ k + b * m ^ k) := by rw_mod_cast [bezout]; norm_cast
+  _ = f (a * p ^ k + b * m ^ k) := by rw_mod_cast [bezout]; fail_if_not_idempotent norm_cast
   _ ≤ f (a * p ^ k) + f (b * m ^ k) := f.add_le' ..
   _ ≤ 1 * (f p) ^ k + 1 * (f m) ^ k := by
     simp only [map_mul, map_pow]

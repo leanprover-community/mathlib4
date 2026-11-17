@@ -38,7 +38,7 @@ lemma intervalIntegral_pow_mul_exp_neg_le {k : ℕ} {M c : ℝ} (hM : 0 ≤ M) (
     _ = k ! / c ^ (k + 1) := by
         simp_rw [key, Gamma_nat_eq_factorial, div_eq_mul_inv,
           one_mul, mul_comm, inv_rpow hc.le, ← rpow_natCast]
-        norm_cast
+        fail_if_not_idempotent norm_cast
 
 lemma sum_Ico_pow_mul_exp_neg_le {k : ℕ} {M : ℕ} {c : ℝ} (hc : 0 < c) :
     ∑ i ∈ Finset.Ico 0 M, i ^ k * rexp (- (c * i)) ≤ rexp c * k ! / c ^ (k + 1) := calc

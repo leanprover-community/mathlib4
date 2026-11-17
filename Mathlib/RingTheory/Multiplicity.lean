@@ -173,7 +173,7 @@ theorem FiniteMultiplicity.not_dvd_of_one_right : FiniteMultiplicity a 1 → ¬a
 theorem Int.natCast_emultiplicity (a b : ℕ) :
     emultiplicity (a : ℤ) (b : ℤ) = emultiplicity a b := by
   unfold emultiplicity FiniteMultiplicity
-  congr! <;> norm_cast
+  congr! <;> fail_if_not_idempotent norm_cast
 
 @[norm_cast]
 theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b :=
@@ -239,7 +239,7 @@ theorem FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt (hf : FiniteMultiplici
     (hm : multiplicity a b < m) : ¬a ^ m ∣ b := by
   apply not_pow_dvd_of_emultiplicity_lt
   rw [hf.emultiplicity_eq_multiplicity]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) (h : FiniteMultiplicity a b) :
     0 < multiplicity a b := by
@@ -292,7 +292,7 @@ theorem emultiplicity_eq_coe {n : ℕ} :
       simp [h]
     · apply not_pow_dvd_of_emultiplicity_lt
       rw [h]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp
   · rw [and_imp]
     apply emultiplicity_eq_of_dvd_of_not_dvd
@@ -764,7 +764,7 @@ theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
   by_cases hfin : FiniteMultiplicity p (a * b)
   · rw [hfin.emultiplicity_eq_multiplicity, hfin.mul_left.emultiplicity_eq_multiplicity,
       hfin.mul_right.emultiplicity_eq_multiplicity]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact multiplicity_mul hp hfin
   · rw [emultiplicity_eq_top.mpr hfin, eq_comm, ENat.add_eq_top, emultiplicity_eq_top,
       emultiplicity_eq_top]

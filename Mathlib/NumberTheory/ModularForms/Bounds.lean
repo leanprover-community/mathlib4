@@ -232,7 +232,7 @@ lemma UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn {f : ℍ → ℂ
       fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩) n := by
   have hq (u : ℝ) : (1 / 𝕢 h (u + y * UpperHalfPlane.I) ^ n : ℂ) =
       ↑(Real.exp (2 * π * n * y / h)) * fourier (-(n : ℤ)) (u : AddCircle h) := by
-    push_cast [fourier_coe_apply, Function.Periodic.qParam, one_div, ← Complex.exp_nat_mul,
+    fail_if_not_idempotent push_cast [fourier_coe_apply, Function.Periodic.qParam, one_div, ← Complex.exp_nat_mul,
       ← Complex.exp_neg, ← Complex.exp_add]
     grind [Complex.I_sq]
   rw [qExpansion_coeff_eq_intervalIntegral hh hfper hfhol hfbdd n hy,
@@ -280,7 +280,7 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
     simp only [g, neg_neg, fourier_coe_apply, smul_eq_mul, Function.Periodic.qParam,
       ← Complex.exp_nat_mul, Complex.ofReal_exp, ← mul_assoc, ← Complex.exp_add]
     congr 2
-    push_cast
+    fail_if_not_idempotent push_cast
     grind [Complex.I_sq]
   rw [fourierCoeffOn_eq_integral, sub_zero]
   simp only [key, intervalIntegral.integral_const_mul, hint, mul_zero, smul_zero]
@@ -302,7 +302,7 @@ lemma UpperHalfPlane.hasSum_norm_sq_qExpansion_coeff_mul_exp {f : ℍ → ℂ} {
   simp only [sub_zero, smul_eq_mul] at hP
   convert hP using 2 with n
   -- The negative-index terms vanish.
-  rw [show (-((n : ℤ) + 1) : ℤ) = -(n + 1 : ℕ) by push_cast; ring,
+  rw [show (-((n : ℤ) + 1) : ℤ) = -(n + 1 : ℕ) by fail_if_not_idempotent push_cast; ring,
     fourierCoeffOn_neg_eq_zero hh hfper hfhol hfbdd hy n, norm_zero, zero_pow two_ne_zero, add_zero]
   -- The nonnegative terms are the rescaled `q`-expansion coefficients.
   have h1 : Real.exp (2 * π * n * y / h) ^ 2 * Real.exp (-(4 * π * n * y / h)) = 1 := by

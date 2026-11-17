@@ -162,7 +162,7 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k ∈ range n, (n.choose k : ℚ) * bern
   simp_rw [mul_sum, ← mul_assoc]
   refine sum_congr rfl fun k hk => ?_
   congr
-  have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by norm_cast
+  have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by fail_if_not_idempotent norm_cast
   simp only [← cast_sub (mem_range.1 hk).le, succ_eq_add_one, field, mul_comm]
   rw_mod_cast [tsub_add_eq_add_tsub (mem_range.1 hk).le, choose_mul_succ_eq]
 
@@ -402,7 +402,7 @@ theorem sum_Ico_pow (n p : ℕ) :
     this
   -- prove some algebraic facts that will make things easier for us later on
   have hle := Nat.le_add_left 1 n
-  have hne : (p + 1 + 1 : ℚ) ≠ 0 := by norm_cast
+  have hne : (p + 1 + 1 : ℚ) ≠ 0 := by fail_if_not_idempotent norm_cast
   have h1 : ∀ r : ℚ, r * (p + 1 + 1) * (n : ℚ) ^ p.succ / (p + 1 + 1 : ℚ) = r * (n : ℚ) ^ p.succ :=
       fun r => by rw [mul_div_right_comm, mul_div_cancel_right₀ _ hne]
   have h2 : f 1 + (n : ℚ) ^ p.succ = 1 / 2 * (n : ℚ) ^ p.succ := by
@@ -518,7 +518,7 @@ private lemma pow_div_mem_pIntegrals {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
     congr 1
     rw [div_eq_iff (pow_ne_zero e hp_ne), ← pow_add, Nat.sub_add_cancel hv]
   have hM'_eq : ((p : ℚ) ^ (N - e) / (M' : ℚ)) = Rat.divInt (p ^ (N - e) : ℤ) (M' : ℤ) := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
   rw [hrw]
   exact mem_pIntegrals_iff_not_dvd_den.2 ((Nat.Prime.coprime_iff_not_dvd Fact.out).1
@@ -563,7 +563,7 @@ private lemma choose_mul_pow_div_mem_pIntegrals {k m p : ℕ} [Fact p.Prime]
   have ⟨hd_plus_one_ne_zero, h_exp, hkm⟩ :
       d + 1 ≠ 0 ∧ 2 * k - 2 * m - 1 = d - 1 ∧ 2 * m ≤ 2 * k := by lia
   have h_denom_rat : (2 * (k : ℚ) - 2 * m + 1) = ((d + 1 : ℕ) : ℚ) := by
-    simp only [hd_def]; push_cast [Nat.cast_sub hkm]; ring
+    simp only [hd_def]; fail_if_not_idempotent push_cast [Nat.cast_sub hkm]; ring
   rw [h_exp, h_denom_rat, mul_div_assoc]
   exact mul_mem (natCast_mem _ ((2 * k).choose (2 * m)))
     (pow_div_mem_pIntegrals hd_plus_one_ne_zero (factorization_succ_le_sub_one hd))
@@ -614,10 +614,10 @@ private lemma faulhaber_sum_mem_pIntegrals {k p : ℕ} [Fact p.Prime]
     exact mod_cast pow_div_mem_pIntegrals (by lia)
       (factorization_succ_le_sub_one (by lia) |>.trans tsub_le_self)
   · rw [zero_add, Nat.choose_one_right, bernoulli_one]
-    push_cast
+    fail_if_not_idempotent push_cast
     field_simp
     obtain rfl | hp2 := eq_or_ne p 2
-    · push_cast
+    · fail_if_not_idempotent push_cast
       rw [show 2 * k - 1 = (2 * k - 2) + 1 by lia, pow_succ, mul_div_cancel_right₀ _ two_ne_zero]
       exact mod_cast Int.padicValuation_le_one ..
     · rw [Valuation.map_neg]
@@ -638,7 +638,7 @@ private lemma sum_pow_filter_eq_faulhaber {k : ℕ} (p : ℕ) (hk : 0 < k) :
     cases p <;> simp [Finset.sum_range_eq_add_Ico, show 2 * k ≠ 0 by lia]
   rw [hfilter, sum_range_pow, Finset.sum_range_succ, Nat.choose_succ_self_right,
     show 2 * k + 1 - 2 * k = 1 by lia]
-  push_cast
+  fail_if_not_idempotent push_cast
   field_simp
 
 private lemma faulhaber_sum_div_prime_eq {k p : ℕ} [Fact p.Prime] :

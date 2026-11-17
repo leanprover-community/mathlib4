@@ -179,7 +179,7 @@ lemma minFac_sq_ndvd_gcd_choose_of_isPrimePow (h : IsPrimePow n) :
     nth_rw 2 [hn₁]
     rw [Nat.Prime.emultiplicity_choose_prime_pow isPrime this (pow_ne_zero _
       (Nat.Prime.ne_zero isPrime)), multiplicity_pow_self_of_prime (prime_iff.mp isPrime)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     grind
 
 lemma primeFactors_gcd_choose_of_isPrimePow (h : IsPrimePow n) :

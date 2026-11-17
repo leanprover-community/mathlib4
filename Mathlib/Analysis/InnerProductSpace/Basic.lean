@@ -548,7 +548,7 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
               ((‖x - IK • y‖ : 𝕜) ^ 2 - (‖x + IK • y‖ : 𝕜) ^ 2) * IK) / 4 := by
   rw [← re_add_im ⟪x, y⟫, re_inner_eq_norm_add_mul_self_sub_norm_sub_mul_self_div_four,
     im_inner_eq_norm_sub_i_smul_mul_self_sub_norm_add_i_smul_mul_self_div_four]
-  push_cast
+  fail_if_not_idempotent push_cast
   simp only [sq, ← mul_div_right_comm, ← add_div]
 
 /-- Polarization identity: The real inner product, in terms of the norm. -/

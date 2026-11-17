@@ -30,6 +30,7 @@ lemma cast_injective : Injective ((↑) : ℚ → α)
     have d₂a : (d₂ : α) ≠ 0 := Nat.cast_ne_zero.2 d₂0
     rw [mk_eq_divInt, mk_eq_divInt] at h ⊢
     rw [cast_divInt_of_ne_zero _ (by simpa), cast_divInt_of_ne_zero _ (by simpa)] at h
+    -- TODO: norm_cast is not idempotent (d₁ is cast to ℤ, then to α -> missing lemma/tag?)
     norm_cast at h
     rwa [eq_div_iff_mul_eq d₂a, division_def, mul_assoc, (d₁.cast_commute (d₂ : α)).inv_left₀.eq,
       ← mul_assoc, ← division_def, eq_comm, eq_div_iff_mul_eq d₁a, eq_comm, ← Int.cast_natCast d₁,
@@ -82,7 +83,7 @@ lemma cast_injective : Injective ((↑) : ℚ≥0 → α) := by
   rw [NNRat.cast_def, NNRat.cast_def, Commute.div_eq_div_iff] at hpq
   on_goal 1 => rw [← p.num_div_den, ← q.num_div_den, div_eq_div_iff]
   · norm_cast at hpq ⊢
-  any_goals norm_cast
+  any_goals fail_if_not_idempotent norm_cast
   any_goals apply den_ne_zero
   exact Nat.cast_commute ..
 

@@ -63,12 +63,12 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
     rw [Set.mem_inv_smul_set_iff, smul_eq_mul]
     refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
     · simpa [← smul_A ha, mul_smul] using! smul_A hx
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       rwa [← mul_mem_A_comm ha, ← smul_eq_mul, ← mem_inv_smul_finset_iff, inv_mem hx]
   refine ⟨?_, ?_⟩
   · rw [← inv_smul_A ha, smul_inv_smul]
   · rw [← inv_smul_A ha, smul_comm]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← smul_A_eq_A_smul ha, inv_smul_smul]
 
 /-- A non-empty set with no doubling is the left translate of its stabilizer. -/
@@ -164,7 +164,7 @@ def invMulSubgroup (A : Finset G) (h : #(A * A) < (3 / 2 : ℚ) * #A) : Subgroup
     rintro a ha b hb rfl
     exact ⟨b⁻¹, by simpa using hb, a⁻¹, ha, by simp⟩
   mul_mem' := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     have h₁ x (hx : x ∈ A) y (hy : y ∈ A) : (1 / 2 : ℚ) * #A < #(x • A ∩ y • A) := by
       convert lt_card_smul_inter_smul (by simpa using Rat.cast_strictMono (K := ℝ) h) hx hy
       norm_num
@@ -198,7 +198,7 @@ lemma invMulSubgroup_eq_inv_mul (A : Finset G) (h) : (invMulSubgroup A h : Set G
 
 lemma invMulSubgroup_eq_mul_inv (A : Finset G) (h) : (invMulSubgroup A h : Set G) = A * A⁻¹ := by
   rw [invMulSubgroup_eq_inv_mul, eq_comm]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact mul_inv_eq_inv_mul_of_doubling_lt_two (by qify at h ⊢; linarith)
 
 instance (A : Finset G) (h) : Fintype (invMulSubgroup A h) := by
@@ -438,7 +438,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
         _ = #A * #A⁻¹ := by simp
         _ = #(A ×ˢ A⁻¹) := by simp
         _ = ∑ z ∈ S, ↑(r z) := by
-          norm_cast
+          fail_if_not_idempotent norm_cast
           exact card_eq_sum_card_fiberwise fun xy hxy ↦
             mul_mem_mul (mem_product.mp hxy).1 (mem_product.mp hxy).2
         _ = ∑ z ∈ S with (K - 1) * #A < r z, ↑(r z) + ∑ z ∈ S with r z ≤ (K - 1) * #A, ↑(r z) := by

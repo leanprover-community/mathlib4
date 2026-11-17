@@ -1013,7 +1013,7 @@ lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] (hf : AEStrongly
   rw [eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top hp₀ hp hf]
   refine IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal μ ?_
   simp_rw [eNorm, ← ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact Finite.exists_le _
 
 @[simp] lemma MemLp.of_discrete [DiscreteMeasurableSpace α] [Finite α] [IsFiniteMeasure μ] :

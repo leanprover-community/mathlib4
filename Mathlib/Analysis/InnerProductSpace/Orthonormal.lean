@@ -446,7 +446,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
     simp only [mul_conj]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   suffices hbf : ‖x - ∑ i ∈ s, ⟪v i, x⟫ • v i‖ ^ 2 = ‖x‖ ^ 2 - ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 by
     rw [← sub_nonneg, ← hbf]
     simp only [norm_nonneg, pow_nonneg]

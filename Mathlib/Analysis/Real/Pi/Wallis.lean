@@ -70,7 +70,7 @@ theorem W_eq_factorial_ratio (n : ℕ) :
     refine (div_eq_div_iff ?_ ?_).mpr ?_
     any_goals exact ne_of_gt (by positivity)
     simp_rw [Nat.mul_succ, Nat.factorial_succ, pow_succ]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
 
 theorem W_eq_integral_sin_pow_div_integral_sin_pow (k : ℕ) : (π / 2)⁻¹ * W k =

@@ -44,7 +44,7 @@ abbrev FactorSet.{u} (α : Type u) [CommMonoidWithZero α] : Type u :=
 attribute [local instance] Associated.setoid
 
 theorem FactorSet.coe_add {a b : Multiset { a : Associates α // Irreducible a }} :
-    (↑(a + b) : FactorSet α) = a + b := by norm_cast
+    (↑(a + b) : FactorSet α) = a + b := by fail_if_not_idempotent norm_cast
 
 theorem FactorSet.sup_add_inf_eq_add [DecidableEq (Associates α)] :
     ∀ a b : FactorSet α, a ⊔ b + a ⊓ b = a + b

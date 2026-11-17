@@ -47,7 +47,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
     ∏ᶠ w : FinitePlace K, w x = (|norm ℤ x| : ℝ)⁻¹ := by
   simp only [← finprod_comp_equiv equivHeightOneSpectrum.symm, equivHeightOneSpectrum_symm_apply]
   refine (inv_eq_of_mul_eq_one_left ?_).symm
-  norm_cast
+  fail_if_not_idempotent norm_cast
   have h_span_nezero : span {x} ≠ 0 := by simp [h_x_nezero]
   rw [Int.abs_eq_natAbs, ← absNorm_span_singleton,
     ← finprod_heightOneSpectrum_factorization h_span_nezero, Int.cast_natCast]
@@ -89,7 +89,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
   congr
   have hb₀ : ((Algebra.norm ℤ) b : ℝ) ≠ 0 := by simp [hb]
   refine (eq_div_of_mul_eq hb₀ ?_).symm
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [coe_norm_int a, coe_norm_int b, ← map_mul,
     div_mul_cancel₀ _ (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
 

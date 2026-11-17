@@ -258,10 +258,10 @@ instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
   · simp_rw [integral_complex_ofReal]
     rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))
       (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   · field_simp
     rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
       (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 end ProbabilityTheory

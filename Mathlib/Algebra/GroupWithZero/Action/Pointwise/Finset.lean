@@ -138,7 +138,7 @@ lemma smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a 
   image_symmDiff _ _ <| MulAction.injective₀ ha
 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
-  coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
+  coe_injective <| by fail_if_not_idempotent push_cast; exact Set.smul_set_univ₀ ha
 
 @[simp]
 lemma smul_finset_eq_univ₀ [Fintype β] (ha : a ≠ 0) : a • s = univ ↔ s = univ := by
@@ -147,11 +147,11 @@ lemma smul_finset_eq_univ₀ [Fintype β] (ha : a ≠ 0) : a • s = univ ↔ s 
 lemma smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by
     rw [← coe_subset] at hs
-    push_cast at hs ⊢
+    fail_if_not_idempotent push_cast at hs ⊢
     exact Set.smul_univ₀ hs
 
 lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
-  coe_injective <| by push_cast; exact Set.smul_univ₀' hs
+  coe_injective <| by fail_if_not_idempotent push_cast; exact Set.smul_univ₀' hs
 
 @[simp]
 lemma card_smul_finset₀ (ha : a ≠ 0) (s : Finset β) : #(a • s) = #s :=

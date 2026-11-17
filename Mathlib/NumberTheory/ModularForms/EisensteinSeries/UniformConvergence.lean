@@ -45,7 +45,7 @@ condition `a : Fin 2 → ZMod N`) converges locally uniformly on `ℍ`. -/
 theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : ℕ} (a : Fin 2 → ZMod N) :
     TendstoLocallyUniformly (fun (s : Finset (gammaSet N 1 a)) ↦ (∑ x ∈ s, eisSummand k x ·))
       (eisensteinSeries a k ·) Filter.atTop := by
-  have hk' : (2 : ℝ) < k := by norm_cast
+  have hk' : (2 : ℝ) < k := by fail_if_not_idempotent norm_cast
   have p_sum : Summable fun x : gammaSet N 1 a ↦ ‖x.val‖ ^ (-k) :=
     mod_cast (summable_one_div_norm_rpow hk').subtype (· ∈ gammaSet N 1 a)
   simp only [tendstoLocallyUniformly_iff_forall_isCompact, eisensteinSeries]

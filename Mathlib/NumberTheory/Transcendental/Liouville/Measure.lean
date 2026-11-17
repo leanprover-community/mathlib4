@@ -70,7 +70,7 @@ theorem setOfPred_liouvilleWith_subset_aux :
     sub_lt_iff_lt_add, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add'] at hlt
   rw [Finset.mem_Icc, ← Int.lt_add_one_iff, ← Int.lt_add_one_iff, ← neg_lt_iff_pos_add, add_comm, ←
     @Int.cast_lt ℝ, ← @Int.cast_lt ℝ]
-  push_cast
+  fail_if_not_idempotent push_cast
   refine ⟨lt_of_le_of_lt ?_ hlt.1, hlt.2.trans_le ?_⟩
   · simp only [mul_nonneg hx01.left b.cast_nonneg, neg_le_sub_iff_le_add, le_add_iff_nonneg_left]
   · rw [add_le_add_iff_left]

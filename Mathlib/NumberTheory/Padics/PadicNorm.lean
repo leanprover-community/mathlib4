@@ -222,9 +222,9 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
     simp [hz]
   · rw [zpow_le_zpow_iff_right₀, neg_le_neg_iff, padicValRat.of_int,
       padicValInt.of_ne_one_ne_zero]
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       rw [← FiniteMultiplicity.pow_dvd_iff_le_multiplicity]
-      · norm_cast
+      · fail_if_not_idempotent norm_cast
       · apply Int.finiteMultiplicity_iff.2 ⟨by simp [hp.out.ne_one], mod_cast hz⟩
     · exact mod_cast hp.out.one_lt
 
@@ -234,7 +234,7 @@ theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
   simp only [dvd_iff_norm_le, Nat.cast_one, zpow_neg, zpow_one, not_le]
   constructor
   · intro h
-    rw [h, inv_lt_one₀] <;> norm_cast
+    rw [h, inv_lt_one₀] <;> fail_if_not_idempotent norm_cast
     · exact Nat.Prime.one_lt Fact.out
     · exact Nat.Prime.pos Fact.out
   · simp only [padicNorm]

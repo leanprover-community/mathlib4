@@ -618,11 +618,11 @@ theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c
 instance instMulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
   one_smul f :=
     inductionOn f fun f => by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn f fun f => by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [mul_smul]
 
 @[to_additive]
@@ -630,14 +630,14 @@ instance instMulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ
   one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [mul_smul]
 
 instance instDistribMulAction [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     DistribMulAction M (Germ l N) where
   smul_add c f g :=
     inductionOn₂ f g fun f g => by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [smul_add]
   smul_zero c := by simp only [← coe_zero, ← coe_smul, smul_zero]
 
@@ -645,25 +645,25 @@ instance instDistribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     DistribMulAction (Germ l M) (Germ l N) where
   smul_add c f g :=
     inductionOn₃ c f g fun c f g => by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [smul_add]
   smul_zero c := inductionOn c fun c => by simp only [← coe_zero, ← coe_smul', smul_zero]
 
 instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
   add_smul c₁ c₂ f :=
     inductionOn f fun f => by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [add_smul]
   zero_smul f :=
     inductionOn f fun f => by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp
 
 instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (Germ l R) (Germ l M) where
   add_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [add_smul]
   zero_smul f := inductionOn f fun f => by simp only [← coe_zero, ← coe_smul', zero_smul]
 

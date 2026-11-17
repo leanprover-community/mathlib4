@@ -139,7 +139,7 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   induction a using QuotientAddGroup.induction_on with | H a =>
   rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def, jacobiTheta₂_functional_equation]
   have h1 : I * ↑(1 / x) = -1 / (I * x) := by
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [← div_div, mul_one_div, div_I, neg_one_mul, neg_neg]
   have hx' : I * x ≠ 0 := mul_ne_zero I_ne_zero (ofReal_ne_zero.mpr hx.ne')
   have h2 : a * I * x / (I * x) = a := by
@@ -212,7 +212,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     Int.cast_natCast, neg_sq, ← add_mul, add_sub_assoc, ← sub_sub, sub_self, zero_sub,
     ← sub_eq_add_neg, mul_neg] at this
   refine this.congr_fun fun n ↦ ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [Complex.cos, mul_div_cancel₀ _ two_ne_zero]
   congr 3 <;> ring
 
@@ -313,7 +313,7 @@ lemma completedHurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
       completedHurwitzZetaEven₀ a s - (if a = 0 then 1 else 0) / s
     rw [smul_eq_mul, mul_comm, mul_div_assoc, div_div, div_mul_cancel₀ _ two_ne_zero, mul_one_div]
   · change (1 / (↑(1 / 2 : ℝ) - s / 2)) • 1 / 2 = 1 / (1 - s)
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [smul_eq_mul, mul_one, ← sub_div, div_div, div_mul_cancel₀ _ two_ne_zero]
 
 /--
@@ -504,7 +504,7 @@ lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · apply (((summable_one_div_int_add_rpow 0 s.re).mpr hs).div_const 2).of_norm_bounded
     intro i
-    simp only [c, (by { push_cast; ring } : 2 * π * I * a * i = ↑(2 * π * a * i) * I), norm_div,
+    simp only [c, (by { fail_if_not_idempotent push_cast; ring } : 2 * π * I * a * i = ↑(2 * π * a * i) * I), norm_div,
       RCLike.norm_ofNat, Complex.norm_exp_ofReal_mul_I, add_zero, norm_one,
       norm_of_nonneg (by positivity : 0 ≤ |(i : ℝ)| ^ s.re), div_right_comm, le_rfl]
   · simp [c, ← Int.cast_abs, div_right_comm, mul_div_assoc]

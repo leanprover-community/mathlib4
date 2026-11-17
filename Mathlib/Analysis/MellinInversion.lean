@@ -40,7 +40,7 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     rexp (-x) • cexp (-↑x) ^ (s - 1) • f = cexp (-s * ↑x) • f := by
   change (rexp (-x) : ℂ) • _ = _ • f
   rw [← smul_assoc, smul_eq_mul]
-  push_cast
+  fail_if_not_idempotent push_cast
   conv in cexp _ * _ => lhs; rw [← cpow_one (cexp _)]
   rw [← cpow_add _ _ (Complex.exp_ne_zero _), cpow_def_of_ne_zero (Complex.exp_ne_zero _),
     Complex.log_exp (by simp [pi_pos]) (by simpa using pi_nonneg)]
@@ -61,8 +61,8 @@ theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
       trans Complex.exp (-s.im * u * I) • (Real.exp (-s.re * u) • f (Real.exp (-u)))
       · conv => lhs; rw [← re_add_im s]
         rw [neg_add, add_mul, Complex.exp_add, mul_comm, ← smul_eq_mul, smul_assoc]
-        norm_cast
-        push_cast
+        fail_if_not_idempotent norm_cast
+        fail_if_not_idempotent push_cast
         ring_nf
       congr
       simp [field]
@@ -81,7 +81,7 @@ theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x
     rw [smul_comm, ← Measure.integral_comp_mul_left]
     congr! 3
     rw [cpow_def_of_ne_zero hx0, ← Complex.ofReal_log hx.le]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
   _ = (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
     simp [fourierInv_eq', mul_comm (Real.log _)]
@@ -98,7 +98,7 @@ theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (h
       MeasurableSet.univ rexp_neg_deriv_aux rexp_neg_injOn_aux] at hf
     replace hf : Integrable fun (x : ℝ) ↦ cexp (-↑σ * ↑x) • f (rexp (-x)) := by
       simpa [rexp_cexp_aux] using hf
-    norm_cast at hf
+    fail_if_not_idempotent norm_cast at hf
   replace hFf : Integrable (𝓕 g) := by
     have h2π : 2 * π ≠ 0 := by simp
     have : Integrable (𝓕 (fun u ↦ rexp (-(σ * u)) • f (rexp (-u)))) := by
@@ -117,8 +117,8 @@ theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (h
       simp [mul_div_cancel_left₀ _ (show 2 * π ≠ 0 by simp)]
     _ = (x : ℂ) ^ (-σ : ℂ) • rexp (σ * Real.log x) • f (rexp (Real.log x)) := by simp [g]
     _ = f x := by
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [mul_comm σ, ← rpow_def_of_pos hx, Real.exp_log hx, ← Complex.ofReal_cpow hx.le]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [← smul_assoc, smul_eq_mul, Real.rpow_neg hx.le,
         inv_mul_cancel₀ (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]

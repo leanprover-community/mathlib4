@@ -295,7 +295,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     refine ((div_lt_iff₀ ?_).1 hUV.2.2.2).le
     exact mul_pos (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.1).card_pos)
       (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.2.1).card_pos)
-  norm_cast
+  fail_if_not_idempotent norm_cast
   gcongr
   calc
     (_ : ℕ) ≤ _ := sum_le_card_nsmul P.parts.offDiag (fun i ↦ #i.1 * #i.2)
@@ -374,7 +374,7 @@ lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP :
       (hP.card_part_le_average_add_one hV)
   · rw [mul_right_comm _ ε, mul_comm ε]
     gcongr
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact aux (P.parts_nonempty hA.ne_empty).card_pos
 
 lemma IsEquipartition.sum_nonUniforms_lt (hA : A.Nonempty) (hε : 0 < ε) (hP : P.IsEquipartition)

@@ -930,7 +930,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
   have :=
     NNReal.coe_le_coe.2
       (NNReal.rpow_sum_le_const_mul_sum_rpow s (fun i => ⟨_, abs_nonneg (f i)⟩) hp)
-  push_cast at this
+  fail_if_not_idempotent push_cast at this
   exact this
 
 -- for some reason `exact mod_cast` can't replace this argument
@@ -941,7 +941,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
       (∑ i ∈ s, |f i| ^ p) ^ (1 / p) + (∑ i ∈ s, |g i| ^ p) ^ (1 / p) := by
   have := NNReal.coe_le_coe.2
     (NNReal.Lp_add_le s (fun i => .mk _ (abs_nonneg (f i))) (fun i => .mk _ (abs_nonneg (g i))) hp)
-  push_cast at this
+  fail_if_not_idempotent push_cast at this
   refine le_trans (rpow_le_rpow ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
     simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add_le,
       rpow_le_rpow]
@@ -975,7 +975,7 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   lift w to ι → ℝ≥0 using hw
   lift f to ι → ℝ≥0 using hf
   beta_reduce at *
-  norm_cast at *
+  fail_if_not_idempotent norm_cast at *
   exact NNReal.inner_le_weight_mul_Lp _ hp _ _
 
 /-- **Weighted Hölder inequality** in terms of `Finset.expect`. -/
@@ -1002,7 +1002,7 @@ theorem summable_and_Lr_rpow_le_Lp_mul_Lq_tsum_of_nonneg (hpqr : p.HolderTriple 
   lift g to ι → ℝ≥0 using hg
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce at *
-  norm_cast at *
+  fail_if_not_idempotent norm_cast at *
   exact NNReal.summable_and_Lr_rpow_le_Lp_mul_Lq_tsum hpqr hf_sum hg_sum
 
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
@@ -1064,10 +1064,10 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.HolderConjugate q) {A B : �
   lift B to ℝ≥0 using hB
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce at *
-  norm_cast at hf_sum hg_sum
+  fail_if_not_idempotent norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
   refine ⟨C, C.prop, hC, ?_⟩
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 /-- For `1 ≤ p`, the `p`-th power of the sum of `f i` is bounded above by a constant times the
 sum of the `p`-th powers of `f i`. Version for sums over finite sets, with nonnegative `ℝ`-valued
@@ -1127,12 +1127,12 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   lift B to ℝ≥0 using hB
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce at hfA hgB
-  norm_cast at hfA hgB
+  fail_if_not_idempotent norm_cast at hfA hgB
   obtain ⟨C, hC₁, hC₂⟩ := NNReal.Lp_add_le_hasSum hp hfA hgB
   use C
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact ⟨zero_le, hC₁, hC₂⟩
 
 end Real
@@ -1229,7 +1229,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
     ENNReal.coe_le_coe.2
       (@NNReal.Lp_add_le _ s (fun i => ENNReal.toNNReal (f i)) (fun i => ENNReal.toNNReal (g i)) _
         hp)
-  push_cast [ENNReal.coe_rpow_of_nonneg, le_of_lt pos, le_of_lt (one_div_pos.2 pos)] at this
+  fail_if_not_idempotent push_cast [ENNReal.coe_rpow_of_nonneg, le_of_lt pos, le_of_lt (one_div_pos.2 pos)] at this
   simp_all
 
 end ENNReal

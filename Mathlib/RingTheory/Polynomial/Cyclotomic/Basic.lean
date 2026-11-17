@@ -313,7 +313,7 @@ theorem degree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
 /-- The natural degree of `cyclotomic n` is `totient n`. -/
 theorem natDegree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
     (cyclotomic n R).natDegree = Nat.totient n := by
-  rw [natDegree, degree_cyclotomic]; norm_cast
+  rw [natDegree, degree_cyclotomic]; fail_if_not_idempotent norm_cast
 
 /-- The natural degree of `cyclotomic n` is at most `totient n`.
 

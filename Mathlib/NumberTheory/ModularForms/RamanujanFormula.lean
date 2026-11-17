@@ -79,7 +79,7 @@ lemma normalizedDerivOfComplex_D2 (γ : SL(2, ℤ)) :
     simp [EisensteinSeries.D2, ofComplex_apply_of_im_pos hw, div_eq_mul_inv]
   simp only [normalizedDerivOfComplex, (((hasDerivAt_denom_zpow γ (-1) z).const_mul
     (2 * π * I * (γ 1 0 : ℂ))).congr_of_eventuallyEq hcomp).deriv]
-  push_cast [show ((γ : GL (Fin 2) ℝ) 1 0 : ℝ) = (γ 1 0 : ℝ) by norm_cast]
+  fail_if_not_idempotent push_cast [show ((γ : GL (Fin 2) ℝ) 1 0 : ℝ) = (γ 1 0 : ℝ) by norm_cast]
   field_simp
 
 /-- Although `E₂` is only quasi-modular, its weight-1 Serre derivative `∂₁ E₂ = D E₂ - E₂² / 12`

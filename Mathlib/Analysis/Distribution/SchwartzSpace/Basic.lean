@@ -477,9 +477,9 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
       2 ^ m.1 * (Finset.Iic m).sup (fun m => SchwartzMap.seminorm 𝕜 m.1 m.2) f := by
   rw [add_comm, add_pow]
   simp only [one_pow, mul_one, Finset.sum_mul]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← Nat.sum_range_choose m.1]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [Finset.sum_mul]
   have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by grind
   grw [hk']
@@ -705,7 +705,7 @@ where finally
     move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n / 2) : ℝ)]
     gcongr ?_ * ?_
     swap
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       exact i.choose_le_middle n
     specialize hgrowth (n - i) (by simp only [tsub_le_self]) x
     grw [hgrowth]

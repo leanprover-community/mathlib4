@@ -76,7 +76,7 @@ theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + 
   rw [bernoulliFun, bernoulliFun_eval_zero, Polynomial.eval_one_map, Polynomial.bernoulli_eval_one]
   split_ifs with h
   · rw [h, bernoulli_one, bernoulli'_one, eq_ratCast]
-    push_cast; ring
+    fail_if_not_idempotent push_cast; ring
   · rw [bernoulli_eq_bernoulli'_of_ne_one h, add_zero, eq_ratCast]
 
 end Evaluation
@@ -368,7 +368,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         enter [1, 2]
         rw [pow_mul, I_sq]
       ring
-  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
+  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by fail_if_not_idempotent norm_cast
   convert! ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
@@ -404,7 +404,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         enter [1, 2]
         rw [pow_add, pow_one, pow_mul, I_sq]
       ring
-  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
+  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by fail_if_not_idempotent norm_cast
   convert! ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr

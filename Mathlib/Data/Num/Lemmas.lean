@@ -301,7 +301,7 @@ namespace PosNum
 theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
   | 1 => by
       simp only [cast_one, Num.ofNat'_one]
-      norm_cast
+      fail_if_not_idempotent norm_cast
   | bit0 p => by
       simpa only [Nat.bit_false, Bool.cond_false, two_mul, of_to_nat' p] using!
         Num.ofNat'_bit false p
@@ -581,7 +581,7 @@ theorem cast_mul [NonAssocSemiring α] (m n) : ((m * n : PosNum) : α) = m * n :
 @[simp]
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
-  norm_cast at this
+  fail_if_not_idempotent norm_cast at this
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` is required.
   revert this; cases cmp m n <;> simp_all [LT.lt.ne, LT.lt.ne']
 
@@ -715,7 +715,7 @@ theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
 
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
-  norm_cast at this
+  fail_if_not_idempotent norm_cast at this
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` is required.
   revert this; cases cmp m n <;> simp_all [LT.lt.ne, LT.lt.ne']
 

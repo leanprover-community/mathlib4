@@ -121,7 +121,7 @@ private lemma lSeriesSummable : LSeriesSummable ↗f (σ : ℂ) := by
   calc
     _ ≤ ∑ k ∈ .range (2 * n), f k :=
       Finset.sum_le_sum_of_subset_of_nonneg (by grind) fun k _ _ ↦ hpos k
-    _ ≤ _ := (bound (2 * n)).trans_eq (by push_cast; ring)
+    _ ≤ _ := (bound (2 * n)).trans_eq (by fail_if_not_idempotent push_cast; ring)
 
 include hx in
 private lemma fourierChar_neg_mul_log_div {n : ℕ} (hn : n ≠ 0) (t : ℝ) :
@@ -160,12 +160,12 @@ private lemma mul_integral_exp_mul_fourierChar_eq (t : ℝ) :
       ∫ u in Ioi (-log x), cexp (-(σ - 1 + t * I) * u) := by
     rw [integral_Ici_eq_integral_Ioi]
     congr with u
-    push_cast [fourierChar_apply, ← Complex.exp_add]
+    fail_if_not_idempotent push_cast [fourierChar_apply, ← Complex.exp_add]
     congr 1
     field
   rw [this, integral_cexp_neg_mul_Ioi_neg_log hx (by simpa using hσ), ofReal_cpow hx.le,
     mul_div_assoc', ← cpow_add _ _ (mod_cast hx.ne')]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring_nf
 
 include hx hσ in
@@ -657,7 +657,7 @@ private lemma eventually_lt_sum_range_div {c : ℝ} (hc : c < A) :
   filter_upwards [(tendsto_sum_div_smooth_real bound hG hG' hpos h1 h2 h3).comp
     tendsto_natCast_atTop_atTop (Ioi_mem_nhds (by nlinarith [A_nonneg bound hG hG' hpos])
     (a := c)), eventually_gt_atTop 0] with N hN1 _
-  have : (0 : ℝ) < N := by norm_cast
+  have : (0 : ℝ) < N := by fail_if_not_idempotent norm_cast
   refine hN1.trans_le ?_
   simp only [comp_apply]
   grw [(h5.trans (indicator_le_indicator_of_subset (by grind : Ioo ε 1 ⊆ Ico 0 1) (by simp))) _,
@@ -677,7 +677,7 @@ private lemma eventually_sum_range_div_lt {c : ℝ} (hc : A < c) :
   filter_upwards [(tendsto_sum_div_smooth_real bound hG hG' hpos h1 h2 h3).comp
     tendsto_natCast_atTop_atTop (Iio_mem_nhds hcψ), eventually_gt_atTop 0,
     (tendsto_const_div_atTop_nhds_zero_nat C).eventually (gt_mem_nhds hε)] with N hN1 _ hN3
-  have hN : (0 : ℝ) < N := by norm_cast
+  have hN : (0 : ℝ) < N := by fail_if_not_idempotent norm_cast
   grw [← Finset.sum_range_add_sum_Ico _ (by rw [Nat.ceil_le]; nlinarith : ⌈2 * ε * N⌉₊ ≤ N),
     add_div, ← tsum_mul_indicator_Ico hN, ((indicator_le_indicator_of_subset Ico_subset_Icc_self
     (by simp)).trans h4) _, (by exact hN1 : (∑' n, f n * ψ (n / N)) / N < _),

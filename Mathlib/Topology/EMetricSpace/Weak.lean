@@ -276,7 +276,7 @@ theorem edist_eq_max (a b : ℝ≥0∞) : edist a b = max (a - b) (b - a) := by
   cases a <;> cases b
   case coe.coe =>
     rw [edist_coe, ← coe_nnreal_ennreal_nndist, NNReal.nndist_eq]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   all_goals simp
 
 theorem edist_le_iff_le_add_left (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by

@@ -185,7 +185,7 @@ theorem div_rpow (x y : ℝ≥0) (z : ℝ) : (x / y) ^ z = x ^ z / y ^ z :=
 
 theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
   refine NNReal.eq ?_
-  push_cast
+  fail_if_not_idempotent push_cast
   exact Real.sqrt_eq_rpow x.1
 
 @[simp]
@@ -233,7 +233,7 @@ theorem _root_.Real.list_prod_map_rpow (l : List ℝ) (hl : ∀ x ∈ l, (0 : �
     (l.map (· ^ r)).prod = l.prod ^ r := by
   lift l to List ℝ≥0 using hl
   have := congr(($(NNReal.list_prod_map_rpow l r) : ℝ))
-  push_cast at this
+  fail_if_not_idempotent push_cast at this
   rw [List.map_map] at this ⊢
   exact mod_cast this
 
@@ -716,9 +716,10 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   · rw [ne_eq, coe_eq_zero] at hx0
     rcases hz with hz | hz <;> simp [*]
   simp only [*]
+  -- TODO: norm_cast is not idempotent! fail_if_not_idempotent norm_cast at *
   norm_cast at *
   rw [← coe_rpow_of_ne_zero (mul_ne_zero hx0 hy0), NNReal.mul_rpow]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem mul_rpow_of_ne_top {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) (z : ℝ) :
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]

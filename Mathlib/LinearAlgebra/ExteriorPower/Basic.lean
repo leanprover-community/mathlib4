@@ -354,7 +354,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
     refine (Submodule.smul_mem_iff_of_isUnit _ (r := (σ.sign : R)) ?_).mp hσ
     rw [isUnit_iff_exists_inv]
     use (σ.sign : R)
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp only [Int.units_mul_self, Units.val_one, Int.cast_one]
   have α_card : (Finset.image α Finset.univ).card = n :=
     (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)

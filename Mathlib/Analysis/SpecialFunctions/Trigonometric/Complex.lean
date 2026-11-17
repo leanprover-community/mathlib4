@@ -145,12 +145,12 @@ theorem tan_sub {x y : ℂ}
     · refine .inl ⟨x_ne, fun l => ?_⟩
       rw [Ne, neg_eq_iff_eq_neg]
       convert minus_y_ne (-l - 1) using 2
-      push_cast
+      fail_if_not_idempotent push_cast
       ring
     · refine .inr ⟨x_eq, ?_⟩
       rcases minus_y_eq with ⟨l, rfl⟩
       use -l - 1
-      push_cast
+      fail_if_not_idempotent push_cast
       ring
   rw [tan_neg] at this
   convert this using 2
@@ -261,7 +261,7 @@ theorem sin_mul_sum_sin (n : ℕ) (a b : ℂ) :
       = ∑ x ∈ range n, (cos (a * (↑(x + 1) - 1 / 2) + b) - cos (-(a * (x - 1 / 2) + b))) := by
       congr! 1 with x hx
       rw [cos_sub_cos]
-      push_cast
+      fail_if_not_idempotent push_cast
       ring_nf
     _ = -2 * sin (n * a / 2) * sin ((n - 1) * a / 2 + b) := by
       simp_rw [cos_neg, sum_range_sub (fun i ↦ cos (a * (i - 1 / 2) + b)), cos_sub_cos]
@@ -281,7 +281,7 @@ theorem sin_mul_sum_cos (n : ℕ) (a b : ℂ) :
       = ∑ x ∈ range n, (sin (a * (↑(x + 1) - 1 / 2) + b) - sin (a * (x - 1 / 2) + b)) := by
       congr! 1 with x hx
       rw [sin_sub_sin]
-      push_cast
+      fail_if_not_idempotent push_cast
       ring_nf
     _ = 2 * sin (n * a / 2) * cos ((n - 1) * a / 2 + b) := by
       simp_rw [sum_range_sub (fun i ↦ sin (a * (i - 1 / 2) + b)), sin_sub_sin]

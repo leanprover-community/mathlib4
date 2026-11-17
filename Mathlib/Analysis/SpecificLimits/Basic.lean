@@ -274,7 +274,7 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) := by
   rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
   rw [← ENNReal.coe_zero]
-  norm_cast at *
+  fail_if_not_idempotent fail_if_not_idempotent norm_cast at *
   apply NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one hr
 
 @[simp]
@@ -384,7 +384,7 @@ theorem tsum_geometric_two' (a : ℝ) : ∑' n : ℕ, a / 2 / 2 ^ n = a :=
 /-- **Sum of a Geometric Series** -/
 theorem NNReal.hasSum_geometric {r : ℝ≥0} (hr : r < 1) : HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ := by
   apply NNReal.hasSum_coe.1
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [NNReal.coe_sub (le_of_lt hr)]
   exact hasSum_geometric_of_lt_one r.coe_nonneg hr
 
@@ -400,7 +400,7 @@ and for `1 ≤ r` the RHS equals `∞`. -/
 theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
   rcases lt_or_ge r 1 with hr | hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
-    norm_cast at *
+    fail_if_not_idempotent norm_cast at *
     convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
     rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 hr, coe_sub, coe_one]
   · rw [tsub_eq_zero_iff_le.mpr hr, ENNReal.inv_zero, ENNReal.tsum_eq_iSup_nat, iSup_eq_top]
@@ -690,7 +690,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
         rw [Finset.mem_range] at hx
       · positivity
       · refine (div_le_one <| mod_cast hn).mpr ?_
-        norm_cast
+        fail_if_not_idempotent norm_cast
         lia)
 
 /-!

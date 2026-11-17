@@ -246,7 +246,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   intro x hx
   refine mul_eq_zero_of_right (coeff x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
-  norm_cast
+  fail_if_not_idempotent norm_cast
   lia
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)

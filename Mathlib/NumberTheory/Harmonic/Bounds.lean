@@ -64,7 +64,7 @@ theorem log_le_harmonic_floor (y : ℝ) (hy : 0 ≤ y) :
       _ ≤ _ := log_add_one_le_harmonic _
     gcongr
     apply (Nat.le_ceil y).trans
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact Nat.ceil_le_floor_add_one y
 
 theorem harmonic_floor_le_one_add_log (y : ℝ) (hy : 1 ≤ y) :

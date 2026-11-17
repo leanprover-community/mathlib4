@@ -159,17 +159,17 @@ theorem log_rpow {x : ℝ≥0∞} {y : ℝ} : log (x ^ y) = y * log x := by
       have x_ne_top := (ENNReal.toReal_pos_iff.1 x_real).2.ne
       simp only [log, rpow_eq_zero_iff, x_ne_zero, false_and, x_ne_top, or_self, ↓reduceIte,
         rpow_eq_top_iff]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       exact ENNReal.toReal_rpow x y ▸ Real.log_rpow x_real y
   · simp
   · rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
-    · rw [ENNReal.zero_rpow_of_pos y_pos, log_zero, EReal.mul_bot_of_pos]; norm_cast
-    · rw [ENNReal.top_rpow_of_pos y_pos, log_top, EReal.mul_top_of_pos]; norm_cast
+    · rw [ENNReal.zero_rpow_of_pos y_pos, log_zero, EReal.mul_bot_of_pos]; fail_if_not_idempotent norm_cast
+    · rw [ENNReal.top_rpow_of_pos y_pos, log_top, EReal.mul_top_of_pos]; fail_if_not_idempotent norm_cast
     · have x_ne_zero := (ENNReal.toReal_pos_iff.1 x_real).1.ne'
       have x_ne_top := (ENNReal.toReal_pos_iff.1 x_real).2.ne
       simp only [log, rpow_eq_zero_iff, x_ne_zero, false_and, x_ne_top, or_self, ↓reduceIte,
         rpow_eq_top_iff]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       exact ENNReal.toReal_rpow x y ▸ Real.log_rpow x_real y
 
 theorem log_pow {x : ℝ≥0∞} {n : ℕ} : log (x ^ n) = n * log x := by

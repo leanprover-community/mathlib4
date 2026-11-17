@@ -155,8 +155,8 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
     nth_rw 2 [← mul_one (2 : ℂ)]
     rw [← mul_add, mul_pow, ← div_div]
     ring
-  · push_cast; ring
-  · push_cast; ring
+  · fail_if_not_idempotent push_cast; ring
+  · fail_if_not_idempotent push_cast; ring
 
 /-- Relate the integral `cos x ^ n` over `[0, π/2]` to the integral of `sin x ^ n` over `[0, π]`,
 which is studied in `Mathlib/Analysis/Real/Pi/Wallis.lean` and other places. -/
@@ -199,7 +199,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,
-      (by push_cast; ring : 2 * z * ↑(π / 2) = π * z)]
+      (by fail_if_not_idempotent push_cast; ring : 2 * z * ↑(π / 2) = π * z)]
     simp [field]
   | succ n hn =>
     rw [hn, Finset.prod_range_succ]

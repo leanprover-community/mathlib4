@@ -104,7 +104,7 @@ theorem mk_one_pow_eq_mk_choose_add :
       ext n
       rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
       simp_rw [coeff_mk, Pi.one_apply, one_mul]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [Finset.sum_antidiagonal_choose_add, add_right_comm]
 
 /--

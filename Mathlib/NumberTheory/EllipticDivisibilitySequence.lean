@@ -561,7 +561,7 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
     on_goal 1 2 3 => simp
     simp_rw [Nat.cast_succ, Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl,
       Int.add_sub_cancel]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simpa only [preNormEDS_ofNat] using preNormEDS'_even ..
   | neg ih m =>
     simp_rw [mul_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', preNormEDS_neg, ih]
@@ -575,7 +575,7 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     rcases m with _ | _ | _
     on_goal 1 2 => simp
     simp_rw [Nat.cast_succ, Int.add_sub_cancel, Int.even_add_one, not_not, Int.even_natCast]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simpa only [preNormEDS_ofNat] using preNormEDS'_odd ..
   | neg ih m =>
     rcases m with _ | m
@@ -810,7 +810,7 @@ lemma complEDS_even (m : ℤ) :
   | nat m =>
     rcases m with _ | _
     · simp
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simpa only [complEDS_ofNat] using! complEDS'_even ..
   | neg ih => simp_rw [mul_neg, complEDS_neg, ih, neg_mul, complEDS₂_neg]
 
@@ -821,7 +821,7 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
   | nat m =>
     rcases m with _ | _
     · simp
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simpa only [complEDS_ofNat] using! complEDS'_odd ..
   | neg ih m =>
     rcases m with _ | m

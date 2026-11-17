@@ -153,7 +153,7 @@ private lemma two_mul_ne_sqrt_five_sub_one_mul {b d : ℤ} (hb : 0 < b) :
   intro h
   refine Nat.prime_five.irrational_sqrt ⟨(2 * d + b) / b, ?_⟩
   have hb0 : (b : ℝ) ≠ 0 := mod_cast (ne_of_gt hb)
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [div_eq_iff hb0]
   linear_combination h
 
@@ -171,7 +171,7 @@ private lemma left_lt_mediant {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
   have hsR : (0 : ℝ) < s := mod_cast hs
   have hqsR : (0 : ℝ) < q + s := by linarith
   have hdetR : (q : ℝ) * r - p * s = 1 := mod_cast hdet
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [div_lt_div_iff₀ hqR hqsR]
   linarith
 
@@ -181,14 +181,14 @@ private lemma mediant_lt_right {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
   have hsR : (0 : ℝ) < s := mod_cast hs
   have hqsR : (0 : ℝ) < q + s := by linarith
   have hdetR : (q : ℝ) * r - p * s = 1 := mod_cast hdet
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [div_lt_div_iff₀ hqsR hsR]
   linarith
 
 private lemma ne_mediant (hξ : Irrational ξ) {p q r s : ℤ} :
     ξ ≠ ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) := by
   have hcast : ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) = (((p + r : ℤ) / (q + s : ℤ) : ℚ) : ℝ) := by
-    push_cast; ring
+    fail_if_not_idempotent push_cast; ring
   rw [hcast]
   exact hξ.ne_rat _
 
@@ -240,7 +240,7 @@ theorem isGoodApprox_or (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p 
     obtain ⟨H2, _⟩ := aux₁ hqR H1
     have H1' := aux₀ h'.det hA (one_le_sqrt_five_mul_of_not_isGoodApprox_right hqs_pos h'.right h3)
     obtain ⟨_, H2'⟩ := aux₁ hqR H1'
-    push_cast at H2'
+    fail_if_not_idempotent push_cast at H2'
     have heq : 2 * s = (√5 - 1) * q := by linarith
     exact two_mul_ne_sqrt_five_sub_one_mul h.q_pos heq
   · -- (p + r) / (q + s) < ξ
@@ -248,7 +248,7 @@ theorem isGoodApprox_or (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p 
     obtain ⟨H2, _⟩ := aux₁' hsR H1
     have H1' := aux₀ h'.det (one_le_sqrt_five_mul_of_not_isGoodApprox_left hqs_pos h'.left h3) hB
     obtain ⟨_, H2'⟩ := aux₁' hsR H1'
-    push_cast at H2'
+    fail_if_not_idempotent push_cast at H2'
     have heq : 2 * q = (√5 - 1) * s := by linarith
     exact two_mul_ne_sqrt_five_sub_one_mul h.s_pos heq
 
@@ -279,11 +279,11 @@ private theorem isFarey_floor (hξ : Irrational ξ) : IsFarey ξ ⌊ξ⌋ 1 (⌊
   s_pos := one_pos
   det := by ring
   left := by
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [div_one]
     exact ((hξ.ne_int _).symm).lt_of_le (Int.floor_le ξ)
   right := by
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [div_one]
     exact Int.lt_floor_add_one ξ
 
@@ -315,7 +315,7 @@ private lemma isGoodApprox_bound_rat {x y : ℤ} (hg : IsGoodApprox ξ x y) :
   have ⟨hy_pos, _⟩ := hg
   have hden_le : ((((x : ℚ) / y : ℚ).den : ℝ)) ≤ (y : ℝ) :=
     mod_cast Int.le_of_dvd hy_pos (Rat.den_dvd x y)
-  push_cast
+  fail_if_not_idempotent push_cast
   refine lt_of_lt_of_le hg.abs_sub_div_lt ?_
   gcongr
 
@@ -337,7 +337,7 @@ theorem exists_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_and_lt_of_irrational
     have hn'' := hn.trans_le (mod_cast hqs : (n : ℝ) ≤ (q : ℝ) + s)
     rw [div_lt_iff₀ hpos] at hn''
     linarith
-  push_cast
+  fail_if_not_idempotent push_cast
   have hqsR : 0 < (q : ℝ) * s := mod_cast (mul_pos hF.q_pos hF.s_pos)
   have hfinal : 1 / ((q : ℝ) * s) < |ξ - (t : ℝ)| := by
     rw [div_lt_iff₀ hqsR]

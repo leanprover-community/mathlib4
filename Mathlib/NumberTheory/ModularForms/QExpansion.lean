@@ -336,14 +336,14 @@ lemma qExpansion_coeff_eq_intervalIntegral {f : ℍ → ℂ} (hh : 0 < h)
   have : circleMap 0 R (u * (2 * π / h)) = 𝕢 h τ := by
     simp only [circleMap, ofReal_exp, ← exp_add, zero_add, τ, R]
     congr 1
-    push_cast
+    fail_if_not_idempotent push_cast
     have := I_sq
     grind
   -- now just complex exponential arithmetic to finish
   simp_rw [deriv_circleMap, this, show ↑I = Complex.I by rfl, show u + t * Complex.I = τ by rfl,
     show ⟨↑τ, τ.2⟩ = τ by rfl, eq_cuspFunction _ hh.ne' hfper, smul_eq_mul, pow_succ]
   field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring
 
 theorem exp_decay_sub_atImInfty {f : ℍ → ℂ} (hh : 0 < h)

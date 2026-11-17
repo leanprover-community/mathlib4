@@ -238,13 +238,13 @@ theorem mem_inv_smul_finset_iff : b ∈ a⁻¹ • s ↔ a • b ∈ s := by
 @[to_additive]
 theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t := by
   simp_rw [← coe_subset]
-  push_cast
+  fail_if_not_idempotent push_cast
   exact Set.smul_set_subset_iff_subset_inv_smul_set
 
 @[to_additive]
 theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
   simp_rw [← coe_subset]
-  push_cast
+  fail_if_not_idempotent push_cast
   exact Set.subset_smul_set_iff
 
 @[to_additive (attr := simp)]
@@ -258,7 +258,7 @@ theorem smul_finset_eq_univ [Fintype β] : a • s = univ ↔ s = univ := by
 @[to_additive (attr := simp)]
 theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : Finset β) = univ :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.smul_univ hs
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then

@@ -410,7 +410,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
   { integrable_exp_mul t := by
       simp_rw [mul_add, exp_add]
       convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
-      norm_cast
+      fail_if_not_idempotent norm_cast
       infer_instance
     mgf_le := by
       let p := (cX.sqrt + cY.sqrt) / cX.sqrt
@@ -720,7 +720,7 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
   integrable_exp_mul t := by
     simp_rw [mul_add, exp_add]
     convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
-    norm_cast
+    fail_if_not_idempotent norm_cast
     infer_instance
   mgf_le t := by
     calc mgf (X + Y) μ t

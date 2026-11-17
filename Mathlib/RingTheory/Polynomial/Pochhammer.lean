@@ -160,7 +160,7 @@ theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
 
 theorem ascPochhammer_nat_eq_natCast_ascFactorial (S : Type*) [Semiring S] (n k : ℕ) :
     (ascPochhammer S k).eval (n : S) = n.ascFactorial k := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [ascPochhammer_nat_eq_ascFactorial]
 
 theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
@@ -169,7 +169,7 @@ theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
 
 theorem ascPochhammer_nat_eq_natCast_descFactorial (S : Type*) [Semiring S] (a b : ℕ) :
     (ascPochhammer S b).eval (a : S) = (a + b - 1).descFactorial b := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [ascPochhammer_nat_eq_descFactorial]
 
 @[simp]

@@ -127,7 +127,7 @@ lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
       _ ≤ 1 - (d : ℝ)⁻¹ := by
         rw [inv_eq_one_div, one_sub_div <| Nat.cast_ne_zero.mpr (ne_of_gt hd0),
           div_le_div_iff_of_pos_right <| Nat.cast_pos'.mpr hd0, le_sub_iff_add_le]
-        norm_cast
+        fail_if_not_idempotent norm_cast
     linarith [sub_lt_of_abs_sub_lt_right (a := (1 : ℝ)) (b := d ^ (n - m)) (c := d⁻¹) h]
 
 lemma ball_eq_singleton {n : ℕ} : Metric.ball n ((2 : ℝ) ^ (-n - 1 : ℤ)) = {n} := by

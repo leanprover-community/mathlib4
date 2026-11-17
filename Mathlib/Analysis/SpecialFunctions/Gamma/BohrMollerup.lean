@@ -158,7 +158,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
   induction n with
   | zero => simp
   | succ n hn =>
-    have : x + n.succ = x + n + 1 := by push_cast; ring
+    have : x + n.succ = x + n + 1 := by fail_if_not_idempotent push_cast; ring
     rw [this, hf_feq, hn]
     · rw [Finset.range_add_one, Finset.sum_insert Finset.notMem_range_self]
       abel
@@ -198,7 +198,7 @@ theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
     ∑ m ∈ Finset.range (n + 1), log (x + 1 + ↑m) =
       ∑ k ∈ Finset.range (n + 1), log (x + ↑(k + 1)) := by
     congr! 2 with m
-    push_cast
+    fail_if_not_idempotent push_cast
     abel
   rw [← this, Nat.cast_add_one n]
   ring

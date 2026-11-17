@@ -465,7 +465,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       rw [← coeff_eval_eq_eval_coeff, ← hφ, hφ₀, Polynomial.coeff_zero]
     have hφR : φ.natDegree < #R := by
       refine lt_of_lt_of_le ?_ hnR
-      norm_cast
+      fail_if_not_idempotent norm_cast
       refine lt_of_le_of_lt natDegree_map_le ?_
       suffices (finSuccEquiv _ _ F).natDegree ≠ n by lia
       rintro rfl

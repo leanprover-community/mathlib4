@@ -200,7 +200,7 @@ theorem mahlerMeasure_C_mul_X_add_C (a b : ℂ) :
   · simp
   simp only [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
     mahlerMeasure_mul, mahlerMeasure_const, ← coe_nnNorm, mahlerMeasure_X_add_C]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp [mul_max, ha]
 
 theorem mahlerMeasure_of_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) :
@@ -386,7 +386,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       exact le_max_right 1 ‖a‖
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z x := by
       simp_rw [← coe_nnNorm]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       exact Finset.prod_le_prod_of_subset_of_one_le (toFinset_subset.mpr (subset_of_le hx.1))
         (fun a _ _ ↦ one_le_pow₀ (le_max_left 1 ‖a‖))
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z p.roots := by
@@ -403,7 +403,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     _ = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
       rw [← Finset.sum_mul]
       congr
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp only [mem_powersetCard, mem_toFinset, imp_self, implies_true, sum_count_eq_card,
         card_powersetCard, S, ← Nat.choose_symm hn]
       congr

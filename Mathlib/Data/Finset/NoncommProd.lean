@@ -312,7 +312,7 @@ theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) 
 theorem noncommProd_singleton (a : α) (f : α → β) :
     noncommProd ({a} : Finset α) f
         (by
-          norm_cast
+          fail_if_not_idempotent norm_cast
           exact Set.pairwise_singleton _ _) =
       f a := mul_one _
 

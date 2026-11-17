@@ -213,7 +213,7 @@ theorem tendsto_indicator_ge (f : α → β) (x : α) :
   simp only [not_le, Set.mem_ofPred_eq]
   refine lt_of_le_of_lt (Nat.le_ceil _) ?_
   refine lt_of_lt_of_le (lt_add_one _) ?_
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 section
 

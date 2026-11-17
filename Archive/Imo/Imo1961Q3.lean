@@ -36,7 +36,7 @@ public theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
       · cases n.even_or_odd with
         | inl hn => refine .inl ⟨⟨k * 2, ?_⟩, hn⟩; simp [mul_assoc]
         | inr hn => exact .inr <| .inl ⟨⟨_, rfl⟩, hn⟩
-      · exact .inl ⟨⟨2 * k + 1, by push_cast; ring⟩, hn⟩
+      · exact .inl ⟨⟨2 * k + 1, by fail_if_not_idempotent push_cast; ring⟩, hn⟩
     · rcases eq_or_ne (cos x) 0 with hcosx | hcosx
       · right; right
         rw [hcosx, zero_pow h₀, zero_sub, ← neg_inj, neg_neg, pow_eq_neg_one_iff,

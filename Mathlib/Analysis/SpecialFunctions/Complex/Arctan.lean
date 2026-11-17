@@ -57,11 +57,13 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
     (h₂ : z.re ≤ π / 2) : cos z ≠ 0 := by
   refine cos_ne_zero_iff.mpr (fun k ↦ ?_)
   rw [ne_eq, Complex.ext_iff, not_and_or] at h₀ ⊢
+  -- TODO: norm_cast is not idempotent fail_if_not_idempotent norm_cast at h₀ ⊢
   norm_cast at h₀ ⊢
   rcases h₀ with nr | ni
   · left; contrapose nr
     rw [nr, mul_div_assoc, neg_eq_neg_one_mul, mul_lt_mul_iff_of_pos_right (by positivity)] at h₁
     rw [nr, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_iff_of_pos_right (by positivity)] at h₂
+    -- TODO: norm_cast is not idempotent fail_if_not_idempotent norm_cast at h₁ h₂
     norm_cast at h₁ h₂
     change -1 < _ at h₁
     rwa [show 2 * k + 1 = 1 by lia, Int.cast_one, one_mul] at nr
@@ -86,7 +88,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
 theorem ofReal_arctan (x : ℝ) : (Real.arctan x : ℂ) = arctan x := by
   conv_rhs => rw [← Real.tan_arctan x]
   rw [ofReal_tan, arctan_tan]
-  all_goals norm_cast
+  all_goals fail_if_not_idempotent norm_cast
   · rw [← ne_eq]; exact (Real.arctan_lt_pi_div_two _).ne
   · exact Real.neg_pi_div_two_lt_arctan _
   · exact (Real.arctan_lt_pi_div_two _).le

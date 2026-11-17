@@ -359,17 +359,17 @@ theorem dist_eq_hammingDist (x y : Hamming β) :
 
 instance : PseudoMetricSpace (Hamming β) where
   dist_self := by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact mod_cast hammingDist_self
   dist_comm := by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact mod_cast hammingDist_comm
   dist_triangle := by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact mod_cast hammingDist_triangle
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
-    push_cast
+    fail_if_not_idempotent push_cast
     constructor
     · refine fun hs ↦ ⟨1, zero_lt_one, fun hab ↦ hs <| by simpa using hab⟩
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ rfl
@@ -378,7 +378,7 @@ instance : PseudoMetricSpace (Hamming β) where
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by
     ext
-    push_cast
+    fail_if_not_idempotent push_cast
     refine iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => ?_⟩
     exact mod_cast hammingDist_le_card_fintype
 
@@ -399,7 +399,7 @@ theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = ha
   rfl
 
 instance [∀ i, AddGroup (β i)] : NormedAddGroup (Hamming β) where
-  dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
+  dist_eq := by fail_if_not_idempotent push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := fun x y => NormedAddGroup.dist_eq x y

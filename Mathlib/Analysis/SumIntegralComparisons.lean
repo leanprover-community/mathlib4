@@ -288,7 +288,7 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
   convert AntitoneOn.tsum_comp_add_le_integral (N - 1) (mod_cast anti) (mod_cast integrable)
       (mod_cast nonneg) using 1
   · congr; ext; congr 2; grind
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
 
 open Filter in
 /-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/

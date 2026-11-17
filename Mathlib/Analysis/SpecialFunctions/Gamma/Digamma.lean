@@ -75,8 +75,8 @@ theorem digamma_apply_add_nat {s : ℂ} (hs : ∀ m : ℕ, s ≠ -(m : ℂ)) (n 
   | zero => simp
   | succ n ih =>
     have hsn (m : ℕ) : s + (n : ℂ) ≠ -(m : ℂ) := fun h ↦
-      hs (m + n) (by push_cast at h ⊢; linear_combination h)
-    rw [show s + ((n + 1 : ℕ) : ℂ) = (s + (n : ℂ)) + 1 by push_cast; ring,
+      hs (m + n) (by fail_if_not_idempotent push_cast at h ⊢; linear_combination h)
+    rw [show s + ((n + 1 : ℕ) : ℂ) = (s + (n : ℂ)) + 1 by fail_if_not_idempotent push_cast; ring,
       digamma_apply_add_one _ hsn, ih, Finset.sum_range_succ]
     ring
 
@@ -85,7 +85,7 @@ open scoped ComplexOrder in
 theorem digamma_nat_add_one (n : ℕ) :
     digamma (n + 1) = harmonic n - Real.eulerMascheroniConstant := by
   rw [add_comm _ 1, digamma_apply_add_nat (by grind) n, digamma_one, harmonic]
-  push_cast [add_comm (1 : ℂ)]
+  fail_if_not_idempotent push_cast [add_comm (1 : ℂ)]
   ring
 
 open scoped Real in
@@ -96,7 +96,7 @@ theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
   -- The idea is to apply `logDeriv` to both sides of `Gamma_mul_Gamma_one_sub`. This produces
   -- side conditions, which the two `have`s below allow the `<;> try ...` line to discharge.
   have (m : ℕ) : s ≠ -m := by simpa using hs (-m)
-  have (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
+  have (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by fail_if_not_idempotent push_cast; grind)
   have := congr(logDeriv $(funext Gamma_mul_Gamma_one_sub) s)
   rw [logDeriv_fun_mul, logDeriv_fun_div, ← Function.comp_def Gamma, ← Function.comp_def sin,
     logDeriv_comp, logDeriv_comp] at this <;>
@@ -124,9 +124,9 @@ derivatives. -/
 theorem digamma_two_mul {s : ℂ} (hs : ∀ m : ℕ, 2 * s ≠ -(m : ℂ)) :
     digamma (2 * s) = (1 / 2) * (digamma s + digamma (s + 1 / 2)) + log 2 := by
   have hs₀ (m : ℕ) : s ≠ -(m : ℂ) := fun h ↦
-    hs (2 * m) (by push_cast; linear_combination 2 * h)
+    hs (2 * m) (by fail_if_not_idempotent push_cast; linear_combination 2 * h)
   have hs₁ (m : ℕ) : s + 1 / 2 ≠ -(m : ℂ) := fun h ↦
-    hs (2 * m + 1) (by push_cast; linear_combination 2 * h)
+    hs (2 * m + 1) (by fail_if_not_idempotent push_cast; linear_combination 2 * h)
   have hpow : (2 : ℂ) ^ (1 - 2 * s) ≠ 0 := by simp [cpow_eq_zero_iff]
   have hd2 := hasDerivAt_id' s |>.const_mul 2 |>.const_sub 1 |>.const_cpow <|
     .inl (by norm_num : (2 : ℂ) ≠ 0)

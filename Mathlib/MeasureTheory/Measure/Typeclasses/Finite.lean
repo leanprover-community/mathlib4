@@ -149,7 +149,7 @@ instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMe
 @[simp]
 theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 0 ↔ μ = 0 := by
   rw [← MeasureTheory.Measure.measure_univ_eq_zero, ← coe_measureUnivNNReal]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measureUnivNNReal μ := by
   contrapose! hμ

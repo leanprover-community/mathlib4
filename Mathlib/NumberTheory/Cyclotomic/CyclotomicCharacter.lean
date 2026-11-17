@@ -172,7 +172,7 @@ lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
   rw [toFun_spec, ← Subgroup.coe_pow, toFun_spec, mul_comm, Subgroup.coe_pow, ← pow_mul,
     ← Subgroup.coe_pow]
   congr 2
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff,
     ZMod.natCast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) (orderOf_dvd_natCard _)]
 

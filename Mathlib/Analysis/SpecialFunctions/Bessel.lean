@@ -85,7 +85,7 @@ theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J (-a) x = (-1) ^ a * J a x := by
     simp only [Int.cast_neg, neg_neg, zpow_neg] at this
     rw [this, ← mul_assoc, mul_inv_cancel₀ (zpow_ne_zero _ (by simp)), one_mul]
   obtain ⟨a, rfl⟩ := Int.eq_ofNat_of_zero_le ha
-  push_cast
+  fail_if_not_idempotent push_cast
   have h : (x / 2) ^ (a : ℂ) = (x / 2) ^ (-a : ℂ) * ((x / 2) ^ 2) ^ a := by
     by_cases hx : x = 0
     · by_cases ha : a = 0 <;> simp [hx, ha]

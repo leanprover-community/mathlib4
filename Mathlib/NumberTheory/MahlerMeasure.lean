@@ -43,7 +43,7 @@ lemma one_le_mahlerMeasure_of_ne_zero {p : ℤ[X]} (hp : p ≠ 0) :
     1 ≤ (p.map (castRingHom ℂ)).mahlerMeasure := by
   apply le_trans _ (p.map (castRingHom ℂ)).leadingCoeff_le_mahlerMeasure
   rw [leadingCoeff_map_of_injective (castRingHom ℂ).injective_int, eq_intCast]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact one_le_abs <| leadingCoeff_ne_zero.mpr hp
 
 section Northcott
@@ -65,7 +65,7 @@ theorem ncard_boxPoly : (boxPoly n B₁ B₂).ncard = ∏ i, (⌊B₂ i⌋ - ⌈
       exact ⟨ceil_le.mp (prop.1 i), le_floor.mp (prop.2 i)⟩
     · grind [boxPoly, ofFn_comp_toFn_eq_id_of_natDegree_lt]
     · grind [toFn_comp_ofFn_eq_id]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     grind [Pi.card_Icc, card_Icc]
 
 open NNReal
@@ -83,7 +83,7 @@ private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
     apply Finset.prod_congr rfl fun i _ ↦ ?_
     zify
     rw [toNat_of_nonneg (by positivity), ← natCast_floor_eq_floor (by positivity)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   rw [← h_card]
   have h_subset :
       {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ⊆

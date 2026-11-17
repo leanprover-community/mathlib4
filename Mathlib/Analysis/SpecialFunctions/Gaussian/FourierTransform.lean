@@ -213,7 +213,7 @@ theorem _root_.fourier_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
   ext1 t
   simp_rw [fourier_real_eq_integral_exp_smul, smul_eq_mul, ← Complex.exp_add, ← add_assoc]
   have (x : ℝ) : ↑(-2 * π * x * t) * I + -π * b * x ^ 2 + 2 * π * c * x =
-    -π * b * x ^ 2 + (-2 * π * I * t + 2 * π * c) * x + 0 := by push_cast; ring
+    -π * b * x ^ 2 + (-2 * π * I * t + 2 * π * c) * x + 0 := by fail_if_not_idempotent push_cast; ring
   simp_rw [this, integral_cexp_quadratic h, neg_mul, neg_neg]
   congr 2
   · rw [← div_div, div_self <| ofReal_ne_zero.mpr pi_ne_zero, one_div, inv_cpow, ← one_div]
@@ -257,7 +257,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   simp only [EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, PiLp.inner_apply, RCLike.inner_apply,
     conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul, Finset.sum_neg_distrib,
     mul_assoc]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [sq_sqrt]
   · simp [Finset.mul_sum, mul_comm]
   · exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
@@ -299,7 +299,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   simp only [neg_mul]
   convert! integral_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 5 with _x y
   · simp only [EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, neg_mul, neg_inj, mul_eq_mul_left_iff]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     left
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
@@ -308,7 +308,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     simp_rw [mul_comm]
   · simp only [EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, mul_pow, ← Finset.mul_sum]
     congr
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
 

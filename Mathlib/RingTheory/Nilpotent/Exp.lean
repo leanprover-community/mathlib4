@@ -102,7 +102,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
       suffices (i ! : ℚ)⁻¹ * (i.choose j) = ((j ! : ℚ)⁻¹ * ((i - j)! : ℚ)⁻¹) by
         rw [← Nat.cast_commute (i.choose j), ← this, ← mul_smul_comm, ← nsmul_eq_mul,
           mul_smul, ← smul_assoc, smul_comm, smul_assoc]
-        norm_cast
+        fail_if_not_idempotent norm_cast
       rw [Nat.choose_eq_factorial_div_factorial hj,
         Nat.cast_div (Nat.factorial_mul_factorial_dvd_factorial hj) (by positivity)]
       simp [field]

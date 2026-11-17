@@ -420,7 +420,7 @@ theorem isStarNormal_iff_norm_eq_adjoint :
     LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply_eq_comp, adjoint_inner_left,
     inner_self_eq_norm_sq_to_K, ← adjoint_inner_right T, inner_self_eq_norm_sq_to_K,
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 lemma IsStarNormal.adjoint_apply_eq_zero_iff (hT : IsStarNormal T) (x : E) :
     adjoint T x = 0 ↔ T x = 0 := by
@@ -769,14 +769,14 @@ theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (T.adj
 theorem re_inner_adjoint_mul_self_nonneg (T : E →ₗ[𝕜] E) (x : E) :
     0 ≤ re ⟪x, (T.adjoint * T) x⟫ := by
   simp only [mul_apply_eq_comp, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact sq_nonneg _
 
 @[simp]
 theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
     im ⟪x, T.adjoint (T x)⟫ = 0 := by
   simp only [adjoint_inner_right, inner_self_eq_norm_sq_to_K]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem isSelfAdjoint_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
     have := FiniteDimensional.completeSpace 𝕜 E

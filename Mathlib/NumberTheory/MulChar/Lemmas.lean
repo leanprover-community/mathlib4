@@ -156,10 +156,10 @@ lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}
   rw [e.symm.orderOf_eq, orderOf_eq_iff hn₀]
   refine ⟨?_, fun m hm hm₀ h ↦ ?_⟩
   · ext
-    push_cast
+    fail_if_not_idempotent push_cast
     exact hζ.pow_eq_one
   · rw [Subtype.ext_iff, Units.ext_iff] at h
-    push_cast at h
+    fail_if_not_idempotent push_cast at h
     exact ((Nat.le_of_dvd hm₀ <| hζ.dvd_of_pow_eq_one _ h).trans_lt hm).false
 
 /-- If there is a multiplicative character of order `n` on `F`, then `#F ≡ 1 mod n`. -/

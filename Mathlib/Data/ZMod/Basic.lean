@@ -275,7 +275,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
   simp only [Fin.val_add_eq_ite, Int.natCast_succ]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   split_ifs with h
   · rw [Nat.cast_sub h]
     congr
@@ -736,7 +736,7 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
       a * a⁻¹ = a * a⁻¹ + n.succ * Nat.gcdB (val a) n.succ := by
         rw [natCast_self, zero_mul, add_zero]
       _ = ↑(↑a.val * Nat.gcdA (val a) n.succ + n.succ * Nat.gcdB (val a) n.succ) := by
-        push_cast
+        fail_if_not_idempotent push_cast
         rw [natCast_zmod_val]
         rfl
       _ = Nat.gcd a.val n.succ := by rw [← Nat.gcd_eq_gcd_ab a.val n.succ]; rfl

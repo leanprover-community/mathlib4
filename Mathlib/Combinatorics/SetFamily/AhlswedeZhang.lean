@@ -64,11 +64,11 @@ private lemma binomial_sum_eq (h : n < m) :
   have h₃ := h₂.le
   have hi₄ : (i + 1 : ℚ) ≠ 0 := i.cast_add_one_ne_zero
   have := congr(($(choose_succ_right_eq m i) : ℚ))
-  push_cast at this
+  fail_if_not_idempotent push_cast at this
   dsimp [f, hf]
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have := congr(($(choose_succ_right_eq n i) : ℚ))
-  push_cast at this
+  fail_if_not_idempotent push_cast at this
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have : (m - i : ℚ) ≠ 0 := sub_ne_zero_of_ne (cast_lt.mpr h₂).ne'
   have : (m.choose i : ℚ) ≠ 0 := cast_ne_zero.2 (choose_pos h₂.le).ne'

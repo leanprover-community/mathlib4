@@ -128,9 +128,9 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       have : Finset.sum (range p) (fun (x : ℕ) ↦ (x : R)) =
           ((Finset.sum (range p) (fun (x : ℕ) ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
       simp only [add_eq_right, ← Finset.mul_sum, this]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp only [Finset.sum_range_id]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp only [Nat.cast_mul, map_mul,
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring_nf
@@ -221,7 +221,7 @@ theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p 
     rw [Int.ofNat_sub (Nat.pow_le_pow_left hyx n)]
     rw [← Int.natCast_dvd_natCast] at hxy hx
     rw [Int.natCast_sub hyx] at *
-    push_cast at *
+    fail_if_not_idempotent push_cast at *
     exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
   · simp only [Nat.sub_eq_zero_iff_le.mpr (Nat.pow_le_pow_left hyx n), emultiplicity_zero_right,
     Nat.sub_eq_zero_iff_le.mpr hyx, top_add]
@@ -231,7 +231,7 @@ theorem Nat.emultiplicity_pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p 
     emultiplicity p (x ^ n + y ^ n) = emultiplicity p (x + y) + emultiplicity p n := by
   iterate 2 rw [← Int.natCast_emultiplicity]
   rw [← Int.natCast_dvd_natCast] at hxy hx
-  push_cast at *
+  fail_if_not_idempotent push_cast at *
   exact Int.emultiplicity_pow_add_pow hp hp1 hxy hx hn
 
 end LiftingTheExponent
@@ -286,12 +286,12 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   rcases emultiplicity_eq_coe.mp h.emultiplicity_eq_multiplicity with ⟨⟨k, hk⟩, hpn⟩
   rw [hk, pow_mul, pow_mul, emultiplicity_pow_sub_pow_of_prime,
     Int.two_pow_two_pow_sub_pow_two_pow _ hxy hx, ← hk]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     rw [h.emultiplicity_eq_multiplicity]
   · exact Int.prime_two
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
   · simpa only [even_iff_two_dvd, ← Int.not_even_iff_odd] using hx_odd.pow
-  norm_cast
+  fail_if_not_idempotent norm_cast
   contrapose hpn
   rw [pow_succ]
   conv_rhs => rw [hk]
@@ -316,7 +316,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
   rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_ofNat,
     emultiplicity_mul Int.prime_two, emultiplicity_mul Int.prime_two]
   · suffices emultiplicity (2 : ℤ) ↑(2 : ℕ) = 1 by rw [this, add_comm 1, ← add_assoc]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [FiniteMultiplicity.emultiplicity_self]
     rw [Nat.finiteMultiplicity_iff]
     decide

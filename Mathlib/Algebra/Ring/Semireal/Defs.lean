@@ -64,5 +64,5 @@ instance (priority := 90) [NonAssocRing R] [IsSemireal R] : CharZero R :=
     | zero => rfl
     | succ n =>
       rw [add_comm] at hn
-      push_cast at hn
+      fail_if_not_idempotent push_cast at hn
       simpa using IsSemireal.one_add_ne_zero (by simp) hn

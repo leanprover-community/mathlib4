@@ -578,7 +578,7 @@ lemma mulHeight_pow (x : ι → K) (n : ℕ) :
   have H (v : AbsoluteValue K ℝ) : ⨆ i : ι, v ((x ^ n) i) = (⨆ i, v (x i)) ^ n := by
     simp only [Pi.pow_apply, map_pow]
     simp +singlePass only [← coe_toNNReal _ (v.nonneg _)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact (pow_left_mono n).map_ciSup_of_continuousAt (continuous_pow n).continuousAt
       (Finite.bddAbove_range _) |>.symm
   have hxn : x ^ n ≠ 0 := by simp [hx]

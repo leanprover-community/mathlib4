@@ -45,7 +45,7 @@ theorem ContDiffAt.deriv_fderiv_add_smul (hf : ContDiffAt 𝕜 (n + 1) f (x + t 
     iteratedFDeriv 𝕜 (n + 1) f (x + t • y) (fun _ ↦ y) := by
   have hf' : DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 n f) (x + t • y) := by
     apply hf.differentiableAt_iteratedFDeriv
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact lt_add_one n
   convert (hf'.continuousMultilinear_apply_const _).deriv_comp_add_smul
   exact hf'.iteratedFDeriv_succ_apply_left'
@@ -114,7 +114,7 @@ theorem map_add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t 
       rw [this]
       apply HasDerivAt.const_mul
       convert ((hasDerivAt_id t).const_sub 1).pow (n + 1)
-      all_goals norm_cast
+      all_goals fail_if_not_idempotent norm_cast
     have hu' : Continuous (u n) := by fun_prop
     set v := fun (k : ℕ) (t : ℝ) ↦ iteratedFDeriv ℝ k f (x + t • y) (fun _ ↦ y)
     have hv : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), HasDerivAt (v (n + 1)) (v (n + 1 + 1) t) t := by
@@ -123,7 +123,7 @@ theorem map_add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t 
       rw [← (hf t ht).deriv_fderiv_add_smul]
       have h_diff : DifferentiableAt ℝ (iteratedFDeriv ℝ (n + 1) f) (x + t • y) := by
         apply (hf t ht).differentiableAt_iteratedFDeriv
-        norm_cast
+        fail_if_not_idempotent norm_cast
         grind
       refine DifferentiableAt.hasDerivAt ?_
       fun_prop

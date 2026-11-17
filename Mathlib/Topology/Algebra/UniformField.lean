@@ -90,7 +90,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
       by_contra h
       exact y_ne (eq_of_nhds_neBot <| neBot_iff.mpr h).symm
     rw [isDenseInducing_coe.nhds_eq_comap (0 : K), ← Filter.comap_inf]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [eq_bot]
     exact comap_bot
 

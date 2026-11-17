@@ -91,7 +91,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       congr 1 with x : 1
       rw [smul_eq_mul, comp_apply, coe_mk, coe_mk, ContinuousMap.toFun_eq_coe, fourier_coe_apply]
       congr 2
-      push_cast
+      fail_if_not_idempotent push_cast
       ring
 
 /-- **Poisson's summation formula**, most general form. -/

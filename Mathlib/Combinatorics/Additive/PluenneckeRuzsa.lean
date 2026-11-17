@@ -184,7 +184,7 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
     exists_min_image (B.powerset.erase ∅) (fun U ↦ #(U * A) / #U : _ → ℚ≥0) ⟨B, hB'⟩
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hU
   refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [← le_div_iff₀ (cast_pos.2 hB.card_pos), mul_div_right_comm, mul_comm _ B]
   grw [card_le_card_mul_left hU.1, ← hUA _ hB', ← mul_subset_mul_right hU.2]
   rw [← mul_div_right_comm, ← mul_assoc, le_div_iff₀ (cast_pos.2 hU.1.card_pos), mul_comm _ C,

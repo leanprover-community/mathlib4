@@ -356,9 +356,9 @@ instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
   smul_tmul q m n := by
     have : HasUniqueDiv (M ⊗[R] N) := .of_module_rat _
     suffices q.den • ((q • m) ⊗ₜ[R] n) = q.den • (m ⊗ₜ[R] (q • n)) from
-      smul_right_injective (M ⊗[R] N) q.den_nz <| by norm_cast
+      smul_right_injective (M ⊗[R] N) q.den_nz <| by fail_if_not_idempotent norm_cast
     rw [smul_tmul', ← tmul_smul, ← smul_assoc, ← smul_assoc, nsmul_eq_mul, Rat.den_mul_eq_num]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [smul_tmul]
 
 end CompatibleSMul

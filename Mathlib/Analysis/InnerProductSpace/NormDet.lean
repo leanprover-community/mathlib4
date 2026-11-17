@@ -375,7 +375,7 @@ theorem normDet_eq_prod_singularValues [FiniteDimensional 𝕜 V] (f : U →ₗ[
   rw [← sq_eq_sq₀ f.normDet_nonneg (Finset.prod_nonneg fun i _ ↦ f.singularValues_nonneg i),
     ← RCLike.ofReal_inj (K := 𝕜), ← Finset.prod_pow, ← Fin.prod_univ_eq_prod_range, normDet_sq]
   simp_rw [sq_singularValues_fin]
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [← LinearMap.IsSymmetric.det_eq_prod_eigenvalues]
 
 section Real

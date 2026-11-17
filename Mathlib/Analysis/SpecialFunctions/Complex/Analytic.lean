@@ -195,7 +195,7 @@ theorem hasFPowerSeriesAt_log_one :
     ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
     FormalMultilinearSeries.compContinuousLinearMap_apply]
   simp
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem hasFPowerSeriesAt_log_one_add :
     HasFPowerSeriesAt (fun x ↦ Real.log (1 + x)) (.ofScalars ℝ (fun n ↦ -(-1 : ℝ) ^ n / n)) 0 := by

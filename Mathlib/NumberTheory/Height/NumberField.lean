@@ -203,7 +203,7 @@ lemma absNorm_mul_finprod_finitePlace_eq_one (hx : x ≠ 0) :
   let i' : { j // (x j : K) ≠ 0 } := ⟨i₀, mod_cast hi₀⟩
   have : Nonempty _ := .intro i'
   have hI : span (Set.range x) = span (Set.range fun i : { j // (x j : K) ≠ 0 } ↦ x i.val) := by
-    convert span_range_eq_span_range_support x <;> norm_cast
+    convert span_range_eq_span_range_support x <;> fail_if_not_idempotent norm_cast
   have hx₀ : (fun i ↦ (x i : K)) ≠ 0 := Function.ne_iff.mpr ⟨_, i'.prop⟩
   simp_rw [Finite.iSup_eq_iSup_subtype hx₀, hI]
   exact absNorm_mul_finprod_finitePlace_eq_one_aux fun j ↦ mod_cast j.prop
@@ -538,7 +538,7 @@ lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den :=
   convert mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp
   · rw [← Int.cast_natCast, Int.cast_inj]
-    push_cast
+    fail_if_not_idempotent push_cast
     refine le_antisymm (max_le ?_ ?_) <| ciSup_le fun i ↦ ?_
     · exact Finite.le_ciSup_of_le 0 <| by simp
     · exact Finite.le_ciSup_of_le 1 <| by simp

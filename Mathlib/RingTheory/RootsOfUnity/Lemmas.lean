@@ -69,7 +69,7 @@ lemma self_sub_one_pow_dvd_order {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsPrim
       apply Subalgebra.sub_mem
       · exact Subalgebra.pow_mem _ (self_mem_adjoin_singleton ℤ μ) _
       · exact Subalgebra.one_mem _
-  · push_cast
+  · fail_if_not_idempotent push_cast
     have := Nat.cast_add (R := R) m k ▸ hμ.prod_pow_sub_one_eq_order
     rw [← this, mul_assoc, mul_assoc]
     congr 1

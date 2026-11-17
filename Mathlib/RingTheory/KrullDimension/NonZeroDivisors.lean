@@ -97,7 +97,7 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
   nontriviality R
   cases finite_or_infinite σ
   · rw [ENat.card_eq_coe_natCard]
-    push_cast
+    fail_if_not_idempotent push_cast
     exact ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _
   · simp only [ENat.card_eq_top_of_infinite, WithBot.coe_top]
     suffices ringKrullDim (MvPolynomial σ R) = ⊤ by simp_all
@@ -110,7 +110,7 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     refine le_trans ?_ (ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _)
     simp only [Nat.card_eq_fintype_card, Fintype.card_fin, Nat.cast_add, Nat.cast_one]
     trans n + 1
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       simp
     · exact WithBot.le_add_self Order.bot_lt_krullDim.ne' _
 

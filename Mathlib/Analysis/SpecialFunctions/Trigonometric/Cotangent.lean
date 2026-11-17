@@ -296,7 +296,7 @@ private lemma summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk 
   simp_rw [← mul_assoc]
   apply Summable.mul_left
   conv => enter [1, n]; rw [show (-1 - k : ℤ) = -(1 + k :) by lia, zpow_neg, zpow_natCast];
-          enter [1, 1, 1]; norm_cast
+          enter [1, 1, 1]; norm_cast -- TODO: not a conv version fail_if_not_idempotent
   rw [summable_norm_iff, summable_nat_add_iff (f := fun n : ℕ ↦ ((n : ℝ) ^ (1 + k))⁻¹)]
   exact summable_nat_pow_inv.mpr <| by lia
 
@@ -369,7 +369,7 @@ private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z �
   rw [tsum_of_add_one_of_neg_add_one (by simpa using aux_summable_add hk z)
     (by simpa [sub_eq_add_neg] using aux_summable_sub hk z),
     tsum_mul_left, Summable.tsum_add (aux_summable_add hk z) (aux_summable_sub hk z)]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring_nf
 
 lemma iteratedDerivWithin_cot_sub_inv_eq_add_mul_tsum {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :

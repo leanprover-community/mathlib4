@@ -326,7 +326,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
   refine
     findExistsOneDivLT_min (hn' k) (Nat.sub_lt hk₁ Nat.zero_lt_one)
       ⟨E, Set.Subset.trans hE₂ hA', hE₁, ?_⟩
-  convert hk₂; norm_cast
+  convert hk₂; fail_if_not_idempotent norm_cast
   exact tsub_add_cancel_of_le hk₁
 
 end ExistsSubsetRestrictNonpos

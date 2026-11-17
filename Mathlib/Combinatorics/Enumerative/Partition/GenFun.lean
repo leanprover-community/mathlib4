@@ -71,7 +71,7 @@ theorem tendsto_order_genFun_term_atTop_nhds_top (f : ℕ → ℕ → R) (i : �
   refine lt_add_of_nonneg_of_lt (by simp) ?_
   nontriviality R using Subsingleton.eq_zero (α := R⟦X⟧)
   rw [order_X_pow]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   grind
 
 variable [TopologicalSpace R]

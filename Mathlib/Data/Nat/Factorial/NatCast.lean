@@ -80,7 +80,7 @@ lemma natCast_of_isNilpotent_of_coprime (h : p.Coprime n) :
     refine .of_mul_eq_one b ?_
     simpa [hm] using h
   refine ⟨(p ^ m).gcdA n, (p ^ m).gcdB n, ?_⟩
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← Nat.cast_one, ← Int.cast_natCast 1, ← (h.pow_left m).gcd_eq_one, Nat.gcd_eq_gcd_ab]
 
 theorem natCast_factorial_of_isNilpotent [Fact p.Prime] (h : n < p) :

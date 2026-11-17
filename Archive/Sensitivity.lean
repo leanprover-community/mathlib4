@@ -400,7 +400,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       Cardinal.mk_fintype]
   rw [← finrank_eq_rank ℝ] at dim_le dim_add dimW ⊢
   rw [← finrank_eq_rank ℝ, ← finrank_eq_rank ℝ] at dim_add
-  norm_cast at dim_le dim_add dimW ⊢
+  fail_if_not_idempotent norm_cast at dim_le dim_add dimW ⊢
   rw [pow_succ'] at dim_le
   rw [Set.toFinset_card] at hH
   linarith
@@ -447,7 +447,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       congr with x; simp
     _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
       refine (mul_le_mul_iff_left₀ H_q_pos).2 ?_
-      norm_cast
+      fail_if_not_idempotent norm_cast
       apply card_le_card
       rw [Set.toFinset_inter]
       convert! inter_subset_inter_right coeffs_support

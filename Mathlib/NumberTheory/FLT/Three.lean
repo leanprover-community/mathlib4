@@ -281,7 +281,7 @@ lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have := lambda_pow_four_dvd_c_cube S'
   rw [pow_dvd_iff_le_emultiplicity, emultiplicity_pow hζ.zeta_sub_one_prime',
     hm.emultiplicity_eq_multiplicity] at this
-  norm_cast at this
+  fail_if_not_idempotent norm_cast at this
   exact (FiniteMultiplicity.pow_dvd_iff_le_multiplicity hm).mpr (by lia)
 
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/
@@ -644,7 +644,7 @@ lemma formula2 :
   rw [← formula1 S]
   congrm ?_ + ?_ + ?_
   · have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; lia
-    calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ) := by push_cast; ring
+    calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ) := by fail_if_not_idempotent push_cast; ring
     _ = S.X^3*S.u₁*λ^(3*S.multiplicity-2) := by simp [hζ.toInteger_cube_eq_one, ← pow_succ, this]
   · ring
   · simp only [u₄_def, inv_eq_one_div, mul_div_assoc', mul_one, val_div_eq_divp, Units.val_mul,

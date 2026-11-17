@@ -50,7 +50,7 @@ theorem tendsto_order_pow_mul_prod_one_sub_pow (k : ℕ) :
   intro m hm
   grw [← le_order_mul, order_X_pow]
   refine lt_add_of_lt_of_nonneg ?_ (by simp)
-  norm_cast
+  fail_if_not_idempotent norm_cast
   grind
 
 theorem tendsto_order_neg_X_pow (k : ℕ) :

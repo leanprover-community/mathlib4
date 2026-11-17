@@ -623,7 +623,7 @@ theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Finite ι]
     simp_rw [← Finsupp.single_eq_pi_single, map_sum, LinearMap.coe_sum, Finset.sum_apply]
     refine Finset.sum_congr rfl (fun x _ ↦ ?_)
     rw [← Finsupp.smul_single_one]
-    push_cast
+    fail_if_not_idempotent push_cast
     simp
   rw [h]
   -- But this map is obviously continuous, because for a fixed `i`, `bil (single i 1)` is

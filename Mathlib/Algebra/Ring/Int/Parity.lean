@@ -127,7 +127,7 @@ theorem isSquare_ofNat_iff {n : ℕ} :
 -- These next two don't make good `norm_cast` lemmas.
 theorem natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem natCast_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   natCast_pow_pred 2 p (by decide)
@@ -160,11 +160,11 @@ theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
   cases k with
   | ofNat k =>
     rw [Int.ofNat_eq_natCast]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp [pow_add]
   | negSucc k =>
     simp_rw [Int.negSucc_eq, show 2 * -(↑k + 1) + (1 : ℤ) = - (1 + k*2) by grind, _root_.zpow_neg]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp [pow_add]
 
 theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]

@@ -214,7 +214,7 @@ lemma f_int_ofNat (k : ℕ) {a : ℝ} (ha : 0 ≤ a) (t : ℝ) (n : ℕ) :
 
 lemma f_int_negSucc (k : ℕ) {a : ℝ} (ha : a ≤ 1) (t : ℝ) (n : ℕ) :
     f_int k a t (Int.negSucc n) = f_nat k (1 - a) t n := by
-  have : (Int.negSucc n) + a = -(n + (1 - a)) := by { push_cast; ring }
+  have : (Int.negSucc n) + a = -(n + (1 - a)) := by { fail_if_not_idempotent push_cast; ring }
   rw [f_int, f_nat, this, abs_neg, neg_sq, abs_of_nonneg (by linarith)]
 
 lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_int k a t) := by
@@ -227,7 +227,7 @@ lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_in
   · simp only [f_int, f_nat, Int.ofNat_eq_natCast, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
       abs_abs]
   · simp only [f_int, f_nat, Int.cast_negSucc, norm_mul, norm_eq_abs, abs_pow, abs_abs,
-      (by { push_cast; ring } : -↑(m + 1) + a = -(m + (1 - a))), abs_neg, neg_sq]
+      (by { fail_if_not_idempotent push_cast; ring } : -↑(m + 1) + a = -(m + (1 - a))), abs_neg, neg_sq]
 
 /-- The sum to be bounded (`ℤ` version). -/
 def F_int (k : ℕ) (a : UnitAddCircle) (t : ℝ) : ℝ :=

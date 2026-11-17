@@ -59,12 +59,12 @@ theorem T_complex_cos (n : ℤ) : (T ℂ n).eval (cos θ) = cos (n * θ) := by
   | add_two n ih1 ih2 =>
     simp only [T_add_two, eval_sub, eval_mul, eval_X, eval_ofNat, ih1, ih2, sub_eq_iff_eq_add,
       cos_add_cos]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
   | neg_add_one n ih1 ih2 =>
     simp only [T_sub_one, eval_sub, eval_mul, eval_X, eval_ofNat, ih1, ih2, sub_eq_iff_eq_add',
       cos_add_cos]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
 
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
@@ -77,12 +77,12 @@ theorem U_complex_cos (n : ℤ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1
   | add_two n ih1 ih2 =>
     simp only [U_add_two, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
       mul_assoc, ih1, ih2, sub_eq_iff_eq_add, sin_add_sin]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
   | neg_add_one n ih1 ih2 =>
     simp only [U_sub_one, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
       mul_assoc, ih1, ih2, sub_eq_iff_eq_add', sin_add_sin]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
 
 /-- The `n`-th rescaled Chebyshev polynomial of the first kind (Vieta–Lucas polynomial) evaluates on

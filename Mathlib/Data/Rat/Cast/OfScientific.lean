@@ -31,6 +31,6 @@ instance {K : Type*} [_root_.Field K] [CharZero K] : LawfulOfScientific K where
     rw [← NNRat.cast_ofScientific, NNRatCast.toOfScientific_def]
     simp only [LawfulOfScientific.ofScientific_def]
     split
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       simp
-    · norm_cast
+    · fail_if_not_idempotent norm_cast

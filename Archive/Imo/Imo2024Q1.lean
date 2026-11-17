@@ -54,10 +54,10 @@ lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m
   congr! 2 with n hn
   apply dvd_iff_dvd_of_dvd_sub
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
-  norm_cast
+  fail_if_not_idempotent fail_if_not_idempotent norm_cast
   simp_rw [Int.floor_sub_intCast, sub_sub_cancel_left]
   convert! condition_two_mul_int (-m) n hn
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [Int.floor_intCast]
   simp
 
@@ -91,7 +91,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
     · calc ⌈α⁻¹⌉₊ * α
         _ < (α⁻¹ + 1) * α := by gcongr; exact Nat.ceil_lt_add_one (inv_nonneg.2 h0.le)
         _ = 1 + α := by field
-        _ ≤ (1 : ℕ) + 1 := by gcongr; norm_cast
+        _ ≤ (1 : ℕ) + 1 := by gcongr; fail_if_not_idempotent norm_cast
   · apply Finset.sum_eq_zero
     intro x hx
     rw [Int.floor_eq_zero_iff]
@@ -127,25 +127,25 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
         _ ≤ (k + 1 : ℕ) * α := by gcongr
     have hk2' : ⌊(k + 1 : ℕ) * α⌋ < (k + 1 : ℕ) * 2 := by
       rw [Int.floor_lt]
-      push_cast
+      fail_if_not_idempotent push_cast
       gcongr
     have hk' : ⌊(k + 1 : ℕ) * α⌋ = 2 * k + 1 := by
       by_contra
       rw [show ⌊(k + 1 : ℕ) * α⌋ = 2 * k by lia] at hc
       have hc' : ((k + 1 : ℕ) : ℤ) ∣ ((k + 1 : ℕ) : ℤ) * ((k + 1 : ℕ) : ℤ) - 1 := by
         convert! hc using 1
-        push_cast
+        fail_if_not_idempotent push_cast
         ring
       rw [dvd_sub_right (dvd_mul_right _ _), ← isUnit_iff_dvd_one, Int.isUnit_iff] at hc'
       lia
     rw [hk']
     refine ⟨?_, ?_, h.2⟩
-    · push_cast
+    · fail_if_not_idempotent push_cast
       ring
     · rw [Int.floor_eq_iff] at hk'
       rw [div_le_iff₀ (by norm_cast; lia), mul_comm α]
       convert! hk'.1
-      push_cast
+      fail_if_not_idempotent push_cast
       ring
 
 end Condition

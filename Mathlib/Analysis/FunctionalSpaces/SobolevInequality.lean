@@ -130,7 +130,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
           -- unfold `T` and reformulate the exponents
           simp_rw [T, card_insert_of_notMem hi]
           congr!
-          push_cast
+          fail_if_not_idempotent push_cast
           ring
     _ = ∫⋯∫⁻_s, (fun x ↦ ∫⁻ (t : A i),
             (f (update x i t) ^ (1 - (s.card : ℝ) * p)
@@ -237,7 +237,7 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
     gcongr
     suffices (s.card : ℝ) + 1 ≤ #ι by linarith
     rw [← card_add_card_compl s]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     gcongr
     have hi' : sᶜ.Nonempty := ⟨i, by rwa [Finset.mem_compl]⟩
     rwa [← card_pos] at hi'
@@ -325,7 +325,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
         -- express the left-hand integrand as a product of identical factors
         congr! 2 with x
         simp_rw [prod_const]
-        norm_cast
+        fail_if_not_idempotent norm_cast
     _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖ₑ) ^ p := by
         -- apply the grid-lines lemma
@@ -494,7 +494,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     · suffices (p' : ℝ) = n' by simpa using this
       rw [← inv_inj, hp']
       simp [field, n', NNReal.conjExponent, *]
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       simp_rw [n', n, eLpNormLESNormFDerivOfEqInnerConst]
       simp only [n, NNReal.coe_one] at hnp
       field_simp
@@ -637,7 +637,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
         (hv.continuous_fderiv one_ne_zero).aestronglyMeasurable (Eventually.of_forall h4v) p
     _ = SNormLESNormFDerivOfEqConst F μ p * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [C₂, C₁, C, e, SNormLESNormFDerivOfEqConst]
-      push_cast
+      fail_if_not_idempotent push_cast
       simp_rw [mul_assoc]
 
 
@@ -673,7 +673,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     · gcongr
   have : (q : ℝ≥0∞) ≤ p' := by
     have H : (p' : ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
-    norm_cast at H ⊢
+    fail_if_not_idempotent norm_cast at H ⊢
     rwa [inv_le_inv₀] at H
     · have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
         simp only [tsub_pos_iff_lt]
@@ -691,7 +691,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
         rw [ENNReal.coe_rpow_of_nonneg]
         · simp [ENNReal.coe_toNNReal hs.measure_lt_top.ne]
         · rw [one_div, one_div]
-          norm_cast
+          fail_if_not_idempotent fail_if_not_idempotent norm_cast
           rw [hp']
           simpa using hpq
     _ = eLpNorm u p' μ * t := by
@@ -717,7 +717,7 @@ theorem eLpNorm_le_eLpNorm_fderiv [FiniteDimensional ℝ F]
     {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) (hs : Bornology.IsBounded s) :
     eLpNorm u p μ ≤ eLpNormLESNormFDerivOfLeConst F μ s p p * eLpNorm (fderiv ℝ u) p μ := by
   refine eLpNorm_le_eLpNorm_fderiv_of_le μ hu h2u hp h2p ?_ hs
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   positivity
 

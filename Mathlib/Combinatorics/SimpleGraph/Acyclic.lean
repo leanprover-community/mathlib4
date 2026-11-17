@@ -636,7 +636,7 @@ lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
 
 protected theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n :=
-  cliqueFree_of_chromaticNumber_lt <| h.chromaticNumber_le_two.trans_lt <| by norm_cast
+  cliqueFree_of_chromaticNumber_lt <| h.chromaticNumber_le_two.trans_lt <| by fail_if_not_idempotent norm_cast
 
 theorem IsAcyclic.cliqueFree_three (h : G.IsAcyclic) : G.CliqueFree 3 :=
   h.cliqueFree le_rfl

@@ -123,7 +123,7 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
   · rw [mem_ofPred_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
     refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel _ _⟩
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [coe_mem_cutMap_iff]
     exact mod_cast sub_lt_comm.mp hq₁q
   · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
@@ -243,7 +243,7 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
   rw [← cast_pow] at hbq
   refine ⟨(q ^ 2 : ℚ), coe_mem_cutMap_iff.2 ?_, hbq⟩
   rw [pow_two] at hqa ⊢
-  push_cast
+  fail_if_not_idempotent push_cast
   obtain ⟨q', hq', hqa'⟩ := lt_inducedMap_iff.1 (lt_of_mul_self_lt_mul_self₀
     (inducedMap_nonneg ha.le) hqa)
   exact mul_self_lt_mul_self (mod_cast hq.le) (hqa'.trans' <| by assumption_mod_cast)

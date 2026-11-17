@@ -109,7 +109,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     have := mul_pos (succ_pos k) (tsub_pos_of_lt hp.out.one_lt)
     rw [← succ_pred_eq_of_pos this, mul_succ, pow_add _ _ (p ^ k)] at H
     replace H := (mul_left_inj' fun h => ?_).1 H
-    · simp only [H, mul_comm _ (k + 1)]; norm_cast
+    · simp only [H, mul_comm _ (k + 1)]; fail_if_not_idempotent norm_cast
     · have := hne.1
       rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by lia)] at this
       exact absurd (eq_zero_of_pow_eq_zero h) this

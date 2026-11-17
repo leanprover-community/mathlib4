@@ -332,7 +332,7 @@ lemma LFunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
   congr 1
   · rw [LSeries, re_tsum <| LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
       (abscissaOfAbsConv_residueClass_le_one a).trans_lt <| by norm_cast]
-    push_cast
+    fail_if_not_idempotent push_cast
     refine tsum_congr fun n ↦ ?_
     rcases eq_or_ne n 0 with rfl | hn
     · simp only [term_zero, zero_re, ofReal_zero]

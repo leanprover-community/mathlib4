@@ -159,7 +159,7 @@ lemma isBonza : IsBonza fExample := by
     by_cases ch2 : a = 2
     · simp only [fExample, ch2, dvd_refl, not_true_eq_false, ↓reduceIte, Nat.cast_ofNat,
         Nat.two_dvd_ne_zero]
-      push_cast
+      fail_if_not_idempotent push_cast
       split_ifs with hb1 hb2
       · grind [sq_emod_four_eq_one_of_odd]
       · simp [hb2]

@@ -89,7 +89,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   refine (hu₂.eventually_gt_atTop 0).mono fun j hj => ?_
   have : addOrderOf (u j) = n j := rfl
   have huj : IsOfFinAddOrder (u j) := addOrderOf_pos_iff.mp hj
-  have huj' : 1 ≤ (↑(n j) : ℝ) := by norm_cast
+  have huj' : 1 ≤ (↑(n j) : ℝ) := by fail_if_not_idempotent norm_cast
   have hI₀ : μ (I j) ≠ 0 := (measure_closedBall_pos _ d <| by positivity).ne.symm
   have hI₁ : μ (I j) ≠ ⊤ := measure_ne_top _ _
   have hI₂ : μ (I j) * ↑(n j) = ENNReal.ofReal T := by
@@ -109,7 +109,7 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
       have hu₀ : ∀ j, addOrderOf (u j) = n.natAbs ^ j := fun j => by
         convert
           addOrderOf_div_of_gcd_eq_one (p := T) (m := 1) (pow_pos (pos_of_gt hn) j) (gcd_one_left _)
-        norm_cast
+        fail_if_not_idempotent norm_cast
       have hnu : ∀ j, n ^ j • u j = 0 := fun j => by
         rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.natCast_pow, Int.natCast_natAbs, ← abs_pow,
           abs_dvd]

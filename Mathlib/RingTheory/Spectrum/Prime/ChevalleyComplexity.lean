@@ -406,7 +406,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
       fun x hx ↦ (hT₂deg _ hx).trans_lt degBound_e₂_lt⟩,
       fun x hx k ↦ SetLike.mem_of_subset ?_ (hg₁ _ hx _),
       fun x hx ↦ Fin.cons ?_ fun k ↦ SetLike.mem_of_subset ?_ (hg₂ _ hx _)⟩
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       calc
         span R₀ ({c} ∪ ⋃ i, coeff(e i)) ^ e₁.powBound
         _ ≤ span R₀ (⋃ i, coeff(e i)) ^ e₁.powBound := by

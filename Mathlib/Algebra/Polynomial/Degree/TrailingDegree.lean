@@ -268,7 +268,7 @@ theorem natTrailingDegree_le_of_mem_supp (a : ℕ) : a ∈ p.support → natTrai
 theorem natTrailingDegree_eq_support_min' (h : p ≠ 0) :
     natTrailingDegree p = p.support.min' (nonempty_support_iff.mpr h) := by
   rw [natTrailingDegree, trailingDegree, ← Finset.coe_min' (support_nonempty.mpr h)]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem le_natTrailingDegree (hp : p ≠ 0) (hn : ∀ m < n, p.coeff m = 0) :
     n ≤ p.natTrailingDegree := by

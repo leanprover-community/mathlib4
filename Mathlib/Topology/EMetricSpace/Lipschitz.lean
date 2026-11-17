@@ -453,7 +453,7 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
         exact (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
       · exact hby
       · exact (hb y hy).edist_le_mul_of_le (hs' hx') hx ((edist_comm _ _).trans_le hxx'.le)
-    _ = δ * ↑(3 * K) + ε / 2 := by push_cast; ring
+    _ = δ * ↑(3 * K) + ε / 2 := by fail_if_not_idempotent push_cast; ring
     _ ≤ ε / 2 + ε / 2 := by gcongr
     _ = ε := ENNReal.add_halves _
 

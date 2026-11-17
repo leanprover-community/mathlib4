@@ -118,13 +118,13 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
   · by_cases ha : (a : ZMod p) = 0
     · rw [legendreSym, ha, quadraticChar_zero,
         zero_pow (Nat.div_pos (@Fact.out p.Prime).two_le (succ_pos 1)).ne']
-      norm_cast
+      fail_if_not_idempotent norm_cast
     · have := (ringChar_zmod_n p).symm.trans hc
       -- p = 2
       subst p
       rw [legendreSym, quadraticChar_eq_one_of_char_two hc ha]
       revert ha
-      push_cast
+      fail_if_not_idempotent push_cast
       generalize (a : ZMod 2) = b; fin_cases b
       · tauto
       · simp
@@ -183,7 +183,7 @@ theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 �
 theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by
   rw [eq_one_iff]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
   · exact mod_cast ha0
 
 /-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
@@ -191,7 +191,7 @@ theorem eq_neg_one_iff {a : ℤ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod
   quadraticChar_neg_one_iff_not_isSquare
 
 theorem eq_neg_one_iff' {a : ℕ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod p) := by
-  rw [eq_neg_one_iff]; norm_cast
+  rw [eq_neg_one_iff]; fail_if_not_idempotent norm_cast
 
 /-- The number of square roots of `a` modulo `p` is determined by the Legendre symbol. -/
 theorem card_sqrts (hp : p ≠ 2) (a : ℤ) :
@@ -250,7 +250,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1) {x y : ℤ}
     (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
   simp_rw [← ZMod.intCast_zmod_eq_zero_iff_dvd] at hxy ⊢
-  push_cast at hxy
+  fail_if_not_idempotent push_cast at hxy
   exact eq_zero_mod_of_eq_neg_one h hxy
 
 end legendreSym

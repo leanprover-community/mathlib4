@@ -1093,7 +1093,7 @@ theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
 theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ ball (b ^ n) (n • r) := by
   simp only [mem_ball, dist_eq_norm_inv_mul, ← inv_pow, ← mul_pow] at h ⊢
   refine lt_of_le_of_lt norm_pow_le_mul_norm ?_
-  replace hn : 0 < (n : ℝ) := by norm_cast
+  replace hn : 0 < (n : ℝ) := by fail_if_not_idempotent norm_cast
   rw [nsmul_eq_mul]
   nlinarith
 
@@ -1120,7 +1120,7 @@ theorem smul_ball'' : a • ball b r = ball (a • b) r := by
 @[to_additive]
 theorem nnNorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x => ‖x‖₊).sum :=
   NNReal.coe_le_coe.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     rw [Multiset.map_map]
     exact norm_multiset_prod_le _
 
@@ -1130,7 +1130,7 @@ alias nnnorm_multiset_prod_le := nnNorm_multiset_prod_le
 @[to_additive]
 theorem nnNorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖₊ ≤ ∑ a ∈ s, ‖f a‖₊ :=
   NNReal.coe_le_coe.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact norm_prod_le _ _
 
 @[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_prod_le := nnNorm_prod_le

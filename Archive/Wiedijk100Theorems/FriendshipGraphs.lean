@@ -250,7 +250,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   let p : ℕ := (d - 1).minFac
   have p_dvd_d_pred := (ZMod.natCast_eq_zero_iff _ _).mpr (d - 1).minFac_dvd
   have dpos : 1 ≤ d := by lia
-  have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by norm_cast
+  have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by fail_if_not_idempotent norm_cast
   have : Fact p.Prime := ⟨Nat.minFac_prime (by lia)⟩
   have hp2 : 2 ≤ p := (Fact.out (p := p.Prime)).two_le
   have dmod : (d : ZMod p) = 1 := by

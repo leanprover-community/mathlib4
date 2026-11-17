@@ -275,7 +275,7 @@ theorem log_riemannZeta_eq {s : ℝ} (hs : 1 < s) :
   rw [← riemannZeta_eq_exp_LSeries (by simpa using hs), LSeries_def₀ (by simp)]
   convert Real.log_exp _
   convert exp_ofReal_re _
-  push_cast
+  fail_if_not_idempotent push_cast
   congr! 2 with p
   rw [ofReal_cpow (by positivity)]
   simp [field]

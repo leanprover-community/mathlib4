@@ -1057,7 +1057,7 @@ theorem uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b :=
 
 theorem uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a :=
   coe_injective <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.uIcc_eq_union
 
 theorem mem_uIcc' : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [uIcc_eq_union]
@@ -1077,7 +1077,7 @@ theorem uIcc_subset_uIcc_iff_le :
 /-- A sort of triangle inequality. -/
 theorem uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] :=
   coe_subset.1 <| by
-    push_cast
+    fail_if_not_idempotent push_cast
     exact Set.uIcc_subset_uIcc_union_uIcc
 
 end LinearOrder

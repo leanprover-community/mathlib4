@@ -111,7 +111,7 @@ lemma add_one_le_natCast_iff {n : WithBot ℕ∞} {m : ℕ} : n + 1 ≤ m ↔ n 
   induction n with
   | bot => simp
   | coe n =>
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp [add_one_le_iff']
 
 @[simp]

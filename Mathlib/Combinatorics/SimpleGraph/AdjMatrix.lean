@@ -406,7 +406,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
   | succ n ih =>
     simp only [pow_succ', finsetWalkLength, ih, adjMatrix_mul_apply]
     rw [Finset.card_biUnion]
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]
       apply Finset.sum_toFinset_eq_subtype
     -- Disjointness for card_bUnion

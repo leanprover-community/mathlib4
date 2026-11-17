@@ -65,7 +65,7 @@ theorem condExp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
     refine condExp_ae_eq_restrict_of_measurableSpace_eq_on (hτ.measurableSpace_le_of_le hτ_le)
       (ℱ.le i) (hτ.measurableSet_eq' i) fun t => ?_
     rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
-  · suffices {x : Ω | τ x = i} = ∅ by simp [this]; norm_cast
+  · suffices {x : Ω | τ x = i} = ∅ by simp [this]; fail_if_not_idempotent norm_cast
     ext1 x
     simp only [Set.mem_ofPred_eq, Set.mem_empty_iff_false, iff_false]
     contrapose hin

@@ -58,7 +58,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     refine fun d => ⟨k * d, fun z h => ?_⟩
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
-    push_cast
+    fail_if_not_idempotent push_cast
     gcongr
     exact (hU yS).trans hk.le
   choose f hf using fun d : ℕ =>
@@ -358,7 +358,7 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
       exact ⟨u, u.prop, rfl⟩
     · exact ⟨y, hxy⟩
     · refine hf_mono (le_trans ?_ hyq.le)
-      norm_cast
+      fail_if_not_idempotent norm_cast
 
 theorem not_bddAbove_coe : ¬ (BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
   dsimp only [BddAbove, upperBounds]
@@ -386,10 +386,10 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     intro q hq
     refine (ha q.den (by positivity)).trans ?_
     rw [← le_sub_iff_add_le, div_le_iff₀ (by positivity), sub_mul, one_mul]
-    norm_cast at hq ⊢
+    fail_if_not_idempotent norm_cast at hq ⊢
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
-    norm_cast at hq ⊢
+    fail_if_not_idempotent norm_cast at hq ⊢
     lia
   use 2 * k ^ 2
   calc

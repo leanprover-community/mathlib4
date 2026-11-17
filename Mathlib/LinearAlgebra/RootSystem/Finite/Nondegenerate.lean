@@ -389,7 +389,7 @@ lemma coroot_eq_polarizationEquiv_apply_root (i : ι) :
   have h₀ := IsAnisotropic.rootForm_root_ne_zero (P := P) i
   rw [polarizationEquiv_apply, ← (smul_right_injective N h₀).eq_iff, P.rootForm_self_smul_coroot i,
     smul_smul, mul_div_cancel₀ _ h₀]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 lemma polarizationEquiv_symm_apply_coroot {i : ι} :
     P.PolarizationEquiv.symm (P.coroot i) = (2 / P.RootForm (P.root i) (P.root i)) • P.root i := by

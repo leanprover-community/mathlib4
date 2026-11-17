@@ -244,7 +244,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
   refine (Lp.stronglyMeasurable _).ae_eq_trim_of_stronglyMeasurable hm ?_ ?_
   · exact (Lp.stronglyMeasurable _).const_smul c
   grw [lpMeasToLpTrim_ae_eq]
-  push_cast
+  fail_if_not_idempotent push_cast
   grw [Lp.coeFn_smul, lpMeasToLpTrim_ae_eq]
 
 /-- `lpMeasSubgroupToLpTrim` preserves the norm. -/
@@ -383,7 +383,7 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
     rwa [Lp.simpleFunc.coe_indicatorConst] at h_ind
   · intro f g hf hg h_disj hfP hgP
     rw [LinearIsometryEquiv.map_add]
-    push_cast
+    fail_if_not_idempotent push_cast
     have h_eq :
       ∀ (f : α → F) (hf : MemLp f p (μ.trim hm)),
         ((lpMeasToLpTrimLie F ℝ p μ hm).symm (MemLp.toLp f hf) : Lp F p μ) =

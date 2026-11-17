@@ -106,7 +106,7 @@ private lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
       apply lt_of_lt_of_le hlt
       conv_lhs => rw [← one_mul (n : ℤ)]
       gcongr
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rwa [← PadicInt.mem_span_pow_iff_le_valuation x hx0, pow_one]
 
 set_option backward.privateInPublic true in

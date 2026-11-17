@@ -92,7 +92,7 @@ example : x + y = y + x ∧ (↑((1:ℕ) + 1) : ℚ) = 2 := by
   constructor
   module -- do not focus this tactic: the double goal is the point of the test
   guard_target =ₐ (↑((1:ℕ) + 1) : ℚ) = 2
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Interaction.20of.20abel.20with.20casting/near/319895001
 example : True := by

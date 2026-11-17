@@ -98,7 +98,7 @@ lemma preHilbertPoly_eq_choose_add_sub [CharZero F] (d : ℕ) {k n : ℕ} (hkn :
       simp [field, ascFactorial_eq_factorial_mul_choose, Nat.sub_add_comm h]
   · rw [Nat.choose_eq_zero_of_lt (by omega)]
     simpa [preHilbertPoly] using
-      Or.inr ⟨k - n - 1, by omega, by rw [Nat.sub_sub, Nat.cast_sub h]; push_cast; ring⟩
+      Or.inr ⟨k - n - 1, by omega, by rw [Nat.sub_sub, Nat.cast_sub h]; fail_if_not_idempotent push_cast; ring⟩
 
 @[deprecated (since := "2026-08-25")]
 alias preHilbertPoly_eq_choose_sub_add := preHilbertPoly_eq_choose_add_sub

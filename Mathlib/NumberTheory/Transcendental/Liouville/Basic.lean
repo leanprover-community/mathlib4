@@ -209,7 +209,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
     refine hn.le.trans ?_
     rw [one_add_one_eq_two]
     gcongr
-    norm_cast
+    fail_if_not_idempotent norm_cast
   -- this branch of the proof exploits the "integrality" of evaluations of polynomials
   -- at ratios of integers.
   · lift b to ℕ using zero_le_one.trans b1.le

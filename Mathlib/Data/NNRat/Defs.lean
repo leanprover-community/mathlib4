@@ -149,7 +149,7 @@ theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
 
 -- See note [specialised high priority simp lemma]
 @[simp high]
-theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
+theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by fail_if_not_idempotent norm_cast
 
 theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
@@ -373,7 +373,7 @@ lemma mk_divInt (n d : ℕ) :
       divNat n d := rfl
 
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
-  rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
+  rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; fail_if_not_idempotent norm_cast
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]
@@ -385,17 +385,17 @@ lemma natCast_eq_divNat (n : ℕ) : (n : ℚ≥0) = divNat n 1 := (num_divNat_de
 
 lemma divNat_mul_divNat (n₁ n₂ : ℕ) {d₁ d₂} :
     divNat n₁ d₁ * divNat n₂ d₂ = divNat (n₁ * n₂) (d₁ * d₂) := by
-  ext; push_cast; exact Rat.divInt_mul_divInt _ _
+  ext; fail_if_not_idempotent push_cast; exact Rat.divInt_mul_divInt _ _
 
 lemma divNat_mul_left {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (a * n) (a * d) = divNat n d := by
-  ext; push_cast; exact Rat.divInt_mul_left (mod_cast ha)
+  ext; fail_if_not_idempotent push_cast; exact Rat.divInt_mul_left (mod_cast ha)
 
 lemma divNat_mul_right {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (n * a) (d * a) = divNat n d := by
-  ext; push_cast; exact Rat.divInt_mul_right (mod_cast ha)
+  ext; fail_if_not_idempotent push_cast; exact Rat.divInt_mul_right (mod_cast ha)
 
 @[simp] lemma mul_den_eq_num (q : ℚ≥0) : q * q.den = q.num := by
   ext
-  push_cast
+  fail_if_not_idempotent push_cast
   rw [← Int.cast_natCast, ← den_coe, ← Int.cast_natCast q.num, ← num_coe]
   exact Rat.mul_den_eq_num _
 
@@ -414,10 +414,10 @@ lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) :
   ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
-  rw [← NNRat.coe_lt_coe, Rat.lt_iff]; norm_cast
+  rw [← NNRat.coe_lt_coe, Rat.lt_iff]; fail_if_not_idempotent norm_cast
 
 theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
-  rw [← NNRat.coe_le_coe, Rat.le_iff]; norm_cast
+  rw [← NNRat.coe_le_coe, Rat.le_iff]; fail_if_not_idempotent norm_cast
 
 end NNRat
 

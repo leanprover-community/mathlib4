@@ -117,7 +117,7 @@ theorem toReal_add {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
 lemma toENNReal_add {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     (x + y).toENNReal = x.toENNReal + y.toENNReal := by
   induction x <;> induction y <;> try {· simp_all}
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp_rw [real_coe_toENNReal]
   simp_all [ENNReal.ofReal_add]
 
@@ -433,7 +433,7 @@ lemma add_sub_add_comm {a b c d : EReal} (h1 : c ≠ ⊥ ∨ d ≠ ⊤) (h2 : c 
   grind
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
-  cases a <;> norm_cast
+  cases a <;> fail_if_not_idempotent norm_cast
   exact _root_.add_sub_cancel_right _ _
 
 lemma add_sub_cancel_left {a : EReal} {b : Real} : b + a - b = a := by
@@ -443,7 +443,7 @@ lemma sub_add_cancel {a : EReal} {b : Real} : a - b + b = a := by
   rw [add_comm, ← add_sub_assoc, add_sub_cancel_left]
 
 lemma sub_add_cancel_right {a : EReal} {b : Real} : b - (a + b) = -a := by
-  cases a <;> norm_cast
+  cases a <;> fail_if_not_idempotent norm_cast
   exact _root_.sub_add_cancel_right _ _
 
 lemma sub_add_cancel_left {a : EReal} {b : Real} : b - (b + a) = -a := by
@@ -516,7 +516,7 @@ lemma sub_lt_sub_of_le_of_gt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
     by_cases htz_top : t - z = ⊤
     · simp_all
     rw [← coe_toReal htz_top <| ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     refine lt_add_of_pos_right y ?_
     exact EReal.toReal_pos (sub_pos.mpr h') htz_top
   · rw [← add_zero x]
@@ -646,7 +646,7 @@ lemma toReal_mul {x y : EReal} : toReal (x * y) = toReal x * toReal y := by
   induction x, y using induction₂_symm with
   | top_zero | zero_bot | top_top | top_bot | bot_bot => simp
   | symm h => rwa [mul_comm, EReal.mul_comm]
-  | coe_coe => norm_cast
+  | coe_coe => fail_if_not_idempotent norm_cast
   | top_pos _ h => simp [top_mul_coe_of_pos h]
   | top_neg _ h => simp [top_mul_coe_of_neg h]
   | pos_bot _ h => simp [coe_mul_bot_of_pos h]

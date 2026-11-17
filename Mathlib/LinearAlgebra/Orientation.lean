@@ -177,7 +177,7 @@ theorem orientation_unitsSMul (e : Basis ι R M) (w : ι → Units R) :
     (e.unitsSMul w).orientation = (∏ i, w i)⁻¹ • e.orientation := by
   rw [Basis.orientation, Basis.orientation, smul_rayOfNeZero, ray_eq_iff,
     e.det.eq_smul_basis_det (e.unitsSMul w), det_unitsSMul_self, Units.smul_def, smul_smul]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp only [inv_mul_cancel, Units.val_one, one_smul]
   exact SameRay.rfl
 

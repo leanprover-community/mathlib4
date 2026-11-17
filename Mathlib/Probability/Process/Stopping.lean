@@ -417,7 +417,7 @@ theorem add_const' [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countab
     simp only [Set.mem_ofPred_eq, Set.mem_iUnion]
     cases τ ω with
     | top => simp
-    | coe a => simp; norm_cast
+    | coe a => simp; fail_if_not_idempotent norm_cast
   exact h ▸ MeasurableSet.iUnion fun k => hτ.measurableSet_eq_le (le_of_add_le_left k.2)
 
 theorem add [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countable ι]
@@ -493,10 +493,10 @@ theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
     simpa only [le_refl, Set.ofPred_true, Set.inter_univ] using h'
   · refine ⟨le_iSup f i s h, fun j ↦ ?_⟩
     by_cases hij : i ≤ j
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       simp only [hij, Set.ofPred_true, Set.inter_univ]
       exact f.mono hij _ h
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       simp only [hij, Set.ofPred_false, Set.inter_empty, @MeasurableSet.empty _ (f.1 j)]
 
 theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i : ι) :
@@ -513,7 +513,7 @@ theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i :
   · refine ⟨le_iSup f i _ h, fun j ↦ ?_⟩
     rw [Set.inter_assoc, this]
     by_cases hij : i ≤ j
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       simp only [hij, Set.ofPred_true, Set.inter_univ]
       exact f.mono hij _ h
     · simp [hij]
@@ -584,7 +584,7 @@ protected theorem measurableSet_ge' [TopologicalSpace ι] [OrderTopology ι]
     cases τ ω with
     | top => simp
     | coe a =>
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [@eq_comm _ i, or_comm]
   rw [this]
   exact (hτ.measurableSet_eq' i).union (hτ.measurableSet_gt' i)
@@ -619,7 +619,7 @@ protected theorem measurableSet_ge_of_countable_range' (hτ : IsStoppingTime f �
     cases τ ω with
     | top => simp
     | coe a =>
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [@eq_comm _ i, or_comm]
   rw [this]
   exact (hτ.measurableSet_eq_of_countable_range' h_countable i).union (hτ.measurableSet_gt' i)
@@ -981,11 +981,11 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
     by_cases h : τ (ω : Set.Iic i × Ω).2 = ⊤
     · simp [h]
     · lift τ (ω : Set.Iic i × Ω).2 to ι using h with t ht
-      norm_cast
+      fail_if_not_idempotent norm_cast
       refine hx_fst_le.trans (le_of_lt ?_)
       convert ω.prop
       simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_ofPred_eq, ← ht]
-      norm_cast
+      fail_if_not_idempotent norm_cast
 
 theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
     (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
@@ -1342,7 +1342,7 @@ theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a 
         | top => simp
         | coe t =>
           simp
-          norm_cast
+          fail_if_not_idempotent norm_cast
       rw [this, Set.ofPred_or]
     · rintro ⟨h₁, h₂⟩
       rw [Set.mem_ofPred] at h₁ h₂

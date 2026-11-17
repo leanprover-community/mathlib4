@@ -156,7 +156,7 @@ lemma isBipartite_iff_forall_walk_even_length {V : Type*} {G : SimpleGraph V} :
   simp_rw [← Nat.not_odd_iff_even]
   refine ⟨fun h _ w ho ↦ ?_, fun h ↦ colorable_iff_forall_connectedComponent.mpr fun c ↦ ?_⟩
   · have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
-    norm_cast
+    fail_if_not_idempotent norm_cast
   · have ⟨v, hv⟩ := c.nonempty_supp
     let f (u : c) := (c.connected_toSimpleGraph ⟨v, hv⟩ u).some
     refine ⟨fun u ↦ .ofNat 2 (f u).length, fun {a b} hab he ↦ ?_⟩

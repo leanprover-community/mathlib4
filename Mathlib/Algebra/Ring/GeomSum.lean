@@ -227,7 +227,7 @@ theorem dvd_pow_pow_sub_self_of_dvd {r : R} {p a b : ℕ} (h : a ∣ b) :
   rw [← Nat.sub_add_cancel (hp a), ← Nat.sub_add_cancel (hp b), pow_succ', pow_succ',
     ← mul_sub_one, ← mul_sub_one]
   refine mul_dvd_mul_left _ <| dvd_pow_sub_one_of_dvd <| Int.natCast_dvd_natCast.mp ?_
-  push_cast [hp a, hp b]
+  fail_if_not_idempotent push_cast [hp a, hp b]
   exact dvd_pow_sub_one_of_dvd h
 
 lemma geom_sum_mul (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by

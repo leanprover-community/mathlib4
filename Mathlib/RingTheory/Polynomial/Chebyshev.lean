@@ -169,7 +169,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
     simp only [T_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
   | neg_add_one n ih1 ih2 =>
@@ -208,9 +208,9 @@ theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
   | add_two n ih1 ih2 =>
     have : (2 * X * T R (n + 1)).degree = ↑(n + 2) := by
       rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih1]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     rw [T_add_two, degree_sub_eq_left_of_degree_lt]
-    · rw [this]; norm_cast
+    · rw [this]; fail_if_not_idempotent norm_cast
     · rw [ih2, this]; tauto
   | neg n ih => simp [ih]
 
@@ -344,14 +344,14 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     simp only [U_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [U_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
 
@@ -382,15 +382,15 @@ theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degre
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one =>
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [U_one, ← C_ofNat, degree_C_mul_X two_ne_zero]
   | more n ih1 ih2 =>
-    push_cast; push_cast at ih2
+    fail_if_not_idempotent push_cast; fail_if_not_idempotent push_cast at ih2
     have : (2 * X * U R (n + 1)).degree = ↑(n + 2) := by
       rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih2]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     rw [U_add_two, degree_sub_eq_left_of_degree_lt]
-    · rw [this]; norm_cast
+    · rw [this]; fail_if_not_idempotent norm_cast
     · rw [ih1, this]; norm_cast; omega
 
 @[simp]
@@ -404,7 +404,7 @@ theorem natDegree_U_neg_one : (U R (-1)).natDegree = 0 := by simp
 theorem degree_U_of_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
     (U R n).degree = ↑((n + 1).natAbs - 1) := by
   obtain ⟨m, rfl | rfl⟩ := n.eq_nat_or_neg
-  case inl => rw [degree_U_natCast R m]; norm_cast
+  case inl => rw [degree_U_natCast R m]; fail_if_not_idempotent norm_cast
   case inr =>
     rw [U_neg, degree_neg]
     cases m with
@@ -415,7 +415,7 @@ theorem degree_U_of_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n �
       | succ m =>
         trans (U R m).degree
         · congr; omega
-        · rw [degree_U_natCast R m]; norm_cast
+        · rw [degree_U_natCast R m]; fail_if_not_idempotent norm_cast
 
 theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     (U R n).natDegree = (n + 1).natAbs - 1 := by
@@ -432,11 +432,11 @@ theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
   | zero => simp
   | one => simp [this]
   | more n ih1 ih2 =>
-    push_cast; push_cast at ih2
+    fail_if_not_idempotent push_cast; fail_if_not_idempotent push_cast at ih2
     rw [U_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih2,
       leadingCoeff_mul, leadingCoeff_X, this]
     · norm_cast; rw [pow_add, pow_add]; ring_nf
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X,
         degree_U_natCast R n, degree_U_natCast R (n + 1)]
       norm_cast; omega
@@ -448,7 +448,7 @@ theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow *
   | one => simp
   | more n ih1 ih2 =>
     trans (n + 2 : ℤ).negOnePow * (2 * x * (U R (n + 1)).eval x - (U R n).eval x)
-    · push_cast; push_cast at ih2
+    · fail_if_not_idempotent push_cast; fail_if_not_idempotent push_cast at ih2
       rw [U_add_two, eval_sub, eval_mul, eval_mul, ih1, ih2,
         Int.negOnePow_succ, Int.negOnePow_add, Int.negOnePow_even 2 even_two]
       simp; ring
@@ -506,10 +506,11 @@ theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one =>
-    rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; norm_cast
+    rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨1, by simp⟩)
   | more n h₀ _ =>
-    push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; norm_cast
+    -- TODO: push_cast is not idempotent
+    push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
@@ -601,7 +602,7 @@ theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
     simp only [C_add_two, eval_sub, eval_mul, eval_X, mul_neg, mul_one, ih1,
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
   | neg_add_one n ih1 ih2 =>
@@ -710,14 +711,14 @@ theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := 
     simp only [S_add_two, eval_sub, eval_mul, eval_X, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [S_sub_one, eval_sub, eval_mul, eval_X, mul_neg, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
 
@@ -856,21 +857,21 @@ theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
     have h₂ := U_sub_one R n
     have h₃ := T_eq_U_sub_X_mul_U R (n + 1)
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
-    linear_combination (norm := (push_cast; ring_nf))
+    linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf))
       h₁ - ih2 + 2 * (X : R[X]) * ih1 + 2 * h₃ - n * h₂
   | neg_add_one n ih1 ih2 =>
     have h₁ := congr(derivative $(T_sub_one R (-n)))
     have h₂ := U_sub_two R (-n)
     have h₃ := T_eq_U_sub_X_mul_U R (-n)
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
-    linear_combination (norm := (push_cast; ring_nf))
+    linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf))
       -ih2 + 2 * (X : R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
 
 theorem T_derivative_mem_span_T (n : ℕ) :
     derivative (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Ico 0 n) := by
   by_cases! hn : n = 0
   · simp [hn]
-  rw [T_derivative_eq_U, ← smul_eq_mul]; norm_cast
+  rw [T_derivative_eq_U, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
   refine Submodule.smul_of_tower_mem _ n ?_
   convert U_mem_span_T R (n - 1) using 2 <;> grind
 
@@ -896,7 +897,7 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
   have H₁ := one_sub_X_sq_mul_U_eq_pol_in_T R n
   have H₂ := T_derivative_eq_U (R := R) (n + 1)
   have h₁ := T_add_two R n
-  linear_combination (norm := (push_cast; ring_nf))
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf))
     (-n - 1) * h₁ + (-(X : R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 
 theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
@@ -905,7 +906,7 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
   simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
     T_derivative_eq_U, C_eq_natCast] at h₁
   have h₂ := T_eq_U_sub_X_mul_U R (n + 1)
-  linear_combination (norm := (push_cast; ring_nf))
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf))
     h₁ + (n + 2) * h₂
 
 theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
@@ -913,7 +914,7 @@ theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
     (n : R[X]) * X * derivative (T R (n + 1)) - (n + 1 : R[X]) * derivative (T R n) := by
   have h := T_eq_X_mul_U_sub_U (R := R) (n - 1)
   rw [T_derivative_eq_U, T_derivative_eq_U]
-  linear_combination (norm := (push_cast; ring_nf))
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf))
     (n + 1) * n * h
 
 theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
@@ -923,7 +924,7 @@ theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
     C_eq_natCast, sub_add_cancel, Int.cast_sub, Int.cast_one, derivative_intCast] at h₁
   have h₂ := add_one_mul_self_mul_T_eq_poly_in_T (R := R) (n - 1)
   rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
-  linear_combination (norm := (push_cast; ring_nf))
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf))
     h₁ + h₂
 
 theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
@@ -933,7 +934,7 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
   simp only [derivative_add, derivative_sub, derivative_mul, derivative_X, derivative_one,
     derivative_X_pow, derivative_intCast, C_eq_natCast, T_derivative_eq_U] at h
   rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
-  linear_combination (norm := (push_cast; ring_nf)) h
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf)) h
 
 theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
     (1 - X ^ 2) * derivative^[k + 2] (T R n) =
@@ -941,7 +942,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
       (n ^ 2 - k ^ 2 : R[X]) * derivative^[k] (T R n) := by
   have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T
     (R := R) n
-  norm_cast at h
+  fail_if_not_idempotent norm_cast at h
   rw [sub_mul, iterate_derivative_sub, one_mul, ← Function.iterate_add_apply, mul_comm (X ^ 2),
     iterate_derivative_sub, mul_comm X, iterate_derivative_intCast_mul,
     iterate_derivative_derivative_mul_X_sq, iterate_derivative_derivative_mul_X] at h
@@ -954,6 +955,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
       ((n + 1) ^ 2 - (k + 1) ^ 2 : R[X]) * derivative^[k] (U R n) := by
   have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U
     (R := R) n
+  -- TODO: norm_cast at h is not idempotent! fail_if_not_idempotent norm_cast at h
   norm_cast at h
   rw [sub_mul, iterate_derivative_sub, one_mul, ← Function.iterate_add_apply, mul_comm (X ^ 2),
     iterate_derivative_sub, mul_assoc 3, ← Nat.cast_three, iterate_derivative_natCast_mul,
@@ -970,7 +972,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
     one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T n k
   simp only [eval_mul, eval_sub, eval_one, eval_pow,
     eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
-  linear_combination (norm := (push_cast; ring_nf)) h
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf)) h
 
 theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
     (1 - x ^ 2) * (derivative^[k + 2] (U R n)).eval x =
@@ -980,7 +982,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
     one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U n k
   simp only [eval_mul, eval_sub, eval_one, eval_pow,
     eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
-  linear_combination (norm := (push_cast; ring_nf)) h
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf)) h
 
 theorem iterate_derivative_T_eval_one_recurrence (n : ℤ) (k : ℕ) :
     (2 * k + 1) * (derivative^[k + 1] (T R n)).eval 1 =
@@ -1001,14 +1003,14 @@ theorem iterate_derivative_T_eval_zero_recurrence (n : ℤ) (k : ℕ) :
       -(n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 0 := by
   have h := one_sub_X_sq_mul_iterate_derivative_T_eval (R := R) n k 0
   rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
-  linear_combination (norm := (push_cast; ring_nf)) h
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf)) h
 
 theorem iterate_derivative_U_eval_zero_recurrence (n : ℤ) (k : ℕ) :
     (derivative^[k + 2] (U R n)).eval 0 =
       -((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 0 := by
   have h := one_sub_X_sq_mul_iterate_derivative_U_eval (R := R) n k 0
   rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
-  linear_combination (norm := (push_cast; ring_nf)) h
+  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf)) h
 
 theorem iterate_derivative_T_eval_one (n : ℤ) (k : ℕ) :
     (∏ l ∈ Finset.range k, (2 * l + 1)) * (derivative^[k] (T R n)).eval 1 =
@@ -1016,7 +1018,7 @@ theorem iterate_derivative_T_eval_one (n : ℤ) (k : ℕ) :
   induction k
   case zero => simp
   case succ k ih =>
-    push_cast at ih ⊢
+    fail_if_not_idempotent push_cast at ih ⊢
     rw [Finset.range_add_one, Finset.prod_insert Finset.notMem_range_self, mul_comm (2 * _ + 1),
       mul_assoc, iterate_derivative_T_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
       mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self]
@@ -1027,7 +1029,7 @@ theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
   induction k
   case zero => simp
   case succ k ih =>
-    push_cast at ih ⊢
+    fail_if_not_idempotent push_cast at ih ⊢
     rw [Finset.range_add_one, Finset.prod_insert Finset.notMem_range_self, mul_comm (2 * _ + 3),
       mul_assoc, iterate_derivative_U_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
       mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self, mul_assoc]

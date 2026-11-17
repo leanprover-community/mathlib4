@@ -227,7 +227,7 @@ theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
   intro m hm
   rw [order_neg, order_X_pow]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact Nat.lt_add_one_iff.mpr hm
 
 theorem tprod_one_sub_X_pow_ne_zero [T2Space R] [Nontrivial R] :

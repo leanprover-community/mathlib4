@@ -127,7 +127,7 @@ private lemma recursion (n : ℕ) :
     I (n + 2) θ * θ ^ 2 =
       2 * (n + 2) * (2 * n + 3) * I (n + 1) θ - 4 * (n + 2) * (n + 1) * I n θ := by
   rw [recursion' (n + 1)]
-  push_cast
+  fail_if_not_idempotent push_cast
   ring
 
 /--
@@ -305,7 +305,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
     simp [field, div_pow] at e ⊢
     linear_combination e
   have : (0 : ℝ) < z ∧ (z : ℝ) < 1 := by simp [← hz, ← h, ← this, hn', hn]
-  norm_cast at this
+  fail_if_not_idempotent norm_cast at this
   lia
 
 end

@@ -404,9 +404,9 @@ noncomputable def conjExponent (p : ℝ≥0∞) : ℝ≥0∞ := 1 + (p - 1)⁻¹
 
 lemma coe_conjExponent {p : ℝ≥0} (hp : 1 < p) : p.conjExponent = conjExponent p := by
   rw [NNReal.conjExponent, conjExponent]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← coe_inv (tsub_pos_of_lt hp).ne']
-  norm_cast
+  fail_if_not_idempotent norm_cast
   field_simp [(tsub_pos_of_lt hp).ne']
   rw [tsub_add_cancel_of_le hp.le]
 

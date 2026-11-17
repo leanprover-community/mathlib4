@@ -42,7 +42,7 @@ private lemma exp_sub_one_ne_zero {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2
   obtain ⟨m, hx⟩ := Complex.exp_eq_one_iff.mp hk
   have h : k = 2 * n * m := by
     apply (@Int.cast_inj ℂ _ _).mp
-    linear_combination (norm := (push_cast; field [show (n : ℂ) ≠ 0 by aesop])) hx * (n / π / I)
+    linear_combination (norm := (fail_if_not_idempotent push_cast; field [show (n : ℂ) ≠ 0 by aesop])) hx * (n / π / I)
   use m
 
 private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ) ∣ k) :

@@ -36,14 +36,14 @@ lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
   rcases hd with ⟨k, hk⟩
   rw [← ZMod.natCast_eq_zero_iff]
   convert! Iff.rfl
-  push_cast
+  fail_if_not_idempotent push_cast
   congr
   suffices (((ZMod.unitOfCoprime _ ha) ^ z : (ZMod d)ˣ) : ZMod d) =
       (((ZMod.unitOfCoprime _ ha) ^ (n : ℤ) : (ZMod d)ˣ) : ZMod d) by
     convert! this
   rw [sub_eq_iff_eq_add] at hk
   rw [hk, zpow_add, zpow_mul]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [ZMod.pow_totient, one_zpow, one_mul]
 
 namespace Condition
@@ -139,9 +139,9 @@ lemma ab_add_one_dvd_a_pow_large_n_add_b : a * b + 1 ∣ a ^ h.large_n + b := by
       ZMod (a * b + 1)) + (b : ZMod (a * b + 1))) = 0 from
       (IsUnit.mul_right_eq_zero (ZMod.unitOfCoprime _ a_coprime_ab_add_one).isUnit).1 this
   rw [mul_add]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp only [mul_inv_cancel, Units.val_one, ZMod.coe_unitOfCoprime]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   convert! ZMod.natCast_self (a * b + 1) using 2
   exact add_comm _ _
 
@@ -166,8 +166,8 @@ lemma ab_add_one_dvd_b_add_one : a * b + 1 ∣ b + 1 := by
   suffices a * b + 1 ∣ a ^ h.large_n_0 + b by
     rw [dvd_pow_iff_of_dvd_sub a_coprime_ab_add_one h.dvd_large_n_0_sub_zero, zpow_zero] at this
     rw [← ZMod.natCast_eq_zero_iff]
-    push_cast
-    norm_cast at this
+    fail_if_not_idempotent push_cast
+    fail_if_not_idempotent norm_cast at this
   exact h.ab_add_one_dvd_a_pow_large_n_0_add_b
 
 lemma a_eq_one : a = 1 := by

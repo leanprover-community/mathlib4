@@ -65,7 +65,7 @@ theorem ArithmeticFunction.vonMangoldt.tendsto_sum_residueClass_div_atTop {q : �
   WienerIkehara.tendsto_sum_div (C := log 4 + 4) (G := LFunctionResidueClassAux a)
     (fun N ↦ (sum_le_sum fun i _ ↦ residueClass_le a i).trans (sum_range_vonMangoldt_le N))
     (continuousOn_LFunctionResidueClassAux a)
-    (fun s hs ↦ by rw [eqOn_LFunctionResidueClassAux ha hs]; push_cast; ring)
+    (fun s hs ↦ by rw [eqOn_LFunctionResidueClassAux ha hs]; fail_if_not_idempotent push_cast; ring)
     (residueClass_nonneg a)
 
 /-- **The prime number theorem in arithmetic progressions**, von Mangoldt form.  For `a` coprime
@@ -131,7 +131,7 @@ theorem exists_prime_of_theta_lt {a b} (hab : θ a < θ b) :
   obtain ⟨⟨hpb, hpp⟩, _⟩ := hp
   refine ⟨p, hpp, ?_, ?_⟩
   · grw [lt_floor_add_one a]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     grind
   · grind [le_floor_iff, one_le_floor_iff]
 

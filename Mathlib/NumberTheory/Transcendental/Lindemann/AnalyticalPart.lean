@@ -199,7 +199,7 @@ public theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     _ ≤ _ := pow_le_pow_left₀ (c'0 r) ?_ _
   · rw [norm_mul, norm_natCast]
   · rw [← Nat.mul_factorial_pred prime_p.ne_zero]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
   · specialize gₚ_eq r _
     · rw [mem_roots'] at hr
@@ -208,7 +208,7 @@ public theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     specialize gₚ'_eq 0 (by rw [C_0, sub_zero])
     simp_rw [nsmul_eq_mul] at gₚ_eq gₚ'_eq
     rw [P_algebraMap, gₚ_eq, gₚ'_eq, eval_pow]
-    push_cast
+    fail_if_not_idempotent push_cast
     ring_nf
   · apply Finset.le_max'
     simpa using Multiset.mem_map_of_mem _ hr
