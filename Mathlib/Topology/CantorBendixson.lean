@@ -54,7 +54,7 @@ Cantor-Bendixson derivative sequence of a closed set.
 
 @[expose] public section
 
-open Set Cardinal OrdinalApprox Function
+open Set Cardinal Order OrdinalApprox Function
 
 universe u
 
@@ -75,8 +75,13 @@ open scoped CantorBendixson
 
 variable {s t : Set X} {a b : Ordinal}
 
+theorem iteratedDerivedSet_def (s : Set X) (a : Ordinal) :
+    sᵈ[a] = s ∩ ⋂ b < a, relDerivedSet sᵈ[b] := by
+  rw [iteratedDerivedSet, gfpApprox_def]
+  rfl
+
 @[simp]
-theorem iteratedDerivedSet_zero : sᵈ[0] = s := by
+theorem iteratedDerivedSet_zero (s : Set X) : sᵈ[0] = s := by
   simp [iteratedDerivedSet, gfpApprox_zero]
 
 @[deprecated (since := "2026-11-11")]
@@ -84,16 +89,24 @@ alias CantorBendixson.iteratedDerivedSet_zero :=
   iteratedDerivedSet_zero
 
 @[simp]
-theorem iteratedDerivedSet_succ : sᵈ[a + 1] = relDerivedSet sᵈ[a] := by
-  simpa [iteratedDerivedSet] using
-    gfpApprox_add_one relDerivedSet relDerivedSet_subset a
+theorem iteratedDerivedSet_add_one (s : Set X) (a : Ordinal) : sᵈ[a + 1] = relDerivedSet sᵈ[a] :=
+  gfpApprox_add_one _ relDerivedSet_subset a
+
+@[deprecated (since := "2026-11-12")]
+alias iteratedDerivedSet_succ := iteratedDerivedSet_add_one
 
 @[deprecated (since := "2026-11-11")]
 alias CantorBendixson.iteratedDerivedSet_succ :=
-  iteratedDerivedSet_succ
+  iteratedDerivedSet_add_one
 
-theorem iteratedDerivedSet_limit (ha : Order.IsSuccLimit a) : sᵈ[a] = ⋂ b < a, sᵈ[b] := by
+theorem iteratedDerivedSet_limit (s : Set X) (ha : IsSuccLimit a) : sᵈ[a] = ⋂ b < a, sᵈ[b] := by
   simpa [iteratedDerivedSet] using gfpApprox_of_isSuccLimit relDerivedSet ha
+
+theorem iteratedDerivSet_of_ne_zero (s : Set X) (ha : a ≠ 0) :
+    sᵈ[a] = ⋂ b < a, relDerivedSet sᵈ[b] := by
+  rw [iteratedDerivedSet_def, inter_eq_right]
+  apply (iInter₂_subset 0 ha.pos).trans
+  simp
 
 @[deprecated (since := "2026-11-11")]
 alias CantorBendixson.iteratedDerivedSet_limit :=
@@ -101,47 +114,54 @@ alias CantorBendixson.iteratedDerivedSet_limit :=
 
 /-- A set is preperfect if and only if every stage of its iterated relative derived-set sequence
 is equal to the original set. -/
-theorem iteratedDerivedSet_constant_iff_preperfect : Preperfect s ↔ ∀ a, sᵈ[a] = s := by
+theorem preperfect_iff_iteratedDerivedSet_eq_const :
+    Preperfect s ↔ iteratedDerivedSet s = const _ s := by
   rw [preperfect_iff_eq_relDerivedSet, eq_comm,
-    ← (gfpApprox_eq_all_of_fixedPoint relDerivedSet (relDerivedSet_subset))]
-  simp [iteratedDerivedSet]
+    ← gfpApprox_eq_all_of_fixedPoint _ relDerivedSet_subset]
+  simp [iteratedDerivedSet, eq_const_iff]
+
+theorem _root_.Preperfect.iteratedDerivedSet_eq (hs : Preperfect s) (i : Ordinal) : sᵈ[i] = s := by
+  rw [preperfect_iff_iteratedDerivedSet_eq_const.1 hs, const_apply]
+
+@[deprecated (since := "2026-11-12")]
+alias iteratedDerivedSet_constant_iff_preperfect := preperfect_iff_iteratedDerivedSet_eq_const
 
 @[deprecated (since := "2026-11-11")]
 alias CantorBendixson.iteratedDerivedSet_constant_iff_preperfect :=
-  iteratedDerivedSet_constant_iff_preperfect
+  preperfect_iff_iteratedDerivedSet_eq_const
 
-theorem isClosed_iteratedDerivedSet (hs : IsClosed s) : ∀ a, IsClosed sᵈ[a] := by
-  intro a
+theorem isClosed_iteratedDerivedSet (hs : IsClosed s) (a : Ordinal) : IsClosed sᵈ[a] := by
   induction a using Ordinal.limitRecOn with
-  | zero => simpa only [iteratedDerivedSet_zero]
+  | zero => simpa
   | add_one a ha =>
     simp_all [ha.relDerivedSet_eq, isClosed_iff_derivedSet_subset, derivedSet_mono]
   | limit a ha ih =>
-    simpa [iteratedDerivedSet_limit ha] using
+    simpa [iteratedDerivedSet_limit s ha] using
       isClosed_iInter fun i => isClosed_iInter fun hi => ih i hi
 
 @[deprecated (since := "2026-11-11")]
 alias CantorBendixson.isClosed_iteratedDerivedSet := isClosed_iteratedDerivedSet
 
-theorem iteratedDerivedSet_antitone (s : Set X) :
-    Antitone (iteratedDerivedSet s) := gfpApprox_anti_right relDerivedSet
+theorem iteratedDerivedSet_antitone (s : Set X) : Antitone (iteratedDerivedSet s) :=
+  gfpApprox_anti_right _
 
 @[deprecated (since := "2026-11-11")]
 alias CantorBendixson.iteratedDerivedSet_antitone := iteratedDerivedSet_antitone
 
-theorem iteratedDerivedSet_mono :
-    Monotone (fun s : Set X => iteratedDerivedSet s) :=
+theorem iteratedDerivedSet_monotone : Monotone (fun s : Set X => iteratedDerivedSet s) :=
   gfpApprox_mono_mid _
 
+@[deprecated (since := "2026-11-12")] alias iteratedDerivedSet_mono :=
+  iteratedDerivedSet_monotone
+
 @[deprecated (since := "2026-11-11")] alias CantorBendixson.iteratedDerivedSet_mono :=
-  iteratedDerivedSet_mono
+  iteratedDerivedSet_monotone
 
 /-- If the iterated derived set stops changing at a successor stage, then `sᵈ[a]` is a fixed
 point of `relDerivSet`. -/
 theorem mem_fixedPoints_of_iteratedDerivedSet_succ_eq (ha : sᵈ[a + 1] = sᵈ[a]) :
     sᵈ[a] ∈ fixedPoints relDerivedSet := by
-  rw [Function.mem_fixedPoints_iff]
-  simpa [iteratedDerivedSet_succ] using ha.symm
+  rwa [Function.mem_fixedPoints_iff, ← iteratedDerivedSet_add_one]
 
 @[deprecated (since := "2026-11-11")]
 alias CantorBendixson.mem_fixedPoints_of_iteratedDerivedSet_succ_eq :=
@@ -164,7 +184,7 @@ alias CantorBendixson.perfectKernel := perfectKernel
 
 theorem perfectKernel_subset_iteratedDerivedSet (s : Set X) (a : Ordinal) :
     perfectKernel s ⊆ sᵈ[a] :=
-  Set.iInter_subset _ a
+  iInter_subset _ a
 
 @[deprecated (since := "2026-11-11")]
 alias CantorBendixson.perfectKernel_subset_iteratedDerivedSet :=
@@ -177,12 +197,16 @@ theorem perfectKernel_subset (s : Set X) : perfectKernel s ⊆ s := by
 alias CantorBendixson.perfectKernel_subset :=
   perfectKernel_subset
 
-theorem perfectKernel_mono (hst : s ⊆ t) : perfectKernel s ⊆ perfectKernel t := by
-  simpa [perfectKernel] using Set.iInter_mono'' (iteratedDerivedSet_mono hst)
+theorem perfectKernel_monotone : Monotone (perfectKernel (X := X)) := by
+  intro s t hst
+  simpa [perfectKernel] using Set.iInter_mono'' (iteratedDerivedSet_monotone hst)
+
+@[deprecated (since := "2026-11-12")]
+alias perfectKernel_mono := perfectKernel_monotone
 
 @[deprecated (since := "2026-11-11")]
 alias CantorBendixson.perfectKernel_mono :=
-  perfectKernel_mono
+  perfectKernel_monotone
 
 theorem isClosed_perfectKernel (hs : IsClosed s) : IsClosed (perfectKernel s) :=
   isClosed_iInter (isClosed_iteratedDerivedSet hs)
@@ -199,10 +223,9 @@ alias CantorBendixson.perfectKernel_empty := perfectKernel_empty
 
 /-- Once `sᵈ[a]` is a fixed point of `relDerivSet`, the perfect kernel equals `sᵈ[a]`. -/
 theorem perfectKernel_eq_iteratedDerivedSet_of_mem_fixedPoints
-    (ha : sᵈ[a] ∈ fixedPoints relDerivedSet) :
-    perfectKernel s = sᵈ[a] := by
+    (ha : sᵈ[a] ∈ fixedPoints relDerivedSet) : perfectKernel s = sᵈ[a] := by
   refine le_antisymm (perfectKernel_subset_iteratedDerivedSet s a) ?_
-  refine Set.subset_iInter fun i => ?_
+  refine subset_iInter fun i => ?_
   rcases lt_or_ge i a with hi | hi
   · exact iteratedDerivedSet_antitone s hi.le
   · exact (gfpApprox_eq_of_mem_fixedPoints relDerivedSet hi ha).ge
@@ -214,9 +237,9 @@ alias CantorBendixson.perfectKernel_eq_iteratedDerivedSet_of_mem_fixedPoints :=
 /-- Every perfect subset of a set is contained in its perfect kernel. -/
 theorem _root_.Perfect.subset_perfectKernel {P : Set X} (hP : Perfect P) (hPs : P ⊆ s) :
     P ⊆ perfectKernel s := by
-  refine Set.subset_iInter fun i => ?_
-  simpa [iteratedDerivedSet_constant_iff_preperfect.mp hP.acc i] using
-    iteratedDerivedSet_mono hPs i
+  refine subset_iInter fun i => ?_
+  rw [← hP.acc.iteratedDerivedSet_eq i]
+  exact iteratedDerivedSet_monotone hPs i
 
 /-- The perfect kernel of a closed set is perfect. -/
 theorem perfect_perfectKernel (hs : IsClosed s) : Perfect (perfectKernel s) := by
