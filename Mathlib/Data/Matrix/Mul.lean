@@ -871,14 +871,14 @@ theorem vecMul_smul [Fintype m] [DistribSMul R α] [SMulCommClass R α α]
   exact dotProduct_smul _ _ _
 
 @[simp]
-theorem mulVec_extend_zero [Fintype n] [Fintype o] {c : o → n} (hs : Function.Injective c)
+theorem mulVec_extend_zero [Fintype n] [Fintype o] {c : o → n} (hc : Function.Injective c)
     (M : Matrix m n α) (w : o → α) : M *ᵥ c.extend w 0 = M.submatrix id c *ᵥ w :=
-  funext fun _ ↦ dotProduct_extend_zero hs _ _
+  funext fun _ ↦ dotProduct_extend_zero hc _ _
 
 @[simp]
-theorem extend_zero_vecMul [Fintype m] [Fintype o] {r : o → m} (hs : Function.Injective r)
+theorem extend_zero_vecMul [Fintype m] [Fintype o] {r : o → m} (hr : Function.Injective r)
     (v : o → α) (M : Matrix m n α) : r.extend v 0 ᵥ* M = v ᵥ* M.submatrix r id :=
-  funext fun _ ↦ extend_zero_dotProduct hs _ _
+  funext fun _ ↦ extend_zero_dotProduct hr _ _
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
