@@ -92,8 +92,8 @@ def numericProjections : Linter where
     if (stx.find? fun | .node _ k _ => k == fieldIdxKind | _ => false).isSome then
       -- Collect the warnings separately from logging them, since (compiled) `foldInfo` is faster
       -- than (interpreted, specialized) `foldInfoM`.
-      let warnings := (← getInfoTrees).foldl (init := #[]) fun acc t =>
-        t.foldInfo (init := acc) fun _ info w => Id.run do
+      let warnings := (← getInfoTrees).foldl (init := #[]) fun w t =>
+        t.foldInfo (init := w) fun _ info w => Id.run do
           if let .ofTermInfo i := info then
             if let some projFn := numericProjFn? i then
               return w.push projFn
