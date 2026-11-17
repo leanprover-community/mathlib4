@@ -1399,3 +1399,52 @@ example (b₁ b₂ : Bool) : b₁ • b₂ = b₂ := by simp
 example (b₁ b₂ : Bool) : b₁ +ᵥ b₂ = b₁ := by simp
 
 end SMul
+
+namespace PrivateSimp
+
+structure Struct where
+  val : Nat
+
+def x : Nat := 0
+def x' : Nat := 0
+
+@[simp]
+private theorem x_eq_x' : x = x' := rfl
+
+-- This used to fail with "Unknown constant `_private.MathlibTest.Simps.0.PrivateSimp.x_eq_y`"
+@[simps!]
+def xx : Struct where
+  val := x
+
+/-- info: PrivateSimp.xx_val : xx.val = x' -/
+#guard_msgs in
+#check xx_val
+
+def y : Nat := 0
+private def y' : Nat := 0
+
+@[simp]
+private theorem y_eq_y' : y = y' := rfl
+
+/--
+error: The result of `simp` on the rhs is ill-typed in the public scope
+
+Unknown constant `_private.MathlibTest.Simps.0.PrivateSimp.y'`
+
+Note: A private declaration `y'` (from the current module) exists but would need to be public to access here.
+-/
+#guard_msgs in
+@[simps!]
+def yy1 : Struct where
+  val := y
+
+-- The RHS after `simp` can refer to private defs if the declaration itself is private
+@[simps!]
+private def yy2 : Struct where
+  val := y
+
+/-- info: PrivateSimp.yy2_val : yy2.val = y' -/
+#guard_msgs in
+#check yy2_val
+
+end PrivateSimp
