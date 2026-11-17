@@ -308,7 +308,7 @@ lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ 
 def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
     (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
     K.compactNhds :=
-  ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
+  ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.isOpen (h1 (Subtype.coe_prop _))) h2⟩
 
 instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
   inf L M := ⟨L.1 ⊓ M.1, fun x ↦ Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩

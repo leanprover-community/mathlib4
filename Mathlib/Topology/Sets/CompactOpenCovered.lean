@@ -58,7 +58,7 @@ lemma id_iff_isOpen_and_isCompact [TopologicalSpace S] :
   rw [iff_of_unique]
   refine ⟨fun ⟨V, hV, heq⟩ ↦ ?_, fun ⟨ho, hc⟩ ↦ ⟨⟨U, ho⟩, hc, by simp⟩⟩
   simp only [id_eq, Set.image_id', carrier_eq_coe, ← heq] at heq ⊢
-  exact ⟨V.is_open', hV⟩
+  exact ⟨V.isOpen, hV⟩
 
 lemma iff_isCompactOpenCovered_sigmaMk :
     IsCompactOpenCovered f U ↔
@@ -69,7 +69,7 @@ lemma iff_isCompactOpenCovered_sigmaMk :
   · refine ⟨⟨s.sigma fun i ↦ if h : i ∈ s then V i h else ∅, isOpen_sigma_iff.mpr ?_⟩, ?_, ?_⟩
     · intro i
       by_cases h : i ∈ s
-      · simpa [h] using (V _ _).is_open'
+      · simpa [h] using (V _ _).isOpen
       · simp [h]
     · dsimp only
       exact Set.isCompact_sigma hs fun i ↦ (by simp_all)
@@ -77,7 +77,7 @@ lemma iff_isCompactOpenCovered_sigmaMk :
   · obtain ⟨s, t, hs, hc, heq'⟩ := hc.sigma_exists_finite_sigma_eq
     have (i : ι) (hi : i ∈ s) : IsOpen (t i) := by
       rw [← Set.mk_preimage_sigma (t := t) hi]
-      exact isOpen_sigma_iff.mp (heq' ▸ V.is_open') i
+      exact isOpen_sigma_iff.mp (heq' ▸ V.isOpen) i
     refine ⟨s, hs, fun i hi ↦ ⟨t i, this i hi⟩, fun i _ ↦ hc i, ?_⟩
     simp_rw [coe_mk, ← heq, ← heq', Set.image_sigma_eq_iUnion, Function.comp_apply]
 
@@ -99,7 +99,7 @@ lemma of_biUnion_eq_of_isCompact [TopologicalSpace S] {U : Set S} (hU : IsCompac
     (s : Set (Opens S)) (hs : ⋃ t ∈ s, t = U) (H : ∀ t ∈ s, IsCompactOpenCovered f t) :
     IsCompactOpenCovered f U := by
   classical
-  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.1) (fun V ↦ V.1.is_open')
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.1) (fun V ↦ V.1.isOpen)
     (by simp [← hs])
   refine of_biUnion_eq_of_finite (SetLike.coe '' (t.image Subtype.val : Set (Opens S))) ?_ ?_ ?_
   · exact subset_antisymm (fun x h ↦ by aesop) (subset_trans ht <| by simp)

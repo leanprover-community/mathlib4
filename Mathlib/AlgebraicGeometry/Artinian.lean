@@ -99,7 +99,7 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   have : IsArtinianRing Γ(X, W) := IsLocallyArtinian.isArtinianRing_presheaf_obj ⟨_, hW1⟩
   have : DiscreteTopology (Spec Γ(X, W)) := inferInstanceAs (DiscreteTopology (PrimeSpectrum _))
   have : DiscreteTopology W := hW1.isoSpec.hom.homeomorph.symm.discreteTopology
-  simpa using (isOpen_discrete ({⟨x, hW2⟩} : Set W)).trans W.is_open'
+  simpa using (isOpen_discrete ({⟨x, hW2⟩} : Set W)).trans W.isOpen
 
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=

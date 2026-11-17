@@ -284,7 +284,7 @@ theorem exists_const (U) (s : Γ(M, U)) (x : PrimeSpectrum.Top R)
       const f g _ le_rfl = (structureSheafInType R M).obj.map i.hom.op s := by
   obtain ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
   obtain ⟨_, ⟨_, ⟨g', rfl⟩, rfl⟩, hxg', hg'U⟩ :=
-    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxV V.is_open'
+    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxV V.isOpen
   refine ⟨g' * g, ?_, ?_, g' • f, Subtype.ext <| funext fun ⟨y, hy⟩ ↦ ?_⟩ <;>
     simp only [PrimeSpectrum.basicOpen_mul]
   · exact ⟨hxg', (hfg ⟨x, hxV⟩).1⟩
@@ -462,7 +462,7 @@ theorem exists_le_iSup_basicOpen_and_smul_eq_smul_and_eq_const
     exists_prop, exists_exists_eq_and, ← mul_smul, ← pow_succ, ← mul_assoc _ (_ * _)] at this
   choose n hn using this
   obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun i ↦ (basicOpen (g i) : Set (PrimeSpectrum R)))
-    (fun _ ↦ (basicOpen _).is_open') (fun x hx ↦ Set.mem_iUnion_of_mem ⟨x, hx⟩ (hxg _))
+    (fun _ ↦ (basicOpen _).isOpen) (fun x hx ↦ Set.mem_iUnion_of_mem ⟨x, hx⟩ (hxg _))
   let N := (t ×ˢ t).sup fun x ↦ n x.1 x.2 + 1
   refine ⟨t, inferInstance, fun i ↦ g i ^ N • f i, fun i ↦ (g i) ^ (N + 1),
     fun x ↦ by simpa using igU x.1, fun x hx ↦ by simpa using ht hx, fun i j ↦ ?_, fun i ↦ ?_⟩
@@ -1011,7 +1011,7 @@ theorem isLocallyFraction_comapFun (U : Opens (PrimeSpectrum.Top R))
   have : IsScalarTower R S N := .of_algebraMap_smul fun _ _ ↦ rfl
   rintro ⟨p, hpV⟩
   obtain ⟨W, m, iWU, a, b, h_frac⟩ := hs ⟨PrimeSpectrum.comap σ p, hUV hpV⟩
-  refine ⟨⟨_, (PrimeSpectrum.continuous_comap σ).isOpen_preimage _ W.is_open'⟩ ⊓ V,
+  refine ⟨⟨_, (PrimeSpectrum.continuous_comap σ).isOpen_preimage _ W.isOpen⟩ ⊓ V,
     ⟨m, hpV⟩, Opens.infLERight _ _, f a, σ b, ?_⟩
   rintro ⟨q, ⟨hqW, hqV⟩⟩
   obtain ⟨hs, H⟩ := h_frac ⟨PrimeSpectrum.comap σ q, hqW⟩

@@ -133,7 +133,7 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     rintro x ⟨hxU, hx⟩
     obtain ⟨V, i, hxV, hf⟩ := X.isUnit_res_of_isUnit_germ U f x hxU hx
     use V.carrier
-    refine ⟨?_, V.is_open', hxV⟩
+    refine ⟨?_, V.isOpen, hxV⟩
     intro y hy
     use i.le hy
     convert RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf

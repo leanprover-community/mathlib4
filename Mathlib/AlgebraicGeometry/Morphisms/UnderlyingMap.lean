@@ -297,7 +297,7 @@ instance specializingMap_isZariskiLocalAtTarget :
     have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ Opens.mem_top _)
     obtain ⟨i, hi⟩ := this
     rw [← specializes_iff_mem_closure] at hy
-    have hfx : f x ∈ U i := (U i).is_open'.stableUnderGeneralization hy hi
+    have hfx : f x ∈ U i := (U i).isOpen.stableUnderGeneralization hy hi
     have hy : (⟨y, hi⟩ : U i) ∈ closure {⟨f x, hfx⟩} := by
       simp only [closure_subtype, Set.image_singleton]
       rwa [← specializes_iff_mem_closure]

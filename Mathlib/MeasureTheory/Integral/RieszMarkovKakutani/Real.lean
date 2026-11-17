@@ -164,7 +164,7 @@ lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X)
     exact fun _ a ↦ a
   · calc
       _ ≤ μ.measure V₁ := by simp [measure_mono]
-      _ = μ.outerMeasure V₁ := Content.measure_apply μ (V₁.is_open'.measurableSet)
+      _ = μ.outerMeasure V₁ := Content.measure_apply μ (V₁.isOpen.measurableSet)
       _ ≤ μ.outerMeasure E + ε.toNNReal := hV₁.2
       _ = _ := by rw [Content.measure_apply μ hμ', ENNReal.ofNNReal_toNNReal]
 
@@ -232,7 +232,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
       _ = ⋃ j, E j := hE.1
       _ ⊆ _ := by gcongr with n; exact (hV n).1
-    obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n ↦ (V n).is_open')
+    obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n ↦ (V n).isOpen)
       f.hasCompactSupport' this
     exact ⟨fun n ↦ ⟨g' n, hg.2.2.2 n⟩, hg⟩
   -- The proof is completed by a chain of inequalities.

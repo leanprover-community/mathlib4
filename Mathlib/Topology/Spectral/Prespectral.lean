@@ -103,7 +103,7 @@ lemma PrespectralSpace.isBasis_opens [PrespectralSpace X] :
     TopologicalSpace.Opens.IsBasis { U : Opens X | IsCompact (U : Set X) } := by
   dsimp only [TopologicalSpace.Opens.IsBasis]
   convert isTopologicalBasis (X := X) with s
-  exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.is_open', hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
+  exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.isOpen, hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
 
 /-- In a prespectral space, the lattice of opens is determined by its lattice of compact opens. -/
 def PrespectralSpace.opensEquiv [PrespectralSpace X] :
@@ -116,7 +116,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     · simp only [iSup_le_iff]
       exact fun _ ↦ id
     · intro x hxU
-      obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.is_open'
+      obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.isOpen
       simp only [Opens.mem_iSup]
       exact ⟨⟨⟨_, h₂⟩, h₁⟩, hVU, hxV⟩
   right_inv I := by
@@ -131,7 +131,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     change (∀ (W : CompactOpens X), (W : Set X) ⊆ U → (W : Set X) ⊆ V) ↔ U ≤ V
     refine ⟨?_, fun H W ↦ (le_trans · H)⟩
     intro H x hxU
-    obtain ⟨W, ⟨h₁, h₂⟩, hxW, hWU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.is_open'
+    obtain ⟨W, ⟨h₁, h₂⟩, hxW, hWU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.isOpen
     exact H ⟨⟨W, h₂⟩, h₁⟩ hWU hxW
 
 open TopologicalSpace Opens in
@@ -143,7 +143,7 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
   obtain ⟨Us, hUs, heq⟩ := TopologicalSpace.Opens.isBasis_iff_cover.mp
     (PrespectralSpace.isBasis_opens X) ⟨f ⁻¹' U, hU.preimage hfc⟩
   obtain ⟨t, ht⟩ := by
-    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.1) (fun s ↦ h _ s.1.is_open')
+    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.1) (fun s ↦ h _ s.1.isOpen)
       (fun x hx ↦ ?_)
     obtain ⟨x, rfl⟩ := hs hx
     obtain ⟨i, hi, hx⟩ := mem_sSup.mp <| by rwa [← heq]

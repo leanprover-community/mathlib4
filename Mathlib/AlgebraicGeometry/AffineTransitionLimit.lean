@@ -181,10 +181,10 @@ lemma exists_map_eq_top
     ∃ (j : I) (fji : j ⟶ i), D.map fji ⁻¹ᵁ U = ⊤ := by
   by_contra! H
   obtain ⟨s, hs⟩ := exists_mem_of_isClosed_of_nonempty' D c hc (fun j f ↦ (D.map f ⁻¹ᵁ U)ᶜ)
-    (fun j f ↦ (D.map f ⁻¹ᵁ U).is_open'.isClosed_compl) (fun j f ↦ by
+    (fun j f ↦ (D.map f ⁻¹ᵁ U).isOpen.isClosed_compl) (fun j f ↦ by
       simp only [TopologicalSpace.Opens.map_coe, Set.nonempty_compl, ne_eq]
       exact SetLike.coe_injective.ne (H j f))
-    (fun j f ↦ (D.map f ⁻¹ᵁ U).is_open'.isClosed_compl.isCompact)
+    (fun j f ↦ (D.map f ⁻¹ᵁ U).isOpen.isClosed_compl.isCompact)
     (fun j k fkj fji x (hx : _ ∉ U) ↦ by rwa [Functor.map_comp] at hx)
   exact absurd (hU.ge (Set.mem_univ s)) (by simpa using hs i (𝟙 i))
 
@@ -270,7 +270,7 @@ lemma exists_map_preimage_le_map_preimage
     ∃ (j : I) (fji : j ⟶ i), D.map fji ⁻¹ᵁ U ≤ D.map fji ⁻¹ᵁ V := by
   have (j : Over i) : CompactSpace ↥((opensDiagram D i U).obj j) :=
     isCompact_iff_compactSpace.mp
-      (QuasiCompact.isCompact_preimage (f := (D.map j.hom)) _ U.is_open' hU)
+      (QuasiCompact.isCompact_preimage (f := (D.map j.hom)) _ U.isOpen hU)
   have H : ((c.π.app i ⁻¹ᵁ U).ι ≫ c.π.app i) ⁻¹ᵁ V = ⊤ := by
     rw [Scheme.Hom.comp_preimage, ← top_le_iff]
     exact .trans (by simp) (Scheme.Hom.preimage_mono _ H)
@@ -749,7 +749,7 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
       simp [t']
     · simp
   choose U hU hxU j f H using this
-  obtain ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover (U ·) (fun x ↦ (U x).is_open'.mem_nhds (hxU x))
+  obtain ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover (U ·) (fun x ↦ (U x).isOpen.mem_nhds (hxU x))
   obtain ⟨k, fk, hk⟩ := IsCofiltered.inf_exists (insert i <| t.image j) (by
     exact t.attach.image fun x ↦ ⟨j x.1, i, Finset.mem_insert_of_mem
       (Finset.mem_image_of_mem _ x.2), by simp, f x.1⟩)
@@ -855,8 +855,8 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
     obtain ⟨j, fjx, fjy, -⟩ := IsCofilteredOrEmpty.cone_objs (i x) (i y)
     obtain ⟨k, fkj, hk⟩ := exists_app_map_eq_zero_of_isLimit D c hc
       (((hU x).preimage (D.map fjx)).isCompact.inter_of_isOpen
-        ((hU y).preimage (D.map fjy)).isCompact ((U x).is_open'.preimage (D.map fjx).continuous)
-        ((U y).is_open'.preimage (D.map fjy).continuous))
+        ((hU y).preimage (D.map fjy)).isCompact ((U x).isOpen.preimage (D.map fjx).continuous)
+        ((U y).isOpen.preimage (D.map fjy).continuous))
       ((D.map fjx).app (U x) (t x) |_ (D.map fjx ⁻¹ᵁ U x ⊓ D.map fjy ⁻¹ᵁ U y) -
         (D.map fjy).app (U y) (t y) |_ (D.map fjx ⁻¹ᵁ U x ⊓ D.map fjy ⁻¹ᵁ U y)) (by
       dsimp +instances [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
@@ -875,7 +875,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
       Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE] using hk
   choose j fjx fjy hj using this
   obtain ⟨σ, hσ⟩ := CompactSpace.elim_nhds_subcover (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).carrier)
-    (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).is_open'.mem_nhds (by exact hxU x))
+    (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).isOpen.mem_nhds (by exact hxU x))
   choose σi hσiσ hσi using fun x ↦ Set.mem_iUnion₂.mp (hσ.ge (Set.mem_univ x))
   let S : Finset _ := σ.image i ∪ Finset.image₂ j σ σ
   have hiS {x} (hx : x ∈ σ) : i x ∈ S := Finset.subset_union_left (Finset.mem_image_of_mem i hx)
@@ -993,7 +993,7 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
   choose i f hf hi using this
   obtain ⟨σ, hσ⟩ := CompactSpace.elim_nhds_subcover
     (fun x ↦ (((c.π.app (i x)) ⁻¹ᵁ (D.obj (i x)).basicOpen (f x)).carrier))
-    (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ (D.obj (i x)).basicOpen (f x)).is_open'.mem_nhds (by exact hi x))
+    (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ (D.obj (i x)).basicOpen (f x)).isOpen.mem_nhds (by exact hi x))
   choose σi hσiσ hσi using fun x ↦ Set.mem_iUnion₂.mp (hσ.ge (Set.mem_univ x))
   obtain ⟨j, fj⟩ := IsCofiltered.inf_objs_exists (σ.image i)
   replace fj := fun i h ↦ (@fj i h).some
@@ -1042,9 +1042,9 @@ lemma exists_isAffineOpen_preimage_eq
     ∃ (i : I) (V : (D.obj i).Opens), IsAffineOpen V ∧ c.π.app i ⁻¹ᵁ V = U := by
   obtain ⟨i, U, hU', rfl⟩ := exists_preimage_eq D c hc U hU.isCompact
   have (j : Over i) : CompactSpace ((opensDiagram D i U).obj j) :=
-    isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ U.is_open' hU')
+    isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ U.isOpen hU')
   have (j : Over i) : QuasiSeparatedSpace ((opensDiagram D i U).obj j) :=
-    (isQuasiSeparated_iff_quasiSeparatedSpace _ (D.map _ ⁻¹ᵁ _).is_open').mp
+    (isQuasiSeparated_iff_quasiSeparatedSpace _ (D.map _ ⁻¹ᵁ _).isOpen).mp
       (.of_quasiSeparatedSpace _)
   have : IsAffine (opensCone D c i U).pt := hU
   obtain ⟨j, hj⟩ := Scheme.exists_isAffine_of_isLimit _ _ (isLimitOpensCone D c hc i U)
@@ -1273,7 +1273,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
       have _ (x) : CompactSpace ↥((opensDiagram D k (𝒱' j₁ ⊓ 𝒱' j₂)).obj x) :=
         isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ (𝒱' j₁ ⊓ 𝒱' j₂).isOpen
           (((h𝒱𝒰 _).1.preimage _).isCompact.inter_of_isOpen ((h𝒱𝒰 _).1.preimage _).isCompact
-            (D.map fki ⁻¹ᵁ 𝒱 j₁).is_open' (D.map fki ⁻¹ᵁ 𝒱 j₂).is_open'))
+            (D.map fki ⁻¹ᵁ 𝒱 j₁).isOpen (D.map fki ⁻¹ᵁ 𝒱 j₂).isOpen))
       obtain ⟨⟨l, ⟨⟨⟩⟩, flk⟩, ⟨flk', ⟨⟨⟨⟩⟩⟩, h⟩, e⟩ :=
         Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType _
           (opensDiagramι .. ≫ (Over.forget k).whiskerLeft t) f _

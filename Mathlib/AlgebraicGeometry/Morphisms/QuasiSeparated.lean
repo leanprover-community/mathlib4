@@ -54,7 +54,7 @@ theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
   rw [quasiSeparatedSpace_iff]
   constructor
-  · intro H U V; exact H U V U.1.is_open' U.2.isCompact V.1.is_open' V.2.isCompact
+  · intro H U V; exact H U V U.1.isOpen U.2.isCompact V.1.isOpen V.2.isCompact
   · intro H
     suffices
       ∀ (U : X.Opens) (_ : IsCompact U.carrier) (V : X.Opens) (_ : IsCompact V.carrier),
@@ -157,8 +157,8 @@ theorem quasiSeparatedSpace_of_quasiSeparated (f : X ⟶ Y)
 
 lemma Scheme.Hom.isQuasiSeparated_preimage [QuasiSeparated f] {U : Opens Y}
     (hU : IsQuasiSeparated (U : Set Y)) : IsQuasiSeparated (f ⁻¹ᵁ U : Set X) := by
-  have : QuasiSeparatedSpace U := (isQuasiSeparated_iff_quasiSeparatedSpace _ U.is_open').mp hU
-  exact (isQuasiSeparated_iff_quasiSeparatedSpace _ (f ⁻¹ᵁ U).is_open').mpr
+  have : QuasiSeparatedSpace U := (isQuasiSeparated_iff_quasiSeparatedSpace _ U.isOpen).mp hU
+  exact (isQuasiSeparated_iff_quasiSeparatedSpace _ (f ⁻¹ᵁ U).isOpen).mpr
     (quasiSeparatedSpace_of_quasiSeparated (f ∣_ U))
 
 instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] : QuasiSeparatedSpace X :=
@@ -341,9 +341,9 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     -- Since `S ∪ U` is quasi-separated, `S ∩ U` can be covered by finite affine opens.
     obtain ⟨s, hs', hs⟩ :=
       isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp
-        ⟨hSU _ _ Set.subset_union_left S.is_open' hS Set.subset_union_right U.1.is_open'
+        ⟨hSU _ _ Set.subset_union_left S.isOpen hS Set.subset_union_right U.1.isOpen
             U.2.isCompact,
-          (S ⊓ U.1).is_open'⟩
+          (S ⊓ U.1).isOpen⟩
     have := hs'.to_subtype
     cases nonempty_fintype s
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs

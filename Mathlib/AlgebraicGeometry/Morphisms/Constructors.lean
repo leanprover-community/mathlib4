@@ -300,7 +300,7 @@ lemma topologically_isZariskiLocalAtTarget [(topologically P).RespectsIso]
   apply IsZariskiLocalAtTarget.mk'
   · intro X Y f U hf
     simp_rw [topologically, morphismRestrict_base]
-    exact hP₂ f U.carrier f.continuous U.is_open' hf
+    exact hP₂ f U.carrier f.continuous U.isOpen hf
   · intro X Y f ι U hU hf
     apply hP₃ f U hU f.continuous fun i ↦ ?_
     rw [← morphismRestrict_base]

@@ -114,7 +114,7 @@ theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
 abbrev inclusion {U V : Opens α} (h : U ≤ V) : U → V := Set.inclusion h
 
 protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
-  U.is_open'
+  U.isOpen
 
 @[simp] theorem mk_coe (U : Opens α) : mk (↑U) U.isOpen = U := rfl
 
@@ -150,12 +150,12 @@ instance : CompleteLattice (Opens α) :=
     -- bot
     ⟨∅, isOpen_empty⟩ rfl
     -- sup
-    (fun U V => ⟨↑U ∪ ↑V, U.is_open'.union V.is_open'⟩) rfl
+    (fun U V => ⟨↑U ∪ ↑V, U.isOpen.union V.isOpen⟩) rfl
     -- inf
-    (fun U V => ⟨↑U ∩ ↑V, U.is_open'.inter V.is_open'⟩)
-    (funext₂ fun U V => ext (U.is_open'.inter V.is_open').interior_eq.symm)
+    (fun U V => ⟨↑U ∩ ↑V, U.isOpen.inter V.isOpen⟩)
+    (funext₂ fun U V => ext (U.isOpen.inter V.isOpen).interior_eq.symm)
     -- sSup
-    (fun S => ⟨⋃ s ∈ S, ↑s, isOpen_biUnion fun s _ => s.is_open'⟩)
+    (fun S => ⟨⋃ s ∈ S, ↑s, isOpen_biUnion fun s _ => s.isOpen⟩)
     (funext fun _ => ext sSup_image.symm)
     -- sInf
     _ rfl
@@ -242,7 +242,7 @@ lemma coe_iInf {ι : Type*} [Finite ι] (U : ι → TopologicalSpace.Opens α) :
   | h_option ih => rw [iInf_option, Set.iInter_option, Opens.coe_inf, ih]
 
 theorem iSup_def {ι} (s : ι → Opens α) :
-    ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).is_open'⟩ :=
+    ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).isOpen⟩ :=
   ext <| coe_iSup s
 
 @[simp]
@@ -311,7 +311,7 @@ theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set
 theorem eq_bot_or_top [IndiscreteTopology α] (U : Opens α) :
     U = ⊥ ∨ U = ⊤ := by
   rw [← coe_eq_empty, ← coe_eq_univ, ← IndiscreteTopology.isOpen_iff]
-  exact U.is_open'
+  exact U.isOpen
 
 instance [Nonempty α] [IndiscreteTopology α] : IsSimpleOrder (Opens α) where
   eq_bot_or_eq_top := eq_bot_or_top
@@ -332,7 +332,7 @@ theorem isBasis_iff_nbhd {B : Set (Opens α)} :
     exact hsV
   · refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
     · rintro sU ⟨U, -, rfl⟩
-      exact U.is_open'
+      exact U.isOpen
     · intro x sU hx hsU
       rcases @h ⟨sU, hsU⟩ x hx with ⟨V, hV, H⟩
       exact ⟨V, ⟨V, hV, rfl⟩, H⟩
@@ -365,7 +365,7 @@ lemma IsBasis.exists_iSup_eq_of_isCompact {X : Type u} [TopologicalSpace X] {ι 
     (W : TopologicalSpace.Opens X) (hW : IsCompact W.carrier) :
     ∃ (κ : Type u) (_ : Finite κ) (a : κ → ι), W = ⨆ (k : κ), U (a k) := by
   obtain ⟨κ, a, heq⟩ := hU.exists_iSup_eq W
-  obtain ⟨s, hs⟩ := hW.elim_finite_subcover _ (fun k : κ ↦ (U (a k)).is_open') (by simp [heq])
+  obtain ⟨s, hs⟩ := hW.elim_finite_subcover _ (fun k : κ ↦ (U (a k)).isOpen) (by simp [heq])
   use s, s.finite_toSet, a ∘ Subtype.val
   refine le_antisymm ?_ ?_
   · simpa [← SetLike.coe_subset_coe, Set.iUnion_subtype]
@@ -388,7 +388,7 @@ lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {
     (hU : IsCompact U.carrier) : ∃ Us ⊆ B, Us.Finite ∧ U = sSup Us := by
   classical
   obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
-  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.is_open')
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.isOpen)
     (by simp [hsup])
   refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
   exact le_antisymm (subset_trans (a := U.carrier) ht (by simp))
@@ -403,13 +403,13 @@ lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
 lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
     {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
     IsBasis (⋃ i : ι,
-      (fun U ↦ ⟨Sigma.mk i '' U.carrier, isOpenMap_sigmaMk _ U.is_open'⟩) '' B i) := by
+      (fun U ↦ ⟨Sigma.mk i '' U.carrier, isOpenMap_sigmaMk _ U.isOpen⟩) '' B i) := by
   convert TopologicalSpace.IsTopologicalBasis.sigma hB
   simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
   simp
 
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
-    IsBasis { ⟨f ⁻¹' U, U.is_open'.preimage h.continuous⟩ | U ∈ B } := by
+    IsBasis { ⟨f ⁻¹' U, U.isOpen.preimage h.continuous⟩ | U ∈ B } := by
   simp only [IsBasis] at H ⊢
   convert h.isTopologicalBasis H
   ext; simp
@@ -433,7 +433,7 @@ theorem isCompactElement_iff (s : Opens α) :
 
 /-- The preimage of an open set, as an open set. -/
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
-  toFun s := ⟨f ⁻¹' s, s.is_open'.preimage f.continuous⟩
+  toFun s := ⟨f ⁻¹' s, s.isOpen.preimage f.continuous⟩
   map_sSup' s := ext <| by simp only [coe_sSup, preimage_iUnion, biUnion_image, coe_mk]
   map_inf' _ _ := rfl
   map_top' := rfl
@@ -513,7 +513,7 @@ protected theorem mem (U : OpenNhdsOf x) : x ∈ U :=
   U.mem'
 
 protected theorem isOpen (U : OpenNhdsOf x) : IsOpen (U : Set α) :=
-  U.is_open'
+  U.isOpen
 
 instance : OrderTop (OpenNhdsOf x) where
   top := ⟨⊤, Set.mem_univ _⟩
