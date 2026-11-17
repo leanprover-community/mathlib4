@@ -46,10 +46,9 @@ we could keep the collection of instances behind an `open scoped`.
   `(exp x).snd = ∫ t in 0..1, exp (t • x.fst) • op (exp ((1 - t) • x.fst)) • x.snd`
   ([Physics.SE](https://physics.stackexchange.com/a/41671/185147), and
   https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
-
 -/
 
-@[expose] public section
+public section
 
 
 variable (𝕜 : Type*) {S R M : Type*}
@@ -112,7 +111,7 @@ theorem hasSum_expSeries_of_smul_comm
   have : HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e := by
     simpa [fst_expSeries] using h
   simpa only [inl_fst_add_inr_snd_eq] using
-    (hasSum_inl _ <| this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
+    (hasSum_inl _ this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
 
 variable [Algebra ℚ R] [Module ℚ M]
 variable [T2Space R] [T2Space M]
@@ -145,7 +144,7 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M]
 
 variable [T2Space R] [T2Space M]
 
@@ -173,7 +172,7 @@ variable [Field R] [AddCommGroup M]
   [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M]
 
 variable [T2Space R] [T2Space M]
 
@@ -211,19 +210,25 @@ example :
 set_option backward.isDefEq.respectTransparency false in
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   erw [WithLp.norm_seminormedAddCommGroupToProd]
-  rw [WithLp.prod_norm_eq_add (by norm_num)]
+  rw [WithLp.prod_norm_eq_add (by simp)]
   simp only [WithLp.toLp_fst, ENNReal.toReal_one, Real.rpow_one, WithLp.toLp_snd, ne_eq,
     one_ne_zero, not_false_eq_true, div_self, fst, snd]
 
-theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
+theorem nnNorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
   ext; simp [norm_def]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_def := nnNorm_def
 
 @[simp] theorem norm_inl (r : R) : ‖(inl r : tsze R M)‖ = ‖r‖ := by simp [norm_def]
 @[simp] theorem norm_inr (m : M) : ‖(inr m : tsze R M)‖ = ‖m‖ := by simp [norm_def]
 
-@[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
+@[simp] theorem nnNorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnNorm_def]
 
-@[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
+@[deprecated (since := "2026-10-31")] alias nnnorm_inl := nnNorm_inl
+
+@[simp] theorem nnNorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnNorm_def]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_inr := nnNorm_inr
 
 variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M]

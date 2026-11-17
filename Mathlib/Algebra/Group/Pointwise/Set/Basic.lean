@@ -5,10 +5,11 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.Set.NAry
+
+import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Pointwise operations of sets
@@ -67,7 +68,7 @@ nat and int actions.
 
 open Function MulOpposite
 
-variable {F α β γ : Type*}
+variable {F α β : Type*}
 
 namespace Set
 
@@ -156,7 +157,7 @@ open scoped Pointwise
 
 section Inv
 
-variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
+variable [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
 theorem inv_ofPred (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
@@ -215,15 +216,19 @@ theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
 
 @[to_additive (attr := simp)]
 theorem image_inv_eq_inv : (·⁻¹) '' s = s⁻¹ :=
-  congr_fun (image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _
+  congr($(image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _)
 
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
   rw [← image_inv_eq_inv, image_eq_empty]
 
-@[to_additive (attr := simp)]
-instance involutiveInv : InvolutiveInv (Set α) where
+/-- Pointwise inversion of sets is involutive in scope `Pointwise`. -/
+@[to_additive (attr := simp, instance_reducible)
+  /-- Pointwise negation of sets is involutive in scope `Pointwise`. -/]
+def involutiveInv : InvolutiveInv (Set α) where
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
+
+scoped [Pointwise] attribute [instance] Set.involutiveInv Set.involutiveNeg
 
 @[to_additive (attr := simp)]
 theorem inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=
@@ -289,7 +294,7 @@ open scoped Pointwise
 
 section Mul
 
-variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 scope `Pointwise`. -/
@@ -431,7 +436,7 @@ end Mul
 
 section Div
 
-variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
@@ -752,7 +757,7 @@ lemma Nontrivial.mul_right : s.Nontrivial → t.Nonempty → (s * t).Nontrivial 
 end IsRightCancelMul
 
 section CancelMonoid
-variable [CancelMonoid α] {s t : Set α} {a : α} {n : ℕ}
+variable [CancelMonoid α] {s : Set α} {a : α} {n : ℕ}
 
 @[to_additive]
 lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivial

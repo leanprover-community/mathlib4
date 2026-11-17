@@ -30,7 +30,9 @@ rectangular box, induction
 
 @[expose] public section
 
-open Set Function Filter Topology
+open Set Function Filter
+
+open scoped Topology
 
 noncomputable section
 

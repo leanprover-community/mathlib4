@@ -27,7 +27,6 @@ variable {R R' A T B ι : Type*}
 namespace AddMonoidAlgebra
 
 /-!
-
 ## sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
@@ -78,7 +77,6 @@ variable [Semiring R]
 section ExplicitDegrees
 
 /-!
-
 In this section, we use `degb` and `degt` to denote "degree functions" on `A` with values in
 a type with *b*ot or *t*op respectively.
 -/
@@ -205,9 +203,6 @@ theorem sup_support_coeff_finsetProd_le (degb0 : degb 0 ≤ 0)
 @[deprecated (since := "2026-06-18")]
 alias sup_support_finsetProd_le := sup_support_coeff_finsetProd_le
 
-@[deprecated (since := "2026-04-08")]
-alias sup_support_finset_prod_le := sup_support_coeff_finsetProd_le
-
 theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).coeff.support.inf degt) ≤ (∏ i ∈ s, f i).coeff.support.inf degt :=
@@ -215,9 +210,6 @@ theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
 
 @[deprecated (since := "2026-06-18")]
 alias le_inf_support_finsetProd := le_inf_support_coeff_finsetProd
-
-@[deprecated (since := "2026-04-08")]
-alias le_inf_support_finset_prod := le_inf_support_coeff_finsetProd
 
 end CommutativeLemmas
 
@@ -324,7 +316,7 @@ theorem supDegree_mul_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
 
 theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
     [SemilatticeSup B] [OrderBot B]
-    [AddLeftMono B] [AddRightMono B]
+    [AddLeftMono B]
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     {ι} {s : Finset ι} {f : ι → R[A]} :
     (∏ i ∈ s, f i).supDegree D ≤ ∑ i ∈ s, (f i).supDegree D := by
@@ -342,12 +334,12 @@ theorem coeff_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     (p * q).coeff (ap + aq) = p.coeff ap * q.coeff aq := by
   classical
   simp_rw [coeff_mul, Finsupp.sum]
-  rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, if_pos rfl]
-  · refine fun a ha hne => if_neg (fun he => ?_)
+  rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, ite_eq_left rfl]
+  · refine fun a ha hne => ite_eq_right (fun he => ?_)
     apply_fun D at he; simp_rw [hadd] at he
     exact (add_lt_add_right (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
-  · intro h; rw [if_pos rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
-  · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
+  · intro h; rw [ite_eq_left rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
+  · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => ite_eq_right <| fun he => ?_)
     apply_fun D at he
     simp_rw [hadd] at he
     have := addLeftMono_of_addLeftStrictMono B
@@ -440,7 +432,6 @@ lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
   obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D hp
   rwa [he, Function.leftInverse_invFun hD]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
   refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
@@ -513,7 +504,6 @@ lemma coeff_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 
 @[deprecated (since := "2026-06-18")]
 alias apply_supDegree_add_supDegree := coeff_supDegree_add_supDegree
 
-set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)
@@ -602,9 +592,11 @@ lemma Monic.supDegree_pow
     [Nontrivial R] (hp : p.Monic D) :
     (p ^ n).supDegree D = n • p.supDegree D := by
   induction n with
-  | zero => rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, if_neg one_ne_zero, hzero]
-  | succ n ih => rw [pow_succ', (hp.pow hadd hD).supDegree_mul_of_ne_zero_left hD hadd hp.ne_zero,
-      ih, succ_nsmul']
+  | zero =>
+    rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, ite_eq_right one_ne_zero, hzero]
+  | succ n ih =>
+    rw [pow_succ', (hp.pow hadd hD).supDegree_mul_of_ne_zero_left hD hadd hp.ne_zero, ih,
+      succ_nsmul']
 
 end AddMonoid
 

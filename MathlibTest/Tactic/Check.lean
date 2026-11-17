@@ -1,6 +1,7 @@
-import Mathlib.Tactic.Check
+module
 
-set_option pp.mvars.anonymous false
+public import Mathlib.Tactic.Check
+
 set_option linter.unusedTactic false
 set_option linter.unusedVariables false
 
@@ -166,7 +167,6 @@ variable (x : {i : Nat} → (y : Nat) → String → String → {j : Nat} → F 
 #check' x
 
 end arrow
-
 -/
 
 /-!

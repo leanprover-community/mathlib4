@@ -5,12 +5,11 @@ Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
 -/
 module
 
-public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.FieldTheory.Galois.GaloisClosure
+public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!
-
 # Galois Group as a profinite group
 
 In this file, we prove that given a field extension `K/k`, there is a continuous isomorphism between
@@ -50,7 +49,6 @@ In a field extension `K/k`
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above.
 
 * `InfiniteGalois.restrictNormalHomContinuous` : Any `restrictNormalHom` is continuous.
-
 -/
 
 @[expose] public section
@@ -66,7 +64,7 @@ section Profinite
 def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateField k K) :
     FiniteGrp :=
   letI := AlgEquiv.fintype k L
-  FiniteGrp.of Gal(L/k)
+  ↧Gal(L/k)
 
 /-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   the restriction homomorphism from `Gal(L₁/k)` to `Gal(L₂/k)` -/
@@ -283,8 +281,8 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
     ext L
     change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
-    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 := by
-      exact AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
+    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 :=
+      AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
     simp_rw [this]
     exact proj_adjoin_singleton_val _ _ _ _ x.2
 
@@ -332,7 +330,7 @@ instance [IsGalois k K] : CompactSpace Gal(K/k) :=
 /-- `Gal(K/k)` as a profinite group as there is
 a `ContinuousMulEquiv` to a `ProfiniteGrp` given above -/
 noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
-  ProfiniteGrp.of Gal(K/k)
+  ↧Gal(K/k)
 
 /-- The categorical isomorphism between `profiniteGalGrp` and `lim Gal(L/k)` where `L` is a
   `FiniteGaloisIntermediateField` ordered by inverse inclusion -/

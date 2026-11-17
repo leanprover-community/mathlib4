@@ -6,7 +6,6 @@ Authors: Wrenna Robson
 module
 
 public import Mathlib.Data.Nat.Notation
-public import Init.Data.Fin.Bitwise
 
 /-!
 # Basic operations on bounded natural numbers.
@@ -15,7 +14,7 @@ This file should not depend on anything defined in Mathlib (except for notation)
 upstreamed to Batteries or the Lean standard library easily.
 -/
 
-@[expose] public section
+public section
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid

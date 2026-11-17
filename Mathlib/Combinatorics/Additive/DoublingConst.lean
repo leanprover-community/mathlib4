@@ -6,7 +6,11 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-public import Mathlib.Data.Finset.Density
+
+import Mathlib.Data.Finset.Density
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Doubling and difference constants
@@ -21,7 +25,7 @@ open scoped Pointwise
 
 namespace Finset
 section Group
-variable {G G' : Type*} [Group G] [AddGroup G'] [DecidableEq G] [DecidableEq G'] {A B : Finset G}
+variable {G : Type*} [Group G] [DecidableEq G] {A B : Finset G}
 
 /-- The doubling constant `σₘ[A, B]` of two finsets `A` and `B` in a group is `|A * B| / |A|`.
 

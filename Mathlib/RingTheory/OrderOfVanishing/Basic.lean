@@ -5,11 +5,12 @@ Authors: Raphael Douglas Giles
 -/
 module
 
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.Algebra.Ring.Hom.InjSurj
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.Length
+
+import Mathlib.Algebra.Ring.Hom.InjSurj
+import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Order of vanishing
@@ -270,7 +271,7 @@ of `Ring.ord R x` into `WithZero (Multiplicative ℤ)`.
 -/
 theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] {x : R} (h : x ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R x =
-  (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x)) := dif_pos h
+  (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x)) := dite_eq_left h
 
 lemma ordMonoidWithZeroHom_eq_coe
     [Nontrivial R] {x : R} (hx : x ∈ nonZeroDivisors R) {n : ℕ} (hn : Ring.ord R x = n) :
@@ -283,7 +284,7 @@ If `x` is not a non zero divisor, `ordMonoidWithZeroHom` is equal to `0`.
 -/
 @[simp]
 theorem ordMonoidWithZeroHom_eq_zero [Nontrivial R] {x : R} (h : x ∉ nonZeroDivisors R) :
-    ordMonoidWithZeroHom R x = 0 := dif_neg h
+    ordMonoidWithZeroHom R x = 0 := dite_eq_right h
 
 /--
 The quotient of a Noetherian ring of krull dimension less than or equal to `1` by a principal ideal
@@ -325,8 +326,10 @@ def ordFrac : K →*₀ ℤᵐ⁰ :=
   (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R) <|
   ordMonoidWithZeroHom_isUnit R
 
-lemma ordFrac_eq_ord {x : R} (hx : x ≠ 0) :
+lemma ordFrac_eq_ord {x : R} :
     ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
   simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mpr hx]

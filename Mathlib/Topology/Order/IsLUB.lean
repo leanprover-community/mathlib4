@@ -8,13 +8,17 @@ module
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Order.LeftRightNhds
 
+import Mathlib.Algebra.Order.Group.Nat
+
 /-!
 # Properties of LUB and GLB in an order topology
 -/
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Function
+
+open scoped Topology
 
 open OrderDual (toDual ofDual)
 

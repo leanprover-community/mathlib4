@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.Analysis.LocallyConvex.HahnBanach
-public import Mathlib.Analysis.Normed.Module.Span
 
 /-!
 # Hahn-Banach extension theorem
@@ -34,8 +33,6 @@ public section
 universe u v
 
 section RCLike
-
-open RCLike
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E : Type*}
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]

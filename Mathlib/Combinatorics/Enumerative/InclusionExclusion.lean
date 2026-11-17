@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Module.BigOperators
+
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Inclusion-exclusion principle

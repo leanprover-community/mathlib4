@@ -24,7 +24,7 @@ We also develop basic API about these equivalences.
 @[expose] public section
 
 open scoped NNReal ENNReal
-open Function Set Filter Bornology
+open Function Filter Bornology
 open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
@@ -54,6 +54,7 @@ section PseudoEMetricSpace
 
 variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
+@[macro_inline]
 instance : EquivLike (X ≃ᵈ Y) X Y where
   coe f := f.1
   inv f := f.1.symm

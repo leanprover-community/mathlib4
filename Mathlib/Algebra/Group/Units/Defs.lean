@@ -92,7 +92,7 @@ instance : CoeHead αˣ α :=
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive /-- The additive inverse of an additive unit in an `AddMonoid`. -/]
 instance instInv : Inv αˣ :=
-  ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
+  ⟨fun u => ⟨u.inv, u.val, u.inv_val, u.val_inv⟩⟩
 attribute [instance] AddUnits.instNeg
 
 /-- See Note [custom simps projection] -/
@@ -353,7 +353,7 @@ end Monoid
 
 section IsUnit
 
-variable {M : Type*} {N : Type*}
+variable {M : Type*}
 
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Quotient
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # Topological complements of submodules
@@ -55,13 +55,12 @@ change to something less misleading.
 ## Implementation details
 
 In the definition of `Submodule.IsTopCompl`, we choose to ask for the continuity of the projection
-on the left submdule along the right one, because it is a simpler map to work with than the
+on the left submodule along the right one, because it is a simpler map to work with than the
 map `M ≃ p × q`.
 
 Because the condition is symmetric, a lot of lemmas could have a left and a right variation.
 In general we only include the left version, the right one being accessible through
 `Submodule.IsTopCompl.symm`.
-
 -/
 
 @[expose] public section
@@ -197,10 +196,14 @@ theorem ker_projectionOntoL (h : IsTopCompl p q) :
     (p.projectionOntoL q h).ker = q := by
   simp
 
-theorem isQuotientMap_projectionOntoL (h : IsTopCompl p q) :
-    IsQuotientMap (p.projectionOntoL q h) :=
+theorem isQuotientMap_projectionOnto (h : IsTopCompl p q) :
+    IsQuotientMap (p.projectionOnto q h.isCompl) :=
   .of_inverse continuous_subtype_val (p.projectionOntoL q h).continuous
     (projectionOntoL_apply_left h)
+
+theorem isQuotientMap_projectionOntoL (h : IsTopCompl p q) :
+    IsQuotientMap (p.projectionOntoL q h) :=
+  isQuotientMap_projectionOnto h
 
 end projectionOnto
 

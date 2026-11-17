@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 /-!
 # Facts about the Gaussian integers relying on quadratic reciprocity.
@@ -15,7 +15,6 @@ public import Mathlib.NumberTheory.LegendreSymbol.Basic
 
 `prime_iff_mod_four_eq_three_of_nat_prime`
 A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
-
 -/
 
 public section
@@ -40,8 +39,8 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
     fun hp1 =>
     by_contradiction fun hp3 : p % 4 ≠ 3 => by
       let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 hp3
-      obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k := by
-        exact ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
+      obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k :=
+        ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
       have hpk : p ∣ k ^ 2 + 1 := by
         rw [pow_two, ← CharP.cast_eq_zero_iff (ZMod p) p, Nat.cast_add, Nat.cast_mul, Nat.cast_one,
           ← hk, neg_add_cancel]
@@ -57,7 +56,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
             _ < (norm (p : ℤ[i])).natAbs := by simpa [add_comm, Zsqrtd.norm] using! hkltp
             _ ≤ (norm (p * x : ℤ[i])).natAbs :=
               norm_le_norm_mul_left _ fun hx0 =>
-                show (-1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using! congr_arg Zsqrtd.im hx
+                show (-1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using! congr($(hx).im)
       have hpk₂ : ¬(p : ℤ[i]) ∣ ⟨k, 1⟩ := fun ⟨x, hx⟩ =>
         lt_irrefl (p * x : ℤ[i]).norm.natAbs <|
           calc
@@ -65,7 +64,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
             _ < (norm (p : ℤ[i])).natAbs := by simpa [add_comm, Zsqrtd.norm] using! hkltp
             _ ≤ (norm (p * x : ℤ[i])).natAbs :=
               norm_le_norm_mul_left _ fun hx0 =>
-                show (1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using! congr_arg Zsqrtd.im hx
+                show (1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using! congr($(hx).im)
       obtain ⟨y, hy⟩ := hpk
       have := hpi.2.2 ⟨k, 1⟩ ⟨k, -1⟩ ⟨y, by rw [← hkmul, ← Nat.cast_mul p, ← hy]; simp⟩
       tauto

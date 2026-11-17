@@ -5,8 +5,8 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.HopkinsLevitzki
 
 /-!
@@ -34,7 +34,6 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
   Spec R is Artinian.
-
 -/
 
 public section
@@ -101,9 +100,6 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   have : DiscreteTopology (Spec Γ(X, W)) := inferInstanceAs (DiscreteTopology (PrimeSpectrum _))
   have : DiscreteTopology W := hW1.isoSpec.hom.homeomorph.symm.discreteTopology
   simpa using (isOpen_discrete ({⟨x, hW2⟩} : Set W)).trans W.2
-
-@[deprecated (since := "2026-01-14")]
-alias IsLocallyArtinian.discreteTopology_of_isAffine := IsLocallyArtinian.discreteTopology
 
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=

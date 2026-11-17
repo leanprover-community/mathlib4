@@ -5,7 +5,6 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.Ultra.Basic
 
@@ -24,7 +23,6 @@ public import Mathlib.Topology.UniformSpace.Ultra.Basic
 This file can be split to separate imports to have the `Prod` and `Pi` instances separately,
 but would be somewhat unnatural since they are closely related.
 The `Prod` instance only requires `Mathlib/Topology/UniformSpace/Basic.lean`.
-
 -/
 
 public section
@@ -80,10 +78,10 @@ instance IsUltraUniformity.pi {ι : Type*} {X : ι → Type*} [U : Π i, Uniform
 instance IsUltraUniformity.bot [UniformSpace X] [DiscreteUniformity X] : IsUltraUniformity X := by
   have := Filter.hasBasis_principal (SetRel.id (α := X))
   rw [← DiscreteUniformity.eq_principal_setRelId] at this
-  apply mk_of_hasBasis this <;> { rw [forall_const]; infer_instance }
+  exact mk_of_hasBasis this inferInstance inferInstance
 
 lemma IsUltraUniformity.top : @IsUltraUniformity X (⊤ : UniformSpace X) := by
   let : UniformSpace X := ⊤
   have := Filter.hasBasis_top (α := (X × X))
   rw [← top_uniformity] at this
-  apply mk_of_hasBasis this <;> { rw [forall_const]; infer_instance }
+  exact mk_of_hasBasis this inferInstance inferInstance

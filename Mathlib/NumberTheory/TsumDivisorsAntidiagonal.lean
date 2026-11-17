@@ -19,12 +19,13 @@ We then prove some identities about the infinite sums over this antidiagonal, su
 `∑' n : ℕ+, n ^ k * r ^ n / (1 - r ^ n) = ∑' n : ℕ+, σ k n * r ^ n`
 which are used for Eisenstein series and their q-expansions. This is also a special case of
 Lambert series.
-
 -/
 
 @[expose] public section
 
-open Filter Complex ArithmeticFunction Nat Topology
+open Filter ArithmeticFunction Nat
+
+open scoped Topology
 
 /-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
 to `(a, b)`. -/
@@ -139,6 +140,6 @@ lemma tendsto_zero_geometric_tsum_pnat {r : 𝕜} (hr : ‖r‖ < 1) :
     simp_rw [← this, pow_zero, add_sub_cancel_left, mul_comm, pow_mul]
   rw [funext h2, (by simp : 𝓝 (0 : 𝕜) = 𝓝 ((1 - 0)⁻¹ - 1)), tendsto_sub_const_iff,
     tendsto_inv_iff₀ (by simp), tendsto_const_sub_iff]
-  exact (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).comp <| tendsto_PNat_val_atTop_atTop
+  exact (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).comp tendsto_PNat_val_atTop_atTop
 
 end tsum

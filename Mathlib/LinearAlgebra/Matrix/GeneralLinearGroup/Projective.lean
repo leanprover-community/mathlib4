@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov, Edison Xie
 -/
 module
 
-public import Mathlib.Data.Sign.Basic
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
@@ -27,7 +27,6 @@ If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 
 * `Matrix.ProjectiveSpecialLinearGroup.isoPSLOfAlgClosed` is an isomorphism between
   `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field.
-
 -/
 
 open scoped MatrixGroups

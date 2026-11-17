@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Support
 
 /-!
-
 # Associated primes of localized module
 
 This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
@@ -20,7 +19,6 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 * `associatedPrimes.mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule` :
   for an `R` module `M`, if `p` is a prime ideal of `S⁻¹R` and `p ∩ R ∈ Ass(M)` then
   `p ∈ Ass (S⁻¹M)`.
-
 -/
 
 public section
@@ -123,7 +121,6 @@ lemma preimage_comap_associatedPrimes_eq_associatedPrimes_of_isLocalizedModule
     fun h ↦ comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of_fg S f p h
     ((isNoetherianRing_iff_ideal_fg R).mp ‹_› _)⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
 lemma minimalPrimes_annihilator_subset_associatedPrimes [IsNoetherianRing R] [Module.Finite R M] :
     (Module.annihilator R M).minimalPrimes ⊆ associatedPrimes R M := by

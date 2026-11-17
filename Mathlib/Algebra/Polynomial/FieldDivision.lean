@@ -5,19 +5,20 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Group.Finset
 
 /-!
 # Theory of univariate polynomials
 
 This file starts looking like the ring theory of $R[X]$
-
 -/
 
 @[expose] public section
@@ -25,7 +26,7 @@ This file starts looking like the ring theory of $R[X]$
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 open scoped Nat
 
 namespace Polynomial
@@ -190,7 +191,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     exact not_isRoot_C _ _ <| C_ne_zero.mp hf0
   by_contra hg
   have hdfg0 : f.derivative * g ≠ 0 := mul_ne_zero hdf0 (by rintro rfl; simp at hg)
-  have hr' := congr_arg (rootMultiplicity a) hr
+  have hr' := congr(rootMultiplicity a $hr)
   have : IsDomain R := {}
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
@@ -240,12 +241,9 @@ theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p
     (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
-theorem normUnit_X : normUnit (X : R[X]) = 1 := by
-  have := coe_normUnit (R := R) (p := X)
-  rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
+theorem normUnit_X : normUnit (X : R[X]) = 1 := by simp [← Units.val_eq_one]
 
-theorem X_eq_normalize : X = normalize (X : R[X]) := by
-  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+theorem X_eq_normalize : X = normalize (X : R[X]) := monic_X.normalize_eq_self.symm
 
 end NormalizationMonoid
 
@@ -253,7 +251,7 @@ end IsDomain
 
 section DivisionRing
 
-variable [DivisionRing R] {p q : R[X]}
+variable [DivisionRing R] {p : R[X]}
 
 theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
   lt_of_not_ge fun h => by
@@ -264,7 +262,7 @@ end DivisionRing
 
 section SimpleRing
 
-variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p q : R[X]}
+variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p : R[X]}
 
 @[simp]
 protected theorem map_eq_zero (f : R →+* S) : p.map f = 0 ↔ p = 0 :=
@@ -338,6 +336,8 @@ theorem div_def : p / q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff
 
 theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 
+theorem neg_mod : (-p) % q = -(p % q) := by rw [mod_def, mod_def, neg_modByMonic]
+
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
     simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
@@ -354,26 +354,24 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
-instance instEuclideanDomain : EuclideanDomain R[X] :=
-  { Polynomial.commRing,
-    Polynomial.nontrivial with
-    quotient := (· / ·)
-    quotient_zero := by simp [div_def]
-    remainder := (· % ·)
-    r := _
-    r_wellFounded := degree_lt_wf
-    quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
-    remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+instance instEuclideanDomain : EuclideanDomain R[X] where
+  quotient := (· / ·)
+  quotient_zero := by simp [div_def]
+  remainder := (· % ·)
+  r := _
+  r_wellFounded := degree_lt_wf
+  quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
+  remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
+  mul_left_not_lt _ _ hq := not_lt_of_ge (degree_le_mul_left _ hq)
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
       not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
-    rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
+    rw [mod_def, modByMonic, dite_eq_left (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
-    simp only [this, false_and, if_false]⟩
+    simp only [this, false_and, ite_false]⟩
 
 protected theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
@@ -450,16 +448,15 @@ theorem mul_mod (p₁ p₂ q : R[X]) : (p₁ * p₂) % q = (p₁ % q) * (p₂ % 
   simp_rw [Polynomial.mod_def]
   apply Polynomial.mul_modByMonic
 
-section
+lemma eval_mod_eq_self_of_root {p q : R[X]} {x : R} (hx : eval x q = 0) :
+    (p % q).eval x = p.eval x :=
+  eval₂_modByMonic_eq_self_of_root (by simp [hx])
 
-open EuclideanDomain
-
+open EuclideanDomain in
 theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
     gcd (p.map f) (q.map f) = (gcd p q).map f :=
   GCD.induction p q (fun x => by simp_rw [Polynomial.map_zero, EuclideanDomain.gcd_zero_left])
     fun x y _ ih => by rw [gcd_val, ← map_mod, ih, ← gcd_val]
-
-end
 
 theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} (hf : f.eval₂ ϕ α = 0)
@@ -536,6 +533,9 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
     rw [← mem_roots (by simp [← zero_le_degree_iff, h])]
     simp [roots_degree_eq_one h]⟩
 
+theorem exists_root_of_natDegree_eq_one (h : natDegree p = 1) : ∃ x, IsRoot p x :=
+  exists_root_of_degree_eq_one (degree_eq_iff_natDegree_eq_of_neZero.mpr h)
+
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),
     coeff_C, coeff_C, inv_eq_one_div]
@@ -546,13 +546,11 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
   · simp
 
 theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := by
-  rw [Ne, ← leadingCoeff_eq_zero, ← Ne, ← isUnit_iff_ne_zero] at hp0
-  rw [Monic, leadingCoeff_normalize, normalize_eq_one]
-  apply hp0
+  simpa [Monic, leadingCoeff_normalize, normalize_eq_one]
 
 theorem normalize_eq_self_iff_monic [DecidableEq R] {p : R[X]} (hp : p ≠ 0) :
     normalize p = p ↔ p.Monic :=
-  ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
+  ⟨fun h ↦ h ▸ monic_normalize hp, Monic.normalize_eq_self⟩
 
 theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
     (p / q).leadingCoeff = p.leadingCoeff / q.leadingCoeff := by
@@ -590,9 +588,14 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
-    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
-  have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
-  simp [CommGroupWithZero.coe_normUnit _ this]
+    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by simp [hp]
+
+theorem leadingCoeff_mul_normalize [DecidableEq R] (p : R[X]) :
+    C p.leadingCoeff * normalize p = p := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  grind [map_mul C p.leadingCoeff p.leadingCoeff⁻¹, leadingCoeff_eq_zero, normalize_apply,
+    coe_normUnit_of_ne_zero]
 
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
@@ -606,6 +609,10 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
 @[simp]
 theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by
   simp [normalize_apply]
+
+@[simp]
+theorem natDegree_normalize [DecidableEq R] : natDegree (normalize p) = natDegree p :=
+  natDegree_eq_of_degree_eq degree_normalize
 
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
@@ -688,25 +695,58 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
-open UniqueFactorizationMonoid in
+section normalizedFactors
+
+open UniqueFactorizationMonoid
+
 /--
 The normalized factors of a polynomial over a field times its leading coefficient give
 the polynomial.
 -/
-theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
-    C a.leadingCoeff * (normalizedFactors a).prod = a := by
-  by_cases ha : a = 0
-  · simp [ha]
-  rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
-    mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
-  simp_all
+theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (p : R[X]) :
+    C p.leadingCoeff * (normalizedFactors p).prod = p := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  rw [prod_normalizedFactors_eq hp, leadingCoeff_mul_normalize]
 
-open UniqueFactorizationMonoid in
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
-  by_cases hp : p = 0
-  · simpa [hp] using zero_notMem_normalizedFactors _
-  · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+  simp +contextual [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic, Irreducible.ne_zero]
+
+theorem sum_natDegree_normalizedFactors [DecidableEq R] (p : R[X]) :
+    ((normalizedFactors p).map natDegree).sum = p.natDegree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  rw [← natDegree_multiset_prod _ (zero_notMem_normalizedFactors p),
+    ← natDegree_C_mul (leadingCoeff_ne_zero.mpr hp), leadingCoeff_mul_prod_normalizedFactors]
+
+/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
+See also `WfDvdMonoid.exists_irreducible_factor`. -/
+theorem exists_monic_irreducible_factor (p : R[X]) (hu : ¬IsUnit p) :
+    ∃ q : R[X], q.Monic ∧ Irreducible q ∧ q ∣ p := by
+  classical
+  obtain rfl | hp := eq_or_ne p 0
+  · exact ⟨X, by simp [irreducible_X]⟩
+  rcases exists_mem_normalizedFactors hp hu with ⟨q, hq⟩
+  grind [Polynomial.mem_normalizedFactors_iff]
+
+theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.natDegree) :
+    ∃ q : R[X], Odd q.natDegree ∧ q.Monic ∧ Irreducible q ∧ q ∣ p := by
+  classical
+  suffices ∃ q ∈ normalizedFactors p, Odd q.natDegree by
+    grind [Polynomial.mem_normalizedFactors_iff, show p ≠ 0 by grind]
+  contrapose! hp
+  rw [← p.sum_natDegree_normalizedFactors, Multiset.sum_map_eq_sum_toEnumFinset]
+  exact Finset.even_sum _ fun _ hq ↦ hp _ (Multiset.mem_of_mem_toEnumFinset hq)
+
+end normalizedFactors
+
+theorem exists_root_of_odd_natDegree_irreducible_imp_natDegree_eq_one
+    (h : ∀ {q : R[X]}, q.Monic → Odd q.natDegree → Irreducible q → q.natDegree = 1)
+    (p : R[X]) (hp : Odd p.natDegree) : ∃ x, p.IsRoot x := by
+  rcases p.exists_odd_natDegree_monic_irreducible_factor hp with ⟨q, _, _, _, hd⟩
+  rcases q.exists_root_of_natDegree_eq_one (by grind) with ⟨x, hx⟩
+  exact ⟨x, hx.dvd hd⟩
 
 variable (p) in
 @[simp]
@@ -728,6 +768,16 @@ theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % 
   rw [mul_comm]
   exact (Polynomial.C_mul_dvd (by simpa using hq)).mpr h
 
+theorem mul_mod_mul_left {p₁ p₂ q : R[X]} : (q * p₁) % (q * p₂) = q * (p₁ % p₂) := by
+  by_cases hq: q = 0
+  · simp [hq]
+  rcases eq_or_ne p₂ 0 with rfl | hp₂
+  · simp
+  · have h1 : (q * p₁) % (q * p₂) = (q * (p₁ % p₂)) % (q * p₂) :=
+      mod_eq_of_dvd_sub ⟨p₁ / p₂, by rw [← mul_sub, EuclideanDomain.mod_eq_sub_mul_div]; ring⟩
+    rw [h1, mod_eq_self_iff (mul_ne_zero hq hp₂), degree_mul, degree_mul]
+    exact WithBot.add_lt_add_left (degree_ne_bot.mpr hq) (degree_mod_lt p₁ hp₂)
+
 end Field
 
 end Polynomial
@@ -741,7 +791,7 @@ theorem natDegree_pos (h : Irreducible f) : 0 < f.natDegree := Nat.pos_of_ne_zer
   obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
   by_cases hx : x = 0
   · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
-  exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))
+  exact h.not_isUnit (hf ▸ isUnit_C.2 (Ne.isUnit hx))
 
 /-- An irreducible polynomial over a field must have positive degree. -/
 theorem degree_pos (h : Irreducible f) : 0 < f.degree := by

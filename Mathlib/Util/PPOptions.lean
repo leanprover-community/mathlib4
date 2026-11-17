@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 
 /-!
-Mathlib-specific pretty printer options.
+# Mathlib-specific pretty printer options
 -/
 
 public meta section

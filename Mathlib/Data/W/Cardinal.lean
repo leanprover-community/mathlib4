@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.W.Basic
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of W-types
 
@@ -30,8 +33,6 @@ public section
 universe u v
 
 variable {α : Type u} {β : α → Type v}
-
-noncomputable section
 
 namespace WType
 

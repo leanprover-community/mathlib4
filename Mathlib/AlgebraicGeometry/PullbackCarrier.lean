@@ -23,7 +23,6 @@ topological space of `pullback f g`, i.e. the fiber product `X ×[S] Y`.
   `f x = s = g y`, there exists `z : X ×[S] Y` lying above `x` and `y`.
 
 We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
-
 -/
 
 @[expose] public section
@@ -143,7 +142,6 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
     (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y)
     (SpecMap_tensorInl_fromSpecResidueField _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.fst f g (T.SpecTensorTo p) = T.x := by
@@ -151,7 +149,6 @@ lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
   rw [← Scheme.Hom.comp_apply]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma snd_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.snd f g (T.SpecTensorTo p) = T.y := by
@@ -277,13 +274,11 @@ def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
       ← Scheme.Hom.comp_apply]
     simp [Triplet.Spec_ofPointTensor_SpecTensorTo]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma carrierEquiv_symm_fst (T : Triplet f g) (p : Spec T.tensor) :
     pullback.fst f g (carrierEquiv.symm ⟨T, p⟩) = T.x := by
   simp [carrierEquiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma carrierEquiv_symm_snd (T : Triplet f g) (p : Spec T.tensor) :
     pullback.snd f g (carrierEquiv.symm ⟨T, p⟩) = T.y := by
@@ -351,7 +346,6 @@ lemma range_snd_comp :
     Set.range (pullback.snd f g ≫ g) = Set.range f ∩ Set.range g := by
   rw [← pullback.condition, range_fst_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ : X ⟶ X')
     (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :

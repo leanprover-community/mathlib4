@@ -5,9 +5,12 @@ Authors: Jean Lo
 -/
 module
 
-public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Flows and invariant sets
@@ -32,7 +35,7 @@ flow onto an invariant subset, and the time-reversal of a flow by a group.
 @[expose] public section
 
 
-open Set Function Filter
+open Set Function
 
 variable {τ α : Type*}
 
@@ -57,17 +60,16 @@ def IsForwardInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set 
 theorem IsInvariant.isForwardInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
     (h : IsInvariant ϕ s) : IsForwardInvariant ϕ s := fun t _ht => h t
 
-/-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
-`IsForwardInvariant` and `IsInvariant` are equivalent. -/
-theorem IsForwardInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
-    {ϕ : τ → α → α} {s : Set α}
-    (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun _ => h zero_le
+/-- If `τ` has `0` as a bottom element, then the notions `IsForwardInvariant` and `IsInvariant` are
+equivalent. -/
+theorem IsForwardInvariant.isInvariant [Preorder τ] [Zero τ] [IsBotZeroClass τ]
+    {ϕ : τ → α → α} {s : Set α} (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s :=
+  fun _ => h zero_le
 
-/-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
-`IsForwardInvariant` and `IsInvariant` are equivalent. -/
-theorem isForwardInvariant_iff_isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
-    {ϕ : τ → α → α} {s : Set α} :
-    IsForwardInvariant ϕ s ↔ IsInvariant ϕ s :=
+/-- If `τ` has `0` as a bottom element, then the notions `IsForwardInvariant` and `IsInvariant` are
+equivalent. -/
+theorem isForwardInvariant_iff_isInvariant [Preorder τ] [Zero τ] [IsBotZeroClass τ]
+    {ϕ : τ → α → α} {s : Set α} : IsForwardInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsForwardInvariant.isInvariant, IsInvariant.isForwardInvariant⟩
 
 end Invariant
@@ -146,6 +148,30 @@ def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
 @[simp]
 theorem fromIter_apply {g : α → α} (h : Continuous g) (n : ℕ) (x : α) :
     fromIter h n x = g^[n] x := rfl
+
+/-- The discrete flow `ℤ → α → α` induced by a homeomorphism `f : α → α`. -/
+protected def _root_.Homeomorph.flow (f : α ≃ₜ α) : Flow ℤ α where
+  toFun n x := (f ^ n) x
+  cont' := by
+    rw [continuous_prod_of_discrete_left]
+    intro n
+    simp only [Function.uncurry_apply_pair]
+    fun_prop
+  map_add' n₁ n₂ := by simp [← Homeomorph.mul_apply, zpow_add]
+  map_zero' x := by simp
+
+@[simp]
+theorem _root_.Homeomorph.flow_apply {f : α ≃ₜ α} {n : ℤ} {x : α} :
+    f.flow n x = (f ^ n) x := by rfl
+
+variable (α) in
+@[simp]
+theorem _root_.Homeomorph.one_flow : (1 : α ≃ₜ α).flow = Flow.id ℤ α := by
+  ext; simp
+
+@[simp]
+theorem _root_.Homeomorph.inv_flow {f : α ≃ₜ α} {n : ℤ} : f⁻¹.flow n = f.flow (-n) := by
+  ext; simp
 
 /-- Restriction of a flow onto an invariant set. -/
 def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ s where
@@ -282,6 +308,11 @@ theorem toHomeomorph_apply (t : τ) (x : α) : ϕ.toHomeomorph t x = ϕ t x := r
 
 @[simp]
 theorem toHomeomorph_symm_apply (t : τ) (x : α) : (ϕ.toHomeomorph t).symm x = ϕ (-t) x := rfl
+
+@[simp]
+theorem _root_.Homeomorph.toHomeomorph_flow_eq {f : α ≃ₜ α} {n : ℤ} :
+    f.flow.toHomeomorph n = f ^ n := by
+  ext; simp
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
   (isInvariant_iff_image _ _).trans
