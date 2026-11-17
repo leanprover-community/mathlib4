@@ -62,6 +62,10 @@ theorem signRight_zero (x : R) : signRight x (0 : Polynomial R) = 0 := by
 theorem signRight_eq_zero_iff {x : R} {p : R[X]} : signRight x p = 0 ↔ p = 0 := by
   rw [signRight, sign_eq_zero_iff, trailingCoeff_eq_zero, taylor_eq_zero]
 
+@[deprecated signRight_eq_zero_iff +typeChanged (since := "2026-11-16")]
+theorem signRight_ne_zero {x : R} {p : R[X]} (hp : p ≠ 0) : signRight x p ≠ 0 :=
+  signRight_eq_zero_iff.not.mpr hp
+
 /-- `signRight` of a constant equals the sign of the constant. -/
 @[simp]
 theorem signRight_C (x c : R) : signRight x (C c) = sign c := by
