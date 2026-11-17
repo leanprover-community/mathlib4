@@ -340,7 +340,7 @@ instance instGroupWithZero : GroupWithZero (WithZero α) where
     apply mul_inv_cancel
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
-@[simps!]
+@[simps! apply symm_apply]
 def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α := unitsWithZeroEquivUnits.trans toUnits.symm
 
 instance [Nontrivial α] : Nontrivial (WithZero α)ˣ :=
