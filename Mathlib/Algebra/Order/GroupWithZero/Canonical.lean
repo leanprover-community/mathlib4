@@ -218,7 +218,8 @@ instance (priority := 10) le : LE (WithZero α) :=
     ((toOption α).trans (WithBot.toOption α).symm).le
 
 variable (α) in
-def toWithBot_orderIso : WithZero α ≃o WithBot α where
+/-- Order isomorphism between `WithZero α` and `WithBot α`, mapping `0` to `⊥`. -/
+def toWithBotOrderIso : WithZero α ≃o WithBot α where
   toEquiv := (toOption α).trans (WithBot.toOption α).symm
   map_rel_iff' := by intros; rfl
 
@@ -253,24 +254,11 @@ protected lemma nonpos_iff_eq_zero : x ≤ 0 ↔ x = 0 := by cases x <;> simp [l
 lemma coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by cases x <;> simp [le_def]
 lemma le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by cases x <;> simp [le_def]
 
-@[simp]
-theorem isMax_coe_iff : IsMax (a : WithZero α) ↔ IsMax a := by
-  simp [IsMax, WithZero.forall]
+protected lemma _root_.IsMax.withZero (h : IsMax a) : IsMax (a : WithZero α) := by
+  simp_all [IsMax, le_def]
 
-protected lemma _root_.IsMax.withZero (h : IsMax a) : IsMax (a : WithZero α) :=
-  isMax_coe_iff.mpr h
-
-@[simp]
-lemma le_unzero_iff (hy : y ≠ 0) : a ≤ unzero hy ↔ a ≤ y := by
-  cases y
-  · grind
-  · simp
-
-@[simp]
-lemma unbot_le_iff (hx : x ≠ 0) : unzero hx ≤ b ↔ x ≤ b := by
-  cases x
-  · grind
-  · simp
+@[simp] lemma le_unzero_iff (hy : y ≠ 0) : a ≤ unzero hy ↔ a ≤ y := by lift y to α using hy; simp
+@[simp] lemma unzero_le_iff (hx : x ≠ 0) : unzero hx ≤ b ↔ x ≤ b := by lift x to α using hx; simp
 
 @[simp, norm_cast] lemma one_le_coe [One α] : 1 ≤ (a : WithZero α) ↔ 1 ≤ a := coe_le_coe
 @[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
@@ -311,15 +299,8 @@ lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_iff_exis
 not `PartialOrder α`. -/
 protected lemma pos_iff_ne_zero : 0 < x ↔ x ≠ 0 := by cases x <;> simp
 
-lemma lt_unzero_iff (hy : y ≠ 0) : a < unzero hy ↔ a < y := by
-  cases y
-  · grind
-  · simp
-
-lemma unzero_lt_iff (hx : x ≠ 0) : unzero hx < b ↔ x < b := by
-  cases x
-  · grind
-  · simp
+lemma lt_unzero_iff (hy : y ≠ 0) : a < unzero hy ↔ a < y := by lift y to α using hy; simp
+lemma unzero_lt_iff (hx : x ≠ 0) : unzero hx < b ↔ x < b := by lift x to α using hx; simp
 
 @[simp, norm_cast] lemma one_lt_coe [One α] : 1 < (a : WithZero α) ↔ 1 < a := coe_lt_coe
 @[simp, norm_cast] lemma coe_lt_one [One α] : (a : WithZero α) < 1 ↔ a < 1 := coe_lt_coe

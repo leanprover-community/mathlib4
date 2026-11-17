@@ -41,11 +41,12 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem map_id : map (id : α → α) = id :=
+protected theorem map_id : map (id : α → α) = id :=
   funext (fun o => match o with | one => rfl | some _ => rfl)
 
 @[to_additive (attr := simp)]
-theorem map_map (h : β → γ) (g : α → β) (a : WithOne α) : map h (map g a) = map (h ∘ g) a := by
+protected theorem map_map (h : β → γ) (g : α → β) (a : WithOne α) :
+    map h (map g a) = map (h ∘ g) a := by
   cases a <;> simp
 
 /-- The image of a binary function `f : α → β → γ` as a function
@@ -86,14 +87,12 @@ lemma map₂_assoc {δ ε ε' : Type*} {f : δ → γ → ε} {g : α → β →
     {g' : β → γ → ε'} (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c))
     {x : WithOne α} {y : WithOne β} {z : WithOne γ} :
     map₂ f (map₂ g x y) z = map₂ f' x (map₂ g' y z) := by
-  rw [map₂_eq_comp_comp x y, map₂_eq_comp_comp _ z, map₂_eq_comp_comp y z, map₂_eq_comp_comp x]
-  simp [Option.map₂_assoc h_assoc]
+  cases x <;> cases y <;> cases z <;> simp [h_assoc]
 
 @[to_additive]
 lemma map₂_comm {f : α → β → γ} {g : β → α → γ} {x : WithOne α} {y : WithOne β}
     (h_comm : ∀ a b, f a b = g b a) : map₂ f x y = map₂ g y x := by
-  rw [map₂_eq_comp_comp x y, map₂_eq_comp_comp y x]
-  simp [Option.map₂_comm h_comm]
+  cases x <;> cases y <;> simp [h_comm]
 
 @[to_additive]
 lemma map₂_left_identity {a : α} {f : α → β → β} (h : ∀ b, f a b = b) (y : WithOne β) :
@@ -105,13 +104,7 @@ lemma map₂_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
 
 @[to_additive (attr := simp)]
 lemma map₂_eq_one_iff {f : α → β → γ} {a : WithOne α} {b : WithOne β} :
-    map₂ f a b = 1 ↔ a = 1 ∨ b = 1 where
-  mp h := by
-    contrapose! h
-    cases a <;> cases b
-    rotate_right
-    · simp
-    all_goals grind
-  mpr h := by cases h <;> simp_all
+    map₂ f a b = 1 ↔ a = 1 ∨ b = 1 := by
+  cases a <;> cases b <;> simp
 
 end WithOne

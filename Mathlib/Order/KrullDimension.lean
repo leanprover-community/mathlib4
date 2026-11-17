@@ -498,9 +498,8 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where
   mp h := by
     obtain ⟨m, hx : m = height x⟩ := WithTop.ne_top_iff_exists.mp hfin.ne_top
-    replace hx := hx.symm
-    rw [hx] at h; norm_cast at h
-    obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
+    rw [← hx] at h; norm_cast at h
+    obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx.symm
     use p ⟨n, by lia⟩
     constructor
     · rw [← hp]

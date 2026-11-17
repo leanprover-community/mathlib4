@@ -215,8 +215,8 @@ instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpac
     injective := Equiv.injective _
     isOpen_range := by simp
   }
-  Option.WeakEMetricSpace.OfIsOpenEmbedding rfl (h.comp WithTop.isOpenEmbedding_coe)
-    |>.of_isInducing h.isInducing h.injective
+  h.isInducing.weakEMetricSpace h.injective <|
+    Option.WeakEMetricSpace.OfIsOpenEmbedding rfl (h.comp WithTop.isOpenEmbedding_coe)
 
 open scoped OnePoint in
 instance [EDist α] : EDist (OnePoint α) where

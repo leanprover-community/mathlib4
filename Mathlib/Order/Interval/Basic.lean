@@ -410,14 +410,13 @@ def coeHom : Interval α ↪o Set α :=
     (fun s =>
       match s with
       | ⊥ => ∅
-      | WithBot.some s => s)
+      | .some s => s)
     fun s t =>
     match s, t with
     | ⊥, _ => iff_of_true bot_le bot_le
-    | WithBot.some s, ⊥ =>
+    | .some s, ⊥ =>
       iff_of_false (fun h => s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
-    | WithBot.some _, WithBot.some _ =>
-      (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.coe_le_coe.symm
+    | .some _, .some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.coe_le_coe.symm
 
 instance setLike : SetLike (Interval α) α where
   coe := coeHom
@@ -482,7 +481,7 @@ instance lattice : Lattice (Interval α) :=
       match s, t with
       | ⊥, _ => ⊥
       | _, ⊥ => ⊥
-      | WithBot.some s, WithBot.some t =>
+      | .some s, .some t =>
         if h : s.fst ≤ t.snd ∧ t.fst ≤ s.snd then
           coe ⟨⟨s.fst ⊔ t.fst, s.snd ⊓ t.snd⟩,
               sup_le (le_inf s.fst_le_snd h.1) <| le_inf h.2 t.fst_le_snd⟩
@@ -490,9 +489,9 @@ instance lattice : Lattice (Interval α) :=
     inf_le_left := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
-      | ⊥, WithBot.some _ => bot_le
-      | WithBot.some _, ⊥ => bot_le
-      | WithBot.some s, WithBot.some t => by
+      | ⊥, .some _ => bot_le
+      | .some _, ⊥ => bot_le
+      | .some s, .some t => by
         change dite _ _ _ ≤ _
         split_ifs
         · exact WithBot.coe_le_coe.2 ⟨le_sup_left, inf_le_left⟩
@@ -500,9 +499,9 @@ instance lattice : Lattice (Interval α) :=
     inf_le_right := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
-      | ⊥, WithBot.some _ => bot_le
-      | WithBot.some _, ⊥ => bot_le
-      | WithBot.some s, WithBot.some t => by
+      | ⊥, .some _ => bot_le
+      | .some _, ⊥ => bot_le
+      | .some s, .some t => by
         change dite _ _ _ ≤ _
         split_ifs
         · exact WithBot.coe_le_coe.2 ⟨le_sup_right, inf_le_right⟩
@@ -620,7 +619,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
       cases s
       · exact bot_le
       · -- Porting note: This case was
-        -- `exact WithBot.some_le_some.2 ⟨iInf₂_le _ ha, le_iSup₂_of_le _ ha le_rfl⟩`
+        -- `exact .some_le_some.2 ⟨iInf₂_le _ ha, le_iSup₂_of_le _ ha le_rfl⟩`
         -- but there seems to be a defEq-problem at `iInf₂_le` that lean cannot resolve yet.
         apply Interval.coe_le_coe.2
         constructor

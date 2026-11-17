@@ -24,16 +24,21 @@ Adding a `bot` or a `top` to an order.
 
 variable {α β γ δ : Type*}
 
+open Set
+
 namespace WithBot
 
 variable {a b : α}
 
-@[to_dual]
+/-- Equivalence between `WithBot α` and `Option α`, sending `⊥` to `none`. This may be used
+to transfer results about `Option α` to `WithBot α`. -/
+@[to_dual /-- Equivalence between `WithTop α` and `Option α`, sending `⊤` to `none`.
+This may be used to transfer results about `Option α` to `WithTop α`. -/]
 def toOption (α : Type*) : WithBot α ≃ Option α where
-  toFun | ⊥ => none | (x : α) => .some x
+  toFun | ⊥ => none | some x => .some x
   invFun | none => ⊥ | .some x => x
-  left_inv | ⊥ => rfl | (_ : α) => rfl
-  right_inv | none => rfl | .some _ => rfl
+  left_inv | ⊥ | some _ => rfl
+  right_inv | none | .some _ => rfl
 
 @[to_dual (attr := simp)] lemma toOption_apply_coe (x : α) : toOption α x = x := rfl
 
@@ -107,6 +112,20 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
 
 @[to_dual]
+theorem isCompl_range_coe_bot : IsCompl (range ((↑) : α → WithBot α)) {⊥} :=
+  IsCompl.of_le (fun _ ⟨⟨_, ha⟩, (hn : _ = ⊥)⟩ => coe_ne_bot (ha.trans hn))
+    fun x _ => casesOn x (Or.inr rfl) fun _ => Or.inl <| mem_range_self _
+
+@[to_dual (attr := simp)]
+theorem compl_range_coe : (range ((↑) : α → WithBot α))ᶜ = {⊥} :=
+  isCompl_range_coe_bot.compl_eq
+
+@[to_dual]
+theorem range_eq (f : WithBot α → β) :
+    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) :=
+  ext fun _ => WithBot.exists.trans <| eq_comm.or Iff.rfl
+
+@[to_dual]
 theorem eq_bot_of_isEmpty [IsEmpty α] {a : WithBot α} : a = ⊥ :=
   match a with
   | ⊥ => rfl
@@ -157,8 +176,9 @@ theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 
-@[to_dual] lemma map_eq_comp_comp (f : α → β) :
-    map f = (toOption β).symm ∘ Option.map f ∘ toOption α := by ext x; cases x <;> simp
+@[to_dual]
+lemma map_eq_comp_comp (f : α → β) : map f = (toOption β).symm ∘ Option.map f ∘ toOption α := by
+  ext x; cases x <;> simp
 
 @[to_dual (attr := simp)]
 lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
@@ -345,11 +365,6 @@ lemma unbotA_eq_unbot [Nonempty α] {a : WithBot α} (ha : a ≠ ⊥) : unbotA a
   cases a with
   | bot => contradiction
   | coe a => simp
-
-@[to_dual]
-theorem range_eq (f : WithBot α → β) :
-    Set.range f = insert (f ⊥) (Set.range (f ∘ WithBot.some : α → β)) :=
-  Set.ext fun _ => WithBot.exists.trans <| eq_comm.or Iff.rfl
 
 end WithBot
 
@@ -1016,15 +1031,13 @@ theorem toDual_apply_coe (a : α) : WithBot.toDual (a : WithBot α) = toDual a :
 @[to_dual (attr := simp)]
 theorem ofDual_apply_coe (a : αᵒᵈ) : WithBot.ofDual (a : WithBot αᵒᵈ) = ofDual a := rfl
 
--- @[to_dual]
--- theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
---     map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
---   rfl
+@[to_dual]
+theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
+    a.toDual.map f = (a.map (ofDual ∘ f ∘ toDual)).toDual := by cases a <;> simp
 
--- @[to_dual]
--- theorem map_ofDual (f : α → β) (a : WithBot αᵒᵈ) :
---     map f (WithBot.ofDual a) = a.map (ofDual ∘ f) :=
---   rfl
+@[to_dual]
+theorem map_ofDual (f : α → β) (a : WithBot αᵒᵈ) :
+    a.ofDual.map f = (a.map (toDual ∘ f ∘ ofDual)).ofDual := by cases a <;> simp
 
 @[to_dual]
 theorem toDual_map (f : α → β) (a : WithBot α) :

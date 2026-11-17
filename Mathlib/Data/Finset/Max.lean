@@ -189,16 +189,6 @@ theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
 theorem max'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
     (s₁ ∪ s₂).max' (h₁.mono subset_union_left) = s₁.max' h₁ ⊔ s₂.max' h₂ := sup'_union h₁ h₂ id
 
--- @[to_dual]
--- theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
---   rw [min_eq_inf_withTop, inf_image]
---   congrm $WithTop.map_id _
-
--- @[to_dual]
--- theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
---   rw [min_eq_inf_withTop, inf_image]
---   congrm $WithTop.map_id _
-
 @[to_dual]
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
@@ -249,6 +239,22 @@ lemma _root_.Monotone.map_finset_max' [LinearOrder β] {f : α → β} (hf : Mon
 @[to_dual]
 theorem coe_max' {s : Finset α} (hs : s.Nonempty) : ↑(s.max' hs) = s.max :=
   coe_sup' hs id
+
+@[to_dual]
+theorem map_ofDual_max (s : Finset αᵒᵈ) :
+    s.max.map ofDual = (s.image ofDual).min.toDual.map ofDual := by
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp
+  rw [← s.coe_max' hs, ← coe_min' (by simpa)]
+  simp [ofDual_max']
+
+@[to_dual]
+theorem map_toDual_max (s : Finset α) :
+    s.max.map toDual = (s.image toDual).min.ofDual.map toDual := by
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp
+  rw [← s.coe_max' hs, ← coe_min' (by simpa)]
+  simp [toDual_max']
 
 @[to_dual]
 theorem max_mem_image_coe {s : Finset α} (hs : s.Nonempty) :

@@ -184,17 +184,17 @@ lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
   rintro (_ | b) (_ | c)
   · simp [top_eq_top]
   · simp [top_eq_top]
-  · simp [← coe_add, top_eq_top]
+  · simp [top_eq_top]
   · simpa [top_eq_top, ← coe_add] using fun a ↦ ha a
 
-set_option backward.isDefEq.respectTransparency false in
 open WithBot in
+@[to_dual existing]
 lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithBot α) := by
   rintro (_ | b) (_ | c)
   · simp [bot_eq_bot]
   · simp [bot_eq_bot]
-  · simp [← WithBot.coe_add, bot_eq_bot]
+  · simp [bot_eq_bot]
   · simpa [bot_eq_bot, ← WithBot.coe_add] using fun a ↦ ha a
 
 @[to_dual]
@@ -284,6 +284,7 @@ protected theorem add_lt_add [Preorder α] [AddLeftStrictMono α] [AddRightStric
 @[to_dual]
 protected lemma add_le_add_iff_left [LE α] [AddLeftMono α] [AddLeftReflectLE α] (hx : x ≠ ⊤) :
     x + y ≤ x + z ↔ y ≤ z := ⟨WithTop.le_of_add_le_add_left hx, fun _ ↦ by gcongr⟩
+
 @[to_dual]
 protected lemma add_le_add_iff_right [LE α] [AddRightMono α] [AddRightReflectLE α] (hz : z ≠ ⊤) :
     x + z ≤ y + z ↔ x ≤ y := ⟨WithTop.le_of_add_le_add_right hz, fun _ ↦ by gcongr⟩

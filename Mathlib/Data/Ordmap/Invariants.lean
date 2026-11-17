@@ -774,12 +774,9 @@ theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
   ⟨Bounded.dual, fun h => by
     have := Bounded.dual h
     rw [dual_dual] at this
-    convert this
-    · rfl
-    · rfl
+    convert this <;> try rfl
     · cases o₁ <;> simp; rfl
-    · cases o₂ <;> simp; rfl
-    ⟩
+    · cases o₂ <;> simp; rfl⟩
 
 theorem Bounded.weak_left : ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → Bounded t ⊥ o₂
   | nil, o₁, o₂, h => by cases o₂ <;> trivial

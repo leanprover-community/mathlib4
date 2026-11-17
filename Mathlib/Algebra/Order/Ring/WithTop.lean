@@ -68,16 +68,6 @@ lemma mul_def (a b : WithTop α) :
 @[to_dual]
 lemma mul_eq_top_iff : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by rw [mul_def]; aesop
 
--- @[to_dual]
--- lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithTop α) = a.bind fun a ↦ ↑(a * b)
---   | ⊤ => by simp [top_mul, hb]; rfl
---   | (a : α) => rfl
-
--- @[to_dual]
--- lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.bind fun b ↦ ↑(a * b)
---   | ⊤ => by simp [ha]; rfl
---   | (b : α) => rfl
-
 @[to_dual (attr := simp)]
 lemma untopD_zero_mul (a b : WithTop α) : (a * b).untopD 0 = a.untopD 0 * b.untopD 0 := by
   by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, untopD_coe, zero_mul]
@@ -233,11 +223,8 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
       have hc : (c : WithTop α) ≠ 0 := by simpa
-      cases a <;> cases b
-      · simp [top_mul hc]
-      · simp [top_mul hc]
-      · simp [top_mul hc]
-      · congrm some $(add_mul ..)
+      cases a <;> cases b <;> try simp [top_mul hc]
+      congrm some $(add_mul ..)
   left_distrib c a b := by
     cases c with
     | top =>
@@ -249,11 +236,8 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
       have hc : (c : WithTop α) ≠ 0 := by simpa
-      cases a <;> cases b
-      · simp [mul_top hc]
-      · simp [mul_top hc]
-      · simp [mul_top hc]
-      · congrm some $(mul_add ..)
+      cases a <;> cases b <;> try simp [mul_top hc]
+      congrm some $(mul_add ..)
 
 @[to_dual]
 instance instNonAssocSemiring [NonAssocSemiring α] [Subsingleton (AddUnits α)]

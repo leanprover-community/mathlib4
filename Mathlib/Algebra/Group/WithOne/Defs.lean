@@ -65,18 +65,11 @@ instance [Repr α] : Repr (WithOne α) :=
     | one => "1"
     | some a => "↑" ++ repr a⟩
 
--- @[to_additive]
--- instance instMonad : Monad WithOne :=
---   inferInstanceAs <| Monad Option
-
-/-- The canonical map from `α` into `WithOne α` -/
-@[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
-def coe : α → WithOne α :=
-  WithOne.some
+attribute [coe] WithOne.some WithZero.some
 
 @[to_additive]
 instance instCoeTC : CoeTC α (WithOne α) :=
-  ⟨coe⟩
+  ⟨some⟩
 
 @[to_additive]
 instance instOne : One (WithOne α) :=
@@ -99,19 +92,34 @@ theorem recOneCoe_coe {C : WithOne α → Sort*} (d : C 1) (f : ∀ a : α, C a)
     @recOneCoe _ C d f ↑x = f x :=
   rfl
 
+@[to_additive (attr := simp)] lemma one_ne_coe {a : α} : (1 : WithOne α) ≠ a := nofun
+
+@[to_additive (attr := simp)] lemma coe_ne_one {a : α} : a ≠ (1 : WithOne α) := nofun
+
+@[to_additive (attr := simp, norm_cast)]
+    lemma coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b := by simp
+
 @[to_additive]
-def _root_.Equiv.withOne_congr {β} (e : α ≃ β) : WithOne α ≃ WithOne β where
-  toFun | 1 => 1 | coe x => e x
-  invFun | 1 => 1 | coe x => e.symm x
+lemma coe_injective : Function.Injective ((↑) : α → WithOne α) := fun _ _ ↦ by simp
+
+/-- Lift an equivalence `α ≃ β` to an equivalence `WithOne α ≃ WithOne β` mapping `1` to `1`. -/
+@[to_additive /-- Lift an equivalence `α ≃ β` to an equivalence `WithZero α ≃ WithZero β`
+mapping `0` to `0`. -/]
+def _root_.Equiv.withOneCongr {β} (e : α ≃ β) : WithOne α ≃ WithOne β where
+  toFun | 1 => 1 | some x => e x
+  invFun | 1 => 1 | some x => e.symm x
   left_inv x := by cases x <;> simp
   right_inv x := by cases x <;> simp
 
-@[to_additive]
+/-- Equivalence between `WithOne α` and `Option α`, sending `1` to `none`. This may be used
+to transfer results about `Option α` to `WithOne α`. -/
+@[to_additive /-- Equivalence between `WithZero α` and `Option α`, sending `0` to `none`.
+This may be used to transfer results about `Option α` to `WithZero α`. -/]
 def toOption (α : Type*) : WithOne α ≃ Option α where
   toFun | one => none | some x => .some x
   invFun | none => one | .some x => some x
-  left_inv | one => rfl | some _ => rfl
-  right_inv | none => rfl | .some _ => rfl
+  left_inv | one | some _ => rfl
+  right_inv | none | .some _ => rfl
 
 @[to_additive (attr := simp)] lemma toOption_apply_coe (x : α) : toOption α x = x := rfl
 
@@ -131,38 +139,19 @@ lemma symm_toOption_comp_some : (toOption α).symm ∘ Option.some = (↑) := rf
 
 @[to_additive (attr := simp)]
 lemma toOption_eq_some_iff {x : WithOne α} {a : α} :
-    toOption α x = Option.some a ↔ x = a := by
-  cases x
-  · simp only [toOption_apply_bot, reduceCtorEq, false_iff]
-    nofun
-  · simp only [toOption_apply_coe, Option.some.injEq]
-    rw [← some.injEq]
-    rfl
+    toOption α x = Option.some a ↔ x = a := by cases x <;> simp
 
 @[to_additive (attr := simp)]
 lemma toOption_eq_none_iff {x : WithOne α} :
-    toOption α x = Option.none ↔ x = 1 := by
-  cases x
-  · simp
-  · simp only [toOption_apply_coe, reduceCtorEq, false_iff]; nofun
+    toOption α x = Option.none ↔ x = 1 := by cases x <;> simp
 
 @[to_additive (attr := simp)]
 lemma symm_toOption_eq_coe_iff {x : Option α} {a : α} :
-    (toOption α).symm x = a ↔ x = Option.some a := by
-  cases x
-  · simp only [symm_toOption_apply_none, reduceCtorEq, iff_false]
-    nofun
-  · simp only [symm_toOption_apply_some, Option.some.injEq]
-    symm
-    rw [← some.injEq]
-    rfl
+    (toOption α).symm x = a ↔ x = Option.some a := by cases x <;> simp
 
 @[to_additive (attr := simp)]
 lemma symm_toOption_eq_one_iff {x : Option α} :
-    (toOption α).symm x = 1 ↔ x = Option.none := by
-  cases x
-  · simp
-  · simp only [symm_toOption_apply_some, reduceCtorEq, iff_false]; nofun
+    (toOption α).symm x = 1 ↔ x = Option.none := by cases x <;> simp
 
 @[to_additive]
 instance instMul [Mul α] : Mul (WithOne α) where
@@ -212,28 +201,12 @@ theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
 lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
   | (x : α), _ => rfl
 
-@[to_additive (attr := simp)]
-theorem coe_ne_one {a : α} : (a : WithOne α) ≠ (1 : WithOne α) := nofun
-
-@[to_additive (attr := simp)]
-theorem one_ne_coe {a : α} : (1 : WithOne α) ≠ a :=
-  coe_ne_one.symm
-
 @[to_additive]
 theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x := by cases x <;> simp
 
 @[to_additive]
 instance instCanLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
   prf _ := ne_one_iff_exists.1
-
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b := by
-  symm
-  rw [← some.injEq]
-  rfl
-
-@[to_additive]
-lemma coe_injective : Function.Injective (coe : α → WithOne α) := fun _ _ ↦ by simp
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {motive : WithOne α → Prop} :

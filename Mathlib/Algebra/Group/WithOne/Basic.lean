@@ -35,7 +35,7 @@ namespace WithOne
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) where
-  inv_inv a := (WithOne.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, WithOne.map_id, id]
+  inv_inv a := (map_map _ _ _).trans <| by simp_rw [inv_comp_inv, map_id, id]
 
 section
 

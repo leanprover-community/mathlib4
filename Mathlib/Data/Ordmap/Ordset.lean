@@ -113,9 +113,7 @@ theorem Valid'.dual_iff {t : Ordnode α} {o₁ o₂} :
   ⟨Valid'.dual, fun h => by
     have := Valid'.dual h
     rw [dual_dual] at this
-    convert this
-    · rfl
-    · rfl
+    convert this <;> try rfl
     · cases o₁ <;> simp; rfl
     · cases o₂ <;> simp; rfl⟩
 

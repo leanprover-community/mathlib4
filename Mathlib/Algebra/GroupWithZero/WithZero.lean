@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.WithOne.Map
 public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Data.Option.NAry
 public import Mathlib.Util.CompileInductive
 
 /-!
@@ -378,11 +377,11 @@ scoped notation:1024 M:1024 "ᵐ⁰" => WithZero <| Multiplicative M
 section AddMonoid
 
 /-- The exponential map as a function `M → Mᵐ⁰`. -/
-def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
+def exp (a : M) : Mᵐ⁰ := some <| .ofAdd a
 
 @[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
 
-lemma exp_eq_coe_ofAdd (a : M) : exp a = coe (Multiplicative.ofAdd a) := rfl
+lemma exp_eq_coe_ofAdd (a : M) : exp a = Multiplicative.ofAdd a := rfl
 
 lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
   Multiplicative.ofAdd.injective.comp WithZero.coe_injective
