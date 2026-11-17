@@ -59,9 +59,9 @@ local notation "𝕢" => Periodic.qParam
 section auxiliary
 
 lemma csqrt_pow_24_eq {z : ℂ} (hz : z ≠ 0) : sqrt z ^ 24 = z ^ 12 := by
-  rw [sqrt_eq_exp hz, ← exp_nat_mul]
+  rw [sqrt_eq_exp hz, ← exp_natCast_mul]
   ring_nf
-  rw [show (log z * 12) = (12 : ℕ) * log z by ring, exp_nat_mul, exp_log hz]
+  rw [show (log z * 12) = (12 : ℕ) * log z by ring, exp_natCast_mul, exp_log hz]
 
 lemma csqrt_I_pow_24 : sqrt I ^ 24 = 1 := by
   rw [csqrt_pow_24_eq I_ne_zero, show 12 = 4 * 3 by lia, pow_mul, I_pow_four, one_pow]
@@ -189,7 +189,7 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
   convert! this using 2 with τ
   rw [Multipliable.tprod_pow]
   apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
-  simp [eta_q, Periodic.qParam, ← exp_nat_mul]
+  simp [eta_q, Periodic.qParam, ← exp_natCast_mul]
 
 lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   apply Tendsto.congr (fun z ↦ (discriminant_eq_q_prod z).symm)

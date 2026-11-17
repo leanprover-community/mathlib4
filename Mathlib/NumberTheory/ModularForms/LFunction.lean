@@ -111,7 +111,7 @@ private lemma hasSum_Λ_of_qExpansion_isBigO {r : ℝ}
     convert! hasSum_ite_sub_hasSum this 0 using 2 with n
     · rcases Nat.eq_zero_or_pos n with rfl | hn
       · simp
-      · simp [hn.ne', Function.Periodic.qParam, ofComplex_apply_eq_ite, ht, ← exp_nat_mul]
+      · simp [hn.ne', Function.Periodic.qParam, ofComplex_apply_eq_ite, ht, ← exp_natCast_mul]
         grind [I_sq]
     · simp only [weakFEPair]
       rw [qExpansion_coeff_zero hh, pow_zero, mul_one]
