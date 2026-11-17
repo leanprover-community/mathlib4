@@ -488,30 +488,20 @@ theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) 
   grw [Fintype.card_eq_nat_card, hp.length_lt_natCard]
 
 lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
-    Set.InjOn p.getVert {i | i ≤ p.length} := by
-  intro n hn m hm hnm
-  induction p generalizing n m with
-  | nil => simp_all
+    Set.InjOn p.getVert (.Iic p.length) := by
+  induction p with
+  | nil => simp [Set.InjOn]
   | @cons v w u h p ihp =>
-    simp only [length_cons, Set.mem_ofPred_eq] at hn hm hnm
-    by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
-    · lia
-    · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
-      have hvp : v ∉ p.support := by aesop
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by lia⟩⟩)).elim
-    · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
-      have hvp : v ∉ p.support := by simp_all
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by lia⟩⟩)).elim
-    · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
-      have := ihp hp.of_cons (by lia : (n - 1) ≤ p.length)
-        (by lia : (m - 1) ≤ p.length) hnm
-      lia
+    rw [show ∀ n, Set.Iic n = insert 0 (.Ioc 0 n) by grind, Set.injOn_insert <| by simp]
+    constructor
+    · grind [getVert_cons, ihp hp.of_cons, Set.InjOn, length_cons]
+    · grind [getVert_cons, hp.support_nodup, getVert_eq_support_getElem]
 
 lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (h : ¬p.Nil) :
     p.getVert i = u ↔ i = 0 := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases h' : i ≤ p.length
-  · apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
+  · apply hp.getVert_injOn (by grind) (by grind)
     simp [h]
   · rw [p.getVert_of_length_le (le_of_not_ge h')] at h
     subst h
@@ -530,8 +520,8 @@ lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi :
   rw [this]
   lia
 
-lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
-    p.IsPath := by
+lemma IsPath.getVert_injOn_iff (p : G.Walk u v) :
+    Set.InjOn p.getVert (.Iic p.length) ↔ p.IsPath := by
   refine ⟨?_, fun a => a.getVert_injOn⟩
   induction p with
   | nil => simp
@@ -540,7 +530,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
     rw [cons_isPath_iff]
     refine ⟨ih (by
       intro n hn m hm hnm
-      simp only [Set.mem_ofPred_eq] at hn hm
+      simp only [Set.mem_Iic] at hn hm
       have := hinj
         (by rw [length_cons]; lia : n + 1 ≤ (q.cons h).length)
         (by rw [length_cons]; lia : m + 1 ≤ (q.cons h).length)
@@ -633,7 +623,7 @@ theorem isCycle_iff_isPath_dropLast_and_le_length {p : G.Walk v v} :
 
 theorem isCycle_iff_getVert_injOn_Iio {v : V} {p : G.Walk v v} :
     p.IsCycle ↔ Set.InjOn p.getVert (.Iio p.length) ∧ 3 ≤ p.length := by
-  rw [isCycle_iff_isPath_dropLast_and_le_length, ← IsPath.getVert_injOn_iff]
+  rw [isCycle_iff_isPath_dropLast_and_le_length, ← IsPath.getVert_injOn_iff, ← Set.Iic_def]
   refine and_congr_left fun hlen ↦ ?_
   simp_rw [length_dropLast, p.length.le_sub_one_iff_lt <| by lia]
   exact Set.EqOn.injOn_iff fun _ ↦ p.getVert_dropLast
@@ -642,8 +632,8 @@ theorem isCycle_iff_getVert_injOn_Ioc {v : V} {p : G.Walk v v} :
     p.IsCycle ↔ Set.InjOn p.getVert (.Ioc 0 p.length) ∧ 3 ≤ p.length := by
   rw [isCycle_iff_isPath_tail_and_le_length, ← IsPath.getVert_injOn_iff]
   refine and_congr_left fun hlen ↦ ?_
-  simp_rw [Set.Iic_def, ← Set.Icc_bot, ← Set.Ico_add_one_right_eq_Icc,
-    p.length_tail_add_one <| by grind, ← Set.Icc_add_one_left_eq_Ioc]
+  simp_rw [← Set.Icc_bot, ← Set.Ico_add_one_right_eq_Icc, p.length_tail_add_one <| by grind,
+    ← Set.Icc_add_one_left_eq_Ioc]
   convert add_left_injective 1 |>.injOn.comp_iff
   all_goals ext; simp
 
@@ -658,26 +648,21 @@ lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p.penultimate := by
   intro h
   have := hp.three_le_length
-  apply hp.getVert_injOn (by simp; lia) (by simp; lia) at h
-  lia
+  grind [hp.getVert_injOn (by grind) (by grind) h]
 
 lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 ∨ i = p.length := by
   refine ⟨?_, by aesop⟩
   rw [or_iff_not_imp_left]
   intro h hi
-  exact hpc.getVert_injOn (by grind) (by grind) (h.symm ▸ (Walk.getVert_length p).symm)
+  exact hpc.getVert_injOn (by grind) (by grind) (h.symm ▸ p.getVert_length.symm)
 
 lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   intro h'
-  have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
-  · rw [p.getVert_of_length_le (by lia : p.length ≤ i + 1),
-      hpc.getVert_endpoint_iff (by lia)] at h'
-    lia
-  have := hpc.getVert_injOn' (by grind) (by grind) h'
-  lia
+  · grind [hpc.three_le_length, p.getVert_of_length_le, hpc.getVert_endpoint_iff]
+  grind [hpc.getVert_injOn' (by grind) (by grind) h']
 
 /-! ### Walk decompositions -/
 
@@ -749,8 +734,7 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
   rw [getVert_takeUntil hw hnl] at hn
   have := p.length_takeUntil_lt_length hw h.symm
-  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by simp)
-    (hn.symm ▸ p.getVert_length.symm)
+  have : n = p.length := hp.getVert_injOn (by grind) (by simp) (hn.symm ▸ p.getVert_length.symm)
   lia
 
 end WalkDecomp

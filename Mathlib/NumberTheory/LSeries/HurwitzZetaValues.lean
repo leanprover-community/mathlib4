@@ -221,7 +221,7 @@ theorem riemannZeta_two_mul_nat' {k : ℕ} :
   · convert riemannZeta_two_mul_nat hk
     grind [zpow_natCast]
 
-theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
+theorem riemannZeta_two : riemannZeta 2 = π ^ 2 / 6 := by
   convert congr(($hasSum_zeta_two.tsum_eq : ℂ))
   · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two]
     simp [push_cast]
@@ -238,16 +238,30 @@ theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
 theorem riemannZeta_neg_nat_eq_bernoulli' (k : ℕ) :
     riemannZeta (-k) = -bernoulli' (k + 1) / (k + 1) := by
   rcases eq_or_ne k 0 with rfl | hk
-  · rw [Nat.cast_zero, neg_zero, riemannZeta_zero, zero_add, zero_add, div_one,
-      bernoulli'_one, Rat.cast_div, Rat.cast_one, Rat.cast_ofNat, neg_div]
+  · simp [riemannZeta_zero, neg_div]
   · rw [← hurwitzZeta_zero, ← QuotientAddGroup.mk_zero, hurwitzZeta_neg_nat hk
       (left_mem_Icc.mpr zero_le_one), ofReal_zero, Polynomial.eval_zero_map,
       Polynomial.bernoulli_eval_zero, Algebra.algebraMap_eq_smul_one, Rat.smul_one_eq_cast,
       div_mul_eq_mul_div, neg_one_mul, bernoulli_eq_bernoulli'_of_ne_one (by simp [hk])]
 
+theorem riemannZeta_neg_ofNat_eq_bernoulli' (k : ℕ) [k.AtLeastTwo] :
+    riemannZeta (-ofNat(k)) = -bernoulli' (ofNat(k) + 1) / (ofNat(k) + 1) :=
+  riemannZeta_neg_nat_eq_bernoulli' k
+
 /-- Value of Riemann zeta at `-ℕ` in terms of `bernoulli`. -/
 theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
-    riemannZeta (-k) = (-1 : ℂ) ^ k * bernoulli (k + 1) / (k + 1) := by
-  rw [riemannZeta_neg_nat_eq_bernoulli', bernoulli, Rat.cast_mul, Rat.cast_pow, Rat.cast_neg,
-    Rat.cast_one, ← neg_one_mul, ← mul_assoc, pow_succ, ← mul_assoc, ← mul_pow, neg_one_mul (-1),
-    neg_neg, one_pow, one_mul]
+    riemannZeta (-k) = (-1) ^ k * bernoulli (k + 1) / (k + 1) := by
+  rw [riemannZeta_neg_nat_eq_bernoulli', ← Rat.cast_neg, neg_bernoulli'_succ_eq_bernoulli]
+  norm_cast
+
+theorem riemannZeta_neg_ofNat_eq_bernoulli (k : ℕ) [k.AtLeastTwo] :
+    riemannZeta (-ofNat(k)) = (-1) ^ ofNat(k) * bernoulli (ofNat(k) + 1) / (ofNat(k) + 1) :=
+  riemannZeta_neg_nat_eq_bernoulli k
+
+theorem riemannZeta_neg_three : riemannZeta (-3) = 120⁻¹ := by
+  rw [riemannZeta_neg_ofNat_eq_bernoulli']
+  norm_num
+
+theorem riemannZeta_neg_five : riemannZeta (-5) = -252⁻¹ := by
+  rw [riemannZeta_neg_ofNat_eq_bernoulli']
+  norm_num
