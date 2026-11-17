@@ -45,10 +45,6 @@ def sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
     | ⊤ => ⊤
     | WithTop.some ub => upperSqrt ub prec
 
-private theorem toRat_shiftLeft_two_mul (d : Dyadic) (n : ℕ) :
-    (d <<< (2 * n)).toRat = d.toRat * 4 ^ n := by
-  norm_num [Dyadic.toRat_shiftLeft_nat, pow_mul]
-
 theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : Dyadic.toReal lb ≤ x) :
     Dyadic.toReal (lowerSqrt lb prec) ≤ √x := by
   unfold lowerSqrt
