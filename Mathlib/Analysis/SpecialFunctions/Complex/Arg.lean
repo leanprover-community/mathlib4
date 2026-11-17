@@ -200,14 +200,14 @@ theorem arg_natCast_mul {r : ℕ} (hr : r ≠ 0) (x : ℂ) : arg (r * x) = arg x
 
 @[simp]
 theorem arg_ofNat_mul (r : ℕ) [r.AtLeastTwo] (x : ℂ) : arg (ofNat(r) * x) = arg x :=
-  arg_natCast_mul (Nat.AtLeastTwo.toNeZero r).ne x
+  arg_natCast_mul (NeZero.ne r) x
 
 theorem arg_mul_natCast (x : ℂ) {r : ℕ} (hr : r ≠ 0) : arg (x * r) = arg x := by
   rw [← ofReal_natCast, arg_mul_ofReal x (by simpa [Nat.pos_iff_ne_zero] using hr)]
 
 @[simp]
 theorem arg_mul_ofNat (x : ℂ) (r : ℕ) [r.AtLeastTwo] : arg (x * ofNat(r)) = arg x :=
-  arg_mul_natCast x (Nat.AtLeastTwo.toNeZero r).ne
+  arg_mul_natCast x (NeZero.ne r)
 
 theorem arg_div_ofReal (x : ℂ) {r : ℝ} (hr : 0 < r) : arg (x / r) = arg x := by
   rw [div_eq_mul_inv, ← ofReal_inv, arg_mul_ofReal x (by simpa using hr)]
@@ -217,7 +217,7 @@ theorem arg_div_natCast (x : ℂ) {r : ℕ} (hr : r ≠ 0) : arg (x / r) = arg x
 
 @[simp]
 theorem arg_div_ofNat (x : ℂ) (r : ℕ) [r.AtLeastTwo] : arg (x / ofNat(r)) = arg x :=
-  arg_div_natCast x (Nat.AtLeastTwo.toNeZero r).ne
+  arg_div_natCast x (NeZero.ne r)
 
 theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     arg x = arg y ↔ (‖y‖ / ‖x‖ : ℂ) * x = y := by
