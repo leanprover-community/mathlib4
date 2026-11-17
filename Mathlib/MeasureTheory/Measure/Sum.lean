@@ -101,6 +101,17 @@ theorem ae_sum_iff [Countable ι] {p : α → Prop} :
     (∀ᵐ x ∂sum μ, p x) ↔ ∀ i, ∀ᵐ x ∂μ i, p x :=
   sum_apply_eq_zero
 
+@[simp]
+theorem _root_.MeasureTheory.nullMeasurableSet_sum [Countable ι] :
+    NullMeasurableSet s (sum μ) ↔ ∀ i, NullMeasurableSet s (μ i) := by
+  refine ⟨fun ⟨t, ht, hst⟩ i ↦ ⟨t, ht, ae_sum_iff.1 hst i⟩, fun h ↦ ?_⟩
+  refine ⟨⋂ i, toMeasurable (μ i) s, .iInter fun i ↦ measurableSet_toMeasurable _ _, ?_⟩
+  rw [eventuallyEqSet_iff, ae_sum_iff]
+  intro i
+  rw [← eventuallyEqSet_iff]
+  refine (Set.subset_iInter fun i ↦ subset_toMeasurable (μ i) s).eventuallySubset.antisymm ?_
+  exact (Set.iInter_subset _ i).eventuallySubset.trans (h i).toMeasurable_ae_eq.subset
+
 theorem ae_sum_iff' {p : α → Prop} (h : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂sum μ, p x) ↔ ∀ i, ∀ᵐ x ∂μ i, p x :=
   sum_apply_eq_zero' h.compl
