@@ -96,6 +96,14 @@ theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) 
   rw [← h]
   exact pairwise_sort _ r
 
+theorem _root_.List.SortedLT.sort_toFinset [LinearOrder α] {l : List α} (hl : l.SortedLT) :
+    l.toFinset.sort (· ≤ ·) = l :=
+  (List.toFinset_sort _ hl.nodup).2 hl.sortedLE.pairwise
+
+theorem _root_.List.SortedGT.sort_toFinset [LinearOrder α] {l : List α} (hl : l.SortedGT) :
+    l.toFinset.sort (· ≥ ·) = l :=
+  (List.toFinset_sort _ hl.nodup).2 hl.sortedGE.pairwise
+
 end
 
 section
