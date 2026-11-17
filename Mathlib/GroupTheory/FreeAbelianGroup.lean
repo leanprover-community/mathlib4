@@ -74,14 +74,14 @@ If `α` is a type, then `FreeCommGroup α` is the free abelian group generated b
 abelian group equipped with a function `FreeCommGroup.of : α → FreeCommGroup α` which has the
 following universal property: if `G` is any abelian group, and `f : α → G` is any function, then
 this function is the composite of `FreeCommGroup.of` and a unique group homomorphism
-`FreeCommGroup.lift f : FreeCommGroup α →+ G`.
+`FreeCommGroup.lift f : FreeCommGroup α →* G`.
 
-A typical element of `FreeCommGroup α` is a formal sum of elements of `α` and their formal inverses.
+A typical element of `FreeCommGroup α` is a formal product of elements of `α` and their formal inverses.
 For example if `x` and `y` are terms of type `α` then `x * x * x * y⁻¹` is a "typical" element of
 `FreeCommGroup α`. In particular if `α` is empty then `FreeCommGroup α` is isomorphic to the trivial
 group, and if `α` has one term then `FreeCommGroup α` is isomorphic to `Multiplicative ℤ`. One can
 think of `FreeCommGroup α` as the functions `α →₀ ℤ` with finite support, and multiplication given
-pointwise.
+by pointwise addition.
 -/
 @[to_additive
 /--
