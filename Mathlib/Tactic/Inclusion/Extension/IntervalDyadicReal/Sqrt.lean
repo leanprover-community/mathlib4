@@ -22,7 +22,7 @@ namespace IntervalDyadicReal
 
 open Inclusion.IntervalDyadicReal.Dyadic
 
-/-- Computes an lower bound for `√x` with precision `prec`. -/
+/-- Computes a lower bound for `√x` with precision `prec`, given a lower bound `lb` for `x`. -/
 @[expose]
 def lowerSqrt (lb : Dyadic) (prec : ℕ) : Dyadic :=
   Dyadic.ofIntWithPrec ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt prec
