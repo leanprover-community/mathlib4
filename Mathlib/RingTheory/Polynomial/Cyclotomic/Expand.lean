@@ -20,7 +20,7 @@ We gather results relating cyclotomic polynomials and `expand`.
   `expand R p (cyclotomic n R) = (cyclotomic (n * p) R) * (cyclotomic n R)`.
 * `Polynomial.expand_cyclotomic_of_dvd` : If `m ∣ n`, then
   `expand R m (cyclotomic n R) = cyclotomic (n * m) R`.
-* `Polynomial.cyclotomic_irreducible_pow_mono` : If `cyclotomic (r ^ n) R` is irreducible, then so
+* `Polynomial.irreducible_cyclotomic_pow_mono` : If `cyclotomic (r ^ n) R` is irreducible, then so
   is `cyclotomic (r ^ m) R` for all `m ≤ n`.
 * `Polynomial.cyclotomic_mul_prime_eq_pow_of_not_dvd` : If `R` is of characteristic `p` and
   `¬p ∣ n`, then `cyclotomic (n * p) R = (cyclotomic n R) ^ (p - 1)`.
@@ -113,7 +113,7 @@ theorem expand_cyclotomic_of_dvd {m n : ℕ} (hdiv : m ∣ n) (R : Type*)
 alias cyclotomic_expand_eq_cyclotomic := expand_cyclotomic_of_dvd
 
 /-- If the `r ^ n`th cyclotomic polynomial is irreducible, so is the `r ^ m`th, for `m ≤ n`. -/
-theorem cyclotomic_irreducible_pow_mono {R} [CommRing R]
+theorem irreducible_cyclotomic_pow_mono {R} [CommRing R]
     [IsDomain R] (r : ℕ) {n m : ℕ} (hmn : m ≤ n) (h : Irreducible (cyclotomic (r ^ n) R)) :
     Irreducible (cyclotomic (r ^ m) R) := by
   rcases eq_or_ne r 0 with rfl | hr
@@ -132,14 +132,14 @@ theorem cyclotomic_irreducible_pow_mono {R} [CommRing R]
     exact hk (by lia) (of_irreducible_expand hr h)
 
 @[deprecated (since := "2026-11-16")]
-alias cyclotomic_irreducible_pow_of_irreducible_pow := cyclotomic_irreducible_pow_mono
+alias cyclotomic_irreducible_pow_of_irreducible_pow := irreducible_cyclotomic_pow_mono
 
 /-- If `Irreducible (cyclotomic (r ^ n) R)` for some `n ≠ 0`, then
 `Irreducible (cyclotomic r R)`. -/
 theorem irreducible_cyclotomic_of_pow {R} [CommRing R]
     [IsDomain R] (r : ℕ) {n : ℕ} (hn : n ≠ 0) (h : Irreducible (cyclotomic (r ^ n) R)) :
     Irreducible (cyclotomic r R) :=
-  pow_one r ▸ cyclotomic_irreducible_pow_mono r hn.bot_lt h
+  pow_one r ▸ irreducible_cyclotomic_pow_mono r hn.bot_lt h
 
 @[deprecated (since := "2026-11-16")]
 alias cyclotomic_irreducible_of_irreducible_pow := irreducible_cyclotomic_of_pow
