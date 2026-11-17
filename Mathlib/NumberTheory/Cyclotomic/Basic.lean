@@ -485,10 +485,11 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [
 
 variable {L} in
 theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
-    [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
+    {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
   change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.isAlgebraic ζ)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic
+    (hζ.isIntegral (NeZero.pos n)).tower_top.isAlgebraic]
   exact hζ.adjoin_isCyclotomicExtension K
 
 end
@@ -950,8 +951,8 @@ theorem IntermediateField.isCyclotomicExtension_eq (F₁ F₂ : IntermediateFiel
 variable (F₁ F₂ : IntermediateField K L) [h₁ : IsCyclotomicExtension {n₁} K F₁]
   [h₂ : IsCyclotomicExtension {n₂} K F₂]
 
-theorem IntermediateField.isCyclotomicExtension_le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : F₁ ≤ F₂ := by
-  exact toSubalgebra_le_toSubalgebra.mp <|
+theorem IntermediateField.isCyclotomicExtension_le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : F₁ ≤ F₂ :=
+  toSubalgebra_le_toSubalgebra.mp <|
     IsCyclotomicExtension.le_of_dvd n₁ n₂ F₁.toSubalgebra F₂.toSubalgebra h
 
 theorem IntermediateField.isCyclotomicExtension_lcm_sup [NeZero n₁] [NeZero n₂] :

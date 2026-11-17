@@ -202,8 +202,8 @@ def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n +
   Iso.refl _
 
 instance x_projective (G : Type u) [Group G] (n : ℕ) :
-    Projective ((standardComplex k G).X n) := by
-  exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
+    Projective ((standardComplex k G).X n) :=
+  inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 set_option backward.defeqAttrib.useBackward true in
 unif_hint where ⊢ Action.V (Action.ofMulAction G (Fin (n + 1) → G)) ≟ Fin (n + 1) → G in
