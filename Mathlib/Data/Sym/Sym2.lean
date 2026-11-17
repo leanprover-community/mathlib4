@@ -499,6 +499,16 @@ lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s
     (s.attachWith h).map Subtype.val = s := by
   cases s; rfl
 
+@[simp]
+lemma attachWith_mk {P : α → Prop} (a b : α) (h : ∀ x ∈ s(a, b), P x) :
+    s(a, b).attachWith h = s(⟨a, h a <| mem_mk_left ..⟩, ⟨b, h b <| mem_mk_right ..⟩) :=
+  rfl
+
+@[simp]
+lemma attachWith_inj {P : α → Prop} {z₁ z₂ : Sym2 α} {h₁ : ∀ a ∈ z₁, P a} {h₂ : ∀ a ∈ z₂, P a} :
+    z₁.attachWith h₁ = z₂.attachWith h₂ ↔ z₁ = z₂ := by
+  simp [← (map.injective Subtype.val_injective).eq_iff]
+
 /-! ### Diagonal -/
 
 variable {z : Sym2 α} {f : α → β}
@@ -804,8 +814,8 @@ theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
 
 @[simp]
-theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ := by
-  exact Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _))
+theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ :=
+  Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _))
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
   ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]
@@ -1025,6 +1035,15 @@ def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y
 lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
   induction z using Sym2.inductionOn
   simp [pair_subset_iff]
+
+variable (s) in
+/-- The set of all unordered pairs of elements from a set is equivalent to the type of all unordered
+pairs of elements from that set. -/
+def sym2Equiv : s.sym2 ≃ Sym2 s where
+  toFun := fun ⟨z, hz⟩ ↦ z.attachWith fun a ha ↦ s.mem_sym2_iff_subset.mp hz ha
+  invFun z := ⟨z.map (↑), by cases z; simp⟩
+  left_inv _ := by simp
+  right_inv z := by cases z; simp
 
 lemma sym2_eq_mk_image : s.sym2 = (Sym2.mk.uncurry) '' s ×ˢ s := by ext ⟨x, y⟩; aesop
 

@@ -363,7 +363,7 @@ def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
     { hom := ↾fun f ↦ ofHom ⟨f.1, f.2⟩
-      inv := ↾fun f ↦ ⟨f.1, f.1.2⟩ }
+      inv := ↾fun f ↦ ⟨f.1, map_continuous f.1⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/

@@ -24,7 +24,6 @@ This file defines lemmas and theorems about the power series for large and small
 ## TODO
 
 * Prove the small Schröder numbers power series.
-
 -/
 
 @[expose] public section
@@ -58,9 +57,11 @@ lemma coeff_X_mul_largeSchroderSeries (n : ℕ) (hn : 0 < n) :
   rintro rfl
   simp_all only [lt_self_iff_false]
 
-lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
+lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) :
     coeff n (X * largeSchroderSeries ^ 2) =
       ∑ i ∈ range n, largeSchroder i * largeSchroder (n - 1 - i) := by
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simp
   rw [pow_two, ← mul_assoc, coeff_mul]
   rw [Nat.sum_antidiagonal_eq_sum_range_succ
     (fun x y => (coeff x) (X * largeSchroderSeries) * (coeff y) largeSchroderSeries) n,
@@ -98,7 +99,7 @@ theorem largeSchroderSeries_eq_one_add_X_mul_largeSchroderSeries_add_X_mul_large
   · aesop
   · have hn' : 0 < n := by omega
     simp only [coeff_largeSchroderSeries, map_add, coeff_one, hn, ↓reduceIte, zero_add]
-    rw [coeff_X_mul_largeSchroderSeriesSeries_sq _ hn', coeff_X_mul_largeSchroderSeries _ hn',
+    rw [coeff_X_mul_largeSchroderSeriesSeries_sq _, coeff_X_mul_largeSchroderSeries _ hn',
       show n = n - 1 + 1 by omega, largeSchroder_succ (n - 1)]
     simp only [add_tsub_cancel_right, Nat.add_left_cancel_iff]
     rw [Iic_eq_Icc, Nat.bot_eq_zero, ← range_succ_eq_Icc_zero]

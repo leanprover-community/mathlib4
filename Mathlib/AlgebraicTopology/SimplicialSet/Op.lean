@@ -24,7 +24,6 @@ We use an abbreviation `X.op` for `opFunctor.obj X`.
 * Construct an isomorphism `nerve Cᵒᵖ ≅ (nerve C).op` (@robin-carlier)
 * Show that the topological realization of `X.op` identifies to the
   topological realization of `X` (@joelriou)
-
 -/
 
 @[expose] public section

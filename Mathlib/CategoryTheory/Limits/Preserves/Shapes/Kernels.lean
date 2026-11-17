@@ -57,8 +57,8 @@ the mapped kernel fork is limit. -/
 def isLimitMapConeEquiv :
     IsLimit (G.mapCone c) ≃ IsLimit (c.map G) := by
   refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
-  refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
-  exact Cone.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
+  · refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
+  · exact Cone.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
 preserves the corresponding limit. -/
@@ -185,8 +185,8 @@ the mapped cokernel cofork is colimit. -/
 def isColimitMapCoconeEquiv :
     IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) := by
   refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
-  refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
-  exact Cocone.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
+  · refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
+  · exact Cocone.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/
@@ -282,7 +282,7 @@ instance : IsIso (cokernelComparison f G) := by
 @[reassoc]
 theorem preserves_cokernel_iso_comp_cokernel_map {X' Y' : C} (g : X' ⟶ Y') [HasCokernel g]
     [PreservesColimit (parallelPair g 0) G] (p : X ⟶ X') (q : Y ⟶ Y')
-    (hpq : f ≫ q = p ≫ g) :
+    (hpq : p ≫ g = f ≫ q) :
     (PreservesCokernel.iso G _).hom ≫
         cokernel.map (G.map f) (G.map g) (G.map p) (G.map q)
           (by rw [← G.map_comp, hpq, G.map_comp]) =

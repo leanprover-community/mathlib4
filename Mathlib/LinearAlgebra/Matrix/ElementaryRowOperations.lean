@@ -139,16 +139,16 @@ scoped instance setoid : Setoid (Matrix m n R) where
 end RowEquivalent
 
 lemma rowEquivalent_swap (A : Matrix m n R) (i j : m) :
-    RowEquivalent A (Matrix.swap R i j * A) := by
-  exact ⟨Matrix.GeneralLinearGroup.swap R i j, rfl⟩
+    RowEquivalent A (Matrix.swap R i j * A) :=
+  ⟨Matrix.GeneralLinearGroup.swap R i j, rfl⟩
 
 lemma rowEquivalent_rowScale (A : Matrix m n R) (i : m) (c : Rˣ) :
-    RowEquivalent A (Matrix.rowScale i (c : R) * A) := by
-  exact ⟨Matrix.GeneralLinearGroup.rowScale (R := R) i c, rfl⟩
+    RowEquivalent A (Matrix.rowScale i (c : R) * A) :=
+  ⟨Matrix.GeneralLinearGroup.rowScale (R := R) i c, rfl⟩
 
 lemma rowEquivalent_transvection (A : Matrix m n R) (i j : m) (h : i ≠ j) (c : R) :
-    RowEquivalent A (Matrix.transvection i j c * A) := by
-  exact ⟨Matrix.GeneralLinearGroup.transvection (R := R) i j h c, rfl⟩
+    RowEquivalent A (Matrix.transvection i j c * A) :=
+  ⟨Matrix.GeneralLinearGroup.transvection (R := R) i j h c, rfl⟩
 
 end RowEquivalent
 

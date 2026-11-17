@@ -58,6 +58,8 @@ the other inside the proof. A few of the theorems, such as `ncard_union_le` do n
 finiteness arguments; they are true by coincidence due to junk values.
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 namespace Set
@@ -696,6 +698,9 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
     s.ncard = 0 ↔ s = ∅ := by
   rw [← Nat.cast_inj (R := ℕ∞), hs.cast_ncard_eq, Nat.cast_zero, encard_eq_zero]
 
+/-- A set has `ncard` zero if and only if it is empty or infinite. -/
+@[simp] lemma ncard_eq_zero_iff : s.ncard = 0 ↔ s = ∅ ∨ s.Infinite := by simp [ncard]
+
 @[simp, norm_cast] theorem ncard_coe_finset (s : Finset α) : (s : Set α).ncard = s.card := by
   rw [ncard_eq_toFinset_card _, Finset.finite_toSet_toFinset]
 
@@ -830,6 +835,10 @@ variable {f : α → β}
 
 theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s.ncard := by
   to_encard_tac; rw [hs.cast_ncard_eq, (hs.image _).cast_ncard_eq]; apply encard_image_le
+
+lemma ncard_image2_le {γ : Type*} {f : α → β → γ} {s : Set α} {t : Set β} (hs : s.Finite)
+    (ht : t.Finite) : (image2 f s t).ncard ≤ s.ncard * t.ncard := by
+  grw [← image_uncurry_prod, ncard_image_le (hs.prod ht), ncard_prod]
 
 theorem InjOn.ncard_image (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
   congr($(H.encard_image).toNat)
@@ -1271,6 +1280,13 @@ lemma exists_subsuperset_card_eq {n : ℕ} (hst : s ⊆ t) (hsn : s.ncard ≤ n)
 lemma exists_subset_card_eq {n : ℕ} (hns : n ≤ s.ncard) : ∃ t ⊆ s, t.ncard = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
 
+/-- Every `k ≤ s.ncard` is the `ncard` of a finite subset of `s`. For
+infinite `s`, `s.ncard = 0` makes `k = 0` so it remains true. -/
+lemma exists_subset_ncard_eq {k : ℕ} (hks : k ≤ s.ncard) :
+    ∃ t ⊆ s, t.Finite ∧ t.ncard = k := by
+  obtain ⟨t, hts, ht⟩ := exists_subset_encard_eq ((Nat.cast_le.2 hks).trans s.ncard_le_encard)
+  exact ⟨t, hts, finite_of_encard_eq_coe ht, by simp [ncard_def, ht]⟩
+
 theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ) :
     ∃ t, t ⊆ s ∧ t.Finite ∧ t.ncard = k := by
   have := hs.to_subtype
@@ -1280,11 +1296,20 @@ theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ)
   simp
 
 theorem Infinite.exists_superset_ncard_eq {s t : Set α} (ht : t.Infinite) (hst : s ⊆ t)
-    (hs : s.Finite) {k : ℕ} (hsk : s.ncard ≤ k) : ∃ s', s ⊆ s' ∧ s' ⊆ t ∧ s'.ncard = k := by
+    (hs : s.Finite) {k : ℕ} (hsk : s.ncard ≤ k) :
+    ∃ s', s'.Finite ∧ s ⊆ s' ∧ s' ⊆ t ∧ s'.ncard = k := by
   obtain ⟨s₁, hs₁, hs₁fin, hs₁card⟩ := (ht.sdiff hs).exists_subset_ncard_eq (k - s.ncard)
-  refine ⟨s ∪ s₁, subset_union_left, union_subset hst (hs₁.trans sdiff_subset), ?_⟩
+  refine ⟨s ∪ s₁, hs.union hs₁fin, subset_union_left, union_subset hst (hs₁.trans sdiff_subset), ?_⟩
   rwa [ncard_union_eq (disjoint_of_subset_right hs₁ disjoint_sdiff_right) hs hs₁fin, hs₁card,
     add_tsub_cancel_of_le]
+
+lemma exists_superset_ncard_eq [Infinite α] {k : ℕ} (hs : s.Finite) (hsk : s.ncard ≤ k) :
+    ∃ t, t.Finite ∧ s ⊆ t ∧ t.ncard = k := by
+  simpa using infinite_univ.exists_superset_ncard_eq s.subset_univ hs hsk
+
+variable (α) in
+lemma exists_ncard_eq [Infinite α] (k : ℕ) : ∃ s : Set α, s.Finite ∧ s.ncard = k := by
+  simpa using exists_superset_ncard_eq finite_empty
 
 theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s ∪ t).ncard) :
     ∃ r : Set α, n < r.ncard ∧ (r ⊆ s ∨ r ⊆ t) := by

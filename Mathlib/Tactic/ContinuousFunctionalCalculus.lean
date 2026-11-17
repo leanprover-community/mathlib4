@@ -10,7 +10,6 @@ public meta import Aesop
 import Mathlib.Tactic.FunProp
 
 /-!
-
 # Tactics for the continuous functional calculus
 
 At the moment, these tactics are just wrappers, but potentially they could be more sophisticated.

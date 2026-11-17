@@ -17,7 +17,6 @@ public import Mathlib.AlgebraicGeometry.Over
   `U : X.Opens` has a coercion to `Scheme` and `U.ι` is a shorthand
   for `X.restrict U.open_embedding : U ⟶ X`.
 - `AlgebraicGeometry.morphismRestrict`: The restriction of `X ⟶ Y` to `X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U`.
-
 -/
 
 @[expose] public section
@@ -139,6 +138,9 @@ lemma eq_presheaf_map_eqToHom {V W : Opens U} (e : U.ι ''ᵁ V = U.ι ''ᵁ W) 
 lemma nonempty_iff : Nonempty U.toScheme ↔ (U : Set X).Nonempty := by
   simp only [toScheme_carrier, SetLike.coe_sort_coe, nonempty_subtype]
   rfl
+
+instance [Nonempty X] : Nonempty (⊤ : X.Opens).toScheme :=
+  (nonempty_iff ⊤).mpr <| by simp
 
 attribute [-simp] eqToHom_op in
 /-- The global sections of the restriction is isomorphic to the sections on the open set. -/

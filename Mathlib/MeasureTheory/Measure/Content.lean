@@ -223,6 +223,7 @@ theorem innerContent_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup 
     (rel_iSup_sum μ.innerContent μ.innerContent_bot (· ≤ ·) μ.innerContent_iSup_nat _ _).trans ?_
   simp only [μ.is_mul_left_invariant_innerContent h3, Finset.sum_const, nsmul_eq_mul, le_refl]
 
+@[deprecated innerContent_mono (since := "2026-11-16")]
 theorem innerContent_mono' ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 : U ⊆ V) :
     μ.innerContent ⟨U, hU⟩ ≤ μ.innerContent ⟨V, hV⟩ :=
   biSup_mono fun _ hK => hK.trans h2
@@ -302,7 +303,7 @@ theorem outerMeasure_caratheodory (A : Set G) :
   rw [Opens.forall]
   apply inducedOuterMeasure_caratheodory
   · apply innerContent_iUnion_nat
-  · apply innerContent_mono'
+  · apply innerContent_mono
 
 @[to_additive]
 theorem outerMeasure_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup G]

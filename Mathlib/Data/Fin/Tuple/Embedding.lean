@@ -25,7 +25,6 @@ import Mathlib.Data.Set.Disjoint
 
 * `Fin.Embedding.append` : merges two embeddings `Fin m ↪ α` and `Fin n ↪ α`
   into an embedding `Fin (m + n) ↪ α` if they have disjoint ranges
-
 -/
 
 @[expose] public section
