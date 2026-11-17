@@ -43,8 +43,7 @@ open DirectSum
 abbrev Two :=
   WithZero Unit
 
-instance : Fintype Two :=
-  inferInstanceAs (Fintype (Option Unit))
+instance : Fintype Two := .ofEquiv _ (WithZero.toOption Unit).symm
 
 instance : IsOrderedAddMonoid Two :=
   { add_le_add_left := by decide }

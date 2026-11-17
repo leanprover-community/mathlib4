@@ -96,8 +96,7 @@ theorem recOneCoe_coe {C : WithOne α → Sort*} (d : C 1) (f : ∀ a : α, C a)
 
 @[to_additive (attr := simp)] lemma coe_ne_one {a : α} : a ≠ (1 : WithOne α) := nofun
 
-@[to_additive (attr := simp, norm_cast)]
-    lemma coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b := by simp
+@[to_additive (attr := norm_cast)] lemma coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b := by simp
 
 @[to_additive]
 lemma coe_injective : Function.Injective ((↑) : α → WithOne α) := fun _ _ ↦ by simp

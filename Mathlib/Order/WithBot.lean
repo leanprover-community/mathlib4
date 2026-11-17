@@ -83,7 +83,7 @@ open Function
 @[to_dual]
 theorem coe_injective : Injective ((↑) : α → WithBot α) := fun _ _ ↦ by simp
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := norm_cast)]
 theorem coe_inj : (a : WithBot α) = b ↔ a = b := by simp
 
 @[to_dual]
@@ -97,10 +97,6 @@ protected theorem «exists» {p : WithBot α → Prop} : (∃ x, p x) ↔ p ⊥ 
 
 @[to_dual]
 theorem bot_eq_bot : (bot : WithBot α) = (⊥ : WithBot α) :=
-  rfl
-
-@[to_dual]
-theorem some_eq_coe (a : α) : (some a : WithBot α) = (↑a : WithBot α) :=
   rfl
 
 @[to_dual (attr := simp)]
