@@ -79,18 +79,19 @@ def _root_.Lean.MVarId.isDefEqWithLCtx (m₁ m₂ : MVarId) : MetaM Bool :=
     -- They are compatible, so now we can check that the goals are equivalent
     isDefEq (← m₁.getType) (← m₂.getType)
 
-/-- Run `tacs : TacticM Unit` in the current local context, and return if `tacs` made progress
-(in the sense of the number of goals changing, the number or presence of expressions in the context
-changing, or that the type of some expression in the context or the type of the goal is no longer
-definitionally equal to what it used to be at reducible transparency.
+/-- Run `tacs : TacticM Unit` in the current local context, and return if `tacs` made progress.
+
+Here, making progress means the number of goals changing, the number or presence of expressions in
+the context changing, or that the type of some expression in the context or the type of the goal is
+no longer definitionally equal to what it used to be at reducible transparency.
 -/
 def runAndDetectProgress (tacs : TacticM Unit) : TacticM Bool := do
   let goals₁ ← getUnsolvedGoals
   tacs
   let goals₂ ← getUnsolvedGoals
   -- XXX: is there better API for "zip if equal length, error otherwise"?
-  unless goals₁.length = goals₂.length do
-    return false
+  if goals₁.length != goals₂.length then
+    return true
   let goalPairs := goals₁.zip goals₂
   withReducible <| goalPairs.anyM fun (goal₁, goal₂) ↦ do
     return !(← goal₁.isDefEqWithLCtx goal₂)
