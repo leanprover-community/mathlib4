@@ -80,6 +80,12 @@ theorem QuotientGroup.out_mem_iff {G : Type*} [Group G] {H : Subgroup G} {g : G 
     g.out ∈ H ↔ g = (1 : G) := by
   rw [← mk_eq_one_iff, QuotientGroup.out_eq']
 
+theorem Algebra.IsInvariant.mem_map_under {A B G : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    [Group G] [MulSemiringAction G B] [Algebra.IsInvariant A B G] {b : B} (hb : ∀ g : G, g • b = b)
+    {I : Ideal B} (hbI : b ∈ I) : b ∈ (I.under A).map (algebraMap A B) := by
+  obtain ⟨a, rfl⟩ := isInvariant (A := A) b hb
+  exact Ideal.mem_map_of_mem (algebraMap A B) hbI
+
 namespace Algebra.FormallyUnramified
 
 open Algebra.TensorProduct
@@ -124,27 +130,24 @@ noncomputable def descentMultiplier : B := by
 
 private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     (I : Ideal B) (hI : ∀ g : G, g • I = I) :
-    descentMultiplier A B H ∈ ((I.comap (algebraMap A B)).map (algebraMap A B)).colon I := by
+    descentMultiplier A B H ∈ ((I.under A).map (algebraMap A B)).colon I := by
   classical
   let := Fintype.ofFinite (G ⧸ H)
-  let J := (I.comap (algebraMap A B)).map (algebraMap A B)
-  let T : B →ₗ[A] B := (∑ q : G ⧸ H, (MulSemiringAction.toAlgHom A B q.out).toLinearMap).comp
+  let J := (I.under A).map (algebraMap A B)
+  let T : B →ₗ[A] B := ∑ q : G ⧸ H, (MulSemiringAction.toAlgHom A B q.out).toLinearMap.comp
     (LinearMap.mulLeft A (groupIdempotent A B H))
-  suffices hT : I.restrictScalars A ≤ (J.restrictScalars A).comap T by
+  suffices hT : ∀ x, x ∈ I → T x ∈ J by
     simpa [Submodule.mem_colon, IsConcreteLE.le_iff, descentMultiplier, T,
       Finset.sum_mul, mul_assoc] using le_comap_extendScalars T I J hT
   intro x hx
   let y := x * groupIdempotent A B H
   let z := ∑ q : G ⧸ H, q.out • y
-  have hy (h : H) : (h : G) • y = y := by
-    simpa only [y, smul_mul', ← Subgroup.smul_def,
-      smul_groupIdempotent] using smul_mul_groupIdempotent A h x
+  suffices z ∈ J by simpa [T, mul_comm, -smul_mul']
+  have hy (h : H) : h • y = y := by rw [smul_mul', smul_groupIdempotent, smul_mul_groupIdempotent]
   have hz (g : G) : g • z = z := MulAction.smul_sum_quotient_of_fixed H y hy g
-  have hzI : z ∈ I := I.sum_mem fun q _ ↦
-    hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I (I.mul_mem_right _ hx)
-  obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) z hz
-  have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hzI)
-  simpa [T, y, z, ha, mul_comm] using this
+  have hyI : y ∈ I := I.mul_mem_right _ hx
+  have hzI : z ∈ I := I.sum_mem fun q _ ↦ hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I hyI
+  exact Algebra.IsInvariant.mem_map_under hz hzI
 
 lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] :
     Ideal.Quotient.mk Q (descentMultiplier A B (Q.inertia G)) = 1 := by
@@ -153,8 +156,8 @@ lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] :
 
 theorem map_comap_eq_of_isInvariant [Algebra.IsInvariant A B G]
     (I : Ideal B) (hI : ∀ g : G, g • I = I) :
-    (I.comap (algebraMap A B)).map (algebraMap A B) = I := by
-  set J := (I.comap (algebraMap A B)).map (algebraMap A B)
+    (I.under A).map (algebraMap A B) = I := by
+  set J := (I.under A).map (algebraMap A B)
   apply le_antisymm Ideal.map_comap_le
   rw [← Submodule.colon_eq_top_iff_le]
   by_contra hJ
