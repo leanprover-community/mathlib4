@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monad.Types
 public import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
-
 # Compacta and Compact Hausdorff Spaces
 
 Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
@@ -66,7 +65,6 @@ We also add wrappers around structures which already exist. Here are the main on
 
 - E. Manes, Algebraic Theories, Graduate Texts in Mathematics 26, Springer-Verlag, 1976.
 - https://ncatlab.org/nlab/show/ultrafilter
-
 -/
 
 @[expose] public section

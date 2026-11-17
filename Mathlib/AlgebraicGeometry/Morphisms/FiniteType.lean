@@ -20,7 +20,6 @@ A morphism of schemes `f : X ⟶ Y` is locally of finite type if for each affine
 A morphism of schemes is of finite type if it is both locally of finite type and quasi-compact.
 
 We show that these properties are local, and are stable under compositions and base change.
-
 -/
 
 public section

@@ -18,7 +18,6 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 Given an injective resolution `R` of an object `Y` in an abelian category `C`,
 we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.cocomplex` and to make computations in the `Ext`-group.
-
 -/
 
 @[expose] public section

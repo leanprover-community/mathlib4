@@ -37,7 +37,6 @@ of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
   space is a finite union of irreducible closed subsets.
 - `TopologicalSpace.NoetherianSpace.finite_irreducibleComponents`: The number of irreducible
   components of a Noetherian space is finite.
-
 -/
 
 public section
@@ -83,8 +82,8 @@ theorem noetherianSpace_tfae :
       WellFoundedLT (Closeds α),
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
-  tfae_have 1 ↔ 2 := by
-    exact Opens.compl_bijective.2.wellFounded_iff (@OrderIso.compl (Set α)).lt_iff_lt.symm
+  tfae_have 1 ↔ 2 :=
+    Opens.compl_bijective.2.wellFounded_iff (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4 := noetherianSpace_iff_opens α
   tfae_have 1 → 3 := @NoetherianSpace.isCompact α _
   tfae_have 3 → 4 := fun h s => h s

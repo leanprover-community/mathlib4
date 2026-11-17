@@ -21,7 +21,6 @@ We introduce a constructor for `P.IsClosedUnderFiniteProducts`
 assuming `P.IsClosedUnderBinaryProducts`,
 `P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)` and that `C`
 has finite products.
-
 -/
 
 universe w

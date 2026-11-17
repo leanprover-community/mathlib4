@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 * `Matrix.Nondegenerate A`: the proposition that when interpreted as a bilinear form, the matrix `A`
   is nondegenerate.
-
 -/
 
 @[expose] public section

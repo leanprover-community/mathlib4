@@ -23,7 +23,6 @@ for commuting endomorphisms but there are important more general situations wher
 * `Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo`: in finite dimensions, the
   simultaneous generalised eigenspaces of a compatible family of endomorphisms span if the same
   is true of each map individually.
-
 -/
 
 public section
@@ -161,8 +160,8 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
   · replace hy : ∀ φ, finrank K ((f i).maxGenEigenspace φ) < n := fun φ ↦ by
       simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ).ne
     have hi (j : ι) (φ : K) :
-        MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) := by
-      exact h j i φ
+        MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) :=
+      h j i φ
     replace ih (φ : K) :
         ⨆ χ : ι → K, ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊤ := by
       apply ih _ (hy φ)

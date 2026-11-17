@@ -29,7 +29,6 @@ The `ModelCategory` instance is scoped in the namespace
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra, §I.1, Example B][Quillen1967]
-
 -/
 
 public section
