@@ -706,6 +706,14 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
 
+/-- In a commutative group, the normal closure of a set is its subgroup closure. -/
+@[to_additive (attr := simp)
+/-- In a commutative additive group, the normal closure of a set is its additive subgroup
+closure. -/]
+theorem normalClosure_eq_closure {G : Type*} [CommGroup G] (s : Set G) :
+    normalClosure s = closure s :=
+  le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure
+
 /-- The normal closure of an empty set is the trivial subgroup. -/
 @[to_additive (attr := simp)]
 lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by

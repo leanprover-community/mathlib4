@@ -225,8 +225,8 @@ theorem paper_eq5 (i j : Fin n) :
       ∑ α ∈ S (p + 1) i, pminor A α * A i j -
       ∑ α ∈ S (p + 1) i, ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j := calc
   _ = ∑ α ∈ S (p + 1) i, (pminor A α * A i j -
-        ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j) := by
-      exact Finset.sum_congr rfl <| by simp [det_bordered_expand]
+        ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j) :=
+      Finset.sum_congr rfl <| by simp [det_bordered_expand]
   _ = ∑ α ∈ S (p + 1) i, pminor A α * A i j -
         ∑ α ∈ S (p + 1) i, ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j := by
     rw [Finset.sum_sub_distrib]

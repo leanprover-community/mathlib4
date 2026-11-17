@@ -1181,8 +1181,8 @@ theorem continuous_finsetSum [TopologicalSpace E]
 /-- The supremum over a finite set of continuous seminorms is continuous. -/
 theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
-    Continuous ((s.sup p : Seminorm 𝕝 E) : E → ℝ) := by
-  exact continuous_of_le (continuous_finsetSum hp) (finset_sup_le_sum p s)
+    Continuous ((s.sup p : Seminorm 𝕝 E) : E → ℝ) :=
+  continuous_of_le (continuous_finsetSum hp) (finset_sup_le_sum p s)
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
