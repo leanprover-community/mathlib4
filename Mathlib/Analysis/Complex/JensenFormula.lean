@@ -421,7 +421,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
       rw [circleAverage_congr_codiscreteWithin (codiscreteWithin_mono sphere_subset_closedBall h₄g)
         hR]
     _ = circleAverage (∑ᶠ u, (divisor f CB u * log ‖· - u‖)) c R + circleAverage (log ‖g ·‖) c R :=
-      circleAverage_add (circleIntegrable_log_norm_factorizedRational (divisor f CB))
+      circleAverage_add (by fun_prop)
         ((h₁g.mono sphere_subset_closedBall).meromorphicOn.circleIntegrable_log_norm)
     _ = ∑ᶠ u, divisor f CB u * log R + log ‖g c‖ := by
       simp only [circleAverage_log_norm_factorizedRational, add_right_inj]
