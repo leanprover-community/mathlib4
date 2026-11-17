@@ -26,7 +26,6 @@ Let `p : R[X]`.
 ## Note
 
 This has nothing to do with minimal polynomials of primitive elements in finite fields.
-
 -/
 
 @[expose] public section

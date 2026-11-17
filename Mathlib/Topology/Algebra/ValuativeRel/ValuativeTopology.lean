@@ -64,7 +64,7 @@ namespace ValuativeRel
 /-- The topology induced by a valuative relation. Note that this is not made into a global instance
 to avoid diamonds. If desired, one can equip a ring with a topological space from a valuative
 relation by hand. But as long as they do so, the fact that the topology is valuative and
-nonarchemidean can be automatically inferred. -/
+nonarchimedean can be automatically inferred. -/
 local instance topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
 
 instance nonarchimedeanRing : NonarchimedeanRing R :=
@@ -288,7 +288,7 @@ theorem toUniformSpace_eq : _u =
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : v.ValueGroup₀ˣ,
-      ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), v.restrict (y - x) < γ.1 := by
+      ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, v.restrict (y - x) < γ.1 := by
   rw [v.toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
   simp_rw [v.subgroups_basis.mem_addGroupFilterBasis_iff]
@@ -484,14 +484,5 @@ instance [TopologicalSpace R] [IsValuativeTopology R] :
     IsLinearTopology (valuation R).integer R :=
   IsLinearTopology.mk_of_hasBasis _ (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True)
     (s := (valuation R).ltSubmodule) (IsValuativeTopology.hasBasis_nhds_zero R)
-
-@[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
-@[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball
-@[deprecated (since := "2026-03-17")] alias isClopen_ball := Valuation.isClopen_ball
-@[deprecated (since := "2026-03-17")] alias isOpen_closedBall := Valuation.isOpen_closedBall
-@[deprecated (since := "2026-03-17")] alias isClosed_closedBall := Valuation.isClosed_closedBall
-@[deprecated (since := "2026-03-17")] alias isClopen_closedBall := Valuation.isClopen_closedBall
-@[deprecated (since := "2026-03-17")] alias isClopen_sphere := Valuation.isClopen_sphere
-@[deprecated (since := "2026-03-17")] alias isOpen_sphere := Valuation.isOpen_sphere
 
 end IsValuativeTopology

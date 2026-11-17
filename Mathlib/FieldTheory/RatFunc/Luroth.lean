@@ -29,7 +29,6 @@ References:
 - https://github.com/leanprover-community/mathlib4/pull/7788#issuecomment-1788132019
 - [P. M. Cohn, *Basic Algebra: Groups, Rings and Fields*][cohn_2003], Theorem 11.3.4
 - [N. Jacobson, *Basic Algebra II: Second Edition*][jacobson1989], Theorem 8.38
-
 -/
 
 variable {K : Type*} [Field K]
@@ -176,8 +175,8 @@ lemma C_c_mul_φ (h : E ≠ ⊥) :
     enter [1, 2]
     rw [← Polynomial.smul_eq_C_mul, algebraMap_smul, ← Φ'_map, eq_C_content_mul_primPart (Φ' E)]
   rw [Polynomial.map_mul, map_C, ← mul_assoc, ← C_mul, inv_mul_cancel₀, map_one, one_mul]
-  · rw [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff, content_eq_zero_iff]
-    exact Φ'_ne_zero h
+  rw [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff, content_eq_zero_iff]
+  exact Φ'_ne_zero h
 
 lemma Φ_natDegree_eq_φ_natDegree (h : E ≠ ⊥) : (Φ E).natDegree = (φ E).natDegree := by
   rw [← natDegree_map_eq_of_injective (algebraMap_injective K), ← C_c_mul_φ h,

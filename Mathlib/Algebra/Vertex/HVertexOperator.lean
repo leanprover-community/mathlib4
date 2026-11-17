@@ -30,7 +30,6 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 ## References
 
 * [R. Borcherds, *Vertex Algebras, Kac-Moody Algebras, and the Monster*][borcherds1986vertex]
-
 -/
 
 @[expose] public section

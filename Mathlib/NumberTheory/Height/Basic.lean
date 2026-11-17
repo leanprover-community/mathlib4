@@ -59,7 +59,6 @@ We define the following variants.
 ## Tags
 
 Height, absolute value
-
 -/
 
 @[expose] public noncomputable section
@@ -88,9 +87,6 @@ class AdmissibleAbsValues (K : Type*) [Field K] where
       (archAbsVal.map (· x)).prod * ∏ᶠ v : nonarchAbsVal, v.val x = 1
 
 open AdmissibleAbsValues Real Function
-
-@[deprecated (since := "2026-03-03")] alias
-  AdmissibleAbsValues.mulSupport_finite := AdmissibleAbsValues.hasFiniteMulSupport
 
 attribute [fun_prop] hasFiniteMulSupport
 

@@ -19,7 +19,6 @@ in `C`, and we define a cofibrant resolution functor
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
-
 -/
 
 @[expose] public section

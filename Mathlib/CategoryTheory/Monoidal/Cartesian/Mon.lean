@@ -51,8 +51,6 @@ instance Mon.uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
   default.isMonHom_hom.mul_hom := toUnit_unique _ _
   uniq f := Mon.Hom.ext (toUnit_unique _ _)
 
-@[deprecated (since := "2026-03-20")] alias uniqueHomToTrivial := Mon.uniqueHomToTrivial
-
 namespace Mon
 
 variable (D) in

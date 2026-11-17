@@ -21,7 +21,6 @@ we define types `SmallShiftedHom.{w} W X Y m : Type w` for all `m : M`,
 and endow these with a composition which transports the composition
 on the types `ShiftedHom (L.obj X) (L.obj Y) m` when `L : C ⥤ D` is
 any localization functor for `W`.
-
 -/
 
 @[expose] public section
@@ -48,7 +47,6 @@ in the localized category with respect to a class of morphisms `W`. -/
 abbrev HasSmallLocalizedShiftedHom : Prop :=
   ∀ (a b : M), HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦b⟧)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma hasSmallLocalizedShiftedHom_iff
     (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] (X Y : C) :
     HasSmallLocalizedShiftedHom.{w} W M X Y ↔
@@ -195,7 +193,6 @@ section
 variable [W.IsCompatibleWithShift M]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
@@ -206,7 +203,6 @@ lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     L.commShiftIso_add' h, Functor.CommShift.isoAdd'_inv_app, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma equiv_shift {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
@@ -218,7 +214,6 @@ lemma equiv_shift {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
   simp only [Functor.comp_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.map_comp]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Z] [HasSmallLocalizedShiftedHom.{w} W M X Z]
@@ -233,14 +228,12 @@ lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma equiv_mk [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} (f : ShiftedHom X Y m) :
     equiv W L (.mk _ f) = f.map L :=
   ((L.commShiftIso m).app Y).homToEquiv.symm.injective
     ((Equiv.symm_apply_apply ..).trans (by simp [ShiftedHom.map, mk]))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
@@ -254,7 +247,6 @@ lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
   simp only [comp_id, L.commShiftIso_zero, Functor.CommShift.isoZero_hom_app, assoc,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id, id_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma equiv_mk₀Inv [HasSmallLocalizedShiftedHom.{w} W M Y X] [W.RespectsIso]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (hf : W f) :
@@ -417,7 +409,6 @@ noncomputable def smallShiftedHomMap {m : M} (f : SmallShiftedHom.{w} W₁ X₁ 
   have := hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀.{w''} W₂ M X₂ X₂
   Φ.smallHomMap' eX ((Φ.functor.commShiftIso m).app Y₁ ≪≫ (shiftFunctor _ _).mapIso eY) f
 
-set_option backward.defeqAttrib.useBackward true in
 lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
     (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) [NatTrans.CommShift e.hom M]
     {m : M} (f : SmallShiftedHom.{w} W₁ X₁ Y₁ m) :
@@ -441,7 +432,6 @@ lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
 
 variable [W₁.IsCompatibleWithShift M] [W₂.IsCompatibleWithShift M]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma smallShiftedHomMap_mk {m : M} (f : ShiftedHom X₁ Y₁ m) :
     Φ.smallShiftedHomMap eX eY (.mk _ f) =
@@ -462,7 +452,6 @@ lemma smallShiftedHomMap_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X₁ ⟶ Y₁)
       .mk₀ _ _ hm₀ (eX.inv ≫ Φ.functor.map f ≫ eY.hom) := by
   simp [SmallShiftedHom.mk₀]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma smallShiftedHomMap_comp
     [HasSmallLocalizedShiftedHom.{w} W₁ M Y₁ Z₁] [HasSmallLocalizedShiftedHom.{w''} W₂ M Z₂ Z₂]
     [HasSmallLocalizedShiftedHom.{w''} W₂ M Y₂ Z₂] [HasSmallLocalizedShiftedHom.{w} W₁ M X₁ Z₁]

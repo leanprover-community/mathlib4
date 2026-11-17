@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vertical line test for group homs
 
