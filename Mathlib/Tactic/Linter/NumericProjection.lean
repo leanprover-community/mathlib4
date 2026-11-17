@@ -99,9 +99,7 @@ def numericProjections : Linter where
   run stx := stx |> withSetOptionIn fun _ => do
     unless Linter.getLinterValue linter.style.numericProjections (← Linter.getLinterOptions) do
       return
-    -- Matching against `.node` is slightly faster than `isOfKind` since it does not bother
-    -- accounting for pseudokinds (all `.atom`s have a pseudokind which is the same as their token)
-    if (stx.find? fun | .node _ k _ => k == fieldIdxKind | _ => false).isSome then
+    if stx.find? (·.isOfKind fieldIdxKind) |>.isSome then
       -- Collect the warnings separately from logging them, since (compiled) `foldInfo` is faster
       -- than (interpreted, specialized) `foldInfoM`.
       let warnings := (← getInfoTrees).foldl (init := #[]) fun w t =>
