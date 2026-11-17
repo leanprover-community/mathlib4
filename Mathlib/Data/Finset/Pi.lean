@@ -18,6 +18,8 @@ public import Mathlib.Logic.Function.DependsOn
 * `Finset.pi`: Cartesian product of finsets indexed by a finset.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Function
@@ -150,7 +152,7 @@ def piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι �
 @[simp] lemma mem_piDiag : f ∈ s.piDiag ι ↔ ∃ a ∈ s, const ι a = f := mem_image
 
 @[simp] lemma card_piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] [Nonempty ι] :
-    (s.piDiag ι).card = s.card := by rw [piDiag, card_image_of_injective _ const_injective]
+    #(s.piDiag ι) = #s := by rw [piDiag, card_image_of_injective _ const_injective]
 
 /-! ### Restriction -/
 

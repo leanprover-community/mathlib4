@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.EReal.Inv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on extended real numbers
 

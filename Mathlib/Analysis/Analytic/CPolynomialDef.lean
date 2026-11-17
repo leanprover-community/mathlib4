@@ -47,6 +47,8 @@ More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, 
 imports.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -231,7 +233,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_partialSum'
     ∀ y ∈ Metric.eball x r, ∀ m, n ≤ m →
     f y = p.partialSum m (y - x) := by
   intro y hy m hm
-  rw [Metric.mem_eball, edist_eq_enorm_sub, ← mem_eball_zero_iff] at hy
+  rw [Metric.mem_eball, eDist_eq_eNorm_sub, ← mem_eball_zero_iff] at hy
   rw [← (HasFiniteFPowerSeriesOnBall.eq_partialSum hf _ hy m hm), add_sub_cancel]
 
 /-! The particular cases where `f` has a finite power series bounded by `0` or `1`. -/
@@ -253,7 +255,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ Metric
     rw [hf (x + y)]
     · convert! hasSum_zero
       rw [hp, zero_apply]
-    · rwa [Metric.mem_eball, edist_eq_enorm_sub, add_comm, add_sub_cancel_right,
+    · rwa [Metric.mem_eball, eDist_eq_eNorm_sub, add_comm, add_sub_cancel_right,
         ← edist_zero_right, ← Metric.mem_eball]
 
 /-- If `f` has a formal power series at `x` bounded by `0`, then `f` is equal to `0` in a
@@ -347,7 +349,7 @@ main point is that the new series `p.changeOrigin x` is still finite, with the s
 `p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`. -/
 lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
-    (hs : s.card = l) (hkl : n ≤ k + l) :
+    (hs : #s = l) (hkl : n ≤ k + l) :
     p.changeOriginSeriesTerm k l s hs = 0 := by
   rw [changeOriginSeriesTerm, hn _ hkl, map_zero]
 
@@ -392,7 +394,7 @@ theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries �
 theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (x y : E) :
     (p.changeOrigin x).sum y = p.sum (x + y) := by
-  let f (s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) : F :=
+  let f (s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // #s = l }) : F :=
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) fun _ ↦ y
   have finsupp : f.support.Finite := by
     apply Set.Finite.subset (s := changeOriginIndexEquiv ⁻¹' Sigma.fst ⁻¹' {m | m < n})
@@ -450,7 +452,7 @@ theorem HasFiniteFPowerSeriesOnBall.changeOrigin (hf : HasFiniteFPowerSeriesOnBa
         FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
       rw [mem_eball_zero_iff, lt_tsub_iff_right, add_comm] at hz
       rw [p.changeOrigin_eval_of_finite hf.finite, add_assoc, hf.sum]
-      exact mem_eball_zero_iff.2 ((enorm_add_le _ _).trans_lt hz)
+      exact mem_eball_zero_iff.2 ((eNorm_add_le _ _).trans_lt hz)
     rw [this]
     apply (p.changeOrigin y).hasSum_of_finite fun _ => p.changeOrigin_finite_of_finite hf.finite
 
@@ -459,7 +461,7 @@ it is continuously polynomial at every point of this ball. -/
 theorem HasFiniteFPowerSeriesOnBall.cpolynomialAt_of_mem
     (hf : HasFiniteFPowerSeriesOnBall f p x n r) (h : y ∈ Metric.eball x r) :
     CPolynomialAt 𝕜 f y := by
-  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_enorm_sub] using! h
+  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [eDist_eq_eNorm_sub] using! h
   have := hf.changeOrigin this
   rw [add_sub_cancel] at this
   exact this.cpolynomialAt

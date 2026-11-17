@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.Order.Interval.Finset.Nat
-/-!
 
+/-!
 # ℕ-indexed products as sequential limits
 
 Given sequences `M N : ℕ → C` of objects with morphisms `f n : M n ⟶ N n` for all `n`, this file
@@ -115,7 +115,6 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
       congr 1
       exact functorMap_commSq_aux f (by lia) (by lia)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The cone over the tower
@@ -132,9 +131,8 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
         f m ≫ eqToHom (functorObj_eq_neg h).symm) (fun n ↦ ?_)
     apply Limits.Pi.hom_ext
     intro m
-    simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, homOfLE_leOfHom,
-      Functor.const_obj_map, Category.id_comp, Pi.map_π, Functor.ofOpSequence_map_homOfLE_succ,
-      functorMap, Category.assoc, Pi.map_π_assoc]
+    simp only [Pi.map_π, Functor.ofOpSequence_map_homOfLE_succ, functorMap, Category.assoc,
+      Pi.map_π_assoc]
     split
     · simp [dite_eq_left (by lia : m < n + 1)]
     · split
@@ -144,7 +142,6 @@ lemma cone_π_app (n : ℕ) : (cone f).π.app ⟨n⟩ =
     Limits.Pi.map fun m ↦ if h : m < n then eqToHom (functorObj_eq_pos h).symm else
     f m ≫ eqToHom (functorObj_eq_neg h).symm := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m⟩ ≫
@@ -152,7 +149,6 @@ lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m�
     Pi.π _ n ≫ eqToHom (functorObj_eq_pos h).symm := by
   simp [cone_π_app, dite_eq_left h]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app ⟨m⟩ ≫ Pi.π _ n =

@@ -41,7 +41,6 @@ Spec 𝒪_{Y, y} ⟶ Y
 ## TODO
 
 Show that certain morphism properties can also be spread out.
-
 -/
 
 public section

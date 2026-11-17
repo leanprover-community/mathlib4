@@ -29,7 +29,6 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 ## Main Results
 * `ball_subset_range_iff_surjective` (and its variants) shows that a semi-linear map between normed
   spaces is surjective if and only if it contains a ball.
-
 -/
 
 @[expose] public section
@@ -83,7 +82,7 @@ variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontri
 theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
     (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x hr.le,
+  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x r,
     convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
   exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
 
@@ -387,8 +386,10 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F)
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
-theorem nnnorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
+theorem nnNorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
   NNReal.eq norm_id
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_id := nnNorm_id
 
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=

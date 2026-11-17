@@ -32,7 +32,7 @@ jobs:
           key-name: mathlib-dependent-issues-app-pk
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_LABEL_BOTS }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-      - uses: leanprover-community/dependent-issues@642c46aafe7b8a799f4052dc4297e8e245e16f47
+      - uses: leanprover-community/dependent-issues@f41637ea643afc7028ebc1daa4dd10e56d2fd23b
         env:
           # (Required) The token to use to make API calls to GitHub.
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -52,4 +52,9 @@ jobs:
 
           # (Optional) A comma-separated list of keywords. Default
           # "depends on, blocked by"
+          #
+          # bors also reads these keywords (`[dependencies] keywords` in
+          # bors.toml) to block PRs on their dependencies, so change both
+          # together. bors takes them as literal text, so `- \[ \] depends on:`
+          # here is `- [ ] depends on:` there.
           keywords: "- \\[ \\] depends on:,- \\[x\\] depends on:"

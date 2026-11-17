@@ -5,10 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
+public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Tactic.Attr.Register
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
-public import Mathlib.Lean.Meta.Simp
-public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic logic properties
@@ -298,8 +298,6 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 /-- `Xor a b` is the exclusive-or of propositions. -/
 def Xor (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
-@[deprecated (since := "2026-04-27")] alias Xor' := Xor
-
 @[grind =] theorem xor_def {a b : Prop} : Xor a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
 
 instance [Decidable a] [Decidable b] : Decidable (Xor a b) := inferInstanceAs (Decidable (Or ..))
@@ -327,9 +325,6 @@ instance : Std.Irrefl Xor where
 theorem xor_not_not : Xor (¬a) (¬b) ↔ Xor a b := by grind
 
 protected theorem Xor.or (h : Xor a b) : a ∨ b := by grind
-
-@[deprecated (since := "2026-04-27")]
-protected alias Xor'.or := Xor.or
 
 /-! ### Declarations about `and` -/
 
@@ -541,13 +536,9 @@ end Dependent
 
 variable {α β : Sort*} {p : α → Prop}
 
-@[deprecated (since := "2026-03-25")] alias forall_swap := forall_comm
-
 theorem forall₂_comm
     {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∀ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∀ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := ⟨swap₂, swap₂⟩
-
-@[deprecated (since := "2026-03-25")] alias forall₂_swap := forall₂_comm
 
 /-- We intentionally restrict the type of `α` in this lemma so that this is safer to use in simp
 than `forall_comm`. -/
@@ -556,8 +547,6 @@ theorem imp_forall_iff {α : Type*} {p : Prop} {q : α → Prop} : (p → ∀ x,
 
 lemma imp_forall_iff_forall (A : Prop) (B : A → Prop) : (A → ∀ h : A, B h) ↔ ∀ h : A, B h := by
   by_cases h : A <;> simp [h]
-
-@[deprecated (since := "2026-03-25")] alias exists_swap := exists_comm
 
 theorem exists_and_exists_comm {P : α → Prop} {Q : β → Prop} :
     (∃ a, P a) ∧ (∃ b, Q b) ↔ ∃ a b, P a ∧ Q b :=

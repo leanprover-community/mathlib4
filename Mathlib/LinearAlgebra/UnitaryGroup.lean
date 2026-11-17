@@ -35,7 +35,6 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 ## Tags
 
 matrix group, group, unitary group, orthogonal group
-
 -/
 
 @[expose] public section
@@ -81,8 +80,8 @@ theorem kronecker_mem_unitary {U₁ : Matrix n n R} {U₂ : Matrix m m R}
     (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
     U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
   simp_rw [Unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
-  constructor <;> ext <;> simp only [mul_apply, submatrix_apply, kroneckerMap_apply, Prod.fst_swap,
-    conjTranspose_apply, ← star_apply, Prod.snd_swap, ← mul_assoc]
+  constructor <;> ext <;> simp only [Matrix.mul_apply, submatrix_apply, kroneckerMap_apply,
+    Prod.fst_swap, conjTranspose_apply, ← star_apply, Prod.snd_swap, ← mul_assoc]
   · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
     rw [Finset.sum_comm]
     simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₁.1, Matrix.one_apply,
@@ -347,7 +346,6 @@ theorem mem_specialOrthogonalGroup_iff :
     A ∈ specialOrthogonalGroup n R ↔ A ∈ orthogonalGroup n R ∧ A.det = 1 :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
     !![a, b; c, d] ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔

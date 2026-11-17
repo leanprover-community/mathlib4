@@ -210,12 +210,6 @@ instance [Infinite V] : Infinite (SimpleGraph V) := by
 
 section Order
 
-/-- The relation that one `SimpleGraph` is a subgraph of another.
-Note that this should be spelled `≤`. -/
-@[deprecated "use `≤` instead" (since := "2026-03-25")]
-def IsSubgraph (x y : SimpleGraph V) : Prop :=
-  ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
-
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance : LE (SimpleGraph V) where
   le x y := ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w

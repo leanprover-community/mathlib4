@@ -194,7 +194,7 @@ lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   induction n with
   | zero => simp
   | succ n ih =>
-  · grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
+    grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
 
 end IsDomain
 
