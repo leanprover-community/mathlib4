@@ -366,12 +366,12 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
   fun_prop
 
-lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
-    (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
+lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M]
+    (I : Ideal (𝓞 K)) (f : Ideal (𝓞 K) → M) :
     (fun v : FinitePlace K ↦
       f v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport :=
   UniqueFactorizationMonoid.hasFiniteMulSupport_fun_pow_multiplicity _
-    (asIdeal_injective.comp maximalIdeal_injective) (fun v ↦ v.maximalIdeal.irreducible) hI
+    (asIdeal_injective.comp maximalIdeal_injective) (fun v ↦ v.maximalIdeal.irreducible)
 
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :

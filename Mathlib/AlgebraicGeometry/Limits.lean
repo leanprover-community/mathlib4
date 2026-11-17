@@ -179,6 +179,8 @@ instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetTo
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
   ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
 
+instance [UnivLE.{v, u}] : HasCoproducts.{v} Scheme.{u} where
+
 lemma sigmaι_eq_iff [Small.{u} σ] (i j : σ) (x y) :
     Sigma.ι g i x = Sigma.ι g j y ↔ (Sigma.mk i x : Σ i, g i) = Sigma.mk j y := by
   refine (Scheme.IsLocallyDirected.ι_eq_ι_iff _).trans ⟨?_, ?_⟩
@@ -470,13 +472,11 @@ noncomputable def Scheme.coprodPresheafObjIso (U : (X ⨿ Y).Opens) :
     ((X ⨿ Y).sheaf.isProductOfDisjoint _ _ h₂).conePointUniqueUpToIso (limit.isLimit _) ≪≫
     prod.mapIso (ι₁.appIso _) (ι₂.appIso _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Scheme.coprodPresheafObjIso_hom_fst (U : (X ⨿ Y).Opens) :
     (coprodPresheafObjIso U).hom ≫ prod.fst = (coprod.inl (C := Scheme)).app U := by
   simp [coprodPresheafObjIso, Hom.appIso_hom, ← Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Scheme.coprodPresheafObjIso_hom_snd (U : (X ⨿ Y).Opens) :
     (coprodPresheafObjIso U).hom ≫ prod.snd = (coprod.inr (C := Scheme)).app U := by
@@ -572,7 +572,7 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec.{u} := by
   have : IsEmpty (Scheme.Spec.obj (⊥_ CommRingCatᵒᵖ)) :=
     @Function.isEmpty _ _ spec_punit_isEmpty (Scheme.Spec.mapIso
       (initialIsoIsInitial (initialOpOfTerminal CommRingCat.punitIsTerminal))).hom
-  have := preservesInitial_of_iso Scheme.Spec (asIso (initial.to _))
+  have := preservesInitial_of_isIso Scheme.Spec (initial.to _)
   exact preservesColimitsOfShape_pempty_of_preservesInitial _
 
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec.{u} :=
