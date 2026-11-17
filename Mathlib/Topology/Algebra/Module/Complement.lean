@@ -99,15 +99,9 @@ theorem IsCompl.isTopCompl_iff_projectionOnto (h : IsCompl p q) :
   rw [h.isTopCompl_iff, IsInducing.subtypeVal.continuous_iff]
   rfl
 
-@[deprecated (since := "2026-05-05")] alias IsCompl.isTopCompl_iff_linearProjOfIsCompl :=
-  IsCompl.isTopCompl_iff_projectionOnto
-
 theorem IsTopCompl.continuous_projectionOnto (h : IsTopCompl p q) :
     Continuous (p.projectionOnto q h.isCompl) :=
   h.isCompl.isTopCompl_iff_projectionOnto.mp h
-
-@[deprecated (since := "2026-05-05")] alias IsTopCompl.continuous_linearProjOfIsCompl :=
-  IsTopCompl.continuous_projectionOnto
 
 protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTopCompl q p where
   isCompl := h.isCompl.symm

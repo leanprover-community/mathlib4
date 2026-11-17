@@ -146,9 +146,6 @@ theorem sConvexComb_eq_affineCombination (s : StdSimplex R P) :
     s.sConvexComb = s.weights.support.affineCombination R id s.weights :=
   IsAffineConvexSpace.sConvexComb_eq_convexComb s
 
-@[deprecated (since := "2026-05-15")]
-alias convexCombination_eq_affineCombination := sConvexComb_eq_affineCombination
-
 theorem iConvexComb_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
     s.iConvexComb f = s.weights.support.affineCombination R f s.weights := by
   let p : P := Nonempty.some inferInstance

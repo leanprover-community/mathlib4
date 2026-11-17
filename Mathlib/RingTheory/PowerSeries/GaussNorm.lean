@@ -79,9 +79,6 @@ lemma HasGaussNorm.hasMvGaussNorm (h : HasGaussNorm v c f) :
     use Finsupp.uniqueEquiv () y
     simpa [coeff, show (Finsupp.single () (y PUnit.unit)) = y by grind]
 
-@[deprecated (since := "2026-05-06")]
-alias HasGaussNorm.HasMvGaussNorm := HasGaussNorm.hasMvGaussNorm
-
 theorem gaussNorm_zero (vZero : v 0 = 0) : gaussNorm v c 0 = 0 :=
   MvPowerSeries.gaussNorm_zero v (fun _ ↦ c) vZero
 

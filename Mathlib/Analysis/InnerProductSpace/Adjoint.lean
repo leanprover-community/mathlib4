@@ -182,9 +182,6 @@ theorem _root_.Submodule.adjoint_orthogonalProjectionOnto (U : Submodule 𝕜 E)
     (U.orthogonalProjectionOnto : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
 
-@[deprecated (since := "2026-05-05")] alias _root_.Submodule.adjoint_orthogonalProjection :=
-  Submodule.adjoint_orthogonalProjectionOnto
-
 theorem orthogonal_ker (T : E →L[𝕜] F) :
     T.kerᗮ = T†.range.topologicalClosure := by
   rw [← Submodule.orthogonal_orthogonal_eq_closure]

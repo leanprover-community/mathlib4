@@ -34,8 +34,3 @@ lemma IsLocalRing.maximalIdeal_sq_lt_of_ringKrullDim_ne_zero (h : ringKrullDim R
     (maximalIdeal R) ^ 2 < maximalIdeal R :=
   (maximalIdeal_sq_lt_maximalIdeal R).mpr (ringKrullDim_eq_zero_of_isField.mt h)
 
-@[deprecated "Use `IsLocalRing.maximalIdeal_sq_lt_of_ringKrullDim_ne_zero` instead"
-  (since := "2026-05-13")]
-lemma IsLocalRing.maximalIdeal_sq_lt (h : 0 < ringKrullDim R) :
-    (maximalIdeal R) ^ 2 < maximalIdeal R :=
-  IsLocalRing.maximalIdeal_sq_lt_of_ringKrullDim_ne_zero h.ne.symm

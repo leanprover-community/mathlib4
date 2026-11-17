@@ -93,9 +93,6 @@ instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInst
 instance [NeZero n] : IsBotZeroClass (Fin n) where
   isBot_zero := isBot_bot
 
-@[deprecated _root_.bot_eq_zero +typeChanged (since := "2026-05-07")]
-protected lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := _root_.bot_eq_zero
-
 lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
 @[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl

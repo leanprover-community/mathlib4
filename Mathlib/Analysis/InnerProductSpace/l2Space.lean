@@ -517,9 +517,6 @@ protected theorem hasSum_orthogonalProjectionOnto {U : Submodule 𝕜 E} [Comple
   simpa only [b.repr_apply_apply, inner_orthogonalProjectionOnto_eq_of_mem_left] using
     b.hasSum_repr (U.orthogonalProjectionOnto x)
 
-@[deprecated (since := "2026-05-05")] alias hasSum_orthogonalProjection :=
-  HilbertBasis.hasSum_orthogonalProjectionOnto
-
 theorem finite_spans_dense [DecidableEq E] (b : HilbertBasis ι 𝕜 E) :
     (⨆ J : Finset ι, span 𝕜 (J.image b : Set E)).topologicalClosure = ⊤ :=
   eq_top_iff.mpr <| b.dense_span.ge.trans (by

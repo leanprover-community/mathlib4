@@ -198,8 +198,6 @@ theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₐ[R] B) : A → B) = ((φ₂ : A →ₐ[R] B) : A → B) from congr_arg _ H
 
-@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
-
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
   CoalgHom.linearMapOfClass_injective.comp coe_coalgHom_injective
 

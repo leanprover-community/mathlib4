@@ -150,8 +150,6 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h�
 theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
   rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
-
 -- make the coercion the simp-normal form
 @[simp]
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
@@ -187,8 +185,6 @@ theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔
 
 theorem toRingHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
   coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := toRingHom_injective
 
 theorem toMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
   RingHom.toMonoidHom_injective.comp toRingHom_injective

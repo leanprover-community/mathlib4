@@ -313,9 +313,6 @@ theorem quotientEquivOfIsCompl_apply_mk_right (h : IsCompl p q) (x : q) :
     quotientEquivOfIsCompl p q h (Quotient.mk x) = x :=
   (quotientEquivOfIsCompl p q h).apply_symm_apply x
 
-@[deprecated (since := "2026-05-06")]
-alias quotientEquivOfIsCompl_apply_mk_coe := quotientEquivOfIsCompl_apply_mk_right
-
 @[simp]
 theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
     (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
@@ -791,60 +788,10 @@ end LinearMap.IsIdempotentElem
 
 namespace Submodule
 
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl := projectionOnto
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection := projection
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply := projection_apply
-@[deprecated (since := "2026-05-04")] alias coe_linearProjOfIsCompl_apply :=
-  coe_projectionOnto_apply
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_mem := projection_apply_mem
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_apply_left :=
-  projectionOnto_apply_left
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_left := projection_apply_left
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_range := range_projectionOnto
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_range := range_projection
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_surjective :=
-  projectionOnto_surjective
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_apply_eq_zero_iff :=
-  projectionOnto_apply_eq_zero_iff
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_eq_zero_iff :=
-  projection_apply_eq_zero_iff
-@[deprecated (since := "2026-05-05")] alias linearProjOfIsCompl_apply_of_mem_right :=
-  projectionOnto_apply_of_mem_right
-@[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_of_mem_right :=
-  projection_apply_of_mem_right
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_apply_right :=
-  projectionOnto_apply_right
-@[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_right :=
-  projection_apply_right
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_ker := ker_projectionOnto
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_ker := ker_projection
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_comp_subtype :=
-  projectionOnto_comp_subtype
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_isCompl_projection :=
-  projectionOnto_projection
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_isIdempotentElem :=
-  isIdempotentElem_projection
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_add_projection_eq_self :=
-  projection_add_projection_eq_self
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_add_projection_eq_id :=
-  projection_add_projection_eq_id
-@[deprecated (since := "2026-05-05")] alias IsCompl.projection_eq_self_sub_projection :=
-  projection_eq_self_sub_projection
-@[deprecated (since := "2026-05-05")] alias IsCompl.projection_eq_id_sub_projection :=
-  projection_eq_id_sub_projection
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_eq_self_iff := projection_eq_self_iff
-
 end Submodule
 
 namespace LinearMap
 
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_of_proj := projectionOnto_of_proj
-@[deprecated (since := "2026-05-04")] alias IsIdempotentElem.eq_isCompl_projection :=
-  IsIdempotentElem.eq_projection
-@[deprecated (since := "2026-05-04")] alias surjective_comp_linearProjOfIsCompl :=
-  surjective_comp_projectionOnto
-@[deprecated (since := "2026-05-04")] alias isIdempotentElem_iff_eq_isCompl_projection_range_ker :=
-  isIdempotentElem_iff_eq_projection_range_ker
 @[deprecated (since := "2026-05-16")] alias ofIsCompl_left_apply := ofIsCompl_apply_left
 @[deprecated (since := "2026-05-16")] alias ofIsCompl_right_apply := ofIsCompl_apply_right
 

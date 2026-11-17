@@ -770,11 +770,6 @@ protected theorem Multipliable.tprod_union_of_disjoint {s t : Set β} (hd : Disj
     ∏' x : ↑(s ∪ t), f x = (∏' x : s, f x) * ∏' x : t, f x :=
   (hs.hasProd.mul_disjoint hd ht.hasProd).tprod_eq
 
-@[deprecated (since := "2026-05-10")]
-alias Multipliable.tprod_union_disjoint := Multipliable.tprod_union_of_disjoint
-@[deprecated (since := "2026-05-10")]
-alias Summable.tsum_union_disjoint := Summable.tsum_union_of_disjoint
-
 @[to_additive]
 protected theorem Multipliable.tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
     (hd : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, Multipliable (f ∘ (↑) : t i → α)) :

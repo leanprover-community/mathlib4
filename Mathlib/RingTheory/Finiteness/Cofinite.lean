@@ -68,9 +68,6 @@ theorem CoFG.of_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.CoFG :
   rw [← sup_eq_right.mpr hT]
   exact Module.Finite.equiv (quotientQuotientEquivQuotientSup S T)
 
-@[deprecated (since := "2026-05-13")]
-alias CoFG.cofg_of_le := CoFG.of_le
-
 section LinearMap
 
 open LinearMap

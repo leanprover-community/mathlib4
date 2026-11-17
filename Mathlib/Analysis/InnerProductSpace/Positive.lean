@@ -425,9 +425,6 @@ theorem IsPositive.orthogonalProjectionOnto_comp {T : E →L[𝕜] E} (hT : T.Is
     U.inner_orthogonalProjectionOnto_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
-@[deprecated (since := "2026-05-05")] alias IsPositive.orthogonalProjection_comp :=
-  IsPositive.orthogonalProjectionOnto_comp
-
 open scoped NNReal
 
 lemma antilipschitz_of_forall_le_inner_map {H : Type*} [NormedAddCommGroup H]

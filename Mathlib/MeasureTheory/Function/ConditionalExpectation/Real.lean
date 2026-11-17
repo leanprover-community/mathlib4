@@ -147,41 +147,6 @@ theorem ae_bdd_abs_condExp_of_ae_bdd_abs {R : E} {f : α → E} (hbdd : ∀ᵐ x
   have hR : 0 ≤ R := (abs_nonneg _).trans hn.some_mem
   exact (abs_condExp_ae_le_condExp_abs f).trans (condExp_le_nonneg_const (m := m) hR hbdd)
 
-/-- If the real-valued function `f` is bounded almost everywhere by `R`, then so is its conditional
-expectation. -/
-@[deprecated ae_bdd_abs_condExp_of_ae_bdd_abs +typeChanged (since := "2026-05-05")]
-theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
-    ∀ᵐ x ∂μ, |(μ[f | m]) x| ≤ R := by
-  by_cases hnm : m ≤ m0
-  swap
-  · simp_rw [condExp_of_not_le hnm, Pi.zero_apply, abs_zero]
-    exact Eventually.of_forall fun _ => R.coe_nonneg
-  by_cases hfint : Integrable f μ
-  swap
-  · simp_rw [condExp_of_not_integrable hfint]
-    filter_upwards [hbdd] with x hx
-    rw [Pi.zero_apply, abs_zero]
-    exact (abs_nonneg _).trans hx
-  by_contra h
-  change μ _ ≠ 0 at h
-  simp only [← pos_iff_ne_zero, Set.compl_def, Set.mem_ofPred_eq, not_le] at h
-  suffices μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R < μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R by
-    exact this.ne rfl
-  refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ h.ne') ?_
-  · exact integrable_condExp.abs.integrableOn
-  refine (setIntegral_abs_condExp_le ?_ _).trans ?_
-  · simp_rw [← Real.norm_eq_abs]
-    exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
-      stronglyMeasurable_condExp.norm.measurable
-  simp only [← smul_eq_mul, ← setIntegral_const]
-  refine setIntegral_mono_ae hfint.abs.integrableOn ?_ hbdd
-  refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
-    (integrable_condExp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
-  refine setLIntegral_mono
-    (stronglyMeasurable_condExp.mono hnm).measurable.nnNorm.coe_nnreal_ennreal fun x hx => ?_
-  rw [eNorm_eq_nnNorm, eNorm_eq_nnNorm, coe_le_coe, Real.nnNorm_of_nonneg R.coe_nonneg]
-  exact Subtype.mk_le_mk.2 (le_of_lt hx)
-
 end HasSolidNorm
 
 section NormedSpace

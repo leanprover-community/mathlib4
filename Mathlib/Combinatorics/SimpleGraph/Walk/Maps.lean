@@ -80,9 +80,6 @@ variable {p} in
 theorem nil_map_iff : (p.map f).Nil ↔ p.Nil := by
   cases p <;> simp
 
-@[deprecated nil_map_iff +typeChanged (since := "2026-05-12")]
-theorem map_eq_nil_iff {p : G.Walk u u} : p.map f = nil ↔ p = nil := by cases p <;> simp
-
 @[simp]
 theorem length_map : (p.map f).length = p.length := by induction p <;> simp [*]
 

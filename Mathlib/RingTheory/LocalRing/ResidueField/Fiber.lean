@@ -136,8 +136,6 @@ noncomputable def Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.
 
 end Ideal
 
-@[deprecated (since := "2026-05-11")] alias Fiber.algEquivQuotient := Ideal.Fiber.algEquivQuotient
-
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- The fiber `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal

@@ -181,10 +181,6 @@ theorem type_unit : type (@emptyRelation Unit) = 1 :=
 instance instNeZeroOne : NeZero (1 : Ordinal) :=
   ⟨type_ne_zero_of_nonempty _⟩
 
-@[deprecated _root_.one_ne_zero +typeChanged (since := "2026-05-12")]
-protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
-  _root_.one_ne_zero
-
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, one_ne_zero⟩⟩
 
@@ -860,18 +856,6 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal where
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
   le_add_self a b := by simpa using add_le_add_left bot_le a
   le_self_add a b := by simpa using add_le_add_right bot_le a
-
-@[deprecated zero_max +typeChanged (since := "2026-05-07")]
-theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
-  zero_max
-
-@[deprecated max_zero +typeChanged (since := "2026-05-07")]
-theorem max_zero_right : ∀ a : Ordinal, max a 0 = a :=
-  max_zero
-
-@[deprecated _root_.max_eq_zero +typeChanged (since := "2026-05-07")]
-protected theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
-  max_eq_zero
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=

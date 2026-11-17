@@ -51,8 +51,6 @@ def carmichael : ArithmeticFunction ℕ where
     | n + 1 => Nat.find <| ExponentExists.of_finite (G := (ZMod (n + 1))ˣ)
   map_zero' := rfl
 
-@[deprecated (since := "2026-05-06")] alias Carmichael := carmichael
-
 @[inherit_doc]
 scoped[ArithmeticFunction.carmichael] notation "λ" => ArithmeticFunction.carmichael
 

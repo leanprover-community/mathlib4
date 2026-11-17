@@ -543,16 +543,10 @@ protected theorem orthogonalProjectionOnto_apply_eq_sum {U : Submodule 𝕜 E}
   simpa only [b.repr_apply_apply, inner_orthogonalProjectionOnto_eq_of_mem_left] using
     (b.sum_repr (U.orthogonalProjectionOnto x)).symm
 
-@[deprecated (since := "2026-05-05")] alias orthogonalProjection_apply_eq_sum :=
-  OrthonormalBasis.orthogonalProjectionOnto_apply_eq_sum
-
 protected theorem orthogonalProjectionOnto_eq_sum_rankOne {U : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] (b : OrthonormalBasis ι 𝕜 U) :
     U.orthogonalProjectionOnto = ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i : E) := by
   ext; simp [b.orthogonalProjectionOnto_apply_eq_sum]
-
-@[deprecated (since := "2026-05-05")] alias orthogonalProjection_eq_sum_rankOne :=
-  OrthonormalBasis.orthogonalProjectionOnto_eq_sum_rankOne
 
 protected theorem starProjection_eq_sum_rankOne {U : Submodule 𝕜 E} [U.HasOrthogonalProjection]
     (b : OrthonormalBasis ι 𝕜 U) :

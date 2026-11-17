@@ -411,10 +411,6 @@ theorem length_eq_zero_iff {p : G.Walk u v} : p.length = 0 ↔ p.Nil := by
 
 alias ⟨_, Nil.length_eq_zero⟩ := length_eq_zero_iff
 
-@[deprecated length_eq_zero_iff +typeChanged (since := "2026-05-11")]
-lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 :=
-  length_eq_zero_iff.symm
-
 lemma not_nil_iff_lt_length {p : G.Walk v w} : ¬ p.Nil ↔ 0 < p.length := by
   cases p <;> simp
 
@@ -428,10 +424,6 @@ theorem eq_nil_iff_nil {p : G.Walk v v} : p = nil ↔ p.Nil := by
   cases p <;> simp
 
 alias ⟨_, Nil.eq_nil⟩ := eq_nil_iff_nil
-
-@[deprecated eq_nil_iff_nil +typeChanged (since := "2026-05-11")]
-lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil :=
-  eq_nil_iff_nil.symm
 
 lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=
   match p with

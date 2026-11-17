@@ -649,5 +649,3 @@ theorem dimH_orthogonalProjectionOnto_le {𝕜 E : Type*} [RCLike 𝕜]
     dimH (K.orthogonalProjectionOnto '' s) ≤ dimH s :=
   K.lipschitzWith_orthogonalProjectionOnto.dimH_image_le s
 
-@[deprecated (since := "2026-05-05")] alias dimH_orthogonalProjection_le :=
-  dimH_orthogonalProjectionOnto_le

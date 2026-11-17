@@ -79,9 +79,6 @@ variable [Preorder α] [One α] [IsBotOneClass α]
 @[to_additive (attr := simp) not_lt_zero]
 theorem not_lt_one : ¬ a < 1 := one_le.not_gt
 
-@[deprecated (since := "2026-05-07")]
-alias not_lt_zero' := not_lt_zero
-
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   one_le.trans_lt h
@@ -102,9 +99,6 @@ variable [PartialOrder α] [One α] [IsBotOneClass α]
 -- Not `simp`, as different types might have a different preferred form.
 @[to_additive]
 theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
-
-@[deprecated (since := "2026-05-07")]
-alias bot_eq_zero'' := bot_eq_zero
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=

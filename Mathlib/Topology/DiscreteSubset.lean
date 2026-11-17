@@ -300,9 +300,6 @@ lemma Filter.codiscreteWithin_mono {s₁ : Set X} (hs : s₁ ⊆ s) :
   refine (biSup_mono hs).trans <| iSup₂_mono fun _ _ ↦ ?_
   gcongr
 
-@[deprecated (since := "2026-05-13")]
-alias Filter.codiscreteWithin.mono := Filter.codiscreteWithin_mono
-
 /-- If `s` is codiscrete within `U`, then `sᶜ ∩ U` has discrete topology. -/
 theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codiscreteWithin U) :
     IsDiscrete (s ∩ U) := by
@@ -580,28 +577,5 @@ theorem IsDiscrete.biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X
     (hs : ∀ i ∈ I, IsDiscrete (s i)) (hsc : ∀ i ∈ I, IsClosed (s i)) :
     IsDiscrete (⋃ i ∈ I, s i) :=
   .biUnion I.finite_toSet hs hsc
-
-/-- The union of finitely many discrete closed subsets is discrete. -/
-@[deprecated IsDiscrete.union +typeChanged (since := "2026-05-13")]
-theorem discreteTopology_union {S T : Set X} (hs : DiscreteTopology S) (ht : DiscreteTopology T)
-    (hs' : IsClosed S) (ht' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
-  rw [← isDiscrete_iff_discreteTopology] at *
-  exact hs.union ht hs' ht'
-
-/-- The union of finitely many discrete closed subsets is discrete. -/
-@[deprecated IsDiscrete.biUnion_finset +typeChanged (since := "2026-05-13")]
-theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X}
-    (hs : ∀ i ∈ I, DiscreteTopology (s i)) (hs' : ∀ i ∈ I, IsClosed (s i)) :
-    DiscreteTopology (⋃ i ∈ I, s i) := by
-  simp only [← isDiscrete_iff_discreteTopology] at *
-  exact .biUnion_finset hs hs'
-
-/-- The union of finitely many discrete closed subsets is discrete. -/
-@[deprecated IsDiscrete.iUnion +typeChanged (since := "2026-05-13")]
-theorem discreteTopology_iUnion_finite {ι : Type*} [Finite ι] {s : ι → Set X}
-    (hs : ∀ i, DiscreteTopology (s i)) (hs' : ∀ i, IsClosed (s i)) :
-    DiscreteTopology (⋃ i, s i) := by
-  simp only [← isDiscrete_iff_discreteTopology] at *
-  exact .iUnion hs hs'
 
 end discrete_union

@@ -112,10 +112,6 @@ theorem orthogonal_orthogonal_eq_closure [CompleteSpace E] :
 
 variable {K}
 
-@[deprecated isCompl_orthogonal (since := "2026-05-07")]
-theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
-  K.isCompl_orthogonal
-
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
     [L.HasOrthogonalProjection] : Kᗮ = Lᗮ ↔ K = L :=
@@ -189,16 +185,8 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
 theorem orthogonalProjectionOnto_apply_eq_projectionOnto [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjectionOnto x = K.projectionOnto _ K.isCompl_orthogonal x := rfl
 
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_apply_eq_linearProjOfIsCompl :=
-  orthogonalProjectionOnto_apply_eq_projectionOnto
-
 theorem toLinearMap_orthogonalProjectionOnto_eq_projectionOnto [K.HasOrthogonalProjection] :
     (K.orthogonalProjectionOnto : E →ₗ[𝕜] K) = K.projectionOnto _ K.isCompl_orthogonal := rfl
-
-@[deprecated (since := "2026-05-05")]
-alias toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl :=
-  toLinearMap_orthogonalProjectionOnto_eq_projectionOnto
 
 open Submodule in
 theorem toLinearMap_starProjection_eq_isComplProjection [K.HasOrthogonalProjection] :

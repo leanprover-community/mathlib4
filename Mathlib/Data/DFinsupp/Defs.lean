@@ -300,8 +300,6 @@ theorem filter_apply_neg [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p
   ext fun i => by
     simp only [add_apply, filter_apply]; split_ifs <;> simp only [add_zero, zero_add]
 
-@[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
-
 @[simp]
 theorem filter_zero [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] :
     (0 : Π₀ i, β i).filter p = 0 := by
@@ -897,8 +895,6 @@ theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s
 @[simp]
 theorem support_single {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
   grind
-
-@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset {i : ι} {b : β i} : (single i b).support ⊆ {i} :=
   support_mk'_subset

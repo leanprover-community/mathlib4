@@ -91,8 +91,6 @@ theorem bitIndices_bit_false (n : ℕ) :
     · simpa [hrw, List.sum_map_mul_left]
     simp [hrw, List.sum_map_mul_left, hs, add_comm (a := 1)]
 
-@[deprecated (since := "2026-05-15")] alias twoPowSum_bitIndices := sum_map_two_pow_bitIndices
-
 @[simp] theorem mem_bitIndices {i n : ℕ} : i ∈ n.bitIndices ↔ n.testBit i := by
   induction n using Nat.binaryRec generalizing i with
   | zero => simp
@@ -125,8 +123,6 @@ theorem bitIndices_sum_map_two_pow {L : List ℕ} (hL : List.SortedLT L) :
     bitIndices_sum_map_two_pow hL₀]
   simp [add_comm (a := 1), add_assoc]
 termination_by L.length
-
-@[deprecated (since := "2026-05-15")] alias bitIndices_twoPowsum := bitIndices_sum_map_two_pow
 
 theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2 ^ a ≤ n :=
   ge_two_pow_of_testBit (by simpa using ha)

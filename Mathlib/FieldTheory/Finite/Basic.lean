@@ -463,9 +463,6 @@ theorem Polynomial.expand_card (f : K[X]) : expand K q f = f ^ q := by
   rw [hn, ← map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
     frobenius_pow hn, RingHom.one_def, map_id]
 
-@[deprecated (since := "2026-05-11")]
-alias expand_card := Polynomial.expand_card
-
 end FiniteField
 
 namespace ZMod

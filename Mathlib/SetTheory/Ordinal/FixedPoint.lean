@@ -350,10 +350,6 @@ theorem isNormal_deriv (f) : IsNormal (deriv f) :=
 theorem deriv_strictMono (f) : StrictMono (deriv f) :=
   derivFamily_strictMono _
 
-@[deprecated "do not depend on the junk values of `nfp`" (since := "2026-05-13")]
-theorem deriv_eq_id_of_nfp_eq_id (h : nfp f = id) : deriv f = id :=
-  ((isNormal_deriv _).ext_iff .id).2 (by simp [h])
-
 theorem deriv_fp (H : IsNormal f) : ∀ o, f (deriv f o) = deriv f o :=
   derivFamily_fp (i := ⟨⟩) H
 
@@ -369,29 +365,6 @@ theorem mem_range_deriv (H : IsNormal f) {a} : a ∈ Set.range (deriv f) ↔ f a
 theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
   convert! derivFamily_eq_enumOrd fun _ : Unit => H
   exact (Set.iInter_const _).symm
-
-@[deprecated "do not depend on the junk values of `nfp`" (since := "2026-05-13")]
-theorem nfp_zero_left (a) : nfp 0 a = a := by
-  rw [← iSup_iterate_eq_nfp]
-  apply (Ordinal.iSup_le ?_).antisymm (Ordinal.le_iSup _ 0)
-  intro n
-  cases n
-  · rfl
-  · rw [Function.iterate_succ']
-    simp
-
-@[deprecated "do not depend on the junk values of `nfp`" (since := "2026-05-13")]
-theorem nfp_zero : nfp 0 = id := by
-  ext
-  exact nfp_zero_left _
-
-@[deprecated "do not depend on the junk values of `deriv`" (since := "2026-05-13")]
-theorem deriv_zero : deriv 0 = id :=
-  deriv_eq_id_of_nfp_eq_id nfp_zero
-
-@[deprecated "do not depend on the junk values of `deriv`" (since := "2026-05-13")]
-theorem deriv_zero_left (a) : deriv 0 a = a := by
-  rw [show deriv 0 = id from deriv_eq_id_of_nfp_eq_id nfp_zero, id_eq]
 
 end
 

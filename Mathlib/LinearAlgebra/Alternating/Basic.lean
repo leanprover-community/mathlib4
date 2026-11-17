@@ -480,9 +480,6 @@ theorem _root_.AlternatingMap.smulRight_eq_comp
     f.smulRight z = (LinearMap.id.smulRight z).compAlternatingMap f :=
   rfl
 
-@[deprecated (since := "2026-05-14")]
-alias smulRight_eq_comp := AlternatingMap.smulRight_eq_comp
-
 @[simp]
 theorem subtype_compAlternatingMap_codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : Submodule R N)
     (h) : p.subtype.compAlternatingMap (f.codRestrict p h) = f :=
