@@ -1036,6 +1036,15 @@ lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s :=
   induction z using Sym2.inductionOn
   simp [pair_subset_iff]
 
+variable (s) in
+/-- The set of all unordered pairs of elements from a set is equivalent to the type of all unordered
+pairs of elements from that set. -/
+def sym2Equiv : s.sym2 ≃ Sym2 s where
+  toFun := fun ⟨z, hz⟩ ↦ z.attachWith fun a ha ↦ s.mem_sym2_iff_subset.mp hz ha
+  invFun z := ⟨z.map (↑), by cases z; simp⟩
+  left_inv _ := by simp
+  right_inv z := by cases z; simp
+
 lemma sym2_eq_mk_image : s.sym2 = (Sym2.mk.uncurry) '' s ×ˢ s := by ext ⟨x, y⟩; aesop
 
 @[simp] lemma mk_preimage_sym2 : (Sym2.mk.uncurry) ⁻¹' s.sym2 = s ×ˢ s := rfl

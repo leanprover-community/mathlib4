@@ -134,8 +134,6 @@ theorem union_comm (s₁ s₂ : Finset α) : s₁ ∪ s₂ = s₂ ∪ s₁ := su
 @[simp]
 theorem union_assoc (s₁ s₂ s₃ : Finset α) : s₁ ∪ s₂ ∪ s₃ = s₁ ∪ (s₂ ∪ s₃) := sup_assoc _ _ _
 
-theorem union_idempotent (s : Finset α) : s ∪ s = s := sup_idem _
-
 theorem union_subset_left (h : s ∪ t ⊆ u) : s ⊆ u :=
   subset_union_left.trans h
 
@@ -147,6 +145,8 @@ theorem union_left_comm (s t u : Finset α) : s ∪ (t ∪ u) = t ∪ (s ∪ u) 
 theorem union_right_comm (s t u : Finset α) : s ∪ t ∪ u = s ∪ u ∪ t := sup_right_comm _ _ _
 
 theorem union_self (s : Finset α) : s ∪ s = s := sup_idem _
+
+@[deprecated (since := "2026-11-16")] alias union_idempotent := union_self
 
 lemma union_eq_left : s ∪ t = s ↔ t ⊆ s := sup_eq_left
 
