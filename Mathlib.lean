@@ -6077,6 +6077,7 @@ public import Mathlib.NumberTheory.LSeries.PrimesInAP
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.LSeries.RiemannZetaLogDeriv
 public import Mathlib.NumberTheory.LSeries.SumCoeff
+public import Mathlib.NumberTheory.LSeries.VasyuninIntegral
 public import Mathlib.NumberTheory.LSeries.WeakPNT
 public import Mathlib.NumberTheory.LSeries.WienerIkehara
 public import Mathlib.NumberTheory.LSeries.ZMod
