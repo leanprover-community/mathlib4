@@ -802,6 +802,8 @@ public import Mathlib.Algebra.Lie.Weights.Killing
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.Algebra.LieRinehartAlgebra.Defs
+public import Mathlib.Algebra.LieRinehartAlgebra.Quotient
+public import Mathlib.Algebra.LieRinehartAlgebra.StrictIdeal
 public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
 public import Mathlib.Algebra.LinearRecurrence
 public import Mathlib.Algebra.Module.Basic
@@ -822,6 +824,8 @@ public import Mathlib.Algebra.Module.GradedModule
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Lattice
+public import Mathlib.Algebra.Module.Lattice.Basic
+public import Mathlib.Algebra.Module.Lattice.Full
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
@@ -4829,6 +4833,7 @@ public import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.BritishFlag
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
+public import Mathlib.Geometry.Euclidean.EulerQuadrilateral
 public import Mathlib.Geometry.Euclidean.Incenter
 public import Mathlib.Geometry.Euclidean.Incenter.Basic
 public import Mathlib.Geometry.Euclidean.Incenter.SouthPole
@@ -4852,6 +4857,7 @@ public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Geometry.Euclidean.Triangle
 public import Mathlib.Geometry.Euclidean.Volume.Basic
 public import Mathlib.Geometry.Euclidean.Volume.Def
+public import Mathlib.Geometry.Euclidean.Volume.Incenter
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 public import Mathlib.Geometry.Euclidean.Volume.Triangle
@@ -4993,6 +4999,7 @@ public import Mathlib.GroupTheory.Focal
 public import Mathlib.GroupTheory.Frattini
 public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.FreeGroup.Center
 public import Mathlib.GroupTheory.FreeGroup.CyclicallyReduced
 public import Mathlib.GroupTheory.FreeGroup.GeneratorEquiv
 public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
@@ -6126,6 +6133,7 @@ public import Mathlib.NumberTheory.ModularForms.OrderAtInfty
 public import Mathlib.NumberTheory.ModularForms.Petersson
 public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+public import Mathlib.NumberTheory.ModularForms.QExpansionInjective
 public import Mathlib.NumberTheory.ModularForms.RamanujanFormula
 public import Mathlib.NumberTheory.ModularForms.SlashActions
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
@@ -6162,6 +6170,7 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
+public import Mathlib.NumberTheory.NumberField.HeckeLFunction
 public import Mathlib.NumberTheory.NumberField.House
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
@@ -7737,6 +7746,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Basic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.BinarySplit
@@ -8163,6 +8173,7 @@ public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.ApproximateUnit
+public import Mathlib.Topology.Baire.Absorbent
 public import Mathlib.Topology.Baire.BaireMeasurable
 public import Mathlib.Topology.Baire.CompleteMetrizable
 public import Mathlib.Topology.Baire.Lemmas

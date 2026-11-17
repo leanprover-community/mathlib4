@@ -267,7 +267,7 @@ def prod (J : Ideal A) : SubDPIdeal hI where
     induction hx using Submodule.smul_induction_on' generalizing m with
     | smul a ha b hb =>
       rw [smul_eq_mul, smul_eq_mul, mul_comm a b, hI.dpow_mul ha, mul_comm]
-      exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m (zero_lt_iff.mpr hm))
+      exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m hm.pos)
         (hI.dpow_mem hm ha)
     | add x hx y hy hx' hy' =>
       rw [hI.dpow_add' (mul_le_left hx) (mul_le_left hy)]
@@ -346,7 +346,6 @@ instance : SupSet (SubDPIdeal hI) :=
 
 theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup ((toIdeal) '' S) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (SubDPIdeal hI) := by
   refine Function.Injective.completeLattice (fun J : SubDPIdeal hI ↦ (J : Set.Iic I))
     (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h)
