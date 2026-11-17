@@ -43,6 +43,9 @@ example : 2 - √2 ∈ Set.Icc 0.58 0.59 := by dyadic_interval [prec := 20]
 
 example : √2 * √2 ∈ Set.Icc 1.99 2.01 := by dyadic_interval [prec := 20]
 
+example : √((5 + √5) * 0.5) - (1 + √5) * 0.5 ∈ Set.Ioo 0.284 0.285 := by
+  dyadic_interval [prec := 20]
+
 example {x : ℝ} : 0 ≤ √x := by dyadic_interval
 
 example {x : ℝ} (hx : x ∈ Set.Icc 1 4) : √x ∈ Set.Icc 1 2 := by dyadic_interval
