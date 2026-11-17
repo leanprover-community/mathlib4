@@ -207,7 +207,7 @@ theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval
   simp [eval]
 
 @[simp]
-theorem accepts_comap (f : α' → α) : (M.comap f).accepts = ⟨List.map f ⁻¹' M.accepts.toSet⟩ := by
+theorem accepts_comap (f : α' → α) : (M.comap f).accepts = M.accepts.preimage f := by
   ext; simp [mem_accepts]
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/

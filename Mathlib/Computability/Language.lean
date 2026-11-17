@@ -193,7 +193,7 @@ theorem add_self (l : Language α) : l + l = l :=
 
 /-- Maps the alphabet of a language. -/
 def map (f : α → β) : Language α →+* Language β where
-  toFun l := ⟨l.toSet.image (List.map f)⟩
+  toFun l := List.map f '' l.toSet
   map_zero' := Language.ext (image_empty _)
   map_one' := Language.ext image_singleton
   map_add' _ _ := Language.ext (image_union ..)
@@ -205,6 +205,13 @@ theorem map_id (l : Language α) : map id l = l := by simp [map]
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
+
+/-- Pulls back the alphabet of a language along `f`. -/
+@[simps apply]
+def preimage (f : α → β) : Language β →+ Language α where
+  toFun l := List.map f ⁻¹' l.toSet
+  map_zero' := Language.ext preimage_empty
+  map_add' _ _ := Language.ext (preimage_union ..)
 
 lemma mem_kstar_iff_exists_nonempty {x : List α} :
     x ∈ l∗ ↔ ∃ S : List (List α), x = S.flatten ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
