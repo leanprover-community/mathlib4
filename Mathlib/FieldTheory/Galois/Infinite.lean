@@ -10,7 +10,6 @@ public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 
 /-!
-
 # The Fundamental Theorem of Infinite Galois Theory
 
 In this file, we prove the fundamental theorem of infinite Galois theory and the special case for
@@ -48,7 +47,6 @@ Special cases :
 
 * `normal_iff_isGalois` : The fixing subgroup of an intermediate field `L` is normal if and only if
   `L` is Galois.
-
 -/
 
 @[expose] public section
@@ -182,7 +180,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
     simp only [AlgEquiv.smul_def, AlgEquiv.mul_apply]
     have : ((restrictNormalHom L') h ⟨y,hy⟩).1 = ((restrictNormalHom L') σ ⟨y,hy⟩).1 := by rw [eq]
     rw [restrictNormalHom_apply L'.1 h ⟨y, hy⟩, restrictNormalHom_apply L'.1 σ ⟨y, hy⟩] at this
-    simp only [this, ← AlgEquiv.mul_apply, inv_mul_cancel, one_apply]
+    simp only [this, ← AlgEquiv.mul_apply, inv_mul_cancel, AlgEquiv.one_apply]
   absurd compl
   apply Set.not_subset.mpr
   use h

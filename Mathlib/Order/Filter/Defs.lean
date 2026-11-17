@@ -136,7 +136,7 @@ def comk (p : Set α → Prop) (he : p ∅) (hmono : ∀ t, p t → ∀ s ⊆ t,
   sets := {t | p tᶜ}
   univ_sets := by simpa
   sets_of_superset := fun ht₁ ht => hmono _ ht₁ _ (compl_subset_compl.2 ht)
-  inter_sets := fun ht₁ ht₂ => by simp [compl_inter, hunion _ ht₁ _ ht₂]
+  inter_sets := fun ht₁ ht₂ => by simp [hunion _ ht₁ _ ht₂]
 
 @[simp]
 lemma mem_comk {p : Set α → Prop} {he hmono hunion s} :
@@ -302,20 +302,14 @@ def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
 
 /-- Two sets `s` and `t` are *eventually equal* along a filter `l` if the set of `x` such that
-`x ∈ s ↔ x ∈ t` belongs to `l`.
-
-This is definitionally `(· ∈ s) =ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
-abbreviation) to avoid simp unfolding membership of concrete sets. -/
+`x ∈ s ↔ x ∈ t` belongs to `l`. -/
 def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
-  EventuallyEq l (fun x => x ∈ s) (fun x => x ∈ t)
+  ∀ᶠ x in l, x ∈ s ↔ x ∈ t
 
 /-- A set `s` is *eventually contained* in a set `t` along a filter `l` if the set of `x` such that
-`x ∈ s → x ∈ t` belongs to `l`.
-
-This is definitionally `(· ∈ s) ≤ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
-abbreviation) to avoid simp unfolding membership of concrete sets. -/
+`x ∈ s → x ∈ t` belongs to `l`. -/
 def EventuallySubset (l : Filter α) (s t : Set α) : Prop :=
-  EventuallyLE l (fun x => x ∈ s) (fun x => x ∈ t)
+  ∀ᶠ x in l, x ∈ s → x ∈ t
 
 /-- `x =ᶠ[l] y` means that `x` and `y` are *eventually equal* along the filter `l`.
 

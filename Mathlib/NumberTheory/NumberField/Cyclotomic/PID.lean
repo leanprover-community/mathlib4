@@ -7,10 +7,10 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 
+meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
-import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.
@@ -30,7 +30,7 @@ universe u
 
 namespace IsCyclotomicExtension.Rat
 
-open NumberField Polynomial InfinitePlace Nat Real cyclotomic RingOfIntegers Ideal
+open NumberField Polynomial InfinitePlace Nat Real cyclotomic NumberField.RingOfIntegers Ideal
 
 variable (K : Type u) [Field K] [NumberField K]
 
@@ -39,7 +39,7 @@ local notation "M " K:70 => (4 / π) ^ nrComplexPlaces K *
 
 /-- If `IsCyclotomicExtension {3} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
-  apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
+  apply NumberField.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   rw [discr_prime 3 K, IsCyclotomicExtension.finrank (n := 3) K
     (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 3, totient_prime
       Nat.prime_three]
@@ -54,7 +54,7 @@ theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞
 /-- If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   have : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩
-  apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
+  apply NumberField.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   rw [discr_prime 5 K, IsCyclotomicExtension.finrank (n := 5) K
     (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 5,
     totient_prime Nat.prime_five]
@@ -68,33 +68,28 @@ theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 
 
 /-- If `IsCyclotomicExtension {7} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem seven_pid [IsCyclotomicExtension {7} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
-  have : IsGalois ℚ K := IsCyclotomicExtension.isGalois {7} ℚ K
+  have : IsGalois ℚ K := isGalois {7} ℚ K
   -- The Minkowski bound is `4`.
   have hM : ⌊(M K)⌋₊ = 4 := by
     have : Fact (Nat.Prime 7) := ⟨Nat.prime_seven⟩
     have : π ∈ Set.Ioo 3 3.15 := ⟨pi_gt_three, pi_lt_d2⟩
-    rw [floor_eq_iff (by positivity), discr_prime 7 K,
-      IsCyclotomicExtension.finrank (n := 7) K (irreducible_rat (by simp)),
+    rw [floor_eq_iff (by positivity), discr_prime 7 K, finrank 7 K,
       nrComplexPlaces_eq_totient_div_two 7, totient_prime Nat.prime_seven]
     norm_num
     field_simp
     dyadic_interval [prec := 5]
   refine isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc
     fun p hp hprime ↦ ?_
-  have : (span {(p : ℤ)}).IsPrime :=
-    isPrime_of_prime (prime_span_singleton_iff.mpr (prime_iff_prime_int.mp hprime))
+  have : Fact p.Prime := ⟨hprime⟩
   obtain ⟨⟨P, _, _⟩⟩ := (span {(p : ℤ)}).nonempty_primesOver (S := 𝓞 K)
   refine ⟨P, ⟨‹_›, ‹_›⟩, Or.inl ?_⟩
   rw [hM] at hp ⊢
-  obtain ⟨h₁, h₄⟩ := Finset.mem_Icc.mp hp
-  interval_cases p
-  · norm_num at hprime
-  · have h : orderOf (2 : ZMod 7) = 3 := (orderOf_eq_iff (by norm_num)).mpr ⟨by decide, by decide⟩
-    rw [inertiaDeg_eq_of_not_dvd (m := 7) 2 K P (by norm_num)]
-    norm_num [h]
-  · have h : orderOf (3 : ZMod 7) = 6 := (orderOf_eq_iff (by norm_num)).mpr ⟨by decide, by decide⟩
-    rw [inertiaDeg_eq_of_not_dvd (m := 7) 3 K P (by norm_num)]
-    norm_num [h]
-  · norm_num at hprime
+  fin_cases hp <;> try exact absurd hprime (by decide)
+  · rw [inertiaDeg_eq_of_not_dvd (m := 7) 2 K P (by decide),
+      (orderOf_eq_iff (n := 3) (by decide)).mpr ⟨by decide, by decide⟩]
+    decide
+  · rw [inertiaDeg_eq_of_not_dvd (m := 7) 3 K P (by decide),
+      (orderOf_eq_iff (n := 6) (by decide)).mpr ⟨by decide, by decide⟩]
+    decide
 
 end IsCyclotomicExtension.Rat

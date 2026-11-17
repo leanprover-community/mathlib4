@@ -31,7 +31,6 @@ We follow the signs conventions appearing in the introduction of
 
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
-
 -/
 
 @[expose] public section
@@ -236,7 +235,6 @@ It is advisable to use a `p₂` that has good definitional properties
 
 When `z₁` or `z₂` is a `0`-cochain, there is a better choice of `p₂`, and this leads
 to the two simplification lemmas `comp_zero_cochain_v` and `zero_cochain_comp_v`.
-
 -/
 
 lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
@@ -548,7 +546,6 @@ lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
   simp only [Cochain.mk_v, one_smul, Int.negOnePow_zero, Cochain.sub_v, Cochain.ofHom_v, eq]
   abel
 
-set_option backward.defeqAttrib.useBackward true in
 lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
     δ (-1) 0 z = Cochain.ofHom (Homotopy.nullHomotopicMap'
       (fun i j hij => z.v i j (by dsimp at hij; rw [← hij, add_neg_cancel_right]))) := by
@@ -581,6 +578,7 @@ def cocycle : AddSubgroup (Cochain F G n) :=
   AddMonoidHom.ker (δ_hom ℤ F G n (n + 1)).toAddMonoidHom
 
 /-- The type of `n`-cocycles, as a subtype of `Cochain F G n`. -/
+@[implicit_reducible]
 def Cocycle : Type v := cocycle F G n
 
 namespace Cocycle
@@ -645,7 +643,7 @@ instance : Module R (Cocycle F G n) where
 
 /-- Constructor for `Cocycle F G n`, taking as inputs `z : Cochain F G n`, an integer
 `m : ℤ` such that `n + 1 = m`, and the relation `δ n m z = 0`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mk (z : Cochain F G n) (m : ℤ) (hnm : n + 1 = m) (h : δ n m z = 0) : Cocycle F G n :=
   ⟨z, by simpa only [mem_iff n m hnm z] using h⟩
 
@@ -657,7 +655,7 @@ lemma δ_eq_zero {n : ℤ} (z : Cocycle F G n) (m : ℤ) : δ n m (z : Cochain F
   · exact δ_shape n m h _
 
 /-- The `0`-cocycle associated to a morphism in `CochainComplex C ℤ`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def ofHom (φ : F ⟶ G) : Cocycle F G 0 := mk (Cochain.ofHom φ) 1 (zero_add 1) (by simp)
 
 @[simp]
@@ -666,7 +664,7 @@ lemma ofHom_smul (r : R) (φ : F ⟶ G) :
   cat_disch
 
 /-- The morphism in `CochainComplex C ℤ` associated to a `0`-cocycle. -/
-@[simps]
+@[simps, implicit_reducible]
 def homOf (z : Cocycle F G 0) : F ⟶ G where
   f i := (z : Cochain _ _ _).v i i (add_zero i)
   comm' := by
@@ -691,7 +689,7 @@ lemma cochain_ofHom_homOf_eq_coe (z : Cocycle F G 0) :
 variable (F G)
 
 /-- The additive equivalence between morphisms in `CochainComplex C ℤ` and `0`-cocycles. -/
-@[simps]
+@[simps, implicit_reducible]
 def equivHom : (F ⟶ G) ≃+ Cocycle F G 0 where
   toFun := ofHom
   invFun := homOf
@@ -711,7 +709,7 @@ def diff : Cocycle K K 1 :=
 
 variable (L n) in
 /-- The inclusion `Cocycle K L n →+ Cochain K L n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toCochainAddMonoidHom : Cocycle K L n →+ Cochain K L n where
   toFun x := x
   map_zero' := by simp
@@ -719,14 +717,12 @@ def toCochainAddMonoidHom : Cocycle K L n →+ Cochain K L n where
 
 variable (R L n) in
 /-- The inclusion `Cocycle K L n →ₗ[R] Cochain K L n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toCochainLinearMap : Cocycle K L n →ₗ[R] Cochain K L n where
   toFun x := x
   map_add' := by simp
   map_smul' := by simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable (L n) in
 /-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
 def isKernel (hm : n + 1 = m) :
@@ -737,16 +733,8 @@ def isKernel (hm : n + 1 = m) :
       { toFun x := ⟨s.ι x, by
           rw [mem_iff _ _ hm]
           congrm $s.condition x⟩
-        map_zero' := by
-          #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-          this was just `cat_disch`. -/
-          simp +instances only [HomComplex_X, map_zero]
-          rfl
-        map_add' _ _ := by
-          #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-          this was just `cat_disch`. -/
-          simp +instances only [HomComplex_X, map_add]
-          rfl })
+        map_zero' := by cat_disch
+        map_add' _ _ := by cat_disch })
     (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
 
 end Cocycle
@@ -800,8 +788,6 @@ def Cocycle.comp {a b c : ℤ} (z₁ : Cocycle F G a) (z₂ : Cocycle G K b) (h 
 
 namespace Cochain
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given two morphisms of complexes `φ₁ φ₂ : F ⟶ G`, the datum of a homotopy between `φ₁` and
 `φ₂` is equivalent to the datum of a `1`-cochain `z` such that `δ (-1) 0 z` is the difference
 of the zero cochains associated to `φ₂` and `φ₁`. -/
@@ -992,7 +978,7 @@ noncomputable def HomComplex.Cocycle.isKernel' (hm : n + 1 = m) :
     IsLimit (KernelFork.ofι (f := (linearHomComplex R K L).d n m)
       (ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L _)) (by cat_disch)) :=
   isLimitOfReflects (forget₂ _ (AddCommGrpCat.{v}))
-    ((KernelFork.isLimitMapConeEquiv ..).2 (Cocycle.isKernel K L n m hm))
+    ((KernelFork.isLimitMapConeEquiv ..).invFun (Cocycle.isKernel K L n m hm))
 
 variable (R K L) in
 lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
@@ -1000,6 +986,6 @@ lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
     dsimp% (((Cocycle.isKernel' R K L m p hp).lift
       (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp))) x).1 = δ n m x :=
   congr($((Cocycle.isKernel' R K L m p hp).fac
-      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).1 x)
+      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).hom' x)
 
 end CochainComplex

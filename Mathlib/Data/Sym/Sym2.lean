@@ -471,8 +471,8 @@ lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sy
     z.pmap (fun a ha => g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha => ha) := by
   cases z; rfl
 
-lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : β → γ)
-    (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
+lemma pmap_map {P : α → Prop} (f : ∀ a, P a → β) (g : β → γ)
+    (z : Sym2 α) (h : ∀ a ∈ z, P a) :
     (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun _ ha ↦ ha) := by
   cases z; rfl
 
@@ -498,6 +498,16 @@ def attachWith {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) : Sym2 {a 
 lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s, P a) :
     (s.attachWith h).map Subtype.val = s := by
   cases s; rfl
+
+@[simp]
+lemma attachWith_mk {P : α → Prop} (a b : α) (h : ∀ x ∈ s(a, b), P x) :
+    s(a, b).attachWith h = s(⟨a, h a <| mem_mk_left ..⟩, ⟨b, h b <| mem_mk_right ..⟩) :=
+  rfl
+
+@[simp]
+lemma attachWith_inj {P : α → Prop} {z₁ z₂ : Sym2 α} {h₁ : ∀ a ∈ z₁, P a} {h₂ : ∀ a ∈ z₂, P a} :
+    z₁.attachWith h₁ = z₂.attachWith h₂ ↔ z₁ = z₂ := by
+  simp [← (map.injective Subtype.val_injective).eq_iff]
 
 /-! ### Diagonal -/
 
@@ -1025,6 +1035,15 @@ def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y
 lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
   induction z using Sym2.inductionOn
   simp [pair_subset_iff]
+
+variable (s) in
+/-- The set of all unordered pairs of elements from a set is equivalent to the type of all unordered
+pairs of elements from that set. -/
+def sym2Equiv : s.sym2 ≃ Sym2 s where
+  toFun := fun ⟨z, hz⟩ ↦ z.attachWith fun a ha ↦ s.mem_sym2_iff_subset.mp hz ha
+  invFun z := ⟨z.map (↑), by cases z; simp⟩
+  left_inv _ := by simp
+  right_inv z := by cases z; simp
 
 lemma sym2_eq_mk_image : s.sym2 = (Sym2.mk.uncurry) '' s ×ˢ s := by ext ⟨x, y⟩; aesop
 

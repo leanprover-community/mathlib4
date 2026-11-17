@@ -24,7 +24,6 @@ function when the base is coprime to the modulus.
 - Extend to results in cases where the base is not coprime to the modulus.
 - Write a tactic or simproc that can automatically reduce exponents
   or towers of exponents using these results.
-
 -/
 
 public section

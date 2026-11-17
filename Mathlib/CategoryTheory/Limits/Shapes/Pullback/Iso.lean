@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 # The pullback of an isomorphism
 
 This file provides some basic results about the pullback (and pushout) of an isomorphism.
-
 -/
 
 @[expose] public section

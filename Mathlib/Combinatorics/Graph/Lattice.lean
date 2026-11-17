@@ -26,7 +26,6 @@ This has the effect of, when taking the intersection of non-compatible graphs,
 
 + Add `ConditionallyCompleteCompleteLatticeInf (Graph α β)` after splitting
   `ConditionallyCompleteCompleteLattice`.
-
 -/
 
 public section
