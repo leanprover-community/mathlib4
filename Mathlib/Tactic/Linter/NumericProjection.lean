@@ -81,6 +81,18 @@ as responsible for their elaboration in the infotrees. As such, we do not gate o
   -- `i.runMetaM ctx (instantiateMVars i.expr)`.
   return (idxStx, ← i.expr.constName?)
 
+/-- Returns `some (structName, fieldName)` if `projFn` is a structure projection that is not
+allowed to have been created by numeric projection syntax, consulting `allowsNumericProj`. -/
+@[inline] def disallowedNumericProjFn? (env : Environment) (projFn : Name) :
+    Option (Name × Name) := do
+  -- Note: we silently return `none` these fail, since the numeric projection may be for a
+  -- one-constructor inductive (which has no fields to suggest replacing it with).
+  let { ctorName, i, .. } ← env.getProjectionFnInfo? projFn
+  let .ctorInfo { induct := structName, .. } ← env.find? ctorName | none
+  guard !(allowsNumericProj env structName)
+  let fieldName ← (getStructureInfo? env structName).bind (·.fieldNames[i]?)
+  some (structName, fieldName)
+
 open Meta in
 @[inherit_doc linter.style.numericProjections]
 def numericProjections : Linter where
@@ -92,28 +104,22 @@ def numericProjections : Linter where
     if (stx.find? fun | .node _ k _ => k == fieldIdxKind | _ => false).isSome then
       -- Collect the warnings separately from logging them, since (compiled) `foldInfo` is faster
       -- than (interpreted, specialized) `foldInfoM`.
+      let env ← getEnv
       let warnings := (← getInfoTrees).foldl (init := #[]) fun w t =>
         t.foldInfo (init := w) fun _ info w => Id.run do
           if let .ofTermInfo i := info then
-            if let some projFn := numericProjFn? i then
-              return w.push projFn
+            if let some (idStx, projFn) := numericProjFn? i then
+              if let some structAndField := disallowedNumericProjFn? env projFn then
+                return w.push (idStx, structAndField)
           return w
       unless warnings.isEmpty do
         -- Deduplicate by range; likely only a small number of potential warnings, so a linear
         -- `Array.contains` check is fast
         let mut loggedRanges := Array.emptyWithCapacity warnings.size
-        for (stx, projFn) in warnings do
+        for (stx, structName, fieldName) in warnings do
           let some range := stx.getRange? (canonicalOnly := true) | continue
             if loggedRanges.contains range then continue else
               loggedRanges := loggedRanges.push range
-          let env ← getEnv
-          -- Note: we silently skip if these fail, since the numeric projection may be for a
-          -- one-constructor inductive (which has no fields to suggest replacing it with).
-          let some { ctorName, i, .. } := env.getProjectionFnInfo? projFn | continue
-          let some (.ctorInfo { induct := structName, .. }) := env.find? ctorName | continue
-          if allowsNumericProj env structName then continue
-          let some fieldName := (getStructureInfo? env structName).bind (·.fieldNames[i]?)
-            | continue
           let msg ← liftCoreM <|
             Hint.mkSuggestionsMessage (ref := stx)
               (codeActionPrefix? := none) (forceList := false)
