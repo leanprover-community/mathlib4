@@ -13,26 +13,31 @@ public import Mathlib.GroupTheory.FreeGroup.Basic
 /-!
 # Free abelian groups
 
-The free abelian group on a type `α`, defined as the abelianization of the free group on `α`.
+The free abelian group on a type `α`, defined as the abelianisation of
+the free group on `α`.
 
-The free abelian group on `α` can be abstractly defined as the left adjoint of the forgetful functor
-from abelian groups to types. Alternatively, one could define it as the functions `α → ℤ` which send
-all but finitely many `(a : α)` to `0`, under pointwise addition. In this file, it is defined as the
-abelianisation of the free group on `α`. All the constructions and theorems required to show the
-adjointness of the construction and the forgetful functor are proved in this file, but the
-category-theoretic adjunction statement is in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+The free abelian group on `α` can be abstractly defined as the left adjoint of the
+forgetful functor from abelian groups to types. Alternatively, one could define
+it as the functions `α → ℤ` which send all but finitely many `(a : α)` to `0`,
+under pointwise addition. In this file, it is defined as the abelianisation
+of the free group on `α`. All the constructions and theorems required to show
+the adjointness of the construction and the forgetful functor are proved in this
+file, but the category-theoretic adjunction statement is in
+`Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
 Here we use the following variables: `(α β : Type*) (A : Type*) [CommGroup A]`
 
-* `FreeCommGroup α` : the free abelian group on a type `α`. As an abelian group it is `α →₀ ℤ`,
-  the functions from `α` to `ℤ` such that all but finitely many elements get mapped to zero, however
-  this is not how it is implemented.
+* `FreeCommGroup α` : the free abelian group on a type `α`. As an abelian
+  group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
+  many elements get mapped to zero, however this is not how it is implemented.
 
-* `lift f : FreeCommGroup α →+ A` : the group homomorphism induced by the map `f : α → A`.
+* `lift f : FreeCommGroup α →+ A` : the group homomorphism induced by the
+  map `f : α → A`.
 
-* `map (f : α → β) : FreeCommGroup α →* FreeCommGroup β` : functoriality of `FreeCommGroup`.
+* `map (f : α → β) : FreeCommGroup α →* FreeCommGroup β` : functoriality of
+  `FreeCommGroup`.
 
 * `instance [Monoid α] : Semigroup (FreeCommGroup α)`
 
@@ -45,20 +50,21 @@ The definitions are
 `def FreeAddCommGroup : Type u := AddGroup.Abelianization (FreeAddGroup α)`,
 the latter generated from the former by `to_additive`. The two are related by
 `FreeCommGroup.freeCommGroupEquivMultiplicative` and
-`FreeAddCommGroup.freeAddCommGroupEquivAdditive`. Results whose natural proofs are additive
-(e.g. those using maps to `ℤ`) are proved for `FreeAddCommGroup` and transferred.
+`FreeAddCommGroup.freeAddCommGroupEquivAdditive`.
 
 Chris Hughes has suggested that this all be rewritten in terms of `Finsupp`.
 Johan Commelin has written all the API relating the definition to `Finsupp`
 in `Mathlib/Algebra/FreeAbelianGroup/Finsupp.lean`.
 
-The lemmas `map_pure`, `map_of`, `map_one`, `map_mul`, `map_inv` and `map_div` are proved about the
-`Functor.map` `<$>` construction, and need `α` and `β` to be in the same universe. But
-`FreeCommGroup.map (f : α → β)` is defined to be the `Group` homomorphism
-`FreeCommGroup α →* FreeCommGroup β` (with `α` and `β` now allowed to be in different universes), so
-`(map f).map_add` etc. can be used to prove that `FreeCommGroup.map` preserves addition. The
-functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_apply` are about
-`FreeCommGroup.map`.
+The lemmas `map_pure`, `map_of`, `map_one`, `map_mul`, `map_inv` and `map_div`
+are proved about the `Functor.map` `<$>` construction, and need `α` and `β` to
+be in the same universe. But
+`FreeCommGroup.map (f : α → β)` is defined to be the `Group`
+homomorphism `FreeCommGroup α →* FreeCommGroup β` (with `α` and `β` now
+allowed to be in different universes), so `(map f).map_mul` etc.
+can be used to prove that `FreeCommGroup.map` preserves multiplication. The
+functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_apply`
+are about `FreeCommGroup.map`.
 -/
 
 @[expose] public section
@@ -96,7 +102,7 @@ inverses. For example if `x` and `y` are terms of type `α` then `x + x + x - y`
 element of `FreeAddCommGroup α`. In particular if `α` is empty then `FreeAddCommGroup α` is
 isomorphic to the trivial group, and if `α` has one term then `FreeAddCommGroup α` is isomorphic to
 `ℤ`. One can think of `FreeAddCommGroup α` as the functions `α →₀ ℤ` with finite support, and
-multiplication given pointwise.
+addition given pointwise.
 -/]
 def FreeCommGroup : Type u :=
   Group.Abelianization (FreeGroup α)
@@ -164,10 +170,10 @@ commutative groups. -/
 def FreeCommGroup.freeCommGroupEquivMultiplicative :
     FreeCommGroup α ≃* Multiplicative (FreeAddCommGroup α) :=
     MonoidHom.toMulEquiv
-    (FreeCommGroup.lift (fun x ↦ Multiplicative.ofAdd (FreeAddCommGroup.of x)))
-    (FreeAddCommGroup.lift (fun x ↦ Additive.ofMul (FreeCommGroup.of x))).toMultiplicativeLeft
-    (by ext; simp)
-    (by ext; simp)
+      (FreeCommGroup.lift (Multiplicative.ofAdd ∘ FreeAddCommGroup.of))
+      (FreeAddCommGroup.lift (Additive.ofMul ∘ FreeCommGroup.of)).toMultiplicativeLeft
+      (by ext; simp)
+      (by ext; simp)
 
 /-- Additive free commutative groups are isomorphic to `Additive` multiplicative free
 commutative groups. -/
@@ -179,7 +185,6 @@ def FreeAddCommGroup.freeAddCommGroupEquivAdditive :
     (by ext; simp)
     (by ext; simp)
 
--- simp lemmas: what it does on `of x`, in both directions
 @[simp]
 theorem FreeCommGroup.freeCommGroupEquivMultiplicative_of (x : α) :
     freeCommGroupEquivMultiplicative (of x) = Multiplicative.ofAdd (FreeAddCommGroup.of x) :=
