@@ -27,8 +27,8 @@ algebraic closure of `ℚ_[p]`, for example.
 ## Details
 
 We define the spectral value and the spectral norm. We prove the norm extension theorem
-[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Theorem 3.2.1/2)]
-[bosch-guntzer-remmert] : given a nonarchimedean normed field `K` and an algebraic
+[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
+(Theorem 3.2.1/2)][bosch-guntzer-remmert] : given a nonarchimedean normed field `K` and an algebraic
 extension `L/K`, the spectral norm is a power-multiplicative `K`-algebra norm on `L` extending
 the norm on `K`. All `K`-algebra automorphisms of `L` are isometries with respect to this norm.
 If `L/K` is finite, we get a formula relating the spectral norm on `L` with any other
@@ -232,8 +232,8 @@ variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 
 open Nat in
 /-- The norm of any root of `p` is bounded by the spectral value of `p`. See
-[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
-[bosch-guntzer-remmert]. -/
+[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
+(Proposition 3.1.2/1(1))][bosch-guntzer-remmert]. -/
 theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) {p : K[X]} (hp : p.Monic) {x : L} (hx : aeval x p = 0) :
     f x ≤ spectralValue p := by

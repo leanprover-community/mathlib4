@@ -365,13 +365,3 @@ alias mem_kstar_iff_exists_nonempty := mem_kstar_iff_exists_ne_one
 @[deprecated (since := "2026-10-30")] alias reverse_mem_reverse := star_mem_reverse
 
 end Language
-
-/-- Symbols for use by all kinds of grammars. -/
-inductive Symbol (T N : Type*)
-  /-- Terminal symbols (of the same type as the language) -/
-  | terminal (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
-  | nonterminal (n : N) : Symbol T N
-deriving DecidableEq, Repr, Fintype
-
-attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

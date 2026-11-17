@@ -183,7 +183,6 @@ lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     rw [← ((finTwoArrowEquiv _).trans (.prodComm ..)).symm.summable_iff] at H
     exact H.prod_factor
 
-
 public section
 
 section transform
@@ -195,7 +194,7 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
 
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
-  simp [SL_slash_def, modular_T_smul z, G2_eq_tsum_cexp, denom_apply, coe_T,
+  simp [SL_slash_def, modular_T_smul z, G2_eq_tsum_cexp, denom_apply,
     ← exp_periodic.nat_mul 1 (2 * π * I * z)]
   grind
 
