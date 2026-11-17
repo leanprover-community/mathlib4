@@ -64,7 +64,7 @@ theorem IsLocalRing.length_restrictScalars :
     | zero => rw [← RelSeries.head, hs_bot]; simp
     | succ i hi => simpa [hi, add_one_mul] using (s.step i).length_restrictScalars A
   · have : ¬ IsFiniteLength A M := by
-      contrapose! h
+      contrapose h
       rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
       exact h.imp (isNoetherian_of_tower A) (isArtinian_of_tower A)
     rw [← length_ne_top_iff, not_ne_iff] at h this
@@ -115,7 +115,7 @@ theorem IsLocalRing.length_baseChange :
     | zero => rw [← RelSeries.head, hs_bot, baseChange_bot]; simp
     | succ i hi => simpa [hi, add_one_mul] using (s.step i).length_baseChange B
   · have : ¬ IsFiniteLength B (B ⊗[A] M) := by
-      contrapose! h
+      contrapose h
       rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
       have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
       exact h.imp IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat

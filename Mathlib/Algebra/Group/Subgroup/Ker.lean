@@ -125,7 +125,7 @@ theorem coe_comp_rangeRestrict (f : G →* N) :
 
 @[to_additive]
 theorem subtype_comp_rangeRestrict (f : G →* N) : f.range.subtype.comp f.rangeRestrict = f :=
-  ext <| f.coe_rangeRestrict
+  ext f.coe_rangeRestrict
 
 @[to_additive]
 theorem rangeRestrict_surjective (f : G →* N) : Function.Surjective f.rangeRestrict :=
@@ -160,7 +160,7 @@ theorem range_one : (1 : G →* N).range = ⊥ :=
 
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.range_subtype (H : Subgroup G) : H.subtype.range = H :=
-  SetLike.coe_injective <| (coe_range _).trans <| Subtype.range_coe
+  SetLike.coe_injective <| (coe_range _).trans Subtype.range_coe
 
 @[to_additive]
 alias _root_.Subgroup.subtype_range := Subgroup.range_subtype
@@ -362,7 +362,7 @@ theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g
 
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* M) : f.range ≤ g.ker ↔ g.comp f = 1 :=
-  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
+  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; congrm $h y⟩
 
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=

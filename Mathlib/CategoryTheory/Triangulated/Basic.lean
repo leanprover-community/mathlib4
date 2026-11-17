@@ -6,8 +6,6 @@ Authors: Luke Kershaw
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Shift.Basic
 
@@ -80,7 +78,7 @@ instance : Inhabited (Triangle C) :=
 
 /-- For each object in `C`, there is a triangle of the form `(X,X,0,𝟙 X,0,0)`
 -/
-@[simps!]
+@[simps!, implicit_reducible]
 def contractibleTriangle (X : C) : Triangle C :=
   Triangle.mk (𝟙 X) (0 : X ⟶ 0) 0
 
@@ -115,12 +113,12 @@ structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the third commutative square of a triangle morphism -/
   comm₃ : T₁.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ T₂.mor₃ := by cat_disch
 
-attribute [reassoc (attr := simp)] TriangleMorphism.comm₁ TriangleMorphism.comm₂
+attribute [map (attr := reassoc (attr := simp))] TriangleMorphism.comm₁ TriangleMorphism.comm₂
   TriangleMorphism.comm₃
 
 /-- The identity triangle morphism.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def triangleMorphismId (T : Triangle C) : TriangleMorphism T T where
   hom₁ := 𝟙 T.obj₁
   hom₂ := 𝟙 T.obj₂
@@ -133,7 +131,7 @@ variable {T₁ T₂ T₃ : Triangle C}
 
 /-- Composition of triangle morphisms gives a triangle morphism.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def TriangleMorphism.comp (f : TriangleMorphism T₁ T₂) (g : TriangleMorphism T₂ T₃) :
     TriangleMorphism T₁ T₃ where
   hom₁ := f.hom₁ ≫ g.hom₁
@@ -420,19 +418,19 @@ def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] : C ⥤ T
 namespace Triangle
 
 /-- The first projection `Triangle C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₁ : Triangle C ⥤ C where
   obj T := T.obj₁
   map f := f.hom₁
 
 /-- The second projection `Triangle C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₂ : Triangle C ⥤ C where
   obj T := T.obj₂
   map f := f.hom₂
 
 /-- The third projection `Triangle C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
@@ -496,9 +494,9 @@ def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     { hom₁ := hom₁.app j
       hom₂ := hom₂.app j
       hom₃ := hom₃.app j
-      comm₁ := NatTrans.congr_app comm₁ j
-      comm₂ := NatTrans.congr_app comm₂ j
-      comm₃ := NatTrans.congr_app comm₃ j }
+      comm₁ := congr($(comm₁).app j)
+      comm₂ := congr($(comm₂).app j)
+      comm₃ := congr($(comm₃).app j) }
   naturality _ _ φ := by
     ext
     · exact hom₁.naturality φ

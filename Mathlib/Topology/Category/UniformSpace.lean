@@ -5,10 +5,14 @@ Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Monad.Limits  -- shake: keep (used in `example` only)
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.UniformSpace.Completion
+
+import Mathlib.CategoryTheory.Adjunction.Reflective
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of uniform spaces
@@ -237,7 +241,7 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : toUniformSpace ↧(Completion X) ⟶ toUniformSpace Y) :
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
-  exact congr_fun (Completion.extension_comp_coe f.hom.property) x
+  congrm $(Completion.extension_comp_coe f.hom.property) x
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/

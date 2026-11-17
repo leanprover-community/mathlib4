@@ -5,11 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
-public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Cramer's rule and adjugate matrices
@@ -114,13 +113,13 @@ theorem cramer_transpose_row_self (i : n) : Aᵀ.cramer (A i) = Pi.single i A.de
 
 theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.single i A.det := by
   rw [← transpose_transpose A, det_transpose]
-  convert! cramer_transpose_row_self Aᵀ i
+  convert cramer_transpose_row_self Aᵀ i
   exact funext h
 
 @[simp]
 theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
   ext i j
-  convert! congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
+  convert! congr($(cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j)
   · simp
   · intro j
     rw [Matrix.one_eq_pi_single, Pi.single_comm]
@@ -263,7 +262,7 @@ theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
 set_option backward.isDefEq.respectTransparency false in
 theorem mul_adjugate (A : Matrix n n α) : A * adjugate A = A.det • (1 : Matrix n n α) := by
   ext i j
-  rw [mul_apply, Pi.smul_apply, Pi.smul_apply, one_apply, smul_eq_mul, mul_boole]
+  rw [Matrix.mul_apply, Pi.smul_apply, Pi.smul_apply, Matrix.one_apply, smul_eq_mul, mul_boole]
   simp [mul_adjugate_apply, sum_cramer_apply, cramer_transpose_row_self, Pi.single_apply, eq_comm]
 
 theorem adjugate_mul (A : Matrix n n α) : adjugate A * A = A.det • (1 : Matrix n n α) :=
@@ -291,7 +290,7 @@ theorem det_eq_zero_of_mulVec_eq_zero_of_mem_nonZeroDivisors {M : Matrix n n α}
 
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j
-  simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i, one_apply]
+  simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i, Matrix.one_apply]
 
 theorem adjugate_eq_one_of_card_eq_one {A : Matrix n n α} (h : Fintype.card n = 1) :
     adjugate A = 1 :=
@@ -514,7 +513,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
 /-- A weaker version of `Matrix.adjugate_adjugate` that uses `Nontrivial`. -/
 theorem adjugate_adjugate' (A : Matrix n n α) [Nontrivial n] :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A :=
-  adjugate_adjugate _ <| Fintype.one_lt_card.ne'
+  adjugate_adjugate _ Fintype.one_lt_card.ne'
 
 end Adjugate
 

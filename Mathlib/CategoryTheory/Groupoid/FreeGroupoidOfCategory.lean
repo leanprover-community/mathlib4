@@ -5,9 +5,9 @@ Authors: Joseph Hua
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
 public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
-public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
@@ -37,7 +37,6 @@ Given a type `C` and a category instance on `C`:
 The free groupoid on a category `C` is first defined by taking the free groupoid `G`
 on the underlying *quiver* of `C`. Then the free groupoid on the *category* `C` is defined as
 the quotient of `G` by the relation that makes the inclusion prefunctor `C ⥤q G` a functor.
-
 -/
 
 @[expose] public section
@@ -141,7 +140,6 @@ lemma lift_obj_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) (X : C) :
     (lift φ).obj (mk X) = φ.obj X := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma lift_map_homMk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (lift φ).map (homMk f) = φ.map f := by
@@ -151,7 +149,7 @@ theorem lift_unique (φ : C ⥤ G) (Φ : FreeGroupoid C ⥤ G) (hΦ : of C ⋙ �
     Φ = lift φ := by
   apply Quotient.lift_unique
   apply Quiver.FreeGroupoid.lift_unique
-  exact congr_arg Functor.toPrefunctor hΦ
+  congrm $(hΦ).toPrefunctor
 
 lemma lift_unique' {Φ Φ' : FreeGroupoid C ⥤ G} (h : of C ⋙ Φ = of C ⋙ Φ') : Φ = Φ' := by
   trans lift (of C ⋙ Φ')

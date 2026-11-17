@@ -5,12 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
 /-!
-
 # The small affine Zariski site
 
 `X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open
@@ -26,7 +24,6 @@ which gives an equivalence of categories of sheaves (`sheafEquiv`).
 
 Note that this differs from the definition on stacks project where the arrows in the small affine
 Zariski site are arbitrary inclusions.
-
 -/
 
 @[expose] public section
@@ -335,7 +332,7 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
-    convert! (inferInstance : IsIso e.hom)
+    convert (inferInstance : IsIso e.hom)
     rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)

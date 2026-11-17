@@ -5,15 +5,14 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
-
 # Conditional expectation of real-valued functions
 
 This file proves some results regarding the conditional expectation of real-valued functions.
@@ -24,13 +23,9 @@ This file proves some results regarding the conditional expectation of real-valu
   Radon-Nikodym derivative of `fμ` restricted on `m` with respect to `μ` restricted on `m`.
 * `MeasureTheory.Integrable.uniformIntegrable_condExp`: the conditional expectation of a function
   form a uniformly integrable class.
-
 -/
 
 public section
-
-
-noncomputable section
 
 open ENNReal Filter
 
@@ -183,8 +178,8 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
     (integrable_condExp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
   refine setLIntegral_mono
-    (stronglyMeasurable_condExp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => ?_
-  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
+    (stronglyMeasurable_condExp.mono hnm).measurable.nnNorm.coe_nnreal_ennreal fun x hx => ?_
+  rw [eNorm_eq_nnNorm, eNorm_eq_nnNorm, coe_le_coe, Real.nnNorm_of_nonneg R.coe_nonneg]
   exact Subtype.mk_le_mk.2 (le_of_lt hx)
 
 end HasSolidNorm
@@ -306,7 +301,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
     UniformIntegrable (fun i => μ[g | ℱ i]) 1 μ := by
   let A : MeasurableSpace α := m0
   have hmeas : ∀ n, ∀ C, MeasurableSet {x | C ≤ ‖(μ[g|ℱ n]) x‖₊} := fun n C =>
-    measurableSet_le measurable_const (stronglyMeasurable_condExp.mono (hℱ n)).measurable.nnnorm
+    measurableSet_le measurable_const (stronglyMeasurable_condExp.mono (hℱ n)).measurable.nnNorm
   have hg : MemLp g 1 μ := memLp_one_iff_integrable.2 hint
   refine uniformIntegrable_of le_rfl one_ne_top
     (fun n => (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable) fun ε hε => ?_
@@ -320,7 +315,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   rcases eq_top_or_lt_top δ with rfl | hδ_top
   · refine ⟨0, fun i ↦ ?_⟩
     specialize h .univ
-    simp only [zero_le, Set.ofPred_true, Set.indicator_univ, MeasurableSet.univ, le_top,
+    simp only [zero_le, Set.ofPred_true, Set.indicator_univ, nullMeasurableSet_univ, le_top,
       forall_const] at h ⊢
     exact (eLpNorm_condExp_le_eLpNorm g le_rfl).trans h
   set C : ℝ≥0 := δ⁻¹.toNNReal * (eLpNorm g 1 μ).toNNReal with hC
@@ -333,7 +328,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
       rw [toReal_one, rpow_one]
       convert!
         mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top C
-      · rw [ENNReal.toReal_one, ENNReal.rpow_one, enorm_eq_nnnorm]
+      rw [ENNReal.toReal_one, ENNReal.rpow_one, eNorm_eq_nnNorm]
     rw [toReal_one, rpow_one, mul_comm,
       ← ENNReal.le_div_iff_mul_le (Or.inl (coe_ne_zero.2 hCpos.ne'))
         (Or.inl coe_lt_top.ne)] at this
@@ -343,10 +338,11 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
       hC, ← toNNReal_mul, coe_toNNReal (mul_ne_top (inv_ne_top.2 hδ.ne') hg.ne),
       ← mul_assoc, ENNReal.mul_inv_cancel hδ.ne' hδ_top.ne, one_mul, rpow_one]
     exact eLpNorm_condExp_le_eLpNorm g (le_refl 1)
-  refine ⟨C, fun n => le_trans ?_ (h {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} (hmeas n C) (this n))⟩
+  refine ⟨C,
+    fun n ↦ (h {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} (hmeas n C).nullMeasurableSet (this n)).trans' ?_⟩
   have hmeasℱ : MeasurableSet[ℱ n] {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} :=
     @measurableSet_le _ _ _ _ _ (ℱ n) _ _ _ _ _ measurable_const
-      (@Measurable.nnnorm _ _ _ _ _ (ℱ n) _ stronglyMeasurable_condExp.measurable)
+      (@Measurable.nnNorm _ _ _ _ _ (ℱ n) _ stronglyMeasurable_condExp.measurable)
   rw [← eLpNorm_congr_ae (condExp_indicator hint hmeasℱ)]
   exact eLpNorm_condExp_le_eLpNorm _ le_rfl
 

@@ -5,17 +5,16 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
-public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Smallness of a property of objects
 
 In this file, given `P : ObjectProperty C`, we define
 `ObjectProperty.Small.{w} P` as an abbreviation for `Small.{w} (Subtype P)`.
-
 -/
 
 public section
@@ -100,14 +99,6 @@ lemma small_op_iff (P : ObjectProperty C) :
 lemma small_unop_iff (P : ObjectProperty Cᵒᵖ) :
     ObjectProperty.Small.{w} P.unop ↔ ObjectProperty.Small.{w} P := by
   rw [← small_op_iff, op_unop]
-
-instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
-    ObjectProperty.Small.{w} P.op := by
-  simpa
-
-instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.Small.{w} P] :
-    ObjectProperty.Small.{w} P.unop := by
-  simpa
 
 /-- A property of objects is essentially small relative to a universe `w`
 if it is contained in the closure by isomorphisms of a small property. -/
@@ -241,13 +232,6 @@ instance [EssentiallySmall.{w} C] (F : C ⥤ D) :
     ObjectProperty.EssentiallySmall.{w} F.essImage := by
   rw [← ObjectProperty.map_top]
   infer_instance
-
-instance (P : ObjectProperty C) [LocallySmall.{w} C]
-    [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
-  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
-  have := (isEquivalence_ιOfLE_iff h₁).2 h₂
-  rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
-  exact essentiallySmall_of_small_of_locallySmall _
 
 lemma EssentiallySmall.of_functor (P : ObjectProperty C) (F : C ⥤ D)
     (H₁ : ObjectProperty.EssentiallySmall.{w} (P.map F))

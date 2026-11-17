@@ -5,7 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Invertibility of continuous linear maps

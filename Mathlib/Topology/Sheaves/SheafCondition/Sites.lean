@@ -5,12 +5,10 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Spaces
-public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
-
 # Coverings and sieves; from sheaves on sites and sheaves on spaces
 
 In this file, we connect coverings in a topological space to sieves in the associated Grothendieck
@@ -20,7 +18,6 @@ on spaces.
 We also specialize results about sheaves on sites to sheaves on spaces; we show that the inclusion
 functor from a topological basis to `TopologicalSpace.Opens` is cover dense, that open maps
 induce cover-preserving functors, and that open embeddings induce continuous functors.
-
 -/
 
 @[expose] public section
@@ -231,7 +228,7 @@ def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
     Limits.IsTerminal (F.obj.obj (op U)) := by
-  convert! F.isTerminalOfEmpty
+  convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
 is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`

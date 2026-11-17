@@ -19,7 +19,6 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.succAbove` : embeds `Fin n` into `Fin (n + 1)` skipping `p`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
-
 -/
 
 @[expose] public section
@@ -88,7 +87,7 @@ theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
 attribute [simp] castSucc_inj
 
 lemma castLE_injective (hmn : m ≤ n) : Injective (castLE hmn) :=
-  fun _ _ hab ↦ Fin.ext (congr_arg val hab :)
+  fun _ _ hab ↦ Fin.ext congr(val $hab)
 
 lemma castAdd_injective (m n : ℕ) : Injective (@Fin.castAdd m n) := castLE_injective _
 
@@ -223,7 +222,7 @@ theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := b
   · grind [castSucc_ne_zero_iff]
 
 theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ last n :=
-  not_iff_not.mpr <| succ_eq_last_succ
+  not_iff_not.mpr succ_eq_last_succ
 
 theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
   grind
@@ -248,7 +247,7 @@ theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
     if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
       else castAdd (m + 1) ⟨i.1 + 1, Nat.lt_of_le_of_ne i.2 (Fin.val_ne_iff.mpr h)⟩ := by
   split_ifs with h
-  exacts [Fin.ext (congr_arg Fin.val h :), rfl]
+  exacts [Fin.ext congr($(h).val), rfl]
 
 theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 
@@ -593,8 +592,11 @@ lemma succAbove_eq_zero_iff [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠
     a.succAbove b = 0 ↔ b = 0 := by
   rw [← succAbove_ne_zero_zero ha, succAbove_right_inj]
 
-lemma succAbove_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) (hb : b ≠ 0) :
-    a.succAbove b ≠ 0 := mt (succAbove_eq_zero_iff ha).mp hb
+lemma succAbove_ne_zero [NeZero n] (a : Fin (n + 1)) {b : Fin n} (hb : b ≠ 0) :
+    a.succAbove b ≠ 0 := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp
+  · exact mt (succAbove_eq_zero_iff ha).mp hb
 
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around zero embeds by `succ`. -/
 @[simp] lemma succAbove_zero : succAbove (0 : Fin (n + 1)) = Fin.succ := rfl
@@ -609,8 +611,11 @@ lemma succAbove_eq_last_iff {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last
     a.succAbove b = last _ ↔ b = last _ := by
   rw [← succAbove_ne_last_last ha, succAbove_right_inj]
 
-lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) (hb : b ≠ last _) :
-    a.succAbove b ≠ last _ := mt (succAbove_eq_last_iff ha).mp hb
+lemma succAbove_ne_last (a : Fin (n + 2)) {b : Fin (n + 1)} (hb : b ≠ last _) :
+    a.succAbove b ≠ last _ := by
+  rcases eq_or_ne a (last _) with rfl | ha
+  · simp
+  · exact mt (succAbove_eq_last_iff ha).mp hb
 
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around `last n` embeds by `castSucc`. -/
 @[simp] lemma succAbove_last : succAbove (last n) = castSucc := by
@@ -702,13 +707,13 @@ lemma castSucc_succAbove_castSucc {n : ℕ} {i : Fin (n + 1)} {j : Fin n} :
 
 /-- `pred` commutes with `succAbove`. -/
 lemma pred_succAbove_pred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ 0)
-    (hk := succAbove_ne_zero ha hb) :
+    (hk := succAbove_ne_zero a hb) :
     (a.pred ha).succAbove (b.pred hb) = (a.succAbove b).pred hk := by
   simp_rw [← succ_inj (b := pred (succAbove a b) hk), ← succ_succAbove_succ, succ_pred]
 
 /-- `castPred` commutes with `succAbove`. -/
 lemma castPred_succAbove_castPred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last (n + 1))
-    (hb : b ≠ last n) (hk := succAbove_ne_last ha hb) :
+    (hb : b ≠ last n) (hk := succAbove_ne_last a hb) :
     (a.castPred ha).succAbove (b.castPred hb) = (a.succAbove b).castPred hk := by
   simp_rw [← castSucc_inj (b := (a.succAbove b).castPred hk), ← castSucc_succAbove_castSucc,
     castSucc_castPred]

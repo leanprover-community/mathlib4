@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.Basic
 Given `P : MorphismProperty C`, we define the predicate `P.IsStableUnderComposition`
 which means that `P f → P g → P (f ≫ g)`. We also introduce the type classes
 `W.ContainsIdentities`, `W.IsMultiplicative`, and `W.HasTwoOutOfThreeProperty`.
-
 -/
 
 @[expose] public section

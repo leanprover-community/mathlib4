@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Order.Lex
 public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Lexicographic order on Pi types
@@ -29,9 +29,9 @@ This file defines the lexicographic and colexicographic orders for Pi types.
 Related files are:
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Sigma.Order`: Lexicographic order on `Σₗ i, α i`.
-* `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`.
-* `Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Order.Sigma`: Lexicographic order on `Σₗ i, α i`.
+* `Order.PSigma`: Lexicographic order on `Σₗ' i, α i`.
+* `Order.Prod.Lex.Basic`: Lexicographic order on `α × β`.
 -/
 
 @[expose] public section
@@ -53,7 +53,9 @@ protected def Lex (x y : ∀ i, β i) : Prop :=
 /- This unfortunately results in a type that isn't delta-reduced, so we keep the notation out of the
 basic API, just in case -/
 /-- The notation `Πₗ i, α i` refers to a pi type equipped with the lexicographic order. -/
-notation3 (prettyPrint := false) "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, p i)) => r
+-- The type ascription on `p` lets the delaborator generator elaborate the expansion.
+notation3 "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, (p : (_ : (_ : Type _)) → Type _) i)) =>
+  r
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
@@ -357,7 +359,7 @@ instance [LinearOrder ι] [WellFoundedGT ι] [Nonempty ι] [∀ i, PartialOrder 
 smaller than the original function. -/
 theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [LT α] {f : ι → α} {i j : ι} (h₁ : i ≤ j)
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
-  ⟨i, fun _ hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
+  ⟨i, fun _ hik => congr(f $(Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne)), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
 
 /-- If we swap two strictly increasing values in a function, then the result is colexicographically

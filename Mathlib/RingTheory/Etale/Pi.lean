@@ -5,20 +5,18 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Smooth.Pi
-public import Mathlib.RingTheory.Unramified.Pi
 public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
+public import Mathlib.RingTheory.Smooth.Pi
+public import Mathlib.RingTheory.Unramified.Pi
 
 /-!
-
 # Formal-étaleness of finite products of rings
 
 ## Main result
 
 - `Algebra.FormallyEtale.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-étale
   if and only if each `A i` is `R`-formally-étale.
-
 -/
 
 public section

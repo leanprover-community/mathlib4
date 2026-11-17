@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Induced
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+public import Mathlib.CategoryTheory.Shift.Induced
 
 /-!
 # The shift induced on a localized category
@@ -17,7 +17,6 @@ on `C` satisfies `W.IsCompatibleWithShift A` when for all `a : A`,
 a morphism `f` is in `W` iff `f⟦a⟧'` is. When this compatibility is satisfied,
 then the corresponding localized category can be equipped with
 a shift by `A`, and the localization functor is compatible with the shift.
-
 -/
 
 @[expose] public section

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.ZeroCons
-public import Aesop
 
 /-!
 # Empty and nonempty finite sets
@@ -21,7 +20,6 @@ This file defines the empty finite set ∅ and a predicate for nonempty `Finset`
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -157,7 +155,8 @@ theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
 theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by grind
+theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by
+  rw [← coe_empty, coe_inj]
 
 @[simp]
 theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := by

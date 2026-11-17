@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
+public import Mathlib.Analysis.Complex.AbsMax
 
 /-!
 # Phragmen-Lindelöf principle
@@ -204,7 +204,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
             ((differentiable_id.sub_const _).const_mul _).neg.cexp).const_mul _).cexp
   replace hd : DiffContOnCl ℂ (fun w => g ε w • f w) (Ioo (-R) R ×ℂ Ioo (a - b) (a + b)) :=
     (hgd.diffContOnCl.smul hfd).mono inter_subset_right
-  convert!
+  convert
     norm_le_of_forall_mem_frontier_norm_le ((isBounded_Ioo _ _).reProdIm (isBounded_Ioo _ _)) hd
       (fun w hw => _) _
   · rw [frontier_reProdIm, closure_Ioo (neg_lt_self hR₀).ne, frontier_Ioo hab, closure_Ioo hab.ne,
@@ -764,8 +764,9 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   rcases him with ⟨C, hC⟩
   -- Due to continuity, it suffices to prove the equality on the open right half-plane.
   suffices ∀ z : ℂ, 0 < z.re → f z = 0 by
-    simpa only [closure_setOfPred_lt_re] using!
-      EqOn.of_subset_closure this hd.continuousOn continuousOn_const subset_closure Subset.rfl
+    simpa only [closure_setOfPred_lt_re, Pi.zero_def] using
+      EqOn.of_subset_closure (fun z hz ↦ this z hz) hd.continuousOn continuousOn_const
+        subset_closure .rfl
   -- Consider $g_n(z)=e^{nz}f(z)$.
   set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z
   have hg : ∀ n z, ‖g n z‖ = expR z.re ^ n * ‖f z‖ := fun n z ↦ by

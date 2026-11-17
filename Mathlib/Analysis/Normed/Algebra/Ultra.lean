@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Field.Ultra
 public import Mathlib.Analysis.Normed.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed algebra preserves ultrametricity
 
