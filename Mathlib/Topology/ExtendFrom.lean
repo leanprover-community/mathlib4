@@ -21,7 +21,6 @@ The main theorem we prove about this definition is `continuousOn_extendFrom`
 which states that, for `extendFrom A f` to be continuous on a set `B ⊆ closure A`,
 it suffices that `f` converges within `A` at any point of `B`, provided that
 `f` is a function to a T₃ space.
-
 -/
 
 @[expose] public section
@@ -29,7 +28,7 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter Set
 
@@ -72,7 +71,7 @@ theorem continuousOn_extendFrom [RegularSpace Y] {f : X → Y} {A B : Set X} (hB
   suffices ∀ y ∈ V ∩ B, φ y ∈ V' from
     mem_of_superset (inter_mem_inf V_in <| mem_principal_self B) this
   rintro y ⟨hyV, hyB⟩
-  haveI := mem_closure_iff_nhdsWithin_neBot.mp (hB hyB)
+  have := mem_closure_iff_nhdsWithin_neBot.mp (hB hyB)
   have limy : Tendsto f (𝓝[A] y) (𝓝 <| φ y) := tendsto_extendFrom (hf y hyB)
   have hVy : V ∈ 𝓝 y := IsOpen.mem_nhds V_op hyV
   have : V ∩ A ∈ 𝓝[A] y := by simpa only [inter_comm] using inter_mem_nhdsWithin A hVy

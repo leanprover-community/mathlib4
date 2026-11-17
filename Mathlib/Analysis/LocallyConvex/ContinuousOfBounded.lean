@@ -6,7 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.SpecificLimits.Normed
+
+import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Continuity and Von Neumann boundedness
@@ -18,13 +19,14 @@ if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ
 ## References
 
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-
 -/
 
 @[expose] public section
 
 
-open TopologicalSpace Bornology Filter Topology Pointwise
+open TopologicalSpace Bornology Filter Pointwise
+
+open scoped Topology
 
 variable {𝕜 𝕜' E F : Type*}
 variable [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]

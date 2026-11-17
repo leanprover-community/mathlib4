@@ -24,7 +24,6 @@ public import Mathlib.CategoryTheory.Sites.LocallySurjective
 ## References
 
 * [caramello2020]: Olivia Caramello, *Denseness conditions, morphisms and equivalences of toposes*
-
 -/
 
 @[expose] public section
@@ -72,7 +71,7 @@ lemma Functor.imageSieve_eq_imageSieve {D : Type uD} [Category.{vC} D] (G : C �
     (f : G.obj U ⟶ G.obj V) :
     G.imageSieve f = Presheaf.imageSieve (yonedaMap G V) f := rfl
 
-open Presieve Opposite
+open Opposite
 
 namespace Functor
 
@@ -104,7 +103,7 @@ lemma functorPushforward_equalizer_mem
   Functor.IsLocallyFaithful.functorPushforward_equalizer_mem _ _ e
 
 variable {K}
-variable {A : Type*} [Category* A] (G : C ⥤ D)
+variable (G : C ⥤ D)
 
 theorem IsLocallyFull.ext [G.IsLocallyFull K]
     (ℱ : Sheaf K Type*) {X Y : C} (i : G.obj X ⟶ G.obj Y)

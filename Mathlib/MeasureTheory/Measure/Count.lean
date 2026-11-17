@@ -5,7 +5,12 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
+
+import Mathlib.SetTheory.Cardinal.ENNReal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Counting measure
@@ -35,7 +40,7 @@ def count : Measure α :=
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
     (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
-    _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ => le_dirac_apply
+    _ ≤ ∑' i, dirac i s := tsum_le_tsum fun _ => le_dirac_apply
     _ ≤ count s := le_sum_apply _ _
 
 theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
@@ -99,7 +104,7 @@ theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.F
 @[simp]
 theorem count_eq_zero_iff : count s = 0 ↔ s = ∅ where
   mp h := eq_empty_of_forall_notMem fun x hx ↦ by
-    simpa [hx] using ((ENNReal.le_tsum x).trans <| le_sum_apply _ _).trans_eq h
+    simpa [hx] using ((le_tsum _ x).trans <| le_sum_apply _ _).trans_eq h
   mpr := by rintro rfl; exact measure_empty
 
 lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty :=
@@ -161,6 +166,11 @@ instance count.isFiniteMeasure [Finite α] :
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
+
+@[simp] lemma count_real_univ : count.real (.univ : Set α) = Nat.card α := by simp [Measure.real]
+
+instance neZero_count [Nonempty α] : NeZero (count : Measure α) where
+  out := by rintro h; simpa using congr($h .univ)
 
 lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
     count = dirac i := by

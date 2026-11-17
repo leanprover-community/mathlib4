@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Order.Filter.CountablyGenerated
-public import Mathlib.Tactic.GCongr
+
 import Mathlib.Algebra.Order.Group.Basic
 
 /-!
@@ -38,8 +38,8 @@ theorem tendsto_natCast_atTop_iff [Semiring R] [PartialOrder R] [IsStrictOrdered
   tendsto_atTop_embedding (fun _ _ => Nat.cast_le) exists_nat_ge
 
 theorem PNat.tendsto_comp_val_iff {β : Type*} {f : ℕ → β} {l : Filter β} :
-    Tendsto (fun x : ℕ+ => f x) atTop l ↔ Tendsto f atTop l := by
-  exact tendsto_comp_val_Ioi_atTop
+    Tendsto (fun x : ℕ+ => f x) atTop l ↔ Tendsto f atTop l :=
+  tendsto_comp_val_Ioi_atTop
 
 theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :

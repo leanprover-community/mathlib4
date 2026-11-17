@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Paths in simplicial sets
 
@@ -25,7 +28,9 @@ of length `n`.
 
 universe v u
 
-open CategoryTheory Opposite Simplicial SimplexCategory
+open CategoryTheory Opposite SimplexCategory
+
+open scoped Simplicial
 
 namespace SSet
 namespace Truncated
@@ -118,10 +123,10 @@ def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
   arrow i := σ.app (op ⦋1⦌ₙ₊₁) (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
-    exact ConcreteCategory.congr_hom (σ.naturality (tr (δ 1)).op) _ |>.symm
+    exact congr($(σ.naturality (tr (δ 1)).op) _) |>.symm
   arrow_tgt i := by
     simp only [← f.arrow_tgt i]
-    exact ConcreteCategory.congr_hom (σ.naturality (tr (δ 0)).op) _ |>.symm
+    exact congr($(σ.naturality (tr (δ 0)).op) _) |>.symm
 
 /- We write this lemma manually to ensure it refers to `Path.vertex`. -/
 @[simp]
@@ -373,7 +378,7 @@ def horn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path (Λ[n + 2, i] : SSet.{u}) (n + 2) :=
   Λ[n + 2, i].liftPath (stdSimplex.spineId (n + 2)) (by simp) (fun j ↦ by
-    convert! (horn.primitiveEdge.{u} h₀ hₙ j).2
+    convert (horn.primitiveEdge.{u} h₀ hₙ j).2
     ext a
     fin_cases a <;> rfl)
 

@@ -6,8 +6,7 @@ Authors: Simon Hudon, Ira Fesefeldt
 module
 
 public import Mathlib.Control.Monad.Basic
-public import Mathlib.Dynamics.FixedPoints.Basic
-public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.Iterate
 public import Mathlib.Order.Part
 public import Mathlib.Order.Preorder.Chain
@@ -77,6 +76,7 @@ structure Chain (α : Type u) [Preorder α] extends ℕ →o α
 namespace Chain
 variable [Preorder α] [Preorder β] [Preorder γ]
 
+@[macro_inline]
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
   coe_injective := by rintro ⟨f, hf⟩; congr!
@@ -97,7 +97,7 @@ instance [Inhabited α] : Inhabited (Chain α) :=
 instance : Membership α (Chain α) where
   mem c a := ∃ i, a = c i
 
-variable (c c' : Chain α)
+variable (c : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 
@@ -112,8 +112,6 @@ lemma directed : Directed (· ≤ ·) c := directedOn_range.1 c.isChain_range.di
 def map : Chain β where toOrderHom := f.comp c.toOrderHom
 
 @[simp] lemma coe_map : ⇑(c.map f) = f ∘ c := rfl
-
-@[deprecated (since := "2026-03-27")] alias map_coe := coe_map
 
 variable {f}
 
@@ -145,8 +143,6 @@ def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) where
   toOrderHom := c₀.toOrderHom.prod c₁.toOrderHom
 
 @[simp] lemma zip_apply (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
-
-@[deprecated (since := "2026-03-27")] alias zip_coe := zip_apply
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
 def pair (a b : α) (hab : a ≤ b) : Chain α where
@@ -226,16 +222,16 @@ theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup 
 lemma isLUB_range_ωSup (c : Chain α) : IsLUB (Set.range c) (ωSup c) := by
   constructor
   · simp only [upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      Set.mem_setOf_eq]
+      Set.mem_ofPred_eq]
     exact fun a ↦ le_ωSup c a
   · simp only [lowerBounds, upperBounds, Set.mem_range, forall_exists_index,
-      forall_apply_eq_imp_iff, Set.mem_setOf_eq]
+      forall_apply_eq_imp_iff, Set.mem_ofPred_eq]
     exact fun ⦃a⦄ a_1 ↦ ωSup_le c a a_1
 
 lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a = ωSup c := by
   rw [le_antisymm_iff]
   simp only [IsLUB, IsLeast, upperBounds, lowerBounds, Set.mem_range, forall_exists_index,
-    forall_apply_eq_imp_iff, Set.mem_setOf_eq] at h
+    forall_apply_eq_imp_iff, Set.mem_ofPred_eq] at h
   constructor
   · apply h.2
     exact fun a ↦ le_ωSup c a
@@ -244,7 +240,7 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
@@ -286,7 +282,7 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
     ωScottContinuous f ↔ ∃ hf : Monotone f, ∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, hf⟩) := by
   refine ⟨fun hf ↦ ⟨hf.monotone, hf.map_ωSup⟩, ?_⟩
   intro hf _ ⟨c, hc⟩ _ _ _ hda
-  convert! isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+  convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
   · simp [← hc, ← (Set.range_comp f ⇑c)]
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]
@@ -294,7 +290,8 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
 alias ⟨ωScottContinuous.monotone_map_ωSup, ωScottContinuous.of_monotone_map_ωSup⟩ :=
   ωScottContinuous_iff_monotone_map_ωSup
 
-/- A monotone function `f : α →o β` is ωScott continuous if and only if it distributes over ωSup. -/
+/--
+A monotone function `f : α →o β` is ωScott continuous if and only if it distributes over ωSup. -/
 lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
     ωScottContinuous f ↔ ∀ c : Chain α, f (ωSup c) = ωSup (c.map f) := by
   rw [ωScottContinuous_iff_monotone_map_ωSup]
@@ -332,7 +329,7 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   · have := c.monotone hij _ ha; apply mem_unique this hb
   · have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
 
-open Classical in
+open scoped Classical in
 /-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `Part α`. -/
 protected noncomputable def ωSup (c : Chain (Part α)) : Part α :=
   if h : ∃ a, some a ∈ c then some (Classical.choose h) else none
@@ -341,11 +338,11 @@ theorem ωSup_eq_some {c : Chain (Part α)} {a : α} (h : some a ∈ c) : Part.�
   have : ∃ a, some a ∈ c := ⟨a, h⟩
   have a' : some (Classical.choose this) ∈ c := Classical.choose_spec this
   calc
-    Part.ωSup c = some (Classical.choose this) := dif_pos this
+    Part.ωSup c = some (Classical.choose this) := dite_eq_left this
     _ = some a := congr_arg _ (eq_of_chain a' h)
 
 theorem ωSup_eq_none {c : Chain (Part α)} (h : ¬∃ a, some a ∈ c) : Part.ωSup c = none :=
-  dif_neg h
+  dite_eq_right h
 
 theorem mem_chain_of_mem_ωSup {c : Chain (Part α)} {a : α} (h : a ∈ Part.ωSup c) : some a ∈ c := by
   simp only [Part.ωSup] at h; split_ifs at h with h_1
@@ -380,7 +377,7 @@ theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ 
   · exact fun a ↦ mem_chain_of_mem_ωSup a
   · intro h
     have h' : ∃ a : α, some a ∈ c := ⟨_, h⟩
-    rw [dif_pos h']
+    rw [dite_eq_left h']
     have hh := Classical.choose_spec h'
     rw [eq_of_chain hh h]
     simp
@@ -390,27 +387,33 @@ end Inst
 end Part
 
 section Pi
+variable {β : α → Type*} [∀ a, OmegaCompletePartialOrder (β a)]
 
-variable {β : α → Type*}
+namespace Pi
 
-instance [∀ a, OmegaCompletePartialOrder (β a)] :
-    OmegaCompletePartialOrder (∀ a, β a) where
+instance instOmegaCompletePartialOrder : OmegaCompletePartialOrder (∀ a, β a) where
   ωSup c a := ωSup (c.map (Pi.evalOrderHom a))
-  ωSup_le _ _ hf a :=
-    ωSup_le _ _ <| by
-      rintro i
-      apply hf
-  le_ωSup _ _ _ := le_ωSup_of_le _ <| le_rfl
+  ωSup_le _ _ hf _ := ωSup_le _ _ fun _ => hf _ _
+  le_ωSup _ _ _ := le_ωSup_of_le _ le_rfl
+
+@[simp]
+theorem ωSup_def (c : OmegaCompletePartialOrder.Chain (∀ a, β a)) :
+    ωSup c = fun a ↦ ωSup (c.map (Pi.evalOrderHom a)) :=
+  rfl
+
+@[simp]
+theorem ωSup_apply (c : OmegaCompletePartialOrder.Chain (∀ a, β a)) (a : α) :
+    ωSup c a = ωSup (c.map (Pi.evalOrderHom a)) :=
+  rfl
+
+end Pi
 
 namespace OmegaCompletePartialOrder
-
-variable [∀ x, OmegaCompletePartialOrder <| β x]
-variable [OmegaCompletePartialOrder γ]
-variable {f : γ → ∀ x, β x}
+variable [OmegaCompletePartialOrder γ] {f : γ → ∀ x, β x}
 
 lemma ωScottContinuous.apply₂ (hf : ωScottContinuous f) (a : α) : ωScottContinuous (f · a) :=
   ωScottContinuous.of_monotone_map_ωSup
-    ⟨fun _ _ h ↦ hf.monotone h a, fun c ↦ congr_fun (hf.map_ωSup c) a⟩
+    ⟨fun _ _ h ↦ hf.monotone h a, fun c ↦ congr($(hf.map_ωSup c) a)⟩
 
 @[fun_prop]
 lemma ωScottContinuous.apply (x : α) : ωScottContinuous (fun f : ∀ x, β x ↦ f x) :=
@@ -429,21 +432,19 @@ end OmegaCompletePartialOrder
 end Pi
 
 namespace Prod
+variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] [OmegaCompletePartialOrder γ]
 
-variable [OmegaCompletePartialOrder α]
-variable [OmegaCompletePartialOrder β]
-variable [OmegaCompletePartialOrder γ]
-
-/-- The supremum of a chain in the product `ω`-CPO. -/
-@[simps]
-protected def ωSupImpl (c : Chain (α × β)) : α × β :=
-  (ωSup (c.map OrderHom.fst), ωSup (c.map OrderHom.snd))
-
-@[simps! ωSup_fst ωSup_snd]
 instance : OmegaCompletePartialOrder (α × β) where
-  ωSup := Prod.ωSupImpl
+  ωSup c := (ωSup (c.map OrderHom.fst), ωSup (c.map OrderHom.snd))
   ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
+
+@[simp] theorem fst_ωSup (c : Chain (α × β)) : (ωSup c).fst = ωSup (c.map OrderHom.fst) := rfl
+
+@[simp] theorem snd_ωSup (c : Chain (α × β)) : (ωSup c).snd = ωSup (c.map OrderHom.snd) := rfl
+
+@[deprecated (since := "2026-10-26")] alias ωSup_fst := fst_ωSup
+@[deprecated (since := "2026-10-26")] alias ωSup_snd := snd_ωSup
 
 theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := rfl
 
@@ -493,6 +494,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 @[inherit_doc] infixr:25 " →𝒄 " => ContinuousHom -- Input: \r\MIc
 
+@[macro_inline]
 instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
@@ -534,10 +536,10 @@ def ofFun (f : α → β) (hf : ωScottContinuous f := by fun_prop) : α →𝒄
   map_ωSup' := hf.map_ωSup
 
 protected theorem congr_fun {f g : α →𝒄 β} (h : f = g) (x : α) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f y :=
-  congr_arg f h
+  congr(f $h)
 
 protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   f.monotone'
@@ -674,7 +676,6 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
   OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 @[fun_prop]
 lemma ωScottContinuous_apply
     {f : α → β →𝒄 γ} (hf : ωScottContinuous f) {g : α → β} (hg : ωScottContinuous g) :
@@ -687,8 +688,8 @@ lemma ωScottContinuous_apply
     apply le_antisymm
     · apply ωSup_le
       intro i
-      dsimp
-      rw [(f (c i)).continuous]
+      simp only [coe_map, OrderHom.apply_coe, OrderHom.coe_mk, Function.comp_apply, toMono_coe,
+        OrderHomClass.coe_coe, (f (c i)).continuous]
       apply ωSup_le
       intro j
       apply le_ωSup_of_le (i ⊔ j)

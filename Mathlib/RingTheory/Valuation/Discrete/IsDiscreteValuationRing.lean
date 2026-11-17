@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 
 /-!
 # Valuations associated to discrete valuation rings
@@ -45,8 +45,7 @@ def maximalIdeal : HeightOneSpectrum A where
 
 instance isRankOneDiscrete :
     IsRankOneDiscrete ((maximalIdeal A).valuation K) := by
-  have : Nontrivial (valueGroup
-      (.ofClass (valuation K (maximalIdeal A)))) := by
+  have : Nontrivial (valueGroup (valuation K (maximalIdeal A)).toMonoidWithZeroHom) := by
     let v := (maximalIdeal A).valuation K
     let π := valuation_exists_uniformizer K (maximalIdeal A) |>.choose
     have hπ : v π = ↑(ofAdd (-1 : ℤ)) :=
@@ -89,8 +88,7 @@ theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ 
       zify
       rw [← WithZero.coe_one, div_eq_mul_inv, ← zpow_natCast, ← zpow_natCast, ← ofAdd_zero,
         ← zpow_neg, ← zpow_add₀ v_π_ne_zero, ← sub_eq_add_neg] at H
-      rwa [← sub_nonneg, ← zpow_le_one_iff_right_of_lt_one₀ (zero_lt_iff.mpr v_π_ne_zero)
-        v_π_lt_one]
+      rwa [← sub_nonneg, ← zpow_le_one_iff_right_of_lt_one₀ v_π_ne_zero.pos v_π_lt_one]
     use u * π ^ (n - m) * w.2
     simp only [← h_frac, Units.inv_eq_val_inv, _root_.map_mul, _root_.map_pow, map_units_inv,
       mul_assoc, mul_div_assoc ((algebraMap A _) ↑u) _ _]
@@ -129,7 +127,7 @@ theorem associated_of_valuation_eq (x y : K)
   rw [mker_valuation_eq_isUnitSubmonoid] at this
   obtain ⟨u, h⟩ := this
   use IsUnit.unit h.1
-  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec, h.2]
+  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1, h.2]
   field_simp
 
 theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =
@@ -159,8 +157,30 @@ lemma intValuation_maximalIdeal (x : A) :
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
   have : (maximalIdeal A).intValuation ↑u = 1 := by simp [maximalIdeal]
   simp [(maximalIdeal A).intValuation_singleton hϖ.ne_zero
-    hϖ.maximalIdeal_eq, hϖ, this, WithZero.exp_eq_coe_ofAdd (n : ℤ)]
+    hϖ.maximalIdeal_eq, hϖ, this, ← WithZero.exp_eq_coe_ofAdd]
 
 end IsDiscreteValuationRing
+
+section ValuationSubring
+
+variable {F : Type*} [Field F] (A : ValuationSubring F) [IsDiscreteValuationRing A]
+
+section IsRankOneDiscrete
+
+theorem IsDiscreteValuationRing.maximalIdeal_valuation_isEquiv :
+    ((IsDiscreteValuationRing.maximalIdeal A).valuation F).IsEquiv A.valuation := by
+  rw [Valuation.isEquiv_iff_valuationSubring]
+  apply ValuationSubring.toSubring_injective
+  ext
+  simp [← IsDiscreteValuationRing.map_algebraMap_eq_valuationSubring]
+
+/-- The valuation of a DVR valuation subring is rank-one discrete. -/
+instance ValuationSubring.isRankOneDiscrete_valuation :
+    A.valuation.IsRankOneDiscrete :=
+  .of_isEquiv (IsDiscreteValuationRing.maximalIdeal_valuation_isEquiv A)
+
+end IsRankOneDiscrete
+
+end ValuationSubring
 
 end

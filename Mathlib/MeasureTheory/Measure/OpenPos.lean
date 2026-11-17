@@ -16,7 +16,6 @@ In this file we define a typeclass for measures that are positive on nonempty op
 `MeasureTheory.Measure.IsOpenPosMeasure`. Examples include (additive) Haar measures, as well as
 measures that have positive density with respect to a Haar measure. We also prove some basic facts
 about these measures.
-
 -/
 
 public section
@@ -237,12 +236,6 @@ theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ
   (measure_eball_pos μ x hr).trans_le (measure_mono eball_subset_closedEBall)
 
 end Metric
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_ball_pos := Metric.measure_eball_pos
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
 
 section MeasureZero
 /-! ## Meagre sets and measure zero

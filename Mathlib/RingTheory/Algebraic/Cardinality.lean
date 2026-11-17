@@ -5,9 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Cardinal
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.Algebraic.Defs
+
+import Mathlib.Algebra.Polynomial.Cardinal
 
 /-!
 # Cardinality of algebraic extensions
@@ -40,7 +41,7 @@ theorem lift_cardinalMk_le_sigma_polynomial :
           ← Polynomial.aeval_def, p.2.2]⟩)
     fun x y => by
       intro h
-      simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
+      simp only [Set.coe_ofPred, ne_eq, Set.mem_ofPred_eq, Sigma.mk.inj_iff] at h
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
       simp only [h.1, forall_true_iff]
   rwa [lift_umax, lift_id'.{v}] at this
@@ -55,7 +56,7 @@ theorem lift_cardinalMk_le_max : lift.{u} #L ≤ lift.{v} #R ⊔ ℵ₀ :=
       (sum_le_sum _ _ fun _ => (Multiset.finite_toSet _).lt_aleph0.le)
     _ = lift.{v} #(R[X]) * ℵ₀ := by rw [sum_const, lift_aleph0]
     _ ≤ lift.{v} (#R ⊔ ℵ₀) ⊔ ℵ₀ ⊔ ℵ₀ := (mul_le_max _ _).trans <| by
-      gcongr; simp only [lift_le, Polynomial.cardinalMk_le_max]
+      grw [Polynomial.cardinalMk_le_max]
     _ = _ := by simp
 
 variable (L : Type u) [CommRing L] [IsDomain L] [Algebra R L]

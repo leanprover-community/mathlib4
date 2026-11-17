@@ -23,7 +23,6 @@ of a geometrically connected scheme over a field.
   for all `Spec K ⟶ Y` with `K` a field, `X ×[Y] Spec K` is connected.
 - `GeometricallyConnected.iff_geometricallyConnected_fiber`: A scheme is geometrically connected
   over `S` iff the fibers of all `s : S` are geometrically connected.
-
 -/
 
 @[expose] public section
@@ -47,15 +46,18 @@ lemma GeometricallyConnected.eq_geometrically :
 instance : IsStableUnderBaseChange @GeometricallyConnected :=
   GeometricallyConnected.eq_geometrically ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyConnected g] : GeometricallyConnected (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyConnected f] : GeometricallyConnected (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
 instance (V : S.Opens) [GeometricallyConnected f] : GeometricallyConnected (f ∣_ V) :=
   MorphismProperty.of_isPullback (isPullback_morphismRestrict ..).flip ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (s : S) [GeometricallyConnected f] :
     GeometricallyConnected (f.fiberToSpecResidueField s) :=
   MorphismProperty.pullback_snd _ _ inferInstance

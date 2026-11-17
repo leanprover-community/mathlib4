@@ -124,8 +124,6 @@ def zeckendorf : ℕ → List ℕ
   | m@(_ + 1) =>
     letI a := greatestFib m
     a :: zeckendorf (m - fib a)
-decreasing_by simp_wf; subst_vars; apply zeckendorf_aux (zero_lt_succ _)
-
 
 @[simp] lemma zeckendorf_zero : zeckendorf 0 = [] := zeckendorf.eq_1 ..
 

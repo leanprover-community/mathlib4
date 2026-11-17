@@ -29,7 +29,7 @@ cobounded filter is generally referred to as the *filter at infinity*.
   contains the `cofinite` filter.
 - `Bornology.IsCobounded`: the predicate that a set is a member of the `cobounded α` filter. For
   `s : Set α`, one should prefer `Bornology.IsCobounded s` over `s ∈ cobounded α`.
-- `bornology.IsBounded`: the predicate that states a set is bounded (i.e., the complement of a
+- `Bornology.IsBounded`: the predicate that states a set is bounded (i.e., the complement of a
   cobounded set). One should prefer `Bornology.IsBounded s` over `sᶜ ∈ cobounded α`.
 - `BoundedSpace α`: a class extending `Bornology α` with the condition
   `Bornology.IsBounded (Set.univ : Set α)`
@@ -48,6 +48,7 @@ variable {ι α β : Type*}
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded` -/
+@[wikidata Q96373820]
 class Bornology (α : Type*) where
   /-- The filter of cobounded sets in a bornology. -/
   cobounded (α) : Filter α
@@ -64,7 +65,7 @@ lemma Bornology.ext (t t' : Bornology α)
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps, implicit_reducible]
+@[simps, instance_reducible]
 def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
@@ -75,7 +76,7 @@ def Bornology.ofBounded {α : Type*} (B : Set (Set α))
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps! cobounded, implicit_reducible]
+@[simps! cobounded, instance_reducible]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
@@ -96,6 +97,7 @@ def IsCobounded [Bornology α] (s : Set α) : Prop :=
   s ∈ cobounded α
 
 /-- `IsBounded` is the predicate that `s` is bounded relative to the ambient bornology on `α`. -/
+@[wikidata Q726212]
 def IsBounded [Bornology α] (s : Set α) : Prop :=
   IsCobounded sᶜ
 

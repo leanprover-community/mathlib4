@@ -5,8 +5,8 @@ Authors: Sean Leather, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.AList
 public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.List.AList
 public import Mathlib.Data.Part
 
 /-!
@@ -80,6 +80,7 @@ def AList.toFinmap (s : AList β) : Finmap β :=
 -- for `Quotient.mk`
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
     toFinmap s₁ = toFinmap s₂ ↔ s₁.entries ~ s₂.entries := by
   cases s₁
@@ -504,7 +505,7 @@ theorem mem_union {a} {s₁ s₂ : Finmap β} : a ∈ s₁ ∪ s₂ ↔ a ∈ s�
 
 @[simp]
 theorem union_toFinmap (s₁ s₂ : AList β) : (toFinmap s₁) ∪ (toFinmap s₂) = toFinmap (s₁ ∪ s₂) := by
-  simp [(· ∪ ·), union]
+  simp [Union.union, union]
 
 theorem keys_union {s₁ s₂ : Finmap β} : (s₁ ∪ s₂).keys = s₁.keys ∪ s₂.keys :=
   induction_on₂ s₁ s₂ fun s₁ s₂ => Finset.ext <| by simp [keys]

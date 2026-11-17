@@ -5,15 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Basic  -- shake: keep (Qq output dependency)
 public meta import Mathlib.Util.AtomM
 public meta import Qq
 public import Batteries.Tactic.Exact
 public import Batteries.Tactic.Init
+public import Mathlib.Basic.Logic.Basic  -- shake: keep (Qq output dependency)
 public import Mathlib.Util.AtomM
 
 /-!
-
 # Intuitionistic tautology (`itauto`) decision procedure
 
 The `itauto` tactic will prove any intuitionistic tautology. It implements the well-known

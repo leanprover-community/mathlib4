@@ -5,10 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
-/-!
 
+/-!
 # The constant sheaf
 
 We define the constant sheaf functor (the sheafification of the constant presheaf)
@@ -35,13 +34,11 @@ essential image of the constant sheaf functor.
 
 namespace CategoryTheory
 
-open Limits Opposite Category Functor Sheaf Adjunction
+open Limits Opposite Category CategoryTheory.Functor Sheaf Adjunction
 
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category* D]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
@@ -63,6 +60,7 @@ variable [HasWeakSheafify J D]
 The functor which maps an object of `D` to the constant sheaf at that object, i.e. the
 sheafification of the constant presheaf.
 -/
+@[implicit_reducible]
 noncomputable def constantSheaf : D ⥤ Sheaf J D := Functor.const Cᵒᵖ ⋙ (presheafToSheaf J D)
 
 /-- The constant sheaf functor is left adjoint to evaluation at a terminal object. -/
@@ -97,7 +95,6 @@ lemma isConstant_iff_mem_essImage {L : D ⥤ Sheaf J D} {T : C} (hT : IsTerminal
   rw [essImage_eq_of_natIso (adj.leftAdjointUniq (constantSheafAdj J D hT))]
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isConstant_of_isIso_counit_app (F : Sheaf J D) [HasTerminal C]
     [IsIso <| (constantSheafAdj J D terminalIsTerminal).counit.app F] : IsConstant J F where
   mem_essImage := ⟨_, ⟨asIso <| (constantSheafAdj J D terminalIsTerminal).counit.app F⟩⟩
@@ -108,7 +105,6 @@ instance [(constantSheaf J D).Faithful] [(constantSheaf J D).Full] (F : Sheaf J 
   rw [isIso_counit_app_iff_mem_essImage]
   exact F.mem_essImage_of_isConstant
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the constant sheaf functor is fully faithful, then a sheaf is constant if and only if the
 counit of the constant sheaf adjunction applied to it is an isomorphism.
@@ -192,11 +188,6 @@ noncomputable def constantCommuteCompose :
 lemma constantCommuteCompose_hom_app_hom (X : D) : ((constantCommuteCompose J U).hom.app X).hom =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
-@[deprecated (since := "2026-03-05")]
-alias constantCommuteCompose_hom_app_val := constantCommuteCompose_hom_app_hom
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
     ((constantCommuteCompose J U).hom.app (F.obj.obj ⟨T⟩)) ≫
@@ -210,7 +201,6 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
   simp [NatTrans.comp_app] -- simp [NatTrans.comp_app] to unfold some definitions
   simp [← map_comp, ← NatTrans.comp_app] -- simp [← NatTrans.comp_app] to simplify some compositions
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isConstant_of_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
     [constantSheaf J B |>.Faithful] [constantSheaf J B |>.Full]
     [(sheafCompose J U).ReflectsIsomorphisms] [((sheafCompose J U).obj F).IsConstant J]

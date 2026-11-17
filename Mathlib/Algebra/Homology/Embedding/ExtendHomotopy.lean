@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory
 Given an embedding of complex shapes `e : c.Embedding c'` and a preadditive
 category `C`, we define a fully faithful functor
 `e.extendHomotopyFunctor C : HomotopyCategory C c ⥤ HomotopyCategory C c'`.
-
 -/
 
 @[expose] public section

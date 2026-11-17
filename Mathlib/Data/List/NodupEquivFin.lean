@@ -24,7 +24,6 @@ Given a list `l`,
 
 * if `l` is sorted w.r.t. `(<)`, then `List.SortedLT.getIso` is the same bijection reinterpreted
   as an `OrderIso`.
-
 -/
 
 @[expose] public section
@@ -133,6 +132,7 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   exact List.getElem_mem _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
@@ -194,7 +194,6 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       · simpa using h
     · grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/

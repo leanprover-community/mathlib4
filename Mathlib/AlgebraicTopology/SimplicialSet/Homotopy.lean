@@ -20,12 +20,13 @@ the file `Mathlib/AlgebraicTopology/SimplicialSet/RelativeMorphism.lean`).
 We show that from `H : SSet.Homotopy f g`, we can obtain a combinatorial
 homotopy `SimplicialObject.Homotopy f g` (where the data involve
 a family of maps `X _⦋n⦌ → Y _⦋n + 1⦌` for all `n : ℕ` and `i : Fin (n + 1)`.)
-
 -/
 
 @[expose] public section
 
-open CategoryTheory SimplicialObject MonoidalCategory Simplicial Opposite
+open CategoryTheory SimplicialObject MonoidalCategory Opposite
+
+open scoped Simplicial
 
 universe u
 
@@ -68,7 +69,7 @@ morphisms of simplicial objects between `f` and `g`. -/
 noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     SimplicialObject.Homotopy f g where
   h i := ↾fun x ↦
-    (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex.nonDegenerateEquiv₁ i).1
+    (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex₁.nonDegenerateEquiv i).1
   h_zero_comp_δ_zero n := by
     ext x
     simp only [TypeCat.Fun.toFun_apply, types_comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
@@ -95,9 +96,8 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simpa [stdSimplex.δ_objEquiv_symm_apply,
-        SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}] using!
-          ConcreteCategory.congr_hom (X.δ_comp_σ_of_le hij) x
+    · simpa [stdSimplex.δ_objEquiv_symm_apply, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}] using!
+        congr($(X.δ_comp_σ_of_le hij) x)
     · rw [stdSimplex.δ_objMk₁_of_lt, Fin.pred_succ]
       rw [Fin.castSucc_lt_succ_iff, ← Fin.castSucc_succ]
       simp only [Fin.castSucc_le_castSucc_iff]
@@ -109,8 +109,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · rw [stdSimplex.δ_objEquiv_symm_apply, stdSimplex.δ_objEquiv_symm_apply,
-        SimplexCategory.δ_comp_σ_succ, ← Fin.castSucc_succ, SimplexCategory.δ_comp_σ_self]
+    · rw [SimplexCategory.δ_comp_σ_succ, ← Fin.castSucc_succ, SimplexCategory.δ_comp_σ_self]
     · rw [stdSimplex.δ_objMk₁_of_lt _ _ (by simp), stdSimplex.δ_objMk₁_of_le _ _ (by simp)]
       rfl
   h_castSucc_comp_δ_succ_of_lt {n} i j hij := by
@@ -120,8 +119,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [SimplexCategory.δ_comp_σ_of_gt hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
-      rfl
+    · simp [SimplexCategory.δ_comp_σ_of_gt hij, ← δ_def]
     · rw [stdSimplex.δ_objMk₁_of_le _ _ (by simpa using! Fin.le_of_lt hij)]
       rfl
   h_comp_σ_castSucc_of_le {n} i j hij := by
@@ -131,7 +129,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [SimplexCategory.σ_comp_σ hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
+    · simp [SimplexCategory.σ_comp_σ hij]
       rfl
     · rw [stdSimplex.σ_objMk₁_of_lt _ _ (by simpa)]
   h_comp_σ_succ_of_lt {n} i j hij := by
@@ -141,7 +139,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [← SimplexCategory.σ_comp_σ hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
+    · simp [← SimplexCategory.σ_comp_σ hij]
       rfl
     · rw [stdSimplex.σ_objMk₁_of_le _ _ (by simpa)]
       rfl

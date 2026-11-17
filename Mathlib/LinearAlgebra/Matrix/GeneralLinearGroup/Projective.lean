@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov, Edison Xie
 -/
 module
 
-public import Mathlib.Data.Sign.Basic
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
@@ -27,7 +27,6 @@ If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 
 * `Matrix.ProjectiveSpecialLinearGroup.isoPSLOfAlgClosed` is an isomorphism between
   `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field.
-
 -/
 
 open scoped MatrixGroups
@@ -121,6 +120,7 @@ lemma toPGL_injective :
     Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) :=
   QuotientGroup.injective_lift_iff _ _ _ |>.2 toPGL_ker.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toPGL_surj_of_roots
     (hR : ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r) :
     Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun g ↦ by
@@ -197,7 +197,7 @@ theorem lift_comp_mk {f : GL n R →* M} (hf) : (lift f hf).comp mk = f := by
 
 /-- Given an action of `GL n R` such that the scalar matrices act trivially,
 define an action of `PGL n R`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mulActionOfGL {α : Type*} [MulAction (GL n R) α]
     (h : ∀ (u : Rˣ) (a : α), GeneralLinearGroup.scalar n u • a = a) :
     MulAction (PGL(n, R)) α :=

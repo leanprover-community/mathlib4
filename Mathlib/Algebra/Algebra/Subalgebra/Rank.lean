@@ -6,18 +6,15 @@ Authors: Jz Pan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
-
 # Some results on the ranks of subalgebras
 
 This file contains some results on the ranks of subalgebras,
 which are corollaries of `rank_mul_rank`.
 Since their proof essentially depends on the fact that a non-trivial commutative ring
 satisfies the strong rank condition, we put them into a separate file.
-
 -/
 
 public section
@@ -35,11 +32,11 @@ variable [Module.Free R A] [Module.Free A (Algebra.adjoin A (B : Set S))]
 theorem rank_sup_eq_rank_left_mul_rank_of_free :
     Module.rank R ↥(A ⊔ B) = Module.rank R A * Module.rank A (Algebra.adjoin A (B : Set S)) := by
   rcases subsingleton_or_nontrivial R with _ | _
-  · haveI := Module.subsingleton R S; simp
+  · have := Module.subsingleton R S; simp
   nontriviality S using rank_subsingleton'
-  letI : Algebra A (Algebra.adjoin A (B : Set S)) := Subalgebra.algebra _
-  letI : SMul A (Algebra.adjoin A (B : Set S)) := Algebra.toSMul
-  haveI : IsScalarTower R A (Algebra.adjoin A (B : Set S)) :=
+  let : Algebra A (Algebra.adjoin A (B : Set S)) := Subalgebra.algebra _
+  let : SMul A (Algebra.adjoin A (B : Set S)) := Algebra.toSMul
+  have : IsScalarTower R A (Algebra.adjoin A (B : Set S)) :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [rank_mul_rank R A (Algebra.adjoin A (B : Set S))]
   change _ = Module.rank R ((Algebra.adjoin A (B : Set S)).restrictScalars R)

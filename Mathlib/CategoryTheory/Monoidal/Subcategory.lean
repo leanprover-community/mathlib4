@@ -6,11 +6,9 @@ Authors: Antoine Labelle
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Transport
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Full monoidal subcategories
@@ -128,7 +126,6 @@ section
 
 variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
 instance : (ιOfLE h).Monoidal :=
@@ -159,7 +156,6 @@ instance : P.ι.Braided where
 
 variable {P}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a braided functor between full braided subcategories. -/
 instance {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P') :
@@ -180,8 +176,6 @@ section Closed
 
 variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
     { rightAdj := P.lift (P.ι ⋙ ihom X.1) (fun Y => P.prop_ihom X.2 Y.2)
@@ -198,8 +192,6 @@ theorem ihom_obj (X Y : P.FullSubcategory) :
 theorem ihom_map_hom (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
     (f : Y ⟶ Z) : ((ihom X).map f).hom = (ihom X.obj).map f.hom :=
   rfl
-
-@[deprecated (since := "2025-12-18")] alias ihom_map := ihom_map_hom
 
 end Closed
 

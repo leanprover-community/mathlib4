@@ -5,8 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-import all Init.Core  -- TODO: for accessing proofs
 public import Mathlib.Tactic.Translate.ToDual
+
+import all Init.Core  -- TODO: for accessing proofs
 
 
 /-!
@@ -22,7 +23,6 @@ to_dual_insert_cast_fun DecidableLE := fun inst a b ↦ inst b a, fun inst a b �
 to_dual_insert_cast_fun DecidableLT := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
 
 attribute [to_dual_do_translate] Empty PEmpty Unit PUnit
-attribute [to_dual_ignore_args 2] Subtype
 
 attribute [to_dual self] ge_iff_le gt_iff_lt
 
@@ -33,7 +33,11 @@ attribute [to_dual lt_of_lt_of_eq''] lt_of_lt_of_eq
 
 attribute [to_dual] Max
 
-attribute [to_dual existing] Std.LawfulOrderSup Std.LawfulOrderSup.mk Std.LawfulOrderSup.max_le_iff
+attribute [to_dual existing] Std.MaxEqOr Std.LawfulOrderSup Std.LawfulOrderMax
+  Std.LawfulOrderLeftLeaningMax
+  Std.instLawfulOrderMaxOfIsLinearPreorderOfLawfulOrderLeftLeaningMax
+  Std.instLawfulOrderLeftLeaningMaxOfIsLinearOrderOfLawfulOrderSup
+  List.max? List.max?_eq_none_iff List.max?_eq_some_iff
 
 -- We need to tag the lemmas used by `grind` in order to translate `grind` proofs.
 namespace Lean.Grind.Order

@@ -5,7 +5,6 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 public import Mathlib.Combinatorics.SimpleGraph.Matching
 
@@ -52,7 +51,7 @@ lemma Subgraph.IsMatching.exists_of_universalVerts [Finite V] {s : Set V}
   refine ⟨t, ht.1, ?_⟩
   obtain ⟨f⟩ : Nonempty (s ≃ t) := by
     rw [← Cardinal.eq, ← t.cast_ncard t.toFinite, ← s.cast_ncard s.toFinite, ht.2]
-  letI hd := Set.disjoint_of_subset_left ht.1 h
+  let hd := Set.disjoint_of_subset_left ht.1 h
   have hadj (v : s) : G.Adj v (f v) := ht.1 (f v).2 (hd.ne_of_mem (f v).2 v.2) |>.symm
   exact Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd.symm f hadj
 
@@ -74,7 +73,6 @@ lemma even_ncard_image_val_supp_sdiff_image_val_rep_union {t : Set V}
   simp [-deleteUniversalVerts_verts, ← Set.sdiff_inter_sdiff,
     ← Set.image_sdiff Subtype.val_injective,
     sdiff_eq_left.mpr <| Set.disjoint_of_subset_right h (disjoint_image_val_universalVerts _),
-    Set.inter_sdiff_distrib_right, ← Set.image_inter Subtype.val_injective,
     Set.ncard_image_of_injective _ Subtype.val_injective, K.even_ncard_supp_sdiff_rep hrep]
 
 end SimpleGraph

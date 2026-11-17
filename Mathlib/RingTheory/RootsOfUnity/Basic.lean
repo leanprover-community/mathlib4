@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IntegralDomain
 
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Roots of unity
 
@@ -56,8 +59,8 @@ variable {k l : ℕ}
 def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
   carrier := {ζ | ζ ^ k = 1}
   one_mem' := one_pow _
-  mul_mem' _ _ := by simp_all only [Set.mem_setOf_eq, mul_pow, one_mul]
-  inv_mem' _ := by simp_all only [Set.mem_setOf_eq, inv_pow, inv_one]
+  mul_mem' _ _ := by simp_all only [Set.mem_ofPred_eq, mul_pow, one_mul]
+  inv_mem' _ := by simp_all only [Set.mem_ofPred_eq, inv_pow, inv_one]
 
 @[simp]
 theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=

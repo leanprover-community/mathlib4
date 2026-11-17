@@ -12,7 +12,6 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Ordered
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Urysohn's lemma
@@ -82,13 +81,14 @@ lemmas about `midpoint`.
 Urysohn's lemma, normal topological space, locally compact topological space
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 
 variable {X : Type*} [TopologicalSpace X]
 
-open Set Filter TopologicalSpace Topology Filter
-open scoped Pointwise
+open Set Filter TopologicalSpace Filter
+
+open scoped Topology Pointwise
 
 namespace Urysohns
 
@@ -155,7 +155,7 @@ theorem subset_right_C (c : CU P) : c.C ⊆ c.right.C :=
 
 /-- `n`-th approximation to a continuous function `f : X → ℝ` such that `f = 0` on `c.C` and `f = 1`
 outside of `c.U`. -/
-noncomputable def approx : ℕ → CU P → X → ℝ
+def approx : ℕ → CU P → X → ℝ
   | 0, c, x => indicator c.Uᶜ 1 x
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
 
@@ -237,7 +237,7 @@ theorem approx_mono (c : CU P) (x : X) : Monotone fun n => c.approx n x :=
 * `0 ≤ f x ≤ 1` for all `x`;
 * `f` equals zero on `c.C` and equals one outside of `c.U`;
 -/
-protected noncomputable def lim (c : CU P) (x : X) : ℝ :=
+protected def lim (c : CU P) (x : X) : ℝ :=
   ⨆ n, c.approx n x
 
 theorem tendsto_approx_atTop (c : CU P) (x : X) :
@@ -450,9 +450,9 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   have hgmc : EqOn g 0 mᶜ := by
     intro x hx
     have B n : f n x = 0 := by
-      have : mᶜ ⊆ (U n ∩ interior m)ᶜ := by
-        simpa using inter_subset_right.trans interior_subset
-      exact fm n (this hx)
+      apply fm n
+      grw [inter_subset_right, interior_subset]
+      exact hx
     simp [g, B]
   have I n x : u n * f n x ≤ u n := mul_le_of_le_one_right (u_pos n).le (f_range n x).2
   have S x : Summable (fun n ↦ u n * f n x) := Summable.of_nonneg_of_le

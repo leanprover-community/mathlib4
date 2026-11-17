@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
@@ -34,35 +33,34 @@ namespace Polynomial
 
 variable {R : Type*} [CommSemiring R] [NoZeroDivisors R] [WfDvdMonoid R] {f : R[X]}
 
-instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
-  wf := by
-    classical
-      refine
-        RelHomClass.wellFounded
-          (⟨fun p : R[X] =>
-              ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
-            DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wf)
-      rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
-      rw [Polynomial.degree_mul, if_neg ane0]
-      split_ifs with hac
-      · rw [hac, Polynomial.leadingCoeff_zero]
-        apply Prod.Lex.left
-        exact WithTop.coe_lt_top _
-      have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
-      simp only [Polynomial.leadingCoeff_mul]
-      by_cases hdeg : c.degree = (0 : ℕ)
-      · simp only [hdeg, Nat.cast_zero, add_zero]
-        refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
-        · rwa [Ne, Polynomial.leadingCoeff_eq_zero]
-        rw [Polynomial.isUnit_iff, Polynomial.eq_C_of_degree_eq_zero hdeg]
-        use c.leadingCoeff, unit_c
-        rw [Polynomial.leadingCoeff, Polynomial.natDegree_eq_of_degree_eq_some hdeg]
-      · apply Prod.Lex.left
-        rw [Polynomial.degree_eq_natDegree cne0] at *
-        simp only [Nat.cast_inj] at hdeg
-        rw [WithTop.coe_lt_coe, Polynomial.degree_eq_natDegree ane0, ← Nat.cast_add, Nat.cast_lt]
-        exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero hdeg)
+instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] := by
+  classical
+  refine
+    RelHomClass.wellFounded
+      (⟨fun p : R[X] =>
+          ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
+        DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
+      (wellFounded_lt.prod_lex ‹WfDvdMonoid R›)
+  rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
+  rw [Polynomial.degree_mul, ite_eq_right ane0]
+  split_ifs with hac
+  · rw [hac, Polynomial.leadingCoeff_zero]
+    apply Prod.Lex.left
+    exact WithTop.coe_lt_top _
+  have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
+  simp only [Polynomial.leadingCoeff_mul]
+  by_cases hdeg : c.degree = (0 : ℕ)
+  · simp only [hdeg, Nat.cast_zero, add_zero]
+    refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
+    · rwa [Ne, Polynomial.leadingCoeff_eq_zero]
+    rw [Polynomial.isUnit_iff, Polynomial.eq_C_of_degree_eq_zero hdeg]
+    use c.leadingCoeff, unit_c
+    rw [Polynomial.leadingCoeff, Polynomial.natDegree_eq_of_degree_eq_some hdeg]
+  · apply Prod.Lex.left
+    rw [Polynomial.degree_eq_natDegree cne0] at *
+    simp only [Nat.cast_inj] at hdeg
+    rw [WithTop.coe_lt_coe, Polynomial.degree_eq_natDegree ane0, ← Nat.cast_add, Nat.cast_lt]
+    exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero hdeg)
 
 variable [Nontrivial R]
 
@@ -90,14 +88,14 @@ open UniqueFactorizationMonoid
 namespace Polynomial
 
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  letI := Classical.arbitrary (NormalizedGCDMonoid D)
+  let := Classical.arbitrary (NormalizedGCDMonoid D)
   exact ufm_of_decomposition_of_wfDvdMonoid
 
 /-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
 only finitely many monic factors.
 (Note that its factors up to unit may be more than monic factors.)
 See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
     Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
   set G := { g : D[X] // g.Monic ∧ g ∣ f }
@@ -140,19 +138,8 @@ instance (priority := 100) uniqueFactorizationMonoid :
       he ▸ (prime_rename_iff (σ := σ) ↑s).2 (h b' hb'),
       Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
       rw [Multiset.prod_hom, Units.coe_map, AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
-        AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_coe, ← map_mul, hw]⟩
+        AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_ofClass, ← map_mul, hw]⟩
 
 end MvPolynomial
 
 end UniqueFactorizationDomain
-
-/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
-See also `WfDvdMonoid.exists_irreducible_factor`. -/
-theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[X])
-    (hu : ¬IsUnit f) : ∃ g : F[X], g.Monic ∧ Irreducible g ∧ g ∣ f := by
-  by_cases hf : f = 0
-  · exact ⟨X, monic_X, irreducible_X, hf ▸ dvd_zero X⟩
-  obtain ⟨g, hi, hf⟩ := WfDvdMonoid.exists_irreducible_factor hu hf
-  have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
-    isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
-  exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩

@@ -5,15 +5,14 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Images in the category of types
 
 In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
-
 -/
 
 @[expose] public section
@@ -104,7 +103,6 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
       comp_apply, (hF p _).choose_spec]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/
