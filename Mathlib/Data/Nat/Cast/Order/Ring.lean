@@ -106,3 +106,13 @@ variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] {m n : ℕ}
 end PartialOrderedRing
 
 end Nat
+
+section OrderedRing
+
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] {x : R}
+
+/-- A positive element of an ordered ring is not the negation of a natural number. -/
+theorem ne_neg_natCast_of_pos (hx : 0 < x) (m : ℕ) : x ≠ -m :=
+  ((neg_nonpos.2 m.cast_nonneg).trans_lt hx).ne'
+
+end OrderedRing

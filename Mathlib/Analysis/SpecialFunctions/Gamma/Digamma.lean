@@ -197,13 +197,11 @@ open Complex Set
 
 variable {x : ℝ}
 
-theorem pos_ne_neg_nat (hx : 0 < x) : ∀ m : ℕ, x ≠ -m := by grind
-
 theorem differentiableAt_log_Gamma (hx : ∀ m : ℕ, x ≠ -m) : DifferentiableAt ℝ (·.Gamma.log) x :=
   (differentiableAt_log (Gamma_ne_zero hx)).comp x (differentiableAt_Gamma hx)
 
 theorem monotoneOn_deriv_log_Gamma : MonotoneOn (deriv (·.Gamma.log)) (Ioi (0 : ℝ)) :=
-  convexOn_log_Gamma.monotoneOn_deriv fun _ hx ↦ differentiableAt_log_Gamma (pos_ne_neg_nat hx)
+  convexOn_log_Gamma.monotoneOn_deriv fun _ hx ↦ differentiableAt_log_Gamma (ne_neg_natCast_of_pos hx)
 
 theorem digamma_eq_deriv_log_Gamma (hx : ∀ m : ℕ, x ≠ -m) : digamma x = deriv (·.Gamma.log) x := by
   rw [digamma_def]
@@ -239,17 +237,17 @@ theorem monotoneOn_digamma : MonotoneOn digamma (Ioi 0) :=
 /-- `ψ(x) ≤ log x ≤ ψ(x + 1)`. -/
 theorem digamma_le_log_le (hx : 0 < x) : digamma x ≤ x.log ∧ x.log ≤ digamma (x + 1) := by
   have : ContinuousOn (·.Gamma.log) (Icc x (x + 1)) := fun _ _ ↦
-    (differentiableAt_log_Gamma (by grind [pos_ne_neg_nat])).continuousAt.continuousWithinAt
+    (differentiableAt_log_Gamma (by grind [ne_neg_natCast_of_pos])).continuousAt.continuousWithinAt
   obtain ⟨c, _, hcs⟩ := exists_deriv_eq_slope (·.Gamma.log) (by linarith) this
-      fun _ _ ↦ (differentiableAt_log_Gamma (by grind [pos_ne_neg_nat hx])).differentiableWithinAt
+      fun _ _ ↦ (differentiableAt_log_Gamma (by grind [ne_neg_natCast_of_pos hx])).differentiableWithinAt
   have : x.log = deriv (·.Gamma.log) c := by grind [Gamma_add_one, log_mul, Gamma_pos_of_pos]
-  rw [digamma_eq_deriv_log_Gamma (pos_ne_neg_nat hx),
-    digamma_eq_deriv_log_Gamma (pos_ne_neg_nat (by linarith)), this]
+  rw [digamma_eq_deriv_log_Gamma (ne_neg_natCast_of_pos hx),
+    digamma_eq_deriv_log_Gamma (ne_neg_natCast_of_pos (by linarith)), this]
   constructor <;> apply monotoneOn_deriv_log_Gamma <;> grind
 
 /-- **`|ψ(x) − log x| ≤ 1 / x` for real `x > 0`**. -/
 theorem abs_digamma_sub_log_le (hx : 0 < x) : |digamma x - x.log| ≤ 1 / x := by
-  grind [abs_le, digamma_apply_add_one (pos_ne_neg_nat hx), digamma_le_log_le hx]
+  grind [abs_le, digamma_apply_add_one (ne_neg_natCast_of_pos hx), digamma_le_log_le hx]
 
 end Real
 
@@ -278,7 +276,7 @@ def gammaAnalyticSet : Set ℂ := {s | ∀ m : ℕ, s ≠ -m}
 
 theorem ofReal_mem_gammaAnalyticSet (hx : 0 < x) : ↑x ∈ gammaAnalyticSet := by
   simp only [gammaAnalyticSet, mem_ofPred_eq]
-  exact_mod_cast (Real.pos_ne_neg_nat hx)
+  exact_mod_cast (ne_neg_natCast_of_pos hx)
 
 private theorem gammaAnalyticSet_eq_compl : gammaAnalyticSet = ((↑) '' {n : ℤ | n ≤ 0} : Set ℂ)ᶜ
     := by
