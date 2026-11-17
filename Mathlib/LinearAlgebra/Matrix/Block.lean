@@ -472,13 +472,11 @@ theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B :
 
 /-! ### Trace -/
 
-
 theorem StrictBlockTriangular.trace_eq_zero [Preorder α] [Fintype m] [AddCommMonoid R]
     (hM : M.StrictBlockTriangular b) : M.trace = 0 := by
   simp only [trace, hM.diag_eq_zero, Pi.zero_apply, Finset.sum_const_zero]
 
 /-! ### Determinant -/
-
 
 variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
