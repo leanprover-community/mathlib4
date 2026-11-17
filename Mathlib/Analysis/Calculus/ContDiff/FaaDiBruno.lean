@@ -270,7 +270,7 @@ lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (
     convert Nat.card_mono Subtype.finite this
     simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
     apply (Finset.card_pair ?_).symm
-    exact ((Fin.zero_le _).trans_lt (c.parts_strictMono ((pos_iff_ne_zero' (c.index 0)).mpr h))).ne
+    exact ((Fin.zero_le _).trans_lt (c.parts_strictMono (Fin.pos_iff_ne_zero.mpr h))).ne
 
 /-!
 ### Extending and shrinking ordered finpartitions
