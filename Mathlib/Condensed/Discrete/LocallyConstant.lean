@@ -11,7 +11,6 @@ public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 public import Mathlib.Topology.FiberPartition
 
 /-!
-
 # The sheaf of locally constant maps on `CompHausLike P`
 
 This file proves that under suitable conditions, the functor from the category of sets to the
@@ -65,7 +64,6 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 * `LightCondSet.LocallyConstant.iso`: the functor `LightCondSet.LocallyConstant.functor` is
   isomorphic to the functor `LightCondensed.discrete (Type _)` (the constant sheaf functor from sets
   to light condensed sets).
-
 -/
 
 @[expose] public section
@@ -99,7 +97,7 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   { hom := ↾fun f ↦ (f : C(Y, X))
-    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
+    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr (by fun_prop)⟩ }
 
 section Adjunction
 
