@@ -101,8 +101,8 @@ theorem integerNormalization_eq_zero_iff {p : K[X]} :
 @[simp] theorem coeff_integerNormalization_eq_zero_iff (p : K[X]) (n : ℕ) :
     (integerNormalization (nonZeroDivisors A) p).coeff n = 0 ↔ p.coeff n = 0 := by
   obtain ⟨b, hb, hbp⟩ := integerNormalization_spec (nonZeroDivisors A) p
-  rw [← (IsFractionRing.injective A K).eq_iff, map_zero, ← coeff_map, hbp, coeff_smul,
-    Algebra.smul_def, mul_eq_zero,
+  rw [← (IsFractionRing.injective A K).eq_iff, map_zero, ← coeff_map, hbp,
+    AddMonoidAlgebra.coeff_smul_apply, Algebra.smul_def, mul_eq_zero,
     or_iff_right (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hb)]
 
 /-- Clearing the denominators of a polynomial does not change its roots. -/
@@ -146,8 +146,9 @@ over the field of fractions of `A`.
 theorem isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] {x : C} :
     IsAlgebraic A x ↔ IsAlgebraic K x := by
   constructor <;> rintro ⟨p, hp, px⟩
-  · refine ⟨p.map (algebraMap A K), fun h => hp (Polynomial.ext fun i => ?_), ?_⟩
-    · have : algebraMap A K (p.coeff i) = 0 :=
+  · refine ⟨p.map (algebraMap A K), fun h => hp ?_, ?_⟩
+    · ext i
+      have : algebraMap A K (p.coeff i) = 0 :=
         _root_.trans (Polynomial.coeff_map _ _).symm (by simp [h])
       exact to_map_eq_zero_iff.mp this
     · exact (Polynomial.aeval_map_algebraMap K _ _).trans px

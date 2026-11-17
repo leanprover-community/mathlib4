@@ -746,7 +746,7 @@ In future, we should build some automation to generate applications like `Option
 inductive types. -/
 @[nolint unusedArguments]
 lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [DecidableEq κ]
-    {ctor : ι → κ} (_ : Function.Injective ctor)
+    {ctor : ι → κ}
     (recursor : ((i : ι) → α (ctor i)) → ((i : κ) → α i))
     (h : ∀ f i, recursor f (ctor i) = f i)
     (h2 : ∀ f₁ f₂ k, (∀ i, ctor i ≠ k) → recursor f₁ k = recursor f₂ k)
@@ -758,7 +758,7 @@ lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [Decidable
 lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [DecidableEq α]
     (f : β none) (g : ∀ a, β (.some a)) (a : α) (x : β (.some a)) :
     Option.rec f (update g a x) = update (Option.rec f g) (.some a) x :=
-  Function.rec_update (@Option.some.inj _) (Option.rec f) (fun _ _ => rfl) (fun
+  Function.rec_update (Option.rec f) (fun _ _ => rfl) (fun
     | _, _, some _, h => (h _ rfl).elim
     | _, _, none, _ => rfl) _ _ _
 

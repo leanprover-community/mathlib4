@@ -11,7 +11,6 @@ public import Mathlib.Analysis.SpecialFunctions.RegularizedHypergeometric
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!
-
 # Bessel function
 
 We introduce Bessel functions in this file. Bessel functions commonly take two complex parameters
@@ -39,7 +38,6 @@ $J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 * Differential equations
 * Generating functions
 * Bessel's integrals
-
 -/
 
 @[expose] public noncomputable section

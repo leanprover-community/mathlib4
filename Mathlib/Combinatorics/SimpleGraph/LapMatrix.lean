@@ -28,7 +28,6 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
-
 -/
 
 @[expose] public section

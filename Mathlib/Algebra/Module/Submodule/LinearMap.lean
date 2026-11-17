@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Submodule.Defs
 
 /-!
-
 # Linear maps involving submodules of a module
 
 In this file we define a number of linear maps involving submodules of a module.
@@ -303,7 +302,7 @@ theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x 
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ coe_restrict_apply _ _
-  simp [Module.End.coe_pow, this.iterate_right _ _]
+  simp [pow_apply_eq_iterate, this.iterate_right _ _]
 
 end
 

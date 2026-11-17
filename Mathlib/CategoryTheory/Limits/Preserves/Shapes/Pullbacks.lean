@@ -22,7 +22,6 @@ The dual is also given.
 ## TODO
 
 * Generalise to wide pullbacks
-
 -/
 
 @[expose] public section

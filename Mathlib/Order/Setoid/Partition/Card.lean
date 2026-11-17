@@ -13,7 +13,6 @@ public import Mathlib.Order.Setoid.Partition
 
 * `Setoid.IsPartition.ncard_eq_finsum` on an ambient finite type,
   the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition
-
 -/
 
 public section

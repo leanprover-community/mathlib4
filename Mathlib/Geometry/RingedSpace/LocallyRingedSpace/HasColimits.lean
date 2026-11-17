@@ -16,7 +16,6 @@ import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 We construct the explicit coproducts and coequalizers of `LocallyRingedSpace`.
 It then follows that `LocallyRingedSpace` has all colimits, and
 `forgetToSheafedSpace` preserves them.
-
 -/
 
 @[expose] public section
@@ -109,6 +108,8 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
 
 instance : HasColimitsOfShape (Discrete ι) LocallyRingedSpace.{u} :=
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
+
+instance [UnivLE.{v, u}] : HasCoproducts.{v} LocallyRingedSpace.{u} where
 
 noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>

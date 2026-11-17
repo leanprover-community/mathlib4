@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
-
 # Condensed Objects
 
 This file defines the category of condensed objects in a category `C`, following the work
@@ -26,7 +25,6 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 - [barwickhaine2019]: *Pyknotic objects, I. Basic notions*, 2019.
 - [scholze2019condensed]: *Lectures on Condensed Mathematics*, 2019.
-
 -/
 
 public section

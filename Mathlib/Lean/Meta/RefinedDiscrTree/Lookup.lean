@@ -27,7 +27,6 @@ expression to be assigned.
 We use a simple unification algorithm. For all star/metavariable patterns in the
 `RefinedDiscrTree` (and in the target if `unify == true`), we store the assignment,
 and when it is attempted to be assigned again, we check that it is the same assignment.
-
 -/
 
 public section

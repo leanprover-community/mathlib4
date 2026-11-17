@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Linear.LinearFunctor
 In this file, it is shown that if `C` is an `R`-linear category, then
 `ShortComplex C` is an `R`-linear category. Various homological notions
 are also shown to be linear.
-
 -/
 
 @[expose] public section
@@ -193,6 +192,7 @@ lemma homologyMap_smul [S₁.HasHomology] [S₂.HasHomology] :
 
 instance homologyFunctor_linear [CategoryWithHomology C] :
     Functor.Linear R (homologyFunctor C) where
+  map_smul := by simp
 
 end Homology
 

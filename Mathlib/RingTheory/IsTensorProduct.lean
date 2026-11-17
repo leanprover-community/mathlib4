@@ -27,7 +27,6 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 ## Main results
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
-
 -/
 
 @[expose] public section

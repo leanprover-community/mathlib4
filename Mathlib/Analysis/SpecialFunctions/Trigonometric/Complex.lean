@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex trigonometric functions
 

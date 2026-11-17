@@ -89,7 +89,7 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   rcases hy with ⟨n, hn⟩
   rw [mem_engel_iff]
   use n + 1
-  rw [pow_succ, Module.End.mul_apply]
+  rw [pow_succ, mul_apply_eq_comp]
   exact hn
 
 variable {R}
@@ -128,14 +128,14 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     generalize k + 1 = k
     induction k generalizing y with
     | zero =>
-      cases y; intro hy; simp only [pow_zero, Module.End.one_apply]
+      cases y; intro hy; simp only [pow_zero, one_apply_eq_self]
       exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
     | succ k ih => solve_by_elim
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]
     rintro _ ⟨y, rfl⟩
-    simp only [pow_succ', Module.End.mul_apply, Submodule.mem_comap, mem_toSubmodule]
+    simp only [pow_succ', mul_apply_eq_comp, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 

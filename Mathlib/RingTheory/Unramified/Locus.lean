@@ -76,7 +76,7 @@ open _root_.TensorProduct in
 then `κ(P) ⊗ A` is unramified at `Q'` (the prime corresponding to `Q`) over `κ(P)`. -/
 theorem IsUnramifiedAt.residueField
     (P : Ideal R) [P.IsPrime] (Q : Ideal A) [Q.IsPrime]
-    [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q]
+    [Algebra.IsUnramifiedAt R Q]
     (Q' : Ideal (P.Fiber A)) [Q'.IsPrime]
     (hQ' : Q = Q'.comap Algebra.TensorProduct.includeRight.toRingHom) :
     IsUnramifiedAt P.ResidueField Q' := by

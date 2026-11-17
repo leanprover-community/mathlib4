@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Int.Parity  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` extensions for `Even` and `Odd`
 

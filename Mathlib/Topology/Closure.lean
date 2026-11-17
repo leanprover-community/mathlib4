@@ -277,7 +277,7 @@ theorem closure_empty : closure (∅ : Set X) = ∅ :=
 
 @[simp]
 theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
-  ⟨subset_eq_empty subset_closure, fun h => h.symm ▸ closure_empty⟩
+  ⟨by gcongr; exact subset_closure, fun h => h.symm ▸ closure_empty⟩
 
 @[simp]
 theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
@@ -297,7 +297,7 @@ theorem closure_eq_compl_interior_compl : closure s = (interior sᶜ)ᶜ := by
 
 @[simp]
 theorem closure_union : closure (s ∪ t) = closure s ∪ closure t := by
-  simp [closure_eq_compl_interior_compl, compl_inter]
+  simp [closure_eq_compl_interior_compl]
 
 theorem Set.Finite.closure_biUnion {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set X) :
     closure (⋃ i ∈ s, f i) = ⋃ i ∈ s, closure (f i) := by
@@ -350,7 +350,7 @@ theorem interior_eq_compl_closure_compl : interior s = (closure sᶜ)ᶜ := by s
 
 theorem interior_union_of_disjoint_closure (h : Disjoint (closure s) (closure t)) :
     interior (s ∪ t) = interior s ∪ interior t := by
-  have full : interior sᶜ ∪ interior tᶜ = univ := by simpa [disjoint_iff, ← compl_inter] using h
+  have full : interior sᶜ ∪ interior tᶜ = univ := by simpa [disjoint_iff, ← compl_inf] using h
   refine subset_antisymm ?_ subset_interior_union
   rw [← (interior _).inter_univ, ← full, inter_union_distrib_left]
   exact union_subset
@@ -401,6 +401,10 @@ theorem dense_iff_closure_eq : Dense s ↔ closure s = univ :=
   eq_univ_iff_forall.symm
 
 alias ⟨Dense.closure_eq, _⟩ := dense_iff_closure_eq
+
+/-- A closed set is dense if and only if it is the whole space. -/
+theorem IsClosed.dense_iff (hs : IsClosed s) : Dense s ↔ s = univ := by
+  rw [dense_iff_closure_eq, hs.closure_eq]
 
 theorem interior_eq_empty_iff_dense_compl : interior s = ∅ ↔ Dense sᶜ := by
   rw [dense_iff_closure_eq, closure_compl, compl_univ_iff]

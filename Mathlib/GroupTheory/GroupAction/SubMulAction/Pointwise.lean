@@ -15,7 +15,6 @@ This file provides `SubMulAction.Monoid` and weaker typeclasses, which show that
 inherit the same pointwise multiplications as sets.
 
 To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale.
-
 -/
 
 public section

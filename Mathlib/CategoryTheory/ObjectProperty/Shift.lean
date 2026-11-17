@@ -17,7 +17,6 @@ Given a predicate `P : ObjectProperty C` on objects of a category equipped with 
 by `A`, we define shifted properties of objects `P.shift a` for all `a : A`.
 We also introduce a typeclass `P.IsStableUnderShift A` to say that `P X`
 implies `P (X⟦a⟧)` for all `a : A`.
-
 -/
 
 @[expose] public section
