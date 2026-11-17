@@ -23,7 +23,6 @@ n-ary generalizations of the binary `curry` and `uncurry`.
   function from `(i : Fin n) → p i`.
 * `Function.FromTypes.curry`: convert a function from `(i : Fin n) → p i` to a
   `p`-ary heterogeneous function.
-
 -/
 
 @[expose] public section

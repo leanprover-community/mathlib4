@@ -30,7 +30,6 @@ which provides the element as a continuous linear map. (Even though `WeakDual ù
 ## Tags
 
 character space, Gelfand transform, functional calculus
-
 -/
 
 @[expose] public section

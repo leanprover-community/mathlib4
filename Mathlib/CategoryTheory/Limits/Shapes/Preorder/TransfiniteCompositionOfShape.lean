@@ -23,7 +23,6 @@ more properties or data for the morphisms `F.obj j ⟶ F.obj (Order.succ j)`
 which appear in the transfinite composition.
 See `MorphismProperty.TransfiniteCompositionOfShape` in the
 file `MorphismProperty.TransfiniteComposition`.
-
 -/
 
 @[expose] public section

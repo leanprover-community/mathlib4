@@ -21,7 +21,6 @@ embedding in the expected way and deduce that the preadditive Yoneda embedding i
 
 ## TODO
 * The Yoneda embedding is additive itself
-
 -/
 
 @[expose] public section

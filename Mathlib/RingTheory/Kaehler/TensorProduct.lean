@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Localization.BaseChange
 - `KaehlerDifferential.tensorKaehlerEquiv`: `(B ⊗[A] Ω[A⁄R]) ≃ₗ[B] Ω[B⁄S]` for `B = S ⊗[R] A`.
 - `KaehlerDifferential.isLocalizedModule_of_isLocalizedModule`:
   `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
-
 -/
 
 @[expose] public section

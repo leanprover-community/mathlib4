@@ -643,6 +643,12 @@ theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
   let ⟨L₁, hx, hy⟩ := Red.exact.1 H
   simp [Red.singleton_iff] at hx hy; simp_all
 
+@[to_additive]
+theorem mk_eq_of (x : α) : mk [(x, true)] = of x := rfl
+
+@[to_additive]
+theorem mk_eq_inv_of (x : α) : mk [(x, false)] = (of x)⁻¹ := rfl
+
 section lift
 
 variable {β : Type v} [Group β] (f : α → β) {x : FreeGroup α}
@@ -811,8 +817,8 @@ theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) :
 then the induced map on their free groups is also bijective. -/
 @[to_additive /-- If `α` and `β` are arbitrary types and there is a bijection between them,
 then the induced map on their additive free groups is also bijective. -/]
-theorem map_bijective (hf : Function.Bijective f) : Function.Bijective (map f) := by
-  exact ⟨map_injective hf.injective, map_surjective hf.surjective⟩
+theorem map_bijective (hf : Function.Bijective f) : Function.Bijective (map f) :=
+  ⟨map_injective hf.injective, map_surjective hf.surjective⟩
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 

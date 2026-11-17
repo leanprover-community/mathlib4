@@ -12,7 +12,6 @@ import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
 This file proves $\log(n + 1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.
-
 -/
 
 public section

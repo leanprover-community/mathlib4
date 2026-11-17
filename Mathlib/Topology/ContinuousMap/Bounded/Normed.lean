@@ -242,8 +242,10 @@ theorem nnNorm_eq_iSup_nnNorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq_iSup_nnnorm := nnNorm_eq_iSup_nnNorm
 
-theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ := by
+theorem eNorm_eq_iSup_eNorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ := by
   simpa only [← edist_zero_right] using! edist_eq_iSup
+
+@[deprecated (since := "2026-11-06")] alias enorm_eq_iSup_enorm := eNorm_eq_iSup_eNorm
 
 theorem abs_sub_coe_le_dist : ‖f x - g x‖ ≤ dist f g := by
   rw [dist_eq_norm]

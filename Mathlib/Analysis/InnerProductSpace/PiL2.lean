@@ -58,7 +58,6 @@ the last section, various properties of matrices are explored.
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
-
 -/
 
 @[expose] public section
@@ -444,8 +443,10 @@ lemma nnNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq_one := nnNorm_eq_one
 
 @[simp]
-lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖ₑ = 1 := b.orthonormal.enorm_eq_one i
+lemma eNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖ₑ = 1 := b.orthonormal.eNorm_eq_one i
+
+@[deprecated (since := "2026-11-06")] alias enorm_eq_one := eNorm_eq_one
 
 @[simp]
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
@@ -1233,12 +1234,14 @@ end Matrix
 local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (toLp 2 x) (toLp 2 y)
 
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
-theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
+theorem inner_matrix_row_row {m' : Type*} [Fintype n] (A : Matrix m' n 𝕜) (B : Matrix m n 𝕜)
+    (i : m') (j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
   simp [PiLp.inner_apply, dotProduct, mul_apply']
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
-theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
+theorem inner_matrix_col_col {n' : Type*} [Fintype m] (A : Matrix m n' 𝕜) (B : Matrix m n 𝕜)
+    (i : n') (j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 

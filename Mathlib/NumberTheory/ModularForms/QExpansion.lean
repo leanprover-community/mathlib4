@@ -50,7 +50,6 @@ and bounded at infinity.
 * Lemmas relating q-expansion coefficients to Fourier series, such as
   `UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn`, are placed in `Bounds.lean`, since
   the present file does not import Fourier theory.
-
 -/
 
 assert_not_exists fourierCoeffOn -- guard against import creep
@@ -697,7 +696,8 @@ lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] (hh : 0 < h)
 
 open scoped DirectSum in
 /-- The qExpansion map as a `ℂ`-algebra map from the graded ring of modular forms to power series
-over `ℂ`. -/
+over `ℂ`. This requires `Γ.HasDetOne` so that `ModularForm Γ k` carries a
+`ℂ`-module structure. Compare `ModularForm.const` with `ModularForm.constℝ`. -/
 def qExpansionAlgHom (h) [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     (⨁ k, ModularForm Γ k) →ₐ[ℂ] PowerSeries ℂ :=
   DirectSum.toAlgebra ℂ _
