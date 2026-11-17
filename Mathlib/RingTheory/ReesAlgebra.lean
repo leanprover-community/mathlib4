@@ -182,7 +182,8 @@ lemma Polynomial.monomial_mem_of_mem {J : Ideal R} {f : R[X]} (mem : f ∈ J.map
   · simpa [eq] using Ideal.mem_map_C_iff.mp mem n
   · simp only [coeff_monomial_of_ne _ eq, zero_mem]
 
-lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG) :
+lemma exists_monomial_span_of_toAssociatedGraded_fg (J : Ideal R)
+    (fg : (J.toAssociatedGraded I).FG) :
     ∃ (ι : Type u) (f : ι → reesAlgebra I) (deg : ι → ℕ) (coeff : ι → R), Finite ι ∧
       (∀ i : ι, (f i).1 = monomial (deg i) (coeff i)) ∧ (∀ i : ι, coeff i ∈ J) ∧
         (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
