@@ -295,7 +295,7 @@ instance : Monad FreeCommGroup.{u} where
   pure α := of α
   bind x f := lift f x
 
-@[to_additive (attr := deprecated "Use `induction_on` instead." (since := "2026-11-17"))]
+@[to_additive (attr := elab_as_elim, deprecated "Use unprimed version." (since := "2026-11-17"))]
 protected theorem induction_on'
     {motive : FreeCommGroup α → Prop} (z : FreeCommGroup α) (one : motive 1)
     (pure : ∀ x, motive <| pure x) (inv : ∀ x, motive (Pure.pure x) → motive ((Pure.pure x)⁻¹))
