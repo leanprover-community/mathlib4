@@ -227,13 +227,13 @@ lemma essInf_eq_ciInf (hμ : ∀ a, μ {a} ≠ 0) (hf : BddBelow (Set.range f)) 
 @[simp] lemma essInf_count_eq_ciInf (hf : BddBelow (Set.range f)) :
     essInf f .count = ⨅ a, f a := essInf_eq_ciInf (by simp) hf
 
-@[simp] lemma essSup_uniformOn_eq_ciSup [Finite α] (hf : BddAbove (Set.range f)) :
+@[simp] lemma essSup_uniformOn_eq_ciSup [Finite α] :
     essSup f (uniformOn univ) = ⨆ a, f a :=
-  essSup_eq_ciSup (by simpa [uniformOn, cond_apply]) hf
+  essSup_eq_ciSup (by simpa [uniformOn, cond_apply]) (Set.finite_range f).bddAbove
 
-@[simp] lemma essInf_cond_count_eq_ciInf [Finite α] (hf : BddBelow (Set.range f)) :
+@[simp] lemma essInf_cond_count_eq_ciInf [Finite α] :
     essInf f (uniformOn univ) = ⨅ a, f a :=
-  essInf_eq_ciInf (by simpa [uniformOn, cond_apply]) hf
+  essInf_eq_ciInf (by simpa [uniformOn, cond_apply]) (Set.finite_range f).bddBelow
 
 end ConditionallyCompleteLattice
 
