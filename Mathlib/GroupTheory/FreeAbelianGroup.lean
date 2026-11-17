@@ -378,7 +378,11 @@ theorem div_seq (f g : FreeCommGroup (α → β)) (x : FreeCommGroup α) :
   div_bind _ _ _
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated "Use `lift map` instead." (since := "2026-11-17"))]
+/-- If `f : FreeCommGroup (α → β)`, then `f <*>` is a multiplicative morphism
+`FreeCommGroup α →* FreeCommGroup β`. -/
+@[to_additive (attr := deprecated "Use `lift map` instead." (since := "2026-11-17"))
+/-- If `f : FreeAddCommGroup (α → β)`, then `f <*>` is an additive morphism
+`FreeAddCommGroup α →+ FreeAddCommGroup β`. -/]
 def seqGroupHom (f : FreeCommGroup (α → β)) : FreeCommGroup α →* FreeCommGroup β := by
   refine .mk' (f <*> ·) fun x y ↦ ?_
   change lift (· <$> (x * y)) _ = lift (· <$> x) _ * lift (· <$> y) _
