@@ -273,7 +273,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
           f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by
         obtain ⟨m, hm, h⟩ := hf_na.finset_image_add g (Finset.range p.natDegree) (map_zero_le f)
-        rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
+        rw [Finset.nonempty_range_iff, ← pos_iff_ne_zero, Finset.mem_range] at hm
         exact ⟨m, hm, h⟩
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
     have h0 : f 0 ≠ 0 := by
