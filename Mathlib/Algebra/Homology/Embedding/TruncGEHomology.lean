@@ -96,6 +96,7 @@ noncomputable def isLimitKernelFork :
 /-- When `j` is at the boundary of the embedding `e` of complex shapes,
 this is a homology data for `K.truncGE' e` in degree `j`: the homology is
 given by `K.homology j'` where `e.f j = j'`. -/
+@[implicit_reducible]
 noncomputable def homologyData :
     ((K.truncGE' e).sc' i j k).HomologyData :=
   ShortComplex.HomologyData.ofIsLimitKernelFork _
@@ -124,11 +125,9 @@ instance (i' : ι') : (K.truncGE e).HasHomology i' := by
   dsimp [truncGE]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The right homology data which allows to show that `K.πTruncGE e`
 induces an isomorphism in homology in degrees `j'` such that `e.f j = j'` for some `j`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j')
     (hi : c.prev j = i) (hk : c.next j = k) (hj : e.BoundaryGE j) :
     ShortComplex.RightHomologyMapData ((shortComplexFunctor C c' j').map (K.πTruncGE e))
@@ -161,8 +160,6 @@ noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j'
 
 end truncGE
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIsoAt_πTruncGE {j : ι} {j' : ι'} (hj' : e.f j = j') :
     QuasiIsoAt (K.πTruncGE e) j' := by
   rw [quasiIsoAt_iff]
