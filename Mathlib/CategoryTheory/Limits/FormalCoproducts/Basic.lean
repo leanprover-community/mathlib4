@@ -87,7 +87,7 @@ lemma hom_ext_iff' {X Y : FormalCoproduct.{w} C} (f g : X ⟶ Y) :
 
 /-- A way to create isomorphisms in the category of formal coproducts, by creating an `Equiv`
 between the indexing sets, and then correspondingly isomorphisms of each component. -/
-@[simps!, implicit_reducible ] def isoOfComponents {X Y : FormalCoproduct.{w} C} (e : X.I ≃ Y.I)
+@[simps!, implicit_reducible] def isoOfComponents {X Y : FormalCoproduct.{w} C} (e : X.I ≃ Y.I)
     (h : ∀ i, X.obj i ≅ Y.obj (e i)) : X ≅ Y where
   hom := { f := e, φ := fun i ↦ (h i).hom }
   inv := { f := e.symm, φ := fun i ↦ eqToHom (by simp) ≫ (h (e.symm i)).inv }
