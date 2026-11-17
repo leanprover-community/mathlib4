@@ -500,7 +500,7 @@ variable (𝕜 𝕜₂ S E F) in
 
 The hypothesis that `𝕜` is nontrivially normed is essential to guarantee continuity in `f`.
 This holds because `(f, x) ↦ c x • f` is jointly continuous. The map is also continuous in the
-variable `c` since bounded set of `F` is absorbed by every neighborhood of zero. -/
+variable `c` since a bounded set of `F` is absorbed by every neighborhood of zero. -/
 @[simps! apply_apply]
 def smulRightL : (E →L[𝕜] S) →L[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
   letI L : (E →L[𝕜] S) →ₗ[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
