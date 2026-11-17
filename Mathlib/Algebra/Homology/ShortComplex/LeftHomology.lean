@@ -66,7 +66,7 @@ initialize_simps_projections LeftHomologyData (-hi, -hπ)
 namespace LeftHomologyData
 
 /-- The chosen kernels and cokernels of the limits API give a `LeftHomologyData` -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofHasKernelOfHasCokernel
     [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
     S.LeftHomologyData where
@@ -141,7 +141,7 @@ variable (S)
 
 /-- When the second map `S.g` is zero, this is the left homology data on `S` given
 by any colimit cokernel cofork of `S.f` -/
-@[simps]
+@[simps, implicit_reducible]
 def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsColimit c) :
     S.LeftHomologyData where
   K := S.X₂
@@ -157,8 +157,6 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
     (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := by
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofIsColimitCokernelCofork_liftK (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsColimit c)
     {T : C} (φ : T ⟶ S.X₂) :
@@ -168,14 +166,13 @@ lemma ofIsColimitCokernelCofork_liftK (hg : S.g = 0) (c : CokernelCofork S.f) (h
 
 /-- When the second map `S.g` is zero, this is the left homology data on `S` given by
 the chosen `cokernel S.f` -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def ofHasCokernel [HasCokernel S.f] (hg : S.g = 0) : S.LeftHomologyData :=
   ofIsColimitCokernelCofork S hg _ (cokernelIsCokernel _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When the first map `S.f` is zero, this is the left homology data on `S` given
 by any limit kernel fork of `S.g` -/
-@[simps]
+@[simps, implicit_reducible]
 def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
     S.LeftHomologyData where
   K := c.pt
@@ -184,12 +181,8 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   π := 𝟙 _
   wi := KernelFork.condition _
   hi := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _))
-  wπ := Fork.IsLimit.hom_ext hc (by
-    dsimp
-    simp only [comp_id, zero_comp, Fork.IsLimit.lift_ι, Fork.ι_ofι, hf])
-  hπ := CokernelCofork.IsColimit.ofId _ (Fork.IsLimit.hom_ext hc (by
-    dsimp
-    simp only [comp_id, zero_comp, Fork.IsLimit.lift_ι, Fork.ι_ofι, hf]))
+  wπ := Fork.IsLimit.hom_ext hc (by simp [hf])
+  hπ := CokernelCofork.IsColimit.ofId _ (Fork.IsLimit.hom_ext hc (by simp [hf]))
 
 @[simp] lemma ofIsLimitKernelFork_f' (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
     (ofIsLimitKernelFork S hf c hc).f' = 0 := by
@@ -197,12 +190,12 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
 
 /-- When the first map `S.f` is zero, this is the left homology data on `S` given
 by the chosen `kernel S.g` -/
-@[simp]
+@[simp, implicit_reducible]
 noncomputable def ofHasKernel [HasKernel S.g] (hf : S.f = 0) : S.LeftHomologyData :=
   ofIsLimitKernelFork S hf _ (kernelIsKernel _)
 
 /-- When both `S.f` and `S.g` are zero, the middle object `S.X₂` gives a left homology data on S -/
-@[simps]
+@[simps, implicit_reducible]
 def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
   K := S.X₂
   H := S.X₂
@@ -219,11 +212,11 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
     (ofZeros S hf hg).f' = 0 := by
   rw [← cancel_mono ((ofZeros S hf hg).i), zero_comp, f'_i, hf]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {S} in
 /-- Given a left homology data `h` of a short complex `S`, we can construct another left homology
 data by choosing another kernel and cokernel that are isomorphic to the ones in `h`. -/
-@[simps] def copy {K' H' : C} (eK : K' ≅ h.K) (eH : H' ≅ h.H) : S.LeftHomologyData where
+@[simps, implicit_reducible]
+def copy {K' H' : C} (eK : K' ≅ h.K) (eH : H' ≅ h.H) : S.LeftHomologyData where
   K := K'
   H := H'
   i := eK.hom ≫ h.i
@@ -233,7 +226,8 @@ data by choosing another kernel and cokernel that are isomorphic to the ones in 
   wπ := by simp [IsKernel.isoKernel]
   hπ := IsColimit.equivOfNatIsoOfIso
     (parallelPair.ext (Iso.refl S.X₁) eK.symm (by simp [IsKernel.isoKernel]) (by simp)) _ _
-    (Cocone.ext (by exact eH.symm) (by rintro (_ | _) <;> simp [IsKernel.isoKernel])) h.hπ
+    (Cocone.ext (by exact eH.symm)
+      (by rintro (_ | _) <;> simp [IsKernel.isoKernel, parallelPair.ext])) h.hπ
 
 end LeftHomologyData
 
@@ -339,8 +333,6 @@ variable {φ h₁ h₂}
 lemma congr_φH {γ₁ γ₂ : LeftHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φH = γ₂.φH := by rw [eq]
 lemma congr_φK {γ₁ γ₂ : LeftHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φK = γ₂.φK := by rw [eq]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When `S₁.f`, `S₁.g`, `S₂.f` and `S₂.g` are all zero, the action on left homology of a
 morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
 @[simps]
@@ -350,8 +342,6 @@ def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf�
   φK := φ.τ₂
   φH := φ.τ₂
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When `S₁.g` and `S₂.g` are zero and we have chosen colimit cokernel coforks `c₁` and `c₂`
 for `S₁.f` and `S₂.f` respectively, the action on left homology of a morphism `φ : S₁ ⟶ S₂` of
 short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such that
@@ -368,8 +358,6 @@ def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
   commπ := comm.symm
   commf' := by simp only [LeftHomologyData.ofIsColimitCokernelCofork_f', φ.comm₁₂]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When `S₁.f` and `S₂.f` are zero and we have chosen limit kernel forks `c₁` and `c₂`
 for `S₁.g` and `S₂.g` respectively, the action on left homology of a morphism `φ : S₁ ⟶ S₂` of
 short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such that
@@ -387,7 +375,6 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
@@ -399,8 +386,6 @@ def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
   φK := 𝟙 _
   φH := c.π
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data
 `LeftHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
@@ -421,15 +406,18 @@ section
 variable (S)
 variable [S.HasLeftHomology]
 
+-- Currently, definitions like `leftHomology`, `cycles` are made
+-- `local implicit_reducible` only in order to prove lemmas which
+-- require unfolding the definition. Ideally, `leftHomology`, `cycles`
+-- should be unexposed (TODO). Doing so may be an interestingly
+-- difficult task though.
 /-- The left homology of a short complex, given by the `H` field of a chosen left homology data. -/
-@[implicit_reducible]
 noncomputable def leftHomology : C := S.leftHomologyData.H
 
 -- `S.leftHomology` is the simp normal form.
 @[simp] lemma leftHomologyData_H : S.leftHomologyData.H = S.leftHomology := rfl
 
 /-- The cycles of a short complex, given by the `K` field of a chosen left homology data. -/
-@[implicit_reducible]
 noncomputable def cycles : C := S.leftHomologyData.K
 
 /-- The "homology class" map `S.cycles ⟶ S.leftHomology`. -/
@@ -449,13 +437,9 @@ lemma iCycles_g : S.iCycles ≫ S.g = 0 := S.leftHomologyData.wi
 @[reassoc (attr := simp)]
 lemma toCycles_i : S.toCycles ≫ S.iCycles = S.f := S.leftHomologyData.f'_i
 
-instance : Mono S.iCycles := by
-  dsimp only [iCycles]
-  infer_instance
+instance : Mono S.iCycles := inferInstanceAs (Mono S.leftHomologyData.i)
 
-instance : Epi S.leftHomologyπ := by
-  dsimp only [leftHomologyπ]
-  infer_instance
+instance : Epi S.leftHomologyπ := inferInstanceAs (Epi S.leftHomologyData.π)
 
 lemma leftHomology_ext_iff {A : C} (f₁ f₂ : S.leftHomology ⟶ A) :
     f₁ = f₂ ↔ S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂ := by
@@ -740,16 +724,15 @@ short complex `S`. -/
 noncomputable def cyclesIso : S.cycles ≅ h.K :=
   cyclesMapIso' (Iso.refl _) _ _
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma cyclesIso_hom_comp_i : h.cyclesIso.hom ≫ h.i = S.iCycles := by
-  dsimp [iCycles, LeftHomologyData.cyclesIso]
-  simp only [cyclesMap'_i, id_τ₂, comp_id]
+  simp [iCycles, cycles, LeftHomologyData.cyclesIso]
 
 @[reassoc (attr := simp)]
 lemma cyclesIso_inv_comp_iCycles : h.cyclesIso.inv ≫ S.iCycles = h.i := by
   simp only [← h.cyclesIso_hom_comp_i, Iso.inv_hom_id_assoc]
 
+attribute [local implicit_reducible] cycles leftHomology in
 @[reassoc (attr := simp)]
 lemma leftHomologyπ_comp_leftHomologyIso_hom :
     S.leftHomologyπ ≫ h.leftHomologyIso.hom = h.cyclesIso.hom ≫ h.π := by
@@ -771,6 +754,7 @@ namespace LeftHomologyMapData
 variable {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
   (γ : LeftHomologyMapData φ h₁ h₂)
 
+attribute [local implicit_reducible] leftHomology in
 lemma leftHomologyMap_eq [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     leftHomologyMap φ = h₁.leftHomologyIso.hom ≫ γ.φH ≫ h₂.leftHomologyIso.inv := by
   dsimp [LeftHomologyData.leftHomologyIso, leftHomologyMapIso']
@@ -778,6 +762,7 @@ lemma leftHomologyMap_eq [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     ← leftHomologyMap'_comp, id_comp, comp_id]
   rfl
 
+attribute [local implicit_reducible] cycles in
 lemma cyclesMap_eq [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     cyclesMap φ = h₁.cyclesIso.hom ≫ γ.φK ≫ h₂.cyclesIso.inv := by
   dsimp [LeftHomologyData.cyclesIso, cyclesMapIso']
@@ -839,7 +824,7 @@ namespace LeftHomologyData
 /-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
 and `φ.τ₃` is mono, then a left homology data for `S₁` induces a left homology data for `S₂` with
 the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono'`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₂ := by
   let i : h.K ⟶ S₂.X₂ := h.i ≫ φ.τ₂
@@ -862,7 +847,6 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
     (fun x hx => by simp) (fun x hx b hb => by rw [← cancel_epi h.π, π_descH, hb])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma τ₁_ofEpiOfIsIsoOfMono_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : φ.τ₁ ≫ (ofEpiOfIsIsoOfMono φ h).f' = h.f' := by
@@ -872,7 +856,7 @@ lemma τ₁_ofEpiOfIsIsoOfMono_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S�
 /-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
 and `φ.τ₃` is mono, then a left homology data for `S₂` induces a left homology data for `S₁` with
 the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₂)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₁ := by
   let i : h.K ⟶ S₁.X₂ := h.i ≫ inv φ.τ₂
@@ -897,7 +881,6 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
     (fun x hx b hx => by rw [← cancel_epi h.π, π_descH, hx])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofEpiOfIsIsoOfMono'_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₂)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : (ofEpiOfIsIsoOfMono' φ h).f' = φ.τ₁ ≫ h.f' := by
@@ -925,7 +908,6 @@ lemma hasLeftHomology_of_iso {S₁ S₂ : ShortComplex C} (e : S₁ ≅ S₂) [H
 
 namespace LeftHomologyMapData
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This left homology map data expresses compatibilities of the left homology data
 constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
@@ -935,7 +917,6 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
   φK := 𝟙 _
   φH := 𝟙 _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- This left homology map data expresses compatibilities of the left homology data
 constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono'` -/
 @[simps]
@@ -947,15 +928,13 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
 
 end LeftHomologyMapData
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (leftHomologyMap' φ h₁ h₂) := by
   let h₂' := LeftHomologyData.ofEpiOfIsIsoOfMono φ h₁
   have : IsIso (leftHomologyMap' φ h₁ h₂') := by
-    rw [(LeftHomologyMapData.ofEpiOfIsIsoOfMono φ h₁).leftHomologyMap'_eq]
-    dsimp
+    rw [(LeftHomologyMapData.ofEpiOfIsIsoOfMono φ h₁).leftHomologyMap'_eq,
+      LeftHomologyMapData.ofEpiOfIsIsoOfMono_φH]
     infer_instance
   have eq := leftHomologyMap'_comp φ (𝟙 S₂) h₁ h₂' h₂
   rw [comp_id] at eq
@@ -966,9 +945,8 @@ instance (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHo
 and `φ.τ₃` is mono, then the induced morphism on left homology is an isomorphism. -/
 instance (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
-    IsIso (leftHomologyMap φ) := by
-  dsimp only [leftHomologyMap]
-  infer_instance
+    IsIso (leftHomologyMap φ) :=
+  inferInstanceAs (IsIso (leftHomologyMap' φ S₁.leftHomologyData S₂.leftHomologyData))
 
 section
 
