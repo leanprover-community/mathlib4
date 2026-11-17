@@ -804,6 +804,8 @@ public import Mathlib.Algebra.Lie.Weights.Killing
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.Algebra.LieRinehartAlgebra.Defs
+public import Mathlib.Algebra.LieRinehartAlgebra.Quotient
+public import Mathlib.Algebra.LieRinehartAlgebra.StrictIdeal
 public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
 public import Mathlib.Algebra.LinearRecurrence
 public import Mathlib.Algebra.Module.Basic
@@ -4997,6 +4999,7 @@ public import Mathlib.GroupTheory.Focal
 public import Mathlib.GroupTheory.Frattini
 public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.FreeGroup.Center
 public import Mathlib.GroupTheory.FreeGroup.CyclicallyReduced
 public import Mathlib.GroupTheory.FreeGroup.GeneratorEquiv
 public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
@@ -6166,6 +6169,7 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
+public import Mathlib.NumberTheory.NumberField.HeckeLFunction
 public import Mathlib.NumberTheory.NumberField.House
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
@@ -8167,6 +8171,7 @@ public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.ApproximateUnit
+public import Mathlib.Topology.Baire.Absorbent
 public import Mathlib.Topology.Baire.BaireMeasurable
 public import Mathlib.Topology.Baire.CompleteMetrizable
 public import Mathlib.Topology.Baire.Lemmas

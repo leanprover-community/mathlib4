@@ -81,8 +81,6 @@ lemma linearYonedaObjXIso_hom_apply
   simp [linearYonedaObjXIso, Linear.homCongr]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K` is a chain complex in a `R`-linear category `C` and `Y : C`, then
 the cochain complex `K.linearYonedaObj R Y` identifies to the restriction to `ℕ`
 of the cochain complex of morphisms from the extension of `K` to the single complex
@@ -95,8 +93,11 @@ noncomputable def linearYonedaObjIso :
   Hom.isoOfComponents (fun k ↦ K.linearYonedaObjXIso R Y k k rfl)
     (fun n m h ↦ by
       ext (f : K.X n ⟶ Y) : 2
-      dsimp
-      simp only [K.linearYonedaObjXIso_hom_apply R Y (-n) n n _ (by lia) (by lia),
+      dsimp only [restriction_X, ComplexShape.embeddingUpNat_f, CochainComplex.linearHomComplex_X,
+        linearYonedaObj_X, linearYoneda_obj_obj_carrier, ModuleCat.hom_comp, restriction_d,
+        LinearMap.coe_comp, Function.comp_apply, linearYonedaObj_d, ModuleCat.hom_ofHom]
+      simp only [CochainComplex.linearHomComplex_d_hom_apply, Linear.leftComp_apply,
+        K.linearYonedaObjXIso_hom_apply R Y (-n) n n _ (by lia) (by lia),
         K.linearYonedaObjXIso_hom_apply R Y (-m) m m _ (by lia) (by lia),
         Cochain.δ_toSingleMk (p := -n) (q := 0) (n := n) _ (by lia) m (-m) (by lia),
         K.extend_d_eq ComplexShape.embeddingDownNat (i' := -m) (j' := -n) (i := m) (j := n)
