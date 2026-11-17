@@ -60,7 +60,7 @@ public register_option linter.style.numericProjections : Bool := {
 When Lean elaborates projection syntax and associates an info node with the projection, Lean
 creates synthetic syntax for that info (which is not present in the original parsed syntax) with
 "faked" syntax nodekind `identProjKind`. `numericProjFn?` detects infos created in this way which
-use additionally use number instead of a field name (`fieldIdx`) and returns the projection syntax
+additionally use a number instead of a field name (`fieldIdx`) and returns the projection syntax
 along with the projection function's constant name (which is recorded in the info's `expr`).
 
 Note that the projection name from the `expr` is guaranteed to be the projection function Lean has
