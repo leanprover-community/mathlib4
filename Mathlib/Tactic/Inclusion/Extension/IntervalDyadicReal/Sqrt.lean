@@ -27,7 +27,7 @@ open Inclusion.IntervalDyadicReal.Dyadic
 def lowerSqrt (lb : Dyadic) (prec : ℕ) : Dyadic :=
   Dyadic.ofIntWithPrec ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt prec
 
-/-- Computes an upper bound for `√x` with precision `prec`. -/
+/-- Computes an upper bound for `√x` with precision `prec`, given an upper bound `ub` for `x`. -/
 @[expose]
 def upperSqrt (ub : Dyadic) (prec : ℕ) : Dyadic :=
   let ub' : ℕ := ⌈(ub <<< (2 * prec)).toRat⌉₊
