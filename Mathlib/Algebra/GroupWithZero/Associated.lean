@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Prime.Lemmas
+public import Mathlib.Order.Setoid.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -21,7 +22,7 @@ and prove basic properties of this quotient.
 
 @[expose] public section
 
-assert_not_exists DenselyOrdered IsOrderedMonoid Multiset Ring
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 variable {M N P : Type*}
 
@@ -61,7 +62,7 @@ instance [Monoid M] : IsEquiv M Associated where
   trans _ _ _ := .trans
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
-@[instance_reducible]
+@[instance_reducible, simps]
 protected def setoid (M : Type*) [Monoid M] :
     Setoid M where
   r := Associated
@@ -409,74 +410,90 @@ namespace Associates
 
 open Associated
 
+section Monoid
+variable [Monoid M]
+
 /-- The canonical quotient map from a monoid `M` into the `Associates` of `M` -/
 @[implicit_reducible]
-protected def mk {M : Type*} [Monoid M] (a : M) : Associates M :=
+protected def mk (a : M) : Associates M :=
   ⟦a⟧
 
-instance [Monoid M] : Inhabited (Associates M) :=
+instance : Inhabited (Associates M) :=
   ⟨⟦1⟧⟩
 
 @[simp]
-theorem mk_eq_mk_iff_associated [Monoid M] {a b : M} : Associates.mk a = Associates.mk b ↔ a ~ᵤ b :=
+theorem mk_eq_mk_iff_associated {a b : M} : Associates.mk a = Associates.mk b ↔ a ~ᵤ b :=
   Iff.intro Quotient.exact Quot.sound
 
 @[simp]
-theorem quotient_mk_eq_mk [Monoid M] (a : M) : ⟦a⟧ = Associates.mk a :=
+theorem quotient_mk_eq_mk (a : M) : ⟦a⟧ = Associates.mk a :=
   rfl
 
 @[simp]
-theorem quot_mk_eq_mk [Monoid M] (a : M) : Quot.mk Setoid.r a = Associates.mk a :=
+theorem quot_mk_eq_mk (a : M) : Quot.mk Setoid.r a = Associates.mk a :=
   rfl
 
 @[simp]
-theorem quotient_out [Monoid M] (a : Associates M) : Associates.mk (Quotient.out a) = a :=
+theorem quotient_out (a : Associates M) : Associates.mk (Quotient.out a) = a :=
   Quotient.out_eq a
 
 @[simp]
-theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a :=
+theorem quot_out (a : Associates M) : Associates.mk (Quot.out a) = a :=
   Quot.out_eq a
 
-theorem mk_quot_out [Monoid M] (a : M) : Quot.out (Associates.mk a) ~ᵤ a := by
+theorem mk_quot_out (a : M) : Quot.out (Associates.mk a) ~ᵤ a := by
   rw [← Associates.mk_eq_mk_iff_associated, Associates.quot_out]
 
-theorem forall_associated [Monoid M] {p : Associates M → Prop} :
+theorem forall_associated {p : Associates M → Prop} :
     (∀ a, p a) ↔ ∀ a, p (Associates.mk a) :=
   Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
 
-theorem mk_surjective [Monoid M] : Function.Surjective (@Associates.mk M _) :=
+theorem mk_surjective : Function.Surjective (@Associates.mk M _) :=
   forall_associated.2 fun a => ⟨a, rfl⟩
 
-instance [Monoid M] : One (Associates M) :=
+instance : One (Associates M) :=
   ⟨⟦1⟧⟩
 
 @[simp]
-theorem mk_one [Monoid M] : Associates.mk (1 : M) = 1 :=
+theorem mk_one : Associates.mk (1 : M) = 1 :=
   rfl
 
-theorem one_eq_mk_one [Monoid M] : (1 : Associates M) = Associates.mk 1 :=
+theorem one_eq_mk_one : (1 : Associates M) = Associates.mk 1 :=
   rfl
 
 @[simp]
-theorem mk_eq_one [Monoid M] {a : M} : Associates.mk a = 1 ↔ IsUnit a := by
+theorem mk_eq_one {a : M} : Associates.mk a = 1 ↔ IsUnit a := by
   rw [← mk_one, mk_eq_mk_iff_associated, associated_one_iff_isUnit]
 
-instance [Monoid M] : Bot (Associates M) :=
+instance : Bot (Associates M) :=
   ⟨1⟩
 
-theorem bot_eq_one [Monoid M] : (⊥ : Associates M) = 1 :=
+theorem bot_eq_one : (⊥ : Associates M) = 1 :=
   rfl
 
-theorem exists_rep [Monoid M] (a : Associates M) : ∃ a0 : M, Associates.mk a0 = a :=
+theorem exists_rep (a : Associates M) : ∃ a0 : M, Associates.mk a0 = a :=
   Quot.exists_rep a
 
-instance [Monoid M] [Subsingleton M] :
-    Unique (Associates M) where
+instance [Subsingleton M] : Unique (Associates M) where
   default := 1
   uniq := forall_associated.2 fun _ ↦ mk_eq_one.2 <| isUnit_of_subsingleton _
 
-theorem mk_injective [Monoid M] [Subsingleton Mˣ] : Function.Injective (@Associates.mk M _) :=
-  fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
+variable [Subsingleton Mˣ]
+
+
+/-- The associates of a monoid where the only unit is `1` are just the monoid itself. -/
+noncomputable def equivOfSubsingletonUnits : Associates M ≃ M :=
+  (Associated.setoid M).quotientTrivialEquiv <| by simp [associated_iff_eq]
+
+@[simp]
+lemma equivOfSubsingletonUnits_mk (a : M) : equivOfSubsingletonUnits (.mk a) = a := rfl
+
+@[simp]
+lemma coe_equivOfSubsingletonUnits_symm : ⇑equivOfSubsingletonUnits.symm = .mk (M := M) := rfl
+
+lemma mk_injective : (@Associates.mk M _).Injective := equivOfSubsingletonUnits.symm.injective
+
+end Monoid
 
 section CommMonoid
 variable [CommMonoid M] [CommMonoid N] [CommMonoid P]
@@ -602,6 +619,19 @@ instance instDecompositionMonoid [DecompositionMonoid M] : DecompositionMonoid (
 theorem mk_isRelPrime_iff {a b : M} :
     IsRelPrime (Associates.mk a) (Associates.mk b) ↔ IsRelPrime a b := by
   simp_rw [IsRelPrime, forall_associated, mk_dvd_mk, isUnit_mk]
+
+variable [Subsingleton Mˣ]
+
+/-- The associates of a monoid where the only unit is `1` are just the monoid itself. -/
+noncomputable def mulEquivOfSubsingletonUnits : Associates M ≃* M where
+  toEquiv := equivOfSubsingletonUnits
+  map_mul' := by simp [forall_associated, mk_mul_mk]
+
+@[simp]
+lemma mulEquivOfSubsingletonUnits_mk (a : M) : mulEquivOfSubsingletonUnits (.mk a) = a := rfl
+
+@[simp] lemma coe_mulEquivOfSubsingletonUnits_symm :
+    ⇑mulEquivOfSubsingletonUnits.symm = Associates.mk (M := M) := rfl
 
 end CommMonoid
 
