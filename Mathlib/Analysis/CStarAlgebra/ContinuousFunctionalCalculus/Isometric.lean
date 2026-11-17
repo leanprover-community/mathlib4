@@ -534,8 +534,8 @@ variable [CompleteSpace A]
 lemma norm_cfcAux (f : C(σ 𝕜 x, 𝕜)) : ‖cfcAux x hx f‖ = ‖f‖ := by
   refine le_antisymm (NonUnitalStarAlgHom.norm_apply_le_of_continuous (𝕜 := 𝕜) _
     (continuous_cfcAux x hx) f) ?_
-  refine (ContinuousMap.norm_le _ (norm_nonneg _)).mpr fun y ↦ ?_
-  exact spectrum.norm_le_norm_of_mem (a := cfcAux x hx f) <| spectrum_cfcAux x hx f ▸ ⟨y, rfl⟩
+  rw [f.norm_le (by positivity)]
+  exact fun r ↦ spectrum.norm_le_norm_of_mem <| spectrum_cfcAux x hx f ▸ ⟨r, rfl⟩
 
 lemma isometry_cfcAux : Isometry (cfcAux x hx) :=
   AddMonoidHomClass.isometry_of_norm _ (norm_cfcAux x hx)
@@ -544,7 +544,7 @@ theorem isometricContinuousFunctionalCalculus (hp₁ : ∀ y : Unitization 𝕜 
     IsometricContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁ where
   toContinuousFunctionalCalculus := continuousFunctionalCalculus hp₁
   isometric y hy := by
-    let := continuousFunctionalCalculus hp₁
+    have := continuousFunctionalCalculus hp₁
     rw [cfcHom_eq_of_continuous_of_map_id hy (cfcAux y ((hp₁ y).mp hy)) (continuous_cfcAux ..)
       (cfcAux_id ..)]
     exact isometry_cfcAux y ((hp₁ y).mp hy)

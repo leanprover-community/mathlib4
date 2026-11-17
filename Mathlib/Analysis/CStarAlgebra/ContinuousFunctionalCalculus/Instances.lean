@@ -330,6 +330,7 @@ namespace Unitization
 
 variable (x : Unitization 𝕜 A) (hx : p x.snd)
 
+open ContinuousMap ContinuousMapZero Unitization in
 open scoped NonUnitalContinuousFunctionalCalculus in
 lemma isClosedEmbedding_cfcAux : IsClosedEmbedding (cfcAux x hx) := by
   /- `cfcAux x hx` is `starMap (cfcₙHom hx)` precomposed with a homeomorphism, and under the
@@ -339,11 +340,10 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding (cfcAux x hx) := by
     { toEquiv := (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeoSpectrum x)).trans
         (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm
       continuous_toFun := Unitization.continuous_iff.mpr ⟨continuous_eval_const _,
-        ContinuousMap.continuous_toContinuousMapZero.comp (ContinuousMap.continuous_precomp _)⟩
+        continuous_toContinuousMapZero.comp (continuous_precomp _)⟩
       continuous_invFun := (ContinuousMap.continuous_precomp _).comp <|
-        (ContinuousMap.continuous_const'.comp Unitization.continuous_fst).add
-          (ContinuousMapZero.isEmbedding_toContinuousMap.continuous.comp
-            Unitization.continuous_snd) }
+        (continuous_const'.comp Unitization.continuous_fst).add
+          (isEmbedding_toContinuousMap.continuous.comp Unitization.continuous_snd) }
   change IsClosedEmbedding (starMap (cfcₙHom hx) ∘ e)
   refine .comp ?_ e.isClosedEmbedding
   rw [← uniformEquivProd.toHomeomorph.comp_isClosedEmbedding_iff]
