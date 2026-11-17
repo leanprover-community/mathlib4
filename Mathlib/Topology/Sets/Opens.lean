@@ -66,7 +66,8 @@ variable (α) in
 structure Opens where
   /-- The underlying set of a bundled `TopologicalSpace.Opens` object. -/
   carrier : Set α
-  /-- The `TopologicalSpace.Opens.carrier _` is an open set. -/
+  /-- The `TopologicalSpace.Opens.carrier _` is an open set. `*.isOpen` should be preferred to
+  using this field as a projection. -/
   is_open' : IsOpen carrier
 
 namespace Opens
@@ -114,7 +115,7 @@ theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
 abbrev inclusion {U V : Opens α} (h : U ≤ V) : U → V := Set.inclusion h
 
 protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
-  U.isOpen
+  U.is_open'
 
 @[simp] theorem mk_coe (U : Opens α) : mk (↑U) U.isOpen = U := rfl
 
@@ -513,7 +514,7 @@ protected theorem mem (U : OpenNhdsOf x) : x ∈ U :=
   U.mem'
 
 protected theorem isOpen (U : OpenNhdsOf x) : IsOpen (U : Set α) :=
-  U.isOpen
+  U.is_open'
 
 instance : OrderTop (OpenNhdsOf x) where
   top := ⟨⊤, Set.mem_univ _⟩
