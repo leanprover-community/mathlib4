@@ -134,7 +134,9 @@ syntax (name := failIfNoProgress) "fail_if_no_progress " tacticSeq : tactic
 elab_rules : tactic
 | `(tactic| fail_if_no_progress $tacs) => do
   let goal ← getMainGoal
-  replaceMainGoal (← runAndFailIfNoProgress goal (evalTactic tacs))
+  let progressMade? ← runAndDetectProgress (evalTactic tacs)
+  if !progressMade? then
+    throwError "no progress made on\n{goal}"
 
 /-- `fail_if_progress tacs` evaluates `tacs`, and fails if progress is made on the main goal
 or the local context at reducible transparency. -/
@@ -143,8 +145,11 @@ syntax (name := failIfProgress) "fail_if_progress " tacticSeq : tactic
 elab_rules : tactic
 | `(tactic| fail_if_progress $tacs) => do
   let goal ← getMainGoal
-  replaceMainGoal (← runAndFailIfProgress goal (evalTactic tacs))
+  let progressMade? ← runAndDetectProgress (evalTactic tacs)
+  if progressMade? then
+    throwError "progress made on\n{goal}"
 
+-- TODO: rethink the implementation!
 /-- `fail_if_not_idempotent tacs` evaluates `tacs`, then evaluates `tacs` again on any remaining
 goals, and fails if progress is made in the second run (on the main goal
 or the local context at reducible transparency). -/
