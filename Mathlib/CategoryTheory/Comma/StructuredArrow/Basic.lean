@@ -553,7 +553,6 @@ end IsUniversal
 
 end StructuredArrow
 
-
 namespace CostructuredArrow
 
 variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
