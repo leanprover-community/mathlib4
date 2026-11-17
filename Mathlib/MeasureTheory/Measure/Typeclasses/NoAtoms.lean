@@ -159,9 +159,7 @@ theorem exists_nullMeasurable_between (hs : NullMeasurableSet s μ) (ht : NullMe
     this ▸ hru', this ▸ hut'⟩
 
 /- The assumptions `MeasurableSingletonClass (NullMeasurableSpace α μ)` resp. `SFinite μ` in
-the following two instances cannot both be dropped. By the proof of
-`instNullSingletonClass_of_sfinite`, a counterexample needs a point `x` such that `{x}` is not
-null measurable and `μ {x} = ∞`.
+the following two instances cannot both be dropped.
 Sketch of such a counterexample: let `Ω` be uncountable, `ω₀ ∈ Ω`, `X := Ω × [0, 1]`, and call
 `B ⊆ X` measurable if all sections `B_ω` are Borel, `B_ω₀ = ∅` or `B_ω₀ = [0, 1]`, and
 `B_ω = B_ω₀` for all but countably many `ω`. This is a σ-algebra; put `μ B := ∑ ω, volume B_ω`.
@@ -172,10 +170,6 @@ Sketch of such a counterexample: let `Ω` be uncountable, `ω₀ ∈ Ω`, `X := 
   `B_ω₀ = [0, 1]`, then `μ B = ∞` and `B` contains some `{ω} × [0, 1]` of measure `1`.
 * For `x := (ω₀, 0)`, every measurable `B ∋ x` contains `{ω} × [0, 1]` for all but countably
   many `ω`, so `μ {x} = ∞`.
-* `μ` is not s-finite, since all measurable sets of finite measure satisfy `B_ω₀ = ∅`.
-* `{x}` is not null measurable: otherwise there is a measurable `M` with `μ ({x} ∆ M) = 0`, so
-  `N := toMeasurable μ ({x} ∆ M)` is measurable with `μ N = 0` and `{x} ∆ M ⊆ N`. Then `N_ω₀ = ∅`,
-  i.e. `M` and `{x}` agree on `{ω₀} × [0, 1]`, contradicting measurability of `M`.
 -/
 
 /-- A measure without atoms vanishes on singletons if singletons are null measurable. See also
