@@ -179,6 +179,8 @@ instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetTo
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
   ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
 
+instance [UnivLE.{v, u}] : HasCoproducts.{v} Scheme.{u} where
+
 lemma sigmaι_eq_iff [Small.{u} σ] (i j : σ) (x y) :
     Sigma.ι g i x = Sigma.ι g j y ↔ (Sigma.mk i x : Σ i, g i) = Sigma.mk j y := by
   refine (Scheme.IsLocallyDirected.ι_eq_ι_iff _).trans ⟨?_, ?_⟩
@@ -571,7 +573,7 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec.{u} := by
   have : IsEmpty (Scheme.Spec.obj (⊥_ CommRingCatᵒᵖ)) :=
     @Function.isEmpty _ _ spec_punit_isEmpty (Scheme.Spec.mapIso
       (initialIsoIsInitial (initialOpOfTerminal CommRingCat.punitIsTerminal))).hom
-  have := preservesInitial_of_iso Scheme.Spec (asIso (initial.to _))
+  have := preservesInitial_of_isIso Scheme.Spec (initial.to _)
   exact preservesColimitsOfShape_pempty_of_preservesInitial _
 
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec.{u} :=

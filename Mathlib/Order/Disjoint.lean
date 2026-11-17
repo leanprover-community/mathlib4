@@ -343,6 +343,9 @@ theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
 theorem ofDual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
   ⟨h.codisjoint, h.disjoint⟩
 
+protected theorem ne [Nontrivial α] (h : IsCompl x y) : x ≠ y := by
+  grind [h.disjoint, h.codisjoint, bot_ne_top]
+
 end BoundedPartialOrder
 
 section BoundedLattice

@@ -38,10 +38,6 @@ section Semiring
 
 variable [Semiring R]
 
-instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
-  let ⟨h⟩ := h
-  ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
-
 instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
   cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
 
@@ -288,6 +284,7 @@ theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑((restriction p).coeff n) = 
     rfl
   · rfl
 
+@[deprecated coeff_restriction (since := "2026-11-16")]
 theorem coeff_restriction' {p : R[X]} {n : ℕ} : ((restriction p).coeff n).1 = p.coeff n := by
   simp
 
@@ -322,7 +319,7 @@ theorem restriction_zero : restriction (0 : R[X]) = 0 := by
 
 @[simp]
 theorem restriction_one : restriction (1 : R[X]) = 1 := by
-  ext i; rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
+  ext i; rw [coeff_restriction, coeff_one, coeff_one]; split_ifs <;> rfl
 
 variable [Semiring S] {f : R →+* S} {x : S}
 

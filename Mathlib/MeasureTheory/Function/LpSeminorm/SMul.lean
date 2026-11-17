@@ -101,6 +101,7 @@ theorem MemLp.const_smul' [ContinuousConstSMul 𝕜 ε] (hf : MemLp f p μ) (c :
   eLpNorm_const_smul_le'.trans_lt
       (ENNReal.mul_lt_top ENNReal.coe_lt_top hf)
 
+@[deprecated MemLp.const_mul (since := "2026-11-16")]
 theorem MemLp.const_mul' {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
   hf.const_smul c
 
