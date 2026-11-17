@@ -66,9 +66,6 @@ protected theorem irrefl (h : WellFounded r) : Std.Irrefl r := @Std.Asymm.irrefl
 instance [WellFoundedRelation α] : Std.Asymm (α := α) WellFoundedRelation.rel :=
   WellFoundedRelation.wf.asymm
 
-theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
-  Subrelation.wf (h _ _) hr
-
 open scoped Function in -- required for scoped `on` notation
 theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
