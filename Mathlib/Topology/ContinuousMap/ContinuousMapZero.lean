@@ -553,6 +553,27 @@ lemma toContinuousMapZero_const (r : R) : (const X r).toContinuousMapZero = 0 :=
 lemma toContinuousMapZero_zero : (0 : C(X, R)).toContinuousMapZero = 0 := by ext; simp
 
 @[simp]
+lemma toContinuousMapZero_add (f g : C(X, R)) :
+    (f + g).toContinuousMapZero = f.toContinuousMapZero + g.toContinuousMapZero := by
+  ext; simp [add_sub_add_comm]
+
+@[simp]
+lemma toContinuousMapZero_neg (f : C(X, R)) :
+    (-f).toContinuousMapZero = -f.toContinuousMapZero := by
+  ext; simp [neg_add_eq_sub]
+
+@[simp]
+lemma toContinuousMapZero_sub (f g : C(X, R)) :
+    (f - g).toContinuousMapZero = f.toContinuousMapZero - g.toContinuousMapZero := by
+  ext; simp [sub_sub_sub_comm]
+
+@[simp]
+lemma toContinuousMapZero_smul {M : Type*} [DistribSMul M R] [ContinuousConstSMul M R]
+    (m : M) (f : C(X, R)) :
+    (m • f).toContinuousMapZero = m • f.toContinuousMapZero := by
+  ext; simp [smul_sub]
+
+@[simp]
 lemma toContinuousMapZero_coe (f : C(X, R)₀) : (f : C(X, R)).toContinuousMapZero = f := by
   ext; simp
 

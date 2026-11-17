@@ -32,19 +32,17 @@ variable [CommRing R] [IsTopologicalRing R] [StarRing R] [ContinuousStar R]
 
 variable (X R) in
 /-- The canonical star algebra isomorphism `Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R)` which sends
-`(r, f)` to function `fun x ↦ r + f x` whose inverse sends `g` to `(g 0, fun x ↦ g x - g 0)`.
+`(r, f)` to the function `fun x ↦ r + f x` whose inverse sends `g` to `(g 0, fun x ↦ g x - g 0)`.
 
 This is the map obtained by lifting the coercion `C(X, R)₀ → C(X, R)` to the unitization
 (see `ContinuousMapZero.toStarAlgHom_unitizationStarAlgEquiv`). -/
 def unitizationStarAlgEquiv : Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R) where
-  toFun := starLift (toContinuousMapHom (X := X) (R := R))
+  __ := starLift (toContinuousMapHom (X := X) (R := R))
+  toFun := starLift _
   invFun g := .mk (g 0, g.toContinuousMapZero)
   left_inv f := by ext <;> simp
   right_inv g := by ext; simp
-  map_add' := map_add _
-  map_mul' := map_mul _
   map_smul' := map_smul _
-  map_star' := map_star _
 
 /-- `ContinuousMapZero.unitizationStarAlgEquiv` is the map obtained by lifting the coercion
 `C(X, R)₀ → C(X, R)` to the unitization. -/
