@@ -150,12 +150,10 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
 @[implicit_reducible]
 def colimitCocone : Cocone F where
   pt := colimit F
-  ι :=
-    { app := coconeMorphism F
-      naturality _ _ f := by
-        ext
-        simpa using! (Types.TypeMax.colimitCocone
-          (F ⋙ forget (ModuleCat R))).ι.naturality_apply f _ }
+  ι.app := coconeMorphism F
+  ι.naturality _ _ f := by
+    ext x
+    exact (Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality_apply f x
 
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
 We already know that this is a morphism between additive groups. The only thing left to see is that

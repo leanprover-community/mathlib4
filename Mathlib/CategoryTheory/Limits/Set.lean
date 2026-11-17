@@ -35,9 +35,7 @@ instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :
       obtain ⟨i, hi⟩ := hx
       exact ⟨i, ⟨x, hi⟩, rfl⟩
     · intro i j ⟨x, hx⟩ ⟨y, hy⟩ h
-      obtain rfl : x = y := by
-        dsimp at h
-        simpa using! h
+      obtain rfl : x = y := congr($(h).val)
       exact ⟨IsFiltered.max i j, IsFiltered.leftToMax i j, IsFiltered.rightToMax i j, rfl⟩
 
 end Set

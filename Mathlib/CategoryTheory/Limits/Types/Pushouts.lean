@@ -262,7 +262,7 @@ lemma eq_or_eq_of_isPushout (h : IsPushout t l r b)
     (x₄ : X₄) : (∃ x₂, r x₂ = x₄) ∨ ∃ x₃, b x₃ = x₄ := by
   obtain ⟨j, x, rfl⟩ := jointly_surjective_of_isColimit h.isColimit x₄
   obtain (_ | _ | _) := j
-  · exact Or.inl ⟨t x, by simp; rfl⟩
+  · exact Or.inl ⟨t x, by simp⟩
   · exact Or.inl ⟨x, rfl⟩
   · exact Or.inr ⟨x, rfl⟩
 
