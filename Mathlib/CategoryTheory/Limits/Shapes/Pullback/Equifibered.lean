@@ -21,7 +21,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
   G(X) → G(Y)
   ```
 - `CategoryTheory.NatTrans.Coequifibered`: The dual notion.
-
 -/
 
 @[expose] public section

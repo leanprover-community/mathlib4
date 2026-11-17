@@ -30,7 +30,6 @@ are also differentiable almost everywhere.
 * `LipschitzOnWith.ae_differentiableWithinAt` is the same result for Lipschitz functions.
 
 We also give several variations around these results.
-
 -/
 
 public section
@@ -113,7 +112,7 @@ lemma BoundedVariationOn.bilinear_comp
     grw [show g y = g x + (g y - g x) by abel, eNorm_add_le, ← eDist_eq_eNorm_sub,
       eVariationOn.edist_le _ hy hx]
   grw [eVariationOn_bilinear_comp_le A A']
-  simp [mul_add, ENNReal.mul_lt_top_iff, hf.lt_top, hg.lt_top]
+  finiteness
 
 @[to_fun]
 lemma BoundedVariationOn.smul {𝕜 : Type*} {f : α → 𝕜} {g : α → F}

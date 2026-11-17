@@ -67,7 +67,6 @@ Uniqueness results: if `κ = η.withDensity f + ξ` for measurable `f` and `ξ` 
 ## References
 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
-
 -/
 
 @[expose] public section
@@ -235,8 +234,8 @@ lemma rnDeriv_def' (κ η : Kernel α γ) :
 
 @[fun_prop]
 lemma measurable_rnDeriv (κ η : Kernel α γ) :
-    Measurable (fun p : α × γ ↦ rnDeriv κ η p.1 p.2) := by
-  exact (measurable_rnDerivAux κ _).ennreal_ofReal.div
+    Measurable (fun p : α × γ ↦ rnDeriv κ η p.1 p.2) :=
+  (measurable_rnDerivAux κ _).ennreal_ofReal.div
     (measurable_const.sub (measurable_rnDerivAux κ _)).ennreal_ofReal
 
 @[fun_prop]

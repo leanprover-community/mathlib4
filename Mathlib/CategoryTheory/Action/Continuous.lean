@@ -23,7 +23,6 @@ where the underlying topological space is discrete.
 
 Finally we define inclusion functors into `Action V G` and `TopCat` in terms
 of `HasForget₂` instances.
-
 -/
 
 @[expose] public section

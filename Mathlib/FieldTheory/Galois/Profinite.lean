@@ -49,7 +49,6 @@ In a field extension `K/k`
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above.
 
 * `InfiniteGalois.restrictNormalHomContinuous` : Any `restrictNormalHom` is continuous.
-
 -/
 
 @[expose] public section
@@ -282,8 +281,8 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
     ext L
     change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
-    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 := by
-      exact AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
+    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 :=
+      AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
     simp_rw [this]
     exact proj_adjoin_singleton_val _ _ _ _ x.2
 

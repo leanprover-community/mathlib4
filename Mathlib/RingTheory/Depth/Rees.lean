@@ -34,7 +34,6 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 ## References
 
 * [Commutative Algebra, Theorem 28][matsumuraCommAlg]
-
 -/
 
 public section

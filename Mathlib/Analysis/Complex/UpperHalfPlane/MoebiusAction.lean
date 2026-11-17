@@ -301,28 +301,22 @@ instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
 
 theorem modular_S_smul (z : ℍ) :
     ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
-  rw [specialLinearGroup_apply]
-  simp [ModularGroup.S, neg_div, inv_neg]
+  simp [specialLinearGroup_apply, neg_div]
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
-  rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, coe_specialLinearGroup_apply]
-  simp [ModularGroup.coe_T_zpow,
-    of_apply, cons_val_zero, Complex.ofReal_one, one_mul, cons_val_one,
-    zero_mul, zero_add, div_one]
+  simp [UpperHalfPlane.ext_iff, add_comm, coe_specialLinearGroup_apply, ModularGroup.coe_T_zpow]
 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
   simpa only [zpow_one, Int.cast_one] using modular_T_zpow_smul z 1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
   refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
-  ext1 ⟨z, hz⟩; ext1
-  suffices ↑a * z * a + b * a = b * a + a * a * z by simpa [specialLinearGroup_apply, add_mul]
-  ring
+  ext
+  simp [specialLinearGroup_apply]
+  grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 0 ≠ 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
       (g • · : ℍ → ℍ) =
@@ -421,7 +415,6 @@ theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z)
 
 theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
 
 end SLModularAction

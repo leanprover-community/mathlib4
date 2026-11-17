@@ -459,7 +459,6 @@ end Ideal
 
 This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
-
 -/
 
 section

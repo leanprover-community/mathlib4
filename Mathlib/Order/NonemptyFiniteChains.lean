@@ -15,7 +15,6 @@ Given a partially ordered type `X`, we introduce the type
 `NonemptyFiniteChains` of nonempty finite chains in `X`, i.e.
 nonempty finite subsets `A` of `X` such that all the elements
 in `A` are comparable.
-
 -/
 
 @[expose] public section

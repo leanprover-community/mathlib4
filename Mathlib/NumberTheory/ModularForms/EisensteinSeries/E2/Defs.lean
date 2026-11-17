@@ -18,7 +18,6 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 We define the Eisenstein series `E2` of weight `2` and level `1` as a limit of partial sums
 over non-symmetric intervals.
-
 -/
 
 open UpperHalfPlane hiding I

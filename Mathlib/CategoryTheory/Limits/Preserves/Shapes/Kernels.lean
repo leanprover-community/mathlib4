@@ -282,7 +282,7 @@ instance : IsIso (cokernelComparison f G) := by
 @[reassoc]
 theorem preserves_cokernel_iso_comp_cokernel_map {X' Y' : C} (g : X' ⟶ Y') [HasCokernel g]
     [PreservesColimit (parallelPair g 0) G] (p : X ⟶ X') (q : Y ⟶ Y')
-    (hpq : f ≫ q = p ≫ g) :
+    (hpq : p ≫ g = f ≫ q) :
     (PreservesCokernel.iso G _).hom ≫
         cokernel.map (G.map f) (G.map g) (G.map p) (G.map q)
           (by rw [← G.map_comp, hpq, G.map_comp]) =

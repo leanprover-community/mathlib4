@@ -20,7 +20,6 @@ This is a mirror of the corresponding notion for localizations of rings.
 
 After `IsLocalizedModule` and `IsLocalization` are unified, the two `IsInteger` predicates
 can be unified.
-
 -/
 
 @[expose] public section

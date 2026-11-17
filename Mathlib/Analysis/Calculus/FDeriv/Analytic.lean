@@ -61,7 +61,6 @@ same holds if `s` is merely a set with unique differentials.
 (5) However, this does not work for `AnalyticOnNhd 𝕜 f s`, as we don't get for free
 differentiability at points in a neighborhood of `s`. Therefore, the theorem that deduces
 `AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s` from `AnalyticOnNhd 𝕜 f s` requires completeness of the space.
-
 -/
 
 public section
@@ -344,7 +343,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_zero_right] using! hy)
   have : fderivWithin 𝕜 (a ∘ f) (insert x s) (x + y) = a ∘L f' := by
     apply HasFDerivWithinAt.fderivWithin _ (hu _ h'y)
-    exact a.hasFDerivAt.comp_hasFDerivWithinAt (x + y) hf'
+    exact a.comp_hasFDerivWithinAt hf'
   rw [this] at Z
   convert! Z with n
   ext v

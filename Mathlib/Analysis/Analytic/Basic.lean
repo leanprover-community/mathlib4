@@ -48,7 +48,6 @@ We develop the basic properties of these notions, notably:
   `AnalyticAt.continuousAt`).
 * In a complete space, the sum of a formal power series with positive radius is well defined on the
   disk of convergence, see `FormalMultilinearSeries.hasFPowerSeriesOnBall`.
-
 -/
 
 @[expose] public section
@@ -1121,8 +1120,7 @@ theorem hasFPowerSeriesAt_iff :
       convert! tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
       simp [norm_smul, mul_comm]
     refine lt_of_lt_of_le ?_ this
-    simp only [ENNReal.coe_pos]
-    exact zero_lt_iff.mpr (nnNorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
+    rwa [ENNReal.coe_pos, pos_iff_ne_zero, nnNorm_ne_zero_iff, ← norm_pos_iff]
   · simp only [Metric.mem_eball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
       dist_zero_right] at h ⊢
     refine fun {y} _ hyr => h ?_

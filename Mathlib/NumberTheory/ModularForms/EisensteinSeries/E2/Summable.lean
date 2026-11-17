@@ -36,7 +36,6 @@ The difference `-2πi/z` between these two orderings is precisely the correction
 
 2. For fixed `n`, the inner sum over `m` can be computed using the cotangent series expansion.
    As `n → ±∞` in symmetric intervals, these sums contribute `-2πi/z`.
-
 -/
 
 open UpperHalfPlane hiding I σ

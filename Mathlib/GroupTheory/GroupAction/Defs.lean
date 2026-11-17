@@ -23,7 +23,6 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 * `MulAction.fixedPoints`
 * `MulAction.fixedBy`
 * `MulAction.stabilizer`
-
 -/
 
 @[expose] public section

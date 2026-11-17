@@ -155,7 +155,7 @@ def coeAddMonoidHom : Nonneg α →+ α :=
     map_zero' := Nonneg.coe_zero
     map_add' := Nonneg.coe_add }
 
-@[norm_cast]
+@[deprecated Nonneg.coe_nsmul (since := "2026-11-16")]
 theorem nsmul_coe (n : ℕ) (r : Nonneg α) :
     ↑(n • r) = n • (r : α) :=
   Nonneg.coeAddMonoidHom.map_nsmul _ _
