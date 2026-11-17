@@ -27,10 +27,12 @@ section
 variable [CategoryStruct.{v} C]
 
 /-- The property of objects of `Cᵒᵖ` corresponding to `P : ObjectProperty C`. -/
+@[implicit_reducible]
 protected def op (P : ObjectProperty C) : ObjectProperty Cᵒᵖ :=
   fun X ↦ P X.unop
 
 /-- The property of objects of `C` corresponding to `P : ObjectProperty Cᵒᵖ`. -/
+@[implicit_reducible]
 protected def unop (P : ObjectProperty Cᵒᵖ) : ObjectProperty C :=
   fun X ↦ P (op X)
 
