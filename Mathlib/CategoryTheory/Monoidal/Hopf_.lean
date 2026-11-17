@@ -68,26 +68,26 @@ namespace Hopf
 variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
-abbrev toBimon' (A : Hopf C) : Bimon C := .mk A.X
+abbrev toBimon (A : Hopf C) : Bimon C := .mk A.X
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
 In fact they automatically intertwine the antipodes, proved below.
 -/
 instance : Category (Hopf C) :=
-  inferInstanceAs <| Category (InducedCategory (Bimon C) toBimon')
+  inferInstanceAs <| Category (InducedCategory (Bimon C) toBimon)
 
 @[ext] lemma ext {A B : Hopf C} {f g : A ⟶ B} (w : f.hom = g.hom) : f = g :=
   InducedCategory.Hom.ext w
 
-@[simp] theorem hom_id (A : Hopf C) : (𝟙 A : A ⟶ A).hom = 𝟙 A.toBimon' := rfl
+@[simp] theorem id_hom' (A : Hopf C) : (𝟙 A : A ⟶ A).hom = 𝟙 A.toBimon := rfl
 
 @[simp]
-theorem hom_comp {A₁ A₂ A₃ : Hopf C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+theorem comp_hom' {A₁ A₂ A₃ : Hopf C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
 /-- The forgetful functor from Hopf monoids to bimonoid objects. -/
-abbrev toBimon : Hopf C ⥤ Bimon C := inducedFunctor _
+abbrev toBimonFunctor : Hopf C ⥤ Bimon C := inducedFunctor _
 
 /-- Construct a morphism `Hopf.mk X ⟶ Hopf.mk Y` from a  map `f : X ⟶ Y` and a `IsBimonHom f`
 instance. -/

@@ -139,10 +139,10 @@ def ofHom {A B : C} [BimonObj A] [BimonObj B] (f : A ⟶ B) [IsMonHom f] [IsComo
 
 @[ext] lemma ext {A B : Bimon C} {f g : A ⟶ B} (w : f.hom = g.hom) : f = g := Hom.ext w
 
-@[simp] theorem hom_id (A : Bimon C) : (𝟙 A : Hom A A).hom = 𝟙 A.X := rfl
+@[simp] theorem id_hom' (A : Bimon C) : (𝟙 A : Hom A A).hom = 𝟙 A.X := rfl
 
 @[simp]
-theorem hom_comp {M N K : Bimon C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
+theorem comp_hom' {M N K : Bimon C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 
 /-- Construct a morphism `A ⟶ B` of `Bimon C` from a map `f : A.X ⟶ A.X` and `IsMonHom f` and
@@ -204,52 +204,24 @@ namespace Functor
 
 variable {D : Type*} [Category D] [MonoidalCategory D] [BraidedCategory D]
 
-open OplaxMonoidal MonObj ComonObj BimonObj IsComonHom
+open MonObj ComonObj BimonObj IsComonHom
 
 /-- The image of a bimonoid object under an braided functor is a bimonoid object. -/
 abbrev obj.instBimonObj (A : C) [BimonObj A] (F : C ⥤ D) [F.Braided] : BimonObj (F.obj A) where
   __ := obj.instComonObj A F
   __ := monObjObj A
   mul_comul := by
-    simp only [μ_def, Δ_def, Category.assoc]
-    simp only [← F.map_comp_assoc, mul_comul]
-    simp only [map_comp, Category.assoc]
-    simp only [Monoidal.map_tensor F, ← Category.assoc]
-    rw [Monoidal.μ_δ F A A, Category.id_comp, ← tensorHom_comp_tensorHom]
-    simp only [Category.assoc]
-    congr 1
-    simp only [Monoidal.μ_δ, Category.comp_id, δ_natural]
-    rw [← tensorHom_comp_tensorHom]
-    rw [Monoidal.map_tensor_assoc]
-    rw [Monoidal.μ_δ, Category.comp_id]
-    simp only [← Category.assoc]
-    congr 1
-    rw [← IsIso.eq_comp_inv]
-    simp [tensorμ_comp_μ_tensorHom_μ_comp_μ]
+    simp only [μ_def, Δ_def, Category.assoc, ← F.map_comp_assoc, mul_comul,
+      ← (cancel_mono (LaxMonoidal.μ F A A))]
+    simp [← tensorHom_comp_tensorHom, tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc]
   one_comul := by
-    simp only [η_def, Δ_def, Category.assoc]
-    simp only [← F.map_comp_assoc, one_comul]
-    simp only [tensorObj.one_def, map_comp, Category.assoc, η_def]
-    rw [Monoidal.map_tensor, Category.assoc, Category.assoc, Monoidal.μ_δ, Category.comp_id]
-    rw [← tensorHom_comp_tensorHom]
-    simp only [← Category.assoc]
-    rw [@leftUnitor_inv_comp_tensorHom]
-    simp only [Category.assoc, δ_natural, left_unitality F, Monoidal.whiskerRight_η_ε,
-      Category.comp_id]
+    simp only [η_def, Δ_def, Category.assoc, ← F.map_comp_assoc, one_comul, tensorObj.one_def]
+    simp [← tensorHom_comp_tensorHom, leftUnitor_inv_comp_tensorHom_assoc]
   mul_counit := by
-    simp only [μ_def, ε_def, Category.assoc, Comon.tensorObj_counit]
-    simp only [← F.map_comp_assoc, mul_counit]
-    simp only [Comon.tensorObj_counit, map_comp, Category.assoc]
-    rw [← tensorHom_comp_tensorHom, Monoidal.map_tensor]
-    simp only [← Category.assoc, Monoidal.μ_δ, Category.id_comp]
-    simp only [Category.assoc]
-    rw [@Monoidal.map_leftUnitor_assoc]
-    simp only [← Category.assoc, Monoidal.μ_δ, Category.id_comp]
+    simp only [μ_def, ε_def, Category.assoc, ← F.map_comp_assoc]
     simp [tensorHom_def]
   one_counit := by
-    simp only [η_def, ε_def, Category.assoc]
-    simp only [← F.map_comp_assoc, one_counit]
-    simp only [map_id, Category.id_comp, Monoidal.ε_η]
+    simp [← F.map_comp_assoc]
 
 attribute [local instance] obj.instBimonObj
 
@@ -258,7 +230,7 @@ instance map.instIsBimon_Hom (F : C ⥤ D) [F.Braided] {X Y : C} [BimonObj X] [B
 
 /-- A monoidal functor takes bimonoid objects to bimonoid objects.
 
-That is, a monoidal functor `F : C ⥤ D` induces a functor `Bimon' C ⥤ Bimon' D`.
+That is, a monoidal functor `F : C ⥤ D` induces a functor `Bimon C ⥤ Bimon D`.
 -/
 @[implicit_reducible, simps]
 def mapBimon (F : C ⥤ D) [F.Braided] : Bimon C ⥤ Bimon D where
@@ -298,16 +270,6 @@ theorem toComon_forget : toComon C ⋙ Comon.forget C = forget C := rfl
 
 section ComonMonEquivMonComon
 
--- @[simp]
--- lemma _root_.Comon.tensorUnit_X : (𝟙_ (Comon C)).X = 𝟙_ C := rfl
-
--- @[simp]
--- lemma _root_.Comon.tensorUnit_counit : ε[(𝟙_ (Comon C)).X] = 𝟙 (𝟙_ C) := rfl
-
--- @[simp]
--- lemma _root_.Comon.tensorUnit_comul : Δ[(𝟙_ (Comon C)).X] = (λ_ (𝟙_ C)).inv := rfl
-
-set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 /-- The object level part of the forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[simps, implicit_reducible]
@@ -316,7 +278,6 @@ def toMonComonObj (M : Comon (Mon C)) : Mon (Comon C) where
   mon.one := .mk' η[M.X.X]
   mon.mul := .mk' μ[M.X.X]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[simps, implicit_reducible]
 def toMonComon : Comon (Mon C) ⥤ Mon (Comon C) where
@@ -380,7 +341,6 @@ def equivMonComonUnitIsoAppX (M : Comon (Mon C)) :
     M.X ≅ ((toMonComon C ⋙ ofMonComon C).obj M).X :=
   Mon.mkIso (equivMonComonUnitIsoAppXAux M)
 
-set_option backward.isDefEq.respectTransparency false in
 instance (M : Comon (Mon C)) : IsComonHom (equivMonComonUnitIsoAppX M).hom where
 
 /-- The unit for the equivalence `Comon (Mon C) ≌ Mon (Comon C)`. -/
@@ -405,7 +365,6 @@ def equivMonComonCounitIsoAppXAux (M : Mon (Comon C)) :
     ((ofMonComon C ⋙ toMonComon C).obj M).X.X ≅ M.X.X :=
   Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 instance (M : Mon (Comon C)) : IsComonHom (equivMonComonCounitIsoAppXAux M).hom where
 
 /-- Auxiliary definition for `equivMonComonCounitIsoApp`. -/
@@ -414,17 +373,14 @@ def equivMonComonCounitIsoAppX (M : Mon (Comon C)) :
     ((ofMonComon C ⋙ toMonComon C).obj M).X ≅ M.X :=
   Comon.mkIso' (equivMonComonCounitIsoAppXAux M)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (M : Mon (Comon C)) : IsMonHom (equivMonComonCounitIsoAppX M).hom where
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the equivalence `Comon (Mon C) ≌ Mon (Comon C)`. -/
 @[simps!]
 def equivMonComonCounitIsoApp (M : Mon (Comon C)) :
     (ofMonComon C ⋙ toMonComon C).obj M ≅ M :=
   Mon.mkIso (equivMonComonCounitIsoAppX M)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[implicit_reducible]
 def equivMonComon : Comon (Mon C) ≌ Mon (Comon C) where
@@ -498,7 +454,7 @@ def Bimon.toComonMon : Bimon C ⥤ Comon (Mon C) where
 
 /-- The equivalence of categories between `Bimon C` and `Comon (Mon C)`. -/
 @[simps, implicit_reducible]
-def equiv : Comon (Mon C) ≌ Bimon C where
+def ComonMon.equivBimon : Comon (Mon C) ≌ Bimon C where
   functor := ComonMon.toBimon
   inverse := Bimon.toComonMon
   unitIso := NatIso.ofComponents (fun _ ↦ Comon.mkIso (Iso.refl _))
