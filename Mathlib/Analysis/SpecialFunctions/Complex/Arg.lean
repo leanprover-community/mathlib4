@@ -188,12 +188,16 @@ theorem arg_ofReal_mul {r : ℝ} (hr : 0 < r) (x : ℂ) : arg (r * x) = arg x :=
     rw [← norm_mul_cos_add_sin_mul_I x, ← mul_assoc, ← ofReal_mul,
       arg_mul_cos_add_sin_mul_I (mul_pos hr (norm_pos_iff.mpr hx)) x.arg_mem_Ioc]
 
-@[deprecated (since := "2026-11-15")] alias arg_real_mul := arg_ofReal_mul
+@[deprecated arg_ofReal_mul +typeChanged (since := "2026-11-17")]
+theorem arg_real_mul (x : ℂ) {r : ℝ} (hr : 0 < r) : arg (r * x) = arg x :=
+  arg_ofReal_mul hr x
 
 theorem arg_mul_ofReal (x : ℂ) {r : ℝ} (hr : 0 < r) : arg (x * r) = arg x :=
   mul_comm x r ▸ arg_ofReal_mul hr x
 
-@[deprecated (since := "2026-11-15")] alias arg_mul_real := arg_mul_ofReal
+@[deprecated arg_mul_ofReal +typeChanged (since := "2026-11-17")]
+theorem arg_mul_real {r : ℝ} (hr : 0 < r) (x : ℂ) : arg (x * r) = arg x :=
+  arg_mul_ofReal x hr
 
 theorem arg_natCast_mul {r : ℕ} (hr : r ≠ 0) (x : ℂ) : arg (r * x) = arg x := by
   rw [← ofReal_natCast, arg_ofReal_mul (by simpa [Nat.pos_iff_ne_zero] using hr)]
