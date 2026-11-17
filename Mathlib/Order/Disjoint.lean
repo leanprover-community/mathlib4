@@ -343,6 +343,10 @@ theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
 theorem ofDual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
   ⟨h.2, h.1⟩
 
+theorem ne [Nontrivial α] (h : IsCompl x y) : x ≠ y :=
+  fun hxy ↦ bot_ne_top
+    ((hxy ▸ h).disjoint.eq_bot_of_self.symm.trans (hxy ▸ h).codisjoint.eq_top_of_self)
+
 end BoundedPartialOrder
 
 section BoundedLattice
