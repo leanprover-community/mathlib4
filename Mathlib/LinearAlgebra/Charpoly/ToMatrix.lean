@@ -80,7 +80,7 @@ lemma LinearMap.charpoly_eq_of_isCompl {p q : Submodule R M} (h : IsCompl p q)
     [Module.Free R p] [Module.Finite R p] [Module.Free R q] [Module.Finite R q]
     (f : M →ₗ[R] M) (hp : f ∈ p.compatibleMaps p) (hq : f ∈ q.compatibleMaps q) :
     f.charpoly = (f.restrict hp).charpoly * (f.restrict hq).charpoly := by
-  rw [← charpoly_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl  h hp hq,
+  rw [← charpoly_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl h hp hq,
     LinearEquiv.charpoly_conj]
 
 namespace Matrix
