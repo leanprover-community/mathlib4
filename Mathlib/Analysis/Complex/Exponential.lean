@@ -153,9 +153,8 @@ lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p)
   rw [← Complex.exp_nsmul]
   ring_nf
 
-lemma exp_mul_natCast (x : ℂ) : ∀ n : ℕ, exp (x * n) = exp x ^ n
-  | 0 => by rw [Nat.cast_zero, mul_zero, exp_zero, pow_zero]
-  | n + 1 => by rw [pow_succ, Nat.cast_add_one, mul_add_one, exp_add, exp_mul_natCast x n]
+lemma exp_mul_natCast (x : ℂ) (n : ℕ) : exp (x * n) = exp x ^ n := by
+  rw [← nsmul_eq_mul', exp_nsmul]
 
 lemma exp_natCast_mul (n : ℕ) (x : ℂ) : exp (n * x) = exp x ^ n := by
   rw [mul_comm, exp_mul_natCast]
@@ -255,8 +254,8 @@ lemma exp_ofNat_mul (n : ℕ) (x : ℝ) [n.AtLeastTwo] : exp (ofNat(n) * x) = ex
 lemma exp_mul_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] : exp (x * ofNat(n)) = exp x ^ ofNat(n) :=
   exp_mul_natCast ..
 
-nonrec lemma exp_mul_intCast (x : ℝ) (n : ℤ) : exp (x * n) = exp x ^ n :=
-  ofReal_injective (by simp [exp_mul_intCast])
+lemma exp_mul_intCast (x : ℝ) (n : ℤ) : exp (x * n) = exp x ^ n :=
+  ofReal_injective (by simp [Complex.exp_mul_intCast])
 
 lemma exp_intCast_mul (n : ℤ) (x : ℝ) : exp (n * x) = exp x ^ n := by
   rw [mul_comm, exp_mul_intCast]
