@@ -128,12 +128,12 @@ theorem signRight_mod {K : Type*} [Field K] [LinearOrder K] {x : K} {p q : K[X]}
 
 section OrderedField
 
-variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R] [TopologicalSpace R]
-  [OrderTopology R]
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [TopologicalSpace K]
+  [OrderTopology K]
 
 /-- The equation `sign (eval y p) = signRight x p` holds for all `y` in some interval
 `(x, x + ε)`. -/
-theorem eventually_sign_eq_signRight (x : R) (p : R[X]) :
+theorem eventually_sign_eq_signRight (x : K) (p : K[X]) :
     ∀ᶠ y in 𝓝[>] x, sign (eval y p) = signRight x p := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp [signRight]
@@ -156,18 +156,18 @@ theorem eventually_sign_eq_signRight (x : R) (p : R[X]) :
     sign_pos (pow_pos (sub_pos.mpr hxy) m), one_mul]
 
 /-- Immediately to the right of `x`, a polynomial has a constant sign. -/
-theorem exists_eventually_sign_eq (x : R) (p : R[X]) :
+theorem exists_eventually_sign_eq (x : K) (p : K[X]) :
     ∃ s : SignType, ∀ᶠ y in 𝓝[>] x, sign (eval y p) = s :=
   ⟨_, eventually_sign_eq_signRight x p⟩
 
-theorem signRight_eq_of_eventually {x : R} {p : R[X]} {s : SignType}
+theorem signRight_eq_of_eventually {x : K} {p : K[X]} {s : SignType}
     (h : ∀ᶠ y in 𝓝[>] x, sign (eval y p) = s) : signRight x p = s := by
   obtain ⟨y, hy1, hy2⟩ := ((eventually_sign_eq_signRight x p).and h).exists
   rw [← hy1, hy2]
 
 /-- `signRight x p` is the unique sign `s` such that `sign (eval y p) = s` for all `y` in some
 interval `(x, x + ε)`. -/
-theorem signRight_eq_iff {x : R} {p : R[X]} {s : SignType} :
+theorem signRight_eq_iff {x : K} {p : K[X]} {s : SignType} :
     signRight x p = s ↔ ∀ᶠ y in 𝓝[>] x, sign (eval y p) = s :=
   ⟨fun h => h ▸ eventually_sign_eq_signRight x p, signRight_eq_of_eventually⟩
 
