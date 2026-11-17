@@ -5,13 +5,13 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Complex
-public import Mathlib.NumberTheory.Harmonic.GammaDeriv
-public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.PSeries
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.NumberTheory.Harmonic.GammaDeriv
+public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 import Mathlib.Analysis.Convex.Deriv
 
@@ -174,7 +174,6 @@ theorem digamma_two_mul {s : ℂ} (hs : ∀ m : ℕ, 2 * s ≠ -(m : ℂ)) :
       ring
 
 /-- **`Complex.digamma` agrees with `Real.digamma` along the reals.** -/
-@[simp]
 theorem digamma_ofReal {x : ℝ} : digamma x = x.digamma := by
   by_cases hx : ∀ m : ℕ, x ≠ -m
   · rw [Real.digamma_def, digamma_def, ← logDeriv_comp_ofReal]
@@ -187,7 +186,7 @@ theorem digamma_ofReal {x : ℝ} : digamma x = x.digamma := by
       (Real.not_differentiableAt_Gamma_neg_nat m),
       logDeriv_eq_zero_of_not_differentiableAt _ _ (not_differentiableAt_Gamma_neg_nat m)]
 
-theorem digamma_eq_re {x : ℝ} : x.digamma = (digamma x).re := by simp
+theorem digamma_eq_re {x : ℝ} : x.digamma = (digamma x).re := by simp [digamma_ofReal]
 
 end Complex
 
@@ -195,29 +194,41 @@ namespace Real
 
 open Complex Set
 
-variable {x : ℝ}
+variable {x : ℝ} (hx : ∀ m : ℕ, x ≠ -m) (n : ℕ)
 
-theorem differentiableAt_log_Gamma (hx : ∀ m : ℕ, x ≠ -m) : DifferentiableAt ℝ (·.Gamma.log) x :=
+theorem digamma_zero : digamma 0 = 0 := by simpa using (digamma_ofReal (x := 0)).symm
+
+theorem digamma_one : digamma 1 = - Real.eulerMascheroniConstant := by
+  simpa [Complex.digamma_one, ← ofReal_neg] using (digamma_ofReal (x := 1)).symm
+
+theorem digamma_one_half : digamma (1 / 2) = - 2 * log 2 - Real.eulerMascheroniConstant := by
+  rw [← Complex.ofReal_inj]; push_cast
+  simp [← digamma_ofReal, -one_div, Complex.digamma_one_half]
+
+include hx in
+theorem differentiableAt_log_Gamma : DifferentiableAt ℝ (·.Gamma.log) x :=
   (differentiableAt_log (Gamma_ne_zero hx)).comp x (differentiableAt_Gamma hx)
 
 theorem monotoneOn_deriv_log_Gamma : MonotoneOn (deriv (·.Gamma.log)) (Ioi (0 : ℝ)) :=
-  convexOn_log_Gamma.monotoneOn_deriv fun _ hx ↦ differentiableAt_log_Gamma (ne_neg_natCast_of_pos hx)
+  convexOn_log_Gamma.monotoneOn_deriv fun _ hx ↦
+    differentiableAt_log_Gamma (ne_neg_natCast_of_pos hx)
 
-theorem digamma_eq_deriv_log_Gamma (hx : ∀ m : ℕ, x ≠ -m) : digamma x = deriv (·.Gamma.log) x := by
+include hx in
+theorem digamma_eq_deriv_log_Gamma : digamma x = deriv (·.Gamma.log) x := by
   rw [digamma_def]
   exact (deriv_log_comp_eq_logDeriv (differentiableAt_Gamma hx) (Gamma_ne_zero hx)).symm
 
-theorem digamma_apply_add_one (hx : ∀ m : ℕ, x ≠ -m) :
-    digamma (x + 1) = digamma x + 1 / x := by
+include hx in
+theorem digamma_apply_add_one : digamma (x + 1) = digamma x + 1 / x := by
   rw [← Complex.ofReal_inj]; push_cast
   convert Complex.digamma_apply_add_one x (mod_cast hx) <;> simp [← digamma_ofReal]
 
-theorem digamma_apply_add_nat (hx : ∀ m : ℕ, x ≠ -m) (n : ℕ) :
-    digamma (x + n) = digamma x + ∑ k ∈ .range n, (x + k)⁻¹ := by
+include hx in
+theorem digamma_apply_add_nat : digamma (x + n) = digamma x + ∑ k ∈ .range n, (x + k)⁻¹ := by
   rw [← Complex.ofReal_inj]; push_cast
   convert Complex.digamma_apply_add_nat (s := x) (mod_cast hx) n <;> simp [← digamma_ofReal]
 
-theorem digamma_nat_add_one (n : ℕ) : digamma (n + 1) = harmonic n - eulerMascheroniConstant := by
+theorem digamma_nat_add_one : digamma (n + 1) = harmonic n - eulerMascheroniConstant := by
   rw [← Complex.ofReal_inj]; push_cast
   convert Complex.digamma_nat_add_one n; simp [← digamma_ofReal]
 
@@ -239,7 +250,8 @@ theorem digamma_le_log_le (hx : 0 < x) : digamma x ≤ x.log ∧ x.log ≤ digam
   have : ContinuousOn (·.Gamma.log) (Icc x (x + 1)) := fun _ _ ↦
     (differentiableAt_log_Gamma (by grind [ne_neg_natCast_of_pos])).continuousAt.continuousWithinAt
   obtain ⟨c, _, hcs⟩ := exists_deriv_eq_slope (·.Gamma.log) (by linarith) this
-      fun _ _ ↦ (differentiableAt_log_Gamma (by grind [ne_neg_natCast_of_pos hx])).differentiableWithinAt
+      fun _ _ ↦
+        (differentiableAt_log_Gamma (by grind [ne_neg_natCast_of_pos hx])).differentiableWithinAt
   have : x.log = deriv (·.Gamma.log) c := by grind [Gamma_add_one, log_mul, Gamma_pos_of_pos]
   rw [digamma_eq_deriv_log_Gamma (ne_neg_natCast_of_pos hx),
     digamma_eq_deriv_log_Gamma (ne_neg_natCast_of_pos (by linarith)), this]
@@ -274,20 +286,22 @@ variable {s : ℂ} {x : ℝ}
 /-- The set where `Gamma` or `digamma` is analytic: the complement of the non-positive integers. -/
 def gammaAnalyticSet : Set ℂ := {s | ∀ m : ℕ, s ≠ -m}
 
+theorem mem_gammaAnalyticSet : s ∈ gammaAnalyticSet ↔ ∀ m : ℕ, s ≠ -m := by rfl
+
 theorem ofReal_mem_gammaAnalyticSet (hx : 0 < x) : ↑x ∈ gammaAnalyticSet := by
-  simp only [gammaAnalyticSet, mem_ofPred_eq]
+  simp only [mem_gammaAnalyticSet]
   exact_mod_cast (ne_neg_natCast_of_pos hx)
 
 private theorem gammaAnalyticSet_eq_compl : gammaAnalyticSet = ((↑) '' {n : ℤ | n ≤ 0} : Set ℂ)ᶜ
     := by
   ext
-  simp only [gammaAnalyticSet, Set.mem_ofPred_eq, Set.mem_compl_iff, Set.mem_image, not_exists,
+  simp only [mem_gammaAnalyticSet, Set.mem_ofPred_eq, Set.mem_compl_iff, Set.mem_image, not_exists,
     not_and]
   constructor
   · rintro h n hn rfl
     obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat hn
     exact h m (by push_cast; ring)
-  · rintro h m hsm
+  · rintro h m _
     exact h (-m) (by omega) (by push_cast; tauto)
 
 theorem mem_gammaAnalyticSet_add_one (hs : s ∈ gammaAnalyticSet) :
@@ -321,18 +335,20 @@ end
 noncomputable def gaussTerm (s : ℂ) (n : ℕ) : ℂ := 1 / (n + 1) - 1 / (s + n)
 
 /-- Gauss' series for the digamma function. -/
-noncomputable def gaussSeries (s : ℂ) : ℂ :=
-  -Real.eulerMascheroniConstant + ∑' n, gaussTerm s n
+noncomputable def gaussSeries (s : ℂ) : ℂ := -Real.eulerMascheroniConstant + ∑' n, gaussTerm s n
 
 /-- The error between `digamma` and its Gauss series; we show it is identically zero. -/
 noncomputable def gaussErr (s : ℂ) : ℂ := digamma s - gaussSeries s
 
-theorem gaussTerm_eq (hs : s ∈ gammaAnalyticSet) (n : ℕ) :
-    gaussTerm s n = (s - 1) / ((n + 1) * (s + n)) := by
+variable (hs : s ∈ gammaAnalyticSet) (hx : ↑x ∈ gammaAnalyticSet)
+
+include hs in
+theorem gaussTerm_eq (n : ℕ) : gaussTerm s n = (s - 1) / ((n + 1) * (s + n)) := by
   rw [gaussTerm, div_sub_div _ _ n.cast_add_one_ne_zero (by grind [hs n])]
   ring_nf
 
-theorem summable_gaussTerm (hs : s ∈ gammaAnalyticSet) : Summable (gaussTerm s) := by
+include hs in
+theorem summable_gaussTerm : Summable (gaussTerm s) := by
   apply Summable.of_norm_bounded_eventually_nat (g := fun n : ℕ ↦ 2 * ‖s - 1‖ / n ^ 2)
   · exact ((Real.summable_one_div_nat_pow.mpr one_lt_two).mul_left (2 * ‖s - 1‖)).congr fun _ ↦ by
       ring
@@ -342,16 +358,16 @@ theorem summable_gaussTerm (hs : s ∈ gammaAnalyticSet) : Summable (gaussTerm s
     have : n / 2 ≤ ‖s + n‖ := by
       grind [add_comm, norm_sub_le_norm_add, norm_natCast, Nat.le_ceil ‖s‖]
     grw [gaussTerm_eq hs, norm_div, norm_mul, (by norm_cast : ‖(n : ℂ) + 1‖ = n + 1),
-      (by nlinarith : (n + 1) * ‖s + n‖ ≥ n ^2 / 2)]
+      (by nlinarith : (n + 1) * ‖s + n‖ ≥ n ^ 2 / 2)]
     ring_nf; rfl
 
-theorem summable_recipDiff (hs : s ∈ gammaAnalyticSet) :
-    Summable fun k : ℕ ↦ 1 / (s + k) - 1 / (s + k + 1) :=
+include hs in
+theorem summable_recipDiff : Summable fun k : ℕ ↦ 1 / (s + k) - 1 / (s + k + 1) :=
   ((summable_gaussTerm (mem_gammaAnalyticSet_add_one hs)).sub (summable_gaussTerm hs)).congr
     (by grind [gaussTerm])
 
-theorem tsum_recipTelescope (hs : s ∈ gammaAnalyticSet) :
-    ∑' k : ℕ, (1 / (s + k) - 1 / (s + k + 1)) = 1 / s := by
+include hs in
+theorem tsum_recipTelescope : ∑' k : ℕ, (1 / (s + k) - 1 / (s + k + 1)) = 1 / s := by
   refine (hasSum_iff_tendsto_nat_of_summable_norm ?_ |>.mpr ?_).tsum_eq
   · exact summable_norm_iff.mpr (summable_recipDiff hs)
   have (n : ℕ) : ∑ k ∈ .range n, (1 / (s + k) - 1 / (s + k + 1)) = 1 / s - 1 / (s + n) := by
@@ -365,8 +381,9 @@ theorem tsum_recipTelescope (hs : s ∈ gammaAnalyticSet) :
     (tendsto_atTop_add_const_right atTop (-‖s‖) tendsto_natCast_atTop_atTop))
   grind [norm_natCast, norm_neg, norm_sub_norm_le (n : ℂ) (-s)]
 
+include hs in
 /-- The error is 1-periodic. -/
-theorem gaussErr_add_one (hs : s ∈ gammaAnalyticSet) : gaussErr (s + 1) = gaussErr s := by
+theorem gaussErr_add_one : gaussErr (s + 1) = gaussErr s := by
   have : gaussSeries (s + 1) - gaussSeries s = 1 / s := by
     simp only [gaussSeries, add_sub_add_left_eq_sub, ← Summable.tsum_sub,
       mem_gammaAnalyticSet_add_one hs, summable_gaussTerm, hs]
@@ -382,23 +399,17 @@ theorem gaussErr_natCast_add_one (n : ℕ) : gaussErr (n + 1) = 0 := by
     have : ((n : ℂ) + 1) ∈ gammaAnalyticSet := by simp [gammaAnalyticSet]; norm_cast; grind
     grind [Nat.cast_add, Nat.cast_one, gaussErr_add_one]
 
-theorem partialSum_gaussTerm_ofReal (hx : ↑x ∈ gammaAnalyticSet) (N : ℕ) :
-    ∑ k ∈ .range N, gaussTerm x k
+include hx in
+theorem partialSum_gaussTerm_ofReal (N : ℕ) : ∑ k ∈ .range N, gaussTerm x k
       = digamma (N + 1) + Real.eulerMascheroniConstant - digamma (x + N) + digamma x := by
   have : harmonic N = ∑ k ∈ .range N, (1 / ((k : ℂ) + 1)) := by simp [harmonic]
   simp_rw [gaussTerm, Finset.sum_sub_distrib, digamma_nat_add_one]
   grind [digamma_apply_add_nat hx]
 
-theorem tendsto_digamma_diff :
-    Tendsto (fun N : ℕ ↦ digamma (N + 1) - digamma (x + N)) atTop (𝓝 0) := by
-  suffices Tendsto (fun N : ℕ ↦ (N + 1 : ℝ).digamma - (x + N : ℝ).digamma) atTop (𝓝 0) by
-    refine ((continuous_ofReal.tendsto 0).comp this).congr (fun N ↦ ?_)
-    simp only [Function.comp_apply]
-    push_cast
-    simp [← Complex.digamma_ofReal]
+theorem tendsto_digamma_diff_real :
+    Tendsto (fun N : ℕ ↦ (N + 1 : ℝ).digamma - (x + N : ℝ).digamma) atTop (𝓝 0) := by
   have (N) (hN : ⌈-x⌉₊ + 1 ≤ N) : 0 < x + (N : ℝ) := by
-    have : (⌈-x⌉₊ : ℝ) + 1 ≤ N := mod_cast hN
-    grind [Nat.le_ceil (-x)]
+    grind [Nat.le_ceil (-x), (mod_cast hN : (⌈-x⌉₊ : ℝ) + 1 ≤ N)]
   have hA : Tendsto (fun N : ℕ ↦ (N + 1 : ℝ).digamma - (N + 1 : ℝ).log)
       atTop (𝓝 0) := by
     have (N : ℕ) : ‖(N + 1 : ℝ).digamma - (N + 1 : ℝ).log‖ ≤ 1 / (N + 1 : ℝ) := by
@@ -424,8 +435,16 @@ theorem tendsto_digamma_diff :
     · filter_upwards [eventually_ge_atTop (⌈-x⌉₊ + 1)]; grind [Real.log_div]
   grind [((hA.sub hB).add hC).congr]
 
+theorem tendsto_digamma_diff :
+    Tendsto (fun N : ℕ ↦ digamma (N + 1) - digamma (x + N)) atTop (𝓝 0) := by
+  refine ((continuous_ofReal.tendsto 0).comp (tendsto_digamma_diff_real (x := x))).congr ?_
+  simp only [Function.comp_apply]
+  push_cast
+  simp [← Complex.digamma_ofReal]
+
+include hx in
 /-- **Real case**: the error vanishes on the reals (off the poles). -/
-theorem gaussErr_ofReal (hx : ↑x ∈ gammaAnalyticSet) : gaussErr x = 0 := by
+theorem gaussErr_ofReal : gaussErr x = 0 := by
   have hsum : Summable (‖gaussTerm x ·‖) := summable_norm_iff.mpr (summable_gaussTerm hx)
   suffices HasSum (gaussTerm x) (digamma x + Real.eulerMascheroniConstant) by
     grind [gaussErr, gaussSeries, HasSum.tsum_eq]
@@ -433,21 +452,14 @@ theorem gaussErr_ofReal (hx : ↑x ∈ gammaAnalyticSet) : gaussErr x = 0 := by
       + (digamma x + Real.eulerMascheroniConstant) := by grind [partialSum_gaussTerm_ofReal hx]
   simpa [hasSum_iff_tendsto_nat_of_summable_norm hsum, this] using tendsto_digamma_diff.add_const _
 
-theorem differentiableOn_gaussSeries :
-    DifferentiableOn ℂ gaussSeries gammaAnalyticSet := by
-  have hterm (N : Finset ℕ) :
-      DifferentiableOn ℂ (fun s ↦ ∑ n ∈ N, gaussTerm s n) gammaAnalyticSet := by
-    refine DifferentiableOn.fun_sum fun n _ ↦ ?_
-    simp only [gaussTerm]
-    exact (differentiableOn_const _).sub
-      ((differentiableOn_const _).div (by fun_prop) fun s hs ↦ by grind [hs n])
+theorem differentiableOn_gaussSeries : DifferentiableOn ℂ gaussSeries gammaAnalyticSet := by
   obtain ⟨g, hg⟩ : SummableLocallyUniformlyOn (fun n s ↦ gaussTerm s n) gammaAnalyticSet := by
     apply SummableLocallyUniformlyOn.of_locally_bounded_eventually isOpen_gammaAnalyticSet
     intro K hK hKc
     obtain ⟨R, hR⟩ := isBounded_iff_forall_norm_le.mp hKc.isBounded
-    refine ⟨fun n ↦ 2 * (R + 1) / n ^ 2, ?_, ?_⟩
-    · exact ((Real.summable_one_div_nat_pow.mpr one_lt_two).mul_left (2 * (R + 1))).congr
-        (by grind)
+    refine ⟨(2 * (R + 1) / · ^ 2), ?_, ?_⟩
+    · apply ((Real.summable_one_div_nat_pow.mpr one_lt_two).mul_left (2 * (R + 1))).congr
+      grind
     · rw [Nat.cofinite_eq_atTop]
       filter_upwards [eventually_ge_atTop (2 * ⌈R⌉₊ + 1)] with n hn s hs
       have := hR s hs
@@ -461,14 +473,20 @@ theorem differentiableOn_gaussSeries :
         nlinarith [Nat.le_ceil R]
       grw [← this]
       field_simp; grind [norm_sub_le, norm_one]
-  exact ((hg.differentiableOn (Eventually.of_forall hterm) isOpen_gammaAnalyticSet).congr
+  refine ((hg.differentiableOn (Eventually.of_forall (fun _ ↦ ?_)) isOpen_gammaAnalyticSet).congr
     (fun s hs ↦ hg.tsum_eqOn hs)).const_add _
+  refine DifferentiableOn.fun_sum fun n _ ↦ ?_
+  simp only [gaussTerm]
+  exact (differentiableOn_const _).sub
+    ((differentiableOn_const _).div (by fun_prop) fun s hs ↦ by grind [hs n])
+
 
 theorem analyticOnNhd_gaussErr : AnalyticOnNhd ℂ gaussErr gammaAnalyticSet :=
   (differentiableOn_digamma.sub differentiableOn_gaussSeries).analyticOnNhd
     isOpen_gammaAnalyticSet
 
-theorem gaussErr_eq_zero (hs : s ∈ gammaAnalyticSet) : gaussErr s = 0 := by
+include hs in
+theorem gaussErr_eq_zero : gaussErr s = 0 := by
   have h1 : 1 ∈ gammaAnalyticSet := by simpa using ofReal_mem_gammaAnalyticSet one_pos
   have : Tendsto (fun k : ℕ ↦ ((1 + 1 / (k + 1) : ℝ) : ℂ)) atTop (𝓝[≠] 1) := by
     rw [tendsto_nhdsWithin_iff]

@@ -224,6 +224,8 @@ theorem continuousAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : ContinuousAt
   (differentiableAt_Gamma hs).continuousAt
 
 theorem not_continuousAt_Gamma_zero : ¬ ContinuousAt Gamma 0 := by
+  -- show discontinuity at 0 by showing that
+  -- `x * Gamma x = Gamma (x+1)` converges to 1 at the origin
   suffices Tendsto (fun x ↦ x * Gamma x) (𝓝[≠] 0) (𝓝 1) from
     this.not_tendsto (by simp) ∘ continuousAt_iff_punctured_nhds.mp ∘ continuousAt_id.mul
   convert! tendsto_nhdsWithin_congr (fun _ ↦ Gamma_add_one) (continuousAt_iff_punctured_nhds.mp ?_)
