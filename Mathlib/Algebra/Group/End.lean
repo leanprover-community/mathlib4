@@ -20,6 +20,7 @@ This file defines
 * the endomorphism monoid structure on `Monoid.End M := M →* M` and `AddMonoid.End M := M →+ M`
 * the automorphism group structure on `Equiv.Perm α := α ≃ α`
 * the automorphism group structure on `MulAut M := M ≃* M` and `AddAut M := M ≃+ M`.
+* `Equiv.Perm.IsSwap`: `f = swap x y` for `x ≠ y`.
 
 ## Implementation notes
 
@@ -133,9 +134,49 @@ theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
 theorem inv_eq_iff_eq {f : Perm α} {x y : α} : f⁻¹ x = y ↔ x = f y :=
   f.symm_apply_eq
 
+section PowApply
+
+variable {f : Perm α}
+
+theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
+  | 0 => rfl
+  | n + 1 => by rw [pow_succ, mul_apply, hfx, pow_apply_eq_self_of_apply_eq_self hfx n]
+
+theorem zpow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℤ, (f ^ n) x = x
+  | (n : ℕ) => pow_apply_eq_self_of_apply_eq_self hfx n
+  | Int.negSucc n => by rw [zpow_negSucc, inv_eq_iff_eq, pow_apply_eq_self_of_apply_eq_self hfx]
+
+theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
+    ∀ n : ℕ, (f ^ n) x = x ∨ (f ^ n) x = f x
+  | 0 => Or.inl rfl
+  | n + 1 =>
+    (pow_apply_eq_of_apply_apply_eq_self hffx n).elim
+      (fun h => Or.inr (by rw [pow_succ', mul_apply, h]))
+      fun h => Or.inl (by rw [pow_succ', mul_apply, h, hffx])
+
+theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
+    ∀ i : ℤ, (f ^ i) x = x ∨ (f ^ i) x = f x
+  | (n : ℕ) => pow_apply_eq_of_apply_apply_eq_self hffx n
+  | Int.negSucc n => by
+    rw [zpow_negSucc, inv_eq_iff_eq, ← f.injective.eq_iff, ← mul_apply, ← pow_succ', eq_comm,
+      inv_eq_iff_eq, ← mul_apply, ← pow_succ, @eq_comm _ x, or_comm]
+    exact pow_apply_eq_of_apply_apply_eq_self hffx _
+
+@[simp]
+theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
+    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
+  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
+
+@[simp]
+theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
+    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
+  rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
+
 theorem zpow_apply_comm {α : Type*} (σ : Perm α) (m n : ℤ) {x : α} :
     (σ ^ m) ((σ ^ n) x) = (σ ^ n) ((σ ^ m) x) := by
   rw [← Equiv.Perm.mul_apply, ← Equiv.Perm.mul_apply, zpow_mul_comm]
+
+end PowApply
 
 /-! Lemmas about mixing `Perm` with `Equiv`. Because we have multiple ways to express
 `Equiv.refl`, `Equiv.symm`, and `Equiv.trans`, we want simp lemmas for every combination.
@@ -580,6 +621,38 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
   rw [← swap_apply_apply, swap_apply_left, swap_apply_of_ne_of_ne hxy hxz, swap_comm]
 
 end Swap
+
+section IsSwap
+
+namespace Perm
+
+variable [DecidableEq α]
+
+/-- `f.IsSwap` indicates that the permutation `f` is a transposition of two elements. -/
+def IsSwap (f : Perm α) : Prop :=
+  ∃ x y, x ≠ y ∧ f = swap x y
+
+@[simp]
+theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
+    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y := by
+  grind [ofSubtype_apply_of_mem, ofSubtype_apply_of_not_mem]
+
+theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
+    (h : f.IsSwap) : (ofSubtype f).IsSwap :=
+  let ⟨⟨x, hx⟩, ⟨y, hy⟩, hxy⟩ := h
+  ⟨x, y, by
+    simp only [Ne, Subtype.ext_iff] at hxy
+    exact hxy.1, by
+    rw [hxy.2, ofSubtype_swap_eq]⟩
+
+theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap x (f x) * f) y ≠ y) :
+    f y ≠ y ∧ y ≠ x := by
+  simp only [swap_apply_def, mul_apply, f.injective.eq_iff] at *
+  grind
+
+end Perm
+
+end IsSwap
 
 section Group
 variable [Group α] (a b : α)
