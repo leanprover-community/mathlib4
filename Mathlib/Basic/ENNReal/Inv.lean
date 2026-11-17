@@ -704,8 +704,14 @@ theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := 
 lemma zpow_ne_top {a : ℝ≥0∞} (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n ≠ ∞ :=
   (ENNReal.zpow_lt_top ha h'a n).ne
 
-theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) (h'y : y ≠ ⊤) :
+theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
+  obtain rfl | h'y := eq_or_ne y ⊤
+  · obtain hx1 | hx1 := lt_or_ge x 1
+    · use -1
+      simpa [zpow_neg_one]
+    · use 0
+      simpa using ⟨hx1, h'x.lt_top⟩
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne, coe_eq_zero] using (zero_lt_one.trans hy).ne'
@@ -716,8 +722,14 @@ theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_le_coe]
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_lt_coe]
 
-theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) (h'y : y ≠ ⊤) :
+theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Ioc (y ^ n) (y ^ (n + 1)) := by
+  obtain rfl | h'y := eq_or_ne y ⊤
+  · obtain hx1 | hx1 := le_or_gt x 1
+    · use -1
+      simpa [zpow_neg_one] using ⟨hx.pos, hx1⟩
+    · use 0
+      simpa
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne, coe_eq_zero] using (zero_lt_one.trans hy).ne'
@@ -734,7 +746,7 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
   simp only [mem_iUnion, mem_Ioo, mem_Ico]
   constructor
   · rintro ⟨hx, h'x⟩
-    exact exists_mem_Ico_zpow hx.ne' h'x.ne hy h'y
+    exact exists_mem_Ico_zpow hx.ne' h'x.ne hy
   · rintro ⟨n, hn, h'n⟩
     constructor
     · apply lt_of_lt_of_le _ hn
