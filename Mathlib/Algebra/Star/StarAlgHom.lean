@@ -1069,13 +1069,10 @@ variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Promote a bijective star algebra homomorphism to a star algebra equivalence. -/
-noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[R] B :=
-  {
-    RingEquiv.ofBijective f
-      (hf : Function.Bijective (f : A → B)) with
-    toFun := f
-    map_star' := map_star f
-    map_smul' := map_smul f }
+noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[R] B where
+  toRingEquiv := .ofBijective f hf
+  map_star' := map_star f
+  map_smul' := map_smul f
 
 @[simp]
 theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
@@ -1084,6 +1081,10 @@ theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
 
 theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
     (StarAlgEquiv.ofBijective f hf) a = f a :=
+  rfl
+
+@[simp]
+lemma toRingEquiv_ofBijective (f : F) (hf) : (ofBijective f hf).toRingEquiv = .ofBijective f hf :=
   rfl
 
 end Bijective
