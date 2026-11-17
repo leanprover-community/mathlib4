@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Zhouhang Zhou. All rights sserved.
+Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
@@ -165,15 +165,15 @@ variable (K) in
 /-- The restriction of the reflection in `K` to `K` is the identity. -/
 theorem restrict_reflection_eq_id :
     K.reflection.toLinearMap.restrict (reflection_mem_compatibleMaps K) = .id :=
-  LinearMap.ext fun x ↦ Subtype.ext (reflection_mem_subspace_eq_self x.2)
+  LinearMap.ext fun ⟨_, hx⟩ ↦ Subtype.ext (reflection_mem_subspace_eq_self hx)
 
 variable (K) in
 /-- The restriction of the reflection in `K` to `Kᗮ` is minus the identity. -/
 theorem restrict_reflection_orthogonalComplement_eq_neg_id :
     K.reflection.toLinearMap.restrict (p := Kᗮ) (q := Kᗮ)
       (reflection_mem_compatibleMaps_orthogonalComplement K) = -.id :=
-  LinearMap.ext fun x ↦
-    Subtype.ext (reflection_mem_subspace_orthogonalComplement_eq_neg x.2)
+  LinearMap.ext fun ⟨_, hx⟩ ↦
+    Subtype.ext (reflection_mem_subspace_orthogonalComplement_eq_neg hx)
 
 /-- The reflection in `(𝕜 ∙ v)ᗮ` of `v` is `-v`. -/
 theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
