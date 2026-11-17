@@ -138,18 +138,14 @@ theorem exists_measurable_subset_lt₀ (hs : NullMeasurableSet s μ) (hμs : 0 <
 theorem exists_measurable_between (hs : MeasurableSet s) (ht : NullMeasurableSet t μ)
     (hst : s ⊆ t) (hμst : μ s < μ t) :
     ∃ u, MeasurableSet u ∧ s ⊆ u ∧ u ⊆ t ∧ μ s < μ u ∧ μ u < μ t := by
-  have : 0 < μ (t \ s) :=
-    (tsub_pos_of_lt hμst).trans_le le_measure_sdiff
+  have h := measure_sdiff hst hs.nullMeasurableSet hμst.ne_top
   obtain ⟨v, hv, hv_meas, hv_pos, hv_lt⟩ :=
-    exists_measurable_subset_lt₀ (ht.diff hs.nullMeasurableSet) this
-  have hvs : Disjoint v s := disjoint_of_subset_left hv disjoint_sdiff_left
-  refine ⟨v ∪ s, hv_meas.union hs, subset_union_right, union_subset (hv.trans sdiff_subset) hst,
-    ?_, ?_⟩
-  · rw [measure_union hvs hs, add_comm]
-    exact ENNReal.lt_add_right hμst.ne_top hv_pos.ne'
-  · calc μ (v ∪ s) = μ v + μ s := measure_union hvs hs
-      _ < μ (t \ s) + μ s := ENNReal.add_lt_add_right hμst.ne_top hv_lt
-      _ = μ t := by rw [← measure_union disjoint_sdiff_left hs, sdiff_union_of_subset hst]
+    exists_measurable_subset_lt₀ (ht.diff hs.nullMeasurableSet) (h ▸ tsub_pos_of_lt hμst)
+  have hsv : Disjoint s v := disjoint_of_subset_right hv disjoint_sdiff_right
+  refine ⟨s ∪ v, hs.union hv_meas, subset_union_left, union_subset hst (hv.trans sdiff_subset),
+    ?_, ?_⟩ <;> rw [measure_union hsv hv_meas]
+  · exact ENNReal.lt_add_right hμst.ne_top hv_pos.ne'
+  · exact lt_tsub_iff_left.1 (h ▸ hv_lt)
 
 theorem exists_nullMeasurable_between (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hst : s ⊆ t) (hμst : μ s < μ t) :
@@ -190,20 +186,14 @@ instance instNullSingletonClass [MeasurableSingletonClass (NullMeasurableSpace �
     by_contra! hx
     obtain ⟨t, htx, -, ht, ht'⟩ :=
       exists_measurable_subset_lt₀ (nullMeasurableSet_singleton x) (pos_iff_ne_zero.2 hx)
-    rcases subset_singleton_iff_eq.1 htx with rfl | rfl
-    · simp at ht
-    · exact ht'.false
+    rcases subset_singleton_iff_eq.1 htx with rfl | rfl <;> simp_all
 
 /-- An s-finite measure without atoms vanishes on singletons. See also `instNullSingletonClass`. -/
 instance instNullSingletonClass_of_sfinite [SFinite μ] : NullSingletonClass μ where
   measure_singleton x := by
     by_contra! hx
-    apply not_isAtom (μ := μ) (toMeasurable μ {x})
-    rw [Measure.isAtom_iff]
-    use measurableSet_toMeasurable _ _
-    constructor
-    · rwa [measure_toMeasurable, pos_iff_ne_zero]
-    intro t hty ht
+    refine not_isAtom (μ := μ) (toMeasurable μ {x}) ⟨measurableSet_toMeasurable _ _,
+      by rwa [measure_toMeasurable, pos_iff_ne_zero], fun t hty ht ↦ ?_⟩
     rw [← inter_eq_right.2 hty, measure_toMeasurable_inter_of_sfinite ht, measure_toMeasurable]
     by_cases hxt : x ∈ t <;> simp [hxt]
 
@@ -225,12 +215,10 @@ instance Measure.restrict.instNoAtoms [NoAtoms μ] [SFinite μ] (s : Set α) :
   rw [← restrict_toMeasurable_of_sfinite]
   exact NoAtoms.restrict (measurableSet_toMeasurable μ s).nullMeasurableSet
 
-theorem _root_.MeasurableEquiv.noAtoms_map_iff (e : α ≃ᵐ β) : NoAtoms (μ.map e) ↔ NoAtoms μ := by
-  rw [noAtoms_iff, noAtoms_iff]
-  refine ⟨fun h s hs ↦ (h (e.symm ⁻¹' s)) ?_, fun h s hs ↦ h _ (e.isAtom_map_iff.1 hs)⟩
-  rwa [e.isAtom_map_iff, ← preimage_comp, e.symm_comp_self, preimage_id]
-
 instance _root_.MeasurableEquiv.instNoAtomsMap [NoAtoms μ] (e : α ≃ᵐ β) : NoAtoms (μ.map e) :=
-  e.noAtoms_map_iff.2 ‹_›
+  ⟨fun _ hs ↦ NoAtoms.not_isAtom _ (e.isAtom_map_iff.1 hs)⟩
+
+theorem _root_.MeasurableEquiv.noAtoms_map_iff (e : α ≃ᵐ β) : NoAtoms (μ.map e) ↔ NoAtoms μ :=
+  ⟨fun _ ↦ e.map_symm_map (μ := μ) ▸ inferInstance, fun _ ↦ inferInstance⟩
 
 end MeasureTheory
