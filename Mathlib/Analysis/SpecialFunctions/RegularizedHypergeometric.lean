@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 
-import Mathlib.Topology.Algebra.InfiniteSum.ContinuousEval
-
 /-! # Generalized hypergeometric function
 
 In this file we define the generalized hypergeometric function as well as the Gaussian
@@ -420,24 +418,18 @@ theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
 
 section Derivative
 
-theorem summable_pow_smul_coeff_derivSeries_regularizedHGFunSeries {z : ℂ}
-    (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
-    Summable fun n ↦ z ^ n • (regularizedHGFunSeries a b).derivSeries.coeff n := by
-  have hball : z ∈ Metric.eball 0 (regularizedHGFunSeries a b).radius := by simpa using hz
-  have hdball : z ∈ Metric.eball 0 (regularizedHGFunSeries a b).derivSeries.radius := by
-    simpa using hz.trans_le (FormalMultilinearSeries.radius_le_radius_derivSeries _)
-  simpa using (regularizedHGFunSeries a b).derivSeries.summable hdball
-
-theorem deriv_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
-    deriv (regularizedHGFun a b) z =
-      a.prod * regularizedHGFun (a.map (· + 1)) (b.map (· + 1)) z := by
-  unfold regularizedHGFun deriv
-  rw [FormalMultilinearSeries.fderiv_sum hz]
+theorem hasDerivAt_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
+    HasDerivAt (regularizedHGFun a b)
+      (a.prod * regularizedHGFun (a.map (· + 1)) (b.map (· + 1)) z) z := by
+  refine ((regularizedHGFunSeries a b).hasDerivAt_sum hz).congr_deriv ?_
   suffices ∑' n, z ^ n * ((n + 1) * C a b (n + 1)) =
       a.prod * ∑' n, z ^ n * C (a.map (· + 1)) (b.map (· + 1)) n by
-    simpa [FormalMultilinearSeries.sum,
-      tsum_apply (summable_pow_smul_coeff_derivSeries_regularizedHGFunSeries hz)]
+    simpa [regularizedHGFun, FormalMultilinearSeries.sum]
   grind [tsum_mul_left, mul_regularizedHGFunCoeff]
+
+theorem deriv_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
+    deriv (regularizedHGFun a b) z = a.prod * regularizedHGFun (a.map (· + 1)) (b.map (· + 1)) z :=
+  (hasDerivAt_regularizedHGFun hz).deriv
 
 end Derivative
 

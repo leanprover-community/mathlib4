@@ -42,7 +42,7 @@ $J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 
 @[expose] public noncomputable section
 
-open Nat FormalMultilinearSeries Topology
+open Nat FormalMultilinearSeries
 
 namespace Complex
 
