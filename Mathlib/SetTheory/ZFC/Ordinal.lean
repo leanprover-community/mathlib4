@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.ZFC.Cardinal
+public import Mathlib.SetTheory.ZFC.Class
 public import Mathlib.SetTheory.ZFC.Rank
 
 /-!
@@ -392,5 +393,16 @@ noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal
   left_inv o := rank_toZFSet o
   right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
   map_rel_iff' {a b} := by simp
+
+open scoped ZFClass in
+/-- The **Burali-Forti paradox**: ordinals form a proper class. -/
+theorem isOrdinal_notCMem_univ : {x | IsOrdinal x} ᶜ∉ univ := by
+  rintro ⟨x, hx, -⟩
+  suffices IsOrdinal x by
+    apply ZFClass.cmem_irrefl (A := x)
+    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred_eq]
+  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;>
+    rw [← SetLike.mem_coe, hx, Set.mem_ofPred_eq] at *
+  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet
