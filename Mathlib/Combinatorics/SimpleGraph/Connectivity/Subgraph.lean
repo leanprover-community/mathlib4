@@ -337,6 +337,42 @@ theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
     rw [mapToSubgraph, map_cons, map_map]
     exact congrArg _ <| w.map_mapToSubgraph_eq_induce s (hs · <| List.mem_of_mem_tail ·)
 
+theorem map_support_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.support.map (↑) = p.support := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.support_map p.toSubgraph.hom |>.symm
+
+theorem map_edges_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.edges.map (Sym2.map (↑)) = p.edges := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.edges_map p.toSubgraph.hom |>.symm
+
+theorem map_darts_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.darts.map p.toSubgraph.hom.mapDart = p.darts := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.darts_map p.toSubgraph.hom |>.symm
+
+theorem image_edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
+    Sym2.map (↑) '' p.mapToSubgraph.edgeSet = p.edgeSet := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.edgeSet_map p.toSubgraph.hom |>.symm
+
+theorem edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.edgeSet = Sym2.map (↑) ⁻¹' p.edgeSet := by
+  simp [← p.image_edgeSet_mapToSubgraph, Sym2.map.injective]
+
+@[simp]
+theorem isTrail_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.IsTrail ↔ p.IsTrail := by
+  simp [p.map_mapToSubgraph_hom, ← isTrail_map_iff_of_injective Subgraph.hom_injective]
+
+@[simp]
+theorem isPath_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.IsPath ↔ p.IsPath := by
+  simp [p.map_mapToSubgraph_hom, ← isPath_map_iff_of_injective Subgraph.hom_injective]
+
+@[simp]
+theorem isCircuit_mapToSubgraph {v} {p : G.Walk v v} : p.mapToSubgraph.IsCircuit ↔ p.IsCircuit := by
+  simp [p.map_mapToSubgraph_hom, ← isCircuit_map_iff_of_injective Subgraph.hom_injective]
+
+@[simp]
+theorem isCycle_mapToSubgraph {v} {p : G.Walk v v} : p.mapToSubgraph.IsCycle ↔ p.IsCycle := by
+  simp [p.map_mapToSubgraph_hom, ← isCycle_map_iff_of_injective Subgraph.hom_injective]
+
 /-- Mapping a walk to its own subgraph and then to `G[w.support]` is the same as inducing the walk
 to its support. -/
 theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
@@ -377,8 +413,7 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsP
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
   rintro ⟨i', ⟨hl, _⟩ | ⟨_, hl⟩⟩ <;>
-    apply hp.getVert_injOn (by rw [Set.mem_ofPred_eq]; lia)
-      (by rw [Set.mem_ofPred_eq]; lia) at hl <;> aesop
+    apply hp.getVert_injOn (by grind) (by grind) at hl <;> aesop
 
 lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsPath)
     (h : i ≠ 0) (h' : i < p.length) :
@@ -386,8 +421,7 @@ lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v
   rw [hp.neighborSet_toSubgraph_internal h h']
   have : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
     intro h
-    have := hp.getVert_injOn (by rw [Set.mem_ofPred_eq]; lia) (by rw [Set.mem_ofPred_eq]; lia) h
-    lia
+    grind [hp.getVert_injOn (by grind) (by grind) h]
   simp_all
 
 lemma snd_of_toSubgraph_adj {u v v'} {p : G.Walk u v} (hp : p.IsPath)
@@ -396,11 +430,11 @@ lemma snd_of_toSubgraph_adj {u v v'} {p : G.Walk u v} (hp : p.IsPath)
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi
   rcases hi.1 with ⟨hl1, rfl⟩ | ⟨hr1, hr2⟩
   · have : i = 0 := by
-      apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
+      apply hp.getVert_injOn (by grind) (by grind)
       rw [p.getVert_zero, hl1]
     simp [this]
   · have : i + 1 = 0 := by
-      apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
+      apply hp.getVert_injOn (by grind) (by grind)
       rw [p.getVert_zero, hr2]
     contradiction
 
@@ -427,11 +461,9 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.Is
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
   rintro ⟨i', ⟨hl1, hl2⟩ | ⟨hr1, hr2⟩⟩
-  · apply hpc.getVert_injOn' (by rw [Set.mem_ofPred_eq]; lia)
-      (by rw [Set.mem_ofPred_eq]; lia) at hl1
+  · apply hpc.getVert_injOn' (by grind) (by grind) at hl1
     simp_all
-  · apply hpc.getVert_injOn (by rw [Set.mem_ofPred_eq]; lia)
-      (by rw [Set.mem_ofPred_eq]; lia) at hr2
+  · apply hpc.getVert_injOn (by grind) (by grind) at hr2
     aesop
 
 lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycle)
