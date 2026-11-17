@@ -851,7 +851,8 @@ protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) �
     (h𝔖 : 𝔖₂ ⊆ 𝔖₁) : 𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₂) :=
   calc
     𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₁) := iInf_le_iInf_of_subset h𝔖
-    _ ≤ 𝒱(α, γ, 𝔖₂, u₂) := iInf₂_mono fun _i _hi => UniformSpace.comap_mono <| UniformFun.mono hu
+    _ ≤ 𝒱(α, γ, 𝔖₂, u₂) :=
+      iInf₂_mono fun _i _hi => UniformSpace.comap_monotone <| UniformFun.mono hu
 
 /-- If `x : α` is in some `S ∈ 𝔖`, then evaluation at `x` is uniformly continuous on
 `α →ᵤ[𝔖] β`. -/
@@ -1016,7 +1017,7 @@ protected theorem continuousAt_eval₂ [TopologicalSpace α] {f : α →ᵤ[𝔖
   intro U hU
   rcases h𝔖 with ⟨V, hV, hVx⟩
   filter_upwards [prod_mem_nhds (UniformOnFun.gen_mem_nhds _ _ _ hV hU)
-    (inter_mem hVx <| hc <| UniformSpace.ball_mem_nhds _ hU)]
+    (inter_mem hVx <| hc <| mem_nhds_left _ hU)]
     with ⟨g, y⟩ ⟨hg, hyV, hy⟩ using ⟨toFun 𝔖 f y, hy, hg y hyV⟩
 
 /-- If each point of `α` admits a neighbourhood `V ∈ 𝔖`,

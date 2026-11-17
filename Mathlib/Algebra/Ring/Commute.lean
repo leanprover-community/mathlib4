@@ -18,7 +18,6 @@ the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
 For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
-
 -/
 
 public section

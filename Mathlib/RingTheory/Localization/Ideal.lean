@@ -21,7 +21,6 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
-
 -/
 
 @[expose] public section
@@ -124,8 +123,6 @@ theorem map_under (J : Ideal S) :
           (show (algebraMap R S) r ∈ J from
             mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 
-@[deprecated (since := "2026-04-09")] alias map_comap := map_under
-
 theorem under_map_of_isPrimary_disjoint
     {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     (Ideal.map (algebraMap R S) I).under R = I := by
@@ -145,15 +142,9 @@ theorem under_map_of_isPrimary_disjoint
     exact I.mul_mem_left c b.2
   exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).2)
 
-@[deprecated (since := "2026-04-09")] alias comap_map_of_isPrimary_disjoint :=
-  under_map_of_isPrimary_disjoint
-
 theorem under_map_of_isPrime_disjoint {I : Ideal R} (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
     (Ideal.map (algebraMap R S) I).under R = I :=
   under_map_of_isPrimary_disjoint M S hI.isPrimary hM
-
-@[deprecated (since := "2026-04-09")] alias comap_map_of_isPrime_disjoint :=
-  under_map_of_isPrime_disjoint
 
 theorem liesOver_map_of_isPrime_disjoint {I : Ideal R} [I.IsPrime] (hM : Disjoint (M : Set R) I) :
     (I.map (algebraMap R S)).LiesOver I :=
@@ -172,10 +163,8 @@ def orderEmbedding : Ideal S ↪o Ideal R where
 
 include M in
 theorem under_le_under_iff {I J : Ideal S} :
-    I.under R ≤ J.under R ↔ I ≤ J := by
-  exact (IsLocalization.orderEmbedding M S).le_iff_le
-
-@[deprecated (since := "2026-04-09")] alias comap_le_comap_iff := under_le_under_iff
+    I.under R ≤ J.under R ↔ I ≤ J :=
+  (IsLocalization.orderEmbedding M S).le_iff_le
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M`.
@@ -215,8 +204,8 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   exact ⟨hp, hd⟩
 
 include M S in
-lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal := by
-  exact ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
+lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal :=
+  ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
 
 theorem isMaximal_of_isMaximal_disjoint (I : Ideal R) [hI : I.IsMaximal]
     (h : Disjoint (M : Set R) (I : Set R)) : (I.map (algebraMap R S)).IsMaximal := by
@@ -231,8 +220,6 @@ theorem disjoint_under_iff (J : Ideal S) :
     exact ⟨1, M.one_mem, ⟨⟩⟩
   · rintro ⟨x, hxM, hxJ⟩
     exact J.eq_top_of_isUnit_mem hxJ (IsLocalization.map_units S ⟨x, hxM⟩)
-
-@[deprecated (since := "2026-04-09")] alias disjoint_comap_iff := disjoint_under_iff
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M` -/
@@ -283,9 +270,6 @@ theorem ideal_eq_iInf_under_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     dsimp at e ⊢
     rw [pow_add, mul_assoc, ← mul_comm x, e]
     exact I.mul_mem_left _ y.2
-
-@[deprecated (since := "2026-04-09")] alias ideal_eq_iInf_comap_map_away :=
-  ideal_eq_iInf_under_map_away
 
 lemma map_eq_top_of_not_subset {I : Ideal R} (hle : ¬ (I : Set R) ⊆ Mᶜ) :
     Ideal.map (algebraMap R S) I = ⊤ := by
@@ -348,8 +332,6 @@ theorem bot_lt_under_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
   convert!
     (orderIsoOfPrime M S).lt_iff_lt.mpr
       (show (⟨⊥, Ideal.isPrime_bot⟩ : { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
-
-@[deprecated (since := "2026-04-09")] alias bot_lt_comap_prime := bot_lt_under_prime
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in

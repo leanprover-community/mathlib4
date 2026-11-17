@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Limits.Opposites
 # Products and coproducts in `C` and `Cᵒᵖ`
 
 We construct products and coproducts in the opposite categories.
-
 -/
 
 @[expose] public section
@@ -58,16 +57,14 @@ theorem hasProductsOfShape_of_opposite [HasCoproductsOfShape X Cᵒᵖ] : HasPro
     hasColimitsOfShape_of_equivalence (Discrete.opposite X).symm
   hasLimitsOfShape_of_hasColimitsOfShape_op
 
-instance hasProducts_opposite [HasCoproducts.{v₂} C] : HasProducts.{v₂} Cᵒᵖ := fun _ =>
-  inferInstance
+instance hasProducts_opposite [HasCoproducts.{v₂} C] : HasProducts.{v₂} Cᵒᵖ where
 
-theorem hasProducts_of_opposite [HasCoproducts.{v₂} Cᵒᵖ] : HasProducts.{v₂} C := fun X =>
+theorem hasProducts_of_opposite [HasCoproducts.{v₂} Cᵒᵖ] : HasProducts.{v₂} C := .mk fun X =>
   hasProductsOfShape_of_opposite X
 
-instance hasCoproducts_opposite [HasProducts.{v₂} C] : HasCoproducts.{v₂} Cᵒᵖ := fun _ =>
-  inferInstance
+instance hasCoproducts_opposite [HasProducts.{v₂} C] : HasCoproducts.{v₂} Cᵒᵖ where
 
-theorem hasCoproducts_of_opposite [HasProducts.{v₂} Cᵒᵖ] : HasCoproducts.{v₂} C := fun X =>
+theorem hasCoproducts_of_opposite [HasProducts.{v₂} Cᵒᵖ] : HasCoproducts.{v₂} C := .mk fun X =>
   hasCoproductsOfShape_of_opposite X
 
 instance hasFiniteCoproducts_opposite [HasFiniteProducts C] : HasFiniteCoproducts Cᵒᵖ where
@@ -181,7 +178,6 @@ theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z 
   erw [opCoproductIsoProduct'_inv_comp_inj, IsLimit.fac]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert!
@@ -280,7 +276,6 @@ theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α) → X ⟶ Z a) :
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a ↦ (π a).op) := by
   convert!

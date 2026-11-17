@@ -83,7 +83,6 @@ type with a zero. They are denoted `R⸨X⸩`.
   `K⟮X⟯` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
   that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`)
   to `K⟦X⟧`.
-
 -/
 
 @[expose] public section
@@ -179,8 +178,8 @@ def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
   hasseDeriv R 1
 
 @[simp]
-theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
-  exact rfl
+theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f :=
+  rfl
 
 theorem derivative_map {W : Type*} [AddCommGroup W] [Module R W]
     (g : V →ₗ[R] W) (f : LaurentSeries V) :
@@ -432,7 +431,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 /-- The prime ideal `(X)` of `K⟦X⟧`, when `K` is a field, as a term of the `HeightOneSpectrum`. -/
 def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   asIdeal := Ideal.span {X}
-  isPrime := PowerSeries.span_X_isPrime
+  isPrime := Ideal.isPrime_span_singleton_of_prime prime_X
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
 open IsDedekindDomain.HeightOneSpectrum WithZero
@@ -457,11 +456,12 @@ theorem intValuation_eq_of_coe (P : K[X]) :
       not_false_eq_true, true_and, (idealX K).3]
   classical
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
-    (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) span_ne_zero.2,
+    (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr Polynomial.prime_X) span_ne_zero.2,
     Ideal.count_associates_factors_eq]
-  on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
-  exacts [Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
-    Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
+  on_goal 1 => convert (normalized_count_X_eq_of_coe _).symm
+  exacts [
+    Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X Polynomial.prime_X,
+    Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X prime_X,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
 /-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤᵐ⁰`. -/
@@ -486,7 +486,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
     polynomialValuationX K P = (PowerSeries.idealX K).valuation K⸨X⸩ P := by
   refine RatFunc.induction_on' P ?_
   intro f g h
-  rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
+  rw [Polynomial.valuation_of_mk K f g, RatFunc.mk_eq_mk' f h, Eq.comm]
   convert
     @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
       ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 (by simp [h])⟩
@@ -586,7 +586,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f
         lia
-    · simp [ne_eq, zero_lt_iff]
+    · simp [ne_eq, pos_iff_ne_zero]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat <| neg_nonpos_of_nonneg ord_nonpos.le
     rw [neg_inj] at hs
     rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, mul_comm,
@@ -602,7 +602,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f (s + n)
         lia
-    · simp [ne_eq, zero_lt_iff]
+    · simp [ne_eq, pos_iff_ne_zero]
 
 theorem valuation_le_iff_coeff_lt_log_eq_zero {D : ℤᵐ⁰} (hD : D ≠ 0) {f : K⸨X⸩} :
     Valued.v f ≤ D ↔ ∀ n : ℤ, n < -log D → f.coeff n = 0 := by
@@ -788,11 +788,8 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
   to show that both terms are in `ℱ`, which is easy in light of their definition. -/
   simp only [Set.mem_Iio, inter_mem_iff]
   constructor
-  · have := (exists_lb_coeff_ne hℱ).choose_spec
-    rw [Filter.eventually_iff] at this
-    convert this
-    ext
-    simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
+  · simpa [φ, Set.iInter_ofPred, Filter.eventually_iff, ℓ]
+      using (exists_lb_coeff_ne hℱ).choose_spec
   · rw [biInter_mem (Set.finite_Icc ℓ N)]
     intro i _
     apply (coeff_tendsto hℱ _).eventually
@@ -851,7 +848,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤᵐ⁰ˣ) :
     apply lt_of_le_of_lt this
     rw [← mul_one (η : ℤᵐ⁰), mul_assoc, one_mul]
     gcongr
-    · exact zero_lt_iff.2 η.ne_zero
+    · exact η.ne_zero.pos
     rw [← WithZero.coe_one, coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
       Multiplicative.ofAdd_lt]
     exact Int.zero_lt_one
@@ -896,7 +893,7 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   simp only [UniformSpace.mem_closure_iff_symm_ball, Set.mem_univ, iff_true, Set.Nonempty,
     Set.mem_inter_iff, Set.mem_range, exists_exists_eq_and]
   intro V hV h_symm
-  rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
+  rw [uniformity_eq_comap_neg_add_nhds_zero] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
   have := embedding γ.1

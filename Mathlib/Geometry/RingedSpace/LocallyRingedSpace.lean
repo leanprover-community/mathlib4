@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Geometry.RingedSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of locally ringed spaces
 

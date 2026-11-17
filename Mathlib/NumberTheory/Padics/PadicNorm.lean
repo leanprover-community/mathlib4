@@ -43,7 +43,7 @@ p-adic, p adic, padic, norm, valuation
 
 /-- If `q ≠ 0`, the `p`-adic norm of a rational `q` is `p ^ (-padicValRat p q)`.
 If `q = 0`, the `p`-adic norm of `q` is `0`. -/
-def padicNorm (p : ℕ) (q : ℚ) : ℚ :=
+noncomputable def padicNorm (p : ℕ) (q : ℚ) : ℚ :=
   if q = 0 then 0 else (p : ℚ) ^ (-padicValRat p q)
 
 namespace padicNorm
@@ -54,8 +54,11 @@ variable {p : ℕ}
 
 /-- Unfolds the definition of the `p`-adic norm of `q` when `q ≠ 0`. -/
 @[simp]
-protected theorem eq_zpow_of_nonzero {q : ℚ} (hq : q ≠ 0) :
+protected theorem eq_zpow_of_ne_zero {q : ℚ} (hq : q ≠ 0) :
     padicNorm p q = (p : ℚ) ^ (-padicValRat p q) := by simp [hq, padicNorm]
+
+@[deprecated (since := "2026-10-13")]
+protected alias eq_zpow_of_nonzero := padicNorm.eq_zpow_of_ne_zero
 
 /-- The `p`-adic norm is nonnegative. -/
 protected theorem nonneg (q : ℚ) : 0 ≤ padicNorm p q :=
@@ -77,7 +80,7 @@ protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 
 See also `padicNorm.padicNorm_p_of_prime` for a version assuming `p` is prime. -/
 theorem padicNorm_p (hp : 1 < p) : padicNorm p p = (p : ℚ)⁻¹ := by
-  simp [padicNorm, (pos_of_gt hp).ne', padicValNat.self hp]
+  simp [padicNorm, (pos_of_gt hp).ne', Nat.multiplicity_self hp]
 
 /-- The `p`-adic norm of `p` is `p⁻¹` if `p` is prime.
 
@@ -89,7 +92,7 @@ theorem padicNorm_p_of_prime [Fact p.Prime] : padicNorm p p = (p : ℚ)⁻¹ :=
 /-- The `p`-adic norm of `q` is `1` if `q` is prime and not equal to `p`. -/
 theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : Fact q.Prime]
     (ne : p ≠ q) : padicNorm p q = 1 := by
-  have p : padicValRat p q = 0 := mod_cast padicValNat_primes ne
+  have p : padicValRat p q = 0 := mod_cast multiplicity_primes ne
   rw [padicNorm, p]
   simp [q_prime.1.ne_zero]
 
@@ -118,10 +121,12 @@ protected theorem neg (q : ℚ) : padicNorm p (-q) = padicNorm p q :=
 variable [hp : Fact p.Prime]
 
 /-- If `q ≠ 0`, then `padicNorm p q ≠ 0`. -/
-protected theorem nonzero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
-  rw [padicNorm.eq_zpow_of_nonzero hq]
+protected theorem ne_zero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
+  rw [padicNorm.eq_zpow_of_ne_zero hq]
   apply zpow_ne_zero
   exact mod_cast ne_of_gt hp.1.pos
+
+@[deprecated (since := "2026-10-13")] protected alias nonzero := padicNorm.ne_zero
 
 /-- If the `p`-adic norm of `q` is 0, then `q` is `0`. -/
 theorem zero_of_padicNorm_eq_zero {q : ℚ} (h : padicNorm p q = 0) : q = 0 := by
@@ -145,7 +150,7 @@ protected theorem mul (q r : ℚ) : padicNorm p (q * r) = padicNorm p q * padicN
 @[simp]
 protected theorem div (q r : ℚ) : padicNorm p (q / r) = padicNorm p q / padicNorm p r :=
   if hr : r = 0 then by simp [hr]
-  else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel₀ _ hr])
+  else eq_div_of_mul_eq (padicNorm.ne_zero hr) (by rw [← padicNorm.mul, div_mul_cancel₀ _ hr])
 
 /-- The `p`-adic norm of an integer is at most `1`. -/
 protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 := by
@@ -221,7 +226,7 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
       rw [← FiniteMultiplicity.pow_dvd_iff_le_multiplicity]
       · norm_cast
       · apply Int.finiteMultiplicity_iff.2 ⟨by simp [hp.out.ne_one], mod_cast hz⟩
-    · exact_mod_cast hp.out.one_lt
+    · exact mod_cast hp.out.one_lt
 
 /-- The `p`-adic norm of an integer `m` is one iff `p` doesn't divide `m`. -/
 theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by

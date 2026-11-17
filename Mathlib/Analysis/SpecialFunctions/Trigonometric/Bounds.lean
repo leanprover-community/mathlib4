@@ -186,8 +186,8 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   let U := Ico 0 (π / 2)
   have intU : interior U = Ioo 0 (π / 2) := interior_Ico
   have half_pi_pos : 0 < π / 2 := div_pos pi_pos two_pos
-  have cos_pos {y : ℝ} (hy : y ∈ U) : 0 < cos y := by
-    exact cos_pos_of_mem_Ioo (Ico_subset_Ioo_left (neg_lt_zero.mpr half_pi_pos) hy)
+  have cos_pos {y : ℝ} (hy : y ∈ U) : 0 < cos y :=
+    cos_pos_of_mem_Ioo (Ico_subset_Ioo_left (neg_lt_zero.mpr half_pi_pos) hy)
   have sin_pos {y : ℝ} (hy : y ∈ interior U) : 0 < sin y := by
     rw [intU] at hy
     exact sin_pos_of_mem_Ioo (Ioo_subset_Ioo_right (div_le_self pi_pos.le one_le_two) hy)
@@ -272,10 +272,10 @@ theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
 
 theorem lipschitzWith_sin : LipschitzWith 1 sin :=
-  lipschitzWith_of_nnnorm_deriv_le differentiable_sin <| by simpa using! abs_cos_le_one
+  lipschitzWith_of_nnNorm_deriv_le differentiable_sin <| by simpa using! abs_cos_le_one
 
 theorem lipschitzWith_cos : LipschitzWith 1 cos :=
-  lipschitzWith_of_nnnorm_deriv_le differentiable_cos <| by simpa using! abs_sin_le_one
+  lipschitzWith_of_nnNorm_deriv_le differentiable_cos <| by simpa using! abs_sin_le_one
 
 theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
   simpa [edist_dist] using! lipschitzWith_sin x y
@@ -290,11 +290,17 @@ theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ
     _ ≤ 2 * |x / 2| := (mul_le_mul_iff_of_pos_left zero_lt_two).mpr Real.abs_sin_le_abs
     _ = _ := by rw [abs_div, Nat.abs_ofNat, Real.norm_eq_abs]; ring
 
-theorem enorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ₑ ≤ ‖x‖ₑ := by
-  iterate 2 rw [← enorm_norm, Real.enorm_of_nonneg (norm_nonneg _)]
+theorem eNorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ₑ ≤ ‖x‖ₑ := by
+  iterate 2 rw [← eNorm_norm, Real.eNorm_of_nonneg (norm_nonneg _)]
   exact ENNReal.ofReal_le_ofReal norm_exp_I_mul_ofReal_sub_one_le
 
-theorem nnnorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖₊ ≤ ‖x‖₊ := by
-  rw [← ENNReal.coe_le_coe]; exact enorm_exp_I_mul_ofReal_sub_one_le
+@[deprecated (since := "2026-11-06")]
+alias enorm_exp_I_mul_ofReal_sub_one_le := eNorm_exp_I_mul_ofReal_sub_one_le
+
+theorem nnNorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖₊ ≤ ‖x‖₊ := by
+  rw [← ENNReal.coe_le_coe]; exact eNorm_exp_I_mul_ofReal_sub_one_le
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_exp_I_mul_ofReal_sub_one_le := nnNorm_exp_I_mul_ofReal_sub_one_le
 
 end Real

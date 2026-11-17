@@ -15,6 +15,9 @@ import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.TangentCone.Prod
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poincaré lemma for 1-forms
 
@@ -394,7 +397,7 @@ theorem exists_forall_hasDerivWithinAt (hs : Convex ℝ s) (hf : DifferentiableO
   let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   apply hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
   · intro a ha
-    exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1).hasFDerivAt
+    exact (StrongDual.smulRightL 𝕜 𝕜 E 1).hasFDerivAt
       |>.comp_hasDerivWithinAt a (hf a ha).hasDerivWithinAt |>.restrictScalars ℝ
   · rintro a ha x - y -
     simpa using smul_comm ..

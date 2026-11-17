@@ -304,7 +304,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     _ ≤ _ := by gcongr; apply Nat.mul_div_le
   · simp only [Prod.forall, and_imp, mem_offDiag, sq]
     rintro U V hU hV -
-    exact_mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
+    exact mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
       (hP.card_part_le_average_add_one hV)
   · rw [smul_eq_mul, offDiag_card, Nat.mul_sub_right_distrib, ← sq, ← mul_pow, mul_add_one (α := ℕ)]
     exact Nat.sub_le _ _

@@ -49,7 +49,6 @@ We take this as our definition as it is easier to work with. It is implemented a
   prove that its induced equivalence relation is equidecomposability.
 * Prove the definition of equidecomposition used here is equivalent to the more familiar one
   using partitions.
-
 -/
 
 @[expose] public section
@@ -163,7 +162,7 @@ open scoped Classical in
 theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) (h : MapsTo f A B) :
     IsDecompOn (g ∘ f) A (T * S) := by
-  rw [left_eq_inter.mpr h]
+  rw [left_eq_inter.mpr h.subset_preimage]
   exact hg.comp' hf
 
 /-- The composition of two equidecompositions as an equidecomposition. -/

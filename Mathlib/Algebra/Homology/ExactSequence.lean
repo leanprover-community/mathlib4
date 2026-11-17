@@ -24,7 +24,6 @@ lemmas expressing the exactness at a particular object.
 
 This implementation is a refactor of `exact_seq` with appeared in the
 Liquid Tensor Experiment as a property of lists in `Arrow C`.
-
 -/
 
 @[expose] public section
@@ -36,7 +35,7 @@ open Limits
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 /-- The composable arrows associated to a short complex. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def ShortComplex.toComposableArrows (S : ShortComplex C) : ComposableArrows C 2 :=
   ComposableArrows.mk₂ S.f S.g
 
@@ -222,11 +221,9 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
     S.IsComplex :=
   S.isComplex₂_iff.2 w
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
-  -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (https://github.com/leanprover-community/mathlib4/issues/27382)
-  isComplex₂_mk _ (by simp [-Fin.reduceFinMk])
+  isComplex₂_mk _ (by simp)
 
 lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
     S.Exact ↔ (S.sc' hS 0 1 2).Exact := by
@@ -322,7 +319,7 @@ lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
 theorem natAddLEFunctor_obj_exact {n k l : ℕ} (h : k + l ≤ n) {R : ComposableArrows C n}
     (hR : R.Exact) :
     ((natAddLEFunctor h).obj R).Exact :=
-  ⟨⟨fun i _ => hR.1.1 (k + i)⟩, fun i _ => hR.exact (k + i)⟩
+  ⟨⟨fun i _ => hR.toIsComplex.zero (k + i)⟩, fun i _ => hR.exact (k + i)⟩
 
 lemma Exact.isIso_map' {C : Type*} [Category* C] [Preadditive C]
     [Balanced C] {n : ℕ} {S : ComposableArrows C n} (hS : S.Exact) (k : ℕ) (hk : k + 3 ≤ n)
