@@ -28,7 +28,6 @@ the Liquid Tensor Experiment.
 ## References
 
 * https://stacks.math.columbia.edu/tag/0111
-
 -/
 
 @[expose] public section
@@ -86,7 +85,6 @@ lemma opcyclesToCycles_naturality :
 
 variable (C c)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.opcyclesToCycles i j : K.opcycles i ⟶ K.cycles j` for all
 `K : HomologicalComplex C c`. -/
 @[simps]
@@ -174,7 +172,7 @@ variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
 the exactness at `X₂.opcycles i`, while the fact that `X₂.opcycles i ⟶ X₃.opcycles i`
 is an epi is an instance. -/
 lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Epi S.g]
-    (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
+    (i : ι) :
     (ShortComplex.mk (opcyclesMap S.f i) (opcyclesMap S.g i)
       (by rw [← opcyclesMap_comp, S.zero, opcyclesMap_zero])).Exact := by
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
@@ -196,7 +194,7 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
 the exactness at `X₂.cycles i`, while the fact that `X₁.cycles i ⟶ X₂.cycles i`
 is a mono is an instance. -/
 lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Mono S.f]
-    (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
+    (i : ι) :
     (ShortComplex.mk (cyclesMap S.f i) (cyclesMap S.g i)
       (by rw [← cyclesMap_comp, S.zero, cyclesMap_zero])).Exact := by
   have : Mono (ShortComplex.map S (eval C c i)).f := by dsimp; infer_instance
@@ -218,7 +216,6 @@ variable {S : ShortComplex (HomologicalComplex C c)}
 
 namespace HomologySequence
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a short exact short complex `S : HomologicalComplex C c`, and degrees `i` and `j`
 such that `c.Rel i j`, this is the snake diagram whose four lines are respectively
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
@@ -293,7 +290,6 @@ lemma comp_δ : HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
 lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₂'_exact
 
-set_option backward.isDefEq.respectTransparency false in
 include hS in
 /-- Exactness of `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i`. -/
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)

@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 # Colimits in the category of types
 
 We show that the category of types has all colimits, by providing the usual concrete models.
-
 -/
 
 @[expose] public section
@@ -34,7 +33,7 @@ variable (F : J ⥤ Type u)
 
 /-- If `F : J ⥤ Type u`, then the data of a "type-theoretic" cocone of `F`
 with a point in `Type u` is the same as the data of a cocone (in a categorical sense). -/
-@[simps apply_pt symm_apply_pt apply_ι_app symm_apply_ι]
+@[implicit_reducible, simps apply_pt symm_apply_pt apply_ι_app symm_apply_ι]
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   toFun c :=
     { pt := c.pt
@@ -48,7 +47,6 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
 
 variable {F}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     c.IsColimit ↔ Nonempty (Limits.IsColimit (F.coconeTypesEquiv c)) := by
   constructor

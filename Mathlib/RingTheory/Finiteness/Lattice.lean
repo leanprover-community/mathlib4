@@ -11,7 +11,6 @@ import Mathlib.Data.Fintype.Lattice
 
 /-!
 # Finite suprema of finite modules
-
 -/
 
 public section

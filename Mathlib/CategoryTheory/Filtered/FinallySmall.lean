@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 In this file, we show that if `C` is a filtered finally small category
 that is locally small, there exists a final functor `D ⥤ C` from
 a small filtered category. The dual result is also obtained.
-
 -/
 
 @[expose] public section

@@ -19,7 +19,6 @@ A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical
 ## Implementation details
 
 Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing usage.
-
 -/
 
 public section

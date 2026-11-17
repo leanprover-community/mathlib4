@@ -25,7 +25,6 @@ exists a monomorphism `X ⟶ nerve T` where `T` is a partially ordered type.
 * [Vegard Fjellbo and John Rognes,
   *Exponentials of non-singular simplicial sets*][fjellbo-rognes-2022]
 * [J. F. Jardine, *Simplicial approximation*][jardine-2004]
-
 -/
 
 public section

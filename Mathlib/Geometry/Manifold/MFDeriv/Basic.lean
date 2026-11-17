@@ -22,7 +22,6 @@ mimicking the API for Fréchet derivatives.
 - deriving continuity from differentiability on manifolds,
 - congruence lemmas for derivatives on manifolds
 - composition lemmas and the chain rule
-
 -/
 
 public section
@@ -31,8 +30,6 @@ assert_not_exists tangentBundleCore
 
 open scoped Topology Manifold
 open Function Set Bundle ChartedSpace
-
-section DerivativesProperties
 
 /-! ### Unique differentiability sets in manifolds -/
 
@@ -682,7 +679,7 @@ theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f 
     mfderiv[s] f x = 0 := by
   simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
   simp only [HasMFDerivWithinAt, mfld_simps] at h
-  rw [fderivWithin, ite_eq_left (by exact h.2)]
+  rw [fderivWithin_def, ite_eq_left (by exact h.2)]
   simp
 
 protected theorem MDifferentiable.mfderivWithin (h : MDiffAt f x) (hxs : UniqueMDiffAt[s] x) :
@@ -804,6 +801,19 @@ lemma mdifferentiable_of_mdifferentiableOn_iUnion_of_isOpen {ι : Type*} {s : ι
 
 end mdifferentiableOn_union
 
+lemma injective_fderivWithin_writtenInExtChartAt {f : M → M'} {s : Set M} {p : M}
+    (hf : Injective (mfderiv[s] f p)) :
+    Injective (fderivWithin 𝕜 (writtenInExtChartAt I I' p f)
+      ((extChartAt I p).symm ⁻¹' s ∩ range I) (extChartAt I p p)) := by
+  rw [mfderivWithin, ite_eq_left (mdifferentiableWithinAt_of_mfderivWithin_injective hf)] at hf
+  exact hf
+
+lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M → M'} {p : M}
+    (hf : (mfderiv% f p).IsInvertible) :
+    (fderivWithin 𝕜 (writtenInExtChartAt I I' p f) (range I) (extChartAt I p p)).IsInvertible := by
+  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)] at hf
+  exact hf
+
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem HasMFDerivWithinAt.continuousWithinAt (h : HasMFDerivAt[s] f x f') :
@@ -847,7 +857,7 @@ theorem preimage_extChartAt_eventuallyEqSet_compl_singleton (y : M) (h : s =ᶠ[
     (extChartAt I x).symm ⁻¹' s ∩ range I =ᶠ[𝓝[{extChartAt I x x}ᶜ] (extChartAt I x x)]
     ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) := by
   have : T1Space M := I.t1Space M
-  obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
+  obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | y ∈ s ↔ y ∈ t} :=
     mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
   rw [← extChartAt_to_inv (I := I) x] at u_mem
   have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) := by
@@ -856,11 +866,10 @@ theorem preimage_extChartAt_eventuallyEqSet_compl_singleton (y : M) (h : s =ᶠ[
   apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
     ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
   rintro z ⟨hz, h'z⟩
-  simp only [eq_iff_iff, mem_ofPred_eq]
+  simp only [mem_ofPred_eq]
   by_cases hIz : z ∈ range I
   · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
       or_false, and_true] at hz ⊢
-    rw [← eq_iff_iff]
     apply hu ⟨hz.1, ?_⟩
     push _ ∈ _ at h'z ⊢
     rw [eq_comm, (extChartAt I x).eq_symm_apply (by simp) hz.2]
@@ -1276,5 +1285,3 @@ theorem tangentMap_comp_at (p : TangentBundle I M) (hg : MDiffAt g (f p.1)) (hf 
 theorem tangentMap_comp (hg : MDiff g) (hf : MDiff f) :
     tangentMap% (g ∘ f) = tangentMap% g ∘ tangentMap% f := by
   ext p : 1; exact tangentMap_comp_at _ (hg _) (hf _)
-
-end DerivativesProperties

@@ -47,7 +47,6 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
   * `⋃ x ∈ J, K x` are pairwise disjoint and do not contain ∅,
   * `⋃ s ∈ K x, s ⊆ x`,
   * `⋃ x ∈ J, x = ⋃ x ∈ J, ⋃ s ∈ K x, s`.
-
 -/
 
 public section
@@ -208,7 +207,7 @@ theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) w
     induction T using Finset.induction generalizing s with
     | empty => simpa
     | insert t T _ ih =>
-      simp_rw [sup_insert, id, sup_eq_union, ← sdiff_sdiff]
+      simp_rw [sup_insert, id, ← sdiff_sdiff]
       rw [coe_insert, insert_subset_iff] at hTC
       obtain ⟨htC, hTC⟩ := hTC
       refine ih ?_ hTC
@@ -265,7 +264,7 @@ lemma pairwiseDisjoint_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ 
     (ht : t ∈ C) :
     PairwiseDisjoint (insert t (hC.disjointOfDiff hs ht) : Set (Set α)) id := by
   have h := hC.pairwiseDisjoint_disjointOfDiff hs ht
-  refine PairwiseDisjoint.insert_of_notMem h (hC.notMem_disjointOfDiff hs ht) fun u hu ↦ ?_
+  refine PairwiseDisjoint.insert h fun u hu _ ↦ ?_
   simp_rw [id]
   refine Disjoint.mono_right ?_ (hC.disjoint_sUnion_disjointOfDiff hs ht)
   exact subset_sUnion_of_mem hu

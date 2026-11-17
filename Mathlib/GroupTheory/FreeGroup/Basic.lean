@@ -643,6 +643,12 @@ theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
   let ⟨L₁, hx, hy⟩ := Red.exact.1 H
   simp [Red.singleton_iff] at hx hy; simp_all
 
+@[to_additive]
+theorem mk_eq_of (x : α) : mk [(x, true)] = of x := rfl
+
+@[to_additive]
+theorem mk_eq_inv_of (x : α) : mk [(x, false)] = (of x)⁻¹ := rfl
+
 section lift
 
 variable {β : Type v} [Group β] (f : α → β) {x : FreeGroup α}

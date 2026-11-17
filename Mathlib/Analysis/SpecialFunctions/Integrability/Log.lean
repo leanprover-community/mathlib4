@@ -166,7 +166,8 @@ Variant of `MeromorphicOn.circleIntegrable_log_norm` for factorized rational fun
 theorem circleIntegrable_log_norm_factorizedRational {R : ℝ} {c : ℂ} (D : ℂ → ℤ) :
     CircleIntegrable (∑ᶠ u, ((D u) * log ‖· - u‖)) c R :=
   CircleIntegrable.finsum (fun _ ↦
-    ((analyticOnNhd_id.sub analyticOnNhd_const).meromorphicOn.circleIntegrable_log_norm).const_smul)
+    analyticOnNhd_id.sub analyticOnNhd_const |>.meromorphicOn.circleIntegrable_log_norm
+      |>.const_smul (𝕜 := ℝ))
 
 /--
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
