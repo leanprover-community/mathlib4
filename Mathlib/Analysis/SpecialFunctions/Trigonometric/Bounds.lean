@@ -290,12 +290,15 @@ theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ
     _ ≤ 2 * |x / 2| := (mul_le_mul_iff_of_pos_left zero_lt_two).mpr Real.abs_sin_le_abs
     _ = _ := by rw [abs_div, Nat.abs_ofNat, Real.norm_eq_abs]; ring
 
-theorem enorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ₑ ≤ ‖x‖ₑ := by
-  iterate 2 rw [← enorm_norm, Real.enorm_of_nonneg (norm_nonneg _)]
+theorem eNorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ₑ ≤ ‖x‖ₑ := by
+  iterate 2 rw [← eNorm_norm, Real.eNorm_of_nonneg (norm_nonneg _)]
   exact ENNReal.ofReal_le_ofReal norm_exp_I_mul_ofReal_sub_one_le
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_exp_I_mul_ofReal_sub_one_le := eNorm_exp_I_mul_ofReal_sub_one_le
+
 theorem nnNorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖₊ ≤ ‖x‖₊ := by
-  rw [← ENNReal.coe_le_coe]; exact enorm_exp_I_mul_ofReal_sub_one_le
+  rw [← ENNReal.coe_le_coe]; exact eNorm_exp_I_mul_ofReal_sub_one_le
 
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_exp_I_mul_ofReal_sub_one_le := nnNorm_exp_I_mul_ofReal_sub_one_le

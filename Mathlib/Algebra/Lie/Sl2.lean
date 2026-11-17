@@ -21,7 +21,6 @@ about `sl₂`.
   representation of a Lie algebra relative to a distinguished `sl₂` triple.
 * `IsSl2Triple.HasPrimitiveVectorWith.exists_nat`: the eigenvalue of a primitive vector must be a
   natural number if the representation is finite-dimensional.
-
 -/
 
 @[expose] public section

@@ -33,7 +33,6 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 - The `Set.TermDefinable` property is transitive, and `TermDefinable` functions are closed under
   composition.
-
 -/
 
 @[expose] public section

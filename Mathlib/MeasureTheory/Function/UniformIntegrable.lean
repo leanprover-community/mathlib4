@@ -148,7 +148,7 @@ protected theorem ae_mono (hg : UnifIntegrable g p μ) (hf_meas : ∀ i, AEStron
   refine tendsto_nhds_bot_mono hg (Eventually.of_forall fun ε ↦ ?_)
   simp only
   gcongr
-  exact eLpNorm_mono_enorm_ae (hf_meas i).restrict ((hfg i).filter_mono ae_restrict_le)
+  exact eLpNorm_mono_eNorm_ae (hf_meas i).restrict ((hfg i).filter_mono ae_restrict_le)
 
 protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) :
     UnifIntegrable g p μ := by
@@ -275,7 +275,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ) :
         · finiteness
       rw [← nonpos_iff_eq_zero]
       refine (measure_mono this).trans ?_
-      have hle := enorm_ae_le_eLpNormEssSup f μ
+      have hle := eNorm_ae_le_eLpNormEssSup f μ
       simp_rw [ae_iff, not_le] at hle
       exact nonpos_iff_eq_zero.2 hle
     rw [this, eLpNormEssSup_measure_zero]
@@ -301,21 +301,21 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
   obtain ⟨M, hM', hM⟩ := MemLp.integral_indicator_norm_ge_nonneg_le
     (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε toReal_nonneg)
   refine ⟨M ^ (1 / p.toReal), ?_⟩
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top _, ← rpow_one ε]; swap
+  rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp_ne_zero hp_ne_top _, ← rpow_one ε]; swap
   · refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
     exact hf.aestronglyMeasurable.nnNorm.aemeasurable.coe_nnreal_real
   conv_rhs => rw [← mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne']
   rw [rpow_mul]
   gcongr
   convert! hM using 3 with x
-  rw [enorm_indicator_eq_indicator_enorm, enorm_indicator_eq_indicator_enorm]
+  rw [eNorm_indicator_eq_indicator_eNorm, eNorm_indicator_eq_indicator_eNorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
     rw [coe_nnNorm, coe_nnNorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
       ← Real.rpow_le_rpow_iff hM' (by positivity)
         (one_div_pos.2 <| toReal_pos hp_ne_zero hp_ne_top), ← Real.rpow_mul (norm_nonneg _),
       mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne', Real.rpow_one]
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
-  · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.enorm_of_nonneg (by positivity),
+  · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.eNorm_of_nonneg (by positivity),
       ← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm]
     rwa [Set.mem_ofPred_eq, ← hiff]
   · rw [Set.indicator_of_notMem hx, Set.indicator_of_notMem]
@@ -734,7 +734,7 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
     eLpNorm (f i) p μ ≤
         eLpNorm ({ x : α | ‖f i x‖₊ < C }.indicator (f i)) p μ +
           eLpNorm ({ x : α | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ := by
-      refine (eLpNorm_mono_enorm (hf i) fun x ↦ ?_).trans (eLpNorm_add_le hp)
+      refine (eLpNorm_mono_eNorm (hf i) fun x ↦ ?_).trans (eLpNorm_add_le hp)
       rw [Pi.add_apply, Set.indicator_apply]
       split_ifs with hx
       · rw [Set.indicator_of_notMem, add_zero]
@@ -826,7 +826,7 @@ theorem uniformIntegrable_average
         ‖(n : ℝ)⁻¹‖ₑ * eLpNorm (f i) p (μ.restrict s) :=
       eLpNorm_const_smul _ _ _ _
     simp_rw [hnorm, ← Finset.mul_sum]
-    rw [enorm_inv (by positivity), Real.enorm_natCast, ← ENNReal.div_eq_inv_mul]
+    rw [eNorm_inv (by positivity), Real.eNorm_natCast, ← ENNReal.div_eq_inv_mul]
     apply div_le_of_le_mul'
     have key := Finset.sum_le_card_nsmul (.range n) (fun i ↦ eLpNorm (f i) p (μ.restrict s)) ε
     simp only [Finset.mem_range, Finset.card_range, nsmul_eq_mul] at key
@@ -837,7 +837,7 @@ theorem uniformIntegrable_average
     rcases eq_or_ne n 0 with rfl | hn
     · simp
     simp_rw [eLpNorm_const_smul, ← Finset.mul_sum]
-    rw [enorm_inv (by positivity), Real.enorm_natCast, ← ENNReal.div_eq_inv_mul]
+    rw [eNorm_inv (by positivity), Real.eNorm_natCast, ← ENNReal.div_eq_inv_mul]
     apply div_le_of_le_mul'
     apply (Finset.sum_le_card_nsmul (.range n) _ _ (fun i _ ↦ le_iSup _ i)).trans_eq
     simp

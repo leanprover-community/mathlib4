@@ -57,7 +57,6 @@ degrees of the fields follow from those of the rings via `IsFractionRing.finrank
 The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
 deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
 `Ideal.IsInertiaRing`.
-
 -/
 
 @[expose] public section

@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 This file contains lemmas concerning operator norm as applied to bilinear maps `E × F → G`,
 interpreted as linear maps `E → F → G` as usual (and similarly for semilinear variants).
-
 -/
 
 @[expose] public section
