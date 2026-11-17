@@ -399,12 +399,15 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     ext
     congrm $h i
 
+@[ext]
+protected theorem ext {b b' : HilbertBasis ι 𝕜 E} (h : ∀ i, b i = b' i) : b = b' :=
+  DFunLike.ext _ _ h
+
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
   dsimp +instances [instFunLike]
   convert rfl
-
 
 protected theorem repr_self [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
@@ -621,14 +624,13 @@ protected theorem repr_reindex_apply (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι
 
 @[simp]
 protected theorem reindex_refl (b : HilbertBasis ι 𝕜 E) : b.reindex (Equiv.refl ι) = b := by
-  apply DFunLike.coe_injective
+  ext
   simp
 
 @[simp]
 protected theorem reindex_reindex {ι'' : Type*} (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι')
     (e' : ι' ≃ ι'') :
     (b.reindex e).reindex e' = b.reindex (e.trans e') := by
-  apply DFunLike.coe_injective
   ext
   simp
 
@@ -642,7 +644,7 @@ theorem toOrthonormalBasis_reindex [Fintype ι] [Fintype ι'] (b : HilbertBasis 
 theorem _root_.OrthonormalBasis.toHilbertBasis_reindex [Fintype ι] [Fintype ι']
     (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
     (b.reindex e).toHilbertBasis = b.toHilbertBasis.reindex e := by
-  apply DFunLike.coe_injective
+  ext
   simp
 
 end reindex
