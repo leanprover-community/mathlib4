@@ -1049,9 +1049,12 @@ variable [CompleteSpace 𝕜] {f : 𝕜 → 𝕜}
 At zeros and poles of a meromorphic function `f`, the logarithmic derivative has a simple pole: its
 meromorphic order equals `-1`.
 -/
-theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜] (hf : MeromorphicAt f x)
+theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜]
     (h₁ : meromorphicOrderAt f x ≠ 0) (h₂ : meromorphicOrderAt f x ≠ ⊤) :
     meromorphicOrderAt (logDeriv f) x = -1 := by
+  have hf : MeromorphicAt f x := by
+    by_contra h
+    exact h₁ (meromorphicOrderAt_of_not_meromorphicAt h)
   lift meromorphicOrderAt f x to ℤ using h₂ with n hn
   rw [logDeriv, meromorphicOrderAt_div hf.deriv hf,
     meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (mod_cast h₁)) hn.symm,
