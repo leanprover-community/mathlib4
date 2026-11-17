@@ -381,7 +381,7 @@ theorem det_eq_of_isCompl {p q : Submodule R M} (h : IsCompl p q)
     [Module.Free R p] [Module.Finite R p] [Module.Free R q] [Module.Finite R q]
     {f : Module.End R M} (hp : f ∈ p.compatibleMaps p) (hq : f ∈ q.compatibleMaps q) :
     f.det = (f.restrict hp).det * (f.restrict hq).det := by
-  rw [← det_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl  h hp hq, LinearEquiv.conj_apply,
+  rw [← det_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl h hp hq, LinearEquiv.conj_apply,
     comp_assoc, LinearMap.det_conj]
 
 omit [DecidableEq ι] in
