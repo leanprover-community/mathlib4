@@ -153,7 +153,7 @@ theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
 variable (M) in
 /-- `M.acceptsFrom S` is the language of `x` such that there is an accept state
 in `M.evalFrom S x`. -/
-def acceptsFrom (S : Set σ) : Language α := ⟨{x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}⟩
+def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
 theorem mem_acceptsFrom {S : Set σ} {x : List α} :
     x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
@@ -201,14 +201,14 @@ theorem acceptsFrom_union {S T : Set σ} :
 variable (M) in
 @[simp]
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
-    M.acceptsFrom (⋃ i, s i) = ⟨⋃ i, (M.acceptsFrom (s i)).toSet⟩ := by
+    M.acceptsFrom (⋃ i, s i) = ⨆ i, M.acceptsFrom (s i) := by
   ext x
-  simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
-  simp_rw [mem_ofPred_eq]; tauto
+  simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion, mem_ofPred, Language.toSet_iSup]
+  tauto
 
 variable (M) in
 theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) :
-    M.acceptsFrom (⋃ (i) (j), f i j) = ⟨⋃ (i) (j), (M.acceptsFrom (f i j)).toSet⟩ := by
+    M.acceptsFrom (⋃ (i) (j), f i j) = ⨆ (i) (j), M.acceptsFrom (f i j) := by
   simp
 
 variable (M) in
@@ -246,7 +246,7 @@ theorem eval_append_singleton (x : List α) (a : α) :
 
 variable (M) in
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α := ⟨{x | ∃ S ∈ M.accept, S ∈ M.eval x}⟩
+def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
   rfl

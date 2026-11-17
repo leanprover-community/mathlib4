@@ -116,7 +116,7 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 /--
 `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
 -/
-def acceptsFrom (s : σ) : Language α := ⟨{x | M.evalFrom s x ∈ M.accept}⟩
+def acceptsFrom (s : σ) : Language α := {x | M.evalFrom s x ∈ M.accept}
 
 theorem mem_acceptsFrom {s : σ} {x : List α} :
     x ∈ M.acceptsFrom s ↔ M.evalFrom s x ∈ M.accept := by rfl
@@ -155,7 +155,6 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   | nil => rfl
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
-    rw [Language.mem_singleton_iff] at ha
     rw [List.flatten_cons, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
