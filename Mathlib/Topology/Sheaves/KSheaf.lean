@@ -54,7 +54,7 @@ namespace KPresheaf
 
 /-- The pushforward by a proper map as a functor over K-presheaves -/
 @[simps!, implicit_reducible]
-def pushforward {Y : TopCat.{w}} (f : X ⟶ Y) (pf : IsProperMap f.hom') :
+def pushforward {Y : TopCat.{w}} (f : X ⟶ Y) (pf : IsProperMap f) :
     KPresheaf A X ⥤ KPresheaf A Y :=
   (Functor.whiskeringLeft _ _ _).obj (Compacts.properPreimage_mono pf).functor.op
 
@@ -173,23 +173,22 @@ lemma hom_ext_of_compacts (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.ob
 open Compacts KPresheaf
 
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
-    (pf : IsProperMap f.hom') (F : KSheaf A X)
+    (pf : IsProperMap f) (F : KSheaf A X)
 
 lemma isKSheaf_pushforward_obj : ((pushforward f pf).obj F.obj).IsKSheaf where
-  nonempty_isTerminal := by
-    exact F.property.nonempty_isTerminal
+  nonempty_isTerminal := F.property.nonempty_isTerminal
   isPullback h :=
     F.property.isPullback <|
     Lattice.BicartSq.map h <| {
       toFun := properPreimage pf
-      map_sup' := fun _ _ ↦ Compacts.ext rfl
-      map_inf' := fun _ _ ↦ Compacts.ext rfl}
+      map_sup' := by aesop
+      map_inf' := by aesop}
   nonempty_isColimit_coconeOfCompacts K :=
     ⟨(Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsOfProperMap_mono pf K).functor.op)
-      _).symm  (F.isColimit (properPreimage pf K))⟩
+      _).symm (F.isColimit (properPreimage pf K))⟩
 
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] (f : X ⟶ Y)
-    (pf : IsProperMap f.hom')
+    (pf : IsProperMap f)
 
 /-- The pushforward of a K-presheaf as a functor -/
 @[simps!, implicit_reducible]
@@ -200,13 +199,13 @@ def pushforward : KSheaf A X ⥤ KSheaf A Y :=
 
 /-- The isomorphism between the pushforwad of identity and the identity functor -/
 def pushforwardId [LocallyCompactSpace X] :
-    pushforward (𝟙 X) (isProperMap_id) ≅ Functor.id (KSheaf A X) := Iso.refl _
+    pushforward (𝟙 X) isProperMap_id ≅ 𝟭 (KSheaf A X) := Iso.refl _
 
 /-- The isomorphism between the pushforwad of a composition and the composition of pushforwards -/
 def pushforwardComp {Z : TopCat.{w}} [T2Space Z] [LocallyCompactSpace Z] {g : Y ⟶ Z}
-    (pg : IsProperMap g.hom') :
-    pushforward (A := A) f  pf ⋙ pushforward g pg ≅
-    pushforward (f ≫ g) (IsProperMap.comp (f := f) (g := g) pg pf) := Iso.refl _
+    (pg : IsProperMap g) :
+    pushforward (A := A) f pf ⋙ pushforward g pg ≅
+    pushforward (f ≫ g) (pg.comp pf) := Iso.refl _
 
 end KSheaf
 

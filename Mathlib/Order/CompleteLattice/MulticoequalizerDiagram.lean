@@ -114,9 +114,9 @@ def multicofork : Multicofork d.multispanIndex :=
   Multicofork.ofπ _ x (fun i ↦ homOfLE (by grind [multispanIndex_right, le_iSup_iff]))
     (fun _ ↦ rfl)
 
-include d
-lemma map {S : Type v} [CompleteLattice S] (f : CompleteLatticeHom T S)
-  : MulticoequalizerDiagram (f x) ( fun i ↦ f (u i)) (fun i j ↦ f (v i j)) where
+include d in
+lemma map {S : Type v} [CompleteLattice S] (f : CompleteLatticeHom T S) :
+    MulticoequalizerDiagram (f x) ( fun i ↦ f (u i)) (fun i j ↦ f (v i j)) where
   iSup_eq := by  rw [← d.iSup_eq,map_iSup]
   eq_inf i j := by rw [d.eq_inf,map_inf]
 
