@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 # Lp space
 
 This file provides the space `Lp E p μ` as the subtype of elements of `α →ₘ[μ] E`
-(see `MeasureTheory.AEEqFun`) such that `eLpNorm f p μ` is finite.
+(see `MeasureTheory.AEEqFun`) such that `inhmgELpNorm f p μ` is finite.
 For `1 ≤ p`, `eLpNorm` defines a norm and `Lp` is a complete metric space
 (the latter is proved at `Mathlib/MeasureTheory/Function/LpSpace/Complete.lean`).
 
@@ -648,14 +648,12 @@ theorem MemLp.norm_rpow {f : α → E} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0
   convert hf.norm_rpow_div (q := p) (by simp [hp_ne_zero]) hp_ne_top
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
 
-#check AEEqFun.eLpNorm_compMeasurePreserving
-
 theorem AEEqFun.compMeasurePreserving_mem_Lp {β : Type*} [MeasurableSpace β]
     {μb : MeasureTheory.Measure β} {g : β →ₘ[μb] E} (hg : g ∈ Lp E p μb) {f : α → β}
     (hf : MeasurePreserving f μ μb) :
     g.compMeasurePreserving f hf ∈ Lp E p μ := by
-  rw [Lp.mem_Lp_iff_eLpNorm_lt_top] at hg ⊢
-  rwa [eLpNorm_compMeasurePreserving]
+  rw [Lp.mem_Lp_iff_inhmgELpNorm_lt_top] at hg ⊢
+  rwa [inhmgELpNorm_compMeasurePreserving]
 
 namespace Lp
 
@@ -1131,7 +1129,7 @@ variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R
 
 protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
   star f := ⟨star (f : α →ₘ[μ] R),
-    by simpa [Lp.mem_Lp_iff_eLpNorm_lt_top] using Lp.eLpNorm_lt_top f⟩
+    by simpa [Lp.mem_Lp_iff_inhmgELpNorm_lt_top] using Lp.inhmgELpNorm_lt_top f⟩
 
 lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ] star f :=
     (f : α →ₘ[μ] R).coeFn_star

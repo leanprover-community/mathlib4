@@ -118,6 +118,10 @@ theorem aestronglyMeasurable_of_eLpNorm_ne_top [TopologicalSpace ε]
   contrapose h
   exact eLpNorm_of_not_aestronglyMeasurable h
 
+theorem aestronglyMeasurable_of_eLpNorm_lt_top [TopologicalSpace ε]
+    {f : α → ε} {p : ℝ≥0∞} (h : eLpNorm f p μ < ∞) : AEStronglyMeasurable f μ :=
+  aestronglyMeasurable_of_eLpNorm_ne_top h.ne
+
 theorem eLpNorm_eq_eLpNorm' [TopologicalSpace ε]
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = eLpNorm' f p.toReal μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top, hf]
