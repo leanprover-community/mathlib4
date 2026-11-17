@@ -204,10 +204,11 @@ variable
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 @[simp]
-theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
+theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] :
+    ‖StrongDual.smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
-lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
+lemma norm_smulRightL_le : ‖StrongDual.smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
   ContinuousLinearMap.opNorm_le_bound₂ _ zero_le_one fun c x ↦ by simp
 
 /-! ### Composition with isometries -/

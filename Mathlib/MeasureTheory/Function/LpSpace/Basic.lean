@@ -381,6 +381,11 @@ theorem norm_le_norm_of_ae_le {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂�
   rw [norm_def, norm_def]
   exact ENNReal.toReal_mono (by finiteness) (eLpNorm_mono_ae (Lp.aestronglyMeasurable f) h)
 
+theorem norm_eq_norm_of_ae_eq {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
+    ‖f‖ = ‖g‖ := by
+  rw [norm_def, norm_def,
+    eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g) h]
+
 theorem mem_Lp_of_nnNorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : f ∈ Lp E p μ :=
   mem_Lp_iff_memLp.2 <| MemLp.of_nnNorm_le_mul (Lp.memLp g) f.aestronglyMeasurable h
@@ -427,6 +432,11 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   lift C to ℝ≥0 using hC
   have := nnNorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
+
+theorem norm_le_of_ae_bound_top {f : Lp E ∞ μ} {C : ℝ} (hC : 0 ≤ C)
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖f‖ ≤ C := by
+  rw [norm_def, eLpNorm_exponent_top (Lp.aestronglyMeasurable f)]
+  exact ENNReal.toReal_le_of_le_ofReal hC (eLpNormEssSup_le_of_ae_bound hfC)
 
 instance instAddCommGroup : AddCommGroup (Lp E p μ) := inferInstance
 
@@ -859,6 +869,12 @@ theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMu
 theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
   LipschitzWith.norm_compLp_le _ _ _
 
+theorem norm_compLp_of_isometry {L : E →SL[σ] F} (hL : Isometry L) (f : Lp E p μ) :
+    ‖L.compLp f‖ = ‖f‖ := by
+  apply Lp.norm_eq_norm_of_ae_eq
+  filter_upwards [L.coeFn_compLp f] with x hx
+  rw [hx, (AddMonoidHomClass.isometry_iff_norm L).1 hL]
+
 variable (μ p)
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a `𝕜`-linear map on `Lp E p μ`. -/
@@ -902,6 +918,10 @@ theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'
 
 theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=
   LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
+
+theorem isometry_compLpL [Fact (1 ≤ p)] {L : E →SL[σ] F} (hL : Isometry L) :
+    Isometry (L.compLpL p μ) :=
+  AddMonoidHomClass.isometry_of_norm _ (norm_compLp_of_isometry hL)
 
 section Bilinear
 

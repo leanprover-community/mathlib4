@@ -128,8 +128,8 @@ instance instCoeFun : CoeFun (StieltjesFunction R) fun _ => R → ℝ :=
 
 initialize_simps_projections StieltjesFunction (toFun → apply)
 
-@[ext] lemma ext {f g : StieltjesFunction R} (h : ∀ x, f x = g x) : f = g := by
-  exact (StieltjesFunction.mk.injEq ..).mpr (funext h)
+@[ext] lemma ext {f g : StieltjesFunction R} (h : ∀ x, f x = g x) : f = g :=
+  (StieltjesFunction.mk.injEq ..).mpr (funext h)
 
 variable (f : StieltjesFunction R)
 
@@ -680,8 +680,8 @@ lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
 
 theorem measure_univ [Nonempty R]
     {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
-    f.measure univ = ofReal (u - l) := by
-  exact tendsto_nhds_unique_of_forall (tendsto_measure_Iic_atTop _)
+    f.measure univ = ofReal (u - l) :=
+  tendsto_nhds_unique_of_forall (tendsto_measure_Iic_atTop _)
     (ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)) (by simp [measure_Iic f hfl])
 
 lemma measure_univ_of_tendsto_atTop_atTop [Nonempty R] (hf : Tendsto f atTop atTop) :
