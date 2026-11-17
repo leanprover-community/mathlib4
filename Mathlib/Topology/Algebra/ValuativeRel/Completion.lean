@@ -101,7 +101,7 @@ theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠
     (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
   refine (?_ : _ < _).trans_eq <| div_mul_cancel₀ (a := v s) (b := v r) (by simpa using hr)
   grw [Valuation.inversion_estimate v (x := x) y_ne (γ := (.mk0 (v s / v r) (by simp_all))) h] <;>
-  simp [zero_lt_iff, hr]
+  simp [pos_iff_ne_zero, hr]
 
 end InversionEstimate
 
@@ -176,6 +176,7 @@ variable [Field K] [ValuativeRel K] [UniformSpace K] [IsValuativeTopology K]
 
 namespace IsValuativeTopology
 
+open scoped Pointwise in
 /-- A valued field is completable. -/
 instance (priority := 100) [IsUniformAddGroup K] : CompletableTopField K where
   nice F hF h0 := by
@@ -268,7 +269,7 @@ noncomputable def extension : Valuation (Completion K) Γ₀ where
           (v.continuous_extensionFun.comp continuous_snd)
       exact isClosed_eq c1 c2
     · intro x y
-      exact_mod_cast Valuation.map_mul _ _ _
+      exact mod_cast Valuation.map_mul _ _ _
   map_add_le_max' x y := by
     rw [le_max_iff]
     simp only [Function.comp_apply]
@@ -279,7 +280,7 @@ noncomputable def extension : Valuation (Completion K) Γ₀ where
       exact (isClosed_le (by fun_prop) <| cont.comp continuous_fst).union
           (isClosed_le (by fun_prop) <| cont.comp continuous_snd)
     · intro x y
-      exact_mod_cast le_max_iff.mp (v.restrict.map_add x y)
+      exact mod_cast le_max_iff.mp (v.restrict.map_add x y)
 
 private lemma extension_def (x : Completion K) : v.extension x =
     embedding (v.extensionFun x) := rfl
@@ -349,7 +350,7 @@ theorem closure_image_coe_ofPred_map_lt {r : Γ₀} (hr : r ≠ 0) :
   simp only [mem_ofPred_eq, mem_closure_iff_nhds]
   refine ⟨fun hx ↦ ?_, fun hx t ht ↦ ?_⟩
   · rcases eq_or_ne x 0 with rfl | h
-    · simp [zero_lt_iff, hr]
+    · simp [pos_iff_ne_zero, hr]
     · obtain ⟨_, hy : v.extension _ = v.extension x, y, hy' : v y < r, rfl⟩ :=
         hx _ (v.extension_locally_const h)
       rwa [← hy, extension_apply_coe]
@@ -361,7 +362,7 @@ theorem closure_image_coe_ofPred_map_mul_map_lt_map {r s : K} (hr : r ≠ 0) (hs
     {x : Completion K | v.extension x * v r < v s} := by
   have hrs : v s / v r ≠ 0 := by simp [hr, hs]
   convert v.closure_image_coe_ofPred_map_lt hrs using 3
-  all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
+  all_goals simp [← lt_div_iff₀, pos_iff_ne_zero, hr]
 
 /-- The function underlying `Valuation.valueGroup₀ExtensionHom`: it sends `v.restrict x` to
 `v.extension.restrict x` for `x : K`. It is characterised by
@@ -472,7 +473,7 @@ theorem coe_vlt_coe_iff {x y : K} :
   Iff.not coe_vle_coe_iff
 
 instance valuativeExtension : ValuativeExtension K (Completion K) where
-  vle_iff_vle _ _ := coe_vle_coe_iff
+  vle_iff_vle := coe_vle_coe_iff
 
 end UniformSpace.Completion
 

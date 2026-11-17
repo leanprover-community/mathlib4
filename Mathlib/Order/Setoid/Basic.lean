@@ -5,6 +5,7 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 module
 
+public import Mathlib.Logic.Function.Const
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.GaloisConnection.Basic
 
@@ -214,6 +215,11 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x
 @[simp]
 theorem ker_eq_bot_iff {f : α → β} : ker f = ⊥ ↔ f.Injective := le_bot_iff.symm
 
+@[simp]
+theorem ker_eq_top_iff {f : α → β} : ker f = ⊤ ↔ f.IsConst := eq_top_iff
+
+@[deprecated (since := "2026-11-10")] alias ker_eq_top := ker_eq_top_iff
+
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
     letI := sInf S
     x ≈ y ↔ ∀ s ∈ S, s x y := Iff.rfl
@@ -235,13 +241,26 @@ def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
     Quotient (sInf S) → Quotient s :=
   Setoid.map_of_le fun _ _ a ↦ a s h
 
-/-- The quotient by the trivial relation is equivalent to the original space. -/
-def quotientBotEquiv :
-    Quotient (⊥ : Setoid α) ≃ α where
-  toFun := Quotient.lift id (fun _ _ ↦ id)
-  invFun := Quotient.mk''
+/-- The quotient by the trivial equivalence relation is equivalent to the original space. -/
+def quotientTrivialEquiv (s : Setoid α) (h : ∀ ⦃x y⦄, s x y → x = y) : Quotient s ≃ α where
+  toFun := Quotient.lift id h
+  invFun := Quotient.mk s
   left_inv := Quotient.ind fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+
+@[simp] lemma coe_quotientTrivialEquiv (s : Setoid α) (h) :
+    ⇑(quotientTrivialEquiv s h) = Quotient.lift id h := rfl
+
+@[simp] lemma coe_symm_quotientTrivialEquiv (s : Setoid α) (h) :
+    ⇑(quotientTrivialEquiv s h).symm = Quotient.mk s := rfl
+
+/-- The quotient by the trivial relation is equivalent to the original space. -/
+def quotientBotEquiv : Quotient (⊥ : Setoid α) ≃ α := quotientTrivialEquiv _ <| by simp
+
+@[simp]
+lemma coe_quotientBotEquiv : ⇑(quotientBotEquiv (α := α)) = Quotient.lift id (by simp) := rfl
+
+@[simp]
+lemma coe_symm_quotientBotEquiv : ⇑(quotientBotEquiv (α := α)).symm = Quotient.mk ⊥ := rfl
 
 section EqvGen
 
@@ -309,10 +328,10 @@ theorem eqvGen_mono {r s : α → α → Prop} (h : ∀ x y, r x y → s x y) :
 /-- There is a Galois insertion of equivalence relations on α into binary relations
 on α, with equivalence closure the lower adjoint. -/
 def gi : @GaloisInsertion (α → α → Prop) (Setoid α) _ _ EqvGen.setoid (⇑) where
-  choice r _ := EqvGen.setoid r
+  choice r hr := { r, iseqv := le_antisymm hr EqvGen.rel ▸ (EqvGen.setoid r).iseqv }
   gc _ s := ⟨fun H _ _ h => H <| EqvGen.rel _ _ h, fun H => eqvGen_of_setoid s ▸ eqvGen_mono H⟩
   le_l_u x := (eqvGen_of_setoid x).symm ▸ le_refl x
-  choice_eq _ _ := rfl
+  choice_eq _ _ := (eqvGen_of_setoid _).symm
 
 end EqvGen
 

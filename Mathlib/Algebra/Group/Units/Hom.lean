@@ -264,7 +264,7 @@ variable {G R S T F : Type*}
 variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
 
 /-- A map `f` between monoids is *local* if any `a` in the domain is a unit
-  whenever `f a` is a unit. See `IsLocalRing.local_hom_TFAE` for other equivalent
+  whenever `f a` is a unit. See `IsLocalRing.local_hom_tfae` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
 class IsLocalHom (f : F) : Prop where

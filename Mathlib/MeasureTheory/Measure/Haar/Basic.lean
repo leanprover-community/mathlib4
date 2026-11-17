@@ -401,8 +401,8 @@ theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K�
 theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
     chaar K₀ (K₁ ⊔ K₂) ≤ chaar K₀ K₁ + chaar K₀ K₂ := by
   let eval : (Compacts G → ℝ) → ℝ := fun f => f K₁ + f K₂ - f (K₁ ⊔ K₂)
-  have : Continuous eval := by
-    exact ((continuous_apply K₁).add (continuous_apply K₂)).sub (continuous_apply (K₁ ⊔ K₂))
+  have : Continuous eval :=
+    ((continuous_apply K₁).add (continuous_apply K₂)).sub (continuous_apply (K₁ ⊔ K₂))
   rw [← sub_nonneg]; change chaar K₀ ∈ eval ⁻¹' Ici (0 : ℝ)
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
@@ -539,7 +539,7 @@ instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
 @[to_additive]
 theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1 := by
   have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
-  simp only [haarMeasure, coe_smul, Pi.smul_apply, smul_eq_mul]
+  simp only [haarMeasure, smul_apply, smul_eq_mul]
   rw [← K₀.isCompact.measure_closure,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_mul_cancel]
   · exact (haarContent_outerMeasure_closure_pos K₀).ne'

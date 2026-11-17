@@ -45,7 +45,6 @@ We also prove that $p \mapsto \sqrt[p]{\sum_{i\in s} z_i^p}$ is antitone on $(0,
   is to define `StrictConvexOn` functions.
 - generalized mean inequality with any `p ≤ q`, including negative numbers;
 - prove that the power mean tends to the geometric mean as the exponent tends to zero.
-
 -/
 
 public section
@@ -223,27 +222,27 @@ lemma add_rpow_le_rpow_add {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (
      a ^ p + b ^ p ≤ (a + b) ^ p := by
   lift a to NNReal using ha
   lift b to NNReal using hb
-  exact_mod_cast NNReal.add_rpow_le_rpow_add a b hp1
+  exact mod_cast NNReal.add_rpow_le_rpow_add a b hp1
 
 lemma rpow_add_rpow_le_add {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp1 : 1 ≤ p) :
     (a ^ p + b ^ p) ^ (1 / p) ≤ a + b := by
   lift a to NNReal using ha
   lift b to NNReal using hb
-  exact_mod_cast NNReal.rpow_add_rpow_le_add a b hp1
+  exact mod_cast NNReal.rpow_add_rpow_le_add a b hp1
 
 lemma rpow_add_rpow_le {p q : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp_pos : 0 < p)
     (hpq : p ≤ q) :
     (a ^ q + b ^ q) ^ (1 / q) ≤ (a ^ p + b ^ p) ^ (1 / p) := by
   lift a to NNReal using ha
   lift b to NNReal using hb
-  exact_mod_cast NNReal.rpow_add_rpow_le a b hp_pos hpq
+  exact mod_cast NNReal.rpow_add_rpow_le a b hp_pos hpq
 
 lemma rpow_add_le_add_rpow {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp : 0 ≤ p)
     (hp1 : p ≤ 1) :
     (a + b) ^ p ≤ a ^ p + b ^ p := by
   lift a to NNReal using ha
   lift b to NNReal using hb
-  exact_mod_cast NNReal.rpow_add_le_add_rpow a b hp hp1
+  exact mod_cast NNReal.rpow_add_le_add_rpow a b hp hp1
 
 /-- For `1 ≤ p`, the function `x ↦ x ^ p` is superadditive on nonnegative reals.
 See `Real.add_rpow_le_rpow_add` for two summands. -/

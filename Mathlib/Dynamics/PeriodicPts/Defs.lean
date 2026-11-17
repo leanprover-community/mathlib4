@@ -41,7 +41,6 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 ## References
 
 * https://en.wikipedia.org/wiki/Periodic_point
-
 -/
 
 @[expose] public section

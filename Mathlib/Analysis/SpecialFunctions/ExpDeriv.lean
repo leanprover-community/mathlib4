@@ -53,8 +53,8 @@ theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
 
 /-- The function `Complex.exp` is complex analytic. -/
 lemma analyticWithinAt_cexp {s : Set ℂ} {x : ℂ} :
-    AnalyticWithinAt ℂ Complex.exp s x := by
-  exact analyticAt_cexp.analyticWithinAt
+    AnalyticWithinAt ℂ Complex.exp s x :=
+  analyticAt_cexp.analyticWithinAt
 
 /-- `exp ∘ f` is analytic -/
 @[fun_prop]
@@ -114,7 +114,7 @@ theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp :=
   analyticOnNhd_cexp.restrictScalars.contDiff
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
-  contDiff_exp.contDiffAt.hasStrictDerivAt' (hasDerivAt_exp x) one_ne_zero
+  contDiff_exp.contDiffAt.hasStrictDerivAt (hasDerivAt_exp x) one_ne_zero
 
 theorem hasStrictFDerivAt_exp_real (x : ℂ) : HasStrictFDerivAt exp (exp x • (1 : ℂ →L[ℝ] ℂ)) x :=
   (hasStrictDerivAt_exp x).complexToReal_fderiv

@@ -180,14 +180,8 @@ def equiv (F : J ⥤ C) : dsimp% Cone F ≅ Σ X, F.cones.obj X where
   inv := ↾fun c ↦
     { pt := c.1.unop
       π := c.2 }
-  hom_inv_id := by
-    ext X
-    cases X
-    rfl
-  inv_hom_id := by
-    ext X
-    cases X
-    all_goals rfl
+  hom_inv_id := rfl
+  inv_hom_id := rfl
 
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps]
@@ -220,14 +214,8 @@ def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
   inv := ↾fun c ↦
     { pt := c.1
       ι := c.2 }
-  hom_inv_id := by
-    ext X
-    cases X
-    rfl
-  inv_hom_id := by
-    ext X
-    cases X
-    all_goals rfl
+  hom_inv_id := rfl
+  inv_hom_id := rfl
 
 /-- A map from the vertex of a cocone naturally induces a cocone by composition. -/
 @[simps]
@@ -488,7 +476,6 @@ instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful wher
   map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective congr(ConeMorphism.hom $h)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
 -/
