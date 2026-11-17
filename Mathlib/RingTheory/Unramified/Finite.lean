@@ -480,7 +480,11 @@ of a group `G` of algebra automorphisms is an idempotent element `e` of `S` with
 `e ≡ 1 [MOD Q] ↔ Q.inertia G = ⊤`, see `mk_groupIdempotent_eq_one_iff`. -/
 noncomputable def groupIdempotent : S :=
   letI := Fintype.ofFinite G
-  ∏ g : G, inertiaIdempotent R S (g : G)
+  ∏ g : G, inertiaIdempotent R S g
+
+lemma groupIdempotent_def [Fintype G] :
+    groupIdempotent R S G = ∏ g : G, inertiaIdempotent R S g :=
+  @(Equiv.refl G).prod_comp ..
 
 lemma isIdempotentElem_groupIdempotent : IsIdempotentElem (groupIdempotent R S G) := by
   simp_rw [groupIdempotent, IsIdempotentElem, ← Finset.prod_mul_distrib,
@@ -495,7 +499,7 @@ variable {S G} in
 lemma smul_mul_groupIdempotent (g : G) (b : S) :
     (g • b) * groupIdempotent R S G = b * groupIdempotent R S G := by
   let := Fintype.ofFinite G
-  obtain ⟨x, hx⟩ : inertiaIdempotent R S (g : G) ∣ groupIdempotent R S G :=
+  obtain ⟨x, hx⟩ : inertiaIdempotent R S g ∣ groupIdempotent R S G :=
     Finset.dvd_prod_of_mem _ (Finset.mem_univ g)
   rw [hx, ← mul_assoc, smul_mul_inertiaIdempotent, mul_assoc]
 
@@ -520,7 +524,7 @@ lemma mk_groupIdempotent_eq_one_iff {Q : Ideal S} :
 omit [Finite G] in
 lemma mk_groupIdempotent_inertia_eq_one (Q : Ideal S) [Finite (Q.inertia G)] :
     Ideal.Quotient.mk Q (groupIdempotent R S (Q.inertia G)) = 1 := by
-  simp [← Subgroup.map_subtype_inj, ← MonoidHom.range_eq_map]
+  simp
 
 end inertia
 
