@@ -398,43 +398,28 @@ end AffineBasis
 
 namespace Module.Basis
 
-variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P] {n : ℕ}
+variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
-/-- `0` together with the vectors of a basis of `V` indexed by `Fin n` form an affine basis of
-`V`, indexed by `Fin (n + 1)`. -/
+/-- Turning a basis `b` of a module `V` indexed by `ι` into an affine basis of an affine space `P`
+over `V` indexed by `Option ι` by mapping `none` to some distinguished point `p` and `some i` to
+`b i +ᵥ p`. -/
 noncomputable def toAffineBasis (b : Basis ι k V) (p : P) : AffineBasis (Option ι) k P where
-  toFun
-    | .none => p
-    | .some i => (b i) +ᵥ p
+  toFun o := o.elim p (b · +ᵥ p)
   ind' := by
-    -- This is quite disgusting I will golf it soon
     rw [affineIndependent_iff_linearIndependent_vsub k _ none]
-    simp only
-    convert_to LinearIndependent k fun (i : {x : Option ι // x.isSome}) ↦ (match (i : Option ι) with
-      | none => p
-      | some i => b i +ᵥ p) -ᵥ
-      p
-    · simp [Option.ne_none_iff_isSome]
-    · (expose_names; refine Function.hfunext e_1 ?_)
-      intro a a' haa'
-      simp only [ne_eq, heq_eq_eq, vsub_left_cancel_iff]
-      congr 1
-      grind[Option.ne_none_iff_isSome]
-    convert_to LinearIndependent k fun i ↦ b i
-    · refine linearIndependent_equiv' (Equiv.optionIsSomeEquiv ι) ?_
-      ext ⟨x, hx⟩
-      induction x with
-      | none => simp at hx
-      | some i => simp
-    exact b.linearIndependent
-  tot' := SetLike.coe_injective <| by
-    stop
-    rw [Fin.range_cons, affineSpan_insert_zero, b.span_eq]
-    simp
+    refine (linearIndependent_equiv' ((Equiv.subtypeEquivRight fun _ ↦
+      Option.ne_none_iff_isSome).trans (Equiv.optionIsSomeEquiv ι)) ?_).2 b.linearIndependent
+    ext ⟨(_ | j), hj⟩ <;> simp at hj ⊢
+  tot' := by
+    rw [AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty k V P
+      ⟨_, mem_range_self none⟩, vectorSpan_range_eq_span_range_vsub_right k _ none, Option.range_eq]
+    simp [Submodule.span_insert_zero, Function.comp_def, b.span_eq]
 
--- @[simp]
--- lemma coe_toAffineBasis (b : Basis (Fin n) k V) :
---     b.toAffineBasis (0 : V) = sorry :=
---   rfl
+@[simp]
+lemma toAffineBasis_apply_none (b : Basis ι k V) (p : P) : b.toAffineBasis p none = p := rfl
+
+@[simp]
+lemma toAffineBasis_apply_some (b : Basis ι k V) (p : P) (i : ι) :
+    b.toAffineBasis p (some i) = b i +ᵥ p := rfl
 
 end Module.Basis
