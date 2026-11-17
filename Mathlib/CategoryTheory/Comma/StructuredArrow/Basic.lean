@@ -156,11 +156,11 @@ theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 X.l
 we need a morphism of the objects underlying the target,
 and to check that the triangle commutes.
 -/
-@[simps right, to_dual (attr := implicit_reducible)
+@[to_dual (attr := implicit_reducible)
 /-- To construct a morphism of costructured arrows,
 we need a morphism of the objects underlying the source,
 and to check that the triangle commutes.
--/]
+-/, simps right]
 def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
     (w : f.hom ≫ T.map g = f'.hom := by cat_disch) : f ⟶ f' where
   left := 𝟙 f.left
