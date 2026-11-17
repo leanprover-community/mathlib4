@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Analysis.Normed.Algebra.Unitization
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
@@ -21,6 +22,9 @@ with inverse given by `fun f ↦ (f 0, fun x ↦ f x - f 0)`.
   of the coercion `C(X, R)₀ → C(X, R)`.
 + `ContinuousMapZero.unitizationStarAlgEquiv`: the star algebra isomorphism
   `Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R)`
++ `ContinuousMapZero.continuous_unitizationStarAlgEquiv` and
+  `ContinuousMapZero.continuous_symm_unitizationStarAlgEquiv`: when `X` is compact and `R` is a
+  normed field, `ContinuousMapZero.unitizationStarAlgEquiv` is a homeomorphism.
 -/
 
 @[expose] public section
@@ -128,5 +132,21 @@ lemma unitizationStarAlgEquiv_inl (r : R) :
 @[simp]
 lemma unitizationStarAlgEquiv_inr (f : C(X, R)₀) : unitizationStarAlgEquiv X R f = f := by
   ext; simp
+
+end ContinuousMapZero
+
+namespace ContinuousMapZero
+
+variable {X 𝕜 : Type*} [TopologicalSpace X] [CompactSpace X] [Zero X]
+variable [NontriviallyNormedField 𝕜] [StarRing 𝕜] [ContinuousStar 𝕜]
+
+@[fun_prop]
+lemma continuous_unitizationStarAlgEquiv : Continuous (unitizationStarAlgEquiv X 𝕜) :=
+  Unitization.continuous_starLift isEmbedding_toContinuousMap.continuous
+
+@[fun_prop]
+lemma continuous_symm_unitizationStarAlgEquiv : Continuous (unitizationStarAlgEquiv X 𝕜).symm :=
+  Unitization.continuous_iff.mpr
+    ⟨continuous_eval_const 0, ContinuousMap.continuous_toContinuousMapZero⟩
 
 end ContinuousMapZero

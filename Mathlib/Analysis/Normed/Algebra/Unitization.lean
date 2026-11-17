@@ -299,6 +299,26 @@ protected theorem continuous_iff {X : Type*} [TopologicalSpace X] {f : X → Uni
     Continuous f ↔ (Continuous fun x ↦ (f x).fst) ∧ (Continuous fun x ↦ (f x).snd) :=
   uniformEquivProd.toHomeomorph.comp_continuous_iff.symm.trans continuous_prodMk
 
+section Lift
+
+variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
+variable {C : Type*} [Semiring C] [Algebra 𝕜 C] [TopologicalSpace C] [ContinuousAdd C]
+variable [ContinuousSMul 𝕜 C]
+
+/-- The lift of a continuous non-unital algebra homomorphism is continuous. -/
+@[fun_prop]
+lemma continuous_lift {φ : A →ₙₐ[𝕜] C} (hφ : Continuous φ) : Continuous (lift φ) :=
+  ((continuous_algebraMap 𝕜 C).comp Unitization.continuous_fst).add
+    (hφ.comp Unitization.continuous_snd)
+
+/-- The lift of a continuous non-unital star algebra homomorphism is continuous. -/
+@[fun_prop]
+lemma continuous_starLift [StarRing 𝕜] [StarRing A] [StarRing C] [StarModule 𝕜 C]
+    {φ : A →⋆ₙₐ[𝕜] C} (hφ : Continuous φ) : Continuous (starLift φ) :=
+  continuous_lift (φ := φ.toNonUnitalAlgHom) hφ
+
+end Lift
+
 end
 
 end Unitization

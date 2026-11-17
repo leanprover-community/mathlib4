@@ -229,6 +229,27 @@ variable {𝕜 A : Type*} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A]
 variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 variable [StarModule 𝕜 A] {p : A → Prop} {p₁ : Unitization 𝕜 A → Prop}
 
+namespace Unitization
+
+variable (x : Unitization 𝕜 A) [CompactSpace (σₙ 𝕜 x.snd)]
+
+/-- The homeomorphism `C(σ 𝕜 x, 𝕜) ≃ₜ Unitization 𝕜 C(σₙ 𝕜 x.snd, 𝕜)₀` which sends `f` to
+`(f x.fst, y ↦ f (y + x.fst) - f x.fst)`.
+
+We construct `Unitization.cfcAux`, the continuous functional calculus on `Unitization` from
+a non-unital continuous functional calculus on the base algebra, using `starMap` and
+precomposition by this homeomorphism; see `Unitization.coe_cfcAux`. -/
+noncomputable def continuousMapSpectrumHomeomorph :
+    C(σ 𝕜 x, 𝕜) ≃ₜ Unitization 𝕜 C(σₙ 𝕜 x.snd, 𝕜)₀ where
+  toEquiv := (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeoSpectrum x)).trans
+    (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm
+  continuous_toFun :=
+    continuous_symm_unitizationStarAlgEquiv.comp (ContinuousMap.continuous_precomp _)
+  continuous_invFun :=
+    (ContinuousMap.continuous_precomp _).comp continuous_unitizationStarAlgEquiv
+
+end Unitization
+
 section Basic
 
 variable [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
@@ -256,6 +277,11 @@ noncomputable def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A
   (starMap (cfcₙHom hx)).comp <|
     (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm.toStarAlgHom.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeoSpectrum x)).toStarAlgHom
+
+open scoped NonUnitalContinuousFunctionalCalculus in
+lemma coe_cfcAux :
+    ⇑(cfcAux x hx) = starMap (cfcₙHom hx) ∘ continuousMapSpectrumHomeomorph x :=
+  rfl
 
 lemma fst_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
     (cfcAux x hx f).fst = f ⟨x.fst, fst_mem_spectrum x⟩ := by
@@ -330,28 +356,18 @@ namespace Unitization
 
 variable (x : Unitization 𝕜 A) (hx : p x.snd)
 
-open ContinuousMap ContinuousMapZero Unitization in
 open scoped NonUnitalContinuousFunctionalCalculus in
 lemma isClosedEmbedding_cfcAux : IsClosedEmbedding (cfcAux x hx) := by
-  /- `cfcAux x hx` is `starMap (cfcₙHom hx)` precomposed with a homeomorphism, and under the
-  identification `Unitization 𝕜 B ≃ₜ 𝕜 × B`, `starMap (cfcₙHom hx)` is `Prod.map id (cfcₙHom hx)`.
-  -/
-  let e : C(σ 𝕜 x, 𝕜) ≃ₜ Unitization 𝕜 C(σₙ 𝕜 x.snd, 𝕜)₀ :=
-    { toEquiv := (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeoSpectrum x)).trans
-        (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm
-      continuous_toFun := Unitization.continuous_iff.mpr ⟨continuous_eval_const _,
-        continuous_toContinuousMapZero.comp (continuous_precomp _)⟩
-      continuous_invFun := (ContinuousMap.continuous_precomp _).comp <|
-        (continuous_const'.comp Unitization.continuous_fst).add
-          (isEmbedding_toContinuousMap.continuous.comp Unitization.continuous_snd) }
-  change IsClosedEmbedding (starMap (cfcₙHom hx) ∘ e)
-  refine .comp ?_ e.isClosedEmbedding
+  /- Under the identification `Unitization 𝕜 B ≃ₜ 𝕜 × B`, `starMap (cfcₙHom hx)` is
+  `Prod.map id (cfcₙHom hx)`. -/
+  rw [coe_cfcAux]
+  refine .comp ?_ (continuousMapSpectrumHomeomorph x).isClosedEmbedding
   rw [← uniformEquivProd.toHomeomorph.comp_isClosedEmbedding_iff]
   convert (IsClosedEmbedding.id.prodMap (cfcₙHom_isClosedEmbedding hx (R := 𝕜))).comp
     uniformEquivProd.toHomeomorph.isClosedEmbedding using 1
-  ext y
-  · exact fst_starMap _ y
-  · exact snd_starMap _ y
+  ext
+  · exact fst_starMap ..
+  · exact snd_starMap ..
 
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem closedEmbeddingContinuousFunctionalCalculus
@@ -359,7 +375,7 @@ theorem closedEmbeddingContinuousFunctionalCalculus
     ClosedEmbeddingContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁ where
   toContinuousFunctionalCalculus := continuousFunctionalCalculus hp₁
   isClosedEmbedding y hy := by
-    let := continuousFunctionalCalculus hp₁
+    have := continuousFunctionalCalculus hp₁
     rw [cfcHom_eq_of_continuous_of_map_id hy (cfcAux y ((hp₁ y).mp hy)) (continuous_cfcAux ..)
       (cfcAux_id ..)]
     exact isClosedEmbedding_cfcAux ..
