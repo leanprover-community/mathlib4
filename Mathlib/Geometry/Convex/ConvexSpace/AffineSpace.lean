@@ -178,11 +178,11 @@ lemma isAffineMap_vsub_const (p : P) : IsAffineMap R ((· -ᵥ p) : P → V) whe
 
 end Module
 
-attribute [local instance] Convexity.ConvexSpace.ofModule in
 /-- Subtracting a base point from a convex combination in an affine space gives the corresponding
 linear combination in the model module. -/
 lemma sConvexComb_vsub (s : StdSimplex R P) (p : P) :
     s.sConvexComb -ᵥ p = s.weights.sum fun x r ↦ r • (x -ᵥ p) := by
+  let := Convexity.ConvexSpace.ofModule (R := R) (M := V)
   rw [(isAffineMap_vsub_const (V := V) p).map_sConvexComb, sConvexComb_map, iConvexComb_eq_sum]
 
 /-- `convexCombPair` in an affine space is the affine line map. -/
