@@ -635,6 +635,13 @@ theorem toOrthonormalBasis_reindex [Fintype ι] [Fintype ι'] (b : HilbertBasis 
   apply DFunLike.coe_injective
   simp
 
+@[simp]
+theorem _root_.OrthonormalBasis.toHilbertBasis_reindex [Fintype ι] [Fintype ι']
+    (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
+    (b.reindex e).toHilbertBasis = b.toHilbertBasis.reindex e := by
+  apply DFunLike.coe_injective
+  simp
+
 end reindex
 
 end HilbertBasis
