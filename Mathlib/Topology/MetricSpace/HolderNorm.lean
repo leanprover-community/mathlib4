@@ -199,7 +199,7 @@ section MetricSpace
 variable [MetricSpace X] [EMetricSpace Y]
 
 lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
-    eHolderNorm r f = 0 ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
+    eHolderNorm r f = 0 ↔ Function.IsConst f := by
   constructor
   · intro h x₁ x₂
     by_cases hx : x₁ = x₂
@@ -254,7 +254,7 @@ lemma MemHolder.comp {r s : ℝ≥0} {Z : Type*} [MetricSpace Z] {f : Z → X} {
   (hg.holderWith.comp hf.holderWith).memHolder
 
 lemma MemHolder.nnHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
-    nnHolderNorm r f = 0 ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
+    nnHolderNorm r f = 0 ↔ Function.IsConst f := by
   rw [← ENNReal.coe_eq_zero, hf.coe_nnHolderNorm_eq_eHolderNorm, eHolderNorm_eq_zero]
 
 end MetricSpace

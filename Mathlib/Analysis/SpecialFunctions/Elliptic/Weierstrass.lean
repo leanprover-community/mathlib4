@@ -1065,7 +1065,7 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
 private lemma relation_eq_zero : L.relation = 0 := by
   ext x
   have : Differentiable ℂ L.relation := fun x ↦ (L.analyticAt_relation x).differentiableAt
-  exact (this.apply_eq_apply_of_bounded (IsZLattice.isCompact_range_of_periodic L.lattice _
+  exact (this.isConst_of_bounded (IsZLattice.isCompact_range_of_periodic L.lattice _
     this.continuous fun z w hw ↦ by lift w to L.lattice using hw; simp).isBounded x 0).trans
     (ite_eq_left (by simp))
 
