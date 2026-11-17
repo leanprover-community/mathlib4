@@ -966,11 +966,8 @@ theorem lyapunov_inequality_of_nonneg {w : ι → ℝ} {θ : ℝ} (hw : ∀ i �
     (hf : ∀ i ∈ s, 0 ≤ f i) (hp : 0 ≤ p) (hq : 0 ≤ q) (hθ₀ : 0 ≤ θ) (hθ₁ : θ ≤ 1) :
     ∑ i ∈ s, w i * f i ^ (θ * p + (1 - θ) * q) ≤
       (∑ i ∈ s, w i * f i ^ p) ^ θ * (∑ i ∈ s, w i * f i ^ q) ^ (1 - θ) := by
-  have hwf (t : ℝ) :
-      ∑ i ∈ s, w i * f i ^ t = ∑ i ∈ s, ((w i).toNNReal : ℝ) * ((f i).toNNReal : ℝ) ^ t :=
-    sum_congr rfl fun i hi ↦ by simp [hw i hi, hf i hi]
-  simp only [hwf]
-  exact_mod_cast NNReal.lyapunov_inequality s _ _ hp hq hθ₀ hθ₁
+  simpa +contextual [hw, hf, ← NNReal.coe_le_coe] using
+    NNReal.lyapunov_inequality s (fun i ↦ (w i).toNNReal) (fun i ↦ (f i).toNNReal) hp hq hθ₀ hθ₁
 
 /-- **Weighted Hölder inequality** in terms of `Finset.expect`. -/
 lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) {w f : ι → ℝ}

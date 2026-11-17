@@ -249,30 +249,24 @@ lemma rpow_add_le_add_rpow {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (
 See `Real.add_rpow_le_rpow_add` for two summands. -/
 lemma sum_rpow_le_rpow_sum {f : ι → ℝ} (hf : ∀ i ∈ s, 0 ≤ f i) {p : ℝ} (hp1 : 1 ≤ p) :
     ∑ i ∈ s, f i ^ p ≤ (∑ i ∈ s, f i) ^ p := by
-  induction s using Finset.cons_induction with
-  | empty => simp [zero_rpow_nonneg]
-  | cons i s hi ih =>
-    rw [forall_mem_cons] at hf
-    simp_rw [sum_cons]
-    grw [ih hf.2, add_rpow_le_rpow_add hf.1 (sum_nonneg hf.2) hp1]
+  simpa +contextual [hf, ← NNReal.coe_le_coe] using
+    NNReal.sum_rpow_le_rpow_sum s (fun i ↦ (f i).toNNReal) hp1
 
 /-- The `ℓ^p` (quasi)norm `(∑ i ∈ s, f i ^ p) ^ (1 / p)` of a nonnegative vector is antitone in
 `p > 0`. See `Real.rpow_add_rpow_le` for two summands. -/
 lemma rpow_sum_rpow_le {f : ι → ℝ} (hf : ∀ i ∈ s, 0 ≤ f i) {p q : ℝ} (hp_pos : 0 < p)
     (hpq : p ≤ q) :
     (∑ i ∈ s, f i ^ q) ^ (1 / q) ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) := by
-  have hf' (r : ℝ) : ∑ i ∈ s, f i ^ r = ∑ i ∈ s, ((f i).toNNReal : ℝ) ^ r :=
-    sum_congr rfl fun i hi ↦ by rw [Real.coe_toNNReal _ (hf i hi)]
-  simp only [hf']
-  exact_mod_cast NNReal.rpow_sum_rpow_le s _ hp_pos hpq
+  simpa +contextual [hf, ← NNReal.coe_le_coe] using
+    NNReal.rpow_sum_rpow_le s (fun i ↦ (f i).toNNReal) hp_pos hpq
 
 /-- For `0 < p ≤ 1`, the function `x ↦ x ^ p` is subadditive on nonnegative reals.
 See `Real.rpow_add_le_add_rpow` for two summands. -/
 lemma rpow_sum_le_sum_rpow {f : ι → ℝ} (hf : ∀ i ∈ s, 0 ≤ f i) {p : ℝ} (hp_pos : 0 < p)
     (hp1 : p ≤ 1) :
-    (∑ i ∈ s, f i) ^ p ≤ ∑ i ∈ s, f i ^ p :=
-  le_sum_of_subadditive_on_pred (· ^ p) (0 ≤ ·) (by simp [hp_pos.ne'])
-    (fun _ _ ha hb ↦ rpow_add_le_add_rpow ha hb hp_pos.le hp1) (fun _ _ ↦ add_nonneg) f hf
+    (∑ i ∈ s, f i) ^ p ≤ ∑ i ∈ s, f i ^ p := by
+  simpa +contextual [hf, ← NNReal.coe_le_coe] using
+    NNReal.rpow_sum_le_sum_rpow s (fun i ↦ (f i).toNNReal) hp_pos hp1
 
 end Real
 
