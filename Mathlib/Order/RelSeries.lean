@@ -356,7 +356,7 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 `r`-series can be pushed out to an `s`-series by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
 -/
-@[simps length]
+@[simps length, implicit_reducible]
 def map (p : RelSeries r) (f : r.Hom s) : RelSeries s where
   length := p.length
   toFun := f.1.comp p
@@ -431,7 +431,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
 a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
 -/
-@[simps! length]
+@[simps! length, implicit_reducible]
 def cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) : RelSeries r :=
   (singleton r newHead).append p (by simpa)
 
@@ -475,7 +475,7 @@ lemma append_cons {p q : RelSeries r} {x : α} (hx : x ~[r] p.head) (hq : p.last
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
 a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
 -/
-@[simps! length]
+@[simps! length, implicit_reducible]
 def snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) : RelSeries r :=
   p.append (singleton r newLast) (by simpa)
 
@@ -655,7 +655,7 @@ def inductionOn' (motive : RelSeries r → Sort*)
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
 -/
-@[simps length]
+@[simps length, implicit_reducible]
 def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
   toFun := Fin.addCases (m := p.length) (n := q.length + 1) (p ∘ Fin.castSucc) q
@@ -705,7 +705,7 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
   rw [← Fin.natAdd_last, Fin.addCases_right]
 
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
-@[simps! length]
+@[simps! length, implicit_reducible]
 def take {r : SetRel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by lia⟩
@@ -720,7 +720,7 @@ lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.take i).last = p i := by simp [take, last, Fin.last]
 
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aₙ`. -/
-@[simps! length]
+@[simps! length, implicit_reducible]
 def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by lia⟩
@@ -943,8 +943,7 @@ theorem exists_relSeries_covBy
     let t₃ : RelSeries {(a, b) : α × α | a ⋖ b} := ⟨m, (t₂ ·), fun i ↦ by simpa using! ht₂ i⟩
     have H : t₁.last = t₃.head := (congr(t₁ $hi₂.symm).trans (congr_fun ht _)).trans h₁.symm
     refine ⟨t₁.smash t₃ H, ⟨Fin.snoc (Fin.castLE (by simp) ∘ i) (.last _), ?_⟩, ?_, ?_, ?_⟩
-    · rw [Function.Injective]
-      refine Fin.lastCases (Fin.lastCases (fun _ ↦ rfl) fun j eq ↦ ?_) fun j ↦ Fin.lastCases
+    · refine Fin.lastCases (Fin.lastCases (fun _ ↦ rfl) fun j eq ↦ ?_) fun j ↦ Fin.lastCases
         (fun eq ↦ ?_) fun k eq ↦ Fin.ext (congr_arg Fin.val (by simpa using! eq) :)
       on_goal 2 => rw [eq_comm] at eq
       all_goals
