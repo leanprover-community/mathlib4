@@ -40,6 +40,6 @@ abbrev HasConicalProduct {I : Type w} (f : I → C) :=
   HasConicalLimit V (Discrete.functor f)
 
 /-- ensure products exists from the existence of conical products -/
-example [HasConicalProducts.{w} V C] : HasProducts.{w} C := inferInstance
+instance [HasConicalProducts.{w} V C] : HasProducts.{w} C where
 
 end CategoryTheory.Enriched
