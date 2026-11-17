@@ -1441,6 +1441,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Reduction
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+public import Mathlib.AlgebraicGeometry.FermatHypersurface.ShiodaAoki
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
@@ -3781,6 +3782,7 @@ public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
 public import Mathlib.Combinatorics.Hindman
 public import Mathlib.Combinatorics.Hypergraph.Basic
+public import Mathlib.Combinatorics.IncidenceSieve.CyclotomicResidualForm
 public import Mathlib.Combinatorics.KatonaCircle
 public import Mathlib.Combinatorics.Matroid.Basic
 public import Mathlib.Combinatorics.Matroid.Circuit
@@ -6760,6 +6762,7 @@ public import Mathlib.RepresentationTheory.Rep.Basic
 public import Mathlib.RepresentationTheory.Rep.Iso
 public import Mathlib.RepresentationTheory.Rep.Res
 public import Mathlib.RepresentationTheory.Semisimple
+public import Mathlib.RepresentationTheory.Spin8Triality
 public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.RepresentationTheory.Submodule
 public import Mathlib.RepresentationTheory.Subrepresentation
@@ -6808,6 +6811,7 @@ public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Artinian.Instances
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Artinian.Ring
+public import Mathlib.RingTheory.ArtinianGorenstein.MacaulayContraction
 public import Mathlib.RingTheory.Bezout
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.Convolution
