@@ -5,8 +5,7 @@ Authors: Tomaz Mascarenhas, Pedro Saccomani, Sarah Pereira
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Instances.Sign
 
