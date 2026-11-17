@@ -121,8 +121,8 @@ variable {K}
 instance isTotallyReal_iSup {ι : Sort*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   refine ⟨fun w ↦ InfinitePlace.isReal_iff.mpr <| ComplexEmbedding.isReal_iff.mpr <|
-    RingHom.ext fun z ↦ RingHom.mem_eqLocusField.mp ?_⟩
-  -- the subfield where `w.embedding` and its conjugate agree contains every `k i`, hence is `⊤`
+    RingHom.ext fun ⟨z, hz⟩ ↦ RingHom.mem_eqLocusField.mp ?_⟩
+  
   have h : (ComplexEmbedding.conjugate w.embedding).eqLocusField w.embedding = ⊤ := by
     rw [eq_top_iff, ← Subfield.comap_subtype_self, Subfield.comap_iSup _
       (fun _ ↦ by simpa using le_iSup _ _), iSup_le_iff]
