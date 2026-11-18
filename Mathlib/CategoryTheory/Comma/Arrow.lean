@@ -39,11 +39,9 @@ to_dual_name_hint Left Right
 @[to_dual self (reorder := f g)]
 protected def Arrow.Hom (f g : Arrow T) := CommaMorphism f g
 
-instance : Quiver (Arrow T) where
+instance : Category (Arrow T) where
   Hom := Arrow.Hom
-
-instance : Category (Arrow T) :=
-  inferInstanceAs <| Category (Comma (𝟭 T) (𝟭 T))
+  __ := (inferInstance : Category (Comma _ _))
 
 namespace Arrow
 

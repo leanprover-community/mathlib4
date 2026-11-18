@@ -113,7 +113,7 @@ theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x ∈ expPoint x prec 
   generalize hm : 16 * (2 * x.toRat.num.natAbs / x.toRat.den + 1) = m
   have hm0 : m ≠ 0 := by lia
   have hred : Real.exp x = Real.exp (x.toRat.num / (x.toRat.den * m : ℕ)) ^ m := by
-    rw [← Real.exp_nat_mul, Rat.cast_def]
+    rw [← Real.exp_natCast_mul, Rat.cast_def]
     push_cast
     field_simp
   have hab : x.toRat.num.natAbs ≤ x.toRat.den * m := by

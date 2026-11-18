@@ -50,8 +50,7 @@ namely Polish spaces.
 accumulation point, perfect set, dense-in-itself, cantor-bendixson.
 -/
 
-@[expose] public section
-
+public section
 
 open Filter Set TopologicalSpace
 
@@ -74,6 +73,7 @@ theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : 
 /-- A set `C` is preperfect if all of its points are accumulation points of itself.
 If `α` is a T1 space, this is equivalent to the closure of `C` being perfect,
 see `preperfect_iff_perfect_closure`. This property is also called dense-in-itself. -/
+@[expose]
 def Preperfect (C : Set α) : Prop :=
   ∀ x ∈ C, AccPt x (𝓟 C)
 
@@ -82,8 +82,11 @@ points are accumulation points of itself.
 Note that we do not require `C` to be nonempty. -/
 @[mk_iff perfect_def]
 structure Perfect (C : Set α) : Prop where
-  closed : IsClosed C
-  acc : Preperfect C
+  isClosed : IsClosed C
+  preperfect : Preperfect C
+
+@[deprecated (since := "2026-11-12")] alias Perfect.closed := Perfect.isClosed
+@[deprecated (since := "2026-11-12")] alias Perfect.acc := Perfect.preperfect
 
 theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
   simp only [Preperfect, accPt_iff_nhds]
@@ -145,7 +148,7 @@ theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (
   constructor <;> intro h
   · exact h.perfect_closure
   intro x xC
-  have H : AccPt x (𝓟 (closure C)) := h.acc _ (subset_closure xC)
+  have H : AccPt x (𝓟 (closure C)) := h.preperfect _ (subset_closure xC)
   rw [accPt_iff_frequently] at *
   have : ∀ y, y ≠ x ∧ y ∈ closure C → ∃ᶠ z in 𝓝 y, z ≠ x ∧ z ∈ C := by
     rintro y ⟨hyx, yC⟩
@@ -159,7 +162,7 @@ theorem Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : 
     (Uop : IsOpen U) : Perfect (closure (U ∩ C)) ∧ (closure (U ∩ C)).Nonempty := by
   constructor
   · apply Preperfect.perfect_closure
-    exact hC.acc.open_inter Uop
+    exact hC.preperfect.open_inter Uop
   apply Nonempty.closure
   exact ⟨x, ⟨xU, xC⟩⟩
 
@@ -170,7 +173,7 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
     (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C) ∧ (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C) ∧ Disjoint C₀ C₁ := by
   obtain ⟨y, yC⟩ := hnonempty
   obtain ⟨x, xC, hxy⟩ : ∃ x ∈ C, x ≠ y := by
-    have := hC.acc _ yC
+    have := hC.preperfect _ yC
     rw [accPt_iff_nhds] at this
     rcases this univ univ_mem with ⟨x, xC, hxy⟩
     exact ⟨x, xC.2, hxy⟩
@@ -178,11 +181,11 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
   use closure (U ∩ C), closure (V ∩ C)
   constructor <;> rw [← and_assoc]
   · refine ⟨hC.closure_nhds_inter x xC xU Uop, ?_⟩
-    rw [hC.closed.closure_subset_iff]
+    rw [hC.isClosed.closure_subset_iff]
     exact inter_subset_right
   constructor
   · refine ⟨hC.closure_nhds_inter y yC yV Vop, ?_⟩
-    rw [hC.closed.closure_subset_iff]
+    rw [hC.isClosed.closure_subset_iff]
     exact inter_subset_right
   apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left
 
