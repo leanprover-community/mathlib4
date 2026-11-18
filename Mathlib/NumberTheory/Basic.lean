@@ -6,5 +6,6 @@ Authors: Johan Commelin, Kenny Lau
 module -- shake: keep-all
 
 public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.RingTheory.Ideal.Span
 
 deprecated_module (since := "2026-11-08")

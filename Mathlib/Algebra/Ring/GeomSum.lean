@@ -335,6 +335,7 @@ theorem sum_range_mul_geometric_add (x : R) (m : ℕ) :
   | zero => simp
   | succ m ih => grind [sum_range_succ, sum_Icc_succ_top]
 
+/-- If `p` divides `a - b`, then `p ^ (k + 1)` divides `a ^ p ^ k - b ^ p ^ k`. -/
 theorem dvd_sub_pow_of_dvd_sub {p : ℕ} {a b : R} (h : (p : R) ∣ a - b) (k : ℕ) :
     (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction k with
