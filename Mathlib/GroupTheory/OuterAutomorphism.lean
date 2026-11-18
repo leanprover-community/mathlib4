@@ -57,7 +57,7 @@ theorem innerMulEquivQuotientCenter_conj (g : G) :
 @[to_additive /-- The **outer automorphism group** of an additive group `G`. -/]
 abbrev Outer (G : Type u) [Group G] : Type u := MulAut G ⧸ inner G
 
-/-- The canonical projection from `MulAut G` to the outer automorphism group `Outer G`. -/
+/-- The canonical projection from `MulAut G` to the outer automorphism group. -/
 @[to_additive
 /-- The canonical projection from `AddAut G` to the outer automorphism group. -/]
 def Outer.of : MulAut G →* Outer G := QuotientGroup.mk' (inner G)
