@@ -483,9 +483,8 @@ lemma extendScalars_eq_mulLeft_inertiaIdempotent (g : G) :
       LinearMap.mulLeft S (inertiaIdempotent R S g) := by
   rw [inertiaIdempotent, equalizerIdempotent_comm]
   apply LinearMap.ext_ring
-  rw [LinearMap.mulLeft_apply, mul_one, extendScalars_apply,
-    LinearMap.coe_comp, Function.comp_apply, sec_self_one]
-  rfl
+  simpa [equalizerIdempotent, extendScalars_apply] using
+    congr($(toLinearMap_productMap_id (MulSemiringAction.toAlgHom R S g)) (elem R S)).symm
 
 variable (G) [Finite G]
 
