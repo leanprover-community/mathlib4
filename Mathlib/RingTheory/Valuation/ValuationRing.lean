@@ -462,7 +462,7 @@ lemma _root_.Valuation.IsIntegers.isFractionRing {v : Valuation K Γ} (hv : v.Is
   isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective
     hv.eq_algebraMap_or_inv_eq_algebraMap hv.hom_inj
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias _root_.Valuation.Integers.isFractionRing := _root_.Valuation.IsIntegers.isFractionRing
 
 instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=

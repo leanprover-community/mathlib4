@@ -690,11 +690,11 @@ end Valuation.IsIntegers
 
 /-! ### Deprecated aliases -/
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Valuation.Integers.maximalIdeal_eq_setOfPred_le_v_algebraMap :=
   Valuation.IsIntegers.maximalIdeal_eq_setOfPred_le_v_algebraMap
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Valuation.Integers.maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow :=
   Valuation.IsIntegers.maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow
 

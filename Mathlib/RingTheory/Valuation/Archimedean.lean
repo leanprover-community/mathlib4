@@ -89,19 +89,19 @@ end Valuation.IsIntegers
 
 /-! ### Deprecated aliases -/
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Valuation.Integers.wfDvdMonoid_iff_wellFounded_gt_on_v :=
   Valuation.IsIntegers.wfDvdMonoid_iff_wellFounded_gt_on_v
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Valuation.Integers.wellFounded_gt_on_v_iff_discrete_mrange :=
   Valuation.IsIntegers.wellFounded_gt_on_v_iff_discrete_mrange
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Valuation.Integers.isPrincipalIdealRing_iff_not_denselyOrdered :=
   Valuation.IsIntegers.isPrincipalIdealRing_iff_not_denselyOrdered
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Valuation.Integers.isPrincipalIdealRing_iff_not_denselyOrdered_mrange :=
   Valuation.IsIntegers.isPrincipalIdealRing_iff_not_denselyOrdered_mrange
 

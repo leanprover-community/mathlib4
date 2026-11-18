@@ -55,7 +55,7 @@ structure IsIntegers : Prop where
   map_le_one : ∀ x, v (algebraMap O R x) ≤ 1
   exists_of_le_one : ∀ ⦃r⦄, v r ≤ 1 → ∃ x, algebraMap O R x = r
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers := IsIntegers
 
 -- typeclass shortcut
@@ -464,79 +464,79 @@ end Ideal
 
 /-! ### Deprecated aliases -/
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.hom_inj := IsIntegers.hom_inj
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.map_le_one := IsIntegers.map_le_one
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.exists_of_le_one := IsIntegers.exists_of_le_one
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.one_of_isUnit' := IsIntegers.one_of_isUnit'
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.one_of_isUnit := IsIntegers.one_of_isUnit
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.isUnit_of_one := IsIntegers.isUnit_of_one
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.le_of_dvd := IsIntegers.le_of_dvd
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.nontrivial_iff := IsIntegers.nontrivial_iff
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.dvd_of_le := IsIntegers.dvd_of_le
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.dvd_iff_le := IsIntegers.dvd_iff_le
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.le_iff_dvd := IsIntegers.le_iff_dvd
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.isUnit_of_one' := IsIntegers.isUnit_of_one'
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.isUnit_iff_valuation_eq_one := IsIntegers.isUnit_iff_valuation_eq_one
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.valuation_irreducible_lt_one := IsIntegers.valuation_irreducible_lt_one
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.valuation_unit := IsIntegers.valuation_unit
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.valuation_pos_iff_ne_zero := IsIntegers.valuation_pos_iff_ne_zero
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.valuation_irreducible_pos := IsIntegers.valuation_irreducible_pos
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.dvdNotUnit_iff_lt := IsIntegers.dvdNotUnit_iff_lt
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.eq_algebraMap_or_inv_eq_algebraMap := IsIntegers.eq_algebraMap_or_inv_eq_algebraMap
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.coe_span_singleton_eq_setOfPred_le_v_algebraMap :=
   IsIntegers.coe_span_singleton_eq_setOfPred_le_v_algebraMap
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.bijective_algebraMap_of_subsingleton_units_mrange :=
   IsIntegers.bijective_algebraMap_of_subsingleton_units_mrange
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.isPrincipal_iff_exists_isGreatest := IsIntegers.isPrincipal_iff_exists_isGreatest
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.isPrincipal_iff_exists_eq_setOfPred_valuation_le :=
   IsIntegers.isPrincipal_iff_exists_eq_setOfPred_valuation_le
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.not_denselyOrdered_of_isPrincipalIdealRing :=
   IsIntegers.not_denselyOrdered_of_isPrincipalIdealRing
 

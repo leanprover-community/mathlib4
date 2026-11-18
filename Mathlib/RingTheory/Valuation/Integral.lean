@@ -91,19 +91,19 @@ end IsIntegers
 
 /-! ## Deprecated aliases -/
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.isIntegral_iff_v_le_one := IsIntegers.isIntegral_iff_v_le_one
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.mem_of_integral := IsIntegers.mem_of_integral
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.integralClosure := IsIntegers.integralClosure
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.isIntegrallyClosed := IsIntegers.isIntegrallyClosed
 
-@[deprecated (since := "2026-09-15")]
+@[deprecated (since := "2026-11-18")]
 alias Integers.isIntegrallyClosed_integers := IsIntegers.isIntegrallyClosed_integers
 
 end Valuation
