@@ -149,12 +149,12 @@ lemma bernoulliMeasure_real_apply_singleton_left [MeasurableSingletonClass X] (p
     Ber(x, y, p).real {x} = p := by
   simp [h.symm]
 
-@[grind =]
+@[simp high, grind =]
 lemma bernoulliMeasure_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
     Ber(x, y, p) {y} = toNNReal (σ p) := by
   simp [h]
 
-@[grind =]
+@[simp high, grind =]
 lemma bernoulliMeasure_real_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
     Ber(x, y, p).real {y} = 1 - p := by
   simp [h]
