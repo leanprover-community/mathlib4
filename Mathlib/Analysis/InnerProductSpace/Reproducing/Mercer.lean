@@ -134,12 +134,8 @@ lemma mercerForm_apply (f g : Lp V 2 μ) :
 
 theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef]
     (f g : Lp V 2 μ) : starRingEnd 𝕜 (mercerForm hK f g) = mercerForm hK g f := by
-  simp_rw [mercerForm_apply]
-  rw [← integral_conj, ← integral_prod_swap]
-  congr with _
-  rw [← ContinuousLinearMap.adjoint_inner_right, ← conj_inner_symm,
-    ← ContinuousLinearMap.star_eq_adjoint,
-    Matrix.IsHermitian.ext_iff.mp (Fact.out : K.PosSemidef).1]
-  simp
+  simp [← integral_conj, ← integral_prod_swap (fun p : X × X ↦ ⟪K p.1 p.2 (g p.2), f p.1⟫_𝕜),
+    ← ContinuousLinearMap.adjoint_inner_left, ← ContinuousLinearMap.star_eq_adjoint,
+    (Fact.out : K.PosSemidef).1.apply]
 
 end RKHS
