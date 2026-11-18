@@ -22,12 +22,9 @@ supplied for true `εNFA`'s.
 
 @[expose] public section
 
-
 open Set
 
 open scoped Computability
-
--- "ε_NFA"
 
 universe u v
 
