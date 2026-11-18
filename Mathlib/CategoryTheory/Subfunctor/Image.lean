@@ -5,9 +5,8 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Subfunctor.Basic
 
 /-!
 # The image of a subfunctor
@@ -16,7 +15,6 @@ Given a morphism of type-valued functors `p : F' ⟶ F`, we define its range
 `Subfunctor.range p`. More generally, if `G' : Subfunctor F'`, we
 define `G'.image p : Subfunctor F` as the image of `G'` by `f`, and
 if `G : Subfunctor F`, we define its preimage `G.preimage f : Subfunctor F'`.
-
 -/
 
 @[expose] public section
@@ -42,7 +40,6 @@ def range (p : F' ⟶ F) : Subfunctor F where
 variable (F) in
 lemma range_id : range (𝟙 F) = ⊤ := by aesop
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma range_ι (G : Subfunctor F) : range G.ι = G := by aesop
 
@@ -52,7 +49,6 @@ section lift
 
 variable (f : F' ⟶ F) {G : Subfunctor F} (hf : range f ≤ G)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If the image of a morphism falls in a subfunctor, then the morphism factors through it. -/
 @[simps! app]
 def lift : F' ⟶ G.toFunctor where

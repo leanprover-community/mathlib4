@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-public import Mathlib.Topology.Constructions
-public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.NhdsWithin
+
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -95,7 +95,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
     (hsi : FiniteInter s) : IsTopologicalBasis s := by
-  convert! isTopologicalBasis_of_subbasis hsg
+  convert isTopologicalBasis_of_subbasis hsg
   refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
   rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
   lift g to Finset (Set α) using hg
@@ -131,7 +131,7 @@ theorem IsTopologicalBasis.mem_nhds_iff {a : α} {s : Set α} {b : Set (Set α)}
   rw [hb.eq_generateFrom, nhds_generateFrom, biInf_sets_eq]
   · simp [and_assoc, and_left_comm]
   · rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
-    let ⟨u, hu₁, hu₂, hu₃⟩ := hb.1 _ hs₂ _ ht₂ _ ⟨hs₁, ht₁⟩
+    let ⟨u, hu₁, hu₂, hu₃⟩ := hb.exists_subset_inter _ hs₂ _ ht₂ _ ⟨hs₁, ht₁⟩
     exact ⟨u, ⟨hu₂, hu₁⟩, le_principal_iff.2 (hu₃.trans inter_subset_left),
       le_principal_iff.2 (hu₃.trans inter_subset_right)⟩
   · rcases eq_univ_iff_forall.1 hb.sUnion_eq a with ⟨i, h1, h2⟩
@@ -255,7 +255,7 @@ protected lemma _root_.Topology.IsInducing.isTopologicalBasis [TopologicalSpace 
     convert! (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
     aesop
 
-@[deprecated Topology.IsInducing.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated Topology.IsInducing.isTopologicalBasis +typeChanged (since := "2026-08-21")]
 protected lemma IsTopologicalBasis.isInducing [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
     (hf : IsInducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
   hf.isTopologicalBasis h
@@ -733,13 +733,13 @@ instance Subtype.firstCountableTopology (s : Set α) [FirstCountableTopology α]
 protected theorem _root_.Topology.IsInducing.firstCountableTopology {β : Type*}
     [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsInducing f) :
     FirstCountableTopology α := by
-  rw [hf.1]
+  rw [hf.eq_induced]
   exact firstCountableTopology_induced α β f
 
 protected theorem _root_.Topology.IsEmbedding.firstCountableTopology {β : Type*}
     [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     FirstCountableTopology α :=
-  hf.1.firstCountableTopology
+  hf.toIsInducing.firstCountableTopology
 
 section FirstCountableTopology
 
@@ -763,11 +763,6 @@ theorem _root_.MapClusterPt.exists_seq_tendsto {ι : Type*} {f : Filter ι} [IsC
 is the limit of some subsequence. -/
 theorem _root_.MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x atTop u) :
     ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
-  subseq_tendsto_of_neBot hx
-
-@[deprecated MapClusterPt.tendsto_subseq (since := "2026-03-29")]
-theorem FirstCountableTopology.tendsto_subseq {u : ℕ → α} {x : α}
-    (hx : MapClusterPt x atTop u) : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
 
 end FirstCountableTopology
@@ -851,16 +846,17 @@ theorem isOpen_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
 
 theorem nonempty_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
     (hs : s ∈ countableBasis α) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs <| empty_notMem_countableBasis α
+  ne_empty_iff_nonempty.1 <| ne_of_mem_of_not_mem hs <| empty_notMem_countableBasis α
 
 variable (α)
 
 -- see Note [lower instance priority]
 instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
-  ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
+  ⟨fun x => HasCountableBasis.isCountablyGenerated
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
-        (countable_countableBasis α).mono inter_subset_left⟩⟩
+        (countable_countableBasis α).mono
+          (inter_subset_left (s := countableBasis α) (t := {t | x ∈ t}))⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) [Countable α] [FirstCountableTopology α] :
@@ -894,6 +890,14 @@ variable {α}
 instance Subtype.secondCountableTopology (s : Set α) [SecondCountableTopology α] :
     SecondCountableTopology s :=
   secondCountableTopology_induced s α (↑)
+
+instance [SeparableSpace α] : SeparableSpace (Additive α) := ‹SeparableSpace α›
+instance [SeparableSpace α] : SeparableSpace (Multiplicative α) := ‹SeparableSpace α›
+
+instance [SecondCountableTopology α] : SecondCountableTopology (Additive α) :=
+  ‹SecondCountableTopology α›
+instance [SecondCountableTopology α] : SecondCountableTopology (Multiplicative α) :=
+  ‹SecondCountableTopology α›
 
 lemma secondCountableTopology_iInf {α ι} [Countable ι] {t : ι → TopologicalSpace α}
     (ht : ∀ i, @SecondCountableTopology α (t i)) : @SecondCountableTopology α (⨅ i, t i) := by
@@ -1013,7 +1017,7 @@ lemma IsTopologicalBasis.exists_countable
     obtain ⟨u, u_mem, xu, uv⟩ : ∃ u ∈ countableBasis α, x ∈ u ∧ u ⊆ v :=
       (isBasis_countableBasis α).isOpen_iff.1 hv _ hx
     have : x ∈ ⋃ a ∈ s u, a := by
-      convert! xu
+      convert xu
       exact (hs u u_mem).symm
     obtain ⟨w, ws, xw⟩ : ∃ w ∈ s u, x ∈ w := by simpa using this
     refine ⟨w, ⟨u, u_mem, ws⟩, xw, ?_⟩
@@ -1132,7 +1136,7 @@ theorem _root_.IsOpenQuotientMap.isTopologicalBasis (h : IsOpenQuotientMap π)
   · rintro - ⟨⟨s, hs, rfl⟩, hxs⟩
     exact h.isOpenMap s (hV.isOpen hs) |>.mem_nhds hxs
 
-@[deprecated IsOpenQuotientMap.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated IsOpenQuotientMap.isTopologicalBasis +typeChanged (since := "2026-08-21")]
 theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
     (h' : IsQuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) :=
   IsOpenQuotientMap.isTopologicalBasis (.of_isOpenMap_isQuotientMap h h') hV
@@ -1145,7 +1149,8 @@ theorem _root_.Topology.IsOpenQuotientMap.secondCountableTopology [SecondCountab
     exact ⟨Set.image π '' V, V_countable.image (Set.image π),
       (h.isTopologicalBasis V_generates).eq_generateFrom⟩
 
-@[deprecated IsOpenQuotientMap.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated Topology.IsOpenQuotientMap.secondCountableTopology +typeChanged
+  (since := "2026-08-21")]
 theorem _root_.Topology.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
     (h' : IsQuotientMap π) (h : IsOpenMap π) : SecondCountableTopology Y :=
   IsOpenQuotientMap.secondCountableTopology ⟨h'.surjective, h'.continuous, h⟩
@@ -1175,13 +1180,13 @@ variable {α β : Type*} [TopologicalSpace α] {f : α → β}
 
 protected theorem Topology.IsInducing.secondCountableTopology [TopologicalSpace β]
     [SecondCountableTopology β] (hf : IsInducing f) : SecondCountableTopology α := by
-  rw [hf.1]
+  rw [hf.eq_induced]
   exact secondCountableTopology_induced α β f
 
 protected theorem Topology.IsEmbedding.secondCountableTopology
     [TopologicalSpace β] [SecondCountableTopology β]
     (hf : IsEmbedding f) : SecondCountableTopology α :=
-  hf.1.secondCountableTopology
+  hf.toIsInducing.secondCountableTopology
 
 protected theorem Topology.IsEmbedding.separableSpace
     [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : IsEmbedding f) :

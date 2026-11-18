@@ -5,8 +5,8 @@ Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Order.BooleanAlgebra.Basic
 
 /-!
 # Symmetric difference and bi-implication
@@ -82,8 +82,6 @@ theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a 
 
 theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor p q :=
   rfl
-
-@[deprecated (since := "2026-04-27")] alias symmDiff_eq_Xor' := symmDiff_eq_xor
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=
@@ -182,7 +180,21 @@ theorem symmDiff_sup_inf : a ∆ b ⊔ a ⊓ b = a ⊔ b := by
     exact le_sup_of_le_right le_sdiff_sup
 
 @[to_dual (attr := simp)]
+theorem symmDiff_sup_left : a ∆ b ⊔ a = a ⊔ b :=
+  le_antisymm (sup_le symmDiff_le_sup le_sup_left)
+    (le_of_eq_of_le (symmDiff_sup_inf a b).symm (sup_le_sup_left inf_le_left _))
+
+@[to_dual (attr := simp)]
+theorem symmDiff_sup_right : a ∆ b ⊔ b = a ⊔ b := by rw [symmDiff_comm, symmDiff_sup_left, sup_comm]
+
+@[to_dual (attr := simp)]
 theorem inf_sup_symmDiff : a ⊓ b ⊔ a ∆ b = a ⊔ b := by rw [sup_comm, symmDiff_sup_inf]
+
+@[to_dual (attr := simp)]
+theorem left_sup_symmDiff : a ⊔ a ∆ b = a ⊔ b := by rw [sup_comm, symmDiff_sup_left]
+
+@[to_dual (attr := simp)]
+theorem right_sup_symmDiff : b ⊔ a ∆ b = a ⊔ b := by rw [sup_comm, symmDiff_sup_right]
 
 @[to_dual (attr := simp)]
 theorem symmDiff_symmDiff_inf : a ∆ b ∆ (a ⊓ b) = a ⊔ b := by
@@ -199,7 +211,7 @@ theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
 
 @[to_dual]
 theorem le_symmDiff_sup_right (a b : α) : a ≤ (a ∆ b) ⊔ b := by
-  convert! symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
+  convert symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
 
 @[to_dual]
 theorem le_symmDiff_sup_left (a b : α) : b ≤ (a ∆ b) ⊔ a :=

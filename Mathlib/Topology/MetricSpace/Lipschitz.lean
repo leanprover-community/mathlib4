@@ -9,7 +9,6 @@ public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Bornology.Hom
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Maps.Proper.Basic
-public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
@@ -127,7 +126,7 @@ theorem coe_toLocallyBoundedMap (hf : LipschitzWith K f) : ⇑(hf.toLocallyBound
 
 theorem comap_cobounded_le (hf : LipschitzWith K f) :
     comap f (Bornology.cobounded β) ≤ Bornology.cobounded α :=
-  (hf.toLocallyBoundedMap f).2
+  (hf.toLocallyBoundedMap f).comap_cobounded_le'
 
 /-- The image of a bounded set under a Lipschitz map is bounded. -/
 theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s) :

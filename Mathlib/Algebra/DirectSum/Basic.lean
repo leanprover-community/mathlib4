@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.DFinsupp.Sigma
 public import Mathlib.Data.DFinsupp.Submonoid
 
@@ -460,8 +459,6 @@ theorem hasFiniteSupport (A : ι → S) (x : DirectSum ι fun i => A i) :
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
-@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
-
 section map
 
 variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
@@ -485,11 +482,11 @@ def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
     (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) :=
   DFinsupp.mapRange.addMonoidHom_comp _ _
 
-lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) := by
-  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) :=
+  DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
-lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) := by
-  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) :=
+  DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma map_eq_iff (x y : ⨁ i, α i) :
     map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by

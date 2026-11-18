@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
-public import Mathlib.Tactic.DepRewrite
 
 /-!
 # Ideal sheaves on schemes
@@ -40,7 +39,6 @@ Instead, for the ease of development and application,
 we define the structure `IdealSheafData` containing all necessary data to uniquely define an
 ideal sheaf. This should be refactored as a constructor for ideal sheaves once they are introduced
 into mathlib.
-
 -/
 
 @[expose] public section
@@ -702,7 +700,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
     f.ker.ideal U = RingHom.ker (f.app U).hom := by
   let I : IdealSheafData Y := ⟨fun U ↦ RingHom.ker (f.app U).hom, ?_, _, rfl⟩
-  · exact congr($(ofIdeals_ideal I).ideal U)
+  · congrm $(ofIdeals_ideal I).ideal U
   intro U s
   apply le_antisymm
   · refine Ideal.map_le_iff_le_comap.mpr fun x hx ↦ ?_
@@ -717,7 +715,7 @@ lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
         letI := hV.trans_le (X.basicOpen_le _); ((f.app U).hom x |_ V) = 0 by
       obtain ⟨_, rfl, H⟩ := this
       obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact
-        X (U := f ⁻¹ᵁ U) (QuasiCompact.isCompact_preimage (f := f) _ U.1.2 U.2.isCompact)
+        X (U := f ⁻¹ᵁ U) (QuasiCompact.isCompact_preimage (f := f) _ U.1.is_open' U.2.isCompact)
         (f.app U x) (f.app U s) H
       exact ⟨_, ⟨n, rfl⟩, by simpa using hn⟩
     refine ⟨f ⁻¹ᵁ Y.basicOpen s, by simp, ?_⟩

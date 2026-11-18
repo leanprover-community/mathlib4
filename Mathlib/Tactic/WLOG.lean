@@ -6,12 +6,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Mu
 module
 
 public meta import Lean.Meta.Tactic.Cases
-import all Lean.MetavarContext -- for `mkAuxMVarType`
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Push
 
-/-!
+import all Lean.MetavarContext -- for `mkAuxMVarType`
 
+/-!
 # Without loss of generality tactic
 
 The tactic `wlog h : P` will add an assumption `h : P` to the main goal,
@@ -20,7 +20,6 @@ where `P` holds (typically by symmetry). `wlog! h : P` is a variant that will al
 at `h : ¬ P`.
 
 The new goal will be placed at the top of the goal stack.
-
 -/
 
 public meta section
@@ -105,8 +104,8 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let (hFVar, hGoal) ← if inaccessible then hGoal.intro1 else hGoal.intro1P
   /- Split the reduction goal by cases on `h`. Keep the one with `¬h` as the reduction goal,
   and prove the easy goal by applying `H` to all its premises, which are fvars in the context. -/
-  let (⟨easyGoal, hyp⟩, ⟨reductionGoal, negHyp⟩) ←
-    reductionGoal.byCases P <| if inaccessible then `_ else h
+  let h ← if inaccessible then reductionGoal.withContext (mkFreshBinderNameForTactic h) else pure h
+  let (⟨easyGoal, hyp⟩, ⟨reductionGoal, negHyp⟩) ← reductionGoal.byCases P h
   easyGoal.withContext do
     -- Exclude ldecls from the `mkAppN` arguments
     let HArgFVarIds ← revertedFVars.filterM (notM ·.isLetVar)

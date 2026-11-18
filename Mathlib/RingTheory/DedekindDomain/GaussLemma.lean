@@ -5,12 +5,12 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 public import Mathlib.RingTheory.Polynomial.ContentIdeal
 public import Mathlib.RingTheory.Polynomial.GaussNorm
 
 /-!
-## Gauss's Lemma for Dedekind Domains
+# Gauss's Lemma for Dedekind Domains
 
 This file contains Gauss's Lemma for Dedekind Domains, which states that the content ideal of a
 polynomial is the whole ring if and only if the `v`-adic Gauss norms of the polynomial are equal to
