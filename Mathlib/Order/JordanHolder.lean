@@ -5,11 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Order.ModularLattice
-import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Equiv.Functor
-import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.RelSeries
+
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Jordan-Hölder Theorem
@@ -114,7 +115,7 @@ theorem Iso.rel
     (h_rel : ∀ {x y}, IsMaximal x (x ⊔ y) → e (x, x ⊔ y) (x ⊓ y, y))
     {x y : X × X} (h_iso : Iso x y) : e x y := by
   have : IsEquiv (X × X) e := { refl _ := h_refl, symm _ _ := h_symm, trans _ _ _ := h_trans }
-  refine Relation.EqvGen.eqvGen_le ?_ _ _ h_iso
+  refine Relation.eqvGen_le ?_ _ _ h_iso
   rintro ⟨a, b⟩ ⟨c, d⟩ ⟨h, rfl : b = a ⊔ d, rfl : c = a ⊓ d⟩
   exact h_rel h
 

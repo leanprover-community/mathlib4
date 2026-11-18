@@ -265,7 +265,7 @@ theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s �
 theorem image_prodMk_subset_prod_right (ha : a ∈ s) : Prod.mk a '' t ⊆ s ×ˢ t := by grind
 
 theorem prod_subset_preimage_fst (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.fst ⁻¹' s :=
-  inter_subset_left
+  inter_subset_left (s := Prod.fst ⁻¹' s) (t := Prod.snd ⁻¹' t)
 
 theorem fst_image_prod_subset (s : Set α) (t : Set β) : Prod.fst '' s ×ˢ t ⊆ s :=
   image_subset_iff.2 <| prod_subset_preimage_fst s t
@@ -279,7 +279,7 @@ lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo Prod.fst (s ×ˢ t) s :
   fun _ hx ↦ (mem_prod.1 hx).1
 
 theorem prod_subset_preimage_snd (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.snd ⁻¹' t :=
-  inter_subset_right
+  inter_subset_right (s := Prod.fst ⁻¹' s) (t := Prod.snd ⁻¹' t)
 
 theorem snd_image_prod_subset (s : Set α) (t : Set β) : Prod.snd '' s ×ˢ t ⊆ t :=
   image_subset_iff.2 <| prod_subset_preimage_snd s t
@@ -345,7 +345,7 @@ theorem prod_eq_prod_iff :
     rintro ⟨rfl, rfl⟩
     exact prod_eq_empty_iff.mp h
   rw [prod_eq_prod_iff_of_nonempty h]
-  rw [nonempty_iff_ne_empty, Ne, prod_eq_empty_iff] at h
+  rw [← ne_empty_iff_nonempty, Ne, prod_eq_empty_iff] at h
   simp_rw [h, false_and, or_false]
 
 @[simp]
@@ -682,6 +682,14 @@ theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
 
 section Nonempty
 
+lemma pi_image_pi_of_subset {C : (i : ι) → Set (Set (α i))} (hC : ∀ i, (C i).Nonempty)
+    (hs : s₁ ⊆ s₂) : s₁.pi '' s₁.pi C = s₁.pi '' s₂.pi C := by
+  ext
+  choose C_mem _ using hC
+  classical
+  exact ⟨fun ⟨x, _⟩ ↦ ⟨fun i ↦ if i ∈ s₁ then x i else C_mem i, by grind⟩,
+    fun ⟨w, _⟩ ↦ ⟨w, by grind⟩⟩
+
 variable [∀ i, Nonempty (α i)]
 
 theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [pi_eq_empty_iff]
@@ -835,7 +843,7 @@ theorem univ_pi_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} :=
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
     ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
-  rw [← Ne, ← nonempty_iff_ne_empty]
+  rw [← Ne, ne_empty_iff_nonempty]
   intro hne i hi
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
     image_mono (f := fun f : ∀ i, α i => f i) h

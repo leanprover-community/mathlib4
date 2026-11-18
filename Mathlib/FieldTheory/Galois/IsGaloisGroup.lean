@@ -5,9 +5,13 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.FieldTheory.Galois.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Basic
+
+import Mathlib.FieldTheory.Galois.Infinite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Galois Groups of Fields
@@ -527,8 +531,6 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
         congrm algebraMap F L $(h ⟨g, ⟨g, hg, rfl⟩⟩))
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha])⟩⟩ }
-
-@[deprecated (since := "2026-04-21")] alias quotientMap := map_quotientMk'
 
 end IntermediateField
 

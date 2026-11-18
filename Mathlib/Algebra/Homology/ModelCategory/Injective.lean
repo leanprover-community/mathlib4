@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.Homology.CochainComplexPlus
 public import Mathlib.Algebra.Homology.Factorizations.CM5a
+public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+
 import Mathlib.Algebra.Homology.HomologySequenceLemmas
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.ModelCategory.Lifting
-public import Mathlib.AlgebraicTopology.ModelCategory.Basic
-public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
@@ -28,7 +29,6 @@ The `ModelCategory` instance is scoped in the namespace
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra, §I.1, Example B][Quillen1967]
-
 -/
 
 public section
@@ -89,7 +89,6 @@ instance {A B : CochainComplex.Plus C} (i : A ⟶ B) [Cofibration i] :
     Mono i := by
   rwa [← cofibration_iff]
 
-set_option backward.defeqAttrib.useBackward true in
 open HomComplex in
 /-- Let `sq` be a commutative square in the category of bounded below cochain complexes
 in an abelian category. We assume that the left morphism `i` is a monomorphism,

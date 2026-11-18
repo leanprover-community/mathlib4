@@ -6,16 +6,14 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 module
 
 public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.Ideal.Over
 
 /-!
-
 # Residue Field of local rings
 
 We prove basic properties of the residue field of a local ring.
-
 -/
 
 @[expose] public section
@@ -43,6 +41,8 @@ lemma residue_ne_zero_iff_isUnit (x : R) : residue R x ≠ 0 ↔ IsUnit x := by
 lemma residue_surjective :
     Function.Surjective (IsLocalRing.residue R) :=
   Ideal.Quotient.mk_surjective
+
+instance : RingHomSurjective (residue R) := ⟨residue_surjective⟩
 
 variable (R)
 
@@ -181,7 +181,7 @@ section FiniteDimensional
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
 instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
-  ⟨(((local_hom_TFAE (algebraMap R S)).out 1 5 rfl rfl).mp inferInstance).symm⟩
+  ⟨(((local_hom_tfae (algebraMap R S)).out 1 5 rfl rfl).mp inferInstance).symm⟩
 
 instance : Algebra (ResidueField R) (ResidueField S) :=
   Ideal.Quotient.algebraOfLiesOver _ _

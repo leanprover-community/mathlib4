@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
+
 import Mathlib.Analysis.Meromorphic.RCLike
 import Mathlib.Analysis.Normed.Module.Connected
 
@@ -365,19 +366,19 @@ theorem _root_.MeromorphicOn.exists_canonicalDecomp
       trans (∏ i ∈ η₀.toFinset, canonicalFactor R i ^ (-(divisor f (ball 0 R)) i)) • φ
       · unfold φ
         rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀]
-        · filter_upwards [codiscreteWithin_mono (by tauto) η₀.compl_mem_codiscrete,
-            self_mem_codiscreteWithin (closedBall 0 R)] with a ha h₂a
-          simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply]
-          rw [← smul_assoc, ← Finset.prod_smul, Finset.prod_eq_one, one_smul]
-          intro x hx
-          rw [smul_eq_mul, ← zpow_add', neg_add_cancel, zpow_zero]
-          simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right,
-            locallyFinsuppWithin.support_neg, mem_compl_iff, mem_support, Decidable.not_not,
-            Finite.mem_toFinset, neg_add_cancel, not_true_eq_false, neg_eq_zero, and_self, or_self,
-            or_false]
-          apply canonicalFactor_ne_zero _ (by simp_all) (by grind)
-          by_contra h
-          simp_all
+        filter_upwards [codiscreteWithin_mono (by tauto) η₀.compl_mem_codiscrete,
+          self_mem_codiscreteWithin (closedBall 0 R)] with a ha h₂a
+        simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply]
+        rw [← smul_assoc, ← Finset.prod_smul, Finset.prod_eq_one, one_smul]
+        intro x hx
+        rw [smul_eq_mul, ← zpow_add', neg_add_cancel, zpow_zero]
+        simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right,
+          locallyFinsuppWithin.support_neg, mem_compl_iff, mem_support, Decidable.not_not,
+          Finite.mem_toFinset, neg_add_cancel, not_true_eq_false, neg_eq_zero, and_self, or_self,
+          or_false]
+        apply canonicalFactor_ne_zero _ (by simp_all) (by grind)
+        by_contra h
+        simp_all
       · rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀]
         filter_upwards [toMeromorphicNFOn_eqOn_codiscrete hφ] using by simp_all [g]
   }
@@ -414,7 +415,7 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
         (η₁.meromorphicAt.smul (D.meromorphicNFOn.meromorphicOn x (by aesop))) (by aesop) ?_
         D.eventuallyEq
       rw [← closure_ball 0 hR.ne']
-      exact isOpen_ball.perfect_closure.2
+      exact isOpen_ball.perfect_closure.preperfect
     have : meromorphicOrderAt (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) x = 0 := by
       refine η₁.meromorphicNFAt.meromorphicOrderAt_eq_zero_iff.2 (finprod_apply_ne_zero fun a ↦ ?_)
       by_cases ha : a ∈ ball 0 R
@@ -550,7 +551,7 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
         (by fun_prop) hw ?η₁ D.eventuallyEq)]
       case η₁ =>
         rw [← closure_ball _ hR.ne']
-        exact isOpen_ball.perfect_closure.2
+        exact isOpen_ball.perfect_closure.preperfect
     _ = ((∏ i ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
       * ∏ i ∈ t₁, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
       • meromorphicTrailingCoeffAt (((∏ i ∈ t₂, canonicalFactor R i ^ (-(divisor f B₀R) i))

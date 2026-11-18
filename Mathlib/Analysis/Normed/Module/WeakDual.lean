@@ -5,12 +5,13 @@ Authors: Kalle Kytölä, Yury Kudryashov, Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Normed.Operator.Completeness
-public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
-import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Analysis.LocallyConvex.WeakDual
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+
+import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+import Mathlib.Analysis.Normed.Operator.Completeness
+import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Weak dual of normed space
@@ -101,7 +102,6 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
 ## Tags
 
 weak-star, weak dual
-
 -/
 
 @[expose] public section

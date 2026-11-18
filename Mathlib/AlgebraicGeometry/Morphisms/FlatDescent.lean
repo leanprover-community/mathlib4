@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Descent
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
+
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 
 /-!
@@ -191,14 +192,14 @@ instance (P : MorphismProperty Scheme) [P.DescendsAlong (@Surjective ⊓ @Flat �
 set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y : Scheme} (f : X ⟶ Y) [Surjective f] [Flat f] [QuasiCompact f] :
     (Over.pullback f).Faithful :=
-  MorphismProperty.faithful_overPullback_of_isomorphisms_descendAlong
+  MorphismProperty.faithful_overPullback_of_isomorphisms_descendsAlong
     (P := @Surjective ⊓ @Flat ⊓ @QuasiCompact)
     ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y : Scheme} (f : X ⟶ Y) [Surjective f] [Flat f] [LocallyOfFinitePresentation f] :
     (Over.pullback f).Faithful :=
-  MorphismProperty.faithful_overPullback_of_isomorphisms_descendAlong
+  MorphismProperty.faithful_overPullback_of_isomorphisms_descendsAlong
     (P := @Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation)
     ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
 

@@ -5,15 +5,14 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 /-!
 # Limit creation properties of `Functor.op` and related constructions
 
 We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.leftOp` and `F.rightOp`
 create certain (co)limits and vice versa.
-
 -/
 
 public section

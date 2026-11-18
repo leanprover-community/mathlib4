@@ -21,7 +21,6 @@ of `R` and a continuous `star` operation. We reuse typeclasses `ContinuousSMul` 
 
 Any non-unital star subalgebra of a non-unital topological star algebra is itself a
 non-unital topological star algebra, and its closure is again a non-unital star subalgebra.
-
 -/
 
 @[expose] public section
@@ -156,11 +155,11 @@ def elemental (x : A) : NonUnitalStarSubalgebra R A :=
 
 namespace elemental
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem star_self_mem (x : A) : star x ∈ elemental R x :=
   le_topologicalClosure _ <| star_self_mem_adjoin_singleton R x
 

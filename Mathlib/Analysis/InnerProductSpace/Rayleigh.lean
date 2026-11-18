@@ -5,11 +5,12 @@ Authors: Heather Macbeth, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.LagrangeMultipliers
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+
+import Mathlib.Analysis.InnerProductSpace.Calculus
 
 /-!
 # The Rayleigh quotient
@@ -33,7 +34,6 @@ finite-dimensional and nontrivial, then `T` has some (nonzero) eigenvectors with
 A slightly more elaborate corollary is that if `E` is complete and `T` is a compact operator, then
 `T` has some (nonzero) eigenvector with eigenvalue either `⨆ x, ⟪T x, x⟫ / ‖x‖ ^ 2` or
 `⨅ x, ⟪T x, x⟫ / ‖x‖ ^ 2` (not necessarily both).
-
 -/
 
 public section
@@ -179,10 +179,10 @@ theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
 
 -- TODO: Prove this from `IsSelfAdjoint.toReal_spectralRadius_eq_norm` using complexification.
 /-- The spectral radius of a self-adjoint operator on a complete space equals the norm. -/
-theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
+theorem spectralRadius_eq_nnNorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
     spectralRadius 𝕜 T = ‖T‖₊ := by
   nontriviality E
-  apply le_antisymm (spectralRadius_le_nnnorm T)
+  apply le_antisymm (spectralRadius_le_nnNorm T)
   suffices h : algebraMap ℝ 𝕜 ‖T‖ ∈ spectrum 𝕜 T ∨ algebraMap ℝ 𝕜 (-‖T‖) ∈ spectrum 𝕜 T by
     rcases h with h | h <;>
       exact le_trans (by simp) (le_biSup _ (spectrum_subset_quasispectrum 𝕜 T h))
@@ -190,6 +190,8 @@ theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
   by_contra! h
   obtain ⟨c, hc0, hc⟩ := T.abs_rayleighQuotient_le_of_norm_mem_resolventSet h.1 h.2
   grind [ciSup_le hc, norm_eq_iSup_rayleighQuotient T hT.isSymmetric]
+
+@[deprecated (since := "2026-10-31")] alias spectralRadius_eq_nnnorm := spectralRadius_eq_nnNorm
 
 end ContinuousLinearMap
 
@@ -214,9 +216,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by
   have H : IsLocalExtrOn T.reApplyInnerSelf {x : F | ‖x‖ ^ 2 = ‖x₀‖ ^ 2} x₀ := by
-    convert hextr
-    ext x
-    simp
+    simpa [sphere] using hextr
   -- find Lagrange multipliers for the function `T.re_apply_inner_self` and the
   -- hypersurface-defining function `fun x ↦ ‖x‖ ^ 2`
   obtain ⟨a, b, h₁, h₂⟩ :=

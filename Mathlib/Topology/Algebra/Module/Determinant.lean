@@ -6,8 +6,11 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The determinant of a continuous linear map.

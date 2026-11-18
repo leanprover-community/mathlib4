@@ -5,9 +5,10 @@ Authors: Peter Nelson
 -/
 module
 
-import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.Grade
+
+import Mathlib.Data.Fintype.Pigeonhole
 
 /-!
 # Kőnig's infinity lemma
@@ -48,7 +49,6 @@ We leave the explicitly graph-theoretic version of the statement as TODO.
 ## TODO
 
 Formulate the lemma as a statement about graphs.
-
 -/
 
 public section

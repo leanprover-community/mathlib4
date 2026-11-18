@@ -8,7 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.Order.Interval.Set.SuccOrder
+
 import Mathlib.Order.Shrink
+
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -25,7 +27,6 @@ In particular, if `J := ℕ`, we define `W.IsStableUnderInfiniteComposition`,
 Finally, we introduce the class `W.IsStableUnderTransfiniteComposition`
 which says that `W.IsStableUnderTransfiniteCompositionOfShape J`
 holds for any well-ordered type `J` in a certain universe `w`.
-
 -/
 
 @[expose] public section

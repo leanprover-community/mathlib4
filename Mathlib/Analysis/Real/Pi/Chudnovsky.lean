@@ -5,10 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-meta import Batteries.Data.Float.Rat  -- shake: keep (for `#eval` sanity check)
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Tactic.Positivity
+
+meta import Batteries.Data.Float.Rat  -- shake: keep (for `#eval` sanity check)
 
 /-!
 # Chudnovsky's formula for π
@@ -34,7 +35,6 @@ but at present we are a long way off.
 ## References
 * [Milla, *A detailed proof of the Chudnovsky formula*][Milla_2018]
 * [Chen and Glebov, *On Chudnovsky--Ramanujan type formulae*][Chen_Glebov_2018]
-
 -/
 
 @[expose] public section

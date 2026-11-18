@@ -5,11 +5,12 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.Group.Submonoid.Finsupp
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.RingHom
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
+
+import Mathlib.Algebra.Group.Submonoid.Finsupp
 
 /-!
 # Homogeneous Localization
@@ -65,9 +66,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 ## References
 
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
-
-
+* [Robin Hartshorne, *Algebraic Geometry*][har77]
 -/
 
 @[expose] public section
@@ -576,10 +575,10 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
   rw [val_mk, Localization.mk_eq_mk', ← IsLocalization.mk'_mul, IsLocalization.mk'_eq_iff_eq_mul,
     one_mul, IsLocalization.eq_iff_exists (M := 𝔭.primeCompl)] at eq0
   obtain ⟨c, hc : _ = c.1 * (f.den.1 * s.1)⟩ := eq0
-  have : f.num.1 ∉ 𝔭 := by
-    exact fun h ↦ mul_mem c.2 (mul_mem f.den_mem s.2)
+  have : f.num.1 ∉ 𝔭 :=
+    fun h ↦ mul_mem c.2 (mul_mem f.den_mem s.2)
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
-  refine .of_mul_eq_one (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
+  refine .of_mul_eq_one (Quotient.mk'' ⟨f.deg, f.den, f.num, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
   simp [mul_comm f.den.1]
 
@@ -670,7 +669,7 @@ induces a map from the homogeneous localization `A⁰_P` to the homogeneous loca
 def map (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
   toFun := Quotient.map'
-    (fun x ↦ ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩)
+    (fun x ↦ ⟨x.deg, ⟨_, map_mem g x.num.2⟩, ⟨_, map_mem g x.den.2⟩, comap_le x.den_mem⟩)
     fun x y (e : x.embedding = y.embedding) ↦ by
       apply_fun IsLocalization.map (Localization Q) g.toRingHom comap_le at e
       simp_rw [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
@@ -695,7 +694,8 @@ abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
   map (.id _) h
 
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
-    map g comap_le (mk x) = mk ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩ :=
+    map g comap_le (mk x) =
+      mk ⟨x.deg, ⟨_, map_mem g x.num.2⟩, ⟨_, map_mem g x.den.2⟩, comap_le x.den_mem⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -1047,15 +1047,15 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
       simp [this]
     exact fun i ↦ (Nat.mod_lt _ hd).le
   apply prod_mem
-  · classical
-    rintro j -
-    apply pow_mem
-    apply Algebra.subset_adjoin
-    refine ⟨dv j, Pi.single j d, ?_, ?_, ?_⟩
-    · simp [Pi.single_apply, mul_comm]
-    · aesop (add simp Pi.single_apply)
-    ext
-    simp [Pi.single_apply]
+  classical
+  rintro j -
+  apply pow_mem
+  apply Algebra.subset_adjoin
+  refine ⟨dv j, Pi.single j d, ?_, ?_, ?_⟩
+  · simp [Pi.single_apply, mul_comm]
+  · aesop (add simp Pi.single_apply)
+  ext
+  simp [Pi.single_apply]
 
 variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜] in
 /--

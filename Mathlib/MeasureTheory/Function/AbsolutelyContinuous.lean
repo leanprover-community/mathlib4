@@ -6,9 +6,10 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Analysis.BoundedVariation
-import Mathlib.Order.SuccPred.IntervalSucc
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+import Mathlib.Order.SuccPred.IntervalSucc
 
 /-!
 # Absolutely Continuous Functions
@@ -72,7 +73,7 @@ Details:
    is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)`
    for `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
 2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, convergence of `G` along `totalLengthFilter` means that
-   the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
+   the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2`,
    tends to `0` as `j` tends to infinity.
 -/
 def totalLengthFilter : Filter (ℕ × (ℕ → X × X)) := Filter.comap
@@ -451,7 +452,7 @@ theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegra
     {a b c : ℝ} (h : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
   -- Step 1: Use `MeasureTheory.tendsto_setLIntegral_zero` to conclude that the function sending
-  -- `E` to `∫⁻ (x : ℝ) in s E, ‖f x‖ₑ ∂volume.restrict (uIoc a b))` tends to `0` along
+  -- `E` to `∫⁻ (x : ℝ) in s E, ‖f x‖ₑ ∂volume.restrict (uIoc a b)` tends to `0` along
   -- `totalLengthFilter ⊓ 𝓟 (disjWithin a b)`.
   let s := fun E : ℕ × (ℕ → ℝ × ℝ) ↦ ⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2
   have : Tendsto (fun i ↦ ∫⁻ (x : ℝ) in s i, ‖f x‖ₑ ∂volume.restrict (uIoc a b))
@@ -473,7 +474,7 @@ theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegra
   filter_upwards [this] with (n, I) hnI
   obtain ⟨hnI1, hnI2⟩ := mem_ofPred_eq ▸ hnI
   simp only
-  rw [← integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_restrict_uIoc.restrict),
+  rw [← integral_norm_eq_lintegral_eNorm (h.aestronglyMeasurable_restrict_uIoc.restrict),
       integral_biUnion_finset _ (by simp +contextual [uIoc]) hnI2]
   · refine Finset.sum_le_sum (fun i hi ↦ ?_)
     rw [Real.dist_eq,

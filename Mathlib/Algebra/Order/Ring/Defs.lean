@@ -5,9 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies, Yuyang
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Tactic.Tauto
 

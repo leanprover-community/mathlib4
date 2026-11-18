@@ -27,7 +27,7 @@ coefficients in `R` together with its universal property.
 
 ### Quotient of free non-unital, non-associative algebra
 
-We follow [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975) and construct
+We follow [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975] and construct
 the free Lie algebra as a quotient of the free non-unital, non-associative algebra. Since we do not
 currently have definitions of ideals, lattices of ideals, and quotients for
 `NonUnitalNonAssocSemiring`, we construct our quotient using the low-level `Quot` function on

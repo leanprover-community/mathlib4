@@ -295,6 +295,10 @@ theorem _root_.AlgHom.fieldRange_eq_map (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
   SetLike.ext' Set.image_univ.symm
 
+/-- The image of `⊤` under an algebra homomorphism is its field range. -/
+theorem map_top (f : E →ₐ[F] K) : (⊤ : IntermediateField F E).map f = f.fieldRange :=
+  f.fieldRange_eq_map.symm
+
 theorem _root_.AlgHom.map_fieldRange {L : Type*} [Field L] [Algebra F L]
     (f : E →ₐ[F] K) (g : K →ₐ[F] L) : f.fieldRange.map g = (g.comp f).fieldRange :=
   SetLike.ext' (Set.range_comp g f).symm
@@ -330,7 +334,7 @@ instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_adjoin_of_mem {S : Set E} {s : E} (hs : s ∈ S) : s ∈ adjoin F S := subset_adjoin F S hs
 
 theorem notMem_of_notMem_adjoin {S : Set E} {s : E} (hs : s ∉ adjoin F S) : s ∉ S := fun h =>
@@ -478,13 +482,13 @@ theorem restrictScalars_adjoin_of_algEquiv
   simp [hi]
 
 @[elab_as_elim]
-theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
-    (mem : ∀ x hx, p x (subset_adjoin _ _ hx))
-    (algebraMap : ∀ x, p (algebraMap F E x) (algebraMap_mem _ _))
-    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (h : x ∈ adjoin F s) : p x h :=
+theorem adjoin_induction {s : Set E} {motive : ∀ x ∈ adjoin F s, Prop}
+    (mem : ∀ x hx, motive x (subset_adjoin _ _ hx))
+    (algebraMap : ∀ x, motive (algebraMap F E x) (algebraMap_mem _ _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (inv : ∀ x hx, motive x hx → motive x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ adjoin F s) : motive x h :=
   Subfield.closure_induction
     (fun x hx ↦ Or.casesOn hx (fun ⟨x, hx⟩ ↦ hx ▸ algebraMap x) (mem x))
     (by simp_rw [← (Algebra.algebraMap F E).map_one]; exact algebraMap 1) add
@@ -630,8 +634,8 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (one_mem ⊥)
 
 @[simp]
-theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  exact adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
+theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ :=
+  adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
 
 @[simp]
 theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
@@ -683,20 +687,23 @@ theorem _root_.Field.fg_iff_fg_top_bot :
   simp [Field.fg_iff, fg_def, Set.exists_finite_iff_finset,
     ← toSubfield_inj, Subfield.algebraMap_ofSubfield, Subfield.closure_union]
 
-theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
-    P (adjoin F S) := by
+theorem induction_on_adjoin_finset (S : Finset E)
+    {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E),
+      ∀ x ∈ S, motive K → motive (K⟮x⟯.restrictScalars F)) :
+    motive (adjoin F S) := by
   classical
   refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h => ?_)
-  · simp [base]
+  · simp [bot]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
-    exact ih (adjoin F _) _ ha h
+    exact adjoin_simple (adjoin F _) _ ha h
 
-theorem induction_on_adjoin_fg (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
-    (K : IntermediateField F E) (hK : K.FG) : P K := by
+theorem induction_on_adjoin_fg {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E)
+      (x : E), motive K → motive (K⟮x⟯.restrictScalars F))
+    (K : IntermediateField F E) (hK : K.FG) : motive K := by
   obtain ⟨S, rfl⟩ := hK
-  exact induction_on_adjoin_finset S P base fun K x _ hK => ih K x hK
+  exact induction_on_adjoin_finset S bot fun K x _ hK => adjoin_simple K x hK
 
 end Induction
 
@@ -718,8 +725,65 @@ theorem map_comap_eq_self_of_surjective {f : L →ₐ[K] L'} (hf : Function.Surj
     (S : IntermediateField K L') : (S.comap f).map f = S :=
   SetLike.coe_injective (Set.image_preimage_eq _ hf)
 
-theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
-  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+section GaloisCoinsertion
+
+variable {ι : Sort*} (f : L →ₐ[K] L')
+
+theorem comap_inf_map (S T : IntermediateField K L) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
+  (gciMapComap f).u_inf_l _ _
+
+theorem comap_iInf_map (S : ι → IntermediateField K L) : (⨅ i, (S i).map f).comap f = ⨅ i, S i :=
+  (gciMapComap f).u_iInf_l _
+
+theorem comap_sup_map (S T : IntermediateField K L) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
+  (gciMapComap f).u_sup_l _ _
+
+theorem comap_iSup_map (S : ι → IntermediateField K L) : (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
+  (gciMapComap f).u_iSup_l _
+
+theorem comap_inf (S T : IntermediateField K L') : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
+  (gc_map_comap f).u_inf
+
+theorem comap_iInf (S : ι → IntermediateField K L') : (⨅ i, S i).comap f = ⨅ i, (S i).comap f :=
+  (gc_map_comap f).u_iInf
+
+@[simp]
+theorem comap_top : (⊤ : IntermediateField K L').comap f = ⊤ :=
+  (gc_map_comap f).u_top
+
+/-- `comap f` preserves the supremum of two intermediate fields lying in the range of `f`. -/
+theorem comap_sup {S T : IntermediateField K L'} (hS : S ≤ f.fieldRange) (hT : T ≤ f.fieldRange) :
+    (S ⊔ T).comap f = S.comap f ⊔ T.comap f := by
+  rw [← map_comap_eq_self hS, ← map_comap_eq_self hT, comap_sup_map, comap_map, comap_map]
+
+/-- `comap f` preserves the supremum of a family of intermediate fields lying in the range
+of `f`. -/
+theorem comap_iSup {S : ι → IntermediateField K L'} (hS : ∀ i, S i ≤ f.fieldRange) :
+    (⨆ i, S i).comap f = ⨆ i, (S i).comap f := by
+  simp [← comap_iSup_map f, map_comap_eq_self, hS]
+
+end GaloisCoinsertion
+
+section val
+
+variable {S T : IntermediateField K L}
+
+theorem comap_eq_top_iff {f : L →ₐ[K] L'} {T : IntermediateField K L'} :
+    T.comap f = ⊤ ↔ f.fieldRange ≤ T := by
+  rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
+
+@[simp]
+theorem comap_val_eq_top : T.comap S.val = ⊤ ↔ S ≤ T := by
+  rw [comap_eq_top_iff, fieldRange_val]
+
+@[simp]
+theorem comap_val_self (S : IntermediateField K L) : S.comap S.val = ⊤ :=
+  comap_val_eq_top.mpr le_rfl
+
+theorem map_comap_val (S T : IntermediateField K L) : (T.comap S.val).map S.val = S ⊓ T := by
+  rw [map_comap_eq, fieldRange_val, inf_comm]
+
+end val
 
 end IntermediateField
 

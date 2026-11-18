@@ -6,8 +6,11 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
-public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Rat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Reinterpret an additive homomorphism as a `ℚ`-linear map.

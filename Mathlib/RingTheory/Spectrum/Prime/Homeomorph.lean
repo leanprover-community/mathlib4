@@ -6,8 +6,9 @@ Authors: Christian Merten, Junyan Xu
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Purely inseparable extensions are universal homeomorphisms
@@ -42,7 +43,7 @@ lemma PrimeSpectrum.isHomeomorph_comap (f : R →+* S) (H : ∀ (x : S), ∃ n >
     intro q q' hqq'
     ext x
     obtain ⟨n, hn, y, hy⟩ := H x
-    rw [← q.2.pow_mem_iff_mem _ hn, ← q'.2.pow_mem_iff_mem _ hn, ← hy]
+    rw [← q.isPrime.pow_mem_iff_mem _ hn, ← q'.isPrime.pow_mem_iff_mem _ hn, ← hy]
     rw [PrimeSpectrum.ext_iff, SetLike.ext_iff] at hqq'
     apply hqq'
   have hint : f.kerLift.IsIntegral := fun x ↦

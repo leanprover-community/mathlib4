@@ -6,12 +6,12 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Range
-import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
 
-/-!
+import Mathlib.Algebra.Order.Ring.Basic
 
+/-!
 # The basics of valuation theory.
 
 The basic theory of valuations (non-archimedean norms) on a commutative ring,
@@ -41,7 +41,10 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
   is an element in the ring whose valuation is `≠ 0` and `≠ 1`.
 * `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
 * `Valuation.supp`, the support of a valuation
-* `orderMonoidIso` is the ordered isomorphism between the value groups of two equivalent valuations.
+* `orderMonoidIso` is the ordered isomorphism between the `valueGroup`'s of two
+  equivalent valuations.
+* `orderMonoidIso₀` is the ordered isomorphism between the `ValueGroup₀`'s of two
+  equivalent valuations.
 
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
   linearly ordered additive commutative group with a top element, `Γ₀`.
@@ -191,7 +194,7 @@ theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg :
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g := by
   classical
   refine
-    Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
+    Finset.induction_on s (fun _ => v.map_zero ▸ hg.pos)
       (fun a s has ih hf => ?_) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_lt hf.1 (ih hf.2)
@@ -218,7 +221,7 @@ theorem ne_zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x ≠
   map_ne_zero v
 
 lemma pos_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : 0 < v x ↔ x ≠ 0 := by
-  rw [zero_lt_iff, ne_zero_iff]
+  rw [pos_iff_ne_zero, ne_zero_iff]
 
 theorem unit_map_eq (u : Rˣ) : (Units.map (v : R →* Γ₀) u : Γ₀) = v u :=
   rfl
@@ -327,6 +330,21 @@ theorem map_sum_eq_of_lt {ι : Type*} [DecidableEq ι] {s : Finset ι} {f : ι �
   rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem hj]
   exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
+theorem exists_map_eq_of_map_sum_eq_zero {ι : Type*} {s : Finset ι} {f : ι → R}
+    {k : ι} (hk : k ∈ s) (hs : v (f k) ≠ 0) (h : v (∑ i ∈ s, f i) = 0) :
+    ∃ i ∈ s, ∃ j ∈ s, i ≠ j ∧ v (f i) ≠ 0 ∧ v (f j) ≠ 0 ∧ v (f i) = v (f j) := by
+  classical
+  by_contra! hne
+  obtain ⟨c, hck, hc⟩ := Finset.exists_max_image s (fun i => v (f i)) ⟨k, hk⟩
+  have hvc : 0 < v (f c) := hs.pos.trans_le (hc k hk)
+  apply hvc.ne
+  rw [← h]
+  refine map_sum_eq_of_lt v hck fun i hi => ?_
+  rw [Finset.mem_sdiff, Finset.mem_singleton] at hi
+  by_cases hfi : v (f i) = 0
+  · rwa [hfi]
+  · exact lt_of_le_of_ne (hc i hi.1) (hne i hi.1 c hck hi.2 hfi hvc.ne')
+
 theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_left]
   rwa [map_neg]
@@ -339,7 +357,7 @@ theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
 lemma map_sub_of_left_eq_zero (hx : v x = 0) : v (x - y) = v y := by
   by_cases hy : v y = 0
   · simpa [*] using map_sub v x y
-  · simp [*, map_sub_eq_of_lt_right, zero_lt_iff]
+  · simp [*, map_sub_eq_of_lt_right, pos_iff_ne_zero]
 
 lemma map_sub_of_right_eq_zero (hy : v y = 0) : v (x - y) = v x := by
   rw [map_sub_swap, map_sub_of_left_eq_zero v hy]
@@ -503,7 +521,7 @@ lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) :
 @[simp]
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
-  split_ifs with h <;> simpa [zero_lt_iff]
+  split_ifs with h <;> simpa [pos_iff_ne_zero]
 
 @[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
@@ -536,13 +554,13 @@ lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
   simp [restrict_def, restrict₀_eq_one_iff]
 
 lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ) :
-    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
+    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.val := by
   set u := WithZero.unzero (Units.ne_zero γ) with hu_def
   obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
   have hx : 0 < v x := by
     rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
     aesop
-  use x, a, hx, zero_lt_iff.mpr ha
+  use x, a, hx, ha.pos
   have ha0 : v.restrict a ≠ 0 := by simpa using ha
   rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff, map_mul,
     embedding_restrict, embedding_restrict, ← coe_toMonoidWithZeroHom, ← hax]
@@ -651,7 +669,7 @@ lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
     ∃ x, 1 < v x := by
   obtain ⟨x, h0, h1⟩ := hv.exists_lt_one
   use x⁻¹
-  simp [one_lt_inv₀ (zero_lt_iff.mpr (by simp [h0] : v x ≠ 0)), h1]
+  simp_all [one_lt_inv₀, pos_iff_ne_zero]
 
 lemma IsNontrivial_iff_exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} : v.IsNontrivial ↔ ∃ x, 1 < v x :=
@@ -718,7 +736,6 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
 
 theorem eq_iff (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
-@[deprecated (since := "2026-03-05")] alias val_eq := eq_iff
 
 theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := by
   have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.eq_iff
@@ -727,7 +744,7 @@ theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := b
 @[deprecated (since := "2026-09-15")] alias ofClass_eq_zero := eq_zero
 
 lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
-  rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]
+  rw [pos_iff_ne_zero, pos_iff_ne_zero, h.eq_zero.ne]
 
 lemma le_iff_le (h : v₁.IsEquiv v₂) {x y : R} :
     v₁ x ≤ v₁ y ↔ v₂ x ≤ v₂ y := h x y
@@ -801,100 +818,103 @@ variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ'₀} {u : Valuatio
 
 namespace IsEquiv
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup MonoidWithZeroHom.ValueGroup₀
 
-/-- An equivalence of valuations `v.IsEquiv w` induces the following map from `ValueGroup₀ v` to
-`ValueGroup₀ w`: given `x : ValueGroup₀ v` and nonzero `a b : R` such that `(v a) * x = (v b)`,
-`valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
-noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : v.ValueGroup₀) : w.ValueGroup₀ :=
-  if hx : x = 0 then 0 else
-    haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
-    valueGroup.mk (w : R →*₀ Γ'₀) c.1.1 c.1.2 (h.eq_zero.ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
+/-- An equivalence of valuations `v.IsEquiv w` induces the following map from `v.valueGroup` to
+`w.valueGroup`: given `x : v.valueGroup` and nonzero `a b : R` such that `(v a) * x = (v b)`,
+`valueGroupFun x` is defined as `(w b) * (w a)⁻¹`. -/
+@[no_expose]
+noncomputable def valueGroupFun (h : v.IsEquiv w) (x : v.valueGroup) : w.valueGroup :=
+  letI hx := exists_mk (v : R →*₀ Γ₀) x
+  valueGroup.mk (w : R →*₀ Γ'₀) hx.choose hx.choose_spec.choose
+    (h.eq_zero.ne.mp hx.choose_spec.choose_spec.1) (h.eq_zero.ne.mp hx.choose_spec.choose_spec.2.1)
 
-theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
+private theorem valueGroupFun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
     (hr' : w r ≠ 0 := h.eq_zero.ne.1 hr) (hs' : w s ≠ 0 := h.eq_zero.ne.1 hs) :
-    valueGroup₀Fun h (valueGroup.mk (v : R →*₀ Γ₀) r s hr hs) =
+    valueGroupFun h (valueGroup.mk (v : R →*₀ Γ₀) r s hr hs) =
       valueGroup.mk (w : R →*₀ Γ'₀) r s hr' hs' := by
-  rw [valueGroup₀Fun, dite_eq_right (by simp)]
-  generalize_proofs _ _ H _ _ _
-  simpa [-map_mul, ← h.eq_iff] using H.choose_spec.symm
+  rw [valueGroupFun]
+  generalize_proofs _ H _
+  simpa [-map_mul, ← h.eq_iff] using H.choose_spec.choose_spec.choose_spec.symm
 
-theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
+/-- The order preserving isomorphism between the `valueGroup`s of the underlying
+`MonoidWithZeroHom`s of two equivalent valuations. -/
+def orderMonoidIso (h : v.IsEquiv w) :
+    v.valueGroup ≃*o w.valueGroup where
+  toFun       := valueGroupFun h
+  invFun      := valueGroupFun h.symm
+  left_inv x  := by
+    obtain ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := exists_mk (v : R →*₀ Γ₀) x
+    rw [valueGroupFun_spec h, valueGroupFun_spec h.symm]
+  right_inv x := by
+    obtain ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := exists_mk (w : R →*₀ Γ'₀) x
+    rw [valueGroupFun_spec h.symm, valueGroupFun_spec h]
+  map_mul' x y := by
+    obtain ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := exists_mk (v : R →*₀ Γ₀) x
+    obtain ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := exists_mk (v : R →*₀ Γ₀) y
+    simp [valueGroup.mk_mul, valueGroupFun_spec h]
+  map_le_map_iff' {x y} := by
+    obtain ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := exists_mk (v : R →*₀ Γ₀) x
+    obtain ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := exists_mk (v : R →*₀ Γ₀) y
+    simp only [coe_toMonoidWithZeroHom, ne_eq] at hr₁ hs₁ hr₂ hs₂
+    simp only [valueGroupFun_spec h, ← Subtype.coe_le_coe,  ← Units.val_le_val, mk_eq_div,
+      coe_toMonoidWithZeroHom]
+    rw [div_le_div_iff₀ (Ne.pos hr₁) (Ne.pos hr₂),
+      div_le_div_iff₀ (h.pos_iff.mp (Ne.pos hr₁)) (h.pos_iff.mp (Ne.pos hr₂))]
+    simp [← map_mul, h.le_iff_le]
+
+theorem orderMonoidIso_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
+    (hr' : w r ≠ 0 := h.eq_zero.ne.1 hr) (hs' : w s ≠ 0 := h.eq_zero.ne.1 hs) :
+    orderMonoidIso h (valueGroup.mk (v : R →*₀ Γ₀) r s hr hs) =
+      valueGroup.mk (w : R →*₀ Γ'₀) r s hr' hs' := by
+  simp [orderMonoidIso, valueGroupFun_spec h hr hs]
 
 /-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
-noncomputable def orderMonoidIso (h : v.IsEquiv w) : v.ValueGroup₀ ≃*o w.ValueGroup₀ where
-  toFun := valueGroup₀Fun h
-  invFun := valueGroup₀Fun h.symm
-  map_mul' x y := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    obtain _ | ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := y.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    simp [← WithZero.coe_mul, valueGroup.mk_mul, valueGroup₀Fun_spec h]
-  left_inv x := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    rw [valueGroup₀Fun_spec h, valueGroup₀Fun_spec h.symm]
-  right_inv x := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    rw [valueGroup₀Fun_spec h.symm, valueGroup₀Fun_spec h]
-  map_le_map_iff' {x} {y} := by
-    simp only [valueGroup₀Fun, ne_eq]
-    split_ifs with hx0 hy0 hy0
-    · simp [hx0, hy0]
-    · simp [hx0]
-    · simp [hx0, hy0]
-    · generalize_proofs _ _ hx _ _ hy _ _
-      conv_rhs => rw [hx.choose_spec, hy.choose_spec]
-      simp only [valueGroup.mk, WithZero.coe_le_coe, Subtype.mk_le_mk]
-      nth_rw 2 [mul_comm]
-      rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
-      nth_rw 4 [mul_comm]
-      conv_rhs =>
-        rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
-      generalize_proofs _ hx' hx20 hy' hy10 hx10 hy20
-      rw [← Units.mk0_mul _ _ (mul_ne_zero hx10 hy20), ← Units.mk0_mul _ _ (mul_ne_zero hx20 hy10),
-        ← Units.mk0_mul, ← Units.mk0_mul]
-      · simp [← Units.val_le_val, ← map_mul, ← h.le_iff_le]
-      · simpa [h.eq_zero] using mul_ne_zero hx10 hy20
-      · simpa [h.eq_zero] using mul_ne_zero hx20 hy10
+noncomputable def orderMonoidIso₀ (h : v.IsEquiv w) :
+    v.ValueGroup₀ ≃*o w.ValueGroup₀ := h.orderMonoidIso.withZero
 
 @[simp]
-theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
-    h.orderMonoidIso (v.restrict a) = w.restrict a := by
+theorem orderMonoidIso₀_spec (h : v.IsEquiv w) (a : R) :
+    h.orderMonoidIso₀ (v.restrict a) = w.restrict a := by
   have h_res := h.restrict
   by_cases ha : v a = 0
   · rw [← restrict_eq_zero_iff] at ha
     rwa [ha, map_zero, Eq.comm, ← h_res.eq_zero]
   · rw [(v.restrict_eq_mk ha)]
-    simp [orderMonoidIso, valueGroup₀Fun_spec h (hs := ha),
-      w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)]
+    simp [orderMonoidIso₀, orderMonoidIso_spec h, w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)]
 
-lemma orderMonoidIso_spec₀ (h : v.IsEquiv w) (a : R) :
-    h.orderMonoidIso (restrict₀ (v : R →*₀ Γ₀) a) = restrict₀ (w : R →*₀ Γ'₀) a :=
-  orderMonoidIso_spec h a
+lemma orderMonoidIso₀_coe (h : v.IsEquiv w) (x : valueGroup (v : R →*₀ Γ₀)) :
+    h.orderMonoidIso₀ x = h.orderMonoidIso x := rfl
 
-theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
-    h.orderMonoidIso.symm = h'.orderMonoidIso := by
-  rfl
+lemma orderMonoidIso₀_spec₀ (h : v.IsEquiv w) (a : R) :
+    h.orderMonoidIso₀ (restrict₀ (v : R →*₀ Γ₀) a) = restrict₀ (w : R →*₀ Γ'₀) a :=
+  orderMonoidIso₀_spec h a
+
+theorem orderMonoidIso₀_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
+    h.orderMonoidIso₀.symm = h'.orderMonoidIso₀ := by rfl
 
 @[simp]
-theorem orderMonoidIso_eq_refl (h : v.IsEquiv v) :
-    h.orderMonoidIso = .refl _ := by
+theorem orderMonoidIso₀_eq_refl (h : v.IsEquiv v) :
+    h.orderMonoidIso₀ = .refl _ := by
   ext x
   obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
   · simp
-  · simp [orderMonoidIso, valueGroup₀Fun_spec h]
+  · simp [orderMonoidIso₀, orderMonoidIso_spec h]
 
 @[simp]
-theorem orderMonoidIso_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
-    h.orderMonoidIso.trans h'.orderMonoidIso = (h.trans h').orderMonoidIso := by
+theorem orderMonoidIso₀_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
+    h.orderMonoidIso₀.trans h'.orderMonoidIso₀ = (h.trans h').orderMonoidIso₀ := by
   ext x
   obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
   · simp
-  · simp [orderMonoidIso, valueGroup₀Fun_spec h, valueGroup₀Fun_spec h',
-      valueGroup₀Fun_spec (trans h h')]
+  · simp [orderMonoidIso₀, orderMonoidIso_spec h, orderMonoidIso_spec h',
+      orderMonoidIso_spec (trans h h')]
+
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_coe := orderMonoidIso₀_coe
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_spec₀ := orderMonoidIso₀_spec₀
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_symm := orderMonoidIso₀_symm
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_eq_refl := orderMonoidIso₀_eq_refl
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_trans := orderMonoidIso₀_trans
 
 end IsEquiv
 
@@ -909,7 +929,7 @@ theorem isEquiv_of_val_le_one (h : ∀ x, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv 
   obtain rfl | hy := eq_or_ne y 0
   · simp
   · rw [← div_le_one₀, ← v.map_div, h, v'.map_div, div_le_one₀] <;>
-      rwa [zero_lt_iff, ne_zero_iff]
+      rwa [pos_iff_ne_zero, ne_zero_iff]
 
 theorem isEquiv_iff_val_le_one : v.IsEquiv v' ↔ ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1 :=
   ⟨IsEquiv.le_one_iff_le_one, isEquiv_of_val_le_one⟩
@@ -1005,15 +1025,10 @@ variable [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R �
 def supp : Ideal R where
   carrier := { x | v x = 0 }
   zero_mem' := map_zero v
-  add_mem' {x y} hx hy := le_zero_iff.mp <|
-    calc
-      v (x + y) ≤ max (v x) (v y) := v.map_add x y
-      _ ≤ 0 := max_le (le_zero_iff.mpr hx) (le_zero_iff.mpr hy)
-  smul_mem' c x hx :=
-    calc
-      v (c * x) = v c * v x := map_mul v c x
-      _ = v c * 0 := congr_arg _ hx
-      _ = 0 := mul_zero _
+  add_mem' {x y} hx hy := by
+    rw [Set.mem_ofPred] at hx hy
+    simpa [hx, hy] using v.map_add x y
+  smul_mem' c x hx := by simp_all
 
 @[simp]
 theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Sets.Closeds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closed submodules of a topological module
 
@@ -50,7 +53,7 @@ lemma toSubmodule_injective : Injective (toSubmodule : ClosedSubmodule R M → S
   fun s t h ↦ by cases s; congr!
 
 instance : SetLike (ClosedSubmodule R M) M where
-  coe s := s.1
+  coe s := s.toSubmodule
   coe_injective _ _ h := toSubmodule_injective <| SetLike.coe_injective h
 
 instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M)
@@ -365,8 +368,8 @@ lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
   simp only [mapEquiv_apply, toSubmodule_sup, Submodule.carrier_eq_coe, Submodule.map_coe,
     LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
     Submodule.coe_closure, Set.mem_image]
-  have : f = f.toLinearEquiv.toLinearMap := by
-    exact LinearMap.ext (congrFun rfl)
+  have : f = f.toLinearEquiv.toLinearMap :=
+    LinearMap.ext (congrFun rfl)
   rw [← this, ← Submodule.coe_closure, ← Submodule.map_sup, Submodule.map_coe]
   simp [← ContinuousLinearEquiv.image_closure]
 

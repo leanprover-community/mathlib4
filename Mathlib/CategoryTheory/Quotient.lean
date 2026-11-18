@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Groupoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotient category
 
@@ -159,7 +162,7 @@ instance category : Category (Quotient r) where
 /-- An equivalence between the type synonym for a quotient category and the type alias
 for the original category. -/
 def equiv {C : Type _} [Category* C] (r : HomRel C) : Quotient r ≃ C where
-  toFun x := x.1
+  toFun x := x.as
   invFun x := ⟨x⟩
 
 noncomputable section

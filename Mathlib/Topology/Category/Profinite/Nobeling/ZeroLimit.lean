@@ -5,8 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
 
 /-!
 # The zero and limit cases in the induction for Nöbeling's theorem

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 
 /-!
 # Right homotopies in model categories
@@ -24,7 +24,6 @@ relation on `X ⟶ Y`.
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
-
 -/
 
 @[expose] public section

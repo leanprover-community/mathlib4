@@ -6,8 +6,9 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 public import Mathlib.Algebra.Order.Hom.Monoid
+
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Algebra.Order.Module.Defs
 
 /-!
@@ -140,7 +141,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
         lt_of_lt_of_le (lt_add_of_pos_left _ zero_lt_one) (by simpa using hk'.trans hm1)
       rw [mkRat_mem_ratLt hka0, sub_smul, sub_lt_comm, ← smul_smul, ← smul_smul, natCast_zsmul]
       exact this
-    · rw [Rat.mkRat_add_mkRat_of_den _ _ hka0]
+    · rw [Rat.mkRat_add_mkRat_of_den]
       rw [add_sub_cancel, Rat.mkRat_mul_left hk0, Rat.mkRat_num_den']
   · -- `u ∈ ratLt 1 x`, `v ∈ ratLt 1 y` → `u + v ∈ ratLt 1 (x + y)`
     intro ⟨u, hu, v, hv, huv⟩
@@ -172,8 +173,8 @@ theorem embedRealFun_zero : embedRealFun (0 : M) = 0 := by
     rw [mem_upperBounds]
     suffices (∀ (y : ℚ), y.num • (1 : M) < 0 → y ≤ x) → 0 ≤ x by simpa using this
     intro h
-    have h' (y : ℚ) (hy : y < 0) : y ≤ x := by
-      exact h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
+    have h' (y : ℚ) (hy : y < 0) : y ≤ x :=
+      h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
     contrapose! h'
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
     exact ⟨y, by simpa using hy, hxy⟩

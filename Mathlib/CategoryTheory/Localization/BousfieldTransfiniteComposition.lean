@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-!
@@ -14,7 +15,6 @@ import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 If `P : ObjectProperty C`, then `P.isLocal : MorphismProperty C`
 is stable under transfinite compositions.
-
 -/
 
 public section
