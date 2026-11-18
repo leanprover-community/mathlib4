@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic operations on `SeparationQuotient`
 
@@ -419,7 +422,7 @@ end Module
 
 section Algebra
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    [TopologicalSpace A] [IsTopologicalSemiring A] [ContinuousConstSMul R A]
+    [TopologicalSpace A] [IsTopologicalSemiring A]
 
 instance instAlgebra : Algebra R (SeparationQuotient A) where
   algebraMap := mkRingHom.comp (algebraMap R A)

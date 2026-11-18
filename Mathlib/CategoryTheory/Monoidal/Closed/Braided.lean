@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.Adjunction.ParametrizedLimits
 # Closed braided monoidal categories
 
 Interactions between monoidal closed and braided category structures.
-
 -/
 
 public section

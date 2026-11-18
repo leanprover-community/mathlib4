@@ -6,10 +6,9 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Bryan Gin-ge Chen, J
 module
 
 public meta import Batteries.Lean.NameMapAttribute
-
+public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
-public import Mathlib.Tactic.Translate.GuessName
 
 /-!
 # Expression translation for the translation attribute.
@@ -63,11 +62,6 @@ public structure TranslationInfo where
 
 /-- `TranslateData` is a structure that holds all data required for a translation attribute. -/
 public structure TranslateData where
-  /-- An attribute that tells that certain arguments of this definition are not
-  involved when translating.
-  This helps the translation heuristic by also transforming definitions if `ℕ` or another
-  fixed type occurs as one of these arguments. -/
-  ignoreArgsAttr : NameMapExtension (List Nat)
   /-- The global `do_translate`/`dont_translate` attributes specify whether operations on
   a given type should be translated. `dont_translate` can be used for types that are translated,
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
@@ -77,7 +71,7 @@ public structure TranslateData where
   Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
     translated thanks to this, you generally have to specify the translated name manually.
   -/
-  doTranslateAttr : NameMapExtension Bool
+  dontTranslateAttr : NameMapExtension Unit
   /-- The `insert_cast`/`insert_cast_fun` attributes create an abstraction boundary for the tagged
   constant when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
   morally self-dual, but their definition is not self-dual. So, in order to allow these constants
@@ -169,73 +163,51 @@ def ReplacementM.run {α} (dontTranslate allFVars : Array FVarId) (x : Replaceme
   let (a, relevantFVars) ← x dontTranslate |>.run |>.run {}
   return (a, (allFVars.findIdx? relevantFVars.contains).elim .noArg .arg)
 
-/-- Implementation function for `shouldTranslate`.
-Returning `none` means that `e` contains no constant that blocks translation.
-We cache previous applications of the function, using an expression cache using ptr equality
-to avoid visiting the same subexpression many times.
-
-Note that this function is still called many times by `applyReplacementFun`
-and we're not remembering the cache between these calls. -/
-unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData) (e : Expr) :
-    ReplacementM (Option Expr) := do
-  let visitedFVars : IO.Ref (Array FVarId) ← IO.mkRef #[]
-  let dontTranslate ← read
-  let lctx ← getLCtx
-  let rec visit (e : Expr) : ExceptT Expr (StateT (PtrSet Expr) BaseIO) Unit := do
-    if (← get).contains e then
-      return
-    modify fun s => s.insert e
-    match e with
-    | .app .. => e.withApp fun f args ↦ do
-      match f with
-      | .const n _ =>
-        -- A constant in an application, e.g. `Prod` in `α × β`, is translated by default.
-        let doTranslate := (t.doTranslateAttr.find? env n).getD true
-        unless doTranslate do throw e
-        let l := (t.ignoreArgsAttr.find? env n).getD []
-        args.size.forM fun i _ ↦ do
-          if !l.contains i then visit args[i]
-      | .fvar .. => visit f -- We don't look in the arguments of free variables.
-      | _ => visit f; args.forM visit
-    | .const n _ =>
-      -- A constant not in an application, e.g. `ℕ`, is not translated by default.
-      let doTranslate := (t.doTranslateAttr.find? env n).getD (findTranslation? env t n).isSome
-      unless doTranslate do throw e
-    | .lam _ _ t _       => visit t
-    | .forallE _ _ t _   => visit t
-    | .letE _ _ e body _ => visit e; visit body
-    | .mdata _ b         => visit b
-    | .proj _ _ b        => visit b
-    | .fvar fvarId       =>
-      if dontTranslate.contains fvarId then
-        throw e
-      if let some value := (lctx.get! fvarId).value? (allowNondep := true) then
-        visit value
-      else
-        visitedFVars.modify (·.push fvarId)
-    /- We do not translate the order on `Prop`.
-    TODO: We also don't want to translate the category on `Type u`. Unfortunately, replacing
-    `.sort 0` with `.sort _` here breaks some uses of `to_additive` on `MonCat`. -/
-    | .sort 0            => throw e
-    | _                  => pure ()
-  match ← (visit e).run' mkPtrSet with
-  | .error e => return some e
-  | .ok () =>
-    /- In the case that we do translate, we mark the visited free variables as relevant for
-    the translation by inserting them into the state. -/
-    modify (·.insertMany (← visitedFVars.get))
-    return none
-
 /-- `shouldTranslate e` tests whether the expression `e` contains a constant
 that is not applied to any arguments and that doesn't have a translation itself.
 This is used for deciding which subexpressions to translate: we only translate
 constants if `shouldTranslate` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
-We ignore all arguments specified by the `ignore` `NameMap`. -/
-@[implemented_by shouldTranslateUnsafe]
-opaque shouldTranslate (env : Environment) (t : TranslateData) (e : Expr) :
-  ReplacementM (Option Expr)
+-/
+partial def shouldTranslate (t : TranslateData) (e : Expr) :
+    ReplacementM Bool := do
+  trace[translate_detail] "checking whether to translate terms of type `{e}`"
+  (← whnfCore e).withApp fun f args ↦ do
+  match f with
+  | .const n _ =>
+    let env ← getEnv
+    if args.isEmpty then
+      -- A constant not in an application, e.g. `ℕ`, is not translated by default.
+      let result := (findTranslation? env t n).isSome && (t.dontTranslateAttr.find? env n).isNone
+      trace[translate_detail] "`{f}` is {if result then "not " else ""}a fixed constant."
+      return result
+    -- A constant in an application, e.g. `Prod` in `α × β`, is translated by default.
+    if (t.dontTranslateAttr.find? env n).isSome then
+      trace[translate_detail] "`{f}` is a fixed constant."
+      return false
+    let arg? := match findTranslation? env t n with
+      | some { relevantArg := .noArg, .. } => none
+      | some { relevantArg := .arg n, .. } => args[n]?
+      | none => args[0]?
+    if let some arg := arg? then
+      shouldTranslate t arg
+    else
+      trace[translate_detail] "`{f}` is not a fixed constant."
+      return true
+  | .fvar fvarId =>
+    if (← read).contains fvarId then
+      trace[translate_detail] "`{f}` is a fixed free variable."
+      return false
+    trace[translate_detail] "`{f}` is not a fixed free variable."
+    modify (·.insert fvarId)
+    return true
+  | .forallE .. => forallTelescope f fun _ ↦ shouldTranslate t
+  | .lam .. => lambdaTelescope f fun _ ↦ shouldTranslate t
+  | .sort _ =>
+    trace[translate_detail] "`{f}` is a sort, so it is fixed."
+    return false
+  | _ => return true -- We don't really expect this case to come up in practice.
 
 /--
 `applyReplacementFun e` replaces the expression `e` with its translation.
@@ -267,9 +239,9 @@ where
     trace[translate_detail] "result: {e}"
     return e
   visitApp (e : Expr) := e.withApp fun f args ↦ do
-    let env ← getEnv
     match f with
     | .proj n i b =>
+      let env ← getEnv
       let some info := getStructureInfo? env n |
         return mkAppN (f.updateProj! (← visit b)) (← args.mapM visit) -- e.g. if `n` is `Exists`
       let some projName := info.getProjFn? i | unreachable!
@@ -283,12 +255,11 @@ where
       -- Replace numeral `1` with `0` in applications of `OfNat` and `OfNat.ofNat`.
       if h : t.changeNumeral ∧ (n₀ matches ``OfNat | ``OfNat.ofNat) ∧ 2 ≤ args.size then
         if args[1] == mkRawNatLit 1 then
-          if (← shouldTranslate env t args[0]).isNone then
+          if ← shouldTranslate t args[0] then
             -- In this case, we still update all arguments of `g` that are not numerals,
             -- since all other arguments can contain subexpressions like
             -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-            trace[translate_detail] "applyReplacementFun: We change the numeral in this \
-              expression to 0. However, we will still recurse into all the non-numeral arguments."
+            trace[translate_detail] "changing the numeral in this expression to 0."
             let args := args.set 1 (mkRawNatLit 0)
             return mkAppN f (← args.mapM visit)
       let some { translation := n₁, reorder, relevantArg, unfold } ← findPrefixTranslation? n₀ t |
@@ -296,9 +267,7 @@ where
       -- Use `relevantArg` to test if the head should be translated.
       if let .arg relevantArg := relevantArg then
         if h : relevantArg < args.size then
-          if let some fixed ← shouldTranslate (← getEnv) t args[relevantArg] then
-            trace[translate_detail]
-              "The application of {n₀} contains the fixed type {fixed} so it is not changed."
+          unless ← shouldTranslate t args[relevantArg] do
             return mkAppN f (← args.mapM visit)
       let { univReorder, reorder } := reorder
       -- If the number of arguments is too small for `reorder`, we need to eta expand first

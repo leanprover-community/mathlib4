@@ -5,8 +5,8 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
 module
 
-public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.CategoryTheory.CodiscreteCategory
 
 /-!
 # The Coherent Isomorphism
@@ -23,7 +23,6 @@ and `WalkingIso.one` respectively, and `coherentIso.hom : Edge x₀ x₁` and
 `WalkingIso`. Given any simplicial set `X`, with a morphism `g : coherentIso ⟶ X`, `0`-simplices
 `x₀ x₁: X _⦋0⦌` and an edge between them `f : Edge x₀ x₁`, such that `g` sends `coherentIso.hom` to
 `f`, then `f` has an inverse (in the sense of `Edge.InvStruct`), see `invStructOfEqMapHom`.
-
 -/
 
 @[expose] public section

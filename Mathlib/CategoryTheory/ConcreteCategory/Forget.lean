@@ -7,6 +7,7 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryash
 module
 
 public import Mathlib.CategoryTheory.Types.Basic
+
 /-!
 # Forgetful functors
 
@@ -58,9 +59,6 @@ variable {C}
 lemma ConcreteCategory.forget_map_eq_ofHom {X Y : C} (f : X ⟶ Y) :
     (forget C).map f = ↾f :=
   rfl
-
-@[deprecated (since := "2026-04-11")] alias ConcreteCategory.forget_map_eq_coe :=
-  ConcreteCategory.forget_map_eq_ofHom
 
 theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
@@ -114,9 +112,6 @@ instance ObjectProperty.FullSubcategory.hasForget₂ (P : ObjectProperty C) :
     HasForget₂ P.FullSubcategory C where
   forget₂ := P.ι
   forget_comp := rfl
-
-@[deprecated (since := "2026-04-18")] alias FullSubcategory.hasForget₂ :=
-  ObjectProperty.FullSubcategory.hasForget₂
 
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
 it suffices to ensure that compositions agree with `forget₂ C D ⋙ forget D = forget C`.

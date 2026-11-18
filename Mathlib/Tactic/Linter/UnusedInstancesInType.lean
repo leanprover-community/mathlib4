@@ -7,14 +7,9 @@ module
 
 public meta import Batteries.Lean.Position
 public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Lean.Environment
-public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Lean.Linter.Basic
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Batteries.Tactic.Lint.Basic
-public import Batteries.Tactic.Lint.Misc
 
 /-!
 # Linters for Unused Instances in Types
@@ -322,7 +317,7 @@ public def unusedDecidableInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM 
       /- Log the warning from the declaration's selection range (usually the declaration name,
       or `instance`) to the body if possible. This underlines the hypotheses and type,
       and makes the warning visible in the infoview when the cursor is within the body. -/
-      let ref := (← findDeclarationSyntaxRange? thm.name).elim (← getRef)
+      let ref := (← findDeclarationSyntaxRange? thm.name).elim bodyRef
         (mkNullNode #[.ofRange ·, bodyRef])
       logLint linter.unusedDecidableInType ref m!"\
         {thm.name.unusedInstancesMsg unusedParams}\n\n\

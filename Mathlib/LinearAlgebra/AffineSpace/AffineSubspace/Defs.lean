@@ -5,9 +5,9 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Order.Atoms
-public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Atoms
 
 /-!
 # Affine spaces
@@ -231,6 +231,23 @@ theorem coe_toAffineSubspace (p : Submodule k V) : (p.toAffineSubspace : Set V) 
 @[simp]
 theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
     x ∈ (p : AffineSubspace k V) ↔ x ∈ p := Iff.rfl
+
+@[simp]
+theorem toAffineSubspace_le_toAffineSubspace {p q : Submodule k V} :
+    (p : AffineSubspace k V) ≤ q ↔ p ≤ q :=
+  .rfl
+
+@[gcongr]
+theorem monotone_toAffineSubspace : Monotone ((↑) : Submodule k V → AffineSubspace k V) :=
+  fun _ _ => toAffineSubspace_le_toAffineSubspace.mpr
+
+theorem toAffineSubspace_injective :
+    Function.Injective ((↑) : Submodule k V → AffineSubspace k V) := by
+  simp [Function.Injective, le_antisymm_iff]
+
+@[simp]
+theorem toAffineSubspace_inj {p q : Submodule k V} : (p : AffineSubspace k V) = q ↔ p = q :=
+  toAffineSubspace_injective.eq_iff
 
 /-- Reinterprets `p : AffineSubspace k V` that includes `0` as a `Submodule k V`. -/
 def ofAffineSubspace (p : AffineSubspace k V) (hp : 0 ∈ p) : Submodule k V where
@@ -747,8 +764,7 @@ instance : Nontrivial (AffineSubspace k P) :=
   ⟨⟨⊥, ⊤, bot_ne_top k V P⟩⟩
 
 theorem nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s.Nonempty := by
-  rw [Set.nonempty_iff_ne_empty]
-  rintro rfl
+  by_contra! rfl
   rw [AffineSubspace.span_empty] at h
   exact bot_ne_top k V P h
 
@@ -809,8 +825,7 @@ theorem coe_eq_univ_iff (Q : AffineSubspace k P) : (Q : Set P) = univ ↔ Q = �
   coe_injective.eq_iff' (top_coe _ _ _)
 
 theorem nonempty_iff_ne_bot (Q : AffineSubspace k P) : (Q : Set P).Nonempty ↔ Q ≠ ⊥ := by
-  rw [nonempty_iff_ne_empty]
-  exact not_congr Q.coe_eq_bot_iff
+  simp [← ne_empty_iff_nonempty]
 
 theorem eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).Nonempty := by
   rw [nonempty_iff_ne_bot]
@@ -1042,12 +1057,11 @@ instance (x : P) : Nonempty ({x} : AffineSubspace k P) :=
 @[simp]
 theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
   rw [← not_iff_not, ← Ne, ← Ne, ← nonempty_iff_ne_bot, affineSpan_nonempty,
-    nonempty_iff_ne_empty]
+    ← ne_empty_iff_nonempty]
 
 @[simp]
 theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
-  rw [bot_lt_iff_ne_bot, nonempty_iff_ne_empty]
-  exact (affineSpan_eq_bot _).not
+  simp [bot_lt_iff_ne_bot]
 
 @[simp]
 lemma affineSpan_eq_top_iff_nonempty_of_subsingleton [Subsingleton P] :
@@ -1204,3 +1218,48 @@ theorem affineSpan_eq_span_iff_zero_mem {s : Set V} :
 alias ⟨_, affineSpan_eq_span_of_zero_mem⟩ := affineSpan_eq_span_iff_zero_mem
 
 end AffineSpace'
+
+namespace Submodule
+
+variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
+
+@[simp]
+theorem toAffineSubspace_top : ((⊤ : Submodule k V) : AffineSubspace k V) = ⊤ :=
+  rfl
+
+@[simp]
+theorem toAffineSubspace_bot : ((⊥ : Submodule k V) : AffineSubspace k V) = {0} :=
+  rfl
+
+@[simp]
+theorem toAffineSubspace_inf (p q : Submodule k V) :
+    ((p ⊓ q : Submodule k V) : AffineSubspace k V) = (p : AffineSubspace k V) ⊓ q :=
+  rfl
+
+@[simp]
+theorem toAffineSubspace_sInf (s : Set (Submodule k V)) :
+    ((sInf s : Submodule k V) : AffineSubspace k V) = ⨅ p ∈ s, (p : AffineSubspace k V) :=
+  SetLike.coe_injective <| by simp
+
+@[simp]
+theorem toAffineSubspace_iInf {ι : Type*} (p : ι → Submodule k V) :
+    ((⨅ i, p i : Submodule k V) : AffineSubspace k V) = ⨅ i, (p i : AffineSubspace k V) :=
+  SetLike.coe_injective <| by simp
+
+theorem toAffineSubspace_sSup {s : Set (Submodule k V)} (hs : s.Nonempty) :
+    ((sSup s : Submodule k V) : AffineSubspace k V) = ⨆ p ∈ s, (p : AffineSubspace k V) := by
+  refine le_antisymm (le_of_forall_ge fun q hq => ?_) monotone_toAffineSubspace.le_map_sSup
+  rw [iSup₂_le_iff] at hq
+  obtain ⟨p, hp⟩ := hs
+  lift q to Submodule k V using hq p hp p.zero_mem
+  simpa using hq
+
+theorem toAffineSubspace_iSup {ι : Type*} [Nonempty ι] (p : ι → Submodule k V) :
+    ((⨆ i, p i : Submodule k V) : AffineSubspace k V) = ⨆ i, (p i : AffineSubspace k V) := by
+  rw [← sSup_range, toAffineSubspace_sSup (range_nonempty _), iSup_range]
+
+theorem toAffineSubspace_sup (p q : Submodule k V) :
+    ((p ⊔ q : Submodule k V) : AffineSubspace k V) = (p : AffineSubspace k V) ⊔ q := by
+  simp_rw [sup_eq_iSup, toAffineSubspace_iSup, Bool.apply_cond]
+
+end Submodule

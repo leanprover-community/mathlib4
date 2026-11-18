@@ -6,9 +6,9 @@ Authors: Jujian Zhang
 
 module
 
+public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.Logic.Small.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Tactic.NormNum
 
@@ -36,7 +36,6 @@ import Mathlib.LinearAlgebra.Pi
 ## Main statements
 
 * `Module.Baer.injective`: an `R`-module is injective if it is Baer.
-
 -/
 
 @[expose] public section

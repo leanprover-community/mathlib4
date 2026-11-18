@@ -5,9 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Integrally closed rings

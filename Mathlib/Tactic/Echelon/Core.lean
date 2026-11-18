@@ -5,6 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Qq
 public import Mathlib.Init
 
 /-!
@@ -19,6 +20,17 @@ elimination with the scales folded back into `L` afterwards.
 A computation model supplies the carrier, its arithmetic operations (`RingOps`) and the
 encoding between entry syntax and values, and the tactic selects a model through the `bareiss_ext`
 extension registry.
+
+## Main definitions
+
+- `RingOps`: the arithmetic of a model's carrier.
+- `Model`: the computation model of a ring, including the encode/decode between the ring element
+  and the carrier representation, and an optional entry certifier.
+- `EntryCertifier`: the functions that prove the ring arithmetic facts about single entries that a
+  certificate needs.
+- `bareissDecomp`: runs fraction-free elimination over a model's carrier.
+- `BareissData`: raw data of the computed decomposition.
+- `bareiss_ext`: the attribute registering a computation model.
 
 ## Implementation notes
 
@@ -40,7 +52,9 @@ so `L` is conjugated by the matrix of `τ`, as in LU factorisation with partial 
 
 public meta section
 
-open Lean Meta
+open Lean Meta Qq
+
+initialize registerTraceClass `Tactic.evalRank
 
 namespace Mathlib.Tactic.Echelon
 
@@ -58,22 +72,7 @@ structure RingOps (V : Type) where
   divExact : V → V → V
   /-- The pivot zero test. -/
   isZero : V → Bool
-
-/-- The arithmetic of `V` on its literals with a `decode`-`encode` roundtrip per operation.
-This is less efficient than performing the elimination directly on `V`, but is a workaround for
-a restriction in the registry (see `Carrier`). Certificate construction is the bottleneck so
-this does not lead to much overall performance degradation.
-A literal `decode` rejects is read as 0 (should never happen for the literals provided by
-`encode`). -/
-def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → Option V) (encode : V → Expr) :
-    RingOps Expr :=
-  let read (e : Expr) : V := (decode e).getD ops.zero
-  { zero := encode ops.zero
-    one := encode ops.one
-    mul x y := encode (ops.mul (read x) (read y))
-    sub x y := encode (ops.sub (read x) (read y))
-    divExact x y := encode (ops.divExact (read x) (read y))
-    isZero x := ops.isZero (read x) }
+deriving Nonempty
 
 /-- Decomposition data with entries in `V`, the carrier of the elimination or `Expr` once the
 entries are encoded. -/
@@ -155,32 +154,65 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
       r := r + 1
   return { L, U := W, swaps, pivot := pivotCols }
 
-/-- The carriers a model computes on, the integers or expressions of the ring.
-The most direct method is for a model to name the carrier type directly as a field of the extension,
-but that puts the model in a higher universe level, and the registry can only store `Type 0`
-elements. -/
-inductive Carrier
-  | int
-  | expr
+/-- An entry certifier proves arithmetic facts about expressions of the ring `α` that the
+certificates need. `eq` proves an equation `a = b`, such as an unreduced entry of a matrix
+product equal to its computed value, and `neZero` proves `a ≠ 0`, such as for a pivot entry.
 
-/-- The type of the values of a carrier. -/
-abbrev Carrier.type : Carrier → Type
-  | .int => Int
-  | .expr => Expr
+`eq` is typically built on a normalizer, while `neZero` may depend on bespoke methods if a
+normalizer cannot provide a disequality proof.
+-/
+structure EntryCertifier {u : Level} (α : Q(Type u)) where
+  /-- Prove `a = b`. -/
+  eq (a b : Q($α)) : MetaM Q($a = $b)
+  /-- Prove `a ≠ 0`, stated with the caller's `Zero` instance `zα`. -/
+  neZero (zα : Q(Zero $α)) (a : Q($α)) : MetaM Q($a ≠ 0)
 
-/-- A computation model of a ring on the carrier `V`. -/
-structure Model (V : Type) where
+/--
+The underlying type of `Model`.
+
+We want to allow the carrier type of this model to be any type. Unfortunately, making it a
+structure field causes the structure to live in `Type 1`, which doesn't work in `IO`/`MetaM`.
+-/
+structure ModelAux {u : Level} (α : Q(Type u)) (V : Type) where
   /-- The arithmetic of the carrier. -/
   ops : RingOps V
   /-- Evaluate an entry to a value with an optional denominator for the row scaling.
   `(n, some d)` denotes `n / d` with `d` nonzero, and `(n, none)` denotes `n`. -/
-  evalEntry : Expr → MetaM (V × Option V)
+  evalEntry : Q($α) → MetaM (V × Option V)
   /-- A nonzero common multiple for eliminating the denominators (`ops.mul` by default). A
   carrier type with a cheap lcm could supply it as an optimisation to keep the scaled entries
   small. -/
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
-  mkEntry : V → MetaM Expr
+  mkEntry : V → MetaM Q($α)
+  /-- An optional certifier for the ring, or `none` to leave the conditions to the kernel.
+  With `none`, the kernel checks the decomposition product `L * A_σ = U` by evaluating the
+  list-based form as a whole without assembling it from per-entry proofs, which is faster than
+  applying `decideCertifier` on every entry. As a result this field is optional rather than
+  taking a default value, so that `Mathlib.Tactic.Matrix.certifyProductEq` can perform this
+  optimization. -/
+  entryCertifier? : Option (EntryCertifier α) := none
+deriving Nonempty
+
+section unsafeCast
+
+-- Analogous to the opaque type `Lean.EnvExtensionState`
+private opaque ModelValueTypeSpec {u : Level} (α : Q(Type u)) : {β : Type // Nonempty β} :=
+  ⟨Unit, ⟨()⟩⟩
+/-- An opaque model type that is used in place of the actual model type.
+We artificially add a parameter `α` to avoid mixing model types of different rings. -/
+def ModelType {u : Level} (α : Q(Type u)) : Type := (ModelValueTypeSpec α).1
+instance {u : Level} (α : Q(Type u)) : Nonempty (ModelType α) := (ModelValueTypeSpec α).2
+/-- A computation model of a ring `α`. It should be constructed using `Model.mk`. -/
+abbrev Model {u : Level} (α : Q(Type u)) : Type := ModelAux α (ModelType α)
+/--
+Construct a `Model α` from a `ModelAux α V` by replacing `V` with `ModelType α` using `unsafeCast`.
+This is safe if you use only one `Model α` at a time.
+-/
+def Model.mk {u : Level} {α : Q(Type u)} (V : Type) (model : ModelAux α V) : Model α :=
+  unsafe unsafeCast model
+
+end unsafeCast
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
 def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
@@ -210,9 +242,9 @@ def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
-  /-- The model for the element type `R` and its carrier, or `none` if the extension does not
-  handle `R`. -/
-  model? (R : Expr) : MetaM (Option ((c : Carrier) × Model c.type))
+  /-- The model for the element type `α` and its carrier, or `none` if the extension does not
+  handle `α`. -/
+  model? {u : Level} (α : Q(Type u)) : MetaM (Option (Model α))
 
 /-- Read a `bareiss_ext` extension from a declaration of the right type. -/
 def mkBareissExt (n : Name) : ImportM BareissExt := do

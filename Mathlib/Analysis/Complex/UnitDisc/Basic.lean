@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Complex.Circle
-public import Mathlib.Analysis.Normed.Module.Ball.Action
 public import Mathlib.Algebra.Group.NatPowAssoc
 public import Mathlib.Algebra.Group.PNatPowAssoc
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Normed.Module.Ball.Action
 
 /-!
 # Poincaré disc
@@ -413,9 +413,6 @@ theorem coe_closedBall_smul (z : 𝕔𝔻) (w : 𝔻) : ↑(z • w) = (z * w : 
 @[simp, norm_cast]
 theorem coe_circle_smul (z : Circle) (w : 𝕔𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
-
-instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
-  SMulCommClass.symm _ _ _
 
 instance : Pow 𝕔𝔻 ℕ where
   pow z n := ⟨z ^ n, by simp [pow_le_one₀ (norm_nonneg _) z.norm_le_one]⟩

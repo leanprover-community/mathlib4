@@ -5,8 +5,8 @@ Authors: Chris Birkbeck, Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.ClassGroup.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Extended
 
 /-!
 # Class group map induced by an extension of domains
@@ -73,7 +73,7 @@ theorem map_id (x : ClassGroup A) : map (RingHom.id A) Function.injective_id x =
   ext : 1
   simp only [Units.coe_map, MonoidHom.coe_ofClass, RingHom.toMonoidHom_eq_coe,
     FractionalIdeal.extendedHom'_apply]
-  rw [← FractionalIdeal.coeToSubmodule_inj, FractionalIdeal.coe_extended_eq_span]
+  rw [← FractionalIdeal.coeToSubmodule_inj, FractionalIdeal.coeToSubmodule_extended_eq_span]
   have : ⇑(IsLocalization.map (FractionRing A) (RingHom.id A)
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ Function.injective_id) :
         FractionRing A →+* FractionRing A) = id :=

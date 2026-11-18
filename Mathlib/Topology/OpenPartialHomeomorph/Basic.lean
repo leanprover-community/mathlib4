@@ -6,8 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
-public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.PartialHomeomorph.Basic
+public import Mathlib.Topology.Sets.Opens
+
 /-!
 # Partial homeomorphisms: basic theory
 
@@ -245,7 +246,7 @@ variable (s : Opens X) (hs : Nonempty s)
 /-- The inclusion of an open subset `s` of a space `X` into `X` is an open partial homeomorphism
 from the subtype `s` to `X`. -/
 noncomputable def openPartialHomeomorphSubtypeCoe : OpenPartialHomeomorph s X :=
-  IsOpenEmbedding.toOpenPartialHomeomorph _ s.2.isOpenEmbedding_subtypeVal
+  IsOpenEmbedding.toOpenPartialHomeomorph _ s.is_open'.isOpenEmbedding_subtypeVal
 
 @[simp, mfld_simps]
 theorem openPartialHomeomorphSubtypeCoe_coe :

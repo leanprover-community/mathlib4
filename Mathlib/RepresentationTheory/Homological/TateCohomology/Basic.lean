@@ -150,7 +150,7 @@ namespace TateCohomology
 section Exact
 
 set_option backward.isDefEq.respectTransparency false in
-instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
+instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
   map_zero X Y := by simp
 
 /-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
@@ -166,8 +166,6 @@ def tateComplex.evalNeg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalComple
     (ComplexShape.up ℤ) (.negSucc n) ≅ chainsFunctor R G ⋙
     HomologicalComplex.eval (ModuleCat R) (ComplexShape.down ℕ) n :=
   .refl _
-
-instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
 
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
     (S.map (tateComplexFunctor R G)).ShortExact := by

@@ -9,6 +9,9 @@ public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Dual.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flag of submodules defined by a basis
 
@@ -107,7 +110,7 @@ theorem map_flag_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
   exact bW.flag_le_iff.2 fun i hi => by
     convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := i.succ) (k := k.succ)
       (Fin.succ_lt_succ_iff.mpr hi) using 1
-    · simp [coe_mkFinCons, Fin.cons_succ]
+    simp [coe_mkFinCons, Fin.cons_succ]
 
 end Ring
 

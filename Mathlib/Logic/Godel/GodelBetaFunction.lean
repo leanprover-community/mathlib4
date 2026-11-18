@@ -8,11 +8,11 @@ module
 public import Mathlib.Data.Nat.ChineseRemainder
 public import Mathlib.Data.Nat.Pairing
 
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Order.Fin.Basic
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Gödel's Beta Function Lemma

@@ -176,7 +176,8 @@ published fork cache: a previous CI build of this fork may hold the missing
 files, so the message points at `cache query` and the SHA-scoped workflow.
 Selected by `forkHintSHA?`.
 -/
-def missingFilesForkLines (repo sha : String) (missing : Nat) : List String := [
+def missingFilesForkLines (repo sha : String) (missing : Nat)
+    (repoExplicit? : Option String := none) : List String := [
   "",
   s!"NOTE: {missing} file(s) were not found in any cache for fork {repo}.",
   s!"CI has not published a fork cache for HEAD ({sha}) — most likely it",
@@ -184,10 +185,10 @@ def missingFilesForkLines (repo sha : String) (missing : Nat) : List String := [
   "by `lake build`.",
   "",
   "To reuse a previous CI build from this fork instead, find a cached commit:",
-  "    lake exe cache query",
+  s!"    lake exe cache query{repoFlag repoExplicit?}",
   "",
   "then re-run with:",
-  "    lake exe cache get --scope=<that-sha>",
+  s!"    lake exe cache get{repoFlag repoExplicit?} --scope=<that-sha>",
   "",
   "Important: using another commit's scope means trusting the artifacts",
   "produced at that commit. `cache get` will print a security notice",
@@ -223,7 +224,7 @@ HEAD has no published fork cache:
   a scope and the non-default-scope warning did the talking)
 - no `--cache-from` override (the user has taken explicit responsibility for
   the lookup chain)
-- the repo is a fork, not a first-party repo: the canonical repos don't build
+- the repo is a fork, not the canonical repo: the canonical repo doesn't build
   into the per-commit `forks` namespace this hint points at
 - HEAD is not an ancestor of `master`: misses there are master-container lag
   (CI still building master), which no fork scope can serve
@@ -255,11 +256,11 @@ even though no fork cache exists for its commits — its absence has no
 consequence. When files are missing, reads that `forkHintSHA?` accepts get
 the fork-workflow hint; every other read gets the generic divergence warning.
 -/
-def warnIfMissingFiles (repo : String) (missing : Nat) (unsafeMode : Bool := false) :
-    IO.CacheM Unit := do
+def warnIfMissingFiles (repo : String) (missing : Nat) (unsafeMode : Bool := false)
+    (repoExplicit? : Option String := none) : IO.CacheM Unit := do
   if missing == 0 then return
   let lines ← match ← forkHintSHA? repo unsafeMode with
-    | some sha => pure (missingFilesForkLines repo sha missing)
+    | some sha => pure (missingFilesForkLines repo sha missing repoExplicit?)
     | none => pure (missingFilesGenericLines missing)
   for line in lines do
     IO.eprintln line

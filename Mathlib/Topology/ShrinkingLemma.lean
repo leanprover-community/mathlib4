@@ -174,7 +174,8 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed
     rcases mem_iUnion.1 (v.subset_iUnion hxs) with ⟨j, hj⟩
     exact (em (j = i)).elim (fun h => h ▸ hj) fun h => (H j h hj).elim
   have C : IsClosed (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) :=
-    IsClosed.inter hs (isClosed_biInter fun _ _ => isClosed_compl_iff.2 <| v.isOpen _)
+    IsClosed.inter hs
+      (isClosed_biInter (s := {j | j ≠ i}) fun _ _ => isClosed_compl_iff.2 <| v.isOpen _)
   rcases normal_exists_closure_subset C (v.isOpen i) I with ⟨vi, ovi, hvi, cvi⟩
   classical
   refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_, ?_, ?_, ?_⟩, ?_, ?_⟩
@@ -187,7 +188,7 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed
       rwa [update_of_ne hji]
     · use i
       rw [update_self]
-      exact hvi ⟨hx, mem_biInter h⟩
+      exact hvi ⟨hx, mem_biInter (s := {j | j ≠ i}) h⟩
   · rintro j (rfl | hj)
     · rwa [update_self, ← v.apply_eq hi]
     · rw [update_of_ne (ne_of_mem_of_not_mem hj hi)]
@@ -276,7 +277,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
   simp only [ne_eq, compl_iUnion] at hsi
   have hsic : IsCompact si := by
     apply hs.of_isClosed_subset _ Set.inter_subset_left
-    exact hs.isClosed.inter (isOpen_biUnion (fun j _ ↦ v.isOpen j)).isClosed_compl
+    exact hs.isClosed.inter (isOpen_biUnion (s := {j | j ≠ i}) fun j _ ↦ v.isOpen j).isClosed_compl
   have : si ⊆ v i := by
     intro x hx
     have (j) (hj : j ≠ i) : x ∉ v j := by

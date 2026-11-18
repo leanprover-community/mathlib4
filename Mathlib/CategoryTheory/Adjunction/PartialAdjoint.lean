@@ -28,7 +28,6 @@ the predicate `F.leftAdjointObjIsDefined` is stable under colimits indexed by `J
 
 ## TODO
 * consider dualizing the results to right adjoints
-
 -/
 
 @[expose] public section
