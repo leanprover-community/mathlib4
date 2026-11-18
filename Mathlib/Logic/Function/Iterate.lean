@@ -224,9 +224,9 @@ theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2
   funext_iff.symm
 
 @[simp]
-theorem map_iterate {ι : Type*} {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
-    (Function.map f)^[n] = Function.map fun i => (f i)^[n] := by
-  induction n <;> simp [*, map_comp_map]
+theorem piMap_iterate {ι : Type*} {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
+    (Function.piMap f)^[n] = Function.piMap fun i => (f i)^[n] := by
+  induction n <;> simp [*, piMap_comp_piMap]
 
 end Function
 
@@ -247,4 +247,4 @@ theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ �
 end List
 
 @[deprecated (since := "2026-05-11")]
-alias Pi.map_iterate := Function.map_iterate
+alias Pi.map_iterate := Function.piMap_iterate

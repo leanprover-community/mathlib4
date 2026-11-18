@@ -226,7 +226,7 @@ theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g
   ⟨fun I ↦ I.of_comp_right hg.2, fun h ↦ h.comp hg.injective⟩
 
 theorem Injective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
-    (hf : ∀ i, Injective (f i)) : Injective (Function.map f) := fun _ _ h ↦
+    (hf : ∀ i, Injective (f i)) : Injective (Function.piMap f) := fun _ _ h ↦
   funext fun i ↦ hf i <| congrFun h _
 
 /-- Composition by an injective function on the left is itself injective. -/
@@ -604,7 +604,7 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
   ⟨injective_of_subsingleton f, surjective_to_subsingleton f⟩
 
 theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
-    (hf : ∀ i, Surjective (f i)) : Surjective (Function.map f) := fun g ↦
+    (hf : ∀ i, Surjective (f i)) : Surjective (Function.piMap f) := fun g ↦
   ⟨fun i ↦ surjInv (hf i) (g i), funext fun _ ↦ rightInverse_surjInv _ _⟩
 
 /-- Composition by a surjective function on the left is itself surjective. -/
@@ -619,7 +619,7 @@ theorem surjective_comp_left_iff [Nonempty α] {g : β → γ} :
   exact ⟨f a, congr_fun hf _⟩
 
 theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
-    (hf : ∀ i, Bijective (f i)) : Bijective (Function.map f) :=
+    (hf : ∀ i, Bijective (f i)) : Bijective (Function.piMap f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
 
 /-- Composition by a bijective function on the left is itself bijective. -/
@@ -801,23 +801,23 @@ lemma update_left_inj {ι : Sort*} {f : α → ι} {i j : α} {a : ι} (hf : ∀
     update f i a = update f j a ↔ i = j := (update_left_injective hf).eq_iff
 
 @[simp]
-theorem map_const {ι : Sort*} {α} {β : ι → Sort*}
+theorem piMap_const {ι : Sort*} {α} {β : ι → Sort*}
     {f : ∀ i, α → β i} (a : α) :
-    Function.map f (Function.const ι a) = swap f a := rfl
+    Function.piMap f (Function.const ι a) = swap f a := rfl
 
 @[simp]
-theorem map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
+theorem piMap_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
     {f : ∀ i, α i → β i}
     (g : ∀ i, α i) (i : ι) (a : α i) :
-    Function.map f (Function.update g i a) = Function.update (Function.map f g) i (f i a) := by
+    Function.piMap f (Function.update g i a) = Function.update (Function.piMap f g) i (f i a) := by
   grind [Function.update]
 
 @[simp]
-theorem map_injective
+theorem piMap_injective
     {ι : Sort*} {α β : ι → Sort*} [∀ i, Nonempty (α i)] {f : ∀ i, α i → β i} :
-    Injective (Function.map f) ↔ ∀ i, Injective (f i) where
+    Injective (Function.piMap f) ↔ ∀ i, Injective (f i) where
   mp h i x y hxy := by classical exact Function.update_injective Classical.ofNonempty i <| h <|
-    (map_update _ _ x ▸ map_update _ _ y ▸ hxy ▸ rfl)
+    (piMap_update _ _ x ▸ piMap_update _ _ y ▸ hxy ▸ rfl)
   mpr := .piMap
 
 end Update
@@ -1136,12 +1136,13 @@ theorem sometimes_spec {p : Prop} {α} [Nonempty α] (P : α → Prop) (f : p �
 
 end Sometimes
 
-@[simp] theorem map_id {ι} {α : ι → Type*} : Function.map (fun i => @id (α i)) = id := rfl
+@[simp] theorem piMap_id {ι} {α : ι → Type*} : Function.piMap (fun i => @id (α i)) = id := rfl
 
-@[simp] theorem map_id' {ι} {α : ι → Type*} : Function.map (fun i (a : α i) => a) = fun x ↦ x := rfl
+@[simp] theorem piMap_id' {ι} {α : ι → Type*} :
+    Function.piMap (fun i (a : α i) => a) = fun x ↦ x := rfl
 
-theorem map_comp_map {ι} {α β γ : ι → Type*} (f : ∀ i, α i → β i) (g : ∀ i, β i → γ i) :
-    Function.map g ∘ Function.map f = Function.map fun i => g i ∘ f i :=
+theorem piMap_comp_piMap {ι} {α β γ : ι → Type*} (f : ∀ i, α i → β i) (g : ∀ i, β i → γ i) :
+    Function.piMap g ∘ Function.piMap f = Function.piMap fun i => g i ∘ f i :=
   rfl
 
 end Function
@@ -1267,16 +1268,16 @@ instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r
   ‹Decidable _›
 
 @[deprecated (since := "2026-05-11")]
-alias Pi.map_id := Function.map_id
+alias Pi.map_id := Function.piMap_id
 
 @[deprecated (since := "2026-05-11")]
-alias Pi.map_id' := Function.map_id'
+alias Pi.map_id' := Function.piMap_id'
 
 @[deprecated (since := "2026-05-11")]
-alias Pi.map_comp_map := Function.map_comp_map
+alias Pi.map_comp_map := Function.piMap_comp_piMap
 
 @[deprecated (since := "2026-05-11")]
-alias Pi.map_injective := Function.map_injective
+alias Pi.map_injective := Function.piMap_injective
 
 @[deprecated (since := "2026-05-11")]
-alias Pi.map_update := Function.map_update
+alias Pi.map_update := Function.piMap_update

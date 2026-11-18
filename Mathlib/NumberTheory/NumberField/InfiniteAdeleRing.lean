@@ -108,7 +108,7 @@ theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
 The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
 -/
 theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ := by
-  have h : ⇑(algebraMap K K∞) = (Pi.map fun v (x : WithAbs v.1) => (x : v.Completion)) ∘
+  have h : ⇑(algebraMap K K∞) = (Function.piMap fun v (x : WithAbs v.1) => (x : v.Completion)) ∘
       algebraMap K ((v : InfinitePlace K) → WithAbs v.1) :=
     funext₂ (algebraMap_apply K)
   exact h ▸ (DenseRange.piMap fun v => AbsoluteValue.Completion.denseRange_coe v.1).comp

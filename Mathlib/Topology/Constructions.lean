@@ -796,7 +796,7 @@ theorem Filter.Tendsto.apply_nhds {l : Filter Y} {f : Y → ∀ i, A i} {x : ∀
 
 @[fun_prop]
 protected theorem Continuous.piMap
-    {f : ∀ i, A i → B i} (hf : ∀ i, Continuous (f i)) : Continuous (Function.map f) :=
+    {f : ∀ i, A i → B i} (hf : ∀ i, Continuous (f i)) : Continuous (Function.piMap f) :=
   continuous_pi fun i ↦ (hf i).comp (continuous_apply i)
 
 theorem nhds_pi {a : ∀ i, A i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
@@ -804,7 +804,7 @@ theorem nhds_pi {a : ∀ i, A i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
 
 protected theorem IsOpenMap.piMap {f : ∀ i, A i → B i}
     (hfo : ∀ i, IsOpenMap (f i)) (hsurj : ∀ᶠ i in cofinite, Surjective (f i)) :
-    IsOpenMap (Function.map f) := by
+    IsOpenMap (Function.piMap f) := by
   refine IsOpenMap.of_nhds_le fun x ↦ ?_
   rw [nhds_pi, nhds_pi, map_piMap_pi hsurj]
   exact Filter.pi_mono fun i ↦ (hfo i).nhds_le _
@@ -831,11 +831,11 @@ theorem continuousAt_pi' {f : X → ∀ i, A i} {x : X} (hf : ∀ i, ContinuousA
 @[fun_prop]
 protected theorem ContinuousAt.piMap {f : ∀ i, A i → B i} {x : ∀ i, A i}
     (hf : ∀ i, ContinuousAt (f i) (x i)) :
-    ContinuousAt (Function.map f) x :=
+    ContinuousAt (Function.piMap f) x :=
   continuousAt_pi.2 fun i ↦ (hf i).comp (continuousAt_apply i x)
 
 protected lemma Topology.IsInducing.piMap {f : ∀ i, A i → B i}
-    (hf : ∀ i, IsInducing (f i)) : IsInducing (Function.map f) := by
+    (hf : ∀ i, IsInducing (f i)) : IsInducing (Function.piMap f) := by
   simp [isInducing_iff_nhds, nhds_pi, (hf _).nhds_eq_comap, Filter.pi_comap]
 
 protected lemma Topology.IsEmbedding.piMap {f : ∀ i, A i → B i}
