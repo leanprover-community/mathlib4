@@ -224,9 +224,11 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
 
-theorem kstar_def_nonempty (l : Language α) :
-    l∗ = ⟨{x | ∃ S : List (List α), x = S.flatten ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ []}⟩ := by
+theorem toSet_kstar (l : Language α) :
+    l∗.toSet = {x | ∃ S : List (List α), x = S.flatten ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ []} := by
   ext x; apply mem_kstar_iff_exists_nonempty
+
+@[deprecated (since := "2026-11-18")] alias kstar_def_nonempty := toSet_kstar
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
