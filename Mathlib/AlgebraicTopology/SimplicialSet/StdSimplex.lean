@@ -20,7 +20,6 @@ We define the standard simplices `Δ[n]` as simplicial sets.
 See files `SimplicialSet.Boundary` and `SimplicialSet.Horn`
 for their boundaries `∂Δ[n]` and horns `Λ[n, i]`.
 (The notations are available via `open Simplicial`.)
-
 -/
 
 @[expose] public section
@@ -343,6 +342,11 @@ lemma stdSimplex.yonedaEquiv_σ_comp
     {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
     yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
   (yonedaEquiv_naturality ..).symm
+
+lemma σ_zero_eq_yonedaEquiv_const {X : SSet.{u}} (x : X _⦋0⦌) :
+    X.σ 0 x = yonedaEquiv (const x) :=
+  yonedaEquiv.symm.injective
+    (by simp [← stdSimplex.σ_comp_yonedaEquiv_symm, yonedaEquiv_symm_zero])
 
 namespace Subcomplex
 
@@ -753,7 +757,7 @@ lemma nonDegenerate_top_dim (n : ℕ) :
 lemma not_hasDimensionLT (n : ℕ) (_ : HasDimensionLT.{u} Δ[n] n := by infer_instance) :
     False :=
   (lt_self_iff_false n).1 (Δ[n].dim_lt_of_nonDegenerate
-    (nonDegenerateEquiv.2 (.refl _)) n)
+    (nonDegenerateEquiv.invFun (.refl _)) n)
 
 /-- The bijection `(stdSimplex.obj n).op.obj d ≃ (stdSimplex.obj n).obj d` for any
 `n : ℕ` and `d : ℕ`. See also `stdSimplex.opIso`. -/

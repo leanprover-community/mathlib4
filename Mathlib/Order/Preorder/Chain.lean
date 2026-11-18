@@ -430,6 +430,6 @@ end PartialOrder
 
 instance [LinearOrder α] : Unique (Flag α) where
   default := ⟨univ, isChain_of_trichotomous _, fun s _ => s.subset_univ.antisymm'⟩
-  uniq s := SetLike.coe_injective <| s.3 (isChain_of_trichotomous _) <| subset_univ _
+  uniq s := SetLike.coe_injective <| s.max_chain' (isChain_of_trichotomous _) <| subset_univ _
 
 end Flag

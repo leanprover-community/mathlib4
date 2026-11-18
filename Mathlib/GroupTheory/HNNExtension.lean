@@ -29,7 +29,6 @@ and Hanna Neumann.
 - `HNNExtension.of_injective` : The canonical embedding `G →* HNNExtension G A B φ` is injective.
 - `HNNExtension.ReducedWord.toList_eq_nil_of_mem_of_range` : Britton's Lemma. If an element of
   `G` is represented by a reduced word, then this reduced word does not contain `t`.
-
 -/
 
 @[expose] public section

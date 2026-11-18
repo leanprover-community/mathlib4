@@ -45,7 +45,7 @@ theorem isUnit_of_eventually_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : ∀ i,
   rw [isUnit_iff_exists]
   use .mk (fun i ↦ (hx i).unit.inv) (by
     filter_upwards [hxr] with i ⟨h, hu⟩
-    have hu : (hx i).unit.1 * hu.unit.inv = 1 := Subtype.val_inj.2 hu.mul_val_inv
+    have hu : (hx i).unit.val * hu.unit.inv = 1 := Subtype.val_inj.2 hu.mul_val_inv
     simp [← Units.eq_inv_of_mul_eq_one_left hu])
   simp [RestrictedProduct.ext_iff]
 
@@ -70,8 +70,8 @@ set_option backward.isDefEq.respectTransparency false in
 the usual product and the condition that `x` is eventually in the units of `B i` along `𝓕`. -/
 def mkUnit (x : Π i, (R i)ˣ) (hx : ∀ᶠ i in 𝓕, x i ∈ (Submonoid.ofClass (B i)).units) :
     Πʳ i, [R i, B i]_[𝓕]ˣ where
-  val := ⟨fun i ↦ (x i).1, by filter_upwards [hx] using fun i hi ↦ hi.1⟩
-  inv := ⟨fun i ↦ (x i)⁻¹.1, by filter_upwards [hx] using fun i hi ↦ hi.2⟩
+  val := ⟨fun i ↦ (x i).val, by filter_upwards [hx] using fun i hi ↦ hi.1⟩
+  inv := ⟨fun i ↦ (x i)⁻¹.val, by filter_upwards [hx] using fun i hi ↦ hi.2⟩
   val_inv := by ext; simp
   inv_val := by ext; simp
 
@@ -86,7 +86,7 @@ def unitsEquiv : Πʳ i, [R i, B i]_[𝓕]ˣ ≃* Πʳ i, [(R i)ˣ, (Submonoid.o
   map_mul' _ _ := rfl
 
 @[simp] lemma unitsEquiv_apply (i : ι) (x : Πʳ i, [R i, B i]_[𝓕]ˣ) :
-    (unitsEquiv R x i) = x.1 i := rfl
+    (unitsEquiv R x i) = x.val i := rfl
 
 @[simp] lemma coe_unitsEquiv_apply (x : Πʳ i, [R i, B i]_[𝓕]ˣ) (i : ι) :
     (unitsEquiv R x).1 i = unitsEquiv R x i := rfl

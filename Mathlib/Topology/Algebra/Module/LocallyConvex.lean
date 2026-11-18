@@ -32,7 +32,6 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 - define a structure `LocallyConvexFilterBasis`, extending `ModuleFilterBasis`, for filter
   bases generating a locally convex topology
-
 -/
 
 public section

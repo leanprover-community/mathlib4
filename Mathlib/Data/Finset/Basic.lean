@@ -38,7 +38,6 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

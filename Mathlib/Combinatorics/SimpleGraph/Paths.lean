@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 
-/-!
+import Mathlib.SetTheory.Cardinal.NatCard
 
+/-!
 # Trail, Path, and Cycle
 
 In a simple graph,
@@ -113,7 +114,8 @@ lemma IsCircuit.not_nil {p : G.Walk v v} (hp : IsCircuit p) : ¬ p.Nil := (hp.ne
 
 theorem isCycle_def {u : V} (p : G.Walk u u) :
     p.IsCycle ↔ p.IsTrail ∧ p ≠ nil ∧ p.support.tail.Nodup :=
-  Iff.intro (fun h => ⟨h.1.1, h.1.2, h.2⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
+  Iff.intro (fun h => ⟨h.isCircuit.isTrail, h.isCircuit.ne_nil, h.support_nodup⟩) fun h =>
+    ⟨⟨h.1, h.2.1⟩, h.2.2⟩
 
 @[simp]
 theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
@@ -136,6 +138,13 @@ theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
+
+theorem IsTrail.length_ne_two {p : G.Walk v v} (hp : p.IsTrail) : p.length ≠ 2 := by
+  grind [cases Walk, length_nil, length_cons, isTrail_cons, edges_cons]
+
+theorem IsTrail.nil_of_length_le_two {p : G.Walk v v} (hp : p.IsTrail) (hlen : p.length ≤ 2) :
+    p.Nil := by
+  grind [length_ne_one, hp.length_ne_two]
 
 @[simp]
 theorem isTrail_concat (hadj : G.Adj v w) :
@@ -190,18 +199,41 @@ theorem IsTrail.count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h
     {e : Sym2 V} (he : e ∈ p.edges) : p.edges.count e = 1 :=
   List.count_eq_one_of_mem h.edges_nodup he
 
-theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
-    {w : G.Walk u v} (h : w.IsTrail) : w.length ≤ G.edgeFinset.card := by
+theorem IsTrail.length_le_encard_edgeSet (hp : p.IsTrail) : p.length ≤ G.edgeSet.encard := by
+  grw [← length_edges, hp.edges_nodup.length_le_encard p.edges_subset_edgeSet]
+
+theorem IsTrail.length_le_ncard_edgeSet [Finite G.edgeSet] (hp : p.IsTrail) :
+    p.length ≤ G.edgeSet.ncard := by
+  grw [← length_edges, hp.edges_nodup.length_le_ncard ‹_› p.edges_subset_edgeSet]
+
+theorem IsPath.length_lt_enatCard (hp : p.IsPath) : p.length < ENat.card V := by
+  simpa [← ENat.natCast_add_one_le_iff] using hp.support_nodup.length_le_enatCard
+
+theorem IsPath.length_lt_natCard [Finite V] (hp : p.IsPath) : p.length < Nat.card V := by
+  simpa [← ENat.natCast_add_one_le_iff] using hp.support_nodup.length_le_natCard
+
+theorem IsCycle.length_le_enatCard {p : G.Walk v v} (hp : p.IsCycle) : p.length ≤ ENat.card V := by
+  simpa using hp.support_nodup.length_le_enatCard
+
+theorem IsCycle.length_le_natCard [Finite V] {p : G.Walk v v} (hp : p.IsCycle) :
+    p.length ≤ Nat.card V := by
+  simpa using hp.support_nodup.length_le_natCard
+
+theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V} {w : G.Walk u v}
+    (h : w.IsTrail) : w.length ≤ G.edgeFinset.card := by
+  simp [edgeFinset, h.length_le_ncard_edgeSet]
+
+theorem isTrail_iff_ncard_edgeSet_eq_length : p.IsTrail ↔ p.edgeSet.ncard = p.length := by
   classical
-  let edges := w.edges.toFinset
-  have : edges.card = w.length := length_edges _ ▸ List.toFinset_card_of_nodup h.edges_nodup
-  rw [← this]
-  have : edges ⊆ G.edgeFinset := by
-    intro e h
-    refine mem_edgeFinset.mpr ?_
-    apply w.edges_subset_edgeSet
-    simpa [edges] using h
-  exact Finset.card_le_card this
+  rw [isTrail_def, ← length_edges, edgeSet, ← List.coe_toFinset, Set.ncard_coe_finset,
+    List.card_toFinset, ← List.dedup_eq_self, p.edges.dedup_sublist.length_eq]
+
+alias ⟨IsTrail.ncard_edgeSet, _⟩ := isTrail_iff_ncard_edgeSet_eq_length
+
+theorem isTrail_iff_encard_edgeSet_eq_length : p.IsTrail ↔ p.edgeSet.encard = p.length := by
+  simp [isTrail_iff_ncard_edgeSet_eq_length, edgeSet, ← p.edges.finite_toSet.cast_ncard_eq]
+
+alias ⟨IsTrail.encard_edgeSet, _⟩ := isTrail_iff_encard_edgeSet_eq_length
 
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
@@ -338,10 +370,7 @@ lemma IsCircuit.ne_bot : ∀ {p : G.Walk u u}, p.IsCircuit → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
 
 lemma IsCircuit.three_le_length {p : G.Walk v v} (hp : p.IsCircuit) : 3 ≤ p.length := by
-  match p with
-  | .cons hadj .nil => simp at hadj
-  | .cons _ <| .cons _ .nil => simpa using hp.isTrail
-  | .cons _ <| .cons _ <| .cons _ _ => grind [length_cons]
+  grind [hp.nil_of_length_le_two, hp.not_nil]
 
 lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
@@ -378,7 +407,7 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
 
 lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.Nil)
     (hcyc : (p.append q).IsCycle) : q.IsPath := by
-  have := hcyc.2
+  have := hcyc.support_nodup
   rw [tail_support_append, List.nodup_append'] at this
   rw [isPath_def, ← cons_tail_support, List.nodup_cons]
   exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
@@ -420,33 +449,31 @@ theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.l
   rwa [take_take, isPath_copy, Nat.min_eq_right <| by lia] at this
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
-lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
+lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [Nonempty V]
     [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsTrail),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsTrail), p'.length ≤ p.length := by
-  have := Fintype.ofFinite G.edgeSet
   let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsTrail ∧ p.length = n}
-  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
-  obtain ⟨x⟩ := N
-  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
+  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeSet.ncard)
+    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.length_le_ncard_edgeSet
+  obtain ⟨x⟩ := ‹Nonempty V›
+  obtain ⟨_, ⟨u, v, p, hp, _⟩, hn⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
-  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
+  have := hn ⟨u', v', p', hp', rfl⟩
   lia
 
 /-- There exists a path of maximal length in a non-empty graph on finite edges. -/
-lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
+lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [Nonempty V]
     [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsPath), p'.length ≤ p.length := by
-  have := Fintype.ofFinite G.edgeSet
   let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsPath ∧ p.length = n}
-  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_card_edgeFinset
-  obtain ⟨x⟩ := N
-  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
+  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeSet.ncard)
+    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_ncard_edgeSet
+  obtain ⟨x⟩ := ‹Nonempty V›
+  obtain ⟨_, ⟨u, v, p, hp, _⟩, hn⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
-  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
+  have := hn ⟨u', v', p', hp', rfl⟩
   lia
 
 /-! ### About paths -/
@@ -457,34 +484,23 @@ instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := by
 
 theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) :
     p.length < Fintype.card V := by
-  rw [Nat.lt_iff_add_one_le, ← length_support]
-  exact hp.support_nodup.length_le_card
+  grw [Fintype.card_eq_nat_card, hp.length_lt_natCard]
 
 lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
-    Set.InjOn p.getVert {i | i ≤ p.length} := by
-  intro n hn m hm hnm
-  induction p generalizing n m with
-  | nil => simp_all
+    Set.InjOn p.getVert (.Iic p.length) := by
+  induction p with
+  | nil => simp [Set.InjOn]
   | @cons v w u h p ihp =>
-    simp only [length_cons, Set.mem_ofPred_eq] at hn hm hnm
-    by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
-    · lia
-    · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
-      have hvp : v ∉ p.support := by aesop
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by lia⟩⟩)).elim
-    · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
-      have hvp : v ∉ p.support := by simp_all
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by lia⟩⟩)).elim
-    · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
-      have := ihp hp.of_cons (by lia : (n - 1) ≤ p.length)
-        (by lia : (m - 1) ≤ p.length) hnm
-      lia
+    rw [show ∀ n, Set.Iic n = insert 0 (.Ioc 0 n) by grind, Set.injOn_insert <| by simp]
+    constructor
+    · grind [getVert_cons, ihp hp.of_cons, Set.InjOn, length_cons]
+    · grind [getVert_cons, hp.support_nodup, getVert_eq_support_getElem]
 
 lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (h : ¬p.Nil) :
     p.getVert i = u ↔ i = 0 := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases h' : i ≤ p.length
-  · apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
+  · apply hp.getVert_injOn (by grind) (by grind)
     simp [h]
   · rw [p.getVert_of_length_le (le_of_not_ge h')] at h
     subst h
@@ -503,8 +519,8 @@ lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi :
   rw [this]
   lia
 
-lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
-    p.IsPath := by
+lemma IsPath.getVert_injOn_iff (p : G.Walk u v) :
+    Set.InjOn p.getVert (.Iic p.length) ↔ p.IsPath := by
   refine ⟨?_, fun a => a.getVert_injOn⟩
   induction p with
   | nil => simp
@@ -513,7 +529,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
     rw [cons_isPath_iff]
     refine ⟨ih (by
       intro n hn m hm hnm
-      simp only [Set.mem_ofPred_eq] at hn hm
+      simp only [Set.mem_Iic] at hn hm
       have := hinj
         (by rw [length_cons]; lia : n + 1 ≤ (q.cons h).length)
         (by rw [length_cons]; lia : m + 1 ≤ (q.cons h).length)
@@ -587,53 +603,37 @@ theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
 lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
-    Set.InjOn p.getVert {i | 1 ≤ i ∧ i ≤ p.length} := by
-  rw [← p.cons_tail_eq hpc.not_nil] at hpc
+    Set.InjOn p.getVert (.Ioc 0 p.length) := by
   intro n hn m hm hnm
-  rw [← SimpleGraph.Walk.length_tail_add_one
-    (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_ofPred] at hn hm
-  have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
-    (by lia : n - 1 ≤ p.tail.length) (by lia : m - 1 ≤ p.tail.length)
-    (by simp_all)
-  lia
+  have := hpc.isPath_tail.getVert_injOn (x₁ := n - 1) (x₂ := m - 1)
+  grind [getVert_tail, length_tail_add_one hpc.not_nil]
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
-    Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
+    Set.InjOn p.getVert (.Iio p.length) := by
   intro n hn m hm hnm
-  simp only [Set.mem_ofPred_eq] at *
+  suffices p.length - n = p.length - m by grind
   have := hpc.three_le_length
-  have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
-    (by simp only [Walk.length_reverse, Set.mem_ofPred_eq]; lia)
-    (by simp only [Walk.length_reverse, Set.mem_ofPred_eq]; lia)
-    (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n by lia, hnm,
-      show p.length - (p.length - m) = m by lia])
-  lia
+  have := p.length_reverse
+  exact hpc.reverse.getVert_injOn (by grind) (by grind) (by grind [getVert_reverse])
 
 lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p.penultimate := by
   intro h
   have := hp.three_le_length
-  apply hp.getVert_injOn (by simp; lia) (by simp; lia) at h
-  lia
+  grind [hp.getVert_injOn (by grind) (by grind) h]
 
 lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 ∨ i = p.length := by
   refine ⟨?_, by aesop⟩
   rw [or_iff_not_imp_left]
   intro h hi
-  exact hpc.getVert_injOn (by simp only [Set.mem_ofPred_eq]; lia)
-    (by simp only [Set.mem_ofPred_eq]; lia) (h.symm ▸ (Walk.getVert_length p).symm)
+  exact hpc.getVert_injOn (by grind) (by grind) (h.symm ▸ p.getVert_length.symm)
 
 lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   intro h'
-  have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
-  · rw [p.getVert_of_length_le (by lia : p.length ≤ i + 1),
-      hpc.getVert_endpoint_iff (by lia)] at h'
-    lia
-  have := hpc.getVert_injOn' (by simp only [Set.mem_ofPred_eq, Nat.sub_le_iff_le_add]; lia)
-    (by simp only [Set.mem_ofPred_eq]; lia) h'
-  lia
+  · grind [hpc.three_le_length, p.getVert_of_length_le, hpc.getVert_endpoint_iff]
+  grind [hpc.getVert_injOn' (by grind) (by grind) h']
 
 theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
     p.IsCycle ↔ p.tail.IsPath ∧ 3 ≤ p.length := by
@@ -722,8 +722,7 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
   rw [getVert_takeUntil hw hnl] at hn
   have := p.length_takeUntil_lt_length hw h.symm
-  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by simp)
-    (hn.symm ▸ p.getVert_length.symm)
+  have : n = p.length := hp.getVert_injOn (by grind) (by simp) (hn.symm ▸ p.getVert_length.symm)
   lia
 
 end WalkDecomp
@@ -1290,6 +1289,30 @@ theorem isCycle_transfer {p : G.Walk v v} (h) : (p.transfer H h).IsCycle ↔ p.I
   simp [isCycle_def]
 
 protected alias ⟨_, IsCycle.transfer⟩ := isCycle_transfer
+
+end Walk
+
+/-! ### Inducing -/
+
+namespace Walk
+
+variable {G} {u v : V} {s : Set V} {p : G.Walk u v} {c : G.Walk u u}
+
+@[simp]
+lemma isTrail_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsTrail ↔ p.IsTrail := by
+  simp [isTrail_def, edges_induce, List.nodup_map_iff, Injective.eq_def]
+
+@[simp]
+lemma isPath_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsPath ↔ p.IsPath := by
+  simp [isPath_def]
+
+@[simp]
+lemma isCircuit_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCircuit ↔ c.IsCircuit := by
+  simp [isCircuit_def]
+
+@[simp]
+lemma isCycle_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCycle ↔ c.IsCycle := by
+  simp [isCycle_def]
 
 end Walk
 

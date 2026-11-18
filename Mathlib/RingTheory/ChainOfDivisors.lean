@@ -10,7 +10,6 @@ public import Mathlib.Order.Atoms
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
-
 # Chains of divisors
 
 The results in this file show that in the monoid `Associates M` of a `UniqueFactorizationMonoid`
@@ -33,7 +32,6 @@ and the set of factors of `a`.
 - Create a structure for chains of divisors.
 - Simplify proof of `mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors` using
   `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.
-
 -/
 
 @[expose] public section
@@ -51,7 +49,7 @@ theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔
             rw [ha] at h
             apply isUnit_of_associated_mul (show Associated (p * b) p by conv_rhs => rw [h]) h₁)⟩,
     fun hp =>
-    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using! hp.1,
+    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using! hp.not_isUnit,
       fun b ⟨⟨a, hab⟩, hb⟩ =>
       (hp.isUnit_or_isUnit hab).casesOn
         (fun hb => show b = ⊥ by rwa [Associates.isUnit_iff_eq_one, ← Associates.bot_eq_one] at hb)
@@ -209,7 +207,7 @@ theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : IsPrimePow q :=
   ⟨c 1, n, irreducible_iff_prime.mp (second_of_chain_is_irreducible hn h₁ (@h₂) hq),
-    zero_lt_iff.mpr hn, (eq_pow_second_of_chain_of_has_chain hn h₁ (@h₂) hq).symm⟩
+    hn.pos, (eq_pow_second_of_chain_of_has_chain hn h₁ (@h₂) hq).symm⟩
 
 end DivisorChain
 
@@ -246,11 +244,12 @@ open DivisorChain
 
 set_option linter.overlappingInstances false
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_image_of_prime_by_factor_orderIso_dvd
-    {m p : Associates M} {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
+    {m p : Associates M} {n : Associates N} (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
     (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ^ s ≤ n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
   by_cases hs : s = 0
   · simp [← Associates.bot_eq_one, hs]
   suffices (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ^ s =
@@ -278,7 +277,6 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
     simpa [Subtype.mk_le_mk] using hc₁''.2 ⟨i, rfl⟩
   exact ne_zero_of_dvd_ne_zero hn (Subtype.prop (d ⟨c₁ 1 ^ s, _⟩))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
@@ -324,7 +322,7 @@ theorem emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso {m p : Ass
   · simp [hm] at hp
   rw [FiniteMultiplicity.of_prime_left (prime_of_normalized_factor p hp) hm
     |>.emultiplicity_eq_multiplicity, ← pow_dvd_iff_le_emultiplicity]
-  apply pow_image_of_prime_by_factor_orderIso_dvd hn hp d (pow_multiplicity_dvd ..)
+  apply pow_image_of_prime_by_factor_orderIso_dvd hp d (pow_multiplicity_dvd ..)
 
 theorem emultiplicity_prime_eq_emultiplicity_image_by_factor_orderIso {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :

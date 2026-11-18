@@ -487,8 +487,10 @@ theorem right_inv_eq_right_inv (h : A * B = 1) (g : A * C = 1) : B = C := by
   rw [← inv_eq_right_inv h, ← inv_eq_right_inv g]
 
 /-- The right inverse of matrix A equals the left inverse of A when they exist. -/
-theorem right_inv_eq_left_inv (h : A * B = 1) (g : C * A = 1) : B = C := by
-  rw [← inv_eq_right_inv h, ← inv_eq_left_inv g]
+theorem right_inv_eq_left_inv {m n α : Type*}
+    [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [Semiring α]
+    {A : Matrix m n α} {B C : Matrix n m α} (h : A * B = 1) (g : C * A = 1) : B = C := by
+  rw [← Matrix.one_mul B, ← g, Matrix.mul_assoc, h, Matrix.mul_one]
 
 theorem inv_inj (h : A⁻¹ = B⁻¹) (h' : IsUnit A.det) : A = B := by
   refine left_inv_eq_left_inv (mul_nonsing_inv _ h') ?_
@@ -701,7 +703,7 @@ def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ 
   invertibleOfRightInverse _ ((⅟(A.submatrix e₁ e₂)).submatrix e₂.symm e₁.symm) <| by
     have : A = (A.submatrix e₁ e₂).submatrix e₁.symm e₂.symm := by simp
     conv in _ * _ =>
-      congr
+      enter [1]
       rw [this]
     rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 

@@ -163,7 +163,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
     rfl
   rw [this]
   have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
-  simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
+  simp only [map_smul, eNorm_smul, ← Real.eNorm_of_nonneg this, f_im]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under an antitone reparametrization. -/
@@ -196,7 +196,7 @@ lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Antit
     rfl
   rw [this]
   have : 0 ≤ -derivWithin f (Icc a b) t := by simp [hf.derivWithin_nonpos]
-  simp only [map_smul, enorm_smul, f_im, ← Real.enorm_of_nonneg this, enorm_neg]
+  simp only [map_smul, eNorm_smul, f_im, ← Real.eNorm_of_nonneg this, eNorm_neg]
 
 section
 

@@ -59,7 +59,6 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 
 - Add `Asymptotics.IsEquivalentTVS`.
 - Prove a version of `Asymptotics.isBigO_one` for `IsBigOTVS`.
-
 -/
 
 @[expose] public section
@@ -215,7 +214,7 @@ protected theorem IsThetaTVS.rfl : f =Θ[𝕜; l] f := .refl f l
 
 theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
-  rcases h.1 U hU with ⟨V, hV₀, hV⟩
+  rcases h.exists_eventuallyLE_mul U hU with ⟨V, hV₀, hV⟩
   use V, hV₀
   simpa using hV 1 one_ne_zero
 
@@ -237,8 +236,8 @@ variable {k : α → G}
 @[trans]
 theorem IsBigOTVS.trans (hfg : f =O[𝕜; l] g) (hgk : g =O[𝕜; l] k) : f =O[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
-  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
+  obtain ⟨V, hV₀, hV⟩ := hfg.exists_eventuallyLE U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.exists_eventuallyLE V hV₀
   refine ⟨W, hW₀, ?_⟩
   filter_upwards [hV, hW] with x hx₁ hx₂ using hx₁.trans hx₂
 
@@ -273,8 +272,8 @@ instance instTransIsThetaOTVS :
 theorem IsLittleOTVS.trans_isBigOTVS (hfg : f =o[𝕜; l] g) (hgk : g =O[𝕜; l] k) :
     f =o[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
-  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
+  obtain ⟨V, hV₀, hV⟩ := hfg.exists_eventuallyLE_mul U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.exists_eventuallyLE V hV₀
   refine ⟨W, hW₀, fun ε hε ↦ ?_⟩
   filter_upwards [hV ε hε, hW] with x hx₁ hx₂ using hx₁.trans <| by gcongr
 
@@ -293,8 +292,8 @@ instance instTransIsLittleOTVSIsThetaTVS :
 theorem IsBigOTVS.trans_isLittleOTVS (hfg : f =O[𝕜; l] g) (hgk : g =o[𝕜; l] k) :
     f =o[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
-  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
+  obtain ⟨V, hV₀, hV⟩ := hfg.exists_eventuallyLE U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.exists_eventuallyLE_mul V hV₀
   refine ⟨W, hW₀, fun ε hε ↦ ?_⟩
   filter_upwards [hV, hW ε hε] with x hx₁ hx₂ using hx₁.trans hx₂
 
@@ -360,13 +359,13 @@ theorem IsBigOTVS.of_egauge_le_mul [ContinuousConstSMul 𝕜 F] {ι} {p : ι →
   rw [hb.isBigOTVS_iff (basis_sets _)]
   intro i hi
   rcases h i hi with ⟨C, V, hV₀, hV⟩
-  rcases NormedField.exists_lt_nnnorm 𝕜 C with ⟨c, hc⟩
+  rcases NormedField.exists_lt_nnNorm 𝕜 C with ⟨c, hc⟩
   have hc₀ : c ≠ 0 := by rintro rfl; simp at hc
   refine ⟨c⁻¹ • V, (set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hV₀, ?_⟩
   refine hV.trans <| .of_forall fun x ↦ ?_
   simp only
   grw [hc]
-  simp [egauge_smul_left, hc₀, enorm_eq_nnnorm, ENNReal.div_eq_inv_mul]
+  simp [egauge_smul_left, hc₀, eNorm_eq_nnNorm, ENNReal.div_eq_inv_mul]
 
 theorem isLittleOTVS_iff_smallSets :
     f =o[𝕜; l] g ↔ ∀ U ∈ 𝓝 0, ∀ᶠ V in (𝓝 0).smallSets, ∀ ε ≠ (0 : ℝ≥0),
@@ -395,10 +394,11 @@ theorem isBigOTVS_map {k : β → α} {l : Filter β} :
   simp [isBigOTVS_iff, EventuallyLE]
 
 lemma IsLittleOTVS.mono (hf : f =o[𝕜; l₁] g) (h : l₂ ≤ l₁) : f =o[𝕜; l₂] g :=
-  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.1 U hU; ⟨V, hV0, fun ε hε ↦ (hV ε hε).filter_mono h⟩⟩
+  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.exists_eventuallyLE_mul U hU;
+    ⟨V, hV0, fun ε hε ↦ (hV ε hε).filter_mono h⟩⟩
 
 lemma IsBigOTVS.mono (hf : f =O[𝕜; l₁] g) (h : l₂ ≤ l₁) : f =O[𝕜; l₂] g :=
-  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.1 U hU; ⟨V, hV0, hV.filter_mono h⟩⟩
+  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.exists_eventuallyLE U hU; ⟨V, hV0, hV.filter_mono h⟩⟩
 
 lemma IsLittleOTVS.comp_tendsto {k : β → α} {lb : Filter β} (h : f =o[𝕜; l] g)
     (hk : Tendsto k lb l) : (f ∘ k) =o[𝕜; lb] (g ∘ k) :=
@@ -745,7 +745,7 @@ lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g
     (h : g =o[𝕜; l] f) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   rw [← isLittleOTVS_one (𝕜 := 𝕜), isLittleOTVS_iff]
   intro U hU
-  rcases (h.smul_left f⁻¹).1 U hU with ⟨V, hV₀, hV⟩
+  rcases (h.smul_left f⁻¹).exists_eventuallyLE_mul U hU with ⟨V, hV₀, hV⟩
   refine ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x hx ↦ hx.trans ?_⟩
   by_cases hx₀ : f x = 0 <;> simp [hx₀, egauge_zero_right _ (Filter.nonempty_of_mem hV₀)]
 
@@ -835,7 +835,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
     norm_cast at hr₀
     refine ⟨(‖c‖₊ / r : ℝ≥0), hr.mono fun x hx ↦ ?_⟩
     suffices ‖f x‖ₑ ≤ (‖c‖₊ / r : ℝ≥0) * ‖g x‖ₑ by
-      simp only [enorm_eq_nnnorm, ← coe_nnnorm] at this ⊢
+      simp only [eNorm_eq_nnNorm, ← coe_nnNorm] at this ⊢
       exact mod_cast this
     calc
       ‖f x‖ₑ ≤ egauge 𝕜 (ball 0 1) (f x) := le_egauge_unitBall ..
@@ -843,7 +843,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
       _ ≤ ‖c‖ₑ * ‖g x‖ₑ / ↑r :=
         egauge_ball_le_of_one_lt_norm hc <| .inl hr₀.ne'
       _ = (‖c‖₊ / r : ℝ≥0) * ‖g x‖ₑ := by
-        simp [hr₀.ne', ENNReal.mul_div_right_comm, enorm_eq_nnnorm]
+        simp [hr₀.ne', ENNReal.mul_div_right_comm, eNorm_eq_nnNorm]
   · rw [nhds_basis_ball.isBigOTVS_iff nhds_basis_ball, isBigO_iff']
     have hc₀ : 0 < ‖c‖₊ := one_pos.trans hc
     rintro ⟨C, hC₀, hC⟩ r hr₀
@@ -855,7 +855,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
         egauge_ball_le_of_one_lt_norm hc <| .inl hr₀.ne'
       _ ≤ ‖c‖ₑ * (C * ‖g x‖ₑ) / r := by
         gcongr
-        simp only [enorm_eq_nnnorm, ← coe_nnnorm] at hx ⊢
+        simp only [eNorm_eq_nnNorm, ← coe_nnNorm] at hx ⊢
         exact mod_cast hx
       _ = ‖g x‖ₑ / (r / (C * ‖c‖₊) : ℝ≥0) := by
         simp_all [pos_iff_ne_zero, ENNReal.div_eq_inv_mul, ENNReal.mul_inv]

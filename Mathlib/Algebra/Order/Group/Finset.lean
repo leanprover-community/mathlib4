@@ -34,7 +34,7 @@ variable {α : Type*} [DecidableEq α]
   | n + 1, _ => by
     by_cases h : n = 0
     · rw [h, zero_add, one_nsmul]
-    · rw [add_nsmul, toFinset_add, one_nsmul, toFinset_nsmul s n h, Finset.union_idempotent]
+    · rw [add_nsmul, toFinset_add, one_nsmul, toFinset_nsmul s n h, Finset.union_self]
 
 lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
     s.toFinset = {a} ↔ card s ≠ 0 ∧ s = card s • {a} := by

@@ -29,7 +29,6 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
   Hall-subgroup (the commutator subgroup has cardinality coprime to its index).
 * `isZGroup_iff_exists_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic
   to a semidirect product of two cyclic subgroups of coprime order.
-
 -/
 
 public section
@@ -95,7 +94,7 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   let P : Sylow p G := default
   have hP := isZGroup p hp P
   let f := MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)
-  refine lt_of_le_of_lt (Abelianization.commutator_le_ker f) ?_
+  refine lt_of_le_of_lt (Group.Abelianization.commutator_le_ker f) ?_
   have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
   contrapose h
   rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
@@ -122,7 +121,7 @@ theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card 
   let P : Sylow p G := default
   rw [← hp.pow_dvd_iff_le_factorization Monoid.exponent_ne_zero_of_finite,
       ← P.card_eq_multiplicity, ← (isZGroup p hp P).exponent_eq_card]
-  exact Monoid.exponent_dvd_of_monoidHom P.1.subtype P.1.subtype_injective
+  exact Monoid.exponent_dvd_of_monoidHom P.toSubgroup.subtype P.toSubgroup.subtype_injective
 
 open scoped IsMulCommutative in
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
@@ -134,8 +133,8 @@ instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
 
 /-- A finite Z-group has cyclic abelianization. -/
-instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Abelianization G) :=
-  let _ : IsZGroup (Abelianization G) := inferInstanceAs (IsZGroup (G ⧸ commutator G))
+instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Group.Abelianization G) :=
+  let _ : IsZGroup (Group.Abelianization G) := inferInstanceAs (IsZGroup (G ⧸ commutator G))
   inferInstance
 
 end Nilpotent
@@ -160,15 +159,16 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
       rw [Subgroup.map_subtype_commutator] at f
       exact isCyclic_of_surjective f f.surjective
     suffices h : commutator (commutator H) ≤ Subgroup.center (commutator H) by
-      rw [← Abelianization.ker_of (commutator H)] at h
-      let _ := commGroupOfCyclicCenterQuotient Abelianization.of h
+      rw [← Group.Abelianization.ker_of (commutator H)] at h
+      let _ := commGroupOfCyclicCenterQuotient Group.Abelianization.of h
       infer_instance
     suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
         Subgroup.centralizer (commutator H) by
       simpa [IsConcreteLE.le_iff, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
     let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
-    have h := Abelianization.commutator_le_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
+    have h := Group.Abelianization.commutator_le_ker
+      ⁅commutator H, commutator H⁆.normalizerMonoidHom
     rwa [Subgroup.normalizerMonoidHom_ker, Subgroup.normalizer_eq_top,
       ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,
         Subgroup.map_subgroupOf_eq_of_le le_top] at h
@@ -234,7 +234,7 @@ variable [Finite G] (P : Sylow p G) [IsCyclic P]
 /-- If a normal cyclic Sylow `p`-subgroup `P` has a complement `K`, then either `⁅K, P⁆ = ⊥` or
   `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
-    (h : K.IsComplement' P) : ⁅K, P.1⁆ = ⊥ ∨ ⁅K, P.1⁆ = P :=
+    (h : K.IsComplement' P) : ⁅K, P.toSubgroup⁆ = ⊥ ∨ ⁅K, P.toSubgroup⁆ = P :=
   P.isPGroup.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
     (h.index_eq_card ▸ P.card_coprime_index)
 
@@ -275,7 +275,7 @@ theorem not_dvd_card_commutator_or_not_dvd_index_commutator :
   refine (normalizer_le_centralizer_or_le_commutator P).imp ?_ ?_ <;>
       refine fun hP h ↦ P.not_dvd_index (h.trans ?_)
   · rw [(MonoidHom.ker_transferSylow_isComplement' P hP).index_eq_card]
-    exact Subgroup.card_dvd_of_le (Abelianization.commutator_le_ker _)
+    exact Subgroup.card_dvd_of_le (Group.Abelianization.commutator_le_ker _)
   · exact Subgroup.index_dvd_of_le hP
 
 end Sylow
@@ -322,7 +322,7 @@ theorem isZGroup_iff_exists_mulEquiv [Finite G] :
       IsCyclic H ∧ IsCyclic N ∧ (Nat.card N).Coprime (Nat.card H) := by
   refine ⟨fun hG ↦ ?_, ?_⟩
   · obtain ⟨H, hH⟩ := Subgroup.exists_right_complement'_of_coprime hG.coprime_commutator_index
-    have h1 : Abelianization G ≃* H := hH.symm.QuotientMulEquiv
+    have h1 : Group.Abelianization G ≃* H := hH.symm.QuotientMulEquiv
     refine ⟨commutator G, H, _, (SemidirectProduct.mulEquivSubgroup hH).symm,
       isCyclic_of_surjective _ h1.surjective, hG.isCyclic_commutator, ?_⟩
     exact Nat.card_congr h1.toEquiv ▸ hG.coprime_commutator_index

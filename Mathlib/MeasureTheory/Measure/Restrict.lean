@@ -102,7 +102,7 @@ theorem restrict_mono_ae (h : s ≤ᵐ[μ] t) : μ.restrict s ≤ μ.restrict t 
   restrict_mono' h (le_refl μ)
 
 theorem restrict_congr_set (h : s =ᵐ[μ] t) : μ.restrict s = μ.restrict t :=
-  le_antisymm (restrict_mono_ae h.le) (restrict_mono_ae h.symm.le)
+  le_antisymm (restrict_mono_ae h.subset) (restrict_mono_ae h.symm.subset)
 
 /-- If `s` is a measurable set, then the outer measure of `t` with respect to the restriction of
 the measure to `s` equals the outer measure of `t ∩ s`. This is an alternate version of
@@ -749,14 +749,14 @@ lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
   · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
       h.exists_measurable_superset_ae_eq
     have A : t' ∩ s =ᵐ[μ] t ∩ s := by
-      have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t') = (x ∈ t) :=
+      have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) :=
         (ae_restrict_iff'₀ hs).1 t't
       filter_upwards [this] with y hy
       simpa only [eq_iff_iff, mem_inter_iff, and_congr_left_iff] using hy
     obtain ⟨s', -, hs', s's⟩ : ∃ s' ⊇ s, MeasurableSet s' ∧ s' =ᵐ[μ] s :=
       hs.exists_measurable_superset_ae_eq
     have B : t' ∩ s' =ᵐ[μ] t' ∩ s :=
-      ae_eq_set_inter (EventuallyEq.refl _ _) s's
+      ae_eq_set_inter .rfl s's
     exact (ht'.inter hs').nullMeasurableSet.congr (B.trans A)
   · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by
       apply NullMeasurableSet.of_null
@@ -776,7 +776,6 @@ lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     filter_upwards [t't] with x hx using by simpa using! hx
   have : t' =ᵐ[μ] t := by
     filter_upwards [this] with x hx
-    simp only [eq_iff_iff]
     tauto
   exact ht'.nullMeasurableSet.congr this
 

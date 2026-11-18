@@ -311,6 +311,44 @@ theorem Preconnected.exists_isPath {G : SimpleGraph V} (h : G.Preconnected) (u v
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
 
+variable {G} in
+theorem Preconnected.finite_dart_iff_finite (h : G.Preconnected) : Finite G.Dart ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ inferInstance⟩
+  nontriviality V
+  exact finite_dart_iff_finite_of_support_eq_univ h.support_eq_univ |>.mp hfin
+
+variable {G} in
+theorem Preconnected.infinite_dart_iff_infinite (h : G.Preconnected) :
+    Infinite G.Dart ↔ Infinite V := by
+  contrapose!
+  exact h.finite_dart_iff_finite
+
+variable {G} in
+theorem Preconnected.finite_support_iff_finite (h : G.Preconnected) :
+    G.support.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ G.support.toFinite⟩
+  nontriviality V
+  rwa [h.support_eq_univ, Set.finite_univ_iff] at hfin
+
+variable {G} in
+theorem Preconnected.infinite_support_iff_infinite (h : G.Preconnected) :
+    G.support.Infinite ↔ Infinite V := by
+  contrapose!
+  exact h.finite_support_iff_finite
+
+variable {G} in
+theorem Preconnected.finite_edgeSet_iff_finite (h : G.Preconnected) :
+    G.edgeSet.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ G.edgeSet.toFinite⟩
+  nontriviality V
+  rwa [finite_edgeSet_iff_finite_support, h.finite_support_iff_finite] at hfin
+
+variable {G} in
+theorem Preconnected.infinite_edgeSet_iff_infinite (h : G.Preconnected) :
+    G.edgeSet.Infinite ↔ Infinite V := by
+  contrapose!
+  exact h.finite_edgeSet_iff_finite
+
 /-- A graph is connected if it's preconnected and contains at least one vertex.
 This follows the convention observed by mathlib that something is connected iff it has
 exactly one connected component.
@@ -1035,5 +1073,13 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   rintro w hwp
   by_contra hws
   exact hp.notMem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
+
+/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
+lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
+    [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
+  have : Nontrivial V := nontrivial_of_degree_ne_zero <| ne_zero_of_eq_one hdeg
+  have := Set.nonempty_compl_of_nontrivial v |>.to_subtype
+  refine ⟨hconn.preconnected.induce_of_degree_eq_one ?_⟩
+  simp [← Set.ncard_le_one_iff_subsingleton, hdeg]
 
 end SimpleGraph

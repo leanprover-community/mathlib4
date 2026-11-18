@@ -63,7 +63,6 @@ Given a `MulAction` of `G` on `α` and `s : Set α`,
   * `SubMulAction.ofFixingSubgroup.append`: appends
     an enumeration of `ofFixingSubgroup M s` at the end
     of an enumeration of `s`, as an equivariant map.
-
 -/
 
 @[expose] public section

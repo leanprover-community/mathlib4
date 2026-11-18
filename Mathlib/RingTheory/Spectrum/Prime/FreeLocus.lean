@@ -16,7 +16,6 @@ public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
-
 # The free locus of a module
 
 ## Main definitions and results
@@ -30,7 +29,6 @@ Let `M` be a finitely presented `R`-module.
 - `Module.rankAtStalk`: The function `Spec R → ℕ` sending `x` to `rank_{Rₓ} Mₓ`.
 - `Module.isLocallyConstant_rankAtStalk`:
   If `M` is flat over `R`, then `rankAtStalk` is locally constant.
-
 -/
 
 @[expose] public section
@@ -71,8 +69,8 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
     (Rₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal] :
-    p ∈ freeLocus R M ↔ Module.Free Rₚ (Rₚ ⊗[R] M) := by
-  exact mem_freeLocus_of_isLocalization p Rₚ (f := TensorProduct.mk R Rₚ M 1)
+    p ∈ freeLocus R M ↔ Module.Free Rₚ (Rₚ ⊗[R] M) :=
+  mem_freeLocus_of_isLocalization p Rₚ (f := TensorProduct.mk R Rₚ M 1)
 
 lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
     freeLocus R M = freeLocus R M' := by
@@ -173,7 +171,7 @@ lemma isOpen_freeLocus [Module.FinitePresentation R M] :
   obtain ⟨r, hr, hr', _⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
     x.asIdeal.primeCompl (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
     (Localization.AtPrime x.asIdeal)
-  exact ⟨basicOpen r, basicOpen_subset_freeLocus_iff.mpr inferInstance, (basicOpen r).2, hr⟩
+  exact ⟨basicOpen r, basicOpen_subset_freeLocus_iff.mpr inferInstance, (basicOpen r).is_open', hr⟩
 
 variable (M) in
 /-- The rank of `M` at the stalk of `p` is the rank of `Mₚ` as a `Rₚ`-module. -/
@@ -188,7 +186,8 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
   obtain ⟨f, hf, hf', hf''⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
     x.asIdeal.primeCompl (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
     (Localization.AtPrime x.asIdeal)
-  refine ⟨Subtype.val ⁻¹' basicOpen f, (basicOpen f).2.preimage continuous_subtype_val, hf, ?_⟩
+  refine ⟨Subtype.val ⁻¹' basicOpen f, (basicOpen f).is_open'.preimage continuous_subtype_val,
+    hf, ?_⟩
   rintro ⟨p, hp''⟩ hp
   let p' := Algebra.algebraMapSubmonoid (Localization (.powers f)) p.asIdeal.primeCompl
   have hp' : Submonoid.powers f ≤ p.asIdeal.primeCompl := by
