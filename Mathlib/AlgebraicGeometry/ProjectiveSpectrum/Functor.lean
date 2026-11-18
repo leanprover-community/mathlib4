@@ -191,8 +191,9 @@ Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
   rw [awayι, awayι, Category.assoc, ι_comp_map, ← Category.assoc, ← Category.assoc]
   congr 1
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
-  refine ext_to_Spec <| (cancel_mono (basicOpen ℬ (f s)).topIso.hom).mp ?_
-  simp [basicOpenIsoSpec_hom, basicOpenToSpec_app_top, awayToSection_comp_appLE _ _ hs]
+  simp only [basicOpenIsoSpec_hom, basicOpenToSpec, Category.assoc, ← Spec.map_comp,
+    ← Scheme.Opens.toSpecΓ_SpecMap_appLE_assoc, map_preimage_basicOpen,
+    awayToSection_comp_appLE _ _ hs]
 
 /-- Given a graded ring hom `f : 𝒜 →+*ᵍ ℬ` satisfying the hypothesis `ℬ₊ ≤ 𝒜₊.map f`, we obtain
 an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positive degree. -/
