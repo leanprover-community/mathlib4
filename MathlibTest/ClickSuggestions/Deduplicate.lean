@@ -48,3 +48,16 @@ check_same
 check_same
   ∀ x : Nat, x = 1,
   ∀ x : Nat, x = haveI : One Nat := ⟨0 + 1 + 0⟩; 1
+
+-- implicit arguments are checked at `implicit` transparency
+def MyNat := Nat
+
+check_not_same ∀ _ : Nat, True, ∀ _ : MyNat, True
+check_not_same ∃ _ : Nat, True, ∃ _ : MyNat, True
+check_not_same @id Nat Nat.zero, @id MyNat Nat.zero
+
+attribute [implicit_reducible] MyNat
+
+check_same ∀ _ : Nat, True, ∀ _ : MyNat, True
+check_same ∃ _ : Nat, True, ∃ _ : MyNat, True
+check_same @id Nat Nat.zero, @id MyNat Nat.zero
