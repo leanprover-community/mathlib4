@@ -6,6 +6,9 @@ Authors: E. S. Markov
 module
 
 public import Mathlib.Analysis.Normed.Module.Proximinal
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Birkhoff–James Orthogonality, Linear Metric Selectors, and Lipschitz Stability
