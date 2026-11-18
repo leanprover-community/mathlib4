@@ -499,8 +499,8 @@ theorem Circle.isOpen_ker_of_continuous {G : Type*} [Group G] [TopologicalSpace 
     (hχ : Continuous χ) : IsOpen (χ.ker : Set G) := by
   have : χ 1 ∈ centeredArc (π / 2) := by simp [mem_centeredArc (half_le_self pi_nonneg), pi_pos]
   obtain ⟨U, hU⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
-    ((isOpen_centeredArc (π / 2)).preimage hχ) this
-  refine Subgroup.isOpen_mono (H₁ := U.toSubgroup) (fun g hg ↦ ?_) U.isOpen
+    ((isOpen_centeredArc _).preimage hχ) this
+  refine Subgroup.isOpen_mono (fun g hg ↦ ?_) U.isOpen
   exact eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n _ ↦ map_pow χ g n ▸ hU (pow_mem hg n)
 
 /- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
