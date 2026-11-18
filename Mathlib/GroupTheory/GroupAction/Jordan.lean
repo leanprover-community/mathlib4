@@ -41,7 +41,6 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
   a cycle of *prime* order contains the alternating group (Wielandt, 13.9).
 
 - Prove the stronger versions of the technical lemmas of Jordan (Wielandt, 13.1').
-
 -/
 
 public section
@@ -104,8 +103,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       → IsMultiplyPretransitive G α 2)
     ∧ (IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)
       → IsMultiplyPreprimitive G α 2) := by
-  induction n using Nat.strong_induction_on generalizing α G with
-  | h n hrec =>
+  induction n using Nat.strong_induction_on generalizing α G with | ind n hrec
   have : Finite α := Nat.finite_of_card_ne_zero <| ne_zero_of_lt hsn'
   have hs_ne_univ : s ≠ Set.univ := by
     intro hs
@@ -179,7 +177,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     -- apply Rudio to get g ∈ G such that a ∈ g • sᶜ, b ∉ g • sᶜ
     obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       sᶜ.toFinite (Set.nonempty_of_mem ha)
-      (by simpa [Set.nonempty_iff_ne_empty] using hs_nonempty)
+      (by simpa using hs_nonempty)
       hab
     let t := s ∩ g • s
     have ha : a ∉ s ∪ g • s := by

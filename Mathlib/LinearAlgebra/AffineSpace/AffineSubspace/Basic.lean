@@ -19,7 +19,6 @@ and the affine span of a set of points.
 
 * `AffineSubspace.Parallel`, notation `∥`, gives the property of two affine subspaces being
   parallel (one being a translate of the other).
-
 -/
 
 @[expose] public section
@@ -534,6 +533,10 @@ theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
 
+theorem AffineMap.vectorSpan_preimage_le (s : Set P₂) :
+    vectorSpan k (f ⁻¹' s) ≤ (vectorSpan k s).comap f.linear := by
+  simp [← Submodule.map_le_iff_le_comap, map_vectorSpan, vectorSpan_mono]
+
 namespace AffineSubspace
 
 /-- The image of an affine subspace under an affine map as an affine subspace. -/
@@ -764,6 +767,17 @@ theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
+theorem direction_comap_le (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) :
+    (s.comap f).direction ≤ s.direction.comap f.linear :=
+  f.vectorSpan_preimage_le _
+
+theorem direction_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₂} (h : s.comap f ≠ ⊥) :
+    (s.comap f).direction = s.direction.comap f.linear := by
+  ext v
+  obtain ⟨p, hp⟩ := (nonempty_iff_ne_bot _).mpr h
+  have : f p ∈ s := by simpa
+  simp [← vadd_mem_iff_mem_direction _ hp, ← vadd_mem_iff_mem_direction _ this]
+
 -- lemmas about map and comap derived from the Galois connection
 theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
@@ -893,8 +907,7 @@ theorem _root_.affineSpan_prod_eq (s : Set P) (t : Set Q) :
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
   apply AffineSubspace.ext_of_direction_eq
-  · simp [direction_prod_eq, Set.nonempty_iff_ne_empty.mp, hs, ht, direction_affineSpan,
-      vectorSpan_prod_eq]
+  · simp [direction_prod_eq, hs, ht, direction_affineSpan, vectorSpan_prod_eq]
   · obtain ⟨x, hx⟩ := hs
     obtain ⟨y, hy⟩ := ht
     use ⟨x, y⟩
@@ -991,8 +1004,7 @@ theorem affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty {s₁ s�
 theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
     line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔
       vectorSpan k ({p₁, p₂} : Set P) = vectorSpan k ({p₃, p₄} : Set P) := by
-  simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty, ←
-    not_nonempty_iff_eq_empty]
+  simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty]
 
 lemma affineSpan_pair_parallel_iff_exists_unit_smul' [IsDomain k] [Module.IsTorsionFree k V]
     {p₁ q₁ p₂ q₂ : P} :

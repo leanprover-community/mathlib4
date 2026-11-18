@@ -12,6 +12,9 @@ public import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 import Mathlib.Data.Int.Interval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Archimedean groups are either discrete or densely ordered
 
@@ -106,7 +109,7 @@ this is a cyclic subgroup. -/]
 theorem Subgroup.isCyclic_of_disjoint_Ioo_one {G : Type*} [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [MulArchimedean G] {H : Subgroup G} {a : G} (h₀ : 1 < a)
     (hd : Disjoint (H : Set G) (Ioo 1 a)) : IsCyclic H := by
-  rw [H.isCyclic_iff_exists_zpowers_eq_top]
+  rw [H.isCyclic_iff_exists_zpowers_eq]
   rcases eq_or_ne H ⊥ with rfl | hbot
   · simp
   · exact (exists_isLeast_one_lt hbot h₀ hd).imp fun _ => zpowers_eq_of_isLeast_mem_and_one_lt
@@ -467,22 +470,21 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_
     simp only [mem_ofPred_eq, mem_sdiff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
       and_true]
     refine (inv_le_comm₀ ?_ ?_).mp <;>
-    simp [zero_lt_iff, hg, hx]
+    simp [pos_iff_ne_zero, hg, hx]
   · simp only [mem_ofPred_eq, Function.onFun, gt_iff_lt]
     intro a ha b _
     refine inv_strictAnti₀ ?_
     contrapose! ha
-    simp only [le_zero_iff] at ha
-    simp [zero_lt_iff, ha, hg]
+    simp [pos_iff_ne_zero, ha.eq_zero, hg]
   · intro x
     simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, and_imp]
     intro hxg hx
     refine inv_anti₀ ?_ hxg
-    simp [zero_lt_iff, hx]
+    simp [pos_iff_ne_zero, hx]
   · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
-    simp [zero_lt_iff, hb0]
+    simp [pos_iff_ne_zero, hb0]
 
 @[deprecated (since := "2026-07-09")]
 alias LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero :=

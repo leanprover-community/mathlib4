@@ -62,7 +62,6 @@ Further results in Elliot's paper:
 * Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
   ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
   `1 + I`.
-
 -/
 
 @[expose] public section
@@ -325,9 +324,12 @@ theorem smeval_ascPochhammer_neg_of_lt {n k : ℕ} (h : n < k) :
     smeval (ascPochhammer ℕ k) (-n : ℤ) = 0 := by
   rw [show k = n + (k - n - 1) + 1 by lia, smeval_ascPochhammer_neg_add]
 
-theorem smeval_ascPochhammer_nat_cast {R} [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n k : ℕ) :
+theorem smeval_ascPochhammer_natCast {R} [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n k : ℕ) :
     smeval (ascPochhammer ℕ k) (n : R) = smeval (ascPochhammer ℕ k) n := by
   rw [smeval_at_natCast (ascPochhammer ℕ k) n]
+
+@[deprecated (since := "2026-10-13")]
+alias smeval_ascPochhammer_nat_cast := smeval_ascPochhammer_natCast
 
 theorem multichoose_neg_self (n : ℕ) : multichoose (-n : ℤ) n = (-1) ^ n := by
   rw [← nsmul_right_inj (Nat.factorial_ne_zero _),

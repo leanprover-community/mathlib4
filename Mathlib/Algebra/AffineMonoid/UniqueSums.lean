@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.Finiteness
 import Mathlib.Algebra.AffineMonoid.Embedding
 import Mathlib.Algebra.FreeAbelianGroup.UniqueSums
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine monoids have unique sums
 

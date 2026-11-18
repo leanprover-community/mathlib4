@@ -74,7 +74,6 @@ instance [Φ.IsIdempotent] (X : C) :
   rw [r_map_ι_app]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance {D : Type*} [Category* D] (F : D ⥤ C) :
     Mono (Functor.whiskerLeft F Φ.ι) := by
   rw [NatTrans.mono_iff_mono_app]

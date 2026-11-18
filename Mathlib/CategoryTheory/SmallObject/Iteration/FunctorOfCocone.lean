@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 Given a functor `F : Set.Iio j ⥤ C` and `c : Cocone F`, we define
 an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
-
 -/
 
 @[expose] public section
@@ -148,7 +147,7 @@ variable {c} in
 /-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (le_refl j)`. -/
 def isColimitCoconeOfLEOfCocone (hc : IsColimit c) :
     IsColimit (coconeOfLE (ofCocone c) (le_refl j)) :=
-  (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).1
+  (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).toFun
     (IsColimit.ofIsoColimit hc
       (Cocone.ext (ofCoconeObjIsoPt c).symm (fun ⟨i, hi⟩ ↦ by
         dsimp

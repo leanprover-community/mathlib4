@@ -35,7 +35,6 @@ Together, these two results prove the Galois correspondence.
 
 - Instances for `Algebra.IsQuadraticExtension`: a quadratic extension is Galois (if separable)
   with cyclic and thus abelian Galois group.
-
 -/
 
 @[expose] public section
@@ -59,7 +58,7 @@ class IsGalois : Prop where
 variable {F E}
 
 theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h =>
+  ⟨fun h => ⟨h.to_isSeparable, h.to_normal⟩, fun h =>
     { to_isSeparable := h.1
       to_normal := h.2 }⟩
 
@@ -433,11 +432,11 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 open IntermediateField
 
 open scoped Pointwise
-
+-- #count_heartbeats in
 lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, one_apply, Subtype.ext_iff,
-    restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
+  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, AlgEquiv.one_apply,
+    Subtype.ext_iff, restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
 
 namespace IsGalois
 

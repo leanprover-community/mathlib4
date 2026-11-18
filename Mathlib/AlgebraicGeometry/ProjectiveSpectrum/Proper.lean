@@ -18,7 +18,6 @@ We show that `Proj 𝒜` is proper over `Spec 𝒜₀`.
 
 ## Notes
 This contribution was created as part of the Durham Computational Algebraic Geometry Workshop
-
 -/
 
 public section
@@ -156,11 +155,11 @@ instance [Algebra.FiniteType (𝒜 0) A] : QuasiCompact (Proj.toSpecZero 𝒜) :
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).1 := by
+  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).carrier := by
     rw [← Proj.opensRange_awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt]
     exact isCompact_range (Proj.awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt).continuous
   have := congr($(Proj.iSup_basicOpen_eq_top' 𝒜
-    (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx)).1)
+    (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx)).carrier)
   simp only [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.carrier_eq_coe,
     TopologicalSpace.Opens.coe_mk, TopologicalSpace.Opens.coe_top] at this
   rw [← isCompact_univ_iff, ← this]
@@ -217,8 +216,8 @@ theorem valuativeCriterion_existence_aux
   have ⟨i₀, hi1⟩ : ∃ a, ψ a = Kmax := by simpa using Finset.max'_mem (Finset.univ.image ψ)
   have hi₀ (j) : ψ j ≤ ψ i₀ := hi1 ▸ (Finset.univ.image ψ).le_max' (ψ j) (by simp)
   have hKmax : 0 < Kmax := by
-    refine zero_lt_iff.mpr fun hKmax ↦ ?_
-    have (i : _) : ψ i = 0 := le_zero_iff.mp (hKmax ▸ Finset.le_max' _ _ (by simp))
+    refine pos_of_ne_zero fun hKmax ↦ ?_
+    have (i : _) : ψ i = 0 := eq_zero_of_nonpos (hKmax ▸ Finset.le_max' _ _ (by simp))
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
     have : φ 1 = 0 := by convert (this j).1; ext; simp
     simp only [map_one, one_ne_zero] at this
