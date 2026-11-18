@@ -3,9 +3,11 @@ Copyright (c) 2026 E. S. Markov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: E. S. Markov
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Proximinal Subspaces and Multivalued Metric Projections
@@ -38,6 +40,8 @@ fundamental proximinality criteria.
 * I. Singer, *Best Approximation in Normed Linear Spaces by Elements of Linear Subspaces*,
   Springer-Verlag, 1970.
 -/
+
+@[expose] public section
 
 open Set Topology
 
