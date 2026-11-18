@@ -189,6 +189,21 @@ theorem gelfandRadiusNorm_nonneg (x : L) : 0 ≤ gelfandRadiusNorm K L x := by
     apply apply_nonneg
   · rw [gelfandRadiusNorm_eq_zero hx]
 
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+/-- The `positivity` extension which identifies expressions of the form `gelfandRadiusNorm a`. -/
+@[positivity gelfandRadiusNorm _ _ _]
+meta def evalGelfandRadiusNorm : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@gelfandRadiusNorm $K $L $FK $FL $AKL $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(gelfandRadiusNorm_nonneg $K $a))
+  | _, _, _ => throwError "not gelfandRadiusNorm"
+
+end Mathlib.Meta.Positivity
+
 @[simp]
 theorem gelfandRadiusNorm_zero : gelfandRadiusNorm K L 0 = 0 := by
   rw [gelfandRadiusNorm_eq ⊥ 0 0 rfl, map_zero]
@@ -232,7 +247,7 @@ theorem gelfandRadiusNorm_add_le {x y : L} (h : IsIntegral K x ∨ IsIntegral K 
     gelfandRadiusNorm K L (x + y) ≤ gelfandRadiusNorm K L x + gelfandRadiusNorm K L y := by
   by_cases hxy : IsIntegral K (x + y); swap
   · rw [gelfandRadiusNorm_eq_zero hxy]
-    exact add_nonneg (gelfandRadiusNorm_nonneg K x) (gelfandRadiusNorm_nonneg K y)
+    positivity
   have (hy : IsIntegral K y) : IsIntegral K x := by simpa using hxy.sub hy
   have (hx : IsIntegral K x) : IsIntegral K y := by simpa using hxy.sub hx
   have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair (by grind) (by grind)
@@ -250,7 +265,7 @@ theorem gelfandRadiusNorm_mul_le {x y : L} (h : IsIntegral K x ∨ IsIntegral K 
   · simp [hy0]
   by_cases hxy : IsIntegral K (x * y); swap
   · rw [gelfandRadiusNorm_eq_zero hxy]
-    exact mul_nonneg (gelfandRadiusNorm_nonneg K x) (gelfandRadiusNorm_nonneg K y)
+    positivity
   have (hy : IsIntegral K y) : IsIntegral K x := by simpa [hy0] using hxy.div hy
   have (hx : IsIntegral K x) : IsIntegral K y := by simpa [hx0] using hxy.div hx
   have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair (by grind) (by grind)
