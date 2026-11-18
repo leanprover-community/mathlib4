@@ -6,9 +6,11 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.BaseChange
-public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
+public import Mathlib.RingTheory.AdicCompletion.LocalRing
+public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.Gorenstein.Defs
+public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Regular.InjectiveDimension
 
 /-!
@@ -57,18 +59,15 @@ lemma isBaseChange_adicCompletion_subsingleton_iff [IsLocalRing R]
 
 variable [IsNoetherianRing R] [IsLocalRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_iff_exists' :
     IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
     (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
   have (a : WithBot ℕ∞) : a ≠ ⊤ ↔ ∃ (n : ℕ), a < n := by
     induction a with
+    | top => simp
     | bot => simp
-    | coe a =>
-      induction a with
-      | top => simp
-      | coe a => simpa [-ENat.WithBot.coe_eq_natCast] using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
-  simp only [isGorensteinLocalRing_def, this, ge_iff_le]
+    | coe a => simpa [← ENat.WithBot.coe_eq_natCast] using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
+  simp only [isGorensteinLocalRing_iff, this, ge_iff_le]
   apply exists_congr (fun n ↦ ?_)
   rw [injectiveDimension_lt_iff_of_finite (ModuleCat.of R R) n]
   congr! 2
