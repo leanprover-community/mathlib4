@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Commutator
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.GroupTheory.Subgroup.Center
 public import Mathlib.GroupTheory.Submonoid.Centralizer
 
@@ -50,9 +51,14 @@ theorem mem_centralizer_iff_commutator_eq_one' {g : G} {s : Set G} :
 
 @[to_additive]
 lemma mem_centralizer_singleton_iff {g k : G} :
-    k ∈ Subgroup.centralizer {g} ↔ k * g = g * k := by
+    k ∈ Subgroup.centralizer {g} ↔ Commute k g := by
   simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
   exact eq_comm
+
+@[to_additive]
+theorem zpowers_le_centralizer_singleton (g : G) :
+    Subgroup.zpowers g ≤ Subgroup.centralizer {g} := by
+  simp [mem_centralizer_singleton_iff]
 
 @[to_additive]
 theorem centralizer_univ : centralizer Set.univ = center G :=
@@ -122,7 +128,7 @@ theorem centralizer_closure (s : Set G) : centralizer (closure s) = centralizer 
 @[to_additive]
 theorem centralizer_eq_iInf (s : Set G) : centralizer s = ⨅ g ∈ s, centralizer {g} :=
   le_antisymm (le_iInf₂ fun g hg ↦ centralizer_le (Set.singleton_subset_iff.mpr hg)) fun x hx ↦ by
-    simpa only [mem_iInf, mem_centralizer_singleton_iff, eq_comm (a := x * _)] using! hx
+    simpa only [mem_iInf, mem_centralizer_singleton_iff, Commute.symm_iff (a := x)] using! hx
 
 @[to_additive]
 theorem center_eq_iInf {s : Set G} (hs : closure s = ⊤) :
