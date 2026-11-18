@@ -199,7 +199,7 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
     [h : OpensMeasurableSpace α] (p : α → Prop) : OpensMeasurableSpace (Subtype p) :=
   ⟨by
     rw [borel_comap]
-    exact comap_mono h.1⟩
+    exact comap_mono h.borel_le⟩
 
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
@@ -669,6 +669,17 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
 
 instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.isInducing
+
+instance [OpensMeasurableSpace α] : OpensMeasurableSpace (Additive α) :=
+  ⟨MeasurableSpace.generateFrom_le fun _ hs ↦ (IsOpen.measurableSet (α := α) hs)⟩
+instance [OpensMeasurableSpace α] : OpensMeasurableSpace (Multiplicative α) :=
+  ⟨MeasurableSpace.generateFrom_le fun _ hs ↦ (IsOpen.measurableSet (α := α) hs)⟩
+
+instance : BorelSpace (Additive α) :=
+  (MeasurableEquiv.additive (α := α)).symm.measurableEmbedding.borelSpace Topology.IsInducing.id
+instance : BorelSpace (Multiplicative α) :=
+  (MeasurableEquiv.multiplicative (α := α)).symm.measurableEmbedding.borelSpace
+    Topology.IsInducing.id
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by

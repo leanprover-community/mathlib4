@@ -62,7 +62,7 @@ instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im where
   prf z hz := ⟨⟨z, hz⟩, rfl⟩
 
 protected theorem «forall» {P : ℍ → Prop} : (∀ z, P z) ↔ ∀ z hz, P ⟨z, hz⟩ :=
-  ⟨fun h z hz ↦ h ⟨z, hz⟩, fun h z ↦ h z.1 z.2⟩
+  ⟨fun h z hz ↦ h ⟨z, hz⟩, fun h z ↦ h z.coe z.coe_im_pos⟩
 
 protected theorem «exists» {P : ℍ → Prop} : (∃ z, P z) ↔ ∃ z hz, P ⟨z, hz⟩ :=
   ⟨fun ⟨⟨z, hz⟩, hP⟩ ↦ ⟨z, hz, hP⟩, fun ⟨z, hz, hP⟩ ↦ ⟨⟨z, hz⟩, hP⟩⟩
@@ -99,7 +99,7 @@ theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
   rfl
 
 @[simp]
-theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
+theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.coe_im_pos) : mk z h = z :=
   rfl
 
 @[simp]

@@ -29,7 +29,6 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 * Move the results that `Module.Finite` over a semilocal ring is a local property from
   `Mathlib/RingTheory/LocalProperties/Semilocal.lean` to this file.
-
 -/
 
 public section
@@ -199,7 +198,7 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
     Module.Finite R M := by
   classical
   constructor
-  choose s₁ s₂ using (fun g ↦ (H g).1)
+  choose s₁ s₂ using (fun g ↦ (H g).fg_top)
   let sf := fun x : t ↦
     IsLocalizedModule.finsetIntegerMultiple (Submonoid.powers x.val) (f x) (s₁ x)
   use t.attach.biUnion sf

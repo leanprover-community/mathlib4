@@ -17,7 +17,6 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 * `rank_dual_eq_card_dual_of_aleph0_le_rank`: The **Erdős-Kaplansky Theorem** which says that
   the dimension of an infinite-dimensional dual space over a division ring has dimension
   equal to its cardinality.
-
 -/
 
 public section

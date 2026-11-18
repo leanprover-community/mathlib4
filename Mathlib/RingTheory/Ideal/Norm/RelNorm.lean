@@ -30,7 +30,6 @@ spanned by the norms of elements in `I`.
 
 * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 * `relNorm_relNorm`: transitivity of the relative ideal norm
-
 -/
 
 @[expose] public section
@@ -457,7 +456,6 @@ variable [Module.Free ℤ R] [Module.Free ℤ S] [Module.Finite ℤ S]
 
 -- A nontrivial free `ℤ`-module is infinite; local to this section to supply `Infinite R`/`S`.
 local instance : Infinite R := Module.Free.infinite ℤ R
-local instance : Infinite S := Module.Free.infinite ℤ S
 
 open UniqueFactorizationMonoid in
 theorem absNorm_relNorm (I : Ideal S) :

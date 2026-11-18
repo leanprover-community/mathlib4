@@ -82,7 +82,6 @@ Some specific considerations on the assumptions in the different implications:
 
 weak convergence of measures, convergence in distribution, convergence in law, finite measure,
 probability measure
-
 -/
 
 public section
@@ -387,7 +386,6 @@ Combining with earlier proven implications, we get that (B) implies also
 
   (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
-
 -/
 
 open ENNReal
@@ -489,7 +487,6 @@ In this section we prove for a sequence (μsₙ)ₙ Borel probability measures t
 implies
 
   (T) The measures μsₙ converge weakly to the measure μ.
-
 -/
 
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]

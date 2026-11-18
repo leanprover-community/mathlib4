@@ -441,8 +441,8 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜 v) :
     ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   have h₂ :
-    (∑ i ∈ s, ∑ j ∈ s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k ∈ s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) := by
-    exact hv.inner_left_right_finset
+    (∑ i ∈ s, ∑ j ∈ s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k ∈ s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) :=
+    hv.inner_left_right_finset
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
     simp only [mul_conj]

@@ -31,7 +31,6 @@ For the Flypitch project:
   hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
-
 -/
 
 @[expose] public section
@@ -111,7 +110,7 @@ instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
 /-- The composition of two language homomorphisms. -/
 @[simps]
 def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
-  ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
+  ⟨fun _n F => g.onFunction (f.onFunction F), fun _ R => g.onRelation (f.onRelation R)⟩
 
 -- added ᴸ to avoid clash with function composition
 @[inherit_doc]

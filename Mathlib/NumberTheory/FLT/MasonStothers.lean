@@ -17,7 +17,6 @@ we have `max {deg(a), deg(b), deg(c)} + 1 ≤ deg(rad(abc))` or `a' = b' = c' = 
 Proof is based on this online note by Franz Lemmermeyer http://www.fen.bilkent.edu.tr/~franz/ag05/ag-02.pdf,
 which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem",
 but slightly different.
-
 -/
 
 public section
@@ -48,8 +47,8 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
       rw [mul_comm _ (radical _), radical_mul_divRadical]
     _ = abc_dr.natDegree + abc_r.natDegree := by
       rw [← Polynomial.natDegree_mul (divRadical_ne_zero abc_nz) radical_ne_zero]
-    _ < a.natDegree + b.natDegree + abc_r.natDegree := by
-      exact Nat.add_lt_add_right abc_dr_ndeg_lt _
+    _ < a.natDegree + b.natDegree + abc_r.natDegree :=
+      Nat.add_lt_add_right abc_dr_ndeg_lt _
 
 /-- **Polynomial ABC theorem.** -/
 protected theorem Polynomial.abc

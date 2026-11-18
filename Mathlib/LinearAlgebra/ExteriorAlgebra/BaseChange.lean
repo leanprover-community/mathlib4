@@ -17,7 +17,6 @@ In this file, we proved that Exterior algebra behaves well with respect to base 
 
 * `ExteriorAlgebra.baseChangeEquiv`: for `R`-algebra `S`, the base change isomorphism
   `S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M)`
-
 -/
 
 noncomputable section
