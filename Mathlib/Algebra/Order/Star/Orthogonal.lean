@@ -82,7 +82,7 @@ lemma right_of_add_left {a b c : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : (a + b) �
 lemma left_of_add_right {a b c : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : c ⋆⟂ (a + b)) : c ⋆⟂ a :=
   h.symm.left_of_add_left ha hb |>.symm
 
-/-- If `0 ≤ a` and `0 ≤ b` and `c ⋆⟂ (a + b)`, then `c ⋆⟂ a`. -/
+/-- If `0 ≤ a` and `0 ≤ b` and `c ⋆⟂ (a + b)`, then `c ⋆⟂ b`. -/
 lemma right_of_add_right {a b c : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : c ⋆⟂ (a + b)) : c ⋆⟂ b :=
   h.symm.right_of_add_left ha hb |>.symm
 
@@ -94,19 +94,19 @@ lemma add_right_iff {a b c : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     c ⋆⟂ (a + b) ↔ c ⋆⟂ a ∧ c ⋆⟂ b := by
   simpa [isStarOrtho_comm] using add_left_iff ha hb
 
+/-- If each `f i` is nonnegative then `(∑ i ∈ s, f i) ⋆⟂ c` if and only if `f j ⋆⟂ c`
+for every `j ∈ s`. -/
 lemma sum_left_iff {ι : Type*} {s : Finset ι} {f : ι → A} {c : A} (hf : ∀ i ∈ s, 0 ≤ f i) :
     (∑ i ∈ s, f i) ⋆⟂ c ↔ ∀ j ∈ s, f j ⋆⟂ c :=
   ⟨fun h _j hj ↦ h.anti_left (hf _ hj) (Finset.single_le_sum hf hj), sum_left⟩
 
+/-- If each `f i` is nonnegative then `c ⋆⟂ (∑ i ∈ s, f i)` if and only if `c ⋆⟂ f j`
+for every `j ∈ s`. -/
 lemma sum_right_iff {ι : Type*} {s : Finset ι} {f : ι → A} {c : A} (hf : ∀ i ∈ s, 0 ≤ f i) :
     c ⋆⟂ (∑ i ∈ s, f i) ↔ ∀ j ∈ s, c ⋆⟂ f j := by
   simpa [isStarOrtho_comm] using sum_left_iff hf
 
-/-- If each `f i` is nonnegative then `(∑ i ∈ s, f i) ⋆⟂ c`, if and only if `f j ⋆⟂ c`
-for every `j ∈ s`. -/
 alias ⟨of_sum_left, _⟩ := sum_left_iff
-/-- If each `f i` is nonnegative then `c ⋆⟂ (∑ i ∈ s, f i)`, if and only if `c ⋆⟂ f j`
-for every `j ∈ s`. -/
 alias ⟨of_sum_right, _⟩ := sum_right_iff
 
 end IsStarOrtho

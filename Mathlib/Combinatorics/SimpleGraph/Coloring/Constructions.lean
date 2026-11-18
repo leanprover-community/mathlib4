@@ -70,7 +70,7 @@ theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u :
   have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one h
   let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
   let c' : G.Coloring Bool := recolorOfEquiv G finTwoEquiv c
-  simp [c'.odd_length_iff_not_congr]
+  simp [c'.even_length_iff_congr]
 
 /-- Bicoloring of a cycle graph of even size -/
 def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=
