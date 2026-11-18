@@ -46,7 +46,7 @@ def sup (s : Finset β) (f : β → α) : α :=
 variable {s s₁ s₂ : Finset β} {f g : β → α} {a : α}
 
 @[to_dual]
-theorem sup_def : s.sup f = (s.1.map f).sup :=
+theorem sup_def : s.sup f = (s.val.map f).sup :=
   rfl
 
 @[to_dual (attr := simp)]

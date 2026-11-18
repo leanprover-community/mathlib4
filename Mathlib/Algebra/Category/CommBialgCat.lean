@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Michał Mrugała, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.RingTheory.Bialgebra.Equiv
 

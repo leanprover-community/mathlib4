@@ -127,10 +127,10 @@ theorem upper_mem : I.upper ∈ I :=
 theorem exists_mem : ∃ x, x ∈ I :=
   ⟨_, I.upper_mem⟩
 
+@[simp]
 theorem nonempty_coe : Set.Nonempty (I : Set (ι → ℝ)) :=
   I.exists_mem
 
-@[simp]
 theorem coe_ne_empty : (I : Set (ι → ℝ)) ≠ ∅ :=
   I.nonempty_coe.ne_empty
 
