@@ -242,13 +242,13 @@ theorem fderiv_implicitFunction_apply_eq_iff (φ : ImplicitFunctionData 𝕜 E F
 
 @[simp]
 theorem leftDeriv_fderiv_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G) (x : G) :
-    φ.leftDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = 0 := by
-  exact φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.left
+    φ.leftDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = 0 :=
+  φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.left
 
 @[simp]
 theorem rightDeriv_fderiv_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G) (x : G) :
-    φ.rightDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = x := by
-  exact φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.right
+    φ.rightDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = x :=
+  φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.right
 
 theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
@@ -327,7 +327,7 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'
   pt := a
   hasStrictFDerivAt_leftFun := hf
   hasStrictFDerivAt_rightFun :=
-    (Classical.choose hker).hasStrictFDerivAt.comp a ((hasStrictFDerivAt_id a).sub_const a)
+    (Classical.choose hker).comp_hasStrictFDerivAt ((hasStrictFDerivAt_id a).sub_const a)
   range_leftDeriv := hf'
   range_rightDeriv := LinearMap.range_eq_of_proj (Classical.choose_spec hker)
   isCompl_ker := LinearMap.isCompl_of_proj (Classical.choose_spec hker)
