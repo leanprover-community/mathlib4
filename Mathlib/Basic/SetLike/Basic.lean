@@ -227,8 +227,8 @@ export IsMemLE (le_iff_mem_imp_mem)
 
 @[deprecated (since := "2026-09-18")] alias IsConcreteLE := IsMemLE
 
-@[deprecated (since := "2026-09-01")] alias SetLike.le_def := _root_.le_iff_mem_imp_mem
-@[deprecated (since := "2026-09-18")] alias IsConcreteLE.le_iff := _root_.le_iff_mem_imp_mem
+@[deprecated (since := "2026-09-01")] alias SetLike.le_def := le_iff_mem_imp_mem
+@[deprecated (since := "2026-09-18")] alias IsConcreteLE.le_iff := le_iff_mem_imp_mem
 
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨mem_of_le_of_mem, _⟩ := le_iff_mem_imp_mem
