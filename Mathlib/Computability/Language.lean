@@ -75,8 +75,6 @@ def toSetEquiv : Language α ≃ Set (List α) where
 instance : CompleteAtomicBooleanAlgebra (Language α) :=
   toSetEquiv.completeAtomicBooleanAlgebra
 
-instance : Coe (Set (List α)) (Language α) where coe f := ⟨f⟩
-
 @[simp] lemma toSet_ofSet (s : Set (List α)) : (ofSet s).toSet = s := rfl
 @[simp] lemma ofSet_toSet (s : Language α) : ofSet s.toSet = s := rfl
 
@@ -93,6 +91,8 @@ instance : Insert (List α) (Language α) where insert a s := ofSet (insert a s.
     (insert a s).toSet = insert a s.toSet := rfl
 @[simp] lemma ofSet_insert {s : Set (List α)} {a : List α} :
     ofSet (insert a s) = insert a (ofSet s) := rfl
+
+instance : Coe (Set (List α)) (Language α) where coe f := ⟨f⟩
 
 variable {l m : Language α} {a b x : List α}
 
