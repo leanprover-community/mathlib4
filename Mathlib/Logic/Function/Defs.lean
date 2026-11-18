@@ -192,7 +192,7 @@ theorem onFun_dflip (f : β → β → φ) (g : α → β) : (dflip f on g) = df
 @[deprecated onFun_dflip (since := "2026-07-30")] theorem onFun_swap_comm (f : β → β → φ)
     (g : α → β) : (dflip f on g) = dflip (f on g) := onFun_dflip f g
 
-@[simp] theorem bicompl_dflip (f : φ → δ → ζ) (g : α → φ) (h : β → δ) : bicompl (dflip f) h g =
+@[simp] theorem bicompl_dflip {ζ : Sort*} (f : φ → δ → ζ) (g : α → φ) (h : β → δ) : bicompl (dflip f) h g =
     dflip (bicompl f g h) := rfl
 
 @[simp] theorem bicompr_dflip (f : φ → δ) (g : α → β → φ) : bicompr f (dflip g) =
