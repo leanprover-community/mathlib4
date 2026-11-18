@@ -60,12 +60,12 @@ variable (hfna : IsNonarchimedean f) (hf_nontriv : f.IsNontrivial)
 
 /-- If the `v`-adic absolute value of `α` is at most one, then `α` can be written as a quotient of
 algebraic integers with denominator a `v`-adic unit. -/
-lemma exists_num_denom_adicAbv_eq_one {α : K} {v : HeightOneSpectrum (𝓞 K)}
+lemma exists_num_denom_of_adicAbv_eq_one {α : K} {v : HeightOneSpectrum (𝓞 K)}
     {b : ℝ≥0} (hb : 1 < b) (h_abs : v.adicAbv hb α ≤ 1) :
     ∃ x y : 𝓞 K, α = x / y ∧ v.adicAbv hb (y : K) = 1 := by
   let S : Set (HeightOneSpectrum (𝓞 K)) := {v}ᶜ
   let γ : S.integer K := ⟨α, fun _ _ ↦ by simp_all [S, (toNNReal_le_one_iff hb).mp h_abs]⟩
-  obtain ⟨⟨x, ⟨y, hy_away, hy_nzd⟩⟩, h⟩ := IsLocalization.surj (Localization.submonoid S) γ
+  obtain ⟨⟨x, y, hy_away, hy_nzd⟩, h⟩ := IsLocalization.surj (Localization.submonoid S) γ
   refine ⟨x, y, ?_, by simpa [adicAbv_coe_eq_one_iff, S] using hy_away⟩
   rw [eq_div_iff <| IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hy_nzd]
   exact Subtype.ext_iff.mp h
@@ -85,8 +85,8 @@ lemma RingOfIntegers.absoluteValue_le_one (x : 𝓞 K) : f x ≤ 1 := by
       _ ≤ ∑ i, f (B i) := by
         gcongr
         rw [zsmul_eq_mul, map_mul]
-        exact mul_le_of_le_one_left (apply_nonneg f _) <| hfna.apply_intCast_le_one
-          (map_zero_le f 1) (map_one f) f.map_neg
+        exact mul_le_of_le_one_left (apply_nonneg f _) <|
+          hfna.apply_intCast_le_one (map_zero_le f 1) (map_one f) f.map_neg
   by_contra! h
   obtain ⟨n, hn⟩ := pow_unbounded_of_one_lt C h
   exact (hC (x ^ n)).not_gt (by simp [hn])
@@ -96,7 +96,7 @@ include hf_nontriv in
 def heightOneSpectrumOfAbsoluteValue : HeightOneSpectrum (𝓞 K) where
   asIdeal := {
     carrier := {a | f a < 1}
-    add_mem' := fun ha hb ↦ (hfna _ _).trans_lt (max_lt ha hb)
+    add_mem' ha hb := (hfna _ _).trans_lt (max_lt ha hb)
     zero_mem' := by simp
     smul_mem' c _ hx := by
       simpa using (mul_le_of_le_one_left (apply_nonneg f _)
@@ -147,7 +147,7 @@ theorem exists_heightOneSpectrum_eq_adicAbv :
   constructor
   · use b, hb
     ext x
-    rcases eq_or_ne x 0 with (rfl | hx)
+    rcases eq_or_ne x 0 with rfl | hx
     · simp
     have hxv_ne : P.valuation K x ≠ 0 := (P.valuation K).ne_zero_iff.mpr hx
     have coe_b : (b : ℝ) = (f π)⁻¹ := rfl
