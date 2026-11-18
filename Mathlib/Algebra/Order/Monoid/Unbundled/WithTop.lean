@@ -30,6 +30,8 @@ variable [One α] {a : α}
 @[to_dual (attr := to_additive)]
 instance one : One (WithTop α) :=
   ⟨(1 : α)⟩
+attribute [to_dual existing] zero
+attribute [to_dual existing] zero.eq_1
 
 @[to_dual (attr := to_additive (attr := simp, norm_cast))]
 theorem coe_one : ((1 : α) : WithTop α) = 1 :=
