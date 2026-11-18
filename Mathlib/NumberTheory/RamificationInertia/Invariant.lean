@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.Lift
 public import Mathlib.RingTheory.Ideal.Pointwise
-public import Mathlib.RingTheory.Invariant.Defs
+public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.Unramified.Finite
 
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
@@ -69,22 +69,6 @@ theorem MulAction.smul_sum_quotient_of_fixed {G M : Type*} [Group G] [AddCommMon
   obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
   rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
   simp [hh, mul_smul, ← Subgroup.smul_def, hx]
-
-@[to_additive (attr := simp)]
-theorem QuotientGroup.mk_eq_one_iff {G : Type*} [Group G] {H : Subgroup G} {g : G} :
-    (g : G ⧸ H) = (1 : G) ↔ g ∈ H := by
-  rw [← Set.mem_singleton_iff, ← Set.mem_preimage, QuotientGroup.preimage_mk_one, SetLike.mem_coe]
-
-@[to_additive (attr := simp)]
-theorem QuotientGroup.out_mem_iff {G : Type*} [Group G] {H : Subgroup G} {g : G ⧸ H} :
-    g.out ∈ H ↔ g = (1 : G) := by
-  rw [← mk_eq_one_iff, QuotientGroup.out_eq']
-
-theorem Algebra.IsInvariant.mem_map_under {A B G : Type*} [CommRing A] [CommRing B] [Algebra A B]
-    [Group G] [MulSemiringAction G B] [Algebra.IsInvariant A B G] {b : B} (hb : ∀ g : G, g • b = b)
-    {I : Ideal B} (hbI : b ∈ I) : b ∈ (I.under A).map (algebraMap A B) := by
-  obtain ⟨a, rfl⟩ := isInvariant (A := A) b hb
-  exact Ideal.mem_map_of_mem (algebraMap A B) hbI
 
 namespace Algebra.FormallyUnramified
 
@@ -147,7 +131,7 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
   have hz (g : G) : g • z = z := MulAction.smul_sum_quotient_of_fixed H y hy g
   have hyI : y ∈ I := I.mul_mem_right _ hx
   have hzI : z ∈ I := I.sum_mem fun q _ ↦ hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I hyI
-  exact Algebra.IsInvariant.mem_map_under hz hzI
+  exact Algebra.IsInvariant.mem_map_under G hz hzI
 
 lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] :
     Ideal.Quotient.mk Q (descentMultiplier A B (Q.inertia G)) = 1 := by
