@@ -49,10 +49,10 @@ structure Nondegenerate (M : Matrix m n R) : Prop where
 end Finite
 
 section NonUnitalSemiring
-variable {m n R : Type*}
+variable {m n R : Type*} [NonUnitalSemiring R] {M : Matrix m n R}
 
 section Fintype
-variable [Fintype m] [Fintype n] [NonUnitalSemiring R] {M : Matrix m n R}
+variable [Fintype m] [Fintype n]
 
 lemma separatingRight_def : M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   refine forall_congr' fun w ↦ ⟨fun hM hw ↦ hM ?_, fun hM hw ↦ hM ?_⟩ <;>
@@ -89,14 +89,12 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n
 
 end Fintype
 
-theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero
-    [Fintype m] [Finite n] [NonUnitalSemiring R] {M : Matrix m n R} (hM : M.SeparatingLeft)
+theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Fintype m] [Finite n] (hM : M.SeparatingLeft)
     {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
   have := Fintype.ofFinite n
   separatingLeft_def.mp hM _ fun _ => by simp [dotProduct_mulVec, hv]
 
-theorem SeparatingRight.eq_zero_of_mulVec_eq_zero
-  [Finite m] [Fintype n] [NonUnitalSemiring R] {M : Matrix m n R} (hM : M.SeparatingRight)
+theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] [Fintype n] (hM : M.SeparatingRight)
     {v : n → R} (hv : M *ᵥ v = 0) : v = 0 :=
   have := Fintype.ofFinite m
   separatingRight_def.mp hM _ fun _ => by simp [hv]
