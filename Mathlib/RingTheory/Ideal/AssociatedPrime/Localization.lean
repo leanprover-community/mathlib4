@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Support
 
 /-!
-
 # Associated primes of localized module
 
 This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
@@ -20,7 +19,6 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 * `associatedPrimes.mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule` :
   for an `R` module `M`, if `p` is a prime ideal of `S⁻¹R` and `p ∩ R ∈ Ass(M)` then
   `p ∈ Ass (S⁻¹M)`.
-
 -/
 
 public section
@@ -108,7 +106,8 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
     apply hp.mem_of_pow_mem k
     rw [← map_pow]
     exact ((hp.under R).mul_mem_iff_mem_or_mem.mp mem).resolve_right
-      (Set.disjoint_left.mp ((IsLocalization.disjoint_under_iff S R' p).mpr hp.1) (∏ a, g a).2)
+      (Set.disjoint_left.mp ((IsLocalization.disjoint_under_iff S R' p).mpr hp.ne_top')
+        (∏ a, g a).2)
 
 variable (R')
 

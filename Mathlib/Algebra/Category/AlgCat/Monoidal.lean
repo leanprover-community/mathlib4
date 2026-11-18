@@ -5,10 +5,12 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The monoidal category structure on R-algebras

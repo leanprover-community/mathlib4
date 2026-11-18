@@ -6,12 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -28,7 +25,6 @@ For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lea
   * `isNilpotent_neg_iff`
   * `Commute.isNilpotent_add`
   * `Commute.isNilpotent_sub`
-
 -/
 
 public section

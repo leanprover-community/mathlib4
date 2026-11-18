@@ -51,8 +51,8 @@ value of `j`.
 ## References
 
 * [Th. Motzkin, *The Euclidean algorithm*][MR32592]
-* [J.-J. Hiblot, *Des anneaux euclidiens dont le plus petit algorithme n'est pas à valeurs finies*]
-  [MR399081]
+* [J.-J. Hiblot, *Des anneaux euclidiens dont le plus petit algorithme n'est pas à valeurs
+  finies*][MR399081]
 * [M. Nagata, *On Euclid algorithm*][MR541021]
 
 
@@ -88,7 +88,7 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   protected r : R → R → Prop
   /-- The relation `r` must be well-founded.
     This ensures that the GCD algorithm always terminates. -/
-  r_wellFounded : WellFounded r
+  [r_wellFounded : WellFounded r]
   /-- The relation `r` satisfies `r (a % b) b`. -/
   protected remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b
   /-- An additional constraint on `r`. -/
@@ -114,9 +114,6 @@ local infixl:50 " ≺ " => EuclideanDomain.r
 
 local instance wellFoundedRelation : WellFoundedRelation R where
   rel := EuclideanDomain.r
-  wf := r_wellFounded
-
-instance isWellFounded : IsWellFounded R (· ≺ ·) where
   wf := r_wellFounded
 
 -- see Note [lower instance priority]

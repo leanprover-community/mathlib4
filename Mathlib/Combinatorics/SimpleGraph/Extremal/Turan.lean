@@ -6,8 +6,8 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
-public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Order.Partition.Equipartition
 
 /-!
@@ -243,11 +243,10 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
-  convert! Nat.lt_add_one #G.edgeFinset
-  convert! G.card_edgeFinset_sup_edge _ hn
+  convert Nat.lt_add_one #G.edgeFinset
+  convert G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Turán's theorem**, forward direction.
 
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
@@ -257,7 +256,7 @@ theorem nonempty_iso_turanGraph :
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
   use (Equiv.subtypeUnivEquiv mem_univ).symm.trans zm
   intro a b
-  simp_rw [turanGraph_adj, Equiv.trans_apply, Equiv.subtypeUnivEquiv_symm_apply]
+  rw [turanGraph_adj]
   have := zp ⟨a, mem_univ a⟩ ⟨b, mem_univ b⟩
   rw [← h.not_adj_iff_part_eq] at this
   rw [← not_iff_not, not_ne_iff, this, card_parts]
@@ -348,11 +347,10 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by lia,
       Nat.mul_add_mod_self_left]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma turanNumber_add : turanNumber (n + r) r = turanNumber n r + n * (r - 1) + r.choose 2 := by
   rw [← mul_right_inj' two_ne_zero]
-  simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges,
-    degree, neighborFinset_eq_filter, turanGraph, card_filter]
+  simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges, degree, neighborFinset_eq_filter,
+    card_filter, turanGraph_adj]
   conv_lhs =>
     enter [2, v]
     rw [Fin.sum_univ_eq_sum_range fun w ↦ if v % r ≠ w % r then 1 else 0, sum_range_add]
@@ -375,7 +373,7 @@ theorem turanNumber_eq {n r : ℕ} :
   rcases r.eq_zero_or_pos with rfl | hr
   · rw [Nat.mod_zero, tsub_self, zero_mul, Nat.zero_div, zero_add]
     have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
-    rw [Fintype.card_fin] at this; convert! this; exact turanGraph_zero
+    rw [Fintype.card_fin] at this; convert this; exact turanGraph_zero
   · have ring₁ (n) : (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) =
         n % r * (n / r) * (r - 1) + r * (r - 1) * (n / r) ^ 2 / 2 := by
       nth_rw 1 [← Nat.mod_add_div n r, Nat.sq_sub_sq, add_tsub_cancel_left,
@@ -385,7 +383,7 @@ theorem turanNumber_eq {n r : ℕ} :
     rcases lt_or_ge n r with h | h
     · rw [Nat.mod_eq_of_lt h, tsub_self, zero_mul, Nat.zero_div, zero_add]
       have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
-      rw [Fintype.card_fin] at this; convert! this
+      rw [Fintype.card_fin] at this; convert this
       rw [turanGraph_eq_top]; exact .inr h.le
     · let n' := n - r
       have n'r : n = n' + r := by lia
@@ -436,7 +434,7 @@ theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
   · rw [cliqueFree_one, ← Fintype.card_eq_zero_iff] at cf
     simp [turanNumber_eq, card_edgeFinset_le_card_choose_two]
   · obtain ⟨H, _, maxH⟩ := exists_isTuranMaximal (V := V) hr
-    convert! maxH.2 cf
+    convert maxH.2 cf
     rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq]
 
 lemma strictMonoOn_turanNumber : StrictMonoOn (turanNumber n) (Set.Icc 1 n) := by

@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Set.Function
-public import Mathlib.Logic.Pairwise
-public import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise
@@ -79,6 +77,10 @@ theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
 
 theorem Pairwise.mono' (H : r ≤ p) (hr : s.Pairwise r) : s.Pairwise p :=
   hr.imp H
+
+@[gcongr]
+theorem Pairwise.mono'' (h : t ⊆ s) (H : ∀ a b, r a b → p a b) : s.Pairwise r → t.Pairwise p :=
+  Pairwise.mono h ∘ Pairwise.mono' H
 
 theorem Pairwise.inter_left (hs : s.Pairwise r) (t : Set α) : (s ∩ t).Pairwise r :=
   hs.mono Set.inter_subset_left
@@ -163,9 +165,10 @@ protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b 
     (insert a s).Pairwise r :=
   pairwise_insert.2 ⟨hs, h⟩
 
-theorem Pairwise.insert_of_notMem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
+@[deprecated Pairwise.insert +typeChanged (since := "2026-11-04")]
+theorem Pairwise.insert_of_notMem (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
     (insert a s).Pairwise r :=
-  (pairwise_insert_of_notMem ha).2 ⟨hs, h⟩
+  hs.insert fun b hb _ => h b hb
 
 theorem pairwise_insert_of_symm [Std.Symm r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
@@ -257,6 +260,11 @@ nicely. -/
 def PairwiseDisjoint (s : Set ι) (f : ι → α) : Prop :=
   s.Pairwise (Disjoint on f)
 
+@[grind .]
+theorem PairwiseDisjoint.disjoint_of_ne (h : s.PairwiseDisjoint f) {i j : ι}
+    (hi : i ∈ s) (hj : j ∈ s) (hij : i ≠ j) : Disjoint (f i) (f j) :=
+  h hi hj hij
+
 theorem PairwiseDisjoint.subset (ht : t.PairwiseDisjoint f) (h : s ⊆ t) : s.PairwiseDisjoint f :=
   Pairwise.mono h ht
 
@@ -291,9 +299,10 @@ protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   pairwiseDisjoint_insert.2 ⟨hs, h⟩
 
-theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
+@[deprecated PairwiseDisjoint.insert +typeChanged (since := "2026-11-04")]
+theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
-  (pairwiseDisjoint_insert_of_notMem hi).2 ⟨hs, h⟩
+  hs.insert fun j hj _ => h j hj
 
 theorem PairwiseDisjoint.image_of_le (hs : s.PairwiseDisjoint f) {g : ι → ι} (hg : f ∘ g ≤ f) :
     (g '' s).PairwiseDisjoint f := by
@@ -422,7 +431,7 @@ lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
   simp only [not_forall] at h
   obtain ⟨i, hi, j, hj, h_ne, t, hfi, hfj, ht⟩ := h
   replace ht : t.Nonempty := by
-    rwa [le_bot_iff, bot_eq_empty, ← Ne, ← nonempty_iff_ne_empty] at ht
+    rwa [le_bot_iff, bot_eq_empty, ← Ne, ne_empty_iff_nonempty] at ht
   obtain ⟨x, hx⟩ := ht
   exact ⟨i, hi, j, hj, h_ne, x, hfi hx, hfj hx⟩
 

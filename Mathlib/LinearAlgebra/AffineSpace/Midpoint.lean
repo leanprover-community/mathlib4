@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Module.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Midpoint of a segment

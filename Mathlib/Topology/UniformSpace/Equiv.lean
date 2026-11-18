@@ -6,8 +6,6 @@ Anatole Dedecker
 -/
 module
 
-public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.Topology.UniformSpace.Pi
 
 /-!
@@ -20,7 +18,6 @@ directions uniformly continuous. We denote uniform isomorphisms with the notatio
 
 * `UniformEquiv α β`: The type of uniform isomorphisms from `α` to `β`.
   This type can be denoted using the following notation: `α ≃ᵤ β`.
-
 -/
 
 @[expose] public section
@@ -171,7 +168,7 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
     left_inv := by convert! f.left_inv
     right_inv := by convert! f.right_inv using 1
     uniformContinuous_toFun := f.uniformContinuous
-    uniformContinuous_invFun := by convert! f.symm.uniformContinuous }
+    uniformContinuous_invFun := by convert f.symm.uniformContinuous }
 
 @[simp]
 theorem symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
@@ -200,6 +197,21 @@ theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' h '' s = s :=
 theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
   IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
     simp only [symm_comp_self, IsUniformInducing.id]
+
+@[simp]
+theorem comp_uniformContinuous_iff (h : α ≃ᵤ β) {f : γ → α} :
+    UniformContinuous (h ∘ f) ↔ UniformContinuous f :=
+  h.isUniformInducing.uniformContinuous_iff.symm
+
+@[simp]
+theorem comp_uniformContinuous_iff' (h : α ≃ᵤ β) {f : β → γ} :
+    UniformContinuous (f ∘ h) ↔ UniformContinuous f :=
+  ⟨fun hf ↦ by simpa [Function.comp_assoc, self_comp_symm] using hf.comp h.uniformContinuous_symm,
+    fun hf ↦ hf.comp h.uniformContinuous⟩
+
+theorem comp_uniformContinuousOn_iff (h : α ≃ᵤ β) (f : γ → α) (s : Set γ) :
+    UniformContinuousOn (h ∘ f) s ↔ UniformContinuousOn f s :=
+  h.isUniformInducing.uniformContinuousOn_iff.symm
 
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
   h.isUniformInducing.comap_uniformSpace
@@ -261,6 +273,9 @@ theorem prodComm_symm : (prodComm α β).symm = prodComm β α :=
 @[simp]
 theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
 
 /-- `(α × β) × γ` is uniformly isomorphic to `α × (β × γ)`. -/
 def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
@@ -350,6 +365,24 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
       have hf : IsUniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
       simp_rw [hf.uniformContinuous_iff]
       exact uniformContinuous_id }
+
+variable {α} in
+/-- `MulOpposite.op` as a uniform equivalence. -/
+@[to_additive (attr := simps! apply symm_apply toEquiv)
+/-- `AddOpposite.op` as a uniform equivalence. -/]
+def _root_.MulOpposite.opUniformEquiv : α ≃ᵤ αᵐᵒᵖ where
+  toEquiv := MulOpposite.opEquiv
+  uniformContinuous_toFun := MulOpposite.uniformContinuous_op
+  uniformContinuous_invFun := MulOpposite.uniformContinuous_unop
+
+variable {α} in
+@[to_additive (attr := simp)]
+theorem _root_.completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α :=
+  MulOpposite.opUniformEquiv.symm.completeSpace_iff
+
+@[to_additive]
+instance _root_.CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ :=
+  completeSpace_mulOpposite_iff.2 ‹CompleteSpace α›
 
 end
 

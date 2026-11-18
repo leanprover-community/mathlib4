@@ -5,10 +5,9 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-public import Mathlib.ModelTheory.FinitelyGenerated
-public import Mathlib.ModelTheory.PartialEquiv
-public import Mathlib.ModelTheory.Bundled
 public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.ModelTheory.PartialEquiv
 
 /-!
 # Fraïssé Classes and Fraïssé Limits
@@ -65,7 +64,6 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 ## TODO
 
 - Show existence of Fraïssé limits
-
 -/
 
 @[expose] public section
@@ -169,8 +167,8 @@ theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
     ⟨Embedding.comp (inclusion le_sup_right) hP.2.some.equivRange.toEmbedding⟩⟩
 
 variable {M} in
-theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M := by
-  exact ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
+theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M :=
+  ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
 
 /-- Any class in the age of a structure has a representative which is a finitely generated
 substructure. -/
@@ -295,7 +293,7 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   use t.toEmbedding.comp r
   change _ = t.toEmbedding.comp s
   ext x
-  have eq' := congr_fun (congr_arg DFunLike.coe eq) ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩
+  have eq' := congr($eq ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩)
   simp only [Embedding.comp_apply,
     coe_subtype] at eq'
   simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]

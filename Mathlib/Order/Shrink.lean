@@ -5,15 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Logic.Small.Defs
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Order instances on Shrink
 
 If `α : Type v` is `u`-small, we transport various order related
 instances on `α` to `Shrink.{u} α`.
-
 -/
 
 @[expose] public section
@@ -79,8 +78,8 @@ noncomputable instance [SuccOrder α] : SuccOrder (Shrink.{u} α) :=
   SuccOrder.ofOrderIso (orderIsoShrink.{u} α)
 
 @[to_dual]
-instance [WellFoundedLT α] : WellFoundedLT (Shrink.{u} α) where
-  wf := (orderIsoShrink.{u} α).symm.toRelIsoLT.toRelEmbedding.isWellFounded.wf
+instance [WellFoundedLT α] : WellFoundedLT (Shrink.{u} α) :=
+  (orderIsoShrink.{u} α).symm.toRelIsoLT.toRelEmbedding.wellFounded'
 
 end Preorder
 

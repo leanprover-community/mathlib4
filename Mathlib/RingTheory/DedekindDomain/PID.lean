@@ -7,7 +7,8 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+
+import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Criteria under which a Dedekind domain is a PID
@@ -67,7 +68,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   have hinv := I.mul_inv
   set J := Submodule.comap (Algebra.linearMap R A) ((I : Submodule R A) * Submodule.span R {v})
   have hJ : IsLocalization.coeSubmodule A J = ↑I * Submodule.span R {v} := by
-    rw [coe_ext_iff, coe_mul, coe_one] at hinv
+    rw [coeToSubmodule_ext_iff, coeToSubmodule_mul, coeToSubmodule_one] at hinv
     apply Submodule.map_comap_eq_self
     grw [← Submodule.one_eq_range, ← hinv, (Submodule.span_singleton_le_iff_mem _ _).2 hv]
   have : (1 : A) ∈ ↑I * Submodule.span R {v} := by
@@ -75,8 +76,8 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
     exact ⟨1, (algebraMap R _).map_one⟩
   obtain ⟨w, hw, hvw⟩ := Submodule.mem_mul_span_singleton.1 this
   refine ⟨⟨w, ?_⟩⟩
-  rw [← FractionalIdeal.coe_spanSingleton S, ← inv_inv I, eq_comm]
-  refine congr_arg coeToSubmodule (Units.eq_inv_of_mul_eq_one_left (le_antisymm ?_ ?_))
+  rw [← coeToSubmodule_spanSingleton S, ← inv_inv I, eq_comm]
+  congrm coeToSubmodule $(Units.eq_inv_of_mul_eq_one_left (le_antisymm ?_ ?_))
   · conv_rhs => rw [← hinv, mul_comm]
     grw [FractionalIdeal.spanSingleton_le_iff_mem.mpr hw]
   · rw [FractionalIdeal.one_le, ← hvw, mul_comm]
@@ -91,7 +92,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     (hf : {I : Ideal R | I.IsMaximal}.Finite) (I I' : FractionalIdeal S A) (hinv : I * I' = 1) :
     Submodule.IsPrincipal (I : Submodule R A) := by
   have hinv' := hinv
-  rw [coe_ext_iff, coe_mul] at hinv
+  rw [coeToSubmodule_ext_iff, coeToSubmodule_mul] at hinv
   let s := hf.toFinset
   have := Classical.decEq (Ideal R)
   have coprime : ∀ M ∈ s, ∀ M' ∈ s.erase M, M ⊔ M' = ⊤ := by
@@ -104,12 +105,12 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
     intro M hM; by_contra! h
     obtain ⟨x, hx, hxM⟩ :=
-      SetLike.exists_of_lt
+      IsConcreteLE.exists_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).lt_top).trans_eq
           hinv.symm)
     exact hxM (Submodule.mul_le.2 h hx)
   choose! a ha b hb hm using this
-  choose! u hu hum using fun M hM => SetLike.not_le_iff_exists.1 (nle M hM)
+  choose! u hu hum using fun M hM => IsConcreteLE.not_le_iff_exists.1 (nle M hM)
   let v := ∑ M ∈ s, u M • b M
   have hv : v ∈ I' := Submodule.sum_mem _ fun M hM => Submodule.smul_mem _ _ <| hb M hM
   refine
@@ -160,7 +161,7 @@ theorem IsPrincipalIdealRing.of_finite_maximals [IsDedekindDomain R]
     obtain rfl | hI := eq_or_ne I ⊥
     · exact bot_isPrincipal
     apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit h
-    exact .of_mul_eq_one _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
+    exact .of_mul_eq_one _ (FractionalIdeal.coeIdeal_mul_inv I hI)⟩
 
 /-- A Dedekind domain is a PID if its set of primes is finite. -/
 theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
