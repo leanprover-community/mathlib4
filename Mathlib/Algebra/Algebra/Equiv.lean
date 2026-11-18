@@ -34,8 +34,9 @@ as well.
 In certain contexts where the `Algebra` structure is avaiable it is easier to define an `AlgEquiv`
 by providing the `AlgHom.commutes'` field. For this reason a convenience constructor
 `AlgEquiv.ofCommutes` is provided to the user. -/
-structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [Add A] [Mul A] [SMul R A]
-    [Add B] [Mul B] [SMul R B] extends A ≃ B, A ≃+ B, A ≃* B, A ≃+* B where
+structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [Add A] [Add B]
+    [Mul A] [Mul B] [SMul R A] [SMul R B]
+    extends A ≃ B, A ≃+ B, A ≃* B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   protected map_smul' : ∀ r : R, ∀ a : A, toFun (r • a) = r • toFun a
 
@@ -50,7 +51,7 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
 class AlgEquivClass (F : Type*) (R A B : outParam (Type*))
-    [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B]
+    [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
     [EquivLike F A B] extends RingEquivClass F A B, MulActionHomClass F R A B where
 
 namespace AlgEquivClass
@@ -76,8 +77,8 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
-def _root_.AlgEquiv.ofClass {F R A B : Type*} [Add A] [Mul A] [SMul R A]
-    [Add B] [Mul B] [SMul R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
+def _root_.AlgEquiv.ofClass {F R A B : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
+    [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with map_smul' := map_smul f }
 
 @[deprecated (since := "2026-09-08")] alias toAlgEquiv := AlgEquiv.ofClass
@@ -104,9 +105,10 @@ def ofCommutes [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
   map_mul' := map_mul e
   map_smul' r a := show e (r • a) = r • (e a) by simp [Algebra.smul_def, commutes']
 
-variable [Add A₁] [Mul A₁] [SMul R A₁] [Add A₂] [Mul A₂] [SMul R A₂]
-  [Add A₃] [Mul A₃] [SMul R A₃] [Add A₁'] [Mul A₁'] [SMul R A₁'] [Add A₂'] [Mul A₂'] [SMul R A₂']
-  [Add A₃'] [Mul A₃'] [SMul R A₃']
+variable
+  [Add A₁] [Add A₂] [Add A₃] [Add A₁'] [Add A₂'] [Add A₃']
+  [Mul A₁] [Mul A₂] [Mul A₃] [Mul A₁'] [Mul A₂'] [Mul A₃']
+  [SMul R A₁] [SMul R A₂] [SMul R A₃] [SMul R A₁'] [SMul R A₂'] [SMul R A₃']
 variable (e : A₁ ≃ₐ[R] A₂)
 
 section coe
@@ -276,10 +278,7 @@ end bijective
 
 section refl
 
-#adaptation_note /-- After generalizing `AlgEquiv` to non-unital in
-https://github.com/leanprover-community/mathlib4/pull/45954, `@[refl]` stopped working. -/
-/-- Algebra equivalences are reflexive. -/
--- @[refl]
+@[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
   { (.refl _ : A₁ ≃+* A₁) with map_smul' _ _ := rfl }
 
