@@ -89,7 +89,6 @@ def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ �
 
 end cokernel
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CategoryWithHomology (TopModuleCat R) := by
   constructor
   intro S

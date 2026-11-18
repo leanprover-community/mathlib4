@@ -391,7 +391,7 @@ variable [AddGroup A] [HasShift C A]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Shifting by `i` and shifting by `j` forms an equivalence when `i + j = 0`. -/
-@[simps]
+@[simps, implicit_reducible]
 def shiftEquiv' (i j : A) (h : i + j = 0) : C ≌ C where
   functor := shiftFunctor C i
   inverse := shiftFunctor C j
