@@ -66,9 +66,9 @@ lemma invtSubmodule_inf_invtSubmodule_le_invtSubmodule_add :
     f.invtSubmodule ⊓ g.invtSubmodule ≤ (f + g).invtSubmodule :=
   fun p ⟨hfp, hgp⟩ _ hx ↦ p.add_mem (hfp hx) (hgp hx)
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] in
-lemma mem_invtSubmodule_iff_mem_compatibleMaps {f : End R M} {p : Submodule R M} :
-    p ∈ f.invtSubmodule ↔ f ∈ Submodule.compatibleMaps p p := Iff.rfl
+lemma mem_compatibleMaps_self_iff_mem_invtSubmodule {R M : Type*} [CommSemiring R] [AddCommMonoid M]
+    [Module R M] {f : End R M} {p : Submodule R M} :
+    f ∈ Submodule.compatibleMaps p p ↔ p ∈ f.invtSubmodule := Iff.rfl
 
 section CommRing
 
@@ -129,7 +129,7 @@ protected lemma one :
     invtSubmodule (1 : End R M) = ⊤ :=
   invtSubmodule.id
 
-protected lemma add_mem {p} {f g : End R M} (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
+protected lemma mem_add {p} {f g : End R M} (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
     p ∈ invtSubmodule (f + g) :=
   (le_inf hf hg).trans (Submodule.inf_comap_le_comap_add ..)
 
@@ -190,7 +190,7 @@ protected lemma comp {p : Submodule R M} {g : End R M}
     p ∈ invtSubmodule (f ∘ₗ g) :=
   fun _ hx ↦ hf (hg hx)
 
-protected lemma mul_mem {p : Submodule R M} {g : End R M}
+protected lemma mem_mul {p : Submodule R M} {g : End R M}
     (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
     p ∈ invtSubmodule (f * g) := fun _ hx ↦ hf (hg hx)
 
