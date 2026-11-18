@@ -5,9 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Data.Dyadic.Basic
-
-import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Archimedean instance for dyadic rationals
@@ -19,12 +18,10 @@ namespace Dyadic
 
 instance : DenselyOrdered Dyadic where
   dense x y h := by
-    use (x + y) >>> 1
-    simp_rw [← toRat_lt_toRat_iff] at *
-    constructor
-    · rw [toRat_shift]
-      simpa [inv_mul_eq_div] using left_lt_add_div_two.2 h
-    · simpa [inv_mul_eq_div] using add_div_two_lt_right.2 h
+    refine ⟨(x + y) >>> 1, ?_, ?_⟩ <;>
+    · rw [← toRat_lt_toRat_iff] at *
+      rw [toRat_shiftRight_nat, Rat.pow_one, toRat_add]
+      grind
 
 instance : Archimedean Dyadic where
   arch x y h := by
