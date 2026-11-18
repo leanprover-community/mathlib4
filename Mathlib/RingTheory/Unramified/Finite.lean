@@ -46,17 +46,6 @@ Let `S/R` be formally unramified and essentially of finite type.
 
 @[expose] public section
 
-theorem _root_.MulAction.smul_sum_quotient_of_fixed {G M : Type*} [Group G] [AddCommMonoid M]
-    [DistribMulAction G M] (H : Subgroup G) [Fintype (G ⧸ H)] (x : M)
-    (hx : ∀ h : H, h • x = x) (g : G) :
-    g • (∑ q : G ⧸ H, q.out • x) = ∑ q : G ⧸ H, q.out • x := by
-  classical
-  rw [Finset.smul_sum]
-  refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
-  obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
-  rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
-  simp [hh, mul_smul, ← Subgroup.smul_def, hx]
-
 open Algebra Module
 open scoped TensorProduct
 
