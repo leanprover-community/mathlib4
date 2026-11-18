@@ -204,6 +204,8 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.c
 
 @[simp] theorem top_eq_top : WithTop.top = ∞ := rfl
 
+@[deprecated (since := "2026-11-18")] alias none_eq_top := top_eq_top
+
 @[simp] theorem some_eq_coe (a : ℝ≥0) : (.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl

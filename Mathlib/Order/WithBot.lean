@@ -99,6 +99,12 @@ protected theorem «exists» {p : WithBot α → Prop} : (∃ x, p x) ↔ p ⊥ 
 theorem bot_eq_bot : (bot : WithBot α) = (⊥ : WithBot α) :=
   rfl
 
+@[deprecated (since := "2026-11-18")] alias _root_.WithTop.none_eq_top := WithTop.top_eq_top
+@[to_dual existing, deprecated (since := "2026-11-18")] alias none_eq_bot := bot_eq_bot
+
+@[deprecated (since := "2026-11-18")] alias _root_.WithTop.some_eq_coe := rfl
+@[to_dual existing, deprecated (since := "2026-11-18")] alias some_eq_coe := rfl
+
 @[to_dual (attr := simp)]
 theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
   nofun

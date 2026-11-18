@@ -181,6 +181,11 @@ end Option
 
 variable [LinearOrder α] [OrderTopology α]
 
+@[deprecated (since := "2026-11-18")] alias WithTop.isOpenEmbedding_some :=
+  WithTop.isOpenEmbedding_coe
+@[to_dual existing, deprecated (since := "2026-11-18")] alias WithBot.isOpenEmbedding_some :=
+  WithBot.isOpenEmbedding_coe
+
 @[to_dual]
 instance [EDist α] : EDist (WithTop α) where
   edist

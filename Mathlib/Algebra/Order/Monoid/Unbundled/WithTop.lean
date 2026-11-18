@@ -411,7 +411,7 @@ section NatCast
 variable [NatCast α]
 
 @[to_dual]
-instance natCast : NatCast (WithTop α) :=
+instance : NatCast (WithTop α) :=
   ⟨fun n => ↑(n : α)⟩
 
 @[to_dual (attr := simp)] lemma untopD_natCast (d : α) (n : ℕ) : untopD d n = n := rfl
@@ -519,6 +519,8 @@ theorem one_lt_top [One α] [LT α] : (1 : WithTop α) < ⊤ := coe_lt_top _
 
 @[to_dual existing (attr := simp) top_pos]
 theorem _root_.WithBot.bot_lt_zero [Zero α] [LT α] : ⊥ < (0 : WithBot α) := WithBot.bot_lt_coe _
+
+@[deprecated (since := "2026-11-18")] alias _root_.WithBot.bot_neg := WithBot.bot_lt_zero
 
 @[to_dual existing (attr := simp) one_lt_top, to_additive existing bot_lt_zero]
 theorem _root_.WithBot.bot_lt_one [One α] [LT α] : ⊥ < (1 : WithBot α) := WithBot.bot_lt_coe _

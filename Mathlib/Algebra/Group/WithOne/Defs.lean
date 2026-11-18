@@ -67,6 +67,9 @@ instance [Repr α] : Repr (WithOne α) :=
 
 attribute [coe] WithOne.some WithZero.some
 
+@[deprecated (since := "2026-11-18")] alias _root_.WithZero.coe := WithZero.some
+@[to_additive existing, deprecated (since := "2026-11-18")] alias coe := some
+
 @[to_additive]
 instance instCoeTC : CoeTC α (WithOne α) :=
   ⟨some⟩

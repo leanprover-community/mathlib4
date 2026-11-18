@@ -257,6 +257,12 @@ theorem coe_bot : ((⊥ : WithBot (Box ι)) : Set (ι → ℝ)) = ∅ := rfl
 @[simp, norm_cast]
 theorem coe_coe : ((I : WithBot (Box ι)) : Set (ι → ℝ)) = I := rfl
 
+theorem eq_some_iff : ∀ {I : WithBot (Box ι)}, (∃ J, I = .some J) ↔ (I : Set (ι → ℝ)).Nonempty
+  | ⊥ => by simp
+  | (I : Box ι) => by simp [I.nonempty_coe]
+
+@[deprecated (since := "2026-11-18")] alias isSome_iff := eq_some_iff
+
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
   induction I <;> simp

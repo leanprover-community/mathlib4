@@ -316,16 +316,25 @@ theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
   ext; simp
 
 /-- Adjoins a `⊤` to the domain of a `LatticeHom`. -/
+@[simps!]
 def withTop' [OrderTop β] (f : LatticeHom α β) : LatticeHom (WithTop α) β :=
   { f.toSupHom.withTop', f.toInfHom.withTop' with }
 
 /-- Adjoins a `⊥` to the domain of a `LatticeHom`. -/
-@[to_dual existing]
+@[to_dual existing, simps!]
 def withBot' [OrderBot β] (f : LatticeHom α β) : LatticeHom (WithBot α) β :=
   { f.toSupHom.withBot', f.toInfHom.withBot' with }
 
+/-- Adjoins a `⊥` and `⊤` to the domain of a `LatticeHom`. -/
+@[simps!]
+def withBotWithTop' [BoundedOrder β] (f : LatticeHom α β) :
+    BoundedLatticeHom (WithBot <| WithTop α) β where
+  toLatticeHom := f.withTop'.withBot'
+  map_top' := rfl
+  map_bot' := rfl
+
 /-- Adjoins a `⊤` and `⊥` to the domain of a `LatticeHom`. -/
-@[to_dual /-- Adjoins a `⊥` and `⊤` to the domain of a `LatticeHom`. -/]
+@[to_dual existing, simps!]
 def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) β where
   toLatticeHom := f.withBot'.withTop'

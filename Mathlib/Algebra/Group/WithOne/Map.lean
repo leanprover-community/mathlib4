@@ -36,6 +36,9 @@ def map (f : α → β) : WithOne α → WithOne β
 protected theorem map_one (f : α → β) : map f 1 = 1 :=
   rfl
 
+@[deprecated (since := "2026-11-18")] alias _root_.WithZero.map_bot := WithZero.map_zero
+@[to_additive existing, deprecated (since := "2026-11-18")] alias map_bot := WithOne.map_one
+
 @[to_additive (attr := simp)]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
@@ -77,6 +80,13 @@ lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map
 lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
   cases a <;> rfl
 
+@[deprecated (since := "2026-11-18")] alias _root_.WithZero.map₂_bot_left := WithZero.map₂_zero_left
+@[to_additive existing, deprecated (since := "2026-11-18")] alias map₂_bot_left := map₂_one_left
+
+@[deprecated (since := "2026-11-18")] alias _root_.WithZero.map₂_bot_right :=
+  WithZero.map₂_zero_right
+@[to_additive existing, deprecated (since := "2026-11-18")] alias map₂_bot_right := map₂_one_right
+
 @[to_additive]
 lemma map₂_eq_comp_comp {f : α → β → γ} (a : WithOne α) (b : WithOne β) :
     map₂ f a b = (toOption γ).symm (Option.map₂ f (toOption α a) (toOption β b)) := by
@@ -106,5 +116,9 @@ lemma map₂_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
 lemma map₂_eq_one_iff {f : α → β → γ} {a : WithOne α} {b : WithOne β} :
     map₂ f a b = 1 ↔ a = 1 ∨ b = 1 := by
   cases a <;> cases b <;> simp
+
+@[deprecated (since := "2026-11-18")] alias _root_.WithZero.map₂_eq_bot_iff :=
+  WithZero.map₂_eq_zero_iff
+@[to_additive existing, deprecated (since := "2026-11-18")] alias map₂_eq_bot_iff := map₂_eq_one_iff
 
 end WithOne
