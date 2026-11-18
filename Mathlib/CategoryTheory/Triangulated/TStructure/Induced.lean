@@ -18,7 +18,6 @@ If `P` is a triangulated subcategory of `C`, we introduce a typeclass
 In particular, we show that the triangulated subcategory `t.plus`
 of `t`-bounded above objects can be endowed with a t-structure `t.onPlus`,
 and the same applies to `t.minus` and `t.bounded`.
-
 -/
 
 @[expose] public section
@@ -44,7 +43,6 @@ class HasInducedTStructure [P.IsTriangulated] : Prop where
 
 variable [P.IsTriangulated] [h : P.HasInducedTStructure t]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The t-structure induced on a full subcategory. -/
 noncomputable def tStructure : TStructure P.FullSubcategory where
   le n X := t.le n X.obj
@@ -88,7 +86,6 @@ lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TS
       t.triangleLEGE_distinguished 0 1 (by lia) X,
         P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma mem_of_hasInducedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
     [P.IsClosedUnderIsomorphisms] [P.HasInducedTStructure t]
     (T : Triangle C) (hT : T ∈ distTriang C)
@@ -106,7 +103,6 @@ lemma mem_of_hasInducedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t :
 @[deprecated (since := "2026-10-13")]
 alias mem_of_hasInductedTStructure := mem_of_hasInducedTStructure
 
-set_option backward.defeqAttrib.useBackward true in
 instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : TStructure C)
     [P.HasInducedTStructure t] [P'.HasInducedTStructure t]
     [P.IsClosedUnderIsomorphisms] [P'.IsClosedUnderIsomorphisms] :

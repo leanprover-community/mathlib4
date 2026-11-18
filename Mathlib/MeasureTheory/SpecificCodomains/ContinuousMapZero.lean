@@ -18,7 +18,6 @@ and `E` is a normed group.
 The structure of this file is largely similar to that of
 `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap`, which contains a more detailed
 module docstring.
-
 -/
 
 public section

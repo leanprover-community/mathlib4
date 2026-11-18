@@ -309,7 +309,7 @@ alias ⟨_, Differentiable.add_const⟩ := differentiable_add_const_iff
 @[simp]
 theorem fderivWithin_add_const (c : F) :
     fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x := by
-  classical simp [fderivWithin]
+  classical simp [fderivWithin_def]
 
 @[simp]
 theorem fderiv_add_const (c : F) : fderiv 𝕜 (fun y => f y + c) x = fderiv 𝕜 f x := by
@@ -827,7 +827,8 @@ theorem differentiableWithinAt_comp_add_left (a : E) :
 theorem fderivWithin_comp_add_left (a : E) :
     fderivWithin 𝕜 (fun x ↦ f (a + x)) s x = fderivWithin 𝕜 f (a +ᵥ s) (a + x) := by
   classical
-  simp only [fderivWithin, hasFDerivWithinAt_comp_add_left, differentiableWithinAt_comp_add_left]
+  simp only [fderivWithin_def, hasFDerivWithinAt_comp_add_left,
+    differentiableWithinAt_comp_add_left]
 
 theorem hasFDerivWithinAt_comp_add_right (a : E) :
     HasFDerivWithinAt (fun x ↦ f (x + a)) f' s x ↔ HasFDerivWithinAt f f' (a +ᵥ s) (x + a) := by

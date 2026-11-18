@@ -33,7 +33,6 @@ over a base `X`. Here `Q = ⊤`.
 
 - Most results are developed only in the case where `Q = ⊤` and `W = ⊤`, but the definition
   is setup in the general case to allow for a later generalization if needed.
-
 -/
 
 set_option backward.defeqAttrib.useBackward true
@@ -289,7 +288,6 @@ lemma inv_hom {X Y : P.Comma L R Q W} (f : X ⟶ Y) [IsIso f] : (inv f).hom = in
 
 variable (L R P Q W)
 
-set_option backward.defeqAttrib.useBackward true in
 instance [Q.RespectsIso] [W.RespectsIso] : (forget L R P Q W).ReflectsIsomorphisms where
   reflects f hf := by
     simp only [forget_obj, forget_map] at hf

@@ -19,7 +19,6 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 * `IsCompl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
   non-distributive lattice, an element can have several complements.
 * `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
-
 -/
 
 @[expose] public section
@@ -254,6 +253,11 @@ theorem Disjoint.left_le_of_le_sup_right (h : a ≤ b ⊔ c) (hd : Disjoint a c)
 theorem Disjoint.left_le_of_le_sup_left (h : a ≤ c ⊔ b) (hd : Disjoint a c) : a ≤ b :=
   hd.left_le_of_le_sup_right <| by rwa [sup_comm]
 
+@[to_dual]
+theorem sup_left_inj_of_disjoint (ha : Disjoint c a) (hb : Disjoint c b) :
+    a ⊔ c = b ⊔ c ↔ a = b :=
+  ⟨eq_of_inf_eq_sup_eq (ha.symm.eq_bot.trans hb.symm.eq_bot.symm), congrArg (· ⊔ c)⟩
+
 end DistribLatticeBot
 
 end Disjoint
@@ -338,6 +342,9 @@ theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
 
 theorem ofDual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
   ⟨h.2, h.1⟩
+
+protected theorem ne [Nontrivial α] (h : IsCompl x y) : x ≠ y := by
+  grind [h.disjoint, h.codisjoint, bot_ne_top]
 
 end BoundedPartialOrder
 

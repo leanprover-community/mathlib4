@@ -33,7 +33,6 @@ requires more unfolding without much obvious benefit.
 
 primitive element, separable field extension, separable extension, intermediate field, adjoin,
 exists_adjoin_simple_eq_top
-
 -/
 
 @[expose] public section

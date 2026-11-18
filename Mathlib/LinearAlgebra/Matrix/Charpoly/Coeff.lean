@@ -32,7 +32,6 @@ We give methods for computing coefficients of the characteristic polynomial.
   polynomial as signed sums of principal minors.
 - `Matrix.charpolyRev` the reverse of the characteristic polynomial.
 - `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
-
 -/
 
 @[expose] public section
@@ -158,7 +157,7 @@ lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
   | zero => simp
   | succ n IH =>
     rw [det_succ_row_zero, map_sum, eval_finsetSum]
-    simp only [add_apply, smul_apply, map_apply, smul_eq_mul, X_mul_C, submatrix_add,
+    simp only [Matrix.add_apply, Matrix.smul_apply, map_apply, smul_eq_mul, X_mul_C, submatrix_add,
       submatrix_smul, Pi.add_apply, Pi.smul_apply, submatrix_map, derivative_mul, map_add,
       derivative_C, zero_mul, derivative_X, mul_one, zero_add, eval_add, eval_mul, eval_C, eval_X,
       mul_zero, add_zero, eval_det_add_X_smul, eval_pow, eval_neg, eval_one]
@@ -265,12 +264,12 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   rw [Matrix.det_apply, finsetSum_coeff]
   apply sum_mem
   rintro c -
-  rw [coeff_smul, Submodule.smul_mem_iff']
+  rw [AddMonoidAlgebra.coeff_smul_apply, Submodule.smul_mem_iff']
   have : ∑ x : n, 1 = Fintype.card n := by rw [Finset.sum_const, card_univ, smul_eq_mul, mul_one]
   rw [← this]
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
-  · rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
+  · rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, Matrix.smul_apply,
       smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub, neg_mem_iff]
     exact h (c i) i
   · rw [add_comm, tsub_self_add, pow_zero, Ideal.one_eq_top]
@@ -328,11 +327,11 @@ theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
     eval 0 M.charpolyRev = 1 := by
   rw [charpolyRev, ← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
   have : (1 - (X : R[X]) • M.map C).map (eval 0) = 1 := by
-    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij, one_apply]
+    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij, Matrix.one_apply]
   congr
 
 @[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :
-    coeff M.charpolyRev 1 = - trace M := by
+    M.charpolyRev.coeff 1 = - trace M := by
   nontriviality R
   cases isEmpty_or_nonempty n
   · simp [charpolyRev, coeff_one]
@@ -352,7 +351,7 @@ lemma isNilpotent_trace_of_isNilpotent (hM : IsNilpotent M) :
     IsNilpotent (trace M) := by
   cases isEmpty_or_nonempty n
   · simp
-  suffices IsNilpotent (coeff (charpolyRev M) 1) by simpa using this
+  suffices IsNilpotent ((charpolyRev M).coeff 1) by simpa using this
   exact (isUnit_iff_coeff_isUnit_isNilpotent.mp (isUnit_charpolyRev_of_isNilpotent hM)).2
     _ one_ne_zero
 
@@ -442,8 +441,7 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
         simp only [Polynomial.finsetSum_coeff]
       _ = _ := by
         simp_rw [h_det, smul_eq_mul, mul_comm (X ^ _) (C _)]
-        simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial]
-        rw [← Finset.sum_filter]
+        simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial, Finsupp.single_apply, ← Finset.sum_filter]
         have h_set : Finset.univ.filter (fun s : Finset n => s.card = k) =
             Finset.univ.powersetCard k := by
           ext s; simp [Finset.mem_powersetCard]

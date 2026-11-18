@@ -177,8 +177,8 @@ noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
 
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
-noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
-  exact birkhoffSet.trans Fintype.finsetOrderIsoSet.symm.toOrderEmbedding
+noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} :=
+  birkhoffSet.trans Fintype.finsetOrderIsoSet.symm.toOrderEmbedding
 
 @[simp] lemma coe_birkhoffFinset (a : α) : birkhoffFinset a = birkhoffSet a := by
   classical
@@ -187,10 +187,10 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   simp [birkhoffFinset, (OrderIso.coe_toOrderEmbedding)]
 
 @[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
-  unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
+  unfold OrderEmbedding.birkhoffSet; split <;> simp
 
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
-  unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
+  unfold OrderEmbedding.birkhoffSet; split <;> simp
 
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by

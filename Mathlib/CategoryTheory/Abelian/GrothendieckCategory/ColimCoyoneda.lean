@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
+
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
 
@@ -24,7 +26,6 @@ then the map from the colimit of the types `X ⟶ Y j` to
 additional assumption that for any map `f : j ⟶ j'` in `J`,
 `Y.map f` is a monomorphism, see
 `IsGrothendieckAbelian.preservesColimit_coyoneda_obj_of_mono`.
-
 -/
 
 @[expose] public section
@@ -85,8 +86,8 @@ lemma hf (j : Under j₀) :
 
 variable {y} in
 include hc hy in
-lemma epi_f [IsFiltered J] : Epi (f y) := by
-  exact (colim.exact_mapShortComplex
+lemma epi_f [IsFiltered J] : Epi (f y) :=
+  (colim.exact_mapShortComplex
     ((ShortComplex.mk _ _ (kernel.condition (g y))).exact_of_f_is_kernel
       (kernelIsKernel (g y)))
     (colimit.isColimit _) (isColimitConstCocone _ _)

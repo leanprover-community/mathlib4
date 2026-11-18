@@ -22,7 +22,6 @@ given a valuation to `ℝ≥0`.
 ## TODO
 
 Define the valuation on the tilt, and define a characteristic predicate for the tilt.
-
 -/
 
 @[expose] public section
@@ -200,7 +199,7 @@ instance : CommSemiring (Perfection R p) :=
   inferInstanceAs <| CommSemiring (subsemiring R p)
 
 instance : CharP (Perfection R p) p :=
-  CharP.subsemiring _ _ (subsemiring R p)
+  inferInstanceAs <| CharP (subsemiring R p) p
 
 /-- The `n`-th coefficient of an element of the perfection. -/
 def coeff (n : ℕ) : Perfection R p →+* R where
@@ -464,8 +463,8 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
   left_inv f := by
     simp_rw [← RingHom.comp_assoc, comp_symm_equiv']
     exact (Perfection.lift p R S).symm_apply_apply f
-  right_inv f := by
-    exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
+  right_inv f :=
+    RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
         RingHom.ext_iff.1 (by rw [← Equiv.eq_symm_apply]; rfl) _
 
@@ -607,9 +606,8 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP O p} (hx : x ^ p ≠ 0) (hy : y
   rw [map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_natCast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [map_mul, v.map_mul]; refine lt_of_le_of_lt ?_ (mul_lt_mul'' hx hy zero_le zero_le)
-  by_cases hvp : v p = 0
+  obtain hvp | hvp := eq_zero_or_pos (v p)
   · rw [hvp]; exact zero_le
-  replace hvp := zero_lt_iff.2 hvp
   conv_lhs => rw [← rpow_one (v p)]
   rw [← rpow_add (ne_of_gt hvp)]
   refine rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.2 _) ?_

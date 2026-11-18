@@ -9,6 +9,9 @@ public import Mathlib.Probability.Independence.Basic
 
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stochastic processes with independent increments
 
