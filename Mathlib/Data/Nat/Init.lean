@@ -469,13 +469,13 @@ def mkDivMod (n i j : ℕ) : ℕ := n * i + j
 theorem mkDivMod_def {n i j : ℕ} : n.mkDivMod i j = n * i + j := rfl
 
 @[simp, grind =] theorem div_mkDivMod_of_pos {n : ℕ} (hn : 0 < n) (i j : ℕ) :
-    (n.mkDivMod i j) / n = i + j / n := (Nat.mul_add_div hn _ _)
+    n.mkDivMod i j / n = i + j / n := (Nat.mul_add_div hn _ _)
 
 @[simp, grind =] theorem div_mkDivMod_of_neZero {n : ℕ} [NeZero n] (i j : ℕ) :
-    (n.mkDivMod i j) / n = i + j / n := div_mkDivMod_of_pos (Nat.pos_of_neZero n) _ _
+    n.mkDivMod i j / n = i + j / n := div_mkDivMod_of_pos (Nat.pos_of_neZero n) _ _
 
 @[simp, grind =] theorem mod_mkDivMod {n : ℕ} (i j : ℕ) :
-    (n.mkDivMod i j) % n = j % n := Nat.mul_add_mod _ _ _
+    n.mkDivMod i j % n = j % n := Nat.mul_add_mod _ _ _
 
 @[simp] theorem mkDivMod_inj_of_pos (hn : 0 < n) {i₁ i₂ : ℕ} {j₁ : ℕ} {j₂ : ℕ} :
     n.mkDivMod i₁ j₁ = n.mkDivMod i₂ j₂ ↔ i₁ + j₁ / n = i₂ + j₂ / n ∧ j₁ % n = j₂ % n :=
@@ -490,7 +490,7 @@ theorem mkDivMod_def {n i j : ℕ} : n.mkDivMod i j = n * i + j := rfl
 
 open Fin.NatCast in
 @[simp] theorem cast_mkDivMod {n : ℕ} [NeZero n] (i j : ℕ) :
-    ((n.mkDivMod i j : ℕ) : Fin n) = (j : Fin n) := Fin.ext <| mod_mkDivMod _ _
+    (n.mkDivMod i j : Fin n) = (j : Fin n) := Fin.ext <| mod_mkDivMod _ _
 
 /-- `Nat.mkDivFin n i j` is `Nat.mkDivMod n i j` with the remainder `j` bundled as a `Fin n`,
 so that it is guaranteed to be the remainder of the result modulo `n`.
@@ -498,16 +498,16 @@ This makes the quotient `i` and remainder `j` recoverable without side condition
 def mkDivFin (n i : ℕ) (j : Fin n) : ℕ := n.mkDivMod i j
 
 @[simp, grind =] theorem div_mkDivFin {n : ℕ} (i : ℕ) (j : Fin n) :
-    (n.mkDivFin i j) / n = i := (div_mkDivMod_of_pos j.pos i j).trans
+    n.mkDivFin i j / n = i := (div_mkDivMod_of_pos j.pos i j).trans
   (Nat.add_eq_left.mpr <| Nat.div_eq_of_lt j.isLt)
 
 @[simp, grind =] theorem mod_mkDivFin {n : ℕ} (i : ℕ) (j : Fin n) :
-    (n.mkDivFin i j) % n = j := (mod_mkDivMod _ _).trans (Nat.mod_eq_of_lt j.isLt)
+    n.mkDivFin i j % n = j := (mod_mkDivMod _ _).trans (Nat.mod_eq_of_lt j.isLt)
 
 open Fin.NatCast in
 @[simp, grind =] theorem cast_mkDivFin {n : ℕ} (i : ℕ) (j : Fin n) :
     haveI : NeZero n := ⟨Nat.ne_zero_of_lt j.isLt⟩
-    ((n.mkDivFin i j : ℕ) : Fin n) = j := Fin.ext <| mod_mkDivFin _ _
+    (n.mkDivFin i j : Fin n) = j := Fin.ext <| mod_mkDivFin _ _
 
 @[simp, grind =] theorem mkDivFin_inj {n i₁ i₂ : ℕ} {j₁ : Fin n} {j₂ : Fin n} :
     n.mkDivFin i₁ j₁ = n.mkDivFin i₂ j₂ ↔ i₁ = i₂ ∧ j₁ = j₂ :=
