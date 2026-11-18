@@ -30,7 +30,8 @@ with `0 < μ t < μ s`.
   singletons, provided singletons are null measurable or the measure is s-finite.
 * `MeasureTheory.Measure.restrict.instNoAtoms`: restrictions of s-finite measures without atoms
   have no atoms.
-* `MeasurableEquiv.noAtoms_map_iff`: having no atoms is invariant under measurable equivalences.
+* `MeasurableEmbedding.noAtoms_map_iff`: having no atoms is invariant under pushforwards along
+  measurable embeddings.
 
 ## Implementation notes
 
@@ -91,12 +92,27 @@ theorem nonempty (h : μ.IsAtom s) : s.Nonempty :=
 
 end IsAtom
 
+theorem _root_.MeasurableEmbedding.isAtom_map_iff {e : α → β} (he : MeasurableEmbedding e)
+    {s : Set β} (hs : MeasurableSet s) : (μ.map e).IsAtom s ↔ μ.IsAtom (e ⁻¹' s) := by
+  simp only [isAtom_iff, he.map_apply, hs, he.measurable hs, true_and]
+  refine and_congr_right fun _ ↦ ⟨fun h t hts ht ↦ ?_, fun h t hts ht ↦ ?_⟩
+  · simpa [he.injective.preimage_image] using
+      h (e '' t) (image_subset_iff.2 hts) (he.measurableSet_image.2 ht)
+  · exact h (e ⁻¹' t) (preimage_mono hts) (he.measurable ht)
+
+theorem _root_.MeasurableEmbedding.isAtom_preimage {e : α → β} (he : MeasurableEmbedding e)
+    {s : Set β} (h : (μ.map e).IsAtom s) : μ.IsAtom (e ⁻¹' s) :=
+  (he.isAtom_map_iff h.measurableSet).1 h
+
+theorem _root_.MeasurableEmbedding.isAtom_map_image {e : α → β} (he : MeasurableEmbedding e)
+    (h : μ.IsAtom s) : (μ.map e).IsAtom (e '' s) := by
+  rwa [he.isAtom_map_iff (he.measurableSet_image.2 h.measurableSet), he.injective.preimage_image]
+
 theorem _root_.MeasurableEquiv.isAtom_map_iff (e : α ≃ᵐ β) {s : Set β} :
     (μ.map e).IsAtom s ↔ μ.IsAtom (e ⁻¹' s) := by
-  simp only [isAtom_iff, e.map_apply, e.measurableSet_preimage]
-  refine and_congr_right fun _ ↦ and_congr_right fun _ ↦ ⟨fun h t hts ht ↦ ?_, fun h t hts ht ↦ ?_⟩
-  · simpa [e.preimage_image] using h (e '' t) (image_subset_iff.2 hts) (e.measurableSet_image.2 ht)
-  · exact h (e ⁻¹' t) (preimage_mono hts) (e.measurableSet_preimage.2 ht)
+  by_cases hs : MeasurableSet s
+  · exact e.measurableEmbedding.isAtom_map_iff hs
+  · simp [isAtom_iff, hs]
 
 end Measure
 
@@ -195,10 +211,15 @@ instance Measure.restrict.instNoAtoms [NoAtoms μ] [SFinite μ] (s : Set α) :
   rw [← restrict_toMeasurable_of_sfinite]
   exact NoAtoms.restrict (measurableSet_toMeasurable μ s).nullMeasurableSet
 
-instance _root_.MeasurableEquiv.instNoAtomsMap [NoAtoms μ] (e : α ≃ᵐ β) : NoAtoms (μ.map e) :=
-  ⟨fun _ hs ↦ NoAtoms.not_isAtom _ (e.isAtom_map_iff.1 hs)⟩
+theorem _root_.MeasurableEmbedding.noAtoms_map [NoAtoms μ] {e : α → β}
+    (he : MeasurableEmbedding e) : NoAtoms (μ.map e) :=
+  ⟨fun _ hs ↦ NoAtoms.not_isAtom _ (he.isAtom_preimage hs)⟩
 
-theorem _root_.MeasurableEquiv.noAtoms_map_iff (e : α ≃ᵐ β) : NoAtoms (μ.map e) ↔ NoAtoms μ :=
-  ⟨fun _ ↦ e.map_symm_map (μ := μ) ▸ inferInstance, fun _ ↦ inferInstance⟩
+theorem _root_.MeasurableEmbedding.noAtoms_map_iff {e : α → β} (he : MeasurableEmbedding e) :
+    NoAtoms (μ.map e) ↔ NoAtoms μ :=
+  ⟨fun h ↦ ⟨fun _ hs ↦ h.not_isAtom _ (he.isAtom_map_image hs)⟩, fun _ ↦ he.noAtoms_map⟩
+
+instance _root_.MeasurableEquiv.instNoAtomsMap [NoAtoms μ] (e : α ≃ᵐ β) : NoAtoms (μ.map e) :=
+  e.measurableEmbedding.noAtoms_map
 
 end MeasureTheory
