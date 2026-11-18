@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Hom.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniqueness of ring homomorphisms to archimedean fields
 

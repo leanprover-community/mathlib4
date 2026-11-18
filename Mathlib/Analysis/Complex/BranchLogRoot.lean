@@ -12,6 +12,9 @@ public import Mathlib.Topology.Connected.LocallyPathConnected
 import Mathlib.Analysis.Complex.CoveringMap
 import Mathlib.Topology.Homotopy.Lifting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Branches of logarithm and `n`th root on simply connected domains
 
@@ -73,7 +76,7 @@ theorem exists_continuousOn_pow_eq (hUc : IsSimplyConnected U) (hUo : IsOpen U)
       ← continuousOn_iff_continuous_domRestrict]
     fun_prop
   · by_cases hz : z ∈ U
-    · simp [hz, ← exp_nat_mul, mul_div_cancel₀ (b := ↑n) (f z) (mod_cast hn), ← hf hz,
+    · simp [hz, ← exp_natCast_mul, mul_div_cancel₀ (b := ↑n) (f z) (mod_cast hn), ← hf hz,
         Function.comp_apply]
     · simp [hz, ← cpow_mul_nat, hn]
 

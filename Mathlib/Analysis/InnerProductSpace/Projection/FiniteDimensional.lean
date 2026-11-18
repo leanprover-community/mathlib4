@@ -53,7 +53,7 @@ variable [FiniteDimensional 𝕜 K]
 
 @[simp]
 theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
-  K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
+  K.isClosed_of_finiteDimensional.submodule_topologicalClosure_eq
 
 @[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
@@ -156,7 +156,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   | zero => -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine ⟨[], rfl.le, show φ = 1 from ?_⟩
     have : (ContinuousLinearMap.id ℝ F - φ).ker = ⊤ := by
-      rwa [le_zero_iff, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
+      rwa [nonpos_iff_eq_zero, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
     symm
     ext x
     have := congr($(LinearMap.ker_eq_top.mp this) x)
@@ -394,7 +394,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     obtain ⟨l, hl, rfl⟩ :
       ∃ l ∈ supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (linearCombination 𝕜 ((↑) : u → E)) l = y := by
       rw [← Finsupp.mem_span_image_iff_linearCombination]
-      simp [huv, inter_eq_self_of_subset_right, hy]
+      simp [huv, hy]
     exact hu.inner_finsupp_eq_zero hxv' hl
 
 variable [FiniteDimensional 𝕜 E]

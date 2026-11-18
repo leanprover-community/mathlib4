@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.ZMod
 
 /-!
-
 # Relating `ℤ_[p]` to `ZMod (p ^ n)`, aka `ℤ/p^nℤ`.
 
 In this file we establish connections between the `p`-adic integers `ℤ_[p]`
@@ -39,7 +38,6 @@ there is a unique limit `R → ℤ_[p]`
 
 The constructions of the ring homomorphisms go through an auxiliary constructor
 `PadicInt.toZModHom`, which removes some boilerplate code.
-
 -/
 
 @[expose] public section
@@ -76,10 +74,10 @@ variable {p}
 theorem modPart_lt_p : modPart p r < p := by
   convert! Int.emod_lt_abs _ _
   · simp
-  · exact mod_cast hp_prime.1.ne_zero
+  · exact mod_cast hp_prime.out.ne_zero
 
 theorem modPart_nonneg : 0 ≤ modPart p r :=
-  Int.emod_nonneg _ <| mod_cast hp_prime.1.ne_zero
+  Int.emod_nonneg _ <| mod_cast hp_prime.out.ne_zero
 
 theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
@@ -94,7 +92,7 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     rw [rdcp.gcd_eq_one]
     simp only [mul_one, cast_one, sub_self]
   apply Coprime.symm
-  apply (coprime_or_dvd_of_prime hp_prime.1 _).resolve_right
+  apply (coprime_or_dvd_of_prime hp_prime.out _).resolve_right
   rw [← Int.natCast_dvd_natCast, ← norm_int_lt_one_iff_dvd, not_lt]
   apply ge_of_eq
   rw [← isUnit_iff]
@@ -319,7 +317,7 @@ This coercion is only a ring homomorphism if it coerces into a ring whose charac
 theorem toZMod_spec : x - (ZMod.cast (toZMod x) : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
   convert sub_zmodRepr_mem x using 2
   dsimp [toZMod, toZModHom]
-  rcases Nat.exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
+  rcases Nat.exists_eq_add_of_lt hp_prime.out.pos with ⟨p', rfl⟩
   change ↑((_ : ZMod (0 + p' + 1)).val) = (_ : ℤ_[0 + p' + 1])
   rw [Nat.cast_inj]
   apply mod_eq_of_lt
@@ -368,7 +366,7 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   | zero => simp only [appr, _root_.pow_zero, zero_lt_one]
   | succ n ih =>
     simp only [appr, map_natCast, ZMod.natCast_self, map_pow, Int.natAbs, map_mul]
-    have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
+    have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.out.one_lt n.lt_add_one
     split_ifs with h
     · apply lt_trans (ih _) hp
     · calc
@@ -422,7 +420,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       simp only [mul_zero] at hc
       contradiction
     conv_rhs =>
-      congr
+      enter [1]
       simp only [hc]
     rw [show (x - (appr x n : ℤ_[p])).valuation = ((p : ℤ_[p]) ^ n * c).valuation by rw [hc]]
     rw [valuation_p_pow_mul _ _ hc', Nat.cast_add, add_sub_cancel_left, _root_.pow_succ, ← mul_sub]
@@ -575,27 +573,24 @@ as a Cauchy sequence of rationals with respect to the `p`-adic norm.
 The `n`th value of the sequence is `((f n r).val : ℚ)`.
 -/
 def nthHomSeq (r : R) : PadicSeq p :=
-  ⟨fun n => nthHom f r n, isCauSeq_nthHom f_compat r⟩
+  CauSeq.mk (nthHom f r ·) (isCauSeq_nthHom f_compat r)
 
-set_option backward.isDefEq.respectTransparency false in
--- this lemma ran into issues after changing to `NeZero` and I'm not sure why.
 theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
   intro ε hε
   change _ < _ at hε
   use 1
   intro j hj
-  have : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow (by lia) hp_prime.1.one_lt⟩
+  have : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow (by lia) hp_prime.out.one_lt⟩
   suffices (ZMod.cast (1 : ZMod (p ^ j)) : ℚ) = 1 by simp [nthHomSeq, nthHom, this, hε]
   rw [ZMod.cast_eq_val, ZMod.val_one, Nat.cast_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nthHomSeq_add (r s : R) :
     nthHomSeq f_compat (r + s) ≈ nthHomSeq f_compat r + nthHomSeq f_compat s := by
   intro ε hε
   obtain ⟨n, hn⟩ := exists_pow_neg_lt_rat p hε
   use n
   intro j hj
-  dsimp [nthHomSeq]
+  simp only [nthHomSeq, sub_apply, mk_apply, add_apply]
   apply lt_of_le_of_lt _ hn
   rw [← Int.cast_add, ← Int.cast_sub, ← padicNorm.dvd_iff_norm_le, ←
     ZMod.intCast_zmod_eq_zero_iff_dvd]
@@ -604,14 +599,13 @@ theorem nthHomSeq_add (r s : R) :
   rw [ZMod.cast_add (show p ^ n ∣ p ^ j from pow_dvd_pow _ hj)]
   simp only [sub_self]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nthHomSeq_mul (r s : R) :
     nthHomSeq f_compat (r * s) ≈ nthHomSeq f_compat r * nthHomSeq f_compat s := by
   intro ε hε
   obtain ⟨n, hn⟩ := exists_pow_neg_lt_rat p hε
   use n
   intro j hj
-  dsimp [nthHomSeq]
+  simp only [nthHomSeq, sub_apply, mk_apply, mul_apply]
   apply lt_of_le_of_lt _ hn
   rw [← Int.cast_mul, ← Int.cast_sub, ← padicNorm.dvd_iff_norm_le, ←
     ZMod.intCast_zmod_eq_zero_iff_dvd]
@@ -667,7 +661,7 @@ theorem lift_sub_val_mem_span (r : R) (n : ℕ) :
     lift f_compat r - (f n r).val ∈ (Ideal.span {(p : ℤ_[p]) ^ n}) := by
   obtain ⟨k, hk⟩ :=
     limNthHom_spec f_compat r _
-      (show (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) from zpow_pos (mod_cast hp_prime.1.pos) _)
+      (show (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) from zpow_pos (mod_cast hp_prime.out.pos) _)
   have := le_of_lt (hk (max n k) (le_max_right _ _))
   rw [norm_le_pow_iff_mem_span_pow] at this
   dsimp [lift]
@@ -750,16 +744,16 @@ lemma toZModPow_ofIntSeq_of_pow_dvd_sub
     (f : ℕ → ℤ) (p : ℕ) [Fact p.Prime] (hi : ∀ i, (p : ℤ) ^ i ∣ f (i + 1) - f i) (n : ℕ) :
     (PadicInt.ofIntSeq _ (isCauSeq_padicNorm_of_pow_dvd_sub f p hi)).toZModPow n = f n := by
   set x := PadicInt.ofIntSeq _ (isCauSeq_padicNorm_of_pow_dvd_sub f p hi)
-  let s : PadicSeq p := ⟨(f ·), isCauSeq_padicNorm_of_pow_dvd_sub f p hi⟩
+  let s : PadicSeq p := .mk (f ·) (isCauSeq_padicNorm_of_pow_dvd_sub f p hi)
   have hs : x = Padic.mk s := rfl
   obtain ⟨e, he⟩ := Ideal.mem_span_singleton.mp (PadicInt.appr_spec n x)
   rw [sub_eq_iff_eq_add] at he
   obtain ⟨N, hN⟩ := padicNormE.defn s (ε := p ^ (-n : ℤ))
-    (by simp only [zpow_neg, zpow_natCast, inv_pos]; exact_mod_cast Nat.pos_of_neZero _)
+    (by simp only [zpow_neg, zpow_natCast, inv_pos]; exact mod_cast Nat.pos_of_neZero _)
   replace hN := hN (N + n) (Nat.le_add_right N n)
   rw [← hs, he, ← Rat.cast_lt (K := ℝ)] at hN
   push_cast at hN
-  simp only [← add_sub, s, Rat.cast_intCast, padicNormE.is_norm,
+  simp only [← add_sub, s, CauSeq.mk_apply, Rat.cast_intCast, padicNormE.is_norm,
     ← Int.cast_natCast (R := ℚ_[p]) (x.appr n), ← Int.cast_sub] at hN
   have : ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ ≤ ↑p ^ (-n : ℤ) := by
     by_contra! H

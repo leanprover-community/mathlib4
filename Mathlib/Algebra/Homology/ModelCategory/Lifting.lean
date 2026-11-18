@@ -25,7 +25,6 @@ Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`. In this situation,
 we construct a cocycle in `Cocycle Q K 1` and show that there exists
 a lifting `B ⟶ X` if this cocycle is a coboundary.
-
 -/
 
 @[expose] public section
@@ -83,11 +82,11 @@ lemma exists_hom (n m : ℤ) (hnm : n + 1 = m := by lia) :
     ∃ (φ : Q.X n ⟶ K.X m), π.f n ≫ φ ≫ ι.f m = (cocycle₁' sq hsq).1.v n m hnm := by
   have : Epi π := Cofork.IsColimit.epi hQ
   obtain ⟨l, hl⟩ := CokernelCofork.IsColimit.desc'
-    ((CokernelCofork.isColimitMapCoconeEquiv _ _).1
+    ((CokernelCofork.isColimitMapCoconeEquiv _ _).toFun
     (isColimitOfPreserves (HomologicalComplex.eval _ _ n) hQ))
     ((cocycle₁' sq hsq).1.v n m hnm) (by simp)
   dsimp [CokernelCofork.map] at l hl
-  obtain ⟨l', hl'⟩ := KernelFork.IsLimit.lift' ((KernelFork.isLimitMapConeEquiv _ _).1
+  obtain ⟨l', hl'⟩ := KernelFork.IsLimit.lift' ((KernelFork.isLimitMapConeEquiv _ _).toFun
     (isLimitOfPreserves (HomologicalComplex.eval _ _ m) hK)) l (by
       simp [← cancel_epi (π.f n), reassoc_of% hl])
   exact ⟨l', by cat_disch⟩

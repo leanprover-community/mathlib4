@@ -27,7 +27,6 @@ For vector spaces (i.e. modules over a division ring), we have
   is at most the `R`-rank of `M`.
 
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
-
 -/
 
 public section
@@ -96,7 +95,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)
     simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker,
-      Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range,
+      Prod.mk_inj, coprod_apply, map_neg, LinearMap.neg_apply, LinearMap.mem_range,
       Function.prod_apply] at h ⊢
     grind
 

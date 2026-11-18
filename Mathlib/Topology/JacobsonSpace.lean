@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.LocalAtTarget
 
 /-!
-
 # Jacobson spaces
 
 ## Main results
@@ -21,7 +20,6 @@ public import Mathlib.Topology.LocalAtTarget
 
 ## References
 - https://stacks.math.columbia.edu/tag/005T
-
 -/
 
 @[expose] public section
@@ -82,7 +80,7 @@ lemma jacobsonSpace_iff_locallyClosed :
   rw [jacobsonSpace_iff]
   constructor
   · simp_rw [isLocallyClosed_iff_isOpen_coborder, coborder, isOpen_compl_iff,
-      Set.nonempty_iff_ne_empty]
+      ← Set.ne_empty_iff_nonempty]
     intro H Z hZ hZ' e
     have : Z ⊆ closure Z \ Z := by
       refine subset_closure.trans ?_
@@ -98,7 +96,7 @@ lemma jacobsonSpace_iff_locallyClosed :
       ← Set.not_nonempty_iff_eq_empty]
     intro H'
     have := H _ H' (isClosed_closure.isOpen_compl.isLocallyClosed.inter hZ.isLocallyClosed)
-    rw [Set.nonempty_iff_ne_empty, Set.inter_assoc, ne_eq,
+    rw [← Set.ne_empty_iff_nonempty, Set.inter_assoc, ne_eq,
       ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset] at this
     exact this subset_closure
 
@@ -168,7 +166,7 @@ instance (priority := 100) [T1Space X] : JacobsonSpace X :=
 
 lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Opens X}
     (hU : IsOpenCover U) : JacobsonSpace X ↔ ∀ i, JacobsonSpace (U i) := by
-  refine ⟨fun H i ↦ .of_isOpenEmbedding (U i).2.isOpenEmbedding_subtypeVal, fun H ↦ ?_⟩
+  refine ⟨fun H i ↦ .of_isOpenEmbedding (U i).is_open'.isOpenEmbedding_subtypeVal, fun H ↦ ?_⟩
   rw [jacobsonSpace_iff_locallyClosed]
   intro Z hZ hZ'
   rw [← hU.iUnion_inter Z, Set.nonempty_iUnion] at hZ
@@ -182,7 +180,7 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
     apply isClosed_singleton_of_isLocallyClosed_singleton
     convert
       (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
-            (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
+            (U i).is_open'.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
         continuous_subtype_val
     ext
     simp [← Subtype.coe_inj]

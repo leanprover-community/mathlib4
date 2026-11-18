@@ -959,7 +959,7 @@ lemma norm_natCast_cpow_le_norm_natCast_cpow_of_pos {n : ℕ} (hn : 0 < n) {w z 
     (h : w.re ≤ z.re) :
     ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ := by
   simp_rw [norm_natCast_cpow_of_pos hn]
-  exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) h
+  exact Real.rpow_le_rpow_of_exponent_le (mod_cast hn) h
 
 lemma norm_natCast_cpow_le_norm_natCast_cpow_iff {n : ℕ} (hn : 1 < n) {w z : ℂ} :
     ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ ↔ w.re ≤ z.re := by
@@ -970,7 +970,7 @@ lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log 
   rcases n.eq_zero_or_pos with rfl | h
   · rw [Nat.cast_zero, Nat.cast_zero, log_zero, norm_zero, Real.zero_rpow hε.ne', zero_div]
   rw [← natCast_log, norm_real, norm_of_nonneg <| Real.log_nonneg <| by
-    exact_mod_cast Nat.one_le_of_lt h.lt]
+    exact mod_cast Nat.one_le_of_lt h.lt]
   exact Real.log_natCast_le_rpow_div n hε
 
 end Complex
@@ -1051,11 +1051,11 @@ namespace Mathlib.Meta.NormNum
 open Lean.Meta Qq
 
 theorem IsNat.rpow_eq_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a : ℝ) : a ^ b = a ^ n := by
-  rw [h.1, Real.rpow_natCast]
+  rw [h.out, Real.rpow_natCast]
 
 theorem IsInt.rpow_eq_inv_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ) :
     a ^ b = (a ^ n)⁻¹ := by
-  rw [h.1, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
+  rw [h.out, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
 
 /-- Given proofs
 - that `a` is a natural number `m`
@@ -1076,9 +1076,9 @@ theorem IsNNRat.rpow_isNNRat (a b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
     (nr dr : ℕ) (hnum : IsNat ((na : ℝ) ^ b) nr) (hden : IsNat ((da : ℝ) ^ b) dr) :
     IsNNRat (a ^ b) nr dr := by
   suffices IsNNRat (nr / dr : ℝ) nr dr by
-    simpa [ha.to_eq, Real.div_rpow, hnum.1, hden.1]
+    simpa [ha.to_eq, Real.div_rpow, hnum.out, hden.out]
   apply IsNNRat.of_raw
-  rw [← hden.1]
+  rw [← hden.out]
   apply (Real.rpow_pos_of_pos _ _).ne'
   exact lt_of_le_of_ne' da.cast_nonneg ha.den_nz
 

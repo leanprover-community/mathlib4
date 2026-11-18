@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 
 import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of minimizers (Hilbert projection theorem)
 
@@ -196,8 +199,8 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
           _ = p := div_mul_cancel₀ _ hq
       have : 2 * p ≤ p :=
         calc
-          2 * p ≤ θ * q := by
-            exact this θ (lt_min (by simp) (div_pos hp q_pos)) (by simp [θ])
+          2 * p ≤ θ * q :=
+            this θ (lt_min (by simp) (div_pos hp q_pos)) (by simp [θ])
           _ ≤ p := eq₁
       linarith
   · intro h

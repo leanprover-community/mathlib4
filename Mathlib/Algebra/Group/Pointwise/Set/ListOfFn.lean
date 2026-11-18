@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 import Mathlib.Data.List.OfFn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise operations with lists of sets
 

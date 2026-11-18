@@ -38,11 +38,17 @@ variable [NontrivialTopology E] [RingHomIsometric σ₁₂]
 @[simp] lemma norm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ = 1 :=
   f.toContinuousLinearMap.homothety_norm <| by simp
 
-@[simp] lemma nnnorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖₊ = 1 :=
+@[simp] lemma nnNorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖₊ = 1 :=
   Subtype.ext f.norm_toContinuousLinearMap
 
-@[simp] lemma enorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ₑ = 1 :=
-  congrArg _ f.nnnorm_toContinuousLinearMap
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap
+
+@[simp] lemma eNorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ₑ = 1 :=
+  congrArg _ f.nnNorm_toContinuousLinearMap
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_toContinuousLinearMap := eNorm_toContinuousLinearMap
 
 end
 
@@ -73,13 +79,19 @@ variable [NontrivialTopology E] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ = 1 :=
   e.toLinearIsometry.norm_toContinuousLinearMap
 
-@[simp] lemma nnnorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
+@[simp] lemma nnNorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖₊ = 1 :=
-  e.toLinearIsometry.nnnorm_toContinuousLinearMap
+  e.toLinearIsometry.nnNorm_toContinuousLinearMap
 
-@[simp] lemma enorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap
+
+@[simp] lemma eNorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ₑ = 1 :=
-  e.toLinearIsometry.enorm_toContinuousLinearMap
+  e.toLinearIsometry.eNorm_toContinuousLinearMap
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_toContinuousLinearMap := eNorm_toContinuousLinearMap
 
 end LinearIsometryEquiv
 end SeminormedAddCommGroup
@@ -135,9 +147,9 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
       ((Filter.tendsto_pure_pure _ _).mono_right (pure_le_nhds _)).le_comap.trans hf)
     exact norm_zero.trans_le (mul_nonneg (NNReal.coe_nonneg _) (norm_nonneg _))
   have hc₀ : c ≠ 0 := norm_pos_iff.1 (one_pos.trans hc)
-  rw [← h.1] at hc
+  rw [← h.norm_map] at hc
   rcases rescale_to_shell_zpow hc ε0 hx with ⟨n, -, hlt, -, hle⟩
-  simp only [← map_zpow₀, h.1, ← map_smulₛₗ] at hlt hle
+  simp only [← map_zpow₀, h.norm_map, ← map_smulₛₗ] at hlt hle
   calc
     ‖x‖ = ‖c ^ n‖⁻¹ * ‖c ^ n • x‖ := by
       rwa [← norm_inv, ← norm_smul, inv_smul_smul₀ (zpow_ne_zero _ _)]
@@ -192,10 +204,11 @@ variable
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 @[simp]
-theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
+theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] :
+    ‖StrongDual.smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
-lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
+lemma norm_smulRightL_le : ‖StrongDual.smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
   ContinuousLinearMap.opNorm_le_bound₂ _ zero_le_one fun c x ↦ by simp
 
 /-! ### Composition with isometries -/
@@ -215,12 +228,12 @@ lemma opNNNorm_linearIsometryEquiv_comp [RingHomIsometric σ₁₂] (e : F ≃�
 /-- Precomposition with a linear isometry preserves the operator norm. -/
 @[simp]
 lemma opNorm_comp_linearIsometryEquiv [RingHomIsometric σ₂₃] (f : F →SL[σ₂₃] G)
-    (e : E ≃ₛₗᵢ[σ₁₂] F) : ‖f.comp (e : E →SL[σ₁₂] F)‖ = ‖f‖ := by simp [← coe_nnnorm]
+    (e : E ≃ₛₗᵢ[σ₁₂] F) : ‖f.comp (e : E →SL[σ₁₂] F)‖ = ‖f‖ := by simp [← coe_nnNorm]
 
 /-- Postcomposition with a linear isometry preserves the operator norm. -/
 @[simp]
 lemma opNorm_linearIsometryEquiv_comp [RingHomIsometric σ₁₂] (e : F ≃ₛₗᵢ[σ₂₃] G)
-    (f : E →SL[σ₁₂] F) : ‖(e : F →SL[σ₂₃] G).comp f‖ = ‖f‖ := by simp [← coe_nnnorm]
+    (f : E →SL[σ₁₂] F) : ‖(e : F →SL[σ₂₃] G).comp f‖ = ‖f‖ := by simp [← coe_nnNorm]
 
 /-- Precomposition with a linear isometry preserves the operator norm. -/
 @[simp]
@@ -284,9 +297,11 @@ theorem norm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ
     0 < ‖(e.symm : F →SL[σ₂₁] E)‖ :=
   pos_of_mul_pos_right (zero_lt_one.trans_le e.one_le_norm_mul_norm_symm) (norm_nonneg _)
 
-theorem nnnorm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
+theorem nnNorm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     0 < ‖(e.symm : F →SL[σ₂₁] E)‖₊ :=
   e.norm_symm_pos
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_symm_pos := nnNorm_symm_pos
 
 theorem subsingleton_or_norm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
     Subsingleton E ∨ 0 < ‖(e.symm : F →SL[σ₂₁] E)‖ := by
@@ -296,9 +311,12 @@ theorem subsingleton_or_norm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[�
   · right
     exact e.norm_symm_pos
 
-theorem subsingleton_or_nnnorm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
+theorem subsingleton_or_nnNorm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
     Subsingleton E ∨ 0 < ‖(e.symm : F →SL[σ₂₁] E)‖₊ :=
   subsingleton_or_norm_symm_pos e
+
+@[deprecated (since := "2026-10-31")]
+alias subsingleton_or_nnnorm_symm_pos := subsingleton_or_nnNorm_symm_pos
 
 variable (𝕜)
 
@@ -328,9 +346,9 @@ variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField �
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
-between normed spaces. See also `WithSeminorms.equicontinuous_TFAE` for similar characterizations
+between normed spaces. See also `WithSeminorms.equicontinuous_tfae` for similar characterizations
 between spaces satisfying `WithSeminorms`. -/
-protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
+protected theorem NormedSpace.equicontinuous_tfae : List.TFAE
     [ EquicontinuousAt ((↑) ∘ f) 0,
       Equicontinuous ((↑) ∘ f),
       UniformEquicontinuous ((↑) ∘ f),
@@ -376,6 +394,9 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
         ((norm_withSeminorms 𝕜 E).continuous_seminorm 0).const_smul C.toNNReal, fun i x ↦ ?_⟩
       exact (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
   tfae_finish
+
+@[deprecated (since := "2026-10-27")]
+protected alias NormedSpace.equicontinuous_TFAE := NormedSpace.equicontinuous_tfae
 
 end Equicontinuous
 

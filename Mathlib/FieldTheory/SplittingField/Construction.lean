@@ -27,7 +27,6 @@ We construct a `SplittingFieldAux` without worrying about whether the instances 
 definitional equalities. Then the actual `SplittingField` is defined to be a quotient of a
 `MvPolynomial` ring by the kernel of the obvious map into `SplittingFieldAux`. Because the
 actual `SplittingField` will be a quotient of a `MvPolynomial`, it has nice instances on it.
-
 -/
 
 @[expose] public section
@@ -305,7 +304,7 @@ instance (f : K[X]) : Module.IsTorsionFree K f.SplittingField :=
 def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
   AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f) <|
     have := finiteDimensional L f
-    ((Algebra.IsAlgebraic.of_finite K L).algHom_bijective₂ _ <| lift _ f h.1).1
+    ((Algebra.IsAlgebraic.of_finite K L).algHom_bijective₂ _ <| lift _ f h.splits').1
 
 end IsSplittingField
 

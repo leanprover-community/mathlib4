@@ -27,7 +27,6 @@ variable {R R' A T B ι : Type*}
 namespace AddMonoidAlgebra
 
 /-!
-
 ## sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
@@ -78,7 +77,6 @@ variable [Semiring R]
 section ExplicitDegrees
 
 /-!
-
 In this section, we use `degb` and `degt` to denote "degree functions" on `A` with values in
 a type with *b*ot or *t*op respectively.
 -/
@@ -318,7 +316,7 @@ theorem supDegree_mul_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
 
 theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
     [SemilatticeSup B] [OrderBot B]
-    [AddLeftMono B] [AddRightMono B]
+    [AddLeftMono B]
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     {ι} {s : Finset ι} {f : ι → R[A]} :
     (∏ i ∈ s, f i).supDegree D ≤ ∑ i ∈ s, (f i).supDegree D := by

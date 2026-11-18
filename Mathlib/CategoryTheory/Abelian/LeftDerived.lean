@@ -44,7 +44,6 @@ and show how to compute the components.
   Eventually, we shall get a left derived functor
   `F.leftDerivedFunctorMinus : DerivedCategory.Minus C ⥤ DerivedCategory.Minus D`,
   and `F.leftDerived` shall be redefined using `F.leftDerivedFunctorMinus`.
-
 -/
 
 @[expose] public section
@@ -115,8 +114,6 @@ noncomputable def ProjectiveResolution.isoLeftDerivedObj {X : C} (P : Projective
     (P.isoLeftDerivedToHomotopyCategoryObj F) ≪≫
     (HomotopyCategory.homologyFunctorFactors D (ComplexShape.down ℕ) n).app _
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ProjectiveResolution.isoLeftDerivedObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
@@ -327,7 +324,6 @@ lemma ProjectiveResolution.fromLeftDerivedZero_eq
   erw [← NatTrans.naturality_assoc]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
     IsIso (F.fromLeftDerivedZero.app X) := by
   rw [(ProjectiveResolution.self X).fromLeftDerivedZero_eq F]

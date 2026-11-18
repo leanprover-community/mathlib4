@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
-
 # Multi-(co)equalizers
 
 A *multiequalizer* is an equalizer of two morphisms between two products.
@@ -25,7 +24,6 @@ Prove that a multiequalizer can be identified with
 an equalizer between products (and analogously for multicoequalizers).
 
 Prove that the limit of any diagram is a multiequalizer (and similarly for colimits).
-
 -/
 
 @[expose] public section

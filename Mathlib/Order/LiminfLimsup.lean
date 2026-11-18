@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Order.Hom.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # liminfs and limsups of functions and filters
 
@@ -849,7 +852,7 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
   rw [ite_eq_right H']
   apply hv.liminf_eq_ciSup_ciInf
   · push Not at H
-    simpa only [nonempty_iff_ne_empty] using H
+    exact H
   · push Not at H'
     exact H'
 
