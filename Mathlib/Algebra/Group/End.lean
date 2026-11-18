@@ -622,8 +622,6 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
 
 end Swap
 
-section IsSwap
-
 namespace Perm
 
 variable [DecidableEq α]
@@ -651,8 +649,6 @@ theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap
   grind
 
 end Perm
-
-end IsSwap
 
 section Group
 variable [Group α] (a b : α)
