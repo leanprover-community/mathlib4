@@ -8,10 +8,10 @@ module
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Data.Sym.Sym2.Card
 public import Mathlib.Order.CompleteBooleanAlgebra
 
-import Mathlib.Data.Set.Lattice.Disjoint
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Simple graphs
@@ -520,6 +520,9 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
   simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
 
+theorem disjoint_edgeSet_diagSet : Disjoint G.edgeSet Sym2.diagSet :=
+  Set.subset_compl_iff_disjoint_right.mp G.edgeSet_subset_compl_diagSet
+
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
   ext ⟨x, y⟩
@@ -569,7 +572,7 @@ theorem disjoint_of_disjoint_support (h : Disjoint G.support H.support) : Disjoi
 @[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
 
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
-  rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
+  simp [← Set.ne_empty_iff_nonempty]
 
 /-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
 allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
@@ -633,6 +636,22 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
     Fintype (G₁ \ G₂).edgeSet := by
   rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
+
+variable {G} in
+@[simp]
+theorem finite_edgeSet_iff_finite_support : G.edgeSet.Finite ↔ G.support.Finite := by
+  refine ⟨fun hfin ↦ ?_, (·.sym2.subset <| edgeSet_subset_sym2_iff.mpr subset_rfl)⟩
+  have : Finite G.edgeSet := hfin
+  classical
+  suffices G.support = ⋃ e : G.edgeSet, e.val.toFinset by rw [this]; apply Set.finite_iUnion; simp
+  ext
+  simp [mem_support, Sym2.mem_iff_exists]
+
+variable {G} in
+@[simp]
+theorem infinite_edgeSet_iff_infinite_support : G.edgeSet.Infinite ↔ G.support.Infinite := by
+  contrapose!
+  exact finite_edgeSet_iff_finite_support
 
 end EdgeSet
 
@@ -1041,7 +1060,7 @@ def IsIsolated (G : SimpleGraph V) (v : V) : Prop := ∀ w, ¬ G.Adj v w
   simp [neighborSet, IsIsolated, Set.ext_iff]
 
 @[simp] lemma neighborSet_nonempty : (G.neighborSet v).Nonempty ↔ ¬ G.IsIsolated v := by
-  simp [Set.nonempty_iff_ne_empty]
+  simp [← Set.ne_empty_iff_nonempty]
 
 protected alias ⟨IsIsolated.of_neighborSet_eq_empty, IsIsolated.neighborSet_eq_empty⟩ :=
   neighborSet_eq_empty
