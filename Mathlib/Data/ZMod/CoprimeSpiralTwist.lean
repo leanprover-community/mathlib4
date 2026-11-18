@@ -5,8 +5,8 @@ Authors: Qamar Munawer
 -/
 module
 
-public import Mathlib.Data.ZMod.Basic
 public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Data.ZMod.Basic
 public import Mathlib.Tactic.Linarith
 
 /-!
