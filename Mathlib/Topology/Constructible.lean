@@ -309,7 +309,7 @@ lemma _root_.QuasiSeparatedSpace.of_isOpenCover {ι : Type*} {U : ι → Opens X
     apply subset_antisymm
     · rintro x ⟨hx₁, hx₂⟩
       obtain ⟨i, hi, hxi⟩ := Set.mem_iUnion₂.mp (ht hx₁)
-      exact Set.mem_iUnion₂.mpr ⟨i, hi, by simpa [*]⟩
+      exact Set.mem_iUnion₂.mpr ⟨i, hi, by simp [*]⟩
     · rw [Set.subset_def]
       simp +contextual
 
