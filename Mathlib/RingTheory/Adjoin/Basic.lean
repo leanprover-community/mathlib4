@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Prod
 
 import Mathlib.Algebra.Order.Group.Nat
+
 /-!
 # Adjoining elements to form subalgebras
 
@@ -19,7 +20,6 @@ This file contains basic results on `Algebra.adjoin`.
 ## Tags
 
 adjoin, algebra
-
 -/
 
 public section

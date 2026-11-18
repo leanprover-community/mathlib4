@@ -6,10 +6,9 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Bryan Gin-ge Chen, J
 module
 
 public meta import Batteries.Lean.NameMapAttribute
-
+public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
-public import Mathlib.Tactic.Translate.GuessName
 
 /-!
 # Expression translation for the translation attribute.

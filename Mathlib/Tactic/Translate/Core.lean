@@ -8,13 +8,12 @@ module
 
 public meta import Lean.Compiler.NoncomputableAttr
 public meta import Lean.Elab.App
+public meta import Lean.Meta.CoeAttr
 public meta import Lean.Meta.Tactic.Ext
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
-public meta import Lean.Meta.CoeAttr
 public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Lean.Name
-
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Translate.Attributes
@@ -98,7 +97,7 @@ syntax bracketedOption := "(" attrOption <|> reorderOption <|>
   translation heuristics, or because the value/proof is genuinely different.
 
 - `self` indicates that the declaration translates to itself, up to some reordering of arguments.
-  If no arguments are reordered then the attribute is redundant, which the `translateRedundant`
+  If no arguments are reordered then the attribute is redundant, which the `translate.redundant`
   linter will warn about.
 
 - `none` indicates that the translated declaration should not get a user-facing name,
@@ -126,39 +125,39 @@ register_option linter.existingAttributeWarning : Bool := {
 
 /-- Linter used by translate attributes that checks if the given declaration name is
     equal to the automatically generated name -/
-register_option linter.translateGenerateName : Bool := {
+register_option linter.translate.generateName : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the given declaration name is \
     equal to the automatically generated name" }
 
 /-- Linter to check whether the user correctly specified that the translated declaration already
 exists -/
-register_option linter.translateExisting : Bool := {
+register_option linter.translate.existing : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks whether the user correctly specified
     that the translated declaration already exists" }
 
 /-- Linter used by translate attributes that checks if the given reorder is
     equal to the automatically generated name -/
-register_option linter.translateReorder : Bool := {
+register_option linter.translate.reorder : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the given reorder is \
     equal to the automatically generated one" }
 
 /-- Linter used by translate attributes that checks if the `relevant_arg` is
 automatically generated. -/
-register_option linter.translateRelevantArg : Bool := {
+register_option linter.translate.relevantArg : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the relevant_arg is \
     automatically generated" }
 
 /-- Linter used by translate attributes that checks if the attribute was already applied -/
-register_option linter.translateOverwrite : Bool := {
+register_option linter.translate.overwrite : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute was already applied" }
 
 /-- Linter used by translate attributes that checks if the attribute is redundant -/
-register_option linter.translateRedundant : Bool := {
+register_option linter.translate.redundant : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute is redundant" }
 
@@ -169,11 +168,56 @@ register_option linter.translate.warnInvalid : Bool := {
   descr := "Linter used by translate attributes that warns when a translation was not added
     because of being invalid." }
 
+
+/-- Linter used by translate attributes that checks if the given declaration name is
+    equal to the automatically generated name -/
+@[deprecated linter.translate.generateName (since := "2026-10-12")]
+register_option linter.translateGenerateName : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the given declaration name is \
+    equal to the automatically generated name" }
+
+/-- Linter to check whether the user correctly specified that the translated declaration already
+exists -/
+@[deprecated linter.translate.existing (since := "2026-10-12")]
+register_option linter.translateExisting : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks whether the user correctly specified
+    that the translated declaration already exists" }
+
+/-- Linter used by translate attributes that checks if the given reorder is
+    equal to the automatically generated name -/
+    @[deprecated linter.translate.reorder (since := "2026-10-12")]
+register_option linter.translateReorder : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the given reorder is \
+    equal to the automatically generated one" }
+
+/-- Linter used by translate attributes that checks if the `relevant_arg` is
+automatically generated. -/
+@[deprecated linter.translate.relevantArg (since := "2026-10-12")]
+register_option linter.translateRelevantArg : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the relevant_arg is \
+    automatically generated" }
+
+/-- Linter used by translate attributes that checks if the attribute was already applied -/
+@[deprecated linter.translate.overwrite (since := "2026-10-12")]
+register_option linter.translateOverwrite : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the attribute was already applied" }
+
+/-- Linter used by translate attributes that checks if the attribute is redundant -/
+@[deprecated linter.translate.redundant (since := "2026-10-12")]
+register_option linter.translateRedundant : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the attribute is redundant" }
+
 /-- Add a translation to the translations map. If the translation attribute is dual,
 also add the reverse translation, but don't do this when `unfold := true`,
 because then `tgt` is an implementation detail. -/
 def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
-    (relevantArg : RelevantArg) (ref : Syntax) (allowDuplicate unfold := false) :
+    (relevantArg : RelevantArg) (allowDuplicate unfold := false) :
     CoreM Unit := do
   insertTranslationAux src { translation := tgt, reorder, relevantArg, unfold }
   trace[translate] "Adding `{.ofConstName src}` {ite t.isDual "↔" "↦"} `{.ofConstName tgt}`\
@@ -189,7 +233,7 @@ where
   insertTranslationAux (src : Name) (info : TranslationInfo) : CoreM Unit := do
     if let some info' := findTranslation? (← getEnv) t src then
       unless allowDuplicate && info'.translation == info.translation do
-        Linter.logLintIf linter.translateOverwrite ref
+        Linter.logLintIf linter.translate.overwrite (← getRef)
           m!"`{.ofConstName src}` was already translated to `{.ofConstName info'.translation}` \
           instead of `{.ofConstName info.translation}`.\n\
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
@@ -205,16 +249,13 @@ structure Config : Type where
   target : Name := Name.anonymous
   /-- An optional doc string. -/
   doc : Option (TSyntax ``Lean.Parser.Command.docComment) := .none
-  /-- If `allowAutoName` is `false` (default) then
-  we check whether the given name can be auto-generated. -/
-  allowAutoName : Bool := false
   /-- The arguments that should be reordered when translating, using cycle notation. -/
   reorder? : Option ArgReorder := .none
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg? : Option RelevantArg := .none
   /-- The attributes which we want to give to the original and translated declaration.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
-  attrs : Array Syntax := #[]
+  attrs : Array Attribute := #[]
   /-- A list of positions of type variables that should not be translated. -/
   dontTranslate : List Nat := []
   /-- The `Syntax` element corresponding to the translation attribute,
@@ -244,18 +285,17 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     throwError "`{t.attrName}` does not support mutually recursive declarations."
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
+  let mut type := decl.type
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
-    value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+    type ← b.insertBoundaries type t.attrName
+    value ← b.cast (← b.insertBoundaries value t.attrName) type t.attrName
   trace[translate_detail] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
   value ← reorderLambda reorder value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
-  let mut type := decl.type
-  if let some b := unfoldBoundaries? then
-    type ← b.insertBoundaries decl.type t.attrName
   let (type', relevantArg₂) ← applyReplacementForall t dont <|
     GuessName.renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
   type ← reorderForall reorder type'
@@ -378,17 +418,17 @@ For types, `.noArg` is replaced with `.arg 0`.
 This heuristic is useful for types like `Mul`, `LinearOrder` and `WithTop`.
 -/
 def getRelevantArg (t : TranslateData) (relevantArg : RelevantArg) (given? : Option RelevantArg)
-    (ref : Syntax) (src : Name) (isMainTranslation : Bool := true) : CoreM RelevantArg := do
+    (src : Name) (isMainTranslation : Bool := true) : CoreM RelevantArg := do
   let isType := (← getConstInfo src).type.getForallBody.isSort
   let relevantArg := if isType && relevantArg == .noArg then .arg 0 else relevantArg
   let some relevantArg' := given? | return relevantArg
   if isMainTranslation then
     if relevantArg == relevantArg' then
-      Linter.logLintIf linter.translateRelevantArg ref m!"\
+      Linter.logLintIf linter.translate.relevantArg (← getRef) m!"\
         `{t.attrName}` correctly autogenerated `(relevant_arg := {relevantArg'})` for \
         `{.ofConstName src}`.\nYou may remove the option."
     else if !isType then
-      Linter.logLintIf linter.translateRelevantArg ref m!"\
+      Linter.logLintIf linter.translate.relevantArg (← getRef) m!"\
         `{t.attrName}` determined that `(relevant_arg := {relevantArg})` \
         is the right option for `{.ofConstName src}`, \
         rather than `(relevant_arg := {relevantArg'})`.\nYou may remove the option."
@@ -416,7 +456,7 @@ where
       unless ← (withReducible (isDefEq type' type)).run' do
         throwError "The type of `{.ofConstName cls}` does not translate to itself, \
           but to{indentExpr type'}"
-      let relevantArg ← getRelevantArg t relevantArg cfg.relevantArg? cfg.ref cls
+      let relevantArg ← getRelevantArg t relevantArg cfg.relevantArg? cls
         (isMainTranslation := false)
       modifyEnv (t.translations.addEntry · (cls, { translation := cls, relevantArg }))
 
@@ -469,12 +509,13 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
     MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate rename
   let relevantArg ←
     if src == rootSrc then
-      getRelevantArg t relevantArg cfg.relevantArg? cfg.ref src
+      getRelevantArg t relevantArg cfg.relevantArg? src
     else
       pure relevantArg
-  insertTranslation t src tgt { reorder } relevantArg cfg.ref
+  insertTranslation t src tgt { reorder } relevantArg
   if src == rootSrc && srcDecl.isThm && tgtDecl.type == srcDecl.type then
-    Linter.logLintIf linter.translateRedundant cfg.ref m!"`{t.attrName}` did not change the type \
+    Linter.logLintIf linter.translate.redundant (← getRef)
+      m!"`{t.attrName}` did not change the type \
       of theorem `{.ofConstName src}`. Please remove the attribute."
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
   do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
@@ -503,7 +544,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   -- now add declaration ranges so jump-to-definition works
   -- note: we currently also do this for auxiliary declarations, while they are not normally
   -- generated for those. We could change that.
-  addDeclarationRangesFromSyntax tgt (← getRef) cfg.ref
+  addDeclarationRangesFromSyntax tgt (← getRef)
   if isProtected (← getEnv) src then
     modifyEnv (addProtected · tgt)
   if defeqAttr.hasTag (← getEnv) src then
@@ -554,10 +595,10 @@ def copyAliasAttribute (t : TranslateData) (src tgt : Name) : CoreM Unit := do
       addAliasDocstring tgt tgtInfo
 
 /-- Warn the user when the declaration has an attribute. -/
-def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
+def warnAttrCore (f : Environment → Name → Bool)
     (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (← getEnv) src then
-    Linter.logLintIf linter.existingAttributeWarning stx <|
+    Linter.logLintIf linter.existingAttributeWarning (← getRef) <|
       m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. \
          The preferred method is to use `@[{thisAttr} (attr := {attrName})]` to apply the \
          attribute to both {src} and the target declaration {tgt}." ++
@@ -568,14 +609,14 @@ def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
       else ""
 
 /-- Warn the user when the declaration has a simple scoped attribute. -/
-def warnAttr {α β : Type} [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
+def warnAttr {α β : Type} [Inhabited β] (attr : SimpleScopedEnvExtension α β)
     (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
-  warnAttrCore stx (f <| attr.getState ·) thisAttr attrName src tgt
+  warnAttrCore (f <| attr.getState ·) thisAttr attrName src tgt
 
 /-- Warn the user when the declaration has a parametric attribute. -/
-def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : ParametricAttribute β)
+def warnParametricAttr {β : Type} [Inhabited β] (attr : ParametricAttribute β)
     (thisAttr attrName src tgt : Name) : CoreM Unit :=
-  warnAttrCore stx (attr.getParam? · · |>.isSome) thisAttr attrName src tgt
+  warnAttrCore (attr.getParam? · · |>.isSome) thisAttr attrName src tgt
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
@@ -606,8 +647,8 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     Otherwise, check that your declaration name is correct \
     (if your declaration is an instance, try naming it)\n\
     or provide a translated name using the `@[{t.attrName} my_add_name]` syntax."
-  if cfg.target != .anonymous && autoGeneratedName == resultingName && !cfg.allowAutoName then
-    Linter.logLintIf linter.translateGenerateName cfg.ref m!"\
+  if cfg.target != .anonymous && autoGeneratedName == resultingName then
+    Linter.logLintIf linter.translate.generateName (← getRef) m!"\
       `{t.attrName}` correctly autogenerated target name for {src}.\n\
       You may remove the explicit argument {cfg.target}."
   if cfg.target != .anonymous then
@@ -652,7 +693,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
         pure reorderGuess
     else if isMainTranslation then
       if reorder == reorderGuess then
-        Linter.logLintIf linter.translateReorder cfg.ref m!"\
+        Linter.logLintIf linter.translate.reorder (← getRef) m!"\
           `{t.attrName}` correctly autogenerated `(reorder := {reorderGuess})` for {src}.\n\
           You may remove the `(reorder := {reorder})` argument."
       pure reorder
@@ -664,7 +705,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       else
         pure reorderGuess
   if isMainTranslation && cfg.self && reorder.isEmpty && cfg.relevantArg?.isNone then
-    Linter.logLintIf linter.translateRedundant cfg.ref m!"\
+    Linter.logLintIf linter.translate.redundant (← getRef) m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered \
       and no `(relevant_arg := ...)` is provided.\nPlease remove the attribute, \
       or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.\n\
@@ -693,7 +734,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   let some univReorder := getPermutation params.toArray tgtParams |
     throwError "inferred universe parameters {params} \
       are not a reordering of {srcDecl.levelParams}."
-  let relevantArg ← getRelevantArg t relevantArg cfg.relevantArg? cfg.ref src isMainTranslation
+  let relevantArg ← getRelevantArg t relevantArg cfg.relevantArg? src isMainTranslation
   return ({ univReorder, reorder }, relevantArg)
 
 /-- A version of `insertTranslation` that checks whether the translation is valid,
@@ -702,7 +743,7 @@ def insertTranslationChecked (t : TranslateData) (src tgt : Name) (cfg : Config)
     (isMainTranslation : Bool) (allowDuplicate unfold := false) : CoreM Unit := do
   let (reorder, relevantArg) ←
     checkExistingType t src tgt cfg (isMainTranslation := isMainTranslation) |>.run'
-  insertTranslation t src tgt reorder relevantArg cfg.ref (allowDuplicate := allowDuplicate)
+  insertTranslation t src tgt reorder relevantArg (allowDuplicate := allowDuplicate)
     (unfold := unfold)
 
 /-- Add translations from `srcs` to `tgts`, trying all pairings until one
@@ -726,7 +767,7 @@ def insertTranslationsChecked (t : TranslateData) (srcs tgts : Array Name) (cfg 
     match result with
     | .ok i => tgts := tgts.eraseIdx! i
     | .error errors =>
-      Linter.logLintIf linter.translate.warnInvalid cfg.ref m!"\
+      Linter.logLintIf linter.translate.warnInvalid (← getRef) m!"\
         @[{t.attrName}] failed to add a translation from `{.ofConstName src}` \
         to any of `{tgts.map MessageData.ofConstName}`.\n\
         Please silence this warning and add a translation manually. \
@@ -804,6 +845,35 @@ where
       throwErrorAt old "rename rule for `{old.getId}` already specified"
     return rename.insert old.getId new.getId
 
+/--
+In a `deprecated` attribute without a target, if `declName` is an alias,
+set the deprecation target to the declaration it is an alias of.
+-/
+def setDeprecatedTarget (declName : Name) (attr : Attribute) : CoreM Attribute := do
+  if let `(attr| deprecated%$tk
+      $[$desc:str]? $[$typeChanged?]? $[(since := $since)]?) := attr.stx then
+    if let some info ← Batteries.Tactic.Alias.getAliasInfo? declName then
+      let stx ← `(attr| deprecated%$tk $(mkCIdent info.name)
+        $[$desc:str]? $[$typeChanged?]? $[(since := $since)]?)
+      return { attr with stx }
+  return attr
+
+/-- In a `deprecated` or `inherit_doc` attribute, translate the target declaration. -/
+def translateAttribute (t : TranslateData) (attr : Attribute) : CoreM Attribute := do
+  let translate (name : Syntax) : CoreM (Option Ident) := do
+    let name ← realizeGlobalConstNoOverload name
+    let some name := findTranslationName? (← getEnv) t name | return none
+    return mkCIdent name
+  match attr.stx with
+  | `(attr| deprecated%$tk $name $[$desc]? $[$typeChanged?]? $[(since := $since)]?) =>
+    let some name ← translate name | return attr
+    return { attr with stx := ← `(attr|
+      deprecated%$tk $name $[$desc]? $[$typeChanged?]? $[(since := $since)]?) }
+  | `(attr| inherit_doc $name) =>
+    let some name ← translate name | return attr
+    return { attr with stx := ← `(attr| inherit_doc $name)}
+  | _ => return attr
+
 /-- Elaboration of the configuration options for a translation attribute. It is assumed that
 - `stx[0]` is the attribute (e.g. `to_additive`)
 - `stx[1]` is the optional tracing `?`
@@ -860,7 +930,8 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     return {
       trace := !stx[1].isNone
       target := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
-      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self, none, rename,
+      attrs := ← (← liftCommandElabM (elabAttrs attrs)).mapM (setDeprecatedTarget declName ·)
+      doc, reorder?, relevantArg?, dontTranslate, existing, self, none, rename,
       ref := match tgt with | some tgt => tgt.raw | _ => stx[0] }
   | _ => throwUnsupportedSyntax
 
@@ -869,34 +940,29 @@ mutual
 /-- Apply attributes to the original and translated declarations. -/
 partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) :
     TermElabM (Array Name) := do
-  if !cfg.existing && !cfg.none then
-    -- Copy the `instance` attribute, since it is nice to directly tag `instance` declarations.
-    copyInstanceAttribute src tgt
-    copyAliasAttribute t src tgt
   -- Warn users if the original declaration has an attribute
   if !cfg.existing && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
       -- Note: we're not bothering to print the correct attribute arguments.
-      Linter.logLintIf linter.existingAttributeWarning cfg.ref m!"\
+      Linter.logLintIf linter.existingAttributeWarning (← getRef) m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
         calling @[{t.attrName}].\nThe preferred method is to use something like \
         `@[{t.attrName} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
-    warnAttr cfg.ref Lean.Meta.Ext.extExtension
+    warnAttr Lean.Meta.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) t.attrName `ext src tgt
-    warnAttr cfg.ref Lean.Meta.Rfl.reflExt (·.values.contains ·) t.attrName `refl src tgt
-    warnAttr cfg.ref Lean.Meta.Symm.symmExt (·.values.contains ·) t.attrName `symm src tgt
-    warnAttr cfg.ref Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
-    warnAttr cfg.ref Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
-    warnParametricAttr cfg.ref Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
-    warnAttrCore cfg.ref Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
+    warnAttr Lean.Meta.Rfl.reflExt (·.values.contains ·) t.attrName `refl src tgt
+    warnAttr Lean.Meta.Symm.symmExt (·.values.contains ·) t.attrName `symm src tgt
+    warnAttr Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
+    warnAttr Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
+    warnParametricAttr Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
+    warnAttrCore Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
-  let attrs ← elabAttrs cfg.attrs
-  let (additiveAttrs, attrs) := attrs.partition (·.name == t.attrName)
+  let (additiveAttrs, attrs) := cfg.attrs.partition (·.name == t.attrName)
   let nestedDecls ←
     match h : additiveAttrs.size with
     | 0 => pure #[]
@@ -926,21 +992,9 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
           (impl · attr.stx attr.kind)
     else
       let mut attr := attr
-      -- Set the target of `(attr := deprecated)` when applied to an `alias`.
-      if attr.name == `deprecated then
-        if let some info ← Batteries.Tactic.Alias.getAliasInfo? src then
-          if let `(attr| deprecated%$tk $[$desc:str]? $[(since := $since)]?) := attr.stx then
-            attr := { attr with stx := ← `(attr|
-              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[(since := $since)]?) }
       for decl in allDecls, i in 0...* do
         if i != 0 then
-          -- Translate the target of `(attr := deprecated)` if possible.
-          if attr.name == `deprecated then
-            if let `(attr| deprecated%$tk $name $[$desc]? $[(since := $since)]?) := attr.stx then
-              let name ← realizeGlobalConstNoOverload name
-              if let some name := findTranslationName? (← getEnv) t name then
-                attr := { attr with stx := ← `(attr|
-                  deprecated%$tk $(mkCIdent name) $[$desc]? $[(since := $since)]?) }
+          attr ← translateAttribute t attr
         Term.applyAttributes decl #[attr]
   return nestedDecls
 
@@ -970,11 +1024,12 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     (kind := AttributeKind.global) : AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`{t.attrName}` can only be used as a global attribute"
+  withRef cfg.ref do
   withOptions (fun o => if cfg.trace then o.set `trace.translate true else o) do
   let tgt ← targetName t cfg src
   let alreadyExists ← realizeGlobalConst tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
-    Linter.logLintIf linter.translateExisting cfg.ref <|
+    Linter.logLintIf linter.translate.existing (← getRef) <|
       if alreadyExists then
         m!"The translated declaration `{.ofConstName tgt}` already exists. \
           Please specify this explicitly using `@[{t.attrName} existing]`."
@@ -1003,24 +1058,29 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- TODO: `Syntax.missing` means we do not add binders to the context,
     -- so the docstring is going to have incomplete syntax highlighting.
     addDocString tgt Syntax.missing doc |>.run'.run'
+  if !alreadyExists && !cfg.none then
+    -- Copy the attribute from an `instance` declaration.
+    copyInstanceAttribute src tgt
+    -- Copy the attribute from an `alias` declaration.
+    copyAliasAttribute t src tgt
   let nestedNames ← copyMetaData t cfg src tgt
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
-  Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
+  Term.addTermInfo' (← getRef) (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
     |>.run' |>.run'
   return nestedNames.push tgt
 
 end
 
 /-- Given a constant `src`, add a translation for it, given by expression `tgt`. -/
-def addTranslationFor (t : TranslateData) (ref : Syntax) (src : Name) (tgt : Term)
+def addTranslationFor (t : TranslateData) (src : Name) (tgt : Term)
     (dontTranslate : List Nat) (relevantArg? : Option RelevantArg) :
     TermElabM Unit := do
   withExporting (isExporting := !isPrivateName src) do withDeclNameForAuxNaming src do
   let cinfo ← getConstInfo src
   let isTheorem ← isProp cinfo.type
   let (type, inferredRelevantArg?) ← applyReplacementForall t dontTranslate cinfo.type
-  let relevantArg ← getRelevantArg t inferredRelevantArg? relevantArg? ref src
+  let relevantArg ← getRelevantArg t inferredRelevantArg? relevantArg? src
   let name ← mkAuxDeclName (t.attrName.appendBefore "_")
   -- The new body should be exposed whenever `src` is not a theorem, to allow unfolding it.
   withExporting (isExporting := !isPrivateName src && !isTheorem) do
@@ -1032,7 +1092,7 @@ def addTranslationFor (t : TranslateData) (ref : Syntax) (src : Name) (tgt : Ter
         mkThmOrUnsafeDef { name, type, value, levelParams := cinfo.levelParams }
       else
         .defnDecl <$> mkDefinitionValInferringUnsafe name cinfo.levelParams type value .opaque
-  insertTranslation t src name {} relevantArg ref (unfold := !isTheorem)
+  insertTranslation t src name {} relevantArg (unfold := !isTheorem)
 where
   /-- Return how many variables can be introduced without introducing one with an
   inaccessible username. -/

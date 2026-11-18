@@ -5,8 +5,8 @@ Authors: Eric Wieser, Utensil Song
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # Clifford Algebras
@@ -174,8 +174,8 @@ theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m : M, f m * f m = algebraMa
 
 @[simp]
 theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
-    lift Q ⟨g.toLinearMap.comp (ι Q), comp_ι_sq_scalar _⟩ = g := by
-  exact (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).apply_symm_apply g
+    lift Q ⟨g.toLinearMap.comp (ι Q), comp_ι_sq_scalar _⟩ = g :=
+  (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).apply_symm_apply g
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]

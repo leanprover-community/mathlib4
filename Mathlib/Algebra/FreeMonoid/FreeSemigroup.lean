@@ -5,8 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Free
+public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.WithOne.Basic
 public import Mathlib.Data.Set.Operations
 
@@ -57,8 +57,7 @@ lemma toFreeMonoid_mk_eq_cons (x : α) (xs : List α) :
 @[to_additive (attr := grind .)]
 lemma toFreeMonoid_injective : Function.Injective (@toFreeMonoid α) := by
   rintro ⟨x, xs⟩ ⟨y, ys⟩ h
-  simp only [toFreeMonoid_mk_eq_cons, Equiv.apply_eq_iff_eq] at h
-  simpa using h
+  simpa [toFreeMonoid_mk_eq_cons, FreeMonoid.ext_iff] using h
 
 @[to_additive (attr := simp, grind .)]
 lemma toFreeMonoid_ne_one (x : FreeSemigroup α) : toFreeMonoid x ≠ 1 := by

@@ -66,7 +66,7 @@ theorem ofReal_measureReal (h : μ s ≠ ∞ := by finiteness) : ENNReal.ofReal 
   simp [measureReal_def, h]
 
 theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' ↦ h <| h'.symm ▸ measureReal_empty
+  ne_empty_iff_nonempty.1 fun h' ↦ h <| h'.symm ▸ measureReal_empty
 
 @[simp] theorem measureReal_ennreal_smul_apply (c : ℝ≥0∞) :
     (c • μ).real s = c.toReal * μ.real s := by
@@ -493,7 +493,7 @@ open Lean Meta Qq Function
 @[positivity MeasureTheory.Measure.real _ _]
 meta def evalMeasureReal : PositivityExt where eval {_ _} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let .app (.app _ a) b ← whnfR e | throwError "not measureReal"
+  let .app (.app _ a) b ← whnf e | throwError "not measureReal"
   let p ← mkAppOptM ``MeasureTheory.measureReal_nonneg #[none, none, a, b]
   pure (.nonnegative p)
 

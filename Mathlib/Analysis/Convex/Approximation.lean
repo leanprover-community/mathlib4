@@ -26,7 +26,6 @@ of continuous affine linear functions. We follow the proof in
   `φ : E → ℝ` that is convex and lower-semicontinuous on a closed convex subset `s` is the supremum
   of a family of countably many functions that are the restrictions to `s` of continuous affine
   linear functions.
-
 -/
 
 public section
@@ -171,7 +170,7 @@ theorem sSup_of_nat_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
       have : s = ∅ := by have := congr($(h𝓕'.2.1) x); simp_all
       grind
 
-/-- A function `φ : E → ℝ` that is convex and lower-semicontinuous is the supremum of a family of
+/-- A function `φ : E → ℝ` that is convex and lower-semicontinuous is the supremum of a family
 of continuous affine linear functions. -/
 theorem univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
     sSup {f | f ≤ φ ∧ ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = (re ∘ l) + const E c} = φ := by

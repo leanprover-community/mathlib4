@@ -8,11 +8,11 @@ module
 public import Mathlib.Data.Finset.Sups
 public import Mathlib.Tactic.Positivity
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # The Ahlswede-Zhang identity
@@ -374,7 +374,7 @@ lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
   refine sum_congr rfl fun s hs ↦ ?_
   rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
-  have := (nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs h𝒜₀).card_pos
+  have := (ne_empty_iff_nonempty.1 <| ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity
 
 variable [Nonempty α]
@@ -406,7 +406,7 @@ lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
 
 lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜) :
     supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by
-  set m := 𝒜.card with hm
+  set m := #𝒜 with hm
   clear_value m
   induction m using Nat.strongRecOn generalizing 𝒜 with | ind m ih => _
   replace ih := fun 𝒜 h𝒜 h𝒜₁ h𝒜₂ ↦ @ih _ h𝒜 𝒜 h𝒜₁ h𝒜₂ rfl

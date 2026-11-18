@@ -5,11 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Logic.Embedding.Set
 public import Mathlib.Order.Directed
 public import Mathlib.Order.RelIso.Basic
-public import Mathlib.Logic.Embedding.Set
 
 import Mathlib.Logic.Equiv.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Interactions between relation homomorphisms and sets

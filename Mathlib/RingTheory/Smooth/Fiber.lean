@@ -6,14 +6,13 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Field
+public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Kaehler.TensorProduct
 public import Mathlib.RingTheory.Smooth.Local
-public import Mathlib.RingTheory.Etale.Locus
 
 import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
-
 # Flat and smooth fibers imply smooth
 
 ## Main results
@@ -32,7 +31,6 @@ import Mathlib.RingTheory.Flat.Equalizer
 ## Note
 
 For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
-
 -/
 
 open TensorProduct IsLocalRing
@@ -99,7 +97,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     kerTensorProductMapIdToAlgHomEquiv _ _ _ _ h₁
   have h₁' : Function.Surjective φ := LinearMap.lTensor_surjective _ h₁
   have h₂' : (RingHom.ker φ).FG := by
-    suffices Module.Finite Pp (RingHom.ker φ) from (Submodule.fg_top _).mp this.1
+    suffices Module.Finite Pp (RingHom.ker φ) from (Submodule.fg_top _).mp this.fg_top
     have : Module.Finite P (RingHom.ker (algebraMap P S)) := ⟨(Submodule.fg_top _).mpr h₂⟩
     exact .equiv e₁.symm
   have h₃ : 𝓂[Sp] ≤ RingHom.ker ψ := by

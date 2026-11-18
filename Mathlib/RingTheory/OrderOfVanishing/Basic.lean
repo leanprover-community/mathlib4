@@ -5,12 +5,12 @@ Authors: Raphael Douglas Giles
 -/
 module
 
-public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Length
 
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Order of vanishing
@@ -326,8 +326,10 @@ def ordFrac : K →*₀ ℤᵐ⁰ :=
   (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R) <|
   ordMonoidWithZeroHom_isUnit R
 
-lemma ordFrac_eq_ord {x : R} (hx : x ≠ 0) :
+lemma ordFrac_eq_ord {x : R} :
     ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
   simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mpr hx]

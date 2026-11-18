@@ -16,6 +16,9 @@ import Mathlib.Topology.Algebra.Group.Units
 import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.LocalAtTarget
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covering maps involving the complex plane
 
@@ -35,7 +38,8 @@ theorem isAddQuotientCoveringMap_exp :
   refine Topology.IsQuotientMap.isAddQuotientCoveringMap_of_addSubgroup ?_
     _ ⟨NormedSpace.discreteTopology_zmultiples _⟩ fun {z _} ↦ ?_
   · refine IsOpenMap.isQuotientMap ?_ (by fun_prop) fun z ↦ ⟨_, Subtype.ext (exp_log z.2)⟩
-    exact (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.1).isOpenMap_iff.mpr isOpenMap_exp
+    exact (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr
+      isOpenMap_exp
   · simp_rw [Subtype.ext_iff, eq_comm (a := exp z), exp_eq_exp_iff_exists_int,
       AddSubgroup.mem_zmultiples_iff, eq_add_neg_iff_add_eq, eq_comm, add_comm, zsmul_eq_mul]
 
@@ -93,8 +97,9 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
   refine .of_isCoveringMap_restrictPreimage _ (by simp) ?_ ?_
   · convert isClosed_singleton (x := (0 : 𝕜)).isOpen_compl
     ext; simp [this]
-  · convert! (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr _) using 1
-    ext; simpa using! (this _).not
+  · refine (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr (t := {x : 𝕜 | x ≠ 0}) ?_)
+    ext
+    simp [this]
 
 attribute [-instance] Units.mulAction'
 

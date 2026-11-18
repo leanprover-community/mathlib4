@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Groupoid
-/-!
 
+/-!
 # Discrete categories are groupoids
 -/
 
@@ -17,7 +17,7 @@ namespace CategoryTheory
 
 variable {C : Type*}
 
-instance : Groupoid (Discrete C) := { inv := fun h ↦ ⟨h.1.symm⟩ }
+instance : Groupoid (Discrete C) := { inv := fun h ↦ ⟨h.eq.symm⟩ }
 
 instance [Category* C] [IsDiscrete C] : IsGroupoid C where
 

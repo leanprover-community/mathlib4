@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 public import Mathlib.CategoryTheory.Monoidal.Center
+public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 
 import Mathlib.Tactic.ApplyFun
 
@@ -32,8 +32,8 @@ We verify that when `V = Type v`, all these notions reduce to the usual ones.
 
 ## References
 
-* [Kim Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_]
-  [morrison-penney-enriched]
+* [Kim Morrison, David Penneys, *Monoidal Categories Enriched in Braided Monoidal
+  Categories*][morrison-penney-enriched]
 -/
 
 @[expose] public section
@@ -359,7 +359,6 @@ def forget (F : EnrichedFunctor W C D) :
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `EnrichedFunctor.forget` distributes over composition of enriched functors up to isomorphism. -/
 @[simps!]
 def forgetComp (F : EnrichedFunctor W C D) (G : EnrichedFunctor W D E) :

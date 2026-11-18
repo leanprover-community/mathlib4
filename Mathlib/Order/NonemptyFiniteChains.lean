@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Data.Finset.Image
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # Nonempty finite chains in a partially ordered type
@@ -15,7 +15,6 @@ Given a partially ordered type `X`, we introduce the type
 `NonemptyFiniteChains` of nonempty finite chains in `X`, i.e.
 nonempty finite subsets `A` of `X` such that all the elements
 in `A` are comparable.
-
 -/
 
 @[expose] public section

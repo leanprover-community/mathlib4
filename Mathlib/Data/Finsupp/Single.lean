@@ -68,10 +68,6 @@ theorem set_indicator_singleton (a : α) (f : α → M) :
     Set.indicator {a} f = ⇑(single a (f a)) := by
   classical rw [Set.indicator_singleton, single_eq_pi_single]
 
-@[deprecated set_indicator_singleton +typeChanged (since := "2026-04-27")]
-theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b :=
-  (set_indicator_singleton a (fun _ => b)).symm
-
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
   classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
@@ -161,8 +157,9 @@ theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
 lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
   RightInverse.surjective fun _ ↦ single_eq_same
 
+@[deprecated support_single +typeChanged (since := "2026-11-15")]
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
-  simpa only [support_single _ h] using! singleton_ne_empty _
+  simp [h]
 
 theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : α} :
     Disjoint (single i b).support (single j b').support ↔ i ≠ j := by

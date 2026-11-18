@@ -109,12 +109,11 @@ theorem measure_union_add_inter' (hs : MeasurableSet s) (t : Set α) :
 
 lemma measure_symmDiff_eq (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
     μ (s ∆ t) = μ (s \ t) + μ (t \ s) := by
-  simpa only [symmDiff_def, sup_eq_union]
-    using measure_union₀ (ht.diff hs) disjoint_sdiff_sdiff.aedisjoint
+  simpa only [symmDiff_def] using measure_union₀ (ht.diff hs) disjoint_sdiff_sdiff.aedisjoint
 
 lemma measure_symmDiff_le (s t u : Set α) :
     μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) := by
-  grw [← measure_union_le, symmDiff_triangle s t u]; rfl
+  grw [← measure_union_le, symmDiff_triangle s t u]
 
 theorem measure_symmDiff_eq_top (hs : μ s ≠ ∞) (ht : μ t = ∞) : μ (s ∆ t) = ∞ :=
   measure_mono_top subset_union_right (measure_sdiff_eq_top ht hs)
@@ -156,7 +155,7 @@ the sum of the measures of the sets. -/
 theorem tsum_meas_le_meas_iUnion_of_disjoint₀ (μ : Measure α)
     {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
-  rw [ENNReal.tsum_eq_iSup_sum, iSup_le_iff]
+  rw [tsum_eq_iSup_sum, iSup_le_iff]
   intro s
   simp only [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   gcongr
@@ -260,7 +259,7 @@ theorem measure_sdiff_le_iff_le_add (hs : NullMeasurableSet s μ) (hst : s ⊆ t
 alias measure_diff_le_iff_le_add := measure_sdiff_le_iff_le_add
 
 theorem measure_eq_measure_of_null_sdiff (hst : s ⊆ t) (h_nullsdiff : μ (t \ s) = 0) :
-    μ s = μ t := measure_congr <| hst.eventuallySubset.antisymm (ae_le_set.mpr h_nullsdiff)
+    μ s = μ t := measure_congr <| hst.eventuallySubset.antisymm (ae_subset.mpr h_nullsdiff)
 
 @[deprecated (since := "2026-06-03")]
 alias measure_eq_measure_of_null_diff := measure_eq_measure_of_null_sdiff
@@ -310,11 +309,11 @@ lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
 
 @[simp]
 theorem union_ae_eq_left_iff_ae_subset : s ∪ t =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
-  rw [ae_le_set]
+  rw [ae_subset]
   refine
     ⟨fun h => by simpa only [union_sdiff_left] using (ae_eq_set.mp h).1, fun h =>
       eventuallySubset_antisymm_iff.mpr
-        ⟨by rwa [ae_le_set, union_sdiff_left],
+        ⟨by rwa [ae_subset, union_sdiff_left],
           .of_subset subset_union_left⟩⟩
 
 @[simp]
@@ -323,7 +322,7 @@ theorem union_ae_eq_right_iff_ae_subset : s ∪ t =ᵐ[μ] t ↔ s ≤ᵐ[μ] t 
 
 theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t ≤ μ s)
     (hsm : NullMeasurableSet s μ) (ht : μ t ≠ ∞) : s =ᵐ[μ] t := by
-  refine eventuallySubset_antisymm_iff.mpr ⟨h₁, ae_le_set.mpr ?_⟩
+  refine eventuallySubset_antisymm_iff.mpr ⟨h₁, ae_subset.mpr ?_⟩
   replace h₂ : μ t = μ s := h₂.antisymm (measure_mono_ae h₁)
   replace ht : μ s ≠ ∞ := h₂ ▸ ht
   rw [measure_sdiff' t hsm ht, measure_congr (union_ae_eq_left_iff_ae_subset.mpr h₁), h₂, tsub_self]
@@ -398,7 +397,7 @@ theorem sum_measure_le_measure_univ {s : Finset ι} {t : ι → Set α}
 
 theorem tsum_measure_le_measure_univ {s : ι → Set α} (hs : ∀ i, NullMeasurableSet (s i) μ)
     (H : Pairwise (AEDisjoint μ on s)) : ∑' i, μ (s i) ≤ μ (univ : Set α) := by
-  rw [ENNReal.tsum_eq_iSup_sum]
+  rw [tsum_eq_iSup_sum]
   exact iSup_le fun s =>
     sum_measure_le_measure_univ (fun i _hi => hs i) fun i _hi j _hj hij => H hij
 
