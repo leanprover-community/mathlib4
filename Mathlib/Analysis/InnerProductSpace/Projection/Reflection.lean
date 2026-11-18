@@ -186,12 +186,8 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
   have h₁ : R (v - w) = -(v - w) := reflection_orthogonalComplement_singleton_eq_neg (v - w)
   have h₂ : R (v + w) = v + w := by
     apply reflection_mem_subspace_eq_self
-    rw [Submodule.mem_orthogonal_singleton_iff_inner_left]
-    rw [real_inner_add_sub_eq_zero_iff]
-    exact h
-  convert! congr($h₂ + $h₁) using 1
-  · simp
-  · abel
+    rwa [Submodule.mem_orthogonal_singleton_iff_inner_left, real_inner_add_sub_eq_zero_iff]
+  grind
 
 end reflection
 
