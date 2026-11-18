@@ -169,10 +169,6 @@ theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) 
   rw [← ofReal_pow, ← normSq_eq_norm_sq, normSq_eq_conj_mul_self, ← sub_mul, mul_comm _ z]
   simp [← map_sub]
 
-private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f : β → α)
-    (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support :=
-  fun _ ↦ mt fun h ↦ by simp [h]
-
 /--
 Finite Blaschke products, i.e., products of powers of canonical factors `canonicalFactor R u` with
 `u ∈ ball 0 R`, take values of norm one on `sphere 0 R`.
@@ -571,7 +567,7 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
         finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _,
         finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
         finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _]
-      <;> simpa [ht₁, ht₂] using mulSupport_pow_subset_support ..
+      <;> simpa [ht₁, ht₂] using mulSupport_zpow_subset_support ..
     _ = ((∏ i ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
       * ∏ i ∈ t₁, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
       • ((∏ n ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R n ^ (-(divisor f B₀R) n)) w)
@@ -652,7 +648,7 @@ lemma ECanonicalDecomp.log_norm_eq
         * ∏ i ∈ t₁, (w - i) ^ (-divisor f S₀R) i) • meromorphicTrailingCoeffAt f w‖ := by
       rw [finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
         finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _]
-      <;> simpa [ht₁, ht₂] using mulSupport_pow_subset_support ..
+      <;> simpa [ht₁, ht₂] using mulSupport_zpow_subset_support ..
     _ =  ∑ i ∈ t₂, log (‖canonicalFactor R i w‖ ^ (divisor f B₀R) i)
         + ∑ i ∈ t₁, log (‖w - i‖ ^ (-divisor f S₀R) i) + log ‖meromorphicTrailingCoeffAt f w‖ := by
       have η₀ (x) (hx : x ∈ t₁) : ‖w - x‖ ^ (-divisor f S₀R) x ≠ 0 := by
