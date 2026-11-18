@@ -362,7 +362,6 @@ variable [Small.{v} R]
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 open associatedPrimes in
 lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M : ModuleCat.{v} R)
     [Module.Finite R M] [Nontrivial M] : supportDim R M ≤ injectiveDimension M := by
@@ -384,11 +383,12 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
       hq, supportDim, Order.krullDim]
     exact le_iSup_iff.mpr fun b a ↦ a q'
-  have tail_eq : (q ⟨q.length, lt_add_one q.length⟩).1.1 = maximalIdeal R := by
+  have tail_eq : q.last.1.1 = maximalIdeal R := by
     by_contra! ne
-    have := (q ⟨q.length, lt_add_one q.length⟩).1.2
-    have lt := ne.lt_of_le (IsLocalRing.le_maximalIdeal_of_isPrime _)
-    let q' := q.snoc ⟨IsLocalRing.closedPoint R, closedPoint_mem_support R M⟩ lt
+    have := q.last.1.2
+    have lt : q.last < ⟨closedPoint R, closedPoint_mem_support R M⟩ :=
+      ne.lt_of_le (le_maximalIdeal_of_isPrime _)
+    let q' := q.snoc _ lt
     have : q'.length > q.length := by simp [q']
     absurd this
     simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
@@ -399,7 +399,9 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     rcases lt_or_eq_of_le ple with lt|eq
     · have : ⟨p, min.isPrime⟩ ∈ Module.support R M := by
         simpa [Module.mem_support_iff_of_finite] using min.1.2
-      let q' := q.cons ⟨⟨p, min.isPrime⟩, this⟩ lt
+      --tech debt
+      have lt' : ⟨⟨p, min.isPrime⟩, this⟩ < q.head := lt
+      let q' := q.cons ⟨⟨p, min.isPrime⟩, this⟩ lt'
       have : q'.length > q.length := by simp [q']
       absurd this
       simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
@@ -412,6 +414,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
         (M.localizedModule (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.primeCompl) i) := by
     induction i with
     | zero =>
+      set_option backward.isDefEq.respectTransparency false in
       simp only [Fin.zero_eta, Ext.homEquiv₀.nontrivial_congr, ModuleCat.localizedModule]
       rw [ModuleCat.homAddEquiv.nontrivial_congr, ((Shrink.linearEquiv.{v} _ _).congrLeft _
         (Localization (q 0).1.1.primeCompl)).nontrivial_congr,
