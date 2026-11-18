@@ -544,14 +544,15 @@ lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPow
   rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
   exact zero_le_one
 
-/-- A power-multiplicative additive group norm on a domain satisfies `f 1 = 1`. -/
-protected lemma IsPowMul.map_one {R F : Type*} [Ring R] [IsDomain R]
+/-- A power-multiplicative additive group norm on a nontrivial ring satisfies `f 1 = 1`. -/
+protected lemma IsPowMul.map_one {R F : Type*} [Ring R] [Nontrivial R]
     [FunLike F R ℝ] [AddGroupNormClass F R ℝ] {f : F} (hf : IsPowMul f) :
     f 1 = 1 := by
   simpa [map_ne_zero_iff_ne_zero, sq] using hf 1 one_le_two
 
-/-- A power-multiplicative additive group norm on a domain satisfies `f (a ^ n) = (f a) ^ n`. -/
-protected lemma IsPowMul.map_pow {R F : Type*} [Ring R] [IsDomain R]
+/-- A power-multiplicative additive group norm on a nontrivial ring satisfies
+`f (a ^ n) = (f a) ^ n`. -/
+protected lemma IsPowMul.map_pow {R F : Type*} [Ring R] [Nontrivial R]
     [FunLike F R ℝ] [AddGroupNormClass F R ℝ] {f : F} (hf : IsPowMul f) (a : R) (n : ℕ) :
     f (a ^ n) = f a ^ n := by
   by_cases! hn : n = 0
