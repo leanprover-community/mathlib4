@@ -174,7 +174,6 @@ def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ c₃ where
 
 end Basis
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A quaternionic basis on `A` is equivalent to a map from the quaternion algebra to `A`. -/
 @[simps]
 def lift : Basis A c₁ c₂ c₃ ≃ (ℍ[R,c₁,c₂,c₃] →ₐ[R] A) where
@@ -183,10 +182,8 @@ def lift : Basis A c₁ c₂ c₃ ≃ (ℍ[R,c₁,c₂,c₃] →ₐ[R] A) where
   left_inv q := by ext <;> simp [Basis.lift]
   right_inv F := by
     ext
-    dsimp [Basis.lift]
-    rw [← F.commutes]
-    simp only [← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero, algebraMap_eq]
-    congr <;> simp
+    rw [Basis.liftHom_apply, Basis.lift]
+    simp [← F.commutes, ← map_smul, ← map_add, algebraMap_eq]
 
 /-- Two `R`-algebra morphisms from a quaternion algebra are equal if they agree on `i` and `j`. -/
 @[ext]

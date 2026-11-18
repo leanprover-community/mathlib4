@@ -113,13 +113,11 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
     change f (inr a) = g (inr a)
     simpa only [inr_eq_smul_eps] using! congr($hinr a))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
 theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
   ext
-  dsimp
-  simp only [one_smul, hε]
+  simp [hε]
 
 /-- A ring morphism `R[ε] →+* R'` is determined by its restriction
 on `R` and its value on `ε`. -/
