@@ -27,6 +27,11 @@ open ENNReal Filter NNReal
 
 namespace NNReal
 
+instance : Norm ℝ≥0 where
+  norm x := x
+
+@[simp] lemma norm_eq_coe (x : ℝ≥0) : ‖x‖ = x := rfl
+
 instance : NNNorm ℝ≥0 where
   nnNorm x := x
 
