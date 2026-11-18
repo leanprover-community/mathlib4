@@ -34,17 +34,6 @@ by `Algebra.FormallyUnramified.descentMultiplier`.
 
 open scoped Pointwise TensorProduct
 
-namespace Algebra.FormallyUnramified
-
-variable (R S M : Type*) [CommRing R] [CommRing S] [Algebra R S] [FormallyUnramified R S]
-  [EssFiniteType R S] [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
-
-@[simp]
-lemma sec_one : sec R S S 1 = elem R S := by
-  simp [sec_apply, LinearMap.toSpanSingleton_one_eq_algebraLinearMap]
-
-end Algebra.FormallyUnramified
-
 theorem MulAction.smul_sum_quotient_of_fixed {G M : Type*} [Group G] [AddCommMonoid M]
     [DistribMulAction G M] (H : Subgroup G) [Fintype (G ⧸ H)] (x : M)
     (hx : ∀ h : H, h • x = x) (g : G) :
@@ -63,34 +52,6 @@ open Algebra.TensorProduct
 variable {A B G : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [FormallyUnramified A B] [EssFiniteType A B]
   [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-
--- PRed
-@[simp]
-lemma extendScalars_eq_mulLeft_inertiaIdempotent (g : G) :
-    extendScalars B (MulSemiringAction.toAlgHom A B g).toLinearMap =
-      LinearMap.mulLeft B (inertiaIdempotent A B g) := by
-  rw [inertiaIdempotent, equalizerIdempotent_comm]
-  apply LinearMap.ext_ring
-  rw [LinearMap.mulLeft_apply, mul_one, extendScalars_apply,
-    LinearMap.coe_comp, Function.comp_apply, sec_one]
-  rfl
-
-section extendScalars
-
-variable {L M N : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
-  [Module A M] [Module B M] [IsScalarTower A B M]
-  [Module A N] [Module B N] [IsScalarTower A B N]
-  [Module A L] [Module B L] [IsScalarTower A B L]
-
-lemma le_comap_extendScalars (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
-    (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) :
-    P ≤ Q.comap (extendScalars B f) := by
-  suffices h : (P.restrictScalars A).baseChange B ≤ Q.comap (f.liftBaseChange B) from
-    fun x hx ↦ h (sec_mem_baseChange A B P hx)
-  rw [← (LinearMap.liftBaseChangeEquiv B).symm_apply_apply f] at hf
-  rwa [Submodule.baseChange_le_iff_le_comap, Q.restrictScalars_comap, ← Submodule.comap_comp]
-
-end extendScalars
 
 variable (A B) (H : Subgroup G)
 

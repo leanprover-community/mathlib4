@@ -378,6 +378,14 @@ lemma extendScalars_mulLeft_comp (f : M →ₗ[R] S) (x : S) :
       (LinearMap.mulLeft S x).comp (extendScalars S f) :=
   extendScalars_apply_restrictScalars_comp (LinearMap.mulLeft S x) f
 
+lemma le_comap_extendScalars (f : M →ₗ[R] N) (P : Submodule S M) (Q : Submodule S N)
+    (hf : P.restrictScalars R ≤ (Q.restrictScalars R).comap f) :
+    P ≤ Q.comap (extendScalars S f) := by
+  rw [← (LinearMap.liftBaseChangeEquiv S).symm_apply_apply f] at hf
+  suffices h : (P.restrictScalars R).baseChange S ≤ Q.comap (f.liftBaseChange S) from
+    fun x hx ↦ h (sec_mem_baseChange R S P hx)
+  rwa [Submodule.baseChange_le_iff_le_comap]
+
 end extendScalars
 
 section equalizer
