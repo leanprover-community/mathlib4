@@ -54,7 +54,6 @@ we can still establish a form of spectral permanence.
 
 + prove a variation of spectral permanence using `StarAlgHom` instead of `StarSubalgebra`.
 + prove a variation of spectral permanence for `quasispectrum`.
-
 -/
 
 public section

@@ -29,7 +29,6 @@ nondegenerate `d`-simplices of `Y` which do not belong to the range of `i`.
 
 ## TODO
 * show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
-
 -/
 
 @[expose] public section
@@ -199,7 +198,6 @@ of simplicial sets and `d : ℕ`, there is a pushout square:
 
 The index type `Cell i d` identifies to the type of nondegenerate `d`-simplices
 of `Y` not in the range of `i`.
-
 -/
 
 /-- If `i : X ⟶ Y` is a monomorphism of simplicial sets and `d : ℕ`, this is
@@ -340,7 +338,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
   w := w i d
   isLimit' := ⟨evaluationJointlyReflectsLimits _ (fun ⟨⟨n⟩⟩ ↦ by
-    refine (isLimitMapConePullbackConeEquiv _ _).2
+    refine (isLimitMapConePullbackConeEquiv _ _).invFun
       (IsPullback.isLimit ?_)
     dsimp
     rw [Types.isPullback_iff]
@@ -392,7 +390,7 @@ lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
 lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
   w := w i d
   isColimit' := ⟨evaluationJointlyReflectsColimits _ (fun ⟨⟨n⟩⟩ ↦ by
-    refine (isColimitMapCoconePushoutCoconeEquiv _ _).2
+    refine (isColimitMapCoconePushoutCoconeEquiv _ _).invFun
       (IsPushout.isColimit ?_)
     refine Types.isPushout_of_isPullback_of_mono' ?_ ?_ ?_
     · exact (isPullback i d).map ((evaluation _ _).obj _)

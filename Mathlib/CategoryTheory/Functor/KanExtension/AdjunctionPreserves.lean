@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 In this file, it is shown that left adjoint functors preserve left Kan extensions,
 and that right adjoint functors preserve right Kan extensions.
 In particular, this applies to equivalences of categories.
-
 -/
 
 @[expose] public section
@@ -57,7 +56,7 @@ lemma preservesLeftKanExtension : G₁.PreservesLeftKanExtension F L where
   preserves F' α hα := by
     have := (adj.leftExtensionPostcompose₂ F L).isLeftAdjoint
     rw [Functor.isLeftKanExtension_iff] at hα ⊢
-    refine ⟨(IsInitial.equivOfIso ?_).1
+    refine ⟨(IsInitial.equivOfIso ?_).toFun
       (IsInitial.isInitialObj (LeftExtension.postcompose₂ L F G₁) _ hα.some)⟩
     exact StructuredArrow.isoMk (Iso.refl _)
 
@@ -90,7 +89,7 @@ lemma preservesRightKanExtension : G₂.PreservesRightKanExtension F L where
   preserves F' α hα := by
     have := (adj.rightExtensionPostcompose₂ F L).isRightAdjoint
     rw [Functor.isRightKanExtension_iff] at hα ⊢
-    refine ⟨(IsTerminal.equivOfIso ?_).1
+    refine ⟨(IsTerminal.equivOfIso ?_).toFun
       (IsTerminal.isTerminalObj (RightExtension.postcompose₂ L F G₂) _ hα.some)⟩
     exact CostructuredArrow.isoMk (Iso.refl _)
 

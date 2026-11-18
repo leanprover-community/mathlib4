@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Monoidal.Functor
 Natural transformations between (lax) monoidal functors must satisfy
 an additional compatibility relation with the tensorators:
 `F.μ X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ X Y`.
-
 -/
 
 @[expose] public section
@@ -177,7 +176,7 @@ attribute [instance] Hom.isMonoidal
 
 instance : Category (LaxMonoidalFunctor C D) where
   Hom := Hom
-  comp α β := ⟨α.1 ≫ β.1, by have := α.2; have := β.2; infer_instance⟩
+  comp α β := ⟨α.hom ≫ β.hom, by have := α.isMonoidal; have := β.isMonoidal; infer_instance⟩
   id _ := ⟨𝟙 _, inferInstance⟩
 
 @[simp]

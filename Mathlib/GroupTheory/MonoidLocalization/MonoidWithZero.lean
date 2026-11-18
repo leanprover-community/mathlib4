@@ -12,7 +12,6 @@ import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
-
 -/
 
 @[expose] public section
@@ -109,7 +108,7 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n hn
   have ⟨ms, eq⟩ := f.surj n
-  refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).2.of_mul
+  refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).right.of_mul
   refine fun h ↦ hn ?_
   rwa [h, map_zero, (f.map_units _).mul_left_eq_zero] at eq
 

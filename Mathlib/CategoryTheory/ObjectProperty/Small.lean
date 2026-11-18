@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
 In this file, given `P : ObjectProperty C`, we define
 `ObjectProperty.Small.{w} P` as an abbreviation for `Small.{w} (Subtype P)`.
-
 -/
 
 public section
@@ -35,7 +34,7 @@ protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtyp
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     Small.{w} P.FullSubcategory :=
-  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.1, x.2⟩, rfl⟩)
+  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.obj, x.property⟩, rfl⟩)
 
 lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
     ObjectProperty.Small.{w} P :=
@@ -100,14 +99,6 @@ lemma small_op_iff (P : ObjectProperty C) :
 lemma small_unop_iff (P : ObjectProperty Cᵒᵖ) :
     ObjectProperty.Small.{w} P.unop ↔ ObjectProperty.Small.{w} P := by
   rw [← small_op_iff, op_unop]
-
-instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
-    ObjectProperty.Small.{w} P.op := by
-  simpa
-
-instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.Small.{w} P] :
-    ObjectProperty.Small.{w} P.unop := by
-  simpa
 
 /-- A property of objects is essentially small relative to a universe `w`
 if it is contained in the closure by isomorphisms of a small property. -/
@@ -242,19 +233,12 @@ instance [EssentiallySmall.{w} C] (F : C ⥤ D) :
   rw [← ObjectProperty.map_top]
   infer_instance
 
-instance (P : ObjectProperty C) [LocallySmall.{w} C]
-    [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
-  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
-  have := (isEquivalence_ιOfLE_iff h₁).2 h₂
-  rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
-  exact essentiallySmall_of_small_of_locallySmall _
-
 lemma EssentiallySmall.of_functor (P : ObjectProperty C) (F : C ⥤ D)
     (H₁ : ObjectProperty.EssentiallySmall.{w} (P.map F))
     (H₂ : ∀ Y : D, ObjectProperty.EssentiallySmall.{w} (P ⊓ (Nonempty <| F.obj · ≅ Y))) :
     ObjectProperty.EssentiallySmall.{w} P := by
-  choose P₁ hP₁ x hP₁x hx using H₁.1
-  choose P₂ hP₂ y hP₂y hy using fun Y ↦ (H₂ Y).1
+  choose P₁ hP₁ x hP₁x hx using H₁.exists_small_le'
+  choose P₂ hP₂ y hP₂y hy using fun Y ↦ (H₂ Y).exists_small_le'
   let f : Subtype P → Σ i : Subtype P₁, Subtype (P₂ i.1) := fun c ↦
     ⟨⟨_, hP₁x _ _⟩, _, hP₂y _ c ⟨c.2, hx _ ⟨_, c.2, ⟨.refl _⟩⟩⟩⟩
   let g : (Σ i : Subtype P₁, Subtype (P₂ i.1)) → C := fun i ↦ i.2.1
@@ -294,7 +278,7 @@ lemma essentiallySmall_iff_objectPropertyEssentiallySmall :
       ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
   wlog hC : LocallySmall.{w} C; · simp [essentiallySmall_iff, hC]
   simp only [hC, ← exists_equivalence_iff_of_locallySmall, true_and]
-  refine ⟨fun H ↦ H.1, fun H ↦ ⟨H⟩⟩
+  refine ⟨fun H ↦ H.equiv_smallCategory, fun H ↦ ⟨H⟩⟩
 
 lemma EssentiallySmall.of_functor (F : C ⥤ D)
     [LocallySmall.{w} C] (H₁ : ObjectProperty.EssentiallySmall.{w} F.essImage)

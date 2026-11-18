@@ -300,7 +300,7 @@ instance fintypeInsert (a : α) (s : Set α) [DecidableEq α] [Fintype s] :
 @[instance_reducible]
 def fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     Fintype (insert a s : Set α) :=
-  Fintype.ofFinset ⟨a ::ₘ s.toFinset.1, s.toFinset.nodup.cons (by simp [h])⟩ <| by simp
+  Fintype.ofFinset ⟨a ::ₘ s.toFinset.val, s.toFinset.nodup.cons (by simp [h])⟩ <| by simp
 
 /-- A `Fintype` structure on `insert a s` when inserting a pre-existing element. -/
 @[instance_reducible]
@@ -327,7 +327,7 @@ a `Fintype` instance, then `s` has a `Fintype` structure as well. -/
 @[instance_reducible]
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
-  Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩
+  Fintype.ofFinset ⟨_, (f '' s).toFinset.nodup.filterMap g <| injective_of_isPartialInv_right I⟩
     (by simp [I.eq])
 
 instance fintypeMap {α β} [DecidableEq β] :

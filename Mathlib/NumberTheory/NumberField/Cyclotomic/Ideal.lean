@@ -38,7 +38,6 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 * `IsCyclotomicExtension.Rat.ramificationIdxIn_eq`: write `n = p ^ (k + 1) * m` where the prime `p`
   does not divide `m`, then the ramification index of `p` in `ℚ(ζₙ)` is `p ^ k * (p - 1)`.
-
 -/
 
 public section

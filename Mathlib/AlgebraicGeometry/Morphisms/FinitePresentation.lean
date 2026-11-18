@@ -23,7 +23,6 @@ quasi-compact, and quasi-separated. We do not provide a separate declaration for
 simply assume all conditions.
 
 We show that these properties are local, and are stable under compositions.
-
 -/
 
 public section

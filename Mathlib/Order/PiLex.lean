@@ -140,8 +140,8 @@ instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Colex (�
 /-- `Lex (∀ i, α i)` is a linear order if the original order has well-founded `<`. -/
 noncomputable instance Lex.linearOrder [LinearOrder ι] [WellFoundedLT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Lex (∀ i, β i)) :=
-  @linearOrderOfSTO _ (· < ·)
-    { trichotomous := (trichotomous_lex _ _).1 } (Classical.decRel _)
+  @linearOrderOfSTO (Πₗ i, β i) (· < ·)
+    { trichotomous := (trichotomous_lex _ _).trichotomous } (Classical.decRel _)
 
 /-- `Colex (∀ i, α i)` is a linear order if the original order has well-founded `>`. -/
 noncomputable instance Colex.linearOrder [LinearOrder ι] [WellFoundedGT ι]

@@ -25,7 +25,6 @@ so as to make the operations (addition etc.) "computable".
 
 * `Module.DirectLimit G f`
 * `AddCommGroup.DirectLimit G f`
-
 -/
 
 @[expose] public section
