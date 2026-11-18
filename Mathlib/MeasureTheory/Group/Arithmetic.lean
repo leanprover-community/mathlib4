@@ -481,24 +481,40 @@ instance measurableSMul₂_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [Measu
   ⟨measurable_mul⟩
 
 @[to_additive]
-instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M] [MulAction M α]
-    [MeasurableConstSMul M α] (s : Submonoid M) : MeasurableConstSMul s α where
+instance SubmonoidClass.instMeasurableConstSMul {M α S : Type*} [MeasurableSpace α] [Monoid M]
+    [MulAction M α] [MeasurableConstSMul M α] [SetLike S M] [SubmonoidClass S M] (s : S) :
+    MeasurableConstSMul s α where
   measurable_const_smul c := by simpa only using! measurable_const_smul (c : M)
 
 @[to_additive]
-instance Submonoid.instMeasurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
-    [MulAction M α] [MeasurableSMul M α] (s : Submonoid M) : MeasurableSMul s α where
+instance SubmonoidClass.instMeasurableSMul {M α S : Type*} [MeasurableSpace M] [MeasurableSpace α]
+    [Monoid M] [MulAction M α] [MeasurableSMul M α] [SetLike S M] [SubmonoidClass S M] (s : S) :
+    MeasurableSMul s α where
   measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtype_coe
 
-@[to_additive]
-instance Subgroup.instMeasurableConstSMul {G α} [MeasurableSpace α] [Group G] [MulAction G α]
-    [MeasurableConstSMul G α] (s : Subgroup G) : MeasurableConstSMul s α :=
-  s.toSubmonoid.instMeasurableConstSMul
+@[to_additive (attr := deprecated SubmonoidClass.instMeasurableConstSMul +typeChanged
+  (since := "2026-11-11"))]
+theorem Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M] [MulAction M α]
+    [MeasurableConstSMul M α] (s : Submonoid M) : MeasurableConstSMul s α :=
+  inferInstance
 
-@[to_additive]
-instance Subgroup.instMeasurableSMul {G α} [MeasurableSpace G] [MeasurableSpace α] [Group G]
+@[to_additive (attr := deprecated SubmonoidClass.instMeasurableSMul +typeChanged
+  (since := "2026-11-11"))]
+theorem Submonoid.instMeasurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
+    [MulAction M α] [MeasurableSMul M α] (s : Submonoid M) : MeasurableSMul s α :=
+  inferInstance
+
+@[to_additive (attr := deprecated SubmonoidClass.instMeasurableConstSMul +typeChanged
+  (since := "2026-11-11"))]
+theorem Subgroup.instMeasurableConstSMul {G α} [MeasurableSpace α] [Group G] [MulAction G α]
+    [MeasurableConstSMul G α] (s : Subgroup G) : MeasurableConstSMul s α :=
+  inferInstance
+
+@[to_additive (attr := deprecated SubmonoidClass.instMeasurableSMul +typeChanged
+  (since := "2026-11-11"))]
+theorem Subgroup.instMeasurableSMul {G α} [MeasurableSpace G] [MeasurableSpace α] [Group G]
     [MulAction G α] [MeasurableSMul G α] (s : Subgroup G) : MeasurableSMul s α :=
-  s.toSubmonoid.instMeasurableSMul
+  inferInstance
 
 section SMul
 variable {M X α β : Type*} [MeasurableSpace X] [SMul M X]
