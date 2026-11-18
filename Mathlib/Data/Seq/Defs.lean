@@ -9,7 +9,8 @@ public import Batteries.Data.MLList.Basic
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Data.Seq.Computation
-public import Mathlib.Data.Subtype
+
+import Mathlib.Data.Subtype
 
 /-!
 # Possibly infinite lists
@@ -161,11 +162,8 @@ theorem cons_right_injective (x : α) : Function.Injective (cons x) :=
 
 @[simp]
 theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
-    (cons x s = cons x' s') ↔ (x = x' ∧ s = s') := by
-  constructor
-  · apply cons_injective2
-  · intro ⟨_, _⟩
-    congr
+    (cons x s = cons x' s') ↔ (x = x' ∧ s = s') :=
+  ⟨(cons_injective2 ·), by rintro ⟨rfl, rfl⟩; rfl⟩
 
 /-!
 ### Destructors
@@ -199,11 +197,8 @@ theorem destruct_nil : destruct (nil : Seq α) = none :=
   rfl
 
 @[simp]
-theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
-  | ⟨f, al⟩ => by
-    unfold cons destruct Functor.map
-    apply congr_arg fun s => some (a, s)
-    apply Subtype.ext; dsimp [tail]
+theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s) :=
+  fun _ ↦ rfl
 
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
@@ -215,14 +210,9 @@ theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s =
   dsimp [destruct]
   rcases f0 : get? s 0 with - | a' <;> intro h
   · contradiction
-  · obtain ⟨f, al⟩ := s
-    injections _ h1 h2
-    rw [← h2]
-    apply Subtype.ext
-    dsimp [tail, cons]
-    rw [h1] at f0
-    rw [← f0]
-    exact (Stream'.eta f).symm
+  · injections _ h1 h2
+    subst h1 h2
+    exact Seq.ext fun n ↦ by cases n <;> simp [f0]
 
 @[simp]
 theorem head_nil : head (nil : Seq α) = none :=
@@ -241,19 +231,14 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := rfl
 
 theorem head_eq_some {s : Seq α} {x : α} (h : s.head = some x) :
     s = cons x s.tail := by
-  ext1 n
-  cases n <;> simp only [get?_cons_zero, get?_cons_succ, get?_tail]
-  exact h
+  ext1 (_ | n) <;> simp_all [head]
 
 theorem head_eq_none {s : Seq α} (h : s.head = none) : s = nil :=
   get?_zero_eq_none.mp h
 
 @[simp]
-theorem head_eq_none_iff {s : Seq α} : s.head = none ↔ s = nil := by
-  constructor
-  · apply head_eq_none
-  · intro h
-    simp [h]
+theorem head_eq_none_iff {s : Seq α} : s.head = none ↔ s = nil :=
+  ⟨head_eq_none, by rintro rfl; rfl⟩
 
 /-!
 ### Recursion and corecursion principles
@@ -295,14 +280,9 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   induction n generalizing o with
   | zero =>
     change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
-    rcases o with - | b <;> intro h
-    · rfl
-    dsimp [Corec.f] at h
-    dsimp [Corec.f]
-    revert h; rcases h₁ : f b with - | s <;> intro h
-    · rfl
-    · obtain ⟨a, b'⟩ := s
-      contradiction
+    rcases o with - | b
+    · exact fun _ ↦ rfl
+    · rcases h₁ : f b with - | ⟨a, b'⟩ <;> simp [Corec.f, h₁]
   | succ n IH =>
     rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
@@ -314,8 +294,8 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   dsimp [corec, destruct, get]
   rw [show Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 from rfl]
   dsimp [Corec.f]
-  rcases h : f b with - | s; · rfl
-  obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
+  rcases h : f b with - | ⟨a, b'⟩; · rfl
+  dsimp [Corec.f]
   apply congr_arg fun b' => some (a, b')
   apply Subtype.ext
   dsimp [corec, tail]
@@ -363,27 +343,11 @@ more like an induction principles. -/
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.ext
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
-  · dsimp [Stream'.IsBisimulation]
-    intro t₁ t₂ e
-    exact
-    match t₁, t₂, e with
-    | _, _, ⟨s, s', rfl, rfl, r⟩ => by
-      suffices head s = head s' ∧ R (tail s) (tail s') from
-        And.imp id (fun r => ⟨tail s, tail s', by cases s using Subtype.recOn; rfl,
-          by cases s' using Subtype.recOn; rfl, r⟩) this
-      have := bisim r; revert r this
-      cases s <;> cases s'
-      · intro r _
-        constructor
-        · rfl
-        · assumption
-      · intro _ this
-        rw [destruct_nil, destruct_cons] at this
-        exact False.elim this
-      · intro _ this
-        rw [destruct_nil, destruct_cons] at this
-        exact False.elim this
-      · simp
+  · rintro _ _ ⟨s, s', rfl, rfl, r⟩
+    suffices head s = head s' ∧ R (tail s) (tail s') from
+      this.imp id fun r ↦ ⟨tail s, tail s', rfl, rfl, r⟩
+    have := bisim r
+    cases s <;> cases s' <;> simp_all [head]
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
 /-- Coinductive principle for equality on sequences.
@@ -436,8 +400,8 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
           (destruct (g s))) :
     f s = g s := by
   refine eq_of_bisim (fun s1 s2 => ∃ s, s1 = f s ∧ s2 = g s) ?_ ⟨s, rfl, rfl⟩
-  intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
-  rw [h1, h2]; apply H
+  rintro _ _ ⟨s, rfl, rfl⟩
+  exact H s
 
 /-!
 ### Termination
@@ -489,18 +453,12 @@ theorem terminates_nil : Terminates (nil : Seq α) := ⟨0, rfl⟩
 @[simp]
 theorem terminates_cons_iff {x : α} {s : Seq α} :
     (cons x s).Terminates ↔ s.Terminates := by
-  constructor <;> intro ⟨n, h⟩
-  · exact ⟨n, cons_terminatedAt_succ_iff.mp (terminated_stable _ (Nat.le_succ _) h)⟩
-  · exact ⟨n + 1, cons_terminatedAt_succ_iff.mpr h⟩
+  refine ⟨fun ⟨n, h⟩ ↦ ⟨n, ?_⟩, fun ⟨n, h⟩ ↦ ⟨n + 1, ?_⟩⟩
+  · exact cons_terminatedAt_succ_iff.mp (terminated_stable _ (Nat.le_succ _) h)
+  · exact cons_terminatedAt_succ_iff.mpr h
 
-theorem terminatedAt_zero_iff {s : Seq α} : s.TerminatedAt 0 ↔ s = nil := by
-  refine ⟨?_, ?_⟩
-  · intro h
-    ext n
-    rw [le_stable _ (Nat.zero_le _) h]
-    simp
-  · rintro rfl
-    simp [TerminatedAt]
+theorem terminatedAt_zero_iff {s : Seq α} : s.TerminatedAt 0 ↔ s = nil :=
+  get?_zero_eq_none
 
 /-!
 ### Membership
@@ -540,23 +498,13 @@ theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a �
 
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
-  obtain ⟨k, e⟩ := M; unfold Stream'.get at e
+  obtain ⟨k, e⟩ := M
   induction k generalizing s with
-  | zero =>
-    have TH : s = cons a (tail s) := by
-      apply destruct_eq_cons
-      unfold destruct get? Functor.map
-      rw [← e]
-      rfl
-    rw [TH]
-    apply h1 _ _ (Or.inl rfl)
+  | zero => exact head_eq_some e.symm ▸ h1 _ _ (Or.inl rfl)
   | succ k IH =>
     cases s with
-    | nil => injection e
-    | cons b s' =>
-      have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' using Subtype.recOn; rfl
-      rw [h_eq] at e
-      apply h1 _ _ (Or.inr (IH e))
+    | nil => simp [Stream'.get] at e
+    | cons b s' => exact h1 _ _ (Or.inr (IH e))
 
 /-!
 ### Converting from/to other types
