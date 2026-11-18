@@ -619,6 +619,14 @@ instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A
     star_mul x y := Unitization.ext
       (by simp [-star_mul']) (by simp [-star_mul', add_comm (star x.fst • star y.snd)]) }
 
+instance instIsProperStar [Semiring R] [StarAddMonoid R] [IsProperStar R]
+    [NonUnitalNonAssocSemiring A] [Star A] [IsProperStar A] [Module R A] :
+    IsProperStar (Unitization R A) where
+  eq_zero_of_star_mul_self_eq_zero {x} h := by
+    have hx : x.fst = 0 := by simpa using congr($(h).fst)
+    apply Unitization.ext hx
+    simpa [hx] using congr($(h).snd)
+
 end Star
 
 /-! ### Algebra structure -/
