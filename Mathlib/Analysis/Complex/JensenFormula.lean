@@ -246,12 +246,11 @@ lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
   by_cases hR : R = 0
   · subst hR
     by_cases hc : D c = 0
-    · have : (D : ℂ → ℤ) = 0 := by
+    · obtain rfl : D = 0 := by
         ext u
         by_cases hu : u = c
-        · simp [hu, hc]
-        · exact D.apply_eq_zero_of_notMem (by simpa using hu)
-      simp [this, factorizedRational]
+        all_goals simp_all [D.apply_eq_zero_of_notMem]
+      simp [factorizedRational]
     · simp [FactorizedRational.eq_zero h hc]
   -- General case: replace `log ‖factorizedRational D ·‖` by a sum of logarithms and compute
   calc circleAverage (log ‖factorizedRational D ·‖) c R
