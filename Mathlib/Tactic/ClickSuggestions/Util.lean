@@ -217,7 +217,7 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
     return true
   -- Unify lambdas and foralls
   if t.isLambda && s.isLambda || t.isForall && s.isForall then
-    unless ← withNewMCtxDepth <| withImplicit <| isDefEq t.bindingDomain! s.bindingDomain! do
+    unless ← withNewMCtxDepth <| isDefEqI t.bindingDomain! s.bindingDomain! do
       return false
     return ← withLocalDeclD `_ t.bindingDomain! fun x ↦
       isExplicitEq (t.bindingBody!.instantiate1 x) (s.bindingBody!.instantiate1 x)
@@ -230,10 +230,12 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let sArgs := s.getAppArgs
   let info ← getFunInfoNArgs t.getAppFn t.getAppNumArgs
   t.getAppNumArgs.allM fun i _ => do
-    if info.paramInfo[i]!.isExplicit then
+    -- `info.paramInfo[i]?` may be `none` due to over-application,
+    -- which we treat the same as an explicit application.
+    if info.paramInfo[i]?.all (·.isExplicit) then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
-      withNewMCtxDepth <| withImplicit <| isDefEq tArgs[i]! sArgs[i]!
+      withNewMCtxDepth <| isDefEqI tArgs[i]! sArgs[i]!
 
 end Meta
 
