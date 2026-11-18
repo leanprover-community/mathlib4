@@ -170,6 +170,14 @@ theorem mem_Lp_iff_inhmgELpNorm_lt_top {f : α →ₘ[μ] E} :
 theorem mem_Lp_iff_memLp {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ MemLp f p μ := by
   simp [mem_Lp_iff_inhmgELpNorm_lt_top, MemLp]
 
+theorem mem_Lp_iff_eLpNorm_lt_top_of_ne_zero {f : α →ₘ[μ] E} (hp : p ≠ 0) :
+    f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := by
+  rw [mem_Lp_iff_memLp, memLp_iff_eLpNorm_of_ne_zero hp]
+
+theorem mem_Lp_iff_eLpNorm_lt_top_of_pos {f : α →ₘ[μ] E} (hp : 0 < p) :
+    f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := by
+  rw [mem_Lp_iff_memLp, memLp_iff_eLpNorm_of_pos hp]
+
 protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ q) : Lp E q μ ≤ Lp E p μ :=
   fun _f hf => MemLp.mono_exponent hf hpq
 
