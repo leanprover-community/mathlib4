@@ -167,6 +167,7 @@ theorem MeromorphicOn.circleIntegrable_log_norm_of_nonneg (hf : MeromorphicOn f 
 If `f` is complex meromorphic, then `log ‖f ·‖` is circle integrable over every circle in the
 complex plane.
 -/
+@[fun_prop]
 theorem Meromorphic.circleIntegrable_log_norm (hf : Meromorphic f) :
     CircleIntegrable (log ‖f ·‖) c R :=
   hf.meromorphicOn.circleIntegrable_log_norm
