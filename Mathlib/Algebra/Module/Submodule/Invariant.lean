@@ -117,12 +117,12 @@ instance : BoundedOrder (f.invtSubmodule) where
 @[simp]
 protected lemma zero :
     (0 : End R M).invtSubmodule = ⊤ :=
-  eq_top_iff.mpr fun x ↦ by simp [invtSubmodule]
+  eq_top_iff.mpr fun x ↦ by simp [mem_invtSubmodule]
 
 @[simp]
 protected lemma id :
     invtSubmodule (LinearMap.id : End R M) = ⊤ :=
-  eq_top_iff.mpr fun x ↦ by simp [invtSubmodule]
+  eq_top_iff.mpr fun x ↦ by simp [mem_invtSubmodule]
 
 @[simp]
 protected lemma one :
