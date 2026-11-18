@@ -13,7 +13,6 @@ public import Mathlib.Basic.Logic.Basic  -- shake: keep (Qq output dependency)
 public import Mathlib.Util.AtomM
 
 /-!
-
 # Intuitionistic tautology (`itauto`) decision procedure
 
 The `itauto` tactic will prove any intuitionistic tautology. It implements the well-known

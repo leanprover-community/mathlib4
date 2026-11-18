@@ -28,7 +28,6 @@ consequences thereof.
   and `range_cfcₙ_nnreal_subset`.
 * `cfc_mem` and `cfcₙ_mem`: the continuous functional calculus of an element is contained in any
   closed star subalgebra containing the element.
-
 -/
 
 public section
@@ -58,7 +57,7 @@ theorem range_cfcHom {a : A} (ha : p a) :
     ← StarSubalgebra.topologicalClosure_map _ _ (cfcHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap
       (cfcHom_continuous ha), StarAlgHom.map_adjoin]
   congr
-  simpa using cfcHom_id ha
+  simp
 
 lemma range_cfc {a : A} (ha : p a) : Set.range (cfc (R := 𝕜) · a) = elemental 𝕜 a := by
   rw [range_cfc_eq_range_cfcHom 𝕜 ha, range_cfcHom 𝕜 ha]
@@ -172,7 +171,7 @@ theorem range_cfcₙHom {a : A} (ha : p a) :
     (cfcₙHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap (cfcₙHom_continuous ha),
     NonUnitalStarAlgHom.map_adjoin]
   congr
-  simpa using cfcₙHom_id ha
+  simp
 
 theorem range_cfcₙ {a : A} (ha : p a) : Set.range (cfcₙ (R := 𝕜) · a) = elemental 𝕜 a := by
   rw [range_cfcₙ_eq_range_cfcₙHom 𝕜 ha, range_cfcₙHom 𝕜 ha]

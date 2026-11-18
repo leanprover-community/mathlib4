@@ -701,7 +701,7 @@ def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ 
   invertibleOfRightInverse _ ((⅟(A.submatrix e₁ e₂)).submatrix e₂.symm e₁.symm) <| by
     have : A = (A.submatrix e₁ e₂).submatrix e₁.symm e₂.symm := by simp
     conv in _ * _ =>
-      congr
+      enter [1]
       rw [this]
     rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 

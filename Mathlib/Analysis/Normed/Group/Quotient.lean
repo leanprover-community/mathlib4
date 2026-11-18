@@ -91,7 +91,6 @@ which uses the topological structure and the group structure to build the unifor
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
 the previous paragraph kicks in.
-
 -/
 
 @[expose] public section

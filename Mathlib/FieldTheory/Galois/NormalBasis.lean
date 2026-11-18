@@ -20,7 +20,6 @@ We prove the normal basis theorem `IsGalois.normalBasis`:
 every finite Galois extension has a basis that is an orbit under the Galois group action.
 
 The proof follows [ConradLinearChar] Keith Conrad, *Linear Independence of Characters*.
-
 -/
 
 variable (K L : Type*) [Field K] [Field L] [Algebra K L]
@@ -53,7 +52,7 @@ theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
     AlgEquiv.coe_pow, AdjoinRoot.powerBasis, AdjoinRoot.powerBasisAux, Basis.coe_mk,
     coe_comp, LinearEquiv.coe_coe, LinearMap.coe_restrictScalars]
   refine (LinearEquiv.eq_symm_apply _).mpr (.symm <| (liftQ_apply ..).trans ?_)
-  rw [toSpanSingleton_apply, AEval'.X_pow_smul_of, End.smul_def, End.coe_pow]
+  rw [toSpanSingleton_apply, AEval'.X_pow_smul_of, End.smul_def, FunLike.coe_pow_eq_iterate]
   rfl
 
 variable [FiniteDimensional K L]

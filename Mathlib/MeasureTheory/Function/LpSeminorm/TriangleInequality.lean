@@ -34,23 +34,23 @@ theorem eLpNorm'_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
   calc
     (∫⁻ a, ‖(f + g) a‖ₑ ^ q ∂μ) ^ (1 / q) ≤ (∫⁻ a, ((‖f ·‖ₑ) + (‖g ·‖ₑ)) a ^ q ∂μ) ^ (1 / q) := by
       gcongr with a
-      simp only [Pi.add_apply, enorm_add_le]
-    _ ≤ eLpNorm' f q μ + eLpNorm' g q μ := ENNReal.lintegral_Lp_add_le hf.enorm hg.enorm hq1
+      simp only [Pi.add_apply, eNorm_add_le]
+    _ ≤ eLpNorm' f q μ + eLpNorm' g q μ := ENNReal.lintegral_Lp_add_le hf.eNorm hg.eNorm hq1
 
 theorem eLpNorm'_add_le_of_le_one (hf : AEStronglyMeasurable f μ) (hq0 : 0 ≤ q) (hq1 : q ≤ 1) :
     eLpNorm' (f + g) q μ ≤ 2 ^ (1 / q - 1) * (eLpNorm' f q μ + eLpNorm' g q μ) :=
   calc
     (∫⁻ a, ‖(f + g) a‖ₑ ^ q ∂μ) ^ (1 / q) ≤ (∫⁻ a, (((‖f ·‖ₑ)) + (‖g ·‖ₑ)) a ^ q ∂μ) ^ (1 / q) := by
       gcongr with a
-      simp only [Pi.add_apply, enorm_add_le]
+      simp only [Pi.add_apply, eNorm_add_le]
     _ ≤ (2 : ℝ≥0∞) ^ (1 / q - 1) * (eLpNorm' f q μ + eLpNorm' g q μ) :=
-      ENNReal.lintegral_Lp_add_le_of_le_one hf.enorm hq0 hq1
+      ENNReal.lintegral_Lp_add_le_of_le_one hf.eNorm hq0 hq1
 
 theorem eLpNormEssSup_add_le :
     eLpNormEssSup (f + g) μ ≤ eLpNormEssSup f μ + eLpNormEssSup g μ := by
   refine le_trans (essSup_mono_ae (Eventually.of_forall fun x => ?_)) (ENNReal.essSup_add_le _ _)
   simp_rw [Pi.add_apply]
-  exact enorm_add_le _ _
+  exact eNorm_add_le _ _
 
 variable [ContinuousAdd ε]
 
@@ -106,7 +106,7 @@ theorem inhmgELpNorm_add_le :
     contrapose! hx
     refine le_antisymm ?_ zero_le
     nth_rw 1 [← add_zero 0, ← hx.1, ← hx.2]
-    exact enorm_add_le (f x) (g x)
+    exact eNorm_add_le (f x) (g x)
   by_cases! hp' : p ≤ 1
   · rw [inhmgELpNorm_eq_lintegral hp' hp hf, inhmgELpNorm_eq_lintegral hp' hp hg,
       inhmgELpNorm_eq_lintegral hp' hp (hf.add hg)]
@@ -114,7 +114,7 @@ theorem inhmgELpNorm_add_le :
     gcongr
     trans (‖f x‖ₑ + ‖g x‖ₑ) ^ p.toReal
     · gcongr
-      exact enorm_add_le (f x) (g x)
+      exact eNorm_add_le (f x) (g x)
     · apply rpow_add_le_add_rpow ‖f x‖ₑ ‖g x‖ₑ toReal_nonneg
       exact toReal_le_of_le_ofReal zero_le_one (by simp [hp'])
   · rw [inhmgELpNorm_eq_eLpNorm hp'.le, inhmgELpNorm_eq_eLpNorm hp'.le,
