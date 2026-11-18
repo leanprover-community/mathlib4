@@ -97,11 +97,6 @@ theorem not_isSquare_discr : ¬ IsSquare (discr K) := by
   rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv]
   exact QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _)
 
-/-- **Stickelberger's theorem**, for quadratic fields: the discriminant is congruent to `0` or
-`1` modulo `4`. -/
-theorem discr_emod_four_eq_zero_or_one : discr K % 4 = 0 ∨ discr K % 4 = 1 :=
-  (isFundamentalDiscr_discr K).1
-
 variable (F : Type*) [Field F] [CharZero F] [Algebra.IsQuadraticExtension ℚ F]
 
 /-- The discriminant is a complete invariant of quadratic fields. -/
