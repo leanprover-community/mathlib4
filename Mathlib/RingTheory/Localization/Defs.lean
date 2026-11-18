@@ -344,7 +344,7 @@ theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y �
 regular iff `r : R` is. -/
 @[simp] lemma isRegular_mk' (hM : ∀ m ∈ M, IsRegular m) {r : R} {m : M} :
     IsRegular (IsLocalization.mk' S r m) ↔ IsRegular r := by
-  have (n : M) (x y : R) : n * x = n * y ↔ x = y := (hM _ n.2).1.eq_iff
+  have (n : M) (x y : R) : n * x = n * y ↔ x = y := (hM _ n.2).left.eq_iff
   simp +contextual only [← isLeftRegular_iff_isRegular, IsLeftRegular, Function.Injective,
     (mk'_surjective M).forall, ← mk'_mul, Prod.forall, Subtype.forall, IsLocalization.eq,
     Submonoid.coe_mul, this, exists_const, mul_assoc]
@@ -732,14 +732,14 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
   let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   constructor; constructor
   · rintro ⟨_, ⟨y, hy, rfl⟩⟩
-    convert! IsLocalization.map_units S ⟨y, hy⟩
+    convert IsLocalization.map_units S ⟨y, hy⟩
     dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply]
     exact congr_arg _ (h.symm_apply_apply _)
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M y
     refine ⟨⟨h x, _, _, s.prop, rfl⟩, ?_⟩
     dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e ⊢
-    convert! e <;> exact h.symm_apply_apply _
+    convert e <;> exact h.symm_apply_apply _
   · intro x y
     rw [RingHom.algebraMap_toAlgebra, RingHom.comp_apply, RingHom.comp_apply,
       IsLocalization.eq_iff_exists M S]
@@ -752,7 +752,7 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
   let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   refine ⟨fun _ => isLocalization_of_base_ringEquiv M S h, ?_⟩
   intro (H : IsLocalization (Submonoid.map (h : R ≃* P) M) S)
-  convert! isLocalization_of_base_ringEquiv (Submonoid.map (h : R ≃* P) M) S h.symm
+  convert isLocalization_of_base_ringEquiv (Submonoid.map (h : R ≃* P) M) S h.symm
   · rw [← Submonoid.map_coe_toMulEquiv, RingEquiv.coe_toMulEquiv_symm, ←
       Submonoid.comap_equiv_eq_map_symm, Submonoid.comap_map_eq_of_injective]
     exact h.toEquiv.injective
@@ -767,7 +767,7 @@ theorem of_ringEquiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring
     (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
     IsLocalization M₂ K := by
   rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e, hM]
-  convert! (inferInstance : IsLocalization M₁ K)
+  convert (inferInstance : IsLocalization M₁ K)
   exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h])
 
 end

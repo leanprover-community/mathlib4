@@ -24,7 +24,6 @@ This file contains basic results for root systems and root data.
 * `RootSystem.mk'`: In characteristic zero over an integral domain, to check that a finite family of
   roots form a root system, we do not need to check that the coroots are stable under reflections
   since this follows from the corresponding property for the roots.
-
 -/
 
 @[expose] public section
@@ -84,7 +83,7 @@ variable (P : RootPairing ι R M N) [Finite ι]
 roots. The proof depends crucially on the fact that there are finitely-many roots.
 
 Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI. -/
-lemma injOn_dualMap_subtype_span_root_coroot [IsAddTorsionFree M] :
+lemma injOn_dualMap_subtype_span_root_coroot [HasUniqueDiv M] :
     InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ P.toLinearMap.flip) (range P.coroot) := by
   have := injOn_dualMap_subtype_span_range_range (finite_range P.root)
     (c := P.toLinearMap.flip ∘ P.coroot) P.root_coroot_two P.mapsTo_reflection_root
@@ -116,7 +115,7 @@ protected lemma ext [CharZero R] [IsDomain R]
     It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
     canonicalizer; a minimization would help. The original proof was: `grind` -/
     simp_all
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, comp_apply]
@@ -158,7 +157,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R]
     rw [mul_comm (p (root i) (coroot j))]
     abel
   suffices p.flip (coroot k) = p.flip (coroot l) from p.flip.toPerfPair.injective this
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
     (c := p.flip ∘ coroot) hp hr
   apply this (mem_range_self k) (mem_range_self l)

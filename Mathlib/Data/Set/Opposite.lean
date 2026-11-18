@@ -5,8 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Data.Opposite
+public import Mathlib.Basic.Opposite
 public import Mathlib.Data.Set.Operations
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The opposite of a set

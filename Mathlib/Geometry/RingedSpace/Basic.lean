@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Geometry.RingedSpace.SheafedSpace
+
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Geometry.RingedSpace.SheafedSpace
 
 /-!
 # Ringed spaces
@@ -18,7 +19,6 @@ We introduce the category of ringed spaces, as an alias for `SheafedSpace CommRi
 
 The facts collected in this file are typically stated for locally ringed spaces, but never actually
 make use of the locality of stalks. See for instance <https://stacks.math.columbia.edu/tag/01HZ>.
-
 -/
 
 @[expose] public section
@@ -132,11 +132,11 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     rw [isOpen_iff_forall_mem_open]
     rintro x ⟨hxU, hx⟩
     obtain ⟨V, i, hxV, hf⟩ := X.isUnit_res_of_isUnit_germ U f x hxU hx
-    use V.1
-    refine ⟨?_, V.2, hxV⟩
+    use V.carrier
+    refine ⟨?_, V.is_open', hxV⟩
     intro y hy
     use i.le hy
-    convert! RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
+    convert RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
     exact (X.presheaf.germ_res_apply i y hy f).symm
 
 theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : X) (hx : x ∈ U) :
@@ -162,7 +162,7 @@ theorem isUnit_res_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) :
     IsUnit (X.presheaf.map (@homOfLE (Opens X) _ _ _ (X.basicOpen_le f)).op f) := by
   apply isUnit_of_isUnit_germ
   rintro x ⟨hxU, hx⟩
-  convert! hx
+  convert hx
   exact X.presheaf.germ_res_apply _ _ _ _
 
 @[simp]

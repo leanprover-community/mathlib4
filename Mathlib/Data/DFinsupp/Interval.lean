@@ -5,11 +5,15 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Order
 public import Mathlib.Order.Interval.Finset.Basic
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+import Mathlib.Data.Fintype.BigOperators
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite intervals of finitely supported functions
@@ -50,7 +54,7 @@ theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
   · rintro ⟨f, hf, rfl⟩
     rw [Function.Embedding.coeFn_mk]
     refine ⟨support_mk_subset, fun i hi => ?_⟩
-    convert! mem_pi.1 hf i hi
+    convert mem_pi.1 hf i hi
     exact mk_of_mem hi
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i

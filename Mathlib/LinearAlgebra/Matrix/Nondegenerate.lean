@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 * `Matrix.Nondegenerate A`: the proposition that when interpreted as a bilinear form, the matrix `A`
   is nondegenerate.
-
 -/
 
 @[expose] public section
@@ -53,12 +52,12 @@ variable {m n R : Type*} [CommSemiring R] {M : Matrix m n R}
 lemma separatingRight_def [Fintype m] [Fintype n] :
     M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   refine forall_congr' fun w ↦ ⟨fun hM hw ↦ hM ?_, fun hM hw ↦ hM ?_⟩ <;>
-  convert! hw
+  convert hw
 
 lemma separatingLeft_def [Fintype m] [Fintype n] :
     M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
   refine forall_congr' fun v ↦ ⟨fun hM hv ↦ hM ?_, fun hM hv ↦ hM ?_⟩ <;>
-  convert! hv
+  convert hv
 
 lemma nondegenerate_def [Fintype m] [Fintype n] :
     M.Nondegenerate ↔
@@ -158,10 +157,13 @@ theorem Nondegenerate.of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) : M.Nonde
 /-- If `M` is square and has nonzero determinant, then `M` as a bilinear form on `n → R` is
 nondegenerate. The "iff" implication, `nondegenerate_iff_det_ne_zero`, is proved in a later file.
 
-See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDetNeZero`.
+See also `LinearMap.BilinForm.Nondegenerate.of_det_ne_zero`.
 -/
-theorem nondegenerate_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : M.Nondegenerate :=
+theorem Nondegenerate.of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : M.Nondegenerate :=
   .of_det_mem_nonZeroDivisors <| mem_nonZeroDivisors_of_ne_zero hM
+
+@[deprecated (since := "2026-11-13")] alias nondegenerate_of_det_ne_zero :=
+  Nondegenerate.of_det_ne_zero
 
 theorem eq_zero_of_det_mem_nonZeroDivisors_of_vecMul_eq_zero (hM : M.det ∈ R⁰)
     {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
@@ -169,7 +171,7 @@ theorem eq_zero_of_det_mem_nonZeroDivisors_of_vecMul_eq_zero (hM : M.det ∈ R�
 
 theorem eq_zero_of_vecMul_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m → R}
     (hv : v ᵥ* M = 0) : v = 0 :=
-  nondegenerate_of_det_ne_zero hM |>.separatingLeft.eq_zero_of_vecMul_eq_zero hv
+  Nondegenerate.of_det_ne_zero hM |>.separatingLeft.eq_zero_of_vecMul_eq_zero hv
 
 theorem eq_zero_of_det_mem_nonZeroDivisors_of_mulVec_eq_zero (hM : M.det ∈ R⁰)
     {v : m → R} (hv : M *ᵥ v = 0) : v = 0 :=
@@ -177,7 +179,7 @@ theorem eq_zero_of_det_mem_nonZeroDivisors_of_mulVec_eq_zero (hM : M.det ∈ R�
 
 theorem eq_zero_of_mulVec_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m → R}
     (hv : M *ᵥ v = 0) : v = 0 :=
-  nondegenerate_of_det_ne_zero hM |>.separatingRight.eq_zero_of_mulVec_eq_zero hv
+  Nondegenerate.of_det_ne_zero hM |>.separatingRight.eq_zero_of_mulVec_eq_zero hv
 
 /-- See also `Matrix.mulVec_injective_iff_isUnit` when working over a field. -/
 theorem mulVec_injective_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) :

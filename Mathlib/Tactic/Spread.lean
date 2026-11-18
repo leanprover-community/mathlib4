@@ -5,8 +5,11 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Binders
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Macro for spread syntax (`__ := instSomething`) in structures.
@@ -64,7 +67,7 @@ macro_rules
     let mut newFields := #[]
 
     for field in fields do
-      match field.1 with
+      match field.raw with
         | `(structInstField| $name:ident := $arg) =>
           if name.getId.eraseMacroScopes == `__ then do
             spreads := spreads.push arg

@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral closure of a subring.
 
@@ -36,6 +39,10 @@ theorem Subalgebra.isIntegral_iff (S : Subalgebra R B) :
     Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
   Algebra.isIntegral_def.trans <| .trans
     (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
+
+instance Subalgebra.isIntegral [Algebra.IsIntegral R B] (S : Subalgebra R B) :
+    Algebra.IsIntegral R S :=
+  S.isIntegral_iff.mpr fun x _ => Algebra.IsIntegral.isIntegral x
 
 section
 
@@ -126,7 +133,7 @@ variable {f}
 @[stacks 00GK]
 theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   letI := f.toAlgebra
-  fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.1 _ trivial
+  fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.fg_top _ trivial
 
 alias RingHom.IsIntegral.of_finite := RingHom.Finite.to_isIntegral
 
@@ -252,7 +259,7 @@ variable (R A B)
 instance Algebra.IsIntegral.tensorProduct [CommRing B]
     [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
     Algebra.IsIntegral A (A ⊗[R] B) where
-  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.isIntegral s) (fun _ _ ↦ .add)
 
 end TensorProduct
 

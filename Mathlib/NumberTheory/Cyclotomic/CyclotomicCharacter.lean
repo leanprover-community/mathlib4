@@ -8,11 +8,11 @@ module
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.Topology.Algebra.Group.Units
 
 /-!
-
 # The cyclotomic character
 
 Let `L` be an integral domain and let `n : ℕ+` be a positive integer. If `μₙ` is the
@@ -73,7 +73,6 @@ variable {L : Type u} [CommRing L] [IsDomain L]
 /-
 
 ## The mod n theory
-
 -/
 
 variable (n : ℕ) [NeZero n]
@@ -102,7 +101,7 @@ theorem modularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow
     (g : L ≃+* L) (p : ℕ) [Fact p.Prime] [∀ i, HasEnoughRootsOfUnity L (p ^ i)]
     {i k : ℕ} (hi : k ≤ i) : (p : ℤ) ^ k ∣ aux g (p ^ i) - aux g (p ^ k) := by
   obtain ⟨i, rfl⟩ := exists_add_of_le hi
-  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot L (p ^ (k + i))
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot L (p ^ (k + i))
   have h := hζ.pow (a := p ^ i) (Nat.pos_of_neZero _) (Nat.pow_add' _ _ _)
   have h_unit : (h.isUnit NeZero.out).unit =
       (hζ.isUnit NeZero.out).unit ^ (p ^ i) := by ext; rfl
@@ -254,7 +253,6 @@ lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n
 /-
 
 ## The p-adic theory
-
 -/
 
 open modularCyclotomicCharacter in
@@ -278,7 +276,7 @@ theorem toFun_apply :
     cyclotomicCharacter.toFun p g =
       PadicInt.ofIntSeq _ (PadicInt.isCauSeq_padicNorm_of_pow_dvd_sub
         (aux g <| p ^ ·) _ fun i ↦ pow_dvd_aux_pow_sub_aux_pow g p i.le_succ) :=
-  dite_eq_left fun _ ↦ HasEnoughRootsOfUnity.exists_primitiveRoot _ _
+  dite_eq_left fun _ ↦ HasEnoughRootsOfUnity.exists_isPrimitiveRoot _ _
 
 open modularCyclotomicCharacter in
 theorem toZModPow_toFun (n : ℕ) :
@@ -348,7 +346,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   intro ε hε
   obtain ⟨k, hk', hk⟩ : ∃ k : ℕ, k ≠ 0 ∧ p ^ (-k : ℤ) < ε := by
     obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
-    exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.1.one_le]) hk⟩
+    exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.out.one_le]) hk⟩
   refine ⟨_, ⟨_, ⟨(K⟮ζ k⟯), adjoin.finiteDimensional ?_, rfl⟩, rfl⟩, ?_⟩
   · exact ((hζ k).isIntegral (Nat.pos_of_neZero _)).tower_top
   · intro σ hσ
@@ -362,4 +360,4 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
     rw [ZMod.val_one'', pow_one]
     · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
-    · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'
+    · exact (one_lt_pow₀ ‹Fact p.Prime›.out.one_lt hk').ne'

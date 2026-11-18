@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Conj
 public import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Data.Finset.Fin
+public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.Data.Fintype.Prod
@@ -17,7 +17,8 @@ public import Mathlib.Data.Int.Order.Units
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.NormNum.Ineq
-public import Mathlib.Data.Finset.Sigma
+
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 
 /-!
 # Sign of a permutation
@@ -26,7 +27,6 @@ The main definition of this file is `Equiv.Perm.sign`,
 associating a `ℤˣ` sign with a permutation.
 
 Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Finite.lean`
-
 -/
 
 @[expose] public section
@@ -93,8 +93,8 @@ def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
   a list of transpositions. -/
 def truncSwapFactors [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
-  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (swapFactorsAux l f (h _)))
-    (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
+  Quotient.recOnSubsingleton (@univ α _).val (fun l h => Trunc.mk (swapFactorsAux l f (h _)))
+    (show ∀ x, f x ≠ x → x ∈ (@univ α _).val from fun _ _ => mem_univ _)
 
 /-- An induction principle for permutations. If `P` holds for the identity permutation, and
 is preserved under composition with a non-trivial swap, then `P` holds for all permutations. -/
@@ -459,7 +459,7 @@ theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁
   have hl'₂ : (l.1.map ofSubtype).prod = f := by
     rw [l.1.prod_hom ofSubtype, l.2.1, ofSubtype_subtypePerm _ h₂]
   conv =>
-    congr
+    enter [1]
     rw [← l.2.1]
   simp_rw [← hl'₂]
   rw [sign_prod_list_swap l.2.2, sign_prod_list_swap hl', List.length_map]

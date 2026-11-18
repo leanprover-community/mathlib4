@@ -5,9 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Interval.Finset.Defs
+
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Preorder.Finite
 
 /-!
@@ -18,7 +19,6 @@ This module contains some results on atoms and simple lattices in the finite con
 ## Main results
 * `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
   are atomic resp. coatomic.
-
 -/
 
 public section

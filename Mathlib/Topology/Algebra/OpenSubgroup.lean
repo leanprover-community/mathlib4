@@ -72,7 +72,7 @@ theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
 
 @[to_additive]
 instance : SetLike (OpenSubgroup G) G where
-  coe U := U.1
+  coe U := U.toSubgroup
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G)
@@ -384,16 +384,22 @@ alias isClosed_of_discrete := isClosed_of_discreteTopology
 
 open Filter in
 @[to_additive]
-lemma tendsto_coe_cofinite_of_isDiscrete [T1Space G] (H : Subgroup G)
-    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  (H.isClosed_of_isDiscrete hH).tendsto_coe_cofinite_of_isDiscrete hH
+lemma tendsto_coe_cofinite_of_isDiscrete (H : Subgroup G) (hH : IsDiscrete (H : Set G)) :
+    Tendsto ((↑) : H → G) cofinite (cocompact _) := by
+  obtain ⟨U, hU, -, hUH⟩ := hH.exists_nhds_eq_one_of_image_mulRight_inter_nonempty
+  refine tendsto_cofinite_cocompact_iff.mpr fun K hK ↦ ?_
+  obtain ⟨t, ht⟩ := compact_covered_by_mul_left_translates hK ⟨1, mem_interior_iff_mem_nhds.mpr hU⟩
+  refine (t.finite_toSet.biUnion fun g _ ↦ Set.Subsingleton.finite (s := {h : H | g * h ∈ U})
+    fun ⟨x, hxH⟩ hx ⟨y, hyH⟩ hy ↦ Subtype.ext ?_).subset fun h hh ↦ by simpa using ht hh
+  exact (inv_mul_eq_one.mp <| hUH _ (mul_mem (inv_mem hyH) hxH)
+    ⟨g * x, ⟨g * y, hy, by simp [mul_assoc]⟩, hx⟩).symm
 
 @[to_additive (attr := deprecated (since := "2026-09-01"))]
 alias tendsto_coe_cofinite_of_discrete := tendsto_coe_cofinite_of_isDiscrete
 
 open Filter in
 @[to_additive]
-lemma _root_.MonoidHom.tendsto_coe_cofinite_of_isDiscrete [T1Space G]
+lemma _root_.MonoidHom.tendsto_coe_cofinite_of_isDiscrete
     {H : Type*} [Group H] {f : H →* G} (hf : Function.Injective f)
     (hf' : IsDiscrete (f.range : Set G)) :
     Tendsto f cofinite (cocompact _) := by
@@ -414,7 +420,8 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 @[to_additive]
 instance : Max (OpenSubgroup G) :=
-  ⟨fun U V ↦ ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.1 ≤ U.1 ⊔ V.1) U.isOpen⟩⟩
+  ⟨fun U V ↦ ⟨U ⊔ V,
+    Subgroup.isOpen_mono (le_sup_left : U.toSubgroup ≤ U.toSubgroup ⊔ V.toSubgroup) U.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
@@ -453,7 +460,6 @@ end Ideal
 
 This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
-
 -/
 
 section
@@ -491,7 +497,7 @@ theorem toSubgroup_injective : Function.Injective
 
 @[to_additive]
 instance : SetLike (OpenNormalSubgroup G) G where
-  coe U := U.1
+  coe U := U.toOpenSubgroup
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G)
@@ -521,7 +527,7 @@ instance instSemilatticeInfOpenNormalSubgroup : SemilatticeInf (OpenNormalSubgro
 @[to_additive]
 instance [SeparatelyContinuousMul G] : Max (OpenNormalSubgroup G) :=
   ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊔ V.toOpenSubgroup,
-    Subgroup.sup_normal U.toOpenSubgroup.1 V.toOpenSubgroup.1⟩⟩
+    Subgroup.sup_normal U.toOpenSubgroup.toSubgroup V.toOpenSubgroup.toSubgroup⟩⟩
 
 @[to_additive]
 instance instSemilatticeSupOpenNormalSubgroup [SeparatelyContinuousMul G] :

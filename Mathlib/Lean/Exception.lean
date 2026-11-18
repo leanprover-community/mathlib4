@@ -5,8 +5,9 @@ Authors: Edward Ayers
 -/
 module
 
-import Mathlib.Init
 public import Lean.Exception
+
+import Mathlib.Init
 
 /-!
 # Additional methods for working with `Exception`s
@@ -14,7 +15,6 @@ public import Lean.Exception
 This file contains two additional methods for working with `Exception`s
 * `successIfFail`, a generalisation of `fail_if_success` to arbitrary `MonadError`s
 * `isFailedToSynthesize`: check if an exception is of the "failed to synthesize" form
-
 -/
 
 public section

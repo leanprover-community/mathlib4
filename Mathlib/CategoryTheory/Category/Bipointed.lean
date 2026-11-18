@@ -89,7 +89,7 @@ instance (X Y : Bipointed) : FunLike (HomSubtype X Y) X Y where
   coe_injective _ _ := Subtype.ext
 
 instance hasForget : ConcreteCategory Bipointed HomSubtype where
-  hom f := ⟨f.1, ⟨f.2, f.3⟩⟩
+  hom f := ⟨f.toFun, ⟨f.map_fst, f.map_snd⟩⟩
   ofHom f := ⟨f.1, f.2.1, f.2.2⟩
 
 /-- Swaps the pointed elements of a bipointed type. `Prod.swap` as a functor. -/
@@ -155,14 +155,14 @@ def pointedToBipointedFst : Pointed.{u} ⥤ Bipointed where
   obj X := ⟨Option X, X.point, none⟩
   map f := ⟨Option.map f.toFun, congr_arg _ f.map_point, rfl⟩
   map_id _ := Bipointed.Hom.ext Option.map_id
-  map_comp f g := Bipointed.Hom.ext (Option.map_comp_map f.1 g.1).symm
+  map_comp f g := Bipointed.Hom.ext (Option.map_comp_map f.toFun g.toFun).symm
 
 /-- The functor from `Pointed` to `Bipointed` which adds a first point. -/
 def pointedToBipointedSnd : Pointed.{u} ⥤ Bipointed where
   obj X := ⟨Option X, none, X.point⟩
   map f := ⟨Option.map f.toFun, rfl, congr_arg _ f.map_point⟩
   map_id _ := Bipointed.Hom.ext Option.map_id
-  map_comp f g := Bipointed.Hom.ext (Option.map_comp_map f.1 g.1).symm
+  map_comp f g := Bipointed.Hom.ext (Option.map_comp_map f.toFun g.toFun).symm
 
 @[simp]
 theorem pointedToBipointedFst_comp_swap :

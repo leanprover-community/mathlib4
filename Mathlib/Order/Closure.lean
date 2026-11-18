@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.BooleanAlgebra
-public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Closure operators between preorders
@@ -72,7 +72,7 @@ namespace ClosureOperator
 
 @[macro_inline]
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
-  coe c := c.1
+  coe c := c.toOrderHom
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where

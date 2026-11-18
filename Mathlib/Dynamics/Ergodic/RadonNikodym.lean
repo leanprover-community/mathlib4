@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+
 import Mathlib.Topology.Order.CountableSeparating
 
 /-!
@@ -38,7 +39,7 @@ protected theorem singularPart [SigmaFinite ν] {f : X → X}
     (hfμ : MeasurePreserving f μ μ) (hfν : MeasurePreserving f ν ν) :
     MeasurePreserving f (μ.singularPart ν) (μ.singularPart ν) := by
   rcases (μ.mutuallySingular_singularPart ν).symm with ⟨s, hsm, hνs, hμs⟩
-  convert! hfμ.restrict_preimage hsm using 1
+  convert hfμ.restrict_preimage hsm using 1
   · refine singularPart_eq_restrict ?_ (hfν.preimage_null hνs)
     rw [← mem_ae_iff, ← Filter.eventuallyEqSet_univ,
       ae_eq_univ_iff_measure_eq (hfμ.measurable hsm).nullMeasurableSet]
@@ -86,7 +87,7 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
     measure_sdiff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
       (hfν.measure_preimage hsm.nullMeasurableSet) (by finiteness)
   suffices f ⁻¹' s =ᵐ[ν] s from this.mem_iff
-  suffices ν (f ⁻¹' s \ s) = 0 from (ae_le_set.mpr this).antisymm (ae_le_set.mpr <| hν_sdiff ▸ this)
+  suffices ν (f ⁻¹' s \ s) = 0 from (ae_subset.mpr this).antisymm (ae_subset.mpr <| hν_sdiff ▸ this)
   contrapose! hμ_sdiff with h₀
   apply ne_of_gt
   calc

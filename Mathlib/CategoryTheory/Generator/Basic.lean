@@ -5,10 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.EssentiallySmall
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
-public import Mathlib.CategoryTheory.Subobject.Lattice
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+public import Mathlib.CategoryTheory.Subobject.Lattice
+
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 
 /-!
 # Separating and detecting sets
@@ -52,7 +53,6 @@ We
 ## Examples
 
 See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.Sheaf`.
-
 -/
 
 @[expose] public section
@@ -110,7 +110,6 @@ lemma IsSeparating.of_equivalence
     simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
       H _ (P.strictMap_obj _ hZ) h']))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma IsCoseparating.of_equivalence
     (h : IsCoseparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsCoseparating (P.strictMap α.functor) := fun X Y f g H =>
@@ -396,7 +395,7 @@ theorem isSeparating_iff_epi
     IsSeparating P ↔ ∀ X : C, Epi (P.coproductFrom X) :=
   ⟨fun hP X ↦ hP.epi_coproductFrom X,
     fun hP ↦ IsSeparating.mk_of_exists_epi (fun X ↦ ⟨_, P.coproductFromFamily X,
-      fun i ↦ i.left.2, _, colimit.isColimit _, _, hP X⟩)⟩
+      fun i ↦ i.left.property, _, colimit.isColimit _, _, hP X⟩)⟩
 
 section
 
@@ -434,7 +433,7 @@ theorem isCoseparating_iff_mono
     IsCoseparating P ↔ ∀ X : C, Mono (P.productTo X) :=
   ⟨fun hP X ↦ hP.mono_productTo X,
     fun hP ↦ IsCoseparating.mk_of_exists_mono (fun X ↦ ⟨_, P.productToFamily X,
-      fun i ↦ i.right.2, _, limit.isLimit _, _, hP X⟩)⟩
+      fun i ↦ i.right.property, _, limit.isLimit _, _, hP X⟩)⟩
 
 end ObjectProperty
 
@@ -730,7 +729,7 @@ theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
 theorem isSeparator_coprod (G H : C) [HasBinaryCoproduct G H] :
     IsSeparator (G ⨿ H) ↔ ObjectProperty.IsSeparating (.pair G H) := by
   refine (isSeparator_iff_of_isColimit_cofan (coprodIsCoprod G H)).trans ?_
-  convert! Iff.rfl
+  convert Iff.rfl
   ext X
   simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor
@@ -776,7 +775,7 @@ theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
 theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
     IsCoseparator (G ⨯ H) ↔ ObjectProperty.IsCoseparating (.pair G H) := by
   refine (isCoseparator_iff_of_isLimit_fan (prodIsProd G H)).trans ?_
-  convert! Iff.rfl
+  convert Iff.rfl
   ext X
   simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor

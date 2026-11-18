@@ -45,7 +45,6 @@ In this file we show that, for certain choices of a commutative (semi)ring `A` a
   modules*][Roby-1963]
 
 * [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
-
 -/
 
 @[expose] public section
@@ -66,7 +65,9 @@ variable {I}
 theorem dpow_eq_of_mem {m : ℕ} {x : A} (hx : x ∈ I) : dpow I m x = inverse (m ! : A) * x ^ m := by
   simp [dpow, hx]
 
-theorem dpow_eq_of_not_mem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
+theorem dpow_eq_of_notMem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
+
+@[deprecated (since := "2026-09-28")] alias dpow_eq_of_not_mem := dpow_eq_of_notMem
 
 theorem dpow_null {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
 
@@ -171,7 +172,7 @@ theorem dpow_comp {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `(n-1)!` is invertible in `A` and `I^n = 0`, then `I` admits a divided power structure.
-  Proposition 1.2.7 of [B74], part (ii). -/
+  Proposition 1.2.7 of [Berthelot-1974], part (ii). -/
 noncomputable def dividedPowers {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A))
     (hnI : I ^ n = 0) : DividedPowers I where
   dpow            := dpow I

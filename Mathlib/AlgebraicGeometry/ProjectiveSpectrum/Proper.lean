@@ -6,9 +6,10 @@ Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Mi
 -/
 module
 
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 public import Mathlib.AlgebraicGeometry.ValuativeCriterion
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Properness of `Proj A`
@@ -17,7 +18,6 @@ We show that `Proj 𝒜` is proper over `Spec 𝒜₀`.
 
 ## Notes
 This contribution was created as part of the Durham Computational Algebraic Geometry Workshop
-
 -/
 
 public section
@@ -46,7 +46,7 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
     exact this.elim _ _
   have : n = j * (d + e) := by
     apply DirectSum.degree_eq_of_mem_mem 𝒜 hb'
-    · convert! SetLike.pow_mem_graded _ _ using 2
+    · convert SetLike.pow_mem_graded _ _ using 2
       · infer_instance
       · exact hx ▸ SetLike.mul_mem_graded hf hg
     · exact hx ▸ hfg
@@ -101,7 +101,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     (Algebra.TensorProduct.lift (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _))
       (fun _ _ ↦ .all _ _)).toRingHom
   have : Function.Surjective F := lift_awayMapₐ_awayMapₐ_surjective 𝒜 i.2.2 j.2.2 rfl i.1.2
-  convert!
+  convert
     IsClosedImmersion.spec_of_surjective
       (CommRingCat.ofHom (R := Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1) F) this using 1
   rw [← cancel_mono (pullbackSpecIso ..).inv]
@@ -155,11 +155,11 @@ instance [Algebra.FiniteType (𝒜 0) A] : QuasiCompact (Proj.toSpecZero 𝒜) :
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).1 := by
+  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).carrier := by
     rw [← Proj.opensRange_awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt]
     exact isCompact_range (Proj.awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt).continuous
   have := congr($(Proj.iSup_basicOpen_eq_top' 𝒜
-    (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx)).1)
+    (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx)).carrier)
   simp only [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.carrier_eq_coe,
     TopologicalSpace.Opens.coe_mk, TopologicalSpace.Opens.coe_top] at this
   rw [← isCompact_univ_iff, ← this]
@@ -216,10 +216,10 @@ theorem valuativeCriterion_existence_aux
   have ⟨i₀, hi1⟩ : ∃ a, ψ a = Kmax := by simpa using Finset.max'_mem (Finset.univ.image ψ)
   have hi₀ (j) : ψ j ≤ ψ i₀ := hi1 ▸ (Finset.univ.image ψ).le_max' (ψ j) (by simp)
   have hKmax : 0 < Kmax := by
-    refine zero_lt_iff.mpr fun hKmax ↦ ?_
-    have (i : _) : ψ i = 0 := le_zero_iff.mp (hKmax ▸ Finset.le_max' _ _ (by simp))
+    refine pos_of_ne_zero fun hKmax ↦ ?_
+    have (i : _) : ψ i = 0 := eq_zero_of_nonpos (hKmax ▸ Finset.le_max' _ _ (by simp))
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
-    have : φ 1 = 0 := by convert! (this j).1; ext; simp
+    have : φ 1 = 0 := by convert (this j).1; ext; simp
     simp only [map_one, one_ne_zero] at this
   let := (awayMap 𝒜 (f := x j) (hxdi i₀) rfl).toAlgebra
   have := Away.isLocalization_mul (hxdi j) (hxdi i₀) rfl (hdi _).ne'
@@ -248,7 +248,7 @@ theorem valuativeCriterion_existence_aux
     obtain ⟨a, ai, hai, rfl⟩ := h
     simp only [smul_eq_mul] at hai
     have H : (∏ i, x i ^ ai i) * x i₀ ^ (a * (d j - 1)) ∈ 𝒜 ((a * d i₀) • d j) := by
-      convert!
+      convert
         SetLike.mul_mem_graded (SetLike.prod_pow_mem_graded 𝒜 d x ai fun _ _ ↦ hxdi _)
           (SetLike.pow_mem_graded (a * (d j - 1)) (hxdi i₀)) using 2
       simp only [smul_eq_mul, hai]
@@ -257,7 +257,7 @@ theorem valuativeCriterion_existence_aux
       · simp only [add_tsub_cancel_right]; ring
     suffices valuation O K (φ (Away.mk 𝒜 (hxdi j) _ _ H) /
           φ (Away.isLocalizationElem (hxdi j) (hxdi i₀)) ^ a) ≤ 1 by
-      convert! this
+      convert this
       rw [eq_div_iff (pow_ne_zero _ hunit.ne_zero), ← hφ'1, ← hφ'1, RingHom.comp_apply,
         ← map_pow, ← map_mul]
       congr
@@ -306,11 +306,10 @@ theorem valuativeCriterion_existence_aux
           · cases (hdi j).ne' h
           · simp; ring_nf
       _ = valuation O K ((φ _) ^ a) ^ (d j * ∏ i, d i) := by
-          · simp only [ψ, ← map_pow]
-            congr 2
-            rw [← pow_mul, ← pow_mul, ← mul_assoc, ← mul_assoc, ← mul_assoc,
-              Finset.univ.prod_erase_mul d (h := Finset.mem_univ _),
-              mul_comm _ a, mul_right_comm]
+          simp only [ψ, ← map_pow]
+          congr 2
+          rw [← pow_mul, ← pow_mul, ← mul_assoc, ← mul_assoc, ← mul_assoc,
+            Finset.univ.prod_erase_mul d (h := Finset.mem_univ _), mul_comm _ a, mul_right_comm]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01MF]
@@ -347,7 +346,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     exact congr_arg Subtype.val (e.apply_symm_apply _)
   refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ (hxd _ i₀.2) (hd _ _).bot_lt, ?_, ?_⟩⟩
   · rw [← Spec.map_comp_assoc]
-    convert! IsOpenImmersion.lift_fac _ _ this using 1
+    convert IsOpenImmersion.lift_fac _ _ this using 1
     change _ = φ ≫ _
     rw [← Spec.map_preimage φ, ← CommRingCat.ofHom_hom (Spec.preimage φ), ← hφ,
       ← CommRingCat.ofHom_comp]

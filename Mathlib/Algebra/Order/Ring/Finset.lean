@@ -5,9 +5,10 @@ Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 -/
 module
 
-import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Nat.Cast.Order.Ring
+
+import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # `Finset.sup` and ring operations

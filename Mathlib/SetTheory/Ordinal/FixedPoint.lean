@@ -97,7 +97,7 @@ theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : �
 
 theorem nfpFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily f a) = nfpFamily f a := by
-  rw [nfpFamily, H.map_iSup bddAbove_of_small]
+  rw [nfpFamily, H.leftOrdContinuous.map_ciSup bddAbove_of_small]
   apply le_antisymm <;> refine Ordinal.iSup_le fun l => ?_
   · exact Ordinal.le_iSup _ (i::l)
   · exact H.strictMono.le_apply.trans (Ordinal.le_iSup _ _)
@@ -176,7 +176,7 @@ theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     exact nfpFamily_fp H _
   | limit o l IH =>
     have := l.nonempty_Iio.to_subtype
-    rw [derivFamily_limit _ l, H.map_iSup bddAbove_of_small]
+    rw [derivFamily_limit _ l, H.leftOrdContinuous.map_ciSup bddAbove_of_small]
     refine eq_of_forall_ge_iff fun c => ?_
     rw [Ordinal.iSup_le_iff, Ordinal.iSup_le_iff]
     refine forall_congr' fun a ↦ ?_
@@ -316,7 +316,7 @@ theorem nfp_eq_self {a} (h : f a = a) : nfp f a = a :=
 /-- The fixed point lemma for normal functions: any normal function has an unbounded set of
 fixed points. -/
 theorem not_bddAbove_fp (H : IsNormal f) : ¬ BddAbove (Function.fixedPoints f) := by
-  convert! not_bddAbove_fp_family fun _ : Unit => H
+  convert not_bddAbove_fp_family fun _ : Unit => H
   exact (Set.iInter_const _).symm
 
 /-- The derivative of a normal function `f` is the sequence of fixed points of `f`.

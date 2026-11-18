@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
 /-!
-
 # Separable polynomials
 
 We define a polynomial to be separable if it is coprime with its derivative. We prove basic
@@ -22,7 +21,6 @@ properties about separable polynomials here.
   over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
   over `K`.
-
 -/
 
 @[expose] public section
@@ -155,7 +153,7 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
       (q * (derivative q * p + derivative q * p + q * derivative p)) := by
     simp only [← mul_assoc, mul_add]
     dsimp only [Separable] at hp
-    convert! hp using 1
+    convert hp using 1
     rw [derivative_mul, derivative_mul]
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
@@ -403,7 +401,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   · rw [isUnit_iff] at h
     rcases h with ⟨r, hr, rfl⟩
     simp_rw [expand_C] at hf
-    exact absurd (isUnit_C.2 hr) hf.1
+    exact absurd (isUnit_C.2 hr) hf.not_isUnit
   · rw [add_zero, pow_zero, expand_one]
     constructor <;> rfl
 

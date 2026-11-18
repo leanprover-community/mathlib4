@@ -214,6 +214,12 @@ end Pi
 
 @[to_additive]
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
+  eq_of_pow_eq_pow_of_commute n hn a b h hab := by
+    rw [commute_iff_eq, Subtype.ext_iff] at *
+    exact eq_of_pow_eq_pow_of_commute hn h hab
+
+@[to_additive]
+instance [HasUniqueRoots G] : HasUniqueRoots H where
   pow_left_injective n hn a b := by
     have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
     dsimp at *
@@ -700,6 +706,14 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
 
+/-- In a commutative group, the normal closure of a set is its subgroup closure. -/
+@[to_additive (attr := simp)
+/-- In a commutative additive group, the normal closure of a set is its additive subgroup
+closure. -/]
+theorem normalClosure_eq_closure {G : Type*} [CommGroup G] (s : Set G) :
+    normalClosure s = closure s :=
+  le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure
+
 /-- The normal closure of an empty set is the trivial subgroup. -/
 @[to_additive (attr := simp)]
 lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
@@ -1095,8 +1109,8 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
     (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : Commute x y := by
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     change x * y = y * x
-    · rw [mul_assoc, mul_eq_one_iff_eq_inv] at this
-      simpa
+    rw [mul_assoc, mul_eq_one_iff_eq_inv] at this
+    simpa
   apply hdis.le_bot
   constructor
   · suffices x * (y * x⁻¹ * y⁻¹) ∈ H₁ by simpa [mul_assoc]

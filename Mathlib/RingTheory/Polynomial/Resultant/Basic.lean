@@ -184,7 +184,7 @@ theorem resultant_zero_zero : resultant (0 : R[X]) 0 m n = 0 ^ (m + n) := by sim
 private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * monomial k r) m n = resultant f g m n := by
   obtain rfl | hm := eq_or_ne m 0
-  · obtain ⟨q, rfl⟩ := natDegree_eq_zero.mp (le_zero_iff.mp hf); simp
+  · obtain ⟨q, rfl⟩ := natDegree_eq_zero.mp hf.eq_zero; simp
   let M₁ := f.sylvester (g + f * monomial k r) m n
   let M₂ := f.sylvester g m n
   let M (i : ℕ) : Matrix (Fin (m + n)) (Fin (m + n)) R :=
@@ -229,7 +229,6 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
   ext i j
   induction j using Fin.addCases <;> simp [M, sylvester, M₁, M₂]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g + fp) = Res(f, g)` if `deg f + deg p ≤ deg g`. -/
 lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * p) m n = resultant f g m n := by
@@ -410,7 +409,7 @@ lemma resultant_eq_prod_roots_sub
       simp [hf'.natDegree_eq_card_roots, hg'.natDegree_eq_card_roots]
     · simp
   generalize hN : f.natDegree + g.natDegree = N
-  induction N using Nat.strong_induction_on generalizing K with | h n IH =>
+  induction N using Nat.strong_induction_on generalizing K with | ind n IH
   by_cases hr : g ∣ f
   · obtain ⟨r, rfl⟩ := hr
     have hr' : r ≠ 0 := by simpa [hg.ne_zero] using hf.ne_zero
@@ -658,17 +657,17 @@ lemma resultant_prod_right {ι : Type*} (s : Finset ι) (f : R[X]) (g : ι → R
 @[simp]
 lemma resultant_pow_left (hf : f.leadingCoeff ^ m ≠ 0) (hn : g.natDegree ≤ n) :
     (f ^ m).resultant g (f ^ m).natDegree n = (f.resultant g f.natDegree n) ^ m := by
-  convert! resultant_prod_left (Finset.range m) (fun _ ↦ f) g n (by simpa) hn <;> simp
+  convert resultant_prod_left (Finset.range m) (fun _ ↦ f) g n (by simpa) hn <;> simp
 
 @[simp]
 lemma resultant_pow_right (hm : f.natDegree ≤ m) (hg : g.leadingCoeff ^ n ≠ 0) :
     f.resultant (g ^ n) m (g ^ n).natDegree = (f.resultant g m g.natDegree) ^ n := by
-  convert! resultant_prod_right (Finset.range n) f (fun _ ↦ g) m hm (by simpa) <;> simp
+  convert resultant_prod_right (Finset.range n) f (fun _ ↦ g) m hm (by simpa) <;> simp
 
 lemma resultant_X_sub_C_pow_left (r : R) (g : R[X]) (m n : ℕ) (hn : g.natDegree ≤ n) :
     ((X - C r) ^ m).resultant g m n = eval r g ^ m := by
   nontriviality R
-  convert! resultant_pow_left _ _ _ _ _ _ <;> simp [natDegree_pow', hn]
+  convert resultant_pow_left _ _ _ _ _ _ <;> simp [natDegree_pow', hn]
 
 lemma resultant_X_sub_C_pow_right (f : R[X]) (r : R) (m n : ℕ) (hm : f.natDegree ≤ m) :
     f.resultant ((X - C r) ^ n) m n = (-1) ^ (m * n) * eval r f ^ n := by
@@ -676,11 +675,11 @@ lemma resultant_X_sub_C_pow_right (f : R[X]) (r : R) (m n : ℕ) (hm : f.natDegr
 
 lemma resultant_X_pow_left (g : R[X]) (m n : ℕ) (hn : g.natDegree ≤ n) :
     (X ^ m).resultant g m n = g.coeff 0 ^ m := by
-  convert! resultant_X_sub_C_pow_left 0 g m n hn <;> simp [coeff_zero_eq_eval_zero]
+  convert resultant_X_sub_C_pow_left 0 g m n hn <;> simp [coeff_zero_eq_eval_zero]
 
 lemma resultant_X_pow_right (f : R[X]) (m n : ℕ) (hm : f.natDegree ≤ m) :
     f.resultant (X ^ n) m n = (-1) ^ (m * n) * f.coeff 0 ^ n := by
-  convert! resultant_X_sub_C_pow_right f 0 m n hm <;> simp [coeff_zero_eq_eval_zero]
+  convert resultant_X_sub_C_pow_right f 0 m n hm <;> simp [coeff_zero_eq_eval_zero]
 
 nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     resultant (f.scaleRoots r) (g.scaleRoots r) =
@@ -893,8 +892,9 @@ lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
   · obtain rfl := eq_one_of_monic_natDegree_zero hf hf0; simp [isCoprime_one_left]
   refine ⟨fun H ↦ ?_, ?_⟩
   · obtain ⟨p, q, hp, hq, e⟩ := exists_mul_add_mul_eq_C_resultant f g le_rfl le_rfl (by simp [hf0])
-    exact ⟨C (H.unit⁻¹).1 * p, C (H.unit⁻¹).1 * q, by simp only [mul_assoc, ← mul_add, mul_comm p,
-      mul_comm q, e, ← map_mul, IsUnit.val_inv_mul, map_one]⟩
+    exact ⟨C (H.unit⁻¹).val * p, C (H.unit⁻¹).val * q, by
+      simp only [mul_assoc, ← mul_add, mul_comm p, mul_comm q, e, ← map_mul, IsUnit.val_inv_mul,
+        map_one]⟩
   · intro ⟨a, b, e⟩
     suffices 1 = f.resultant b * f.resultant g from isUnit_iff_exists_inv'.mpr ⟨_, this.symm⟩
     have := resultant_mul_right f b g _ le_rfl
@@ -982,7 +982,7 @@ lemma resultant_deriv {f : R[X]} (hf : 0 < f.degree) :
   rw [resultant_comm, resultant, ← sylvesterDeriv_updateRow f hf, Matrix.det_updateRow_smul,
     Matrix.updateRow_eq_self, discr, mul_comm f.natDegree]
   ring_nf
-  rw [Nat.div_mul_cancel (by convert! Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; lia)]
+  rw [Nat.div_mul_cancel (by convert Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; lia)]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree = 3) :

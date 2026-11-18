@@ -5,13 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-import Batteries.Data.Fin.Lemmas
 public import Mathlib.Order.Fin.Basic
+
+import Batteries.Data.Fin.Lemmas
 import Mathlib.Order.MinMax
 
 /-!
 # Lemmas about `Fin.clamp`
-
 -/
 
 namespace Fin

@@ -327,7 +327,7 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
     [IsLocalization.Away x S₁] [IsLocalization.Away y S₂]
     [IsLocalization.Away (algebraMap R S₂ x) T] :
     IsLocalization.Away (algebraMap R S₁ y) T := by
-  convert! IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
+  convert IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
   simp
 
@@ -579,8 +579,10 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
     replace hts := Set.insert_subset a.2 hts
     classical
     have ⟨r', eq, _⟩ := this ({a.1} ∪ t) (fun a ↦ f ⟨a, hts a.2⟩) (fun a b ↦
-      h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) (Ideal.span_mono (fun _ ↦ .inr) mem) ⟨{a.1} ∪ t, by simp⟩
-    exact (congr_arg _ (uniq _ fun b ↦ eq ⟨b, .inr b.2⟩).symm).trans (eq ⟨a, .inl rfl⟩)
+      h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) (Ideal.span_mono (fun _ h ↦ Set.mem_union_right _ h) mem)
+      ⟨{a.1} ∪ t, by simp⟩
+    exact (congr_arg _ (uniq _ fun b ↦ eq ⟨b, Set.mem_union_right _ b.2⟩).symm).trans
+      (eq ⟨a, Set.mem_union_left _ rfl⟩)
   have span_eq := (Ideal.eq_top_iff_one _).mpr mem
   refine existsUnique_of_exists_of_unique ?_ fun x y hx hy ↦
     algebraMap_injective_of_span_eq_top s span_eq (funext fun a ↦ (hx a).trans (hy a).symm)

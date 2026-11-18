@@ -419,7 +419,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype Gal(K/k)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert! Even.zero
+  · convert Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
@@ -539,18 +539,19 @@ lemma IsUnramifiedAtInfinitePlaces.trans
     [h₁ : IsUnramifiedAtInfinitePlaces k K] [h₂ : IsUnramifiedAtInfinitePlaces K F] :
     IsUnramifiedAtInfinitePlaces k F where
   isUnramified w :=
-    Eq.trans (IsScalarTower.algebraMap_eq k K F ▸ h₁.1 (w.comap (algebraMap _ _))) (h₂.1 w)
+    Eq.trans (IsScalarTower.algebraMap_eq k K F ▸ h₁.isUnramified (w.comap (algebraMap _ _)))
+      (h₂.isUnramified w)
 
 lemma IsUnramifiedAtInfinitePlaces.top [h : IsUnramifiedAtInfinitePlaces k F] :
     IsUnramifiedAtInfinitePlaces K F where
-  isUnramified w := (h.1 w).of_restrictScalars K
+  isUnramified w := (h.isUnramified w).of_restrictScalars K
 
 lemma IsUnramifiedAtInfinitePlaces.bot [h₁ : IsUnramifiedAtInfinitePlaces k F]
     [Algebra.IsAlgebraic K F] :
     IsUnramifiedAtInfinitePlaces k K where
   isUnramified w := by
     obtain ⟨w, rfl⟩ := InfinitePlace.comap_surjective (K := F) w
-    exact (h₁.1 w).comap K
+    exact (h₁.isUnramified w).comap K
 
 variable {K}
 
@@ -763,7 +764,7 @@ theorem unramifiedPlacesOver_ncard :
 open Finset in
 /-- The degree of `L` over `K` is equal to the number of unramified places over `v` plus twice the
 number of ramified places over `v`. -/
-theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L] :
+theorem unramifiedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L] :
     (unramifiedPlacesOver L v).ncard + 2 * (ramifiedPlacesOver L v).ncard = Module.finrank K L := by
   classical
   let : Algebra K ℂ := v.embedding.toAlgebra
@@ -774,6 +775,9 @@ theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L]
     AlgHom.toRingHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
   simp only [Set.Finite.toFinset_ofPred, coe_filter, mem_univ, true_and, Set.mem_ofPred_eq] at hψ
   exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
+
+@[deprecated (since := "2026-10-05")]
+alias unramifedPlacesOver_ncard_add_eq_finrank := unramifiedPlacesOver_ncard_add_eq_finrank
 
 end placesOver
 

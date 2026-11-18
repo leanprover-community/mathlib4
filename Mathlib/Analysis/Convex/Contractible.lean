@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Homotopy.Contractible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A convex set is contractible
 

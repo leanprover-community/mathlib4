@@ -33,7 +33,7 @@ Define the interior and boundary of a manifold.
   sends it to the interior of the model; that is, the notion of interior is independent of choices
   of charts
 - `ModelWithCorners.isOpen_interior`, `ModelWithCorners.isClosed_boundary`: the interior is open and
-  and the boundary is closed. This is currently only proven for C¹ manifolds.
+  the boundary is closed. This is currently only proven for C¹ manifolds.
 
 - `MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv`: differentiable maps with surjective
   differential send interior points to interior points
@@ -72,7 +72,6 @@ manifold, interior, boundary
   manifolds; this will require e.g. the homology of spheres.
 - submersions send interior points to interior points. This should be an easy consequence of
   `MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv` once submersions are defined.
-
 -/
 
 @[expose] public section
@@ -455,7 +454,8 @@ lemma isInteriorPoint_iff_isInteriorPoint_val {u : Opens M} {x : u} :
     I.IsInteriorPoint x ↔ I.IsInteriorPoint x.1 := by
   simpa [I.isInteriorPoint_iff, u.chartAt_eq,
     OpenPartialHomeomorph.subtypeRestr, mem_interior_iff_mem_nhds] using!
-    fun _ _ ↦ (chartAt H x.1).extend_preimage_mem_nhds (mem_chart_source H x.1) (u.2.mem_nhds x.2)
+    fun _ _ ↦ (chartAt H x.1).extend_preimage_mem_nhds (mem_chart_source H x.1)
+      (u.is_open'.mem_nhds x.2)
 
 /-- For `u : Opens M`, `x : u` is a boundary point iff `x.val : M` is. -/
 lemma isBoundaryPoint_iff_isBoundaryPoint_val {u : Opens M} {x : u} :

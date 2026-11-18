@@ -5,15 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 
 /-!
 # Consequences of model category axioms
 
 In this file, we deduce basic properties of fibrations, cofibrations,
 and weak equivalences from the axioms of model categories.
-
 -/
 
 public section

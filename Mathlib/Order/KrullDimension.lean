@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
-import Mathlib.Tactic.FinCases
 
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Tactic.FinCases
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -98,6 +98,7 @@ The definition of `coheight` is via the `height` in the dual order, in order to 
 theorems between `height` and `coheight`. See `coheight_eq` for the definition with a
 series ordered by `<` and beginning with `a`.
 -/
+@[to_dual existing]
 noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ := height (α := αᵒᵈ) a
 
 end definitions
@@ -199,13 +200,13 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
       · apply p.step ⟨p.length - 1, by lia⟩
-      · convert! hlast
+      · convert hlast
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; lia)
     suffices p'.length ≤ height x by
       simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.natCast_sub,
         Nat.cast_one, p'] at this
-      convert! this
+      convert this
       norm_cast
       lia
     refine le_iSup₂_of_le p' ?_ le_rfl
@@ -431,6 +432,7 @@ lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ ∀ y < x, heigh
   · simp
   · norm_cast
 
+@[to_dual existing]
 lemma coheight_le_coe_iff {x : α} {n : ℕ} : coheight x ≤ n ↔ ∀ y > x, coheight y < n :=
   height_le_coe_iff (α := αᵒᵈ)
 
@@ -623,9 +625,9 @@ lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
     fun i ↦ by obtain rfl := Subsingleton.elim i 0; simpa⟩).not_gt (by simp), ?_⟩
-  · rintro H ⟨_ | n, l, h⟩
-    · simp
-    · cases H (l 0) (l 1) (h 0)
+  rintro H ⟨_ | n, l, h⟩
+  · simp
+  · cases H (l 0) (l 1) (h 0)
 
 lemma krullDim_nonpos_iff_forall_isMin : krullDim α ≤ 0 ↔ ∀ x : α, IsMin x := by
   simp only [krullDim_nonpos_iff_forall_isMax, IsMax, IsMin]
@@ -771,6 +773,7 @@ lemma height_le_krullDim (a : α) : height a ≤ krullDim α := by
   simp only [WithBot.coe_le_coe]
   exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
 
+@[to_dual existing]
 lemma coheight_le_krullDim (a : α) : coheight a ≤ krullDim α := by
   simpa using! height_le_krullDim (α := αᵒᵈ) a
 
@@ -856,6 +859,7 @@ The Krull dimension is the supremum of the elements' coheights.
 If `α` is `Nonempty`, then `krullDim_eq_iSup_coheight_of_nonempty`, with the coercion from
 `ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
 -/
+@[to_dual existing krullDim_eq_iSup_height]
 lemma krullDim_eq_iSup_coheight : krullDim α = ⨆ (a : α), ↑(coheight a) := by
   cases isEmpty_or_nonempty α with
   | inl h => rw [krullDim_eq_bot, ciSup_of_empty]
@@ -932,6 +936,37 @@ lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [Krul
   ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
 
 instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
+
+@[simp]
+lemma krullDimLE_orderDual_iff {n : ℕ} {α : Type*} [Preorder α] :
+    Order.KrullDimLE n αᵒᵈ ↔ Order.KrullDimLE n α := by
+  rw [Order.krullDimLE_iff, Order.krullDimLE_iff, krullDim_orderDual]
+
+instance {n : ℕ} {α : Type*} [Preorder α] [Order.KrullDimLE n α] :
+    Order.KrullDimLE n αᵒᵈ := krullDimLE_orderDual_iff.mpr inferInstance
+
+@[to_dual]
+lemma krullDimLE_iff_le_coheight_imp_isMin {X : Type*} [Preorder X] {n : ℕ} :
+    Order.KrullDimLE n X ↔ ∀ x : X, n ≤ coheight x → IsMin x := by
+  rw [Order.krullDimLE_iff]
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
+  · rw [isMin_iff_forall_not_lt]
+    intro y hyx
+    have hy : coheight y ≤ n := mod_cast (coheight_le_krullDim y).trans h
+    exact absurd hx (coheight_le_coe_iff.mp hy x hyx).not_ge
+  · rw [krullDim_eq_iSup_coheight, iSup_le_iff]
+    intro x
+    have : coheight x ≤ n := by
+      rw [coheight_le_coe_iff]
+      intro y hxy
+      contrapose! hxy
+      exact (h y hxy).not_lt
+    exact_mod_cast this
+
+@[to_dual]
+lemma isMin_of_le_coheight_of_krullDimLE {X : Type*} [Preorder X] {n : ℕ}
+    [Order.KrullDimLE n X] {x : X} (hx : n ≤ coheight x) : IsMin x :=
+  krullDimLE_iff_le_coheight_imp_isMin.mp ‹_› x hx
 
 end typeclass
 
@@ -1113,7 +1148,7 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
     Order.height x ≤ (m + 1) * Order.height (f x) + m := by
   generalize h' : Order.height (f x) = n
   cases n with | top => simp | coe n =>
-    induction n using Nat.strong_induction_on generalizing x with | h n ih =>
+    induction n using Nat.strong_induction_on generalizing x with | ind n ih
     refine height_le_iff.mpr fun p hp ↦ le_of_not_gt fun h_len ↦ ?_
     let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
     suffices h'' : f (p i) < f x by

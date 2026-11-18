@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Update a function on a set of values
 

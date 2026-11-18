@@ -9,11 +9,11 @@ public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
 public import Mathlib.CategoryTheory.Comma.Over.StrictInitial
+
 import Mathlib.CategoryTheory.Sites.Subcanonical
 import Mathlib.CategoryTheory.Sites.SubcanonicalOver
 
 /-!
-
 # The pro-étale site
 
 In this file we define the big and small pro-étale site. The big pro-étale site is
@@ -29,7 +29,6 @@ over `S` and equip it with the induced topology.
 ## References
 
 - [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
-
 -/
 
 @[expose] public section
@@ -181,7 +180,7 @@ lemma bot_mem_topology (X : S.ProEt) [IsEmpty X.left] : ⊥ ∈ topology S X := 
 lemma topology_eq_top_of_isEmpty [IsEmpty S] : topology S = ⊤ := by
   rw [GrothendieckTopology.eq_top_iff]
   intro X
-  have : IsEmpty X.left := X.hom.base.1.1.isEmpty (β := S)
+  have : IsEmpty X.left := X.hom.base.hom'.toFun.isEmpty (β := S)
   exact bot_mem_topology _
 
 end ProEt

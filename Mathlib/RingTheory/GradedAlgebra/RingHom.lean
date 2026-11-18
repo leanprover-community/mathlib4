@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Data.FunLike.Graded
+public import Mathlib.Algebra.GradedFunLike
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!

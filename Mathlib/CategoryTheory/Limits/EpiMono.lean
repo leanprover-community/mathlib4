@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 /-!
@@ -24,8 +25,6 @@ X ⟶ Y
 ```
 
 is a pullback square.
-
-
 -/
 
 public section

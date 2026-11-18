@@ -6,12 +6,11 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Actions
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Order.Setoid.Basic
 
 /-!
-
 # Sets invariant to a `MulAction`
 
 In this file we define `SubMulAction R M`; a subset of a `MulAction R M` which is closed with
@@ -64,7 +63,8 @@ class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetL
 
 attribute [to_additive] SMulMemClass
 
-attribute [aesop 90% (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .]
+  SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]

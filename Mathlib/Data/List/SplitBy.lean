@@ -6,6 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Data.List.Chain
+
 import Mathlib.Data.List.Flatten
 
 /-!

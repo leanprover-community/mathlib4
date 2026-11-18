@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids in a group with zero
 -/

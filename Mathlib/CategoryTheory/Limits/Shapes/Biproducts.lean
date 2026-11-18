@@ -381,7 +381,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
     let ⟨c, hc⟩ := h
     HasBiproduct.mk <| by
       simpa only [Function.comp_def, e.symm_apply_apply] using
-        LimitBicone.mk (c.whisker e) ((c.whiskerIsBilimitIff _).2 hc)⟩
+        LimitBicone.mk (c.whisker e) ((c.whiskerIsBilimitIff _).invFun hc)⟩
 
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :
     HasBiproductsOfShape J C := by
@@ -446,7 +446,7 @@ This means you may not be able to `simp` using this lemma unless you `open scope
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
-  convert! (biproduct.bicone f).ι_π j j'
+  convert (biproduct.bicone f).ι_π j j'
 
 @[reassoc] -- Not `simp` because `simp` can prove this
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :

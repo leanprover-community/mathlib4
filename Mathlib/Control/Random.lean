@@ -27,7 +27,6 @@ defining objects that can be created randomly.
 ## References
 
 * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
-
 -/
 
 @[expose] public section

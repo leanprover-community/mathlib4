@@ -240,27 +240,23 @@ class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 
-/-- `IsIso.mk'` is the dual of `IsIso.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-theorem IsIso.mk' {f : Y ⟶ X} (out : ∃ inv : X ⟶ Y, inv ≫ f = 𝟙 X ∧ f ≫ inv = 𝟙 Y) : IsIso f where
-  out := by simp_all only [and_comm]
+to_dual_for IsIso.mk := ⟨by simpa only [and_comm] using out⟩
 
 /-- The inverse of a morphism `f` when we have `[IsIso f]`. -/
 @[to_dual self, no_expose]
 noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
-  Classical.choose I.1
+  Classical.choose I.out
 
 attribute [to_dual self] inv.congr_simp
 
 namespace IsIso
 
 theorem hom_inv_id (f : X ⟶ Y) [I : IsIso f] : f ≫ inv f = 𝟙 X :=
-  (Classical.choose_spec I.1).left
+  (Classical.choose_spec I.out).left
 
 @[to_dual existing (attr := reassoc (attr := simp), map, grind =) hom_inv_id]
 theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
-  (Classical.choose_spec I.1).right
+  (Classical.choose_spec I.out).right
 
 attribute [reassoc] hom_inv_id_map inv_hom_id_map
 

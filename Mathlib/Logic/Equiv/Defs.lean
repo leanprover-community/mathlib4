@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.FunLike.Equiv
+public import Mathlib.Basic.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
 
@@ -815,7 +815,7 @@ protected theorem forall₃_congr'
   (Equiv.forall₃_congr eα.symm eβ.symm eγ.symm h.symm).symm
 
 /-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
-@[simps (attr := grind =) apply]
+@[implicit_reducible, simps (attr := grind =) apply]
 noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
   toFun := f
   invFun := surjInv hf.surjective

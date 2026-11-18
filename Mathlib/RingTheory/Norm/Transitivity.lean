@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -18,7 +18,6 @@ about the roots of the minimal polynomial of `s` over `R`.
 ## References
 
 * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
-
 -/
 
 @[expose] public section
@@ -93,7 +92,7 @@ lemma det_mul_corner_pow :
     pow_one, det_one, smul_eq_mul, mul_one]
   -- `Decidable (P = Q)` diamond induced by `Prop.linearOrder`, which is classical, when `P` and `Q`
   -- are themselves decidable.
-  convert! rfl
+  convert rfl
 
 /-- A matrix with X added to the corner. -/
 noncomputable def cornerAddX : Matrix m m S[X] :=

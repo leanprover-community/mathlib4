@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
-import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 public import Mathlib.Algebra.Homology.Embedding.Splitting
+
+import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
+import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 
 /-!
 # Homotopy equivalences between chain complexes
@@ -16,7 +17,6 @@ If `0 ⟶ K₁ ⟶ K₂ ⟶ K₃ ⟶ 0` is a degreewise short exact sequence of
 chain complexes, we show that `K₁ ⟶ K₂` is a homotopy equivalence
 iff `K₃` is contractible, and `K₂ ⟶ K₃` is a homotopy equivalence
 iff `K₁`.
-
 -/
 
 @[expose] public section
@@ -28,7 +28,6 @@ namespace ChainComplex
 variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
   (S : ShortComplex (ChainComplex C ℕ))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homotopyEquivalences_shortComplexF_iff_of_degreewiseSplit
     (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
     homotopyEquivalences _ _ S.f ↔ Nonempty (Homotopy (𝟙 S.X₃) 0) := by
@@ -42,7 +41,6 @@ lemma homotopyEquivalences_shortComplexF_iff_of_degreewiseSplit
   simp
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homotopyEquivalences_shortComplexG_iff_of_degreewiseSplit
     (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
     homotopyEquivalences _ _ S.g ↔ Nonempty (Homotopy (𝟙 S.X₁) 0) := by

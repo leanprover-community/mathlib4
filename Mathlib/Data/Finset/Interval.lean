@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Yury Kudryashov
 -/
 module
 
-import Mathlib.Data.Finset.Grade
 public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Order.Interval.Finset.Basic
+
+import Mathlib.Data.Finset.Grade
 
 /-!
 # Intervals of finsets as finsets

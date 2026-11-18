@@ -6,16 +6,14 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
-public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.CancelIso
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # Monoidal opposites
 
 We write `Cᵐᵒᵖ` for the monoidal opposite of a monoidal category `C`.
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -339,6 +337,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps!] def MonoidalOpposite.mopMopEquivalence : Cᴹᵒᵖᴹᵒᵖ ≌ C :=
   .trans (MonoidalOpposite.unmopEquiv Cᴹᵒᵖ) (MonoidalOpposite.unmopEquiv C)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance MonoidalOpposite.mopMopEquivalenceFunctorMonoidal :
     (MonoidalOpposite.mopMopEquivalence C).functor.Monoidal where
@@ -364,6 +363,7 @@ instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
   μ_δ X Y := Category.comp_id _
   δ_μ X Y := Category.comp_id _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 instance : (mopMopEquivalence C).IsMonoidal where
   leftAdjoint_ε := by

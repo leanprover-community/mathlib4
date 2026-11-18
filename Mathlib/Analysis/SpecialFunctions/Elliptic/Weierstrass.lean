@@ -6,16 +6,16 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Summable
-import Mathlib.Analysis.Analytic.Binomial
-import Mathlib.Analysis.Complex.Liouville
-import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+
+import Mathlib.Analysis.Analytic.Binomial
+import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
-
 # Weierstrass `℘` functions
 
 ## Main definitions and results
@@ -43,7 +43,6 @@ import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 ## tags
 
 Weierstrass p-functions, Weierstrass p functions
-
 -/
 
 @[expose] public section
@@ -125,9 +124,9 @@ lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
     (inferInstanceAs (DiscreteTopology L.lattice))
 
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
-  convert!
+  convert
     L.isClosed_lattice.isClosedMap_subtype_val _ (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
-  convert! Set.image_preimage_eq_inter_range.symm using 1
+  convert Set.image_preimage_eq_inter_range.symm using 1
   simpa
 
 lemma isOpen_compl_lattice_sdiff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
@@ -302,7 +301,7 @@ lemma hasSum_weierstrassP (z : ℂ) :
 lemma differentiableOn_weierstrassP :
     DifferentiableOn ℂ ℘[L] L.latticeᶜ := by
   rw [← L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  convert! L.differentiableOn_weierstrassPExcept _
+  convert L.differentiableOn_weierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
@@ -553,7 +552,7 @@ lemma hasSum_derivWeierstrassP (z : ℂ) :
 lemma differentiableOn_derivWeierstrassP :
     DifferentiableOn ℂ ℘'[L] L.latticeᶜ := by
   rw [← L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  convert! L.differentiableOn_derivWeierstrassPExcept _
+  convert L.differentiableOn_derivWeierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
@@ -686,7 +685,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
     have H₁ : Summable fun i : ℕ ↦ ((i + 2) * κ ^ (-i : ℤ)) := by
       have : |κ⁻¹| < 1 := by grind [abs_inv, inv_lt_one_iff₀]
       simpa [mul_comm] using ((Real.hasFPowerSeriesOnBall_ofScalars_mul_add_zero 1 2).hasSum
-        (y := κ⁻¹) (by simpa [enorm_eq_nnnorm])).summable
+        (y := κ⁻¹) (by simpa [eNorm_eq_nnNorm])).summable
     have H₂ : Summable fun l : L.lattice ↦ ‖l - x‖ ^ (-3 : ℤ) * ‖z - x‖ :=
       (ZLattice.summable_norm_sub_zpow _ _ (by simp) _).mul_right _
     refine (H₁.mul_of_nonneg H₂ (by intro; positivity) (by intro; positivity)).of_norm_bounded ?_
@@ -720,7 +719,7 @@ lemma weierstrassPExcept_eq_tsum (l₀ z x : ℂ)
     · simp
     simpa [mul_comm] using ((Complex.one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero l x
       (by simpa [sub_eq_zero] using (norm_nonneg _).trans_lt (hx l h))).hasSum (y := z - x)
-      (by simpa [enorm_eq_nnnorm] using hx _ h)).tsum_eq.symm
+      (by simpa [eNorm_eq_nnNorm] using hx _ h)).tsum_eq.symm
   trans ∑' (l : ↥L.lattice) (i : ℕ), L.weierstrassPExceptSummand l₀ x i l * (z - x) ^ i
   · simp only [weierstrassPExceptSummand, ite_mul, zero_mul]
   · simp_rw [coeff_weierstrassPExceptSeries, ← tsum_mul_right]
@@ -1052,7 +1051,7 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
   · lift x to L.lattice using hx
     have := L.analyticAt_relation_zero
     rw [← sub_self x.1] at this
-    convert! this.comp (f := (· - x.1)) (by fun_prop)
+    convert this.comp (f := (· - x.1)) (by fun_prop)
     ext a
     simp
   · have : AnalyticAt ℂ (fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃) x := by

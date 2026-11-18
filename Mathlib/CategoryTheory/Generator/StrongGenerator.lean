@@ -27,7 +27,6 @@ then `S` is a strong generator.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 @[expose] public section
@@ -132,12 +131,11 @@ lemma isStrongGenerator_iff_exists_extremalEpi
   have := hasCoproductsOfShape_of_small.{w} C (CostructuredArrow P.ι X)
   have := (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm
-  refine ⟨_, fun j ↦ ((equivShrink.{w} (CostructuredArrow P.ι X)).symm j).left.1,
-    fun j ↦ ((equivShrink.{w} _).symm j).1.2, _,
+  refine ⟨_, fun j ↦ ((equivShrink.{w} (CostructuredArrow P.ι X)).symm j).left.obj,
+    fun j ↦ ((equivShrink.{w} _).symm j).left.property, _,
     (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm, _, hP.extremalEpi_coproductFrom X⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma IsStrongGenerator.mk_of_exists_colimitsOfShape
     (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
     P.IsStrongGenerator := by
