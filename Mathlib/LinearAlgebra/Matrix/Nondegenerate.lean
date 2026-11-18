@@ -92,12 +92,12 @@ end Fintype
 theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Fintype m] [Finite n] (hM : M.SeparatingLeft)
     {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
   have := Fintype.ofFinite n
-  separatingLeft_def.mp hM _ fun _ => by simp [dotProduct_mulVec, hv]
+  separatingLeft_def.mp hM _ fun _ ↦ by simp [dotProduct_mulVec, hv]
 
 theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] [Fintype n] (hM : M.SeparatingRight)
     {v : n → R} (hv : M *ᵥ v = 0) : v = 0 :=
   have := Fintype.ofFinite m
-  separatingRight_def.mp hM _ fun _ => by simp [hv]
+  separatingRight_def.mp hM _ fun _ ↦ by simp [hv]
 
 end NonUnitalSemiring
 
@@ -106,18 +106,16 @@ variable {m n R : Type*} [Semiring R] {M : Matrix m n R}
 
 theorem separatingLeft_iff_forall_vecMul_eq_zero [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
-  refine ⟨fun h _ => h.eq_zero_of_vecMul_eq_zero, ?_⟩
   have := Fintype.ofFinite n
-  rw [separatingLeft_def]
-  refine fun h w hw ↦ h w <| funext fun i ↦ ?_
+  refine ⟨fun h _ ↦ h.eq_zero_of_vecMul_eq_zero, fun h ↦ separatingLeft_def.2 fun w hw ↦ h w ?_⟩
+  ext i
   classical simpa using! hw <| Pi.single i 1
 
 theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] [Fintype n] :
     M.SeparatingRight ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
-  refine ⟨fun h _ => h.eq_zero_of_mulVec_eq_zero, ?_⟩
   have := Fintype.ofFinite m
-  rw [separatingRight_def]
-  refine fun h w hw ↦ h w <| funext fun i ↦ ?_
+  refine ⟨fun h _ ↦ h.eq_zero_of_mulVec_eq_zero, fun h ↦ separatingRight_def.2 fun w hw ↦ h w ?_⟩
+  ext i
   classical simpa using hw <| Pi.single i 1
 
 theorem nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero [Fintype m] [Fintype n] :
