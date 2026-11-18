@@ -1240,7 +1240,7 @@ lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) :
     (μ.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
       = ENNReal.ofReal (∫ x in s, |(f' x).det| * g (f x) ∂μ) := by
-  rw [Measure.comap_apply f hf.injective (fun t ht ↦ hf.measurableSet_image' ht) _ hs,
+  rw [hf.comap_apply,
     withDensity_apply _ (hf.measurableSet_image' hs),
     ← ofReal_integral_eq_lintegral_ofReal hg_int
       ((ae_restrict_iff' (hf.measurableSet_image' hs)).mpr hg),

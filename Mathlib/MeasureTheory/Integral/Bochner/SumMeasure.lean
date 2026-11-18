@@ -194,9 +194,8 @@ theorem setIntegral_countable (f : X → E) {s : Set X} (hs : s.Countable) (hf :
     · exact Countable.measurableSet hs
   rw [← integral_subtype_comap hs.measurableSet, integral_countable hf']
   congr 1 with a : 1
-  rw [measureReal_def, Measure.comap_apply Subtype.val Subtype.coe_injective
-    (fun s' hs' ↦ MeasurableSet.subtype_image (Countable.measurableSet hs) hs') _
-    (MeasurableSet.singleton a)]
+  rw [measureReal_def,
+    Measure.comap_apply (Measure.le_comap_caratheodory_of_le_comap le_rfl μ) (.singleton a)]
   simp [measureReal_def]
 
 theorem setIntegral_finset (s : Finset X) (hf : IntegrableOn f s μ) :

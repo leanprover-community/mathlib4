@@ -203,15 +203,15 @@ lemma borelMarkovFromReal_apply (Ω : Type*) [Nonempty Ω] [MeasurableSpace Ω] 
   split_ifs <;> rfl
 
 lemma borelMarkovFromReal_apply' (Ω : Type*) [Nonempty Ω] [MeasurableSpace Ω] [StandardBorelSpace Ω]
-    (η : Kernel α ℝ) (a : α) {s : Set Ω} (hs : MeasurableSet s) :
+    (η : Kernel α ℝ) (a : α) (s : Set Ω) :
     borelMarkovFromReal Ω η a s
       = if η a (range (embeddingReal Ω))ᶜ = 0 then η a (embeddingReal Ω '' s)
         else (embeddingReal Ω '' s).indicator 1 (range_nonempty (embeddingReal Ω)).choose := by
   have he := measurableEmbedding_embeddingReal Ω
   rw [borelMarkovFromReal_apply]
   split_ifs with h
-  · rw [Measure.comap_apply _ he.injective he.measurableSet_image' _ hs]
-  · rw [Measure.comap_apply _ he.injective he.measurableSet_image' _ hs, Measure.dirac_apply]
+  · rw [he.comap_apply]
+  · rw [he.comap_apply, Measure.dirac_apply]
 
 /-- When `η` is an s-finite kernel, `borelMarkovFromReal Ω η` is an s-finite kernel. -/
 instance instIsSFiniteKernelBorelMarkovFromReal (η : Kernel α ℝ) [IsSFiniteKernel η] :
@@ -276,9 +276,6 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
     exact h_compProd
   filter_upwards [h_ae] with a ha
   rw [borelMarkovFromReal, comapRight_apply', comapRight_apply']
-  rotate_left
-  · exact measurable_prodMk_left ht
-  · exact measurable_prodMk_left ht
   classical
   rw [piecewise_apply, ite_eq_left]
   exact ha
