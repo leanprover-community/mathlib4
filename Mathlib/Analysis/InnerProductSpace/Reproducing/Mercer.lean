@@ -5,9 +5,9 @@ Authors: Tjeerd Jan Heeringa
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Reproducing
 public import Mathlib.MeasureTheory.Function.L2Space
 public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.Analysis.InnerProductSpace.Reproducing
 
 /-!
 # Mercer's theorem
@@ -50,27 +50,27 @@ private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 
   calc
     ∫⁻ (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
         ∫⁻ (p : X × X), ‖K p.1 p.2‖ₑ * (‖f p.2‖ₑ * ‖g p.1‖ₑ) ∂μ.prod μ := by
-      grw [enorm_inner_le_enorm, ContinuousLinearMap.le_opENorm]
+      grw [eNorm_inner_le_eNorm, ContinuousLinearMap.le_opENorm]
       simp [mul_assoc]
     _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ *
           (∫⁻ (a : X × X), ‖f a.2‖ₑ ^ 2 * ‖g a.1‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ := by
       have := ENNReal.lintegral_mul_le_Lp_mul_Lq (μ.prod μ) Real.HolderConjugate.two_two
-        hK.aemeasurable.enorm (((f : X →ₘ[μ] V).measurable.comp measurable_snd).enorm.mul
-          ((g : X →ₘ[μ] V).measurable.comp measurable_fst).enorm).aemeasurable
+        hK.aemeasurable.eNorm (((f : X →ₘ[μ] V).measurable.comp measurable_snd).eNorm.mul
+          ((g : X →ₘ[μ] V).measurable.comp measurable_fst).eNorm).aemeasurable
       simp only [Function.comp_apply, Pi.mul_apply, ENNReal.rpow_ofNat, one_div] at this
       grw [this]
       simp [mul_pow]
     _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ * ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) *
           ∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹ := by
       simp_rw [mul_comm (‖f _‖ₑ ^ 2)]
-      grw [lintegral_prod_mul ((g : X →ₘ[μ] V).aemeasurable.enorm.pow_const 2)
-        ((f : X →ₘ[μ] V).aemeasurable.enorm.pow_const 2)]
+      grw [lintegral_prod_mul ((g : X →ₘ[μ] V).aemeasurable.eNorm.pow_const 2)
+        ((f : X →ₘ[μ] V).aemeasurable.eNorm.pow_const 2)]
       simp [mul_comm]
     _ ≤ (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
       rw [ENNReal.mul_rpow_of_nonneg (∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) (∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ)
         (by simp)]
-      simp [Lp.enorm_def, eLpNorm_eq_lintegral_rpow_enorm_toReal (Ne.symm (NeZero.ne' 2))
-        (ENNReal.ofNat_ne_top), mul_assoc]
+      simp [Lp.eNorm_def, mul_assoc, hK.aestronglyMeasurable, Lp.aestronglyMeasurable,
+        eLpNorm_eq_lintegral_rpow_eNorm_toReal two_ne_zero ENNReal.ofNat_ne_top]
 
 private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
     (f g : Lp V 2 μ) : Integrable (fun p ↦ ⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜) (μ.prod μ) := by
@@ -82,15 +82,17 @@ private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 
       (Lp.aestronglyMeasurable g).comp_fst
     exact continuous_inner.comp_aestronglyMeasurable (h1.prodMk h2)
   · grw [hasFiniteIntegral_def, lintegral_norm_inner_le hK f g]
-    refine ENNReal.mul_lt_top ?_ enorm_lt_top
-    refine ENNReal.mul_lt_top hK.eLpNorm_lt_top enorm_lt_top
+    refine ENNReal.mul_lt_top ?_ eNorm_lt_top
+    refine ENNReal.mul_lt_top hK.eLpNorm_lt_top eNorm_lt_top
 
+omit [SFinite μ] in
 private lemma integral_congr_fst {U : Type*} {φ ψ : X → U} (h : φ =ᵐ[μ] ψ) (F : X × X → U → 𝕜) :
     ∫ p : X × X, F p (φ p.1) ∂ μ.prod μ = ∫ p : X × X, F p (ψ p.1) ∂ μ.prod μ := by
   apply integral_congr_ae
   filter_upwards [Measure.quasiMeasurePreserving_fst.ae h] with p hp
   rw [hp]
 
+omit [SFinite μ] in
 private lemma integral_congr_snd {U : Type*} {φ ψ : X → U} (h : φ =ᵐ[μ] ψ) (F : X × X → U → 𝕜) :
     ∫ p : X × X, F p (φ p.2) ∂ μ.prod μ = ∫ p : X × X, F p (ψ p.2) ∂ μ.prod μ := by
   apply integral_congr_ae
@@ -132,8 +134,8 @@ def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     grw [lintegral_norm_inner_le hK f g]
     · simp
     rw [← lt_top_iff_ne_top]
-    refine ENNReal.mul_lt_top ?_ enorm_lt_top
-    refine ENNReal.mul_lt_top hK.eLpNorm_lt_top enorm_lt_top
+    refine ENNReal.mul_lt_top ?_ eNorm_lt_top
+    refine ENNReal.mul_lt_top hK.eLpNorm_lt_top eNorm_lt_top
     )
 
 variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
