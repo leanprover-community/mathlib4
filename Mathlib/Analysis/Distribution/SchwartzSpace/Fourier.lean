@@ -301,7 +301,7 @@ theorem norm_fourier_Lp_top_leq_toLp_one (f : 𝓢(V, F)) :
   norm_toLp_top_le.trans (seminorm_le_bound ℝ 0 0 _ (by positivity)
     (by simpa using norm_fourier_apply_le_toLp_one f))
 
-theorem toLp_one_fourierTransform_eq (f : 𝓢(V, F)) :
+theorem fourierTransform_toLp_one_eq (f : 𝓢(V, F)) :
     Lp.fourierTransform (f.toLp 1) = (𝓕 f).toBoundedContinuousFunction := by
   ext x
   simpa [fourier_coe] using fourier_congr_ae (coeFn_toLp f 1 volume) x
@@ -312,17 +312,17 @@ theorem norm_fourierInv_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
   _ ≤ ∫ (v : V), ‖𝐞 (inner ℝ v x) • f v‖ := norm_integral_le_integral_norm _
   _ = _ := by simp [norm_toLp_one]
 
-theorem norm_fourierInv_toBoundedContinuousFunction_le_toLp_one (f : 𝓢(V, F)) :
+theorem norm_toBoundedContinuousFunction_fourierInv_le_toLp_one (f : 𝓢(V, F)) :
     ‖(𝓕⁻ f).toBoundedContinuousFunction‖ ≤ ‖f.toLp 1‖ := by
   rw [BoundedContinuousFunction.norm_le (by positivity)]
   simpa using norm_fourierInv_apply_le_toLp_one f
 
-theorem norm_fourierInv_Lp_top_leq_toLp_one (f : 𝓢(V, F)) :
+theorem norm_fourierInv_Lp_top_le_toLp_one (f : 𝓢(V, F)) :
     ‖(𝓕⁻ f).toLp ⊤‖ ≤ ‖f.toLp 1‖ :=
   norm_toLp_top_le.trans (seminorm_le_bound ℝ 0 0 _ (by positivity)
     (by simpa using norm_fourierInv_apply_le_toLp_one f))
 
-theorem toLp_one_fourierTransformInv_eq (f : 𝓢(V, F)) :
+theorem fourierTransformInv_toLp_one_eq (f : 𝓢(V, F)) :
     Lp.fourierTransformInv (f.toLp 1) = (𝓕⁻ f).toBoundedContinuousFunction := by
   ext x
   simpa [fourierInv_coe] using fourierInv_congr_ae (coeFn_toLp f 1 volume) x
@@ -338,7 +338,7 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
     ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
-theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
+@[simp] theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 := by
   apply Complex.ofRealLI.injective
   simpa [← LinearIsometry.integral_comp_comm, inner_self_eq_norm_sq_to_K] using
@@ -358,7 +358,7 @@ Version for the inverse Fourier transform. -/
     ∫ ξ, ⟪𝓕⁻ f ξ, 𝓕⁻ g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourierInv_fourierInv f g (innerSL ℂ)
 
-theorem integral_norm_sq_fourierInv (f : 𝓢(V, H)) :
+@[simp] theorem integral_norm_sq_fourierInv (f : 𝓢(V, H)) :
     ∫ ξ, ‖𝓕⁻ f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 := by
   apply Complex.ofRealLI.injective
   simpa [← LinearIsometry.integral_comp_comm, inner_self_eq_norm_sq_to_K] using
