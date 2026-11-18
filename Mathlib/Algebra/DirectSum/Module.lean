@@ -529,6 +529,16 @@ theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (
     Set.image_insert_eq, Set.image_singleton, sSup_pair, iSupIndep_pair hij this]
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 
+/-- The submodules `fst` and `snd` of `M × N` are internal -/
+theorem isInternal_submodule_fst_snd {N : Type*} [AddCommGroup N] [Module R N]
+    (A : ι → Submodule R (M × N)) {i j : ι} (h : Set.univ = {i, j})
+    (Ai : A i = Submodule.fst R M N) (Aj : A j = Submodule.snd R M N) : IsInternal A := by
+  wlog h' : Nontrivial (M × N)
+  · have : Subsingleton (M × N) := not_nontrivial_iff_subsingleton.mp h'
+    exact Function.bijective_of_subsingleton' _
+  · have hij : i ≠ j := fun h ↦ (Submodule.isCompl_fst_snd R M N).ne (Ai ▸ Aj ▸ congrArg A h)
+    exact (isInternal_submodule_iff_isCompl A hij h).mpr (Ai ▸ Aj ▸ Submodule.isCompl_fst_snd R M N)
+
 @[simp]
 theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
     IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
