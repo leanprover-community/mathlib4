@@ -521,7 +521,7 @@ def smulRightL : (E →L[𝕜] S) →L[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
       obtain ⟨r, -, hr⟩ := (ht₁.restrict_scalars 𝕜 hv).exists_pos
       obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 r
       simp only at ht₁ hs ht₂ huv
-      simp only [mem_ofPred_eq]
+      simp only [mem_ofPred]
       filter_upwards [eventually_nhds_zero_mapsTo hs <|
         (continuous_const_smul k).tendsto' 0 0 (smul_zero k) hu] with c hc f hf x hx
       obtain ⟨f, hf', rfl⟩ := hr k hk.le hf
