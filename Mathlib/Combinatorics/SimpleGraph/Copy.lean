@@ -516,25 +516,21 @@ graph homomorphisms from `H` to `G`. See `SimpleGraph.unlabeledCopyCount` for th
 unlabeled copies. -/
 noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
   classical exact Fintype.card (Copy H G)
-
 @[deprecated (since := "2026-11-17")] alias labelledCopyCount := copyCount
 
 @[simp] lemma copyCount_of_isEmpty [IsEmpty W] (G : SimpleGraph V) (H : SimpleGraph W) :
     G.copyCount H = 1 := by
   convert! Fintype.card_unique
   exact { default := ⟨default, isEmptyElim⟩, uniq := fun _ ↦ Subsingleton.elim _ _ }
-
 @[deprecated (since := "2026-11-17")]
 alias labelledCopyCount_of_isEmpty := copyCount_of_isEmpty
 
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
   simp [copyCount, Fintype.card_eq_zero_iff]
-
 @[deprecated (since := "2026-11-17")] alias labelledCopyCount_eq_zero := copyCount_eq_zero
 
 @[simp] lemma copyCount_pos : 0 < G.copyCount H ↔ H ⊑ G := by
   simp [copyCount, IsContained, Fintype.card_pos_iff]
-
 @[deprecated (since := "2026-11-17")] alias labelledCopyCount_pos := copyCount_pos
 
 end CopyCount
@@ -562,7 +558,6 @@ lemma unlabeledCopyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // 
   ext G'
   simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_image]
   rw [← Set.mem_range, Copy.range_toSubgraph, Set.mem_ofPred_eq]
-
 @[deprecated (since := "2026-11-17")]
 alias copyCount_eq_card_image_copyToSubgraph :=
   unlabeledCopyCount_eq_card_image_copyToSubgraph
