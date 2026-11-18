@@ -359,7 +359,6 @@ def forget (F : EnrichedFunctor W C D) :
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `EnrichedFunctor.forget` distributes over composition of enriched functors up to isomorphism. -/
 @[simps!]
 def forgetComp (F : EnrichedFunctor W C D) (G : EnrichedFunctor W D E) :

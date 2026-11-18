@@ -22,7 +22,7 @@ First, in the case where the homotopy between two morphisms of simplicial sets
 we use the fact that we still have a similar kind of homotopy between
 the corresponding morphisms on the simplicial objects in `C` that are
 obtained after applying the "free object" functor `sigmaConst.obj R : Type _ ⥤ C`
-degreewise, and that a combinatoral homotopy of simplicial objects
+degreewise, and that a combinatorial homotopy of simplicial objects
 in a preadditive category induces a homotopy on the alternating face map
 complexes (see `SimplicialObject.Homotopy.toChainHomotopy`, which is defined
 in the file `Mathlib/AlgebraicTopology/SimplicialObject/ChainHomotopy.lean`).
@@ -33,7 +33,6 @@ i.e. by a morphism `h : X ⊗ Δ[1] ⟶ Y`, we apply the construction above
 to the combinatorial simplicial homotopy that is deduced from `h` by
 using the definition `SSet.Homotopy.toSimplicialObjectHomotopy` from the file
 `Mathlib/AlgebraicTopology/SimplicialSet/Homotopy.lean`.
-
 -/
 
 @[expose] public section

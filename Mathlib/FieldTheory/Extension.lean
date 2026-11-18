@@ -20,7 +20,6 @@ extends to an embedding of E/F into K/F.
 
 [Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly
-
 -/
 
 @[expose] public section

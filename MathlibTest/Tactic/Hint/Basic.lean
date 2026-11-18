@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Hint
+module
+
+public import Mathlib.Tactic.Hint
 
 /--
 error: No suggestions available
