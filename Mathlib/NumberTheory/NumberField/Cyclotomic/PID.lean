@@ -89,7 +89,7 @@ theorem seven_pid [IsCyclotomicExtension {7} ℚ K] : IsPrincipalIdealRing (𝓞
       (orderOf_eq_iff (n := 3) (by decide)).mpr ⟨by decide, by decide⟩]
     decide
   · rw [inertiaDeg_eq_of_not_dvd (m := 7) 3 K P (by decide),
-      (orderOf_eq_iff (n := 6) (by decide)).mpr ⟨by decide, by decide⟩]
+      (orderOf_eq_iff (n := 6) (by decide)).mpr (by decide)]
     decide
 
 end IsCyclotomicExtension.Rat
