@@ -1219,9 +1219,6 @@ jobs:
       contents: read
     env:
       STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
-    defaults:
-      run:
-        working-directory: pr-branch
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -1248,59 +1245,63 @@ jobs:
       - name: Check mathlib-ci pins
         id: pins
         if: ${{ !cancelled() }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: python
-        run: |
-          import os
-          import re
-          import subprocess
-          import sys
-          from pathlib import Path
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('node:fs');
+            process.chdir(`${process.env.GITHUB_WORKSPACE}/pr-branch`);
 
-          strict = os.environ["STRICT"] == "true"
-          level = "error" if strict else "warning"
-          failed = False
-          default_pin = None
-          comparisons = {}
-          default_action = Path(".github/actions/get-mathlib-ci/action.yml")
-          action_pin = re.compile(r"leanprover-community/mathlib-ci[^@\s]*@([0-9a-f]{40})")
-          default_ref = re.compile(r"default: ([0-9a-f]{40})")
+            const strict = process.env.STRICT === 'true';
+            let failed = false;
+            function report(file, line, message) {
+              const location = { file, startLine: line };
+              if (strict) core.error(message, location);
+              else core.warning(message, location);
+              failed = true;
+            }
 
-          for file in sorted(Path(".github").rglob("*")):
-              if not file.is_file() or file.suffix not in (".yml", ".yaml"):
-                  continue
-              for line, text in enumerate(file.read_text().splitlines(), start=1):
-                  pins = action_pin.findall(text)
-                  if file == default_action:
-                      defaults = default_ref.findall(text)
-                      if defaults:
-                          default_pin = defaults[-1]
-                      pins.extend(defaults)
-                  for sha in pins:
-                      print(f"{file}:{line}:{sha}")
-                      if sha not in comparisons:
-                          try:
-                              comparisons[sha] = subprocess.check_output(
-                                  ["gh", "api", f"repos/leanprover-community/mathlib-ci/compare/{sha}...master",
-                                   "--jq", ".status"], text=True,
-                              ).strip()
-                          except subprocess.CalledProcessError:
-                              comparisons[sha] = "unknown commit or API error"
-                      comparison = comparisons[sha]
-                      if comparison not in ("ahead", "identical"):
-                          print(f"::{level} file={file},line={line}::"
-                                f"mathlib-ci commit {sha} is not on mathlib-ci master ({comparison}).")
-                          failed = True
+            let defaultPin;
+            const comparisons = new Map();
+            const defaultAction = '.github/actions/get-mathlib-ci/action.yml';
+            const actionPin = /leanprover-community\/mathlib-ci[^@\s]*@([0-9a-f]{40})/g;
+            const defaultRef = /default: ([0-9a-f]{40})/g;
 
-          if default_pin:
-              with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-                  output.write(f"sha={default_pin}\n")
-          else:
-              print(f"::{level} file={default_action}::get-mathlib-ci has no default commit.")
-              failed = True
+            for (const name of fs.readdirSync('.github', { recursive: true }).sort()) {
+              const file = `.github/${name}`;
+              if (!/\.ya?ml$/.test(file) || !fs.statSync(file).isFile()) continue;
+              const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+              for (const [index, text] of lines.entries()) {
+                const line = index + 1;
+                const pins = Array.from(text.matchAll(actionPin), match => match[1]);
+                if (file === defaultAction) {
+                  for (const match of text.matchAll(defaultRef)) {
+                    defaultPin = match[1];
+                    pins.push(defaultPin);
+                  }
+                }
+                for (const sha of pins) {
+                  core.info(`${file}:${line}:${sha}`);
+                  if (!comparisons.has(sha)) {
+                    try {
+                      const { data } = await github.rest.repos.compareCommits({
+                        owner: 'leanprover-community', repo: 'mathlib-ci', base: sha, head: 'master',
+                      });
+                      comparisons.set(sha, data.status);
+                    } catch {
+                      comparisons.set(sha, 'unknown commit or API error');
+                    }
+                  }
+                  const comparison = comparisons.get(sha);
+                  if (comparison !== 'ahead' && comparison !== 'identical') {
+                    report(file, line, `mathlib-ci commit ${sha} is not on mathlib-ci master (${comparison}).`);
+                  }
+                }
+              }
+            }
 
-          sys.exit(1 if strict and failed else 0)
+            if (defaultPin) core.setOutput('sha', defaultPin);
+            else report(defaultAction, undefined, 'get-mathlib-ci has no default commit.');
+            if (strict && failed) core.setFailed('The mathlib-ci pin check failed.');
 
       # Check script paths against the PR's default mathlib-ci commit.
       - name: Get mathlib-ci
@@ -1317,54 +1318,64 @@ jobs:
         env:
           PIN: ${{ steps.pins.outputs.sha }}
           CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
-        shell: python
-        run: |
-          import os
-          import re
-          import subprocess
-          import sys
-          from pathlib import Path
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('node:fs');
+            const path = require('node:path');
+            process.chdir(`${process.env.GITHUB_WORKSPACE}/pr-branch`);
 
-          strict = os.environ["STRICT"] == "true"
-          level = "error" if strict else "warning"
-          failed = False
-          pin = os.environ["PIN"]
-          scripts_dir = Path(os.environ["CI_SCRIPTS_DIR"])
-          script_path = re.compile(r"\$\{?CI_SCRIPTS_DIR\}?/([A-Za-z0-9._/-]+)")
+            const strict = process.env.STRICT === 'true';
+            let failed = false;
+            function report(file, line, message) {
+              const location = { file, startLine: line };
+              if (strict) core.error(message, location);
+              else core.warning(message, location);
+              failed = true;
+            }
 
-          def report(file, line, message):
-              global failed
-              print(f"::{level} file={file},line={line}::{message}")
-              failed = True
+            const pin = process.env.PIN;
+            const scriptsDir = process.env.CI_SCRIPTS_DIR;
+            const scriptPath = /\$\{?CI_SCRIPTS_DIR\}?\/([A-Za-z0-9._/-]+)/g;
 
-          # Check literal script paths before the first `#` on each line.
-          # Dynamic paths are outside this check.
-          for file in sorted(Path(".github/workflows").rglob("*")):
-              if not file.is_file() or file.suffix not in (".yml", ".yaml"):
-                  continue
-              for line, text in enumerate(file.read_text().splitlines(), start=1):
-                  code = text.split("#", 1)[0]
-                  for path in script_path.findall(code):
-                      full_path = scripts_dir / path.lstrip("/")
-                      if ".." in Path(path).parts or not full_path.exists():
-                          report(file, line, f"The mathlib-ci scripts at {pin} have no file `{path}`.")
+            // Check literal script paths before the first `#` on each line.
+            // Dynamic paths are outside this check.
+            for (const name of fs.readdirSync('.github/workflows', { recursive: true }).sort()) {
+              const file = `.github/workflows/${name}`;
+              if (!/\.ya?ml$/.test(file) || !fs.statSync(file).isFile()) continue;
+              const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+              for (const [index, text] of lines.entries()) {
+                const code = text.split('#', 1)[0];
+                for (const match of code.matchAll(scriptPath)) {
+                  const script = match[1];
+                  if (script.split('/').includes('..') || !fs.existsSync(path.join(scriptsDir, script))) {
+                    report(file, index + 1, `The mathlib-ci scripts at ${pin} have no file \`${script}\`.`);
+                  }
+                }
+              }
+            }
 
-          # Require workflows to use get-mathlib-ci for mathlib-ci checkouts.
-          # Invalid YAML fails this step.
-          query = """
+            // Require workflows to use get-mathlib-ci for mathlib-ci checkouts.
+            // Invalid YAML fails this step.
+            const query = `
               .jobs[].steps[]?
               | select((.uses // "") | test("^actions/checkout@"))
               | select((.with.repository // "") | test("/mathlib-ci$"))
               | filename + ":" + (.with.repository | line | to_string)
-          """
-          workflows = sorted(Path(".github/workflows").glob("*.y*ml"))
-          checkouts = subprocess.check_output(["yq", "ea", query, *map(str, workflows)], text=True)
-          for checkout in checkouts.splitlines():
-              file, line = checkout.rsplit(":", 1)
-              report(file, line, "The step checks out mathlib-ci with actions/checkout.%0A"
-                     "Hint: Use `./workflow-actions/.github/actions/get-mathlib-ci` instead.")
+            `;
+            const workflows = fs.readdirSync('.github/workflows').sort()
+              .filter(name => /\.y.*ml$/.test(name))
+              .map(name => `.github/workflows/${name}`);
+            const { stdout } = await exec.getExecOutput('yq', ['ea', query, ...workflows], { silent: true });
+            for (const checkout of stdout.trim().split('\n').filter(Boolean)) {
+              const separator = checkout.lastIndexOf(':');
+              const file = checkout.slice(0, separator);
+              const line = Number(checkout.slice(separator + 1));
+              report(file, line, 'The step checks out mathlib-ci with actions/checkout.\n' +
+                'Hint: Use `./workflow-actions/.github/actions/get-mathlib-ci` instead.');
+            }
 
-          sys.exit(1 if strict and failed else 0)
+            if (strict && failed) core.setFailed('The mathlib-ci usage check failed.');
 
   final:
     name: Post-CI job
