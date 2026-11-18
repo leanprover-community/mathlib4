@@ -388,16 +388,9 @@ theorem Complex.ECanonicalDecomp.circleAverage_poissonKernel_smul_log_norm {h : 
     filter_upwards [D.log_norm_eventuallyEq] with a ha
     simp [ha]
 
-/--
-**The Poisson–Jensen Formula.** If `f` is meromorphic on `closedBall 0 R` and has vanishing order at
-an interior point `w ∈ ball 0 R`, then the logarithm of the norm of the trailing coefficient of `f`
-at `w` equals the Poisson integral of `log ‖f ·‖` at `w`, corrected by a finite sum over the divisor
-of `f`.
-
-This generalises Jensen's formula `MeromorphicOn.circleAverage_log_norm` from the centre `0` to an
-arbitrary interior point `w`.
--/
-theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball 0 R)
+-- Auxiliary lemma for `MeromorphicOn.log_norm_meromorphicTrailingCoeffAt`. The Poisson–Jensen
+-- Formula in the special case where the ball is centred at the origin.
+private lemma MeromorphicOn.log_norm_meromorphicTrailingCoeffAt₀ (h₁w : w ∈ ball 0 R)
     (h₂w : meromorphicOrderAt f w = 0) (h₁f : MeromorphicOn f (closedBall 0 R)) :
     log ‖meromorphicTrailingCoeffAt f w‖
       = circleAverage (poissonKernel 0 w • (log ‖f ·‖)) 0 R
@@ -412,6 +405,39 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball 0 
   rw [h₀h.circleAverage_poissonKernel_smul_log_norm h₁w,
     h₀h.log_norm_eq (ball_subset_closedBall h₁w) h₂w hR]
   ring
+
+/--
+**The Poisson–Jensen Formula.** If `f` is meromorphic on `closedBall c R` and has vanishing order at
+an interior point `w ∈ ball c R`, then the logarithm of the norm of the trailing coefficient of `f`
+at `w` equals the Poisson integral of `log ‖f ·‖` at `w`, corrected by a finite sum over the divisor
+of `f`.
+
+This generalises Jensen's formula `MeromorphicOn.circleAverage_log_norm` from the centre `c` to an
+arbitrary interior point `w`.
+-/
+theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball c R)
+    (h₂w : meromorphicOrderAt f w = 0) (h₁f : MeromorphicOn f (closedBall c R)) :
+    log ‖meromorphicTrailingCoeffAt f w‖
+      = circleAverage (poissonKernel c w • (log ‖f ·‖)) c R
+        - ∑ᶠ i, (divisor f (ball c R) i) * log ‖Complex.canonicalFactor R (i - c) (w - c)‖ := by
+  -- Reduce to the centred case by translating `f` to `g z = f (z + c)`.
+  let g := fun z ↦ f (z + c)
+  have hfg : f = fun z ↦ g (z - c) := by simp [g]
+  rw [hfg, meromorphicTrailingCoeffAt_fun_comp_sub_const_eq_meromorphicTrailingCoeffAt,
+    log_norm_meromorphicTrailingCoeffAt₀ (R := R)]
+  · congr 1
+    · -- The circle averages agree, because the Poisson kernel is compatible with translation.
+      rw [← circleAverage_map_add_const (c := c)]
+      simp [poissonKernel_add_const, Pi.mul_def]
+    · -- Translate the finsum by `i ↦ i + c`: a zero of `f` at `i + c` corresponds to a zero of `g`
+      -- at `i`, and the canonical factors match accordingly.
+      refine finsum_eq_of_bijective (· + c) (Equiv.addRight c).bijective fun x ↦ ?_
+      simp only [add_sub_cancel_right, divisor_ball_fun_comp_sub_const_eq_divisor_ball]
+  · simpa [mem_ball_zero_iff] using mem_ball_iff_norm.1 h₁w
+  · change meromorphicOrderAt (fun z ↦ f (z + c)) (w - c) = 0
+    rwa [meromorphicOrderAt_fun_comp_add_const_eq_meromorphicOrderAt, sub_add_cancel]
+  · rwa [← meromorphicOn_closedBall_fun_comp_sub_const_iff_meromorphicOn_closedBall (c := c),
+      ← hfg]
 
 
 /-!
