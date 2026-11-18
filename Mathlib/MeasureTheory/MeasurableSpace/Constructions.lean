@@ -1189,7 +1189,7 @@ end curry
 variable (α) in
 /-- Typeclass for a measurable space `α` for which the diagonal of `α × α` is measurable. -/
 class MeasurableEq [MeasurableSpace α] where
-  measurableSet_diagonal : MeasurableSet (diagonal α)
+  measurableSet_diagonal : MeasurableSet (diagonalUniv α)
 
 export MeasurableEq (measurableSet_diagonal)
 

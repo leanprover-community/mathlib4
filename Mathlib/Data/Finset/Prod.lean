@@ -303,6 +303,10 @@ theorem image_diagonal [DecidableEq β] (f : α × α → β) (s : Finset α) :
 @[deprecated (since := "2026-09-06")] alias image_diag := image_diagonal
 
 @[simp, norm_cast]
+theorem coe_diagonal : (s.diagonal : Set (α × α)) = (s : Set α).diagonal :=
+  Set.ext fun _ => mem_diagonal
+
+@[simp, norm_cast]
 theorem coe_offDiagonal : (s.offDiagonal : Set (α × α)) = (s : Set α).offDiagonal :=
   Set.ext fun _ => mem_offDiagonal
 

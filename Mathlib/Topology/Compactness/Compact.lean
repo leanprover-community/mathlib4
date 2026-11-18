@@ -975,7 +975,7 @@ lemma Function.Surjective.compactSpace {f : X → Y} (hf : Continuous f) [Compac
     exact isCompact_range hf
 
 @[compactness .]
-theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
+theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonalUniv X) :=
   @range_diagonal X ▸ isCompact_range (continuous_id.prodMk continuous_id)
 
 theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]

@@ -57,8 +57,9 @@ theorem mem_prod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     exact mem_inf_of_inter (preimage_mem_comap ht₁) (preimage_mem_comap ht₂) h
 
 @[simp]
-theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : (diagonal α)ᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
-  simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonal_iff_disjoint]
+theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} :
+    (diagonalUniv α)ᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
+  simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonalUniv_iff_disjoint]
 
 @[simp]
 theorem prod_mem_prod_iff [f.NeBot] [g.NeBot] : s ×ˢ t ∈ f ×ˢ g ↔ s ∈ f ∧ t ∈ g :=

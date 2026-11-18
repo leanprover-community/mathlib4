@@ -38,7 +38,7 @@ variable {α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter 
   {s t s₁ s₂ t₁ t₂ : Set X} {x : X}
 
 theorem nhdsSet_diagonal (X) [TopologicalSpace (X × X)] :
-    𝓝ˢ (diagonal X) = ⨆ (x : X), 𝓝 (x, x) := by
+    𝓝ˢ (diagonalUniv X) = ⨆ (x : X), 𝓝 (x, x) := by
   rw [nhdsSet, ← range_diagonal, ← range_comp]
   rfl
 

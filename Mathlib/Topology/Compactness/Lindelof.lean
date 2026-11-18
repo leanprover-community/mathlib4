@@ -598,7 +598,7 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
 theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
     IsLindelof (range f) := by rw [← image_univ]; exact isLindelof_univ.image hf
 
-theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
+theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonalUniv X) :=
   @range_diagonal X ▸ isLindelof_range (continuous_id.prodMk continuous_id)
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is Lindelöf
