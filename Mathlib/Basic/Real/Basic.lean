@@ -539,25 +539,26 @@ def IsPowMul {R S : Type*} [Pow R ℕ] [Pow S ℕ] (f : R → S) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
 
 /-- A power-multiplicative additive group norm on a nontrivial ring satisfies `f 1 = 1`. -/
-lemma IsPowMul.map_one_eq_zero_or_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
-    f 1 = 0 ∨ f 1 = 1 :=
+lemma IsPowMul.map_one_eq_zero_or_one {R S : Type*} [Monoid R] [MonoidWithZero S]
+    [IsRightCancelMulZero S] {f : R → S} (hf : IsPowMul f) : f 1 = 0 ∨ f 1 = 1 :=
   eq_zero_or_one_of_sq_eq_self (by simpa using (hf 1 one_le_two).symm)
 
-lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
+lemma IsPowMul.map_one_le_one {R S : Type*} [Monoid R] [MonoidWithZero S] [Preorder S]
+    [IsRightCancelMulZero S] [ZeroLEOneClass S] {f : R → S} (hf : IsPowMul f) :
     f 1 ≤ 1 := by
-  grind [hf.map_one_eq_zero_or_one]
+  grind [hf.map_one_eq_zero_or_one, zero_le_one]
 
 /-- A power-multiplicative additive group norm on a nontrivial ring satisfies `f 1 = 1`. -/
-protected lemma IsPowMul.map_one {R F : Type*} [Ring R] [Nontrivial R]
-    [FunLike F R ℝ] [AddGroupNormClass F R ℝ] {f : F} (hf : IsPowMul f) :
-    f 1 = 1 := by
+protected lemma IsPowMul.map_one {R S F : Type*} [Ring R] [Nontrivial R] [Semiring S]
+    [IsRightCancelMulZero S] [PartialOrder S] [FunLike F R S] [AddGroupNormClass F R S] {f : F}
+    (hf : IsPowMul f) : f 1 = 1 := by
   simpa [map_eq_zero_iff_eq_zero] using hf.map_one_eq_zero_or_one
 
 /-- A power-multiplicative additive group norm on a nontrivial ring satisfies
 `f (a ^ n) = (f a) ^ n`. -/
-protected lemma IsPowMul.map_pow {R F : Type*} [Ring R] [Nontrivial R]
-    [FunLike F R ℝ] [AddGroupNormClass F R ℝ] {f : F} (hf : IsPowMul f) (a : R) (n : ℕ) :
-    f (a ^ n) = f a ^ n := by
+protected lemma IsPowMul.map_pow {R S F : Type*} [Ring R] [Nontrivial R] [Semiring S]
+    [IsRightCancelMulZero S] [PartialOrder S] [FunLike F R S] [AddGroupNormClass F R S] {f : F}
+    (hf : IsPowMul f) (a : R) (n : ℕ) : f (a ^ n) = f a ^ n := by
   by_cases! hn : n = 0
   · simpa [hn] using hf.map_one
   · exact hf a hn.pos
