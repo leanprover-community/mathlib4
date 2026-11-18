@@ -178,8 +178,8 @@ theorem NoetherianSpace.exists_finite_set_isClosed_irreducible [NoetherianSpace 
       (∀ t ∈ S, IsClosed t) ∧ (∀ t ∈ S, IsIrreducible t) ∧ s = ⋃₀ S := by
   lift s to Closeds α using hs
   rcases NoetherianSpace.exists_finite_set_closeds_irreducible s with ⟨S, hSf, hS, rfl⟩
-  refine ⟨(↑) '' S, hSf.image _, Set.forall_mem_image.2 fun S _ ↦ S.2, Set.forall_mem_image.2 hS,
-    ?_⟩
+  refine ⟨(↑) '' S, hSf.image _, Set.forall_mem_image.2 fun S _ ↦ S.isClosed',
+    Set.forall_mem_image.2 hS, ?_⟩
   lift S to Finset (Closeds α) using hSf
   simp [← Finset.sup_id_eq_sSup, Closeds.coe_finset_sup]
 
@@ -209,7 +209,7 @@ theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [Noet
   · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
     exact hα.sdiff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
   · contrapose! hZ
-    rw [hZ, closure_empty, ← Set.nonempty_iff_empty_ne]
+    rw [hZ, closure_empty, Set.empty_ne_iff_nonempty]
     exact H.1.nonempty
 
 lemma NoetherianSpace.of_subset {W V : Set α} [NoetherianSpace W]
