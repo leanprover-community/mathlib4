@@ -5,12 +5,13 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Hom.Rat
-public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.QuadraticAlgebra.Int
 public import Mathlib.Algebra.QuadraticAlgebra.IsQuadraticExtension
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
-public import Mathlib.RingTheory.QuadraticAlgebra
+
+import Mathlib.Algebra.Algebra.Hom.Rat
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.RingTheory.QuadraticAlgebra
 
 /-!
 # Quadratic fields
@@ -22,6 +23,8 @@ zero which is a quadratic extension of `ℚ` in the sense of `Algebra.IsQuadrati
 
 * `NumberField.QuadraticField.isFundamentalDiscr_discr`: the discriminant of a quadratic field
   is a fundamental discriminant;
+* `NumberField.QuadraticField.nonempty_algEquiv_quadraticAlgebra_int`: the ring of integers of a
+  quadratic field is the quadratic algebra over `ℤ` of discriminant `discr K`;
 * `NumberField.QuadraticField.nonempty_algEquiv_quadraticAlgebra_discr`: every quadratic field
   is `ℚ(√(discr K))`;
 * `NumberField.QuadraticField.nonempty_algEquiv_iff_discr_eq`: the discriminant is a complete
@@ -45,8 +48,6 @@ instance : Algebra.IsQuadraticExtension ℤ (𝓞 K) where
   finrank_eq_two' := by rw [RingOfIntegers.rank, Algebra.IsQuadraticExtension.finrank_eq_two]
 
 variable {K}
-
-section discr
 
 /-- If the ring of integers of `K` is `QuadraticAlgebra ℤ a b`, the discriminant of `K` is the
 discriminant of that quadratic algebra. -/
@@ -107,11 +108,9 @@ variable (F : Type*) [Field F] [CharZero F] [Algebra.IsQuadraticExtension ℚ F]
 theorem nonempty_algEquiv_iff_discr_eq :
     Nonempty (K ≃ₐ[ℚ] F) ↔ discr K = discr F := by
   refine ⟨fun ⟨e⟩ ↦ discr_eq_discr_of_algEquiv K e, fun h ↦ ?_⟩
-  obtain ⟨e₁⟩ := nonempty_algEquiv_quadraticAlgebra_int K
+  obtain ⟨e₁⟩ := h ▸ nonempty_algEquiv_quadraticAlgebra_int K
   obtain ⟨e₂⟩ := nonempty_algEquiv_quadraticAlgebra_int F
   exact ⟨(IsFractionRing.ringEquivOfRingEquiv (L := F)
-    ((h ▸ e₁).trans e₂.symm).toRingEquiv).toRatAlgEquiv⟩
-
-end discr
+    (e₁.trans e₂.symm).toRingEquiv).toRatAlgEquiv⟩
 
 end NumberField.QuadraticField
