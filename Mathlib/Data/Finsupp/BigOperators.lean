@@ -31,7 +31,6 @@ it is a member of the support of a member of the collection:
 * `List.mem_foldr_sup_support_iff`
 * `Multiset.mem_sup_map_support_iff`
 * `Finset.mem_sup_support_iff`
-
 -/
 
 public section

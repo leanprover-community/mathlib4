@@ -105,6 +105,26 @@ theorem log_zero : log 0 = 0 := by simp [log]
 @[simp]
 theorem log_one : log 1 = 0 := by simp [log]
 
+lemma log_mul_eq_add_log_sub_two_pi_mul_I_iff {x y : ℂ} :
+    log (x * y) = log x + log y - 2 * π * I ↔ π < arg x + arg y := by
+  rw [← arg_mul_eq_add_arg_sub_two_pi_iff]
+  refine ⟨fun h ↦ by simpa [log_im] using congr(im $h), fun h ↦ ?_⟩
+  have hx : x ≠ 0 := by grind [arg_le_pi, Real.pi_pos]
+  have hy : y ≠ 0 := by grind [arg_le_pi, Real.pi_pos]
+  simp [Complex.ext_iff, log_re, Real.log_mul, hx, hy, log_im, h]
+
+alias ⟨_, log_mul_of_pi_lt⟩ := log_mul_eq_add_log_sub_two_pi_mul_I_iff
+
+lemma log_mul_eq_add_log_add_two_pi_mul_I_iff {x y : ℂ} :
+    log (x * y) = log x + log y + 2 * π * I ↔ arg x + arg y ≤ -π := by
+  rw [← arg_mul_eq_add_arg_add_two_pi_iff]
+  refine ⟨fun h ↦ by simpa [log_im] using congr(im $h), fun h ↦ ?_⟩
+  have hx : x ≠ 0 := by grind [neg_pi_lt_arg, Real.pi_pos]
+  have hy : y ≠ 0 := by grind [neg_pi_lt_arg, Real.pi_pos]
+  simp [Complex.ext_iff, log_re, Real.log_mul, hx, hy, log_im, h]
+
+alias ⟨_, log_mul_of_le_neg_pi⟩ := log_mul_eq_add_log_add_two_pi_mul_I_iff
+
 /-- This holds true for all `x : ℂ` because of the junk values `0 / 0 = 0` and `log 0 = 0`. -/
 @[simp] lemma log_div_self (x : ℂ) : log (x / x) = 0 := by simp [log]
 

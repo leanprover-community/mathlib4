@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
-
 # Lemmas regarding the prime spectrum of tensor products
 
 ## Main result

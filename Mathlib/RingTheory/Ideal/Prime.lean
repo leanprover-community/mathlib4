@@ -9,7 +9,6 @@ public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
-
 # Prime ideals
 
 This file contains the definition of `Ideal.IsPrime` for prime ideals.

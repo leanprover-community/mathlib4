@@ -11,7 +11,6 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Data.Fintype.Pigeonhole
 
 /-!
-
 # Cardinality of Ore localizations
 
 This file contains some results on cardinality of Ore localizations.
@@ -20,7 +19,6 @@ This file contains some results on cardinality of Ore localizations.
 
 - Prove or disprove `OreLocalization.cardinalMk_le_lift_cardinalMk_of_commute`
   with `Commute` assumption removed.
-
 -/
 
 public section

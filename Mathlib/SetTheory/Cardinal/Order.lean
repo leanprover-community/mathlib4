@@ -164,11 +164,11 @@ theorem lift_injective : Injective lift.{u, v} :=
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
   lift_injective.eq_iff
 
-@[simp]
+@[simp, gcongr]
 theorem lift_le {a b : Cardinal.{v}} : lift.{u} a ≤ lift.{u} b ↔ a ≤ b :=
   liftInitialSeg.le_iff_le
 
-@[simp]
+@[simp, gcongr]
 theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
   liftInitialSeg.lt_iff_lt
 
@@ -294,9 +294,6 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
   le_self_add a b := (add_zero a).ge.trans <| add_right_mono bot_le
   le_add_self a b := (zero_add a).ge.trans <| add_left_mono bot_le
-
-@[deprecated zero_le +typeChanged (since := "2026-04-17")]
-protected theorem zero_le (a : Cardinal) : 0 ≤ a := zero_le
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing

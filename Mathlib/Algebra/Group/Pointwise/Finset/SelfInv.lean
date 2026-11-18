@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 This file specialises `IsSelfInv` to finsets equipped with the pointwise inversion.
 
 See also `Algebra/Group/Pointwise/Set/SelfInv.lean` for the set version.
-
 -/
 
 @[expose] public section

@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Polynomial.Subring
 
 import Mathlib.Algebra.Ring.Hom.InjSurj
+import Mathlib.RingTheory.Artinian.Algebra
 
 /-!
 # Algebraic elements and integral elements
@@ -90,6 +91,8 @@ theorem Algebra.IsAlgebraic.of_isIntegralClosure (R B C : Type*) [CommRing R] [N
 
 end Field
 
+open scoped nonZeroDivisors
+
 section
 
 variable (K L R : Type*) {A : Type*}
@@ -113,6 +116,18 @@ end Ring
 section Field
 
 variable {K L} [Field K] [Ring A] [Algebra K A]
+
+theorem Transcendental.of_mem_nonZeroDivisors_of_not_isUnit {a : A} (ha : a ∈ A⁰)
+    (hu : ¬ IsUnit a) : Transcendental K a :=
+  fun h ↦ hu (IsArtinianRing.isUnit_of_isIntegral_of_nonZeroDivisor h.isIntegral ha)
+
+theorem Transcendental.of_not_isUnit [IsDomain A] {a : A} (h0 : a ≠ 0) (hu : ¬ IsUnit a) :
+    Transcendental K a :=
+  .of_mem_nonZeroDivisors_of_not_isUnit (mem_nonZeroDivisors_of_ne_zero h0) hu
+
+theorem Transcendental.of_mem_ne_top [IsDomain A] {I : Ideal A} (hI : I ≠ ⊤) {a : A} (h0 : a ≠ 0)
+    (ha : a ∈ I) : Transcendental K a :=
+  .of_not_isUnit h0 fun hu ↦ hI (I.eq_top_of_isUnit_mem ha hu)
 
 /-- If `K` is a field, `r : A` and `f : K[X]`, then `Polynomial.aeval r f` is
 transcendental over `K` if and only if `r` and `f` are both transcendental over `K`.
@@ -178,8 +193,7 @@ theorem of_smul_isIntegral {y : R} (hy : ¬ IsNilpotent y)
   · exact hy ⟨_, h⟩
   · rw [natDegree_C_mul_X _ hy0]; rintro ⟨⟩
 
-theorem of_smul {y : R} (hy : y ∈ nonZeroDivisors R)
-    (h : IsAlgebraic R (y • z)) : IsAlgebraic R z :=
+theorem of_smul {y : R} (hy : y ∈ R⁰) (h : IsAlgebraic R (y • z)) : IsAlgebraic R z :=
   have ⟨p, hp, eval0⟩ := h
   ⟨_, mt (comp_C_mul_X_eq_zero_iff hy).mp hp, by simpa [aeval_comp, Algebra.smul_def] using eval0⟩
 
@@ -424,7 +438,7 @@ theorem Algebra.isAlgebraic_adjoin_singleton_iff [NoZeroDivisors R] {s : S} :
     (adjoin R {s}).IsAlgebraic ↔ IsAlgebraic R s :=
   (isAlgebraic_adjoin_of_nonempty <| Set.singleton_nonempty s).trans forall_eq
 
-theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivisors S)
+theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ S⁰)
     (alg_y : IsAlgebraic R y) (alg_yz : IsAlgebraic R (y * z)) : IsAlgebraic R z := by
   have ⟨t, ht, r, hr, eq⟩ := alg_y.exists_ne_zero_eq_adjoin_mul hy
   have := alg_yz.mul (Algebra.isAlgebraic_adjoin_singleton_iff.mpr alg_y _ ht)
@@ -498,8 +512,6 @@ protected theorem IsAlgebraic.transcendental_iff [Algebra.IsAlgebraic R S] :
   ⟨(·.extendScalars _), (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
 
 end Algebra
-
-open scoped nonZeroDivisors
 
 namespace Algebra.IsAlgebraic
 

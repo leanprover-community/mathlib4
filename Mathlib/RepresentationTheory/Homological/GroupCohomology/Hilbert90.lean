@@ -46,7 +46,6 @@ statement is clearer.
 * Develop Galois cohomology to extend Noether's result to infinite Galois extensions.
 * "Additive Hilbert 90": let `L/K` be a finite Galois extension. Then $H^n(Gal(L/K), L)$ is trivial
   for all $1 ≤ n.$
-
 -/
 
 @[expose] public section

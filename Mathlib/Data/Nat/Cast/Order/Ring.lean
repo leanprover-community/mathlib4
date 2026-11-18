@@ -12,7 +12,6 @@ public import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Cast of natural numbers: lemmas about bundled ordered semirings
-
 -/
 
 public section

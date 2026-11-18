@@ -19,6 +19,7 @@ open Lean Qq
 
 namespace Inclusion
 namespace IntervalDyadicReal
+open Inclusion.IntervalDyadicReal
 
 /-- Construct an inclusion variable for a real expression using a dyadic interval. -/
 @[inclusion_ext(_ : ℝ)]

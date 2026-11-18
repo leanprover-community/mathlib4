@@ -348,6 +348,52 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[gcongr, mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
 
+section
+variable {a b : ℝ} {ha : 0 ≤ a} {hb : 0 ≤ b}
+
+@[gcongr, simp] theorem mk_le_mk : NNReal.mk a ha ≤ NNReal.mk b hb ↔ a ≤ b := Iff.rfl
+
+@[gcongr, simp] theorem mk_lt_mk : NNReal.mk a ha < NNReal.mk b hb ↔ a < b := Iff.rfl
+
+@[simp] theorem mk_eq_zero : NNReal.mk a ha = 0 ↔ a = 0 := coe_inj.symm
+/-! No `NNReal.mk_nonpos`, `nonpos_iff_eq_zero` is more useful`. -/
+/-! No `NNReal.mk_neg`, `not_lt_zero` is more useful`. -/
+
+@[simp] theorem zero_eq_mk : 0 = NNReal.mk a ha ↔ 0 = a := coe_inj.symm
+/-! No `NNReal.mk_nonneg`, that's just a special case of `zero_le`. -/
+@[simp] theorem mk_pos : 0 < NNReal.mk a ha ↔ 0 < a := Iff.rfl
+
+@[simp] theorem mk_eq_one : NNReal.mk a ha = 1 ↔ a = 1 := coe_inj.symm
+@[simp] theorem mk_le_one : NNReal.mk a ha ≤ 1 ↔ a ≤ 1 := Iff.rfl
+@[simp] theorem mk_lt_one : NNReal.mk a ha < 1 ↔ a < 1 := Iff.rfl
+
+@[simp] theorem one_eq_mk : 1 = NNReal.mk a ha ↔ 1 = a := coe_inj.symm
+@[simp] theorem one_le_mk : 1 ≤ NNReal.mk a ha ↔ 1 ≤ a := Iff.rfl
+@[simp] theorem one_lt_mk : 1 < NNReal.mk a ha ↔ 1 < a := Iff.rfl
+
+@[simp] theorem mk_eq_natCast {n : ℕ} : NNReal.mk a ha = n ↔ a = n := coe_inj.symm
+@[simp] theorem mk_le_natCast {n : ℕ} : NNReal.mk a ha ≤ n ↔ a ≤ n := Iff.rfl
+@[simp] theorem mk_lt_natCast {n : ℕ} : NNReal.mk a ha < n ↔ a < n := Iff.rfl
+
+@[simp] theorem natCast_eq_mk {n : ℕ} : n = NNReal.mk a ha ↔ n = a := coe_inj.symm
+@[simp] theorem natCast_le_mk {n : ℕ} : n ≤ NNReal.mk a ha ↔ n ≤ a := Iff.rfl
+@[simp] theorem natCast_lt_mk {n : ℕ} : n < NNReal.mk a ha ↔ n < a := Iff.rfl
+
+section ofNat
+variable {n : ℕ} [n.AtLeastTwo]
+
+@[simp] theorem mk_eq_ofNat : NNReal.mk a ha = ofNat(n) ↔ a = ofNat(n) := coe_inj.symm
+@[simp] theorem mk_le_ofNat : NNReal.mk a ha ≤ ofNat(n) ↔ a ≤ ofNat(n) := Iff.rfl
+@[simp] theorem mk_lt_ofNat : NNReal.mk a ha < ofNat(n) ↔ a < ofNat(n) := Iff.rfl
+
+@[simp] theorem ofNat_eq_mk : ofNat(n) = NNReal.mk a ha ↔ ofNat(n) = a := coe_inj.symm
+@[simp] theorem ofNat_le_mk : ofNat(n) ≤ NNReal.mk a ha ↔ ofNat(n) ≤ a := Iff.rfl
+@[simp] theorem ofNat_lt_mk : ofNat(n) < NNReal.mk a ha ↔ ofNat(n) < a := Iff.rfl
+
+end ofNat
+
+end
+
 protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max_right _ h
 

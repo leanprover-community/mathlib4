@@ -16,7 +16,6 @@ Use `open unitInterval` to turn on the notation `I := Set.Icc (0 : ℝ) (1 : ℝ
 
 We provide basic instances, as well as a custom tactic for discharging
 `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` when `x : I`.
-
 -/
 
 @[expose] public section
@@ -568,6 +567,9 @@ open NNReal
 
 /-- The coercion from `I` to `ℝ≥0`. -/
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+
+@[simp]
+theorem toNNReal_mk (x : ℝ) (hx : x ∈ Set.Icc _ _) : toNNReal ⟨x, hx⟩ = NNReal.mk x hx.1 := rfl
 
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
 

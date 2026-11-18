@@ -26,7 +26,6 @@ this is the relative homology of the pair, which is related to the homology
 of simplicial sets `P.left` and `P.right` via a long homology sequence
 (see the lemmas `SSetPair.homology_exact₁`, `SSetPair.homology_exact₂` and
 `SSetPair.homology_exact₃`),
-
 -/
 
 @[expose] public section

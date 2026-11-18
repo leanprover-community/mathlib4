@@ -23,7 +23,6 @@ to transport `HasWeakSheafify` and `HasSheafify` assumptions for the site `(C₀
 to the site `(C, J)`, see `Functor.IsDenseSubsite.hasWeakSheafify_of_isEquivalence`
 and `Functor.IsDenseSubsite.hasSheafify_of_isEquivalence` in the file
 `Mathlib/CategoryTheory/Sites/DenseSubsite/Basic.lean`.
-
 -/
 
 @[expose] public section

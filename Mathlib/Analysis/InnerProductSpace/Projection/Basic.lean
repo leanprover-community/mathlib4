@@ -270,10 +270,13 @@ alias nnnorm_starProjection_eq_infNndist := nnNorm_starProjection_eq_infNNDist
 
 /-- The extended norm of the orthogonal projection of `y` onto `U` equals the extended distance
 to the orthogonal complement of `U` as given by `Metric.infEDist`. -/
-theorem enorm_starProjection_eq_infEDist
+theorem eNorm_starProjection_eq_infEDist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     ‖U.starProjection y‖ₑ = Metric.infEDist y Uᗮ := by
-  simp [← Uᗮ.edist_starProjection_eq_infEDist y, edist_eq_enorm_sub]
+  simp [← Uᗮ.edist_starProjection_eq_infEDist y, eDist_eq_eNorm_sub]
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_starProjection_eq_infEDist := eNorm_starProjection_eq_infEDist
 
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]

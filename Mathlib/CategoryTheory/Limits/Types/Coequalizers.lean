@@ -13,7 +13,6 @@ public import Mathlib.Logic.Function.Coequalizer
 
 The coequalizer of a pair of maps `(f, g)` from `X` to `Y`
 is the quotient of `Y` by `∀ x : Y, f x ~ g x`
-
 -/
 
 @[expose] public section

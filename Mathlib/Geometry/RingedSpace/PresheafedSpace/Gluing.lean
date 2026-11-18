@@ -51,7 +51,6 @@ that it is an open immersion. The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, _)` 
 of the red arrows, and the map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{V_{jk}}, _)` is given by the composition of the
 blue arrows. To lift this into a map from `Γ(𝒪_X, ι i '' U)`, we also need to show that these
 commute with the maps in the diagram (the green arrows), which is just a lengthy diagram-chasing.
-
 -/
 
 @[expose] public section
