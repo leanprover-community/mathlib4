@@ -24,7 +24,6 @@ form of Lebesgue's density theorem.
 * `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`: a version of Lebesgue's density
   theorem for sequences of balls converging on a point but whose centres are not required to be
   fixed.
-
 -/
 
 public section

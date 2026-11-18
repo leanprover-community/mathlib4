@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
@@ -23,7 +25,6 @@ We also show that outer measures on a type `α` form a complete lattice.
 ## Tags
 
 outer measure
-
 -/
 
 @[expose] public section

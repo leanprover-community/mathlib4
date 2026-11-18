@@ -18,7 +18,6 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
   images and show that the biproduct is preserved if one of them is an isomorphism,
 * give the canonical isomorphism between the image of a biproduct and the biproduct of the images
   in case that the biproduct is preserved.
-
 -/
 
 @[expose] public section
@@ -70,7 +69,7 @@ theorem mapBicone_whisker {K : Type w₂} {g : K ≃ J} {f : J → C} (c : Bicon
 end Bicone
 
 /-- The image of a binary bicone under a functor. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F.obj Y) :=
   (BinaryBicones.functoriality _ _ F).obj b
 

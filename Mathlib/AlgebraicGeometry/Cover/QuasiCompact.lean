@@ -74,7 +74,7 @@ particular for étale and Zariski covers. -/
 lemma of_isOpenMap {𝒰 : S.Cover K} [Scheme.JointlySurjective K] (h : ∀ i, IsOpenMap (𝒰.f i)) :
     QuasiCompactCover 𝒰.toPreZeroHypercover where
   isCompactOpenCovered_of_isAffineOpen {U} hU := .of_isOpenMap
-    (fun i ↦ (𝒰.f i).continuous) h (fun x _ ↦ ⟨𝒰.idx x, 𝒰.covers x⟩) U.2 hU.isCompact
+    (fun i ↦ (𝒰.f i).continuous) h (fun x _ ↦ ⟨𝒰.idx x, 𝒰.covers x⟩) U.is_open' hU.isCompact
 
 /-- Any open cover is quasi-compact. -/
 instance (𝒰 : S.OpenCover) : QuasiCompactCover 𝒰.toPreZeroHypercover :=
@@ -87,7 +87,7 @@ lemma of_hom {𝒱 : PreZeroHypercover.{w'} S} (f : 𝒱.Hom 𝒰) [QuasiCompact
   refine ⟨fun {U} hU ↦ ?_⟩
   exact .of_comp (a := f.s₀) (𝒱.f ·) (f.h₀ ·)
     (fun _ ↦ Scheme.Hom.continuous _) (fun i ↦ funext <| by simp [← Scheme.Hom.comp_apply])
-    (fun _ ↦ Scheme.Hom.continuous _) U.2 (hU.isCompactOpenCovered 𝒱)
+    (fun _ ↦ Scheme.Hom.continuous _) U.is_open' (hU.isCompactOpenCovered 𝒱)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -101,7 +101,7 @@ instance [QuasiCompactCover 𝒰] {T : Scheme.{u}} (f : T ⟶ S) :
     obtain ⟨W, hW, hx, _⟩ := isBasis_iff_nbhd.mp S.isBasis_affineOpens (mem_top (f x))
     obtain ⟨W', hW', hx', hle⟩ := isBasis_iff_nbhd.mp T.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ W ⊓ U' from ⟨hx, hxU⟩)
-    exact ⟨W', le_trans hle inf_le_right, by simpa [hx], W'.2,
+    exact ⟨W', le_trans hle inf_le_right, by simpa [hx], W'.is_open',
       this hW' ⟨W, hW, by simpa using! le_trans hle inf_le_left⟩⟩
   obtain ⟨U, hU, hsub⟩ := h
   obtain ⟨s, hf, V, hc, (heq : _ = (U : Set S))⟩ := hU.isCompactOpenCovered 𝒰
@@ -142,7 +142,7 @@ instance of_finite {𝒰 : S.Cover K} [Scheme.JointlySurjective K]
     [∀ i, AlgebraicGeometry.QuasiCompact (𝒰.f i)] [Finite 𝒰.I₀] :
     QuasiCompactCover 𝒰.toPreZeroHypercover where
   isCompactOpenCovered_of_isAffineOpen {U} hU := by
-    refine .of_finite_of_isSpectralMap (fun i ↦ (𝒰.f i).isSpectralMap) ?_ U.2 hU.isCompact
+    refine .of_finite_of_isSpectralMap (fun i ↦ (𝒰.f i).isSpectralMap) ?_ U.is_open' hU.isCompact
     exact (fun x _ ↦ ⟨𝒰.idx x, 𝒰.covers x⟩)
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -185,8 +185,9 @@ lemma exists_hom {S : Scheme.{u}} (𝒰 : S.Cover (Scheme.precoverage P))
     [P.RespectsLeft @IsOpenImmersion] [CompactSpace S] [QuasiCompactCover 𝒰.toPreZeroHypercover] :
     ∃ (𝒱 : Scheme.AffineCover.{w} P S) (f : 𝒱.cover ⟶ 𝒰),
       Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.h₀ j) := by
-  obtain ⟨n, f, V, hV, h⟩ := QuasiCompactCover.exists_isAffineOpen_of_isCompact 𝒰.1
-    (show IsCompact (⊤ : TopologicalSpace.Opens S).carrier from isCompact_univ)
+  obtain ⟨n, f, V, hV, h⟩ :=
+    QuasiCompactCover.exists_isAffineOpen_of_isCompact 𝒰.toPreZeroHypercover
+      (show IsCompact (⊤ : TopologicalSpace.Opens S).carrier from isCompact_univ)
   simp only [coe_top, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_iUnion,
     Set.mem_image, SetLike.mem_coe, forall_const] at h
   choose idx x hmem hx using h

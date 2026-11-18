@@ -21,7 +21,6 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
-
 -/
 
 @[expose] public section
@@ -164,8 +163,8 @@ def orderEmbedding : Ideal S ↪o Ideal R where
 
 include M in
 theorem under_le_under_iff {I J : Ideal S} :
-    I.under R ≤ J.under R ↔ I ≤ J := by
-  exact (IsLocalization.orderEmbedding M S).le_iff_le
+    I.under R ≤ J.under R ↔ I ≤ J :=
+  (IsLocalization.orderEmbedding M S).le_iff_le
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M`.
@@ -205,8 +204,8 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   exact ⟨hp, hd⟩
 
 include M S in
-lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal := by
-  exact ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
+lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal :=
+  ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
 
 theorem isMaximal_of_isMaximal_disjoint (I : Ideal R) [hI : I.IsMaximal]
     (h : Disjoint (M : Set R) (I : Set R)) : (I.map (algebraMap R S)).IsMaximal := by
@@ -242,7 +241,8 @@ prime ideals disjoint from `M`. -/
 @[simps!] def primeSpectrumOrderIso :
     PrimeSpectrum S ≃o {p : PrimeSpectrum R // Disjoint (M : Set R) p.asIdeal} :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime M S).trans
-    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.asIdeal, p.1.isPrime, p.2⟩,
+      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 include M in
 lemma map_radical (I : Ideal R) :
@@ -305,7 +305,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
       rw [← mk'_eq_mul_mk'_one, mk'_self]
     exact ⟨0, eq_comm.1 (by simp [Ideal.Quotient.eq_zero_iff_mem, this])⟩
   · rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hI
-    obtain ⟨n, hn⟩ := hI.3 hM
+    obtain ⟨n, hn⟩ := hI.mul_inv_cancel hM
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n
     refine ⟨(Ideal.Quotient.mk J) (r * rn), ?_⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality

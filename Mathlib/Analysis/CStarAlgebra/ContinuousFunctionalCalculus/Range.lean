@@ -28,7 +28,6 @@ consequences thereof.
   and `range_cfcₙ_nnreal_subset`.
 * `cfc_mem` and `cfcₙ_mem`: the continuous functional calculus of an element is contained in any
   closed star subalgebra containing the element.
-
 -/
 
 public section

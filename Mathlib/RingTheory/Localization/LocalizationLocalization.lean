@@ -136,7 +136,7 @@ theorem isLocalization_isLocalization_atPrime_isLocalization (p : Ideal S) [Hp :
     [IsLocalization.AtPrime T p] : IsLocalization.AtPrime T (p.comap (algebraMap R S)) := by
   apply localization_localization_isLocalization_of_has_all_units M p.primeCompl T
   intro x hx hx'
-  exact (Hp.1 : ¬_) (p.eq_top_of_isUnit_mem hx' hx)
+  exact (Hp.ne_top' : ¬_) (p.eq_top_of_isUnit_mem hx' hx)
 
 instance (p : Ideal (Localization M)) [p.IsPrime] : Algebra R (Localization.AtPrime p) :=
   inferInstance

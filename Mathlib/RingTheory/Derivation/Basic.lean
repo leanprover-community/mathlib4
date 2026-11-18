@@ -5,6 +5,8 @@ Authors: Nicolò Cavalleri, Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
@@ -31,7 +33,6 @@ and `Mathlib/RingTheory/Derivation/ToSquareZero.lean` for
 ## Future project
 
 - Generalize derivations into bimodules.
-
 -/
 
 @[expose] public section
@@ -218,7 +219,7 @@ variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass 
 
 instance : SMul S (Derivation R A M) :=
   ⟨fun r D =>
-    { toLinearMap := r • D.1
+    { toLinearMap := r • D.toLinearMap
       map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
       leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
         smul_comm r (_ : A) (_ : M)] }⟩

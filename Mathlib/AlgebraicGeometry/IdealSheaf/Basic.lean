@@ -39,7 +39,6 @@ Instead, for the ease of development and application,
 we define the structure `IdealSheafData` containing all necessary data to uniquely define an
 ideal sheaf. This should be refactored as a constructor for ideal sheaves once they are introduced
 into mathlib.
-
 -/
 
 @[expose] public section
@@ -716,7 +715,7 @@ lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
         letI := hV.trans_le (X.basicOpen_le _); ((f.app U).hom x |_ V) = 0 by
       obtain ⟨_, rfl, H⟩ := this
       obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact
-        X (U := f ⁻¹ᵁ U) (QuasiCompact.isCompact_preimage (f := f) _ U.1.2 U.2.isCompact)
+        X (U := f ⁻¹ᵁ U) (QuasiCompact.isCompact_preimage (f := f) _ U.1.is_open' U.2.isCompact)
         (f.app U x) (f.app U s) H
       exact ⟨_, ⟨n, rfl⟩, by simpa using hn⟩
     refine ⟨f ⁻¹ᵁ Y.basicOpen s, by simp, ?_⟩
