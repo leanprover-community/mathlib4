@@ -93,16 +93,16 @@ jobs:
 
       # A bors batch builds on `staging` or `trying`. Its commits sit on top of the tip of the
       # branch that the batch merges into, so that branch is the `master` or `bump/*` branch whose
-      # tip the batch is ahead of by the fewest commits. On a tie, the step chooses `master`.
-      # A tie occurs only when a `bump/*` tip and the `master` tip are the same commit. A `bump/*`
-      # branch has merge commits and adaptation commits that `master` never contains, so only a
-      # new `bump/*` branch without such a commit can tie.
+      # tip the batch is ahead of by the fewest commits. On a tie, the manifest check runs with
+      # strict rules. A tie occurs only when a `bump/*` tip and the `master` tip are the same
+      # commit. A `bump/*` branch has merge commits and adaptation commits that `master` never
+      # contains, so only a new `bump/*` branch without such a commit can tie.
       - name: Find the target branch of a bors batch
         id: bors_target
         if: >-
           github.repository == 'leanprover-community/mathlib4'
           && (github.ref_name == 'staging' || github.ref_name == 'trying')
-        # On an API error the output stays empty, and the manifest check runs as for `master`.
+        # On an API error the output stays empty, and the manifest check runs with strict rules.
         continue-on-error: true
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
@@ -115,9 +115,16 @@ jobs:
                 owner, repo, basehead: `${branch}...${context.sha}`, per_page: 1,
               });
               core.info(`${branch}: ${data.status}, ahead by ${data.ahead_by}`);
-              if (['ahead', 'identical'].includes(data.status) && data.ahead_by < fewest) {
+              const reachable = ['ahead', 'identical'].includes(data.status);
+              if (reachable && data.ahead_by < fewest) {
                 target = branch;
                 fewest = data.ahead_by;
+              } else if (reachable && data.ahead_by === fewest && target === 'master') {
+                core.notice(
+                  `Because \`${branch}\` and \`master\` are at the same commit, we can't tell if this bors batch ` +
+                  `is merging into \`master\` or into \`${branch}\`: the \`lake-manifest.json\` check will run with strict rules.`,
+                  { title: 'Bors target branch is ambiguous' },
+                );
               }
             }
             core.info(`The batch merges into ${target}.`);
