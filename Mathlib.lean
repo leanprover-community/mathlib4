@@ -2300,6 +2300,7 @@ public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
 public import Mathlib.Analysis.Normed.Module.Bases
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Module.BirkhoffOrthogonality
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.Normed.Module.Connected
