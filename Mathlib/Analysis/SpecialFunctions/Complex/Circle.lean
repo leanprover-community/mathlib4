@@ -10,6 +10,8 @@ public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Topology.Covering.AddCircle
 
+import Mathlib.Topology.Algebra.ClopenNhdofOne
+
 /-!
 # Maps on the unit circle
 
@@ -490,6 +492,16 @@ theorem Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two {z : Circle}
         simpa [div_div, ← pow_succ'] using mem_centeredArc_div
           (div_le_self pi_nonneg one_le_two) (by simpa) (hz (2 ^ (n + 1)) (by positivity))
   simpa [h] using Set.ext_iff.mp hasBasis_centeredArc_div_two_pow.ker z
+
+/-- A continuous homomorphism from a profinite group to `Circle` has open kernel. -/
+theorem Circle.isOpen_ker_of_continuous {G : Type*} [Group G] [TopologicalSpace G]
+    [IsTopologicalGroup G] [CompactSpace G] [ZeroDimensionalSpace G] (χ : G →* Circle)
+    (hχ : Continuous χ) : IsOpen (χ.ker : Set G) := by
+  have : χ 1 ∈ centeredArc (π / 2) := by simp [mem_centeredArc (half_le_self pi_nonneg), pi_pos]
+  obtain ⟨U, hU⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
+    ((isOpen_centeredArc (π / 2)).preimage hχ) this
+  refine Subgroup.isOpen_mono (H₁ := U.toSubgroup) (fun g hg ↦ ?_) U.isOpen
+  exact eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n _ ↦ map_pow χ g n ▸ hU (pow_mem hg n)
 
 /- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
