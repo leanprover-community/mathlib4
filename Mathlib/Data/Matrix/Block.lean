@@ -177,6 +177,10 @@ abbrev toBlock (M : Matrix m n α) (p : m → Prop) (q : n → Prop) :
     Matrix { a // p a } { a // q a } α :=
   M.submatrix (↑) (↑)
 
+theorem toBlock_def (M : Matrix m n α) (p : m → Prop) (q : n → Prop) :
+    toBlock M p q = M.submatrix (↑) (↑) :=
+  rfl
+
 theorem toBlock_apply (M : Matrix m n α) (p : m → Prop) (q : n → Prop) (i : { a // p a })
     (j : { a // q a }) : toBlock M p q i j = M ↑i ↑j :=
   rfl
@@ -199,7 +203,7 @@ abbrev toSquareBlock (M : Matrix m m α) (b : m → β) (k : β) :
   toBlock M _ _
 
 theorem toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
-    toSquareBlock M b k = of (fun i j : { a // b a = k } => M ↑i ↑j) :=
+    toSquareBlock M b k = toBlock M (b · = k) (b · = k) :=
   rfl
 
 theorem fromBlocks_smul [SMul R α] (x : R) (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
