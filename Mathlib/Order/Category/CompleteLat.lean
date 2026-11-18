@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Category.BddLat
 public import Mathlib.Order.Hom.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of complete lattices
 

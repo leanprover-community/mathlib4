@@ -8,6 +8,9 @@ module
 public import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.PFunctor.Univariate.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate polynomial functors.
 
@@ -121,8 +124,8 @@ section Comp
 
 /-- Functor composition on polynomial functors -/
 def comp (P : MvPFunctor.{uA₂, uB₂} m) (Q : Fin2 m → MvPFunctor.{uA₁, uB₁} n) : MvPFunctor n where
-  A := Σ a₂ : P.1, ∀ i, P.2 a₂ i → (Q i).1
-  B a i := Σ (j : _) (b : P.2 a.1 j), (Q j).2 (a.snd j b) i
+  A := Σ a₂ : P.A, ∀ i, P.B a₂ i → (Q i).A
+  B a i := Σ (j : _) (b : P.B a.fst j), (Q j).B (a.snd j b) i
 
 variable {P : MvPFunctor.{uA₂, uB₂} m} {Q : Fin2 m → MvPFunctor.{uA₁, uB₁} n}
 

@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Order.Hom.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # liminfs and limsups of functions and filters
 
@@ -742,14 +745,11 @@ lemma liminf_le_limsup_of_frequently_le {v : α → β} (h : ∃ᶠ x in f, u x 
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 
--- The linter erroneously claims that I'm not referring to `c`
-set_option linter.unusedVariables false in
 @[to_dual gt_mem_sets_of_limsInf_gt]
 theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
-    ∀ᶠ a in f, a < b :=
-  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ :=
-    exists_lt_of_csInf_lt (s := {a | ∀ᶠ n in f, n ≤ a}) h l
-  mem_of_superset h fun _a => hcb.trans_le'
+    ∀ᶠ a in f, a < b := by
+  obtain ⟨_, h, hcb⟩ := exists_lt_of_csInf_lt (s := {a | ∀ᶠ n in f, n ≤ a}) h l
+  exact mem_of_superset h fun _a => hcb.trans_le'
 
 section Classical
 
@@ -852,7 +852,7 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
   rw [ite_eq_right H']
   apply hv.liminf_eq_ciSup_ciInf
   · push Not at H
-    simpa only [nonempty_iff_ne_empty] using H
+    exact H
   · push Not at H'
     exact H'
 

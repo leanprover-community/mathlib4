@@ -60,8 +60,8 @@ theorem map_mkQ_eq {N₁ N₂ : Submodule R M} (h : N₁ ≤ N₂) (h' : N₂.FG
     have : N₂ ≤ 𝔪 • N₂ ⊔ N₁ := by
       simpa using Submodule.comap_mono (f := Submodule.mkQ (𝔪 • N₂)) hN.ge
     rw [sup_comm] at this
-    exact h.antisymm (Submodule.le_of_le_smul_of_le_jacobson_bot h'
-      (by rw [jacobson_eq_maximalIdeal]; exact bot_ne_top) this)
+    exact h.antisymm (Submodule.le_of_le_smul_of_le_jacobson h'
+      (ringJacobson_eq_maximalIdeal R).ge this)
   · rintro rfl; simp
 
 theorem map_mkQ_eq_top {N : Submodule R M} [Module.Finite R M] :
@@ -388,7 +388,7 @@ variable (R M) [Finite (MaximalSpectrum R)] [AddCommGroup M] [Module R M]
 /-- If `M` is a finite flat module over a commutative semilocal ring `R` that has the same rank `n`
 at every maximal ideal, then `M` is free of rank `n`. -/
 @[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
-    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
+    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.asIdeal) ((R ⧸ P.asIdeal) ⊗[R] M) = n) :
     Nonempty (Basis (Fin n) R M) := by
   let := @Quotient.field
   /- For every maximal ideal `P`, `R⧸P ⊗[R] M` is an `n`-dimensional vector space over the field
@@ -415,7 +415,7 @@ at every maximal ideal, then `M` is free of rank `n`. -/
   simp [smul_tmul', ← funext_iff.mp (hb _)]
 
 @[stacks 02M9] theorem free_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
-    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
+    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.asIdeal) ((R ⧸ P.asIdeal) ⊗[R] M) = n) :
     Free R M :=
   have ⟨b⟩ := nonempty_basis_of_flat_of_finrank_eq R M n rk
   .of_basis b

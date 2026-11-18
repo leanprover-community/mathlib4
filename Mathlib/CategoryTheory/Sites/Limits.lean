@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
-
 # Limits and colimits of sheaves
 
 ## Limits
@@ -25,7 +24,6 @@ Given a diagram `F : K ⥤ Sheaf J D` of sheaves, and a colimit cocone on the le
 we show that the cocone obtained by sheafifying the cocone point is a colimit cocone of sheaves.
 
 This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soon as `D` does.
-
 -/
 
 @[expose] public section
@@ -66,7 +64,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
     Cone (F ⋙ sheafToPresheaf J D ⋙ (evaluation Cᵒᵖ D).obj (op X)) where
   pt := S.pt
   π :=
-    { app := fun k => (Presheaf.isLimitOfIsSheaf J (F.obj k).1 W (F.obj k).2).lift <|
+    { app := fun k => (Presheaf.isLimitOfIsSheaf J (F.obj k).obj W (F.obj k).property).lift <|
         Multifork.ofι _ S.pt (fun i => S.ι i ≫ (E.π.app k).app (op i.Y))
           (by
             intro i
@@ -80,7 +78,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         intro i j f
         dsimp [Presheaf.isLimitOfIsSheaf]
         rw [Category.id_comp]
-        apply Presheaf.IsSheaf.hom_ext (F.obj j).2 W
+        apply Presheaf.IsSheaf.hom_ext (F.obj j).property W
         intro ii
         rw [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← (F.map f).hom.naturality, ←
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
@@ -89,7 +87,6 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
 
 variable [HasLimitsOfShape K D]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a cone of shape `K` of sheaves, which is a limit on the level of presheaves,
 this definition shows that the limit presheaf satisfies the multifork variant of the sheaf
@@ -120,7 +117,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       intro k
       dsimp
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac]
-      apply Presheaf.IsSheaf.hom_ext (F.obj k).2 W
+      apply Presheaf.IsSheaf.hom_ext (F.obj k).property W
       intro i
       dsimp only [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
       rw [(F.obj k).property.amalgamate_map]
@@ -190,7 +187,6 @@ noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma sheafifyCocone_ι_app_val

@@ -149,29 +149,11 @@ theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoun
   rw [OrderIso.map_bot]
   rfl
 
-/-- Club sets in regular cardinals correspond one to one with normal functions.
+/-- Club sets in regular cardinals correspond one to one with normal enumerator functions.
 
 See also `Order.isNormal_enum_iff_isClub`. -/
-theorem isNormal_enum_iff_dirSupClosed :
-    IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
-  let H := (Subtype.strictMono_coe _).comp (enum s hs).strictMono
-  refine ⟨fun he ↦ by simpa using he.dirSupClosed_range, ?_⟩
-  rw [isNormal_iff, dirSupClosed_iff_of_linearOrder]
-  refine fun hs' ↦ ⟨H, fun a ha b hb ↦ ?_⟩
-  have bdd : BddAbove (Subtype.val ∘ enum s hs '' Iio a) := by
-    use enum s hs a
-    simpa [upperBounds] using fun x hx ↦ hx.le
-  have : Nonempty α := ⟨a⟩
-  let := WellFoundedLT.toOrderBot α
-  let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
-  trans sSup ((Subtype.val ∘ enum s hs) '' Iio a)
-  · refine enum_le_of_forall_lt (hs' ?_ ?_ (isLUB_csSup' bdd)) fun b hb ↦ ?_
-    · grind
-    · simpa using ha.ne_bot
-    · obtain ⟨c, hbc, hca⟩ := ha.lt_iff_nonempty_Ioo.1 hb
-      refine (H hbc).trans_le <| le_csSup bdd ⟨c, ?_⟩
-      simpa
-  · apply csSup_le'
-    simpa [upperBounds]
+theorem isNormal_enum_iff_dirSupClosed : IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
+  rw [isNormal_iff_dirSupClosed_range ((Subtype.strictMono_coe _).comp (enum s hs).strictMono)]
+  simp
 
 end Order

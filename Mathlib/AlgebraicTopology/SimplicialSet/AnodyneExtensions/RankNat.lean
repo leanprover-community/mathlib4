@@ -15,7 +15,6 @@ import Mathlib.Basic.Finite.Sigma
 In this file, we show that if `P : A.Pairing` is
 a regular pairing of subcomplex `A` of a simplicial set `X`,
 then there exists a rank function for `P` with values in `ℕ`.
-
 -/
 
 @[expose] public section
@@ -34,7 +33,7 @@ variable (P : A.Pairing)
 
 instance (y : P.II) : Finite { x // P.AncestralRel x y } := by
   let T := { x : P.II // P.AncestralRel x y }
-  let U := Σ (d : Fin (P.p y).1.dim), ⦋d⦌ ⟶ ⦋(P.p y).1.1.1.1⦌
+  let U := Σ (d : Fin (P.p y).1.dim), ⦋d⦌ ⟶ ⦋(P.p y).1.toN.toS.dim⦌
   let ψ : U → X.S := fun ⟨d, f⟩ ↦ S.mk (X.map f.op (P.p y).1.simplex)
   have h (t : T) : ∃ u, ψ u = t.1.1.toS := by
     obtain ⟨f, _, hf⟩ := N.le_iff_exists_mono.1 t.2.2.le

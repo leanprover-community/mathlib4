@@ -8,8 +8,8 @@ module
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
-/-!
 
+/-!
 # Locally surjective morphisms of coherent sheaves
 
 This file characterises locally surjective morphisms of presheaves for the coherent, regular
@@ -64,7 +64,7 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
       (h : Presheaf.IsLocallySurjective (extensiveTopology C) f) {X : C} :
         Function.Surjective (f.app (op X)) := by
   intro x
-  replace h := h.1 x
+  replace h := h.imageSieve_mem x
   rw [mem_sieves_iff_contains_colimit_cofan] at h
   obtain ⟨α, _, Y, π, h, h'⟩ := h
   let y : (a : α) → (F.obj ⟨Y a⟩) := fun a ↦ (h' a).choose
@@ -103,14 +103,13 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
         ∀ (X : C), Function.Surjective (f.hom.app (op X)) :=
   extensiveTopology.presheafIsLocallySurjective_iff _ f.hom
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (coherentTopology C) f) :
         Presheaf.IsLocallySurjective (regularTopology C) f where
   imageSieve_mem y := by
-    replace h := h.1 y
+    replace h := h.imageSieve_mem y
     rw [coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily] at h
     obtain ⟨α, _, Z, π, h, h'⟩ := h
     rw [mem_sieves_iff_hasEffectiveEpi]
