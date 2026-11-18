@@ -310,22 +310,10 @@ Helper Lemma: Identify the support of `d` as the support of the sum `∑ᶠ u, (
 -/
 lemma support_mul_log_norm_sub (d : 𝕜 → ℤ) :
     (fun u ↦ (d u * log ‖· - u‖)).support = d.support := by
+  obtain ⟨y, hy⟩ := NormedField.exists_one_lt_norm 𝕜
   ext u
-  rw [← not_iff_not]
-  simp only [ne_eq, not_not, Function.mem_support]
-  constructor <;> intro hx
-  · obtain ⟨y, hy⟩ := NormedField.exists_one_lt_norm 𝕜
-    have := congr($hx (y + u))
-    simp only [add_sub_cancel_right, Pi.zero_apply, mul_eq_zero, Int.cast_eq_zero, log_eq_zero,
-      norm_eq_zero] at this
-    rcases this with h | h | h | h
-    · assumption
-    · simp only [h, norm_zero] at hy
-      linarith
-    · simp only [h, lt_self_iff_false] at hy
-    · simp only [h, lt_neg_self_iff] at hy
-      linarith
-  · simp_all [Pi.zero_def]
+  refine ⟨fun h h' ↦ h (by simp [h', Pi.zero_def]), fun h h' ↦ h ?_⟩
+  simpa [(log_pos hy).ne'] using congr($h' (y + u))
 
 /--
 If the support of `d` is infinite, then the functions `log ‖factorizedRational d ·‖` and
@@ -347,22 +335,11 @@ theorem log_norm_eqOn (d : 𝕜 → ℤ) :
   -- Trivial case: the support of d is infinite
   by_cases hd : d.support.Finite
   case neg => exact fun x _ ↦ congrFun (log_norm_eq_of_not_hasFiniteSupport hd) x
-  -- General case
+  -- General case: on the complement, it is exactly the trailing coefficient
   intro z hz
-  have h₂z : d z = 0 := by simpa using hz
-  change log ‖factorizedRational d z‖ = _
-  rw [factorizedRational, finprod_eq_prod_of_mulSupport_subset (s := hd.toFinset) _
-      (by simp [mulSupport]),
-    finsum_eq_sum_of_support_subset (s := hd.toFinset) _ (by simp [support_mul_log_norm_sub])]
-  have : ∀ x ∈ hd.toFinset, ‖z - x‖ ^ d x ≠ 0 := by
-    intro x hx
-    rw [Finite.mem_toFinset, Function.mem_support] at hx
-    rw [ne_eq, zpow_eq_zero_iff hx, norm_eq_zero, sub_eq_zero, eq_comm]
-    apply ne_of_apply_ne d
-    rwa [h₂z]
-  simp only [Finset.prod_apply, Pi.pow_apply, norm_prod, norm_zpow]
-  rw [log_prod this]
-  simp [log_zpow]
+  rw [finsum_apply (by simpa [HasFiniteSupport, support_mul_log_norm_sub]),
+    ← log_norm_meromorphicTrailingCoeffAt hd,
+    (analyticAt (by simp_all)).meromorphicTrailingCoeffAt_of_ne_zero (ne_zero (by simp_all))]
 
 /--
 If `D` is a function with locally finite support within `U`, such as the divisor of a meromorphic
