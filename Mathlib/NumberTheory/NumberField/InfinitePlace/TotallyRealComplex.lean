@@ -120,23 +120,17 @@ variable {K}
 /-- The compositum of a family of totally real subfields is totally real. -/
 instance isTotallyReal_iSup {ι : Sort*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
-  refine ⟨fun w ↦ InfinitePlace.isReal_iff.mpr <| ComplexEmbedding.isReal_iff.mpr <|
-    RingHom.ext fun ⟨z, hz⟩ ↦ RingHom.mem_eqLocusField.mp ?_⟩
-  
-  have h : (ComplexEmbedding.conjugate w.embedding).eqLocusField w.embedding = ⊤ := by
-    rw [eq_top_iff, ← Subfield.comap_subtype_self, Subfield.comap_iSup _
-      (fun _ ↦ by simpa using le_iSup _ _), iSup_le_iff]
-    refine fun _ x hx ↦ RingHom.congr_fun (IsTotallyReal.complexEmbedding_isReal
-      (w.embedding.comp (Subfield.inclusion ?_))) ⟨x, hx⟩
-    exact le_iSup _ _
-  exact h ▸ Subsemiring.mem_top z
+  refine ⟨fun w ↦ isReal_iff.mpr <| ComplexEmbedding.isReal_iff.mpr <|
+    RingHom.eq_of_eqOn_subfield_top (?_ : ⊤ ≤ RingHom.eqLocusField _ _)⟩
+  rw [← Subfield.comap_subtype_self, Subfield.comap_iSup _ fun _ ↦ by simpa using le_iSup _ _]
+  exact iSup_le fun _ x hx ↦ RingHom.congr_fun (IsTotallyReal.complexEmbedding_isReal
+    (w.embedding.comp (Subfield.inclusion (le_iSup _ _)))) ⟨x, hx⟩
 
 /-- The compositum of two totally real subfields is totally real. -/
 instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F] :
     IsTotallyReal (E ⊔ F : Subfield K) := by
-  have (b : Bool) : IsTotallyReal (cond b E F : Subfield K) := by cases b <;> assumption
   rw [sup_eq_iSup]
-  exact isTotallyReal_iSup
+  exact @isTotallyReal_iSup _ _ _ _ (Bool.forall_bool.2 ⟨‹_›, ‹_›⟩)
 
 end Sup
 
