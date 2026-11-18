@@ -128,20 +128,13 @@ theorem equivPiTensorComplSingletonTensor_comp_map (i₀ : ι) (f : ∀ i, M i �
   rfl
 
 @[simp]
-theorem equivPiTensorComplSingletonTensor_comp_map_comp_symm (i₀ : ι) (f : ∀ i, M i →ₗ[R] N i) :
-    (equivPiTensorComplSingletonTensor R N i₀) ∘ₗ map f ∘ₗ
-    (equivPiTensorComplSingletonTensor R M i₀).symm =
-    TensorProduct.map (map fun (i : ({i₀}ᶜ : Set ι)) ↦ f i) (f i₀) := by
-  rw [← LinearMap.comp_assoc, equivPiTensorComplSingletonTensor_comp_map, LinearMap.comp_assoc]
-  simp
-
-@[simp]
 theorem map_comp_equivPiTensorComplSingletonTensor_symm (i₀ : ι) (f : ∀ i, M i →ₗ[R] N i) :
     map f ∘ₗ (equivPiTensorComplSingletonTensor R M i₀).symm = (equivPiTensorComplSingletonTensor
     R N i₀).symm ∘ₗ TensorProduct.map (map fun (i : ({i₀}ᶜ : Set ι)) ↦ f i) (f i₀) := by
   apply Function.Injective.injective_linearMapComp_left
     (equivPiTensorComplSingletonTensor R N i₀).injective
-  simp
+  simp_rw [← LinearMap.comp_assoc, equivPiTensorComplSingletonTensor_comp_map,
+    LinearEquiv.comp_symm_cancel_right, LinearEquiv.comp_symm, LinearMap.id_comp]
 
 @[simp]
 theorem equivPiTensorComplSingletonTensor_conj_map (i₀ : ι) (f : ∀ i, M i →ₗ[R] M i) :
