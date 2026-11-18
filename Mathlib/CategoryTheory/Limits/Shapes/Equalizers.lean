@@ -296,7 +296,7 @@ theorem parallelPairHom_app_one {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') 
 
 /-- Construct a natural isomorphism between functors out of the walking parallel pair from
 its components. -/
-@[simps!, to_dual none]
+@[to_dual none, simps! (attr := to_dual none)]
 def parallelPair.ext {F G : WalkingParallelPair ⥤ C} (zero : F.obj zero ≅ G.obj zero)
     (one : F.obj one ≅ G.obj one)
     (left : F.map left ≫ one.hom = zero.hom ≫ G.map left := by cat_disch)
