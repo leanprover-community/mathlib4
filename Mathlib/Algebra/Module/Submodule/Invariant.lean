@@ -101,10 +101,12 @@ lemma sup_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.i
 variable (f)
 
 @[simp]
-protected lemma top_mem : ⊤ ∈ f.invtSubmodule := by simp [mem_invtSubmodule]
+protected lemma top_mem : ⊤ ∈ f.invtSubmodule :=
+  (mem_invtSubmodule f).mpr le_top
 
 @[simp]
-protected lemma bot_mem : ⊥ ∈ f.invtSubmodule := by simp [mem_invtSubmodule]
+protected lemma bot_mem : ⊥ ∈ f.invtSubmodule :=
+  (mem_invtSubmodule _).mpr (OrderBot.bot_le (Submodule.comap ..))
 
 instance : BoundedOrder (f.invtSubmodule) where
   top := ⟨⊤, invtSubmodule.top_mem f⟩
