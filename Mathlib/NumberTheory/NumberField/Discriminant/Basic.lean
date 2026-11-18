@@ -119,8 +119,7 @@ theorem discr_emod_four_eq_zero_or_one : discr K % 4 = 0 ∨ discr K % 4 = 1 := 
     rw [map_div₀, map_sub, map_sub, ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply ℤ (𝓞 E) E, hM₁, map_pow _ m,
       IsScalarTower.algebraMap_apply ℤ (𝓞 E) E, hm, ← map_pow, ← map_sub, hx, map_mul, map_ofNat,
-      map_ofNat]
-    field_simp
+      map_ofNat, mul_div_cancel_left₀ _ (by norm_num)]
   refine ⟨m, c, ?_⟩
   apply FaithfulSMul.algebraMap_injective ℤ (𝓞 E)
   rw [hM₁, map_add, map_pow, hm, ← sub_eq_iff_eq_add', ← hc, map_mul, map_ofNat]
