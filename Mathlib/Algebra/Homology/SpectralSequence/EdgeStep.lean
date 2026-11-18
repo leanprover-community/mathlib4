@@ -72,9 +72,8 @@ instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeMonoAt pq r] :
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma edgeMonoStep_comp_d (pq pq' : ι) (r r' : ℤ)
-    (hrr' : r + 1 = r' := by lia)
-    [E.HasEdgeMonoAt pq r] :
+lemma edgeMonoStep_comp_d (pq pq' : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
     E.edgeMonoStep pq r r' hrr' ≫ (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).d pq pq' = 0 := by
   simp [edgeMonoStep]
 
@@ -82,8 +81,8 @@ lemma edgeMonoStep_comp_d (pq pq' : ι) (r r' : ℤ)
 lemma iso_hom_comp_edgeMonoStep (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
     (hrr' : r + 1 = r' := by lia) :
     (E.iso r r' pq hrr' (E.le₀_of_hasEdgeMonoAt pq r)).hom ≫ E.edgeMonoStep pq r r' =
-      ((E.page r (E.le₀_of_hasEdgeMonoAt pq r)).isoHomologyπ _ pq rfl (by simp)).inv ≫
-        (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).iCycles pq := by
+    ((E.page r (E.le₀_of_hasEdgeMonoAt pq r)).isoHomologyπ _ pq rfl (by simp)).inv ≫
+      (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).iCycles pq := by
   simp [edgeMonoStep]
 
 /-- Assuming `E.HasEdgeMonoAt pq r` holds (i.e. the differential to an object
@@ -134,7 +133,7 @@ noncomputable def edgeEpiStep (pq : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq r]
       (E.page r' (by have := E.le₀_of_hasEdgeEpiAt pq r; lia)).X pq :=
   (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).pOpcycles pq ≫
     ((E.page r (E.le₀_of_hasEdgeEpiAt pq r) ).isoHomologyι pq _ rfl (by simp)).inv ≫
-    (E.iso r r' pq hrr' (E.le₀_of_hasEdgeEpiAt pq r)).hom
+      (E.iso r r' pq hrr' (E.le₀_of_hasEdgeEpiAt pq r)).hom
 
 instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeEpiAt pq r] :
     Epi (E.edgeEpiStep pq r r' hrr') := by
@@ -151,8 +150,8 @@ lemma d_comp_edgeEpiStep (pq pq' : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq' r]
 lemma edgeEpiStep_comp_iso_inv (pq : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq r]
     (hrr' : r + 1 = r' := by lia) :
     E.edgeEpiStep pq r r' hrr' ≫ (E.iso r r' pq hrr' (E.le₀_of_hasEdgeEpiAt pq r)).inv =
-      (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).pOpcycles pq ≫
-        ((E.page r (E.le₀_of_hasEdgeEpiAt pq r)).isoHomologyι pq _ rfl (by simp)).inv := by
+    (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).pOpcycles pq ≫
+      ((E.page r (E.le₀_of_hasEdgeEpiAt pq r)).isoHomologyι pq _ rfl (by simp)).inv := by
   simp [edgeEpiStep]
 
 /-- Assuming `E.HasEdgeEpiAt pq r` holds (i.e. the differential from an object
@@ -184,7 +183,7 @@ lemma exact_edgeEpiStepShortComplex (pq pq' : ι) (r r' : ℤ) [E.HasEdgeEpiAt p
 @[reassoc (attr := simp)]
 lemma edgeMonoStep_edgeEpiStep (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E.HasEdgeEpiAt pq r]
     (hrr' : r + 1 = r' := by lia) :
-        E.edgeMonoStep pq r r' hrr' ≫ E.edgeEpiStep pq r r' hrr' = 𝟙 _ := by
+    E.edgeMonoStep pq r r' hrr' ≫ E.edgeEpiStep pq r r' hrr' = 𝟙 _ := by
   simp only [edgeMonoStep, edgeEpiStep, assoc,
     ← (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).homology_π_ι_assoc pq,
     HomologicalComplex.isoHomologyι_hom_inv_id_assoc,
@@ -211,16 +210,17 @@ variable (r r' : ℤ) (pq pq' pq'' : ι)
 @[reassoc]
 lemma π_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r]
     (hrr' : r + 1 = r' := by lia) :
-    left.π ≫ left.homologyIso.inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
-      (E.iso r r' pq' hrr').hom ≫ E.edgeMonoStep pq' r r' hrr' = left.i := by
+    left.π ≫ left.homologyIso.inv ≫
+      ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
+        (E.iso r r' pq' hrr').hom ≫ E.edgeMonoStep pq' r r' hrr' = left.i := by
   simp
 
 @[reassoc (attr := simp)]
 lemma edgeMonoStep_p_compatibility [E.HasEdgeMonoAt pq' r]
     (hrr' : r + 1 = r' := by lia) :
-      E.edgeMonoStep pq' r r' hrr' ≫ right.p =
-       (E.iso r r' pq' hrr' hr).inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
-       right.homologyIso.hom ≫ right.ι := by
+    E.edgeMonoStep pq' r r' hrr' ≫ right.p =
+    (E.iso r r' pq' hrr' hr).inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
+      right.homologyIso.hom ≫ right.ι := by
   simp [← cancel_epi (E.iso r r' pq').hom,
     ← cancel_epi ((E.page r).isoHomologyπ  _ pq' rfl (d_eq_zero_of_hasEdgeMonoAt ..)).hom]
 
@@ -236,7 +236,8 @@ lemma edgeEpiStep_ι_compatibility [E.HasEdgeEpiAt pq' r]
 lemma i_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r]
     (hrr' : r + 1 = r' := by lia) :
     left.i ≫ E.edgeEpiStep pq' r r' hrr' =
-      left.π ≫ left.homologyIso.inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
+    left.π ≫ left.homologyIso.inv ≫
+      ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
         (E.iso r r' pq' hrr' hr).hom := by
   simp [← cancel_mono (E.iso r r' pq').inv,
     ← cancel_mono ((E.page r).isoHomologyι  pq' pq'' hpq''
