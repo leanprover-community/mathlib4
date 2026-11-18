@@ -72,6 +72,8 @@ variable {α : Type*}
   rw [RelIso.apply_symm_apply] at h
   exact List.prefix_nil.mp h
 
+@[simp] lemma inv_eq_symm (f : TreeAut α) : f⁻¹ = f.symm := rfl
+
 lemma length_map_take_ge (f : TreeAut α) (v : InfiniteRegularTree α) :
     ∀ k ≤ v.length, k ≤ (f (v.take k)).length
   | 0, _ => Nat.zero_le _

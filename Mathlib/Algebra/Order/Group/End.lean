@@ -79,7 +79,7 @@ instance : Group (r ≃r r) where
   mul_one _ := ext fun _ => rfl
   inv_mul_cancel f := ext f.symm_apply_apply
 
-@[simp] lemma inv_eq_symm (e : r ≃r r) : e⁻¹ = e.symm := rfl
+lemma inv_eq_symm (e : r ≃r r) : e⁻¹ = e.symm := rfl
 
 lemma one_def : (1 : r ≃r r) = .refl r := rfl
 lemma mul_def (f g : r ≃r r) : (f * g) = g.trans f := rfl
