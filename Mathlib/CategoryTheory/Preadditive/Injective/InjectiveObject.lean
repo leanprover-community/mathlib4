@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # The full subcategory of injective objects
-
 -/
 
 public section
@@ -54,9 +53,9 @@ instance [HasZeroMorphisms C] [HasZeroObject C] : (isInjective C).ContainsZero w
 injective objects in `C`. -/
 abbrev ι : InjectiveObject C ⥤ C := ObjectProperty.ι _
 
-instance (X : InjectiveObject C) : Injective ((ι C).obj X) := X.2
+instance (X : InjectiveObject C) : Injective ((ι C).obj X) := X.property
 
-instance (X : InjectiveObject C) : Injective X.obj := X.2
+instance (X : InjectiveObject C) : Injective X.obj := X.property
 
 end InjectiveObject
 

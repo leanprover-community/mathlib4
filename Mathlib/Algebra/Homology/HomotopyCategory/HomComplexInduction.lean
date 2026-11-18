@@ -18,7 +18,6 @@ that for a certain `p₀ : ℕ` and any `x : X n`, `φ n x` and `x` coincide
 up to the degree `p₀ + n`, then we construct a cochain
 `InductionUp.limitSequence` in `Cochain K L d` which coincides with the
 `n`th-iteration of `φ` evaluated on `x₀` up to the degree `p₀ + n` for any `n : ℕ`.
-
 -/
 
 @[expose] public section

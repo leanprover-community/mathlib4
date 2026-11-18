@@ -17,7 +17,6 @@ In this file, we introduce a typeclass `IsClosedUnderFiniteLimits`
 saying that a property of objects `P : ObjectProperty C` of a category `C`
 is closed under finite limits. The dual definition `IsClosedUnderFiniteLimits`
 is also introduced.
-
 -/
 
 @[expose] public section

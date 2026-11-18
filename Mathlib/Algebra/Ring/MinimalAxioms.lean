@@ -20,7 +20,6 @@ a minimum number of equalities.
 * `Ring.ofMinimalAxioms`: Define a `Ring` structure on a Type by proving a minimized set of axioms
 * `CommRing.ofMinimalAxioms`: Define a `CommRing` structure on a Type by proving a minimized set of
   axioms
-
 -/
 
 public section

@@ -262,11 +262,11 @@ def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
   right_inv f := by simp only [← comp_coprod, comp_id, coprod_inl_inr]
   map_add' a b := by
     ext
-    simp only [Prod.snd_add, add_apply, coprod_apply, Prod.fst_add, add_add_add_comm]
+    simp only [Prod.snd_add, LinearMap.add_apply, coprod_apply, Prod.fst_add, add_add_add_comm]
   map_smul' r a := by
     dsimp
     ext
-    simp only [smul_add, smul_apply, coprod_apply]
+    simp
 
 theorem prod_ext_iff {f g : M × M₂ →ₗ[R] M₃} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=
@@ -589,16 +589,14 @@ theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = �
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
   aesop
 
-theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ := by
-  rw [eq_top_iff]
-  rintro ⟨m, n⟩ -
-  rw [show (m, n) = (m, 0) + (0, n) by simp]
-  apply Submodule.add_mem (Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂)
-  · exact Submodule.mem_sup_left (Submodule.mem_comap.mpr (by simp))
-  · exact Submodule.mem_sup_right (Submodule.mem_comap.mpr (by simp))
+theorem isCompl_fst_snd : IsCompl (Submodule.fst R M M₂) (Submodule.snd R M M₂) := by
+  simpa [range_inl, range_inr] using! isCompl_range_inl_inr
 
-theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
-  aesop
+theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
+  (isCompl_fst_snd R M M₂).sup_eq_top
+
+theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ :=
+  (isCompl_fst_snd R M M₂).inf_eq_bot
 
 theorem le_prod_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} {q : Submodule R (M × M₂)} :
     q ≤ p₁.prod p₂ ↔ map (LinearMap.fst R M M₂) q ≤ p₁ ∧ map (LinearMap.snd R M M₂) q ≤ p₂ := by

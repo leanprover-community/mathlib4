@@ -36,7 +36,6 @@ subcube containing both `a` and `b`.
 
 We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the scope `Interval` to
 make the notation available.
-
 -/
 
 @[expose] public section
@@ -235,7 +234,7 @@ lemma monotone_or_antitone_iff_uIcc :
 
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
-      ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
+      ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
     mem_uIcc]
 

@@ -13,6 +13,9 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Order.LiminfLimsup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on extended non-negative reals
 -/
@@ -374,9 +377,6 @@ theorem tendsto_finsetProd_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞}
     · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
         h' _ (Finset.mem_insert_of_mem hi)
     · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
-
-@[deprecated (since := "2026-04-08")]
-alias tendsto_finset_prod_of_ne_top := tendsto_finsetProd_of_ne_top
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=

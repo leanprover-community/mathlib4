@@ -17,7 +17,6 @@ of categories `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi 
 
 When the category `C` is idempotent complete, it is shown that
 `HomologicalComplex (Karoubi C) c` is also idempotent complete.
-
 -/
 
 @[expose] public section

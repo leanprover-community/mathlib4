@@ -17,7 +17,6 @@ public import Mathlib.GroupTheory.OrderOfElement
 A finite order element in a normed ring has norm 1.
 
 The values of additive characters on finite cancellative monoids have norm 1.
-
 -/
 
 public section
