@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.Topology.Category.CompHausLike.Basic
 
 /-!
-
 # Explicit limits and colimits
 
 This file collects some constructions of explicit limits and colimits in `CompHausLike P`,
@@ -172,7 +171,7 @@ instance (P) [HasExplicitFiniteCoproducts.{0} P] :
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) (compHausLikeToTop P) from
     preservesColimit_of_iso_diagram _ Discrete.natIsoFunctor.symm
   exact preservesColimit_of_preserves_colimit_cocone (CompHausLike.finiteCoproduct.isColimit _)
-    ((isColimitMapCoconeCofanMkEquiv _ _ _).2 (TopCat.sigmaCofanIsColimit _))
+    ((isColimitMapCoconeCofanMkEquiv _ _ _).invFun (TopCat.sigmaCofanIsColimit _))
 
 /-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
 noncomputable instance {P' : TopCat.{u} → Prop}

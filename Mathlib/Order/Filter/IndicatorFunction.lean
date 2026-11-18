@@ -34,7 +34,7 @@ variable [One M] {s t : Set α} {f g : α → M} {l : Filter α}
 @[to_additive]
 theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] t) :
     mulIndicator s f =ᶠ[l] mulIndicator t g :=
-  (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
+  (eventually_inf_principal.1 hf).mp <| hs.mono fun x hst hfg =>
     by_cases
       (fun hxs : x ∈ s => by simp only [*, hst.1 hxs, mulIndicator_of_mem])
       (fun hxs => by simp only [mulIndicator_of_notMem, hxs, mt hst.2 hxs, not_false_eq_true])
@@ -110,7 +110,7 @@ protected theorem Filter.EventuallyEq.mulSupport [One β] {f g : α → β} {l :
 @[to_additive]
 protected theorem Filter.EventuallyEq.mulIndicator [One β] {l : Filter α} {f g : α → β} {s : Set α}
     (hfg : f =ᶠ[l] g) : s.mulIndicator f =ᶠ[l] s.mulIndicator g :=
-  mulIndicator_eventuallyEq (hfg.filter_mono inf_le_left) EventuallyEq.rfl
+  mulIndicator_eventuallyEq (hfg.filter_mono inf_le_left) .rfl
 
 @[to_additive]
 theorem Filter.EventuallyEq.mulIndicator_one [One β] {l : Filter α} {f : α → β} {s : Set α}
@@ -123,7 +123,7 @@ theorem Filter.EventuallyEqSet.of_mulIndicator [One β] {l : Filter α} {f : α 
     s =ᶠ[l] t := by
   have : ∀ {s : Set α}, Function.mulSupport (s.mulIndicator f) =ᶠ[l] s := fun {s} ↦ by
     rw [mulSupport_mulIndicator]
-    exact (hf.mono fun x hx ↦ and_iff_left hx).set_eq
+    exact hf.mono fun x hx ↦ and_iff_left hx
   exact this.symm.trans <| h.mulSupport.trans this
 
 @[to_additive (attr := deprecated (since := "2026-08-14"))]

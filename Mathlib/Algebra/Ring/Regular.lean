@@ -53,8 +53,8 @@ theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZer
 Note this is not an instance as it forms a typeclass loop. -/
 lemma NoZeroDivisors.toIsCancelMulZero [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
     IsCancelMulZero α where
-  mul_left_cancel_of_ne_zero ha := (IsRegular.of_ne_zero' ha).1
-  mul_right_cancel_of_ne_zero hb := (IsRegular.of_ne_zero' hb).2
+  mul_left_cancel_of_ne_zero ha := (IsRegular.of_ne_zero' ha).left
+  mul_right_cancel_of_ne_zero hb := (IsRegular.of_ne_zero' hb).right
 
 namespace IsDedekindFiniteMonoid
 

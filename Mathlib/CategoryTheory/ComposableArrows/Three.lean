@@ -18,7 +18,6 @@ The names are justified by the fact that `ComposableArrow.mk₃ f₁ f₂ f₃`
 can be thought of as a `3`-simplex in the simplicial set `nerve C`,
 and its faces (numbered from `0` to `3`) are respectively
 `mk₂ f₂ f₃`, `mk₂ f₁₂ f₃`, `mk₂ f₁ f₂₃`, `mk₂ f₁ f₂`.
-
 -/
 
 @[expose] public section

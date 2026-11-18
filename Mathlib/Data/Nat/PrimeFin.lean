@@ -122,7 +122,7 @@ lemma primeFactors_pow_succ (n k : ℕ) : (n ^ (k + 1)).primeFactors = n.primeFa
   · simp
   induction k with
   | zero => simp
-  | succ k ih => rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
+  | succ k ih => rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_self]
 
 lemma primeFactors_pow (n : ℕ) (hk : k ≠ 0) : (n ^ k).primeFactors = n.primeFactors := by
   cases k

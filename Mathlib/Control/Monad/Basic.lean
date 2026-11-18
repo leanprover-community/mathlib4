@@ -35,7 +35,6 @@ and use regular `functor_norm` rules as well.
 ## Tags
 
 functor, applicative, monad, simp
-
 -/
 
 @[expose] public section

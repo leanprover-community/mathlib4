@@ -70,7 +70,7 @@ For example if `x` and `y` are terms of type `α` then `3 * x * x * y - 2 * x * 
 "typical" element of `FreeCommRing α`. In particular if `α` is empty
 then `FreeCommRing α` is isomorphic to `ℤ`, and if `α` has one term `t`
 then `FreeCommRing α` is isomorphic to the polynomial ring `ℤ[t]`.
-One can think of `FreeRing α` as the free polynomial ring
+One can think of `FreeCommRing α` as the free polynomial ring
 with coefficients in the integers and variables indexed by `α`.
 -/
 def FreeCommRing (α : Type u) : Type u :=

@@ -15,7 +15,6 @@ the functors `opOp C : C ⥤ Cᵒᵖᵒᵖ` and `unopUnop C : Cᵒᵖᵒᵖ ⥤ 
 We also show that the unit and counit isomorphisms of the equivalence
 `opOpEquivalence C : Cᵒᵖᵒᵖ ≌ C` are compatible with shifts, which is summarized
 by the property `(opOpEquivalence C).IsTriangulated`.
-
 -/
 
 @[expose] public section
@@ -180,21 +179,20 @@ instance : (opOpEquivalence C).CommShift ℤ :=
 variable [Preadditive C] [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C]
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (opOp C).IsTriangulated where
   map_distinguished T hT := by
     refine isomorphic_distinguished _ (op_distinguished _ (op_distinguished _ hT)) _
       (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
       (Quiver.Hom.unop_inj ?_))
-    have := (shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.naturality T.mor₃
-    dsimp at this ⊢
+    dsimp
     simp only [shiftFunctor_op_map _ 1 (-1), Functor.op_obj,
       unop_id, shiftFunctor_op_map _ (-1) 1,
       commShiftIso_opOp_hom_app _ 1 (-1),
       opShiftFunctorEquivalence_counitIso_inv_app _ 1 (-1) (add_neg_cancel 1),
       unop_comp, Quiver.Hom.unop_op, Category.assoc, ← op_comp, Iso.inv_hom_id_app_assoc,
       shiftFunctorCompIsoId_op_hom_app, Iso.unop_hom_inv_id_app_assoc, ← Functor.map_comp]
-    simp [Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app, ← reassoc_of% this]
+    simp [Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app,
+      ← dsimp% (shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.naturality_assoc T.mor₃]
 
 instance : (opOpEquivalence C).IsTriangulated :=
   .mk'' _ <| inferInstanceAs <| (opOp C).IsTriangulated

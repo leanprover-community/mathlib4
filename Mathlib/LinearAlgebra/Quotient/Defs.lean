@@ -22,7 +22,6 @@ public import Mathlib.Logic.Small.Basic
 * `Submodule.Quotient.module`: `M ⧸ p` is a module
 * `Submodule.Quotient.mkQ`: a linear map sending an element of `M` to `M ⧸ p`
 * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
-
 -/
 
 @[expose] public section

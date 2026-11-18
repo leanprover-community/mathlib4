@@ -64,7 +64,7 @@ lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r :=
 alias ⟨IsSquare.exists_mul_self, _⟩ := isSquare_iff_exists_mul_self
 attribute [to_additive (attr := aesop unsafe 5% forward)] IsSquare.exists_mul_self
 
-@[to_additive (attr := simp, aesop safe)]
+@[to_additive (attr := simp, aesop safe, grind .)]
 lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
 
 @[to_additive]
@@ -113,7 +113,7 @@ grind_pattern Even.zero => Even (0 : α)
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
 
-@[to_additive (attr := aesop unsafe 90%)]
+@[to_additive (attr := aesop unsafe 90%, grind .)]
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
   fun ⟨r, _⟩ => ⟨f r, by simp [*]⟩
 
@@ -136,46 +136,45 @@ lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by si
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 
 -- provable by simp in `Algebra.Ring.Parity`
-@[to_additive (attr := aesop safe) Even.two_nsmul]
+@[to_additive (attr := aesop safe, grind .) Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
-@[to_additive (attr := aesop unsafe 80%) Even.nsmul_right]
-lemma IsSquare.pow (n : ℕ) (ha : IsSquare a) : IsSquare (a ^ n) := by
-  aesop (add simp Commute.mul_pow)
+@[to_additive (attr := aesop unsafe 80%, grind .) Even.nsmul_right]
+lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
+  rintro ⟨r, rfl⟩
+  simp [Commute.mul_pow]
 
-@[to_additive (attr := aesop unsafe 90%) Even.nsmul_left]
-lemma Even.isSquare_pow (hn : Even n) : ∀ a : α, IsSquare (a ^ n) := by aesop (add simp pow_add)
+@[to_additive (attr := aesop unsafe 90%, grind .) Even.nsmul_left]
+lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
+  rintro ⟨m, rfl⟩
+  simp [pow_add]
 
 end Monoid
 
-@[to_additive (attr := aesop unsafe 90%)]
+@[to_additive (attr := aesop unsafe 90%, grind .)]
 lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) :=
   fun ⟨r, _⟩ ⟨s, _⟩ => ⟨r * s, by simp_all [mul_mul_mul_comm]⟩
 
 section DivisionMonoid
 variable [DivisionMonoid α] {a : α}
 
-@[to_additive (attr := simp)] lemma isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
+@[to_additive (attr := simp, grind =)] lemma isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   constructor <;> intro h <;> simpa using (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 
 @[to_additive] alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 
-@[to_additive (attr := aesop unsafe 80%) Even.zsmul_right]
+@[to_additive (attr := aesop unsafe 80%, grind .) Even.zsmul_right]
 lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
-  aesop (add simp Commute.mul_zpow)
+  rintro ⟨r, rfl⟩
+  simp [Commute.mul_zpow]
 
 end DivisionMonoid
 
-@[to_additive (attr := aesop unsafe 90%)]
+@[to_additive (attr := aesop unsafe 90%, grind .)]
 lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
-    IsSquare (a / b) := by aesop (add simp div_eq_mul_inv)
+    IsSquare (a / b) := by grind [div_eq_mul_inv]
 
-@[to_additive (attr := simp, aesop unsafe 90%) Even.zsmul_left]
+@[to_additive (attr := simp, aesop unsafe 90%, grind .) Even.zsmul_left]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
-  aesop (add simp zpow_add)
-
-example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
-    IsSquare <| a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (n + n)) := by aesop
-
-example {G : Type*} [AddCommGroup G] {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
-    Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop
+  rintro ⟨r, rfl⟩
+  simp [zpow_add]

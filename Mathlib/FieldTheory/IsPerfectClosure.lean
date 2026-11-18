@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.PerfectClosure
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
-
 # `IsPerfectClosure` predicate
 
 This file contains `IsPerfectClosure` which asserts that `L` is a perfect closure of `K` under a
@@ -59,7 +58,6 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 ## Tags
 
 perfect ring, perfect closure, purely inseparable
-
 -/
 
 @[expose] public section

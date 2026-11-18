@@ -366,6 +366,7 @@ theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
+@[simp]
 theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S ∘L S†).IsPositive := by
   simpa using! isPositive_one.conj_adjoint S
@@ -376,6 +377,7 @@ theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
+@[simp]
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S† ∘L S).IsPositive := by
   simpa using! isPositive_one.adjoint_conj S
@@ -386,8 +388,8 @@ variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : E →ₗ[𝕜] F) : (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 F
   simpa [← isPositive_toContinuousLinearMap_iff] using!
     ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
 
@@ -483,6 +485,9 @@ lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
 lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def (f:=0) (g:=f)
 
+@[aesop safe (rule_sets := [CStarAlgebra])]
+alias ⟨_, IsPositive.nonneg⟩ := nonneg_iff_isPositive
+
 instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
 
 instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
@@ -499,6 +504,19 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E]
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
+
+theorem norm_map_le_norm_map_iff_le {G : Type*}
+    [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
+    (p : E →L[𝕜] F) (q : E →L[𝕜] G) :
+    (∀ x : E, ‖p x‖ ≤ ‖q x‖) ↔ adjoint p ∘L p ≤ adjoint q ∘L q := by
+  simp [le_def, isPositive_iff', isSelfAdjoint_iff, star_eq_adjoint, inner_sub_left,
+    adjoint_inner_left, ← RCLike.ofReal_pow, -map_pow, sq_le_sq₀]
+
+theorem norm_map_le_norm_iff_le [CompleteSpace E] [CompleteSpace F]
+    (p : E →L[𝕜] F) :
+    (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ .id 𝕜 E := by
+  simpa [adjoint_id] using norm_map_le_norm_map_iff_le p (.id 𝕜 E)
 
 /-- A star projection operator is positive.
 
