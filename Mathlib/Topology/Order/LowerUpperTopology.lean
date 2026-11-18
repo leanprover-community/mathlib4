@@ -302,18 +302,6 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
 
 end Preorder
 
-section PartialOrder
-
-variable [PartialOrder α] [TopologicalSpace α] [IsLower α]
-
--- see Note [lower instance priority]
-/-- The lower topology on a partial order is T₀. -/
-instance (priority := 90) t0Space : T0Space α :=
-  (t0Space_iff_inseparable α).2 fun x y h =>
-    Ici_injective <| by simpa only [inseparable_iff_closure_eq, closure_singleton] using h
-
-end PartialOrder
-
 section LinearOrder
 
 variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
@@ -440,18 +428,6 @@ lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
   IsLower.continuous_iff_Ici (α := αᵒᵈ)
 
 end Preorder
-
-
-section PartialOrder
-
-variable [PartialOrder α] [TopologicalSpace α] [IsUpper α]
-
--- see Note [lower instance priority]
-/-- The upper topology on a partial order is T₀. -/
-instance (priority := 90) t0Space : T0Space α :=
-  IsLower.t0Space (α := αᵒᵈ)
-
-end PartialOrder
 
 section LinearOrder
 
