@@ -277,7 +277,7 @@ theorem closure_empty : closure (∅ : Set X) = ∅ :=
 
 @[simp]
 theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
-  ⟨subset_eq_empty subset_closure, fun h => h.symm ▸ closure_empty⟩
+  ⟨by gcongr; exact subset_closure, fun h => h.symm ▸ closure_empty⟩
 
 @[simp]
 theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
@@ -401,6 +401,10 @@ theorem dense_iff_closure_eq : Dense s ↔ closure s = univ :=
   eq_univ_iff_forall.symm
 
 alias ⟨Dense.closure_eq, _⟩ := dense_iff_closure_eq
+
+/-- A closed set is dense if and only if it is the whole space. -/
+theorem IsClosed.dense_iff (hs : IsClosed s) : Dense s ↔ s = univ := by
+  rw [dense_iff_closure_eq, hs.closure_eq]
 
 theorem interior_eq_empty_iff_dense_compl : interior s = ∅ ↔ Dense sᶜ := by
   rw [dense_iff_closure_eq, closure_compl, compl_univ_iff]

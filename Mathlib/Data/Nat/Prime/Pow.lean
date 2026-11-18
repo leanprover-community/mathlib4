@@ -12,7 +12,6 @@ public import Mathlib.Data.Nat.Prime.Basic
 
 This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose only divisors are
 `p` and `1`.
-
 -/
 
 public section

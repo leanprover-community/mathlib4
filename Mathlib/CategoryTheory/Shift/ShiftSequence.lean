@@ -24,7 +24,6 @@ For example, if `C` is the derived category (TODO) of an abelian
 category `A` and `F` is the homology functor in degree `0`, then
 for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
 in degree `n`.
-
 -/
 
 @[expose] public section
@@ -83,6 +82,7 @@ variable {M}
 variable [F.ShiftSequence M]
 
 /-- The shifted functors given by the shift sequence. -/
+@[implicit_reducible]
 def shift (n : M) : C ⥤ A := ShiftSequence.sequence F n
 
 /-- Compatibility isomorphism `shiftFunctor C n ⋙ F.shift a ≅ F.shift a'` when `n + a = a'`. -/

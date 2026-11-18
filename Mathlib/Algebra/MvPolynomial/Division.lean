@@ -28,7 +28,6 @@ import Mathlib.Data.Finsupp.Weight
 
 Where possible, the results in this file should be first proved in the generality of
 `AddMonoidAlgebra`, and then the versions specialized to `MvPolynomial` proved in terms of these.
-
 -/
 
 @[expose] public section

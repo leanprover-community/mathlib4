@@ -28,7 +28,6 @@ is triangulated as soon as one of the adjoint functors is triangulated.
 We finally specialize these structures to equivalences of categories, and prove that,
 if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 `E.functor` is triangulated if and only if `E.inverse` is triangulated.
-
 -/
 
 public section

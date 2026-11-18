@@ -303,7 +303,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
       have h_qmp : QuasiMeasurePreserving (-u p +ᵥ ·) μ μ :=
         (measurePreserving_vadd _ μ).quasiMeasurePreserving
-      refine (h_qmp.vadd_ae_eq_of_ae_eq (u p) hE₂).trans (ae_eq_trans ?_ hE₂.symm)
+      refine (h_qmp.vadd_ae_eq_of_ae_eq (u p) hE₂).trans (.trans ?_ hE₂.symm)
       rw [hC]
     exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hE₀ h hu
   · right

@@ -19,7 +19,6 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.succAbove` : embeds `Fin n` into `Fin (n + 1)` skipping `p`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
-
 -/
 
 @[expose] public section
@@ -205,7 +204,7 @@ theorem exists_fin_succ' {P : Fin (n + 1) → Prop} :
 The `Fin.castSucc_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
-@[simp]
+@[deprecated castSucc_zero (since := "2026-11-16")]
 theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 
 @[simp]
@@ -215,6 +214,7 @@ theorem castSucc_pos_iff [NeZero n] {i : Fin n} : 0 < castSucc i ↔ 0 < i := by
 
 The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
+@[deprecated castSucc_pos (since := "2026-11-16")]
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
 theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := by
@@ -586,15 +586,18 @@ lemma succAbove_right_inj : p.succAbove i = p.succAbove j ↔ i = j :=
 @[simp]
 lemma succAbove_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.succAbove 0 = 0 := by
   rw [Fin.succAbove_of_castSucc_lt]
-  · exact castSucc_zero'
+  · exact castSucc_zero
   · exact Fin.pos_iff_ne_zero.2 ha
 
 lemma succAbove_eq_zero_iff [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) :
     a.succAbove b = 0 ↔ b = 0 := by
   rw [← succAbove_ne_zero_zero ha, succAbove_right_inj]
 
-lemma succAbove_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) (hb : b ≠ 0) :
-    a.succAbove b ≠ 0 := mt (succAbove_eq_zero_iff ha).mp hb
+lemma succAbove_ne_zero [NeZero n] (a : Fin (n + 1)) {b : Fin n} (hb : b ≠ 0) :
+    a.succAbove b ≠ 0 := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp
+  · exact mt (succAbove_eq_zero_iff ha).mp hb
 
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around zero embeds by `succ`. -/
 @[simp] lemma succAbove_zero : succAbove (0 : Fin (n + 1)) = Fin.succ := rfl
@@ -609,8 +612,11 @@ lemma succAbove_eq_last_iff {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last
     a.succAbove b = last _ ↔ b = last _ := by
   rw [← succAbove_ne_last_last ha, succAbove_right_inj]
 
-lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) (hb : b ≠ last _) :
-    a.succAbove b ≠ last _ := mt (succAbove_eq_last_iff ha).mp hb
+lemma succAbove_ne_last (a : Fin (n + 2)) {b : Fin (n + 1)} (hb : b ≠ last _) :
+    a.succAbove b ≠ last _ := by
+  rcases eq_or_ne a (last _) with rfl | ha
+  · simp
+  · exact mt (succAbove_eq_last_iff ha).mp hb
 
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around `last n` embeds by `castSucc`. -/
 @[simp] lemma succAbove_last : succAbove (last n) = castSucc := by
@@ -646,7 +652,7 @@ lemma lt_succAbove_iff_lt_castSucc (p : Fin (n + 1)) (i : Fin n) :
 /-- Embedding a positive `Fin n` results in a positive `Fin (n + 1)` -/
 lemma succAbove_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p.succAbove i := by
   by_cases H : castSucc i < p
-  · simpa [succAbove_of_castSucc_lt _ _ H] using castSucc_pos' h
+  · simpa [succAbove_of_castSucc_lt _ _ H] using castSucc_pos h
   · simp [succAbove_of_le_castSucc _ _ (Fin.not_lt.1 H)]
 
 lemma castPred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : castSucc x < y)
@@ -702,13 +708,13 @@ lemma castSucc_succAbove_castSucc {n : ℕ} {i : Fin (n + 1)} {j : Fin n} :
 
 /-- `pred` commutes with `succAbove`. -/
 lemma pred_succAbove_pred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ 0)
-    (hk := succAbove_ne_zero ha hb) :
+    (hk := succAbove_ne_zero a hb) :
     (a.pred ha).succAbove (b.pred hb) = (a.succAbove b).pred hk := by
   simp_rw [← succ_inj (b := pred (succAbove a b) hk), ← succ_succAbove_succ, succ_pred]
 
 /-- `castPred` commutes with `succAbove`. -/
 lemma castPred_succAbove_castPred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last (n + 1))
-    (hb : b ≠ last n) (hk := succAbove_ne_last ha hb) :
+    (hb : b ≠ last n) (hk := succAbove_ne_last a hb) :
     (a.castPred ha).succAbove (b.castPred hb) = (a.succAbove b).castPred hk := by
   simp_rw [← castSucc_inj (b := (a.succAbove b).castPred hk), ← castSucc_succAbove_castSucc,
     castSucc_castPred]

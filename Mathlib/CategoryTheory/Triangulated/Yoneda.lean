@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 Let `C` be a pretriangulated category. In this file, we show that the
 functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrpCat` for `A : Cᵒᵖ` and
 `preadditiveYoneda.obj B : Cᵒᵖ ⥤ AddCommGrpCat` for `B : C` are homological functors.
-
 -/
 
 public section
@@ -93,7 +92,6 @@ lemma preadditiveYoneda_shiftMap_apply (B : C) {X Y : Cᵒᵖ} (n : ℤ) (f : X 
   symm
   apply ShiftedHom.opEquiv_symm_apply_comp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma preadditiveYoneda_homologySequenceδ_apply
     (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {B : C} (x : T.obj₁ ⟶ B⟦n₀⟧) :
     (preadditiveYoneda.obj B).homologySequenceδ

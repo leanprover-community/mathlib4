@@ -147,7 +147,7 @@ theorem measure_ne_zero [Countable G] [SMulInvariantMeasure G α μ]
 @[to_additive]
 theorem mono (h : IsFundamentalDomain G s μ) {ν : Measure α} (hle : ν ≪ μ) :
     IsFundamentalDomain G s ν :=
-  ⟨h.1.mono_ac hle, hle h.2, h.aedisjoint.mono fun _ _ h => hle h⟩
+  ⟨h.nullMeasurableSet.mono_ac hle, hle h.ae_covers, h.aedisjoint.mono fun _ _ h => hle h⟩
 
 @[to_additive]
 theorem preimage_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) {f : β → α}
@@ -652,7 +652,6 @@ domain. Even though any "sensible" action should have a fundamental domain, this
 delicate question which was recently addressed by Misha Kapovich: https://arxiv.org/abs/2301.05325
 
 TODO: Formalize the existence of a Dirichlet domain as in Kapovich's paper.
-
 -/
 
 section HasFundamentalDomain
@@ -712,7 +711,6 @@ be pulled back. And yet here, we are describing a situation involving measures i
 
 Another viewpoint is that if a set is small enough to fit in a single fundamental domain, then its
 `ν` measure in `α` is the same as the `μ` measure of its pushforward in `α ⧸ G`.
-
 -/
 
 section QuotientMeasureEqMeasurePreimage

@@ -35,7 +35,6 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 * `CategoryTheory.smallSheafificationAdjunction`: `smallSheafify` is left adjoint to the functor
   taking a sheaf to its underlying presheaf.
-
 -/
 
 @[expose] public section
