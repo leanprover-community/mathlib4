@@ -74,9 +74,9 @@ private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 
   constructor
   · have h1 : AEStronglyMeasurable (fun p : X × X ↦ (K p.1 p.2) (f p.2 : V)) (μ.prod μ) :=
       isBoundedBilinearMap_apply.continuous.comp_aestronglyMeasurable
-        (hK.aestronglyMeasurable.prodMk (Lp.aestronglyMeasurable f).comp_snd)
+        (hK.aestronglyMeasurable.prodMk (f : X →ₘ[μ] V).aestronglyMeasurable.comp_snd)
     have h2 : AEStronglyMeasurable (fun p : X × X ↦ (g p.1 : V)) (μ.prod μ) :=
-      (Lp.aestronglyMeasurable g).comp_fst
+      (g : X →ₘ[μ] V).aestronglyMeasurable.comp_fst
     exact continuous_inner.comp_aestronglyMeasurable (h1.prodMk h2)
   · grw [hasFiniteIntegral_def, lintegral_norm_inner_le hK f g]
     finiteness
