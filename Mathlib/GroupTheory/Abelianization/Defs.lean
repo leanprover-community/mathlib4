@@ -79,10 +79,12 @@ noncomputable def mulEquiv (hf : IsAbelianization f) : Abelianization G ≃* A :
   QuotientGroup.liftEquiv (commutator G) hf.surjective hf.ker_eq.symm
 
 @[to_additive]
-theorem subsingleton_iff (hf : IsAbelianization f) :
-    Subsingleton A ↔ commutator G = ⊤ := by
-  rw [← hf.ker_eq, eq_top_iff]
-  sorry
+theorem isMulCommutative (hf : IsAbelianization f) : IsMulCommutative A :=
+  hf.mulEquiv.surjective.isMulCommutative
+
+@[to_additive]
+theorem subsingleton_iff (hf : IsAbelianization f) : Subsingleton A ↔ commutator G = ⊤ :=
+  hf.mulEquiv.toEquiv.subsingleton_congr.symm.trans QuotientGroup.subsingleton_iff
 
 end IsAbelianization
 
