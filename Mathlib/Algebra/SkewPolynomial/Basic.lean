@@ -81,7 +81,6 @@ Skew Polynomials, Twisted Polynomials.
 Note that [ore33] proposes a more general definition of skew polynomial ring, where the
 multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `φ` is as above and
 `δ` is a derivation.
-
 -/
 
 @[expose] public section
@@ -113,7 +112,7 @@ The set of all `n` such that `X^n` has a non-zero coefficient.
 def support (p : SkewPolynomial R) : Finset ℕ :=
   Finset.map ⟨toAdd, toAdd.injective⟩ (SkewMonoidAlgebra.support p)
 
-/-- Though `SkewPolynomial.support` is not definiyionally equal to `SkewMonoidAlgebra.support` we
+/-- Though `SkewPolynomial.support` is not definitionally equal to `SkewMonoidAlgebra.support` we
   can relate them using the following lemma. -/
 lemma support_eq_skewMonoidAlgebra_support (p : SkewPolynomial R) :
     p.support = Finset.map (Multiplicative.toAdd (α := ℕ)) (SkewMonoidAlgebra.support p) := by
@@ -663,8 +662,8 @@ lemma monomial_add_erase (p : SkewPolynomial R) (n : ℕ) :
 
 @[simp]
 lemma coeff_erase (p : SkewPolynomial R) (n i : ℕ) :
-    (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
-  exact ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (p.erase n).coeff i = if i = n then 0 else p.coeff i :=
+  ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[simp]
 lemma erase_zero (n : ℕ) : (0 : SkewPolynomial R).erase n = 0 := by

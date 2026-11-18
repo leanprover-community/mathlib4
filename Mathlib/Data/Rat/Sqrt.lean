@@ -16,7 +16,6 @@ import Mathlib.Data.Rat.Lemmas
 
 This file defines the square root function on rational numbers `Rat.sqrt`
 and proves several theorems about it.
-
 -/
 
 @[expose] public section

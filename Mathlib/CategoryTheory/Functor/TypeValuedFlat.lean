@@ -23,7 +23,6 @@ for a clarification about the differences between these notions.)
 
 In this file, we show that if finite limits exist in `C` and are preserved by `F`,
 then `F.Elements` is cofiltered.
-
 -/
 
 public section
@@ -92,7 +91,7 @@ def fromOverFunctorElementsEquivalence :
   functor.map f :=
     Over.homMk (homMk f.hom.left (Subtype.ext_iff.1 f.map_val))
   inverse.obj u :=
-    Functor.elementsMk _ (Over.mk u.hom.1) ⟨u.left.val, u.hom.2⟩
+    Functor.elementsMk _ (Over.mk u.hom.hom) ⟨u.left.val, u.hom.map_val⟩
   inverse.map f := homMk (Over.homMk f.left.hom (congr_arg Hom.hom (Over.w f)))
   unitIso := Iso.refl _
   counitIso := Iso.refl _

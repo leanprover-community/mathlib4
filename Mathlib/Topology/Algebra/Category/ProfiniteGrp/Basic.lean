@@ -11,7 +11,6 @@ public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Separation.Connected
 
 /-!
-
 # Category of Profinite Groups
 
 We say `G` is a profinite group if it is a topological group which is compact and totally
@@ -27,7 +26,6 @@ disconnected.
   profinite group.
 
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
-
 -/
 
 @[expose] public section
@@ -244,7 +242,7 @@ instance : HasForget₂ ProfiniteGrp GrpCat where
 @[to_additive /-- A closed additive subgroup of a profinite additive group is profinite. -/]
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G) : ProfiniteGrp :=
   letI : CompactSpace H := inferInstance
-  of H.1
+  of H.toSubgroup
 
 /-- A topological group that has a `ContinuousMulEquiv` to a profinite group is profinite. -/
 @[to_additive /-- A topological additive group that has a `ContinuousAddEquiv` to a
@@ -299,7 +297,6 @@ In this section, we construct limits in the category of profinite groups.
 * `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`.
 
 * `ProfiniteGrp.limitConeIsLimit`: `ProfiniteGrp.limitCone` is a limit cone.
-
 -/
 
 section Limits
@@ -325,7 +322,6 @@ instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))
 instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The explicit limit cone in `ProfiniteGrp`. -/
 @[to_additive /-- The explicit limit cone in `ProfiniteAddGrp`. -/]
 abbrev limitCone : Limits.Cone F where
@@ -335,8 +331,8 @@ abbrev limitCone : Limits.Cone F where
       toFun := fun x => x.1 j
       map_one' := rfl
       map_mul' := fun x y => rfl
-      continuous_toFun := by
-        exact (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a => a) }⟩
+      continuous_toFun :=
+        (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a => a) }⟩
     naturality := fun i j f => by
       simp only [Functor.const_obj_obj, Functor.comp_obj,
         Functor.const_obj_map, Category.id_comp, Functor.comp_map]

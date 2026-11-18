@@ -64,7 +64,6 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 ## TODO
 
 - Show existence of Fraïssé limits
-
 -/
 
 @[expose] public section
@@ -168,8 +167,8 @@ theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
     ⟨Embedding.comp (inclusion le_sup_right) hP.2.some.equivRange.toEmbedding⟩⟩
 
 variable {M} in
-theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M := by
-  exact ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
+theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M :=
+  ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
 
 /-- Any class in the age of a structure has a representative which is a finitely generated
 substructure. -/

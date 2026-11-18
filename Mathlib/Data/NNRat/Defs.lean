@@ -142,7 +142,8 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 @[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
 @[simp] lemma den_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
 
-@[simp, norm_cast]
+-- We want this lemma to have higher priority than `NNRat.cast_sub`.
+@[simp high, norm_cast]
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
   max_eq_left <| le_sub_comm.2 <| by rwa [sub_zero]
 
@@ -207,8 +208,10 @@ theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 
 @[norm_cast]
-theorem nsmul_coe (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
+theorem coe_nsmul (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
   coeHom.toAddMonoidHom.map_nsmul _ _
+
+@[deprecated (since := "2026-11-16")] alias nsmul_coe := coe_nsmul
 
 theorem bddAbove_coe {s : Set ℚ≥0} : BddAbove ((↑) '' s : Set ℚ) ↔ BddAbove s :=
   ⟨fun ⟨b, hb⟩ ↦

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Order.ProjIcc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous bundled maps on intervals
 
@@ -139,8 +142,8 @@ noncomputable def concatCM :
 @[simp]
 theorem concatCM_left {x : Icc a c} (hx : x ≤ b)
     {fg : {fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}} :
-    concatCM fg x = fg.1.1 ⟨x.1, x.2.1, hx⟩ := by
-  exact concat_left fg.2 hx
+    concatCM fg x = fg.1.1 ⟨x.1, x.2.1, hx⟩ :=
+  concat_left fg.2 hx
 
 @[simp]
 theorem concatCM_right {x : Icc a c} (hx : b ≤ x)

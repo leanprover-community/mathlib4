@@ -743,6 +743,8 @@ example : x = y := by
 set_option linter.unusedVariables false in
 theorem create_a_few_goals (h1 : 1 + 1 = 2) (h2 : y = z) : x = y := rfl
 
+set_option linter.unusedTactic false
+
 -- We should not complain about `omega` (and others) failing in an `any_goals` context.
 example : x = y := by
   apply create_a_few_goals

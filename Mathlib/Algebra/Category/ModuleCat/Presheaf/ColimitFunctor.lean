@@ -23,7 +23,6 @@ a functor `PresheafOfModules.colimitFunctor : PresheafOfModules R ⥤ ModuleCat 
 * Define fiber functors on categories of (pre)sheaves of modules
 * Refactor `Mathlib/Algebra/Category/ModuleCat/Stalk.lean` so that it uses
 this slightly more general construction.
-
 -/
 
 @[expose] public section
@@ -41,7 +40,6 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
 
-set_option backward.defeqAttrib.useBackward true in
 variable (cR) in
 /-- Given a cocone `cR` for a functor `R : Cᵒᵖ ⥤ RingCat`, this is the
 functor `ModuleCat cR.pt ⥤ PresheafOfModules R` which sends a module `M`
@@ -275,8 +273,8 @@ lemma homEquiv_naturality_right {N N' : ModuleCat.{w} cR.pt}
 @[simp]
 lemma homEquiv_symm_apply {N : ModuleCat.{w} cR.pt} (β : M ⟶ (constFunctor cR).obj N)
     {X : Cᵒᵖ} (x : M.obj X) :
-    dsimp% (homEquiv hcR hcM).symm β (cM.ι.app X x) = β.app X x := by
-  exact homEquiv'_symm_apply ..
+    dsimp% (homEquiv hcR hcM).symm β (cM.ι.app X x) = β.app X x :=
+  homEquiv'_symm_apply ..
 
 section
 
@@ -284,7 +282,6 @@ variable {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
   (hcM' : IsColimit cM')
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The linear map between the colimit modules induced by a morphism of modules. -/
 noncomputable def map (f : M ⟶ M') :
     ModuleColimit hcR hcM →ₗ[cR.pt] ModuleColimit hcR hcM' where
@@ -367,7 +364,6 @@ noncomputable def colimitAdjunction :
       homEquiv_naturality_right _ _ := ModuleColimit.homEquiv_naturality_right _ _ _ _ }
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma colimitAdjunction_homEquiv
     (F : PresheafOfModules R) (G : ModuleCat cR.pt) :
     dsimp% (colimitAdjunction.{w} hcR).homEquiv F G =

@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
-
 # Separated morphisms
 
 A morphism of schemes is separated if its diagonal morphism is a closed immersion.

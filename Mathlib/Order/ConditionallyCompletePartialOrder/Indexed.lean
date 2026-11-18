@@ -14,7 +14,6 @@ import Mathlib.Order.GaloisConnection.Basic
 
 This file proves lemmas about `iSup` and `iInf` for functions valued in a conditionally complete
 partial order, as opposed to a conditionally complete lattice.
-
 -/
 
 public section

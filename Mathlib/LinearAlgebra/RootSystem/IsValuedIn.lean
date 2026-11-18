@@ -28,7 +28,6 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
   between a root and coroot is always an integer.
 * `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
 * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
-
 -/
 
 @[expose] public section
