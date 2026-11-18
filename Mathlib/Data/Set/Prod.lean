@@ -459,12 +459,6 @@ theorem diagonal_preimage_prod_self (s : Set α) : Prod.diagonal ⁻¹' s ×ˢ s
 
 @[deprecated (since := "2026-10-14")] alias diag_preimage_prod_self := diagonal_preimage_prod_self
 
-theorem image_diagonal_eq_diagonalUniv_inter (s : Set α) :
-    Prod.diagonal '' s = diagonalUniv α ∩ s ×ˢ s := by
-  rw [← range_diagonal, ← image_preimage_eq_range_inter, diagonal_preimage_prod_self]
-
-@[deprecated (since := "2026-10-14")] alias diag_image := image_diagonal_eq_diagonalUniv_inter
-
 theorem diagonalUniv_eq_univ_iff : diagonalUniv α = univ ↔ Subsingleton α := by
   simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonalUniv_iff]
 
@@ -624,6 +618,10 @@ theorem diagonal_insert (a : α) (s : Set α) :
     (insert a s).diagonal = insert (a, a) s.diagonal := by grind
 
 @[simp] theorem diagonal_image (s : Set α) : Prod.diagonal '' s = s.diagonal := by grind
+
+@[deprecated diagonal_image (since := "2026-10-14")]
+theorem diag_image (s : Set α) : Prod.diagonal '' s = diagonalUniv α ∩ s ×ˢ s :=
+  (diagonal_image s).trans diagonal_eq_diagonalUniv_inter
 
 theorem image_diagonal {β : Type*} (f : α × α → β) :
     f '' s.diagonal = (f ∘ Prod.diagonal) '' s := by grind
