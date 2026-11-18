@@ -76,8 +76,8 @@ theorem apply_pos_iff (w : DiscreteMeasure α) (a : α) : 0 < w a ↔ a ∈ w.we
 
 lemma toMeasure_apply' [MeasurableSpace α] (μ : DiscreteMeasure α) {s : Set α}
     (hs : MeasurableSet s) : μ.toMeasure s = ∑' (a : α), (μ.weight a) • dirac a s := by
-  rw [toMeasure, sum_apply (hs := hs)]
-  simp_rw [Measure.smul_apply]
+  rw [toMeasure, Measure.sum_apply _ hs]
+  simp_rw [smul_apply]
 
 lemma toMeasure_apply_eq_tsum_mul [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : DiscreteMeasure α) {s : Set α} (hs : MeasurableSet s) :
@@ -103,7 +103,7 @@ lemma toMeasure_apply_singleton [MeasurableSpace α] [MeasurableSingletonClass �
 theorem toMeasure_apply_eq_zero_iff [MeasurableSpace α] [MeasurableSingletonClass α]
     {μ : DiscreteMeasure α} {s : Set α} (hs : MeasurableSet s) :
     μ.toMeasure s = 0 ↔ Disjoint μ.weight.support s := by
-  rw [toMeasure_apply (hs := hs), ENNReal.tsum_eq_zero]
+  rw [toMeasure_apply (hs := hs), tsum_eq_zero_iff]
   exact funext_iff.symm.trans Set.indicator_eq_zero'
 
 @[simp]
@@ -133,7 +133,7 @@ lemma toMeasure_additive [MeasurableSpace α] [MeasurableSingletonClass α] (μ 
   simp only [toMeasure_apply_eq_tsum_mul (hs := h₁), Set.indicator.mul_indicator_eq]
   conv => right; left; intro d; rw [toMeasure_apply_eq_tsum_mul (hs := h₀ _)]
   simp_rw [Set.indicator.mul_indicator_eq]
-  rw [ENNReal.tsum_comm]
+  rw [tsum_comm]
   apply tsum_congr <| fun b ↦ by rw [indicator_iUnion_of_pairwise_disjoint s hs μ]
 
 theorem toMeasure_apply_finset [MeasurableSpace α] [MeasurableSingletonClass α]
