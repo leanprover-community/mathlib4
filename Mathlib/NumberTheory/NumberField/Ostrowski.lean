@@ -41,6 +41,7 @@ variable {K : Type*} [Field K] [NumberField K]
 
 section archimedean
 
+open Polynomial in
 /-- For an absolute value `v` whose restriction to `ℚ` is equivalent to the usual absolute value,
 `v x` is uniformly bounded when all complex conjugates of `x` lie in the closed unit disk. -/
 lemma abv_lt_of_complexEmbedding_norm_le_one (v : AbsoluteValue K ℝ)
@@ -49,21 +50,23 @@ lemma abv_lt_of_complexEmbedding_norm_le_one (v : AbsoluteValue K ℝ)
   let C := (Module.finrank ℚ K).choose (Module.finrank ℚ K / 2)
   let p := (minpoly ℚ x).map (algebraMap ℚ (WithAbs v))
   have hm : p.Monic := (minpoly.monic (Algebra.IsIntegral.isIntegral x)).map _
-  -- Bounds on the complex roots bound the coefficients; equivalence on `ℚ`
-  -- transfers those inequalities to `v`.
-  have hc (i : ℕ) : ‖p.coeff i‖₊ ≤ ⟨v (C : K), v.nonneg _⟩ := by
-    rw [Polynomial.coeff_map]
-    change v ((minpoly ℚ x).coeff i) ≤ v C
-    simpa using (hQ _ (C : ℚ)).mpr <| by
-      simpa [← Rat.norm_cast_real] using Embeddings.coeff_bdd_of_norm_le hx i
+  -- Bounds on the complex conjugates bound the coefficients; equivalence on `ℚ`
+  -- transfers these bounds to `v`.
+  have hc (i : ℕ) : ‖p.coeff i‖ ≤ v C := by
+    simpa [p, -map_natCast, -eq_ratCast, WithAbs.algebraMap_right_apply, WithAbs.norm_toAbs_eq,
+      ← AbsoluteValue.under_apply, ← map_natCast (algebraMap ℚ K) C, hQ.le_iff_le,
+      ← Rat.norm_cast_real] using Embeddings.coeff_bdd_of_norm_le hx i
   -- The minimal polynomial vanishes at `x`; transport this root to `WithAbs v`.
   have hr : p.IsRoot (WithAbs.toAbs v x) := by
-    simpa [p] using (minpoly ℚ x).aeval_algHom_apply (WithAbs.algEquiv ℚ v).symm x
+    simp [p, IsRoot, eval_map, ← aeval_def,
+      -WithAbs.algEquiv_symm_apply, ← WithAbs.algEquiv_symm_apply (R := ℚ),
+      aeval_algHom_apply]
   -- The polynomial is monic, so Cauchy's root bound is at most `v C + 1`.
-  change ‖WithAbs.toAbs v x‖₊ < ⟨v (C : K), v.nonneg _⟩ + 1
-  exact lt_of_lt_of_le (hr.norm_lt_cauchyBound hm.ne_zero) (by
-    simpa [Polynomial.cauchyBound, hm.leadingCoeff] using
-      add_le_add (Finset.sup_le fun i _ ↦ hc i) (le_refl 1))
+  have hb : (p.cauchyBound : ℝ) ≤ v C + 1 := by
+    rw [cauchyBound, hm.leadingCoeff, nnnorm_one, div_one, NNReal.coe_add,
+      NNReal.coe_one, add_le_add_iff_right, ← Real.le_toNNReal_iff_coe_le (v.nonneg _)]
+    exact Finset.sup_le fun i _ ↦ (Real.le_toNNReal_iff_coe_le (v.nonneg _)).mpr (hc i)
+  exact (NNReal.coe_lt_coe.mpr (hr.norm_lt_cauchyBound hm.ne_zero)).trans_le hb
 
 /-- Every archimedean absolute value on a number field is equivalent to the absolute value
 associated to a complex embedding. -/
@@ -105,18 +108,16 @@ theorem exists_infinitePlace_isEquiv (v : AbsoluteValue K ℝ) (hv : ¬ IsNonarc
     simpa using pow_le_one₀ (norm_nonneg (σ a)) (hs σ).le (n := n))
   exact hn.not_ge (by simpa using hb.le)
 
-/-- **Ostrowski's Theorem, archimedean case**, as a classification by infinite places.
-Uniqueness concerns the place; complex conjugate embeddings give the same place. -/
+/-- **Ostrowski's Theorem, archimedean case**: every archimedean absolute value on a number
+  field `K` is equivalent to the absolute value of a unique infinite place of `K`. -/
 theorem existsUnique_infinitePlace_isEquiv (v : AbsoluteValue K ℝ) (hv : ¬ IsNonarchimedean v) :
     ∃! w : InfinitePlace K, v ≈ w.val := by
   obtain ⟨w, hw⟩ := exists_infinitePlace_isEquiv v hv
   -- Two candidates are equivalent through `v`; equivalent infinite places are equal.
   exact ⟨w, hw, fun w' hw' ↦ InfinitePlace.eq_iff_isEquiv.mpr (hw'.symm.trans hw)⟩
 
-/-- **Ostrowski's Theorem, archimedean case**, in its explicit power form.
-A real embedding is represented here as a complex embedding with real image.
-The exponent can additionally be shown to satisfy `t ≤ 1`, since `v` obeys the
-ordinary triangle inequality. -/
+/-- **Ostrowski's Theorem, archimedean case**: every archimedean absolute value `v` on a number
+  field `K` is of the form `v x = ‖σ x‖ ^ t` for some embedding `σ : K →+* ℂ` and some `0 < t`. -/
 theorem exists_complexEmbedding_rpow_eq (v : AbsoluteValue K ℝ)
     (hv : ¬ IsNonarchimedean v) :
     ∃ (σ : K →+* ℂ) (t : ℝ), 0 < t ∧ ∀ x : K, v x = ‖σ x‖ ^ t := by
