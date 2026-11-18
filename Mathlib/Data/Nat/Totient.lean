@@ -22,9 +22,6 @@ This file defines [Euler's totient function](https://en.wikipedia.org/wiki/Euler
 We prove the divisor sum formula, namely that `n` equals `φ` summed over the divisors of `n`. See
 `sum_totient`. We also prove two lemmas to help compute totients, namely `totient_mul` and
 `totient_prime_pow`.
-
-See `Nat.totient_lcm_mul_totient_gcd` in `Mathlib.NumberTheory.ArithmeticFunction.Misc` for the
-identity `φ (lcm m n) * φ (gcd m n) = φ m * φ n`.
 -/
 
 @[expose] public section
@@ -36,7 +33,8 @@ open Finset
 namespace Nat
 
 /-- Euler's totient function. This counts the number of naturals strictly less than `n` which are
-coprime with `n`. -/
+coprime with `n`. See `ArithmeticFunction.totient` for the bundled version, as an arithmetic
+function. -/
 @[oeis A000010 "the sequence skips `n = 0`"]
 def totient (n : ℕ) : ℕ := #{a ∈ range n | n.Coprime a}
 
