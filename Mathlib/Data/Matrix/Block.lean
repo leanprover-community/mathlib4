@@ -837,11 +837,8 @@ variable [CommRing R]
 
 theorem toBlock_mul_eq_mul {m n k : Type*} [Fintype n] (p : m → Prop) (q : k → Prop)
     (A : Matrix m n R) (B : Matrix n k R) :
-    (A * B).toBlock p q = A.toBlock p ⊤ * B.toBlock ⊤ q := by
-  ext i k
-  simp only [toBlock_apply, Matrix.mul_apply]
-  rw [Finset.sum_subtype]
-  simp [Pi.top_apply, Prop.top_eq_true]
+    (A * B).toBlock p q = A.toBlock p ⊤ * B.toBlock ⊤ q :=
+  submatrix_mul _ _ _ _ _ <| (Equiv.Set.univ _).bijective
 
 theorem toBlock_mul_eq_add {m n k : Type*} [Fintype n] (p : m → Prop) (q : n → Prop)
     [DecidablePred q] (r : k → Prop) (A : Matrix m n R) (B : Matrix n k R) : (A * B).toBlock p r =
