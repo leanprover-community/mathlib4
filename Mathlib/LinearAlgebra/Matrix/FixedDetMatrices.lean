@@ -32,6 +32,17 @@ namespace FixedDetMatrices
 open Matrix hiding mul_smul
 open ModularGroup SpecialLinearGroup MatrixGroups
 
+variable {n R} in
+/-- Constructor for `FixedDetMatrix`. -/
+def _root_.FixedDetMatrix.mk {m : R} (A : Matrix n n R) (h : det A = m) : FixedDetMatrix n R m :=
+    ⟨A, h⟩
+
+@[simp]
+lemma coe_mk {m : R} (A : Matrix n n R) (h : det A = m) :
+    (FixedDetMatrix.mk A h).1 = A := rfl
+
+lemma mk_coe {m : R} (A : FixedDetMatrix n R m) : FixedDetMatrix.mk (A.1) (A.2) = A := rfl
+
 /-- Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
 entrywise. -/
 lemma ext' {m : R} {A B : FixedDetMatrix n R m} (h : A.1 = B.1) : A = B := by
@@ -45,20 +56,19 @@ lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j, A.1 i j = B.1 i j) 
   apply h
 
 instance (m : R) : SMul (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  smul g A := ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩
+  smul g A := FixedDetMatrix.mk (g * A.1) (by simp [A.2])
 
 lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m)) :
-    g • A = ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩ :=
+    g • A = FixedDetMatrix.mk ((g : Matrix n n R) * A.1) (by simp [A.2]) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  one_smul b := by rw [smul_def]; simp only [coe_one, one_mul, Subtype.coe_eta]
-  mul_smul x y b := by simp_rw [smul_def, ← mul_assoc, coe_mul]
+  one_smul b := by simp [smul_def, mk_coe]
+  mul_smul x y b := by simp [smul_def, ← mul_assoc]
 
 lemma smul_coe (m : R) (g : SpecialLinearGroup n R) (A : FixedDetMatrix n R m) :
     (g • A).1 = g * A.1 := by
-  rw [smul_def]
+  simp [smul_def]
 
 section IntegralFixedDetMatrices
 
@@ -78,8 +88,8 @@ private lemma reduce_aux {A : Δ m} (h : (A.1 1 0) ≠ 0) :
   suffices ((reduceStep A).1 1 0) = A.1 0 0 % A.1 1 0 by
     rw [this, abs_eq_self.mpr (Int.emod_nonneg (A.1 0 0) h)]
     exact Int.emod_lt_abs (A.1 0 0) h
-  simp_rw [Int.emod_def, sub_eq_add_neg, reduceStep, smul_coe, coe_T_zpow, S]
-  simp [vecMul, vecHead, vecTail, mul_comm]
+  simp [Int.emod_def, sub_eq_add_neg, reduceStep, smul_coe, coe_T_zpow,
+    vecMul, vecHead, vecTail, mul_comm]
 
 /-- Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]
@@ -173,7 +183,6 @@ lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
 lemma T_S_rel_smul (A : Δ m) : S • S • S • T • S • T • S • A = T⁻¹ • A := by
   simp_rw [← T_S_rel, ← smul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m := by
   induction A using reduce_rec with
   | step A h1 h2 => simpa only [reduce_reduceStep h1] using h2
