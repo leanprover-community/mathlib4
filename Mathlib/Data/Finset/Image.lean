@@ -578,8 +578,8 @@ theorem iterate_image [DecidableEq α] (f : α → α) (n : ℕ) :
   | succ n ih => rw [iterate_succ_apply', iterate_succ', ih, image_image]
 
 lemma _root_.List.toFinset_map {β : Type*} [DecidableEq α] [DecidableEq β] (f : α → β)
-    (s : List α) : (s.map f).toFinset = s.toFinset.image f := by
-  ext b; constructor <;> simp
+    (l : List α) : (l.map f).toFinset = l.toFinset.image f :=
+  Multiset.toFinset_map f l
 
 end Image
 
