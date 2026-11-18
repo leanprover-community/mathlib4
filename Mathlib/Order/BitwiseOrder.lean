@@ -52,8 +52,10 @@ class IsDistribBitwiseLattice (α : Type*) [AndOp α] [OrOp α] : Prop where
   [toIdempotentOp_or : Std.IdempotentOp (α := α) HOr.hOr]
   [toAssociative_or : Std.Associative (α := α) HOr.hOr]
   [toCommutative_or : Std.Commutative (α := α) HOr.hOr]
-  and_or_distrib_left (x y z : α) : x &&& (y ||| z) = (x &&& y) ||| (x &&& z)
-  and_or_self_left (x y : α) : x &&& (x ||| y) = x
+  /-- The bitwise version of `inf_sup_left`. -/
+  and_or_left (x y z : α) : x &&& (y ||| z) = (x &&& y) ||| (x &&& z)
+  /-- The bitwise version of `inf_sup_self`. -/
+  and_or_self (x y : α) : x &&& (x ||| y) = x
 
 namespace IsDistribBitwiseLattice
 variable {α : Type*} [AndOp α] [OrOp α] [IsDistribBitwiseLattice α]
@@ -62,13 +64,15 @@ attribute [instance]
   toIdempotentOp_and toAssociative_and toCommutative_and
   toIdempotentOp_or toAssociative_or toCommutative_or
 
-theorem and_or_distrib_right (x y z : α) : (x ||| y) &&& z = (x &&& z) ||| (y &&& z) := by
-  simp only [Std.Commutative.comm (op := HAnd.hAnd) _ z, and_or_distrib_left]
+/-- The bitwise version of `inf_sup_right`. -/
+theorem and_or_right (x y z : α) : (x ||| y) &&& z = (x &&& z) ||| (y &&& z) := by
+  simp only [Std.Commutative.comm (op := HAnd.hAnd) _ z, and_or_left]
 
-theorem and_or_self_right (x y : α) : y &&& (x ||| y) = y := by
-  rw [Std.Commutative.comm (op := HOr.hOr) x y, and_or_self_left]
+-- this has no lattice equivalent
+theorem and_or_self' (x y : α) : y &&& (x ||| y) = y := by
+  rw [Std.Commutative.comm (op := HOr.hOr) x y, and_or_self]
 
-attribute [grind =] and_or_distrib_left and_or_distrib_right and_or_self_left and_or_self_right
+attribute [grind =] and_or_left and_or_right and_or_self and_or_self'
 
 end IsDistribBitwiseLattice
 
@@ -77,30 +81,33 @@ end IsDistribBitwiseLattice
 `a ^^^ (a &&& b)`. -/
 class IsGeneralizedBitwiseAlgebra (α : Type*) [AndOp α] [OrOp α] [XorOp α] [Zero α] : Prop extends
     IsDistribBitwiseLattice α, LawfulXor α where
+  /-- The bitwise version of `inf_symmDiff_distrib_left`. -/
   and_xor_distrib_left (x y z : α) : x &&& (y ^^^ z) = (x &&& y) ^^^ (x &&& z)
-  or_xor_self (x y : α) : x ||| (y ^^^ x) = x ||| y
+  /-- The bitwise version of `left_sup_symmDiff`. -/
+  left_or_xor (x y : α) : x ||| (x ^^^ y) = x ||| y
 
 namespace IsGeneralizedBitwiseAlgebra
 variable {α : Type*} [AndOp α] [OrOp α] [XorOp α] [Zero α] [IsGeneralizedBitwiseAlgebra α]
 
+/-- The bitwise version of `inf_symmDiff_distrib_right`. -/
 theorem and_xor_distrib_right (x y z : α) :
     (x ^^^ y) &&& z = (x &&& z) ^^^ (y &&& z) := by
   simp only [Std.Commutative.comm (op := HAnd.hAnd) _ z, and_xor_distrib_left]
 
-attribute [grind =] and_xor_distrib_left and_xor_distrib_right or_xor_self LawfulXor.xor_self
+/-- The bitwise version of `right_sup_symmDiff`. -/
+theorem right_or_xor (x y : α) : y ||| (x ^^^ y) = x ||| y := by
+  simp only [Std.Commutative.comm (op := HXor.hXor) _ y, Std.Commutative.comm (op := HOr.hOr) _ y,
+    left_or_xor]
 
-theorem bot_eq_zero {bot : α} [Std.LawfulIdentity (α := α) (· ||| ·) bot] : bot = 0 := by
-  have := IsDistribBitwiseLattice.and_or_self_left bot 0
-  have := LawfulXor.xor_self bot
-  grind
+attribute [grind =] and_xor_distrib_left and_xor_distrib_right left_or_xor right_or_xor
 
 end IsGeneralizedBitwiseAlgebra
 
 instance : IsGeneralizedBitwiseAlgebra Nat where
-  and_or_distrib_left := Nat.and_or_distrib_left
-  and_or_self_left _ _ := by apply Nat.eq_of_testBit_eq; grind
+  and_or_left := Nat.and_or_distrib_left
+  and_or_self _ _ := by apply Nat.eq_of_testBit_eq; grind
   and_xor_distrib_left _ _ _ := Nat.and_xor_distrib_left
-  or_xor_self _ _ := by apply Nat.eq_of_testBit_eq; grind
+  left_or_xor _ _ := by apply Nat.eq_of_testBit_eq; grind
 
 /-- A typeclass asserting that `&&&`, `|||`, `^^^`, and `~~~` satisfy the laws needed to induce a
 `BooleanAlgebra` structure on `BitwiseOrder α`. -/
@@ -108,16 +115,18 @@ class IsBitwiseAlgebra (α : Type*)
     {bot top : outParam α} [AndOp α] [OrOp α] [XorOp α] [Zero α] [Complement α]
     [Std.LawfulIdentity (α := α) (· ||| ·) bot] [Std.LawfulIdentity (α := α) (· &&& ·) top] :
     Prop extends IsGeneralizedBitwiseAlgebra α where
+  /-- The bitwise version of `inf_compl_eq_bot`. -/
   and_not_self (x : α) : x &&& ~~~x = bot
+  /-- The bitwise version of `sup_compl_eq_top`. -/
   or_not_self (x : α) : x ||| ~~~x = top
 
 attribute [simp, grind =] IsBitwiseAlgebra.and_not_self IsBitwiseAlgebra.or_not_self
 
 instance {w} : IsBitwiseAlgebra (BitVec w) where
-  and_or_distrib_left := by grind
-  and_or_self_left := by grind
+  and_or_left := by grind
+  and_or_self := by grind
   and_xor_distrib_left := by grind
-  or_xor_self := by grind
+  left_or_xor := by grind
   and_not_self := BitVec.and_not_self
   or_not_self := BitVec.or_not_self
 
@@ -130,10 +139,10 @@ run_cmd do
     Elab.Command.elabCommand <| ← `(
       namespace $ty
       instance : IsBitwiseAlgebra $ty where
-        and_or_distrib_left := by grind
-        and_or_self_left := by grind
+        and_or_left := by grind
+        and_or_self := by grind
         and_xor_distrib_left := by grind
-        or_xor_self := by grind
+        left_or_xor := by grind
         and_not_self _ := $and_not_self
         or_not_self _ := $or_not_self
       end $ty
@@ -253,7 +262,7 @@ instance [IsDistribBitwiseLattice α] : Lattice (BitwiseOrder α) where
     simp
     grind
   sup_le a b c (ha : _ = _) (hb : _ = _) := private
-    (IsDistribBitwiseLattice.and_or_distrib_right _ _ _).trans congr($ha ||| $hb)
+    (IsDistribBitwiseLattice.and_or_right _ _ _).trans congr($ha ||| $hb)
 
 instance [IsDistribBitwiseLattice α] : DistribLattice (BitwiseOrder α) :=
   .ofInfSupLe fun a b c => by
@@ -282,23 +291,23 @@ instance {bot : α} [AndOp α] [OrOp α] [XorOp α] [Zero α] [IsGeneralizedBitw
     GeneralizedBooleanAlgebra (BitwiseOrder α) where
   sup_inf_sdiff a b := by
     ext
-    simp only [bits_sup, bits_inf, bits_sdiff, IsGeneralizedBitwiseAlgebra.or_xor_self]
-    exact congrArg bits ((sup_comm (a ⊓ b) a).trans sup_inf_self)
+    simp only [bits_sup, bits_inf, bits_sdiff, IsGeneralizedBitwiseAlgebra.right_or_xor]
+    exact congrArg bits sup_inf_self
   inf_inf_sdiff a b := by
+    have := IsGeneralizedBitwiseAlgebra.left_or_xor bot 0
     ext
-    simp [IsGeneralizedBitwiseAlgebra.bot_eq_zero]
+    simp
     grind
 
 open scoped symmDiff in
 @[simp, grind =]
 theorem bits_symmDiff [AndOp α] [OrOp α] [XorOp α] [Zero α] [IsGeneralizedBitwiseAlgebra α]
     {a b : BitwiseOrder α} : (a ∆ b).bits = a.bits ^^^ b.bits := by
-  have hza (x y : BitwiseOrder α) : ofBits (x.bits ^^^ y.bits) ⊓ x = x \ y := by ext; simp; grind
-  have hzb : ofBits (a.bits ^^^ b.bits) ⊓ b = b \ a := by rw [LawfulXor.xor_comm]; exact hza b a
-  have hzb_sup : b ⊔ ofBits (a.bits ^^^ b.bits) = b ⊔ a := by
-    ext; simp [IsGeneralizedBitwiseAlgebra.or_xor_self]
+  have hza : ofBits (a.bits ^^^ b.bits) ⊓ a = a \ b := by ext; simp; grind
+  have hzb : ofBits (a.bits ^^^ b.bits) ⊓ b = b \ a := by ext; simp; grind
+  have hza_sup : a ⊔ ofBits (a.bits ^^^ b.bits) = a ⊔ b := by ext; simp; grind
   suffices a ∆ b = ofBits (a.bits ^^^ b.bits) from congrArg bits this
-  rw [symmDiff_def, ← hza, ← hzb, ← inf_sup_left, sup_comm a b, ← hzb_sup, sup_comm b, inf_sup_self]
+  rw [symmDiff_def, ← hza, ← hzb, ← inf_sup_left, ← hza_sup, sup_comm a, inf_sup_self]
 
 open scoped symmDiff in
 @[simp, grind =]

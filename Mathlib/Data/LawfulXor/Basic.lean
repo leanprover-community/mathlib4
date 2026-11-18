@@ -28,15 +28,15 @@ export LawfulXor (xor_assoc xor_self xor_zero xor_comm)
 
 variable {α : Type*} [XorOp α] [Zero α] [LawfulXor α]
 
-attribute [simp] xor_zero LawfulXor.xor_self
+attribute [simp, grind =] xor_zero LawfulXor.xor_self
 
 @[simp]
 theorem zero_xor (a : α) : 0 ^^^ a = a := by rw [LawfulXor.xor_comm, xor_zero]
 
-instance : Std.Commutative (α := α) XorOp.xor where comm := xor_comm
-instance : Std.Associative (α := α) XorOp.xor where assoc := xor_assoc
+instance : Std.Commutative (α := α) HXor.hXor where comm := xor_comm
+instance : Std.Associative (α := α) HXor.hXor where assoc := xor_assoc
 
-instance : Std.LawfulCommIdentity (α := α) XorOp.xor 0 where
+instance : Std.LawfulCommIdentity (α := α) HXor.hXor 0 where
   left_id := zero_xor
   right_id := xor_zero
 
