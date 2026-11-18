@@ -111,8 +111,6 @@ noncomputable def quotSMulTopExtEquivExtQuotSMulTop (M : ModuleCat.{v} R) (n : �
     simp [Submodule.mem_smul_pointwise_iff_exists]
   exact (Submodule.quotEquivOfEq _ _ ker.symm).trans (f.quotKerEquivOfSurjective surj)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear equivalence `Ext (R⧸(r1, ... rk)) M k ≃ M⧸(r1, ... rk)M` for `R`-regular sequence
 `(r1, ... rk)`, this is a special case of a more general result for Koszul complex. -/
 noncomputable def extQuotientLengthEquivOfIsRegular [IsLocalRing R] [IsNoetherianRing R]
@@ -153,9 +151,8 @@ noncomputable def extQuotientLengthEquivOfIsRegular [IsLocalRing R] [IsNoetheria
       ((QuotSMulTop.equiv a (Shrink.linearEquiv R (R ⧸ Ideal.ofList rs'))).trans
       (Ideal.quotOfListSMulTopEquivQuotSMulTopOuter eqapp).symm).trans (Shrink.linearEquiv R _).symm
     let e1 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M (n + 1) ≃ₗ[R]
-      Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
-      __ := (((extFunctor (n + 1)).mapIso e1'.toModuleIso.op).app M).addCommGroupIsoToAddEquiv
-      map_smul' r x := by simp [Iso.addCommGroupIsoToAddEquiv] }
+      Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) :=
+      (((linearExtFunctor R _ (n + 1)).mapIso e1'.toModuleIso.op).app M).toLinearEquiv
     have : HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) n :=
       have : projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) = n := by
         simp [ModuleCat.projectiveDimension_quotient_eq_length rs' rs'reg, rs', len]
