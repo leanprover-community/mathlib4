@@ -40,7 +40,6 @@ The next steps are:
 ## References
 
 - [B. Gartner and J. Matousek, Cone Programming][gartnerMatousek]
-
 -/
 
 @[expose] public section

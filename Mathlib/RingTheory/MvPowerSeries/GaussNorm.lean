@@ -39,7 +39,6 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
 
 * `MvPowerSeries.gaussNorm_neg`: if `v` has the property that `∀ i, v i = v (-i)` then
   `gaussNorm v c (-f) = gaussNorm v c f `.
-
 -/
 
 @[expose] public section

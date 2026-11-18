@@ -26,7 +26,6 @@ The reason is that we did not want to change existing names in the library.
 
 Almost no monoid is actually present in this file: most assumptions have been generalized to
 `Mul` or `MulOneClass`.
-
 -/
 
 @[expose] public section

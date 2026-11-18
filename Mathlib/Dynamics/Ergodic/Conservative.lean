@@ -207,7 +207,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   -- Discharge the trivial case `n = 0`
   rcases n with - | n
   · exact Conservative.id μ
-  refine ⟨hf.1.iterate _, fun s hs hs0 => ?_⟩
+  refine ⟨hf.toQuasiMeasurePreserving.iterate _, fun s hs hs0 => ?_⟩
   rcases (hf.frequently_ae_mem_and_frequently_image_mem hs.nullMeasurableSet hs0).exists
     with ⟨x, _, hx⟩
   /- We take a point `x ∈ s` such that `f^[k] x ∈ s` for infinitely many values of `k`,

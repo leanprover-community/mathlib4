@@ -43,7 +43,6 @@ identify to `f.right`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 universe w
@@ -66,7 +65,7 @@ variable [F₁.IsCardinalAccessible κ]
   [HasCardinalFilteredColimits C₁ κ] [HasCardinalFilteredColimits C₂ κ]
 
 instance : HasCardinalFilteredColimits (Comma F₁ F₂) κ where
-  hasColimitsOfShape J _ _ := by
+  hasColimitsOfShape' J _ _ := by
     have := HasCardinalFilteredColimits.hasColimitsOfShape C₁ κ J
     have := HasCardinalFilteredColimits.hasColimitsOfShape C₂ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
@@ -413,9 +412,9 @@ private instance : (π₂ κ f).Final := by
 instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
   isDenseAt f :=
     ⟨Comma.fstSndJointlyReflectColimit
-      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).2
+      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).invFun
         ((isCardinalPresentable C₁ κ).ι.denseAt f.left))
-      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).2
+      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).invFun
         ((isCardinalPresentable C₂ κ).ι.denseAt f.right))⟩
 
 end isCardinalAccessibleCategory

@@ -267,7 +267,7 @@ theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
 
 @[simp]
 theorem nonempty_sUnion {S : Set (Set α)} : (⋃₀ S).Nonempty ↔ ∃ s ∈ S, Set.Nonempty s := by
-  simp [nonempty_iff_ne_empty]
+  simp [← ne_empty_iff_nonempty]
 
 theorem Nonempty.of_sUnion {s : Set (Set α)} (h : (⋃₀ s).Nonempty) : s.Nonempty :=
   let ⟨s, hs, _⟩ := nonempty_sUnion.1 h
@@ -345,8 +345,8 @@ theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b
   simp only [eq_univ_iff_forall, mem_sUnion]
 
 theorem iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set α} (h : f i = ∅) :
-    ⋂ j, f j = ∅ :=
-  subset_eq_empty (iInter_subset _ i) h
+    ⋂ j, f j = ∅ := by
+  grw [iInter_subset _ i, h]
 
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
@@ -364,7 +364,7 @@ theorem sInter_eq_empty_iff {c : Set (Set α)} : ⋂₀ c = ∅ ↔ ∀ a, ∃ b
 -- classical
 @[simp]
 theorem nonempty_iInter {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x, ∀ i, x ∈ f i := by
-  simp [nonempty_iff_ne_empty, iInter_eq_empty_iff]
+  simp [← ne_empty_iff_nonempty, iInter_eq_empty_iff]
 
 -- classical
 theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
@@ -374,7 +374,7 @@ theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
 -- classical
 @[simp]
 theorem nonempty_sInter {c : Set (Set α)} : (⋂₀ c).Nonempty ↔ ∃ a, ∀ b ∈ c, a ∈ b := by
-  simp [nonempty_iff_ne_empty, sInter_eq_empty_iff]
+  simp [← ne_empty_iff_nonempty, sInter_eq_empty_iff]
 
 -- classical
 theorem compl_sUnion (S : Set (Set α)) : (⋃₀ S)ᶜ = ⋂₀ (compl '' S) :=

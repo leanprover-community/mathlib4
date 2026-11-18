@@ -10,7 +10,6 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Projection
 
 /-!
-
 # Projections in C⋆-algebras
 
 Here we collect results about projections specific to C⋆-algebras.
@@ -25,7 +24,6 @@ Here we collect results about projections specific to C⋆-algebras.
   - `p * q = p`
   - `q - p` is a star projection
   - `q - p` is an idempotent element
-
 -/
 
 public section

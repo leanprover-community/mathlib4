@@ -34,7 +34,6 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 ## References
 
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-
 -/
 
 @[expose] public section
@@ -379,6 +378,41 @@ end NormedField
 
 end Bornology
 
+namespace Topology.IsInducing
+open Bornology
+
+variable {𝕜 E F ι : Type*} {Eι : ι → Type*} [NormedDivisionRing 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+    [∀ i, AddCommGroup (Eι i)] [∀ i, Module 𝕜 (Eι i)]
+    [∀ i, TopologicalSpace (Eι i)]
+    {f : (i : ι) → E →ₗ[𝕜] Eι i}
+
+/-- If the topology on `E` is induced by a linear map, then a set `s : Set E` is von
+Neumann bounded if and only if its image is von Neumann bounded. -/
+protected lemma isVonNBounded_iff {f : E →ₗ[𝕜] F} (hf : Topology.IsInducing f) {s : Set E} :
+    IsVonNBounded 𝕜 s ↔ IsVonNBounded 𝕜 (f '' s) := by
+  simp [isVonNBounded_iff_tendsto_smallSets_nhds, hf.nhds_eq_comap,
+    smallSets_comap_eq_comap_image, Function.comp_def]
+
+/-- If the topology on `E` is induced by a linear map, then a set `s : Set E` is von
+Neumann bounded if its image is von Neumann bounded. -/
+protected alias ⟨_, isVonNBounded⟩ := Topology.IsInducing.isVonNBounded_iff
+
+/-- If the topology on `E` is induced by a family of linear maps, then a set `s : Set E` is von
+Neumann bounded if and only if its image under each map is von Neumann bounded. -/
+protected lemma isVonNBounded_pi_iff
+    (hf : Topology.IsInducing (fun x i ↦ f i x)) {s : Set E} :
+    IsVonNBounded 𝕜 s ↔ ∀ i, IsVonNBounded 𝕜 (f i '' s) := by
+  replace hf : IsInducing (LinearMap.pi f) := hf
+  simpa [isVonNBounded_pi_iff, Set.image_image] using hf.isVonNBounded_iff
+
+/-- If the topology on `E` is induced by a family of linear maps, then a set `s : Set E` is von
+Neumann bounded if its image under each map is von Neumann bounded. -/
+protected alias ⟨_, isVonNBounded_pi⟩ := Topology.IsInducing.isVonNBounded_pi_iff
+
+end Topology.IsInducing
+
 section IsUniformAddGroup
 
 variable (𝕜) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
@@ -433,8 +467,8 @@ protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
   intro V hV
   refine (h hV).restrict_scalars <| AntilipschitzWith.tendsto_cobounded (K := ‖(1 : 𝕜')‖₊⁻¹) ?_
   refine AntilipschitzWith.of_le_mul_nndist fun x y ↦ ?_
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← sub_smul, nnnorm_smul, ← div_eq_inv_mul,
-    mul_div_cancel_right₀ _ (nnnorm_ne_zero_iff.2 one_ne_zero)]
+  rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← sub_smul, nnNorm_smul, ← div_eq_inv_mul,
+    mul_div_cancel_right₀ _ (nnNorm_ne_zero_iff.2 one_ne_zero)]
 
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars

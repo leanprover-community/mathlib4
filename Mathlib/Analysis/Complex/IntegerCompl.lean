@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 
 We define the complement of the integers in the complex plane and give some basic lemmas about it.
 We also show that the upper half plane embeds into the integer complement.
-
 -/
 
 @[expose] public section
