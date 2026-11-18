@@ -187,7 +187,7 @@ theorem coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
     · cases h1 (mem_image_of_mem _ hx)
     · exact (h2 (Monotone.map_bddBelow coe_mono h's)).elim
   · rw [preimage_image_eq]
-    exact WithTop.coe_injective
+    exact coe_injective
 
 @[to_dual]
 theorem iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
