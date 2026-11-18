@@ -64,6 +64,17 @@ variable {A B G : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [FormallyUnramified A B] [EssFiniteType A B]
   [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
+-- PRed
+@[simp]
+lemma extendScalars_eq_mulLeft_inertiaIdempotent (g : G) :
+    extendScalars B (MulSemiringAction.toAlgHom A B g).toLinearMap =
+      LinearMap.mulLeft B (inertiaIdempotent A B g) := by
+  rw [inertiaIdempotent, equalizerIdempotent_comm]
+  apply LinearMap.ext_ring
+  rw [LinearMap.mulLeft_apply, mul_one, extendScalars_apply,
+    LinearMap.coe_comp, Function.comp_apply, sec_one]
+  rfl
+
 section extendScalars
 
 variable {L M N : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
@@ -79,16 +90,6 @@ lemma le_comap_extendScalars (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submod
   rw [← (LinearMap.liftBaseChangeEquiv B).symm_apply_apply f] at hf
   rwa [Submodule.baseChange_le_iff_le_comap, Q.restrictScalars_comap, ← Submodule.comap_comp]
 
-@[simp]
-lemma extendScalars_toAlgHom (g : G) :
-    extendScalars B (MulSemiringAction.toAlgHom A B g).toLinearMap =
-      LinearMap.mulLeft B (inertiaIdempotent A B g) := by
-  rw [inertiaIdempotent, equalizerIdempotent_comm]
-  apply LinearMap.ext_ring
-  rw [LinearMap.mulLeft_apply, mul_one, extendScalars_apply,
-    LinearMap.coe_comp, Function.comp_apply, sec_one]
-  rfl
-
 end extendScalars
 
 variable (A B) (H : Subgroup G)
@@ -102,7 +103,7 @@ noncomputable def descentMultiplier : B := by
   letI := Fintype.ofFinite (G ⧸ H)
   exact ∑ q : G ⧸ H, inertiaIdempotent A B q.out * groupIdempotent A B H
 
-private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
+lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     (I : Ideal B) (hI : ∀ g : G, g • I = I) :
     descentMultiplier A B H ∈ ((I.under A).map (algebraMap A B)).colon I := by
   classical
