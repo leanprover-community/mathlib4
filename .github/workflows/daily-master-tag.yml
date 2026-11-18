@@ -2,8 +2,7 @@ name: Daily master tag
 
 on:
   schedule:
-    # Run daily at 10:00 UTC (after nightly-testing has settled)
-    - cron: '0 10 * * *'
+    - cron: '0 10 * * *'  # Runs at 10:00 UTC every day
   workflow_dispatch:
 
 jobs:

@@ -126,15 +126,15 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
     (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     -- Then `x` is an `i + 1`-cocycle and `δ z = x` in `Hⁱ⁺¹(X₁)`.
     δ hX i j hij (π X.X₃ i <| cocyclesMk z (by subst hij; simpa [CochainComplex.of.d] using! hz)) =
-      π X.X₁ j (cocyclesMkOfCompEqD hX hx) := by
-  exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
+      π X.X₁ j (cocyclesMkOfCompEqD hX hx) :=
+  (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa using! hx) (j + 1) (by simp)
 
 /-- Stated for readability of `δ₀_apply`. -/
 theorem mem_cocycles₁_of_comp_eq_d₀₁
     {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = d₀₁ X.X₂ y) :
     x ∈ cocycles₁ X.X₁ := by
-  apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
+  apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.mono_f)
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
@@ -160,7 +160,7 @@ theorem δ₀_apply
 theorem mem_cocycles₂_of_comp_eq_d₁₂
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = d₁₂ X.X₂ y) :
     x ∈ cocycles₂ X.X₁ := by
-  apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
+  apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.mono_f)
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
 
