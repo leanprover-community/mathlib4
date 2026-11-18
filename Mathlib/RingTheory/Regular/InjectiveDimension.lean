@@ -33,19 +33,6 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing
 
-lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
-  obtain ⟨m, hm⟩ := WithBot.ne_bot_iff_exists.mp (ringKrullDim_ne_bot (R := R))
-  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp
-    (WithBot.coe_inj.not.mp (ne_of_eq_of_ne hm ringKrullDim_ne_top))
-  exact ⟨n, ((WithBot.coe_inj.mpr hn).trans hm).symm⟩
-
-variable {R} in
-lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : Type*} [CommRing S]
-    [IsLocalRing S] (f : R →+* S) (surj : Function.Surjective f) [IsLocalHom f] :
-    Function.Bijective (ResidueField.map f) :=
-  ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
-    (Ideal.Quotient.mk_surjective.comp surj)⟩
-
 open CategoryTheory Abelian Module
 
 section
@@ -156,7 +143,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
           · simpa using Ideal.Quotient.eq_zero_iff_mem.not.mpr hrp
           · simpa using Ideal.Quotient.eq_zero_iff_mem.mpr hrq
         apply ih (j + 1) (Nat.le_add_right_of_le hj) this
-  rcases exist_nat_eq' R with ⟨m, hm⟩
+  rcases FiniteRingKrullDim.ringKrullDim_eq_nat R with ⟨m, hm⟩
   apply this m n (le_refl n)
   simpa [← hm] using ringKrullDim_quotient_le p.1
 
@@ -440,12 +427,10 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
         exact h (i + 1) (Nat.add_le_add_right hi 1)
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
+  | top => simp
   | bot =>
     simp [injectiveDimension_eq_bot_iff, ModuleCat.isZero_of_iff_subsingleton,
       ModuleCat.isZero_of_iff_subsingleton (M := M), sub]
-  | coe N =>
-    induction N with
-    | top => simp
-    | coe n => simpa using aux n
+  | coe n => simpa using aux n
 
 end
