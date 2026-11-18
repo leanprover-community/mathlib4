@@ -39,14 +39,13 @@ private def polarₗᵢAux (T : E →L[ℂ] F) : T.abs.range →ₗ[ℂ] F :=
 
 @[simp]
 private theorem polarₗᵢAux_apply (T : E →L[ℂ] F) (x : E) (h : T.abs x ∈ T.abs.range) :
-    polarₗᵢAux T ⟨T.abs x, h⟩ = T x := by
-  exact congrArg _ (T.abs.quotKerEquivRange_symm_apply_image x h)
+    polarₗᵢAux T ⟨T.abs x, h⟩ = T x :=
+  congrArg _ (T.abs.quotKerEquivRange_symm_apply_image x h)
 
 private theorem denseRange_inclusion (T : E →L[ℂ] F) :
-    DenseRange (Submodule.inclusion T.abs.range.le_topologicalClosure) := by
-  erw [denseRange_inclusion_iff (by
-    simpa [← SetLike.coe_subset_coe] using T.abs.range.le_topologicalClosure)]
-  simp
+    DenseRange (Submodule.inclusion T.abs.range.le_topologicalClosure) :=
+  (denseRange_inclusion_iff T.abs.range.le_topologicalClosure).mpr
+    (Submodule.topologicalClosure_coe _).subset
 
 /-- The polar `U` is a linear isometry from the range `T.abs.range` of `T.abs` to the orthogonal of
 the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that `T = U ∘ T.abs`. -/
