@@ -553,10 +553,8 @@ variable (f : MvPowerSeries σ R) (ha : HasSubst a) (hb : HasSubst b)
 
 include ha hb
 
-/-- Substituting two families that agree up to weighted order `n`, and have weighted order at
-least `k`, gives series that agree up to weighted order `n + k`, provided that each linear term of
-`f` is harmless: either its coefficient vanishes, or the families agree up to weighted order
-`n + k` in that variable. -/
+/-- Substituting families that agree up to weighted order `n` and have weighted order at least `k`
+gives series that agree up to weighted order `n + k`, if no linear term of `f` interferes. -/
 theorem add_le_weightedOrder_subst_sub_subst (hak : ∀ s, k ≤ (a s).weightedOrder w)
     (hbk : ∀ s, k ≤ (b s).weightedOrder w) (h : ∀ s, n ≤ (a s - b s).weightedOrder w)
     (hf : ∀ s, coeff (Finsupp.single s 1) f = 0 ∨ n + k ≤ (a s - b s).weightedOrder w) :

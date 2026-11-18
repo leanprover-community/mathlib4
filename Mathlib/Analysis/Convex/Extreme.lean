@@ -92,7 +92,7 @@ protected theorem IsExtreme.trans (hAB : IsExtreme 𝕜 A B) (hBC : IsExtreme �
     (hAB.right_mem_of_mem_openSegment hx₁A hx₂A (hBC.subset hxC) hx) hxC hx
 
 protected theorem IsExtreme.antisymm : Std.Antisymm (IsExtreme 𝕜 : Set E → Set E → Prop) :=
-  ⟨fun _ _ hAB hBA ↦ Subset.antisymm hBA.1 hAB.1⟩
+  ⟨fun _ _ hAB hBA ↦ Subset.antisymm hBA.subset hAB.subset⟩
 
 instance : IsPartialOrder (Set E) (IsExtreme 𝕜) where
   refl := IsExtreme.refl 𝕜
@@ -101,21 +101,21 @@ instance : IsPartialOrder (Set E) (IsExtreme 𝕜) where
 
 theorem IsExtreme.inter (hAB : IsExtreme 𝕜 A B) (hAC : IsExtreme 𝕜 A C) :
     IsExtreme 𝕜 A (B ∩ C) := by
-  use Subset.trans inter_subset_left hAB.1
+  use Subset.trans inter_subset_left hAB.subset
   rintro x₁ hx₁A x₂ hx₂A x ⟨hxB, hxC⟩ hx
   exact ⟨hAB.left_mem_of_mem_openSegment hx₁A hx₂A hxB hx,
     hAC.left_mem_of_mem_openSegment hx₁A hx₂A hxC hx⟩
 
 protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B) :
     IsExtreme 𝕜 B C :=
-  ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.2 (hBA hx₁B) (hBA hx₂B) hxC hx⟩
+  ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.left_mem_of_mem_openSegment (hBA hx₁B) (hBA hx₂B) hxC hx⟩
 
 theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   inhabit ι
-  refine ⟨iInter_subset_of_subset default (hAF default).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ ?_⟩
+  refine ⟨iInter_subset_of_subset default (hAF default).subset, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ ?_⟩
   rw [mem_iInter] at hxF ⊢
-  exact fun i ↦ (hAF i).2 hx₁A hx₂A (hxF i) hx
+  exact fun i ↦ (hAF i).left_mem_of_mem_openSegment hx₁A hx₂A (hxF i) hx
 
 theorem isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂ B ∈ F, B) := by
@@ -174,7 +174,7 @@ theorem IsExtreme.extremePoints_subset_extremePoints (hAB : IsExtreme 𝕜 A B) 
 theorem IsExtreme.extremePoints_eq (hAB : IsExtreme 𝕜 A B) :
     B.extremePoints 𝕜 = B ∩ A.extremePoints 𝕜 :=
   Subset.antisymm (fun _ hx ↦ ⟨hx.1, hAB.extremePoints_subset_extremePoints hx⟩)
-    (inter_extremePoints_subset_extremePoints_of_subset hAB.1)
+    (inter_extremePoints_subset_extremePoints_of_subset hAB.subset)
 
 @[nontriviality]
 lemma Set.extremePoints_eq_self [Subsingleton E] (A : Set E) : Set.extremePoints 𝕜 A = A :=
@@ -190,7 +190,8 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [AddCommGroup F] [
 theorem IsExtreme.convex_sdiff [IsOrderedRing 𝕜] (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) :
     Convex 𝕜 (A \ B) :=
   convex_iff_openSegment_subset.2 fun _ ⟨hx₁A, hx₁B⟩ _ ⟨hx₂A, _⟩ _ hx ↦
-    ⟨hA.openSegment_subset hx₁A hx₂A hx, fun hxB ↦ hx₁B (hAB.2 hx₁A hx₂A hxB hx)⟩
+    ⟨hA.openSegment_subset hx₁A hx₂A hx,
+      fun hxB ↦ hx₁B (hAB.left_mem_of_mem_openSegment hx₁A hx₂A hxB hx)⟩
 
 @[deprecated (since := "2026-06-03")] alias IsExtreme.convex_diff := IsExtreme.convex_sdiff
 

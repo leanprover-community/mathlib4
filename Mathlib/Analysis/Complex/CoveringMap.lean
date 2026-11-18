@@ -38,7 +38,8 @@ theorem isAddQuotientCoveringMap_exp :
   refine Topology.IsQuotientMap.isAddQuotientCoveringMap_of_addSubgroup ?_
     _ ⟨NormedSpace.discreteTopology_zmultiples _⟩ fun {z _} ↦ ?_
   · refine IsOpenMap.isQuotientMap ?_ (by fun_prop) fun z ↦ ⟨_, Subtype.ext (exp_log z.2)⟩
-    exact (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.1).isOpenMap_iff.mpr isOpenMap_exp
+    exact (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr
+      isOpenMap_exp
   · simp_rw [Subtype.ext_iff, eq_comm (a := exp z), exp_eq_exp_iff_exists_int,
       AddSubgroup.mem_zmultiples_iff, eq_add_neg_iff_add_eq, eq_comm, add_comm, zsmul_eq_mul]
 

@@ -300,7 +300,7 @@ lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
   have hsum₂ := (hasSum_re H₂.hasSum).summable
   rw [← LSeries_eulerProduct_exp_log _ h₀, ← LSeries_eulerProduct_exp_log χ h₁,
     ← LSeries_eulerProduct_exp_log _ h₂]
-  simp only [← exp_nat_mul, Nat.cast_ofNat, ← exp_add, norm_exp, add_re, mul_re,
+  simp only [← exp_natCast_mul, Nat.cast_ofNat, ← exp_add, norm_exp, add_re, mul_re,
     re_ofNat, im_ofNat, zero_mul, sub_zero, Real.one_le_exp_iff]
   rw [re_tsum H₀, re_tsum H₁, re_tsum H₂, ← tsum_mul_left, ← tsum_mul_left,
     ← hsum₀.tsum_add hsum₁, ← (hsum₀.add hsum₁).tsum_add hsum₂]
