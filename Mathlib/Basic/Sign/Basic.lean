@@ -56,6 +56,10 @@ lemma zpow_even (s : SignType) {z : ℤ} (hz : Even z) (hs : s ≠ 0) :
     s ^ z = 1 := by
   cases s <;> simp_all [Even.neg_one_zpow]
 
+@[simp]
+protected lemma mul_self_eq_one_iff {s : SignType} : s * s = 1 ↔ s ≠ 0 :=
+  ⟨right_ne_zero_of_mul_eq_one, fun hs => (mul_eq_one_iff_inv_eq₀ hs).mpr rfl⟩
+
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
 @[simps]
 def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α where
