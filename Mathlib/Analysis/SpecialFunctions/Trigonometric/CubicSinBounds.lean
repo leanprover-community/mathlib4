@@ -23,7 +23,6 @@ integral bound `(4 / π) * ∫ θ in 0..δ, sin θ ^ 2 ≤ cubicCollarWeight π 
 - `CubicSinBounds.cubicCollarWeight`: parametric cubic weight `(4 / (3 * p)) * δ ^ 3`.
 - `CubicSinBounds.cubicCollarWeight_nonneg`: non-negativity for `0 < p` and `0 ≤ δ`.
 - `CubicSinBounds.cubicCollarWeight_anti_left`: antitonicity in the parameter `p`.
-- `CubicSinBounds.sin_sq_le_sq`: pointwise bound `Real.sin θ ^ 2 ≤ θ ^ 2`.
 - `CubicSinBounds.integral_sin_sq_le_cubic`: `∫ θ in 0..δ, sin θ ^ 2 ≤ δ ^ 3 / 3`.
 - `CubicSinBounds.normalized_sin_sq_integral_le_cubicCollarWeight`: integral bound.
 -/
@@ -62,10 +61,6 @@ end OrderedField
 
 section RealIntegral
 
-/-- Pointwise bound `Real.sin θ ^ 2 ≤ θ ^ 2` for all `θ : ℝ`. -/
-theorem sin_sq_le_sq (θ : ℝ) : Real.sin θ ^ 2 ≤ θ ^ 2 := by
-  simpa [sq_abs] using sq_le_sq.mpr (Real.abs_sin_le_abs (x := θ))
-
 /-- Definite integral cubic bound `∫ θ in 0..δ, Real.sin θ ^ 2 ≤ δ ^ 3 / 3` for `0 ≤ δ`. -/
 theorem integral_sin_sq_le_cubic {δ : ℝ} (hδ : 0 ≤ δ) :
     (∫ θ in (0 : ℝ)..δ, Real.sin θ ^ 2) ≤ δ ^ 3 / 3 := by
@@ -73,7 +68,7 @@ theorem integral_sin_sq_le_cubic {δ : ℝ} (hδ : 0 ≤ δ) :
     (Real.continuous_sin.pow 2).intervalIntegrable 0 δ
   have hsq : IntervalIntegrable (fun θ : ℝ => θ ^ 2) MeasureTheory.volume 0 δ :=
     (continuous_id.pow 2).intervalIntegrable 0 δ
-  have hmono := intervalIntegral.integral_mono_on hδ hsin hsq (fun θ _ => sin_sq_le_sq θ)
+  have hmono := intervalIntegral.integral_mono_on hδ hsin hsq (fun θ _ => Real.sin_sq_le_sq)
   rw [integral_pow] at hmono
   linarith [show ((δ ^ (2 + 1) - (0 : ℝ) ^ (2 + 1)) / (↑(2 : ℕ) + 1)) = δ ^ 3 / 3 by norm_num]
 
