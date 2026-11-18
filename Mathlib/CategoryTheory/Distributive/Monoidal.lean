@@ -5,10 +5,9 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
@@ -54,7 +53,6 @@ pointed types and the coproduct given by the wedge sum is distributive.
 * [Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
   monoids in monoidal categories, in: Operads: Proceedings of Renaissance
   Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
-
 -/
 
 @[expose] public section
@@ -102,7 +100,7 @@ end IsMonoidalLeftDistrib
 
 namespace Distributive
 
-/-- Notation for the forward direction morphism of the canonical left distributivity isomorphism -/
+/-- Notation for the canonical left distributivity isomorphism -/
 scoped notation "∂L" => leftDistrib
 
 end Distributive
@@ -159,8 +157,8 @@ end IsMonoidalRightDistrib
 
 namespace Distributive
 
-/-- Notation for the forward direction morphism of the canonical right distributivity isomorphism -/
-notation "∂R" => rightDistrib
+/-- Notation for the canonical right distributivity isomorphism -/
+scoped notation "∂R" => rightDistrib
 
 end Distributive
 
@@ -203,7 +201,6 @@ lemma whiskerRight_coprod_inr_rightDistrib_inv [IsMonoidalRightDistrib C] {X Y Z
   apply (cancel_iso_hom_right _ _ (∂R X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_rightDistrib_hom]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In a symmetric monoidal category, the left distributivity is equal to
 the right distributivity up to braiding isomorphisms. -/
 @[simp]
@@ -212,8 +209,6 @@ lemma coprodComparison_tensorLeft_braiding_hom [BraidedCategory C] {X Y Z : C} :
     (coprod.map (β_ X Y).hom (β_ X Z).hom) ≫ (coprodComparison (tensorRight X) Y Z) := by
   simp [coprodComparison]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- In a symmetric monoidal category, the right distributivity is equal to
 the left distributivity up to braiding isomorphisms. -/
 @[simp]
@@ -246,7 +241,6 @@ instance isMonoidalDistrib.of_symmetric_monoidal_closed [SymmetricCategory C] [M
     IsMonoidalDistrib C := by
   apply SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of distributivity isomorphism from the closed monoidal structure -/
 lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
     (leftDistrib X Y Z).inv =

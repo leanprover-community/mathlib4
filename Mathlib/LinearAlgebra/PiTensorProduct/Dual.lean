@@ -73,9 +73,9 @@ theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π
     (f : Dual R (⨂[R] i, M i)) : dualDistribInvOfBasis b f =
     ∑ p : (Π i, κ i), f (⨂ₜ[R] i, b i (p i)) • (⨂ₜ[R] i, (b i).dualBasis (p i)) := by
   simp only [dualDistribInvOfBasis, Basis.coe_dualBasis, ringLmapEquivSelf_symm_apply, coe_sum,
-    coe_comp, coe_smulRight, End.one_apply, Finset.sum_apply, Function.comp_apply,
+    coe_comp, coe_smulRight, one_apply_eq_self, Finset.sum_apply, Function.comp_apply,
     applyₗ_apply_apply]
-  convert! rfl
+  convert rfl
 
 theorem dualDistrib_dualDistribInvOfBasis_left_inverse [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
@@ -104,7 +104,7 @@ isomorphism `⨂[R] i, R ≃ R` given by multiplication (`constantBaseRingEquiv`
 @[simps!]
 noncomputable def dualDistribEquivOfBasis [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) : (⨂[R] i, Dual R (M i)) ≃ₗ[R] Dual R (⨂[R] i, M i) :=
-  LinearEquiv.ofLinear dualDistrib (dualDistribInvOfBasis b)
+  LinearEquiv.ofLinearMap dualDistrib (dualDistribInvOfBasis b)
     (dualDistrib_dualDistribInvOfBasis_left_inverse _)
     (dualDistrib_dualDistribInvOfBasis_right_inverse _)
 

@@ -1,5 +1,7 @@
-import Mathlib.Tactic.Widget.Conv
-import Lean.Elab.Tactic.ElabTerm
+module
+
+public import Lean.Elab.Tactic.ElabTerm
+public import Mathlib.Tactic.Widget.Conv
 
 /-!
 Instead of testing `conv?` directly, we test the `insertEnterSyntax` function.
@@ -152,7 +154,6 @@ example : 1 = Nat.log2 4 → False := by
   test "/0/1/1"
   exact test_sorry
 
-set_option pp.mvars.anonymous false in
 /--
 info: `conv?` would output:
 conv =>

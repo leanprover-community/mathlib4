@@ -8,8 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 public import Mathlib.CategoryTheory.SmallObject.Basic
+
+import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 
 /-!
 # Anodyne extensions
@@ -48,14 +49,15 @@ we show that a strong anodyne extension is an anodyne extension.
 ## References
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*, IV.2][gabriel-zisman-1967]
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
-
 -/
 
 @[expose] public section
 
 universe u
 
-open CategoryTheory HomotopicalAlgebra Simplicial
+open CategoryTheory HomotopicalAlgebra
+
+open scoped Simplicial
 
 namespace SSet
 

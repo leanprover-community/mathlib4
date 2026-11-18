@@ -5,8 +5,10 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.SetTheory.Cardinal.Regular
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Infinite pigeonhole principle
@@ -74,7 +76,7 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < 
       (by rwa [isRegular_aleph0.cof_ord])
     exact ⟨a, ha.trans' (succ_le_of_lt hα)⟩
   · exact infinite_pigeonhole_card f (succ #α) (succ_le_of_lt h) (hα.trans (le_succ _))
-      ((lt_succ _).trans_le (isRegular_succ hα).2.ge)
+      ((lt_succ _).trans_le (isRegular_succ hα).le_cof_ord.ge)
 
 /-- A function whose domain's cardinality is infinite and strictly greater than its codomain's
 has an infinite fiber. -/
@@ -121,8 +123,5 @@ theorem le_range_of_union_finset_eq_univ {α β : Type*} [Infinite β] (f : α �
     apply fun b => (u b).choose_spec
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h
   exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
-
-@[deprecated (since := "2026-01-17")] alias le_range_of_union_finset_eq_top :=
-  le_range_of_union_finset_eq_univ
 
 end Cardinal

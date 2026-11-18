@@ -9,7 +9,6 @@ public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Bornology.Hom
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Maps.Proper.Basic
-public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
@@ -38,7 +37,7 @@ assert_not_exists Module.Basis Ideal ContinuousMul
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal Bornology
+open Filter Function Set NNReal ENNReal Bornology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
@@ -127,7 +126,7 @@ theorem coe_toLocallyBoundedMap (hf : LipschitzWith K f) : ⇑(hf.toLocallyBound
 
 theorem comap_cobounded_le (hf : LipschitzWith K f) :
     comap f (Bornology.cobounded β) ≤ Bornology.cobounded α :=
-  (hf.toLocallyBoundedMap f).2
+  (hf.toLocallyBoundedMap f).comap_cobounded_le'
 
 /-- The image of a bounded set under a Lipschitz map is bounded. -/
 theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s) :
@@ -167,6 +166,11 @@ lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ ?_)
   simpa only [NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using!
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
+
+/-- The set of functions which are 1-Lipschitz on a metric space separates points. -/
+theorem _root_.Set.separatesPoints_lipschitzWith_one (E : Type*) [MetricSpace E] :
+    { f : E → ℝ | LipschitzWith 1 f }.SeparatesPoints :=
+  fun _ y _ ↦ ⟨(dist · y), by simp [LipschitzWith.dist_left], by simpa⟩
 
 end Metric
 
@@ -296,8 +300,6 @@ theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x =
 
 end Real
 end LocallyLipschitz
-
-open Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
 

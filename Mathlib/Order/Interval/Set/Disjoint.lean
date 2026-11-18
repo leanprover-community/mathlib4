@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Order.Interval.Set.LinearOrder
-public import Mathlib.Order.MinMax
 
 /-!
 # Extra lemmas about intervals
@@ -149,6 +148,11 @@ theorem iUnion_Ioc_eq_Ioi_self_iff {f : ι → α} {a : α} :
     ⋃ i, Ioc a (f i) = Ioi a ↔ ∀ x, a < x → ∃ i, x ≤ f i := by
   simp [← Ioi_inter_Iic, ← inter_iUnion, subset_def]
 
+@[to_dual (attr := simp)]
+theorem iUnion_Icc_eq_Ici_self_iff {f : ι → α} {a : α} :
+    ⋃ i, Icc a (f i) = Ici a ↔ ∀ x ≥ a, ∃ i, x ≤ f i := by
+  simp [← Ici_inter_Iic, ← inter_iUnion, subset_def]
+
 @[simp]
 theorem biUnion_Ico_eq_Iio_self_iff {p : ι → Prop} {f : ∀ i, p i → α} {a : α} :
     ⋃ (i) (hi : p i), Ico (f i hi) a = Iio a ↔ ∀ x < a, ∃ i hi, f i hi ≤ x := by
@@ -164,6 +168,41 @@ end LinearOrder
 end Set
 
 section UnionIxx
+
+section Preorder
+
+variable [Preorder α] {s : Set α} {a : α}
+
+@[to_dual]
+theorem IsLeast.biUnion_Ici_eq_Ici (h : IsLeast s a) : ⋃ x ∈ s, Ici x = Ici a := by
+  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x ↦ mem_biUnion h.left
+  exact Ici_subset_Ici.mpr <| h.right hx
+
+@[to_dual (attr := deprecated IsLeast.biUnion_Ici_eq_Ici +typeChanged (since := "2026-08-13"))]
+theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Ici x = Ici a :=
+  a_glb.isLeast a_mem |>.biUnion_Ici_eq_Ici
+
+@[to_dual]
+theorem IsLeast.biUnion_Ioi_eq (h : IsLeast s a) : ⋃ x ∈ s, Ioi x = Ioi a := by
+  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x ↦ mem_biUnion h.left
+  exact Ioi_subset_Ioi <| h.right hx
+
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] {s : Set α} {a : α}
+
+@[to_dual]
+theorem biUnion_Ici_eq_Ici_iff : ⋃ x ∈ s, Ici x = Ici a ↔ IsLeast s a := by
+  refine ⟨fun h ↦ ?_, IsLeast.biUnion_Ici_eq_Ici⟩
+  have hlb : a ∈ lowerBounds s := fun b hbs ↦ h.le <| mem_biUnion hbs self_mem_Ici
+  have ⟨b, hbs, hba⟩ := mem_iUnion₂.mp <| h.ge self_mem_Ici
+  exact ⟨hlb hbs |>.antisymm hba ▸ hbs, hlb⟩
+
+end PartialOrder
+
+section LinearOrder
 
 variable [LinearOrder α] {s : Set α} {a : α} {f : ι → α}
 
@@ -182,6 +221,14 @@ theorem IsLUB.biUnion_Iio_eq (h : IsLUB s a) : ⋃ x ∈ s, Iio x = Iio a :=
 theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :=
   h.dual.iUnion_Ioi_eq
 
+theorem iUnion_Ioi_eq_Ioi_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R} :
+    ⋃ i : ι, Ioi (f i) = Ioi (⨅ i, f i) :=
+  isGLB_iInf.iUnion_Ioi_eq
+
+theorem iUnion_Iio_eq_Iio_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R} :
+    ⋃ i : ι, Iio (f i) = Iio (⨆ i, f i) :=
+  isLUB_iSup.iUnion_Iio_eq
+
 theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
   refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
@@ -190,18 +237,9 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     rw [mem_iUnion₂]
     exact ⟨y, hys, hyx.le⟩
 
-theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
-    ⋃ x ∈ s, Ici x = Ici a := by
-  refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
-  · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
-  · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
-
 theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Iic x = Iio a :=
   a_lub.dual.biUnion_Ici_eq_Ioi a_notMem
-
-theorem IsLUB.biUnion_Iic_eq_Iic (a_lub : IsLUB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Iic x = Iic a :=
-  a_lub.dual.biUnion_Ici_eq_Ici a_mem
 
 theorem iUnion_Ici_eq_Ioi_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (no_least_elem : ⨅ i, f i ∉ range f) : ⋃ i : ι, Ici (f i) = Ioi (⨅ i, f i) := by
@@ -212,12 +250,11 @@ theorem iUnion_Iic_eq_Iio_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R
     (no_greatest_elem : (⨆ i, f i) ∉ range f) : ⋃ i : ι, Iic (f i) = Iio (⨆ i, f i) :=
   @iUnion_Ici_eq_Ioi_iInf ι (OrderDual R) _ f no_greatest_elem
 
-theorem iUnion_Ici_eq_Ici_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Ici_eq_Ici_iInf {R : Type*} [CompleteLattice R] {f : ι → R}
     (has_least_elem : (⨅ i, f i) ∈ range f) : ⋃ i : ι, Ici (f i) = Ici (⨅ i, f i) := by
-  simp only [← IsGLB.biUnion_Ici_eq_Ici (@isGLB_iInf _ _ _ f) has_least_elem, mem_range,
-    iUnion_exists, iUnion_iUnion_eq']
+  simp [← isGLB_iInf.isLeast has_least_elem |>.biUnion_Ici_eq_Ici]
 
-theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLattice R] {f : ι → R}
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : ⋃ i : ι, Iic (f i) = Iic (⨆ i, f i) :=
   @iUnion_Ici_eq_Ici_iInf ι (OrderDual R) _ f has_greatest_elem
 
@@ -237,5 +274,7 @@ theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, I
   rw [← iInter_Iic_eq_empty_iff.mpr hf]
   gcongr
   exact Iio_subset_Iic_self
+
+end LinearOrder
 
 end UnionIxx

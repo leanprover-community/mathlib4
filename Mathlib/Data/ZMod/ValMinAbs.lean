@@ -6,7 +6,11 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.ZMod.Basic
-public import Mathlib.Tactic.Linarith
+
+import Mathlib.Tactic.Linarith
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Absolute value in `ZMod n`
@@ -59,7 +63,7 @@ lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val 
   · simp
   by_cases h : a.val ≤ n.succ / 2
   · dsimp [valMinAbs]
-    rw [if_pos h, ← Int.natCast_inj, Nat.cast_mul, Nat.cast_two, mul_comm, Int.natCast_add,
+    rw [ite_eq_left h, ← Int.natCast_inj, Nat.cast_mul, Nat.cast_two, mul_comm, Int.natCast_add,
       Nat.cast_one]
   apply iff_of_false _ (mt _ h)
   · intro he
@@ -103,7 +107,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma valMinAbs_zero : ∀ n, (0 : ZMod n).valMinAbs = 0
   | 0 => by simp only [valMinAbs_def_zero]
-  | n + 1 => by simp only [valMinAbs_def_pos, if_true, Int.ofNat_zero, zero_le, val_zero]
+  | n + 1 => by simp only [valMinAbs_def_pos, ite_true, Int.ofNat_zero, zero_le, val_zero]
 
 @[simp]
 lemma valMinAbs_eq_zero (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 :=
@@ -157,7 +161,7 @@ lemma val_eq_ite_valMinAbs [NeZero n] (a : ZMod n) :
 lemma prime_ne_zero (p q : ℕ) [hp : Fact p.Prime] [hq : Fact q.Prime] (hpq : p ≠ q) :
     (q : ZMod p) ≠ 0 := by
   rwa [← Nat.cast_zero, Ne, natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd,
-    ← hp.1.coprime_iff_not_dvd, Nat.coprime_primes hp.1 hq.1]
+    ← hp.out.coprime_iff_not_dvd, Nat.coprime_primes hp.out hq.out]
 
 variable {n a : ℕ}
 

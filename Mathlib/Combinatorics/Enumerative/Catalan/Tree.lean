@@ -5,21 +5,15 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
-public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.Data.Nat.Choose.Central
 
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Tactic.Field
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 
 /-!
 ## Main results
 * `treesOfNumNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
   is `catalan n`
-
 -/
 
 @[expose] public section
@@ -78,8 +72,8 @@ theorem coe_treesOfNumNodesEq (n : ℕ) :
 
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = catalan n := by
   induction n using Nat.case_strong_induction_on with
-  | hz => simp
-  | hi n ih =>
+  | zero => simp
+  | succ n ih =>
     rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
     · apply sum_congr rfl
       rintro ⟨i, j⟩ H

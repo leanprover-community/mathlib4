@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.MeanValue
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending differentiability to the boundary
 
@@ -84,7 +87,7 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
   refine ContinuousWithinAt.closure_le uv_in ?_ ?_ key
   all_goals
     -- common start for both continuity proofs
-    have : (B ∩ s) ×ˢ (B ∩ s) ⊆ s ×ˢ s := by gcongr <;> exact inter_subset_right
+    have : (B ∩ s) ×ˢ (B ∩ s) ⊆ s ×ˢ s := by grw [inter_subset_right]
     obtain ⟨u_in, v_in⟩ : u ∈ closure s ∧ v ∈ closure s := by
       simpa [closure_prod_eq] using closure_mono this uv_in
     apply ContinuousWithinAt.mono _ this

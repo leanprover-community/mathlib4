@@ -5,12 +5,11 @@ Authors: Vincent Beffara
 -/
 module
 
-public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+
+import Mathlib.Analysis.Analytic.Polynomial
+import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # The open mapping theorem for holomorphic functions
@@ -261,10 +260,10 @@ theorem isOpenQuotientMap_pow_compl_zero (n : ℕ) [NeZero n] :
   surjective z := have ⟨w, h⟩ := (isOpenQuotientMap_pow n).surjective z
     ⟨⟨w, by rintro rfl; exact z.2 (by simpa [zero_pow (NeZero.ne n)] using h.symm)⟩, Subtype.ext h⟩
   continuous := by fun_prop
-  isOpenMap := (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.1).isOpenMap_iff.mpr <|
-    (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.1.isOpenMap_subtype_val
+  isOpenMap :=
+    (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr <|
+      (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.isOpen_compl.isOpenMap_subtype_val
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem isOpenQuotientMap_zpow_compl_zero (n : ℤ) [NeZero n] :
     IsOpenQuotientMap
       fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, zpow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) := by

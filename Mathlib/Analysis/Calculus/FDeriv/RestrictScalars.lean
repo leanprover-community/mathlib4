@@ -20,9 +20,7 @@ the scalar restriction of a linear map.
 public section
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
-
-noncomputable section
+open Filter ContinuousLinearMap Set
 
 section RestrictScalars
 

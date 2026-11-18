@@ -5,11 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.TypeTags.Finite
-public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.RepresentationTheory.Semisimple
+
+import Mathlib.Algebra.Group.TypeTags.Finite
 
 /-!
 # Maschke's theorem
@@ -117,7 +115,7 @@ def equivariantProjection : W →ₗ[k[G]] V :=
 
 theorem equivariantProjection_apply (v : W) :
     π.equivariantProjection G v = (Nat.card G : k)⁻¹ʳ • ∑ g : G, π.conjugate g v := by
-  simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply,
+  simp only [equivariantProjection, LinearMap.smul_apply, sumOfConjugatesEquivariant_apply,
     Fintype.card_eq_nat_card]
 
 theorem equivariantProjection_condition (hcard : IsUnit (Nat.card G : k))
@@ -141,7 +139,7 @@ variable [Group G]
 variable {V : Type*} [AddCommGroup V] [Module k[G] V]
 variable {W : Type*} [AddCommGroup W] [Module k[G] W]
 
-set_option backward.isDefEq.respectTransparency false in
+omit [Finite G] in
 theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[k[G]] V, g.comp f = .id := by
   let A := k[G]
@@ -153,12 +151,14 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.k
   have hφ : ∀ (x : V), φ (f x) = x := by
     apply LinearMap.leftInverse_apply_of_inj
     simp [hf]
+  have : Finite G := Nat.finite_of_card_ne_zero fun h ↦ NeZero.ne (Nat.card G : k) (by simp [h])
   have _ : Fintype G := Fintype.ofFinite G
   refine ⟨φ.equivariantProjection G, LinearMap.ext ?_⟩
-  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| hφ
+  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) hφ
 
 namespace Submodule
 
+omit [Finite G] in
 theorem exists_isCompl (p : Submodule k[G] V) : ∃ q : Submodule k[G] V, IsCompl p q := by
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| DFunLike.congr_fun hf⟩
@@ -180,7 +180,6 @@ variable {G k V : Type*} [Group G] [Field k] [Finite G] [NeZero (Nat.card G : k)
 
 open Representation
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsSemisimpleRepresentation ρ := by
   rw [isSemisimpleRepresentation_iff_isSemisimpleModule_asModule]
   infer_instance

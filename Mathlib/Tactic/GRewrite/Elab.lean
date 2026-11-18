@@ -5,12 +5,14 @@ Authors: Jovan Gerbscheid, Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 -/
 module
 
-public meta import Lean.Elab.Tactic.Rewrite
 public meta import Lean.Elab.ConfigEval
+public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Tactic.GRewrite.Core
 
-/-!
+meta import Mathlib.Tactic.GRewrite.Core
+import Lean.Elab.ConfigEval
 
+/-!
 # The generalized rewriting tactic
 
 This file defines the tactics that use the backend defined in `Mathlib.Tactic.GRewrite.Core`:
@@ -19,7 +21,6 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 - `apply_rw`
 - `nth_grewrite`
 - `nth_grw`
-
 -/
 
 meta section

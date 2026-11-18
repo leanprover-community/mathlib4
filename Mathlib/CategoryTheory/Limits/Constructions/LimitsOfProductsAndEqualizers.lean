@@ -5,15 +5,14 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Sigma
+
+import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
 /-!
 # Constructing limits from products and equalizers.
@@ -50,8 +49,6 @@ namespace HasLimitOfHasProductsOfHasEqualizers
 variable {F : J ⥤ C} {c₁ : Fan F.obj} {c₂ : Fan fun f : Σ p : J × J, p.1 ⟶ p.2 => F.obj f.1.2}
   (s t : c₁.pt ⟶ c₂.pt)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 (Implementation) Given the appropriate product and equalizer cones, build the cone for `F` which is
 limiting if the given cones are also.
@@ -87,14 +84,13 @@ def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     · apply t₂.hom_ext
       intro ⟨j⟩
       simp [hs, ht]
-  uniq q m w := hi.hom_ext (i.equalizer_ext (t₁.hom_ext fun j => by simpa using w j.1))
+  uniq q m w := hi.hom_ext (i.equalizer_ext (t₁.hom_ext fun j => by simpa using w j.as))
   fac s j := by simp
 
 end HasLimitOfHasProductsOfHasEqualizers
 
 open HasLimitOfHasProductsOfHasEqualizers
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given the existence of the appropriate (possibly finite) products and equalizers,
 we can construct a limit cone for `F`.
 (This assumes the existence of all equalizers, which is technically stronger than needed.)
@@ -155,7 +151,6 @@ variable (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
   [PreservesLimitsOfShape (Discrete.{w} (Σ p : J × J, p.1 ⟶ p.2)) G]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor preserves equalizers and the appropriate products, it preserves limits. -/
 lemma preservesLimit_of_preservesEqualizers_and_product :
     PreservesLimitsOfShape J G where
@@ -317,8 +312,6 @@ namespace HasColimitOfHasCoproductsOfHasCoequalizers
 variable {F : J ⥤ C} {c₁ : Cofan fun f : Σ p : J × J, p.1 ⟶ p.2 => F.obj f.1.1} {c₂ : Cofan F.obj}
   (s t : c₁.pt ⟶ c₂.pt)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Given the appropriate coproduct and coequalizer cocones,
 build the cocone for `F` which is colimiting if the given cocones are also.
 -/
@@ -342,7 +335,6 @@ variable
   (ht : ∀ f : Σ p : J × J, p.1 ⟶ p.2, c₁.ι.app ⟨f⟩ ≫ t = c₂.ι.app ⟨f.1.1⟩)
   {i : Cofork s t}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Show the cocone constructed in `buildColimit` is colimiting,
 provided the cocones used in its construction are.
@@ -364,14 +356,13 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
           simp only [← Category.assoc]
           apply eq_whisker (ht f)
       simp [reassoced_s, reassoced_t]
-  uniq q m w := hi.hom_ext (i.coequalizer_ext (t₂.hom_ext fun j => by simpa using w j.1))
+  uniq q m w := hi.hom_ext (i.coequalizer_ext (t₂.hom_ext fun j => by simpa using w j.as))
   fac s j := by simp
 
 end HasColimitOfHasCoproductsOfHasCoequalizers
 
 open HasColimitOfHasCoproductsOfHasCoequalizers
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given the existence of the appropriate (possibly finite) coproducts and coequalizers,
 we can construct a colimit cocone for `F`.
 (This assumes the existence of all coequalizers, which is technically stronger than needed.)
@@ -429,7 +420,6 @@ variable (G : C ⥤ D) [PreservesColimitsOfShape WalkingParallelPair G]
   [PreservesColimitsOfShape (Discrete.{w} (Σ p : J × J, p.1 ⟶ p.2)) G]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor preserves coequalizers and the appropriate coproducts, it preserves colimits. -/
 lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     PreservesColimitsOfShape J G where

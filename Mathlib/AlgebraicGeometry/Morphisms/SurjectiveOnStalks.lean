@@ -7,8 +7,8 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.RingTheory.RingHom.Surjective
-public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-public import Mathlib.Topology.LocalAtTarget
+
+import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 
 /-!
 # Morphisms surjective on stalks
@@ -38,9 +38,6 @@ class SurjectiveOnStalks (f : X ⟶ Y) : Prop where
   stalkMap_surjective (f) : ∀ x, Function.Surjective (f.stalkMap x)
 
 alias Scheme.Hom.stalkMap_surjective := SurjectiveOnStalks.stalkMap_surjective
-
-@[deprecated (since := "2026-01-20")]
-alias SurjectiveOnStalks.surj_on_stalks := Scheme.Hom.stalkMap_surjective
 
 namespace SurjectiveOnStalks
 
@@ -145,9 +142,9 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
   let U (ijk : Σ i, (𝒱 i).I₀ × (𝒲 i).I₀) : TopologicalSpace.Opens (X.carrier × Y) :=
     ⟨{ P | P.1 ∈ ((𝒱 ijk.1).f ijk.2.1 ≫ (𝒰.pullback₁ f).f ijk.1).opensRange ∧
           P.2 ∈ ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange },
-      (continuous_fst.1 _ ((𝒱 ijk.1).f ijk.2.1 ≫
-      (𝒰.pullback₁ f).f ijk.1).opensRange.2).inter (continuous_snd.1 _
-      ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange.2)⟩
+      (continuous_fst.isOpen_preimage _ ((𝒱 ijk.1).f ijk.2.1 ≫
+      (𝒰.pullback₁ f).f ijk.1).opensRange.is_open').inter (continuous_snd.isOpen_preimage _
+      ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange.is_open')⟩
   have : Set.range L ⊆ (iSup U :) := by
     simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
       PreZeroHypercover.pullback₁_I₀, PreZeroHypercover.pullback₁_X, Set.range_subset_iff]

@@ -6,8 +6,8 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.DirectSum.Basic
-public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # Direct sum of modules
@@ -22,7 +22,6 @@ the construction is of particular importance when this linear map is an equivale
 the submodules provide an internal decomposition of `M`.  The property is defined more generally
 elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s are established
 in this file.
-
 -/
 
 @[expose] public section
@@ -137,11 +136,10 @@ theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
     (H : ∀ i, ψ.comp (lof R ι M i) = ψ'.comp (lof R ι M i)) : ψ = ψ' :=
   DFinsupp.lhom_ext' H
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of a subset of the direct summands
 into a larger subset of the direct summands, as a linear map. -/
 def lsetToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, M i) →ₗ[R] ⨁ i : T, M i :=
-  toModule R _ _ fun i ↦ lof R T (fun i : Subtype T ↦ M i) ⟨i, H i.prop⟩
+  toModule R _ _ fun i ↦ lof R T (fun i : T ↦ M i) ⟨i, H i.prop⟩
 
 variable (ι M)
 
@@ -268,11 +266,11 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
     (lmap (fun i ↦ (g i) ∘ₗ (f i))) = (lmap g) ∘ₗ (lmap f) :=
   DFinsupp.mapRange.linearMap_comp _ _
 
-theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
-  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) :=
+  DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
-theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) := by
-  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) :=
+  DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma lmap_eq_iff (x y : ⨁ i, M i) :
     lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
@@ -298,7 +296,7 @@ lemma range_lmap :
 end AddCommMonoid
 
 section AddCommGroup
-variable {R : Type u} {ι : Type v} {M : ι → Type w} {N : ι → Type*}
+variable {ι : Type v} {M : ι → Type w} {N : ι → Type*}
 
 lemma ker_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i) :
     (map f).ker =
@@ -477,14 +475,12 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
   change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
   simp [h.ofBijective_coeLinearMap_of_mem hx]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by
@@ -590,8 +586,8 @@ theorem coe_congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
 def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     (⨁ i, N i) ≃ₗ[R] ⨁ i, P i where
   toAddEquiv := congrAddEquiv (fun i ↦ (u i).toAddEquiv)
-  map_smul' r x := by
-    exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
+  map_smul' r x :=
+    (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
 
 theorem coe_congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     ⇑(congrLinearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=

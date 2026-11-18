@@ -8,7 +8,8 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.Order.Interval.Set.Union
+
+import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -39,14 +40,15 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 
 ## References
 
-* [Walter Rudin, Real and Complex Analysis.][Rud87]
+* [Walter Rudin, Real and Complex Analysis.][rudin1987]
 -/
 
 @[expose] public section
 
-open scoped ENNReal BoundedContinuousFunction
-open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
+open CompactlySupportedContinuousMap Filter Function Set
   TopologicalSpace MeasureTheory
+
+open scoped ENNReal BoundedContinuousFunction CompactlySupported Topology
 
 namespace RealRMK
 
@@ -113,8 +115,8 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
   let y : Fin N → ℝ := fun n ↦ a + ε * (n + 1)
   -- By definition `y n` and `y m` are separated by at least `ε`.
   have hy {n m : Fin N} (h : n < m) : y n + ε ≤ y m := calc
-    _ ≤ a + ε * m + ε := by
-      exact add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
+    _ ≤ a + ε * m + ε :=
+      add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
     _ = _ := by dsimp [y]; rw [mul_add, mul_one, add_assoc]
   -- Define `E n` as the inverse image of the interval `(y n - ε, y n]`.
   let E (n : Fin N) := (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)
@@ -135,21 +137,16 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     exact fun x _ ↦ partition_aux (mem_range_self x)
   · -- The sets `E n` are pairwise disjoint.
     intro m _ n _ hmn
-    apply Disjoint.preimage
-    simp_rw [mem_preimage, mem_Ioc, disjoint_left]
-    intro x hx
-    rw [mem_ofPred_eq, and_assoc] at hx
-    simp_rw [mem_ofPred_eq, not_and_or, not_lt, not_le, or_assoc]
+    rw [Function.onFun, disjoint_left]
+    intro x hx hx'
     rcases (by lia : m < n ∨ n < m) with hc | hc
-    · left
-      exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
-    · right; left
-      exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
+    · exact hx'.1.1.not_ge <| hx.1.2.trans <|le_tsub_of_add_le_right (hy hc)
+    · exact hx.1.1.not_ge <| hx'.1.2.trans <|le_tsub_of_add_le_right (hy hc)
   · -- Upper and lower bound on `f x` follow from the definition of `E n` .
     intro _ _ hx
     simp only [mem_inter_iff, mem_preimage, mem_Ioc, E, y] at hx
     constructor <;> linarith
-  · exact fun _ ↦ (f.1.measurable measurableSet_Ioc).inter measurableSet_closure
+  · exact fun _ ↦ (f.toContinuousMap.measurable measurableSet_Ioc).inter measurableSet_closure
 
 omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)`, `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
@@ -159,7 +156,7 @@ lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X)
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
   have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
   obtain ⟨V₁ : Opens X, hV₁⟩ := Content.outerMeasure_exists_open μ hμ hε'
-  let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage f.1.2 isOpen_Iio⟩
+  let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage (by fun_prop) isOpen_Iio⟩
   use V₁ ⊓ V₂
   refine ⟨subset_inter hV₁.1 hfE, ?_, ?_⟩
   · intro x hx
@@ -167,7 +164,7 @@ lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X)
     exact fun _ a ↦ a
   · calc
       _ ≤ μ.measure V₁ := by simp [measure_mono]
-      _ = μ.outerMeasure V₁ := Content.measure_apply μ (V₁.2.measurableSet)
+      _ = μ.outerMeasure V₁ := Content.measure_apply μ (V₁.is_open'.measurableSet)
       _ ≤ μ.outerMeasure E + ε.toNNReal := hV₁.2
       _ = _ := by rw [Content.measure_apply μ hμ', ENNReal.ofNNReal_toNNReal]
 
@@ -194,8 +191,9 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   intro ε hε
   -- Choose an interval `(a, b)` which contains the range of `f`.
   obtain ⟨a, b, hab⟩ : ∃ a b : ℝ, a < b ∧ range f ⊆ Ioo a b := by
-    obtain ⟨r, hr⟩ := (Metric.isCompact_iff_isClosed_bounded.mp
-      (HasCompactSupport.isCompact_range f.2 f.1.2)).2.subset_ball_lt 0 0
+    obtain ⟨r, hr⟩ := Metric.isCompact_iff_isClosed_bounded.mp
+      (HasCompactSupport.isCompact_range f.hasCompactSupport' (map_continuous f))
+        |>.2.subset_ball_lt 0 0
     exact ⟨-r, r, by linarith, hr.2.trans_eq (by simp [Real.ball_eq_Ioo])⟩
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
   obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * μ.real K + |a| + b) hε
@@ -216,8 +214,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     apply lt_of_le_of_lt <| measure_mono h
     dsimp [μ]
     rw [rieszMeasure, ← coe_toContinuousMap, ← ContinuousMap.toFun_eq_coe,
-      Content.measure_apply _ f.2.measurableSet]
-    exact Content.outerMeasure_lt_top_of_isCompact _ f.2
+      Content.measure_apply _ f.hasCompactSupport'.measurableSet]
+    exact Content.outerMeasure_lt_top_of_isCompact _ f.hasCompactSupport'
   -- Define sets `V` which are open approximations to the sets `E`
   obtain ⟨V, hV⟩ : ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε') ∧
       μ (V n) ≤ μ (E n) + ENNReal.ofReal (ε' / N) := by
@@ -234,7 +232,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
       _ = ⋃ j, E j := hE.1
       _ ⊆ _ := by gcongr with n; exact (hV n).1
-    obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n ↦ (V n).2) f.2 this
+    obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n ↦ (V n).is_open')
+      f.hasCompactSupport' this
     exact ⟨fun n ↦ ⟨g' n, hg.2.2.2 n⟩, hg⟩
   -- The proof is completed by a chain of inequalities.
   calc Λ f
@@ -285,7 +284,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         _ ≤ _ := by
           rw [← ENNReal.toReal_ofReal (div_nonneg (le_of_lt hε'.1) (Nat.cast_nonneg _))]
           apply ENNReal.toReal_le_add (hV n).2.2 (hE' n)
-          · finiteness
+          finiteness
   · -- Use that `μ K ≤ Λ (∑ n, g n)`
     gcongr
     rw [← map_sum Λ g _]
@@ -293,7 +292,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     apply ENNReal.toReal_le_of_le_ofReal
     · exact Λ.map_nonneg (fun x ↦ h x)
     · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
-      refine rieszMeasure_le_of_eq_one Λ h f.2 h'
+      refine rieszMeasure_le_of_eq_one Λ h f.hasCompactSupport' h'
   · -- Rearrange the sums
     have (n : Fin N) : (|a| + y n + ε') * μ.real (E n) =
         (|a| + 2 * ε') * μ.real (E n) + (y n - ε') * μ.real (E n) := by linarith
@@ -316,14 +315,14 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
         dsimp [μ, rieszMeasure]
-        exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
+        exact Continuous.integrable_of_hasCompactSupport (by fun_prop) f.hasCompactSupport'
     calc
       _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
       _ = ∫ x in (⋃ n, E n), f x ∂μ := by
         refine Eq.symm <| integral_iUnion_fintype hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
         dsimp [μ, rieszMeasure]
-        exact fun _ ↦
-          Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.1.2 f.2
+        exact fun _ ↦ Integrable.integrableOn <|
+          Continuous.integrable_of_hasCompactSupport (by fun_prop) f.hasCompactSupport'
       _ = ∫ x in tsupport f, f x ∂μ := by simp_rw [hE.1]
       _ = _ := setIntegral_tsupport
   · -- Rough bound of the sum
@@ -481,7 +480,7 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     by infer_instance, ?_, fun g ↦ ?_⟩
   · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
     simp
-  convert! hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
     simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]

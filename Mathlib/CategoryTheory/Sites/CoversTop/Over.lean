@@ -14,10 +14,9 @@ public import Mathlib.CategoryTheory.Sites.Over
 This file contains a transitivity lemma for `GrothendieckTopology.CoversTop`: if a family
 `X : I → C` covers the top for `J`, and for each `i` a family `Y i` covers the top for the
 induced topology on `Over (X i)`, then the combined family covers the top for `J`.
-
 -/
 
-@[expose] public section
+public section
 
 universe u
 

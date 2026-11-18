@@ -5,9 +5,9 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
 module
 
-public import Mathlib.Tactic.FieldSimp
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Local subrings of fields
@@ -49,17 +49,17 @@ lemma toSubring_injective : Function.Injective (toSubring (R := R)) := by
 /-- Copy of a local subring with a new `carrier` equal to the old one.
 Useful to fix definitional equalities. -/
 protected def copy (S : LocalSubring R) (s : Set R) (hs : s = ↑S.toSubring) : LocalSubring R :=
-  LocalSubring.mk (S.toSubring.copy s hs) (isLocalRing := hs ▸ S.2)
+  LocalSubring.mk (S.toSubring.copy s hs) (isLocalRing := hs ▸ S.isLocalRing)
 
 /-- The image of a `LocalSubring` as a `LocalSubring`. -/
 @[simps! toSubring]
 def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S :=
-  mk (s.1.map f)
+  mk (s.toSubring.map f)
 
 /-- The range of a ring homomorphism from a local ring as a `LocalSubring`. -/
 @[simps! toSubring]
 def range [IsLocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
-  .copy (map f (mk ⊤)) f.range (by ext x; exact congr(x ∈ $(Set.image_univ.symm)))
+  .copy (map f (mk ⊤)) f.range (by ext x; congrm x ∈ $Set.image_univ.symm)
 
 /--
 The domination order on local subrings.
@@ -67,7 +67,7 @@ The domination order on local subrings.
 -/
 @[stacks 00I9]
 instance : PartialOrder (LocalSubring R) where
-  le A B := ∃ h : A.1 ≤ B.1, IsLocalHom (Subring.inclusion h)
+  le A B := ∃ h : A.toSubring ≤ B.toSubring, IsLocalHom (Subring.inclusion h)
   le_refl a := ⟨le_rfl, ⟨fun _ ↦ id⟩⟩
   le_trans A B C h₁ h₂ := ⟨h₁.1.trans h₂.1, @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _ h₂.2 h₁.2⟩
   le_antisymm A B h₁ h₂ := toSubring_injective (le_antisymm h₁.1 h₂.1)
@@ -83,7 +83,6 @@ section ofPrime
 
 variable (A : Subring K) (P : Ideal A) [P.IsPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The localization of a subring at a prime, as a local subring.
 Also see `Localization.subalgebra.ofField` -/
 noncomputable

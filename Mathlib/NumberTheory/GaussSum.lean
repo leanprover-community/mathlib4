@@ -5,9 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.Algebra.CharP.CharAndCard
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-public import Mathlib.Algebra.CharP.CharAndCard
 
 import Mathlib.NumberTheory.MulChar.Lemmas
 
@@ -92,6 +92,18 @@ lemma star_gaussSum_eq (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
     _ = ∑ x, star (ψ x) * χ⁻¹ x := by simp [gaussSum, star_mul, MulChar.star_apply']
     _ = ∑ x, ψ⁻¹ x * χ⁻¹ x := by simp [← starRingEnd_apply, map_neg_eq_conj]
     _ = _ := by simp [mul_comm, gaussSum]
+
+lemma gaussSum_inv_right (χ : MulChar R R') (ψ : AddChar R R') :
+    gaussSum χ ψ⁻¹ = χ (-1) * gaussSum χ ψ := by
+  rw [AddChar.inv_mulShift, show (-1 : R) = ((-1 : Rˣ) : R) by simp, gaussSum_mulShift_eq,
+    MulChar.inv_apply, Ring.inverse_unit]
+  simp
+
+/-- The Gauss sum of `χ⁻¹` is `χ (-1)` times the complex conjugate of the Gauss sum of `χ`. -/
+lemma gaussSum_inv_eq_conj (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
+    gaussSum χ⁻¹ ψ = χ (-1) * starRingEnd ℂ (gaussSum χ ψ) := by
+  rw [starRingEnd_apply, star_gaussSum_eq, gaussSum_inv_right, ← mul_assoc, ← MulChar.mul_apply]
+  simp [MulChar.one_apply isUnit_neg_one]
 
 end GaussSumDef
 
@@ -198,7 +210,7 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ ≠ 1) {ψ :
   classical -- to get `[DecidableEq R]` for `sum_mulShift`
   simp_rw [← Finset.mul_sum, sum_mulShift _ hψ, sub_eq_zero, apply_ite, Nat.cast_zero, mul_zero]
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
-  simp only [Finset.mem_univ, map_one, one_mul, if_true]
+  simp only [Finset.mem_univ, map_one, one_mul, ite_true]
 
 /-- If `χ` is a multiplicative character of order `n` on a finite field `F`,
 then `g(χ) * g(χ^(n-1)) = χ(-1)*#F` -/
@@ -245,7 +257,7 @@ of `χ` and `ψ` is the Gauss sum of `χ^p` and `ψ^p`. -/
 theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
     gaussSum χ ψ ^ p = gaussSum (χ ^ p) (ψ ^ p) := by
   rw [← frobenius_def, gaussSum, gaussSum, map_sum]
-  simp_rw [pow_apply' χ fp.1.ne_zero, map_mul, frobenius_def]
+  simp_rw [pow_apply' χ fp.out.ne_zero, map_mul, frobenius_def]
   rfl
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
@@ -268,7 +280,7 @@ theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {
   | zero => rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
   | succ n ih =>
     rw [pow_succ, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ, map_mul,
-      ← pow_apply' χ fp.1.ne_zero ((p : R) ^ n), hχ.pow_char p]
+      ← pow_apply' χ fp.out.ne_zero ((p : R) ^ n), hχ.pow_char p]
 
 end gaussSum_frob
 
@@ -296,7 +308,7 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
   rw [← hg]
   apply mul_right_cancel₀ this
   rw [← hχ.gaussSum_frob_iter p n hp ψ, ← pow_mul, ← pow_succ,
-    Nat.two_mul_div_two_add_one_of_odd (fp.1.eq_two_or_odd'.resolve_left hp').pow]
+    Nat.two_mul_div_two_add_one_of_odd (fp.out.eq_two_or_odd'.resolve_left hp').pow]
 
 /-- When `F` and `F'` are finite fields and `χ : F → F'` is a nontrivial quadratic character,
 then `(χ(-1) * #F)^(#F'/2) = χ #F'`. -/
@@ -356,7 +368,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     exact mt FFp.dvd_of_dvd_pow hFF
   -- there is a primitive additive character `ℤ/8ℤ → FF`, sending `a + 8ℤ ↦ τ^a`
   -- with a primitive eighth root of unity `τ`
-  let ψ₈ := primitiveZModChar 8 F (by convert! hp2 3 using 1; norm_cast)
+  let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
   -- We cast from `AddChar (ZMod (8 : ℕ+)) FF` to `AddChar (ZMod 8) FF`
   -- This is needed to make `simp_rw [← h₁]` below work.
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char

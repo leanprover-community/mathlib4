@@ -6,9 +6,10 @@ Authors: Louis Carlin, Mario Carneiro
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Defs
-public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Ring.Equiv
+
+import Mathlib.Algebra.Ring.Divisibility.Basic
 
 /-!
 # Lemmas about Euclidean domains
@@ -16,10 +17,9 @@ public import Mathlib.Algebra.Ring.Equiv
 ## Main statements
 
 * `gcd_eq_gcd_ab`: states Bézout's lemma for Euclidean domains.
-
 -/
 
-@[expose] public section
+public section
 
 
 universe u

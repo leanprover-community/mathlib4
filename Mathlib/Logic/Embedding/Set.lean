@@ -5,15 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Notation
-public import Mathlib.Order.SetNotation
-public import Mathlib.Logic.Embedding.Basic
-public import Mathlib.Logic.Pairwise
 public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Notation
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Interactions between embeddings and sets.
-
 -/
 
 @[expose] public section
@@ -26,7 +24,7 @@ open Set Set.Notation
 
 section Equiv
 
-variable {α : Sort u} {β : Sort v} (f : α ≃ β)
+variable {α : Sort u} {β : Sort v}
 
 @[simp]
 theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
@@ -43,9 +41,8 @@ namespace Embedding
 `Option α ↪ β`. -/
 @[simps]
 def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option α ↪ β :=
-  ⟨Option.elim' x f, Option.injective_iff.2 ⟨f.2, h⟩⟩
+  ⟨Option.elim' x f, Option.injective_iff.2 ⟨f.inj', h⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
@@ -65,7 +62,7 @@ theorem codRestrict_apply {α β} (p) (f : α ↪ β) (H a) : codRestrict p f H 
 /-- `Set.image` as an embedding `Set α ↪ Set β`. -/
 @[simps apply]
 protected def image {α β} (f : α ↪ β) : Set α ↪ Set β :=
-  ⟨image f, f.2.image_injective⟩
+  ⟨image f, f.inj'.image_injective⟩
 
 end Embedding
 

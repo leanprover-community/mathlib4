@@ -25,7 +25,6 @@ The proof of `Commute.cfcHom` and `Commute.cfcₙHom` could be made simpler by a
 facts about double commutants, but doing so would require extra type class assumptions so that we
 can talk about topological star algebras. Instead, we avoid this to minimize the work Lean must do
 to call these lemmas, and give a straightforward proof by induction.
-
 -/
 
 public section
@@ -78,7 +77,7 @@ protected theorem Commute.cfc {a b : A} (hb₁ : Commute a b)
     (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
     Commute (cfc f a) b :=
   cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
-    fun hf ha ↦ hb₁.cfcHom ha hb₂ ⟨_, hf.restrict⟩
+    fun hf ha ↦ hb₁.cfcHom ha hb₂ ⟨_, hf.domRestrict⟩
 
 /-- For `a` selfadjoint, an element commutes with `cfc f a` if it commutes with `a`.
 
@@ -163,7 +162,7 @@ protected theorem Commute.cfcₙ {a b : A} (hb₁ : Commute a b)
     (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
     Commute (cfcₙ f a) b :=
   cfcₙ_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
-    fun hf hf₀ ha ↦ hb₁.cfcₙHom ha hb₂ ⟨⟨_, hf.restrict⟩, hf₀⟩
+    fun hf hf₀ ha ↦ hb₁.cfcₙHom ha hb₂ ⟨⟨_, hf.domRestrict⟩, hf₀⟩
 
 /-- For `a` selfadjoint, an element commutes with `cfcₙ f a` if it commutes with `a`.
 

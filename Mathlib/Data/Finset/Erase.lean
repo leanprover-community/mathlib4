@@ -18,7 +18,6 @@ public import Mathlib.Data.Multiset.Filter
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -27,11 +26,11 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
@@ -42,23 +41,23 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Erase
 
-variable [DecidableEq α] {s t u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 /-- `erase s a` is the set `s - {a}`, that is, the elements of `s` which are
   not equal to `a`. -/
 def erase (s : Finset α) (a : α) : Finset α :=
-  ⟨_, s.2.erase a⟩
+  ⟨_, s.nodup.erase a⟩
 
 @[simp]
-theorem erase_val (s : Finset α) (a : α) : (erase s a).1 = s.1.erase a :=
+theorem erase_val (s : Finset α) (a : α) : (erase s a).val = s.val.erase a :=
   rfl
 
 @[simp, grind =]
 theorem mem_erase {a b : α} {s : Finset α} : a ∈ erase s b ↔ a ≠ b ∧ a ∈ s :=
-  s.2.mem_erase_iff
+  s.nodup.mem_erase_iff
 
 theorem notMem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
-  s.2.notMem_erase
+  s.nodup.notMem_erase
 
 theorem ne_of_mem_erase : b ∈ erase s a → b ≠ a := fun h => (mem_erase.1 h).1
 
