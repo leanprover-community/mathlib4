@@ -160,12 +160,10 @@ lemma Gammaℝ_mul_Gammaℝ_add_one (s : ℂ) : Gammaℝ s * Gammaℝ (s + 1) = 
     rw [← cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), Complex.Gamma_mul_Gamma_add_half,
       sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_one, ofReal_ofNat]
     ring_nf
-  _ = 2 * ((2 : ℝ) ^ (-s) * π ^ (-s)) * Gamma s := by
-    rw [sub_eq_add_neg, cpow_add _ _ two_ne_zero, cpow_one,
-      ← cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), ofReal_ofNat]
-    ring_nf
   _ = 2 * (2 * π) ^ (-s) * Gamma s := by
-    rw [← mul_cpow_ofReal_nonneg two_pos.le pi_pos.le, ofReal_ofNat]
+    rw [sub_eq_add_neg, cpow_add _ _ two_ne_zero, cpow_one,
+      ← cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), ofNat_mul_cpow]
+    ring_nf
 
 /-- Reformulation of the reflection formula in terms of `Gammaℝ`. -/
 lemma Gammaℝ_one_sub_mul_Gammaℝ_one_add (s : ℂ) :
