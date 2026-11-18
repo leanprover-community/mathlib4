@@ -5,11 +5,8 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Order.BourbakiWitt
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Order.BourbakiWitt
 
 /-!
 # Category of types with an omega complete partial order
@@ -22,7 +19,6 @@ an `OmegaCompletePartialOrder`.
 
 * `ωCPO`
   * an instance of `Category` and `ConcreteCategory`
-
 -/
 
 @[expose] public section
@@ -131,7 +127,7 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
 end HasEqualizers
 
 instance : HasProducts.{v} ωCPO.{v} :=
-  fun _ => { has_limit := fun _ => hasLimit_of_iso Discrete.natIsoFunctor.symm }
+  .mk fun _ => { has_limit := fun _ => hasLimit_of_iso Discrete.natIsoFunctor.symm }
 
 instance {X Y : ωCPO.{v}} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   HasLimit.mk ⟨_, HasEqualizers.isEqualizer f g⟩

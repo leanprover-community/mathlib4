@@ -5,12 +5,10 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.Topology.Separation.Connected
 
 /-!
-
 # Proper morphisms
 
 A morphism of schemes is proper if it is separated, universally closed and (locally) of finite type.
@@ -23,7 +21,6 @@ Note that we don't require quasi-compact, since this is implied by universally c
 - `AlgebraicGeometry.finite_appTop_of_universallyClosed`:
   If `X` is a reduced connected scheme that is universally closed and of finite type over `Spec K`,
   then `Γ(X, ⊤)` is finite dimensional over `K`.
-
 -/
 
 public section

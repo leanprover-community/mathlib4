@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Stalk
 public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Topology.Sheaves.LocalPredicate
-public import Mathlib.Tactic.ModuleNF
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -43,9 +41,7 @@ boundaries.
 
 ## References
 
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
-
-
+* [Robin Hartshorne, *Algebraic Geometry*][har77]
 -/
 
 
@@ -210,9 +206,9 @@ variable (R M) in
 structure presheaf. -/
 @[simps obj_carrier]
 def structurePresheafInModuleCat : Presheaf (ModuleCat R) (PrimeSpectrum.Top R) where
-  obj U := ↧((structureSheafInType R M).1.obj U)
+  obj U := ↧((structureSheafInType R M).obj.obj U)
   map i := ModuleCat.ofHom
-    { toFun := (structureSheafInType R M).1.map i
+    { toFun := (structureSheafInType R M).obj.map i
       map_add' _ _ := rfl
       map_smul' _ _ := rfl }
 
@@ -221,9 +217,9 @@ variable (R) in
 structure presheaf. -/
 @[simps obj_carrier]
 def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) where
-  obj U := ↧((structureSheafInType R R).1.obj U)
+  obj U := ↧((structureSheafInType R R).obj.obj U)
   map i := CommRingCat.ofHom
-    { toFun := (structureSheafInType R R).1.map i
+    { toFun := (structureSheafInType R R).obj.map i
       map_add' _ _ := rfl
       map_mul' _ _ := rfl
       map_one' := rfl
@@ -254,7 +250,7 @@ variable (R) in
 /-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
 with the `Type`-valued structure presheaf. -/
 def structurePresheafCompForget :
-    structurePresheafInCommRingCat R ⋙ forget CommRingCat ≅ (structureSheafInType R R).1 :=
+    structurePresheafInCommRingCat R ⋙ forget CommRingCat ≅ (structureSheafInType R R).obj :=
   NatIso.ofComponents fun _ => Iso.refl _
 
 open TopCat.Presheaf
@@ -266,7 +262,7 @@ namespace StructureSheaf
 
 @[simp]
 theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
-    (s : Γ(M, U)) (x : V) : ((structureSheafInType R M).1.map i.op s).1 x = s.1 (i x) :=
+    (s : Γ(M, U)) (x : V) : ((structureSheafInType R M).obj.map i.op s).1 x = s.1 (i x) :=
   rfl
 
 /-- The section of `structureSheaf R` on an open `U` sending each `x ∈ U` to the element
@@ -285,10 +281,10 @@ theorem const_apply (f : M) (g : R) (U : Opens (PrimeSpectrum.Top R))
 theorem exists_const (U) (s : Γ(M, U)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) :
     ∃ (g : R) (_ : x ∈ basicOpen g) (i : basicOpen g ≤ U) (f : M),
-      const f g _ le_rfl = (structureSheafInType R M).1.map i.hom.op s := by
+      const f g _ le_rfl = (structureSheafInType R M).obj.map i.hom.op s := by
   obtain ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
   obtain ⟨_, ⟨_, ⟨g', rfl⟩, rfl⟩, hxg', hg'U⟩ :=
-    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxV V.2
+    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxV V.is_open'
   refine ⟨g' * g, ?_, ?_, g' • f, Subtype.ext <| funext fun ⟨y, hy⟩ ↦ ?_⟩ <;>
     simp only [PrimeSpectrum.basicOpen_mul]
   · exact ⟨hxg', (hfg ⟨x, hxV⟩).1⟩
@@ -300,7 +296,7 @@ theorem exists_const (U) (s : Γ(M, U)) (x : PrimeSpectrum.Top R)
 
 @[simp]
 theorem res_const (f : M) (g : R) (U hu V hv i) :
-    (structureSheafInType R M).1.map i (const f g U hu) = const f g V hv :=
+    (structureSheafInType R M).obj.map i (const f g U hu) = const f g V hv :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -392,7 +388,7 @@ lemma isUnit_basicOpen_end (f : R) :
   have := (isUnit_basicOpen f).map
     (algebraMap _ (Module.End Γ(R, basicOpen f) Γ(M, basicOpen f)))
   rw [Module.End.isUnit_iff] at this ⊢
-  convert! this
+  convert this
   ext a
   simp
 
@@ -466,7 +462,7 @@ theorem exists_le_iSup_basicOpen_and_smul_eq_smul_and_eq_const
     exists_prop, exists_exists_eq_and, ← mul_smul, ← pow_succ, ← mul_assoc _ (_ * _)] at this
   choose n hn using this
   obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun i ↦ (basicOpen (g i) : Set (PrimeSpectrum R)))
-    (fun _ ↦ (basicOpen _).2) (fun x hx ↦ Set.mem_iUnion_of_mem ⟨x, hx⟩ (hxg _))
+    (fun _ ↦ (basicOpen _).is_open') (fun x hx ↦ Set.mem_iUnion_of_mem ⟨x, hx⟩ (hxg _))
   let N := (t ×ˢ t).sup fun x ↦ n x.1 x.2 + 1
   refine ⟨t, inferInstance, fun i ↦ g i ^ N • f i, fun i ↦ (g i) ^ (N + 1),
     fun x ↦ by simpa using igU x.1, fun x hx ↦ by simpa using ht hx, fun i j ↦ ?_, fun i ↦ ?_⟩
@@ -510,7 +506,7 @@ theorem toBasicOpenₗ_surjective (f : R) : Function.Surjective (toBasicOpenₗ 
 
 set_option backward.isDefEq.respectTransparency.types false in
 public instance (f : R) : IsLocalizedModule.Away f (toOpenₗ R M (basicOpen f)) := by
-  convert!
+  convert
     IsLocalizedModule.of_linearEquiv (.powers f) (LocalizedModule.mkLinearMap (.powers f) M)
       (.ofBijective _ ⟨toBasicOpenₗ_injective _, toBasicOpenₗ_surjective _⟩)
   ext x
@@ -522,7 +518,7 @@ instance isIso_toBasicOpenₗ (f : R) :
 
 public lemma toOpenₗ_top_bijective : Function.Bijective (toOpenₗ R M ⊤) := by
   have : IsLocalizedModule ⊥ (toOpenₗ R M ⊤) := by
-    convert! (inferInstance : IsLocalizedModule (.powers 1) (toOpenₗ R M (basicOpen 1)))
+    convert (inferInstance : IsLocalizedModule (.powers 1) (toOpenₗ R M (basicOpen 1)))
     rw [PrimeSpectrum.basicOpen_one, Submonoid.powers_one]
   refine ⟨fun x y e ↦ by simpa using (IsLocalizedModule.eq_iff_exists ⊥ _).mp e, fun x ↦ ?_⟩
   obtain ⟨⟨x, _, rfl⟩, rfl⟩ := IsLocalizedModule.mk'_surjective ⊥ (toOpenₗ R M ⊤) x
@@ -640,7 +636,7 @@ theorem toOpenₗ_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top 
 
 theorem isUnit_toStalk (x : PrimeSpectrum.Top R) (f : R) (hf : x ∈ basicOpen f) :
     IsUnit (toStalk R x f) := by
-  convert! (isUnit_basicOpen f).map ((structurePresheafInCommRingCat R).germ _ x hf).hom
+  convert (isUnit_basicOpen f).map ((structurePresheafInCommRingCat R).germ _ x hf).hom
   exact ((structurePresheafInCommRingCat R).germ_res_apply (homOfLE (le_top : basicOpen f ≤ ⊤))
     x hf (algebraMap R Γ(R, ⊤) f)).symm
 
@@ -650,7 +646,7 @@ theorem isUnit_toStalkₗ' (x : PrimeSpectrum.Top R) (f : R) (hf : x ∈ basicOp
     (Module.End ((structurePresheafInCommRingCat R).stalk x)
       ((structurePresheafInModuleCat R M).stalk x)))
   rw [Module.End.isUnit_iff] at this ⊢
-  convert! this
+  convert this
   ext a
   simp only [Module.algebraMap_end_apply]
   rw [toStalk_smul]
@@ -766,7 +762,7 @@ theorem localizationToStalk_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
 
 instance (x : PrimeSpectrum.Top R) :
     IsLocalizedModule x.asIdeal.primeCompl (toStalkₗ' R M x).hom := by
-  convert!
+  convert
     IsLocalizedModule.of_linearEquiv x.asIdeal.primeCompl
       (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M) (stalkIsoₗ R M x).toLinearEquiv.symm
   ext m
@@ -794,7 +790,7 @@ def toStalkₗ (x : PrimeSpectrum.Top R) :
 
 public
 instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (toStalkₗ R M x) := by
-  convert!
+  convert
     IsLocalizedModule.of_linearEquiv x.asIdeal.primeCompl (toStalkₗ' R M x).hom
       (modulePresheafStalkIso R M x).symm
   ext m
@@ -808,7 +804,7 @@ instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (toS
   have : TopCat.Presheaf.germ (moduleStructurePresheaf R M).presheaf ⊤ x (by simp) ≫ α.hom =
       (forget₂ _ _).map ((structurePresheafInModuleCat R M).germ ⊤ x (by simp)) :=
     Limits.colimit.isoColimitCocone_ι_hom (C := Ab) ..
-  exact congr($this _)
+  congrm $this _
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
@@ -893,7 +889,7 @@ open Spec (structureSheaf)
 
 @[simp]
 theorem algebraMap_self_map (U V : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (i : V ⟶ U) :
-    CommRingCat.ofHom (algebraMap R _) ≫ (Spec.structureSheaf R).1.map i =
+    CommRingCat.ofHom (algebraMap R _) ≫ (Spec.structureSheaf R).obj.map i =
       CommRingCat.ofHom (algebraMap R _) :=
   rfl
 
@@ -926,7 +922,7 @@ instance to_basicOpen_epi (r : R) :
 
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
 @[simps! inv]
-def globalSectionsIso : ↧R ≅ (structureSheaf R).1.obj (op ⊤) :=
+def globalSectionsIso : ↧R ≅ (structureSheaf R).obj.obj (op ⊤) :=
   RingEquiv.toCommRingCatIso (.ofBijective _ algebraMap_obj_top_bijective)
 
 theorem globalSectionsIso_hom (R : CommRingCat) :
@@ -963,7 +959,7 @@ def Localizations.comapFun (y : PrimeSpectrum.Top S) :
       have := IsLocalizedModule.map_units (S := y.asIdeal.primeCompl)
         (LocalizedModule.mkLinearMap y.asIdeal.primeCompl N) ⟨σ x, x.2⟩
       rw [Module.End.isUnit_iff] at this ⊢
-      convert! this using 2 with a
+      convert this using 2 with a
       exact (IsScalarTower.algebraMap_smul ..).symm)
   { __ := g,
     map_smul' r x := by simpa [Localizations] using! (IsScalarTower.algebraMap_smul ..).symm }
@@ -1000,13 +996,14 @@ we prove the predicate `isLocallyFraction` is preserved by this map, hence it ca
 a morphism between the structure sheaves of `R` and `S`.
 -/
 def comapFun (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
-    (hUV : V.1 ⊆ PrimeSpectrum.comap σ ⁻¹' U.1) (s : ∀ x : U, Localizations M x.1) (y : V) :
+    (hUV : V.carrier ⊆ PrimeSpectrum.comap σ ⁻¹' U.carrier) (s : ∀ x : U, Localizations M x.1)
+    (y : V) :
     Localizations N y.1 :=
   Localizations.comapFun f _ (s ⟨y.1.comap σ, hUV y.2⟩)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem isLocallyFraction_comapFun (U : Opens (PrimeSpectrum.Top R))
-    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.1 ⊆ PrimeSpectrum.comap σ ⁻¹' U.1)
+    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.carrier ⊆ PrimeSpectrum.comap σ ⁻¹' U.carrier)
     (s : ∀ x : U, Localizations M x.1) (hs : (isLocallyFraction R M).toPrelocalPredicate.pred s) :
     (isLocallyFraction S N).toPrelocalPredicate.pred (comapFun f U V hUV s) := by
   let := Module.compHom N σ
@@ -1014,7 +1011,7 @@ theorem isLocallyFraction_comapFun (U : Opens (PrimeSpectrum.Top R))
   have : IsScalarTower R S N := .of_algebraMap_smul fun _ _ ↦ rfl
   rintro ⟨p, hpV⟩
   obtain ⟨W, m, iWU, a, b, h_frac⟩ := hs ⟨PrimeSpectrum.comap σ p, hUV hpV⟩
-  refine ⟨⟨_, (PrimeSpectrum.continuous_comap σ).isOpen_preimage _ W.2⟩ ⊓ V,
+  refine ⟨⟨_, (PrimeSpectrum.continuous_comap σ).isOpen_preimage _ W.is_open'⟩ ⊓ V,
     ⟨m, hpV⟩, Opens.infLERight _ _, f a, σ b, ?_⟩
   rintro ⟨q, ⟨hqW, hqV⟩⟩
   obtain ⟨hs, H⟩ := h_frac ⟨PrimeSpectrum.comap σ q, hqW⟩
@@ -1032,7 +1029,7 @@ Explicitly, this map is given as follows: For a point `p : V`, if the section `s
 to the fraction `a / b`, its image on `V` evaluates on `p` to the fraction `f(a) / f(b)`.
 -/
 def comapₗ (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
-    (hUV : V.1 ⊆ PrimeSpectrum.comap σ ⁻¹' U.1) :
+    (hUV : V.carrier ⊆ PrimeSpectrum.comap σ ⁻¹' U.carrier) :
     Γ(M, U) →ₛₗ[σ] Γ(N, V) where
   toFun s := ⟨comapFun f U V hUV s.1, isLocallyFraction_comapFun f U V hUV s.1 s.2⟩
   map_add' s t := Subtype.ext <| funext fun _ ↦ by dsimp [comapFun]; rw [map_add]
@@ -1042,7 +1039,7 @@ def comapₗ (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem comapₗ_const (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
-    (hUV : V.1 ⊆ PrimeSpectrum.comap σ ⁻¹' U.1) (a : M) (b : R) (hb : U ≤ basicOpen b) :
+    (hUV : V.carrier ⊆ PrimeSpectrum.comap σ ⁻¹' U.carrier) (a : M) (b : R) (hb : U ≤ basicOpen b) :
     comapₗ f U V hUV (const a b U hb) = const (f a) (σ b) V (hUV.trans (Set.preimage_mono hb)) :=
   Subtype.ext <| funext fun _ ↦ by simp [comapₗ, comapFun]
 
@@ -1055,8 +1052,8 @@ variable {S : Type u} [CommRing S] {P : Type u} [CommRing P]
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comapₗ_eq_localRingHom (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
-    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.1 ⊆ PrimeSpectrum.comap f ⁻¹' U.1)
-    (s : (structureSheaf R).1.obj (op U)) (p : V) :
+    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.carrier ⊆ PrimeSpectrum.comap f ⁻¹' U.carrier)
+    (s : (structureSheaf R).obj.obj (op U)) (p : V) :
     (comapₗ f.toSemilinearMap U V hUV s).1 p =
       Localization.localRingHom (PrimeSpectrum.comap f p.1).asIdeal _ f rfl
         (s.1 ⟨PrimeSpectrum.comap f p.1, hUV p.2⟩) := by
@@ -1079,8 +1076,8 @@ Explicitly, this map is given as follows: For a point `p : V`, if the section `s
 to the fraction `a / b`, its image on `V` evaluates on `p` to the fraction `f(a) / f(b)`.
 -/
 def comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
-    (hUV : V.1 ⊆ PrimeSpectrum.comap f ⁻¹' U.1) :
-    (structureSheaf R).1.obj (op U) →+* (structureSheaf S).1.obj (op V) where
+    (hUV : V.carrier ⊆ PrimeSpectrum.comap f ⁻¹' U.carrier) :
+    (structureSheaf R).obj.obj (op U) →+* (structureSheaf S).obj.obj (op V) where
   __ := comapₗ f.toSemilinearMap U V hUV
   map_one' := Subtype.ext <| funext fun _ ↦ by
     dsimp
@@ -1098,8 +1095,8 @@ def comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpe
 
 @[simp]
 theorem comap_apply (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
-    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.1 ⊆ PrimeSpectrum.comap f ⁻¹' U.1)
-    (s : (structureSheaf R).1.obj (op U)) (p : V) :
+    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.carrier ⊆ PrimeSpectrum.comap f ⁻¹' U.carrier)
+    (s : (structureSheaf R).obj.obj (op U)) (p : V) :
     (comap f U V hUV s).1 p =
       Localization.localRingHom (PrimeSpectrum.comap f p.1).asIdeal _ f rfl
         (s.1 ⟨PrimeSpectrum.comap f p.1, hUV p.2⟩) :=
@@ -1107,8 +1104,8 @@ theorem comap_apply (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem comap_const (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
-    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.1 ⊆ PrimeSpectrum.comap f ⁻¹' U.1) (a b : R)
-    (hb : ∀ x : PrimeSpectrum R, x ∈ U → b ∈ x.asIdeal.primeCompl) :
+    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.carrier ⊆ PrimeSpectrum.comap f ⁻¹' U.carrier)
+    (a b : R) (hb : ∀ x : PrimeSpectrum R, x ∈ U → b ∈ x.asIdeal.primeCompl) :
     comap f U V hUV (const a b U hb) =
       const (f a) (f b) V fun p hpV => hb (PrimeSpectrum.comap f p) (hUV hpV) :=
   Subtype.ext <| funext fun p => by
@@ -1125,10 +1122,10 @@ to OO_X(U) is the identity.
 -/
 theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
     (comap (RingHom.id R) U V fun _ hpV => leOfHom iVU hpV) =
-      ((structureSheaf R).1.map iVU.op).hom :=
+      ((structureSheaf R).obj.map iVU.op).hom :=
   RingHom.ext fun s => Subtype.ext <| funext fun p => by
     rw [comap_apply]
-    exact congr($(Localization.localRingHom_id ..) _)
+    congrm $(Localization.localRingHom_id ..) _
 
 /--
 The comap of the identity is the identity. In this variant of the lemma, two open subsets `U` and
@@ -1137,7 +1134,7 @@ are not definitionally equal.
 -/
 theorem comap_id {U V : Opens (PrimeSpectrum.Top R)} (hUV : U = V) :
     (comap (RingHom.id R) U V fun p hpV => by rwa [hUV, PrimeSpectrum.comap_id]) =
-      (eqToHom (show (structureSheaf R).1.obj (op U) = _ by rw [hUV])).hom := by
+      (eqToHom (show (structureSheaf R).obj.obj (op U) = _ by rw [hUV])).hom := by
   rw [comap_id_eq_map U V (eqToHom hUV.symm), eqToHom_op, eqToHom_map]
 
 @[simp]

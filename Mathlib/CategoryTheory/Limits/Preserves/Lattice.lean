@@ -5,10 +5,11 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Lattice
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Hom.CompleteLattice
+
+import Mathlib.CategoryTheory.Limits.Lattice
 
 /-!
 # Lattice Homs that Preserve Limits and Colimits
@@ -18,7 +19,6 @@ In particular, if `f` preserves finite infs/sups (i.e. is from a InfTopHomClass/
 then `(toOrderHom f).toFunctor` preserves finite limits/colimits. If `f` preserves
 arbitrary infs/sups (i.e. is from a sInfHomClass/sSupHomClass) then `(toOrderHom f).toFunctor`
 preserves all limits/colimits.
-
 -/
 
 public section

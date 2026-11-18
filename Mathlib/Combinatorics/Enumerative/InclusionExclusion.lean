@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Module.BigOperators
+
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Inclusion-exclusion principle
@@ -83,7 +84,7 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
   rw [← sub_eq_zero]
   calc
     Set.indicator (⋃ i ∈ s, S i) f a - ∑ t ∈ s.powerset with t.Nonempty,
-      (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t.1, S i) f a
+      (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t.val, S i) f a
     _ = ∑ t ∈ s.powerset with t.Nonempty, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a +
         ∑ t ∈ s.powerset with ¬ t.Nonempty, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a := by
       simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ, ha]

@@ -5,12 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
-public import Mathlib.Data.Finsupp.MonomialOrder
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Data.List.TFAE
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-! # Division algorithm with respect to monomial orders
 
@@ -43,7 +39,6 @@ The proof is done by induction, using two standard constructions
 
 
 ## Reference : [Becker-Weispfenning1993]
-
 -/
 
 @[expose] public section
@@ -198,7 +193,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · intro c hc i
         by_cases hc' : c ∈ r'.support
         · exact H'.2.2 c hc' i
-        · convert! hf i
+        · convert hf i
           classical
           have := MvPolynomial.support_add hc
           rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this
@@ -256,5 +251,21 @@ theorem div_single {b : MvPolynomial σ R}
     id_eq, smul_eq_mul, add_left_inj]
   rw [Finsupp.sum_eq_single ⟨b, by simp⟩ _ (by simp)]
   simp +contextual
+
+theorem div_single_of_isWeightedHomogeneous {M : Type*} [AddCommMonoid M] [PartialOrder M]
+    [CanonicallyOrderedAdd M] [Sub M] [OrderedSub M] [AddLeftReflectLE M] {w : σ → M} {i n : M}
+    {b f : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff b)) (hbi : b.IsWeightedHomogeneous w i)
+    (hf : f.IsWeightedHomogeneous w n) (hin : i ≤ n) :
+    ∃ g r : MvPolynomial σ R, g.IsWeightedHomogeneous w (n - i) ∧ r.IsWeightedHomogeneous w n ∧
+      f = g * b + r ∧ ∀ c ∈ r.support, ¬m.degree b ≤ c := by
+  classical
+  obtain ⟨g, r, hgr, -, hr⟩ := m.div_single hb f
+  apply_fun weightedHomogeneousComponent w n at hgr
+  rw [hf.weightedHomogeneousComponent_same, map_add,
+    weightedHomogeneousComponent_mul_of_isWeightedHomogeneous_right hbi hin] at hgr
+  refine ⟨_, _, weightedHomogeneousComponent_isWeightedHomogeneous (n - i) g,
+    weightedHomogeneousComponent_isWeightedHomogeneous n r, hgr, fun c hc ↦ ?_⟩
+  rw [support_weightedHomogeneousComponent, Finset.mem_filter] at hc
+  exact hr c hc.1
 
 end MonomialOrder

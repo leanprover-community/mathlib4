@@ -533,8 +533,6 @@ theorem minimal_apply_mem_iff (ht : t ⊆ Set.range f) :
     Minimal (· ∈ t) (f x) ↔ Minimal (fun x ↦ f x ∈ t) x := by
   rw [← f.minimal_apply_mem_inter_range_iff, inter_eq_self_of_subset_left ht]
 
-@[deprecated (since := "2026-04-07")] alias maximal_apply_iff := maximal_apply_mem_iff
-
 theorem image_setOfPred_minimal : f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
   _root_.image_monotone_setOfPred_minimal (by simp [f.le_iff_le])
 
@@ -600,11 +598,8 @@ def mapSetOfPredMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Ma
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 @[to_dual /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/]
 def setOfPredMinimalIsoSetOfPredMaximal (f : s ≃o tᵒᵈ) :
-    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} where
-      toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfPredMinimal x).2⟩
-      invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
-        ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfPredMinimal x).2⟩
-      __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfPredMinimal
+    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} :=
+  f.mapSetOfPredMinimal
 
 @[deprecated (since := "2026-07-09")]
 alias setOfMinimalIsoSetOfMaximal := setOfPredMinimalIsoSetOfPredMaximal

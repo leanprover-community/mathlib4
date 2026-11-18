@@ -5,16 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.LocalizedModule.Submodule
-public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
-public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
-
 # Support of a module
 
 ## Main results
@@ -125,8 +122,7 @@ lemma Module.support_eq_empty_iff :
 
 lemma Module.nonempty_support_iff :
     (Module.support R M).Nonempty ↔ Nontrivial M := by
-  rw [Set.nonempty_iff_ne_empty, ne_eq,
-    Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
+  simp [← Set.ne_empty_iff_nonempty, Module.support_eq_empty_iff, not_subsingleton_iff_nontrivial]
 
 lemma Module.nonempty_support_of_nontrivial [Nontrivial M] : (Module.support R M).Nonempty :=
   Module.nonempty_support_iff.mpr ‹_›

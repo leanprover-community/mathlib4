@@ -5,8 +5,8 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
-public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Homogeneous submodules of a graded module
@@ -103,8 +103,6 @@ theorem HomogeneousSubmodule.toSubmodule_injective :
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
   coe_injective _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
-
-instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ)
 
 @[ext]
 theorem HomogeneousSubmodule.ext

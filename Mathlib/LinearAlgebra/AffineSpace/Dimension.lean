@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 This file defines the dimension of an affine subspace to be `⊥` for the empty subspace,
 and otherwise equal to the `Module.rank` of the direction of the subspace. The finite dimension
-is similary defined using `Module.finrank`.
+is similarly defined using `Module.finrank`.
 
 ## Main definitions
 
@@ -91,6 +91,15 @@ theorem dim_eq_rank (h : s ≠ ⊥) : dim s = Module.rank R s.direction := by
 theorem finDim_eq_finrank (h : s ≠ ⊥) : finDim s = Module.finrank R s.direction := by
   simp [finDim, dim_eq_rank h]
   norm_cast
+
+@[simp]
+theorem dim_toAffineSubspace (s : Submodule R V) : s.toAffineSubspace.dim = Module.rank R s := by
+  rw [dim_eq_rank (toAffineSubspace_ne_bot _), Submodule.toAffineSubspace_direction]
+
+@[simp]
+theorem finDim_toAffineSubspace (s : Submodule R V) :
+    s.toAffineSubspace.finDim = Module.finrank R s := by
+  rw [finDim_eq_finrank (toAffineSubspace_ne_bot _), Submodule.toAffineSubspace_direction]
 
 @[simp]
 theorem finDim_eq_finrank_of_not_finite [Module.Free R s.direction] [StrongRankCondition R]

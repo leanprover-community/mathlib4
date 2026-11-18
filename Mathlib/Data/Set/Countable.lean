@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Basic.Countable.Basic
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Logic.Equiv.List
 public import Mathlib.Order.Preorder.Finite
 
@@ -107,7 +105,7 @@ lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : 
 lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
     (n : ℕ) :
     enumerateCountable h default n ∈ s := by
-  convert! mem_range_self n
+  convert mem_range_self n
   exact (range_enumerateCountable_of_mem h h_mem).symm
 
 end Enumerate

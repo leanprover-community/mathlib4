@@ -5,8 +5,8 @@ Authors: Reid Barton, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.CommSq
+public import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Facts about epimorphisms and monomorphisms.
@@ -277,5 +277,15 @@ theorem CommSq.cube_lemma_of_mono (h0xx : CommSq f0x0 f00x f01x f0x1)
       f0x0 f0x1 f1x0 f1x1 fx00 fx01 fx10 fx11 h0xx.w h1xx.w hx0x.w hx1x.w hxx1.w⟩
 
 end cubeLemma
+
+variable (C) in
+/-- The class of morphisms consisting of split monomorphisms. -/
+abbrev MorphismProperty.splitMonomorphisms : MorphismProperty C :=
+  fun _ _ f ↦ IsSplitMono f
+
+variable (C) in
+/-- The class of morphisms consisting of split epimorphisms. -/
+abbrev MorphismProperty.splitEpimorphisms : MorphismProperty C :=
+  fun _ _ f ↦ IsSplitEpi f
 
 end CategoryTheory

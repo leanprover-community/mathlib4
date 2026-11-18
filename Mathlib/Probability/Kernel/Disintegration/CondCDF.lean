@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 
 /-!
@@ -36,7 +35,6 @@ easily. Here we apply that construction to the case `β = Unit` and then drop `�
 
 * `ProbabilityTheory.setLIntegral_condCDF`: for all `a : α` and `x : ℝ`, all measurable set `s`,
   `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
-
 -/
 
 @[expose] public section

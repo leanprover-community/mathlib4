@@ -136,7 +136,7 @@ theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
 theorem ker_le_range_iff [MulOneClass I] (f : G →* H) [f.range.Normal] (g : H →* I) :
     g.ker ≤ f.range ↔ (mk' f.range).comp g.ker.subtype = 1 :=
   ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (eq_one_iff _).mpr <| h hx,
-    fun h x hx => (eq_one_iff _).mp <| by exact DFunLike.congr_fun h ⟨x, hx⟩⟩
+    fun h x hx => (eq_one_iff _).mp <| congr($h ⟨x, hx⟩)⟩
 
 @[to_additive (attr := simp)]
 theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
@@ -151,7 +151,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 -- for commutative groups we don't need normality assumption
 @[to_additive]
 instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) where
-  mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b)
+  mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr(mk $(mul_comm a b))
 
 local notation " Q" => G ⧸ N
 
@@ -256,7 +256,7 @@ theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : 
 @[to_additive (attr := simp)]
 theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q) = φ g :=
   rfl
--- TODO: replace `mk` with `mk'`)
+-- TODO: replace `mk` with `mk'`
 
 @[to_additive (attr := simp)]
 theorem lift_comp_mk' (φ : G →* M) (HN : N ≤ φ.ker) :
@@ -336,6 +336,11 @@ theorem ker_map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ Subgroup.c
   exact QuotientGroup.ker_lift _ _ _
 
 @[to_additive]
+theorem map_injective_iff (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) :
+    Function.Injective (map N M f h) ↔ M.comap f ≤ N := by
+  rw [← MonoidHom.ker_eq_bot_iff, ker_map, Subgroup.map_eq_bot_iff, ker_mk']
+
+@[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
     map N N (MonoidHom.id _) h x = x :=
   induction_on x fun _x => rfl
@@ -366,7 +371,7 @@ section Pointwise
 open Set
 
 @[to_additive (attr := simp)] lemma image_coe : ((↑) : G → Q) '' N = 1 :=
-  congr_arg ((↑) : Subgroup Q → Set Q) <| map_mk'_self N
+  congr($(map_mk'_self N))
 
 @[to_additive]
 lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N * s := by

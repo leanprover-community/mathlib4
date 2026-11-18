@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 import Mathlib.Algebra.Module.Torsion.Prod
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Quaternions
@@ -159,7 +159,7 @@ theorem imJ_coe : (x : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 @[simp, norm_cast]
 theorem imK_coe : (x : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h => congr_arg re h
+theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h => congr(re $h)
 
 @[simp]
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
@@ -173,6 +173,8 @@ instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂,c₃]) = 0 := rfl
 
+@[simp] lemma mk_zero : ⟨0, 0, 0, 0⟩ = (0 : ℍ[R,c₁,c₂,c₃]) := rfl
+
 instance : Inhabited ℍ[R,c₁,c₂,c₃] := ⟨0⟩
 
 section One
@@ -185,6 +187,8 @@ instance : One ℍ[R,c₁,c₂,c₃] := ⟨⟨1, 0, 0, 0⟩⟩
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂,c₃]) = 1 := rfl
+
+@[simp] lemma mk_one : ⟨1, 0, 0, 0⟩ = (1 : ℍ[R,c₁,c₂,c₃]) := rfl
 
 end One
 end Zero
@@ -361,7 +365,7 @@ instance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃] where
   natCast_zero := by simp
   natCast_succ := by simp
   intCast n := ((n : R) : ℍ[R,c₁,c₂,c₃])
-  intCast_ofNat _ := congr_arg coe (Int.cast_natCast _)
+  intCast_ofNat _ := congr(coe $(Int.cast_natCast _))
   intCast_negSucc n := by
     change coe _ = -coe _
     rw [Int.cast_negSucc, coe_neg]
@@ -389,6 +393,8 @@ theorem im_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).im = 0 :=
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R,c₁,c₂,c₃]) :=
   rfl
+
+@[simp, norm_cast] lemma mk_natCast (n : ℕ) : ⟨n, 0, 0, 0⟩ = (n : ℍ[R,c₁,c₂,c₃]) := rfl
 
 @[simp, norm_cast]
 theorem re_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).re = z :=
@@ -428,6 +434,8 @@ theorem im_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).im = 0 :=
 @[norm_cast]
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂,c₃]) :=
   rfl
+
+@[simp, norm_cast] lemma mk_intCast (z : ℤ) : ⟨z, 0, 0, 0⟩ = (z : ℍ[R,c₁,c₂,c₃]) := rfl
 
 end AddCommGroupWithOne
 
@@ -838,6 +846,14 @@ theorem imK_mul : (a * b).imK = a.re * b.imK + a.imI * b.imJ - a.imJ * b.imI + a
 @[simp, norm_cast]
 theorem coe_mul : ((x * y : R) : ℍ[R]) = x * y := QuaternionAlgebra.coe_mul x y
 
+lemma mk_mul_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
+    (⟨a₁, a₂, a₃, a₄⟩ : ℍ[R]) * ⟨b₁, b₂, b₃, b₄⟩ =
+    ⟨a₁ * b₁ - a₂ * b₂ - a₃ * b₃ - a₄ * b₄,
+     a₁ * b₂ + a₂ * b₁ + a₃ * b₄ - a₄ * b₃,
+     a₁ * b₃ - a₂ * b₄ + a₃ * b₁ + a₄ * b₂,
+     a₁ * b₄ + a₂ * b₃ - a₃ * b₂ + a₄ * b₁⟩ := by
+  ext; exacts [re_mul .., imI_mul .., imJ_mul .., imK_mul ..]
+
 @[norm_cast, simp]
 theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R]) = (x : ℍ[R]) ^ n :=
   QuaternionAlgebra.coe_pow x n
@@ -960,6 +976,8 @@ theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a := by
 @[simp, norm_cast]
 theorem star_coe : star (x : ℍ[R]) = x :=
   QuaternionAlgebra.star_coe x
+
+lemma star_mk (a₁ a₂ a₃ a₄ : R) : star (⟨a₁, a₂, a₃, a₄⟩ : ℍ[R]) = ⟨a₁, -a₂, -a₃, -a₄⟩ := by simp
 
 @[simp]
 theorem star_im : star a.im = -a.im := by ext <;> simp

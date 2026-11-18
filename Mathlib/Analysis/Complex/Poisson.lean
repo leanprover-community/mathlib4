@@ -6,7 +6,6 @@ Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger
 module
 
 public import Mathlib.Analysis.Complex.MeanValue
-public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 
 /-!
 # Poisson Integral Formula
@@ -237,7 +236,7 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
       simp_rw [sub_smul]
       have h₁ : ∀ z ∈ sphere 0 R, z - w ≠ 0 := by aesop (add simp sub_eq_zero)
       have h₃ : ContinuousOn f (sphere 0 R) :=
-        hf.2.mono <| sphere_subset_closedBall.trans_eq (closure_ball 0 hR.ne').symm
+        hf.continuousOn.mono <| sphere_subset_closedBall.trans_eq (closure_ball 0 hR.ne').symm
       rw [circleAverage_fun_sub]
       all_goals
         apply ContinuousOn.circleIntegrable hR.le

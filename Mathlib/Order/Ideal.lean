@@ -47,7 +47,6 @@ in line with most presentations of forcing.
 ## Tags
 
 ideal, cofinal, dense, countable, generic
-
 -/
 
 @[expose] public section
@@ -112,8 +111,6 @@ instance : SetLike (Ideal P) P where
 
 /-- The partial ordering by subset inclusion, inherited from `Set P`. -/
 instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P)
-
-@[deprecated (since := "2026-04-01")] alias instPartialOrderIdeal := Order.Ideal.instPartialOrder
 
 @[ext]
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
@@ -219,7 +216,7 @@ theorem isProper_of_ne_top (ne_top : I ≠ ⊤) : IsProper I :=
   ⟨fun h ↦ ne_top <| ext h⟩
 
 theorem IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
-  fun h ↦ IsProper.ne_univ <| congr_arg SetLike.coe h
+  fun h ↦ IsProper.ne_univ congr(SetLike.coe $h)
 
 theorem _root_.IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
   isProper_of_ne_top hI.1
@@ -613,10 +610,10 @@ variable [LE P]
 /-- A non-empty directed union of ideals of sets in a preorder is an ideal. -/
 lemma isIdeal_sUnion_of_directedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
     (hD : DirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
-  refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,
-    directedOn_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
+  refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).IsLowerSet), Set.nonempty_sUnion.2 ?_,
+    directedOn_sUnion hD (fun J hJ => (hidl J hJ).Directed)⟩
   let ⟨I, hI⟩ := hNe
-  exact ⟨I, ⟨hI, (hidl I hI).2⟩⟩
+  exact ⟨I, ⟨hI, (hidl I hI).Nonempty⟩⟩
 
 /-- A union of a nonempty chain of ideals of sets is an ideal. -/
 lemma isIdeal_sUnion_of_isChain {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)

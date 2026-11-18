@@ -231,9 +231,7 @@ theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realiz
           let ⟨h, _h'⟩ := h₁ x
           F.mem_nhds.1 h
     ⟨⟨fun x ↦ ⟨g₂ x, (h₂ x).1⟩, fun x ↦
-        Finite.fintype <|
-          let ⟨_h, h'⟩ := h₁ x
-          h'.subset fun _i hi ↦ hi.mono (inter_subset_inter_right _ (h₂ x).2)⟩⟩,
+        Finite.fintype <| by grw [(h₂ x).2]; exact (h₁ x).2⟩⟩,
     fun ⟨R⟩ ↦ R.to_locallyFinite⟩
 
 instance [TopologicalSpace α] [Finite β] (F : Ctop.Realizer α) (f : β → Set α) :

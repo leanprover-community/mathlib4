@@ -58,7 +58,7 @@ set_option backward.isDefEq.respectTransparency false in
   lift n to ℕ using hn
   have hd : (d : α) ≠ 0 := by
     refine fun hd ↦ hb ?_
-    have : Rat.divInt a b = _ := congr_arg NNRat.cast e
+    have : Rat.divInt a b = _ := congr(NNRat.cast $e)
     obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
     simp [*]
   have hb' : b ≠ 0 := by rintro rfl; exact hb Nat.cast_zero
@@ -132,7 +132,7 @@ theorem cast_one : ((1 : ℚ) : α) = 1 :=
   (cast_intCast _).trans Int.cast_one
 
 theorem cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by
-  simpa only [cast_def] using (r.1.cast_commute a).div_left (r.2.cast_commute a)
+  simpa only [cast_def] using (r.num.cast_commute a).div_left (r.den.cast_commute a)
 
 theorem cast_comm (r : ℚ) (a : α) : (r : α) * a = a * r :=
   (cast_commute r a).eq
@@ -154,8 +154,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
     rw [d0, zero_mul] at this
     contradiction
   rw [mk_eq_divInt] at e
-  have := congr_arg ((↑) : ℤ → α)
-    ((divInt_eq_divInt_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
+  have := congr(($((divInt_eq_divInt_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e) : α))
   rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this
   rw [eq_comm, cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq,
     ← mul_assoc, this, mul_assoc, mul_inv_cancel₀ b0, mul_one]

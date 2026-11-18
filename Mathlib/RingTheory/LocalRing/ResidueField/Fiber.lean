@@ -5,10 +5,7 @@ Authors: Jingting Wang, Junyan Xu, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-public import Mathlib.RingTheory.TensorProduct.Quotient
-public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # The fiber of a ring homomorphism at a prime ideal
@@ -37,7 +34,7 @@ instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
       ((TensorProduct.quotIdealMapEquivTensorQuot S (maximalIdeal R)).symm.restrictScalars _)
   have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
     rw [eSp.nontrivial_congr, Ideal.Quotient.nontrivial_iff]
-    exact ((((local_hom_TFAE (algebraMap R S)).out 1 3 rfl rfl).mp inferInstance).trans_lt
+    exact ((((local_hom_tfae (algebraMap R S)).out 1 3 rfl rfl).mp inferInstance).trans_lt
       (inferInstance : (maximalIdeal S).IsMaximal).lt_top).ne
   .of_surjective' TensorProduct.includeRight.toRingHom
     (TensorProduct.mk_surjective _ _ _ residue_surjective)
@@ -164,7 +161,7 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
       ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
     · simp
     · rw [← Ideal.mem_comap, ← PrimeSpectrum.comap_asIdeal]
-      convert! hr
+      convert hr
       exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩
     · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap,
         -Ideal.ResidueField.map_algebraMap]
@@ -196,8 +193,9 @@ and the prime spectrum of `κ(p) ⊗[R] S`. -/
 noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing R]
     [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
     p.primesOver S ≃o PrimeSpectrum (p.Fiber S) :=
-  .trans ⟨⟨fun q ↦ ⟨⟨q, q.2.1⟩, PrimeSpectrum.ext q.2.2.1.symm⟩,
-    fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+  .trans ⟨⟨fun q ↦ ⟨⟨q, q.2.1⟩, PrimeSpectrum.ext q.2.2.over.symm⟩,
+    fun q ↦ ⟨q.1.asIdeal, ⟨q.1.isPrime, ⟨congr($(q.2).asIdeal).symm⟩⟩⟩,
+    fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
     (PrimeSpectrum.preimageOrderIsoFiber R S ⟨p, ‹_›⟩)
 
 /-- The `Homeomorph` between the fiber of `PrimeSpectrum S → PrimeSpectrum R`
@@ -215,7 +213,7 @@ noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing 
   exact
   { __ := preimageOrderIsoFiber R S p
     continuous_toFun := by
-      convert!
+      convert
         (H.toHomeomorphOfSurjective (preimageOrderIsoFiber R S p).symm.surjective).symm.continuous
       ext1 x
       obtain ⟨x, rfl⟩ := (H.toHomeomorphOfSurjective
@@ -226,5 +224,5 @@ noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing 
 
 @[simp]
 theorem PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply (q : PrimeSpectrum (p.Fiber S)) :
-    (primesOverOrderIsoFiber R S p).symm q = q.1.comap Algebra.TensorProduct.includeRight :=
+    (primesOverOrderIsoFiber R S p).symm q = q.asIdeal.comap Algebra.TensorProduct.includeRight :=
   rfl

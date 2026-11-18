@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
-
 # Quasi-affine schemes
 
 ## Main results
@@ -17,7 +16,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
   This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
 - `IsQuasiAffine.of_isImmersion`:
   Any quasi-compact locally closed subscheme of a quasi-affine scheme is quasi-affine.
-
 -/
 
 @[expose] public section
@@ -61,12 +59,13 @@ lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
     Opens.IsBasis { X.basicOpen r | (r : Γ(X, ⊤)) (_ : IsAffineOpen (X.basicOpen r)) } := by
   refine Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrU⟩ := (PrimeSpectrum.isBasis_basic_opens
-    (R := Γ(X, ⊤))).exists_subset_of_mem_open (Set.mem_image_of_mem _ hxU) (X.toSpecΓ ''ᵁ U).2
+    (R := Γ(X, ⊤))).exists_subset_of_mem_open (Set.mem_image_of_mem _ hxU)
+    (X.toSpecΓ ''ᵁ U).is_open'
   simp_rw [← toSpecΓ_preimage_basicOpen]
   refine ⟨_, ⟨r, ?_, rfl⟩, hxr, (Set.preimage_mono hrU).trans_eq
     (Set.preimage_image_eq _ X.toSpecΓ.isEmbedding.injective)⟩
   rw [← Hom.isAffineOpen_iff_of_isOpenImmersion X.toSpecΓ]
-  convert! IsAffineOpen.Spec_basicOpen r
+  convert IsAffineOpen.Spec_basicOpen r
   exact SetLike.coe_injective (Set.image_preimage_eq_of_subset
     (hrU.trans (Set.image_subset_range _ _)))
 
