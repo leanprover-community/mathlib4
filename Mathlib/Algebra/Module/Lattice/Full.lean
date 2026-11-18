@@ -58,6 +58,28 @@ lemma _root_.Module.Basis.extendOfIsFullLattice_apply {M : Submodule R V} [IsFul
     {ι : Type*} (b : Basis ι R M) (k : ι) : b.extendOfIsFullLattice A k = (b k).val := by
   simp [Basis.extendOfIsFullLattice]
 
+lemma _root_.Module.Basis.coe_extendOfIsFullLattice {M : Submodule R V} [IsFullLattice A M]
+    {ι : Type*} (b : Basis ι R M) : b.extendOfIsFullLattice A = Subtype.val ∘ b :=
+  funext (b.extendOfIsFullLattice_apply _)
+
+@[simp]
+lemma _root_.Module.Basis.extendOfIsFullLattice_repr_apply {M : Submodule R V}
+    [IsFullLattice A M] {ι : Type*} (b : Basis ι R M) (x : M) (i : ι) :
+    (b.extendOfIsFullLattice A).repr x i = algebraMap R A (b.repr x i) := by
+  suffices ((b.extendOfIsFullLattice A).repr.toLinearMap.restrictScalars R) ∘ₗ M.subtype =
+      Finsupp.mapRange.linearMap (Algebra.linearMap R A) ∘ₗ b.repr.toLinearMap by
+    congrm $this x i
+  refine b.ext fun j ↦ ?_
+  simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
+    LinearEquiv.coe_coe, coe_subtype, ← b.extendOfIsFullLattice_apply A, Basis.repr_self,
+    Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
+
+lemma _root_.Module.Basis.extendOfIsFullLattice_span {M : Submodule R V} [IsFullLattice A M]
+    {ι : Type*} (b : Basis ι R M) : span R (Set.range (b.extendOfIsFullLattice A)) = M := by
+  rw [show ⇑(b.extendOfIsFullLattice A) = M.subtype ∘ b from
+    funext (b.extendOfIsFullLattice_apply A), Set.range_comp, ← map_span, b.span_eq, map_top,
+    range_subtype]
+
 /-- A lattice containing a full lattice is itself full. -/
 theorem of_le {M N : Submodule R V} (hle : M ≤ N) [IsFullLattice A M] [IsLattice A N] :
     IsFullLattice A N where
@@ -69,6 +91,37 @@ instance smul (M : Submodule R V) [IsFullLattice A M] (a : Aˣ) :
     IsFullLattice A (a • M : Submodule R V) where
   span_eq_top := by rw [Submodule.coe_pointwise_smul, span_smul, span_eq_top, smul_top]
 
+section map
+
+variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
+variable (M : Submodule R V)
+
+/-- The image of a full lattice under an `A`-linear equivalence is a full lattice. -/
+instance instMapRestrictScalars [IsFullLattice A M] (e : V ≃ₗ[A] W) :
+    IsFullLattice A (M.map (e.restrictScalars R).toLinearMap) where
+  span_eq_top := by
+    rw [map_coe, LinearEquiv.restrictScalars_toLinearMap, LinearMap.coe_restrictScalars, span_image,
+      span_eq_top, map_top, LinearEquiv.range]
+
+/-- The preimage of a full lattice under an `A`-linear equivalence is a full lattice. -/
+instance instComapRestrictScalars [IsFullLattice A M] (e : W ≃ₗ[A] V) :
+    IsFullLattice A (M.comap (e.restrictScalars R).toLinearMap) where
+  span_eq_top := by
+    rw [comap_coe, LinearEquiv.restrictScalars_toLinearMap, LinearMap.coe_restrictScalars,
+      LinearEquiv.coe_coe, ← e.image_symm_eq_preimage, ← LinearEquiv.coe_coe, span_image,
+      span_eq_top, map_top, LinearEquiv.range]
+
+/-- A lattice is a full lattice in its own `A`-span. -/
+instance _root_.Submodule.IsLattice.isFullLattice_span_self [IsLattice A M] :
+    IsFullLattice A (M.comap ((span A (M : Set V)).subtype.restrictScalars R)) where
+  toIsLattice := .comap A M (injective_subtype _) fun x hx ↦ ⟨⟨x, subset_span hx⟩, rfl⟩
+  span_eq_top := by
+    apply map_injective_of_injective (injective_subtype (span A (M : Set V)))
+    rw [map_span, map_top, range_subtype, comap_coe, LinearMap.coe_restrictScalars,
+      Set.image_preimage_eq_of_subset fun x hx ↦ ⟨⟨x, subset_span hx⟩, rfl⟩]
+
+end map
+
 end CommRing
 
 section Field
@@ -76,6 +129,18 @@ section Field
 variable (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 variable (M : Submodule R V)
+
+omit [FaithfulSMul R K] in
+lemma finiteDimensional (M : Submodule R V) [IsFullLattice K M] : FiniteDimensional K V := by
+  have h := IsLattice.finiteDimensional_span K M
+  rw [span_eq_top] at h
+  exact Finite.equiv topEquiv
+
+/-- The `R`-span of a finite `K`-basis is a full lattice. -/
+instance span_range_basis {ι : Type*} [Finite ι] (b : Basis ι K V) :
+    IsFullLattice K (span R (Set.range b)) where
+  toIsLattice := IsLattice.span_of_linearIndependent K b.linearIndependent
+  span_eq_top := by rw [span_span_of_tower, b.span_eq]
 
 /-- The `R`-rank of a full lattice equals the `K`-rank of the ambient module. -/
 theorem rank_eq [IsFullLattice K M] : Module.rank R M = Module.rank K V := by
@@ -101,6 +166,21 @@ theorem of_rank_le [IsLattice K M] (hr : Module.rank K V ≤ Module.rank R M) :
   have hM : Module.rank R M < Cardinal.aleph0 := Module.rank_lt_aleph0 R M
   have : Module.Finite K V := rank_lt_aleph0_iff.mp (hr.trans_lt hM)
   of_finrank_le K M (Cardinal.toNat_le_toNat hr hM)
+
+section IsPrincipalIdealRing
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
+
+/-- A basis of a full lattice in `ι → K`, indexed by `ι`. -/
+noncomputable def basisOfPi {ι : Type*} [Fintype ι] (M : Submodule R (ι → K))
+    [IsFullLattice K M] : Basis ι R M :=
+  have := IsLattice.finite K M
+  have := IsLattice.free K M
+  (Free.chooseBasis R M).reindex <| Fintype.equivOfCardEq <| by
+    rw [← finrank_eq_card_chooseBasisIndex, IsFullLattice.finrank_eq K M,
+      Module.finrank_fintype_fun_eq_card]
+
+end IsPrincipalIdealRing
 
 section IsFractionRing
 

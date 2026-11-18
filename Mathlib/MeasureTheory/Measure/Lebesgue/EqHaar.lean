@@ -71,10 +71,7 @@ namespace Module.Basis
 /-- The parallelepiped formed from the standard basis for `ι → ℝ` is `[0,1]^ι` -/
 theorem parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     (Pi.basisFun ℝ ι).parallelepiped = TopologicalSpace.PositiveCompacts.piIcc01 ι :=
-  SetLike.coe_injective <| by
-    refine Eq.trans ?_ ((uIcc_of_le ?_).trans (Set.pi_univ_Icc _ _).symm)
-    · classical convert! parallelepiped_single (ι := ι) 1
-    · exact zero_le_one
+  SetLike.coe_injective <| _root_.parallelepiped_basisFun.trans (Set.pi_univ_Icc _ _).symm
 
 /-- A parallelepiped can be expressed on the standard basis. -/
 theorem parallelepiped_eq_map {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
@@ -95,7 +92,7 @@ theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [Normed
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
     (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map,
-    ← addHaar_self b, ← f.toEquiv.preimage_image (_root_.parallelepiped ⇑b)]
+    ← addHaar_self b, ← f.toEquiv.preimage_image (_root_.parallelepiped ℝ ⇑b)]
   have := image_parallelepiped f.toLinearMap (⇑b : ι → E)
   simp_all
 
@@ -565,9 +562,9 @@ variable {ι G : Type*} [Fintype ι] [DecidableEq ι] [NormedAddCommGroup G] [No
   [MeasurableSpace G] [BorelSpace G]
 
 theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
-    b.addHaar (parallelepiped v) = ENNReal.ofReal |b.det v| := by
+    b.addHaar (parallelepiped ℝ v) = ENNReal.ofReal |b.det v| := by
   have : FiniteDimensional ℝ G := b.finiteDimensional_of_finite
-  have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
+  have A : parallelepiped ℝ v = b.constr ℕ v '' parallelepiped ℝ b := by
     rw [image_parallelepiped]
     exact congr_arg _ <| funext fun i ↦ (b.constr_basis ℕ v i).symm
   rw [A, addHaar_image_linearMap, b.addHaar_self, mul_one, ← LinearMap.det_toMatrix b,
@@ -583,7 +580,7 @@ as it can be zero, but it is always locally finite and translation invariant. -/
   ‖ω (finBasisOfFinrankEq ℝ G _i.out)‖₊ • (finBasisOfFinrankEq ℝ G _i.out).addHaar
 
 theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ)
-    (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
+    (v : Fin n → G) : ω.measure (parallelepiped ℝ v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, ENNReal.smul_def,
     smul_apply, smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),

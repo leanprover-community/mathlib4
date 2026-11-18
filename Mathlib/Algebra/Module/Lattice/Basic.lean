@@ -131,6 +131,53 @@ instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) 
     rw [← linearIndepOn_id_smul_set_iff a⁻¹] at hs ⊢
     exact linearIndepOn _ hsM hs
 
+section map
+
+variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
+
+theorem map [IsLattice A M] {f : V →ₗ[A] W} (hf : Set.InjOn f (span A (M : Set V))) :
+    IsLattice A (M.map (f.restrictScalars R)) where
+  fg := (fg A (M := M)).map _
+  linearIndepOn s hs hli := by
+    obtain ⟨t, ht, rfl⟩ := Set.subset_image_iff.mp hs
+    refine (linearIndepOn t ht ?_).id_imageₛ (hf.mono (span_mono ht))
+    exact (linearIndepOn_id_imageₛ_iff (hf.mono fun _ hx ↦ subset_span (span_le.mpr ht hx))).mp hli
+
+theorem of_map {f : V →ₗ[A] W} (hf : Set.InjOn f M) [IsLattice A (M.map (f.restrictScalars R))] :
+    IsLattice A M where
+  fg := by
+    apply fg_of_fg_map_of_fg_inf_ker (f.restrictScalars R) (fg A _)
+    suffices M ⊓ (f.restrictScalars R).ker = ⊥ from this ▸ fg_bot
+    exact eq_bot_iff.mpr fun x ⟨hxM, hxf⟩ ↦ hf hxM (zero_mem M) (by simpa using hxf)
+  linearIndepOn t ht hli := by
+    refine .of_comp f ((linearIndepOn_iff_image (hf.mono ht)).mpr ?_)
+    apply linearIndepOn (M := M.map (f.restrictScalars R))
+    · rintro _ ⟨x, hx, rfl⟩
+      exact mem_map_of_mem (ht hx)
+    · exact hli.id_imageₛ (f := f.restrictScalars R) (hf.mono (span_le.mpr ht))
+
+theorem map_iff {f : V →ₗ[A] W} (hf : Set.InjOn f (span A (M : Set V))) :
+    IsLattice A (M.map (f.restrictScalars R)) ↔ IsLattice A M :=
+  ⟨fun _ ↦ of_map A M (hf.mono subset_span), fun _ ↦ map A M hf⟩
+
+theorem comap [IsLattice A M] {f : W →ₗ[A] V} (hf : Function.Injective f)
+    (hM : (M : Set V) ⊆ Set.range f) : IsLattice A (M.comap (f.restrictScalars R)) :=
+  have : IsLattice A ((M.comap (f.restrictScalars R)).map (f.restrictScalars R)) := by
+    rwa [map_comap_eq_of_le hM]
+  of_map A _ hf.injOn
+
+/-- The image of a lattice under an `A`-linear equivalence is a lattice. -/
+instance instMapRestrictScalars [IsLattice A M] (e : V ≃ₗ[A] W) :
+    IsLattice A (M.map (e.restrictScalars R).toLinearMap) :=
+  map A M e.injective.injOn
+
+/-- The preimage of a lattice under an `A`-linear equivalence is a lattice. -/
+instance instComapRestrictScalars [IsLattice A M] (e : W ≃ₗ[A] V) :
+    IsLattice A (M.comap (e.restrictScalars R).toLinearMap) :=
+  comap A M e.injective fun x _ ↦ e.surjective x
+
+end map
+
 end CommRing
 
 section Field
@@ -150,12 +197,55 @@ This is the finrank version of `rank_span_eq_rank`. -/
 theorem finrank_span_eq_finrank [IsLattice K M] : finrank K (span K (M : Set V)) = finrank R M :=
   congr(Cardinal.toNat $(rank_span_eq_rank K M))
 
+/-- If the `R`-span of `s` is a lattice, then the `K`-rank of `s` equals its `R`-rank. -/
+theorem _root_.Set.finrank_eq_of_isLattice (s : Set V) [IsLattice K (span R s)] :
+    Set.finrank K s = Set.finrank R s := by
+  rw [Set.finrank, Set.finrank, ← span_span_of_tower R K s]
+  exact finrank_span_eq_finrank K _
 /-- An `R`-module `M` is a lattice in an ambient `K`-module `V` if and only if `M`
 is finitely generated, and its `R`-rank equals the `K`-dimension of its `K`-span. -/
 theorem iff_fg_and_finrank_span_eq_finrank :
     IsLattice K M ↔ M.FG ∧ finrank K (span K (M : Set V)) = finrank R M := by
   have : Nontrivial R := (algebraMap R K).domain_nontrivial
   simp +contextual [isLattice_iff, finrank_span_eq_finrank_iff]
+
+/-- The `R`-span of a finite `K`-linearly independent family is a lattice. -/
+theorem span_of_linearIndependent {ι : Type*} [Finite ι] {v : ι → V}
+    (hv : LinearIndependent K v) : IsLattice K (span R (Set.range v)) := by
+  have : Nontrivial R := (algebraMap R K).domain_nontrivial
+  have := Fintype.ofFinite ι
+  rw [iff_fg_and_finrank_span_eq_finrank, span_span_of_tower, finrank_span_eq_card hv,
+    finrank_span_eq_card (hv.restrict_scalars' R)]
+  exact ⟨fg_span (Set.finite_range v), rfl⟩
+
+/-- Any lattice is contained in the `R`-span of a finite `K`-linearly independent set with the
+same `K`-span. -/
+theorem exists_finite_linearIndepOn_le_span [IsLattice K M] :
+    ∃ s : Set V, s.Finite ∧ LinearIndepOn K id s ∧ M ≤ span R s ∧
+      span K s = span K (M : Set V) := by
+  have := IsDomain.of_faithfulSMul R K
+  have := finite K M
+  obtain ⟨n, g, hg⟩ := Finite.exists_fin (R := R) (M := M)
+  obtain ⟨I, hI, a, ha, haM⟩ := exists_linearIndepOn_smul_mem_span hg
+  have ha' : algebraMap R K a ≠ 0 :=
+    (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective R K)).mpr ha
+  let φ : V →ₗ[R] V := (LinearMap.lsmul K V (algebraMap R K a)⁻¹).restrictScalars R
+  have hM : M ≤ span R ((fun i ↦ φ (g i)) '' I) := fun m hm ↦ by
+    simpa [map_span, ← Set.image_comp, Function.comp_def, φ, -algebraMap_smul,
+      ← algebraMap_smul K a m, smul_smul, mul_inv_cancel₀ ha'] using
+      mem_map_of_mem (f := φ ∘ₗ M.subtype) (haM ⟨m, hm⟩)
+  refine ⟨(fun i ↦ φ (g i)) '' I, I.toFinite.image _, ?_, hM, le_antisymm ?_ ?_⟩
+  · exact LinearIndepOn.id_image <|
+      (linearIndependent K M (fun i : I ↦ (g i).2) (hI.map' M.subtype M.ker_subtype)).units_smul
+        fun _ ↦ Units.mk0 _ (inv_ne_zero ha')
+  · exact span_le.mpr <| Set.image_subset_iff.mpr fun i _ ↦ smul_mem _ _ (subset_span (g i).2)
+  · exact span_le.mpr <| hM.trans (span_le_restrictScalars R K _)
+
+/-- The `K`-span of a lattice is finite-dimensional. -/
+instance finiteDimensional_span [IsLattice K M] : FiniteDimensional K (span K (M : Set V)) := by
+  obtain ⟨s, rfl⟩ := fg K (M := M)
+  rw [span_span_of_tower]
+  exact FiniteDimensional.span_finset K s
 
 section IsPrincipalIdealRing
 
