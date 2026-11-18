@@ -550,8 +550,8 @@ lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPow
 /-- A power-multiplicative additive group norm on a nontrivial ring satisfies `f 1 = 1`. -/
 protected lemma IsPowMul.map_one {R F : Type*} [Ring R] [Nontrivial R]
     [FunLike F R ℝ] [AddGroupNormClass F R ℝ] {f : F} (hf : IsPowMul f) :
-    f 1 = 1 :=
-  hf.map_one_eq_zero_or_one.resolve_left ((map_ne_zero_iff_ne_zero f).mpr one_ne_zero)
+    f 1 = 1 := by
+  simpa [map_eq_zero_iff_eq_zero] using hf.map_one_eq_zero_or_one
 
 /-- A power-multiplicative additive group norm on a nontrivial ring satisfies
 `f (a ^ n) = (f a) ^ n`. -/
