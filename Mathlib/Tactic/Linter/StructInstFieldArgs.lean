@@ -1,0 +1,207 @@
+/-
+Copyright (c) 2026 Jon Eugster. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jon Eugster
+-/
+module
+
+public import Lean.Data.Options
+
+meta import Lean.Meta.Tactic.TryThis
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header  -- shake: keep
+
+/-!
+## Structure Instance Field Arguments Linter
+
+This linter discourages the pattern `:= fun x ↦ _` in structure instance fields
+and suggest moving function binders to the left side of the `:=`.
+
+This increases readability of the code while not changing functionality.
+
+The linter prints a try-this-suggestion with an automated fix.
+
+### Example
+
+```lean4
+-- offending
+instance : Foo where
+  foo_bar := fun x y ↦ x
+
+-- conform
+instance : A where
+  foo_bar x y := x
+```
+
+## Implementation
+
+Not all function arguments are moveable, for example `foo := fun ⟨x, y⟩ ↦ _`
+cannot be changed as `foo ⟨x, y⟩ := _` is not valid syntax.
+
+## Future extensions
+
+- In repeated `fun` applications like `foo := fun x ↦ fun y ↦ x`, the linter
+  only looks at the first `fun` syntax and thus suggests `foo x := fun y ↦ x`
+  on which the linter will trigger again. The suggestion could directly suggest
+  the conform version by going recursively into the function body, but for simplicity,
+  this has not been implemented so far.
+-/
+
+open Lean Elab Linter
+open Lean Elab Command Linter Meta Tactic.TryThis
+
+namespace Mathlib.Linter.Style
+
+/-- Helper function to format Syntax the way it is written in source code. -/
+meta def srcText (stxs : Array Syntax) : Option String :=
+  (mkNullNode stxs).reprint.map (·.trimAscii.copy)
+
+/--
+`fun` binders that can be moved before `:=` unchanged.
+See the definition of `Lean.Parser.Term.funBinder`.
+-/
+meta def movableBinder (b : Syntax) : Bool :=
+  b.isIdent || b.getKind ∈
+    #[``Parser.Term.funStrictImplicitBinder,
+      ``Parser.Term.funImplicitBinder,
+      ``Parser.Term.implicitBinder,
+      ``Parser.Term.instBinder,
+      ``Parser.Term.hole,
+      ``Parser.Term.typeAscription]
+
+/-- Number of leading binders of `e`, without unfolding definitions. -/
+meta def forallArity : Expr → Nat
+  | .forallE _ _ b _ => forallArity b + 1
+  | .mdata _ e => forallArity e
+  | .bvar .. | .fvar .. | .mvar ..
+  | .sort .. | .const .. | .app ..
+  | .lam .. | .letE .. | .lit ..
+  | .proj .. => 0
+
+/-- Number of arguments the field takes in its declared type. -/
+meta def fieldArity? (proj : Name) : CommandElabM (Option Nat) := do
+  let env ← getEnv
+  let some info := env.getProjectionFnInfo? proj | return none
+  let some constInfo := env.find? proj | return none
+  return some (forallArity constInfo.type - info.numParams - 1)
+
+/-- The projection function Lean recorded for a field name in a structure instance. -/
+meta def fieldProjFn? (stx : Syntax) : CommandElabM (Option Name) := do
+  let some startPos := stx.getPos? | return none
+  let some endPos := stx.getTailPos? | return none
+  for tree in (← getInfoTrees) do
+    let found? := tree.foldInfo (init := none) fun _ info acc =>
+      acc <|> match info with
+        | .ofFieldInfo fi =>
+          if fi.stx.getPos? == some startPos && fi.stx.getTailPos? == some endPos
+          then some fi.projName else none
+        | .ofTermInfo ti  =>
+          if ti.stx.getPos? == some startPos && ti.stx.getTailPos? == some endPos
+          then ti.expr.getAppFn.constName? else none
+        | _ => none
+    if found?.isSome then return found?
+  return none
+
+/--
+The `structInstFieldArgs` linter flags values of structure instance fields which start with
+`fun` and suggests to move the arguments before the `:=`.
+
+Example: `foo a b := _` is preferred over `foo := fun a b ↦ _`.
+
+The linter comes with a try-this-suggestion to automatically apply the fix.
+-/
+public meta register_option linter.style.structInstFieldArgs : Bool := {
+  defValue := false
+  descr := "enable the `structInstFieldArgs` linter"
+}
+
+public meta register_option linter.style.structInstFieldArgs.useExpectedType : Bool := {
+  defValue := true
+  descr := "if enabled, the `structInstFieldArgs` linter looks at the expected type \
+    and moves at most as many arguments, as the expected type takes. \
+    This makes the linter more conservative, but it comes with a significant slowdown."
+}
+
+@[inherit_doc linter.style.structInstFieldArgs]
+meta def structInstFieldArgsLinter : Linter where run := withSetOptionIn fun stx => do
+    let opts ← getLinterOptions
+    unless getLinterValue linter.style.structInstFieldArgs opts do return
+    if (← MonadState.get).messages.hasErrors then return
+    for field in stx.topDown do
+      if field.getKind != ``Lean.Parser.Term.structInstField then continue
+      -- `defPart` contains `:=` and everything after
+      let some defPart := field.find? (·.getKind == ``Parser.Term.structInstFieldDef) | continue
+      -- `value` is value of the field after `:=`
+      let value := defPart[defPart.getNumArgs - 1]
+      if value.getKind != ``Parser.Term.fun then continue
+      -- `funBody` is one of `basicFun <|> matchAlts`
+      let funBody := value[1]
+      unless funBody.getKind == ``Parser.Term.basicFun do continue
+      let binders := funBody[0].getArgs
+      let mut movableBinders := binders.takeWhile movableBinder
+
+      -- Look at the declared type of the field to cap how many arguments should be moved
+      if linter.style.structInstFieldArgs.useExpectedType.get opts.toOptions then
+        let some proj  ← fieldProjFn? field[0] | continue
+        let some arity ← fieldArity? proj | continue
+        let alreadyMoved := field[1][0].getNumArgs
+        movableBinders := movableBinders.extract 0 (arity - alreadyMoved)
+
+      if movableBinders.isEmpty then continue
+
+      let assignStx := defPart.getArgs.pop -- the `:=`
+      let optTypeStx :=  funBody[1] -- optional type annotation like `fun x y : Nat ↦ _`
+      let arrowStx :=  funBody[2] -- the arrow `↦` or `=>`
+
+      -- Extract some parts of the original source to make the suggestion
+      let some assignTxt := srcText assignStx | continue
+      let some movableBindersTxt := srcText movableBinders | continue
+      let some optTypeTxt := (srcText #[optTypeStx]).map (" " ++ ·) | continue
+      let movableWithType := if optTypeStx.isNone then
+          movableBindersTxt
+        else
+          s!"({movableBindersTxt}{optTypeTxt})"
+
+      -- `foo:= fun x ↦ _` and `foo x:= fun x ↦ _` are valid syntax, so we need to insert a space
+      let some assignTk := assignStx[0]? | continue
+      let some assignPos := assignTk.getPos? | continue
+      let mut prevTk := field[0]
+      for tk in field.topDown do match tk with
+        | .atom .. | .ident .. =>
+          if let some e := tk.getTailPos? then
+            if e ≤ assignPos then prevTk := tk
+        | _ => pure ()
+      let ws := match prevTk.getTailInfo with
+        | .original _ _ trailing _ => if trailing.isEmpty then " " else ""
+        | _ => ""
+
+      let suggestion ← if movableBinders.size == binders.size then
+          -- if all binders are moveable, we suggest `foo x y := _`
+          pure s!"{ws}{movableWithType} {assignTxt}"
+        else
+          -- if there ore non-moveable binders,
+          -- we need to keep the `fun` syntax for the unmovable binders,
+          -- e.g. `foo x y := fun ⟨a, b⟩ ↦ _`
+          let remaining  := binders.extract movableBinders.size binders.size
+          let funStx :=  value[0] -- the keyword `fun`
+          let some funTxt := srcText #[funStx] | continue
+          let some remainingTxt := srcText remaining | continue
+          let some arrowTxt := srcText #[arrowStx] | continue
+          pure s!"{ws}{movableWithType} {assignTxt} {funTxt} {remainingTxt}{optTypeTxt} {arrowTxt}"
+
+      let replacementSpan := mkNullNode <| assignStx ++ #[arrowStx]
+      let msgSpan := mkNullNode <| movableBinders
+      Linter.logLint linter.style.structInstFieldArgs msgSpan m!"Please move function binders \
+        before the `:=`. The syntax `foo := fun x y ↦ _` can be written as  `foo x y := _` \
+        which increases readability."
+      liftTermElabM <| addSuggestion
+        msgSpan
+        suggestion
+        (origSpan? := replacementSpan)
+        (header := "Fix:")
+        (diffGranularity := .word)
+
+meta initialize addLinter structInstFieldArgsLinter
+
+end Mathlib.Linter.Style

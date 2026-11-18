@@ -42,6 +42,8 @@ public import Batteries.Tactic.Alias
 -- This import makes the `proof_wanted` command available globally.
 public import Batteries.Util.ProofWanted
 
+meta import Mathlib.Tactic.Linter.StructInstFieldArgs
+
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
 For this reason, the imports of this file are carefully curated.
@@ -109,6 +111,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.missingEnd
   linter.style.setOption
   linter.style.show
+  linter.style.structInstFieldArgs
   linter.style.whitespace
   linter.unusedDecidableInType
   linter.unusedFintypeInType

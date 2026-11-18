@@ -474,11 +474,11 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
   intro s t
   by_cases! h : Nonempty e.source
   · exact { e.toHomeomorphSourceTarget with
+      -- The atlas of H on itself has only one chart, hence c' is the inclusion.
+      -- Then, compatibility of `G` *almost* yields our claim --- except that `e` is a chart
+      -- on `M` and `c` is one on `s`: we need to show that restricting `e` to `s` and composing
+      -- with `c'` yields a chart in the maximal atlas of `s`.
       mem_groupoid :=
-        -- The atlas of H on itself has only one chart, hence c' is the inclusion.
-        -- Then, compatibility of `G` *almost* yields our claim --- except that `e` is a chart
-        -- on `M` and `c` is one on `s`: we need to show that restricting `e` to `s` and composing
-        -- with `c'` yields a chart in the maximal atlas of `s`.
         fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
   · have : IsEmpty t := isEmpty_coe_sort.mpr
