@@ -538,6 +538,15 @@ end Real
 def IsPowMul {R S : Type*} [Pow R ℕ] [Pow S ℕ] (f : R → S) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
 
+protected theorem IsPowMul.comp {R S T : Type*} [Pow R ℕ] [Pow S ℕ] [Pow T ℕ]
+    {f : S → T} {g : R → S} (hf : IsPowMul f) (hg : IsPowMul g) :
+    IsPowMul (f ∘ g) :=
+  fun x ↦ by simp +contextual [hf (g x), hg x]
+
+theorem isPowMul {R S F : Type*} [Monoid R] [Monoid S] [FunLike F R S] [MonoidHomClass F R S]
+    (f : F) : IsPowMul f :=
+  fun a n _ ↦ map_pow f a n
+
 lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
     f 1 ≤ 1 := by
   have hf1 : (f 1) ^ 2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
