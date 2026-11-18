@@ -278,6 +278,7 @@ end bijective
 
 section refl
 
+/-- Algebra equivalences are reflexive. -/
 @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
   { (.refl _ : A₁ ≃+* A₁) with map_smul' _ _ := rfl }
