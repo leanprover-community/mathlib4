@@ -24,12 +24,17 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*}
 
+-- TODO: find a better home for these lemmas.
 namespace WithTop
 
--- TODO: find a better home for this lemma.
 @[to_dual]
 theorem isCompl_range_coe : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
   eq_compl_iff_isCompl.1 <| Set.ext fun _ ↦ ne_top_iff_exists.symm
+
+@[to_dual]
+theorem nonempty_preimage_some_iff {s : Set (WithTop α)} :
+    (((↑) ⁻¹' s : Set α)).Nonempty ↔ ¬ s ⊆ {⊤} := by
+  rw [nonempty_preimage_iff, isCompl_range_coe.eq_compl, inter_compl_nonempty_iff]
 
 section LE
 
@@ -159,6 +164,42 @@ theorem isLUB_top_iff {s : Set (WithTop α)} :
     ← or_iff_not_imp_left, forall_or_left]
 
 @[to_dual]
+theorem isGLB_sInf_of_preimage' [InfSet α] {s : Set (WithTop α)}
+    (hs : ¬ s ⊆ {⊤} → IsGLB ((↑) ⁻¹' s : Set α) (sInf ((↑) ⁻¹' s))) (hs' : BddBelow s) :
+    IsGLB s (sInf s) := by
+  by_cases h : s ⊆ {⊤}
+  · rw [sInf_eq_top_iff.2 (.inl h)]
+    exact isGLB_top_iff.2 h
+  rw [sInf_eq h hs', isGLB_coe_iff]
+  exact ⟨h, hs h⟩
+
+/-- See `isGLB_sInf_of_preimage'` for a stronger version. -/
+@[to_dual
+/-- See `isGLB_sInf_of_preimage` for a stronger version. -/]
+theorem isGLB_sInf_of_preimage [InfSet α] {s : Set (WithTop α)}
+    (hs : IsGLB ((↑) ⁻¹' s : Set α) (sInf ((↑) ⁻¹' s))) (hs' : BddBelow s) : IsGLB s (sInf s) :=
+  isGLB_sInf_of_preimage' (fun _ ↦ hs) hs'
+
+@[to_dual]
+theorem isLUB_sSup_of_preimage' [SupSet α] {s : Set (WithTop α)}
+    (hs : ⊤ ∉ s → BddAbove ((↑) ⁻¹' s : Set α) →
+      IsLUB ((↑) ⁻¹' s : Set α) (sSup ((↑) ⁻¹' s))) :
+    IsLUB s (sSup s) := by
+  by_cases h : ⊤ ∈ s ∨ ¬BddAbove ((↑) ⁻¹' s : Set α)
+  · rw [sSup_eq_top_iff.2 h]
+    exact isLUB_top_iff.2 h
+  push Not at h
+  rw [sSup_eq h.1 h.2, isLUB_coe_iff]
+  exact ⟨h.1, hs h.1 h.2⟩
+
+/-- See `isLUB_sSup_of_preimage'` for a stronger version. -/
+@[to_dual
+/-- See `isGLB_sInf_of_preimage'` for a stronger version. -/]
+theorem isLUB_sSup_of_preimage [SupSet α] {s : Set (WithTop α)}
+    (hs : IsLUB ((↑) ⁻¹' s : Set α) (sSup ((↑) ⁻¹' s))) : IsLUB s (sSup s) :=
+  isLUB_sSup_of_preimage' fun _ _ ↦ hs
+
+@[to_dual]
 instance instOrderSupSet [OrderSupSet α] : OrderSupSet (WithTop α) where
   isLUB_sSup_of_isLUB
   | s, ⊤, h => by rwa [sSup_eq_top_iff.2 (isLUB_top_iff.1 h)]
@@ -213,12 +254,9 @@ complete lattice with a top. -/
 @[to_dual]
 theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : s.Nonempty) : IsLUB s (sSup s) := by
-  by_cases h : ⊤ ∈ s ∨ ¬BddAbove ((↑) ⁻¹' s : Set β)
-  · rw [sSup_eq_top_iff.2 h]
-    exact isLUB_top_iff.2 h
-  push Not at h
-  rw [sSup_eq h.1 h.2, isLUB_coe_iff]
-  exact ⟨h.1, isLUB_csSup (hs.preimage' <| by simp [isCompl_range_coe.eq_compl, h.1]) h.2⟩
+  refine isLUB_sSup_of_preimage' fun hs₁ hs₂ ↦ isLUB_csSup ?_ hs₂
+  rw [nonempty_preimage_some_iff, subset_singleton_iff_eq]
+  aesop
 
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
@@ -230,13 +268,8 @@ complete lattice with a top. -/
 @[to_dual]
 theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : BddBelow s) : IsGLB s (sInf s) := by
-  by_cases h : s ⊆ {⊤}
-  · rw [sInf_eq_top_iff.2 (.inl h)]
-    exact isGLB_top_iff.2 h
-  rw [sInf_eq h hs, isGLB_coe_iff]
-  rw [← inter_compl_nonempty_iff, ← isCompl_range_coe.eq_compl, ← nonempty_preimage_iff] at h ⊢
-  have := h.nonempty
-  exact ⟨h, isGLB_csInf h (bddBelow_preimage_coe.mpr hs)⟩
+  refine isGLB_sInf_of_preimage' (fun hs' ↦ isGLB_csInf ?_ (bddBelow_preimage_coe.mpr hs)) hs
+  rwa [nonempty_preimage_some_iff]
 
 theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) :=
   isGLB_sInf' (OrderBot.bddBelow _)
