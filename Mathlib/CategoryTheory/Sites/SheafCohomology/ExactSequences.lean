@@ -47,7 +47,8 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 namespace Sheaf
 
-variable [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
+variable [HasSheafify J AddCommGrpCat.{w}]
+  [HasExt.{w', max u w, max (max u v) (w + 1)} (Sheaf J AddCommGrpCat.{w})]
 
 variable {S : ShortComplex (Sheaf J AddCommGrpCat.{w})} (hS : S.ShortExact) (n₀ n₁ : ℕ)
   (h : n₀ + 1 = n₁)

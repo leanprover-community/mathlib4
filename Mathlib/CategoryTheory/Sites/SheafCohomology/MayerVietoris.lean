@@ -31,7 +31,7 @@ open Category Opposite Limits Abelian
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
   [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrpCat.{v}]
-  [HasExt.{w} (Sheaf J AddCommGrpCat.{v})]
+  [HasExt.{w, max u v, max u (v + 1)} (Sheaf J AddCommGrpCat.{v})]
 
 namespace GrothendieckTopology.MayerVietorisSquare
 

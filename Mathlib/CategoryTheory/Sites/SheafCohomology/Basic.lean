@@ -49,8 +49,8 @@ namespace Sheaf
 
 section
 
-variable (F : Sheaf J AddCommGrpCat.{w})
-  [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
+variable (F : Sheaf J AddCommGrpCat.{w}) [HasSheafify J AddCommGrpCat.{w}]
+  [HasExt.{w', max u w, max (max u v) (w + 1)} (Sheaf J AddCommGrpCat.{w})]
 
 /-- The cohomology of an abelian sheaf in degree `n`. -/
 abbrev H (n : ℕ) : Type w' :=
@@ -60,7 +60,8 @@ end
 
 section
 
-variable [HasSheafify J AddCommGrpCat.{v}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{v})]
+variable [HasSheafify J AddCommGrpCat.{v}]
+  [HasExt.{w', max u v, max u (v + 1)} (Sheaf J AddCommGrpCat.{v})]
 
 variable (J) in
 /-- The bifunctor which sends an abelian sheaf `F` and an object `U` to the
@@ -89,7 +90,8 @@ end
 
 section
 
-variable [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
+variable [HasSheafify J AddCommGrpCat.{w}]
+  [HasExt.{w', max u w, max (max u v) (w + 1)} (Sheaf J AddCommGrpCat.{w})]
 
 instance (F : Sheaf J AddCommGrpCat.{w}) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
   subsingleton_of_forall_eq 0 fun x ↦ (Ext.eq_zero_of_injective x)
