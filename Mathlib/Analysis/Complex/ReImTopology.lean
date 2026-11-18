@@ -188,16 +188,16 @@ theorem frontier_setOfPred_lt_im (a : ℝ) : frontier { z : ℂ | a < z.im } = {
 alias frontier_setOf_lt_im := frontier_setOfPred_lt_im
 
 theorem closure_reProdIm (s t : Set ℝ) : closure (s ×ℂ t) = closure s ×ℂ closure t := by
-  simpa only [← preimage_eq_preimage equivRealProdCLM.symm.toHomeomorph.surjective,
-    equivRealProdCLM.symm.toHomeomorph.preimage_closure] using! @closure_prod_eq _ _ _ _ s t
+  simpa only [← preimage_eq_preimage equivRealProdCLM.symm.surjective,
+    equivRealProdCLM.symm.preimage_closure] using! @closure_prod_eq _ _ _ _ s t
 
 theorem interior_reProdIm (s t : Set ℝ) : interior (s ×ℂ t) = interior s ×ℂ interior t := by
   rw [reProdIm, reProdIm, interior_inter, interior_preimage_re, interior_preimage_im]
 
 theorem frontier_reProdIm (s t : Set ℝ) :
     frontier (s ×ℂ t) = closure s ×ℂ frontier t ∪ frontier s ×ℂ closure t := by
-  simpa only [← preimage_eq_preimage equivRealProdCLM.symm.toHomeomorph.surjective,
-    equivRealProdCLM.symm.toHomeomorph.preimage_frontier] using! frontier_prod_eq s t
+  simpa only [← preimage_eq_preimage equivRealProdCLM.symm.surjective,
+    equivRealProdCLM.symm.preimage_frontier] using! frontier_prod_eq s t
 
 theorem frontier_setOfPred_le_re_and_le_im (a b : ℝ) :
     frontier { z | a ≤ re z ∧ b ≤ im z } = { z | a ≤ re z ∧ im z = b ∨ re z = a ∧ b ≤ im z } := by
