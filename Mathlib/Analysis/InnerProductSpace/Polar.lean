@@ -72,15 +72,15 @@ theorem range_polarₗᵢ (T : E →L[ℂ] F) :
       (isClosed_closure.preimage T.polarₗᵢ.toContinuousLinearMap.continuous) ?_
     rintro ⟨_, x, rfl⟩
     exact subset_closure ⟨x, T.polarₗᵢ_apply x ▸ rfl⟩
-  · exact Submodule.topologicalClosure_minimal _
-      (by
-        rintro _ ⟨x, rfl⟩
-        exact ⟨⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩, T.polarₗᵢ_apply x⟩)
+  · refine Submodule.topologicalClosure_minimal _ ?_
       T.polarₗᵢ.isometry.isClosedEmbedding.isClosed_range
+    rintro _ ⟨x, rfl⟩
+    exact ⟨⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩, T.polarₗᵢ_apply x⟩
 
 theorem polarₗᵢ_adjoint_comp (T : E →L[ℂ] F) :
     T.polarₗᵢ.toContinuousLinearMap.adjoint ∘L T.polarₗᵢ.toContinuousLinearMap = .id ℂ _ := by
-  refine ContinuousLinearMap.ext fun x => ext_inner_right ℂ fun y => ?_
+  ext
+  refine ext_inner_right ℂ fun y ↦ ?_
   simp
 
 theorem polarₗᵢ_comp_adjoint (T : E →L[ℂ] F) :
