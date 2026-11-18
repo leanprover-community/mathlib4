@@ -55,6 +55,24 @@ class RankLeOne (v : Valuation R Γ₀) where
   Note that this class includes the data of an inclusion morphism `Γ₀ → ℝ≥0`. -/
 class RankOne (v : Valuation R Γ₀) extends RankLeOne v, Valuation.IsNontrivial v
 
+namespace RankLeOne
+
+variable (v : Valuation R Γ₀) [RankLeOne v]
+
+@[simp]
+lemma hom'_le_hom'_iff (x y : v.ValueGroup₀) : hom' v x ≤ hom' v y ↔ x ≤ y :=
+  RankLeOne.strictMono'.le_iff_le
+
+@[simp]
+lemma hom'_lt_hom'_iff (x y : v.ValueGroup₀) : hom' v x < hom' v y ↔ x < y :=
+  RankLeOne.strictMono'.lt_iff_lt
+
+@[simp]
+lemma zero_lt_hom'_iff (x : v.ValueGroup₀) : 0 < hom' v x ↔ 0 < x := by
+  simpa using RankLeOne.strictMono'.lt_iff_lt (f := hom' v) (a := 0)
+
+end RankLeOne
+
 open WithZero
 
 lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
@@ -213,34 +231,49 @@ open ValuativeRel
 
 variable {R : Type*} [Ring R] [ValuativeRel R]
 
-/-- A valuative relation has a rank one valuation when it is both nontrivial
-and the rank is at most one. -/
+namespace Valuation
+
+/-- The embedding of the value group-with-zero into the nonnegative reals induces a
+valuation of rank at most one. -/
 @[instance_reducible]
-def Valuation.RankOne.ofRankLeOneStruct [ValuativeRel.IsNontrivial R] (e : RankLeOneStruct R) :
-    Valuation.RankOne (valuation R) where
+def RankLeOne.ofRankLeOneStruct (e : RankLeOneStruct R) :
+    Valuation.RankLeOne (valuation R) where
   hom' := e.emb.comp embedding
   strictMono' := e.strictMono.comp embedding_strictMono
 
-instance [IsNontrivial R] [IsRankLeOne R] :
-    Valuation.RankOne (valuation R) :=
-  Valuation.RankOne.ofRankLeOneStruct IsRankLeOne.nonempty.some
+/-- A valuative relation has a rank one valuation when its rank is at most one. -/
+instance [IsRankLeOne R] : Valuation.RankLeOne (valuation R) :=
+  .ofRankLeOneStruct IsRankLeOne.nonempty.some
+
+/-- A valuative relation has a rank one valuation when it is both nontrivial
+and the rank is at most one. -/
+@[instance_reducible]
+def RankOne.ofRankLeOneStruct [ValuativeRel.IsNontrivial R] (e : RankLeOneStruct R) :
+    Valuation.RankOne (valuation R) where
+  __ := Valuation.RankLeOne.ofRankLeOneStruct e
+
+instance [ValuativeRel.IsNontrivial R] [IsRankLeOne R] : Valuation.RankOne (valuation R) where
 
 /-- Convert between the rank one statement on valuative relation's induced valuation. -/
-def Valuation.RankOne.rankLeOneStruct (e : Valuation.RankOne (valuation R)) :
+def RankOne.rankLeOneStruct (e : Valuation.RankOne (valuation R)) :
     RankLeOneStruct R where
   emb := e.hom.comp (ValuativeRel.ValueGroupWithZero.embed (v := valuation R))
   strictMono := e.strictMono.comp (ValueGroupWithZero.embed_strictMono (valuation R))
 
-lemma ValuativeRel.isRankLeOne_of_rankOne [h : (valuation R).RankOne] :
+end Valuation
+
+namespace ValuativeRel
+
+lemma isRankLeOne_of_rankOne [h : (valuation R).RankOne] :
     IsRankLeOne R := ⟨⟨h.rankLeOneStruct⟩⟩
 
-lemma ValuativeRel.isNontrivial_of_rankOne [h : (valuation R).RankOne] :
+lemma isNontrivial_of_rankOne [h : (valuation R).RankOne] :
     ValuativeRel.IsNontrivial R :=
   (isNontrivial_iff_isNontrivial _).mpr h.toIsNontrivial
 
 open WithZero
 
-lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
+lemma isRankLeOne_iff_mulArchimedean :
     IsRankLeOne R ↔ MulArchimedean (ValueGroupWithZero R) := by
   constructor
   · rintro ⟨⟨f, hf⟩⟩
@@ -263,11 +296,13 @@ lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
       · exact ⟨⟨b, (H.trans' zero_lt_one).ne', H.ne'⟩⟩
       · exact ⟨⟨a, ha, ha'⟩⟩
 
-lemma ValuativeRel.IsRankLeOne.of_compatible_mulArchimedean [MulArchimedean Γ₀]
+lemma IsRankLeOne.of_compatible_mulArchimedean [MulArchimedean Γ₀]
     (v : Valuation R Γ₀) [v.Compatible] :
     ValuativeRel.IsRankLeOne R := by
   rw [isRankLeOne_iff_mulArchimedean]
   exact MulArchimedean.comap (embedding.toMonoidHom.comp (ValueGroupWithZero.embed v).toMonoidHom)
     (embedding_strictMono.comp (ValueGroupWithZero.embed_strictMono v))
+
+end ValuativeRel
 
 end ValuativeRel
