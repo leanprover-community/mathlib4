@@ -5,8 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 module
 
+public import Batteries.Tactic.Alias
 public import Mathlib.Init
-
 import Mathlib.Tactic.Attr.Register
 
 set_option doc.verso true
@@ -235,19 +235,24 @@ theorem isFixedPt_id (x : α) : IsFixedPt id x :=
 @[simp] theorem forall_isFixedPt_iff {f : α → α} : (∀ x, IsFixedPt f x) ↔ f = id :=
   ⟨funext, fun h ↦ h ▸ isFixedPt_id⟩
 
+/- ### `Function.piMap` function -/
+
+/-- Sends a dependent function `a : ∀ i, α i` to a dependent function
+`Function.piMap f a : ∀ i, β i` by applying `f i` to `i`-th component. -/
+protected def piMap {ι} {α β : ι → Sort*} (f : ∀ i, α i → β i) : (∀ i, α i) → (∀ i, β i) :=
+  fun a i ↦ f i (a i)
+
+lemma piMap_def {ι} {α β : ι → Sort*} (f : ∀ i, α i → β i) (g : ∀ i, α i) :
+    Function.piMap f g = (fun {i} => f i) ∘' g := rfl
+
+@[simp, grind =]
+lemma piMap_apply {ι} {α β : ι → Sort*} (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) :
+    Function.piMap f a i = f i (a i) := rfl
+
 end Function
 
-namespace Pi
+@[deprecated (since := "2026-05-11")]
+alias Pi.map := Function.piMap
 
-variable {ι : Sort*} {α β : ι → Sort*}
-
-/- ### `Pi.map` function -/
-
-/-- Sends a dependent function `a : ∀ i, α i` to a dependent function `Pi.map f a : ∀ i, β i`
-by applying `f i` to `i`-th component. -/
-protected def map (f : ∀ i, α i → β i) : (∀ i, α i) → (∀ i, β i) := fun a i ↦ f i (a i)
-
-@[simp]
-lemma map_apply (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) : Pi.map f a i = f i (a i) := rfl
-
-end Pi
+@[deprecated (since := "2026-05-11")]
+alias Pi.map_apply := Function.piMap_apply
