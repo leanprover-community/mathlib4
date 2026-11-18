@@ -311,7 +311,7 @@ class PolynormableSpace [topology : TopologicalSpace E] where
 
 theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
     (hp : WithSeminorms p) : t = p.moduleFilterBasis.topology :=
-  hp.1
+  hp.topology_eq_withSeminorms
 
 variable [TopologicalSpace E]
 variable {p : SeminormFamily 𝕜 E ι}
@@ -348,7 +348,7 @@ instance PolynormableSpace.continuousSMul [PolynormableSpace 𝕜 E] :
 
 theorem WithSeminorms.hasBasis (hp : WithSeminorms p) :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ p.basisSets) id := by
-  rw [congr_fun (congr_arg (@nhds E) hp.1) 0]
+  rw [congr_fun (congr_arg (@nhds E) hp.topology_eq_withSeminorms) 0]
   exact AddGroupFilterBasis.nhds_zero_hasBasis _
 
 theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
@@ -385,6 +385,30 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
   have : (sr.fst.sup p).ball (x +ᵥ (0 : E)) sr.snd = x +ᵥ (sr.fst.sup p).ball 0 sr.snd :=
     Eq.symm (Seminorm.vadd_ball (sr.fst.sup p))
   rwa [vadd_eq_add, add_zero] at this
+
+theorem WithSeminorms.hasBasis_zero_ball_of_directed [Nonempty ι] (hp : WithSeminorms p)
+    (hp_dir : Directed (· ≤ ·) p) :
+    (𝓝 (0 : E)).HasBasis (fun ir : ι × ℝ ↦ 0 < ir.2) fun ir ↦ (p ir.1).ball 0 ir.2 := by
+  refine hp.hasBasis_zero_ball.to_hasBasis ?_ ?_
+  · rintro ⟨s, r⟩ (hr : 0 < r)
+    obtain ⟨i, hi⟩ := hp_dir.finset_le s
+    exact ⟨(i, r), hr, ball_antitone (Finset.sup_le hi)⟩
+  · rintro ⟨i, r⟩ (hr : 0 < r)
+    exact ⟨({i}, r), hr, by simp⟩
+
+theorem WithSeminorms.hasBasis_zero_closedBall (hp : WithSeminorms p) :
+    (𝓝 (0 : E)).HasBasis
+    (fun sr : Finset ι × ℝ ↦ 0 < sr.2) fun sr ↦ (sr.1.sup p).closedBall 0 sr.2 :=
+  hp.hasBasis_zero_ball.to_hasBasis
+    (fun i hi ↦ ⟨(i.1, i.2 / 2), half_pos hi, fun _ (hx : _ ≤ _) ↦ hx.trans_lt (half_lt_self hi)⟩)
+    fun i hi ↦ ⟨i, hi, ball_subset_closedBall _ 0 i.2⟩
+
+theorem WithSeminorms.hasBasis_zero_closedBall_of_directed [Nonempty ι] (hp : WithSeminorms p)
+    (hp_dir : Directed (· ≤ ·) p) :
+    (𝓝 (0 : E)).HasBasis (fun ir : ι × ℝ ↦ 0 < ir.2) fun ir ↦ (p ir.1).closedBall 0 ir.2 :=
+  (hp.hasBasis_zero_ball_of_directed hp_dir).to_hasBasis
+    (fun i hi ↦ ⟨(i.1, i.2 / 2), half_pos hi, fun _ (hx : _ ≤ _) ↦ hx.trans_lt (half_lt_self hi)⟩)
+    fun i hi ↦ ⟨i, hi, ball_subset_closedBall _ 0 i.2⟩
 
 /-- The `x`-neighbourhoods of a space whose topology is induced by a family of seminorms
 are exactly the sets which contain seminorm balls around `x`. -/
@@ -1082,7 +1106,7 @@ theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : 
     LocallyConvexSpace ℝ E := by
   have := hp.isTopologicalAddGroup
   apply ofBasisZero ℝ E id fun s => s ∈ p.basisSets
-  · rw [hp.1, AddGroupFilterBasis.nhds_eq _, AddGroupFilterBasis.N_zero]
+  · rw [hp.topology_eq_withSeminorms, AddGroupFilterBasis.nhds_eq _, AddGroupFilterBasis.N_zero]
     exact FilterBasis.hasBasis _
   · intro s hs
     change s ∈ Set.iUnion _ at hs

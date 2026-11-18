@@ -312,7 +312,7 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
     Finset.filter_eq' _ (ComplexEmbedding.conjugate (embedding w)),
     Finset.mem_univ, ite_true, mult]
   split_ifs with hw
-  · rw [ComplexEmbedding.isReal_iff.mp (isReal_iff.mp hw), Finset.union_idempotent,
+  · rw [ComplexEmbedding.isReal_iff.mp (isReal_iff.mp hw), Finset.union_self,
       Finset.card_singleton]
   · refine Finset.card_pair ?_
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]

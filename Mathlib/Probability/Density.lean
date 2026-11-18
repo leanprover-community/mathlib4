@@ -132,8 +132,8 @@ theorem pdf_of_not_haveLebesgueDecomposition {_ : MeasurableSpace Ω} {ℙ : Mea
 
 @[fun_prop]
 theorem measurable_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
-    (μ : Measure E := by volume_tac) : Measurable (pdf X ℙ μ) := by
-  exact measurable_rnDeriv _ _
+    (μ : Measure E := by volume_tac) : Measurable (pdf X ℙ μ) :=
+  measurable_rnDeriv _ _
 
 theorem withDensity_pdf_le_map {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) : μ.withDensity (pdf X ℙ μ) ≤ map X ℙ :=
@@ -231,7 +231,8 @@ theorem quasiMeasurePreserving_hasPDF (hg : QuasiMeasurePreserving g μ ν)
   have hgm : AEMeasurable g (map X ℙ) := hg.aemeasurable.mono_ac HasPDF.absolutelyContinuous
   rw [hasPDF_iff, ← AEMeasurable.map_map_of_aemeasurable hgm (HasPDF.aemeasurable X ℙ μ)]
   refine ⟨hgm.comp_aemeasurable (HasPDF.aemeasurable _ _ μ), hmap, ?_⟩
-  exact (HasPDF.absolutelyContinuous.map_of_aemeasurable hg.1).trans hg.2
+  exact HasPDF.absolutelyContinuous.map_of_aemeasurable hg.aemeasurable
+    |>.trans hg.absolutelyContinuous
 
 theorem quasiMeasurePreserving_hasPDF' [SFinite ℙ] [SigmaFinite ν]
     (hg : QuasiMeasurePreserving g μ ν) : HasPDF (g ∘ X) ℙ ν :=
