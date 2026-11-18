@@ -95,6 +95,7 @@ theorem extends_norm (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ :=
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' hf1 _
 
 variable (f) in
+/-- The composition of an algebra norm with an injective algebra homomorphism. -/
 def compInjective {T : Type*} [Ring T] [Algebra R T] (σ : T →ₐ[R] S) (hσ : Function.Injective σ) :
     AlgebraNorm R T where
   __ := f.toSeminorm.comp σ.toLinearMap
