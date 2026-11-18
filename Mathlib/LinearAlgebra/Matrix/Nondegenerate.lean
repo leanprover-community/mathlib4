@@ -5,7 +5,6 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
