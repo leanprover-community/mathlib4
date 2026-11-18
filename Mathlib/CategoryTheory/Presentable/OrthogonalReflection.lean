@@ -60,7 +60,6 @@ errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 @[expose] public section
@@ -446,7 +445,7 @@ noncomputable def corepresentableBy :
     ⟨_, isLocal_reflectionObj Z hW⟩ where
   homEquiv {A} :=
     (ObjectProperty.fullyFaithfulι _).homEquiv.trans
-      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2))
+      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.property))
 
 variable (W κ)
 

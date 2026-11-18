@@ -67,7 +67,8 @@ instance : Inhabited 𝔸[R, K] := ⟨0⟩
 
 @[simp]
 theorem algebraMap_fst_apply (x : K) (v : InfinitePlace K) :
-    (algebraMap K 𝔸[R, K] x).1 v = x := rfl
+    (algebraMap K 𝔸[R, K] x).1 v = x :=
+  InfiniteAdeleRing.algebraMap_apply K x v
 
 theorem algebraMap_fst_def (x : K) :
     (algebraMap K 𝔸[R, K] x).1 = algebraMap K K∞ x := rfl

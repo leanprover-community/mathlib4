@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Filter.AtTopBot.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence to ±infinity in ordered rings
 -/

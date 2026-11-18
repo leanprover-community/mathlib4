@@ -202,7 +202,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
     AEStronglyMeasurable (fun v ↦ fourierSMulRight L f v) μ := by
   apply AEStronglyMeasurable.fun_const_smul
   have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
-    (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
+    (StrongDual.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
     L.continuous.aestronglyMeasurable.prodMk hf
   -- Elaboration without the expected type is faster here:
@@ -795,7 +795,7 @@ theorem fourier_deriv
   ext x
   have I : Integrable (fun x ↦ fderiv ℝ f x) := by
     simpa only [← toSpanSingleton_deriv] using!
-      (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
+      (StrongDual.smulRightL ℝ ℝ E 1).integrable_comp hf'
   have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
     simp only [fourier_continuousLinearMap_apply I, fderiv_apply_one_eq_deriv]
   rw [this, fourier_fderiv hf h'f I]

@@ -19,7 +19,6 @@ See also `LinearAlgebra.Trace` for the trace of an endomorphism.
 ## Tags
 
 matrix, trace, diagonal
-
 -/
 
 @[expose] public section
@@ -119,6 +118,20 @@ lemma trace_blockDiagonal' [DecidableEq p] {m : p → Type*} [∀ i, Fintype (m 
     (M : ∀ i, Matrix (m i) (m i) R) :
     trace (blockDiagonal' M) = ∑ i, trace (M i) := by
   simp [blockDiagonal', trace, Finset.sum_sigma']
+
+@[simp]
+lemma trace_fromBlocks (A : Matrix n n R) (B : Matrix n m R) (C : Matrix m n R) (D : Matrix m m R) :
+    trace (fromBlocks A B C D) = trace A + trace D := by
+  simp [trace, fromBlocks]
+
+@[simp]
+lemma trace_comp (M : Matrix n n (Matrix m m R)) : trace (comp n n m m R M) = trace (trace M) := by
+  simp [trace, Fintype.sum_prod_type, Finset.sum_comm (α := n)]
+
+@[simp]
+lemma trace_trace_comp_symm (M : Matrix (n × m) (n × m) R) :
+    trace (trace ((comp n n m m R).symm M)) = trace M := by
+  rw [← trace_comp, Equiv.apply_symm_apply]
 
 end AddCommMonoid
 

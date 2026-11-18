@@ -19,7 +19,6 @@ of nondegenerate simplices) of its monogenous subcomplexes.
 In this file, we assume that `X` is nonsingular, in which case its monogenous subcomplexes
 identify to standard simplices. This allows to show that `X` is the colimit
 of `Δ[x.dim]` for `x : X.N`.
-
 -/
 
 @[expose] public section
@@ -72,6 +71,6 @@ noncomputable def coconeN' : Cocone X.functorN' where
 for all nondegenerate simplices `x : X.N`. -/
 noncomputable def isColimitCoconeN' : IsColimit X.coconeN' :=
   (IsColimit.equivOfNatIsoOfIso
-    X.functorN'Iso.symm _ _ (Cocone.ext (Iso.refl _))).1 X.isColimitCoconeN
+    X.functorN'Iso.symm _ _ (Cocone.ext (Iso.refl _))).toFun X.isColimitCoconeN
 
 end SSet

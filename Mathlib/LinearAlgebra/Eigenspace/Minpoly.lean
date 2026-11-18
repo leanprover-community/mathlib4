@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eigenvalues are the roots of the minimal polynomial.
 
@@ -39,7 +42,7 @@ variable {R : Type v} {M : Type w} [CommSemiring R] [AddCommMonoid M] [Module R 
 theorem ker_aeval_ring_hom'_unit_polynomial (f : End R M) (c : R[X]ˣ) :
     LinearMap.ker (aeval f (c : R[X])) = ⊥ :=
   LinearMap.ker_eq_bot'.mpr fun m hm ↦ by
-    simpa [← mul_apply_eq_comp, ← aeval_mul] using congr(c⁻¹.1.aeval f $hm)
+    simpa [← mul_apply_eq_comp, ← aeval_mul] using congr(c⁻¹.val.aeval f $hm)
 
 end CommSemiring
 

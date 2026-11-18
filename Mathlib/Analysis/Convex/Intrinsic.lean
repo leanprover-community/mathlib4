@@ -109,7 +109,7 @@ theorem intrinsicClosure_empty : intrinsicClosure 𝕜 (∅ : Set P) = ∅ := by
 
 @[simp]
 theorem intrinsicClosure_nonempty : (intrinsicClosure 𝕜 s).Nonempty ↔ s.Nonempty :=
-  ⟨by simp_rw [nonempty_iff_ne_empty]; rintro h rfl; exact h intrinsicClosure_empty,
+  ⟨by contrapose!; rintro rfl; exact intrinsicClosure_empty,
     Nonempty.mono subset_intrinsicClosure⟩
 
 alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := intrinsicClosure_nonempty
@@ -406,7 +406,7 @@ theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
     obtain ⟨y, hyt, hys⟩ := h _ ht hx
     exact ⟨⟨_, subset_affineSpan 𝕜 s hys⟩, hyt, hys⟩
   · by_contra hc
-    obtain ⟨z, hz₁, hz₂⟩ := h _ (affineSpan 𝕜 s).closed_of_finiteDimensional.isOpen_compl hc
+    obtain ⟨z, hz₁, hz₂⟩ := h _ (affineSpan 𝕜 s).isClosed_of_finiteDimensional.isOpen_compl hc
     exact hz₁ (subset_affineSpan 𝕜 s hz₂)
 
 variable {𝕜}
@@ -489,5 +489,5 @@ protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s
 
 theorem intrinsicInterior_nonempty (hs : Convex ℝ s) :
     (intrinsicInterior ℝ s).Nonempty ↔ s.Nonempty :=
-  ⟨by simp_rw [nonempty_iff_ne_empty]; rintro h rfl; exact h intrinsicInterior_empty,
+  ⟨by contrapose!; rintro rfl; exact intrinsicInterior_empty,
     Set.Nonempty.intrinsicInterior hs⟩

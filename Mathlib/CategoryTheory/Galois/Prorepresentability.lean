@@ -51,7 +51,6 @@ an arbitrary `FintypeCat.{w}`.
 ## References
 
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
-
 -/
 
 @[expose] public section
@@ -261,7 +260,6 @@ theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
 section EndAutGaloisIsomorphism
 
 /-!
-
 ### Isomorphism between `Aut F` and `AutGalois F`
 
 In this section we establish the isomorphism between the automorphism group of `F` and
@@ -285,7 +283,6 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
   `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GrpCat).sections`
 
   which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
-
 -/
 
 -- Local notation for `F` considered as a functor to types instead of finite types.
@@ -370,7 +367,7 @@ noncomputable def endMulEquivAutGalois : End F ≃* (AutGalois F)ᵐᵒᵖ :=
   MulEquiv.mk (Equiv.trans (endEquivAutGalois F) MulOpposite.opEquiv) (by simp)
 
 lemma endMulEquivAutGalois_pi (f : End F) (A : PointedGaloisObject F) :
-    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).asIso.hom A.2 = f.asHom.app A A.pt :=
+    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).asIso.hom A.pt = f.asHom.app A A.pt :=
   endEquivAutGalois_π F f A
 
 /-- Any endomorphism of a fiber functor is a unit. -/
