@@ -18,7 +18,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.CohenMacaulay.Catenary
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Gorenstein.Defs
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.KrullDimension.Basic
@@ -1167,7 +1166,7 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R]
     (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R))
       (ModuleCat.of R R) n)).IsPrincipal := by
   have : IsGorensteinLocalRing R := by
-    rw [isGorensteinLocalRing_def, h1]
+    rw [isGorensteinLocalRing_iff, h1]
     exact WithBot.coe_inj.not.mpr (ENat.natCast_ne_top _)
   have : IsCohenMacaulayLocalRing R := isCohenMacaulayLocalRing_of_isGorensteinLocalRing R
   have deptheq : IsLocalRing.depth (ModuleCat.of R R) = n := by
@@ -1287,12 +1286,10 @@ lemma isGorensteinLocalRing_iff_exists [IsNoetherianRing R] :
     (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
   have (a : WithBot ℕ∞) : a ≠ ⊤ ↔ ∃ (n : ℕ), a < n := by
     induction a with
+    | top => simp
     | bot => simp
-    | coe a =>
-      induction a with
-      | top => simp
-      | coe a => simpa [- ENat.WithBot.coe_eq_natCast] using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
-  simp only [isGorensteinLocalRing_def, this, ge_iff_le]
+    | coe a => simpa [← ENat.WithBot.coe_eq_natCast] using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
+  simp only [isGorensteinLocalRing_iff, this, ge_iff_le]
   apply exists_congr (fun n ↦ ?_)
   rw [injectiveDimension_lt_iff_of_finite (ModuleCat.of R R) n]
   congr! 2
@@ -1322,7 +1319,7 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
   tfae_have 2 → 3 := by
     intro injdim
     have : IsGorensteinLocalRing R := by
-      rw [isGorensteinLocalRing_def, injdim]
+      rw [isGorensteinLocalRing_iff, injdim]
       exact WithBot.coe_inj.not.mpr (ENat.natCast_ne_top n)
     have : IsCohenMacaulayLocalRing R := isCohenMacaulayLocalRing_of_isGorensteinLocalRing R
     refine ⟨fun i hi ↦ ?_, ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim n injdim h⟩
@@ -1395,7 +1392,7 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
       ⟨rs, len, gen, reg⟩
     rw [Ideal.irreducible_iff_bot_irreducible, Ideal.bot_isIrreducible_iff_isPrincipal] at irr
     have inj := injective_of_isPrincipal (R ⧸ J) irr
-    rw [quotient_regular_isGorenstein_iff_isGorenstein R rs reg, gen, isGorensteinLocalRing_def]
+    rw [quotient_regular_isGorenstein_iff_isGorenstein R rs reg, gen, isGorensteinLocalRing_iff]
     apply ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr ENat.zero_ne_top)
     exact (injectiveDimension_le_iff _ _).mpr inferInstance
   tfae_finish
