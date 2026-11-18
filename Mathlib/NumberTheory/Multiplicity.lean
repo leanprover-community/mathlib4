@@ -47,10 +47,6 @@ theorem dvd_geom_sum₂_iff_of_dvd_sub' {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * x ^ (n - 1) := by
   rw [geom_sum₂_comm, dvd_geom_sum₂_iff_of_dvd_sub]; simpa using h.neg_right
 
-theorem dvd_geom_sum₂_self {x y : R} (h : ↑n ∣ x - y) :
-    ↑n ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) :=
-  (dvd_geom_sum₂_iff_of_dvd_sub h).mpr (dvd_mul_right _ _)
-
 theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
     p ^ 2 ∣ (x + p) ^ n - x ^ (n - 1) * p * n - x ^ n := by
   rcases n with - | n
