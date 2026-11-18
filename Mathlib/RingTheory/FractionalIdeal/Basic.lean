@@ -570,26 +570,27 @@ This is only an auxiliary definition: the preferred way of writing `I.mul J` is 
 Elaborated terms involving `FractionalIdeal` tend to grow quite large,
 so by making definitions irreducible, we hope to avoid deep unfolds.
 -/
-@[no_expose] def mul (I J : FractionalIdeal S P) : FractionalIdeal S P :=
+@[no_expose, deprecated "use the `Mul` instance directly" (since := "2026-11-14")]
+def mul (I J : FractionalIdeal S P) : FractionalIdeal S P :=
   ⟨I * J, I.isFractional.mul J.isFractional⟩
 
+@[deprecated "`mul` is deprecated" (since := "2026-11-14")]
 alias mul_def' := mul.eq_def
 
--- local attribute [semireducible] mul
+@[no_expose]
 instance : Mul (FractionalIdeal S P) :=
-  ⟨fun I J => mul I J⟩
+  ⟨fun I J => ⟨I * J, I.isFractional.mul J.isFractional⟩⟩
 
-@[simp]
+@[deprecated "`mul` is deprecated" (since := "2026-11-14")]
 theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
-  rfl
+  (rfl)
 
-set_option backward.isDefEq.respectTransparency false in
-theorem mul_def (I J : FractionalIdeal S P) :
-    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul_def']
+theorem mul_def (I J : FractionalIdeal S P) : I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ :=
+  (rfl)
 
 @[simp, norm_cast]
 theorem coeToSubmodule_mul (I J : FractionalIdeal S P) : (↑(I * J) : Submodule R P) = I * J := by
-  simp only [mul_def, coeToSubmodule_mk]
+  simp [mul_def]
 
 @[deprecated (since := "2026-11-09")] alias coe_mul := coeToSubmodule_mul
 

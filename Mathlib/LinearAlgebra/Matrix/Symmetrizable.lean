@@ -34,6 +34,10 @@ def IsSymmetrizable [MonoidWithZero R] (M : Matrix ι ι R) : Prop :=
 
 section IsSymmetrizable
 
+lemma IsSymmetrizable.of_isEmpty [Semiring R] [IsEmpty ι] :
+    M.IsSymmetrizable :=
+  ⟨1, isEmptyElim, isEmptyElim⟩
+
 lemma IsSymm.isSymmetrizable [MonoidWithZero R] (h : M.IsSymm) :
     M.IsSymmetrizable := by
   use 1
@@ -114,6 +118,10 @@ def IsPosSymmetrizable [Semiring R] [LT R]
   ∃ d : ι → R, (∀ i, 0 < d i) ∧ ∀ i j, d i * M i j = d j * M j i
 
 section IsPosSymmetrizable
+
+lemma IsPosSymmetrizable.of_isEmpty [Semiring R] [LT R] [IsEmpty ι] :
+    M.IsPosSymmetrizable :=
+  ⟨1, isEmptyElim, isEmptyElim⟩
 
 lemma IsPosSymmetrizable.isSymmetrizable [Semiring R] [IsDomain R] [Preorder R]
     (h : M.IsPosSymmetrizable) : M.IsSymmetrizable := by
