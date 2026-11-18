@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.SurjectiveOnStalks
 
 We define `Ideal.ResidueField I` to be the residue field of the local ring `Localization.Prime I`,
 and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
-
 -/
 
 @[expose] public section

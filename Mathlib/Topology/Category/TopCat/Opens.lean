@@ -13,6 +13,9 @@ public import Mathlib.Topology.Sets.Opens
 import Mathlib.CategoryTheory.Limits.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of open sets in a topological space.
 
@@ -140,7 +143,7 @@ theorem coe_inclusion' {X : TopCat.{u}} {U : Opens X} :
     (inclusion' U : U → X) = Subtype.val := rfl
 
 theorem isOpenEmbedding {X : TopCat.{u}} (U : Opens X) : IsOpenEmbedding (inclusion' U) :=
-  U.2.isOpenEmbedding_subtypeVal
+  U.is_open'.isOpenEmbedding_subtypeVal
 
 /-- The inclusion of the top open subset (i.e. the whole space) is an isomorphism.
 -/
@@ -346,8 +349,8 @@ def IsOpenMap.functorMap {X Y : TopCat.{u}} {f : X ⟶ Y} {U V : Opens X}
 -/
 @[simps obj_coe]
 def IsOpenMap.functor {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
-  obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
-  map {U V} h := IsOpenMap.functorMap (hf _ U.2) (hf _ V.2) h.down.down
+  obj U := ⟨f '' (U : Set X), hf (U : Set X) U.is_open'⟩
+  map {U V} h := IsOpenMap.functorMap (hf _ U.is_open') (hf _ V.is_open') h.down.down
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/
@@ -417,7 +420,7 @@ lemma le_functorObj_iff {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsInducing f) {U 
   constructor
   · exact fun i x hx ↦ (hf.mem_functorObj_iff ((Opens.map f).obj ⟨t, ht⟩)).mp (i hx)
   · intro h x hx
-    refine Opens.mem_sSup.mpr ⟨⟨_, V.2.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
+    refine Opens.mem_sSup.mpr ⟨⟨_, V.is_open'.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
     dsimp
     rwa [Set.union_eq_right]
 
@@ -502,7 +505,6 @@ theorem map_functor_eq {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     ((Opens.map U.inclusion').obj <| U.isOpenEmbedding.functor.obj V) = V :=
   TopologicalSpace.Opens.map_functor_eq' _ U.isOpenEmbedding V
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     U.isOpenEmbedding.isOpenMap.adjunction.counit.app (U.isOpenEmbedding.functor.obj V) =

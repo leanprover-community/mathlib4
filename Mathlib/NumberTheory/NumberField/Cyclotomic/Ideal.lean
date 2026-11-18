@@ -38,14 +38,13 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 * `IsCyclotomicExtension.Rat.ramificationIdxIn_eq`: write `n = p ^ (k + 1) * m` where the prime `p`
   does not divide `m`, then the ramification index of `p` in `ℚ(ζₙ)` is `p ^ k * (p - 1)`.
-
 -/
 
 public section
 
 namespace IsCyclotomicExtension.Rat
 
-open Ideal NumberField RingOfIntegers
+open Ideal NumberField NumberField.RingOfIntegers
 
 variable (n m p k : ℕ) [hp : Fact (Nat.Prime p)] (K : Type*) [Field K] [NumberField K]
   (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver (span {(p : ℤ)})]
@@ -86,8 +85,7 @@ theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
 
 theorem p_mem_span_zeta_sub_one : (p : 𝓞 K) ∈ span {hζ.toInteger - 1} := by
-  convert absNorm_mem _
-  exact (absNorm_span_zeta_sub_one ..).symm
+  simpa [absNorm_span_zeta_sub_one p k hζ] using absNorm_mem (span {hζ.toInteger - 1})
 
 theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
   (Submodule.ne_bot_iff _).mpr ⟨p, p_mem_span_zeta_sub_one p k hζ, NeZero.natCast_ne p (𝓞 K)⟩

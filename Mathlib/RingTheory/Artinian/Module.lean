@@ -37,7 +37,7 @@ itself, or simply Artinian if it is both left and right Artinian.
   iff its Jacobson radical is zero.
 
 * `instIsSemiprimaryRingOfIsArtinianRing`: an Artinian ring `R` is semiprimary, in particular
-  the Jacobson radical of `R` is a nilpotent ideal (`IsArtinianRing.isNilpotent_jacobson_bot`).
+  the Jacobson radical of `R` is a nilpotent ideal (`IsArtinianRing.isNilpotent_jacobson`).
 
 ## References
 
@@ -47,7 +47,6 @@ itself, or simply Artinian if it is both left and right Artinian.
 ## Tags
 
 Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian module
-
 -/
 
 @[expose] public section
@@ -296,10 +295,9 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : Module.End R M) :
   simp_rw [← hn _ hm, Submodule.eq_top_iff', Submodule.mem_sup]
   intro x
   rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
-  · exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
-  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `mem_range` into `mem_range (f := _)`
-  simp_rw [f.pow_apply n, f.pow_apply m, ← iterate_add_apply, ← f.pow_apply (m + n),
-    ← f.pow_apply m, ← mem_range (f := _), ← hn _ (n.le_add_left m), hn _ hm]
+  · exact ⟨x - (f ^ n) y, by simp only [mem_ker, map_sub, hy, sub_self], (f ^ n) y, by simp⟩
+  simp_rw [pow_apply_eq_iterate, ← iterate_add_apply, ← pow_apply_eq_iterate, ← mem_range,
+    ← hn _ (n.le_add_left m), hn _ hm]
   exact LinearMap.mem_range_self (f ^ m) x
 
 /-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
@@ -447,14 +445,14 @@ theorem isUnit_iff_isRightRegular [IsArtinianRing R] {x : R} : IsUnit x ↔ IsRi
   exact IsArtinian.surjective_of_injective_endomorphism (.toSpanSingleton R R x)
 
 theorem isUnit_iff_isRegular [IsArtinianRing R] {x : R} : IsUnit x ↔ IsRegular x := by
-  rw [isRegular_iff, ← isUnit_iff_isRightRegular, and_iff_right_of_imp (·.isRegular.1)]
+  rw [isRegular_iff, ← isUnit_iff_isRightRegular, and_iff_right_of_imp (·.isRegular.left)]
 
 theorem isUnit_iff_isLeftRegular [IsArtinianRing Rᵐᵒᵖ] {x : R} : IsUnit x ↔ IsLeftRegular x := by
   rw [← isRightRegular_op, ← isUnit_op, isUnit_iff_isRightRegular]
 
 theorem isUnit_iff_isRegular_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {x : R} :
     IsUnit x ↔ IsRegular x := by
-  rw [isRegular_iff, ← isUnit_iff_isLeftRegular, and_iff_left_of_imp (·.isRegular.2)]
+  rw [isRegular_iff, ← isUnit_iff_isLeftRegular, and_iff_left_of_imp (·.isRegular.right)]
 
 end Semiring
 
@@ -570,7 +568,7 @@ lemma primeSpectrum_asIdeal_range_eq :
 variable (R)
 
 theorem nilradical_pow_eq_iInf (n : ℕ) :
-    nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.1 ^ n := by
+    nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.asIdeal ^ n := by
   have : Fintype (MaximalSpectrum R) := Fintype.ofFinite (MaximalSpectrum R)
   rw [← iInf_univ, ← Finset.coe_univ, PrimeSpectrum.nilradical_eq_iInf]
   simp only [Finset.mem_coe]

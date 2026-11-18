@@ -22,7 +22,6 @@ So far, I don't see a way to state nicely what we really want:
 The problem is that the limits API doesn't promise you any particular model of the cokernel,
 and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 (and hence making `cokernel.π f` arbitrarily large in norm), obtaining another categorical cokernel.
-
 -/
 
 @[expose] public section
@@ -40,7 +39,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   Cofork.ofπ
-    (@SemiNormedGrp₁.mkHom _ (Y ⧸ NormedAddGroupHom.range f.1) _ _
+    (@SemiNormedGrp₁.mkHom _ (Y ⧸ NormedAddGroupHom.range f.hom') _ _
       f.hom.1.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
     (by
       ext x
@@ -54,12 +53,12 @@ def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork 
     (cokernelCocone f).pt ⟶ s.pt := by
   fconstructor
   -- The lift itself:
-  · apply NormedAddGroupHom.lift _ s.π.1
+  · apply NormedAddGroupHom.lift _ s.π.hom'
     rintro _ ⟨b, rfl⟩
     change (f ≫ s.π) b = 0
     simp
   -- The lift has norm at most one:
-  exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.2
+  exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.normNoninc
 
 instance : HasCokernels SemiNormedGrp₁.{u} where
   has_colimit f :=
@@ -69,13 +68,13 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
           isColimitAux _ (cokernelLift f)
             (fun s => by
               ext
-              apply NormedAddGroupHom.lift_mk f.1.range
+              apply NormedAddGroupHom.lift_mk f.hom'.range
               rintro _ ⟨b, rfl⟩
               change (f ≫ s.π) b = 0
               simp)
             fun _ _ w =>
             SemiNormedGrp₁.hom_ext <| Subtype.ext
-              (NormedAddGroupHom.lift_unique f.1.range _ _ _ congr($(w).hom.val)) }
+              (NormedAddGroupHom.lift_unique f.hom'.range _ _ _ congr($(w).hom.val)) }
 
 -- Sanity check
 example : HasCokernels SemiNormedGrp₁ := by infer_instance
@@ -91,7 +90,7 @@ section EqualizersAndKernels
 noncomputable instance {V W : SemiNormedGrp.{u}} : Norm (V ⟶ W) where
   norm f := norm f.hom
 noncomputable instance {V W : SemiNormedGrp.{u}} : NNNorm (V ⟶ W) where
-  nnnorm f := nnnorm f.hom
+  nnNorm f := nnNorm f.hom
 
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
 noncomputable def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=
@@ -212,7 +211,6 @@ theorem explicitCokernelπ_desc_apply {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} 
   show (explicitCokernelπ f ≫ explicitCokernelDesc cond) x = g x by rw [explicitCokernelπ_desc]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 theorem explicitCokernelDesc_unique {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
     (w : f ≫ g = 0) (e : explicitCokernel f ⟶ Z) (he : explicitCokernelπ f ≫ e = g) :
     e = explicitCokernelDesc w := by

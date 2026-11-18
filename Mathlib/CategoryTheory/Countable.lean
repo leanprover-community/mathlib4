@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.FinCategory.Basic
 # Countable categories
 
 A category is countable in this sense if it has countably many objects and countably many morphisms.
-
 -/
 
 @[expose] public section

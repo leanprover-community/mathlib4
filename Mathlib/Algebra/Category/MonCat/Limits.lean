@@ -17,7 +17,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
-
 -/
 
 @[expose] public section
@@ -148,7 +147,6 @@ noncomputable instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
 noncomputable instance forget_preservesLimits : PreservesLimits (forget MonCat.{u}) :=
   MonCat.forget_preservesLimitsOfSize.{u, u}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance forget_createsLimit :
@@ -175,8 +173,7 @@ noncomputable instance forget_createsLimit :
       { toFun := (Types.Small.limitConeIsLimit.{v, u} _).lift ((forget MonCat).mapCone _),
         map_one' := by simp; rfl, map_mul' := ?_ }
     intro x y
-    simp only [Types.Small.limitCone_pt, Functor.comp_obj, Functor.mapCone_pt,
-      Types.Small.limitConeIsLimit_lift, Functor.const_obj_obj, Functor.mapCone_π_app,
+    simp only [Functor.comp_obj, Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app,
       ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, map_mul]
     rw [← equivShrink_mul]
     rfl
@@ -333,19 +330,19 @@ noncomputable instance forget_createsLimit :
   exact createsLimitOfNatIso e.symm
 
 @[to_additive]
-noncomputable instance forget_createsLimitsOfShape :
-    CreatesLimitsOfShape J (forget MonCat.{u}) where
+noncomputable instance forget_createsLimitsOfShape [UnivLE.{v, u}] :
+    CreatesLimitsOfShape J (forget CommMonCat.{u}) where
   CreatesLimit := inferInstance
 
 /-- The forgetful functor from commutative monoids to types preserves all limits. -/
 @[to_additive
 /-- The forgetful functor from commutative additive monoids to types preserves all limits. -/]
-noncomputable instance forget_createsLimitsOfSize :
-    CreatesLimitsOfSize.{w, v} (forget MonCat.{u}) where
+noncomputable instance forget_createsLimitsOfSize [UnivLE.{v, u}] :
+    CreatesLimitsOfSize.{w, v} (forget CommMonCat.{u}) where
   CreatesLimitsOfShape := inferInstance
 
 @[to_additive]
-noncomputable instance forget_createsLimits : CreatesLimits (forget MonCat.{u}) :=
+noncomputable instance forget_createsLimits : CreatesLimits (forget CommMonCat.{u}) :=
   CommMonCat.forget_createsLimitsOfSize.{u, u}
 
 end CommMonCat

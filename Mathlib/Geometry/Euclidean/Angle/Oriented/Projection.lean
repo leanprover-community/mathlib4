@@ -12,7 +12,6 @@ public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 # Oriented angles and orthogonal projection.
 
 This file proves lemmas relating to oriented angles involving orthogonal projections.
-
 -/
 
 public section
