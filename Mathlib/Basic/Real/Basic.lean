@@ -545,10 +545,18 @@ lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPow
   exact zero_le_one
 
 /-- A power-multiplicative additive group norm on a domain satisfies `f 1 = 1`. -/
-lemma IsPowMul.map_one_eq_one {R F : Type*} [Ring R] [IsDomain R]
+protected lemma IsPowMul.map_one {R F : Type*} [Ring R] [IsDomain R]
     [FunLike F R ℝ] [AddGroupNormClass F R ℝ] {f : F} (hf : IsPowMul f) :
     f 1 = 1 := by
   simpa [map_ne_zero_iff_ne_zero, sq] using hf 1 one_le_two
+
+/-- A power-multiplicative additive group norm on a domain satisfies `f (a ^ n) = (f a) ^ n`. -/
+protected lemma IsPowMul.map_pow {R F : Type*} [Ring R] [IsDomain R]
+    [FunLike F R ℝ] [AddGroupNormClass F R ℝ] {f : F} (hf : IsPowMul f) (a : R) (n : ℕ) :
+    f (a ^ n) = f a ^ n := by
+  by_cases! hn : n = 0
+  · simpa [hn] using hf.map_one
+  · exact hf a hn.pos
 
 /-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
   `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,

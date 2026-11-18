@@ -72,7 +72,7 @@ public theorem MulAlgebraNorm.unique [CompleteSpace K] (f g : MulAlgebraNorm K L
 public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L) (hf : IsPowMul f) :
     MulAlgebraNorm K L where
   __ := f
-  map_one' := hf.map_one_eq_one
+  map_one' := hf.map_one
   map_mul' x y := by
     by_cases hx : f x = 0
     · simp [eq_zero_of_map_eq_zero f hx]
