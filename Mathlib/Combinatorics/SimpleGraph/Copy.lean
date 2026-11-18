@@ -528,9 +528,7 @@ lemma copyCount_eq_natCard (G : SimpleGraph V) (H : SimpleGraph W) :
     G.copyCount H = Nat.card (Copy H G) := by rw [copyCount]
 
 @[simp] lemma copyCount_of_isEmpty [IsEmpty W] (G : SimpleGraph V) (H : SimpleGraph W) :
-    G.copyCount H = 1 := by
-  have : Nonempty (Copy H G) := IsContained.of_isEmpty
-  exact Nat.card_unique
+    G.copyCount H = 1 := by simp [copyCount]
 
 @[deprecated (since := "2026-11-17")]
 alias labelledCopyCount_of_isEmpty := copyCount_of_isEmpty
