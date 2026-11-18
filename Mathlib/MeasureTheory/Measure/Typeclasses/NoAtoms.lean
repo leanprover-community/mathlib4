@@ -151,6 +151,12 @@ theorem exists_measurable_subset_lt₀ (hs : NullMeasurableSet s μ) (hμs : 0 <
   obtain ⟨t, htr, ht⟩ := exists_measurable_subset_lt hr hμs
   exact ⟨t, htr.trans hrs, ht⟩
 
+/-- The completion of a measure without atoms has no atoms. -/
+instance instCompletion : NoAtoms μ.completion :=
+  mk' fun _ hs hμs ↦ by
+    obtain ⟨t, hts, -, ht⟩ := exists_measurable_subset_lt₀ (μ := μ) hs hμs
+    exact ⟨t, hts, ht⟩
+
 theorem exists_measurable_between (hs : MeasurableSet s) (ht : NullMeasurableSet t μ)
     (hst : s ⊆ t) (hμst : μ s < μ t) :
     ∃ u, MeasurableSet u ∧ s ⊆ u ∧ u ⊆ t ∧ μ s < μ u ∧ μ u < μ t := by
@@ -165,14 +171,8 @@ theorem exists_measurable_between (hs : MeasurableSet s) (ht : NullMeasurableSet
 
 theorem exists_nullMeasurable_between (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hst : s ⊆ t) (hμst : μ s < μ t) :
-    ∃ u, NullMeasurableSet u μ ∧ s ⊆ u ∧ u ⊆ t ∧ μ s < μ u ∧ μ u < μ t := by
-  obtain ⟨r, hrs, hr, hrs'⟩ := hs.exists_measurable_subset_ae_eq
-  rw [← hrs'.measure_eq] at hμst ⊢
-  obtain ⟨u, hu, hru, hut, hru', hut'⟩ := exists_measurable_between hr ht (hrs.trans hst) hμst
-  have : μ (u ∪ s) = μ u := by
-    rw [measure_congr (ae_eq_set_union Filter.EventuallyEqSet.rfl hrs'.symm), union_eq_left.2 hru]
-  exact ⟨u ∪ s, hu.nullMeasurableSet.union hs, subset_union_right, union_subset hut hst,
-    this ▸ hru', this ▸ hut'⟩
+    ∃ u, NullMeasurableSet u μ ∧ s ⊆ u ∧ u ⊆ t ∧ μ s < μ u ∧ μ u < μ t :=
+  exists_measurable_between (μ := μ.completion) hs (MeasurableSet.nullMeasurableSet ht) hst hμst
 
 /-- A measure without atoms vanishes on singletons if singletons are null measurable. See also
 `instNullSingletonClass_of_sfinite`. -/
