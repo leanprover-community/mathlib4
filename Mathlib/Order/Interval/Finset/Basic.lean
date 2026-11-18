@@ -632,7 +632,7 @@ theorem insert_Ioi [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
   ext
   simp_rw [Finset.mem_insert, mem_Ici, mem_Ioi, le_iff_lt_or_eq, or_comm, eq_comm]
 
-@[deprecated (since := "2026-11-03")] alias Ioi_insert := insert_Ioi
+@[to_dual (attr := deprecated (since := "2026-11-03"))] alias Ioi_insert := insert_Ioi
 
 @[to_dual]
 theorem notMem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
