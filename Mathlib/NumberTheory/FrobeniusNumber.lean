@@ -193,7 +193,7 @@ instance : IsNoetherian ℕ ℕ where
     · exact Submodule.span_mono (by simp) (hn m le (setGcd_dvd_of_mem hm))
     · exact Submodule.subset_span (by simpa using .inr ⟨gt, hm⟩)
 
-theorem addSubmonoid_fg (s : AddSubmonoid ℕ) : s.FG := by
+theorem addSubmonoid_fg (s : AddSubmonoid ℕ) : IsAddFG s := by
   rw [← s.toNatSubmodule_toAddSubmonoid, ← Submodule.fg_iff_addSubmonoid_fg]
   apply IsNoetherian.noetherian
 
