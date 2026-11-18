@@ -141,24 +141,19 @@ instance [DiscreteTopology A] : CompactSpace (PontryaginDual A) :=
   inferInstanceAs (CompactSpace (A →ₜ* Circle))
 
 @[to_additive (attr := ext)]
-theorem ext {ψ φ : PontryaginDual A} (h : ∀ a, ψ a = φ a) : ψ = φ :=
-  DFunLike.ext _ _ h
+theorem ext {ψ φ : PontryaginDual A} (h : ∀ a, ψ a = φ a) : ψ = φ := DFunLike.ext _ _ h
 
 @[to_additive (attr := simp)]
-theorem one_apply (a : A) : (1 : PontryaginDual A) a = 1 :=
-  rfl
+theorem one_apply (a : A) : (1 : PontryaginDual A) a = 1 := rfl
 
 @[to_additive (attr := simp)]
-theorem mul_apply (ψ φ : PontryaginDual A) (a : A) : (ψ * φ) a = ψ a * φ a :=
-  rfl
+theorem mul_apply (ψ φ : PontryaginDual A) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
 
 @[to_additive (attr := simp)]
-theorem inv_apply (ψ : PontryaginDual A) (a : A) : ψ⁻¹ a = (ψ a)⁻¹ :=
-  rfl
+theorem inv_apply (ψ : PontryaginDual A) (a : A) : ψ⁻¹ a = (ψ a)⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-theorem div_apply (ψ φ : PontryaginDual A) (a : A) : (ψ / φ) a = ψ a / φ a :=
-  rfl
+theorem div_apply (ψ φ : PontryaginDual A) (a : A) : (ψ / φ) a = ψ a / φ a := rfl
 
 /-- A discrete monoid has compact Pontryagin dual. -/
 add_decl_doc instLocallyCompactSpacePontryaginDual
