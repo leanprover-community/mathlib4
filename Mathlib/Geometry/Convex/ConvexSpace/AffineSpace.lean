@@ -182,7 +182,7 @@ end Module
 linear combination in the model module. -/
 lemma sConvexComb_vsub (s : StdSimplex R P) (p : P) :
     s.sConvexComb -ᵥ p = s.weights.sum fun x r ↦ r • (x -ᵥ p) := by
-  let := Convexity.ConvexSpace.ofModule (R := R) (M := V)
+  let : ConvexSpace R V := .ofModule
   rw [(isAffineMap_vsub_const (V := V) p).map_sConvexComb, sConvexComb_map, iConvexComb_eq_sum]
 
 /-- `convexCombPair` in an affine space is the affine line map. -/
@@ -236,10 +236,10 @@ namespace Convexity
 variable {R V P : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup V]
   [Module R V] [AddTorsor V P] [ConvexSpace R P] [IsAffineConvexSpace R V P]
 
-attribute [local instance] ConvexSpace.ofModule in
 /-- An affine space modelled on a torsion-free module over linearly ordered scalars is a
 cancellative convex space. -/
 instance IsCancelConvexSpace.of_addTorsor [Module.IsTorsionFree R V] : IsCancelConvexSpace R P :=
+  let : ConvexSpace R V := .ofModule
   .of_injective (AddTorsor.isAffineMap_vsub_const (V := V) (Classical.arbitrary P))
     fun _ _ ↦ vsub_left_cancel
 
