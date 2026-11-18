@@ -19,13 +19,12 @@ This file contains a definition of the Hodge star on exterior powers.
    form and volume element.
  * `exteriorPower.hodgeStarOfOrientation`: the Hodge star associated to a bilinear form and a
    positive orientation.
+ * `exteriorPower.mul_exteriorPower_hodgeStar_hodgeStar`: the Hodge star preserves the bilinear
+   form on exterior powers up to a scalar, namely the self-pairing of the volume element.
 
 ## TODO
 
-* Prove
-  + `Δ * B.exteriorPower l (hodgeStar B hB vol hkl x) (hodgeStar B hB vol hkl y) =
-      B.exteriorPower k x y`
-  + `Δ • hodgeStar B hB vol hlk (hodgeStar B hB vol hkl x) = (-1 : R) ^ (k * l) • x`
+* Prove `Δ • hodgeStar B hB vol hlk (hodgeStar B hB vol hkl x) = (-1 : R) ^ (k * l) • x`
   where `Δ := B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1)`
 * Develop further theory in the common case that the determinant identity:
   `B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1) = 1`
@@ -54,6 +53,35 @@ public def hodgeStar :
 lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
     B.exteriorPower l (hodgeStar B hB vol hkl x) = wedgePairing vol hkl x := by
   simp
+
+/-- The Hodge star preserves the bilinear form on exterior powers, up to the scalar `Δ`, the
+self-pairing of the volume element. -/
+@[simp↓] public lemma mul_exteriorPower_hodgeStar_hodgeStar (x y : ⋀[R]^k M) :
+    let Δ := B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1)
+    Δ * B.exteriorPower l (hodgeStar B hB vol hkl x) (hodgeStar B hB vol hkl y) =
+      B.exteriorPower k x y := by
+  intro Δ
+  nontriviality R
+  let b := finBasis R M
+  let c := b.dualBasis.map (LinearEquiv.ofBijective B hB).symm
+  have hdual n := B.exteriorPower_apply_basis_exteriorPower n b c (by simp [c])
+  have hΔ : Δ * (vol b.topVector * vol c.topVector) = 1 := by
+    calc
+      _ = B.exteriorPower _ (vol c.topVector • vol.symm 1) (vol b.topVector • vol.symm 1) := by
+        simp [Δ, mul_assoc, mul_comm]
+      _ = B.exteriorPower _ c.topVector b.topVector := by simp [← map_smul]
+      _ = 1 := by
+        let s : Set.powersetCard (Fin (finrank R M)) (finrank R M) := ⟨Finset.univ, by simp⟩
+        simp only [← Basis.topVector_eq_exteriorPower _ s, hdual, Basis.dualBasis_apply_self,
+          ↓reduceIte]
+  rw [exteriorPower_hodgeStar_eq_wedgePairing]
+  suffices Δ • (wedgePairing vol hkl).compl₂ (hodgeStar B hB vol hkl).toLinearMap =
+      B.exteriorPower k from congr($this x y)
+  rw [wedgePairing_eq_apply_topVector_smul vol hkl c]
+  refine LinearMap.ext_basis (c.exteriorPower k) (b.exteriorPower k) fun I J ↦ ?_
+  simp +contextual [-Basis.coe_dualBasis, -coe_basis, Basis.groupSMul_apply,
+    wedgePairing_eq_apply_topVector_smul vol hkl b, ← hdual l, hdual k, Basis.dualBasis_apply_self,
+    smul_smul, hΔ]
 
 variable [LinearOrder R] [IsStrictOrderedRing R] [Module.Oriented R M (Fin (finrank R M))]
 

@@ -43,4 +43,11 @@ public lemma bijective_exteriorPower [Module.Free R M] [Module.Finite R M] (hB :
   · exact exteriorPower.map_injective (LinearEquiv.ofBijective _ hB).symm (by ext; simp)
   · exact exteriorPower.map_surjective hB.surjective
 
+/-- Bases in duality for `B` induce bases in duality for `B.exteriorPower n`. -/
+public lemma exteriorPower_apply_basis_exteriorPower {ι : Type*} [LinearOrder ι] [Finite ι]
+    (b c : Module.Basis ι R M) (hc : ∀ i, B (c i) = b.dualBasis i) (s : Set.powersetCard ι n) :
+    B.exteriorPower n (c.exteriorPower n s) = (b.exteriorPower n).dualBasis s := by
+  simpa [LinearMap.BilinForm.exteriorPower, Function.comp_def, hc] using
+    pairingDual_apply_dualBasis_exteriorPower n b s
+
 end LinearMap.BilinForm
