@@ -5,8 +5,8 @@ Authors: E. S. Markov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Proximinal
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.Normed.Module.Proximinal
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.RCLike.Basic
 
@@ -204,7 +204,8 @@ theorem comp_of_commute {V₁ V₂ : Submodule 𝕜 X}
     rw [h_idem, sub_self]
   have hu_zero := (h_ker_sub hu_ker).2 (w - s₀_op x) (V₀.sub_mem hw (h_range x))
   rw [sub_zero] at hu_zero
-  have h_shift : x - w = (x - s₀_op x) - (w - s₀_op x) := (sub_sub_sub_cancel_right x w (s₀_op x)).symm
+  have h_shift : x - w = (x - s₀_op x) - (w - s₀_op x) :=
+    (sub_sub_sub_cancel_right x w (s₀_op x)).symm
   rw [h_shift]
   exact hu_zero
 
