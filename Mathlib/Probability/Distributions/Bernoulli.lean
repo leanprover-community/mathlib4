@@ -140,9 +140,18 @@ lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
   simp_all [bernoulliMeasure_real_apply]
 
 @[simp]
+lemma bernoulliMeasure_apply_singleton_left [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
+    Ber(x, y, p) {x} = toNNReal p :=
+  bernoulliMeasure_apply_of_mem_of_notMem p (by simp) (by simp) (by grind)
+
+@[simp]
 lemma bernoulliMeasure_real_apply_singleton_left [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
     Ber(x, y, p).real {x} = p :=
   bernoulliMeasure_real_apply_of_mem_of_notMem p (by simp) (by simp) (by grind)
+
+lemma bernoulliMeasure_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
+    Ber(x, y, p) {y} = toNNReal (σ p) := by
+  simp [h]
 
 lemma bernoulliMeasure_real_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
     Ber(x, y, p).real {y} = 1 - p := by
