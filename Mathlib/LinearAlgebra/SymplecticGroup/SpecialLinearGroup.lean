@@ -24,8 +24,8 @@ gives an equivalence with $\operatorname{SL}_2(R)$, whose matrices are indexed b
 
 ## Main results
 
-* `Matrix.det_unique_sum_unique`: the determinant formula for matrices indexed by
-  `ι ⊕ m`, where `ι` and `m` are singleton types.
+* `Matrix.det_subsingleton_sum_subsingleton`: the determinant formula for matrices indexed by
+  `ι ⊕ m`, given an index in each of the two subsingleton types.
 * `SymplecticGroup.mem_subsingleton_iff_det_eq_one`: a matrix indexed by `ι ⊕ ι`,
   where `ι` has a maximum of one element, is symplectic if and only if its determinant is one.
 * `SymplecticGroup.subsingletonEquivSpecialLinear`: for a subsingleton `m`, the symplectic
@@ -51,13 +51,14 @@ theorem mem_subsingleton_iff_det_eq_one
   all_goals
     have hji : j = i := Subsingleton.elim _ _
     subst j
-    let : Unique ι := uniqueOfSubsingleton i
-    simp [Matrix.mul_apply, Matrix.transpose_apply, mul_comm]
-  · rw [Matrix.det_unique_sum_unique M] at hdet
-    have hd : (default : ι) = i := Subsingleton.elim _ _
-    simpa [Matrix.mul_apply, Matrix.transpose_apply, Fintype.sum_unique,
+  · simp [Matrix.mul_apply, Matrix.transpose_apply, mul_comm]
+  · simp [Matrix.mul_apply, Matrix.transpose_apply, mul_comm]
+  · rw [Matrix.det_subsingleton_sum_subsingleton M i i] at hdet
+    have hsum (f : ι → R) : Finset.univ.sum f = f i :=
+      Fintype.sum_subsingleton f i
+    simpa [Matrix.mul_apply, Matrix.transpose_apply, hsum,
       Matrix.toBlocks₁₁, Matrix.toBlocks₁₂, Matrix.toBlocks₂₁, Matrix.toBlocks₂₂,
-      Matrix.sub_apply, Matrix.one_apply, hd, mul_comm] using hdet
+      Matrix.sub_apply, Matrix.one_apply, mul_comm] using hdet
 
 /-- If `m` is a subsingleton, the symplectic group is equivalent to the special linear group
 on `m ⊕ m`. The underlying matrix is unchanged. -/
