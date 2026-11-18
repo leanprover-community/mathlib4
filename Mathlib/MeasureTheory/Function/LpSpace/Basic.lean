@@ -174,6 +174,9 @@ theorem mem_Lp_iff_eLpNorm_lt_top_of_ne_zero {f : α →ₘ[μ] E} (hp : p ≠ 0
     f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := by
   rw [mem_Lp_iff_memLp, memLp_iff_eLpNorm_of_ne_zero hp]
 
+@[deprecated (since := "2026-11-18")]
+alias mem_Lp_iff_eLpNorm_lt_top := mem_Lp_iff_eLpNorm_lt_top_of_ne_zero
+
 theorem mem_Lp_iff_eLpNorm_lt_top_of_pos {f : α →ₘ[μ] E} (hp : 0 < p) :
     f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := by
   rw [mem_Lp_iff_memLp, memLp_iff_eLpNorm_of_pos hp]
