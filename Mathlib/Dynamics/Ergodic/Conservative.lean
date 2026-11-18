@@ -65,7 +65,7 @@ def IsRecurrent (f : α → α) (μ : Measure α) (s : Set α) :=
 
 theorem isRecurrent_def :
     s.IsRecurrent f μ ↔ ∀ᵐ (x : α) ∂μ, x ∈ s → ∃ n ≠ 0, f^[n] x ∈ s := by
-  simp [IsRecurrent, EventuallySubset, EventuallyLE]
+  simp [IsRecurrent, EventuallySubset]
 
 theorem isRecurrent_iff_ae_iUnion :
     s.IsRecurrent f μ ↔ sᶜ ∪ ⋃ n ≠ 0, f^[n] ⁻¹' s =ᵐ[μ] univ := by
@@ -128,7 +128,7 @@ theorem isRecurrent_of_ae (hf : QuasiMeasurePreserving f μ μ) (hs : s ∈ ae �
 
 theorem IsRecurrent.preimage (n : ℕ) (hf : QuasiMeasurePreserving f μ μ)
     (hs : s.IsRecurrent f μ) : (f^[n] ⁻¹' s).IsRecurrent f μ := by
-  refine ((hf.iterate n).preimage_mono_ae hs).congr ae_eq_rfl (Eq.eventuallyEqSet ?_)
+  refine ((hf.iterate n).preimage_mono_ae hs).congr EventuallyEqSet.rfl (Eq.eventuallyEqSet ?_)
   rw [preimage_iUnion₂]
   refine iUnion₂_congr fun m _ ↦ ?_
   rw [← preimage_comp, ← iterate_add, add_comm, iterate_add, preimage_comp]
@@ -136,8 +136,7 @@ theorem IsRecurrent.preimage (n : ℕ) (hf : QuasiMeasurePreserving f μ μ)
 theorem isRecurrent_iff_isReccurent_iUnion_preimage (s : Set α)
     (hf : QuasiMeasurePreserving f μ μ) :
     s.IsRecurrent f μ ↔ (⋃ n, f^[n] ⁻¹' s).IsRecurrent f μ := by
-  constructor <;> intro hs
-  · exact isRecurrent_iUnion fun n ↦ hs.preimage n hf
+  refine ⟨fun hs ↦ isRecurrent_iUnion fun n ↦ hs.preimage n hf, fun hs ↦ ?_⟩
   rw [isRecurrent_def] at hs ⊢
   filter_upwards [hs] with x hx hxs; clear hf hs
   simp only [mem_iUnion, mem_preimage, forall_exists_index] at hx
@@ -207,7 +206,7 @@ theorem isRecurrent_iff_ae_sub_limsup_preimage (s : Set α) (hf : QuasiMeasurePr
       at hx ⊢
     grind [hx 1]
   constructor <;> intro h
-  · apply EventuallySubset.antisymm _ (hl.trans (.of_subset (iUnion₂_subset_iUnion _ _)))
+  · refine EventuallySubset.antisymm ?_ (hl.trans (.of_subset (iUnion₂_subset_iUnion _ _)))
     refine .countable_iUnion' fun n ↦ ?_
     rw [← preimage_limsup_preimage (n := n)]
     apply (hf.iterate n).preimage_mono_ae
@@ -215,8 +214,10 @@ theorem isRecurrent_iff_ae_sub_limsup_preimage (s : Set α) (hf : QuasiMeasurePr
     simp only [limsup_eq_iInf_iSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter, mem_iInter,
       mem_iUnion, exists_prop]
     exact frequently_atTop.1 (hx hxs)
-  · apply EventuallySubset.trans _ (h.trans_le hl)
+  · rw [IsRecurrent]
+    refine (EventuallySubset.congr ?_ .rfl h).trans hl
     exact .of_subset (subset_iUnion_of_subset 0 (by simp))
+
 
 theorem _root_.MeasureTheory.MeasurePreserving.isRecurrent [IsFiniteMeasure μ]
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) : s.IsRecurrent f μ :=
@@ -242,17 +243,20 @@ structure Conservative (f : α → α) (μ : Measure α) : Prop extends QuasiMea
 theorem conservative_iff_exists_mem_iterate_mem (hf : QuasiMeasurePreserving f μ μ) :
     Conservative f μ ↔ ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
   refine ⟨fun h s s_m s₀ ↦ (h.isRecurrent s_m).exists_mem_iterate_mem s₀, fun h ↦ ?_⟩
-  refine ⟨hf, fun s hs ↦ ae_le_set.2 ?_⟩
+  refine ⟨hf, fun s hs ↦ ae_subset.2 ?_⟩
   suffices ht : μ (s ∩ ⋂ n ≠ 0, f^[n] ⁻¹' sᶜ) = 0 by
     rw [← ht]; congr; ext x
     simp only [Set.mem_sdiff, mem_iUnion, not_exists, preimage_compl, mem_inter_iff, mem_iInter,
       mem_compl_iff]
-  by_contra t₀
-  have tm : MeasurableSet (s ∩ ⋂ n ≠ 0, f^[n] ⁻¹' sᶜ) := by
-    refine MeasurableSet.inter hs (MeasurableSet.iInter fun n ↦ ?_)
-    exact MeasurableSet.iInter fun _ ↦ ((hf.iterate n).measurable hs).compl
-  obtain ⟨x, xt, n, n₀, xn⟩ := h tm t₀
-  exact notMem_of_mem_compl (mem_iInter₂.1 xt.2 n n₀) xn.1
+  by_contra hμs
+  have hsm : NullMeasurableSet (s ∩ ⋂ n ≠ 0, f^[n] ⁻¹' sᶜ) μ := by
+    refine hs.nullMeasurableSet.inter (.iInter fun n ↦ ?_)
+    exact .iInter fun _ ↦ hs.nullMeasurableSet.compl.preimage (hf.iterate n)
+  obtain ⟨t, hst, htm, hμst⟩ := hsm.exists_measurable_subset_ae_eq
+  rw [← hμst.measure_eq] at hμs
+  obtain ⟨x, hxt, n, hn₀, hxn⟩ := h htm hμs
+  refine notMem_of_mem_compl ?_ hxn
+  exact compl_subset_compl_of_subset (hst.trans inter_subset_left) (mem_iInter₂.1 (hst hxt).2 n hn₀)
 
 /-- A self-map preserving a finite measure is conservative. -/
 protected theorem MeasurePreserving.conservative [IsFiniteMeasure μ] (h : MeasurePreserving f μ μ) :
@@ -327,7 +331,7 @@ of points `x ∈ s` such that `x` does not return to `s` after `≥ n` iteration
 theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ ({ x ∈ s | ∀ m ≥ n, f^[m] x ∉ s }) = 0 := by
-  apply measure_mono_null _ (ae_iff.1 (hf.ae_mem_imp_frequently_image_mem hs))
+  refine measure_mono_null ?_ (ae_iff.1 (hf.ae_mem_imp_frequently_image_mem hs))
   simp only [Classical.not_imp, not_frequently, eventually_atTop, ofPred_subset_ofPred, and_imp]
   exact fun x xs hx ↦ ⟨xs, n, fun m mn ↦ hx m mn⟩
 
