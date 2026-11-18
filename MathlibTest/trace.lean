@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Trace
+module
+
+public meta import Mathlib.Tactic.Trace
 
 set_option linter.unusedTactic false
 

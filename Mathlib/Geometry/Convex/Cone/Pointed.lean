@@ -18,7 +18,6 @@ A *pointed cone* is defined to be a submodule of a module where the scalars are 
 nonnegative. This is equivalent to saying that, as a set, a pointed cone is a convex cone which
 contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the submodule definition
 as it allows us to use the `Module` API to work with convex cones.
-
 -/
 
 @[expose] public section
@@ -124,7 +123,7 @@ theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointe
 
 lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.convex
 
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), membership .]
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
 
@@ -234,7 +233,6 @@ variable [AddCommMonoid F] [Module R F]
 variable [AddCommMonoid G] [Module R G]
 
 /-!
-
 ## Maps between pointed cones
 
 There is already a definition of maps between submodules, `Submodule.map`. In our case, these maps
@@ -242,7 +240,6 @@ are induced from linear maps between the ambient modules that are linear over no
 Such maps are unlikely to be of any use in practice. So, we construct some API to define maps
 between pointed cones induced from linear maps between the ambient modules that are linear over
 *all* scalars.
-
 -/
 
 /-- The image of a pointed cone under an `R`-linear map is a pointed cone. -/

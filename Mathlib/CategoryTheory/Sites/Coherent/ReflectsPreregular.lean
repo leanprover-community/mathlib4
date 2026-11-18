@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
-/-!
 
+/-!
 # Reflecting the property of being preregular
 
 We prove that given a fully faithful functor `F : C ⥤ D`, with `Preregular D`, such that for every

@@ -5,6 +5,18 @@ set -euxo pipefail
 lake clean
 rm -f .lake/packages/batteries/.lake/build/bin/runLinter
 
+# Mirror the real Lean toolchain in the fake root, except for our `bin/lean` wrapper.
+# Lake derives the include dir, libraries, C compiler etc. from the sysroot
+# reported by `lean --print-prefix`, which the wrapper sets to the fake root.
+REAL_PREFIX="$(lean --print-prefix)"
+FAKE_ROOT="$BENCH_DIR/build/fake-root"
+for entry in "$REAL_PREFIX"/*; do
+  [[ "$(basename "$entry")" == bin ]] || ln -sfn "$entry" "$FAKE_ROOT/"
+done
+for entry in "$REAL_PREFIX"/bin/*; do
+  [[ "$(basename "$entry")" == lean ]] || ln -sfn "$entry" "$FAKE_ROOT/bin/"
+done
+
 # Run build
 LAKE_OVERRIDE_LEAN=true \
   LEAN="$BENCH_DIR/build/fake-root/bin/lean" \

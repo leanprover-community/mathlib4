@@ -207,6 +207,18 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
     | ofNat => simp [mul_smul, Nat.cast_smul_eq_nsmul]
     | negSucc => simp [mul_smul, add_smul, Nat.cast_smul_eq_nsmul]
 
+variable (R M) in
+/-- Only a ring of characteristic zero can have a non-trivial module without additive or
+scalar torsion. -/
+lemma CharZero.of_hasUniqueDiv [Semiring R] [AddCancelCommMonoid M] [Module R M]
+    [Nontrivial M] [HasUniqueDiv M] : CharZero R := by
+  refine ⟨fun {n m h} ↦ ?_⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : M)
+  replace h : n • x = m • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
+  exact IsAddTorsionFree.nsmul_left_injective hx h
+
+@[deprecated (since := "2026-09-29")] alias CharZero.of_isAddTorsionFree := CharZero.of_hasUniqueDiv
+
 variable (M) in
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
 zero as well. Usually `M` is an `R`-algebra. -/

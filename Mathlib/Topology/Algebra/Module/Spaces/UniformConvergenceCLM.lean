@@ -403,7 +403,7 @@ variable {𝔖₁ 𝔖₂ : Set (Set E)}
 theorem uniformSpace_mono [UniformSpace F] [IsUniformAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
     instUniformSpace σ F 𝔖₁ ≤ instUniformSpace σ F 𝔖₂ := by
   simp_rw [uniformSpace_eq]
-  exact UniformSpace.comap_mono (UniformOnFun.mono (le_refl _) h)
+  exact UniformSpace.comap_monotone (UniformOnFun.mono (le_refl _) h)
 
 theorem topologicalSpace_mono [TopologicalSpace F] [IsTopologicalAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
     instTopologicalSpace σ F 𝔖₁ ≤ instTopologicalSpace σ F 𝔖₂ := by

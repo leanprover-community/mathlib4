@@ -9,6 +9,9 @@ public import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 public import Mathlib.Geometry.RingedSpace.Stalks
 public import Mathlib.Topology.Sheaves.Functors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheafed spaces
 
@@ -48,9 +51,10 @@ namespace SheafedSpace
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 
 instance coeSort : CoeSort (SheafedSpace C) Type* where
-  coe X := X.1
+  coe X := X.toPresheafedSpace
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
+@[implicit_reducible]
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 
@@ -211,7 +215,7 @@ noncomputable instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOf
   ⟨fun {K} =>
     createsColimitOfFullyFaithfulOfIso
       ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
-        limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
+        limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).IsSheaf⟩
       (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩
 
 noncomputable instance [HasLimits C] :

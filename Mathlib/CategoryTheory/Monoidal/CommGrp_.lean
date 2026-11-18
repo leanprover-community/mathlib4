@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Grp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of commutative groups in a Cartesian monoidal category
 -/
@@ -271,7 +274,7 @@ attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
 /-- `mapCommGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp C ⥤ CommGrp D where
-  obj F := F.1.mapCommGrp
+  obj F := F.obj.mapCommGrp
   map α := mapCommGrpNatTrans α.hom
 
 end Functor

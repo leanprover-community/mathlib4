@@ -34,7 +34,6 @@ This file defines partial isomorphisms between first-order structures.
   them can be extended to an isomorphism `M ≃[L] N`.
 - The proofs of these results are adapted in part from David Wärn's approach to countable dense
   linear orders, a special case of this phenomenon in the case where `L = Language.order`.
-
 -/
 
 @[expose] public section

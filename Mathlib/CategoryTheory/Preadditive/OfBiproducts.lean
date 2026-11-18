@@ -7,12 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.GroupTheory.EckmannHilton
+
 /-!
 # Constructing a semiadditive structure from binary biproducts
 
 We show that any category with zero morphisms and binary biproducts is enriched over the category
 of commutative monoids.
-
 -/
 
 @[expose] public section

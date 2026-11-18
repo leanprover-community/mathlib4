@@ -49,7 +49,7 @@ private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : �
     exact ⟨ne_of_gt ε_pos, by simp⟩
   have := hC.closure_nhds_inter x xC this Metric.isOpen_eball
   refine ⟨this.1, this.2, ?_, ?_⟩
-  · rw [IsClosed.closure_subset_iff hC.closed]
+  · rw [IsClosed.closure_subset_iff hC.isClosed]
     apply inter_subset_right
   rw [Metric.ediam_closure]
   apply le_trans (Metric.ediam_mono inter_subset_left)
@@ -95,7 +95,7 @@ theorem Perfect.exists_nat_bool_injection
       exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
   let D : List Bool → Set α := fun l => (DP l).val
   have hanti : ClosureAntitone D := by
-    refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.closed
+    refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.isClosed
     intro l a
     cases a
     · exact (h0 _ _ _).2.2.1

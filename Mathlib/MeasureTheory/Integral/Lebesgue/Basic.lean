@@ -45,8 +45,10 @@ open SimpleFunc
 variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 /-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
-noncomputable irreducible_def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
+@[no_expose] noncomputable def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
   ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
+
+alias lintegral_def := lintegral.eq_def
 
 /-! In the notation for integrals, an expression like `∫⁻ x, g ‖x‖ ∂μ` will not be parsed correctly,
   and needs parentheses. We do not set the binding power of `r` to `0`, because then
@@ -191,7 +193,7 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
   have : (map (↑) φ).lintegral μ ≠ ∞ := ne_top_of_le_ne_top h (by grw [← le_iSup₂ φ hle])
   rw [← ENNReal.add_lt_add_iff_left this, ← add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
   refine (hb _ fun x => le_trans ?_ (max_le (hle x) (hψ x))).trans_lt hbφ
-  simp only [SimpleFunc.add_apply, SimpleFunc.sub_apply, add_tsub_eq_max]
+  simp only [add_apply, sub_apply, add_tsub_eq_max]
   rfl
 
 theorem iSup_lintegral_le {ι : Sort*} (f : ι → α → ℝ≥0∞) :
@@ -387,8 +389,8 @@ theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : �
         (map (↑) φ).lintegral (μ.restrict s) + (map (↑) (ψ - φ)).lintegral (μ.restrict s) := by
       rw [← SimpleFunc.add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
       refine SimpleFunc.lintegral_mono (fun x => ?_) le_rfl
-      simp only [add_tsub_eq_max, le_max_right, coe_map, Function.comp_apply, SimpleFunc.coe_add,
-        SimpleFunc.coe_sub, Pi.add_apply, Pi.sub_apply, ENNReal.coe_max (φ x) (ψ x)]
+      simp only [add_tsub_eq_max, le_max_right, coe_map, Function.comp_apply, FunLike.coe_add,
+        FunLike.coe_sub, Pi.add_apply, Pi.sub_apply, ENNReal.coe_max (φ x) (ψ x)]
     _ ≤ (map (↑) φ).lintegral (μ.restrict s) + ε₁ := by
       gcongr
       refine le_trans ?_ (hφ _ hψ).le
@@ -449,19 +451,16 @@ theorem lintegral_finsetSum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞)
       map_add' := lintegral_add_measure f }
   map_sum F μ s
 
-@[deprecated (since := "2026-04-08")]
-alias lintegral_finset_sum_measure := lintegral_finsetSum_measure
-
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum, ← lintegral_finsetSum_measure,
-    lintegral, SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum,
+  simp_rw [tsum_eq_iSup_sum, ← lintegral_finsetSum_measure,
+    lintegral, SimpleFunc.lintegral_sum, tsum_eq_iSup_sum,
     SimpleFunc.lintegral_finsetSum, iSup_comm (ι := Finset ι)]
 
 theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     HasSum (fun i => ∫⁻ a, f a ∂μ i) (∫⁻ a, f a ∂Measure.sum μ) :=
-  (lintegral_sum_measure f μ).symm ▸ ENNReal.summable.hasSum
+  (lintegral_sum_measure f μ).symm ▸ CompleteLattice.summable.hasSum
 
 @[simp]
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
@@ -613,7 +612,8 @@ theorem lintegral_biUnion {t : Set β} {s : β → Set α} (ht : t.Countable)
 theorem lintegral_biUnion_finset₀ {s : Finset β} {t : β → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on t)) (hm : ∀ b ∈ s, NullMeasurableSet (t b) μ)
     (f : α → ℝ≥0∞) : ∫⁻ a in ⋃ b ∈ s, t b, f a ∂μ = ∑ b ∈ s, ∫⁻ a in t b, f a ∂μ := by
-  simp only [← Finset.mem_coe, lintegral_biUnion₀ s.countable_toSet hm hd, ← Finset.tsum_subtype']
+  simp only [← Finset.mem_coe, lintegral_biUnion₀ s.countable_toSet hm hd,
+    ← (Finset.tsum_subtype')]
 
 theorem lintegral_biUnion_finset {s : Finset β} {t : β → Set α} (hd : Set.PairwiseDisjoint (↑s) t)
     (hm : ∀ b ∈ s, MeasurableSet (t b)) (f : α → ℝ≥0∞) :
@@ -668,7 +668,7 @@ theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
     ∫⁻ x in ⋃ i, s i, f x ∂μ = ⨆ i, ∫⁻ x in s i, f x ∂μ := by
-  simp only [lintegral_def, iSup_comm (ι := ι),
+  simp only [lintegral, iSup_comm (ι := ι),
     SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]
 
 theorem lintegral_max {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :

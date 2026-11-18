@@ -31,7 +31,6 @@ We also define predicates about affine schemes and affine open sets.
 * `AlgebraicGeometry.IsAffineOpen`: An open subset of a scheme is affine if the open subscheme is
   affine.
 * `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
-
 -/
 
 @[expose] public section
@@ -268,7 +267,7 @@ theorem isAffineOpen_top (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : X.Opens
   exact Set.range_id.symm
 
 theorem exists_isAffineOpen_mem_and_subset {X : Scheme.{u}} {x : X}
-    {U : X.Opens} (hxU : x ∈ U) : ∃ W : X.Opens, IsAffineOpen W ∧ x ∈ W ∧ W.1 ⊆ U := by
+    {U : X.Opens} (hxU : x ∈ U) : ∃ W : X.Opens, IsAffineOpen W ∧ x ∈ W ∧ W.carrier ⊆ U := by
   obtain ⟨R, f, hf⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset hxU
   exact ⟨Scheme.Hom.opensRange f (H := hf.1),
     ⟨AlgebraicGeometry.isAffineOpen_opensRange f (H := hf.1), hf.2.1, hf.2.2⟩⟩
@@ -507,7 +506,8 @@ lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
 include hU in
 protected theorem isCompact :
     IsCompact (U : Set X) := by
-  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1 (by fun_prop)
+  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.isCompact_univ
+    (by fun_prop)
   convert hU.range_fromSpec.symm
   exact Set.image_univ
 
@@ -719,7 +719,6 @@ lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
     ← CommRingCat.hom_comp, ← X.presheaf.map_comp]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `f.app (Y.basicOpen r)` is isomorphic to map induced on localizations
 `Γ(Y, Y.basicOpen r) ⟶ Γ(X, X.basicOpen (f.app U r))` -/
 def appBasicOpenIsoAwayMap {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
@@ -837,6 +836,18 @@ theorem isLocalization_stalk (x : U) :
   subst this
   exact hU.isLocalization_stalk' y hx
 
+/-- A section lies outside the prime ideal attached to a point of an affine open precisely when
+it does not vanish there, i.e. when the point lies in its basic open set. This is the
+chart-level form of `PrimeSpectrum.mem_basicOpen`. -/
+theorem mem_basicOpen_iff_notMem_primeIdealOf (x : U) (f : Γ(X, U)) :
+    (x : X) ∈ X.basicOpen f ↔ f ∉ (hU.primeIdealOf x).asIdeal := by
+  have := hU.isLocalization_stalk x
+  have h := IsLocalization.AtPrime.isUnit_to_map_iff
+    (X.presheaf.stalk (x : X)) (hU.primeIdealOf x).asIdeal f
+  rw [TopCat.Presheaf.stalk_open_algebraMap] at h
+  rw [X.mem_basicOpen' f x]
+  exact h
+
 lemma stalkMap_injective (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U) (x : X)
     (hx : f x ∈ U)
     (h : ∀ g, f.stalkMap x (Y.presheaf.germ U (f x) hx g) = 0 →
@@ -884,7 +895,7 @@ def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens)
       (hx : x ∈ V) :
     Arrow.mk (f.stalkMap x) ≅ Arrow.mk (CommRingCat.ofHom <|
       Localization.localRingHom _ _ (f.appLE U V hVU).hom
-        congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).1).symm) := by
+        congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).asIdeal).symm) := by
   let := Y.presheaf.algebra_section_stalk ⟨f x, hVU hx⟩
   have := hU.isLocalization_stalk ⟨f x, hVU hx⟩
   let := X.presheaf.algebra_section_stalk ⟨x, hx⟩
@@ -925,8 +936,8 @@ See `iSup_basicOpen_of_span_eq_top` for the inverse direction without the affine
 -/
 theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
     ⨆ f : s, X.basicOpen (f : Γ(X, U)) = U ↔ Ideal.span s = ⊤ := by
-  trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).1 = Set.univ
-  · trans hU.fromSpec ⁻¹' (⨆ f : s, X.basicOpen (f : Γ(X, U))).1 = hU.fromSpec ⁻¹' U.1
+  trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).carrier = Set.univ
+  · trans hU.fromSpec ⁻¹' (⨆ f : s, X.basicOpen (f : Γ(X, U))).carrier = hU.fromSpec ⁻¹' U.carrier
     · refine ⟨fun h => by rw [h], ?_⟩
       intro h
       apply_fun Set.image hU.fromSpec at h
@@ -973,7 +984,6 @@ def Scheme.AffineOpenCover.ofIsOpenCover {X : Scheme.{u}} {ι : Type*} (U : ι �
   covers x :=
     ⟨(hU' _).isoSpec.hom ⟨_, (hU.exists_mem x).choose_spec⟩, by simp [← Scheme.Hom.comp_apply]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the
@@ -1009,7 +1019,8 @@ lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
   · rw [iSup₂_le_iff]
     exact fun i _ ↦ X.basicOpen_le i
   · intro x hx
-    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open hx U.2
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+      X.isBasis_affineOpens.exists_subset_of_mem_open hx U.is_open'
     refine SetLike.mem_of_subset ?_ hxV
     rw [← (hV.iSup_basicOpen_eq_self_iff (s := X.presheaf.map (homOfLE hVU).op '' s)).mpr
       (by rw [← Ideal.map_span, hs, Ideal.map_top])]
@@ -1140,7 +1151,7 @@ lemma Opens.toSpecΓ_preimage_basicOpen {X : Scheme.{u}} (U : X.Opens) (r : Γ(X
 
 open Set.Notation in
 lemma Opens.toSpecΓ_preimage_zeroLocus {X : Scheme.{u}} (U : X.Opens) (s : Set Γ(X, U)) :
-    U.toSpecΓ ⁻¹' PrimeSpectrum.zeroLocus s = U.1 ↓∩ X.zeroLocus s := by
+    U.toSpecΓ ⁻¹' PrimeSpectrum.zeroLocus s = U.carrier ↓∩ X.zeroLocus s := by
   ext x
   refine .trans (forall₂_congr fun y hy ↦ ?_) Set.mem_iInter₂.symm
   exact iff_not_comm.mp congr(x ∈ $(Opens.toSpecΓ_preimage_basicOpen U y)).to_iff.symm
@@ -1166,8 +1177,8 @@ set_option backward.isDefEq.respectTransparency false in
 open Set.Notation in
 lemma Scheme.zeroLocus_inf (X : Scheme.{u}) {U : X.Opens} (I J : Ideal Γ(X, U)) :
     X.zeroLocus (U := U) ↑(I ⊓ J) = X.zeroLocus (U := U) I ∪ X.zeroLocus (U := U) J := by
-  suffices U.1 ↓∩ (X.zeroLocus (U := U) ↑(I ⊓ J)) =
-      U.1 ↓∩ (X.zeroLocus (U := U) I ∪ X.zeroLocus (U := U) J) by
+  suffices U.carrier ↓∩ (X.zeroLocus (U := U) ↑(I ⊓ J)) =
+      U.carrier ↓∩ (X.zeroLocus (U := U) I ∪ X.zeroLocus (U := U) J) by
     ext x
     by_cases hxU : x ∈ U
     · simpa [hxU] using congr(⟨x, hxU⟩ ∈ $this)

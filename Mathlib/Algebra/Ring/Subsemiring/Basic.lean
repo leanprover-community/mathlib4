@@ -251,6 +251,10 @@ instance : CompleteLattice (Subsemiring R) :=
 theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
+@[simp] theorem toSubmonoid_top : (⊤ : Subsemiring R).toSubmonoid = ⊤ := rfl
+
+@[simp] theorem toAddSubmonoid_top : (⊤ : Subsemiring R).toAddSubmonoid = ⊤ := rfl
+
 section NonAssocSemiring
 
 variable (R)
@@ -378,7 +382,7 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : Subsemirin
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
