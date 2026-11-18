@@ -592,11 +592,11 @@ theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = �
 theorem isCompl_fst_snd : IsCompl (Submodule.fst R M M₂) (Submodule.snd R M M₂) := by
   simpa [range_inl, range_inr] using! isCompl_range_inl_inr
 
-@[deprecated "Instead use `(isCompl_fst_snd _ _ _).sup_eq_top`" (since := "2026-08-18")]
+@[deprecated "Instead use `(isCompl_fst_snd _ _ _).sup_eq_top`" (since := "2026-11-18")]
 theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
   (isCompl_fst_snd R M M₂).sup_eq_top
 
-@[deprecated "Instead use `(isCompl_fst_snd _ _ _).inf_eq_bot`" (since := "2026-08-18")]
+@[deprecated "Instead use `(isCompl_fst_snd _ _ _).inf_eq_bot`" (since := "2026-11-18")]
 theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ :=
   (isCompl_fst_snd R M M₂).inf_eq_bot
 
