@@ -5,11 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Minimal
-public import Mathlib.Order.Zorn
-public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.DiscreteSubset
-public import Mathlib.Tactic.CrossRefAttribute
+
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -31,7 +28,6 @@ There are good reasons to consider the empty space to be “too simple to be sim
 See also https://ncatlab.org/nlab/show/too+simple+to+be+simple,
 and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
-
 -/
 
 @[expose] public section
@@ -220,8 +216,7 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
   refine ⟨f x, mem_image_of_mem f hxs, ?_, ?_⟩
   all_goals
     rw [← mem_preimage]
-    apply mem_of_mem_inter_left
-    show x ∈ _ ∩ s
+    apply mem_of_mem_inter_left (b := s)
     simp [*]
 
 @[stacks 0379]
@@ -245,8 +240,8 @@ lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s :
   refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
   exact continuous_subtype_val.continuousOn
 
-lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
-  exact ⟨.of_subtype, .of_subtype⟩
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s :=
+  ⟨.of_subtype, .of_subtype⟩
 
 theorem isPreirreducible_iff_preirreducibleSpace :
     IsPreirreducible s ↔ PreirreducibleSpace s :=

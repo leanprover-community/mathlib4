@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -223,8 +222,7 @@ theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure
 @[to_additive]
 theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
     (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
-  simp_rw [← notMem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
-    hasCompactMulSupport_def, exists_isCompact_superset_iff]
+  grind [hasCompactMulSupport_def, exists_isCompact_superset_iff]
 
 namespace HasCompactMulSupport
 
@@ -254,7 +252,7 @@ theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) := h
 @[to_additive]
 theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
     HasCompactMulSupport f ↔ f =ᶠ[coclosedCompact α] 1 :=
-  mem_coclosedCompact_iff.symm
+  (mem_coclosedCompact_iff (s := {x | f x = (1 : α → β) x})).symm
 
 @[to_additive]
 theorem _root_.isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]

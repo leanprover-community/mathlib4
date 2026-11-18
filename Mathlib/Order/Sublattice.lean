@@ -44,7 +44,7 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective L M h := by cases L; congr
 
-instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α) α
+instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (L : Sublattice α) : Set α := L
@@ -52,7 +52,8 @@ def Simps.coe (L : Sublattice α) : Set α := L
 initialize_simps_projections Sublattice (carrier → coe, as_prefix coe)
 
 /-- Turn a set closed under supremum and infimum into a sublattice. -/
-abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.1, hs.2⟩
+abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α :=
+  ⟨s, hs.supClosed, hs.infClosed⟩
 
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 

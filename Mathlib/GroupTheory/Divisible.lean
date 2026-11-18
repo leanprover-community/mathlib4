@@ -5,12 +5,13 @@ Authors: Jujian Zhang
 -/
 module
 
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Tactic.NormNum.Eq
-public import Mathlib.Algebra.Field.Defs
+
+import Mathlib.Tactic.NormNum.Eq
 
 /-!
 # Divisible Group and rootable group
@@ -114,12 +115,6 @@ class RootableBy where
 theorem RootableBy.surjective_pow [RootableBy A α] {n : α} (hn : n ≠ 0) :
     Function.Surjective fun a : A => a ^ n := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
-
-@[deprecated (since := "2026-04-19")] alias pow_left_surj_of_rootableBy :=
-  RootableBy.surjective_pow
-
-@[deprecated (since := "2026-04-19")] alias smul_right_surj_of_divisibleBy :=
-  DivisibleBy.surjective_smul
 
 /--
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version

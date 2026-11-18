@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.ZeroCons
-public import Aesop
 
 /-!
 # Empty and nonempty finite sets
@@ -21,7 +20,6 @@ This file defines the empty finite set ∅ and a predicate for nonempty `Finset`
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -101,7 +99,7 @@ instance inhabitedFinset : Inhabited (Finset α) :=
   ⟨∅⟩
 
 @[simp]
-theorem empty_val : (∅ : Finset α).1 = 0 :=
+theorem empty_val : (∅ : Finset α).val = 0 :=
   rfl
 
 @[simp, grind ←]
@@ -131,7 +129,7 @@ theorem eq_empty_of_forall_notMem {s : Finset α} (H : ∀ x, x ∉ s) : s = ∅
 theorem eq_empty_iff_forall_notMem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s := by grind
 
 @[simp]
-theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=
+theorem val_eq_zero {s : Finset α} : s.val = 0 ↔ s = ∅ :=
   @val_inj _ s ∅
 
 @[simp] lemma subset_empty : s ⊆ ∅ ↔ s = ∅ := subset_zero.trans val_eq_zero
@@ -157,7 +155,8 @@ theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
 theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by grind
+theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by
+  rw [← coe_empty, coe_inj]
 
 @[simp]
 theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := by

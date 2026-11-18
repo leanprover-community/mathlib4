@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Data.Multiset.Fold
-public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # The fold operation for a commutative associative operation over a finset.
@@ -36,7 +35,7 @@ local notation a " * " b => op a b
 /-- `fold op b f s` folds the commutative associative operation `op` over the
   `f`-image of `s`, i.e. `fold (+) b f {1,2,3} = f 1 + f 2 + f 3 + b`. -/
 def fold (b : β) (f : α → β) (s : Finset α) : β :=
-  (s.1.map f).fold op b
+  (s.val.map f).fold op b
 
 variable {op} {f : α → β} {b : β} {s : Finset α} {a : α}
 

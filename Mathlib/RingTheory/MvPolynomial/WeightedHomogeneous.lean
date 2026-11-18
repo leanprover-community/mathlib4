@@ -5,15 +5,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.DirectSum.Decomposition
-public import Mathlib.Algebra.GradedMonoid
-public import Mathlib.Algebra.MvPolynomial.Basic
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Data.Finsupp.Weight
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.RingTheory.MvPolynomial.Basic
-public import Mathlib.Tactic.Order
 
 /-!
 # Weighted homogeneous polynomials
@@ -551,7 +545,7 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
       ((DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x) = x m := by
   classical
   rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, map_sum]
-  convert! @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
+  convert @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
   · rw [IsWeightedHomogeneous.weightedHomogeneousComponent_same (x m).prop]
   · intro n _ hmn
     exact IsWeightedHomogeneous.weightedHomogeneousComponent_ne m (x n).prop hmn.symm
@@ -570,7 +564,7 @@ variable [AddCommMonoid M] [PartialOrder M]
 /-- If `M` is canonically ordered, then the `weightedHomogeneousComponent` of weighted degree `0`
 of a polynomial is its constant coefficient. -/
 @[simp]
-theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [IsAddTorsionFree M]
+theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [HasUniqueDiv M]
     (hw : ∀ i : σ, w i ≠ 0) :
     weightedHomogeneousComponent w 0 φ = C (φ.coeff 0) := by
   classical
@@ -590,7 +584,7 @@ def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
 omit [PartialOrder M] in
-theorem nonTorsionWeight_of [IsAddTorsionFree M] (hw : ∀ i : σ, w i ≠ 0) :
+theorem nonTorsionWeight_of [HasUniqueDiv M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
 
@@ -728,6 +722,15 @@ lemma weightedHomogeneousComponent_mem_of_mem [DecidableEq M] {I : Ideal (MvPoly
     (h : I.IsHomogeneous (weightedHomogeneousSubmodule R w)) {p : MvPolynomial σ R} (hp : p ∈ I)
     (m : M) : (weightedHomogeneousComponent w m p) ∈ I :=
   (mem_iff_weightedHomogeneousComponent_mem R w h p).mp hp m
+
+variable {R w} in
+lemma weightedHomogeneousComponent_mul_of_isWeightedHomogeneous_right [PartialOrder M]
+    [CanonicallyOrderedAdd M] [Sub M] [OrderedSub M] [AddLeftReflectLE M] {i n : M}
+    {f q : MvPolynomial σ R} (hq : q.IsWeightedHomogeneous w i) (hin : i ≤ n) :
+    weightedHomogeneousComponent w n (f * q) = weightedHomogeneousComponent w (n - i) f * q := by
+  classical
+  simp_rw [← weightedDecomposition.decompose'_apply]
+  exact DirectSum.coe_decompose_mul_of_right_mem_of_le _ hq hin
 
 end GradedAlgebra
 

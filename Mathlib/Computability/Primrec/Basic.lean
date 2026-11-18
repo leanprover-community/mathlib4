@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Basic.Denumerable
-public import Mathlib.Logic.Function.Iterate
 
 /-!
 # The primitive recursive functions
@@ -408,7 +407,7 @@ theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α
 
 protected lemma PrimrecPred.decide {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     Primrec (fun a => decide (p a)) := by
-  convert! hp.choose_spec
+  convert hp.choose_spec
 
 lemma Primrec.primrecPred {p : α → Prop} [DecidablePred p]
     (hp : Primrec (fun a => decide (p a))) : PrimrecPred p :=
@@ -719,7 +718,7 @@ theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
     have : q * k ≤ a ∧ a < (q + 1) * k ↔ q = a / k := by
       rw [le_antisymm_iff, ← (@Nat.lt_succ_iff _ q), Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero H),
           Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero H)]
-    simpa [H, zero_lt_iff, eq_comm (b := q)]
+    simpa [H, pos_iff_ne_zero, eq_comm (b := q)]
 
 theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
   (nat_sub.comp fst (nat_mul.comp snd nat_div)).to₂.of_eq fun m n => by

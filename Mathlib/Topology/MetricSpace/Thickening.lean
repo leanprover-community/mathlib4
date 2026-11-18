@@ -28,7 +28,6 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
   The same holds for open thickenings.
 * `IsCompact.cthickening_eq_biUnion_closedBall`: if `s` is compact, `cthickening δ s` is the union
   of `closedBall`s of radius `δ` around `x : E`.
-
 -/
 
 @[expose] public section
@@ -357,7 +356,7 @@ theorem ediam_thickening_le (ε : ℝ≥0) : ediam (thickening ε s) ≤ ediam s
 theorem diam_cthickening_le {α : Type*} [PseudoMetricSpace α] (s : Set α) (hε : 0 ≤ ε) :
     diam (cthickening ε s) ≤ diam s + 2 * ε := by
   lift ε to ℝ≥0 using hε
-  refine (toReal_le_add' (ediam_cthickening_le _) ?_ ?_).trans_eq ?_
+  refine (toReal_le_add_of_top_imp_top (ediam_cthickening_le _) ?_ ?_).trans_eq ?_
   · exact fun h ↦ top_unique <| h ▸ ediam_mono (self_subset_cthickening _)
   · simp [mul_eq_top]
   · simp [diam]
@@ -382,7 +381,7 @@ theorem cthickening_closure : cthickening δ (closure s) = cthickening δ s := b
 
 lemma thickening_eq_empty_iff_of_pos (hε : 0 < ε) :
     thickening ε s = ∅ ↔ s = ∅ :=
-  ⟨fun h ↦ subset_eq_empty (self_subset_thickening hε _) h, by simp +contextual⟩
+  ⟨by gcongr; apply self_subset_thickening hε, by simp +contextual⟩
 
 lemma thickening_nonempty_iff_of_pos (hε : 0 < ε) :
     (thickening ε s).Nonempty ↔ s.Nonempty := by
@@ -574,7 +573,7 @@ theorem cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α] [P
     isClosed_closure.exists_infDist_eq_dist (closure_nonempty_iff.mpr hne) x
   replace hy : dist x y ≤ δ :=
     (ENNReal.ofReal_le_ofReal_iff hδ).mp
-      (((congr_arg ENNReal.ofReal hy.symm).le.trans ENNReal.ofReal_toReal_le).trans hx)
+      ((congr(ENNReal.ofReal $hy.symm).le.trans ENNReal.ofReal_toReal_le).trans hx)
   exact mem_biUnion yE hy
 
 nonrec theorem _root_.IsClosed.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α]
@@ -704,7 +703,7 @@ theorem IsCompact.exists_thickening_image_subset
     refine ⟨min ε₁ ε₂, by positivity, V₁ ∪ V₂, union_mem_nhdsSet hV₁ hV₂, ?_⟩
     rw [image_union, thickening_union]
     calc thickening (ε₁ ⊓ ε₂) (f '' V₁) ∪ thickening (ε₁ ⊓ ε₂) (f '' V₂)
-      _ ⊆ thickening ε₁ (f '' V₁) ∪ thickening ε₂ (f '' V₂) := by gcongr <;> norm_num
+      _ ⊆ thickening ε₁ (f '' V₁) ∪ thickening ε₂ (f '' V₂) := by gcongr <;> simp
       _ ⊆ U ∪ U := by gcongr
       _ = U := union_self _
   · intro x hx

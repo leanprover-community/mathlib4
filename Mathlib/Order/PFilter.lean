@@ -29,7 +29,6 @@ Note the relation between `Order/Filter` and `Order/PFilter`: for any type `α`,
 ## Tags
 
 pfilter, filter, ideal, dual
-
 -/
 
 @[expose] public section
@@ -74,7 +73,7 @@ instance : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
   coe_injective := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
 
-instance : PartialOrder (PFilter P) := .ofSetLike (PFilter P) P
+instance : PartialOrder (PFilter P) := .ofSetLike (PFilter P)
 
 theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
 

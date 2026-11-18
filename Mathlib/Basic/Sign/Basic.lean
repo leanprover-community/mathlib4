@@ -5,11 +5,15 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Data.Fintype.BigOperators
+
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sign function
@@ -51,6 +55,10 @@ lemma pow_even (s : SignType) {n : ℕ} (hn : Even n) (hs : s ≠ 0) :
 lemma zpow_even (s : SignType) {z : ℤ} (hz : Even z) (hs : s ≠ 0) :
     s ^ z = 1 := by
   cases s <;> simp_all [Even.neg_one_zpow]
+
+@[simp]
+protected lemma mul_self_eq_one_iff {s : SignType} : s * s = 1 ↔ s ≠ 0 :=
+  ⟨right_ne_zero_of_mul_eq_one, fun hs => (mul_eq_one_iff_inv_eq₀ hs).mpr rfl⟩
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
 @[simps]

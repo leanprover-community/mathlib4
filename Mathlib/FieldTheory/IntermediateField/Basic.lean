@@ -65,7 +65,7 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
-instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L) L
+instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L)
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   change -x ∈ S.toSubalgebra; simpa
@@ -461,6 +461,19 @@ def comap (f : L →ₐ[K] L') (S : IntermediateField K L') : IntermediateField 
   __ := S.toSubalgebra.comap f
   inv_mem' x hx := show f x⁻¹ ∈ S by rw [map_inv₀ f x]; exact S.inv_mem hx
 
+@[simp]
+theorem coe_comap (f : L →ₐ[K] L') (S : IntermediateField K L') : (S.comap f : Set L) = f ⁻¹' S :=
+  rfl
+
+@[simp]
+theorem mem_comap {S : IntermediateField K L'} {f : L →ₐ[K] L'} {x : L} :
+    x ∈ S.comap f ↔ f x ∈ S :=
+  Iff.rfl
+
+theorem comap_comap {L'' : Type*} [Field L''] [Algebra K L''] (S : IntermediateField K L'')
+    (g : L' →ₐ[K] L'') (f : L →ₐ[K] L') : (S.comap g).comap f = S.comap (g.comp f) :=
+  rfl
+
 /-- Given `f : L →ₐ[K] L'`, `S.map f` is the intermediate field between `K` and `L'`
 such that `x ∈ S ↔ f x ∈ S.map f`. -/
 def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L' where
@@ -512,8 +525,23 @@ theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
 
+theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
+  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+
 theorem gc_map_comap (f : L →ₐ[K] L') : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
+
+/-- `map f` and `comap f` form a `GaloisCoinsertion`, since an algebra homomorphism out of a field
+is injective. -/
+def gciMapComap (f : L →ₐ[K] L') : GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun S ↦ (comap_map f S).le
+
+theorem comap_surjective (f : L →ₐ[K] L') : Function.Surjective (comap f) :=
+  (gciMapComap f).u_surjective
+
+theorem map_le_map_iff (f : L →ₐ[K] L') {S T : IntermediateField K L} :
+    S.map f ≤ T.map f ↔ S ≤ T :=
+  (gciMapComap f).l_le_l_iff
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
 field `E` of `L/K`, `intermediateFieldMap e E` is the induced equivalence
@@ -739,6 +767,15 @@ theorem restrictScalars_inj {E E' : IntermediateField L' L} :
     E.restrictScalars K = E'.restrictScalars K ↔ E = E' :=
   (restrictScalars_injective K).eq_iff
 
+instance (E : IntermediateField L' L) : Algebra L' (E.restrictScalars K) :=
+  inferInstanceAs (Algebra L' E)
+
+instance (E : IntermediateField L' L) : IsScalarTower L' (E.restrictScalars K) L :=
+  inferInstanceAs (IsScalarTower L' E L)
+
+instance (E : IntermediateField L' L) : IsScalarTower K L' (E.restrictScalars K) :=
+  inferInstanceAs (IsScalarTower K L' E)
+
 end RestrictScalars
 
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
@@ -754,7 +791,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 /-- Construct an algebra isomorphism from an equality of intermediate fields. -/
 @[simps! apply]
 def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
-  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
+  Subalgebra.equivOfEq _ _ congr(toSubalgebra $h)
 
 @[simp]
 theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :

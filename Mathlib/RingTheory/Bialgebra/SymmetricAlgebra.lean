@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.Basic
-public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Bialgebra structure on `SymmetricAlgebra R M`
@@ -54,7 +53,7 @@ instance instIsCocomm : Coalgebra.IsCocomm R (SymmetricAlgebra R M) where
       ext x
       simp
       abel
-    exact congr(($h).toLinearMap)
+    congrm ($h).toLinearMap
 
 @[simp]
 theorem counitAlgHom_eq :

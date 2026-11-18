@@ -5,7 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
 /-!
@@ -29,6 +31,10 @@ This file defines totally nonnegative matrices and provides basic API for them.
   nonnegative.
 - `Matrix.IsTotallyNonneg.smul`: a nonnegative scalar multiple of a totally nonnegative matrix
   is totally nonnegative.
+- `Matrix.IsTotallyNonneg.transpose`: the transpose of a totally nonnegative matrix is totally
+  nonnegative.
+- `Matrix.IsTotallyNonneg.conjTranspose`: the conjugate transpose of a totally nonnegative matrix is
+  totally nonnegative.
 -/
 public section
 
@@ -51,6 +57,20 @@ lemma IsTotallyNonneg.nonneg (hM : M.IsTotallyNonneg) (i j : ι) : 0 ≤ M i j :
   have hrows : StrictMono ![i] := fun _ _ _ ↦ by lia
   have hcols : StrictMono ![j] := fun _ _ _ ↦ by lia
   grind [det_unique, submatrix_apply, const_fin1_eq, hM hrows hcols]
+
+protected lemma IsTotallyNonneg.transpose (hM : M.IsTotallyNonneg) :
+    Mᵀ.IsTotallyNonneg := fun _ _ _ hrows hcols ↦ by
+  simp [← transpose_submatrix, hM hcols hrows]
+
+@[simp] theorem isTotallyNonneg_transpose_iff :
+    Mᵀ.IsTotallyNonneg ↔ M.IsTotallyNonneg := ⟨(·.transpose), (·.transpose)⟩
+
+protected lemma IsTotallyNonneg.conjTranspose [StarRing R] [StarOrderedRing R]
+    (hM : M.IsTotallyNonneg) : Mᴴ.IsTotallyNonneg := fun _ _ _ hrows hcols ↦ by
+  simp [← conjTranspose_submatrix, hM hcols hrows]
+
+@[simp] theorem isTotallyNonneg_conjTranspose_iff [StarRing R] [StarOrderedRing R] :
+    Mᴴ.IsTotallyNonneg ↔ M.IsTotallyNonneg := ⟨(by simpa using ·.conjTranspose), (·.conjTranspose)⟩
 
 variable [IsOrderedRing R]
 
