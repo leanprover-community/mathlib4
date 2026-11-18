@@ -94,6 +94,9 @@ jobs:
       # A bors batch builds on `staging` or `trying`. Its commits sit on top of the tip of the
       # branch that the batch merges into, so that branch is the `master` or `bump/*` branch whose
       # tip the batch is ahead of by the fewest commits. On a tie, the step chooses `master`.
+      # A tie occurs only when a `bump/*` tip and the `master` tip are the same commit. A `bump/*`
+      # branch has merge commits and adaptation commits that `master` never contains, so only a
+      # new `bump/*` branch without such a commit can tie.
       - name: Find the target branch of a bors batch
         id: bors_target
         if: >-
