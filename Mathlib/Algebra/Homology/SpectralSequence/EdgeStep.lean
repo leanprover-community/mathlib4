@@ -219,8 +219,9 @@ lemma π_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r]
 lemma edgeMonoStep_p_compatibility [E.HasEdgeMonoAt pq' r]
     (hrr' : r + 1 = r' := by lia) :
     E.edgeMonoStep pq' r r' hrr' ≫ right.p =
-    (E.iso r r' pq' hrr' hr).inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
-      right.homologyIso.hom ≫ right.ι := by
+    (E.iso r r' pq' hrr' hr).inv ≫
+      ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
+        right.homologyIso.hom ≫ right.ι := by
   simp [← cancel_epi (E.iso r r' pq').hom,
     ← cancel_epi ((E.page r).isoHomologyπ  _ pq' rfl (d_eq_zero_of_hasEdgeMonoAt ..)).hom]
 
