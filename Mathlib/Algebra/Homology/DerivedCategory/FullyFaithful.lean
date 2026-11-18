@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Homology.SingleHomology
 
 In this file, we show that for any `n : ℤ`, the functor
 `singleFunctor C n : C ⥤ DerivedCategory C` is fully faithful.
-
 -/
 
 @[expose] public section

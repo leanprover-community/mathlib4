@@ -151,7 +151,6 @@ section SMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [CompleteSpace E]
-variable [IsScalarTower ℝ 𝕜 E]
 
 variable {u u' : ℝ → 𝕜}
 variable {v v' : ℝ → E}

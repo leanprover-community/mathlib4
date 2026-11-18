@@ -15,7 +15,6 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 (assuming the appropriate images and kernels exist).
 
 `imageToKernel f g w` is the corresponding morphism between objects in `C`.
-
 -/
 
 @[expose] public section

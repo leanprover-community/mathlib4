@@ -318,7 +318,7 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
 noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D ⥤ C)
     [MonadicRightAdjoint R] [PreservesColimitsOfShape J R] : CreatesColimitsOfShape J R :=
   letI : PreservesColimitsOfShape J (monadicLeftAdjoint R) := by
-    apply (Adjunction.leftAdjoint_preservesColimits (monadicAdjunction R)).1
+    apply (Adjunction.leftAdjoint_preservesColimits (monadicAdjunction R)).preservesColimitsOfShape
   letI : PreservesColimitsOfShape J (monadicLeftAdjoint R ⋙ R) := by
     apply CategoryTheory.Limits.comp_preservesColimitsOfShape _ _
   ⟨monadicCreatesColimitOfPreservesColimit _ _⟩
@@ -353,7 +353,7 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
   has_colimit := fun F => by
       let c := (monadicLeftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
       let : PreservesColimitsOfShape J _ :=
-        (monadicAdjunction R).leftAdjoint_preservesColimits.1
+        (monadicAdjunction R).leftAdjoint_preservesColimits.preservesColimitsOfShape
       let t : IsColimit c := isColimitOfPreserves (monadicLeftAdjoint R) (colimit.isColimit _)
       apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
       apply
@@ -647,7 +647,7 @@ noncomputable def comonadicCreatesLimitOfPreservesLimit (R : D ⥤ C) (K : J ⥤
 noncomputable def comonadicCreatesLimitsOfShapeOfPreservesLimitsOfShape (R : D ⥤ C)
     [ComonadicLeftAdjoint R] [PreservesLimitsOfShape J R] : CreatesLimitsOfShape J R :=
   letI : PreservesLimitsOfShape J (comonadicRightAdjoint R) := by
-    apply (Adjunction.rightAdjoint_preservesLimits (comonadicAdjunction R)).1
+    apply (Adjunction.rightAdjoint_preservesLimits (comonadicAdjunction R)).preservesLimitsOfShape
   letI : PreservesLimitsOfShape J (comonadicRightAdjoint R ⋙ R) := by
     apply CategoryTheory.Limits.comp_preservesLimitsOfShape _ _
   ⟨comonadicCreatesLimitOfPreservesLimit _ _⟩
@@ -682,7 +682,7 @@ theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimi
   has_limit := fun F => by
       let c := (comonadicRightAdjoint R).mapCone (limit.cone (F ⋙ R))
       let : PreservesLimitsOfShape J _ :=
-        (comonadicAdjunction R).rightAdjoint_preservesLimits.1
+        (comonadicAdjunction R).rightAdjoint_preservesLimits.preservesLimitsOfShape
       let t : IsLimit c := isLimitOfPreserves (comonadicRightAdjoint R) (limit.isLimit _)
       apply HasLimit.mk ⟨_, (IsLimit.postcomposeHomEquiv _ _).symm t⟩
       apply

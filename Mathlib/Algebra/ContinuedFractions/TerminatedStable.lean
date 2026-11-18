@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.ContinuedFractions.Translations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stabilisation of gcf Computations Under Termination
 

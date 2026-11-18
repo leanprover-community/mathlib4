@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pullbacks and pushouts in the category of topological spaces
 -/

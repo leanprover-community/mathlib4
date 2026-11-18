@@ -29,7 +29,6 @@ infimum.
 
 The list of properties in this file is copied and adapted from the file about `SupClosed`.
 We should keep these files in sync.
-
 -/
 
 public section
@@ -297,6 +296,11 @@ lemma mem_countableSupClosure_iff_iSup [CompleteLattice α] :
 lemma sup_mem_countableSupClosure [SemilatticeSup α] (ha : a ∈ s) (hb : b ∈ s) :
     a ⊔ b ∈ countableSupClosure s :=
   supClosed_countableSupClosure (subset_countableSupClosure ha) (subset_countableSupClosure hb)
+
+@[to_dual]
+lemma supClosure_subset_countableSupClosure [SemilatticeSup α] :
+    supClosure s ⊆ countableSupClosure s :=
+  supClosure_min subset_countableSupClosure supClosed_countableSupClosure
 
 @[to_dual]
 lemma iSup_mem_countableSupClosure [CompleteLattice α] [Countable ι] [Nonempty ι] {A : ι → α}

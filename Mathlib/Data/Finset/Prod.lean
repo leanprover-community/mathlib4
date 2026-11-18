@@ -54,7 +54,7 @@ theorem product_eq_sprod : Finset.product s t = s ×ˢ t :=
   rfl
 
 @[simp]
-theorem product_val : (s ×ˢ t).1 = s.1 ×ˢ t.1 :=
+theorem product_val : (s ×ˢ t).val = s.val ×ˢ t.val :=
   rfl
 
 @[simp, grind =]
@@ -252,7 +252,7 @@ def diag : Finset (α × α) := s.map ⟨Function.diag, Function.diag_injective�
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
 for `a, b ∈ s`. -/
 def offDiag : Finset (α × α) :=
-  .mk (Quotient.map List.offDiag (fun _ _ ↦ List.Perm.offDiag) s.1) <| by
+  .mk (Quotient.map List.offDiag (fun _ _ ↦ List.Perm.offDiag) s.val) <| by
     rcases s with ⟨⟨s⟩, hs⟩
     exact hs.offDiag
 

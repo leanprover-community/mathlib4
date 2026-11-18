@@ -345,11 +345,11 @@ theorem continuousWithinAt_Ioo_iff_Iio (h : a < b) :
 
 @[to_dual]
 protected theorem CovBy.nhdsLE (H : a ⋖ b) : 𝓝[≤] b = pure b := by
-  rw [← Iio_insert, nhdsWithin_insert, H.nhdsLT, sup_bot_eq]
+  rw [← insert_Iio, nhdsWithin_insert, H.nhdsLT, sup_bot_eq]
 
 @[to_dual]
 protected theorem PredOrder.nhdsLE [PredOrder α] : 𝓝[≤] b = pure b := by
-  rw [← Iio_insert, nhdsWithin_insert, PredOrder.nhdsLT, sup_bot_eq]
+  rw [← insert_Iio, nhdsWithin_insert, PredOrder.nhdsLT, sup_bot_eq]
 
 @[to_dual]
 theorem Ioc_mem_nhdsLE (H : a < b) : Ioc a b ∈ 𝓝[≤] b :=

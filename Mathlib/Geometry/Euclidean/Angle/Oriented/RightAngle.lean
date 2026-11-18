@@ -13,7 +13,6 @@ public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
 This file proves basic geometric results about distances and oriented angles in (possibly
 degenerate) right-angled triangles in real inner product spaces and Euclidean affine spaces.
-
 -/
 
 public section
