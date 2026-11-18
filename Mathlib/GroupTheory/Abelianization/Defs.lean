@@ -86,6 +86,11 @@ theorem isMulCommutative (hf : IsAbelianization f) : IsMulCommutative A :=
 theorem subsingleton_iff (hf : IsAbelianization f) : Subsingleton A ↔ commutator G = ⊤ :=
   hf.mulEquiv.toEquiv.subsingleton_congr.symm.trans QuotientGroup.subsingleton_iff
 
+theorem mulEquiv_comp {B : Type*} [Group B] (hf : IsAbelianization f) (e : A ≃* B) :
+    IsAbelianization ((e : A →* B).comp f) where
+  surjective := (e.surjective.comp hf.surjective :)
+  ker_eq := (f.ker_comp_of_injective _ e.injective).trans hf.ker_eq
+
 end IsAbelianization
 
 namespace Abelianization

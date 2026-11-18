@@ -71,7 +71,7 @@ theorem subsingleton_abelianization_iff_isPerfect :
   QuotientGroup.subsingleton_iff.trans isPerfect_def.symm
 
 @[to_additive]
-theorem IsAbelianization.subsingleton_iff_isPerfect {A : Type*} [Group A] (f : G →* A)
+theorem IsAbelianization.subsingleton_iff_isPerfect {A : Type*} [Group A] {f : G →* A}
     (hf : IsAbelianization f) : Subsingleton A ↔ IsPerfect G :=
   hf.subsingleton_iff.trans isPerfect_def.symm
 
