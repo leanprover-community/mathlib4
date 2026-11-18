@@ -151,26 +151,26 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg {v : E}
 
 variable (K) in
 /-- The reflection in `K` preserves `K`. -/
-theorem reflection_mem_compatibleMaps : K ∈ Module.End.invtSubmodule K.reflection.toLinearMap :=
+theorem mem_invtSubmodule_reflection : K ∈ Module.End.invtSubmodule K.reflection.toLinearMap :=
   fun _ hx ↦ by simpa [reflection_mem_subspace_eq_self hx] using hx
 
 variable (K) in
 /-- The reflection in `K` preserves `Kᗮ`. -/
-theorem reflection_mem_compatibleMaps_orthogonalComplement :
+theorem orthogonalComplement_mem_invtSubmodule_reflection :
     Kᗮ ∈ Module.End.invtSubmodule K.reflection.toLinearMap :=
   fun _ hx ↦ by simpa [reflection_mem_subspace_orthogonalComplement_eq_neg hx] using hx
 
 variable (K) in
 /-- The restriction of the reflection in `K` to `K` is the identity. -/
 theorem restrict_reflection_eq_id :
-    K.reflection.toLinearMap.restrict (reflection_mem_compatibleMaps K) = .id :=
+    K.reflection.toLinearMap.restrict (mem_invtSubmodule_reflection K) = .id :=
   LinearMap.ext fun ⟨_, hx⟩ ↦ Subtype.ext (reflection_mem_subspace_eq_self hx)
 
 variable (K) in
 /-- The restriction of the reflection in `K` to `Kᗮ` is minus the identity. -/
 theorem restrict_reflection_orthogonalComplement_eq_neg_id :
     K.reflection.toLinearMap.restrict (p := Kᗮ) (q := Kᗮ)
-      (reflection_mem_compatibleMaps_orthogonalComplement K) = -.id :=
+      (orthogonalComplement_mem_invtSubmodule_reflection K) = -.id :=
   LinearMap.ext fun ⟨_, hx⟩ ↦
     Subtype.ext (reflection_mem_subspace_orthogonalComplement_eq_neg hx)
 
