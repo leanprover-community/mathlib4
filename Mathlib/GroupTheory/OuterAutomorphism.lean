@@ -55,10 +55,7 @@ theorem innerMulEquivQuotientCenter_conj (g : G) :
 
 /-- The **outer automorphism group** of a multiplicative group `G`. -/
 @[to_additive /-- The **outer automorphism group** of an additive group `G`. -/]
-def Outer (G : Type u) [Group G] : Type u := MulAut G ⧸ inner G
-
-@[to_additive]
-instance (G : Type*) [Group G] : Group (Outer G) := inferInstanceAs (Group (MulAut G ⧸ inner G))
+abbrev Outer (G : Type u) [Group G] : Type u := MulAut G ⧸ inner G
 
 /-- The canonical projection from `MulAut G` to the outer automorphism group `Outer G`. -/
 @[to_additive
