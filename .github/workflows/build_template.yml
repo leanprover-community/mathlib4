@@ -91,12 +91,14 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # A bors batch builds on `staging` or `trying`. Its commits sit on top of the tip of the
-      # branch that the batch merges into, so that branch is the `master` or `bump/*` branch whose
-      # tip the batch is ahead of by the fewest commits. On a tie, the manifest check runs with
-      # strict rules. A tie occurs only when a `bump/*` tip and the `master` tip are the same
-      # commit. A `bump/*` branch has merge commits and adaptation commits that `master` never
-      # contains, so only a new `bump/*` branch without such a commit can tie.
+      # A bors batch builds on a staging branch, with its commits on top of the tip of the
+      # target branch for the batch. We try to figure out if it's `master` or `bump/*`:
+      # it should be the one for which the batch is "ahead of" by the fewest commits.
+      # On a tie, we run the check with strict rules: note that a tie occurs only when a `bump/*`
+      # tip and the `master` tip are the same commit: because a `bump/*` branch has merge commits
+      # and adaptation commits that `master` doesn't, only a new `bump/*` branch could hit this.
+      # TODO: Maybe we should have a bors feature to distinguish 'staging' from 'bump staging':
+      # it's not possible with the current features.
       - name: Find the target branch of a bors batch
         id: bors_target
         if: >-
