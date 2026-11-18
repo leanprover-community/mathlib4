@@ -81,8 +81,8 @@ theorem seven_pid [IsCyclotomicExtension {7} ℚ K] : IsPrincipalIdealRing (𝓞
   refine isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc
     fun p hp hprime ↦ ?_
   have : Fact p.Prime := ⟨hprime⟩
-  obtain ⟨⟨P, _, _⟩⟩ := (span {(p : ℤ)}).nonempty_primesOver (S := 𝓞 K)
-  refine ⟨P, ⟨‹_›, ‹_›⟩, Or.inl ?_⟩
+  obtain ⟨P⟩ := (span {(p : ℤ)}).nonempty_primesOver (S := 𝓞 K)
+  refine ⟨P, P.prop, Or.inl ?_⟩
   rw [hM] at hp ⊢
   fin_cases hp <;> try exact absurd hprime (by decide)
   · rw [inertiaDeg_eq_of_not_dvd (m := 7) 2 K P (by decide),
