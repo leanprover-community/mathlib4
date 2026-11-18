@@ -158,20 +158,6 @@ theorem exists_nullMeasurable_between (hs : NullMeasurableSet s μ) (ht : NullMe
   exact ⟨u ∪ s, hu.nullMeasurableSet.union hs, subset_union_right, union_subset hut hst,
     this ▸ hru', this ▸ hut'⟩
 
-/- The assumptions `MeasurableSingletonClass (NullMeasurableSpace α μ)` resp. `SFinite μ` in
-the following two instances cannot both be dropped.
-Sketch of such a counterexample: let `Ω` be uncountable, `ω₀ ∈ Ω`, `X := Ω × [0, 1]`, and call
-`B ⊆ X` measurable if all sections `B_ω` are Borel, `B_ω₀ = ∅` or `B_ω₀ = [0, 1]`, and
-`B_ω = B_ω₀` for all but countably many `ω`. This is a σ-algebra; put `μ B := ∑ ω, volume B_ω`.
-* `μ` has no atoms: let `B` be measurable with `μ B > 0`. If `B_ω₀ = ∅`, then `B` is the countable
-  union of the `{ω} × B_ω` with `ω ≠ ω₀`, so `volume B_ω > 0` for some `ω ≠ ω₀`. As `volume` has no
-  atoms, there is a Borel `A ⊆ B_ω` with `0 < volume A < volume B_ω`, and `t := {ω} × A ⊆ B` is
-  measurable with `0 < μ t < volume B_ω ≤ μ B` (whether or not `μ B` is finite). If
-  `B_ω₀ = [0, 1]`, then `μ B = ∞` and `B` contains some `{ω} × [0, 1]` of measure `1`.
-* For `x := (ω₀, 0)`, every measurable `B ∋ x` contains `{ω} × [0, 1]` for all but countably
-  many `ω`, so `μ {x} = ∞`.
--/
-
 /-- A measure without atoms vanishes on singletons if singletons are null measurable. See also
 `instNullSingletonClass_of_sfinite`. -/
 instance instNullSingletonClass [MeasurableSingletonClass (NullMeasurableSpace α μ)] :
