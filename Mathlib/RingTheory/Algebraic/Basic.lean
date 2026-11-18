@@ -43,7 +43,7 @@ theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := b
 variable (R A)
 
 theorem Algebra.IsAlgebraic.nontrivial [alg : Algebra.IsAlgebraic R A] : Nontrivial R :=
-  (alg.1 0).nontrivial
+  (alg.isAlgebraic 0).nontrivial
 
 instance (priority := low) Algebra.transcendental_of_subsingleton [Subsingleton R] :
     Algebra.Transcendental R A :=
@@ -175,7 +175,7 @@ theorem IsLocalization.isAlgebraic [Nontrivial R] (M : Submonoid R) [IsLocalizat
     · exact isAlgebraic_zero
     have ⟨⟨r, m⟩, h⟩ := surj M x
     refine ⟨C m.1 * X - C r, fun eq ↦ hx ?_, by simpa [sub_eq_zero, mul_comm x] using h⟩
-    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(coeff $eq 0), mk'_zero] at h
+    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(($eq).coeff 0), mk'_zero] at h
 
 open IsScalarTower
 
@@ -605,7 +605,7 @@ variable (S) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
 open Function (Injective) in
 theorem injective_tower_top (inj : Injective (algebraMap R A)) : Injective (algebraMap S A) := by
   refine (injective_iff_map_eq_zero _).mpr fun s eq ↦ of_not_not fun ne ↦ ?_
-  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
+  have ⟨r, ne, dvd⟩ := (alg.isAlgebraic s).exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
   refine ne (inj <| map_zero (algebraMap R A) ▸ zero_dvd_iff.mp ?_)
   simp_rw [← eq, IsScalarTower.algebraMap_apply R S A, map_dvd (algebraMap S A) dvd]
 

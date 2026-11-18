@@ -73,11 +73,9 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
         le_comap_map := by
   refine quotientMap_injective' (le_of_eq ?_)
   rw [comap_map_of_surjective (mapRingHom (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))))
-      (map_surjective (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))) Ideal.Quotient.mk_surjective)]
-  refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
-  refine fun p hp =>
-    polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp ?_
-  simpa only [coeff_map, coe_mapRingHom] using! ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
+      (map_surjective (Quotient.mk (P.comap (C : R →+* R[X]))) Quotient.mk_surjective), sup_eq_left]
+  refine fun p hp ↦ polynomial_mem_ideal_of_coeff_mem_ideal P p fun n ↦ ?_
+  simpa [Quotient.eq_zero_iff_mem] using congr($(hp).coeff n)
 
 /-- The identity in this lemma asserts that the "obvious" square
 ```
@@ -176,10 +174,10 @@ theorem comap_ne_bot_of_root_mem [IsDomain S] {r : S} (r_ne_zero : r ≠ 0) (hr 
 
 theorem isMaximal_of_isIntegral_of_isMaximal_under [Algebra R S] [Algebra.IsIntegral R S]
     (I : Ideal S) [I.IsPrime] (hI : IsMaximal (I.under R)) : IsMaximal I :=
-  ⟨⟨mt comap_eq_top_iff.mpr hI.1.1, fun _ I_lt_J =>
+  ⟨⟨mt comap_eq_top_iff.mpr hI.out.1, fun _ I_lt_J =>
       let ⟨I_le_J, x, hxJ, hxI⟩ := IsConcreteLE.lt_iff_le_and_exists.mp I_lt_J
       comap_eq_top_iff.1 <|
-        hI.1.2 _ (under_lt_under_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩
+        hI.out.2 _ (under_lt_under_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩
           (Algebra.IsIntegral.isIntegral x))⟩⟩
 
 theorem isMaximal_of_isIntegral_of_isMaximal_comap (f : R →+* S) (hf : f.IsIntegral) (I : Ideal S)
@@ -398,7 +396,7 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
 /-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
 a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
 lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
-    {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime] (hq : p.primesOver S = {q})
+    {p : Ideal R} [p.IsPrime] {q : Ideal S} (hq : p.primesOver S = {q})
     [Algebra.IsIntegral R S] (x : S) (hx : x ∉ q) : ∃ r ∉ p, x ∣ algebraMap _ _ r := by
   simp only [dvd_def, eq_comm, mul_comm x]
   by_contra!

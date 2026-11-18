@@ -44,7 +44,6 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 - [Rote, *The Generalized Combinatorial Lasoń-Alon-Zippel-Schwartz
   Nullstellensatz Lemma*][Rote_2023]
-
 -/
 
 public section
@@ -133,7 +132,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [← hn.2, some_apply]
     · intro x hx
       specialize Heval' x hx
-      rw [Polynomial.ext_iff] at Heval'
+      rw [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff] at Heval'
       simpa only [Polynomial.coeff_map, Polynomial.coeff_zero] using Heval' m
 
 open MonomialOrder

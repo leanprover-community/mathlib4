@@ -478,7 +478,7 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
       let prefixStr := if s.isPrefix then "(prefix) " else ""
       m!"Projection {prefixStr}{s.name}: {s.expr}"
   let print2 : MessageData :=
-    String.join <| (nondefaults.map fun nm : ProjectionData ↦ toString nm.1).intersperse ", "
+    String.join <| (nondefaults.map fun nm : ProjectionData ↦ toString nm.name).intersperse ", "
   let toPrint :=
     toPrint ++
       if nondefaults.isEmpty then [] else
