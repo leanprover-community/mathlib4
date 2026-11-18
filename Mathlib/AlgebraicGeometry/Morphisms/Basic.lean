@@ -317,7 +317,7 @@ lemma resLE [IsZariskiLocalAtTarget P] {U : Y.Opens} {V : X.Opens}
 open immersions, then `P` can be checked locally around points. -/
 lemma iff_exists_resLE [IsZariskiLocalAtTarget P]
     [P.RespectsRight @IsOpenImmersion] :
-    P f ↔ ∀ x : X, ∃ (U : Y.Opens) (V : X.Opens) (_ : x ∈ V.1) (e : V ≤ f ⁻¹ᵁ U),
+    P f ↔ ∀ x : X, ∃ (U : Y.Opens) (V : X.Opens) (_ : x ∈ V.carrier) (e : V ≤ f ⁻¹ᵁ U),
       P (f.resLE U V e) := by
   refine ⟨fun hf x ↦ ⟨⊤, ⊤, trivial, by simp, resLE _ hf⟩, fun hf ↦ ?_⟩
   choose U V hxU e hf using hf

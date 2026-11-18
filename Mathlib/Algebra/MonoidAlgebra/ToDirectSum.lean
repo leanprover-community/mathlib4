@@ -264,7 +264,7 @@ theorem AddMonoidAlgebra.toDirectSum_pow [DecidableEq ι] [AddMonoid ι] [Semiri
 @[simp]
 theorem DirectSum.toAddMonoidAlgebra_pow [DecidableEq ι] [AddMonoid ι] [Semiring M]
     [∀ m : M, Decidable (m ≠ 0)] (f : ⨁ _ : ι, M) (n : ℕ) :
-    (f ^ n).toAddMonoidAlgebra = toAddMonoidAlgebra f ^ n := by
-  exact map_pow addMonoidAlgebraRingEquivDirectSum.symm f n
+    (f ^ n).toAddMonoidAlgebra = toAddMonoidAlgebra f ^ n :=
+  map_pow addMonoidAlgebraRingEquivDirectSum.symm f n
 
 end Equivs

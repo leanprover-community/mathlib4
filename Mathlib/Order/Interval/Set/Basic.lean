@@ -394,7 +394,7 @@ theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := by
 @[to_dual (attr := simp)] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
 
 @[to_dual (attr := simp)]
-lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
+lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [← ne_empty_iff_nonempty]
 
 @[to_dual]
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=

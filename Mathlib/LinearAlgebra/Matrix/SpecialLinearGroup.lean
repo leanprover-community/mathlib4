@@ -816,7 +816,7 @@ lemma diagonal_eq_diagonal2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
   apply coeMonoidHom_injective
   rw [Finset.map_noncommProd]
-  simp only [coeMonoidHom_apply, coe_mk, ne_eq, apply_dite]
+  simp only [coeMonoidHom_apply, ne_eq, apply_dite]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
       (dite_eq_left (Finset.mem_filter.1 hi).2 :
         _ = (diagonal2n (Finset.mem_filter.1 hi).2 _ _).1))]

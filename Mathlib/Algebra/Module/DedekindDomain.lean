@@ -76,8 +76,8 @@ theorem isInternal_prime_power_torsion [Module.Finite R M]
 `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`. -/
 theorem exists_isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     ∃ (P : Finset <| Ideal R) (_ : DecidableEq P) (_ : ∀ p ∈ P, Prime p) (e : P → ℕ),
-      DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) := by
-  exact ⟨_, _, fun p hp => prime_of_factor p (Multiset.mem_toFinset.mp hp), _,
+      DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) :=
+  ⟨_, _, fun p hp => prime_of_factor p (Multiset.mem_toFinset.mp hp), _,
     isInternal_prime_power_torsion hM⟩
 
 end Submodule
