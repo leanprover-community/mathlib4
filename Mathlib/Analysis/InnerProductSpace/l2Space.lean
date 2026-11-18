@@ -400,7 +400,7 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     congrm $h i
 
 @[ext]
-protected theorem ext {b b' : HilbertBasis ι 𝕜 E} (h : ∀ i, b i = b' i) : b = b' :=
+protected theorem eq_of_apply_eq {b b' : HilbertBasis ι 𝕜 E} (h : ∀ i, b i = b' i) : b = b' :=
   DFunLike.ext _ _ h
 
 @[simp]
