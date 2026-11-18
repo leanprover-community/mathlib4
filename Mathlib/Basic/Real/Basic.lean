@@ -554,7 +554,7 @@ protected lemma IsPowMul.map_one {R S F : Type*} [Ring R] [Nontrivial R] [Semiri
   simpa [map_eq_zero_iff_eq_zero] using hf.map_one_eq_zero_or_one
 
 /-- A power-multiplicative additive group norm on a nontrivial ring satisfies
-`f (a ^ n) = (f a) ^ n`. -/
+`f (a ^ n) = (f a) ^ n` for all natural numbers `n`. -/
 protected lemma IsPowMul.map_pow {R S F : Type*} [Ring R] [Nontrivial R] [Semiring S]
     [IsRightCancelMulZero S] [PartialOrder S] [FunLike F R S] [AddGroupNormClass F R S] {f : F}
     (hf : IsPowMul f) (a : R) (n : ℕ) : f (a ^ n) = f a ^ n := by
