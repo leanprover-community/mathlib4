@@ -303,7 +303,7 @@ end
 /-! simp-normal form pulls `of` to the outside. -/
 
 @[simp]
-theorem transpose_of (f : m → n → α) : (of f)ᵀ = of (Function.swap f) :=
+theorem transpose_of (f : m → n → α) : (of f)ᵀ = of (Function.dflip f) :=
   rfl
 
 @[simp]
@@ -627,7 +627,7 @@ lemma row_of (f : m → n → α) : (of f).row = f := rfl
 @[deprecated (since := "2026-10-23")] alias of_row := row_of
 
 @[simp]
-theorem col_of (f : m → n → α) : (of f).col = Function.swap f := rfl
+theorem col_of (f : m → n → α) : (of f).col = Function.dflip f := rfl
 
 @[deprecated "by dsimp" (since := "2026-10-23")]
 lemma of_col (f : m → n → α) : (of f)ᵀ.col = f := by dsimp

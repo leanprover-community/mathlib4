@@ -111,7 +111,7 @@ indecomposable (strong connectivity of `adj`). -/
 theorem isIndecomposable_of_spansFrom {n : ℕ}
     {M : Matrix (Fin n) (Fin n) R} {adj : Fin n → Fin n → Bool}
     (hadj : ∀ i j, adj i j ↔ M i j ≠ 0) {root : Fin n} {fwd bwd : List (Fin n × Fin n)}
-    (hf : SpansFrom adj fwd root) (hb : SpansFrom (Function.swap adj) bwd root) :
+    (hf : SpansFrom adj fwd root) (hb : SpansFrom (Function.dflipadj) bwd root) :
     M.IsIndecomposable := by
   refine (isIndecomposable_iff_reflTransGen M).2 fun i j ↦ ?_
   simpa only [hadj] using (hb.reflTransGen i).swap.trans (hf.reflTransGen j)
@@ -208,7 +208,7 @@ def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivit
   let adj (p c : Nat) : Bool := (adjMatrix[p]!)[c]!
   let (outTree, fromRoot) := bfs n adj 0
   if !fromRoot.all id then .disconnected fromRoot else
-  let (inTree, toRoot) := bfs n (Function.swap adj) 0
+  let (inTree, toRoot) := bfs n (Function.dflipadj) 0
   if !toRoot.all id then .disconnected (toRoot.map not) else
   .connected outTree inTree
 
@@ -233,7 +233,7 @@ def certifyIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (d�
   let inTreeQ ← mkEdgeListLitQ n inTree
   let adj : Q(Fin $n → Fin $n → Bool) := q(packedAdj $n (packRows $n $lit))
   let hout ← mkDecideProofQ q(SpansFrom $adj $outTreeQ $root)
-  let hin ← mkDecideProofQ q(SpansFrom (Function.swap $adj) $inTreeQ $root)
+  let hin ← mkDecideProofQ q(SpansFrom (Function.dflip$adj) $inTreeQ $root)
   return q(isIndecomposable_of_spansFrom (packedAdj_packRows_iff $lit) $hout $hin)
 
 /-- Prove that `lit` interpreted as an `n × n` matrix is decomposable from a nonempty proper
