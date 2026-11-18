@@ -21,7 +21,7 @@ TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 
 public section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 

@@ -21,6 +21,11 @@ This file sets up the theory of locally constant function from a topological spa
 * `LocallyConstant X Y` : the type of locally constant maps from `X` to `Y`
 * `LocallyConstant.map` : push-forward of locally constant maps
 * `LocallyConstant.comap` : pull-back of locally constant maps
+
+## TODO
+
+Link `IsLocallyConstant` to `Function.IsConst(On)`.
+
 -/
 
 @[expose] public section

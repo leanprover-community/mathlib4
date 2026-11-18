@@ -20,6 +20,7 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.CohenMacaulay.Catenary
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Gorenstein.Defs
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
@@ -448,18 +449,13 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
         (algebraMap R (Localization qq.1.1.primeCompl)) rfl).2
     have : IsLocalHom (algebraMap R (Localization qq.1.1.primeCompl)) :=
       IsLocalHom.of_surjective _ surj
-    let e' : (R ⧸ maximalIdeal R) →ₗ[R] qq.1.1.ResidueField :=
-      { __ := ResidueField.map (algebraMap R (Localization qq.1.1.primeCompl))
-        map_smul' r x := by
-          simp only [RingHom.toMonoidHom_eq_coe, Algebra.smul_def, Ideal.Quotient.algebraMap_eq,
-            OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_ofClass, map_mul,
-            RingHom.id_apply, mul_eq_mul_right_iff, map_eq_zero]
-          left
-          rw [IsScalarTower.algebraMap_eq R (Localization qq.1.1.primeCompl) qq.1.1.ResidueField,
-            ResidueField.algebraMap_eq, ← ResidueField.map_comp_residue]
-          rfl }
-    have bij : Function.Bijective e' :=
-      ResidueField.map_bijective_of_surjective _ surj
+    let eres := ResidueField.map (algebraMap R (Localization qq.1.1.primeCompl))
+    have bij : Function.Bijective eres := ⟨RingHom.injective _,
+      Ideal.Quotient.lift_surjective_of_surjective _ _ (Ideal.Quotient.mk_surjective.comp surj)⟩
+    let e' : ResidueField R →ₗ[R] qq.1.1.ResidueField :=
+      { __ := eres
+        map_smul' r x := by simp [eres, Algebra.smul_def,
+          IsScalarTower.algebraMap_eq R (Localization qq.1.1.primeCompl) qq.1.1.ResidueField]}
     let e : (R ⧸ maximalIdeal R) ≃ₗ[R] qq.1.1.ResidueField :=
       LinearEquiv.ofBijective e' bij
     let f : ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R)) ≃ₗ[R]
@@ -495,18 +491,9 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
   have reg : IsRegular R rs := ((Shrink.linearEquiv.{v} R R).isRegular_congr rs).mp reg'
   apply le_antisymm
   · obtain ⟨r, hr⟩ : ∃ n : ℕ, injectiveDimension M = n := by
-      generalize hd : injectiveDimension M = d
-      induction d with
-      | bot =>
-        absurd not_nontrivial_iff_subsingleton.mpr
-          (ModuleCat.isZero_iff_subsingleton.mp ((injectiveDimension_eq_bot_iff M).mp hd))
-        assumption
-      | coe d =>
-        induction d with
-        | top => simp [hd] at h
-        | coe d =>
-          use d
-          rfl
+      apply ENat.WithBot.eq_natCast_of_ne_bot_of_ne_top _ h
+      simpa [injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
+        not_subsingleton_iff_nontrivial]
     rw [hr]
     apply Nat.cast_le.mpr
     have projdim : projectiveDimension (ModuleCat.of R
@@ -557,14 +544,13 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     have injf : Function.Injective f := by
       rw [← LinearMap.ker_eq_bot, eq_bot_iff]
       intro x hx
-      by_contra ne
-      absurd hf
+      contrapose hf
       ext y
       let e := Shrink.algEquiv R (R ⧸ maximalIdeal R)
       let : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
       calc
       _ = f (e.symm (e y * (e x)⁻¹ * (e x))) := by
-        simp [AddEquivClass.map_ne_zero_iff.mpr ne]
+        simp [AddEquivClass.map_ne_zero_iff.mpr hf]
       _ = _ := by
         rcases Ideal.Quotient.mk_surjective (e y * (e x)⁻¹) with ⟨r, hr⟩
         rw [← hr, ← Ideal.Quotient.algebraMap_eq, ← Algebra.smul_def]
@@ -605,7 +591,7 @@ variable (R) [IsNoetherianRing R]
 
 theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing R] :
     IsCohenMacaulayLocalRing R := by
-  have := (isGorensteinLocalRing_def R).mp ‹_›
+  have := (isGorensteinLocalRing_iff R).mp ‹_›
   have eq := injectiveDimension_eq_depth (ModuleCat.of R R) this
   have le := supportDim_le_injectiveDimension (ModuleCat.of R R)
   rw [Module.supportDim_self_eq_ringKrullDim, eq] at le
@@ -614,7 +600,7 @@ theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing
 
 theorem injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing [IsGorensteinLocalRing R] :
     injectiveDimension (ModuleCat.of R R) = ringKrullDim R := by
-  have gor := (isGorensteinLocalRing_def R).mp ‹_›
+  have gor := (isGorensteinLocalRing_iff R).mp ‹_›
   have le := supportDim_le_injectiveDimension (ModuleCat.of R R)
   rw [Module.supportDim_self_eq_ringKrullDim] at le
   have le' := depth_le_ringKrullDim (ModuleCat.of R R)
@@ -624,13 +610,10 @@ theorem injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing [IsGorenstei
 
 lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
   induction a with
+  | top => rfl
   | bot => rfl
-  | coe n =>
-    induction n with
-    | top => rfl
-    | coe n =>
-      simpa [- ENat.WithBot.coe_eq_natCast] using
-        WithBot.coe_inj.not.mpr (ENat.natCast_ne_top (n + 1))
+  | coe n => simpa [← ENat.WithBot.coe_eq_natCast] using
+    WithBot.coe_inj.not.mpr (ENat.natCast_ne_top (n + 1))
 
 variable [IsLocalRing R]
 
@@ -656,7 +639,7 @@ lemma quotient_span_regular_isGorenstein_iff_isGorenstein
     Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
   have : IsLocalRing (R ⧸ Ideal.span {x}) :=
     IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
-  rw [isGorensteinLocalRing_def, isGorensteinLocalRing_def,
+  rw [isGorensteinLocalRing_iff, isGorensteinLocalRing_iff,
     ← injectiveDimension_quotient_span_regular R x reg mem]
   exact (add_one_eq_top_iff _).not
 
@@ -773,11 +756,11 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     (h : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) k)) :
     IsGorensteinLocalRing R := by
-  obtain ⟨n, hn⟩ := exist_nat_eq' R
+  obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat R
   let e (I : Ideal R) : (ModuleCat.of R (Shrink.{u, u} (R ⧸ I))) ≅
     ModuleCat.of R (R ⧸ I) := (Shrink.linearEquiv _ _).toModuleIso
   induction n using Nat.case_strong_induction_on generalizing R k with
-  | hz =>
+  | zero =>
     have : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
     have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
       apply ModuleCat.hasInjectiveDimensionLT_of_quotients _ _ (fun I ↦ ?_)
@@ -785,8 +768,8 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       rw [Set.mem_ofPred_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
       exact (((extFunctor k).mapIso (e (maximalIdeal R)).op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp h
-    exact (isGorensteinLocalRing_def R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
-  | hi n ih =>
+    exact (isGorensteinLocalRing_iff R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
+  | succ n ih =>
     have supp_le (M : ModuleCat.{u} R) [Module.Finite R M] :
       Module.support R (Ext M (ModuleCat.of R R) k) ⊆ {closedPoint R} := by
       intro p hp
@@ -795,7 +778,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
         simpa [PrimeSpectrum.ext_iff, closedPoint] using ne)
       rcases exists_isPrime_no_insert p.1 ltm with ⟨q, qp, ple, qlt, hq⟩
       let Rq := Localization.AtPrime q
-      obtain ⟨m, hm⟩ := exist_nat_eq' Rq
+      obtain ⟨m, hm⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat Rq
       have mle : m ≤ n := by
         rw [← Order.lt_add_one_iff, ← Nat.cast_lt (α := WithBot ℕ∞), ← hm, ← hn,
           IsLocalization.AtPrime.ringKrullDim_eq_height q,
@@ -876,7 +859,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
       apply (((extFunctor k).mapIso (e p.1).op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp (ext_zero p.1)
-    exact (isGorensteinLocalRing_def R).mpr (injectiveDimension_lt_iff.mpr injlt).ne_top
+    exact (isGorensteinLocalRing_iff R).mpr (injectiveDimension_lt_iff.mpr injlt).ne_top
 
 end
 

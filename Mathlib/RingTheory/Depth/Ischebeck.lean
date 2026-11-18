@@ -6,7 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
-public import Mathlib.RingTheory.Depth.Basic
+public import Mathlib.RingTheory.Depth.Finite
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
@@ -16,6 +16,17 @@ public import Mathlib.RingTheory.Regular.Category
 /-!
 
 # The Ischebeck theorem and its corollary
+
+In this file, we prove the Ischebeck theorem (`depth_ge_depth_sub_dim`) and its important corollary
+that depth doesn't exceed codimension of any associated prime.
+
+## Main Results
+
+* `depth_ge_depth_sub_dim` (Ischebeck theorem) : For nontrivial finitely genrated modules `M N` over
+  Noetherian local ring `R`, `depth(N, M)` is not less than `depth(M) - dim(N)`.
+
+* `depth_le_ringKrullDim_associatedPrime` : For nontrivial finitely genrated modules `M` over
+  Noetherian local ring `R`, `depth(M) ≤ dim(R/p)` for any associated prime `p` of `M`.
 
 -/
 
@@ -28,6 +39,8 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
+/-- **Ischbeck Theorem** : For nontrivial finitely genrated modules `M N` over
+Noetherian local ring `R`, `depth(N, M)` is not less than `depth(M) - dim(N)`. -/
 theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v} R] : N.depth M ≥ IsLocalRing.depth M -
@@ -36,7 +49,7 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
   induction r with
   | top => simp
   | coe r =>
-    induction r using Nat.strong_induction_on generalizing N with | h r ihr =>
+    induction r using Nat.strong_induction_on generalizing N with | ind r ihr =>
     by_cases eq0 : r = 0
     · simp only [eq0, CharP.cast_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero] at dim
       have smul_lt := (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
@@ -73,45 +86,33 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
           have dimlt : (Module.supportDim R (QuotSMulTop x L)).unbot
             (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) < r := by
             have : (Module.supportDim R (QuotSMulTop x L)) + 1 ≤ Module.supportDim R L := by
-              simp only [Module.supportDim_eq_ringKrullDim_quotient_annihilator]
-              rw [e.annihilator_eq, Ideal.annihilator_quotient]
-              have ple : p.1 ≤ Module.annihilator R (QuotSMulTop x L) := by
-                rw [← p.1.annihilator_quotient, ← LinearEquiv.annihilator_eq e]
-                exact (Submodule.mkQ _).annihilator_le_of_surjective (Submodule.mkQ_surjective _)
-              have : Ideal.Quotient.mk p.asIdeal x ∈ nonZeroDivisors (R ⧸ p.1) := by
-                simpa [Ideal.Quotient.eq_zero_iff_mem] using hx2
-              exact ringKrullDim_succ_le_of_surjective _ (Quotient.factor_surjective ple) this
-                (by simpa [Ideal.Quotient.eq_zero_iff_mem] using QuotSMulTop.mem_annihilator L x)
+              apply Module.supportDim_quotSMulTop_succ_le_of_isSMulRegular
+              rw [e.isSMulRegular_congr]
+              have : IsRegular (Ideal.Quotient.mk p.asIdeal x) := by
+                simpa [isRegular_iff_mem_nonZeroDivisors, Ideal.Quotient.eq_zero_iff_mem] using hx2
+              exact this.isSMulRegular
             have succle : (Module.supportDim R (QuotSMulTop x L)).unbot
               (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) + 1 ≤ r := by
               simpa [← dim_eq, WithBot.le_unbot_iff] using this
-            have : (Module.supportDim R (QuotSMulTop x L)).unbot
-              (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) ≠ ⊤ := by
-              by_contra h
-              simp [h] at succle
-            exact (ENat.add_one_le_iff this).mp succle
-          rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt dimlt) with ⟨m, hm⟩
+            exact ENat.add_one_le_natCast_iff.mp succle
+          rcases ENat.ne_top_iff_exists.mp dimlt.ne_top with ⟨m, hm⟩
           simp only [← hm, Nat.cast_lt] at dimlt
           apply subsingleton_ext_of_lt_depth
           refine lt_of_lt_of_le ?_ (ihr m dimlt (ModuleCat.of R (QuotSMulTop x L)) hm.symm)
-          by_cases eqtop : IsLocalRing.depth M = ⊤
-          · simp only [Nat.cast_add, eqtop, ENat.top_sub_natCast, ENat.add_lt_top,
-              ENat.natCast_lt_top, true_and]
-          · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨k, hk⟩
-            have : (i + 1 : ℕ) ≤ IsLocalRing.depth M - r := by
-              simpa [ENat.add_one_le_iff (ENat.natCast_ne_top i)] using hi
-            apply lt_of_le_of_lt this
-            simp only [← hk, ← ENat.natCast_sub, Nat.cast_lt] at hi ⊢
-            omega
+          rcases ENat.ne_top_iff_exists.mp (IsLocalRing.depth_ne_top M) with ⟨k, hk⟩
+          have : (i + 1 : ℕ) ≤ IsLocalRing.depth M - r := by
+            simpa [ENat.add_one_le_iff (ENat.natCast_ne_top i)] using hi
+          apply lt_of_le_of_lt this
+          simp only [← hk, ← ENat.natCast_sub, Nat.cast_lt] at hi ⊢
+          omega
         have epi := (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i)).epi_f
           ((AddCommGrpCat.isZero_of_iff_subsingleton.mpr this).eq_zero_of_tgt _)
         have epi' : Function.Surjective (x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
           simp only [smulShortComplex, AddCommGrpCat.epi_iff_surjective] at epi
           convert epi
           ext a
-          simp only [LinearMap.smul_apply, id_coe, id_eq]
-          nth_rw 1 [← Ext.mk₀_id_comp a, ← Ext.smul_comp, ← Ext.mk₀_smul]
-          congr
+          have : ↟(LinearMap.lsmul R L x) = x • 𝟙 ↧L := rfl
+          simp [this, Ext.mk₀_smul]
         by_contra! ntr
         have mem : x ∈ (Module.annihilator R (Ext (of R L) M i)).jacobson :=
           maximalIdeal_le_jacobson _ hx1
@@ -162,15 +163,11 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
             exact ge_trans (depth_min_fst_trd_le_snd_left S hS M) (le_inf_iff.mpr
               ⟨(tsub_le_tsub_left dimle1 _).trans ge1, (tsub_le_tsub_left dimle3 _).trans ge3⟩)
 
-lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
-    ringKrullDim (R ⧸ P) ≠ ⊥ :=
-  ne_bot_of_le_ne_bot WithBot.zero_ne_bot
-    (@ringKrullDim_nonneg_of_nontrivial _ _ (Quotient.nontrivial_iff.mpr prime.ne_top'))
-
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} R] (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] (P : Ideal R)
-    (ass : P ∈ associatedPrimes R M) : IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
-      (quotient_prime_ringKrullDim_ne_bot ass.1) := by
+    (ass : P ∈ associatedPrimes R M) :
+    letI := ass.isPrime
+    IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot ringKrullDim_ne_bot_of_nontrivial := by
   have := Quotient.nontrivial_iff.mpr ass.1.ne_top'
   have dep0 : (of R (Shrink.{v} (R ⧸ P))).depth M = 0 := by
     rw [depth_eq_zero_iff_nontrivial_linearMap,
@@ -183,25 +180,3 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
   convert! this
   rw [← Module.supportDim_quotient_eq_ringKrullDim,
     Module.supportDim_eq_of_equiv (Shrink.linearEquiv R (R ⧸ P))]
-
-theorem depth_le_supportDim [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
-    IsLocalRing.depth M ≤ Module.supportDim R M := by
-  rcases associatedPrimes.nonempty R M with ⟨p, hp⟩
-  have := depth_le_ringKrullDim_associatedPrime M p hp
-  rw [← WithBot.coe_le_coe, WithBot.coe_unbot] at this
-  rw [Module.supportDim_eq_ringKrullDim_quotient_annihilator]
-  exact this.trans (ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective
-    (le_of_eq_of_le Submodule.annihilator_top.symm hp.annihilator_le)))
-
-theorem depth_le_ringKrullDim [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
-    IsLocalRing.depth M ≤ ringKrullDim R :=
-  (depth_le_supportDim M).trans (Module.supportDim_le_ringKrullDim R M)
-
-theorem depth_ne_top [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
-    IsLocalRing.depth M ≠ ⊤ := by
-  have := lt_of_le_of_lt (depth_le_ringKrullDim M) ringKrullDim_lt_top
-  simp only [← WithBot.coe_top, WithBot.coe_lt_coe] at this
-  exact this.ne_top

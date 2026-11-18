@@ -40,7 +40,6 @@ This will be useful to define embedded submanifolds.
   is a smooth embedding
 * `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:
   a local diffeomorphism (and in particular, a diffeomorphism) is a smooth embedding
-
 -/
 
 open scoped ContDiff

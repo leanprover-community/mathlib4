@@ -39,7 +39,6 @@ Instead, for the ease of development and application,
 we define the structure `IdealSheafData` containing all necessary data to uniquely define an
 ideal sheaf. This should be refactored as a constructor for ideal sheaves once they are introduced
 into mathlib.
-
 -/
 
 @[expose] public section

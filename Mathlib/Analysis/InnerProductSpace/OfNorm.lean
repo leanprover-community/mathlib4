@@ -128,7 +128,7 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   rw [add_comm y x, norm_sub_rev]
   by_cases hI : (I : 𝕜) = 0
   · simp only [hI, neg_zero, zero_mul]
-  have hI' := I_mul_I_of_nonzero hI
+  have hI' := I_mul_I_of_ne_zero hI
   have I_smul (v : E) : ‖(I : 𝕜) • v‖ = ‖v‖ := by rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
   have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
     convert I_smul ((I : 𝕜) • x + y)
@@ -179,7 +179,7 @@ private theorem I_prop : innerProp' E (I : 𝕜) := by
   · rw [hI]
     simpa using real_prop (𝕜 := 𝕜) 0
   intro x y
-  have hI' := I_mul_I_of_nonzero hI
+  have hI' := I_mul_I_of_ne_zero hI
   rw [conj_I, inner_, inner_, mul_left_comm, smul_smul, hI', neg_one_smul]
   have h₁ : ‖-x - y‖ = ‖x + y‖ := by rw [← neg_add', norm_neg]
   have h₂ : ‖-x + y‖ = ‖x - y‖ := by rw [← neg_sub, norm_neg, sub_eq_neg_add]
