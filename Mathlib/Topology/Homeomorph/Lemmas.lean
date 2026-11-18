@@ -16,7 +16,6 @@ public import Mathlib.Topology.DenseEmbedding
 
 This file proves further properties of homeomorphisms between topological spaces.
 Pretty much every topological property is preserved under homeomorphisms.
-
 -/
 
 @[expose] public section
@@ -133,15 +132,15 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
   have : ∀ x, (𝓝 x).HasBasis (fun s ↦ IsOpen s ∧ h x ∈ s ∧ IsConnected s)
       (h.symm '' ·) := fun x ↦ by
     rw [← h.symm_map_nhds_eq]
-    exact (i.1 _).map _
+    exact (i.open_connected_basis _).map _
   refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
   exact hs.2.2.2.image _ h.symm.continuous.continuousOn
 
 /-- The codomain of a homeomorphism is a locally compact space if and only if
 the domain is a locally compact space. -/
 theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
-    LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
-  exact ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
+    LocallyCompactSpace X ↔ LocallyCompactSpace Y :=
+  ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
     fun _ => h.isClosedEmbedding.locallyCompactSpace⟩
 
 @[simp]
@@ -268,6 +267,7 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
   toEquiv := Equiv.ulift
@@ -297,6 +297,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   rw [Fin.appendEquiv_eq_homeomorph]
   exact Homeomorph.continuous_toFun _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
 `Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
@@ -328,6 +329,7 @@ set_option backward.defeqAttrib.useBackward true in
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
 @[simps! -fullyApplied]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
@@ -347,6 +349,7 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Set.univ X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
@@ -365,6 +368,7 @@ section
 
 variable {ι : Type*}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
   depending on whether they satisfy a predicate p or not. -/
 @[simps!]
@@ -378,6 +382,7 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
 
 variable [DecidableEq ι] (i : ι)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A product of topological spaces can be split as the binary product of one of the spaces and
   the product of all the remaining spaces. -/
 @[simps!]
@@ -541,10 +546,14 @@ lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
   rw [eq_true hf.isClosedMap, true_and]
 
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Sum.map f g) := ⟨hf.1.sumMap hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
+    IsHomeomorph (Sum.map f g) :=
+  ⟨hf.continuous.sumMap hg.continuous, hf.isOpenMap.sumMap hg.isOpenMap,
+    hf.bijective.sumMap hg.bijective⟩
 
 lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Prod.map f g) := ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2, hf.3.prodMap hg.3⟩
+    IsHomeomorph (Prod.map f g) :=
+  ⟨hf.continuous.prodMap hg.continuous, hf.isOpenMap.prodMap hg.isOpenMap,
+    hf.bijective.prodMap hg.bijective⟩
 
 lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*}
     [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}

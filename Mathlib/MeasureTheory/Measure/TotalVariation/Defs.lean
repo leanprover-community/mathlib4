@@ -34,7 +34,6 @@ so that it takes values in `[0, 1]`.
 
 * `tvDist_self`, `tvDist_eq_zero_iff`, `tvDist_comm`, `tvDist_triangle`: the total variation
   distance between finite measures is a distance.
-
 -/
 
 @[expose] public section
@@ -124,14 +123,17 @@ lemma etvDist_lt_top_iff : etvDist μ ν < ∞ ↔ IsFiniteMeasure μ ∧ IsFini
 lemma etvDist_ne_top_iff : etvDist μ ν ≠ ∞ ↔ IsFiniteMeasure μ ∧ IsFiniteMeasure ν := by
   rw [← lt_top_iff_ne_top, etvDist_lt_top_iff]
 
-lemma etvDist_eq_iSup_finPartition_enorm [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+lemma etvDist_eq_iSup_finPartition_eNorm [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     etvDist μ ν =
       ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
         ∑ p ∈ P.parts, ‖μ.real p - ν.real p‖ₑ := by
-  rw [etvDist_eq_etvDist_toSignedMeasure, VectorMeasure.etvDist_eq_iSup_finPartition_enorm]
+  rw [etvDist_eq_etvDist_toSignedMeasure, VectorMeasure.etvDist_eq_iSup_finPartition_eNorm]
   simp only [Measure.toSignedMeasure_apply]
   congrm ⨆ P, ∑ s ∈ _, ?_
   simp [s.2]
+
+@[deprecated (since := "2026-11-06")]
+alias etvDist_eq_iSup_finPartition_enorm := etvDist_eq_iSup_finPartition_eNorm
 
 @[simp]
 lemma etvDist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : etvDist μ μ = 0 := by
@@ -163,7 +165,7 @@ lemma etvDist_of_ge [IsFiniteMeasure ν] (hμν : ν ≤ μ) :
   by_cases hμ : IsFiniteMeasure μ
   · calc etvDist μ ν
     _ = etvDist (μ - ν) 0 := by
-      simp only [etvDist_eq_iSup_finPartition_enorm, measureReal_zero, Pi.zero_apply, sub_zero]
+      simp only [etvDist_eq_iSup_finPartition_eNorm, measureReal_zero, Pi.zero_apply, sub_zero]
       congrm ⨆ P, ∑ s ∈ _, ‖?_‖ₑ
       simp only [Measure.real]
       rw [Measure.sub_apply s.2 hμν, ENNReal.toReal_sub_of_le (hμν s) (by simp)]
@@ -199,7 +201,7 @@ lemma ofReal_tvDist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure
 lemma tvDist_eq_iSup_finPartition_abs [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     tvDist μ ν = ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
       ∑ p ∈ P.parts, |μ.real p - ν.real p| := by
-  rw [tvDist, etvDist_eq_iSup_finPartition_enorm, ENNReal.toReal_iSup (by simp)]
+  rw [tvDist, etvDist_eq_iSup_finPartition_eNorm, ENNReal.toReal_iSup (by simp)]
   congr with P
   rw [ENNReal.toReal_sum (by simp)]
   simp

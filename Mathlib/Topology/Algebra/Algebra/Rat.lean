@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Monoid.Defs
 ## Results
 
 This is just a minimal stub for now!
-
 -/
 
 public section

@@ -181,10 +181,6 @@ protected theorem coe_coe {F : Type*} [FunLike F A B]
 
 theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
-@[macro_inline]
-instance : FunLike (A →ₛₙₐ[φ] B) A B where
-  coe f := f.toFun
-  coe_injective := coe_injective
 
 instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
   map_add f := f.map_add'

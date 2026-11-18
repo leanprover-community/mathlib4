@@ -27,7 +27,6 @@ import Mathlib.Algebra.Module.Torsion.Field
 
 * We introduce the notation `R ∙ v` for the span of a singleton, `Submodule.span R {v}`.  This is
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
-
 -/
 
 @[expose] public section
@@ -712,6 +711,14 @@ lemma isCompl_span_singleton_of_isCoatom_of_notMem (hs : IsCoatom s) (hx : x ∉
   rw [← covBy_top_iff] at hs
   simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
 
+theorem isCoatom_iff_exists_notMem_isCompl_span_singleton :
+    IsCoatom s ↔ ∃ x ∉ s, IsCompl s (K ∙ x) := by
+  refine ⟨fun hs ↦ ?_, fun ⟨x, hx, hc⟩ ↦ ?_⟩
+  · have ⟨b, hb⟩ := SetLike.exists_notMem_of_ne_top s hs.ne_top
+    exact ⟨b, hb, isCompl_span_singleton_of_isCoatom_of_notMem hs hb⟩
+  · rw [← covBy_top_iff, ← hc.symm.sup_eq_top]
+    exact covBy_span_singleton_sup hx
+
 end DivisionRing
 
 end Submodule
@@ -783,7 +790,7 @@ theorem toSpanSingleton_smul {S : Type*} [Monoid S] [DistribMulAction S M]
 
 theorem toSpanSingleton_isIdempotentElem_iff {e : R} :
     IsIdempotentElem (toSpanSingleton R R e) ↔ IsIdempotentElem e := by
-  simp_rw [IsIdempotentElem, LinearMap.ext_iff, Module.End.mul_apply, toSpanSingleton_apply,
+  simp_rw [IsIdempotentElem, LinearMap.ext_iff, mul_apply_eq_comp, toSpanSingleton_apply,
     smul_eq_mul, mul_assoc]
   exact ⟨fun h ↦ by conv_rhs => rw [← one_mul e, ← h, one_mul], fun h _ ↦ by rw [h]⟩
 
@@ -791,7 +798,7 @@ theorem isIdempotentElem_map_one_iff {f : Module.End R R} :
     IsIdempotentElem (f 1) ↔ IsIdempotentElem f := by
   rw [IsIdempotentElem, ← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, IsIdempotentElem,
     LinearMap.ext_iff]
-  simp_rw [Module.End.mul_apply]
+  simp_rw [mul_apply_eq_comp]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
@@ -933,5 +940,10 @@ theorem coord_self : (coord R M x h) (⟨x, Submodule.mem_span_singleton_self x�
 
 theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y • x = y :=
   Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
+
+@[simp]
+theorem coord_mk_smul (a : R) :
+    coord R M x h ⟨a • x, Submodule.mem_span_singleton.mpr ⟨a, rfl⟩⟩ = a :=
+  (symm_apply_eq (toSpanNonzeroSingleton R M x h)).mpr rfl
 
 end LinearEquiv

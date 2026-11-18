@@ -189,7 +189,7 @@ theorem frontier_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | (∀ i : Fin n, a ≤ y i) ∧ ∃ i : Fin n, a = y i } := by
   rw [frontier, closure_quadrant, interior_quadrant]
-  ext; simp; grind
+  ext; grind
 
 end
 
@@ -221,8 +221,8 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     rw [range_euclideanHalfSpace, interior_halfSpace]
     exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
-  continuous_invFun := by
-    exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
+  continuous_invFun :=
+    ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
       (PiLp.continuous_apply 2 _ 0).max continuous_const).subtype_mk _
 
 /--

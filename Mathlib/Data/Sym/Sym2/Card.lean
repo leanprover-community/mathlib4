@@ -10,6 +10,9 @@ public import Mathlib.Data.Sym.Sym2
 
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of `Sym2`
 
@@ -33,6 +36,19 @@ theorem finite_sym2_iff : Finite (Sym2 α) ↔ Finite α :=
 theorem infinite_sym2_iff : Infinite (Sym2 α) ↔ Infinite α := by
   contrapose!
   exact finite_sym2_iff
+
+@[simp]
+theorem _root_.Set.finite_sym2_iff {s : Set α} : s.sym2.Finite ↔ s.Finite := by
+  rw [← Set.finite_coe_iff, s.sym2Equiv.finite_iff, Sym2.finite_sym2_iff, Set.finite_coe_iff]
+
+protected alias ⟨_, _root_.Set.Finite.sym2⟩ := Set.finite_sym2_iff
+
+@[simp]
+theorem _root_.Set.infinite_sym2_iff {s : Set α} : s.sym2.Infinite ↔ s.Infinite := by
+  contrapose!
+  exact Set.finite_sym2_iff
+
+protected alias ⟨_, _root_.Set.Infinite.sym2⟩ := Set.infinite_sym2_iff
 
 theorem finite_mk_fiber (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).Finite := by
   cases z
@@ -91,7 +107,7 @@ theorem encard_diagSet : (@diagSet α).encard = ENat.card α :=
 variable (α) in
 theorem two_mul_encard_diagSet_compl_add_enatCard :
     2 * (@diagSet α)ᶜ.encard + ENat.card α = ENat.card α * ENat.card α := by
-  simpa [ENat.card] using congr($(two_mul_cardinalMk_diagSet_compl_add_cardinalMk α).toENat)
+  simpa using congr($(two_mul_cardinalMk_diagSet_compl_add_cardinalMk α).toENat)
 
 open scoped Classical in
 private noncomputable def boolProdSym2Equiv : Bool × Sym2 α ≃ α × Option α where

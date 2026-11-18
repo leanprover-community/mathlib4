@@ -10,6 +10,9 @@ public import Mathlib.Order.Minimal
 
 import Mathlib.Order.Hom.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite preorders and finite sets in a preorder
 
@@ -161,8 +164,8 @@ lemma OrderEmbedding.range_eq_iff
   let i : f '' .univ ≃o g '' .univ :=
     { __ := Set.equivOfEq (by simpa using! h)
       map_rel_iff' := by rfl }
-  have : (ef.trans i).trans eg.symm = .refl _ := by
-    exact Subsingleton.elim _ _
+  have : (ef.trans i).trans eg.symm = .refl _ :=
+    Subsingleton.elim _ _
   ext x
   simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
     using! congr(eg ($this ⟨x, Set.mem_univ x⟩))

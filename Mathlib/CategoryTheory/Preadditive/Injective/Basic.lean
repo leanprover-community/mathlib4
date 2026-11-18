@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective objects and categories with enough injectives
 
