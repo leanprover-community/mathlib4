@@ -249,7 +249,7 @@ theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t
 theorem IsUpperSet.eq_empty_or_Ici [WellFoundedLT α] (h : IsUpperSet s) :
     s = ∅ ∨ ∃ a, s = Ici a := by
   refine or_iff_not_imp_left.2 fun ha ↦ ?_
-  obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 ha
+  obtain ⟨a, ha⟩ := Set.ne_empty_iff_nonempty.1 ha
   exact ⟨_, ext fun b ↦ ⟨WellFoundedLT.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
 
 @[to_dual]
