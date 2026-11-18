@@ -14,10 +14,12 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 
 This file describes properties of almost everywhere strongly measurable functions with finite
 `p`-seminorm, denoted by `eLpNorm f p μ` and defined for `p:ℝ≥0∞` as `0` if `p=0`,
-`(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and `essSup ‖f‖ μ` for `p=∞`.
+`(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and `essSup ‖f‖ μ` for `p=∞`. We define it to be infinite
+if the function is not almost everywhere strongly measurable.
 
 It also introduces the inhomogeneous `p`-seminorm, equal to the `L^p` norm for `p ≥ 1`, to
-`∫ ‖f a‖^p ∂μ` for `0 < p < 1`, and to the measure of the support of `f` for `p = 0`. This
+`∫ ‖f a‖^p ∂μ` for `0 < p < 1`, and to the measure of the support of `f` for `p = 0` (also
+setting it to `∞` when the function is not almost everywhere strongly measurable). This
 version is denoted by `inhmgELpNorm` and always satisfies the triangle inequality.
 
 The Prop-valued `MemLp f p μ` states that a function `f : α → E` has finite
@@ -28,9 +30,10 @@ inhomogeneous `p`-seminorm.
 * `eLpNorm' f p μ` : `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `f : α → F` and `p : ℝ`, where `α` is a measurable
   space and `F` is a normed group.
 * `eLpNormEssSup f μ` : seminorm in `ℒ∞`, equal to the essential supremum `essSup ‖f‖ μ`.
-* `eLpNorm f p μ` : for `p : ℝ≥0∞`, seminorm in `ℒp`, equal to `0` for `p=0`, to `eLpNorm' f p μ`
-  for `0 < p < ∞` and to `eLpNormEssSup f μ` for `p = ∞`.
-* `inhmgELpNorm`: An inhomogeneous version of `eLpNorm`, defined differently for `p < 1`.
+* `eLpNorm f p μ` : for `p : ℝ≥0∞`, seminorm in `ℒp`, equal for ae strongly measurable functions
+  to `0` for `p=0`, to `eLpNorm' f p μ` for `0 < p < ∞` and to `eLpNormEssSup f μ` for `p = ∞`.
+* `inhmgELpNorm`: An inhomogeneous version of `eLpNorm`, defined differently for `p < 1` to make
+  sure that it satisfies the triangle inequality.
 * `MemLp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
   finite inhomogeneous `p`-seminorm for the measure `μ` (`inhmgELpNorm f p μ < ∞`, which
   implies almost everywhere strong measurability by definition of the seminorm).

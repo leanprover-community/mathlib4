@@ -58,7 +58,7 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : N
     Function.comp_def]
   simp [ENNReal.toReal_pos hp_zero hp_top]
 
-lemma inhmgELpNorm_indicator_eq_eLpNorm_restrict
+lemma inhmgELpNorm_indicator_eq_inhmgELpNorm_restrict
     {f : α → ε} {s : Set α} (hs : NullMeasurableSet s μ) :
     inhmgELpNorm (s.indicator f) p μ = inhmgELpNorm f p (μ.restrict s) := by
   rcases ne_or_eq p 0 with hp | rfl
@@ -180,7 +180,7 @@ lemma MemLp.indicator {f : α → ε} (hs : NullMeasurableSet s μ) (hf : MemLp 
 
 lemma memLp_indicator_iff_restrict {f : α → ε} (hs : NullMeasurableSet s μ) :
     MemLp (s.indicator f) p μ ↔ MemLp f p (μ.restrict s) := by
-  simp [MemLp, inhmgELpNorm_indicator_eq_eLpNorm_restrict hs]
+  simp [MemLp, inhmgELpNorm_indicator_eq_inhmgELpNorm_restrict hs]
 
 lemma memLp_indicator_const (p : ℝ≥0∞) (hs : NullMeasurableSet s μ) (c : E)
     (hμsc : c = 0 ∨ μ s ≠ ∞) :

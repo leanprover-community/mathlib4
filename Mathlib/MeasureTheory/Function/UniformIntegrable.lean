@@ -92,7 +92,6 @@ protected theorem eLpNorm_lt_top (hf : UniformIntegrable f p μ) (i : ι) :
     eLpNorm (f i) p μ < ∞ :=
   (le_iSup _ i).trans_lt hf.iSup_eLpNorm_lt
 
-
 protected theorem memLp (hf : UniformIntegrable f p μ) (hp : p ≠ 0) (i : ι) : MemLp (f i) p μ := by
   rw [memLp_iff_eLpNorm_of_ne_zero hp]
   exact hf.eLpNorm_lt_top i
