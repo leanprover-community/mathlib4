@@ -240,7 +240,6 @@ to module `Foo.Bar` (no `srcDir` indirection).
 - `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
 - `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
-  `check_title_labels.lean` is a temporary copy of `check-title-labels.lean` and will be deleted soon.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
@@ -256,6 +255,10 @@ to module `Foo.Bar` (no `srcDir` indirection).
   successful master build and publishes the result to the
   [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
   (committing only when the entries actually change).
+- [`crossref-diff.yml`](../.github/workflows/crossref-diff.yml)
+  Post-build workflow that diffs a PR build's `crossrefs.json` against the master build at the
+  PR's merge base, then comments on the PR with the cross-references it adds, each linked to its
+  database entry. The table is rendered by mathlib-ci's `pr_summary/crossrefsDiff.py`.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
@@ -331,7 +334,7 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   (leanprover/lean4#12805 or later).
 
 **API surrounding CI**
-- `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+- `check-title-labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
 
 **Docker images**
 - `docker_build.sh` builds the `lean4`, `gitpod4`, and `gitpod4-blueprint` Docker images.

@@ -55,10 +55,6 @@ lemma cochainComplex_d (n₁ n₂ : ℤ) (k₁ k₂ : ℕ) (h₁ : k₁ = n₁) 
       R.cocomplex.d k₁ k₂ ≫ (cochainComplexXIso _ _ _ h₂).inv :=
   HomologicalComplex.extend_d_eq _ _ h₁ h₂
 
-instance : R.cochainComplex.IsStrictlyGE 0 := by
-  dsimp [cochainComplex]
-  infer_instance
-
 instance (n : ℤ) : Injective (R.cochainComplex.X n) := by
   by_cases hn : 0 ≤ n
   · obtain ⟨k, rfl⟩ := Int.eq_ofNat_of_zero_le hn

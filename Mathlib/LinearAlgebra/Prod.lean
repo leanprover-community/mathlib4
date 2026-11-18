@@ -425,9 +425,7 @@ theorem _root_.Submodule.disjoint_fst_snd : Disjoint (Submodule.fst R M M₂) (.
   simp [disjoint_def]
 
 theorem _root_.Submodule.codisjoint_fst_snd : Codisjoint (Submodule.fst R M M₂) (.snd R M M₂) := by
-  rw [codisjoint_iff_le_sup]
-  rintro ⟨x, y⟩ -
-  simp [mem_sup]
+  simp [codisjoint_iff_exists_add_eq]
 
 theorem _root_.Submodule.isCompl_fst_snd : IsCompl (Submodule.fst R M M₂) (.snd R M M₂) :=
   ⟨Submodule.disjoint_fst_snd R M M₂, Submodule.codisjoint_fst_snd R M M₂⟩
