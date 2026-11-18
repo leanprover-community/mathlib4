@@ -113,7 +113,7 @@ theorem isOpen_iff_inter :
 theorem isOpen_iff_coe_preimage :
     IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) := by
   simp [hU.isOpen_iff_inter (s := s),
-    (U _).isOpen.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
+    (U _).isOpenEmbedding'.isOpen_iff_image_isOpen,
     image_preimage_eq_inter_range]
 
 theorem isClosed_iff_coe_preimage {s : Set β} :
