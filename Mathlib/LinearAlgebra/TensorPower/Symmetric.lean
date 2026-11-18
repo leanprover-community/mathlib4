@@ -29,18 +29,18 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 * Universal property: linear maps from `Sym[R]^n M` to `N` correspond to symmetric multilinear
   maps `M ^ n` to `N`.
 * Relate to homogeneous (multivariate) polynomials of degree `n`.
-
 -/
 
 @[expose] public section
 
 suppress_compilation
 
-universe u v
+universe u v w
 
 open TensorProduct Equiv
 
-variable (R ι : Type u) [CommSemiring R] (M : Type v) [AddCommMonoid M] [Module R M] (s : ι → M)
+variable (R : Type u) (ι : Type w) [CommSemiring R] (M : Type v)
+  [AddCommMonoid M] [Module R M] (s : ι → M)
 
 /-- The relation on the `ι`-indexed tensor power of `M` where two tensors are equal
 if they are related by a permutation of `ι`. -/
@@ -50,7 +50,7 @@ inductive SymmetricPower.Rel : (⨂[R] _, M) → (⨂[R] _, M) → Prop
 /-- The `ι`-indexed symmetric tensor power of a semimodule `M` over a commutative semiring `R`
 is the quotient of the `ι`-indexed tensor power of `M` by the relation that two tensors are equal
 if they are related by a permutation of `ι`. -/
-def SymmetricPower : Type max u v :=
+def SymmetricPower : Type max u v w :=
   (addConGen (SymmetricPower.Rel R ι M)).Quotient
 deriving AddCommMonoid
 

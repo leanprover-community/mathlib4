@@ -50,7 +50,6 @@ and bounded at infinity.
 * Lemmas relating q-expansion coefficients to Fourier series, such as
   `UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn`, are placed in `Bounds.lean`, since
   the present file does not import Fourier theory.
-
 -/
 
 assert_not_exists fourierCoeffOn -- guard against import creep
@@ -342,7 +341,7 @@ lemma qExpansion_coeff_eq_intervalIntegral {f : ℍ → ℂ} (hh : 0 < h)
     grind
   -- now just complex exponential arithmetic to finish
   simp_rw [deriv_circleMap, this, show ↑I = Complex.I by rfl, show u + t * Complex.I = τ by rfl,
-    show ⟨↑τ, τ.2⟩ = τ by rfl, eq_cuspFunction _ hh.ne' hfper, smul_eq_mul, pow_succ]
+    show ⟨↑τ, τ.coe_im_pos⟩ = τ by rfl, eq_cuspFunction _ hh.ne' hfper, smul_eq_mul, pow_succ]
   field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
   push_cast
   ring
@@ -697,7 +696,8 @@ lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] (hh : 0 < h)
 
 open scoped DirectSum in
 /-- The qExpansion map as a `ℂ`-algebra map from the graded ring of modular forms to power series
-over `ℂ`. -/
+over `ℂ`. This requires `Γ.HasDetOne` so that `ModularForm Γ k` carries a
+`ℂ`-module structure. Compare `ModularForm.const` with `ModularForm.constℝ`. -/
 def qExpansionAlgHom (h) [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     (⨁ k, ModularForm Γ k) →ₐ[ℂ] PowerSeries ℂ :=
   DirectSum.toAlgebra ℂ _

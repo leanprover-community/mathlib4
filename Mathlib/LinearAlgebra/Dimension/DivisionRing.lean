@@ -27,7 +27,6 @@ For vector spaces (i.e. modules over a division ring), we have
   is at most the `R`-rank of `M`.
 
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
-
 -/
 
 public section

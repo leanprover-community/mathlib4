@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 This file contains the definition of triangulated categories, which are
 pretriangulated categories which satisfy the octahedron axiom.
-
 -/
 
 @[expose] public section
@@ -103,12 +102,12 @@ variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   (h : Octahedron comm h₁₂ h₂₃ h₁₃)
 
 /-- The triangle `Z₁₂ ⟶ Z₁₃ ⟶ Z₂₃ ⟶ Z₁₂⟦1⟧` given by an octahedron. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def triangle : Triangle C :=
   Triangle.mk h.m₁ h.m₃ (w₂₃ ≫ v₁₂⟦1⟧')
 
 /-- The first morphism of triangles given by an octahedron. -/
-@[simps]
+@[simps, implicit_reducible]
 def triangleMorphism₁ : Triangle.mk u₁₂ v₁₂ w₁₂ ⟶ Triangle.mk u₁₃ v₁₃ w₁₃ where
   hom₁ := 𝟙 X₁
   hom₂ := u₂₃
@@ -122,7 +121,7 @@ def triangleMorphism₁ : Triangle.mk u₁₂ v₁₂ w₁₂ ⟶ Triangle.mk u�
     simpa only [Functor.map_id, comp_id] using h.comm₂.symm
 
 /-- The second morphism of triangles given an octahedron. -/
-@[simps]
+@[simps, implicit_reducible]
 def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u₂₃ v₂₃ w₂₃ where
   hom₁ := u₁₂
   hom₂ := 𝟙 X₃
@@ -138,7 +137,6 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
 
 variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/
 def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃') (u₁₃' : X₁' ⟶ X₃')
     (comm' : u₁₂' ≫ u₂₃' = u₁₃')
@@ -165,21 +163,24 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
   have rel₁₃ := H.triangleMorphism₁.comm₃
   have rel₂₂ := H.triangleMorphism₂.comm₂
   have rel₂₃ := H.triangleMorphism₂.comm₃
-  dsimp [iso₁₂, iso₂₃, iso₁₃] at eq₁₂ eq₁₂' eq₁₃ eq₁₃' eq₂₃ eq₂₃' rel₁₂ rel₁₃ rel₂₂ rel₂₃
-  rw [Functor.map_id, comp_id] at rel₁₃
-  rw [id_comp] at rel₂₂
+  simp only [Triangle.mk_obj₁, Triangle.mk_obj₂, Triangle.mk_obj₃,
+    Triangle.mk_mor₂, Triangle.mk_mor₃,
+    triangleMorphism₁_hom₁, triangleMorphism₂_hom₁, triangleMorphism₂_hom₃,
+    triangleMorphism₁_hom₂, triangleMorphism₂_hom₂,
+    iso₁₂, iso₁₃, iso₂₃,
+    isoTriangleOfIso₁₂_hom_hom₂, Triangle.mk_obj₂, isoTriangleOfIso₁₂_hom_hom₁,
+    triangleMorphism₁_hom₃, Functor.map_id, comp_id, id_comp]
+    at eq₁₂ eq₁₂' eq₁₃ eq₁₃' eq₂₃ eq₂₃' rel₁₂ rel₁₃ rel₂₂ rel₂₃
   refine ⟨iso₁₂.hom.hom₃ ≫ H.m₁ ≫ iso₁₃.inv.hom₃,
     iso₁₃.hom.hom₃ ≫ H.m₃ ≫ iso₂₃.inv.hom₃, ?_, ?_, ?_, ?_, ?_⟩
   · rw [reassoc_of% eq₁₂, ← cancel_mono iso₁₃.hom.hom₃, assoc, assoc, assoc, assoc,
       iso₁₃.inv_hom_id_triangle_hom₃, eq₁₃, reassoc_of% comm₂₃, ← rel₁₂]
-    dsimp
-    rw [comp_id]
+    simp
   · rw [← cancel_mono (e₁.hom⟦(1 : ℤ)⟧'), eq₁₂', assoc, assoc, assoc, eq₁₃',
       iso₁₃.inv_hom_id_triangle_hom₃_assoc, ← rel₁₃]
   · rw [reassoc_of% eq₁₃, reassoc_of% rel₂₂, ← cancel_mono iso₂₃.hom.hom₃, assoc, assoc,
       iso₂₃.inv_hom_id_triangle_hom₃, eq₂₃]
-    dsimp
-    rw [comp_id]
+    simp
   · rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc, assoc, eq₂₃',
       iso₂₃.inv_hom_id_triangle_hom₃_assoc, ← rel₂₃, ← Functor.map_comp, comm₁₂,
       Functor.map_comp, reassoc_of% eq₁₃']
@@ -318,7 +319,6 @@ variable {C}
     Octahedron comm h₁₂ h₂₃ h₁₃ :=
   (IsTriangulated.octahedron_axiom comm h₁₂ h₂₃ h₁₃).some
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A choice of octahedron' given by the octahedron axiom. -/
 @[no_expose] def Triangulated.someOctahedron' [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}

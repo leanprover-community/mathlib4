@@ -65,7 +65,6 @@ for commutative rings.
 ## TODO
 
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
-
 -/
 
 @[expose] public section
@@ -207,8 +206,8 @@ abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
 variable {A} in
 theorem iCycles_mk {m n : ℕ} (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
     (hf : (inhomogeneousChains A).d m n f = 0) :
-    iCycles A m (cyclesMk m n h f hf) = f := by
-  exact (inhomogeneousChains A).i_cyclesMk f n h hf
+    iCycles A m (cyclesMk m n h f hf) = f :=
+  (inhomogeneousChains A).i_cyclesMk f n h hf
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
 inhomogeneous chains. -/
@@ -233,7 +232,6 @@ abbrev groupHomology.π (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 @[elab_as_elim]
 theorem groupHomology_induction_on {n : ℕ}

@@ -274,8 +274,8 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
   · simp [h]
-  have hij : j + -i ≠ 0 := by
-    exact sub_ne_zero.mpr (Ne.symm h)
+  have hij : j + -i ≠ 0 :=
+    sub_ne_zero.mpr (Ne.symm h)
   convert
     integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
       (fourier_add_half_inv_index hij hT.elim)
@@ -579,7 +579,7 @@ theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ �
     (fun x _ ↦ has_antideriv_at_fourier_neg hT hn x |>.hasDerivWithinAt) hf'
     (((map_continuous (fourier (-n))).comp (AddCircle.continuous_mk' _)).intervalIntegrable _ _)]
   have : ∀ u v w : ℂ, u * ((b - a : ℝ) / v * w) = (b - a : ℝ) / v * (u * w) := by intros; ring
-  conv in intervalIntegral _ _ _ _ => congr; ext; rw [this]
+  conv in intervalIntegral _ _ _ _ => enter [1, _]; rw [this]
   rw [(by ring : ((b - a : ℝ) : ℂ) / (-2 * π * I * n) = ((b - a : ℝ) : ℂ) * (1 / (-2 * π * I * n)))]
   have s2 : (b : AddCircle (b - a)) = (a : AddCircle (b - a)) := by
     simpa using coe_add_period (b - a) a

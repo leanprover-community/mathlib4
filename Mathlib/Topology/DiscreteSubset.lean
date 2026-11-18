@@ -36,7 +36,6 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 We define the filter `Filter.codiscreteWithin S`, which is the supremum of all `𝓝[S \ {x}] x`.
 This is the filter of all open codiscrete sets within S. We also define `Filter.codiscrete` as
 `Filter.codiscreteWithin univ`, which is the filter of all open codiscrete sets in the space.
-
 -/
 
 @[expose] public section
@@ -166,7 +165,7 @@ lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
 
 lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
     {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
-  let := hs.1
+  let := hs.to_subtype
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 

@@ -15,8 +15,8 @@ This file defines the polar decomposition for a continuous linear map `T : E →
 between (potentially distinct) Hilbert spaces `E` and `F`.
 
 ## Main definitions
- - `ContinuousLinearMap.polarₗᵢ` the linear isometry `U : |T|.range.topologicalClosure →ₗᵢ[ℂ] F`
-    such that `T = U ∘ |T|`.
+ - `ContinuousLinearMap.polarₗᵢ` the linear isometry `U : T.abs.range.topologicalClosure →ₗᵢ[ℂ] F`
+    such that `T = U ∘ T.abs`.
 
 -/
 
@@ -33,38 +33,35 @@ variable {E F : Type*}
 
 section Polar
 
-@[inherit_doc]
-local notation "|" T "|" => abs T
-
-private def polarₗᵢAux (T : E →L[ℂ] F) : |T|.range →ₗ[ℂ] F :=
-  Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs_eq fun _ a ↦ a)
-    ∘ₗ |T|.quotKerEquivRange.symm.toLinearMap
+private def polarₗᵢAux (T : E →L[ℂ] F) : T.abs.range →ₗ[ℂ] F :=
+  Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs fun _ a ↦ a)
+    ∘ₗ T.abs.quotKerEquivRange.symm.toLinearMap
 
 @[simp]
-private theorem polarₗᵢAux_apply (T : E →L[ℂ] F) (x : E) (h : |T| x ∈ |T|.range) :
-    polarₗᵢAux T ⟨|T| x, h⟩ = T x := by
-  exact congrArg _ (|T|.quotKerEquivRange_symm_apply_image x h)
+private theorem polarₗᵢAux_apply (T : E →L[ℂ] F) (x : E) (h : T.abs x ∈ T.abs.range) :
+    polarₗᵢAux T ⟨T.abs x, h⟩ = T x := by
+  exact congrArg _ (T.abs.quotKerEquivRange_symm_apply_image x h)
 
 private theorem denseRange_inclusion (T : E →L[ℂ] F) :
-    DenseRange (Submodule.inclusion |T|.range.le_topologicalClosure) := by
+    DenseRange (Submodule.inclusion T.abs.range.le_topologicalClosure) := by
   erw [denseRange_inclusion_iff (by
-    simpa [← SetLike.coe_subset_coe] using |T|.range.le_topologicalClosure)]
+    simpa [← SetLike.coe_subset_coe] using T.abs.range.le_topologicalClosure)]
   simp
 
-/-- The polar `U` is a linear isometry from the range `|T|.range` of `|T|` to the orthogonal of
-the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that `T = U ∘ |T|`. -/
-def polarₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[ℂ] F :=
+/-- The polar `U` is a linear isometry from the range `T.abs.range` of `T.abs` to the orthogonal of
+the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that `T = U ∘ T.abs`. -/
+def polarₗᵢ (T : E →L[ℂ] F) : T.abs.range.topologicalClosure →ₗᵢ[ℂ] F :=
   T.polarₗᵢAux.extendOfIsometry
-    (e := Submodule.inclusion |T|.range.le_topologicalClosure)
+    (e := Submodule.inclusion T.abs.range.le_topologicalClosure)
     T.denseRange_inclusion
     (by
       rintro ⟨_, x, rfl⟩
       simp [norm_abs_apply])
 
 theorem polarₗᵢ_apply (T : E →L[ℂ] F) (x : E) :
-    T.polarₗᵢ ⟨|T| x, |T|.range.le_topologicalClosure ⟨x, rfl⟩⟩ = T x := by
-  rw [← Submodule.inclusion_apply |T|.range.le_topologicalClosure
-    ⟨|T| x, LinearMap.mem_range_self _ x⟩]
+    T.polarₗᵢ ⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩ = T x := by
+  rw [← Submodule.inclusion_apply T.abs.range.le_topologicalClosure
+    ⟨T.abs x, LinearMap.mem_range_self _ x⟩]
   simp [polarₗᵢ]
 
 theorem range_polarₗᵢ (T : E →L[ℂ] F) :
@@ -79,7 +76,7 @@ theorem range_polarₗᵢ (T : E →L[ℂ] F) :
   · exact Submodule.topologicalClosure_minimal _
       (by
         rintro _ ⟨x, rfl⟩
-        exact ⟨⟨|T| x, |T|.range.le_topologicalClosure ⟨x, rfl⟩⟩, T.polarₗᵢ_apply x⟩)
+        exact ⟨⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩, T.polarₗᵢ_apply x⟩)
       T.polarₗᵢ.isometry.isClosedEmbedding.isClosed_range
 
 theorem polarₗᵢ_adjoint_comp (T : E →L[ℂ] F) :

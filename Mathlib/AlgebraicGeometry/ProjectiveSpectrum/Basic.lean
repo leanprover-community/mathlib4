@@ -29,7 +29,6 @@ In this file we provide basic properties of the scheme.
 - `AlgebraicGeometry.Proj.fromOfGlobalSections`:
   Given a map `f : A →+* Γ(X, ⊤)` such that the image of the irrelevant ideal under `f`
   generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`.
-
 -/
 
 @[expose] public section
@@ -257,7 +256,8 @@ def pullbackAwayιIso :
     IsOpenImmersion.isoOfRangeEq (Limits.pullback.fst _ _ ≫ awayι 𝒜 f f_deg hm)
       (awayι 𝒜 x (hx ▸ SetLike.mul_mem_graded f_deg g_deg) (hm.trans_le (m.le_add_right m'))) <| by
   rw [IsOpenImmersion.range_pullback_to_base_of_left]
-  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).1 = (awayι 𝒜 _ _ _).opensRange.1
+  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).carrier =
+    (awayι 𝒜 _ _ _).opensRange.carrier
   rw [opensRange_awayι, opensRange_awayι, opensRange_awayι, ← basicOpen_mul, hx]
 
 @[reassoc (attr := simp)]

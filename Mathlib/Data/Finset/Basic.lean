@@ -38,7 +38,6 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -482,7 +481,7 @@ theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
 
 @[simp]
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
-  simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty

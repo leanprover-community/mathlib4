@@ -33,7 +33,6 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
   on `M.toMon : Mon (C ⥤ C)`.
 * Canonical left action of `Type u` on `u`-small cocomplete categories via the
   copower.
-
 -/
 
 @[expose] public section

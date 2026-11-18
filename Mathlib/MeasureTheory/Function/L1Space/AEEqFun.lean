@@ -24,7 +24,6 @@ classes of integrable functions, already defined as a special case of `L^p` spac
 ## Tags
 
 function space, l1
-
 -/
 
 @[expose] public section

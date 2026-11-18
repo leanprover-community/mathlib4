@@ -38,7 +38,6 @@ universe than `ModuleCat.{v} R`.
   ideals `I`, then `M` has injective dimension `< n`.
 * `ModuleCat.hasInjectiveDimensionLT_iff_quotients`: if and only if version of
   `ModuleCat.hasInjectiveDimensionLT_of_quotients`
-
 -/
 
 @[expose] public section

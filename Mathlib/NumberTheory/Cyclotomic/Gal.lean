@@ -35,7 +35,6 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
   `PowerBasis.map_conjugate`; but figuring out the exact correct assumptions + proof for this is
   mathematically nontrivial. (Current thoughts: the correct condition is that the annihilating
   ideal of both elements is equal. This may not hold in an ID, and definitely holds in an ICD.)
-
 -/
 
 @[expose] public section
