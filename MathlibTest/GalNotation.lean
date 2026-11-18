@@ -62,14 +62,14 @@ set_option pp.explicit true in
 info: @AlgEquiv K L L
   (@Distrib.toAdd L
     (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
-  (@Distrib.toMul L
-    (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
-  (@Algebra.toSMul K L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
-    (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝)
   (@Distrib.toAdd L
     (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
   (@Distrib.toMul L
     (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
+  (@Distrib.toMul L
+    (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
+  (@Algebra.toSMul K L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+    (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝)
   (@Algebra.toSMul K L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
     (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝) : Type uL
 -/
