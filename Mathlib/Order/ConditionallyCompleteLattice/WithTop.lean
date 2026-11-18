@@ -24,8 +24,9 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*}
 
--- TODO: find a better home for these lemmas.
 namespace WithTop
+
+-- TODO: find a better home for these lemmas.
 
 @[to_dual]
 theorem isCompl_range_coe : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
