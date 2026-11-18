@@ -26,6 +26,7 @@ jobs:
         sparse-checkout: .github/actions
         path: workflow-actions
     - name: Get mathlib-ci
+      id: mathlib-ci
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Configure Lean
@@ -59,6 +60,10 @@ jobs:
     - name: build mathlib
       id: build
       continue-on-error: true
+      env:
+        REPO: ${{ github.repository }}
+        SHA: ${{ github.sha }}
+        REF: ${{ steps.mathlib-ci.outputs.ref }}
       run: |
         # The default step shell is `bash -e` without `pipefail`, so the status of
         # `lake build | tee` would be tee's. Make the pipeline report lake's instead.
@@ -70,12 +75,14 @@ jobs:
         lake build | tee "${lean_outfile}" || build_status=$?
         if [ "${build_status}" -eq 0 ]; then build_success=true; else build_success=false; fi
 
-        # Process output for posting to Zulip
-        SHA=${{ github.sha }} \
-        REPO=${{ github.repository }} \
-        RUN_ID=${{ github.run_id }} \
+        # Process output for posting to Zulip.
+        # The description links to the linter set, this workflow and the reporting script.
+        blob="https://github.com/${REPO}/blob/${SHA}"
         INFO=true \
         SUCCESS="${build_success}" \
+        LOCATIONS_MAX_COUNT=2 \
+        MAX_ROWS=20 \
+        DESCRIPTION="\`lake build\` with [\`linter.weeklyLintSet\`](${blob}/Mathlib/Init.lean) enabled ([workflow](${blob}/.github/workflows/weekly-lints.yml), [reporting script](https://github.com/leanprover-community/mathlib-ci/blob/${REF}/scripts/reporting/zulip_build_report.sh))." \
           "${CI_SCRIPTS_DIR}/reporting/zulip_build_report.sh" "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper

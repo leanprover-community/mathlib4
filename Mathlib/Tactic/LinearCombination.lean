@@ -33,7 +33,6 @@ Lastly, calls a normalization tactic on this target.
 ## References
 
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
-
 -/
 
 public meta section

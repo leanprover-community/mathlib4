@@ -160,8 +160,9 @@ section Prod
 /-- Send a measure `ν` on `Y` and a function `f` on `X × Y` to the function on `X` given by
 `x ↦ ν (f (x, ·))`, or more suggestively, `x ↦ ∫ f(x, y) dμ(y)`. -/
 def contractSnd : D(Y, R) →ₗ[R] C(X × Y, R) →ₗ[R] C(X, R) :=
-  LinearMap.mk₂ R (fun ν f ↦ comp ν f.curry) ?_ ?_ ?_ ?_ where finally
-    all_goals intros; ext; simp
+  LinearMap.mk₂ R (fun ν f ↦ comp ν f.curry) ?_ ?_ ?_ ?_
+where finally
+  all_goals intros; ext; simp
 
 /-- Send a measure `μ` on `X` and a function `f` on `X × Y` to the function on `Y` given by
 `y ↦ μ (f (·, y))`, or more suggestively, `y ↦ ∫ f(x, y) dμ(x)`. -/

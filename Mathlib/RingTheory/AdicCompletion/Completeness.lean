@@ -35,7 +35,6 @@ when the ideal `I` is finitely generated.
 
 * `MvPowerSeries.isAdicComplete`: Multivariate power series is adic complete with respect to
   the ideal spanned by all variables when the index is finite.
-
 -/
 
 public section

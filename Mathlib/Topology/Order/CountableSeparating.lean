@@ -55,7 +55,7 @@ instance range_Ioi : HasCountableSeparatingOn X (· ∈ range Ioi) s :=
   .range_Iio (X := Xᵒᵈ)
 
 instance range_Iic : HasCountableSeparatingOn X (· ∈ range Iic) s :=
-  let ⟨t, htc, ht_sub, ht⟩ := (range_Ioi (X := X) (s := s)).1
+  let ⟨t, htc, ht_sub, ht⟩ := (range_Ioi (X := X) (s := s)).exists_countable_separating
   ⟨compl '' t, htc.image _, by simpa [← compl_inj_iff (x := Ioi _)] using ht_sub,
     by simpa [not_iff_not]⟩
 

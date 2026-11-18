@@ -77,7 +77,7 @@ def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   constructor
   · rw [← ker_eq_bot, ker_coprod_of_disjoint_range, ker_subtype, ker_subtype, prod_bot]
     rw [range_subtype, range_subtype]
-    exact h.1
+    exact h.disjoint
   · rw [← range_eq_top, ← sup_eq_range, h.sup_eq_top]
 
 @[simp]
@@ -809,8 +809,6 @@ namespace Submodule
 @[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_eq_zero_iff :=
   projection_apply_eq_zero_iff
 @[deprecated (since := "2026-05-05")] alias linearProjOfIsCompl_apply_of_mem_right :=
-  projectionOnto_apply_of_mem_right
-@[deprecated (since := "2026-04-27")] alias linearProjOfIsCompl_apply_right' :=
   projectionOnto_apply_of_mem_right
 @[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_of_mem_right :=
   projection_apply_of_mem_right

@@ -154,7 +154,7 @@ alias _root_.isSolvable_def := Group.isSolvable_def
 
 @[to_additive]
 instance (priority := 100) {G : Type*} [Group G] [IsMulCommutative G] : IsSolvable G :=
-  ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_le_ker (MonoidHom.id G))⟩⟩
+  ⟨⟨1, le_bot_iff.mp (Group.Abelianization.commutator_le_ker (MonoidHom.id G))⟩⟩
 
 @[to_additive]
 theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
