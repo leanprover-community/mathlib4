@@ -175,7 +175,6 @@ theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The following square commutes:
 ```
@@ -188,12 +187,11 @@ Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
 @[reassoc] theorem awayι_comp_map {i : ℕ} (hi : 0 < i) (s : A) (hs : s ∈ 𝒜 i) :
     awayι ℬ (f s) (f.2 hs) hi ≫ map f hf =
     Spec.map (CommRingCat.ofHom (Away.map f s)) ≫ awayι 𝒜 s hs hi := by
-  rw [awayι, awayι, Category.assoc, ι_comp_map, ← Category.assoc, ← Category.assoc]
-  congr 1
-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
-  simp only [basicOpenIsoSpec_hom, basicOpenToSpec, Category.assoc, ← Spec.map_comp,
-    ← Scheme.Opens.toSpecΓ_SpecMap_appLE_assoc, map_preimage_basicOpen,
-    awayToSection_comp_appLE _ _ hs]
+  rw [awayι, awayι, Category.assoc,
+    ← Scheme.Hom.resLE_comp_ι _ (map_preimage_basicOpen f hf s).ge, ← Category.assoc,
+    ← Category.assoc, cancel_mono, Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
+  simp [basicOpenIsoSpec_hom, basicOpenToSpec, ← Spec.map_comp,
+    ← Scheme.Opens.toSpecΓ_SpecMap_appLE_assoc, awayToSection_comp_appLE _ _ hs]
 
 /-- Given a graded ring hom `f : 𝒜 →+*ᵍ ℬ` satisfying the hypothesis `ℬ₊ ≤ 𝒜₊.map f`, we obtain
 an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positive degree. -/
