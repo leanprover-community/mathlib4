@@ -114,8 +114,8 @@ theorem IsPowMul.le_gelfandRadiusNormAux {f : AlgebraNorm K L} (hf : IsPowMul f)
     simp_rw [map_smul_eq_mul]
     grw [norm_le_pi_norm, ← Finset.mul_sum, ← Algebra.leftMulMatrix_mulVec_repr,
       Matrix.linfty_opNorm_mulVec, mul_assoc, mul_comm]
-  refine le_gelfandRadius_of_bound _ (C := max C 1) fun n ↦ ?_
-  grw [← hf.map_pow, hC, map_pow, le_max_left C 1]
+  refine le_gelfandRadius_of_bound _ (C := C) fun n ↦ ?_
+  grw [← hf.map_pow, hC, map_pow]
 
 end
 
