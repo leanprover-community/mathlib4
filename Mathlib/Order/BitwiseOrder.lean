@@ -49,17 +49,24 @@ class IsDistribBitwiseLattice (α : Type*) [AndOp α] [OrOp α] : Prop where
   [toIdempotentOp_and : Std.IdempotentOp (α := α) HAnd.hAnd]
   [toAssociative_and : Std.Associative (α := α) HAnd.hAnd]
   [toCommutative_and : Std.Commutative (α := α) HAnd.hAnd]
+  [toIdempotentOp_or : Std.IdempotentOp (α := α) HOr.hOr]
+  [toAssociative_or : Std.Associative (α := α) HOr.hOr]
+  [toCommutative_or : Std.Commutative (α := α) HOr.hOr]
   and_or_distrib_left (x y z : α) : x &&& (y ||| z) = (x &&& y) ||| (x &&& z)
   and_or_self_left (x y : α) : x &&& (x ||| y) = x
-  and_or_self_right (x y : α) : y &&& (x ||| y) = y
 
 namespace IsDistribBitwiseLattice
 variable {α : Type*} [AndOp α] [OrOp α] [IsDistribBitwiseLattice α]
 
-attribute [instance] toIdempotentOp_and toAssociative_and toCommutative_and
+attribute [instance]
+  toIdempotentOp_and toAssociative_and toCommutative_and
+  toIdempotentOp_or toAssociative_or toCommutative_or
 
 theorem and_or_distrib_right (x y z : α) : (x ||| y) &&& z = (x &&& z) ||| (y &&& z) := by
   simp only [Std.Commutative.comm (op := HAnd.hAnd) _ z, and_or_distrib_left]
+
+theorem and_or_self_right (x y : α) : y &&& (x ||| y) = y := by
+  rw [Std.Commutative.comm (op := HOr.hOr) x y, and_or_self_left]
 
 attribute [grind =] and_or_distrib_left and_or_distrib_right and_or_self_left and_or_self_right
 
@@ -84,7 +91,6 @@ attribute [grind =] and_xor_distrib_left and_xor_distrib_right or_xor_self Lawfu
 
 theorem bot_eq_zero {bot : α} [Std.LawfulIdentity (α := α) (· ||| ·) bot] : bot = 0 := by
   have := IsDistribBitwiseLattice.and_or_self_left bot 0
-  have := Std.LawfulLeftIdentity.left_id (op := (· ||| ·)) (0 : α)
   have := LawfulXor.xor_self bot
   grind
 
@@ -93,7 +99,6 @@ end IsGeneralizedBitwiseAlgebra
 instance : IsGeneralizedBitwiseAlgebra Nat where
   and_or_distrib_left := Nat.and_or_distrib_left
   and_or_self_left _ _ := by apply Nat.eq_of_testBit_eq; grind
-  and_or_self_right _ _ := by apply Nat.eq_of_testBit_eq; grind
   and_xor_distrib_left _ _ _ := Nat.and_xor_distrib_left
   or_xor_self _ _ := by apply Nat.eq_of_testBit_eq; grind
 
@@ -111,7 +116,6 @@ attribute [simp, grind =] IsBitwiseAlgebra.and_not_self IsBitwiseAlgebra.or_not_
 instance {w} : IsBitwiseAlgebra (BitVec w) where
   and_or_distrib_left := by grind
   and_or_self_left := by grind
-  and_or_self_right := by grind
   and_xor_distrib_left := by grind
   or_xor_self := by grind
   and_not_self := BitVec.and_not_self
@@ -128,7 +132,6 @@ run_cmd do
       instance : IsBitwiseAlgebra $ty where
         and_or_distrib_left := by grind
         and_or_self_left := by grind
-        and_or_self_right := by grind
         and_xor_distrib_left := by grind
         or_xor_self := by grind
         and_not_self _ := $and_not_self
