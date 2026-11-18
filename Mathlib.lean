@@ -5685,6 +5685,7 @@ public import Mathlib.MeasureTheory.Function.JacobianOneDim
 public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
 public import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Function.L1Space.Projection
 public import Mathlib.MeasureTheory.Function.L2Space
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Function.LpOrder
