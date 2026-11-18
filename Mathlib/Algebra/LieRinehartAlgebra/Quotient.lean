@@ -1,0 +1,122 @@
+/-
+Copyright (c) 2026 Leonid Ryvkin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Leonid Ryvkin
+-/
+module
+
+public import Mathlib.Algebra.LieRinehartAlgebra.StrictIdeal
+
+/-!
+# Quotients of Lie-Rinehart algebras by strict Lie-Rinehart ideals
+
+Given a Lie-Rinehart algebra `(R A L)` and a strict ideal `s ⊆ L`, the quotient `L ⧸ s` inherits the
+structure of a Lie-Rinehart algebra.
+
+## Main statements:
+
+* The quotient of a Lie-Rinehart algebra by a strict Lie-Rinehart ideal is a Lie-Rinehart algebra.
+
+* The quotient map `mk'` is a Lie-Rinehart algebra homomorphism.
+
+## Implementation notes
+
+Quotients by strict ideals appear in [huebschmann_1999] in the form of extensions; in our notation
+these are the short exact sequences `0 → s → L → L ⧸ s → 0`.
+
+## References
+
+* [J. Huebschmann,
+  *Extensions of Lie-Rinehart algebras and the Chern-Weil construction*][huebschmann_1999]
+
+-/
+
+public section
+
+namespace LieRinehartAlgebra
+
+variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
+
+instance : HasQuotient L (StrictLieRinehartIdeal A L) := ⟨fun s => L ⧸ s.toSubmodule⟩
+
+variable {s : StrictLieRinehartIdeal A L}
+
+instance : AddCommGroup (L ⧸ s) := Submodule.Quotient.addCommGroup _
+
+instance : Module A (L ⧸ s) := Submodule.Quotient.module _
+
+variable (s) in
+/-- Map associating to an element in a Lie-Rinehart algebra `L`, an element in the quotient
+`L ⧸ s`, where `s` is a strict Lie-Rinehart ideal. -/
+abbrev mkQ : L → L ⧸ s := Submodule.Quotient.mk
+
+@[simp]
+theorem mkQ_eq_zero {l : L} : mkQ s l = 0 ↔ l ∈ s :=
+  Submodule.Quotient.mk_eq_zero s.toSubmodule
+
+theorem mk''_eq_mkQ (l : L) : Quotient.mk'' l = mkQ s l := rfl
+
+instance : LieRing (L ⧸ s) where
+  bracket x y :=
+    Quotient.liftOn₂' x y (fun x' y' => mkQ s ⁅x', y'⁆) (by
+      intro a₁ a₂ b₁ b₂ ha hb
+      rw [Submodule.quotientRel_def] at ha hb
+      have h : ⁅a₁, a₂⁆ - ⁅b₁, b₂⁆ = ⁅a₁ - b₁, a₂⁆ + ⁅b₁, a₂ - b₂⁆ := by simp
+      rw [Submodule.Quotient.eq]
+      membership)
+  add_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg (mkQ s) (add_lie x y z)
+  lie_add := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg (mkQ s) (lie_add x y z)
+  lie_self := by rintro ⟨x⟩; exact congrArg (mkQ s) (lie_self x)
+  leibniz_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg (mkQ s) (leibniz_lie x y z)
+
+theorem mkQ_bracket (x y : L) : mkQ s ⁅x, y⁆ = ⁅mkQ s x, mkQ s y⁆ := rfl
+
+instance : Bracket (L ⧸ s) A where
+  bracket x a := Quotient.liftOn' x (fun x' => ⁅x', a⁆) fun l l' h => by
+    rw [Submodule.quotientRel_def] at h
+    rw [← sub_eq_zero, ← sub_lie]
+    exact isotropic h a
+
+theorem mkQ_bracket' (x : L) (a : A) : ⁅mkQ s x, a⁆ = ⁅x, a⁆ := rfl
+
+instance : LieRingModule (L ⧸ s) A where
+  add_lie := by rintro ⟨x⟩ ⟨y⟩ a; exact (add_lie x y a)
+  lie_add := by rintro ⟨x⟩ a b; exact (lie_add x a b)
+  leibniz_lie := by rintro ⟨x⟩ ⟨y⟩ a; exact (leibniz_lie x y a)
+
+instance [LieRinehartRing A L] : LieRinehartRing A (L ⧸ s) where
+  lie_smul_eq_mul' := by rintro a b ⟨x⟩; exact (LieRinehartRing.lie_smul_eq_mul a b x)
+  leibniz_mul_right' := by rintro ⟨x⟩ a b; exact (LieRinehartRing.leibniz_mul_right x a b)
+  leibniz_smul_right' := by
+    rintro ⟨x⟩ ⟨y⟩ a
+    exact congrArg (mkQ s) (LieRinehartRing.leibniz_smul_right x y a)
+
+variable {R : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRinehartRing A L]
+  [LieRinehartAlgebra R A L]
+
+instance : Module R (L ⧸ s) := Submodule.Quotient.module' _
+
+instance : LieAlgebra R (L ⧸ s) where
+  lie_smul := by rintro r ⟨x⟩ ⟨y⟩; exact congrArg (mkQ s) (lie_smul r x y)
+
+variable (s R) in
+open LieRinehartAlgebra in
+/-- `LieRinehartAlgebra.mkQ` as a Lie-Rinehart homomorphism. -/
+def mk' : L →ₗ⁅.id R A⁆ L ⧸ s where
+  __ := (s.toSubmodule.restrictScalars R).mkQ
+  map_lie' {_ _} := rfl
+  map_smul_apply' _ _ := rfl
+  apply_lie' _ _ := rfl
+
+@[simp]
+lemma mk'_apply {l : L} : mk' s R l = mkQ s l := by rfl
+
+@[simp]
+theorem surjective_mk' : Function.Surjective (mk' s R) := Quot.mk_surjective
+
+theorem mk'_eq_zero {l : L} : mk' s R l = 0 ↔ l ∈ s := Submodule.Quotient.mk_eq_zero s.toSubmodule
+
+@[simp]
+theorem ker_mk' : (mk' s R).ker = s := by ext l; simp
+
+end LieRinehartAlgebra
