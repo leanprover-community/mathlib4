@@ -27,7 +27,6 @@ generating pretopologies.
 - `AlgebraicGeometry.Scheme.smallPretopology`: the pretopology on `P.Over ⊤ S` defined by
   `P`-coverings of `S`-schemes with `P`. The induced topology agrees
   with `AlgebraicGeometry.Scheme.smallGrothendieckTopology`.
-
 -/
 
 @[expose] public section

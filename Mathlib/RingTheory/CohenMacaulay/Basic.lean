@@ -5,10 +5,10 @@ Authors: Nailin Guan, Yongle Hu
 -/
 module
 
+public import Mathlib.RingTheory.Depth.Ischebeck
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Regular
 public import Mathlib.RingTheory.Regular.Flat
-public import Mathlib.RingTheory.Depth.Ischebeck
 
 /-!
 
@@ -87,8 +87,8 @@ variable [IsLocalRing R] [IsNoetherianRing R] (p : Ideal R) [Small.{v} R]
 lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{v} R)
     [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M]
     (mem : p ∈ associatedPrimes R M) :
-    IsLocalRing.depth M = (ringKrullDim (R ⧸ p)).unbot
-    (quotient_prime_ringKrullDim_ne_bot mem.1) := by
+    letI := mem.isPrime
+    IsLocalRing.depth M = (ringKrullDim (R ⧸ p)).unbot ringKrullDim_ne_bot_of_nontrivial := by
   apply le_antisymm (depth_le_ringKrullDim_associatedPrime M p mem)
   rw [← M.depth_eq_supportDim_unbot_of_cohenMacaulay, ← WithBot.coe_le_coe, WithBot.coe_unbot,
     WithBot.coe_unbot, Module.supportDim_eq_ringKrullDim_quotient_annihilator]
@@ -114,14 +114,12 @@ lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
       simpa [Ideal.Quotient.eq_zero_iff_mem] using nmem
     have succ_le := ringKrullDim_succ_le_of_surjective _ (Ideal.Quotient.factor_surjective lt.le)
       nz (by simpa [Ideal.Quotient.eq_zero_iff_mem] using mem)
-    have : ringKrullDim (R ⧸ p) ≠ ⊤ := ne_top_of_le_ne_top ringKrullDim_ne_top
+    have netop : ringKrullDim (R ⧸ p) ≠ ⊤ := ne_top_of_le_ne_top ringKrullDim_ne_top
       (ringKrullDim_le_of_surjective (Ideal.Quotient.mk p) Ideal.Quotient.mk_surjective)
-    have nebot : ringKrullDim (R ⧸ p) ≠ ⊥ := quotient_prime_ringKrullDim_ne_bot ‹_›
-    have netop : (ringKrullDim (R ⧸ p)).unbot nebot ≠ ⊤ := by simpa [← WithBot.coe_inj.not]
-    rcases ENat.ne_top_iff_exists.mp netop with ⟨m, hm⟩
-    rw [← WithBot.coe_inj, WithBot.coe_unbot, ENat.WithBot.coe_eq_natCast] at hm
+    rcases ENat.WithBot.eq_natCast_of_ne_bot_of_ne_top ringKrullDim_ne_bot_of_nontrivial
+      netop with ⟨m, hm⟩
     absurd (succ_le.trans le).trans_eq eq
-    rw [← hm, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
+    rw [hm, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
     exact Nat.not_succ_le_self m
   · simpa [← eq] using hp'
 
@@ -136,12 +134,11 @@ lemma quotSMulTop_isCohenMacaulay_iff_isCohenMacaulay (M : ModuleCat.{v} R) [Mod
      M.IsCohenMacaulay ↔ (ModuleCat.of R (QuotSMulTop r M)).IsCohenMacaulay := by
   simp only [ModuleCat.isCohenMacaulay_iff]
   by_cases ntr : Subsingleton M
-  · have : Subsingleton (QuotSMulTop r M) := Function.Surjective.subsingleton
-      (Submodule.mkQ_surjective _)
+  · have : Subsingleton (QuotSMulTop r M) := (Submodule.mkQ_surjective _).subsingleton
     simp [ntr, this]
   · have ntr1 : Nontrivial M := not_subsingleton_iff_nontrivial.mp ntr
     have ntr2 : Nontrivial (QuotSMulTop r M) := nontrivial_quotSMulTop_of_mem_maximalIdeal M mem
-    simp [not_subsingleton_iff_nontrivial.mpr ntr2, false_or, ntr,
+    simp [not_subsingleton_iff_nontrivial.mpr ntr2, ntr,
       ← Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem,
       ← IsLocalRing.depth_quotSMulTop_succ_eq_depth M r reg mem, ENat.WithBot.add_one_cancel]
 
@@ -151,8 +148,7 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
     (ModuleCat.of R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M))).IsCohenMacaulay := by
   have ntr2 : Nontrivial (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M)) :=
     (IsRegular.quot_ofList_smul_nontrivial reg ⊤)
-  have ntr1 : Nontrivial M := Function.Surjective.nontrivial (Submodule.mkQ_surjective
-    (Ideal.ofList rs • (⊤ : Submodule R M)))
+  have ntr1 : Nontrivial M := (Ideal.ofList rs • (⊤ : Submodule R M)).mkQ_surjective.nontrivial
   simp only [isCohenMacaulay_iff, ← not_nontrivial_iff_subsingleton, ntr1, not_true_eq_false,
     false_or, ntr2]
   rw [← Module.supportDim_add_length_eq_supportDim_of_isRegular rs reg,
@@ -171,11 +167,8 @@ lemma isLocalization_at_prime_prime_depth_le_depth [IsLocalRing Rₚ] [Module.Fi
     [ntr : Nontrivial Mₚ] : p.depth M ≤ IsLocalRing.depth Mₚ := by
   have : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
   have : Nontrivial M := by
-    by_contra h
-    absurd not_subsingleton_iff_nontrivial.mpr ntr
-    rw [IsLocalizedModule.subsingleton_iff_ker_eq_top p.primeCompl f]
-    have := (Submodule.subsingleton_iff R).mpr (not_nontrivial_iff_subsingleton.mp h)
-    apply Subsingleton.elim
+    contrapose! ntr
+    exact IsLocalizedModule.subsingleton_of_subsingleton p.primeCompl f
   simp only [IsLocalRing.depth_eq_sSup_length_isRegular, Ideal.depth]
   have smul_lt : p • (⊤ : Submodule R M) < ⊤ :=
     Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
@@ -199,11 +192,8 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
   have : IsLocalRing Rₚ := IsLocalization.AtPrime.isLocalRing Rₚ p
   have : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
   have : Nontrivial M := by
-    by_contra h
-    absurd not_subsingleton_iff_nontrivial.mpr ntr
-    rw [IsLocalizedModule.subsingleton_iff_ker_eq_top p.primeCompl f]
-    have := (Submodule.subsingleton_iff R).mpr (not_nontrivial_iff_subsingleton.mp h)
-    apply Subsingleton.elim
+    contrapose! ntr
+    exact IsLocalizedModule.subsingleton_of_subsingleton p.primeCompl f
   have : p.depth M ≠ ⊤ :=
     ne_top_of_le_ne_top (depth_ne_top M) (ideal_depth_le_depth p Ideal.IsPrime.ne_top' M)
   rcases ENat.ne_top_iff_exists.mp this with ⟨n, hn⟩
@@ -216,13 +206,9 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
         ((Shrink.linearEquiv R (R ⧸ p)).congrLeft M R).nontrivial_congr] at hn
       obtain ⟨g, hg⟩ : ∃ g : R ⧸ p →ₗ[R] M, g ≠ 0 := exists_ne 0
       have : g 1 ≠ 0 := by
-        by_contra eq0
-        absurd hg
-        apply LinearMap.ext (fun r ↦ ?_)
-        induction r using Submodule.Quotient.induction_on
-        rename_i r
-        nth_rw 1 [← mul_one r, ← smul_eq_mul, Submodule.Quotient.mk_smul, map_smul]
-        simp [eq0]
+        contrapose hg
+        ext
+        simp [hg]
       have le : p ≤ LinearMap.ker (LinearMap.toSpanSingleton R M (g 1)) := by
         intro r hr
         rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, ← map_smul,

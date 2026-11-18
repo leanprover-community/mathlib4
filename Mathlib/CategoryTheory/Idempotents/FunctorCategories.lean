@@ -16,7 +16,6 @@ that a functor category `J ⥤ C` is idempotent complete when the target categor
 We also provide a fully faithful functor
 `karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)` for all categories
 `J` and `C`.
-
 -/
 
 @[expose] public section

@@ -10,7 +10,6 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 
 /-!
 # Inner products of strongly measurable functions are strongly measurable.
-
 -/
 
 public section

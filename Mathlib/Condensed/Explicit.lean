@@ -9,7 +9,6 @@ public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Module
 
 /-!
-
 # The explicit sheaf condition for condensed sets
 
 We give the following three explicit descriptions of condensed objects:

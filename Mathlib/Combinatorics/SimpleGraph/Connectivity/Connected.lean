@@ -1036,4 +1036,12 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   by_contra hws
   exact hp.notMem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
 
+/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
+lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
+    [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
+  have : Nontrivial V := nontrivial_of_degree_ne_zero <| ne_zero_of_eq_one hdeg
+  have := Set.nonempty_compl_of_nontrivial v |>.to_subtype
+  refine ⟨hconn.preconnected.induce_of_degree_eq_one ?_⟩
+  simp [← Set.ncard_le_one_iff_subsingleton, hdeg]
+
 end SimpleGraph

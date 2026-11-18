@@ -35,7 +35,6 @@ The consequence is that any functor from the category `HomotopyCategory.Plus C`
 has a right derived functor, and we show that the unit natural transformation for
 such a derived functor is an isomorphism on objects coming from
 `HomotopyCategory.Plus (InjectiveObject C)`.
-
 -/
 
 @[expose] public section
@@ -196,7 +195,6 @@ abbrev localizerMorphism : LocalizerMorphism
     intro n
     infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_quotient_map_iff
     {K L : CochainComplex.Plus (InjectiveObject C)} (f : K ⟶ L) :
     IsIso ((quotient _).map f) ↔
@@ -208,7 +206,6 @@ lemma isIso_quotient_map_iff
     ← CochainComplex.IsKInjective.quasiIso_iff]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =
@@ -247,7 +244,6 @@ HomotopyCategory.Plus (InjectiveObject C) --------> HomotopyCategory.Plus C
 That the square is Guitart exact will follow from the lemma
 `TwoSquare.GuitartExact.quotient_of_nonempty_rightHomotopy`
 from the file `Mathlib/CategoryTheory/GuitartExact/Quotient.lean`.
-
 -/
 
 open MorphismProperty
