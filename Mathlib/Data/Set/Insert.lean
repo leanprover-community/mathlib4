@@ -217,6 +217,7 @@ theorem singleton_subset_iff {a : α} {s : Set α} : {a} ⊆ s ↔ a ∈ s :=
 @[gcongr]
 theorem singleton_subset_singleton : ({a} : Set α) ⊆ {b} ↔ a = b := by simp
 
+@[deprecated ofPred_eq_eq_singleton (since := "2026-11-16")]
 theorem set_compr_eq_eq_singleton {a : α} : { b | b = a } = {a} :=
   rfl
 

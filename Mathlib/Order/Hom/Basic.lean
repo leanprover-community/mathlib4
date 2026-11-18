@@ -93,8 +93,8 @@ abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderEmbedding :=
-  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
-  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
+  fun i ↦ ⟨i.toEmbedding, by rw [forall_comm]; exact @i.map_rel_iff'⟩,
+  fun i ↦ ⟨i.toEmbedding, by rw [forall_comm]; exact @i.map_rel_iff'⟩
 
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
@@ -105,8 +105,8 @@ abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderIso :=
-  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
-  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
+  fun i ↦ ⟨i.toEquiv, by rw [forall_comm]; exact @i.map_rel_iff'⟩,
+  fun i ↦ ⟨i.toEquiv, by rw [forall_comm]; exact @i.map_rel_iff'⟩
 
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso
@@ -796,6 +796,28 @@ theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
 theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g :=
   DFunLike.coe_injective h
 
+/-- Build an order isomorphism from a bijective map that preserves and reflects `≤`. -/
+noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b, f a ≤ f b ↔ a ≤ b) :
+    α ≃o β :=
+  RelIso.ofBijective f hf hf'
+
+@[simp] lemma toEquiv_ofBijective (f : α → β) (hf hf') :
+    (ofBijective f hf hf').toEquiv = .ofBijective f hf := rfl
+
+@[simp, grind =] lemma coe_ofBijective (f : α → β) (hf hf') : ⇑(ofBijective f hf hf') = f := rfl
+
+@[simp] lemma ofBijective_coe (e : α ≃o β) :
+    ofBijective e e.bijective (by simp) = e := ext rfl
+
+lemma ofBijective_apply_symm_apply (f : α → β) (hf hf') (x : β) :
+    f ((ofBijective f hf hf').symm x) = x :=
+  (ofBijective f hf hf').apply_symm_apply x
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : α → β) (hf hf') (x : α) :
+    (ofBijective f hf hf').symm (f x) = x :=
+  (ofBijective f hf hf').symm_apply_apply x
+
 /-- Reinterpret an order isomorphism as an order embedding. -/
 def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
   e.toRelEmbedding
@@ -1402,7 +1424,7 @@ section BoundedOrder
 variable [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] (f : α ≃o β)
 
 theorem OrderIso.isCompl {x y : α} (h : IsCompl x y) : IsCompl (f x) (f y) :=
-  ⟨h.1.map_orderIso _, h.2.map_orderIso _⟩
+  ⟨h.disjoint.map_orderIso _, h.codisjoint.map_orderIso _⟩
 
 theorem OrderIso.isCompl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
   ⟨f.isCompl, fun h => f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩
