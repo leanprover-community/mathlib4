@@ -512,7 +512,7 @@ theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : MvPowerS
 
 section
 
-variable (w : τ → ℕ)
+variable (w : τ → ℕ) {n k : ℕ∞} {S : Type*} [CommRing S] [Algebra R S] {a b : σ → MvPowerSeries τ S}
 
 theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     ⨅ (d : σ →₀ ℕ) (_ : coeff d f ≠ 0), d.weight (weightedOrder w ∘ a) ≤
@@ -549,57 +549,59 @@ theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     exact Finset.sum_le_sum fun j hj => by
       simp [mul_comm, mul_le_mul_right (iInf_le_iff.mpr fun _ a ↦ a j)]
 
-end
+variable (f : MvPowerSeries σ R) (ha : HasSubst a) (hb : HasSubst b)
 
-section Order
-
-variable {S : Type*} [CommRing S] [Algebra R S] {a b : σ → MvPowerSeries τ S}
+include ha hb
 
 /-- Substituting two families that agree up to weighted order `n`, and have weighted order at
-least `k`, gives series that agree up to weighted order `n + k`, provided `f` has no linear term
-in a variable where the families differ. No finiteness of the variables is needed. -/
-theorem add_le_weightedOrder_subst_sub (w : τ → ℕ) {n k : ℕ∞} {f : MvPowerSeries σ R}
-    (ha : HasSubst a) (hb : HasSubst b)
-    (hak : ∀ s, k ≤ (a s).weightedOrder w) (hbk : ∀ s, k ≤ (b s).weightedOrder w)
-    (h : ∀ s, n ≤ (a s - b s).weightedOrder w)
-    (hf : ∀ s, a s ≠ b s → coeff (Finsupp.single s 1) f = 0) :
+least `k`, gives series that agree up to weighted order `n + k`, provided that each linear term of
+`f` is harmless: either its coefficient vanishes, or the families agree up to weighted order
+`n + k` in that variable. -/
+theorem add_le_weightedOrder_subst_sub_subst (hak : ∀ s, k ≤ (a s).weightedOrder w)
+    (hbk : ∀ s, k ≤ (b s).weightedOrder w) (h : ∀ s, n ≤ (a s - b s).weightedOrder w)
+    (hf : ∀ s, coeff (Finsupp.single s 1) f = 0 ∨ n + k ≤ (a s - b s).weightedOrder w) :
     n + k ≤ (f.subst a - f.subst b).weightedOrder w := by
   refine le_weightedOrder w fun e he ↦ ?_
   rw [map_sub, sub_eq_zero, coeff_subst ha, coeff_subst hb]
   refine finsum_congr fun d ↦ ?_
-  obtain hd | hd | hd : d.degree = 0 ∨ d.degree = 1 ∨ 2 ≤ d.degree := by omega
+  obtain hd | hd | hd : d.degree = 0 ∨ d.degree = 1 ∨ 2 ≤ d.degree := by lia
   · simp [d.degree_eq_zero_iff.mp hd]
   · obtain ⟨s, rfl⟩ := (Finsupp.sum_eq_one_iff d).mp hd
-    by_cases hs : a s = b s
+    rcases hf s with hs | hs
     · simp [hs]
-    · simp [hf s hs]
+    · simp [coeff_eq_of_lt_weightedOrder_sub w (he.trans_le hs)]
   · congr 1
     -- one factor `c s` for each of the `d s` occurrences of the variable `s`
     have hprod (c : σ → MvPowerSeries τ S) :
         d.prod (fun s k ↦ c s ^ k) = ∏ x ∈ d.support.sigma fun s ↦ Finset.range (d s), c x.1 := by
-      rw [Finsupp.prod, Finset.prod_sigma]
-      simp
+      simp [Finsupp.prod, Finset.prod_sigma]
     have hd : 2 ≤ (d.support.sigma fun s ↦ Finset.range (d s)).card := by
       simpa [Finset.card_sigma, Finsupp.degree_apply] using hd
     rw [hprod, hprod]
     refine coeff_eq_of_lt_weightedOrder_sub w (he.trans_le (le_trans ?_
       (add_nsmul_le_weightedOrder_prod_sub_prod w (fun x _ ↦ hak x.1) (fun x _ ↦ hbk x.1)
         fun x _ ↦ h x.1)))
-    obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le hd
-    rw [hm, show 2 + m - 1 = m + 1 by omega, succ_nsmul']
-    exact add_le_add le_rfl le_self_add
+    gcongr
+    exact le_self_nsmul zero_le (by lia)
 
-/-- Substituting two families that agree up to order `n`, and have order at least `k`, gives
-series that agree up to order `n + k`, provided `f` has no linear term in a variable where the
-families differ. No finiteness of the variables is needed. -/
-theorem add_le_order_subst_sub {n k : ℕ∞} {f : MvPowerSeries σ R}
-    (ha : HasSubst a) (hb : HasSubst b)
-    (hak : ∀ s, k ≤ (a s).order) (hbk : ∀ s, k ≤ (b s).order) (h : ∀ s, n ≤ (a s - b s).order)
-    (hf : ∀ s, a s ≠ b s → coeff (Finsupp.single s 1) f = 0) :
+/-- If `a s - b s` has weighted order at least `n` for all `s`, then so does
+`f.subst a - f.subst b`. -/
+theorem le_weightedOrder_subst_sub_subst (h : ∀ s, n ≤ (a s - b s).weightedOrder w) :
+    n ≤ (f.subst a - f.subst b).weightedOrder w := by
+  simpa using add_le_weightedOrder_subst_sub_subst w (k := 0) (f := f) ha hb (by simp) (by simp) h
+    fun s ↦ .inr (by simpa using h s)
+
+theorem add_le_order_subst_sub_subst (hak : ∀ s, k ≤ (a s).order) (hbk : ∀ s, k ≤ (b s).order)
+    (h : ∀ s, n ≤ (a s - b s).order)
+    (hf : ∀ s, coeff (Finsupp.single s 1) f = 0 ∨ n + k ≤ (a s - b s).order) :
     n + k ≤ (f.subst a - f.subst b).order :=
-  add_le_weightedOrder_subst_sub _ ha hb hak hbk h hf
+  add_le_weightedOrder_subst_sub_subst _ _ ha hb hak hbk h hf
 
-end Order
+theorem le_order_subst_sub_subst (h : ∀ s, n ≤ (a s - b s).order) :
+    n ≤ (f.subst a - f.subst b).order :=
+  le_weightedOrder_subst_sub_subst _ _ ha hb h
+
+end
 
 section truncTotal
 

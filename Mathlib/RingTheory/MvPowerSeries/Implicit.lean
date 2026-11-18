@@ -170,18 +170,15 @@ theorem subst_mapVecCoeff_X_inr (L : (τ →₀ R) →ₗ[R] (ι →₀ R)) (ha 
 
 /-- If `f` has no linear terms in `Y`, then substituting `(X, a)` and `(X, b)` for families `a`, `b`
 that agree up to order `n` gives power series that agree up to order `n + 1`. -/
-theorem le_order_subst_sub_subst {f : MvPowerSeries (σ ⊕ τ) R}
+theorem le_order_subst_sumElim_sub_subst {f : MvPowerSeries (σ ⊕ τ) R}
     (hf : ∀ k, coeff (single (Sum.inr k) 1) f = 0) (n : ℕ)
     (ha : HasSubst a ∧ ∀ j, constantCoeff (a j) = 0)
     (hb : HasSubst b ∧ ∀ j, constantCoeff (b j) = 0) (h : ∀ j, n ≤ (a j - b j).order) :
     n + 1 ≤ (f.subst (Sum.elim X a) - f.subst (Sum.elim X b)).order := by
-  refine add_le_order_subst_sub (HasSubst.X.sumElim ha.1) (HasSubst.X.sumElim hb.1)
-    (fun s ↦ ?_) (fun s ↦ ?_) (by simp [h]) ?_
+  refine add_le_order_subst_sub_subst f (HasSubst.X.sumElim ha.1) (HasSubst.X.sumElim hb.1)
+    (fun s ↦ ?_) (fun s ↦ ?_) (by simp [h]) (by rintro (s | k) <;> simp [hf])
   · exact one_le_order_iff_constCoeff_eq_zero.mpr (by rcases s with s | s <;> simp [ha.2])
   · exact one_le_order_iff_constCoeff_eq_zero.mpr (by rcases s with s | s <;> simp [hb.2])
-  rintro (s | k) hs
-  · simp at hs
-  · exact hf k
 
 section Existence
 
@@ -230,7 +227,7 @@ theorem implicitStep_admissible (ha : HasSubst a ∧ ∀ j, constantCoeff (a j) 
 theorem implicitStep_contract (n : ℕ) (ha : HasSubst a ∧ ∀ j, constantCoeff (a j) = 0)
     (hb : HasSubst b ∧ ∀ j, constantCoeff (b j) = 0) (h : ∀ j, n ≤ (a j - b j).order) (j : τ) :
     n + 1 ≤ (implicitStep F hF K a j - implicitStep F hF K b j).order := by
-  refine le_order_subst_sub_subst (fun k ↦ ?_) n ha hb h
+  refine le_order_subst_sumElim_sub_subst (fun k ↦ ?_) n ha hb h
   rw [map_sub, coeff_mapVecCoeff, coeff_mapVecCoeff, vecCoeff_X_inr,
     LinearMap.comp_apply, implicitJacobian_single, one_smul, sub_self]
 
@@ -308,7 +305,7 @@ public theorem eq_implicitFunction (a : τ → MvPowerSeries σ R) (ha : HasSubs
       have hc (d : σ →₀ ℕ) (hd : d.degree < n + 1) :
           vecCoeff a ha.coeff_zero d = vecCoeff b hb.coeff_zero d := by
         refine hJ.1 (Finsupp.ext fun i ↦ ?_)
-        have := le_order_subst_sub_subst (hlin i) n ⟨ha, ha0⟩ ⟨hb, hb0⟩ ih
+        have := le_order_subst_sumElim_sub_subst (hlin i) n ⟨ha, ha0⟩ ⟨hb, hb0⟩ ih
         rw [subst_sub (HasSubst.X.sumElim ha), subst_sub (HasSubst.X.sumElim hb), hab i,
           sub_sub_sub_cancel_right, subst_mapVecCoeff_X_inr _ ha,
           subst_mapVecCoeff_X_inr _ hb] at this
