@@ -162,7 +162,7 @@ lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :
 /-- The `ComplexShape` allowing differentials from `X i` to `X (i+a)`.
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
 -/
-@[to_dual (attr := simps) down'
+@[to_dual (attr := simps, implicit_reducible) down'
 /-- The `ComplexShape` allowing differentials from `X (j+a)` to `X j`.
 (For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
 -/]
@@ -177,7 +177,7 @@ theorem up'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
-@[to_dual (attr := simps!) down
+@[to_dual (attr := simps!, implicit_reducible) down
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/]
 def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
@@ -196,7 +196,6 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual instDecidableRelRelDown']
 instance instDecidableRelRelUp' (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
   fun _ _ => by dsimp; infer_instance

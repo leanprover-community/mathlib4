@@ -38,8 +38,7 @@ giving definitions, equivalent conditions, and basic properties.
 ## References
 
 * [Stacks: Noetherian Schemes](https://stacks.math.columbia.edu/tag/01OU)
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
-
+* [Robin Hartshorne, *Algebraic Geometry*][har77]
 -/
 
 public section
@@ -64,7 +63,7 @@ include hS hN in
 /-- Let `R` be a ring, and `f i` a finite collection of elements of `R` generating the unit ideal.
 If the localization of `R` at each `f i` is Noetherian, so is `R`.
 
-We follow the proof given in [Har77], Proposition II.3.2 -/
+We follow the proof given in [har77], Proposition II.3.2 -/
 theorem isNoetherianRing_of_away : IsNoetherianRing R := by
   apply monotone_stabilizes_iff_noetherian.mp
   intro I
@@ -117,7 +116,7 @@ theorem isLocallyNoetherian_of_affine_cover {ι} {S : ι → X.affineOpens}
 /-- A scheme is locally Noetherian if and only if it is covered by affine opens whose sections
 are Noetherian rings.
 
-See [Har77], Proposition II.3.2. -/
+See [har77], Proposition II.3.2. -/
 theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
     (hS : (⨆ i, S i : X.Opens) = ⊤) :
     IsLocallyNoetherian X ↔ ∀ i, IsNoetherianRing Γ(X, S i) :=
@@ -164,11 +163,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
     IsLocallyNoetherian X ↔ ∀ (i : 𝒰.I₀), IsLocallyNoetherian (𝒰.X i) := by
   refine ⟨fun _ ↦ inferInstance, ?_⟩
-  · rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
-    intro h i
-    exact @isNoetherianRing_of_ringEquiv _ _ _ _
-      (IsOpenImmersion.ΓIsoTop (PreZeroHypercover.f _ i.2)).symm.commRingCatIsoToRingEquiv
-      (IsLocallyNoetherian.component_noetherian ⟨_, isAffineOpen_opensRange _⟩)
+  rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
+  intro h i
+  exact @isNoetherianRing_of_ringEquiv _ _ _ _
+    (IsOpenImmersion.ΓIsoTop (PreZeroHypercover.f _ i.2)).symm.commRingCatIsoToRingEquiv
+    (IsLocallyNoetherian.component_noetherian ⟨_, isAffineOpen_opensRange _⟩)
 
 /-- If `R` is a Noetherian ring, `Spec R` is a Noetherian topological space. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :

@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.Ideal.Maximal
 
 /-!
-
 # Ideals over a ring
 
 This file contains an assortment of definitions and results for `Ideal R`,
@@ -155,7 +154,7 @@ theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
   classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
-    Finset.coe_image, Finset.val_toFinset] using! pow_multiset_sum_mem_span_pow (s.1.map f) n
+    Finset.coe_image, Finset.val_toFinset] using! pow_multiset_sum_mem_span_pow (s.val.map f) n
 
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
@@ -267,9 +266,10 @@ theorem exists_maximal_of_not_isField [Nontrivial R] (h : ¬ IsField R) :
   simp only [← bot_lt_iff_ne_bot] at h
   refine isField_iff_maximal_bot.mpr ⟨⟨bot_ne_top, Ideal.maximal_of_no_maximal h⟩⟩
 
-theorem not_isField_of_ne_of_ne [Nontrivial R] {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
+theorem not_isField_of_ne_of_ne {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
     ¬ IsField R := by
   contrapose h_bot
+  have := h_bot.nontrivial
   exact ((isField_iff_maximal_bot.mp h_bot).eq_of_le h_top bot_le).symm
 
 theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
@@ -296,7 +296,7 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
   contrapose! +distrib
   simp_rw [not_lt_top_iff, not_bot_lt_iff]
-  exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.eq_bot_or_eq_top⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)

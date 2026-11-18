@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 import Mathlib.RingTheory.Noetherian.Nilpotent
 
 /-!
-## The Hopkins–Levitzki theorem
+# The Hopkins–Levitzki theorem
 
 ## Main results
 
@@ -28,7 +28,7 @@ import Mathlib.RingTheory.Noetherian.Nilpotent
 * `isArtinianRing_iff_isNoetherianRing_krullDimLE_zero`: a commutative ring is Artinian iff
   it is Noetherian with Krull dimension at most 0.
 
-## Reference
+## References
 
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
@@ -114,7 +114,7 @@ theorem isNoetherian_iff_finite_of_jacobson_fg (fg : (Ring.jacobson R).FG) :
     (P := fun M ↦ Module.Finite R M → IsNoetherian R M)
     (fun M _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 1 2).mp)
     fun M _ _ _ _ hs hq fin ↦ (isNoetherian_iff_submodule_quotient (Ring.jacobson R • ⊤)).mpr
-      ⟨hs (.of_fg (.smul fg fin.1)), hq inferInstance⟩⟩
+      ⟨hs (.of_fg (.smul fg fin.fg_top)), hq inferInstance⟩⟩
 
 theorem isNoetherianRing_iff_jacobson_fg : IsNoetherianRing R ↔ (Ring.jacobson R).FG :=
   ⟨fun _ ↦ IsNoetherian.noetherian .., fun fg ↦

@@ -67,7 +67,7 @@ theorem ext {R S : HomogeneousSubsemiring 𝒜}
 
 theorem ext' {R S : HomogeneousSubsemiring 𝒜}
     (h : ∀ i, ∀ a ∈ 𝒜 i, a ∈ R ↔ a ∈ S) : R = S :=
-  AddSubmonoidClass.IsHomogeneous.ext R.2 S.2 h
+  AddSubmonoidClass.IsHomogeneous.ext R.is_homogeneous' S.is_homogeneous' h
 
 @[simp high]
 theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
@@ -131,7 +131,7 @@ theorem Subsemiring.isHomogeneous_iff_forall_subset :
   Iff.rfl
 
 theorem Subsemiring.isHomogeneous_iff_subset_iInter :
-    SetLike.IsHomogeneous 𝒜 R ↔ (R : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' R :=
-  subset_iInter_iff.symm
+    SetLike.IsHomogeneous 𝒜 R ↔ (R : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' R := by
+  simp [Subsemiring.isHomogeneous_iff_forall_subset]
 
 end IsHomogeneousSubsemiringDefs

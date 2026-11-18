@@ -18,7 +18,6 @@ for the objects on each page (e.g. `κ := ℤ × ℤ` or `κ := ℕ × ℕ`).
 A spectral sequence is defined as the data of a sequence of homological complexes
 (the pages) and a sequence of isomorphisms between the homology of a page and the
 next page.
-
 -/
 
 @[expose] public section
@@ -86,13 +85,12 @@ variable (C c r₀)
 
 /-- The functor `SpectralSequence C c r₀ ⥤ HomologicalComplex C (c r)` which
 sends a spectral sequence to its `r`th page. -/
-@[simps]
+@[simps, implicit_reducible]
 def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
     SpectralSequence C c r₀ ⥤ HomologicalComplex C (c r) where
   obj E := E.page r
   map f := f.hom r
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between the homology of a spectral sequence on the
 object `pq : κ` of the `r`th page and the corresponding object on the next page. -/
 @[simps!]

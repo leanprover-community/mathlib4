@@ -14,7 +14,6 @@ In this file, we describe the properties of decomposition under tensor product. 
 decomposition of an `R`-module `M` indexed by a type `ι`. Given an `R`-module `N`, the `R`-module
 `M ⊗[R] N` has a decomposition into pieces `fun i ↦ (ℳ i) ⊗[R] N`. Given a commutative `R`-algebra
 `S`, the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChange S`.
-
 -/
 
 public section

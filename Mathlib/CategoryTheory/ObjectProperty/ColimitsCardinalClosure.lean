@@ -21,7 +21,6 @@ that `Arrow J` is of cardinality `< κ`.
 If `C` is locally `w`-small and `P` is essentially `w`-small,
 we show that this closure `P.colimitsCardinalClosure κ` is
 also essentially `w`-small.
-
 -/
 
 @[expose] public section

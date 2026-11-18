@@ -54,6 +54,8 @@ We also show well-founded lattices are compactly generated
 complete lattice, well-founded, compact
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 variable {ι : Sort*} {α : Type*} {f : ι → α}
@@ -366,7 +368,8 @@ theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
   have lt n : a (n + 1) < a n := (Disjoint.right_lt_sup_of_left_ne_bot
     ((hs (e n).2.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_) (e n).2.2).trans_le (sup_le n)
   · exact (RelEmbedding.natGT a lt).not_wellFounded wellFounded_lt
-  exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_ge <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
+  exact ⟨(e i).2.1, fun h ↦
+    n.lt_succ_self.not_ge <| hi.trans_eq <| e.inj' <| Subtype.val_injective h⟩
 
 theorem WellFoundedLT.finite_ne_bot_of_iSupIndep [WellFoundedLT α]
     {ι : Type*} {t : ι → α} (ht : iSupIndep t) : Set.Finite {i | t i ≠ ⊥} := by
@@ -559,7 +562,7 @@ lemma disjoint_biSup_of_finite_disjoint_biSup {ι : Type*} {f : ι → α} {s : 
   simp_rw [disjoint_iff, iSup_subtype', ← sSup_range, inf_comm, inf_sSup_eq_iSup_inf_sup_finset,
     iSup_eq_bot]
   intro u hu
-  obtain ⟨t, ht, ht', htu⟩ : ∃ᵉ (t ⊆ s) (hu : t.Finite), f '' t = u :=
+  obtain ⟨t, ht, ht', htu⟩ : ∃ t ⊆ s, ∃ hu : t.Finite, f '' t = u :=
     Set.Finite.exists_subset_finite_image_eq u.finite_toSet <| by rwa [Set.image_eq_range f s]
   replace htu : u.sup id = ⨆ i ∈ t, f i := by
     simp only [Finset.sup_eq_iSup, id_eq, ← Finset.mem_coe, ← htu, iSup_image]
@@ -641,8 +644,8 @@ theorem iSupIndep.iInf {ι : Type*} {κ : ι → Type*} (f : (i : ι) → κ i �
   intro s
   induction s using Finset.strongInduction with
   | H s ih =>
-    by_cases hs : 1 < s.card; swap
-    · by_cases hcard0 : s.card = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
+    by_cases hs : 1 < #s; swap
+    · by_cases hcard0 : #s = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
     · obtain ⟨k₁, k₂, _, _, h⟩ := Finset.one_lt_card_iff.mp hs
       obtain ⟨i, hi⟩ : ∃ i : ι, k₁ i ≠ k₂ i := Function.ne_iff.mp h
       classical

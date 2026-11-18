@@ -19,12 +19,14 @@ open Lean Qq
 
 namespace Inclusion
 namespace IntervalDyadicReal
+open Inclusion.IntervalDyadicReal
 
 /-- Construct an inclusion variable for a real expression using a dyadic interval. -/
 @[inclusion_ext(_ : ℝ)]
 meta def mkRealIVar : InclusionExt :=
   mkNDIVarExt `interval_dyadic_real
-    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩ mkBinarySplitCover
+    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩
+    (Interval.mkBinarySplitCover q(binarySplit))
 
 @[grind =]
 theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map Dyadic.toReal :=
@@ -41,11 +43,16 @@ theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton (n : 
   rw [Semiring.toGrindSemiring_ofNat]
   exact natCast_mem n
 
-@[inclusion_op interval_dyadic_real]
 theorem intCast_mem (z : ℤ) : (z : ℝ) ∈ Interval.singleton (z : Dyadic) := by
   simpa [mem_iff_mem_map] using Interval.mem_map_singleton (z : Dyadic) Dyadic.toReal
 
 end Constants
+
+@[inclusion_op interval_dyadic_real]
+theorem intCast_mem_of_mem {z : ℤ} {I : Interval ℤ} (hz : z ∈ I) :
+    (z : ℝ) ∈ I.map (fun z : ℤ ↦ (z : Dyadic)) := by
+  rw [mem_iff_mem_map, Interval.map_map, Interval.mem_map_iff]
+  simp [← WithBot.le_coe_iff, ← WithTop.coe_le_iff, ← Interval.mem_def, hz]
 
 section Arithmetic
 
@@ -136,6 +143,32 @@ theorem mem_Ioo {a b x : ℝ} {I J K : Interval Dyadic} (ha : a ∈ I) (hx : x �
   Interval.mem_Ioo Dyadic.toRealOrderEmbedding ha hx hb
 
 end Props
+
+section Rounding
+
+/-- Round the lower endpoint of `I` down and the upper endpoint up, each to a multiple of
+`2 ^ (-prec)`. Infinite endpoints are left unchanged, so the result always contains `I`.
+
+This drops surplus bits so that later computations don't have to carry them. For example, a large
+power of an interval (as in `expPoint`) has endpoints with very long binary expansions. -/
+def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
+  ⟨I.lb.map (fun l ↦ Dyadic.roundDown l prec), I.ub.map (fun u ↦ Dyadic.roundUp u prec)⟩
+
+theorem mem_roundOut_iff {x : ℝ} {I : Interval Dyadic} {prec : ℕ} :
+    x ∈ roundOut I prec ↔
+      (∀ J : Dyadic, I.lb = J → (J.roundDown prec).toReal ≤ x) ∧
+      (∀ J : Dyadic, I.ub = J → x ≤ (J.roundUp prec).toReal) := by
+  rw [mem_iff_mem_map, Interval.mem_map_iff]
+  simp [roundOut, WithBot.map_eq_some_iff, WithTop.map_eq_some_iff]
+
+theorem roundOut_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
+    x ∈ roundOut I prec := by
+  rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
+  refine mem_roundOut_iff.mpr ⟨fun l hl ↦ ?_, fun u hu ↦ ?_⟩
+  · exact (Dyadic.toReal_le_toReal.mpr Dyadic.roundDown_le).trans (hx.1 l hl)
+  · exact (hx.2 u hu).trans (Dyadic.toReal_le_toReal.mpr Dyadic.le_roundUp)
+
+end Rounding
 
 end IntervalDyadicReal
 

@@ -56,7 +56,7 @@ section IsUnit
 variable {K}
 
 theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
-    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
+    IsUnit x ↔ |(x.norm ℚ : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 
@@ -230,8 +230,7 @@ theorem even_torsionOrder :
   suffices orderOf (⟨-1, neg_one_mem_torsion⟩ : torsion K) = 2 by
     rw [even_iff_two_dvd, ← this]
     apply orderOf_dvd_natCard
-  rw [← Subgroup.orderOf_coe, ← orderOf_units, Units.val_neg, val_one, orderOf_neg_one,
-    ringChar.eq_zero, ite_eq_right (by decide)]
+  simp [← Subgroup.orderOf_coe, ringChar.eq_zero]
 
 section odd
 

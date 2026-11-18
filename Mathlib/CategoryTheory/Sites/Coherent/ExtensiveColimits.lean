@@ -9,8 +9,8 @@ public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Sites.Limits
-/-!
 
+/-!
 # Colimits in categories of extensive sheaves
 
 This file proves that `J`-shaped colimits of `A`-valued sheaves for the extensive topology are
