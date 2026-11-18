@@ -485,8 +485,8 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
     let I : (openCoverOfMapIrrelevantEqTop 𝒜 f hf).I₀ := ⟨n, r, hn, hr⟩
     obtain ⟨x, rfl⟩ : x ∈ ((openCoverOfMapIrrelevantEqTop 𝒜 f hf).f I).opensRange := by
       simpa [openCoverOfMapIrrelevantEqTop] using hx
-    simp only [Scheme.Hom.mem_preimage, ← Scheme.Hom.comp_apply, fromOfGlobalSections]
-    simp
+    rw [Scheme.Hom.mem_preimage, ← Scheme.Hom.comp_apply]
+    simp [fromOfGlobalSections]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma fromOfGlobalSections_morphismRestrict {r : A} {n : ℕ} (hn : 0 < n) (hr : r ∈ 𝒜 n) :
