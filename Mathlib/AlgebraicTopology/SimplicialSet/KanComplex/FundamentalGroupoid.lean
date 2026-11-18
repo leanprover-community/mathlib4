@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.Quasicategory.CompStruct
-public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.MulStruct
-public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 
 /-!
@@ -176,7 +174,7 @@ lemma homMk_comp_iff {x₀ x₁ x₂ : X _⦋0⦌} {e₀₁ : Edge x₀ x₁} {e
 @[simp]
 lemma homMk_inv {x y : X _⦋0⦌} (e : Edge x y) :
     homMk e.inv = inv (homMk e) := by
-  simpa [← cancel_mono (homMk e), IsIso.inv_hom_id] using e.invHomId.homMk_comp
+  simpa [← cancel_mono (homMk e)] using e.invHomId.homMk_comp
 
 end FundamentalGroupoid
 
