@@ -101,42 +101,40 @@ private lemma integral_congr_snd {U : Type*} {φ ψ : X → U} (h : φ =ᵐ[μ] 
 
 /-- The bilinear map `(f,g) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ)`. -/
 def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
-    Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
-  (LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
-    (fun (f : Lp V 2 μ) (g : Lp V 2 μ) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ))
-    (fun f₁ f₂ g ↦ by
-      simp_rw [← integral_add (mercerForm_integrable hK f₁ g) (mercerForm_integrable hK f₂ g),
-        ← inner_add_left,
-        integral_congr_snd (Lp.coeFn_add f₁ f₂) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
-      simp
-    )
-    (fun c f g ↦ by
-      simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul,
-        integral_congr_snd (Lp.coeFn_smul c f) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
-      simp
-    )
-    (fun f g₁ g₂ ↦ by
-      simp_rw [← integral_add (mercerForm_integrable hK f g₁) (mercerForm_integrable hK f g₂),
-        ← inner_add_right,
-        integral_congr_fst (Lp.coeFn_add g₁ g₂) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
-      simp
-    )
-    (fun c f g ↦ by
-      simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply,
-        integral_congr_fst (Lp.coeFn_smul c g) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
-      simp
-    )
-  )
-  (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
-  (fun f g ↦ by
+    Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 :=
+  LinearMap.mkContinuous₂
+    (LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
+      (fun f g ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ))
+      ?_ ?_ ?_ ?_)
+    (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal ?_
+where finally
+  · intro f₁ f₂ g
+    simp_rw [← integral_add (mercerForm_integrable hK f₁ g) (mercerForm_integrable hK f₂ g),
+      ← inner_add_left,
+      integral_congr_snd (Lp.coeFn_add f₁ f₂) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
+    simp
+  · intro c f g
+    simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul,
+      integral_congr_snd (Lp.coeFn_smul c f) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
+    simp
+  · intro f g₁ g₂
+    simp_rw [← integral_add (mercerForm_integrable hK f g₁) (mercerForm_integrable hK f g₂),
+      ← inner_add_right,
+      integral_congr_fst (Lp.coeFn_add g₁ g₂) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
+    simp
+  · intro c f g
+    simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply,
+      integral_congr_fst (Lp.coeFn_smul c g) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
+    simp
+  · intro f g
     grw [LinearMap.mk₂'ₛₗ_apply, norm_integral_le_lintegral_norm]
     simp_rw [ofReal_norm]
     grw [lintegral_norm_inner_le hK f g]
     · simp
     rw [← lt_top_iff_ne_top]
     refine ENNReal.mul_lt_top ?_ eNorm_lt_top
-    refine ENNReal.mul_lt_top hK.eLpNorm_lt_top eNorm_lt_top
-    )
+    exact ENNReal.mul_lt_top hK.eLpNorm_lt_top eNorm_lt_top
+
 
 variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
 
