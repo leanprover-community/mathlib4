@@ -109,32 +109,25 @@ def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal ?_
 where finally
   · intro f₁ f₂ g
-    simp_rw [← integral_add (mercerForm_integrable hK f₁ g) (mercerForm_integrable hK f₂ g),
-      ← inner_add_left,
-      integral_congr_snd (Lp.coeFn_add f₁ f₂) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
-    simp
+    simp_rw [integral_congr_snd (Lp.coeFn_add f₁ f₂) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
+    simp [integral_add (mercerForm_integrable hK f₁ g) (mercerForm_integrable hK f₂ g),
+      inner_add_left]
   · intro c f g
-    simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul,
-      integral_congr_snd (Lp.coeFn_smul c f) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
-    simp
+    simp [integral_congr_snd (Lp.coeFn_smul c f) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜),
+      inner_smul_left, integral_const_mul]
   · intro f g₁ g₂
-    simp_rw [← integral_add (mercerForm_integrable hK f g₁) (mercerForm_integrable hK f g₂),
-      ← inner_add_right,
-      integral_congr_fst (Lp.coeFn_add g₁ g₂) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
-    simp
+    simp_rw [integral_congr_fst (Lp.coeFn_add g₁ g₂) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
+    simp [integral_add (mercerForm_integrable hK f g₁) (mercerForm_integrable hK f g₂),
+      inner_add_right]
   · intro c f g
-    simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply,
-      integral_congr_fst (Lp.coeFn_smul c g) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
-    simp
+    simp [integral_congr_fst (Lp.coeFn_smul c g) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜),
+      inner_smul_right, integral_const_mul]
   · intro f g
     grw [LinearMap.mk₂'ₛₗ_apply, norm_integral_le_lintegral_norm]
     simp_rw [ofReal_norm]
     grw [lintegral_norm_inner_le hK f g]
     · simp
-    rw [← lt_top_iff_ne_top]
-    refine ENNReal.mul_lt_top ?_ eNorm_lt_top
-    exact ENNReal.mul_lt_top hK.eLpNorm_lt_top eNorm_lt_top
-
+    finiteness
 
 variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
 
