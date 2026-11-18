@@ -179,28 +179,28 @@ theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   grind [pathGraph_adj, cycleGraph_adj', Fin.coe_sub_iff_le]
 
 /-- An embedding of the path graph in a larger path graph. -/
-protected def Embedding.pathGraph (n m : ℕ) (h : n ≤ m) : pathGraph n ↪g pathGraph m :=
+protected def Embedding.pathGraph (m n : ℕ) (h : m ≤ n) : pathGraph m ↪g pathGraph n :=
   .hasse (Fin.castLEOrderEmb h) <| by
     simp_rw [Fin.castLEOrderEmb, OrderEmbedding.coe_ofStrictMono, Fin.range_castLE]
     exact Set.ordConnected_Iio.preimage_mono Fin.val_strictMono.monotone
 
 @[simp]
-theorem Embedding.coe_pathGraph {n m : ℕ} (h : n ≤ m) :
-    ⇑(Embedding.pathGraph n m h) = Fin.castLE h :=
+theorem Embedding.coe_pathGraph {m n : ℕ} (h : m ≤ n) :
+    ⇑(Embedding.pathGraph m n h) = Fin.castLE h :=
   rfl
 
 @[simp]
-theorem Embedding.pathGraph_toEmbedding {n m : ℕ} (h : n ≤ m) :
-    (Embedding.pathGraph n m h).toEmbedding = Fin.castLEEmb h :=
+theorem Embedding.pathGraph_toEmbedding {m n : ℕ} (h : m ≤ n) :
+    (Embedding.pathGraph m n h).toEmbedding = Fin.castLEEmb h :=
   rfl
 
-theorem pathGraph_isContained_iff {n m : ℕ} : pathGraph n ⊑ pathGraph m ↔ n ≤ m where
+theorem pathGraph_isContained_iff {m n : ℕ} : pathGraph m ⊑ pathGraph n ↔ m ≤ n where
   mp h := Fin.nonempty_embedding_iff.mp ⟨h.some.toEmbedding⟩
-  mpr h := Embedding.pathGraph n m h |>.isContained
+  mpr h := Embedding.pathGraph m n h |>.isContained
 
-theorem pathGraph_isIndContained_iff {n m : ℕ} : pathGraph n ⊴ pathGraph m ↔ n ≤ m where
+theorem pathGraph_isIndContained_iff {m n : ℕ} : pathGraph m ⊴ pathGraph n ↔ m ≤ n where
   mp h := Fin.nonempty_embedding_iff.mp ⟨h.some.toEmbedding⟩
-  mpr h := Embedding.pathGraph n m h |>.isIndContained
+  mpr h := Embedding.pathGraph m n h |>.isIndContained
 
 namespace Walk
 
