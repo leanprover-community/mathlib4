@@ -925,7 +925,6 @@ noncomputable def QuotientRegularSequenceToExt (M N : ModuleCat.{v} R) {rs : Lis
       (fun r hr ↦ mem r (List.mem_cons_of_mem a hr))).comp
       (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M a rs').congrRight.toLinearMap)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quotientRegularSequenceToExt_bijective (M N : ModuleCat.{v} R) {rs : List R}
     (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
     Function.Bijective (QuotientRegularSequenceToExt M N reg mem) := by
