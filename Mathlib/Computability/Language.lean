@@ -208,7 +208,7 @@ theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f
 
 /-- Pulls back the alphabet of a language along `f`. -/
 @[simps apply]
-def preimage (f : α → β) : Language β →+ Language α where
+def comap (f : α → β) : Language β →+ Language α where
   toFun l := List.map f ⁻¹' l.toSet
   map_zero' := Language.ext preimage_empty
   map_add' _ _ := Language.ext (preimage_union ..)
