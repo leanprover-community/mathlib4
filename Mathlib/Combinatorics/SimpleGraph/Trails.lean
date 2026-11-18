@@ -153,6 +153,10 @@ theorem IsEulerian.connected_of_forall_not_isIsolated (hp : p.IsEulerian)
     apply reachable_of_mem_support <;> apply hp.mem_support_of_not_isIsolated <;> apply hG
   nonempty := ⟨u⟩
 
+theorem IsEulerian.connected_iff_forall_not_isIsolated [Nontrivial V] (h : p.IsEulerian) :
+    G.Connected ↔ ∀ v, ¬G.IsIsolated v :=
+  ⟨(·.preconnected.not_isIsolated), connected_of_forall_not_isIsolated h⟩
+
 theorem IsEulerian.isChordless {u v : V} {p : G.Walk u v} (hp : p.IsEulerian) : p.IsChordless :=
   fun _ ⟨hadj, hnmem, _⟩ ↦ hnmem <| hp.mem_edges_iff.mpr hadj
 
@@ -204,6 +208,10 @@ theorem IsEulerian.exists_isEulerian_of_not_isIsolated (hG : G.IsEulerian) (hv :
   have ⟨_, _, hp⟩ := hG.exists_isEulerian
   ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
 
+theorem isEulerian_iff_exists_isEulerian_of_not_isIsolated (h : ¬G.IsIsolated v) :
+    G.IsEulerian ↔ ∃ p : G.Walk v v, p.IsEulerian :=
+  ⟨(·.exists_isEulerian_of_not_isIsolated h), (⟨v, ·⟩)⟩
+
 variable (v) in
 /-- In a connected Eulerian graph there exists a closed Eulerian trail from any vertex.
 Since Eulerian graphs are nonempty, it suffices to require preconnected. -/
@@ -213,10 +221,18 @@ theorem IsEulerian.exists_isEulerian_of_preconnected (h : G.IsEulerian) (h' : G.
   · exact ⟨.nil, Subsingleton.elim G ⊥ ▸ .of_bot .nil⟩
   exact h.exists_isEulerian_of_not_isIsolated <| h'.not_isIsolated v
 
+theorem Preconnected.isEulerian_iff_exists_isEulerian (h : G.Preconnected) :
+    G.IsEulerian ↔ ∃ p : G.Walk v v, p.IsEulerian :=
+  ⟨(·.exists_isEulerian_of_preconnected v h), (⟨v, ·⟩)⟩
+
 theorem IsEulerian.connected_of_forall_not_isIsolated (h : G.IsEulerian)
     (h' : ∀ v, ¬G.IsIsolated v) : G.Connected :=
   have ⟨_, _, hp⟩ := h.exists_isEulerian
   hp.connected_of_forall_not_isIsolated h'
+
+theorem IsEulerian.connected_iff_forall_not_isIsolated [Nontrivial V] (h : G.IsEulerian) :
+    G.Connected ↔ ∀ v, ¬G.IsIsolated v :=
+  ⟨(·.preconnected.not_isIsolated), connected_of_forall_not_isIsolated h⟩
 
 variable (v) in
 theorem IsEulerian.even_degree (h : G.IsEulerian) [Fintype (G.neighborSet v)] :
