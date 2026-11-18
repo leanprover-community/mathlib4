@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Pi
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -85,7 +84,7 @@ theorem piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α
     (h : Disjoint (t₁ a) (t₂ a)) : Disjoint (piFinset t₁) (piFinset t₂) :=
   disjoint_iff_ne.2 fun f₁ hf₁ f₂ hf₂ eq₁₂ =>
     disjoint_iff_ne.1 h (f₁ a) (mem_piFinset.1 hf₁ a) (f₂ a) (mem_piFinset.1 hf₂ a)
-      (congr_fun eq₁₂ a)
+      congr($eq₁₂ a)
 
 lemma piFinset_image [∀ a, DecidableEq (δ a)] (f : ∀ a, γ a → δ a) (s : ∀ a, Finset (γ a)) :
     piFinset (fun a ↦ (s a).image (f a)) = (piFinset s).image fun b a ↦ f _ (b a) := by
@@ -154,7 +153,7 @@ noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [F
 instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
     {s : β → β → Prop} [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
   Fintype.ofEquiv {f : α → β // ∀ {x y}, r x y → s (f x) (f y)} <| Equiv.mk
-    (fun f ↦ ⟨f.1, f.2⟩) (fun f ↦ ⟨f.1, f.2⟩) (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (fun f ↦ ⟨f.1, f.2⟩) (fun f ↦ ⟨f.toFun, f.map_rel'⟩) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 noncomputable instance RelEmbedding.instFintype {α β} [Fintype α] [Fintype β]
     {r : α → α → Prop} {s : β → β → Prop} : Fintype (r ↪r s) :=

@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.AEStabilizer
 public import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.MeasureTheory.Group.AEStabilizer
 
 /-!
 # Ergodic group actions
@@ -87,9 +87,9 @@ theorem _root_.ErgodicSMul.of_aestabilizer [Group G] [MulAction G α] [SMulInvar
 theorem ergodicSMul_iterateMulAct {f : α → α} (hf : Measurable f) :
     ErgodicSMul (IterateMulAct f) α μ ↔ Ergodic f μ := by
   simp only [ergodicSMul_iff, smulInvariantMeasure_iterateMulAct, hf]
-  refine ⟨fun ⟨h₁, h₂⟩ ↦ .of_preimage_eq h₁ fun s htm hs ↦ ?_, fun h ↦ ⟨h.1, ?_⟩⟩
+  refine ⟨fun ⟨h₁, h₂⟩ ↦ .of_preimage_eq h₁ fun s htm hs ↦ ?_, fun h ↦ ⟨h.toMeasurePreserving, ?_⟩⟩
   · refine h₂ htm fun n ↦ ?_
-    exact (Function.IsFixedPt.preimage_iterate hs n.val).eventuallyEq
+    exact (Function.IsFixedPt.preimage_iterate hs n.val).eventuallyEqSet
   · intro s hm hs
     exact h.quasiErgodic.aeconst_set hm.nullMeasurableSet <| hs (.mk 1)
 

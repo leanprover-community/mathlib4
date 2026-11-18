@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
+
 /-!
 # Partial homeomorphisms: composition
 
@@ -98,15 +99,17 @@ theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ 
 
 theorem trans_assoc (e'' : OpenPartialHomeomorph Z Z') :
     (e.trans e').trans e'' = e.trans (e'.trans e'') :=
-  toPartialEquiv_injective <| e.1.trans_assoc _ _
+  toPartialEquiv_injective <| e.toPartialHomeomorph.trans_assoc _ _
 
 @[simp, mfld_simps]
 theorem trans_refl : e.trans (OpenPartialHomeomorph.refl Y) = e :=
-  toPartialHomeomorph_injective (PartialHomeomorph.toPartialEquiv_injective e.1.trans_refl)
+  toPartialHomeomorph_injective
+    (PartialHomeomorph.toPartialEquiv_injective e.toPartialHomeomorph.trans_refl)
 
 @[simp, mfld_simps]
 theorem refl_trans : (OpenPartialHomeomorph.refl X).trans e = e :=
-  toPartialHomeomorph_injective (PartialHomeomorph.toPartialEquiv_injective e.1.refl_trans)
+  toPartialHomeomorph_injective
+    (PartialHomeomorph.toPartialEquiv_injective e.toPartialHomeomorph.refl_trans)
 
 theorem trans_ofSet {s : Set Y} (hs : IsOpen s) : e.trans (ofSet s hs) = e.restr (e ⁻¹' s) :=
   OpenPartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) <| by
@@ -226,5 +229,23 @@ theorem trans_transOpenPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
       e.transOpenPartialHomeomorph (e'.transOpenPartialHomeomorph f'') := by
   simp only [transOpenPartialHomeomorph_eq_trans, OpenPartialHomeomorph.trans_assoc,
     trans_toOpenPartialHomeomorph]
+
+@[simp]
+lemma toOpenPartialHomeomorph_symm_trans_self (e : X ≃ₜ Y) :
+    e.toOpenPartialHomeomorph.symm.trans e.toOpenPartialHomeomorph = .refl Y := by
+  simp [← symm_toOpenPartialHomeomorph, ← trans_toOpenPartialHomeomorph]
+
+@[simp]
+lemma toOpenPartialHomeomorph_trans_symm_self (e : X ≃ₜ Y) :
+    e.toOpenPartialHomeomorph.trans e.toOpenPartialHomeomorph.symm = .refl X := by
+  simp [← symm_toOpenPartialHomeomorph, ← trans_toOpenPartialHomeomorph]
+
+open OpenPartialHomeomorph in
+@[simp]
+lemma transOpenPartialHomeomorph_symm_trans {e e' : OpenPartialHomeomorph Y Z} (φ : X ≃ₜ Y) :
+    (φ.transOpenPartialHomeomorph e).symm.trans
+      (φ.transOpenPartialHomeomorph e') = e.symm.trans e' := by
+  simp [trans_symm_eq_symm_trans_symm, trans_assoc, ← trans_assoc φ.toOpenPartialHomeomorph.symm,
+    Homeomorph.transOpenPartialHomeomorph_eq_trans]
 
 end Homeomorph

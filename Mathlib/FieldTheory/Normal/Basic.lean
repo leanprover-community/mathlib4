@@ -21,7 +21,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 * `Algebra.IsQuadraticExtension.normal`: the instance that a quadratic extension, given as a class
   `Algebra.IsQuadraticExtension`, is normal.
-
 -/
 
 @[expose] public section
@@ -96,8 +95,8 @@ namespace IntermediateField
 /-- A compositum of normal extensions is normal. -/
 instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
-  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' := fun x => ?_ }
-  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
+  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).toIsAlgebraic, splits' := fun x => ?_ }
+  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).toIsAlgebraic) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet K)
   have hF : Normal F E := by
     have : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
@@ -127,7 +126,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
   have : ∀ x ∈ S, ((minpoly F x).map (algebraMap F E)).Splits := fun x hx ↦ splits_of_splits
     (splits x hx).2 fun y hy ↦ (le_iSup _ ⟨x, hx⟩ : _ ≤ E) (subset_adjoin F _ <| by exact hy)
   obtain ⟨φ⟩ := nonempty_algHom_adjoin_of_splits fun x hx ↦ ⟨(splits x hx).1, this x hx⟩
-  convert! (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
+  convert (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
   simp [minpoly.algHom_eq _ φ.injective, ← minpoly.algHom_eq _ (adjoin F S).val.injective,
     Polynomial.map_map]
 

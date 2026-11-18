@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing finite products from binary products and terminal.
 
@@ -292,10 +295,6 @@ lemma PreservesFiniteCoproducts.of_preserves_binary_and_initial (J : Type*) [Fin
   let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
   have := preservesShape_fin_of_preserves_binary_and_initial F n
   preservesColimitsOfShape_of_equiv (Discrete.equivalence e).symm _
-
-@[deprecated (since := "2026-03-10")]
-alias preservesFiniteCoproductsOfPreservesBinaryAndInitial :=
-  PreservesFiniteCoproducts.of_preserves_binary_and_initial
 
 end Preserves
 

@@ -5,10 +5,11 @@ Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
 module
 
-public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Order.DenselyOrdered
 public import Mathlib.Topology.Order.Monotone
-public import Mathlib.Topology.Connected.TotallyDisconnected
+
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Intermediate Value Theorem
@@ -194,7 +195,6 @@ In this section we prove the following results:
   is one of the intervals `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`, `Set.Ici`, `Set.Iic`,
   `Set.Ioi`, `Set.Iio`; note that this is false for non-complete orders: e.g., in `ℝ \ {0}`, the set
   of positive numbers cannot be represented as `Set.Ioi _`.
-
 -/
 
 
@@ -408,7 +408,7 @@ lemma IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset {a b : α} {s : Set
     refine ⟨t₁_mem, fun t ht ↦ ?_⟩
     rcases ht.2.eq_or_lt with rfl | h
     · have : closure A ⊆ s ∩ Icc a b := by
-        apply (closure_subset_iff hs).2 (fun t ht ↦ ⟨?_, ht.1⟩)
+        apply (closure_subset_iff hs).2 (fun t (ht : t ∈ A) ↦ ⟨?_, ht.1⟩)
         have : t ∈ Icc a t := ⟨ht.1.1, le_rfl⟩
         exact ht.2 this
       apply this.trans inter_subset_left
@@ -568,7 +568,7 @@ lemma isTotallyDisconnected_iff_lt {s : Set α} :
   · simp_rw [← not_ordConnected_inter_Icc_iff hx hy]
     exact fun hs ↦ h _ inter_subset_left hs _ ⟨hx, le_rfl, hxy.le⟩ _ ⟨hy, hxy.le, le_rfl⟩ hxy
   · obtain ⟨z, h1z, h2z⟩ := h x (hts hx) y (hts hy) hxy
-    exact h1z <| hts <| ht.1 hx hy ⟨h2z.1.le, h2z.2.le⟩
+    exact h1z <| hts <| ht.out' hx hy ⟨h2z.1.le, h2z.2.le⟩
 
 /-!
 ### Intermediate Value Theorem on an interval

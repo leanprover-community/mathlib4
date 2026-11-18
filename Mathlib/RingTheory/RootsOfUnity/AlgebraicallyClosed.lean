@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 public import Mathlib.NumberTheory.Cyclotomic.Basic
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
 /-!
 # Instances for HasEnoughRootsOfUnity
@@ -36,7 +36,7 @@ instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity F n where
     rootsOfUnity.isCyclic F n
 
 instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity F (n ^ k) :=
-  have : NeZero ((n ^ k : ℕ) : F) := by exact_mod_cast ‹NeZero (n : F)›.pow
+  have : NeZero ((n ^ k : ℕ) : F) := mod_cast ‹NeZero (n : F)›.pow
   inferInstance
 
 end IsSepClosed

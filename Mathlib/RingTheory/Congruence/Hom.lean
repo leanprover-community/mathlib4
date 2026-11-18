@@ -6,12 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.RingTheory.Congruence.Basic
-public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # Congruence relations and ring homomorphisms
@@ -108,7 +102,7 @@ theorem mapGen_eq_map_of_surjective
     {c : RingCon M} (f : M →+* N) (h : ker f ≤ c) (hf : Surjective f) :
     c.mapGen f = Relation.Map c f f := by
   refine le_antisymm ?_ <| (RingCon.gi N).gc.le_u_l _
-  have := Relation.map_equivalence c.toSetoid.2 _ hf h
+  have := Relation.map_equivalence c.toSetoid.iseqv _ hf h
   intro _ _ hg
   induction hg with
   | of _ _ a => exact a
@@ -190,7 +184,7 @@ theorem lift_apply_mk' (f : c.Quotient →+* P) :
 equal if they are equal on elements that are coercions from the ring. -/
 @[ext high] -- This should have higher priority than `RingHom.ext`
 theorem Quotient.hom_ext {f g : c.Quotient →+* P} (h : f.comp c.mk' = g.comp c.mk') : f = g :=
-  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
+  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by congrm $h x
 
 /-- The uniqueness part of the universal property for quotients of rings. -/
 theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →+* P) (Hg : g.comp c.mk' = f) :
@@ -509,7 +503,7 @@ equal if they are equal on elements that are coercions from the ring. -/
 @[ext 1100]
 theorem Quotient.hom_extₐ {f g : c.Quotient →ₐ[R] P}
     (h : f.comp (c.mkₐ R) = g.comp (c.mkₐ R)) : f = g :=
-  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
+  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by congrm $h x
 
 /-- `liftₐ` as an equivalence. -/
 @[simps]

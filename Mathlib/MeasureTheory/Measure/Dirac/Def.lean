@@ -26,6 +26,7 @@ variable {α : Type*} [MeasurableSpace α] {s : Set α} {a : α}
 namespace MeasureTheory.Measure
 
 /-- The dirac measure. -/
+@[wikidata Q1227387]
 def dirac (a : α) : Measure α := (OuterMeasure.dirac a).toMeasure (by simp)
 
 instance : MeasureSpace PUnit :=

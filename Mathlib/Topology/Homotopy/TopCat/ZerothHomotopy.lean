@@ -15,7 +15,6 @@ public import Mathlib.Topology.Homotopy.TopCat.Path
 In this file, given `X : TopCat`, we define a bijection
 `TopCat.zerothHomotopyEquiv` between `ZerothHomotopy X` and
 `(TopCat.toSSet.obj X).π₀`.
-
 -/
 
 @[expose] public section
@@ -34,7 +33,7 @@ singular simplicial set of `X` and the type of morphisms `I ⟶ X`. -/
 noncomputable def toSSetObj₁Equiv :
     toSSet.obj X _⦋1⦌ ≃ (I ⟶ X) :=
   (toSSetObjEquiv _ _).trans
-    { toFun f := ofHom (f.comp (toContinuousMap TopCat.stdSimplexHomeomorphI.symm))
+    { toFun f := ofHom (f.comp (ContinuousMap.ofClass TopCat.stdSimplexHomeomorphI.symm))
       invFun f := f.hom.comp TopCat.stdSimplexHomeomorphI
       left_inv _ := by simp
       right_inv _ := by simp }

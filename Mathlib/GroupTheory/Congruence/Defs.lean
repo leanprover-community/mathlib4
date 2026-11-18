@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Data.Setoid.Basic
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Order.Setoid.Basic
+
 import Mathlib.Order.GaloisConnection.Basic
 
 /-!
@@ -721,7 +721,7 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
       (↑u⁻¹ : c.Quotient)
       (fun (x y : M) (hxy : (x * y : c.Quotient) = 1) (hyx : (y * x : c.Quotient) = 1) =>
         f x y (c.eq.1 hxy) (c.eq.1 hyx))
-      (fun x y x' y' hx hy => ?_) u.3 u.4
+      (fun x y x' y' hx hy => ?_) u.val_inv u.inv_val
   refine Function.hfunext ?_ ?_
   · rw [c.eq.2 hx, c.eq.2 hy]
   · rintro Hxy Hxy' -

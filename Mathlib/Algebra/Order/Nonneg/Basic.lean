@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Data.Nat.Cast.Order.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The type of nonnegative elements
@@ -154,7 +155,7 @@ def coeAddMonoidHom : Nonneg α →+ α :=
     map_zero' := Nonneg.coe_zero
     map_add' := Nonneg.coe_add }
 
-@[norm_cast]
+@[deprecated Nonneg.coe_nsmul (since := "2026-11-16")]
 theorem nsmul_coe (n : ℕ) (r : Nonneg α) :
     ↑(n • r) = n • (r : α) :=
   Nonneg.coeAddMonoidHom.map_nsmul _ _

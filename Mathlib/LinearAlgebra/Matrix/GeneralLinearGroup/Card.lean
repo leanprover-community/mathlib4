@@ -5,10 +5,12 @@ Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran 
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Rank
-public import Mathlib.LinearAlgebra.Matrix.Basis
+
+import Mathlib.FieldTheory.Finiteness
+
 /-!
 # Cardinal of the general linear group over finite rings
 
@@ -90,7 +92,7 @@ theorem card_matrix {m n α} [Finite m] [Finite n] :
 
 theorem enatCard_matrix {m n α} :
     ENat.card (Matrix m n α) = ENat.card α ^ (ENat.card n * ENat.card m) := by
-  simp [Matrix, ENat.card_fun, ←ENat.epow_mul]
+  simp [Matrix, ENat.card_fun, ← ENat.epow_mul]
 
 section field
 
@@ -104,9 +106,9 @@ variable (n : ℕ)
 by sending a matrix to its columns. -/
 noncomputable def equiv_GL_linearindependent :
     GL (Fin n) 𝔽 ≃ { s : Fin n → Fin n → 𝔽 // LinearIndependent 𝔽 s } where
-  toFun M := ⟨M.1.col, by
+  toFun M := ⟨M.val.col, by
     apply linearIndependent_iff_card_eq_finrank_span.2
-    rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
+    rw [Set.finrank, finrank_span_range_col, rank_unit]⟩
   invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
     classical
     let b := basisOfPiSpaceOfLinearIndependent M.2

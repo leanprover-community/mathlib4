@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.Order.Filter.EventuallyConst
 
@@ -57,7 +56,7 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
   ⟨measurable_id, map_id⟩
 
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
-  hf.1.aemeasurable
+  hf.measurable.aemeasurable
 
 protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
     (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
@@ -94,11 +93,12 @@ theorem aemeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
 
 protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa μb :=
-  ⟨hf.1, hf.2.absolutelyContinuous⟩
+  ⟨hf.measurable.aemeasurable, hf.map_eq.absolutelyContinuous⟩
 
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
-  ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩
+  ⟨hg.measurable.comp hf.measurable, by
+    rw [← map_map hg.measurable hf.measurable, hf.map_eq, hg.map_eq]⟩
 
 protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
     (hg : Measurable g) (hf : Measurable f) :
@@ -122,13 +122,13 @@ protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
 protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasurePreserving e μb μc) :
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
-  convert! (MeasurePreserving.symm e h).comp hg
+  convert (MeasurePreserving.symm e h).comp hg
   simp [← Function.comp_assoc e.symm e g]
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
-  convert! hg.comp (MeasurePreserving.symm e h)
+  convert hg.comp (MeasurePreserving.symm e h)
   simp [Function.comp_assoc g e e.symm]
 
 protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb) [SigmaFinite μb] :
@@ -143,7 +143,7 @@ protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SF
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
-  rw [map_apply₀ hf.1.aemeasurable hs]
+  rw [map_apply₀ hf.measurable.aemeasurable hs]
 
 theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
@@ -176,7 +176,7 @@ theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : Measure
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) :
     (ae μa).EventuallyEmptyOrUniv (f ⁻¹' s) ↔ (ae μb).EventuallyEmptyOrUniv s :=
-  aeconst_comp hf hs.mem
+  aeconst_comp hf hs.mem.nullMeasurable
 
 theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
     (hf' : MeasurePreserving f μa' μb') : MeasurePreserving f (μa + μa') (μb + μb') where

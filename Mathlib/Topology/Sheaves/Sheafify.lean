@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Sheaves.LocalPredicate
-public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.Skyscraper
+
+import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
 # Sheafification of `Type`-valued presheaves
@@ -72,7 +72,7 @@ def sheafify : Sheaf (Type v) X :=
 sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
-def toSheafify : F ⟶ F.sheafify.1 where
+def toSheafify : F ⟶ F.sheafify.obj where
   app U := ↾fun f ↦ ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf
     ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
