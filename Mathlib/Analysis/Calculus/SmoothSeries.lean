@@ -92,7 +92,7 @@ theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
     (hy : y ∈ t) : HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg ⊢
   convert! hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
-  · exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 F 1).map_tsum <|
+  · exact (StrongDual.smulRightL 𝕜 𝕜 F 1).map_tsum <|
       .of_norm_bounded hu fun n ↦ hg' n y hy
   · simpa
 

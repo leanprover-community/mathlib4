@@ -699,11 +699,12 @@ protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDire
     (𝓤 (α →ᵤ[𝔖] β)).HasAntitoneBasis fun n ↦ UniformOnFun.gen 𝔖 (t n) (V n) := by
   have := hb.nonempty
   refine ⟨(UniformOnFun.hasBasis_uniformity_of_covering_of_basis 𝔖
-    ht hmono.directed_le hex hb.1).to_hasBasis ?_ fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
+    ht hmono.directed_le hex hb.toHasBasis).to_hasBasis ?_
+      fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
   · rintro ⟨k, l⟩ -
     rcases directed_of (· ≤ ·) k l with ⟨n, hkn, hln⟩
-    exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.2 hln)⟩
-  · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.2 h)
+    exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.antitone hln)⟩
+  · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.antitone h)
 
 protected theorem isCountablyGenerated_uniformity [IsCountablyGenerated (𝓤 β)] {t : ℕ → Set α}
     (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n) :

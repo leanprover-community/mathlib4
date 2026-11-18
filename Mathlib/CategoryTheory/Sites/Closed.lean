@@ -200,7 +200,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
     have : ∀ ⦃Y⦄ (f : Y ⟶ X) (hf : S f), M.pullback f = (x f hf).1 := by
       intro Y f hf
       apply le_antisymm
-      · rintro Z u ⟨W, g, f', hf', hg : (x f' hf').1.1 _, c⟩
+      · rintro Z u ⟨W, g, f', hf', hg : (x f' hf').1.arrows _, c⟩
         rw [Sieve.mem_iff_pullback_eq_top,
           ← show (x (u ≫ f) _).1 = (x f hf).1.pullback u from congr($(hx f u hf).val)]
         conv_lhs => congr; congr; rw [← c] -- Porting note: Originally `simp_rw [← c]`

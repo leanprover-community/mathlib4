@@ -85,14 +85,14 @@ namespace IsDPMorphism
 variable {hI hJ} {C : Type*} [CommSemiring C] {K : Ideal C} (hK : DividedPowers K)
 
 theorem map_dpow {f : A →+* B} (hf : IsDPMorphism hI hJ f) {n : ℕ} {a : A} (ha : a ∈ I) :
-    f (hI.dpow n a) = hJ.dpow n (f a) := (hf.2 a ha).symm
+    f (hI.dpow n a) = hJ.dpow n (f a) := (hf.dpow_comp a ha).symm
 
 theorem comp {f : A →+* B} {g : B →+* C} (hg : IsDPMorphism hJ hK g) (hf : IsDPMorphism hI hJ f) :
     IsDPMorphism hI hK (g.comp f) := by
-  refine ⟨le_trans (map_map f g ▸ map_mono hf.1) hg.1, fun a ha ↦ ?_⟩
+  refine ⟨le_trans (map_map f g ▸ map_mono hf.ideal_comp) hg.ideal_comp, fun a ha ↦ ?_⟩
   simp only [RingHom.coe_comp, Function.comp_apply]
-  rw [← hf.2 a ha, hg.2]
-  exact hf.1 (mem_map_of_mem f ha)
+  rw [← hf.dpow_comp a ha, hg.dpow_comp]
+  exact hf.ideal_comp (mem_map_of_mem f ha)
 
 end IsDPMorphism
 
@@ -129,7 +129,7 @@ lemma isDPMorphism (f : DPMorphism hI hJ) : IsDPMorphism hI hJ f.toRingHom :=
 /-- A constructor for `DPMorphism` from a ring homomorphism `f : A →+* B` satisfying
   `IsDPMorphism hI hJ f`. -/
 def mk' {f : A →+* B} (hf : IsDPMorphism hI hJ f) : DPMorphism hI hJ :=
-  ⟨f, hf.1, hf.2⟩
+  ⟨f, hf.ideal_comp, hf.dpow_comp⟩
 
 variable (hI hJ)
 
@@ -209,9 +209,9 @@ theorem of_comp (f : A →+* B) (g : B →+* C) (heq : J = I.map f) (hf : IsDPMo
   apply on_span _ _ heq
   · rintro b ⟨a, ha, rfl⟩
     rw [← RingHom.comp_apply]
-    exact hh.1 (mem_map_of_mem _ ha)
+    exact hh.ideal_comp (mem_map_of_mem _ ha)
   · rintro n b ⟨a, ha, rfl⟩
-    rw [← RingHom.comp_apply, hh.2 a ha, RingHom.comp_apply, hf.2 a ha]
+    rw [← RingHom.comp_apply, hh.dpow_comp a ha, RingHom.comp_apply, hf.dpow_comp a ha]
 
 end IsDPMorphism
 
@@ -238,7 +238,7 @@ variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Idea
 theorem dpow_comp_from_gens {S : Set A} (hS : I = span S) (hS' : ∀ s ∈ S, f s ∈ J)
     (hdp : ∀ {n : ℕ}, ∀ a ∈ S, f (hI.dpow n a) = hJ.dpow n (f a)) :
     ∀ {n}, ∀ a ∈ I, hJ.dpow n (f a) = f (hI.dpow n a) :=
-  (IsDPMorphism.on_span hI hJ hS hS' hdp).2
+  (IsDPMorphism.on_span hI hJ hS hS' hdp).dpow_comp
 
 /-- If two divided power structures on the ideal `I` agree on a generating set, then they are
   equal.
