@@ -94,34 +94,23 @@ theorem extends_norm' (hf1 : f 1 = 1) (a : R) : f (a • (1 : S)) = ‖a‖ := b
 theorem extends_norm (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ := by
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' hf1 _
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- The restriction of an algebra norm to a subalgebra. -/
-def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A where
-  toFun x     := f x.val
-  map_zero'   := map_zero f
-  add_le' x y := map_add_le_add _ _ _
-  neg' x      := map_neg_eq_map _ _
-  mul_le' x y := map_mul_le_mul _ _ _
-  eq_zero_of_map_eq_zero' x hx := by
-    rw [← ZeroMemClass.coe_eq_zero]; exact eq_zero_of_map_eq_zero f hx
-  smul' r x := map_smul_eq_mul _ _ _
+variable (f) in
+def compInjective {T : Type*} [Ring T] [Algebra R T] (σ : T →ₐ[R] S) (hσ : Function.Injective σ) :
+    AlgebraNorm R T where
+  __ := f.toSeminorm.comp σ.toLinearMap
+  toFun x := f (σ x)
+  mul_le' x y := by grw [map_mul, map_mul_le_mul]
+  eq_zero_of_map_eq_zero' x hx := by simpa [map_eq_zero_iff σ hσ] using eq_zero_of_map_eq_zero f hx
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
+/-- The restriction of an algebra norm to a subalgebra. -/
+def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A :=
+  f.compInjective A.val A.subtype_injective
+
 /-- The restriction of an algebra norm in a scalar tower. -/
 def isScalarTower_restriction {A : Type*} [CommRing A] [Algebra R A] [Algebra A S]
     [IsScalarTower R A S] (hinj : Function.Injective (algebraMap A S)) (f : AlgebraNorm R S) :
-    AlgebraNorm R A where
-  toFun x     := f (algebraMap A S x)
-  map_zero'   := by simp only [map_zero]
-  add_le' x y := by simp only [map_add, map_add_le_add]
-  neg' x      := by simp only [map_neg, map_neg_eq_map]
-  mul_le' x y := by simp only [map_mul, map_mul_le_mul]
-  eq_zero_of_map_eq_zero' x hx := by
-    rw [← map_eq_zero_iff (algebraMap A S) hinj]
-    exact eq_zero_of_map_eq_zero f hx
-  smul' r x := by
-    simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply]
-    simp only [← smul_eq_mul, algebraMap_smul, map_smul_eq_mul]
+    AlgebraNorm R A :=
+  f.compInjective (IsScalarTower.toAlgHom R A S) hinj
 
 end AlgebraNorm
 

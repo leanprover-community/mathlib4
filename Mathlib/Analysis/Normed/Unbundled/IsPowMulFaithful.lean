@@ -87,10 +87,10 @@ theorem eq_of_powMul_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁
       ∀ x : R[y], f₁ x.val ≤ C₁ * f₂ x.val ∧ f₂ x.val ≤ C₂ * f₁ x.val) :
     f₁ = f₂ := by
   ext x
-  set g₁ : AlgebraNorm R R[(x : S)] := AlgebraNorm.restriction _ f₁
-  set g₂ : AlgebraNorm R R[(x : S)] := AlgebraNorm.restriction _ f₂
-  have hg₁_pm : IsPowMul g₁ := IsPowMul.restriction _ hf₁_pm
-  have hg₂_pm : IsPowMul g₂ := IsPowMul.restriction _ hf₂_pm
+  set g₁ : AlgebraNorm R R[(x : S)] := f₁.restriction _
+  set g₂ : AlgebraNorm R R[(x : S)] := f₂.restriction _
+  have hg₁_pm : IsPowMul g₁ := hf₁_pm.comp _
+  have hg₂_pm : IsPowMul g₂ := hf₂_pm.comp _
   let y : R[(x : S)] := ⟨x, self_mem_adjoin_singleton R x⟩
   have hy : x = y.val := rfl
   have h1 : f₁ y.val = g₁ y := rfl
