@@ -45,8 +45,8 @@ def sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
     | ⊤ => ⊤
     | WithTop.some ub => upperSqrt ub prec
 
-theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : (lb : ℝ) ≤ x) :
-    (lowerSqrt lb prec : ℝ) ≤ √x := by
+theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : lb ≤ x) :
+    lowerSqrt lb prec ≤ √x := by
   rcases le_or_gt 0 lb.toRat with hlb | hlb
   · apply Real.le_sqrt_of_sq_le
     have h : ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt ^ 2 ≤ (lb <<< (2 * prec)).toRat := by
@@ -62,10 +62,10 @@ theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : (lb : ℝ) ≤ x
       exact mul_neg_of_neg_of_pos hlb (by positivity)
     simp [lowerSqrt, Nat.floor_eq_zero.mpr <| zero_lt_one.trans' this]
 
-theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ (ub : ℝ)) :
-    √x ≤ (upperSqrt ub prec : ℝ) := by
+theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ ub) :
+    √x ≤ upperSqrt ub prec := by
   set n := ⌈(ub <<< (2 * prec)).toRat⌉₊
-  suffices H : ∀ m : ℕ, n ≤ m ^ 2 → √x ≤ (Dyadic.ofIntWithPrec m prec : ℝ) by
+  suffices H : ∀ m : ℕ, n ≤ m ^ 2 → √x ≤ Dyadic.ofIntWithPrec m prec by
     dsimp only [upperSqrt]
     split_ifs with h
     exacts [H _ h, H _ n.lt_succ_sqrt'.le]
