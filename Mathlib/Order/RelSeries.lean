@@ -21,7 +21,6 @@ import Mathlib.Order.OrderIsoNat
 
 If `r` is a relation on `α` then a relation series of length `n` is a series
 `a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
-
 -/
 
 @[expose] public section
@@ -352,7 +351,6 @@ lemma append_assoc (p q w : RelSeries r) (hpq : p.last ~[r] q.head) (hqw : q.las
     lia
   · simp [append, Fin.append_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toList_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
@@ -368,8 +366,8 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 @[simps length]
 def map (p : RelSeries r) (f : r.Hom s) : RelSeries s where
   length := p.length
-  toFun := f.1.comp p
-  step := (f.2 <| p.step ·)
+  toFun := f.toFun.comp p
+  step := (f.map_rel' <| p.step ·)
 
 @[simp] lemma map_apply (p : RelSeries r) (f : r.Hom s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
@@ -435,7 +433,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
   simp [RelSeries.last, RelSeries.head]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma reverse_reverse {r : SetRel α α} (p : RelSeries r) : p.reverse.reverse = p := by
   ext <;> simp
@@ -555,7 +552,6 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   simp only [Fin.val_succ, Fin.val_last]
   exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toList_tail {p : RelSeries r} (hp : p.length ≠ 0) : (p.tail hp).toList = p.toList.tail := by
@@ -571,7 +567,7 @@ lemma tail_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
   simp
 
 lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
-    (p.tail hp).cons p.head (p.3 ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
+    (p.tail hp).cons p.head (p.step ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
   apply toList_injective
   simp [← head_toList]
 
@@ -599,7 +595,7 @@ def inductionOn (motive : RelSeries r → Sort*)
       have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
       nth_rw 3 [heq] at lq
       convert
-        cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head (p.3 ⟨0, heq ▸ d.zero_lt_succ⟩)
+        cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head (p.step ⟨0, heq ▸ d.zero_lt_succ⟩)
           (hd _ lq)
       exact (p.cons_self_tail (heq ▸ d.zero_ne_add_one.symm)).symm
   exact this rfl

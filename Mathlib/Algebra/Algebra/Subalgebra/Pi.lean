@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.LinearAlgebra.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of subalgebras
 

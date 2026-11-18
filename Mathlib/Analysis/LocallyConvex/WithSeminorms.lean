@@ -311,7 +311,7 @@ class PolynormableSpace [topology : TopologicalSpace E] where
 
 theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
     (hp : WithSeminorms p) : t = p.moduleFilterBasis.topology :=
-  hp.1
+  hp.topology_eq_withSeminorms
 
 variable [TopologicalSpace E]
 variable {p : SeminormFamily 𝕜 E ι}
@@ -348,7 +348,7 @@ instance PolynormableSpace.continuousSMul [PolynormableSpace 𝕜 E] :
 
 theorem WithSeminorms.hasBasis (hp : WithSeminorms p) :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ p.basisSets) id := by
-  rw [congr_fun (congr_arg (@nhds E) hp.1) 0]
+  rw [congr_fun (congr_arg (@nhds E) hp.topology_eq_withSeminorms) 0]
   exact AddGroupFilterBasis.nhds_zero_hasBasis _
 
 theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
@@ -386,6 +386,30 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     Eq.symm (Seminorm.vadd_ball (sr.fst.sup p))
   rwa [vadd_eq_add, add_zero] at this
 
+theorem WithSeminorms.hasBasis_zero_ball_of_directed [Nonempty ι] (hp : WithSeminorms p)
+    (hp_dir : Directed (· ≤ ·) p) :
+    (𝓝 (0 : E)).HasBasis (fun ir : ι × ℝ ↦ 0 < ir.2) fun ir ↦ (p ir.1).ball 0 ir.2 := by
+  refine hp.hasBasis_zero_ball.to_hasBasis ?_ ?_
+  · rintro ⟨s, r⟩ (hr : 0 < r)
+    obtain ⟨i, hi⟩ := hp_dir.finset_le s
+    exact ⟨(i, r), hr, ball_antitone (Finset.sup_le hi)⟩
+  · rintro ⟨i, r⟩ (hr : 0 < r)
+    exact ⟨({i}, r), hr, by simp⟩
+
+theorem WithSeminorms.hasBasis_zero_closedBall (hp : WithSeminorms p) :
+    (𝓝 (0 : E)).HasBasis
+    (fun sr : Finset ι × ℝ ↦ 0 < sr.2) fun sr ↦ (sr.1.sup p).closedBall 0 sr.2 :=
+  hp.hasBasis_zero_ball.to_hasBasis
+    (fun i hi ↦ ⟨(i.1, i.2 / 2), half_pos hi, fun _ (hx : _ ≤ _) ↦ hx.trans_lt (half_lt_self hi)⟩)
+    fun i hi ↦ ⟨i, hi, ball_subset_closedBall _ 0 i.2⟩
+
+theorem WithSeminorms.hasBasis_zero_closedBall_of_directed [Nonempty ι] (hp : WithSeminorms p)
+    (hp_dir : Directed (· ≤ ·) p) :
+    (𝓝 (0 : E)).HasBasis (fun ir : ι × ℝ ↦ 0 < ir.2) fun ir ↦ (p ir.1).closedBall 0 ir.2 :=
+  (hp.hasBasis_zero_ball_of_directed hp_dir).to_hasBasis
+    (fun i hi ↦ ⟨(i.1, i.2 / 2), half_pos hi, fun _ (hx : _ ≤ _) ↦ hx.trans_lt (half_lt_self hi)⟩)
+    fun i hi ↦ ⟨i, hi, ball_subset_closedBall _ 0 i.2⟩
+
 /-- The `x`-neighbourhoods of a space whose topology is induced by a family of seminorms
 are exactly the sets which contain seminorm balls around `x`. -/
 theorem WithSeminorms.mem_nhds_iff (hp : WithSeminorms p) (x : E) (U : Set E) :
@@ -415,7 +439,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
 /-- A family of seminorms inducing a T₁ topology is separating. -/
 theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E) (hx : x ≠ 0) :
     ∃ i, p i x ≠ 0 := by
-  have := ((t1Space_TFAE E).out 1 10).mp (inferInstance : T1Space E)
+  have := ((t1Space_tfae E).out 1 10).mp (inferInstance : T1Space E)
   by_contra! h
   refine hx (this ?_)
   rw [hp.hasBasis_zero_ball.specializes_iff]
@@ -826,8 +850,8 @@ maps from `E` to `F`, the following are equivalent:
 
 In particular, if you can determine all continuous seminorms on `E`, that gives you a complete
 characterization of equicontinuity for linear maps from `E` to `F`. For example `E` and `F` are
-both normed spaces, you get `NormedSpace.equicontinuous_TFAE`. -/
-protected theorem equicontinuous_TFAE {κ : Type*}
+both normed spaces, you get `NormedSpace.equicontinuous_tfae`. -/
+protected theorem equicontinuous_tfae {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
     [hu : IsUniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) : TFAE
@@ -867,13 +891,16 @@ protected theorem equicontinuous_TFAE {κ : Type*}
       Eventually.of_forall fun x k ↦ by simpa using! hfp k x
   tfae_finish
 
+@[deprecated (since := "2026-10-27")]
+protected alias equicontinuous_TFAE := WithSeminorms.equicontinuous_tfae
+
 theorem uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
     [IsUniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
     UniformEquicontinuous ((↑) ∘ f) ↔
     ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p :=
-  (hq.equicontinuous_TFAE f).out 3 4
+  (hq.equicontinuous_tfae f).out 3 4
 
 theorem uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
@@ -882,7 +909,7 @@ theorem uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type*}
     UniformEquicontinuous ((↑) ∘ f) ↔ ∀ i,
     BddAbove (range fun k ↦ (q i).comp (f k)) ∧
       Continuous (⨆ k, (q i).comp (f k)) :=
-  (hq.equicontinuous_TFAE f).out 3 5
+  (hq.equicontinuous_tfae f).out 3 5
 
 end WithSeminorms
 
@@ -1079,7 +1106,7 @@ theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : 
     LocallyConvexSpace ℝ E := by
   have := hp.isTopologicalAddGroup
   apply ofBasisZero ℝ E id fun s => s ∈ p.basisSets
-  · rw [hp.1, AddGroupFilterBasis.nhds_eq _, AddGroupFilterBasis.N_zero]
+  · rw [hp.topology_eq_withSeminorms, AddGroupFilterBasis.nhds_eq _, AddGroupFilterBasis.N_zero]
     exact FilterBasis.hasBasis _
   · intro s hs
     change s ∈ Set.iUnion _ at hs

@@ -686,7 +686,7 @@ theorem IsCycleOn.conj (h : f.IsCycleOn s) : (g * f * g⁻¹).IsCycleOn ((g : Pe
     rw [Equiv.image_eq_preimage_symm] at hx hy
     convert Equiv.Perm.SameCycle.conj (h.2 hx hy) (g := g) <;> simp⟩
 
-theorem isCycleOn_swap [DecidableEq α] (hab : a ≠ b) : (swap a b).IsCycleOn {a, b} :=
+theorem isCycleOn_swap [DecidableEq α] : (swap a b).IsCycleOn {a, b} :=
   ⟨bijOn_swap (by simp) (by simp), fun x hx y hy => by
     rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hx hy
     obtain rfl | rfl := hx <;> obtain rfl | rfl := hy
@@ -981,9 +981,8 @@ def subtypePerm_of_support_le (c : Perm α) {s : Finset α}
 
 /-- Support of a cycle is nonempty -/
 theorem IsCycle.nonempty_support {g : Perm α} (hg : g.IsCycle) :
-    g.support.Nonempty := by
-  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty_iff]
-  exact IsCycle.ne_one hg
+    g.support.Nonempty :=
+  let ⟨x, hx, _⟩ := hg; ⟨x, mem_support.2 hx⟩
 
 /-- Centralizer of a cycle is a power of that cycle on the cycle -/
 theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :

@@ -1,4 +1,6 @@
-import Mathlib.Tactic.GuardGoalNums
+module
+
+public meta import Mathlib.Tactic.GuardGoalNums
 
 set_option linter.unusedTactic false
 

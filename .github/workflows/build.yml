@@ -31,21 +31,14 @@ permissions:
 jobs:
   build:
     name: ci
-    if: ${{ github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     uses: ./.github/workflows/build_template.yml
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}-${{ (github.event_name == 'push' && github.ref == 'refs/heads/master' && github.run_id) || '' }}
       pr_branch_ref: ${{ github.sha }}
       # The OIDC environment of the upload jobs. The cache writer credentials are scoped to it.
       cache_environment: >-
-        ${{
-             (github.repository == 'leanprover-community/mathlib4'
-               && github.ref_name == 'master')
-               && 'cache-upload-master'
-          || (github.repository == 'leanprover-community/mathlib4')
-               && 'cache-upload-forks'
-          || 'cache-upload-nightly-testing'
-        }}
+        ${{ github.ref_name == 'master' && 'cache-upload-master' || 'cache-upload-forks' }}
       # the single producer: the master `push` build
       publish_cache: ${{ github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       runs_on: pr

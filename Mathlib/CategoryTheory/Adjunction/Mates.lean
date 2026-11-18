@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Functor.TwoSquare
 public import Mathlib.CategoryTheory.HomCongr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mate of natural transformations
 

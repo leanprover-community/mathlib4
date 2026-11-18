@@ -13,7 +13,6 @@ public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 Given `P : ObjectProperty C` and `κ : Cardinal`, we introduce a predicate
 `P.HasCardinalLT κ` saying that the cardinality of `Subtype P` is `< κ`.
-
 -/
 
 public section

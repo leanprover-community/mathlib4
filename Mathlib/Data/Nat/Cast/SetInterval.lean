@@ -12,6 +12,9 @@ import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`
 
