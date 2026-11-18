@@ -357,5 +357,5 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   apply modularCyclotomicCharacter.unique
   intro t ht
   obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
-  rw [ZMod.val_one'' (one_lt_pow₀ (Nat.Prime.one_lt Fact.out) hk').ne', pow_one]
+  rw [ZMod.val_one'' (one_lt_pow₀ ‹Fact p.Prime›.out.one_lt hk').ne', pow_one]
   exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩

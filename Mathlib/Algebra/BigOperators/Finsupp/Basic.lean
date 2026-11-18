@@ -587,8 +587,8 @@ lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]
     {f : α →₀ M} {g : α → M → N} {n₁ n₂ : N}
     (a : α) (ha : a ∈ f.support)
     (h : g a (f a) * n₁ = g a (f a) * n₂) :
-    f.prod g * n₁ = f.prod g * n₂ := by
-  exact Finset.prod_mul_eq_prod_mul_of_exists a ha h
+    f.prod g * n₁ = f.prod g * n₂ :=
+  Finset.prod_mul_eq_prod_mul_of_exists a ha h
 
 end Finsupp
 

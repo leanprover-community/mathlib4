@@ -126,7 +126,7 @@ theorem coe_toLocallyBoundedMap (hf : LipschitzWith K f) : ⇑(hf.toLocallyBound
 
 theorem comap_cobounded_le (hf : LipschitzWith K f) :
     comap f (Bornology.cobounded β) ≤ Bornology.cobounded α :=
-  (hf.toLocallyBoundedMap f).2
+  (hf.toLocallyBoundedMap f).comap_cobounded_le'
 
 /-- The image of a bounded set under a Lipschitz map is bounded. -/
 theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s) :
