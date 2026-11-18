@@ -14,7 +14,6 @@ import Mathlib.Analysis.Normed.Ring.Basic
 
 This file develops the behavior of `IsBigOWith`, `IsBigO`, and `IsLittleO` under absolute values,
 negation, addition, subtraction, zero, constants, and finite sums.
-
 -/
 
 @[expose] public section
@@ -388,8 +387,8 @@ variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
   choose! C hC using h
   exact ⟨_, IsBigOWith.sum hC⟩
 
-@[to_fun] theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (∑ i ∈ s, A i) =o[l] g' := by
-  exact Finset.sum_induction A (· =o[l] g') (fun _ _ ↦ .add) (isLittleO_zero ..) h
+@[to_fun] theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (∑ i ∈ s, A i) =o[l] g' :=
+  Finset.sum_induction A (· =o[l] g') (fun _ _ ↦ .add) (isLittleO_zero ..) h
 
 variable {B : ι → α → ℝ}
 

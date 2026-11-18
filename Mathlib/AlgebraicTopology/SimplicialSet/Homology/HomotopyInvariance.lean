@@ -33,7 +33,6 @@ i.e. by a morphism `h : X ⊗ Δ[1] ⟶ Y`, we apply the construction above
 to the combinatorial simplicial homotopy that is deduced from `h` by
 using the definition `SSet.Homotopy.toSimplicialObjectHomotopy` from the file
 `Mathlib/AlgebraicTopology/SimplicialSet/Homotopy.lean`.
-
 -/
 
 @[expose] public section

@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 import Mathlib.CategoryTheory.Abelian.Subobject
 
 /-!
-
 # Grothendieck categories
 
 This file defines Grothendieck categories and proves basic facts about them.
@@ -40,7 +39,6 @@ Relevant implications of `IsGrothendieckAbelian` are established in
 ## References
 
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
-
 -/
 
 public section

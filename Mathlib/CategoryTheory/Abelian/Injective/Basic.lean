@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
 
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective objects in abelian categories
 

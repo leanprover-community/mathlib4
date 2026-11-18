@@ -14,13 +14,11 @@ import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.RingTheory.Ideal.Finsupp
 
 /-!
-
 # Freeness of `QuotSMulTop` by a regular element
 
 Let `M` be a finitely presented module over a commutative ring `R`. If `x` is in the
 Jacobson radical of `R` and `x` is `M`-regular, then `M/xM` is free over `R/(x)` if and only if
 `M` is free over `R`.
-
 -/
 
 public section
@@ -39,7 +37,7 @@ lemma Module.free_quotSMulTop_iff_free [Module.FinitePresentation R M] {x : R}
   have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
   let I := Module.Free.ChooseBasisIndex (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
   let b := Module.Free.chooseBasis (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
-  let b' : QuotSMulTop x M ≃ₗ[R] I →₀ R ⧸ Ideal.span {x} := b.1.restrictScalars R
+  let b' : QuotSMulTop x M ≃ₗ[R] I →₀ R ⧸ Ideal.span {x} := b.repr.restrictScalars R
   let f := b'.symm.toLinearMap.comp (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x})))
   rcases Module.projective_lifting_property (Submodule.mkQ (x • (⊤ : Submodule R M))) f
     (Submodule.mkQ_surjective _) with ⟨g, hg⟩

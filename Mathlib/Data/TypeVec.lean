@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Fin.Fin2
 
 /-!
-
 # Tuples of types, and their categorical structure.
 
 ## Features

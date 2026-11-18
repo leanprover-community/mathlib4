@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 Given `f : α → D ⥤ C`, we prove the isomorphisms
 `(∏ᶜ f).obj d ≅ ∏ᶜ (fun s => (f s).obj d)` and `(∐ f).obj d ≅ ∐ (fun s => (f s).obj d)`.
-
 -/
 
 @[expose] public section
@@ -26,6 +25,8 @@ variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
   {α : Type w}
 
 section Product
+
+instance [HasProducts.{w} C] : HasProducts.{w} (D ⥤ C) where
 
 variable [HasLimitsOfShape (Discrete α) C]
 
@@ -47,6 +48,8 @@ theorem piObjIso_inv_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
 end Product
 
 section Coproduct
+
+instance [HasCoproducts.{w} C] : HasCoproducts.{w} (D ⥤ C) where
 
 variable [HasColimitsOfShape (Discrete α) C]
 

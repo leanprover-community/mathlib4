@@ -128,8 +128,8 @@ instance instCoeFun : CoeFun (StieltjesFunction R) fun _ => R → ℝ :=
 
 initialize_simps_projections StieltjesFunction (toFun → apply)
 
-@[ext] lemma ext {f g : StieltjesFunction R} (h : ∀ x, f x = g x) : f = g := by
-  exact (StieltjesFunction.mk.injEq ..).mpr (funext h)
+@[ext] lemma ext {f g : StieltjesFunction R} (h : ∀ x, f x = g x) : f = g :=
+  (StieltjesFunction.mk.injEq ..).mpr (funext h)
 
 variable (f : StieltjesFunction R)
 
@@ -211,9 +211,9 @@ instance : Module ℝ≥0 (StieltjesFunction R) where
   add_smul _ _ _ := ext fun _ ↦ add_mul _ _ _
   zero_smul _ := ext fun _ ↦ zero_mul _
 
-@[simp] lemma zero_apply (x : R) : (0 : StieltjesFunction R) x = 0 := rfl
+@[simp] protected lemma zero_apply (x : R) : (0 : StieltjesFunction R) x = 0 := rfl
 
-@[simp] lemma add_apply (f g : StieltjesFunction R) (x : R) : (f + g) x = f x + g x := rfl
+@[simp] protected lemma add_apply (f g : StieltjesFunction R) (x : R) : (f + g) x = f x + g x := rfl
 
 /-- If a function `f : R → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
 at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
@@ -680,8 +680,8 @@ lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
 
 theorem measure_univ [Nonempty R]
     {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
-    f.measure univ = ofReal (u - l) := by
-  exact tendsto_nhds_unique_of_forall (tendsto_measure_Iic_atTop _)
+    f.measure univ = ofReal (u - l) :=
+  tendsto_nhds_unique_of_forall (tendsto_measure_Iic_atTop _)
     (ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)) (by simp [measure_Iic f hfl])
 
 lemma measure_univ_of_tendsto_atTop_atTop [Nonempty R] (hf : Tendsto f atTop atTop) :
@@ -767,8 +767,8 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction R) {y : R}
 @[simp]
 lemma measure_const (c : ℝ) : (StieltjesFunction.const R c).measure = 0 := by
   apply Measure.ext_of_Icc _ _ (fun a b hab ↦ ?_)
-  simp only [measure_Icc, const_apply, Measure.coe_zero, Pi.ofNat_apply, ofReal_eq_zero,
-    tsub_le_iff_right, zero_add]
+  simp only [measure_Icc, const_apply, zero_apply, ofReal_eq_zero, tsub_le_iff_right,
+    zero_add]
   rw [ContinuousWithinAt.leftLim_eq]
   · simp
   · exact continuousWithinAt_const
@@ -784,7 +784,7 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
     · simp [leftLim_eq_of_eq_bot _ ha]
     · exact tendsto_nhds_unique ((f + g).mono.tendsto_leftLim a)
         ((f.mono.tendsto_leftLim a).add (g.mono.tendsto_leftLim a))
-  simp only [measure_Icc, add_apply, Measure.coe_add, Pi.add_apply, this]
+  simp only [measure_Icc, StieltjesFunction.add_apply, this, add_apply]
   rw [← ENNReal.ofReal_add (sub_nonneg_of_le (f.mono.leftLim_le h))
     (sub_nonneg_of_le (g.mono.leftLim_le h))]
   ring_nf
@@ -792,7 +792,7 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
 @[simp]
 lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction R) : (c • f).measure = c • f.measure := by
   refine Measure.ext_of_Icc _ _ (fun a b h ↦ ?_)
-  simp only [measure_Icc, Measure.smul_apply]
+  simp only [measure_Icc, smul_apply]
   change ofReal (c * f b - leftLim (c • f) a) = c • ofReal (f b - leftLim f a)
   have : leftLim (c • f) a = c * leftLim f a := by
     rcases Filter.eq_or_neBot (𝓝[<] a) with ha | ha

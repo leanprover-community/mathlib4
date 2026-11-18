@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 import Mathlib.Analysis.RCLike.BoundedContinuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality of finite measures
 

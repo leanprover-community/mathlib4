@@ -46,7 +46,6 @@ and `L`.
   `μ` and `ν` on a complete second-countable inner product space coincide, then `μ = ν`.
 * `Measure.ext_of_charFunDual`: If the characteristic functions `charFunDual` of two finite measures
   `μ` and `ν` on a Banach space coincide, then `μ = ν`.
-
 -/
 
 @[expose] public section

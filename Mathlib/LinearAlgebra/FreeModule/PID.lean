@@ -43,7 +43,6 @@ In this section, `M` is a free and finitely generated `R`-module, and
 ## Tags
 
 free module, finitely generated module, rank, structure theorem
-
 -/
 
 @[expose] public section
@@ -105,7 +104,7 @@ open Submodule.IsPrincipal
 
 theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ O) {ϕ : O →ₗ[R] R}
     (hϕ : ∀ ψ : O →ₗ[R] R, ¬ϕ.submoduleImage N < ψ.submoduleImage N)
-    [(ϕ.submoduleImage N).IsPrincipal] (y : M) (yN : y ∈ N)
+    (y : M) (yN : y ∈ N)
     (ϕy_eq : ϕ ⟨y, hNO yN⟩ = generator (ϕ.submoduleImage N)) (ψ : O →ₗ[R] R) :
     generator (ϕ.submoduleImage N) ∣ ψ ⟨y, hNO yN⟩ := by
   let a : R := generator (ϕ.submoduleImage N)

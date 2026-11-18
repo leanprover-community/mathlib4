@@ -22,7 +22,6 @@ and reflection of a point in an affine subspace.
 
 * `EuclideanGeometry.reflection` is the reflection of a point in an
   affine subspace.
-
 -/
 
 @[expose] public section

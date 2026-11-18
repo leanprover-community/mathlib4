@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
 # Presentable objects are stable under retracts
-
 -/
 
 public section

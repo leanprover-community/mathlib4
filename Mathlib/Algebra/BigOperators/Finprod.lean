@@ -481,7 +481,7 @@ theorem finprod_mem_eq_prod_of_subset (f : α → M) {s : Set α} {t : Finset α
 @[to_additive]
 theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport f).Finite) :
     ∏ᶠ i ∈ s, f i = ∏ i ∈ hf.toFinset, f i :=
-  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp [inter_assoc]
+  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
@@ -761,7 +761,7 @@ theorem finprod_mem_empty : (∏ᶠ i ∈ (∅ : Set α), f i) = 1 := by simp
 @[to_additive
 /-- A set `s` is nonempty if the sum of some function over `s` is not equal to `0`. -/]
 theorem nonempty_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ finprod_mem_empty
+  ne_empty_iff_nonempty.1 fun h' => h <| h'.symm ▸ finprod_mem_empty
 
 /-- Given finite sets `s` and `t`, the product of `f i` over `i ∈ s ∪ t` times the product of
 `f i` over `i ∈ s ∩ t` equals the product of `f i` over `i ∈ s` times the product of `f i`

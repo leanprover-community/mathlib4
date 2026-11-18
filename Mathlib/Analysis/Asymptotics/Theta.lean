@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Asymptotics.Lemmas
 public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic equivalence up to a constant
 

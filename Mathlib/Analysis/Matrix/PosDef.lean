@@ -17,7 +17,6 @@ This file proves that eigenvalues of positive (semi)definite matrices are (nonne
 
 * `Matrix.toInnerProductSpace`: the pre-inner product space on `n → 𝕜` induced by a
   positive semi-definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
-
 -/
 
 @[expose] public section
