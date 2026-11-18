@@ -135,7 +135,6 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = d A n := by
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousCochains.d_comp_d :
     d A n ≫ d A (n + 1) = 0 := by
   simpa [CochainComplex.of.d] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
@@ -172,8 +171,8 @@ abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :
 
 variable {A} in
 theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
-    iCocycles A n (cocyclesMk f h) = f := by
-  exact (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp) (by simp [h])
+    iCocycles A n (cocyclesMk f h) = f :=
+  (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp) (by simp [h])
 
 end groupCohomology
 
@@ -181,6 +180,7 @@ open groupCohomology
 
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
+@[implicit_reducible]
 def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 
@@ -190,7 +190,6 @@ abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
     {C : groupCohomology A n → Prop} (x : groupCohomology A n)

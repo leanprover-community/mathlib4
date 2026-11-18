@@ -34,7 +34,6 @@ left adjoint to the functor equipping a module with the trivial representation.
 * `Rep.coinvariantsTensorFreeLEquiv A α`: given a representation `A` and a type `α`, this is the
   `k`-linear equivalence between `(A ⊗ (α →₀ k[G]))_G` and `α →₀ A` sending
   `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a))`. This is useful for group homology.
-
 -/
 
 @[expose] public section
@@ -373,7 +372,7 @@ representation, factors through `A_G`. -/
 noncomputable abbrev desc [B.ρ.IsTrivial] (f : A ⟶ B) :
     (coinvariantsFunctor k G).obj A ⟶ ↧B.V :=
   ModuleCat.ofHom <| Representation.Coinvariants.lift _ f.hom.toLinearMap <| by
-    simp [f.hom.2, isTrivial_def]
+    simp [f.hom.isIntertwining', isTrivial_def]
 
 variable (k G)
 
@@ -438,7 +437,7 @@ variable (k : Type u) {G : Type v} [CommRing k] [Group G]
 
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
-@[simps! obj_V map_hom_toLinearMap]
+@[implicit_reducible, simps! obj_V map_hom_toLinearMap]
 noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToCoinvariants S
@@ -452,7 +451,7 @@ section Finsupp
 
 open MonoidalCategory Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u) [DecidableEq α]
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u)
 
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(A ⊗ (α →₀ k[G]))_G →ₗ[k] (α →₀ A)` sending

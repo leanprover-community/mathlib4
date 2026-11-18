@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Polynomial.IsIntegral
 
 
 /-!
-
 # Universal factorization ring
 
 Let `R` be a commutative ring and `p : R[X]` be monic of degree `n` and let `n = m + k`.
@@ -27,7 +26,6 @@ We construct the universal ring of the following functors on `R-Alg`:
 - `S ↦ "factorizations of p into coprime (monic deg m) * (monic deg k) in S"`:
   Represented by an etale `R`-algebra (`Polynomial.UniversalCoprimeFactorizationRing`).
   See `Polynomial.UniversalCoprimeFactorizationRing.homEquiv`.
-
 -/
 
 @[expose] public section

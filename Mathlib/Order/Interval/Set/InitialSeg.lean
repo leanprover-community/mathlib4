@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.InitialSeg
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals as initial segments
 
@@ -42,7 +45,6 @@ def principalSegIio (j : α) : Iio j <i α where
 lemma principalSegIio_apply (k : Iio j) : principalSegIio j k = k.1 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i ≤ j`, then `Iic i` is an initial segment of `Iic j`. -/
 @[simps]
 def initialSegIicIicOfLE (h : i ≤ j) : Iic i ≤i Iic j where

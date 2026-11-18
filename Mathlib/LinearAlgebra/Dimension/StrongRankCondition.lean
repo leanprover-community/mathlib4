@@ -41,7 +41,6 @@ For modules over rings with invariant basis number
 
 * `Algebra.IsQuadraticExtension`: An extension of rings `R ⊆ S` is quadratic if `S` is a
   free `R`-algebra of rank `2`.
-
 -/
 
 @[expose] public section
@@ -83,7 +82,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
     -- we see they have the same cardinality.
     have w₁ := infinite_basis_le_maximal_linearIndependent' v _ v'.linearIndependent v'.maximal
     rcases Cardinal.lift_mk_le'.mp w₁ with ⟨f⟩
-    have : Infinite ι' := Infinite.of_injective f f.2
+    have : Infinite ι' := Infinite.of_injective f f.inj'
     have w₂ := infinite_basis_le_maximal_linearIndependent' v' _ v.linearIndependent v.maximal
     exact le_antisymm w₁ w₂
 
@@ -518,7 +517,7 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
 
 @[nontriviality]
-theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Subsingleton M] :
+theorem finrank_eq_zero_of_subsingleton [Subsingleton M] :
     Module.finrank R M = 0 :=
   (finrank_eq_zero_iff_of_free R M).mpr inferInstance
 

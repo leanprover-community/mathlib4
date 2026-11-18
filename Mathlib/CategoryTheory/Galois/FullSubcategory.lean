@@ -16,7 +16,6 @@ import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 Given a Galois category `C`, we introduce a typeclass `P.IsGaloisSubcategory`
 which allows to show that `P.FullSubcategory` is also a Galois category.
-
 -/
 
 universe w v u
@@ -41,7 +40,7 @@ class IsGaloisSubcategory (P : ObjectProperty C) : Prop where
   /-- `P` is stable under pullbacks. -/
   isClosedUnderLimitsOfShape_walkingCospan :
     P.IsClosedUnderLimitsOfShape WalkingCospan := by infer_instance
-  /-- `P` is stable under finite coproducs. -/
+  /-- `P` is stable under finite coproducts. -/
   isClosedUnderColimitsOfShape_discrete (ι : Type) [Finite ι] :
     P.IsClosedUnderColimitsOfShape (Discrete ι) := by intros; infer_instance
   /-- `P` is stable under quotients by finite groups. -/
@@ -78,7 +77,7 @@ instance [PreGaloisCategory C] [MonoCoprod C]
     have : Mono i.hom := inferInstanceAs (Mono (P.ι.map i))
     obtain ⟨Z, u, ⟨h⟩⟩ := monoInducesIsoOnDirectSummand i.hom
     refine ⟨⟨Z, ?_⟩, ObjectProperty.homMk u,
-      ⟨isColimitOfReflects P.ι ((isColimitMapCoconeBinaryCofanEquiv ..).2 h)⟩⟩
+      ⟨isColimitOfReflects P.ι ((isColimitMapCoconeBinaryCofanEquiv ..).invFun h)⟩⟩
     have : Mono u := MonoCoprod.binaryCofan_inr _ h
     exact P.prop_of_mono u Y.property
   hasFiniteCoproducts := ⟨inferInstance⟩

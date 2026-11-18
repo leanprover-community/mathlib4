@@ -18,7 +18,6 @@ directions uniformly continuous. We denote uniform isomorphisms with the notatio
 
 * `UniformEquiv α β`: The type of uniform isomorphisms from `α` to `β`.
   This type can be denoted using the following notation: `α ≃ᵤ β`.
-
 -/
 
 @[expose] public section
@@ -198,6 +197,21 @@ theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' h '' s = s :=
 theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
   IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
     simp only [symm_comp_self, IsUniformInducing.id]
+
+@[simp]
+theorem comp_uniformContinuous_iff (h : α ≃ᵤ β) {f : γ → α} :
+    UniformContinuous (h ∘ f) ↔ UniformContinuous f :=
+  h.isUniformInducing.uniformContinuous_iff.symm
+
+@[simp]
+theorem comp_uniformContinuous_iff' (h : α ≃ᵤ β) {f : β → γ} :
+    UniformContinuous (f ∘ h) ↔ UniformContinuous f :=
+  ⟨fun hf ↦ by simpa [Function.comp_assoc, self_comp_symm] using hf.comp h.uniformContinuous_symm,
+    fun hf ↦ hf.comp h.uniformContinuous⟩
+
+theorem comp_uniformContinuousOn_iff (h : α ≃ᵤ β) (f : γ → α) (s : Set γ) :
+    UniformContinuousOn (h ∘ f) s ↔ UniformContinuousOn f s :=
+  h.isUniformInducing.uniformContinuousOn_iff.symm
 
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
   h.isUniformInducing.comap_uniformSpace

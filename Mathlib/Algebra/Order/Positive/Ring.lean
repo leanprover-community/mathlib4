@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic structures on the set of positive numbers
 
