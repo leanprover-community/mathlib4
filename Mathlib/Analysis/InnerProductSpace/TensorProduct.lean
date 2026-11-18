@@ -94,7 +94,6 @@ private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E �
   simp only [inner_def, map_sum, LinearMap.sum_apply]
   simp [OrthonormalBasis.inner_eq_ite, ← Finset.sum_product', RCLike.mul_conj]
 
-set_option backward.privateInPublic true in
 private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
   /-
   The way we prove this is by noting that every element of a tensor product lies
@@ -113,7 +112,6 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   have : y = 0 := by simp [(e.toBasis.tensorProduct f.toBasis).ext_elem_iff, this]
   rw [this, map_zero]
 
-set_option backward.privateInPublic true in
 private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
   /-
@@ -128,8 +126,6 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   rw [inner_mapIncl_mapIncl, inner_self y e f, RCLike.ofReal_re]
   exact Finset.sum_nonneg fun _ _ ↦ sq_nonneg _
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
   letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
   { conj_inner_symm x y :=
@@ -137,8 +133,8 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] 
         (by simp_all [inner])) (by simp_all [inner])
     add_left _ _ _ := LinearMap.map_add₂ _ _ _ _
     smul_left _ _ _ := LinearMap.map_smulₛₗ₂ _ _ _ _
-    definite := TensorProduct.inner_definite
-    re_inner_nonneg := TensorProduct.re_inner_self_nonneg }
+    definite := private TensorProduct.inner_definite
+    re_inner_nonneg := private TensorProduct.re_inner_self_nonneg }
   this.toNormedAddCommGroup
 
 instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) := .ofCore _
