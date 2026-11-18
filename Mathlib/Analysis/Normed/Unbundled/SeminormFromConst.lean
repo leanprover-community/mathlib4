@@ -87,13 +87,13 @@ theorem seminormFromConst_le (x : R) (n : ℕ) : seminormFromConst_seq c f x n �
   (seminormFromConst_seq_antitone c f x n.zero_le).trans_eq (seminormFromConst_seq_apply_zero c f x)
 
 /-- The real-valued function sending `x ∈ R` to the limit of `(f (x * c^n))/((f c)^n)`. -/
-@[deprecated "Use `seminormFromConst` directly." (since := "2026-09-24")]
+@[deprecated "Use `seminormFromConst` directly." (since := "2026-11-18")]
 def seminormFromConst' (c : R) (f : RingSeminorm R) (x : R) : ℝ :=
   iInf (seminormFromConst_seq c f x)
 
 /-- We prove that `seminormFromConst' c f x` is the limit of the sequence
   `seminormFromConst_seq c f x` as `n` tends to infinity. -/
-@[deprecated "Use `seminormFromConst` directly." (since := "2026-09-24")]
+@[deprecated "Use `seminormFromConst` directly." (since := "2026-11-18")]
 theorem tendsto_seminormFromConst_seq_atTop (x : R) :
     Tendsto (seminormFromConst_seq c f x) atTop (𝓝 (seminormFromConst' c f x)) :=
   tendsto_atTop_ciInf (seminormFromConst_seq_antitone c f x)
@@ -250,7 +250,7 @@ theorem normFromConst_def {k : K} {g : RingSeminorm K}
     (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) (x : K) :
     normFromConst hg_k hg_pm x = seminormFromConst k g x := rfl
 
-@[deprecated (since := "2026-09-24")]
+@[deprecated (since := "2026-11-18")]
 alias seminormFromConstRingNormOfField_def := normFromConst_def
 
 /-- If `K` is a field, `seminormFromConst` applied to an `AlgebraNorm` is an `AlgebraNorm`. -/
