@@ -609,9 +609,10 @@ subtypes when each set has a neighbourhood that is disjoint from all other sets.
 @[simps! symm_apply_coe]
 noncomputable def Homeomorph.Set.iUnion {ι : Type*} {s : ι → Set X}
     (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) :
-    ⋃ i, s i ≃ₜ Σ i, s i := by
-  refine (unionEqSigmaOfDisjoint fun i j h ↦ ?_).toHomeomorphOfIsInducing <|
+    ⋃ i, s i ≃ₜ Σ i, s i :=
+  (unionEqSigmaOfDisjoint fun i j h ↦ ?_).toHomeomorphOfIsInducing <|
     ((Set.isHomeomorph_unionEqSigmaOfDisjoint_iff _).2 hs).isInducing
+where finally
   obtain ⟨u, hu, hu'⟩ := hs i
   exact (hu' j h.symm).mono_left (subset_of_mem_nhdsSet hu)
 
