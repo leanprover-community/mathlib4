@@ -157,20 +157,20 @@ theorem dist_excenter_circumcenter_sq {signs : Finset (Fin 3)} (hsigns : signs.c
     ← Finset.sum_mul, t.sum_excenterWeights_eq_one_iff.mpr (t.excenterExists _)]
   ring
 
-/-- **Euler's theorem in geometry** for excenter. -/
+/-- **Euler's theorem in geometry** for excenters. -/
 theorem dist_excenter_singleton_circumcenter_sq (i : Fin 3) :
     dist (t.excenter {i}) t.circumcenter ^ 2 =
       t.circumradius * (t.circumradius + 2 * t.exradius {i}) := by
   rw [t.dist_excenter_circumcenter_sq (by simp)]
   simp
 
-/-- **Euler's theorem in geometry** for incenter. -/
+/-- **Euler's theorem in geometry** for incenters. -/
 theorem dist_incenter_circumcenter_sq :
     dist t.incenter t.circumcenter ^ 2 = t.circumradius * (t.circumradius - 2 * t.inradius) := by
   rw [← excenter_empty, t.dist_excenter_circumcenter_sq (by simp), sub_eq_add_neg]
   simp
 
-/-- **Euler inequality**: the inradius of a triangle is not larger than half of the circumradius. -/
+/-- **Euler inequality**: the inradius of a triangle is less or equal to half of the circumradius. -/
 theorem two_mul_inradius_le_circumradius : 2 * t.inradius ≤ t.circumradius := by
   have := sq_nonneg (dist t.incenter t.circumcenter)
   rw [dist_incenter_circumcenter_sq] at this
