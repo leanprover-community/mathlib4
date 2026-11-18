@@ -92,50 +92,60 @@ instance : Insert (List α) (Language α) where insert a s := ofSet (insert a s.
 @[simp] lemma ofSet_insert {s : Set (List α)} {a : List α} :
     ofSet (insert a s) = insert a (ofSet s) := rfl
 
-instance : Coe (Set (List α)) (Language α) where coe f := ⟨f⟩
-
 variable {l m : Language α} {a b x : List α}
 
 /-- `0 : Language α` has no elements. -/
-instance : Zero (Language α) where zero := ⟨∅⟩
+instance : Zero (Language α) where zero := ofSet ∅
 
 /-- `1 : Language α` contains only one element `[]`. -/
-instance : One (Language α) where one := ⟨{[]}⟩
+instance : One (Language α) where one := ofSet {[]}
 
 instance : Inhabited (Language α) where default := 0
 
 /-- The sum of two languages is their union. -/
-instance : Add (Language α) where add l m := ⟨l.toSet ∪ m.toSet⟩
+instance : Add (Language α) where add l m := ofSet (l.toSet ∪ m.toSet)
 
 /-- The subtraction of two languages is their difference. -/
-instance : Sub (Language α) where sub l m := ⟨l.toSet \ m.toSet⟩
+instance : Sub (Language α) where sub l m := ofSet (l.toSet \ m.toSet)
 
 /-- The product of two languages `l` and `m` is the language made of the strings `x ++ y` where
 `x ∈ l` and `y ∈ m`. -/
-instance : Mul (Language α) where mul l m := ⟨image2 (· ++ ·) l.toSet m.toSet⟩
+instance : Mul (Language α) where mul l m := ofSet (image2 (· ++ ·) l.toSet m.toSet)
 
-theorem zero_def : (0 : Language α) = ⟨∅⟩ :=
-  rfl
+@[simp] lemma toSet_zero : (0 : Language α).toSet = ∅ := rfl
 
-theorem one_def : (1 : Language α) = ⟨{[]}⟩ :=
-  rfl
+@[deprecated toSet_zero +typeChanged (since := "2026-11-18")]
+theorem zero_def : (0 : Language α) = ofSet ∅ := rfl
 
-theorem add_def (l m : Language α) : l + m = ⟨l.toSet ∪ m.toSet⟩ :=
-  rfl
+@[simp] lemma toSet_one : (1 : Language α).toSet = {[]} := rfl
 
-theorem sub_def (l m : Language α) : l - m = ⟨l.toSet \ m.toSet⟩ :=
-  rfl
+@[deprecated toSet_one +typeChanged (since := "2026-11-18")]
+theorem one_def : (1 : Language α) = ofSet {[]} := rfl
 
-theorem mul_def (l m : Language α) : l * m = ⟨image2 (· ++ ·) l.toSet m.toSet⟩ :=
-  rfl
+@[simp] lemma toSet_add (l m : Language α) : (l + m).toSet = l.toSet ∪ m.toSet := rfl
+
+@[deprecated toSet_add +typeChanged (since := "2026-11-18")]
+theorem add_def (l m : Language α) : l + m = ofSet (l.toSet ∪ m.toSet) := rfl
+
+@[simp] lemma toSet_sub (l m : Language α) : (l - m).toSet = l.toSet \ m.toSet := rfl
+
+@[deprecated toSet_sub +typeChanged (since := "2026-11-18")]
+theorem sub_def (l m : Language α) : l - m = ofSet (l.toSet \ m.toSet) := rfl
+
+@[simp] lemma toSet_mul (l m : Language α) : (l * m).toSet = image2 (· ++ ·) l.toSet m.toSet := rfl
+
+@[deprecated toSet_mul +typeChanged (since := "2026-11-18")]
+theorem mul_def (l m : Language α) : l * m = ofSet (image2 (· ++ ·) l.toSet m.toSet) := rfl
 
 /-- The Kleene star of a language `L` is the set of all strings which can be written by
 concatenating strings from `L`. -/
 instance : KStar (Language α) where
-  kstar l := ⟨{x | ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l}⟩
+  kstar l := ofSet {x | ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l}
 
-lemma kstar_def (l : Language α) :
-    l∗ = ⟨{x | ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l}⟩ := rfl
+@[simp] lemma toSet_kstar (l : Language α) :
+    l∗.toSet = {x | ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l} := rfl
+
+@[deprecated (since := "2026-11-18")] alias kstar_def := toSet_kstar
 
 @[simp]
 theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
@@ -179,11 +189,11 @@ instance instSemiring : Semiring (Language α) where
   mul_assoc _ _ _ := Language.ext (image2_assoc append_assoc)
   zero_mul _ := Language.ext image2_empty_left
   mul_zero _ := Language.ext image2_empty_right
-  one_mul l := by simp [mul_def, one_def]
-  mul_one l := by simp [mul_def, one_def]
+  one_mul l := Language.ext (by simp)
+  mul_one l := Language.ext (by simp)
   natCast n := if n = 0 then 0 else 1
   natCast_zero := rfl
-  natCast_succ n := by cases n <;> simp [add_def, zero_def]
+  natCast_succ n := by cases n <;> ext <;> simp
   left_distrib _ _ _ := Language.ext image2_union_right
   right_distrib _ _ _ := Language.ext image2_union_left
   nsmul := nsmulRec
@@ -193,7 +203,7 @@ theorem add_self (l : Language α) : l + l = l :=
 
 /-- Maps the alphabet of a language. -/
 def map (f : α → β) : Language α →+* Language β where
-  toFun l := List.map f '' l.toSet
+  toFun l := ofSet (List.map f '' l.toSet)
   map_zero' := Language.ext (image_empty _)
   map_one' := Language.ext image_singleton
   map_add' _ _ := Language.ext (image_union ..)
@@ -209,7 +219,7 @@ theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f
 /-- Pulls back the alphabet of a language along `f`. -/
 @[simps apply]
 def comap (f : α → β) : Language β →+ Language α where
-  toFun l := List.map f ⁻¹' l.toSet
+  toFun l := ofSet (List.map f ⁻¹' l.toSet)
   map_zero' := Language.ext preimage_empty
   map_add' _ _ := Language.ext (preimage_union ..)
 
@@ -224,11 +234,11 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
 
-theorem toSet_kstar (l : Language α) :
+@[simp] lemma toSet_kstar_nonempty (l : Language α) :
     l∗.toSet = {x | ∃ S : List (List α), x = S.flatten ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ []} := by
   ext x; apply mem_kstar_iff_exists_nonempty
 
-@[deprecated (since := "2026-11-18")] alias kstar_def_nonempty := toSet_kstar
+@[deprecated (since := "2026-11-18")] alias kstar_def_nonempty := toSet_kstar_nonempty
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
@@ -249,10 +259,10 @@ theorem mem_iSup {ι : Sort*} {l : ι → Language α} {x : List α} : x ∈ ⨆
   simp [← mem_toSet]
 
 theorem iSup_mul {ι : Sort*} (l : ι → Language α) (m : Language α) :
-    (⨆ i, l i) * m = ⨆ i, l i * m := by ext; simp [mul_def, image2_iUnion_left]
+    (⨆ i, l i) * m = ⨆ i, l i * m := by ext; simp [image2_iUnion_left]
 
 theorem mul_iSup {ι : Sort*} (l : ι → Language α) (m : Language α) :
-    m * ⨆ i, l i = ⨆ i, m * l i := by ext; simp [mul_def, image2_iUnion_right]
+    m * ⨆ i, l i = ⨆ i, m * l i := by ext; simp [image2_iUnion_right]
 
 theorem iSup_add {ι : Sort*} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) + m = ⨆ i, l i + m :=
@@ -263,10 +273,10 @@ theorem add_iSup {ι : Sort*} [Nonempty ι] (l : ι → Language α) (m : Langua
   sup_iSup
 
 theorem iSup_sub {ι : Sort*} (l : ι → Language α) (m : Language α) :
-    (⨆ i, l i) - m = ⨆ i, l i - m := by ext; simp [sub_def]
+    (⨆ i, l i) - m = ⨆ i, l i - m := by ext; simp
 
 theorem sub_iSup {ι : Sort*} [Nonempty ι] (l : ι → Language α) (m : Language α) :
-    m - ⨆ i, l i = ⨅ i, m - l i := by ext; simp [sub_def, sdiff_iUnion]
+    m - ⨆ i, l i = ⨅ i, m - l i := by ext; simp [sdiff_iUnion]
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
@@ -282,7 +292,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
       exact ⟨a, hS.1, _, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
 
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
-  ext; simp [mem_kstar, mem_pow]
+  ext; simp [mem_pow]
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
@@ -357,7 +367,7 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
-def reverse (l : Language α) : Language α := ⟨{w | w.reverse ∈ l}⟩
+def reverse (l : Language α) : Language α := ofSet {w | w.reverse ∈ l}
 
 @[simp]
 lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
@@ -365,7 +375,7 @@ lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
 lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
   rw [mem_reverse, List.reverse_reverse]
 
-lemma reverse_eq_image (l : Language α) : l.reverse = ⟨List.reverse '' l.toSet⟩ :=
+lemma reverse_eq_image (l : Language α) : l.reverse = ofSet (List.reverse '' l.toSet) :=
   Language.ext ((reverse_involutive.toPerm _).image_eq_preimage_symm _).symm
 
 lemma toSet_reverse (l : Language α) : l.reverse.toSet = List.reverse ⁻¹' l.toSet :=
@@ -398,7 +408,7 @@ lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse 
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
   apply Language.ext
-  simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
+  simp only [toSet_mul, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
     List.reverse_append]
   apply image2_swap
 

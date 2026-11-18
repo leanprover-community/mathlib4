@@ -33,7 +33,7 @@ namespace Language
 
 variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
-def leftQuotient (x : List α) : Language α := {y | x ++ y ∈ L}
+def leftQuotient (x : List α) : Language α := ofSet {y | x ++ y ∈ L}
 
 variable (L) in
 @[simp]
