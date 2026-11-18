@@ -261,6 +261,8 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let sArgs := s.getAppArgs
   let info ← getFunInfoNArgs t.getAppFn t.getAppNumArgs
   t.getAppNumArgs.allM fun i _ => do
+    -- `info.paramInfo[i]?` may be `none` due to over-application,
+    -- which we treat the same as an explicit application.
     if info.paramInfo[i]?.all (·.isExplicit) then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
