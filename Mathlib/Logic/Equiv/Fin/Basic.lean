@@ -340,8 +340,8 @@ This is like `finProdFinEquiv` but with `m` infinite; its inverse is `Nat.divMod
 def natProdFinEquiv (n : ℕ) [NeZero n] : ℕ × Fin n ≃ ℕ where
   toFun := Function.uncurry n.mkDivFin
   invFun := Function.prod (· / n) (Fin.ofNat n)
-  left_inv _ := Prod.ext (Nat.div_mkDivFin _ _) (Nat.ofNat_mkDivFin _ _)
-  right_inv := Nat.mkDivFin_div_ofNat
+  left_inv _ := Prod.ext (Nat.div_mkDivFin _ _) (Nat.cast_mkDivFin _ _)
+  right_inv := Nat.mkDivFin_div_cast
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 This is the inverse of `natProdFinEquiv`, and is like `finProdFinEquiv.symm` but with `m` infinite.

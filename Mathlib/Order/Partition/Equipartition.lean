@@ -131,7 +131,7 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
   simp_rw [hf]
   let z a : Fin #s := ⟨(#P.parts).mkDivFin (f a).2 (g (f a).1), by
     have : NeZero #P.parts := ⟨(g (f a).1).pos.ne'⟩
-    refine (Nat.mkDivFin_lt_mkDivFin_iff.mpr ?_).trans_eq (Nat.mkDivFin_div_ofNat #s)
+    refine (Nat.mkDivFin_lt_mkDivFin_iff.mpr ?_).trans_eq (Nat.mkDivFin_div_cast #s)
     rw [Fin.lt_def, Fin.val_ofNat, ← hg]
     have := (f a).2.isLt
     have := hP.card_part_le_average_add_one (f a).1.2
