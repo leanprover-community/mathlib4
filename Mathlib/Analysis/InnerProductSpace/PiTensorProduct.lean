@@ -5,8 +5,9 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
+public import Mathlib.LinearAlgebra.PiTensorProduct.Finite
 
 /-!
 
@@ -27,6 +28,7 @@ open scoped InnerProductSpace TensorProduct
 
 variable {𝕜} [RCLike 𝕜] {ι : Type*} [Fintype ι]
   {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, InnerProductSpace 𝕜 (E i)]
+  {F : ι → Type*} [∀ i, NormedAddCommGroup (F i)] [∀ i, InnerProductSpace 𝕜 (F i)]
 
 noncomputable instance instInner : Inner 𝕜 (⨂[𝕜] i, E i) where
   inner x y := ((lift <| mapMultilinear 𝕜 E _).compr₂ (lift <| .mkPiAlgebra 𝕜 ι 𝕜) ∘ₛₗ
@@ -41,5 +43,62 @@ variable (𝕜) in
 @[simp]
 theorem inner_tprod (x y : Π i, E i) : ⟪⨂ₜ[𝕜] i, x i, ⨂ₜ[𝕜] i, y i⟫_𝕜 = ∏ i, ⟪x i, y i⟫_𝕜 := by
   simp [inner_def]
+
+-- This is a helper lemma for establishing `InnerProductSpace.Core`
+-- and is superceded by `_root_.inner_add_left`.
+private lemma inner_add_left (x y z : ⨂[𝕜] i, E i) : ⟪x + y, z⟫_𝕜 = ⟪x, z⟫_𝕜 + ⟪y, z⟫_𝕜 := by
+  simp [inner_def]
+
+-- This is a helper lemma for establishing `InnerProductSpace.Core`
+-- and is superceded by `_root_.inner_add_right`.
+private lemma inner_add_right (x y z : ⨂[𝕜] i, E i) : ⟪x, y + z⟫_𝕜 = ⟪x, y⟫_𝕜 + ⟪x, z⟫_𝕜 := by
+  simp [inner_def]
+
+@[simp]
+theorem inner_map_map (f : Π i, E i →ₗᵢ[𝕜] F i) (x y : ⨂[𝕜] i, E i) :
+    ⟪map (fun i ↦ (f i).toLinearMap) x, map (fun i ↦ (f i).toLinearMap) y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
+  x.induction_on (y.induction_on (by simp [inner_def]) (by simp_all [inner_add_right]))
+    (by simp_all [inner_add_left])
+
+theorem inner_mapIncl_mapIncl {p : Π i, Submodule 𝕜 (E i)} (x y : ⨂[𝕜] i, p i) :
+    ⟪mapIncl p x, mapIncl p y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
+  inner_map_map (fun i ↦ (p i).subtypeₗᵢ) x y
+
+open scoped Classical in
+private theorem inner_self {κ : ι → Type*} [∀ i, Fintype (κ i)]
+    (b : Π i, OrthonormalBasis (κ i) 𝕜 (E i)) (x : ⨂[𝕜] i, E i) :
+    ⟪x, x⟫_𝕜 = ∑ (s : Π i, κ i), ‖(Basis.piTensorProduct fun i ↦ (b i).toBasis).repr x s‖ ^ 2 := by
+  let b' := Basis.piTensorProduct fun i ↦ (b i).toBasis
+  have hx : x = ∑ s, b'.repr x s • ⨂ₜ[𝕜] i, b i (s i) := by nth_rw 1 [← b'.sum_repr x]; simp [b']
+  conv_lhs => rw [hx]
+  simp [inner_def, OrthonormalBasis.inner_eq_ite, Fintype.prod_boole, ← funext_iff,
+    RCLike.mul_conj, b']
+
+noncomputable instance : InnerProductSpace.Core 𝕜 (⨂[𝕜] i, E i) where
+  conj_inner_symm x y := x.induction_on
+      (fun _ _ ↦ y.induction_on
+        (by simp_all [inner_def, mul_left_comm])
+        (by simp_all [inner_add_left, inner_add_right]))
+      (by simp_all [inner_def])
+  add_left _ _ _ := LinearMap.map_add₂ _ _ _ _
+  smul_left _ _ _ := LinearMap.map_smulₛₗ₂ _ _ _ _
+  definite x hx := by
+    obtain ⟨p, _, hp⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
+    obtain ⟨y, rfl⟩ := Set.singleton_subset_iff.mp hp
+    suffices y = 0 by exact this ▸ map_zero _
+    simp only [inner_mapIncl_mapIncl, inner_self fun i ↦ stdOrthonormalBasis 𝕜 (p i),
+      RCLike.ofReal_eq_zero, Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ sq_nonneg _),
+      Finset.mem_univ, sq_eq_zero_iff, norm_eq_zero, forall_const] at hx
+    exact (Basis.piTensorProduct _).ext_elem_iff.mpr hx
+  re_inner_nonneg x := by
+    obtain ⟨p, _, hp⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
+    obtain ⟨y, rfl⟩ := Set.singleton_subset_iff.mp hp
+    rw [inner_mapIncl_mapIncl, inner_self fun i ↦ stdOrthonormalBasis 𝕜 (p i), RCLike.ofReal_re]
+    exact Finset.sum_nonneg fun _ _ ↦ sq_nonneg _
+
+noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (⨂[𝕜] i, E i) :=
+  instCore.toNormedAddCommGroup
+
+noncomputable instance instInnerProductSpace : InnerProductSpace 𝕜 (⨂[𝕜] i, E i) := .ofCore _
 
 end PiTensorProduct
