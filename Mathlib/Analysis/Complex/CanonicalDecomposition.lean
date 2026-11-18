@@ -170,7 +170,7 @@ theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) 
   simp [← map_sub]
 
 private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f : β → α)
-    (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support := by
+    (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support :=
   fun _ ↦ mt fun h ↦ by simp [h]
 
 /--

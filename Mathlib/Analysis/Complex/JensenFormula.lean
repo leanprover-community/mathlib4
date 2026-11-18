@@ -192,7 +192,7 @@ theorem circleAverage_poissonKernel_smul_log₀ {w ρ : ℂ} {R : ℝ} (hρ : ρ
         _ = R * (n + 2) := by ring
   aesop
 
-@[deprecated circleAverage_poissonKernel_smul_log₀ +typeChanged (since := "2026-10-01")]
+@[deprecated circleAverage_poissonKernel_smul_log₀ +typeChanged (since := "2026-11-18")]
 theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (hρ : ρ ∈ sphere 0 R)
     (hw : w ∈ ball 0 R) :
     circleAverage ((Complex.re ∘ herglotzRieszKernel 0 w) • (log ‖· - ρ‖)) (0 : ℂ) R
@@ -224,7 +224,7 @@ theorem circleAverage_poissonKernel_smul_log {w ρ c : ℂ} {R : ℝ} (hρ : ρ 
     (by simp_all [mem_ball_iff_norm.1 hw])]
   simp
 
-@[deprecated circleAverage_poissonKernel_smul_log +typeChanged (since := "2026-10-01")]
+@[deprecated circleAverage_poissonKernel_smul_log +typeChanged (since := "2026-11-18")]
 theorem circleAverage_re_herglotzRieszKernel_mul_log {w ρ c : ℂ} {R : ℝ} (hρ : ρ ∈ sphere c R)
     (hw : w ∈ ball c R) :
     circleAverage ((Complex.re ∘ herglotzRieszKernel c w) * (log ‖· - ρ‖)) c R = log ‖w - ρ‖ := by
