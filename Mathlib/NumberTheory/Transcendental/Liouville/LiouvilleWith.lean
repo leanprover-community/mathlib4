@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
-public import Mathlib.Topology.Instances.Irrational
+
+import Mathlib.Topology.Instances.Irrational
 
 /-!
 # Liouville numbers with a given exponent
@@ -38,7 +39,7 @@ Liouville number, irrational, irrationality exponent
 @[expose] public section
 
 
-open Filter Metric Real Set
+open Filter Real Set
 
 open scoped Filter Topology
 
@@ -90,7 +91,7 @@ theorem mono (h : LiouvilleWith p x) (hle : q ≤ p) : LiouvilleWith q x := by
   refine ⟨C, hC.mono ?_⟩; rintro n ⟨hn, m, hne, hlt⟩
   refine ⟨m, hne, hlt.trans_le <| ?_⟩
   gcongr
-  exact_mod_cast hn
+  exact mod_cast hn
 
 /-- If `x` satisfies Liouville condition with exponent `p` and `q < p`, then `x`
 satisfies Liouville condition with exponent `q` and constant `1`. -/
@@ -219,7 +220,7 @@ protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
   refine ⟨C, hC.mono ?_⟩
   rintro n ⟨m, hne, hlt⟩
   refine ⟨-m, by simp [neg_div, hne], ?_⟩
-  convert! hlt using 1
+  convert hlt using 1
   rw [abs_sub_comm]
   congr! 1; push_cast; ring
 
@@ -266,7 +267,7 @@ theorem nat_sub_iff : LiouvilleWith p (n - x) ↔ LiouvilleWith p x := by simp [
 theorem nat_sub (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n - x) :=
   nat_sub_iff.2 h
 
-theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
+theorem ne_intCast (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
   rintro rfl; rename' m => M
   rcases ((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
     ⟨n : ℕ, hn : 0 < n, m : ℤ, hne : (M : ℝ) ≠ m / n, hlt : |(M - m / n : ℝ)| < n ^ (-1 : ℝ)⟩
@@ -279,12 +280,14 @@ theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := 
   rw [Ne, eq_div_iff hn'.ne'] at hne
   exact mod_cast hne
 
+@[deprecated (since := "2026-10-27")] alias ne_cast_int := ne_intCast
+
 /-- A number satisfying the Liouville condition with exponent `p > 1` is an irrational number. -/
 protected theorem irrational (h : LiouvilleWith p x) (hp : 1 < p) : Irrational x := by
   rintro ⟨r, rfl⟩
   rcases eq_or_ne r 0 with (rfl | h0)
-  · refine h.ne_cast_int hp 0 ?_; rw [Rat.cast_zero, Int.cast_zero]
-  · refine (h.mul_rat (inv_ne_zero h0)).ne_cast_int hp 1 ?_
+  · refine h.ne_intCast hp 0 ?_; rw [Rat.cast_zero, Int.cast_zero]
+  · refine (h.mul_rat (inv_ne_zero h0)).ne_intCast hp 1 ?_
     rw [Rat.cast_inv, mul_inv_cancel₀]
     exacts [Int.cast_one.symm, Rat.cast_ne_zero.mpr h0]
 
@@ -317,7 +320,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   rcases le_or_gt N b with h | h
   · refine (hN b h a hne).not_gt (hlt.trans_le ?_)
     gcongr
-    exact_mod_cast hb.le
+    exact mod_cast hb.le
   · exact (hm b h hb _).not_gt hlt
 
 /-- A Liouville number is a Liouville number with any real exponent. -/

@@ -24,7 +24,6 @@ Given a list `l`,
 
 * if `l` is sorted w.r.t. `(<)`, then `List.SortedLT.getIso` is the same bijection reinterpreted
   as an `OrderIso`.
-
 -/
 
 @[expose] public section
@@ -195,7 +194,6 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       · simpa using h
     · grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/

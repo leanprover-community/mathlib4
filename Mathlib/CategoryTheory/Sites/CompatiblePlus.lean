@@ -5,17 +5,17 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Sites.Plus
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
+# Compatibility of the plus construction with functors
 
 In this file, we prove that the plus functor is compatible with functors which
 preserve the correct limits and colimits.
 
 See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
-
 -/
 
 @[expose] public section
@@ -97,8 +97,8 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
       slice_lhs 2 3 =>
         erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P Y.unop))).fac]
       dsimp
-      simp only [HasColimit.isoOfNatIso_ι_hom_assoc, GrothendieckTopology.diagramPullback_app,
-        colimit.ι_pre, HasColimit.isoOfNatIso_ι_hom, ι_colimMap_assoc]
+      simp only [HasColimit.ι_isoOfNatIso_hom_assoc, GrothendieckTopology.diagramPullback_app,
+        colimit.ι_pre, HasColimit.ι_isoOfNatIso_hom, ι_colimMap_assoc]
       simp only [← Category.assoc]
       dsimp
       congr 1
@@ -181,7 +181,6 @@ def plusFunctorWhiskerRightIso :
       (whiskeringRight _ _ _).obj F ⋙ J.plusFunctor E :=
   NatIso.ofComponents (fun _ => J.plusCompIso _ _) @fun _ _ _ => plusCompIso_whiskerRight _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerRight_toPlus_comp_plusCompIso_hom :

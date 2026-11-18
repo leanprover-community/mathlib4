@@ -5,12 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
 /-!
-
 # The small affine Zariski site
 
 `X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open
@@ -26,7 +24,6 @@ which gives an equivalence of categories of sheaves (`sheafEquiv`).
 
 Note that this differs from the definition on stacks project where the arrows in the small affine
 Zariski site are arbitrary inclusions.
-
 -/
 
 @[expose] public section
@@ -107,7 +104,8 @@ instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
 instance : (toOpensFunctor X).IsCoverDense (Opens.grothendieckTopology X) where
   is_cover := by
     intro U x hx
-    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open hx U.2
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+      X.isBasis_affineOpens.exists_subset_of_mem_open hx U.is_open'
     exact ⟨V, homOfLE hVU, ⟨⟨V, hV⟩, 𝟙 _, homOfLE hVU, rfl⟩, hxV⟩
 
 variable (X) in
@@ -178,7 +176,7 @@ lemma generate_presieveOfSections
 lemma generate_presieveOfSections_mem_grothendieckTopology
     {U : X.AffineZariskiSite} {s : Set Γ(X, U.toOpens)} :
     Sieve.generate (presieveOfSections U s) ∈ grothendieckTopology X U ↔ Ideal.span s = ⊤ := by
-  rw [← U.2.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, SetLike.le_def]
+  rw [← U.2.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, IsConcreteLE.le_iff]
   refine forall₂_congr fun x hx ↦ ?_
   simp only [exists_and_left, TopologicalSpace.Opens.iSup_mk,
     TopologicalSpace.Opens.carrier_eq_coe, Set.iUnion_coe_set, TopologicalSpace.Opens.mem_mk,
@@ -192,7 +190,7 @@ lemma generate_presieveOfSections_mem_grothendieckTopology
 
 lemma mem_grothendieckTopology_iff_sectionsOfPresieve
     {U : X.AffineZariskiSite} {S : Sieve U} :
-    S ∈ grothendieckTopology X U ↔ Ideal.span (sectionsOfPresieve S.1) = ⊤ := by
+    S ∈ grothendieckTopology X U ↔ Ideal.span (sectionsOfPresieve S.arrows) = ⊤ := by
   rw [← generate_presieveOfSections_mem_grothendieckTopology, presieveOfSections_sectionsOfPresieve,
     Sieve.generate_sieve]
 
@@ -291,8 +289,6 @@ lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ
   refine (Algebra.isLocalization_iff_isPushout (.powers f) Γ(X, X.basicOpen f)).symm.trans ?_
   simp [RingHom.algebraMap_toAlgebra]
 
-@[deprecated (since := "2026-02-01")] alias PreservesLocalization := NatTrans.Coequifibered
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The relative gluing data associated to a quasi-coherent `𝒪ₓ` algebra. -/
 def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
@@ -302,20 +298,6 @@ def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
   functor := F.rightOp ⋙ Scheme.Spec
   natTrans := Functor.whiskerRight α.rightOp Scheme.Spec ≫ (restrictIsoSpec X).inv
   equifibered := (H.rightOp.whiskerRight _).comp (.of_isIso _)
-
-@[deprecated "By `inferInstance`." (since := "2026-02-01")]
-lemma PreservesLocalization.isLocallyDirected (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
-    (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
-    (H : α.Coequifibered) :
-    ((F.rightOp ⋙ Scheme.Spec) ⋙ Scheme.forget).IsLocallyDirected :=
-  (relativeGluingData H).instIsLocallyDirectedI₀CompFunctorForgetOfIsThin
-
-@[deprecated "By `inferInstance`." (since := "2026-02-01")]
-lemma PreservesLocalization.isOpenImmersion (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
-    (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
-    (H : α.Coequifibered) :
-    ∀ ⦃U V⦄ (f : U ⟶ V), IsOpenImmersion ((F.rightOp ⋙ Scheme.Spec).map f) := by
-  exact fun U V ↦ (relativeGluingData H).instIsOpenImmersionMapI₀Functor
 
 lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
@@ -327,21 +309,6 @@ lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommR
   apply TopologicalSpace.Opens.coe_inj.mp ?_
   refine PrimeSpectrum.localization_away_comap_range (F.obj (.op <| U.basicOpen r))
     (α.app (.op U) r)
-
-@[deprecated (since := "2026-02-01")]
-alias PreservesLocalization.opensRange_map := opensRange_relativeGluingData_map
-
-set_option backward.isDefEq.respectTransparency.types false in
-@[deprecated Cover.RelativeGluingData.toBase_preimage_eq_opensRange_ι (since := "2026-02-01")]
-lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
-    (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
-    (H : α.Coequifibered) (U : X.AffineZariskiSite) :
-    (relativeGluingData H).toBase ⁻¹ᵁ U.1 = ((relativeGluingData H).cover.f U).opensRange := by
-  simpa using! (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
-
-@[deprecated (since := "2026-02-01")]
-alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=
-  NatTrans.Coequifibered.of_isIso
 
 set_option backward.isDefEq.respectTransparency false in
 variable (X) in
@@ -361,12 +328,12 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
       (U.2.isoSpec.hom ≫ colimit.ι F U) <| by
       rw [Pullback.range_fst, Opens.range_ι, ← Hom.coe_opensRange, Hom.opensRange_comp_of_isIso,
         ← Scheme.Hom.coe_preimage]
-      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).1)
+      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).carrier)
       · delta cocone
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
-    convert! (inferInstance : IsIso e.hom)
+    convert (inferInstance : IsIso e.hom)
     rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)

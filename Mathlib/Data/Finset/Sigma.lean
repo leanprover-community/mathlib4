@@ -28,6 +28,8 @@ worth it, we must first refactor the functor library so that the `alternative` i
 is computable and universe-polymorphic.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 
@@ -78,7 +80,7 @@ theorem pairwiseDisjoint_map_sigmaMk :
   rw [Function.onFun, disjoint_left]
   simp_rw [mem_map, Function.Embedding.sigmaMk_apply]
   rintro _ ⟨y, _, rfl⟩ ⟨z, _, hz'⟩
-  exact hij (congr_arg Sigma.fst hz'.symm)
+  exact hij congr($(hz'.symm).fst)
 
 @[simp]
 theorem disjiUnion_map_sigma_mk :
@@ -169,16 +171,16 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
       rintro x hx rfl
       exact ⟨rfl, rfl, hx⟩
     · rintro ⟨⟨⟩, ⟨⟩, hx⟩
-      rw [sigmaLift, dif_pos rfl, mem_map]
+      rw [sigmaLift, dite_eq_left rfl, mem_map]
       exact ⟨_, hx, by simp⟩
-  · rw [sigmaLift, dif_neg h]
+  · rw [sigmaLift, dite_eq_right h]
     refine iff_of_false (notMem_empty _) ?_
     rintro ⟨⟨⟩, ⟨⟩, _⟩
     exact h rfl
 
 theorem mk_mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (i : ι) (a : α i) (b : β i)
     (x : γ i) : (⟨i, x⟩ : Sigma γ) ∈ sigmaLift f ⟨i, a⟩ ⟨i, b⟩ ↔ x ∈ f a b := by
-  rw [sigmaLift, dif_pos rfl, mem_map]
+  rw [sigmaLift, dite_eq_left rfl, mem_map]
   refine ⟨?_, fun hx => ⟨_, hx, rfl⟩⟩
   rintro ⟨x, hx, _, rfl⟩
   exact hx
@@ -217,7 +219,7 @@ theorem sigmaLift_mono
 variable (f a b)
 
 theorem card_sigmaLift :
-    (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
+    #(sigmaLift f a b) = dite (a.1 = b.1) (fun h => #(f (h ▸ a.2) b.2)) fun _ => 0 := by
   simp_rw [sigmaLift]
   split_ifs with h <;> simp
 

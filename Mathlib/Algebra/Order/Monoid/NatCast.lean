@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuya
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Data.Nat.Cast.Defs
 
 /-!
@@ -16,8 +15,6 @@ public import Mathlib.Data.Nat.Cast.Defs
 public section
 
 variable {α : Type*}
-
-open Function
 
 lemma lt_add_one [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
     [NeZero (1 : α)] [AddLeftStrictMono α] (a : α) : a < a + 1 :=

@@ -30,7 +30,9 @@ assert_not_exists Real.instPow
 
 noncomputable section
 
-open Set Filter Metric MeasureTheory TopologicalSpace ENNReal NNReal Topology
+open Set Filter Metric MeasureTheory ENNReal NNReal
+
+open scoped Topology
 
 /-- A measure `μ` is said to be a uniformly locally doubling measure if there exists a constant `C`
 such that for all sufficiently small radii `ε`, and for any centre, the measure of a ball of radius
@@ -74,7 +76,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     use C ^ n
     filter_upwards [eventually_mem_nhdsWithin, this n] with ε hε₀ hε x t ht
     rw [mem_Ioi] at hε₀
-    grw [ht, hn, ENNReal.coe_pow]
+    grw [ht, hn.le, ENNReal.coe_pow]
     exact hε x
   intro n
   induction n with

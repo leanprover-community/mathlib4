@@ -37,8 +37,7 @@ def riemannZetaSummandHom (hs : s ≠ 0) : ℕ →*₀ ℂ where
   map_zero' := by simp [hs]
   map_one' := by simp
   map_mul' m n := by
-    simpa only [Nat.cast_mul, ofReal_natCast]
-      using mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _
+    simpa only [Nat.cast_mul] using natCast_mul_cpow m n _
 
 /-- When `χ` is a Dirichlet character and `s ≠ 0`, the map `n ↦ χ n * n^(-s)` is completely
 multiplicative and vanishes at zero. -/
@@ -48,10 +47,7 @@ def dirichletSummandHom {n : ℕ} (χ : DirichletCharacter ℂ n) (hs : s ≠ 0)
   map_zero' := by simp [hs]
   map_one' := by simp
   map_mul' m n := by
-    simp_rw [← ofReal_natCast]
-    simpa only [Nat.cast_mul, IsUnit.mul_iff, not_and, map_mul, ofReal_mul,
-      mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _]
-      using mul_mul_mul_comm ..
+    simpa only [Nat.cast_mul, map_mul, natCast_mul_cpow] using mul_mul_mul_comm ..
 
 /-- When `s.re > 1`, the map `n ↦ n^(-s)` is norm-summable. -/
 lemma summable_riemannZetaSummand (hs : 1 < s.re) :
@@ -82,7 +78,9 @@ lemma tsum_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < 
   simp only [dirichletSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, LSeries,
     LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs), div_eq_mul_inv]
 
-open Filter Nat Topology EulerProduct
+open Filter Nat EulerProduct
+
+open scoped Topology
 
 /-- The Euler product for the Riemann ζ function, valid for `s.re > 1`.
 This version is stated in terms of `HasProd`. -/
@@ -186,8 +184,8 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
     simp only [Set.mulIndicator_apply, Set.mem_ofPred_eq, Finset.mem_coe, Nat.mem_primeFactors,
       ne_eq, mul_ite, mul_one]
     by_cases h : p.Prime; swap
-    · simp only [h, false_and, if_false]
-    simp only [h, true_and, if_true]
+    · simp only [h, false_and, ite_false]
+    simp only [h, true_and, ite_true]
     by_cases hp' : p ∣ N; swap
     · simp only [hp', false_and, ↓reduceIte, inv_inj, sub_right_inj, mul_eq_mul_right_iff,
         cpow_eq_zero_iff, Nat.cast_eq_zero, h.ne_zero, ne_eq, neg_eq_zero, or_false]
@@ -208,8 +206,8 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
 
 section LogDirichlet
 
-open Real hiding log exp_nat_mul exp_add
-open ArithmeticFunction Primes Summable
+open Real hiding log exp_natCast_mul exp_add
+open ArithmeticFunction Summable
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 
@@ -249,7 +247,7 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
       suffices (Function.support f) ⊆ {n | IsPrimePow n} from
         tsum_subtype_eq_of_support_subset this
       intro n hn
-      contrapose! hn
+      contrapose hn
       simp [f, vonMangoldt_eq_zero_iff.mpr hn]
 
 /-- For `1 < s.re`, the Dirichlet L-function is the exponential of the `L`-series of

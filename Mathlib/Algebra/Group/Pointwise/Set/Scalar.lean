@@ -5,10 +5,11 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Opposites
 public import Mathlib.Data.Set.NAry
-public import Mathlib.Tactic.Monotonicity.Attr
+
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Pointwise scalar operations of sets
@@ -57,7 +58,7 @@ assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
 open Function MulOpposite
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 namespace Set
 
@@ -83,7 +84,7 @@ scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
 open scoped Pointwise
 
 section SMul
-variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
+variable [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
   {b : β}
 
 @[to_additive (attr := simp)] lemma image2_smul : image2 (· • ·) s t = s • t := rfl
@@ -150,7 +151,7 @@ lemma smul_set_subset_smul {s : Set α} : a ∈ s → a • t ⊆ s • t := ima
 end SMul
 
 section SMulSet
-variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
+variable [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
 
 @[to_additive] lemma image_smul : (fun x ↦ a • x) '' t = a • t := rfl
 
@@ -206,7 +207,7 @@ theorem smul_set_univ_pi (c : M) (s : ∀ i, Set (π i)) : c • univ.pi s = uni
 
 end Pi
 
-variable {s : Set α} {t : Set β} {a : α} {b : β}
+variable {a : α} {b : β}
 
 @[to_additive]
 lemma range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
@@ -223,12 +224,20 @@ lemma smul_set_range [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
 
 end SMul
 
+open scoped Pointwise
+
 section SDiv
-variable {ι : Sort*} {κ : ι → Sort*} [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
+variable [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-@[to_additive]
-instance sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)
+/-- The pointwise scalar division of sets `s /ₛ t` is defined as `{x /ₛ y | x ∈ s, y ∈ t}` in
+scope `Pointwise`. -/
+@[to_additive (attr := instance_reducible)
+  /-- The pointwise subtraction of sets `s -ᵥ t` is defined as `{x -ᵥ y | x ∈ s, y ∈ t}` in
+  scope `Pointwise`. -/]
+def sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)
+
+scoped [Pointwise] attribute [instance] Set.sdiv Set.vsub
 
 @[to_additive (attr := simp)]
 lemma image2_sdiv : image2 (· /ₛ ·) s t = s /ₛ t := rfl
@@ -308,8 +317,6 @@ lemma union_sdiv_inter_subset_union : s₁ ∪ s₂ /ₛ t₁ ∩ t₂ ⊆ s₁ 
   image2_union_inter_subset_union
 
 end SDiv
-
-open scoped Pointwise
 
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :

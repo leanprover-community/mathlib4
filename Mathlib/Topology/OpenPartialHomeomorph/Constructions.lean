@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+
 /-!
 # Constructions of new partial homeomorphisms from old
 
@@ -26,7 +27,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 @[expose] public section
 
-open Function Set Filter Topology
+open Function Set Topology
 
 variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
@@ -105,7 +106,7 @@ theorem refl_prod_refl : (OpenPartialHomeomorph.refl X).prod (OpenPartialHomeomo
 theorem prod_trans (e : OpenPartialHomeomorph X Y) (f : OpenPartialHomeomorph Y Z)
     (e' : OpenPartialHomeomorph X' Y') (f' : OpenPartialHomeomorph Y' Z') :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
-  toPartialEquiv_injective <| e.1.prod_trans ..
+  toPartialEquiv_injective <| e.toPartialHomeomorph.prod_trans ..
 
 theorem prod_eq_prod_of_nonempty {eX eX' : OpenPartialHomeomorph X X'}
     {eY eY' : OpenPartialHomeomorph Y Y'} (h : (eX.prod eY).source.Nonempty) :
@@ -269,7 +270,7 @@ theorem subtypeRestr_def : e.subtypeRestr hs = (s.openPartialHomeomorphSubtypeCo
 
 @[simp, mfld_simps]
 theorem subtypeRestr_coe :
-    ((e.subtypeRestr hs : OpenPartialHomeomorph s Y) : s → Y) = Set.restrict ↑s (e : X → Y) :=
+    ((e.subtypeRestr hs : OpenPartialHomeomorph s Y) : s → Y) = Set.domRestrict ↑s (e : X → Y) :=
   rfl
 
 @[simp, mfld_simps]
@@ -295,13 +296,13 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : OpenPartialHomeomorph X Y) 
     (f.subtypeRestr hs).symm.trans (f'.subtypeRestr hs) ≈
       (f.symm.trans f').restr (f.target ∩ f.symm ⁻¹' s) := by
   simp only [subtypeRestr_def, trans_symm_eq_symm_trans_symm]
-  have openness₁ : IsOpen (f.target ∩ f.symm ⁻¹' s) := f.isOpen_inter_preimage_symm s.2
+  have openness₁ : IsOpen (f.target ∩ f.symm ⁻¹' s) := f.isOpen_inter_preimage_symm s.is_open'
   rw [← ofSet_trans _ openness₁, ← trans_assoc, ← trans_assoc]
   refine EqOnSource.trans' ?_ (eqOnSource_refl _)
   -- f' has been eliminated !!!
   have set_identity : f.symm.source ∩ (f.target ∩ f.symm ⁻¹' s) = f.symm.source ∩ f.symm ⁻¹' s := by
     mfld_set_tac
-  have openness₂ : IsOpen (s : Set X) := s.2
+  have openness₂ : IsOpen (s : Set X) := s.is_open'
   rw [ofSet_trans', set_identity, ← trans_of_set' _ openness₂, trans_assoc]
   refine EqOnSource.trans' (eqOnSource_refl _) ?_
   -- f has been eliminated !!!
@@ -312,7 +313,7 @@ theorem subtypeRestr_symm_apply {U : Opens X} (hU : Nonempty U)
     {y : Y} (hy : y ∈ (e.subtypeRestr hU).target) :
     (Subtype.val ∘ (e.subtypeRestr hU).symm) y = e.symm y := by
   rw [e.eq_symm_apply _ hy.1]
-  · change restrict _ e _ = _
+  · change domRestrict _ e _ = _
     rw [← e.subtypeRestr_coe hU, (e.subtypeRestr hU).right_inv hy]
   · have := OpenPartialHomeomorph.map_target _ hy
     rwa [e.subtypeRestr_source] at this

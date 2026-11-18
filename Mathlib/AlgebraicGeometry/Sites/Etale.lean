@@ -12,12 +12,10 @@ public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
-
 # The étale site
 
 In this file we define the big étale site, i.e. the étale topology as a Grothendieck topology
 on the category of schemes.
-
 -/
 
 @[expose] public section
@@ -45,7 +43,6 @@ lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
   intro X Y f hf
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The small étale site of a scheme is the Grothendieck topology on the
 category of schemes étale over `X` induced from the étale topology on `Scheme.{u}`. -/
 def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=

@@ -5,14 +5,12 @@ Authors: Kevin Buzzard, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
 # Sheaves taking values in a category
@@ -51,7 +49,6 @@ in a sufficiently large universe. Rather than use `UnivLE` we prove some results
 a category `A'` instead, whose morphism universe of `A'` is defined to be `max u₁ v₁`, where
 `u₁, v₁` are the universes for `C`. Perhaps after we get better at handling universe
 inequalities this can be changed.
-
 -/
 
 @[expose] public section
@@ -91,8 +88,6 @@ open Presieve Presieve.FamilyOfElements Limits
 
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : Sieve X) (R : Presieve X) (E : Aᵒᵖ)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a sieve `S` on `X : C`, a presheaf `P : Cᵒᵖ ⥤ A`, and an object `E` of `A`,
     the cones over the natural diagram `S.arrows.diagram.op ⋙ P` associated to `S` and `P`
     with cone point `E` are in 1-1 correspondence with `SieveCompatible` family of elements
@@ -106,12 +101,12 @@ def conesEquivSieveCompatibleFamily :
         S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ rfl)
       simpa using! π.naturality φ.op⟩
   invFun x :=
-    { app := fun f => x.1 f.unop.1.hom f.unop.2
+    { app := fun f => x.1 f.unop.obj.hom f.unop.property
       naturality := fun f f' g => by
-        have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
+        have := x.2 f.unop.obj.hom g.unop.hom.left f.unop.property
         dsimp at this ⊢
         rw [id_comp, ← this]
-        convert! rfl
+        convert rfl
         simp only [Over.w] }
 
 variable {P S E}
@@ -130,7 +125,7 @@ def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
 def homEquivAmalgamation :
     (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
-  invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
+  invFun t := ⟨t.1, fun f => t.2 f.unop.obj.hom f.unop.property⟩
 
 variable (P S)
 
@@ -305,16 +300,6 @@ section
 
 variable {J A}
 
-/-- The underlying presheaf of a sheaf. -/
-@[deprecated "Use ObjectProperty.obj" (since := "2026-03-03")]
-abbrev Sheaf.val (F : Sheaf J A) : Cᵒᵖ ⥤ A := F.obj
-
-@[deprecated "Use ObjectProperty.FullSubcategory.property" (since := "2026-03-03")]
-lemma Sheaf.cond (F : Sheaf J A) : Presheaf.IsSheaf J F.obj := F.property
-
-@[deprecated (since := "2026-03-03")]
-alias Sheaf.Hom.mk := ObjectProperty.homMk
-
 lemma Sheaf.hom_ext_iff {F G : Sheaf J A} {f g : F ⟶ G} :
     f = g ↔ f.hom = g.hom := by
   cat_disch
@@ -388,14 +373,13 @@ end
 
 /-- This is stated as a lemma to prevent class search from forming a loop since a sheaf morphism is
 monic if and only if it is monic as a presheaf morphism (under suitable assumption). -/
-theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mono f.1] : Mono f :=
+theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mono f.hom] : Mono f :=
   (sheafToPresheaf J A).mono_of_mono_map h
 
-instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.1] : Epi f :=
+instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.hom] : Epi f :=
   (sheafToPresheaf J A).epi_of_epi_map h
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
@@ -445,7 +429,6 @@ lemma Presheaf.IsSheaf.of_le {K : GrothendieckTopology C} {F : Cᵒᵖ ⥤ A} (h
     Presheaf.IsSheaf J F :=
   fun _ _ _ hS ↦ h _ _ (hle _ hS)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The category of sheaves on the bottom (trivial) Grothendieck topology is
 equivalent to the category of presheaves.
@@ -466,10 +449,10 @@ variable {J} {A}
 
 /-- If the empty sieve is a cover of `X`, then `F(X)` is terminal. -/
 def Sheaf.isTerminalOfBotCover (F : Sheaf J A) (X : C) (H : ⊥ ∈ J X) :
-    IsTerminal (F.1.obj (op X)) := by
+    IsTerminal (F.obj.obj (op X)) := by
   refine @IsTerminal.ofUnique _ _ _ ?_
   intro Y
-  choose t h using F.2 Y _ H (by tauto) (by tauto)
+  choose t h using F.property Y _ H (by tauto) (by tauto)
   exact ⟨⟨t⟩, fun a => h.2 a (by tauto)⟩
 
 variable (J) in
@@ -498,7 +481,7 @@ noncomputable def Sheaf.isTerminalOfEqTop (H : J = ⊤) (F : Sheaf J A) :
 
 @[simp]
 theorem Sheaf.Hom.add_app [Preadditive A] {P Q : Sheaf J A} (f g : P ⟶ Q) (U : Cᵒᵖ) :
-    (f + g).1.app U = f.1.app U + g.1.app U :=
+    (f + g).hom.app U = f.hom.app U + g.hom.app U :=
   rfl
 
 end CategoryTheory

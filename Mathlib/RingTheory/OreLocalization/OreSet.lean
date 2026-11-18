@@ -5,12 +5,10 @@ Authors: Jakob von Raumer, Kevin Klinge
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.OreLocalization.OreSet
 
 /-!
-
 # (Left) Ore sets and rings
 
 This file contains results on left Ore sets for rings and monoids with zero.
@@ -18,7 +16,6 @@ This file contains results on left Ore sets for rings and monoids with zero.
 ## References
 
 * https://ncatlab.org/nlab/show/Ore+set
-
 -/
 
 @[expose] public section
@@ -37,8 +34,6 @@ def oreSetOfIsCancelMulZero {R : Type*} [MonoidWithZero R] [IsCancelMulZero R]
     oreNum
     oreDenom
     ore_eq }
-
-@[deprecated (since := "2026-01-12")] alias oreSetOfCancelMonoidWithZero := oreSetOfIsCancelMulZero
 
 /-- In rings without zero divisors, the first (cancellability) condition is always fulfilled,
 it suffices to give a proof for the Ore condition itself. -/

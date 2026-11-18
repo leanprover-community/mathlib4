@@ -6,11 +6,11 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 module
 
 public import Mathlib.GroupTheory.QuotientGroup.Finite
-public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Tactic.FinCases
+
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Ideal quotients
@@ -23,14 +23,13 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 ## Main definitions
 
 - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
-
 -/
 
 @[expose] public section
 
 open Set
 
-variable {ι ι' R S : Type*} [Ring R] (I J : Ideal R) {a b : R}
+variable {ι ι' R : Type*} [Ring R] (I J : Ideal R) {a b : R}
 
 namespace Ideal.Quotient
 
@@ -88,12 +87,12 @@ instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
         (Or.inr ∘ eq_zero_iff_mem.2)
 
 instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
-  let _ := Quotient.nontrivial_iff.mpr hI.1
+  let _ := Quotient.nontrivial_iff.mpr hI.ne_top'
   NoZeroDivisors.to_isDomain _
 
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
-  · have : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
+  · have : Nontrivial (R ⧸ I) := ⟨H.toNontrivial.exists_pair_ne⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
     have := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
@@ -120,8 +119,8 @@ protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) := fast_instance%
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
-      show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
-    inv_zero := dif_pos rfl
+      show a * dite _ _ _ = _ by rw [dite_eq_right ha]; exact Classical.choose_spec (exists_inv ha)
+    inv_zero := dite_eq_left rfl
     __ := Quotient.nontrivial_iff.mpr hI.out.1 }
 
 /-- The quotient by a two-sided ideal that is maximal as a left ideal is a division ring.
@@ -201,7 +200,6 @@ noncomputable def piQuotEquiv [I.IsTwoSided] : ((ι → R) ⧸ pi fun _ ↦ I) �
     exact Ideal.Quotient.eq.2 fun i ↦ Ideal.Quotient.eq.1 (Quotient.out_eq' _)
   right_inv x := funext fun i ↦ Quotient.out_eq' (x i)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
     contained in `I^m`. -/
 theorem map_pi [I.IsTwoSided] [Finite ι] (x : ι → R) (hi : ∀ i, x i ∈ I)

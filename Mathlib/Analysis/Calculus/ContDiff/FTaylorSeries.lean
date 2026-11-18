@@ -5,11 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-public import Mathlib.Data.ENat.Lattice
+
+import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Iterated derivatives of a function
@@ -107,7 +107,7 @@ In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ�
 
 noncomputable section
 
-open ENat NNReal Topology Filter Set Fin Filter Function
+open ENat Topology Filter Set Fin Filter Function
 
 /-- The type of smoothness exponents, consisting of all natural numbers and two special terms `∞`
 and `ω`.
@@ -218,7 +218,8 @@ theorem hasFTaylorSeriesUpToOn_top_iff' (hN : ∞ ≤ N) :
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         ∀ m : ℕ, ∀ x ∈ s, HasFDerivWithinAt (fun y => p y m) (p x m.succ).curryLeft s x := by
   -- Everything except for the continuity is trivial:
-  refine ⟨fun h => ⟨h.1, fun m => h.2 m (natCast_lt_of_coe_top_le_withTop hN _)⟩, fun h =>
+  refine ⟨fun h =>
+    ⟨h.zero_eq, fun m => h.fderivWithin m (natCast_lt_of_coe_top_le_withTop hN _)⟩, fun h =>
     ⟨h.1, fun m _ => h.2 m, fun m _ x hx =>
       -- The continuity follows from the existence of a derivative:
       (h.2 m x hx).continuousWithinAt⟩⟩
@@ -621,7 +622,8 @@ theorem ftaylorSeriesWithin_insert :
 `s` with a neighborhood of `x` within `s`. -/
 theorem iteratedFDerivWithin_inter' {n : ℕ} (hu : u ∈ 𝓝[s] x) :
     iteratedFDerivWithin 𝕜 n f (s ∩ u) x = iteratedFDerivWithin 𝕜 n f s x :=
-  iteratedFDerivWithin_congr_set (nhdsWithin_eq_iff_eventuallyEq.1 <| nhdsWithin_inter_of_mem' hu) _
+  iteratedFDerivWithin_congr_set
+    (nhdsWithin_eq_iff_eventuallyEqSet.1 <| nhdsWithin_inter_of_mem' hu) _
 
 /-- The iterated differential within a set `s` at a point `x` is not modified if one intersects
 `s` with a neighborhood of `x`. -/
@@ -868,7 +870,7 @@ theorem tsupport_iteratedFDeriv_subset (n : ℕ) : tsupport (iteratedFDeriv 𝕜
 theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n f) ⊆ tsupport f :=
   subset_closure.trans (tsupport_iteratedFDeriv_subset n)
 
-theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
+protected theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
     HasCompactSupport (iteratedFDeriv 𝕜 n f) :=
   hf.of_isClosed_subset isClosed_closure (tsupport_iteratedFDeriv_subset n)
 
@@ -908,7 +910,7 @@ theorem iteratedFDerivWithin_of_isOpen (n : ℕ) (hs : IsOpen s) :
     EqOn (iteratedFDerivWithin 𝕜 n f s) (iteratedFDeriv 𝕜 n f) s := by
   intro x hx
   rw [← iteratedFDerivWithin_univ]
-  exact iteratedFDerivWithin_congr_set (Filter.eventuallyEq_univ.mpr <| hs.mem_nhds hx) n
+  exact iteratedFDerivWithin_congr_set (Filter.eventuallyEqSet_univ.mpr <| hs.mem_nhds hx) n
 
 theorem ftaylorSeriesWithin_univ : ftaylorSeriesWithin 𝕜 f univ = ftaylorSeries 𝕜 f := by
   ext1 x; ext1 n

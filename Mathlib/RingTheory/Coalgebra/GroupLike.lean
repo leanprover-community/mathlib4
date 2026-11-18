@@ -57,7 +57,7 @@ lemma IsGroupLikeElem.map [FunLike F A B] [CoalgHomClass F R A B] (f : F)
 /-- A coalgebra isomorphism preserves group-like elements. -/
 @[simp] lemma isGroupLikeElem_map_equiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
     IsGroupLikeElem R (f a) ↔ IsGroupLikeElem R a where
-  mp ha := (CoalgEquivClass.toCoalgEquiv f).symm_apply_apply a ▸ ha.map _
+  mp ha := (CoalgEquiv.ofClass f).symm_apply_apply a ▸ ha.map _
   mpr := .map f
 
 variable (R A) in
@@ -86,7 +86,7 @@ lemma val_injective : Injective (val : GroupLike R A → A) := by rintro ⟨a, h
 /-- Identity equivalence between `GroupLike R A` and `{a : A // IsGroupLikeElem R a}`. -/
 @[simps]
 def valEquiv : GroupLike R A ≃ Subtype (IsGroupLikeElem R : A → Prop) where
-  toFun a := ⟨a.1, a.2⟩
+  toFun a := ⟨a.val, a.isGroupLikeElem_val⟩
   invFun a := ⟨a.1, a.2⟩
   left_inv _ := rfl
   right_inv _ := rfl

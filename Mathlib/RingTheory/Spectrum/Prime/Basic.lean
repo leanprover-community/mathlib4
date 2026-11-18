@@ -63,7 +63,7 @@ variable [CommSemiring R] [CommSemiring S]
 variable {R S}
 
 lemma nonempty_iff_nontrivial : Nonempty (PrimeSpectrum R) ↔ Nontrivial R := by
-  refine ⟨fun ⟨p⟩ ↦ ⟨0, 1, fun h ↦ p.2.ne_top ?_⟩, fun h ↦ ?_⟩
+  refine ⟨fun ⟨p⟩ ↦ ⟨0, 1, fun h ↦ p.isPrime.ne_top ?_⟩, fun h ↦ ?_⟩
   · simp [Ideal.eq_top_iff_one p.asIdeal, ← h]
   · obtain ⟨I, hI⟩ := Ideal.exists_maximal R
     exact ⟨⟨I, hI.isPrime⟩⟩
@@ -212,7 +212,7 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
     vanishingIdeal (zeroLocus (I : Set R)) = I.radical :=
   Ideal.ext fun f => by
     rw [mem_vanishingIdeal, Ideal.radical_eq_sInf, Submodule.mem_sInf]
-    exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.1 ⟨hx, x.2⟩⟩
+    exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.asIdeal ⟨hx, x.isPrime⟩⟩
 
 theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
   apply range_asIdeal R ▸ nilradical_eq_sInf R
@@ -335,7 +335,7 @@ theorem vanishingIdeal_iUnion {ι : Sort*} (t : ι → Set (PrimeSpectrum R)) :
 
 theorem zeroLocus_inf (I J : Ideal R) :
     zeroLocus ((I ⊓ J : Ideal R) : Set R) = zeroLocus I ∪ zeroLocus J :=
-  Set.ext fun x => x.2.inf_le
+  Set.ext fun x => x.isPrime.inf_le
 
 theorem union_zeroLocus (s s' : Set R) :
     zeroLocus s ∪ zeroLocus s' = zeroLocus (Ideal.span s ⊓ Ideal.span s' : Ideal R) := by
@@ -344,11 +344,11 @@ theorem union_zeroLocus (s s' : Set R) :
 
 theorem zeroLocus_mul (I J : Ideal R) :
     zeroLocus ((I * J : Ideal R) : Set R) = zeroLocus I ∪ zeroLocus J :=
-  Set.ext fun x => x.2.mul_le
+  Set.ext fun x => x.isPrime.mul_le
 
 theorem zeroLocus_singleton_mul (f g : R) :
     zeroLocus ({f * g} : Set R) = zeroLocus {f} ∪ zeroLocus {g} :=
-  Set.ext fun x => by simpa using x.2.mul_mem_iff_mem_or_mem
+  Set.ext fun x => by simpa using x.isPrime.mul_mem_iff_mem_or_mem
 
 @[simp]
 theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
@@ -358,7 +358,7 @@ theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
 @[simp]
 theorem zeroLocus_singleton_pow (f : R) (n : ℕ) (hn : 0 < n) :
     zeroLocus ({f ^ n} : Set R) = zeroLocus {f} :=
-  Set.ext fun x => by simpa using x.2.pow_mem_iff_mem n hn
+  Set.ext fun x => by simpa using x.isPrime.pow_mem_iff_mem n hn
 
 theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
     vanishingIdeal t ⊔ vanishingIdeal t' ≤ vanishingIdeal (t ∩ t') := by
@@ -398,12 +398,13 @@ theorem asIdeal_bot [IsDomain R] : (⊥ : PrimeSpectrum R).asIdeal = ⊥ := rfl
 
 instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
-  uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+  uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.isPrime.ne_top)
 
 /-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
 lemma isMax_iff {x : PrimeSpectrum R} :
     IsMax x ↔ x.asIdeal.IsMaximal := by
-  refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
+  refine ⟨fun hx ↦ ⟨⟨x.isPrime.ne_top, fun I hI ↦ ?_⟩⟩,
+    fun hx y e ↦ (hx.eq_of_le y.isPrime.ne_top e).ge⟩
   by_contra e
   obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
   exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
@@ -413,14 +414,14 @@ lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
   ext I
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [mem_zeroLocus, SetLike.coe_subset_coe] at h
-    simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le ‹_› I.2.ne_top h).symm
+    simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le ‹_› I.isPrime.ne_top h).symm
   · simp [Set.mem_singleton_iff.mp h]
 
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
   change IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
-  simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
-  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
+  simp only [IsMin, Minimal, x.isPrime, bot_le, and_self, and_true, true_and]
+  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.isPrime e⟩
 
 end Order
 
@@ -455,9 +456,9 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   rw [Multiset.map_add, Multiset.prod_add]
   apply le_trans (mul_le_mul' h_Wx h_Wy)
   rw [add_mul]
-  apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_right)
+  apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_left)
   rw [mul_add]
-  apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_left)
+  apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_right)
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
 /-- In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
@@ -492,13 +493,28 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
   rw [Multiset.map_add, Multiset.prod_add]
   refine ⟨le_trans (mul_le_mul' h_Wx_le h_Wy_le) ?_, mt Ideal.mul_eq_bot.mp ?_⟩
   · rw [add_mul]
-    apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_right)
+    apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_left)
     rw [mul_add]
-    apply sup_le (show span A {x} * M ≤ M from Ideal.mul_le_left)
+    apply sup_le (show span A {x} * M ≤ M from Ideal.mul_le_right)
     rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
   · rintro (hx | hy) <;> contradiction
 
 end Noetherian
+
+section Action
+
+variable {G : Type*} [Group G] [MulSemiringAction G R]
+
+instance : MulAction G (PrimeSpectrum R) where
+  smul g P := ⟨g • P, P.isPrime.smul g⟩
+  mul_smul g h P := PrimeSpectrum.ext (mul_smul g h P.asIdeal)
+  one_smul P := PrimeSpectrum.ext (one_smul G P.asIdeal)
+
+@[simp]
+theorem asIdeal_smul (g : G) (P : PrimeSpectrum R) : (g • P).asIdeal = g • P.asIdeal :=
+  rfl
+
+end Action
 
 end CommSemiRing
 

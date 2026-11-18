@@ -19,7 +19,6 @@ public import Mathlib.Data.Multiset.Filter
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -32,7 +31,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -43,14 +42,14 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Filter
 
-variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
+variable (p : α → Prop) [DecidablePred p] {s t : Finset α}
 
 /-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`.
 
 For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α`
 as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). -/
 def filter (s : Finset α) : Finset α :=
-  ⟨_, s.2.filter p⟩
+  ⟨_, s.nodup.filter p⟩
 
 end Finset.Filter
 
@@ -114,7 +113,7 @@ section Filter
 variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
 
 @[simp]
-theorem filter_val (s : Finset α) : (filter p s).1 = s.1.filter p :=
+theorem filter_val (s : Finset α) : (filter p s).val = s.val.filter p :=
   rfl
 
 @[simp]

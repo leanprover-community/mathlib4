@@ -124,7 +124,7 @@ theorem norm_normedMk_eq_one [NontrivialTopology M] :
   · simpa only [normedMk_apply, one_mul] using! fun _ ↦ le_rfl
   · intro N _ hle
     obtain ⟨x, _⟩ := exists_norm_ne_zero M
-    exact one_le_of_le_mul_right₀ (by positivity) (hle x)
+    exact one_le_of_le_mul_right₀ (b := ‖x‖) (by positivity) (hle x)
 
 /-- The projection is `0` if and only if all the elements have norm `0`. -/
 theorem normedMk_eq_zero_iff : normedMk (M := M) = 0 ↔ ∀ (x : M), ‖x‖ = 0 := by

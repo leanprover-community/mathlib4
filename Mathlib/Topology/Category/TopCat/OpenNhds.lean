@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Category.TopCat.Opens
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of open neighborhoods of a point
@@ -51,13 +50,13 @@ theorem le_def (U V : OpenNhds x) : U ≤ V ↔ U.1 ≤ V.1 := Iff.rfl
 
 instance (x : X) : Lattice (OpenNhds x) :=
   { inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
-    le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
-    inf_le_left := fun U V => @inf_le_left _ _ U.1.1 V.1.1
-    inf_le_right := fun U V => @inf_le_right _ _ U.1.1 V.1.1
-    sup := fun U V => ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
-    sup_le := fun U V W => @sup_le _ _ U.1.1 V.1.1 W.1.1
-    le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
-    le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }
+    le_inf := fun U V W => @le_inf _ _ U.1.carrier V.1.carrier W.1.carrier
+    inf_le_left := fun U V => @inf_le_left _ _ U.1.carrier V.1.carrier
+    inf_le_right := fun U V => @inf_le_right _ _ U.1.carrier V.1.carrier
+    sup := fun U V => ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.carrier U.2⟩
+    sup_le := fun U V W => @sup_le _ _ U.1.carrier V.1.carrier W.1.carrier
+    le_sup_left := fun U V => @le_sup_left _ _ U.1.carrier V.1.carrier
+    le_sup_right := fun U V => @le_sup_right _ _ U.1.carrier V.1.carrier }
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance (x : X) : OrderTop (OpenNhds x) where
@@ -66,10 +65,10 @@ instance (x : X) : OrderTop (OpenNhds x) where
     cases x
     simp [le_def]
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
+@[macro_inline]
 instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
   coe f := Set.inclusion f.le
   coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!

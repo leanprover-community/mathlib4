@@ -22,19 +22,18 @@ namespace AlgebraicGeometry
 
 section universe_polymorphic
 
-variable {A B C σ τ ψ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable {A B C σ τ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
   [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
-  [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ C]
-  {𝒜 : ℕ → σ} {ℬ : ℕ → τ} {𝒞 : ℕ → ψ} [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
-  (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (hf : ℬ₊ ≤ 𝒜₊.map f) (hg : 𝒞₊ ≤ ℬ₊.map g)
+  [CommRing C] {𝒜 : ℕ → σ} {ℬ : ℕ → τ} [GradedRing 𝒜] [GradedRing ℬ]
+  (f : 𝒜 →+*ᵍ ℬ) (hf : ℬ₊ ≤ 𝒜₊.map f)
 
 namespace ProjectiveSpectrum
 
 /-- The underlying function of `Proj ℬ ⟶ Proj 𝒜` on the level of points. -/
 @[simps] def comapFun (p : ProjectiveSpectrum ℬ) : ProjectiveSpectrum 𝒜 where
-  asHomogeneousIdeal := p.1.comap f
-  isPrime := p.2.comap f
-  not_irrelevant_le le := p.3 <| hf.trans <| map_le_of_le_comap _ le
+  asHomogeneousIdeal := p.asHomogeneousIdeal.comap f
+  isPrime := p.isPrime.comap f
+  not_irrelevant_le le := p.not_irrelevant_le <| hf.trans <| map_le_of_le_comap _ le
 
 /-- The underlying continuous function of `Proj ℬ ⟶ Proj 𝒜` on the level of points. -/
 def comap : C(ProjectiveSpectrum ℬ, ProjectiveSpectrum 𝒜) where
@@ -50,16 +49,18 @@ namespace Proj
 open StructureSheaf
 
 variable (U : Opens (ProjectiveSpectrum 𝒜)) (V : Opens (ProjectiveSpectrum ℬ))
-  (hUV : V.1 ⊆ ProjectiveSpectrum.comap f hf ⁻¹' U.1)
+  (hUV : V.carrier ⊆ ProjectiveSpectrum.comap f hf ⁻¹' U.carrier)
 
 /-- The underlying function of `Proj ℬ ⟶ Proj 𝒜` on the level of structure sheaves. -/
 noncomputable def comapStructureSheafFun
-    (s : ∀ x : U, AtPrime 𝒜 x.1.1.1) (y : V) : AtPrime ℬ y.1.1.1 :=
-  localRingHom f _ y.1.1.1 rfl <| s ⟨.comap f hf y.1, hUV y.2⟩
+    (s : ∀ x : U, AtPrime 𝒜 x.1.asHomogeneousIdeal.toSubmodule) (y : V) :
+    AtPrime ℬ y.1.asHomogeneousIdeal.toSubmodule :=
+  localRingHom f _ y.1.asHomogeneousIdeal.toSubmodule rfl <| s ⟨.comap f hf y.1, hUV y.2⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyFraction_comapStructureSheafFun
-    (s : ∀ x : U, AtPrime 𝒜 x.1.1.1) (hs : (isLocallyFraction 𝒜).pred s) :
+    (s : ∀ x : U, AtPrime 𝒜 x.1.asHomogeneousIdeal.toSubmodule)
+    (hs : (isLocallyFraction 𝒜).pred s) :
     (isLocallyFraction ℬ).pred (comapStructureSheafFun f hf U V hUV s) := by
   rintro ⟨p, hpV⟩
   rcases hs ⟨.comap f hf p, hUV hpV⟩ with ⟨W, m, iWU, i, a, b, hb, h_frac⟩
@@ -73,7 +74,7 @@ lemma isLocallyFraction_comapStructureSheafFun
 set_option backward.isDefEq.respectTransparency false in
 /-- The underlying ring hom of `Proj ℬ ⟶ Proj 𝒜` on the level of structure sheaves. -/
 noncomputable def comapStructureSheaf :
-    (Proj.structureSheaf 𝒜).1.obj (.op U) →+* (Proj.structureSheaf ℬ).1.obj (.op V) where
+    (Proj.structureSheaf 𝒜).obj.obj (.op U) →+* (Proj.structureSheaf ℬ).obj.obj (.op V) where
   toFun s := ⟨comapStructureSheafFun _ _ _ _ hUV s.1,
       isLocallyFraction_comapStructureSheafFun _ _ _ _ hUV _ s.2⟩
   map_one' := by ext; simp [comapStructureSheafFun]
@@ -103,20 +104,18 @@ set_option backward.isDefEq.respectTransparency.types false in
     { base := TopCat.ofHom <| comap f hf
       c := { app U := CommRingCat.ofHom <| comapStructureSheaf f hf _ _ Set.Subset.rfl } }
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma germ_map_sectionInBasicOpen {p : ProjectiveSpectrum ℬ}
-    (c : NumDenSameDeg 𝒜 (p.comap f hf).1.toIdeal.primeCompl) :
+    (c : NumDenSameDeg 𝒜 (p.comap f hf).asHomogeneousIdeal.toIdeal.primeCompl) :
     (toSheafedSpace ℬ).presheaf.germ
       ((Opens.map (sheafedSpaceMap f hf).hom.base).obj _) p (mem_basicOpen_den _ _ _)
       ((sheafedSpaceMap f hf).hom.c.app _ (sectionInBasicOpen 𝒜 _ c)) =
     (toSheafedSpace ℬ).presheaf.germ
-      (ProjectiveSpectrum.basicOpen _ (f c.den)) p c.4
+      (ProjectiveSpectrum.basicOpen _ (f c.den)) p c.den_mem
       (sectionInBasicOpen ℬ p (c.map _ le_rfl)) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma val_sectionInBasicOpen_apply (p : ProjectiveSpectrum.top 𝒜)
-    (c : NumDenSameDeg 𝒜 p.1.toIdeal.primeCompl)
+    (c : NumDenSameDeg 𝒜 p.asHomogeneousIdeal.toIdeal.primeCompl)
     (q : ProjectiveSpectrum.basicOpen 𝒜 c.den) :
     ((sectionInBasicOpen 𝒜 p c).val q).val = .mk c.num ⟨c.den, q.2⟩ :=
   rfl
@@ -164,7 +163,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
     (map f hf).resLE _ _ le_rfl ≫ (basicOpen 𝒜 s).ι := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc] lemma awayToSection_comp_appLE {i : ℕ} {s : A} (hs : s ∈ 𝒜 i) :
     awayToSection 𝒜 s ≫
       Scheme.Hom.appLE (map f hf) (basicOpen 𝒜 s) (basicOpen ℬ (f s)) (by rfl) =
@@ -190,7 +188,7 @@ Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
 ```
 -/
 @[reassoc] theorem awayι_comp_map {i : ℕ} (hi : 0 < i) (s : A) (hs : s ∈ 𝒜 i) :
-    awayι ℬ (f s) (f.2 hs) hi ≫ map f hf =
+    awayι ℬ (f s) (f.map_mem hs) hi ≫ map f hf =
     Spec.map (CommRingCat.ofHom (Away.map f s)) ≫ awayι 𝒜 s hs hi := by
   rw [awayι, awayι, Category.assoc, ι_comp_map, ← Category.assoc, ← Category.assoc]
   congr 1
@@ -201,8 +199,8 @@ Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
 /-- Given a graded ring hom `f : 𝒜 →+*ᵍ ℬ` satisfying the hypothesis `ℬ₊ ≤ 𝒜₊.map f`, we obtain
 an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positive degree. -/
 @[simps! I₀ f] noncomputable def mapAffineOpenCover : (Proj ℬ).AffineOpenCover :=
-  affineOpenCoverOfIrrelevantLESpan _ (fun s : (affineOpenCover 𝒜).I₀ ↦ f s.2) (fun s ↦ f.2 s.2.2)
-    (fun s ↦ s.1.2) <| (toIdeal_le_toIdeal_iff.mpr hf).trans <|
+  affineOpenCoverOfIrrelevantLESpan _ (fun s : (affineOpenCover 𝒜).I₀ ↦ f s.2)
+    (fun s ↦ f.map_mem s.2.2) (fun s ↦ s.1.2) <| (toIdeal_le_toIdeal_iff.mpr hf).trans <|
     Ideal.map_le_of_le_comap <| (toIdeal_irrelevant_le _).mpr fun i hi x hx ↦
     Ideal.subset_span ⟨⟨⟨i, hi⟩, ⟨x, hx⟩⟩, rfl⟩
 

@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
 
@@ -36,7 +37,7 @@ Here is a list of type aliases for `E →L[𝕜] F` endowed with various topolog
 
 ## Main statements
 
-* `ContinuousLinearMap.topologicalAddGroup` and
+* `ContinuousLinearMap.isTopologicalAddGroup` and
   `ContinuousLinearMap.continuousSMul` register these facts as instances for the special
   case of bounded convergence.
 
@@ -71,9 +72,11 @@ instance topologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] :
     TopologicalSpace (E →SL[σ] F) :=
   fast_instance% UniformConvergenceCLM.instTopologicalSpace σ F { S | IsVonNBounded 𝕜₁ S }
 
-instance topologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
+instance isTopologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
     IsTopologicalAddGroup (E →SL[σ] F) :=
   UniformConvergenceCLM.instIsTopologicalAddGroup σ F _
+
+@[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
 
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
     [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
@@ -299,14 +302,17 @@ theorem map_smulₛₗ₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (c : R) (x
     f (c • x) y = σ₁₃ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
 
 /-- Send a continuous sesquilinear map to an abstract sesquilinear map (forgetting continuity). -/
-def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
-  (coeLMₛₗ σ₂₃).comp L.toLinearMap
+@[simps -isSimp apply]
+def toLinearMap₁₂ : (E →SL[σ₁₃] F →SL[σ₂₃] G) →ₗ[𝕜₃] E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G where
+  toFun L := (coeLMₛₗ σ₂₃).comp L.toLinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
-@[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
+@[simp] lemma toLinearMap₁₂_apply_apply_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
     L.toLinearMap₁₂ v w = L v w := rfl
 
 lemma toLinearMap₁₂_injective :
-    (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃)).Injective := by
+    (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃) : _ → _).Injective := by
   simp [Function.Injective, LinearMap.ext_iff, ← ContinuousLinearMap.ext_iff]
 
 lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
@@ -464,8 +470,9 @@ def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G)
 end Prod
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [TopologicalSpace E]
 
+variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] in
 /-- `ContinuousLinearMap.toSpanSingleton` as a continuous linear equivalence. -/
 @[simps!]
 def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
@@ -473,6 +480,57 @@ def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
   continuous_toFun := continuous_of_continuous_uncurry _ <|
     continuous_snd.smul continuous_fst
   continuous_invFun := continuous_eval_const 1
+
+section smulRightL
+variable
+  {𝕜 𝕜₂ S E F : Type*}
+  [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul 𝕜 F]
+  [Ring S] [TopologicalSpace S] [IsTopologicalAddGroup S] [Module 𝕜 S]
+  [ContinuousConstSMul 𝕜 S] [Module S F] [IsScalarTower 𝕜 S F] [SMulCommClass S 𝕜 F]
+  [ContinuousSMul S F]
+  [NormedField 𝕜₂] [NormedAlgebra 𝕜 𝕜₂] [Module 𝕜₂ F] [IsScalarTower 𝕜 𝕜₂ F]
+  [ContinuousConstSMul 𝕜₂ F] [SMulCommClass S 𝕜₂ F]
+
+variable (𝕜 𝕜₂ S E F) in
+/-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
+`smulRightL c f x = c x • f`. This is the continuous analogue of `ContinuousLinearMap.smulRightₗ`.
+
+The hypothesis that `𝕜` is nontrivially normed is essential to guarantee continuity in `f`.
+This holds because `(f, x) ↦ c x • f` is jointly continuous. The map is also continuous in the
+variable `c` since a bounded set of `F` is absorbed by every neighborhood of zero. -/
+@[simps! apply_apply]
+def smulRightL : (E →L[𝕜] S) →L[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
+  letI L : (E →L[𝕜] S) →ₗ[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
+    { toFun c :=
+        { toLinearMap := c.smulRightₗ
+          cont := show Continuous (c.smulRightₗ : F →ₗ[𝕜₂] E →L[𝕜] F) from
+            continuous_of_continuous_uncurry (c.smulRightₗ : F →ₗ[𝕜] E →L[𝕜] F) <|
+              (c.continuous.comp continuous_snd).smul continuous_fst }
+      map_add' _ _ := by ext; exact add_smul ..
+      map_smul' _ _ := by ext; exact smul_assoc .. }
+  { toLinearMap := L
+    cont := continuous_of_continuousAt_zero L <| by
+      refine (map_zero L ▸ (ContinuousLinearMap.hasBasis_nhds_zero_of_basis
+        ContinuousLinearMap.hasBasis_nhds_zero).tendsto_right_iff).mpr ?_
+      rintro ⟨t₁, s, t₂⟩ ⟨ht₁, hs, ht₂⟩
+      obtain ⟨u, hu, v, hv, huv⟩ := mem_nhds_prod_iff.1 <|
+        continuous_smul.tendsto' ((0 : S), (0 : F)) 0 (zero_smul _ _) ht₂
+      obtain ⟨r, -, hr⟩ := (ht₁.restrict_scalars 𝕜 hv).exists_pos
+      obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 r
+      simp only at ht₁ hs ht₂ huv
+      simp only [mem_ofPred_eq]
+      filter_upwards [eventually_nhds_zero_mapsTo hs <|
+        (continuous_const_smul k).tendsto' 0 0 (smul_zero k) hu] with c hc f hf x hx
+      obtain ⟨f, hf', rfl⟩ := hr k hk.le hf
+      simpa [L, smul_comm (c x) k] using huv <| Set.mk_mem_prod (hc hx) hf' }
+
+@[simp] lemma toLinearMap_smulRightL_apply (c : E →L[𝕜] S) :
+    (smulRightL 𝕜 𝕜₂ S E F c : F →L[𝕜₂] E →L[𝕜] F).toLinearMap = c.smulRightₗ := rfl
+
+end smulRightL
 
 end ContinuousLinearMap
 
@@ -511,6 +569,19 @@ def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
       (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp
       (postcomp F e₄₃.symm.toContinuousLinearMap)).continuous }
+
+variable (F σ₁₂) in
+/-- The partly continuous semilinear map obtained by applying a continuous semilinear map
+at a given vector. -/
+@[simps apply_apply] def _root_.ContinuousLinearMap.applyₗ
+    [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] :
+    E →ₛₗ[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F where
+  toFun x :=
+    { toFun f := f x
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 end Semilinear
 

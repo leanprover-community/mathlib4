@@ -5,16 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
 # Existence of wide pullbacks when the target object is terminal
 
 In this file, we show that the wide pullback of a family of arrows `objs j ⟶ B`
 exists when `B` is terminal and the product of the objects `objs j` exists.
-
 -/
 
 @[expose] public section
@@ -39,7 +38,6 @@ variable (c : Fan objs)
 abbrev ofFan (hB : IsTerminal B) : WidePullbackCone arrows :=
   WidePullbackCone.mk (hB.from _) c.proj (fun _ ↦ hB.hom_ext _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 variable {c} in
 /-- When the base object is terminal, a limit wide pullback cone can be obtained
 from a limit fan. -/

@@ -7,10 +7,8 @@ module
 
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Finiteness
-public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
-
 # Locality of `Algebra.FiniteType`
 
 In this file we show that finite-type is local on the source and the target.
@@ -19,7 +17,6 @@ In this file we show that finite-type is local on the source and the target.
 
 - `Algebra.FiniteType.of_span_eq_top_source`: finite-type is local on the (algebraic) source
 - `Algebra.FiniteType.of_span_eq_top_target`: finite-type is local on the (algebraic) target
-
 -/
 
 public section
@@ -29,8 +26,8 @@ section Algebra
 open scoped Pointwise TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (M : Submonoid R)
-variable (R' S' : Type*) [CommRing R'] [CommRing S']
-variable [Algebra R R'] [Algebra S S']
+variable (S' : Type*) [CommRing S']
+variable [Algebra S S']
 
 variable {S'} in
 open scoped Classical in
@@ -55,7 +52,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S']
   rw [Algebra.smul_def, ← map_mul] at hx''
   obtain ⟨a, ha₂⟩ := (IsLocalization.eq_iff_exists M S').mp hx''
   use a * y ^ n
-  convert! A.mul_mem hx' (hA₂ a.prop) using 1
+  convert A.mul_mem hx' (hA₂ a.prop) using 1
   rw [Submonoid.smul_def, smul_eq_mul, Submonoid.coe_mul, SubmonoidClass.coe_pow, mul_assoc, ← ha₂,
     mul_comm]
 
@@ -88,7 +85,7 @@ lemma Algebra.FiniteType.of_span_eq_top_target (s : Set S) (hs : Ideal.span (s :
   -- Suppose `s : Finset S` spans `S`, and each `Sᵣ` is finitely generated as an `R`-algebra.
   -- Say `t r : Finset Sᵣ` generates `Sᵣ`. By assumption, we may find `lᵢ` such that
   -- `∑ lᵢ * sᵢ = 1`. I claim that all `s` and `l` and the numerators of `t` and generates `S`.
-  replace h := fun r => (h r).1
+  replace h := fun r => (h r).out
   choose t ht using h
   obtain ⟨l, hl⟩ :=
     (Finsupp.mem_span_iff_linearCombination S (s : Set S) 1).mp
@@ -141,11 +138,11 @@ lemma Algebra.FiniteType.of_span_eq_top_source (s : Set R) (hs : Ideal.span (s :
   let := fun r : s => (Localization.awayMap (algebraMap R S) r).toAlgebra
   set f := algebraMap R S
   constructor
-  replace H := fun r => (h r).1
+  replace H := fun r => (h r).out
   choose s₁ s₂ using H
   let sf := fun x : s => IsLocalization.finsetIntegerMultiple (Submonoid.powers (f x)) (s₁ x)
   use s.attach.biUnion sf
-  convert! (Algebra.adjoin_attach_biUnion (R := R) sf).trans _
+  convert (Algebra.adjoin_attach_biUnion (R := R) sf).trans _
   rw [eq_top_iff]
   rintro x -
   apply (⨆ x : s, Algebra.adjoin R (sf x : Set S)).toSubmodule.mem_of_span_eq_top_of_smul_pow_mem

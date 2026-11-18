@@ -3,8 +3,10 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Ring.Subsemiring.Order
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.Ring.Subsemiring.Order
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # A canonically ordered commutative semiring where multiplication by 2 is not injective
@@ -24,7 +26,7 @@ Reference:
 https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/canonically_ordered.20pathology
 -/
 
-
+@[expose] public section
 
 namespace Counterexample
 
@@ -212,8 +214,7 @@ instance : NoZeroDivisors L where
 -/
 example : ∃ a b : L, a ≠ b ∧ 2 * a = 2 * b := by
   refine ⟨⟨(1, 0), by simp⟩, 1, fun h : (⟨(1, 0), _⟩ : L) = ⟨⟨1, 1⟩, _⟩ => ?_, rfl⟩
-  obtain F : (0 : ZMod 2) = 1 := congr_arg (fun j : L => j.1.2) h
-  cases F
+  cases congr($h.1.2)
 
 end ExL
 

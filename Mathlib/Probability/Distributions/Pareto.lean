@@ -5,8 +5,8 @@ Authors: Alvan Caleb Arulandu
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Probability.CDF
 
 /-! # Pareto distributions over ℝ
 
@@ -19,14 +19,13 @@ Define the Pareto measure over the reals.
 * `paretoPDF`: `ℝ≥0∞`-valued pdf,
   `paretoPDF t r = ENNReal.ofReal (paretoPDFReal t r)`.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
-
 -/
 
 @[expose] public section
 
 open scoped ENNReal NNReal
 
-open MeasureTheory Real Set Filter Topology
+open MeasureTheory Real Set Filter
 
 namespace ProbabilityTheory
 variable {t r x : ℝ}
@@ -45,11 +44,11 @@ lemma paretoPDF_eq (t r x : ℝ) :
     paretoPDF t r x = ENNReal.ofReal (if t ≤ x then r * t ^ r * x ^ (-(r + 1)) else 0) := rfl
 
 lemma paretoPDF_of_lt (hx : x < t) : paretoPDF t r x = 0 := by
-  simp only [paretoPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
+  simp only [paretoPDF_eq, ite_eq_right (not_le.mpr hx), ENNReal.ofReal_zero]
 
 lemma paretoPDF_of_le (hx : t ≤ x) :
     paretoPDF t r x = ENNReal.ofReal (r * t ^ r * x ^ (-(r + 1))) := by
-  simp only [paretoPDF_eq, if_pos hx]
+  simp only [paretoPDF_eq, ite_eq_left hx]
 
 /-- The Lebesgue integral of the Pareto pdf over reals `≤ t` equals `0`. -/
 lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
@@ -58,7 +57,7 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
   · intro a (_ : a < _)
     simp only [paretoPDF_eq, ENNReal.ofReal_eq_zero]
-    rw [if_neg (by linarith)]
+    rw [ite_eq_right (by linarith)]
 
 /-- The Pareto pdf is measurable. -/
 @[fun_prop]
@@ -74,7 +73,7 @@ lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
 /-- The Pareto pdf is positive for all reals `>= t`. -/
 lemma paretoPDFReal_pos (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
     0 < paretoPDFReal t r x := by
-  rw [paretoPDFReal, if_pos hx]
+  rw [paretoPDFReal, ite_eq_left hx]
   have _ : 0 < x := by linarith
   positivity
 
@@ -90,8 +89,6 @@ lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
     | inr htp =>
       positivity [lt_of_lt_of_le htp h]
   · positivity
-
-open Measure
 
 /-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]

@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Convex.Slope
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+
+import Mathlib.Analysis.Convex.Slope
 
 /-!
 # Convexity of functions and derivatives
@@ -23,7 +24,7 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
 
 public section
 
-open Metric Set Asymptotics ContinuousLinearMap Filter
+open Set Filter
 open scoped Topology NNReal
 
 /-!

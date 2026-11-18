@@ -22,7 +22,9 @@ continuity, continuous function
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {X Y Z : Type*}
 
@@ -32,7 +34,7 @@ open TopologicalSpace
 -- when topologies are not those provided by instances.
 theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X → Y} :
     Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
-  ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
+  ⟨fun hf => hf.isOpen_preimage, fun h => ⟨h⟩⟩
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 variable {f : X → Y} {s : Set X} {x : X} {y : Y}
@@ -256,7 +258,7 @@ theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
 
 section DenseRange
 
-variable {α ι : Type*} (f : α → X) (g : X → Y)
+variable {α : Type*} (f : α → X) (g : X → Y)
 variable {f : α → X} {s : Set X}
 
 /-- A surjective map has dense range. -/

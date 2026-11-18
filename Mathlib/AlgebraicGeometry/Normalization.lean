@@ -5,10 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
-public import Mathlib.Tactic.DepRewrite
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
 public import Mathlib.RingTheory.Smooth.IntegralClosure
 
 /-!
@@ -26,7 +25,6 @@ The factorization map is `AlgebraicGeometry.Scheme.Hom.normalizationDesc`, and t
 is `AlgebraicGeometry.Scheme.Hom.normalization.hom_ext`.
 
 We also show that normalization commutes with disjoint unions and smooth base change.
-
 -/
 
 @[expose] public noncomputable section
@@ -41,7 +39,6 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 open AffineZariskiSite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism `f : X ⟶ Y`, this is the presheaf of integral closure of `Y` in `X`. -/
 def normalizationDiagram : Y.Opensᵒᵖ ⥤ CommRingCat where
   obj U :=
@@ -113,9 +110,6 @@ lemma coequifibered_normalizationDiagramMap :
     (integralClosure Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r)) := .of_algebraMap_eq' rfl
   exact IsLocalization.Away.integralClosure r
 
-@[deprecated (since := "2026-02-01")]
-alias preservesLocalization_normalizationDiagramMap := coequifibered_normalizationDiagramMap
-
 /-- The diagram of affine schemes that we glue to form the normalization. -/
 def normalizationGlueData := relativeGluingData f.coequifibered_normalizationDiagramMap
 
@@ -144,7 +138,7 @@ def toNormalization : X ⟶ f.normalization :=
   have : (pullbackRestrictIsoRestrict f U.1).inv ≫
       Cover.trans ((directedCover Y).pullback₁ f) i ≫
       (pullbackRestrictIsoRestrict f V.1).hom = X.homOfLE
-        (f.preimage_mono (toOpens_mono i.1.1)) := by
+        (f.preimage_mono (toOpens_mono i.down.down)) := by
     rw [← cancel_mono (Scheme.Opens.ι _)]
     simp +instances [Cover.trans, Cover.locallyDirectedPullbackCover]
   rw [← Iso.inv_comp_eq, reassoc_of% this, ← Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc,
@@ -190,7 +184,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toNormalization_fromNormalization :
     f.toNormalization ≫ f.fromNormalization = f := by
   refine Scheme.Cover.hom_ext (X.openCoverOfIsOpenCover _
-    (.comap (iSup_affineOpens_eq_top Y) f.base.1)) _ _ fun U ↦ ?_
+    (.comap (iSup_affineOpens_eq_top Y) f.base.hom')) _ _ fun U ↦ ?_
   refine (f.ι_toNormalization_assoc _ _).trans ?_
   rw [f.ι_fromNormalization, ← Spec.map_comp_assoc]
   change (f ⁻¹ᵁ U.1).toSpecΓ ≫ Spec.map (f.app _) ≫ U.2.fromSpec = (f ⁻¹ᵁ U.1).ι ≫ _
@@ -202,7 +196,7 @@ instance : IsIntegralHom f.fromNormalization := by
     (iSup_affineOpens_eq_top _)]
   intro U
   let e := IsOpenImmersion.isoOfRangeEq (f.fromNormalization ⁻¹ᵁ U).ι (f.normalizationOpenCover.f U)
-      (by simpa using congr($(f.fromNormalization_preimage U).1))
+      (by simpa using congr($(f.fromNormalization_preimage U).carrier))
   rw [← MorphismProperty.cancel_left_of_respectsIso @IsIntegralHom e.inv,
     ← MorphismProperty.cancel_right_of_respectsIso @IsIntegralHom _ U.2.isoSpec.hom]
   have : (f.normalizationDiagramMap.app (.op U)).hom.IsIntegral := by
@@ -358,7 +352,7 @@ instance [IsReduced X] : IsReduced f.normalization :=
 instance [IsIntegral X] : IsIntegral f.normalization :=
   have : IrreducibleSpace f.normalization := by
     rw [irreducibleSpace_def]
-    convert!
+    convert
       ((IrreducibleSpace.isIrreducible_univ X).image _
           f.toNormalization.continuous.continuousOn).closure
     simpa using f.toNormalization.denseRange.closure_range.symm
@@ -368,7 +362,6 @@ section UniversalProperty
 
 variable {T : Scheme.{u}} (f₁ : X ⟶ T) (f₂ : T ⟶ Y) [IsIntegralHom f₂]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an qcqs morphism `f : X ⟶ Y`, which factors into `X ⟶ T ⟶ Y` with `T ⟶ Y` integral,
 the map `X ⟶ T` factors through `f.normalization` uniquely.
@@ -499,7 +492,6 @@ section Coproduct
 variable {U V : Scheme} {iU : U ⟶ X} {iV : V ⟶ X} (e : IsColimit (BinaryCofan.mk iU iV))
     [QuasiCompact iU] [QuasiSeparated iU] [QuasiCompact iV] [QuasiSeparated iV]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normalization of `Y` in a coproduct is isomorphic to the coproduct of the normalizations in
 each of the components. -/
 noncomputable def normalizationCoprodIso :
@@ -529,14 +521,12 @@ noncomputable def normalizationCoprodIso :
     rw [← cancel_epi (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).inv]
     apply coprod.hom_ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_inl_normalizationCoprodIso_hom :
     (iU ≫ f).toNormalization ≫ coprod.inl ≫ (f.normalizationCoprodIso e).hom =
       iU ≫ f.toNormalization := by
   simp [Scheme.Hom.normalizationCoprodIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_inr_normalizationCoprodIso_hom :
     (iV ≫ f).toNormalization ≫ coprod.inr ≫ (f.normalizationCoprodIso e).hom =
@@ -555,14 +545,12 @@ lemma inr_toNormalization_normalizationCoprodIso_inv :
       (iV ≫ f).toNormalization ≫ coprod.inr := by
   simp [← toNormalization_inr_normalizationCoprodIso_hom_assoc f e]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_normalizationCoprodIso_hom_fromNormalization :
     coprod.inl ≫ (f.normalizationCoprodIso e).hom ≫ f.fromNormalization =
       (iU ≫ f).fromNormalization := by
   simp [Scheme.Hom.normalizationCoprodIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_normalizationCoprodIso_hom_fromNormalization :
     coprod.inr ≫ (f.normalizationCoprodIso e).hom ≫ f.fromNormalization =
@@ -582,7 +570,6 @@ section Smooth
 
 variable {X S Y : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [QuasiCompact f] [QuasiSeparated f]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The comparison lemma between the normalization of the pullback to the pullback of the
 normalization. This is an isomorphism when `g` is smooth. -/
 noncomputable def normalizationPullback :
@@ -596,7 +583,6 @@ lemma normalizationPullback_snd :
     f.normalizationPullback g ≫ pullback.snd _ _ = (pullback.snd f g).fromNormalization :=
   (pullback.snd f g).normalizationDesc_comp ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_normalizationPullback_fst :
     (pullback.snd f g).toNormalization ≫ f.normalizationPullback g ≫ pullback.fst _ _ =
@@ -613,7 +599,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := S.isBasis_affineOpens.exists_subset_of_mem_open
     (Set.mem_univ ((pullback.snd _ g ≫ g) x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU : V ≤ g ⁻¹ᵁ U⟩ :=
-    Y.isBasis_affineOpens.exists_subset_of_mem_open (a := pullback.snd _ g x) hxU (g ⁻¹ᵁ U).2
+    Y.isBasis_affineOpens.exists_subset_of_mem_open (a := pullback.snd _ g x) hxU (g ⁻¹ᵁ U).is_open'
   let W := pullback.snd (Scheme.Hom.fromNormalization f) g ⁻¹ᵁ V
   refine ⟨W, hxV, (isIso_morphismRestrict_iff_isIso_app _ (U := W) (hV.preimage _)).mpr ?_⟩
   have := isIso_pushoutSection_of_isQuasiSeparated_of_flat_right
@@ -654,7 +640,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     ((pullback.snd f g).normalizationObjIso hV).inv ≫
     (pullback.snd f g).normalization.presheaf.map (eqToHom
       (by simp only [W, ← Scheme.Hom.comp_preimage, Scheme.Hom.normalizationPullback_snd])).op
-  convert! show IsIso φ by dsimp only [φ]; infer_instance using 1
+  convert show IsIso φ by dsimp only [φ]; infer_instance using 1
   ext1
   · dsimp [φ]
     simp only [Scheme.Hom.app_eq_appLE, colimit.ι_desc_assoc, span_left, PushoutCocone.mk_pt,
@@ -689,7 +675,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     simp only [← Functor.map_inv, inv_eqToHom, Scheme.Hom.appLE_map, ← Scheme.Hom.app_eq_appLE,
       Scheme.Hom.fromNormalization_app _ hV, IsIso.Iso.inv_inv, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
-    exact congr(CommRingCat.ofHom $(ψ.comp_algebraMap.symm))
+    congrm CommRingCat.ofHom $ψ.comp_algebraMap.symm
 
 end Smooth
 

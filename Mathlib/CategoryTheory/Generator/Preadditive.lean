@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 This file contains characterizations of separating sets and objects that are valid in all
 preadditive categories.
-
 -/
 
 public section
@@ -21,7 +20,7 @@ public section
 
 universe v u
 
-open CategoryTheory Opposite ObjectProperty
+open CategoryTheory Opposite
 
 namespace CategoryTheory
 

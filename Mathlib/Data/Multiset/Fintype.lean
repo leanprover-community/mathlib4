@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # Multiset coercion to type
@@ -111,23 +111,28 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
 @[simp] lemma map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
   ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
 
+@[to_additive]
+theorem prod_map_eq_prod_toEnumFinset {M : Type*} [CommMonoid M] (m : Multiset α) (f : α → M) :
+    (m.map f).prod = ∏ i ∈ m.toEnumFinset, f i.1 := by
+  grind [m.map_toEnumFinset_fst, map_map, Finset.prod_map_val]
+
 @[simp] lemma image_toEnumFinset_fst (m : Multiset α) :
     m.toEnumFinset.image Prod.fst = m.toFinset := by
   rw [Finset.image, Multiset.map_toEnumFinset_fst]
 
 @[simp] lemma map_fst_le_of_subset_toEnumFinset {s : Finset (α × ℕ)} (hsm : s ⊆ m.toEnumFinset) :
-    s.1.map Prod.fst ≤ m := by
+    s.val.map Prod.fst ≤ m := by
   simp_rw [le_iff_count, count_map]
   rintro a
-  obtain ha | ha := (s.1.filter fun x ↦ a = x.1).card.eq_zero_or_pos
+  obtain ha | ha := (s.val.filter fun x ↦ a = x.1).card.eq_zero_or_pos
   · rw [ha]
     exact Nat.zero_le _
-  obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
+  obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.val.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
     by_contra! h
-    replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
+    replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.val.filter fun x ↦ a = x.1) - 1) := by
       simpa +contextual [forall_comm (β := _ = a), Finset.subset_iff,
         imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
-    have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
+    have : card (s.val.filter fun x ↦ a = x.1) ≤ card (s.val.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
     lia
   exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
@@ -253,9 +258,9 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
     by_cases hv : x.1 = v
     · simp only [hv, true_and] at h ⊢
       apply lt_of_le_of_ne (Nat.le_of_lt_add_one _) h
-      convert! x.2.2 using 1
+      convert x.2.2 using 1
       simp [hv]
-    · convert! x.2.2 using 1
+    · convert x.2.2 using 1
       exact (count_cons_of_ne hv _).symm
     ⟩⟩
   invFun x := x.elim ⟨v, ⟨m.count v, by simp⟩⟩ (fun x ↦ ⟨x.1, x.2.castLE (count_le_count_cons ..)⟩)

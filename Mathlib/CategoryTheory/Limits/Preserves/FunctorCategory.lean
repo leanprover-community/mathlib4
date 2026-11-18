@@ -5,12 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.Limits.Yoneda
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -27,7 +25,6 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 ## References
 
 https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_by_functor_categories_and_localizations
-
 -/
 
 @[expose] public section
@@ -45,7 +42,6 @@ section
 
 variable {C : Type u} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{u} D]
-variable {E : Type u} [Category.{v₂} E]
 
 /-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
 `F : C ⥤ D` also preserves colimits.
@@ -153,7 +149,6 @@ def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category* C] {D : Type*}
     limit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ limit G ⋙ F :=
   (preservesLimitIso _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringRightIsoLimitComp_inv_π {C : Type*} [Category* C] {D : Type*}
     [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -162,7 +157,6 @@ theorem limitCompWhiskeringRightIsoLimitComp_inv_π {C : Type*} [Category* C] {D
       limit.π (G ⋙ (whiskeringRight _ _ _).obj F) j = whiskerRight (limit.π G j) F := by
   simp [limitCompWhiskeringRightIsoLimitComp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringRightIsoLimitComp_hom_whiskerRight_π
     {C : Type*} [Category* C] {D : Type*} [Category* D]
@@ -190,7 +184,6 @@ def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category* C] {D : Type
     colimit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ colimit G ⋙ F :=
   (preservesColimitIso _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitCompWhiskeringRightIsoColimitComp_hom {C : Type*} [Category* C] {D : Type*}
     [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -199,7 +192,6 @@ theorem ι_colimitCompWhiskeringRightIsoColimitComp_hom {C : Type*} [Category* C
       (colimitCompWhiskeringRightIsoColimitComp F G).hom = whiskerRight (colimit.ι G j) F := by
   simp [colimitCompWhiskeringRightIsoColimitComp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerRight_ι_colimitCompWhiskeringRightIsoColimitComp_inv {C : Type*} [Category* C]
     {D : Type*} [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -220,13 +212,13 @@ instance whiskeringRightPreservesColimits {C : Type*} [Category* C] {D : Type*} 
     PreservesColimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
 
-/-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
+/-- If `F.op.lan : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 lemma preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
     [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F :=
-  letI := preservesLimitsOfShape_of_natIso (J := J)
-    (Presheaf.compULiftYonedaIsoULiftYonedaCompLan.{u} F).symm
-  preservesLimitsOfShape_of_reflects_of_preserves F uliftYoneda.{u}
+  have := preservesLimitsOfShape_of_natIso (J := J)
+    (Presheaf.compShrinkYonedaIsoShrinkYonedaCompLan.{u} F).symm
+  preservesLimitsOfShape_of_reflects_of_preserves F shrinkYoneda.{u}
 
 /-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
 lemma preservesFiniteLimits_of_evaluation {D : Type*} [Category* D] {E : Type*} [Category* E]
@@ -254,7 +246,6 @@ section
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
 variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : PreservesLimitsOfShape J (colim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesLimitsOfShape_of_evaluation _ _ (fun d =>
     let i : (colim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
@@ -272,7 +263,6 @@ section
 variable [HasColimitsOfShape J C] [HasLimitsOfShape K C]
 variable [PreservesColimitsOfShape J (lim : (K ⥤ C) ⥤ _)]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : PreservesColimitsOfShape J (lim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesColimitsOfShape_of_evaluation _ _ (fun d =>
     let i : (lim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
