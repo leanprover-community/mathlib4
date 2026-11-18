@@ -50,11 +50,14 @@ unfolds the abbrev `VectorMeasure.Integrable`. TODO: fix `simp`. See lean4#13958
 @[simp, nolint simpNF] theorem IntegrableOn.empty : μ.IntegrableOn f ∅ := by
   simp [VectorMeasure.IntegrableOn]
 
-theorem IntegrableOn.biUnion_finite
-    {s : Set ι} (hs : s.Finite) {t : ι → Set X} (ht : ∀ i ∈ s, MeasurableSet (t i))
-    (h't : ∀ i ∈ s, μ.IntegrableOn f (t i)) :
-    μ.IntegrableOn f (⋃ i ∈ s, t i) := by
-  induction s, hs using Set.Finite.induction_on with
+theorem IntegrableOn.biUnion_finite {p : ι → Prop} (hp : {i | p i}.Finite) {t : ι → Set X}
+    (ht : ∀ i, p i → MeasurableSet (t i)) (h't : ∀ i, p i → μ.IntegrableOn f (t i)) :
+    μ.IntegrableOn f (⋃ (i) (_ : p i), t i) := by
+  change μ.IntegrableOn f (⋃ i ∈ {i | p i}, t i)
+  replace ht : ∀ i ∈ {i | p i}, MeasurableSet (t i) := ht
+  replace h't : ∀ i ∈ {i | p i}, μ.IntegrableOn f (t i) := h't
+  generalize {i | p i} = s at hp ht h't ⊢
+  induction s, hp using Set.Finite.induction_on with
   | empty => simp
   | insert _ h's hf =>
     simp only [mem_insert_iff, forall_eq_or_imp, iUnion_iUnion_eq_or_left] at ht h't ⊢
