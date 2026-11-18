@@ -75,75 +75,64 @@ runs:
         # the credential scope.
 
         # The privileged container `master` is writable only by mathlib4's own
-        # native CI, whose OIDC-gated credential is scoped to match. A cross-repo pull
-        # request is built by build_fork.yml with fork-trust credentials
-        # whatever repo the PR head lives on (e.g. a `bump/*` branch on the
-        # mathlib4-nightly-testing fork), so it can only write `forks`.
+        # native CI, whose OIDC-gated credential is scoped to match. Every other
+        # build is a fork build: a cross-repo pull request (built by
+        # build_fork.yml with fork-trust credentials, whatever repo the PR head
+        # lives on), or a workflow that runs in a repo other than mathlib4.
         # `GITHUB_REPOSITORY` is the repo the workflow runs as (the base repo
         # for `pull_request_target`), i.e. the one whose credentials this job
-        # holds; when it differs from `$REPO`, the build is a fork and targets
-        # `forks` regardless of the head repo's own trust class.
-        if [ "$REPO" != "$GITHUB_REPOSITORY" ]; then
+        # holds. A fork build writes `forks`. The cache tool's default chain
+        # for a fork repo is [master, forks] (master-first): master supplies
+        # the bulk of unchanged upstream deps, forks supplies PR-specific
+        # files. No widening needed, so MATHLIB_CACHE_FROM stays unset.
+        CANONICAL="leanprover-community/mathlib4"
+        if [ "$REPO" != "$CANONICAL" ] || [ "$GITHUB_REPOSITORY" != "$CANONICAL" ]; then
           PRIMARY="forks"
+        elif [ "$REF_TYPE" = "tag" ]; then
+          case "$BRANCH" in
+            v4.*)
+              # `v4.*` release tags: release_cache.yml rebuilds every
+              # release commit and publishes it into `master`, the
+              # container canonical checkouts read. Tag creation is
+              # restricted to release managers by a tag ruleset, and the
+              # `cache-upload-master` environment admits `v4.*` tag refs,
+              # so these builds carry master trust. Reads use the tool's
+              # default for the canonical repo, `master` alone, for the
+              # same fill-in reason as the master/staging arm below.
+              PRIMARY="master"
+              ;;
+            *)
+              # Other tags have no trust class of their own:
+              # fork-equivalent, like the dev-branch arm below.
+              PRIMARY="forks"
+              READ_CHAIN="master,forks"
+              ;;
+          esac
         else
-        case "$REPO" in
-          "leanprover-community/mathlib4")
-            if [ "$REF_TYPE" = "tag" ]; then
-              case "$BRANCH" in
-                v4.*)
-                  # `v4.*` release tags: release_cache.yml rebuilds every
-                  # release commit and publishes it into `master`, the
-                  # container canonical checkouts read. Tag creation is
-                  # restricted to release managers by a tag ruleset, and the
-                  # `cache-upload-master` environment admits `v4.*` tag refs,
-                  # so these builds carry master trust. Reads use the tool's
-                  # default for the canonical repo, `master` alone, for the
-                  # same fill-in reason as the master/staging arm below.
-                  PRIMARY="master"
-                  ;;
-                *)
-                  # Other tags have no trust class of their own:
-                  # fork-equivalent, like the dev-branch arm below.
-                  PRIMARY="forks"
-                  READ_CHAIN="master,forks"
-                  ;;
-              esac
-            else
-              case "$BRANCH" in
-                "master"|"staging")
-                  # Master, staging, and `v4.*` release tags (above) are the
-                  # only writers that feed `master` (`staging` is bors's merge
-                  # candidate, which fast-forwards to `master`). Reads use the
-                  # tool's default for the canonical repo, `master` alone, and
-                  # the chain must not widen: files the read chain serves are
-                  # skipped at stage time, so every file missing from `master`
-                  # is a miss that gets rebuilt and uploaded, and `master`
-                  # fills itself into a standalone cache. (Only PRIMARY=master
-                  # does this; other runs write to `forks` and widen the
-                  # chain.)
-                  PRIMARY="master"
-                  ;;
-                *)
-                  # `bors trying`, `ci-dev/*`, maintainer dev branches on the
-                  # canonical repo: trust level is fork-equivalent (the
-                  # minted credential scopes them to `forks`). Reads must widen
-                  # past the default [master] so the post-build verification
-                  # finds the just-uploaded fork-trust artifacts.
-                  PRIMARY="forks"
-                  READ_CHAIN="master,forks"
-                  ;;
-              esac
-            fi
-            ;;
-          *)
-            # Foreign fork, or the nightly-testing repo, which is a fork in
-            # the cache's model. The cache tool's default chain for a fork repo
-            # is [master, forks] (master-first): master supplies the
-            # bulk of unchanged upstream deps, forks supplies PR-specific
-            # files. No widening needed, so MATHLIB_CACHE_FROM stays unset.
-            PRIMARY="forks"
-            ;;
-        esac
+          case "$BRANCH" in
+            "master"|"staging")
+              # Master, staging, and `v4.*` release tags (above) are the
+              # only writers that feed `master` (`staging` is bors's merge
+              # candidate, which fast-forwards to `master`). Reads use the
+              # tool's default for the canonical repo, `master` alone, and
+              # the chain must not widen: files the read chain serves are
+              # skipped at stage time, so every file missing from `master`
+              # is a miss that gets rebuilt and uploaded, and `master`
+              # fills itself into a standalone cache. (Only PRIMARY=master
+              # does this; other runs write to `forks` and widen the
+              # chain.)
+              PRIMARY="master"
+              ;;
+            *)
+              # `bors trying`, `ci-dev/*`, maintainer dev branches on the
+              # canonical repo: trust level is fork-equivalent (the
+              # minted credential scopes them to `forks`). Reads must widen
+              # past the default [master] so the post-build verification
+              # finds the just-uploaded fork-trust artifacts.
+              PRIMARY="forks"
+              READ_CHAIN="master,forks"
+              ;;
+          esac
         fi
 
         # Per-commit cache namespace, only for fork-trust uploads. Closes the

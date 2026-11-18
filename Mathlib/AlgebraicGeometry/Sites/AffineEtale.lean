@@ -113,11 +113,6 @@ instance : HasSheafify S.smallEtaleTopology A :=
   Functor.IsDenseSubsite.hasSheafify_of_isEquivalence
     (AffineEtale.topology S) S.smallEtaleTopology (AffineEtale.Spec S)
 
-instance :
-    ((AffineEtale.Spec S).sheafPushforwardContinuous A
-      (AffineEtale.topology S) S.smallEtaleTopology).IsEquivalence :=
-  Functor.isEquivalence_of_isOneHypercoverDense _ _ _ _
-
 instance : (AffineEtale.topology S).WEqualsLocallyBijective A :=
   .ofEssentiallySmall (AffineEtale.topology S)
 
