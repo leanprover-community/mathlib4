@@ -50,7 +50,6 @@ Cantor-Bendixson derivative sequence of a closed set.
 * Pointwise and setwise Cantor-Bendixson ranks.
 * A generalized Cantor-Bendixson decomposition theorem for arbitrary topological spaces and
   arbitrary cardinalities of topological bases.
-
 -/
 
 @[expose] public section

@@ -186,18 +186,34 @@ lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : �
 
 @[simp] lemma isSquare (x : ℂ) : IsSquare x := ⟨x ^ (2⁻¹ : ℂ), by simp [← sq]⟩
 
+theorem mul_cpow {a b : ℂ} (h : a.arg + b.arg ∈ Set.Ioc (-π) π) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r := by
+  by_cases hr : r = 0
+  · simp [hr]
+  by_cases ha : a = 0
+  · simp [ha, hr]
+  by_cases hb : b = 0
+  · simp [hb, hr]
+  rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul ha hb h, add_mul, exp_add]
+
+theorem mul_cpow_of_pi_lt {a b : ℂ} (h : π < a.arg + b.arg) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r * exp (-2 * π * I * r) := by
+  have ha : a ≠ 0 := by grind [arg_le_pi, arg_zero]
+  have hb : b ≠ 0 := by grind [arg_le_pi, arg_zero]
+  simp_rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul_of_pi_lt h, sub_eq_add_neg, add_mul, exp_add, neg_mul]
+
+theorem mul_cpow_of_le_neg_pi {a b : ℂ} (h : a.arg + b.arg ≤ -π) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r * exp (2 * π * I * r) := by
+  have ha : a ≠ 0 := by grind [neg_pi_lt_arg, arg_zero]
+  have hb : b ≠ 0 := by grind [neg_pi_lt_arg, arg_zero]
+  simp_rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul_of_le_neg_pi h, add_mul, exp_add]
+
 theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
-    ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
-  rcases eq_or_ne r 0 with (rfl | hr)
-  · simp only [cpow_zero, mul_one]
-  rcases eq_or_lt_of_le ha with (rfl | ha')
-  · rw [ofReal_zero, zero_mul, zero_cpow hr, zero_mul]
-  rcases eq_or_lt_of_le hb with (rfl | hb')
-  · rw [ofReal_zero, mul_zero, zero_cpow hr, mul_zero]
-  have ha'' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha'.ne'
-  have hb'' : (b : ℂ) ≠ 0 := ofReal_ne_zero.mpr hb'.ne'
-  rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,
-    add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
+    ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r :=
+  mul_cpow (by simp [arg_ofReal_of_nonneg ha, arg_ofReal_of_nonneg hb, pi_nonneg, pi_pos]) r
 
 lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
   ofReal_natCast m ▸ ofReal_natCast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s

@@ -23,7 +23,6 @@ The use of `HasLaw` also implies that `Y` and `X` are a.e. measurable.
 
 * `HasCondDistrib Y X κ P` : predicate stating that the conditional distribution of `Y` given `X`
   under the measure `P` is equal to the kernel `κ`.
-
 -/
 
 @[expose] public section

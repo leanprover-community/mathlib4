@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of circulant graphs
 

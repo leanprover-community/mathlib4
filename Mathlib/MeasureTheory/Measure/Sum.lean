@@ -20,7 +20,7 @@ measure, sum
 
 public section
 
-open Function Filter
+open Function Filter CompleteLattice
 
 namespace MeasureTheory.Measure
 
@@ -32,11 +32,11 @@ noncomputable def sum (μ : ι → Measure α) : Measure α :=
     le_trans (le_iInf fun _ => le_toOuterMeasure_caratheodory _)
       (OuterMeasure.le_sum_caratheodory _)
 
-theorem le_sum_apply (μ : ι → Measure α) (s : Set α) : ∑' i, μ i s ≤ sum μ s :=
-  le_toMeasure_apply _ _ _
+theorem le_sum_apply (μ : ι → Measure α) (s : Set α) : ∑' i, μ i s ≤ sum μ s := by
+  grw [sum, ← le_toMeasure_apply]; rfl
 
 @[simp]
-theorem sum_apply (μ : ι → Measure α) (hs : MeasurableSet s) :
+protected theorem sum_apply (μ : ι → Measure α) (hs : MeasurableSet s) :
     sum μ s = ∑' i, μ i s :=
   toMeasure_apply _ _ hs
 
@@ -46,8 +46,8 @@ theorem sum_apply₀ (μ : ι → Measure α) (hs : NullMeasurableSet s (sum μ)
   rcases hs.exists_measurable_subset_ae_eq with ⟨t, ts, t_meas, ht⟩
   calc
   sum μ s = sum μ t := measure_congr ht.symm
-  _ = ∑' i, μ i t := sum_apply _ t_meas
-  _ ≤ ∑' i, μ i s := ENNReal.tsum_le_tsum fun i ↦ measure_mono ts
+  _ = ∑' i, μ i t := Measure.sum_apply _ t_meas
+  _ ≤ ∑' i, μ i s := tsum_le_tsum fun i ↦ measure_mono ts
 
 /-! For the next theorem, the countability assumption is necessary. For a counterexample, consider
 an uncountable space, with a distinguished point `x₀`, and the sigma-algebra made of countable sets
@@ -64,11 +64,11 @@ theorem sum_apply_of_countable [Countable ι] (μ : ι → Measure α) (s : Set 
   rcases exists_measurable_superset_forall_eq μ s with ⟨t, hst, htm, ht⟩
   calc
   sum μ s ≤ sum μ t := measure_mono hst
-  _ = ∑' i, μ i t := sum_apply _ htm
+  _ = ∑' i, μ i t := Measure.sum_apply _ htm
   _ = ∑' i, μ i s := by simp [ht]
 
 theorem le_sum (μ : ι → Measure α) (i : ι) : μ i ≤ sum μ :=
-  le_iff.2 fun s hs ↦ by simpa only [sum_apply μ hs] using ENNReal.le_tsum i
+  le_iff.2 fun s hs ↦ by grw [Measure.sum_apply μ hs, ← le_tsum _ i]
 
 @[simp]
 theorem sum_apply_eq_zero [Countable ι] :
@@ -89,13 +89,13 @@ lemma sum_zero : Measure.sum (fun (_ : ι) ↦ (0 : Measure α)) = 0 := by
 theorem sum_sum (μ : ι → ι' → Measure α) :
     (sum fun n => sum (μ n)) = sum (fun (p : ι × ι') ↦ μ p.1 p.2) := by
   ext1 s hs
-  simp [sum_apply _ hs, ENNReal.tsum_prod']
+  simp [Measure.sum_apply _ hs, tsum_prod']
 
 theorem sum_comm (μ : ι → ι' → Measure α) :
     (sum fun n => sum (μ n)) = sum fun m => sum fun n => μ n m := by
   ext1 s hs
-  simp_rw [sum_apply _ hs]
-  rw [ENNReal.tsum_comm]
+  simp_rw [Measure.sum_apply _ hs]
+  rw [tsum_comm]
 
 theorem ae_sum_iff [Countable ι] {p : α → Prop} :
     (∀ᵐ x ∂sum μ, p x) ↔ ∀ i, ∀ᵐ x ∂μ i, p x :=
@@ -108,7 +108,7 @@ theorem ae_sum_iff' {p : α → Prop} (h : MeasurableSet { x | p x }) :
 @[simp]
 theorem sum_fintype [Fintype ι] (μ : ι → Measure α) : sum μ = ∑ i, μ i := by
   ext1 s hs
-  simp only [sum_apply, finsetSum_apply, hs, tsum_fintype]
+  simp [hs]
 
 theorem sum_coe_finset (s : Finset ι) (μ : ι → Measure α) :
     (sum fun i : s => μ i) = ∑ i ∈ s, μ i := by rw [sum_fintype, Finset.sum_coe_sort s μ]
@@ -125,21 +125,20 @@ theorem sum_cond (μ ν : Measure α) : (sum fun b => cond b μ ν) = μ + ν :=
 
 @[simp]
 theorem sum_of_isEmpty [IsEmpty ι] (μ : ι → Measure α) : sum μ = 0 := by
-  rw [← measure_univ_eq_zero, sum_apply _ MeasurableSet.univ, tsum_empty]
+  rw [← measure_univ_eq_zero, Measure.sum_apply _ MeasurableSet.univ, tsum_empty]
 
 theorem sum_add_sum_compl (s : Set ι) (μ : ι → Measure α) :
     ((sum fun i : s => μ i) + sum fun i : ↥sᶜ => μ i) = sum μ := by
   ext1 t ht
-  simp only [add_apply, sum_apply _ ht]
-  exact ENNReal.summable.tsum_add_tsum_compl (f := fun i => μ i t) ENNReal.summable
+  simp only [add_apply, Measure.sum_apply _ ht]
+  exact summable.tsum_add_tsum_compl (f := fun i => μ i t) summable
 
 theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ = sum ν :=
-  congr_arg sum (funext h)
+  congr(sum $(funext h))
 
 theorem sum_add_sum (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
   ext1 s hs
-  simp only [add_apply, sum_apply _ hs,
-    ENNReal.summable.tsum_add ENNReal.summable]
+  simp [Measure.sum_apply _ hs, summable.tsum_add summable]
 
 @[simp] lemma sum_comp_equiv (e : ι' ≃ ι) (μ : ι → Measure α) :
     sum (μ ∘ e) = sum μ := by

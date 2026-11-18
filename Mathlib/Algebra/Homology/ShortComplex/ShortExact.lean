@@ -6,14 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Short exact short complexes
 
 A short complex `S : ShortComplex C` is short exact (`S.ShortExact`) when it is exact,
 `S.f` is a mono and `S.g` is an epi.
-
 -/
 
 @[expose] public section
@@ -220,6 +218,15 @@ end ShortExact
 
 end Preadditive
 
+/-- `ShortComplex.ShortExact` as an object property. -/
+abbrev shortExact (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :
+    ObjectProperty (ShortComplex C) :=
+  ShortComplex.ShortExact
+
 end ShortComplex
+
+/-- The category of short exact sequences. -/
+abbrev ShortExactSequence (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :=
+  (ShortComplex.shortExact C).FullSubcategory
 
 end CategoryTheory

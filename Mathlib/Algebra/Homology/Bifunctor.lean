@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.TotalComplex
-public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 /-!
 # The action of a bifunctor on homological complexes
@@ -20,7 +19,6 @@ Then, when `K₁ : HomologicalComplex C₁ c₁`, `K₂ : HomologicalComplex C�
 a typeclass `HasMapBifunctor K₁ K₂ F c` which allows to define
 `mapBifunctor K₁ K₂ F c : HomologicalComplex D c` as the total complex of the
 bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
-
 -/
 
 @[expose] public section

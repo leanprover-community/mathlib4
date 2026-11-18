@@ -5,8 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.ENat.SuccOrder
-public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Order.SuccPred.ENat
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
@@ -114,7 +113,6 @@ However, when `σ` is finite, this is not necessarily an `MvPolynomial`.
 series, all of which coefficients are `1`, is the sum of all indeterminates.)
 
 TODO: Define a coercion to MvPolynomial.
-
 -/
 
 @[expose] public section
@@ -382,7 +380,7 @@ theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
   simp_rw [degree_eq_weight_one]
   exact ne_zero_iff_exists_coeff_ne_zero_and_weight (fun _ => 1)
 
-/-- The order of a multivariate power series is the the minimum total degree over all
+/-- The order of a multivariate power series is the minimum total degree over all
 exponents `d` with nonzero coefficient `coeff d f`. -/
 def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ => 1) f
 

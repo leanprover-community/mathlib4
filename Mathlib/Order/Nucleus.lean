@@ -53,6 +53,7 @@ namespace Nucleus
 section SemilatticeInf
 variable [SemilatticeInf X] {n m : Nucleus X} {x y : X}
 
+@[macro_inline]
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!

@@ -5,10 +5,10 @@ Authors: Dennj Osele
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.LinearAlgebra.Matrix.Adjugate
-public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+
+import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
 # Hadamard matrices
@@ -88,23 +88,23 @@ theorem IsHadamard.kronecker {A : Matrix m m R} {B : Matrix n n R}
   refine ⟨fun _ _ ↦ mul_mem (hA.apply_mem _ _) (hB.apply_mem _ _), ?_, ?_⟩ <;> ext ⟨i, i'⟩ ⟨j, j'⟩
   · calc
       _ = ∑ x₁, ∑ x₂, A i x₁ * (B i' x₂ * Bᴴ x₂ j') * Aᴴ x₁ j := by
-        simp [conjTranspose_kronecker', mul_apply, mul_assoc, ← Finset.sum_product']
+        simp [conjTranspose_kronecker', Matrix.mul_apply, mul_assoc, ← Finset.sum_product']
       _ = if i' = j' then ∑ x, A i x * (Fintype.card n • Aᴴ) x j else 0 := by
-        simp [← Finset.sum_mul, ← Finset.mul_sum, ← mul_apply, hB.mul_conjTranspose,
-          one_apply, mul_assoc _ (Fintype.card n : R), -conjTranspose_apply]
+        simp [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hB.mul_conjTranspose,
+          Matrix.one_apply, mul_assoc _ (Fintype.card n : R), -conjTranspose_apply]
       _ = _ := by
-        simp only [← mul_apply, mul_smul_comm, hA.mul_conjTranspose]
-        simp [one_apply, ← Nat.cast_mul, mul_comm, ← ite_and, and_comm]
+        simp only [← Matrix.mul_apply, mul_smul_comm, hA.mul_conjTranspose]
+        simp [Matrix.one_apply, ← Nat.cast_mul, mul_comm, ← ite_and, and_comm]
   · calc
       _ = ∑ x₁, ∑ x₂, Bᴴ i' x₂ * (Aᴴ i x₁ * A x₁ j) * B x₂ j' := by
-        simp [conjTranspose_kronecker', mul_apply, mul_assoc, ← Finset.sum_product']
+        simp [conjTranspose_kronecker', Matrix.mul_apply, mul_assoc, ← Finset.sum_product']
       _ = if i = j then ∑ x, Bᴴ i' x * (Fintype.card m • B) x j' else 0 := by
         rw [Finset.sum_comm]
-        simp [← Finset.sum_mul, ← Finset.mul_sum, ← mul_apply, hA.conjTranspose_mul,
-          one_apply, mul_assoc _ (Fintype.card m : R), -conjTranspose_apply]
+        simp [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hA.conjTranspose_mul,
+          Matrix.one_apply, mul_assoc _ (Fintype.card m : R), -conjTranspose_apply]
       _ = _ := by
-        simp only [← mul_apply, mul_smul_comm, hB.conjTranspose_mul]
-        simp [one_apply, ← Nat.cast_mul, ← ite_and]
+        simp only [← Matrix.mul_apply, mul_smul_comm, hB.conjTranspose_mul]
+        simp [Matrix.one_apply, ← Nat.cast_mul, ← ite_and]
 
 /-- A Hadamard matrix with constant column sum `s` has order `s * star s`, provided the order
 is regular in `R`.
@@ -185,7 +185,7 @@ variable [CommRing R] [StarRing R] {A : Matrix n n R}
 /-- The Hadamard determinant identity: `det A * star (det A) = (card n)^(card n)`. -/
 theorem IsHadamard.det_mul_star_det (hA : A.IsHadamard) :
     A.det * star A.det = (Fintype.card n : R) ^ Fintype.card n := by
-  have := congr_arg det hA.mul_conjTranspose
+  have := congr(det $hA.mul_conjTranspose)
   rwa [det_mul, det_conjTranspose, det_smul, det_one, mul_one] at this
 
 /-- The Hadamard determinant identity: `star (det A) * det A = (card n)^(card n)`. -/
@@ -217,7 +217,7 @@ theorem IsHadamard.of_mul_conjTranspose
     (hcard : IsRegular (Fintype.card n : R)) : A.IsHadamard := by
   refine ⟨hentry, hmul, ?_⟩
   have hdet : IsRegular (A.det * star A.det) := by
-    have := congr_arg det hmul
+    have := congr(det $hmul)
     rw [det_mul, det_conjTranspose, det_smul, det_one, mul_one] at this
     rw [this]
     exact hcard.pow _
@@ -245,7 +245,7 @@ theorem IsHadamard.four_dvd_card {A : Matrix n n ℤ}
     Unitary.mem_iff_eq_one_or_eq_neg_one.mp (hA.apply_mem i j)
   obtain ⟨r, s, t, hrs, hrt, hst⟩ := Fintype.two_lt_card_iff.mp hcard
   have horth ⦃i k : n⦄ (hik : i ≠ k) : ∑ j, A i j * A k j = 0 := by
-    simpa [Matrix.mul_apply, hik] using congr_fun (congr_fun hA.mul_conjTranspose i) k
+    simpa [Matrix.mul_apply, hik] using congr($hA.mul_conjTranspose i k)
   have hexpand : ∀ j, (1 + A s j * A r j) * (1 + A t j * A r j) =
       1 + A s j * A r j + A t j * A r j + A s j * A t j := fun j => by
     obtain hr | hr := hpm r j <;> simp [hr] <;> ring

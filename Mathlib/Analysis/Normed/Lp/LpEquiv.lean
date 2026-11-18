@@ -35,7 +35,6 @@ the subtype of `PreLp` satisfying `Memℓp`.
 
 * Equivalence between `lp` and `MeasureTheory.Lp`, for `f : α → E` (i.e., functions rather than
   pi-types) and the counting measure on `α`
-
 -/
 
 @[expose] public section

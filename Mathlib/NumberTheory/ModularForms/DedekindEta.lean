@@ -5,12 +5,9 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
-public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
+
+import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 
 /-!
 # Dedekind eta function
@@ -162,7 +159,7 @@ lemma logDeriv_qParam (h : ℝ) (z : ℂ) : logDeriv (𝕢 h) z = 2 * π * I / h
 lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
     Summable fun i ↦ logDeriv (1 - eta_q i ·) z := by
   have := summable_norm_pow_mul_geometric_div_one_sub 1 (norm_qParam_lt_one 1 ⟨z, hz⟩)
-  convert! ((summable_nat_add_iff 1).mpr this).mul_left (-2 * π * I) using 1 with n
+  convert ((summable_nat_add_iff 1).mpr this).mul_left (-2 * π * I) using 1 with n
   grind [one_sub_eta_logDeriv_eq]
 
 open EisensteinSeries in
@@ -180,5 +177,9 @@ lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
   simp [eta_q_eq_pow, ← tsum_mul_left, tsum_pnat_eq_tsum_succ (f := fun n ↦
         n * cexp (2 * π * I * z) ^ n / (1 - cexp (2 * π * I * z) ^ n)), ← tsum_neg]
   grind
+
+open EisensteinSeries in
+lemma deriv_eta_eq_E2_mul_eta (z : ℍ) : deriv eta z = (π * I / 12) * E2 z * eta z := by
+  rw [← logDeriv_eta_eq_E2, logDeriv_apply, div_mul_cancel₀ _ (eta_ne_zero z.2)]
 
 end ModularForm

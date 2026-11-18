@@ -24,7 +24,6 @@ The elements of `s` are called generators.
 ## TODOS
 * Add API describing behaviour w/r/t `MulOpposite`.
 * Add lemma showing this graph is the same as `SimpleGraph.circulantGraph` in appropriate settings.
-
 -/
 
 @[expose] public section

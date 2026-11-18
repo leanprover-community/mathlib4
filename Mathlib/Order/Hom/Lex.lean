@@ -5,10 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Prod.Lex
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Hom.Set
+public import Mathlib.Order.Prod.Lex.Basic
 public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.Sum.Order
 
 /-!
 # Lexicographic order and order isomorphisms
@@ -184,7 +184,7 @@ theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
 def prodLexAssoc (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ where
   toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
-      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) <| toLex
+      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) toLex
   map_rel_iff' := by
     simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff, Equiv.trans_apply, Equiv.prodCongr_apply,
       Equiv.prodAssoc_apply]

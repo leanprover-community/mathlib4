@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
@@ -33,7 +32,6 @@ use depending on the context.
 
 ## References
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
-
 -/
 
 @[expose] public section

@@ -5,10 +5,11 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.Set.NAry
+
+import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Pointwise operations of sets
@@ -215,7 +216,7 @@ theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
 
 @[to_additive (attr := simp)]
 theorem image_inv_eq_inv : (·⁻¹) '' s = s⁻¹ :=
-  congr_fun (image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _
+  congr($(image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _)
 
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by

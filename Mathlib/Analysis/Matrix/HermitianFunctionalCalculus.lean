@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Analysis.Matrix.Spectrum
-public import Mathlib.Topology.ContinuousMap.Units
+
+import Mathlib.Topology.ContinuousMap.Units
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
@@ -76,7 +77,7 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have h2 :
       diagonal (RCLike.ofReal ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩)
         = (0 : Matrix n n 𝕜) := by
-    simp only [LinearMap.coe_coe, cfcAux_apply, conjStarAlgAut_apply] at hf
+    simp only [LinearMap.coe_ofClass, cfcAux_apply, conjStarAlgAut_apply] at hf
     replace hf := congr($hf * (hA.eigenvectorUnitary : Matrix n n 𝕜))
     simp only [mul_assoc, SetLike.coe_mem, Unitary.star_mul_self_of_mem, mul_one, zero_mul] at hf
     simpa [← mul_assoc] using congr((star hA.eigenvectorUnitary : Matrix n n 𝕜) * $hf)

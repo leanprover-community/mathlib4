@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
-public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Logic.Pairwise
-
-import Mathlib.Util.Delaborators
 public import Mathlib.Util.Delaborators
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra lemmas about products of monoids and groups
@@ -50,6 +50,10 @@ variable {α β : Type*} [Preorder α] [Preorder β]
 @[to_additive] lemma one_anti [One β] : Antitone (1 : α → β) := antitone_const
 
 end Pi
+
+@[to_additive]
+protected theorem Pi.isSelfInv_iff {ι : Type*} {G : ι → Type*} [∀ i, Inv (G i)] {x : ∀ i, G i} :
+    IsSelfInv x ↔ ∀ i, IsSelfInv (x i) := funext_iff
 
 namespace MulHom
 
@@ -354,7 +358,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hl := congr_fun h l
     have hm := congr_fun h m
     have hn := congr_fun h n
-    grind [mul_one, one_mul, mul_apply]
+    grind [mul_one, one_mul, Pi.mul_apply]
   · aesop (add simp [mulSingle_apply])
 
 end Single

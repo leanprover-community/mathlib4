@@ -34,7 +34,7 @@ theorem add_closure_setOfPred_eq_single :
     AddSubmonoid.closure { f : α →₀ M | ∃ a b, f = single a b } = ⊤ :=
   top_unique fun x _hx =>
     Finsupp.induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb hf =>
-      AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩) hf
+      AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure ⟨a, b, rfl⟩) hf
 
 @[deprecated (since := "2026-07-09")]
 alias add_closure_setOf_eq_single := add_closure_setOfPred_eq_single
