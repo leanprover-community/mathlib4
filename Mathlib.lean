@@ -8313,6 +8313,7 @@ public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Topology.ContinuousMap.Ideals
 public import Mathlib.Topology.ContinuousMap.Interval
+public import Mathlib.Topology.ContinuousMap.Kolmogorov
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.LocallyConstant
 public import Mathlib.Topology.ContinuousMap.LocallyConvex
