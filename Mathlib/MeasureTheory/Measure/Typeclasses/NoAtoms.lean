@@ -86,6 +86,13 @@ theorem measure_eq_of_ne_zero (h : μ.IsAtom s) {t : Set α} (hts : t ⊆ s) (ht
     μ t = μ s :=
   (h.measure_eq_zero_or_eq hts).resolve_left ht
 
+/-- A measurable subset of an atom which is not a null set is an atom. -/
+theorem of_subset (h : μ.IsAtom s) (hts : t ⊆ s) (ht : MeasurableSet t) (hμt : μ t ≠ 0) :
+    μ.IsAtom t := by
+  refine ⟨ht, pos_iff_ne_zero.2 hμt, fun u hut hu ↦ ?_⟩
+  rw [h.measure_eq_of_ne_zero hts hμt]
+  exact h.measure_eq_zero_or_eq' u (hut.trans hts) hu
+
 theorem not_isAtom_of_exists (h : ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) : ¬ IsAtom μ s := by
   intro ha
   obtain ⟨t, hts, ht₀, hts'⟩ := h
@@ -127,6 +134,26 @@ theorem _root_.MeasurableEquiv.isAtom_map_iff (e : α ≃ᵐ β) {s : Set β} :
   by_cases hs : MeasurableSet s
   · exact e.measurableEmbedding.isAtom_map_iff hs
   · simp [isAtom_iff, hs]
+
+theorem IsAtom.of_restrict (hs : MeasurableSet s) (h : (μ.restrict s).IsAtom t) :
+    μ.IsAtom (t ∩ s) := by
+  refine ⟨h.measurableSet.inter hs, restrict_apply h.measurableSet ▸ h.pos, fun u hut hu ↦ ?_⟩
+  have := h.measure_eq_zero_or_eq' u (hut.trans inter_subset_left) hu
+  rwa [restrict_apply hu, restrict_apply h.measurableSet,
+    inter_eq_left.2 (hut.trans inter_subset_right)] at this
+
+theorem IsAtom.restrict_of_inter (h : μ.IsAtom (t ∩ s)) (ht : MeasurableSet t) :
+    (μ.restrict s).IsAtom t := by
+  refine ⟨ht, (restrict_apply ht).symm ▸ h.pos, fun u hut hu ↦ ?_⟩
+  rw [restrict_apply hu, restrict_apply ht]
+  exact h.measure_eq_zero_or_eq (inter_subset_inter_left s hut)
+
+theorem IsAtom.restrict (h : μ.IsAtom t) (hts : t ⊆ s) : (μ.restrict s).IsAtom t :=
+  IsAtom.restrict_of_inter (by rwa [inter_eq_left.2 hts]) h.measurableSet
+
+theorem isAtom_restrict_iff (hs : MeasurableSet s) :
+    (μ.restrict s).IsAtom t ↔ MeasurableSet t ∧ μ.IsAtom (t ∩ s) :=
+  ⟨fun h ↦ ⟨h.measurableSet, h.of_restrict hs⟩, fun ⟨ht, h⟩ ↦ h.restrict_of_inter ht⟩
 
 end Measure
 
@@ -206,13 +233,9 @@ instance instNullSingletonClass_of_sfinite [SFinite μ] : NullSingletonClass μ 
 /-- The restriction of a measure without atoms to a null measurable set has no atoms. For
 s-finite measures, see the instance `Measure.restrict.instNoAtoms` for arbitrary sets. -/
 theorem restrict (hs : NullMeasurableSet s μ) : NoAtoms (μ.restrict s) := by
-  refine mk' fun t ht hμt ↦ ?_
-  rw [restrict_apply ht] at hμt
-  obtain ⟨r, hrts, -, hr₀, hrts'⟩ :=
-    exists_measurable_subset_lt₀ (ht.nullMeasurableSet.inter hs) hμt
-  refine ⟨r, hrts.trans inter_subset_left, ?_⟩
-  rw [restrict_apply ht, restrict_apply₀' hs, inter_eq_left.2 (hrts.trans inter_subset_right)]
-  exact ⟨hr₀, hrts'⟩
+  obtain ⟨r, -, hr, hrs⟩ := hs.exists_measurable_subset_ae_eq
+  rw [← restrict_congr_set hrs]
+  exact ⟨fun t ht ↦ not_isAtom _ (ht.of_restrict hr)⟩
 
 end NoAtoms
 
