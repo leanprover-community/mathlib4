@@ -164,7 +164,7 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] (ht : p.IsEu
 
 -- #41524
 set_option warn.sorry false in set_option linter.style.longLine false in
-theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected) (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) : ∃ p : G.Walk v v, p.IsEulerian := sorry
+theorem _root_.SimpleGraph.IsEulerian.exists_isEulerian_of_preconnected (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (h : G.Preconnected) (v : V) : ∃ p : G.Walk v v, p.IsEulerian := sorry
 
 -- TODO: golf `Subgraph.degree_of_notMem_verts` with this
 omit [DecidableEq V] in
@@ -210,7 +210,7 @@ theorem _root_.SimpleGraph.Preconnected.exists_isEulerian_of_even_degree [Fintyp
     ∀ v, ∃ p : G.Walk v v, p.IsEulerian := by
   -- It suffices to show that there exists an Eulerian trail from some vertex.
   suffices Nonempty V → ∃ (v : V) (p : G.Walk v v), p.IsEulerian from
-    fun v ↦ hcon.exists_isEulerian (this ⟨v⟩) v
+    fun v ↦ IsEulerian.exists_isEulerian_of_preconnected (this ⟨v⟩) hcon v
   intro
   -- Take a longest trail `p` in `G` from `u` to `v`.
   have ⟨u, v, p, hp, hmax⟩ := Walk.exists_isTrail_forall_isTrail_length_le_length G
