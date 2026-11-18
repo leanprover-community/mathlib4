@@ -213,7 +213,7 @@ theorem JoinedIn.joined (h : JoinedIn F x y) : Joined x y :=
 
 theorem joinedIn_iff_joined (x_in : x ∈ F) (y_in : y ∈ F) :
     JoinedIn F x y ↔ Joined (⟨x, x_in⟩ : F) (⟨y, y_in⟩ : F) :=
-  ⟨fun h => h.joined_subtype, fun h => ⟨h.somePath.map continuous_subtype_val, by simp⟩⟩
+  ⟨fun h => h.joined_subtype, fun h => ⟨h.somePath.map continuous_subtypeVal, by simp⟩⟩
 
 @[simp]
 theorem joinedIn_univ : JoinedIn univ x y ↔ Joined x y := by
