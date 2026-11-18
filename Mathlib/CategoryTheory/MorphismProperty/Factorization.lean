@@ -30,7 +30,6 @@ the existence of which is asserted in the type-class `HasFunctorialFactorization
 We also introduce the class `W₁.comp W₂` of morphisms of the form `i ≫ p` with `W₁ i`
 and `W₂ p` and show that `W₁.comp W₂ = ⊤` iff `HasFactorization W₁ W₂` holds (this
 is `MorphismProperty.comp_eq_top_iff`).
-
 -/
 
 @[expose] public section

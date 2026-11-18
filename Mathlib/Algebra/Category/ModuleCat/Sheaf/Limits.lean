@@ -15,7 +15,6 @@ limits exist in the category `SheafOfModules R`.
 
 ## TODO
 * do the same for colimits (which requires constructing the associated sheaf of modules functor)
-
 -/
 
 public section

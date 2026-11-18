@@ -21,7 +21,6 @@ rings of integers.
 ## Main results
 * `NumberField.RingOfIntegers.dvd_norm` : if `L/K` is a finite Galois extension of fields, then,
   for all `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
-
 -/
 
 @[expose] public section

@@ -15,7 +15,6 @@ map complex of `(X : SimplicialObject C)` where `C` is a preadditive category, a
 as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 public section

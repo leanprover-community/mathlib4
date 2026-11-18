@@ -35,7 +35,6 @@ For the definitions, see `Mathlib.Order.Defs.Lattice`.
 ## Tags
 
 semilattice, lattice
-
 -/
 
 @[expose] public section
@@ -174,6 +173,13 @@ instance OrderDual.instSemilatticeSup (α) [h : SemilatticeInf α] : Semilattice
 theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
     OrderDual.instSemilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext fun _ _ => Iff.rfl
+
+set_option linter.translate.warnInvalid false in
+variable (α) in
+/-- In a (semi)lattice, `a ≤ b` can be decided by checking if `a ⊔ b = b`. -/
+@[to_dual /-- In a (semi)lattice, `a ≤ b` can be decided by checking if `b ⊓ a = a`. -/]
+abbrev SemilatticeSup.decidableLEOfDecidableEq [DecidableEq α] : DecidableLE α :=
+  fun _ _ => decidable_of_iff _ sup_eq_right
 
 end SemilatticeSup
 

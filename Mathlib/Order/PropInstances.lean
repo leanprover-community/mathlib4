@@ -11,7 +11,6 @@ public import Mathlib.Order.Disjoint
 # The order on `Prop`
 
 Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
-
 -/
 
 public section
