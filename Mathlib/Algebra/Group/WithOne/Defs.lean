@@ -78,22 +78,28 @@ instance instCoeTC : CoeTC α (WithOne α) :=
 instance instOne : One (WithOne α) :=
   ⟨one⟩
 
+section recOneCoe
+
+variable {motive : WithOne α → Sort*}
+
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator, cases_eliminator)
 /-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/]
-def recOneCoe {C : WithOne α → Sort*} (one : C 1) (coe : ∀ a : α, C a) : ∀ n : WithOne α, C n
+def recOneCoe (one : motive 1) (coe : ∀ a : α, motive a) : ∀ n : WithOne α, motive n
   | 1 => one
   | (a : α) => coe a
 
 @[to_additive (attr := simp)]
-theorem recOneCoe_one {C : WithOne α → Sort*} (d : C 1) (f : ∀ a : α, C a) :
-    @recOneCoe _ C d f 1 = d :=
+theorem recOneCoe_one (one : motive 1) (coe : ∀ a : α, motive a) :
+    recOneCoe one coe 1 = one :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem recOneCoe_coe {C : WithOne α → Sort*} (d : C 1) (f : ∀ a : α, C a) (x : α) :
-    @recOneCoe _ C d f ↑x = f x :=
+theorem recOneCoe_coe (one : motive 1) (coe : ∀ a : α, motive a) (x : α) :
+    recOneCoe one coe (x : WithOne α) = coe x :=
   rfl
+
+end recOneCoe
 
 @[to_additive (attr := simp)] lemma one_ne_coe {a : α} : (1 : WithOne α) ≠ a := nofun
 
