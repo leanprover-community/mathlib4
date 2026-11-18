@@ -290,8 +290,8 @@ lemma coe_toFinset_toList_eq [DecidableEq α] (p : RelSeries r) :
     p.toList.toFinset = {l | l ∈ p} := by simp
 
 lemma finite_ofPred_mem (p : RelSeries r) : {l | l ∈ p}.Finite := by
-    classical
-    simp [← p.coe_toFinset_toList_eq, -List.coe_toFinset]
+  classical
+  simp [← p.coe_toFinset_toList_eq, -List.coe_toFinset]
 
 lemma toFinset_toList_eq [DecidableEq α] (p : RelSeries r) :
     p.toList.toFinset = Set.Finite.toFinset (s := {l | l ∈ p}) p.finite_ofPred_mem := by
