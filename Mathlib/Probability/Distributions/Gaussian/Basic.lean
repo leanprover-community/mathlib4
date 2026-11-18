@@ -124,8 +124,7 @@ lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
   rw [← memLp_map_measure_iff (by fun_prop) (by fun_prop), IsGaussian.map_eq_gaussianReal L]
-  convert memLp_id_gaussianReal p.toNNReal
-  simp [hp]
+  exact memLp_id_gaussianReal' p hp
 
 @[fun_prop]
 lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E) :

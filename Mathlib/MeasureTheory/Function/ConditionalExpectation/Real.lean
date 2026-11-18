@@ -285,7 +285,7 @@ theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p
   by_cases! hf : MemLp f p μ
   · rw [← ofReal_lpNorm hf, ← ofReal_lpNorm (hf.condExp hp)]
     exact ofReal_le_ofReal (hf.lpNorm_condExp_le_lpNorm hp)
-  · simp only [MemLp, not_lt, top_le_iff] at hf
+  · simp only [memLp_iff_eLpNorm_of_pos (zero_lt_one.trans_le hp), not_lt, top_le_iff] at hf
     simp [hf]
 
 @[deprecated eLpNorm_condExp_le_eLpNorm +typeChanged (since := "2026-07-01")]
@@ -320,7 +320,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
     exact (eLpNorm_condExp_le_eLpNorm g le_rfl).trans h
   set C : ℝ≥0 := δ⁻¹.toNNReal * (eLpNorm g 1 μ).toNNReal with hC
   have hCpos : 0 < C := _root_.mul_pos (toNNReal_pos (ENNReal.inv_ne_zero.2 hδ_top.ne)
-    (inv_ne_top.2 hδ.ne')) (toNNReal_pos hne hg.ne)
+    (inv_ne_top.2 hδ.ne')) (toNNReal_pos hne hg.eLpNorm_lt_top.ne)
   have : ∀ n, μ {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} ≤ δ := by
     intro n
     have : C ^ ENNReal.toReal 1 * μ {x | ENNReal.ofNNReal C ≤ ‖μ[g|ℱ n] x‖₊} ≤
@@ -335,7 +335,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
     simp_rw [coe_le_coe] at this
     refine this.trans ?_
     rw [ENNReal.div_le_iff_le_mul (.inl (coe_ne_zero.2 hCpos.ne')) (.inl coe_lt_top.ne),
-      hC, ← toNNReal_mul, coe_toNNReal (mul_ne_top (inv_ne_top.2 hδ.ne') hg.ne),
+      hC, ← toNNReal_mul, coe_toNNReal (mul_ne_top (inv_ne_top.2 hδ.ne') hg.eLpNorm_lt_top.ne),
       ← mul_assoc, ENNReal.mul_inv_cancel hδ.ne' hδ_top.ne, one_mul, rpow_one]
     exact eLpNorm_condExp_le_eLpNorm g (le_refl 1)
   refine ⟨C,

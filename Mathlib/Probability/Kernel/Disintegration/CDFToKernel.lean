@@ -311,8 +311,7 @@ lemma IsRatCondKernelCDFAux.bddBelow_range (hf : IsRatCondKernelCDFAux f κ ν) 
 lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
-  rw [← memLp_one_iff_integrable]
-  rw [memLp_iff]
+  rw [← memLp_one_iff_integrable, memLp_iff_eLpNorm_of_ne_zero one_ne_zero]
   refine (?_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
   refine (eLpNorm_le_of_ae_bound (C := 1)
     ((Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable) ?_).trans (by simp)

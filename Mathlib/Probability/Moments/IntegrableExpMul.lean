@@ -521,11 +521,16 @@ lemma integrable_pow_of_mem_interior_integrableExpSet
   simp
 
 /-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all
-nonzero finite `p`. -/
+finite `p`. -/
 lemma memLp_of_mem_interior_integrableExpSet
-    (h : 0 ∈ interior (integrableExpSet X μ)) {p : ℝ≥0} (hp : p ≠ 0) :
+    (h : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
     MemLp X p μ := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet h
+  rcases eq_or_ne p 0 with rfl | hp
+  · have : IsFiniteMeasure μ := by
+      have : 0 ∈ integrableExpSet X μ := interior_subset h
+      simpa [integrableExpSet, integrable_const_iff]
+    simp [hX.aestronglyMeasurable]
   rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable (mod_cast hp) (by simp)]
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2

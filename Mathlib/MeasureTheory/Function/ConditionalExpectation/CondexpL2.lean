@@ -219,7 +219,7 @@ theorem condExpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
   have h_eq : h_mem_Lp.toLp _ =ᵐ[μ] fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ :=
     h_mem_Lp.coeFn_toLp
   refine EventuallyEq.trans ?_ h_eq
-  refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜 hm _ _ two_ne_zero ENNReal.coe_ne_top
+  refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜 hm _ _ ENNReal.coe_ne_top
     (fun s _ hμs => integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _) ?_ ?_ ?_ ?_
   · intro s _ hμs
     rw [IntegrableOn, integrable_congr (ae_restrict_of_ae h_eq)]
@@ -264,7 +264,7 @@ variable (𝕜 𝕜')
 theorem condExpL2_comp_continuousLinearMap (hm : m ≤ m0) (T : E' →L[ℝ] E'') (f : α →₂[μ] E') :
     (condExpL2 E'' 𝕜' hm (T.compLp f) : α →₂[μ] E'') =ᵐ[μ]
     T.compLp (condExpL2 E' 𝕜 hm f : α →₂[μ] E') := by
-  refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜' hm _ _ two_ne_zero ENNReal.coe_ne_top
+  refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜' hm _ _ ENNReal.coe_ne_top
     (fun s _ hμs => integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _) (fun s _ hμs =>
       integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs.ne) ?_ ?_ ?_
   · intro s hs hμs
