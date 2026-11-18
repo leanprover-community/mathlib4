@@ -544,12 +544,6 @@ lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPow
   rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
   exact zero_le_one
 
-/-- A power-multiplicative group norm on a domain satisfies `f 1 = 1`. -/
-lemma IsPowMul.map_one_eq_one {R F : Type*} [Ring R] [IsDomain R]
-    [FunLike F R ℝ] [AddGroupNormClass F R ℝ] {f : F} (hf : IsPowMul f) :
-    f 1 = 1 := by
-  simpa [map_ne_zero_iff_ne_zero, sq] using hf 1 one_le_two
-
 /-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
   `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
   `nβ (f x) ≤ C * nα x`. -/
