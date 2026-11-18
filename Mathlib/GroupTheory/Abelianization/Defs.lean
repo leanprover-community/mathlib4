@@ -39,8 +39,9 @@ open Subgroup (centralizer)
 namespace Group
 
 /-- The abelianization of the group `G` is the quotient of `G` by its commutator subgroup. -/
-@[to_additive /-- The abelianization of the additive group `G` is the quotient of `G` by its
-commutator subgroup. -/]
+@[to_additive
+/-- The abelianization of the additive group `G` is the quotient of `G` by its commutator
+subgroup. -/]
 def Abelianization : Type u :=
   G ⧸ commutator G
 
@@ -49,6 +50,41 @@ open scoped IsMulCommutative in
 @[to_additive]
 instance : CommGroup (Abelianization G) :=
   inferInstanceAs (CommGroup (G ⧸ commutator G))
+
+/-- `f` exhibits `A` as an additive abelianization of `G`: it is surjective with kernel the
+additive commutator subgroup. -/
+structure _root_.AddGroup.IsAbelianization {G A : Type*} [AddGroup G] [AddGroup A] (f : G →+ A) :
+    Prop where
+  surjective : Function.Surjective f
+  ker_eq : f.ker = addCommutator G
+
+/-- `f` exhibits `A` as an abelianization of `G`: it is surjective with kernel the
+commutator subgroup. -/
+@[to_additive]
+structure IsAbelianization {G : Type u} [Group G] {A : Type v} [Group A] (f : G →* A) : Prop where
+  surjective : Function.Surjective f
+  ker_eq : f.ker = commutator G
+
+namespace IsAbelianization
+
+  -- Let `A` be a group and let `f` be a group homomorphism from `G` to `A`.
+variable {A : Type v} [Group A] {f : G →* A}
+
+/-- If `f : G →* A` exhibits `A` as an abelianization of `G`, then `A` is isomorphic to
+`Abelianization G`. -/
+@[to_additive
+/-- If `f : G →+ A` exhibits `A` as an additive abelianization of `G`, then `A` is isomorphic
+to `Abelianization G`. -/]
+noncomputable def mulEquiv (hf : IsAbelianization f) : Abelianization G ≃* A :=
+  QuotientGroup.liftEquiv (commutator G) hf.surjective hf.ker_eq.symm
+
+@[to_additive]
+theorem subsingleton_iff (hf : IsAbelianization f) :
+    Subsingleton A ↔ commutator G = ⊤ := by
+  rw [← hf.ker_eq, eq_top_iff]
+  sorry
+
+end IsAbelianization
 
 namespace Abelianization
 
@@ -76,6 +112,16 @@ variable (G) in
 @[to_additive]
 lemma surjective_of : Function.Surjective (of : G →* Abelianization G) :=
   QuotientGroup.mk'_surjective (commutator G)
+
+variable (G) in
+@[to_additive]
+theorem isAbelianization_of : IsAbelianization (of : G →* Abelianization G) where
+  surjective := surjective_of _
+  ker_eq := ker_of _
+
+section mulEquiv
+
+end mulEquiv
 
 section lift
 
