@@ -33,7 +33,9 @@ open Matrix hiding mul_smul
 open ModularGroup SpecialLinearGroup MatrixGroups
 
 variable {n R} in
-/-- Constructor for `FixedDetMatrix`. -/
+/-- Make a `A : FixedDetMatrix n R m` from `A : Matrix n n R ` such that `det A = m`.
+
+Use this definition instead of `(⟨A, h⟩ : FixedDetMatrix n R m)`. -/
 def _root_.FixedDetMatrix.mk {m : R} (A : Matrix n n R) (h : det A = m) : FixedDetMatrix n R m :=
     ⟨A, h⟩
 
