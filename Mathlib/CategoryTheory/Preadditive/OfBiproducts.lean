@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.EckmannHilton
 
 We show that any category with zero morphisms and binary biproducts is enriched over the category
 of commutative monoids.
-
 -/
 
 @[expose] public section

@@ -19,7 +19,6 @@ U ⊓ V --->   U
   v          v
   V   ---> U ⊔ V
 ```
-
 -/
 
 @[expose] public section

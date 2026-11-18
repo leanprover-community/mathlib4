@@ -267,6 +267,12 @@ instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   default := ⟨y, rfl⟩
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
 
+@[simp]
+theorem Subtype.coe_default_eq (y : α) : ↑(default : { x : α // x = y }) = y := rfl
+
+@[simp]
+theorem Subtype.coe_default_eq' (y : α) : ↑(default : { x : α // y = x }) = y := rfl
+
 end Subtype
 
 instance Fin.instUnique : Unique (Fin 1) where uniq _ := Subsingleton.elim _ _

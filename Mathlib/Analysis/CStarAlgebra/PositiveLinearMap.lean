@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
@@ -29,14 +30,15 @@ public section
 
 open scoped NNReal
 
-variable {A₁ A₂ B₁ B₂ : Type*}
+variable {A₁ A₂ A₃ B₁ B₂ : Type*}
 
 section CStarAlgebra
 
 namespace PositiveLinearMap
 
-variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
-  [StarOrderedRing A₁] [PartialOrder A₂] [StarOrderedRing A₂]
+variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [NonUnitalCStarAlgebra A₃]
+  [PartialOrder A₁] [StarOrderedRing A₁] [PartialOrder A₂] [StarOrderedRing A₂]
+  [PartialOrder A₃] [StarOrderedRing A₃]
   [CStarAlgebra B₁] [CStarAlgebra B₂] [PartialOrder B₁] [PartialOrder B₂]
   [StarOrderedRing B₁]
 
@@ -116,6 +118,58 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
       obtain ⟨C, h⟩ := exists_norm_apply_le (.ofClass f)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
+
+/-- Lift a positive linear map between C⋆-algebras to a positive continuous linear map. -/
+@[expose]
+def toPositiveContinuousLinearMap (f : A₁ →ₚ[ℂ] A₂) : A₁ →P[ℂ] A₂ where
+  toPositiveLinearMap := f
+  cont := by dsimp; fun_prop
+
+variable {f f₁ f₂ : A₁ →ₚ[ℂ] A₂} {g : A₂ →ₚ[ℂ] A₃}
+
+@[simp] theorem toPositiveContinuousLinearMap_apply (x : A₁) :
+    f.toPositiveContinuousLinearMap x = f x := rfl
+
+@[simp] theorem toPositiveContinuousLinearMap_zero :
+    (0 : A₁ →ₚ[ℂ] A₂).toPositiveContinuousLinearMap = 0 := rfl
+
+@[simp] lemma toPositiveContinuousLinearMap_id :
+    (PositiveLinearMap.id ℂ A₁).toPositiveContinuousLinearMap = .id ℂ A₁ := rfl
+
+@[simp] lemma toPositiveContinuousLinearMap_comp :
+    (g.comp f).toPositiveContinuousLinearMap =
+      g.toPositiveContinuousLinearMap.comp f.toPositiveContinuousLinearMap :=
+  rfl
+
+@[simp] lemma toPositiveContinuousLinearMap_add :
+    (f₁ + f₂).toPositiveContinuousLinearMap =
+      f₁.toPositiveContinuousLinearMap + f₂.toPositiveContinuousLinearMap :=
+  rfl
+
+/-- Lift a positive linear map between C⋆-algebras to a continuous linear map. -/
+abbrev toContinuousLinearMap (f : A₁ →ₚ[ℂ] A₂) : A₁ →L[ℂ] A₂ :=
+  f.toPositiveContinuousLinearMap.toContinuousLinearMap
+
+@[simp]
+theorem toContinuousLinearMap_apply (x : A₁) : f.toContinuousLinearMap x = f x := rfl
+
+@[simp] theorem toContinuousLinearMap_zero : (0 : A₁ →ₚ[ℂ] A₂).toContinuousLinearMap = 0 := rfl
+
+@[simp] theorem toLinearMap_toContinuousLinearMap :
+    f.toContinuousLinearMap.toLinearMap = f.toLinearMap := rfl
+
+@[simp] lemma toContinuousLinearMap_id :
+    (PositiveLinearMap.id ℂ A₁).toContinuousLinearMap = .id ℂ A₁ := rfl
+
+@[simp] lemma toContinuousLinearMap_comp :
+    (g.comp f).toContinuousLinearMap =
+      g.toContinuousLinearMap.comp f.toContinuousLinearMap :=
+  rfl
+
+@[simp] lemma toContinuousLinearMap_add :
+    (f₁ + f₂).toContinuousLinearMap =
+      f₁.toContinuousLinearMap + f₂.toContinuousLinearMap :=
+  rfl
 
 end PositiveLinearMap
 

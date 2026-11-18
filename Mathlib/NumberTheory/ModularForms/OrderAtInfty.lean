@@ -39,7 +39,6 @@ only the periodicity is relevant here.)
   given by its order at infinity.
 * `UpperHalfPlane.orderAtInfty_eq_top_iff_eq_zero`: the order is infinite iff the function is zero.
 * `UpperHalfPlane.orderAtInfty_mul_of_holo`: the order of a product equals the sum of the orders.
-
 -/
 
 open Real Function Asymptotics
@@ -237,7 +236,7 @@ theorem isTheta_analyticOrderAt (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex)
         (analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne) |>.comp_tendsto
           (qParam_tendsto_atImInfty hh)
   convert! htheta.norm_right using 2
-  simp [Periodic.norm_qParam, ← exp_nat_mul, field]
+  simp [Periodic.norm_qParam, ← exp_natCast_mul, field]
 
 /-- The order at infinity is the order of the cusp function divided by the period. -/
 lemma orderAtInfty_eq_analyticOrderAt_div (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)

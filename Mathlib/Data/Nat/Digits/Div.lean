@@ -13,7 +13,6 @@ public import Mathlib.Data.Nat.Digits.Lemmas
 
 We prove some divisibility tests based on digits, in particular completing
 Theorem #85 from https://www.cs.ru.nl/~freek/100/.
-
 -/
 
 public section

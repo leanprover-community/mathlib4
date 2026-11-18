@@ -27,7 +27,6 @@ If `f : X ⟶ Y` is a morphism of simplicial sets and `x : X _⦋0⦌`,
 this allows to obtain the equality
 `(mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x)`
 by `with_implicit rfl`.
-
 -/
 
 @[expose] public section
@@ -331,9 +330,9 @@ def natIsoMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ≅ G.obj (mk x))
 end
 
 lemma functor_ext {D : Type*} [Groupoid D] {F G : FundamentalGroupoid X ⥤ D}
-    (h₁ : ∀ (x : X _⦋0⦌), F.obj (mk x) = G.obj (mk x))
+    (h₁ : ∀ (x : X _⦋0⦌), F.obj (mk x) = G.obj (mk x) := by cat_disch)
     (h₂ : ∀ {x y : X _⦋0⦌} (e : Edge x y), F.map (homMk e) =
-      eqToHom (h₁ x) ≫ G.map (homMk e) ≫ eqToHom (h₁ y).symm) :
+      eqToHom (h₁ x) ≫ G.map (homMk e) ≫ eqToHom (h₁ y).symm := by cat_disch) :
     F = G :=
   Truncated.FundamentalGroupoid.functor_ext h₁ h₂
 

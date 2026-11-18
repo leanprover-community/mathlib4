@@ -20,7 +20,6 @@ we can equip bounded continuous functions with the corresponding operations.
 * `BoundedAdd R`: a class guaranteeing boundedness of addition.
 * `BoundedSub R`: a class guaranteeing boundedness of subtraction.
 * `BoundedMul R`: a class guaranteeing boundedness of multiplication.
-
 -/
 
 public section

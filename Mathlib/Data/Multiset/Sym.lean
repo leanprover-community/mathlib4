@@ -29,7 +29,6 @@ unordered n-tuples from a given multiset. These are multiset versions of `Nat.mu
 * `theorem injective_sym2 : Function.Injective (Multiset.sym2 : Multiset α → _)`
 
 * `theorem strictMono_sym2 : StrictMono (Multiset.sym2 : Multiset α → _)`
-
 -/
 
 @[expose] public section

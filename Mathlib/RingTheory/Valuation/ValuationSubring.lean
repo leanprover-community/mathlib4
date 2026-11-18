@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Valuation.ValuationRing
 ## Projects
 
 The order structure on `ValuationSubring K`.
-
 -/
 
 @[expose] public section
@@ -393,7 +392,7 @@ instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
 
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
-  le_total := (le_total_ideal A).1
+  le_total := (le_total_ideal A).total
   max_def a b := congr($sup_eq_maxDefault a b)
   toDecidableLE := _
 

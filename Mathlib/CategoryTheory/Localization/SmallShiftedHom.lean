@@ -21,7 +21,6 @@ we define types `SmallShiftedHom.{w} W X Y m : Type w` for all `m : M`,
 and endow these with a composition which transports the composition
 on the types `ShiftedHom (L.obj X) (L.obj Y) m` when `L : C ⥤ D` is
 any localization functor for `W`.
-
 -/
 
 @[expose] public section
@@ -121,6 +120,7 @@ end SmallHom
 /-- The type of morphisms from `X` to `Y⟦m⟧` in the localized category
 with respect to `W : MorphismProperty C` that is shrunk to `Type w`
 when `HasSmallLocalizedShiftedHom.{w} W X Y` holds. -/
+@[implicit_reducible]
 def SmallShiftedHom (X Y : C) [HasSmallLocalizedShiftedHom.{w} W M X Y] (m : M) : Type w :=
   SmallHom W X (Y⟦m⟧)
 

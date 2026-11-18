@@ -49,7 +49,6 @@ provided.
 * `TopCat.GlueData.preimage_image_eq_image`: The preimage of the image of some `U ⊆ U i` is
     given by XXX.
 * `TopCat.GlueData.ι_isOpenEmbedding`: Each of the `ι i`s are open embeddings.
-
 -/
 
 @[expose] public section

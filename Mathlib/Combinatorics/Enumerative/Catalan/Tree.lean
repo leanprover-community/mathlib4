@@ -14,7 +14,6 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 ## Main results
 * `treesOfNumNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
   is `catalan n`
-
 -/
 
 @[expose] public section
