@@ -756,7 +756,7 @@ theorem Polynomial.roots_X_pow_char_sub_X :
   have := Subfield.fintypeBot F p
   have : (univ : Finset (⊥ : Subfield F)).image Subtype.val = primeSubfieldFinset F p := by
     ext; simp
-  simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtype_val, this]
+  simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtypeVal, this]
     using (splits_X_pow_char_sub_X (⊥ : Subfield F) p).roots_map (⊥ : Subfield F).subtype
 
 @[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-11-15")]
