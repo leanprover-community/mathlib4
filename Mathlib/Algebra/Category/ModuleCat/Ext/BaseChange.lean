@@ -294,19 +294,16 @@ noncomputable def ModuleCat.isoExtendScalars'OfIsBaseChange' {M : ModuleCat.{v} 
 
 namespace CategoryTheory.Abelian
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism on `Ext` induced by `ModuleCat.isoExtendScalars'OfIsBaseChange'`. -/
 noncomputable def Ext.isBaseChangeMapAux {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS]
     [Module R NS] [IsScalarTower R S NS] (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f)
     (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g) (n : ℕ) :
     Ext ((ModuleCat.extendScalars'.{v, v'} R S).obj M)
-    ((ModuleCat.extendScalars'.{v, v'} R S).obj N) n ≃ₗ[S] Ext MS NS n := {
-  __ := (((extFunctorObj ((ModuleCat.extendScalars'.{v, v'} R S).obj M) n).mapIso
-  (isoExtendScalars'OfIsBaseChange' S g isb2).symm).trans (((extFunctor n).mapIso
-  (isoExtendScalars'OfIsBaseChange' S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
-  map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
+    ((ModuleCat.extendScalars'.{v, v'} R S).obj N) n ≃ₗ[S] Ext MS NS n :=
+  ((((linearExtFunctor S _ n).obj (.op ((ModuleCat.extendScalars'.{v, v'} R S).obj M))).mapIso
+    (isoExtendScalars'OfIsBaseChange' S g isb2).symm).trans (((linearExtFunctor S _ n).mapIso
+    (isoExtendScalars'OfIsBaseChange' S f isb1).op).app NS)).toLinearEquiv
 
 /-- Compostion of `Ext.isBaseChangeMapAux` and `ModuleCat.extendScalars'.mapExtLinearMap`. -/
 noncomputable def Ext.isBaseChangeMap [Module.Flat R S] {M N : ModuleCat.{v} R}
