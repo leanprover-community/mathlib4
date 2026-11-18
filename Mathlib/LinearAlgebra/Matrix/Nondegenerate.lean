@@ -5,10 +5,14 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
 # Matrices associated with non-degenerate bilinear forms
+
+Note that while the definitions in this file could be made for `NonUnitalNonAssocSemiring`,
+we require associativity to avoid having to distinguish `v ⬝ᵥ M *ᵥ w` and `v ᵥ* M ⬝ᵥ w`.
 
 ## Main definitions
 
@@ -23,7 +27,7 @@ namespace Matrix
 
 section Finite
 
-variable {m n R A : Type*} [NonUnitalNonAssocSemiring R] [Finite m] [Finite n] (M : Matrix m n R)
+variable {m n R A : Type*} [NonUnitalSemiring R] [Finite m] [Finite n] (M : Matrix m n R)
 
 attribute [local instance] Fintype.ofFinite
 
@@ -45,24 +49,51 @@ structure Nondegenerate (M : Matrix m n R) : Prop where
 
 end Finite
 
-section CommSemiring
+section NonUnitalSemiring
 
-variable {m n R : Type*} [CommSemiring R] {M : Matrix m n R}
+section Fintype
+variable {m n R : Type*} [Fintype m] [Fintype n] [NonUnitalSemiring R]
+variable {M : Matrix m n R}
 
-lemma separatingRight_def [Fintype m] [Fintype n] :
-    M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
+lemma separatingRight_def : M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   refine forall_congr' fun w ↦ ⟨fun hM hw ↦ hM ?_, fun hM hw ↦ hM ?_⟩ <;>
   convert hw
 
-lemma separatingLeft_def [Fintype m] [Fintype n] :
-    M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
+lemma separatingLeft_def : M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
   refine forall_congr' fun v ↦ ⟨fun hM hv ↦ hM ?_, fun hM hv ↦ hM ?_⟩ <;>
   convert hv
 
-lemma nondegenerate_def [Fintype m] [Fintype n] :
+lemma nondegenerate_def :
     M.Nondegenerate ↔
       (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) ∧ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   rw [nondegenerate_iff, separatingLeft_def, separatingRight_def]
+
+/-- If `M` is nondegenerate and `w * M * v = 0` for all `w`, then `v = 0`. -/
+theorem Nondegenerate.eq_zero_of_ortho (hM : Nondegenerate M) {v : m → R}
+    (hv : ∀ w, v ⬝ᵥ M *ᵥ w = 0) : v = 0 :=
+  (nondegenerate_def.mp hM).1 v hv
+
+/-- If `M` is nondegenerate and `v ≠ 0`, then there is some `w` such that `w * M * v ≠ 0`. -/
+theorem Nondegenerate.exists_not_ortho_of_ne_zero (hM : Nondegenerate M)
+    {v : m → R} (hv : v ≠ 0) : ∃ w, v ⬝ᵥ M *ᵥ w ≠ 0 :=
+  not_forall.mp (mt hM.eq_zero_of_ortho hv)
+
+/-- If `M` is nondegenerate and `w * M * v = 0` for all `v`, then `w = 0`. -/
+theorem Nondegenerate.eq_zero_of_ortho' (hM : Nondegenerate M) {w : n → R}
+    (hw : ∀ v, v ⬝ᵥ M *ᵥ w = 0) : w = 0 :=
+  (nondegenerate_def.mp hM).2 w hw
+
+/-- If `M` is nondegenerate and `w ≠ 0`, then there is some `v` such that `v * M * w ≠ 0`. -/
+theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n → R} (hw : w ≠ 0) :
+    ∃ v, v ⬝ᵥ M *ᵥ w ≠ 0 :=
+  not_forall.mp (mt hM.eq_zero_of_ortho' hw)
+
+end Fintype
+
+end NonUnitalSemiring
+
+section Semiring
+variable {m n R : Type*} [Semiring R] {M : Matrix m n R}
 
 theorem separatingLeft_iff_forall_vecMul_eq_zero [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
@@ -93,6 +124,11 @@ theorem nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero [Fintype m] [Fintype 
   rw [nondegenerate_iff, separatingLeft_iff_forall_vecMul_eq_zero,
     separatingRight_iff_forall_mulVec_eq_zero]
 
+end Semiring
+
+section NonUnitalCommSemiring
+variable {m n R : Type*} [NonUnitalCommSemiring R] {M : Matrix m n R}
+
 @[simp]
 theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
     Mᵀ.SeparatingLeft ↔ M.SeparatingRight := by
@@ -117,29 +153,7 @@ theorem nondegenerate_transpose_iff [Finite m] [Finite n] : Mᵀ.Nondegenerate �
 
 alias ⟨_, Nondegenerate.transpose⟩ := nondegenerate_transpose_iff
 
-variable [Fintype m] [Fintype n]
-
-/-- If `M` is nondegenerate and `w * M * v = 0` for all `w`, then `v = 0`. -/
-theorem Nondegenerate.eq_zero_of_ortho (hM : Nondegenerate M) {v : m → R}
-    (hv : ∀ w, v ⬝ᵥ M *ᵥ w = 0) : v = 0 :=
-  (nondegenerate_def.mp hM).1 v hv
-
-/-- If `M` is nondegenerate and `v ≠ 0`, then there is some `w` such that `w * M * v ≠ 0`. -/
-theorem Nondegenerate.exists_not_ortho_of_ne_zero (hM : Nondegenerate M)
-    {v : m → R} (hv : v ≠ 0) : ∃ w, v ⬝ᵥ M *ᵥ w ≠ 0 :=
-  not_forall.mp (mt hM.eq_zero_of_ortho hv)
-
-/-- If `M` is nondegenerate and `w * M * v = 0` for all `v`, then `w = 0`. -/
-theorem Nondegenerate.eq_zero_of_ortho' (hM : Nondegenerate M) {w : n → R}
-    (hw : ∀ v, v ⬝ᵥ M *ᵥ w = 0) : w = 0 :=
-  (nondegenerate_def.mp hM).2 w hw
-
-/-- If `M` is nondegenerate and `w ≠ 0`, then there is some `v` such that `v * M * w ≠ 0`. -/
-theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n → R} (hw : w ≠ 0) :
-    ∃ v, v ⬝ᵥ M *ᵥ w ≠ 0 :=
-  not_forall.mp (mt hM.eq_zero_of_ortho' hw)
-
-end CommSemiring
+end NonUnitalCommSemiring
 
 section Determinant
 variable {m R : Type*} [CommRing R] [Fintype m] [DecidableEq m] {M : Matrix m m R}
