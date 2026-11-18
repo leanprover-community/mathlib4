@@ -184,7 +184,7 @@ lemma isKSheaf_pushforward_obj : ((pushforward f pf).obj F.obj).IsKSheaf where
       map_sup' := by aesop
       map_inf' := by aesop}
   nonempty_isColimit_coconeOfCompacts K :=
-    ⟨(Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsOfProperMap_mono pf K).functor.op)
+    ⟨(Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsByProperPreimage_mono pf K).functor.op)
       _).symm (F.isColimit (properPreimage pf K))⟩
 
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] (f : X ⟶ Y)
