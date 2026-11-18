@@ -241,6 +241,7 @@ def univ : Class :=
 @[deprecated inferInstance +typeChanged (since := "2026-09-25")]
 instance : Top Class := ⟨univ⟩
 
+set_option linter.deprecated false in
 deriving instance CompleteLattice for Class
 
 /-- Assert that `A` is a ZFC set satisfying `B` -/
@@ -343,6 +344,7 @@ scoped under the `Class` namespace. -/
 def sUnion (x : Class) : Class :=
   sSup (classToCong x)
 
+set_option linter.deprecated false in
 @[inherit_doc]
 scoped prefix:110 "⋃₀ " => Class.sUnion
 
@@ -352,6 +354,7 @@ Uses `⋂₀` notation, scoped under the `Class` namespace. -/
 def sInter (x : Class) : Class :=
   sInf (classToCong x)
 
+set_option linter.deprecated false in
 @[inherit_doc]
 scoped prefix:110 "⋂₀ " => Class.sInter
 
