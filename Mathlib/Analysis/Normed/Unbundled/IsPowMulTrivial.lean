@@ -16,10 +16,10 @@ In this file, we prove triviality of power-multiplicative algebra norms over tri
 
 ## Main Results
 
-* `AlgebraNorm.le_one_of_norm_le_one`: if `A` is a commutative normed ring with bounded norm,
+* `AlgebraNorm.le_one_of_norm_le`: if `A` is a commutative normed ring with bounded norm,
   and `f` is a power-multiplicative algebra norm on an extension `B` of `A`, then `f` is bounded
   by `1` on integral elements of `B`.
-* `AlgebraNorm.eq_one_of_norm_le_one`: if `K` is a commutative normed ring with bounded norm,
+* `AlgebraNorm.eq_one_of_norm_le`: if `K` is a commutative normed ring with bounded norm,
   and `f` is a power-multiplicative algebra norm on a division ring `L` integral over `K`, then `f`
   is trivial.
 -/
