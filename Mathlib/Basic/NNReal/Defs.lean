@@ -543,6 +543,8 @@ theorem lt_iff_exists_ratCast_btwn (a b : ℝ≥0) :
         simp [Real.coe_toNNReal _ this, NNReal.coe_lt_coe.symm, haq, hqb]⟩)
     fun ⟨_, _, haq, hqb⟩ => lt_trans haq hqb
 
+@[deprecated (since := "2026-11-18")] alias lt_iff_exists_rat_btwn := lt_iff_exists_ratCast_btwn
+
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
 theorem mul_sup (a b c : ℝ≥0) : a * (b ⊔ c) = a * b ⊔ a * c :=
