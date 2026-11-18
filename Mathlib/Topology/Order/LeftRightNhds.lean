@@ -50,7 +50,7 @@ open List in
 2. `s` is a neighborhood of `b` within `(a, b)`
 3. `s` includes `(u, b)` for some `u ∈ [a, b)`
 4. `s` includes `(u, b)` for some `u < b` -/]
-theorem TFAE_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
+theorem tfae_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
     TFAE [s ∈ 𝓝[>] a,
       s ∈ 𝓝[Ioc a b] a,
       s ∈ 𝓝[Ioo a b] a,
@@ -70,10 +70,13 @@ theorem TFAE_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
     exact ⟨u, au, fun x hx => hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
   tfae_finish
 
+@[to_dual (attr := deprecated (since := "2026-10-27"))]
+alias TFAE_mem_nhdsGT := tfae_mem_nhdsGT
+
 @[to_dual]
 theorem mem_nhdsGT_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioc a u', Ioo a u ⊆ s :=
-  (TFAE_mem_nhdsGT hu' s).out 1 4
+  (tfae_mem_nhdsGT hu' s).out 1 4
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
@@ -81,7 +84,7 @@ with `a < u < u'`, provided `a` is not a top element. -/
 contains an interval `(u, a)` with `l' < u < a`, provided `a` is not a bottom element. -/]
 theorem mem_nhdsGT_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioo a u ⊆ s :=
-  (TFAE_mem_nhdsGT hu' s).out 1 5
+  (tfae_mem_nhdsGT hu' s).out 1 5
 
 @[to_dual nhdsLT_basis_of_exists_lt]
 theorem nhdsGT_basis_of_exists_gt {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
@@ -186,6 +189,20 @@ alias countable_setOf_isolated_right_within := countable_setOfPred_isolated_righ
 @[deprecated (since := "2026-07-09")]
 alias countable_setOf_isolated_left_within := countable_setOfPred_isolated_left_within
 
+@[to_dual]
+theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology α] (s : Set α) :
+    ∃ d ⊆ s, d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Ici x) := by
+  obtain ⟨d, hdc, hd⟩ := exists_countable_dense s
+  refine ⟨(↑) '' d ∪ {x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥}, by grind, ?_, fun x hxs ↦ ?_⟩
+  · exact (hdc.image _).union countable_setOfPred_isolated_right_within
+  refine mem_closure_iff.2 fun u hu hxu ↦ ?_
+  rcases (u ∩ (s ∩ Ioi x)).eq_empty_or_nonempty with h | ⟨y, hyu, hys, hyx⟩
+  · exact ⟨x, hxu, .inr ⟨hxs, empty_mem_iff_bot.1 <| h ▸ inter_mem
+      (mem_nhdsWithin_of_mem_nhds (hu.mem_nhds hxu)) self_mem_nhdsWithin⟩, le_rfl⟩
+  · obtain ⟨z, hzd, hz⟩ := hd.exists_mem_open
+      ((hu.inter isOpen_Ioi).preimage continuous_subtype_val) ⟨⟨y, hys⟩, hyu, hyx⟩
+    exact ⟨z, hz.1, .inl ⟨z, hzd, rfl⟩, hz.2.le⟩
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
 @[to_dual /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval
@@ -216,7 +233,7 @@ open List in
 2. `s` is a neighborhood of `b` within `(a, b]`
 3. `s` includes `(u, b]` for some `u ∈ [a, b)`
 4. `s` includes `(, b]` for some `u < b` -/]
-theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
+theorem tfae_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
     TFAE [s ∈ 𝓝[≥] a,
       s ∈ 𝓝[Icc a b] a,
       s ∈ 𝓝[Ico a b] a,
@@ -233,10 +250,13 @@ theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
       (Ico_subset_Ico_right <| min_le_left _ _).trans hus⟩
   tfae_finish
 
+@[to_dual (attr := deprecated (since := "2026-10-27"))]
+alias TFAE_mem_nhdsGE := tfae_mem_nhdsGE
+
 @[to_dual]
 theorem mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 1 4 (by simp) (by simp)
+  (tfae_mem_nhdsGE hu' s).out 1 4 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
@@ -244,7 +264,7 @@ with `a < u < u'`, provided `a` is not a top element. -/
 `(u, a]` with `u' < u < a`, provided `a` is not a top element. -/]
 theorem mem_nhdsGE_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 1 5 (by simp) (by simp)
+  (tfae_mem_nhdsGE hu' s).out 1 5 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u`. -/
@@ -255,9 +275,7 @@ theorem mem_nhdsGE_iff_exists_Ico_subset [NoMaxOrder α] {a : α} {s : Set α} :
   let ⟨_, hu'⟩ := exists_gt a
   mem_nhdsGE_iff_exists_Ico_subset' hu'
 
-@[to_dual]
-theorem nhdsGE_basis_Ico [NoMaxOrder α] (a : α) : (𝓝[≥] a).HasBasis (fun u => a < u) (Ico a) :=
-  ⟨fun _ => mem_nhdsGE_iff_exists_Ico_subset⟩
+@[to_dual (attr := deprecated (since := "2026-10-07"))] alias nhdsGE_basis_Ico := nhdsGE_basis
 
 /-- The filter of right neighborhoods has a basis of closed intervals. -/
 @[to_dual /-- The filter of left neighborhoods has a basis of closed intervals. -/]
@@ -359,8 +377,10 @@ theorem nhds_basis_mabs_div_lt [NoMaxOrder α] (a : α) :
 @[to_additive]
 theorem nhds_basis_Ioo_one_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => Ioo (a / ε) (a * ε) := by
-  convert! nhds_basis_mabs_div_lt a
-  simp only [Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul, div_lt_comm]
+  refine (nhds_basis_mabs_div_lt a).congr (fun _ => Iff.rfl) fun ε _ => ?_
+  ext b
+  simp only [mem_ofPred_eq, mem_Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul,
+    div_lt_comm]
 
 @[to_additive]
 theorem nhds_basis_Icc_one_lt [NoMaxOrder α] [DenselyOrdered α] (a : α) :

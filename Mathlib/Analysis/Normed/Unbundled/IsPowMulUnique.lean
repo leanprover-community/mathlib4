@@ -12,6 +12,9 @@ public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniqueness of power-multiplicative norms
 
@@ -56,7 +59,7 @@ public theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
   · ext x
     by_cases hx : x = 0
     · simp [hx]
-    · rw [f.eq_one_of_trivial hK hf_pm x hx, g.eq_one_of_trivial hK hg_pm x hx]
+    · rw [f.eq_one_of_norm_le hK hf_pm hx, g.eq_one_of_norm_le hK hg_pm hx]
   let : NontriviallyNormedField K := ⟨hK⟩
   refine eq_of_powMul_faithful f hf_pm g hg_pm fun x ↦ ?_
   let T₀ : g.copy x ≃ₗ[K] f.copy x := LinearEquiv.refl K K⟮x⟯

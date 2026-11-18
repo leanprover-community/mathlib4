@@ -22,7 +22,6 @@ or rational number coerced into that ring.
 We then define `Result e`, which contains a proof that a typed expression `e : Q($α)`
 is equal to the coercion of an explicit natural number, integer, or rational number,
 or is either `true` or `false`.
-
 -/
 
 public section

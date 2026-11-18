@@ -22,7 +22,6 @@ are `κ`-filtered colimits of split monomorphisms.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 public section

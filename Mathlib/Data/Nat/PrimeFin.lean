@@ -34,6 +34,7 @@ instance Primes.infinite : Infinite Primes := infinite_setOfPred_prime.to_subtyp
 instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
 
 /-- The prime factors of a natural number as a finset. -/
+@[oeis A027748 "starting from the 2nd element"]
 def primeFactors (n : ℕ) : Finset ℕ := n.primeFactorsList.toFinset
 
 @[simp] lemma toFinset_factors (n : ℕ) : n.primeFactorsList.toFinset = n.primeFactors := rfl
@@ -121,7 +122,7 @@ lemma primeFactors_pow_succ (n k : ℕ) : (n ^ (k + 1)).primeFactors = n.primeFa
   · simp
   induction k with
   | zero => simp
-  | succ k ih => rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
+  | succ k ih => rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_self]
 
 lemma primeFactors_pow (n : ℕ) (hk : k ≠ 0) : (n ^ k).primeFactors = n.primeFactors := by
   cases k

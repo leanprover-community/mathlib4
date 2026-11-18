@@ -34,7 +34,6 @@ To reduce import dependencies, the type-classes themselves are in
 
 As is usual in mathlib, we extend the inverse function to the zero element,
 and require `0⁻¹ = 0`.
-
 -/
 
 @[expose] public section

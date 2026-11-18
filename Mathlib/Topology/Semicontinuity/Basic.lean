@@ -706,7 +706,7 @@ variable {ι : Type*}
 theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ∑' i, f i x') s x := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum]
+  simp_rw [tsum_eq_iSup_sum]
   refine lowerSemicontinuousWithinAt_iSup fun b => ?_
   exact lowerSemicontinuousWithinAt_sum fun i _hi => h i
 
@@ -939,12 +939,18 @@ theorem upperSemicontinuousWithinAt_inv_iff :
 alias ⟨_, LowerSemicontinuousWithinAt.inv⟩ := upperSemicontinuousWithinAt_inv_iff
 
 @[to_additive (attr := simp)]
-theorem lowerSemicontinuouAt_inv_iff :
+theorem lowerSemicontinuousAt_inv_iff :
     LowerSemicontinuousAt f⁻¹ a ↔ UpperSemicontinuousAt f a := by
   simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
 
+@[deprecated (since := "2026-10-13")]
+alias lowerSemicontinuouAt_inv_iff := lowerSemicontinuousAt_inv_iff
+
+@[deprecated (since := "2026-10-13")]
+alias lowerSemicontinuouAt_neg_iff := lowerSemicontinuousAt_neg_iff
+
 @[to_additive]
-alias ⟨_, UpperSemicontinuousAt.inv⟩ := lowerSemicontinuouAt_inv_iff
+alias ⟨_, UpperSemicontinuousAt.inv⟩ := lowerSemicontinuousAt_inv_iff
 
 @[to_additive (attr := simp)]
 theorem upperSemicontinuousAt_inv_iff :

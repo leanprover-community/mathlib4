@@ -215,7 +215,11 @@ protected theorem SupIndep.disjoint_sup_sup {s : Finset ι} {f : ι → α} {u v
   induction u using Finset.induction generalizing v with
   | empty => simp
   | insert x u hx ih =>
-    grind [= SupIndep, Disjoint.disjoint_sup_left_of_disjoint_sup_right]
+    rw [sup_insert]
+    apply Disjoint.disjoint_sup_left_of_disjoint_sup_right
+    · grind
+    · unfold SupIndep at hs
+      grind
 
 theorem supIndep_sigma_iff' {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)}
     {f : Sigma β → α} : (s.sigma g).SupIndep f ↔ (s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
@@ -250,6 +254,29 @@ protected theorem SupIndep.union [DecidableEq ι] {s t : Finset ι} {f : ι → 
 protected theorem SupIndep.insert [DecidableEq ι] {i : ι} {s : Finset ι} {f : ι → α}
     (hs : s.SupIndep f) (h : Disjoint (f i) (s.sup f)) : (insert i s).SupIndep f := by
   grind [insert_eq, SupIndep.union, sup_singleton]
+
+protected theorem SupIndep.sup_inter [DecidableEq ι] {s₁ s₂ : Finset ι} (hs : s.SupIndep f)
+    (hs₁ : s₁ ⊆ s) (hs₂ : s₂ ⊆ s) : (s₁ ∩ s₂).sup f = s₁.sup f ⊓ s₂.sup f := by
+  conv_rhs => rw [← sup_inf_sdiff s₁ s₂, sup_union]
+  rw [sup_inf_assoc_of_le _ <| sup_mono inter_subset_right,
+    (hs.disjoint_sup_sup (sdiff_subset.trans hs₁) hs₂ disjoint_sdiff_self_left).eq_bot,
+    sup_bot_eq]
+
+theorem supIndep_iff_sup_inter_eq [DecidableEq ι] :
+    s.SupIndep f ↔ ∀ s₁ ⊆ s, ∀ s₂ ⊆ s, (s₁ ∩ s₂).sup f = s₁.sup f ⊓ s₂.sup f := by
+  refine ⟨fun hs s₁ hs₁ s₂ hs₂ ↦ hs.sup_inter hs₁ hs₂, fun h t ht i hi hit ↦ ?_⟩
+  simpa [hit, disjoint_iff] using (h {i} (singleton_subset_iff.mpr hi) t ht).symm
+
+protected theorem SupIndep.sup_inf' [DecidableEq ι] {t : Finset ι'} {g : ι' → Finset ι}
+    (hs : s.SupIndep f) (ht : t.Nonempty) (hg : ∀ j ∈ t, g j ⊆ s) :
+    (t.inf' ht g).sup f = t.inf' ht fun x ↦ (g x).sup f := by
+  induction ht using Finset.Nonempty.cons_induction with
+  | singleton => simp
+  | cons j t _ ht ih =>
+    rw [forall_mem_cons] at hg
+    simp_rw [inf'_cons ht]
+    rw [hs.sup_inter hg.1 ?_, ih hg.2]
+    grw [inf'_mono_fun hg.2, inf'_const]
 
 end IsModularLattice
 

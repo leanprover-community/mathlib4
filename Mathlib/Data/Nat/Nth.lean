@@ -42,7 +42,6 @@ There has been some discussion on the subject of whether both of `nth` and
 `Nat.Subtype.orderIsoOfNat` should exist. See discussion
 [here](https://github.com/leanprover-community/mathlib/pull/9457#pullrequestreview-767221180).
 Future work should address how lemmas that use these should be written.
-
 -/
 
 @[expose] public section
@@ -480,7 +479,8 @@ theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i �
   rwa [nth_count hpa, lt_self_iff_false] at hn
 
 theorem le_nth_count' {n : ℕ} (hpn : ∃ k, p k ∧ n ≤ k) : n ≤ nth p (count p n) :=
-  (le_csInf hpn fun _ => And.right).trans (nth_count_eq_sInf p n).ge
+  (le_csInf (s := {i : ℕ | p i ∧ n ≤ i}) hpn fun _ => And.right).trans
+    (nth_count_eq_sInf p n).ge
 
 theorem le_nth_count (hp : (Set.ofPred p).Infinite) (n : ℕ) : n ≤ nth p (count p n) :=
   let ⟨m, hp, hn⟩ := hp.exists_gt n

@@ -19,7 +19,6 @@ A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
 asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkMap`).
 
 We show that this property is local, and are stable under compositions and base change.
-
 -/
 
 public section
@@ -214,7 +213,6 @@ We show that this map is
 5. `isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
   bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
-
 -/
 
 variable {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
@@ -236,7 +234,6 @@ lemma isIso_pushoutSection_iff :
     (asIso (pushoutSection H hUST hUSX hUY)) (by simp) (by simp) (by simp) (by simp),
     fun h ↦ inferInstanceAs (IsIso h.isoPushout.inv)⟩
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] IsAffineOpen.isoSpec_hom in
 attribute [local simp ←] Scheme.Hom.resLE_eq_morphismRestrict in
 lemma isIso_pushoutSection_of_isAffineOpen (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT)
@@ -353,7 +350,7 @@ lemma isIso_pushoutSection_of_iSup_eq
   ```
   The two rows are exact because of the sheaf axiom (and additionally the flatness assumption for
   the top row). The vertical arrow in the middle is an isomorphism by assumption, and the one
-  one the right is monomorphic by assumption. Hence the left arrow is also an isomorphism.
+  on the right is monomorphic by assumption. Hence the left arrow is also an isomorphism.
 
   In the actual proof we use `Pairwise`-indexed diagrams instead of nested limits because it works
   better with the existing API.
@@ -458,8 +455,8 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
   have := hI.to_subtype
   exact isIso_pushoutSection_of_iSup_eq H hUST hUSX hUY (fun i : I ↦ i) (by rwa [iSup_subtype,
     eq_comm]) (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.1.2) (fun i j ↦
-    mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT (hUX' _ _ (hIUX _) i.1.1.2
-    i.1.2.isCompact (hIUX _) j.1.1.2 j.1.2.isCompact))
+    mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT (hUX' _ _ (hIUX _) i.1.1.is_open'
+    i.1.2.isCompact (hIUX _) j.1.1.is_open' j.1.2.isCompact))
     (f.flat_appLE hUS hUT _)
 
 lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_left [Flat iX]
@@ -501,7 +498,8 @@ lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
   exact isIso_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
     (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS i.1.2 hUX hUX')
     (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX
-    (hUT' _ _ (hIUT _) i.1.1.2 i.1.2.isCompact (hIUT _) j.1.1.2 j.1.2.isCompact) hiX) hiX
+      (hUT' _ _ (hIUT _) i.1.1.is_open' i.1.2.isCompact (hIUT _) j.1.1.is_open' j.1.2.isCompact)
+      hiX) hiX
 
 end sections
 
