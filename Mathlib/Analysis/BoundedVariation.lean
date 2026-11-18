@@ -30,7 +30,6 @@ are also differentiable almost everywhere.
 * `LipschitzOnWith.ae_differentiableWithinAt` is the same result for Lipschitz functions.
 
 We also give several variations around these results.
-
 -/
 
 public section
@@ -63,7 +62,7 @@ lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg :
     gcongr with i hi
     apply edist_triangle
   _ = ∑ i ∈ range n, ‖B (f (u (i + 1)) - f (u i)) (g (u (i + 1)))‖ₑ +
-      ∑ i ∈ range n, ‖B (f (u i)) (g (u (i + 1)) - g (u i))‖ₑ := by simp [edist_eq_enorm_sub]
+      ∑ i ∈ range n, ‖B (f (u i)) (g (u (i + 1)) - g (u i))‖ₑ := by simp [eDist_eq_eNorm_sub]
   _ ≤ ∑ i ∈ range n, ‖B‖ₑ * ‖f (u (i + 1)) - f (u i)‖ₑ * ‖g (u (i + 1))‖ₑ +
       ∑ i ∈ range n, ‖B‖ₑ * ‖f (u i)‖ₑ * ‖g (u (i + 1)) - g (u i)‖ₑ := by
     gcongr with i hi i hi
@@ -79,7 +78,7 @@ lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg :
     simp only [← sum_mul, ← mul_sum]
     ring
   _ ≤ ‖B‖ₑ * D * eVariationOn f s + ‖B‖ₑ * C * eVariationOn g s := by
-    simp only [← edist_eq_enorm_sub]
+    simp only [← eDist_eq_eNorm_sub]
     gcongr
     · exact eVariationOn.sum_le_of_monotoneOn_Iic (u_mono.monotoneOn _) (fun i hi ↦ u_mem i)
     · exact eVariationOn.sum_le_of_monotoneOn_Iic (u_mono.monotoneOn _) (fun i hi ↦ u_mem i)
@@ -88,7 +87,7 @@ lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg :
 @[to_fun eVariationOn_fun_smul_le]
 lemma eVariationOn_smul_le {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
     [NormedRing 𝕜] [NormedAlgebra ℝ 𝕜] [Module 𝕜 F]
-    [NormSMulClass 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+    [NormSMulClass 𝕜 F]
     {C D : ℝ≥0∞} {s : Set α} (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D) :
     eVariationOn (f • g) s ≤ C * eVariationOn g s + D * eVariationOn f s := by
   apply (eVariationOn_bilinear_comp_le hf hg (B := ContinuousLinearMap.lsmul ℝ 𝕜)).trans
@@ -107,18 +106,18 @@ lemma BoundedVariationOn.bilinear_comp
   · simp
   suffices eVariationOn (fun x ↦ (B (f x)) (g x)) s < ∞ from ne_of_lt this
   have A (y) (hy : y ∈ s) : ‖f y‖ₑ ≤ ‖f x‖ₑ + eVariationOn f s := by
-    grw [show f y = f x + (f y - f x) by abel, enorm_add_le, ← edist_eq_enorm_sub,
+    grw [show f y = f x + (f y - f x) by abel, eNorm_add_le, ← eDist_eq_eNorm_sub,
       eVariationOn.edist_le _ hy hx]
   have A' (y) (hy : y ∈ s) : ‖g y‖ₑ ≤ ‖g x‖ₑ + eVariationOn g s := by
-    grw [show g y = g x + (g y - g x) by abel, enorm_add_le, ← edist_eq_enorm_sub,
+    grw [show g y = g x + (g y - g x) by abel, eNorm_add_le, ← eDist_eq_eNorm_sub,
       eVariationOn.edist_le _ hy hx]
   grw [eVariationOn_bilinear_comp_le A A']
-  simp [mul_add, ENNReal.mul_lt_top_iff, hf.lt_top, hg.lt_top]
+  finiteness
 
 @[to_fun]
 lemma BoundedVariationOn.smul {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
     [NormedRing 𝕜] [NormedAlgebra ℝ 𝕜] [Module 𝕜 F]
-    [NormSMulClass 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+    [NormSMulClass 𝕜 F]
     {s : Set α} (hf : BoundedVariationOn f s) (hg : BoundedVariationOn g s) :
     BoundedVariationOn (f • g) s :=
   hf.bilinear_comp hg (B := ContinuousLinearMap.lsmul ℝ 𝕜)
@@ -137,7 +136,7 @@ lemma LocallyBoundedVariationOn.bilinear_comp (hf : LocallyBoundedVariationOn f 
 @[to_fun]
 lemma LocallyBoundedVariationOn.smul {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
     [NormedRing 𝕜] [NormedAlgebra ℝ 𝕜] [Module 𝕜 F]
-    [NormSMulClass 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+    [NormSMulClass 𝕜 F]
     {s : Set α} (hf : LocallyBoundedVariationOn f s) (hg : LocallyBoundedVariationOn g s) :
     LocallyBoundedVariationOn (f • g) s :=
   hf.bilinear_comp hg (B := ContinuousLinearMap.lsmul ℝ 𝕜)

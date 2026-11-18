@@ -119,7 +119,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Configure Lean
-      uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
+      uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
       with:
         auto-config: false
         use-github-cache: false
@@ -172,30 +172,12 @@ jobs:
         echo "Deleting ${tmplean}"
         rm "${tmplean}"
 
-    - name: Get branch SHA if it exists
-      id: get-branch-sha
-      run: |
-        # Check if the branch exists remotely
-        SHA=$(git ls-remote --heads origin "$BRANCH_NAME" | awk '{print $1}')
-        if [ -n "$SHA" ]; then
-          echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
-          echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
-        else
-          echo "Branch '$BRANCH_NAME' does not exist"
-          echo "sha=" >> "${GITHUB_OUTPUT}"
-        fi
-
     - name: Get PR
-      if: ${{ steps.get-branch-sha.outputs.sha != '' }}
       id: find-pr
-      uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
-      # TODO: this may not work properly if the same commit is pushed to multiple branches:
-      # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+      uses: ./.github/actions/find-open-pr
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        sha: ${{ steps.get-branch-sha.outputs.sha }}
-        # Only return if PR is still open
-        filterOutClosed: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ env.BRANCH_NAME }}
 
     - name: Send Zulip message (blocked by open PR)
       if: steps.find-pr.outputs.pr_found == 'true'

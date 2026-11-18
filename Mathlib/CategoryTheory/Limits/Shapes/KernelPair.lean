@@ -28,7 +28,6 @@ is developed here.
 
 - Internal equivalence relations (or congruences) and the fact that every kernel pair induces one,
   and the converse in an effective regular category (WIP by b-mehta).
-
 -/
 
 @[expose] public section
@@ -175,7 +174,8 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
     (f : X ⟶ Z) [HasPullback f g] [HasPullback f (a₁ ≫ g)] :
     IsKernelPair (pullback.fst f g)
       (pullback.map f _ f _ (𝟙 X) a₁ (𝟙 Z) (by simp) <| Category.comp_id _)
-      (pullback.map _ _ _ _ (𝟙 X) a₂ (𝟙 Z) (by simp) <| (Category.comp_id _).trans h.1.1) := by
+      (pullback.map _ _ _ _ (𝟙 X) a₂ (𝟙 Z) (by simp) <|
+        (Category.comp_id _).trans h.toCommSq.w) := by
   refine ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
     (fun s => pullback.lift (s.fst ≫ pullback.fst _ _)
       (h.lift (s.fst ≫ pullback.snd _ _) (s.snd ≫ pullback.snd _ _) ?_ ) ?_) (fun s => ?_)

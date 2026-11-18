@@ -179,9 +179,6 @@ theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
 theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
   rfl
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-30"), nolint synTaut]
-theorem toBialgHom_toAlgHom : ((e : A →ₐc[R] B) : A →ₐ[R] B) = e := rfl
-
 section
 
 variable {e e'}
@@ -330,5 +327,9 @@ noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐ
 
 @[simp]
 lemma coe_ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : (ofBijective f hf : A → B) = f := rfl
+
+@[simp]
+lemma toEquiv_ofBijective (f : A →ₐc[R] B) (hf) : (ofBijective f hf).toEquiv = .ofBijective f hf :=
+  rfl
 
 end BialgEquiv

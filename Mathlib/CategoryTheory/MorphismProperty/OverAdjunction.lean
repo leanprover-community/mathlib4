@@ -125,7 +125,7 @@ noncomputable def Over.pullbackComp (f : X ⟶ Y) (g : Y ⟶ Z)
 set_option backward.defeqAttrib.useBackward true in
 lemma Over.pullbackComp_left_fst_fst (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong f]
     [P.IsStableUnderBaseChangeAlong g] [P.HasPullbacksAlong f] [P.HasPullbacksAlong g]
-    [Q.RespectsIso] [Q.IsStableUnderBaseChange] (A : P.Over Q Z) :
+    [Q.IsStableUnderBaseChange] (A : P.Over Q Z) :
     ((Over.pullbackComp f g).hom.app A).left ≫ pullback.fst (pullback.snd A.hom g) f ≫
     pullback.fst A.hom g = pullback.fst A.hom (f ≫ g) := by
   simp

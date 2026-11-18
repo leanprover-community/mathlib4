@@ -119,7 +119,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
   · simp_rw [Measure.ext_iff]
     refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_const_mul g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.map_mul_left_eq_self⟩
 
 /-- An alternative way to prove that `μ` is right invariant under multiplication. -/
 @[to_additive /-- An alternative way to prove that `μ` is right invariant under addition. -/]
@@ -130,7 +130,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
   · simp_rw [Measure.ext_iff]
     refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_mul_const g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.map_mul_right_eq_self⟩
 
 @[to_additive]
 instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] {H : Type*}

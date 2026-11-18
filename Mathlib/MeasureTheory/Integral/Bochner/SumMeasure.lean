@@ -69,7 +69,7 @@ lemma Integrable.summable_integral (hf : Integrable f (Measure.sum μ)) :
   convert! ENNReal.summable_toReal (f := fun i ↦ ∫⁻ x, ‖f x‖ₑ ∂μ i) ?_ with i
   · rw [← integral_toReal ?_ (by simp)]
     · simp
-    · exact (hf.aestronglyMeasurable.mono_measure (Measure.le_sum _ i)).enorm
+    · exact (hf.aestronglyMeasurable.mono_measure (Measure.le_sum _ i)).eNorm
   rw [← lintegral_sum_measure]
   exact hf.2.ne
 

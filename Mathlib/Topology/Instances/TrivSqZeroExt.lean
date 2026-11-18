@@ -25,7 +25,6 @@ one value.
 ## Main results
 
 * `TrivSqZeroExt.topologicalRing`: the ring operations are continuous
-
 -/
 
 @[expose] public section

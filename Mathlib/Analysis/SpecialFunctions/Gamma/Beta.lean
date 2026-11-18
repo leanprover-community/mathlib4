@@ -114,9 +114,9 @@ theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
   refine setIntegral_congr_fun measurableSet_Ioc fun x hx => ?_
   rw [mul_mul_mul_comm]
   congr 1
-  · rw [← mul_cpow_ofReal_nonneg ha.le (div_pos hx.1 ha).le, ofReal_div, mul_div_cancel₀ _ ha']
+  · rw [← ofReal_mul_cpow ha.le, ofReal_div, mul_div_cancel₀ _ ha']
   · rw [(by norm_cast : (1 : ℂ) - ↑(x / a) = ↑(1 - x / a)), ←
-      mul_cpow_ofReal_nonneg ha.le (sub_nonneg.mpr <| (div_le_one ha).mpr hx.2)]
+      ofReal_mul_cpow ha.le]
     push_cast
     rw [mul_sub, mul_one, mul_div_cancel₀ _ ha']
 
@@ -263,10 +263,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
   have A : (n : ℂ) ^ s = (n : ℂ) ^ (s - 1) * n := by
     conv_lhs => rw [(by ring : s = s - 1 + 1), cpow_add _ _ hn']
     simp
-  have B : ((x : ℂ) * ↑n) ^ (s - 1) = (x : ℂ) ^ (s - 1) * (n : ℂ) ^ (s - 1) := by
-    rw [← ofReal_natCast,
-      mul_cpow_ofReal_nonneg hx.1.le (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)).le]
-  rw [A, B, cpow_natCast]; ring
+  rw [A, mul_natCast_cpow, cpow_natCast]; ring
 
 /-- The main technical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
@@ -449,6 +446,27 @@ theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
   constructor
   · contrapose!; exact Gamma_ne_zero
   · rintro ⟨m, rfl⟩; exact Gamma_neg_nat_eq_zero m
+
+theorem norm_Gamma_le_norm_Gamma_add_one_iff (s : ℂ) :
+    ‖Gamma s‖ ≤ ‖Gamma (s + 1)‖ ↔ s = 0 ∨ 1 ≤ ‖s‖ := by
+  by_cases hs : Gamma s = 0
+  · grind [Nat.cast_eq_zero, norm_neg, RCLike.norm_natCast, Nat.one_le_cast]
+  have hs0 : s ≠ 0 := fun h ↦ by simp [h] at hs
+  have hs' : 0 < ‖Gamma s‖ := by simp [hs]
+  grind [norm_mul, le_mul_iff_one_le_left]
+
+theorem norm_Gamma_le_norm_Gamma_add_one {s : ℂ} (hs : 1 ≤ ‖s‖) :
+    ‖Gamma s‖ ≤ ‖Gamma (s + 1)‖ := by
+  grind [norm_Gamma_le_norm_Gamma_add_one_iff]
+
+/-- This bound is not tight and is provided for convenience. -/
+theorem norm_Gamma_le_norm_Gamma_add_of_one_le_re {s : ℂ} (hs : 1 ≤ s.re) (n : ℕ) :
+    ‖Gamma s‖ ≤ ‖Gamma (s + n)‖ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    grw [ih, norm_Gamma_le_norm_Gamma_add_one (le_trans (by simp; grind) (Complex.re_le_norm _))]
+    grind
 
 /-- A weaker, but easier-to-apply, version of `Complex.Gamma_ne_zero`. -/
 theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by

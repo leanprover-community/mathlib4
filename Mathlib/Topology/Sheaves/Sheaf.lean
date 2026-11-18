@@ -23,7 +23,6 @@ of equivalent conditions.
 
 We provide the instance `CategoryTheory.Category (TopCat.Sheaf C X)` as the full subcategory of
 presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
-
 -/
 
 @[expose] public section
@@ -81,7 +80,7 @@ preserve limits. This applies to most "algebraic" categories, e.g. groups, abeli
   See `TopCat.Presheaf.isSheaf_iff_isSheaf_comp` and
   `CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget`.
 -/
-nonrec def IsSheaf (F : Presheaf.{w, v, u} C X) : Prop :=
+nonrec abbrev IsSheaf (F : Presheaf.{w, v, u} C X) : Prop :=
   Presheaf.IsSheaf (Opens.grothendieckTopology X) F
 
 /-- The presheaf valued in `Unit` over any topological space is a sheaf.
@@ -104,15 +103,14 @@ variable (C X)
 /-- A `TopCat.Sheaf C X` is a presheaf of objects from `C` over a (bundled) topological space `X`,
 satisfying the sheaf condition.
 -/
-nonrec def Sheaf : Type max u v w :=
+nonrec abbrev Sheaf : Type max u v w :=
   Sheaf (Opens.grothendieckTopology X) C
-deriving Category
 
 variable {C X}
 
 /-- The underlying presheaf of a sheaf -/
 abbrev Sheaf.presheaf (F : X.Sheaf C) : TopCat.Presheaf C X :=
-  F.1
+  F.obj
 
 variable (C X)
 
@@ -137,11 +135,11 @@ instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.hom_ext
 
 -- Note: These can be proved by simp.
-theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
+theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).hom.app t = 𝟙 _ :=
   rfl
 
 theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
-    (f ≫ g).1.app t = f.1.app t ≫ g.1.app t :=
+    (f ≫ g).hom.app t = f.hom.app t ≫ g.hom.app t :=
   rfl
 
 end Sheaf

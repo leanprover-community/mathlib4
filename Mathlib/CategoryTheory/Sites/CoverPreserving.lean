@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Continuous
+
 /-!
 # Cover-preserving functors between sites.
 
@@ -32,7 +33,6 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.3.
 * https://stacks.math.columbia.edu/tag/00WU
-
 -/
 
 public section
@@ -109,7 +109,6 @@ end
 
 open Limits.WalkingCospan
 
-set_option backward.defeqAttrib.useBackward true in
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor
@@ -138,14 +137,13 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   injection c'.π.naturality WalkingCospan.Hom.inr with _ e₂
   exact hx (c'.π.app left).right (c'.π.app right).right hg₁ hg₂ (e₁.symm.trans e₂)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful]
     (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σ c', F.obj c' ≅ d) : CompatiblePreserving K F := by
   constructor
   introv hx he
   obtain ⟨X', e⟩ := hF f₁
-  apply (ℱ.1.mapIso e.op).toEquiv.injective
-  simp only [Iso.op_hom, Iso.toEquiv_fun, ℱ.1.mapIso_hom, ← Functor.map_comp_apply]
+  apply (ℱ.obj.mapIso e.op).toEquiv.injective
+  simp only [Iso.op_hom, Iso.toEquiv_fun, ℱ.obj.mapIso_hom, ← Functor.map_comp_apply]
   simpa using!
     hx (F.preimage <| e.hom ≫ f₁) (F.preimage <| e.hom ≫ f₂) hg₁ hg₂
       (F.map_injective <| by simpa using! he)
@@ -158,12 +156,13 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
     (hF₂ : CoverPreserving J K F) : Functor.IsContinuous F J K where
   op_comp_isSheaf_of_types G X S hS x hx := by
     apply existsUnique_of_exists_of_unique
-    · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.2 _ (hF₂.cover_preserve hS)
+    · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.property _ (hF₂.cover_preserve hS)
       exact ⟨H.amalgamate (x.functorPushforward F) (hx.functorPushforward hF₁),
         fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
-      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.2).isSeparated _ (hF₂.cover_preserve hS)).ext
+      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.property).isSeparated _
+        (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       simpa using! congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
 

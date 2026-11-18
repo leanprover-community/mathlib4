@@ -1,5 +1,7 @@
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+module
+
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 
 /-! Test for kernel reduction of elliptic curve `nsmul`
 

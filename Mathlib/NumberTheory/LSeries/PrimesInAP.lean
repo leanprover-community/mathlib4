@@ -452,7 +452,7 @@ theorem forall_exists_prime_gt_and_zmodEq (n : ℕ) {q : ℕ} {a : ℤ} (hq : q 
     ∃ p > n, p.Prime ∧ p ≡ a [ZMOD q] := by
   have : NeZero q := ⟨hq⟩
   have : IsUnit (a : ZMod q) := by
-    rwa [ZMod.coe_int_isUnit_iff_isCoprime, isCoprime_comm]
+    rwa [ZMod.isUnit_intCast_iff_isCoprime, isCoprime_comm]
   obtain ⟨p, hpn, hpp, heq⟩ := forall_exists_prime_gt_and_eq_mod this n
   refine ⟨p, hpn, hpp, ?_⟩
   simpa [← ZMod.intCast_eq_intCast_iff] using heq

@@ -17,7 +17,6 @@ public import Mathlib.Topology.Order.LocalExtr
 
 A topological division ring is a topological ring whose inversion function is continuous at every
 non-zero element.
-
 -/
 
 @[expose] public section
@@ -81,6 +80,7 @@ end Subfield
 
 section Units
 
+set_option fun_prop.projDefaultTransparency true in
 /-- In an ordered field, the units of the nonnegative elements are the positive elements. -/
 @[simps!]
 def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
