@@ -755,11 +755,11 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     (h : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) k)) :
     IsGorensteinLocalRing R := by
-  obtain ⟨n, hn⟩ := exist_nat_eq' R
+  obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat R
   let e (I : Ideal R) : (ModuleCat.of R (Shrink.{u, u} (R ⧸ I))) ≅
     ModuleCat.of R (R ⧸ I) := (Shrink.linearEquiv _ _).toModuleIso
   induction n using Nat.case_strong_induction_on generalizing R k with
-  | hz =>
+  | zero =>
     have : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
     have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
       apply ModuleCat.hasInjectiveDimensionLT_of_quotients _ _ (fun I ↦ ?_)
@@ -767,8 +767,8 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       rw [Set.mem_ofPred_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
       exact (((extFunctor k).mapIso (e (maximalIdeal R)).op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp h
-    exact (isGorensteinLocalRing_def R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
-  | hi n ih =>
+    exact (isGorensteinLocalRing_iff R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
+  | succ n ih =>
     have supp_le (M : ModuleCat.{u} R) [Module.Finite R M] :
       Module.support R (Ext M (ModuleCat.of R R) k) ⊆ {closedPoint R} := by
       intro p hp
@@ -777,7 +777,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
         simpa [PrimeSpectrum.ext_iff, closedPoint] using ne)
       rcases exists_isPrime_no_insert p.1 ltm with ⟨q, qp, ple, qlt, hq⟩
       let Rq := Localization.AtPrime q
-      obtain ⟨m, hm⟩ := exist_nat_eq' Rq
+      obtain ⟨m, hm⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat Rq
       have mle : m ≤ n := by
         rw [← Order.lt_add_one_iff, ← Nat.cast_lt (α := WithBot ℕ∞), ← hm, ← hn,
           IsLocalization.AtPrime.ringKrullDim_eq_height q,
@@ -858,6 +858,6 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
       apply (((extFunctor k).mapIso (e p.1).op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp (ext_zero p.1)
-    exact (isGorensteinLocalRing_def R).mpr (injectiveDimension_lt_iff.mpr injlt).ne_top
+    exact (isGorensteinLocalRing_iff R).mpr (injectiveDimension_lt_iff.mpr injlt).ne_top
 
 end
