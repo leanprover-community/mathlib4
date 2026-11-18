@@ -273,6 +273,31 @@ lemma head_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (
 lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p.last := by
   grind [length_toList, last, Fin.last, toList_getElem]
 
+@[simp]
+lemma nodup_toList_iff_injective_toFun (p : RelSeries r) : p.toList.Nodup ↔ p.toFun.Injective := by
+  rw [List.nodup_iff_injective_get, Function.Injective, Function.Injective,
+    Function.Surjective.forall₂ (f := finCongr p.length_toList) (Equiv.surjective _)]
+  simp [Fin.cast, Fin.val_eq_val]
+
+@[simp]
+lemma injective_toFun_fromListIsChain_iff_nodup
+    (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r] ·)) :
+    (fromListIsChain x x_ne_nil hx).toFun.Injective ↔ x.Nodup := by
+  rw [Iff.comm]
+  simpa using (fromListIsChain x x_ne_nil hx).nodup_toList_iff_injective_toFun
+
+lemma coe_toFinset_toList_eq [DecidableEq α] (p : RelSeries r) :
+    p.toList.toFinset = {l | l ∈ p} := by simp
+
+lemma finite_ofPred_mem (p : RelSeries r) : {l | l ∈ p}.Finite := by
+    classical
+    simp [← p.coe_toFinset_toList_eq, -List.coe_toFinset]
+
+lemma toFinset_toList_eq [DecidableEq α] (p : RelSeries r) :
+    p.toList.toFinset = Set.Finite.toFinset (s := {l | l ∈ p}) p.finite_ofPred_mem := by
+  ext
+  simp
+
 end
 
 variable {r s}
