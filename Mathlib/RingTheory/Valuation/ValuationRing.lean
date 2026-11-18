@@ -42,7 +42,6 @@ The Mathlib definition of a valuation ring requires `IsDomain A` even though the
 does not mention zero divisors. Thus, there is a technical `PreValuationRing A` that
 is defined in further generality that can be used in places where the ring cannot be a domain.
 The `ValuationRing` class is kept to be in sync with the literature.
-
 -/
 
 @[expose] public section
@@ -406,7 +405,7 @@ instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
 theorem iff_local_bezout_domain : ValuationRing R ↔ IsLocalRing R ∧ IsBezout R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
 
-protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
+theorem tfae (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
@@ -416,6 +415,8 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
   tfae_have 1 ↔ 4 := iff_ideal_total
   tfae_have 1 ↔ 5 := iff_local_bezout_domain
   tfae_finish
+
+@[deprecated (since := "2026-10-27")] protected alias TFAE := tfae
 
 end
 

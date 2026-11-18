@@ -118,7 +118,7 @@ end CoproductsFromFiniteFiltered
 open CoproductsFromFiniteFiltered
 
 theorem hasCoproducts_of_finite_and_filtered [HasFiniteCoproducts C]
-    [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := fun α => by
+    [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := .mk fun α => by
   exact ⟨fun F => HasColimit.mk (liftToFinsetColimitCocone F)⟩
 
 theorem has_colimits_of_finite_and_filtered [HasFiniteColimits C]
@@ -256,7 +256,6 @@ def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) 
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/

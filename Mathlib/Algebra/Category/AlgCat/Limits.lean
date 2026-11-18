@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Category.Ring.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of R-algebras has all limits
 

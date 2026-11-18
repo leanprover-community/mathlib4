@@ -46,7 +46,6 @@ mixed space with enough symmetries, see `volume_eq_two_pi_pow_mul_integral` and
 * `mixedEmbedding.volume_eq_two_pow_mul_two_pi_pow_mul_integral`: if the measurable set `A` of the
   mixed space is norm-stable in the sense that `normAtAllPlaces⁻¹ (normAtAllPlaces '' A) = A`,
   then its volume can be computed via an integral over `normAtAllPlaces '' A`.
-
 -/
 
 @[expose] public section
@@ -405,7 +404,7 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
     congr 1
     refine setLIntegral_congr (ae_eq_set_inter (by rfl) (Measure.ae_eq_set_pi fun w _ ↦ ?_))
     split_ifs
-    exacts [ae_eq_rfl, Ioi_ae_eq_Ici]
+    exacts [.rfl, Ioi_ae_eq_Ici]
   · exact (Measurable.mul (by fun_prop)
       <| measurable_const.indicator <| hm.preimage (measurable_polarSpaceCoord_symm K)).aemeasurable
 

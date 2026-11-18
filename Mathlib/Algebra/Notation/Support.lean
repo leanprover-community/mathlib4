@@ -109,7 +109,7 @@ lemma mulSupport_eq_empty_iff : mulSupport f = ∅ ↔ f = 1 := by
 
 @[to_additive (attr := simp)]
 lemma mulSupport_nonempty_iff : (mulSupport f).Nonempty ↔ f ≠ 1 := by
-  rw [nonempty_iff_ne_empty, Ne, mulSupport_eq_empty_iff]
+  simp [← ne_empty_iff_nonempty]
 
 @[to_additive]
 theorem _root_.Subsingleton.mulSupport_eq [Subsingleton M] (f : ι → M) : mulSupport f = ∅ :=
@@ -124,8 +124,6 @@ lemma range_subset_insert_image_mulSupport (f : ι → M) :
 @[to_additive]
 lemma range_eq_image_or_of_mulSupport_subset {k : Set ι} (h : mulSupport f ⊆ k) :
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
-  have : range f ⊆ insert 1 (f '' k) :=
-    (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_mono h))
   grind
 
 @[to_additive (attr := simp)]

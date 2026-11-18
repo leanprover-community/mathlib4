@@ -39,7 +39,6 @@ a product set.
   σ-algebra
 * `generateFrom_measurableCylinders`: cylinders formed from measurable sets generate the
   product σ-algebra
-
 -/
 
 @[expose] public section
@@ -182,7 +181,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
     cylinder s S = ∅ ↔ S = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by (rw [h]; exact cylinder_empty _)⟩
   by_contra hS
-  rw [← Ne, ← nonempty_iff_ne_empty] at hS
+  rw [← Ne, ne_empty_iff_nonempty] at hS
   let f := hS.some
   have hf : f ∈ S := hS.choose_spec
   classical

@@ -6,7 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Normed.Lp.lpSpace
+public import Mathlib.Analysis.Normed.Lp.LpEquiv
 public import Mathlib.Analysis.Normed.Module.Bases
 
 /-!
@@ -399,12 +399,15 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     ext
     congrm $h i
 
+@[ext]
+protected theorem eq_of_apply_eq {b b' : HilbertBasis ι 𝕜 E} (h : ∀ i, b i = b' i) : b = b' :=
+  DFunLike.ext _ _ h
+
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
   dsimp +instances [instFunLike]
   convert rfl
-
 
 protected theorem repr_self [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
@@ -472,22 +475,21 @@ protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     ∑' i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ :=
   (b.hasSum_inner_mul_inner x y).tsum_eq
 
--- Note: this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
--- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
 /-- A finite Hilbert basis is an orthonormal basis. -/
 protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : OrthonormalBasis ι 𝕜 E :=
-  OrthonormalBasis.mk b.orthonormal
-    (by
-      refine Eq.ge ?_
-      classical
-      have := (span 𝕜 (Finset.univ.image b : Set E)).closed_of_finiteDimensional
-      simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ, HilbertBasis.dense_span] using
-        this.submodule_topologicalClosure_eq.symm)
+  ⟨b.repr.trans (lpPiLpₗᵢ _ 𝕜)⟩
+
+@[simp]
+theorem repr_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
+    b.toOrthonormalBasis.repr = b.repr.trans (lpPiLpₗᵢ _ 𝕜) :=
+  rfl
 
 @[simp]
 theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
-    (b.toOrthonormalBasis : ι → E) = b :=
-  OrthonormalBasis.coe_mk _ _
+    (b.toOrthonormalBasis : ι → E) = b := by
+  classical
+  ext
+  simp [← OrthonormalBasis.repr_symm_single]
 
 /-- A Hilbert basis of is an unconditional Schauder basis (`UnconditionalSchauderBasis`),
 with coordinate functionals `x ↦ ⟪b i, x⟫`. The basis expansion `x = ∑' i, ⟪b i, x⟫ • b i`
@@ -593,5 +595,58 @@ variable (𝕜 E)
 theorem _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
   ⟨w, hw, hw''⟩
+
+section reindex
+
+variable {𝕜 E} {ι' : Type*}
+
+/-- For a HilbertBasis `b` indexed by `ι`, `b.reindex (e : ι ≃ ι')` is a `HilbertBasis` indexed
+by `ι'`.
+
+TODO: Prove this using `LinearIsometryEquiv.lpCongrLeft`, like `OrthonormalBasis.reindex`, once
+that equivalence exists. -/
+protected def reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') : HilbertBasis ι' 𝕜 E :=
+  HilbertBasis.mk (b.orthonormal.comp _ e.symm.injective) (by simp)
+
+@[simp]
+protected theorem coe_reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
+    ⇑(b.reindex e) = b ∘ e.symm :=
+  HilbertBasis.coe_mk _ _
+
+protected theorem reindex_apply (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') (i' : ι') :
+    b.reindex e i' = b (e.symm i') := by
+  rw [HilbertBasis.coe_reindex, Function.comp_apply]
+
+@[simp]
+protected theorem repr_reindex_apply (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') (x : E) (i' : ι') :
+    (b.reindex e).repr x i' = b.repr x (e.symm i') := by
+  rw [HilbertBasis.repr_apply_apply, b.repr_apply_apply, HilbertBasis.reindex_apply]
+
+@[simp]
+protected theorem reindex_refl (b : HilbertBasis ι 𝕜 E) : b.reindex (Equiv.refl ι) = b := by
+  ext
+  simp
+
+@[simp]
+protected theorem reindex_reindex {ι'' : Type*} (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι')
+    (e' : ι' ≃ ι'') :
+    (b.reindex e).reindex e' = b.reindex (e.trans e') := by
+  ext
+  simp
+
+@[simp]
+theorem toOrthonormalBasis_reindex [Fintype ι] [Fintype ι'] (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
+    (b.reindex e).toOrthonormalBasis = b.toOrthonormalBasis.reindex e := by
+  apply DFunLike.coe_injective
+  simp
+
+@[simp]
+theorem _root_.OrthonormalBasis.toHilbertBasis_reindex [Fintype ι] [Fintype ι']
+    (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
+    (b.reindex e).toHilbertBasis = b.toHilbertBasis.reindex e := by
+  ext
+  simp
+
+end reindex
 
 end HilbertBasis

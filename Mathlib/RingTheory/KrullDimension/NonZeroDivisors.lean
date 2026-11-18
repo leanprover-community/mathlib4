@@ -13,7 +13,6 @@ import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
-
 # Krull dimension and non-zero-divisors
 
 ## Main results
@@ -41,7 +40,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   · rw [hr', ringKrullDim_eq_bot_of_subsingleton]
     simp
   have : Nonempty (PrimeSpectrum.zeroLocus (R := R) (Ideal.span {r})) := by
-    rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty, ne_eq,
+    rwa [Set.nonempty_coe_sort, ← Set.ne_empty_iff_nonempty, ne_eq,
       PrimeSpectrum.zeroLocus_empty_iff_eq_top]
   have := Ideal.Quotient.nontrivial_iff.mpr hr'
   have := (Ideal.Quotient.mk (Ideal.span {r})).domain_nontrivial
@@ -105,7 +104,8 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     rw [ENat.WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)
-    have := Function.invFun_surjective (f := ι) ((Infinite.natEmbedding σ).2.comp Fin.val_injective)
+    have := Function.invFun_surjective (f := ι)
+      ((Infinite.natEmbedding σ).inj'.comp Fin.val_injective)
     refine le_trans ?_ (ringKrullDim_le_of_surjective
       (rename (R := R) _).toRingHom (rename_surjective _ this))
     refine le_trans ?_ (ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _)

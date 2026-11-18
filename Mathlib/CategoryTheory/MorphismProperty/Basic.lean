@@ -19,7 +19,6 @@ The following meta-property is defined
 * `RespectsRight P Q`: `P` respects the property `Q` on the right if `P f → P (f ≫ i)` where
   `i` satisfies `Q`.
 * `Respects`: `P` respects `Q` if `P` respects `Q` both on the left and on the right.
-
 -/
 
 @[expose] public section
@@ -754,7 +753,6 @@ namespace NatTrans
 
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
     IsIso (α.app X) ↔ IsIso (α.app Y) :=
   (MorphismProperty.isomorphisms D).arrow_mk_iso_iff

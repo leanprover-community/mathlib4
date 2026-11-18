@@ -57,7 +57,7 @@ theorem IsUniformInducing.id : IsUniformInducing (@id α) :=
 
 theorem IsUniformInducing.comp {g : β → γ} (hg : IsUniformInducing g) {f : α → β}
     (hf : IsUniformInducing f) : IsUniformInducing (g ∘ f) :=
-  ⟨by rw [← hf.1, ← hg.1, comap_comap]; rfl⟩
+  ⟨by rw [← hf.comap_uniformity, ← hg.comap_uniformity, comap_comap]; rfl⟩
 
 theorem IsUniformInducing.of_comp_iff {g : β → γ} (hg : IsUniformInducing g) {f : α → β} :
     IsUniformInducing (g ∘ f) ↔ IsUniformInducing f := by
@@ -68,7 +68,7 @@ theorem IsUniformInducing.of_comp_iff {g : β → γ} (hg : IsUniformInducing g)
 theorem IsUniformInducing.basis_uniformity {f : α → β} (hf : IsUniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
     (𝓤 α).HasBasis p fun i => Prod.map f f ⁻¹' s i :=
-  hf.1 ▸ H.comap _
+  hf.comap_uniformity ▸ H.comap _
 
 theorem IsUniformInducing.cauchy_map_iff {f : α → β} (hf : IsUniformInducing f) {F : Filter α} :
     Cauchy (map f F) ↔ Cauchy F := by
@@ -77,7 +77,8 @@ theorem IsUniformInducing.cauchy_map_iff {f : α → β} (hf : IsUniformInducing
 theorem IsUniformInducing.of_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f)
     (hg : UniformContinuous g) (hgf : IsUniformInducing (g ∘ f)) : IsUniformInducing f := by
   refine ⟨le_antisymm ?_ hf.le_comap⟩
-  rw [← hgf.1, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g, ← comap_comap]
+  rw [← hgf.comap_uniformity, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g,
+    ← comap_comap]
   exact comap_mono hg.le_comap
 
 theorem IsUniformInducing.uniformContinuous {f : α → β} (hf : IsUniformInducing f) :
@@ -101,7 +102,8 @@ theorem IsUniformInducing.isInducing {f : α → β} (h : IsUniformInducing f) :
 theorem IsUniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformInducing e₁) (h₂ : IsUniformInducing e₂) :
     IsUniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
+  ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.comap_uniformity, ← h₂.comap_uniformity,
+    comap_inf, comap_comap]⟩
 
 lemma IsUniformInducing.isDenseInducing (h : IsUniformInducing f) (hd : DenseRange f) :
     IsDenseInducing f where
@@ -226,14 +228,16 @@ theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopo
 
 theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α → β} (b : β)
     (he₁ : IsUniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
-    ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by
+    ∃ a, closure (e '' SetRel.ball s a) ∈ 𝓝 b := by
   obtain ⟨U, ⟨hU, hUo, hsymm⟩, hs⟩ :
     ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SetRel.IsSymm U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
       rwa [← he₁.comap_uniformity, (uniformity_hasBasis_open_symmetric.comap _).mem_iff] at hs
-  rcases he₂.dense.mem_nhds (UniformSpace.ball_mem_nhds b hU) with ⟨a, ha⟩
-  refine ⟨a, mem_of_superset ?_ (closure_mono <| image_mono <| UniformSpace.ball_mono hs a)⟩
-  have ho : IsOpen (UniformSpace.ball (e a) U) := UniformSpace.isOpen_ball (e a) hUo
-  refine mem_of_superset (ho.mem_nhds <| UniformSpace.mem_ball_symmetry.2 ha) fun y hy => ?_
+  rcases he₂.dense.mem_nhds (SetRel.ball_mem_nhds b hU) with ⟨a, ha⟩
+  refine ⟨a, mem_of_superset ?_
+    (closure_mono <| image_mono <| SetRel.ball_mono hs a)⟩
+  have ho : IsOpen (SetRel.ball U (e a)) := UniformSpace.isOpen_ball (e a) hUo
+  have hab : (b, e a) ∈ U := SetRel.symm U (SetRel.mem_ball.mp ha)
+  refine mem_of_superset (ho.mem_nhds <| SetRel.mem_ball.mpr hab) fun y hy => ?_
   refine mem_closure_iff_nhds.2 fun V hV => ?_
   rcases he₂.dense.mem_nhds (inter_mem hV (ho.mem_nhds hy)) with ⟨x, hxV, hxU⟩
   exact ⟨e x, hxV, mem_image_of_mem e hxU⟩

@@ -46,7 +46,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `p : MvPolynomial σ R`
-
 -/
 
 @[expose] public section
@@ -161,7 +160,7 @@ theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (
   · refine Finset.le_sup_of_le (b := d) ?_ le_rfl
     rw [mem_support_iff, coeff_add, Finsupp.add_apply]
     suffices q.coeff d = 0 by rw [this, add_zero]; rwa [← mem_support_iff]
-    rw [Ne, ← Finsupp.support_eq_empty, ← Ne, ← Finset.nonempty_iff_ne_empty] at h0
+    rw [← Finsupp.support_nonempty_iff] at h0
     obtain ⟨j, hj⟩ := h0
     contrapose! h
     rw [mem_support_iff] at hd
@@ -186,7 +185,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   rintro ⟨d, hd, hi⟩
   obtain ⟨x, rfl, hx⟩ := coeff_rename_ne_zero _ _ _ hd
   simp only [Finsupp.mapDomain, Finsupp.mem_support_iff] at hi
-  rw [sum_apply, Finsupp.sum] at hi
+  rw [Finsupp.sum_apply, Finsupp.sum] at hi
   contrapose! hi
   rw [Finset.sum_eq_zero]
   intro j hj
@@ -642,7 +641,7 @@ lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ
   simp only [mem_degreesLE, nonpos_iff_eq_zero] at hx
   have := (totalDegree_eq_zero_iff_eq_C (p := x)).mp
     (Nat.eq_zero_of_le_zero (x.totalDegree_le_degrees_card.trans (by simp [hx])))
-  exact ⟨x.coeff 0, by simp [Algebra.smul_def, ← this]⟩
+  exact ⟨x.coeff 0, by simp [← this]⟩
 
 variable (s) in
 lemma degreesLE_nsmul : ∀ n, degreesLE R σ (n • s) = degreesLE R σ s ^ n

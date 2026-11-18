@@ -328,7 +328,8 @@ embedding provided that the range of `f` is order-connected. -/
 theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (hf : StrictMono f) (hc : OrdConnected (range f)) : IsEmbedding f :=
-  ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
+  ⟨⟨h.topology_eq_generate_intervals.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩,
+    hf.injective⟩
 
 /-- An `OrderEmbedding` is a topological embedding provided that the range of `f` is
 order-connected -/
@@ -540,16 +541,10 @@ theorem SuccOrder.hasBasis_nhds_Ioc_of_exists_lt [SuccOrder α] {a : α} (ha : �
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ha
 
-@[deprecated (since := "2026-04-19")]
-alias PredOrder.hasBasis_nhds_Ioc_of_exists_gt := PredOrder.hasBasis_nhds_Ico_of_exists_gt
-
 @[to_dual]
 theorem SuccOrder.hasBasis_nhds_Ioc [SuccOrder α] {a : α} [NoMinOrder α] :
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
-
-@[deprecated (since := "2026-04-19")]
-alias PredOrder.hasBasis_nhds_Ioc := PredOrder.hasBasis_nhds_Ico
 
 variable (α) in
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
