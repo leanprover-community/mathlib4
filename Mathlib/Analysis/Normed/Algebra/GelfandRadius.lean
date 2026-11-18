@@ -153,23 +153,18 @@ theorem gelfandRadius_le_of_bound {a : A} {C r : ℝ} (hr : 0 ≤ r)
   filter_upwards [eventually_ne_atTop 0] with n hn
   grw [h n, Real.mul_rpow hC.le (by positivity), Real.pow_rpow_inv_natCast hr hn]
 
-/-- If `C * r ^ n ≤ ‖a ^ n‖` for all `n`, then `r ≤ gelfandRadius a`. -/
+/-- If `r ^ n ≤ C * ‖a ^ n‖` for all `n`, then `r ≤ gelfandRadius a`. -/
 theorem le_gelfandRadius_of_bound (a : A) {C r : ℝ} (h : ∀ n, r ^ n ≤ C * ‖a ^ n‖) :
     r ≤ gelfandRadius a := by
+  rcases le_or_gt C 0 with hC | hC
+  · grw [← pow_one r, h, hC, zero_mul, ← gelfandRadius_nonneg]
   rcases le_total r 0 with hr | hr
   · exact hr.trans (gelfandRadius_nonneg a)
-  rcases le_or_gt C 0 with hC | hC
-  · specialize h 1
-    grw [hC] at h
-    simp at h
-    grw [← gelfandRadius_nonneg]
-    exact h
-  have hlim : Tendsto (fun n : ℕ ↦ C ^ (n : ℝ)⁻¹ * ‖a ^ n‖ ^ (n : ℝ)⁻¹) atTop (𝓝 (gelfandRadius a)) := by
-    simpa using (((Real.continuous_const_rpow hC.ne').tendsto' 0 1 (Real.rpow_zero _)).comp
-      tendsto_inv_atTop_nhds_zero_nat).mul (tendsto_gelfandRadius a)
-  apply ge_of_tendsto hlim
+  apply ge_of_tendsto
+    (by simpa using (((Real.continuous_const_rpow hC.ne').tendsto' 0 1 (Real.rpow_zero _)).comp
+      tendsto_inv_atTop_nhds_zero_nat).mul (tendsto_gelfandRadius a))
   filter_upwards [eventually_ne_atTop 0] with n hn
-  grw [← Real.mul_rpow hC.le (by positivity), ← h, Real.pow_rpow_inv_natCast hr hn]
+  grw [← Real.mul_rpow hC.le (norm_nonneg (a ^ n)), ← h, Real.pow_rpow_inv_natCast hr hn]
 
 theorem gelfandRadius_le_of_norm_pow_le {a : A} {b : B} (C : ℝ) (h : ∀ n, ‖a ^ n‖ ≤ C * ‖b ^ n‖) :
     gelfandRadius a ≤ gelfandRadius b := by

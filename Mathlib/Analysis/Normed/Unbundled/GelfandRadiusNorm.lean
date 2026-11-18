@@ -107,21 +107,15 @@ variable {K L} in
 theorem IsPowMul.le_gelfandRadiusNormAux {f : AlgebraNorm K L} (hf : IsPowMul f) (x : L) :
     f x ≤ gelfandRadiusNormAux K L x := by
   let b := Module.finBasis K L
-  obtain ⟨C, hC⟩ : ∃ C, ∀ x, f x ≤ C * ‖Algebra.leftMulMatrix b x‖ := by
-    use ‖⇑(b.repr 1)‖ * ∑ i, f (b i)
-    intro x
-    conv_lhs => rw [← b.linearCombination_repr x]
-    rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype _ _ (by simp)]
-    grw [Finset.map_sum_le_sum]
+  let C := ‖⇑(b.repr 1)‖ * ∑ i, f (b i)
+  have hC x : f x ≤ C * ‖Algebra.leftMulMatrix b x‖ := by
+    conv_lhs => rw [← b.linearCombination_repr x, ← mul_one x]
+    grw [Finsupp.linearCombination_apply, Finsupp.sum_fintype _ _ (by simp), Finset.map_sum_le_sum]
     simp_rw [map_smul_eq_mul]
-    have h : b.repr x = (Algebra.leftMulMatrix b x).mulVec (b.repr 1) := by
-      rw [Algebra.leftMulMatrix_mulVec_repr, mul_one]
-    grw [norm_le_pi_norm, ← Finset.mul_sum, h, Matrix.linfty_opNorm_mulVec, mul_assoc, mul_comm]
-  apply le_gelfandRadius_of_bound _ (C := max C 1)
-  intro n
-  by_cases! hn : n = 0
-  · simp [hn]
-  · grw [← hf x hn.pos, hC, map_pow, le_max_left C 1]
+    grw [norm_le_pi_norm, ← Finset.mul_sum, ← Algebra.leftMulMatrix_mulVec_repr,
+      Matrix.linfty_opNorm_mulVec, mul_assoc, mul_comm]
+  refine le_gelfandRadius_of_bound _ (C := max C 1) fun n ↦ ?_
+  grw [← hf.map_pow, hC, map_pow, le_max_left C 1]
 
 end
 
