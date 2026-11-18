@@ -178,4 +178,19 @@ lemma congrIsometry_refl : congrIsometry (fun i ↦ .refl 𝕜 (E i)) = .refl �
 
 end CongrIsometry
 
+section MapInclIsometry
+
+variable (p : Π i, Submodule 𝕜 (E i)) (x : ⨂[𝕜] i, p i)
+
+noncomputable def mapInclIsometry : (⨂[𝕜] i, p i) →ₗᵢ[𝕜] ⨂[𝕜] i, E i :=
+  mapIsometry fun i ↦ (p i).subtypeₗᵢ
+
+@[simp]
+lemma mapInclIsometry_apply : mapInclIsometry p x = mapIncl p x := rfl
+
+@[simp]
+lemma toLinearMap_mapInclIsometry : (mapInclIsometry p).toLinearMap = mapIncl p := rfl
+
+end MapInclIsometry
+
 end PiTensorProduct
