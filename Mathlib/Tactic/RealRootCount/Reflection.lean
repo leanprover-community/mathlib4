@@ -24,6 +24,8 @@ polynomial and its derivative, up to positive constant factors.
 
 - `isScaledSturmSeq_of_entries?`: If `d.entries? = some L` then `L` is the Sturm sequence of `d.s`
   and its derivative, up to positive constant factors.
+- `signVariations_map_evalScaled`: For `0 < d`, the sign variations of `L.map (evalScaled n d)` are
+  the sign variations of the values at `n / d` of the polynomials in `L`.
 -/
 
 open Polynomial SignType
@@ -210,5 +212,37 @@ theorem isScaledSturmSeq_of_entries? {d : SturmCertificate} (h : d.entries? = so
   refine isScaledSturmSeq_of_sturmEntries? one_pos one_pos ?_ ?_ (toReal_ne_zero hlead) hsteps
   · simp
   · simp [toReal_coeffDerivative]
+
+theorem eval_toReal_cons (c : ℤ) (p : List ℤ) (x : ℝ) :
+    (toReal (c :: p)).eval x = c + x * (toReal p).eval x := by
+  simp [toReal, map_ofCoeffList_cons]
+
+theorem cast_evalScaled (n : ℤ) (d : ℕ) (p : List ℤ) {x : ℝ} (hx : d * x = n) :
+    (d : ℝ) * evalScaled n d p = d ^ p.length * (toReal p).eval x := by
+  induction p with
+  | nil => simp [evalScaled, toReal]
+  | cons c p ih =>
+    rw [evalScaled, eval_toReal_cons, List.length_cons]
+    push_cast
+    calc (d : ℝ) * (c * d ^ p.length + n * evalScaled n d p)
+      _ = c * d ^ (p.length + 1) + n * (d * evalScaled n d p) := by ring
+      _ = c * d ^ (p.length + 1) + d * x * (d ^ p.length * (toReal p).eval x) := by rw [ih, hx]
+      _ = d ^ (p.length + 1) * (c + x * (toReal p).eval x) := by ring
+
+theorem sign_evalScaled (n : ℤ) {d : ℕ} (hd : 0 < d) (p : List ℤ) :
+    sign (evalScaled n d p) = sign ((toReal p).eval ((n : ℝ) / d)) := by
+  have hd' : (0 : ℝ) < d := Nat.cast_pos.mpr hd
+  calc sign (evalScaled n d p)
+    _ = sign ((d : ℝ) * evalScaled n d p) := by simp [sign_mul, sign_pos hd']
+    _ = sign ((d : ℝ) ^ p.length * (toReal p).eval ((n : ℝ) / d)) := by
+      rw [cast_evalScaled n d p (mul_div_cancel₀ _ hd'.ne')]
+    _ = sign ((toReal p).eval ((n : ℝ) / d)) := by simp [sign_mul, sign_pow, sign_pos hd']
+
+theorem signVariations_map_evalScaled (n : ℤ) {d : ℕ} (hd : 0 < d) (L : List (List ℤ)) :
+    (L.map (evalScaled n d)).signVariations =
+      ((L.map toReal).map (sign ∘ eval ((n : ℝ) / d))).signVariations := by
+  rw [← List.signVariations_map_sign, List.map_map, List.map_map]
+  congrm List.signVariations ?_
+  exact List.map_congr_left fun e _ => sign_evalScaled n hd e
 
 end Mathlib.Tactic.RealRootCount
