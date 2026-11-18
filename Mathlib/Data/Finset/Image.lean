@@ -736,8 +736,8 @@ theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) 
     (m.map f).toFinset = m.toFinset.image f :=
   Finset.image_toFinset.symm
 
-theorem List.toFinset_map {β : Type*} [DecidableEq α] [DecidableEq β] (f : α → β)
-    (l : List α) : (l.map f).toFinset = l.toFinset.image f :=
+theorem List.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) (l : List α) :
+    (l.map f).toFinset = l.toFinset.image f :=
   Multiset.toFinset_map f l
 
 namespace Equiv
