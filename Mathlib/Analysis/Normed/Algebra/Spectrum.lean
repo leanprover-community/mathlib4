@@ -80,6 +80,10 @@ noncomputable def spectralRadius (𝕜 : Type*) {A : Type*}
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ σₙ 𝕜 a, ‖k‖ₑ
 
+lemma spectralRadius_def [NormedField 𝕜] [NonUnitalRing A] [Module 𝕜 A] (a : A) :
+    spectralRadius 𝕜 a = ⨆ k ∈ σₙ 𝕜 a, ‖k‖ₑ :=
+  rfl
+
 /-! ### Elementary properties of the spectral radius in Banach algebras
 
 The spectral radius in a Banach `𝕜`-algebra (or, in fact, in any algebra satisfying
@@ -95,14 +99,14 @@ variable [NormedField 𝕜] [NonUnitalRing A] [Module 𝕜 A]
 @[simp]
 theorem spectralRadius_of_subsingleton [Subsingleton A] (a : A) :
     spectralRadius 𝕜 a = 0 := by
-  simp [spectralRadius]
+  simp [spectralRadius_def]
 
 @[deprecated (since := "2026-11-10")]
 alias spectrum.SpectralRadius.of_subsingleton := spectralRadius_of_subsingleton
 
 @[simp]
 theorem spectralRadius_zero : spectralRadius 𝕜 (0 : A) = 0 := by
-  simp [spectralRadius]
+  simp [spectralRadius_def]
 
 @[deprecated (since := "2026-11-10")]
 alias spectrum.spectralRadius_zero := spectralRadius_zero
@@ -110,12 +114,12 @@ alias spectrum.spectralRadius_zero := spectralRadius_zero
 @[simp]
 theorem Unitization.spectralRadius_inr [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] (a : A) :
     spectralRadius 𝕜 (a : Unitization 𝕜 A) = spectralRadius 𝕜 a := by
-  simp [spectralRadius, quasispectrum_eq_spectrum_union_zero, ← quasispectrum_eq_spectrum_inr']
+  simp [spectralRadius_def, quasispectrum_eq_spectrum_union_zero, ← quasispectrum_eq_spectrum_inr']
 
 @[simp]
 theorem spectralRadius_smul (k : 𝕜) (a : A) :
     spectralRadius 𝕜 (k • a) = ‖k‖ₑ * spectralRadius 𝕜 a := by
-  simp only [spectralRadius, quasispectrum_smul, ← Set.image_smul, iSup_image, ← smul_eq_mul]
+  simp only [spectralRadius_def, quasispectrum_smul, ← Set.image_smul, iSup_image, ← smul_eq_mul]
   simp [↓ENNReal.smul_iSup, eNorm_eq_nnNorm]
 
 end NotNormed
@@ -187,7 +191,7 @@ variable (𝕜) in
 theorem exists_eNorm_quasispectrum_eq_spectralRadius (a : A) :
     ∃ k ∈ σₙ 𝕜 a, ‖k‖ₑ = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (isCompact 𝕜 a).exists_isMaxOn (nonempty 𝕜 a) continuous_eNorm.continuousOn
-  unfold spectralRadius
+  rw [spectralRadius_def]
   exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le h)⟩
 
 @[deprecated (since := "2026-10-31")]
@@ -253,7 +257,7 @@ section NotNormed
 variable [Ring A] [Algebra 𝕜 A]
 
 lemma spectralRadius_eq_of_unital (a : A) : spectralRadius 𝕜 a = ⨆ k ∈ σ 𝕜 a, ‖k‖ₑ := by
-  simp [spectralRadius, quasispectrum_eq_spectrum_union_zero, iSup_or, iSup_sup_eq]
+  simp [spectralRadius_def, quasispectrum_eq_spectrum_union_zero, iSup_or, iSup_sup_eq]
 
 @[simp]
 theorem spectralRadius_one [Nontrivial A] : spectralRadius 𝕜 (1 : A) = 1 := by
@@ -399,13 +403,6 @@ alias spectrum.spectralRadius_le_pow_nnNorm_pow_one_div := spectralRadius_le_pow
 theorem spectralRadius_le_iInf_pow_eNorm_rPow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ ⨅ n : ℕ, ‖a ^ (n + 1)‖ₑ ^ (1 / (n + 1) : ℝ) :=
   le_iInf <| spectralRadius_le_pow_eNorm_rPow_one_div 𝕜 a
-
-@[deprecated (since := "2026-11-10")]
-alias spectrum.spectralRadius_le_iInf_pow_nnnorm_pow_one_div :=
-  spectralRadius_le_iInf_pow_eNorm_rPow_one_div
-@[deprecated (since := "2026-11-10")]
-alias spectrum.spectralRadius_le_iInf_pow_nnNorm_pow_one_div :=
-  spectralRadius_le_iInf_pow_eNorm_rPow_one_div
 
 theorem spectralRadius_le_liminf_pow_eNorm_rPow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => ‖a ^ n‖ₑ ^ (1 / n : ℝ) := by
@@ -873,7 +870,7 @@ lemma QuasispectrumRestricts.spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [Norm
     [IsScalarTower 𝕜₁ 𝕜₂ A] [IsScalarTower 𝕜₂ A A] [SMulCommClass 𝕜₂ A A]
     {f : 𝕜₂ → 𝕜₁} {a : A} (h : QuasispectrumRestricts a f) :
     spectralRadius 𝕜₁ a = spectralRadius 𝕜₂ a := by
-  rw [spectralRadius, spectralRadius]
+  rw [spectralRadius_def, spectralRadius_def]
   have (x : 𝕜₁) : ‖(algebraMap 𝕜₁ 𝕜₂) x‖ₑ = ‖x‖ₑ :=
     congr(($(algebraMap_isometry 𝕜₁ 𝕜₂ |>.nnNorm_map_of_map_zero (map_zero _) x) : ℝ≥0∞))
   simp_rw [h.algebraMap_image.symm, iSup_image, this]
@@ -914,7 +911,7 @@ lemma SpectrumRestricts.nnReal_iff_spectralRadius_le {A : Type*} [Ring A] [Algeb
     rw [← NNReal.coe_sub (mod_cast hyt)]
     simp
   · replace h : ∀ x ∈ σ ℝ a, ‖t - x‖₊ ≤ t := by
-      simpa [spectralRadius, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h
+      simpa [spectralRadius_def, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h
     gconvert h with x hx h_le
     rw [← NNReal.coe_le_coe, coe_nnNorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
