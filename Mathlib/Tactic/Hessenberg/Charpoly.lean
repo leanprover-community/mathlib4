@@ -267,7 +267,6 @@ abbrev lastColMinor (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α) (i : Fin n) :
     Matrix (Fin n) (Fin n) α :=
   M.submatrix i.castSucc.succAbove Fin.castSucc
 
-
 /-- The leading block `Mᵢ` formed from the first `i` rows and columns of `M.lastColMinor i` is equal
 to the leading `i×i` block of `M`. -/
 theorem toBlock_lastColMinor (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α) (i : Fin n) :
