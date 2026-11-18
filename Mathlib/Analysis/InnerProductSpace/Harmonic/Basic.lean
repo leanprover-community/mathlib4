@@ -203,7 +203,7 @@ theorem harmonicOnNhd_comp_add_const_iff {k : E} :
   rwa [harmonicAt_comp_add_const_iff, sub_add_cancel] at h
 
 open scoped Pointwise in
-/-- Left addition by a constant preserve harmonicity on a set. -/
+/-- Left addition by a constant preserves harmonicity on a set. -/
 theorem harmonicOnNhd_comp_const_add_iff {k : E} :
     HarmonicOnNhd (fun y ↦ f (k + y)) s ↔ HarmonicOnNhd f ({k} + s) := by
   simpa [add_comm] using @harmonicOnNhd_comp_add_const_iff _ _ _ _ _ _ _ f s k
