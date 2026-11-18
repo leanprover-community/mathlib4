@@ -43,6 +43,11 @@ def _root_.FixedDetMatrix.mk {m : R} (A : Matrix n n R) (h : det A = m) : FixedD
 lemma coe_mk {m : R} (A : Matrix n n R) (h : det A = m) :
     (FixedDetMatrix.mk A h).1 = A := rfl
 
+@[simp]
+theorem mk_inj {m : R} {A B : Matrix n n R} (hA : det A = m) (hB : det B = m) :
+    FixedDetMatrix.mk A hA = .mk B hB ↔ A = B :=
+  Subtype.mk_eq_mk
+
 lemma mk_coe {m : R} (A : FixedDetMatrix n R m) : FixedDetMatrix.mk (A.1) (A.2) = A := rfl
 
 /-- Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
