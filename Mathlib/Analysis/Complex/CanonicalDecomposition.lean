@@ -171,10 +171,7 @@ theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) 
 
 private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f : β → α)
     (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support := by
-  simp only [mulSupport_subset_iff, ne_eq, mem_support]
-  intro
-  contrapose
-  simp +contextual
+  fun _ ↦ mt fun h ↦ by simp [h]
 
 /--
 Finite Blaschke products, i.e., products of powers of canonical factors `canonicalFactor R u` with
@@ -183,14 +180,11 @@ Finite Blaschke products, i.e., products of powers of canonical factors `canonic
 theorem norm_finprod_canonicalFactor_zpow_eq_one {F : ℂ → ℤ} (hF : F.support ⊆ ball 0 R) {z : ℂ}
     (hz : z ∈ sphere 0 R) :
     ‖(∏ᶠ u, (canonicalFactor R u) ^ (F u)) z‖ = 1 := by
-  by_cases h : (mulSupport fun u ↦ (canonicalFactor R u) ^ (F u)).Finite
-  · rw [finprod_eq_prod_of_mulSupport_subset (s := h.toFinset) _ (by simp)]
-    simp only [Finset.prod_apply, Pi.pow_apply, norm_prod, norm_zpow]
-    apply Finset.prod_eq_one
-    intro b hb
-    rw [norm_canonicalFactor_eval_circle_eq_one
-      (hF (mulSupport_pow_subset_support _ _ (h.mem_toFinset.1 hb))) hz, one_zpow]
-  · simp [finprod_of_infinite_mulSupport h]
+  refine finprod_induction (fun f : ℂ → ℂ ↦ ‖f z‖ = 1) (by simp)
+    (fun _ _ ha hb ↦ by simp [ha, hb]) fun u ↦ ?_
+  by_cases hu : F u = 0
+  · simp [hu]
+  · simp [norm_canonicalFactor_eval_circle_eq_one (hF hu) hz]
 
 /-!
 ### Orders and Divisors
@@ -700,23 +694,11 @@ lemma ECanonicalDecomp.log_norm_eventuallyEq {f h : ℂ → E} (D : ECanonicalDe
       ‖(∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) u‖ = 1 :=
     norm_finprod_canonicalFactor_zpow_eq_one
       (fun _ hu ↦ (divisor f (ball 0 R)).supportWithinDomain (by simpa using hu)) hu
-  -- Rewrite the extended canonical decomposition as an instance of the setting of
-  -- `MeromorphicOn.log_norm_extract_zeros_poles`, with the Blaschke product absorbed into `h`.
-  have h₁ : f =ᶠ[codiscreteWithin (sphere 0 R)] factorizedRational (divisor f (sphere 0 R)) •
-      ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) • h) := by
-    filter_upwards [D.eventuallyEq.filter_mono (codiscreteWithin_mono sphere_subset_closedBall)]
-      with a ha
-    rw [ha, Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.mul_apply, mul_comm, mul_smul]
-  have h₂ : ∀ u : sphere (0 : ℂ) R,
-      ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) • h) u ≠ 0 := by
-    intro ⟨u, hu⟩
-    rw [Pi.smul_apply']
-    apply smul_ne_zero _ (D.ne_zero u (sphere_subset_closedBall hu))
-    rw [← norm_ne_zero_iff, h₀ hu]
-    exact one_ne_zero
-  filter_upwards [MeromorphicOn.log_norm_extract_zeros_poles h₂ h₁, self_mem_codiscreteWithin _]
-    with a ha h₂a
-  rw [ha]
-  simp only [Pi.add_apply, Pi.smul_apply', norm_smul, h₀ h₂a, one_mul]
+  filter_upwards [D.eventuallyEq.filter_mono (codiscreteWithin_mono sphere_subset_closedBall),
+    (divisor f (sphere 0 R)).eq_zero_codiscreteWithin, self_mem_codiscreteWithin _]
+    with z hz h₁z h₂z
+  rw [Pi.add_apply, hz, Pi.smul_apply', Pi.mul_apply, norm_smul, norm_mul, h₀ h₂z, one_mul, log_mul]
+  · simpa using FactorizedRational.ne_zero h₁z
+  · simpa using D.ne_zero z <| sphere_subset_closedBall h₂z
 
 end Complex
