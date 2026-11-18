@@ -166,29 +166,11 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] (ht : p.IsEu
 set_option warn.sorry false in set_option linter.style.longLine false in
 theorem _root_.SimpleGraph.IsEulerian.exists_isEulerian_of_preconnected (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (h : G.Preconnected) (v : V) : ∃ p : G.Walk v v, p.IsEulerian := sorry
 
--- TODO: golf `Subgraph.degree_of_notMem_verts` with this
-omit [DecidableEq V] in
-theorem _root_.SimpleGraph.Subgraph.neighborSet_eq_empty_of_notMem_verts {G' : G.Subgraph} {v : V}
-    (hv : v ∉ G'.verts) : G'.neighborSet v = ∅ := by
-  grind [Subgraph.mem_neighborSet, Subgraph.Adj.fst_mem]
-
-omit [DecidableEq V] in
-theorem _root_.SimpleGraph.Subgraph.mem_verts_of_nonempty_neighborSet {G' : G.Subgraph} {v : V}
-    (hv : (G'.neighborSet v).Nonempty) : v ∈ G'.verts := by
-  contrapose! hv
-  exact G'.neighborSet_eq_empty_of_notMem_verts hv
-
 theorem isEulerian_mapToSubgraph {u v} {p : G.Walk u v} :
     p.mapToSubgraph.IsEulerian ↔ p.IsTrail := by
   rw [isEulerian_iff, isTrail_mapToSubgraph]
   refine ⟨And.left, fun h ↦ ⟨h, fun e he ↦ ?_⟩⟩
   simpa [← edgeSet_mapToSubgraph] using he
-
-omit [DecidableEq V] in
-@[simp]
-theorem _root_.SimpleGraph.Subgraph.ncard_neighborSet (G' : G.Subgraph) (v)
-    [Fintype <| G'.neighborSet v] : (G'.neighborSet v).ncard = G'.degree v := by
-  simp_rw [Set.ncard_eq_toFinset_card', Subgraph.finset_card_neighborSet_eq_degree]
 
 omit [DecidableEq V] in
 theorem IsTrail.even_ncard_neighborSet_toSubgraph_iff {u v} {p : G.Walk u v}
