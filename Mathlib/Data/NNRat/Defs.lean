@@ -208,8 +208,10 @@ theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 
 @[norm_cast]
-theorem nsmul_coe (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
+theorem coe_nsmul (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
   coeHom.toAddMonoidHom.map_nsmul _ _
+
+@[deprecated (since := "2026-11-16")] alias nsmul_coe := coe_nsmul
 
 theorem bddAbove_coe {s : Set ℚ≥0} : BddAbove ((↑) '' s : Set ℚ) ↔ BddAbove s :=
   ⟨fun ⟨b, hb⟩ ↦

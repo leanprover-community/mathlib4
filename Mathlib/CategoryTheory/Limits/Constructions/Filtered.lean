@@ -118,7 +118,7 @@ end CoproductsFromFiniteFiltered
 open CoproductsFromFiniteFiltered
 
 theorem hasCoproducts_of_finite_and_filtered [HasFiniteCoproducts C]
-    [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := fun α => by
+    [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := .mk fun α => by
   exact ⟨fun F => HasColimit.mk (liftToFinsetColimitCocone F)⟩
 
 theorem has_colimits_of_finite_and_filtered [HasFiniteColimits C]
