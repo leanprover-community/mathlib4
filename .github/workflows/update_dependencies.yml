@@ -2,7 +2,7 @@ name: Update Mathlib Dependencies
 
 on:
   schedule:
-    - cron: '0 * * * *'  # This will run every hour
+    - cron: '17 0 * * *'  # Daily at 00:17 UTC
   workflow_dispatch:
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false # no later step needs git credentials
 
       - name: Configure Lean
-        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
+        uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
         with:
           auto-config: false
           use-github-cache: false
@@ -34,7 +34,7 @@ jobs:
         run: lake update -v
 
       - name: Upload the updated manifest and toolchain
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: lake-update-result
           path: |
@@ -127,7 +127,7 @@ jobs:
 
       - name: Download the updated manifest and toolchain
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: lake-update-result
           path: ${{ runner.temp }}/lake-update-result
@@ -192,10 +192,11 @@ jobs:
           # branch_stale : working tree differs from branch tip → CPR would push
           #
           # States (checked in priority order):
+          #   IDLE       : no open PR + !needs_update → skip CPR
           #   SUPERSEDED : open PR + !needs_update  → call CPR to close PR
           #   CONFLICT   : merge-conflict label     → call CPR to rebase
           #   STALE      : open PR + branch_stale   → call CPR to update branch
-          #   ABSENT     : no branch or no open PR  → call CPR to create/clean up
+          #   ABSENT     : needs_update + (no branch or no open PR) → call CPR to create PR
           #   PENDING    : open PR + needs_update + !branch_stale → skip CPR
 
           # ── inputs ──────────────────────────────────────────────────────────
@@ -222,7 +223,9 @@ jobs:
           echo "merge_conflict=$merge_conflict"
 
           # ── state ───────────────────────────────────────────────────────────
-          if [ "$pr_open" == "true" ] && [ "$needs_update" == "false" ]; then
+          if [ "$pr_open" != "true" ] && [ "$needs_update" == "false" ]; then
+            state="IDLE"
+          elif [ "$pr_open" == "true" ] && [ "$needs_update" == "false" ]; then
             state="SUPERSEDED"
           elif [ "$merge_conflict" == "true" ]; then
             state="CONFLICT"
@@ -237,7 +240,7 @@ jobs:
           echo "State: $state"
           echo "state=$state" >> "$GITHUB_OUTPUT"
 
-          if [ "$state" == "PENDING" ]; then
+          if [ "$state" == "PENDING" ] || [ "$state" == "IDLE" ]; then
             create_pr=false
           else
             create_pr=true

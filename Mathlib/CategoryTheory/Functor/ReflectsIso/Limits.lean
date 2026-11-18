@@ -14,7 +14,6 @@ Let `Fᵢ : C ⥤ Dᵢ` be a conservative family of functors (i.e. they jointly
 reflect isomorphisms). Let `G : J ⥤ C` be a functor that has a limit that
 is preserved by the functors `Fᵢ`. In this file, we show that a cone for `G`
 is a limit if it is so after applying the functors `Fᵢ`.
-
 -/
 
 @[expose] public section
@@ -26,7 +25,6 @@ variable {C : Type*} [Category C] {I : Type*} {D : I → Type*} [∀ i, Category
   {F : ∀ i, C ⥤ D i} (hF : JointlyReflectIsomorphisms F)
   {J : Type*} [Category* J] {G : J ⥤ C}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `Fᵢ : C ⥤ Dᵢ` is a conservative family of functors which also
 preserve the (existing) limit of a functor `G : J ⥤ C`, then a cone
 for `G` is a limit if it is so after applying the functors `Fᵢ`
@@ -51,7 +49,6 @@ noncomputable def jointlyReflectsLimit
   rw [← this]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `Fᵢ : C ⥤ Dᵢ` is a conservative family of functors which also
 preserve the (existing) colimit of a functor `G : J ⥤ C`, then a cocone
 for `G` is a colimit if it is so after applying the functors `Fᵢ`

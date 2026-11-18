@@ -43,8 +43,6 @@ Then we establish that `Proj 𝒜` is a `LocallyRingedSpace`:
 ## References
 
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
-
-
 -/
 
 @[expose] public section

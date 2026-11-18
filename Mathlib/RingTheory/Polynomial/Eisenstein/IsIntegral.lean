@@ -23,7 +23,6 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
   integral over `R`, if `p ^ n • z ∈ R[B.gen]`, then `z ∈ R[B.gen]`.
   Together with `Algebra.discr_mul_isIntegral_mem_adjoin` this result often allows to compute the
   ring of integers of `L`.
-
 -/
 
 public section
@@ -55,13 +54,9 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     exact zero_ne_one h.symm
   · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, map_sum]
     conv =>
-      congr
-      congr
-      next => skip
-      congr
-      next => skip
-      ext
-      rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial]
+      enter [2, 2, _]
+      rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial,
+        Finsupp.single_apply]
     rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
       natDegree_cyclotomic, Nat.totient_prime hp.out] at hi
     simp only [hi.trans_le (Nat.sub_le _ _), sum_ite_eq', mem_range, ite_true,
@@ -212,9 +207,7 @@ theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Rin
   choose! f hf using hQ
   rw [aeval_eq_sum_range, sum_range] at hz
   conv_lhs at hz =>
-    congr
-    next => skip
-    ext i
+    enter [2, i]
     rw [hf i (mem_range.2 (Fin.is_lt i)), ← smul_smul]
   rw [← smul_sum] at hz
   rw [← smul_right_injective _ hp hz]
@@ -257,10 +250,10 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   -- The base case is `dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt`.
   refine mem_adjoin_of_dvd_coeff_of_dvd_aeval hp.ne_zero (fun i => ?_) hQ
   induction i using Nat.case_strong_induction_on with
-  | hz =>
+  | zero =>
     intro
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
-  | hi j hind =>
+  | succ j hind =>
     intro hj
     convert hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) _ hndiv
     -- Two technical results we will need about `P.natDegree` and `Q.natDegree`.
