@@ -1208,14 +1208,13 @@ jobs:
           lint-bib-file: true
           checkout: false
 
-  # Checks for rules that a PR can break to test a change, but that must hold on `master`.
-  # On bors runs (`staging` and `trying`) a finding is an error, and bors requires this job.
-  # On other runs a finding is a warning, so the job passes.
+  # Bors requires these checks on `staging` and `trying`.
+  # Other runs report rule violations as warnings so PRs can test unmerged changes.
   merge_checks:
     name: Merge checks
     runs-on: ubuntu-latest
-    # The job reads (potentially fork) PR files and runs no PR code. The PR files are in
-    # `pr-branch/`, so no local action path (`uses: ./...`) leads into them.
+    # Read PR files from `pr-branch/` and load local actions from the workflow commit.
+    # The job does not execute PR code.
     permissions:
       contents: read
     env:
@@ -1229,10 +1228,9 @@ jobs:
           ref: ${{ inputs.pr_branch_ref }}
           path: pr-branch
           sparse-checkout: .github
-          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          # Keep the read-only token out of the untrusted checkout.
           persist-credentials: false
-          # This job runs with only `contents: read` and no persisted credentials,
-          # so checking out fork PR code under pull_request_target is safe.
+          # The job reads fork PR files without executing their code.
           allow-unsafe-pr-checkout: true
 
       - name: Checkout local actions
@@ -1244,9 +1242,9 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Check that each mathlib-ci commit that `.github/` pins is on mathlib-ci `master`.
-      # A commit from a mathlib-ci PR branch or fork runs unreviewed code with mathlib4 secrets.
-      # The step also outputs the default commit of get-mathlib-ci as `sha`.
+      # Require mathlib-ci pins from its master history.
+      # Unmerged commits can expose mathlib4 secrets when other jobs execute them.
+      # Output the get-mathlib-ci default commit as `sha`.
       - name: Check mathlib-ci pins
         id: pins
         if: ${{ !cancelled() }}
@@ -1256,9 +1254,8 @@ jobs:
           level=warning; [ "$STRICT" = true ] && level=error
           status=0
           pin=
-          declare -A compared  # mathlib-ci commit -> its `compare` status against mathlib-ci master
-          # One `file:line:match` line for each `mathlib-ci...@<sha>` and for the default commit of
-          # get-mathlib-ci. Each match ends with the 40-hex commit.
+          declare -A compared  # Cache each commit's comparison with mathlib-ci master.
+          # Read `file:line:match` records. Each match ends with a 40-digit hexadecimal commit hash.
           while IFS=: read -r file line match; do
             sha=${match: -40}
             echo "$file:$line:$sha"
@@ -1280,12 +1277,11 @@ jobs:
           fi
           [ "$level" = warning ] || exit "$status"
 
-      # The paths are checked against the mathlib-ci commit that the PR pins in get-mathlib-ci,
-      # because the workflows run the scripts at that commit.
+      # Check script paths against the PR's default mathlib-ci commit.
       - name: Get mathlib-ci
         id: get_mathlib_ci
         if: ${{ !cancelled() && steps.pins.outputs.sha }}
-        # On other runs a missing commit is only a warning, which "Check mathlib-ci pins" reports.
+        # Outside bors, allow checkout failure after the pin check reports a warning.
         continue-on-error: ${{ env.STRICT != 'true' }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
         with:
@@ -1301,9 +1297,8 @@ jobs:
           status=0
           report() { echo "::$level file=$1,line=$2::$3"; status=1; }
 
-          # 1. Each literal `$CI_SCRIPTS_DIR/<path>` or `${CI_SCRIPTS_DIR}/<path>` with no `#` before it
-          #    on its line names a file at the pinned commit. The check does not see paths that a
-          #    workflow builds at run time.
+          # Check literal script paths before the first `#` on each line.
+          # Dynamic paths are outside this check.
           while IFS=: read -r file line text; do
             while read -r path; do
               [[ "/$path/" != */../* && -e "$CI_SCRIPTS_DIR/$path" ]] ||
@@ -1311,8 +1306,8 @@ jobs:
             done < <(grep -oE '\$\{?CI_SCRIPTS_DIR\}?/[A-Za-z0-9._/-]+' <<< "${text%%#*}" | cut -d/ -f2-)
           done < <(grep -rnE --include='*.yml' --include='*.yaml' '^[^#]*\$\{?CI_SCRIPTS_DIR\}?/' .github/workflows)
 
-          # 2. No step checks out mathlib-ci with actions/checkout. Workflows use the local
-          #    get-mathlib-ci action, which holds the pin. A file that yq cannot parse fails the step.
+          # Require workflows to use get-mathlib-ci for mathlib-ci checkouts.
+          # Invalid YAML fails this step.
           yq ea '.jobs[].steps[]?
                  | select((.uses // "") | test("^actions/checkout@"))
                  | select((.with.repository // "") | test("/mathlib-ci$"))

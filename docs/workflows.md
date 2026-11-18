@@ -49,6 +49,10 @@ for fork permissions and recovery procedures.
 |---|---|
 | [`build_template.yml`](../.github/workflows/build_template.yml) | Reusable CI workflow (`workflow_call`) that performs Lean setup, build/test/lint steps, cache/artifact handling, and reporting. Cache uploads have a 20-minute timeout; post-build checks have a 30-minute timeout. |
 
+The build template checks mathlib-ci pins, script paths, and checkout usage.
+Bors requires the Merge checks job on `staging` and `trying`.
+Other runs report rule violations as warnings so PRs can test unmerged changes.
+
 ## Pull requests
 
 Primary trigger for this section: PR/merge-queue events (`pull_request`, `pull_request_target`).
