@@ -112,8 +112,8 @@ theorem toDirectSum_zero [Semiring M] : (0 : AddMonoidAlgebra M ι).toDirectSum 
 
 @[simp]
 theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
-    (f + g).toDirectSum = f.toDirectSum + g.toDirectSum :=
-  Finsupp.toDFinsupp_add _ _
+    (f + g).toDirectSum = f.toDirectSum + g.toDirectSum := by
+  simp [toDirectSum]
 
 @[simp]
 theorem toDirectSum_natCast [DecidableEq ι] [AddMonoid ι] [Semiring M] (n : ℕ) :
@@ -127,13 +127,13 @@ theorem toDirectSum_ofNat [DecidableEq ι] [AddMonoid ι] [Semiring M] (n : ℕ)
 
 @[simp]
 theorem toDirectSum_sub [Ring M] (f g : AddMonoidAlgebra M ι) :
-    (f - g).toDirectSum = f.toDirectSum - g.toDirectSum :=
-  Finsupp.toDFinsupp_sub _ _
+    (f - g).toDirectSum = f.toDirectSum - g.toDirectSum := by
+  simp [toDirectSum]
 
 @[simp]
 theorem toDirectSum_neg [Ring M] (f : AddMonoidAlgebra M ι) :
-    (-f).toDirectSum = - f.toDirectSum :=
-  Finsupp.toDFinsupp_neg _
+    (-f).toDirectSum = - f.toDirectSum := by
+  simp [toDirectSum]
 
 @[simp]
 theorem toDirectSum_intCast [DecidableEq ι] [AddMonoid ι] [Ring M] (z : ℤ) :
@@ -187,12 +187,16 @@ theorem toAddMonoidAlgebra_ofNat [AddMonoid ι] [Semiring M] [∀ m : M, Decidab
 @[simp]
 theorem toAddMonoidAlgebra_sub [Ring M] [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
     (f - g).toAddMonoidAlgebra = toAddMonoidAlgebra f - toAddMonoidAlgebra g := by
-  ext : 1; exact DFinsupp.toFinsupp_sub ..
+  ext : 1
+  rw [AddMonoidAlgebra.coeff_sub]
+  apply DFinsupp.toFinsupp_sub
 
 @[simp]
 theorem toAddMonoidAlgebra_neg [Ring M] [∀ m : M, Decidable (m ≠ 0)] (f : ⨁ _ : ι, M) :
     (-f).toAddMonoidAlgebra = -toAddMonoidAlgebra f := by
-  ext : 1; exact DFinsupp.toFinsupp_neg ..
+  ext : 1
+  rw [AddMonoidAlgebra.coeff_neg]
+  apply DFinsupp.toFinsupp_neg
 
 @[simp]
 theorem toAddMonoidAlgebra_intCast [AddMonoid ι] [Ring M] [∀ m : M, Decidable (m ≠ 0)] (z : ℤ) :

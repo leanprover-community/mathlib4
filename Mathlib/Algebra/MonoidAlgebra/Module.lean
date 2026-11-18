@@ -174,7 +174,7 @@ def supportedEquivFinsupp (s : Set M) : supported R S s ≃ₗ[R] s →₀ S :=
     invFun x := ⟨.ofCoeff x.1, x.2⟩
     left_inv _ := rfl
     right_inv _ := rfl
-    map_add' _ _ := rfl
+    map_add' _ _ := by simp; rfl
     map_smul' _ _ := rfl }
    ≪≫ₗ Finsupp.supportedEquivFinsupp s
 
