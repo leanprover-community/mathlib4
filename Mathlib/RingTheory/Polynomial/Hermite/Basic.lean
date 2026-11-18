@@ -33,14 +33,13 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 ## References
 
 * [Hermite Polynomials](https://en.wikipedia.org/wiki/Hermite_polynomials)
-
 -/
 
 @[expose] public section
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 

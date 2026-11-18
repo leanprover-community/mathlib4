@@ -38,7 +38,6 @@ relation and that isomorphic algebras are Morita equivalent.
 ## Tags
 
 Morita Equivalence, Category Theory, Noncommutative Ring, Module Theory
-
 -/
 
 @[expose] public section

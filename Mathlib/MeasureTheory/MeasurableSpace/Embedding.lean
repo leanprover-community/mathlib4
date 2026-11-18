@@ -360,6 +360,14 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
 def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α :=
   ⟨Equiv.ulift, measurable_down, measurable_up⟩
 
+/-- Measurable equivalence between `α` and `Additive α`. -/
+def additive {α : Type*} [MeasurableSpace α] : α ≃ᵐ Additive α :=
+  ⟨Additive.ofMul, measurable_ofMul, measurable_toMul⟩
+
+/-- Measurable equivalence between `α` and `Multiplicative α`. -/
+def multiplicative {α : Type*} [MeasurableSpace α] : α ≃ᵐ Multiplicative α :=
+  ⟨Multiplicative.ofAdd, measurable_ofAdd, measurable_toAdd⟩
+
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=
   Iff.intro
@@ -521,11 +529,11 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [MeasurableSpace β₁] [Measu
     (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂) :
     (α₁ → β₁) ≃ᵐ (α₂ → β₂) where
   __ := Equiv.arrowCongr' hα hβ
-  measurable_toFun _ h := by
-    exact MeasurableSet.preimage h <|
+  measurable_toFun _ h :=
+    MeasurableSet.preimage h <|
       measurable_pi_iff.mpr fun _ ↦ hβ.measurable.comp (measurable_pi_apply _)
-  measurable_invFun _ h := by
-    exact MeasurableSet.preimage h <|
+  measurable_invFun _ h :=
+    MeasurableSet.preimage h <|
       measurable_pi_iff.mpr fun _ ↦ hβ.symm.measurable.comp (measurable_pi_apply _)
 
 /-- Pi-types are measurably equivalent to iterated products. -/

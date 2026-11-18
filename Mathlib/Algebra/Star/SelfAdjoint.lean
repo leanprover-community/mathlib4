@@ -37,7 +37,6 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
 * Define `fun z x => z * x * star z` (i.e. conjugation by `z`) as a monoid action of `R` on `R`
   (similar to the existing `ConjAct` for groups), and then state the fact that `selfAdjoint R` is
   invariant under it.
-
 -/
 
 @[expose] public section
@@ -377,12 +376,21 @@ end IsSelfAdjoint
 
 variable (R)
 
-/-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
-def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
+/-- The self-adjoint elements of a star additive monoid, as an additive submonoid.
+
+When coercing to a type, prefer `selfAdjoint` over this definition, as it has more API. -/
+def selfAdjoint.addSubmonoid [AddMonoid R] [StarAddMonoid R] : AddSubmonoid R where
   carrier := { x | IsSelfAdjoint x }
   zero_mem' := star_zero R
   add_mem' hx := hx.add
+
+/-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
+def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
+  __ := selfAdjoint.addSubmonoid R
   neg_mem' hx := hx.neg
+
+@[simp] theorem toAddSubmonoid_selfAdjoint [AddGroup R] [StarAddMonoid R] :
+  (selfAdjoint R).toAddSubmonoid = selfAdjoint.addSubmonoid R := rfl
 
 /-- The skew-adjoint elements of a star additive group, as an additive subgroup. -/
 def skewAdjoint [AddCommGroup R] [StarAddMonoid R] : AddSubgroup R where
@@ -598,7 +606,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), membership .]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]
@@ -689,10 +697,14 @@ instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [Trivial
     {x : R} : IsStarNormal x :=
   ⟨by rw [star_trivial]⟩
 
--- see Note [lower instance priority]
-instance (priority := 100) CommMonoid.isStarNormal [CommMonoid R] [StarMul R] {x : R} :
-    IsStarNormal x :=
-  ⟨mul_comm _ _⟩
+/-- All elements of a commutative star magma are normal.
+
+See Note [lower instance priority] -/
+instance (priority := 100) IsStarNormal.all [CommMagma R] [StarMul R] (x : R) :
+    IsStarNormal x where
+  star_comm_self := .all _ _
+
+@[deprecated (since := "2026-10-30")] alias CommMonoid.isStarNormal := IsStarNormal.all
 
 theorem Commute.isStarNormal_add [NonUnitalNonAssocSemiring R] [StarRing R] {a b : R}
     (hab : Commute a (star b)) [ha : IsStarNormal a] [hb : IsStarNormal b] :

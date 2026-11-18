@@ -114,7 +114,7 @@ variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set
 namespace Measure
 
 theorem trimmed (μ : Measure α) : μ.toOuterMeasure.trim = μ.toOuterMeasure :=
-  le_antisymm μ.trim_le μ.1.le_trim
+  le_antisymm μ.trim_le μ.toOuterMeasure.le_trim
 
 /-! ### General facts about measures -/
 
@@ -148,8 +148,9 @@ theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
   ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
 
-theorem outerMeasure_le_iff {m : OuterMeasure α} : m ≤ μ.1 ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
-  simpa only [μ.trimmed] using! OuterMeasure.le_trim_iff (m₂ := μ.1)
+theorem outerMeasure_le_iff {m : OuterMeasure α} :
+    m ≤ μ.toOuterMeasure ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
+  simpa only [μ.trimmed] using! OuterMeasure.le_trim_iff (m₂ := μ.toOuterMeasure)
 
 lemma mono_null ⦃s t : Set α⦄ (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 := measure_mono_null h ht
 
@@ -188,7 +189,7 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
   exact hs
 
 theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty
+  ne_empty_iff_nonempty.1 fun h' => h <| h'.symm ▸ measure_empty
 
 theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = ∞ :=
   top_unique <| h₁ ▸ measure_mono h
@@ -203,6 +204,14 @@ theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono subset
 theorem exists_measurable_superset (μ : Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s := by
   simpa only [← measure_eq_trim] using! μ.toOuterMeasure.exists_measurable_superset_eq_trim s
+
+/-- For every subset `s` of a measurable set `t` there exists a measurable set `u` with
+`s ⊆ u ⊆ t` of the same measure as `s`. -/
+theorem exists_measurable_superset_of_subset (μ : Measure α) (hst : s ⊆ t)
+    (ht : MeasurableSet t) : ∃ u, s ⊆ u ∧ u ⊆ t ∧ MeasurableSet u ∧ μ u = μ s := by
+  obtain ⟨v, hsv, hv, hvs⟩ := exists_measurable_superset μ s
+  exact ⟨v ∩ t, subset_inter hsv hst, inter_subset_right, hv.inter ht,
+    le_antisymm (hvs ▸ measure_mono inter_subset_left) (measure_mono (subset_inter hsv hst))⟩
 
 /-- For every set `s` and a countable collection of measures `μ i` there exists a measurable
 superset `t ⊇ s` such that each measure `μ i` takes the same value on `s` and `t`. -/
@@ -324,14 +333,16 @@ This property holds without the assumption `μ s ≠ ∞` when the space is s-fi
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
-irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
+@[no_expose] def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
   if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
     if h' : ∃ t, t ⊇ s ∧ MeasurableSet t ∧
       ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
     else (exists_measurable_superset μ s).choose
 
+alias toMeasurable_def := toMeasurable.eq_def
+
 theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
-  rw [toMeasurable_def]; split_ifs with hs h's
+  rw [toMeasurable]; split_ifs with hs h's
   exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
@@ -340,13 +351,13 @@ theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
     MeasurableSet (toMeasurable μ s) := by
-  rw [toMeasurable_def]; split_ifs with hs h's
+  rw [toMeasurable]; split_ifs with hs h's
   exacts [hs.choose_spec.2.1, h's.choose_spec.2.1,
           (exists_measurable_superset μ s).choose_spec.2.1]
 
 @[simp]
 theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
-  rw [toMeasurable_def]; split_ifs with hs h's
+  rw [toMeasurable]; split_ifs with hs h's
   · exact measure_congr hs.choose_spec.2.2
   · simpa only [inter_univ] using h's.choose_spec.2.2 univ MeasurableSet.univ
   · exact (exists_measurable_superset μ s).choose_spec.2.2

@@ -28,7 +28,6 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 * `Path.Homotopic p₀ p₁` is the relation saying that there is a homotopy between `p₀` and `p₁`
 * `Path.Homotopic.setoid x₀ x₁` is the setoid on `Path`s from `Path.Homotopic`
 * `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
-
 -/
 
 @[expose] public section
@@ -313,8 +312,8 @@ theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
 @[simp] theorem mk''_eq_mk (p : Path x₀ x₁) : Quotient.mk'' p = mk p := rfl
 
 theorem exact {p q : Path x₀ x₁} (h : Quotient.mk p = Quotient.mk q) :
-    Homotopic p q := by
-  exact _root_.Quotient.exact h
+    Homotopic p q :=
+  _root_.Quotient.exact h
 
 theorem eq {p q : Path x₀ x₁} : mk p = mk q ↔ Homotopic p q :=
   _root_.Quotient.eq

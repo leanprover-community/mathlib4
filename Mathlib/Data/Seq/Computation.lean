@@ -9,6 +9,9 @@ public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Logic.Relator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coinductive formalization of unbounded computations.
 
@@ -302,7 +305,7 @@ class Terminates (s : Computation α) : Prop where
   term : ∃ a, a ∈ s
 
 theorem terminates_iff (s : Computation α) : Terminates s ↔ ∃ a, a ∈ s :=
-  ⟨fun h => h.1, Terminates.mk⟩
+  ⟨fun h => h.term, Terminates.mk⟩
 
 theorem terminates_of_mem {s : Computation α} {a : α} (h : a ∈ s) : Terminates s :=
   ⟨⟨a, h⟩⟩

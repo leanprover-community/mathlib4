@@ -148,7 +148,7 @@ theorem isPrecomplete_iff :
       ∀ f : ℕ → M,
         (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.prec', fun h => ⟨h⟩⟩
 
 theorem IsPrecomplete.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
     [IsScalarTower R S M] : IsPrecomplete (I.map (algebraMap R S)) M ↔ IsPrecomplete I M := by
@@ -661,7 +661,7 @@ theorem of_bijective_iff : Function.Bijective (of I M) ↔ IsAdicComplete I M :=
   ⟨fun h ↦
     { toIsHausdorff := of_injective_iff.mp h.1,
       toIsPrecomplete := of_surjective_iff.mp h.2 },
-   fun h ↦ ⟨of_injective_iff.mpr h.1, of_surjective_iff.mpr h.2⟩⟩
+   fun h ↦ ⟨of_injective_iff.mpr h.toIsHausdorff, of_surjective_iff.mpr h.toIsPrecomplete⟩⟩
 
 variable (I M)
 
@@ -872,15 +872,15 @@ end StrictMono
 instance bot : IsAdicComplete (⊥ : Ideal R) M where
 
 protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingleton M :=
-  h.1.subsingleton
+  h.toIsHausdorff.subsingleton
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M where
 
 open Finset
 
-theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+theorem le_jacobson [IsAdicComplete I R] : I ≤ Ring.jacobson R := by
   intro x hx
-  rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
+  rw [← Ideal.neg_mem_iff, Ring.mem_jacobson_iff]
   intro y
   rw [add_comm]
   let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
@@ -910,5 +910,9 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm (_ ^ _), ← sub_sub,
       sub_self, zero_sub, @neg_mem_iff, mul_pow]
     exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
+
+@[deprecated le_jacobson +typeChanged (since := "2026-10-12")]
+theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+  simpa only [Ideal.jacobson_bot] using (le_jacobson I)
 
 end IsAdicComplete

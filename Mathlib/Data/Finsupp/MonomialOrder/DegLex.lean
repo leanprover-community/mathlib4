@@ -22,7 +22,6 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 
 * [Cox, Little and O'Shea, *Ideals, varieties, and algorithms*][coxlittleoshea1997]
 * [Becker and Weispfenning, *Gröbner bases*][Becker-Weispfenning1993]
-
 -/
 
 @[expose] public section
