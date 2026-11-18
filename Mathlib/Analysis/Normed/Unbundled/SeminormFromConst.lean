@@ -189,8 +189,7 @@ theorem seminormFromConst_isMul_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f 
 
 theorem seminormFromConst_apply_c : seminormFromConst c f c = f c := by
   refine tendsto_nhds_unique_of_forall (tendsto_seminormFromConst ..) tendsto_const_nhds fun n ↦ ?_
-  simp [seminormFromConst_seq, ← pow_succ', hpm c]
-  simp [pow_succ, hc]
+  simp [seminormFromConst_seq, ← pow_succ', hpm c, pow_succ (f c), hc]
 
 theorem seminormFromConst_const_mul (x : R) :
     seminormFromConst c f (c * x) = seminormFromConst c f c * seminormFromConst c f x := by
