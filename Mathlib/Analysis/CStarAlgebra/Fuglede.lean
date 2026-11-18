@@ -86,7 +86,7 @@ lemma expMulMulExp_const (h : SemiconjBy x a b) (z : ℂ) : expMulMulExp a b x z
     rintro - ⟨z, hz, rfl⟩
     rw [mem_sphere_iff_norm, sub_zero, expMulMulExp_eq_expUnitary_mul_mul_expUnitary h z,
       CStarRing.norm_mul_coe_unitary, CStarRing.norm_coe_unitary_mul]
-  simpa [expMulMulExp] using hf.apply_eq_apply_of_bounded this z 0
+  simpa [expMulMulExp] using hf.isConst_of_bounded this z 0
 
 /- This is not public because it is superseded by `SemiconjBy.star_right`. -/
 lemma SemiconjBy.star_right_of_unital (h : SemiconjBy x a b) :

@@ -364,7 +364,7 @@ Analysis:
 
   Complex analysis:
     Cauchy integral formula: 'DiffContOnCl.circleIntegral_sub_inv_smul'
-    Liouville theorem: 'Differentiable.apply_eq_apply_of_bounded'
+    Liouville theorem: 'Differentiable.isConst_of_bounded'
     maximum modulus principle: 'Complex.eventually_eq_of_isLocalMax_norm'
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
     principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
