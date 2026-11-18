@@ -238,4 +238,30 @@ lemma isEmptyIsometry_apply (x : ⨂[𝕜] i, E i) : isEmptyIsometry ι x = isEm
 
 end IsEmpty
 
+section Subsingleton
+
+variable [Subsingleton ι] (i₀ : ι)
+
+theorem inner_of_subsingleton (x y : ⨂[𝕜] i, E i) :
+    ⟪x, y⟫_𝕜 = ⟪subsingletonEquiv i₀ x, subsingletonEquiv i₀ y⟫_𝕜 :=
+  x.induction_on
+    (y.induction_on
+      (by simp [inner_def, inner_smul_left, inner_smul_right, Fintype.prod_subsingleton _ i₀])
+      (by simp_all [_root_.inner_add_right]))
+    (by simp_all [_root_.inner_add_left])
+
+noncomputable def subsingletonIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] E i₀ :=
+  subsingletonEquiv i₀ |>.isometryOfInner fun x y ↦
+    x.induction_on
+      (y.induction_on
+        (by simp [inner_smul_right, inner_smul_left, Fintype.prod_subsingleton _ i₀])
+        (by simp_all [_root_.inner_add_right]))
+      (by simp_all [_root_.inner_add_left])
+
+@[simp]
+lemma subsingletonIsometry_apply (x : ⨂[𝕜] i, E i) :
+    subsingletonIsometry i₀ x = subsingletonEquiv i₀ x := rfl
+
+end Subsingleton
+
 end PiTensorProduct
