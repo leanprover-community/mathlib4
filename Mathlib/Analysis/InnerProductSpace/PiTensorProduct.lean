@@ -155,4 +155,27 @@ lemma mapIsometry_id : mapIsometry (fun i ↦ (.id : E i →ₗᵢ[𝕜] E i)) =
 
 end MapIsometry
 
+section CongrIsometry
+
+variable (f : Π i, E i ≃ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i)
+
+noncomputable def congrIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] ⨂[𝕜] i, F i :=
+  congr (fun i ↦ (f i).toLinearEquiv) |>.isometryOfInner
+    <| inner_map_map (fun i ↦ (f i).toLinearIsometry)
+
+@[simp]
+lemma congrIsometry_apply : congrIsometry f x = congr (fun i ↦ (f i).toLinearEquiv) x := rfl
+
+lemma congrIsometry_symm : (congrIsometry f).symm = congrIsometry (fun i ↦ (f i).symm) := rfl
+
+@[simp]
+lemma toLinearEquiv_congrIsometry :
+    (congrIsometry f).toLinearEquiv = congr (fun i ↦ (f i).toLinearEquiv) := rfl
+
+@[simp]
+lemma congrIsometry_refl : congrIsometry (fun i ↦ .refl 𝕜 (E i)) = .refl 𝕜 (⨂[𝕜] i, E i) :=
+  LinearIsometryEquiv.toLinearEquiv_inj.mp <| LinearEquiv.toLinearMap_inj.mp <| by ext; simp
+
+end CongrIsometry
+
 end PiTensorProduct
