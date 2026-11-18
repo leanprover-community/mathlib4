@@ -140,9 +140,7 @@ theorem sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClose
       obtain ⟨l, c, hlc⟩ := hf.2
       exact Continuous.lowerSemicontinuous (hlc ▸ by fun_prop)
     obtain ⟨𝓕', h𝓕'⟩ := exists_countable_lowerSemicontinuous_isLUB hr hl
-    refine ⟨𝓕', h𝓕'.2.1, h𝓕'.2.2.csSup_eq ?_, fun f hf => h𝓕'.1 hf⟩
-    by_contra!
-    grind [(isLUB_empty_iff.1 (this ▸ h𝓕'.2.2)) (fun x : s => φ x - 1) ⟨hs.some, hs.some_mem⟩]
+    exact ⟨𝓕', h𝓕'.2.1, h𝓕'.2.2.sSup_eq, fun f hf => h𝓕'.1 hf⟩
   · use ∅; simp [domRestrict_def]; grind
 
 /-- The sequential version of `sSup_of_countable_affine_eq`. -/
@@ -210,9 +208,7 @@ theorem univ_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E]
     obtain ⟨l, c, hlc⟩ := hf.2
     exact Continuous.lowerSemicontinuous (by rw [hlc]; fun_prop)
   obtain ⟨𝓕', h𝓕'⟩ := exists_countable_lowerSemicontinuous_isLUB hr hl
-  refine ⟨𝓕', h𝓕'.2.1, h𝓕'.2.2.csSup_eq ?_, fun f hf => h𝓕'.1 hf⟩
-  by_contra!
-  grind [(isLUB_empty_iff.1 (this ▸ h𝓕'.2.2)) (fun x => φ x - 1) 0]
+  exact ⟨𝓕', h𝓕'.2.1, h𝓕'.2.2.sSup_eq, fun f hf => h𝓕'.1 hf⟩
 
 /-- The sequential version of `univ_sSup_of_countable_affine_eq`. -/
 theorem univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]

@@ -130,7 +130,7 @@ theorem isEmpty_algebraicIndependent (h : ¬ Injective (algebraMap R A)) :
 
 theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trdeg R A = 0 := by
   have := isEmpty_algebraicIndependent h
-  rw [trdeg, ciSup_of_empty, bot_eq_zero]
+  rw [trdeg, iSup_of_empty, bot_eq_zero]
 
 theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
     AlgebraicIndependent R (X (R := R) (σ := σ)) := by

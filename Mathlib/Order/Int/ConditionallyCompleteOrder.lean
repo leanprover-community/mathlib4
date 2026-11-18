@@ -27,8 +27,8 @@ noncomputable section
 
 namespace Int
 
-instance : NoBotOrder ℤ := ⟨fun x ↦ ⟨x - 1, (Int.sub_one_lt_of_le le_rfl).not_ge⟩⟩
-instance : NoTopOrder ℤ := ⟨fun x ↦ ⟨x + 1, (Int.lt_add_one_of_le le_rfl).not_ge⟩⟩
+instance : NoMinOrder ℤ := ⟨fun x ↦ ⟨x - 1, Int.sub_one_lt_of_le le_rfl⟩⟩
+instance : NoMaxOrder ℤ := ⟨fun x ↦ ⟨x + 1, Int.lt_add_one_of_le le_rfl⟩⟩
 
 open scoped Classical in
 instance : ConditionallyCompleteLinearOrder ℤ where

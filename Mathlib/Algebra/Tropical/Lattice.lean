@@ -6,8 +6,9 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Tropical.Basic
-public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+import Mathlib.Order.Bounds.OrderIso
 
 /-!
 # Order on tropical algebraic structure
@@ -57,14 +58,19 @@ instance [SupSet R] : SupSet (MinTropical R) where sSup s := trop (sSup (untrop 
 instance [InfSet R] : InfSet (MinTropical R) where sInf s := trop (sInf (untrop '' s))
 
 @[to_dual]
-instance [ConditionallyCompleteLattice R] :
-    ConditionallyCompleteLattice (MinTropical R) where
+instance [Preorder R] [OrderSupSet R] : OrderSupSet (MinTropical R) where
   isLUB_sSup_of_isLUB _ _ hx := by
     rw [← tropOrderIso.symm.isLUB_image'] at hx ⊢
     exact hx.isLUB_sSup
+
+@[to_dual]
+instance [Preorder R] [OrderInfSet R] : OrderInfSet (MinTropical R) where
   isGLB_sInf_of_isGLB _ _ hx := by
     rw [← tropOrderIso.symm.isGLB_image'] at hx ⊢
     exact hx.isGLB_sInf
+
+@[to_dual]
+instance [ConditionallyCompleteLattice R] : ConditionallyCompleteLattice (MinTropical R) where
   exists_isLUB_cond s hn hb := ⟨sSup s,
     .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)⟩
   exists_isGLB_cond s hn hb := ⟨sInf s,

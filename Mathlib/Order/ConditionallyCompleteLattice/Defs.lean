@@ -143,8 +143,7 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
   toOrderSupSet := H2
   toOrderInfSet := .ofOrderSupSet
   exists_isLUB_cond _ hn hb := ⟨_, isLUB_sSup _ hb hn⟩
-  exists_isGLB_cond s hn hb :=
-    ⟨sSup (lowerBounds s), isLUB_lowerBounds.mp (isLUB_sSup _ hn.bddAbove_lowerBounds hb)⟩
+  exists_isGLB_cond _ hn hb := ⟨_, isLUB_lowerBounds.mp (isLUB_sSup _ hn.bddAbove_lowerBounds hb)⟩
 
 /-- A version of `conditionallyCompleteLatticeOfsSup` when we already know that `α` is a lattice.
 

@@ -127,9 +127,8 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
     (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddAbove t), sSup ((↑) '' t : Set α) ∈ s)
     (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), sInf ((↑) '' t : Set α) ∈ s) :
     ConditionallyCompleteLinearOrder s :=
-  letI := OrderSupSet.chooseBot (default : s)
-  letI := OrderInfSet.chooseTop (default : s)
-  { DistribLattice.toLattice, (inferInstance : LinearOrder s), ‹OrderSupSet s›, ‹OrderInfSet s› with
+  { DistribLattice.toLattice, (inferInstance : LinearOrder s),
+      OrderSupSet.chooseBot (default : s), OrderInfSet.chooseTop (default : s) with
     exists_isLUB_cond _ ht h_bdd := ⟨_, Subtype.isLUB_of_csSup_image_mem ht h_bdd (h_Sup ht h_bdd)⟩
     exists_isGLB_cond _ ht h_bdd := ⟨_, Subtype.isGLB_of_csInf_image_mem ht h_bdd (h_Inf ht h_bdd)⟩
     csSup_of_not_bddAbove _ ht :=
@@ -170,12 +169,12 @@ variable [Inhabited s] [OrdConnected s]
 theorem Set.OrdConnected.coe_sSup {t : Set s} (ht : t.Nonempty) (h_bdd : BddAbove t) :
     ((sSup t : s) : α) = sSup ((↑) '' t : Set α) :=
   congrArg Subtype.val <|
-    (Subtype.isLUB_of_csSup_image_mem ht h_bdd (csSup_image_mem ht h_bdd)).csSup_eq ht
+    (Subtype.isLUB_of_csSup_image_mem ht h_bdd (csSup_image_mem ht h_bdd)).sSup_eq
 
 theorem Set.OrdConnected.coe_sInf {t : Set s} (ht : t.Nonempty) (h_bdd : BddBelow t) :
     ((sInf t : s) : α) = sInf ((↑) '' t : Set α) :=
   congrArg Subtype.val <|
-    (Subtype.isGLB_of_csInf_image_mem ht h_bdd (csInf_image_mem ht h_bdd)).csInf_eq ht
+    (Subtype.isGLB_of_csInf_image_mem ht h_bdd (csInf_image_mem ht h_bdd)).sInf_eq
 
 theorem Set.OrdConnected.sSup_empty_of_noBotOrder [NoBotOrder s] : sSup (∅ : Set s) = default :=
   OrderSupSet.chooseBot_sSup_empty_of_noBotOrder

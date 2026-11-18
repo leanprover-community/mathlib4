@@ -50,14 +50,14 @@ theorem ciSup_set_le_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs 
     (hf : BddAbove (f '' s)) : ⨆ i : s, f i ≤ a ↔ ∀ i ∈ s, f i ≤ a :=
   (isLUB_le_iff <| isLUB_ciSup_set hf hs).trans forall_mem_image
 
-@[to_dual]
-theorem IsLUB.ciSup_eq [Nonempty ι] {f : ι → α} (H : IsLUB (range f) a) : ⨆ i, f i = a :=
-  H.csSup_eq (range_nonempty f)
+@[to_dual (attr := deprecated IsLUB.iSup_eq +typeChanged (since := "2026-11-18"))]
+theorem IsLUB.ciSup_eq {f : ι → α} (H : IsLUB (range f) a) : ⨆ i, f i = a :=
+  H.iSup_eq
 
-@[to_dual]
-theorem IsLUB.ciSup_set_eq {s : Set β} {f : β → α} (H : IsLUB (f '' s) a) (Hne : s.Nonempty) :
+@[to_dual (attr := deprecated IsLUB.iSup_set_eq +typeChanged (since := "2026-11-18"))]
+theorem IsLUB.ciSup_set_eq {s : Set β} {f : β → α} (H : IsLUB (f '' s) a) (_Hne : s.Nonempty) :
     ⨆ i : s, f i = a :=
-  IsLUB.csSup_eq (image_eq_range f s ▸ H) (image_eq_range f s ▸ Hne.image f)
+  H.iSup_set_eq
 
 /-- The indexed supremum of a function is bounded above by a uniform bound -/
 @[to_dual le_ciInf /-- The indexed infimum of a function is bounded below by a uniform bound -/]
@@ -384,11 +384,11 @@ section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 
-theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
-  simp
+@[deprecated iSup_of_empty +typeChanged (since := "2026-11-18")]
+theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := iSup_of_empty _
 
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
-  ciSup_of_empty f
+  iSup_of_empty f
 
 theorem le_ciSup_iff' {s : ι → α} {a : α} (h : BddAbove (range s)) :
     a ≤ iSup s ↔ ∀ b, (∀ i, s i ≤ b) → a ≤ b := by simp [iSup, h, le_csSup_iff', upperBounds]
@@ -461,13 +461,13 @@ end ConditionallyCompleteLinearOrderBot
 
 namespace GaloisConnection
 
-variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι] {l : α → β}
+variable [ConditionallyCompleteLattice α] [PartialOrder β] [OrderSupSet β] [Nonempty ι] {l : α → β}
   {u : β → α}
 
 @[to_dual u_csInf]
 theorem l_csSup (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
 l (sSup s) = ⨆ x : s, l x :=
-Eq.symm <| IsLUB.ciSup_set_eq (gc.isLUB_l_image <| isLUB_csSup hne hbdd) hne
+Eq.symm <| IsLUB.iSup_set_eq (gc.isLUB_l_image <| isLUB_csSup hne hbdd)
 
 @[to_dual u_csInf']
 theorem l_csSup' (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
@@ -489,7 +489,7 @@ end GaloisConnection
 namespace OrderIso
 
 section ConditionallyCompleteLattice
-variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι]
+variable [ConditionallyCompleteLattice α] [PartialOrder β] [OrderSupSet β] [Nonempty ι]
 
 @[to_dual]
 theorem map_csSup (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
