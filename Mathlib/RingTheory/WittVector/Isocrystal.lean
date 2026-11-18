@@ -48,7 +48,6 @@ This file introduces notation in the scope `Isocrystal`.
 * [Formalized functional analysis via semilinear maps][dupuis-lewis-macbeth2022]
 * [Theory of commutative formal groups over fields of finite characteristic][manin1963]
 * <https://www.math.ias.edu/~lurie/205notes/Lecture26-Isocrystals.pdf>
-
 -/
 
 @[expose] public section

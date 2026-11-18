@@ -24,7 +24,6 @@ This file contains basic results on algebraic independence of a family of elemen
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
-
 -/
 
 @[expose] public section
@@ -109,7 +108,7 @@ theorem aeval_of_algebraicIndependent
     AlgebraicIndependent R fun i ↦ aeval x (f i) := by
   rw [algebraicIndependent_iff] at hx hf ⊢
   intro p hp
-  exact hf _ (hx _ (by rwa [← aeval_comp_bind₁, AlgHom.comp_apply] at hp))
+  exact hf _ (hx _ (by rwa [← comp_aeval_apply] at hp))
 
 omit hx in
 /-- If `{f_i(x) | i : ι}` is algebraically independent over `R`, then
@@ -121,7 +120,7 @@ theorem of_aeval {f : ι → MvPolynomial ι R}
     AlgebraicIndependent R f := by
   rw [algebraicIndependent_iff] at H ⊢
   intro p hp
-  exact H p (by rw [← aeval_comp_bind₁, AlgHom.comp_apply, bind₁, hp, map_zero])
+  exact H p (by rw [← comp_aeval_apply, hp, map_zero])
 
 end AlgebraicIndependent
 

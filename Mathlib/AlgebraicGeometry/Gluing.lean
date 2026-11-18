@@ -49,7 +49,6 @@ which is a special case where the conditions are easier to check.
 
 All the hard work is done in `Mathlib/Geometry/RingedSpace/PresheafedSpace/Gluing.lean` where we
 glue presheafed spaces, sheafed spaces, and locally ringed spaces.
-
 -/
 
 @[expose] public section
@@ -499,7 +498,6 @@ instance : (MorphismProperty.isomorphisms Scheme).IsLocalAtTarget zariskiPrecove
     simp, Cover.hom_ext (𝒰.pullback₁ f) _ _ fun i ↦ by simp, Cover.hom_ext 𝒰 _ _ fun i ↦ by simp⟩
 
 /-!
-
 ## Locally directed gluing
 
 We say that a diagram of open immersions is "locally directed" if for any `V, W ⊆ U` in the diagram,
@@ -513,7 +511,6 @@ The intended usage is to provide the following instances:
 
 and to directly use the `colimit` API.
 Also see `AlgebraicGeometry.Scheme.IsLocallyDirected.openCover` for the open cover of the `colimit`.
-
 -/
 section IsLocallyDirected
 

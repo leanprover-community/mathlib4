@@ -89,7 +89,6 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 * `ℝ≥0∞`: the type of the extended nonnegative real numbers;
 * `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `Mathlib.Basic.NNReal.Defs`;
 * `∞`: a localized notation in `ENNReal` for `⊤ : ℝ≥0∞`.
-
 -/
 
 @[expose] public section
@@ -703,7 +702,7 @@ theorem coe_sSup {s : Set ℝ≥0} : BddAbove s → (↑(sSup s) : ℝ≥0∞) =
   WithTop.coe_sSup
 
 theorem coe_sInf {s : Set ℝ≥0} (hs : s.Nonempty) : (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
-  WithTop.coe_sInf hs (OrderBot.bddBelow s)
+  WithTop.coe_sInf hs
 
 theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
     (↑(iSup f) : ℝ≥0∞) = ⨆ a, ↑(f a) :=

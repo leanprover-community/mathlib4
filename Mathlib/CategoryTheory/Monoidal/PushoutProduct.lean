@@ -37,7 +37,6 @@ following diagram:
 
 In `Mathlib.CategoryTheory.Monoidal.Arrow`, these constructions are used to define a
 monoidal (closed) structure on arrow categories.
-
 -/
 
 @[expose] public section

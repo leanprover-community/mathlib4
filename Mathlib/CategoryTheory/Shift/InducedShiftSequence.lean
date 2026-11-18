@@ -24,7 +24,6 @@ category (see the file `Mathlib/CategoryTheory/Shift/Induced.lean`), this file s
 under certain assumptions, there is an induced "shift sequence". The main application
 will be the construction of a shift sequence for the homology functor on the
 homotopy category of cochain complexes (TODO), and also on the derived category (TODO).
-
 -/
 
 @[expose] public section
@@ -59,8 +58,8 @@ variable [HasShift D M] [L.CommShift M]
 
 /-- The `shiftIso` field of the induced shift sequence. -/
 noncomputable def shiftIso (n a a' : M) (ha' : n + a = a') :
-    shiftFunctor D n ⋙ F' a ≅ F' a' := by
-  exact ((whiskeringLeft C D A).obj L).preimageIso ((Functor.associator _ _ _).symm ≪≫
+    shiftFunctor D n ⋙ F' a ≅ F' a' :=
+  ((whiskeringLeft C D A).obj L).preimageIso ((Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (L.commShiftIso n).symm _ ≪≫
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (e' a) ≪≫
     G.shiftIso n a a' ha' ≪≫ (e' a').symm)

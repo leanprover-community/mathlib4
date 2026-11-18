@@ -21,7 +21,6 @@ instance of `Cone`, please refer to `Mathlib/CategoryTheory/Limits/Cones.lean`.
   `CostructuredArrow (const J) F`.
 * A cone is limiting iff it is terminal in the category of cones. As a corollary, an equivalence of
   categories of cones preserves limiting properties.
-
 -/
 
 @[expose] public section

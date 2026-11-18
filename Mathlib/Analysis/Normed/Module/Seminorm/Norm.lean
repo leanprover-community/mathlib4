@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 /-! # The norm as a seminorm
 
 In this file, we define the norm of a normed space as a bundled seminorm.
-
 -/
 
 public section

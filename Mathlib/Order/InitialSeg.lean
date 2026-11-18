@@ -138,10 +138,10 @@ instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
 /-- Composition of functions shows that `≼i` is transitive -/
 @[trans]
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
-  ⟨f.1.trans g.1, fun a c h => by
+  ⟨f.toRelEmbedding.trans g.toRelEmbedding, fun a c h => by
     simp only [RelEmbedding.coe_trans, coe_coe_fn, comp_apply] at h ⊢
-    rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
-    rcases f.2 _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
+    rcases g.mem_range_of_rel' _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
+    rcases f.mem_range_of_rel' _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
 
 @[simp]
 theorem refl_apply (x : α) : InitialSeg.refl r x = x :=

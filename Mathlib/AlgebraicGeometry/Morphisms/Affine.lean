@@ -11,7 +11,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
-
 # Affine morphisms of schemes
 
 A morphism of schemes `f : X ⟶ Y` is affine if the preimage
@@ -29,7 +28,6 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
   Affine morphisms are stable under base change.
 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
-
 -/
 
 public section
@@ -98,7 +96,8 @@ private lemma isAffine_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
   intro i
   rw [Set.inter_inter_distrib_right]
   refine (hs₂ i (hs' i.2)).isQuasiSeparated _ _ Set.inter_subset_right
-    (U.1.2.inter (X.basicOpen _).2) ?_ Set.inter_subset_right (V.1.2.inter (X.basicOpen _).2) ?_
+    (U.1.is_open'.inter (X.basicOpen _).is_open') ?_ Set.inter_subset_right
+    (V.1.is_open'.inter (X.basicOpen _).is_open') ?_
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
     exact (U.2.basicOpen _).isCompact
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
@@ -256,7 +255,7 @@ lemma isAffineHom_of_isInducing
     obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
       X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
     obtain ⟨U', hU'U, rfl⟩ : ∃ U' : Y.Opens, U' ≤ U ∧ f ⁻¹ᵁ U' = V := by
-      obtain ⟨U', hU', e⟩ := hf₁.isOpen_iff.mp V.2
+      obtain ⟨U', hU', e⟩ := hf₁.isOpen_iff.mp V.is_open'
       exact ⟨⟨U', hU'⟩ ⊓ U, inf_le_right, Opens.ext (by simpa [e] using hVU)⟩
     obtain ⟨r, hrU', hxr⟩ := hU.exists_basicOpen_le ⟨f x, hxV⟩ hxU
     refine ⟨_, hxr, hU.basicOpen r, ?_⟩

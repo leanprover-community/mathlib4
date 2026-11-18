@@ -48,7 +48,6 @@ rather than in `ℝ`.
 ## References
 
 * Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
-
 -/
 
 @[expose] public section
@@ -329,8 +328,8 @@ variable [T2Space α] [L.NeBot]
 
 @[to_additive]
 theorem HasProd.unique {a₁ a₂ : α} :
-    HasProd f a₁ L → HasProd f a₂ L → a₁ = a₂ := by
-  exact tendsto_nhds_unique
+    HasProd f a₁ L → HasProd f a₂ L → a₁ = a₂ :=
+  tendsto_nhds_unique
 
 @[to_additive]
 theorem HasProd.tprod_eq (ha : HasProd f a L) : ∏'[L] b, f b = a :=

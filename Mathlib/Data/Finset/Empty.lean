@@ -20,7 +20,6 @@ This file defines the empty finite set ∅ and a predicate for nonempty `Finset`
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -100,7 +99,7 @@ instance inhabitedFinset : Inhabited (Finset α) :=
   ⟨∅⟩
 
 @[simp]
-theorem empty_val : (∅ : Finset α).1 = 0 :=
+theorem empty_val : (∅ : Finset α).val = 0 :=
   rfl
 
 @[simp, grind ←]
@@ -117,6 +116,7 @@ theorem mk_zero : (⟨0, nodup_zero⟩ : Finset α) = ∅ :=
 theorem ne_empty_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ≠ ∅ := fun e =>
   notMem_empty a <| e ▸ h
 
+@[simp]
 theorem Nonempty.ne_empty {s : Finset α} (h : s.Nonempty) : s ≠ ∅ :=
   (Exists.elim h) fun _a => ne_empty_of_mem
 
@@ -130,7 +130,7 @@ theorem eq_empty_of_forall_notMem {s : Finset α} (H : ∀ x, x ∉ s) : s = ∅
 theorem eq_empty_iff_forall_notMem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s := by grind
 
 @[simp]
-theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=
+theorem val_eq_zero {s : Finset α} : s.val = 0 ↔ s = ∅ :=
   @val_inj _ s ∅
 
 @[simp] lemma subset_empty : s ⊆ ∅ ↔ s = ∅ := subset_zero.trans val_eq_zero
@@ -141,13 +141,22 @@ theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := by grind
 theorem nonempty_of_ne_empty {s : Finset α} (h : s ≠ ∅) : s.Nonempty :=
   exists_mem_of_ne_zero (mt val_eq_zero.1 h)
 
-@[push ←]
+@[simp, push]
+lemma ne_empty_iff_nonempty {s : Finset α} : s ≠ ∅ ↔ s.Nonempty :=
+  ⟨nonempty_of_ne_empty, Nonempty.ne_empty⟩
+
+@[deprecated ne_empty_iff_nonempty +typeChanged (since := "2026-11-05")]
 theorem nonempty_iff_ne_empty {s : Finset α} : s.Nonempty ↔ s ≠ ∅ :=
-  ⟨Nonempty.ne_empty, nonempty_of_ne_empty⟩
+  ne_empty_iff_nonempty.symm
+
+/-- Variant of `ne_empty_iff_nonempty` used by `push Not`. -/
+@[simp, push]
+lemma empty_ne_iff_nonempty {s : Finset α} : ∅ ≠ s ↔ s.Nonempty :=
+  ne_comm.trans ne_empty_iff_nonempty
 
 @[simp, push]
 theorem not_nonempty_iff_eq_empty {s : Finset α} : ¬s.Nonempty ↔ s = ∅ :=
-  nonempty_iff_ne_empty.not.trans not_not
+  ne_empty_iff_nonempty.symm.not.trans not_not
 
 theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
   by_cases Or.inl fun h => Or.inr (nonempty_of_ne_empty h)
@@ -180,7 +189,7 @@ theorem bot_eq_empty : (⊥ : Finset α) = ∅ :=
 
 @[simp]
 theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
-  (@bot_lt_iff_ne_bot (Finset α) _ _ _).trans nonempty_iff_ne_empty.symm
+  (@bot_lt_iff_ne_bot (Finset α) _ _ _).trans ne_empty_iff_nonempty
 
 alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 

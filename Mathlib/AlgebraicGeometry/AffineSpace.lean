@@ -21,7 +21,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 - `AlgebraicGeometry.AffineSpace.homOverEquiv`:
   `S`-morphisms into `Spec 𝔸(n; S)` are equivalent to the choice of `n` global sections.
 - `AlgebraicGeometry.AffineSpace.SpecIso`: `𝔸(n; Spec R) ≅ Spec R[n]`
-
 -/
 
 @[expose] public section
@@ -153,7 +152,7 @@ def homOverEquiv {X : Scheme.{u}} [X.Over S] :
   invFun v := ⟨homOfVector (X ↘ S) v, inferInstance⟩
   left_inv f := by
     ext : 2
-    · simp [f.2.1]
+    · simp [f.2.comp_over]
     · rw [homOfVector_appTop_coord]
   right_inv v := by ext i; simp [-TopologicalSpace.Opens.map_top, homOfVector_appTop_coord]
 
