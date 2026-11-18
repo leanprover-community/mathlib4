@@ -112,9 +112,8 @@ theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (g : G) (q : G ⧸ H
   rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 
-theorem _root_.MulAction.smul_sum_quotient_of_fixed {G M : Type*} [Group G] [AddCommMonoid M]
-    [DistribMulAction G M] (H : Subgroup G) [Fintype (G ⧸ H)] (x : M)
-    (hx : ∀ h : H, h • x = x) (g : G) :
+theorem smul_sum_quotient_of_fixed {M : Type*} [AddCommMonoid M] [DistribMulAction G M]
+    [Fintype (G ⧸ H)] (x : M) (hx : ∀ h : H, h • x = x) (g : G) :
     g • (∑ q : G ⧸ H, q.out • x) = ∑ q : G ⧸ H, q.out • x := by
   classical
   rw [Finset.smul_sum]
