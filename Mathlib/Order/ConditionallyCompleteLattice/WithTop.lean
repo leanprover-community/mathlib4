@@ -36,6 +36,10 @@ theorem nonempty_preimage_some_iff {s : Set (WithTop α)} :
     (((↑) ⁻¹' s : Set α)).Nonempty ↔ ¬ s ⊆ {⊤} := by
   rw [nonempty_preimage_iff, isCompl_range_coe.eq_compl, inter_compl_nonempty_iff]
 
+@[to_dual]
+theorem subset_range_some_iff {s : Set (WithTop α)} : s ⊆ .range some ↔ ⊤ ∉ s := by
+  rw [isCompl_range_coe.eq_compl, subset_compl_singleton_iff]
+
 section LE
 
 /-!
@@ -254,9 +258,8 @@ complete lattice with a top. -/
 @[to_dual]
 theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : s.Nonempty) : IsLUB s (sSup s) := by
-  refine isLUB_sSup_of_preimage' fun hs₁ hs₂ ↦ isLUB_csSup ?_ hs₂
-  rw [nonempty_preimage_some_iff, subset_singleton_iff_eq]
-  aesop
+  refine isLUB_sSup_of_preimage' fun hs₁ hs₂ ↦ isLUB_csSup (hs.preimage' ?_) hs₂
+  rwa [subset_range_some_iff]
 
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
