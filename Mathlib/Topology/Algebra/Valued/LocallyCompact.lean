@@ -92,8 +92,10 @@ lemma exists_norm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_coe_lt_one K
 
 variable (K) in
-lemma exists_nnnorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
+lemma exists_nnNorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
   exists_norm_coe_lt_one K
+
+@[deprecated (since := "2026-10-31")] alias exists_nnnorm_lt_one := exists_nnNorm_lt_one
 
 end Valued.integer
 
@@ -159,7 +161,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
       this, AddSubgroupClass.coe_norm, Set.image_univ, Set.mem_range, Set.iUnion_exists,
       Set.iUnion_iUnion_eq', Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
     intro
-    exact (Metric.closedBall_subset_ball hn).trans (Set.subset_iUnion_of_subset _ le_rfl)
+    grw [hn, ← Set.subset_iUnion]
 
 end FiniteResidueField
 
@@ -223,7 +225,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
+    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.val.2
       rw [← hb] at z0 ⊢
       simp only [← v.restrict_le_iff]
       refine Valued.isOpen_closedBall _ ?_

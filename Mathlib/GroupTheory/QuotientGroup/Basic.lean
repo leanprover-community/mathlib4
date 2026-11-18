@@ -398,9 +398,7 @@ theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := b
 @[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive
 subgroup is the whole additive group. -/]
 theorem subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G ⧸ H)) : H = ⊤ :=
-  top_unique fun x _ => by
-    have : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
-    rwa [inv_one, one_mul] at this
+  QuotientGroup.subsingleton_iff.mp h
 
 end trivial
 
@@ -461,7 +459,7 @@ end QuotientGroup
 
 namespace QuotientAddGroup
 
-variable {R : Type*} [NonAssocRing R] (N : AddSubgroup R) [N.Normal]
+variable {R : Type*} [NonAssocRing R] (N : AddSubgroup R)
 
 @[simp]
 theorem mk_nat_mul (n : ℕ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := by

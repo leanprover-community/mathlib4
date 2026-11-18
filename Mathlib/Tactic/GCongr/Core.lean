@@ -10,7 +10,6 @@ public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Mathlib.Tactic.GCongr.ForwardAttr
 public import Batteries.Tactic.Exact
-public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
 
@@ -155,7 +154,8 @@ structure GCongrKey where
 deriving Inhabited, BEq
 
 instance : Ord GCongrKey where
-  compare a b := a.1.quickCmp b.1 |>.then (a.2.quickCmp b.2) |>.then (compare a.3 b.3)
+  compare a b :=
+    a.relName.quickCmp b.relName |>.then (a.head.quickCmp b.head) |>.then (compare a.arity b.arity)
 
 /-- The data for a "main" hypothesis of a `gcongr` lemma.
 That is a hypothesis of the form `∀ xs, a xs' ~ b xs'` where `xs'` is a subset of `xs`,
@@ -417,7 +417,7 @@ def addGCongrLemma (declName : Name) (stx : Syntax) (kind : AttributeKind) : Met
     -- If none of the methods work, we throw the error thrown by the "normal" attempt.
     throw e
 where
-  /-- Assuming the lemma has conslusion `lhs ↔ rhs`, mark one of the implications
+  /-- Assuming the lemma has conclusion `lhs ↔ rhs`, mark one of the implications
   `lhs → rhs` or `rhs → lhs` as a `gcongr` lemma. -/
   addIffGCongrLemma (prio : Nat) (strict forGrw : Bool) (cinfo : ConstantInfo)
       (xs : Array Expr) (lhs rhs : Expr) : MetaM Unit := do
@@ -604,10 +604,10 @@ The lemma `rel_imp_rel` is too general to be tagged with `@[gcongr]`,
 so instead we use `relImpRelLemma` to look it up.
 -/
 
-variable {α : Sort*} {r : α → α → Prop} [IsTrans α r] {a b c d : α}
+variable {α : Sort*} {r : α → α → Prop} [Trans r r r] {a b c d : α}
 
 lemma rel_imp_rel (h₁ : r c a) (h₂ : r b d) : r a b → r c d :=
-  fun h => IsTrans.trans c b d (IsTrans.trans c a b h₁ h) h₂
+  fun h => Trans.trans (Trans.trans h₁ h) h₂
 
 /--
 Construct a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.

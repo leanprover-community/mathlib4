@@ -119,12 +119,6 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {s : Set α} {p : α → Prop} (a : α)
 
-@[to_dual] protected theorem IsUpperSet.Ici : IsUpperSet (Ici a) := fun _ _ => ge_trans
-@[to_dual] protected theorem IsUpperSet.Ioi : IsUpperSet (Ioi a) := fun _ _ => flip lt_of_lt_of_le
-
-@[to_dual (attr := deprecated (since := "2026-10-16"))] alias isUpperSet_Ici := IsUpperSet.Ici
-@[to_dual (attr := deprecated (since := "2026-10-16"))] alias isUpperSet_Ioi := IsUpperSet.Ioi
-
 @[to_dual]
 theorem isUpperSet_iff_Ici_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ici a ⊆ s := by
   simp [IsUpperSet, subset_def, @forall_comm (_ ∈ s)]
@@ -255,7 +249,7 @@ theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t
 theorem IsUpperSet.eq_empty_or_Ici [WellFoundedLT α] (h : IsUpperSet s) :
     s = ∅ ∨ ∃ a, s = Ici a := by
   refine or_iff_not_imp_left.2 fun ha ↦ ?_
-  obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 ha
+  obtain ⟨a, ha⟩ := Set.ne_empty_iff_nonempty.1 ha
   exact ⟨_, ext fun b ↦ ⟨WellFoundedLT.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
 
 @[to_dual]

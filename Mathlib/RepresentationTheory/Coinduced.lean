@@ -38,7 +38,6 @@ coinduction functor and hence that the coinduction functor preserves limits.
 * `Rep.resCoindAdjunction k φ`: given a monoid homomorphism `φ : G →* H`, this is the adjunction
   between the restriction functor `Rep k H ⥤ Rep k G` along `φ` and the coinduction functor
   along `φ`.
-
 -/
 
 @[expose] public section
@@ -92,7 +91,7 @@ def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind 
     simp only [mem_coindV, LinearMap.compLeft_apply, Function.comp_apply,
       IntertwiningMap.toLinearMap_apply] at h ⊢
     intro g h0
-    simpa [h] using LinearMap.ext_iff.1 (f.2 g) (x h0)
+    simpa [h] using LinearMap.ext_iff.1 (f.isIntertwining' g) (x h0)
   isIntertwining' h := by ext; simp
 
 lemma coindMap_coe_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :
@@ -146,7 +145,7 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
     have hγ (s : S) (g : G) : γ (s.1 * g) = s * γ g := by ext; simp [mul_assoc, γ, hmk]
     let x (g : G) : X := X.ρ (γ g) (s (y.1 (i (Quotient.mk' g))))
     refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
-    · simp [x, ← Module.End.mul_apply, ← map_mul, hmk, hγ]
+    · simp [x, ← mul_apply_eq_comp, ← map_mul, hmk, hγ]
     · simp only [coindFunctor_obj, coindFunctor_map, hom_ofHom,
         Representation.coindMap_coe_apply_apply, hom_comm_apply, x]
       simp_all [← y.2 (γ g), γ]

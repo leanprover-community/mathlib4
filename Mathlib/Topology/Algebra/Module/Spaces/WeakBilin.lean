@@ -43,7 +43,6 @@ We prove the following results characterizing the weak topology:
 ## Tags
 
 weak-star, weak dual, duality
-
 -/
 
 @[expose] public section
@@ -135,6 +134,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, LinearMap.smul_apply]
 
 set_option backward.isDefEq.respectTransparency false in
+set_option fun_prop.projDefaultTransparency true in
 /--
 Map `F` into the topological dual of `E` with the weak topology induced by `F`
 -/
