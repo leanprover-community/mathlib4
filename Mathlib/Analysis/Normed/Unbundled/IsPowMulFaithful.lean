@@ -89,8 +89,8 @@ theorem eq_of_powMul_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁
   ext x
   set g₁ : AlgebraNorm R R[(x : S)] := f₁.restriction _
   set g₂ : AlgebraNorm R R[(x : S)] := f₂.restriction _
-  have hg₁_pm : IsPowMul g₁ := hf₁_pm.comp _
-  have hg₂_pm : IsPowMul g₂ := hf₂_pm.comp _
+  have hg₁_pm : IsPowMul g₁ := hf₁_pm.comp (isPowMul _)
+  have hg₂_pm : IsPowMul g₂ := hf₂_pm.comp (isPowMul _)
   let y : R[(x : S)] := ⟨x, self_mem_adjoin_singleton R x⟩
   have hy : x = y.val := rfl
   have h1 : f₁ y.val = g₁ y := rfl
