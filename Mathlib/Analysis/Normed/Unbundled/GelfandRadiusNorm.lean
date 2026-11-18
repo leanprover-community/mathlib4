@@ -145,8 +145,12 @@ theorem Module.Basis.gelfandRadiusNorm_apply
   have : FiniteDimensional K L := b.finiteDimensional_of_finite
   rw [FiniteDimensional.gelfandRadiusNorm_eq K x, b.gelfandRadiusNormAux_apply]
 
-@[deprecated (since := "2026-11-12")]
-alias gelfandRadiusNorm_def := Module.Basis.gelfandRadiusNorm_apply
+variable {L} in
+open scoped Matrix.Norms.Operator in
+@[deprecated Module.Basis.gelfandRadiusNorm_apply +typeChanged (since := "2026-11-12")]
+theorem gelfandRadiusNorm_def [FiniteDimensional K L] (x : L) :
+    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x) :=
+  (Module.finBasis K L).gelfandRadiusNorm_apply x
 
 variable {L} in
 /-- The Gelfand radius norm is invariant under algebra maps. -/
@@ -177,6 +181,13 @@ private theorem IntermediateField.gelfandRadiusNorm_eq
     (E : IntermediateField K L) [FiniteDimensional K E] (x : L) (y : E) (h : x = y) :
     gelfandRadiusNorm K L x = gelfandRadiusNormAux K E y := by
   rw [h, ← E.algebraMap_apply, gelfandRadiusNorm_algebraMap, FiniteDimensional.gelfandRadiusNorm_eq]
+
+variable {L} in
+theorem gelfandRadiusNorm_nonneg (x : L) : 0 ≤ gelfandRadiusNorm K L x := by
+  by_cases hx : IsIntegral K x
+  · rw [hx.gelfandRadiusNorm_eq]
+    apply apply_nonneg
+  · rw [gelfandRadiusNorm_eq_zero hx]
 
 @[simp]
 theorem gelfandRadiusNorm_zero : gelfandRadiusNorm K L 0 = 0 := by
@@ -217,18 +228,32 @@ theorem gelfandRadiusNorm_eq_norm (x : K) : gelfandRadiusNorm K K x = ‖x‖ :=
   simpa using gelfandRadiusNorm_smul x (1 : K)
 
 variable {K L} in
-theorem gelfandRadiusNorm_add_le {x y : L} (hx : IsIntegral K x) (hy : IsIntegral K y) :
+theorem gelfandRadiusNorm_add_le {x y : L} (h : IsIntegral K x ∨ IsIntegral K y) :
     gelfandRadiusNorm K L (x + y) ≤ gelfandRadiusNorm K L x + gelfandRadiusNorm K L y := by
-  have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair hx hy
+  by_cases hxy : IsIntegral K (x + y); swap
+  · rw [gelfandRadiusNorm_eq_zero hxy]
+    exact add_nonneg (gelfandRadiusNorm_nonneg K x) (gelfandRadiusNorm_nonneg K y)
+  have (hy : IsIntegral K y) : IsIntegral K x := by simpa using hxy.sub hy
+  have (hx : IsIntegral K x) : IsIntegral K y := by simpa using hxy.sub hx
+  have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair (by grind) (by grind)
   rw [K⟮x, y⟯.gelfandRadiusNorm_eq x (AdjoinPair.gen₁ K x y) rfl,
     K⟮x, y⟯.gelfandRadiusNorm_eq y (AdjoinPair.gen₂ K x y) rfl,
     K⟮x, y⟯.gelfandRadiusNorm_eq (x + y) (AdjoinPair.gen₁ K x y + AdjoinPair.gen₂ K x y) rfl]
   apply map_add_le_add
 
 variable {K L} in
-theorem gelfandRadiusNorm_mul_le {x y : L} (hx : IsIntegral K x) (hy : IsIntegral K y) :
+theorem gelfandRadiusNorm_mul_le {x y : L} (h : IsIntegral K x ∨ IsIntegral K y) :
     gelfandRadiusNorm K L (x * y) ≤ gelfandRadiusNorm K L x * gelfandRadiusNorm K L y := by
-  have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair hx hy
+  by_cases hx0 : x = 0
+  · simp [hx0]
+  by_cases hy0 : y = 0
+  · simp [hy0]
+  by_cases hxy : IsIntegral K (x * y); swap
+  · rw [gelfandRadiusNorm_eq_zero hxy]
+    exact mul_nonneg (gelfandRadiusNorm_nonneg K x) (gelfandRadiusNorm_nonneg K y)
+  have (hy : IsIntegral K y) : IsIntegral K x := by simpa [hy0] using hxy.div hy
+  have (hx : IsIntegral K x) : IsIntegral K y := by simpa [hx0] using hxy.div hx
+  have : FiniteDimensional K K⟮x, y⟯ := finiteDimensional_adjoin_pair (by grind) (by grind)
   rw [K⟮x, y⟯.gelfandRadiusNorm_eq x (AdjoinPair.gen₁ K x y) rfl,
     K⟮x, y⟯.gelfandRadiusNorm_eq y (AdjoinPair.gen₂ K x y) rfl,
     K⟮x, y⟯.gelfandRadiusNorm_eq (x * y) (AdjoinPair.gen₁ K x y * AdjoinPair.gen₂ K x y) rfl]
@@ -263,9 +288,9 @@ open Algebra.IsIntegral in
 noncomputable def gelfandRadiusAlgNorm : AlgebraNorm K L where
   toFun := gelfandRadiusNorm K L
   map_zero' := gelfandRadiusNorm_zero K L
-  add_le' x y := gelfandRadiusNorm_add_le (isIntegral x) (isIntegral y)
+  add_le' x _ := gelfandRadiusNorm_add_le (Or.inl (isIntegral x))
   neg' := gelfandRadiusNorm_neg K
-  mul_le' x y := gelfandRadiusNorm_mul_le (isIntegral x) (isIntegral y)
+  mul_le' x _ := gelfandRadiusNorm_mul_le (Or.inl (isIntegral x))
   eq_zero_of_map_eq_zero' x := eq_zero_of_gelfandRadiusNorm_eq_zero (isIntegral x)
   smul' := gelfandRadiusNorm_smul
 
