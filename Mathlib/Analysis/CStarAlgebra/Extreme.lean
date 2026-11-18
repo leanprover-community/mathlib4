@@ -129,7 +129,8 @@ theorem eq_zero_of_mem_extremePoints_unitClosedBall ⦃x : A⦄
   /- Since `p` and `star a * a` are self-adjoint
   with product zero that the norm of their sum is the max of the norms of these contractions. -/
   have hmax : ‖p + star a * a‖ ≤ 1 := by
-    rw [IsSelfAdjoint.star_mul_self x |>.norm_add_eq_max (.star_mul_self a) hpa, sup_le_iff]
+    rw [(IsSelfAdjoint.star_mul_self x |>.isStarOrtho_iff_mul_eq_zero
+        (.star_mul_self a) |>.mpr hpa).norm_add, sup_le_iff]
     simp only [CStarRing.norm_star_mul_self]
     grw [mem_closedBall_zero_iff.mp hx.1, mem_closedBall_zero_iff.mp hx.1,
       mem_closedBall_zero_iff.mp ha, mem_closedBall_zero_iff.mp ha, one_mul, and_self]
