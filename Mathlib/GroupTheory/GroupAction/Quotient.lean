@@ -120,7 +120,7 @@ theorem smul_sum_quotient_of_fixed {M : Type*} [AddCommMonoid M] [DistribMulActi
   refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
   obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
   rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
-  simp [hh, mul_smul, ← Subgroup.smul_def, hx]
+  rw [toPerm_apply, hh, mul_smul, ← smul_def, hx, smul_assoc]
 
 end QuotientAction
 
