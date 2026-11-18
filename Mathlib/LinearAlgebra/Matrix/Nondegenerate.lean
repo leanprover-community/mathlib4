@@ -300,7 +300,7 @@ theorem Nondegenerate.of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) : M.Nonde
 /-- If `M` is square and has nonzero determinant, then `M` as a bilinear form on `n → R` is
 nondegenerate. The "iff" implication, `nondegenerate_iff_det_ne_zero`, is proved in a later file.
 
-See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDetNeZero`.
+See also `LinearMap.BilinForm.Nondegenerate.of_det_ne_zero`.
 -/
 theorem Nondegenerate.of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : M.Nondegenerate :=
   .of_det_mem_nonZeroDivisors <| mem_nonZeroDivisors_of_ne_zero hM
