@@ -120,20 +120,28 @@ lemma equivPiTensorComplSingletonTensor_symm_tmul (i₀ : ι)
 variable {M} {N : ι → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
 
 @[simp]
+theorem equivPiTensorComplSingletonTensor_comp_map (i₀ : ι) (f : ∀ i, M i →ₗ[R] N i) :
+    (equivPiTensorComplSingletonTensor R N i₀) ∘ₗ map f = TensorProduct.map
+    (map fun (i : ({i₀}ᶜ : Set ι)) ↦ f i) (f i₀) ∘ₗ (equivPiTensorComplSingletonTensor R M i₀) := by
+  ext
+  simp
+  rfl
+
+@[simp]
 theorem equivPiTensorComplSingletonTensor_comp_map_comp_symm (i₀ : ι) (f : ∀ i, M i →ₗ[R] N i) :
     (equivPiTensorComplSingletonTensor R N i₀) ∘ₗ map f ∘ₗ
     (equivPiTensorComplSingletonTensor R M i₀).symm =
     TensorProduct.map (map fun (i : ({i₀}ᶜ : Set ι)) ↦ f i) (f i₀) := by
-  apply TensorProduct.ext
-  ext x x₀
-  suffices (⨂ₜ[R] (i : ({i₀}ᶜ : Set ι)), (f i) (Function.subtypeNeLift i₀ x x₀ i)) ⊗ₜ[R] (f i₀)
-    (Function.subtypeNeLift i₀ x x₀ i₀) = (⨂ₜ[R] (i : ({i₀}ᶜ : Set ι)), (f i) (x i)) ⊗ₜ[R] (f i₀) x₀
-    by simpa [equivPiTensorComplSingletonTensor_symm_tmul R M i₀ x]
-  congr
-  · ext i
-    simp [Function.subtypeNeLift_of_neq i₀ x x₀ i (by aesop)]
-    rfl
-  · exact Function.subtypeNeLift_self i₀ x x₀
+  rw [← LinearMap.comp_assoc, equivPiTensorComplSingletonTensor_comp_map, LinearMap.comp_assoc]
+  simp
+
+@[simp]
+theorem map_comp_equivPiTensorComplSingletonTensor_symm (i₀ : ι) (f : ∀ i, M i →ₗ[R] N i) :
+    map f ∘ₗ (equivPiTensorComplSingletonTensor R M i₀).symm = (equivPiTensorComplSingletonTensor
+    R N i₀).symm ∘ₗ TensorProduct.map (map fun (i : ({i₀}ᶜ : Set ι)) ↦ f i) (f i₀) := by
+  apply Function.Injective.injective_linearMapComp_left
+    (equivPiTensorComplSingletonTensor R N i₀).injective
+  simp
 
 @[simp]
 theorem equivPiTensorComplSingletonTensor_conj_map (i₀ : ι) (f : ∀ i, M i →ₗ[R] M i) :
