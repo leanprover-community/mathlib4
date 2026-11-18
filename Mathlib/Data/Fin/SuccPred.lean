@@ -204,7 +204,7 @@ theorem exists_fin_succ' {P : Fin (n + 1) → Prop} :
 The `Fin.castSucc_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
-@[simp]
+@[deprecated castSucc_zero (since := "2026-11-16")]
 theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 
 @[simp]
@@ -214,6 +214,7 @@ theorem castSucc_pos_iff [NeZero n] {i : Fin n} : 0 < castSucc i ↔ 0 < i := by
 
 The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
+@[deprecated castSucc_pos (since := "2026-11-16")]
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
 theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := by
@@ -585,7 +586,7 @@ lemma succAbove_right_inj : p.succAbove i = p.succAbove j ↔ i = j :=
 @[simp]
 lemma succAbove_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.succAbove 0 = 0 := by
   rw [Fin.succAbove_of_castSucc_lt]
-  · exact castSucc_zero'
+  · exact castSucc_zero
   · exact Fin.pos_iff_ne_zero.2 ha
 
 lemma succAbove_eq_zero_iff [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) :
@@ -651,7 +652,7 @@ lemma lt_succAbove_iff_lt_castSucc (p : Fin (n + 1)) (i : Fin n) :
 /-- Embedding a positive `Fin n` results in a positive `Fin (n + 1)` -/
 lemma succAbove_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p.succAbove i := by
   by_cases H : castSucc i < p
-  · simpa [succAbove_of_castSucc_lt _ _ H] using castSucc_pos' h
+  · simpa [succAbove_of_castSucc_lt _ _ H] using castSucc_pos h
   · simp [succAbove_of_le_castSucc _ _ (Fin.not_lt.1 H)]
 
 lemma castPred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : castSucc x < y)

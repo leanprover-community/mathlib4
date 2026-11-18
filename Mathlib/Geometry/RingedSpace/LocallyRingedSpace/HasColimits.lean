@@ -109,6 +109,8 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
 instance : HasColimitsOfShape (Discrete ι) LocallyRingedSpace.{u} :=
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
 
+instance [UnivLE.{v, u}] : HasCoproducts.{v} LocallyRingedSpace.{u} where
+
 noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
