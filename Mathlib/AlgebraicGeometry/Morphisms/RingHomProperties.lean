@@ -6,11 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.RingHom.Locally
 
 /-!
-
 # Properties of morphisms from properties of ring homs.
 
 We provide the basic framework for talking about properties of morphisms that come from properties
@@ -55,7 +53,6 @@ For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 
 We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`,
 `IsZariskiLocalAtTarget P`, `IsZariskiLocalAtSource P`.
-
 -/
 
 @[expose] public section
@@ -70,7 +67,6 @@ namespace RingHom
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsStableUnderBaseChange.pullback_fst_appTop
     (hP : IsStableUnderBaseChange P) (hP' : RespectsIso P)
@@ -84,9 +80,8 @@ theorem IsStableUnderBaseChange.pullback_fst_appTop
   have := congr_arg Quiver.Hom.unop
       (PreservesPullback.iso_hom_fst AffineScheme.Γ.rightOp (AffineScheme.ofHom f)
         (AffineScheme.ofHom g))
-  simp only [AffineScheme.Γ, Functor.rightOp_obj, Functor.comp_obj, Functor.op_obj, unop_comp,
-    AffineScheme.forgetToScheme_obj, Scheme.Γ_obj, Functor.rightOp_map, Functor.comp_map,
-    Functor.op_map, Quiver.Hom.unop_op, AffineScheme.forgetToScheme_map, Scheme.Γ_map] at this
+  simp only [AffineScheme.Γ, unop_comp, Functor.rightOp_map, Functor.comp_map, Functor.op_map,
+    Quiver.Hom.unop_op, AffineScheme.forgetToScheme_map, Scheme.Γ_map] at this
   rw [← this, CommRingCat.hom_comp, hP'.cancel_right_isIso, ← pushoutIsoUnopPullback_inl_hom,
     CommRingCat.hom_comp, hP'.cancel_right_isIso]
   exact hP.pushout_inl hP' _ _ H
@@ -223,10 +218,10 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     congr
     apply X.presheaf.map_comp
   refine ⟨r, s, hBx, ers, ?_⟩
-  · rw [f.appLE_congr _ hBrr' hBss' (fun f => P f.hom), heq]
-    apply hPa _ s' _
-    rw [U₂.2.appLE_eq_away_map f V₂.2]
-    exact hPl _ _ _ _ h₂
+  rw [f.appLE_congr _ hBrr' hBss' (fun f => P f.hom), heq]
+  apply hPa _ s' _
+  rw [U₂.2.appLE_eq_away_map f V₂.2]
+  exact hPl _ _ _ _ h₂
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f` over some affine open
@@ -235,7 +230,7 @@ lemma exists_affineOpens_le_appLE_of_appLE
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) (hPl : LocalizationAwayPreserves P)
     (x : X) (U₁ : Y.Opens) (U₂ : Y.affineOpens) (V₁ : X.Opens) (V₂ : X.affineOpens)
     (hx₁ : x ∈ V₁) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂).hom)
-    (hfx₁ : f x ∈ U₁.1) :
+    (hfx₁ : f x ∈ U₁.carrier) :
     ∃ (U' : Y.affineOpens) (V' : X.affineOpens) (_ : U'.1 ≤ U₁) (_ : V'.1 ≤ V₁) (_ : x ∈ V'.1)
       (e : V'.1 ≤ f ⁻¹ᵁ U'.1), P (f.appLE U' V' e).hom := by
   obtain ⟨r, hBr, hBfx⟩ := U₂.2.exists_basicOpen_le ⟨f x, hfx₁⟩ (e₂ hx₂)
@@ -642,7 +637,7 @@ lemma iff_exists_appLE_locally
   · obtain ⟨U, V, hxV, e, hf⟩ := hf x
     use U, V, hxV, e
     simp only [iff_of_isAffine (P := P), Scheme.Hom.appLE, homOfLE_leOfHom] at hf ⊢
-    have : (toMorphismProperty (Locally Q)).RespectsIso := toMorphismProperty_respectsIso_iff.mp <|
+    have : (toMorphismProperty (Locally Q)).RespectsIso := toMorphismProperty_respectsIso_iff.mp
       (isLocal_ringHomProperty P).respectsIso
     exact (MorphismProperty.arrow_mk_iso_iff (toMorphismProperty (Locally Q))
       (arrowResLEAppIso f U V e)).mpr (locally_of hQi _ hf)

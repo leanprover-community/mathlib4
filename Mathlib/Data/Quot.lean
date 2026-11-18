@@ -36,10 +36,10 @@ instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
   coe := @Setoid.r _
 
 theorem ext {α : Sort*} : ∀ {s t : Setoid α}, (∀ a b, s a b ↔ t a b) → s = t
-  | ⟨r, _⟩, ⟨p, _⟩, Eq =>
-  by have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
-     subst this
-     rfl
+  | ⟨r, _⟩, ⟨p, _⟩, Eq => by
+    have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
+    subst this
+    rfl
 
 end Setoid
 

@@ -5,10 +5,14 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.NumberTheory.LSeries.Convergence
-public import Mathlib.NumberTheory.LSeries.Linearity
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+
+import Mathlib.Analysis.Normed.Group.Tannery
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.NumberTheory.LSeries.Linearity
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # A converging L-series determines its coefficients
@@ -45,8 +49,7 @@ lemma cpow_mul_div_cpow_eq_div_div_cpow (m n : ℕ) (z : ℂ) (x : ℝ) :
   congr
   simp_rw [div_eq_mul_inv]
   rw [show (n + 1 : ℂ)⁻¹ = (n + 1 : ℝ)⁻¹ by simp,
-    show (n + 1 : ℂ) = (n + 1 : ℝ) by norm_cast, show (m : ℂ) = (m : ℝ) by norm_cast,
-    mul_cpow_ofReal_nonneg m.cast_nonneg Hn, mul_inv, mul_comm]
+    show (n + 1 : ℂ) = (n + 1 : ℝ) by norm_cast, natCast_mul_cpow, mul_inv, mul_comm]
   congr
   rw [← cpow_neg, show (-x : ℂ) = (-1 : ℝ) * x by simp, cpow_mul_ofReal_nonneg Hn,
     Real.rpow_neg_one, inv_inv]
@@ -181,7 +184,7 @@ lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
   · simpa [h] using! LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
   · simp only [h, or_false]
     refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
-    convert! (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
+    convert (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
     · refine ⟨fun H' _ _ ↦ by rw [H', Pi.zero_apply], fun H' ↦ ?_⟩
       ext (- | m)
       · simp [hf]
@@ -233,7 +236,7 @@ lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : absci
     LSeries f = LSeries g ↔ ∀ n ≠ 0, f n = g n := by
   refine ⟨fun H n hn ↦ ?_, fun H ↦ funext (LSeries_congr fun {n} ↦ H n)⟩
   refine eq_of_LSeries_eventually_eq hf hg ?_ hn
-  exact Filter.Eventually.of_forall fun x ↦ congr_fun H x
+  exact Filter.Eventually.of_forall fun x ↦ congr($H x)
 
 /-- The map `f ↦ LSeries f` is injective on functions `f` such that `f 0 = 0` and the L-series
 of `f` converges somewhere. -/

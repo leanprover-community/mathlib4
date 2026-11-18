@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Triangulated
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
 
 /-!
 # Triangulated functors
@@ -18,7 +18,6 @@ functor `F.mapTriangle : Triangle C ⥤ Triangle D` on the categories of
 triangles. When `C` and `D` are pretriangulated, a triangulated functor
 is such a functor `F` which also sends distinguished triangles to
 distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
-
 -/
 
 @[expose] public section
@@ -55,9 +54,9 @@ def mapTriangle : Triangle C ⥤ Triangle D where
 instance [Faithful F] : Faithful F.mapTriangle where
   map_injective {X Y} f g h := by
     ext <;> apply F.map_injective
-    · exact congr_arg TriangleMorphism.hom₁ h
-    · exact congr_arg TriangleMorphism.hom₂ h
-    · exact congr_arg TriangleMorphism.hom₃ h
+    · congrm TriangleMorphism.hom₁ $h
+    · congrm TriangleMorphism.hom₂ $h
+    · congrm TriangleMorphism.hom₃ $h
 
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
@@ -77,8 +76,6 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
@@ -89,8 +86,7 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
       simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc,
         Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
       rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
-      simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
-        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by cat_disch)
+      simp)) (by cat_disch)
 
 attribute [simps!] mapTriangleCommShiftIso
 
@@ -98,10 +94,7 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 -- Split out from the following instance for faster elaboration.
-set_option backward.privateInPublic true in
 private theorem mapTriangleCommShiftIso_add
     [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (n m : ℤ) :
@@ -110,15 +103,11 @@ private theorem mapTriangleCommShiftIso_add
         (F.mapTriangleCommShiftIso n) (F.mapTriangleCommShiftIso m) := by
   ext <;> simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   commShiftIso := F.mapTriangleCommShiftIso
-  commShiftIso_add _ _ := mapTriangleCommShiftIso_add ..
+  commShiftIso_add _ _ := private mapTriangleCommShiftIso_add ..
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
 def mapTriangleRotateIso :
@@ -129,8 +118,6 @@ def mapTriangleRotateIso :
       ((F.commShiftIso (1 : ℤ)).symm.app _)
       (by simp) (by simp) (by simp)) (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
 noncomputable def mapTriangleInvRotateIso :
@@ -185,7 +172,6 @@ namespace IsTriangulated
 
 open ZeroObject
 
-set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
   map_zero X Y := by
     have h₁ : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
@@ -197,7 +183,6 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
       infer_instance
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by

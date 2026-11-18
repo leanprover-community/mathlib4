@@ -5,7 +5,6 @@ Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Path
 
@@ -89,23 +88,27 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.eHmul.1.2 x) (HSpace.eHmul.1.2 y)
+      exact Prod.ext (HSpace.eHmul.toHomotopy.map_zero_left x)
+        (HSpace.eHmul.toHomotopy.map_zero_left y)
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
+      exact Prod.ext (HSpace.eHmul.toHomotopy.map_one_left x)
+        (HSpace.eHmul.toHomotopy.map_one_left y)
     · rintro t ⟨x, y⟩ h
       replace h := Prod.mk_inj.mp h
-      exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
+      exact Prod.ext (HSpace.eHmul.prop' t x h.1) (HSpace.eHmul.prop' t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.hmulE.1.2 x) (HSpace.hmulE.1.2 y)
+      exact Prod.ext (HSpace.hmulE.toHomotopy.map_zero_left x)
+        (HSpace.hmulE.toHomotopy.map_zero_left y)
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
+      exact Prod.ext (HSpace.hmulE.toHomotopy.map_one_left x)
+        (HSpace.hmulE.toHomotopy.map_one_left y)
     · rintro t ⟨x, y⟩ h
       replace h := Prod.mk_inj.mp h
-      exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
+      exact Prod.ext (HSpace.hmulE.prop' t x h.1) (HSpace.hmulE.prop' t y h.2)
 
 
 namespace IsTopologicalGroup
@@ -216,7 +219,7 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
 
 theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
   ext t
-  exact congr_arg γ (qRight_one_right t)
+  congrm γ $(qRight_one_right t)
 
 /-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
 product path `e ∧ γ`. -/

@@ -21,7 +21,7 @@ section Definitions
 
 section LinearOrder
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] {X : ι → Type*}
 
 /-- Gluing `Ioc a b` and `Ioc b c` into `Ioc a c`. -/
 def IocProdIoc (a b c : ι) (x : (Π i : Ioc a b, X i) × (Π i : Ioc b c, X i)) (i : Ioc a c) : X i :=
@@ -159,7 +159,7 @@ end Definitions
 
 section Lemmas
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] {X : ι → Type*}
 
 lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
     (s : (i : Ioc a c) → Set (X i)) :
@@ -180,9 +180,9 @@ lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) →
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IicProdIoc_def, forall_const,
     Subtype.forall, mem_Iic, Set.mem_prod, frestrictLe₂_apply, restrict₂, mem_Ioc]
   refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
-  · convert! h i (hi.trans hab)
+  · convert h i (hi.trans hab)
     rw [dite_eq_left hi]
-  · convert! h i hi2
+  · convert h i hi2
     rw [dite_eq_right (not_le.2 hi1)]
   · split_ifs with hi3
     · exact h1 i hi3

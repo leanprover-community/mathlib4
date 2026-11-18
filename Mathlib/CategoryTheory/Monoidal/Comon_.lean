@@ -5,11 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Transport
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -272,7 +270,7 @@ The contravariant functor turning comonoid objects into monoid objects in the op
 -/
 @[simps] def ComonToMonOpOp : Comon C ⥤ (Mon Cᵒᵖ)ᵒᵖ where
   obj A := op (ComonToMonOpOpObj A)
-  map := fun f => op <|
+  map := fun f => op
     { hom := f.hom.op
       isMonHom_hom.one_hom := by apply Quiver.Hom.unop_inj; simp
       isMonHom_hom.mul_hom := by apply Quiver.Hom.unop_inj; simp }
@@ -309,7 +307,6 @@ def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
       isComonHom_hom.hom_counit := by apply Quiver.Hom.op_inj; simp
       isComonHom_hom.hom_comul := by apply Quiver.Hom.op_inj; simp [op_tensorHom] }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.

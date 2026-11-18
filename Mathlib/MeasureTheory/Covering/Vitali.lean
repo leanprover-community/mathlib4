@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vitali covering theorems
 
@@ -313,8 +316,7 @@ theorem exists_disjoint_covering_ae
       linarith [Idist_v a ⟨au, hax⟩, hR0 x]
     · have R0pos : 0 < R0 := (hR0 x).trans_le H
       have vnonempty : v.Nonempty := by
-        by_contra h
-        rw [nonempty_iff_ne_empty, Classical.not_not] at h
+        by_contra! h
         rw [h, image_empty, Real.sSup_empty] at R0_def
         exact lt_irrefl _ (R0pos.trans_le (le_of_eq R0_def))
       obtain ⟨a, hav, R0a⟩ : ∃ a ∈ v, R0 / 2 < r a := by
@@ -418,7 +420,7 @@ theorem exists_disjoint_covering_ae
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
       measure_mono M
     _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _
-    _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (ENNReal.tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
+    _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
     _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
@@ -492,7 +494,7 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
       exact t'_disj hq hq' (ne_of_apply_ne _ hqq')
     · rintro - ⟨q, hq, rfl⟩
       exact (t't hq).2.2.2.2.1
-    · convert! μt' using 3
+    · convert μt' using 3
       rw [biUnion_image]
 
 end Vitali

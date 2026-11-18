@@ -5,15 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Max
 public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Order.Max
 
 /-!
 # Maximal elements of subsets
 
 Let `S : Set J` and `m : S`. If `m` is not a maximal element of `S`,
 then `↑m : J` is not maximal in `J`.
-
 -/
 
 public section

@@ -20,7 +20,6 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
   over a unital binary operation, then the magma is a commutative monoid.
 * `EckmannHilton.commGroup`: If a type carries a group structure that distributes
   over a unital binary operation, then the group is commutative.
-
 -/
 
 public section

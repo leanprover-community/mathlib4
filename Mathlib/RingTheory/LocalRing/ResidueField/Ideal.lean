@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.SurjectiveOnStalks
 
 We define `Ideal.ResidueField I` to be the residue field of the local ring `Localization.Prime I`,
 and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
-
 -/
 
 @[expose] public section
@@ -246,7 +245,7 @@ lemma Ideal.ResidueField.ringHom_ext {I : Ideal R} [I.IsPrime]
 @[ext high] -- higher than `AlgHom.ext`.
 lemma Ideal.ResidueField.algHom_ext {I : Ideal A} [I.IsPrime] {f g : I.ResidueField →ₐ[R] B}
     (H : f.comp (IsScalarTower.toAlgHom R A _) = g.comp (IsScalarTower.toAlgHom R A _)) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext congr($H))
+  AlgHom.toRingHom_injective (ringHom_ext congr($H))
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma Ideal.ResidueField.mapₐ_id (I : Ideal A) [I.IsPrime] :
