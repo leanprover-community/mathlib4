@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.RingTheory.Flat.Stability
+public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.Unramified.Basic
 
 import Mathlib.RingTheory.Ideal.IdempotentFG
@@ -44,6 +45,17 @@ Let `S/R` be formally unramified and essentially of finite type.
 -/
 
 @[expose] public section
+
+theorem _root_.MulAction.smul_sum_quotient_of_fixed {G M : Type*} [Group G] [AddCommMonoid M]
+    [DistribMulAction G M] (H : Subgroup G) [Fintype (G ⧸ H)] (x : M)
+    (hx : ∀ h : H, h • x = x) (g : G) :
+    g • (∑ q : G ⧸ H, q.out • x) = ∑ q : G ⧸ H, q.out • x := by
+  classical
+  rw [Finset.smul_sum]
+  refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
+  obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
+  rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
+  simp [hh, mul_smul, ← Subgroup.smul_def, hx]
 
 open Algebra Module
 open scoped TensorProduct
@@ -380,11 +392,8 @@ lemma extendScalars_mulLeft_comp (f : M →ₗ[R] S) (x : S) :
 
 lemma le_comap_extendScalars (f : M →ₗ[R] N) (P : Submodule S M) (Q : Submodule S N)
     (hf : P.restrictScalars R ≤ (Q.restrictScalars R).comap f) :
-    P ≤ Q.comap (extendScalars S f) := by
-  rw [← (LinearMap.liftBaseChangeEquiv S).symm_apply_apply f] at hf
-  suffices h : (P.restrictScalars R).baseChange S ≤ Q.comap (f.liftBaseChange S) from
-    fun x hx ↦ h (sec_mem_baseChange R S P hx)
-  rwa [Submodule.baseChange_le_iff_le_comap]
+    P ≤ Q.comap (extendScalars S f) :=
+  fun _ hx ↦ Submodule.baseChange_le_comap_liftBaseChange_iff.mpr hf (sec_mem_baseChange R S P hx)
 
 end extendScalars
 
@@ -546,6 +555,56 @@ omit [Finite G] in
 lemma mk_groupIdempotent_inertia_eq_one (Q : Ideal S) [Finite (Q.inertia G)] :
     Ideal.Quotient.mk Q (groupIdempotent R S (Q.inertia G)) = 1 := by
   simp
+
+open Algebra.TensorProduct
+
+variable {G} (H : Subgroup G)
+
+/-- The sum of `inertiaIdempotent R S g * groupIdempotent R S H` over coset representatives `g`. -/
+noncomputable def cosetIdempotentSum : S := by
+  classical
+  letI := Fintype.ofFinite (G ⧸ H)
+  exact ∑ q : G ⧸ H, inertiaIdempotent R S q.out * groupIdempotent R S H
+
+lemma mk_cosetIdempotentSum_inertia (Q : Ideal S) [Q.IsPrime] :
+    Ideal.Quotient.mk Q (cosetIdempotentSum R S (Q.inertia G)) = 1 := by
+  classical
+  simp [cosetIdempotentSum, mk_inertiaIdempotent]
+
+open scoped Pointwise
+
+variable {S} [Algebra.IsInvariant R S G] {I : Ideal S}
+
+lemma cosetIdempotentSum_mem_colon (hI : ∀ g : G, g • I = I) :
+    cosetIdempotentSum R S H ∈ ((I.under R).map (algebraMap R S)).colon I := by
+  classical
+  let := Fintype.ofFinite (G ⧸ H)
+  let J := (I.under R).map (algebraMap R S)
+  let T : S →ₗ[R] S := ∑ q : G ⧸ H, (MulSemiringAction.toAlgHom R S q.out).toLinearMap.comp
+    (LinearMap.mulLeft R (groupIdempotent R S H))
+  suffices hT : ∀ x, x ∈ I → T x ∈ J by
+    simpa [Submodule.mem_colon, IsConcreteLE.le_iff, cosetIdempotentSum, T,
+      Finset.sum_mul, mul_assoc] using le_comap_extendScalars T I J hT
+  intro x hx
+  let y := x * groupIdempotent R S H
+  let z := ∑ q : G ⧸ H, q.out • y
+  suffices z ∈ J by simpa [T, mul_comm, -smul_mul']
+  have hy (h : H) : h • y = y := by rw [smul_mul', smul_groupIdempotent, smul_mul_groupIdempotent]
+  have hz (g : G) : g • z = z := MulAction.smul_sum_quotient_of_fixed H y hy g
+  have hyI : y ∈ I := I.mul_mem_right _ hx
+  have hzI : z ∈ I := I.sum_mem fun q _ ↦ hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I hyI
+  exact Algebra.IsInvariant.mem_map_under G hz hzI
+
+theorem map_under_eq_of_isInvariant (hI : ∀ g : G, g • I = I) :
+    (I.under R).map (algebraMap R S) = I := by
+  set J := (I.under R).map (algebraMap R S)
+  apply le_antisymm Ideal.map_comap_le
+  rw [← Submodule.colon_eq_top_iff_le]
+  by_contra hJ
+  obtain ⟨m, hm, hKm⟩ := Ideal.exists_le_maximal (J.colon (I : Set S)) hJ
+  specialize hKm (cosetIdempotentSum_mem_colon R (m.inertia G) hI)
+  rw [← Ideal.Quotient.eq_zero_iff_mem, mk_cosetIdempotentSum_inertia] at hKm
+  exact one_ne_zero hKm
 
 end inertia
 
