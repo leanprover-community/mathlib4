@@ -131,7 +131,7 @@ instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F
     IsTotallyReal (E ⊔ F : Subfield K) := by
   have {i} : IsTotallyReal ↑(bif i then E else F) := by cases i <;> simpa
   rw [sup_eq_iSup]
-  exact isTotallyReal_iSup
+  infer_instance
 
 end Sup
 
