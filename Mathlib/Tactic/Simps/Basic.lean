@@ -921,7 +921,7 @@ This is very similar to `expr.substs`, but this also reduces head let-expression
 partial def _root_.Lean.Expr.instantiateLambdasOrApps (es : Array Expr) (e : Expr) : Expr :=
   e.betaRev es.reverse true -- check if this is what I want
 
-/-- The context for the `simpsM` monad -/
+/-- The context for the `SimpsM` monad -/
 structure Context where
   /-- The configuration using in `simps` -/
   cfg : Config
@@ -935,7 +935,7 @@ structure Context where
   -/
   autoProjs : Bool
 
-/-- The state for the `simpsM` monad -/
+/-- The state for the `SimpsM` monad -/
 structure State where
   /-- The array of generated simp-lemmas -/
   lemmas : Array Name
@@ -943,7 +943,7 @@ structure State where
 /-- Monad for the `simps` attribute -/
 abbrev SimpsM := ReaderT Context <| StateRefT State MetaM
 
-/-- The changing data used in the simps-tactic needed to generate a single lemma. -/
+/-- The changing data used in simps needed to generate a single lemma. -/
 private structure SimpsLemmaData where
   /-- The syntax for this projection (or for the keyword `simps` if no projections were given). -/
   ref : Syntax
