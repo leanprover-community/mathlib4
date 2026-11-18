@@ -131,14 +131,14 @@ instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Colex (�
 noncomputable instance Lex.linearOrder [LinearOrder ι] [WellFoundedLT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Lex (∀ i, β i)) :=
   @linearOrderOfSTO _ (· < ·)
-    { trichotomous := fun x y h₁ h₂ ↦ Lex.ext ((trichotomous_lex ..).1 x.ofLex y.ofLex h₁ h₂) }
+    { trichotomous := fun _ _ h₁ h₂ ↦ Lex.ext ((trichotomous_lex ..).trichotomous _ _ h₁ h₂) }
     (Classical.decRel _)
 
 /-- `Colex (∀ i, α i)` is a linear order if the original order has well-founded `>`. -/
 noncomputable instance Colex.linearOrder [LinearOrder ι] [WellFoundedGT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Colex (∀ i, β i)) :=
   @linearOrderOfSTO _ (· < ·)
-    { trichotomous := fun _ _ h₁ h₂ ↦ Colex.ext ((trichotomous_lex ..).1 _ _ h₁ h₂) }
+    { trichotomous := fun _ _ h₁ h₂ ↦ Colex.ext ((trichotomous_lex ..).trichotomous _ _ h₁ h₂) }
     (Classical.decRel _)
 
 theorem lex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
