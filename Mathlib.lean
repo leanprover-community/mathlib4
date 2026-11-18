@@ -1442,6 +1442,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Reduction
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+public import Mathlib.AlgebraicGeometry.FermatHypersurface.ShiodaAoki
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
