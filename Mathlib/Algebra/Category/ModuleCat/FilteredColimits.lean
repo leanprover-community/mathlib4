@@ -19,7 +19,6 @@ In this file, we start with a ring `R`, a small filtered category `J` and a func
 (in `AddCommGrpCat`) carries the structure of an `R`-module, thereby showing that the forgetful
 functor `forget₂ (ModuleCat R) AddCommGrpCat` preserves filtered colimits. In particular, this
 implies that `forget (ModuleCat R)` preserves filtered colimits.
-
 -/
 
 @[expose] public section

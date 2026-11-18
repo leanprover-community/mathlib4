@@ -24,7 +24,6 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 ## References
 
 * [Hermite Polynomials](https://en.wikipedia.org/wiki/Hermite_polynomials)
-
 -/
 
 public section

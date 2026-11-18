@@ -36,7 +36,6 @@ moreover, this filter is an increasing approximate unit.
   `{x | a ≤ x} ∩ closedBall 0 1` for `0 ≤ a` with `‖a‖ < 1`.
 + `CStarAlgebra.increasingApproximateUnit`: the filter `CStarAlgebra.approximateUnit` is an
   increasing approximate unit.
-
 -/
 
 @[expose] public section

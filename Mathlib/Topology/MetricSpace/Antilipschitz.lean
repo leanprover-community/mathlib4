@@ -38,7 +38,7 @@ def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ�
 
 protected lemma AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β]
     {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y < ⊤ :=
-  (h x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top (edist_lt_top _ _)
+  (h x y).trans_lt <| by finiteness
 
 theorem AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y ≠ ⊤ :=
@@ -198,7 +198,7 @@ protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β]
 protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}
     (hf : AntilipschitzWith K f) : 0 < K := by
   by_contra! h₀
-  obtain rfl : K = 0 := by rwa [le_zero_iff] at h₀
+  obtain rfl := h₀.eq_zero
   exact not_subsingleton α hf.subsingleton
 
 end AntilipschitzWith

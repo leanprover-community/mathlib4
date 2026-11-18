@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.SingleObj
 
 /-!
 # `SingleObj α` is preadditive when `α` is a ring.
-
 -/
 
 public section

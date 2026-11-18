@@ -751,7 +751,6 @@ end ZeroObject
 
 section SubobjectSubobject
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The subobject lattice of a subobject `Y` is order isomorphic to the interval `Set.Iic Y`. -/
 def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic Y where
   toFun Z :=

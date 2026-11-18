@@ -18,7 +18,6 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
   `IsCyclotomicExtension {p} K L` and `Irreducible (cyclotomic p K)`, then
   `discr K (hζ.powerBasis K).basis = (-1) ^ ((p - 1) / 2) * p ^ (p - 2)` for any
   `hζ : IsPrimitiveRoot ζ p`.
-
 -/
 
 public section
@@ -89,7 +88,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
         pow_mul, hpo.pow.neg_one_pow]
       refine Nat.Even.sub_odd ?_ (even_two_mul _) odd_one
       rw [mul_left_comm, ← ha]
-      exact one_le_mul (one_le_pow _ _ hp.1.pos) (succ_le_iff.2 <| tsub_pos_of_lt hp.1.one_lt)
+      exact one_le_mul (one_le_pow _ _ hp.out.pos) (succ_le_iff.2 <| tsub_pos_of_lt hp.out.one_lt)
   · have H := congr((@derivative K _) $(cyclotomic_prime_pow_mul_X_pow_sub_one K p k))
     rw [derivative_mul, derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_natCast,
       derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_natCast,
@@ -111,7 +110,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     rw [← succ_pred_eq_of_pos this, mul_succ, pow_add _ _ (p ^ k)] at H
     replace H := (mul_left_inj' fun h => ?_).1 H
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
-    · have := hne.1
+    · have := hne.out
       rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by lia)] at this
       exact absurd (eq_zero_of_pow_eq_zero h) this
 

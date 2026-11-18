@@ -37,26 +37,33 @@ theorem powMod_def (b e m : ℕ) : powMod b e m = b ^ e % m := by
   funext b e m
   rw [powMod_def, Nat.powMod_def]
 
-/-- `lucasCheck p a factorization` checks that `a ^ (p - 1) % p = 1`, that
-`a ^ ((p - 1) / q) % p ≠ 1` for each `(q, e) ∈ factorization`, and that the `q ^ e` multiply to
-`p - 1`. -/
+/-- `lucasCheck p a factorization` checks that `a ^ (p - 1) % p = 1` (via the powMod check for
+`q = 2`), that `a ^ ((p - 1) / q) % p ≠ 1` for each `(q, e) ∈ factorization`, and that the
+`q ^ e` multiply to `p - 1`. -/
 @[expose] def lucasCheck (p a : ℕ) (factorization : List (ℕ × ℕ)) : Bool :=
-  powMod a (p - 1) p == 1 && factorization.all (fun f ↦ powMod a ((p - 1) / f.1) p != 1) &&
+  p % 2 == 1 && powMod a ((p - 1) / 2) p == p - 1 &&
+    factorization.all (fun f ↦ f.1 == 2 || powMod a ((p - 1) / f.1) p != 1) &&
     (factorization.map fun f ↦ f.1 ^ f.2).prod == p - 1
 
 theorem prime_of_lucasCheck {p a : ℕ} {factorization : List (ℕ × ℕ)}
     (hprime : ∀ f ∈ factorization, f.1.Prime) (h : lucasCheck p a factorization = true) :
     p.Prime := by
-  simp only [lucasCheck, Bool.and_eq_true, beq_iff_eq, List.all_eq_true, bne_iff_ne] at h
-  obtain ⟨⟨ha, hpow⟩, hprod⟩ := h
-  have hp : p ≠ 1 := by grind [powMod_def]
+  simp only [lucasCheck, Bool.and_eq_true, beq_iff_eq, List.all_eq_true, Bool.or_eq_true,
+    bne_iff_ne] at h
+  obtain ⟨⟨⟨hodd, hpow2⟩, hpow⟩, hprod⟩ := h
+  have hp : 2 < p := by grind [List.prod_eq_zero_iff, pow_eq_zero_iff', Nat.Prime.ne_zero]
+  have hneg : (a : ZMod p) ^ ((p - 1) / 2) = -1 := by
+    rw [← Nat.cast_pow, ← ZMod.natCast_mod, ← powMod_def, hpow2, Nat.cast_pred (by lia),
+      ZMod.natCast_self, zero_sub]
   refine lucas_primality p a ?_ fun q hq hqp h1 ↦ ?_
-  · rw [← Nat.cast_pow, ← ZMod.natCast_mod, ← powMod_def, ha, Nat.cast_one]
+  · rw [← Nat.mul_div_cancel' (by lia : 2 ∣ p - 1), pow_mul', hneg, neg_one_sq]
   · obtain ⟨_, hx, hqf⟩ := hq.prime.dvd_prod_iff.mp (hprod ▸ hqp)
     obtain ⟨f, hf, rfl⟩ := List.mem_map.mp hx
     obtain rfl := (Nat.prime_dvd_prime_iff_eq hq (hprime f hf)).mp (hq.dvd_of_dvd_pow hqf)
-    apply hpow f hf
-    rw [powMod_def, ← ZMod.val_natCast, Nat.cast_pow, h1, ZMod.val_one'' hp]
+    rcases hpow f hf with h2 | hne
+    · exact absurd (ZMod.neg_one_eq_one_iff.mp (by rwa [h2, hneg] at h1)) (by lia)
+    · apply hne
+      rw [powMod_def, ← ZMod.val_natCast, Nat.cast_pow, h1, ZMod.val_one'' (by lia)]
 
 /-- A candidate witness of a Lucas certificate for a `p`, which is not recorded in the type. -/
 structure LucasWitness where
