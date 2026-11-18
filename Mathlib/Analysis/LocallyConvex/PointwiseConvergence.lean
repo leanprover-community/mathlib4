@@ -20,7 +20,6 @@ that it is locally convex in the topological sense
   `x : E`.
 * `PointwiseConvergenceCLM.withSeminorm`: the topology is induced by the seminorms.
 * `PointwiseConvergenceCLM.instLocallyConvexSpace`: `E →SLₚₜ[σ] F` is locally convex.
-
 -/
 
 @[expose] public section

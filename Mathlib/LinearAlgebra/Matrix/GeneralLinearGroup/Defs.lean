@@ -274,19 +274,50 @@ variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype 
 def reindex (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
 
 @[simp]
-theorem symm_reindexMulEquiv (e : m ≃ n) :
+theorem symm_reindex (e : m ≃ n) :
     (reindex R e).symm = reindex R e.symm :=
   rfl
 
 @[simp]
-theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
+theorem reindex_trans_reindex (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindex R e) (reindex R e') = reindex R (.trans e e') :=
   rfl
 
 @[simp]
-theorem reindexMulEquiv_refl : reindex R (.refl n) = .refl (GL n R) := rfl
+theorem reindex_refl : reindex R (.refl n) = .refl (GL n R) := rfl
+
+theorem reindex_map (e : m ≃ n) (f : R →+* S) (a : GL m R) :
+    reindex S e (map f a) = map f (reindex R e a) :=
+  rfl
+
+theorem reindex_comp_map (e : m ≃ n) (f : R →+* S) :
+    (reindex S e : GL m S →* GL n S).comp (map f) = (map f).comp (reindex R e) :=
+  rfl
+
+theorem reindex_trans_mapEquiv (e : m ≃ n) (f : R ≃+* S) :
+    (reindex R e).trans (mapEquiv n f) = (mapEquiv m f).trans (reindex S e) :=
+  rfl
 
 end Reindex
+
+section Prod
+
+variable (n R S)
+
+/-- The equivalence between `GL n (R × S)` and `GL n R × GL n S`. -/
+@[simps! apply_fst_val apply_snd_val]
+def prodEquiv : GL n (R × S) ≃* GL n R × GL n S :=
+    (Units.mapEquiv (Matrix.prodRingEquiv n R S)).trans MulEquiv.prodUnits
+
+@[simp]
+lemma val_prodEquiv_symm_apply (g : GL n R × GL n S) :
+    ((prodEquiv n R S).symm g : Matrix n n (R × S)) =
+      (prodRingEquiv n R S).symm (g.fst, g.snd) := rfl
+
+lemma prodEquiv_apply (g : GL n (R × S)) :
+    prodEquiv n R S g = (map (RingHom.fst R S) g, map (RingHom.snd R S) g) := rfl
+
+end Prod
 
 section Pi
 

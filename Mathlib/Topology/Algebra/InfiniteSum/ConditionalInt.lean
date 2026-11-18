@@ -22,7 +22,6 @@ example in the definition of the Eisenstein series `E2`.
 In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` and `symmetricIoo` as
 `SummationFilter`s corresponding to the intervals `Icc -N N`, `Ico -N N`, `Ioc -N N` respectively.
 We also prove that these filters are all `NeBot` and `LeAtTop`.
-
 -/
 
 @[expose] public section

@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
@@ -43,7 +44,6 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 ## TODO
 
 * Construct the affine equivalence between `P` and `finsuppAffineCoords ι k`.
-
 -/
 
 open scoped Finset

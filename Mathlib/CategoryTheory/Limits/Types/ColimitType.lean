@@ -30,7 +30,6 @@ in a categorical sense is a colimit.
 * refactor `DirectedSystem` and the construction of colimits in `Type`
   by using `Functor.ColimitType`.
 * add a similar API for limits in `Type`?
-
 -/
 
 @[expose] public section

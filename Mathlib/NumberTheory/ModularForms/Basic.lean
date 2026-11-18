@@ -612,6 +612,12 @@ lemma directSum_of_pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (DirectSum.of (ModularForm Γ) k f) ^ n = .of (ModularForm Γ) ((n : ℤ) * k) (f.pow n) := by
   grind [DirectSum.ofPow, DirectSum.of_eq_of_gradedMonoid_eq (gnpow_eq_pow f n)]
 
+lemma directSum_of_mul_of {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne] {a b : ℤ}
+    (f : ModularForm Γ a) (g : ModularForm Γ b) :
+    DirectSum.of (ModularForm Γ) a f * DirectSum.of (ModularForm Γ) b g =
+      .of (ModularForm Γ) (a + b) (f.mul g) :=
+  DirectSum.of_mul_of f g
+
 open Filter SlashInvariantForm
 
 /-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a
@@ -647,10 +653,6 @@ section SL2Z
 open ModularForm OnePoint
 
 variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [FunLike F ℍ ℂ] (f : F)
-
-instance [Γ.IsArithmetic] : Fact (IsCusp ∞ Γ) :=
-  ⟨by simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
-    using ⟨_, OnePoint.map_infty _⟩⟩
 
 lemma ModularFormClass.bdd_at_infty [ModularFormClass F Γ k] [Fact (IsCusp ∞ Γ)] :
     IsBoundedAtImInfty f :=

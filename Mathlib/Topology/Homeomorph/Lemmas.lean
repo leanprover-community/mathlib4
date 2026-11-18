@@ -16,7 +16,6 @@ public import Mathlib.Topology.DenseEmbedding
 
 This file proves further properties of homeomorphisms between topological spaces.
 Pretty much every topological property is preserved under homeomorphisms.
-
 -/
 
 @[expose] public section
@@ -140,8 +139,8 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
 /-- The codomain of a homeomorphism is a locally compact space if and only if
 the domain is a locally compact space. -/
 theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
-    LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
-  exact ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
+    LocallyCompactSpace X ↔ LocallyCompactSpace Y :=
+  ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
     fun _ => h.isClosedEmbedding.locallyCompactSpace⟩
 
 @[simp]

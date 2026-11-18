@@ -26,7 +26,6 @@ These definitions and constructions are useful in particular for the comonadicit
 
 This file was adapted from `Mathlib/CategoryTheory/Limits/Shapes/SplitCoequalizer.lean`. Please try
 to keep them in sync.
-
 -/
 
 @[expose] public section

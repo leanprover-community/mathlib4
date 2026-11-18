@@ -53,7 +53,6 @@ We
 ## Examples
 
 See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.Sheaf`.
-
 -/
 
 @[expose] public section
