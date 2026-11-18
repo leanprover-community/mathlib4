@@ -538,7 +538,6 @@ end Real
 def IsPowMul {R S : Type*} [Pow R ℕ] [Pow S ℕ] (f : R → S) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
 
-/-- A power-multiplicative additive group norm on a nontrivial ring satisfies `f 1 = 1`. -/
 lemma IsPowMul.map_one_eq_zero_or_one {R S : Type*} [Monoid R] [MonoidWithZero S]
     [IsRightCancelMulZero S] {f : R → S} (hf : IsPowMul f) : f 1 = 0 ∨ f 1 = 1 :=
   eq_zero_or_one_of_sq_eq_self (by simpa using (hf 1 one_le_two).symm)
