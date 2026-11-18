@@ -345,6 +345,8 @@ theorem memLp_iff {f : α →ₛ E} (hp_ne_top : p ≠ ∞) :
   ⟨fun h => measure_preimage_lt_top_of_memLp hp_ne_top f h, fun h =>
     memLp_of_finite_measure_preimage p h⟩
 
+@[deprecated (since := "2026-11-18")] alias memLp_zero := memLp_iff
+
 theorem integrable_iff {f : α →ₛ E} : Integrable f μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ :=
   memLp_one_iff_integrable.symm.trans <| memLp_iff ENNReal.coe_ne_top
 

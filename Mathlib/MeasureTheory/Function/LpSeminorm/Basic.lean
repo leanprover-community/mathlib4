@@ -99,6 +99,8 @@ theorem memLp_zero_iff {f : α → ε} :
   simp [MemLp, inhmgELpNorm]
   grind
 
+@[deprecated (since := "2026-11-18")] alias memLp_zero_iff_aestronglyMeasurable := memLp_zero_iff
+
 section ESeminormedAddMonoid
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]

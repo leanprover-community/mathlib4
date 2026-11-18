@@ -302,6 +302,9 @@ lemma memLp_iff_eLpNorm_of_ne_zero {f : α → ε} (hp : p ≠ 0) :
     rwa [ENNReal.rpow_lt_top_iff_of_pos] at h
     simpa using ENNReal.toReal_pos hp (by finiteness)
 
+@[deprecated (since := "2026-11-18")]
+alias mem_Lp_iff_eLpNorm_lt_top := memLp_iff_eLpNorm_of_ne_zero
+
 lemma memLp_iff_eLpNorm_of_pos {f : α → ε} (hp : 0 < p) :
     MemLp f p μ ↔ eLpNorm f p μ < ∞ :=
   memLp_iff_eLpNorm_of_ne_zero hp.ne'
