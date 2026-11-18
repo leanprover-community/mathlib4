@@ -9,8 +9,8 @@ public import Mathlib.Condensed.Discrete.Basic
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 public import Mathlib.Topology.FiberPartition
-/-!
 
+/-!
 # The sheaf of locally constant maps on `CompHausLike P`
 
 This file proves that under suitable conditions, the functor from the category of sets to the
@@ -64,7 +64,6 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 * `LightCondSet.LocallyConstant.iso`: the functor `LightCondSet.LocallyConstant.functor` is
   isomorphic to the functor `LightCondensed.discrete (Type _)` (the constant sheaf functor from sets
   to light condensed sets).
-
 -/
 
 @[expose] public section
@@ -98,7 +97,7 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   { hom := ↾fun f ↦ (f : C(Y, X))
-    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
+    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr (by fun_prop)⟩ }
 
 section Adjunction
 
@@ -121,7 +120,7 @@ noncomputable def sigmaIso [HasExplicitFiniteCoproducts.{u} P] : (finiteCoproduc
 
 lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
     (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) :
-    (X.mapIso (sigmaIso r).op).hom ≫ sigmaComparison X (fun a ↦ (fiber r a).1) ≫
+    (X.mapIso (sigmaIso r).op).hom ≫ sigmaComparison X (fun a ↦ (fiber r a).toTop) ≫
       (↾fun g ↦ g a) = X.map (sigmaIncl r a).op := by
   ext
   simp only [Functor.mapIso_hom, Iso.op_hom, sigmaComparison, TypeCat.Fun.toFun_apply,
@@ -149,7 +148,7 @@ noncomputable def counitAppApp (S : CompHausLike.{u} P)
     (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w))
     [PreservesFiniteProducts Y] [HasExplicitFiniteCoproducts.{u} P] :
     LocallyConstant S (Y.obj (op ↧PUnit.{u + 1})) ⟶ Y.obj ⟨S⟩ :=
-  ↾fun r ↦ (inv (sigmaComparison Y (fun a ↦ (fiber r a).1)) ≫
+  ↾fun r ↦ (inv (sigmaComparison Y (fun a ↦ (fiber r a).toTop)) ≫
     (Y.mapIso (sigmaIso r).op).inv) (counitAppAppImage r)
 
 -- This is the key lemma to prove naturality of the counit:
@@ -162,7 +161,7 @@ lemma presheaf_ext (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w))
     [HasExplicitFiniteCoproducts.{u} P]
     (h : ∀ (a : Fiber f), X.map (sigmaIncl f a).op x = X.map (sigmaIncl f a).op y) : x = y := by
   apply injective_of_mono (X.mapIso (sigmaIso f).op).hom
-  apply injective_of_mono (sigmaComparison X (fun a ↦ (fiber f a).1))
+  apply injective_of_mono (sigmaComparison X (fun a ↦ (fiber f a).toTop))
   ext a
   specialize h a
   rw [← sigmaComparison_comp_sigmaIso] at h
@@ -174,7 +173,7 @@ lemma incl_of_counitAppApp [PreservesFiniteProducts Y] [HasExplicitFiniteCoprodu
   simp only [counitAppApp, Functor.mapIso_inv, ← Iso.op_hom, CategoryTheory.comp_apply,
     ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, ← Functor.map_comp_apply, Iso.inv_hom_id,
     Functor.map_id_apply]
-  exact congrFun (Iso.inv_hom_id_apply (asIso (sigmaComparison Y (fun a ↦ (fiber f a).1)))
+  exact congrFun (Iso.inv_hom_id_apply (asIso (sigmaComparison Y (fun a ↦ (fiber f a).toTop)))
     (counitAppAppImage f)) _
 
 variable {T : CompHausLike.{u} P} (g : T ⟶ S)
@@ -199,7 +198,6 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The counit is natural in `S : CompHausLike P` -/
 @[simps! app]
 noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
@@ -247,7 +245,6 @@ noncomputable def functorIso :
   NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
     (functorToPresheavesIso P hs X))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/

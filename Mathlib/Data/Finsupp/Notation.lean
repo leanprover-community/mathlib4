@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finsupp.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation for `Finsupp`
 
@@ -97,7 +100,7 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
       let ret : Std.Format := f!"fun₀" ++ .nest 2 (
         .group (.join <| f.support.val.unquot.map fun a =>
           .line ++ .group (f!"| {repr a} =>" ++ .line ++ repr (f a))))
-      if p ≥ leadPrec then Format.paren ret else ret
+      if p ≥ eval_prec lead then Format.paren ret else ret
 
 -- This cannot be put in `Mathlib/Data/DFinsupp/Notation.lean` where it belongs, since doc-strings
 -- can only be added/modified in the file where the corresponding declaration is defined.

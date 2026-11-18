@@ -234,7 +234,7 @@ private lemma hasDerivAt_wedgeIntegral_im_aux :
   have : (fun w ↦ f w - f z) =o[𝓝 z] fun _ ↦ (1 : ℝ) := by
     rw [Asymptotics.isLittleO_one_iff, tendsto_sub_nhds_zero_iff]
     exact f_cont.continuousAt <| _root_.mem_nhds_iff.mpr ⟨ball c r, le_refl _, isOpen_ball, hz⟩
-  rw [Asymptotics.IsLittleO] at this ⊢
+  rw [Asymptotics.isLittleO_iff_forall_isBigOWith] at this ⊢
   intro ε ε_pos
   replace := this ε_pos
   simp only [Asymptotics.isBigOWith_iff, norm_one, mul_one] at this ⊢

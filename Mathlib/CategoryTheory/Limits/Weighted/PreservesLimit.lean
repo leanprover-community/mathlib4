@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # Weighted limits preserve limits on the weight variable
-
 -/
 
 universe w v'' u'' v' u' v u
@@ -83,7 +82,7 @@ public lemma preservesLimit
     [PreservesColimit G.leftOp (hasWeightedLimit.{w} F).ι] :
     PreservesLimit G (weightedLimFlipObj'.{w} F) where
   preserves {c} hc := ⟨by
-    refine (IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ?_).1
+    refine (IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ?_).toFun
       ((preservesLimit' (coconeLeftOpOfCone c)
         (isColimitOfPreserves (hasWeightedLimit.{w} F).ι
           (isColimitCoconeLeftOpOfCone _ hc))).whiskerEquivalence

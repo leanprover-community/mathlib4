@@ -163,7 +163,6 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
     P f ↔ ∀ i, P (𝒰.pullbackHom f i) :=
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
     (H : Set.range f ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
   let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
@@ -318,7 +317,7 @@ lemma resLE [IsZariskiLocalAtTarget P] {U : Y.Opens} {V : X.Opens}
 open immersions, then `P` can be checked locally around points. -/
 lemma iff_exists_resLE [IsZariskiLocalAtTarget P]
     [P.RespectsRight @IsOpenImmersion] :
-    P f ↔ ∀ x : X, ∃ (U : Y.Opens) (V : X.Opens) (_ : x ∈ V.1) (e : V ≤ f ⁻¹ᵁ U),
+    P f ↔ ∀ x : X, ∃ (U : Y.Opens) (V : X.Opens) (_ : x ∈ V.carrier) (e : V ≤ f ⁻¹ᵁ U),
       P (f.resLE U V e) := by
   refine ⟨fun hf x ↦ ⟨⊤, ⊤, trivial, by simp, resLE _ hf⟩, fun hf ↦ ?_⟩
   choose U V hxU e hf using hf

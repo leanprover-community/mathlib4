@@ -27,7 +27,6 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 ## References
 
 * Evan Chen, Euclidean Geometry in Mathematical Olympiads.
-
 -/
 
 @[expose] public section
@@ -252,13 +251,13 @@ theorem oangle_add_oangle_rev_neg_right (x y : V) : o.oangle x (-y) + o.oangle y
 angle. -/
 @[simp]
 theorem oangle_smul_left_of_pos (x y : V) {r : ℝ} (hr : 0 < r) :
-    o.oangle (r • x) y = o.oangle x y := by simp [oangle, Complex.arg_real_mul _ hr]
+    o.oangle (r • x) y = o.oangle x y := by simp [oangle, Complex.arg_ofReal_mul hr]
 
 /-- Multiplying the second vector passed to `oangle` by a positive real does not change the
 angle. -/
 @[simp]
 theorem oangle_smul_right_of_pos (x y : V) {r : ℝ} (hr : 0 < r) :
-    o.oangle x (r • y) = o.oangle x y := by simp [oangle, Complex.arg_real_mul _ hr]
+    o.oangle x (r • y) = o.oangle x y := by simp [oangle, Complex.arg_ofReal_mul hr]
 
 /-- Multiplying the first vector passed to `oangle` by a negative real produces the same angle
 as negating that vector. -/
@@ -454,7 +453,7 @@ theorem oangle_add {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
   simp_rw [oangle]
   rw [← Complex.arg_mul_coe_angle, o.kahler_mul y x z]
   · congr 1
-    exact mod_cast Complex.arg_real_mul _ (by positivity : 0 < ‖y‖ ^ 2)
+    exact mod_cast Complex.arg_ofReal_mul (by positivity : 0 < ‖y‖ ^ 2) _
   · exact o.kahler_ne_zero hx hy
   · exact o.kahler_ne_zero hy hz
 
@@ -507,13 +506,9 @@ theorem span_eq_of_two_zsmul_oangle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠
   rw [Real.Angle.two_zsmul_eq_zero_iff, o.oangle_eq_zero_or_eq_pi_iff_right_eq_smul,
     or_iff_right hx] at h
   rw [Submodule.span_singleton_eq_span_singleton]
-  rcases h with ⟨r, hr⟩
-  have hr' : r ≠ 0 := by
-    contrapose! hy with hr₀
-    rw [hr₀, zero_smul] at hr
-    exact hr
-  use (Units.mk0 r hr')
-  rw [Units.smul_mk0, hr]
+  rcases h with ⟨r, rfl⟩
+  use (Units.mk0 r (by simp_all))
+  rw [Units.smul_mk0]
 
 /-- Twice angles with two vectors are zero if and only if the spans of two vectors are equal. -/
 theorem two_zsmul_oangle_eq_zero_iff_span_eq {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :

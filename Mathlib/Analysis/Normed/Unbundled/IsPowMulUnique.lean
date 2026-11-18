@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniqueness of power-multiplicative norms
 
@@ -74,7 +77,7 @@ public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L) 
     by_cases hx : f x = 0
     · simp [eq_zero_of_map_eq_zero f hx]
     · let g : AlgebraNorm K L := algNormFromConst hx hf
-      have hg : IsPowMul g := seminormFromConst_isPowMul hx hf
+      have hg : IsPowMul g := seminormFromConst_isPowMul hf
       rw [hf.unique hg]
       exact seminormFromConst_const_mul hx hf y
 

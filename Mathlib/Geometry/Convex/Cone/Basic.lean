@@ -89,7 +89,7 @@ instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M)
 theorem ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
 variable (C) in
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), membership .]
 protected lemma smul_mem (hc : 0 < c) (hx : x ∈ C) : c • x ∈ C := C.smul_mem' hc hx
 
 variable (C) in
@@ -426,7 +426,7 @@ theorem IsReproducing.of_span_eq_top {R : Type*} {M : Type*} [Ring R] [LinearOrd
   rw [IsReproducing, Set.eq_univ_iff_forall]
   intro x
   -- A generating cone in a nontrivial module must be nonempty
-  have hne : (C : Set M).Nonempty := Set.nonempty_iff_ne_empty.2 fun h' => by simp [h'] at h
+  have hne : (C : Set M).Nonempty := Set.ne_empty_iff_nonempty.1 fun h' => by simp [h'] at h
   -- Build the submodule S = C - C and show span C ⊆ S
   let S : Submodule R M := {
     carrier := (C : Set M) - (C : Set M)
