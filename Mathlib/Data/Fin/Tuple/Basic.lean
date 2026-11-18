@@ -279,7 +279,7 @@ theorem comp_tail {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n.succ → 
   ext j
   simp [tail]
 
-theorem cons_cons_swap {α : Sort*} (x y : α) (q : Fin n → α) :
+theorem cons_cons_comp_swap_zero_one {α : Sort*} (x y : α) (q : Fin n → α) :
     cons x (cons y q) ∘ Equiv.swap 0 1 = cons y (cons x q) := by
   ext i
   induction i using Fin.induction with
