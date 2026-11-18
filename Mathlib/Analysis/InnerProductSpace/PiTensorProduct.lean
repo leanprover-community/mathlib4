@@ -218,4 +218,24 @@ lemma reindexIsometry_refl : reindexIsometry 𝕜 E (.refl ι) = .refl 𝕜 (⨂
 
 end Reindex
 
+section IsEmpty
+
+variable [IsEmpty ι]
+
+@[simp]
+theorem inner_of_isEmpty (x y : ⨂[𝕜] i, E i) :
+    ⟪x, y⟫_𝕜 = starRingEnd 𝕜 (isEmptyEquiv ι x) * isEmptyEquiv ι y :=
+  x.induction_on
+    (y.induction_on (by simp_all [inner_def, mul_comm]) (by simp_all [inner_add_right, mul_add]))
+    (by simp_all [inner_add_left, add_mul])
+
+variable (ι) in
+noncomputable def isEmptyIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] 𝕜 :=
+  isEmptyEquiv ι |>.isometryOfInner <| by simp [mul_comm]
+
+@[simp]
+lemma isEmptyIsometry_apply (x : ⨂[𝕜] i, E i) : isEmptyIsometry ι x = isEmptyEquiv ι x := rfl
+
+end IsEmpty
+
 end PiTensorProduct
