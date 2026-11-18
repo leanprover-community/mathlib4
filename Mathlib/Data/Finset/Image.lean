@@ -577,10 +577,6 @@ theorem iterate_image [DecidableEq α] (f : α → α) (n : ℕ) :
   | zero => simp
   | succ n ih => rw [iterate_succ_apply', iterate_succ', ih, image_image]
 
-lemma _root_.List.toFinset_map {β : Type*} [DecidableEq α] [DecidableEq β] (f : α → β)
-    (l : List α) : (l.map f).toFinset = l.toFinset.image f :=
-  Multiset.toFinset_map f l
-
 end Image
 
 /-! ### filterMap -/
@@ -738,7 +734,11 @@ end Finset
 
 theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) (m : Multiset α) :
     (m.map f).toFinset = m.toFinset.image f :=
-  Finset.val_inj.1 (Multiset.dedup_map_dedup_eq _ _).symm
+  Finset.image_toFinset.symm
+
+theorem List.toFinset_map {β : Type*} [DecidableEq α] [DecidableEq β] (f : α → β)
+    (l : List α) : (l.map f).toFinset = l.toFinset.image f :=
+  Multiset.toFinset_map f l
 
 namespace Equiv
 
