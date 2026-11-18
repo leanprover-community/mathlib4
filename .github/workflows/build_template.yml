@@ -1250,32 +1250,57 @@ jobs:
         if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: python
         run: |
-          level=warning; [ "$STRICT" = true ] && level=error
-          status=0
-          pin=
-          declare -A compared  # Cache each commit's comparison with mathlib-ci master.
-          # Read `file:line:match` records. Each match ends with a 40-digit hexadecimal commit hash.
-          while IFS=: read -r file line match; do
-            sha=${match: -40}
-            echo "$file:$line:$sha"
-            [[ "$match" = default:* ]] && pin=$sha
-            if [ -z "${compared[$sha]}" ]; then
-              compared[$sha]=$(gh api "repos/leanprover-community/mathlib-ci/compare/$sha...master" --jq .status) ||
-                compared[$sha]="unknown commit or API error"
-            fi
-            case "${compared[$sha]}" in ahead|identical) continue ;; esac
-            echo "::$level file=$file,line=$line::mathlib-ci commit $sha is not on mathlib-ci master (${compared[$sha]})."
-            status=1
-          done < <(grep -rnoE --include='*.yml' --include='*.yaml' 'leanprover-community/mathlib-ci[^@[:space:]]*@[0-9a-f]{40}' .github || true
-                   grep -HnoE 'default: [0-9a-f]{40}' .github/actions/get-mathlib-ci/action.yml)
-          if [ -n "$pin" ]; then
-            echo "sha=$pin" >> "$GITHUB_OUTPUT"
-          else
-            echo "::$level file=.github/actions/get-mathlib-ci/action.yml::get-mathlib-ci has no default commit."
-            status=1
-          fi
-          [ "$level" = warning ] || exit "$status"
+          import os
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          strict = os.environ["STRICT"] == "true"
+          level = "error" if strict else "warning"
+          failed = False
+          default_pin = None
+          comparisons = {}
+          default_action = Path(".github/actions/get-mathlib-ci/action.yml")
+          action_pin = re.compile(r"leanprover-community/mathlib-ci[^@\s]*@([0-9a-f]{40})")
+          default_ref = re.compile(r"default: ([0-9a-f]{40})")
+
+          for file in sorted(Path(".github").rglob("*")):
+              if not file.is_file() or file.suffix not in (".yml", ".yaml"):
+                  continue
+              for line, text in enumerate(file.read_text().splitlines(), start=1):
+                  pins = action_pin.findall(text)
+                  if file == default_action:
+                      defaults = default_ref.findall(text)
+                      if defaults:
+                          default_pin = defaults[-1]
+                      pins.extend(defaults)
+                  for sha in pins:
+                      print(f"{file}:{line}:{sha}")
+                      if sha not in comparisons:
+                          try:
+                              comparisons[sha] = subprocess.check_output(
+                                  ["gh", "api", f"repos/leanprover-community/mathlib-ci/compare/{sha}...master",
+                                   "--jq", ".status"], text=True,
+                              ).strip()
+                          except subprocess.CalledProcessError:
+                              comparisons[sha] = "unknown commit or API error"
+                      comparison = comparisons[sha]
+                      if comparison not in ("ahead", "identical"):
+                          print(f"::{level} file={file},line={line}::"
+                                f"mathlib-ci commit {sha} is not on mathlib-ci master ({comparison}).")
+                          failed = True
+
+          if default_pin:
+              with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+                  output.write(f"sha={default_pin}\n")
+          else:
+              print(f"::{level} file={default_action}::get-mathlib-ci has no default commit.")
+              failed = True
+
+          sys.exit(1 if strict and failed else 0)
 
       # Check script paths against the PR's default mathlib-ci commit.
       - name: Get mathlib-ci
@@ -1292,31 +1317,54 @@ jobs:
         env:
           PIN: ${{ steps.pins.outputs.sha }}
           CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
+        shell: python
         run: |
-          level=warning; [ "$STRICT" = true ] && level=error
-          status=0
-          report() { echo "::$level file=$1,line=$2::$3"; status=1; }
+          import os
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          strict = os.environ["STRICT"] == "true"
+          level = "error" if strict else "warning"
+          failed = False
+          pin = os.environ["PIN"]
+          scripts_dir = Path(os.environ["CI_SCRIPTS_DIR"])
+          script_path = re.compile(r"\$\{?CI_SCRIPTS_DIR\}?/([A-Za-z0-9._/-]+)")
+
+          def report(file, line, message):
+              global failed
+              print(f"::{level} file={file},line={line}::{message}")
+              failed = True
 
           # Check literal script paths before the first `#` on each line.
           # Dynamic paths are outside this check.
-          while IFS=: read -r file line text; do
-            while read -r path; do
-              [[ "/$path/" != */../* && -e "$CI_SCRIPTS_DIR/$path" ]] ||
-                report "$file" "$line" "The mathlib-ci scripts at $PIN have no file \`$path\`."
-            done < <(grep -oE '\$\{?CI_SCRIPTS_DIR\}?/[A-Za-z0-9._/-]+' <<< "${text%%#*}" | cut -d/ -f2-)
-          done < <(grep -rnE --include='*.yml' --include='*.yaml' '^[^#]*\$\{?CI_SCRIPTS_DIR\}?/' .github/workflows)
+          for file in sorted(Path(".github/workflows").rglob("*")):
+              if not file.is_file() or file.suffix not in (".yml", ".yaml"):
+                  continue
+              for line, text in enumerate(file.read_text().splitlines(), start=1):
+                  code = text.split("#", 1)[0]
+                  for path in script_path.findall(code):
+                      full_path = scripts_dir / path.lstrip("/")
+                      if ".." in Path(path).parts or not full_path.exists():
+                          report(file, line, f"The mathlib-ci scripts at {pin} have no file `{path}`.")
 
           # Require workflows to use get-mathlib-ci for mathlib-ci checkouts.
           # Invalid YAML fails this step.
-          yq ea '.jobs[].steps[]?
-                 | select((.uses // "") | test("^actions/checkout@"))
-                 | select((.with.repository // "") | test("/mathlib-ci$"))
-                 | filename + ":" + (.with.repository | line | to_string)' .github/workflows/*.y*ml > "$RUNNER_TEMP/checkouts"
-          while IFS=: read -r file line; do
-            report "$file" "$line" "The step checks out mathlib-ci with actions/checkout.%0AHint: Use \`./workflow-actions/.github/actions/get-mathlib-ci\` instead."
-          done < "$RUNNER_TEMP/checkouts"
+          query = """
+              .jobs[].steps[]?
+              | select((.uses // "") | test("^actions/checkout@"))
+              | select((.with.repository // "") | test("/mathlib-ci$"))
+              | filename + ":" + (.with.repository | line | to_string)
+          """
+          workflows = sorted(Path(".github/workflows").glob("*.y*ml"))
+          checkouts = subprocess.check_output(["yq", "ea", query, *map(str, workflows)], text=True)
+          for checkout in checkouts.splitlines():
+              file, line = checkout.rsplit(":", 1)
+              report(file, line, "The step checks out mathlib-ci with actions/checkout.%0A"
+                     "Hint: Use `./workflow-actions/.github/actions/get-mathlib-ci` instead.")
 
-          [ "$level" = warning ] || exit "$status"
+          sys.exit(1 if strict and failed else 0)
 
   final:
     name: Post-CI job
