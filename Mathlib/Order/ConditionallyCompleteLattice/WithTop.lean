@@ -26,6 +26,11 @@ variable {α β γ : Type*} {ι : Sort*}
 
 namespace WithTop
 
+-- TODO: find a better home for this lemma.
+@[to_dual]
+theorem isCompl_range_coe : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
+  eq_compl_iff_isCompl.1 <| Set.ext fun _ ↦ ne_top_iff_exists.symm
+
 section LE
 
 /-!
@@ -36,15 +41,15 @@ variable [LE α]
 
 open scoped Classical in
 /-- This instance ensures `OrderSupSet (WithTop α)` whenever `OrderSupSet α`. -/
-@[to_dual /-- This instance ensures `OrderInfSet (WithBot α)` whenever `OrderInfSet α`. -/,
-  no_expose]
+@[no_expose, to_dual
+/-- This instance ensures `OrderInfSet (WithBot α)` whenever `OrderInfSet α`. -/]
 instance instSupSet [SupSet α] : SupSet (WithTop α) :=
   ⟨fun S => if ⊤ ∈ S ∨ ¬BddAbove ((↑) ⁻¹' S : Set α) then ⊤ else ↑(sSup ((↑) ⁻¹' S : Set α))⟩
 
 open scoped Classical in
 /-- This instance ensures `OrderInfSet (WithTop α)` whenever `OrderInfSet α`. -/
-@[to_dual /-- This instance ensures `OrderSupSet (WithBot α)` whenever `OrderSupSet α`. -/,
-  no_expose]
+@[no_expose, to_dual
+/-- This instance ensures `OrderSupSet (WithBot α)` whenever `OrderSupSet α`. -/]
 instance instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
@@ -114,10 +119,6 @@ theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
 
 end LE
 
-@[to_dual]
-theorem isCompl_range_coe : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
-  eq_compl_iff_isCompl.1 <| Set.ext fun _ ↦ ne_top_iff_exists.symm
-
 section Preorder
 
 variable [Preorder α]
@@ -147,9 +148,9 @@ theorem isLUB_coe_iff {s : Set (WithTop α)} {a : α} :
 
 @[to_dual]
 theorem isGLB_top_iff {s : Set (WithTop α)} :
-    IsGLB s ⊤ ↔ s ⊆ {⊤} :=
-  ⟨fun h _ hx ↦ WithTop.top_le_iff.mp (h.1 hx),
-    fun h ↦ ⟨fun _ hx ↦ le_of_eq (h hx).symm, fun _ _ ↦ le_top⟩⟩
+    IsGLB s ⊤ ↔ s ⊆ {⊤} where
+  mp h _ hx := WithTop.top_le_iff.mp (h.1 hx)
+  mpr h := ⟨fun _ hx ↦ le_of_eq (h hx).symm, fun _ _ ↦ le_top⟩
 
 @[to_dual]
 theorem isLUB_top_iff {s : Set (WithTop α)} :
@@ -159,23 +160,21 @@ theorem isLUB_top_iff {s : Set (WithTop α)} :
 
 @[to_dual]
 instance instOrderSupSet [OrderSupSet α] : OrderSupSet (WithTop α) where
-  isLUB_sSup_of_isLUB s a h := by
-    cases a with
-    | top => rwa [sSup_eq_top_iff.2 (isLUB_top_iff.1 h)]
-    | coe a =>
-      rw [isLUB_coe_iff] at h
-      rw [sSup_eq h.1 h.2.bddAbove, isLUB_coe_iff]
-      exact ⟨h.1, h.2.isLUB_sSup⟩
+  isLUB_sSup_of_isLUB
+  | s, ⊤, h => by rwa [sSup_eq_top_iff.2 (isLUB_top_iff.1 h)]
+  | s, (a : α), h => by
+    rw [isLUB_coe_iff] at h
+    rw [sSup_eq h.1 h.2.bddAbove, isLUB_coe_iff]
+    exact ⟨h.1, h.2.isLUB_sSup⟩
 
 @[to_dual]
 instance instOrderInfSet [OrderInfSet α] : OrderInfSet (WithTop α) where
-  isGLB_sInf_of_isGLB s a h := by
-    cases a with
-    | top => rwa [sInf_eq_top_iff.2 (.inl (isGLB_top_iff.1 h))]
-    | coe a =>
-      obtain ⟨hs, h'⟩ := isGLB_coe_iff.mp h
-      rw [sInf_eq hs ⟨_, h.1⟩, isGLB_coe_iff]
-      exact ⟨hs, h'.isGLB_sInf⟩
+  isGLB_sInf_of_isGLB
+  | s, ⊤, h => by rwa [sInf_eq_top_iff.2 (.inl (isGLB_top_iff.1 h))]
+  | s, (a : α), h => by
+    obtain ⟨hs, h'⟩ := isGLB_coe_iff.mp h
+    rw [sInf_eq hs ⟨_, h.1⟩, isGLB_coe_iff]
+    exact ⟨hs, h'.isGLB_sInf⟩
 
 @[to_dual (attr := norm_cast)]
 theorem coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
