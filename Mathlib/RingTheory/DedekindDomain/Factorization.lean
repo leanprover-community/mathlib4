@@ -350,8 +350,8 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
       Injective.eq_iff (IsLocalization.injective K (le_refl R⁰))]
     rw [ne_eq, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot] at h_a_ne_zero
     exact h_a_ne_zero
-  have hv : Irreducible (Associates.mk v.asIdeal) := by
-    exact Associates.irreducible_mk.mpr v.irreducible
+  have hv : Irreducible (Associates.mk v.asIdeal) :=
+    Associates.irreducible_mk.mpr v.irreducible
   rw [h_a₁J₁, ← div_spanSingleton, ← div_spanSingleton, div_eq_div_iff h_a₁' h_a',
     ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, ← coeIdeal_mul, ← coeIdeal_mul] at h_aJ
   rw [count, dite_eq_right hI, sub_eq_sub_iff_add_eq_add, ← natCast_add, ← natCast_add, natCast_inj,
@@ -631,10 +631,10 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
-      exact p.2.ne_top
+      exact p.isPrime.ne_top
     · rw [Ideal.zero_eq_bot, bot_lt_iff_ne_bot, ← Ideal.zero_eq_bot,
         mul_ne_zero_iff, Finset.prod_ne_zero_iff]
-      exact ⟨hJ, fun x _ ↦ x.3⟩
+      exact ⟨hJ, fun x _ ↦ x.ne_bot⟩
   choose! a ha ha' using fun p hps ↦ IsConcreteLE.exists_of_lt (this p hps)
   obtain ⟨K, hK⟩ : J ∣ Ideal.span {∑ p ∈ s, a p} := by
     rw [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
@@ -847,7 +847,7 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
     ← Finset.prod_set_coe]
   · let _ : Fintype {v : HeightOneSpectrum R // v.asIdeal ∣ map (algebraMap S R) p} := hF
     refine Fintype.prod_equiv (equivPrimesOver _ hp) _ _ fun ⟨v, _⟩ ↦ ?_
-    have : v.asIdeal.LiesOver p := by rwa [Ideal.liesOver_iff_dvd_map v.2.ne_top]
+    have : v.asIdeal.LiesOver p := by rwa [Ideal.liesOver_iff_dvd_map v.isPrime.ne_top]
     simp [maxPowDividing_eq_pow_multiset_count _ h, ramificationIdx_eq_factors_count p v h]
   · intro v hv
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,

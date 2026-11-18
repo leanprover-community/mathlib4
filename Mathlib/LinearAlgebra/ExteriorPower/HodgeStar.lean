@@ -6,6 +6,7 @@ Authors: Kirill Kondrashov, Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
+public import Mathlib.LinearAlgebra.ExteriorPower.Orientation
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 
 /-!
@@ -16,10 +17,11 @@ This file contains a definition of the Hodge star on exterior powers.
 ## Main definitions / results:
  * `exteriorPower.hodgeStar`: the Hodge star on exterior powers associated to a choice of bilinear
    form and volume element.
+ * `exteriorPower.hodgeStarOfOrientation`: the Hodge star associated to a bilinear form and a
+   positive orientation.
 
 ## TODO
 
-* Add API to obviate the need to supply the volume element in the presence of `Module.Oriented`.
 * Prove
   + `Δ * B.exteriorPower l (hodgeStar B hB vol hkl x) (hodgeStar B hB vol hkl y) =
       B.exteriorPower k x y`
@@ -52,5 +54,12 @@ public def hodgeStar :
 lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
     B.exteriorPower l (hodgeStar B hB vol hkl x) = wedgePairing vol hkl x := by
   simp
+
+variable [LinearOrder R] [IsStrictOrderedRing R] [Module.Oriented R M (Fin (finrank R M))]
+
+/-- The Hodge star associated to a bijective bilinear form on an oriented module. -/
+abbrev hodgeStarOfOrientation :
+    ⋀[R]^k M ≃ₗ[R] ⋀[R]^l M :=
+  hodgeStar B hB volOfOrientation hkl
 
 end exteriorPower

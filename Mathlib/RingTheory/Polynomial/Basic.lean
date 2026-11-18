@@ -38,10 +38,6 @@ section Semiring
 
 variable [Semiring R]
 
-instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
-  let ⟨h⟩ := h
-  ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
-
 instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
   cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
 
@@ -288,6 +284,7 @@ theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑((restriction p).coeff n) = 
     rfl
   · rfl
 
+@[deprecated coeff_restriction (since := "2026-11-16")]
 theorem coeff_restriction' {p : R[X]} {n : ℕ} : ((restriction p).coeff n).1 = p.coeff n := by
   simp
 
@@ -322,7 +319,7 @@ theorem restriction_zero : restriction (0 : R[X]) = 0 := by
 
 @[simp]
 theorem restriction_one : restriction (1 : R[X]) = 1 := by
-  ext i; rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
+  ext i; rw [coeff_restriction, coeff_one, coeff_one]; split_ifs <;> rfl
 
 variable [Semiring S] {f : R →+* S} {x : S}
 
@@ -586,7 +583,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     · rw [Ne, eq_top_iff_one, mem_map_C_iff, not_forall]
       use 0
       rw [AddMonoidAlgebra.coeff_one_zero, ← eq_top_iff_one]
-      exact h.1
+      exact h.ne_top'
     · intro f g
       simp only [mem_map_C_iff]
       contrapose!
@@ -597,7 +594,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         refine ⟨m + n, ?_⟩
         rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m, n))).mpr rfl),
           Finset.sum_insert (Finset.notMem_erase _ _), (P.add_mem_iff_left _).not]
-        · apply mt h.2
+        · apply mt h.mem_or_mem'
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
         apply P.sum_mem
