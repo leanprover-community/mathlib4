@@ -152,14 +152,13 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg {v : E}
 variable (K) in
 /-- The reflection in `K` preserves `K`. -/
 theorem reflection_mem_compatibleMaps : K ∈ Module.End.invtSubmodule K.reflection.toLinearMap :=
-  (mem_compatibleMaps _ _).mp fun _ hx ↦ by simpa [reflection_mem_subspace_eq_self hx] using hx
+  fun _ hx ↦ by simpa [reflection_mem_subspace_eq_self hx] using hx
 
 variable (K) in
 /-- The reflection in `K` preserves `Kᗮ`. -/
 theorem reflection_mem_compatibleMaps_orthogonalComplement :
     Kᗮ ∈ Module.End.invtSubmodule K.reflection.toLinearMap :=
-  (mem_compatibleMaps _ _).mp fun _ hx ↦ by
-    simpa [reflection_mem_subspace_orthogonalComplement_eq_neg hx] using hx
+  fun _ hx ↦ by simpa [reflection_mem_subspace_orthogonalComplement_eq_neg hx] using hx
 
 variable (K) in
 /-- The restriction of the reflection in `K` to `K` is the identity. -/
