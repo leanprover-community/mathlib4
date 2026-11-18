@@ -38,7 +38,7 @@ variable {α β : Type*}
 /-- `s.sym2` is the finset of all unordered pairs of elements from `s`.
 It is the image of `s ×ˢ s` under the quotient `α × α → Sym2 α`. -/
 @[simps]
-protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.1.sym2, s.2.sym2⟩
+protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.val.sym2, s.nodup.sym2⟩
 
 section
 variable {s t : Finset α} {a b : α}
@@ -233,7 +233,7 @@ theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
 @[simp]
 theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
   cases n
-  · exact iff_of_false (singleton_ne_empty _) fun h ↦ (h.1 rfl).elim
+  · simp
   · refine ⟨fun h ↦ ⟨Nat.succ_ne_zero _, eq_empty_of_sym_eq_empty h⟩, ?_⟩
     rintro ⟨_, rfl⟩
     exact sym_empty _

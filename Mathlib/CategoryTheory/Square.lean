@@ -29,7 +29,6 @@ we consider a commutative square as a horizontal
 morphism between two vertical maps (`arrowArrowEquivalence`)
 or a vertical morphism between two horizontal
 maps (`arrowArrowEquivalence'`).
-
 -/
 
 @[expose] public section

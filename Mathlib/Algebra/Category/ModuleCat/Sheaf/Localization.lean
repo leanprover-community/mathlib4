@@ -16,7 +16,6 @@ which become isomorphisms after sheafification
 (see the file `Mathlib/CategoryTheory/Sites/Localization.lean`), we show that
 the sheafification functor from presheaves of modules to sheaves of modules
 is a localization functor.
-
 -/
 
 public section

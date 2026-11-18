@@ -175,6 +175,12 @@ theorem orbit_eq_primesOver [Finite G] [SMulCommClass G A B] (P : Ideal A) (Q : 
   obtain ⟨g, hg⟩ := exists_smul_of_under_eq A B G Q R (hP.over.symm.trans h.2.over)
   exact ⟨g, hg.symm⟩
 
+variable {A B} in
+theorem mem_map_under {b : B} (hb : ∀ g : G, g • b = b) {I : Ideal B} (hbI : b ∈ I) :
+    b ∈ (I.under A).map (algebraMap A B) := by
+  obtain ⟨a, rfl⟩ := isInvariant (A := A) b hb
+  exact Ideal.mem_map_of_mem (algebraMap A B) hbI
+
 end Algebra.IsInvariant
 
 end transitivity
@@ -348,7 +354,7 @@ private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
     rw [mul_comm, Algebra.smul_def, mul_comm] at h
     rw [div_eq_div_iff hy ha, ← map_mul, ← h, map_mul, ← algebraMap_apply]
   simp only [h, map_div₀, algebraMap_apply (A ⧸ P) K L, AlgEquiv.commutes] at hx ⊢
-  simp only [← algebraMap_apply, div_left_inj' ha] at hx ⊢
+  simp only [← algebraMap_apply, div_left_inj₀ ha] at hx ⊢
   exact fixed_of_fixed1 G P Q K L f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L
     ((IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L
       (Ideal.Quotient.stabilizerHom Q P G g) b).symm.trans (hx g)))

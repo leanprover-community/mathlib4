@@ -204,7 +204,7 @@ def invariantsEquivRepHom : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y wher
   toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.2 g⟩
+  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.isIntertwining' g⟩
 
 end Rep
 
@@ -260,6 +260,7 @@ instance : (invariantsFunctor k G).Linear k where
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
+@[implicit_reducible, simps]
 noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S

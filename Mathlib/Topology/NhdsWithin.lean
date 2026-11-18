@@ -24,7 +24,6 @@ to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continu
 * `𝓟 s`: the principal filter of a set `s`;
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
 * `𝓝ˢ[t] s`: the filter `nhdsSetWithin s t` of neighborhoods of a set `s` within a set `t`.
-
 -/
 
 public section
@@ -531,6 +530,13 @@ theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.domRestrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
+
+theorem tendsto_nhdsWithin_inter_iff_subtype {s t : Set α} {a : α} (h : a ∈ s) (f : α → β)
+    (l : Filter β) :
+    Tendsto f (𝓝[s ∩ t] a) l ↔ Tendsto (s.domRestrict f) (𝓝[(↑) ⁻¹' t] ⟨a, h⟩) l := by
+  rw [nhdsWithin_inter', nhdsWithin_eq_map_subtype_coe h, ← map_inf_principal_preimage,
+    tendsto_map'_iff]
+  rfl
 
 theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t) {J : Set s} {a : s} :
     ClusterPt a (Filter.principal J) ↔ ∃ᶠ x in nhdsWithin a t, ∃ h : x ∈ s, (⟨x, h⟩ : s) ∈ J := by

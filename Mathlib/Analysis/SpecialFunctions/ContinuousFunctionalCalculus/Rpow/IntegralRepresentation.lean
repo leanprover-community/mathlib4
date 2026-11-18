@@ -236,7 +236,7 @@ lemma rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one (ht : 0 < t) :
 /- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/
 private lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ioc 0 1) := by
-  refine IntegrableOn.congr_set_ae (t := Ioo 0 1) ?_ (Filter.EventuallyEq.symm Ioo_ae_eq_Ioc)
+  refine IntegrableOn.congr_set_ae (t := Ioo 0 1) ?_ Ioo_ae_eq_Ioc.symm
   refine ⟨?meas, ?finite⟩
   case meas =>
     refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioo
@@ -713,7 +713,7 @@ lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 
     _ = cfcₙ (rpowIntegrand₀₁ p t) b := by
       rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
 
-open CStarAlgebra in
+open CStarAlgebra ComplexOrder in
 /-- `rpowIntegrand₀₁ p t` is operator concave for all `p ∈ Ioo 0 1` and all `0 < t`. -/
 lemma concaveOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
     ConcaveOn ℝ (Ici (0 : A)) (cfcₙ (rpowIntegrand₀₁ p t)) := by
