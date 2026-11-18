@@ -14,7 +14,6 @@ import Mathlib.AlgebraicTopology.SimplexCategory.ToMkOne
 
 We define a bijection `SSet.stdSimplex.objMk₁` between `Fin (n + 2)` and `Δ[1] _⦋n⦌`
 for any `n : ℕ`.
-
 -/
 
 @[expose] public section

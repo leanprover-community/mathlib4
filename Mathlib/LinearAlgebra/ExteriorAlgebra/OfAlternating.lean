@@ -21,7 +21,6 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 * `ExteriorAlgebra.lhom_ext`: linear maps from the exterior algebra agree if they agree on the
   exterior powers.
-
 -/
 
 @[expose] public section

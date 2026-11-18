@@ -35,7 +35,6 @@ The category `Profinite` is defined using the structure `CompHausLike`. See the 
 ## Tags
 
 profinite
-
 -/
 
 @[expose] public section

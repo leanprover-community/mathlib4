@@ -19,7 +19,6 @@ A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical
 ## Implementation details
 
 Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing usage.
-
 -/
 
 public section
@@ -41,7 +40,7 @@ lemma isPrimary_iff {I : Ideal R} :
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
   isPrimary_iff.mpr
-  ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
+  ⟨hi.ne_top', fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
 
 theorem isPrime_radical {I : Ideal R} (hi : I.IsPrimary) : IsPrime (radical I) :=
   I.colon_univ ▸ hi.isPrime_radical_colon
