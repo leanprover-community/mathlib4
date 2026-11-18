@@ -193,4 +193,29 @@ lemma toLinearMap_mapInclIsometry : (mapInclIsometry p).toLinearMap = mapIncl p 
 
 end MapInclIsometry
 
+section Reindex
+
+variable {ι₂} [Fintype ι₂] (e : ι ≃ ι₂)
+
+variable (𝕜 E) in
+noncomputable def reindexIsometry : (⨂[𝕜] i : ι, E i) ≃ₗᵢ[𝕜] ⨂[𝕜] i : ι₂, E (e.symm i) :=
+  reindex 𝕜 E e |>.isometryOfInner fun x y ↦ x.induction_on
+    (y.induction_on
+      (fun _ u _ v ↦ by
+        simp [inner_smul_left, inner_smul_right, Equiv.prod_comp _ fun i ↦ inner 𝕜 (v i) (u i)])
+      (by simp_all [inner_add_right]))
+    (by simp_all [inner_add_left])
+
+@[simp]
+lemma reindexIsometry_apply (x : ⨂[𝕜] i : ι, E i) : reindexIsometry 𝕜 E e x = reindex 𝕜 E e x :=
+  rfl
+
+@[simp]
+lemma reindexIsometry_refl : reindexIsometry 𝕜 E (.refl ι) = .refl 𝕜 (⨂[𝕜] i, E i) := by
+  ext
+  rw [reindexIsometry_apply, reindex_refl]
+  rfl
+
+end Reindex
+
 end PiTensorProduct
