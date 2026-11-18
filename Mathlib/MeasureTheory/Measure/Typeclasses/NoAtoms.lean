@@ -64,6 +64,15 @@ theorem isAtom_singleton_iff [MeasurableSingletonClass α] {x : α} :
   refine ⟨IsAtom.pos, fun h ↦ ⟨measurableSet_singleton x, h, fun t hts _ ↦ ?_⟩⟩
   rcases subset_singleton_iff_eq.1 hts with rfl | rfl <;> simp
 
+/-- For an s-finite measure, a singleton of positive measure is contained in an atom of the same
+measure, namely its measurable hull. -/
+theorem isAtom_toMeasurable_singleton_iff [SFinite μ] {x : α} :
+    μ.IsAtom (toMeasurable μ {x}) ↔ 0 < μ {x} := by
+  refine ⟨fun h ↦ measure_toMeasurable (μ := μ) {x} ▸ h.pos, fun hx ↦
+    ⟨measurableSet_toMeasurable _ _, by rwa [measure_toMeasurable], fun t hty ht ↦ ?_⟩⟩
+  rw [← inter_eq_right.2 hty, measure_toMeasurable_inter_of_sfinite ht, measure_toMeasurable]
+  by_cases hxt : x ∈ t <;> simp [hxt]
+
 namespace IsAtom
 
 /-- A version of `IsAtom.measure_eq_zero_or_eq'` for subsets `t` which need not be measurable. -/
@@ -71,6 +80,11 @@ theorem measure_eq_zero_or_eq (h : μ.IsAtom s) {t : Set α} (hts : t ⊆ s) :
     μ t = 0 ∨ μ t = μ s := by
   obtain ⟨u, -, hus, hu, hut⟩ := exists_measurable_superset_of_subset μ hts h.measurableSet
   exact hut ▸ h.measure_eq_zero_or_eq' u hus hu
+
+/-- A subset of an atom which is not a null set has the same measure as the atom. -/
+theorem measure_eq_of_ne_zero (h : μ.IsAtom s) {t : Set α} (hts : t ⊆ s) (ht : μ t ≠ 0) :
+    μ t = μ s :=
+  (h.measure_eq_zero_or_eq hts).resolve_left ht
 
 theorem not_isAtom_of_exists (h : ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) : ¬ IsAtom μ s := by
   intro ha
@@ -186,12 +200,8 @@ instance instNullSingletonClass [MeasurableSingletonClass (NullMeasurableSpace �
 
 /-- An s-finite measure without atoms vanishes on singletons. See also `instNullSingletonClass`. -/
 instance instNullSingletonClass_of_sfinite [SFinite μ] : NullSingletonClass μ where
-  measure_singleton x := by
-    by_contra! hx
-    refine not_isAtom (μ := μ) (toMeasurable μ {x}) ⟨measurableSet_toMeasurable _ _,
-      by rwa [measure_toMeasurable, pos_iff_ne_zero], fun t hty ht ↦ ?_⟩
-    rw [← inter_eq_right.2 hty, measure_toMeasurable_inter_of_sfinite ht, measure_toMeasurable]
-    by_cases hxt : x ∈ t <;> simp [hxt]
+  measure_singleton _ := by_contra fun hx ↦
+    not_isAtom _ (isAtom_toMeasurable_singleton_iff.2 (pos_iff_ne_zero.2 hx))
 
 /-- The restriction of a measure without atoms to a null measurable set has no atoms. For
 s-finite measures, see the instance `Measure.restrict.instNoAtoms` for arbitrary sets. -/
