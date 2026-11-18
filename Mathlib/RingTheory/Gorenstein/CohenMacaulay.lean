@@ -112,8 +112,6 @@ noncomputable def quotSMulTopExtEquivExtQuotSMulTop (M : ModuleCat.{v} R) (n : �
     simp [Submodule.mem_smul_pointwise_iff_exists]
   exact (Submodule.quotEquivOfEq _ _ ker.symm).trans (f.quotKerEquivOfSurjective surj)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear equivalence `Ext (R⧸(r1, ... rk)) M k ≃ M⧸(r1, ... rk)M` for `R`-regular sequence
 `(r1, ... rk)`, this is a special case of a more general result for Koszul complex. -/
 noncomputable def extQuotientLengthEquivOfIsRegular [IsLocalRing R] [IsNoetherianRing R]
@@ -154,9 +152,8 @@ noncomputable def extQuotientLengthEquivOfIsRegular [IsLocalRing R] [IsNoetheria
       ((QuotSMulTop.equiv a (Shrink.linearEquiv R (R ⧸ Ideal.ofList rs'))).trans
       (Ideal.quotOfListSMulTopEquivQuotSMulTopOuter eqapp).symm).trans (Shrink.linearEquiv R _).symm
     let e1 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M (n + 1) ≃ₗ[R]
-      Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
-      __ := (((extFunctor (n + 1)).mapIso e1'.toModuleIso.op).app M).addCommGroupIsoToAddEquiv
-      map_smul' r x := by simp [Iso.addCommGroupIsoToAddEquiv] }
+      Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) :=
+      (((linearExtFunctor R _ (n + 1)).mapIso e1'.toModuleIso.op).app M).toLinearEquiv
     have : HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) n :=
       have : projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) = n := by
         simp [ModuleCat.projectiveDimension_quotient_eq_length rs' rs'reg, rs', len]
@@ -365,7 +362,6 @@ variable [Small.{v} R]
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 open associatedPrimes in
 lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M : ModuleCat.{v} R)
     [Module.Finite R M] [Nontrivial M] : supportDim R M ≤ injectiveDimension M := by
@@ -387,11 +383,12 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
       hq, supportDim, Order.krullDim]
     exact le_iSup_iff.mpr fun b a ↦ a q'
-  have tail_eq : (q ⟨q.length, lt_add_one q.length⟩).1.1 = maximalIdeal R := by
+  have tail_eq : q.last.1.1 = maximalIdeal R := by
     by_contra! ne
-    have := (q ⟨q.length, lt_add_one q.length⟩).1.2
-    have lt := ne.lt_of_le (IsLocalRing.le_maximalIdeal_of_isPrime _)
-    let q' := q.snoc ⟨IsLocalRing.closedPoint R, closedPoint_mem_support R M⟩ lt
+    have := q.last.1.2
+    have lt : q.last < ⟨closedPoint R, closedPoint_mem_support R M⟩ :=
+      ne.lt_of_le (le_maximalIdeal_of_isPrime _)
+    let q' := q.snoc _ lt
     have : q'.length > q.length := by simp [q']
     absurd this
     simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
@@ -402,7 +399,9 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     rcases lt_or_eq_of_le ple with lt|eq
     · have : ⟨p, min.isPrime⟩ ∈ Module.support R M := by
         simpa [Module.mem_support_iff_of_finite] using min.1.2
-      let q' := q.cons ⟨⟨p, min.isPrime⟩, this⟩ lt
+      --tech debt
+      have lt' : ⟨⟨p, min.isPrime⟩, this⟩ < q.head := lt
+      let q' := q.cons ⟨⟨p, min.isPrime⟩, this⟩ lt'
       have : q'.length > q.length := by simp [q']
       absurd this
       simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
@@ -415,6 +414,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
         (M.localizedModule (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.primeCompl) i) := by
     induction i with
     | zero =>
+      set_option backward.isDefEq.respectTransparency false in
       simp only [Fin.zero_eta, Ext.homEquiv₀.nontrivial_congr, ModuleCat.localizedModule]
       rw [ModuleCat.homAddEquiv.nontrivial_congr, ((Shrink.linearEquiv.{v} _ _).congrLeft _
         (Localization (q 0).1.1.primeCompl)).nontrivial_congr,
