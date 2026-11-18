@@ -103,18 +103,12 @@ def heightOneSpectrumOfAbsoluteValue : HeightOneSpectrum (𝓞 K) where
         (RingOfIntegers.absoluteValue_le_one hfna c)).trans_lt hx
   }
   isPrime := by
-    rw [Ideal.isPrime_iff]
-    constructor
-    · rw [Ideal.ne_top_iff_one]
-      change ¬f 1 < 1
-      simp
-    · change ∀ x y : 𝓞 K, f (x * y) < 1 → f x < 1 ∨ f y < 1
-      intro _ _
-      contrapose!
-      simpa using fun h1 h2 ↦ one_le_mul_of_one_le_of_one_le h1 h2
+    simp_rw [Ideal.isPrime_iff, Ideal.ne_top_iff_one, ← Submodule.mem_carrier']
+    refine ⟨by simp, fun {x} {y} ↦ ?_⟩
+    contrapose!
+    simpa using one_le_mul_of_one_le_of_one_le
   ne_bot := by
-    rw [Submodule.ne_bot_iff]
-    change ∃ x : 𝓞 K, f x < 1 ∧ x ≠ 0
+    simp_rw [Submodule.ne_bot_iff, ← Submodule.mem_carrier', Set.mem_ofPred_eq]
     obtain ⟨a, ha, hfa⟩ := hf_nontriv
     obtain ⟨c, b, h, rfl⟩ := IsFractionRing.div_surjective (A := 𝓞 K) a
     by_cases hfb : f b < 1
@@ -122,6 +116,11 @@ def heightOneSpectrumOfAbsoluteValue : HeightOneSpectrum (𝓞 K) where
     grind [map_inv₀, RingOfIntegers.absoluteValue_le_one]
 
 include hf_nontriv
+
+@[simp]
+lemma mem_heightOneSpectrumOfAbsoluteValue {x : 𝓞 K} :
+    x ∈ (heightOneSpectrumOfAbsoluteValue hfna hf_nontriv).asIdeal ↔ f x < 1 :=
+  Iff.rfl
 
 /-- **Ostrowski's Theorem, non-archimedean case** A nontrivial non-archimedean absolute value on a
 number field is equal to a `v`-adic absolute value attached to a unique
@@ -136,12 +135,12 @@ theorem exists_heightOneSpectrum_eq_adicAbv :
   let b : ℝ≥0 := ⟨(f π)⁻¹, by positivity⟩
   have hb : 1 < b := by
     apply_mod_cast (one_lt_inv₀ hπ_pos).2
-    change π ∈ P.asIdeal
-    simp [← intValuation_lt_one_iff_mem, hπ]
+    simp [P, ← mem_heightOneSpectrumOfAbsoluteValue hfna hf_nontriv,
+      ← intValuation_lt_one_iff_mem, hπ]
   have f_eq_one_of_adicAbv_eq_one {x : K} (hx : P.adicAbv hb x = 1) : f x = 1 := by
-    obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_adicAbv_eq_one hb (le_of_eq hx)
+    obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_of_adicAbv_eq_one hb (le_of_eq hx)
     have h {x : 𝓞 K} (hx : P.adicAbv hb (x : K) = 1) : f x = 1 := by
-      rw [adicAbv_coe_eq_one_iff] at hx
+      rw [adicAbv_coe_eq_one_iff, mem_heightOneSpectrumOfAbsoluteValue] at hx
       exact le_antisymm (RingOfIntegers.absoluteValue_le_one hfna x) (le_of_not_gt hx)
     simp [h (by simpa [hz] using hx), h hz]
   constructor

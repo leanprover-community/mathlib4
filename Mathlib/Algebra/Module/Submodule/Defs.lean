@@ -202,6 +202,9 @@ variable (p)
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
+theorem mem_carrier' : x ∈ p.carrier ↔ x ∈ p :=
+  Iff.rfl
+
 protected theorem zero_mem : (0 : M) ∈ p :=
   zero_mem _
 
