@@ -103,6 +103,26 @@ theorem gelfandRadiusNormAux_map (f : F) (x : L) :
   let := (AlgHom.ofClass f).toAlgebra
   gelfandRadiusNormAux_algebraMap K M x
 
+variable {K L} in
+theorem IsPowMul.le_gelfandRadiusNormAux {f : AlgebraNorm K L} (hf : IsPowMul f) (x : L) :
+    f x ≤ gelfandRadiusNormAux K L x := by
+  let b := Module.finBasis K L
+  obtain ⟨C, hC⟩ : ∃ C, ∀ x, f x ≤ C * ‖Algebra.leftMulMatrix b x‖ := by
+    use ‖⇑(b.repr 1)‖ * ∑ i, f (b i)
+    intro x
+    conv_lhs => rw [← b.linearCombination_repr x]
+    rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype _ _ (by simp)]
+    grw [Finset.map_sum_le_sum]
+    simp_rw [map_smul_eq_mul]
+    have h : b.repr x = (Algebra.leftMulMatrix b x).mulVec (b.repr 1) := by
+      rw [Algebra.leftMulMatrix_mulVec_repr, mul_one]
+    grw [norm_le_pi_norm, ← Finset.mul_sum, h, Matrix.linfty_opNorm_mulVec, mul_assoc, mul_comm]
+  apply le_gelfandRadius_of_bound _ (C := max C 1)
+  intro n
+  by_cases! hn : n = 0
+  · simp [hn]
+  · grw [← hf x hn.pos, hC, map_pow, le_max_left C 1]
+
 end
 
 public section
@@ -292,6 +312,15 @@ theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
     contrapose hx
     exact hx.of_pow hk
 
+variable {K L} in
+theorem IsPowMul.le_gelfandRadiusNorm {f : AlgebraNorm K L} (hf : IsPowMul f) {x : L}
+    (hx : IsIntegral K x) : f x ≤ gelfandRadiusNorm K L x := by
+  have : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx
+  rw [hx.gelfandRadiusNorm_eq]
+  let g : AlgebraNorm K K⟮x⟯ := f.restriction K⟮x⟯.toSubalgebra
+  have hg : IsPowMul g := hf.restriction K⟮x⟯.toSubalgebra
+  exact hg.le_gelfandRadiusNormAux (AdjoinSimple.gen K x)
+
 end gelfandRadiusNorm
 
 section gelfandRadiusAlgNorm
@@ -341,6 +370,11 @@ theorem gelfandRadiusAlgNorm_eq_norm (x : K) : gelfandRadiusAlgNorm K K x = ‖x
 /-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusAlgNorm : IsPowMul (gelfandRadiusAlgNorm K L) :=
   isPowMul_gelfandRadiusNorm K L
+
+variable {K L} in
+theorem IsPowMul.le_gelfandRadiusAlgNorm {f : AlgebraNorm K L} (hf : IsPowMul f) (x : L) :
+    f x ≤ gelfandRadiusAlgNorm K L x :=
+  hf.le_gelfandRadiusNorm (Algebra.IsIntegral.isIntegral x)
 
 end gelfandRadiusAlgNorm
 
