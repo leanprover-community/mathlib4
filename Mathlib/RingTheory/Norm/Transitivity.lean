@@ -85,11 +85,12 @@ lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock).det := by
   let := Prop.linearOrder
   trans (M * auxMat M k).det
-  · simp [det_mul, (auxMat_blockTriangular M k).det_fintype,
+  · rw [det_mul, (auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop,
       auxMat_toSquareBlock_ne, auxMat_toSquareBlock_eq]
-  rw [(mul_auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop, mul_auxMat_toSquareBlock_eq]
-  simp_rw [det_smul_of_tower, eq_iff_iff, iff_true, Fintype.card_unique,
-    pow_one, det_one, smul_eq_mul, mul_one]
+    simp
+  · rw [(mul_auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop,
+      mul_auxMat_toSquareBlock_eq]
+    simp
 
 /-- A matrix with X added to the corner. -/
 noncomputable def cornerAddX : Matrix m m S[X] :=
