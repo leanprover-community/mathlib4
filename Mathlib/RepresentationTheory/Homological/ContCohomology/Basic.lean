@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.RepresentationTheory.Continuous.TopRep
 
 /-!
-
 # Continuous cohomology
 
 We define continuous cohomology as the homology of the homogeneous cochain complex.

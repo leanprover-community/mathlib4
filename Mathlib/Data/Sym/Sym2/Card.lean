@@ -37,6 +37,19 @@ theorem infinite_sym2_iff : Infinite (Sym2 α) ↔ Infinite α := by
   contrapose!
   exact finite_sym2_iff
 
+@[simp]
+theorem _root_.Set.finite_sym2_iff {s : Set α} : s.sym2.Finite ↔ s.Finite := by
+  rw [← Set.finite_coe_iff, s.sym2Equiv.finite_iff, Sym2.finite_sym2_iff, Set.finite_coe_iff]
+
+protected alias ⟨_, _root_.Set.Finite.sym2⟩ := Set.finite_sym2_iff
+
+@[simp]
+theorem _root_.Set.infinite_sym2_iff {s : Set α} : s.sym2.Infinite ↔ s.Infinite := by
+  contrapose!
+  exact Set.finite_sym2_iff
+
+protected alias ⟨_, _root_.Set.Infinite.sym2⟩ := Set.infinite_sym2_iff
+
 theorem finite_mk_fiber (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).Finite := by
   cases z
   simp [mk_fiber]

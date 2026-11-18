@@ -33,7 +33,6 @@ over a base `X`. Here `Q = ⊤`.
 
 - Most results are developed only in the case where `Q = ⊤` and `W = ⊤`, but the definition
   is setup in the general case to allow for a later generalization if needed.
-
 -/
 
 set_option backward.defeqAttrib.useBackward true
@@ -330,13 +329,13 @@ variable [Q.IsMultiplicative] [Q'.IsMultiplicative] [W.IsMultiplicative] [W'.IsM
 
 /-- Weaken the conditions on all components. -/
 def changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
-  obj X := ⟨X.toComma, hP _ X.2⟩
-  map f := ⟨f.toCommaMorphism, hQ _ f.2, hW _ f.3⟩
+  obj X := ⟨X.toComma, hP _ X.prop⟩
+  map f := ⟨f.toCommaMorphism, hQ _ f.prop_hom_left, hW _ f.prop_hom_right⟩
 
 /-- Weakening the condition on the structure morphisms is fully faithful. -/
 def fullyFaithfulChangeProp :
     (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
-  preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
+  preimage f := ⟨f.toCommaMorphism, f.prop_hom_left, f.prop_hom_right⟩
 
 instance : (changeProp L R hP hQ hW).Faithful where
   map_injective {X Y} f g h := by ext : 1; congrm $(h).hom

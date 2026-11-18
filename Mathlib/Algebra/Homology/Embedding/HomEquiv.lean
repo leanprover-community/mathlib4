@@ -20,7 +20,6 @@ condition `e.HasLift φ`.
 
 ## TODO
 * obtain dual results for morphisms `L.extend e ⟶ K`.
-
 -/
 
 @[expose] public section
