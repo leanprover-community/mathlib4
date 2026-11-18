@@ -71,7 +71,7 @@ def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateFi
 noncomputable def finGaloisGroupMap {L₁ L₂ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
     (le : L₁ ⟶ L₂) : L₁.unop.finGaloisGroup ⟶ L₂.unop.finGaloisGroup :=
   haveI : Normal k L₂.unop := IsGalois.to_normal
-  letI : Algebra L₂.unop L₁.unop := RingHom.toAlgebra (Subsemiring.inclusion <| leOfHom le.1)
+  letI : Algebra L₂.unop L₁.unop := RingHom.toAlgebra (Subsemiring.inclusion <| leOfHom le.unop)
   haveI : IsScalarTower k L₂.unop L₁.unop := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   FiniteGrp.ofHom (AlgEquiv.restrictNormalHom L₂.unop)
 
@@ -132,7 +132,7 @@ noncomputable def algEquivToLimit : Gal(K/k) →* limit (asProfiniteGaloisGroupF
   toFun σ := {
     val := fun L ↦ σ.restrictNormalHom L.unop
     property := fun {L₁ L₂} π ↦ by
-      algebraize [Subsemiring.inclusion π.1.le]
+      algebraize [Subsemiring.inclusion π.unop.le]
       have : IsScalarTower k L₂.unop L₁.unop := IsScalarTower.of_algebraMap_eq (congrFun rfl)
       have : IsScalarTower L₂.unop L₁.unop K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
       apply (IsScalarTower.AlgEquiv.restrictNormalHom_comp_apply L₂.unop L₁.unop σ).symm }
@@ -167,7 +167,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
   rw [continuous_induced_rng]
   refine continuous_pi (fun L ↦ ?_)
-  convert! restrictNormalHom_continuous L.unop.1
+  convert! restrictNormalHom_continuous L.unop.toIntermediateField
   exact (DiscreteTopology.eq_bot (α := L.unop ≃ₐ[k] L.unop)).symm
 
 /-- The projection map from `lim Gal(L/k)` to a specific `Gal(L/k)`. -/
@@ -275,14 +275,14 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
   map_mul' := map_mul _
   invFun := limitToAlgEquiv
   left_inv := fun f ↦ AlgEquiv.ext fun x ↦
-    AlgEquiv.restrictNormal_commutes f (adjoin k {x}).1 ⟨x, _⟩
+    AlgEquiv.restrictNormal_commutes f (adjoin k {x}).toIntermediateField ⟨x, _⟩
   right_inv := fun g ↦ by
     apply Subtype.val_injective
     ext L
     change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
-    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 := by
-      exact AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
+    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 :=
+      AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
     simp_rw [this]
     exact proj_adjoin_singleton_val _ _ _ _ x.2
 
@@ -296,7 +296,8 @@ lemma krullTopology_mem_nhds_one_iff_of_isGalois [IsGalois k K] (A : Set Gal(K/k
 lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     (L : FiniteGaloisIntermediateField k K) : IsOpen (mulEquivToLimit k K '' L.fixingSubgroup) := by
   let fix1 : Set (Π L, (asProfiniteGaloisGroupFunctor k K).obj L) := {f | f (op L) = 1}
-  suffices mulEquivToLimit k K '' L.1.fixingSubgroup = Set.preimage Subtype.val fix1 by
+  suffices mulEquivToLimit k K '' L.toIntermediateField.fixingSubgroup =
+      Set.preimage Subtype.val fix1 by
     rw [this]
     exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
   ext x
@@ -309,7 +310,7 @@ lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLim
     ← MulEquiv.toEquiv_eq_coe, ← (mulEquivToLimit k K).image_eq_preimage_symm]
   intro H ⟨L, le⟩
   rw [mem_nhds_iff]
-  use mulEquivToLimit k K '' L.1.fixingSubgroup
+  use mulEquivToLimit k K '' L.toIntermediateField.fixingSubgroup
   simp only [isOpen_mulEquivToLimit_image_fixingSubgroup L]
   simpa [one_mem] using Set.image_subset_iff.mp (Set.image_mono le)
 

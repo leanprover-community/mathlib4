@@ -190,7 +190,7 @@ sum is divisible by `n`. -/
 theorem Int.erdos_ginzburg_ziv_multiset (s : Multiset ℤ) (hs : 2 * n - 1 ≤ Multiset.card s) :
     ∃ t ≤ s, Multiset.card t = n ∧ ↑n ∣ t.sum := by
   obtain ⟨t, hts, ht⟩ := Int.erdos_ginzburg_ziv (s := s.toEnumFinset) Prod.fst (by simpa using hs)
-  exact ⟨t.1.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
+  exact ⟨t.val.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
 
 /-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ/nℤ` for multiset.
 
@@ -199,6 +199,6 @@ sum is divisible by `n`. -/
 theorem ZMod.erdos_ginzburg_ziv_multiset (s : Multiset (ZMod n))
     (hs : 2 * n - 1 ≤ Multiset.card s) : ∃ t ≤ s, Multiset.card t = n ∧ t.sum = 0 := by
   obtain ⟨t, hts, ht⟩ := ZMod.erdos_ginzburg_ziv (s := s.toEnumFinset) Prod.fst (by simpa using hs)
-  exact ⟨t.1.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
+  exact ⟨t.val.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
 
 end composite

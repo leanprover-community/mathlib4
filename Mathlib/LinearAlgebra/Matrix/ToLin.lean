@@ -483,7 +483,7 @@ theorem LinearMap.toMatrix'_algebraMap (x : R) :
     LinearMap.toMatrix' (algebraMap R (Module.End R (n → R)) x) = scalar n x := by
   simp [Module.algebraMap_end_eq_smul_id, smul_eq_diagonal_mul]
 
-theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix n n R} :
+theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix m n R} :
     LinearMap.ker (Matrix.toLin' M) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 :=
   Matrix.ker_mulVecLin_eq_bot_iff
 
@@ -586,7 +586,7 @@ def LinearMap.toMatrix : (M₁ →ₗ[R] M₂) ≃ₗ[R] Matrix m n R :=
 /-- `LinearMap.toMatrix'` is a particular case of `LinearMap.toMatrix`, for the standard basis
 `Pi.basisFun R n`. -/
 @[simp] theorem LinearMap.toMatrix_eq_toMatrix' :
-    LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R n) = LinearMap.toMatrix' :=
+    LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R m) = LinearMap.toMatrix' :=
   rfl
 
 /-- Given bases of two modules `M₁` and `M₂` over a commutative ring `R`, we get a linear
@@ -643,8 +643,9 @@ theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
   LinearMap.toMatrix_id v₁
 
 @[simp]
-lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) (i j : ι) :
-    f.toMatrix (.singleton ι R) (.singleton ι R) i j = f 1 := by
+lemma LinearMap.toMatrix_singleton {ι ι' : Type*} [Unique ι] [Unique ι'] (f : R →ₗ[R] R)
+    (i : ι') (j : ι) :
+    f.toMatrix (.singleton ι R) (.singleton ι' R) i j = f 1 := by
   simp [toMatrix, Subsingleton.elim j default]
 
 @[simp]

@@ -175,6 +175,12 @@ theorem orbit_eq_primesOver [Finite G] [SMulCommClass G A B] (P : Ideal A) (Q : 
   obtain ⟨g, hg⟩ := exists_smul_of_under_eq A B G Q R (hP.over.symm.trans h.2.over)
   exact ⟨g, hg.symm⟩
 
+variable {A B} in
+theorem mem_map_under {b : B} (hb : ∀ g : G, g • b = b) {I : Ideal B} (hbI : b ∈ I) :
+    b ∈ (I.under A).map (algebraMap A B) := by
+  obtain ⟨a, rfl⟩ := isInvariant (A := A) b hb
+  exact Ideal.mem_map_of_mem (algebraMap A B) hbI
+
 end Algebra.IsInvariant
 
 end transitivity

@@ -54,8 +54,7 @@ first.
 inductive Container where
   /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
   | master
-  /-- Container for fork PR builds, mathlib4 development branches, and every
-  push build on the nightly-testing repo. -/
+  /-- Container for fork PR builds and mathlib4 development branches. -/
   | forks
   deriving DecidableEq, Repr, BEq, Inhabited
 
@@ -104,7 +103,7 @@ writers in sync.
 - `master` is flat: RBAC admits only master CI, whose writes all carry
   `repo == MATHLIBREPO`, so a single hash never collides.
 - `forks` always namespaces by repo. It collects artifacts from many writers —
-  different forks, the nightly-testing repo, and canonical-repo builds whose
+  different forks and canonical-repo builds whose
   trust is fork-equivalent (`ci-dev/*`, `bors trying`) — so identical hashes
   from different writers must stay on distinct paths.
 -/

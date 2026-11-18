@@ -181,7 +181,7 @@ theorem mem_span_mul_finite_of_mem_mul {I J : FractionalIdeal S P} {x : P} (hx :
   Submodule.mem_span_mul_finite_of_mem_mul (by simpa using mem_coeToSubmodule.mpr hx)
 
 lemma _root_.Units.submodule_isFractional [IsLocalization S P] (I : (Submodule R P)ˣ) :
-    IsFractional S I.1 :=
+    IsFractional S I.val :=
   FractionalIdeal.isFractional_of_fg (fg_unit _)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1067,8 +1067,8 @@ lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
 
 lemma ringEquivOfRingEquiv_symm_eq :
     (FractionalIdeal.ringEquivOfRingEquiv K L f).symm =
-      FractionalIdeal.ringEquivOfRingEquiv L K f.symm := by
-  exact (RingEquiv.coe_nonUnitalRingHom_inj_iff (ringEquivOfRingEquiv K L f).symm
+      FractionalIdeal.ringEquivOfRingEquiv L K f.symm :=
+  (RingEquiv.coe_nonUnitalRingHom_inj_iff (ringEquivOfRingEquiv K L f).symm
           (ringEquivOfRingEquiv L K f.symm)).mpr rfl
 
 end RingEquiv
