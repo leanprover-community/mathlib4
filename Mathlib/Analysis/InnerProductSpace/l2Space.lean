@@ -476,8 +476,7 @@ protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
 of its coefficients `⟪b i, x⟫` with respect to a Hilbert basis `b`. -/
 protected theorem hasSum_norm_inner_sq (b : HilbertBasis ι 𝕜 E) (x : E) :
     HasSum (fun i => ‖⟪b i, x⟫‖ ^ 2) (‖x‖ ^ 2) := by
-  simpa only [← inner_conj_symm x (b _), RCLike.conj_mul, inner_self_eq_norm_sq_to_K, ← ofReal_pow,
-    hasSum_ofReal] using b.hasSum_inner_mul_inner x x
+  simpa [b.repr_apply_apply] using lp.hasSum_norm (by simp) (b.repr x)
 
 protected theorem summable_norm_inner_sq (b : HilbertBasis ι 𝕜 E) (x : E) :
     Summable fun i => ‖⟪b i, x⟫‖ ^ 2 :=
