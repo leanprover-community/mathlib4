@@ -100,13 +100,7 @@ jobs:
       # For an intentional revert, an admin sets MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS to true
       # and deletes the variable after the revert merges.
       - name: Validate lake-manifest.json
-        # Skip `bump/*` branches and PRs that target them, because their dependencies track `nightly-testing`.
-        # For PRs, use `github.base_ref`: `pull_request_target` sets `github.ref_name` to the default branch.
-        # Bors batches still run the check on `staging`.
-        if: >-
-          github.repository == 'leanprover-community/mathlib4'
-          && !startsWith(github.ref_name, 'bump/')
-          && !startsWith(github.base_ref, 'bump/')
+        if: github.repository == 'leanprover-community/mathlib4'
         uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@b712eb80b9da9eebe2397203f842edfdecf72260
         with:
           ref: ${{ inputs.pr_branch_ref }}
