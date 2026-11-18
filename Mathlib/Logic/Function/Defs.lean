@@ -5,8 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 module
 
-public import Mathlib.Init
 public import Batteries.Tactic.Alias
+public import Mathlib.Init
 import Mathlib.Tactic.Attr.Register
 
 set_option doc.verso true
