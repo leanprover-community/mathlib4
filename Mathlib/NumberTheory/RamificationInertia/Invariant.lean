@@ -45,20 +45,6 @@ lemma sec_one : sec R S S 1 = elem R S := by
 
 end Algebra.FormallyUnramified
 
-section LiftBaseChange
-
-lemma Submodule.baseChange_le_comap_liftBaseChange_iff
-    {R M N A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
-    {l : M →ₗ[R] N} {p : Submodule R M} {q : Submodule A N} :
-    p.baseChange A ≤ q.comap (l.liftBaseChange A) ↔ p ≤ (q.restrictScalars R).comap l := by
-  have h : (l.liftBaseChange A).restrictScalars R ∘ₗ TensorProduct.mk R A M 1 = l :=
-    (LinearMap.liftBaseChangeEquiv A).symm_apply_apply l
-  rw [Submodule.baseChange_le_iff_le_comap, Submodule.restrictScalars_comap, ← Submodule.comap_comp,
-    h]
-
-end LiftBaseChange
-
 theorem MulAction.smul_sum_quotient_of_fixed {G M : Type*} [Group G] [AddCommMonoid M]
     [DistribMulAction G M] (H : Subgroup G) [Fintype (G ⧸ H)] (x : M)
     (hx : ∀ h : H, h • x = x) (g : G) :
@@ -86,8 +72,12 @@ variable {L M N : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
   [Module A L] [Module B L] [IsScalarTower A B L]
 
 lemma le_comap_extendScalars (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
-    (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (extendScalars B f) :=
-  fun _ hx ↦ Submodule.baseChange_le_comap_liftBaseChange_iff.mpr hf (sec_mem_baseChange A B P hx)
+    (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) :
+    P ≤ Q.comap (extendScalars B f) := by
+  suffices h : (P.restrictScalars A).baseChange B ≤ Q.comap (f.liftBaseChange B) from
+    fun x hx ↦ h (sec_mem_baseChange A B P hx)
+  rw [← (LinearMap.liftBaseChangeEquiv B).symm_apply_apply f] at hf
+  rwa [Submodule.baseChange_le_iff_le_comap, Q.restrictScalars_comap, ← Submodule.comap_comp]
 
 @[simp]
 lemma extendScalars_toAlgHom (g : G) :
