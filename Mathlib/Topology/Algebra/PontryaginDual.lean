@@ -25,6 +25,8 @@ isomorphic to its double dual.
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
 * `AddPontryaginDual A`: The additive version for additive groups, the group of continuous
   additive homomorphisms `A →+ Additive Circle`.
+* `AddPontryaginDual.toAddChar χ`: The additive character `A → Circle` associated with
+  `χ : AddPontryaginDual A`, which turns addition in `A` into multiplication in `Circle`.
 
 ## Implementation notes
 
@@ -126,6 +128,14 @@ instance : ContinuousMapClass (PontryaginDual A) A Circle :=
 instance : MonoidHomClass (PontryaginDual A) A Circle :=
   inferInstanceAs (MonoidHomClass (A →ₜ* Circle) A Circle)
 
+@[to_additive instContinuousEvalConstAdditiveCircle]
+instance : ContinuousEvalConst (PontryaginDual A) A Circle :=
+  inferInstanceAs (ContinuousEvalConst (A →ₜ* Circle) A Circle)
+
+@[to_additive instContinuousEvalAdditiveCircle]
+instance [LocallyCompactSpace A] : ContinuousEval (PontryaginDual A) A Circle :=
+  inferInstanceAs (ContinuousEval (A →ₜ* Circle) A Circle)
+
 @[to_additive]
 instance [DiscreteTopology A] : CompactSpace (PontryaginDual A) :=
   inferInstanceAs (CompactSpace (A →ₜ* Circle))
@@ -136,6 +146,18 @@ theorem ext {ψ φ : PontryaginDual A} (h : ∀ a, ψ a = φ a) : ψ = φ :=
 
 @[to_additive (attr := simp)]
 theorem one_apply (a : A) : (1 : PontryaginDual A) a = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem mul_apply (ψ φ : PontryaginDual A) (a : A) : (ψ * φ) a = ψ a * φ a :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem inv_apply (ψ : PontryaginDual A) (a : A) : ψ⁻¹ a = (ψ a)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem div_apply (ψ φ : PontryaginDual A) (a : A) : (ψ / φ) a = ψ a / φ a :=
   rfl
 
 /-- A discrete monoid has compact Pontryagin dual. -/
@@ -226,17 +248,16 @@ def toMultiplicative : AddPontryaginDual A ≃ₜ PontryaginDual (Multiplicative
   left_inv _ := rfl
   right_inv _ := rfl
   continuous_toFun :=
-    (ContinuousMonoidHom.isInducing_toContinuousMap _ _).continuous_iff.2
+    (ContinuousMonoidHom.isInducing_toContinuousMap _ _).continuous_iff.mpr
       (ContinuousAddMonoidHom.isInducing_toContinuousMap A _).continuous
   continuous_invFun :=
-    (ContinuousAddMonoidHom.isInducing_toContinuousMap A _).continuous_iff.2
+    (ContinuousAddMonoidHom.isInducing_toContinuousMap A _).continuous_iff.mpr
       (ContinuousMonoidHom.isInducing_toContinuousMap _ _).continuous
 
 variable {A} in
 @[simp]
 theorem toMultiplicative_apply (φ : AddPontryaginDual A) (a : Multiplicative A) :
-    toMultiplicative A φ a = (φ a.toAdd).toMul :=
-  rfl
+    toMultiplicative A φ a = (φ a.toAdd).toMul := rfl
 
 instance [LocallyCompactSpace H] : LocallyCompactSpace (AddPontryaginDual H) :=
   have : LocallyCompactSpace (Multiplicative H) := ‹LocallyCompactSpace H›
@@ -252,6 +273,78 @@ instance [DiscreteTopology A] [CompactSpace A] : Finite (AddPontryaginDual A) :=
 
 noncomputable instance [DiscreteTopology A] [CompactSpace A] : Fintype (AddPontryaginDual A) :=
   .ofFinite _
+
+/-! ### Elements of the additive Pontryagin dual as additive characters -/
+
+variable {A}
+
+/-- The additive character `A → Circle` associated with an element `χ` of the additive Pontryagin
+dual of `A`. It sends `a` to `(χ a).toMul`, turning addition in `A` into multiplication in
+`Circle`. -/
+def toAddChar (χ : AddPontryaginDual A) : AddChar A Circle :=
+  AddChar.toAddMonoidHomEquiv.symm (AddMonoidHom.ofClass χ)
+
+theorem toAddChar_apply (χ : AddPontryaginDual A) (a : A) : χ.toAddChar a = (χ a).toMul := rfl
+
+theorem toAddChar_injective :
+    Function.Injective (toAddChar : AddPontryaginDual A → AddChar A Circle) :=
+  fun _ _ h ↦ ext fun a ↦ Additive.toMul.injective (DFunLike.congr_fun h a)
+
+@[simp]
+theorem toAddChar_inj {χ η : AddPontryaginDual A} : χ.toAddChar = η.toAddChar ↔ χ = η :=
+  toAddChar_injective.eq_iff
+
+@[fun_prop]
+theorem continuous_toAddChar (χ : AddPontryaginDual A) : Continuous χ.toAddChar :=
+  continuous_toMul.comp (map_continuous χ)
+
+/-- The element of the additive Pontryagin dual of `A` associated with a continuous additive
+character `A → Circle`. -/
+def ofAddChar (ψ : AddChar A Circle) (hψ : Continuous ψ) : AddPontryaginDual A :=
+  (⟨AddChar.toAddMonoidHomEquiv ψ, continuous_ofMul.comp hψ⟩ : A →ₜ+ AdditiveCircle)
+
+@[simp]
+theorem toAddChar_ofAddChar (ψ : AddChar A Circle) (hψ : Continuous ψ) :
+    (ofAddChar ψ hψ).toAddChar = ψ := rfl
+
+@[simp]
+theorem ofAddChar_toAddChar (χ : AddPontryaginDual A) :
+    ofAddChar χ.toAddChar χ.continuous_toAddChar = χ := rfl
+
+@[simp]
+theorem toAddChar_zero_apply (a : A) : (0 : AddPontryaginDual A).toAddChar a = 1 := rfl
+
+@[simp]
+theorem toAddChar_add_apply (χ η : AddPontryaginDual A) (a : A) :
+    (χ + η).toAddChar a = χ.toAddChar a * η.toAddChar a := rfl
+
+@[simp]
+theorem toAddChar_neg_apply (χ : AddPontryaginDual A) (a : A) :
+    (-χ).toAddChar a = (χ.toAddChar a)⁻¹ := rfl
+
+@[simp]
+theorem toAddChar_sub_apply (χ η : AddPontryaginDual A) (a : A) :
+    (χ - η).toAddChar a = χ.toAddChar a / η.toAddChar a := rfl
+
+/-- For every `a : A`, the evaluation `χ ↦ χ.toAddChar a` is continuous. -/
+@[fun_prop]
+theorem continuous_toAddChar_apply (a : A) :
+    Continuous fun χ : AddPontryaginDual A ↦ χ.toAddChar a :=
+  continuous_toMul.comp (continuous_eval_const a)
+
+/-- If `A` is locally compact, then the evaluation `(χ, a) ↦ χ.toAddChar a` is jointly
+continuous. -/
+theorem continuous_toAddChar_uncurry [LocallyCompactSpace A] :
+    Continuous fun p : AddPontryaginDual A × A ↦ p.1.toAddChar p.2 :=
+  continuous_toMul.comp continuous_eval
+
+/-- A map `f` into the additive Pontryagin dual is continuous if `(x, a) ↦ (f x).toAddChar a` is
+jointly continuous. -/
+theorem continuous_of_continuous_uncurry {X : Type*} [TopologicalSpace X]
+    (f : X → AddPontryaginDual A) (h : Continuous fun p : X × A ↦ (f p.1).toAddChar p.2) :
+    Continuous f :=
+  ContinuousAddMonoidHom.continuous_of_continuous_uncurry (B := A) (C := AdditiveCircle) f
+    (continuous_ofMul.comp h)
 
 end AddPontryaginDual
 
