@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
@@ -139,19 +138,8 @@ instance (priority := 100) uniqueFactorizationMonoid :
       he ▸ (prime_rename_iff (σ := σ) ↑s).2 (h b' hb'),
       Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
       rw [Multiset.prod_hom, Units.coe_map, AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
-        AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_coe, ← map_mul, hw]⟩
+        AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_ofClass, ← map_mul, hw]⟩
 
 end MvPolynomial
 
 end UniqueFactorizationDomain
-
-/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
-See also `WfDvdMonoid.exists_irreducible_factor`. -/
-theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[X])
-    (hu : ¬IsUnit f) : ∃ g : F[X], g.Monic ∧ Irreducible g ∧ g ∣ f := by
-  by_cases hf : f = 0
-  · exact ⟨X, monic_X, irreducible_X, hf ▸ dvd_zero X⟩
-  obtain ⟨g, hi, hf⟩ := WfDvdMonoid.exists_irreducible_factor hu hf
-  have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
-    isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
-  exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩

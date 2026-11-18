@@ -6,7 +6,8 @@ Authors: Dagur Asgeirsson, Etienne Marion
 module
 
 public import Mathlib.Topology.Category.CompHaus.Basic
-public import Mathlib.Topology.Compactification.OnePoint.Basic
+
+import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # Compactly generated topological spaces
@@ -97,7 +98,7 @@ lemma eq_compactlyGenerated [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{
   · exact UCompactlyGeneratedSpace.le_compactlyGenerated
   · simp only [compactlyGenerated, ← continuous_iff_coinduced_le, continuous_sigma_iff,
       Sigma.forall]
-    exact fun S f ↦ f.2
+    exact fun S f ↦ map_continuous f
 
 instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     UCompactlyGeneratedSpace.{u} X where

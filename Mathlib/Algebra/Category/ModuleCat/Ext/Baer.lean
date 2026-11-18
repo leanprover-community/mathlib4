@@ -9,10 +9,10 @@ public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
-public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
+
+import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!
-
 # Baer's criterion for injective dimension
 
 Baer's criterion says that an `R`-module `M` is injective iff every `R`-linear map
@@ -38,7 +38,6 @@ universe than `ModuleCat.{v} R`.
   ideals `I`, then `M` has injective dimension `< n`.
 * `ModuleCat.hasInjectiveDimensionLT_iff_quotients`: if and only if version of
   `ModuleCat.hasInjectiveDimensionLT_of_quotients`
-
 -/
 
 @[expose] public section
@@ -76,8 +75,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
       Ext.mk₀_comp_mk₀] at hf'
     use (Ext.addEquiv₀ f').hom.comp (Shrink.linearEquiv R R).symm.toLinearMap
     intro x hx
-    have := ConcreteCategory.congr_hom ((Ext.mk₀_bijective _ _).1 hf')
-      ((Shrink.linearEquiv R I).symm ⟨x, hx⟩)
+    have := congr($((Ext.mk₀_bijective _ _).1 hf') ((Shrink.linearEquiv R I).symm ⟨x, hx⟩))
     simpa [S]
   · -- Conversely, extend the map represented by `e` and turn the extension back into `Ext⁰`.
     obtain ⟨g', hg'⟩ := h

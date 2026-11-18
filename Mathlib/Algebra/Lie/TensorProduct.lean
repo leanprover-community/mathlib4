@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of Lie modules
 

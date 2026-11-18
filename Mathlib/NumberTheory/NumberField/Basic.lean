@@ -5,13 +5,11 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.CharZero.AddMonoidHom
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
-public import Mathlib.Tactic.CrossRefAttribute
+
+import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # Number fields
@@ -448,6 +446,6 @@ namespace AdjoinRoot
 is a number field. -/
 instance {f : Polynomial ℚ} [hf : Fact (Irreducible f)] : NumberField (AdjoinRoot f) where
   to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := by convert! (AdjoinRoot.powerBasis hf.out.ne_zero).finite
+  to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finite
 
 end AdjoinRoot

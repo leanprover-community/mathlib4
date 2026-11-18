@@ -6,11 +6,10 @@ Authors: Attila Gáspár
 module
 
 public import Mathlib.Algebra.Torsor.Basic
-public import Mathlib.Topology.Algebra.Group.Defs
-
-import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Algebra.MulAction
+
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Topological torsors of groups
@@ -101,6 +100,7 @@ theorem IsTopologicalTorsor.to_isTopologicalGroup : IsTopologicalGroup V where
 def Homeomorph.smulConst (p : P) : V ≃ₜ P where
   __ := Equiv.smulConst p
 
+set_option fun_prop.projDefaultTransparency true in
 /-- The map `p' ↦ p /ₛ p'` as a homeomorphism: `Equiv.constSDiv` as a homeomorphism -/
 @[to_additive (attr := simps!)
 /-- The map `p' ↦ p -ᵥ p'` as a homeomorphism: `Equiv.constVSub` as a homeomorphism -/]

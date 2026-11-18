@@ -36,7 +36,7 @@ open Lean Parser PrettyPrinter Delaborator Std
 
 namespace Superscript
 
-instance : Hashable Char := ⟨fun c => hash c.1⟩
+instance : Hashable Char := ⟨fun c => hash c.val⟩
 
 /-- A bidirectional character mapping. -/
 structure Mapping where
@@ -137,7 +137,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
         if ch.utf8Size != ch'.utf8Size then
           aligns := aligns.push (newStr.rawEndPos, pos)
       newStr := newStr.push ' '
-      if stopWs.1 - stopTk.1 != 1 then
+      if stopWs.byteIdx - stopTk.byteIdx != 1 then
         aligns := aligns.push (newStr.rawEndPos, stopWs)
     let ictx := mkInputContext newStr "<superscript>"
     let s' := p.run ictx c.toParserModuleContext c.tokens (mkParserState newStr)
@@ -193,7 +193,7 @@ def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
   node kind {
     info.firstTokens := .tokens tokens
     info.collectTokens := (tokens ++ ·)
-    fn := withAntiquotFn antiquotP.fn p (isCatAntiquot := true)
+    fn := withAntiquotFn antiquotP.fn p (antiquotBehavior := .acceptLhs)
   }
 
 /-- Parenthesizer for the script parser. -/

@@ -14,7 +14,6 @@ public import Mathlib.Topology.Defs.Filter
 * `Ultrafilter.lim f`: a limit of an ultrafilter `f`,
   defined as the limit of `(f : Filter X)`
   with a proof of `Nonempty X` deduced from existence of an ultrafilter on `X`.
-
 -/
 
 @[expose] public section

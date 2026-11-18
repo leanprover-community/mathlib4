@@ -6,9 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
-public import Mathlib.Data.Finsupp.Indicator
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Finitely supported product of finsets
@@ -52,7 +52,7 @@ theorem mem_finsupp_iff {t : ι → Finset α} :
   refine mem_map.trans ⟨?_, ?_⟩
   · rintro ⟨f, hf, rfl⟩
     refine ⟨support_indicator_subset _ _, fun i hi => ?_⟩
-    convert! mem_pi.1 hf i hi
+    convert mem_pi.1 hf i hi
     exact indicator_of_mem hi _
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i

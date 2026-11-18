@@ -87,8 +87,8 @@ abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) 
     GeneralizedHeytingAlgebra.toDistribLattice with
     himp_eq := fun _ _ =>
       eq_of_forall_le_iff fun _ => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
-    inf_compl_le_bot := fun _ => (this _).1.le_bot
-    top_le_sup_compl := fun _ => (this _).2.top_le }
+    inf_compl_le_bot := fun _ => (this _).disjoint.le_bot
+    top_le_sup_compl := fun _ => (this _).codisjoint.top_le }
 
 variable (α)
 
@@ -184,19 +184,18 @@ theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
 def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
-    coe_le_coe.symm.trans <|
+    coe_le_coe.symm.trans
       ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.2⟩
   le_l_u _ := le_compl_compl
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 
 instance lattice : Lattice (Regular α) :=
-  gi.liftLattice
+  { gi.liftLattice with inf := (· ⊓ ·) }
 
 @[simp, norm_cast]
 theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : BooleanAlgebra (Regular α) :=
   { Regular.lattice, Regular.boundedOrder, Regular.himp,
     Regular.instCompl with
@@ -233,6 +232,6 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
-  propext <| Decidable.not_not
+  propext Decidable.not_not
 
 end Heyting

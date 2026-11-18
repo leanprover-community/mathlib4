@@ -6,14 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Short exact short complexes
 
 A short complex `S : ShortComplex C` is short exact (`S.ShortExact`) when it is exact,
 `S.f` is a mono and `S.g` is an epi.
-
 -/
 
 @[expose] public section
@@ -62,7 +60,6 @@ lemma shortExact_iff_of_iso (e : S₁ ≅ S₂) : S₁.ShortExact ↔ S₂.Short
   · exact shortExact_of_iso e
   · exact shortExact_of_iso e.symm
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ShortExact.op (h : S.ShortExact) : S.op.ShortExact where
   exact := h.exact.op
   mono_f := by
@@ -74,7 +71,6 @@ lemma ShortExact.op (h : S.ShortExact) : S.op.ShortExact where
     dsimp
     infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ShortExact.unop {S : ShortComplex Cᵒᵖ} (h : S.ShortExact) : S.unop.ShortExact where
   exact := h.exact.unop
   mono_f := by

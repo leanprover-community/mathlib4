@@ -5,9 +5,8 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Algebra.Group.Commutator
-public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Commutators of Subgroups
@@ -97,7 +96,7 @@ theorem Commute.commutatorElement_pow_right {a b : G} (h : Commute b ⁅a, b⁆)
     ⁅a, b⁆ ^ n = ⁅a, b ^ n⁆ := by
   induction n with
   | zero => simp
-  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ←ih,
+  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ← ih,
         (h.pow_right n).right_comm, mul_inv_cancel_right]
 
 @[to_additive]
@@ -512,13 +511,16 @@ lemma mem_commutatorSet_of_isConj_sq {g : G} (hg : IsConj g (g ^ 2)) : g ∈ com
   rw [commutatorElement_def, hg]
   simp only [IsUnit.mul_inv_cancel_right, Units.isUnit, mul_inv_eq_iff_eq_mul, pow_two]
 
+variable {G} in
 @[to_additive]
-lemma map_commutator_eq {H : Type*} [Group H] (f : G →* H) :
-    (commutator G).map f = ⁅f.range, f.range⁆ := by
-  rw [_root_.commutator_def, Subgroup.map_commutator]
-  apply congr_arg₂ <;>
-  · rw [Subgroup.map_eq_range_iff]
-    rw [codisjoint_iff, top_sup_eq]
+lemma map_commutator_eq (f : G →* G') : (commutator G).map f = ⁅f.range, f.range⁆ := by
+  rw [commutator_def, map_commutator, map_top]
+
+variable {G} in
+@[to_additive]
+theorem map_commutator_of_surjective {f : G →* G'} (hf : Function.Surjective f) :
+    (commutator G).map f = commutator G' := by
+  rw [map_commutator_eq, f.range_eq_top_of_surjective hf, commutator_def]
 
 section commutatorRepresentatives
 
@@ -559,21 +561,11 @@ variable {G}
 @[to_additive]
 theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} [N.Normal] :
     IsMulCommutative (G ⧸ N) ↔ _root_.commutator G ≤ N := by
-  refine ⟨fun hcomm ↦ ?_, fun hGN ↦ ⟨⟨fun x' y' ↦ ?_⟩⟩⟩
-  · rw [commutator_eq_normalClosure, ← Subgroup.normalClosure_subset_iff]
-    rintro x ⟨p, q, rfl⟩
-    rw [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def]
-    simp only [QuotientGroup.mk_mul, QuotientGroup.mk_inv]
-    rw [← commutatorElement_def, commutatorElement_eq_one_iff_mul_comm, mul_comm']
-  · obtain ⟨x, rfl⟩ := QuotientGroup.mk'_surjective N x'
-    obtain ⟨y, rfl⟩ := QuotientGroup.mk'_surjective N y'
-    rw [← commutatorElement_eq_one_iff_mul_comm, ← map_commutatorElement, QuotientGroup.mk'_apply,
-      QuotientGroup.eq_one_iff]
-    apply hGN
-    rw [commutator_eq_closure]
-    exact Subgroup.subset_closure (commutator_mem_commutatorSet x y)
+  rw [← commutator_eq_bot_iff, ← map_commutator_of_surjective (QuotientGroup.mk'_surjective N),
+    map_eq_bot_iff, QuotientGroup.ker_mk']
 
 open IsMulCommutative in
+@[to_additive]
 instance : IsMulCommutative (G ⧸ _root_.commutator G) :=
   Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr le_rfl
 
@@ -582,17 +574,7 @@ instance : IsMulCommutative (G ⧸ _root_.commutator G) :=
 @[to_additive /-- If `N` is a normal additive subgroup of `G` and `H` a commutative additive
 subgroup such that `H ⊔ N = ⊤`, then `N` contains `addCommutator G`. -/]
 theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgroup G} [N.Normal]
-    {H : Subgroup G} (hHN : N ⊔ H = ⊤) (hH : IsMulCommutative H) : _root_.commutator G ≤ N := by
-  -- It is enough to prove that Q = G ⧸ N is commutative
-  apply quotient_commutative_iff_commutator_le.mp
-  -- Q is a quotient of H
-  let φ : H →ₙ* G ⧸ N := MonoidHom.comp (QuotientGroup.mk' N) (Subgroup.subtype H)
-  -- It is enough to prove that φ is surjective
-  apply Function.Surjective.isMulCommutative (f := φ) _ hH
-  -- We have to prove that `MonoidHom.range φ = ⊤`
-  have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
-    rw [Subgroup.map_top, MonoidHom.range_eq_top]
-    exact QuotientGroup.mk'_surjective N
-  rw [MulHom.coe_coe, ← MonoidHom.range_eq_top, MonoidHom.range_eq_map, ← Subgroup.map_map, ← this,
-    Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN, Subgroup.map_top]
-  simp
+    {H : Subgroup G} (hHN : N ⊔ H = ⊤) [IsMulCommutative H] : _root_.commutator G ≤ N := by
+  rw [← QuotientGroup.ker_mk' N, ← map_eq_bot_iff, _root_.commutator_def, ← hHN, map_commutator,
+    commutator_self_eq_bot_iff, map_sup, QuotientGroup.map_mk'_self, bot_sup_eq]
+  infer_instance

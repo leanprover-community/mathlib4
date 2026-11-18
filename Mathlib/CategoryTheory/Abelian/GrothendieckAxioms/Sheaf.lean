@@ -5,20 +5,19 @@ Authors: Dagur Asgeirsson, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Generator.Sheaf
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.Equivalence
 
-/-!
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
+import Mathlib.CategoryTheory.Generator.Sheaf
 
+/-!
 # AB axioms in sheaf categories
 
 If `J` is a Grothendieck topology on a small category `C : Type v`,
 and `A : Type u₁` (with `Category.{v} A`) is a Grothendieck abelian category,
 then `Sheaf J A` is a Grothendieck abelian category.
-
 -/
 
 public section

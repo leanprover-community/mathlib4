@@ -5,9 +5,8 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.BooleanAlgebra
-public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Order.Hom.Basic
 
 /-!
 # Closure operators between preorders
@@ -73,7 +72,7 @@ namespace ClosureOperator
 
 @[macro_inline]
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
-  coe c := c.1
+  coe c := c.toOrderHom
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
@@ -168,6 +167,16 @@ lemma closure_min (hxy : x ≤ y) (hy : c.IsClosed y) : c x ≤ y := hy.closure_
 lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) where
   left _ := and_imp.mpr closure_min
   right _ h := h ⟨c.le_closure x, c.isClosed_closure x⟩
+
+/-- If the closed elements are stable under a binary operation `f` that is monotone in both of its
+arguments, then the closure is sub-`f`: `c (f x y) ≤ f (c x) (c y)`. Compare `closure_inf_le`,
+which is the case `f = (· ⊓ ·)`, where no stability assumption is needed. -/
+lemma closure_binop_le (c : ClosureOperator α) {f : α → α → α}
+    (hf : ∀ ⦃x y x' y'⦄, x ≤ x' → y ≤ y' → f x y ≤ f x' y')
+    (hclosed : ∀ ⦃x y⦄, c.IsClosed x → c.IsClosed y → c.IsClosed (f x y)) (x y : α) :
+    c (f x y) ≤ f (c x) (c y) :=
+  closure_min (hf (c.le_closure x) (c.le_closure y))
+    (hclosed (c.isClosed_closure x) (c.isClosed_closure y))
 
 end Preorder
 
