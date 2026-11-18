@@ -18,6 +18,23 @@ This file provides the inner product space structure on pi tensor products.
 For an indexed family `E` of `𝕜`-inner product spaces, the inner product on `⨂[𝕜] i, E i` is the
 unique sesquilinear map given by `⟪⨂ₜ[𝕜] i, a i, ⨂ₜ[𝕜] i, b i⟫ = ∏ i, ⟪a i, b i⟫` on pure tensors.
 
+## Main definitions:
+
+- `PiTensorProduct.instNormedAddCommGroup`: the normed additive group structure on pi tensor
+  products, where `‖⨂ₜ[𝕜] i, x i‖ = Π i, ‖x i‖`.
+- `PiTensorProduct.instInnerProductSpace`: the inner product space structure on pi tensor products,
+  where `⟪⨂ₜ[𝕜] i, x i, ⨂ₜ[𝕜] i, y i⟫ = ∏ i, ⟪x i, y i⟫`.
+- `PiTensorProduct.mapIsometry`: the linear isometry version of `PiTensorProduct.map`
+- `PiTensorProduct.congrIsometry`: the linear isometry equivalence version
+  of `PiTensorProduct.congr`
+- `PiTensorProduct.mapInclIsometry`: the linear isometry version of `PiTensorProduct.mapIncl`
+- `PiTensorProduct.reindexIsometry`: the linear isometry equivalence version
+  of `PiTensorProduct.reindex`
+- `PiTensorProduct.isEmptyIsometry`: the linear isometry equivalence version
+  of `PiTensorProduct.isEmptyEquiv`
+- `PiTensorProduct.subsingletonIsometry`: the linear isometry equivalence version
+  of `PiTensorProduct.subsingletonEquiv`
+
 -/
 
 @[expose] public section
@@ -64,6 +81,7 @@ theorem inner_mapIncl_mapIncl {p : Π i, Submodule 𝕜 (E i)} (x y : ⨂[𝕜] 
     ⟪mapIncl p x, mapIncl p y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
   inner_map_map (fun i ↦ (p i).subtypeₗᵢ) x y
 
+-- This is a helper lemma for establishing `InnerProductSpace.Core`.
 open scoped Classical in
 private theorem inner_self {κ : ι → Type*} [∀ i, Fintype (κ i)]
     (b : Π i, OrthonormalBasis (κ i) 𝕜 (E i)) (x : ⨂[𝕜] i, E i) :
@@ -132,6 +150,8 @@ section MapIsometry
 
 variable (f : Π i, E i →ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i)
 
+/-- The tensor product of a family of linear isometries is a linear isometry.
+This is the linear isometry version of `PiTensorProduct.map`. -/
 noncomputable def mapIsometry : (⨂[𝕜] i, E i) →ₗᵢ[𝕜] ⨂[𝕜] i, F i :=
   map (fun i ↦ (f i).toLinearMap) |>.isometryOfInner (inner_map_map f)
 
@@ -159,6 +179,8 @@ section CongrIsometry
 
 variable (f : Π i, E i ≃ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i)
 
+/-- The tensor product of a family of linear isometry equivalences is a linear isometry equivalence.
+This is the linear isometry equivalence version of `PiTensorProduct.congr`. -/
 noncomputable def congrIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] ⨂[𝕜] i, F i :=
   congr (fun i ↦ (f i).toLinearEquiv) |>.isometryOfInner
     <| inner_map_map (fun i ↦ (f i).toLinearIsometry)
@@ -182,6 +204,7 @@ section MapInclIsometry
 
 variable (p : Π i, Submodule 𝕜 (E i)) (x : ⨂[𝕜] i, p i)
 
+/-- The linear isometry version of `PiTensorProduct.mapIncl`. -/
 noncomputable def mapInclIsometry : (⨂[𝕜] i, p i) →ₗᵢ[𝕜] ⨂[𝕜] i, E i :=
   mapIsometry fun i ↦ (p i).subtypeₗᵢ
 
@@ -198,6 +221,7 @@ section Reindex
 variable {ι₂} [Fintype ι₂] (e : ι ≃ ι₂)
 
 variable (𝕜 E) in
+/-- The linear isometry equivalence version of `PiTensorProduct.reindex`. -/
 noncomputable def reindexIsometry : (⨂[𝕜] i : ι, E i) ≃ₗᵢ[𝕜] ⨂[𝕜] i : ι₂, E (e.symm i) :=
   reindex 𝕜 E e |>.isometryOfInner fun x y ↦ x.induction_on
     (y.induction_on
@@ -230,6 +254,7 @@ theorem inner_of_isEmpty (x y : ⨂[𝕜] i, E i) :
     (by simp_all [inner_add_left, add_mul])
 
 variable (ι) in
+/-- The linear isometry equivalence version of `PiTensorProduct.isEmptyEquiv`. -/
 noncomputable def isEmptyIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] 𝕜 :=
   isEmptyEquiv ι |>.isometryOfInner <| by simp [mul_comm]
 
@@ -250,6 +275,7 @@ theorem inner_of_subsingleton (x y : ⨂[𝕜] i, E i) :
       (by simp_all [_root_.inner_add_right]))
     (by simp_all [_root_.inner_add_left])
 
+/-- The linear isometry equivalence version of `PiTensorProduct.subsingletonEquiv`. -/
 noncomputable def subsingletonIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] E i₀ :=
   subsingletonEquiv i₀ |>.isometryOfInner fun x y ↦
     x.induction_on
