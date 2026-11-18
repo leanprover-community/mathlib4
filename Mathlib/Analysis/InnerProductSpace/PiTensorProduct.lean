@@ -128,4 +128,31 @@ theorem eDist_tprod_le (x y : Π i, E i) :
   grw [eDist_eq_eNorm_sub, eNorm_sub_le]
   simp
 
+section MapIsometry
+
+variable (f : Π i, E i →ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i)
+
+noncomputable def mapIsometry : (⨂[𝕜] i, E i) →ₗᵢ[𝕜] ⨂[𝕜] i, F i :=
+  map (fun i ↦ (f i).toLinearMap) |>.isometryOfInner (inner_map_map f)
+
+@[simp]
+lemma mapIsometry_apply : mapIsometry f x = map (fun i ↦ (f i).toLinearMap) x := rfl
+
+@[simp]
+lemma toLinearMap_mapIsometry : (mapIsometry f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := rfl
+
+@[simp]
+lemma norm_map : ‖map (fun i ↦ (f i).toLinearMap) x‖ = ‖x‖ := (mapIsometry f).norm_map x
+
+@[simp]
+lemma nnNorm_map : ‖map (fun i ↦ (f i).toLinearMap) x‖₊ = ‖x‖₊ := (mapIsometry f).nnNorm_map x
+
+@[simp]
+lemma eNorm_map : ‖map (fun i ↦ (f i).toLinearMap) x‖ₑ = ‖x‖ₑ := (mapIsometry f).eNorm_map x
+
+@[simp]
+lemma mapIsometry_id : mapIsometry (fun i ↦ (.id : E i →ₗᵢ[𝕜] E i)) = .id := by ext; simp
+
+end MapIsometry
+
 end PiTensorProduct
