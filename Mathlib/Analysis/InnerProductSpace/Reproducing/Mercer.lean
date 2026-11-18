@@ -79,8 +79,7 @@ private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 
       (Lp.aestronglyMeasurable g).comp_fst
     exact continuous_inner.comp_aestronglyMeasurable (h1.prodMk h2)
   · grw [hasFiniteIntegral_def, lintegral_norm_inner_le hK f g]
-    refine ENNReal.mul_lt_top ?_ eNorm_lt_top
-    refine ENNReal.mul_lt_top hK.eLpNorm_lt_top eNorm_lt_top
+    finiteness
 
 omit [SFinite μ] in
 private lemma integral_congr_fst {U : Type*} {φ ψ : X → U} (h : φ =ᵐ[μ] ψ) (F : X × X → U → 𝕜) :
