@@ -85,7 +85,6 @@ variable [Small.{v} R]
 
 open Pointwise
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `M` has projective dimension not exceeding `n`, for an `M`-regular element `a`,
 the linear equivalence `Ext M N n ⧸ a • ⊤ ≃ Ext M⧸xM N (n + 1)` induced by the long exact sequence
 `Ext M N n → Ext M N n → Ext M⧸xM N (n + 1) → 0` with first morphism scalar multiple by `a`. -/
@@ -94,15 +93,12 @@ noncomputable def quotSMulTopExtEquivExtQuotSMulTop (M : ModuleCat.{v} R) (n : �
     QuotSMulTop a (Ext M N n) ≃ₗ[R] Ext (ModuleCat.of R (QuotSMulTop a M)) N (n + 1) := by
   let S := M.smulShortComplex a
   have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
-  let f : Ext M N n →ₗ[R] Ext (ModuleCat.of R (QuotSMulTop a M)) N (n + 1) := {
-    __ := S_exact.extClass.precomp N (add_comm 1 n)
-    map_smul' := by simp } --here need set false
+  let f : Ext M N n →ₗ[R] Ext (ModuleCat.of R (QuotSMulTop a M)) N (n + 1) :=
+    S_exact.extClass.precompOfLinear R N (add_comm 1 n)
   have surj : Function.Surjective f := by
-    have exac := Ext.contravariant_sequence_exact₃' S_exact N n (n + 1) (add_comm 1 n)
-    have : Subsingleton (Ext M N (n + 1)) :=
-      HasProjectiveDimensionLT.subsingleton M (n + 1) (n + 1) (le_refl _) N
-    exact (AddCommGrpCat.epi_iff_surjective _).mp
-      (exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _))
+    intro x
+    apply Ext.contravariant_sequence_exact₃ S_exact N x _ (add_comm 1 n)
+    exact (HasProjectiveDimensionLT.subsingleton M (n + 1) (n + 1) (le_refl _) N).elim _ _
   have ker : LinearMap.ker f = a • (⊤ : Submodule R _) := by
     have exac := Ext.contravariant_sequence_exact₁' S_exact N n (n + 1) (add_comm 1 n)
     have exac' : Function.Exact (a • LinearMap.id (R := R) (M := (Ext M N n))) f := by
