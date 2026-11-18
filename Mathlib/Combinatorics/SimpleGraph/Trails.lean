@@ -189,6 +189,11 @@ variable (G) in
 structure IsEulerian where
   exists_isEulerian : ∃ (v : V) (p : G.Walk v v), p.IsEulerian
 
+protected theorem IsEulerian.elim (hG : G.IsEulerian) {P : Prop}
+    (h : ∀ {v} {p : G.Walk v v}, p.IsEulerian → P) : P :=
+  have ⟨_, _, hp⟩ := hG.exists_isEulerian
+  h hp
+
 protected theorem IsEulerian.nonempty (h : G.IsEulerian) : Nonempty V :=
   h.exists_isEulerian.nonempty
 
@@ -205,8 +210,7 @@ protected theorem IsEulerian.bot [Nonempty V] : (⊥ : SimpleGraph V).IsEulerian
 /-- In an Eulerian graph there exists an Eulerian circuit from any non-isolated vertex. -/
 theorem IsEulerian.exists_isEulerian_of_not_isIsolated (hG : G.IsEulerian) (hv : ¬G.IsIsolated v) :
     ∃ p : G.Walk v v, p.IsEulerian :=
-  have ⟨_, _, hp⟩ := hG.exists_isEulerian
-  ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
+  hG.elim fun hp ↦ ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
 
 theorem isEulerian_iff_exists_isEulerian_of_not_isIsolated (h : ¬G.IsIsolated v) :
     G.IsEulerian ↔ ∃ p : G.Walk v v, p.IsEulerian :=
@@ -227,8 +231,7 @@ theorem Preconnected.isEulerian_iff_exists_isEulerian (h : G.Preconnected) :
 
 theorem IsEulerian.connected_of_forall_not_isIsolated (h : G.IsEulerian)
     (h' : ∀ v, ¬G.IsIsolated v) : G.Connected :=
-  have ⟨_, _, hp⟩ := h.exists_isEulerian
-  hp.connected_of_forall_not_isIsolated h'
+  h.elim (·.connected_of_forall_not_isIsolated h')
 
 theorem IsEulerian.connected_iff_forall_not_isIsolated [Nontrivial V] (h : G.IsEulerian) :
     G.Connected ↔ ∀ v, ¬G.IsIsolated v :=
@@ -236,8 +239,7 @@ theorem IsEulerian.connected_iff_forall_not_isIsolated [Nontrivial V] (h : G.IsE
 
 variable (v) in
 theorem IsEulerian.even_degree (h : G.IsEulerian) [Fintype (G.neighborSet v)] :
-    Even (G.degree v) := by
-  have ⟨u, p, hp⟩ := h.exists_isEulerian
-  simp [hp.even_degree_iff]
+    Even (G.degree v) :=
+  h.elim (by simp [·.even_degree_iff])
 
 end SimpleGraph
