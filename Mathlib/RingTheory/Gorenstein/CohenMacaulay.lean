@@ -747,7 +747,6 @@ lemma LinearMap.surjective_of_injective_of_length_ne_top (M : Type*) [AddCommGro
   absurd not_le.mpr (Submodule.length_lt netop)
   exact Module.length_le_of_injective f.rangeRestrict ((injective_rangeRestrict_iff f).mpr inj)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     (h : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) k)) :
     IsGorensteinLocalRing R := by
