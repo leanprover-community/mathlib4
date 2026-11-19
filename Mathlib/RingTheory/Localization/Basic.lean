@@ -693,7 +693,7 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 /-- For an algebra homomorphism `f : A →ₐ[R] B`, if `A` and `B` are algebras over a localization
 `S` of `R`, then `f` is automatically an `S`-algebra homomorphism. -/
 def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B where
-  __ := f
+  toRingHom := f.toRingHom
   commutes' := by
     let f := f.comp (IsScalarTower.toAlgHom R S A)
     let g := IsScalarTower.toAlgHom R S B

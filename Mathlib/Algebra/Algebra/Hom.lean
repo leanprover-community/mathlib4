@@ -30,6 +30,9 @@ universe u v w u₁ v₁
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
+  map_smul' (r : R) (x : A) : toFun (r • x) = r • toFun x :=
+    (congr(toFun $(Algebra.smul_def r x)).trans (map_mul' _ _)).trans <|
+      (congr($(commutes' r) * toFun x)).trans (Algebra.smul_def r (toFun x)).symm
 
 /-- Reinterpret an `AlgHom` as a `RingHom` -/
 add_decl_doc AlgHom.toRingHom
@@ -89,8 +92,8 @@ variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective f g h := by
-    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
-    rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _, _⟩
+    rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _, _⟩
     congr
 
 instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
@@ -139,15 +142,16 @@ instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 
 @[simp]
-theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
+theorem coe_mk {f : A →+* B} (h h') : ((⟨f, h, h'⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
 
 @[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
+    ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A →ₐ[R] B) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
+theorem toRingHom_mk {f : A →+* B} (h h') : ((⟨f, h, h'⟩ : A →ₐ[R] B) : A →+* B) = f :=
   rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
@@ -211,7 +215,8 @@ theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁
   DFunLike.ext _ _ H
 
 @[simp]
-theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅ h₆) :
+    (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A →ₐ[R] B) = f :=
   rfl
 
 @[simp] lemma addHomMk_coe (f : A →ₐ[R] B) : AddHom.mk f (map_add f) = f := rfl

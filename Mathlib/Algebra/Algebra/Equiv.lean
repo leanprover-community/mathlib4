@@ -926,7 +926,8 @@ attribute [local instance] ULift.algebra' in
 @[pp_with_univ]
 def AlgHom.ulift (f : S →ₐ[R] T) :
     ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
-  __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
+  toRingHom := (AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom) :
+    ULift.{u₁} S →+* ULift.{u₃} T)
   commutes' _ := by simp
 
 @[simp]

@@ -196,7 +196,7 @@ def AlgHom.domRestrict : B →ₐ[A] D :=
 
 /-- Extend the scalars of an `AlgHom`. -/
 def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.domRestrict B).toRingHom.toAlgebra where
-  __ := f
+  toRingHom := f.toRingHom
   commutes' := fun _ ↦ rfl
   __ := (f.domRestrict B).toRingHom.toAlgebra
 
