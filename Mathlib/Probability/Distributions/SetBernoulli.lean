@@ -100,8 +100,8 @@ lemma setBernoulli_real_mem_of_notMem (p : I) (hi : i ∉ u) :
     setBer(u, p).real {s | i ∈ s} = 0 := by
   simp [measureReal_def, setBernoulli_mem_of_notMem p hi]
 
-lemma HasLaw.indicator_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι} {M : Type*} [Zero M]
-    [MeasurableSpace M] (c : M) (hS : HasLaw S setBer(u, p) P) :
+lemma HasLaw.indicator_const_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι} {M : Type*}
+    [Zero M] [MeasurableSpace M] (c : M) (hS : HasLaw S setBer(u, p) P) :
     HasLaw ({ω | i ∈ S ω}.indicator (fun _ ↦ c)) Ber(c, 0, p) P := by
   have := hS.isProbabilityMeasure
   have : p = ⟨P.real {ω | i ∈ S ω}, by simp⟩ := by
@@ -115,11 +115,10 @@ lemma HasLaw.indicator_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι}
 lemma HasLaw.indicator_one_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι} {M : Type*} [Zero M]
     [One M] [MeasurableSpace M] (hS : HasLaw S setBer(u, p) P) :
     HasLaw ({ω | i ∈ S ω}.indicator (1 : Ω → M)) Ber(1, 0, p) P :=
-  hS.indicator_of_setBernoulli_of_mem hi 1
+  hS.indicator_const_of_setBernoulli_of_mem hi 1
 
 lemma HasLaw.indicator_of_setBernoulli_of_notMem (hi : i ∉ u) {S : Ω → Set ι} {M : Type*} [Zero M]
-    [MeasurableSpace M]
-    (hS : HasLaw S setBer(u, p) P) (f : Ω → M) :
+    [MeasurableSpace M] (hS : HasLaw S setBer(u, p) P) (f : Ω → M) :
     HasLaw ({ω | i ∈ S ω}.indicator f) (dirac 0) P := by
   have := hS.isProbabilityMeasure
   apply hasLaw_dirac_of_ae_eq
@@ -238,7 +237,7 @@ lemma HasLaw.indepFun_setBernoulli_inter [Countable ι]
     (X · ∩ t) ⟂ᵢ[P] (X · ∩ u) := by
   have := hX.isProbabilityMeasure
   have h1 v : (X · ∩ v) =
-      (fun p ↦ {i | ∃ (h : i ∈ v), p ⟨i, h⟩}) ∘ (fun ω (i : v) ↦ i.1 ∈ (X ω)) := by ext; grind
+      (fun p ↦ {i | ∃ (h : i ∈ v), p ⟨i, h⟩}) ∘ (fun ω (i : v) ↦ i.val ∈ (X ω)) := by ext; grind
   simp_rw [h1]
   apply IndepFun.comp₀
   any_goals fun_prop
@@ -265,8 +264,8 @@ lemma IndepFun.hasLaw_union_setBernoulli [Countable ι] (hXY : X ⟂ᵢ[P] Y)
     have := hX.isProbabilityMeasure
     have :
         (Function.uncurry (· ∪ ·)) ∘
-            (Prod.map (fun (p : ι → Prop) ↦ {i | p i}) fun (p : ι → Prop) ↦ {i | p i}) =
-          (fun p ↦ {i | p i}) ∘ ((fun p i ↦ (p i).1 ∨ (p i).2) ∘ fun p i ↦ (p.1 i, p.2 i)) := by
+          (Prod.map (fun (p : ι → Prop) ↦ {i | p i}) fun (p : ι → Prop) ↦ {i | p i}) =
+        (fun p ↦ {i | p i}) ∘ ((fun p i ↦ (p i).1 ∨ (p i).2) ∘ fun p i ↦ (p.1 i, p.2 i)) := by
       ext; grind
     rw [show (fun ω ↦ X ω ∪ Y ω) = (· ∪ ·).uncurry ∘ (fun ω ↦ (X ω, Y ω)) from rfl,
       ← AEMeasurable.map_map_of_aemeasurable, (hXY.hasLaw_prod hX hY).map_eq, setBernoulli_eq_map,
