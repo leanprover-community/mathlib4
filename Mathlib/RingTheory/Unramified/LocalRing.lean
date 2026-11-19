@@ -66,7 +66,7 @@ set_option backward.inferInstanceAs.wrap.data false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
-  have hmR : mR ≤ maximalIdeal S := ((local_hom_TFAE (algebraMap R S)).out 1 3 rfl rfl).mp ‹_›
+  have hmR : mR ≤ maximalIdeal S := ((local_hom_tfae (algebraMap R S)).out 1 3 rfl rfl).mp ‹_›
   let : Algebra (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| Algebra (R ⧸ _) _)
   have : IsScalarTower R (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| IsScalarTower R (R ⧸ _) _)
   have : FormallyUnramified (ResidueField R) (S ⧸ mR) := .of_restrictScalars R _ _
@@ -78,7 +78,8 @@ lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R
     Ideal.Quotient.nontrivial_iff.mpr <| ne_top_of_le_ne_top (maximalIdeal.isMaximal S).ne_top hmR
   have : IsLocalRing (S ⧸ mR) := .of_surjective' _ Ideal.Quotient.mk_surjective
   have : maximalIdeal (S ⧸ mR) = ⊥ := by
-    rw [← jacobson_eq_maximalIdeal _ bot_ne_top, IsArtinianRing.jacobson_eq_radical,
+    rw [← ringJacobson_eq_maximalIdeal, ← Ideal.jacobson_bot,
+      IsArtinianRing.jacobson_eq_radical,
       ← Ideal.zero_eq_bot, ← nilradical, nilradical_eq_zero]
   rwa [← isField_iff_maximalIdeal_eq] at this
 
@@ -146,6 +147,10 @@ lemma isUnramifiedAt_iff_map_eq :
 instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
   ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
 
+lemma IsUnramifiedAt.map_eq [Algebra.IsUnramifiedAt R q] :
+    p.map (algebraMap R (Localization.AtPrime q)) = maximalIdeal _ :=
+  ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).2
+
 instance [Algebra.IsUnramifiedAt R q] : Module.Finite p.ResidueField q.ResidueField :=
   Algebra.FormallyUnramified.finite_of_free _ _
 
@@ -164,7 +169,7 @@ namespace Localization
 
 lemma localRingHom_injective_of_primesOver_eq_singleton
     [Algebra.IsIntegral R S] [FaithfulSMul R S] :
-    Function.Injective (localRingHom p q (algebraMap R S) (hq.ge rfl).2.1) := by
+    Function.Injective (localRingHom p q (algebraMap R S) (hq.ge rfl).2.over) := by
   rw [injective_iff_map_eq_zero]
   intro x hx
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
@@ -203,7 +208,8 @@ lemma localRingHom_surjective_of_primesOver_eq_singleton
   rw [← Localization.AtPrime.algebraMap_eq]
   change Function.Surjective (Algebra.linearMap _ _)
   rw [← LinearMap.range_eq_top, ← top_le_iff]
-  apply Submodule.le_of_le_smul_of_le_jacobson_bot Module.Finite.fg_top (maximalIdeal_le_jacobson _)
+  apply Submodule.le_of_le_smul_of_le_jacobson Module.Finite.fg_top
+    (ringJacobson_eq_maximalIdeal (Localization.AtPrime p)).ge
   rw [Ideal.smul_top_eq_map, Algebra.FormallyUnramified.map_maximalIdeal]
   rintro x -
   obtain ⟨a, ha⟩ := H (algebraMap _ _ x)
@@ -221,20 +227,20 @@ lemma exists_awayMap_injective_of_localRingHom_injective
     ∃ r ∉ p, ∀ r', r ∣ r' → Function.Injective (awayMap (algebraMap R S) r') := by
   classical
   obtain ⟨s, hs⟩ := hRS
-  have (x : s) : algebraMap R (Localization.AtPrime p) x.1 = 0 := by
+  have (x : s) : algebraMap R (Localization.AtPrime p) x.val = 0 := by
     apply H
     simp [localRingHom_to_map, -FaithfulSMul.algebraMap_eq_zero_iff,
-      show algebraMap R S _ = 0 from hs.le (Ideal.subset_span x.2)]
+      show algebraMap R S _ = 0 from hs.le (Ideal.subset_span x.property)]
   choose m hm using fun x ↦ (IsLocalization.map_eq_zero_iff p.primeCompl _ _).mp (this x)
   have H : RingHom.ker (algebraMap R S) ≤ RingHom.ker
-      (algebraMap R (Localization.Away (∏ i, m i).1)) := by
+      (algebraMap R (Localization.Away (∏ i, m i).val)) := by
     rw [← hs, Ideal.span_le]
     intro x hxs
-    refine (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).1) _ _).mpr ⟨⟨_, 1, rfl⟩, ?_⟩
+    refine (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).val) _ _).mpr ⟨⟨_, 1, rfl⟩, ?_⟩
     simp only [pow_one]
     rw [Fintype.prod_eq_mul_prod_compl ⟨x, hxs⟩, Submonoid.coe_mul, mul_assoc, mul_left_comm, hm,
       mul_zero]
-  refine ⟨_, (∏ i : s, m i).2, ?_⟩
+  refine ⟨_, (∏ i : s, m i).property, ?_⟩
   rintro r' ⟨s, e⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
@@ -243,7 +249,8 @@ lemma exists_awayMap_injective_of_localRingHom_injective
     IsLocalization.mk'_eq_zero_iff] at hx
   obtain ⟨⟨_, n, rfl⟩, hn⟩ := hx
   simp only [← map_pow, ← map_mul] at hn
-  obtain ⟨⟨_, k, rfl⟩, hk⟩ := (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).1) _ _).mp (H hn)
+  obtain ⟨⟨_, k, rfl⟩, hk⟩ :=
+    (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).val) _ _).mp (H hn)
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr ⟨⟨_, k + n, rfl⟩, ?_⟩
   dsimp only at hk ⊢
   rw [pow_add, mul_assoc, e, mul_pow, ← e, mul_assoc, mul_left_comm, hk, mul_zero]

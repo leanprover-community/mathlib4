@@ -66,8 +66,9 @@ theorem topologicalKrullDim_zero_of_discreteTopology
     (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     topologicalKrullDim X ≤ 0 := by
   refine krullDim_nonpos_iff_forall_isMax.mpr fun Z Y h ↦ (h.antisymm' fun x hx ↦ ?_).le
-  obtain ⟨z, hz⟩ := Z.2.nonempty
-  rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible Y.2.isPreirreducible hx (h hz)]
+  obtain ⟨z, hz⟩ := Z.isIrreducible'.nonempty
+  rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible
+    Y.isIrreducible'.isPreirreducible hx (h hz)]
 
 lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding f)
     (Z : TopologicalSpace.IrreducibleCloseds X) :
@@ -75,7 +76,7 @@ lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding 
   rw [← coheight_orderIso (orderIsoOfIsOpenEmbedding f hf) Z]
   refine .symm (coheight_eq_of_strictMono Subtype.val (Subtype.strictMono_coe _) ?_ _)
   intro a b hlt
-  exact ⟨⟨b, a.2.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
+  exact ⟨⟨b, a.property.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
 
 attribute [local instance] specializationOrder in
 lemma Topology.IsOpenEmbedding.coheight_eq [QuasiSober Y] [T0Space Y] [QuasiSober X] [T0Space X]
@@ -101,7 +102,8 @@ def coheightZeroSetOrderIsoIrreducibleComponents [QuasiSober X] [T0Space X] :
     { Equiv.subtypeUnivEquiv fun _ ↦ trivial with map_rel_iff' := Iff.rfl }
   have : {x : X | coheight x = 0} = {x : X | Maximal ⊤ x} := by simp [maximal_iff_isMax]
   rw [irreducibleComponents_eq_maximals_closed, this]
-  exact OrderIso.mapSetOfPredMaximal <| OrderIso.trans
+  exact OrderIso.mapSetOfPredMaximal (s := .univ)
+      (t := {s : Set X | IsClosed s ∧ IsIrreducible s}) <| OrderIso.trans
     (OrderIso.trans univIso (irreducibleSetEquivPoints (α := X)).symm) <|
     TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' X
 
@@ -115,7 +117,7 @@ lemma QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one [QuasiSober X] [Irre
     {x ∈ p | coheight x = 1} ⊆ Subtype.val '' {x : p | coheight x = 0} := by
   have hsm : StrictMono (WithTop.recTopCoe (genericPoint X) (Subtype.val : p → X)) :=
     WithTop.strictMono_iff.mpr
-      ⟨Subtype.strictMono_coe p, QuasiSober.val_lt_genericPoint_of_closure_ne_univ hp⟩
+      ⟨Subtype.strictMono_coe (· ∈ p), QuasiSober.val_lt_genericPoint_of_closure_ne_univ hp⟩
   rintro x ⟨hx, kx⟩
   exact ⟨⟨x, hx⟩, coheight_zero_of_coheight_one_of_strictMono _ hsm ⟨x, hx⟩
     (by simpa using kx), rfl⟩

@@ -18,7 +18,6 @@ a right fraction `inv (Q.map s) ≫ Q.map g` or as a left fraction
 `Q.map g ≫ inv (Q.map s)`, with `s` a quasi-isomorphism (to `X` or from `Y`).
 When strict bounds are known on `X` or `Y`, certain bounds may also be ensured
 on the auxiliary object appearing in the fraction.
-
 -/
 
 public section

@@ -7,19 +7,19 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
+public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 import Mathlib.LinearAlgebra.Matrix.Dual
 
 /-!
-
 # Realisations of Cartan Matrices
 
 Let `R` be an integral domain of characteristic zero, and let `M` and `N` be `R`-modules in perfect
 pairing. Then, given vectors `r₁, r₂, …, rₗ` in `M` and `c₁, c₂, …, cₗ` in `N`, the following two
 propositions are equivalent:
-1. The vectors `rᵢ`, `cᵢ` are the simple roots and coroots of a finite, reduced, crystrallographic
+1. The vectors `rᵢ`, `cᵢ` are the simple roots and coroots of a finite, reduced, crystallographic
    root pairing (i.e., a reduced root datum except we do not require `R = ℤ`).
 2. The matrix `Aᵢⱼ = ⟨cⱼ, rᵢ⟩` is a finite-type Cartan matrix.
 
@@ -32,8 +32,7 @@ to formalise item 2.
    matrix.
  * `Matrix.IsFiniteCartan.toRealisation`: a realisation associated to an invertible Cartan matrix.
  * `Matrix.IsFiniteCartan.toRootPairing`: a reduced, irreducible, crystallographic root system
-   assocated to a Cartan matrix, with coefficients in any field of characteristic zero.
-
+   associated to a Cartan matrix, with coefficients in any field of characteristic zero.
 -/
 
 public noncomputable section
@@ -199,9 +198,9 @@ lemma mem_weyl (i : n) :
     (rl.reflection i, rl.coreflection i) ∈ rl.weylGroup :=
   Subgroup.subset_closure <| mem_range_self i
 
-instance : SMul rl.weylGroup (M × N) where smul w p := (w.1.1 p.1, w.1.2 p.2)
+instance : SMul rl.weylGroup (M × N) where smul w p := (w.val.1 p.1, w.val.2 p.2)
 
-lemma weylGroup_smul_def (w : rl.weylGroup) (p : M × N) : w • p = (w.1.1 p.1, w.1.2 p.2) := rfl
+lemma weylGroup_smul_def (w : rl.weylGroup) (p : M × N) : w • p = (w.val.1 p.1, w.val.2 p.2) := rfl
 
 instance : DistribMulAction rl.weylGroup (M × N) where
   mul_smul := by simp [weylGroup_smul_def]
@@ -222,6 +221,7 @@ lemma flip_weyl :
 
 @[simp] lemma coreflection_inv (i : n) : (rl.coreflection i)⁻¹ = rl.coreflection i := by rfl
 
+open scoped Pointwise in
 @[elab_as_elim]
 lemma weylGroup.induction {pred : (g : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)) → g ∈ rl.weylGroup → Prop}
     (mem : ∀ i, pred (rl.reflection i, rl.coreflection i) (rl.mem_weyl i))
@@ -334,7 +334,8 @@ lemma eq_of_mem_weylGroup_of_forall_apply_sRoot_eq [CharZero R] [IsDomain R]
 instance [CharZero R] [IsDomain R] : Finite rl.weylGroup := by
   set f : rl.weylGroup → n → M := fun w i ↦ (w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)).1 (rl.sRoot i)
   have hinj : Injective f := fun w w' hww' ↦
-    Subtype.ext <| rl.eq_of_mem_weylGroup_of_forall_apply_sRoot_eq w.2 w'.2 fun i ↦ congr_fun hww' i
+    Subtype.ext <| rl.eq_of_mem_weylGroup_of_forall_apply_sRoot_eq w.property w'.property
+      fun i ↦ congr_fun hww' i
   rw [← finite_univ_iff]
   refine .of_finite_image ?_ hinj.injOn
   exact (Finite.pi fun _ ↦ rl.finite_setOf_mem_weylGroup_apply_sRoot).subset <| by grind
@@ -439,8 +440,8 @@ lemma injOn_snd : InjOn snd rl.idx := by
 def toRootPairing :
     RootPairing rl.idx R M N :=
   .mk' rl.pairing
-    ⟨fun p ↦ (p : M × N).1, fun i j h ↦ Subtype.ext <| rl.injOn_fst i.2 j.2 h⟩
-    ⟨fun p ↦ (p : M × N).2, fun i j h ↦ Subtype.ext <| rl.injOn_snd i.2 j.2 h⟩
+    ⟨fun p ↦ (p : M × N).1, fun i j h ↦ Subtype.ext <| rl.injOn_fst i.property j.property h⟩
+    ⟨fun p ↦ (p : M × N).2, fun i j h ↦ Subtype.ext <| rl.injOn_snd i.property j.property h⟩
     (fun i ↦ rl.pairing_fst_snd i.property)
     (by
       rintro ⟨p, hp⟩ - ⟨⟨q, hq⟩, rfl⟩
@@ -463,8 +464,8 @@ lemma toRootPairing_pairing (i j : rl.idx) :
 
 instance : rl.toRootPairing.IsCrystallographic where
   exists_value i j := by
-    obtain ⟨hp, -⟩ := rl.idx_subset_span_int_sprod_span_int i.2
-    obtain ⟨-, hq⟩ := rl.idx_subset_span_int_sprod_span_int j.2
+    obtain ⟨hp, -⟩ := rl.idx_subset_span_int_sprod_span_int i.property
+    obtain ⟨-, hq⟩ := rl.idx_subset_span_int_sprod_span_int j.property
     obtain ⟨z, hz⟩ := rl.exist_int_eq_pairing_of_mem_span_int hp hq
     exact ⟨z, by simp [toRootPairing_pairing, hz]⟩
 
@@ -566,6 +567,57 @@ lemma isIrreducible_toRootPairing [Nonempty n] {k V W : Type*} [Field k] [CharZe
       exact hΦker (f i) (hfΦ i) hx
     exact (LinearMap.IsPerfPair.bijective_left rl.pairing).injective <| by simp [hx]
 
+/-- The simple (co)roots are naturally parameterised by the index type of the Cartan matrix. -/
+def baseIdx : n ↪ rl.idx where
+  toFun i := (⟨(rl.sRoot i, rl.sCoroot i), rl.sPair_mem_idx i⟩ : rl.idx)
+  inj' i j h := by
+    simp only [Subtype.mk.injEq, Prod.mk.injEq] at h
+    exact rl.injective_sRoot h.1
+
+@[simp] lemma baseIdx_apply (i : n) :
+    rl.baseIdx i = ⟨(rl.sRoot i, rl.sCoroot i), rl.sPair_mem_idx i⟩ := by
+  rfl
+
+/-- The base carried by the root pairing associated to a realisation of a Cartan matrix. -/
+def rootPairingBase : rl.toRootPairing.Base :=
+  letI P := rl.toRootPairing
+  letI supp := (range rl.baseIdx).toFinite.toFinset
+  have : Set.Pairwise supp fun i j ↦ P.pairingIn ℤ i j ≤ 0 := by
+    rw [Finite.coe_toFinset]
+    rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
+    suffices P.pairingIn ℤ ⟨_, rl.sPair_mem_idx i⟩ ⟨_, rl.sPair_mem_idx j⟩ = rl.matrix i j by
+      simpa [this] using rl.isCartan.offDiag_nonpos i j (ne_of_apply_ne _ hij)
+    simpa [P, toRootPairing_pairing] using
+      P.algebraMap_pairingIn ℤ ⟨_, rl.sPair_mem_idx i⟩ ⟨_, rl.sPair_mem_idx j⟩
+  have : LinearIndepOn R P.root supp := by
+    rw [Finite.coe_toFinset, linearIndepOn_range_iff rl.baseIdx.injective]
+    exact rl.lin_ind_sRoot
+  have (i : rl.idx) : P.root i ∈ span ℤ (P.root '' supp) := by
+    rw [Finite.coe_toFinset, ← range_comp]
+    exact (rl.idx_subset_span_int_sprod_span_int i.property).1
+  have (i : rl.idx) : P.coroot i ∈ span ℤ (P.coroot '' supp) := by
+    rw [Finite.coe_toFinset, ← range_comp]
+    exact (rl.idx_subset_span_int_sprod_span_int i.property).2
+  .mkOfPairwiseLEZero P (by assumption) (by assumption) (by assumption) (by assumption)
+
+/-- The indexing type of a Cartan matrix realisation bijects to the support of the base carried by
+the corresponding root pairing. -/
+def rootPairingBaseEquiv :
+    n ≃ rl.rootPairingBase.support :=
+  (Equiv.ofInjective _ rl.baseIdx.injective).trans <| .subtypeEquivRight (by simp [rootPairingBase])
+
+@[simp] lemma val_rootPairingBaseEquiv_apply (i : n) :
+    (rl.rootPairingBaseEquiv i : rl.idx) = ⟨(rl.sRoot i, rl.sCoroot i), rl.sPair_mem_idx i⟩ := by
+  rfl
+
+@[simp] lemma rootPairingBase_cartanMatrix_eq :
+    letI e := rl.rootPairingBaseEquiv
+    rl.rootPairingBase.cartanMatrix.submatrix e e = rl.matrix := by
+  ext i j
+  apply FaithfulSMul.algebraMap_injective ℤ R
+  rw [submatrix_apply, RootPairing.Base.algebraMap_cartanMatrixIn_apply]
+  simp [toRootPairing_pairing]
+
 end Realisation
 
 end CartanMatrix
@@ -592,8 +644,8 @@ private lemma span_range_sRoot_eq_top :
   suffices (hA.toRealisation (hA.isUnit_map k).invertible).sRoot = Pi.basisFun k n by simp [this]
   ext; simp [toRealisation]
 
-/-- Given a field `k` of chacteristic zero and Cartan matrix `A`, this is a reduced
-crystrallographic root system over `k`. It carries a natural base with Cartan matrix `A`. -/
+/-- Given a field `k` of characteristic zero and Cartan matrix `A`, this is a reduced
+crystallographic root system over `k`. It carries a natural base with Cartan matrix `A`. -/
 def toRootPairing := (hA.toRealisation (hA.isUnit_map k).invertible).toRootPairing
 
 instance : (hA.toRootPairing k).IsReduced :=
@@ -609,5 +661,19 @@ instance : (hA.toRootPairing k).IsRootSystem :=
 lemma isIrreducible_toRootPairing [Nonempty n] (hA' : A.IsIndecomposable) :
     (hA.toRootPairing k).IsIrreducible :=
   CartanMatrix.Realisation.isIrreducible_toRootPairing _ (hA.span_range_sRoot_eq_top k) hA'
+
+/-- The base of the root system defined by a Cartan matrix. -/
+def rootPairingBase : (hA.toRootPairing k).Base :=
+  (hA.toRealisation (hA.isUnit_map k).invertible).rootPairingBase
+
+/-- The Cartan matrix indexing type indexes the elements of the support of the base. -/
+def rootPairingBaseEquiv :
+    n ≃ (hA.rootPairingBase k).support :=
+  (hA.toRealisation (hA.isUnit_map k).invertible).rootPairingBaseEquiv
+
+@[simp] lemma rootPairingBase_cartanMatrix_eq :
+    letI e := hA.rootPairingBaseEquiv k
+    (hA.rootPairingBase k).cartanMatrix.submatrix e e = A :=
+  (hA.toRealisation (hA.isUnit_map k).invertible).rootPairingBase_cartanMatrix_eq
 
 end Matrix.IsFiniteCartan

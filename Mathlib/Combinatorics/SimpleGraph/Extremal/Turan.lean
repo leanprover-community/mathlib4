@@ -80,13 +80,13 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
     simp [h.1.symm]
   · rintro (rfl | h) a b
     · simp [Fin.val_inj]
-    · rw [Nat.mod_eq_of_lt (a.2.trans_le h), Nat.mod_eq_of_lt (b.2.trans_le h), Fin.val_inj]
+    · rw [Nat.mod_eq_of_lt (a.isLt.trans_le h), Nat.mod_eq_of_lt (b.isLt.trans_le h), Fin.val_inj]
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff_isEmpty_copy_top_fin]
   by_contra! ⟨f⟩
   obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
-    (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
+    (⟨(f x).val % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
   rw [Fin.mk.injEq] at c
   exact absurd c <| f.toHom.map_adj d
 
@@ -247,7 +247,6 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
   convert G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Turán's theorem**, forward direction.
 
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
@@ -257,13 +256,13 @@ theorem nonempty_iso_turanGraph :
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
   use (Equiv.subtypeUnivEquiv mem_univ).symm.trans zm
   intro a b
-  simp_rw [turanGraph_adj, Equiv.trans_apply, Equiv.subtypeUnivEquiv_symm_apply]
+  rw [turanGraph_adj]
   have := zp ⟨a, mem_univ a⟩ ⟨b, mem_univ b⟩
   rw [← h.not_adj_iff_part_eq] at this
   rw [← not_iff_not, not_ne_iff, this, card_parts]
   rcases le_or_gt r (card V) with c | c
   · rw [min_eq_right c]; rfl
-  · have lc : ∀ x, zm ⟨x, _⟩ < card V := fun x ↦ (zm ⟨x, mem_univ x⟩).2
+  · have lc : ∀ x, zm ⟨x, _⟩ < card V := fun x ↦ (zm ⟨x, mem_univ x⟩).isLt
     rw [min_eq_left c.le, Nat.mod_eq_of_lt (lc a), Nat.mod_eq_of_lt (lc b),
       ← Nat.mod_eq_of_lt ((lc a).trans c), ← Nat.mod_eq_of_lt ((lc b).trans c)]; rfl
 
@@ -348,11 +347,10 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by lia,
       Nat.mul_add_mod_self_left]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma turanNumber_add : turanNumber (n + r) r = turanNumber n r + n * (r - 1) + r.choose 2 := by
   rw [← mul_right_inj' two_ne_zero]
-  simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges,
-    degree, neighborFinset_eq_filter, turanGraph, card_filter]
+  simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges, degree, neighborFinset_eq_filter,
+    card_filter, turanGraph_adj]
   conv_lhs =>
     enter [2, v]
     rw [Fin.sum_univ_eq_sum_range fun w ↦ if v % r ≠ w % r then 1 else 0, sum_range_add]

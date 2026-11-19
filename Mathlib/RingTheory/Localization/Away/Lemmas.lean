@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Localization.Submodule
 # More lemmas on localization away
 
 This file contains lemmas on localization away from an element requiring more imports.
-
 -/
 
 @[expose] public section
@@ -29,7 +28,7 @@ noncomputable def mulNumerator (s : Set R)
     {Rₜ : s → Type*} [∀ t, CommRing (Rₜ t)] [∀ t, Algebra R (Rₜ t)]
     [∀ t, IsLocalization.Away t.val (Rₜ t)]
     (p : (t : s) → Set (Rₜ t)) (x : (t : s) × p t) : R :=
-  x.1 * (IsLocalization.Away.sec x.1.1 x.2.1).1
+  x.1 * (IsLocalization.Away.sec x.1.val x.2.val).1
 
 lemma span_range_mulNumerator_eq_top {s : Set R}
     (hsone : Ideal.span s = ⊤) {Rₜ : s → Type*} [∀ t, CommRing (Rₜ t)] [∀ t, Algebra R (Rₜ t)]

@@ -380,27 +380,27 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
     { l // g ∘ₗ l = .id } ≃
       { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
   refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (f ∘ₗ fst R M P + l.1 ∘ₗ snd R M P) ?_).symm, ?_⟩
-    invFun := fun e ↦ ⟨e.1.symm ∘ₗ inr R M P, ?_⟩
+  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (f ∘ₗ fst R M P + l.val ∘ₗ snd R M P) ?_).symm, ?_⟩
+    invFun := fun e ↦ ⟨e.val.symm ∘ₗ inr R M P, ?_⟩
     left_inv := ?_
     right_inv := ?_ }
-  · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
+  · have h₁ : ∀ x, g (l.val x) = x := LinearMap.congr_fun l.property
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · intro x y e
-      simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
+      simp only [LinearMap.add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
       simpa [h₁, h₂] using congr(g $e)
     · intro x
-      obtain ⟨y, hy⟩ := (h (x - l.1 (g x))).mp (by simp [h₁, g.map_sub])
+      obtain ⟨y, hy⟩ := (h (x - l.val (g x))).mp (by simp [h₁, g.map_sub])
       exact ⟨⟨y, g x⟩, by simp [hy]⟩
-  · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
+  · have h₁ : ∀ x, g (l.val x) = x := LinearMap.congr_fun l.property
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · ext; simp
     · rw [LinearEquiv.eq_comp_toLinearMap_symm]
       ext <;> simp [h₁, h₂]
-  · rw [← LinearMap.comp_assoc, (LinearEquiv.eq_comp_toLinearMap_symm _ _).mp e.2.2]; rfl
+  · rw [← LinearMap.comp_assoc, (LinearEquiv.eq_comp_toLinearMap_symm _ _).mp e.property.2]; rfl
   · intro; ext; simp
   · rintro ⟨e, rfl, rfl⟩
     ext1
@@ -420,11 +420,11 @@ def Exact.splitInjectiveEquiv
     { l // l ∘ₗ f = .id } ≃
       { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
   refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (l.1.prod g) ?_), ?_⟩
-    invFun := fun e ↦ ⟨fst R M P ∘ₗ e.1, ?_⟩
+  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (l.val.prod g) ?_), ?_⟩
+    invFun := fun e ↦ ⟨fst R M P ∘ₗ e.val, ?_⟩
     left_inv := ?_
     right_inv := ?_ }
-  · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
+  · have h₁ : ∀ x, l.val (f x) = x := LinearMap.congr_fun l.property
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · intro x y e
@@ -433,14 +433,14 @@ def Exact.splitInjectiveEquiv
       rw [← sub_eq_zero, ← hz, ← h₁ z, hz, map_sub, e.1, sub_self, map_zero]
     · rintro ⟨x, y⟩
       obtain ⟨y, rfl⟩ := hg y
-      refine ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩
-  · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
+      refine ⟨f x + y - f (l.val y), by ext <;> simp [h₁, h₂]⟩
+  · have h₁ : ∀ x, l.val (f x) = x := LinearMap.congr_fun l.property
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · rw [LinearEquiv.eq_toLinearMap_symm_comp]
       ext <;> simp [h₁, h₂]
     · ext; simp
-  · rw [LinearMap.comp_assoc, (LinearEquiv.eq_toLinearMap_symm_comp _ _).mp e.2.1]; rfl
+  · rw [LinearMap.comp_assoc, (LinearEquiv.eq_toLinearMap_symm_comp _ _).mp e.property.1]; rfl
   · intro; ext; simp
   · rintro ⟨e, rfl, rfl⟩
     ext x <;> simp
@@ -451,17 +451,17 @@ theorem Exact.split_tfae' (h : Function.Exact f g) :
       Function.Surjective g ∧ ∃ l, l ∘ₗ f = LinearMap.id,
       ∃ e : N ≃ₗ[R] M × P, f = e.symm ∘ₗ LinearMap.inl R M P ∧ g = LinearMap.snd R M P ∘ₗ e] := by
   tfae_have 1 → 3
-  | ⟨hf, l, hl⟩ => ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).2⟩
+  | ⟨hf, l, hl⟩ => ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).property⟩
   tfae_have 2 → 3
-  | ⟨hg, l, hl⟩ => ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).2⟩
+  | ⟨hg, l, hl⟩ => ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).property⟩
   tfae_have 3 → 1
   | ⟨e, e₁, e₂⟩ => by
     have : Function.Injective f := e₁ ▸ e.symm.injective.comp LinearMap.inl_injective
-    exact ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
+    exact ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).property⟩⟩
   tfae_have 3 → 2
   | ⟨e, e₁, e₂⟩ => by
     have : Function.Surjective g := e₂ ▸ Prod.snd_surjective.comp e.surjective
-    exact ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
+    exact ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).property⟩⟩
   tfae_finish
 
 /-- Equivalent characterizations of split exact sequences. Also known as the **Splitting lemma**. -/

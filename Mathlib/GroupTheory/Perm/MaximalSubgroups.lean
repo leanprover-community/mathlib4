@@ -175,7 +175,7 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     convert one_add_one_eq_two <;>
     · apply le_antisymm
       · assumption
-      rw [one_le_encard_iff_nonempty, Set.nonempty_iff_ne_empty]
+      by_contra! h
       aesop
   have _ : Finite α := by
     rw [← ENat.card_lt_top, hα]
@@ -308,14 +308,14 @@ lemma compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
     · -- `k ∈ G`
       apply hG
       exact MulAction.fixingSubgroup_le_stabilizer _ _ hk
-  · -- `∃ (k : fixingSubgroup (Perm α) s), k • b = x`
-    suffices h : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) by
-      obtain ⟨k, hk⟩ := h.exists_smul_eq (⟨b, hb'⟩ : ofFixingSubgroup M s) ⟨x, hx'⟩
-      rw [← Subtype.coe_inj, val_smul] at hk
-      exact ⟨k, hk⟩
-    -- Prove pretransitivity…
-    rw [← is_one_pretransitive_iff]
-    apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
+  -- `∃ (k : fixingSubgroup (Perm α) s), k • b = x`
+  suffices h : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) by
+    obtain ⟨k, hk⟩ := h.exists_smul_eq (⟨b, hb'⟩ : ofFixingSubgroup M s) ⟨x, hx'⟩
+    rw [← Subtype.coe_inj, val_smul] at hk
+    exact ⟨k, hk⟩
+  -- Prove pretransitivity…
+  rw [← is_one_pretransitive_iff]
+  apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
 
 end MulAction.IsBlock
 
@@ -329,7 +329,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     {s : Set α} (h0 : s.Nonempty) (hα : s.ncard < sᶜ.ncard) :
     IsCoatom (stabilizer (Perm α) s) := by
   classical
-  have h1 : sᶜ.Nonempty := nonempty_iff_ne_empty.mpr (by aesop)
+  have h1 : sᶜ.Nonempty := ne_empty_iff_nonempty.mp (by aesop)
   have : Fintype α := Fintype.ofFinite α
   -- To prove that `stabilizer (Perm α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`

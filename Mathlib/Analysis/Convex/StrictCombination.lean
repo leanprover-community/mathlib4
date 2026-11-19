@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 This file proves lemmas about convex combinations of points in strictly convex sets and strictly
 convex spaces.
-
 -/
 
 public section

@@ -150,7 +150,7 @@ theorem Disjoint.map [OrderBot α] [OrderBot β] [BotHomClass F α β] [InfHomCl
 
 theorem IsCompl.map [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] {a b : α}
     (f : F) (h : IsCompl a b) : IsCompl (f a) (f b) :=
-  ⟨h.1.map _, h.2.map _⟩
+  ⟨h.disjoint.map _, h.codisjoint.map _⟩
 
 end BoundedLattice
 

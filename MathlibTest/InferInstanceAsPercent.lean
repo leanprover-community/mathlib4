@@ -3,7 +3,9 @@ Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Tests for `inferInstanceAs%`
@@ -12,6 +14,8 @@ Demonstrates that `inferInstanceAs%` fixes type leakage in synthesized instances
 when defining a typeclass instance for a type alias, the lambda binder domains
 use the alias type (not an internal unfolding).
 -/
+
+@[expose] public section
 
 set_option pp.funBinderTypes true
 
@@ -34,7 +38,7 @@ instance myNatInv_fixed : MyInv MyNat :=
 
 -- The binder type is `MyNat`:
 /--
-info: @[instance_reducible] def myNatInv_fixed : MyInv MyNat :=
+info: @[instance_reducible, expose] def myNatInv_fixed : MyInv MyNat :=
 { myInv := fun (a : MyNat) => (Nat.add a 0).succ }
 -/
 #guard_msgs in

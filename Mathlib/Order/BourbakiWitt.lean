@@ -144,12 +144,12 @@ lemma bot_eq_of_le_or_map_le {y : α} (le_map : ∀ x, x ≤ f x) (hy : IsExtrem
       · right; exact le_trans hyz (le_map z)
     · intro c hc
       refine ⟨(bot_isAdmissible le_map).cSup_mem _ (subset_trans hc (sep_subset _ _)), ?_⟩
-      · by_cases! h : ∀ z ∈ c, z ≤ y
-        · left; apply cSup_le c y h
-        · rcases h with ⟨z, hz, hzy⟩
-          have h' := Or.resolve_left (hc hz).2 hzy
-          right
-          apply le_trans h' (le_cSup _ _ hz)
+      by_cases! h : ∀ z ∈ c, z ≤ y
+      · left; apply cSup_le c y h
+      · rcases h with ⟨z, hz, hzy⟩
+        have h' := Or.resolve_left (hc hz).2 hzy
+        right
+        apply le_trans h' (le_cSup _ _ hz)
 
 lemma setOfPred_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
     IsAdmissible x f {y | IsExtremePt x f y} := by
@@ -159,7 +159,7 @@ lemma setOfPred_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
       intro y hy hyx
       exfalso
       exact lt_irrefl x (lt_of_le_of_lt ((bot_isAdmissible le_map).base_isLeast.2 hy) hyx)
-    · exact fun y h ↦ (bot_isAdmissible le_map).base_isLeast.2 h.1
+    · exact fun y h ↦ (bot_isAdmissible le_map).base_isLeast.2 h.mem_bot
   · rintro _ ⟨y, hy, rfl⟩
     refine ⟨map_mem_bot le_map hy.mem_bot, ?_⟩
     intro z hz hzy

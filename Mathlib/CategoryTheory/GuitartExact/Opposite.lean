@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 
 A `2`-square is Guitart exact iff the opposite (transposed) `2`-square
 is Guitart exact.
-
 -/
 
 @[expose] public section
@@ -36,7 +35,7 @@ variable {X₃ : C₃ᵒᵖ} {X₂ : C₂ᵒᵖ} (g : B.op.obj X₃ ⟶ R.op.obj
 namespace structuredArrowRightwardsOpEquivalence
 
 /-- Auxiliary definition for `structuredArrowRightwardsOpEquivalence`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def functor :
     (w.op.StructuredArrowRightwards g)ᵒᵖ ⥤
       w.CostructuredArrowDownwards g.unop where
@@ -52,6 +51,7 @@ def functor :
             ((CostructuredArrow.proj _ _).congr_map (StructuredArrow.w φ.unop)))
 
 /-- Auxiliary definition for `structuredArrowRightwardsOpEquivalence`. -/
+@[simps!, implicit_reducible]
 def inverse :
     w.CostructuredArrowDownwards g.unop ⥤
       (w.op.StructuredArrowRightwards g)ᵒᵖ where
@@ -68,7 +68,6 @@ def inverse :
 
 end structuredArrowRightwardsOpEquivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `w : TwoSquare T L R B`, and `g : B.op.obj X₃ ⟶ R.op.obj X₂`, this is
 the obvious equivalence of categories between
 `(w.op.StructuredArrowRightwards g)ᵒᵖ` and `w.CostructuredArrowDownwards g.unop`. -/
@@ -90,8 +89,6 @@ instance [w.GuitartExact] : w.op.GuitartExact := by
     isConnected_iff_of_equivalence (w.structuredArrowRightwardsOpEquivalence g)]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma guitartExact_op_iff : w.op.GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro
@@ -109,7 +106,7 @@ instance guitartExact_id' (F : C₁ ⥤ C₂) :
   apply guitartExact_id
 
 instance guitartExact_of_isEquivalence_of_isIso'
-    [T.IsEquivalence] [B.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
+    [T.IsEquivalence] [B.IsEquivalence] [IsIso w] : GuitartExact w := by
   rw [← guitartExact_op_iff]
   infer_instance
 

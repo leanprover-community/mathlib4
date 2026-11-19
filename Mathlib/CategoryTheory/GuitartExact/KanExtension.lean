@@ -35,7 +35,6 @@ The dual results for right Kan extensions are also obtained.
 ## References
 
 * https://ncatlab.org/nlab/show/exact+square
-
 -/
 
 @[expose] public section
@@ -61,10 +60,8 @@ obtained by the precomposition with `T` and the postcomposition with `w`. -/
 abbrev compTwoSquare (w : TwoSquare T L R B) : L.LeftExtension (T ⋙ F) :=
   LeftExtension.mk (B ⋙ E.right)
     (whiskerLeft T E.hom ≫ (associator _ _ _).inv ≫
-      whiskerRight w.natTrans _ ≫ (associator _ _ _).hom)
+      whiskerRight w _ ≫ (associator _ _ _).hom)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If `w : TwoSquare T L R B` is a Guitart exact square, and `E` is a left extension
 of `F` along `R`, then `E` is a pointwise left Kan extension of `F` along `R` at
 `B.obj X₃` iff `E.compTwoSquare w` is a pointwise left Kan extension
@@ -128,11 +125,9 @@ variable {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ �
 obtained by the precomposition with `L` and the postcomposition with `w`. -/
 abbrev compTwoSquare (w : TwoSquare T L R B) : T.RightExtension (L ⋙ F) :=
   RightExtension.mk (R ⋙ E.left)
-    ((associator _ _ _).inv ≫ whiskerRight w.natTrans _ ≫
+    ((associator _ _ _).inv ≫ whiskerRight w _ ≫
       (associator _ _ _).hom ≫ whiskerLeft L E.hom)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `w : TwoSquare T L R B` is a Guitart exact square, and `E` is a right extension
 of `F` along `B`, then `E` is a pointwise right Kan extension of `F` along `B` at
 `R.obj X₃` iff `E.compTwoSquare w` is a pointwise right Kan extension

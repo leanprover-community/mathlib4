@@ -112,7 +112,7 @@ theorem IsCountablyCompact.elim_directed_cover [Countable ι] [Nonempty ι]
     iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr sdiff_subset
   rcases hA hle with ⟨a, ha, hac⟩
   rcases mem_iUnion.mp (hAU ha) with ⟨k, hk⟩
-  exact closure_minimal (fun _ hx => hx.2) (hUo k).isClosed_compl
+  exact closure_minimal (s := A \ U k) (t := (U k)ᶜ) (fun _ hx => hx.2) (hUo k).isClosed_compl
     (hac.mono (iInf_le _ k)).mem_closure hk
 
 /-- A countably compact set has a finite subcover for any countable open cover. -/
@@ -212,7 +212,7 @@ theorem isCountablyCompact_iff_isCountablyCompact_univ :
   rw [Subtype.isCountablyCompact_iff, image_univ, Subtype.range_coe]
 
 theorem isCountablyCompact_univ_iff : IsCountablyCompact (univ : Set E) ↔ CountablyCompactSpace E :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isCountablyCompact_univ⟩
 
 theorem isCountablyCompact_iff_countablyCompactSpace :
     IsCountablyCompact A ↔ CountablyCompactSpace A :=
@@ -279,7 +279,7 @@ theorem isSeqCompact_iff_isSeqCompact_univ : IsSeqCompact A ↔ IsSeqCompact (un
   rw [Subtype.isSeqCompact_iff, image_univ, Subtype.range_coe]
 
 theorem isSeqCompact_univ_iff : IsSeqCompact (univ : Set E) ↔ SeqCompactSpace E :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isSeqCompact_univ⟩
 
 theorem isSeqCompact_iff_seqCompactSpace : IsSeqCompact A ↔ SeqCompactSpace A :=
   isSeqCompact_iff_isSeqCompact_univ.trans isSeqCompact_univ_iff
@@ -313,11 +313,11 @@ theorem IsCountablyCompact.exists_accPt_of_infinite
   let x : ℕ → E := (↑) ∘ f
   have hx_inj : Function.Injective x := Subtype.val_injective.comp f.injective
   obtain ⟨a, haA, hac⟩ :=
-    IsCountablyCompact.seq_clusterPt hA x (Eventually.of_forall (fun n => hBA (f n).2))
+    IsCountablyCompact.seq_clusterPt hA x (Eventually.of_forall (fun n => hBA (f n).property))
   refine ⟨a, haA, accPt_iff_clusterPt.2 <| ClusterPt.mono hac <| le_inf ?_ ?_⟩
   · exact tendsto_principal.mpr <| Nat.cofinite_eq_atTop ▸
       ((Set.finite_singleton a).preimage hx_inj.injOn).compl_mem_cofinite
-  · exact tendsto_principal.mpr <| Eventually.of_forall fun n => (f n).2
+  · exact tendsto_principal.mpr <| Eventually.of_forall fun n => (f n).property
 
 /-- In a `T₁` space, a set is countably compact if and only if every infinite subset has an
 accumulation point in the set. -/
