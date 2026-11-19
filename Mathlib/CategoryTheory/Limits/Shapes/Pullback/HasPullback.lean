@@ -204,7 +204,7 @@ W ⟶ Y
 X ⟶ Z
 ```
 -/
-@[to_dual
+@[to_dual (reorder := f₁ g₁, f₂ g₂, 11 14)
 /-- Given such a diagram, then there is a natural morphism `Y ⨿ₛ Z ⟶ W ⨿ₜ X`.
 
 ```
