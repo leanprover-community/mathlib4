@@ -180,7 +180,7 @@ theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCo
     G.Adj u v :=
   G'.adj_sub h
 
-lemma spanningCoe_le (G' : G.Subgraph) : G'.spanningCoe ≤ G := fun _ _ ↦ G'.3
+lemma spanningCoe_le (G' : G.Subgraph) : G'.spanningCoe ≤ G := fun _ _ ↦ G'.adj_sub
 
 theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G₂.Adj := by
   simp [Subgraph.spanningCoe]
@@ -263,6 +263,10 @@ def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
 theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
   Sym2.ind (fun _ _ ↦ G'.adj_sub)
 
+variable (G') in
+theorem disjoint_edgeSet_diagSet : Disjoint G'.edgeSet Sym2.diagSet :=
+  G.disjoint_edgeSet_diagSet.mono_left G'.edgeSet_subset
+
 @[simp]
 protected lemma mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.Adj v w := .rfl
 
@@ -279,6 +283,11 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
 @[simp]
 lemma edgeSet_spanningCoe (G' : G.Subgraph) : G'.spanningCoe.edgeSet = G'.edgeSet := by
   rfl
+
+variable (G') in
+@[simp]
+theorem fromEdgeSet_edgeSet : fromEdgeSet G'.edgeSet = G'.spanningCoe := by
+  simp [← edgeSet_inj, disjoint_edgeSet_diagSet]
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
@@ -406,7 +415,7 @@ theorem eq_bot_iff_verts_eq_empty (G' : G.Subgraph) : G' = ⊥ ↔ G'.verts = �
     funext₂ fun _ _ ↦ propext ⟨fun h' ↦ (h ▸ h'.fst_mem :), False.elim⟩⟩
 
 theorem ne_bot_iff_nonempty_verts (G' : G.Subgraph) : G' ≠ ⊥ ↔ G'.verts.Nonempty :=
-  G'.eq_bot_iff_verts_eq_empty.not.trans Set.nonempty_iff_ne_empty.symm
+  G'.eq_bot_iff_verts_eq_empty.not.trans Set.ne_empty_iff_nonempty
 
 @[simp]
 theorem sSup_adj {s : Set G.Subgraph} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -1280,11 +1289,11 @@ lemma le_induce_union : G'.induce s ⊔ G'.induce s' ≤ G'.induce (s ∪ s') :=
   · simp only [sup_adj, induce_adj, Set.mem_union]
     rintro v w (h | h) <;> simp [h]
 
-lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') := by
-  exact (sup_le_iff.mp le_induce_union).1
+lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') :=
+  (sup_le_iff.mp le_induce_union).1
 
-lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
-  exact (sup_le_iff.mp le_induce_union).2
+lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') :=
+  (sup_le_iff.mp le_induce_union).2
 
 variable (G') in
 theorem le_induce_iUnion (s : ι → Set V) : ⨆ i, G'.induce (s i) ≤ G'.induce (⋃ i, s i) :=

@@ -158,12 +158,12 @@ attribute [local instance] specializationOrder
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
 noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     TopologicalSpace.IrreducibleCloseds α ≃o α where
-  toFun s := s.2.genericPoint
+  toFun s := s.isIrreducible'.genericPoint
   invFun x := ⟨closure ({x} : Set α), isIrreducible_singleton.closure, isClosed_closure⟩
   left_inv s := by
     refine TopologicalSpace.IrreducibleCloseds.ext ?_
     simp only [IsIrreducible.genericPoint_closure_eq, TopologicalSpace.IrreducibleCloseds.coe_mk,
-      closure_eq_iff_isClosed.mpr s.3]
+      closure_eq_iff_isClosed.mpr s.isClosed']
     rfl
   right_inv x := isIrreducible_singleton.closure.isGenericPoint_genericPoint_closure.eq
       (by rw [closure_closure]; exact isGenericPoint_closure)
@@ -220,8 +220,8 @@ lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι �
   use H.genericPoint
   apply le_antisymm
   · simpa [h'.closure_subset_iff, h'.closure_eq] using!
-      continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
-  rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
+      continuous_subtypeVal.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
+  rw [← image_singleton, ← closure_image_closure continuous_subtypeVal,
     H.isGenericPoint_genericPoint_closure.def]
   refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
     (closure_mono ?_)
