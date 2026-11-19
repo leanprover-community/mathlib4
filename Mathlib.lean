@@ -2413,6 +2413,7 @@ public import Mathlib.Analysis.Real.Pi.Chudnovsky
 public import Mathlib.Analysis.Real.Pi.Irrational
 public import Mathlib.Analysis.Real.Pi.Leibniz
 public import Mathlib.Analysis.Real.Pi.Wallis
+public import Mathlib.Analysis.Real.RationalClearance
 public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Analysis.Seminorm
