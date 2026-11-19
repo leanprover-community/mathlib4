@@ -299,6 +299,11 @@ theorem continuousFunctionalCalculus (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y
     rw [snd_cfcAux]
     exact cfcₙHom_predicate _ _
 
+lemma cfcHom_eq_cfcAux [ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁]
+    (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) :
+    cfcHom ((hp₁ x).mpr hx) = cfcAux x hx :=
+  cfcHom_eq_of_continuous_of_map_id _ _ (continuous_cfcAux x hx) (cfcAux_id x hx)
+
 end Unitization
 
 section StandardInstances
