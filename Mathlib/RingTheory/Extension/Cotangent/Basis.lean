@@ -5,8 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
 
 /-!
@@ -89,7 +87,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : IsLocalization.Away D.gbar S := by
   refine .of_surjective_of_isScalarTower (n := 1) ?_ ?_ _ ?_ (by simpa using! D.hg)
   · refine .of_comp (g := algebraMap P.Ring D.T) ?_
-    convert! P.algebraMap_surjective
+    convert P.algebraMap_surjective
     ext x
     exact (IsScalarTower.algebraMap_apply _ D.T S x).symm
   · simp [T, Ideal.Quotient.mk_surjective]
@@ -141,7 +139,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     D.tensorCotangentHom (1 ⊗ₜ[D.T] Extension.Cotangent.mk x) =
-      .mk ⟨x.val, D.ker_presLeft_le x.2⟩ := by
+      .mk ⟨x.val, D.ker_presLeft_le x.property⟩ := by
   simp_rw +instances [tensorCotangentHom, LinearMap.liftBaseChange_tmul, one_smul, presLeft,
     Extension.Cotangent.map_mk, Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom,
     toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, toExtension_Ring,
@@ -380,7 +378,7 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
   have hJfg : P.ker.FG := by
     rw [P.ker_eq_ker_aeval_val]
     apply FinitePresentation.ker_fG_of_surjective
-    convert! P.algebraMap_surjective
+    convert P.algebraMap_surjective
     simp [P.algebraMap_eq]
   have hJ : J ≤ P.ker := by simp [J, Ideal.span_le, Set.range_subset_iff]
   suffices hJ : P.ker ≤ J ⊔ P.ker • P.ker by

@@ -5,10 +5,8 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
-public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 import Mathlib.Algebra.Order.Archimedean.Real.Basic
 import Mathlib.Logic.Equiv.Fin.Basic
@@ -145,7 +143,7 @@ theorem two_mul_extremalNumber_le_zarankiewicz_symm
   apply Finset.le_sup_of_le (b := G.bipartiteDoubleCover)
   · simp_rw [mem_filter, mem_univ, true_and]
     refine ⟨bipartiteDoubleCover_le, ?_⟩
-    contrapose! h
+    contrapose h
     refine completeBipartiteGraph_isContained_bipartiteDoubleCover.mp <|
       h.trans' ⟨Iso.toCopy ?_⟩
     exact completeBipartiteGraphCongr

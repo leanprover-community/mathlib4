@@ -382,7 +382,7 @@ def vecAlt0 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α := v ⟨(k : �
 /-- `vecAlt1 v` gives a vector with half the length of `v`, with
 only alternate elements (odd-numbered). -/
 def vecAlt1 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
-  v ⟨(k : ℕ) + k + 1, hm.symm ▸ Nat.add_succ_lt_add k.2 k.2⟩
+  v ⟨(k : ℕ) + k + 1, hm.symm ▸ Nat.add_succ_lt_add k.isLt k.isLt⟩
 
 section bits
 

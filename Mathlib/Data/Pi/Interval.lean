@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Basic
 public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals in a pi type

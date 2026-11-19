@@ -72,7 +72,7 @@ def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
           exact h₁.fst
         · injection mem_unique h₁ (al _ h₃)
       cases e : (p m).get pm
-      · suffices ∀ᵉ k ≤ m, false ∈ p k from IH _ ⟨rfl, this⟩ fun n h => this _ (le_of_lt_succ h)
+      · suffices ∀ k ≤ m, false ∈ p k from IH _ ⟨rfl, this⟩ fun n h => this _ (le_of_lt_succ h)
         intro n h
         rcases h.lt_or_eq_dec with h | h
         · exact al _ h
@@ -85,13 +85,13 @@ end Rfind
 /-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
 Returns a `Part`. -/
 def rfind (p : ℕ →. Bool) : Part ℕ :=
-  ⟨_, fun h => (rfindX p h).1⟩
+  ⟨_, fun h => (rfindX p h).val⟩
 
 theorem rfind_spec {p : ℕ →. Bool} {n : ℕ} (h : n ∈ rfind p) : true ∈ p n :=
-  h.snd ▸ (rfindX p h.fst).2.1
+  h.snd ▸ (rfindX p h.fst).property.1
 
 theorem rfind_min {p : ℕ →. Bool} {n : ℕ} (h : n ∈ rfind p) : ∀ {m : ℕ}, m < n → false ∈ p m :=
-  @(h.snd ▸ @((rfindX p h.fst).2.2))
+  @(h.snd ▸ @((rfindX p h.fst).property.2))
 
 @[simp]
 theorem rfind_dom {p : ℕ →. Bool} :

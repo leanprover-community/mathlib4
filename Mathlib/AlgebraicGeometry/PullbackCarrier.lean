@@ -23,7 +23,6 @@ topological space of `pullback f g`, i.e. the fiber product `X ×[S] Y`.
   `f x = s = g y`, there exists `z : X ×[S] Y` lying above `x` and `y`.
 
 We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
-
 -/
 
 @[expose] public section
@@ -143,7 +142,6 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
     (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y)
     (SpecMap_tensorInl_fromSpecResidueField _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.fst f g (T.SpecTensorTo p) = T.x := by
@@ -151,7 +149,6 @@ lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
   rw [← Scheme.Hom.comp_apply]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma snd_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.snd f g (T.SpecTensorTo p) = T.y := by
@@ -349,7 +346,6 @@ lemma range_snd_comp :
     Set.range (pullback.snd f g ≫ g) = Set.range f ∩ Set.range g := by
   rw [← pullback.condition, range_fst_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ : X ⟶ X')
     (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
@@ -390,7 +386,8 @@ lemma pullbackComparison_forget_surjective {X Y S : Scheme.{u}} (f : X ⟶ S) (g
     Function.Surjective (pullbackComparison forget f g) := by
   refine .of_comp_left (fun x ↦ ?_) <|
     injective_of_mono (Types.pullbackIsoPullback (forget.map f) (forget.map g)).hom
-  obtain ⟨z, h1, h2⟩ := Pullback.exists_preimage_pullback (f := f) (g := g) x.1.1 x.1.2 x.2
+  obtain ⟨z, h1, h2⟩ :=
+    Pullback.exists_preimage_pullback (f := f) (g := g) x.val.1 x.val.2 x.property
   use z
   ext
   · simp only [Function.comp_apply, Types.pullbackIsoPullback_hom_fst]
@@ -419,7 +416,8 @@ lemma image_preimage_eq_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X} {sn
     {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (s : Set X) :
     snd.base '' fst.base ⁻¹' s = g.base ⁻¹' f.base '' s := by
   refine subset_antisymm ?_ (fun x hx ↦ ?_)
-  · rw [Set.image_subset_iff, ← Set.preimage_comp, ← TopCat.coe_comp, ← Hom.comp_base, ← h.1.1]
+  · rw [Set.image_subset_iff, ← Set.preimage_comp, ← TopCat.coe_comp, ← Hom.comp_base,
+      ← h.toCommSq.w]
     rw [Hom.comp_base, TopCat.coe_comp, ← Set.image_subset_iff, Set.image_comp]
     exact Set.image_mono (Set.image_preimage_subset _ _)
   · obtain ⟨y, hy, heq⟩ := hx

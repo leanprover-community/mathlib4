@@ -7,11 +7,10 @@ module
 
 public import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Composition.Lemmas
-public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 public import Mathlib.Probability.Kernel.Deterministic
+public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
 /-!
-
 # Posterior kernel
 
 For `μ : Measure Ω` (called prior measure), seen as a measure on a parameter, and a kernel
@@ -48,7 +47,6 @@ and data can be recovered from the distribution of the data and the posterior.
 
 This notation emphasizes that the posterior is a kind of inverse of `κ`, which we would want to
 denote `κ†`, but we have to also specify the measure `μ`.
-
 -/
 
 @[expose] public section
@@ -268,7 +266,7 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
 lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ ω ∂μ, ∀ᵐ x ∂(κ ∘ₘ μ),
       (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
-  convert!
+  convert
     Measure.ae_ae_of_ae_prod
       (rnDeriv_posterior_ae_prod h_ac) -- much faster than `exact`
          -- much faster than `exact`

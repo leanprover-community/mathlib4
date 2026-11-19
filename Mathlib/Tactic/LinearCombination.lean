@@ -33,7 +33,6 @@ Lastly, calls a normalization tactic on this target.
 ## References
 
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
-
 -/
 
 public meta section
@@ -158,7 +157,7 @@ partial def expandLinearCombo (ty : Option Expr) (stx : Syntax.Term) :
 def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
-  let eType ← withReducible <| (← Tactic.getMainGoal).getType'
+  let eType ← withReducible (← Tactic.getMainGoal).getType'
   let (goalRel, ty, _) ← eType.ineq?
   -- build the specified linear combination of the hypotheses
   let (hypRel, p) ← match input with

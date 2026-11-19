@@ -5,9 +5,8 @@ Authors: Kim Morrison, Oleksandr Manzyuk
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Basic
-public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!
 # The category of bimodule objects over a pair of monoid objects.
@@ -197,7 +196,6 @@ section
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Left action for the tensor product of two bimodules. -/
 noncomputable def actLeft : R.X ⊗ X P Q ⟶ X P Q :=
   (PreservesCoequalizer.iso (tensorLeft R.X) _ _).inv ≫
@@ -461,7 +459,6 @@ noncomputable def hom :
       slice_rhs 3 5 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
       simp)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem hom_left_act_hom' :
     ((P.tensorBimod Q).tensorBimod L).actLeft ≫ hom P Q L =
@@ -488,7 +485,6 @@ theorem hom_left_act_hom' :
   slice_rhs 3 4 => erw [whisker_exchange]
   monoidal
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem hom_right_act_hom' :
     ((P.tensorBimod Q).tensorBimod L).actRight ≫ hom P Q L =
@@ -555,7 +551,6 @@ noncomputable def inv :
       slice_rhs 3 4 => rw [associator_inv_naturality_middle]
       monoidal)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
   dsimp [hom, homAux, inv, invAux]
@@ -571,7 +566,6 @@ theorem hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
   slice_rhs 2 3 => rw [Category.comp_id]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem inv_hom_id : inv P Q L ≫ hom P Q L = 𝟙 _ := by
   dsimp [hom, homAux, inv, invAux]
@@ -626,7 +620,6 @@ theorem inv_hom_id : inv P ≫ hom P = 𝟙 _ := by
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem hom_left_act_hom' :
     ((regular R).tensorBimod P).actLeft ≫ hom P = (R.X ◁ hom P) ≫ P.actLeft := by
@@ -638,7 +631,6 @@ theorem hom_left_act_hom' :
   slice_rhs 1 2 => rw [← whiskerLeft_comp, coequalizer.π_desc]
   rw [Iso.inv_hom_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem hom_right_act_hom' :
     ((regular R).tensorBimod P).actRight ≫ hom P = (hom P ▷ S.X) ≫ P.actRight := by
@@ -688,7 +680,6 @@ theorem inv_hom_id : inv P ≫ hom P = 𝟙 _ := by
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem hom_left_act_hom' :
     (P.tensorBimod (regular S)).actLeft ≫ hom P = (R.X ◁ hom P) ≫ P.actLeft := by
@@ -700,7 +691,6 @@ theorem hom_left_act_hom' :
   slice_rhs 1 2 => rw [← whiskerLeft_comp, coequalizer.π_desc]
   rw [Iso.inv_hom_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem hom_right_act_hom' :
     (P.tensorBimod (regular S)).actRight ≫ hom P = (hom P ▷ S.X) ≫ P.actRight := by
@@ -745,14 +735,12 @@ noncomputable def rightUnitorBimod {X Y : Mon C} (M : Bimod X Y) : M.tensorBimod
       inv_hom_id := RightUnitorBimod.inv_hom_id M } (RightUnitorBimod.hom_left_act_hom' M)
     (RightUnitorBimod.hom_right_act_hom' M)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem whiskerLeft_id_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerLeft M (𝟙 N) = 𝟙 (M.tensorBimod N) := by
   ext
   apply Limits.coequalizer.hom_ext
   simp [TensorBimod.X]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem id_whiskerRight_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerRight (𝟙 M) N = 𝟙 (M.tensorBimod N) := by
   ext

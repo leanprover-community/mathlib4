@@ -5,10 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-public import Mathlib.FieldTheory.Finite.Trace
-public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Data.ZMod.Units
+public import Mathlib.FieldTheory.Finite.Trace
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 
 /-!
 # Additive characters of finite rings and fields
@@ -83,7 +82,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
 /-- When `R` is a field `F`, then a nontrivial additive character is primitive -/
 theorem IsPrimitive.of_ne_one {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : ψ ≠ 1) :
     IsPrimitive ψ :=
-  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using! congr_arg (mulShift · a⁻¹) h
+  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using! congr(mulShift $h a⁻¹)
 
 /-- If `r` is not a unit, then `e.mulShift r` is not primitive. -/
 lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
@@ -213,12 +212,12 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
-  let pp := p.toPNat hp.1.pos
+  let pp := p.toPNat hp.out.pos
   have hp₂ : ¬ringChar F' ∣ p := by
     rcases CharP.char_is_prime_or_zero F' (ringChar F') with hq | hq
-    · exact mt (Nat.Prime.dvd_iff_eq hp.1 (Nat.Prime.ne_one hq)).mp h.symm
+    · exact mt (Nat.Prime.dvd_iff_eq hp.out (Nat.Prime.ne_one hq)).mp h.symm
     · rw [hq]
-      exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
+      exact fun hf => Nat.Prime.ne_zero hp.out (zero_dvd_iff.mp hf)
   let ψ := primitiveZModChar pp F' (neZero_iff.mp (NeZero.of_not_dvd F' hp₂))
   letI : Algebra (ZMod p) F := ZMod.algebra _ _
   let ψ' := ψ.char.compAddMonoidHom (Algebra.trace (ZMod p) F).toAddMonoidHom
