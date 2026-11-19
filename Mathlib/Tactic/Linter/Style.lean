@@ -412,21 +412,20 @@ namespace Style.misnamedCoercions
 /-- Checks if a lemma `name` is (very likely) a misnamed coercion lemma:
 if its name contains the component `coe`, but the statement involves no such declaration,
 most likely it needs renaming.
-Upon error, return a message describing more details (such as, all relevant constants
-that *do* occur in the lemma). -/
-public def isMisnamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
+If misnamed, return all coercions that are referenced in the lemma. -/
+public def isMisnamedCoercion (name : Name) : MetaM <| Option <| Array Name := do
   -- Does the final name component contain a part `coe` (or `coe'`)?
-  let .str _ s := name | return (false, "")
+  let .str _ s := name | return none
   let parts := s.split "_" |>.toList
-  unless parts.contains "coe" || parts.contains "coe'" do return (false, "")
+  unless parts.contains "coe" || parts.contains "coe'" do return none
   -- Does the declaration reference a constant called `coe`? If so, we are fine.
   let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
-  let usedCoercions ← usedConstants.filterM (fun c ↦ return (← getCoeFnInfo? c).isSome)
-  let coercionConstants := usedConstants.filter
+  let hasCoeConstants := usedConstants.any
     fun c ↦ (c matches .str _ "coe") || c == `UniformSpace.Completion.coe'
-  if coercionConstants.isEmpty then return (true,
-    m!"This declaration statement references the coercions(s) {usedCoercions}")
-  return (false, "")
+  if !hasCoeConstants then
+    let usedCoercions ← usedConstants.filterM (fun c ↦ return (← getCoeFnInfo? c).isSome)
+    return some usedCoercions
+  return none
 
 /-- Linter that checks for lemmas whose name contains the string "coe",
 but which don't reference any declaration named like this: most likely,
@@ -441,12 +440,13 @@ these are coercion lemmas violating mathlib's naming convention. -/
         isDeprecated env declName then
       return none
     match ← isMisnamedCoercion declName with
-    | (true, details) =>
+    | some usedCoercions =>
       return m!"The lemma `{.ofConstName declName true}` contains 'coe' in its name, \
-        but does not involve any constant named \"coe\": {details}.\n\
+        but does not involve any constant named `coe`: \
+        This declaration statement references the coercions(s) {usedCoercions}.\n\
         Most likely, this lemma is a misnamed coercion lemma: \
         note that it should be named according to the coercion used."
-    | (false, _) => return none
+    | none => return none
 
 end Style.misnamedCoercions
 
