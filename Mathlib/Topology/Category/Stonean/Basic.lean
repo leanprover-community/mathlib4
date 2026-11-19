@@ -38,7 +38,6 @@ can be lifted along epimorphisms).
 
 The category `Stonean` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section
@@ -202,7 +201,7 @@ namespace CompHaus
   "constructive" witness to the fact that `CompHaus` has enough projectives. -/
 noncomputable
 def presentation (X : CompHaus) : Stonean where
-  toTop := (projectivePresentation X).p.1
+  toTop := (projectivePresentation X).p.toTop
   prop := instExtremallyDisconnectedCarrierToTopTrueOfProjective X.projectivePresentation.p
 
 /-- The morphism from `presentation X` to `X`. -/

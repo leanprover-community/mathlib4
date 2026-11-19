@@ -12,7 +12,6 @@ public import Mathlib.Probability.Process.HittingTime
 import Mathlib.Tactic.AdaptationNote
 
 /-!
-
 # Doob's upcrossing estimate
 
 Given a discrete real-valued submartingale $(f_n)_{n \in \mathbb{N}}$, denoting by $U_N(a, b)$ the
@@ -54,7 +53,6 @@ convergence theorems.
 ### References
 
 We mostly follow the proof from [Kallenberg, *Foundations of modern probability*][kallenberg2021]
-
 -/
 
 @[expose] public section
@@ -69,7 +67,6 @@ namespace MeasureTheory
 variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 /-!
-
 ## Proof outline
 
 In this section, we will denote by $U_N(a, b)$ the number of upcrossings of $(f_n)$ from below $a$
@@ -129,7 +126,6 @@ $$
 as required.
 
 To obtain the general case, we simply apply the above to $((f_n - a)^+)_n$.
-
 -/
 
 
@@ -442,10 +438,9 @@ theorem upperCrossingTime_eq_of_upcrossingsBefore_lt (hab : a < b)
 
 theorem upcrossingsBefore_le (f : ℕ → Ω → ℝ) (ω : Ω) (hab : a < b) :
     upcrossingsBefore a b f N ω ≤ N := by
-  by_cases hN : N = 0
-  · subst hN
-    rw [upcrossingsBefore_zero]
-  · refine csSup_le ⟨0, zero_lt_iff.2 hN⟩ fun n (hn : _ < N) => ?_
+  obtain rfl | hN := eq_or_ne N 0
+  · rw [upcrossingsBefore_zero]
+  · refine csSup_le ⟨0, hN.pos⟩ fun n (hn : _ < N) => ?_
     by_contra hnN
     exact hn.ne (upperCrossingTime_eq_of_bound_le hab (not_le.1 hnN).le)
 
@@ -553,8 +548,8 @@ theorem sub_eq_zero_of_upcrossingsBefore_lt (hab : a < b) (hn : upcrossingsBefor
 theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
     (b - a) * upcrossingsBefore a b f N ω ≤
     ∑ k ∈ Finset.range N, upcrossingStrat a b f N k ω * (f (k + 1) - f k) ω := by
-  by_cases hN : N = 0
-  · simp [hN]
+  obtain rfl | hN := eq_or_ne N 0
+  · simp
   simp_rw [upcrossingStrat, Finset.sum_mul, ←
     Set.indicator_mul_left _ _ (fun x ↦ (f (x + 1) - f x) ω), Pi.one_apply, Pi.sub_apply, one_mul]
   rw [Finset.sum_comm]
@@ -584,7 +579,7 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
             (stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -
               stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) ω) := by
         gcongr ∑ k ∈ _, ?_ with i hi
-        refine le_sub_of_le_upcrossingsBefore (zero_lt_iff.2 hN) hab ?_
+        refine le_sub_of_le_upcrossingsBefore hN.pos hab ?_
         rwa [Finset.mem_range] at hi
       _ ≤ ∑ k ∈ Finset.range N,
           (stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -
@@ -688,7 +683,6 @@ theorem Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part [IsFin
       (integral_nonneg fun ω => posPart_nonneg _)
 
 /-!
-
 ### Variant of the upcrossing estimate
 
 Now, we would like to prove a variant of the upcrossing estimate obtained by taking the supremum
@@ -709,14 +703,13 @@ $$
 $$
 $U_N(a, b)$ is measurable as $\{U_N(a, b) < N\}$ is a measurable set since $U_N(a, b)$ is a
 stopping time.
-
 -/
 
 
 theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
     ∑ i ∈ Finset.Ico 1 (N + 1), {n | upperCrossingTime a b f N n ω < N}.indicator 1 i := by
-  by_cases hN : N = 0
-  · simp [hN]
+  obtain rfl | hN := eq_or_ne N 0
+  · simp
   rw [← Finset.sum_Ico_consecutive _ (Nat.succ_le_succ zero_le)
     (Nat.succ_le_succ (upcrossingsBefore_le f ω hab))]
   have h₁ : ∀ k ∈ Finset.Ico 1 (upcrossingsBefore a b f N ω + 1),
@@ -725,7 +718,7 @@ theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
     rw [Finset.mem_Ico] at hk
     rw [Set.indicator_of_mem]
     · rfl
-    · exact upperCrossingTime_lt_of_le_upcrossingsBefore (zero_lt_iff.2 hN) hab
+    · exact upperCrossingTime_lt_of_le_upcrossingsBefore hN.pos hab
         (Nat.lt_succ_iff.1 hk.2)
   have h₂ : ∀ k ∈ Finset.Ico (upcrossingsBefore a b f N ω + 1) (N + 1),
       {n : ℕ | upperCrossingTime a b f N n ω < N}.indicator 1 k = 0 := by

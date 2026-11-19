@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
-
 # Unramified morphisms
 
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.
@@ -32,7 +31,6 @@ under `R`-algebra homomorphisms and compositions.
 
 We show that unramified is stable under algebra isomorphisms, composition and
 localization at an element.
-
 -/
 
 public section
@@ -109,7 +107,7 @@ theorem iff_comp_injective_of_small [Small.{w} A] :
       exact Ideal.cotangentIdeal_square _
     · ext x
       apply RingHom.kerLift_injective (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
-      simpa using congr($(f₁.2.trans f₂.2.symm) x)
+      simpa using congr($(f₁.property.trans f₂.property.symm) x)
 
 /-- A version without stray universes that is more easy to rewrite with. -/
 theorem iff_comp_injective :

@@ -14,7 +14,6 @@ If `F : J → Type max v u` (with `J : Type v`), we show that the coproduct
 of `F` exists in `Type max v u` and identifies to the sigma type `Σ j, F j`.
 Similarly, the binary coproduct of two types `X` and `Y` identifies to
 `X ⊕ Y`, and the initial object of `Type u` if `PEmpty`.
-
 -/
 
 @[expose] public section
@@ -310,7 +309,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
           forall_exists_index]
         intro y e
         have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
-        rw [disjoint_iff.mp h₃.1] at this
+        rw [disjoint_iff.mp h₃.disjoint] at this
         exact this.elim
       · rintro T _ _ m rfl rfl
         ext x

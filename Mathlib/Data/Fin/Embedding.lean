@@ -24,7 +24,6 @@ This file defines embeddings between `Fin n` and other types.
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `Embedding`, add `m` on `i` on the right,
   generalizes `Fin.succ`;
 * `Fin.natAddEmb n i` : `Fin.natAdd` as an `Embedding`, adds `n` on `i` on the left;
-
 -/
 
 @[expose] public section
@@ -150,7 +149,7 @@ def natAddCastLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
 @[deprecated (since := "2026-11-06")] alias natAdd_castLEEmb_apply_val := natAddCastLEEmb_apply_val
 
 lemma range_natAddCastLEEmb {n m : ℕ} (hmn : n ≤ m) :
-    Set.range (natAddCastLEEmb hmn) = {i | m - n ≤ i.1} := by
+    Set.range (natAddCastLEEmb hmn) = {i | m - n ≤ i.val} := by
   simp only [natAddCastLEEmb, Nat.sub_le_iff_le_add]
   ext y
   exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; lia,

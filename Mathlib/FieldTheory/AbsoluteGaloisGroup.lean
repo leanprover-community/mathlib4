@@ -26,7 +26,6 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
 
 ## Tags
 field, algebraic closure, galois group, abelianization
-
 -/
 
 @[expose] public noncomputable section
@@ -76,7 +75,7 @@ noncomputable def absoluteGaloisGroup.mapOfAlgebra : G_K L →ₜ* G_K K :=
         use s.image f
         rw [adjoin_map, adjoin_adjoin_right, Finset.coe_image]
       · exact f.injective <| ((σ.restrictScalarsHom K).restrictNormal_commutes
-          (AlgebraicClosure K) x).trans <| hσ ⟨f x, subset_adjoin _ _ ⟨_, x.2, rfl⟩⟩ }
+          (AlgebraicClosure K) x).trans <| hσ ⟨f x, subset_adjoin _ _ ⟨_, x.property, rfl⟩⟩ }
 
 end
 

@@ -47,7 +47,6 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 ## References
 
 We follow [Wielandt-1964].
-
 -/
 
 @[expose] public section
@@ -361,9 +360,15 @@ theorem IsBlock.image {H Y : Type*} [SMul H Y] {φ : G → H} (j : X →ₑ[φ] 
   exact fun g₁ g₂ hg ↦ disjoint_image_of_injective hj <| hB <| ne_of_apply_ne _ hg
 
 @[to_additive]
-theorem IsBlock.subtype_val_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
+theorem IsBlock.subtypeVal_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
     IsBlock G (Subtype.val ⁻¹' B : Set C) :=
   hB.preimage C.inclusion
+
+@[deprecated (since := "2026-11-10")]
+alias _root_.AddAction.IsBlock.subtype_val_preimage := _root_.AddAction.IsBlock.subtypeVal_preimage
+
+@[deprecated (since := "2026-11-10")]
+alias IsBlock.subtype_val_preimage := IsBlock.subtypeVal_preimage
 
 @[to_additive]
 theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
@@ -521,7 +526,7 @@ theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
   rintro g ⟨-, ⟨-, ⟨h₁, rfl⟩, h⟩, h₂, rfl⟩
   suffices g ∈ H by
     rw [← Subgroup.coe_mk H g this, ← H.toSubmonoid.smul_def, smul_orbit (⟨g, this⟩ : H) a]
-  rw [← mul_mem_cancel_left h₂⁻¹.2, ← mul_mem_cancel_right h₁.2]
+  rw [← mul_mem_cancel_left h₂⁻¹.property, ← mul_mem_cancel_right h₁.property]
   apply hH
   simpa only [mem_stabilizer_iff, InvMemClass.coe_inv, mul_smul, inv_smul_eq_iff]
 
@@ -558,7 +563,7 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
   · intro hg
     obtain ⟨-, ⟨b, rfl⟩, h⟩ := hg.symm ▸ mem_orbit_self a
     simp_rw [H.toSubmonoid.smul_def, ← mul_smul, ← mem_stabilizer_iff] at h
-    exact (mul_mem_cancel_right b.2).mp (hH h)
+    exact (mul_mem_cancel_right b.property).mp (hH h)
   · intro hg
     rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Submonoid.smul_def (S := H.toSubmonoid)]
     apply smul_orbit (G := H)

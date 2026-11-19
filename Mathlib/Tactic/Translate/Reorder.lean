@@ -48,7 +48,6 @@ The universe reordering is always inferred automatically, using `guessUnivReorde
 Permutation are stored as their disjoint cycle representation (`Permutation`).
 This allows efficiently permuting an array/list of arguments/universes
 (`Permutation.permute!`/`Permutation.permuteList!`).
-
 -/
 
 public meta section
@@ -63,7 +62,7 @@ namespace Permutation
 
 /-- Permute an array of arguments using the given reorder. -/
 def permute! {α} [Inhabited α] (c : Permutation) : Array α → Array α :=
-  c.foldl (cyclicPermute! · ·.1)
+  c.foldl (cyclicPermute! · ·.val)
 where
   /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
@@ -83,11 +82,11 @@ def permuteList! {α} [Inhabited α] (p : Permutation) (us : List α) : List α 
 
 /-- Return the inverse permutation. -/
 def reverse (c : Permutation) : Permutation :=
-  c.map (⟨·.1.reverse, by grind⟩)
+  c.map (⟨·.val.reverse, by grind⟩)
 
 /-- Return the minimum size of an array on which the permutation is valid. -/
 def range (p : Permutation) : Nat :=
-  p.iter.flatMap (·.1.iter) |>.map (· + 1) |>.fold max 0
+  p.iter.flatMap (·.val.iter) |>.map (· + 1) |>.fold max 0
 
 /-- Two permutations are considered equal if they permute in the same way. -/
 def beq (p₁ p₂ : Permutation) : Bool :=
@@ -125,7 +124,8 @@ decreasing_by
 where
   /-- Compute where `ArgReorder.permute!` sends the `n`-th element in an array. -/
   permuteSingle (r : ArgReorder) (n : Nat) : Nat :=
-    r.perm.findSome? (fun cycle ↦ getCycleSuccessor n (cycle.1.head (by grind)) cycle.1) |>.getD n
+    r.perm.findSome? (fun cycle ↦ getCycleSuccessor n (cycle.val.head (by grind)) cycle.val)
+      |>.getD n
   /-- Return the successor of `n` in a cycle, where `head` is the head of the cycle list. -/
   getCycleSuccessor (n head : Nat) : List Nat → Option Nat
     | [] => none
@@ -134,7 +134,7 @@ where
 /-- Return the minimum size of an array on which the given reorder is valid. -/
 def range (r : ArgReorder) : Nat :=
   r.argReorders.foldl (max · <| ·.1 + 1) <|
-    r.perm.iter.flatMap (·.1.iter) |>.map (· + 1) |>.fold max 0
+    r.perm.iter.flatMap (·.val.iter) |>.map (· + 1) |>.fold max 0
 
 /-- Two reorders are considered equal if all permutations are the same. -/
 partial def beq (r₁ r₂ : ArgReorder) : Bool :=
@@ -146,7 +146,7 @@ instance : BEq ArgReorder := ⟨beq⟩
 
 /-- Print an `ArgReorder`, representing the arguments by their index. -/
 def toString (r : ArgReorder) : String :=
-  let perm := r.perm.map (" ".intercalate <| ·.1.map (s!"{· + 1}"))
+  let perm := r.perm.map (" ".intercalate <| ·.val.map (s!"{· + 1}"))
   let argReorders := r.argReorders.map (fun x ↦ s!"{x.1 + 1} ({x.2.toString})")
   s!"{", ".intercalate (perm ++ argReorders.toList)}"
 decreasing_by
@@ -239,7 +239,7 @@ private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Permutation :=
       map := map.set! j none
       if j' = i then break
       j := j'
-      cycle := ⟨cycle.1 ++ [j.val], by grind⟩
+      cycle := ⟨cycle.val ++ [j.val], by grind⟩
     perm := cycle :: perm
   return perm
 
@@ -397,7 +397,7 @@ partial def elabReorder (stx : TSyntax `translateReorder) (argNames : Array Name
             elabReorder argReorder argNames xs m!"{args[arg]!}"
         argReorders := argReorders.push (arg, reorder)
     -- Check that the cycles are disjoint
-    _ ← perm.iter.flatMap (·.1.iter) |>.foldM (init := ({} : Std.HashSet Nat)) fun s n ↦ do
+    _ ← perm.iter.flatMap (·.val.iter) |>.foldM (init := ({} : Std.HashSet Nat)) fun s n ↦ do
       let (contains, s) := s.containsThenInsert n
       if contains then throwError
         "Please remove the duplicate entries from the disjoint cycle representation.\n\
