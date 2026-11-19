@@ -183,7 +183,10 @@ The following square commutes:
 Proj ℬ         ⟶ Proj 𝒜₁
     ^                   ^
     |                   |
-Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
+Proj ℬ          ⟶ Proj 𝒜
+   ^                   ^
+   |                   |
+Spec B[f(s)⁻¹]₀ ⟶ Spec A[s⁻¹]₀
 ```
 -/
 @[reassoc] theorem awayι_comp_map {i : ℕ} (hi : 0 < i) (s : A) (hs : s ∈ 𝒜 i) :
