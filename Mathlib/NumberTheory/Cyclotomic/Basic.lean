@@ -817,7 +817,8 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
         ← map_mul, hw, ← IsScalarTower.algebraMap_apply]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
-      refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.property, b.2.property⟩⟩, ?_⟩
+      refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2,
+        mul_mem_nonZeroDivisors.2 ⟨a.2.property, b.2.property⟩⟩, ?_⟩
       rw [map_mul, add_mul, ← mul_assoc, ha,
         mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
       simp only [map_add, map_mul]

@@ -399,7 +399,8 @@ def GaloisCoinsertion.setIsotypicComponents :
     GaloisCoinsertion (α := Set (isotypicComponents R M)) (β := fullyInvariantSubmodule R M)
       (fun s ↦ ⨆ c ∈ s, ⟨c, .of_mem_isotypicComponents c.property⟩) fun m ↦ {c | c.val ≤ m} :=
   GaloisConnection.toGaloisCoinsertion (fun _ _ ↦ iSup₂_le_iff) fun s c hc ↦ of_not_not fun hcs ↦
-    (bot_lt_isotypicComponents c.property).ne' <| (sSupIndep_isotypicComponents R M c.property).eq_bot_of_le <|
+    (bot_lt_isotypicComponents c.property).ne' <|
+    (sSupIndep_isotypicComponents R M c.property).eq_bot_of_le <|
     hc.trans <| by
       simp_rw [CompleteSublattice.coe_iSup, iSup₂_le_iff]
       exact fun c hc ↦ le_sSup ⟨c.property, Subtype.coe_ne_coe.mpr (ne_of_mem_of_not_mem hc hcs)⟩
@@ -494,7 +495,8 @@ algebras of its isotypic components. -/
 noncomputable def endAlgEquiv :
     Module.End R M ≃ₐ[R₀] Π c : isotypicComponents R M, Module.End R c.val :=
   ((sSupIndep_iff _).mp <| sSupIndep_isotypicComponents R M).algEquiv R₀
-    ((sSup_eq_iSup' _).symm.trans <| sSup_isotypicComponents R M) (.of_mem_isotypicComponents ·.property)
+    ((sSup_eq_iSup' _).symm.trans <| sSup_isotypicComponents R M)
+    (.of_mem_isotypicComponents ·.property)
 
 /-- The endomorphism ring of a semisimple module is the direct product of the endomorphism rings
 of its isotypic components. -/

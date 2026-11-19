@@ -255,7 +255,8 @@ variable
 include hx_χ w_plus w_minus w_chi h_bracket_sum h_pos_containment h_neg_containment hαq
 
 private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
-    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.property.2 := by
+    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
+      sl2SubmoduleOfRoot α.property.2 := by
   have h_h_containment : ⁅x_χ, (y : L)⁆ ∈ genWeightSpace L χ := by
     have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) := by
       apply toLieSubmodule_le_rootSpace_zero
@@ -294,7 +295,8 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
 include hq hα₀ hy
 
 private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
-    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.property.2 := by
+    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
+      sl2SubmoduleOfRoot α.property.2 := by
   let S := rootSystem H
   have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = ↑γ :=
     ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
@@ -379,7 +381,8 @@ end
 set_option backward.isDefEq.respectTransparency.types false in
 include hq hx_χ hαq in
 private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot hα₀) :
-    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.property.2 := by
+    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
+      sl2SubmoduleOfRoot α.property.2 := by
   have hm_α_original : m_α ∈ sl2SubmoduleOfRoot hα₀ := hm_α
   rw [sl2SubmoduleOfRoot_eq_sup] at hm_α
   obtain ⟨m_αneg, hm_αneg, m_h, hm_h, hm_eq⟩ := Submodule.mem_sup.mp hm_α
@@ -449,7 +452,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     induction hx using LieSubmodule.iSup_induction' with
     | mem χ x_χ hx_χ =>
       induction hm using LieSubmodule.iSup_induction' with
-      | mem α m_α hm_α => exact invtSubmoduleToLieIdeal_aux q hq χ x_χ m_α hx_χ α.val α.property.1 α.property.2 hm_α
+      | mem α m_α hm_α =>
+        exact invtSubmoduleToLieIdeal_aux q hq χ x_χ m_α hx_χ α.val α.property.1 α.property.2 hm_α
       | zero =>
         simp only [Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
       | add m₁ m₂ _ _ ih₁ ih₂ =>

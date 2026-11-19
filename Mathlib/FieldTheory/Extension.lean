@@ -112,10 +112,11 @@ noncomputable def union : Lifts F E K :=
   have hc := hc.insert fun _ _ _ ↦ .inl bot_le
   have dir : Directed (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
   ⟨iSup t, (Subalgebra.iSupLift (toSubalgebra <| t ·) dir (·.val.emb) (fun i j h ↦
-    AlgHom.ext fun x ↦ (hc.total i.property j.property).elim (fun hij ↦ (hij.snd x).symm) fun hji ↦ by
-      rw [AlgHom.comp_apply, ← inclusion]
-      dsimp only [coe_type_toSubalgebra]
-      rw [← hji.snd (inclusion h x), inclusion_inclusion, inclusion_self, AlgHom.id_apply x])
+    AlgHom.ext fun x ↦ (hc.total i.property j.property).elim (fun hij ↦ (hij.snd x).symm)
+      fun hji ↦ by
+        rw [AlgHom.comp_apply, ← inclusion]
+        dsimp only [coe_type_toSubalgebra]
+        rw [← hji.snd (inclusion h x), inclusion_inclusion, inclusion_self, AlgHom.id_apply x])
     _ le_rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 

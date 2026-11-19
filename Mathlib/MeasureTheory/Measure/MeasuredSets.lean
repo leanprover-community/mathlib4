@@ -185,7 +185,8 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     Dense ((SetLike.coe : MeasuredSets μ → Set α) ⁻¹' C) := by
   rw [EMetric.dense_iff]
   rintro s ε εpos
-  rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.property εpos with ⟨t, tC, ht⟩
+  rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.property εpos with
+    ⟨t, tC, ht⟩
   have t_meas : MeasurableSet t := by rw [h]; exact measurableSet_generateFrom tC
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
   simpa [MeasuredSets.edist_def] using! ht

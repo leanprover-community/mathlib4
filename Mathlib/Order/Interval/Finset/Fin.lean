@@ -85,7 +85,8 @@ theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx
   ext; simp
 
 @[simp]
-theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.isLt) = Iic a := by
+theorem attachFin_Iic :
+    attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.isLt) = Iic a := by
   ext; simp
 
 @[simp]

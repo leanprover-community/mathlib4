@@ -675,7 +675,8 @@ theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver
 
 theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ ramifiedPlacesOver L v :=
-  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.under_eq (mk φ).val (mk v.embedding).val⟩, h.2.mk_isRamified⟩
+  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.under_eq (mk φ).val (mk v.embedding).val⟩,
+    h.2.mk_isRamified⟩
 
 variable (w)
 

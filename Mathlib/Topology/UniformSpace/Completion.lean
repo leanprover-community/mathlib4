@@ -136,7 +136,8 @@ theorem basis_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → SetRel α α
   h.lift' monotone_gen
 
 theorem mem_uniformity' {s : Set (CauchyFilter α × CauchyFilter α)} :
-    s ∈ 𝓤 (CauchyFilter α) ↔ ∃ t ∈ 𝓤 α, ∀ f g : CauchyFilter α, t ∈ f.val ×ˢ g.val → (f, g) ∈ s := by
+    s ∈ 𝓤 (CauchyFilter α) ↔
+      ∃ t ∈ 𝓤 α, ∀ f g : CauchyFilter α, t ∈ f.val ×ˢ g.val → (f, g) ∈ s := by
   refine mem_uniformity.trans (exists_congr (fun t => and_congr_right_iff.mpr (fun _h => ?_)))
   exact ⟨fun h _f _g ht => h ht, fun h _p hp => h _ _ hp⟩
 

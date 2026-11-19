@@ -398,7 +398,8 @@ theorem coe_monodromy_mk {x y : X} (γ : Path x y) (e : p ⁻¹' {x}) :
 
 lemma monodromy_eq_apply_one {x y : X} {γ : Path x y} {e : p ⁻¹' {x}} {Γ : C(I, E)}
     (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) : cov.monodromy (.mk γ) e = Γ 1 := by
-  rw [show Γ = cov.liftPath γ e (γ.source.trans e.property.symm) from (eq_liftPath_iff' ..).mpr ⟨hpΓ, Γ_0⟩,
+  rw [show Γ = cov.liftPath γ e (γ.source.trans e.property.symm) from
+      (eq_liftPath_iff' ..).mpr ⟨hpΓ, Γ_0⟩,
     coe_monodromy_mk]
 
 /-- Lift a homotopy class of paths to a covering space. -/
@@ -416,7 +417,8 @@ def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' 
   γ.hrecOn g hg
 
 theorem map_liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
-    (cov.liftPathQuotient γ e).map ⟨p, cov.continuous⟩ = γ.cast e.property (cov.monodromy γ e).property := by
+    (cov.liftPathQuotient γ e).map ⟨p, cov.continuous⟩ =
+      γ.cast e.property (cov.monodromy γ e).property := by
   obtain ⟨γ⟩ := γ
   congrm Path.Homotopic.Quotient.mk ?_
   ext1

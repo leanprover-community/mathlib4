@@ -47,7 +47,8 @@ lemma exists_forall_abs_repr_le_norm :
     have inst : IsZLattice ℝ L' :=
       ⟨Submodule.map_injective_of_injective E'.subtype_injective (by simp [E', L'])⟩
     obtain ⟨ε, hε, H⟩ := this (b.map e.symm) inst
-    exact ⟨ε, hε, fun x i ↦ by simpa using! H ⟨⟨x.val, Submodule.subset_span x.property⟩, x.property⟩ i⟩
+    exact ⟨ε, hε, fun x i ↦ by
+      simpa using! H ⟨⟨x.val, Submodule.subset_span x.property⟩, x.property⟩ i⟩
   have : Finite ι := Module.Finite.finite_basis b
   let b' : Basis ι ℝ E := Basis.ofZLatticeBasis ℝ L b
   let e := ((b'.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _).toContinuousLinearEquiv (𝕜 := ℝ))

@@ -347,7 +347,8 @@ noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
   refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
-        (op ⟨(unop U).val, (specializes_iff_forall_open.mp h _ (unop U).val.is_open' (unop U).property :)⟩)
+        (op ⟨(unop U).val,
+          (specializes_iff_forall_open.mp h _ (unop U).val.is_open' (unop U).property :)⟩)
   · intro U V i
     dsimp
     rw [Category.comp_id]
@@ -510,7 +511,8 @@ theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : ToType (F.obj.obj (op U
     (h : ∀ (x : X) (hx : x ∈ U), F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) : s = t := by
   -- We use `germ_eq` and the axiom of choice, to pick for every point `x` a neighbourhood
   -- `V x`, such that the restrictions of `s` and `t` to `V x` coincide.
-  choose V m i₁ i₂ heq using fun x : U => F.presheaf.germ_eq x.val x.property x.property s t (h x.val x.property)
+  choose V m i₁ i₂ heq using fun x : U =>
+    F.presheaf.germ_eq x.val x.property x.property s t (h x.val x.property)
   -- Since `F` is a sheaf, we can prove the equality locally, if we can show that these
   -- neighborhoods form a cover of `U`.
   apply F.eq_of_locally_eq' V U i₁

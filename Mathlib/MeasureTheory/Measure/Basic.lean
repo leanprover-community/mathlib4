@@ -126,7 +126,8 @@ theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
     μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) := by
   have := hs.toEncodable
   rw [biUnion_eq_iUnion]
-  exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.property) fun x => h x x.property
+  exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.property)
+    fun x => h x x.property
 
 theorem measure_biUnion {s : Set β} {f : β → Set α} (hs : s.Countable) (hd : s.PairwiseDisjoint f)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) :=

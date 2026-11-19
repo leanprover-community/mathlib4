@@ -41,7 +41,8 @@ theorem two_pow_mk_le_two_pow_mk_dense [NormalSpace X] {s d : Set X} (hs : IsClo
     by_contra ht
     rw [← sdiff_nonempty] at ht
     have hUVd := hd.inter_open_nonempty _ ((hU t₁).inter (hV t₂)) <| ht.mono <|
-      subset_inter (sdiff_subset.trans (hUs t₁)) ((sdiff_subset_sdiff_left t₁.property).trans (hVs t₂))
+      subset_inter (sdiff_subset.trans (hUs t₁))
+        ((sdiff_subset_sdiff_left t₁.property).trans (hVs t₂))
     rw [inter_right_comm, h] at hUVd
     exact hUVd.not_disjoint <| disjoint_of_subset_left inter_subset_left (hUV t₂)
   have h_inj : Injective (U · ∩ d) := fun _ _ h ↦ SetCoe.ext <| (hUd h).antisymm (hUd h.symm)

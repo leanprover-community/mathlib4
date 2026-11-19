@@ -257,7 +257,8 @@ open WithTop in
 theorem iSup_filtration : ⨆ j : Iio i, filtration j = filtration i := by
   cases i
   · rw [← range_coe, iSup_range']; exact iSup_adjoin_eq_top
-  refine (iSup_le fun j ↦ filtration.monotone (mem_Iio.1 j.property).le).antisymm (adjoin_le_iff.2 ?_)
+  refine (iSup_le fun j ↦ filtration.monotone (mem_Iio.1 j.property).le).antisymm
+    (adjoin_le_iff.2 ?_)
   rintro _ ⟨j, hj, rfl⟩
   refine le_iSup (α := IntermediateField F E) _ ⟨j⁺, ?_⟩ (subset_adjoin F _ ?_)
   exacts [⟨j, lt_succ j, rfl⟩, hi.succ_lt (coe_lt_coe.mpr hj)]
@@ -295,7 +296,8 @@ def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
     simp_rw [dite_eq_left this]
     apply Subalgebra.iSupLift_comp_inclusion
 
-theorem equivLim_coherence (x l) : (equivLim hi x).val l = embFunctor F E (mem_Iio.mp l.property).le x :=
+theorem equivLim_coherence (x l) :
+    (equivLim hi x).val l = embFunctor F E (mem_Iio.mp l.property).le x :=
   rfl
 
 end Lim

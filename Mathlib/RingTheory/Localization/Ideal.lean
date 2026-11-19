@@ -73,8 +73,8 @@ lemma mk'_mem_map_algebraMap_iff (I : Ideal R) (x : R) (s : M) :
   rw [← Ideal.unit_mul_mem_iff_mem _ (IsLocalization.map_units S s), IsLocalization.mk'_spec',
     IsLocalization.mem_map_algebraMap_iff M]
   simp_rw [← map_mul, IsLocalization.eq_iff_exists M, mul_comm x, ← mul_assoc, ← Submonoid.coe_mul]
-  exact ⟨fun ⟨⟨y, t⟩, c, h⟩ ↦ ⟨_, (c * t).property, h ▸ I.mul_mem_left c.val y.property⟩, fun ⟨s, hs, h⟩ ↦
-    ⟨⟨⟨_, h⟩, ⟨s, hs⟩⟩, 1, by simp⟩⟩
+  exact ⟨fun ⟨⟨y, t⟩, c, h⟩ ↦ ⟨_, (c * t).property, h ▸ I.mul_mem_left c.val y.property⟩,
+    fun ⟨s, hs, h⟩ ↦ ⟨⟨⟨_, h⟩, ⟨s, hs⟩⟩, 1, by simp⟩⟩
 
 lemma algebraMap_mem_map_algebraMap_iff (I : Ideal R) (x : R) :
     algebraMap R S x ∈ I.map (algebraMap R S) ↔
@@ -140,7 +140,8 @@ theorem under_map_of_isPrimary_disjoint
   have : a * (c * s : M) ∈ I := by
     rw [mul_comm, Submonoid.coe_mul, mul_assoc, hc]
     exact I.mul_mem_left c b.property
-  exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).property)
+  exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right
+    (Set.disjoint_left.mp key (c * s).property)
 
 theorem under_map_of_isPrime_disjoint {I : Ideal R} (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
     (Ideal.map (algebraMap R S) I).under R = I :=
@@ -226,7 +227,8 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M` -
 @[simps] def orderIsoOfPrime :
     { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ Disjoint (M : Set R) ↑p } where
   toFun p := ⟨p.val.under R, (isPrime_iff_isPrime_disjoint M S p.val).1 p.property⟩
-  invFun p := ⟨Ideal.map (algebraMap R S) p.val, isPrime_of_isPrime_disjoint M S p.val p.property.1 p.property.2⟩
+  invFun p := ⟨Ideal.map (algebraMap R S) p.val,
+    isPrime_of_isPrime_disjoint M S p.val p.property.1 p.property.2⟩
   left_inv J := Subtype.ext (map_under M S J)
   right_inv I := Subtype.ext (under_map_of_isPrime_disjoint M S I.property.1 I.property.2)
   map_rel_iff' {I I'} := by

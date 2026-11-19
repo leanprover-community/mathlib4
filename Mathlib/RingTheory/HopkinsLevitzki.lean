@@ -166,7 +166,8 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
   have : Finite Spec :=
     (minimalPrimes.finite_of_isNoetherianRing R).subset Ideal.mem_minimalPrimes_of_krullDimLE_zero
   have (I : Spec) : I.val.IsPrime := I.property
-  have (I : Spec) : IsSemisimpleRing (R ⧸ I.val) := let _ := Ideal.Quotient.field I.val; inferInstance
+  have (I : Spec) : IsSemisimpleRing (R ⧸ I.val) :=
+    let _ := Ideal.Quotient.field I.val; inferInstance
   have : IsSemisimpleRing (R ⧸ Ring.jacobson R) := by
     rw [eq, nilradical_eq_sInf, sInf_eq_iInf']
     exact (Ideal.quotientInfRingEquivPiQuotient _ fun I J ne ↦

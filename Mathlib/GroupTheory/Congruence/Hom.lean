@@ -117,7 +117,8 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
     Subtype.ext_iff.2 <|
       ext fun x y =>
         ⟨fun ⟨a, b, H, hx, hy⟩ =>
-          d.val.trans (d.val.symm <| d.property <| c.eq.1 hx) <| d.val.trans H <| d.property <| c.eq.1 hy,
+          d.val.trans (d.val.symm <| d.property <| c.eq.1 hx) <|
+            d.val.trans H <| d.property <| c.eq.1 hy,
           fun h => ⟨_, _, h, rfl, rfl⟩⟩
   right_inv d :=
     Con.ext fun x y ↦ by
@@ -128,7 +129,8 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
     constructor
     · intro h x y hs
       rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩
-      exact t.val.trans (t.val.symm <| t.property <| c.eq.1 hx) (t.val.trans ht (t.property <| c.eq.1 hy))
+      exact t.val.trans (t.val.symm <| t.property <| c.eq.1 hx)
+        (t.val.trans ht (t.property <| c.eq.1 hy))
     · exact Relation.map_mono
 
 end Mul

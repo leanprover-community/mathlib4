@@ -300,7 +300,8 @@ instance : MulRingNormClass (FinitePlace K) K ℝ where
 noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.property.choose
 
 @[simp]
-theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w := Subtype.ext w.property.choose_spec
+theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w :=
+  Subtype.ext w.property.choose_spec
 
 @[simp]
 theorem norm_embedding_eq (w : FinitePlace K) (x : K) :

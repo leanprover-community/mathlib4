@@ -110,7 +110,8 @@ noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
   toFun v := ⟨natGenerator v, prime_natGenerator v⟩
   invFun p :=
     have h : Prime ((Ideal.span {(p.val : ℤ)}).map (IsIntegralClosure.intEquiv R).symm) :=
-      Ideal.map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.property]) (by simp [p.property.ne_zero])
+      Ideal.map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.property])
+        (by simp [p.property.ne_zero])
     .ofPrime h
   left_inv v := by
     simp only [Ideal.map_symm]

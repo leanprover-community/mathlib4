@@ -480,7 +480,8 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     apply ((Module.End.isUnit_iff _).mp (hu₂.map (algebraMap Rₛ (Module.End Rₛ _)))).1
     apply ((Module.End.isUnit_iff _).mp (hu₀.map (algebraMap Rₛ (Module.End Rₛ _)))).1
     simp only [Module.algebraMap_end_apply, algebraMap_smul, LinearMap.map_smul_of_tower]
-    rw [LinearMap.smul_comp, ← smul_assoc s₀.val, Algebra.smul_def s₀.val, IsUnit.mul_val_inv, one_smul]
+    rw [LinearMap.smul_comp, ← smul_assoc s₀.val, Algebra.smul_def s₀.val, IsUnit.mul_val_inv,
+      one_smul]
     apply LinearMap.restrictScalars_injective R
     apply IsLocalizedModule.ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) M)
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap (.powers t) M))
@@ -491,7 +492,8 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     apply ((Module.End.isUnit_iff _).mp (hu₁.map (algebraMap Rₛ (Module.End Rₛ _)))).1
     apply ((Module.End.isUnit_iff _).mp (hu₀.map (algebraMap Rₛ (Module.End Rₛ _)))).1
     simp only [Module.algebraMap_end_apply, algebraMap_smul, LinearMap.map_smul_of_tower]
-    rw [LinearMap.comp_smul, ← smul_assoc s₀.val, Algebra.smul_def s₀.val, IsUnit.mul_val_inv, one_smul]
+    rw [LinearMap.comp_smul, ← smul_assoc s₀.val, Algebra.smul_def s₀.val, IsUnit.mul_val_inv,
+      one_smul]
     apply LinearMap.restrictScalars_injective R
     apply IsLocalizedModule.ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) N)
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap (.powers t) N))

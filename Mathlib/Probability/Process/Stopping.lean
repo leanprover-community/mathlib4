@@ -435,7 +435,8 @@ theorem add [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countable ι]
       cases π ω with
       | top => simp
       | coe b => norm_cast; simpa using le_of_add_le_right
-  exact h ▸ MeasurableSet.iUnion fun k => (hπ.measurableSet_eq_le k.property).inter (hτ.add_const' k.val j)
+  exact h ▸ MeasurableSet.iUnion fun k =>
+    (hπ.measurableSet_eq_le k.property).inter (hτ.add_const' k.val j)
 
 section Preorder
 

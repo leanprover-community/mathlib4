@@ -282,7 +282,8 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
     [Nonempty (s → F → proj ⁻¹' s)] : Pretrivialization F (s.restrictPreimage proj) where
   toFun z := (⟨proj z, z.property⟩, (e z).2)
   invFun x := by classical exact if h : (x.1.val, x.2) ∈ e.target then ⟨e.invFun (x.1, x.2), by
-      simpa only [mem_preimage, ← e.proj_toFun _ (e.map_target' h), e.right_inv' h] using! x.1.property⟩
+      simpa only [mem_preimage, ← e.proj_toFun _ (e.map_target' h),
+        e.right_inv' h] using! x.1.property⟩
     else Classical.arbitrary (s → F → _) x.1 x.2
   source := Subtype.val ⁻¹' e.source
   target := (Prod.map Subtype.val id) ⁻¹' e.target

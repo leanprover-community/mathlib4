@@ -88,8 +88,8 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     {v : HeightOneSpectrum R | v.asIdeal ∣ I}.Finite := by
   rw [← Set.finite_coe_iff, Set.coe_ofPred]
   have h_fin := fintypeSubtypeDvd I hI
-  refine
-    Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.property⟩ : { x // x ∣ I })) ?_
+  refine Finite.of_injective
+    (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.property⟩ : { x // x ∣ I })) ?_
   intro v w hvw
   exact Subtype.coe_injective (HeightOneSpectrum.ext (by simpa using hvw))
 

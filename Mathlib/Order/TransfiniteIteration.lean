@@ -46,7 +46,8 @@ defined by taking *infima* at limit points. -/]
 noncomputable def supTransfiniteIterate (j : J) : I → I :=
   let := SuccOrder.ofLinearWellFoundedLT J
   SuccOrder.limitRecOn j
-    (fun _ _ ↦ id) (fun _ _ g ↦ φ ∘ g) (fun y _ h ↦ ⨆ x : Set.Iio y, h x.val (Set.mem_Iio.1 x.property))
+    (fun _ _ ↦ id) (fun _ _ g ↦ φ ∘ g)
+    (fun y _ h ↦ ⨆ x : Set.Iio y, h x.val (Set.mem_Iio.1 x.property))
 
 @[deprecated (since := "2026-09-15")]
 alias transfiniteIterate := supTransfiniteIterate

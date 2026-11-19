@@ -112,7 +112,8 @@ theorem sum_le_of_monotoneOn_Icc {f : α → E} {s : Set α} {m n : ℕ} {u : �
     _ ≤ ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
       Finset.sum_mono_set _ (Nat.Iio_eq_range n ▸ Finset.Ico_subset_Iio_self)
     _ ≤ eVariationOn f s :=
-      sum_le (fun i j h ↦ hu (π i).property (π j).property (monotone_projIcc hmn h)) fun i ↦ us _ (π i).property
+      sum_le (fun i j h ↦ hu (π i).property (π j).property (monotone_projIcc hmn h))
+        fun i ↦ us _ (π i).property
 
 theorem sum_le_of_monotoneOn_Iic {f : α → E} {s : Set α} {n : ℕ} {u : ℕ → α}
     (hu : MonotoneOn u (Iic n)) (us : ∀ i ≤ n, u i ∈ s) :

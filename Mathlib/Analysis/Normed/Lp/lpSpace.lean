@@ -738,7 +738,8 @@ variable {E : Type*} [NormedAddCommGroup E]
 set_option backward.isDefEq.respectTransparency false in
 lemma norm_tsum_le (f : ℓ¹(α, E)) :
     ‖∑' i, f i‖ ≤ ‖f‖ := calc
-  ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ := norm_tsum_le_tsum_norm (.of_norm (by simpa using f.property.summable))
+  ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ :=
+    norm_tsum_le_tsum_norm (.of_norm (by simpa using f.property.summable))
   _ = ‖f‖ := by simp [norm_eq_tsum_rpow]
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace E]
@@ -751,7 +752,8 @@ noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
     { toFun f := ∑' i, f i
       map_add' f g := by
         rw [← Summable.tsum_add]
-        exacts [rfl, .of_norm (by simpa using f.property.summable), .of_norm (by simpa using g.property.summable)]
+        exacts [rfl, .of_norm (by simpa using f.property.summable),
+          .of_norm (by simpa using g.property.summable)]
       map_smul' c f := by
         simp only [coeFn_smul]
         exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.property.summable)) }

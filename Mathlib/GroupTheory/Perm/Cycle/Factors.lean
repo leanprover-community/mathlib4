@@ -477,7 +477,8 @@ variable [DecidableEq α] [Fintype α] (f : Perm α)
 def cycleFactorsFinset : Finset (Perm α) :=
   (truncCycleFactors f).lift
     (fun l : { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } ↦
-      ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.property.2.1 _ h1) l.property.2.2⟩)
+      ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.property.2.1 _ h1)
+        l.property.2.2⟩)
     fun ⟨_, hl⟩ ⟨_, hl'⟩ ↦
     Finset.eq_of_veq <| Multiset.coe_eq_coe.mpr <|
       list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left

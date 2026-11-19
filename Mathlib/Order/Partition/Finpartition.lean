@@ -257,8 +257,8 @@ abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a
 
 instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
   @Fintype.ofSurjective { p : Finset α // p.SupIndep id ∧ p.sup id = a ∧ ⊥ ∉ p } (Finpartition a) _
-    (Subtype.fintype _) (fun i ↦ ⟨i.val, i.property.1, i.property.2.1, i.property.2.2⟩) fun ⟨_, y, z, w⟩ ↦
-    ⟨⟨_, y, z, w⟩, rfl⟩
+    (Subtype.fintype _) (fun i ↦ ⟨i.val, i.property.1, i.property.2.1, i.property.2.2⟩)
+    fun ⟨_, y, z, w⟩ ↦ ⟨⟨_, y, z, w⟩, rfl⟩
 
 /-! ### Refinement order -/
 
@@ -330,11 +330,13 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
   have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
   choose f hP hf using this
   rw [← card_attach]
-  refine card_le_card_of_injOn (fun b ↦ f _ b.property) (fun b _ ↦ hP _ b.property) fun b _ c _ h ↦ ?_
+  refine card_le_card_of_injOn (fun b ↦ f _ b.property) (fun b _ ↦ hP _ b.property)
+    fun b _ c _ h ↦ ?_
   exact
     Subtype.coe_injective
       (Q.disjoint.elim b.property c.property fun H ↦
-        P.ne_bot (hP _ b.property) <| disjoint_self.1 <| H.mono (hf _ b.property) <| h.le.trans <| hf _ c.property)
+        P.ne_bot (hP _ b.property) <| disjoint_self.1 <|
+          H.mono (hf _ b.property) <| h.le.trans <| hf _ c.property)
 
 end Order
 

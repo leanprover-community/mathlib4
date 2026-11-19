@@ -233,7 +233,8 @@ instance (X Y : DifferentialObject S C) :
 instance concreteCategoryOfDifferentialObjects :
     ConcreteCategory (DifferentialObject S C) (HomSubtype S C) where
   hom f := ⟨ConcreteCategory.hom (C := C) f.f, by simp [ConcreteCategory.ofHom_hom]⟩
-  ofHom f := ⟨ConcreteCategory.ofHom (C := C) f, by simpa [ConcreteCategory.hom_ofHom] using f.property⟩
+  ofHom f := ⟨ConcreteCategory.ofHom (C := C) f, by
+    simpa [ConcreteCategory.hom_ofHom] using f.property⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := C)

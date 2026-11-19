@@ -916,8 +916,10 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         rw [ite_eq_right hmn0, ZMod.natCast_eq_natCast_iff, ← Nat.modEq_and_modEq_iff_modEq_mul h,
           Prod.fst_zmod_cast, Prod.snd_zmod_cast]
         refine
-          ⟨(Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).property.left.trans ?_,
-            (Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).property.right.trans ?_⟩
+          ⟨(Nat.chineseRemainder h (cast x : ZMod m).val
+              (cast x : ZMod n).val).property.left.trans ?_,
+            (Nat.chineseRemainder h (cast x : ZMod m).val
+              (cast x : ZMod n).val).property.right.trans ?_⟩
         · rw [← ZMod.natCast_eq_natCast_iff, ZMod.natCast_zmod_val, ZMod.natCast_val]
         · rw [← ZMod.natCast_eq_natCast_iff, ZMod.natCast_zmod_val, ZMod.natCast_val]
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩

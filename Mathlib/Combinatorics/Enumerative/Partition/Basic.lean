@@ -251,7 +251,8 @@ theorem partitionWithPartEquiv_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a �
 
 @[simp]
 theorem partitionWithPartEquiv_symm_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
-    (p : (n - a).Partition) : ((partitionWithPartEquiv ha1 ha).symm p).val.parts = a ::ₘ p.parts := by
+    (p : (n - a).Partition) :
+    ((partitionWithPartEquiv ha1 ha).symm p).val.parts = a ::ₘ p.parts := by
   dsimp [partitionWithPartEquiv]
 
 end Partition

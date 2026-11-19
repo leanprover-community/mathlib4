@@ -251,8 +251,8 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
       exacts [Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
-      ⟨fun p => ⟨p.val.1, by convert p.property⟩, fun x => ⟨⟨_, _⟩, x.property⟩, fun _ => by ext; rfl,
-        fun _ => by ext; rfl⟩
+      ⟨fun p => ⟨p.val.1, by convert p.property⟩, fun x => ⟨⟨_, _⟩, x.property⟩,
+        fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
       ⟨fun p => ⟨p.val.1, p.property.trans congr(Sum.inr $(Subsingleton.elim ..))⟩,
         fun x => ⟨⟨_, _⟩, x.property⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩

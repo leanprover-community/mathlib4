@@ -241,7 +241,8 @@ theorem torsion_eq_one_or_neg_one_of_odd_finrank
     (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
   by_cases! hc : 2 < orderOf (x : (𝓞 K)ˣ)
   · rw [← orderOf_units, ← orderOf_submonoid] at hc
-    linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc (IsPrimitiveRoot.orderOf (x.val : K)),
+    linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc
+          (IsPrimitiveRoot.orderOf (x.val : K)),
         NumberField.InfinitePlace.nrRealPlaces_pos_of_odd_finrank h]
   · interval_cases hi : orderOf (x : (𝓞 K)ˣ)
     · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion x.val).1 x.property)]

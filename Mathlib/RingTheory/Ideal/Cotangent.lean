@@ -216,7 +216,8 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
 @[simp]
 lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
-    Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.property⟩ := rfl
+    Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) =
+      Ideal.toCotangent I₂ ⟨f x, h x.property⟩ := rfl
 
 namespace Cotangent
 

@@ -152,7 +152,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       apply intervalIntegral.integral_congr
       rw [uIcc_of_le zero_le_one]
       intro t ht
-      simp [Path.extend, hf (s, t), Prod.le_def, s.property.1, s.property.2, ht.1, ht.2, Function.comp_def, hψ]
+      simp [Path.extend, hf (s, t), Prod.le_def, s.property.1, s.property.2, ht.1, ht.2,
+        Function.comp_def, hψ]
     have hf₀ : ∫ t in 0..1, f (0, t) = ∫ᶜ x in γ₁, ω x := by
       simpa [curveIntegral_def, curveIntegralFun_def, Path.extend] using hfi 0
     have hf₁ : ∫ t in 0..1, f (1, t) = curveIntegral ω γ₂ := by

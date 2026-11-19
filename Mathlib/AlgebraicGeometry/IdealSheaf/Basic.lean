@@ -513,7 +513,8 @@ def radical (I : IdealSheafData X) : IdealSheafData X :=
   (fun U f ↦
     letI : Algebra Γ(X, U) Γ(X, X.affineBasicOpen f) :=
       (X.presheaf.map (homOfLE (X.basicOpen_le f)).op).hom.toAlgebra
-    have : IsLocalization.Away f Γ(X, X.basicOpen f) := U.property.isLocalization_of_eq_basicOpen _ _ rfl
+    have : IsLocalization.Away f Γ(X, X.basicOpen f) :=
+      U.property.isLocalization_of_eq_basicOpen _ _ rfl
     (IsLocalization.map_radical (.powers f) Γ(X, X.basicOpen f) (I.ideal U)).trans
       congr($(I.map_ideal_basicOpen U f).radical))
   I.supportSet
@@ -582,7 +583,8 @@ noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
         dsimp only at hx ⊢
         have : Topology.IsOpenEmbedding (Spec.map F) :=
           localization_away_isOpenEmbedding Γ(X, X.basicOpen f) f
-        rw [← U.property.map_fromSpec (X.affineBasicOpen f).property (homOfLE (X.basicOpen_le f)).op,
+        rw [← U.property.map_fromSpec (X.affineBasicOpen f).property
+            (homOfLE (X.basicOpen_le f)).op,
           Scheme.Hom.comp_base, TopCat.coe_comp, Set.preimage_comp] at hx
         generalize U.property.fromSpec ⁻¹' Z = Z' at hx ⊢
         replace hx : x ∈ vanishingIdeal (Spec.map F ⁻¹' Z') := hx
@@ -715,7 +717,8 @@ lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
         letI := hV.trans_le (X.basicOpen_le _); ((f.app U).hom x |_ V) = 0 by
       obtain ⟨_, rfl, H⟩ := this
       obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact
-        X (U := f ⁻¹ᵁ U) (QuasiCompact.isCompact_preimage (f := f) _ U.val.is_open' U.property.isCompact)
+        X (U := f ⁻¹ᵁ U)
+        (QuasiCompact.isCompact_preimage (f := f) _ U.val.is_open' U.property.isCompact)
         (f.app U x) (f.app U s) H
       exact ⟨_, ⟨n, rfl⟩, by simpa using hn⟩
     refine ⟨f ⁻¹ᵁ Y.basicOpen s, by simp, ?_⟩
@@ -823,7 +826,8 @@ lemma ker_ideal_of_isPullback_of_isOpenImmersion {X Y U V : Scheme.{u}}
     (f : X ⟶ Y) (f' : U ⟶ V) (iU : U ⟶ X) (iV : V ⟶ Y) [IsOpenImmersion iV]
     [QuasiCompact f] (H : IsPullback f' iU iV f) (W) :
     f'.ker.ideal W =
-      (f.ker.ideal ⟨iV ''ᵁ W, W.property.image_of_isOpenImmersion _⟩).comap (iV.appIso W).inv.hom := by
+      (f.ker.ideal ⟨iV ''ᵁ W, W.property.image_of_isOpenImmersion _⟩).comap
+        (iV.appIso W).inv.hom := by
   have : QuasiCompact f' := MorphismProperty.of_isPullback H.flip inferInstance
   have : IsOpenImmersion iU := MorphismProperty.of_isPullback H inferInstance
   ext x

@@ -174,7 +174,8 @@ def tensorCotangentInvFun
         simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,
           LinearMap.coe_restrictScalars, Function.comp_apply, mk_apply, smul_eq_mul, e,
           LinearMap.liftBaseChange_tmul, LinearEquiv.ofBijective_apply]
-        have h₂ : b.val • Cotangent.mk d = 0 := by ext; simp [Cotangent.smul_eq_zero_of_mem _ b.property]
+        have h₂ : b.val • Cotangent.mk d = 0 := by
+          ext; simp [Cotangent.smul_eq_zero_of_mem _ b.property]
         rw [TensorProduct.smul_tmul', mul_smul, f.mapKer_apply_coe, ← halg,
           algebraMap_smul, ← TensorProduct.tmul_smul, h₂, tmul_zero, smul_zero]
 

@@ -237,7 +237,8 @@ variable [Normal F L]
 
 lemma normalClosure_def' : normalClosure F K L = ⨆ f : L →ₐ[F] L, K.map f := by
   refine (normalClosure_def F K L).trans (le_antisymm (iSup_le (fun f ↦ ?_)) (iSup_le (fun f ↦ ?_)))
-  · exact le_iSup_of_le (f.liftNormal L) (fun b ⟨a, h⟩ ↦ ⟨a, a.property, h ▸ f.liftNormal_commutes L a⟩)
+  · exact le_iSup_of_le (f.liftNormal L)
+      (fun b ⟨a, h⟩ ↦ ⟨a, a.property, h ▸ f.liftNormal_commutes L a⟩)
   · exact le_iSup_of_le (f.comp K.val) (fun b ⟨a, h⟩ ↦ ⟨⟨a, h.1⟩, h.2⟩)
 
 lemma normalClosure_def'' : normalClosure F K L = ⨆ f : Gal(L/F), K.map f := by

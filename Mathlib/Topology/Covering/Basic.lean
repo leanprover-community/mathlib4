@@ -80,7 +80,8 @@ noncomputable def toTrivialization' {x : X} [Nonempty I] (h : IsEvenlyCovered f 
       fun ⟨e, (he : f e ∈ U)⟩ ↦ by simp [Prod.map, he]
     continuousOn_invFun := continuousOn_iff_continuous_domRestrict.mpr <|
       ((continuous_subtypeVal.comp H.symm.continuous).comp (by fun_prop :
-        Continuous fun ui ↦ ⟨⟨_, ui.property.1⟩, ui.val.2⟩)).congr fun ⟨⟨x, i⟩, ⟨hx, _⟩⟩ ↦ by simp [hx]
+        Continuous fun ui ↦ ⟨⟨_, ui.property.1⟩, ui.val.2⟩)).congr
+          fun ⟨⟨x, i⟩, ⟨hx, _⟩⟩ ↦ by simp [hx]
     baseSet := U
     open_baseSet := hU
     source_eq := rfl
@@ -143,7 +144,9 @@ theorem restrictPreimage {x : X} (hxs : x ∈ s) (h : IsEvenlyCovered f x I) :
     IsEvenlyCovered (s.restrictPreimage f) ⟨x, hxs⟩ I :=
   have ⟨inst, U, hxU, hU, hfU, H, hH⟩ := h
   ⟨inst, Subtype.val ⁻¹' U, hxU, hU.preimage (by fun_prop), hfU.preimage continuous_subtypeVal,
-    { toFun e := (⟨⟨(H ⟨e, e.property⟩).1, hH _ ▸ e.val.property⟩, by simpa only [hH] using! e.property⟩, (H ⟨e, e.property⟩).2)
+    { toFun e :=
+        (⟨⟨(H ⟨e, e.property⟩).1, hH _ ▸ e.val.property⟩, by simpa only [hH] using! e.property⟩,
+          (H ⟨e, e.property⟩).2)
       invFun x := ⟨⟨H.symm (⟨x.1, x.1.property⟩, x.2), by simp [← hH]⟩, by simp [← hH]⟩
       left_inv _ := by simp, right_inv _ := by simp }, fun _ ↦ by ext; apply hH⟩
 

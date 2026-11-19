@@ -196,7 +196,8 @@ lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
   rw [mem_span_set]
   constructor
   · rintro ⟨c, hc, rfl⟩
-    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).property, rfl⟩
+    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc,
+      fun y ↦ (c y).property, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
 

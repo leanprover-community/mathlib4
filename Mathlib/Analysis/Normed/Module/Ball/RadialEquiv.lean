@@ -45,7 +45,8 @@ noncomputable def homeomorphSphereProd (E : Type*) [NormedAddCommGroup E] [Norme
     have : 0 < ‖(x : E)‖ := by simpa [-Subtype.coe_prop] using x.property
     (⟨r • ‖x.val‖⁻¹ • x.val, by simp [norm_smul, abs_of_pos hr, this.ne']⟩,
       ⟨‖x.val‖ / r, by rw [mem_Ioi]; positivity⟩)
-  invFun x := ⟨x.2.val • x.1.val, smul_ne_zero x.2.property.out.ne' (ne_of_mem_sphere x.1.property hr.ne')⟩
+  invFun x := ⟨x.2.val • x.1.val,
+    smul_ne_zero x.2.property.out.ne' (ne_of_mem_sphere x.1.property hr.ne')⟩
   left_inv
   | ⟨x, hx⟩ => by
     have : 0 < ‖x‖ := by simpa using hx

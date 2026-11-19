@@ -240,7 +240,8 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Hom
       if h : (x.1 : ℝ) ≤ 1 / 2 then
         F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.property.1, h⟩⟩, x.2)
       else
-        G (⟨2 * x.1 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
+        G (⟨2 * x.1 - 1,
+          unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
   show ite _ _ _ = _ by
     split_ifs <;>
       · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
@@ -490,7 +491,8 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) (G
       if h : (x.1 : ℝ) ≤ 1 / 2 then
         F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.property.1, h⟩⟩, x.2)
       else
-        G (⟨2 * x.1 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
+        G (⟨2 * x.1 - 1,
+          unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
   Homotopy.trans_apply _ _ _
 
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) (G : HomotopyWith f₁ f₂ P) :
@@ -600,7 +602,8 @@ theorem trans_apply (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) 
       if h : (x.1 : ℝ) ≤ 1 / 2 then
         F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.property.1, h⟩⟩, x.2)
       else
-        G (⟨2 * x.1 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
+        G (⟨2 * x.1 - 1,
+          unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
   Homotopy.trans_apply _ _ _
 
 theorem symm_trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) :

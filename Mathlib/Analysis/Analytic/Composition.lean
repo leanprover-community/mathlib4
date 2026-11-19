@@ -1104,7 +1104,8 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) :
-    Composition.length (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.isLt⟩) =
+    Composition.length
+        (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.isLt⟩) =
       Composition.blocksFun b i :=
   show List.length ((splitWrtComposition a.blocks b)[i.val]) = blocksFun b i by
     rw [getElem_map_rev List.length, getElem_of_eq (map_length_splitWrtComposition _ _), blocksFun,

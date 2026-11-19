@@ -178,11 +178,13 @@ theorem Submodule.mem_of_isLocalized_span {m : M} {N : Submodule R M}
   exact Set.disjoint_right.mp disj (u * t).property (by apply hu ▸ smul_mem _ _ ha)
 
 theorem Submodule.le_of_isLocalized_span {N P : Submodule R M}
-    (h : ∀ r : s, N.localized₀ (.powers r.val) (f r) ≤ P.localized₀ (.powers r.val) (f r)) : N ≤ P :=
+    (h : ∀ r : s, N.localized₀ (.powers r.val) (f r) ≤ P.localized₀ (.powers r.val) (f r)) :
+    N ≤ P :=
   fun m hm ↦ mem_of_isLocalized_span s span_eq _ f fun r ↦ h r ⟨m, hm, 1, by simp⟩
 
 theorem Submodule.eq_of_isLocalized₀_span {N P : Submodule R M}
-    (h : ∀ r : s, N.localized₀ (.powers r.val) (f r) = P.localized₀ (.powers r.val) (f r)) : N = P :=
+    (h : ∀ r : s, N.localized₀ (.powers r.val) (f r) = P.localized₀ (.powers r.val) (f r)) :
+    N = P :=
   le_antisymm (le_of_isLocalized_span s span_eq _ _ fun r ↦ (h r).le)
     (le_of_isLocalized_span s span_eq _ _ fun r ↦ (h r).ge)
 
@@ -195,7 +197,8 @@ theorem Submodule.eq_top_of_isLocalized₀_span {N : Submodule R M}
   eq_of_isLocalized₀_span s span_eq Mₚ f fun _ ↦ by simp only [h, Submodule.localized₀_top]
 
 theorem Submodule.eq_of_isLocalized'_span {N P : Submodule R M}
-    (h : ∀ r, N.localized' (Rₚ r) (.powers r.val) (f r) = P.localized' (Rₚ r) (.powers r.val) (f r)) :
+    (h : ∀ r, N.localized' (Rₚ r) (.powers r.val) (f r) =
+      P.localized' (Rₚ r) (.powers r.val) (f r)) :
     N = P :=
   eq_of_isLocalized₀_span s span_eq _ f fun r ↦ congr(restrictScalars _ $(h r))
 

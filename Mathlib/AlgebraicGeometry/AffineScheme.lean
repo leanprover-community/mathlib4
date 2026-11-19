@@ -631,7 +631,8 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
     ∃ f : Γ(X, U), X.basicOpen f ≤ V ∧ ↑x ∈ X.basicOpen f := by
   have : IsAffine _ := hU
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, h₁, h₂ : _ ≤ U.ι ⁻¹ᵁ V⟩ :=
-    (isBasis_basicOpen U).exists_subset_of_mem_open (x.property : (⟨x, h⟩ : U) ∈ _) (U.ι ⁻¹ᵁ V).isOpen
+    (isBasis_basicOpen U).exists_subset_of_mem_open (x.property : (⟨x, h⟩ : U) ∈ _)
+      (U.ι ⁻¹ᵁ V).isOpen
   replace h₁ : x.val ∈ X.basicOpen r := by simpa [U.mem_basicOpen_toScheme] using! h₁
   replace h₂ : X.basicOpen r ≤ V := by
     simpa [Scheme.image_basicOpen] using! (U.ι.image_mono h₂).trans (U.ι.image_preimage_le _)

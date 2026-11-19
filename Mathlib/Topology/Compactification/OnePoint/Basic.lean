@@ -409,7 +409,8 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
     { toFun := fun x => match x with
         | ∞ => Classical.choose f.property
         | some x => f.val x
-      continuous_toFun := continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.property }
+      continuous_toFun :=
+        continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.property }
   left_inv f := by
     ext x
     refine OnePoint.rec ?_ ?_ x

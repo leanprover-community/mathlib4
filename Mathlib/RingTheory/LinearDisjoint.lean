@@ -433,7 +433,8 @@ variable {A B} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_left (H : A.LinearDisjoint B) [Module.Flat R A]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
-    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
+    (hb : LinearIndependent R b) :
+    LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
   Submodule.LinearDisjoint.linearIndependent_mul_of_flat_left H ha hb
 
 variable {A B} in
@@ -443,7 +444,8 @@ variable {A B} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_right (H : A.LinearDisjoint B) [Module.Flat R B]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
-    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
+    (hb : LinearIndependent R b) :
+    LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
   Submodule.LinearDisjoint.linearIndependent_mul_of_flat_right H ha hb
 
 variable {A B} in
@@ -454,7 +456,8 @@ also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat (H : A.LinearDisjoint B)
     (hf : Module.Flat R A ∨ Module.Flat R B)
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
-    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
+    (hb : LinearIndependent R b) :
+    LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
   Submodule.LinearDisjoint.linearIndependent_mul_of_flat H hf ha hb
 
 /-- If `{ a_i }` is an `R`-basis of `A`, if `{ b_j }` is an `R`-basis of `B`,

@@ -124,7 +124,8 @@ decreasing_by
 where
   /-- Compute where `ArgReorder.permute!` sends the `n`-th element in an array. -/
   permuteSingle (r : ArgReorder) (n : Nat) : Nat :=
-    r.perm.findSome? (fun cycle ↦ getCycleSuccessor n (cycle.val.head (by grind)) cycle.val) |>.getD n
+    r.perm.findSome? (fun cycle ↦ getCycleSuccessor n (cycle.val.head (by grind)) cycle.val)
+      |>.getD n
   /-- Return the successor of `n` in a cycle, where `head` is the head of the cycle list. -/
   getCycleSuccessor (n head : Nat) : List Nat → Option Nat
     | [] => none

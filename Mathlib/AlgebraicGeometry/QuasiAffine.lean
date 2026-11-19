@@ -130,8 +130,8 @@ lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffin
   let e : pullback f (Y.basicOpen r.val).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.val)) :=
     pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.val) ≪≫
     IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.property.preimage f)
-  refine .of_iso ((this r.val).op.map Scheme.Spec) e.symm r.property.isoSpec.symm (.refl _) (.refl _)
-    ?_ ?_ (by simp) (by simp)
+  refine .of_iso ((this r.val).op.map Scheme.Spec) e.symm r.property.isoSpec.symm (.refl _)
+    (.refl _) ?_ ?_ (by simp) (by simp)
   · simp only [Iso.symm_hom, Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [e, Scheme.Cover.pullbackHom, IsAffineOpen.isoSpec_hom, Scheme.Hom.appLE]
     simp only [homOfLE_leOfHom, Spec.map_comp, Category.assoc,

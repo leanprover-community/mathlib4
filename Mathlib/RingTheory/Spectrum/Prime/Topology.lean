@@ -1109,7 +1109,8 @@ semiring `{0, 0.5, 1}` with `⊔` as `+` and `⊓` as `*`, `0.5` has no compleme
 def mulZeroAddOneEquivClopens :
     {e : R × R // e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃o Clopens (PrimeSpectrum R) where
   toEquiv := .ofBijective
-    (fun e ↦ ⟨basicOpen e.val.1, isClopen_iff_mul_add.mpr ⟨_, _, e.property.1, e.property.2, rfl⟩⟩) <| by
+    (fun e ↦ ⟨basicOpen e.val.1,
+      isClopen_iff_mul_add.mpr ⟨_, _, e.property.1, e.property.2, rfl⟩⟩) <| by
       refine ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ eq ↦ mul_eq_zero_add_eq_one_ext_left ?_, fun s ↦ ?_⟩
       · exact basicOpen_injOn_isIdempotentElem (IsIdempotentElem.of_mul_add hx.1 hx.2).1
           (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' congr($(eq).carrier)
@@ -1233,8 +1234,8 @@ irreducible component is a zero locus of some minimal prime ideal. -/
 protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R) :
     I.minimalPrimes ≃o (irreducibleComponents (zeroLocus (I : Set R)))ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ I ≤ p} ≃o zeroLocus (I : Set R) :=
-    ⟨⟨fun x ↦ ⟨⟨x.val, x.property.1⟩, x.property.2⟩, fun x ↦ ⟨x.val.asIdeal, x.val.isPrime, x.property⟩,
-      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun x ↦ ⟨⟨x.val, x.property.1⟩, x.property.2⟩,
+      fun x ↦ ⟨x.val.asIdeal, x.val.isPrime, x.property⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.zeroLocusEquivIrreducibleCloseds (I : Set R)).trans
@@ -1249,8 +1250,8 @@ irreducible component is a zero locus of some minimal prime ideal. -/
 protected def _root_.minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
-    ⟨⟨fun x ↦ ⟨x.val, x.property.1⟩, fun x ↦ ⟨x.asIdeal, x.isPrime, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩,
-      Iff.rfl⟩
+    ⟨⟨fun x ↦ ⟨x.val, x.property.1⟩, fun x ↦ ⟨x.asIdeal, x.isPrime, bot_le⟩, fun _ ↦ rfl,
+      fun _ ↦ rfl⟩, Iff.rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
@@ -1431,7 +1432,8 @@ lemma isIdempotentElemEquivClopens_symm_inf (s₁ s₂) :
   map_inf ..
 
 lemma isIdempotentElemEquivClopens_symm_compl (s : Clopens (PrimeSpectrum R)) :
-    isIdempotentElemEquivClopens.symm sᶜ = ⟨_, (isIdempotentElemEquivClopens.symm s).property.one_sub⟩ :=
+    isIdempotentElemEquivClopens.symm sᶜ =
+      ⟨_, (isIdempotentElemEquivClopens.symm s).property.one_sub⟩ :=
   map_compl ..
 
 lemma isIdempotentElemEquivClopens_symm_top :

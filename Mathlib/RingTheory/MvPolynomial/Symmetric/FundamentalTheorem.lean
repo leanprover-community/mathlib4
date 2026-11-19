@@ -221,8 +221,8 @@ lemma leadingCoeff_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
   | zero => rw [esymmAlgHom_zero, leadingCoeff_toLex_C]
   | add_single i _ _ _ _ ih =>
     rw [esymmAlgHomMonomial_add, esymmAlgHomMonomial_single_one,
-        ((monic_esymm <| i.isLt.trans_le hnm).pow toLex_add toLex.injective).leadingCoeff_mul_eq_left,
-        ih]
+      ((monic_esymm <| i.isLt.trans_le hnm).pow toLex_add toLex.injective).leadingCoeff_mul_eq_left,
+      ih]
     exacts [toLex.injective, toLex_add]
 
 set_option backward.isDefEq.respectTransparency false in

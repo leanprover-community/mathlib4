@@ -61,8 +61,8 @@ lemma covMatrix_apply (s t : I) :
     covMatrix I s t = min s.val t.val := rfl
 
 lemma covMatrix_submatrix (hJI : J ⊆ I) :
-    (covMatrix I).submatrix (fun i : J ↦ ⟨i.val, hJI i.property⟩) (fun i : J ↦ ⟨i.val, hJI i.property⟩) =
-    covMatrix J := rfl
+    (covMatrix I).submatrix (fun i : J ↦ ⟨i.val, hJI i.property⟩)
+      (fun i : J ↦ ⟨i.val, hJI i.property⟩) = covMatrix J := rfl
 
 lemma posSemidef_covMatrix (I : Finset ℝ≥0) :
     (covMatrix I).PosSemidef := by

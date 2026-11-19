@@ -66,7 +66,8 @@ theorem ContDiffAt.contDiffPointwiseHolderAt {n : WithTop ℕ∞} (h : ContDiffA
     (iteratedFDeriv ℝ k f · - iteratedFDeriv ℝ k f a) =O[𝓝 a] (· - a) :=
       (h.differentiableAt_iteratedFDeriv hk).isBigO_sub
     _ =O[𝓝 a] (‖· - a‖ ^ (α : ℝ)) :=
-      .of_norm_left <| .comp_tendsto (.id_rpow_of_le_one α.property.2) <| tendsto_norm_sub_self_nhdsGE a
+      .of_norm_left <| .comp_tendsto (.id_rpow_of_le_one α.property.2) <|
+        tendsto_norm_sub_self_nhdsGE a
 
 namespace ContDiffPointwiseHolderAt
 

@@ -177,7 +177,8 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
   nontriviality R
   let e : s ⊕ t ≃ ↥(inl R M M' '' s ∪ inr R M M' '' t) :=
-    .ofBijective (Sum.elim (fun i ↦ ⟨_, .inl ⟨_, i.property, rfl⟩⟩) fun i ↦ ⟨_, .inr ⟨_, i.property, rfl⟩⟩)
+    .ofBijective
+      (Sum.elim (fun i ↦ ⟨_, .inl ⟨_, i.property, rfl⟩⟩) fun i ↦ ⟨_, .inr ⟨_, i.property, rfl⟩⟩)
       ⟨by rintro (_ | _) (_ | _) eq <;> simp [hs.ne_zero, ht.ne_zero] at eq <;> aesop,
         by rintro ⟨_, ⟨_, _, rfl⟩ | ⟨_, _, rfl⟩⟩ <;> aesop⟩
   refine (linearIndependent_equiv' e ?_).mp (linearIndependent_inl_union_inr' hs ht)

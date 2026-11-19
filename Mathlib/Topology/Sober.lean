@@ -301,11 +301,13 @@ lemma component_injective [T0Space α] : Function.Injective (component (α := α
 noncomputable
 def ofComponent [QuasiSober α] (x : irreducibleComponents α) : genericPoints α :=
   ⟨x.property.1.genericPoint, show _ ∈ irreducibleComponents α from
-    (x.property.1.isGenericPoint_genericPoint (isClosed_of_mem_irreducibleComponents x.val x.property)).symm ▸ x.property⟩
+    (x.property.1.isGenericPoint_genericPoint
+      (isClosed_of_mem_irreducibleComponents x.val x.property)).symm ▸ x.property⟩
 
 lemma isGenericPoint_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
     IsGenericPoint (ofComponent x).val x :=
-    x.property.1.isGenericPoint_genericPoint (isClosed_of_mem_irreducibleComponents x.val x.property)
+    x.property.1.isGenericPoint_genericPoint
+      (isClosed_of_mem_irreducibleComponents x.val x.property)
 
 @[simp]
 lemma component_ofComponent [QuasiSober α] (x : irreducibleComponents α) :

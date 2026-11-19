@@ -219,7 +219,8 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
     refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
     · exact (dist_val_le_dist (u n) (u m)).trans (hu N n m hNn hNm).le
     · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by simp) (by norm_num)
-  obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).val) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
+  obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).val) atTop (𝓝 x) :=
+    cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩
   obtain ⟨C, hC⟩ : ∃ C, ∀ n, 1 / infDist (u n).val sᶜ < C := by

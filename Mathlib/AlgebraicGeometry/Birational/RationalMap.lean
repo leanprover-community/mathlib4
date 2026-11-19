@@ -610,7 +610,8 @@ def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover wher
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
     use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.property).choose_spec.1⟩
-    exact ⟨⟨x.val, (TopologicalSpace.Opens.mem_sSup.mp x.property).choose_spec.2⟩, Subtype.ext (by simp)⟩
+    exact ⟨⟨x.val, (TopologicalSpace.Opens.mem_sSup.mp x.property).choose_spec.2⟩,
+      Subtype.ext (by simp)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
@@ -624,7 +625,8 @@ def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.Par
   let g (x : f.openCoverDomain.I₀) := x.property.choose
   have hg₁ (x) : (g x).toRationalMap = f := x.property.choose_spec.1
   have hg₂ (x) : (g x).domain = x.val := x.property.choose_spec.2
-  refine (cancel_epi (isPullback_opens_inf_le (le_sSup x.property) (le_sSup y.property)).isoPullback.hom).mp ?_
+  refine (cancel_epi
+    (isPullback_opens_inf_le (le_sSup x.property) (le_sSup y.property)).isoPullback.hom).mp ?_
   simp only [openCoverDomain, IsPullback.isoPullback_hom_fst_assoc,
     IsPullback.isoPullback_hom_snd_assoc]
   change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom

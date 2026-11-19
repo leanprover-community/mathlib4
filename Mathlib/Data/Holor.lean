@@ -323,7 +323,8 @@ theorem cprankMax_upper_bound [Semiring α] : ∀ {ds}, ∀ x : Holor α ds, CPR
     have h_cprankMax_sum :
       CPRankMax (Finset.card (Finset.range d) * prod ds)
         (∑ i ∈ Finset.attach (Finset.range d),
-          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.property)) := by rwa [Finset.card_attach] at this
+          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.property)) := by
+      rwa [Finset.card_attach] at this
     rw [← sum_unitVec_mul_slice x]
     rw [h_dds_prod]
     exact h_cprankMax_sum

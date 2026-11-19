@@ -94,11 +94,13 @@ lemma coequifibered_normalizationDiagramMap :
     rw! (castMode := .all) [f.preimage_basicOpen r]
     exact isLocalization_basicOpen_of_qcqs (f.isCompact_preimage U.property.isCompact)
         (f.isQuasiSeparated_preimage U.property.isQuasiSeparated) (f.app _ r)
-  change IsLocalization.Away ((algebraMap Γ(Y, U.val) (integralClosure Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val))) r)
+  change IsLocalization.Away
+    ((algebraMap Γ(Y, U.val) (integralClosure Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val))) r)
     (integralClosure Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r))
   let : Algebra ↑Γ(Y, U.val) ↑Γ(X, f ⁻¹ᵁ Y.basicOpen r) :=
     (f.appLE _ _ (f.preimage_mono (Y.basicOpen_le _))).hom.toAlgebra
-  have : IsScalarTower Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val) Γ(X, f ⁻¹ᵁ Y.basicOpen r) := .of_algebraMap_eq' rfl
+  have : IsScalarTower Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val) Γ(X, f ⁻¹ᵁ Y.basicOpen r) :=
+    .of_algebraMap_eq' rfl
   have : IsScalarTower Γ(Y, U.val) Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r) :=
     .of_algebraMap_eq' <| by
       simp only [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, Scheme.Hom.app_eq_appLE,
@@ -133,7 +135,8 @@ def toNormalization : X ⟶ f.normalization :=
     ((directedCover Y).pullback₁ f)
     (fun U ↦ letI := (f.app U.val).hom.toAlgebra
       (pullbackRestrictIsoRestrict f _).hom ≫
-      (f ⁻¹ᵁ U.val).toSpecΓ ≫ Spec.map (CommRingCat.ofHom <| integralClosure Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val)
+      (f ⁻¹ᵁ U.val).toSpecΓ ≫
+      Spec.map (CommRingCat.ofHom <| integralClosure Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val)
       |>.val.toRingHom) ≫ f.normalizationOpenCover.f U) fun {U V : Y.AffineZariskiSite} i ↦ by
   have : (pullbackRestrictIsoRestrict f U.val).inv ≫
       Cover.trans ((directedCover Y).pullback₁ f) i ≫
@@ -155,7 +158,8 @@ set_option backward.defeqAttrib.useBackward true in
 lemma ι_toNormalization (U : Y.affineOpens) :
     letI := (f.app U.val).hom.toAlgebra
     (f ⁻¹ᵁ U.val).ι ≫ f.toNormalization = (f ⁻¹ᵁ U.val).toSpecΓ ≫
-      Spec.map (CommRingCat.ofHom <| integralClosure Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val) |>.val.toRingHom) ≫
+      Spec.map
+        (CommRingCat.ofHom <| integralClosure Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val) |>.val.toRingHom) ≫
         f.normalizationOpenCover.f U := by
   rw [← cancel_epi (pullbackRestrictIsoRestrict f U.val).hom, ← Category.assoc]
   trans ((directedCover Y).pullback₁ f).f U ≫ f.toNormalization
@@ -289,7 +293,8 @@ instance [IsIntegralHom f] : IsIso f.toNormalization := by
   let := (f.app U.val).hom.toAlgebra
   convert_to! IsIso (Spec.map (CommRingCat.ofHom
       (integralClosure Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val)).val.toRingHom))
-  · rw [← cancel_mono (f.normalizationOpenCover.f U), ← cancel_epi (U.property.preimage f).isoSpec.hom]
+  · rw [← cancel_mono (f.normalizationOpenCover.f U),
+      ← cancel_epi (U.property.preimage f).isoSpec.hom]
     simp [e, -Iso.cancel_iso_hom_left, IsAffineOpen.isoSpec_hom,
       Hom.ι_toNormalization]
   have : integralClosure Γ(Y, U.val) Γ(X, f ⁻¹ᵁ U.val) = ⊤ := by
@@ -375,14 +380,17 @@ def normalizationDesc (H : f = f₁ ≫ f₂) : f.normalization ⟶ T := by
       ι.naturality := ?_ }
   · algebraize [(f.app U.val).hom, (f₂.app U.val).hom,
       (f₁.appLE (f₂ ⁻¹ᵁ U.val) (f ⁻¹ᵁ U.val) (by simp [H])).hom]
-    have : IsScalarTower Γ(Y, U.val) Γ(T, f₂ ⁻¹ᵁ U.val) Γ(X, f ⁻¹ᵁ U.val) := .of_algebraMap_eq' <| by
+    have : IsScalarTower Γ(Y, U.val) Γ(T, f₂ ⁻¹ᵁ U.val)
+        Γ(X, f ⁻¹ᵁ U.val) := .of_algebraMap_eq' <| by
       simp only [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp,
         Hom.app_eq_appLE, Hom.appLE_comp_appLE, ← H]
-    exact .algebraMap (R := Γ(Y, U.val)) (B := Γ(X, f ⁻¹ᵁ U.val)) (f₂.isIntegral_app U.val U.property x)
+    exact .algebraMap (R := Γ(Y, U.val)) (B := Γ(X, f ⁻¹ᵁ U.val))
+      (f₂.isIntegral_app U.val U.property x)
   · intros U V i
     dsimp [normalizationGlueData, relativeGluingData]
-    rw [Category.comp_id, ← Spec.map_comp_assoc, ← (V.property.preimage f₂).map_fromSpec (U.property.preimage f₂)
-      (homOfLE (f₂.preimage_mono (Scheme.AffineZariskiSite.toOpens_mono i.le))).op,
+    rw [Category.comp_id, ← Spec.map_comp_assoc,
+      ← (V.property.preimage f₂).map_fromSpec (U.property.preimage f₂)
+        (homOfLE (f₂.preimage_mono (Scheme.AffineZariskiSite.toOpens_mono i.le))).op,
       ← Spec.map_comp_assoc]
     congr 2
     ext i
@@ -458,7 +466,8 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       simp [← Scheme.Hom.comp_preimage]
     trans Spec.map (f₀.appLE (g ⁻¹ᵁ U.val) (f ⁻¹ᵁ U.val) h₁) ≫ (U.prop.preimage g).fromSpec
     · simp only [AlgHom.toRingHom_eq_coe, comp_appLE, Spec.map_comp, Category.assoc, f₀]
-      rw [app_eq_appLE, IsAffineOpen.SpecMap_appLE_fromSpec _ _ ((U.property.preimage _).preimage _)]
+      rw [app_eq_appLE,
+        IsAffineOpen.SpecMap_appLE_fromSpec _ _ ((U.property.preimage _).preimage _)]
       have : (toNormalization f).appLE (f₁ ⁻¹ᵁ g ⁻¹ᵁ U.val) (f ⁻¹ᵁ U.val) h₁ =
         f.normalization.presheaf.map (eqToHom h₂).op ≫
         (toNormalization f).app (f.fromNormalization ⁻¹ᵁ U.val) ≫

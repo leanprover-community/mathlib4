@@ -225,7 +225,8 @@ noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirec
   directed {U V} x := by
     let a := (pullback.fst _ _ ≫ U.val.ι) x
     have haU : a ∈ U.val := (pullback.fst U.val.ι V.val.ι x).property
-    have haV : a ∈ V.val := by unfold a; rw [pullback.condition]; exact (pullback.snd U.val.ι V.val.ι x).property
+    have haV : a ∈ V.val := by
+      unfold a; rw [pullback.condition]; exact (pullback.snd U.val.ι V.val.ι x).property
     obtain ⟨f, g, e, hxf⟩ := exists_basicOpen_le_affine_inter U.property V.property _ ⟨haU, haV⟩
     refine ⟨U.basicOpen f, homOfLE (U.basicOpen_le f), eqToHom (Subtype.ext (by exact e)) ≫
       homOfLE (V.basicOpen_le g), ⟨a, hxf⟩, ?_⟩

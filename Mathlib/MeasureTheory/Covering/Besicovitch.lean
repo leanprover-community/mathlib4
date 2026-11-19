@@ -428,7 +428,8 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
         have G_lt : G a < G b := by
           rcases G_le.lt_or_eq with (H | H); · exact H
           have A : (a : ℕ) ≠ b := Fin.val_injective.ne a_ne_b
-          rw [← color_G a (Nat.lt_succ_iff.1 a.isLt), ← color_G b (Nat.lt_succ_iff.1 b.isLt), H] at A
+          rw [← color_G a (Nat.lt_succ_iff.1 a.isLt), ← color_G b (Nat.lt_succ_iff.1 b.isLt),
+            H] at A
           exact (A rfl).elim
         exact Or.inl (Gab a b G_lt)
       hlast := by

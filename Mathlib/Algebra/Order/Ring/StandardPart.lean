@@ -158,7 +158,8 @@ instance ordConnected_preimage_mk :
   ordConnected_preimage_mk'
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mk_eq_mk {x y : FiniteElement K} : mk x = mk y ↔ 0 < ArchimedeanClass.mk (x.val - y.val) := by
+theorem mk_eq_mk {x y : FiniteElement K} :
+    mk x = mk y ↔ 0 < ArchimedeanClass.mk (x.val - y.val) := by
   apply Quotient.eq.trans
   rw [Submodule.quotientRel_def, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
     FiniteElement.not_isUnit_iff_mk_pos, AddSubgroupClass.coe_sub]

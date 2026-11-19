@@ -616,12 +616,14 @@ def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
 
 @[simp]
 theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :
-    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) = ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.property⟩ :=
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) =
+      ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.property⟩ :=
   rfl
 
 @[simp]
 theorem Finset.disjUnionEquiv_inr (h : Disjoint s t) (y : t) :
-    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) = ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.property⟩ :=
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) =
+      ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.property⟩ :=
   rfl
 
 @[simp]

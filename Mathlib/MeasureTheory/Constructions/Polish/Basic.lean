@@ -424,7 +424,8 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
       ¬MeasurablySeparable (f '' cylinder p.2.1 p.1) (g '' cylinder p.2.2 p.1) }
   -- for each such pair, one can find longer cylinders whose images are not Borel-separated either
   have : ∀ p : A, ∃ q : A,
-      q.val.1 = p.val.1 + 1 ∧ q.val.2.1 ∈ cylinder p.val.2.1 p.val.1 ∧ q.val.2.2 ∈ cylinder p.val.2.2 p.val.1 := by
+      q.val.1 = p.val.1 + 1 ∧ q.val.2.1 ∈ cylinder p.val.2.1 p.val.1 ∧
+      q.val.2.2 ∈ cylinder p.val.2.2 p.val.1 := by
     rintro ⟨⟨n, x, y⟩, hp⟩
     rcases I n x y hp with ⟨x', y', hx', hy', h'⟩
     exact ⟨⟨⟨n + 1, x', y'⟩, h'⟩, rfl, hx', hy'⟩
@@ -1037,7 +1038,8 @@ theorem Measurable.tprod {f : ι → X → E} (h : ∀ i : ι, Measurable (f i))
   have h0 : (Eᶜ.domRestrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
     funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
   refine measurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ measurable_const)
-  refine measurable_of_tendsto_metrizable' L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.property.hasProd)
+  refine measurable_of_tendsto_metrizable' L.filter ?_
+    (tendsto_pi_nhds.mpr fun e => e.property.hasProd)
   fun_prop
 
 /-- The product of almost everywhere measurable functions is measurable. -/

@@ -300,8 +300,8 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   obtain ⟨q, r, r_mem, lt⟩ := exists_mem_finset_approx' bS adm a b_ne_zero
   apply @dvd_of_mul_left_dvd _ _ q
   simp only [Algebra.smul_def] at lt
-  rw [←
-    sub_eq_zero.mp (b_min _ (I.val.sub_mem (I.val.mul_mem_left _ ha) (I.val.mul_mem_left _ b_mem)) lt)]
+  rw [← sub_eq_zero.mp
+    (b_min _ (I.val.sub_mem (I.val.mul_mem_left _ ha) (I.val.mul_mem_left _ b_mem)) lt)]
   refine mul_dvd_mul_right (dvd_trans (map_dvd _ ?_) hr') _
   exact Multiset.dvd_prod (Multiset.mem_map.mpr ⟨_, r_mem, rfl⟩)
 
@@ -311,7 +311,8 @@ By showing this function is surjective, we prove that the class group is finite.
 noncomputable def mkMMem [IsDedekindDomain S]
     (J : { J : Ideal S // algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J }) : ClassGroup S :=
   ClassGroup.mk0
-    ⟨J.val, mem_nonZeroDivisors_iff_ne_zero.mpr (ne_bot_of_prod_finsetApprox_mem bS adm J.val J.property)⟩
+    ⟨J.val, mem_nonZeroDivisors_iff_ne_zero.mpr
+      (ne_bot_of_prod_finsetApprox_mem bS adm J.val J.property)⟩
 
 theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
     Function.Surjective (ClassGroup.mkMMem bS adm) := by

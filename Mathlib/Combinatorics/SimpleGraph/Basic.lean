@@ -104,7 +104,8 @@ attribute [grind ext] SimpleGraph.ext
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
-  toFun x := ⟨fun v w ↦ x.val v w, ⟨fun v w ↦ by simp [x.property.1]⟩, ⟨fun v ↦ by simp [x.property.2]⟩⟩
+  toFun x := ⟨fun v w ↦ x.val v w, ⟨fun v w ↦ by simp [x.property.1]⟩,
+    ⟨fun v ↦ by simp [x.property.2]⟩⟩
   inj' := by
     rintro ⟨adj, _⟩ ⟨adj', _⟩
     simp only [mk.injEq, Subtype.mk.injEq]

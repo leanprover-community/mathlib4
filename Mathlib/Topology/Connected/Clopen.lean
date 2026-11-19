@@ -578,7 +578,8 @@ noncomputable def equivOfIsClopen : ConnectedComponents α ≃ Σ i, ConnectedCo
     obtain rfl : i = j := by
       apply hdisj.eq
       rw [Set.not_disjoint_iff]
-      exact ⟨x, x.property, (hclopen j).connectedComponent_subset y.property (hxy ▸ mem_connectedComponent)⟩
+      exact ⟨x, x.property,
+        (hclopen j).connectedComponent_subset y.property (hxy ▸ mem_connectedComponent)⟩
     simp [← Set.image_val_inj, heq, hxy]
   · obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
     obtain ⟨i, hi⟩ := Set.iUnion_eq_univ_iff.mp hunion x

@@ -932,8 +932,8 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
 @[simps toEquiv_apply] noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
   invFun n := Classical.choose n.property
-  left_inv m :=
-    f.injective (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).property)
+  left_inv m := f.injective
+    (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).property)
   right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn)
   map_fun' {n} f x := by simp
   map_rel' {n} R x := by simp

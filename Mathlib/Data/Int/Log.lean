@@ -169,7 +169,8 @@ def zpowLogGi {b : ℕ} (hb : 1 < b) :
       fun r : Set.Ioi (0 : R) => Int.log b (r : R) :=
   GaloisCoinsertion.monotoneIntro (fun r₁ _ => log_mono_right r₁.property)
     (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
-    (fun r => Subtype.coe_le_coe.mp <| zpow_log_le_self hb r.property) fun _ => log_zpow (R := R) hb _
+    (fun r => Subtype.coe_le_coe.mp <| zpow_log_le_self hb r.property)
+    fun _ => log_zpow (R := R) hb _
 
 /-- `zpow b` and `Int.log b` (almost) form a Galois connection. -/
 theorem lt_zpow_iff_log_lt {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) :

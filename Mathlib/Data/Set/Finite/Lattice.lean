@@ -176,7 +176,8 @@ lemma finite_iUnion_iff {ι : Type*} {s : ι → Set α} (hs : Pairwise fun i j 
     (⋃ i, s i).Finite ↔ (∀ i, (s i).Finite) ∧ {i | (s i).Nonempty}.Finite where
   mp h := by
     refine ⟨fun i ↦ h.subset <| subset_iUnion _ _, ?_⟩
-    let u (i : {i | (s i).Nonempty}) : ⋃ i, s i := ⟨i.property.choose, mem_iUnion.2 ⟨i.val, i.property.choose_spec⟩⟩
+    let u (i : {i | (s i).Nonempty}) : ⋃ i, s i :=
+      ⟨i.property.choose, mem_iUnion.2 ⟨i.val, i.property.choose_spec⟩⟩
     have u_inj : Function.Injective u := by
       rintro ⟨i, hi⟩ ⟨j, hj⟩ hij
       ext

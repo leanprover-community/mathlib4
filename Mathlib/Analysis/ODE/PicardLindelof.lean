@@ -286,7 +286,8 @@ noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ c
     apply intervalIntegral.norm_integral_le_of_norm_le_const
     intro t ht
     -- Can `grind` do this in the future?
-    have ht : t ∈ Icc tmin tmax := subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₂.property t₁.property) ht
+    have ht : t ∈ Icc tmin tmax :=
+      subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₂.property t₁.property) ht
     exact hf.norm_le _ ht _ <| α.mem_closedBall hf.mul_max_le
   mem_closedBall₀ := by simp [hx]
 

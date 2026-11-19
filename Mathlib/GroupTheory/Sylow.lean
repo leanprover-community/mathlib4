@@ -205,8 +205,9 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
             one_mem' := ⟨Q, ⟨⟨Q, hQ⟩, rfl⟩, Q.one_mem⟩
             inv_mem' := fun {_} ⟨_, ⟨R, rfl⟩, hg⟩ => ⟨R, ⟨R, rfl⟩, R.val.inv_mem hg⟩
             mul_mem' := fun {_} _ ⟨_, ⟨R, rfl⟩, hg⟩ ⟨_, ⟨S, rfl⟩, hh⟩ =>
-              (hc2.total R.property S.property).elim (fun T => ⟨S, ⟨S, rfl⟩, S.val.mul_mem (T hg) hh⟩) fun T =>
-                ⟨R, ⟨R, rfl⟩, R.val.mul_mem hg (T hh)⟩ },
+              (hc2.total R.property S.property).elim
+                (fun T => ⟨S, ⟨S, rfl⟩, S.val.mul_mem (T hg) hh⟩)
+                fun T => ⟨R, ⟨R, rfl⟩, R.val.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
           refine Exists.imp (fun k hk => ?_) (hc1 S.property ⟨g, hg⟩)
           rw [Subtype.ext_iff, coe_pow] at hk ⊢

@@ -239,7 +239,8 @@ theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
         ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A)
         continuous_subtypeVal (fun x ↦ x.property.2) with
       x
-    rw [cfcHomSuperset_apply, Set.domRestrict_apply, cfc_apply _ _ x.property.1 (hf.mono x.property.2)]
+    rw [cfcHomSuperset_apply, Set.domRestrict_apply,
+      cfc_apply _ _ x.property.1 (hf.mono x.property.2)]
     congr!
 
 open UniformOnFun in
@@ -773,7 +774,8 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
       continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.domRestrict⟩, hf0⟩ (X :=
         {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtypeVal (fun x ↦ x.property.2) with
       x
-    rw [cfcₙHomSuperset_apply, Set.domRestrict_apply, cfcₙ_apply _ _ (hf.mono x.property.2) hf0 x.property.1]
+    rw [cfcₙHomSuperset_apply, Set.domRestrict_apply,
+      cfcₙ_apply _ _ (hf.mono x.property.2) hf0 x.property.1]
     congr!
   · convert continuousOn_empty _ using 1
     rw [Set.eq_empty_iff_forall_notMem]
@@ -892,7 +894,8 @@ theorem ContinuousOn.cfcₙ_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum 𝕜 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      quasispectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.property)
+      quasispectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp
+        (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
     exact upperHemicontinuous_quasispectrum 𝕜 A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet

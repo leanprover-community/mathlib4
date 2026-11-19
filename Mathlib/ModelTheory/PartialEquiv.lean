@@ -417,7 +417,8 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
 
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
 @[simps]
-def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.val.symm, f.val.dom_fg_iff_cod_fg.1 f.property⟩
+def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M :=
+  ⟨f.val.symm, f.val.dom_fg_iff_cod_fg.1 f.property⟩
 
 lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.val.cod ∧ f ≤ g := by

@@ -1085,7 +1085,8 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace 
 abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a : X) :
     PseudoMetricSpace (boundedComponent a) :=
   PseudoEMetricSpace.toPseudoMetricSpace fun p q ↦ by
-    refine ((edist_triangle p.val a q.val).trans_lt (ENNReal.add_lt_top.2 ⟨?_, q.property.lt_top⟩)).ne
+    refine ((edist_triangle p.val a q.val).trans_lt
+      (ENNReal.add_lt_top.2 ⟨?_, q.property.lt_top⟩)).ne
     rw [edist_comm]
     exact p.property.lt_top
 

@@ -157,10 +157,12 @@ lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : 
   -- We need to construct `max u v`-indexed families with the same presieves.
   -- Because `f` and `g` need not be injective, the indexing type is a sigma of sums.
   let ι' : Type (max u v) := (Presieve.ofArrows X f).uncurry
-  let σ' (i : ι') : Type (max u v) := (Presieve.ofArrows (Y i.property.idx) (g i.property.idx)).uncurry
+  let σ' (i : ι') : Type (max u v) :=
+    (Presieve.ofArrows (Y i.property.idx) (g i.property.idx)).uncurry
   let α : Type (max u v) :=
     (Presieve.ofArrows (fun p : Σ i, σ i ↦ Y _ p.2) (fun _ ↦ g _ _ ≫ f _)).uncurry
-  let τ' (a : α) : Type (max u v) := (Presieve.ofArrows (Y a.property.idx.1) (g a.property.idx.1)).uncurry
+  let τ' (a : α) : Type (max u v) :=
+    (Presieve.ofArrows (Y a.property.idx.1) (g a.property.idx.1)).uncurry
   let fib (i : ι' ⊕ α) := i.elim (fun i ↦ σ' i) (fun i ↦ Unit ⊕ τ' i)
   let incl (p : ι' ⊕ α) : ι := p.elim (fun i ↦ i.property.idx) (fun i ↦ i.property.idx.1)
   let fibincl (i : ι' ⊕ α) (j : fib i) : σ (incl i) := match i with

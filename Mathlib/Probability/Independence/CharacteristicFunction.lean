@@ -147,8 +147,8 @@ lemma iIndepFun.charFunDual_map_finsetSum_eq_prod [NormedSpace ℝ E]
     symm
     convert
       iIndepFun.indepFun_finsetSum_of_notMem₀ (i := ⟨i, mem_insert_self i s⟩) (f :=
-        fun (x : (insert i s : Finset ι)) ↦ X x.val) (s := {x | x.val ∈ s}) hX (fun i ↦ (mX i.val i.property))
-        (by simpa)
+        fun (x : (insert i s : Finset ι)) ↦ X x.val) (s := {x | x.val ∈ s}) hX
+        (fun i ↦ (mX i.val i.property)) (by simpa)
     let e : ((insert i s) : Finset ι) → ι := Subtype.val
     convert (Finset.sum_of_injOn Subtype.val ?_ ?_ ?_ ?_).symm
     · simp

@@ -244,12 +244,14 @@ abbrev MonicDegreeEq : Type _ := { p : R[X] // p.coeff n = 1 ∧ ∀ i > n, p.co
 @[simp]
 lemma MonicDegreeEq.natDegree [Nontrivial R] (p : MonicDegreeEq R n) :
     p.val.natDegree = n :=
-  natDegree_eq_of_le_of_coeff_ne_zero (natDegree_le_iff_coeff_eq_zero.mpr p.property.2) (by simp [p.property.1])
+  natDegree_eq_of_le_of_coeff_ne_zero (natDegree_le_iff_coeff_eq_zero.mpr p.property.2)
+    (by simp [p.property.1])
 
 @[simp]
 lemma MonicDegreeEq.degree [Nontrivial R] (p : MonicDegreeEq R n) :
     p.val.degree = n :=
-  degree_eq_of_le_of_coeff_ne_zero (degree_le_of_natDegree_le p.natDegree.le) (by simp [p.property.1])
+  degree_eq_of_le_of_coeff_ne_zero (degree_le_of_natDegree_le p.natDegree.le)
+    (by simp [p.property.1])
 
 lemma MonicDegreeEq.monic (p : MonicDegreeEq R n) :
     p.val.Monic := by

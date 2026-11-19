@@ -164,7 +164,8 @@ theorem isConj_swap {w x y z : α} (hwx : w ≠ x) (hyz : y ≠ z) : IsConj (swa
 
 /-- set of all pairs (⟨a, b⟩ : Σ a : fin n, fin n) such that b < a -/
 def finPairsLT (n : ℕ) : Finset (Σ _ : Fin n, Fin n) :=
-  (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.isLt
+  (univ : Finset (Fin n)).sigma fun a =>
+    (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.isLt
 
 theorem mem_finPairsLT {n : ℕ} {a : Σ _ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
   simp only [finPairsLT, Fin.lt_def, true_and, mem_attachFin, mem_range, mem_univ,

@@ -230,7 +230,8 @@ lemma IsCompact.elim_nhds_subcover_nhdsSet (hs : IsCompact s) {U : X → Set X}
     by rwa [Finset.set_biUnion_finset_image]⟩
 
 theorem IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
-    (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U (x : s) x.property :=
+    (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) :
+    ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U (x : s) x.property :=
   (hs.elim_nhds_subcover_nhdsSet' U hU).imp fun _ ↦ subset_of_mem_nhdsSet
 
 theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
@@ -330,7 +331,8 @@ theorem IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed
     (hSc : ∀ U ∈ S, IsCompact U) (hScl : ∀ U ∈ S, IsClosed U) : (⋂₀ S).Nonempty := by
   rw [sInter_eq_iInter]
   exact IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
-    (DirectedOn.directed_val hSd) (fun i ↦ hSn i i.property) (fun i ↦ hSc i i.property) (fun i ↦ hScl i i.property)
+    (DirectedOn.directed_val hSd) (fun i ↦ hSn i i.property) (fun i ↦ hSc i i.property)
+    (fun i ↦ hScl i i.property)
 
 /-- Cantor's intersection theorem for sequences indexed by `ℕ`:
 the intersection of a decreasing sequence of nonempty compact closed sets is nonempty. -/

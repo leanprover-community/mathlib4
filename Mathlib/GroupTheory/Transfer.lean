@@ -244,7 +244,8 @@ include hP
 open scoped IsMulCommutative in
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 def transferSylow [P.FiniteIndex] : G →* P :=
-  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
+  haveI : IsMulCommutative P :=
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
   transfer (MonoidHom.id P)
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
@@ -264,7 +265,8 @@ open scoped IsMulCommutative in
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ P.index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
-  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
+  haveI : IsMulCommutative P :=
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
   transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
 theorem transferSylow_domRestrict_eq_pow : ⇑((transferSylow P hP).domRestrict (P : Subgroup G)) =

@@ -608,7 +608,8 @@ theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [S.HasO
     _ = ‖S.orthogonalProjectionOnto x‖ ^ 2 + ‖Sᗮ.orthogonalProjectionOnto x‖ ^ 2 := by
       simp only [sq]
       exact norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ <|
-        (S.mem_orthogonal _).1 (Sᗮ.orthogonalProjectionOnto x).property _ (S.orthogonalProjectionOnto x).property
+        (S.mem_orthogonal _).1 (Sᗮ.orthogonalProjectionOnto x).property _
+          (S.orthogonalProjectionOnto x).property
 
 theorem norm_sq_eq_add_norm_sq_starProjection (x : E) (S : Submodule 𝕜 E)
     [S.HasOrthogonalProjection] :

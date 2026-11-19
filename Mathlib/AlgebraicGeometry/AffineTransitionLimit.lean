@@ -340,7 +340,8 @@ lemma exists_preimage_eq
   choose i V hV hVi using fun x : s ↦ hs x.property
   obtain ⟨j, fj⟩ := IsCofiltered.inf_objs_exists (hsf.toFinset.attach.image
     fun x ↦ i ⟨x.val, (by simpa only [Set.Finite.mem_toFinset] using x.property)⟩:)
-  replace fj : ∀ b : s, j ⟶ i b := fun b ↦ (@fj (i b) (by simpa using ⟨b.val, b.property, rfl⟩)).some
+  replace fj : ∀ b : s, j ⟶ i b :=
+    fun b ↦ (@fj (i b) (by simpa using ⟨b.val, b.property, rfl⟩)).some
   refine ⟨j, ⨆ (k : s), D.map (fj _) ⁻¹ᵁ V k, ?_, ?_⟩
   · simp only [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.carrier_eq_coe,
       TopologicalSpace.Opens.map_coe, TopologicalSpace.Opens.coe_mk]
@@ -882,8 +883,10 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
   have hjS {x y} (hx : x ∈ σ) (hy : y ∈ σ) : j x y ∈ S :=
     Finset.subset_union_right (Finset.mem_image₂_of_mem hx hy)
   obtain ⟨k, fk, hk⟩ := IsCofiltered.inf_exists S
-    (σ.attach.image₂ (fun (x y : σ) ↦ ⟨j x.val y.val, i x.val, hjS x.property y.property, hiS x.property, fjx x y⟩) σ.attach ∪
-    σ.attach.image₂ (fun (x y : σ) ↦ ⟨j x.val y.val, i y.val, hjS x.property y.property, hiS y.property, fjy x y⟩) σ.attach)
+    (σ.attach.image₂ (fun (x y : σ) ↦
+      ⟨j x.val y.val, i x.val, hjS x.property y.property, hiS x.property, fjx x y⟩) σ.attach ∪
+    σ.attach.image₂ (fun (x y : σ) ↦
+      ⟨j x.val y.val, i y.val, hjS x.property y.property, hiS y.property, fjy x y⟩) σ.attach)
   have hk₁ {x y} (hx : x ∈ σ) (hy : y ∈ σ) := hk (hjS hx hy) (hiS hx) (f := fjx x y)
     (Finset.subset_union_left (Finset.mem_image₂.mpr ⟨⟨x, hx⟩, by simp, ⟨y, hy⟩, by simp, rfl⟩))
   have hk₂ {x y} (hx : x ∈ σ) (hy : y ∈ σ) := hk (hjS hx hy) (hiS hy) (f := fjy x y)
@@ -909,8 +912,8 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
         hk₁ x.property y.property, hk₂ x.property y.property, le_inf_iff]
       exact ⟨fVx.le, fVy.le⟩
     convert!
-      congr(((D.map (fk'k ≫ fk (hjS x.property y.property))).app _ ≫ (D.obj k').presheaf.map (homOfLE H).op)
-        $(hj x y)) using 1
+      congr(((D.map (fk'k ≫ fk (hjS x.property y.property))).app _ ≫
+        (D.obj k').presheaf.map (homOfLE H).op) $(hj x y)) using 1
     · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
       simp only [← ConcreteCategory.comp_apply]
       congr 2
@@ -1215,7 +1218,8 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     (((X.isBasis_affineOpens).isOpenCover_mem_and_le
     ((S.isBasis_affineOpens).isOpenCover.comap f.base.hom)).comap a.base.hom)
   -- By qcqs, this cover descends to some finite affine open cover `𝒱` of `Dᵢ`.
-  obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ := Scheme.exists_isOpenCover_and_isAffine D c hc _ 𝒰 fun U ↦ U.property.1
+  obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ :=
+    Scheme.exists_isOpenCover_and_isAffine D c hc _ 𝒰 fun U ↦ U.property.1
   obtain ⟨i', fi'i, hi'⟩ : ∃ (i' : I) (fi'i : i' ⟶ i),
       ∀ j, D.map fi'i ⁻¹ᵁ 𝒱 j ≤ t.app i' ⁻¹ᵁ j.val.val.2.val.2.val := by
     choose k fk hk using fun j ↦ exists_map_preimage_le_map_preimage D c hc (h𝒱𝒰 j).1.isCompact

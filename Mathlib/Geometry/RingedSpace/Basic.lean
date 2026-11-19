@@ -93,7 +93,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ (x) (hx : x ∈ U), IsUnit (X.presheaf.germ U x hx f)) : IsUnit f := by
   -- We pick a cover of `U` by open sets `V x`, such that `f` is a unit on each `V x`.
-  choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x x.property (h x.val x.property)
+  choose V iVU m h_unit using fun x : U =>
+    X.isUnit_res_of_isUnit_germ U f x x.property (h x.val x.property)
   have hcover : U ≤ iSup V := by
     intro x hxU
     simp only [Opens.mem_iSup]

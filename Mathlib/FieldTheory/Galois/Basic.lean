@@ -310,7 +310,8 @@ theorem coe_subgroupEquivAlgEquiv_symm_apply [FiniteDimensional F E] (σ : Gal(E
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
-    rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.property x, show ϕ • (y : E) = ↑y from y.property ϕ]⟩
+    rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.property x,
+      show ϕ • (y : E) = ↑y from y.property ϕ]⟩
 
 instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   algebraMap :=

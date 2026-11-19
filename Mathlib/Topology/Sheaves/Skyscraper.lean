@@ -292,7 +292,8 @@ set_option backward.isDefEq.respectTransparency false in
 def fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) : 𝓕.stalk p₀ ⟶ c :=
   let χ : Cocone ((OpenNhds.inclusion p₀).op ⋙ 𝓕) :=
     Cocone.mk c
-      { app := fun U => f.app ((OpenNhds.inclusion p₀).op.obj U) ≫ eqToHom (ite_eq_left U.unop.property)
+      { app := fun U =>
+          f.app ((OpenNhds.inclusion p₀).op.obj U) ≫ eqToHom (ite_eq_left U.unop.property)
         naturality := fun U V inc => by
           dsimp only [Functor.const_obj_map, Functor.const_obj_obj, Functor.comp_map,
             Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj]

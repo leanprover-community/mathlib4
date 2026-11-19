@@ -312,7 +312,8 @@ theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : X) (hx : x �
 every point in the fiber `T x` has an allowed section passing through it.
 -/
 theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
-    (w : ∀ t : T x, ∃ (U : OpenNhds x) (f : ∀ y : U.val, T y) (_ : P.pred f), f ⟨x, U.property⟩ = t) :
+    (w : ∀ t : T x,
+      ∃ (U : OpenNhds x) (f : ∀ y : U.val, T y) (_ : P.pred f), f ⟨x, U.property⟩ = t) :
     Function.Surjective (stalkToFiber P x) := fun t ↦ by
   rcases w t with ⟨U, f, h, rfl⟩
   fconstructor

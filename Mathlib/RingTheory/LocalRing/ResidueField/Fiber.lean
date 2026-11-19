@@ -146,7 +146,8 @@ variable (R S) in
 noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
     comap (algebraMap R S) ⁻¹' {p} ≃ PrimeSpectrum (p.asIdeal.Fiber S) where
   toFun q := ⟨RingHom.ker (Algebra.TensorProduct.lift
-    (Ideal.ResidueField.mapₐ p.asIdeal q.val.asIdeal (Algebra.ofId _ _) congr($(q.property.symm).asIdeal))
+    (Ideal.ResidueField.mapₐ p.asIdeal q.val.asIdeal (Algebra.ofId _ _)
+        congr($(q.property.symm).asIdeal))
       (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _).toRingHom, RingHom.ker_isPrime _⟩
   invFun q := ⟨q.comap Algebra.TensorProduct.includeRight.toRingHom, by
     simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, ← comap_comp_apply,

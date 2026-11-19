@@ -189,11 +189,13 @@ instance MulPosStrictMono.to_covariantClass_pos_mul_le [MulPosStrictMono α] :
 
 instance PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
     ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
-  ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.property.le⟩ _ _ bc⟩
+  ⟨fun a _ _ bc =>
+    @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.property.le⟩ _ _ bc⟩
 
 instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
     ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
-  ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.property.le⟩ _ _ bc⟩
+  ⟨fun a _ _ bc =>
+    @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.property.le⟩ _ _ bc⟩
 
 instance (priority := 100) MulLeftMono.toPosMulMono [MulLeftMono α] :
     PosMulMono α where mul_le_mul_of_nonneg_left _ _ _ _ := ‹MulLeftMono α›.elim _

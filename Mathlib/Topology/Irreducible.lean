@@ -505,8 +505,10 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
     preimage_mem_irreducibleComponents_of_isPreirreducible_fiber W.property hf₁ hf₂ hf₃
       (by simp [hf₄.range_eq, W.property.1.1])⟩
   right_inv W := Subtype.ext <| by
-    refine (Set.subset_preimage_image _ _).antisymm' (W.property.2 ?_ (Set.subset_preimage_image _ _))
-    refine ⟨?_, (W.property.1.image _ hf₁.continuousOn).2.preimage_of_isPreirreducible_fiber _ hf₂ hf₃⟩
+    refine (Set.subset_preimage_image _ _).antisymm'
+      (W.property.2 ?_ (Set.subset_preimage_image _ _))
+    refine ⟨?_,
+      (W.property.1.image _ hf₁.continuousOn).2.preimage_of_isPreirreducible_fiber _ hf₂ hf₃⟩
     obtain ⟨x, hx⟩ := W.property.1.1
     exact ⟨_, x, hx, rfl⟩
   left_inv _ := Subtype.ext <| Set.image_preimage_eq _ hf₄

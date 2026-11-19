@@ -382,7 +382,8 @@ variable {equiv : ∀ j : Iio i, F j ≃ piLT X j} (nat : IsNatEquiv f equiv)
 /-- A natural family of bijections below a limit ordinal
 induces a bijection at the limit ordinal. -/
 @[simps] def invLimEquiv : limit f i ≃ limit (piLTProj (X := X)) i where
-  toFun t := ⟨fun l ↦ equiv l (t.val l), fun _ _ h ↦ Eq.symm <| by simp_rw [← t.property h]; apply nat⟩
+  toFun t := ⟨fun l ↦ equiv l (t.val l),
+    fun _ _ h ↦ Eq.symm <| by simp_rw [← t.property h]; apply nat⟩
   invFun t := ⟨fun l ↦ (equiv l).symm (t.val l),
     fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.property h] <;> simp⟩
   left_inv t := by ext; apply Equiv.left_inv
@@ -396,7 +397,8 @@ noncomputable def piEquivLim : ∀ j : Iic i, F j ≃ piLT X j :=
     (equiv, equivLim.trans <| (invLimEquiv nat).trans (piLTLim hi).symm)
 
 variable {equivLim}
-theorem isNatEquiv_piEquivLim [InverseSystem f] (H : ∀ x l, (equivLim x).val l = f l.property.le x) :
+theorem isNatEquiv_piEquivLim [InverseSystem f]
+    (H : ∀ x l, (equivLim x).val l = f l.property.le x) :
     IsNatEquiv f (piEquivLim nat equivLim hi) := fun j k hj hk h t ↦ by
   obtain rfl | hj := hj.eq_or_lt
   · obtain rfl | hk := hk.eq_or_lt
@@ -494,13 +496,15 @@ end Unique
 
 variable [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
   (equivSucc : ∀ i, ¬IsMax i → {e : F i⁺ ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
-  (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).val l = f l.property.le x})
+  (equivLim : ∀ i, IsSuccPrelimit i →
+    {e : F i ≃ limit f i // ∀ x l, (e x).val l = f l.property.le x})
 
 private noncomputable def globalEquivAux (i : ι) :
     PEquivOn f (fun i hi ↦ (equivSucc i hi).val) (Iic i) :=
   SuccOrder.prelimitRecOn i
     (fun _ hi e ↦ pEquivOnSucc hi e fun i hi ↦ (equivSucc i hi).property)
-    fun i hi e ↦ pEquivOnLim hi (fun j ↦ e j j.property) (equivLim i hi).val (equivLim i hi).property
+    fun i hi e ↦
+      pEquivOnLim hi (fun j ↦ e j j.property) (equivLim i hi).val (equivLim i hi).property
 
 /-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
 @[no_expose] noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=

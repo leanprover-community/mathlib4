@@ -81,7 +81,8 @@ theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
     Equiv.mk (fun x => ⟨x.2⁻¹, x.1⁻¹⟩) (fun x => ⟨x.2⁻¹, x.1⁻¹⟩)
       (fun x => Prod.ext (inv_inv _) (inv_inv _)) fun x => Prod.ext (inv_inv _) (inv_inv _)
   let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
-  suffices hf : (ψ ∘ fun x : H × K => x.1.val * x.2.val) = (fun x : K × H => x.1.val * x.2.val) ∘ ϕ by
+  suffices hf : (ψ ∘ fun x : H × K => x.1.val * x.2.val) =
+      (fun x : K × H => x.1.val * x.2.val) ∘ ϕ by
     rwa [isComplement'_def, isComplement_iff_bijective, ← Equiv.bijective_comp ϕ, ← hf,
       ψ.comp_bijective]
   exact funext fun x => mul_inv_rev _ _
@@ -628,7 +629,8 @@ theorem smul_leftQuotientEquiv (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :
 
 @[to_additive]
 theorem smul_apply_eq_smul_apply_inv_smul (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :
-    ((f • S).property.leftQuotientEquiv q : G) = f • (S.property.leftQuotientEquiv (f⁻¹ • q) : G) := by
+    ((f • S).property.leftQuotientEquiv q : G) =
+      f • (S.property.leftQuotientEquiv (f⁻¹ • q) : G) := by
   rw [smul_leftQuotientEquiv, smul_inv_smul]
 
 end Action

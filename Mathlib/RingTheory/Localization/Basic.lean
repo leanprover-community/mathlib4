@@ -101,7 +101,8 @@ theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
     · simpa using hs
     · simp [update_of_ne ne]
   · obtain ⟨r, s, rfl⟩ := exists_mk'_eq S x
-    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.val 0 ▸ s.property⟩,
+    exact ⟨mk' (M := T) _ (update 0 i r)
+        ⟨update 0 i s, by apply update_self i s.val 0 ▸ s.property⟩,
       by simp [map_mk']⟩
 
 end Localization

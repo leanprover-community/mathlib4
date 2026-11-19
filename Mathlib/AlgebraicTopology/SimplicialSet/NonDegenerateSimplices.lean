@@ -64,7 +64,8 @@ def induction {motive : X.N → Sort*}
 
 @[simp]
 lemma induction_mk {motive : X.N → Sort*}
-    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.val x.property)) {n : ℕ} (s : X.nonDegenerate n) :
+    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.val x.property)) {n : ℕ}
+    (s : X.nonDegenerate n) :
   induction (motive := motive) mk (N.mk s.val s.property) = mk n s := rfl
 
 lemma ext_iff (x y : X.N) :

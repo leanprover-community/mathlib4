@@ -401,7 +401,8 @@ theorem bijective_frobeniusAlgHom_pow :
     ((card_algHom_le_finrank K L L).trans_eq <| by simp)
 
 theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
-    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgEquivOfAlgebraic K L ^ n.val :=
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦
+      frobeniusAlgEquivOfAlgebraic K L ^ n.val :=
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
     simpa only [Function.comp_def, map_pow] using! bijective_frobeniusAlgHom_pow K L
 

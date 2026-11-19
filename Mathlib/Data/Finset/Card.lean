@@ -516,7 +516,8 @@ lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha 
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : #t ≤ #s) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   let f' : s → β := fun a ↦ f a a.property
-  have hinj' : Set.InjOn f' s.attach := fun x hx y hy hxy ↦ Subtype.ext (hinj _ _ x.property y.property hxy)
+  have hinj' : Set.InjOn f' s.attach := fun x hx y hy hxy ↦
+    Subtype.ext (hinj _ _ x.property y.property hxy)
   have hmapsto' : Set.MapsTo f' s.attach t := fun x hx ↦ hf _ _
   intro b hb
   obtain ⟨a, ha, rfl⟩ := surjOn_of_injOn_of_card_le _ hmapsto' hinj' (by rwa [card_attach]) hb

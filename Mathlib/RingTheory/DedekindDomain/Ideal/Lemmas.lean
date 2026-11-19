@@ -895,8 +895,8 @@ def quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i ∈ s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
-  quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
-    (fun i => prime i i.property) (fun i j h => coprime i i.property j j.property (Subtype.coe_injective.ne h))
+  quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i) (fun i => prime i i.property)
+    (fun i j h => coprime i i.property j j.property (Subtype.coe_injective.ne h))
     (_root_.trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R / P i ^ e i`,

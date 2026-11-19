@@ -106,7 +106,8 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
     calc edist (f x) (f y)
       _ ≤ edist (f z) (f x) + edist (f z) (f y) := edist_triangle_left _ _ _
       _ ≤ (K _ z.property) * edist z.val x + edist (f z) (f y) := add_le_add_left
-        (hf _ z.property ⟨mem_ball_self <| hε _ z.property, z.property⟩ ⟨hx'.2.trans <| half_lt_self <| hε _ z.property, hx⟩) _
+        (hf _ z.property ⟨mem_ball_self <| hε _ z.property, z.property⟩
+          ⟨hx'.2.trans <| half_lt_self <| hε _ z.property, hx⟩) _
       _ ≤ (K _ z.property) * edist z.val x + (K' _ z.property) * edist z.val y :=
         add_le_add_right (hK' _ z.property _ ⟨hy, hy'⟩) _
       _ ≤ (K _ z.property) * edist z.val x + (K' _ z.property) * (edist x z.val + edist x y) := by

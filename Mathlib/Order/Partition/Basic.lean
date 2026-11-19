@@ -544,7 +544,8 @@ lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
 equal to the identity on `t`. -/
 lemma exists_extend_partial' (P : Partition u)
     (h : ∀ ⦃x y⦄, x ∈ t → y ∈ t → P.Rel x y → x = y) : ∃ f, IsRepFun P f ∧ EqOn f id t := by
-  simpa using! exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp) (fun x y ↦ h x.property y.property)
+  simpa using! exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp)
+    (fun x y ↦ h x.property y.property)
 
 /-- Every partition has a representative function. -/
 lemma nonempty (P : Partition u) : ∃ f, IsRepFun P f := by

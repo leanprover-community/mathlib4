@@ -175,8 +175,9 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
     refine x.property.regular.left ?_
     simp only [mem_ofPred_eq, map_smul, smul_eq_mul]
     rw [← mul_assoc _ _ (B z x), ← mul_assoc _ _ (B z x), mul_left_comm,
-      apply_self_mul_coroot_apply B x.property, mul_left_comm (B x x), apply_self_mul_coroot_apply B x.property,
-      ← hSB.eq x y, RingHom.id_apply, ← hSB.eq x z, RingHom.id_apply]
+      apply_self_mul_coroot_apply B x.property, mul_left_comm (B x x),
+      apply_self_mul_coroot_apply B x.property, ← hSB.eq x y, RingHom.id_apply, ← hSB.eq x z,
+      RingHom.id_apply]
     ring
 
 end RootPairing

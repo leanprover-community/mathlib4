@@ -511,7 +511,8 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
 theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn F x) :=
   ⟨x, mem_pathComponentIn_self h, fun _ ⟨γ, hγ⟩ ↦ by
     refine ⟨γ, fun t ↦
-      ⟨(γ.truncateOfLE t.property.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm, fun t' ↦ ?_⟩⟩
+      ⟨(γ.truncateOfLE t.property.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm,
+        fun t' ↦ ?_⟩⟩
     dsimp [Path.truncateOfLE, Path.truncate]
     exact γ.extend_extends' ⟨min (max t'.val 0) t.val, by simp [t.property.1, t.property.2]⟩ ▸ hγ _⟩
 

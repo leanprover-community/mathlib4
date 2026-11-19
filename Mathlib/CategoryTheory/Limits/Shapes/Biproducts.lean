@@ -735,7 +735,8 @@ theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
   · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
     exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
-  · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.property)), comp_zero]
+  · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.property)),
+      comp_zero]
 
 theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
     biproduct.fromSubtype f p =
@@ -767,7 +768,8 @@ theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
   · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
     exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
-  · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.property)), zero_comp]
+  · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.property)),
+      zero_comp]
 
 theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
     biproduct.toSubtype f p =

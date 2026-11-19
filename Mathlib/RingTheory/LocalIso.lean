@@ -135,7 +135,8 @@ lemma trans [Algebra S T] [Algebra R T] [IsScalarTower R S T]
     have (i : ι) : IsStandardOpenImmersion R (T'' i.1 i.2) :=
       have : IsScalarTower R (Localization.Away i.1.val) (T' i.1.val) :=
         IsScalarTower.to₁₃₄ _ S _ _
-      have : IsStandardOpenImmersion (Localization.Away i.1.val) (T'' i.1.val i.2.val) := i.2.property
+      have : IsStandardOpenImmersion (Localization.Away i.1.val) (T'' i.1.val i.2.val) :=
+        i.2.property
       have : IsStandardOpenImmersion R (Localization.Away i.1.val) := i.1.property
       .trans _ (Localization.Away i.1.val) _
     exact .of_span_range_eq_top _ h fun i : ι ↦ T'' i.1 i.2

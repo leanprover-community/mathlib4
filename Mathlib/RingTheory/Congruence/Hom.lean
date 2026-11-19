@@ -144,7 +144,8 @@ def correspondence {c : RingCon M} : Set.Ici c ≃o RingCon c.Quotient where
       comap_rel]
   map_rel_iff' {s t} := by
     simp only [Equiv.coe_fn_mk, le_def, c.mk'_surjective.forall, ← Subtype.coe_le_coe]
-    simp_rw [mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le s.property) c.mk'_surjective,
+    simp_rw [mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le s.property)
+        c.mk'_surjective,
       mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le t.property) c.mk'_surjective]
 
 variable (c : RingCon M)

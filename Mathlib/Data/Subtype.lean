@@ -47,12 +47,14 @@ theorem prop (x : Subtype p) : p x :=
 
 /-- An alternative version of `Subtype.forall`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.forall` from right to left. -/
-protected theorem forall' {q : ∀ x, p x → Prop} : (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.property :=
+protected theorem forall' {q : ∀ x, p x → Prop} :
+    (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.property :=
   (@Subtype.forall _ _ fun x ↦ q x.val x.property).symm
 
 /-- An alternative version of `Subtype.exists`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.exists` from right to left. -/
-protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.property :=
+protected theorem exists' {q : ∀ x, p x → Prop} :
+    (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.property :=
   (@Subtype.exists _ _ fun x ↦ q x.val x.property).symm
 
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :

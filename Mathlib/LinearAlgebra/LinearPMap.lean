@@ -645,11 +645,13 @@ private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤
   have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.val.domain) (_hxy : (x : E) = y),
       f x = p.val y := by
     intro p x y hxy
-    rcases hc (P x).val.val (P x).val.property p.val p.property with ⟨q, _hqc, ⟨hxq1, hxq2⟩, ⟨hpq1, hpq2⟩⟩
+    rcases hc (P x).val.val (P x).val.property p.val p.property with
+      ⟨q, _hqc, ⟨hxq1, hxq2⟩, ⟨hpq1, hpq2⟩⟩
     exact (hxq2 (y := ⟨y, hpq1 y.property⟩) hxy).trans (hpq2 rfl).symm
   use { toFun := f, map_add' := ?_, map_smul' := ?_ }, ?_
   · intro x y
-    rcases hc (P x).val.val (P x).val.property (P y).val.val (P y).val.property with ⟨p, hpc, hpx, hpy⟩
+    rcases hc (P x).val.val (P x).val.property (P y).val.val (P y).val.property with
+      ⟨p, hpc, hpx, hpy⟩
     set x' := inclusion hpx.1 ⟨x, (P x).property⟩
     set y' := inclusion hpy.1 ⟨y, (P y).property⟩
     rw [f_eq ⟨p, hpc⟩ x x' rfl, f_eq ⟨p, hpc⟩ y y' rfl, f_eq ⟨p, hpc⟩ (x + y) (x' + y') rfl,

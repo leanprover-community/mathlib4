@@ -93,8 +93,9 @@ theorem map_map (f : A →+* B) (hf : Function.Injective f) (g : B →+* C)
 theorem map_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
     [IsDedekindDomain B] (f : A →+* B)
     (hf : Function.Injective f) (I : (Ideal A)⁰) :
-    map f hf (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.val.map f, mem_nonZeroDivisors_iff_ne_zero.mpr <|
-      (Ideal.map_eq_bot_iff_of_injective hf).not.mpr (mem_nonZeroDivisors_iff_ne_zero.mp I.property)⟩ := by
+    map f hf (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.val.map f,
+      mem_nonZeroDivisors_iff_ne_zero.mpr <| (Ideal.map_eq_bot_iff_of_injective hf).not.mpr
+        (mem_nonZeroDivisors_iff_ne_zero.mp I.property)⟩ := by
   rw [mk0_eq_quotientMk, mk0_eq_quotientMk, map_quotientMk]
   congr 1
   ext : 1

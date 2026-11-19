@@ -219,7 +219,8 @@ structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f
 
 theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.Realizer α}
     {f : β → Set α} (R : LocallyFinite.Realizer F f) : LocallyFinite f := fun a ↦
-  ⟨_, F.mem_nhds.2 ⟨(R.bas a).val, (R.bas a).property, Subset.rfl⟩, have := R.sets a; Set.toFinite _⟩
+  ⟨_, F.mem_nhds.2 ⟨(R.bas a).val, (R.bas a).property, Subset.rfl⟩,
+    have := R.sets a; Set.toFinite _⟩
 
 theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realizer α)
     {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=

@@ -319,13 +319,15 @@ variable [Group α] {s : Subgroup α}
 /-- The natural bijection between a left coset `g * s` and `s`. -/
 @[to_additive /-- The natural bijection between the cosets `g + s` and `s`. -/]
 def leftCosetEquivSubgroup (g : α) : (g • s : Set α) ≃ s :=
-  ⟨fun x => ⟨g⁻¹ * x.val, (mem_leftCoset_iff _).1 x.property⟩, fun x => ⟨g * x.val, x.val, x.property, rfl⟩,
+  ⟨fun x => ⟨g⁻¹ * x.val, (mem_leftCoset_iff _).1 x.property⟩,
+    fun x => ⟨g * x.val, x.val, x.property, rfl⟩,
     fun ⟨x, _⟩ => Subtype.ext <| by simp, fun ⟨g, _⟩ => Subtype.ext <| by simp⟩
 
 /-- The natural bijection between a right coset `s * g` and `s`. -/
 @[to_additive /-- The natural bijection between the cosets `s + g` and `s`. -/]
 def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
-  ⟨fun x => ⟨x.val * g⁻¹, (mem_rightCoset_iff _).1 x.property⟩, fun x => ⟨x.val * g, x.val, x.property, rfl⟩,
+  ⟨fun x => ⟨x.val * g⁻¹, (mem_rightCoset_iff _).1 x.property⟩,
+    fun x => ⟨x.val * g, x.val, x.property, rfl⟩,
     fun ⟨x, _⟩ => Subtype.ext <| by simp, fun ⟨g, _⟩ => Subtype.ext <| by simp⟩
 
 /-- A (non-canonical) bijection between a group `α` and the product `(α/s) × s` -/

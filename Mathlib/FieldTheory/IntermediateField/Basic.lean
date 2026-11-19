@@ -717,7 +717,8 @@ theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F)
 /-- The algEquiv between an intermediate field and its lift. -/
 def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
   toFun x := ⟨x.val.val, (mem_lift x.val).mpr x.property⟩
-  invFun x := ⟨⟨x.val, lift_le F x.property⟩, (mem_lift ⟨x.val, lift_le F x.property⟩).mp x.property⟩
+  invFun x := ⟨⟨x.val, lift_le F x.property⟩,
+    (mem_lift ⟨x.val, lift_le F x.property⟩).mp x.property⟩
   left_inv := congrFun rfl
   right_inv := congrFun rfl
   map_mul' _ _ := rfl

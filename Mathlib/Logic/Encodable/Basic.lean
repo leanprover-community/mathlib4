@@ -212,7 +212,8 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
   toFun a := ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
-      (show isSome (decode₂ α n.val) by obtain ⟨x, hx⟩ := n.property; rw [← hx, encodek₂]; exact rfl)
+      (show isSome (decode₂ α n.val) by
+        obtain ⟨x, hx⟩ := n.property; rw [← hx, encodek₂]; exact rfl)
   left_inv _ := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv _ := Subtype.ext <| decode₂_isPartialInv.get_eq _ _
 

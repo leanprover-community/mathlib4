@@ -604,7 +604,8 @@ def awayToSection (f) : ↧(A⁰_ f) ⟶ (structureSheaf 𝒜).obj.obj (op (pbo 
         obtain ⟨s, rfl⟩ := HomogeneousLocalization.mk_surjective s
         obtain ⟨n, hn : f ^ n = s.den.val⟩ := s.den_mem
         exact ⟨_, x.property, 𝟙 _, s.deg, s.num, s.den,
-          fun x hsx ↦ x.property (Ideal.IsPrime.mem_of_pow_mem inferInstance n (hn ▸ hsx)), fun _ ↦ rfl⟩⟩
+          fun x hsx ↦ x.property (Ideal.IsPrime.mem_of_pow_mem inferInstance n (hn ▸ hsx)),
+          fun _ ↦ rfl⟩⟩
     map_add' _ _ := by ext; simp only [map_add, HomogeneousLocalization.val_add, Proj.add_apply]
     map_mul' _ _ := by ext; simp only [map_mul, HomogeneousLocalization.val_mul, Proj.mul_apply]
     map_zero' := by ext; simp only [map_zero, HomogeneousLocalization.val_zero, Proj.zero_apply]
@@ -770,7 +771,8 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
         IsLocalization.mk'_eq_iff_eq] at e
       obtain ⟨⟨c, hcx⟩, hc⟩ :=
         IsLocalization.exists_of_eq (M := x.val.asHomogeneousIdeal.toIdeal.primeCompl) e
-      obtain ⟨i, hi⟩ := not_forall.mp ((x.val.asHomogeneousIdeal.isHomogeneous.mem_iff _).not.mp hcx)
+      obtain ⟨i, hi⟩ :=
+        not_forall.mp ((x.val.asHomogeneousIdeal.isHomogeneous.mem_iff _).not.mp hcx)
       refine ⟨i, _, (decompose 𝒜 c i).property, hi, ?_⟩
       apply_fun fun x ↦ (decompose 𝒜 x (i + z.deg + y.deg)).val at hc
       conv_rhs at hc => rw [add_right_comm]

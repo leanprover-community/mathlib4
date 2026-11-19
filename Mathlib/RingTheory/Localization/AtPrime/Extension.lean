@@ -238,7 +238,8 @@ theorem primesOverEquivPrimesOver_inertiaDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) (
   have : NeZero p := ⟨hp⟩
   have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
     (ne_bot_of_mem_primesOver (NeZero.ne _) P.prop) inferInstance
-  have : (P.val.map (algebraMap S Sₚ)).LiesOver (maximalIdeal Rₚ) := liesOver_map_of_liesOver p _ _ _
+  have : (P.val.map (algebraMap S Sₚ)).LiesOver (maximalIdeal Rₚ) :=
+    liesOver_map_of_liesOver p _ _ _
   exact inertiaDeg_map_eq_inertiaDeg p _ _ _
 
 @[deprecated (since := "2026-09-17")]

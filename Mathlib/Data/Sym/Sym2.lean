@@ -230,7 +230,8 @@ def lift₂ :
       (fun (a : α × α) (b : β × β) => f.val a.1 a.2 b.1 b.2)
       (by
         rintro _ _ _ _ ⟨⟩ ⟨⟩
-        exacts [rfl, (f.property _ _ _ _).2, (f.property _ _ _ _).1, (f.property _ _ _ _).1.trans (f.property _ _ _ _).2])
+        exacts [rfl, (f.property _ _ _ _).2, (f.property _ _ _ _).1,
+          (f.property _ _ _ _).1.trans (f.property _ _ _ _).2])
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor

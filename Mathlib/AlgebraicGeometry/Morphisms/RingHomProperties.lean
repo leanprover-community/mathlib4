@@ -113,7 +113,8 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
     have : IsIso (e.hom.appLE (e.hom ''ᵁ U) U.val (e.hom.preimage_image_eq _).ge) :=
       inferInstanceAs (IsIso (e.hom.app _ ≫
         X.presheaf.map (eqToHom (e.hom.preimage_image_eq _).symm).op))
-    rw [← Scheme.Hom.appLE_comp_appLE _ _ ⊤ (e.hom ''ᵁ U) U.val le_top (e.hom.preimage_image_eq _).ge,
+    rw [← Scheme.Hom.appLE_comp_appLE _ _ ⊤ (e.hom ''ᵁ U) U.val le_top
+        (e.hom.preimage_image_eq _).ge,
       CommRingCat.hom_comp, h₁.cancel_right_isIso]
     exact H ⟨_, U.prop.image_of_isOpenImmersion e.hom⟩
   · introv H U
@@ -170,8 +171,8 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     apply h₃ _ _ hs
     intro r
     simp_rw [sourceAffineLocally_morphismRestrict] at hs'
-    have := hs' r ⟨X.basicOpen (f.appLE ⊤ U le_top r.val), U.property.basicOpen (f.appLE ⊤ U le_top r.val)⟩
-      (by simp [Scheme.Hom.appLE])
+    have := hs' r ⟨X.basicOpen (f.appLE ⊤ U le_top r.val),
+      U.property.basicOpen (f.appLE ⊤ U le_top r.val)⟩ (by simp [Scheme.Hom.appLE])
     rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.property, CommRingCat.hom_ofHom,
       ← h₁.isLocalization_away_iff] at this
 
@@ -193,8 +194,8 @@ over some basic open of `U₁` (resp. `V₁`). -/
 lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) (hPl : LocalizationAwayPreserves P)
     (x : X) (U₁ : Y.affineOpens) (U₂ : Y.affineOpens) (V₁ : X.affineOpens) (V₂ : X.affineOpens)
-    (hx₁ : x ∈ V₁.val) (hx₂ : x ∈ V₂.val) (e₂ : V₂.val ≤ f ⁻¹ᵁ U₂.val) (h₂ : P (f.appLE U₂ V₂ e₂).hom)
-    (hfx₁ : f x ∈ U₁.val) :
+    (hx₁ : x ∈ V₁.val) (hx₂ : x ∈ V₂.val) (e₂ : V₂.val ≤ f ⁻¹ᵁ U₂.val)
+    (h₂ : P (f.appLE U₂ V₂ e₂).hom) (hfx₁ : f x ∈ U₁.val) :
     ∃ (r : Γ(Y, U₁)) (s : Γ(X, V₁)) (_ : x ∈ X.basicOpen s)
       (e : X.basicOpen s ≤ f ⁻¹ᵁ Y.basicOpen r),
         P (f.appLE (Y.basicOpen r) (X.basicOpen s) e).hom := by
@@ -236,7 +237,8 @@ lemma exists_affineOpens_le_appLE_of_appLE
   obtain ⟨r, hBr, hBfx⟩ := U₂.property.exists_basicOpen_le ⟨f x, hfx₁⟩ (e₂ hx₂)
   obtain ⟨s, hBs, hBx⟩ := V₂.property.exists_basicOpen_le ⟨x, hx₁⟩ hx₂
   obtain ⟨r', s', hBx', e', hf'⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine hPa hPl x
-    ⟨Y.basicOpen r, U₂.property.basicOpen _⟩ U₂ ⟨X.basicOpen s, V₂.property.basicOpen _⟩ V₂ hBx hx₂ e₂ h₂ hBfx
+    ⟨Y.basicOpen r, U₂.property.basicOpen _⟩ U₂ ⟨X.basicOpen s, V₂.property.basicOpen _⟩ V₂
+    hBx hx₂ e₂ h₂ hBfx
   exact ⟨⟨Y.basicOpen r', (U₂.property.basicOpen _).basicOpen _⟩,
     ⟨X.basicOpen s', (V₂.property.basicOpen _).basicOpen _⟩, le_trans (Y.basicOpen_le _) hBr,
     le_trans (X.basicOpen_le _) hBs, hBx', e', hf'⟩
@@ -614,8 +616,8 @@ points of the source. -/
 lemma iff_exists_appLE_locally
     (hQ : RingHom.StableUnderCompositionWithLocalizationAwaySource Q)
     (hQi : RespectsIso Q) [HasRingHomProperty P (Locally Q)] :
-    P f ↔ ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.val) (e : V.val ≤ f ⁻¹ᵁ U.val),
-      Q (f.appLE U V e).hom := by
+    P f ↔ ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.val)
+      (e : V.val ≤ f ⁻¹ᵁ U.val), Q (f.appLE U V e).hom := by
   have := respects_isOpenImmersion (P := P)
     (RingHom.locally_stableUnderCompositionWithLocalizationAwaySource hQ)
   refine ⟨fun hf x ↦ ?_,
@@ -663,8 +665,9 @@ omit [HasRingHomProperty P Q] in
 lemma locally_of_iff (hQl : LocalizationAwayPreserves Q)
     (hQa : StableUnderCompositionWithLocalizationAway Q)
     (h : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y), P f ↔
-      ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.val) (e : V.val ≤ f ⁻¹ᵁ U.val),
-      Q (f.appLE U V e).hom) : HasRingHomProperty P (Locally Q) where
+      ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.val)
+        (e : V.val ≤ f ⁻¹ᵁ U.val), Q (f.appLE U V e).hom) :
+    HasRingHomProperty P (Locally Q) where
   isLocal_ringHomProperty := locally_propertyIsLocal hQl hQa
   eq_affineLocally' := by
     have : HasRingHomProperty (affineLocally (Locally Q)) (Locally Q) :=

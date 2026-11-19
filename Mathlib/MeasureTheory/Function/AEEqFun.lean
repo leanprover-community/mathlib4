@@ -365,7 +365,8 @@ return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal fun
 `[g ∘ f] : α →ₘ γ`. This requires that `γ` has a second countable topology. -/
 def compMeasurable (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
   Quotient.liftOn' f
-    (fun f' => mk (g ∘ (f' : α → β)) (hg.comp_aemeasurable f'.property.aemeasurable).aestronglyMeasurable)
+    (fun f' => mk (g ∘ (f' : α → β))
+      (hg.comp_aemeasurable f'.property.aemeasurable).aestronglyMeasurable)
     fun _ _ H => mk_eq_mk.2 <| H.fun_comp g
 
 @[simp]

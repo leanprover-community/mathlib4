@@ -383,8 +383,8 @@ def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Pr
           apply Equiv.symm
           refine (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight ?_)
           intro x
-          exact ⟨fun ⟨hp, h'⟩ => congr_arg Subtype.val h', fun h' => ⟨(h x).2 (h'.symm ▸ y.property),
-            Subtype.ext h'⟩⟩ }
+          exact ⟨fun ⟨hp, h'⟩ => congr_arg Subtype.val h',
+            fun h' => ⟨(h x).2 (h'.symm ▸ y.property), Subtype.ext h'⟩⟩ }
     _ ≃ Subtype p := sigmaFiberEquiv fun x : Subtype p => (⟨f x, (h x).1 x.property⟩ : Subtype q)
 
 /-- A sigma type over an `Option` is equivalent to the sigma set over the original type,

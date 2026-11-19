@@ -568,7 +568,8 @@ theorem algebraMap_injective_of_span_eq_top (s : Set R) (span_eq : Ideal.span s 
 for a covering of the whole prime spectrum by basic opens. -/
 theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.span s = ⊤)
     (f : Π a : s, Away a.val) (h : ∀ a b : s,
-      Away.awayToAwayRight (P := Away (a * b : R)) a.val b (f a) = Away.awayToAwayLeft b.val a (f b)) :
+      Away.awayToAwayRight (P := Away (a * b : R)) a.val b (f a) =
+        Away.awayToAwayLeft b.val a (f b)) :
     ∃! r : R, ∀ a : s, algebraMap R _ r = f a := by
   have mem := (Ideal.eq_top_iff_one _).mp span_eq; clear span_eq
   wlog finset_eq : ∃ t : Finset R, t = s generalizing s
@@ -579,8 +580,8 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
     replace hts := Set.insert_subset a.property hts
     classical
     have ⟨r', eq, _⟩ := this ({a.val} ∪ t) (fun a ↦ f ⟨a, hts a.property⟩) (fun a b ↦
-      h ⟨a, hts a.property⟩ ⟨b, hts b.property⟩) (Ideal.span_mono (fun _ h ↦ Set.mem_union_right _ h) mem)
-      ⟨{a.val} ∪ t, by simp⟩
+      h ⟨a, hts a.property⟩ ⟨b, hts b.property⟩)
+      (Ideal.span_mono (fun _ h ↦ Set.mem_union_right _ h) mem) ⟨{a.val} ∪ t, by simp⟩
     exact (congr_arg _ (uniq _ fun b ↦ eq ⟨b, Set.mem_union_right _ b.property⟩).symm).trans
       (eq ⟨a, Set.mem_union_left _ rfl⟩)
   have span_eq := (Ideal.eq_top_iff_one _).mpr mem

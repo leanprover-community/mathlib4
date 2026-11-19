@@ -438,13 +438,14 @@ theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + or
   cases nonempty_fintype L
   obtain ⟨p, -⟩ := @exists_config P L _ _
   let ϕ : { q // q ≠ p } ≃ Σ l : { l : L // p ∈ l }, { q // q ∈ l.val ∧ q ≠ p } :=
-    { toFun := fun q => ⟨⟨mkLine q.property, (mkLine_ax q.property).2⟩, q, (mkLine_ax q.property).1, q.property⟩
+    { toFun := fun q =>
+        ⟨⟨mkLine q.property, (mkLine_ax q.property).2⟩, q, (mkLine_ax q.property).1, q.property⟩
       invFun := fun lq => ⟨lq.2, lq.2.property.2⟩
       right_inv := fun lq =>
         Sigma.subtype_ext
           (Subtype.ext
-            ((eq_or_eq (mkLine_ax lq.2.property.2).1 (mkLine_ax lq.2.property.2).2 lq.2.property.1 lq.1.property).resolve_left
-              lq.2.property.2))
+            ((eq_or_eq (mkLine_ax lq.2.property.2).1 (mkLine_ax lq.2.property.2).2
+                lq.2.property.1 lq.1.property).resolve_left lq.2.property.2))
           rfl }
   classical
     have h1 : Fintype.card { q // q ≠ p } + 1 = Fintype.card P := by

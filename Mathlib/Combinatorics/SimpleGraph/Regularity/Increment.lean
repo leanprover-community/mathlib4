@@ -89,7 +89,8 @@ set_option backward.privateInPublic true in
 /-- The contribution to `Finpartition.energy` of a pair of distinct parts of a `Finpartition`. -/
 private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
     Finset (Finset α × Finset α) :=
-  (chunk hP G ε (mem_offDiag.1 x.property).1).parts ×ˢ (chunk hP G ε (mem_offDiag.1 x.property).2.1).parts
+  (chunk hP G ε (mem_offDiag.1 x.property).1).parts ×ˢ
+    (chunk hP G ε (mem_offDiag.1 x.property).2.1).parts
 
 variable {hP G ε}
 

@@ -583,7 +583,8 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
   toFun s := ⟨Quotient.lift₂ s.val.r fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
       (fun h ↦ s.val.trans' (s.val.trans' (s.val.symm' (s.property h₁)) h) (s.property h₂))
       (fun h ↦ s.val.trans' (s.val.trans' (s.property h₁) h) (s.val.symm' (s.property h₂))),
-    ⟨Quotient.ind s.val.iseqv.refl, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.val.iseqv.symm,
+    ⟨Quotient.ind s.val.iseqv.refl,
+      fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.val.iseqv.symm,
       fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.val.iseqv.trans⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl

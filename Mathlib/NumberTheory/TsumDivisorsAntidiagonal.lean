@@ -50,7 +50,8 @@ given by sending `n = a * b` to `(a, b)`. -/
 def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
   toFun x := divisorsAntidiagonalFactors x.1 x.2
   invFun x :=
-    ⟨⟨x.1.val * x.2.val, mul_pos x.1.property x.2.property⟩, ⟨x.1, x.2⟩, by simp [Nat.mem_divisorsAntidiagonal]⟩
+    ⟨⟨x.1.val * x.2.val, mul_pos x.1.property x.2.property⟩, ⟨x.1, x.2⟩,
+      by simp [Nat.mem_divisorsAntidiagonal]⟩
   left_inv := by
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [Nat.mem_divisorsAntidiagonal] at h

@@ -259,7 +259,8 @@ public lemma IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
   choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_fg_eq_subtypeVal
   have : Finite S := hS
   refine ⟨⨆ s : S, P s, ⋃ (s : S), AddSubmonoid.inclusion (le_iSup _ s) '' t s.val,
-    .iSup _ fun s => hP s s.property, .iUnion fun s => (ht s s.property).isSemilinearSet.image _, ?_⟩
+    .iSup _ fun s => hP s s.property,
+    .iUnion fun s => (ht s s.property).isSemilinearSet.image _, ?_⟩
   simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
     fun s : S => ht' s s.property]
 

@@ -88,7 +88,8 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
 
 theorem attach_ndinsert (a : α) (s : Multiset α) :
     (s.ndinsert a).attach =
-      ndinsert ⟨a, mem_ndinsert_self a s⟩ (s.attach.map fun p => ⟨p.val, mem_ndinsert_of_mem p.property⟩) :=
+      ndinsert ⟨a, mem_ndinsert_self a s⟩
+        (s.attach.map fun p => ⟨p.val, mem_ndinsert_of_mem p.property⟩) :=
   have eq :
     ∀ h : ∀ p : { x // x ∈ s }, p.val ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=

@@ -446,7 +446,8 @@ only asks for a proof of facts that carry any mathematical content, and allows a
 same `s` for all parts. -/]
 def Fork.IsLimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Fork f g)
     (create : ∀ s : Fork f g, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) : IsLimit t :=
-  Fork.IsLimit.mk t (fun s => (create s).val) (fun s => (create s).property.1) fun s _ w => (create s).property.2 w
+  Fork.IsLimit.mk t (fun s => (create s).val) (fun s => (create s).property.1)
+    fun s _ w => (create s).property.2 w
 
 /-- Noncomputably make a limit cone from the existence of unique factorizations. -/
 @[no_expose, to_dual

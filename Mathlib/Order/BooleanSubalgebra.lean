@@ -411,7 +411,8 @@ theorem mem_closure_iff_sup_sdiff {a : α} :
   simp_rw [Finset.sup_insert, compl_sup, eq]
   refine tc.induction ⟨∅, by simp⟩ fun ⟨z, w⟩ tc _ ⟨t, eq⟩ ↦ ?_
   simp_rw [Finset.sup_insert, inf_sup_left, eq]
-  use {(z, ⟨_, isSublattice.supClosed x.property w.property⟩), (⟨_, isSublattice.infClosed y.property z.property⟩, w)} ∪ t
+  use {(z, ⟨_, isSublattice.supClosed x.property w.property⟩),
+    (⟨_, isSublattice.infClosed y.property z.property⟩, w)} ∪ t
   simp_rw [Finset.sup_union, Finset.sup_insert, Finset.sup_singleton, _root_.sdiff_eq,
     compl_sup, inf_left_comm z.val, compl_inf, compl_compl, inf_sup_right, inf_assoc]
 

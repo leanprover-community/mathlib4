@@ -803,7 +803,8 @@ theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) 
   rintro ⟨f0, hf0 : IsBadSeq r s f0⟩
   let fs : ∀ n : ℕ, { f : ℕ → α // IsBadSeq r s f ∧ IsMinBadSeq r rk s n f } := by
     refine Nat.rec ?_ fun n fn => ?_
-    · exact ⟨(minBadSeqOfBadSeq r rk s 0 f0 hf0).val, (minBadSeqOfBadSeq r rk s 0 f0 hf0).property.2⟩
+    · exact ⟨(minBadSeqOfBadSeq r rk s 0 f0 hf0).val,
+        (minBadSeqOfBadSeq r rk s 0 f0 hf0).property.2⟩
     · exact ⟨(minBadSeqOfBadSeq r rk s (n + 1) fn.val fn.property.1).val,
         (minBadSeqOfBadSeq r rk s (n + 1) fn.val fn.property.1).property.2⟩
   have h : ∀ m n, m ≤ n → (fs m).val m = (fs n).val m := fun m n mn => by
@@ -811,10 +812,11 @@ theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) 
     induction k with
     | zero => rfl
     | succ k ih =>
-      rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).val (fs (m + k)).property.1).property.1 m
-        (Nat.lt_succ_iff.2 (Nat.add_le_add_left k.zero_le m))]
+      rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).val
+        (fs (m + k)).property.1).property.1 m (Nat.lt_succ_iff.2 (Nat.add_le_add_left k.zero_le m))]
       rfl
-  refine ⟨fun n => (fs n).val n, ⟨fun n => (fs n).property.1.1 n, fun m n mn => ?_⟩, fun n g hg1 hg2 => ?_⟩
+  refine ⟨fun n => (fs n).val n, ⟨fun n => (fs n).property.1.1 n, fun m n mn => ?_⟩,
+    fun n g hg1 hg2 => ?_⟩
   · dsimp
     rw [h m n mn.le]
     exact (fs n).property.1.2 m n mn
@@ -975,6 +977,7 @@ theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedO
   change WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
   exact
     @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c => f c) (fun i c => g _ c) hι
-      fun i => ((hπ i).onFun (f := fun x => ⟨x, x.val.property, x.property⟩)).mono (fun b c h => ‹_›)
+      fun i => ((hπ i).onFun (f := fun x => ⟨x, x.val.property, x.property⟩)).mono
+        (fun b c h => ‹_›)
 
 end SigmaLex

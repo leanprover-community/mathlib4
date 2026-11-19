@@ -565,7 +565,8 @@ private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 @[simps apply_coe]
 noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x, x.small_coe⟩
-  invFun := fun ⟨s, _⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u + 1} s).symm x).val.out
+  invFun := fun ⟨s, _⟩ ↦
+    mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u + 1} s).symm x).val.out
   left_inv := private Function.rightInverse_of_injective_of_leftInverse (by intro _ _; simp)
     fun s ↦ Subtype.coe_injective <| coe_equiv_aux s.property
   right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.property

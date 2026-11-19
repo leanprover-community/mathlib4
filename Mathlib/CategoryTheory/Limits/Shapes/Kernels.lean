@@ -179,8 +179,8 @@ def KernelFork.IsLimit.ofι {W : C} (g : W ⟶ X) (eq : g ≫ f = 0)
 def KernelFork.IsLimit.ofι' {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ f = 0)
     (h : ∀ {A : C} (k : A ⟶ X) (_ : k ≫ f = 0), { l : A ⟶ K // l ≫ i = k}) [hi : Mono i] :
     IsLimit (KernelFork.ofι i w) :=
-  ofι _ _ (fun {_} k hk => (h k hk).val) (fun {_} k hk => (h k hk).property) (fun {A} k hk m hm => by
-    rw [← cancel_mono i, (h k hk).property, hm])
+  ofι _ _ (fun {_} k hk => (h k hk).val) (fun {_} k hk => (h k hk).property)
+    (fun {A} k hk m hm => by rw [← cancel_mono i, (h k hk).property, hm])
 
 /-- Every kernel of `f` induces a kernel of `f ≫ g` if `g` is mono. -/
 @[to_dual isCokernelEpiComp

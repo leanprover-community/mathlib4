@@ -334,7 +334,8 @@ lemma eq_of_mem_weylGroup_of_forall_apply_sRoot_eq [CharZero R] [IsDomain R]
 instance [CharZero R] [IsDomain R] : Finite rl.weylGroup := by
   set f : rl.weylGroup → n → M := fun w i ↦ (w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)).1 (rl.sRoot i)
   have hinj : Injective f := fun w w' hww' ↦
-    Subtype.ext <| rl.eq_of_mem_weylGroup_of_forall_apply_sRoot_eq w.property w'.property fun i ↦ congr_fun hww' i
+    Subtype.ext <| rl.eq_of_mem_weylGroup_of_forall_apply_sRoot_eq w.property w'.property
+      fun i ↦ congr_fun hww' i
   rw [← finite_univ_iff]
   refine .of_finite_image ?_ hinj.injOn
   exact (Finite.pi fun _ ↦ rl.finite_setOf_mem_weylGroup_apply_sRoot).subset <| by grind

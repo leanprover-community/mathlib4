@@ -527,8 +527,8 @@ def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
     simp [h.isOpenMap.preimage_closure_image h.injective h.continuous _ V.isClosed]
   right_inv V := by
     ext
-    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.property V.val.isIrreducible'.2
-      V.val.isClosed']
+    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.property
+      V.val.isIrreducible'.2 V.val.isClosed']
   map_rel_iff' {a b} := by
     refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
     simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,

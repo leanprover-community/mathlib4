@@ -647,7 +647,8 @@ theorem of_surjective_iff : Function.Surjective (of I M) ↔ IsPrecomplete I M :
     rw [← mkQ_apply _ x, ← eval_of, hx]
     simp [u]
   · intro h u
-    choose x hx using (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.val n))
+    choose x hx using
+      (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.val n))
     obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by rw [SModEq, hx, ← u.property hmn, ← hx]; simp)
     use a
     ext n

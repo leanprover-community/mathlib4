@@ -234,7 +234,8 @@ section Torsion
 open QuotientAddGroup Cardinal in
 theorem card_torsion_le_of_isSMulRegular (n : ℕ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n := by
-  have (x : {x : AddCircle p | n • x = 0}) : ∃ (k : Fin n) (y : 𝕜), y = x.val ∧ n • y = k.val • p := by
+  have (x : {x : AddCircle p | n • x = 0}) :
+      ∃ (k : Fin n) (y : 𝕜), y = x.val ∧ n • y = k.val • p := by
     obtain ⟨x, hx⟩ := x
     obtain ⟨y, rfl⟩ := mk_surjective x
     rw [Set.mem_ofPred, ← mk_nsmul, eq_zero_iff] at hx

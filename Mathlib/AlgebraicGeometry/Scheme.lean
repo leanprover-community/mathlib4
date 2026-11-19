@@ -858,7 +858,8 @@ theorem Scheme.SpecMap_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U 
   simp [eqToHom_map]
 
 lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
-    (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.property f = 0 := by
+    (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) :
+    X.presheaf.germ U x x.property f = 0 := by
   rw [Scheme.mem_basicOpen X s x x.property] at hx
   have hu : IsUnit (X.presheaf.germ _ x x.property (s ^ n)) := by
     rw [map_pow]

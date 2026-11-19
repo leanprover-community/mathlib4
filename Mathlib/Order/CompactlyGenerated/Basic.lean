@@ -366,7 +366,8 @@ theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
   have sup_le n : (e n).val ⊔ a (n + 1) ≤ a n := sup_le_iff.mpr ⟨le_iSup₂_of_le n le_rfl le_rfl,
     iSup₂_le fun i hi ↦ le_iSup₂_of_le i (n.le_succ.trans hi) le_rfl⟩
   have lt n : a (n + 1) < a n := (Disjoint.right_lt_sup_of_left_ne_bot
-    ((hs (e n).property.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_) (e n).property.2).trans_le (sup_le n)
+    ((hs (e n).property.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_)
+    (e n).property.2).trans_le (sup_le n)
   · exact (RelEmbedding.natGT a lt).not_wellFounded wellFounded_lt
   exact ⟨(e i).property.1, fun h ↦
     n.lt_succ_self.not_ge <| hi.trans_eq <| e.inj' <| Subtype.val_injective h⟩

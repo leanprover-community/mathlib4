@@ -181,7 +181,8 @@ this is the restriction to `s`. -/
 @[simp]
 def restrict₂ (hst : s ⊆ t) (f : (i : t) → π i) (i : s) : π i := f ⟨i.val, hst i.property⟩
 
-theorem restrict₂_def (hst : s ⊆ t) : restrict₂ (π := π) hst = fun f x ↦ f ⟨x.val, hst x.property⟩ := rfl
+theorem restrict₂_def (hst : s ⊆ t) :
+    restrict₂ (π := π) hst = fun f x ↦ f ⟨x.val, hst x.property⟩ := rfl
 
 theorem restrict₂_comp_restrict (hst : s ⊆ t) :
     (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl

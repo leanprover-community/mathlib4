@@ -471,7 +471,8 @@ variable (v : vectorsProdEqOne G n) (j k : ℕ)
 
 /-- Rotate a vector whose product is 1. -/
 def rotate : vectorsProdEqOne G n :=
-  ⟨⟨_, (v.val.val.length_rotate k).trans v.val.property⟩, List.prod_rotate_eq_one_of_prod_eq_one v.property k⟩
+  ⟨⟨_, (v.val.val.length_rotate k).trans v.val.property⟩,
+    List.prod_rotate_eq_one_of_prod_eq_one v.property k⟩
 
 theorem rotate_zero : rotate v 0 = v :=
   Subtype.ext (Subtype.ext v.val.val.rotate_zero)

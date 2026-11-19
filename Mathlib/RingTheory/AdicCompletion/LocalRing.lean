@@ -175,10 +175,12 @@ lemma spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRing R] :
     intro m
     rcases Ideal.toCotangent_surjective _ m with ⟨m', hm'⟩
     rcases Submodule.Quotient.mk_surjective _ (m'.val.val 2) with ⟨l, hl⟩
-    have lmem : (transitionMap _ R (Nat.le_succ 1)) (m'.val.val 2) = m'.val.val 1 := m'.val.property (Nat.le_succ 1)
+    have lmem : (transitionMap _ R (Nat.le_succ 1)) (m'.val.val 2) = m'.val.val 1 :=
+      m'.val.property (Nat.le_succ 1)
     simp only [smul_eq_mul, Nat.succ_eq_add_one, Nat.reduceAdd, transitionMap, Submodule.factorPow,
       Submodule.mapQ_eq_factor, Submodule.factor_eq_factor, ← hl, mk_eq_mk, factor_mk, pow_one,
-      (mem_maximalIdeal_iff_eval_one_eq_zero m'.val).mp m'.property, eq_zero_iff_mem, mul_top] at lmem
+      (mem_maximalIdeal_iff_eval_one_eq_zero m'.val).mp m'.property, eq_zero_iff_mem,
+      mul_top] at lmem
     use (maximalIdeal R).toCotangent ⟨l, lmem⟩
     simp only [mapCotangent_toCotangent, Algebra.ofId_apply, ← hm', toCotangent_eq, f]
     change (of (maximalIdeal R) R l) - m' ∈ _

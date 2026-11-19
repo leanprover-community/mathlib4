@@ -402,7 +402,8 @@ def isColimitAux' (t : PushoutCocone f g)
           t.inl ≫ l = s.inl ∧
             t.inr ≫ l = s.inr ∧ ∀ {m}, t.inl ≫ m = s.inl → t.inr ≫ m = s.inr → m = l }) :
     IsColimit t :=
-  isColimitAux t (fun s => (create s).val) (fun s => (create s).property.1) (fun s => (create s).property.2.1)
+  isColimitAux t (fun s => (create s).val) (fun s => (create s).property.1)
+    (fun s => (create s).property.2.1)
     fun s _ w => (create s).property.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
 
 

@@ -260,13 +260,17 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
   toFun c :=
     ⟨c ⊔ b,
       le_sup_right.trans_lt <|
-        sup_strictMonoOn_Icc_inf (left_mem_Icc.2 inf_le_left) (Ioo_subset_Icc_self c.property) c.property.1,
-      sup_strictMonoOn_Icc_inf (Ioo_subset_Icc_self c.property) (right_mem_Icc.2 inf_le_left) c.property.2⟩
+        sup_strictMonoOn_Icc_inf (left_mem_Icc.2 inf_le_left) (Ioo_subset_Icc_self c.property)
+          c.property.1,
+      sup_strictMonoOn_Icc_inf (Ioo_subset_Icc_self c.property) (right_mem_Icc.2 inf_le_left)
+        c.property.2⟩
   invFun c :=
     ⟨a ⊓ c,
-      inf_strictMonoOn_Icc_sup (left_mem_Icc.2 le_sup_right) (Ioo_subset_Icc_self c.property) c.property.1,
+      inf_strictMonoOn_Icc_sup (left_mem_Icc.2 le_sup_right) (Ioo_subset_Icc_self c.property)
+        c.property.1,
       inf_le_left.trans_lt' <|
-        inf_strictMonoOn_Icc_sup (Ioo_subset_Icc_self c.property) (right_mem_Icc.2 le_sup_right) c.property.2⟩
+        inf_strictMonoOn_Icc_sup (Ioo_subset_Icc_self c.property) (right_mem_Icc.2 le_sup_right)
+          c.property.2⟩
   left_inv c :=
     Subtype.ext <| by
       dsimp

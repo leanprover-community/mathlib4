@@ -67,7 +67,8 @@ theorem IsGδ.baireSpace_of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSp
     (hG.preimage continuous_subtypeVal).baireSpace_of_dense
     (by simp [Subtype.dense_iff, inter_eq_right.mpr subset_closure])
   have h_homeo : Homeomorph ((↑) ⁻¹' s : Set (closure s)) s := ⟨⟨fun x => ⟨x, x.property⟩,
-    fun x => ⟨⟨x, subset_closure x.property⟩, x.property⟩, by grind, by grind⟩, by fun_prop, by fun_prop⟩
+    fun x => ⟨⟨x, subset_closure x.property⟩, x.property⟩, by grind, by grind⟩, by fun_prop,
+    by fun_prop⟩
   exact h_homeo.baireSpace
 
 @[deprecated (since := "2026-06-04")]

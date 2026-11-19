@@ -127,7 +127,8 @@ def extendToSucc : Set.Iic (Order.succ j) ⥤ C where
   obj := obj F X
   map {i₁ i₂} f := map hj F τ i₁ i₂ (leOfHom f) i₂.property
   map_id _ := extendToSucc.map_id _ F τ _ _
-  map_comp {i₁ i₂ i₃} f g := extendToSucc.map_comp hj F τ i₁ i₂ i₃ (leOfHom f) (leOfHom g) i₃.property
+  map_comp {i₁ i₂ i₃} f g :=
+    extendToSucc.map_comp hj F τ i₁ i₂ i₃ (leOfHom f) (leOfHom g) i₃.property
 
 lemma extendToSucc_obj_eq (i : J) (hi : i ≤ j) :
     (extendToSucc hj F τ).obj ⟨i, hi.trans (Order.le_succ j)⟩ = F.obj ⟨i, hi⟩ :=

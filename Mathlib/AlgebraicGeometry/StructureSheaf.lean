@@ -270,7 +270,8 @@ theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
 def const (f : M) (g : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : U ≤ basicOpen g) :
     Γ(M, U) :=
-  ⟨fun x => .mk f ⟨g, hu x.property⟩, fun x ↦ ⟨U, x.property, 𝟙 _, f, g, fun y ↦ ⟨hu y.property, rfl⟩⟩⟩
+  ⟨fun x => .mk f ⟨g, hu x.property⟩,
+    fun x ↦ ⟨U, x.property, 𝟙 _, f, g, fun y ↦ ⟨hu y.property, rfl⟩⟩⟩
 
 @[simp]
 theorem const_apply (f : M) (g : R) (U : Opens (PrimeSpectrum.Top R))
@@ -1085,7 +1086,8 @@ def comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpe
     exact (Localization.localRingHom ..).map_one
   map_mul' r s := Subtype.ext <| funext fun p ↦ by
     dsimp
-    change _ = (comapₗ f.toSemilinearMap U V hUV r).val p * (comapₗ f.toSemilinearMap U V hUV s).val p
+    change _ =
+      (comapₗ f.toSemilinearMap U V hUV r).val p * (comapₗ f.toSemilinearMap U V hUV s).val p
     simp only [comapₗ_eq_localRingHom, PrimeSpectrum.comap_asIdeal]
     exact (Localization.localRingHom ..).map_mul _ _
   map_zero' := Subtype.ext <| funext fun _ ↦ by

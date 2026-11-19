@@ -200,7 +200,8 @@ Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
 an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positive degree. -/
 @[simps! I₀ f] noncomputable def mapAffineOpenCover : (Proj ℬ).AffineOpenCover :=
   affineOpenCoverOfIrrelevantLESpan _ (fun s : (affineOpenCover 𝒜).I₀ ↦ f s.2)
-    (fun s ↦ f.map_mem s.2.property) (fun s ↦ s.1.property) <| (toIdeal_le_toIdeal_iff.mpr hf).trans <|
+    (fun s ↦ f.map_mem s.2.property) (fun s ↦ s.1.property) <|
+    (toIdeal_le_toIdeal_iff.mpr hf).trans <|
     Ideal.map_le_of_le_comap <| (toIdeal_irrelevant_le _).mpr fun i hi x hx ↦
     Ideal.subset_span ⟨⟨⟨i, hi⟩, ⟨x, hx⟩⟩, rfl⟩
 

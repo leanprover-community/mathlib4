@@ -985,7 +985,8 @@ def ord (c : Cardinal) : Ordinal :=
     refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
   exacts [f.symm, f]
 
-theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.val r.property :=
+theorem ord_eq_iInf (α : Type u) :
+    ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.val r.property :=
   (rfl)
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/

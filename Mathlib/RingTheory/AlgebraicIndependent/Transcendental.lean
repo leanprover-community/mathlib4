@@ -74,7 +74,8 @@ theorem isEmpty_of_isAlgebraic [Algebra.IsAlgebraic R A] : IsEmpty ι := by
 end AlgebraicIndependent
 
 theorem trdeg_eq_zero [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
-  bot_unique <| ciSup_le' fun s ↦ have := s.property.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
+  bot_unique <| ciSup_le' fun s ↦
+    have := s.property.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
 
 variable (R A) in
 theorem trdeg_pos [Algebra.Transcendental R A] : 0 < trdeg R A :=

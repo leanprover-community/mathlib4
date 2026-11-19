@@ -518,7 +518,8 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
       ← notMem_support]
     contrapose hx
     obtain ⟨a, -, ha⟩ := mem_support_of_mem_noncommProd_support
-      (comm := fun a ha b hb h ↦ g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).property (v b).property) hx
+      (comm := fun a ha b hb h ↦
+        g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).property (v b).property) hx
     exact support_zpowers_of_mem_cycleFactorsFinset_le (v a) ha
 
 theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
@@ -555,8 +556,10 @@ theorem kerParam_range_eq :
           ((ofSubtype_support_disjoint a).mono_right
             (mem_cycleFactorsFinset_support_le x.property))).commute.mul_inv_cancel
     · intro i
-      refine ⟨⟨i, mem_centralizer_singleton_iff.mpr (self_mem_cycle_factors_commute i.property)⟩, ?_, rfl⟩
-      exact Perm.ext fun x ↦ Subtype.ext (cycleFactorsFinset_mem_commute' g i.property x.property).mul_inv_cancel
+      refine ⟨⟨i, mem_centralizer_singleton_iff.mpr (self_mem_cycle_factors_commute i.property)⟩,
+        ?_, rfl⟩
+      exact Perm.ext fun x ↦
+        Subtype.ext (cycleFactorsFinset_mem_commute' g i.property x.property).mul_inv_cancel
   · rintro - ⟨p, hp, rfl⟩
     simp only [coe_subtype]
     set u : Perm (Function.fixedPoints g) :=

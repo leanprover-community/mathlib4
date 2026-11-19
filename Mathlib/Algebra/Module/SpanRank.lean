@@ -148,7 +148,8 @@ lemma spanRank_span_range_of_linearIndependent [RankCondition R] {ι : Type u} {
     (span R (.range v)).spanRank = #ι := by
   refine le_antisymm (le_trans (spanRank_span_le_card _) mk_range_le) (le_ciInf fun x ↦ ?_)
   have : #x.val = #((Subtype.val : span R (.range v) → _) ⁻¹' x.val) :=
-    (mk_preimage_of_injective_of_subset_range _ _ Subtype.val_injective (by simp [← x.property])).symm
+    (mk_preimage_of_injective_of_subset_range _ _ Subtype.val_injective
+      (by simp [← x.property])).symm
   rw [this]
   refine le_trans ?_ ((Module.Basis.span hs).le_span (R := R) (J := Subtype.val ⁻¹' x.val) ?_)
   · rw [mk_range_eq]

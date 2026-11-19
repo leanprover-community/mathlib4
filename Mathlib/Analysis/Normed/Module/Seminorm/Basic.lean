@@ -530,7 +530,8 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
       rw [Seminorm.coe_sSup_eq' H, iSup_apply]
       rcases H with ⟨q, hq⟩
       exact
-        le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq (mem_image_of_mem _ i.property) x⟩ ⟨p, hp⟩⟩⟩
+        le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq (mem_image_of_mem _ i.property) x⟩
+          ⟨p, hp⟩⟩⟩
 
 protected theorem bddAbove_range_iff {ι : Sort*} {p : ι → Seminorm 𝕜 E} :
     BddAbove (range p) ↔ ∀ x, BddAbove (range fun i ↦ p i x) := by

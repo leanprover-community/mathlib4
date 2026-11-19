@@ -269,7 +269,8 @@ def weierstrassP (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l
 
 lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
     ℘[L - l₀] z + (1 / (z - l₀.val) ^ 2 - 1 / l₀.val ^ 2) = ℘[L] z := by
-  trans ℘[L - l₀] z + ∑' i : L.lattice, if i = l₀.val then (1 / (z - l₀.val) ^ 2 - 1 / l₀.val ^ 2) else 0
+  trans ℘[L - l₀] z +
+    ∑' i : L.lattice, if i = l₀.val then (1 / (z - l₀.val) ^ 2 - 1 / l₀.val ^ 2) else 0
   · simp
   rw [weierstrassPExcept, ← Summable.tsum_add]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *]
@@ -337,8 +338,8 @@ def derivWeierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
 scoped notation3 "℘'[" L:max " - " l₀ "]" => derivWeierstrassPExcept L l₀
 
 lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
-    HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ if l.val = l₀ then 0 else -2 / (z - l) ^ 3)
-      ℘'[L - l₀] := by
+    HasSumLocallyUniformly
+      (fun (l : L.lattice) (z : ℂ) ↦ if l.val = l₀ then 0 else -2 / (z - l) ^ 3) ℘'[L - l₀] := by
   refine L.hasSumLocallyUniformly_aux (u := fun _ ↦ (16 * ‖·‖ ^ (-3 : ℝ))) _
     (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
@@ -615,7 +616,8 @@ each `aᵢ` can be written as an infinite sum over `l ∈ L`.
 This is the summand of this infinite sum with the `l₀`-th term omitted.
 See `PeriodPair.coeff_weierstrassPExceptSeries`. -/
 def weierstrassPExceptSummand (l₀ x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
-  if l.val = l₀ then 0 else ((i + 1) * (l.val - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.val ^ (-2 : ℤ)) 0)
+  if l.val = l₀ then 0 else
+    ((i + 1) * (l.val - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.val ^ (-2 : ℤ)) 0)
 
 /-- The power series expansion of `℘[L - l₀]` at `x`.
 See `PeriodPair.hasFPowerSeriesOnBall_weierstrassPExcept`. -/

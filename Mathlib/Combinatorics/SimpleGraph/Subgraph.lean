@@ -741,7 +741,8 @@ instance [DecidableEq V] [Fintype V] [DecidableRel G.Adj] : Fintype G.Subgraph :
   refine .ofBijective
     (α := {H : Finset V × (V → V → Bool) //
       (∀ a b, H.2 a b → G.Adj a b) ∧ (∀ a b, H.2 a b → a ∈ H.1) ∧ ∀ a b, H.2 a b = H.2 b a})
-    (fun H ↦ ⟨H.val.1, fun a b ↦ H.val.2 a b, @H.property.1, @H.property.2.1, by simp [symm_def, H.property.2.2]⟩)
+    (fun H ↦ ⟨H.val.1, fun a b ↦ H.val.2 a b, @H.property.1, @H.property.2.1,
+      by simp [symm_def, H.property.2.2]⟩)
     ⟨?_, fun H ↦ ?_⟩
   · rintro ⟨⟨_, _⟩, -⟩ ⟨⟨_, _⟩, -⟩
     simp [funext_iff]

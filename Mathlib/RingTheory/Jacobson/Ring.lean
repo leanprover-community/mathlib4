@@ -200,7 +200,8 @@ theorem IsLocalization.isMaximal_of_isMaximal_notMem
 correspond to maximal ideals in the original ring `R` that don't contain `y` -/
 def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
     { p : Ideal S // p.IsMaximal } ≃o { p : Ideal R // p.IsMaximal ∧ y ∉ p } where
-  toFun p := ⟨Ideal.comap (algebraMap R S) p.val, (isMaximal_iff_isMaximal_disjoint S y p.val).1 p.property⟩
+  toFun p := ⟨Ideal.comap (algebraMap R S) p.val,
+    (isMaximal_iff_isMaximal_disjoint S y p.val).1 p.property⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.val,
     isMaximal_of_isMaximal_notMem y p.val p.property.1 p.property.2⟩
   left_inv J := Subtype.ext (map_under (powers y) S J)

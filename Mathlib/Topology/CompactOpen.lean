@@ -499,7 +499,8 @@ theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
 theorem continuousOn_of_continuousOn_uncurry {s : Set X} (f : X → C(Y, Z))
     (h : ContinuousOn (Function.uncurry fun x y => f x y) (s ×ˢ univ)) : ContinuousOn f s :=
   continuousOn_iff_continuous_domRestrict.mpr <| continuous_of_continuous_uncurry _ <|
-    h.comp_continuous (continuous_subtypeVal.prodMap continuous_id) (fun x ↦ ⟨x.1.property, trivial⟩)
+    h.comp_continuous (continuous_subtypeVal.prodMap continuous_id)
+      (fun x ↦ ⟨x.1.property, trivial⟩)
 
 /-- The currying process is a continuous map between function spaces. -/
 theorem continuous_curry [LocallyCompactSpace (X × Y)] :

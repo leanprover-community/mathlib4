@@ -98,9 +98,10 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   rw [← MorphismProperty.cancel_right_of_respectsIso (P := @IsClosedImmersion) _ e₁.hom,
     ← MorphismProperty.cancel_left_of_respectsIso (P := @IsClosedImmersion) e₂.inv]
   let F : Away 𝒜 i.2.val ⊗[𝒜 0] Away 𝒜 j.2.val →+* Away 𝒜 (i.2.val * j.2.val) :=
-    (Algebra.TensorProduct.lift (awayMapₐ 𝒜 j.2.property rfl) (awayMapₐ 𝒜 i.2.property (mul_comm _ _))
-      (fun _ _ ↦ .all _ _)).toRingHom
-  have : Function.Surjective F := lift_awayMapₐ_awayMapₐ_surjective 𝒜 i.2.property j.2.property rfl i.1.property
+    (Algebra.TensorProduct.lift (awayMapₐ 𝒜 j.2.property rfl)
+      (awayMapₐ 𝒜 i.2.property (mul_comm _ _)) (fun _ _ ↦ .all _ _)).toRingHom
+  have : Function.Surjective F :=
+    lift_awayMapₐ_awayMapₐ_surjective 𝒜 i.2.property j.2.property rfl i.1.property
   convert
     IsClosedImmersion.spec_of_surjective
       (CommRingCat.ofHom (R := Away 𝒜 i.2.val ⊗[𝒜 0] Away 𝒜 j.2.val) F) this using 1
@@ -114,7 +115,8 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     congr 1
     ext x : 2
     congrm $((Algebra.TensorProduct.lift_comp_includeLeft
-     (awayMapₐ 𝒜 j.2.property rfl) (awayMapₐ 𝒜 i.2.property (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm) x
+     (awayMapₐ 𝒜 j.2.property rfl) (awayMapₐ 𝒜 i.2.property (mul_comm _ _))
+     (fun _ _ ↦ .all _ _)).symm) x
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
       limit.lift_π, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
       ← Spec.map_comp, e₂, e₁]
@@ -123,7 +125,8 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     congr 1
     ext x : 2
     congrm $((Algebra.TensorProduct.lift_comp_includeRight
-     (awayMapₐ 𝒜 j.2.property rfl) (awayMapₐ 𝒜 i.2.property (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm) x
+     (awayMapₐ 𝒜 j.2.property rfl) (awayMapₐ 𝒜 i.2.property (mul_comm _ _))
+     (fun _ _ ↦ .all _ _)).symm) x
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01MC]
@@ -139,11 +142,13 @@ instance [Algebra.FiniteType (𝒜 0) A] : LocallyOfFiniteType (Proj.toSpecZero 
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
   rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
-    (Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.property⟩) (by simpa using hx))]
+    (Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.property⟩)
+      (by simpa using hx))]
   intro i
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := @LocallyOfFiniteType)
-    (Proj.basicOpenIsoSpec 𝒜 (i : A) (hxd _ i.property) (hd _ i.property).bot_lt).inv, ← Category.assoc,
-    ← Proj.awayι, Proj.awayι_toSpecZero, HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
+    (Proj.basicOpenIsoSpec 𝒜 (i : A) (hxd _ i.property) (hd _ i.property).bot_lt).inv,
+    ← Category.assoc, ← Proj.awayι, Proj.awayι_toSpecZero,
+    HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
   exact HomogeneousLocalization.Away.finiteType _ _ (hxd _ i.property)
 
 end LocallyOfFiniteType
@@ -319,10 +324,12 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
   have : i₁ (IsLocalRing.closedPoint K) ∈ (⊤ : (Proj 𝒜).Opens) := trivial
-  rw [← Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.property⟩) (by simpa using hx),
+  rw [← Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.property⟩)
+      (by simpa using hx),
     TopologicalSpace.Opens.mem_iSup] at this
   obtain ⟨i, hi⟩ := this
-  have : Set.range i₁ ⊆ (Proj.awayι 𝒜 _ (hxd i i.property) (hd i i.property).bot_lt).opensRange := by
+  have : Set.range i₁ ⊆
+      (Proj.awayι 𝒜 _ (hxd i i.property) (hd i i.property).bot_lt).opensRange := by
     rw [Proj.opensRange_awayι]
     rintro _ ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)
@@ -341,10 +348,12 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   let e : O ≃+* (algebraMap O K).range :=
     (AlgEquiv.ofInjective (Algebra.ofId O K) (IsFractionRing.injective _ _)).toRingEquiv
   let φ'' := e.symm.toRingHom.comp ((Subring.inclusion hφ').comp (RingHom.rangeRestrict _))
-  have hφ'' : (algebraMap O K).comp φ'' = φ'.comp (awayMap 𝒜 (hxd _ i.property) (mul_comm _ _)) := by
+  have hφ'' : (algebraMap O K).comp φ'' =
+      φ'.comp (awayMap 𝒜 (hxd _ i.property) (mul_comm _ _)) := by
     ext x
     exact congr_arg Subtype.val (e.apply_symm_apply _)
-  refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ (hxd _ i₀.property) (hd _ _).bot_lt, ?_, ?_⟩⟩
+  refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ (hxd _ i₀.property) (hd _ _).bot_lt,
+    ?_, ?_⟩⟩
   · rw [← Spec.map_comp_assoc]
     convert IsOpenImmersion.lift_fac _ _ this using 1
     change _ = φ ≫ _

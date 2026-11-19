@@ -108,7 +108,8 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     have : IsManifold I (0 + 1) M := by simpa
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v
     rw [fderivWithin_fderivWithin, Filter.EventuallyEq.fderivWithin_eq]
-    · have := i.val.extend_preimage_mem_nhds (I := I) hxi (j.val.extend_source_mem_nhds (I := I) hxj)
+    · have := i.val.extend_preimage_mem_nhds (I := I) hxi
+        (j.val.extend_source_mem_nhds (I := I) hxj)
       filter_upwards [nhdsWithin_le_nhds this] with y hy
       simp_rw [Function.comp_apply, (j.val.extend I).left_inv hy]
     · simp_rw [Function.comp_apply, i.val.extend_left_inv hxi, j.val.extend_left_inv hxj]

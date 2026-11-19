@@ -288,7 +288,8 @@ def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.uno
         (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).val.op)
       (fun g' w' =>
         congrArg Quiver.Hom.op
-          (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).property)
+          (CokernelCofork.IsColimit.desc' m.isColimit g'.unop
+            (congrArg Quiver.Hom.unop w')).property)
       (by
         rintro Z' g' w' m' rfl
         apply Quiver.Hom.unop_inj

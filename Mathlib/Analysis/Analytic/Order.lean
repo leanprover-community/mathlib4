@@ -674,7 +674,8 @@ theorem isClopen_setOfPred_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) 
         push _ ∈ _
         by_cases h₁w : w = z
         · rwa [h₁w]
-        · rw [(hf _ w.property).analyticOrderAt_eq_zero.2 ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
+        · rw [(hf _ w.property).analyticOrderAt_eq_zero.2
+            ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
           exact ENat.zero_ne_top
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr

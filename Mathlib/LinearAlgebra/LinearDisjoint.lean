@@ -366,7 +366,8 @@ variable {M N} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat R M]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
-    (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
+    (hn : LinearIndependent R n) :
+    LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
   rw [LinearIndependent] at hm hn ⊢
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
   let i1 := LinearMap.rTensor (ι →₀ R) (Finsupp.linearCombination R m)
@@ -387,7 +388,8 @@ variable {M N} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Flat R N]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
-    (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
+    (hn : LinearIndependent R n) :
+    LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
   rw [LinearIndependent] at hm hn ⊢
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
   let i1 := LinearMap.lTensor (κ →₀ R) (Finsupp.linearCombination R n)
@@ -409,7 +411,8 @@ also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
     (hf : Module.Flat R M ∨ Module.Flat R N)
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
-    (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
+    (hn : LinearIndependent R n) :
+    LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
   rcases hf with _ | _
   · exact H.linearIndependent_mul_of_flat_left hm hn
   · exact H.linearIndependent_mul_of_flat_right hm hn

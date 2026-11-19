@@ -555,7 +555,8 @@ lemma attach_cons (a : α) (s : Finset α) (ha) :
 theorem attach_insert [DecidableEq α] (s : Finset α) (a : α) :
     attach (insert a s) =
       insert (⟨a, mem_insert_self a s⟩ : { x // x ∈ insert a s })
-        ((attach s).image fun x => ⟨x.val, mem_insert_of_mem x.property⟩) := by ext ⟨x, hx⟩; simpa using hx
+        ((attach s).image fun x => ⟨x.val, mem_insert_of_mem x.property⟩) := by
+  ext ⟨x, hx⟩; simpa using hx
 
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :

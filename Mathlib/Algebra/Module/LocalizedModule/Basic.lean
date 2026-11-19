@@ -1287,8 +1287,8 @@ lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ (is
   ext x
   induction x using induction_on with | _ m s
   refine ((Module.End.isUnit_iff _).1 (map_units f₁ s)).1 ?_
-  rw [Module.algebraMap_end_apply, Module.algebraMap_end_apply,
-    ← CompatibleSMul.map_smul, ← CompatibleSMul.map_smul, smul'_mk, ← mk_smul _ s.property, mk_cancel]
+  rw [Module.algebraMap_end_apply, Module.algebraMap_end_apply, ← CompatibleSMul.map_smul,
+    ← CompatibleSMul.map_smul, smul'_mk, ← mk_smul _ s.property, mk_cancel]
   simp [map, lift, iso_localizedModule_eq_refl, lift_mk]
 
 end IsLocalizedModule

@@ -100,7 +100,8 @@ theorem zero_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
 
 theorem one_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
     (isLocallyFraction 𝒜).pred (1 : ∀ x : U.unop, at x.val) := fun x =>
-  ⟨unop U, x.property, 𝟙 (unop U), ⟨0, ⟨1, one_mem_graded _⟩, ⟨1, one_mem_graded _⟩, _, fun _ => rfl⟩⟩
+  ⟨unop U, x.property, 𝟙 (unop U),
+    ⟨0, ⟨1, one_mem_graded _⟩, ⟨1, one_mem_graded _⟩, _, fun _ => rfl⟩⟩
 
 theorem add_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.val)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
@@ -113,7 +114,8 @@ theorem add_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x 
         add_mem (add_comm jb ja ▸ mul_mem_graded sb_mem ra_mem : sb * ra ∈ 𝒜 (ja + jb))
           (mul_mem_graded sa_mem rb_mem)⟩,
       ⟨sa * sb, mul_mem_graded sa_mem sb_mem⟩, fun y ↦
-        y.val.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.val, y.property.1⟩) (hwb ⟨y.val, y.property.2⟩), ?_⟩
+        y.val.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.val, y.property.1⟩)
+          (hwb ⟨y.val, y.property.2⟩), ?_⟩
   rintro ⟨y, hy⟩
   simp only [Subtype.forall, Opens.apply_mk] at wa wb
   simp [wa y hy.1, wb y hy.2, ext_iff_val, add_mk, add_comm (sa * rb)]
@@ -134,7 +136,8 @@ theorem mul_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x 
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨ra * rb, SetLike.mul_mem_graded ra_mem rb_mem⟩,
       ⟨sa * sb, SetLike.mul_mem_graded sa_mem sb_mem⟩, fun y =>
-      y.val.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.val, y.property.1⟩) (hwb ⟨y.val, y.property.2⟩), ?_⟩
+      y.val.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.val, y.property.1⟩)
+        (hwb ⟨y.val, y.property.2⟩), ?_⟩
   rintro ⟨y, hy⟩
   simp only [Subtype.forall, Opens.apply_mk] at wa wb
   simp [wa y hy.1, wb y hy.2, ext_iff_val, Localization.mk_mul]

@@ -323,7 +323,8 @@ def mapAdditive (π : S →+ R) {K : ℝ} (hK : ∀ x, ‖π x‖ ≤ K * ‖x�
 
 @[simp]
 lemma coeff_val_mapAdditive (π : S →+ R) {K : ℝ} (hK : ∀ x, ‖π x‖ ≤ K * ‖x‖)
-    (A : Restricted S c) (t : σ →₀ ℕ) : coeff t (mapAdditive c π hK A).val = π (coeff t A.val) := rfl
+    (A : Restricted S c) (t : σ →₀ ℕ) :
+    coeff t (mapAdditive c π hK A).val = π (coeff t A.val) := rfl
 
 end Restricted
 

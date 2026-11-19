@@ -150,12 +150,14 @@ theorem measurePreserving_homeomorphUnitSphereProd :
     isPiSystem_measurableSet isPiSystem_Iio
     μ.toSphere.toFiniteSpanningSetsIn (finiteSpanningSetsIn_volumeIoiPow_range_Iio _)
     fun s hs ↦ forall_mem_range.2 fun r ↦ ?_
-  have : Ioo (0 : ℝ) r = r.val • Ioo (0 : ℝ) 1 := by simp [LinearOrderedField.smul_Ioo r.property.out]
+  have : Ioo (0 : ℝ) r = r.val • Ioo (0 : ℝ) 1 := by
+    simp [LinearOrderedField.smul_Ioo r.property.out]
   have hpos : 0 < dim E := Module.finrank_pos
   rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
     comap_subtypeVal_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
-    smul_assoc, μ.addHaar_smul_of_nonneg r.property.out.le, Nat.sub_add_cancel hpos, Nat.cast_pred hpos,
-    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_natCast, ← ENNReal.ofReal_mul, mul_div_cancel₀]
+    smul_assoc, μ.addHaar_smul_of_nonneg r.property.out.le, Nat.sub_add_cancel hpos,
+    Nat.cast_pred hpos, sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_natCast,
+    ← ENNReal.ofReal_mul, mul_div_cancel₀]
   exacts [(Nat.cast_pos.2 hpos).ne', Nat.cast_nonneg _]
 
 /-- An auxiliary lemma for `toSphereBallBound_mul_measure_unitBall_le_toSphere_ball`.

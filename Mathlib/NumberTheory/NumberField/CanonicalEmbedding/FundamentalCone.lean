@@ -561,7 +561,8 @@ def idealSetEquivNorm (n : ℕ) :
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val ∧ absNorm I.val = n} // J.val ∣ I.val} ×
         (torsion K) := Equiv.prodSubtypeFstEquivSubtypeProd
         (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val ∧ absNorm I.val = n} ↦ J.val ∣ I.val)
-    _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.val ∧ absNorm I.val = n) ∧ J.val ∣ I.val} × (torsion K) :=
+    _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.val ∧ absNorm I.val = n) ∧ J.val ∣ I.val} ×
+        (torsion K) :=
       Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
         (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.val ∧ absNorm I.val = n)
         (fun I ↦ J.val ∣ I.val))

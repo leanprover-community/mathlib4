@@ -43,7 +43,8 @@ def TensorProduct.toIntegralClosure
   | add x y _ _ => rw [map_add]; exact add_mem ‹_› ‹_›
   | tmul x y =>
     convert!
-      ((y.property.map (Algebra.TensorProduct.includeRight (R := R) (A := S))).tower_top (A := S)).smul x
+      ((y.property.map (Algebra.TensorProduct.includeRight (R := R) (A := S))).tower_top
+        (A := S)).smul x
     simp [smul_tmul']
 
 lemma TensorProduct.toIntegralClosure_injective_of_flat [Module.Flat R S] :

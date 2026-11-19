@@ -291,7 +291,8 @@ instance : StarMul (specialUnitaryGroup n α) where
   star_involutive A := Subtype.ext <| star_involutive A.val
 
 @[simp, norm_cast]
-theorem specialUnitaryGroup.coe_star (A : specialUnitaryGroup n α) : (star A).val = star A.val := rfl
+theorem specialUnitaryGroup.coe_star (A : specialUnitaryGroup n α) :
+    (star A).val = star A.val := rfl
 
 instance : Inv (specialUnitaryGroup n α) where inv := star
 

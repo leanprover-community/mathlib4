@@ -102,7 +102,8 @@ theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = ‖φ x‖ := rfl
 noncomputable def embedding (w : InfinitePlace K) : K →+* ℂ := w.property.choose
 
 @[simp]
-theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext w.property.choose_spec
+theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w :=
+  Subtype.ext w.property.choose_spec
 
 @[simp]
 theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by

@@ -160,7 +160,8 @@ lemma reps_zero_empty : reps 0 = ∅ := by
 noncomputable instance repsFintype (k : ℤ) : Fintype (reps k) := by
   let H := Finset.Icc (-|k|) |k|
   let H4 := Fin 2 → Fin 2 → H
-  apply Fintype.ofInjective (β := H4) (f := fun M i j ↦ ⟨M.val.val i j, reps_entries_le_m' M.property i j⟩)
+  apply Fintype.ofInjective (β := H4)
+    (f := fun M i j ↦ ⟨M.val.val i j, reps_entries_le_m' M.property i j⟩)
   intro M N h
   ext i j
   simpa only [Subtype.mk.injEq] using congrFun₂ h i j
@@ -230,7 +231,8 @@ private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B 
 
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} {A : Δ m} (hm : m ≠ 0)
-    (h0 : ∀ A : Δ m, A.val 1 0 = 0 → 0 < A.val 0 0 → 0 ≤ A.val 0 1 → |(A.val 0 1)| < |(A.val 1 1)| → C A)
+    (h0 : ∀ A : Δ m, A.val 1 0 = 0 → 0 < A.val 0 0 →
+      0 ≤ A.val 0 1 → |(A.val 0 1)| < |(A.val 1 1)| → C A)
     (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) : C A := by
   have h_reduce : C (reduce A) := by
     rcases reduce_mem_reps hm A with ⟨H1, H2, H3, H4⟩

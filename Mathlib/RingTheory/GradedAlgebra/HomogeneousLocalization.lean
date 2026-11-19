@@ -669,7 +669,8 @@ induces a map from the homogeneous localization `A⁰_P` to the homogeneous loca
 def map (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
   toFun := Quotient.map'
-    (fun x ↦ ⟨x.deg, ⟨_, map_mem g x.num.property⟩, ⟨_, map_mem g x.den.property⟩, comap_le x.den_mem⟩)
+    (fun x ↦ ⟨x.deg, ⟨_, map_mem g x.num.property⟩, ⟨_, map_mem g x.den.property⟩,
+      comap_le x.den_mem⟩)
     fun x y (e : x.embedding = y.embedding) ↦ by
       apply_fun IsLocalization.map (Localization Q) g.toRingHom comap_le at e
       simp_rw [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
@@ -695,7 +696,8 @@ abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
 
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
     map g comap_le (mk x) =
-      mk ⟨x.deg, ⟨_, map_mem g x.num.property⟩, ⟨_, map_mem g x.den.property⟩, comap_le x.den_mem⟩ :=
+      mk ⟨x.deg, ⟨_, map_mem g x.num.property⟩, ⟨_, map_mem g x.den.property⟩,
+        comap_le x.den_mem⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in

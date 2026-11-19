@@ -564,7 +564,8 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : e
   ne_of_lt <|
     calc
       edist x y ≤ edist a x + edist a y := edist_triangle_left x.val y.val a
-      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.property y.property
+      _ < r + r := by
+        rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.property y.property
       _ ≤ ∞ := le_top
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist

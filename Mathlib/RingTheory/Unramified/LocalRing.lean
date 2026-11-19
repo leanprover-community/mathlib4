@@ -249,7 +249,8 @@ lemma exists_awayMap_injective_of_localRingHom_injective
     IsLocalization.mk'_eq_zero_iff] at hx
   obtain ⟨⟨_, n, rfl⟩, hn⟩ := hx
   simp only [← map_pow, ← map_mul] at hn
-  obtain ⟨⟨_, k, rfl⟩, hk⟩ := (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).val) _ _).mp (H hn)
+  obtain ⟨⟨_, k, rfl⟩, hk⟩ :=
+    (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).val) _ _).mp (H hn)
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr ⟨⟨_, k + n, rfl⟩, ?_⟩
   dsimp only at hk ⊢
   rw [pow_add, mul_assoc, e, mul_pow, ← e, mul_assoc, mul_left_comm, hk, mul_zero]

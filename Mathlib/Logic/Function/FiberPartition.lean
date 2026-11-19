@@ -36,7 +36,8 @@ as an arbitrary such `x`.
 -/
 noncomputable def image (f : Y → Z) (a : Fiber f) : Z := a.property.choose.val
 
-lemma eq_fiber_image (f : Y → Z) (a : Fiber f) : a.val = f ⁻¹' {a.image} := a.property.choose_spec.symm
+lemma eq_fiber_image (f : Y → Z) (a : Fiber f) : a.val = f ⁻¹' {a.image} :=
+  a.property.choose_spec.symm
 
 /--
 Given `y : Y`, `Fiber.mk f y` is the fiber of `f` that `y` belongs to, as an element of `Fiber f`.

@@ -79,7 +79,8 @@ variable (R) in
 /-- The ring isomorphism between the units of a restricted product `Πʳ i, [R i, B i]_[𝓕]` and
 the restricted product of `(R i)ˣ` with respect to `(B i)ˣ`. -/
 def unitsEquiv : Πʳ i, [R i, B i]_[𝓕]ˣ ≃* Πʳ i, [(R i)ˣ, (Submonoid.ofClass (B i)).units]_[𝓕] where
-  toFun x := ⟨coeUnits x, by filter_upwards [x.val.property, x.inv.property] using fun i hi hi' ↦ ⟨hi, hi'⟩⟩
+  toFun x := ⟨coeUnits x, by
+    filter_upwards [x.val.property, x.inv.property] using fun i hi hi' ↦ ⟨hi, hi'⟩⟩
   invFun y := mkUnit y.val y.property
   left_inv _ := rfl
   right_inv _ := rfl

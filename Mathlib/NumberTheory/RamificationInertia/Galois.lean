@@ -101,7 +101,8 @@ noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
     apply Subtype.val_inj.mp
     change map _ Q.val = map _ (map _ Q.val)
     rw [map_mul]
-    exact (Q.val.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
+    exact (Q.val.map_map ((galRestrict A K L B) τ).toRingHom
+      ((galRestrict A K L B) σ).toRingHom).symm
 
 theorem coe_smul_primesOver_eq_map_galRestrict (σ : Gal(L/K)) (P : primesOver p B) :
     (σ • P).val = map (galRestrict A K L B σ) P :=

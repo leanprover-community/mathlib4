@@ -208,7 +208,8 @@ noncomputable abbrev toStep : Z ⟶ step W Z := pushout.inr _ _
 a map `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 def D₂ : Type _ :=
   Σ (f : W.toSet),
-    { pq : (f.val.right ⟶ step W Z) × (f.val.right ⟶ step W Z) // f.val.hom ≫ pq.1 = f.val.hom ≫ pq.2 }
+    { pq : (f.val.right ⟶ step W Z) × (f.val.right ⟶ step W Z) //
+      f.val.hom ≫ pq.1 = f.val.hom ≫ pq.2 }
 
 /-- The shape of the multicoequalizer of all pairs of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/

@@ -28,7 +28,8 @@ variable {R : Type*}
 
 instance [CommMonoid R] [AddCommMonoid R] :
     Compl {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
-  compl a := ⟨(a.val.2, a.val.1), (mul_comm ..).trans a.property.1, (add_comm ..).trans a.property.2⟩
+  compl a := ⟨(a.val.2, a.val.1), (mul_comm ..).trans a.property.1,
+    (add_comm ..).trans a.property.2⟩
 
 lemma eq_of_mul_eq_add_eq_one [NonAssocSemiring R] (a : R) {b c : R}
     (mul : a * b = c * a) (add_ab : a + b = 1) (add_ac : a + c = 1) :
@@ -60,14 +61,16 @@ instance : PartialOrder {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
 
 instance : SemilatticeSup {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   sup a b := ⟨(a.val.1 + a.val.2 * b.val.1, a.val.2 * b.val.2), by simp_rw [add_mul,
-      mul_mul_mul_comm _ b.val.1, b.property.1, mul_zero, ← mul_assoc, a.property.1, zero_mul, add_zero], by
+      mul_mul_mul_comm _ b.val.1, b.property.1, mul_zero, ← mul_assoc, a.property.1, zero_mul,
+      add_zero], by
     simp_rw [add_assoc, ← mul_add, b.property.2, mul_one, a.property.2]⟩
   le_sup_left a b := by
     simp_rw [(· ≤ ·), mul_add, ← mul_assoc, a.property.1, zero_mul, add_zero,
       (IsIdempotentElem.of_mul_add a.property.1 a.property.2).1.eq]
   le_sup_right a b := by
     simp_rw [(· ≤ ·), mul_add, mul_comm a.val.2, ← mul_assoc,
-      (IsIdempotentElem.of_mul_add b.property.1 b.property.2).1.eq, ← mul_add, a.property.2, mul_one]
+      (IsIdempotentElem.of_mul_add b.property.1 b.property.2).1.eq, ← mul_add, a.property.2,
+      mul_one]
   sup_le a b c hac hbc := by simp_rw [(· ≤ ·), add_mul, mul_assoc]; rw [hac, hbc]
 
 instance : BooleanAlgebra {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
@@ -80,8 +83,8 @@ instance : BooleanAlgebra {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
     simp_rw [(· ≤ ·), (· ⊔ ·), (·ᶜ), SemilatticeSup.sup, ← mul_assoc]; rw [hab, hac]
   le_sup_inf a b c := Eq.le <| mul_eq_zero_add_eq_one_ext_right <| by
     simp_rw +instances [(· ⊔ ·), (· ⊓ ·), (·ᶜ), SemilatticeSup.sup, add_mul, mul_add,
-      mul_mul_mul_comm _ b.val.1, (IsIdempotentElem.of_mul_add a.property.1 a.property.2).2.eq, ← mul_assoc, a.property.1,
-      zero_mul, zero_add]
+      mul_mul_mul_comm _ b.val.1, (IsIdempotentElem.of_mul_add a.property.1 a.property.2).2.eq,
+      ← mul_assoc, a.property.1, zero_mul, zero_add]
   top := ⟨(1, 0), mul_zero _, add_zero _⟩
   bot := ⟨(0, 1), zero_mul _, zero_add _⟩
   inf_compl_le_bot a := Eq.le <| mul_eq_zero_add_eq_one_ext_right <| by
@@ -135,7 +138,8 @@ instance : BooleanAlgebra {a : R // IsIdempotentElem a} where
   __ : OrderTop _ := inferInstance
   __ : OrderBot _ := inferInstance
   compl a := ⟨_, a.property.one_sub⟩
-  inf_compl_le_bot a := (mul_zero _).trans ((mul_one_sub ..).trans <| by rw [a.property, sub_self]).symm
+  inf_compl_le_bot a :=
+    (mul_zero _).trans ((mul_one_sub ..).trans <| by rw [a.property, sub_self]).symm
   top_le_sup_compl a := (one_mul _).trans <| by
     simp_rw [(· ⊔ ·), SemilatticeSup.sup, add_sub_cancel, mul_sub, mul_one]
     rw [a.property, sub_self, sub_zero]; rfl
@@ -148,9 +152,11 @@ instance : BooleanAlgebra {a : R // IsIdempotentElem a} where
 whose product is 0 and whose sum is 1. The correspondence is given by `a ↔ (a, 1 - a)`. -/
 def OrderIso.isIdempotentElemMulZeroAddOne :
     {a : R // IsIdempotentElem a} ≃o {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
-  toFun a := ⟨(a, 1 - a), by simp_rw [mul_sub, mul_one, a.property.eq, sub_self], by rw [add_sub_cancel]⟩
+  toFun a := ⟨(a, 1 - a), by simp_rw [mul_sub, mul_one, a.property.eq, sub_self],
+    by rw [add_sub_cancel]⟩
   invFun a := ⟨a.val.1, (IsIdempotentElem.of_mul_add a.property.1 a.property.2).1⟩
-  right_inv a := Subtype.ext <| Prod.ext rfl <| sub_eq_of_eq_add <| a.property.2.symm.trans (add_comm ..)
+  right_inv a := Subtype.ext <| Prod.ext rfl <| sub_eq_of_eq_add <|
+    a.property.2.symm.trans (add_comm ..)
   map_rel_iff' := Iff.rfl
 
 end CommRing

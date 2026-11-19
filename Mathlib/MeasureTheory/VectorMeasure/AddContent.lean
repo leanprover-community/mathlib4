@@ -123,7 +123,8 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     intro s t
     have : edist s t = edist (s : MeasuredSets μ) t := rfl
     simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, eDist_eq_eNorm_sub]
-    rw [measure_symmDiff_eq (by exact s.val.property.nullMeasurableSet) (by exact t.val.property.nullMeasurableSet)]
+    rw [measure_symmDiff_eq (by exact s.val.property.nullMeasurableSet)
+      (by exact t.val.property.nullMeasurableSet)]
     have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_sdiff _ _
     have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_sdiff _ _
     nth_rewrite 1 [← Is]
@@ -131,7 +132,8 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     rw [addContent_union hC (hC.inter_mem (C'C _ t.property) (C'C _ s.property))
         (hC.sdiff_mem (C'C _ t.property) (C'C _ s.property)) Set.disjoint_sdiff_inter.symm,
       addContent_union hC (hC.inter_mem (C'C _ s.property) (C'C _ t.property))
-        (hC.sdiff_mem (C'C _ s.property) (C'C _ t.property)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
+        (hC.sdiff_mem (C'C _ s.property) (C'C _ t.property)) Set.disjoint_sdiff_inter.symm,
+      Set.inter_comm]
     simp only [add_sub_add_left_eq_sub, ge_iff_le]
     apply eNorm_sub_le.trans
     gcongr
@@ -217,7 +219,8 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
           + (m s'' - m₁ s) + (m t' - m₁ t)‖ₑ := by abel_nf
     _ ≤ ‖m (s'' ∪ t') - m s'' - m t'‖ₑ + ‖m₁ ⟨s ∪ t, s.property.union t.property⟩ - m (s'' ∪ t')‖ₑ
           + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := eNorm_add₄_le
-    _ = ‖m₁ ⟨s ∪ t, s.property.union t.property⟩ - m (s'' ∪ t')‖ₑ + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := by
+    _ = ‖m₁ ⟨s ∪ t, s.property.union t.property⟩ - m (s'' ∪ t')‖ₑ + ‖m s'' - m₁ s‖ₑ
+          + ‖m t' - m₁ t‖ₑ := by
       rw [addContent_union hC s''C t'C Set.disjoint_sdiff_left]
       simp
     _ < 4 * δ + 3 * δ + δ := by

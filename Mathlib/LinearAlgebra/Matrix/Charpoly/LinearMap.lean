@@ -155,9 +155,11 @@ noncomputable def Matrix.isRepresentation.toEnd :
     Matrix.isRepresentation R b →ₐ[R] Module.End R M where
   toFun A := A.property.choose
   map_one' := (1 : Matrix.isRepresentation R b).property.choose_spec.eq hb Matrix.Represents.one
-  map_mul' A₁ A₂ := (A₁ * A₂).property.choose_spec.eq hb (A₁.property.choose_spec.mul A₂.property.choose_spec)
+  map_mul' A₁ A₂ :=
+    (A₁ * A₂).property.choose_spec.eq hb (A₁.property.choose_spec.mul A₂.property.choose_spec)
   map_zero' := (0 : Matrix.isRepresentation R b).property.choose_spec.eq hb Matrix.Represents.zero
-  map_add' A₁ A₂ := (A₁ + A₂).property.choose_spec.eq hb (A₁.property.choose_spec.add A₂.property.choose_spec)
+  map_add' A₁ A₂ :=
+    (A₁ + A₂).property.choose_spec.eq hb (A₁.property.choose_spec.add A₂.property.choose_spec)
   commutes' r :=
     (algebraMap _ (Matrix.isRepresentation R b) r).property.choose_spec.eq hb (.algebraMap r)
 

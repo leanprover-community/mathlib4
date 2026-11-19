@@ -189,7 +189,8 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
     ← Module.finrank_eq_card_basis bN, Module.finrank_of_isPerfPair p]
   let bM := bN.dualBasis.map p.toPerfPair.symm
   have hbM (j : w) (x : M) (hx : x ∈ M') : bM.repr x j = p x (j : N) := by simp [bM, bN]
-  have hj (j : w) : bM.repr m j ∈ (algebraMap K L).range := (hbM _ _ hm) ▸ hp m hm j (hw₁ j.property)
+  have hj (j : w) : bM.repr m j ∈ (algebraMap K L).range :=
+    (hbM _ _ hm) ▸ hp m hm j (hw₁ j.property)
   replace hp (i : w) (j : v) :
       (bN.dualBasis.map p.toPerfPair.symm).toMatrix b i j ∈ (algebraMap K L).fieldRange := by
     simp only [Basis.toMatrix, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,

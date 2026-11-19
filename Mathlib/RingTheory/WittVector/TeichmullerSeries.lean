@@ -51,7 +51,8 @@ theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
       refine fun n ↦ ⟨fun b c ↦ ?_⟩
       ext
       exact congrArg (fun x ↦ x.val) <|
-          (h n).allEq ⟨b.val, S'.subset_insert a b.property.1, b.property.2⟩ ⟨c.val, S'.subset_insert a c.property.1, c.property.2⟩
+          (h n).allEq ⟨b.val, S'.subset_insert a b.property.1, b.property.2⟩
+            ⟨c.val, S'.subset_insert a c.property.1, c.property.2⟩
     replace hind := hind this
     simp only [ha, not_false_eq_true, Finset.sum_insert]
     have : ∀ (n : ℕ), (x a).coeff n = 0 ∨ (∑ s ∈ S', x s).coeff n = 0 := by

@@ -285,7 +285,8 @@ protected def Mem (s : Computation α) (a : α) :=
 instance : Membership α (Computation α) :=
   ⟨Computation.Mem⟩
 
-theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.val m = some a → s.val n = some a := by
+theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) :
+    s.val m = some a → s.val n = some a := by
   obtain ⟨f, al⟩ := s
   induction h with
   | refl => exact id

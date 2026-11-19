@@ -189,7 +189,8 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
       toFun :=
         { toFun := fun x => f x.property.choose
           map_add' := fun x y => by
-            have eq1 : _ + _ = (x + y).val := congr($(x.property.choose_spec) + $(y.property.choose_spec))
+            have eq1 : _ + _ = (x + y).val :=
+              congr($(x.property.choose_spec) + $(y.property.choose_spec))
             rw [← map_add, ← (x + y).property.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]

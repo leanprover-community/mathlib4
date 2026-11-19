@@ -513,8 +513,9 @@ instance Factors.isPrime (P : (factors (map (algebraMap R S) p)).toFinset) :
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 theorem Factors.ramificationIdx_ne_zero (P : (factors (map (algebraMap R S) p)).toFinset) :
     ramificationIdx' p P.val ≠ 0 :=
-  IsDedekindDomain.ramificationIdx'_ne_zero (ne_zero_of_mem_factors (Multiset.mem_toFinset.mp P.property))
-    (Factors.isPrime p P) (Ideal.le_of_dvd (dvd_of_mem_factors (Multiset.mem_toFinset.mp P.property)))
+  IsDedekindDomain.ramificationIdx'_ne_zero
+    (ne_zero_of_mem_factors (Multiset.mem_toFinset.mp P.property)) (Factors.isPrime p P)
+    (Ideal.le_of_dvd (dvd_of_mem_factors (Multiset.mem_toFinset.mp P.property)))
 
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S) p)).toFinset) :

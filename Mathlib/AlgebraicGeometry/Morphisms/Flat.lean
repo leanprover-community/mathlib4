@@ -436,7 +436,8 @@ lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
   have := hI.to_subtype
   exact mono_pushoutSection_of_iSup_eq (ι := I) H hUST hUSX hUY (·) (by rwa [iSup_subtype, eq_comm])
-    (fun i ↦ have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.val.property; inferInstance)
+    (fun i ↦ have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.val.property;
+      inferInstance)
     (f.flat_appLE hUS hUT _)
 
 lemma mono_pushoutSection_of_isCompact_of_flat_left [Flat iX]
@@ -453,10 +454,12 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
   have hIUX (i : I) : i.val ≤ UX := by rw [e]; intro i; aesop
   have := hI.to_subtype
-  exact isIso_pushoutSection_of_iSup_eq H hUST hUSX hUY (fun i : I ↦ i) (by rwa [iSup_subtype,
-    eq_comm]) (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.val.property) (fun i j ↦
-    mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT (hUX' _ _ (hIUX _) i.val.val.is_open'
-    i.val.property.isCompact (hIUX _) j.val.val.is_open' j.val.property.isCompact))
+  exact isIso_pushoutSection_of_iSup_eq H hUST hUSX hUY (fun i : I ↦ i)
+    (by rwa [iSup_subtype, eq_comm])
+    (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.val.property)
+    (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT
+      (hUX' _ _ (hIUX _) i.val.val.is_open' i.val.property.isCompact (hIUX _) j.val.val.is_open'
+        j.val.property.isCompact))
     (f.flat_appLE hUS hUT _)
 
 lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_left [Flat iX]
@@ -496,9 +499,11 @@ lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
   have hIUT (i : I) : i.val ≤ UT := by rw [e]; intro i; aesop
   have := hI.to_subtype
   exact isIso_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
-    (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS i.val.property hUX hUX')
+    (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS i.val.property
+      hUX hUX')
     (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX
-      (hUT' _ _ (hIUT _) i.val.val.is_open' i.val.property.isCompact (hIUT _) j.val.val.is_open' j.val.property.isCompact)
+      (hUT' _ _ (hIUT _) i.val.val.is_open' i.val.property.isCompact (hIUT _) j.val.val.is_open'
+        j.val.property.isCompact)
       hiX) hiX
 
 end sections

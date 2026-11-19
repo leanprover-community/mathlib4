@@ -342,7 +342,8 @@ def subtypeDomain [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : 
     Π₀ i : Subtype p, β i :=
   ⟨fun i => x (i : ι),
     x.support'.map fun xs =>
-      ⟨(Multiset.filter p xs.val).attach.map fun j => ⟨j.val, (Multiset.mem_filter.1 j.property).2⟩, fun i =>
+      ⟨(Multiset.filter p xs.val).attach.map fun j =>
+          ⟨j.val, (Multiset.mem_filter.1 j.property).2⟩, fun i =>
         (xs.prop i).imp_left fun H =>
           Multiset.mem_map.2
             ⟨⟨i, Multiset.mem_filter.2 ⟨H, i.property⟩⟩, Multiset.mem_attach _ _, Subtype.eta _ _⟩⟩⟩
@@ -966,7 +967,8 @@ theorem support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f
 
 end MapRangeAndZipWith
 
-theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase i) fun j => f j.val := by
+theorem erase_def (i : ι) (f : Π₀ i, β i) :
+    f.erase i = mk (f.support.erase i) fun j => f j.val := by
   grind
 
 @[simp]

@@ -272,7 +272,8 @@ theorem IsArtinian.isSemisimpleModule_iff_jacobson [IsArtinian R M] :
     IsSemisimpleModule R M ↔ Module.jacobson R M = ⊥ :=
   ⟨fun _ ↦ IsSemisimpleModule.jacobson_eq_bot R M, fun h ↦
     have ⟨s, hs⟩ := Finset.exists_inf_le (Subtype.val (p := fun m : Submodule R M ↦ IsCoatom m))
-    have _ (m : s) : IsSimpleModule R (M ⧸ m.val.val) := isSimpleModule_iff_isCoatom.mpr m.val.property
+    have _ (m : s) : IsSimpleModule R (M ⧸ m.val.val) :=
+      isSimpleModule_iff_isCoatom.mpr m.val.property
     let f : M →ₗ[R] ∀ m : s, M ⧸ m.val.val := LinearMap.pi fun m ↦ m.val.val.mkQ
     .of_injective f <| LinearMap.ker_eq_bot.mp <| le_bot_iff.mp fun x hx ↦ by
       rw [← h, Module.jacobson, Submodule.mem_sInf]

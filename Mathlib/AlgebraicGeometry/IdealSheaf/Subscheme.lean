@@ -159,8 +159,8 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   intro x hx
   apply (I.glueDataObj U).IsSheaf.section_ext
   intro p hp
-  obtain ⟨f, g, hfg, hf⟩ := exists_basicOpen_le_affine_inter U.property V.property (I.glueDataObjι U p).val
-      ⟨(I.glueDataObjι U p).property, hp⟩
+  obtain ⟨f, g, hfg, hf⟩ := exists_basicOpen_le_affine_inter U.property V.property
+      (I.glueDataObjι U p).val ⟨(I.glueDataObjι U p).property, hp⟩
   refine ⟨(I.glueDataObjι U ⁻¹ᵁ U.val.ι ⁻¹ᵁ X.basicOpen f),
     fun x hx ↦ X.basicOpen_le g (hfg ▸ hx), hf, ?_⟩
   have := Hom.isIso_app (I.glueDataObjMap (X.affineBasicOpen_le f))

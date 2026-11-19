@@ -34,7 +34,8 @@ protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtyp
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     Small.{w} P.FullSubcategory :=
-  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.val, x.property⟩) (fun x ↦ ⟨⟨x.obj, x.property⟩, rfl⟩)
+  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.val, x.property⟩)
+    (fun x ↦ ⟨⟨x.obj, x.property⟩, rfl⟩)
 
 lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
     ObjectProperty.Small.{w} P :=
@@ -113,7 +114,8 @@ lemma EssentiallySmall.exists_small_le (P : ObjectProperty C)
   obtain ⟨Q, _, hQ⟩ := exists_small_le' P
   let P' := Q ⊓ P.isoClosure
   have h (X' : Subtype P') : ∃ (X : Subtype P), Nonempty (X'.val ≅ X.val) :=
-    ⟨⟨X'.property.2.choose, X'.property.2.choose_spec.choose⟩, X'.property.2.choose_spec.choose_spec⟩
+    ⟨⟨X'.property.2.choose, X'.property.2.choose_spec.choose⟩,
+      X'.property.2.choose_spec.choose_spec⟩
   choose φ hφ using h
   refine ⟨fun X ↦ X ∈ Set.range (Subtype.val ∘ φ), ?_, ?_, ?_⟩
   · exact small_of_surjective (f := fun X ↦ ⟨(φ X).val, by tauto⟩)

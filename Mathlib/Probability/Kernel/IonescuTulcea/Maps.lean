@@ -95,7 +95,8 @@ def IicProdIoc {a b : ι} (hab : a ≤ b) :
     ((Π i : Iic a, X i) × (Π i : Ioc a b, X i)) ≃ᵐ Π i : Iic b, X i where
   toFun x i := if h : i ≤ a then x.1 ⟨i, mem_Iic.2 h⟩
     else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.property⟩⟩
-  invFun x := ⟨fun i ↦ x ⟨i.val, Iic_subset_Iic.2 hab i.property⟩, fun i ↦ x ⟨i.val, Ioc_subset_Iic_self i.property⟩⟩
+  invFun x := ⟨fun i ↦ x ⟨i.val, Iic_subset_Iic.2 hab i.property⟩,
+    fun i ↦ x ⟨i.val, Ioc_subset_Iic_self i.property⟩⟩
   left_inv := fun x ↦ by
     ext i
     · simp [mem_Iic.1 i.property]

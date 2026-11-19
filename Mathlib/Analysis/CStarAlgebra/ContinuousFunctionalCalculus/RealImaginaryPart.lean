@@ -52,7 +52,8 @@ lemma quasispectrum_imaginaryPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
 -- fails to find `IsScalarTower ℝ ℂ A`.
 lemma quasispectrum_imaginaryPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     quasispectrum ℝ (ℑ a : A) = im '' (quasispectrum ℂ a) := by
-  simp [← (ℑ a).property.quasispectrumRestricts.image, quasispectrum_imaginaryPart a, Set.image_image]
+  simp [← (ℑ a).property.quasispectrumRestricts.image, quasispectrum_imaginaryPart a,
+    Set.image_image]
 
 variable [ContinuousMapZero.UniqueHom ℂ A]
 
