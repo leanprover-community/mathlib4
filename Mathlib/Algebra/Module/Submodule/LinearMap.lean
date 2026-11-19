@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Submodule.Defs
 
 /-!
-
 # Linear maps involving submodules of a module
 
 In this file we define a number of linear maps involving submodules of a module.
@@ -221,7 +220,7 @@ theorem restrict_coe_apply (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M} 
   rfl
 
 theorem restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.val x.property⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -258,7 +257,7 @@ theorem subtype_comp_restrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R 
 
 theorem restrict_eq_codRestrict_domRestrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
     {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
-    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
+    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.val x.property :=
   rfl
 
 theorem restrict_eq_domRestrict_codRestrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
@@ -303,7 +302,7 @@ theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x 
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ coe_restrict_apply _ _
-  simp [Module.End.coe_pow, this.iterate_right _ _]
+  simp [pow_apply_eq_iterate, this.iterate_right _ _]
 
 end
 
@@ -347,7 +346,7 @@ def inclusion (h : p ≤ p') : p →ₗ[R] p' :=
 theorem coe_inclusion (h : p ≤ p') (x : p) : (inclusion h x : M) = x :=
   rfl
 
-theorem inclusion_apply (h : p ≤ p') (x : p) : inclusion h x = ⟨x, h x.2⟩ :=
+theorem inclusion_apply (h : p ≤ p') (x : p) : inclusion h x = ⟨x, h x.property⟩ :=
   rfl
 
 theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) := fun _ _ h =>

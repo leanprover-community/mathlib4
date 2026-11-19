@@ -20,7 +20,6 @@ refer to files/types that currently only exist in mathlib3.
 
 Add sections about algebra-order and algebra-topology mixins and interactions with
 normed typeclasses.
-
 -/
 
 @[expose] public section

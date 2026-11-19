@@ -164,7 +164,7 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, SetLike.IsHomogeneo
   refine Ideal.mul_homogeneous_element_mem_of_mem 𝒜 (s z) z ?_ ?_ i
   · rcases z with ⟨z, hz2⟩
     apply h _ hz2
-  · exact Ideal.subset_span z.2
+  · exact Ideal.subset_span z.property
 
 /-- For any `I : Ideal A`, not necessarily homogeneous, `I.homogeneousCore' 𝒜`
 is the largest homogeneous ideal of `A` contained in `I`. -/
@@ -203,7 +203,8 @@ theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal �
 variable (𝒜 I)
 
 theorem Ideal.IsHomogeneous.iff_eq : I.IsHomogeneous 𝒜 ↔ (I.homogeneousCore 𝒜).toIdeal = I :=
-  ⟨fun hI => hI.toIdeal_homogeneousCore_eq_self, fun hI => hI ▸ (Ideal.homogeneousCore 𝒜 I).2⟩
+  ⟨fun hI => hI.toIdeal_homogeneousCore_eq_self,
+    fun hI => hI ▸ (Ideal.homogeneousCore 𝒜 I).is_homogeneous'⟩
 
 theorem Ideal.IsHomogeneous.iff_exists :
     I.IsHomogeneous 𝒜 ↔ ∃ S : Set (homogeneousSubmonoid 𝒜), I = Ideal.span ((↑) '' S) := by
@@ -229,7 +230,7 @@ namespace Ideal.IsHomogeneous
 
 theorem bot : Ideal.IsHomogeneous 𝒜 ⊥ := fun i r hr => by
   simp only [Ideal.mem_bot] at hr
-  rw [hr, decompose_zero, zero_apply]
+  rw [hr, decompose_zero, DirectSum.zero_apply]
   apply Ideal.zero_mem
 
 theorem top : Ideal.IsHomogeneous 𝒜 ⊤ := fun i r _ => by simp only [Submodule.mem_top]
@@ -572,7 +573,7 @@ def irrelevant : HomogeneousIdeal 𝒜 :=
   ⟨RingHom.ker (GradedRing.projZeroRingHom 𝒜), fun i r (hr : (decompose 𝒜 r 0 : A) = 0) => by
     change (decompose 𝒜 (decompose 𝒜 r _ : A) 0 : A) = 0
     by_cases h : i = 0
-    · rw [h, hr, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+    · rw [h, hr, decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
     · rw [decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
 
 @[inherit_doc] scoped notation 𝒜 "₊" => irrelevant 𝒜

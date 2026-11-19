@@ -441,12 +441,12 @@ variable (R)
 `((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose`
 -/
 @[no_expose] def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
-  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
+  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.property).choose
 
 @[simp]
 theorem Span.finsupp_linearCombination_repr {w : Set M} (x : span R w) :
     Finsupp.linearCombination R ((↑) : w → M) (Span.repr R w x) = x :=
-  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose_spec
+  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.property).choose_spec
 
 end
 
@@ -474,13 +474,13 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
   mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span hx
 
 lemma Submodule.mem_span_iff_of_fintype {s : Set M} [Fintype s] {x : M} :
-    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by
+    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.val = x := by
   conv_lhs => rw [← Subtype.range_val (s := s)]
   exact mem_span_range_iff_exists_fun _
 
 /-- A variant of `Submodule.mem_span_finset` using `s` as the index type. -/
 lemma Submodule.mem_span_finset' {s : Finset M} {x : M} :
-    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x :=
+    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.val = x :=
   mem_span_iff_of_fintype
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
@@ -501,11 +501,12 @@ lemma Submodule.mem_span_set' {m : M} {s : Set M} :
   refine ⟨fun h ↦ ?_, ?_⟩
   · rcases mem_span_set.1 h with ⟨c, cs, rfl⟩
     have A : c.support ≃ Fin #c.support := Finset.equivFin _
-    refine ⟨_, fun i ↦ c (A.symm i), fun i ↦ ⟨A.symm i, cs (A.symm i).2⟩, ?_⟩
+    refine ⟨_, fun i ↦ c (A.symm i), fun i ↦ ⟨A.symm i, cs (A.symm i).property⟩, ?_⟩
     rw [Finsupp.sum, ← Finset.sum_coe_sort c.support]
     exact Fintype.sum_equiv A.symm _ (fun j ↦ c j • (j : M)) (fun i ↦ rfl)
   · rintro ⟨n, f, g, rfl⟩
-    exact Submodule.sum_mem _ (fun i _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span (g i).2))
+    exact Submodule.sum_mem _
+      (fun i _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span (g i).property))
 
 /-- The span of a subset `s` is the union over all `n` of the set of linear combinations of at most
 `n` terms belonging to `s`. -/
@@ -516,7 +517,7 @@ lemma Submodule.span_eq_iUnion_nat (s : Set M) :
   simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_ofPred_eq, mem_span_set']
   refine exists_congr (fun n ↦ ⟨?_, ?_⟩)
   · rintro ⟨f, g, rfl⟩
-    exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).2, rfl⟩
+    exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).property, rfl⟩
   · rintro ⟨f, hf, rfl⟩
     exact ⟨fun i ↦ (f i).1, fun i ↦ ⟨(f i).2, (hf i)⟩, rfl⟩
 

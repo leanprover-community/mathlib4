@@ -18,7 +18,6 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 We define the Eisenstein series `E2` of weight `2` and level `1` as a limit of partial sums
 over non-symmetric intervals.
-
 -/
 
 open UpperHalfPlane hiding I
@@ -69,10 +68,10 @@ lemma D2_one : D2 1 = 0 := by
   simp [D2]
 
 private lemma denom_aux (A B : SL(2, ℤ)) (z : ℍ) : ((A * B) 1 0) * (denom B z) =
-    (A 1 0) * B.1.det + (B 1 0) * denom (A * B) z := by
-  have h0 := Matrix.two_mul_expl A.1 B.1
+    (A 1 0) * B.val.det + (B 1 0) * denom (A * B) z := by
+  have h0 := Matrix.two_mul_expl A.val B.val
   simp only [Fin.isValue, coe_mul, h0.2.2.1, Int.cast_add, Int.cast_mul, ModularGroup.denom_apply,
-    Matrix.det_fin_two B.1, Int.cast_sub, ← map_mul, h0.2.2.2]
+    Matrix.det_fin_two B.val, Int.cast_sub, ← map_mul, h0.2.2.2]
   ring
 
 local notation "φ" => Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)
@@ -81,7 +80,7 @@ lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = (D2 A) ∣[(2 : ℤ)] B + D2 B :=
   simp only [D2, mul_assoc, coe_mul, map_mul, ← mul_div, SL_slash_def,
     ModularGroup.sl_moeb, Int.reduceNeg, zpow_neg, Pi.add_apply, ← mul_add, mul_eq_mul_left_iff,
     I_ne_zero, or_false, ofReal_eq_zero, pi_ne_zero, OfNat.ofNat_ne_zero]
-  have hd : (A.1 * B.1) 1 0 * denom (φ B) z - B 1 0 * denom (φ A * φ B) z = A 1 0 := by
+  have hd : (A.val * B.val) 1 0 * denom (φ B) z - B 1 0 * denom (φ A * φ B) z = A 1 0 := by
     simpa [sub_eq_iff_eq_add] using denom_aux A B z
   have : denom A (num B z / denom B z) = denom A ↑(B • z) := by
     simp [specialLinearGroup_apply, denom, num]
@@ -99,8 +98,7 @@ lemma D2_T : D2 ModularGroup.T = 0 := by
   ext z
   simp [D2, ModularGroup.T]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma D2_S (z : ℍ) : D2 ModularGroup.S z = 2 * π * I / z := by
-  simp [D2, ModularGroup.S, ModularGroup.denom_apply]
+  simp [D2, ModularGroup.denom_apply]
 
 end EisensteinSeries

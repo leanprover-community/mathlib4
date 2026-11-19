@@ -21,7 +21,6 @@ the usual way this is considered.
   have the same argument.
 * `Complex.abs_add_eq/Complex.abs_sub_eq`: If two nonzero complex numbers have the same argument,
   then the triangle inequality is an equality.
-
 -/
 
 public section

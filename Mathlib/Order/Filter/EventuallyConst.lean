@@ -25,6 +25,11 @@ A naive definition of `Filter.EventuallyConst f l` is `∃ y, ∀ᶠ x in l, f x
 However, this proposition is false for empty `α`, `β`.
 Instead, we say that `Filter.map f l` is supported on a subsingleton.
 This allows us to drop `[Nonempty _]` assumptions here and there.
+
+## TODO
+
+Link this to `Function.IsConst` and `Function.IsConstOn`.
+
 -/
 
 @[expose] public section
@@ -78,13 +83,15 @@ This is the specialization of `Filter.EventuallyConst` to `s : Set α`. -/
 def EventuallyEmptyOrUniv (s : Set α) (l : Filter α) : Prop := EventuallyConst (· ∈ s) l
 
 theorem eventuallyEmptyOrUniv_iff' {s : Set α} :
-    EventuallyEmptyOrUniv s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
-  eventuallyConst_pred'
+    EventuallyEmptyOrUniv s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ := by
+  simp_rw [EventuallyEmptyOrUniv, eventuallyConst_pred', eventuallyEqSet_iff']
+  rfl
 
 @[deprecated eventuallyEmptyOrUniv_iff' +typeChanged (since := "2026-08-25")]
 theorem eventuallyConst_set' {s : Set α} :
-    EventuallyConst (· ∈ s) l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
-  eventuallyConst_pred'
+    EventuallyConst (· ∈ s) l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ := by
+  simp_rw [eventuallyConst_pred', eventuallyEqSet_iff']
+  rfl
 
 theorem eventuallyEmptyOrUniv_iff {s : Set α} :
     EventuallyEmptyOrUniv s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
@@ -167,7 +174,7 @@ namespace EventuallyEmptyOrUniv
 
 protected lemma congr {s t : Set α} (h : EventuallyEmptyOrUniv s l) (hst : s =ᶠ[l] t) :
     EventuallyEmptyOrUniv t l :=
-  EventuallyConst.congr h hst
+  EventuallyConst.congr h (eventuallyEqSet_iff'.1 hst)
 
 lemma anti {s : Set α} {l'} (h : EventuallyEmptyOrUniv s l) (hl' : l' ≤ l) :
     EventuallyEmptyOrUniv s l' :=

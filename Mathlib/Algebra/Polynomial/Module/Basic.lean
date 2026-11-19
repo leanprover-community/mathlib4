@@ -191,8 +191,8 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
 @[simp]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
-  simp only [Module.End.mul_apply, Polynomial.aeval_monomial, Module.End.pow_apply,
-    Module.algebraMap_end_apply, smul_def]
+  simp only [smul_def, aeval_monomial, mul_apply_eq_comp, pow_apply_eq_iterate, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, Module.algebraMap_end_apply]
   induction i generalizing r j m with
   | zero =>
     rw [Function.iterate_zero, zero_add]
@@ -232,12 +232,11 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
   | monomial f_n f_a =>
     rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j =>
       (monomial f_n f_a).coeff i • g.coeff j, monomial_smul_apply]
-    simp [Polynomial.coeff_monomial]
+    simp [Finsupp.single_apply]
 
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
-  toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans
-    (toFinsuppIso R).symm.toAddEquiv
+  toAddEquiv := coeffAddEquiv.trans AddMonoidAlgebra.coeffAddEquiv.symm
   map_smul' r x := by
     dsimp
     induction x using induction_linear with
@@ -246,19 +245,18 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
     | single n a =>
     ext i
     simp only [coeffAddEquiv_apply, AddMonoidAlgebra.coeffAddEquiv_symm_apply,
-      toFinsuppIso_symm_apply, coeff_ofFinsupp, smul_single_apply, smul_eq_mul, coeff_single,
-      AddMonoidAlgebra.ofCoeff_single, ofFinsupp_single]
+      AddMonoidAlgebra.coeff_ofCoeff, smul_single_apply, smul_eq_mul, coeff_single,
+      AddMonoidAlgebra.ofCoeff_single, single_eq_monomial]
     split_ifs with hn
     · rw [show i = (i - n) + n by lia, Polynomial.coeff_mul_monomial]
       simp
     · rw [Polynomial.coeff_mul, Finset.sum_eq_zero]
-      simp [Polynomial.coeff_monomial]
+      simp [Finsupp.single_apply]
       lia
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
 def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] : PolynomialModule R S ≃ₗ[R] S[X] where
-  toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans
-    (toFinsuppIso _).symm.toAddEquiv
+  toAddEquiv := coeffAddEquiv.trans AddMonoidAlgebra.coeffAddEquiv.symm
   map_smul' _ _ := rfl
 
 @[simp]

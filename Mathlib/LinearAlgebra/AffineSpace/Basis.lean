@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
@@ -43,7 +44,6 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 ## TODO
 
 * Construct the affine equivalence between `P` and `finsuppAffineCoords ι k`.
-
 -/
 
 open scoped Finset
@@ -132,7 +132,7 @@ protected theorem nonempty : Nonempty ι :=
 def reindex (e : ι ≃ ι') : AffineBasis ι' k P :=
   ⟨b ∘ e.symm, b.ind.comp_embedding e.symm.toEmbedding, by
     rw [e.symm.surjective.range_comp]
-    exact b.3⟩
+    exact b.tot'⟩
 
 @[simp, norm_cast]
 theorem coe_reindex : ⇑(b.reindex e) = b ∘ e.symm :=

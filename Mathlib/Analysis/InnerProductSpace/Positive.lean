@@ -114,7 +114,7 @@ theorem isPositive_id : IsPositive (id : E →ₗ[𝕜] E) := isPositive_one
 @[simp]
 theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
   refine ⟨IsSymmetric.natCast n, fun x => ?_⟩
-  simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
+  simp only [natCast_apply_eq_smul, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
     mul_re, natCast_re, inner_self_im, mul_zero, sub_zero]
   positivity [inner_self_nonneg (x := x) (𝕜 := 𝕜)]
 
@@ -197,7 +197,7 @@ end Order
 theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT : IsIdempotentElem T) :
     T.IsPositive ↔ T.IsSymmetric := by
   refine ⟨fun h => h.isSymmetric, fun h => ⟨h, fun x => ?_⟩⟩
-  rw [← hT.eq, Module.End.mul_apply, h]
+  rw [← hT.eq, mul_apply_eq_comp, h]
   exact inner_self_nonneg
 
 theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E ≃ₗᵢ[𝕜] F) :
@@ -239,7 +239,7 @@ theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
   specialize h2 a
   have hh {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) : RCLike.re ⟪T a, a⟫_𝕜 = ‖T a‖ ^ 2 := by
     conv_lhs => rw [← hT.isIdempotentElem]
-    rw [Module.End.mul_apply, hT.isSymmetric]
+    rw [mul_apply_eq_comp, hT.isSymmetric]
     exact inner_self_eq_norm_sq _
   simp_rw [LinearMap.sub_apply, inner_sub_left, map_sub, hh hq, hh hp,
     hp.isIdempotentElem.mem_range_iff.mp ha, sub_nonneg, sq_le_sq, abs_norm] at h2
@@ -366,6 +366,7 @@ theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
+@[simp]
 theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S ∘L S†).IsPositive := by
   simpa using! isPositive_one.conj_adjoint S
@@ -376,6 +377,7 @@ theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
+@[simp]
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S† ∘L S).IsPositive := by
   simpa using! isPositive_one.adjoint_conj S
@@ -386,8 +388,8 @@ variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : E →ₗ[𝕜] F) : (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 F
   simpa [← isPositive_toContinuousLinearMap_iff] using!
     ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
 
@@ -483,6 +485,9 @@ lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
 lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def (f:=0) (g:=f)
 
+@[aesop safe (rule_sets := [CStarAlgebra])]
+alias ⟨_, IsPositive.nonneg⟩ := nonneg_iff_isPositive
+
 instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
 
 instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
@@ -499,6 +504,19 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E]
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
+
+theorem norm_map_le_norm_map_iff_le {G : Type*}
+    [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
+    (p : E →L[𝕜] F) (q : E →L[𝕜] G) :
+    (∀ x : E, ‖p x‖ ≤ ‖q x‖) ↔ adjoint p ∘L p ≤ adjoint q ∘L q := by
+  simp [le_def, isPositive_iff', isSelfAdjoint_iff, star_eq_adjoint, inner_sub_left,
+    adjoint_inner_left, ← RCLike.ofReal_pow, -map_pow, sq_le_sq₀]
+
+theorem norm_map_le_norm_iff_le [CompleteSpace E] [CompleteSpace F]
+    (p : E →L[𝕜] F) :
+    (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ .id 𝕜 E := by
+  simpa [adjoint_id] using norm_map_le_norm_map_iff_le p (.id 𝕜 E)
 
 /-- A star projection operator is positive.
 

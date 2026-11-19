@@ -273,10 +273,10 @@ theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = �
 instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N) where
   smul_lie t x f := by
     ext n
-    simp only [smul_sub, smul_lie, LinearMap.smul_apply, LieHom.lie_apply, map_smul]
+    simp [smul_sub]
   lie_smul t x f := by
     ext n
-    simp only [smul_sub, LinearMap.smul_apply, LieHom.lie_apply, lie_smul]
+    simp [smul_sub]
 
 /-- We could avoid defining this by instead defining a `LieRingModule L R` instance with a zero
 bracket and relying on `LinearMap.instLieRingModule`. We do not do this because in the case that
@@ -654,12 +654,13 @@ protected theorem surjective (e : L₁ ≃ₗ⁅R⁆ L₂) :
   e.toLinearEquiv.surjective
 
 /-- A bijective morphism of Lie algebras yields an equivalence of Lie algebras. -/
-@[simps!]
-noncomputable def ofBijective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Bijective f) : L₁ ≃ₗ⁅R⁆ L₂ :=
-  { LinearEquiv.ofBijective (f : L₁ →ₗ[R] L₂)
-      h with
-    toFun := f
-    map_lie' := by intro x y; exact f.map_lie x y }
+noncomputable def ofBijective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Bijective f) : L₁ ≃ₗ⁅R⁆ L₂ where
+  toLieHom := f
+  __ := LinearEquiv.ofBijective (f : L₁ →ₗ[R] L₂) h
+
+@[simp]
+lemma toLinearEquiv_ofBijective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Bijective f) :
+    (ofBijective f h).toLinearEquiv = .ofBijective (f : L₁ →ₗ[R] L₂) h := rfl
 
 end LieEquiv
 

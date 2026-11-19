@@ -37,7 +37,6 @@ These require `open Kronecker`:
 * `A ⊗ₖ B` for `kroneckerMap (*) A B`. Lemmas about this notation use the token `kronecker`.
 * `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.
   Lemmas about this notation use the token `kroneckerTMul`.
-
 -/
 
 @[expose] public section

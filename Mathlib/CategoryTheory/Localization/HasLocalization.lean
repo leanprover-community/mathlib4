@@ -35,7 +35,6 @@ involve the localized category, but the proof does,
 it is no longer necessary to use a `HasLocalization`
 assumption, but one may use
 `HasLocalization.standard` in the proof instead.
-
 -/
 
 @[expose] public noncomputable section
@@ -64,12 +63,14 @@ variable [HasLocalization.{w} W]
 
 /-- The localized category for `W : MorphismProperty C`
 that is fixed by the `[HasLocalization W]` instance. -/
+@[implicit_reducible]
 def Localization' := HasLocalization.D W
 
 instance : Category W.Localization' := HasLocalization.hD
 
 /-- The localization functor `C ⥤ W.Localization'`
 that is fixed by the `[HasLocalization W]` instance. -/
+@[implicit_reducible]
 def Q' : C ⥤ W.Localization' := HasLocalization.L
 
 instance : W.Q'.IsLocalization W := HasLocalization.hL

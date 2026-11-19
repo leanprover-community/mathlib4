@@ -43,7 +43,7 @@ theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := b
 variable (R A)
 
 theorem Algebra.IsAlgebraic.nontrivial [alg : Algebra.IsAlgebraic R A] : Nontrivial R :=
-  (alg.1 0).nontrivial
+  (alg.isAlgebraic 0).nontrivial
 
 instance (priority := low) Algebra.transcendental_of_subsingleton [Subsingleton R] :
     Algebra.Transcendental R A :=
@@ -174,8 +174,8 @@ theorem IsLocalization.isAlgebraic [Nontrivial R] (M : Submonoid R) [IsLocalizat
     obtain rfl | hx := eq_or_ne x 0
     · exact isAlgebraic_zero
     have ⟨⟨r, m⟩, h⟩ := surj M x
-    refine ⟨C m.1 * X - C r, fun eq ↦ hx ?_, by simpa [sub_eq_zero, mul_comm x] using h⟩
-    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(coeff $eq 0), mk'_zero] at h
+    refine ⟨C m.val * X - C r, fun eq ↦ hx ?_, by simpa [sub_eq_zero, mul_comm x] using h⟩
+    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(($eq).coeff 0), mk'_zero] at h
 
 open IsScalarTower
 
@@ -336,11 +336,11 @@ theorem transcendental_algebraMap_iff {a : S} (h : Function.Injective (algebraMa
 namespace Subalgebra
 
 theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
-    IsAlgebraic R x ↔ IsAlgebraic R x.1 :=
+    IsAlgebraic R x ↔ IsAlgebraic R x.val :=
   (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
 
 theorem transcendental_iff_transcendental_val {S : Subalgebra R A} {x : S} :
-    Transcendental R x ↔ Transcendental R x.1 :=
+    Transcendental R x ↔ Transcendental R x.val :=
   isAlgebraic_iff_isAlgebraic_val.not
 
 theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : IsAlgebraic (⊥ : Subalgebra R S) x) :
@@ -605,7 +605,7 @@ variable (S) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
 open Function (Injective) in
 theorem injective_tower_top (inj : Injective (algebraMap R A)) : Injective (algebraMap S A) := by
   refine (injective_iff_map_eq_zero _).mpr fun s eq ↦ of_not_not fun ne ↦ ?_
-  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
+  have ⟨r, ne, dvd⟩ := (alg.isAlgebraic s).exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
   refine ne (inj <| map_zero (algebraMap R A) ▸ zero_dvd_iff.mp ?_)
   simp_rw [← eq, IsScalarTower.algebraMap_apply R S A, map_dvd (algebraMap S A) dvd]
 
@@ -645,7 +645,7 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     (aeval_eq : aeval x p = 0) (coeff_zero_ne : p.coeff 0 ≠ 0) : (x⁻¹ : L) ∈ A := by
   suffices (x⁻¹ : L) = (-p.coeff 0)⁻¹ • aeval x (divX p) by
     rw [this]
-    exact A.smul_mem (aeval x _).2 _
+    exact A.smul_mem (aeval x _).property _
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
   rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def,
     aeval_coe, map_inv₀, map_neg, inv_neg, neg_mul]
