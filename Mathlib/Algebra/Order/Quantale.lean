@@ -99,10 +99,8 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
 structure Quantale (α : Type*)
   [Semigroup α] [CompleteLattice α] [IsQuantale α]
 
-section
-
-variable {α : Type*} {x y : α} {s : Set α}
-variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {α ι : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {x y z : α} {s : Set α} {f : ι → α}
 
 @[to_additive]
 theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_distrib _ _
@@ -138,9 +136,6 @@ scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
 end AddQuantale
 
 namespace Quantale
-
-variable {α : Type*} {ι : Type*} {x y z : α} {f : ι → α}
-variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
 
 /-- Left- and right-residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
@@ -183,13 +178,13 @@ theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
   rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_distrib]
 
 @[to_additive]
-instance : MulLeftMono α where
+instance (priority := 90) : MulLeftMono α where
   elim := by
     intro _ _ _; simp only; intro
     rwa [← left_eq_sup, ← mul_sup_distrib, sup_of_le_left]
 
 @[to_additive]
-instance : MulRightMono α where
+instance (priority := 90) : MulRightMono α where
   elim := by
     intro _ _ _; simp only; intro
     rwa [← left_eq_sup, ← sup_mul_distrib, sup_of_le_left]

@@ -170,8 +170,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/]
 def supportedEquivFinsupp (s : Set M) : supported R S s ≃ₗ[R] s →₀ S :=
-  { toFun x := ⟨x.1.coeff, x.2⟩
-    invFun x := ⟨.ofCoeff x.1, x.2⟩
+  { toFun x := ⟨x.val.coeff, x.property⟩
+    invFun x := ⟨.ofCoeff x.val, x.property⟩
     left_inv _ := rfl
     right_inv _ := rfl
     map_add' _ _ := rfl

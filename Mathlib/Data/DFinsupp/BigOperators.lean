@@ -229,7 +229,7 @@ also an `ZeroHom`.
 def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β i) γ) :
     ZeroHom (Π₀ i, β i) γ where
   toFun f :=
-    (f.support'.lift fun s => ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
+    (f.support'.lift fun s => ∑ i ∈ Multiset.toFinset s.val, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
       refine Finset.sum_congr_of_eq_on_inter ?_ ?_ fun _ _ _ ↦ rfl <;> simp_all <;> grind

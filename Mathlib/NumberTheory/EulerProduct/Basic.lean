@@ -391,7 +391,7 @@ variable {α : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [Comp
 variable {f : ℕ → α}
 
 @[to_additive tsum_primes_pow_eq]
-theorem tprod_primes_pow_eq (hf : Multipliable fun n : {n // IsPrimePow n} ↦ f n.1) :
+theorem tprod_primes_pow_eq (hf : Multipliable fun n : {n // IsPrimePow n} ↦ f n.val) :
     ∏' (p : Nat.Primes) (n : ℕ), f (p ^ (n + 1)) = ∏' n : {n : ℕ // IsPrimePow n}, f n := calc
   _ = ∏' p : Nat.Primes × ℕ, f (prodNatEquiv p) := by
     simpa using (hf.comp_injective prodNatEquiv.injective).tprod_prod.symm

@@ -165,7 +165,7 @@ lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
 
 lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
     {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
-  let := hs.1
+  let := hs.to_subtype
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 
@@ -210,7 +210,7 @@ lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) ↔ IsDiscrete s :=
-  ⟨fun h ↦ ⟨continuous_subtype_val.discrete_of_tendsto_cofinite_cocompact h⟩,
+  ⟨fun h ↦ ⟨continuous_subtypeVal.discrete_of_tendsto_cofinite_cocompact h⟩,
    fun hs' ↦ hs.tendsto_coe_cofinite_of_isDiscrete hs'⟩
 
 end cofinite_cocompact

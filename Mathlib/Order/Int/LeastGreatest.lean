@@ -60,7 +60,7 @@ def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ,
 `z < b` for some fixed `b : ℤ`. -/
 lemma isLeast_coe_leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hinh : ∃ z : ℤ, P z) : IsLeast {z | P z} (leastOfBdd b Hb Hinh : ℤ) :=
-  (leastOfBdd b Hb Hinh).2
+  (leastOfBdd b Hb Hinh).property
 
 /--
 If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded below and nonempty,
@@ -96,7 +96,7 @@ def greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : �
 lemma isGreatest_coe_greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ)
     (Hb : ∀ z : ℤ, P z → z ≤ b) (Hinh : ∃ z : ℤ, P z) :
     IsGreatest {z | P z} (greatestOfBdd b Hb Hinh : ℤ) :=
-  (greatestOfBdd b Hb Hinh).2
+  (greatestOfBdd b Hb Hinh).property
 
 /--
 If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded above and nonempty,
