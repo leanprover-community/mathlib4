@@ -22,6 +22,8 @@ direct product of the infinite adele ring and the finite adele ring.
 ## Main results
 
 - `NumberField.AdeleRing.norm_algebraMap_eq_one_of_ne_zero` is the idelic product formula.
+- `Rat.AdeleRing.continuousAlgEquivProd` identifies the adele ring of `ℚ` with
+  `ℝ × FiniteAdeleRing ℤ ℚ` as a topological `ℚ`-algebra.
 
 ## References
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
@@ -184,3 +186,61 @@ end AdeleRing
 end norm
 
 end NumberField
+
+section Rat
+
+open NumberField IsDedekindDomain
+
+namespace Rat.InfiniteAdeleRing
+
+/-- The infinite adele ring of `ℚ` is `ℝ` as a topological `ℚ`-algebra: a one-factor
+product of completions, at the unique infinite place, which is real. -/
+noncomputable def continuousAlgEquivReal : InfiniteAdeleRing ℚ ≃A[ℚ] ℝ where
+  toAlgEquiv := AlgEquiv.ofRingEquiv
+    (f := (RingEquiv.piUnique (fun v : InfinitePlace ℚ => v.Completion)).trans
+      (InfinitePlace.Completion.ringEquivRealOfIsReal Rat.isReal_infinitePlace))
+    (fun q => by
+      have h : (algebraMap ℚ ℝ) q = (q : ℝ) := eq_ratCast (algebraMap ℚ ℝ) q
+      rw [h]
+      exact eq_ratCast (((RingEquiv.piUnique
+          (fun v : InfinitePlace ℚ => v.Completion)).trans
+        (InfinitePlace.Completion.ringEquivRealOfIsReal
+          Rat.isReal_infinitePlace)).toRingHom.comp
+        (algebraMap ℚ (InfiniteAdeleRing ℚ))) q)
+  continuous_toFun := ((Homeomorph.piUnique
+      (fun v : InfinitePlace ℚ => v.Completion)).trans
+    (InfinitePlace.Completion.isometryEquivRealOfIsReal
+      Rat.isReal_infinitePlace).toHomeomorph).continuous
+  continuous_invFun := ((Homeomorph.piUnique
+      (fun v : InfinitePlace ℚ => v.Completion)).trans
+    (InfinitePlace.Completion.isometryEquivRealOfIsReal
+      Rat.isReal_infinitePlace).toHomeomorph).symm.continuous
+
+end Rat.InfiniteAdeleRing
+
+namespace Rat.AdeleRing
+
+/-- The adele ring of `ℚ` is `ℝ × 𝔸_ℚ^f` as a topological `ℚ`-algebra. -/
+noncomputable def continuousAlgEquivProd :
+    AdeleRing ℤ ℚ ≃A[ℚ] ℝ × FiniteAdeleRing ℤ ℚ where
+  toAlgEquiv := AlgEquiv.prodCongr Rat.InfiniteAdeleRing.continuousAlgEquivReal.toAlgEquiv
+    ((AlgEquiv.refl) : FiniteAdeleRing ℤ ℚ ≃ₐ[ℚ] FiniteAdeleRing ℤ ℚ)
+  continuous_toFun := (Homeomorph.prodCongr
+    Rat.InfiniteAdeleRing.continuousAlgEquivReal.toHomeomorph
+    (Homeomorph.refl (FiniteAdeleRing ℤ ℚ))).continuous
+  continuous_invFun := (Homeomorph.prodCongr
+    Rat.InfiniteAdeleRing.continuousAlgEquivReal.toHomeomorph
+    (Homeomorph.refl (FiniteAdeleRing ℤ ℚ))).symm.continuous
+
+/-- The diagonal `ℚ → 𝔸_ℚ` is `q ↦ (q, (q)_p)` on `ℝ × 𝔸_ℚ^f`. -/
+theorem continuousAlgEquivProd_algebraMap (q : ℚ) :
+    continuousAlgEquivProd (algebraMap ℚ (AdeleRing ℤ ℚ) q) =
+      ((q : ℝ), algebraMap ℚ (FiniteAdeleRing ℤ ℚ) q) := by
+  apply Prod.ext
+  · exact Rat.InfiniteAdeleRing.continuousAlgEquivReal.commutes q
+  · simp only [continuousAlgEquivProd]
+    exact AdeleRing.algebraMap_snd_def (R := ℤ) (K := ℚ) q
+
+end Rat.AdeleRing
+
+end Rat
