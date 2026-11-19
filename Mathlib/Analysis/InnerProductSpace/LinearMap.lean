@@ -237,6 +237,44 @@ lemma norm_innerSL_le : ‖innerSL 𝕜 (E := E)‖ ≤ 1 :=
 
 end Norm_Seminormed
 
+section innerReal
+
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E]
+variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+
+variable (𝕜 E) in
+/-- The inner product as a `ℝ`-bilinear map. -/
+def innerRealₗ : E →ₗ[ℝ] E →ₗ[ℝ] 𝕜 :=
+  LinearMap.mk₂ ℝ (inner 𝕜) ?_ ?_ ?_ ?_
+where finally
+  · simp [inner_add_left]
+  · intro c x y
+    rw [RCLike.real_smul_eq_coe_smul (K := 𝕜) c x, inner_smul_left]
+    simp [RCLike.real_smul_eq_coe_mul]
+  · simp [inner_add_right]
+  · intro c x y
+    rw [RCLike.real_smul_eq_coe_smul (K := 𝕜) c y, inner_smul_right]
+    simp [RCLike.real_smul_eq_coe_mul]
+
+@[simp]
+theorem innerRealₗ_apply (x y : E) : innerRealₗ 𝕜 E x y = inner 𝕜 x y := rfl
+
+@[simp]
+theorem innerRealₗ_eq_innerₗ : innerRealₗ ℝ F = innerₗ F := rfl
+
+variable (𝕜 E) in
+/-- The inner product as a continuous `ℝ`-bilinear map. -/
+def innerRealL : E →L[ℝ] E →L[ℝ] 𝕜 :=
+  LinearMap.mkContinuous₂ (innerRealₗ 𝕜 E) 1 (by simpa using norm_inner_le_norm)
+
+@[simp]
+theorem innerRealL_apply (x y : E) : innerRealL 𝕜 E x y = inner 𝕜 x y := rfl
+
+@[simp]
+theorem innerRealL_eq_innerSL : innerRealL ℝ F = innerSL ℝ := rfl
+
+end innerReal
+
 section RCLikeToReal
 
 open scoped InnerProductSpace

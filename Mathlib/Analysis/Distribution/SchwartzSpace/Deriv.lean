@@ -37,7 +37,9 @@ In this file we define the various notions of derivatives of Schwartz functions.
 
 @[expose] public noncomputable section
 
-variable {ι 𝕜 D E F V F F₁ F₂ F₃ : Type*}
+variable {ι 𝕜 D E F V F₁ F₂ F₃ : Type*}
+
+open scoped InnerProductSpace
 
 namespace SchwartzMap
 
@@ -46,8 +48,6 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
 section Derivatives
 
 /-! ### Derivatives of Schwartz functions -/
-
-variable [NormedSpace ℝ E]
 
 variable (𝕜)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F]
@@ -74,7 +74,7 @@ open LineDeriv
 
 section fderiv
 
-variable [SMulCommClass ℝ 𝕜 F]
+variable [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 F]
 
 variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
@@ -137,6 +137,8 @@ theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : �
     · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.natCast_lt_top n) x
 
 end fderiv
+
+variable [NormedSpace ℝ E]
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 
@@ -211,6 +213,8 @@ end Laplacian
 
 section integration_by_parts
 
+/-! ### Integration by parts -/
+
 variable [NormedSpace ℝ E]
 
 open MeasureTheory
@@ -282,7 +286,11 @@ theorem integral_mul_lineDerivOp_right_eq_neg_left (f : 𝓢(D, 𝕜)) (g : 𝓢
     ∫ (x : D), f x * ∂_{v} g x ∂μ = -∫ (x : D), ∂_{v} f x * g x ∂μ :=
   integral_bilinear_lineDerivOp_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜) v
 
-variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
+variable [RCLike 𝕜]
+
+section NormedSpace
+
+variable [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
 
 /-- Integration by parts of Schwartz functions for directional derivatives.
 
@@ -299,13 +307,21 @@ theorem integral_clm_comp_lineDerivOp_right_eq_neg_left (f : 𝓢(D, F →L[𝕜
   integral_bilinear_lineDerivOp_right_eq_neg_left f g
     ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ) v
 
+end NormedSpace
+
+variable [InnerProductSpace 𝕜 F] in
+/-- Integration by parts of Schwartz functions for directional derivatives.
+
+Version for the inner product. -/
+theorem integral_inner_lineDerivOp_right_eq_neg_left (f : 𝓢(D, F)) (g : 𝓢(D, F)) (v : D) :
+    ∫ x, ⟪f x, ∂_{v} g x⟫_𝕜 ∂μ = -∫ x, ⟪∂_{v} f x, g x⟫_𝕜 ∂μ :=
+  integral_bilinear_lineDerivOp_right_eq_neg_left f g (innerRealL 𝕜 F) v
+
 end integration_by_parts
 
 section laplacian_integration_by_parts
 
 open MeasureTheory Laplacian LineDeriv
-
-/-! ### Integration by parts -/
 
 variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
@@ -319,8 +335,7 @@ Version for a general bilinear map. -/
 theorem integral_bilinear_laplacian_right_eq_left (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂))
     (L : F₁ →L[ℝ] F₂ →L[ℝ] F₃) :
     ∫ x, L (f x) (Δ g x) ∂μ = ∫ x, L (Δ f x) (g x) ∂μ := by
-  simp_rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E), sum_apply, map_sum,
-    _root_.sum_apply]
+  simp_rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E), sum_apply, map_sum, sum_apply]
   rw [MeasureTheory.integral_finsetSum, MeasureTheory.integral_finsetSum]
   · simp [integral_bilinear_lineDerivOp_right_eq_neg_left]
   · exact fun _ _ ↦ (pairing L (∂_{_} <| ∂_{_} f) g).integrable
@@ -334,8 +349,9 @@ theorem integral_mul_laplacian_right_eq_left (f : 𝓢(E, 𝕜)) (g : 𝓢(E, �
     ∫ x, f x * Δ g x ∂μ = ∫ x, Δ f x * g x ∂μ :=
   integral_bilinear_laplacian_right_eq_left f g (ContinuousLinearMap.mul ℝ 𝕜)
 
-variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+variable [RCLike 𝕜]
 
+variable [NormedSpace 𝕜 F] in
 /-- Integration by parts of Schwartz functions for the Laplacian.
 
 Version for scalar multiplication. -/
@@ -343,8 +359,7 @@ theorem integral_smul_laplacian_right_eq_left (f : 𝓢(E, 𝕜)) (g : 𝓢(E, F
     ∫ x, f x • Δ g x ∂μ = ∫ x, Δ f x • g x ∂μ :=
   integral_bilinear_laplacian_right_eq_left f g (ContinuousLinearMap.lsmul ℝ 𝕜)
 
-variable [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂]
-
+variable [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂] in
 /-- Integration by parts of Schwartz functions for the Laplacian.
 
 Version for a Schwartz function with values in continuous linear maps. -/
@@ -352,6 +367,14 @@ theorem integral_clm_comp_laplacian_right_eq_left (f : 𝓢(E, F₁ →L[𝕜] F
     ∫ x, f x (Δ g x) ∂μ = ∫ x, Δ f x (g x) ∂μ :=
   integral_bilinear_laplacian_right_eq_left f g
     ((ContinuousLinearMap.id 𝕜 (F₁ →L[𝕜] F₂)).bilinearRestrictScalars ℝ)
+
+variable [InnerProductSpace 𝕜 F] in
+/-- Integration by parts of Schwartz functions for the Laplacian.
+
+Version for the inner product. -/
+theorem integral_inner_laplacian_right_eq_left (f : 𝓢(E, F)) (g : 𝓢(E, F)) :
+    ∫ x, ⟪f x, Δ g x⟫_𝕜 ∂μ = ∫ x, ⟪Δ f x, g x⟫_𝕜 ∂μ :=
+  integral_bilinear_laplacian_right_eq_left f g (innerRealL 𝕜 F)
 
 end laplacian_integration_by_parts
 
