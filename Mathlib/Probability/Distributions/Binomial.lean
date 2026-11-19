@@ -231,12 +231,22 @@ lemma IndepFun.hasLaw_add_map_cast_binomial [MeasurableAdd₂ R] {n1 n2 : ℕ}
   · rw [ncard_union_eq (by grind)]
     simp
 
+lemma map_cast_binomial_conv [MeasurableAdd₂ R] (n1 n2 : ℕ) (p : I) :
+    Bin(R, n1, p) ∗ Bin(R, n2, p) = Bin(R, n1 + n2, p) := by
+  obtain ⟨Ω, _, P, X, Y, -, -, hX, hY, hXY, _⟩ :=
+    exists_hasLaw_indepFun Bin(R, n1, p) Bin(R, n2, p)
+  rw [← (hXY.hasLaw_add hX hY).map_eq, (hXY.hasLaw_add_map_cast_binomial hX hY).map_eq]
+
 /-- The sum of two independent binomial random variables is a binomial random variable. -/
 lemma IndepFun.hasLaw_add_binomial {X Y : Ω → ℕ} {n1 n2 : ℕ}
     (hXY : X ⟂ᵢ[P] Y) (hX : HasLaw X Bin(n1, p) P) (hY : HasLaw Y Bin(n2, p) P) :
     HasLaw (X + Y) Bin(n1 + n2, p) P := by
   convert hXY.hasLaw_add_map_cast_binomial (binomial_nat ▸ hX) (binomial_nat ▸ hY)
   simp
+
+lemma binomial_conv (n1 n2 : ℕ) (p : I) : Bin(n1, p) ∗ Bin(n2, p) = Bin(n1 + n2, p) := by
+  obtain ⟨Ω, _, P, X, Y, mX, mY, hX, hY, hXY, _⟩ := exists_hasLaw_indepFun Bin(n1, p) Bin(n2, p)
+  rw [← (hXY.hasLaw_add hX hY).map_eq, (hXY.hasLaw_add_binomial hX hY).map_eq]
 
 variable {ι : Type*} {s : Finset ι} {n : ι → ℕ}
 
@@ -301,14 +311,14 @@ lemma iIndepFun.hasLaw_sum_binomial [Fintype ι]
     (hX : iIndepFun X P) (lX : ∀ i, HasLaw (X i) Bin(n i, p) P) :
     HasLaw (∑ i, X i) Bin(∑ i, n i, p) P := by
   rw [← binomial_nat]
-  exact hX.hasLaw_sum_map_cast_binomial (by simpa using lX)
+  exact hX.hasLaw_sum_map_cast_binomial (by simpa)
 
 /-- The sum of independent binomial random variables is a binomial random variable. -/
 lemma iIndepFun.hasLaw_finsetSum_binomial
     (hX : iIndepFun (s.restrict X) P) (lX : ∀ i ∈ s, HasLaw (X i) Bin(n i, p) P) :
     HasLaw (∑ i ∈ s, X i) Bin(∑ i ∈ s, n i, p) P := by
   rw [← binomial_nat]
-  exact hX.hasLaw_finsetSum_map_cast_binomial (by simpa using lX)
+  exact hX.hasLaw_finsetSum_map_cast_binomial (by simpa)
 
 /-- A sum of independent Bernoulli random variables is a binomial random variable. -/
 lemma iIndepFun.hasLaw_finsetSum_bernoulli_binomial
