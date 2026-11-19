@@ -62,6 +62,8 @@ pinned curl release from [static-curl](https://github.com/leanprover-community/s
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`. Otherwise the tool uses rclone when it is available. |
 | `MATHLIB_CACHE_PARALLEL_MAX` | The parallel curl transfer limit for uploads and downloads (50 by default). |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace for reads and repo-scoped uploads (see `--scope`, which takes precedence). Flat locations ignore it. |
+| `MATHLIB_LAKE_CACHE_PUT_URL` | The upload root of `cache lake put`, an S3 URL with the bucket in its path (`https://host/bucket[/prefix]`). The tool writes under `{root}/artifacts/` and `{root}/revisions/`, with the S3 credentials and region above. |
+| `MATHLIB_LAKE_CACHE_GET_URL` | The download root of `cache lake get`, which reads `{root}/artifacts/` and `{root}/revisions/`. |
 | `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. CI sets it to widen reads per job. |
 
 An empty value means unset for every variable above except
