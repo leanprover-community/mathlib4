@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Opposites
 public import Mathlib.GroupTheory.Congruence.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruences on the opposite of a group
 

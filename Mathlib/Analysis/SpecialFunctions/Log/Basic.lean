@@ -52,7 +52,6 @@ theorem log_of_pos (hx : 0 < x) : log x = expOrderIso.symm ⟨x, hx⟩ := by
   congr
   exact abs_of_pos hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_log_eq_abs (hx : x ≠ 0) : exp (log x) = |x| := by
   rw [log_of_ne_zero hx, ← coe_expOrderIso_apply, OrderIso.apply_symm_apply, Subtype.coe_mk]
 
@@ -363,8 +362,8 @@ lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp +unfoldPartialApp only [continuousOn_iff_continuous_domRestrict,
     domRestrict]
-  conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
-  exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
+  conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.property)]
+  exact expOrderIso.symm.continuous.comp (continuous_subtypeVal.norm.subtype_mk _)
 
 /-- The real logarithm is continuous as a function from nonzero reals. -/
 @[fun_prop]

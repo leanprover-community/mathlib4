@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Under `CommRingCat`
 

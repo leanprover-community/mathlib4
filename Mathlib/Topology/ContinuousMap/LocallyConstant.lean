@@ -10,7 +10,6 @@ public import Mathlib.Topology.LocallyConstant.Algebra
 
 /-!
 # The algebra morphism from locally constant functions to continuous functions.
-
 -/
 
 @[expose] public section

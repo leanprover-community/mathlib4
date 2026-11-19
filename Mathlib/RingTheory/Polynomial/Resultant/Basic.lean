@@ -184,11 +184,11 @@ theorem resultant_zero_zero : resultant (0 : R[X]) 0 m n = 0 ^ (m + n) := by sim
 private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * monomial k r) m n = resultant f g m n := by
   obtain rfl | hm := eq_or_ne m 0
-  · obtain ⟨q, rfl⟩ := natDegree_eq_zero.mp (le_zero_iff.mp hf); simp
+  · obtain ⟨q, rfl⟩ := natDegree_eq_zero.mp hf.eq_zero; simp
   let M₁ := f.sylvester (g + f * monomial k r) m n
   let M₂ := f.sylvester g m n
   let M (i : ℕ) : Matrix (Fin (m + n)) (Fin (m + n)) R :=
-    .of fun j₁ j₂ ↦ if j₂.1 < i then M₁ j₁ j₂ else M₂ j₁ j₂
+    .of fun j₁ j₂ ↦ if j₂.val < i then M₁ j₁ j₂ else M₂ j₁ j₂
   have (i : ℕ) (hi : i ≤ m) : (M i).det = M₂.det := by
     induction i with
     | zero => simp [M]; rfl
@@ -229,7 +229,6 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
   ext i j
   induction j using Fin.addCases <;> simp [M, sylvester, M₁, M₂]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g + fp) = Res(f, g)` if `deg f + deg p ≤ deg g`. -/
 lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * p) m n = resultant f g m n := by
@@ -260,7 +259,7 @@ lemma resultant_C_mul_right (r : R) :
   let M₁ := f.sylvester (C r * g) m n
   let M₂ := f.sylvester g m n
   let M (i : ℕ) : Matrix (Fin (m + n)) (Fin (m + n)) R :=
-    .of fun j₁ j₂ ↦ if j₂.1 < i then M₁ j₁ j₂ else M₂ j₁ j₂
+    .of fun j₁ j₂ ↦ if j₂.val < i then M₁ j₁ j₂ else M₂ j₁ j₂
   have (i : ℕ) (hi : i ≤ m) : (M i).det = r ^ i * M₂.det := by
     induction i with
     | zero => simp [M]; rfl
@@ -410,7 +409,7 @@ lemma resultant_eq_prod_roots_sub
       simp [hf'.natDegree_eq_card_roots, hg'.natDegree_eq_card_roots]
     · simp
   generalize hN : f.natDegree + g.natDegree = N
-  induction N using Nat.strong_induction_on generalizing K with | h n IH =>
+  induction N using Nat.strong_induction_on generalizing K with | ind n IH
   by_cases hr : g ∣ f
   · obtain ⟨r, rfl⟩ := hr
     have hr' : r ≠ 0 := by simpa [hg.ne_zero] using hf.ne_zero
@@ -822,14 +821,14 @@ lemma toMatrix_sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDeg
       ((degreeLT.basis _ _).prod (degreeLT.basis _ _)) (degreeLT.basis _ _) =
     (sylvester f g m n).reindex (.refl _) finSumFinEquiv.symm := by
   ext i (j | j)
-  · suffices (if j.1 ≤ i then g.coeff (i - j) else 0) =
-      if j ≤ i.1 ∧ ↑i ≤ j + n then g.coeff (i - j) else 0 by
+  · suffices (if j.val ≤ i then g.coeff (i - j) else 0) =
+      if j ≤ i.val ∧ ↑i ≤ j + n then g.coeff (i - j) else 0 by
         simpa [LinearMap.toMatrix_apply, sylvester, coeff_mul_X_pow']
     rw [ite_and]
     split_ifs with h₁ h₂ <;> try rfl
     exact coeff_eq_zero_of_natDegree_lt (by lia)
-  · suffices (if j.1 ≤ i then f.coeff (i - j) else 0) =
-      if j ≤ i.1 ∧ ↑i ≤ j + m then f.coeff (i - j) else 0 by
+  · suffices (if j.val ≤ i then f.coeff (i - j) else 0) =
+      if j ≤ i.val ∧ ↑i ≤ j + m then f.coeff (i - j) else 0 by
         simpa [LinearMap.toMatrix_apply, sylvester, coeff_mul_X_pow']
     rw [ite_and]
     split_ifs with h₁ h₂ <;> try rfl
@@ -882,10 +881,10 @@ lemma exists_mul_add_mul_eq_C_resultant
   nontriviality R
   let X := adjSylvester f g ⟨1, by simpa [Polynomial.mem_degreeLT,
     ← Nat.cast_add, Nat.pos_iff_ne_zero, not_and_or, -not_and] using H⟩
-  have : ((sylvesterMap f g hf hg X)).1 = _ :=
-    congr(($(sylvesterMap_comp_adjSylvester f g hf hg) _).1)
-  refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
-    by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
+  have : ((sylvesterMap f g hf hg X)).val = _ :=
+    congr(($(sylvesterMap_comp_adjSylvester f g hf hg) _).val)
+  refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.property,
+    by simpa [-SetLike.coe_mem] using X.1.property, by simpa [Algebra.smul_def] using this⟩
 
 lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
     IsUnit (resultant f g) ↔ IsCoprime f g := by
@@ -893,8 +892,9 @@ lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
   · obtain rfl := eq_one_of_monic_natDegree_zero hf hf0; simp [isCoprime_one_left]
   refine ⟨fun H ↦ ?_, ?_⟩
   · obtain ⟨p, q, hp, hq, e⟩ := exists_mul_add_mul_eq_C_resultant f g le_rfl le_rfl (by simp [hf0])
-    exact ⟨C (H.unit⁻¹).1 * p, C (H.unit⁻¹).1 * q, by simp only [mul_assoc, ← mul_add, mul_comm p,
-      mul_comm q, e, ← map_mul, IsUnit.val_inv_mul, map_one]⟩
+    exact ⟨C (H.unit⁻¹).val * p, C (H.unit⁻¹).val * q, by
+      simp only [mul_assoc, ← mul_add, mul_comm p, mul_comm q, e, ← map_mul, IsUnit.val_inv_mul,
+        map_one]⟩
   · intro ⟨a, b, e⟩
     suffices 1 = f.resultant b * f.resultant g from isUnit_iff_exists_inv'.mpr ⟨_, this.symm⟩
     have := resultant_mul_right f b g _ le_rfl

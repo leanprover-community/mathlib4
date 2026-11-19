@@ -38,7 +38,7 @@ fibers over `s`. If `OpenPartialHomeomorph` could be refactored to work with an 
 nonempty space while preserving the APIs, we could switch back to the definition. -/
 def IsEvenlyCovered (x : X) (I : Type*) [TopologicalSpace I] :=
   DiscreteTopology I ∧ ∃ U : Set X, x ∈ U ∧ IsOpen U ∧ IsOpen (f ⁻¹' U) ∧
-    ∃ H : f ⁻¹' U ≃ₜ U × I, ∀ x, (H x).1.1 = f x
+    ∃ H : f ⁻¹' U ≃ₜ U × I, ∀ x, (H x).1.val = f x
 
 namespace IsEvenlyCovered
 
@@ -49,10 +49,10 @@ noncomputable def fiberHomeomorph {x : X} (h : IsEvenlyCovered f x I) : I ≃ₜ
   choose _ U hxU hU hfU H hH using h
   exact
   { toFun i := ⟨H.symm (⟨x, hxU⟩, i), by simp [← hH]⟩
-    invFun e := (H ⟨e, by rwa [Set.mem_preimage, (e.2 : f e = x)]⟩).2
+    invFun e := (H ⟨e, by rwa [Set.mem_preimage, (e.property : f e = x)]⟩).2
     left_inv _ := by simp
     right_inv e := Set.inclusion_injective (Set.preimage_mono (Set.singleton_subset_iff.mpr hxU)) <|
-      H.injective <| Prod.ext (Subtype.ext <| by simpa [hH] using e.2.symm) (by simp)
+      H.injective <| Prod.ext (Subtype.ext <| by simpa [hH] using e.property.symm) (by simp)
     continuous_toFun := by fun_prop
     continuous_invFun := by fun_prop }
 
@@ -72,15 +72,16 @@ noncomputable def toTrivialization' {x : X} [Nonempty I] (h : IsEvenlyCovered f 
     map_source' e (he : f e ∈ U) := by simp [he]
     map_target' _ _ := Subtype.coe_prop _
     left_inv' e (he : f e ∈ U) := by simp [he]
-    right_inv' xi := by rintro ⟨hx, -⟩; simpa [hx] using fun h ↦ (h (H.symm _).2).elim
+    right_inv' xi := by rintro ⟨hx, -⟩; simpa [hx] using fun h ↦ (h (H.symm _).property).elim
     open_source := hfU
     open_target := hU.prod isOpen_univ
     continuousOn_toFun := continuousOn_iff_continuous_domRestrict.mpr <|
-      ((continuous_subtype_val.prodMap continuous_id).comp H.continuous).congr
+      ((continuous_subtypeVal.prodMap continuous_id).comp H.continuous).congr
       fun ⟨e, (he : f e ∈ U)⟩ ↦ by simp [Prod.map, he]
     continuousOn_invFun := continuousOn_iff_continuous_domRestrict.mpr <|
-      ((continuous_subtype_val.comp H.symm.continuous).comp (by fun_prop :
-        Continuous fun ui ↦ ⟨⟨_, ui.2.1⟩, ui.1.2⟩)).congr fun ⟨⟨x, i⟩, ⟨hx, _⟩⟩ ↦ by simp [hx]
+      ((continuous_subtypeVal.comp H.symm.continuous).comp (by fun_prop :
+        Continuous fun ui ↦ ⟨⟨_, ui.property.1⟩, ui.val.2⟩)).congr
+          fun ⟨⟨x, i⟩, ⟨hx, _⟩⟩ ↦ by simp [hx]
     baseSet := U
     open_baseSet := hU
     source_eq := rfl
@@ -118,17 +119,17 @@ theorem to_isEvenlyCovered_preimage {x : X} (h : IsEvenlyCovered f x I) :
 theorem of_trivialization [DiscreteTopology I] {x : X} {t : Trivialization I f}
     (hx : x ∈ t.baseSet) : IsEvenlyCovered f x I :=
   ⟨‹_›, _, hx, t.open_baseSet, t.source_eq ▸ t.open_source,
-  { toFun e := ⟨⟨f e, e.2⟩, (t e).2⟩
+  { toFun e := ⟨⟨f e, e.property⟩, (t e).2⟩
     invFun xi := ⟨t.invFun (xi.1, xi.2), by
-      rw [Set.mem_preimage, ← t.mem_source]; exact t.map_target (t.target_eq ▸ ⟨xi.1.2, ⟨⟩⟩)⟩
-    left_inv e := Subtype.ext <| t.symm_apply_mk_proj (t.mem_source.mpr e.2)
+      rw [Set.mem_preimage, ← t.mem_source]; exact t.map_target (t.target_eq ▸ ⟨xi.1.property, ⟨⟩⟩)⟩
+    left_inv e := Subtype.ext <| t.symm_apply_mk_proj (t.mem_source.mpr e.property)
     right_inv xi := by simp [t.proj_symm_apply', t.apply_symm_apply']
     continuous_toFun := (IsInducing.subtypeVal.prodMap .id).continuous_iff.mpr <|
       (continuousOn_iff_continuous_domRestrict.mp <| t.continuousOn_toFun.mono t.source_eq.ge).congr
-      fun e ↦ by simp [t.mk_proj_snd' e.2]
+      fun e ↦ by simp [t.mk_proj_snd' e.property]
     continuous_invFun := IsInducing.subtypeVal.continuous_iff.mpr <|
-      t.continuousOn_invFun.comp_continuous (continuous_subtype_val.prodMap continuous_id)
-      fun ⟨x, _⟩ ↦ t.target_eq ▸ ⟨x.2, ⟨⟩⟩ }, fun _ ↦ by simp⟩
+      t.continuousOn_invFun.comp_continuous (continuous_subtypeVal.prodMap continuous_id)
+      fun ⟨x, _⟩ ↦ t.target_eq ▸ ⟨x.property, ⟨⟩⟩ }, fun _ ↦ by simp⟩
 
 variable (I) in
 theorem of_preimage_eq_empty [IsEmpty I] {x : X} {U : Set X} (hUx : U ∈ 𝓝 x) (hfU : f ⁻¹' U = ∅) :
@@ -142,16 +143,18 @@ set_option backward.isDefEq.respectTransparency false in
 theorem restrictPreimage {x : X} (hxs : x ∈ s) (h : IsEvenlyCovered f x I) :
     IsEvenlyCovered (s.restrictPreimage f) ⟨x, hxs⟩ I :=
   have ⟨inst, U, hxU, hU, hfU, H, hH⟩ := h
-  ⟨inst, Subtype.val ⁻¹' U, hxU, hU.preimage (by fun_prop), hfU.preimage continuous_subtype_val,
-    { toFun e := (⟨⟨(H ⟨e, e.2⟩).1, hH _ ▸ e.1.2⟩, by simpa only [hH] using! e.2⟩, (H ⟨e, e.2⟩).2)
-      invFun x := ⟨⟨H.symm (⟨x.1, x.1.2⟩, x.2), by simp [← hH]⟩, by simp [← hH]⟩
+  ⟨inst, Subtype.val ⁻¹' U, hxU, hU.preimage (by fun_prop), hfU.preimage continuous_subtypeVal,
+    { toFun e :=
+        (⟨⟨(H ⟨e, e.property⟩).1, hH _ ▸ e.val.property⟩, by simpa only [hH] using! e.property⟩,
+          (H ⟨e, e.property⟩).2)
+      invFun x := ⟨⟨H.symm (⟨x.1, x.1.property⟩, x.2), by simp [← hH]⟩, by simp [← hH]⟩
       left_inv _ := by simp, right_inv _ := by simp }, fun _ ↦ by ext; apply hH⟩
 
 theorem subtypeVal_comp (hs : IsOpen s) {x : s} {f : E → s} (h : IsEvenlyCovered f x I) :
     IsEvenlyCovered (Subtype.val ∘ f) x I :=
   have ⟨inst, U, hxU, hU, hfU, H, hH⟩ := h
   have : Subtype.val ∘ f ⁻¹' Subtype.val '' U = f ⁻¹' U := by ext; simp
-  ⟨inst, Subtype.val '' U, ⟨x, hxU, rfl⟩, hs.isOpenMap_subtype_val _ hU, by rwa [this], .trans
+  ⟨inst, Subtype.val '' U, ⟨x, hxU, rfl⟩, hs.isOpenMap_subtypeVal _ hU, by rwa [this], .trans
     (.setCongr this) (H.trans <| .prodCongr (IsEmbedding.subtypeVal.homeomorphImage U) (.refl I)),
     fun _ ↦ congr_arg Subtype.val (hH _)⟩
 
@@ -161,11 +164,11 @@ theorem comp_subtypeVal (hs : IsOpen s) (hfs : IsOpen (f ⁻¹' s)) {x : X} (hx 
   (isEmpty_or_nonempty I).elim (fun _ ↦ .of_preimage_eq_empty _ ((hs.inter hU).mem_nhds ⟨hx, hxU⟩)
     <| Set.not_nonempty_iff_eq_empty.mp fun ⟨e, he⟩ ↦ isEmptyElim (H ⟨⟨e, he.1⟩, he.2⟩).2) fun _ ↦
   have hUs : U ⊆ s := fun y hy ↦ by
-    convert Set.mem_preimage.mp (H.symm (⟨y, hy⟩, Classical.arbitrary I)).1.2; simp [← hH]
+    convert Set.mem_preimage.mp (H.symm (⟨y, hy⟩, Classical.arbitrary I)).val.property; simp [← hH]
   have : Subtype.val '' (fun e : f ⁻¹' s ↦ f e) ⁻¹' U = f ⁻¹' U := by ext; simpa using @hUs _
-  ⟨inst, U, hxU, hU, this ▸ hfs.isOpenMap_subtype_val _ hfU, .trans (.symm <| .trans
+  ⟨inst, U, hxU, hU, this ▸ hfs.isOpenMap_subtypeVal _ hfU, .trans (.symm <| .trans
     (IsEmbedding.subtypeVal.homeomorphImage _) <| .setCongr this) H, fun x ↦ by
-    dsimp; convert hH ⟨⟨x, hUs x.2⟩, x.2⟩ using 4; rw [Homeomorph.symm_apply_eq]; rfl⟩
+    dsimp; convert hH ⟨⟨x, hUs x.property⟩, x.property⟩ using 4; rw [Homeomorph.symm_apply_eq]; rfl⟩
 
 theorem comp_homeomorph {x : X} (h : IsEvenlyCovered f x I) {E'} [TopologicalSpace E']
     (g : E' ≃ₜ E) : IsEvenlyCovered (f ∘ g) x I :=
@@ -204,17 +207,17 @@ theorem of_isEmpty [IsEmpty E] : IsCoveringMapOn f s := fun _ _ ↦ .to_isEvenly
 
 /-- A constructor for `IsCoveringMapOn` when there are both empty and nonempty fibers. -/
 theorem mk' (F : s → Type*) [∀ x : s, TopologicalSpace (F x)] [hF : ∀ x : s, DiscreteTopology (F x)]
-    (t : ∀ x : s, x.1 ∈ Set.range f → {t : Trivialization (F x) f // x.1 ∈ t.baseSet})
-    (h : ∀ x : s, x.1 ∉ Set.range f → ∃ U ∈ 𝓝 x.1, f ⁻¹' U = ∅) :
+    (t : ∀ x : s, x.val ∈ Set.range f → {t : Trivialization (F x) f // x.val ∈ t.baseSet})
+    (h : ∀ x : s, x.val ∉ Set.range f → ∃ U ∈ 𝓝 x.val, f ⁻¹' U = ∅) :
     IsCoveringMapOn f s := fun x hx ↦ by
   lift x to s using hx
-  by_cases hxf : x.1 ∈ Set.range f
-  · exact .to_isEvenlyCovered_preimage (.of_trivialization (t x hxf).2)
+  by_cases hxf : x.val ∈ Set.range f
+  · exact .to_isEvenlyCovered_preimage (.of_trivialization (t x hxf).property)
   · have ⟨U, hUx, hfU⟩ := h x hxf
     exact .to_isEvenlyCovered_preimage (.of_preimage_eq_empty Empty hUx hfU)
 
 theorem mk (F : s → Type*) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, DiscreteTopology (F x)]
-    (e : ∀ x, Trivialization (F x) f) (h : ∀ x, x.1 ∈ (e x).baseSet) :
+    (e : ∀ x, Trivialization (F x) f) (h : ∀ x, x.val ∈ (e x).baseSet) :
     IsCoveringMapOn f s := by
   cases isEmpty_or_nonempty E
   · exact .of_isEmpty _ _
@@ -260,7 +263,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
 
 theorem restrictPreimage (hf : IsCoveringMapOn f s) (t : Set X) :
     IsCoveringMapOn (t.restrictPreimage f) (Subtype.val ⁻¹' s) :=
-  fun x hs ↦ ((hf x hs).restrictPreimage t x.2).to_isEvenlyCovered_preimage
+  fun x hs ↦ ((hf x hs).restrictPreimage t x.property).to_isEvenlyCovered_preimage
 
 theorem comp_homeomorph (hf : IsCoveringMapOn f s) {E'} [TopologicalSpace E'] (g : E' ≃ₜ E) :
     IsCoveringMapOn (f ∘ g) s :=
@@ -316,7 +319,7 @@ theorem of_discreteTopology [DiscreteTopology E] [DiscreteTopology X] : IsCoveri
       invFun xi := xi.2
       left_inv _ := rfl
       right_inv _ := Prod.ext (Subsingleton.elim ..) rfl },
-    (·.2.symm)⟩
+    (·.property.symm)⟩
 
 /-- A constructor for `IsCoveringMap` when there are both empty and nonempty fibers. -/
 theorem mk' (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTopology (F x)]
@@ -511,10 +514,10 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
     (h : ∀ e ∈ f ⁻¹' {x}, ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
     IsEvenlyCovered f x (f ⁻¹' {x}) := by
   have : DiscreteTopology (f ⁻¹' {x}) :=
-    (IsDiscrete.of_openPartialHomeomorph f subset_rfl h).1
+    (IsDiscrete.of_openPartialHomeomorph f subset_rfl h).to_subtype
   /- for each preimage e of x, choose a homeomorphism φₑ
     from a neighborhood of e to its image -/
-  choose φ hφ using fun e : f ⁻¹' {x} ↦ h e e.2
+  choose φ hφ using fun e : f ⁻¹' {x} ↦ h e e.property
   -- separately, choose pairwise disjoint neighborhoods Vₑ by Hausdorff-ness
   have ⟨V, hV, disj⟩ := fin.t2_separation
   -- let Vₑ' be the intersection Vₑ ∩ dom(φₑ)
@@ -539,7 +542,7 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
     (fun e ↦ .mono subset_rfl (hUV e) (surjOn_image f _))
     (pairwise_disjoint_mono disj.subtype fun e ↦ inter_subset_left)
     ((preimage_mono (inter_subset_left.trans hUW)).trans hWV))
-    ⟨hxU, Set.mem_iInter.mpr fun e ↦ ⟨e, ⟨(hV e).1, (hφ e).1⟩, e.2⟩⟩
+    ⟨hxU, Set.mem_iInter.mpr fun e ↦ ⟨e, ⟨(hV e).1, (hφ e).1⟩, e.property⟩⟩
   · convert ((φ e).isOpen_inter_preimage h).inter (hV e).2 using 1
     simp_rw [(hφ e).2, V']; ac_rfl
   · have : s ⊆ (φ e).target := hs.trans <| (hUV e).trans <| by

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Order.Hom.Basic
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing nonarchimedean (ultrametric) normed groups from nonarchimedean normed homs
 

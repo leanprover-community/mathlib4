@@ -178,7 +178,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
   `f : K →+* L` to `𝓞 K`. -/
 def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) where
-  toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
+  toFun k := ⟨f k.val, map_isIntegral_int f k.property⟩
   map_zero' := by ext; simp only [map_mk, map_zero]
   map_one' := by ext; simp only [map_mk, map_one]
   map_add' x y := by ext; simp only [map_mk, map_add]
@@ -192,8 +192,8 @@ theorem mapRingHom_apply {K L : Type*} [Field K] [Field L] (f : K →+* L) (x : 
   a ring isomorphism `e : K ≃+* L` to `𝓞 K`. -/
 def mapRingEquiv {K L : Type*} [Field K] [Field L] (e : K ≃+* L) : (𝓞 K) ≃+* (𝓞 L) :=
   RingEquiv.ofRingHom (mapRingHom e) (mapRingHom e.symm)
-    (RingHom.ext fun x => ext (EquivLike.right_inv e x.1))
-      (RingHom.ext fun x => ext (EquivLike.left_inv e x.1))
+    (RingHom.ext fun x => ext (EquivLike.right_inv e x.val))
+      (RingHom.ext fun x => ext (EquivLike.left_inv e x.val))
 
 @[simp]
 theorem mapRingEquiv_apply {K L : Type*} [Field K] [Field L] (e : K ≃+* L) (x : 𝓞 K) :
@@ -228,8 +228,8 @@ def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
   AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (AlgEquiv.ofClass e).symm)
-    (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
-      (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
+    (AlgHom.ext fun x => ext (EquivLike.right_inv e x.val))
+      (AlgHom.ext fun x => ext (EquivLike.left_inv e x.val))
 
 instance inst_isScalarTower (k K L : Type*) [Field k] [Field K] [Field L]
     [Algebra k K] [Algebra k L] [Algebra K L] [IsScalarTower k K L] :
@@ -266,7 +266,7 @@ theorem minpoly_coe (x : 𝓞 K) :
   minpoly.algebraMap_eq RingOfIntegers.coe_injective x
 
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
-  x.2
+  x.property
 
 theorem isIntegral (x : 𝓞 K) : IsIntegral ℤ x := by
   obtain ⟨P, hPm, hP⟩ := x.isIntegral_coe

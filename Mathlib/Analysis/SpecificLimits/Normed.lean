@@ -92,7 +92,7 @@ open List in
 
 NB: For backwards compatibility, if you add more items to the list, please append them at the end of
 the list. -/
-theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
+theorem tfae_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     TFAE
       [∃ a ∈ Ioo (-R) R, f =o[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =o[atTop] (a ^ ·),
         ∃ a ∈ Ioo (-R) R, f =O[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =O[atTop] (a ^ ·),
@@ -140,6 +140,9 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     refine ⟨a, A ⟨?_, ha⟩, .of_norm_eventuallyLE H⟩
     exact nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
   tfae_finish
+
+@[deprecated (since := "2026-10-27")]
+alias TFAE_exists_lt_isLittleO_pow := tfae_exists_lt_isLittleO_pow
 
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
 theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : ℕ) {r : ℝ}
@@ -299,6 +302,23 @@ lemma summable_iterate_mul_of_norm_lt_one [HasSummableGeomSeries R] {x : R} (h :
     Summable ((· * x)^[·] x) :=
   HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
+/-- A closed subring has summable geometric series when the ambient ring does. -/
+instance {S : Type*} [SetLike S R] [NonUnitalSubringClass S R] [HasSummableGeomSeries R]
+    (s : S) [hs : IsClosed (s : Set R)] : HasSummableGeomSeries s where
+  summable_geometric_of_norm_lt_one x hx := by
+    obtain ⟨L, hL⟩ := summable_iterate_mul_of_norm_lt_one (x := (x : R)) hx
+    replace hL : HasSum (fun x_1 ↦ (↑((fun x_2 ↦ x_2 * x)^[x_1] x) : R)) L := by
+      convert hL with n
+      induction n with
+      | zero => simp
+      | succ n ih => simp [ih, iterate_succ_apply']
+    lift L to s using hs.mem_of_tendsto hL.tendsto_sum_nat <| .of_forall fun _ ↦ by
+      simp only [← AddSubmonoidClass.coe_finsetSum, Subtype.coe_prop]
+    apply HasSum.summable (a := L)
+    rw [← Topology.IsEmbedding.subtypeVal.isInducing.hasSum_iff (g := AddSubmonoidClass.subtype s)]
+    simpa [Function.comp_def] using hL
+
+/-- A complete normed ring has summable geometric series. -/
 instance [CompleteSpace R] : HasSummableGeomSeries R where
   summable_geometric_of_norm_lt_one x hx := by
     have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ (n + 1) :=

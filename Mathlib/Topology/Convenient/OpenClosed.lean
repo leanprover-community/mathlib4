@@ -17,7 +17,6 @@ Let `X : ι → Type*` be a family of topological spaces.
 If all the opens (resp. closed) subsets of the `X i` are
 `X`-generated, then any open (resp. closed) subset of
 an `X`-generated space is `X`-generated.
-
 -/
 
 public section
@@ -45,10 +44,10 @@ lemma IsOpen.isGeneratedBy [IsGeneratedBy X Y] {U : Set Y} (hU : IsOpen U) :
   intro V hV
   obtain ⟨V, hV, rfl⟩ : ∃ (T : Set Y), T ⊆ U ∧ V = Subtype.val ⁻¹' T :=
     ⟨Subtype.val '' V, by simp, by simp⟩
-  refine continuous_subtype_val.isOpen_preimage _ ?_
+  refine continuous_subtypeVal.isOpen_preimage _ ?_
   rw [IsGeneratedBy.isOpen_iff X]
   intro i f
-  convert (W ⟨i, f⟩).isOpen.isOpenMap_subtype_val _ (hV ⟨i, f⟩)
+  convert (W ⟨i, f⟩).isOpen.isOpenMap_subtypeVal _ (hV ⟨i, f⟩)
   aesop
 
 lemma Topology.IsOpenEmbedding.isGeneratedBy [IsGeneratedBy X Y]
@@ -78,10 +77,10 @@ lemma IsClosed.isGeneratedBy [IsGeneratedBy X Y] {F : Set Y} (hF : IsClosed F) :
   intro V hV
   obtain ⟨V, hV, rfl⟩ : ∃ (T : Set Y), T ⊆ F ∧ V = Subtype.val ⁻¹' T :=
     ⟨Subtype.val '' V, by simp, by simp⟩
-  refine IsClosed.preimage continuous_subtype_val ?_
+  refine IsClosed.preimage continuous_subtypeVal ?_
   rw [IsGeneratedBy.isClosed_iff X]
   intro i f
-  convert (W ⟨i, f⟩).isClosed.isClosedMap_subtype_val _ (hV ⟨i, f⟩)
+  convert (W ⟨i, f⟩).isClosed.isClosedMap_subtypeVal _ (hV ⟨i, f⟩)
   aesop
 
 lemma Topology.IsClosedEmbedding.isGeneratedBy [IsGeneratedBy X Y]

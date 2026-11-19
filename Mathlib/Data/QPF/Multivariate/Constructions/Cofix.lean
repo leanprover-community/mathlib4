@@ -188,7 +188,6 @@ A bisimulation relation `R` for values `x y : Cofix F α`:
 * holds for `x y`: `R x y`
 * for any values `x y` that satisfy `R`, their root has the same shape
   and their children can be paired in such a way that they satisfy `R`.
-
 -/
 
 
@@ -314,9 +313,7 @@ theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x
   intro x y h
   rw [h]
   conv =>
-    lhs
-    congr
-    rfl
+    enter [1, 2]
     rw [Cofix.mk]
     rw [Cofix.dest_corec]
   rw [← comp_map, ← appendFun_comp, id_comp]
@@ -389,7 +386,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
     rfl
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh
 
-theorem liftR_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
+theorem liftR_map_last' {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
     (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id ::: f) <$$> x) x := by
   have := liftR_map_last R x f id hh
   rwa [appendFun_id_id, MvFunctor.id_map] at this
@@ -408,7 +405,7 @@ theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := b
   dsimp [Cofix.dest, Cofix.abs]
   induction y using Quot.ind
   simp only [Cofix.repr, M.dest_corec, abs_map, MvQPF.abs_repr, Function.comp]
-  conv => congr; rfl; rw [Cofix.dest]
+  conv => enter [2]; rw [Cofix.dest]
   rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
   apply liftR_map_last
   intros
