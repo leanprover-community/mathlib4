@@ -25,6 +25,7 @@ open scoped Topology
 
 namespace Real
 
+/-- The intervals `[x, y]` tend to `(vitaliFamily volume).filterAt x` as `y → x⁺`. -/
 theorem tendsto_Icc_vitaliFamily_right (x : ℝ) :
     Tendsto (fun y => Icc x y) (𝓝[>] x) ((vitaliFamily (volume : Measure ℝ)).filterAt x) := by
   simp only [Icc_eq_closedBall]
@@ -38,6 +39,7 @@ theorem tendsto_Icc_vitaliFamily_right (x : ℝ) :
     rw [Metric.mem_closedBall, dist_eq, one_mul, abs_le]
     constructor <;> linarith
 
+/-- The intervals `[y, x]` tend to `(vitaliFamily volume).filterAt x` as `y → x⁻`. -/
 theorem tendsto_Icc_vitaliFamily_left (x : ℝ) :
     Tendsto (fun y => Icc y x) (𝓝[<] x) ((vitaliFamily (volume : Measure ℝ)).filterAt x) := by
   simp only [Icc_eq_closedBall]

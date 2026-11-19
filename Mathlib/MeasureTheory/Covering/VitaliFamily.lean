@@ -39,6 +39,7 @@ Let `v` be such a Vitali family.
 * `v.exists_covering` is the covering property of Vitali families: if for every `x ∈ s`,
   a predicate `P x a` holds for arbitrarily small sets `a` in the family at `x`,
   then one can extract a countable disjoint family of such sets covering almost all `s`.
+* `v.mono ν hν` is the same family of filters, seen as a Vitali family for a measure `ν ≪ μ`.
 
 ## References
 

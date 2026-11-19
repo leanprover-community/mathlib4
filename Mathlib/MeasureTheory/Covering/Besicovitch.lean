@@ -29,7 +29,8 @@ one can cover almost all the space by a family of disjoint admissible balls.
 It is deduced from the topological Besicovitch theorem, and proved
 in `Besicovitch.exists_disjoint_closedBall_covering_ae`.
 
-This implies that balls of small radius form a Vitali family in such spaces. Therefore, theorems
+This implies that closed balls centered at `x`, with radius tending to `0`, form a Vitali family in
+such spaces, see `Besicovitch.vitaliFamily`. Therefore, theorems
 on differentiation of measures hold as a consequence of general results. We restate them in this
 context to make them more easily usable.
 
@@ -1016,8 +1017,9 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
 
 /-! ### Consequences on differentiation of measures -/
 
-/-- In a space with the Besicovitch covering property, the set of closed balls with positive radius
-forms a Vitali family. This is essentially a restatement of the measurable Besicovitch theorem. -/
+/-- In a space with the Besicovitch covering property, closed balls centered at `x` form a Vitali
+family: the filter `filterAt x` is the image of `𝓝[>] 0` under `r ↦ closedBall x r`.
+This is essentially a restatement of the measurable Besicovitch theorem. -/
 protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ where
   filterAt x := (𝓝[>] (0 : ℝ)).map (closedBall x)
   filterAt_le_smallSets_nhds x := (tendsto_closedBall_smallSets x).mono_left nhdsWithin_le_nhds

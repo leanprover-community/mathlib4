@@ -55,17 +55,18 @@ private theorem frequently_measure_closedBall_three_mul_le (x : α) :
     filter_upwards [Ioc_mem_nhdsGT (scalingScaleOf_pos μ 3)] with r hr
     exact measure_mul_le_scalingConstantOf_mul μ ⟨zero_lt_three, le_rfl⟩ hr.2
 
-/-- A Vitali family in a space with a uniformly locally doubling measure. For any `K`, the sets at
-`x` contain all small enough balls `closedBall y r` with `dist x y ≤ K * r`,
-see `IsUnifLocDoublingMeasure.tendsto_closedBall_filterAt`. -/
+/-- A Vitali family in a space with a uniformly locally doubling measure, given by
+`Vitali.vitaliFamily`. For any `K`, the closed balls `closedBall y r` with `dist x y ≤ K * r`
+tend to `filterAt x` as `r → 0`, see `IsUnifLocDoublingMeasure.tendsto_closedBall_filterAt`. -/
 def vitaliFamily : VitaliFamily μ :=
   Vitali.vitaliFamilyOfForall μ (fun _ ↦ scalingConstantOf μ 3)
     (frequently_measure_closedBall_three_mul_le μ)
 
 omit [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ] in
-/-- Auxiliary lemma for `tendsto_closedBall_filterAt`: in the Vitali family
-`IsUnifLocDoublingMeasure.vitaliFamily`, the sets based at `x`
-contain all balls `closedBall y r` when `dist x y ≤ K * r` and `r` is small enough. -/
+/-- Auxiliary lemma for `tendsto_closedBall_filterAt`: if `dist x y ≤ K * r` and `r` is small
+enough, then `closedBall y r` is one of the sets at `x` used to define the Vitali family
+`IsUnifLocDoublingMeasure.vitaliFamily`, with doubling constant
+`scalingConstantOf μ (max (4 * K + 3) 3)`. -/
 private theorem closedBall_mem_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ}
     (h : dist x y ≤ K * r) (rpos : 0 < r) (hr : r ≤ scalingScaleOf μ (max (4 * K + 3) 3)) :
     IsClosed (closedBall y r) ∧ (interior (closedBall y r)).Nonempty ∧

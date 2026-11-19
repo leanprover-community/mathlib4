@@ -15,7 +15,8 @@ import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 # Differentiation of measures
 
 On a second countable metric space with a measure `μ`, consider a Vitali family (i.e., for each `x`
-one has a family of sets shrinking to `x`, with a good behavior with respect to covering theorems).
+one has a filter `filterAt x` of sets shrinking to `x`, with a good behavior with respect to
+covering theorems, see `VitaliFamily.exists_covering`).
 Consider also another measure `ρ`. Then, for almost every `x`, the ratio `ρ a / μ a` converges when
 `a` shrinks to `x` along the Vitali family, towards the Radon-Nikodym derivative of `ρ` with
 respect to `μ`. This is the main theorem on differentiation of measures.
@@ -48,7 +49,8 @@ Let `v` be a Vitali family for `μ`. Assume for simplicity that `ρ` is absolute
 respect to `μ`, as the case of a singular measure is easier.
 
 It is easy to see that a set `s` on which `liminf ρ a / μ a < q` satisfies `ρ s ≤ q * μ s`, by using
-a disjoint subcovering provided by the definition of Vitali families. Similarly for the limsup.
+a disjoint subcovering provided by the covering property `VitaliFamily.exists_covering` (see
+`VitaliFamily.measure_le_of_frequently_le`). Similarly for the limsup.
 It follows that a set on which `ρ a / μ a` oscillates has measure `0`, and therefore that
 `ρ a / μ a` converges almost surely (`VitaliFamily.ae_tendsto_div`). Moreover, on a set where the
 limit is close to a constant `c`, one gets `ρ s ∼ c μ s`, using again a covering lemma as above.

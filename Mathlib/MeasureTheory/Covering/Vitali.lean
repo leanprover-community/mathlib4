@@ -27,17 +27,24 @@ together with a size function `δ` (think "radius" or "diameter").
 
 We deduce the measurable Vitali covering theorem. Assume one is given a family `t` of closed sets
 with nonempty interior, such that each `a ∈ t` is included in a ball `B (x, r)` and covers a
-definite proportion of the ball `B (x, 6 r)` for a given measure `μ` (think of the situation
+definite proportion of the ball `B (x, 3 r)` for a given measure `μ` (think of the situation
 where `μ` is a doubling measure and `t` is a family of balls). Consider a set `s` at which the
 family is fine, i.e., every point of `s` belongs to arbitrarily small elements of `t`. Then one
 can extract from `t` a disjoint subfamily that covers almost all `s`. It is proved in
 `Vitali.exists_disjoint_covering_ae`. The proportion is allowed to depend on the center `x` of the
 ball, i.e., we only need `μ (B (x, 3 r)) ≤ C x * μ a` for some function `C`.
 
-A way to restate this theorem is to say that the set of closed sets `a` with nonempty interior
-covering a fixed proportion `1/C` of the ball `closedBall x (3 * diam a)` forms a Vitali family.
-This version is given in `Vitali.vitaliFamily`. It only requires that, around almost every point
-`x`, the measure is doubling at arbitrarily small scales, with a constant that may depend on `x`.
+A way to restate this theorem is to say that closed sets with nonempty interior covering a fixed
+proportion form a Vitali family. This version is given in `Vitali.vitaliFamily`. It only requires
+that, around almost every point `x`, the measure is doubling at arbitrarily small scales, with a
+constant that may depend on `x`. At such a point `x`, the filter `filterAt x` is the supremum over
+`C : ℝ≥0` of the filters of closed sets `a` with nonempty interior, shrinking to `x`, such that
+`a ⊆ B (x, r)` and `μ (B (x, 3 r)) ≤ C * μ a` for some `r`. A property holds frequently along
+this supremum if and only if it holds frequently along one of these filters, so the constant `C`
+does not grow as the sets shrink to `x`; this is needed for the covering property. At the remaining
+points, which form a null set, `filterAt x` is given by the closed balls
+centered at `x`. The convenience constructor `Vitali.vitaliFamilyOfForall` takes instead a
+pointwise doubling constant `C x` that works at every point.
 -/
 
 @[expose] public section
