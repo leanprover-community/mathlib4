@@ -323,7 +323,7 @@ lemma cochainsResMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X �
     cochainsResMap (φ.comp ψ) (X := X) ((resFunctor (ψ : K →* H)).map f ≫ g) =
       cochainsResMap φ f ≫ cochainsResMap ψ g := by
   ext i v x
-  congrm($(resolutionResMap_comp φ ψ f g (i + 1)).hom v.1 x)
+  congrm($(resolutionResMap_comp φ ψ f g (i + 1)).hom v x)
 
 @[deprecated (since := "2026-07-27")] alias cochainsMap_comp := cochainsResMap_comp
 @[deprecated (since := "2026-07-27")] alias cochainsMap_comp_assoc := cochainsResMap_comp_assoc
@@ -419,7 +419,7 @@ lemma cochainsResMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
       (homogeneousCochainsFunctor k H).map f := by
   ext i v x
   simpa [homogeneousCochainsResNatTrans_app_f]
-    using! congr($(resolutionResMap_eq φ f (i + 1)).hom v.1 x)
+    using! congr($(resolutionResMap_eq φ f (i + 1)).hom v x)
 
 /-- The levelwise form of `cochainsResMap_eq`: the restriction part expressed via
 `homogeneousCochainsXRes` and the coefficient part via `resolutionMap`. -/
@@ -443,7 +443,7 @@ identity of `G`. -/
 lemma cochainsResMap_id_left (f : X ⟶ X') :
     cochainsResMap (ContinuousMonoidHom.id G) f = (homogeneousCochainsFunctor k G).map f := by
   ext i v x
-  congrm($(resolutionResMap_id_fst f (i + 1)).hom v.1 x)
+  congrm($(resolutionResMap_id_fst f (i + 1)).hom v x)
 
 /-- `resMap φ f n` is the component of the restriction natural transformation `resNatTrans`
 followed by the functorial map on continuous cohomology. -/
