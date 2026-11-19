@@ -980,10 +980,7 @@ def _root_.Center.toMulOppositeAlgEquiv : Center A ≃ₐ[R] Center Aᵐᵒᵖ w
   commutes' _ := rfl
 /-- An isomorphism of `R`-algebras induces an `R`-algebra isomorphism between their centers. -/
 @[simps! apply_coe]
-def centerCongr (e : A ≃ₐ[R] B) :
-    center R A ≃ₐ[R] center R B where
-  toRingEquiv := e.toCenter
-  commutes' r := Subtype.ext <| e.commutes r
+def centerCongr (e : A ≃ₐ[R] B) : center R A ≃ₐ[R] center R B := e.toCenter
 
 @[simp] lemma toRingEquiv_centerCongr (e : A ≃ₐ[R] B) :
     (centerCongr e).toRingEquiv = Subsemiring.centerCongr e.toRingEquiv := rfl
