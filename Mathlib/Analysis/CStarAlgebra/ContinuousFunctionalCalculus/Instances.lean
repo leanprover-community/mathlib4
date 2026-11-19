@@ -194,27 +194,27 @@ variable (x : Unitization R A)
 
 /-- For `x : Unitization R A`, the map `fun r : R ↦ x.fst + r` is a homemorphism between the
 sets `quasispectrum R x.snd` and `spectrum R x`. -/
-def quasispectrumHomeoSpectrum : σₙ R x.snd ≃ₜ σ R x :=
+def quasispectrumHomeomorphSpectrum : σₙ R x.snd ≃ₜ σ R x :=
   (Homeomorph.addRight x.fst).subtype fun _ ↦ by simp [Unitization.mem_spectrum_iff]
 
 @[simp]
-lemma coe_quasispectrumHomeoSpectrum_apply (y : σₙ R x.snd) :
-    (quasispectrumHomeoSpectrum x y : R) = y + x.fst :=
+lemma coe_quasispectrumHomeomorphSpectrum_apply (y : σₙ R x.snd) :
+    (quasispectrumHomeomorphSpectrum x y : R) = y + x.fst :=
   rfl
 
 @[simp]
-lemma coe_quasispectrumHomeoSpectrum_symm_apply (z : σ R x) :
-    ((quasispectrumHomeoSpectrum x).symm z : R) = z - x.fst :=
+lemma coe_quasispectrumHomeomorphSpectrum_symm_apply (z : σ R x) :
+    ((quasispectrumHomeomorphSpectrum x).symm z : R) = z - x.fst :=
   (sub_eq_add_neg _ _).symm
 
 lemma compactSpace_spectrum [CompactSpace (σₙ R x.snd)] : CompactSpace (σ R x) :=
-  (quasispectrumHomeoSpectrum x).compactSpace
+  (quasispectrumHomeomorphSpectrum x).compactSpace
 
 variable [Nontrivial R]
 
 @[simp]
-lemma quasispectrumHomeoSpectrum_zero :
-    quasispectrumHomeoSpectrum x 0 = ⟨x.fst, fst_mem_spectrum x⟩ :=
+lemma quasispectrumHomeomorphSpectrum_zero :
+    quasispectrumHomeomorphSpectrum x 0 = ⟨x.fst, fst_mem_spectrum x⟩ :=
   Subtype.ext (by simp)
 
 end Unitization
@@ -252,7 +252,7 @@ Concretely, it sends `f` to `algebraMap 𝕜 _ (f x.fst) + ↑(cfcₙHom hx g)`,
 noncomputable def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A :=
   (starMap (cfcₙHom hx)).comp <|
     (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm.toStarAlgHom.comp
-      (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeoSpectrum x)).toStarAlgHom
+      (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeomorphSpectrum x)).toStarAlgHom
 
 lemma fst_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
     (cfcAux x hx f).fst = f ⟨x.fst, fst_mem_spectrum x⟩ := by
@@ -260,7 +260,7 @@ lemma fst_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
 
 lemma snd_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
     (cfcAux x hx f).snd =
-      cfcₙHom hx ((f.comp (quasispectrumHomeoSpectrum x)).toContinuousMapZero) := by
+      cfcₙHom hx ((f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero) := by
   simp [cfcAux]
 
 lemma continuous_cfcAux : Continuous (cfcAux x hx) := by
@@ -281,7 +281,7 @@ lemma cfcAux_id : cfcAux x hx ((ContinuousMap.id 𝕜).restrict (σ 𝕜 x)) = x
 lemma spectrum_cfcAux (f : C(σ 𝕜 x, 𝕜)) : σ 𝕜 (cfcAux x hx f) = Set.range f := by
   rw [Unitization.spectrum_eq_vadd_quasispectrum, snd_cfcAux, fst_cfcAux,
     cfcₙHom_map_quasispectrum, Set.vadd_set_range]
-  convert (quasispectrumHomeoSpectrum x).surjective.range_comp f using 3
+  convert (quasispectrumHomeomorphSpectrum x).surjective.range_comp f using 3
   simp
 
 open scoped NonUnitalContinuousFunctionalCalculus in
