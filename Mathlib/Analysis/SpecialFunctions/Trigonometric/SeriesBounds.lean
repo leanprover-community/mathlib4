@@ -63,13 +63,7 @@ lemma Complex.sin_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) (n : ℕ) :
       Finset.mul_sum, Finset.sum_mul, Finset.sum_div, Finset.sum_range_succ', pow_zero, sub_self,
       zero_div, zero_mul, zero_div, add_zero]
     refine Finset.sum_congr rfl fun k _ ↦ ?_
-    rcases k.even_or_odd' with ⟨a, e | e⟩
-    · simp only [e, even_two, Even.mul_right, ↓reduceIte, ne_eq, OfNat.ofNat_ne_zero,
-        not_false_eq_true, mul_div_cancel_left₀, pow_mul, pow_succ', pow_zero, mul_one, mul_pow,
-        neg_mul, mul_neg, neg_neg]
-      ring_nf
-      simp [mul_comm _ 2, pow_mul]
-    · simp [e, pow_mul, pow_add, mul_pow]
+    rcases k.even_or_odd' with ⟨a, rfl | rfl⟩ <;> grind [pow_mul, mul_pow, I_sq]
   rw [sin, e, ← sub_div, ← sub_mul, sub_sub_sub_comm, norm_div, Complex.norm_two,
     div_le_iff₀ (by norm_num), norm_mul, Complex.norm_I, mul_one]
   grw [norm_sub_le, add_le_add ((-z * I).exp_bound (by simpa) (by simp))
@@ -88,12 +82,7 @@ lemma Complex.cos_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) {n : ℕ} (n0 : 0 
        ∑ k ∈ Finset.range (2 * n), (-z * I) ^ k / k.factorial) / 2 := by
     simp only [← Finset.sum_add_distrib, ← Finset.sum_range_two_mul_ite_even n, Finset.sum_div]
     refine Finset.sum_congr rfl fun k _ ↦ ?_
-    rcases k.even_or_odd' with ⟨a, e | e⟩
-    · simp only [e, even_two, Even.mul_right, ↓reduceIte, ne_eq, OfNat.ofNat_ne_zero,
-        not_false_eq_true, mul_div_cancel_left₀, pow_mul, mul_pow, I_sq, mul_neg, mul_one, neg_mul,
-        Even.neg_pow, ← add_div, neg_pow' (z ^ 2), mul_comm _ ((-1 : ℂ) ^ a), ← add_mul]
-      ring
-    · simp [e, pow_mul, pow_add, mul_pow, neg_div]
+    rcases k.even_or_odd' with ⟨a, rfl | rfl⟩ <;> grind [pow_mul, mul_pow, I_sq]
   rw [cos, e, ← sub_div, add_sub_add_comm, norm_div, Complex.norm_two, div_le_iff₀ (by norm_num)]
   grw [norm_add_le, add_le_add ((z * I).exp_bound (by simpa) (by lia))
     ((-z * I).exp_bound (by simpa) (by lia))]
@@ -106,25 +95,23 @@ lemma Complex.cos_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) {n : ℕ} (n0 : 0 
 lemma Real.sin_series_bound {x : ℝ} (x1 : |x| ≤ 1) (n : ℕ) :
     |sin x - x * ∑ k ∈ Finset.range n, (-1) ^ k * x ^ (2 * k) / (2 * k + 1).factorial| ≤
       |x| ^ (2 * n + 1) * ((2 * n + 2) / ((2 * n + 1).factorial * (2 * n + 1))) := by
-  have b := Complex.sin_series_bound (z := x) (by simpa only [Complex.norm_real]) n
-  convert b <;> norm_cast
+  exact_mod_cast Complex.sin_series_bound (z := x) (by simpa) n
 
 /-- Bounds the Taylor remainder of `Real.cos` at order `n`, for `|x| ≤ 1`. -/
 lemma Real.cos_series_bound {x : ℝ} (x1 : |x| ≤ 1) {n : ℕ} (n0 : 0 < n) :
     |cos x - ∑ k ∈ Finset.range n, (-1) ^ k * x ^ (2 * k) / (2 * k).factorial| ≤
       |x| ^ (2 * n) * ((2 * n + 1) / ((2 * n).factorial * (2 * n))) := by
-  have b := Complex.cos_series_bound (z := x) (by simpa only [Complex.norm_real]) n0
-  convert b <;> norm_cast
+  exact_mod_cast Complex.cos_series_bound (z := x) (by simpa) n0
 
 /-! ### Strict bracketing by consecutive partial sums, for `x > 0` -/
 
 /-- All four strict bounds at once, for `x > 0`. The four projections below are the intended
 interface. -/
 private theorem Real.sin_cos_bound_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
-    (∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < x.sin) ∧
-    (x.sin < ∑ i ∈ .range (2 * n + 1), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)!) ∧
-    (∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i) / (2 * i)! < x.cos) ∧
-    (x.cos < ∑ i ∈ .range (2 * n + 3), (-1) ^ i * x ^ (2 * i) / (2 * i)!) := by
+    (∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < sin x) ∧
+    (sin x < ∑ i ∈ .range (2 * n + 1), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)!) ∧
+    (∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i) / (2 * i)! < cos x) ∧
+    (cos x < ∑ i ∈ .range (2 * n + 3), (-1) ^ i * x ^ (2 * i) / (2 * i)!) := by
   have H₀ (x : ℝ) (n : ℕ) (k : ℕ → ℕ) :
       HasDerivAt (fun x : ℝ ↦ ∑ i ∈ .range n, (-1) ^ i * x ^ (k i) / (k i)!)
         (∑ i ∈ .range n, (-1) ^ i * k i * x ^ (k i - 1) / (k i)!) x := by
@@ -184,13 +171,12 @@ private theorem Real.sin_cos_bound_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     have Hlt_cos : ∀ x > 0, cosSeries (2 * n + 4) x < cos x := Hstep_sin_cos _ Hsin_lt
     have Hlt_sin : ∀ x > 0, sinSeries (2 * n + 4) x < sin x := Hstep_cos_sin' _ Hlt_cos
     have Hcos_lt : ∀ x > 0, cos x < cosSeries (2 * n + 5) x := Hstep_sin_cos' _ Hlt_sin
-    simp only [mul_add_one, add_assoc]
     exact ⟨Hlt_sin _ hx, Hsin_lt _ hx, Hlt_cos _ hx, Hcos_lt _ hx⟩
 
 /-- For `x > 0` and even nonzero `n`, the partial sum of the Taylor series of `sin` over
 `Finset.range n` is a strict lower bound for `sin x`. -/
 theorem Real.sum_lt_sin_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Even n) (hn0 : n ≠ 0) :
-    ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < x.sin := by
+    ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < sin x := by
   obtain ⟨m, rfl⟩ := even_iff_exists_two_mul.1 hn
   obtain ⟨k, rfl⟩ := m.exists_eq_succ_of_ne_zero (by simpa using hn0)
   rw [Nat.mul_succ]
@@ -199,14 +185,14 @@ theorem Real.sum_lt_sin_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Even n) (h
 /-- For `x > 0` and odd `n`, the partial sum of the Taylor series of `sin` over `Finset.range n`
 is a strict upper bound for `sin x`. -/
 theorem Real.sin_lt_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) :
-    x.sin < ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! := by
+    sin x < ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! := by
   obtain ⟨m, rfl⟩ := hn
   exact (sin_cos_bound_of_pos hx m).2.1
 
 /-- For `x > 0` and even nonzero `n`, the partial sum of the Taylor series of `cos` over
 `Finset.range n` is a strict lower bound for `cos x`. -/
 theorem Real.sum_lt_cos_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Even n) (hn0 : n ≠ 0) :
-    ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! < x.cos := by
+    ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! < cos x := by
   obtain ⟨m, rfl⟩ := even_iff_exists_two_mul.1 hn
   obtain ⟨k, rfl⟩ := m.exists_eq_succ_of_ne_zero (by simpa using hn0)
   rw [Nat.mul_succ]
@@ -216,7 +202,7 @@ theorem Real.sum_lt_cos_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Even n) (h
 `Finset.range n` is a strict upper bound for `cos x`.
 See `Real.cos_le_sum_of_pos` for a non-strict version valid for every odd `n`. -/
 theorem Real.cos_lt_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) (hn1 : 1 < n) :
-    x.cos < ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! := by
+    cos x < ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! := by
   obtain ⟨m, rfl⟩ := hn
   obtain ⟨k, rfl⟩ := m.exists_eq_succ_of_ne_zero (by lia)
   rw [Nat.mul_succ, add_right_comm]
@@ -225,7 +211,7 @@ theorem Real.cos_lt_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) (hn
 /-- For `x > 0` and odd `n`, the partial sum of the Taylor series of `cos` over `Finset.range n`
 is an upper bound for `cos x`. -/
 theorem Real.cos_le_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) :
-    x.cos ≤ ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! := by
+    cos x ≤ ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! := by
   obtain ⟨m, rfl⟩ := hn
   obtain _ | k := m
   · simpa using cos_le_one x
