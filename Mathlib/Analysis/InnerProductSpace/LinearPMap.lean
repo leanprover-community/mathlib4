@@ -213,18 +213,15 @@ theorem mem_adjoint_domain_iff_exists {T : E →ₗ.[𝕜] F} (y : F) :
     let i : T.domain →L[𝕜] D :=
       { toLinearMap := Submodule.inclusion T.domain.le_topologicalClosure
         cont := continuous_inclusion T.domain.le_topologicalClosure }
-    let ℓExt := ℓ.extend i
-    have hℓAgrees (x : T.domain) : ℓExt (i x) = ℓ x := by
-      apply ContinuousLinearMap.extend_eq
-      · apply (denseRange_inclusion_iff T.domain.le_topologicalClosure).2
-        simp
-      · exact (isUniformEmbedding_set_inclusion T.domain.le_topologicalClosure).isUniformInducing
-    let rieszMap := (InnerProductSpace.toDual 𝕜 D).symm
-    use (rieszMap ℓExt : E)
+    let ℓExt := ℓ.extend i 
+    use ((InnerProductSpace.toDual 𝕜 D).symm ℓExt : E)
     intro x
-    change ⟪rieszMap ℓExt, i x⟫ = ℓ x
+    change ⟪(InnerProductSpace.toDual 𝕜 D).symm ℓExt, i x⟫ = ℓ x
     rw [InnerProductSpace.toDual_symm_apply]
-    exact hℓAgrees x
+    apply ContinuousLinearMap.extend_eq
+    · apply (denseRange_inclusion_iff T.domain.le_topologicalClosure).2
+      simp
+    · exact (isUniformEmbedding_set_inclusion T.domain.le_topologicalClosure).isUniformInducing
   · exact LinearPMap.mem_adjoint_domain_of_exists y
 
 end LinearPMap
