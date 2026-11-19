@@ -8,11 +8,13 @@ module
 
 public import Lean.Meta.AppBuilder
 public import Lean.Meta.Match.MatcherInfo
+public import Lean.ProjFns
+public import Lean.Structure
 
+import Lean.Meta.Transform
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
-import Lean.Meta.Transform
 
 /-!
 # Additional operations on Expr and related types

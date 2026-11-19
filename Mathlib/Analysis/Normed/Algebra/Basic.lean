@@ -25,7 +25,6 @@ This file contains basic facts about normed algebras.
 ## Tags
 
 normed algebra, character space, continuous functional calculus
-
 -/
 
 public section
@@ -49,18 +48,22 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
-theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toStrongDual (φ : WeakDual 𝕜 A)‖ ≤ ‖(1 : A)‖ :=
-  ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg (1 : A)) fun a =>
-    mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ a)
+theorem norm_toStrongDual_le_one (φ : characterSpace 𝕜 A) :
+    ‖toStrongDual (φ : WeakDual 𝕜 A)‖ ≤ 1 :=
+  ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun a ↦ by
+    simpa using spectrum.norm_le_norm_of_mem (apply_mem_spectrum φ a)
+
+@[deprecated (since := "2026-11-18")]
+alias norm_le_norm_one := norm_toStrongDual_le_one
 
 instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
   rw [← isCompact_iff_compactSpace]
-  have h : characterSpace 𝕜 A ⊆ toStrongDual ⁻¹' Metric.closedBall 0 ‖(1 : A)‖ := by
+  have h : characterSpace 𝕜 A ⊆ toStrongDual ⁻¹' Metric.closedBall 0 1 := by
     intro φ hφ
     rw [Set.mem_preimage, mem_closedBall_zero_iff]
-    exact (norm_le_norm_one ⟨φ, ⟨hφ.1, hφ.2⟩⟩ :)
+    exact (norm_toStrongDual_le_one ⟨φ, ⟨hφ.1, hφ.2⟩⟩ :)
   exact (isCompact_closedBall 0 _).of_isClosed_subset CharacterSpace.isClosed h
 
 end CharacterSpace

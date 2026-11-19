@@ -67,7 +67,7 @@ theorem ext {R S : HomogeneousSubsemiring 𝒜}
 
 theorem ext' {R S : HomogeneousSubsemiring 𝒜}
     (h : ∀ i, ∀ a ∈ 𝒜 i, a ∈ R ↔ a ∈ S) : R = S :=
-  AddSubmonoidClass.IsHomogeneous.ext R.2 S.2 h
+  AddSubmonoidClass.IsHomogeneous.ext R.is_homogeneous' S.is_homogeneous' h
 
 @[simp high]
 theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
@@ -114,7 +114,7 @@ homogeneous subsemiring contained in `R`. -/
 def Subsemiring.homogeneousCore : HomogeneousSubsemiring 𝒜 where
   __ := Subsemiring.closure ((↑) '' (((↑) : Subtype (IsHomogeneousElem 𝒜) → A) ⁻¹' R))
   is_homogeneous' := IsHomogeneous.subsemiringClosure_of_isHomogeneousElem fun x ↦ by
-    rintro ⟨x, _, rfl⟩; exact x.2
+    rintro ⟨x, _, rfl⟩; exact x.property
 
 theorem Subsemiring.homogeneousCore_mono : Monotone (Subsemiring.homogeneousCore 𝒜) :=
   fun _ _ h => Subsemiring.closure_mono <| Set.image_mono <| fun _ ↦ @h _
@@ -131,7 +131,7 @@ theorem Subsemiring.isHomogeneous_iff_forall_subset :
   Iff.rfl
 
 theorem Subsemiring.isHomogeneous_iff_subset_iInter :
-    SetLike.IsHomogeneous 𝒜 R ↔ (R : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' R :=
-  subset_iInter_iff.symm
+    SetLike.IsHomogeneous 𝒜 R ↔ (R : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' R := by
+  simp [Subsemiring.isHomogeneous_iff_forall_subset]
 
 end IsHomogeneousSubsemiringDefs

@@ -100,14 +100,14 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
   have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
     apply Subset.antisymm (subset_univ _)
-    · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
-      apply union_subset_union_right sᶜ us
+    simp_rw [← compl_union_self s, Option.elim', iUnion_option]
+    apply union_subset_union_right sᶜ us
   rcases precise_refinement (Option.elim' sᶜ u) (Option.forall.2 ⟨isOpen_compl_iff.2 hs, uo⟩)
       uc with
     ⟨v, vo, vc, vf, vu⟩
   refine ⟨v ∘ some, fun i ↦ vo _, ?_, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
-  · simp only [iUnion_option, ← compl_subset_iff_union] at vc
-    exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
+  simp only [iUnion_option, ← compl_subset_iff_union] at vc
+  exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 
 theorem ParacompactSpace.of_hasBasis {ι : X → Sort*} {p : ∀ x, ι x → Prop} {s : ∀ x, ι x → Set X}
     (hb : ∀ x, (𝓝 x).HasBasis (p x) (s x))
@@ -158,7 +158,7 @@ instance (priority := 200) [CompactSpace X] [ParacompactSpace Y] : ParacompactSp
     have hW : ∀ y, y ∈ W y := fun _ ↦ mem_iInter₂.2 fun _ _ ↦ hyV _ _
     rcases precise_refinement W hWo (iUnion_eq_univ_iff.2 fun y ↦ ⟨y, hW y⟩)
       with ⟨E, hEo, hE, hEf, hEA⟩
-    refine ⟨Σ y, T y, fun z ↦ U z.2.1 z.1 ×ˢ E z.1, fun _ ↦ (hUo _ _).prod (hEo _),
+    refine ⟨Σ y, T y, fun z ↦ U z.2.val z.1 ×ˢ E z.1, fun _ ↦ (hUo _ _).prod (hEo _),
       iUnion_eq_univ_iff.2 fun (x, y) ↦ ?_, fun (x, y) ↦ ?_, fun ⟨y, x, hx⟩ ↦ ?_⟩
     · rcases iUnion_eq_univ_iff.1 hE y with ⟨b, hb⟩
       rcases iUnion₂_eq_univ_iff.1 (hT b) x with ⟨a, ha, hx⟩
@@ -223,8 +223,8 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
   -- Next we choose a finite covering `B (c n i) (r n i)` of each
   -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
   have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), (K n)ᶜ ∈ 𝓝 (x : X) :=
-    fun n x ↦ (K.isClosed n).compl_mem_nhds fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
-  choose! r hrp hr using fun n (x : ↑(Kdiff (n + 1) ∩ s)) ↦ (hB x x.2.2).mem_iff.1 (this n x)
+    fun n x ↦ (K.isClosed n).compl_mem_nhds fun hx' ↦ x.property.1.2 <| K.subset_interior_succ _ hx'
+  choose! r hrp hr using fun n (x : ↑(Kdiff (n + 1) ∩ s)) ↦ (hB x x.property.2).mem_iff.1 (this n x)
   have hxr : ∀ (n x) (hx : x ∈ Kdiff (n + 1) ∩ s), B x (r n ⟨x, hx⟩) ∈ 𝓝 x := fun n x hx ↦
     (hB x hx.2).mem_of_mem (hrp _ ⟨x, hx⟩)
   choose T hT using fun n ↦ (Kdiffc (n + 1)).elim_nhds_subcover' _ (hxr n)
@@ -232,7 +232,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
   -- Finally, we take the union of all these coverings
   refine ⟨Σ n, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, ?_, ?_, ?_⟩
   · rintro ⟨n, x, hx⟩
-    exact ⟨x.2.2, hrp _ _⟩
+    exact ⟨x.property.2, hrp _ _⟩
   · refine fun x hx ↦ mem_iUnion.2 ?_
     rcases mem_iUnion₂.1 (hT _ ⟨hKcov x, hx⟩) with ⟨⟨c, hc⟩, hcT, hcx⟩
     exact ⟨⟨_, ⟨c, hc⟩, hcT⟩, hcx⟩

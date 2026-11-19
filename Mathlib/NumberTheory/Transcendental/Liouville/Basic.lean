@@ -9,12 +9,11 @@ public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Algebra.Polynomial
 
+import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
-
 # Liouville's theorem
 
 This file contains a proof of Liouville's theorem stating that all Liouville numbers are

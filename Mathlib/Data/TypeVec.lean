@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Fin.Fin2
 
 /-!
-
 # Tuples of types, and their categorical structure.
 
 ## Features
@@ -677,7 +676,7 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
 
 set_option backward.isDefEq.respectTransparency false in
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
-    subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
+    subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.val.fst x.val.snd := by
   ext i x
   induction i <;> simp only [toSubtype', comp, subtypeVal, prod.mk] at *
   simp [*]

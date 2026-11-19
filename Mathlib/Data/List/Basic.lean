@@ -5,13 +5,13 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
+public import Batteries.Data.List.Lemmas
 public import Mathlib.Basic.Unique
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
-public import Mathlib.Tactic.Common
-public import Batteries.Data.List.Lemmas
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Basic properties of lists
@@ -961,8 +961,6 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
 theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
   filter_sublist.subset
 
-@[deprecated (since := "2026-04-24")] alias filter_subset' := filter_subset_self
-
 theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
@@ -1119,7 +1117,7 @@ end Forall
 /-! ### Miscellaneous lemmas -/
 
 theorem get_attach (l : List α) (i) :
-    (l.attach.get i).1 = l.get ⟨i, length_attach (l := l) ▸ i.2⟩ := by simp
+    (l.attach.get i).val = l.get ⟨i, length_attach (l := l) ▸ i.isLt⟩ := by simp
 
 section Disjoint
 

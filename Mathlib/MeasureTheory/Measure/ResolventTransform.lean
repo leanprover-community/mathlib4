@@ -5,14 +5,14 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Measure.Support
 
-import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 import Mathlib.Tactic.Positivity
 
 /-!
@@ -71,7 +71,7 @@ theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] 
     rw [continuousOn_iff_continuous_domRestrict]
     convert continuous_const (y := (0 : A)) with x
     simp
-  have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet a).measurableSet
+  have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet 𝕜 a).measurableSet
   simpa using h1.measurable_piecewise h2 h3
 
 variable [CompleteSpace 𝕜] [NormedDivisionRing A] [NormedAlgebra 𝕜 A]

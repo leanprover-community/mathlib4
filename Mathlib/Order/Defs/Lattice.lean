@@ -35,7 +35,6 @@ of `sup` over `inf`, on the left or on the right.
 ## Tags
 
 semilattice, lattice
-
 -/
 
 @[expose] public section
@@ -114,7 +113,7 @@ theorem lt_sup_of_lt_left (h : c < a) : c < a ⊔ b :=
 theorem lt_sup_of_lt_right (h : c < b) : c < a ⊔ b :=
   lt_of_lt_of_le h le_sup_right
 
-@[to_dual (attr := simp) (reorder := a b c) le_inf_iff]
+@[to_dual (attr := simp low) (reorder := a b c) le_inf_iff]
 theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   ⟨fun h : a ⊔ b ≤ c => ⟨le_trans le_sup_left h, le_trans le_sup_right h⟩,
    fun ⟨h₁, h₂⟩ => sup_le h₁ h₂⟩

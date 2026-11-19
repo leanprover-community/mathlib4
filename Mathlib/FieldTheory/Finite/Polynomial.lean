@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.FieldTheory.Finite.Basic
 
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Polynomials over finite fields
@@ -221,6 +221,6 @@ theorem eq_zero_of_eval_eq_zero [Finite σ] (p : MvPolynomial σ K) (h : ∀ v :
     (hp : p ∈ restrictDegree σ K (Fintype.card K - 1)) : p = 0 :=
   let p' : R σ K := ⟨p, hp⟩
   have : p' ∈ ker (evalᵢ σ K) := funext h
-  show p'.1 = (0 : R σ K).1 from congr_arg _ <| by rwa [ker_evalₗ, mem_bot] at this
+  show p'.val = (0 : R σ K).val from congr_arg _ <| by rwa [ker_evalₗ, mem_bot] at this
 
 end MvPolynomial

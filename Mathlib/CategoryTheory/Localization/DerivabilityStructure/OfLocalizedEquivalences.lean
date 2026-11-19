@@ -37,7 +37,6 @@ The dual results for left derivability structures are also obtained.
 This will be particularly useful when `L.functor` and `R.functor` are functors
 from a category to a quotient category (e.g. functors from categories of homological
 complexes to homotopy categories).
-
 -/
 
 public section
@@ -57,7 +56,6 @@ section
 variable [W₂'.RespectsIso]
   [L.IsLocalizedEquivalence] [R.IsLocalizedEquivalence] [R.functor.EssSurj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
     [T.IsLeftDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -84,8 +82,6 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
   rw [B.isLeftDerivabilityStructure_iff W₁'.Q W₂'.Q F e']
   apply TwoSquare.GuitartExact.of_hComp iso.inv
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -117,7 +113,6 @@ lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     (R.functor ⋙ W₂'.Q) F e, ← this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isRightDerivabilityStructure_of_isLocalizedEquivalence
     [T.IsRightDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -129,7 +124,6 @@ lemma isRightDerivabilityStructure_of_isLocalizedEquivalence
     inferInstanceAs (TwoSquare.op iso.hom).GuitartExact
   exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso'
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isRightDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -147,7 +141,6 @@ variable [W₁'.RespectsIso] [W₂'.RespectsIso] [L.IsInduced] [L.functor.IsEqui
   [R.IsInduced] [R.functor.IsEquivalence]
   (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isLeftDerivabilityStructure_of_equivalences
     [T.IsLeftDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :

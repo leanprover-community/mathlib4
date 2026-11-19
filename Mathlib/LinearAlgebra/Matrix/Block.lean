@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Wen Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.Transvection
 
 /-!
 # Block matrices and their determinant
@@ -32,7 +32,6 @@ matrices built out of blocks.
 ## Tags
 
 matrix, diagonal, det, block triangular
-
 -/
 
 @[expose] public section
@@ -107,7 +106,7 @@ end Zero
 
 protected theorem BlockTriangular.neg [NegZeroClass R] {M : Matrix m m R}
     (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
-  fun _ _ h => by rw [neg_apply, hM h, neg_zero]
+  fun _ _ h => by rw [Matrix.neg_apply, hM h, neg_zero]
 
 theorem BlockTriangular.add [AddZeroClass R] (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M + N) b := fun i j h => by simp_rw [Matrix.add_apply, hM h, hN h, zero_add]
@@ -287,6 +286,21 @@ lemma isIndecomposable_iff_blockTriangular_const [Nontrivial α] [Finite m] [Zer
     obtain rfl : a₂ = a₁ := by simpa using congr($ha (e <| .inr <| Nonempty.some ⟨⟨0, by lia⟩⟩))
     exact le_refl _
 
+open Relation in
+lemma isIndecomposable_iff_reflTransGen [Finite m] [Zero R] (M : Matrix m m R) :
+    M.IsIndecomposable ↔ ∀ i j, ReflTransGen (fun i j ↦ M i j ≠ 0) i j := by
+  classical
+  rw [isIndecomposable_iff_blockTriangular_const (α := Bool)]
+  refine ⟨fun hconst i j ↦ ?_, fun hreach b hb ↦ ?_⟩
+  · obtain ⟨a, ha⟩ := hconst (fun k ↦ decide (ReflTransGen (fun i j ↦ M i j ≠ 0) i k))
+      fun x y hxy ↦ by grind [Bool.lt_iff]
+    simpa [ReflTransGen.refl] using (congrFun ha j).trans (congrFun ha i).symm
+  · have key (x y : m) : b x ≤ b y := by
+      induction hreach x y with grind [BlockTriangular]
+    rcases isEmpty_or_nonempty m with hm | ⟨⟨x⟩⟩
+    · exact ⟨false, funext hm.elim⟩
+    · exact ⟨b x, funext fun y ↦ le_antisymm (key y x) (key x y)⟩
+
 end LinearOrder
 
 theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B : Matrix m n R)
@@ -335,7 +349,7 @@ theorem twoBlockTriangular_det (M : Matrix m m R) (p : m → Prop) [DecidablePre
     det_fromBlocks_zero₂₁ (toBlock M p p) (toBlock M p fun j => ¬p j)
       (toBlock M (fun j => ¬p j) fun j => ¬p j)
   ext i j
-  exact h (↑i) i.2 (↑j) j.2
+  exact h (↑i) i.property (↑j) j.property
 
 theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePred p]
     (h : ∀ i, p i → ∀ j, ¬p j → M i j = 0) :
@@ -383,7 +397,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
 theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder α]
     (h : BlockTriangular M b) : M.det = ∏ k : α, (M.toSquareBlock b k).det := by
   refine h.det.trans (prod_subset (subset_univ _) fun a _ ha => ?_)
-  have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.2⟩⟩
+  have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.property⟩⟩
   exact det_isEmpty
 
 theorem det_of_isUpperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
@@ -443,7 +457,7 @@ theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Inv
     rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
   have h_zero : M.toBlock (fun i => ¬p i) p = 0 := by
     ext i j
-    simpa using hM (lt_of_lt_of_le j.2 (le_of_not_gt i.2))
+    simpa using hM (lt_of_lt_of_le j.property (le_of_not_gt i.property))
   simpa [h_zero] using h_sum
 
 /-- The inverse of an upper-left subblock of a block-triangular matrix `M` is the upper-left
@@ -473,7 +487,7 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
     exact fun i h => h.1 h.2
   have h_zero : M.toBlock q p = 0 := by
     ext i j
-    simpa using hM (lt_of_lt_of_le j.2 <| le_of_not_gt i.2)
+    simpa using hM (lt_of_lt_of_le j.property <| le_of_not_gt i.property)
   have h_mul_eq_zero : M⁻¹.toBlock q p * M.toBlock p p = 0 := by simpa [h_zero] using h_sum
   have : Invertible (M.toBlock p p) := hM.invertibleToBlock k
   have : (fun i => k ≤ b i) = q := by

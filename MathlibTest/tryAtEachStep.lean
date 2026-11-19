@@ -1,5 +1,7 @@
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.TacticAnalysis.Declarations
+module
+
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.TacticAnalysis.Declarations
 
 -- Disable timing in tests to avoid non-deterministic output
 set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
