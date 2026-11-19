@@ -123,15 +123,15 @@ theorem Real.mul_iSup_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (r * ⨆ i, f 
   Real.smul_iSup_of_nonpos ha f
 
 theorem Real.iInf_mul_of_nonneg (ha : 0 ≤ r) (f : ι → ℝ) : (⨅ i, f i) * r = ⨅ i, f i * r := by
-  simp only [Real.mul_iInf_of_nonneg ha, mul_comm]
+  simp [Real.mul_iInf_of_nonneg ha, mul_comm]
 
 theorem Real.iSup_mul_of_nonneg (ha : 0 ≤ r) (f : ι → ℝ) : (⨆ i, f i) * r = ⨆ i, f i * r := by
-  simp only [Real.mul_iSup_of_nonneg ha, mul_comm]
+  simp [Real.mul_iSup_of_nonneg ha, mul_comm]
 
 theorem Real.iInf_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨅ i, f i) * r = ⨆ i, f i * r := by
-  simp only [Real.mul_iInf_of_nonpos ha, mul_comm]
+  simp [Real.mul_iInf_of_nonpos ha, mul_comm]
 
 theorem Real.iSup_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨆ i, f i) * r = ⨅ i, f i * r := by
-  simp only [Real.mul_iSup_of_nonpos ha, mul_comm]
+  simp [Real.mul_iSup_of_nonpos ha, mul_comm]
 
 end Mul

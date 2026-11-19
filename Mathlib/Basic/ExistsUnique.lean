@@ -112,11 +112,11 @@ theorem existsUnique_const {b : Prop} (α : Sort*) [i : Nonempty α] [Subsinglet
     (∃! _ : α, b) ↔ b := by simp
 
 @[simp] theorem existsUnique_eq {a' : α} : ∃! a, a = a' := by
-  simp only [eq_comm, ExistsUnique, and_self, forall_eq', exists_eq']
+  simp [eq_comm, ExistsUnique]
 
 /-- The difference with `existsUnique_eq` is that the equality is reversed. -/
 @[simp] theorem existsUnique_eq' {a' : α} : ∃! a, a' = a := by
-  simp only [ExistsUnique, and_self, forall_eq', exists_eq']
+  simp [ExistsUnique]
 
 theorem existsUnique_prop {p q : Prop} : (∃! _ : p, q) ↔ p ∧ q := by simp
 
