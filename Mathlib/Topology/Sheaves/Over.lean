@@ -16,7 +16,6 @@ we show that the category `Over U` (whose objects are the
 `V : Opens X` equipped with a morphism `V ⟶ U`) is equivalent
 to the category `Opens U`.
 This equivalence is bi-continuous, and thus induces an equivalence of sheaf categories.
-
 -/
 
 @[expose] public section
@@ -35,7 +34,7 @@ namespace Opens
 then the category `Over U` is equivalent to `Opens ↥U`. -/
 @[simps!]
 def overEquivalence : Over U ≌ Opens ↥U where
-  functor.obj V := ⟨_, IsOpen.preimage (continuous_subtype_val) V.left.isOpen⟩
+  functor.obj V := ⟨_, IsOpen.preimage (continuous_subtypeVal) V.left.isOpen⟩
   functor.map f := homOfLE (Set.preimage_mono (f := Subtype.val) (leOfHom f.left))
   inverse.obj W :=
     Over.mk (Y := ⟨_, (U.isOpenEmbedding'.isOpen_iff_image_isOpen).1 W.isOpen⟩)

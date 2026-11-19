@@ -20,7 +20,6 @@ a homeomorphism
 `Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s ≃ₜ Sᶜ.domRestrict '' s × Π i : S, α i`.
 `Sᶜ.domRestrict '' s` is a compact space since `s` is compact, and the lemma applies,
 with `X = Sᶜ.domRestrict '' s` and `Y = Π i : S, α i`.
-
 -/
 
 @[expose] public section
@@ -66,7 +65,7 @@ lemma continuous_reorderRestrictProd [∀ i, TopologicalSpace (α i)] :
   simp only [reorderRestrictProd]
   split_ifs with h
   · fun_prop
-  · exact ((continuous_apply _).comp continuous_subtype_val).comp continuous_fst
+  · exact ((continuous_apply _).comp continuous_subtypeVal).comp continuous_fst
 
 lemma reorderRestrictProd_mem_preimage_image_restrict (p : Sᶜ.domRestrict '' s × (Π i : S, α i)) :
     reorderRestrictProd S s p ∈ Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s := by
@@ -92,7 +91,7 @@ def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, Topologi
   continuous_toFun := by
     refine (Continuous.subtype_mk (by fun_prop) _).prodMk ?_
     rw [continuous_pi_iff]
-    exact fun _ ↦ (continuous_apply _).comp continuous_subtype_val
+    exact fun _ ↦ (continuous_apply _).comp continuous_subtypeVal
   continuous_invFun := continuous_reorderRestrictProd.subtype_mk _
 
 /-- The image by `preimageImageRestrict α S s` of `s` seen as a set of
@@ -132,7 +131,7 @@ theorem IsCompact.isClosed_image_restrict (S : Set ι)
     isCompact_iff_compactSpace.mp (hs_compact.image (Pi.continuous_domRestrict _))
   refine isClosedMap_snd_of_compactSpace _ ?_
   rw [Homeomorph.isClosed_image]
-  exact hs_closed.preimage continuous_subtype_val
+  exact hs_closed.preimage continuous_subtypeVal
 
 lemma isClosedMap_restrict_of_compactSpace [∀ i, CompactSpace (α i)] :
     IsClosedMap (S.domRestrict : (Π i, α i) → _) := fun s hs ↦ by

@@ -21,7 +21,6 @@ set of subsets of `α` which is closed under finite intersections.
 
 `finiteInterClosure S` is endowed with a term of type `FiniteInter` using
 `finiteInterClosure_finiteInter`.
-
 -/
 
 public section

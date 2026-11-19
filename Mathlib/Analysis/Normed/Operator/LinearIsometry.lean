@@ -92,8 +92,10 @@ protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
   (SemilinearIsometryClass.isometry f).continuous
 
 -- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
-theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
+theorem nnNorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
 
 protected theorem lipschitzWith [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
   (SemilinearIsometryClass.isometry f).lipschitzWith
@@ -200,8 +202,11 @@ protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x 
   f.toLinearMap.map_smul c x
 
 protected lemma norm_map (x : E) : ‖f x‖ = ‖x‖ := by simp
-protected lemma nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
-protected lemma enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
+protected lemma nnNorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
+protected lemma eNorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
+
+@[deprecated (since := "2026-10-31")] protected alias nnnorm_map := LinearIsometry.nnNorm_map
+@[deprecated (since := "2026-11-06")] protected alias enorm_map := LinearIsometry.eNorm_map
 
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap f.norm_map
@@ -540,12 +545,15 @@ def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x�
   ⟨e, fun x => le_antisymm (h₁ x) <| by simpa only [e.symm_apply_apply] using h₂ (e x)⟩
 
 protected lemma norm_map (x : E) : ‖e x‖ = ‖x‖ := by simp
-protected lemma nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
-protected lemma enorm_map (x : E) : ‖e x‖ₑ = ‖x‖ₑ := by simp
+protected lemma nnNorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
+protected lemma eNorm_map (x : E) : ‖e x‖ₑ = ‖x‖ₑ := by simp
+
+@[deprecated (since := "2026-10-31")] protected alias nnnorm_map := LinearIsometryEquiv.nnNorm_map
+@[deprecated (since := "2026-11-06")] protected alias enorm_map := LinearIsometryEquiv.eNorm_map
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `LinearIsometry`. -/
 def toLinearIsometry : E →ₛₗᵢ[σ₁₂] E₂ :=
-  ⟨e.1, e.2⟩
+  ⟨e.toLinearEquiv, e.norm_map'⟩
 
 theorem toLinearIsometry_injective : Function.Injective (toLinearIsometry : _ → E →ₛₗᵢ[σ₁₂] E₂) :=
   fun x _ h => coe_injective (congr_arg _ h : ⇑x.toLinearIsometry = _)
@@ -882,19 +890,19 @@ theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e := rfl
 theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e := rfl
 
 theorem map_zero : e 0 = 0 :=
-  e.1.map_zero
+  e.toLinearEquiv.map_zero
 
 theorem map_add (x y : E) : e (x + y) = e x + e y :=
-  e.1.map_add x y
+  e.toLinearEquiv.map_add x y
 
 theorem map_sub (x y : E) : e (x - y) = e x - e y :=
-  e.1.map_sub x y
+  e.toLinearEquiv.map_sub x y
 
 theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
-  e.1.map_smulₛₗ c x
+  e.toLinearEquiv.map_smulₛₗ c x
 
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
-  e.1.map_smul c x
+  e.toLinearEquiv.map_smul c x
 
 
 @[simp]
@@ -906,13 +914,13 @@ theorem edist_map (x y : E) : edist (e x) (e y) = edist x y :=
   e.toLinearIsometry.edist_map x y
 
 protected theorem bijective : Bijective e :=
-  e.1.bijective
+  e.toLinearEquiv.bijective
 
 protected theorem injective : Injective e :=
-  e.1.injective
+  e.toLinearEquiv.injective
 
 protected theorem surjective : Surjective e :=
-  e.1.surjective
+  e.toLinearEquiv.surjective
 
 theorem map_eq_iff {x y : E} : e x = e y ↔ x = y :=
   e.injective.eq_iff

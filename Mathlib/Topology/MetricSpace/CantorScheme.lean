@@ -37,7 +37,6 @@ in this file. See instead `PiNat.res`.
 ## Tags
 
 scheme, cantor scheme, lusin scheme, approximation.
-
 -/
 
 @[expose] public section
@@ -149,7 +148,7 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
     · rw [← hyx]
       apply map_mem
     apply map_mem
-  apply continuous_subtype_val.isOpen_preimage
+  apply continuous_subtypeVal.isOpen_preimage
   apply isOpen_cylinder
 
 /-- A scheme on a complete space with vanishing diameter

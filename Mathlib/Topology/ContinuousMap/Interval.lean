@@ -102,9 +102,9 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   let K₁ : Set (Icc a b) := projIccCM '' Subtype.val '' (K ∩ Iic ⟨b, h⟩)
   let K₂ : Set (Icc b c) := projIccCM '' Subtype.val '' (K ∩ Ici ⟨b, h⟩)
   have hK₁ : IsCompact K₁ :=
-    hK.inter_right isClosed_Iic |>.image continuous_subtype_val |>.image projIccCM.continuous
+    hK.inter_right isClosed_Iic |>.image continuous_subtypeVal |>.image projIccCM.continuous
   have hK₂ : IsCompact K₂ :=
-    hK.inter_right isClosed_Ici |>.image continuous_subtype_val |>.image projIccCM.continuous
+    hK.inter_right isClosed_Ici |>.image continuous_subtypeVal |>.image projIccCM.continuous
   have hfU : MapsTo f K₁ U := by
     rw [← concat_comp_IccInclusionLeft hfg']
     apply hfgU.comp
@@ -142,8 +142,8 @@ noncomputable def concatCM :
 @[simp]
 theorem concatCM_left {x : Icc a c} (hx : x ≤ b)
     {fg : {fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}} :
-    concatCM fg x = fg.1.1 ⟨x.1, x.2.1, hx⟩ := by
-  exact concat_left fg.2 hx
+    concatCM fg x = fg.1.1 ⟨x.1, x.2.1, hx⟩ :=
+  concat_left fg.2 hx
 
 @[simp]
 theorem concatCM_right {x : Icc a c} (hx : b ≤ x)

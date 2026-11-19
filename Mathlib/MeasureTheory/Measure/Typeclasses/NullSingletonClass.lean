@@ -12,11 +12,8 @@ import Mathlib.MeasureTheory.Measure.Interval
 /-!
 # Measures having value zero on singletons
 
-## TODO
-
-Add a `NoAtoms` class defined as
-`∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s`.
-This implies `NullSingletonClass` but the converse is not true.
+See `Mathlib/MeasureTheory/Measure/Typeclasses/NoAtoms.lean` for the stronger notion of a measure
+without atoms, `MeasureTheory.NoAtoms`.
 -/
 
 public section
@@ -30,9 +27,6 @@ variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 /-- Measure `μ` has value zero on singletons. -/
 class NullSingletonClass {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   measure_singleton : ∀ x, μ {x} = 0
-
-@[deprecated (since := "2026-06-09")]
-alias NoAtoms := NullSingletonClass
 
 export MeasureTheory.NullSingletonClass (measure_singleton)
 

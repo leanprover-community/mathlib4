@@ -23,7 +23,6 @@ This file contains the conditional Jensen's inequality. We follow the proof in
 * `ConvexOn.map_condExp_le_univ`: in a Banach space `E` with a sigma finite measure `μ`, if
   `φ : E → ℝ` is a convex lower-semicontinuous function, then for any `f : α → E` such that `f` and
   `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]` a.e.
-
 -/
 
 public section

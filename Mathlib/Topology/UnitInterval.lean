@@ -16,7 +16,6 @@ Use `open unitInterval` to turn on the notation `I := Set.Icc (0 : ℝ) (1 : ℝ
 
 We provide basic instances, as well as a custom tactic for discharging
 `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` when `x : I`.
-
 -/
 
 @[expose] public section
@@ -235,19 +234,19 @@ instance : LinearOrderedCommMonoidWithZero I where
     simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
-  rw [preimage_subtype_val_Iic]
+  rw [preimage_subtypeVal_Iic]
   exact Icc_bot.symm
 
 lemma subtype_Iio_eq_Ico (x : I) : Subtype.val ⁻¹' (Iio ↑x) = Ico 0 x := by
-  rw [preimage_subtype_val_Iio]
+  rw [preimage_subtypeVal_Iio]
   exact Ico_bot.symm
 
 lemma subtype_Ici_eq_Icc (x : I) : Subtype.val ⁻¹' (Ici ↑x) = Icc x 1 := by
-  rw [preimage_subtype_val_Ici]
+  rw [preimage_subtypeVal_Ici]
   exact Icc_top.symm
 
 lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
-  rw [preimage_subtype_val_Ioi]
+  rw [preimage_subtypeVal_Ioi]
   exact Ioc_top.symm
 
 end unitInterval
@@ -568,6 +567,9 @@ open NNReal
 
 /-- The coercion from `I` to `ℝ≥0`. -/
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+
+@[simp]
+theorem toNNReal_mk (x : ℝ) (hx : x ∈ Set.Icc _ _) : toNNReal ⟨x, hx⟩ = NNReal.mk x hx.1 := rfl
 
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
 

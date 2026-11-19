@@ -131,7 +131,7 @@ theorem IsTopologicalBasis.mem_nhds_iff {a : α} {s : Set α} {b : Set (Set α)}
   rw [hb.eq_generateFrom, nhds_generateFrom, biInf_sets_eq]
   · simp [and_assoc, and_left_comm]
   · rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
-    let ⟨u, hu₁, hu₂, hu₃⟩ := hb.1 _ hs₂ _ ht₂ _ ⟨hs₁, ht₁⟩
+    let ⟨u, hu₁, hu₂, hu₃⟩ := hb.exists_subset_inter _ hs₂ _ ht₂ _ ⟨hs₁, ht₁⟩
     exact ⟨u, ⟨hu₂, hu₁⟩, le_principal_iff.2 (hu₃.trans inter_subset_left),
       le_principal_iff.2 (hu₃.trans inter_subset_right)⟩
   · rcases eq_univ_iff_forall.1 hb.sUnion_eq a with ⟨i, h1, h2⟩
@@ -290,11 +290,11 @@ theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen
   refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => ?_) ?_
   · simp only [mem_iUnion, mem_image] at hu
     rcases hu with ⟨i, s, sb, rfl⟩
-    exact (Uo i).isOpenMap_subtype_val _ ((hb i).isOpen sb)
+    exact (Uo i).isOpenMap_subtypeVal _ ((hb i).isOpen sb)
   · intro a u ha uo
     rcases iUnion_eq_univ_iff.1 Uc a with ⟨i, hi⟩
     lift a to ↥(U i) using hi
-    rcases (hb i).exists_subset_of_mem_open ha (uo.preimage continuous_subtype_val) with
+    rcases (hb i).exists_subset_of_mem_open ha (uo.preimage continuous_subtypeVal) with
       ⟨v, hvb, hav, hvu⟩
     exact ⟨(↑) '' v, mem_iUnion.2 ⟨i, mem_image_of_mem _ hvb⟩, mem_image_of_mem _ hav,
       image_subset_iff.2 hvu⟩
@@ -595,7 +595,7 @@ theorem isSeparable_range [TopologicalSpace β] [SeparableSpace α] {f : α → 
   image_univ (f := f) ▸ (isSeparable_univ_iff.2 ‹_›).image hf
 
 theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s := by
-  simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
+  simpa using isSeparable_range (continuous_subtypeVal (p := (· ∈ s)))
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
@@ -672,7 +672,7 @@ theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {
     [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
   let ⟨t, htc, htd⟩ := exists_countable_dense s
   ⟨(↑) '' t, Subtype.coe_image_subset s t, htc.image Subtype.val,
-    hs.denseRange_val.dense_image continuous_subtype_val htd⟩
+    hs.denseRange_subtypeVal.dense_image continuous_subtypeVal htd⟩
 
 /-- Let `s` be a dense set in a topological space `α` with partial order structure. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
@@ -733,13 +733,13 @@ instance Subtype.firstCountableTopology (s : Set α) [FirstCountableTopology α]
 protected theorem _root_.Topology.IsInducing.firstCountableTopology {β : Type*}
     [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsInducing f) :
     FirstCountableTopology α := by
-  rw [hf.1]
+  rw [hf.eq_induced]
   exact firstCountableTopology_induced α β f
 
 protected theorem _root_.Topology.IsEmbedding.firstCountableTopology {β : Type*}
     [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     FirstCountableTopology α :=
-  hf.1.firstCountableTopology
+  hf.toIsInducing.firstCountableTopology
 
 section FirstCountableTopology
 
@@ -846,7 +846,7 @@ theorem isOpen_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
 
 theorem nonempty_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
     (hs : s ∈ countableBasis α) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs <| empty_notMem_countableBasis α
+  ne_empty_iff_nonempty.1 <| ne_of_mem_of_not_mem hs <| empty_notMem_countableBasis α
 
 variable (α)
 
@@ -890,6 +890,14 @@ variable {α}
 instance Subtype.secondCountableTopology (s : Set α) [SecondCountableTopology α] :
     SecondCountableTopology s :=
   secondCountableTopology_induced s α (↑)
+
+instance [SeparableSpace α] : SeparableSpace (Additive α) := ‹SeparableSpace α›
+instance [SeparableSpace α] : SeparableSpace (Multiplicative α) := ‹SeparableSpace α›
+
+instance [SecondCountableTopology α] : SecondCountableTopology (Additive α) :=
+  ‹SecondCountableTopology α›
+instance [SecondCountableTopology α] : SecondCountableTopology (Multiplicative α) :=
+  ‹SecondCountableTopology α›
 
 lemma secondCountableTopology_iInf {α ι} [Countable ι] {t : ι → TopologicalSpace α}
     (ht : ∀ i, @SecondCountableTopology α (t i)) : @SecondCountableTopology α (⨅ i, t i) := by
@@ -1172,13 +1180,13 @@ variable {α β : Type*} [TopologicalSpace α] {f : α → β}
 
 protected theorem Topology.IsInducing.secondCountableTopology [TopologicalSpace β]
     [SecondCountableTopology β] (hf : IsInducing f) : SecondCountableTopology α := by
-  rw [hf.1]
+  rw [hf.eq_induced]
   exact secondCountableTopology_induced α β f
 
 protected theorem Topology.IsEmbedding.secondCountableTopology
     [TopologicalSpace β] [SecondCountableTopology β]
     (hf : IsEmbedding f) : SecondCountableTopology α :=
-  hf.1.secondCountableTopology
+  hf.toIsInducing.secondCountableTopology
 
 protected theorem Topology.IsEmbedding.separableSpace
     [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : IsEmbedding f) :

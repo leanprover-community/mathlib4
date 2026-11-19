@@ -51,7 +51,6 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Link with periodicity
 * Lie group structure
 * Exponential equivalence to `Circle`
-
 -/
 
 @[expose] public section
@@ -299,6 +298,18 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
 
+/-- The quotient map `𝕜 → AddCircle p` is injective on `[a, a + p)`. -/
+theorem injOn_coe_Ico (a : 𝕜) : InjOn ((↑) : 𝕜 → AddCircle p) (Ico a (a + p)) := by
+  rintro x ⟨hx₀, hx⟩ y ⟨hy₀, hy⟩ hxy
+  have hp : 0 < p := by grind only
+  obtain ⟨n, hn⟩ : ∃ n : ℤ, n • p = x - y := by rw [← coe_eq_zero_iff, coe_sub, hxy, sub_self]
+  have : |x - y| < p := by grind
+  rw [← hn, abs_zsmul, abs_of_pos hp] at this
+  simp_all [sub_eq_zero, eq_comm]
+
+instance [hp : Fact (0 < p)] [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
+  .of_injective _ (zero_add p ▸ injOn_coe_Ico p 0).injective
+
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
@@ -411,11 +422,11 @@ variable [TopologicalSpace 𝕜]
 
 @[continuity]
 theorem continuous_equivIco_symm : Continuous (equivIco p a).symm :=
-  continuous_quotient_mk'.comp continuous_subtype_val
+  continuous_quotient_mk'.comp continuous_subtypeVal
 
 @[continuity]
 theorem continuous_equivIoc_symm : Continuous (equivIoc p a).symm :=
-  continuous_quotient_mk'.comp continuous_subtype_val
+  continuous_quotient_mk'.comp continuous_subtypeVal
 
 variable [OrderTopology 𝕜] {x : AddCircle p}
 
@@ -450,9 +461,9 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   open_source := isOpen_Ioo
   open_target := isOpen_compl_singleton
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
-  continuousOn_invFun := by
-    exact continuousOn_of_forall_continuousAt
-      (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
+  continuousOn_invFun :=
+    continuousOn_of_forall_continuousAt
+      (fun _ ↦ continuousAt_subtypeVal.comp ∘ continuousAt_equivIco p a)
 
 end Continuity
 
@@ -785,7 +796,7 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     · apply continuousWithinAt_toIocMod_Iic
     · apply continuousWithinAt_toIcoMod_Ici
   continuous_invFun :=
-    continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtype_val)
+    continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtypeVal)
 
 /-! We now show that a continuous function on `[a, a + p]` satisfying `f a = f (a + p)` is the
 pullback of a continuous function on `AddCircle p`, by first showing that

@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
 /-!
-
 # Connections between the regular, extensive and coherent topologies
 
 This file compares the regular, extensive and coherent topologies.

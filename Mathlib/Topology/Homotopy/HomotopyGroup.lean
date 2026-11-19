@@ -38,7 +38,6 @@ We provide a group instance using path composition and show commutativity when `
 * Examples with `𝕊^n`: `π_n (𝕊^n) = ℤ`, `π_m (𝕊^n)` trivial for `m < n`.
 * Actions of π_1 on π_n.
 * Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
-
 -/
 
 @[expose] public section
@@ -123,7 +122,7 @@ theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
   rfl
 
 instance instContinuousEval : ContinuousEval (Ω^ N X x) (I^N) X :=
-  .of_continuous_forget continuous_subtype_val
+  .of_continuous_forget continuous_subtypeVal
 
 instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := inferInstance
 
@@ -208,7 +207,7 @@ lemma continuous_currySum : Continuous (currySum x (M := M) (N := N)) :=
 /-- Given an element `p` in the `M`-iterated loop space of the `N`-iterated loop space of `X`,
 this induces a continuous function from `I^M × I^N` to `X`. -/
 protected def uncurry (p : Ω^ M (Ω^ N X x) const) : C((I^M) × (I^N), X) :=
-  .uncurry ⟨fun a => ⟨(p.1 a).1, ContinuousMap.continuous _⟩, (map_continuous p).subtype_val⟩
+  .uncurry ⟨fun a => ⟨(p.1 a).1, ContinuousMap.continuous _⟩, (map_continuous p).subtypeVal⟩
 
 @[simp]
 lemma uncurry_apply (p : Ω^ M (Ω^ N X x) const) (y : (I^M) × (I^N)) :
@@ -225,7 +224,7 @@ def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (M ⊕ N) X
   left_inv p := by ext; simp; rfl
   right_inv p := by ext; simp
   continuous_toFun := ((ContinuousMap.continuous_uncurry.comp' ((ContinuousMap.continuous_postcomp
-    ⟨_, continuous_subtype_val⟩).comp continuous_subtype_val)).compCM
+    ⟨_, continuous_subtypeVal⟩).comp continuous_subtypeVal)).compCM
       continuous_const).subtype_mk _
 
 end
@@ -278,7 +277,7 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
       (continuous_eval.comp <|
         Continuous.prodMap
           (ContinuousMap.continuous_curry.comp <|
-            (ContinuousMap.continuous_precomp _).comp continuous_subtype_val)
+            (ContinuousMap.continuous_precomp _).comp continuous_subtypeVal)
           continuous_id)
       _
 

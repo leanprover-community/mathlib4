@@ -44,7 +44,6 @@ Under suitable assumptions on the target category `A`, we show that
 both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
 and with arbitrary colimits. (The commutation of `Φ.sheafFiber` with colimits
 is obtained in the file `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.)
-
 -/
 
 @[expose] public section
@@ -138,7 +137,7 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
 noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
     Cocone ((Functor.Elements.π Φ.fiber).op ⋙ P) where
   pt := Φ.presheafFiber.obj P
-  ι.app x := Φ.toPresheafFiber x.unop.1 x.unop.2 P
+  ι.app x := Φ.toPresheafFiber x.unop.obj x.unop.val P
 
 /-- The cocone `Φ.presheafFiberCocone P` is a colimit. -/
 noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
@@ -180,7 +179,7 @@ set_option backward.privateInPublic true in
 /-- Constructor for morphisms from the fiber of a presheaf. -/
 noncomputable def presheafFiberDesc :
     Φ.presheafFiber.obj P ⟶ T :=
-  colimit.desc _ (Cocone.mk _ { app x := φ x.unop.1 x.unop.2 })
+  colimit.desc _ (Cocone.mk _ { app x := φ x.unop.obj x.unop.val })
 
 set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]

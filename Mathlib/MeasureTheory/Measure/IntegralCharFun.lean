@@ -28,7 +28,6 @@ relating the measure of some sets to integrals of characteristic functions.
 * `measureReal_abs_inner_gt_le_integral_charFun`: an application in an inner product space,
   which gives for all `a`,
   `μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖`
-
 -/
 
 public section

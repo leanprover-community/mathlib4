@@ -28,7 +28,6 @@ There are good reasons to consider the empty space to be “too simple to be sim
 See also https://ncatlab.org/nlab/show/too+simple+to+be+simple,
 and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
-
 -/
 
 @[expose] public section
@@ -239,10 +238,10 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
 lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s := by
   rw [← Subtype.range_coe (s := s), ← Set.image_univ]
   refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
-  exact continuous_subtype_val.continuousOn
+  exact continuous_subtypeVal.continuousOn
 
-lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
-  exact ⟨.of_subtype, .of_subtype⟩
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s :=
+  ⟨.of_subtype, .of_subtype⟩
 
 theorem isPreirreducible_iff_preirreducibleSpace :
     IsPreirreducible s ↔ PreirreducibleSpace s :=
