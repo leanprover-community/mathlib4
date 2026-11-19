@@ -142,18 +142,9 @@ variable [CompleteSpace V]
 
 /-- The integral operator `f ↦ ∫ (y : X), K · y (f y) ∂μ` defined through the Riesz representer
 associated to the bilinear form `mercerForm`. -/
-def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
-  {
-    toFun := fun (f : Lp V 2 μ) ↦ (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm hK f)
-    map_add' f g := by ext; simp
-    map_smul' c f := by simp [ContinuousLinearMap.map_smulₛₗ, LinearIsometryEquiv.map_smulₛₗ]
-  }
-  (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
-  (fun f ↦ by
-    grw [LinearMap.coe_mk, AddHom.coe_mk, norm_map, mercerForm, ContinuousLinearMap.le_opNorm,
-      LinearMap.mkContinuous₂_norm_le]
-    exact ENNReal.toReal_nonneg
-  )
+def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ :=
+  InnerProductSpace.continuousLinearMapOfBilin (mercerForm hK)
+
 
 @[simp]
 lemma integralOperator_apply (f : Lp V 2 μ) :
