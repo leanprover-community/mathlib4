@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.MeasureTheory.Covering.ClosedBallCovering
 public import Mathlib.MeasureTheory.Covering.Differentiation
 public import Mathlib.MeasureTheory.Covering.Vitali
 
@@ -21,6 +22,9 @@ doubling measures with results about differentiation along a Vitali family to ob
 form of Lebesgue's density theorem.
 
 ## Main results
+* `IsUnifLocDoublingMeasure.closedBallCoveringMeasure`: a locally finite uniformly locally doubling
+  measure has the closed ball covering property,
+  see `MeasureTheory.Measure.ClosedBallCoveringMeasure`.
 * `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`: a version of Lebesgue's density
   theorem for sequences of balls converging on a point but whose centres are not required to be
   fixed.
@@ -44,7 +48,7 @@ variable {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] (μ : Measure 
 closed balls whose measures add up to at most `ε`, for any positive `ε`. This works even if one
 restricts the set of allowed radii around a point `x` to a set `f x` which accumulates at `0`.
 
-See `Besicovitch.exists_closedBall_covering_tsum_measure_le` for a version for any set `s`
+See `MeasureTheory.Measure.exists_closedBall_covering_tsum_measure_le` for a version for any set `s`
 in a space with the Besicovitch covering property. -/
 theorem exists_closedBall_covering_tsum_measure_le_of_measure_eq_zero
     [OpensMeasurableSpace α] [SecondCountableTopology α] [μ.OuterRegular]
@@ -177,6 +181,14 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter 
       simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff₀' hK).mp hjε
     simp only [mem_closedBall] at hx hy ⊢
     linarith [dist_triangle_right y x (w j)]
+
+/-- A locally finite uniformly locally doubling measure has the closed ball covering property:
+any set `s` can be covered by closed balls centered at the points of `s`
+whose measures add up to at most `μ s + ε`. -/
+instance closedBallCoveringMeasure : Measure.ClosedBallCoveringMeasure μ :=
+  .of_vitaliFamily (vitaliFamily μ 0)
+    (fun x ↦ tendsto_closedBall_filterAt μ (fun _ ↦ x) id tendsto_id (.of_forall fun _ ↦ by simp))
+    fun _ hε f _ hs hf ↦ exists_closedBall_covering_tsum_measure_le_of_measure_eq_zero μ hε f hs hf
 
 end
 
