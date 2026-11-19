@@ -37,7 +37,6 @@ it.
 * `DivisibleHull M` is the divisible hull of an abelian group.
 * `DivisibleHull.archimedeanClassOrderIso M` is the equivalence between `ArchimedeanClass M` and
   `ArchimedeanClass (DivisibleHull M)`.
-
 -/
 
 @[expose] public section

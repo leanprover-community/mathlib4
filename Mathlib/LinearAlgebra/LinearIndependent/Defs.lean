@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
-
 # Linear independence
 
 This file defines linear independence in a module or vector space.
@@ -71,7 +70,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 @[expose] public section
@@ -305,7 +303,7 @@ lemma linearIndepOn_iff_linearIndepOn_finset :
   mpr hv := by
     rw [LinearIndepOn, linearIndependent_iff_finset_linearIndependent]
     exact fun t ↦ (hv (t.map <| .subtype _) (by simp)).comp (ι' := t)
-      (fun x ↦ ⟨x, Finset.mem_map_of_mem (.subtype _) x.2⟩) fun x ↦ by aesop
+      (fun x ↦ ⟨x, Finset.mem_map_of_mem (.subtype _) x.property⟩) fun x ↦ by aesop
 
 /-- If the image of a family of vectors under a linear map is linearly independent, then so is
 the original family. -/
@@ -667,14 +665,14 @@ lemma linearIndepOn_finset_iffₒₛ [DecidableEq ι] {s : Finset ι} :
     LinearIndepOn R v s ↔ ∀ t ⊆ s, ∀ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, f i • v i → ∀ i ∈ s, f i = 0 := by
   rw [LinearIndepOn, Fintype.linearIndependent_iffₒₛ]
-  refine ⟨fun h t ht f heq i hi => h { i | i.1 ∈ t } (f ∘ Subtype.val) ?_ ⟨i, hi⟩,
+  refine ⟨fun h t ht f heq i hi => h { i | i.val ∈ t } (f ∘ Subtype.val) ?_ ⟨i, hi⟩,
     fun h t f heq i => ?_⟩
   · simp only [Finset.compl_filter, Finset.sum_filter, Function.comp_apply, Finset.coe_sort_coe]
     rw [Finset.sum_coe_sort s fun i => if i ∈ t then f i • v i else 0,
       Finset.sum_coe_sort s fun i => if i ∉ t then f i • v i else 0]
     simpa [Finset.inter_eq_right.2 ht, Finset.sum_ite, Finset.filter_notMem_eq_sdiff]
   · specialize h (t.map (Embedding.subtype _)) (Finset.map_subtype_subset _)
-      (fun i => if h : i ∈ s then f ⟨i, h⟩ else 0) ?_ i i.2
+      (fun i => if h : i ∈ s then f ⟨i, h⟩ else 0) ?_ i i.property
     · conv =>
         enter [2, 1, 1]
         rw [← s.subtype_map_of_mem (fun x hx => hx), Finset.subtype_eq_univ.2 (fun x hx => hx)]

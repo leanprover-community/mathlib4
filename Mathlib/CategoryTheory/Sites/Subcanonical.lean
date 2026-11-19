@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Continuous
 
 /-!
-
 # Subcanonical Grothendieck topologies
 
 This file provides some API for the Yoneda embedding into the category of sheaves for a
@@ -138,7 +137,6 @@ theorem uliftYonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type (max v v'))}
     dsimp% (J.uliftYonedaEquiv.symm x).hom.app Y ⟨f⟩ = F.obj.map f.op x :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- See also `uliftYonedaEquiv_naturality'` for a more general version. -/
 lemma uliftYonedaEquiv_naturality {X Y : C} {F : Sheaf J (Type (max v v'))}
@@ -246,7 +244,6 @@ instance preservesLimitsOfSize_yoneda : PreservesLimitsOfSize J.yoneda := by
     inferInstanceAs <| PreservesLimitsOfShape I CategoryTheory.yoneda
   exact preservesLimitsOfShape_of_reflects_of_preserves _ (sheafToPresheaf J _)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Let `{ Xᵢ ⟶ Y }` be a family of pairwise disjoint maps that form a cover in `J`. Then its
@@ -268,15 +265,14 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
       have := Types.isTerminalEquivUnique _ (Sheaf.isTerminalOfBotCover s.pt _ (hempty Y h))
       exact Subsingleton.elim _ _
   refine Cofan.IsColimit.mk _ (fun s ↦ ⟨?_⟩) (fun s j ↦ ?_) fun s m hm ↦ ?_
-  · refine (s.pt.2.isSheafFor _ H).extend ?_
-    refine ⟨fun Y ↦ ↾fun g ↦ ((s.inj (Sieve.ofArrows.i g.2)).hom.app Y)
-      (Sieve.ofArrows.h g.2), ?_⟩
+  · refine (s.pt.property.isSheafFor _ H).extend ?_
+    refine ⟨fun Y ↦ ↾fun g ↦ ((s.inj (Sieve.ofArrows.i g.property)).hom.app Y)
+      (Sieve.ofArrows.h g.property), ?_⟩
     intro ⟨Y⟩ ⟨Z⟩ ⟨(g : Z ⟶ Y)⟩
     ext u
-    simp only [Sieve.functor_obj, Sieve.generate_apply, Sieve.functor_map, Quiver.Hom.unop_op',
-      TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
-      ← heq s (g ≫ Sieve.ofArrows.h u.2)
-      (Sieve.ofArrows.h <| Sieve.downward_closed _ u.2 g) (by simp)]
+    simp only [TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
+      ← heq s (g ≫ Sieve.ofArrows.h u.property)
+      (Sieve.ofArrows.h <| Sieve.downward_closed _ u.property g) (by simp)]
     congrm $((s.inj _).hom.naturality g.op) _
   · ext : 1
     let u (j : ι) : CategoryTheory.yoneda.obj (X j) ⟶ (Sieve.ofArrows _ c.inj).functor :=

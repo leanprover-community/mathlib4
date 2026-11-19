@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
-
 # Main definitions and results
 
 In a field extension `K/k`
@@ -22,7 +21,6 @@ In a field extension `K/k`
 ## TODO
 
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
-
 -/
 
 @[expose] public section

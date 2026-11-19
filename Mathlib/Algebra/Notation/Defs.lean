@@ -28,7 +28,6 @@ Note `Zero` has already been defined in core Lean.
 
 - `a • b` is used as notation for `HSMul.hSMul a b`.
 - `a +ᵥ b` is used as notation for `HVAdd.hVAdd a b`.
-
 -/
 
 public section

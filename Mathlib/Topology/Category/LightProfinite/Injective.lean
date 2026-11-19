@@ -12,7 +12,6 @@ import Mathlib.CategoryTheory.Functor.OfSequence
 import Mathlib.Topology.Category.CompHausLike.Limits
 
 /-!
-
 # Injectivity of light profinite spaces
 
 This file establishes that non-empty light profinite sets are injective in the
@@ -33,7 +32,6 @@ category `LightProfinite`. The proof uses an inductive extension argument along 
 
 * <https://kskedlaya.org/condensed/sec_profinite_set.html#sec_profinite_set-5>
 * <https://www.youtube.com/watch?v=_4G582SIo28&t=3187s>
-
 -/
 
 public section
@@ -193,7 +191,7 @@ instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] :
     have hg : g = (isLimitOfPreserves _ S.asLimit).lift (k_cone.extend f) := by
       apply (isLimitOfPreserves _ S.asLimit).uniq (k_cone.extend f)
       intro n
-      simp [show k_cone.π.app n = (k_seq n.unop).1 from rfl, h_down]
+      simp [show k_cone.π.app n = (k_seq n.unop).val from rfl, h_down]
     rw [hg]
     apply (isLimitOfPreserves _ S.asLimit).uniq (k_cone.extend f)
     intro n

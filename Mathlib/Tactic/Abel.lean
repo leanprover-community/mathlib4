@@ -22,7 +22,6 @@ Evaluate expressions in the language of additive, commutative monoids and groups
   syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
   ```
   It is undecided whether these features should be restored eventually.
-
 -/
 
 public section

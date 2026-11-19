@@ -21,7 +21,6 @@ import Mathlib.Order.OrderIsoNat
 
 If `r` is a relation on `α` then a relation series of length `n` is a series
 `a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
-
 -/
 
 @[expose] public section
@@ -125,11 +124,11 @@ def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r]
 corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.IsChain (· ~[r] ·)} where
   toFun x := ⟨_, x.toList_ne_nil, x.isChain_toList⟩
-  invFun x := fromListIsChain _ x.2.1 x.2.2
+  invFun x := fromListIsChain _ x.property.1 x.property.2
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
-    have := Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x.2.1
+    have := Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x.property.1
     simp_all [toList]
 
 lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
@@ -290,21 +289,21 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
   step i := by
     obtain hi | rfl | hi :=
       lt_trichotomy i (Fin.castLE (by lia) (Fin.last _ : Fin (p.length + 1)))
-    · convert p.step ⟨i.1, hi⟩ <;> convert! Fin.append_left p q _ <;> rfl
+    · convert p.step ⟨i.val, hi⟩ <;> convert! Fin.append_left p q _ <;> rfl
     · convert connect
       · convert! Fin.append_left p q _
       · convert! Fin.append_right p q _; rfl
     · set x := _; set y := _
       change Fin.append p q x ~[r] Fin.append p q y
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-          i.2.trans <| by lia⟩ := by
+          i.isLt.trans <| by lia⟩ := by
         ext; dsimp [x, y]; rw [Nat.add_sub_cancel']; exact hi
       have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
-          (by exact i.2)⟩ := by
+          (by exact i.isLt)⟩ := by
         ext
         dsimp
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
-          Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
+          Nat.add_sub_cancel' <| le_of_lt (show p.length < i.val from hi), add_comm]
         rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
       convert! q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <| by lia⟩
@@ -367,8 +366,8 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 @[simps length]
 def map (p : RelSeries r) (f : r.Hom s) : RelSeries s where
   length := p.length
-  toFun := f.1.comp p
-  step := (f.2 <| p.step ·)
+  toFun := f.toFun.comp p
+  step := (f.map_rel' <| p.step ·)
 
 @[simp] lemma map_apply (p : RelSeries r) (f : r.Hom s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
@@ -415,8 +414,8 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
   toFun := p ∘ Fin.rev
   step i := by
     rw [Function.comp_apply, Function.comp_apply, SetRel.mem_inv]
-    have hi : i.1 + 1 ≤ p.length := by lia
-    convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by lia) hi⟩
+    have hi : i.val + 1 ≤ p.length := by lia
+    convert p.step ⟨p.length - (i.val + 1), Nat.sub_lt_self (by lia) hi⟩
     · ext; simp
     · ext
       simp only [Fin.val_rev, Fin.val_castSucc, Fin.val_succ]
@@ -520,7 +519,7 @@ lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : p.last ~[r] newLast} {x :
   simp only [snoc, append, mem_def, Set.mem_range]
   constructor
   · rintro ⟨i, rfl⟩
-    exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i => Or.inl ⟨⟨i.1, i.2⟩,
+    exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i => Or.inl ⟨⟨i.val, i.isLt⟩,
       (Fin.append_left _ _ _).symm⟩) i
   · intro h
     rcases h with (⟨i, rfl⟩ | rfl)
@@ -534,7 +533,7 @@ If a series `a₀ -r→ a₁ -r→ ...` has positive length, then `a₁ -r→ ..
 def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   length := p.length - 1
   toFun := Fin.tail p ∘ (Fin.cast <| Nat.succ_pred_eq_of_pos <| Nat.pos_of_ne_zero len_pos)
-  step i := p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
+  step i := p.step ⟨i.val + 1, Nat.lt_pred_iff.mp i.isLt⟩
 
 @[simp] lemma head_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
     (p.tail len_pos).head = p 1 := by
@@ -568,7 +567,7 @@ lemma tail_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
   simp
 
 lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
-    (p.tail hp).cons p.head (p.3 ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
+    (p.tail hp).cons p.head (p.step ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
   apply toList_injective
   simp [← head_toList]
 
@@ -596,7 +595,7 @@ def inductionOn (motive : RelSeries r → Sort*)
       have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
       nth_rw 3 [heq] at lq
       convert
-        cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head (p.3 ⟨0, heq ▸ d.zero_lt_succ⟩)
+        cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head (p.step ⟨0, heq ▸ d.zero_lt_succ⟩)
           (hd _ lq)
       exact (p.cons_self_tail (heq ▸ d.zero_ne_add_one.symm)).symm
   exact this rfl
@@ -613,8 +612,8 @@ another series -/
 @[simps]
 def eraseLast (p : RelSeries r) : RelSeries r where
   length := p.length - 1
-  toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ (Nat.sub_le _ _))⟩
-  step i := p.step ⟨i, lt_of_lt_of_le i.2 (Nat.sub_le _ _)⟩
+  toFun i := p ⟨i, lt_of_lt_of_le i.isLt (Nat.succ_le_succ (Nat.sub_le _ _))⟩
+  step i := p.step ⟨i, lt_of_lt_of_le i.isLt (Nat.sub_le _ _)⟩
 
 @[simp] lemma head_eraseLast (p : RelSeries r) : p.eraseLast.head = p.head := rfl
 
@@ -741,7 +740,7 @@ def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by lia⟩
   step := fun ⟨j, h⟩ => by
-    convert! p.step ⟨j + i.1, by lia⟩
+    convert! p.step ⟨j + i.val, by lia⟩
     simp only [Fin.succ_mk]; lia
 
 @[simp]
@@ -882,14 +881,14 @@ def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono
     LTSeries α where
   length := length
   toFun := toFun
-  step i := strictMono <| lt_add_one i.1
+  step i := strictMono <| lt_add_one i.val
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An injection from the type of strictly monotone functions with limited length to `LTSeries`. -/
 def injStrictMono (n : ℕ) :
     {f : (l : Fin n) × (Fin (l + 1) → α) // StrictMono f.2} ↪ LTSeries α where
-  toFun f := mk f.1.1 f.1.2 f.2
+  toFun f := mk f.val.1 f.val.2 f.property
   inj' f g e := by
     obtain ⟨⟨lf, f⟩, mf⟩ := f
     obtain ⟨⟨lg, g⟩, mg⟩ := g
@@ -967,7 +966,7 @@ theorem exists_relSeries_covBy
       on_goal 2 => rw [eq_comm] at eq
       all_goals
         rw [Fin.snoc_castSucc] at eq
-        obtain rfl : m = 0 := by simpa [t₃] using! (congr_arg Fin.val eq).trans_lt (i j).2
+        obtain rfl : m = 0 := by simpa [t₃] using! (congr_arg Fin.val eq).trans_lt (i j).isLt
         cases (h (.last _)).ne' (h₂.symm.trans h₁)
     · refine funext (Fin.lastCases ?_ fun j ↦ ?_)
       · convert! h₂; simpa using! RelSeries.last_smash ..

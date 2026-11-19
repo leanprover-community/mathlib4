@@ -46,7 +46,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
 
 instance : Unique (Iic 0) where
   default := ⟨0, by simp⟩
-  uniq a := Subtype.ext (Nat.le_zero.1 (mem_Iic.1 a.2))
+  uniq a := Subtype.ext (Nat.le_zero.1 (mem_Iic.1 a.property))
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
@@ -117,7 +117,7 @@ variable {a b c}
 lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
 
 lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by lia)⟩ :=
-  Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
+  Subtype.val_inj.1 (mem_Ioc_succ.1 a.property)
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by

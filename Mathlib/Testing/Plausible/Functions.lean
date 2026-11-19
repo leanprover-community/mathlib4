@@ -373,7 +373,8 @@ instance : Arbitrary (InjectiveFunction ℤ) where
     have Hinj : Injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun _x _y h =>
         Int.ofNat.inj (add_right_injective _ h)
     let r : InjectiveFunction ℤ :=
-      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| List.nodup_range.map Hinj)
+      InjectiveFunction.mk.{0} xs' ys.val ys.property
+        (ys.property.nodup_iff.1 <| List.nodup_range.map Hinj)
     pure r
 
 instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where

@@ -26,7 +26,6 @@ Our definition requires that the condition hold for any `b ∈ (0,1)`. This is e
 it only for `b = 1 / 2` (or any other particular value in `(0, 1)`). While this could, in principle,
 make it harder to prove that a particular function grows polynomially, this issue does not seem to
 arise in practice.
-
 -/
 
 @[expose] public section
