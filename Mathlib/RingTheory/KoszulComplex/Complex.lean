@@ -353,7 +353,6 @@ noncomputable abbrev toUpOneHom (i : ℕ) :
     (koszulComplex (appendMap φ a)).X (i + 1) ⟶ (upOne φ).X (i + 1) :=
   ModuleCat.ofHom ((LinearMap.snd R _ _).comp (exteriorPowerProdEquivProd R M i).symm.toLinearMap)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma to_self_hom_comm (i : ℕ) :
     toUpOneHom φ a (i + 1) ≫ (koszulComplex φ).d (i + 1) i =
       (koszulComplex (appendMap φ a)).d (i + 1 + 1) (i + 1) ≫ toUpOneHom φ a i := by
@@ -372,7 +371,7 @@ lemma to_self_hom_comm (i : ℕ) :
   rw [h, LinearEquiv.symm_apply_apply]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] ChainComplex.augment in
 /-- The homomorphism given by projection to the second component
 using `exteriorPowerProdEquivProd`. -/
 noncomputable def toUpOne : koszulComplex (appendMap φ a) ⟶ upOne φ :=
@@ -580,7 +579,6 @@ noncomputable def ofListIsoOfEq {rs' rs : List R} {a : R} (eq : rs = rs' ++ [a])
     koszulComplex (appendMap (Fintype.linearCombination R rs'.get) a) :=
   isoOfEquiv _ (ofListIsoOfEqAux eq) _ (ofListIsoOfEqAux_comp eq)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exactAt_of_isRegular (rs : List R) (reg : IsRegular R rs)
     (i : ℕ) (ne : i ≠ 0) : (ofList rs).ExactAt i := by
   generalize h : rs.length = n
@@ -611,8 +609,9 @@ lemma exactAt_of_isRegular (rs : List R) (reg : IsRegular R rs)
     rcases Nat.exists_eq_succ_of_ne_zero ne with ⟨j, rfl⟩
     rcases eq_or_ne j 0 with rfl|ne0
     · simp only [Nat.succ_eq_add_one]
-      rw [← ((shortComplexProd_shortExact φ a).homology_exact₃ (0 + 1) 0 rfl).mono_g_iff]
-      simp only [ModuleCat.mono_iff_injective, shortComplexProd_δ_eq]
+      rw [← ((shortComplexProd_shortExact φ a).homology_exact₃ (0 + 1) 0 rfl).mono_g_iff,
+        ModuleCat.mono_iff_injective]
+      simp only [shortComplexProd_δ_eq]
       simp only [Nat.reduceAdd, pow_zero, one_mul, ← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
       intro x hx
       apply (upOneHomologyIso φ 0).toLinearEquiv.map_eq_zero_iff.mp
