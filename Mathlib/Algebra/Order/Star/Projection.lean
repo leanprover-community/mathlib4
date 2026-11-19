@@ -34,12 +34,12 @@ variable [HasUniqueDiv R] {p q : R}
 
 /-- For star projections `p` and `q` in a star ring with no additive torsion, the following are
 equivalent:
-- `q - p` is a star projection
-- `q - p` is an idempotent element
-- `p ⋆⟂ (q - p)`
-- `q * p = p`
-- `p * q = p`
-- `q * p * q = p` -/
+1. `q - p` is a star projection
+2. `q - p` is idempotent
+3. `p ⋆⟂ (q - p)`
+4. `q * p = p`
+5. `p * q = p`
+6. `q * p * q = p` -/
 lemma sub_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
     List.TFAE
       [IsStarProjection (q - p),
@@ -48,13 +48,10 @@ lemma sub_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
       q * p = p,
       p * q = p,
       q * p * q = p] := by
-  have h₄₅ (h : q * p = p) : p * q = p := by
-    simpa [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using congr(star $h)
   tfae_have 1 ↔ 2 := by simp [isStarProjection_iff, hq.isSelfAdjoint.sub hp.isSelfAdjoint]
-  tfae_have 2 → 4 := fun h ↦ (hp.isIdempotentElem.sub_iff hq.isIdempotentElem |>.mp h).2
-  tfae_have 4 → 5 := h₄₅
-  tfae_have 5 → 1 := hp.sub_of_mul_eq_left hq
-  tfae_have 4 → 6 := fun h ↦ by rw [h, h₄₅ h]
+  tfae_have 1 ↔ 4 := hp.sub_iff_mul_eq_right hq
+  tfae_have 1 ↔ 5 := hp.sub_iff_mul_eq_left hq
+  tfae_have 5 → 6 := by grind
   tfae_have 6 → 4 := fun h ↦ by rw [← h, ← mul_assoc, ← mul_assoc, hq.isIdempotentElem.eq]
   tfae_have 5 ↔ 3 := by
     rw [hp.isSelfAdjoint.isStarOrtho_iff_mul_eq_zero (hq.isSelfAdjoint.sub hp.isSelfAdjoint),
@@ -69,14 +66,14 @@ variable [PartialOrder R] [StarOrderedRing R] [IsProperStar R] {p q : R}
 
 /-- For star projections `p` and `q` in a star-ordered ring with a proper star (e.g., a
 C⋆-algebra), the following are equivalent:
-- `p ≤ q`
-- `q - p` is a star projection
-- `q - p` is an idempotent element
-- `p ⋆⟂ (q - p)`
-- `q * p = p`
-- `p * q = p`
-- `q * p * q = p`
-- `p * q * p = p` -/
+1. `p ≤ q`
+2. `q - p` is a star projection
+3. `q - p` is idempotent
+4. `p ⋆⟂ (q - p)`
+5. `q * p = p`
+6. `p * q = p`
+7. `q * p * q = p`
+8. `p * q * p = p` -/
 lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
     List.TFAE
       [p ≤ q,
@@ -122,11 +119,11 @@ lemma le_iff_isIdempotentElem_sub (hp : IsStarProjection p) (hq : IsStarProjecti
 @[deprecated (since := "2026-11-15")] alias le_iff_sub := le_iff_isStarProjection_sub
 @[deprecated (since := "2026-11-15")] alias le_iff_idempotent_sub := le_iff_isIdempotentElem_sub
 
-lemma le_iff_conjugate_eq (hp : IsStarProjection p) (hq : IsStarProjection q) :
+lemma le_iff_conjugate_right_eq (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ q * p * q = p :=
   hp.le_tfae hq |>.out 1 7
 
-lemma le_iff_conjugate_eq' (hp : IsStarProjection p) (hq : IsStarProjection q) :
+lemma le_iff_conjugate_left_eq (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ p * q * p = p :=
   hp.le_tfae hq |>.out 1 8
 
@@ -137,11 +134,11 @@ lemma le_iff_isStarOrtho_sub (hp : IsStarProjection p) (hq : IsStarProjection q)
 /-- If `p ≤ q` are star projections, then `q * p * q = p`.
 This is a special case of the more general lemma `IsStarProjection.conjugate_of_nonneg_of_le`
 where `p` need only be nonnegative, but we retain it for discoverability and the parallelism
-with `IsStarProjection.conjugate_eq_of_le'`. -/
-alias ⟨conjugate_eq_of_le, _⟩ := le_iff_conjugate_eq
+with `IsStarProjection.conjugate_left_eq_of_le`. -/
+alias ⟨conjugate_right_eq_of_le, _⟩ := le_iff_conjugate_right_eq
 
 /-- If `p ≤ q` are star projections, then `p * q * p = p`. -/
-alias ⟨conjugate_eq_of_le', _⟩ := le_iff_conjugate_eq'
+alias ⟨conjugate_left_eq_of_le, _⟩ := le_iff_conjugate_left_eq
 
 lemma commute_of_le (hp : IsStarProjection p) (hq : IsStarProjection q) (h : p ≤ q) :
     Commute p q := by
