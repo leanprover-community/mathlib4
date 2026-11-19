@@ -249,7 +249,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
   · rw [closure_le_eq continuous_id' continuous_const] at h; exact ⟨h.1.1, h.2⟩
   · apply q.continuousOn_invFun.comp (by fun_prop)
     simp_rw [not_le, q.target_eq]; intro s h
-    exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
+    exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtypeVal h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
     exacts [eqOn ⟨hs.1, h⟩, q.proj_symm_apply' (t_sub ⟨le_of_not_ge h, hs.2⟩)]
   · dsimp only; rwa [ite_eq_left (t_0 ▸ t_mono n.zero_le)]
@@ -388,22 +388,23 @@ theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
   of the path. -/
 def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
     p ⁻¹' {x} → p ⁻¹' {y} :=
-  fun e ↦ γ.lift (fun γ : Path x y ↦ ⟨cov.liftPath γ e (γ.source.trans e.2.symm) 1,
+  fun e ↦ γ.lift (fun γ : Path x y ↦ ⟨cov.liftPath γ e (γ.source.trans e.property.symm) 1,
       congr($(cov.liftPath_lifts ..) 1).trans γ.target⟩)
     fun _ _ h ↦ Subtype.ext (cov.liftPath_apply_one_eq_of_homotopicRel h ..)
 
 theorem coe_monodromy_mk {x y : X} (γ : Path x y) (e : p ⁻¹' {x}) :
-    (cov.monodromy (.mk γ) e : E) = cov.liftPath γ e (γ.source.trans e.2.symm) 1 :=
+    (cov.monodromy (.mk γ) e : E) = cov.liftPath γ e (γ.source.trans e.property.symm) 1 :=
   rfl
 
 lemma monodromy_eq_apply_one {x y : X} {γ : Path x y} {e : p ⁻¹' {x}} {Γ : C(I, E)}
     (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) : cov.monodromy (.mk γ) e = Γ 1 := by
-  rw [show Γ = cov.liftPath γ e (γ.source.trans e.2.symm) from (eq_liftPath_iff' ..).mpr ⟨hpΓ, Γ_0⟩,
+  rw [show Γ = cov.liftPath γ e (γ.source.trans e.property.symm) from
+      (eq_liftPath_iff' ..).mpr ⟨hpΓ, Γ_0⟩,
     coe_monodromy_mk]
 
 /-- Lift a homotopy class of paths to a covering space. -/
 def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
-    Path.Homotopic.Quotient e.1 (cov.monodromy γ e) :=
+    Path.Homotopic.Quotient e.val (cov.monodromy γ e) :=
   have he (γ : Path x y) : γ 0 = p (e : E) := by aesop
   let g (γ : Path x y) : Path.Homotopic.Quotient (e : E) (cov.liftPath γ (e : E) (he γ) 1) :=
     .mk ⟨cov.liftPath γ (e : E) (he γ), cov.liftPath_zero .., rfl⟩
@@ -416,11 +417,12 @@ def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' 
   γ.hrecOn g hg
 
 theorem map_liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
-    (cov.liftPathQuotient γ e).map ⟨p, cov.continuous⟩ = γ.cast e.2 (cov.monodromy γ e).2 := by
+    (cov.liftPathQuotient γ e).map ⟨p, cov.continuous⟩ =
+      γ.cast e.property (cov.monodromy γ e).property := by
   obtain ⟨γ⟩ := γ
   congrm Path.Homotopic.Quotient.mk ?_
   ext1
-  exact cov.liftPath_lifts _ _ (γ.source.trans e.2.symm)
+  exact cov.liftPath_lifts _ _ (γ.source.trans e.property.symm)
 
 theorem monodromy_map {x y : E} (γ : Path.Homotopic.Quotient x y) :
     cov.monodromy (γ.map ⟨p, cov.continuous⟩) ⟨x, rfl⟩ = ⟨y, rfl⟩ := Subtype.ext <| by
@@ -429,20 +431,20 @@ theorem monodromy_map {x y : E} (γ : Path.Homotopic.Quotient x y) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem monodromy_eq_of_map_eq {x y : X} {γ : Path.Homotopic.Quotient x y}
-    {ex : p ⁻¹' {x}} {ey : p ⁻¹' {y}} (Γ : Path.Homotopic.Quotient ex.1 ey)
-    (eq : Γ.map ⟨p, cov.continuous⟩ = γ.cast ex.2 ey.2) :
+    {ex : p ⁻¹' {x}} {ey : p ⁻¹' {y}} (Γ : Path.Homotopic.Quotient ex.val ey)
+    (eq : Γ.map ⟨p, cov.continuous⟩ = γ.cast ex.property ey.property) :
     cov.monodromy γ ex = ey := by
   convert ← cov.monodromy_map Γ
-  exacts [ey.2, ex.2, ey.2, by rw [eq]; exact γ.cast_heq .., ey.2]
+  exacts [ey.property, ex.property, ey.property, by rw [eq]; exact γ.cast_heq .., ey.property]
 
 theorem monodromy_refl {x : X} : cov.monodromy (.refl x) = id :=
-  funext fun e ↦ Subtype.ext congr($(cov.liftPath_const e.2.symm) 1)
+  funext fun e ↦ Subtype.ext congr($(cov.liftPath_const e.property.symm) 1)
 
 theorem monodromy_trans_apply {x y z : X}
     (γ : Path.Homotopic.Quotient x y) (γ' : Path.Homotopic.Quotient y z) (e) :
     cov.monodromy (γ.trans γ') e = cov.monodromy γ' (cov.monodromy γ e) := by
   obtain ⟨γ⟩ := γ; obtain ⟨γ'⟩ := γ'
-  exact Subtype.ext (congr($(cov.liftPath_trans e.2.symm ..) 1).trans (Path.target _))
+  exact Subtype.ext (congr($(cov.liftPath_trans e.property.symm ..) 1).trans (Path.target _))
 
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
 @[reducible] def fundamentalGroupMulAction (x : X) :
@@ -520,8 +522,8 @@ theorem existsUnique_continuousMap_lifts_of_range_le
     (cov.eq_liftPath_iff' <| by simp [γ'_0, he]).mpr ⟨Γ'_lifts, Γ'_0⟩]
   let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
   let pγ' : Path a₀ (γ 1) := ⟨γ', γ'_0, γγ'1.symm⟩
-  change (cov.monodromy (.mk <| pγ.map f.continuous) ⟨e₀, he⟩).1 =
-    (cov.monodromy (.mk <| pγ'.map f.continuous) ⟨e₀, he⟩).1
+  change (cov.monodromy (.mk <| pγ.map f.continuous) ⟨e₀, he⟩).val =
+    (cov.monodromy (.mk <| pγ'.map f.continuous) ⟨e₀, he⟩).val
   rw [← Subtype.ext_iff]
   apply (cov.monodromy_bijective <| .mk (pγ'.map f.continuous).symm).1
   simp_rw [← monodromy_trans_apply, ← mk_trans]
@@ -560,7 +562,7 @@ theorem IsCoveringMapOn.existsUnique_continuousMap_lifts [SimplyConnectedSpace A
     simp only [ContinuousMap.coe_comp, ContinuousMap.coe_mk, funext_iff,
       Function.comp_apply] at hF'₂
     specialize hF_unique
-      ⟨fun a ↦ ⟨F' a, by rw [Set.mem_preimage, hF'₂]; exact (f a).2⟩, by fun_prop⟩
+      ⟨fun a ↦ ⟨F' a, by rw [Set.mem_preimage, hF'₂]; exact (f a).property⟩, by fun_prop⟩
       ⟨Subtype.ext hF'₁, ?_⟩
     · ext; simp [← hF'₂]
     · ext; simp [← hF_unique]
@@ -611,7 +613,7 @@ theorem monodromy_eq_id_iff :
 set_option backward.isDefEq.respectTransparency.types false in
 theorem ker_monodromyPerm :
     (hp.isCoveringMap.monodromyPerm x).ker =
-    (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2).range := by
+    (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.property).range := by
   ext γ; constructor <;> intro h
   · refine ⟨.of ((hp.isCoveringMap.liftPathQuotient γ.asHom e).cast rfl congr(($h.symm e).val)), ?_⟩
     rw [FundamentalGroup.mapOfEq_apply,
@@ -627,7 +629,7 @@ theorem monodromyPerm_injective [SimplyConnectedSpace E] :
   let e : p⁻¹' {x} := ⟨(hp.surjective x).choose, (hp.surjective x).choose_spec⟩
   rw [← MonoidHom.ker_eq_bot_iff, hp.ker_monodromyPerm e]
   set f : FundamentalGroup E (e : E) →* FundamentalGroup X x :=
-    FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2
+    FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.property
   have : Subsingleton f.range := (Set.subsingleton_coe _).mpr f.subsingleton_coe_range
   exact Subgroup.eq_bot_of_subsingleton _
 
@@ -641,7 +643,7 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
   map_one' := by rw [FundamentalGroup.one_def, IsCoveringMap.monodromy_refl]; simp
   map_mul' γ γ' := by
     rw [FundamentalGroup.mul_def, IsCoveringMap.monodromy_trans_apply, ← op_mul, op_inj]
-    apply hp.isCancelSMul.right_cancel _ _ e.1
+    apply hp.isCancelSMul.right_cancel _ _ e.val
     simp_rw [mul_smul, fiberEquivGroup_smul_self, ← hp.toPermFiber_apply_apply_coe]
     congr
     refine .trans ?_ hp.monodromy_toPermFiber
@@ -650,7 +652,7 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : Gᵐᵒᵖ} :
-    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 =
+    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.val =
       hp.isCoveringMap.monodromy γ.asHom e := by
   rw [fundamentalGroupToMulOpposite, ← MulOpposite.unop_injective.eq_iff, iff_comm, eq_comm,
     ← hp.fiberEquivGroup_smul_self e]
@@ -669,7 +671,7 @@ theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : G} {Γ : 
 
 variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :
-    (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ.asHom e := by
+    (hp.fundamentalGroupToMulOpposite e γ).unop • e.val = hp.isCoveringMap.monodromy γ.asHom e := by
   simp [fundamentalGroupToMulOpposite, fiberEquivGroup_smul_self]
 
 variable {e} in
@@ -695,7 +697,7 @@ variable {e} in
 theorem fundamentalGroupToMulOpposite_eq_one_iff :
     hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ.asHom e = e where
   mp h := Subtype.ext <| by rw [← hp.unop_fundamentalGroupToMulOpposite_smul, h]; apply one_smul
-  mpr h := MulOpposite.unop_injective <| hp.isCancelSMul.right_cancel _ _ e.1 <| by
+  mpr h := MulOpposite.unop_injective <| hp.isCancelSMul.right_cancel _ _ e.val <| by
     simp [fundamentalGroupToMulOpposite, h]
 
 theorem ker_fundamentalGroupToMulOpposite :
@@ -771,7 +773,7 @@ theorem monodromy_eq_id_iff :
 
 theorem ker_monodromyPerm :
     (hp.isCoveringMap.monodromyPerm x).ker =
-    (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2).range :=
+    (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.property).range :=
   hp.toMultiplicative.ker_monodromyPerm e
 
 theorem monodromyPerm_injective [SimplyConnectedSpace E] :
@@ -787,7 +789,7 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* (Multiplicative G)
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : (Multiplicative G)ᵐᵒᵖ} :
-    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 =
+    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.val =
       hp.isCoveringMap.monodromy γ.asHom e :=
   hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_iff
 
@@ -803,7 +805,7 @@ theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : Multiplic
 
 variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :
-    (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ.asHom e :=
+    (hp.fundamentalGroupToMulOpposite e γ).unop • e.val = hp.isCoveringMap.monodromy γ.asHom e :=
   hp.toMultiplicative.unop_fundamentalGroupToMulOpposite_smul
 
 variable {e} in

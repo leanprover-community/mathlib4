@@ -56,7 +56,8 @@ theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n 
     rfl
   · rfl
 
-theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n := by
+@[deprecated coeff_toSubring (since := "2026-11-16")]
+theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).val = coeff p n := by
   simp
 
 @[simp]
@@ -88,7 +89,7 @@ theorem toSubring_one :
         (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
       1 := by
   ext i
-  rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
+  rw [coeff_toSubring, coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
     OneMemClass.coe_one]
 
 @[simp]

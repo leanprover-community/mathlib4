@@ -342,7 +342,7 @@ theorem _root_.Matrix.posSemidef_iff_submatrix_of_forall_finset {ι : Type*} {κ
     M.PosSemidef ↔ ∀ i, (M.submatrix (f i) (f i)).PosSemidef := by
   refine ⟨fun h i ↦ h.submatrix _, fun h ↦ posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_⟩
   obtain ⟨i, hi⟩ := hf s
-  choose g hg using fun x : s ↦ hi x.2
+  choose g hg using fun x : s ↦ hi x.property
   exact funext hg ▸ (h i).submatrix g
 
 omit [Fintype m] in
@@ -528,7 +528,7 @@ theorem _root_.Matrix.posDef_iff_submatrix_of_forall_finset {ι : Type*} {κ : �
     M.PosDef ↔ ∀ i, (M.submatrix (f i) (f i)).PosDef := by
   refine ⟨fun h i ↦ h.submatrix (hf_inj i), fun h ↦ posDef_iff_submatrix_finset.mpr fun s ↦ ?_⟩
   obtain ⟨i, hi⟩ := hf s
-  choose g hg using fun x : s ↦ hi x.2
+  choose g hg using fun x : s ↦ hi x.property
   have hfg : f i ∘ g = (↑) := funext hg
   exact hfg ▸ (h i).submatrix (.of_comp (hfg ▸ Subtype.coe_injective))
 
