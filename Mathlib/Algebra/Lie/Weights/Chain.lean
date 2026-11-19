@@ -52,7 +52,6 @@ It should be possible to unify some of the definitions here such as `LieModule.c
 * The proof that the roots of a Lie algebra are a root system currently depends on these results.
   (This can be resolved by proving the root reflection formula using the approach outlined in
   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
-
 -/
 
 @[expose] public section
@@ -284,9 +283,7 @@ lemma chainTopCoeff_add_one :
       Nat.find (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists := by
   classical
   rw [chainTopCoeff, dite_eq_right hα]
-  apply Nat.succ_pred_eq_of_pos
-  rw [zero_lt_iff]
-  intro e
+  refine Nat.succ_pred_eq_of_pos (pos_of_ne_zero fun e ↦ ?_)
   have : genWeightSpace M (0 • α + β : L → R) = ⊥ := by
     rw [← e]
     exact Nat.find_spec (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists
@@ -377,7 +374,7 @@ end
 
 lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
     (chainTop α β).IsNonZero :=
-  chainTop_isNonZero' α β hα α.2
+  chainTop_isNonZero' α β hα α.genWeightSpace_ne_bot'
 
 end
 

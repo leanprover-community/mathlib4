@@ -19,7 +19,6 @@ We prove several asymptotics involving integral ideals of a number field.
   integral ideals of bounded norm in a fixed class of the class group.
 * `NumberField.ideal.tendsto_norm_le_div_atTop`: asymptotics for the number of integral ideals
   of bounded norm.
-
 -/
 
 public section
@@ -89,7 +88,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
       toMixed K ⁻¹' {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ s} := fun _ ↦ rfl
   have h₂ : {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1} = normLeOne K := by ext; simp
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
-  have h₃ : (absNorm J.1 : ℝ) ≠ 0 := (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J))
+  have h₃ : (absNorm J.val : ℝ) ≠ 0 := (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J))
   convert!
     ((ZLattice.covolume.tendsto_card_le_div'
               (ZLattice.comap ℝ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
@@ -141,9 +140,9 @@ theorem tendsto_norm_le_div_atTop₀ :
       simp_rw [← Nat.le_floor_iff hs]
       refine @Fintype.ofFinite _ (Ring.HasFiniteQuotients.finite_absNorm_le₀ ⌊s⌋₊)
     let e := fun C : ClassGroup (𝓞 K) ↦ Equiv.subtypeSubtypeEquivSubtypeInter
-      (fun I : (Ideal (𝓞 K))⁰ ↦ absNorm I.1 ≤ s) (fun I ↦ ClassGroup.mk0 I = C)
+      (fun I : (Ideal (𝓞 K))⁰ ↦ absNorm I.val ≤ s) (fun I ↦ ClassGroup.mk0 I = C)
     simp_rw [← Nat.card_congr (e _), Nat.card_eq_fintype_card, Fintype.subtype_card]
-    rw [Fintype.card, Finset.card_eq_sum_card_fiberwise (f := fun I ↦ ClassGroup.mk0 I.1)
+    rw [Fintype.card, Finset.card_eq_sum_card_fiberwise (f := fun I ↦ ClassGroup.mk0 I.val)
       (t := Finset.univ) (fun _ _ ↦ Finset.mem_univ _), Nat.cast_sum, Finset.sum_div]
 
 /--

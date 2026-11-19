@@ -48,7 +48,6 @@ which are lattices with only two elements, and related ideas.
 * `IsCompl.isAtom_iff_isCoatom` and `IsCompl.isCoatom_if_isAtom`: In a modular
   bounded lattice, a complement of an atom is a coatom and vice versa.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
-
 -/
 
 @[expose] public section
@@ -1001,7 +1000,6 @@ theorem isAtomic_iff_isCoatomic : IsAtomic α ↔ IsCoatomic α :=
   ⟨fun _ => isCoatomic_of_isAtomic_of_complementedLattice_of_isModular,
    fun _ => isAtomic_of_isCoatomic_of_complementedLattice_of_isModular⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A complemented modular atomic lattice is strongly atomic.
 Not an instance to prevent loops. -/
 theorem ComplementedLattice.isStronglyAtomic [IsAtomic α] : IsStronglyAtomic α where
@@ -1113,18 +1111,19 @@ end BooleanAlgebra
 namespace Set
 
 theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
-  ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
+  ⟨(singleton_nonempty _).ne_empty, fun _ hs => ssubset_singleton_iff.mp hs⟩
 
 theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
   refine
     ⟨?_, by
       rintro ⟨x, rfl⟩
       exact isAtom_singleton x⟩
-  rw [isAtom_iff_le_of_ge, bot_eq_empty, ← nonempty_iff_ne_empty]
+  rw [isAtom_iff_le_of_ge, bot_eq_empty, ne_empty_iff_nonempty]
   rintro ⟨⟨x, hx⟩, hs⟩
   exact
     ⟨x, eq_singleton_iff_unique_mem.2
-        ⟨hx, fun y hy => (hs {y} (singleton_ne_empty _) (singleton_subset_iff.2 hy) hx).symm⟩⟩
+        ⟨hx, fun y hy =>
+          (hs {y} (singleton_nonempty _).ne_empty (singleton_subset_iff.2 hy) hx).symm⟩⟩
 
 theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
   rw [isCompl_compl.isCoatom_iff_isAtom, isAtom_iff]

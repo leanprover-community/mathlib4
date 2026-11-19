@@ -23,7 +23,6 @@ definition is a quotient module of `I`, but the alternative definition as an ide
 also given, and the two are `R`-equivalent as in `Ideal.cotangentEquivIdeal`.
 
 Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local ring.
-
 -/
 
 @[expose] public section
@@ -107,11 +106,11 @@ lemma Cotangent.smul_eq_zero_of_mem {I : Ideal R}
     {x} (hx : x ∈ I) (m : I.Cotangent) : x • m = 0 := by
   obtain ⟨m, rfl⟩ := Ideal.toCotangent_surjective _ m
   rw [← map_smul, Ideal.toCotangent_eq_zero, pow_two]
-  exact Ideal.mul_mem_mul hx m.2
+  exact Ideal.mul_mem_mul hx m.property
 
 lemma isTorsionBySet_cotangent :
     Module.IsTorsionBySet R I.Cotangent I :=
-  fun m x ↦ m.smul_eq_zero_of_mem x.2
+  fun m x ↦ m.smul_eq_zero_of_mem x.property
 
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
 def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
@@ -217,7 +216,8 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
 @[simp]
 lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
-    Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
+    Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) =
+      Ideal.toCotangent I₂ ⟨f x, h x.property⟩ := rfl
 
 namespace Cotangent
 
@@ -412,7 +412,7 @@ lemma Ideal.mapCotangent_surjective_of_comap_eq (surj : Function.Surjective (alg
       (le_of_le_of_eq le_sup_right eq.symm)) := by
   intro x
   rcases I.toCotangent_surjective x with ⟨x', rfl⟩
-  rcases Ideal.exists_of_comap_eq_ker_sup _ surj eq x'.2 with ⟨y', mem, hy'⟩
+  rcases Ideal.exists_of_comap_eq_ker_sup _ surj eq x'.property with ⟨y', mem, hy'⟩
   use J.toCotangent ⟨y', mem⟩
   simpa using I.toCotangent.congr_arg (SetCoe.ext hy')
 

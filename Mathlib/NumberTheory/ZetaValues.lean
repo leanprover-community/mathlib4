@@ -308,7 +308,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
   suffices ∀ {y : ℝ}, y ∈ Ico (0 : ℝ) 1 →
       HasSum (fun (n : ℤ) ↦ 1 / (n : ℂ) ^ k * AddCircle.fourier n y)
         (-(2 * (π : ℂ) * I) ^ k / k ! * bernoulliFun k y) by
-    rw [← Ico_insert_right (zero_le_one' ℝ), mem_insert_iff, or_comm] at hx
+    rw [← insert_right_Ico (zero_le_one' ℝ), mem_insert_iff, or_comm] at hx
     rcases hx with (hx | rfl)
     · exact this hx
     · convert this (left_mem_Ico.mpr zero_lt_one) using 1
@@ -368,10 +368,8 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
     · rw [pow_add, pow_one]
       conv_rhs =>
         rw [mul_pow]
-        congr
-        congr
-        · skip
-        · rw [pow_mul, I_sq]
+        enter [1, 2]
+        rw [pow_mul, I_sq]
       ring
   have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
   convert! ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
@@ -407,10 +405,8 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
       rw [pow_add, pow_one]
       conv_rhs =>
         rw [mul_pow]
-        congr
-        congr
-        · skip
-        · rw [pow_add, pow_one, pow_mul, I_sq]
+        enter [1, 2]
+        rw [pow_add, pow_one, pow_mul, I_sq]
       ring
   have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
   convert! ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
@@ -443,9 +439,8 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
   have : (2 : ℝ) ^ (2 * k - 1) = (2 : ℝ) ^ (2 * k) / 2 := by
     rw [eq_div_iff (two_ne_zero' ℝ)]
     conv_lhs =>
-      congr
-      · skip
-      · rw [← pow_one (2 : ℝ)]
+      enter [2]
+      rw [← pow_one (2 : ℝ)]
     rw [← pow_add, Nat.sub_add_cancel]
     lia
   rw [this, mul_pow]

@@ -11,7 +11,6 @@ public import Mathlib.Order.Hom.Basic
 import Mathlib.Data.ULift
 
 /-!
-
 # Preorders as categories
 
 We install a category instance on any preorder. This is not to be confused with the category _of_
@@ -25,7 +24,6 @@ categories.
 * `homOfLE` and `leOfHom` provide translations between inequalities in the preorder, and
   morphisms in the associated category.
 * `Monotone.functor` is the functor associated to a monotone function.
-
 -/
 
 @[expose] public section
@@ -84,7 +82,6 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 
 alias _root_.Quiver.Hom.le := leOfHom
 
-@[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 
@@ -160,6 +157,11 @@ def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
 
 @[simp]
 theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
+  rfl
+
+@[simp]
+lemma Monotone.functor_map_homOfLE {f : X → Y} (hf : Monotone f) {a b : X} (h : a ≤ b) :
+    hf.functor.map (homOfLE h) = homOfLE (hf h) :=
   rfl
 
 -- Faithfulness is automatic because preorder categories are thin

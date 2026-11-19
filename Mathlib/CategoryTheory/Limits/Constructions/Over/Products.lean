@@ -333,7 +333,7 @@ theorem over_binaryProduct_of_pullback [HasPullbacks C] {B : C} : HasBinaryProdu
 /-- Given all wide pullbacks in `C`, construct products in `C/B`. -/
 theorem over_products_of_widePullbacks [HasWidePullbacks.{w} C] {B : C} :
     HasProducts.{w} (Over B) :=
-  fun _ => over_product_of_widePullback
+  .mk fun _ => over_product_of_widePullback
 
 /-- Given all finite wide pullbacks in `C`, construct finite products in `C/B`. -/
 theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B : C} :

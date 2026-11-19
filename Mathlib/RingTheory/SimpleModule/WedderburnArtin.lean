@@ -38,7 +38,6 @@ import Mathlib.RingTheory.SimpleRing.Matrix
   If the base ring is an algebraically closed field, the only finite-dimensional division algebra
   over it is itself, and we obtain `IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed` and
   `IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed` (in a later file).
-
 -/
 
 public section
@@ -148,7 +147,7 @@ theorem exists_end_algEquiv_pi_matrix_end :
       (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
       Nonempty (End R M ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (End R (S i))) := by
   choose d pos S _ simple e using fun c : isotypicComponents R M ↦
-    (IsIsotypic.isotypicComponents c.2).submodule_linearEquiv_fun
+    (IsIsotypic.isotypicComponents c.property).submodule_linearEquiv_fun
   exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
     (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..))
     (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩

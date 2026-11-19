@@ -41,7 +41,6 @@ For modules over rings with invariant basis number
 
 * `Algebra.IsQuadraticExtension`: An extension of rings `R ⊆ S` is quadratic if `S` is a
   free `R`-algebra of rank `2`.
-
 -/
 
 @[expose] public section
@@ -83,7 +82,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
     -- we see they have the same cardinality.
     have w₁ := infinite_basis_le_maximal_linearIndependent' v _ v'.linearIndependent v'.maximal
     rcases Cardinal.lift_mk_le'.mp w₁ with ⟨f⟩
-    have : Infinite ι' := Infinite.of_injective f f.2
+    have : Infinite ι' := Infinite.of_injective f f.inj'
     have w₂ := infinite_basis_le_maximal_linearIndependent' v' _ v.linearIndependent v.maximal
     exact le_antisymm w₁ w₂
 
@@ -640,7 +639,7 @@ theorem exists_fun_fin_finrank_span_eq :
       LinearIndependent K f := by
   rcases exists_finset_span_eq_linearIndepOn K s with ⟨t, hts, ht_card, ht_span, ht_indep⟩
   set e := (Finset.equivFinOfCardEq ht_card).symm
-  exact ⟨(↑) ∘ e, fun i ↦ hts (e i).2, by simpa, ht_indep.comp _ e.injective⟩
+  exact ⟨(↑) ∘ e, fun i ↦ hts (e i).property, by simpa, ht_indep.comp _ e.injective⟩
 
 /-- This is a version of `mem_span_set` with an estimate on the number of terms in the sum. -/
 theorem mem_span_set_iff_exists_finsupp_le_finrank :

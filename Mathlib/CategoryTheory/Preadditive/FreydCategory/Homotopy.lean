@@ -18,7 +18,6 @@ TODO: Define the preadditive categories `LeftFreyd V` (resp. `RightFreyd V`) obt
 taking the quotient of `Arrow V` by the left (resp. right) homotopy relation. If `V`
 has binary biproducts, this will have all kernels (resp. cokernels) and will be the
 category obtained by freely adjoining kernels (resp. cokernels) to `V`.
-
 -/
 
 @[expose] public section

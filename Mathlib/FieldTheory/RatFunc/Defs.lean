@@ -45,7 +45,6 @@ the codomain is not a field or even an integral domain.
 * [Kleiman, *Misconceptions about $K_X$*][kleiman1979]
 * https://freedommathdance.blogspot.com/2012/11/misconceptions-about-kx.html
 * https://stacks.math.columbia.edu/tag/01X1
-
 -/
 
 @[expose] public section
@@ -108,7 +107,7 @@ of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q`
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
     P :=
   Localization.liftOn (toFractionRing x) (fun p q => f p q) fun {_ _ q q'} h =>
-    H q.2 q'.2 (let ⟨⟨_, _⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
+    H q.property q'.property (let ⟨⟨_, _⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
       mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
 
 theorem liftOn_ofFractionRing_mk {P : Sort v} (n : K[X]) (d : K[X]⁰) (f : K[X] → K[X] → P)
@@ -223,7 +222,7 @@ protected theorem induction_on' {P : K⟮X⟯ → Prop} :
   | ⟨x⟩, f =>
     Localization.induction_on x fun ⟨p, q⟩ => by
       simpa only [mk_coe_def, Localization.mk_eq_mk'] using
-        f p q (mem_nonZeroDivisors_iff_ne_zero.mp q.2)
+        f p q (mem_nonZeroDivisors_iff_ne_zero.mp q.property)
 
 end IsDomain
 
