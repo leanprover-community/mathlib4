@@ -243,25 +243,33 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
       invFun := toAlgEquivAux g⁻¹
       left_inv x := by
         let L := adjoin k {x, toAlgEquivAux g x}
-        have hx : x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g x})
-        have hx' : toAlgEquivAux g x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+        have hx : x ∈ L.toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g x})
+        have hx' : toAlgEquivAux g x ∈ L.toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
         simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', map_inv, AlgEquiv.aut_inv,
           mk_toAlgEquivAux g x L hx' hx, AlgEquiv.symm_apply_apply]
       right_inv x := by
         let L := adjoin k {x, toAlgEquivAux g⁻¹ x}
-        have hx : x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g⁻¹ x})
-        have hx' : toAlgEquivAux g⁻¹ x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+        have hx : x ∈ L.toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g⁻¹ x})
+        have hx' : toAlgEquivAux g⁻¹ x ∈ L.toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
         simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
           AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
       map_mul' x y := by
-        have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
-        have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+        have hx : x ∈ (adjoin k {x, y}).toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert x {y})
+        have hy : y ∈ (adjoin k {x, y}).toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
         rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
           toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
           toAlgEquivAux_eq_liftNormal g (x * y) (adjoin k {x, y}) (mul_mem hx hy), map_mul]
       map_add' x y := by
-        have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
-        have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+        have hx : x ∈ (adjoin k {x, y}).toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert x {y})
+        have hy : y ∈ (adjoin k {x, y}).toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
         simp only [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
           toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
           toAlgEquivAux_eq_liftNormal g (x + y) (adjoin k {x, y}) (add_mem hx hy), map_add] }
