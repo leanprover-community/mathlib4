@@ -530,9 +530,7 @@ theorem intrinsicInterior_nonempty (hs : Convex ℝ s) :
     Set.Nonempty.intrinsicInterior hs⟩
 
 /-- In finite dimensions, a point `p` of a convex set `s` lies in its intrinsic interior if and
-only if every segment from a point of `s` to `p` extends beyond `p` inside `s`.
-
-This is Theorem 6.4 in [rockafellar1970]. -/
+only if every segment from a point of `s` to `p` extends beyond `p` inside `s`. -/
 theorem Convex.mem_intrinsicInterior_iff (hs : Convex ℝ s) {p : V} :
     p ∈ intrinsicInterior ℝ s ↔ p ∈ s ∧ ∀ y ∈ s, ∃ t : ℝ, 0 < t ∧ p + t • (p - y) ∈ s := by
   refine ⟨fun hp ↦ ⟨intrinsicInterior_subset hp, fun y hy ↦
