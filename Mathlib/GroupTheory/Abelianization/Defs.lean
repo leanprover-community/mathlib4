@@ -511,17 +511,6 @@ theorem AddGroup.Abelianization.abelianizationEquivAdditive_symm_ofMul_of
     (abelianizationEquivAdditive G).symm (.ofMul (.of x)) = of (.ofMul x) :=
   rfl
 
-@[simp]
-theorem isAbelianization_toMultiplicative_iff {A B : Type*} [AddGroup A] [AddGroup B]
-    (f : A →+ B) :
-    Group.IsAbelianization (AddMonoidHom.toMultiplicative f) ↔ AddGroup.IsAbelianization f := by
-  sorry
-
-theorem isAbelianization_toAdditive_iff {G H : Type*} [Group G] [Group H]
-    (f : G →* H) :
-    AddGroup.IsAbelianization (MonoidHom.toAdditive f) ↔ Group.IsAbelianization f := by
-  sorry
-
 end AdditiveMultiplicativeEquiv
 
 @[deprecated (since := "2026-11-03")] alias Abelianization := Group.Abelianization
