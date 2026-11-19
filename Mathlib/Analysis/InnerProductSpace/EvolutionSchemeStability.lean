@@ -155,15 +155,18 @@ theorem norm_explicitStep_sub_le (ops : EvolutionOperators X) {ν dt : ℝ}
       (1 + dt * ops.lipAdvection + dt * ν * ops.lipLaplace + ops.lipClosure * dt) * ‖u - v‖ := by
   dsimp [explicitStep]
   have h_rearrange :
-      (u - dt • ops.advection u + (dt * ν) • ops.laplace u + dt • ops.force + dt • ops.closure u) -
-      (v - dt • ops.advection v + (dt * ν) • ops.laplace v + dt • ops.force + dt • ops.closure v) =
+      (u - dt • ops.advection u + (dt * ν) • ops.laplace u +
+        dt • ops.force + dt • ops.closure u) -
+      (v - dt • ops.advection v + (dt * ν) • ops.laplace v +
+        dt • ops.force + dt • ops.closure v) =
       (u - v) - dt • (ops.advection u - ops.advection v) +
       (dt * ν) • (ops.laplace u - ops.laplace v) + dt • (ops.closure u - ops.closure v) := by
     simp only [smul_sub]
     abel
   rw [h_rearrange]
   have h_tri1 := norm_add_le
-    ((u - v) - dt • (ops.advection u - ops.advection v) + (dt * ν) • (ops.laplace u - ops.laplace v))
+    ((u - v) - dt • (ops.advection u - ops.advection v) +
+      (dt * ν) • (ops.laplace u - ops.laplace v))
     (dt • (ops.closure u - ops.closure v))
   have h_tri2 := norm_add_le
     ((u - v) - dt • (ops.advection u - ops.advection v))
