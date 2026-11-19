@@ -5,10 +5,10 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Hom.Set
 
@@ -213,13 +213,15 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
-/-- A chain in a partial order is a linear order. -/
+/-- A chain in a preorder is a linear order. -/
 @[implicit_reducible]
-def IsChain.linearOrder [PartialOrder α] [DecidableLE α] {s : Set α} (hs : IsChain (· ≤ ·) s) :
+def IsChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsChain (· < ·) s) :
     LinearOrder s where
-  le_total := by
-    rintro ⟨a, ha⟩ ⟨b, hb⟩
-    exact hs.total ha hb
+  le_antisymm :=
+    fun ⟨a, ha⟩ ⟨b, hb⟩ hab hba ↦
+      Subtype.ext <| not_not.mp (hs ha hb · |>.elim hba.not_gt hab.not_gt)
+  le_total :=
+    fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ eq_or_ne a b |>.elim (by simp [·]) (hs ha hb · |>.imp (·.le) (·.le))
   toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
@@ -270,7 +272,7 @@ protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ s
   constructor
   intro x
   simp only [IsMaxChain, h', IsChain.empty, empty_subset, forall_const, true_and] at h
-  exact singleton_ne_empty x (h IsChain.singleton).symm
+  exact (singleton_nonempty x).ne_empty (h IsChain.singleton).symm
 
 protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s.Nonempty :=
   not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
@@ -339,7 +341,7 @@ instance : SetLike (Flag α) α where
     cases t
     congr
 
-instance : PartialOrder (Flag α) := .ofSetLike (Flag α) α
+instance : PartialOrder (Flag α) := .ofSetLike (Flag α)
 
 @[ext]
 theorem ext : (s : Set α) = t → s = t :=
@@ -428,6 +430,6 @@ end PartialOrder
 
 instance [LinearOrder α] : Unique (Flag α) where
   default := ⟨univ, isChain_of_trichotomous _, fun s _ => s.subset_univ.antisymm'⟩
-  uniq s := SetLike.coe_injective <| s.3 (isChain_of_trichotomous _) <| subset_univ _
+  uniq s := SetLike.coe_injective <| s.max_chain' (isChain_of_trichotomous _) <| subset_univ _
 
 end Flag

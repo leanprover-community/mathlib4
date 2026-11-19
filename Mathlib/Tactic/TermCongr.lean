@@ -76,6 +76,8 @@ This can potentially break tactics that are sensitive to metadata or reducible f
 Please report anything that goes wrong with `congr(...)` lemmas on Zulip.
 
 For debugging, you can set `set_option trace.Elab.congr true`.
+
+[More documentation on `congr()` and `congrm`.](https://leanprover-community.github.io/extras/congr.html)
 -/
 syntax (name := termCongr) "congr(" withoutForbidden(ppDedentIfGrouped(term)) ")" : term
 
@@ -121,7 +123,7 @@ Saves the current mvarCounter as a proxy for age. We use this to avoid
 reprocessing old congruence holes that happened to leak into the local context. -/
 def mkCHole (forLhs : Bool) (val pf : Expr) : MetaM Expr := do
   -- Create a metavariable to bump the mvarCounter.
-  discard <| mkFreshTypeMVar
+  discard mkFreshTypeMVar
   let d : MData := KVMap.empty
     |>.insert congrHoleForLhsKey forLhs
     |>.insert congrHoleIndex (← getMCtx).mvarCounter
@@ -391,7 +393,7 @@ def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
       throwError "Cannot generate congruence because we need{indentD res.lhs}\n\
         to be definitionally equal to{indentD res.rhs}"
     -- Propagate types into any proofs that we're dropping:
-    discard <| res.eq
+    discard res.eq
     return {res with pf? := none}
 
 /-- Tries to make a congruence between `lhs` and `rhs` automatically.
@@ -504,7 +506,7 @@ partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
       trace[Elab.congr] "lam"
       let resDom ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
       -- We do not yet support congruences in the binding domain for lambdas.
-      discard <| resDom.defeq
+      discard resDom.defeq
       withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
         let lhsb := lhs.bindingBody!.instantiate1 x
         let rhsb := rhs.bindingBody!.instantiate1 x
@@ -529,7 +531,7 @@ partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
           return CongrResult.mk' lhs rhs (← mkImpCongr (← resDom.eq) (← resBody.eq))
       else
         -- We do not yet support congruences in the binding domain for dependent pi types.
-        discard <| resDom.defeq
+        discard resDom.defeq
         withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
           let lhsb := lhs.bindingBody!.instantiate1 x
           let rhsb := rhs.bindingBody!.instantiate1 x
@@ -557,7 +559,7 @@ partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
       unless n1 == n2 && i1 == i2 do
         throwCongrEx lhs rhs "Incompatible primitive projections"
       let res ← mkCongrOfAux (depth + 1) mvarCounterSaved e1 e2
-      discard <| res.defeq
+      discard res.defeq
       return {lhs := lhs.updateProj! res.lhs, rhs := rhs.updateProj! res.rhs, pf? := none}
     | _, _ =>
       trace[Elab.congr] "base case"

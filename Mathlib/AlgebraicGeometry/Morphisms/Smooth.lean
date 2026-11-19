@@ -5,17 +5,13 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.FunctionField
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
-public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Smooth.Field
 
 /-!
-
 # Smooth morphisms
 
 In this file we define smooth morphisms. The main definitions are:
@@ -39,7 +35,6 @@ In this file we define smooth morphisms. The main definitions are:
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry" in
 June 2024.
-
 -/
 
 @[expose] public section
@@ -153,16 +148,28 @@ instance : HasRingHomProperty (@SmoothOfRelativeDimension n)
     grind [Scheme.affineOpens]
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma smoothOfRelativeDimension_isStableUnderBaseChange :
+instance smoothOfRelativeDimension_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange (@SmoothOfRelativeDimension n) :=
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
     (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
 
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension n g] :
+    SmoothOfRelativeDimension n (pullback.fst f g) :=
+  have := smoothOfRelativeDimension_isStableUnderBaseChange n
+  MorphismProperty.pullback_fst f g inferInstance
+
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension n f] :
+    SmoothOfRelativeDimension n (pullback.snd f g) :=
+  have := smoothOfRelativeDimension_isStableUnderBaseChange n
+  MorphismProperty.pullback_snd f g inferInstance
+
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
   HasRingHomProperty.of_isOpenImmersion
-    (locally_holdsForLocalizationAway <|
+    (locally_holdsForLocalizationAway
       isStandardSmoothOfRelativeDimension_holdsForLocalizationAway).containsIdentities
 
 /-- Open immersions are smooth. -/
@@ -239,7 +246,7 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
   let p := (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal
   let q := (hV.primeIdealOf ⟨x, hx⟩).asIdeal
   have : q.LiesOver p :=
-    ⟨congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).1).symm⟩
+    ⟨congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).asIdeal).symm⟩
   let := Localization.AtPrime.algebraOfLiesOver p q
   trans Algebra.FormallySmooth (Localization.AtPrime p) (Localization.AtPrime q)
   · rw [← formallySmooth_algebraMap]
@@ -257,7 +264,7 @@ lemma exists_smooth_of_formallySmooth_stalk
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
-    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.2.preimage f.continuous)
+    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.is_open'.preimage f.continuous)
   have := f.finitePresentation_appLE hU hV hVU
   algebraize [(f.appLE U V hVU).hom]
   have : Algebra.IsSmoothAt _ _ := (formallySmooth_stalkMap_iff U hU V hV hVU hxV).mp H
@@ -269,7 +276,7 @@ lemma exists_smooth_of_formallySmooth_stalk
       IsAffineOpen.isoSpec_hom, IsAffineOpen.toSpecΓ_fromSpec] at hrx
   · have := hV.isLocalization_basicOpen r
     rw [← RingHom.smooth_algebraMap] at hr
-    convert!
+    convert
       RingHom.Smooth.propertyIsLocal.respectsIso.1 _
         (IsLocalization.algEquiv (.powers r) _ Γ(X, X.basicOpen r)).toRingEquiv hr
     ext
@@ -285,7 +292,7 @@ lemma Scheme.Hom.isOpen_smoothLocus [LocallyOfFinitePresentation f] :
   obtain ⟨U, hU, V, hV, hVU, hxV, H⟩ := exists_smooth_of_formallySmooth_stalk f x hx
   algebraize [(f.appLE U V hVU).hom]
   exact ⟨V, fun y hy ↦ (formallySmooth_stalkMap_iff U hU V hV hVU hy).mpr
-    (inferInstanceAs (Algebra.IsSmoothAt _ _)), V.2, hxV⟩
+    (inferInstanceAs (Algebra.IsSmoothAt _ _)), V.is_open', hxV⟩
 
 /-- The set of points smooth over a base, as a `Scheme.Opens`. -/
 def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Opens :=
@@ -301,7 +308,7 @@ lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
-    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.2.preimage f.continuous)
+    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.is_open'.preimage f.continuous)
   have := f.smooth_appLE hU hV hVU
   algebraize [(f.appLE U V hVU).hom]
   rw [Scheme.Hom.mem_smoothLocus, formallySmooth_stalkMap_iff U hU V hV hVU hxV]

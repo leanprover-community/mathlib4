@@ -8,12 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
-
 # Prime spectrum of (multivariate) polynomials
 
 Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary schemes.
@@ -27,7 +24,6 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
 - `MvPolynomial.isOpenMap_comap_C`:
   The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
-
 -/
 
 public section
@@ -104,7 +100,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
       ← Algebra.TensorProduct.includeRight.comp_algebraMap, comap_comp_apply,
       Subsingleton.elim (α := PrimeSpectrum x.asIdeal.ResidueField) (comap _ _) ⊥]
     ext a
-    exact congr(a ∈ $(Ideal.ker_algebraMap_residueField _))
+    congrm a ∈ $(Ideal.ker_algebraMap_residueField _)
 
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `D(f) ⊆ Spec S`
@@ -146,7 +142,7 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
       (Algebra.TensorProduct.comm R _ _).trans (polyEquivTensor R x.asIdeal.ResidueField).symm
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
     simp [e]
-  · simp [Polynomial.ext_iff]
+  · simp [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
     comap C '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
@@ -208,7 +204,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     congr!
     ext
     · simp [scalarRTensorAlgEquiv, e, Algebra.smul_def]
-    · simp [e, scalarRTensorAlgEquiv, coeff, map, X, monomial]
+    · simp [e, scalarRTensorAlgEquiv, map, X, monomial]
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :

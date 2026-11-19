@@ -30,7 +30,6 @@ which provides the element as a continuous linear map. (Even though `WeakDual �
 ## Tags
 
 character space, Gelfand transform, functional calculus
-
 -/
 
 @[expose] public section
@@ -55,6 +54,7 @@ section NonUnitalNonAssocSemiring
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
   [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A]
 
+@[macro_inline]
 noncomputable instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
   coe_injective φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h

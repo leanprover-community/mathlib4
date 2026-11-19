@@ -5,13 +5,13 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Tactic.Ring
-public import Mathlib.Util.Qq
+
+import Mathlib.Algebra.Ring.CharZero
 
 /-!
 # The complex numbers
@@ -486,14 +486,14 @@ theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : ℂ) = ofNat(n) :
 theorem conj_neg_I : conj (-I) = I := by simp
 
 theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
-  ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
+  ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq congr(im $h)⟩, fun ⟨h, e⟩ => by
     rw [e, conj_ofReal]⟩
 
 theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
   conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal], fun h => ⟨_, h.symm⟩⟩
 
 theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
-  ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
+  ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp congr(im $h)), fun h =>
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 
 @[simp]
@@ -789,8 +789,6 @@ lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 instance instCharZero : CharZero ℂ :=
   charZero_of_inj_zero fun n h => by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
 
-instance instIsAddTorsionFree : IsAddTorsionFree ℂ := IsDomain.instIsAddTorsionFreeOfCharZero _
-
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
   simp only [add_conj, ofReal_mul, ofReal_ofNat, mul_div_cancel_left₀ (z.re : ℂ) two_ne_zero]
@@ -823,7 +821,7 @@ lemma reProdIm_subset_iff {s s₁ t t₁ : Set ℝ} : s ×ℂ t ⊆ s₁ ×ℂ t
 /-- If `s ⊆ s₁ ⊆ ℝ` and `t ⊆ t₁ ⊆ ℝ`, then `s × t ⊆ s₁ × t₁` in `ℂ`. -/
 lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
     s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
-  convert! prod_subset_prod_iff
+  convert prod_subset_prod_iff
   exact reProdIm_subset_iff
 
 variable {s t : Set ℝ}

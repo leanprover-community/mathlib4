@@ -8,9 +8,7 @@ module
 public import Mathlib.Analysis.BoxIntegral.Partition.Filter
 public import Mathlib.Analysis.BoxIntegral.Partition.Measure
 public import Mathlib.Analysis.Oscillation
-public import Mathlib.Data.Bool.Basic
 public import Mathlib.MeasureTheory.Measure.Real
-public import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane
@@ -133,7 +131,7 @@ theorem integralSum_disjUnion (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ]
     (h : Disjoint π₁.iUnion π₂.iUnion) :
     integralSum f vol (π₁.disjUnion π₂ h) = integralSum f vol π₁ + integralSum f vol π₂ := by
   refine (Prepartition.sum_disj_union_boxes h _).trans
-      (congr_arg₂ (· + ·) (sum_congr rfl fun J hJ => ?_) (sum_congr rfl fun J hJ => ?_))
+      congr($(sum_congr rfl fun J hJ => ?_) + $(sum_congr rfl fun J hJ => ?_))
   · rw [disjUnion_tag_of_mem_left _ hJ]
   · rw [disjUnion_tag_of_mem_right _ hJ]
 
@@ -180,7 +178,7 @@ theorem hasIntegral_congr (I : Box ι) (l : IntegrationParams) {f₁ f₂ : ℝ�
     {vol₁ vol₂ : ι →ᵇᵃ E →L[ℝ] F}
     (hf : EqOn f₁ f₂ I.Icc) (hvol : EqOn vol₁ vol₂ (Set.Iic I)) (y : F) :
     HasIntegral I l f₁ vol₁ y ↔ HasIntegral I l f₂ vol₂ y :=
-  tendsto_congr fun π ↦ integralSum_congr hf <| hvol.mono π.le_of_mem'
+  tendsto_congr fun π ↦ integralSum_congr hf <| hvol.mono fun J hJ ↦ π.le_of_mem' J hJ
 
 -- Porting note: using the above notation ℝⁿ here causes the theorem below to be silently ignored
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Lean.204.20doesn't.20add.20lemma.20to.20the.20environment/near/363764522
@@ -399,7 +397,6 @@ to be a function `r` such that
 
 The proof is mostly based on
 [Russel A. Gordon, *The integrals of Lebesgue, Denjoy, Perron, and Henstock*][Gordon55].
-
 -/
 namespace Integrable
 
@@ -704,7 +701,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
       have ineq : edist (f (t₁ J)) (f (t₂ J)) ≤ ediam (f '' (ball x r ∩ (Box.Icc I))) := by
         apply edist_le_ediam_of_mem <;>
           refine Set.mem_image_of_mem f ⟨?_, tag_mem_Icc _ J⟩ <;>
-          refine closedBall_subset_ball (div_two_lt_of_pos r0) <| mem_closedBall_comm.1 ?_
+          grw [← div_two_lt_of_pos r0, ← mem_closedBall_comm]
         · exact h₁.isSubordinate.infPrepartition π₂.toPrepartition J hJ.1 (Box.coe_subset_Icc xJ)
         · exact h₂.isSubordinate.infPrepartition π₁.toPrepartition J
             ((π₁.mem_infPrepartition_comm).1 hJ.1) (Box.coe_subset_Icc xJ)
@@ -818,8 +815,8 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
         dist (vol J (f <| π.tag J)) (g J) ≤ εs (π.tag J) := fun J hJ ↦ by
       rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₁ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ (hεs0 _) _ (π.le_of_mem' _ hJ) ?_
-        (hπδ.2 hlH J hJ) fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
-      convert! hπδ.1 J hJ using 3; exact (ite_eq_left hJs).symm
+        (hπδ.isHenstock hlH J hJ) fun hD => (Finset.le_sup hJ).trans (hπδ.distortion_le hD)
+      convert! hπδ.isSubordinate J hJ using 3; exact (ite_eq_left hJs).symm
     refine (dist_sum_sum_le_of_le _ this).trans ?_
     rw [sum_comp]
     refine (sum_le_sum ?_).trans (hεs _ ?_)
@@ -837,9 +834,10 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
       (∑ J ∈ π.boxes with tag π J ∉ s, g J)
       ≤ ∑ J ∈ π.boxes with tag π J ∉ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
       rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
-      refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
-        fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
-      convert! hπδ.1 J hJ using 3; exact (ite_eq_right hJs).symm
+      refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_
+        (fun hH => hπδ.isHenstock hH J hJ)
+        fun hD => (Finset.le_sup hJ).trans (hπδ.distortion_le hD)
+      convert! hπδ.isSubordinate J hJ using 3; exact (ite_eq_right hJs).symm
     _ ≤ ∑ J ∈ π.boxes, ε' * B J := by
       gcongr
       · exact fun _ _ _ ↦ mul_nonneg ε'0.le (hB0 _)

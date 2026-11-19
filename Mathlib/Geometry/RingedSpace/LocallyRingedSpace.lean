@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Geometry.RingedSpace.Basic
-public import Mathlib.Geometry.RingedSpace.Stalks
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of locally ringed spaces
@@ -59,7 +61,7 @@ abbrev toRingedSpace : RingedSpace :=
 /-- The underlying topological space of a locally ringed space. -/
 @[implicit_reducible]
 def toTopCat : TopCat :=
-  X.1.carrier
+  X.toSheafedSpace.carrier
 
 instance : CoeSort LocallyRingedSpace (Type u) :=
   ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
@@ -83,7 +85,7 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
-  X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.1
+  X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.toHom
 
 @[simp]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
@@ -101,13 +103,13 @@ instance : Quiver LocallyRingedSpace :=
 a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
 -/
 noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
+    Y.presheaf.stalk (f.toHom.base x) ⟶ X.presheaf.stalk x :=
   f.toShHom.hom.stalkMap x
 
 @[instance]
 theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.stalkMap x).hom :=
-  f.2 x
+  f.prop x
 
 instance isLocalHomStalkMap' {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.toHom.stalkMap x).hom :=
@@ -116,7 +118,7 @@ instance isLocalHomStalkMap' {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X
 @[instance]
 theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : X) :
     IsLocalHom (f.stalkMap x).hom :=
-  f.2 x
+  f.prop x
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity morphism on a locally ringed space. -/
@@ -144,13 +146,13 @@ instance : Category LocallyRingedSpace.{u} where
 @[simps]
 def forgetToSheafedSpace : LocallyRingedSpace.{u} ⥤ SheafedSpace CommRingCat.{u} where
   obj X := X.toSheafedSpace
-  map f := InducedCategory.homMk f.1
+  map f := InducedCategory.homMk f.toHom
 
 /-- The canonical map `X ⟶ Spec Γ(X, ⊤)`. This is the unit of the `Γ-Spec` adjunction. -/
 instance : forgetToSheafedSpace.Faithful where
   map_injective h := by
     ext : 1
-    exact congr_arg InducedCategory.Hom.hom h
+    congrm $(h).hom
 
 /-- Constructor for morphisms in `LocallyRingedSpace`. -/
 @[simps toHom]
@@ -288,8 +290,8 @@ theorem Γ_map_op {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) : Γ.map f.op = f
 
 /-- The empty locally ringed space. -/
 def empty : LocallyRingedSpace.{u} where
-  carrier := TopCat.of PEmpty
-  presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
+  carrier := ↧PEmpty
+  presheaf := (CategoryTheory.Functor.const _).obj ↧PUnit
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
   isLocalRing x := PEmpty.elim x
 
@@ -383,7 +385,7 @@ lemma stalkSpecializes_stalkMap (x x' : X) (h : x ⤳ x') :
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
     f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) y) =
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
+  congr($(CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y)
 
 @[reassoc]
 lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X) (hxx' : x = x') :
@@ -418,7 +420,7 @@ lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
     e.inv.stalkMap y (e.hom.stalkMap (e.inv.base y) z) =
       Y.presheaf.stalkSpecializes (specializes_of_eq <| by simp) z :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z
+  congr($(CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z)
 
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
@@ -431,7 +433,7 @@ lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
     e.hom.stalkMap x (e.inv.stalkMap (e.hom.base x) y) =
       X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) y :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y
+  congr($(CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y)
 
 @[reassoc (attr := simp)]
 lemma stalkMap_germ (U : Opens Y) (x : X) (hx : f.base x ∈ U) :

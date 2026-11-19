@@ -19,7 +19,6 @@ We also introduce `coend F` as multicoequalizers of
 
 ## References
 * https://ncatlab.org/nlab/show/end
-
 -/
 
 @[expose] public section

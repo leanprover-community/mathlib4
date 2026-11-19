@@ -5,10 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
-public import Mathlib.Topology.Order.IsLUB
+
+import Mathlib.Topology.MetricSpace.Pseudo.Basic
 
 /-! # Proper spaces
 
@@ -20,7 +20,6 @@ public import Mathlib.Topology.Order.IsLUB
 * `secondCountable_of_proper`: proper spaces are sigma-compact, hence second countable.
 * `locallyCompact_of_proper`: proper spaces are locally compact.
 * `pi_properSpace`: finite products of proper spaces are proper.
-
 -/
 
 public section
