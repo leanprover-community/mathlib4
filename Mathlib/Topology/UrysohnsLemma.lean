@@ -6,11 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.Algebra.Affine
 

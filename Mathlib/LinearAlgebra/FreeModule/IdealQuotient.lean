@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+
 /-! # Ideals in free modules over PIDs
 
 ## Main results

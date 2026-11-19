@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.Unramified.LocalStructure
 
+import Mathlib.RingTheory.Polynomial.IsIntegral
+
 /-!
 # Smooth base change commutes with integral closure
 

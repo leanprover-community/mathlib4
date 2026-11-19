@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Positive
 
 import Mathlib.LinearAlgebra.Eigenspace.Zero
+import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # Singular values for finite-dimensional linear maps

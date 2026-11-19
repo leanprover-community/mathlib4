@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.UniqueFactorizationDomain.ClassGroup
 
+import Mathlib.LinearAlgebra.TensorProduct.Pi
+import Mathlib.RingTheory.Ideal.BigOperators
+
 /-!
 # The Picard group of a commutative ring
 

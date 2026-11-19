@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 public import Mathlib.GroupTheory.Archimedean
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 import Mathlib.Data.Int.Interval
+import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

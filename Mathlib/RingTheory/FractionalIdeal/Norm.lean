@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 import Mathlib.RingTheory.Localization.NormTrace
+import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!

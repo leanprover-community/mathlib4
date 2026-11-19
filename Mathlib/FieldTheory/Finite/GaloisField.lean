@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Norm.Transitivity
 
+import Mathlib.Basic.Finite.Set
+
 /-!
 # Galois fields
 

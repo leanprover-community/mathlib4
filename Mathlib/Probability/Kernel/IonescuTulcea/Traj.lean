@@ -6,11 +6,11 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
-public import Mathlib.MeasureTheory.Function.FactorsThrough
 public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 
+import Mathlib.MeasureTheory.Function.FactorsThrough
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.Probability.Kernel.SetIntegral
 

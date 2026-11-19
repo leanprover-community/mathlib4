@@ -8,6 +8,8 @@ module
 public import Mathlib.Probability.Distributions.Fernique
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 
+import Mathlib.MeasureTheory.Group.IntegralConvolution
+
 /-!
 # Fernique's theorem for Gaussian measures
 

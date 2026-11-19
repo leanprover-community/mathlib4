@@ -6,9 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Algebra.Order.Sub.Basic
 
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
 
 set_option doc.verso true

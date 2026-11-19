@@ -10,6 +10,7 @@ public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
+import Mathlib.NumberTheory.ModularForms.Identities
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,15 +5,15 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Basic.Finite.Set
 public import Mathlib.Data.Finset.Order
-public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
 public import Mathlib.Tactic.TFAE
 
+import Mathlib.Basic.Finite.Set
+import Mathlib.Data.Set.Lattice.Order
 import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.OrderIsoNat
 

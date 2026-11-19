@@ -7,6 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
+import Mathlib.Algebra.BigOperators.Fin
+
 /-!
 # General-Valued Constraint Satisfaction Problems
 

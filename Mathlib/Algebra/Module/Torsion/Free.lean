@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Module.Opposite
-public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Algebra.Regular.SMul
+
+import Mathlib.Algebra.Regular.Opposite
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

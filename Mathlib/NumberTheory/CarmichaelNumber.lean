@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.FermatPsp
 
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Tactic.Simproc.Factors
 

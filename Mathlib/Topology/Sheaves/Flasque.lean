@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
 
+import Mathlib.Algebra.Category.Grp.FilteredColimits
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.Topology.Sheaves.LocallySurjective
 

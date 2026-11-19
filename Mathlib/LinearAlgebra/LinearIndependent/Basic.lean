@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Logic.Equiv.Fin.Rotate
 
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Regular.Basic
 
 /-!

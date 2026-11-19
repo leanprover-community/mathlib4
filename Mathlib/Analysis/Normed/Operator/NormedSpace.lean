@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 
+import Mathlib.Topology.Algebra.Equicontinuity
+
 /-!
 # Operator norm for maps on normed spaces
 

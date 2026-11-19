@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
+import Mathlib.RingTheory.Flat.Stability
+import Mathlib.RingTheory.LocalProperties.Projective
+
 /-!
 # A finite flat module `M` is locally free if `rankAtStalk M` is constant
 -/

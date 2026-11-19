@@ -9,6 +9,7 @@ public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.Discriminant
 
 import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Order.Interval.Finset.Box
 
 /-!
 # Dimension formula and Sturm bound for level 1 modular forms

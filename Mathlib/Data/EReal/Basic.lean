@@ -8,6 +8,8 @@ module
 public import Mathlib.Basic.ENNReal.Operations
 public import Mathlib.Order.Hom.WithTopBot
 
+import Mathlib.Order.Interval.Set.WithBotTop
+
 /-!
 # The extended real numbers
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Computability.DFA
 
+import Mathlib.Data.List.Induction
 import Mathlib.Data.Set.Finite.Basic
 
 /-!

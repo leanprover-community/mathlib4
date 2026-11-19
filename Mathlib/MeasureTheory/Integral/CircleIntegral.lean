@@ -10,6 +10,8 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
+import Mathlib.Analysis.Calculus.Deriv.Linear
+
 /-!
 # Integral over a circle in `ℂ`
 

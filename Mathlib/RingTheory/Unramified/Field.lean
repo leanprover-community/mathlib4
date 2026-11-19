@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Unramified.Finite
 public import Mathlib.RingTheory.Unramified.Locus
+
+import Mathlib.RingTheory.Artinian.Ring
 
 /-!
 # Unramified algebras over fields

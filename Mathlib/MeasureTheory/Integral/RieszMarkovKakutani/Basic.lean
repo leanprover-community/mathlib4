@@ -7,7 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
-public import Mathlib.Topology.PartitionOfUnity
+
+import Mathlib.Topology.PartitionOfUnity
 
 /-!
 # Riesz–Markov–Kakutani representation theorem

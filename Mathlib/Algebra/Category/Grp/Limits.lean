@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
+import Mathlib.CategoryTheory.Limits.Yoneda
+
 /-!
 # The category of (commutative) (additive) groups has all limits
 

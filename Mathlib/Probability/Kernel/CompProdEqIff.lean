@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 
 import Mathlib.Probability.Kernel.Composition.WithDensity
+import Mathlib.Probability.Kernel.RadonNikodym
 
 /-!
 # Condition for two kernels to be equal almost everywhere

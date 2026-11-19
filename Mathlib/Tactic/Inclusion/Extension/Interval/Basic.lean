@@ -11,6 +11,8 @@ public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Tactic.Inclusion.Core.ToSet
 
+import Mathlib.Algebra.Order.Ring.Basic
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

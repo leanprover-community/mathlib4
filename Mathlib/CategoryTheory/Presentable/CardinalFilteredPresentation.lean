@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Generator.StrongGenerator
 public import Mathlib.CategoryTheory.Presentable.Limits
-public import Mathlib.CategoryTheory.Presentable.Retracts
+
+import Mathlib.CategoryTheory.Presentable.Retracts
 
 /-!
 # Presentable generators

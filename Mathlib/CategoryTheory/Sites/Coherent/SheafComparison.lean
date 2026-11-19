@@ -6,12 +6,12 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 public import Mathlib.CategoryTheory.Sites.InducedTopology
 
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
 /-!

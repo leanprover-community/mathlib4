@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 public import Mathlib.Analysis.Normed.Operator.Banach
 
+import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 /-!

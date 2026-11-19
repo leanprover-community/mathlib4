@@ -6,11 +6,11 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Basic
-public import Mathlib.SetTheory.Cardinal.Subfield
 
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Erdős-Kaplansky theorem

@@ -5,8 +5,9 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+
+import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 
 /-!
 # Spaces orthogonal to the radius vector in spheres.

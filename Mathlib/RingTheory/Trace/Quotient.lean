@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.LocalRing.Quotient
+import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
 # The trace map on quotients and localizations

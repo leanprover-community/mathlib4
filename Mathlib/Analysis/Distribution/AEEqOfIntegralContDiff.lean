@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Functions which vanish as distributions vanish as functions

@@ -11,6 +11,7 @@ public import Mathlib.Order.OrderIsoNat
 public import Mathlib.Order.SuccPred.Nat
 
 import Mathlib.Data.List.GetD
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Monotone
 
 /-!

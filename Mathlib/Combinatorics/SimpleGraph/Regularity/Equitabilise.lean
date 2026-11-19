@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Partition.Equipartition
 
 import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Equitabilising a partition

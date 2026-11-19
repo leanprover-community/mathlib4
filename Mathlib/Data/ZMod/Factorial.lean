@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.ZMod.Basic
 
+import Mathlib.Algebra.BigOperators.Ring.Finset
+
 /-!
 # Facts about factorials in ZMod
 

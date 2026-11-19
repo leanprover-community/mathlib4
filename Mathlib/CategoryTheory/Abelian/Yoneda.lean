@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Basic
 public import Mathlib.CategoryTheory.Generator.Basic
 
 import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.Algebra.Category.Grp.EpiMono
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Generator.Preadditive
 import Mathlib.CategoryTheory.Limits.Preserves.Opposites

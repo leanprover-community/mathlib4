@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Data.Matrix.Basis
 
+import Mathlib.Algebra.BigOperators.RingEquiv
+
 /-!
 # Matrices over star rings.
 

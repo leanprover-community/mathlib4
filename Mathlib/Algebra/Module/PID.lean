@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 
 import Mathlib.Algebra.Module.DedekindDomain
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Structure of finitely generated modules over a PID

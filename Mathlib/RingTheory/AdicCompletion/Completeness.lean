@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Equiv
 
 import Mathlib.RingTheory.AdicCompletion.Exactness
 import Mathlib.RingTheory.AdicCompletion.Topology
+import Mathlib.RingTheory.Finiteness.Ideal
 
 /-!
 # Completeness of the Adic Completion for Finitely Generated Ideals

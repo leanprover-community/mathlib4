@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.ConstMulAction
 
+import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!

@@ -8,6 +8,8 @@ module
 public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.MetricSpace.Basic
 
+import Mathlib.Data.List.Zip
+
 /-!
 # Metrizable uniform spaces
 

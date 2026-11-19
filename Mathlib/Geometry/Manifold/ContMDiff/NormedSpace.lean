@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 
+import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 import Mathlib.Analysis.Normed.Operator.Prod
 import Mathlib.Geometry.Manifold.Notation
 

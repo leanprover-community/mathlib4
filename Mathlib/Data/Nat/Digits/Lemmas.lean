@@ -6,12 +6,12 @@ Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 module
 
 public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Nat.Digits.Defs
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.IntervalCases
 
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.List.Indexes
 
 /-!

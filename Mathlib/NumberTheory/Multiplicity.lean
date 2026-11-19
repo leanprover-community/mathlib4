@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.Span
 

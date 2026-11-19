@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Sequences
 
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Topology.Perfect
 
 /-!

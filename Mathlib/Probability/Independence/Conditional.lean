@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.Probability.Kernel.Condexp
 
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
 import Mathlib.Probability.Kernel.CompProdEqIff
 
 /-!

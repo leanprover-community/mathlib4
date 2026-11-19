@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 public import Mathlib.Topology.Order.DenselyOrdered
-public import Mathlib.Topology.UniformSpace.Compact
+
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Extra lemmas about pseudo-metric spaces

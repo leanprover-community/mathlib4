@@ -8,6 +8,8 @@ module
 public import Mathlib.Combinatorics.SetFamily.Intersecting
 public import Mathlib.Data.Finset.Union
 
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 
 /-!

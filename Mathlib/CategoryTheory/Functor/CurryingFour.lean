@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Functor.CurryingThree
-public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 
+import Mathlib.CategoryTheory.Functor.Quadrifunctor
 import Mathlib.CategoryTheory.Products.Associator
 
 set_option doc.verso true

@@ -5,8 +5,9 @@ Authors: Neil Strickland, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Semiconj.Basic
+
+import Mathlib.Algebra.Group.Commute.Defs
 
 /-!
 # Additional lemmas about commuting pairs of elements in monoids

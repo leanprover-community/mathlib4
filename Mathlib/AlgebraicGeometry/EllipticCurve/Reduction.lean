@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 
+import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!

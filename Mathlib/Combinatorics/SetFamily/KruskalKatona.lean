@@ -9,6 +9,8 @@ public import Mathlib.Combinatorics.Colex
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
 public import Mathlib.Combinatorics.SetFamily.Intersecting
 
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
 /-!
 # Kruskal-Katona theorem
 

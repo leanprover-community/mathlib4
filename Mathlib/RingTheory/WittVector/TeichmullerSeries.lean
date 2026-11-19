@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.WittVector.Complete
 
+import Mathlib.RingTheory.WittVector.InitTail
+
 /-!
 # Teichmuller Series
 

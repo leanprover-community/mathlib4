@@ -5,9 +5,10 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Set.Sigma
 public import Mathlib.Order.Closure
 public import Mathlib.Order.Filter.Map
+
+import Mathlib.Data.Set.Sigma
 
 /-!
 # Basic results on filter bases

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 
+import Mathlib.Analysis.Calculus.FDeriv.Mul
+
 /-!
 # Translation and scaling of integral curves
 

@@ -5,12 +5,12 @@ Authors: Antoine Chambert-Loir, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.GroupTheory.Complement
 
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Nat.Choose.Dvd
 
 /-! # Cyclicity of the units of `ZMod n`

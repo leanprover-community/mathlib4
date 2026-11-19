@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 
+import Mathlib.Order.Atoms.Finite
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

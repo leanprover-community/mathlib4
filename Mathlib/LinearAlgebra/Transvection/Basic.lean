@@ -8,8 +8,9 @@ module
 
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Dual.BaseChange
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FixedSubmodule
+
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Transvections in a module

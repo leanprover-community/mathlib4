@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Probability.Distributions.Gamma
 
+import Mathlib.MeasureTheory.Integral.ExpDecay
+
 /-! # Exponential distributions over ℝ
 
 Define the Exponential measure over the reals.

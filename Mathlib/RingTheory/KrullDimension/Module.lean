@@ -5,10 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Support
 
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.Spectrum.Prime.Module
 
 /-!

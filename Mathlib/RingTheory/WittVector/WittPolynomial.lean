@@ -6,9 +6,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Expand
 
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Data.ZMod.Basic
 
 /-!

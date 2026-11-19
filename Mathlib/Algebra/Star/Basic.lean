@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Int.Cast.Lemmas
 
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!

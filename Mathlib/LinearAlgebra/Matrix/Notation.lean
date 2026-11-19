@@ -6,8 +6,9 @@ Authors: Anne Baanen, Eric Wieser
 module
 
 public meta import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.RowCol
+
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Matrix and vector notation

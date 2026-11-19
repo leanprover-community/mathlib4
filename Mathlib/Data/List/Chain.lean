@@ -11,6 +11,7 @@ public import Mathlib.Logic.Function.Iterate
 
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.Nat.Init
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

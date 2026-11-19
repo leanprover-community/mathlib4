@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Order.SupClosed
 
+import Mathlib.Data.Set.Lattice.Image
+
 /-!
 # Sublattices
 

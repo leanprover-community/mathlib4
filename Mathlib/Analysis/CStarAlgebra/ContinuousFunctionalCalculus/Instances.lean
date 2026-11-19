@@ -8,12 +8,12 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-public import Mathlib.Analysis.Complex.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Unitization
 public import Mathlib.Analysis.RCLike.Lemmas
 
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.Complex.Spectrum
 
 /-! # Instances of the continuous functional calculus
 

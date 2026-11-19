@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 # Immersions of schemes

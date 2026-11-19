@@ -5,8 +5,9 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.Bounds.Lattice
 public import Mathlib.Order.ScottContinuity
+
+import Mathlib.Order.Bounds.Lattice
 
 /-!
 # Scott continuity on product spaces

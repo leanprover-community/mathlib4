@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.RingTheory.LinearDisjoint
 
 import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Linearly disjoint fields

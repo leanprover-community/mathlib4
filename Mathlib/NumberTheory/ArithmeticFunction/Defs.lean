@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.FunLike
-public import Mathlib.Data.Nat.Factorization.Induction
-public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.Tactic.ArithMult
 
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Data.Nat.Factorization.Induction
+import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution

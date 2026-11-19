@@ -6,10 +6,10 @@ Authors: Markus Himmel, Alex Keizer
 module
 
 public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Nat.Bits
 
 import Batteries.Data.Nat.Bitwise
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.GetD
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote

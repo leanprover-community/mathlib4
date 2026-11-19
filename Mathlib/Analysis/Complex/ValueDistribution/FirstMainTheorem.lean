@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 
+import Mathlib.Analysis.Meromorphic.IsolatedZeros
 import Mathlib.Analysis.Meromorphic.RCLike
 
 /-!

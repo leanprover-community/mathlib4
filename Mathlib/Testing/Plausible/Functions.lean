@@ -16,6 +16,7 @@ public import Mathlib.Data.Int.Range
 public import Mathlib.Data.List.Sigma
 public import Mathlib.Data.PNat.Notation
 
+import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Bound.Init
 

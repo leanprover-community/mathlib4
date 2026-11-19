@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.Data.Set.Card
 public import Mathlib.Order.Filter.TendstoCofinite
-public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
+
+import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Theory of univariate polynomials

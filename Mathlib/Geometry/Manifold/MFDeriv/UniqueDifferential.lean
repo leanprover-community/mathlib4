@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 
+import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.Geometry.Manifold.Notation
+
 /-!
 # Unique derivative sets in manifolds
 

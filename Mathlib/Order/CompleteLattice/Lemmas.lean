@@ -6,8 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Bool.Set
-public import Mathlib.Data.Nat.Set
 public import Mathlib.Order.CompleteLattice.Basic
+
+import Mathlib.Data.Nat.Set
 
 /-!
 # Theory of complete lattices

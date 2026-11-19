@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
 
+import Mathlib.Analysis.Meromorphic.IsolatedZeros
 import Mathlib.Analysis.Meromorphic.RCLike
 import Mathlib.Analysis.Normed.Module.Connected
 

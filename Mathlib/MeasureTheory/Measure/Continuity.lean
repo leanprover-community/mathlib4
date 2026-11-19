@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 
 import Mathlib.MeasureTheory.Measure.Basic
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 import Mathlib.Topology.Order.AtTopBotIxx
 
 set_option doc.verso true

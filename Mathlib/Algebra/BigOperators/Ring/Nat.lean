@@ -5,10 +5,10 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.SetTheory.Cardinal.Finite
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Big operators on a finset in the natural numbers

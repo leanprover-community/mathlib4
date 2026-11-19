@@ -8,7 +8,9 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 public import Mathlib.CategoryTheory.Presentable.Dense
-public import Mathlib.CategoryTheory.Presentable.Directed
+
+import Mathlib.CategoryTheory.Limits.Preorder
+import Mathlib.CategoryTheory.Presentable.Directed
 
 /-!
 # Sharply smaller regular cardinals

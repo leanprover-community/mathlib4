@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.RingTheory.Ideal.NatInt
 
 /-!

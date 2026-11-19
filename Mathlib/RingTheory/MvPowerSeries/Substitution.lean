@@ -8,7 +8,8 @@ module
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
-public import Mathlib.RingTheory.Nilpotent.Basic
+
+import Mathlib.RingTheory.Nilpotent.Basic
 
 /-! # Substitutions in multivariate power series
 

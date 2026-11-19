@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.TensorProduct.Finite
 
+import Mathlib.LinearAlgebra.Quotient.Basic
+
 /-!
 # Algebras which are commutative ring epimorphisms
 -/

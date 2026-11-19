@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Topology.Instances.RealVectorSpace
 
+import Mathlib.Algebra.Algebra.IsSimpleRing
+
 /-! # Further lemmas about `RCLike` -/
 
 public section

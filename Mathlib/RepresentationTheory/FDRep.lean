@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.FGModuleCat.Limits
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Rep.Basic
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 import Mathlib.Algebra.Category.FGModuleCat.Colimits
 import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)

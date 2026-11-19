@@ -9,6 +9,7 @@ public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.MetricSpace.Gluing
 
 import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+import Mathlib.Topology.MetricSpace.Equicontinuity
 
 /-!
 # The Gromov-Hausdorff distance is realized

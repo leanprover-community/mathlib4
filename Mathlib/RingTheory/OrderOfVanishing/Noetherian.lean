@@ -9,6 +9,7 @@ module
 public import Mathlib.RingTheory.OrderOfVanishing.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 
+import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 set_option doc.verso true

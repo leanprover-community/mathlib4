@@ -8,10 +8,11 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Order.Circular
-public import Mathlib.Order.SuccPred.Int
 
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.GroupTheory.QuotientGroup.ModEq
+import Mathlib.Order.SuccPred.Int
 
 /-!
 # Reducing to an interval modulo its length

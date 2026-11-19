@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.RingTheory.PowerSeries.Inverse
 
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Noetherian.OfPrime
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky

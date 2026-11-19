@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 
+import Mathlib.RingTheory.LocalRing.Basic
+
 /-!
 # Subspaces of inner product spaces
 

@@ -8,6 +8,8 @@ module
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+
 /-!
 # Poles and polars
 

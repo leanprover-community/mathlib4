@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 
+import Mathlib.Analysis.Calculus.ContDiff.Comp
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 
 /-!

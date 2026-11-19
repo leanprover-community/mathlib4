@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
-public import Mathlib.GroupTheory.GroupAction.Pointwise
 
 import Mathlib.Analysis.Normed.Module.Seminorm.Norm
+import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # The Minkowski functional, normed field version

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.Meromorphic.Divisor
 
+import Mathlib.Analysis.Asymptotics.Theta
+
 /-!
 # Normal form of meromorphic functions and continuous extension
 

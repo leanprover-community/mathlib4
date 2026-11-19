@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Basic
 
+import Mathlib.CategoryTheory.Abelian.Exact
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

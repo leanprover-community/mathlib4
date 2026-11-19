@@ -8,6 +8,8 @@ module -- shake: keep-all
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 
+import Mathlib.RingTheory.Finiteness.Quotient
+
 /-!
 # Ramification index and inertia degree
 

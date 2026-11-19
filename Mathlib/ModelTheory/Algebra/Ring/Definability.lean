@@ -7,10 +7,10 @@ module
 
 public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.ModelTheory.Definability
-public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.Nullstellensatz
 
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
+import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 
 /-!
 # Definable Subsets in the language of rings

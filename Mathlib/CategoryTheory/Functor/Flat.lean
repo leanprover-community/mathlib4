@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
+import Mathlib.CategoryTheory.Adjunction.Comma
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit

@@ -6,7 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Filter.Bases.Basic
-public import Mathlib.Order.Filter.Prod
+
+import Mathlib.Order.Filter.Prod
 
 /-!
 # N-ary maps of filter

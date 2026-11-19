@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Tactic.Spread
 
+import Mathlib.Basic.Logic.Basic
+
 /-!
 # Semirings and rings
 

@@ -12,6 +12,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.IntervalCases
 
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Algebra.Order.Hom.TypeTags
 import Mathlib.Tactic.Group

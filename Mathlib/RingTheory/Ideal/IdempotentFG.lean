@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.RingTheory.Finiteness.Defs
 
+import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!

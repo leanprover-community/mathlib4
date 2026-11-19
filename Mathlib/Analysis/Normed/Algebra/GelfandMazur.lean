@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.Algebra.Algebra.IsSimpleRing
 public import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
 public import Mathlib.Analysis.Complex.Basic
 

@@ -9,6 +9,8 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
+import Mathlib.RingTheory.DedekindDomain.Factorization
+
 /-!
 # (Absolute) Discriminant and Different Ideal
 

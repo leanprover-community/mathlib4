@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 

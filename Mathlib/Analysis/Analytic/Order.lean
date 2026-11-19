@@ -6,9 +6,11 @@ Authors: Vincent Beffara, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Asymptotics.Theta
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 

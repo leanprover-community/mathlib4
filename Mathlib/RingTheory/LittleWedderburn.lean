@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Basic.Finite.Defs
 
+import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.GroupWithZero.Action.Center
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval

@@ -10,6 +10,8 @@ public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Order.Partition.Equipartition
 
+import Mathlib.Data.Fintype.Pigeonhole
+
 /-!
 # Turán's theorem
 

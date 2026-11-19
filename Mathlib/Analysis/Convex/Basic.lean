@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.Star
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 public import Mathlib.Tactic.Field
 
+import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Ring.Action.Pointwise.Set
 import Mathlib.Tactic.NoncommRing
 

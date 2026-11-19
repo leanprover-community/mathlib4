@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Module.ZLattice.Basic
 
 import Mathlib.Analysis.PSeries
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.Order.SuccPred.Int
 
 /-!
 # Convergence of `p`-series on lattices

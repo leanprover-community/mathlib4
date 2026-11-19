@@ -9,6 +9,7 @@ public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Kernel.Posterior
 
 import Mathlib.Probability.Decision.Risk.Basic
+import Mathlib.Probability.Kernel.Deterministic
 
 /-!
 # Bayes estimator

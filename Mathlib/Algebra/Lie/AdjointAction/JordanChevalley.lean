@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.JordanChevalley
 
 import Mathlib.Algebra.Lie.AdjointAction.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Jordan–Chevalley decomposition and the adjoint action

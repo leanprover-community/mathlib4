@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.FDeriv.Affine
 
+import Mathlib.Analysis.Calculus.FDeriv.Prod
+
 /-!
 # Basic properties of continuously-differentiable functions
 

@@ -10,6 +10,8 @@ public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Order.SetAccumulate
 public import Mathlib.Order.SupClosed
 
+import Mathlib.Algebra.Order.Group.Nat
+
 /-! # Semirings and rings of sets
 
 A semi-ring of sets `C` (in the sense of measure theory) is a family of sets containing `∅`,

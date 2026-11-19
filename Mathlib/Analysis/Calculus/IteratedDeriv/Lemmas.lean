@@ -6,8 +6,10 @@ Authors: Chris Birkbeck, Ruben Van de Velde
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Shift
 
 /-!
 # One-dimensional iterated derivatives

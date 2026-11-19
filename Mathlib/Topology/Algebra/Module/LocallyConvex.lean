@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Topology.Connected.LocallyPathConnected
 
 import Mathlib.Analysis.Convex.PathConnected
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Locally convex topological modules

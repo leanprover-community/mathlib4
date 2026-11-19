@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Order.CompactlyGenerated.Basic
 
+import Mathlib.Data.Set.Lattice.Order
+
 /-!
 # Results about compactness properties for intervals in complete lattices
 -/

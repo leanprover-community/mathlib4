@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 import Mathlib.Algebra.FiniteSupport.Basic
+import Mathlib.Algebra.Order.Monoid.Multiset
 
 /-!
 # Unique factorization and multiplicity

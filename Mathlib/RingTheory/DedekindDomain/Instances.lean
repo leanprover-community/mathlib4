@@ -7,7 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
 
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.Localization.Finiteness
 

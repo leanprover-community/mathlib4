@@ -5,9 +5,10 @@ Authors: Filippo A. E. Nuccio, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Artinian.Ring
+import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 
 /-!
 # Prime spectra of Noetherian and Artinian rings

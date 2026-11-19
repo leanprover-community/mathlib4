@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.ZMod.Basic
 
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Tactic.Linarith
 
 set_option doc.verso true

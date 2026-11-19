@@ -5,10 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Combinatorics.SimpleGraph.Density
 public import Mathlib.Order.Partition.Equipartition
 
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.SetTheory.Cardinal.Order
 

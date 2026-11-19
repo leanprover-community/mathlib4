@@ -12,6 +12,7 @@ public import Mathlib.NumberTheory.MulChar.Duality
 import Mathlib.FieldTheory.Finite.Extension
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 import Mathlib.NumberTheory.NumberField.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Int
 
 /-!
 # Galois theory for cyclotomic fields

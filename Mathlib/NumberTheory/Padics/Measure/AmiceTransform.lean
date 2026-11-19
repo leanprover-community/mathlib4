@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.NumberTheory.Padics.AddChar
 import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 
 /-!
 # The Amice transform

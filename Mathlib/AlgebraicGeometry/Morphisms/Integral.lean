@@ -7,7 +7,8 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
-public import Mathlib.RingTheory.RingHom.Integral
+
+import Mathlib.RingTheory.RingHom.Integral
 
 /-!
 # Integral morphisms of schemes

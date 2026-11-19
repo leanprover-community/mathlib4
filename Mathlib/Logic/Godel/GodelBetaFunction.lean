@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Nat.ChineseRemainder
 public import Mathlib.Data.Nat.Pairing
 
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Nat.Factorial.Basic

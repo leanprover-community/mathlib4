@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SumIntegralComparisons
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.SpecialFunctions.Stirling
+import Mathlib.Data.Nat.Factorial.BigOperators
 
 /-!
 # Bounds on the partial sums of the logarithm

@@ -5,13 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.Option
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

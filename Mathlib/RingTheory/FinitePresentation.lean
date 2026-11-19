@@ -6,9 +6,9 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Finiteness.Ideal
 
 import Mathlib.Basic.Finite.Sum
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!

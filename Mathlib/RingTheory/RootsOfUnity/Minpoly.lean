@@ -5,11 +5,11 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
+import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!

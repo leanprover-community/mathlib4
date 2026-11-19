@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Module.HahnEmbedding
 public import Mathlib.Analysis.RCLike.Basic
 
 import Mathlib.Algebra.Module.LinearMap.Rat
+import Mathlib.Algebra.Module.Submodule.Order
 import Mathlib.Basic.Real.Embedding
 import Mathlib.GroupTheory.DivisibleHull
 

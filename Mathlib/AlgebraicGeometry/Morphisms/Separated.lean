@@ -7,9 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 import Mathlib.AlgebraicGeometry.PullbackCarrier
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 # Separated morphisms

@@ -5,10 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Data.ZMod.QuotientRing
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+
+import Mathlib.Data.ZMod.QuotientRing
 
 /-! # Rings with finite quotients
 

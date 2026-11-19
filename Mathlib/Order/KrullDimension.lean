@@ -10,6 +10,8 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
 
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Tactic.FinCases
 

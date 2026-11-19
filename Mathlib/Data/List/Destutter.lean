@@ -10,6 +10,7 @@ public import Mathlib.Order.Basic
 
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Dedup
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Destuttering of Lists

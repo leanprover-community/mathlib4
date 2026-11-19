@@ -7,6 +7,8 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Aleph
 
+import Mathlib.Algebra.GroupWithZero.Divisibility
+
 /-!
 # Cardinal arithmetic
 

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.PNat.Defs
 
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Data.Int.Order.Basic
 
 /-!
 # Further lemmas for the Rational Numbers

@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Filter.Finite
 
+import Mathlib.Order.CompleteLattice.Finset
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

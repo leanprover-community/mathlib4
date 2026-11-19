@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.Factorization.Induction
 
 /-!
 # The Möbius function and Möbius inversion

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.RingTheory.Coprime.Basic
 
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.RingTheory.Coprime.Lemmas
 

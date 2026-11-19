@@ -7,6 +7,8 @@ module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 
+import Mathlib.Data.List.Iterate
+
 /-!
 # Properties of cyclic permutations constructed from lists/cycles
 

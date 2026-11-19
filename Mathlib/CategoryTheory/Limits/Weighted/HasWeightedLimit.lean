@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+import Mathlib.CategoryTheory.ObjectProperty.Equivalence
+
 /-!
 # Weighted limits
 

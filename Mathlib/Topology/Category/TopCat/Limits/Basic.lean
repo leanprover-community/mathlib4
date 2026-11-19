@@ -7,8 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.Topology.Category.TopCat.Adjunctions
+
+import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # The category of topological spaces has all limits and colimits

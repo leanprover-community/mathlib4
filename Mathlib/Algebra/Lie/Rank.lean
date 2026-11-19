@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Lie.EngelSubalgebra
 public import Mathlib.Algebra.Module.LinearMap.Polynomial
-public import Mathlib.LinearAlgebra.Eigenspace.Zero
+
+import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Rank of a Lie algebra and regular elements

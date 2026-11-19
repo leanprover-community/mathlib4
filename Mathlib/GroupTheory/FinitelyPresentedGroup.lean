@@ -9,6 +9,8 @@ module
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.Schreier
 
+import Mathlib.Basic.Finite.Sum
+
 /-!
 # Finitely Presented Groups
 

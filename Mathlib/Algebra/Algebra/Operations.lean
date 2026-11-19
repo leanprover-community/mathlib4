@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 public import Mathlib.Algebra.Module.Submodule.Finsupp
 public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.Algebra.Ring.Submonoid.Pointwise
 public import Mathlib.Data.Set.Semiring
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+
+import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 
 /-!
 # Multiplication and division of submodules of an algebra.

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.Finset.Fin
 public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Order.Interval.Set.Fin
+
+import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # Finite intervals in `Fin n`

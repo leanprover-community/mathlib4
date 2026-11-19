@@ -8,6 +8,7 @@ module
 public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.BooleanAlgebra
 
+import Mathlib.Basic.Nontrivial.Basic
 import Mathlib.Data.Set.Lattice.Image
 
 /-!

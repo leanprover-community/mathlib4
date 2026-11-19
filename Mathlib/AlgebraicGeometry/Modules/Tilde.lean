@@ -14,6 +14,7 @@ public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Localization
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Module.LocalizedModule.Away
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 import Mathlib.Data.Fintype.Order
 
 /-!

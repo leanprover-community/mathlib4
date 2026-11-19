@@ -5,11 +5,11 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 import Mathlib.Algebra.Algebra.ZMod
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.RingTheory.Algebraic.Cardinality
 

@@ -6,9 +6,10 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Order.Fin.Tuple
+
+import Mathlib.Algebra.Group.Fin.Tuple
 
 /-!
 # Collections of tuples of naturals with the same sum

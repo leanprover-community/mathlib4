@@ -8,7 +8,8 @@ module
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.Lipschitz
+
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Group actions by isometries

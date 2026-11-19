@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Separation.GDelta
 
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Topology.UrysohnsLemma
 
 /-!

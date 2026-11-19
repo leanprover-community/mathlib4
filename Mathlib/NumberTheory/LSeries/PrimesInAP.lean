@@ -10,6 +10,7 @@ public import Mathlib.NumberTheory.LSeries.DirichletContinuation
 
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.Nonvanishing
+import Mathlib.NumberTheory.SumPrimeReciprocals
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression

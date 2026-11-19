@@ -7,12 +7,13 @@ module
 
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.NumberTheory.ModularForms.Derivative
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Complex.SqrtDeriv
 import Mathlib.Analysis.Normed.Ring.InfiniteProd
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.DedekindEta
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
 /-!
 # The modular discriminant Δ

@@ -5,8 +5,9 @@ Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Algebra.SMul
+
+import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
 /-!
 # `C^n` sections

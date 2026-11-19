@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.KrullDimension.Module
 public import Mathlib.RingTheory.Regular.RegularSequence
 
 import Mathlib.RingTheory.Flat.TorsionFree
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
 /-!

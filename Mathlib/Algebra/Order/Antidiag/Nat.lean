@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
+import Mathlib.Algebra.Group.Fin.Tuple
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Tactic.FinCases
 

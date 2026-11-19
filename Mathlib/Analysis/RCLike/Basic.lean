@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Algebra.IsSimpleRing
 public import Mathlib.Algebra.BigOperators.Balance
 public import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Algebra.Order.Star.Basic
@@ -15,6 +14,8 @@ public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.Algebra.Algebra.IsSimpleRing
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ

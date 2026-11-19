@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Topology.Connected.PathConnected
 
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.LinearAlgebra.Projection
 
 set_option doc.verso true

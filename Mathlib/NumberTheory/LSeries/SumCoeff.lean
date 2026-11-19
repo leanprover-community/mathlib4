@@ -12,7 +12,9 @@ public import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.NumberTheory.AbelSummation
+import Mathlib.Topology.Order.IsLocallyClosed
 
 /-!
 # Partial sums of coefficients of L-series

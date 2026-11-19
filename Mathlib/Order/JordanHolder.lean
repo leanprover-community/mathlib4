@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.RelSeries
 
+import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Equiv.Functor

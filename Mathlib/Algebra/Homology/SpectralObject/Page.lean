@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.SpectralObject.Cycles
-public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.CategoryTheory.ComposableArrows.Three
+
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # Spectral objects in abelian categories

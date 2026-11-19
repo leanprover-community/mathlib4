@@ -9,6 +9,8 @@ public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.Nullstellensatz
 
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 
 /-!

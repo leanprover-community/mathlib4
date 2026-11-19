@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.Distribution.DerivNotation
 
+import Mathlib.MeasureTheory.Function.Holder
+
 /-!
 # Continuously differentiable functions with compact support
 

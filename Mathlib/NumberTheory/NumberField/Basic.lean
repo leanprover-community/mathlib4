@@ -5,11 +5,11 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.CharZero.AddMonoidHom
 
 /-!
 # Number fields

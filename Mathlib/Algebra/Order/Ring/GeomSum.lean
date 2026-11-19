@@ -5,9 +5,10 @@ Authors: Neil Strickland
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.GeomSum
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Partial sums of geometric series in an ordered ring

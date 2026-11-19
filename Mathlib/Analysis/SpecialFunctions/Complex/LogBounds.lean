@@ -5,9 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Analysis.SpecificLimits.RCLike
 

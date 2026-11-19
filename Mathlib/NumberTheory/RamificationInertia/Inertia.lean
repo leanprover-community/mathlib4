@@ -5,8 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.RamificationInertia.Inertia
+
+import Mathlib.RingTheory.Finiteness.Quotient
 
 /-!
 # Ramification index and inertia degree

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.AlgebraicGeometry.Properties
 
+import Mathlib.Algebra.Ring.Hom.InjSurj
+
 /-!
 # Function field of integral schemes
 

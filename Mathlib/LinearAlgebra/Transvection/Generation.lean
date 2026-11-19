@@ -9,6 +9,7 @@ module
 public import Mathlib.LinearAlgebra.Transvection.Basic
 
 import Mathlib.LinearAlgebra.Center
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Dilatransvections generate the special linear group

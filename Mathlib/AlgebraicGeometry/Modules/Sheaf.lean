@@ -13,6 +13,9 @@ public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.Topology.Sheaves.Module
 
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+
 /-!
 # The category of sheaves of modules over a scheme
 

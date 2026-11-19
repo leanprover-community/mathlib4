@@ -5,9 +5,11 @@ Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Small.List
 public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Exponential
+
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Logic.Small.List
 
 /-!
 # Fixed points of normal functions

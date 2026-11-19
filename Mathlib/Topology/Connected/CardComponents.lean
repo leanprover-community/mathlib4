@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Card
 public import Mathlib.Topology.Connected.Clopen
 
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.Separation.Connected

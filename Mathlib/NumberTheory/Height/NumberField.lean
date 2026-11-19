@@ -17,6 +17,7 @@ import Mathlib.NumberTheory.Height.MvPolynomial
 import Mathlib.NumberTheory.Height.Northcott
 import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 import Mathlib.NumberTheory.NumberField.ProductFormula
+import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # Heights over number fields

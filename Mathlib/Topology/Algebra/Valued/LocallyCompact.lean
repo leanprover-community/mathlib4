@@ -5,12 +5,14 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.ProperSpace
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.LocalRing.Quotient
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+import Mathlib.Analysis.Normed.Field.ProperSpace
+import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field

@@ -5,10 +5,11 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.IsolatedZeros
 public import Mathlib.Analysis.Meromorphic.NormalForm
 public import Mathlib.Analysis.Meromorphic.TrailingCoefficient
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
+import Mathlib.Analysis.Meromorphic.IsolatedZeros
 
 /-!
 # Factorized Rational Functions

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.GroupTheory.GroupAction.Defs
@@ -17,6 +16,7 @@ public import Mathlib.Order.Setoid.Basic
 
 import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Order.Group.Action
 
 /-!
 # Basic properties of group actions

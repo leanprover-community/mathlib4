@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Lie.CartanSubalgebra
 public import Mathlib.Algebra.Lie.Rank
 
+import Mathlib.LinearAlgebra.Eigenspace.Zero
+
 /-!
 # Existence of Cartan subalgebras
 

@@ -5,7 +5,6 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.Data.Fin.VecNotation
@@ -15,6 +14,7 @@ public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
 
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Rays in modules

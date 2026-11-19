@@ -9,6 +9,8 @@ public import Mathlib.NumberTheory.Padics.WithVal
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
+import Mathlib.RingTheory.Int.Basic
+
 /-!
 # Isomorphisms between `adicCompletion ℚ` and `ℚ_[p]`
 

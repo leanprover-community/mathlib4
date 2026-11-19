@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
+import Mathlib.RingTheory.Finiteness.Finsupp
 import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Noetherian.Nilpotent

@@ -11,6 +11,7 @@ public import Mathlib.Data.Int.Interval
 public import Mathlib.Order.Disjointed
 
 import Mathlib.Algebra.Order.Disjointed
+import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Tactic.Ring

@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.AbsMax
 
 import Mathlib.Analysis.Complex.RemovableSingularity
+import Mathlib.Analysis.Normed.Module.Extr
 import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!

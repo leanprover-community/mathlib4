@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.Tactic.ToAdditive
 
+import Mathlib.Util.CompileInductive
+
 /-!
 # Walking pairs
 

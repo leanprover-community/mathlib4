@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.CategoryTheory.Limits.FintypeCat
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
@@ -14,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.SetTheory.Cardinal.Finite
 
+import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.SetTheory.Cardinal.NatCard

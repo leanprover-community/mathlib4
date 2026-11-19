@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
 
+import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
+import Mathlib.Analysis.Calculus.FDeriv.Mul
+
 /-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
 

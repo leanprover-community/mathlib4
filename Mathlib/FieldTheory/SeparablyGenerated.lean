@@ -5,10 +5,10 @@ Authors: Andrew Yang, Christian Merten, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.FieldTheory.SeparableClosure
 
 import Mathlib.Algebra.CharP.IntermediateField
+import Mathlib.Algebra.MvPolynomial.Nilpotent
 import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.RingTheory.Polynomial.GaussLemma

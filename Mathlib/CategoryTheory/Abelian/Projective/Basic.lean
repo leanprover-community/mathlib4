@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
+
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 
 /-!
 # Projective objects in abelian categories

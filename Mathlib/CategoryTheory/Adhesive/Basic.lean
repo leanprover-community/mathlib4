@@ -7,8 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Extensive
 
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Adhesive categories

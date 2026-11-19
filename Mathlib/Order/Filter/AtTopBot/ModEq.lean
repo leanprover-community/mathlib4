@@ -16,6 +16,7 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.AtTopBot.Monoid
+import Mathlib.Order.Nat
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

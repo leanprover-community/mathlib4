@@ -7,8 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
+
+import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 
 /-!
 # Smallness of a property of objects

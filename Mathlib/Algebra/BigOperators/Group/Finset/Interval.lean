@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
 
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Sums/products over integer intervals

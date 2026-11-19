@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Nat.Fib.Basic
 
+import Mathlib.Algebra.Divisibility.Units
+
 /-!
 # Fibonacci numbers extended onto the integers
 

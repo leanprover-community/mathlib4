@@ -12,6 +12,7 @@ import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # The normal basis theorem

@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.GroupTheory.Perm.Cycle.Factors
 public import Mathlib.Tactic.NormNum.GCD
 
+import Mathlib.Data.Set.Pairwise.List
 import Mathlib.GroupTheory.Perm.Closure
 
 /-!

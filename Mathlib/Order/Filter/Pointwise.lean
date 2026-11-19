@@ -15,6 +15,7 @@ public import Mathlib.Order.Filter.NAry
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!

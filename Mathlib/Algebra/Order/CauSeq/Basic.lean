@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Order.Setoid.Basic
 
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Ring.Pi
 
 /-!

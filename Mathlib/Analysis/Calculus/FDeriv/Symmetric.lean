@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Analytic.IteratedFDeriv
 public import Mathlib.Analysis.Calculus.MeanValue
 
 import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Topology.Instances.RealVectorSpace
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

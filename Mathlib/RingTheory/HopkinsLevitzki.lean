@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 
+import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 import Mathlib.RingTheory.Noetherian.Nilpotent
 
 /-!

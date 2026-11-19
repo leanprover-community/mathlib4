@@ -13,6 +13,7 @@ import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
+import Mathlib.CategoryTheory.Generator.Preadditive
 import Mathlib.CategoryTheory.Preadditive.LiftToFinset
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 

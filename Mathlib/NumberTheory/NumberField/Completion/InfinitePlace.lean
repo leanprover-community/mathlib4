@@ -7,6 +7,8 @@ module
 
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
+import Mathlib.Topology.Instances.Complex
+
 /-!
 # The completion of a number field at an infinite place
 

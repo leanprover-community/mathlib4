@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
 
+import Mathlib.RingTheory.Nakayama
+
 /-!
 # Basis of cotangent space can be realized as a presentation
 

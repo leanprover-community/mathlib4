@@ -9,7 +9,8 @@ public import Mathlib.Analysis.AbsoluteValue.Equivalence
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.NumberField.Norm
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-public import Mathlib.Topology.Instances.Complex
+
+import Mathlib.Topology.Instances.Complex
 
 /-!
 # Infinite places of a number field

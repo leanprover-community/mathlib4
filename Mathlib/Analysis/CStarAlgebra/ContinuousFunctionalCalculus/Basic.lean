@@ -9,6 +9,8 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometr
 public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
+import Mathlib.Topology.ContinuousMap.Units
+
 /-! # Continuous functional calculus
 
 In this file we construct the `continuousFunctionalCalculus` for a normal element `a` of a

@@ -6,11 +6,11 @@ Authors: Peter Nelson, Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
 public import Mathlib.Order.Atoms
 
 import Mathlib.Basic.Finite.Prod
+import Mathlib.Data.Finset.Order
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!

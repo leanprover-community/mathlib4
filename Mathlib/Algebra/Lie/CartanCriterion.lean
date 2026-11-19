@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Lagrange
 
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple

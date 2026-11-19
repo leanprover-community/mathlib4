@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Category
 

@@ -5,7 +5,11 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.ObjectProperty.Comma
+public import Mathlib.CategoryTheory.Presentable.Directed
+public import Mathlib.CategoryTheory.Presentable.Retracts
 public import Mathlib.CategoryTheory.Presentable.Uniformization
 
 import Mathlib.CategoryTheory.Comma.LocallySmall

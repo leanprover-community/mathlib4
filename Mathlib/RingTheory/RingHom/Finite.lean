@@ -6,8 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Localization.Finiteness
 
+import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!

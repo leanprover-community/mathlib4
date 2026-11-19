@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 
 import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
+import Mathlib.CategoryTheory.Limits.Preserves.Over
 import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 
 /-!

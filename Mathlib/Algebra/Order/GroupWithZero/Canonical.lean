@@ -16,8 +16,9 @@ public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Algebra.Order.Monoid.TypeTags
-public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Set.Function
+
+import Mathlib.Data.Int.Basic
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined

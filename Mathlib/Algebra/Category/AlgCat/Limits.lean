@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.Algebra.Regular.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.Limits
 

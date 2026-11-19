@@ -8,9 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 public import Mathlib.MeasureTheory.Measure.RegularityCompacts
-public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Properties of the integral of `mulExpNegMulSq`

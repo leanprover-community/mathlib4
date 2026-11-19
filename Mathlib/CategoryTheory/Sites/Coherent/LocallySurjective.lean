@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 
 /-!

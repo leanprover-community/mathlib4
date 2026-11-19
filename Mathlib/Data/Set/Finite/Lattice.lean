@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Set.Lattice.Image
 
 import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Finiteness of unions and intersections

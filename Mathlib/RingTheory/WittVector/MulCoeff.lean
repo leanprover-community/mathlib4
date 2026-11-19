@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.WittVector.Truncated
 
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Supported
 
 /-!

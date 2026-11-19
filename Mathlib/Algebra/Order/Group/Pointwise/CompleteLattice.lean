@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
+import Mathlib.Algebra.Order.Group.OrderIso
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

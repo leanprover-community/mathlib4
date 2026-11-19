@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Action.Pretransitive
 public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
 
+import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!

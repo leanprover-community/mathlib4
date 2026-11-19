@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 
 /-!

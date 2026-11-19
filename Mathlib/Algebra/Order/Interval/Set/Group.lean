@@ -5,13 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Interval.Set.Defs
 
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Order.Interval.Set.Basic
 
 /-! # Lemmas about arithmetic operations and intervals -/

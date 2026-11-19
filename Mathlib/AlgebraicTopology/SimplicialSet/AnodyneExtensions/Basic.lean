@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
 public import Mathlib.CategoryTheory.SmallObject.Basic
 
+import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
+import Mathlib.CategoryTheory.ExtremalEpi
 
 /-!
 # Anodyne extensions

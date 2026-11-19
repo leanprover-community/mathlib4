@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 public import Mathlib.Order.Int.ConditionallyCompleteOrder
 
+import Mathlib.Algebra.Order.Interval.Set.Monoid
 import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!

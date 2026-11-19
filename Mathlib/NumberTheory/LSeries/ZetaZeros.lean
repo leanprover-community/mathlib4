@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 import Mathlib.Analysis.Analytic.Order
+import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 import Mathlib.NumberTheory.LSeries.Nonvanishing
 
 /-!

@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 
+import Mathlib.Data.Nat.Set
+
 /-!
 # Density of simple functions
 

@@ -10,6 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.RingTheory.LocalRing.Basic
 
 set_option doc.verso true

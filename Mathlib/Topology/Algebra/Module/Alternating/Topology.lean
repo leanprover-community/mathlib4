@@ -8,6 +8,8 @@ module
 public import Mathlib.Topology.Algebra.Module.Alternating.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
+import Mathlib.Topology.Algebra.SeparationQuotient.Section
+
 /-!
 # Topology on continuous alternating maps
 

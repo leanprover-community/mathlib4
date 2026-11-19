@@ -6,12 +6,12 @@ Authors: Andrew Yang, Christian Merten
 module
 
 public import Mathlib.Algebra.Category.Ring.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Over
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.FinitePresentation
 
 import Mathlib.Algebra.Category.Ring.FilteredColimits
+import Mathlib.CategoryTheory.Limits.Preserves.Over
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
 
 /-!

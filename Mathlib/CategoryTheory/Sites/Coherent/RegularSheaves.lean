@@ -10,9 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
-public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 import Mathlib.CategoryTheory.Limits.Final.ParallelPair
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 /-!
 # Sheaves for the regular topology
