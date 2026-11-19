@@ -198,7 +198,7 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
     let x (g : G) : X := X.ρ (γ g) (s (y.val (i (Quotient.mk' g))))
     refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
     · simp [x, ← mul_apply_eq_comp, ← map_mul, hmk, hγ]
-    · simp [x, hom_comm_apply, hs, ← y.2 (γ g), γ]
+    · simp [x, hom_comm_apply, hs, ← y.property (γ g), γ]
 
 end Coind
 section Coind'
