@@ -405,27 +405,34 @@ theorem outerMeasure_le_lintegral_liminfRatio (hρ : ∀ ⦃t⦄, μ t = 0 → �
     _ ≤ t * ∫⁻ x in s, g x ∂μ := by grw [setLIntegral_le_lintegral (⋃ n, A n)]
 
 /-- Let `ρ` be an outer measure that vanishes on `μ`-null sets.
-If `g` is a measurable function such that `v.liminfRatio ρ x ≤ g x` for all `x ∈ s`,
+If `g` is an a.e.-measurable function such that `v.liminfRatio ρ x ≤ g x` for all `x ∈ s`,
 then `ρ s ≤ ∫⁻ x in s, g x ∂μ`. -/
 theorem outerMeasure_le_lintegral_of_liminfRatio_le (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0)
-    {s : Set α} {g : α → ℝ≥0∞} (hg : Measurable g) (h : ∀ x ∈ s, v.liminfRatio ρ x ≤ g x) :
+    {s : Set α} {g : α → ℝ≥0∞} (hg : AEMeasurable g (μ.restrict s))
+    (h : ∀ x ∈ s, v.liminfRatio ρ x ≤ g x) :
     ρ s ≤ ∫⁻ x in s, g x ∂μ := by
   /- We can't apply `lintegral_mono_ae` directly, because `h` is not an a.e. inequality
   with respect to `μ.restrict s` unless `s` is measurable. Instead, we replace `v.liminfRatio ρ`
-  with a measurable function `φ ≤ v.liminfRatio ρ` that has the same integral over `s`. -/
+  with a measurable function `φ ≤ v.liminfRatio ρ` that has the same integral over `s`,
+  and `g` with its measurable modification `hg.mk g`. -/
   obtain ⟨φ, hφm, hφf, hφeq⟩ := exists_measurable_le_lintegral_eq (μ.restrict s) (v.liminfRatio ρ)
   refine (v.outerMeasure_le_lintegral_liminfRatio hρ s).trans (hφeq.trans_le ?_)
+  rw [lintegral_congr_ae hg.ae_eq_mk]
   refine lintegral_mono_ae <| (ae_iff).2 ?_
   simp only [not_le]
-  rw [Measure.restrict_apply (measurableSet_lt hg hφm)]
-  exact measure_mono_null (fun x ⟨hx, hxs⟩ ↦ (hx.trans_le ((hφf x).trans (h x hxs))).false)
-    measure_empty
+  rw [Measure.restrict_apply (measurableSet_lt hg.measurable_mk hφm)]
+  -- On `s`, `φ > hg.mk g` is only possible where `g ≠ hg.mk g`.
+  refine measure_mono_null (t := {x | ¬g x = hg.mk g x} ∩ s) ?_
+    (nonpos_iff_eq_zero.1 <| (le_restrict_apply _ _).trans_eq (ae_iff.1 hg.ae_eq_mk))
+  rintro x ⟨hx, hxs⟩
+  refine ⟨fun hgx ↦ ?_, hxs⟩
+  exact (lt_irrefl _ (hx.trans_le ((hφf x).trans ((h x hxs).trans_eq hgx))))
 
 /-- Let `ρ` be an outer measure that vanishes on `μ`-null sets.
 If `v.liminfRatio ρ x ≤ c` for all `x ∈ s`, then `ρ s ≤ c * μ s`. -/
 theorem outerMeasure_le_mul_of_liminfRatio_le (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) {s : Set α}
     {c : ℝ≥0∞} (h : ∀ x ∈ s, v.liminfRatio ρ x ≤ c) : ρ s ≤ c * μ s := by
-  simpa using v.outerMeasure_le_lintegral_of_liminfRatio_le hρ measurable_const h
+  simpa using v.outerMeasure_le_lintegral_of_liminfRatio_le hρ aemeasurable_const h
 
 /-- Let `ρ` be an outer measure that vanishes on `μ`-null sets.
 If `v.liminfRatio ρ x = 0` for all `x ∈ s`, then `ρ s = 0`. -/
