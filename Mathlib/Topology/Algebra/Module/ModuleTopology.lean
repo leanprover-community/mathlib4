@@ -54,7 +54,7 @@ and now the pullback of `U` under `•` is just the pullback along the continuou
 so it's open. The proof for `+` is similar.
 
 As a consequence of this, we see that if `φ : A → M` is a linear map between topological `R`-modules
-modules and if `A` has the module topology, then `φ` is automatically continuous.
+and if `A` has the module topology, then `φ` is automatically continuous.
 Indeed the argument above shows that if `A → M` is linear then the module
 topology on `A` is `≤` the pullback of the module topology on `M` (because it's the inf of a set
 containing this topology) which is the definition of continuity.
@@ -106,7 +106,6 @@ the module topology.
 
 * The module topology is a functor from the category of `R`-modules
   to the category of topological `R`-modules, and it's an adjoint to the forgetful functor.
-
 -/
 
 public section
@@ -219,7 +218,8 @@ protected theorem isoₛₗ (hσ : Continuous σ) (hσ' : Continuous σ') (e : A
     let g' : B' →ₛₗ[σ'] A := e.symm
     let h : A →+ B' := e
     let h' : B' →+ A := e.symm
-    simp_rw [e.toHomeomorph.symm.isInducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
+    simp_rw [e.toHomeomorph.symm.isInducing.eq_induced, eq_moduleTopology R A, moduleTopology,
+      induced_sInf]
     apply congr_arg
     ext τ -- from this point on the definitions of `g`, `g'` etc. above don't work without `@`.
     rw [Set.mem_image]
@@ -354,7 +354,7 @@ theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpac
 variable (R) in
 theorem isTopologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : IsTopologicalAddGroup C where
-  continuous_add := (IsModuleTopology.toContinuousAdd R C).1
+  continuous_add := (IsModuleTopology.toContinuousAdd R C).continuous_add
   continuous_neg := continuous_neg R C
 
 @[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
@@ -695,7 +695,7 @@ include R in
 and if `D` is given the module topology, then `D` is a topological ring. -/
 theorem isTopologicalRing : IsTopologicalRing D where
   -- Proof: we have already checked all the axioms above.
-  continuous_add := (toContinuousAdd R D).1
+  continuous_add := (toContinuousAdd R D).continuous_add
   continuous_mul := continuous_mul_of_finite R D
   continuous_neg := continuous_neg R D
 

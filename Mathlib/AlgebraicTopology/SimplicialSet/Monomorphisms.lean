@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 
 In this file, we show that the class of monomorphisms in `SSet` is stable
 under coproducts, pushouts, filtered colimits and transfinite compositions.
-
 -/
 
 public section

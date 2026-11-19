@@ -15,7 +15,6 @@ import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
-
 -/
 
 @[expose] public section
@@ -347,7 +346,7 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     refine le_ciInf fun r => ?_
     obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
     refine ciInf_set_le hf (hxy.trans ?_)
-    exact_mod_cast hyr
+    exact mod_cast hyr
   · refine le_ciInf fun q => ?_
     have hq := q.prop
     rw [mem_Ioi] at hq
@@ -373,11 +372,11 @@ theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) 
   ext
   simpa using exists_rat_lt _
 
-theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-  exact iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
+theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ :=
+  iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
 
-theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
-  exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
+theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ :=
+  iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
 
 /-- Exponentiation is eventually larger than linear growth. -/
 lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1 : ℝ) < a ^ m := by

@@ -40,6 +40,13 @@ file used by the library's own linters.
 
   **Requirements:** `gh` (GitHub CLI) installed and authenticated (`gh auth login`).
 
+- `dup_decls_report.lean`
+  Runs the `Mathlib.Tactic.DuplicateDecls` linter
+  (`lintDuplicateDeclarations`) for theorems, instances, and defs, logging any duplicate
+  declarations found. Run in CI by the `duplicate_decls_report.yml` workflow
+  (see [docs/workflows.md](../docs/workflows.md)). Run locally with
+  `lake env lean scripts/dup_decls_report.lean`.
+
 **Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
@@ -176,8 +183,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 - `set_option_utils.py`
   Shared configuration for `add_set_option.py` and `rm_set_option.py`. Contains the list of
-  managed options (`backward.isDefEq.respectTransparency`, `backward.whnf.reducibleClassField`)
-  and helpers for generating `set_option` lines and regex patterns.
+  managed options and helpers for generating `set_option` lines and regex patterns.
 
 - `add_set_option.py`
   Adds `set_option ... false in` before declarations that fail to build. Traverses the DAG
@@ -187,11 +193,15 @@ to module `Foo.Bar` (no `srcDir` indirection).
   Usage: `python3 scripts/add_set_option.py [--option NAME] [--max-workers N] [--timeout N] [--files FILE ...]`
 
 - `rm_set_option.py`
-  Removes unnecessary `set_option ... false in` lines. Only targets lines without a trailing
+  Removes unnecessary `set_option ... in` lines. Only targets lines without a trailing
   comment; lines like `set_option ... false in -- reason` are left untouched. Traverses the DAG
   **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
   cached builds of downstream files. Tries removing all occurrences at once; if that fails,
-  falls back to one-at-a-time removal.
+  falls back to one-at-a-time removal. Only the edited files are rebuilt, so options that
+  change what a declaration exports (`EXPORT_AFFECTING_OPTIONS` in `set_option_utils.py`,
+  e.g. `backward.privateInPublic`) are skipped unless passed via `--option`. It also removes
+  project-wide `backward.*` entries for these options from `lakefile.lean`, but leaves other
+  entries (such as linter settings) alone.
   Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...] [--resume]`
 
 - `add_module_set_option.py`, `rm_module_set_option.py`
@@ -228,15 +238,15 @@ to module `Foo.Bar` (no `srcDir` indirection).
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
 - `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
-- `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
+- `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `export_crossrefs.lean`
-  Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`,
-  `@[kerodon]`, `@[lmfdb]`, `@[dlmf]`, or `@[oeis]` (declaration name, source file, line number, and the cross-reference ids).
+  Exports a JSON dictionary of every declaration with a `CrossRef.Tag` attribute (e.g.: `@[stacks]`)
+  with declaration name, source file, line number, cross-reference ids and resolved url(s).
   It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
   so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
   The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded
@@ -245,6 +255,10 @@ to module `Foo.Bar` (no `srcDir` indirection).
   successful master build and publishes the result to the
   [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
   (committing only when the entries actually change).
+- [`crossref-diff.yml`](../.github/workflows/crossref-diff.yml)
+  Post-build workflow that diffs a PR build's `crossrefs.json` against the master build at the
+  PR's merge base, then comments on the PR with the cross-references it adds, each linked to its
+  database entry. The table is rendered by mathlib-ci's `pr_summary/crossrefsDiff.py`.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
@@ -320,7 +334,7 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   (leanprover/lean4#12805 or later).
 
 **API surrounding CI**
-- `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+- `check-title-labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
 
 **Docker images**
 - `docker_build.sh` builds the `lean4`, `gitpod4`, and `gitpod4-blueprint` Docker images.

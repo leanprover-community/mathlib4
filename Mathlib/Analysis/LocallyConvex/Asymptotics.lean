@@ -21,7 +21,6 @@ and families of seminorms.
 * `PolynormableSpace.isLittleOTVS_iff`
 * `WithSeminorms.isBigOTVS_iff`
 * `WithSeminorms.isLittleOTVS_iff`
-
 -/
 
 @[expose] public section
@@ -38,11 +37,11 @@ namespace Seminorm
 
 theorem isBigO_comp_iff {p : Seminorm 𝕜 E} {q : Seminorm 𝕜 F} :
     (p ∘ f) =O[l] (q ∘ g) ↔ ∃ C : ℝ≥0, p ∘ f ≤ᶠ[l] (C • q) ∘ g := by
-  simp [Asymptotics.isBigO_iff_nnnorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
+  simp [Asymptotics.isBigO_iff_nnNorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
 
 theorem isLittleO_comp_iff {p : Seminorm 𝕜 E} {q : Seminorm 𝕜 F} :
     (p ∘ f) =o[l] (q ∘ g) ↔ ∀ ε : ℝ≥0, ε ≠ 0 → p ∘ f ≤ᶠ[l] (ε • q) ∘ g := by
-  simp [Asymptotics.isLittleO_iff_nnnorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
+  simp [Asymptotics.isLittleO_iff_nnNorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
 
 end Seminorm
 
@@ -111,7 +110,8 @@ theorem isBigOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace �
     · intro r₁ r₂ h ⟨q, q_cont, hq⟩
       exact ⟨q, q_cont, hq.mono fun x hx ↦ (h _).trans hx⟩
     · intro r C ⟨q, q_cont, hq⟩
-      exact ⟨C • q, q_cont.const_smul _, hq.mono fun x hx ↦ (smul_le_smul_of_nonneg_left hx C.2)⟩
+      exact ⟨C • q, q_cont.const_smul _,
+        hq.mono fun x hx ↦ (smul_le_smul_of_nonneg_left hx C.property)⟩
 
 theorem isBigOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, ∃ C : ℝ≥0, p i ∘ f ≤ᶠ[l] ((C • s.sup q) ∘ g) := by
@@ -148,7 +148,7 @@ theorem isLittleOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace
     · intro r C ⟨q, q_cont, hq⟩
       refine ⟨C • q, q_cont.const_smul _, fun ε ε_ne ↦ hq ε ε_ne |>.mono fun x hx ↦ ?_⟩
       rw [smul_comm]
-      exact smul_le_smul_of_nonneg_left hx C.2
+      exact smul_le_smul_of_nonneg_left hx C.property
 
 theorem isLittleOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =o[𝕜; l] g ↔

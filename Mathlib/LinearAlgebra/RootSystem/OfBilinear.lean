@@ -55,17 +55,17 @@ variable (hx : IsReflective B x)
 
 /-- The coroot attached to a reflective vector. -/
 def coroot : M →ₗ[R] R where
-  toFun y := (hx.2 y).choose
+  toFun y := (hx.dvd_two_mul y).choose
   map_add' a b := by
-    refine hx.1.1 ?_
+    refine hx.regular.left ?_
     simp only
-    rw [← (hx.2 (a + b)).choose_spec, mul_add, ← (hx.2 a).choose_spec, ← (hx.2 b).choose_spec,
-      map_add, mul_add]
+    rw [← (hx.dvd_two_mul (a + b)).choose_spec, mul_add, ← (hx.dvd_two_mul a).choose_spec,
+      ← (hx.dvd_two_mul b).choose_spec, map_add, mul_add]
   map_smul' r a := by
-    refine hx.1.1 ?_
+    refine hx.regular.left ?_
     simp only [RingHom.id_apply]
-    rw [← (hx.2 (r • a)).choose_spec, smul_eq_mul, mul_left_comm, ← (hx.2 a).choose_spec, map_smul,
-      two_mul, smul_eq_mul, two_mul, mul_add]
+    rw [← (hx.dvd_two_mul (r • a)).choose_spec, smul_eq_mul, mul_left_comm,
+      ← (hx.dvd_two_mul a).choose_spec, map_smul, two_mul, smul_eq_mul, two_mul, mul_add]
 
 @[simp]
 lemma apply_self_mul_coroot_apply {y : M} : B x x * coroot B hx y = 2 * B x y :=
@@ -74,7 +74,7 @@ lemma apply_self_mul_coroot_apply {y : M} : B x x * coroot B hx y = 2 * B x y :=
 @[simp]
 lemma smul_coroot : B x x • coroot B hx = 2 • B x := by
   ext y
-  simp [smul_apply, smul_eq_mul, nsmul_eq_mul, Nat.cast_ofNat, apply_self_mul_coroot_apply]
+  simp [smul_eq_mul, nsmul_eq_mul, Nat.cast_ofNat, apply_self_mul_coroot_apply]
 
 @[simp]
 lemma coroot_apply_self : coroot B hx x = 2 :=
@@ -83,9 +83,9 @@ lemma coroot_apply_self : coroot B hx x = 2 :=
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
-  simp only [reflection_apply, map_sub, map_smul, sub_apply,
-    smul_apply, smul_eq_mul]
-  refine hx.1.1 ?_
+  simp only [reflection_apply, map_sub, map_smul, LinearMap.sub_apply,
+    LinearMap.smul_apply, smul_eq_mul]
+  refine hx.regular.left ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]
   rw [sub_eq_iff_eq_add, ← hSB.eq x y, RingHom.id_apply, mul_assoc _ _ (B x x), mul_comm _ (B x x),
     apply_self_mul_coroot_apply]
@@ -96,14 +96,14 @@ lemma reflective_reflection (hSB : LinearMap.IsSymm B) {y : M}
     IsReflective B (Module.reflection (coroot_apply_self B hx) y) := by
   constructor
   · rw [isOrthogonal_reflection B hx hSB]
-    exact hy.1
+    exact hy.regular
   · intro z
     have hz : Module.reflection (coroot_apply_self B hx)
-        (Module.reflection (coroot_apply_self B hx) z) = z := by
-      exact (LinearEquiv.eq_symm_apply (Module.reflection (coroot_apply_self B hx))).mp rfl
+        (Module.reflection (coroot_apply_self B hx) z) = z :=
+      (LinearEquiv.eq_symm_apply (Module.reflection (coroot_apply_self B hx))).mp rfl
     rw [← hz, isOrthogonal_reflection B hx hSB,
       isOrthogonal_reflection B hx hSB]
-    exact hy.2 _
+    exact hy.dvd_two_mul _
 
 end IsReflective
 
@@ -120,22 +120,22 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
   toLinearMap := Dual.eval R M
   root := Embedding.subtype fun x ↦ IsReflective B x
   coroot :=
-    { toFun := fun x => IsReflective.coroot B x.2
+    { toFun := fun x => IsReflective.coroot B x.property
       inj' := by
         intro x y hxy
         simp only [mem_ofPred_eq] at hxy -- x* = y*
-        have h1 : ∀ z, IsReflective.coroot B x.2 z = IsReflective.coroot B y.2 z :=
+        have h1 : ∀ z, IsReflective.coroot B x.property z = IsReflective.coroot B y.property z :=
           fun z => congrFun (congrArg DFunLike.coe hxy) z
-        have h2x : ∀ z, B x x * IsReflective.coroot B x.2 z =
-            B x x * IsReflective.coroot B y.2 z :=
+        have h2x : ∀ z, B x x * IsReflective.coroot B x.property z =
+            B x x * IsReflective.coroot B y.property z :=
           fun z => congrArg (HMul.hMul ((B x) x)) (h1 z)
-        have h2y : ∀ z, B y y * IsReflective.coroot B x.2 z =
-            B y y * IsReflective.coroot B y.2 z :=
+        have h2y : ∀ z, B y y * IsReflective.coroot B x.property z =
+            B y y * IsReflective.coroot B y.property z :=
           fun z => congrArg (HMul.hMul ((B y) y)) (h1 z)
-        simp_rw [apply_self_mul_coroot_apply B x.2] at h2x -- 2(x,z) = (x,x)y*(z)
-        simp_rw [apply_self_mul_coroot_apply B y.2] at h2y -- (y,y)x*(z) = 2(y,z)
+        simp_rw [apply_self_mul_coroot_apply B x.property] at h2x -- 2(x,z) = (x,x)y*(z)
+        simp_rw [apply_self_mul_coroot_apply B y.property] at h2y -- (y,y)x*(z) = 2(y,z)
         have h2xy : B x x = B y y := by
-          refine h2.1 ?_
+          refine h2.left ?_
           dsimp only
           specialize h2x y
           rw [coroot_apply_self] at h2x
@@ -145,38 +145,39 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
         rw [Subtype.ext_iff, ← sub_eq_zero]
         refine hNB.1 _ (fun z => ?_)
         rw [map_sub, LinearMap.sub_apply, sub_eq_zero]
-        refine h2.1 ?_
+        refine h2.left ?_
         dsimp only
         rw [h2x z, ← h2y z, hxy, h2xy] }
-  root_coroot_two x := coroot_apply_self B x.2
+  root_coroot_two x := coroot_apply_self B x.property
   reflectionPerm x :=
-    { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
-        reflective_reflection B hSB x.2 y.2⟩
-      invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
-        reflective_reflection B hSB x.2 y.2⟩
+    { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.property) y),
+        reflective_reflection B hSB x.property y.property⟩
+      invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.property) y),
+        reflective_reflection B hSB x.property y.property⟩
       left_inv := by
         intro y
-        simp [involutive_reflection (coroot_apply_self B x.2) y]
+        simp [involutive_reflection (coroot_apply_self B x.property) y]
       right_inv := by
         intro y
-        simp [involutive_reflection (coroot_apply_self B x.2) y] }
+        simp [involutive_reflection (coroot_apply_self B x.property) y] }
   reflectionPerm_root := by
     simp [coe_ofPred, Module.reflection_apply]
   reflectionPerm_coroot x y := by
     simp only [coe_ofPred, mem_ofPred_eq, Embedding.coeFn_mk, Embedding.subtype_apply,
       Dual.eval_apply, Equiv.coe_fn_mk]
     ext z
-    simp only [sub_apply, smul_apply, smul_eq_mul]
-    refine y.2.1.1 ?_
-    simp only [mem_ofPred_eq, mul_sub, apply_self_mul_coroot_apply B y.2, ← mul_assoc]
-    rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB.eq z,
+    simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
+    refine y.property.regular.left ?_
+    simp only [mem_ofPred_eq, mul_sub, apply_self_mul_coroot_apply B y.property, ← mul_assoc]
+    rw [← isOrthogonal_reflection B x.property hSB y y, apply_self_mul_coroot_apply, ← hSB.eq z,
       ← hSB.eq z, RingHom.id_apply, RingHom.id_apply, Module.reflection_apply, map_sub,
       mul_sub, sub_eq_sub_iff_comm, sub_left_inj]
-    refine x.2.1.1 ?_
+    refine x.property.regular.left ?_
     simp only [mem_ofPred_eq, map_smul, smul_eq_mul]
     rw [← mul_assoc _ _ (B z x), ← mul_assoc _ _ (B z x), mul_left_comm,
-      apply_self_mul_coroot_apply B x.2, mul_left_comm (B x x), apply_self_mul_coroot_apply B x.2,
-      ← hSB.eq x y, RingHom.id_apply, ← hSB.eq x z, RingHom.id_apply]
+      apply_self_mul_coroot_apply B x.property, mul_left_comm (B x x),
+      apply_self_mul_coroot_apply B x.property, ← hSB.eq x y, RingHom.id_apply, ← hSB.eq x z,
+      RingHom.id_apply]
     ring
 
 end RootPairing

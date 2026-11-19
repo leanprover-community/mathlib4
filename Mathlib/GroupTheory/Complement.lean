@@ -46,7 +46,7 @@ more ergonomic way to unfold.
 If `S` and `T` are `SetLike`s such as `AddSubgroup`s, see `isComplement_iff_bijective` for a
 more ergonomic way to unfold. -/]
 def IsComplement : Prop :=
-  Function.Bijective fun x : S × T => x.1.1 * x.2.1
+  Function.Bijective fun x : S × T => x.1.val * x.2.val
 
 /-- `H` and `K` are complements if `(*) : H × K → G` is a bijection -/
 @[to_additive /-- `H` and `K` are complements if `(+) : H × K → G` is a bijection -/]
@@ -67,12 +67,12 @@ theorem isComplement'_def : IsComplement' H K ↔ IsComplement (H : Set G) (K : 
 
 @[to_additive]
 theorem isComplement_iff_existsUnique :
-    IsComplement S T ↔ ∀ g : G, ∃! x : S × T, x.1.1 * x.2.1 = g :=
+    IsComplement S T ↔ ∀ g : G, ∃! x : S × T, x.1.val * x.2.val = g :=
   Function.bijective_iff_existsUnique _
 
 @[to_additive]
 theorem IsComplement.existsUnique (h : IsComplement S T) (g : G) :
-    ∃! x : S × T, x.1.1 * x.2.1 = g :=
+    ∃! x : S × T, x.1.val * x.2.val = g :=
   isComplement_iff_existsUnique.mp h g
 
 @[to_additive]
@@ -81,7 +81,8 @@ theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
     Equiv.mk (fun x => ⟨x.2⁻¹, x.1⁻¹⟩) (fun x => ⟨x.2⁻¹, x.1⁻¹⟩)
       (fun x => Prod.ext (inv_inv _) (inv_inv _)) fun x => Prod.ext (inv_inv _) (inv_inv _)
   let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
-  suffices hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ by
+  suffices hf : (ψ ∘ fun x : H × K => x.1.val * x.2.val) =
+      (fun x : K × H => x.1.val * x.2.val) ∘ ϕ by
     rwa [isComplement'_def, isComplement_iff_bijective, ← Equiv.bijective_comp ϕ, ← hf,
       ψ.comp_bijective]
   exact funext fun x => mul_inv_rev _ _
@@ -112,16 +113,16 @@ theorem isComplement_singleton_right {g : G} : IsComplement S {g} ↔ S = univ :
   refine
     ⟨fun h => top_le_iff.mp fun x _ => ?_, fun h => h ▸ isComplement_univ_singleton⟩
   obtain ⟨y, hy⟩ := h.2 (x * g)
-  conv_rhs at hy => rw [← show y.2.1 = g from y.2.2]
+  conv_rhs at hy => rw [← show y.2.val = g from y.2.property]
   rw [← mul_right_cancel hy]
-  exact y.1.2
+  exact y.1.property
 
 @[to_additive]
 theorem isComplement_univ_left : IsComplement univ S ↔ ∃ g : G, S = {g} := by
   refine
     ⟨fun h => Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
   · obtain ⟨a, _⟩ := h.2 1
-    exact ⟨a.2.1, a.2.2⟩
+    exact ⟨a.2.val, a.2.property⟩
   · have : (⟨⟨_, mem_top a⁻¹⟩, ⟨a, ha⟩⟩ : (⊤ : Set G) × S) = ⟨⟨_, mem_top b⁻¹⟩, ⟨b, hb⟩⟩ :=
       h.1 ((inv_mul_cancel a).trans (inv_mul_cancel b).symm)
     exact Subtype.ext_iff.mp (Prod.ext_iff.mp this).2
@@ -133,7 +134,7 @@ theorem isComplement_univ_right : IsComplement S univ ↔ ∃ g : G, S = {g} := 
   refine
     ⟨fun h => Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
   · obtain ⟨a, _⟩ := h.2 1
-    exact ⟨a.1.1, a.1.2⟩
+    exact ⟨a.1.val, a.1.property⟩
   · have : (⟨⟨a, ha⟩, ⟨_, mem_top a⁻¹⟩⟩ : S × (⊤ : Set G)) = ⟨⟨b, hb⟩, ⟨_, mem_top b⁻¹⟩⟩ :=
       h.1 ((mul_inv_cancel a).trans (mul_inv_cancel b).symm)
     exact Subtype.ext_iff.mp (Prod.ext_iff.mp this).1
@@ -211,7 +212,7 @@ lemma isComplement_iff_existsUnique_mul_inv_mem :
 
 @[to_additive]
 lemma isComplement_subgroup_right_iff_existsUnique_quotientGroupMk :
-    IsComplement S H ↔ ∀ q : G ⧸ H, ∃! s : S, QuotientGroup.mk s.1 = q := by
+    IsComplement S H ↔ ∀ q : G ⧸ H, ∃! s : S, QuotientGroup.mk s.val = q := by
   simp_rw [isComplement_iff_existsUnique_inv_mul_mem, SetLike.mem_coe, ← QuotientGroup.eq,
     QuotientGroup.forall_mk]
 
@@ -219,7 +220,7 @@ set_option linter.docPrime false in
 @[to_additive]
 lemma isComplement_subgroup_left_iff_existsUnique_quotientMk'' :
     IsComplement H T ↔
-      ∀ q : Quotient (QuotientGroup.rightRel H), ∃! t : T, Quotient.mk'' t.1 = q := by
+      ∀ q : Quotient (QuotientGroup.rightRel H), ∃! t : T, Quotient.mk'' t.val = q := by
   simp_rw [isComplement_iff_existsUnique_mul_inv_mem, SetLike.mem_coe,
     ← QuotientGroup.rightRel_apply, ← Quotient.eq'', Quotient.forall]
 
@@ -325,15 +326,15 @@ namespace IsComplement
 
 /-- The equivalence `G ≃ S × T`, such that the inverse is  `(*) : S × T → G` -/
 noncomputable def equiv {S T : Set G} (hST : IsComplement S T) : G ≃ S × T :=
-  (Equiv.ofBijective (fun x : S × T => x.1.1 * x.2.1) hST).symm
+  (Equiv.ofBijective (fun x : S × T => x.1.val * x.2.val) hST).symm
 
 variable (hST : IsComplement S T) (hHT : IsComplement H T) (hSK : IsComplement S K)
 
-@[simp] theorem equiv_symm_apply (x : S × T) : (hST.equiv.symm x : G) = x.1.1 * x.2.1 := rfl
+@[simp] theorem equiv_symm_apply (x : S × T) : (hST.equiv.symm x : G) = x.1.val * x.2.val := rfl
 
 @[simp]
 theorem equiv_fst_mul_equiv_snd (g : G) : ↑(hST.equiv g).fst * (hST.equiv g).snd = g :=
-  (Equiv.ofBijective (fun x : S × T => x.1.1 * x.2.1) hST).right_inv g
+  (Equiv.ofBijective (fun x : S × T => x.1.val * x.2.val) hST).right_inv g
 
 theorem equiv_fst_eq_mul_inv (g : G) : ↑(hST.equiv g).fst = g * ((hST.equiv g).snd : G)⁻¹ :=
   eq_mul_inv_of_mul_eq (hST.equiv_fst_mul_equiv_snd g)
@@ -556,6 +557,29 @@ theorem encard_left [H.FiniteIndex] (h : IsComplement S H) : S.encard = H.index 
 theorem encard_right [H.FiniteIndex] (h : IsComplement H T) : T.encard = H.index := by
   rw [← h.finite_right.cast_ncard_eq, h.ncard_right]
 
+/-- If `S` is a left transversal for a subgroup `H`, then for every `x : G`
+there is a unique `g : H` with `x * g ∈ S`. -/
+@[to_additive /-- If `S` is a left transversal for an additive subgroup `H`, then for every
+`x : G` there is a unique `g : H` with `x + g ∈ S`. -/]
+lemma existsUnique_mul_mem_left (h : IsComplement S H) (x : G) :
+    ∃! g : H, x * g ∈ S := by
+  obtain ⟨t, ht, ht'⟩ := isComplement_iff_existsUnique_mul_inv_mem.mp h x
+  refine ⟨t⁻¹, ht, fun g hg ↦ ?_⟩
+  rw [← inv_inv g, ht' g⁻¹ (by simp [hg])]
+
+/-- If `T` is a right transversal for a subgroup `H`, then for every `x : G`
+there is a unique `g : H` with `g * x ∈ T`. -/
+@[to_additive /-- If `T` is a right transversal for an additive subgroup `H`, then for every
+`x : G` there is a unique `g : H` with `g + x ∈ T`. -/]
+lemma existsUnique_mul_mem_right (h : IsComplement H T) (x : G) :
+    ∃! g : H, g * x ∈ T := by
+  obtain ⟨t, ht, ht'⟩ := isComplement_iff_existsUnique_inv_mul_mem.mp h x
+  refine ⟨t⁻¹, ht, fun g hg ↦ ?_⟩
+  rw [← inv_inv g, ht' g⁻¹ (by simp [hg])]
+
+@[to_additive (attr := deprecated (since := "2026-10-28"))]
+alias existsUnique_smul_mem := existsUnique_mul_mem_right
+
 end IsComplement
 
 section Action
@@ -578,8 +602,8 @@ noncomputable instance : MulAction F H.LeftTransversal where
   smul f T :=
     ⟨f • (T : Set G), by
       refine isComplement_iff_existsUnique_inv_mul_mem.mpr fun g => ?_
-      obtain ⟨t, ht1, ht2⟩ := isComplement_iff_existsUnique_inv_mul_mem.mp T.2 (f⁻¹ • g)
-      refine ⟨⟨f • (t : G), Set.smul_mem_smul_set t.2⟩, ?_, ?_⟩
+      obtain ⟨t, ht1, ht2⟩ := isComplement_iff_existsUnique_inv_mul_mem.mp T.property (f⁻¹ • g)
+      refine ⟨⟨f • (t : G), Set.smul_mem_smul_set t.property⟩, ?_, ?_⟩
       · exact smul_inv_smul f g ▸ QuotientAction.inv_mul_mem f ht1
       · rintro ⟨-, t', ht', rfl⟩ h
         replace h := QuotientAction.inv_mul_mem f⁻¹ h
@@ -590,22 +614,23 @@ noncomputable instance : MulAction F H.LeftTransversal where
 
 @[to_additive]
 theorem smul_toLeftFun (f : F) (S : H.LeftTransversal) (g : G) :
-    (f • (S.2.toLeftFun g : G)) = (f • S).2.toLeftFun (f • g) :=
+    (f • (S.property.toLeftFun g : G)) = (f • S).property.toLeftFun (f • g) :=
   Subtype.ext_iff.mp <| @ExistsUnique.unique (↥(f • (S : Set G))) (fun s => (↑s)⁻¹ * f • g ∈ H)
-    (isComplement_iff_existsUnique_inv_mul_mem.mp (f • S).2 (f • g))
-    ⟨f • (S.2.toLeftFun g : G), Set.smul_mem_smul_set (Subtype.coe_prop _)⟩
-      ((f • S).2.toLeftFun (f • g))
-    (QuotientAction.inv_mul_mem f (S.2.inv_toLeftFun_mul_mem g))
-      ((f • S).2.inv_toLeftFun_mul_mem (f • g))
+    (isComplement_iff_existsUnique_inv_mul_mem.mp (f • S).property (f • g))
+    ⟨f • (S.property.toLeftFun g : G), Set.smul_mem_smul_set (Subtype.coe_prop _)⟩
+      ((f • S).property.toLeftFun (f • g))
+    (QuotientAction.inv_mul_mem f (S.property.inv_toLeftFun_mul_mem g))
+      ((f • S).property.inv_toLeftFun_mul_mem (f • g))
 
 @[to_additive]
 theorem smul_leftQuotientEquiv (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :
-    f • (S.2.leftQuotientEquiv q : G) = (f • S).2.leftQuotientEquiv (f • q) :=
+    f • (S.property.leftQuotientEquiv q : G) = (f • S).property.leftQuotientEquiv (f • q) :=
   Quotient.inductionOn' q fun g => smul_toLeftFun f S g
 
 @[to_additive]
 theorem smul_apply_eq_smul_apply_inv_smul (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :
-    ((f • S).2.leftQuotientEquiv q : G) = f • (S.2.leftQuotientEquiv (f⁻¹ • q) : G) := by
+    ((f • S).property.leftQuotientEquiv q : G) =
+      f • (S.property.leftQuotientEquiv (f⁻¹ • q) : G) := by
   rw [smul_leftQuotientEquiv, smul_inv_smul]
 
 end Action
@@ -631,7 +656,7 @@ theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
           (Prod.ext_iff.mp (show x = y from h.1 ((mul_one g).trans (one_mul g).symm))).1,
       codisjoint_iff_le_sup.mpr fun g _ => ?_⟩
   obtain ⟨⟨h, k⟩, rfl⟩ := h.2 g
-  exact Subgroup.mul_mem_sup h.2 k.2
+  exact Subgroup.mul_mem_sup h.property k.property
 
 theorem IsComplement'.sup_eq_top (h : IsComplement' H K) : H ⊔ K = ⊤ :=
   h.isCompl.sup_eq_top

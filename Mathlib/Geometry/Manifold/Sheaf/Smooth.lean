@@ -97,7 +97,7 @@ variable {M}
 
 instance smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
     CoeFun ((smoothSheaf IM I M N).presheaf.obj U) (fun _ ↦ ↑(unop U) → N) where
-  coe a := a.1
+  coe a := a.val
 
 open Manifold in
 /-- The object of `smoothSheaf IM I M N` for the open set `U` in `M` is
@@ -123,7 +123,7 @@ open CategoryTheory Limits
 map to `N` from smooth functions from  `U` to `N`. -/
 def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
     (i : (smoothSheaf IM I M N).presheaf.obj (Opposite.op U.val)) : N :=
-  i.1 ⟨x, U.2⟩
+  i.val ⟨x, U.property⟩
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -163,9 +163,9 @@ def ContMDiff.smoothSheafHom (f : M → P) (hf : ContMDiff IM IP ∞ f) :
     smoothSheaf IP I P N ⟶ (TopCat.Sheaf.pushforward _ (TopCat.ofHom ⟨f, hf.continuous⟩)).obj
       (smoothSheaf IM I M N) where
   hom.app U := ↾fun g ↦ ⟨g ∘ Set.restrictPreimage _ f, by
-    apply ContMDiff.comp (I' := IP) g.2
+    apply ContMDiff.comp (I' := IP) g.property
     rw [← ContMDiff.subtypeVal_comp_iff]
-    exact hf.comp contMDiff_subtype_val⟩
+    exact hf.comp contMDiff_subtypeVal⟩
 
 end TypeCat
 
@@ -305,7 +305,7 @@ example : (CategoryTheory.sheafCompose _ (CategoryTheory.forget CommRingCat.{u})
 
 instance smoothSheafCommRing.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
     CoeFun ((smoothSheafCommRing IM I M R).presheaf.obj U) (fun _ ↦ ↑(unop U) → R) where
-  coe a := a.1
+  coe a := a.val
 
 open CategoryTheory Limits
 
@@ -336,8 +336,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point
 `x : M`, the evaluation-at-`x` map to `R` from smooth functions from  `U` to `R`. -/
 def smoothSheafCommRing.evalAt (x : TopCat.of M) (U : OpenNhds x) :
-    (smoothSheafCommRing IM I M R).presheaf.obj (Opposite.op U.1) ⟶ ↧R :=
-  CommRingCat.ofHom (ContMDiffMap.evalRingHom ⟨x, U.2⟩)
+    (smoothSheafCommRing IM I M R).presheaf.obj (Opposite.op U.val) ⟶ ↧R :=
+  CommRingCat.ofHom (ContMDiffMap.evalRingHom ⟨x, U.property⟩)
 
 /-- Canonical ring homomorphism from the stalk of `smoothSheafCommRing IM I M R` at `x` to `R`,
 given by evaluating sections at `x`, considered as a morphism in the category of commutative rings.

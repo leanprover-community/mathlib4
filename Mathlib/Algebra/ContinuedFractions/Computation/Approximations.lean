@@ -44,7 +44,6 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 ## References
 
 - [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
-
 -/
 
 @[expose] public section

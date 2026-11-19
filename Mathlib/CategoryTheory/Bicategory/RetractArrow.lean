@@ -16,7 +16,6 @@ If `f : X ⟶ Y` and `f' : X' ⟶ Y'` are 1-morphisms in a bicategory,
 we introduce a structure `RetractArrow₁ f' f` expressing that
 `f'` is a retract of `f`, and we show that if `f` is an
 equivalence, then `f'` is also an equivalence.
-
 -/
 
 @[expose] public section
@@ -68,7 +67,7 @@ lemma comm' {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f) :
   simp
 
 /-- If a `1`-morphism is a retract of another, it stays so
-after the applicaton of a pseudofunctor. -/
+after the application of a pseudofunctor. -/
 @[implicit_reducible, simps]
 def map {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
     {D : Type*} [Bicategory D] (F : C ⥤ᵖ D) :
