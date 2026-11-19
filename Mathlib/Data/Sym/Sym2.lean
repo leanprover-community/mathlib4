@@ -123,65 +123,67 @@ protected theorem eq {a b c d : α} : s(a, b) = s(c, d) ↔ Rel α (a, b) (c, d)
   Quotient.eq' (s₁ := Sym2.Rel.setoid α)
 
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f s(x, y)) : ∀ i, f i :=
-  Quot.ind <| Prod.rec h
+protected theorem ind {motive : Sym2 α → Prop} (mk : ∀ x y, motive s(x, y)) : ∀ i, motive i :=
+  Quot.ind <| Prod.rec mk
 
 @[elab_as_elim]
-protected theorem inductionOn {f : Sym2 α → Prop} (i : Sym2 α) (hf : ∀ x y, f s(x, y)) : f i :=
-  i.ind hf
+protected theorem inductionOn {motive : Sym2 α → Prop} (i : Sym2 α) (mk : ∀ x y, motive s(x, y)) :
+    motive i :=
+  i.ind mk
 
 @[elab_as_elim]
-protected theorem inductionOn₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α) (j : Sym2 β)
-    (hf : ∀ a₁ a₂ b₁ b₂, f s(a₁, a₂) s(b₁, b₂)) : f i j :=
+protected theorem inductionOn₂ {motive : Sym2 α → Sym2 β → Prop} (i : Sym2 α) (j : Sym2 β)
+    (mk : ∀ a₁ a₂ b₁ b₂, motive s(a₁, a₂) s(b₁, b₂)) : motive i j :=
   Quot.induction_on₂ i j <| by
     intro ⟨a₁, a₂⟩ ⟨b₁, b₂⟩
-    exact hf _ _ _ _
+    exact mk _ _ _ _
 
 /-- Dependent recursion principle for `Sym2`. See `Quot.rec`. -/
 @[elab_as_elim]
 protected def rec {motive : Sym2 α → Sort*}
-    (f : (a b : α) → motive s(a, b))
-    (h : (a b c d : α) → (h : Rel α (a, b) (c, d)) → Eq.ndrec (f a b) (Sym2.sound h) = f c d)
+    (mk : (a b : α) → motive s(a, b))
+    (sound : (a b c d : α) → (h : Rel α (a, b) (c, d)) → Eq.ndrec (mk a b) (Sym2.sound h) = mk c d)
     (z : Sym2 α) : motive z :=
-  Quot.rec (fun (a, b) ↦ f a b) (fun (a, b) (c, d) ↦ h a b c d) z
+  Quot.rec (fun (a, b) ↦ mk a b) (fun (a, b) (c, d) ↦ sound a b c d) z
 
 /-- Dependent recursion principle for `Sym2`. See `Quot.recOn`. -/
 @[elab_as_elim]
 protected def recOn {motive : Sym2 α → Sort*} (z : Sym2 α)
-    (f : (a b : α) → motive s(a, b))
-    (h : (a b c d : α) → (h : Rel α (a, b) (c, d)) → Eq.ndrec (f a b) (Sym2.sound h) = f c d) :
+    (mk : (a b : α) → motive s(a, b))
+    (sound : (a b c d : α) → (h : Rel α (a, b) (c, d)) →
+      Eq.ndrec (mk a b) (Sym2.sound h) = mk c d) :
     motive z :=
-  Quot.recOn z (fun (a, b) ↦ f a b) (fun (a, b) (c, d) ↦ h a b c d)
+  Quot.recOn z (fun (a, b) ↦ mk a b) (fun (a, b) (c, d) ↦ sound a b c d)
 
 /-- A dependent recursion principle for `Sym2` that uses heterogeneous equality. -/
 @[elab_as_elim]
 protected def hrec {motive : Sym2 α → Sort*}
-    (f : (a b : α) → motive s(a, b))
-    (h : (a b : α) → f a b ≍ f b a)
+    (mk : (a b : α) → motive s(a, b))
+    (sound : (a b : α) → mk a b ≍ mk b a)
     (z : Sym2 α) : motive z :=
-  Quot.hrecOn _ (fun (a, b) ↦ f a b) <| by
+  Quot.hrecOn _ (fun (a, b) ↦ mk a b) <| by
     simp only [rel_iff']
     rintro _ _ (rfl | rfl)
-    exacts [HEq.rfl, h _ _]
+    exacts [HEq.rfl, sound _ _]
 
 /-- Dependent recursion principal for `Sym2` when the target is a `Subsingleton` type.
 See `Quot.recOnSubsingleton`. -/
 @[elab_as_elim]
 protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
     [(a b : α) → Subsingleton (motive s(a, b))]
-    (z : Sym2 α) (f : (a b : α) → motive s(a, b)) : motive z :=
-  Quot.recOnSubsingleton z fun (a, b) ↦ f a b
+    (z : Sym2 α) (mk : (a b : α) → motive s(a, b)) : motive z :=
+  Quot.recOnSubsingleton z fun (a, b) ↦ mk a b
 
 theorem mk_surjective : (Sym2.mk (α := α)).uncurry.Surjective := Quot.mk_surjective
 
 theorem mk_fiber (a b : α) : Sym2.mk.uncurry ⁻¹' {s(a, b)} = {(a, b), (b, a)} := by
   grind
 
-protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
+protected theorem «exists» {α : Type*} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
   mk_surjective.exists.trans Prod.exists
 
-protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
+protected theorem «forall» {α : Type*} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f s(x, y) :=
   mk_surjective.forall.trans Prod.forall
 
