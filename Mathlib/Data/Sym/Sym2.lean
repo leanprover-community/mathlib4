@@ -159,12 +159,12 @@ protected def recOn {motive : Sym2 α → Sort*} (z : Sym2 α)
 @[elab_as_elim]
 protected def hrec {motive : Sym2 α → Sort*}
     (mk : (a b : α) → motive s(a, b))
-    (sound : (a b : α) → mk a b ≍ mk b a)
+    (eq_swap : (a b : α) → mk a b ≍ mk b a)
     (z : Sym2 α) : motive z :=
   Quot.hrecOn _ (fun (a, b) ↦ mk a b) <| by
     simp only [rel_iff']
     rintro _ _ (rfl | rfl)
-    exacts [HEq.rfl, sound _ _]
+    exacts [HEq.rfl, eq_swap _ _]
 
 /-- Dependent recursion principal for `Sym2` when the target is a `Subsingleton` type.
 See `Quot.recOnSubsingleton`. -/
