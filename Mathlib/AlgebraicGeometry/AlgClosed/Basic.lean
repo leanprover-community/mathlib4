@@ -14,7 +14,6 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 We show that if `X` is locally of finite type over an algebraically closed field `k`,
 then the closed points of `X` are in bijection with the `k`-points of `X`.
 See `AlgebraicGeometry.pointEquivClosedPoint`.
-
 -/
 
 @[expose] public noncomputable section
@@ -66,12 +65,12 @@ then the closed points of `X` are in bijection with the `k`-points of `X`. -/
 @[simps]
 def pointEquivClosedPoint :
     {p : Spec ↧K ⟶ X // p ≫ f = 𝟙 _} ≃ closedPoints X where
-  toFun p := ⟨p.1 (IsLocalRing.closedPoint K), by
-    have := isClosedImmersion_of_comp_eq_id _ _ p.2
-    have := p.1.isClosedEmbedding.isClosed_range
+  toFun p := ⟨p.val (IsLocalRing.closedPoint K), by
+    have := isClosedImmersion_of_comp_eq_id _ _ p.property
+    have := p.val.isClosedEmbedding.isClosed_range
     rwa [Set.range_eq_singleton] at this
-    exact fun x ↦ congr(p.1 $(Subsingleton.elim _ _))⟩
-  invFun x := ⟨pointOfClosedPoint f x.1 x.2, pointOfClosedPoint_comp f x.1 x.2⟩
+    exact fun x ↦ congr(p.val $(Subsingleton.elim _ _))⟩
+  invFun x := ⟨pointOfClosedPoint f x.val x.property, pointOfClosedPoint_comp f x.val x.property⟩
   left_inv p := by
     ext
     refine ((Scheme.SpecToEquivOfField _ _).symm_apply_eq (x := ⟨_, _⟩)).mpr ?_
@@ -82,7 +81,7 @@ def pointEquivClosedPoint :
     refine (Category.comp_id _).symm.trans (((residueFieldIsoBase f _ h).eq_inv_comp).mp ?_)
     rw [← Spec.map_injective.eq_iff]
     simp only [Spec.map_id, Spec.map_comp, SpecMap_residueFieldIsoBase_inv]
-    rw [reassoc_of% Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField, p.2]
+    rw [reassoc_of% Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField, p.property]
   right_inv x := by simp
 
 lemma ext_of_apply_closedPoint_eq
@@ -90,7 +89,7 @@ lemma ext_of_apply_closedPoint_eq
     [LocallyOfFiniteType h]
     (hf : f ≫ h = 𝟙 _) (hg : g ≫ h = 𝟙 _)
     (H : f (IsLocalRing.closedPoint K) = g (IsLocalRing.closedPoint K)) : f = g :=
-  congr($((pointEquivClosedPoint h).injective (a₁ := ⟨f, hf⟩) (a₂ := ⟨g, hg⟩) (Subtype.ext H)).1)
+  congr($((pointEquivClosedPoint h).injective (a₁ := ⟨f, hf⟩) (a₂ := ⟨g, hg⟩) (Subtype.ext H)).val)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `X` and `Y` be locally of finite type `K`-schemes with `K` algebraically closed and `Y`

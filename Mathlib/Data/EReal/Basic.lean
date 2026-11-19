@@ -91,7 +91,7 @@ theorem coe_orderEmbedding : ⇑orderEmbedding = Real.toEReal := rfl
 /-- The canonical map from nonnegative extended reals to extended reals. -/
 @[coe] def _root_.ENNReal.toEReal : ℝ≥0∞ → EReal
   | ⊤ => ⊤
-  | .some x => x.1
+  | .some x => x.val
 
 instance : Coe ℝ≥0∞ EReal :=
   ⟨ENNReal.toEReal⟩

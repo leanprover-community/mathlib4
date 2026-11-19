@@ -326,7 +326,7 @@ theorem finite_const_le_of_tsum_ne_top {ι : Type*} {a : ι → ℝ≥0∞} (tsu
   refine tsum_ne_top (top_unique ?_)
   calc ∞ = ∑' _ : { i | ε ≤ a i }, ε := (tsum_const_eq_top_of_ne_zero ε_ne_zero).symm
   _ ≤ ∑' i, a i := CompleteLattice.summable.tsum_le_tsum_of_inj (↑)
-    Subtype.val_injective (fun _ _ => zero_le) (fun i => i.2) CompleteLattice.summable
+    Subtype.val_injective (fun _ _ => zero_le) (fun i => i.property) CompleteLattice.summable
 
 /-- Markov's inequality for `Finset.card` and `tsum` in `ℝ≥0∞`. -/
 theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} {c : ℝ≥0∞} (c_ne_top : c ≠ ∞)

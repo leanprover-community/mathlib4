@@ -59,8 +59,8 @@ lemma sum_range_modEq_sum_of_contra (hS : ¬∃ a b, a ≠ b ∧ (n ! : ℤ) ∣
     exact Int.ModEq.dvd he.symm
   let e : Perm (Fin n) ≃ Ico (0 : ℤ) n ! := ofBijective _ bijf
   change _ % _ = _ % _; rw [sum_int_mod]; congr 1
-  change _ = ∑ i, (e i).1; rw [Equiv.sum_comp]
-  change _ = ∑ i : { x // x ∈ _ }, id i.1; simp_rw [sum_coe_sort, id_eq]
+  change _ = ∑ i, (e i).val; rw [Equiv.sum_comp]
+  change _ = ∑ i : { x // x ∈ _ }, id i.val; simp_rw [sum_coe_sort, id_eq]
   have Ico_eq : Ico (0 : ℤ) n ! = (range n !).map ⟨_, Nat.cast_injective⟩ := by
     ext i
     simp_rw [mem_Ico, mem_map, mem_range, Function.Embedding.coeFn_mk]
@@ -74,7 +74,7 @@ lemma sum_range_modEq_sum_of_contra (hS : ¬∃ a b, a ≠ b ∧ (n ! : ℤ) ∣
 /-- The sum over all permutations of `Icc 1 n` of the entry at any fixed position is
 `(n - 1)! * (n * (n + 1) / 2)`. -/
 lemma sum_perm_add_one {i : Fin n} (hn : 1 ≤ n) :
-    ∑ a : Perm (Fin n), ((a i).1 + 1) = (n - 1)! * (n * (n + 1) / 2) := by
+    ∑ a : Perm (Fin n), ((a i).val + 1) = (n - 1)! * (n * (n + 1) / 2) := by
   rw [le_iff_exists_add'] at hn; obtain ⟨n, rfl⟩ := hn
   rw [← sum_comp (Equiv.mulRight (swap i 0))]
   simp_rw [coe_mulRight, Perm.coe_mul, Function.comp_apply, swap_apply_left, univ_perm_fin_succ,
@@ -90,7 +90,7 @@ lemma sum_modEq_zero_of_odd (hn : Odd n) : ∑ a, S c a ≡ 0 [ZMOD n !] := by
   unfold S; rw [sum_comm]
   conv_lhs => enter [2, i, 2, a]; rw [← Nat.cast_one, ← Nat.cast_add]
   simp_rw [← mul_sum, ← Nat.cast_sum]
-  have eqv : ∀ i, c i * ↑(∑ a : Perm (Fin n), ((a i).1 + 1)) =
+  have eqv : ∀ i, c i * ↑(∑ a : Perm (Fin n), ((a i).val + 1)) =
       c i * ((n - 1)! * (n * (n + 1) / 2) : ℕ) := fun i ↦ by rw [sum_perm_add_one hn.pos]
   rw [sum_congr rfl fun i _ ↦ eqv i, ← sum_mul,
     Nat.mul_div_assoc _ (hn.add_odd odd_one).two_dvd, ← mul_assoc, mul_comm _ n,

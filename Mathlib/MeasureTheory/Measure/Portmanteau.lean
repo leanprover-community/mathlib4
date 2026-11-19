@@ -82,7 +82,6 @@ Some specific considerations on the assumptions in the different implications:
 
 weak convergence of measures, convergence in distribution, convergence in law, finite measure,
 probability measure
-
 -/
 
 public section
@@ -387,7 +386,6 @@ Combining with earlier proven implications, we get that (B) implies also
 
   (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
-
 -/
 
 open ENNReal
@@ -489,7 +487,6 @@ In this section we prove for a sequence (μsₙ)ₙ Borel probability measures t
 implies
 
   (T) The measures μsₙ converge weakly to the measure μ.
-
 -/
 
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
@@ -796,7 +793,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     {G : Set Ω} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
     ∃ T : Finset (Set Ω), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G := by
   obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set Ω), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
-    have : ∀ (x : G), ∃ s ∈ S, s ∈ 𝓝 (x : Ω) ∧ s ⊆ G := fun x ↦ h G hG x x.2
+    have : ∀ (x : G), ∃ s ∈ S, s ∈ 𝓝 (x : Ω) ∧ s ⊆ G := fun x ↦ h G hG x x.property
     choose! s hsS hs_nhds hsG using this
     rcases TopologicalSpace.isOpen_iUnion_countable (fun i ↦ interior (s i))
       (fun i ↦ isOpen_interior) with ⟨T₀, T₀_count, hT₀⟩

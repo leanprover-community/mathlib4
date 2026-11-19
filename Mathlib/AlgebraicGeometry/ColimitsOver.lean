@@ -24,7 +24,6 @@ then we show that also `D` has a colimit under the following assumptions:
 
 This can be used to reduce existence of certain colimits in `P.Over ⊤ S` to the case where
 `S` is affine.
-
 -/
 
 @[expose] public section

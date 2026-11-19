@@ -25,7 +25,6 @@ We also provide the following bundled versions:
 * `Polynomial.mapRingHom`
 
 We include results on applying the definitions to `C`, `X` and ring operations.
-
 -/
 
 @[expose] public section

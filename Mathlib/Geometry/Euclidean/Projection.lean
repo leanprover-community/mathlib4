@@ -22,7 +22,6 @@ and reflection of a point in an affine subspace.
 
 * `EuclideanGeometry.reflection` is the reflection of a point in an
   affine subspace.
-
 -/
 
 @[expose] public section
@@ -100,7 +99,7 @@ theorem orthogonalProjection_contLinear {s : AffineSubspace 𝕜 P} [Nonempty s]
 /-- The `orthogonalProjection` lies in the given subspace. -/
 theorem orthogonalProjection_mem {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) : ↑(orthogonalProjection s p) ∈ s :=
-  (orthogonalProjection s p).2
+  (orthogonalProjection s p).property
 
 /-- The `orthogonalProjection` lies in the orthogonal subspace. -/
 theorem orthogonalProjection_mem_orthogonal (s : AffineSubspace 𝕜 P) [Nonempty s]
@@ -130,14 +129,14 @@ given subspace. -/
 theorem orthogonalProjection_vsub_mem_direction {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ s) :
     ↑(orthogonalProjection s p₂ -ᵥ ⟨p₁, hp₁⟩ : s.direction) ∈ s.direction :=
-  (orthogonalProjection s p₂ -ᵥ ⟨p₁, hp₁⟩ : s.direction).2
+  (orthogonalProjection s p₂ -ᵥ ⟨p₁, hp₁⟩ : s.direction).property
 
 /-- Subtracting the `orthogonalProjection` from a point in the given
 subspace produces a result in the direction of the given subspace. -/
 theorem vsub_orthogonalProjection_mem_direction {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ s) :
     ↑((⟨p₁, hp₁⟩ : s) -ᵥ orthogonalProjection s p₂ : s.direction) ∈ s.direction :=
-  ((⟨p₁, hp₁⟩ : s) -ᵥ orthogonalProjection s p₂ : s.direction).2
+  ((⟨p₁, hp₁⟩ : s) -ᵥ orthogonalProjection s p₂ : s.direction).property
 
 /-- A point equals its orthogonal projection if and only if it lies in
 the subspace. -/
@@ -156,7 +155,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace 𝕜 P} [N
     [s.direction.HasOrthogonalProjection] (p : s) : orthogonalProjection s p = p := by
   ext
   rw [orthogonalProjection_eq_self_iff]
-  exact p.2
+  exact p.property
 
 /-- Orthogonal projection is idempotent. -/
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace 𝕜 P) [Nonempty s]

@@ -67,22 +67,22 @@ lemma nnDist_eq (x y : Subtype p) : nnDist x y = nnDist (x : α) y := rfl
 @[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
 @[simp]
-theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.val r) = ball a r :=
   rfl
 
 @[simp]
 theorem preimage_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
-    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+    Subtype.val ⁻¹' (closedBall a.val r) = closedBall a r :=
   rfl
 
 @[simp]
 theorem image_ball {p : α → Prop} (a : {a // p a}) (r : ℝ) :
-    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+    Subtype.val '' (ball a r) = ball a.val r ∩ {a | p a} := by
   rw [← preimage_ball, image_preimage_eq_inter_range, range_val_subtype]
 
 @[simp]
 theorem image_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
-    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
+    Subtype.val '' (closedBall a r) = closedBall a.val r ∩ {a | p a} := by
   rw [← preimage_closedBall, image_preimage_eq_inter_range, range_val_subtype]
 
 end Subtype

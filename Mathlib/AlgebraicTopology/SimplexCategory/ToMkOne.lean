@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 We define a bijective map `SimplexCategory.toMk₁ : Fin (n + 2) → ⦋n⦌ ⟶ ⦋1⦌`.
 This is used in the file `Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne`
 in the study of simplices in the simplicial set `Δ[1]`.
-
 -/
 
 @[expose] public section
@@ -110,7 +109,7 @@ lemma toMk₁_injective {n : ℕ} : Function.Injective (toMk₁ (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
   · grind
-  have := congr($h ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩)
+  have := congr($h ⟨i.val, lt_of_lt_of_le hij (by dsimp; lia)⟩)
   simp [toMk₁_apply, ite_eq_left hij] at this
 
 lemma toMk₁_surjective {n : ℕ} : Function.Surjective (toMk₁ (n := n)) := by
