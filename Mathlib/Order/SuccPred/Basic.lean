@@ -890,7 +890,7 @@ lemma pred_notMem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
     pred ↑a ∉ s ↔ IsMin a where
   mp := isMin_of_pred_notMem
   mpr h nh := by
-    replace h := congr($h.pred_eq.val)
+    replace h := congr($(h.pred_eq).val)
     rw [coe_pred_of_mem nh] at h
     simp at h
 
@@ -917,7 +917,7 @@ lemma succ_notMem_iff_isMax [SuccOrder α] [NoMaxOrder α] {a : s} :
     succ ↑a ∉ s ↔ IsMax a where
   mp := isMax_of_succ_notMem
   mpr h nh := by
-    replace h := congr($h.succ_eq.val)
+    replace h := congr($(h.succ_eq).val)
     rw [coe_succ_of_mem nh] at h
     simp at h
 
