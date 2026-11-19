@@ -306,14 +306,14 @@ lemma coindToInd_apply (f : coind S.subtype A) :
 
 @[deprecated "Use `Representation.coindToInd_indToCoind`" (since := "2026-09-28")]
 lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
-    (hx : f.1.support ⊆ MulAction.orbit S g) :
-    Rep.coindToInd A f = IndV.mk S.subtype _ g (f.1 g) := by
+    (hx : f.val.support ⊆ MulAction.orbit S g) :
+    Rep.coindToInd A f = IndV.mk S.subtype _ g (f.val g) := by
   have : f = A.ρ.indToCoind (IndV.mk S.subtype A.ρ g (f g)) := by
     ext h
     by_cases hh : h ∈ MulAction.orbit S g
     · obtain ⟨s, rfl⟩ := hh
-      simp [Subgroup.smul_def, mul_assoc, ← mem_coindV.mp f.2]
-    · have hf : f.1 h = 0 := by_contra fun h' => hh (hx h')
+      simp [Subgroup.smul_def, mul_assoc, ← mem_coindV.mp f.property]
+    · have hf : f.val h = 0 := by_contra fun h' => hh (hx h')
       have hg : h * g⁻¹ ∉ S := fun hs => hh ⟨⟨_, hs⟩, by simp [Subgroup.smul_def]⟩
       simp [hf, hg]
   exact (congrArg _ this).trans (A.ρ.coindToInd_indToCoind _)
