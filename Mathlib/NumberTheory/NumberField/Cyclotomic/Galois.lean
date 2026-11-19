@@ -21,7 +21,7 @@ In this file, we study the Galois theory of cyclotomic extensions of `ℚ`.
 Let `n` be an integer. There is an isomorphism between `Gal(ℚ(ζₙ)/ℚ)` and `(ℤ/nℤ)ˣ` that sends `σ`
 to `a_σ` such that `σ (ζₙ) = ζₙ ^ a_σ`.
 
-Following [Washington][washington.cyclotomic], we define the bijection between subfields
+Following [Washington][washington_cyclotomic], we define the bijection between subfields
 of `ℚ(ζₙ)` and subgroups of the group `Xₙ` of Dirichlet characters of level `n` such that
 `F` corresponds to `Y` if and only if the subgroup `H` of `(ℤ/nℤ)ˣ` corresponding to `F` by
 the above isomorphism is the orthogonal of `Y` for the nondegenerate pairing on `(ℤ/nℤ)ˣ × Xₙ`
@@ -40,7 +40,6 @@ defined by `(n, χ) ↦ χ n`.
 - `IsCyclotomicExtension.Rat.mem_intermediateFieldEquivSubgroupChar_iff_conductor_dvd`: assume that
   `m ∣ n`, then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `intermediateFieldEquivSubgroupChar` is the set of
   characters whose conductor divides `m`.
-
 -/
 
 @[expose] public section

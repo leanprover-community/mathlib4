@@ -23,7 +23,6 @@ the Dold-Kan equivalence
 with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

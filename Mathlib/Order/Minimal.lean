@@ -85,7 +85,7 @@ theorem minimal_false : ¬ Minimal (fun _ ↦ False) x := by
 
 @[to_dual (attr := simp)]
 theorem minimal_subtype {x : Subtype Q} :
-    Minimal (fun x ↦ P x.1) x ↔ Minimal (P ⊓ Q) x := by
+    Minimal (fun x ↦ P x.val) x ↔ Minimal (P ⊓ Q) x := by
   obtain ⟨x, hx⟩ := x
   simp only [Minimal, Subtype.forall, Subtype.mk_le_mk, Pi.inf_apply, inf_Prop_eq]
   tauto
@@ -576,10 +576,10 @@ theorem map_minimal_mem (f : s ≃o t) (hx : Minimal (· ∈ s) x) :
 
 /-- If two sets are order isomorphic, their minimals are also order isomorphic. -/
 def mapSetOfPredMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Minimal (· ∈ t) x} where
-  toFun x := ⟨f ⟨x, x.2.1⟩, f.map_minimal_mem x.2⟩
-  invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_minimal_mem x.2⟩
-  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
-  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
+  toFun x := ⟨f ⟨x, x.property.1⟩, f.map_minimal_mem x.property⟩
+  invFun x := ⟨f.symm ⟨x, x.property.1⟩, f.symm.map_minimal_mem x.property⟩
+  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.property.1⟩ :)
+  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.property.1⟩ :)
   map_rel_iff' := f.map_rel_iff
 
 @[deprecated (since := "2026-07-28")] alias mapSetOfMinimal := mapSetOfPredMinimal
@@ -587,10 +587,10 @@ def mapSetOfPredMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Mi
 /-- If two sets are order isomorphic, their maximals are also order isomorphic. -/
 @[to_dual existing]
 def mapSetOfPredMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) x} where
-  toFun x := ⟨f ⟨x, x.2.1⟩, f.map_maximal_mem x.2⟩
-  invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_maximal_mem x.2⟩
-  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
-  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
+  toFun x := ⟨f ⟨x, x.property.1⟩, f.map_maximal_mem x.property⟩
+  invFun x := ⟨f.symm ⟨x, x.property.1⟩, f.symm.map_maximal_mem x.property⟩
+  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.property.1⟩ :)
+  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.property.1⟩ :)
   map_rel_iff' := f.map_rel_iff
 
 @[deprecated (since := "2026-07-28")] alias mapSetOfMaximal := mapSetOfPredMaximal

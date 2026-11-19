@@ -25,7 +25,6 @@ The equivalence with ordered groups and rings can be found in
 * `AddSubmonoid.support`: the support of a submonoid.
 * `AddSubmonoid.IsPointed`: a submonoid with zero support.
 * `AddSubmonoid.IsSpanning`: a submonoid satisfying `M ∪ -M = G`.
-
 -/
 
 @[expose] public section

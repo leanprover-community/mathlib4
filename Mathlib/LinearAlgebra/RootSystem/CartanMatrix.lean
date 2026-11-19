@@ -27,7 +27,6 @@ This file contains definitions and basic results about Cartan matrices of root p
 * `RootPairing.Base.induction_on_cartanMatrix`: an induction principle expressing the connectedness
   of the Dynkin diagram of an irreducible root pairing.
 * `RootPairing.Base.equivOfCartanMatrixEq`: a root system is determined by its Cartan matrix.
-
 -/
 
 @[expose] public section
@@ -310,8 +309,8 @@ lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
     ∃ d ∈ span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K)),
       (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) := by
   set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
-  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim
-    LinearMap.proj (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.1.1 - LinearMap.proj x.1.2)
+  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim LinearMap.proj
+    (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.val.1 - LinearMap.proj x.val.2)
   suffices ∃ d ∈ p, ∀ i, f i d ≠ 0 by
     obtain ⟨d, hp, hf⟩ := this
     refine ⟨d, hp, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_⟩
@@ -414,10 +413,12 @@ lemma cartanMatrix_isIndecomposable [P.IsReduced] [P.IsIrreducible] :
 
 lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
     b.cartanMatrix.IsFiniteCartan where
-  diag i := b.cartanMatrix_apply_same i
-  offDiag_nonpos i j hij := b.cartanMatrix_le_zero_of_ne i j hij
+  diag := b.cartanMatrix_apply_same
+  offDiag_nonpos := b.cartanMatrix_le_zero_of_ne
   zero_comm _ _ := b.cartanMatrix_apply_eq_zero_iff_symm
-  exists_posDef := b.exists_cartanMatrix_diagonal_mul_posDef
+  exists_posDef' := by
+    obtain ⟨d, hd, hd'⟩ := b.exists_cartanMatrix_diagonal_mul_posDef
+    exact ⟨d, hd, fun x hx ↦ by simpa using hd'.dotProduct_mulVec_pos hx⟩
 
 end IsCrystallographic
 

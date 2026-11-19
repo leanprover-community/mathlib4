@@ -1117,7 +1117,7 @@ end Forall
 /-! ### Miscellaneous lemmas -/
 
 theorem get_attach (l : List α) (i) :
-    (l.attach.get i).1 = l.get ⟨i, length_attach (l := l) ▸ i.2⟩ := by simp
+    (l.attach.get i).val = l.get ⟨i, length_attach (l := l) ▸ i.isLt⟩ := by simp
 
 section Disjoint
 

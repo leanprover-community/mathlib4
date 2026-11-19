@@ -273,7 +273,7 @@ class NeBot (f : Filter α) : Prop where
 
 @[push ←]
 theorem neBot_iff {f : Filter α} : NeBot f ↔ f ≠ ⊥ :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.ne', fun h => ⟨h⟩⟩
 
 /-- `f.Eventually p` or `∀ᶠ x in f, p x` mean that `{x | p x} ∈ f`. E.g., `∀ᶠ x in atTop, p x`
 means that `p` holds true for sufficiently large `x`. -/

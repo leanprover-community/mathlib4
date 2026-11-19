@@ -53,7 +53,6 @@ We
 ## Examples
 
 See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.Sheaf`.
-
 -/
 
 @[expose] public section
@@ -396,7 +395,7 @@ theorem isSeparating_iff_epi
     IsSeparating P ↔ ∀ X : C, Epi (P.coproductFrom X) :=
   ⟨fun hP X ↦ hP.epi_coproductFrom X,
     fun hP ↦ IsSeparating.mk_of_exists_epi (fun X ↦ ⟨_, P.coproductFromFamily X,
-      fun i ↦ i.left.2, _, colimit.isColimit _, _, hP X⟩)⟩
+      fun i ↦ i.left.property, _, colimit.isColimit _, _, hP X⟩)⟩
 
 section
 
@@ -434,7 +433,7 @@ theorem isCoseparating_iff_mono
     IsCoseparating P ↔ ∀ X : C, Mono (P.productTo X) :=
   ⟨fun hP X ↦ hP.mono_productTo X,
     fun hP ↦ IsCoseparating.mk_of_exists_mono (fun X ↦ ⟨_, P.productToFamily X,
-      fun i ↦ i.right.2, _, limit.isLimit _, _, hP X⟩)⟩
+      fun i ↦ i.right.property, _, limit.isLimit _, _, hP X⟩)⟩
 
 end ObjectProperty
 
@@ -513,7 +512,7 @@ theorem wellPowered_of_isDetecting [HasPullbacks C] {𝒢 : ObjectProperty C}
     [ObjectProperty.Small.{w} 𝒢] [LocallySmall.{w} C]
     (h𝒢 : 𝒢.IsDetecting) : WellPowered.{w} C where
   subobject_small X := small_of_injective
-    (f := fun P : Subobject X => { f : Σ G : Subtype 𝒢, G.1 ⟶ X | P.Factors f.2 })
+    (f := fun P : Subobject X => { f : Σ G : Subtype 𝒢, G.val ⟶ X | P.Factors f.2 })
       fun P Q h => Subobject.eq_of_isDetecting h𝒢 _ _
         (by simpa [Set.ext_iff, Sigma.forall] using h)
 

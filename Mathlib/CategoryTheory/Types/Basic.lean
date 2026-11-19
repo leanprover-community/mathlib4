@@ -235,8 +235,8 @@ variable (J)
 @[simps]
 def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
   obj F := F.sections
-  map {F G} φ := ↾fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
-    by simp [← NatTrans.naturality_apply, x.2 f]⟩
+  map {F G} φ := ↾fun x ↦ ⟨fun j => φ.app j (x.val j), fun {j j'} f =>
+    by simp [← NatTrans.naturality_apply, x.property f]⟩
 
 end Functor
 
@@ -273,7 +273,7 @@ end FunctorToTypes
 and the original type.
 -/
 def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
-  hom := ofHom fun a ↦ a.1
+  hom := ofHom fun a ↦ a.down
   inv := ofHom fun a ↦ .up a
 
 /-- The functor embedding `Type u` into `Type (max u v)`.

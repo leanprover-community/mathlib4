@@ -16,7 +16,6 @@ between `Fin (p + 1)` and the type of nondegenerate `(p + 1)`-simplices
 of `Δ[p] ⊗ Δ[1]`. We use this enumeration of the nondegenerate simplices
 in order to define a filtration `SSet.prodStdSimplex₁.filtration`
 of `Δ[p] ⊗ Δ[1]` by subcomplexes.
-
 -/
 
 @[expose] public section
@@ -94,7 +93,7 @@ noncomputable def filtration (j : Fin (p + 1)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).Su
   ⨆ i : Set.Iic j, .ofSimplex (nonDegenerateEquiv i.val).val
 
 lemma ofSimplex_le_filtration {i j : Fin (p + 1)} (hij : i ≤ j) :
-    .ofSimplex (nonDegenerateEquiv i).1 ≤ filtration.{u} j :=
+    .ofSimplex (nonDegenerateEquiv i).val ≤ filtration.{u} j :=
   le_iSup (fun i : Set.Iic j ↦
     Subcomplex.ofSimplex (nonDegenerateEquiv i.val).val) ⟨i, hij⟩
 
