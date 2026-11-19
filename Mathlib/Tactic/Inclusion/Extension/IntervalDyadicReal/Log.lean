@@ -16,7 +16,7 @@ This file implements `Real.log` extension for the tactic `dyadic_interval`.
 ## Implementation details
 
 We first define `Inclusion.IntervalDyadicReal.smallArtanh`, which computes `artanh` of a small
-dyadic number `num / den` using the binary splitting method. Then we use the identity
+rational number `num / den` using the binary splitting method. Then we use the identity
 `log 2 = 6 * artanh (1 / 17) + 4 * artanh (1 / 19) + 4 * artanh (1 / 31)`
 to obtain a dyadic approximation of `log 2`.
 
@@ -36,15 +36,9 @@ obtained by adding a `step prec`.
 
 public section
 
-open Real Dyadic
+open Dyadic Finset Inclusion.IntervalDyadicReal.Dyadic Real
 
-namespace Inclusion
-
-namespace IntervalDyadicReal
-
-open Dyadic
-
-section SmallArtanh
+namespace Inclusion.IntervalDyadicReal
 
 /-- The `n`-th partial sum of the `artanh` series at `num / den`,
 returned as `(P, Q)` with `P / Q` equal to this sum.
@@ -70,13 +64,16 @@ where
   termination_by a b => b - a
   decreasing_by all_goals lia
 
-theorem smallArtanh.go_spec (num den a b : ℕ) :
-    (go num den a b).1 = ∏ i ∈ Finset.Ico a b, (2 * i + 1) * num ^ 2 ∧
-    (go num den a b).2.1 = ∏ i ∈ Finset.Ico a b, (2 * i + 3) * den ^ 2 ∧
-    (go num den a b).2.2 = ∑ i ∈ Finset.Ico a b, (∏ j ∈ Finset.Ico a i, (2 * j + 1) * num ^ 2) *
-      ∏ j ∈ Finset.Ico i b, (2 * j + 3) * den ^ 2 := by
+namespace smallArtanh
+
+theorem go_spec (num den a b : ℕ) :
+    letI X := go num den a b
+    X.1 = ∏ i ∈ Ico a b, (2 * i + 1) * num ^ 2 ∧
+    X.2.1 = ∏ i ∈ Ico a b, (2 * i + 3) * den ^ 2 ∧
+    X.2.2 = ∑ i ∈ Ico a b,
+      (∏ j ∈ Ico a i, (2 * j + 1) * num ^ 2) * ∏ j ∈ Ico i b, (2 * j + 3) * den ^ 2 := by
   fun_induction go num den a b with
-  | case1 a b h => simp [Finset.Ico_eq_empty_of_le (by lia : b ≤ a)]
+  | case1 a b h => simp [Ico_eq_empty_of_le (by lia : b ≤ a)]
   | case2 a b h => simp [show b = a + 1 by lia]
   | case3 a b n h m Pl Ql Rl hl Pr Qr Rr hr ihl ihr =>
     rw [hl] at ihl
@@ -85,51 +82,57 @@ theorem smallArtanh.go_spec (num den a b : ℕ) :
     obtain ⟨rfl, rfl, rfl⟩ := ihr
     dsimp only
     split_ands
-    · apply Finset.prod_Ico_consecutive <;> lia
-    · apply Finset.prod_Ico_consecutive <;> lia
+    · apply prod_Ico_consecutive <;> lia
+    · apply prod_Ico_consecutive <;> lia
     · have ham : a ≤ m := by lia
       have hmb : m ≤ b := by lia
-      rw [Finset.mul_sum, Finset.mul_sum, ← Finset.sum_Ico_consecutive _ ham hmb]
-      congr 1 <;> refine Finset.sum_congr rfl fun i hi ↦ ?_
-      · rw [← Finset.prod_Ico_consecutive _ (Finset.mem_Ico.mp hi).2.le hmb]
+      rw [mul_sum, mul_sum, ← sum_Ico_consecutive _ ham hmb]
+      congr 1 <;> refine sum_congr rfl fun i hi ↦ ?_
+      · rw [← prod_Ico_consecutive _ (Finset.mem_Ico.mp hi).2.le hmb]
         ring
-      · rw [← Finset.prod_Ico_consecutive _ ham (Finset.mem_Ico.mp hi).1]
+      · rw [← prod_Ico_consecutive _ ham (Finset.mem_Ico.mp hi).1]
         ring
 
-theorem smallArtanh.go_spec' {num den : ℕ} (hden : den ≠ 0) (a b : ℕ) :
-    ((go num den a b).2.2 : ℝ) / (go num den a b).2.1 = ∑ i ∈ Finset.Ico a b,
-      ∏ j ∈ Finset.Ico a i, (((2 * j + 1) * num ^ 2) / ((2 * j + 3) * den ^ 2) : ℝ) := by
-  rw [(go_spec num den a b).2.1, (go_spec num den a b).2.2]
-  push_cast
-  rw [div_eq_mul_inv, Finset.sum_mul]
-  refine Finset.sum_congr rfl fun i hi ↦ ?_
-  rw [← div_eq_mul_inv,
-    ← Finset.prod_Ico_consecutive _ (Finset.mem_Ico.mp hi).1 (Finset.mem_Ico.mp hi).2.le,
-    mul_div_mul_right _ _ (Finset.prod_ne_zero_iff.mpr fun j _ => by positivity),
-    ← Finset.prod_div_distrib]
-
-theorem smallArtanh.den_ne_zero (num den n : ℕ) (hden : den ≠ 0) :
+theorem den_ne_zero (num den n : ℕ) (hden : den ≠ 0) :
     (smallArtanh num den n).2 ≠ 0 := by
   rw [smallArtanh, (go_spec num den 0 n).2.1]
-  simpa [hden] using Finset.prod_ne_zero_iff.mpr fun j _ => by positivity
+  simpa [hden] using prod_ne_zero_iff.mpr fun j _ => by positivity
 
-theorem smallArtanh.spec (num den n : ℕ) :
-    ((smallArtanh num den n).1 : ℝ) / (smallArtanh num den n).2 =
-      ∑ k ∈ Finset.range n, (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1) := by
+theorem spec (num den n : ℕ) :
+    letI X := smallArtanh num den n
+    (X.1 : ℝ) / X.2 = ∑ k ∈ range n, (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1) := by
   rw [smallArtanh]
-  by_cases hden : den = 0
-  · simp [hden]
+  rcases eq_or_ne den 0 with rfl | hden; · simp
+  rw [(go_spec num den 0 n).2.1, (go_spec num den 0 n).2.2]
   push_cast
-  rw [mul_div_mul_comm, go_spec' hden, Finset.mul_sum]
-  simp only [Nat.Ico_zero_eq_range]
-  refine Finset.sum_congr rfl fun i hi => ?_
+  rw [mul_div_mul_comm, div_eq_mul_inv (∑ _ ∈ _, _), sum_mul, mul_sum, Nat.Ico_zero_eq_range]
+  refine sum_congr rfl fun i hi => ?_
+  rw [← div_eq_mul_inv, Nat.Ico_zero_eq_range, ← prod_range_mul_prod_Ico _ (mem_range.mp hi).le,
+    mul_div_mul_right _ _ (prod_ne_zero_iff.mpr fun j _ => by positivity), ← prod_div_distrib]
   induction i with
   | zero => simp
   | succ i ih =>
     specialize ih (by grind)
-    rw [Finset.prod_range_succ, ← _root_.mul_assoc, ih]
-    simp [div_pow, field]
+    simp_rw [prod_range_succ, ← _root_.mul_assoc, ih, div_pow, Nat.cast_add, Nat.cast_one, fieldEq]
     ring
+
+/-- The partial sums computed by `smallArtanh` are lower bounds for `artanh (num / den)`. -/
+theorem div_le_artanh {num den : ℕ} (h : num < den) (n : ℕ) :
+    ((smallArtanh num den n).1 : ℝ) / (smallArtanh num den n).2 ≤ artanh (num / den) := by
+  rw [spec]
+  have : (num : ℝ) / den < 1 := by (have : den ≠ 0 := by lia); field_simp; norm_cast
+  exact sum_range_le_artanh (by positivity) this n
+
+/-- An upper bound for `artanh (num / den)` in terms of the partial sums computed by
+`smallArtanh`. -/
+theorem artanh_le_div_add {num den : ℕ} (h : num < den) (n : ℕ) :
+    letI X := smallArtanh num den n
+    artanh (num / den) ≤ (X.1 : ℝ) / X.2 + (num / den) ^ (2 * n + 1) / (1 - (num / den) ^ 2) := by
+  rw [spec]
+  have : (num : ℝ) / den < 1 := by (have : den ≠ 0 := by lia); field_simp; norm_cast
+  exact artanh_le_sum_range_add (by positivity) this n
+
+end smallArtanh
 
 private theorem div_le_pow (p N prec m n : ℕ) (hp : 2 ≤ p) (hm : 2 ^ m ≤ p ^ 2)
     (hn : (1 / p) / (1 - (1 / p) ^ 2) ≤ (1 / 2 : ℝ) ^ n) (hN : prec ≤ m * N + n) :
@@ -141,42 +144,17 @@ private theorem div_le_pow (p N prec m n : ℕ) (hp : 2 ≤ p) (hm : 2 ^ m ≤ p
   rw [pow_mul, pow_mul]
   exact pow_le_pow_left₀ (by positivity) (by simpa [field] using mod_cast hm) N
 
-/-- The partial sums computed by `smallArtanh` are lower bounds for `artanh (num / den)`. -/
-theorem smallArtanh.div_le_artanh {num den : ℕ} (h : num < den) (n : ℕ) :
-    ((smallArtanh num den n).1 : ℝ) / (smallArtanh num den n).2 ≤ artanh (num / den) := by
-  rw [spec]
-  exact sum_range_le_artanh (by positivity)
-    ((div_lt_one (Nat.cast_pos.mpr (by lia))).mpr (mod_cast h)) n
-
-/-- An upper bound for `artanh (num / den)` in terms of the partial sums computed by
-`smallArtanh`. -/
-theorem smallArtanh.artanh_le_div_add {num den : ℕ} (h : num < den) (n : ℕ) :
-    artanh (num / den) ≤ ((smallArtanh num den n).1 : ℝ) / (smallArtanh num den n).2 +
-      (num / den : ℝ) ^ (2 * n + 1) / (1 - (num / den) ^ 2) := by
-  rw [spec]
-  apply artanh_le_sum_range_add
-  · positivity
-  · have : den ≠ 0 := by lia
-    field_simp
-    norm_cast
-
 /-- Two-sided bounds for `artanh (1 / p)` in terms of the partial sums computed by `smallArtanh`,
 with error at most `step prec`. -/
 private theorem artanh_one_div_bounds (p N prec m n : ℕ) (hp : 2 ≤ p) (hm : 2 ^ m ≤ p ^ 2)
     (hn : (1 / p) / (1 - (1 / p) ^ 2) ≤ (1 / 2 : ℝ) ^ n) (hN : prec ≤ m * N + n) :
-    ((smallArtanh 1 p N).1 : ℝ) / (smallArtanh 1 p N).2 ≤ artanh (1 / p) ∧
-      artanh (1 / p) ≤ (smallArtanh 1 p N).1 / (smallArtanh 1 p N).2 + (step prec).toRat := by
+    letI X := smallArtanh 1 p N
+    (X.1 : ℝ) / X.2 ≤ artanh (1 / p) ∧ artanh (1 / p) ≤ X.1 / X.2 + (step prec).toRat := by
   have hlo := smallArtanh.div_le_artanh (by lia : 1 < p) N
   have hup := smallArtanh.artanh_le_div_add (by lia : 1 < p) N
   rw [Nat.cast_one] at hlo hup
   refine ⟨hlo, hup.trans ?_⟩
   grw [div_le_pow p N prec m n hp hm hn hN]
-
-end SmallArtanh
-
-section Log
-
-section LogTwo
 
 /-- Computes a lower bound `l : Dyadic` for `log 2` with precision `prec`. -/
 @[expose]
@@ -220,10 +198,6 @@ theorem logTwo_spec (prec : ℕ) :
     norm_num [toRat_step, zpow_add₀]
     ring
   grind [log_two_eq_six_mul_artanh_add]
-
-end LogTwo
-
-section LogSum
 
 /-- Computes a lower bound `l : Dyadic` for `log (m / 2 ^ m.log2)` with precision `prec`.
 Note that `m / 2 ^ m.log2 ∈ [1, 2)` when `m ≠ 0`. -/
@@ -275,8 +249,6 @@ theorem logSum_spec {m : ℕ} (hm : m ≠ 0) (prec : ℕ) :
     simp only [natDivLower_eq, toRat_mul, toRat_ofNat, hlog]
     push_cast
     constructor <;> linarith
-
-end LogSum
 
 /-- Computes a lower bound for `log x` with precision `prec`. -/
 @[expose]
@@ -345,8 +317,6 @@ theorem logPoint_mem (x : Dyadic) (prec : ℕ) : Real.log (toReal x) ∈ logPoin
   · obtain ⟨hl, hu⟩ := lowerLog_spec x prec
     exact Interval.mem_map_Icc _ hl (by simpa [Dyadic.toReal] using hu)
 
-end Log
-
 /-- Logarithm of an `Interval Dyadic`, computed from the enclosures `logPoint` at the endpoints of
 its absolute value. When `0` lies in the interval, the result must also contain `log 0 = 0`. -/
 @[expose]
@@ -400,6 +370,4 @@ theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) :
     exact Interval.mem_Ici_of_le (Real.log_le_log (hpos hI hl) (Interval.map_lb_le _ hx))
       (logPoint_mem l prec)
 
-end IntervalDyadicReal
-
-end Inclusion
+end Inclusion.IntervalDyadicReal
