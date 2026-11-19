@@ -51,6 +51,7 @@ variable {R : Type*} [CommRing R] [IsLocalRing R] [Fintype (ResidueField R)]
 
 -- TODO: Switch over to Finite and Nat.card once the rest of the finite field material has been
 -- switched over
+/-- We define the `legendreSym` for a local ring with finite residue field. -/
 noncomputable def legendreSym : MulChar R ℤ :=
   (quadraticChar (ResidueField R)).compLocalHom (residue R)
 
@@ -82,6 +83,8 @@ theorem sq_one (ha : IsUnit a) : legendreSym a ^ 2 = 1 := MonoidWithZeroHom.sq_o
 
 -- TODO: move (wrong file)
 omit [DecidableEq (ResidueField R)] in
+/-- The residue of an element is `0` in `ResidueField R` if and only if its reduction in
+`ZMod p` is `0`. -/
 lemma residue_eq_zero_iff_of_prime {p : ℕ} [Fact (Nat.Prime p)]
     (hp : Fintype.card (ResidueField R) = p) {z : ℤ} :
     residue R z = 0 ↔ (z : ZMod p) = 0 := by
@@ -92,6 +95,8 @@ lemma residue_eq_zero_iff_of_prime {p : ℕ} [Fact (Nat.Prime p)]
 
 -- TODO: move (wrong file)
 omit [DecidableEq (ResidueField R)] in
+/-- The residue of an element is a square in `ResidueField R` if and only if its reduction in
+`ZMod p` is a square. -/
 lemma isSquare_residue_iff {p : ℕ} [Fact (Nat.Prime p)]
     (hp : Fintype.card (ResidueField R) = p) {z : ℤ} :
     IsSquare (residue R z) ↔ IsSquare (z : ZMod p) := by
