@@ -156,7 +156,7 @@ instance nonempty_Iic_subtype : Nonempty (I(, a]) :=
   Nonempty.to_subtype nonempty_Iic
 
 @[to_dual self]
-theorem nonempty_Icc_subtype (h : a ≤ b) : Nonempty (I[a, b]) :=
+theorem nonempty_Icc_subtype (h : a ≤ b) : Nonempty I[a, b] :=
   Nonempty.to_subtype (nonempty_Icc.mpr h)
 
 @[to_dual]
