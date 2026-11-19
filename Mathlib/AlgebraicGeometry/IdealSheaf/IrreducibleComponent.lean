@@ -67,7 +67,7 @@ noncomputable def irreducibleComponentι : X.irreducibleComponent Z hZ ⟶ X :=
   (X.irreducibleComponentIdeal Z hZ).subschemeι
 
 lemma irreducibleComponentι_apply (x : X.irreducibleComponent Z hZ) :
-    X.irreducibleComponentι Z hZ x = x.1 :=
+    X.irreducibleComponentι Z hZ x = x.val :=
   rfl
 
 instance : IsClosedImmersion (X.irreducibleComponentι Z hZ) :=

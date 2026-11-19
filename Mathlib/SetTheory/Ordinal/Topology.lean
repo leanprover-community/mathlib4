@@ -66,7 +66,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     refine ⟨Shrink t, ?_, Subtype.val ∘ (equivShrink _).symm, ?_, ?_⟩
     · have := ht₀.to_subtype
       exact (equivShrink _).symm.nonempty
-    · simpa [← (equivShrink t).forall_congr_left (p := (·.1 ∈ s))]
+    · simpa [← (equivShrink t).forall_congr_left (p := (·.val ∈ s))]
     · simp [(equivShrink t).symm.iSup_comp, ← sSup_eq_iSup']
   tfae_have 5 → 1 := by
     rintro ⟨ι, hne, f, hfs, rfl⟩

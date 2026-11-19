@@ -159,7 +159,7 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
     intro y hy
     have := AlgEquiv.restrictNormal_commutes x L y
     dsimp at this
-    rw [hx y.1 ((IntermediateField.mem_lift y).mpr hy)] at this
+    rw [hx y.val ((IntermediateField.mem_lift y).mpr hy)] at this
     exact SetLike.coe_eq_coe.mp this
   · exact ⟨IntermediateField.fixingSubgroup_isOpen (IntermediateField.lift L'), congrFun rfl⟩
 
@@ -185,7 +185,7 @@ lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (asProfiniteGaloisGroupF
 lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
     (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : L)
     (L' : FiniteGaloisIntermediateField k K) (h : L ≤ L') :
-    (proj L g x).val = (proj L' g ⟨x, h x.2⟩).val := by
+    (proj L g x).val = (proj L' g ⟨x, h x.property⟩).val := by
   induction L with | _ L => ?_
   induction L' with | _ L' => ?_
   let : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
@@ -198,7 +198,7 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
 lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
     (x : K) (y : adjoin k {x}) (L : FiniteGaloisIntermediateField k K)
     (h : x ∈ L.toIntermediateField) :
-    (proj (adjoin k {x}) g y).val = (proj L g ⟨y, adjoin_simple_le_iff.mpr h y.2⟩).val :=
+    (proj (adjoin k {x}) g y).val = (proj L g ⟨y, adjoin_simple_le_iff.mpr h y.property⟩).val :=
   proj_of_le _ g y _ _
 
 set_option backward.privateInPublic true in
@@ -286,10 +286,10 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
     ext L
     change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
-    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 :=
+    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.val :=
       AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
     simp_rw [this]
-    exact proj_adjoin_singleton_val _ _ _ _ x.2
+    exact proj_adjoin_singleton_val _ _ _ _ x.property
 
 open scoped Topology in
 lemma krullTopology_mem_nhds_one_iff_of_isGalois [IsGalois k K] (A : Set Gal(K/k)) :

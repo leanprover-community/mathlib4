@@ -153,7 +153,7 @@ theorem coe_bot : ((⊥ : Subgroup G) : Set G) = {1} :=
 
 @[to_additive]
 instance : Unique (⊥ : Subgroup G) :=
-  ⟨⟨1⟩, fun g => Subtype.ext g.2⟩
+  ⟨⟨1⟩, fun g => Subtype.ext g.property⟩
 
 @[to_additive (attr := simp)]
 theorem top_toSubmonoid : (⊤ : Subgroup G).toSubmonoid = ⊤ :=

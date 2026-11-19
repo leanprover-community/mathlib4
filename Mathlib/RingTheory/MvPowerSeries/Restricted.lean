@@ -198,13 +198,13 @@ instance (c : σ → ℝ) : Ring (Restricted R c) :=
 
 /-- `R`-module structure on `Restricted R c`. -/
 instance (c : σ → ℝ) : Module R (Restricted R c) where
-  smul r f := ⟨r • f.1, f.2.smul r⟩
-  one_smul f := Subtype.ext (one_smul R f.1)
-  mul_smul r s f := Subtype.ext (mul_smul r s f.1)
+  smul r f := ⟨r • f.val, f.property.smul r⟩
+  one_smul f := Subtype.ext (one_smul R f.val)
+  mul_smul r s f := Subtype.ext (mul_smul r s f.val)
   smul_zero r := Subtype.ext (smul_zero r)
-  smul_add r f g := Subtype.ext (smul_add r f.1 g.1)
-  add_smul r s f := Subtype.ext (add_smul r s f.1)
-  zero_smul f := Subtype.ext (zero_smul R f.1)
+  smul_add r f g := Subtype.ext (smul_add r f.val g.val)
+  add_smul r s f := Subtype.ext (add_smul r s f.val)
+  zero_smul f := Subtype.ext (zero_smul R f.val)
 
 section CommRing
 
@@ -213,13 +213,13 @@ variable {S : Type*} [NormedCommRing S] [IsUltrametricDist S] (c : σ → ℝ)
 /-- Commutative ring structure on `Restricted S c` when `S` is commutative. -/
 noncomputable
 instance : CommRing (Restricted S c) where
-  mul_comm := fun f g ↦ Subtype.ext (mul_comm f.1 g.1)
+  mul_comm := fun f g ↦ Subtype.ext (mul_comm f.val g.val)
 
 /-- Algebra structure on `Restricted S c` when `S` is commutative. -/
 noncomputable
 instance : Algebra S (Restricted S c) :=
-  fast_instance% Algebra.ofModule (fun r f g ↦ Subtype.ext (smul_mul_assoc r f.1 g.1))
-    fun r f g ↦ Subtype.ext (mul_smul_comm r f.1 g.1)
+  fast_instance% Algebra.ofModule (fun r f g ↦ Subtype.ext (smul_mul_assoc r f.val g.val))
+    fun r f g ↦ Subtype.ext (mul_smul_comm r f.val g.val)
 
 /-- Check for diamond instances on algebra and module structures. -/
 example : (Algebra.toModule : Module S (Restricted S c)) =
@@ -231,37 +231,37 @@ end CommRing
 namespace Restricted
 
 @[ext]
-lemma ext {c : σ → ℝ} {f g : Restricted R c} (h : f.1 = g.1) : f = g := Subtype.ext h
+lemma ext {c : σ → ℝ} {f g : Restricted R c} (h : f.val = g.val) : f = g := Subtype.ext h
 
 variable (c : σ → ℝ)
 
 @[simp]
-lemma val_zero : (0 : Restricted R c).1 = 0 := rfl
+lemma val_zero : (0 : Restricted R c).val = 0 := rfl
 
 @[simp]
-lemma val_one : (1 : Restricted R c).1 = 1 := rfl
+lemma val_one : (1 : Restricted R c).val = 1 := rfl
 
 @[simp]
-lemma val_add (f g : Restricted R c) : (f + g).1 = f.1 + g.1 := rfl
+lemma val_add (f g : Restricted R c) : (f + g).val = f.val + g.val := rfl
 
 @[simp]
-lemma val_neg (f : Restricted R c) : (-f).1 = -f.1 := rfl
+lemma val_neg (f : Restricted R c) : (-f).val = -f.val := rfl
 
 @[simp]
-lemma val_sub (f g : Restricted R c) : (f - g).1 = f.1 - g.1 := rfl
+lemma val_sub (f g : Restricted R c) : (f - g).val = f.val - g.val := rfl
 
 @[simp]
-lemma val_smul (r : R) (f : Restricted R c) : (r • f).1 = r • f.1 := rfl
+lemma val_smul (r : R) (f : Restricted R c) : (r • f).val = r • f.val := rfl
 
 @[simp]
-lemma val_mul (f g : Restricted R c) : (f * g).1 = f.1 * g.1 := rfl
+lemma val_mul (f g : Restricted R c) : (f * g).val = f.val * g.val := rfl
 
 @[simp]
-lemma val_pow (f : Restricted R c) (n : ℕ) : (f ^ n).1 = f.1 ^ n := rfl
+lemma val_pow (f : Restricted R c) (n : ℕ) : (f ^ n).val = f.val ^ n := rfl
 
 @[simp]
 lemma val_sum {ι : Type*} (s : Finset ι) (g : ι → Restricted R c) :
-    (∑ i ∈ s, g i).1 = ∑ i ∈ s, (g i).1 :=
+    (∑ i ∈ s, g i).val = ∑ i ∈ s, (g i).val :=
   map_sum (IsRestricted.subring c).subtype g s
 
 /-- `MvPowerSeries.monomial n a` as an element of `Restricted R c`. -/
@@ -270,7 +270,7 @@ def monomial (n : σ →₀ ℕ) (a : R) : Restricted R c :=
   ⟨MvPowerSeries.monomial n a, isRestricted_monomial c n a⟩
 
 @[simp]
-lemma val_monomial (n : σ →₀ ℕ) (a : R) : (monomial c n a).1 = MvPowerSeries.monomial n a := rfl
+lemma val_monomial (n : σ →₀ ℕ) (a : R) : (monomial c n a).val = MvPowerSeries.monomial n a := rfl
 
 variable (R) in
 /-- `MvPowerSeries.X s` as an element of `Restricted R c`. -/
@@ -278,7 +278,7 @@ noncomputable
 def X (s : σ) : Restricted R c := ⟨MvPowerSeries.X s, isRestricted_X c s⟩
 
 @[simp]
-lemma val_X (s : σ) : (X R c s).1 = MvPowerSeries.X s := rfl
+lemma val_X (s : σ) : (X R c s).val = MvPowerSeries.X s := rfl
 
 /-- The constant `MvPowerSeries.C a` as an element of `Restricted R c`, bundled as a ring
 homomorphism. -/
@@ -287,7 +287,7 @@ def C : R →+* Restricted R c :=
   RingHom.codRestrict MvPowerSeries.C (IsRestricted.subring c) (isRestricted_C c)
 
 @[simp]
-lemma val_C (a : R) : (C c a).1 = MvPowerSeries.C a := rfl
+lemma val_C (a : R) : (C c a).val = MvPowerSeries.C a := rfl
 
 lemma algebraMap_apply {S : Type*} [NormedCommRing S] [IsUltrametricDist S] (a : S) :
     algebraMap S (Restricted S c) a = C c a :=
@@ -300,30 +300,31 @@ noncomputable
 def map {φ : R →+* S} {K : ℝ} (hφ : ∀ x, ‖φ x‖ ≤ K * ‖x‖) :
     Restricted R c →+* Restricted S c :=
   RingHom.codRestrict ((MvPowerSeries.map φ).comp (IsRestricted.subring c).subtype)
-    (IsRestricted.subring c) fun f ↦ isRestricted_map c _ hφ f.2
+    (IsRestricted.subring c) fun f ↦ isRestricted_map c _ hφ f.property
 
 @[simp]
 lemma val_map {φ : R →+* S} {K : ℝ} (hφ : ∀ x, ‖φ x‖ ≤ K * ‖x‖) (f : Restricted R c) :
-    (map c hφ f).1 = MvPowerSeries.map φ f.1 := rfl
+    (map c hφ f).val = MvPowerSeries.map φ f.val := rfl
 
 lemma map_injective {φ : R →+* S} {K : ℝ} (hφ : ∀ x, ‖φ x‖ ≤ K * ‖x‖)
     (hφinj : Function.Injective φ) : Function.Injective (map c hφ) := fun a b h ↦
   Restricted.ext <| MvPowerSeries.ext fun t ↦ hφinj <| by
     simpa only [val_map, MvPowerSeries.coeff_map] using
-      congrArg (fun r : Restricted S c ↦ MvPowerSeries.coeff t r.1) h
+      congrArg (fun r : Restricted S c ↦ MvPowerSeries.coeff t r.val) h
 
 /-- A version of `MvPowerSeries.Restricted.map` where we take `π` only being additive (not
 necessarily multiplicative), this gives an additive map between restricted power series. -/
 noncomputable
 def mapAdditive (π : S →+ R) {K : ℝ} (hK : ∀ x, ‖π x‖ ≤ K * ‖x‖) :
     Restricted S c →+ Restricted R c where
-  toFun A := ⟨fun t ↦ π (coeff t A.1), isRestricted_map c π hK A.2⟩
+  toFun A := ⟨fun t ↦ π (coeff t A.val), isRestricted_map c π hK A.property⟩
   map_zero' := Restricted.ext (MvPowerSeries.ext fun t ↦ by aesop)
   map_add' A B := Restricted.ext (MvPowerSeries.ext fun t ↦ by aesop)
 
 @[simp]
 lemma coeff_val_mapAdditive (π : S →+ R) {K : ℝ} (hK : ∀ x, ‖π x‖ ≤ K * ‖x‖)
-    (A : Restricted S c) (t : σ →₀ ℕ) : coeff t (mapAdditive c π hK A).1 = π (coeff t A.1) := rfl
+    (A : Restricted S c) (t : σ →₀ ℕ) :
+    coeff t (mapAdditive c π hK A).val = π (coeff t A.val) := rfl
 
 end Restricted
 
@@ -347,7 +348,7 @@ def toRestricted : MvPolynomial σ R →+* MvPowerSeries.Restricted R c :=
     fun p ↦ isRestricted c p
 
 @[simp]
-lemma val_toRestricted (p : MvPolynomial σ R) : (toRestricted c p).1 = (p : MvPowerSeries σ R) :=
+lemma val_toRestricted (p : MvPolynomial σ R) : (toRestricted c p).val = (p : MvPowerSeries σ R) :=
   rfl
 
 @[simp]

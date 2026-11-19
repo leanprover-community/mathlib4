@@ -249,7 +249,7 @@ def Partitions.toSet (p : Partitions α) : Set (Set α) :=
 lemma Partitions.ext_iff (p q : Partitions α) : p = q ↔ p.toSet = q.toSet :=
   Subtype.ext_iff
 
-lemma Partitions.isPartition (p : Partitions α) : IsPartition p.toSet := p.2
+lemma Partitions.isPartition (p : Partitions α) : IsPartition p.toSet := p.property
 
 /-- Defining `≤` on partitions as the `≤` defined on their induced equivalence relations. -/
 instance Partition.le : LE (Partitions α) :=
@@ -273,7 +273,7 @@ variable (α) in
 partitions of `α` into subsets. -/
 protected def Partition.orderIso : Setoid α ≃o Partitions α where
   toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
-  invFun C := mkClasses C.1 C.2.2
+  invFun C := mkClasses C.val C.property.2
   left_inv := mkClasses_classes
   right_inv C := by
     rw [Partitions.ext_iff, ← classes_mkClasses C.toSet C.isPartition]

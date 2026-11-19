@@ -125,8 +125,8 @@ theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card 
 
 open scoped IsMulCommutative in
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
-  have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
-    ⟨Nat.prime_of_mem_primeFactors p.2⟩
+  have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.val.Prime :=
+    ⟨Nat.prime_of_mem_primeFactors p.property⟩
   obtain ⟨ϕ⟩ := ((Group.isNilpotent_of_finite_tfae (G := G)).out 1 5).mp hG
   let _ : CommGroup G :=
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
@@ -223,7 +223,7 @@ theorem commutator_eq_bot_or_commutator_eq_self {P K : Subgroup G} [IsCyclic P]
     refine ⟨fun k hk g hg ↦ P.mul_mem ((hKP hk g).mp hg) (P.inv_mem hg), fun g hg ↦ ?_⟩
     obtain ⟨k, q, hkq⟩ := h ⟨g, hg⟩
     rw [← Subtype.coe_mk g hg, ← hkq]
-    exact Subgroup.commutator_mem_commutator k.2 q.2
+    exact Subgroup.commutator_mem_commutator k.property q.property
 
 end IsPGroup
 

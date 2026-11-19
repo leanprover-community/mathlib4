@@ -573,8 +573,8 @@ instance [NonUnitalSemiring R] (idem : IsIdempotentElem e) : Semiring idem.Corne
   __ : NonUnitalSemiring idem.Corner :=
     inferInstanceAs <| NonUnitalSemiring (NonUnitalSubsemiring.corner e)
   one := ⟨e, e, by simp_rw [idem.eq]⟩
-  one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).1
-  mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).2
+  one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.property).1
+  mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.property).2
 
 instance [NonUnitalCommSemiring R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
   __ : Semiring idem.Corner := inferInstance
@@ -598,15 +598,15 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
     (he : CompleteOrthogonalIdempotents e) (hc : ∀ i, IsMulCentral (e i)) :
     R ≃+* Π i, (he.idem i).Corner where
   toFun r i := ⟨_, r, rfl⟩
-  invFun r := ∑ i, (r i).1
+  invFun r := ∑ i, (r i).val
   left_inv r := by
     simp_rw [((hc _).comm _).eq, mul_assoc, (he.idem _).eq, ← Finset.mul_sum, he.complete, mul_one]
   right_inv r := funext fun i ↦ Subtype.ext <| by
     simp_rw [Finset.mul_sum, Finset.sum_mul]
     rw [Finset.sum_eq_single i _ (by simp at ·)]
-    · have ⟨r', eq⟩ := (r i).2
+    · have ⟨r', eq⟩ := (r i).property
       rw [← eq]; simp_rw [← mul_assoc, (he.idem i).eq, mul_assoc, (he.idem i).eq]
-    · intro j _ ne; have ⟨r', eq⟩ := (r j).2
+    · intro j _ ne; have ⟨r', eq⟩ := (r j).property
       rw [← eq]; simp_rw [← mul_assoc, he.ortho ne.symm, zero_mul]
   map_mul' r₁ r₂ := funext fun i ↦ Subtype.ext <|
     calc e i * (r₁ * r₂) * e i

@@ -229,7 +229,7 @@ def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
       have : n < N := Decidable.byContradiction fun h ↦ (hN n (Nat.ge_of_not_lt h)).false i
       exact subset_iUnion₂ (s := fun _ i ↦ (map n i) '' closedBall 0 1) this i
     simp_rw [inter_union_distrib_left, inter_iUnion]
-    exact h.2.union (isClosed_iUnion_of_finite (fun n ↦ isClosed_iUnion_of_finite (h.1 n.1)))
+    exact h.2.union (isClosed_iUnion_of_finite (fun n ↦ isClosed_iUnion_of_finite (h.1 n.val)))
   isClosedBase := isClosedBase
   union' := union'
 
