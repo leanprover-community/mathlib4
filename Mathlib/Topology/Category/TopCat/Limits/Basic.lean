@@ -48,7 +48,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
           continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
       naturality := fun X Y f => by
         ext a
-        exact (a.2 f).symm }
+        exact (a.property f).symm }
 
 /-- The chosen cone `TopCat.limitCone F` for a functor `F : J ⥤ TopCat` is a limit cone.
 Generally you should just use `limit.isLimit F`, unless you need the actual definition

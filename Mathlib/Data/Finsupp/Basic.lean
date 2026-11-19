@@ -1260,10 +1260,10 @@ the type of finitely supported functions from `s`. -/
 -- TODO: add [DecidablePred (· ∈ s)] as an assumption
 @[simps apply] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
-  toFun f := subtypeDomain (· ∈ s) f.1
+  toFun f := subtypeDomain (· ∈ s) f.val
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
   left_inv f :=
-    letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
+    letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.val f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
 
 @[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]

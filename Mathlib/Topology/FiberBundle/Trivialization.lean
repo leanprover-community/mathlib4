@@ -280,9 +280,9 @@ end Nonempty
 @[simps toFun source target baseSet]
 noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
     [Nonempty (s → F → proj ⁻¹' s)] : Pretrivialization F (s.restrictPreimage proj) where
-  toFun z := (⟨proj z, z.2⟩, (e z).2)
-  invFun x := by classical exact if h : (x.1.1, x.2) ∈ e.target then ⟨e.invFun (x.1, x.2), by
-      simpa only [mem_preimage, ← e.proj_toFun _ (e.map_target' h), e.right_inv' h] using! x.1.2⟩
+  toFun z := (⟨proj z, z.property⟩, (e z).2)
+  invFun x := by classical exact if h : (x.1.val, x.2) ∈ e.target then ⟨e.invFun (x.1, x.2), by
+      simpa only [mem_preimage, ← e.proj_toFun _ (e.map_target' h), e.right_inv' h] using! x.1.property⟩
     else Classical.arbitrary (s → F → _) x.1 x.2
   source := Subtype.val ⁻¹' e.source
   target := (Prod.map Subtype.val id) ⁻¹' e.target
@@ -325,14 +325,14 @@ noncomputable def domExtend {s : Set B} (e : Pretrivialization F fun z : proj �
   map_source' _ := by
     rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩
     simpa [hzp, e.coe_fst hze] using e.map_source hze
-  map_target' x hx := by simpa using ⟨(e.invFun x).2, e.map_target hx⟩
+  map_target' x hx := by simpa using ⟨(e.invFun x).property, e.map_target hx⟩
   left_inv' _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.symm_apply_apply hze]
-  right_inv' x hx := (dite_eq_left (e.invFun x).2).trans (e.right_inv hx)
+  right_inv' x hx := (dite_eq_left (e.invFun x).property).trans (e.right_inv hx)
   open_target := e.open_target
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
   source_eq := by ext z; simpa [e.source_eq] using
-    (e.proj_symm_apply' · ▸ (e.invFun (proj z, Classical.arbitrary (Z → F) z)).2)
+    (e.proj_symm_apply' · ▸ (e.invFun (proj z, Classical.arbitrary (Z → F) z)).property)
   target_eq := by ext; simp [e.target_eq]
   proj_toFun _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.coe_fst hze]
 
@@ -543,8 +543,8 @@ def preimageHomeomorph {s : Set B} (hb : s ⊆ e.baseSet) : proj ⁻¹' s ≃ₜ
 
 @[simp]
 theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj ⁻¹' s) :
-    e.preimageHomeomorph hb p = (⟨proj p, p.2⟩, (e p).2) :=
-  Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
+    e.preimageHomeomorph hb p = (⟨proj p, p.property⟩, (e p).2) :=
+  Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.property)))) rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp`
 with `Bundle.Trivialization.preimageHomeomorph_symm_apply`. -/
@@ -554,7 +554,7 @@ protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSe
 @[simp]
 theorem preimageHomeomorph_symm_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : s × F) :
     (e.preimageHomeomorph hb).symm p =
-      ⟨e.symm (p.1, p.2), ((preimageHomeomorph_symm_apply.aux e hb) p).2⟩ :=
+      ⟨e.symm (p.1, p.2), ((preimageHomeomorph_symm_apply.aux e hb) p).property⟩ :=
   rfl
 
 /-- The source is homeomorphic to the product of the base set with the fiber. -/
@@ -563,8 +563,8 @@ def sourceHomeomorphBaseSetProd : e.source ≃ₜ e.baseSet × F :=
 
 @[simp]
 theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
-    e.sourceHomeomorphBaseSetProd p = (⟨proj p, e.mem_source.mp p.2⟩, (e p).2) :=
-  e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
+    e.sourceHomeomorphBaseSetProd p = (⟨proj p, e.mem_source.mp p.property⟩, (e p).2) :=
+  e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.property⟩
 
 /-- Auxiliary definition to avoid looping in `dsimp`
 with `Bundle.Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
@@ -573,7 +573,7 @@ protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBa
 @[simp]
 theorem sourceHomeomorphBaseSetProd_symm_apply (p : e.baseSet × F) :
     e.sourceHomeomorphBaseSetProd.symm p =
-      ⟨e.symm (p.1, p.2), (sourceHomeomorphBaseSetProd_symm_apply.aux e p).2⟩ :=
+      ⟨e.symm (p.1, p.2), (sourceHomeomorphBaseSetProd_symm_apply.aux e p).property⟩ :=
   rfl
 
 /-- Each fiber of a trivialization is homeomorphic to the specified fiber. -/
@@ -994,7 +994,7 @@ def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
   simpa using ⟨by fun_prop, ContinuousEval.continuous_eval.comp Ψ.continuous⟩
 
 @[simp]
-theorem clift_self (h : proj e.1 = γ i) :
+theorem clift_self (h : proj e.val = γ i) :
     T.clift (e, γ) i = e := by
   have : proj e ∈ T.baseSet := by simp [h]
   simp [clift, liftCM, ← h, lift_self, this]

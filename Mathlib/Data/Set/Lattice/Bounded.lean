@@ -66,11 +66,11 @@ theorem biInter_mono {s s' : Set α} {t t' : α → Set β} (hs : s ⊆ s') (h :
   (biInter_subset_biInter_left hs).trans <| iInter₂_mono h
 
 theorem biUnion_eq_iUnion (s : Set α) (t : ∀ x ∈ s, Set β) :
-    ⋃ x ∈ s, t x ‹_› = ⋃ x : s, t x x.2 :=
+    ⋃ x ∈ s, t x ‹_› = ⋃ x : s, t x x.property :=
   iSup_subtype'
 
 theorem biInter_eq_iInter (s : Set α) (t : ∀ x ∈ s, Set β) :
-    ⋂ x ∈ s, t x ‹_› = ⋂ x : s, t x x.2 :=
+    ⋂ x ∈ s, t x ‹_› = ⋂ x : s, t x x.property :=
   iInf_subtype'
 
 @[simp] lemma biUnion_const {s : Set α} (hs : s.Nonempty) (t : Set β) : ⋃ a ∈ s, t = t :=
@@ -488,7 +488,7 @@ theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C
   ext x; constructor
   · rintro ⟨s, ⟨y, rfl⟩, ⟨s, hs⟩, rfl⟩
     refine ⟨_, hs, ?_⟩
-    exact (f ⟨s, hs⟩ y).2
+    exact (f ⟨s, hs⟩ y).property
   · rintro ⟨s, hs, hx⟩
     obtain ⟨y, hy⟩ := hf ⟨s, hs⟩ ⟨x, hx⟩
     refine ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, ?_⟩
@@ -498,7 +498,7 @@ theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, β → C x}
     (hf : ∀ x : ι, Surjective (f x)) : ⋃ y : β, range (fun x : ι => (f x y).val) = ⋃ x, C x := by
   ext x; rw [mem_iUnion, mem_iUnion]; constructor
   · rintro ⟨y, i, rfl⟩
-    exact ⟨i, (f i y).2⟩
+    exact ⟨i, (f i y).property⟩
   · rintro ⟨i, hx⟩
     obtain ⟨y, hy⟩ := hf i ⟨x, hx⟩
     exact ⟨y, i, congr_arg Subtype.val hy⟩
@@ -636,7 +636,7 @@ theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
 theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
     (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
-  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
+  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.val i.property)
 end Directed
 
 end Set

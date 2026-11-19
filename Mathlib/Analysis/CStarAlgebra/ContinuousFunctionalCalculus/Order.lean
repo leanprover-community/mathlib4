@@ -244,7 +244,7 @@ lemma norm_le_iff_le_algebraMap (a : A) {r : ℝ} (hr : 0 ≤ r) (ha : 0 ≤ a :
 lemma nnNorm_le_iff_of_nonneg (a : A) (r : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ≤ r ↔ a ≤ algebraMap ℝ≥0 A r := by
   rw [← NNReal.coe_le_coe]
-  exact norm_le_iff_le_algebraMap a r.2
+  exact norm_le_iff_le_algebraMap a r.property
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_le_iff_of_nonneg := nnNorm_le_iff_of_nonneg
 
@@ -283,7 +283,7 @@ lemma mem_Icc_algebraMap_iff_norm_le {x : A} {r : ℝ} (hr : 0 ≤ r) :
 
 lemma mem_Icc_algebraMap_iff_nnNorm_le {x : A} {r : ℝ≥0} :
     x ∈ Icc 0 (algebraMap ℝ≥0 A r) ↔ 0 ≤ x ∧ ‖x‖₊ ≤ r :=
-  mem_Icc_algebraMap_iff_norm_le (hr := r.2)
+  mem_Icc_algebraMap_iff_norm_le (hr := r.property)
 
 @[deprecated (since := "2026-10-31")]
 alias mem_Icc_algebraMap_iff_nnnorm_le := mem_Icc_algebraMap_iff_nnNorm_le

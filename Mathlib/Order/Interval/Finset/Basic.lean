@@ -468,8 +468,8 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
 
 /-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
 def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
-  toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
-  invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
+  toFun b := ⟨b.val, coe_Iic a ▸ mem_coe.2 b.property⟩
+  invFun b := ⟨b.val, by rw [← mem_coe, coe_Iic a]; exact b.property⟩
 
 end LocallyFiniteOrderBot
 

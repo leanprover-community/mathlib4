@@ -358,7 +358,7 @@ open scoped ComplexStarModule
 
 lemma CStarAlgebra.linear_combination_nonneg (x : A) :
     ((ℜ x : A)⁺ - (ℜ x : A)⁻) + (I • (ℑ x : A)⁺ - I • (ℑ x : A)⁻) = x := by
-  rw [CFC.posPart_sub_negPart _ (ℜ x).2, ← smul_sub, CFC.posPart_sub_negPart _ (ℑ x).2,
+  rw [CFC.posPart_sub_negPart _ (ℜ x).property, ← smul_sub, CFC.posPart_sub_negPart _ (ℑ x).property,
     realPart_add_I_smul_imaginaryPart x]
 
 variable [PartialOrder A] [StarOrderedRing A]

@@ -559,7 +559,7 @@ lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro x
   let u := WithZero.unzero (Units.ne_zero x)
-  obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
+  obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.property
   simp only [Set.mem_ofPred_eq, RingHom.id_apply]
   set y₀ := h_val.orderMonoidIso₀ x with hy₀_def
   have hy₀_ne_zero : y₀ ≠ 0 := by simp [hy₀_def]

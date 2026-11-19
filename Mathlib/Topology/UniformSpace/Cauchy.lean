@@ -839,7 +839,7 @@ def setSeq (n : ℕ) : Set α :=
   ⋂ m ∈ Set.Iic n, (setSeqAux hf U_mem m).val
 
 theorem setSeq_mem (n : ℕ) : setSeq hf U_mem n ∈ f :=
-  (biInter_mem (finite_le_nat n)).2 fun m _ => (setSeqAux hf U_mem m).2.1
+  (biInter_mem (finite_le_nat n)).2 fun m _ => (setSeqAux hf U_mem m).property.1
 
 theorem setSeq_mono ⦃m n : ℕ⦄ (h : m ≤ n) : setSeq hf U_mem n ⊆ setSeq hf U_mem m :=
   biInter_subset_biInter_left <| Iic_subset_Iic.2 h
@@ -849,7 +849,7 @@ theorem setSeq_sub_aux (n : ℕ) : setSeq hf U_mem n ⊆ setSeqAux hf U_mem n :=
 
 theorem setSeq_prod_subset {N m n} (hm : N ≤ m) (hn : N ≤ n) :
     setSeq hf U_mem m ×ˢ setSeq hf U_mem n ⊆ U N := fun p hp => by
-  refine (setSeqAux hf U_mem N).2.2 ⟨?_, ?_⟩ <;> apply setSeq_sub_aux
+  refine (setSeqAux hf U_mem N).property.2 ⟨?_, ?_⟩ <;> apply setSeq_sub_aux
   · exact setSeq_mono hf U_mem hm hp.1
   · exact setSeq_mono hf U_mem hn hp.2
 
@@ -955,7 +955,7 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   replace hs (n : ℕ) := hs (B n) (hB.mem n)
   choose t tC ht using hs
   have := fun n => (tC n).to_subtype
-  choose o hox hos using fun (n : ℕ) (x : t n) (hx : ((B n).ball x.1 ∩ s).Nonempty) => hx
+  choose o hox hos using fun (n : ℕ) (x : t n) (hx : ((B n).ball x.val ∩ s).Nonempty) => hx
   refine ⟨⋃ (n) (x), range (o n x), iUnion₂_subset fun _ _ => range_subset_iff.2 (hos _ _),
     countable_iUnion fun _ => countable_iUnion fun _ => countable_range _, fun x hx => ?_⟩
   rw [mem_closure_iff_ball]

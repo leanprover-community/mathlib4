@@ -187,7 +187,7 @@ theorem AlgEquiv.coe_mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S)
     (x : integralClosure R A) : (f.mapIntegralClosure x : S) = f (x : A) := rfl
 
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
-  let ⟨p, hpm, hpx⟩ := x.2
+  let ⟨p, hpm, hpx⟩ := x.property
   ⟨p, hpm,
     Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩

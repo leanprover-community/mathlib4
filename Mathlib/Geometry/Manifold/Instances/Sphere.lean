@@ -174,7 +174,7 @@ theorem contDiff_stereoInvFunAux {m : ℕ∞ω} : ContDiff ℝ m (stereoInvFunAu
 /-- Stereographic projection, reverse direction.  This is a map from the orthogonal complement of a
 unit vector `v` in an inner product space `E` to the unit sphere in `E`. -/
 def stereoInvFun (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : sphere (0 : E) 1 :=
-  ⟨stereoInvFunAux v (w : E), stereoInvFunAux_mem hv w.2⟩
+  ⟨stereoInvFunAux v (w : E), stereoInvFunAux_mem hv w.property⟩
 
 @[simp]
 theorem stereoInvFun_apply (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
@@ -186,14 +186,14 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     stereoInvFun hv w ≠ (⟨v, by simp [hv]⟩ : sphere (0 : E) 1) := by
   refine Subtype.coe_ne_coe.1 ?_
   rw [← inner_lt_one_iff_real_of_norm_eq_one _ hv]
-  · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+  · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.property
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by
       rw [inv_mul_lt_iff₀']
       · linarith
       positivity
     simpa [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm, hw,
       hv] using hw'
-  · simpa using stereoInvFunAux_mem hv w.2
+  · simpa using stereoInvFunAux_mem hv w.property
 
 theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv) :=
   continuous_induced_rng.2
@@ -212,7 +212,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     rw [← ((ℝ ∙ v).starProjection_add_starProjection_orthogonal x),
       Submodule.starProjection_unit_singleton ℝ hv x]
     rfl
-  have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
+  have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.property
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
     convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
@@ -236,7 +236,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
     innerSL_apply_apply, Submodule.orthogonalProjectionOnto_mem_subspace_eq_self]
   have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjectionOnto v = 0 :=
     Submodule.orthogonalProjectionOnto_orthogonalComplement_singleton_eq_zero v
-  have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+  have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.property
   have h₃ : ⟪v, v⟫ = 1 := by simp [hv]
   rw [h₁, h₂, h₃]
   match_scalars

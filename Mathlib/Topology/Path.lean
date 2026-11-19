@@ -233,7 +233,7 @@ theorem extend_range {a b : X} (γ : Path a b) :
 theorem image_extend_of_subset (γ : Path x y) {s : Set ℝ} (h : I ⊆ s) :
     γ.extend '' s = range γ :=
   (γ.extend_range ▸ image_subset_range _ _).antisymm <| range_subset_iff.mpr <| fun t ↦
-    ⟨t, h t.2, extend_extends' _ _⟩
+    ⟨t, h t.property, extend_extends' _ _⟩
 
 theorem extend_of_le_zero {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ≤ 0) : γ.extend t = a :=
@@ -287,8 +287,8 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
 @[grind =]
 theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
     (γ.trans γ') t =
-      if h : (t : ℝ) ≤ 1 / 2 then γ ⟨2 * t, (mul_pos_mem_iff zero_lt_two).2 ⟨t.2.1, h⟩⟩
-      else γ' ⟨2 * t - 1, two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t.2.2⟩⟩ :=
+      if h : (t : ℝ) ≤ 1 / 2 then γ ⟨2 * t, (mul_pos_mem_iff zero_lt_two).2 ⟨t.property.1, h⟩⟩
+      else γ' ⟨2 * t - 1, two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t.property.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> rw [extend_apply]
 
 @[simp]
@@ -610,7 +610,7 @@ theorem truncate_zero_one {a b : X} (γ : Path a b) :
     γ.truncate 0 1 = γ.cast (by simp) (by simp) := by
   ext x
   rw [cast_coe]
-  have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.2
+  have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.property
   rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
 
 /-! #### Reparametrising a path -/
@@ -645,7 +645,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
     have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
-    rcases this t.2 with ⟨w, hw₁, hw₂⟩
+    rcases this t.property with ⟨w, hw₁, hw₂⟩
     rw [IccExtend_of_mem _ _ hw₁] at hw₂
     exact ⟨_, hw₂⟩
   rw [range_comp, this, image_univ]

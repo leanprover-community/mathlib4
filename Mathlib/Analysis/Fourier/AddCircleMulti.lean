@@ -154,20 +154,20 @@ def measurableEquivPiIoc : UnitAddTorus ι ≃ᵐ {x : ι → ℝ // ∀ i, x i 
 
 theorem coe_measurableEquivPiIoc :
     ⇑(measurableEquivPiIoc b) = fun x =>
-      ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
-      fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
+      ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).val,
+      fun i => (AddCircle.equivIoc 1 (b i) (x i)).property⟩ := rfl
 
 @[simp]
 theorem coe_measurableEquivPiIoc_apply (x : UnitAddTorus ι) :
-    (measurableEquivPiIoc b) x = ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
-      fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
+    (measurableEquivPiIoc b) x = ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).val,
+      fun i => (AddCircle.equivIoc 1 (b i) (x i)).property⟩ := rfl
 
 theorem coe_symm_measurableEquivPiIoc :
-    ⇑(measurableEquivPiIoc b).symm = fun x i => x.1 i := rfl
+    ⇑(measurableEquivPiIoc b).symm = fun x i => x.val i := rfl
 
 @[simp]
 theorem coe_symm_measurableEquivPiIoc_apply (y : {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)}) :
-    (measurableEquivPiIoc b).symm y = fun i => (y.1 i : UnitAddCircle) := rfl
+    (measurableEquivPiIoc b).symm y = fun i => (y.val i : UnitAddCircle) := rfl
 
 /-- The equivalence `measurableEquivPiIoc` is measure preserving. -/
 lemma measurePreserving_equivPiIoc :

@@ -324,7 +324,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds_def, iInf_subtype']
   refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
-  exact i.2.2.measurableSet.principal_isMeasurablyGenerated
+  exact i.property.2.measurableSet.principal_isMeasurablyGenerated
 
 /-- If `s` is a measurable set, then `𝓝[s] a` is a measurably generated filter for
 each `a`. This cannot be an `instance` because it depends on a non-instance `hs : MeasurableSet s`.

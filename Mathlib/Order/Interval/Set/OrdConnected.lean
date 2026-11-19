@@ -104,22 +104,22 @@ variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[simp]
 lemma image_subtype_val_Icc {s : Set α} [OrdConnected s] (x y : s) :
-    Subtype.val '' Icc x y = Icc x.1 y :=
+    Subtype.val '' Icc x y = Icc x.val y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Icc (by simpa) x y
 
 @[simp]
 lemma image_subtype_val_Ico {s : Set α} [OrdConnected s] (x y : s) :
-    Subtype.val '' Ico x y = Ico x.1 y :=
+    Subtype.val '' Ico x y = Ico x.val y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Ico (by simpa) x y
 
 @[simp]
 lemma image_subtype_val_Ioc {s : Set α} [OrdConnected s] (x y : s) :
-    Subtype.val '' Ioc x y = Ioc x.1 y :=
+    Subtype.val '' Ioc x y = Ioc x.val y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Ioc (by simpa) x y
 
 @[simp]
 lemma image_subtype_val_Ioo {s : Set α} [OrdConnected s] (x y : s) :
-    Subtype.val '' Ioo x y = Ioo x.1 y :=
+    Subtype.val '' Ioo x y = Ioo x.val y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Ioo (by simpa) x y
 
 theorem OrdConnected.inter {s t : Set α} (hs : OrdConnected s) (ht : OrdConnected t) :
@@ -205,7 +205,7 @@ instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected 
     DenselyOrdered s :=
   ⟨fun a b (h : (a : α) < b) =>
     let ⟨x, H⟩ := exists_between h
-    ⟨⟨x, (hs.out a.2 b.2) (Ioo_subset_Icc_self H)⟩, H⟩⟩
+    ⟨⟨x, (hs.out a.property b.property) (Ioo_subset_Icc_self H)⟩, H⟩⟩
 
 @[instance]
 theorem ordConnected_preimage {F : Type*} [FunLike F α β] [OrderHomClass F α β] (f : F)
@@ -320,17 +320,17 @@ theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
 
 @[simp]
 theorem image_subtype_val_uIcc [OrdConnected s] (a b : s) :
-    Subtype.val '' [[a, b]] = [[a.1, b.1]] := by
+    Subtype.val '' [[a, b]] = [[a.val, b.val]] := by
   simp [uIcc, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
 
 @[simp]
 theorem image_subtype_val_uIoc [OrdConnected s] (a b : s) :
-    Subtype.val '' uIoc a b = uIoc a.1 b.1 := by
+    Subtype.val '' uIoc a b = uIoc a.val b.val := by
   simp [uIoc, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
 
 @[simp]
 theorem image_subtype_val_uIoo [OrdConnected s] (a b : s) :
-    Subtype.val '' uIoo a b = uIoo a.1 b.1 := by
+    Subtype.val '' uIoo a b = uIoo a.val b.val := by
   simp [uIoo, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
 
 end LinearOrder

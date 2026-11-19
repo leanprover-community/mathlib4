@@ -377,13 +377,13 @@ theorem UniformSpace.gc_generateFilter_uniformity :
   · intro hf U hU
     choose desc hdesc using (@comp_mem_uniformity_sets α u)
     let seq (n : Nat) : 𝓤[u].sets :=
-      Nat.rec n (zero := ⟨U, hU⟩) (succ := fun n ih => ⟨desc ih.2, (hdesc ih.2).1⟩)
-    refine ⟨fun n => (seq n).1, rfl, fun n => ⟨?_, ?_⟩⟩
+      Nat.rec n (zero := ⟨U, hU⟩) (succ := fun n ih => ⟨desc ih.property, (hdesc ih.property).1⟩)
+    refine ⟨fun n => (seq n).val, rfl, fun n => ⟨?_, ?_⟩⟩
     · refine ⟨⟨?_, ?_⟩, ?_⟩
-      · exact hf (seq n).2
-      · exact Filter.map_mono hf (uniformity_le_symm (seq n).2)
-      · exact refl_le_uniformity (seq n).2
-    · exact (hdesc (seq n).2).2
+      · exact hf (seq n).property
+      · exact Filter.map_mono hf (uniformity_le_symm (seq n).property)
+      · exact refl_le_uniformity (seq n).property
+    · exact (hdesc (seq n).property).2
 
 /-- Galois insertion between `generateFilter` and `uniformity`. -/
 def UniformSpace.giGenerateFilter :
@@ -781,7 +781,7 @@ instance instUniformSpaceSubtype {p : α → Prop} [t : UniformSpace α] : Unifo
   UniformSpace.comap Subtype.val t
 
 theorem uniformity_subtype {p : α → Prop} [UniformSpace α] :
-    𝓤 (Subtype p) = comap (fun q : Subtype p × Subtype p => (q.1.1, q.2.1)) (𝓤 α) :=
+    𝓤 (Subtype p) = comap (fun q : Subtype p × Subtype p => (q.1.val, q.2.val)) (𝓤 α) :=
   rfl
 
 theorem uniformity_setCoe {s : Set α} [UniformSpace α] :

@@ -186,7 +186,7 @@ lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
   simp_rw [Finset.mul_sum]
   refine tendsto_finsetSum _ fun i _ ↦ ?_
   simp_rw [mul_smul_comm]
-  exact tendsto_const_nhds.smul <| h (x i) (x i).2.1 <| by simpa using (x i).2.2
+  exact tendsto_const_nhds.smul <| h (x i) (x i).property.1 <| by simpa using (x i).property.2
 
 omit [PartialOrder A] in
 /-- Multiplication on the left by `m` tends to `𝓝 m` if and only if multiplication on the right

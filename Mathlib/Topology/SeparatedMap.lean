@@ -139,7 +139,7 @@ theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
   refine ⟨?_, fun h x ↦ ?_⟩
   · rintro h x x' hx (rfl : x = x')
     obtain ⟨U, hn, hi⟩ := h x
-    exact ⟨_, Filter.prod_mem_prod hn hn, fun {p} hp ↦ hi hp.1 hp.2 p.2⟩
+    exact ⟨_, Filter.prod_mem_prod hn hn, fun {p} hp ↦ hi hp.1 hp.2 p.property⟩
   · obtain ⟨t, ht, t_sub⟩ := h x x rfl rfl
     obtain ⟨t₁, h₁, t₂, h₂, prod_sub⟩ := Filter.mem_prod_iff.mp ht
     exact ⟨t₁ ∩ t₂, Filter.inter_mem h₁ h₂,

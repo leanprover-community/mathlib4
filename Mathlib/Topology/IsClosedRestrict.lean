@@ -69,12 +69,12 @@ lemma continuous_reorderRestrictProd [∀ i, TopologicalSpace (α i)] :
 
 lemma reorderRestrictProd_mem_preimage_image_restrict (p : Sᶜ.domRestrict '' s × (Π i : S, α i)) :
     reorderRestrictProd S s p ∈ Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s := by
-  obtain ⟨y, hy_mem_s, hy_eq⟩ := p.1.2
+  obtain ⟨y, hy_mem_s, hy_eq⟩ := p.1.property
   exact ⟨y, hy_mem_s, hy_eq.trans (restrict_compl_reorderRestrictProd p).symm⟩
 
 @[simp]
 lemma reorderRestrictProd_restrict_compl (x : Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s) :
-    reorderRestrictProd S s ⟨⟨Sᶜ.domRestrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩ =
+    reorderRestrictProd S s ⟨⟨Sᶜ.domRestrict x, x.property⟩, fun i ↦ (x : Π j, α j) i⟩ =
       (x : Π j, α j) := by
   ext; simp [reorderRestrictProd]
 
@@ -84,7 +84,7 @@ noncomputable
 def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
     (S : Set ι) (s : Set (Π j, α j)) :
     Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s ≃ₜ Sᶜ.domRestrict '' s × (Π i : S, α i) where
-  toFun x := ⟨⟨Sᶜ.domRestrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩
+  toFun x := ⟨⟨Sᶜ.domRestrict x, x.property⟩, fun i ↦ (x : Π j, α j) i⟩
   invFun p := ⟨reorderRestrictProd S s p, reorderRestrictProd_mem_preimage_image_restrict p⟩
   left_inv x := by ext; simp
   right_inv p := by ext <;> simp

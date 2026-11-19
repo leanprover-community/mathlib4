@@ -345,8 +345,8 @@ def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (· < ·
        _ ≃ _ := Set.equivOfEq <| by rw [sum_to_range C ho, union_succ C hsC ho]
 
 theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
-    (Sum.elim (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
-    (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
+    (Sum.elim (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.val)
+    (fun (l : MaxProducts C ho) ↦ Products.eval C l.val)) := by
   ext ⟨_, _⟩ <;> [rfl; rfl]
 
 /-- Let
@@ -375,7 +375,7 @@ by `succ_exact` and `succ_mono`. The left square commutes by `GoodProducts.squar
 -/
 def SumEval : GoodProducts (π C (ord I · < o)) ⊕ MaxProducts C ho →
     LocallyConstant C ℤ :=
-  Sum.elim (fun l ↦ l.1.eval C) (fun l ↦ l.1.eval C)
+  Sum.elim (fun l ↦ l.val.eval C) (fun l ↦ l.val.eval C)
 
 set_option backward.isDefEq.respectTransparency false in
 include hsC in
@@ -388,8 +388,8 @@ theorem linearIndependent_iff_sum :
 set_option backward.isDefEq.respectTransparency false in
 include hsC in
 theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
-    (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
-    (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
+    (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.val)
+    (fun (l : MaxProducts C ho) ↦ Products.eval C l.val)) := by
   rw [← sum_equiv_comp_eval_eq_elim C hsC ho, Equiv.toFun_as_coe,
     EquivLike.range_comp (e := sum_equiv C hsC ho)]
 
@@ -545,7 +545,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   -- Write the image of `l` under `Linear_CC'` as `Linear_CC'` applied to the linear combination
   -- above, with leading `term I ho`'s added to each term:
   have : (Linear_CC' C hsC ho) (l.val.eval C) = (Linear_CC' C hsC ho)
-      (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.1).map (e C)).prod) := by
+      (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.val).map (e C)).prod) := by
     rw [← hmsum]
     simp only [map_finsuppSum]
     apply Finsupp.sum_congr

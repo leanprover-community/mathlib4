@@ -59,8 +59,8 @@ public theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
   let T : g.copy x ≃L[K] f.copy x := T₀.toContinuousLinearEquiv
   obtain ⟨C1, h1_pos, h1⟩ := T.symm.toContinuousLinearMap.bound
   obtain ⟨C2, h2_pos, h2⟩ := T.toContinuousLinearMap.bound
-  exact ⟨C2, C1, h2_pos, h1_pos, forall_and.mpr ⟨fun y ↦ h2 ⟨y, algebra_adjoin_le_adjoin K _ y.2⟩,
-    fun y ↦ h1 ⟨y, algebra_adjoin_le_adjoin K _ y.2⟩⟩⟩
+  exact ⟨C2, C1, h2_pos, h1_pos, forall_and.mpr ⟨fun y ↦ h2 ⟨y, algebra_adjoin_le_adjoin K _ y.property⟩,
+    fun y ↦ h1 ⟨y, algebra_adjoin_le_adjoin K _ y.property⟩⟩⟩
 
 /-- Uniqueness of multiplicative algebra norms over complete normed fields. -/
 public theorem MulAlgebraNorm.unique [CompleteSpace K] (f g : MulAlgebraNorm K L) : f = g := by

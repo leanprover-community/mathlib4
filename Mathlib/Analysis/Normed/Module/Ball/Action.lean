@@ -33,7 +33,7 @@ instance : SMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
     ⟨(c : 𝕜) • ↑x,
       mem_ball_zero_iff.2 <| by
         simpa only [norm_smul, one_mul] using
-          mul_lt_mul' (mem_closedBall_zero_iff.1 c.2) (mem_ball_zero_iff.1 x.2) (norm_nonneg _)
+          mul_lt_mul' (mem_closedBall_zero_iff.1 c.property) (mem_ball_zero_iff.1 x.property) (norm_nonneg _)
             one_pos⟩
 
 instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
@@ -48,7 +48,7 @@ instance : SMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
     ⟨(c : 𝕜) • ↑x,
       mem_closedBall_zero_iff.2 <| by
         simpa only [norm_smul, one_mul] using
-          mul_le_mul (mem_closedBall_zero_iff.1 c.2) (mem_closedBall_zero_iff.1 x.2) (norm_nonneg _)
+          mul_le_mul (mem_closedBall_zero_iff.1 c.property) (mem_closedBall_zero_iff.1 x.property) (norm_nonneg _)
             zero_le_one⟩
 
 instance mulActionClosedBallClosedBall :

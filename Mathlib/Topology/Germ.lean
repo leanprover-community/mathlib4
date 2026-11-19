@@ -180,7 +180,7 @@ lemma eq_of_germ_isConstant_on {s : Set X} (h : ∀ x ∈ s, (f : Germ (𝓝 x) 
   let i : s → X := fun x ↦ x
   change (f ∘ i) (⟨x, x_in⟩ : s) = (f ∘ i) (⟨x', x'_in⟩ : s)
   have : PreconnectedSpace s := Subtype.preconnectedSpace hs
-  exact eq_of_germ_isConstant (fun y ↦ Germ.isConstant_comp_subtype (h y y.2)) _ _
+  exact eq_of_germ_isConstant (fun y ↦ Germ.isConstant_comp_subtype (h y y.property)) _ _
 
 @[to_additive (attr := simp)]
 theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)

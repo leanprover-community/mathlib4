@@ -167,7 +167,7 @@ variable (X Y) in
 /-- A measurable equivalence between `C(X, Y)` and `{f : X → Y // Continuous f}`. -/
 def continuousMapToFun : C(X, Y) ≃ᵐ {f : X → Y // Continuous f} where
   toFun f := ⟨f, f.continuous⟩
-  invFun f := ⟨f.1, f.2⟩
+  invFun f := ⟨f.val, f.property⟩
   left_inv f := rfl
   right_inv f := rfl
   measurable_toFun :=
@@ -181,12 +181,12 @@ lemma continuousMapToFun_apply (f : C(X, Y)) :
 
 @[simp]
 lemma symm_continuousMapToFun_apply (f : {g : X → Y // Continuous g}) :
-    (continuousMapToFun X Y).symm f = ⟨f.1, f.2⟩ := rfl
+    (continuousMapToFun X Y).symm f = ⟨f.val, f.property⟩ := rfl
 
 lemma continuousMapToFun_apply_apply (f : C(X, Y)) (x : X) :
-    (continuousMapToFun X Y f).1 x = f x := rfl
+    (continuousMapToFun X Y f).val x = f x := rfl
 
 lemma symm_continuousMapToFun_apply_apply (f : {g : X → Y // Continuous g}) (x : X) :
-    (continuousMapToFun X Y).symm f x = f.1 x := rfl
+    (continuousMapToFun X Y).symm f x = f.val x := rfl
 
 end MeasurableEquiv

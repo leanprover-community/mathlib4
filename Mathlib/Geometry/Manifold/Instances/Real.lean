@@ -88,12 +88,12 @@ instance : Inhabited (EuclideanQuadrant n) :=
   ⟨0⟩
 
 @[ext]
-theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
+theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.val = y.val) : x = y :=
   Subtype.ext h
 
 @[ext]
 theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
-    (h : x.1 = y.1) : x = y :=
+    (h : x.val = y.val) : x = y :=
   Subtype.ext h
 
 theorem EuclideanHalfSpace.convex [NeZero n] :
@@ -237,7 +237,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
-  left_inv' x _ := by ext i; simp only [x.2 i, sup_of_le_left]
+  left_inv' x _ := by ext i; simp only [x.property i, sup_of_le_left]
   right_inv' x hx := by ext1 i; simp only [hx i, sup_of_le_left]
   source_eq := rfl
   convex_range' := by
@@ -529,7 +529,7 @@ lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val <
 
 lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
   ext p
-  rcases Set.eq_endpoints_or_mem_Ioo_of_mem_Icc p.2 with (hp | hp | hp)
+  rcases Set.eq_endpoints_or_mem_Ioo_of_mem_Icc p.property with (hp | hp | hp)
   · have : p = ⊥ := SetCoe.ext hp
     rw [this]
     apply iff_of_true Icc_isBoundaryPoint_bot (mem_insert ⊥ {⊤})
