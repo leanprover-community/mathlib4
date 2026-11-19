@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
+
 import Mathlib.RingTheory.FiniteType
 
 /-!
@@ -14,7 +15,6 @@ import Mathlib.RingTheory.FiniteType
 
 This file proves the bound on the degree of a minimal polynomial on an algebra
 that is finite as a module.
-
 -/
 
 public section

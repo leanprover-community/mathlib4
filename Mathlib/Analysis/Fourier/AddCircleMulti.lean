@@ -6,7 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.AddCircle
+
 import Mathlib.MeasureTheory.Integral.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Multivariate Fourier series
@@ -150,20 +154,20 @@ def measurableEquivPiIoc : UnitAddTorus ι ≃ᵐ {x : ι → ℝ // ∀ i, x i 
 
 theorem coe_measurableEquivPiIoc :
     ⇑(measurableEquivPiIoc b) = fun x =>
-      ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
-      fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
+      ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).val,
+      fun i => (AddCircle.equivIoc 1 (b i) (x i)).property⟩ := rfl
 
 @[simp]
 theorem coe_measurableEquivPiIoc_apply (x : UnitAddTorus ι) :
-    (measurableEquivPiIoc b) x = ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
-      fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
+    (measurableEquivPiIoc b) x = ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).val,
+      fun i => (AddCircle.equivIoc 1 (b i) (x i)).property⟩ := rfl
 
 theorem coe_symm_measurableEquivPiIoc :
-    ⇑(measurableEquivPiIoc b).symm = fun x i => x.1 i := rfl
+    ⇑(measurableEquivPiIoc b).symm = fun x i => x.val i := rfl
 
 @[simp]
 theorem coe_symm_measurableEquivPiIoc_apply (y : {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)}) :
-    (measurableEquivPiIoc b).symm y = fun i => (y.1 i : UnitAddCircle) := rfl
+    (measurableEquivPiIoc b).symm y = fun i => (y.val i : UnitAddCircle) := rfl
 
 /-- The equivalence `measurableEquivPiIoc` is measure preserving. -/
 lemma measurePreserving_equivPiIoc :
@@ -173,15 +177,15 @@ lemma measurePreserving_equivPiIoc :
   have := Measure.map_map (μ := volume.comap Subtype.val) (.of_eval
     (f := fun (x : d → ℝ) => (fun i => x i : UnitAddTorus d))
     (fun i => AddCircle.measurable_mk'.comp (measurable_pi_apply i)))
-    measurable_subtype_coe (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
+    measurable_subtypeVal (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
   simp only [Function.comp_def] at this
   simp_rw [coe_symm_measurableEquivPiIoc, ← this]
-  convert! (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
+  convert (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
   · simp [volume, AddCircle.haarAddCircle]
   · convert!
-    (map_comap_subtype_coe (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc (a := a i))) volume)
-    convert! (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
-    grind
+    (map_comap_subtypeVal (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc (a := a i))) volume)
+    convert (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
+    simp
 
 theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
     ∫⁻ x : UnitAddTorus d, f x =

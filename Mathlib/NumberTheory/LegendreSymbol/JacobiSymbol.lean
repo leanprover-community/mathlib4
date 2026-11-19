@@ -114,7 +114,7 @@ theorem one_right (a : ℤ) : J(a | 1) = 1 := by
 is the same as the Jacobi symbol `J(a | p)`. -/
 theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) :
     legendreSym p a = J(a | p) := by
-  simp only [jacobiSym, primeFactorsList_prime fp.1, List.prod_cons, List.prod_nil, mul_one,
+  simp only [jacobiSym, primeFactorsList_prime fp.out, List.prod_cons, List.prod_nil, mul_one,
     List.pmap]
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
@@ -154,8 +154,8 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
 theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
   simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul]
   exact List.prod_map_mul (l := (primeFactorsList b).attach)
-    (f := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.2 } a₁)
-    (g := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.2 } a₂)
+    (f := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.property } a₁)
+    (g := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.property } a₂)
 
 /-- The symbol `J(a | b)` vanishes iff `a` and `b` are not coprime (assuming `b ≠ 0`). -/
 theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 ↔ a.gcd b ≠ 1 :=
@@ -406,7 +406,7 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
   -- define the right-hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
-      map_one' := by convert! ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
+      map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
       map_mul' := fun x y => by
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl

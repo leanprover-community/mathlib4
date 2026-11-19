@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Calculus
+
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!

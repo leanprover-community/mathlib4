@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Embedding
 public import Mathlib.SetTheory.Cardinal.NatCard
+
 import Mathlib.Data.Set.Finite.Range
 
 /-! # Existence of embeddings from finite types

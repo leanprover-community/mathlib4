@@ -166,7 +166,8 @@ def map (f : R →+* S) : WithVal v →+* WithVal w := (equiv w).symm.toRingHom.
 
 @[simp] theorem map_id : map v v (.id R) = .id (WithVal v) := rfl
 
-@[simp] theorem map_comp {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : S →+* T) (g : R →+* S) :
+-- This cannot be `@[simp]` because `simp` cannot fill in the argument `w`.
+theorem map_comp {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : S →+* T) (g : R →+* S) :
     map v u (f.comp g) = (map w u f).comp (map v w g) := rfl
 
 @[simp] theorem map_apply (f : R →+* S) (x : WithVal v) : map v w f x = toVal w (f x.ofVal) := rfl
@@ -205,9 +206,6 @@ theorem apply_ofVal (r : WithVal v) : v r.ofVal = Valued.v r := rfl
 theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 
 @[simp] theorem valued_toVal (r : R) : Valued.v (toVal v r) = v r := rfl
-
-@[deprecated (since := "2026-03-02")] alias apply_equiv := apply_ofVal
-@[deprecated (since := "2026-03-02")] alias apply_symm_equiv := valued_toVal
 
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
@@ -562,15 +560,15 @@ lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro x
   let u := WithZero.unzero (Units.ne_zero x)
-  obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
+  obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.property
   simp only [Set.mem_ofPred_eq, RingHom.id_apply]
-  set y₀ := h_val.orderMonoidIso x with hy₀_def
+  set y₀ := h_val.orderMonoidIso₀ x with hy₀_def
   have hy₀_ne_zero : y₀ ≠ 0 := by simp [hy₀_def]
   set y := (Units.mk0 y₀ hy₀_ne_zero) with hy_def
   use y
   intro b hb
-  rwa [← h_val.orderMonoidIso_spec, hy_def, Units.val_mk0, hy₀_def,
-    h_val.orderMonoidIso.strictMono.lt_iff_lt] at hb
+  rwa [← h_val.orderMonoidIso₀_spec, hy_def, Units.val_mk0, hy₀_def,
+    h_val.orderMonoidIso₀.strictMono.lt_iff_lt] at hb
 
 theorem IsEquiv.uniformContinuous_congr (h : v.IsEquiv w) :
     UniformContinuous (WithVal.congr v w (.refl R)) := by
@@ -609,7 +607,7 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
     (γ : v.ValueGroup₀ˣ) :
-    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
+    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.val := by
   obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (v : K →*₀ Γ₀) γ
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]

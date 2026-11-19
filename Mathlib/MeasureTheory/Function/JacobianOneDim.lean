@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.MeasureTheory.Function.Jacobian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Change of variable formulas for integrals in dimension 1
 
@@ -418,9 +421,6 @@ theorem integral_image_eq_integral_deriv_smul_of_antitoneOn (hs : MeasurableSet 
   simp only [abs_neg, abs_one, one_smul] at B
   rw [A, ← image_comp] at B
   convert! B using 3 with x hx x <;> simp [n, e]
-
-@[deprecated (since := "2026-03-19")] alias integral_image_eq_integral_deriv_smul_of_antitone :=
-  integral_image_eq_integral_deriv_smul_of_antitoneOn
 
 theorem integral_Icc_deriv_smul_of_deriv_nonpos {a b : ℝ} {g : ℝ → F}
     (hf : ContinuousOn f (Icc a b))

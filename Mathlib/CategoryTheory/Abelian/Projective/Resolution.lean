@@ -5,8 +5,8 @@ Authors: Markus Himmel, Kim Morrison, Jakob von Raumer, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -313,12 +313,11 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/
-irreducible_def of : ProjectiveResolution Z where
+@[no_expose] def of : ProjectiveResolution Z where
   complex := ofComplex Z
   π := (ChainComplex.toSingle₀Equiv _ _).symm ⟨Projective.π Z, by
           rw [ofComplex_d_1_0, assoc, kernel.condition, comp_zero]⟩

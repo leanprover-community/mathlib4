@@ -27,7 +27,6 @@ is essentially small.
 
 By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 `P.IsClosedUnderLimitsOfShape J`.
-
 -/
 
 @[expose] public section
@@ -101,7 +100,6 @@ noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Ini
   toLimitPresentation := h.toLimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `P : ObjectProperty C`, and a presentation `P.LimitOfShape J X`
 of an object `X : C`, this is the induced functor `J ⥤ StructuredArrow P.ι X`. -/
 @[simps]
@@ -169,7 +167,7 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
     ObjectProperty.Small.{w} (P.strictLimitsOfShape J) := by
   refine small_of_surjective
     (f := fun (F : { F : J ⥤ P.FullSubcategory // HasLimit (F ⋙ P.ι) }) ↦
-      (⟨_, letI := F.2; ⟨F.1 ⋙ P.ι, fun j ↦ (F.1.obj j).2⟩⟩)) ?_
+      (⟨_, letI := F.property; ⟨F.val ⋙ P.ι, fun j ↦ (F.val.obj j).property⟩⟩)) ?_
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 
@@ -200,6 +198,13 @@ instance : IsClosedUnderLimitsOfShape (⊤ : ObjectProperty C) J where
   limitsOfShape_le _ _ := by trivial
 
 export IsClosedUnderLimitsOfShape (limitsOfShape_le)
+
+instance {ι : Type*} (P : ι → ObjectProperty C) [∀ i, (P i).IsClosedUnderLimitsOfShape J] :
+    (⨅ i, P i).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := by
+    simp only [le_iInf_iff]
+    intro i
+    exact (limitsOfShape_monotone _ (iInf_le _ _)).trans (limitsOfShape_le (P i) J)
 
 section
 
@@ -256,7 +261,7 @@ lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
     [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
     (P.inverseImage e.functor).IsClosedUnderLimitsOfShape J ↔ P.IsClosedUnderLimitsOfShape J := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
-  convert!
+  convert
     (inferInstance :
       ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
   ext X

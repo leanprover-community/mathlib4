@@ -37,7 +37,7 @@ The main results are:
 ## References
 
 * Chapter 8 of [Barry Simon, *Convexity*][simon2011]
-* Chapter 1 of [Rolf Schneider, *Convex Bodies: The Brunn-Minkowski theory*][schneider2013].
+* Chapter 1 of [Rolf Schneider, *Convex Bodies: The Brunn-Minkowski theory*][schneider2014].
 
 ## TODO
 
@@ -109,7 +109,7 @@ theorem intrinsicClosure_empty : intrinsicClosure 𝕜 (∅ : Set P) = ∅ := by
 
 @[simp]
 theorem intrinsicClosure_nonempty : (intrinsicClosure 𝕜 s).Nonempty ↔ s.Nonempty :=
-  ⟨by simp_rw [nonempty_iff_ne_empty]; rintro h rfl; exact h intrinsicClosure_empty,
+  ⟨by contrapose!; rintro rfl; exact intrinsicClosure_empty,
     Nonempty.mono subset_intrinsicClosure⟩
 
 alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := intrinsicClosure_nonempty
@@ -141,13 +141,13 @@ theorem intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrin
 
 theorem interior_subset_intrinsicInterior : interior s ⊆ intrinsicInterior 𝕜 s :=
   fun x hx => ⟨⟨x, subset_affineSpan _ _ <| interior_subset hx⟩,
-    preimage_interior_subset_interior_preimage continuous_subtype_val hx, rfl⟩
+    preimage_interior_subset_interior_preimage continuous_subtypeVal hx, rfl⟩
 
 theorem intrinsicClosure_subset_closure : intrinsicClosure 𝕜 s ⊆ closure s :=
-  image_subset_iff.2 <| continuous_subtype_val.closure_preimage_subset _
+  image_subset_iff.2 <| continuous_subtypeVal.closure_preimage_subset _
 
 theorem intrinsicFrontier_subset_frontier : intrinsicFrontier 𝕜 s ⊆ frontier s :=
-  image_subset_iff.2 <| continuous_subtype_val.frontier_preimage_subset _
+  image_subset_iff.2 <| continuous_subtypeVal.frontier_preimage_subset _
 
 theorem intrinsicClosure_subset_affineSpan : intrinsicClosure 𝕜 s ⊆ affineSpan 𝕜 s :=
   (image_subset_range _ _).trans Subtype.range_coe.subset
@@ -406,7 +406,7 @@ theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
     obtain ⟨y, hyt, hys⟩ := h _ ht hx
     exact ⟨⟨_, subset_affineSpan 𝕜 s hys⟩, hyt, hys⟩
   · by_contra hc
-    obtain ⟨z, hz₁, hz₂⟩ := h _ (affineSpan 𝕜 s).closed_of_finiteDimensional.isOpen_compl hc
+    obtain ⟨z, hz₁, hz₂⟩ := h _ (affineSpan 𝕜 s).isClosed_of_finiteDimensional.isOpen_compl hc
     exact hz₁ (subset_affineSpan 𝕜 s hz₂)
 
 variable {𝕜}
@@ -440,6 +440,33 @@ protected theorem Convex.intrinsicClosure (hs : Convex 𝕜 s) : Convex 𝕜 (in
 
 end Convex
 
+section IntrinsicClosure
+
+variable {E : Type*} [Field 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+
+open Homeomorph in
+/-- If `x ∈ intrinsicInterior 𝕜 C` and `y ∈ intrinsicClosure 𝕜 C`, then the open segment
+from `x` to `y` stays in `intrinsicInterior 𝕜 C`. This is the intrinsic version
+of `Convex.openSegment_interior_closure_subset_interior`. -/
+theorem Convex.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicInterior {C : Set E}
+    (hC : Convex 𝕜 C) {x y : E} (hx : x ∈ intrinsicInterior 𝕜 C) (hy : y ∈ intrinsicClosure 𝕜 C) :
+    openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 C := by
+  rcases mem_intrinsicInterior.1 hx with ⟨xA, hxA, rfl⟩
+  rcases mem_intrinsicClosure.1 hy with ⟨yA, hyA, rfl⟩
+  let : Nonempty (affineSpan 𝕜 C) := ⟨xA⟩
+  let A := (affineSpan 𝕜 C).subtype.comp (AffineEquiv.vaddConst 𝕜 xA).toAffineMap
+  rw [intrinsicInterior, ← image_interior_preimage_comp (vaddConst xA) (vaddConst xA).isHomeomorph]
+  intro _ hz
+  have hA : ⇑A = Subtype.val ∘ vaddConst xA := rfl
+  simpa [hA] using hC.openSegment_image_interior_closure_preimage_subset (A := A)
+    (x := 0) (y := yA -ᵥ xA)
+    (by simpa [hA, preimage_comp, ← (vaddConst xA).preimage_interior] using hxA)
+    (by simpa [hA, preimage_comp, ← (vaddConst xA).preimage_closure] using hyA)
+    (by simpa [A] using hz)
+
+end IntrinsicClosure
+
 private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
@@ -462,5 +489,5 @@ protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s
 
 theorem intrinsicInterior_nonempty (hs : Convex ℝ s) :
     (intrinsicInterior ℝ s).Nonempty ↔ s.Nonempty :=
-  ⟨by simp_rw [nonempty_iff_ne_empty]; rintro h rfl; exact h intrinsicInterior_empty,
+  ⟨by contrapose!; rintro rfl; exact intrinsicInterior_empty,
     Set.Nonempty.intrinsicInterior hs⟩

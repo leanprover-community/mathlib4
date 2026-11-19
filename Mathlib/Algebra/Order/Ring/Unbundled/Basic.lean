@@ -5,12 +5,13 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
+
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Tactic.Tauto
 
 /-!
@@ -359,7 +360,7 @@ theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
     (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  convert! mul_le_mul_iff_right₀ h
+  convert mul_le_mul_iff_right₀ h
   simp
 
 @[simp]
@@ -715,12 +716,6 @@ lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMul
   rw [mul_mul_mul_comm, ← pow_two r, two_mul, two_add_two_eq_four]
   grw [mul_le_mul_of_nonneg_left ht zero_le_four, ← mul_assoc, four_mul_le_sq_add a b, sq]
 
-@[deprecated two_mul_le_add_of_sq_le_mul +typeChanged (since := "2026-04-20")]
-lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
-    [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b :=
-  two_mul_le_add_of_sq_le_mul ha hb ht.le
-
 end LinearOrderedCommSemiring
 
 section LinearOrderedRing
@@ -730,29 +725,28 @@ variable [Ring R] [LinearOrder R] {a b : R}
 -- TODO: Can the following five lemmas be generalised to
 -- `[Semiring R] [LinearOrder R] [ExistsAddOfLE R] ..`?
 
-lemma mul_neg_iff [PosMulStrictMono R] [MulPosStrictMono R]
-    [AddLeftReflectLT R] [AddLeftStrictMono R] :
+lemma mul_neg_iff [PosMulStrictMono R] [MulPosStrictMono R] [AddLeftStrictMono R] :
     a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
   rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff (R := R), neg_pos, neg_lt_zero]
 
 lemma mul_nonpos_iff [MulPosStrictMono R] [PosMulStrictMono R]
-    [AddLeftReflectLE R] [AddLeftMono R] :
+    [AddLeftMono R] :
     a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
   rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff (R := R), neg_nonneg, neg_nonpos]
 
 lemma mul_nonneg_iff_neg_imp_nonpos [PosMulStrictMono R] [MulPosStrictMono R]
-    [AddLeftMono R] [AddLeftReflectLE R] :
+    [AddLeftMono R] :
     0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
   rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg (R := R)]; simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_pos_imp_nonpos [PosMulStrictMono R] [MulPosStrictMono R]
-    [AddLeftMono R] [AddLeftReflectLE R] :
+    [AddLeftMono R] :
     a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
   rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg (R := R)]
   simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_neg_imp_nonneg [PosMulStrictMono R] [MulPosStrictMono R]
-    [AddLeftMono R] [AddLeftReflectLE R] :
+    [AddLeftMono R] :
     a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
   rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg (R := R)]
   simp only [neg_pos, neg_nonneg]

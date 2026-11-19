@@ -6,16 +6,15 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Ring.GrindInstances
-public import Mathlib.Algebra.Ring.Commute
-public import Mathlib.Algebra.Ring.Invertible
 public import Mathlib.Algebra.Order.Ring.Synonym
+public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Algebra.Ring.Invertible
 
 import Mathlib.Tactic.Tauto
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
-
 -/
 
 public section

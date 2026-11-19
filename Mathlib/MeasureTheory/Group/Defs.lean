@@ -100,7 +100,7 @@ instance IsMulLeftInvariant.smulInvariantMeasure [Mul G] [IsMulLeftInvariant μ]
 @[to_additive]
 instance [Monoid G] [MeasurableConstSMul G G] (s : Submonoid G) [IsMulLeftInvariant μ] :
     SMulInvariantMeasure {x // x ∈ s} G μ :=
-  ⟨fun ⟨x, _⟩ _ h ↦ IsMulLeftInvariant.smulInvariantMeasure.1 x h⟩
+  ⟨fun ⟨x, _⟩ _ h ↦ IsMulLeftInvariant.smulInvariantMeasure.measure_preimage_smul x h⟩
 
 @[to_additive]
 instance IsMulRightInvariant.toSMulInvariantMeasure_op [Mul G] [MeasurableConstSMul Gᵐᵒᵖ G]

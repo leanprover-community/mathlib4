@@ -5,9 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
+public import Mathlib.Algebra.Notation.Bracket
 public import Mathlib.Algebra.Ring.Semiconj
 public import Mathlib.Algebra.Ring.Units
-public import Mathlib.Data.Bracket
 
 /-!
 # Semirings and rings
@@ -18,7 +18,6 @@ the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
 For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
-
 -/
 
 public section
