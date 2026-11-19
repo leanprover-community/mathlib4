@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
-
 # Separated morphisms
 
 A morphism of schemes is separated if its diagonal morphism is a closed immersion.
@@ -119,7 +118,7 @@ lemma of_isAffineHom [h : IsAffineHom f] : IsSeparated f := by
       (iSup_affineOpens_eq_top Y)]
     intro U
     have H : IsAffineHom (f ∣_ U) := IsZariskiLocalAtTarget.restrict h U
-    exact this _ U.2
+    exact this _ U.property
   have : IsAffine X := HasAffineProperty.iff_of_isAffine.mp h
   rw [MorphismProperty.arrow_mk_iso_iff @IsSeparated (arrowIsoSpecΓOfIsAffine f)]
   infer_instance

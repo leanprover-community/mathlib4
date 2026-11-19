@@ -13,7 +13,6 @@ public import Mathlib.Order.Setoid.Partition
 
 In this file, we prove some results about measurability of functions defined by using
 `IndexedPartition.piecewise`.
-
 -/
 
 @[expose] public section
@@ -77,7 +76,7 @@ theorem stronglyMeasurable_piecewise [Countable ι] (hs : IndexedPartition s)
   have : ∀ᶠ n in atTop, e ((G n).index x) = hs.index x := by
     obtain ⟨y, hy⟩ := e.bijective.2 (hs.index x)
     refine eventually_atTop.mpr ⟨y + 1, fun b hb => ?_⟩
-    have : y = (⟨y, by lia⟩ : Fin (b + 1)).1 := rfl
+    have : y = (⟨y, by lia⟩ : Fin (b + 1)).val := rfl
     rw [← hy, EmbeddingLike.apply_eq_iff_eq, this, ← Fin.ext_iff, ← (G b).mem_iff_index_eq]
     have : ∃ m < b, hs.index x = e m := ⟨y, ⟨by lia, hy.symm⟩⟩
     simpa [g, hs.mem_iff_index_eq, this] using! e.injective (hy.trans this.choose_spec.2).symm

@@ -24,7 +24,6 @@ exists only to provide an entry in the instance list for `FiniteDimensional`.
 ## Tags
 
 matrix, finite dimensional, findim, finrank
-
 -/
 
 public section

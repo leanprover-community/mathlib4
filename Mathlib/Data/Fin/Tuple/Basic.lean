@@ -77,7 +77,6 @@ For a **pivot** `p : Fin (n + 1)`,
   hypothesis that `h : ∃ i, p i`.
 * `Fin.append a b` : append two tuples.
 * `Fin.repeat n a` : repeat a tuple `n` times.
-
 -/
 
 @[expose] public section
@@ -180,12 +179,19 @@ theorem cons_zero_succ : (cons 0 Fin.succ : Fin (n + 1) → Fin (n + 1)) = id :=
 given by separating out the first element of the tuple.
 
 This is `Fin.cons` as an `Equiv`. -/
-@[simps]
+@[simps symm_apply]
 def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ ∀ i, α i where
   toFun f := cons f.1 f.2
   invFun f := (f 0, tail f)
   left_inv f := by simp
   right_inv f := by simp
+
+/- `@[simps]` over-applies, while `@[simps -fullyApplied]` under-applies, so this is manually
+written. -/
+@[simp]
+theorem consEquiv_apply (α : Fin (n + 1) → Type*) (f : α 0 × ∀ i, α (succ i)) :
+    consEquiv α f = cons f.1 f.2 :=
+  rfl
 
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
@@ -711,12 +717,19 @@ theorem comp_init {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n.succ → 
 given by separating out the last element of the tuple.
 
 This is `Fin.snoc` as an `Equiv`. -/
-@[simps]
+@[simps symm_apply]
 def snocEquiv (α : Fin (n + 1) → Type*) : α (last n) × (∀ i, α (castSucc i)) ≃ ∀ i, α i where
-  toFun f _ := Fin.snoc f.2 f.1 _
+  toFun f := Fin.snoc f.2 f.1
   invFun f := ⟨f _, Fin.init f⟩
   left_inv f := by simp
   right_inv f := by simp
+
+/- `@[simps]` over-applies, while `@[simps -fullyApplied]` under-applies, so this is manually
+written. -/
+@[simp]
+theorem snocEquiv_apply (α : Fin (n + 1) → Type*) (f : α (last n) × ∀ i, α (castSucc i)) :
+    snocEquiv α f = snoc f.2 f.1 :=
+  rfl
 
 /-- Recurse on an `n+1`-tuple by splitting it its initial `n`-tuple and its last element. -/
 @[elab_as_elim, inline]
@@ -1061,13 +1074,21 @@ theorem insertNth_update (p : Fin (n + 1)) (x : α p) (i : Fin n) (y : α (p.suc
 given by separating out the `p`-th element of the tuple.
 
 This is `Fin.insertNth` as an `Equiv`. -/
-@[simps]
+@[simps symm_apply]
 def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
     α p × (∀ i, α (p.succAbove i)) ≃ ∀ i, α i where
   toFun f := insertNth p f.1 f.2
   invFun f := (f p, removeNth p f)
   left_inv f := by ext <;> simp
   right_inv f := by simp
+
+/- `@[simps]` over-applies, while `@[simps -fullyApplied]` under-applies, so this is manually
+written. -/
+@[simp]
+theorem insertNthEquiv_apply (α : Fin (n + 1) → Type*) (p : Fin (n + 1))
+    (f : α p × ∀ i, α (p.succAbove i)) :
+    insertNthEquiv α p f = insertNth p f.1 f.2 :=
+  rfl
 
 @[simp] lemma insertNthEquiv_zero (α : Fin (n + 1) → Type*) : insertNthEquiv α 0 = consEquiv α :=
   Equiv.symm_bijective.injective <| by ext <;> rfl
@@ -1118,17 +1139,17 @@ private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p
   given that it is satisfied for some `k`. -/
 @[no_expose]
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
-  (Fin.findX p h).1
+  (Fin.findX p h).val
 
 /-- `Fin.find p h` satisfies `p`. -/
-protected theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := (Fin.findX p h).2.1
+protected theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := (Fin.findX p h).property.1
 
 grind_pattern Fin.find_spec => Fin.find p h
 
 /-- For `m : Fin n`, if `m < Fin.find p h` then `m` does not satisfy `p`. -/
 @[grind →]
 protected theorem find_min (h : ∃ k, p k) : ∀ {j : Fin n}, j < Fin.find p h → ¬ p j :=
-  @(Fin.findX p h).2.2
+  @(Fin.findX p h).property.2
 
 /-- For `m : Fin n`, if `m` satisfies `p`, then `Fin.find p h ≤ m`. -/
 protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :

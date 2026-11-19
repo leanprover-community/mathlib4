@@ -62,7 +62,7 @@ theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
     rw [← (algebraMap R S).map_one, ← (algebraMap R S).map_zero] at hze
     obtain ⟨t, ht⟩ := (eq_iff_exists P.primeCompl S).1 hze
     have htz : (t : R) = 0 := by simpa using ht.symm
-    exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
+    exact t.property (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   letI := AtPrime.nontrivial S P -- Can't be a local instance because we can't figure out `P`.
@@ -82,8 +82,8 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       obtain ⟨t, ht⟩ := IsLocalization.eq.1 hxyz
       simp only [mul_one, one_mul, Submonoid.coe_mul] at ht
       suffices (t : R) * (sx * sy * sz) ∈ P from
-        not_or_intro (mt hp.mem_or_mem <| not_or_intro sx.2 sy.2) sz.2
-          (hp.mem_or_mem <| (hp.mem_or_mem this).resolve_left t.2)
+        not_or_intro (mt hp.mem_or_mem <| not_or_intro sx.property sy.property) sz.property
+          (hp.mem_or_mem <| (hp.mem_or_mem this).resolve_left t.property)
       rw [← ht]
       exact
         P.mul_mem_left _ <| P.mul_mem_right _ <|
@@ -149,7 +149,8 @@ def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPri
 order-preserving bijection with the interval $(-∞, I]$ in the prime spectrum of R. -/
 @[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
-    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun p ↦ ⟨⟨p, p.property.1⟩, p.property.2⟩, fun p ↦ ⟨p.val.asIdeal, p.val.isPrime, p.property⟩,
+      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx =>
@@ -168,8 +169,6 @@ theorem to_map_mem_maximal_iff (x : R) (h : IsLocalRing S := isLocalRing S I) :
 theorem under_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).under R = I :=
   Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
-
-@[deprecated (since := "2026-04-09")] alias comap_maximalIdeal := under_maximalIdeal
 
 instance liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).LiesOver I :=
@@ -201,8 +200,6 @@ theorem AtPrime.under_maximalIdeal :
     (IsLocalRing.maximalIdeal (Localization I.primeCompl)).under R = I :=
   IsLocalization.AtPrime.under_maximalIdeal _ _
 
-@[deprecated (since := "2026-04-09")] alias AtPrime.comap_maximalIdeal := AtPrime.under_maximalIdeal
-
 /-- The image of `I` in the localization at `I.primeCompl` is a maximal ideal, and in particular
 it is the unique maximal ideal given by the local ring structure `AtPrime.isLocalRing` -/
 theorem AtPrime.map_eq_maximalIdeal :
@@ -216,9 +213,6 @@ lemma AtPrime.eq_maximalIdeal_iff_under_eq {J : Ideal (Localization.AtPrime I)} 
   mp h := le_antisymm (IsLocalRing.le_maximalIdeal (fun hJ ↦ (hI.ne_top (h.symm ▸ hJ ▸ rfl)))) <| by
     simpa [← AtPrime.map_eq_maximalIdeal, ← h] using Ideal.map_comap_le
   mpr h := h.symm ▸ AtPrime.under_maximalIdeal
-
-@[deprecated (since := "2026-04-09")] alias AtPrime.eq_maximalIdeal_iff_comap_eq :=
-  AtPrime.eq_maximalIdeal_iff_under_eq
 
 theorem le_comap_primeCompl_iff {J : Ideal P} [J.IsPrime] {f : R →+* P} :
     I.primeCompl ≤ J.primeCompl.comap f ↔ J.comap f ≤ I :=
@@ -249,7 +243,7 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
     (y : I.primeCompl) :
     localRingHom I J f hIJ (IsLocalization.mk' _ x y) =
       IsLocalization.mk' (Localization.AtPrime J) (f x)
-        (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.2⟩ : J.primeCompl) :=
+        (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.property⟩ : J.primeCompl) :=
   map_mk' _ _ _
 
 @[simp]
@@ -363,8 +357,6 @@ noncomputable def algebraOfLiesOver
     (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
   (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
-
-@[deprecated (since := "2026-04-24")] alias instAlgebraOfLiesOver := algebraOfLiesOver
 
 /-- A deprecated predicate on the algebra map between two localizations. -/
 @[deprecated "Use `IsScalarTower` instead." (since := "2026-06-27")]
@@ -491,7 +483,7 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
   have := hp.1.1
   have : Unique (Set.Iic (⟨p, hp.1.1⟩ : PrimeSpectrum R)) := ⟨⟨⟨p, hp.1.1⟩, by exact
     fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
-    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
+    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.val.isPrime i.property⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
 
 open Ideal in
@@ -539,8 +531,6 @@ theorem under_map_of_isMaximal [P.IsMaximal] [P.LiesOver p] :
     (Ideal.map (algebraMap S Sₚ) P).under S = P :=
   comap_map_eq_self_of_isMaximal _ (isPrime_map_of_liesOver S p Sₚ P).ne_top
 
-@[deprecated (since := "2026-04-09")] alias comap_map_of_isMaximal := under_map_of_isMaximal
-
 lemma under_maximalIdeal_pow [p.IsMaximal] (n : ℕ) :
     (IsLocalRing.maximalIdeal Rₚ ^ n).under R = p ^ n := by
   ext
@@ -548,8 +538,6 @@ lemma under_maximalIdeal_pow [p.IsMaximal] (n : ℕ) :
     algebraMap_mem_map_algebraMap_iff p.primeCompl Rₚ]
   refine ⟨fun ⟨m, hm, h⟩ ↦ ?_, fun h ↦ ⟨1, by simp, by simp [h]⟩⟩
   exact (IsMaximal.mul_mem_pow _ h).resolve_left (mem_primeCompl_iff.mp hm)
-
-@[deprecated (since := "2026-04-09")] alias comap_maximalIdeal_pow := under_maximalIdeal_pow
 
 section isomorphisms
 
@@ -651,8 +639,6 @@ lemma under_map_eq_map : (Ideal.map (algebraMap R Sₚ) p).under S = pS := by
   rw [Algebra.smul_def]
   apply Ideal.mul_mem_right
   exact Ideal.mem_map_of_mem _ hγ
-
-@[deprecated (since := "2026-04-09")] alias comap_map_eq_map := under_map_eq_map
 
 variable [IsScalarTower R Rₚ Sₚ]
 

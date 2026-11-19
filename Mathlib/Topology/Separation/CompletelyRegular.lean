@@ -41,16 +41,16 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
 ## Implementation notes
 
 The present definition `CompletelyRegularSpace` is a slight modification of the one given in
-[russell1974]. There it's assumed that any point `x ∈ Kᶜ` is separated from the closed set `K` by a
+[walker1974]. There it's assumed that any point `x ∈ Kᶜ` is separated from the closed set `K` by a
 continuous *real*-valued function `f` (as opposed to `f` being unit-interval-valued). This can be
 converted to the present definition by replacing a real-valued `f` by `h ∘ g ∘ f`, with
-`g : x ↦ max(x, 0)` and `h : x ↦ min(x, 1)`. Some sources (e.g. [russell1974]) also assume that a
+`g : x ↦ max(x, 0)` and `h : x ↦ min(x, 1)`. Some sources (e.g. [walker1974]) also assume that a
 completely regular space is T₁. Here a completely regular space that is also T₁ is called a T₃.₅
 space.
 
 ## References
 
-* [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
+* [Russell C. Walker, *The Stone-Čech Compactification*][walker1974]
 -/
 
 public section
@@ -272,7 +272,7 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
-  exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by simp_all⟩
+  exact ⟨fun x ↦ f x, continuous_subtypeVal.comp f_cont, by simp_all⟩
 
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     SeparatesPoints {f : X → I | Continuous f} := by

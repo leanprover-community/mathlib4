@@ -204,17 +204,17 @@ theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_ofPred_eq]
     intro t ht
-    rw [mem_preimage, ← closure_subtype] at ht
+    rw [mem_ofPred_eq, Set.mem_eq_mem, ← closure_subtype] at ht
     revert ht t
     apply IsClosed.closure_subset (isClosed_eq _ _)
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
-      apply ContinuousAt.comp _ continuousAt_subtype_val
+      apply ContinuousAt.comp _ continuousAt_subtypeVal
       rw [Subtype.coe_mk]
       exact hγ.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
-      apply ContinuousAt.comp _ continuousAt_subtype_val
+      apply ContinuousAt.comp _ continuousAt_subtypeVal
       rw [Subtype.coe_mk]
       exact hγ'.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
   · rw [isOpen_iff_mem_nhds]

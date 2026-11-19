@@ -30,7 +30,6 @@ which are continuous with continuous inverse.
 ## TODO
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
   with multiplication corresponding to composition in `AffineEquiv.group`.
-
 -/
 
 @[expose] public section
@@ -103,8 +102,7 @@ theorem ext {e e' : P₁ ≃ᴬ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
 @[continuity]
-protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
-  e.2
+protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e := by fun_prop
 
 /-- A continuous affine equivalence is a continuous affine map. -/
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
@@ -130,13 +128,14 @@ lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᴬ[k] P₂) :
   rfl
 
 lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᴬ[k] P₂) :
-    e.toContinuousAffineMap.toContinuousMap = toContinuousMap e.toHomeomorph :=
+    e.toContinuousAffineMap.toContinuousMap = ContinuousMap.ofClass e.toHomeomorph :=
   rfl
 
 end Basic
 
 section ReflSymmTrans
 
+set_option fun_prop.projDefaultTransparency true in
 variable (k P₁) in
 /-- Identity map as a `ContinuousAffineEquiv`. -/
 def refl : P₁ ≃ᴬ[k] P₁ where

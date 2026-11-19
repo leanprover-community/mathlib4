@@ -38,15 +38,16 @@ theorem Module.FinitePresentation.of_localizationSpan' (hs : Ideal.span s = ⊤)
   rw [← Module.FinitePresentation.fg_ker_iff f fsurj]
   refine f.ker.of_localizationSpan' s hs (Rₚ := Rₚ)
     (fun g ↦ TensorProduct.mk R (Rₚ g) (Fin n → R) 1) (fun g ↦ ?_)
-  rw [LinearMap.localized'_ker_eq_ker_localizedMap (Rₚ g) (Submonoid.powers g.1) _ (ϕ g) f]
+  rw [LinearMap.localized'_ker_eq_ker_localizedMap (Rₚ g) (Submonoid.powers g.val) _ (ϕ g) f]
   apply Module.FinitePresentation.fg_ker
   rw [← LinearMap.range_eq_top] at fsurj ⊢
-  simp [← LinearMap.localized'_range_eq_range_localizedMap (Rₚ g) (Submonoid.powers g.1), fsurj]
+  simp [← LinearMap.localized'_range_eq_range_localizedMap (Rₚ g) (Submonoid.powers g.val), fsurj]
 
 /-- If there exists a set `{ r }` of `R` that generates the unit ideal and such that
   `Mᵣ` is a finitely presented `Rᵣ`-module for each `r`, then `M` is a finitely presented
   `R`-module. -/
 theorem Module.FinitePresentation.of_localizationSpan (hs : Ideal.span s = ⊤)
-    (h : ∀ g : s, Module.FinitePresentation (Localization.Away g.1) (LocalizedModule.Away g.1 M)) :
+    (h : ∀ g : s,
+      Module.FinitePresentation (Localization.Away g.val) (LocalizedModule.Away g.val M)) :
     Module.FinitePresentation R M :=
-  of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M) h
+  of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.val) M) h

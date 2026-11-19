@@ -19,7 +19,6 @@ We introduce the category of ringed spaces, as an alias for `SheafedSpace CommRi
 
 The facts collected in this file are typically stated for locally ringed spaces, but never actually
 make use of the locality of stalks. See for instance <https://stacks.math.columbia.edu/tag/01HZ>.
-
 -/
 
 @[expose] public section
@@ -62,10 +61,10 @@ instance : CoeSort RingedSpace Type* where
 around `x`. -/
 lemma exists_res_eq_zero_of_germ_eq_zero (U : Opens X) (f : X.presheaf.obj (op U)) (x : U)
     (h : X.presheaf.germ U x.val x.property f = 0) :
-    ∃ (V : Opens X) (i : V ⟶ U) (_ : x.1 ∈ V), X.presheaf.map i.op f = 0 := by
+    ∃ (V : Opens X) (i : V ⟶ U) (_ : x.val ∈ V), X.presheaf.map i.op f = 0 := by
   have h1 : X.presheaf.germ U x.val x.property f = X.presheaf.germ U x.val x.property 0 := by simpa
   obtain ⟨V, hv, i, _, (hv4 : (X.presheaf.map i.op) f = (X.presheaf.map _) 0)⟩ :=
-    TopCat.Presheaf.germ_eq X.presheaf x.1 x.2 x.2 f 0 h1
+    TopCat.Presheaf.germ_eq X.presheaf x.val x.property x.property f 0 h1
   use V, i, hv
   simpa using hv4
 
@@ -94,7 +93,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ (x) (hx : x ∈ U), IsUnit (X.presheaf.germ U x hx f)) : IsUnit f := by
   -- We pick a cover of `U` by open sets `V x`, such that `f` is a unit on each `V x`.
-  choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x x.2 (h x.1 x.2)
+  choose V iVU m h_unit using fun x : U =>
+    X.isUnit_res_of_isUnit_germ U f x x.property (h x.val x.property)
   have hcover : U ≤ iSup V := by
     intro x hxU
     simp only [Opens.mem_iSup]
@@ -133,8 +133,8 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     rw [isOpen_iff_forall_mem_open]
     rintro x ⟨hxU, hx⟩
     obtain ⟨V, i, hxV, hf⟩ := X.isUnit_res_of_isUnit_germ U f x hxU hx
-    use V.1
-    refine ⟨?_, V.2, hxV⟩
+    use V.carrier
+    refine ⟨?_, V.is_open', hxV⟩
     intro y hy
     use i.le hy
     convert RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
@@ -147,8 +147,8 @@ theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : X) (hx : x 
 /-- A variant of `mem_basicOpen` with bundled `x : U`. -/
 @[simp]
 theorem mem_basicOpen' {U : Opens X} (f : X.presheaf.obj (op U)) (x : U) :
-    ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x.1 x.2 f) :=
-  mem_basicOpen X f x.1 x.2
+    ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x.val x.property f) :=
+  mem_basicOpen X f x.val x.property
 
 @[simp]
 theorem mem_top_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :

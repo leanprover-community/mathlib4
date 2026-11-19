@@ -117,7 +117,7 @@ theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^
     rw [zpow_natCast, ← Nat.cast_pow, ← Nat.le_floor_iff hr.le]
     exact Nat.pow_log_le_self b (Nat.floor_pos.mpr hr1).ne'
   · rw [log_of_right_le_one _ hr1, zpow_neg]
-    exact_mod_cast inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
+    exact mod_cast inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
 
 theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (log b r + 1) := by
   rcases le_or_gt r 0 with hr | hr
@@ -125,7 +125,7 @@ theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (lo
     exact hr.trans_lt (zero_lt_one.trans_le <| mod_cast hb.le)
   rcases le_or_gt 1 r with hr1 | hr1
   · rw [log_of_one_le_right _ hr1, Int.ofNat_add_one_out]
-    exact_mod_cast Nat.lt_of_floor_lt <| Nat.lt_pow_succ_log_self hb _
+    exact mod_cast Nat.lt_of_floor_lt <| Nat.lt_pow_succ_log_self hb _
   · rw [log_of_right_le_one _ hr1.le]
     have hcri : 1 < r⁻¹ := (one_lt_inv₀ hr).2 hr1
     have : 1 ≤ Nat.clog b ⌈r⁻¹⌉₊ :=
@@ -133,7 +133,7 @@ theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (lo
     rw [neg_add_eq_sub, ← neg_sub, ← Int.ofNat_one, ← Int.ofNat_sub this, zpow_neg, zpow_natCast,
       lt_inv_comm₀ hr (pow_pos (Nat.cast_pos.mpr <| zero_lt_one.trans hb) _), ← Nat.cast_pow]
     refine Nat.lt_ceil.1 ?_
-    exact Nat.pow_pred_clog_lt_self hb <| Nat.one_lt_cast.1 <| hcri.trans_le <| Nat.le_ceil _
+    exact Nat.pow_pred_clog_lt_self b <| Nat.one_lt_cast.1 <| hcri.trans_le <| Nat.le_ceil _
 
 @[simp]
 theorem log_zero_right (b : ℕ) : log b (0 : R) = 0 :=
@@ -167,9 +167,10 @@ def zpowLogGi {b : ℕ} (hb : 1 < b) :
       (fun z : ℤ =>
         Subtype.mk ((b : R) ^ z) <| zpow_pos (mod_cast zero_lt_one.trans hb) z)
       fun r : Set.Ioi (0 : R) => Int.log b (r : R) :=
-  GaloisCoinsertion.monotoneIntro (fun r₁ _ => log_mono_right r₁.2)
+  GaloisCoinsertion.monotoneIntro (fun r₁ _ => log_mono_right r₁.property)
     (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
-    (fun r => Subtype.coe_le_coe.mp <| zpow_log_le_self hb r.2) fun _ => log_zpow (R := R) hb _
+    (fun r => Subtype.coe_le_coe.mp <| zpow_log_le_self hb r.property)
+    fun _ => log_zpow (R := R) hb _
 
 /-- `zpow b` and `Int.log b` (almost) form a Galois connection. -/
 theorem lt_zpow_iff_log_lt {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) :
@@ -250,8 +251,11 @@ theorem neg_log_inv_eq_clog (b : ℕ) (r : R) : -log b r⁻¹ = clog b r := by r
 
 theorem neg_clog_inv_eq_log (b : ℕ) (r : R) : -clog b r⁻¹ = log b r := by rw [clog_inv, neg_neg]
 
+omit [IsStrictOrderedRing R] in
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : clog b r = 0 := by
-  rw [← neg_log_inv_eq_clog, log_of_left_le_one hb, neg_zero]
+  obtain rfl | rfl : b = 0 ∨ b = 1 := by lia
+  · simp
+  · simp
 
 theorem self_le_zpow_clog {b : ℕ} (hb : 1 < b) (r : R) : r ≤ (b : R) ^ clog b r := by
   rcases le_or_gt r 0 with hr | hr
@@ -288,7 +292,7 @@ def clogZPowGi {b : ℕ} (hb : 1 < b) :
       ⟨(b : R) ^ z, zpow_pos (mod_cast zero_lt_one.trans hb) z⟩ :=
   GaloisInsertion.monotoneIntro
     (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
-    (fun r₁ _ => clog_mono_right r₁.2)
+    (fun r₁ _ => clog_mono_right r₁.property)
     (fun _ => Subtype.coe_le_coe.mp <| self_le_zpow_clog hb _) fun _ => clog_zpow (R := R) hb _
 
 /-- `Int.clog b` and `zpow b` (almost) form a Galois connection. -/

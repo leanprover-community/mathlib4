@@ -9,24 +9,23 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
 /-!
 # The barycenter of the standard simplex
-
 -/
 
 @[expose] public section
 
 namespace Convexity.StdSimplex
 
-variable {K M : Type*} [Field K] [CharZero K] [LinearOrder K] [IsStrictOrderedRing K]
+variable {K M : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 /-- In the standard simplex with vertices `M`, this is the barycenter of
 a nonempty finite subset `S` of `M`. -/
-@[simps -isSimp]
+@[simps -isSimp weights]
 noncomputable def subBarycenter (S : Finset M) (hS : S.Nonempty) : StdSimplex K M where
   weights := S.sum (fun m ↦ .single m S.card⁻¹)
   nonneg := Finset.sum_nonneg (by simp)
   total := by
     rw [← Finsupp.sum_finsetSum_index (by simp) (by simp)]
-    simpa using IsUnit.mul_inv_cancel (Ne.isUnit (by simpa [← Finset.nonempty_iff_ne_empty]))
+    simpa using IsUnit.mul_inv_cancel (Ne.isUnit (by simpa))
 
 lemma subBarycenter_weights_apply_eq_zero
     (S : Finset M) (hS : S.Nonempty) (m : M) (hm : m ∉ S) :

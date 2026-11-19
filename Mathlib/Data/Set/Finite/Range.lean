@@ -92,13 +92,13 @@ theorem finite_range (f : ι → α) [Finite ι] : (range f).Finite :=
 theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β) :
     {y : β | ∃ x hx, F x hx = y}.Finite := by
   have := hs.to_subtype
-  simpa [range] using finite_range fun x : s => F x x.2
+  simpa [range] using finite_range fun x : s => F x x.property
 
 end SetFiniteConstructors
 
 lemma Finite.exists_subset_finite_image_eq {f : α → β} {s : Set α} {u : Set β}
     (hu : u.Finite) (hsu : u ⊆ f '' s) :
-    ∃ᵉ (t ⊆ s) (_ : t.Finite), f '' t = u := by
+    ∃ t ⊆ s, ∃ _ : t.Finite, f '' t = u := by
   have : Finite u := Finite.to_subtype hu
   choose g hg hg' using hsu
   let g' (x : u) : α := g x.property

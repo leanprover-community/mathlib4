@@ -5,7 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.SetTheory.ZFC.Ordinal
+public import Mathlib.Data.Set.BooleanAlgebra -- Used only by deprecated declarations
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # ZFC classes
@@ -96,18 +97,25 @@ def sInter (x : ZFClass) : ZFClass := sInf (classToCong x)
 @[inherit_doc]
 scoped prefix:110 "⋂₀ " => ZFClass.sInter
 
+@[deprecated ZFSet.coe_subset_coe (since := "2026-11-16")]
 lemma coe_subset : (x : ZFClass.{u}) ⊆ y ↔ x ⊆ y := .rfl
 
-lemma coe_sep (p : ZFSet.{u} → Prop) (x : ZFSet.{u}) : x.sep p = {y ∈ x | p y} := by ext; simp
+@[deprecated ZFSet.coe_sep (since := "2026-11-16")]
+lemma coe_sep (x : ZFSet.{u}) (p : ZFSet.{u} → Prop) : x.sep p = {y ∈ x | p y} := by ext; simp
 
+@[deprecated ZFSet.coe_empty (since := "2026-11-16")]
 lemma coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : ZFClass) := by ext; simp
 
+@[deprecated ZFSet.coe_insert (since := "2026-11-16")]
 lemma coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = insert x (y : ZFClass) := by ext; simp
 
+@[deprecated ZFSet.coe_union (since := "2026-11-16")]
 lemma coe_union (x y : ZFSet.{u}) : ↑(x ∪ y) = (x : ZFClass) ∪ y := by ext; simp
 
+@[deprecated ZFSet.coe_inter (since := "2026-11-16")]
 lemma coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (x : ZFClass) ∩ y := by ext; simp
 
+@[deprecated ZFSet.coe_sdiff (since := "2026-11-16")]
 lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (x : ZFClass) \ y := by ext; simp
 
 @[simp]
@@ -170,7 +178,7 @@ lemma iota_ex (A) : iota.{u} A ᶜ∈ .univ :=
   cmem_univ.2 <|
     Or.elim (Classical.em <| ∃ x : ZFSet, ∀ y : ZFSet, ↑y ᶜ∈ A ↔ y = x)
       (fun ⟨x, h⟩ => ⟨x, Eq.symm <| iota_val A x h⟩) fun hn =>
-      ⟨∅, Set.ext fun _ => coe_empty.symm ▸ ⟨False.rec, fun ⟨_, ⟨x, rfl, H⟩, _⟩ => hn ⟨x, H⟩⟩⟩
+      ⟨∅, Set.ext fun _ => ZFSet.coe_empty.symm ▸ ⟨False.rec, fun ⟨_, ⟨x, rfl, H⟩, _⟩ => hn ⟨x, H⟩⟩⟩
 
 /-- Function value -/
 def fval (F A : ZFClass.{u}) : ZFClass.{u} := iota {y | A ᶜ∈ {x | ↑(ZFSet.pair x y) ᶜ∈ F}}
@@ -189,11 +197,18 @@ state that `x : ZFSet` belongs to `A : Class` is to write `A x`. This is poor pr
 the reasons why `Class` is deprecated in favor of `ZFClass`. -/
 @[deprecated ZFClass (since := "2026-09-25"), pp_with_univ, use_set_notation_for_order]
 def Class :=
-  Set ZFSet deriving LE, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
+  Set ZFSet deriving LE, EmptyCollection, Nonempty, Max, Min, Compl, SDiff
 
 @[deprecated Set.insert +typeChanged (since := "2026-09-25")]
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩
+
+set_option linter.deprecated false in
+/-- `Class` is treated as (the definitionally equal) `ZFSet → Prop`, so that `A x` means that the
+ZFC set `x` belongs to the class `A`. -/
+@[deprecated "without replacement" (since := "2026-09-25")]
+instance : CoeFun Class fun _ => ZFSet → Prop :=
+  ⟨Set.Mem⟩
 
 namespace Class
 
@@ -358,32 +373,32 @@ theorem coe_mem {x : ZFSet.{u}} {A : Class.{u}} : ↑x ∈ A ↔ A x :=
 theorem coe_apply {x y : ZFSet.{u}} : (y : Class.{u}) x ↔ x ∈ y :=
   Iff.rfl
 
-@[simp, norm_cast, deprecated ZFClass.coe_subset +typeChanged (since := "2026-09-25")]
+@[simp, norm_cast, deprecated ZFSet.coe_subset_coe +typeChanged (since := "2026-09-25")]
 theorem coe_subset (x y : ZFSet.{u}) : (x : Class.{u}) ⊆ y ↔ x ⊆ y :=
   Iff.rfl
 
-@[simp, norm_cast, deprecated ZFClass.coe_sep +typeChanged (since := "2026-09-25")]
+@[simp, norm_cast, deprecated ZFSet.coe_sep +typeChanged (since := "2026-09-25")]
 theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
     (ZFSet.sep p x : Class) = { y ∈ x | p y } :=
   ext fun _ => ZFSet.mem_sep
 
-@[simp, norm_cast, deprecated ZFClass.coe_empty +typeChanged (since := "2026-09-25")]
+@[simp, norm_cast, deprecated ZFSet.coe_empty +typeChanged (since := "2026-09-25")]
 theorem coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : Class.{u}) :=
   ext fun y => iff_false _ ▸ ZFSet.notMem_empty y
 
-@[simp, norm_cast, deprecated ZFClass.coe_insert +typeChanged (since := "2026-09-25")]
+@[simp, norm_cast, deprecated ZFSet.coe_insert +typeChanged (since := "2026-09-25")]
 theorem coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = @insert ZFSet.{u} Class.{u} _ x y :=
   ext fun _ => ZFSet.mem_insert_iff
 
-@[simp, norm_cast, deprecated ZFClass.coe_union +typeChanged (since := "2026-09-25")]
+@[simp, norm_cast, deprecated ZFSet.coe_union +typeChanged (since := "2026-09-25")]
 theorem coe_union (x y : ZFSet.{u}) : ↑(x ∪ y) = (x : Class.{u}) ∪ y :=
   ext fun _ => ZFSet.mem_union
 
-@[simp, norm_cast, deprecated ZFClass.coe_inter +typeChanged (since := "2026-09-25")]
+@[simp, norm_cast, deprecated ZFSet.coe_inter +typeChanged (since := "2026-09-25")]
 theorem coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (x : Class.{u}) ∩ y :=
   ext fun _ => ZFSet.mem_inter
 
-@[simp, norm_cast, deprecated ZFClass.coe_sdiff +typeChanged (since := "2026-09-25")]
+@[simp, norm_cast, deprecated ZFSet.coe_sdiff +typeChanged (since := "2026-09-25")]
 theorem coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
   ext fun _ => ZFSet.mem_sdiff
 
@@ -461,10 +476,10 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
     (by
       by_contra! hnA
       exact
-        WellFounded.min_mem ZFSet.mem_wf _ hnA
+        WellFounded.min_mem ZFSet.mem_wf {x | ¬ A x} hnA
           (hA fun x hx =>
             Classical.not_not.1 fun hB =>
-              WellFounded.not_lt_min ZFSet.mem_wf _ hB <| coe_apply.1 hx))
+              WellFounded.not_lt_min ZFSet.mem_wf {x | ¬ A x} hB <| coe_apply.1 hx))
 
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
 @[deprecated ZFClass.iota +typeChanged (since := "2026-09-25")]
@@ -490,7 +505,7 @@ theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
 /-- Function value -/
 @[deprecated ZFClass.fval +typeChanged (since := "2026-09-25")]
 def fval (F A : Class.{u}) : Class.{u} :=
-  iota fun y => ToSet (fun x => F (ZFSet.pair x y)) A
+  iota {y | ToSet {x | F (ZFSet.pair x y)} A}
 
 @[deprecated ZFClass.fval_ex +typeChanged (since := "2026-09-25")]
 theorem fval_ex (F A : Class.{u}) : F.fval A ∈ univ.{u} :=
@@ -537,7 +552,7 @@ theorem choice_cmem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) : choice x �
   exact choice_mem_aux x h y yx
 
 private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
-    (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out) = s := by
+    (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).val.out) = s := by
   ext x
   rw [SetLike.mem_coe, ← mk_out x, mk_mem_iff, mk_out]
   refine ⟨?_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), ?_⟩⟩
@@ -550,19 +565,10 @@ private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 @[simps apply_coe]
 noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x, x.small_coe⟩
-  invFun := fun ⟨s, _⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u + 1} s).symm x).1.out
+  invFun := fun ⟨s, _⟩ ↦
+    mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u + 1} s).symm x).val.out
   left_inv := private Function.rightInverse_of_injective_of_leftInverse (by intro _ _; simp)
-    fun s ↦ Subtype.coe_injective <| coe_equiv_aux s.2
-  right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.2
-
-/-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-theorem isOrdinal_notCMem_univ : {x | IsOrdinal x} ᶜ∉ (.univ : ZFClass.{u}) := by
-  rintro ⟨x, hx, -⟩
-  suffices IsOrdinal x by
-    apply ZFClass.cmem_irrefl (A := (x : ZFClass.{u}))
-    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred_eq]
-  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;>
-    rw [← SetLike.mem_coe, hx, Set.mem_ofPred_eq] at *
-  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
+    fun s ↦ Subtype.coe_injective <| coe_equiv_aux s.property
+  right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.property
 
 end ZFSet

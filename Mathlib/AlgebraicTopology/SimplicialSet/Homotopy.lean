@@ -20,7 +20,6 @@ the file `Mathlib/AlgebraicTopology/SimplicialSet/RelativeMorphism.lean`).
 We show that from `H : SSet.Homotopy f g`, we can obtain a combinatorial
 homotopy `SimplicialObject.Homotopy f g` (where the data involve
 a family of maps `X _⦋n⦌ → Y _⦋n + 1⦌` for all `n : ℕ` and `i : Fin (n + 1)`.)
-
 -/
 
 @[expose] public section
@@ -70,7 +69,7 @@ morphisms of simplicial objects between `f` and `g`. -/
 noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     SimplicialObject.Homotopy f g where
   h i := ↾fun x ↦
-    (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex₁.nonDegenerateEquiv i).1
+    (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex₁.nonDegenerateEquiv i).val
   h_zero_comp_δ_zero n := by
     ext x
     simp only [TypeCat.Fun.toFun_apply, types_comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,

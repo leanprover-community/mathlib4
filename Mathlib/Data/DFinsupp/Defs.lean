@@ -116,7 +116,7 @@ bundled:
 -/
 def mapRange (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (x : Π₀ i, β₁ i) : Π₀ i, β₂ i :=
   ⟨fun i => f i (x i),
-    x.support'.map fun s => ⟨s.1, fun i => (s.2 i).imp_right fun h : x i = 0 => by
+    x.support'.map fun s => ⟨s.val, fun i => (s.property i).imp_right fun h : x i = 0 => by
       rw [← hf i, ← h]⟩⟩
 
 @[simp]
@@ -282,7 +282,7 @@ section FilterAndSubtypeDomain
 def filter [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : Π₀ i, β i) : Π₀ i, β i :=
   ⟨fun i => if p i then x i else 0,
     x.support'.map fun xs =>
-      ⟨xs.1, fun i => (xs.prop i).imp_right fun H : x i = 0 => by simp only [H, ite_self]⟩⟩
+      ⟨xs.val, fun i => (xs.prop i).imp_right fun H : x i = 0 => by simp only [H, ite_self]⟩⟩
 
 @[simp, grind =]
 theorem filter_apply [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (i : ι) (f : Π₀ i, β i) :
@@ -342,10 +342,11 @@ def subtypeDomain [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : 
     Π₀ i : Subtype p, β i :=
   ⟨fun i => x (i : ι),
     x.support'.map fun xs =>
-      ⟨(Multiset.filter p xs.1).attach.map fun j => ⟨j.1, (Multiset.mem_filter.1 j.2).2⟩, fun i =>
+      ⟨(Multiset.filter p xs.val).attach.map fun j =>
+          ⟨j.val, (Multiset.mem_filter.1 j.property).2⟩, fun i =>
         (xs.prop i).imp_left fun H =>
           Multiset.mem_map.2
-            ⟨⟨i, Multiset.mem_filter.2 ⟨H, i.2⟩⟩, Multiset.mem_attach _ _, Subtype.eta _ _⟩⟩⟩
+            ⟨⟨i, Multiset.mem_filter.2 ⟨H, i.property⟩⟩, Multiset.mem_attach _ _, Subtype.eta _ _⟩⟩⟩
 
 @[simp]
 theorem subtypeDomain_zero [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p] :
@@ -392,7 +393,7 @@ variable [∀ i, Zero (β i)]
 
 theorem finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } :=
   Trunc.induction_on f.support' fun xs ↦
-    xs.1.finite_toSet.subset fun i H ↦ ((xs.prop i).resolve_right H)
+    xs.val.finite_toSet.subset fun i H ↦ ((xs.prop i).resolve_right H)
 
 section DecidableEq
 variable [DecidableEq ι]
@@ -401,7 +402,7 @@ variable [DecidableEq ι]
 defined on this `Finset`. -/
 def mk (s : Finset ι) (x : ∀ i : (↑s : Set ι), β (i : ι)) : Π₀ i, β i :=
   ⟨fun i => if H : i ∈ s then x ⟨i, H⟩ else 0,
-    Trunc.mk ⟨s.1, fun i => if H : i ∈ s then Or.inl H else Or.inr <| dite_eq_right H⟩⟩
+    Trunc.mk ⟨s.val, fun i => if H : i ∈ s then Or.inl H else Or.inr <| dite_eq_right H⟩⟩
 
 variable {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i} {i : ι}
 
@@ -434,7 +435,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) :=
 @[simps apply]
 def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)
-  invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
+  invFun f := ⟨f, Trunc.mk ⟨Finset.univ.val, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
   left_inv _ := DFunLike.coe_injective rfl
 
 @[simp]
@@ -558,8 +559,8 @@ end SingleAndZipWith
 
 /-- Redefine `f i` to be `0`. -/
 def erase (i : ι) (x : Π₀ i, β i) : Π₀ i, β i :=
-  ⟨fun j ↦ if j = i then 0 else x.1 j,
-    x.support'.map fun xs ↦ ⟨xs.1, fun j ↦ (xs.prop j).imp_right (by simp only [·, ite_self])⟩⟩
+  ⟨fun j ↦ if j = i then 0 else x.toFun j,
+    x.support'.map fun xs ↦ ⟨xs.val, fun j ↦ (xs.prop j).imp_right (by simp only [·, ite_self])⟩⟩
 
 @[simp, grind =]
 theorem erase_apply {i j : ι} {f : Π₀ i, β i} : (f.erase i) j = if j = i then 0 else f j :=
@@ -618,7 +619,7 @@ This is the (dependent) finitely-supported version of `Function.update`. -/
 def update : Π₀ i, β i :=
   ⟨Function.update f i b,
     f.support'.map fun s =>
-      ⟨i ::ₘ s.1, fun j => by
+      ⟨i ::ₘ s.val, fun j => by
         rcases eq_or_ne i j with (rfl | hi)
         · simp
         · obtain hj | (hj : f j = 0) := s.prop j
@@ -778,16 +779,16 @@ theorem mk_add [∀ i, AddZeroClass (β i)] {s : Finset ι} {x y : ∀ i : (↑s
   ext fun i => by simp only [add_apply, mk_apply]; split_ifs <;> [rfl; rw [zero_add]]
 
 @[simp]
-theorem mk_zero [∀ i, Zero (β i)] {s : Finset ι} : mk s (0 : ∀ i : (↑s : Set ι), β i.1) = 0 :=
+theorem mk_zero [∀ i, Zero (β i)] {s : Finset ι} : mk s (0 : ∀ i : (↑s : Set ι), β i.val) = 0 :=
   ext fun i => by simp only [mk_apply]; split_ifs <;> rfl
 
 @[simp]
-theorem mk_neg [∀ i, AddGroup (β i)] {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i.1} :
+theorem mk_neg [∀ i, AddGroup (β i)] {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i.val} :
     mk s (-x) = -mk s x :=
   ext fun i => by simp only [neg_apply, mk_apply]; split_ifs <;> [rfl; rw [neg_zero]]
 
 @[simp]
-theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : Set ι), β i.1} :
+theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : Set ι), β i.val} :
     mk s (x - y) = mk s x - mk s y :=
   ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
 
@@ -805,7 +806,7 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 /-- Set `{i | f x ≠ 0}` as a `Finset`. -/
 def support (f : Π₀ i, β i) : Finset ι :=
-  (f.support'.lift fun xs => (Multiset.toFinset xs.1).filter fun i => f i ≠ 0) <| by
+  (f.support'.lift fun xs => (Multiset.toFinset xs.val).filter fun i => f i ≠ 0) <| by
     rintro ⟨sx, hx⟩ ⟨sy, hy⟩
     dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
     ext i; constructor
@@ -817,7 +818,7 @@ def support (f : Π₀ i, β i) : Finset ι :=
       exact Finset.mem_filter.2 ⟨Multiset.mem_toFinset.2 <| (hx i).resolve_right h, h⟩
 
 @[simp]
-theorem support_mk_subset {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i.1} : (mk s x).support ⊆ s :=
+theorem support_mk_subset {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i.val} : (mk s x).support ⊆ s :=
   fun _ H => Multiset.mem_toFinset.1 (Finset.mem_filter.1 H).1
 
 @[simp]
@@ -841,11 +842,11 @@ theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by 
 def subtypeSupportEqEquiv (s : Finset ι) :
     {f : Π₀ i, β i // f.support = s} ≃ ∀ i : s, {x : β i // x ≠ 0} where
   toFun | ⟨f, hf⟩ => fun ⟨i, hi⟩ ↦ ⟨f i, (f.mem_support_toFun i).1 <| hf.symm ▸ hi⟩
-  invFun f := ⟨mk s fun i ↦ (f i).1, Finset.ext fun i ↦ by
+  invFun f := ⟨mk s fun i ↦ (f i).val, Finset.ext fun i ↦ by
     -- TODO: `simp` fails to use `(f _).2` inside `∃ _, _`
     calc
-      i ∈ support (mk s fun i ↦ (f i).1) ↔ ∃ h : i ∈ s, (f ⟨i, h⟩).1 ≠ 0 := by simp
-      _ ↔ ∃ _ : i ∈ s, True := exists_congr fun h ↦ (iff_true _).mpr (f _).2
+      i ∈ support (mk s fun i ↦ (f i).val) ↔ ∃ h : i ∈ s, (f ⟨i, h⟩).val ≠ 0 := by simp
+      _ ↔ ∃ _ : i ∈ s, True := exists_congr fun h ↦ (iff_true _).mpr (f _).property
       _ ↔ i ∈ s := by simp⟩
   left_inv := by
     rintro ⟨f, rfl⟩
@@ -909,7 +910,7 @@ variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 
 theorem mapRange_def [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] {f : ∀ i, β₁ i → β₂ i}
     {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} :
-    mapRange f hf g = mk g.support fun i => f i.1 (g i.1) := by
+    mapRange f hf g = mk g.support fun i => f i.val (g i.val) := by
   ext
   simp_all
 
@@ -957,7 +958,7 @@ theorem zipWith_def {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁
     [dec : DecidableEq ι] [∀ i : ι, Zero (β i)] [∀ i : ι, Zero (β₁ i)] [∀ i : ι, Zero (β₂ i)]
     [∀ (i : ι) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i : ι) (x : β₂ i), Decidable (x ≠ 0)]
     {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i} {g₂ : Π₀ i, β₂ i} :
-    zipWith f hf g₁ g₂ = mk (g₁.support ∪ g₂.support) fun i => f i.1 (g₁ i.1) (g₂ i.1) := by
+    zipWith f hf g₁ g₂ = mk (g₁.support ∪ g₂.support) fun i => f i.val (g₁ i.val) (g₂ i.val) := by
   grind
 
 theorem support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i}
@@ -966,7 +967,8 @@ theorem support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f
 
 end MapRangeAndZipWith
 
-theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase i) fun j => f j.1 := by
+theorem erase_def (i : ι) (f : Π₀ i, β i) :
+    f.erase i = mk (f.support.erase i) fun j => f j.val := by
   grind
 
 @[simp]
@@ -993,7 +995,7 @@ section FilterAndSubtypeDomain
 
 variable {p : ι → Prop} [DecidablePred p]
 
-theorem filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fun i => f i.1 := by
+theorem filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fun i => f i.val := by
   grind
 
 @[simp]
@@ -1002,7 +1004,7 @@ theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.sup
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
-  ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; simp [h2]
+  ext i; by_cases h2 : f i ≠ 0 <;> simp at h2 <;> simp [h2]
 
 @[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :
@@ -1044,7 +1046,7 @@ noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Functio
   toFun x := f (h x)
   support' :=
     f.support'.map fun s =>
-      ⟨(s.1.finite_toSet.preimage hh.injOn).toFinset.val, fun x =>
+      ⟨(s.val.finite_toSet.preimage hh.injOn).toFinset.val, fun x =>
         (s.prop (h x)).imp_left fun hx => (Set.Finite.mem_toFinset _).mpr hx⟩
 
 @[simp]
@@ -1080,7 +1082,7 @@ def comapDomain' [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ} (hh' : Fu
   toFun x := f (h x)
   support' :=
     f.support'.map fun s =>
-      ⟨Multiset.map h' s.1, fun x =>
+      ⟨Multiset.map h' s.val, fun x =>
         (s.prop (h x)).imp_left fun hx => Multiset.mem_map.mpr ⟨_, hx, hh' _⟩⟩
 
 @[simp, grind =]
@@ -1135,7 +1137,7 @@ def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : �
   toFun := fun i ↦ match i with | none => a | some _ => f _
   support' :=
     f.support'.map fun s =>
-      ⟨none ::ₘ Multiset.map some s.1, fun i =>
+      ⟨none ::ₘ Multiset.map some s.val, fun i =>
         Option.rec (Or.inl <| Multiset.mem_cons_self _ _)
           (fun i =>
             (s.prop i).imp_left fun h => Multiset.mem_cons_of_mem <| Multiset.mem_map_of_mem _ h)

@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
-
 # Categories where inclusions into coproducts are monomorphisms
 
 If `C` is a category, the class `MonoCoprod C` expresses that left
@@ -27,7 +26,6 @@ a monomorphism.
 
 TODO: define distributive categories, and show that they satisfy `MonoCoprod`, see
 <https://ncatlab.org/toddtrimble/published/distributivity+implies+monicity+of+coproduct+inclusions>
-
 -/
 
 @[expose] public section
@@ -90,7 +88,6 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     obtain ⟨c, hc₁, hc₂⟩ := h A B
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (↾(Sum.inl : A → A ⊕ B))
@@ -171,7 +168,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
     (hc : IsColimit c) (hc₁ : IsColimit c₁)
-    (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1))
+    (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.val))
     (hc₂ : IsColimit c₂) : Mono (Cofan.IsColimit.desc hc₁ (fun i => c.inj (ι i))) := by
   classical
   let e := ((Equiv.ofInjective ι hι).sumCongr (Equiv.refl _)).trans (Equiv.Set.sumCompl _)
@@ -185,17 +182,17 @@ variable (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
 include hι
 
 include hc in
-lemma mono_of_injective [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
+lemma mono_of_injective [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.val)] :
     Mono (Cofan.IsColimit.desc hc₁ (fun i => c.inj (ι i))) :=
   mono_of_injective_aux X ι hι c c₁ hc hc₁ _ (colimit.isColimit _)
 
 lemma mono_of_injective' [HasCoproduct (X ∘ ι)] [HasCoproduct X]
-    [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
+    [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.val)] :
     Mono (Sigma.desc (f := X ∘ ι) (fun j => Sigma.ι X (ι j))) :=
   mono_of_injective X ι hι _ _ (colimit.isColimit _) (colimit.isColimit _)
 
 lemma mono_map'_of_injective [HasCoproduct (X ∘ ι)] [HasCoproduct X]
-    [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
+    [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.val)] :
     Mono (Sigma.map' ι (fun j => 𝟙 ((X ∘ ι) j))) := by
   convert mono_of_injective' X ι hι
   apply Sigma.hom_ext
@@ -209,9 +206,8 @@ section
 
 variable [MonoCoprod C] {I : Type*} (X : I → C)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
-    [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :
+    [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.val)] :
     Mono (Cofan.inj c i) := by
   let ι : Unit → I := fun _ ↦ i
   have hι : Function.Injective ι := fun _ _ _ ↦ rfl
@@ -219,7 +215,7 @@ lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
     (Cofan.IsColimit.mk _ (fun s => s.inj ()))
 
 instance mono_ι [HasCoproduct X] (i : I)
-    [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :
+    [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.val)] :
     Mono (Sigma.ι X i) :=
   mono_inj X _ (colimit.isColimit _) i
 
