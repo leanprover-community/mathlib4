@@ -621,6 +621,13 @@ theorem map_map (p : MvPowerSeries σ R) : map g (map f p) = map (g.comp f) p :=
   ext n
   simp
 
+theorem toAddMonoidHom_map :
+    (map (σ := σ) f : MvPowerSeries σ R →+ MvPowerSeries σ S) = mapAddMonoidHom (f : R →+ S) :=
+  rfl
+
+theorem map_eq_mapAddMonoidHom (p : MvPowerSeries σ R) : map f p = mapAddMonoidHom f p :=
+  rfl
+
 end Map
 
 section toSubring
