@@ -17,7 +17,6 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 This file constructs colimits in the category of additive commutative groups, as
 quotients of finitely supported functions.
-
 -/
 
 @[expose] public section
@@ -297,7 +296,6 @@ refl lemma: Its LHS and RHS are not defeq at implicit transparency. Either the l
 a refl lemma or more declarations need to be implicit-reducible.
 -/
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The categorical cokernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical quotient.
 -/

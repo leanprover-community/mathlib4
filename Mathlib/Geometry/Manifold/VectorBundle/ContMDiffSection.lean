@@ -16,7 +16,6 @@ sections of a vector bundle over a manifold `M` and prove that it's a module ove
 
 In passing, we prove that binary and finite sums, differences and scalar products of `C^n`
 sections are `C^n`.
-
 -/
 
 @[expose] public section
@@ -49,7 +48,7 @@ variable {f : M → 𝕜} {a : 𝕜} {s t : Π x : M, V x} {u : Set M} {x₀ : M
 
 lemma ContMDiffWithinAt.add_section (hs : CMDiffAt[u] n (T% s) x₀) (ht : CMDiffAt[u] n (T% t) x₀) :
     CMDiffAt[u] n (T% (s + t)) x₀ := by
-  rw [contMDiffWithinAt_section] at hs ht ⊢
+  rw [contMDiffWithinAt_section_iff] at hs ht ⊢
   set e := trivializationAt F V x₀
   refine (hs.add ht).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
@@ -74,7 +73,7 @@ lemma ContMDiff.add_section (hs : CMDiff n (T% s)) (ht : CMDiff n (T% t)) :
 
 lemma ContMDiffWithinAt.neg_section
     (hs : CMDiffAt[u] n (T% s) x₀) : CMDiffAt[u] n (T% (-s)) x₀ := by
-  rw [contMDiffWithinAt_section] at hs ⊢
+  rw [contMDiffWithinAt_section_iff] at hs ⊢
   set e := trivializationAt F V x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
@@ -113,7 +112,7 @@ lemma ContMDiff.sub_section (hs : CMDiff n (T% s)) (ht : CMDiff n (T% t)) : CMDi
 
 lemma ContMDiffWithinAt.smul_section (hf : CMDiffAt[u] n f x₀) (hs : CMDiffAt[u] n (T% s) x₀) :
     CMDiffAt[u] n (T% (f • s)) x₀ := by
-  rw [contMDiffWithinAt_section] at hs ⊢
+  rw [contMDiffWithinAt_section_iff] at hs ⊢
   set e := trivializationAt F V x₀
   refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)

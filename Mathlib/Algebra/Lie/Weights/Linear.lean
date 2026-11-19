@@ -36,7 +36,6 @@ or `R` has characteristic zero.
 * `LieModule.exists_forall_lie_eq_smul`: existence of simultaneous
   eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
   with linear weights.
-
 -/
 
 @[expose] public section

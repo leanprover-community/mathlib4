@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 If `C` has limits of size `w` and `J` is `w`-essentially small, then `C` has limits of shape `J`.
 
 See also the file `FinallySmall.lean` for more general results.
-
 -/
 
 public section

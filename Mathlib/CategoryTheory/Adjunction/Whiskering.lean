@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 Given categories `C D E`, functors `F : D ⥤ E` and `G : E ⥤ D` with an adjunction
 `F ⊣ G`, we provide the induced adjunction between the functor categories `C ⥤ D` and `C ⥤ E`,
 and the functor categories `E ⥤ C` and `D ⥤ C`.
-
 -/
 
 @[expose] public section
