@@ -321,7 +321,7 @@ theorem associated_of_isUniformizer {π₁ π₂ : K₀} (h1 : IsUniformizer v �
     (h2 : IsUniformizer v π₂) : Associated π₁ π₂ := by
   have hval : v ((π₁ : K)⁻¹ * π₂) = 1 := by
     simp [IsUniformizer.iff.mp h1, IsUniformizer.iff.mp h2]
-  set p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
+  set p : v.integer := ⟨(π₁.val : K)⁻¹ * π₂.val, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
   use ((IsIntegers.isUnit_iff_valuation_eq_one (x := p) <| integer.integers v).mpr hval).unit
   apply_fun ((↑) : K₀ → K) using Subtype.val_injective
   simp [hp, ← mul_assoc, mul_inv_cancel₀ h1.ne_zero]

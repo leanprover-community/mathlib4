@@ -490,7 +490,7 @@ theorem adicCompletionIntegers.integers :
 variable {K v}
 
 theorem adicCompletionIntegers.isUnit_iff_valued_eq_one {a : v.adicCompletionIntegers K} :
-    IsUnit a ↔ Valued.v a.1 = 1 := by
+    IsUnit a ↔ Valued.v a.val = 1 := by
   simp [Valuation.IsIntegers.isUnit_iff_valuation_eq_one (integers K v)]
 
 theorem adicCompletionIntegers.mem_units_iff_valued_eq_one {a : (v.adicCompletion K)ˣ} :
