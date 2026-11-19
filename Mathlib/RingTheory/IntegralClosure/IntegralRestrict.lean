@@ -195,14 +195,6 @@ lemma algebraMap_galRestrict_apply (σ : Gal(L/K)) (x : B) :
     algebraMap B L (galRestrict A K L B σ x) = σ (algebraMap B L x) :=
   algebraMap_galRestrictHom_apply A K L B σ.toAlgHom x
 
-/-- If `Gal(L/K)` acts on `B` compatibly with its action on `L`, then this action is given by
-`galRestrict`. -/
-lemma smul_eq_galRestrict_apply [MulSemiringAction Gal(L/K) B] [SMulDistribClass Gal(L/K) B L]
-    (σ : Gal(L/K)) (x : B) :
-    σ • x = galRestrict A K L B σ x := by
-  apply IsIntegralClosure.algebraMap_injective B A L
-  rw [algebraMap.smul', AlgEquiv.smul_def, algebraMap_galRestrict_apply]
-
 variable (K) in
 lemma galRestrict_symm_algebraMap_apply (σ : B ≃ₐ[A] B) (x : B) :
     (galRestrict A K L B).symm σ (algebraMap B L x) = algebraMap B L (σ x) :=
