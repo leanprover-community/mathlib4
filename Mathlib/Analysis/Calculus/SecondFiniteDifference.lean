@@ -89,7 +89,6 @@ lemma second_order_peano_bound {f : ℝ → ℝ} {t f'' : ℝ}
     (hf_nhds : ∀ᶠ x in 𝓝 t, DifferentiableAt ℝ f x)
     (hf'' : HasDerivAt (deriv f) f'' t) :
     ∀ ε > 0, ∀ᶠ h in 𝓝 0,
-
       |f (t + h) - f t - deriv f t * h - (1 / 2) * f'' * h ^ 2| ≤ ε * h ^ 2 := by
   intro ε hε
   have h_rem := hasDerivAt_remainder_bound hf'' ε hε
