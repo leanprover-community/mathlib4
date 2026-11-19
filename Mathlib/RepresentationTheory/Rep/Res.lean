@@ -33,7 +33,7 @@ abbrev res (f : H →* G) (A : Rep k G) := of (A.ρ.comp f)
 `G`-representations. -/
 @[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
-    res f X ⟶ res f Y := ofHom ⟨p.hom, fun _ ↦ p.hom.2 _⟩
+    res f X ⟶ res f Y := ofHom ⟨p.hom, fun _ ↦ p.hom.isIntertwining' _⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 @[expose, implicit_reducible, simps obj map]
