@@ -129,7 +129,7 @@ theorem frequently_le_mul_of_liminfRatio_lt {F : Type*} [FunLike F (Set α) ℝ�
 
 /-- For almost every point `x`, sufficiently small sets in a Vitali family around `x` have positive
 measure. (This is a nontrivial result, following from the covering property of Vitali families). -/
-theorem ae_eventually_measure_pos [SecondCountableTopology α] :
+theorem ae_eventually_measure_pos :
     ∀ᵐ x ∂μ, ∀ᶠ a in v.filterAt x, 0 < μ a := by
   set s := {x | ¬∀ᶠ a in v.filterAt x, 0 < μ a} with hs
   simp -zeta only [not_lt, not_eventually, nonpos_iff_eq_zero] at hs
@@ -161,7 +161,7 @@ private theorem measure_le_of_measure_sdiff_eq_zero (hρ : ∀ ⦃t⦄, μ t = 0
 /-- Auxiliary statement for `outerMeasure_le_of_frequently_le` and
 `outerMeasure_toMeasurable_le_of_frequently_le`. The assumption on `t` means that `t` is included,
 up to a `μ`-null set, in every measurable superset of `s`. -/
-private theorem outerMeasure_le_of_frequently_le_aux [SecondCountableTopology α]
+private theorem outerMeasure_le_of_frequently_le_aux
     (ν : Measure α) [OuterRegular ν] (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) {s t : Set α}
     (ht : ∀ u, MeasurableSet u → s ⊆ u → μ (t \ u) = 0)
     (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ t ≤ ν s := by
@@ -200,7 +200,7 @@ private theorem outerMeasure_le_of_frequently_le_aux [SecondCountableTopology α
 /-- Let `ρ` be an outer measure that vanishes on `μ`-null sets and let `ν` be an outer regular
 measure. If, at every point of a set `s`, there are arbitrarily small sets `a` in a Vitali family
 satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s`. -/
-theorem outerMeasure_le_of_frequently_le [SecondCountableTopology α]
+theorem outerMeasure_le_of_frequently_le
     (ν : Measure α) [OuterRegular ν] (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) (s : Set α)
     (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s :=
   v.outerMeasure_le_of_frequently_le_aux ν hρ (fun _ _ hsu ↦ by simp [sdiff_eq_bot_iff.2 hsu]) hs
@@ -211,7 +211,7 @@ satisfying `ρ a ≤ ν a`, then `ρ (toMeasurable μ s) ≤ ν s`.
 
 Note that `ρ (toMeasurable μ s)` can be larger than `ρ s`, since `ρ` is not assumed to be a
 measure. -/
-theorem outerMeasure_toMeasurable_le_of_frequently_le [SecondCountableTopology α]
+theorem outerMeasure_toMeasurable_le_of_frequently_le
     [SFinite μ] (ν : Measure α) [OuterRegular ν] (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) (s : Set α)
     (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ (toMeasurable μ s) ≤ ν s := by
   refine v.outerMeasure_le_of_frequently_le_aux ν hρ (fun u hu hsu ↦ ?_) hs
@@ -222,7 +222,7 @@ end OuterMeasure
 
 /-- If two measures `ρ` and `ν` have, at every point of a set `s`, arbitrarily small sets in a
 Vitali family satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s` if `ρ ≪ μ`. -/
-theorem measure_le_of_frequently_le [SecondCountableTopology α] {ρ : Measure α}
+theorem measure_le_of_frequently_le {ρ : Measure α}
     (ν : Measure α) [OuterRegular ν] (hρ : ρ ≪ μ) (s : Set α)
     (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s :=
   v.outerMeasure_le_of_frequently_le ν hρ s hs
@@ -235,7 +235,7 @@ theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIn
 
 section OuterMeasure
 
-variable [SecondCountableTopology α] [SigmaFinite μ] [OuterRegular μ]
+variable [SigmaFinite μ] [OuterRegular μ]
   {F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F α] {ρ : F}
 
 /-- Let `ρ` be an outer measure that vanishes on `μ`-null sets. Then `ρ s` is bounded by the
