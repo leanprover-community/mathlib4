@@ -17,6 +17,8 @@ A subgroup `H` of a topological group `G` is cocompact if the quotient `G ⧸ H`
 
 * `Subgroup.isCocompact_iff_exists_isCompact_mul_eq_univ`: in a weakly locally compact group,
   `H` is cocompact if and only if `C * H = G` for some compact set `C`.
+* `Subgroup.IsCocompact.isCompact_range_of_periodic`: A continuous function that is periodic
+  with respect to every element of a cocompact subgroup has compact range.
 -/
 
 @[expose] public section
@@ -54,7 +56,7 @@ theorem exists_isCompact_mul_eq_univ_of_isCocompact [SeparatelyContinuousMul G]
   obtain ⟨C, hC, hCH⟩ :=
     (QuotientGroup.isOpenQuotientMap_mk (N := H)).exists_isCompact_subset_image isCompact_univ
   refine ⟨C, hC, Set.eq_univ_of_forall fun g ↦ ?_⟩
-  obtain ⟨c, hc, hcg⟩ := hCH (Set.mem_univ (g : G ⧸ H))
+  obtain ⟨c, hc, hcg⟩ := hCH (Set.mem_univ (QuotientGroup.mk g))
   exact ⟨c, hc, c⁻¹ * g, QuotientGroup.eq.mp hcg, mul_inv_cancel_left c g⟩
 
 @[to_additive]
