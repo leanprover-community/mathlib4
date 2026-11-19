@@ -28,7 +28,6 @@ for the Bochner integral.
   w.r.t. a parameter
 - `intervalIntegral.continuous_primitive` and friends: primitives of interval integrable
   measurable functions are continuous
-
 -/
 
 public section

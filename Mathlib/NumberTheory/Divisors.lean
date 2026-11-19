@@ -37,7 +37,6 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 
 ## Tags
 divisors, perfect numbers
-
 -/
 
 @[expose] public section

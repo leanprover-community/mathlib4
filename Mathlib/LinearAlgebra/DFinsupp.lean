@@ -375,7 +375,7 @@ theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
     simp only [LinearMap.mem_range, lsum_apply_apply]
     exact ⟨DFinsupp.single i ⟨y, hy⟩, DFinsupp.sumAddHom_single _ _ _⟩
   · rintro x ⟨v, rfl⟩
-    exact dfinsuppSumAddHom_mem _ v _ fun i _ => (le_iSup p i : p i ≤ _) (v i).2
+    exact dfinsuppSumAddHom_mem _ v _ fun i _ => (le_iSup p i : p i ≤ _) (v i).property
 
 /-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
 `DFinsupp.sumAddHom` composed with `DFinsupp.filter_add_monoid_hom`; that is, every element in the

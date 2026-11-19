@@ -23,7 +23,6 @@ a functor `PresheafOfModules.colimitFunctor : PresheafOfModules R ⥤ ModuleCat 
 * Define fiber functors on categories of (pre)sheaves of modules
 * Refactor `Mathlib/Algebra/Category/ModuleCat/Stalk.lean` so that it uses
 this slightly more general construction.
-
 -/
 
 @[expose] public section
@@ -274,8 +273,8 @@ lemma homEquiv_naturality_right {N N' : ModuleCat.{w} cR.pt}
 @[simp]
 lemma homEquiv_symm_apply {N : ModuleCat.{w} cR.pt} (β : M ⟶ (constFunctor cR).obj N)
     {X : Cᵒᵖ} (x : M.obj X) :
-    dsimp% (homEquiv hcR hcM).symm β (cM.ι.app X x) = β.app X x := by
-  exact homEquiv'_symm_apply ..
+    dsimp% (homEquiv hcR hcM).symm β (cM.ι.app X x) = β.app X x :=
+  homEquiv'_symm_apply ..
 
 section
 

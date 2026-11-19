@@ -159,7 +159,7 @@ lemma setOfPred_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
       intro y hy hyx
       exfalso
       exact lt_irrefl x (lt_of_le_of_lt ((bot_isAdmissible le_map).base_isLeast.2 hy) hyx)
-    · exact fun y h ↦ (bot_isAdmissible le_map).base_isLeast.2 h.1
+    · exact fun y h ↦ (bot_isAdmissible le_map).base_isLeast.2 h.mem_bot
   · rintro _ ⟨y, hy, rfl⟩
     refine ⟨map_mem_bot le_map hy.mem_bot, ?_⟩
     intro z hz hzy

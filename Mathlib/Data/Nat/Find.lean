@@ -65,15 +65,15 @@ The API for `Nat.find` is:
 * `Nat.find_min'` is the proof that if `m` does satisfy `p` then `Nat.find hp ≤ m`.
 -/
 protected def find : ℕ :=
-  (Nat.findX H).1
+  (Nat.findX H).val
 
 protected theorem find_spec : p (Nat.find H) :=
-  (Nat.findX H).2.left
+  (Nat.findX H).property.left
 
 grind_pattern Nat.find_spec => Nat.find H
 
 protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
-  @(Nat.findX H).2.right
+  @(Nat.findX H).property.right
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
   Nat.le_of_not_gt fun l => Nat.find_min H l h

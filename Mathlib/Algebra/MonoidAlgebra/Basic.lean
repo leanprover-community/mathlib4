@@ -11,7 +11,6 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 
 /-!
 # Algebra structure on monoid algebras
-
 -/
 
 @[expose] public noncomputable section

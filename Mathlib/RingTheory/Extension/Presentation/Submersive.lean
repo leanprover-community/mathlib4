@@ -46,7 +46,6 @@ For a presubmersive presentation `P` of `S` over `R` we make the following defin
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
-
 -/
 
 @[expose] public section
@@ -304,7 +303,6 @@ In this section we compute the Jacobian of the composition of `Q` and `P` to be
 the product of the Jacobians. For this we use a block decomposition of the Jacobi matrix and show
 that the upper-right block vanishes, the upper-left block has determinant Jacobian of `Q` and
 the lower-right block has determinant Jacobian of `P`.
-
 -/
 
 variable [Fintype σ] [Fintype σ']

@@ -45,7 +45,6 @@ algebraic closure, algebraically closed
   see `IsAlgClosure.of_exists_root`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
-
 -/
 
 @[expose] public section
@@ -286,7 +285,7 @@ attribute [instance] IsAlgClosure.isAlgebraic
 
 theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
     IsAlgClosure k K ↔ IsAlgClosed K ∧ Algebra.IsAlgebraic k K :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
+  ⟨fun h => ⟨h.isAlgClosed, h.isAlgebraic⟩, fun h => ⟨h.1, h.2⟩⟩
 
 instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] : Normal R K where
@@ -488,7 +487,7 @@ noncomputable def equivOfEquiv (hSR : S ≃+* R) : L ≃+* M :=
 @[simp]
 theorem equivOfEquiv_comp_algebraMap (hSR : S ≃+* R) :
     (↑(equivOfEquiv L M hSR) : L →+* M).comp (algebraMap S L) = (algebraMap R M).comp hSR :=
-  (equivOfEquivAux L M hSR).2
+  (equivOfEquivAux L M hSR).property
 
 @[simp]
 theorem equivOfEquiv_algebraMap (hSR : S ≃+* R) (s : S) :
