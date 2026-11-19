@@ -39,7 +39,6 @@ the proof relies on two facts:
   which follows from the fact that any monomorphism is a relative cell complex with
   basic cells of the form `∂Δ[n] ⟶ Δ[n]`, see
   the file `Mathlib/AlgebraicTopology/SimplicialSet/Skeleton.lean`).
-
 -/
 
 public section

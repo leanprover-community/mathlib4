@@ -148,7 +148,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
   congr
   rw [ofReal_mul, ofReal_mul, ofReal_exp, ← mul_assoc]
   congr
-  · rw [mul_cpow_ofReal_nonneg pi_nonneg hc.le, ← rpow_natCast, ← rpow_mul hc.le, mul_comm,
+  · rw [ofReal_mul_cpow pi_nonneg, ← rpow_natCast, ← rpow_mul hc.le, mul_comm,
       ofReal_cpow pi_nonneg, ofReal_cpow hc.le]
     simp [div_eq_inv_mul]
   · norm_cast

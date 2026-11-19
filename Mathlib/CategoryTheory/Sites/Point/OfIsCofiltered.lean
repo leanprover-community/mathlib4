@@ -20,7 +20,6 @@ Let `J` be a Grothendieck topology on a category `C`. We provide a constructor
 
 We show that the fiber of a presheaf for the constructed point identifies
 to a colimit indexed by the category `N`.
-
 -/
 
 @[expose] public section
@@ -179,7 +178,7 @@ noncomputable def presheafFiberOfIsCofilteredCocone (P : Cᵒᵖ ⥤ A) :
 the fiber of a presheaf can be computed as a colimit indexed by `N`. -/
 noncomputable def isColimitPresheafFiberOfIsCofilteredCocone (P : Cᵒᵖ ⥤ A) :
     IsColimit (presheafFiberOfIsCofilteredCocone p hp P) :=
-  (Functor.Final.isColimitWhiskerEquiv (functor.{w} p).op _).2
+  (Functor.Final.isColimitWhiskerEquiv (functor.{w} p).op _).invFun
     ((ofIsCofiltered p hp).isColimitPresheafFiberCocone P)
 
 end GrothendieckTopology.Point

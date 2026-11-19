@@ -158,7 +158,7 @@ section SetCoe
 
 variable {α : Type u}
 
-instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
+instance (s : Set α) : CoeTC s α := ⟨fun x => x.val⟩
 
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
@@ -176,16 +176,16 @@ theorem SetCoe.exists {s : Set α} {p : s → Prop} :
   Subtype.exists
 
 theorem SetCoe.exists' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
-    (∃ (x : _) (h : x ∈ s), p x h) ↔ ∃ x : s, p x.1 x.2 :=
-  (@SetCoe.exists _ _ fun x => p x.1 x.2).symm
+    (∃ (x : _) (h : x ∈ s), p x h) ↔ ∃ x : s, p x.val x.property :=
+  (@SetCoe.exists _ _ fun x => p x.val x.property).symm
 
 theorem SetCoe.forall' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
-    (∀ (x) (h : x ∈ s), p x h) ↔ ∀ x : s, p x.1 x.2 :=
-  (@SetCoe.forall _ _ fun x => p x.1 x.2).symm
+    (∀ (x) (h : x ∈ s), p x h) ↔ ∀ x : s, p x.val x.property :=
+  (@SetCoe.forall _ _ fun x => p x.val x.property).symm
 
 @[simp]
 theorem set_coe_cast :
-    ∀ {s t : Set α} (H' : s = t) (H : ↥s = ↥t) (x : s), cast H x = ⟨x.1, H' ▸ x.2⟩
+    ∀ {s t : Set α} (H' : s = t) (H : ↥s = ↥t) (x : s), cast H x = ⟨x.val, H' ▸ x.property⟩
   | _, _, rfl, _, _ => rfl
 
 theorem SetCoe.ext {s : Set α} {a b : s} : (a : α) = b → a = b :=
@@ -466,20 +466,28 @@ theorem eq_empty_of_forall_notMem (h : ∀ x, x ∉ s) : s = ∅ :=
 theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
   subset_empty_iff.1
 
-/-- See also `Set.nonempty_iff_ne_empty`. -/
+/-- See also `Set.ne_empty_iff_nonempty`. -/
 @[push]
 theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
   simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
-@[push ←]
-theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
-  not_nonempty_iff_eq_empty.not_right
+@[simp, push]
+lemma ne_empty_iff_nonempty : s ≠ ∅ ↔ s.Nonempty :=
+  not_nonempty_iff_eq_empty.symm.not_left
 
-/-- Variant of `nonempty_iff_ne_empty` used by `push Not`. -/
-@[push ←]
+@[deprecated ne_empty_iff_nonempty +typeChanged (since := "2026-11-05")]
+theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
+  ne_empty_iff_nonempty.symm
+
+/-- Variant of `ne_empty_iff_nonempty` used by `push Not`. -/
+@[simp, push]
+lemma empty_ne_iff_nonempty : ∅ ≠ s ↔ s.Nonempty :=
+  ne_comm.trans ne_empty_iff_nonempty
+
+@[deprecated empty_ne_iff_nonempty +typeChanged (since := "2026-11-10")]
 theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
-  nonempty_iff_ne_empty.trans ne_comm
+  empty_ne_iff_nonempty.symm
 
 /-- See also `nonempty_iff_ne_empty'`. -/
 theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
@@ -489,14 +497,14 @@ theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty'.not_right
 
-alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
+@[simp] alias ⟨_, Nonempty.ne_empty⟩ := ne_empty_iff_nonempty
 
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
-  not_iff_not.1 <| by simpa using! nonempty_iff_ne_empty
+  not_iff_not.1 <| by simp [Set.Nonempty]
 
 lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›
@@ -506,10 +514,17 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
   uniq _ := eq_empty_of_isEmpty _
 
 theorem eq_empty_or_nonempty (s : Set α) : s = ∅ ∨ s.Nonempty :=
-  or_iff_not_imp_left.2 nonempty_iff_ne_empty.2
+  or_iff_not_imp_left.2 ne_empty_iff_nonempty.1
 
-theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
-  subset_empty_iff.1 <| e ▸ h
+@[gcongr] theorem eq_empty_of_subset (h : t ⊆ s) (e : s = ∅) : t = ∅ := eq_bot_mono h e
+
+@[deprecated (since := "2026-09-29")] alias subset_eq_empty := eq_empty_of_subset
+
+@[gcongr] theorem empty_eq_of_subset (h : t ⊆ s) (e : ∅ = s) : ∅ = t := bot_eq_mono h e
+
+@[gcongr] theorem ne_empty_of_subset (h : s ⊆ t) (e : s ≠ ∅) : t ≠ ∅ := ne_bot_mono h e
+
+@[gcongr] theorem empty_ne_of_subset (h : s ⊆ t) (e : ∅ ≠ s) : ∅ ≠ t := bot_ne_mono h e
 
 theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
@@ -545,21 +560,19 @@ theorem exists_mem_const {p : Prop} [Nonempty s] : (∃ x ∈ s, p) ↔ p :=
   (nonempty_coe_sort.mp ‹_›).exists_const
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
-  ⟨fun x => x.2⟩
+  ⟨fun x => x.property⟩
 
 @[simp]
 theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
-  (@bot_lt_iff_ne_bot (Set α) _ _ _).trans nonempty_iff_ne_empty.symm
+  (@bot_lt_iff_ne_bot (Set α) _ _ _).trans ne_empty_iff_nonempty
 
 alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 
 /-!
-
 ### Universal set.
 
 In Lean `@univ α` (or `univ : Set α`) is the set that contains all elements of type `α`.
 Mathematically it is the same as `α` but it has a different type.
-
 -/
 
 
@@ -601,8 +614,13 @@ theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
   exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
 
-theorem eq_univ_of_subset {s t : Set α} (h : s ⊆ t) (hs : s = univ) : t = univ :=
-  eq_univ_of_univ_subset (hs ▸ h : univ ⊆ t)
+@[gcongr] theorem eq_univ_of_subset (h : s ⊆ t) (hs : s = univ) : t = univ := eq_top_mono h hs
+
+@[gcongr] theorem univ_eq_of_subset (h : s ⊆ t) (hs : univ = s) : univ = t := top_eq_mono h hs
+
+@[gcongr] theorem ne_univ_of_subset (h : t ⊆ s) (hs : s ≠ univ) : t ≠ univ := ne_top_mono h hs
+
+@[gcongr] theorem univ_ne_of_subset (h : t ⊆ s) (hs : univ ≠ s) : univ ≠ t := top_ne_mono h hs
 
 theorem exists_mem_univ_of_nonempty (α) : ∀ [Nonempty α], ∃ x : α, x ∈ (univ : Set α)
   | ⟨x⟩ => ⟨x, trivial⟩
@@ -920,7 +938,6 @@ theorem mem_sep (xs : x ∈ s) (px : p x) : x ∈ { x ∈ s | p x } :=
 theorem sep_mem_eq : { x ∈ s | x ∈ t } = s ∩ t :=
   rfl
 
-@[simp]
 theorem mem_sep_iff : x ∈ { x ∈ s | p x } ↔ x ∈ s ∧ p x :=
   Iff.rfl
 
@@ -1064,7 +1081,7 @@ variable {α : Type*} {β : Type*}
 
 theorem Injective.nonempty_apply_iff {f : Set α → Set β} (hf : Injective f) (h2 : f ∅ = ∅)
     {s : Set α} : (f s).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, ← h2, nonempty_iff_ne_empty, hf.ne_iff]
+  rw [← ne_empty_iff_nonempty, ← h2, ← ne_empty_iff_nonempty, hf.ne_iff]
 
 end Function
 

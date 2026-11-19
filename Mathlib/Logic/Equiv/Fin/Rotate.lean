@@ -123,7 +123,7 @@ def finCycle (k : Fin n) : Equiv.Perm (Fin n) where
   left_inv i := by have := NeZero.of_pos k.pos; simp
   right_inv i := by have := NeZero.of_pos k.pos; simp
 
-lemma finCycle_eq_finRotate_iterate {k : Fin n} : finCycle k = (finRotate n)^[k.1] := by
+lemma finCycle_eq_finRotate_iterate {k : Fin n} : finCycle k = (finRotate n)^[k.val] := by
   match n with
   | 0 => exact k.elim0
   | n + 1 =>

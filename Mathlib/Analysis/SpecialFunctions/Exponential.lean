@@ -52,7 +52,6 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 
 - `Complex.exp_eq_exp_ℂ` : `Complex.exp = NormedSpace.exp ℂ ℂ`
 - `Real.exp_eq_exp_ℝ` : `Real.exp = NormedSpace.exp ℝ ℝ`
-
 -/
 
 public section

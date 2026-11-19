@@ -24,7 +24,6 @@ and its right adjoint `ex`.
 
 ## References
 * [J. F. Jardine, *Simplicial approximation*][jardine-2004]
-
 -/
 
 @[expose] public section

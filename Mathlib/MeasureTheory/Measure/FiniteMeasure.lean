@@ -80,7 +80,6 @@ considerations:
 ## Tags
 
 weak convergence of measures, finite measure
-
 -/
 
 @[expose] public section
@@ -351,8 +350,8 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
       Measurable fun a : (FiniteMeasure α × FiniteMeasure β) ↦
       a.1.toMeasure u * a.2.toMeasure v :=
     Measurable.mul
-      ((Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst))
-      ((Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
+      ((Measure.measurable_coe Hu).comp (measurable_subtypeVal.comp measurable_fst))
+      ((Measure.measurable_coe Hv).comp (measurable_subtypeVal.comp measurable_snd))
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
   simp only [mem_image2, mem_ofPred_eq, forall_exists_index, and_imp]
@@ -1015,7 +1014,7 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
       simp only [toMeasure_comap]
       rw [Measure.comap_apply _ hf.injective, image_preimage_eq_inter_range]
       · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
-        exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (by exact μ.2)
+        exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (by exact μ.property)
       · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
       · exact hf.continuous.measurable hs }
   exact A.comp B.isEmbedding

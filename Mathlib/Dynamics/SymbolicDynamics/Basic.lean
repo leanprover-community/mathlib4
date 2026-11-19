@@ -594,7 +594,7 @@ lemma finite_setOfPred_pattern_support_eq
   classical
   -- Patterns with support U biject with (U → A) via restriction/extension
   let e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
-  { toFun := fun p i => p.1.config i.1
+  { toFun := fun p i => p.val.config i.val
     invFun := fun f => ⟨{ config := fun g => if h : g ∈ U then f ⟨g, h⟩ else default,
                            support := U,
                            condition := fun g hg => by simp [hg] }, rfl⟩
@@ -607,7 +607,7 @@ lemma finite_setOfPred_pattern_support_eq
       by_cases hg : g ∈ dom
       · simp [hg]
       · simp [hg, cond g hg]
-    right_inv := fun f => by ext i; simp [i.2] }
+    right_inv := fun f => by ext i; simp [i.property] }
   let : Fintype { p : Pattern A G | p.support = U } := Fintype.ofEquiv (U → A) e.symm
   apply toFinite
 

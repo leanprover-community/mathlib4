@@ -35,7 +35,6 @@ of the formal group law `F(X,Y)`.
 
 ## References
 * [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
-
 -/
 
 @[expose] public section

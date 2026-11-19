@@ -28,7 +28,6 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 ## References
 
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
 -/
 
 @[expose] public section

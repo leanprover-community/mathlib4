@@ -22,7 +22,6 @@ carrying a uniformly locally doubling measure.
   [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
 * `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
   rather than closed thickenings.
-
 -/
 
 public section
@@ -73,7 +72,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   set Y₂ : ℕ → Set α := fun i => cthickening (r₂ i) (s i)
   let Z : ℕ → Set α := fun i => ⋃ (j) (_ : p j ∧ i ≤ j), Y₂ j
   suffices ∀ i, μ (atTop.blimsup Y₁ p \ Z i) = 0 by
-    rwa [ae_le_set, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, sdiff_iInter,
+    rwa [ae_subset, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, sdiff_iInter,
       measure_iUnion_null_iff]
   intro i
   set W := atTop.blimsup Y₁ p \ Z i
@@ -222,7 +221,7 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
   rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup,
     blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
     blimsup_congr (Eventually.of_forall h₂)]
-  exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') (ae_eq_refl _)
+  exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') .rfl
 
 theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ → Set α} {r : ℕ → ℝ}
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
@@ -267,7 +266,7 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
   have hq {u : ℕ → Set α} (hu : ∀ i, u i ≠ ∅ → 0 < r i) :
       blimsup u atTop p = blimsup u atTop q :=
     blimsup_congr' <| Eventually.of_forall fun i hi ↦ by simp [q, hu i hi]
-  rw [hq fun i hi ↦ (thickening_nonempty_iff.1 <| nonempty_iff_ne_empty.2 hi).1,
+  rw [hq fun i hi ↦ (thickening_nonempty_iff.1 <| ne_empty_iff_nonempty.1 hi).1,
     hq fun i hi ↦ (mul_pos_iff_of_pos_left hM).1
-      (thickening_nonempty_iff.1 <| nonempty_iff_ne_empty.2 hi).1]
+      (thickening_nonempty_iff.1 <| ne_empty_iff_nonempty.1 hi).1]
   exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (Eventually.of_forall fun i hi => hi.2)

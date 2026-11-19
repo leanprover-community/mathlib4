@@ -15,7 +15,6 @@ If we have a parametrized adjunction `adj₂ : F ⊣₂ G`,
 we show that `sq₁₂.ι` has the left lifting property with respect to
 `f₃` if and only if `f₂` has the left lifting property with respect
 to `sq₁₃.π`: this is the lemma `ParametrizedAdjunction.hasLiftingProperty_iff`.
-
 -/
 
 @[expose] public section

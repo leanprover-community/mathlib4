@@ -13,7 +13,6 @@ public import Mathlib.Logic.Function.Coequalizer
 
 The coequalizer of a pair of maps `(f, g)` from `X` to `Y`
 is the quotient of `Y` by `∀ x : Y, f x ~ g x`
-
 -/
 
 @[expose] public section
@@ -54,7 +53,7 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
   constructor
   · rw [←
       show _ = π from
-        h.comp_coconePointUniqueUpToIso_inv (coequalizerColimit f g).2
+        h.comp_coconePointUniqueUpToIso_inv (coequalizerColimit f g).isColimit
           WalkingParallelPair.one]
     rintro ⟨y, hy, e'⟩
     dsimp at e'

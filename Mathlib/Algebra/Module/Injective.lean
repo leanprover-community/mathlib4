@@ -36,7 +36,6 @@ import Mathlib.LinearAlgebra.Pi
 ## Main statements
 
 * `Module.Baer.injective`: an `R`-module is injective if it is Baer.
-
 -/
 
 @[expose] public section
@@ -188,15 +187,16 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
       toFun :=
-        { toFun := fun x => f x.2.choose
+        { toFun := fun x => f x.property.choose
           map_add' := fun x y => by
-            have eq1 : _ + _ = (x + y).1 := congr($(x.2.choose_spec) + $(y.2.choose_spec))
-            rw [← map_add, ← (x + y).2.choose_spec] at eq1
+            have eq1 : _ + _ = (x + y).val :=
+              congr($(x.property.choose_spec) + $(y.property.choose_spec))
+            rw [← map_add, ← (x + y).property.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
           map_smul' := fun r x => by
-            have eq1 : r • _ = (r • x).1 := congr(r • $(x.2.choose_spec))
-            rw [← map_smul, ← (r • x).2.choose_spec] at eq1
+            have eq1 : r • _ = (r • x).val := congr(r • $(x.property.choose_spec))
+            rw [← map_smul, ← (r • x).property.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_smul] }
       le := le_refl _
@@ -205,7 +205,7 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
         dsimp
         apply congrArg
         exact Fact.out (p := Function.Injective i)
-          (⟨i m, ⟨_, rfl⟩⟩ : LinearMap.range i).2.choose_spec.symm }
+          (⟨i m, ⟨_, rfl⟩⟩ : LinearMap.range i).property.choose_spec.symm }
 
 /-- Since every nonempty chain has a maximal element, by Zorn's lemma, there is a maximal
 `extension_of i f`. -/
@@ -227,8 +227,8 @@ variable {f}
 
 set_option backward.privateInPublic true in
 private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSingleton i f y) :
-    ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
-  have mem1 : x.1 ∈ (_ : Set _) := x.2
+    ∃ (a : (extensionOfMax i f).domain) (b : R), x.val = a.val + b • y := by
+  have mem1 : x.val ∈ (_ : Set _) := x.property
   rw [Submodule.coe_sup] at mem1
   rcases mem1 with ⟨a, a_mem, b, b_mem : b ∈ (Submodule.span R _ : Submodule R N), eq1⟩
   rw [Submodule.mem_span_singleton] at b_mem
@@ -324,7 +324,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
       at eq1
   have eq3 :=
     ExtensionOfMaxAdjoin.extendIdealTo_eq i f h (r - ExtensionOfMaxAdjoin.snd i x)
-      (by rw [← eq2]; exact Submodule.sub_mem _ (ExtensionOfMaxAdjoin.fst i x).2 ha)
+      (by rw [← eq2]; exact Submodule.sub_mem _ (ExtensionOfMaxAdjoin.fst i x).property ha)
   simp only [map_sub, sub_smul, sub_eq_iff_eq_add] at eq3
   unfold ExtensionOfMaxAdjoin.extensionToFun
   rw [eq3, ← add_assoc, ← (extensionOfMax i f).toLinearPMap.map_add, AddMemClass.mk_add_mk]

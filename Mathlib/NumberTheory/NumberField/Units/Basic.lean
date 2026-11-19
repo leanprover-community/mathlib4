@@ -56,7 +56,7 @@ section IsUnit
 variable {K}
 
 theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
-    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
+    IsUnit x ↔ |(x.norm ℚ : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 
@@ -241,10 +241,11 @@ theorem torsion_eq_one_or_neg_one_of_odd_finrank
     (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
   by_cases! hc : 2 < orderOf (x : (𝓞 K)ˣ)
   · rw [← orderOf_units, ← orderOf_submonoid] at hc
-    linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc (IsPrimitiveRoot.orderOf (x.1 : K)),
+    linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc
+          (IsPrimitiveRoot.orderOf (x.val : K)),
         NumberField.InfinitePlace.nrRealPlaces_pos_of_odd_finrank h]
   · interval_cases hi : orderOf (x : (𝓞 K)ˣ)
-    · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion x.1).1 x.2)]
+    · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion x.val).1 x.property)]
     · exact Or.intro_left _ (orderOf_eq_one_iff.1 hi)
     · rw [← orderOf_units, CharP.orderOf_eq_two_iff 0 (by decide)] at hi
       simp [← Units.val_inj, ← Units.val_inj, Units.val_neg, Units.val_one, hi]
