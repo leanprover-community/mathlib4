@@ -37,7 +37,7 @@ section kernel
 abbrev ker : TopModuleCat R := .of R φ.hom.ker
 
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
-def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
+def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtypeVal⟩
 
 instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) Subtype.val_injective
 
@@ -89,7 +89,6 @@ def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ �
 
 end cokernel
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CategoryWithHomology (TopModuleCat R) := by
   constructor
   intro S

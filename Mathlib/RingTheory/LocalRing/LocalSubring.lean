@@ -49,12 +49,12 @@ lemma toSubring_injective : Function.Injective (toSubring (R := R)) := by
 /-- Copy of a local subring with a new `carrier` equal to the old one.
 Useful to fix definitional equalities. -/
 protected def copy (S : LocalSubring R) (s : Set R) (hs : s = ↑S.toSubring) : LocalSubring R :=
-  LocalSubring.mk (S.toSubring.copy s hs) (isLocalRing := hs ▸ S.2)
+  LocalSubring.mk (S.toSubring.copy s hs) (isLocalRing := hs ▸ S.isLocalRing)
 
 /-- The image of a `LocalSubring` as a `LocalSubring`. -/
 @[simps! toSubring]
 def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S :=
-  mk (s.1.map f)
+  mk (s.toSubring.map f)
 
 /-- The range of a ring homomorphism from a local ring as a `LocalSubring`. -/
 @[simps! toSubring]
@@ -67,7 +67,7 @@ The domination order on local subrings.
 -/
 @[stacks 00I9]
 instance : PartialOrder (LocalSubring R) where
-  le A B := ∃ h : A.1 ≤ B.1, IsLocalHom (Subring.inclusion h)
+  le A B := ∃ h : A.toSubring ≤ B.toSubring, IsLocalHom (Subring.inclusion h)
   le_refl a := ⟨le_rfl, ⟨fun _ ↦ id⟩⟩
   le_trans A B C h₁ h₂ := ⟨h₁.1.trans h₂.1, @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _ h₂.2 h₁.2⟩
   le_antisymm A B h₁ h₂ := toSubring_injective (le_antisymm h₁.1 h₂.1)

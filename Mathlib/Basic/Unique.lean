@@ -51,7 +51,6 @@ set_option genInjectivity false in
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
 for good definitional properties of the default term. -/
-@[ext]
 structure Unique (α : Sort u) extends Inhabited α where
   /-- In a `Unique` type, every term is equal to the default element (from `Inhabited`). -/
   uniq : ∀ a : α, a = default
@@ -266,6 +265,12 @@ instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
 instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   default := ⟨y, rfl⟩
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
+
+@[simp]
+theorem Subtype.coe_default_eq (y : α) : ↑(default : { x : α // x = y }) = y := rfl
+
+@[simp]
+theorem Subtype.coe_default_eq' (y : α) : ↑(default : { x : α // y = x }) = y := rfl
 
 end Subtype
 

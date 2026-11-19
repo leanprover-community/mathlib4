@@ -343,7 +343,7 @@ end Topology.IsQuotientMap
     ⟨h.isCoveringMap, h.surjective, this, h.isCancelSMul, h.apply_eq_iff_mem_orbit⟩
   mpr h := (isQuotientCoveringMap_iff ..).mpr ⟨h.1.isQuotientMap h.2.1, h.2.2.1, h.2.2.2.2, fun e ↦
     have ⟨_, U, heU, hU, hfU, H, hH⟩ := h.1 (f e)
-    ⟨Subtype.val '' Prod.snd ∘ H ⁻¹' {(H ⟨e, heU⟩).2}, (hfU.isOpenMap_subtype_val _ <|
+    ⟨Subtype.val '' Prod.snd ∘ H ⁻¹' {(H ⟨e, heU⟩).2}, (hfU.isOpenMap_subtypeVal _ <|
         (isOpen_discrete _).preimage <| by fun_prop).mem_nhds ⟨⟨e, heU⟩, rfl, rfl⟩, fun g ↦ by
       rintro ⟨_, ⟨_, ⟨x, hx, rfl⟩, rfl⟩, y, hy, eq⟩
       have := h.2.2.2.1
