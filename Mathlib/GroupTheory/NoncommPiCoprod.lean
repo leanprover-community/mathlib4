@@ -144,7 +144,7 @@ and it is given by `AddMonoidHom.noncommPiCoprod`. -/]
 def noncommPiCoprodEquiv [DecidableEq ι] :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
       ((∀ i, N i) →* M) where
-  toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
+  toFun ϕ := noncommPiCoprod ϕ.val ϕ.property
   invFun f :=
     ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun _ _ hij x y =>
       Commute.map (Pi.mulSingle_commute hij x y) f⟩

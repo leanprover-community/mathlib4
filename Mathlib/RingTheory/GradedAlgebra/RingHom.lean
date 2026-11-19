@@ -261,7 +261,7 @@ theorem cancel_left {g : ℬ →+*ᵍ 𝒞} {f₁ f₂ : 𝒜 →+*ᵍ ℬ} (hg 
 /-- A graded ring homomorphism descends to an additive homomorphism on each indexed component. -/
 @[simps!] def gradedAddHom [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
     (f : 𝒜 →+*ᵍ ℬ) (i : ι) : 𝒜 i →+ ℬ i where
-  toFun x := ⟨f x, map_mem f x.2⟩
+  toFun x := ⟨f x, map_mem f x.property⟩
   map_zero' := by ext; simp
   map_add' x y := by ext; simp
 

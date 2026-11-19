@@ -181,7 +181,7 @@ theorem mem_span_mul_finite_of_mem_mul {I J : FractionalIdeal S P} {x : P} (hx :
   Submodule.mem_span_mul_finite_of_mem_mul (by simpa using mem_coeToSubmodule.mpr hx)
 
 lemma _root_.Units.submodule_isFractional [IsLocalization S P] (I : (Submodule R P)ˣ) :
-    IsFractional S I.1 :=
+    IsFractional S I.val :=
   FractionalIdeal.isFractional_of_fg (fg_unit _)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -296,7 +296,7 @@ theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
   obtain ⟨z, ⟨x, hx⟩⟩ := exists_integer_multiple R⁰ y
   refine ⟨x, ?_, ?_⟩
   · rw [Ne, ← @IsFractionRing.to_map_eq_zero_iff R _ K, hx, Algebra.smul_def]
-    exact mul_ne_zero (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors z.2) y_ne_zero
+    exact mul_ne_zero (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors z.property) y_ne_zero
   · rw [hx]
     exact smul_mem _ _ y_mem
 
@@ -538,7 +538,7 @@ variable (R₁)
 def spanFinset {ι : Type*} (s : Finset ι) (f : ι → K) : FractionalIdeal R₁⁰ K :=
   ⟨Submodule.span R₁ (f '' s), by
     obtain ⟨a', ha'⟩ := IsLocalization.exist_integer_multiples R₁⁰ s f
-    refine ⟨a', a'.2, fun x hx => Submodule.span_induction ?_ ?_ ?_ ?_ hx⟩
+    refine ⟨a', a'.property, fun x hx => Submodule.span_induction ?_ ?_ ?_ ?_ hx⟩
     · rintro _ ⟨i, hi, rfl⟩
       exact ha' i hi
     · rw [smul_zero]
@@ -572,7 +572,7 @@ variable [IsLocalization S P]
 
 theorem isFractional_span_singleton (x : P) : IsFractional S (span R {x} : Submodule R P) :=
   let ⟨a, ha⟩ := exists_integer_multiple S x
-  isFractional_span_iff.mpr ⟨a, a.2, fun _ hx' => (Set.mem_singleton_iff.mp hx').symm ▸ ha⟩
+  isFractional_span_iff.mpr ⟨a, a.property, fun _ hx' => (Set.mem_singleton_iff.mp hx').symm ▸ ha⟩
 
 variable (S)
 
@@ -829,7 +829,7 @@ theorem spanSingleton_mul_le_iff {x : P} {I J : FractionalIdeal S P} :
     exact h x ⟨1, one_smul _ _⟩ zI hzI
   · rintro h _ ⟨z, rfl⟩ zI hzI
     rw [Algebra.smul_mul_assoc]
-    exact Submodule.smul_mem J.1 _ (h zI hzI)
+    exact Submodule.smul_mem J.val _ (h zI hzI)
 
 theorem eq_spanSingleton_mul {x : P} {I J : FractionalIdeal S P} :
     I = spanSingleton _ x * J ↔ (∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI) ∧ ∀ z ∈ J, x * z ∈ I := by
@@ -1067,8 +1067,8 @@ lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
 
 lemma ringEquivOfRingEquiv_symm_eq :
     (FractionalIdeal.ringEquivOfRingEquiv K L f).symm =
-      FractionalIdeal.ringEquivOfRingEquiv L K f.symm := by
-  exact (RingEquiv.coe_nonUnitalRingHom_inj_iff (ringEquivOfRingEquiv K L f).symm
+      FractionalIdeal.ringEquivOfRingEquiv L K f.symm :=
+  (RingEquiv.coe_nonUnitalRingHom_inj_iff (ringEquivOfRingEquiv K L f).symm
           (ringEquivOfRingEquiv L K f.symm)).mpr rfl
 
 end RingEquiv
