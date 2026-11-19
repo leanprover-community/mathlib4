@@ -209,8 +209,7 @@ theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1
     calc
       _ ≤ max B 1 ^ (p.natDegree - i) * p.natDegree.choose i := by gcongr; apply le_max_left
       _ ≤ max B 1 ^ d * p.natDegree.choose i := by
-        gcongr
-        grind
+        gcongr <;> grind
       _ ≤ max B 1 ^ d * d.choose (d / 2) := by
         gcongr; exact (i.choose_mono h3).trans (i.choose_le_middle d)
   · rw [eq_one_of_roots_le hB h1 h2 h4, Polynomial.map_one, coeff_one]
