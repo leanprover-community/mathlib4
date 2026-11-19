@@ -30,14 +30,8 @@ lemma PowerSeries.maximalIdeal_eq_sup [IsLocalRing R] : maximalIdeal R⟦X⟧ =
     ext
     simp [isUnit_iff_constantCoeff]
   have eqker : RingHom.ker (constantCoeff (R := R)) = Ideal.span {X} := by
-    ext g
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · have := PowerSeries.sub_const_eq_shift_mul_X g
-      simp only [RingHom.mem_ker.mp h, map_zero, sub_zero] at this
-      rw [this, Ideal.mem_span_singleton]
-      simp only [dvd_mul_left]
-    · rcases Ideal.mem_span_singleton'.mp h with ⟨w, hw⟩
-      simp [← hw]
+    ext
+    simp [Ideal.mem_span_singleton, PowerSeries.X_dvd_iff]
   rw [maxeq, ← eqker, ← Ideal.comap_map_of_surjective' (S := R) _ PowerSeries.constantCoeff_surj,
     Ideal.map_map, constantCoeff_comp_C, Ideal.map_id]
 
