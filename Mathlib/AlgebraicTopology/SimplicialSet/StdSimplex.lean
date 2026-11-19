@@ -292,7 +292,7 @@ lemma face_inter_face {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
 lemma face_empty (n : ℕ) :
     face.{u} (∅ : Finset (Fin (n + 1))) = ⊥ := by
   ext
-  simpa using Finset.univ_neq_empty _
+  simp
 
 @[simp]
 lemma face_univ (n : ℕ) :
@@ -342,6 +342,11 @@ lemma stdSimplex.yonedaEquiv_σ_comp
     {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
     yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
   (yonedaEquiv_naturality ..).symm
+
+lemma σ_zero_eq_yonedaEquiv_const {X : SSet.{u}} (x : X _⦋0⦌) :
+    X.σ 0 x = yonedaEquiv (const x) :=
+  yonedaEquiv.symm.injective
+    (by simp [← stdSimplex.σ_comp_yonedaEquiv_symm, yonedaEquiv_symm_zero])
 
 namespace Subcomplex
 

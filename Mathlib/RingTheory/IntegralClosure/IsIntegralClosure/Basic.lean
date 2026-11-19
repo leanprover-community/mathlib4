@@ -76,6 +76,15 @@ theorem IsIntegral.mem_of_inv_mem (int : IsIntegral R x) (inv_mem : x⁻¹ ∈ A
 
 end inv
 
+section div
+
+variable {R S : Type*} [Field R] [Field S] [Algebra R S] {x y : S}
+
+theorem IsIntegral.div (hx : IsIntegral R x) (hy : IsIntegral R y) : IsIntegral R (x / y) := by
+  simpa [div_eq_mul_inv] using hx.mul hy.inv
+
+end div
+
 section
 
 variable {R A B S : Type*}
