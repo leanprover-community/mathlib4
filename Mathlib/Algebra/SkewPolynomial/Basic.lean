@@ -662,8 +662,8 @@ lemma monomial_add_erase (p : SkewPolynomial R) (n : ℕ) :
 
 @[simp]
 lemma coeff_erase (p : SkewPolynomial R) (n i : ℕ) :
-    (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
-  exact ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (p.erase n).coeff i = if i = n then 0 else p.coeff i :=
+  ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[simp]
 lemma erase_zero (n : ℕ) : (0 : SkewPolynomial R).erase n = 0 := by

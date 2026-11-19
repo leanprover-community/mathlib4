@@ -215,7 +215,7 @@ alias CantorBendixson.perfectKernel_eq_iteratedDerivedSet_of_mem_fixedPoints :=
 theorem _root_.Perfect.subset_perfectKernel {P : Set X} (hP : Perfect P) (hPs : P ⊆ s) :
     P ⊆ perfectKernel s := by
   refine Set.subset_iInter fun i => ?_
-  simpa [iteratedDerivedSet_constant_iff_preperfect.mp hP.acc i] using
+  simpa [iteratedDerivedSet_constant_iff_preperfect.mp hP.preperfect i] using
     iteratedDerivedSet_mono hPs i
 
 /-- The perfect kernel of a closed set is perfect. -/
