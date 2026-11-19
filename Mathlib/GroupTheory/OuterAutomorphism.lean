@@ -74,8 +74,8 @@ theorem inner_eq_top_iff : inner G = ⊤ ↔ Subsingleton (Outer G) :=
   QuotientGroup.subsingleton_iff.symm
 
 @[to_additive (attr := simp)]
-theorem inner_eq_top [Subsingleton (Outer G)] : inner G = ⊤ := by
-  simpa [inner_eq_top_iff]
+theorem inner_eq_top [Subsingleton (Outer G)] : inner G = ⊤ :=
+  inner_eq_top_iff.mpr ‹_›
 
 /-- If `G` is commutative, the outer automorphism group is the full automorphism group. -/
 @[to_additive /-- If `G` is commutative, the outer automorphism group is the full automorphism
