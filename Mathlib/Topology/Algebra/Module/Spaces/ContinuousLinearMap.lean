@@ -455,6 +455,7 @@ variable {E F F' : Type*}
   [IsScalarTower 𝕝 𝕜' F']
 
 variable (𝕝 𝕝') in
+/-- A `𝕜,𝕜'`-bilinear map induces a `𝕝,𝕝`-bilinear map. -/
 def restrictScalars₁₂ (f : E →L[𝕜] F →L[𝕜'] F') : E →L[𝕝] F →L[𝕝'] F' where
   toFun x := (f x).restrictScalars 𝕝'
   map_add' := by simp
