@@ -572,41 +572,54 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
     [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : α → ℝ≥0)
     (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r)) :
     VitaliFamily μ where
-  setsAt x := { a | IsClosed a ∧ (interior a).Nonempty ∧
-    ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a }
-  measurableSet _ _ ha := ha.1.measurableSet
-  nonempty_interior _ _ ha := ha.2.1
-  nontrivial x ε εpos := by
+  filterAt x := (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
+    ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a}
+  filterAt_le_smallSets_nhds _ := inf_le_left
+  eventually_measurableSet _ := mem_inf_of_right fun _ ha ↦ ha.1.measurableSet
+  filterAt_neBot x := by
+    refine (nhds_basis_closedBall.smallSets.inf_principal _).neBot_iff.2 fun {ε} εpos ↦ ?_
     obtain ⟨r, μr, rpos, rε⟩ :
         ∃ r, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
       ((h x).and_eventually (Ioc_mem_nhdsGT εpos)).exists
-    refine ⟨closedBall x r, ⟨isClosed_closedBall, ?_, ⟨r, Subset.rfl, μr⟩⟩, by gcongr⟩
+    refine ⟨closedBall x r, closedBall_subset_closedBall rε, isClosed_closedBall, ?_, r, Subset.rfl,
+      μr⟩
     exact (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
-  covering := by
-    intro s f fsubset ffine
+  exists_covering s P hP := by
     let t : Set (ℝ × α × Set α) :=
       { p | p.2.2 ⊆ closedBall p.2.1 p.1 ∧ μ (closedBall p.2.1 (3 * p.1)) ≤ C p.2.1 * μ p.2.2 ∧
-            (interior p.2.2).Nonempty ∧ IsClosed p.2.2 ∧ p.2.2 ∈ f p.2.1 ∧ p.2.1 ∈ s }
+            (interior p.2.2).Nonempty ∧ IsClosed p.2.2 ∧ P p.2.1 p.2.2 ∧ p.2.1 ∈ s }
     have A : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ p, p ∈ t ∧ p.1 ≤ ε ∧ p.2.1 = x := by
       intro x xs ε εpos
-      rcases ffine x xs ε εpos with ⟨a, ha, h'a⟩
-      rcases fsubset x xs ha with ⟨a_closed, a_int, ⟨r, ar, μr⟩⟩
-      refine ⟨⟨min r ε, x, a⟩, ⟨?_, ?_, a_int, a_closed, ha, xs⟩, min_le_right _ _, rfl⟩
+      have hev : ∀ᶠ a in (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
+          ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a},
+          a ⊆ closedBall x ε ∧ a ∈ {a | IsClosed a ∧ (interior a).Nonempty ∧
+            ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a} :=
+        ((eventually_smallSets_subset.2 (closedBall_mem_nhds x εpos)).filter_mono
+          inf_le_left).and (mem_inf_of_right (mem_principal_self _))
+      obtain ⟨a, haP, ha_ε, a_closed, a_int, r, ar, μr⟩ := ((hP x xs).and_eventually hev).exists
+      refine ⟨⟨min r ε, x, a⟩, ⟨?_, ?_, a_int, a_closed, haP, xs⟩, min_le_right _ _, rfl⟩
       · rcases min_cases r ε with (h' | h') <;> rwa [h'.1]
       · apply le_trans ?_ μr
         gcongr
         apply min_le_left
     rcases exists_disjoint_covering_ae μ s t C (fun p => p.1) (fun p => p.2.1) (fun p => p.2.2)
         (fun p hp => hp.1) (fun p hp => hp.2.1) (fun p hp => hp.2.2.1) (fun p hp => hp.2.2.2.1) A
-      with ⟨t', t't, _, t'_disj, μt'⟩
-    refine ⟨(fun p : ℝ × α × Set α => p.2) '' t', ?_, ?_, ?_, ?_⟩
+      with ⟨t', t't, t'_count, t'_disj, μt'⟩
+    refine ⟨(fun p : ℝ × α × Set α => p.2) '' t', t'_count.image _, ?_, ?_, ?_, ?_⟩
     · rintro - ⟨q, hq, rfl⟩
       exact (t't hq).2.2.2.2.2
     · rintro p ⟨q, hq, rfl⟩ p' ⟨q', hq', rfl⟩ hqq'
       exact t'_disj hq hq' (ne_of_apply_ne _ hqq')
     · rintro - ⟨q, hq, rfl⟩
       exact (t't hq).2.2.2.2.1
-    · convert μt' using 3
-      rw [biUnion_image]
+    · rw [biUnion_image]
+      exact ae_subset.2 μt'
+
+theorem filterAt_vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : α → ℝ≥0)
+    (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r)) (x : α) :
+    (Vitali.vitaliFamily μ C h).filterAt x = (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧
+      (interior a).Nonempty ∧ ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a} :=
+  rfl
 
 end Vitali
