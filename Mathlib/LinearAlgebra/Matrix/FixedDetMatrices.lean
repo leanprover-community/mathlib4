@@ -85,8 +85,7 @@ variable {m : ℤ}
 
 /-- Set of representatives for the orbits under `S` and `T` -/
 def reps (m : ℤ) : Set (Δ m) :=
-  {A : Δ m |
-    (A.val 1 0) = 0 ∧ 0 < A.val 0 0 ∧ 0 ≤ A.val 0 1 ∧ |(A.val 0 1)| < |(A.val 1 1)|}
+  {A : Δ m | (A.val 1 0) = 0 ∧ 0 < A.val 0 0 ∧ 0 ≤ A.val 0 1 ∧ |(A.val 0 1)| < |(A.val 1 1)|}
 
 /-- Reduction step for matrices in `Δ m` which moves the matrices towards `reps` -/
 def reduceStep (A : Δ m) : Δ m := S • (T ^ (-(A.val 0 0 / A.val 1 0))) • A
