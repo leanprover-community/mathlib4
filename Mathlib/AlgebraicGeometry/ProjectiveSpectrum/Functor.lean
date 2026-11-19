@@ -180,9 +180,6 @@ theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
 /--
 The following square commutes:
 ```
-Proj ℬ      ⟶        Proj 𝒜₁
-  ^                    ^
-  |                    |
 Proj ℬ      ⟶        Proj 𝒜
   ^                    ^
   |                    |
