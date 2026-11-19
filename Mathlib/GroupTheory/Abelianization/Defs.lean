@@ -23,6 +23,13 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 * `Group.Abelianization.quotientMulEquiv`: The abelianization of a quotient `G ⧸ N` is isomorphic
   to the quotient of the abelianization of `G` by the image of `N`.
 * `MulEquiv.abelianizationCongr`: Isomorphic groups have isomorphic abelianizations.
+* `Group.IsAbelianization`: a predicate on homomorphisms `f : G →* A`, stating that `f` is
+  surjective with kernel the commutator subgroup of `G`, i.e., that `f` exhibits `A` as an
+  abelianization of `G`.
+* `Group.IsAbelianization.mulEquiv`: an abelianization `A` of `G` is isomorphic to
+  `Abelianization G`.
+* `Group.IsAbelianization.lift`: the universal property of an abelianization: homomorphisms from
+  `G` to an abelian group factor uniquely through it.
 -/
 
 @[expose] public section
@@ -249,8 +256,7 @@ noncomputable def mulEquiv (hf : IsAbelianization f) : Abelianization G ≃* A :
   QuotientGroup.liftEquiv (commutator G) hf.surjective hf.ker_eq.symm
 
 @[to_additive (attr := simp)]
-theorem mulEquiv_of (hf : IsAbelianization f) (x : G) :
-    hf.mulEquiv (Abelianization.of x) = f x :=
+theorem mulEquiv_of (hf : IsAbelianization f) (x : G) : hf.mulEquiv (Abelianization.of x) = f x :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -277,9 +283,8 @@ of `G` -/
 /-- If `B` is isomorphic to `A` and `A` is an additive abelianization of `G`, then `B` is an
 additive abelianization of `G` -/]
 theorem mulEquiv_comp {B : Type*} [Group B] (hf : IsAbelianization f) (e : A ≃* B) :
-    IsAbelianization ((e : A →* B).comp f) where
-  surjective := (e.surjective.comp hf.surjective :)
-  ker_eq := (f.ker_comp_of_injective _ e.injective).trans hf.ker_eq
+    IsAbelianization ((e : A →* B).comp f) :=
+  ⟨(e.surjective.comp hf.surjective :), (f.ker_comp_of_injective _ e.injective).trans hf.ker_eq⟩
 
 /-- To show that a surjection onto an abelian group is an abelianization, it suffices to show
 that its kernel is contained in the commutator subgroup. -/
@@ -290,6 +295,11 @@ theorem of_ker_le [IsMulCommutative A] (hs : Function.Surjective f)
     (h : f.ker ≤ commutator G) : IsAbelianization f :=
   ⟨hs, le_antisymm h (Abelianization.commutator_le_ker f)⟩
 
+/-- An abelian group is its own abelianization. -/
+@[to_additive /-- An additive abelian group is its own additive abelianization. -/]
+theorem id [IsMulCommutative G] : IsAbelianization (MonoidHom.id G) :=
+  of_ker_le Function.surjective_id (by rw [MonoidHom.ker_id]; exact bot_le)
+
 /-- If `H` is isomorphic to `G` and `A` is an abelianization of `G`, then `A` is an abelianization
 of `H`. -/
 @[to_additive
@@ -299,18 +309,24 @@ theorem comp_mulEquiv {H : Type*} [Group H] (hf : IsAbelianization f) (e : H ≃
     IsAbelianization (f.comp (e : H →* G)) where
   surjective := hf.surjective.comp e.surjective
   ker_eq := by
-    rw [← MonoidHom.comap_ker, hf.ker_eq]
-    sorry
+    rw [← MonoidHom.comap_ker, hf.ker_eq, Subgroup.comap_equiv_eq_map_symm,
+      map_commutator_of_surjective e.symm.surjective]
 
 /-- An abelianization of `G` induces an abelianization of `G ⧸ N`, given by the quotient of `A`
 by the image `M` of `N`. -/
 @[to_additive
 /-- An additive abelianization of `G` induces an additive abelianization of `G ⧸ N`, given by the
 quotient of `A` by the image `M` of `N`. -/]
-theorem quotient (hf : IsAbelianization f) (N : Subgroup G) [N.Normal]
-    (M : Subgroup A) [M.Normal] (h : N ≤ M.comap f) (h' : M ≤ N.map f) :
-    IsAbelianization (QuotientGroup.map N M f h) :=
-  sorry
+theorem quotient (hf : IsAbelianization f) {N : Subgroup G} [N.Normal]
+  {M : Subgroup A} [M.Normal] (h : N.map f = M) :
+    IsAbelianization (QuotientGroup.map N M f (Subgroup.map_le_iff_le_comap.mp h.le)) where
+  surjective := QuotientGroup.map_surjective_of_surjective _ _ _
+    (QuotientGroup.mk_surjective.comp hf.surjective) _
+  ker_eq := by
+    subst h
+    rw [QuotientGroup.ker_map, Subgroup.comap_map_eq, hf.ker_eq, Subgroup.map_sup,
+      QuotientGroup.map_mk'_self, map_commutator_of_surjective (QuotientGroup.mk'_surjective N),
+      bot_sup_eq]
 
 @[to_additive]
 theorem hom_ext (hf : IsAbelianization f) {M : Type*} [Monoid M] {φ ψ : A →* M}
@@ -350,6 +366,11 @@ theorem lift_symm_apply (hf : IsAbelianization f) (ψ : A →* B) :
 
 end lift
 
+@[to_additive (attr := simp)]
+theorem lift_self [IsMulCommutative A] (hf : IsAbelianization f) :
+    hf.lift f = MonoidHom.id A :=
+  hf.hom_ext <| by ext x; simp
+
 section map
 
 variable {H : Type*} [Group H] {B : Type*} [Group B] {g : H →* B}
@@ -379,6 +400,13 @@ theorem map_map {I C : Type*} [Group I] [Group C] {k : I →* C}
     hg.map hk ψ (hf.map hg φ x) = hf.map hk (ψ.comp φ) x := by
   obtain ⟨x, rfl⟩ := hf.surjective x
   simp
+
+@[to_additive (attr := simp)]
+theorem map_comp {I C : Type*} [Group I] [Group C] {k : I →* C}
+    (hf : IsAbelianization f) (hg : IsAbelianization g) (hk : IsAbelianization k)
+    (φ : G →* H) (ψ : H →* I) :
+    (hg.map hk ψ).comp (hf.map hg φ) = hf.map hk (ψ.comp φ) :=
+  MonoidHom.ext (hf.map_map hg hk φ ψ)
 
 end map
 
