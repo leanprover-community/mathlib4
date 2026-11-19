@@ -528,7 +528,7 @@ def recOn
     (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ConnectedComponent.sound p.reachable ▸ f u = f v) :
     motive c :=
-  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.2
+  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.property
 
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=

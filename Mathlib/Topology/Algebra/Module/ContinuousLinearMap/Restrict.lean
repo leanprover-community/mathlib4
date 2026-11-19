@@ -167,7 +167,7 @@ theorem coe_restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M
   rfl
 
 theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.val x.property⟩ :=
   rfl
 
 open Set in
@@ -183,7 +183,7 @@ theorem subtypeL_comp_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R�
 
 theorem restrict_eq_codRestrict_domRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
     {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
-    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
+    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.val x.property :=
   rfl
 
 theorem restrict_eq_domRestrict_codRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}

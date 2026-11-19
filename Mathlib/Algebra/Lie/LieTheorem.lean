@@ -121,7 +121,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     rw [Module.End.isNilpotent_iff_of_finite]
     suffices ⨆ i, U' i ≤ Module.End.maxGenEigenspace (T χ w) 0 by
       intro x
-      specialize this x.2
+      specialize this x.property
       simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] at this
       gconvert this with n hn
       ext
