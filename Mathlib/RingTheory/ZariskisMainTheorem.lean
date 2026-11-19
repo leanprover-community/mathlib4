@@ -575,7 +575,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
     have : IsScalarTower R (MvPolynomial (Fin n) R) S := .of_algebraMap_eq fun r ↦
       (f.commutes r).symm.trans congr(f ($(MvPolynomial.finSuccEquiv_comp_C_eq_C n) r)).symm
     let f'' : (MvPolynomial (Fin n) R)[X] →ₐ[MvPolynomial (Fin n) R] S :=
-      ⟨f'.toRingHom, fun _ ↦ rfl⟩
+      { f'.toRingHom with commutes' _ := rfl }
     have : Algebra.WeaklyQuasiFiniteAt (MvPolynomial (Fin n) R) p :=
       .of_restrictScalars R _ _
     have := ZariskisMainProperty.of_algHom_polynomial p f''
