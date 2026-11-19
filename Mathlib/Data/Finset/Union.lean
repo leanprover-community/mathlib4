@@ -261,7 +261,7 @@ lemma biUnion_filter_eq_of_maps_to [DecidableEq α] {s : Finset α} {t : Finset 
 lemma erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
     (s.biUnion f).erase b = s.biUnion fun x ↦ (f x).erase b := by grind
 
-@[simp]
+@[simp, grind =]
 lemma biUnion_nonempty : (s.biUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty := by
   simp only [Finset.Nonempty, mem_biUnion]
   rw [exists_comm]
@@ -270,6 +270,7 @@ lemma biUnion_nonempty : (s.biUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty 
 lemma Nonempty.biUnion (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) :
     (s.biUnion t).Nonempty := biUnion_nonempty.2 <| hs.imp fun x hx ↦ ⟨hx, ht x hx⟩
 
+@[grind =]
 lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset β) :
     Disjoint (s.biUnion f) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
   classical
@@ -278,6 +279,7 @@ lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset �
   · intro i s his ih
     simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 
+@[grind =]
 lemma disjoint_biUnion_right (s : Finset β) (t : Finset α) (f : α → Finset β) :
     Disjoint s (t.biUnion f) ↔ ∀ i ∈ t, Disjoint s (f i) := by
   simpa only [_root_.disjoint_comm] using disjoint_biUnion_left t f s

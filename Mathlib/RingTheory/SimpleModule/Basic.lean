@@ -49,7 +49,6 @@ import Mathlib.SetTheory.Cardinal.NatCard
 ## TODO
 * Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
-
 -/
 
 @[expose] public section
@@ -517,10 +516,11 @@ theorem linearEquiv_of_ne_zero [IsSemisimpleModule R M] [IsSimpleModule R N]
   ⟨m, ⟨.symm <| .ofBijective _ ((bijective_or_eq_zero _).resolve_right ne)⟩⟩
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
-noncomputable instance _root_.Module.End.instDivisionRing
-    [DecidableEq (Module.End R M)] [IsSimpleModule R M] : DivisionRing (Module.End R M) where
-  inv f := if h : f = 0 then 0 else (LinearEquiv.ofBijective _ <| bijective_of_ne_zero h).symm
-  exists_pair_ne := ⟨0, 1, have := IsSimpleModule.nontrivial R M; zero_ne_one⟩
+noncomputable instance _root_.Module.End.instDivisionRing [IsSimpleModule R M] :
+    DivisionRing (Module.End R M) where
+  inv f := open scoped Classical in if h : f = 0 then 0 else (LinearEquiv.ofBijective _ <|
+    bijective_of_ne_zero h).symm
+  toNontrivial := have := IsSimpleModule.nontrivial R M; inferInstance
   mul_inv_cancel a a0 := by
     simp_rw [dite_eq_right a0]; ext
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _

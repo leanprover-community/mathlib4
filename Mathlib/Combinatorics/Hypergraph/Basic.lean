@@ -53,7 +53,6 @@ the vertex or edge set. This is an issue, but is likely amenable to automation."
 
 Because `edgeSet` is a `Set (Set α)`, rather than a multiset, here we are assuming that
 all hypergraphs are *without repeated edge*.
-
 -/
 
 public section

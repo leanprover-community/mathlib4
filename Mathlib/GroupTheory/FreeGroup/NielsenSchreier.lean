@@ -46,7 +46,6 @@ https://ncatlab.org/nlab/show/Nielsen-Schreier+theorem
 ## Tags
 
 free group, free groupoid, Nielsen-Schreier
-
 -/
 
 @[expose] public section

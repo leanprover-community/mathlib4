@@ -77,7 +77,8 @@ theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
   let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
   ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge rfl⟩
 
-theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ => by
+@[gcongr]
+theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) (x : E) : gauge t x ≤ gauge s x := by
   unfold gauge
   gcongr; exacts [bddBelow_gauge_set, hs.gauge_set_nonempty]
 
@@ -285,7 +286,7 @@ theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set
     rw [← mem_smul_set_iff_inv_smul_mem₀ this.ne', smul_assoc]
     exact smul_mem_smul_set hx
 
-theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ ℝ]
+theorem gauge_smul_left_of_nonneg [MulActionWithZero α E]
     [IsScalarTower α ℝ ℝ] [IsScalarTower α ℝ E] {s : Set E} {a : α} (ha : 0 ≤ a) :
     gauge (a • s) = a⁻¹ • gauge s := by
   obtain rfl | ha' := ha.eq_or_lt
@@ -305,7 +306,7 @@ theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ
     refine ⟨smul_pos (inv_pos.2 ha') hr, r⁻¹ • x, hx, ?_⟩
     rw [smul_inv₀, smul_assoc, inv_inv]
 
-theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower α ℝ ℝ]
+theorem gauge_smul_left [Module α E] [IsScalarTower α ℝ ℝ]
     [IsScalarTower α ℝ E] {s : Set E} (symmetric : ∀ x ∈ s, -x ∈ s) (a : α) :
     gauge (a • s) = |a|⁻¹ • gauge s := by
   rw [← gauge_smul_left_of_nonneg (abs_nonneg a)]
@@ -591,13 +592,14 @@ theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x
   · rw [div_zero, closedBall_zero', singleton_zero, gauge_closure_zero]; rfl
   · apply le_antisymm
     · rw [← gauge_ball hr]
-      exact gauge_mono (absorbent_ball_zero hr') ball_subset_closedBall x
+      grw [ball_subset_closedBall]
+      exact absorbent_ball_zero hr'
     · suffices ∀ᶠ R in 𝓝[>] r, ‖x‖ / R ≤ gauge (closedBall 0 r) x by
         refine le_of_tendsto ?_ this
         exact tendsto_const_nhds.div inf_le_left hr'.ne'
       filter_upwards [self_mem_nhdsWithin] with R hR
-      rw [← gauge_ball (hr.trans hR.out.le)]
-      refine gauge_mono ?_ (closedBall_subset_ball hR) _
+      rw [← gauge_ball (hr.trans hR.le)]
+      grw [hR.out]
       exact (absorbent_ball_zero hr').mono ball_subset_closedBall
 
 theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤ ‖x‖ := by

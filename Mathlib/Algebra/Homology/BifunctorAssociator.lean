@@ -33,7 +33,6 @@ commutation of certain functors to certain coproducts.
 
 The main application of these results shall be the construction of
 the associator for the monoidal category structure on homological complexes.
-
 -/
 
 @[expose] public section
@@ -743,7 +742,6 @@ lemma ιOrZero_mapBifunctorAssociatorX_hom (i₁ : ι₁) (i₂ : ι₂) (i₃ :
       mapBifunctor₂₃.ιOrZero_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h,
       zero_comp, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₁ (j j' : ι₄) :
     (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫
@@ -764,7 +762,6 @@ lemma mapBifunctorAssociatorX_hom_D₁ (j j' : ι₄) :
   · rw [mapBifunctor₁₂.d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₁,
       mapBifunctor₂₃.d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₁, comp_zero, zero_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₂ (j j' : ι₄) :
     (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫
@@ -783,7 +780,6 @@ lemma mapBifunctorAssociatorX_hom_D₂ (j j' : ι₄) :
   · rw [mapBifunctor₁₂.d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₁,
       mapBifunctor₂₃.d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₁, comp_zero, zero_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₃ (j j' : ι₄) :
     (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫

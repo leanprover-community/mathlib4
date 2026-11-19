@@ -652,7 +652,6 @@ domain. Even though any "sensible" action should have a fundamental domain, this
 delicate question which was recently addressed by Misha Kapovich: https://arxiv.org/abs/2301.05325
 
 TODO: Formalize the existence of a Dirichlet domain as in Kapovich's paper.
-
 -/
 
 section HasFundamentalDomain
@@ -712,7 +711,6 @@ be pulled back. And yet here, we are describing a situation involving measures i
 
 Another viewpoint is that if a set is small enough to fit in a single fundamental domain, then its
 `ν` measure in `α` is the same as the `μ` measure of its pushforward in `α ⧸ G`.
-
 -/
 
 section QuotientMeasureEqMeasurePreimage
@@ -822,7 +820,7 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
     QuotientMeasureEqMeasurePreimage ν (0 : Measure (Quotient α_mod_G)) := by
   apply fund_dom_s.quotientMeasureEqMeasurePreimage
   ext U meas_U
-  simp only [Measure.coe_zero, Pi.zero_apply]
+  simp only [zero_apply]
   convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
   rw [measure_map_restrict_apply (meas_U := meas_U)]
 

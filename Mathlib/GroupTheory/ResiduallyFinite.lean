@@ -16,7 +16,6 @@ In this file we define residually finite groups and prove some basic properties.
 
 - `Group.ResiduallyFinite G`: A group `G` is residually finite if the intersection of all
   finite index normal subgroups is trivial.
-
 -/
 
 public section

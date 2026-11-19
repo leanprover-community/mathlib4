@@ -40,7 +40,6 @@ open Comonad
 
 variable [HasBinaryProducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `X ⨯ -` has a comonad structure. This is sometimes called the writer comonad. -/
 @[simps!]
 def prodComonad : Comonad C where

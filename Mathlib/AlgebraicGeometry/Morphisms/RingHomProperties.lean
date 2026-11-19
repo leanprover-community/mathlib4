@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 public import Mathlib.RingTheory.RingHom.Locally
 
 /-!
-
 # Properties of morphisms from properties of ring homs.
 
 We provide the basic framework for talking about properties of morphisms that come from properties
@@ -54,7 +53,6 @@ For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 
 We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`,
 `IsZariskiLocalAtTarget P`, `IsZariskiLocalAtSource P`.
-
 -/
 
 @[expose] public section

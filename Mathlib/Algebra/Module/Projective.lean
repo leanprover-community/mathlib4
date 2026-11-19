@@ -5,12 +5,12 @@ Authors: Kevin Buzzard, Antoine Labelle
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 import Mathlib.Basic.UnivLE
 
 /-!
-
 # Projective modules
 
 This file contains a definition of a projective module, the proof that
@@ -51,7 +51,6 @@ https://en.wikipedia.org/wiki/Projective_module
 ## Tags
 
 projective module
-
 -/
 
 public section
@@ -81,7 +80,7 @@ variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M 
 
 theorem projective_def :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (linearCombination R id) s :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
 
 theorem projective_def' :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.linearCombination R id ∘ₗ s = .id := by
@@ -212,8 +211,6 @@ end Semiring
 section Ring
 
 variable {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P] [Module R P]
-variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Module R₀ M] [Module R M]
-variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
 
 /-- A variant of `Projective.iff_split` allowing for a more flexible selection of the universe
   for the free module `M`. -/
@@ -235,22 +232,6 @@ theorem Projective.iff_split : Module.Projective R P ↔
     ∃ (M : Type max u v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
   Projective.iff_split'.{max u v}
-
-open TensorProduct in
-instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
-    Module.Projective R (M ⊗[R₀] N) := by
-  obtain ⟨sM, hsM⟩ := hM
-  obtain ⟨sN, hsN⟩ := hN
-  have : Module.Projective R (M ⊗[R₀] (N →₀ R₀)) := by
-    fapply Projective.of_split (R := R) (M := ((M →₀ R) ⊗[R₀] (N →₀ R₀)))
-    · exact (AlgebraTensorModule.map sM (LinearMap.id (R := R₀) (M := N →₀ R₀)))
-    · exact (AlgebraTensorModule.map
-        (Finsupp.linearCombination R id) (LinearMap.id (R := R₀) (M := N →₀ R₀)))
-    · ext; simp [hsM _]
-  fapply Projective.of_split (R := R) (M := (M ⊗[R₀] (N →₀ R₀)))
-  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) sN)
-  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (linearCombination R₀ id))
-  · ext; simp [hsN _]
 
 end Ring
 

@@ -45,7 +45,6 @@ TODO: add the similar result for the series of homogeneous components.
 - If the topology of `R` is T0 or T2, then so is that of `PowerSeries σ R`.
 - If `R` is a `IsUniformAddGroup`, then so is `PowerSeries σ R`.
 - If `R` is complete, then so is `PowerSeries σ R`.
-
 -/
 
 public section
