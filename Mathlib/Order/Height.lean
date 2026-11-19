@@ -56,7 +56,8 @@ theorem exists_isChain_of_le_chainHeight {r} {s : Set α} (n : ℕ) (h : n ≤ s
   · exact ⟨∅, by simp [h']⟩
   · obtain ⟨t, ht₁, ht₂, ht₃⟩ : ∃ t ⊆ s, IsChain r t ∧ n ≤ t.encard := by
       contrapose! h
-      refine iSup_lt_iff.mpr ⟨n - 1, ?_, fun m ↦ ENat.le_sub_one_of_lt <| h m.1 m.2.1 m.2.2⟩
+      refine iSup_lt_iff.mpr
+        ⟨n - 1, ?_, fun m ↦ ENat.le_sub_one_of_lt <| h m.val m.property.1 m.property.2⟩
       exact mod_cast Nat.sub_one_lt h'
     obtain ⟨u, hu₁, hu₂⟩ := exists_subset_encard_eq ht₃
     exact ⟨u, hu₁.trans ht₁, hu₂, ht₂.mono hu₁⟩
@@ -65,7 +66,7 @@ theorem exists_eq_chainHeight_of_chainHeight_ne_top (h : s.chainHeight r ≠ ⊤
     ∃ t ⊆ s, t.encard = s.chainHeight r ∧ IsChain r t := by
   have : Nonempty { t // t ⊆ s ∧ IsChain r t } := ⟨∅, by simp⟩
   obtain ⟨t, ht⟩ := exists_eq_iSup_of_lt_top (by rwa [← chainHeight_eq_iSup, lt_top_iff_ne_top])
-  exact ⟨t.1, t.2.1, ht, t.2.2⟩
+  exact ⟨t.val, t.property.1, ht, t.property.2⟩
 
 theorem exists_eq_chainHeight_of_finite (h : s.Finite) :
      ∃ t ⊆ s, t.encard = s.chainHeight r ∧ IsChain r t :=

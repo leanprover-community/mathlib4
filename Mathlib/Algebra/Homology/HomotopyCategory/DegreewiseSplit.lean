@@ -63,7 +63,7 @@ def homOfDegreewiseSplit : S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧ :=
 @[simp]
 lemma homOfDegreewiseSplit_f (n : ℤ) :
     (homOfDegreewiseSplit S σ).f n =
-      (cocycleOfDegreewiseSplit S σ).1.v n (n + 1) rfl := by
+      (cocycleOfDegreewiseSplit S σ).val.v n (n + 1) rfl := by
   simp [homOfDegreewiseSplit, Cochain.rightShift_v _ _ _ _ _ _ _ _ rfl]
 
 /-- The triangle in `CochainComplex C ℤ` attached to a degreewise split short exact sequence
@@ -84,7 +84,7 @@ variable [HasBinaryBiproducts C]
 when `p + 1 = q`. -/
 noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 = q) :
     (mappingCone (homOfDegreewiseSplit S σ)).X p ≅ S.X₂.X q where
-  hom := (mappingCone.fst (homOfDegreewiseSplit S σ)).1.v p q hpq ≫ (σ q).s -
+  hom := (mappingCone.fst (homOfDegreewiseSplit S σ)).val.v p q hpq ≫ (σ q).s -
     (mappingCone.snd (homOfDegreewiseSplit S σ)).v p p (add_zero p) ≫
       by exact (Cochain.ofHom S.f).v (p + 1) q (by lia)
   inv := S.g.f q ≫ (mappingCone.inl (homOfDegreewiseSplit S σ)).v q p (by lia) -
@@ -191,7 +191,7 @@ noncomputable def triangleRotateShortComplexSplitting (n : ℤ) :
 
 @[simp]
 lemma cocycleOfDegreewiseSplit_triangleRotateShortComplexSplitting_v (p : ℤ) :
-    (cocycleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ)).1.v p _ rfl =
+    (cocycleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ)).val.v p _ rfl =
       -φ.f _ := by
   simp [cocycleOfDegreewiseSplit, d_snd_v φ p (p + 1) rfl]
 

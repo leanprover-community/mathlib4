@@ -196,7 +196,7 @@ theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsLeft R) :
   rcases h with ⟨u, v, h₁, h₂⟩
   simp only [S.coe_one, mul_one, Submonoid.smul_def, smul_eq_mul] at h₁ h₂
   rw [← h₂, ← sub_eq_zero, ← mul_sub] at h₁
-  exact (sub_eq_zero.mp (hS u.2 _ h₁)).symm
+  exact (sub_eq_zero.mp (hS u.property _ h₁)).symm
 
 end Ring
 

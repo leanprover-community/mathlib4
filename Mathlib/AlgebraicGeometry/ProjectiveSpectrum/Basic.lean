@@ -116,7 +116,7 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
   | algebraMap r =>
     convert zero_mem (Ideal.span _)
     rw [sub_eq_zero]
-    exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
+    exact (DirectSum.decompose_of_mem_same 𝒜 r.property).symm
   | add x y hx hy _ _ =>
     rw [map_add, add_sub_add_comm]
     exact add_mem ‹_› ‹_›
@@ -334,7 +334,8 @@ def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → �
 @[simps! f] noncomputable
 def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   affineOpenCoverOfIrrelevantLESpan 𝒜
-    (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.2) (fun i ↦ i.1.2) <| by
+    (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.property)
+    (fun i ↦ i.1.property) <| by
   classical
   intro z hz
   rw [← DirectSum.sum_support_decompose 𝒜 z]

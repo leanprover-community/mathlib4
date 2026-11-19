@@ -258,10 +258,11 @@ public lemma IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
   rcases hs with ⟨S, hS, hS', rfl⟩
   choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_fg_eq_subtypeVal
   have : Finite S := hS
-  refine ⟨⨆ s : S, P s, ⋃ (s : S), AddSubmonoid.inclusion (le_iSup _ s) '' t s.1,
-    .iSup _ fun s => hP s s.2, .iUnion fun s => (ht s s.2).isSemilinearSet.image _, ?_⟩
+  refine ⟨⨆ s : S, P s, ⋃ (s : S), AddSubmonoid.inclusion (le_iSup _ s) '' t s.val,
+    .iSup _ fun s => hP s s.property,
+    .iUnion fun s => (ht s s.property).isSemilinearSet.image _, ?_⟩
   simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
-    fun s : S => ht' s s.2]
+    fun s : S => ht' s s.property]
 
 public lemma IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet s₁)
     (hs₂ : IsSemilinearSet s₂) :
@@ -441,7 +442,7 @@ private noncomputable def basis : Basis hs.basisSet ℚ (ι → ℚ) :=
   Basis.mk hs.linearIndepOn_basisSet (image_eq_range _ _ ▸ top_le_iff.2 hs.span_basisSet)
 
 set_option backward.isDefEq.respectTransparency false in
-private theorem basis_apply (i) : hs.basis i = toRatVec i.1 := by
+private theorem basis_apply (i) : hs.basis i = toRatVec i.val := by
   simp [basis]
 
 private noncomputable def fundamentalDomain : Set (ι → ℕ) :=
@@ -450,7 +451,7 @@ private noncomputable def fundamentalDomain : Set (ι → ℕ) :=
 private theorem finite_fundamentalDomain : hs.fundamentalDomain.Finite := by
   classical
   have := Fintype.ofFinite ι
-  apply (finite_Iic (hs.base + ∑ i : hs.basisSet, i.1)).subset
+  apply (finite_Iic (hs.base + ∑ i : hs.basisSet, i.val)).subset
   intro x hx
   rw [mem_Iic, ← toRatVec_mono, map_add, map_sum, ← add_sub_cancel (toRatVec hs.base) (toRatVec x),
     add_le_add_iff_left, ← hs.basis.sum_repr (toRatVec x - toRatVec hs.base)]
@@ -465,20 +466,20 @@ private noncomputable def floor (x i) :=
   ⌊hs.basis.repr (toRatVec x - toRatVec hs.base) i⌋
 
 private noncomputable def fract (x) :=
-  x + ∑ i, (-hs.floor x i).toNat • i.1 - ∑ i, (hs.floor x i).toNat • i.1
+  x + ∑ i, (-hs.floor x i).toNat • i.val - ∑ i, (hs.floor x i).toNat • i.val
 
 private theorem floor_base (i) : hs.floor hs.base i = 0 := by simp [floor]
 
 private theorem fract_base : hs.fract hs.base = hs.base := by simp [fract, hs.floor_base]
 
 private theorem floor_add_nsmul_self {x i} {n : ℕ} :
-    hs.floor (x + n • i.1) i = hs.floor x i + n := by
+    hs.floor (x + n • i.val) i = hs.floor x i + n := by
   simp only [floor]
   rw [map_add, ← sub_add_eq_add_sub]
   simp [-nsmul_eq_mul, ← hs.basis_apply]
 
 private theorem floor_add_sum {f : (ι → ℕ) → ℕ} {x i} :
-    hs.floor (x + ∑ j : hs.basisSet, f j • j.1) i = hs.floor x i + f i.1 := by
+    hs.floor (x + ∑ j : hs.basisSet, f j • j.val) i = hs.floor x i + f i.val := by
   classical
   simp only [floor]
   rw [map_add, ← sub_add_eq_add_sub, ← Finset.sum_coe_sort]
@@ -496,7 +497,7 @@ private theorem floor_le_floor_add_of_mem_closure {x y i} (hy : y ∈ closure hs
   apply Finset.sum_nonneg
   simp [-nsmul_eq_mul, ← hs.basis_apply, Finsupp.single_apply, ite_nonneg]
 
-private theorem floor_add_of_mem_closure {x y i t} (ht : t ⊆ hs.basisSet) (hi : i.1 ∉ t)
+private theorem floor_add_of_mem_closure {x y i t} (ht : t ⊆ hs.basisSet) (hi : i.val ∉ t)
     (hy : y ∈ closure t) : hs.floor (x + y) i = hs.floor x i := by
   classical
   suffices hs.basis.repr (toRatVec y) i = 0 by
@@ -509,7 +510,7 @@ private theorem floor_add_of_mem_closure {x y i t} (ht : t ⊆ hs.basisSet) (hi 
   | add _ _ _ _ ih₁ ih₂ => simp [ih₁, ih₂]
 
 private theorem floor_toNat_sum_le (x) :
-    ∑ i, (hs.floor x i).toNat • i.1 ≤ x + ∑ i, (-hs.floor x i).toNat • i.1 := by
+    ∑ i, (hs.floor x i).toNat • i.val ≤ x + ∑ i, (-hs.floor x i).toNat • i.val := by
   rw [← toRatVec_mono]
   simp only [floor, map_add, map_sum, map_nsmul]
   rw [← sub_le_iff_le_add, ← Finset.sum_sub_distrib]
@@ -525,13 +526,13 @@ private theorem floor_toNat_sum_le (x) :
   · simp [toRatVec_nonneg]
 
 private theorem add_floor_neg_toNat_sum_eq (x) :
-    x + ∑ i, (-hs.floor x i).toNat • i.1 = hs.fract x + ∑ i, (hs.floor x i).toNat • i.1 := by
+    x + ∑ i, (-hs.floor x i).toNat • i.val = hs.fract x + ∑ i, (hs.floor x i).toNat • i.val := by
   simp only [fract]
   rw [tsub_add_cancel_of_le (hs.floor_toNat_sum_le x)]
 
 private theorem toRatVec_fract_eq (x) :
     toRatVec (hs.fract x) = toRatVec hs.base +
-      ∑ i, Int.fract (hs.basis.repr (toRatVec x - toRatVec hs.base) i) • toRatVec i.1 := by
+      ∑ i, Int.fract (hs.basis.repr (toRatVec x - toRatVec hs.base) i) • toRatVec i.val := by
   simp only [fract]
   rw [← map_tsub_of_le _ _ _ (hs.floor_toNat_sum_le x)]
   simp only [map_add, map_sum, map_nsmul]
@@ -577,7 +578,7 @@ private theorem fract_eq_self_of_mem_fundamentalDomain {x} (hx : x ∈ hs.fundam
 
 private theorem mem_iff_fract_eq_and_floor_nonneg (x) :
     x ∈ s ↔
-      hs.fract x = hs.base ∧ ∀ i, 0 ≤ hs.floor x i ∧ (i.1 ∉ hs.periods → hs.floor x i = 0) := by
+      hs.fract x = hs.base ∧ ∀ i, 0 ≤ hs.floor x i ∧ (i.val ∉ hs.periods → hs.floor x i = 0) := by
   classical
   nth_rw 1 [hs.eq_base_vadd_closure_periods]
   simp only [mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
@@ -590,7 +591,7 @@ private theorem mem_iff_fract_eq_and_floor_nonneg (x) :
       exact hs.floor_le_floor_add_of_mem_closure (closure_mono hs.periods_subset_basisSet hy)
     · rw [hs.floor_add_of_mem_closure hs.periods_subset_basisSet hi hy, hs.floor_base]
   · intro ⟨hx₁, hx₂⟩
-    refine ⟨∑ i : hs.basisSet with i.1 ∈ hs.periods, (hs.floor x i).toNat • i.1,
+    refine ⟨∑ i : hs.basisSet with i.val ∈ hs.periods, (hs.floor x i).toNat • i.val,
       sum_mem fun i hi => nsmul_mem (mem_closure_of_mem (Finset.mem_filter.1 hi).2) _, ?_⟩
     rw [Finset.sum_filter, ← hx₁]
     conv_rhs =>
@@ -610,10 +611,10 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
     simp only [setOfFractNe, mem_iUnion, mem_ofPred_eq, exists_prop]
     constructor
     · intro hx
-      refine ⟨hs.fract x, ⟨hs.fract_mem_fundamentalDomain x, hx⟩, ∑ i, (hs.floor x i).toNat • i.1,
-        ?_, ∑ i, (-hs.floor x i).toNat • i.1, ?_, ?_⟩
-      · exact sum_mem fun i _ => nsmul_mem (mem_closure_of_mem i.2) _
-      · exact sum_mem fun i _ => nsmul_mem (mem_closure_of_mem i.2) _
+      refine ⟨hs.fract x, ⟨hs.fract_mem_fundamentalDomain x, hx⟩, ∑ i, (hs.floor x i).toNat • i.val,
+        ?_, ∑ i, (-hs.floor x i).toNat • i.val, ?_, ?_⟩
+      · exact sum_mem fun i _ => nsmul_mem (mem_closure_of_mem i.property) _
+      · exact sum_mem fun i _ => nsmul_mem (mem_closure_of_mem i.property) _
       · exact hs.add_floor_neg_toNat_sum_eq x
     · rintro ⟨u, ⟨hu, hu'⟩, y, hy, y', hy', heq⟩
       replace heq := congr(hs.fract $heq)
@@ -640,17 +641,17 @@ private noncomputable def setOfFloorNeg : Set (ι → ℕ) :=
 
 private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg := by
   classical
-  convert_to IsSemilinearSet (⋃ i : hs.basisSet, { x | ∃ y ∈ closure {i.1},
-    ∃ z ∈ closure (hs.basisSet \ {i.1}), ∃ z' ∈ closure (hs.basisSet \ {i.1}),
-      x + i.1 + y + z' = hs.base + z }) using 1
+  convert_to IsSemilinearSet (⋃ i : hs.basisSet, { x | ∃ y ∈ closure {i.val},
+    ∃ z ∈ closure (hs.basisSet \ {i.val}), ∃ z' ∈ closure (hs.basisSet \ {i.val}),
+      x + i.val + y + z' = hs.base + z }) using 1
   · ext x
     simp only [setOfFloorNeg, mem_iUnion, mem_ofPred_eq]
     constructor
     · intro ⟨hx, i, hi⟩
-      refine ⟨i, ((- hs.floor x i).toNat - 1) • i.1, ?_,
-        ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.1, ?_,
-        ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.1, ?_, ?_⟩
-      · exact nsmul_mem (mem_closure_of_mem (mem_singleton i.1)) _
+      refine ⟨i, ((- hs.floor x i).toNat - 1) • i.val, ?_,
+        ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.val, ?_,
+        ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.val, ?_, ?_⟩
+      · exact nsmul_mem (mem_closure_of_mem (mem_singleton i.val)) _
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
         simpa [Subtype.val_inj] using hj
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
@@ -659,23 +660,23 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
           tsub_add_cancel_of_le
             ((Int.le_toNat (neg_pos.2 hi).le).2 (le_neg.1 (Int.cast_le_neg_one_of_neg hi))),
           add_assoc x,
-          Finset.add_sum_erase _ (fun j => (-hs.floor x j).toNat • j.1) (Finset.mem_univ i),
+          Finset.add_sum_erase _ (fun j => (-hs.floor x j).toNat • j.val) (Finset.mem_univ i),
           ← add_zero (Finset.sum (Finset.univ.erase i) _),
-          ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 hi.le,
+          ← zero_nsmul i.val, ← Int.toNat_eq_zero.2 hi.le,
           Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx]
         exact hs.add_floor_neg_toNat_sum_eq x
     · intro ⟨i, y, hy, z, hz, z', hz', heq⟩
       refine ⟨?_, i, ?_⟩
       · apply congr_arg hs.fract at heq
         rwa [hs.fract_add_of_mem_closure (closure_mono sdiff_subset hz'),
-          hs.fract_add_of_mem_closure (closure_mono (singleton_subset_iff.2 i.2) hy),
-          hs.fract_add_of_mem_closure (mem_closure_of_mem i.2),
+          hs.fract_add_of_mem_closure (closure_mono (singleton_subset_iff.2 i.property) hy),
+          hs.fract_add_of_mem_closure (mem_closure_of_mem i.property),
           hs.fract_add_of_mem_closure (closure_mono sdiff_subset hz), hs.fract_base] at heq
       · rw [mem_closure_singleton] at hy
         rcases hy with ⟨n, rfl⟩
         apply congr_arg (hs.floor · i) at heq
-        rw [hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz,
-          hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz',
+        rw [hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.val)) hz,
+          hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.val)) hz',
           hs.floor_base, add_assoc x, ← succ_nsmul', hs.floor_add_nsmul_self,
           ← eq_neg_iff_add_eq_zero] at heq
         simpa [heq] using neg_one_lt_zero.trans_le (Nat.cast_nonneg _)
@@ -693,27 +694,27 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
       (.closure_of_finite hs.finite_basisSet.sdiff) (LinearMap.funLeft ℕ ℕ Sum.inr)
     have := Fintype.ofFinite ι
     convert!
-      Nat.isSemilinearSet_setOfPred_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.1 hs.base
+      Nat.isSemilinearSet_setOfPred_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.val hs.base
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 0) 1) 0) using 4
-      <;> simp [add_comm _ i.1, add_assoc, fromCols_mulVec]
+      <;> simp [add_comm _ i.val, add_assoc, fromCols_mulVec]
 
 private noncomputable def setOfFloorPos : Set (ι → ℕ) :=
-  { x | hs.fract x = hs.base ∧ ∃ i, i.1 ∉ hs.periods ∧ 0 < hs.floor x i }
+  { x | hs.fract x = hs.base ∧ ∃ i, i.val ∉ hs.periods ∧ 0 < hs.floor x i }
 
 private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos := by
   classical
-  convert_to IsSemilinearSet (⋃ i ∈ { i : hs.basisSet | i.1 ∉ hs.periods },
-    { x | ∃ y ∈ closure {i.1}, ∃ z ∈ closure (hs.basisSet \ {i.1}),
-      ∃ z' ∈ closure (hs.basisSet \ {i.1}), x + z' = hs.base + i.1 + y + z }) using 1
+  convert_to IsSemilinearSet (⋃ i ∈ { i : hs.basisSet | i.val ∉ hs.periods },
+    { x | ∃ y ∈ closure {i.val}, ∃ z ∈ closure (hs.basisSet \ {i.val}),
+      ∃ z' ∈ closure (hs.basisSet \ {i.val}), x + z' = hs.base + i.val + y + z }) using 1
   · ext x
     simp only [setOfFloorPos, mem_iUnion, mem_ofPred_eq, exists_prop]
     constructor
     · intro ⟨hx, i, hi, hi'⟩
-      refine ⟨i, hi, ((hs.floor x i).toNat - 1) • i.1, ?_,
-          ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.1, ?_,
-          ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.1, ?_, ?_⟩
-      · exact nsmul_mem (mem_closure_of_mem (mem_singleton i.1)) _
+      refine ⟨i, hi, ((hs.floor x i).toNat - 1) • i.val, ?_,
+          ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.val, ?_,
+          ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.val, ?_, ?_⟩
+      · exact nsmul_mem (mem_closure_of_mem (mem_singleton i.val)) _
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
         simpa [Subtype.val_inj] using hj
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
@@ -721,9 +722,9 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
       · rw [add_assoc hs.base, ← succ_nsmul',
           tsub_add_cancel_of_le ((Int.le_toNat hi'.le).2 (Int.add_one_le_of_lt hi')),
           add_assoc hs.base,
-          Finset.add_sum_erase _ (fun j => (hs.floor x j).toNat • j.1) (Finset.mem_univ i),
+          Finset.add_sum_erase _ (fun j => (hs.floor x j).toNat • j.val) (Finset.mem_univ i),
           ← add_zero (Finset.sum (Finset.univ.erase i) _),
-          ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 (neg_neg_iff_pos.2 hi').le,
+          ← zero_nsmul i.val, ← Int.toNat_eq_zero.2 (neg_neg_iff_pos.2 hi').le,
           Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx]
         exact hs.add_floor_neg_toNat_sum_eq x
     · intro ⟨i, hi, y, hy, z, hz, z', hz', heq⟩
@@ -731,13 +732,13 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
       · apply congr_arg hs.fract at heq
         rwa [hs.fract_add_of_mem_closure (closure_mono sdiff_subset hz'),
           hs.fract_add_of_mem_closure (closure_mono sdiff_subset hz),
-          hs.fract_add_of_mem_closure (closure_mono (singleton_subset_iff.2 i.2) hy),
-          hs.fract_add_of_mem_closure (mem_closure_of_mem i.2), hs.fract_base] at heq
+          hs.fract_add_of_mem_closure (closure_mono (singleton_subset_iff.2 i.property) hy),
+          hs.fract_add_of_mem_closure (mem_closure_of_mem i.property), hs.fract_base] at heq
       · rw [mem_closure_singleton] at hy
         rcases hy with ⟨n, rfl⟩
         apply congr_arg (hs.floor · i) at heq
-        rw [hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz,
-          hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz',
+        rw [hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.val)) hz,
+          hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.val)) hz',
           add_assoc hs.base, ← succ_nsmul', hs.floor_add_nsmul_self, hs.floor_base, zero_add] at heq
         simp [heq]
   · refine .biUnion (toFinite _) fun i hi => .proj' ?_
@@ -754,7 +755,7 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
       (.closure_of_finite hs.finite_basisSet.sdiff) (LinearMap.funLeft ℕ ℕ Sum.inr)
     have := Fintype.ofFinite ι
     convert!
-      Nat.isSemilinearSet_setOfPred_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.1)
+      Nat.isSemilinearSet_setOfPred_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.val)
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 0) 0) 1)
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 1) 1) 0) using 4
       <;> simp [add_assoc, fromCols_mulVec]

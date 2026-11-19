@@ -477,7 +477,8 @@ variable [DecidableEq α] [Fintype α] (f : Perm α)
 def cycleFactorsFinset : Finset (Perm α) :=
   (truncCycleFactors f).lift
     (fun l : { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } ↦
-      ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.2.2.1 _ h1) l.2.2.2⟩)
+      ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.property.2.1 _ h1)
+        l.property.2.2⟩)
     fun ⟨_, hl⟩ ⟨_, hl'⟩ ↦
     Finset.eq_of_veq <| Multiset.coe_eq_coe.mpr <|
       list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left
@@ -794,7 +795,7 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
       (∀ τ : Perm β, τ ∈ l → τ.IsCycle) → l.Pairwise Disjoint → P l.prod by
     classical
       let x := σ.truncCycleFactors.out
-      exact congr(P $(x.2.1)).mp (this x.1 x.2.2.1 x.2.2.2)
+      exact congr(P $(x.property.1)).mp (this x.val x.property.2.1 x.property.2.2)
   intro l
   induction l with
   | nil => exact fun _ _ => base_one
