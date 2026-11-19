@@ -387,6 +387,7 @@ variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 @[deprecated iSup_of_empty +typeChanged (since := "2026-11-18")]
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := iSup_of_empty _
 
+@[deprecated iSup_of_empty +typeChanged (since := "2026-11-18")]
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   iSup_of_empty f
 

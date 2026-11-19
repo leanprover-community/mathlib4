@@ -890,7 +890,7 @@ instance : NoMaxOrder Ordinal :=
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
-  dite_eq_right (fun ⟨_, h⟩ ↦ not_isTop _ (isGLB_empty_iff.mp h))
+  dite_eq_right fun ⟨_, h⟩ ↦ not_isTop _ (isGLB_empty_iff.mp h)
 
 instance : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) (by exact succ_le_iff')

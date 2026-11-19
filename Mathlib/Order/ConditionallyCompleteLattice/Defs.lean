@@ -94,6 +94,7 @@ To differentiate the statements from the corresponding statements in (unconditio
 complete linear orders, we prefix `sInf` and `sSup` by a `c` everywhere. The same statements should
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
+-- TODO: deprecate this typeclass. Its only field `csSup_empty` was removed in #35674.
 class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyCompleteLinearOrder α,
     OrderBot α where
 
