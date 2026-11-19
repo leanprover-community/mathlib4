@@ -192,7 +192,7 @@ namespace Unitization
 
 variable (x : Unitization R A)
 
-/-- For `x : Unitization R A`, the map `fun r : R ↦ x.fst + r` is a homemorphism between the
+/-- For `x : Unitization R A`, the map `fun r : R ↦ r + x.fst` is a homemorphism between the
 sets `quasispectrum R x.snd` and `spectrum R x`. -/
 def quasispectrumHomeomorphSpectrum : σₙ R x.snd ≃ₜ σ R x :=
   (Homeomorph.addRight x.fst).subtype fun _ ↦ by simp [Unitization.mem_spectrum_iff]
