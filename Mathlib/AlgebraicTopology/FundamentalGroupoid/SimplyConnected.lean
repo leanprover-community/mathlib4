@@ -177,7 +177,7 @@ theorem isSimplyConnected_iff_exists_homotopy_refl_forall_mem {s : Set X} :
       target' := by simp
     } with ⟨F⟩
     exact ⟨F.map (.restrict s (.id _)), fun t ↦ (F t).property⟩
-  · rcases h x (p.map continuous_subtype_val) (fun t ↦ (p t).property) with ⟨F, hF⟩
+  · rcases h x (p.map continuous_subtypeVal) (fun t ↦ (p t).property) with ⟨F, hF⟩
     exact ⟨{
       toFun t := ⟨F t, hF t⟩
       map_zero_left := by simp

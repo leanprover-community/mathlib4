@@ -483,7 +483,7 @@ theorem Convex.dimH_eq_finrank_vectorSpan {s : Set E} (hcvx : Convex ℝ s) (hne
     (⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩ : affineSpan ℝ s)
   have hs_eq : s = (↑) '' ((↑) ⁻¹' s : Set (affineSpan ℝ s)) :=
     (image_preimage_eq_of_subset <| (subset_affineSpan ℝ s).trans Subtype.range_coe.superset).symm
-  rw [hs_eq, isometry_subtype_coe.dimH_image, ← φ.isometry.dimH_image,
+  rw [hs_eq, isometry_subtypeVal.dimH_image, ← φ.isometry.dimH_image,
       Real.dimH_of_nonempty_interior, direction_affineSpan ℝ s, ← hs_eq]
   simp_rw [← AffineIsometryEquiv.coe_toHomeomorph, ← φ.toHomeomorph.image_interior, image_nonempty]
   simpa [intrinsicInterior] using (intrinsicInterior_nonempty hcvx).mpr hne

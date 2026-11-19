@@ -30,10 +30,12 @@ open CategoryTheory ConcreteCategory
 
 open CategoryTheory.Subobject
 
-theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
+theorem subtypeVal_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
   (mono_iff_injective _).mpr Subtype.val_injective
 
-attribute [local instance] subtype_val_mono
+@[deprecated (since := "2026-11-10")] alias subtype_val_mono := subtypeVal_mono
+
+attribute [local instance] subtypeVal_mono
 
 /-- The category of `MonoOver α`, for `α : Type u`, is equivalent to the partial order `Set α`.
 -/

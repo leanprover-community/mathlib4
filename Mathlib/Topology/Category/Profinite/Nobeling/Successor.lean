@@ -172,10 +172,10 @@ noncomputable
 def CC'₁ : C' C ho → C :=
   fun g ↦ ⟨SwapTrue o g.val, (swapTrue_mem_C1 C hsC ho ⟨g.val,g.prop.2⟩).1⟩
 
-theorem continuous_CC'₀ : Continuous (CC'₀ C ho) := Continuous.subtype_mk continuous_subtype_val _
+theorem continuous_CC'₀ : Continuous (CC'₀ C ho) := Continuous.subtype_mk continuous_subtypeVal _
 
 theorem continuous_CC'₁ : Continuous (CC'₁ C hsC ho) :=
-  Continuous.subtype_mk (Continuous.comp (continuous_swapTrue o) continuous_subtype_val) _
+  Continuous.subtype_mk (Continuous.comp (continuous_swapTrue o) continuous_subtypeVal) _
 
 /-- The `ℤ`-linear map induced by precomposing with `CC'₀` -/
 noncomputable
@@ -247,7 +247,7 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
   let C₁C : π (C1 C ho) (ord I · < o) → C :=
     fun x ↦ ⟨SwapTrue o x.val, (swapTrue_mem_C1 C hsC ho x).1⟩
   have h₁ : Continuous C₁C := Continuous.subtype_mk
-    ((continuous_swapTrue o).comp continuous_subtype_val) _
+    ((continuous_swapTrue o).comp continuous_subtypeVal) _
   refine ⟨LocallyConstant.piecewise' ?_ (isClosed_C0 C hC ho)
       (isClosed_proj _ o (isClosed_C1 C hC ho)) (f.comap ⟨C₀C, h₀⟩) (f.comap ⟨C₁C, h₁⟩) ?_, ?_⟩
   · rintro _ ⟨y, hyC, rfl⟩

@@ -189,9 +189,11 @@ noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducibl
   (factors a).pmap (fun a ha => ⟨Associates.mk a, irreducible_mk.2 ha⟩) irreducible_of_factor
 
 @[simp]
-theorem map_subtype_coe_factors' {a : α} :
+theorem map_subtypeVal_factors' {a : α} :
     (factors' a).map (↑) = (factors a).map Associates.mk := by
   simp [factors', Multiset.map_pmap, Multiset.pmap_eq_map]
+
+@[deprecated (since := "2026-11-10")] alias map_subtype_coe_factors' := map_subtypeVal_factors'
 
 theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
   obtain rfl | hb := eq_or_ne b 0
@@ -201,8 +203,8 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
     contrapose hb with ha
     rw [← associated_zero_iff_eq_zero, ← ha]
     exact h.symm
-  rw [← Multiset.map_eq_map Subtype.coe_injective, map_subtype_coe_factors',
-    map_subtype_coe_factors', ← rel_associated_iff_map_eq_map]
+  rw [← Multiset.map_eq_map Subtype.coe_injective, map_subtypeVal_factors',
+    map_subtypeVal_factors', ← rel_associated_iff_map_eq_map]
   exact
     factors_unique irreducible_of_factor irreducible_of_factor
       ((factors_prod ha).trans <| h.trans (factors_prod hb).symm)

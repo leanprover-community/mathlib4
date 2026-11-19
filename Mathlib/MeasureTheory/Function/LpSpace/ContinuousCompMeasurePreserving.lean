@@ -65,7 +65,7 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
   | @indicatorConst c s hs hνs =>
     dsimp only [Lp.simpleFunc.coe_indicatorConst, Lp.indicatorConstLp_compMeasurePreserving]
     refine continuous_indicatorConstLp_set hp fun f ↦ ?_
-    apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtype_val _ f.property
+    apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtypeVal _ f.property
       hs.nullMeasurableSet hνs.ne
     exact .of_forall Subtype.property
 
