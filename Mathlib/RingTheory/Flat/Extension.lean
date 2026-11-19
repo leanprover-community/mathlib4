@@ -5,8 +5,9 @@ Authors: Nailin Guan, Jingting Wang
 -/
 module
 
-public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Algebra.Shrink
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.Algebra.Category.Ring.FilteredColimitsLocal
 public import Mathlib.Algebra.Field.ULift
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.CategoryTheory.Limits.Filtered
@@ -18,11 +19,10 @@ public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Ideal.GoingUp
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.RingHom.Flat
-public import Mathlib.Algebra.Category.Ring.FilteredColimitsLocal
 
 /-!
 
@@ -256,12 +256,12 @@ instance : CoeSort (FlatExtension R K) (Type u) := ⟨FlatExtension.Ring⟩
 attribute [coe] FlatExtension.Ring
 
 instance (S : FlatExtension R K) : IsLocalHom (algebraMap R S) :=
-  ((IsLocalRing.local_hom_TFAE _).out 1 3).mpr (le_of_eq S.eqmap.symm)
+  ((IsLocalRing.local_hom_tfae _).out 1 3).mpr (le_of_eq S.eqmap.symm)
 
 instance (S : FlatExtension R K) : IsLocalHom (algebraMap S K) := by
-  apply ((IsLocalRing.local_hom_TFAE _).out 1 3).mpr
+  apply ((IsLocalRing.local_hom_tfae _).out 1 3).mpr
   rw [S.eqmap, Ideal.map_map, ← IsScalarTower.algebraMap_eq R]
-  exact ((IsLocalRing.local_hom_TFAE _).out 1 3).mp ‹_›
+  exact ((IsLocalRing.local_hom_tfae _).out 1 3).mp ‹_›
 
 /-- The local ring itself as trivial flat extension. -/
 noncomputable def trivial : FlatExtension R K where
@@ -278,7 +278,7 @@ structure Hom (S₁ S₂ : FlatExtension R K) where
   comm : (IsScalarTower.toAlgHom R S₂ K).comp algHom = IsScalarTower.toAlgHom R S₁ K
 
 instance (S₁ S₂ : FlatExtension R K) (f : S₁.Hom S₂) : IsLocalHom f.algHom.toRingHom := by
-  apply ((IsLocalRing.local_hom_TFAE f.algHom.toRingHom).out 1 3).mpr
+  apply ((IsLocalRing.local_hom_tfae f.algHom.toRingHom).out 1 3).mpr
   have : f.algHom.toRingHom.comp (algebraMap R S₁) = (algebraMap R S₂) :=
     AlgHom.comp_algebraMap_of_tower _ _
   rw [S₁.eqmap, Ideal.map_map, this, ← S₂.eqmap]
@@ -472,7 +472,7 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
     · simpa [CommRingCat.flat_iff] using! RingHom.flat_algebraMap_iff.mpr (F.obj j').flat
     · ext x
       simpa using! congr($(algebraMap_comp_ι_eq c j' j) x)
-  · refine le_antisymm (fun x hx ↦ ?_) (((local_hom_TFAE (algebraMap R c.pt)).out 1 3).mp ?_)
+  · refine le_antisymm (fun x hx ↦ ?_) (((local_hom_tfae (algebraMap R c.pt)).out 1 3).mp ?_)
     · obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp <| (le_of_eq <|
         @CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit _ _ _ _
         c (fun f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom))
