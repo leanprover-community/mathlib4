@@ -101,11 +101,11 @@ section IndicatorConstLp
 
 open Set Function
 
-variable {s : Set α} {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {c : E}
+variable {s : Set α} {hs : NullMeasurableSet s μ} {hμs : μ s ≠ ∞} {c : E}
 
 /-- Indicator of a set as an element of `Lp`. -/
-def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
-  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs.nullMeasurableSet c (.inr hμs))
+def indicatorConstLp (p : ℝ≥0∞) (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
+  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs c (.inr hμs))
 
 /-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp` -/
 theorem indicatorConstLp_add {c' : E} :
@@ -122,7 +122,7 @@ theorem indicatorConstLp_sub {c' : E} :
   rfl
 
 theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ => c :=
-  MemLp.coeFn_toLp (memLp_indicator_const p hs.nullMeasurableSet c (Or.inr hμs))
+  MemLp.coeFn_toLp (memLp_indicator_const p hs c (Or.inr hμs))
 
 theorem indicatorConstLp_coeFn_mem : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp p hs hμs c x = c :=
   indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_mem hxs _)
@@ -133,13 +133,13 @@ theorem indicatorConstLp_coeFn_notMem : ∀ᵐ x : α ∂μ, x ∉ s → indicat
 theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
-    eLpNorm_indicator_const hs.nullMeasurableSet hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
+    eLpNorm_indicator_const hs hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
       measureReal_def, ENNReal.toReal_rpow, toReal_eNorm]
 
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
-    eLpNorm_indicator_const' hs.nullMeasurableSet hμs_ne_zero ENNReal.top_ne_zero,
+    eLpNorm_indicator_const' hs hμs_ne_zero ENNReal.top_ne_zero,
     ENNReal.toReal_top, div_zero, ENNReal.rpow_zero, mul_one, toReal_eNorm]
 
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
@@ -153,7 +153,7 @@ theorem norm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ ≤ ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [indicatorConstLp, Lp.norm_toLp]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
-  refine (eLpNorm_indicator_const_le c p hs.nullMeasurableSet).trans_eq ?_
+  refine (eLpNorm_indicator_const_le c p hs).trans_eq ?_
   rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, measureReal_def,
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   finiteness
@@ -171,17 +171,16 @@ theorem eNorm_indicatorConstLp_le :
 
 @[deprecated (since := "2026-11-06")] alias enorm_indicatorConstLp_le := eNorm_indicatorConstLp_le
 
-theorem edist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
+theorem edist_indicatorConstLp_eq_eNorm {t : Set α} {ht : NullMeasurableSet t μ} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
-  rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet
-    ht.nullMeasurableSet, Lp.eNorm_toLp]
+  rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs ht, Lp.eNorm_toLp]
 
 @[deprecated (since := "2026-11-06")]
 alias edist_indicatorConstLp_eq_enorm := edist_indicatorConstLp_eq_eNorm
 
-theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
+theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : NullMeasurableSet t μ} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
@@ -191,7 +190,7 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt 
 /-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,
 if the underlying sets tend to the set in the sense of the measure of the symmetric difference. -/
 theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : Filter β} {t : β → Set α}
-    {ht : ∀ b, MeasurableSet (t b)} {hμt : ∀ b, μ (t b) ≠ ∞} (hp : p ≠ ∞)
+    {ht : ∀ b, NullMeasurableSet (t b) μ} {hμt : ∀ b, μ (t b) ≠ ∞} (hp : p ≠ ∞)
     (h : Tendsto (fun b ↦ μ (t b ∆ s)) l (𝓝 0)) :
     Tendsto (fun b ↦ indicatorConstLp p (ht b) (hμt b) c) l (𝓝 (indicatorConstLp p hs hμs c)) := by
   rw [tendsto_iff_dist_tendsto_zero]
@@ -205,18 +204,18 @@ theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : 
 /-- A family of `indicatorConstLp` functions is continuous in the parameter,
 if `μ (s y ∆ s x)` tends to zero as `y` tends to `x` for all `x`. -/
 theorem continuous_indicatorConstLp_set [Fact (1 ≤ p)] {X : Type*} [TopologicalSpace X]
-    {s : X → Set α} {hs : ∀ x, MeasurableSet (s x)} {hμs : ∀ x, μ (s x) ≠ ∞} (hp : p ≠ ∞)
+    {s : X → Set α} {hs : ∀ x, NullMeasurableSet (s x) μ} {hμs : ∀ x, μ (s x) ≠ ∞} (hp : p ≠ ∞)
     (h : ∀ x, Tendsto (fun y ↦ μ (s y ∆ s x)) (𝓝 x) (𝓝 0)) :
     Continuous fun x ↦ indicatorConstLp p (hs x) (hμs x) c :=
   continuous_iff_continuousAt.2 fun x ↦ tendsto_indicatorConstLp_set hp (h x)
 
 @[simp]
 theorem indicatorConstLp_empty :
-    indicatorConstLp p MeasurableSet.empty (by simp : μ ∅ ≠ ∞) c = 0 := by
+    indicatorConstLp p nullMeasurableSet_empty (by simp : μ ∅ ≠ ∞) c = 0 := by
   simp only [indicatorConstLp, Set.indicator_empty', MemLp.toLp_zero]
 
-theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
-    (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0) :
+theorem indicatorConstLp_inj {s t : Set α} (hs : NullMeasurableSet s μ) (hsμ : μ s ≠ ∞)
+    (ht : NullMeasurableSet t μ) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0) :
     indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c ↔ s =ᵐ[μ] t := by
   simp_rw [← indicator_const_eventuallyEq hc, indicatorConstLp, MemLp.toLp_eq_toLp_iff]
 
@@ -233,8 +232,8 @@ theorem memLp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (suppor
     exact hfg.indicator hg.nullMeasurableSet_support
 
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
-theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : Disjoint s t) (c : E) :
+theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : NullMeasurableSet s μ)
+    (ht : NullMeasurableSet t μ) (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : Disjoint s t) (c : E) :
     indicatorConstLp p (hs.union ht) (by finiteness) c =
       indicatorConstLp p hs hμs c + indicatorConstLp p ht hμt c := by
   ext1
@@ -263,7 +262,7 @@ lemma MemLp.toLp_const : MemLp.toLp _ (memLp_const c) = Lp.const p μ c := rfl
 
 @[simp]
 lemma indicatorConstLp_univ :
-    indicatorConstLp p .univ (measure_ne_top μ _) c = Lp.const p μ c := by
+    indicatorConstLp p nullMeasurableSet_univ (measure_ne_top μ _) c = Lp.const p μ c := by
   rw [← MemLp.toLp_const, indicatorConstLp]
   simp only [Set.indicator_univ]
 
@@ -309,17 +308,17 @@ namespace Lp
 
 variable {β : Type*} [MeasurableSpace β] {μb : MeasureTheory.Measure β} {f : α → β}
 
-theorem indicatorConstLp_compMeasurePreserving {s : Set β} (hs : MeasurableSet s)
+theorem indicatorConstLp_compMeasurePreserving {s : Set β} (hs : NullMeasurableSet s μb)
     (hμs : μb s ≠ ∞) (c : E) (hf : MeasurePreserving f μ μb) :
     Lp.compMeasurePreserving f hf (indicatorConstLp p hs hμs c) =
-      indicatorConstLp p (hs.preimage hf.measurable)
-        (by rwa [hf.measure_preimage hs.nullMeasurableSet]) c :=
+      indicatorConstLp p (hs.preimage hf.quasiMeasurePreserving)
+        (by rwa [hf.measure_preimage hs]) c :=
   rfl
 
 end Lp
 
 theorem indicatorConstLp_eq_toSpanSingleton_compLp {s : Set α} [NormedSpace ℝ E]
-    (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) :
+    (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (x : E) :
     indicatorConstLp 2 hs hμs x =
       (ContinuousLinearMap.toSpanSingleton ℝ x).compLp (indicatorConstLp 2 hs hμs (1 : ℝ)) := by
   ext1

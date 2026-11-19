@@ -111,7 +111,7 @@ theorem mem_lpMeas_self {m0 : MeasurableSpace α} (μ : Measure α) (f : Lp F p 
 
 theorem mem_lpMeas_indicatorConstLp {m m0 : MeasurableSpace α} (hm : m ≤ m0) {μ : Measure α}
     {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) {c : F} :
-    indicatorConstLp p (hm s hs) hμs c ∈ lpMeas F 𝕜 m p μ :=
+    indicatorConstLp p (hm s hs).nullMeasurableSet hμs c ∈ lpMeas F 𝕜 m p μ :=
   ⟨s.indicator fun _ : α => c, (@stronglyMeasurable_const _ _ m _ _).indicator hs,
     indicatorConstLp_coeFn⟩
 
@@ -332,11 +332,12 @@ the sub-sigma algebra and returns its version in the larger Lp space) to an indi
 sub-sigma-algebra, we obtain an indicator in the Lp space of the larger sigma-algebra. -/
 theorem lpMeasToLpTrimLie_symm_indicator [one_le_p : Fact (1 ≤ p)] [NormedSpace ℝ F] {hm : m ≤ m0}
     {s : Set α} {μ : Measure α} (hs : MeasurableSet[m] s) (hμs : μ.trim hm s ≠ ∞) (c : F) :
-    ((lpMeasToLpTrimLie F ℝ p μ hm).symm (indicatorConstLp p hs hμs c) : Lp F p μ) =
-      indicatorConstLp p (hm s hs) ((le_trim hm).trans_lt hμs.lt_top).ne c := by
+    ((lpMeasToLpTrimLie F ℝ p μ hm).symm
+      (indicatorConstLp p hs.nullMeasurableSet hμs c) : Lp F p μ) =
+        indicatorConstLp p (hm s hs).nullMeasurableSet ((le_trim hm).trans_lt hμs.lt_top).ne c := by
   ext1
   change
-    lpTrimToLpMeas F ℝ p μ hm (indicatorConstLp p hs hμs c) =ᵐ[μ]
+    lpTrimToLpMeas F ℝ p μ hm (indicatorConstLp p hs.nullMeasurableSet hμs c) =ᵐ[μ]
       (indicatorConstLp p _ _ c : α → F)
   grw [lpTrimToLpMeas_ae_eq, ae_eq_of_ae_eq_trim indicatorConstLp_coeFn, indicatorConstLp_coeFn]
 
