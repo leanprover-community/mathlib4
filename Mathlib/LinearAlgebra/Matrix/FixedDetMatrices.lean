@@ -228,7 +228,7 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
   refine ⟨?_, hT _⟩
   intro ih
   rw [show B = T⁻¹ • T • B by simp, ← T_S_rel_smul]
-  grind [← T_S_rel_smul]
+  grind
 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T ^ n • B) ↔ C B := by
