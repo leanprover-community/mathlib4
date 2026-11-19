@@ -168,7 +168,8 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
 
 @[to_additive]
 instance Bot.isCyclic : IsCyclic (⊥ : Subgroup α) :=
-  ⟨⟨1, fun x => ⟨0, Subtype.ext <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
+  ⟨⟨1, fun x =>
+    ⟨0, Subtype.ext <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.property)⟩⟩⟩
 
 @[to_additive]
 instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H := by

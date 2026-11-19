@@ -251,7 +251,7 @@ def restrict₂ (hIJ : I ⊆ J) :
 
 @[simp]
 lemma restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
-    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
+    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.val, hIJ i.property⟩ := rfl
 
 end restrict₂
 

@@ -220,9 +220,9 @@ def isLimitAux' (t : PullbackCone f g)
           l ≫ t.fst = s.fst ∧
             l ≫ t.snd = s.snd ∧ ∀ {m}, m ≫ t.fst = s.fst → m ≫ t.snd = s.snd → m = l }) :
     Limits.IsLimit t :=
-  PullbackCone.isLimitAux t (fun s => (create s).1) (fun s => (create s).2.1)
-    (fun s => (create s).2.2.1) fun s _ w =>
-    (create s).2.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
+  PullbackCone.isLimitAux t (fun s => (create s).val) (fun s => (create s).property.1)
+    (fun s => (create s).property.2.1) fun s _ w =>
+    (create s).property.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
 
 insert_to_dual_translation CategoryTheory.Limits.PullbackCone.IsLimit
   CategoryTheory.Limits.PushoutCocone.IsColimit

@@ -147,16 +147,16 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
     let x₀ : X 0 := ⟨0, fun p q hpq hp ↦
       IsZero.eq_of_tgt (L.isZero_of_isStrictlyGE d _ (by lia)) _ _⟩
     let φ (n : ℕ) (α : X n) : X (n + 1) :=
-      ⟨_, (isKInjective_of_injective_aux f α.1 (n + d - 1) ((n + 1 : ℕ) + d - 1)
-        (by lia) (hK _) α.2).choose_spec⟩
-    have hφ (k : ℕ) (x : X k) : (φ k x).1.EqUpTo x.1 (d + k) := fun p q hpq hp => by
+      ⟨_, (isKInjective_of_injective_aux f α.val (n + d - 1) ((n + 1 : ℕ) + d - 1)
+        (by lia) (hK _) α.property).choose_spec⟩
+    have hφ (k : ℕ) (x : X k) : (φ k x).val.EqUpTo x.val (d + k) := fun p q hpq hp => by
       dsimp [φ]
       rw [add_eq_left, Cochain.single_v_eq_zero _ _ _ _ _ (by lia)]
     refine ⟨(Cochain.equivHomotopy f 0).symm ⟨limitSequence φ hφ x₀, ?_⟩⟩
     rw [Cochain.ofHom_zero, add_zero]
     ext n
     let k₀ := (n - d + 1).toNat
-    rw [← (sequence φ x₀ k₀).2 n n (add_zero n) (by lia),
+    rw [← (sequence φ x₀ k₀).property n n (add_zero n) (by lia),
       δ_v (-1) 0 (neg_add_cancel 1) _ n n (by lia) (n - 1) (n + 1) rfl (by lia),
       δ_v (-1) 0 (neg_add_cancel 1) _ n n (by lia) (n - 1) (n + 1) rfl (by lia),
       limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by lia) (by lia),
@@ -168,7 +168,7 @@ instance (K : CochainComplex C ℕ) [∀ n, Injective (K.X n)] :
 
 lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
-    ∃ (α : Cochain K L m), δ m n α = z.1 := by
+    ∃ (α : Cochain K L m), δ m n α = z.val := by
   obtain ⟨φ, hφ⟩ := (Cocycle.equivHom ..).surjective (z.rightShift n 0 (zero_add n))
   rw [Cocycle.ext_iff] at hφ
   dsimp at hφ
@@ -184,9 +184,9 @@ lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
 
 lemma IsKInjective.eq_δ_of_cocycle' {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hL : L.Acyclic) (m : ℤ) (hm : m + 1 = n) :
-    ∃ (α : Cochain K L m), δ m n α = z.1 := by
+    ∃ (α : Cochain K L m), δ m n α = z.val := by
   obtain ⟨β, hβ⟩ :=
     IsKInjective.eq_δ_of_cocycle (Cocycle.ofHom (𝟙 L)) hL (-1) (by simp)
-  exact ⟨z.1.comp β (by lia), by simp [δ_comp z.1 β _ _ 0 _ hm rfl (by simp), hβ]⟩
+  exact ⟨z.val.comp β (by lia), by simp [δ_comp z.val β _ _ 0 _ hm rfl (by simp), hβ]⟩
 
 end CochainComplex

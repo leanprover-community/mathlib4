@@ -213,13 +213,13 @@ theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x :
   rfl
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
-    s.orderEmbOfFin h i = s.sort[i]'(by rw [length_sort, h]; exact i.2) :=
+    s.orderEmbOfFin h i = s.sort[i]'(by rw [length_sort, h]; exact i.isLt) :=
   rfl
 
 @[simp]
 theorem orderEmbOfFin_mem (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
     s.orderEmbOfFin h i ∈ s :=
-  (s.orderIsoOfFin h i).2
+  (s.orderIsoOfFin h i).property
 
 @[simp]
 theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :

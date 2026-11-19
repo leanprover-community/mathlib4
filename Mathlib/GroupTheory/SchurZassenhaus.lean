@@ -89,7 +89,7 @@ theorem smul_diff' (h : H) :
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
-  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
+  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.property)
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=

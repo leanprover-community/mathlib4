@@ -34,11 +34,11 @@ theorem lift_cardinalMk_le_sigma_polynomial :
   have := @lift_mk_le_lift_mk_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
       let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
-      ⟨p.1, x, by
+      ⟨p.val, x, by
         dsimp
-        have := (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective R L)).2 p.2.1
+        have := (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective R L)).2 p.property.1
         rw [Polynomial.mem_roots this, Polynomial.IsRoot, Polynomial.eval_map,
-          ← Polynomial.aeval_def, p.2.2]⟩)
+          ← Polynomial.aeval_def, p.property.2]⟩)
     fun x y => by
       intro h
       simp only [Set.coe_ofPred, ne_eq, Set.mem_ofPred_eq, Sigma.mk.inj_iff] at h
