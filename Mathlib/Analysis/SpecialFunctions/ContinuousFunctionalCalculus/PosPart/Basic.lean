@@ -186,7 +186,6 @@ theorem _root_.NonnegSpectrumClass.of_starOrderedRing : NonnegSpectrumClass ℝ 
     rw [cfcₙ_mul .., cfcₙ_mul .., cfcₙ_id' ℝ a]
     exact cfcₙ_predicate (·⁻ : ℝ → ℝ) a |>.conjugate_nonneg ha
 
-
 variable [NonnegSpectrumClass ℝ A]
 
 lemma posPart_eq_self (a : A) : a⁺ = a ↔ 0 ≤ a := by
