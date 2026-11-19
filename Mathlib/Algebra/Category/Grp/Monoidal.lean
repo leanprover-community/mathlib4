@@ -47,6 +47,7 @@ noncomputable instance monoidalCategoryStruct : MonoidalCategoryStruct Ab.{u} wh
     (TensorProduct.rid ℤ M)).toAddEquiv.toAddCommGrpIso
 
 /-- Extensionality for morphisms out of the image of a tensor product of abelian groups. -/
+@[local ext]
 lemma toModuleCatULiftInt_tensor_ext {X Y : Ab.{u}} {W : ModuleCat.{u} (ULift.{u} ℤ)}
     {f g : toModuleCatULiftInt.functor.obj (X ⊗ Y) ⟶ W}
     (h : ∀ (x : X) (y : Y), f.hom (x ⊗ₜ y) = g.hom (x ⊗ₜ y)) : f = g := by
@@ -55,18 +56,13 @@ lemma toModuleCatULiftInt_tensor_ext {X Y : Ab.{u}} {W : ModuleCat.{u} (ULift.{u
 
 /-- The data needed to induce the monoidal structure on `Ab` from the one on
 `ModuleCat (ULift ℤ)`. -/
-noncomputable def inducingFunctorData :
+noncomputable def monoidalInducingFunctorData :
     Monoidal.InducingFunctorData toModuleCatULiftInt.functor where
   μIso X Y := (TensorProduct.equivOfCompatibleSMul ℤ (ULift ℤ) (ULift ℤ) X Y).toModuleIso
   εIso := .refl _
-  whiskerLeft_eq _ _ _ _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
-  whiskerRight_eq _ _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
-  tensorHom_eq _ _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
   associator_eq X Y Z := toModuleCatULiftInt_tensor_ext fun t z ↦ t.inductionOn (fun _ _ ↦ rfl)
     fun _ _ h h' ↦ by
     rw [TensorProduct.add_tmul]; exact (map_add ..).trans <| congr($h + $h').trans (map_add ..).symm
-  leftUnitor_eq _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
-  rightUnitor_eq _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
 
 /-- The monoidal structure on the category of abelian groups, given by the tensor product
 over `ℤ`. -/
@@ -91,8 +87,7 @@ noncomputable instance monoidalClosed : MonoidalClosed Ab.{u} where
     adj := .mkOfHomEquiv
       { homEquiv N P := ((β_ M N).homFromEquiv.trans <| ConcreteCategory.homEquiv.trans
           liftAddEquivInt.symm.toEquiv).trans ConcreteCategory.homEquiv.symm
-        homEquiv_naturality_left_symm _ _ := by ext1; exact TensorProduct.ext' fun _ _ ↦ rfl
-        homEquiv_naturality_right _ _ := rfl } }
+        homEquiv_naturality_left_symm _ _ := by ext1; exact TensorProduct.ext' fun _ _ ↦ rfl } }
 
 lemma tensorObj_def (M N : Ab.{u}) : (M ⊗ N : Ab.{u}) = of (M ⊗[ℤ] N) :=
   rfl
