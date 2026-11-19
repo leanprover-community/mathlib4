@@ -695,7 +695,7 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     _ = #(G.killCopies H).edgeFinset := ?_
   congr 1
   ext e
-  induction e using Sym2.inductionOn with | hf v w
+  induction e using Sym2.inductionOn with | mk v w
   simp [mem_edgeSet, killCopies_of_ne_bot hH, f, eq_comm]
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
