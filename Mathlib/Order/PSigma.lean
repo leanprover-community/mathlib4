@@ -193,8 +193,8 @@ instance noMinOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMinOrder (�
     obtain ⟨b, h⟩ := exists_lt a
     exact ⟨⟨i, b⟩, right _ h⟩⟩
 
-theorem wellFounded {ι : Type*} {α : ι → Type*} {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
-    (hr : WellFounded r) (hs : ∀ i, WellFounded (s i)) : WellFounded (Lex r s) := by
+instance wellFounded {ι : Type*} {α : ι → Type*} {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
+    [WellFounded r] [∀ i, WellFounded (s i)] : WellFounded (Lex r s) := by
   constructor
   rw [PSigma.forall]
   refine hr.fix fun i IH a ↦ (hs i).fix (C := fun a ↦ Acc (Lex r s) ⟨i, a⟩)
