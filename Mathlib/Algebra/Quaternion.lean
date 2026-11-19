@@ -196,7 +196,8 @@ section Add
 variable [Add R]
 
 @[simps]
-instance : Add ℍ[R,c₁,c₂,c₃] where add a b := ⟨a.re + b.re, a.imI + b.imI, a.imJ + b.imJ, a.imK + b.imK⟩
+instance : Add ℍ[R,c₁,c₂,c₃] where add a b :=
+  ⟨a.re + b.re, a.imI + b.imI, a.imJ + b.imJ, a.imK + b.imK⟩
 
 @[simp]
 theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -257,7 +258,8 @@ variable [AddGroup R]
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂,c₃]) = -x := by ext <;> simp
 
 @[simps]
-instance : Sub ℍ[R,c₁,c₂,c₃] where sub a b := ⟨a.re - b.re, a.imI - b.imI, a.imJ - b.imJ, a.imK - b.imK⟩
+instance : Sub ℍ[R,c₁,c₂,c₃] where sub a b :=
+  ⟨a.re - b.re, a.imI - b.imI, a.imJ - b.imJ, a.imK - b.imK⟩
 
 @[simp] theorem im_sub : (a - b).im = a.im - b.im :=
   QuaternionAlgebra.ext (sub_zero _).symm rfl rfl rfl
@@ -300,11 +302,12 @@ variable [Ring R]
 * `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₃ * i`. -/
 @[simps]
 instance : Mul ℍ[R,c₁,c₂,c₃] where
-  mul a b :=
-    ⟨a.re * b.re + c₁ * a.imI * b.imI + c₃ * a.imJ * b.imJ + c₂ * c₃ * a.imJ * b.imK - c₁ * c₃ * a.imK * b.imK,
-      a.re * b.imI + a.imI * b.re + c₂ * a.imI * b.imI - c₃ * a.imJ * b.imK + c₃ * a.imK * b.imJ,
-      a.re * b.imJ + c₁ * a.imI * b.imK + a.imJ * b.re + c₂ * a.imJ * b.imI - c₁ * a.imK * b.imI,
-      a.re * b.imK + a.imI * b.imJ + c₂ * a.imI * b.imK - a.imJ * b.imI + a.imK * b.re⟩
+  mul a b := ⟨
+    a.re * b.re + c₁ * a.imI * b.imI + c₃ * a.imJ * b.imJ + c₂ * c₃ * a.imJ * b.imK -
+      c₁ * c₃ * a.imK * b.imK,
+    a.re * b.imI + a.imI * b.re + c₂ * a.imI * b.imI - c₃ * a.imJ * b.imK + c₃ * a.imK * b.imJ,
+    a.re * b.imJ + c₁ * a.imI * b.imK + a.imJ * b.re + c₂ * a.imJ * b.imI - c₁ * a.imK * b.imI,
+    a.re * b.imK + a.imI * b.imJ + c₂ * a.imI * b.imK - a.imJ * b.imI + a.imK * b.re⟩
 
 @[simp]
 theorem mk_mul_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
