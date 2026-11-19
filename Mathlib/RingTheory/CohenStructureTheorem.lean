@@ -498,7 +498,6 @@ lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoether
   intro x
   simpa [toCotangentSpace, Ideal.toCotangent_eq_zero] using fun h ↦ le h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     [IsAdicComplete (maximalIdeal R) R] : ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
     (f : S →+* R), Function.Surjective f ∧ RingHom.ker f ≤ (maximalIdeal S) ^ 2 := by
