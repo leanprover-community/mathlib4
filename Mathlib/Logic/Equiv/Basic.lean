@@ -229,6 +229,7 @@ def natEquivNatSumPUnit : ℕ ≃ ℕ ⊕ PUnit where
   right_inv := by rintro (_ | _) <;> rfl
 
 /-- `ℕ ⊕ PUnit` is equivalent to `ℕ`. -/
+@[deprecated "write `natEquivNatSumPUnit.symm`" (since := "2026-11-18")]
 def natSumPUnitEquivNat : ℕ ⊕ PUnit ≃ ℕ :=
   natEquivNatSumPUnit.symm
 
@@ -389,17 +390,10 @@ def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Pr
 
 /-- A sigma type over an `Option` is equivalent to the sigma set over the original type,
 if the fiber is empty at none. -/
-def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : p none → False) :
+def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : IsEmpty (p none)) :
     (Σ x : Option α, p x) ≃ Σ x : α, p (some x) :=
-  haveI h' : ∀ x, p x → x.isSome := by
-    intro x
-    cases x
-    · intro n
-      exfalso
-      exact h n
-    · intro _
-      exact rfl
-  (sigmaSubtypeEquivOfSubset _ _ h').symm.trans (sigmaCongrLeft' (optionIsSomeEquiv α))
+  (sigmaSubtypeEquivOfSubset _ _ (by rintro (_ | ⟨x⟩) <;> simp)).symm.trans
+    (sigmaCongrLeft' (optionIsSomeEquiv α))
 
 /-- The `Pi`-type `∀ i, π i` is equivalent to the type of sections `f : ι → Σ i, π i` of the
 `Sigma` type such that for all `i` we have `(f i).fst = i`. -/

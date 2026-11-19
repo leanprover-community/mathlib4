@@ -55,7 +55,7 @@ lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     {commX : f₂ ∘ mapX = mapY ∘ f₁} {commZ : g₂ ∘ mapZ = mapY ∘ g₁} :
     Continuous (Function.mapPullback mapX mapY mapZ commX commZ) := by
   refine continuous_induced_rng.mpr (.prodMk ?_ ?_) <;>
-    apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
+    apply_rules [continuous_fst, continuous_snd, continuous_subtypeVal, Continuous.comp]
 
 /-- A function from a topological space `X` to a type `Y` is a separated map if any two distinct
   points in `X` with the same image in `Y` can be separated by open neighborhoods. -/
@@ -107,7 +107,7 @@ theorem IsSeparatedMap.pullback {f : X → Y} (sep : IsSeparatedMap f) (g : A �
   rw [isSeparatedMap_iff_isClosed_diagonal] at sep ⊢
   rw [← preimage_map_fst_pullbackDiagonal]
   refine sep.preimage (Continuous.mapPullback ?_ ?_) <;>
-  apply_rules [continuous_fst, continuous_subtype_val, Continuous.comp]
+  apply_rules [continuous_fst, continuous_subtypeVal, Continuous.comp]
 
 theorem IsSeparatedMap.comp_left {A} {f : X → Y} (sep : IsSeparatedMap f) {g : Y → A}
     (inj : g.Injective) : IsSeparatedMap (g ∘ f) := fun x₁ x₂ he ↦ sep x₁ x₂ (inj he)

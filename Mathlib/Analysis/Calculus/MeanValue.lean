@@ -623,7 +623,7 @@ theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
   · exact ⟨0, by simp⟩
   · refine ⟨f y, fun x hx ↦ ?_⟩
     have h₁ := hs.isOpen_inter_preimage_of_fderiv_eq_zero hf hf' {f y}
-    have h₂ := hf.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)
+    have h₂ := hf.continuousOn.comp_continuous continuous_subtypeVal (fun x ↦ x.2)
     by_contra h₃
     obtain ⟨t, ht, ht'⟩ := (isClosed_singleton (x := f y)).preimage h₂
     have ht'' : ∀ a ∈ s, a ∈ t ↔ f a ≠ f y := by simpa [Set.ext_iff] using ht'
