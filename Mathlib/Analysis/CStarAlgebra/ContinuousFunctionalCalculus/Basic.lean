@@ -336,19 +336,7 @@ section NonnegSpectrumClass
 variable [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
-  .of_spectrum_nonneg fun a ha ↦ by
-    rw [StarOrderedRing.nonneg_iff] at ha
-    induction ha using AddSubmonoid.closure_induction with
-    | mem x hx =>
-      obtain ⟨b, rfl⟩ := hx
-      exact spectrum_star_mul_self_nonneg
-    | zero =>
-      nontriviality A
-      simp
-    | add x y x_mem y_mem hx hy =>
-      rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
-      rw [← StarOrderedRing.nonneg_iff] at x_mem y_mem
-      exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
+  .of_starOrderedRing
 
 open ComplexOrder in
 instance CStarAlgebra.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
@@ -428,20 +416,8 @@ section NonnegSpectrumClass
 
 variable [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-open scoped CStarAlgebra in
-instance CStarAlgebra.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
-  quasispectrum_nonneg_of_nonneg a ha := by
-    rw [Unitization.quasispectrum_eq_spectrum_inr' _ ℂ]
-    -- should this actually be an instance on the `Unitization`? (probably scoped)
-    let _ := CStarAlgebra.spectralOrder A⁺¹
-    have := CStarAlgebra.spectralOrderedRing A⁺¹
-    apply spectrum_nonneg_of_nonneg
-    rw [StarOrderedRing.nonneg_iff] at ha ⊢
-    have := AddSubmonoid.mem_map_of_mem (Unitization.inrNonUnitalStarAlgHom ℂ A) ha
-    rw [AddMonoidHom.map_mclosure, ← Set.range_comp] at this
-    apply AddSubmonoid.closure_mono ?_ this
-    rintro _ ⟨s, rfl⟩
-    exact ⟨s, by simp⟩
+instance CStarAlgebra.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A :=
+  .of_starOrderedRing
 
 end NonnegSpectrumClass
 
