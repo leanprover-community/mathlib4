@@ -92,7 +92,7 @@ lemma hasGaussianLaw_fun_sub (hX : IsGaussianProcess X P) {s t : T} :
 
 lemma hasGaussianLaw_sum (hX : IsGaussianProcess X P) {I : Finset T} :
     HasGaussianLaw (∑ i ∈ I, X i) P := by
-  convert! (hX.hasGaussianLaw I).sum
+  convert (hX.hasGaussianLaw I).sum
   simp [I.sum_attach X]
 
 lemma hasGaussianLaw_fun_sum (hX : IsGaussianProcess X P) {I : Finset T} :
@@ -129,7 +129,7 @@ lemma of_isGaussianProcess (hX : IsGaussianProcess X P)
     choose J L hL using h
     classical
     let K : (I.biUnion J → E) →L[ℝ] I → F :=
-      { toFun x s := L s (fun t ↦ x ⟨t.1, mem_biUnion.2 ⟨s.1, s.2, t.2⟩⟩)
+      { toFun x s := L s (fun t ↦ x ⟨t.val, mem_biUnion.2 ⟨s.val, s.property, t.property⟩⟩)
         map_add' x y := by ext; simp [← Pi.add_def]
         map_smul' c x := by ext; simp [← Pi.smul_def] }
     have : (fun ω ↦ I.restrict (Y · ω)) = K ∘ (fun ω ↦ (I.biUnion J).restrict (X · ω)) := by

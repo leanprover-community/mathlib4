@@ -31,7 +31,6 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   expresses the universal property of the exterior power as a
   linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
   alternating maps and linear maps from the exterior power.
-
 -/
 
 @[expose] public section
@@ -50,7 +49,7 @@ open Function Set Set.powersetCard
 
 /-! The canonical alternating map from `Fin n → M` to `⋀[R]^n M`. -/
 
-/-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
+/-- `exteriorPower.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
 def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
@@ -101,7 +100,7 @@ lemma ιMulti_span_fixedDegree_of_span_eq_top {s : Set M} (hs : span R s = ⊤) 
     · rw [ExteriorAlgebra.ιMulti_apply]
       apply congrArg (List.prod ∘ List.ofFn)
       ext i
-      obtain ⟨m, -, hm⟩ := (Set.mem_image _ _ _).mp (f i).2
+      obtain ⟨m, -, hm⟩ := (Set.mem_image _ _ _).mp (f i).property
       rw [Function.comp_apply, Function.comp_apply, ← hm, ExteriorAlgebra.ι_leftInverse]
 
 /-- The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`. -/
@@ -161,14 +160,14 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         rw [map_sub, map_add, Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul, sub_eq_zero] at this
-        convert! this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
+        convert this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
       map_update_smul' := fun m i r x ↦ by
         have := s.linearCombination_var_relation (.smul m i r x)
         dsimp at this ⊢
         rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, sub_eq_zero] at this
-        convert! this
+        convert this
       map_eq_zero_of_eq' := fun v i j hm hij ↦
         by simpa using s.linearCombination_var_relation (.alt v i j hm hij) }
   invFun f :=
@@ -227,7 +226,7 @@ lemma alternatingMapLinearEquiv_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :
 @[simp]
 lemma alternatingMapLinearEquiv_apply_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) (a : Fin n → M) :
     alternatingMapLinearEquiv f (ιMulti R n a) = f a :=
-  DFunLike.congr_fun (alternatingMapLinearEquiv_comp_ιMulti f) a
+  congr($(alternatingMapLinearEquiv_comp_ιMulti f) a)
 
 @[simp]
 lemma alternatingMapLinearEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin n → M) :
@@ -305,7 +304,7 @@ theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
   linearMap_ext <| AlternatingMap.ext fun m ↦ (by simp)
 
 @[simp]
-theorem coe_map (f : M →ₗ[R] N) (x : ⋀[R]^n M) : map n f x = ExteriorAlgebra.map f x.1 :=
+theorem coe_map (f : M →ₗ[R] N) (x : ⋀[R]^n M) : map n f x = ExteriorAlgebra.map f x.val :=
   congr($(subtype_comp_map_eq f) x)
 
 /-! Exactness properties of the exterior power functor. -/

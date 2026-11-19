@@ -20,7 +20,6 @@ valuation at infinity `FunctionField.inftyValuation K`.
 
 ### TODO
 - Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation. (*)
-
 -/
 
 @[expose] public noncomputable section
@@ -204,7 +203,7 @@ lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
       simp [← hk]
     · obtain ⟨ka, hka⟩ := exists_zpow_uniformizingPolynomial hle ha
       obtain ⟨kb, hkb⟩ := exists_zpow_uniformizingPolynomial hle (f := b) (by aesop)
-      rw [MonoidWithZeroHom.coe_ofClass, hka, hkb] at hab
+      rw [coe_toMonoidWithZeroHom, hka, hkb] at hab
       use kb - ka
       have : v ↑πᵥ ^ ka ≠ 0 := zpow_ne_zero _ h0
       simp [zpow_sub, ← Units.val_inj, ← coePolynomial_eq_algebraMap, field, ← hab]

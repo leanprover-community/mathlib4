@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Continuity of series of functions
@@ -17,7 +16,6 @@ additionally suitable uniform summable bounds are satisfied, in `continuous_tsum
 For smoothness of series of functions, see the file `Mathlib/Analysis/Calculus/SmoothSeries.lean`.
 
 TODO: update this to use `SummableUniformlyOn`.
-
 -/
 
 public section

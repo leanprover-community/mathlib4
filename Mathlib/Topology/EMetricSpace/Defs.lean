@@ -70,6 +70,13 @@ def eball (x : α) (ε : ℝ≥0∞) : Set α :=
 theorem eball_subset_eball (h : ε₁ ≤ ε₂) : eball x ε₁ ⊆ eball x ε₂ := fun _y (yx : _ < ε₁) =>
   lt_of_lt_of_le yx h
 
+/-- The points at finite distance from `a`. -/
+def boundedComponent (a : α) : Set α := {x | edist a x ≠ ∞}
+
+@[simp]
+theorem mem_boundedComponent_iff {a x : α} :
+    x ∈ boundedComponent a ↔ edist a x ≠ ∞ := Iff.rfl
+
 end Metric
 
 /-- Creating a uniform space from an extended distance. -/
@@ -606,6 +613,12 @@ def edistLtTopSetoid : Setoid α where
       symm h := by rwa [edist_comm]
       trans hxy hyz := lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩) }
 
+theorem boundedComponent_eq {a b : α} (h : b ∈ boundedComponent a) :
+    boundedComponent a = boundedComponent b := by
+  ext x
+  simp only [mem_boundedComponent_iff, ← lt_top_iff_ne_top] at h ⊢
+  exact ⟨edistLtTopSetoid.trans (edistLtTopSetoid.symm h), edistLtTopSetoid.trans h⟩
+
 @[simp]
 theorem eball_zero {α : Type*} [EDist α] {x : α} : eball x 0 = ∅ := by
   ext
@@ -716,6 +729,8 @@ theorem isClosed_eball_top : IsClosed (eball x ⊤) :=
     ⟨⊤, ENNReal.coe_lt_top, fun _z hzy hzx =>
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩
 
+theorem isClopen_eball_top : IsClopen (eball x ⊤) := ⟨isClosed_eball_top, isOpen_eball⟩
+
 variable (x)
 
 theorem eball_mem_nhds (ε0 : 0 < ε) : eball x ε ∈ 𝓝 x :=
@@ -745,22 +760,22 @@ open Metric
 
 @[simp]
 theorem preimage_eball (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val ⁻¹' (eball a.1 r) = eball a r :=
+    Subtype.val ⁻¹' (eball a.val r) = eball a r :=
   rfl
 
 @[simp]
 theorem preimage_closedEBall (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val ⁻¹' (closedEBall a.1 r) = closedEBall a r :=
+    Subtype.val ⁻¹' (closedEBall a.val r) = closedEBall a r :=
   rfl
 
 @[simp]
 theorem image_eball (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val '' (eball a r) = eball a.1 r ∩ {a | p a} := by
+    Subtype.val '' (eball a r) = eball a.val r ∩ {a | p a} := by
   rw [← preimage_eball, image_preimage_eq_inter_range, range_val_subtype]
 
 @[simp]
 theorem image_closedEBall (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val '' (closedEBall a r) = closedEBall a.1 r ∩ {a | p a} := by
+    Subtype.val '' (closedEBall a r) = closedEBall a.val r ∩ {a | p a} := by
   rw [← preimage_closedEBall, image_preimage_eq_inter_range, range_val_subtype]
 
 end Subtype

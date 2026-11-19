@@ -50,7 +50,6 @@ weak Markov property: if `B` is a pre-Brownian motion and `t₀ : ℝ≥0`, then
 ## Tags
 
 pre-Brownian motion, Brownian motion, Markov property
-
 -/
 
 public section
@@ -103,7 +102,7 @@ lemma IsPreBrownianReal.eval_zero_ae_eq_zero (hB : IsPreBrownianReal B P) :
   exact this.ae_eq_of_dirac
 
 lemma IsPreBrownianReal.hasLaw_sub (hB : IsPreBrownianReal B P) (s t : ℝ≥0) :
-    HasLaw (B s - B t) (gaussianReal 0 (nndist s.1 t.1)) P :=
+    HasLaw (B s - B t) (gaussianReal 0 (nndist s.val t.val)) P :=
   (measurePreserving_eval_sub_eval_projectiveFamily
     {s, t} ⟨s, by simp⟩ ⟨t, by simp⟩).hasLaw.comp (hB.hasLaw _)
 
@@ -156,7 +155,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
       rw [PiLp.coe_symm_continuousLinearEquiv, covarianceBilin_apply_pi, covarianceBilin_apply_pi]
       · congrm ∑ i, ∑ j, _ * ?_
         rw [covariance_eval_projectiveFamily, covariance_map]
-        · wlog hij : i.1 ≤ j.1 generalizing i j
+        · wlog hij : i.val ≤ j.val generalizing i j
           · rw [covariance_comm, this j i (by grind), min_comm]
           rw [min_eq_left hij]
           exact h3 i j hij
@@ -265,13 +264,13 @@ lemma IsPreBrownianReal.indepFun_shift (hB : IsPreBrownianReal B P) (t₀ : ℝ�
           map_add' x y := by simp
           map_smul' c x := by simp }, by simp⟩
   any_goals fun_prop
-  · rintro s ⟨t, ht : t ≤ t₀⟩
-    have := hB.isGaussianProcess.isProbabilityMeasure
-    rw [covariance_fun_sub_left, hB.covariance_eval, hB.covariance_eval, min_eq_right, min_eq_right,
-      sub_self]
-    · grind
-    · simp [ht, le_add_right]
-    all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
+  rintro s ⟨t, ht : t ≤ t₀⟩
+  have := hB.isGaussianProcess.isProbabilityMeasure
+  rw [covariance_fun_sub_left, hB.covariance_eval, hB.covariance_eval, min_eq_right, min_eq_right,
+    sub_self]
+  · grind
+  · simp [ht, le_add_right]
+  all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
 
 /-- If `B` is a pre-Brownian motion then `t ↦ t * B (1 / t)` is a pre-Brownian motion. -/
 lemma IsPreBrownianReal.inv (hB : IsPreBrownianReal B P) :

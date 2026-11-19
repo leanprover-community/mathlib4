@@ -33,8 +33,8 @@ instance : SMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
     ⟨(c : 𝕜) • ↑x,
       mem_ball_zero_iff.2 <| by
         simpa only [norm_smul, one_mul] using
-          mul_lt_mul' (mem_closedBall_zero_iff.1 c.2) (mem_ball_zero_iff.1 x.2) (norm_nonneg _)
-            one_pos⟩
+          mul_lt_mul' (mem_closedBall_zero_iff.1 c.property) (mem_ball_zero_iff.1 x.property)
+            (norm_nonneg _) one_pos⟩
 
 instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   one_smul _c₂ := Subtype.ext <| one_smul 𝕜 _
@@ -48,8 +48,8 @@ instance : SMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
     ⟨(c : 𝕜) • ↑x,
       mem_closedBall_zero_iff.2 <| by
         simpa only [norm_smul, one_mul] using
-          mul_le_mul (mem_closedBall_zero_iff.1 c.2) (mem_closedBall_zero_iff.1 x.2) (norm_nonneg _)
-            zero_le_one⟩
+          mul_le_mul (mem_closedBall_zero_iff.1 c.property) (mem_closedBall_zero_iff.1 x.property)
+            (norm_nonneg _) zero_le_one⟩
 
 instance mulActionClosedBallClosedBall :
     MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
@@ -186,7 +186,7 @@ variable [CharZero 𝕜]
 
 include 𝕜 in
 theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x :=
-  have : IsAddTorsionFree E := .of_isTorsionFree 𝕜 E
+  have : HasUniqueDiv E := .of_isTorsionFree 𝕜 E
   fun h => ne_zero_of_mem_sphere hr x (self_eq_neg.mp (by (conv_lhs => rw [h]); rfl))
 
 include 𝕜 in

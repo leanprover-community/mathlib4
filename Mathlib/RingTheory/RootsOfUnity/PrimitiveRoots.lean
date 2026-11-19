@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.LCM
-public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.RingTheory.RootsOfUnity.Basic
+
+import Mathlib.Algebra.Group.TypeTags.Finite
 
 /-!
 # Primitive roots of unity
@@ -212,7 +212,7 @@ protected theorem orderOf (ζ : M) : IsPrimitiveRoot ζ (orderOf ζ) :=
   ⟨pow_orderOf_eq_one ζ, fun _ ↦ orderOf_dvd_of_pow_eq_one⟩
 
 theorem unique {ζ : M} (hk : IsPrimitiveRoot ζ k) (hl : IsPrimitiveRoot ζ l) : k = l :=
-  Nat.dvd_antisymm (hk.2 _ hl.1) (hl.2 _ hk.1)
+  Nat.dvd_antisymm (hk.dvd_of_pow_eq_one _ hl.pow_eq_one) (hl.dvd_of_pow_eq_one _ hk.pow_eq_one)
 
 theorem eq_orderOf (h : IsPrimitiveRoot ζ k) : k = orderOf ζ :=
   h.unique (IsPrimitiveRoot.orderOf ζ)
@@ -236,8 +236,8 @@ theorem pow_mul_pow_lcm {ζ' : M} {k' : ℕ} (hζ : IsPrimitiveRoot ζ k) (hζ' 
     IsPrimitiveRoot
       (ζ ^ (k / Nat.factorizationLCMLeft k k') * ζ' ^ (k' / Nat.factorizationLCMRight k k'))
       (Nat.lcm k k') := by
-  convert! IsPrimitiveRoot.orderOf _
-  convert!
+  convert IsPrimitiveRoot.orderOf _
+  convert
     ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm (by simpa [← hζ.eq_orderOf])
         (by simpa [← hζ'.eq_orderOf])).symm using 2
   all_goals simp [hζ.eq_orderOf, hζ'.eq_orderOf]
@@ -349,12 +349,12 @@ section DivisionCommMonoid
 
 variable {ζ : G}
 
-theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 := by
-  exact_mod_cast h.pow_eq_one
+theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 :=
+  mod_cast h.pow_eq_one
 
 theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 ↔ (k : ℤ) ∣ l := by
   by_cases h0 : 0 ≤ l
-  · lift l to ℕ using h0; exact_mod_cast h.pow_eq_one_iff_dvd l
+  · lift l to ℕ using h0; exact mod_cast h.pow_eq_one_iff_dvd l
   · have : 0 ≤ -l := (Int.neg_pos_of_neg <| Int.lt_of_not_ge h0).le
     lift -l to ℕ using this with l' hl'
     rw [← dvd_neg, ← hl']
@@ -376,7 +376,7 @@ theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 
     IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : 0 ≤ i
   · lift i to ℕ using h0
-    exact_mod_cast h.pow_of_coprime i hi
+    exact mod_cast h.pow_of_coprime i hi
   have : 0 ≤ -i := (Int.neg_pos_of_neg <| Int.lt_of_not_ge h0).le
   lift -i to ℕ using this with i' hi'
   rw [← inv_iff, ← zpow_neg, ← hi', zpow_natCast]
@@ -418,9 +418,9 @@ theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n :
   have h : p ≠ 0 ∧ n ≠ 0 := by aesop
   have : NeZero p := .mk h.1
   have hp : Fact p.Prime := CharP.char_is_prime_of_pos R p
-  refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.1.one_lt) <|
+  refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.out.one_lt) <|
     frobenius_inj R p ?_).elim
-  rw [frobenius_def, ← pow_mul', hζ.1, map_one]
+  rw [frobenius_def, ← pow_mul', hζ.pow_eq_one, map_one]
 
 nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
     ζ ∈ nthRootsFinset k (1 : R) :=
@@ -437,7 +437,7 @@ theorem eq_neg_one_of_two_right [NoZeroDivisors R] {ζ : R} (h : IsPrimitiveRoot
 
 theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
     IsPrimitiveRoot (-1 : R) 2 := by
-  convert! IsPrimitiveRoot.orderOf (-1 : R)
+  convert IsPrimitiveRoot.orderOf (-1 : R)
   rw [orderOf_neg_one, ite_eq_right <| by rwa [ringChar.eq_iff.mpr h]]
 
 /-- If `1 < k` then `(∑ i ∈ range k, ζ ^ i) = 0`. -/
@@ -483,21 +483,27 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         rfl)
 
 @[simp]
-theorem zmodEquivZPowers_apply_coe_int (i : ℤ) :
+theorem zmodEquivZPowers_apply_intCast (i : ℤ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   rw [zmodEquivZPowers, AddEquiv.ofBijective_apply] -- Porting note: Original proof didn't have `rw`
   exact AddMonoidHom.liftOfRightInverse_comp_apply _ _ ZMod.intCast_rightInverse _ _
 
+@[deprecated (since := "2026-10-27")]
+alias zmodEquivZPowers_apply_coe_int := zmodEquivZPowers_apply_intCast
+
 @[simp]
-theorem zmodEquivZPowers_apply_coe_nat (i : ℕ) :
+theorem zmodEquivZPowers_apply_natCast (i : ℕ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   have : (i : ZMod k) = (i : ℤ) := by norm_cast
-  simp only [this, zmodEquivZPowers_apply_coe_int, zpow_natCast]
+  simp only [this, zmodEquivZPowers_apply_intCast, zpow_natCast]
+
+@[deprecated (since := "2026-10-13")]
+alias zmodEquivZPowers_apply_coe_nat := zmodEquivZPowers_apply_natCast
 
 @[simp]
 theorem zmodEquivZPowers_symm_apply_zpow (i : ℤ) :
     h.zmodEquivZPowers.symm (Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ)) = i := by
-  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_coe_int]
+  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_intCast]
 
 @[simp]
 theorem zmodEquivZPowers_symm_apply_zpow' (i : ℤ) : h.zmodEquivZPowers.symm ⟨ζ ^ i, i, rfl⟩ = i :=
@@ -506,7 +512,7 @@ theorem zmodEquivZPowers_symm_apply_zpow' (i : ℤ) : h.zmodEquivZPowers.symm �
 @[simp]
 theorem zmodEquivZPowers_symm_apply_pow (i : ℕ) :
     h.zmodEquivZPowers.symm (Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ)) = i := by
-  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_coe_nat]
+  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_natCast]
 
 @[simp]
 theorem zmodEquivZPowers_symm_apply_pow' (i : ℕ) : h.zmodEquivZPowers.symm ⟨ζ ^ i, i, rfl⟩ = i :=
@@ -719,20 +725,20 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
 @[simps]
 def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     primitiveRoots n R ≃ primitiveRoots n R where
-  toFun x := ⟨x.1 ^ a,
+  toFun x := ⟨x.val ^ a,
     have hr : 0 < n := by by_contra! h; cases x; simp_all
     have hr' : a.Coprime n := by
       simpa [(a.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right a n)
-    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
-  invFun x := ⟨x.1 ^ b,
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.property).pow_of_coprime _ hr'⟩
+  invFun x := ⟨x.val ^ b,
     have hr : 0 < n := by by_contra! h; cases x; simp_all
     have hr' : b.Coprime n := by
       simpa [(b.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right b n)
-    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.property).pow_of_coprime _ hr'⟩
   left_inv x := by ext; simp [← pow_mul,
-    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.property).pow_eq_one]
   right_inv x := by ext; simp [← pow_mul, mul_comm b,
-    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.property).pow_eq_one]
 
 /-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
     `a`-th power given that `n` and `a` are coprime. -/
@@ -759,7 +765,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' [DecidableEq R] {n : ℕ} [NeZer
   constructor
   · intro H
     obtain ⟨k, hk, hx⟩ := exists_pos H (NeZero.ne n)
-    exact ⟨k, hx.2 _ H, (mem_primitiveRoots hk).mpr hx⟩
+    exact ⟨k, hx.dvd_of_pow_eq_one _ H, (mem_primitiveRoots hk).mpr hx⟩
   · rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := Nat.pos_of_ne_zero fun ha₀ ↦ by simp_all
     rw [mem_primitiveRoots hazero] at ha
@@ -795,7 +801,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using! h)
         nth_rw 1 [← pow_one μ'] at h
-        convert! ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
+        convert ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
         exact Nat.cast_one.symm
       map_mul' := by
         intro x y

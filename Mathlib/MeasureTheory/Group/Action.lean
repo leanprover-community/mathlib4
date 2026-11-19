@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Dynamics.Minimal
-public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Measures invariant under group actions
@@ -44,11 +44,11 @@ instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
     SMulInvariantMeasure M α (μ + ν) :=
   ⟨fun c _s hs =>
     show _ + _ = _ + _ from
-      congr_arg₂ (· + ·) (measure_preimage_smul c hs) (measure_preimage_smul c hs)⟩
+      congr($(measure_preimage_smul c hs) + $(measure_preimage_smul c hs))⟩
 
 @[to_additive]
 instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
-  ⟨fun a _s hs => show c • _ = c • _ from congr_arg (c • ·) (measure_preimage_smul a hs)⟩
+  ⟨fun a _s hs => show c • _ = c • _ from congr(c • $(measure_preimage_smul a hs))⟩
 
 @[to_additive]
 instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) :=
@@ -65,7 +65,7 @@ variable {m : MeasurableSpace α} [SMul G α]
 @[to_additive
 /-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/]
 theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) ≤ μ s :=
-  (outerMeasure_le_iff (m := .map (c • ·) μ.1)).2
+  (outerMeasure_le_iff (m := .map (c • ·) μ.toOuterMeasure)).2
     (fun _s hs ↦ (SMulInvariantMeasure.measure_preimage_smul _ hs).le) _
 
 /-- See also `smul_ae`. -/
@@ -84,7 +84,8 @@ theorem measure_preimage_smul_of_nullMeasurableSet (hs : NullMeasurableSet s μ)
     μ ((c • ·) ⁻¹' s) = μ s := by
   rw [← measure_toMeasurable s,
     ← SMulInvariantMeasure.measure_preimage_smul c (measurableSet_toMeasurable μ s)]
-  exact measure_congr (tendsto_smul_ae μ c hs.toMeasurable_ae_eq) |>.symm
+  refine (measure_congr ?_).symm
+  exact tendsto_smul_ae μ c hs.toMeasurable_ae_eq
 
 end AE_smul
 
@@ -160,7 +161,7 @@ theorem eventuallyEmptyOrUniv_smul_set_ae (c : G) {s : Set α} :
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by
-  simp only [ae_le_set, ← smul_set_sdiff, measure_smul_eq_zero_iff]
+  simp only [ae_subset, ← smul_set_sdiff, measure_smul_eq_zero_iff]
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
@@ -261,7 +262,7 @@ theorem smulInvariantMeasure_tfae :
         ∀ (c : G) (s), μ (c • s) = μ s,
         ∀ c : G, Measure.map (c • ·) μ = μ,
         ∀ c : G, MeasurePreserving (c • ·) μ μ] := by
-  tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 1 ↔ 2 := ⟨fun h => h.measure_preimage_smul, fun h => ⟨h⟩⟩
   tfae_have 1 → 6 := fun h c => (measurePreserving_smul c μ).map_eq
   tfae_have 6 → 7 := fun H c => ⟨measurable_const_smul c, H c⟩
   tfae_have 7 → 4 := fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
@@ -355,7 +356,7 @@ theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen 
 theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ := by
   rw [← not_iff_not, ← Ne, ← pos_iff_ne_zero,
-    measure_pos_iff_nonempty_of_smulInvariant G hμ hU, nonempty_iff_ne_empty]
+    measure_pos_iff_nonempty_of_smulInvariant G hμ hU, ← ne_empty_iff_nonempty]
 
 end IsMinimal
 

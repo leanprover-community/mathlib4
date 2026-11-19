@@ -29,7 +29,6 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `Matrix.mulVecᵣ`
 * `Matrix.vecMulᵣ`
 * `Matrix.etaExpand`
-
 -/
 
 @[expose] public section

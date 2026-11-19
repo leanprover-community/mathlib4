@@ -23,7 +23,6 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
   for primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
   `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly the associated primes of `I`.
 - `Submodule.isLasker`: Every Noetherian module is Lasker.
-
 -/
 
 @[expose] public section
@@ -83,10 +82,10 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     contrapose hIJ
     suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
-    · rw [← hI, colon_finsetInf,
-        radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
-      rw [hIJ, ← hJ, colon_finsetInf,
-        radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
+    rw [← hI, colon_finsetInf,
+      radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
+    rw [hIJ, ← hJ, colon_finsetInf,
+      radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
     {N : Submodule R M} {s : Finset (Submodule R M)}
@@ -137,7 +136,7 @@ lemma image_radical_eq_associated_primes
   ext p
   constructor
   · rintro ⟨q, hqt, rfl⟩
-    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    obtain ⟨x, hxt, hxq⟩ := IsConcreteLE.not_le_iff_exists.mp (ht.minimal hqt)
     use (ht.primary hqt).isPrime_radical_colon, x
     rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
       eq_comm, inf_eq_left, Finset.le_inf_iff]
@@ -163,10 +162,10 @@ lemma comap_localized₀_eq_ite
     (s₀ : Finset N.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set N.associatedPrimes))
     (q : Submodule R M) (hqp : q.IsPrimary)
     (p : N.associatedPrimes) (hq : (q.colon Set.univ).radical = p) :
-    letI S := ⨅ q ∈ s₀, q.1.primeCompl
+    letI S := ⨅ q ∈ s₀, q.val.primeCompl
     letI f := mkLinearMap S M
     (localized₀ S f q).comap f = if p ∈ s₀ then q else ⊤ := by
-  set S := ⨅ q ∈ s₀, q.1.primeCompl
+  set S := ⨅ q ∈ s₀, q.val.primeCompl
   set f := mkLinearMap S M
   split_ifs with hp
   · refine le_antisymm (fun x hx ↦ ?_) (map_le_iff_le_comap.mp (map_le_localized₀ S f q))
@@ -179,8 +178,8 @@ lemma comap_localized₀_eq_ite
     grind [Submonoid.mem_iInf, mem_primeCompl_iff]
   · replace hq : ¬ (q.colon Set.univ : Set R) ⊆ ⋃ r ∈ s₀, r := by
       contrapose hp
-      obtain ⟨r, hrs, h⟩ := (subset_union_prime p p fun i _ _ _ ↦ i.2.1).mp hp
-      rw [← r.2.1.radical_le_iff, hq] at h
+      obtain ⟨r, hrs, h⟩ := (subset_union_prime p p fun i _ _ _ ↦ i.property.toIsPrime).mp hp
+      rw [← r.property.toIsPrime.radical_le_iff, hq] at h
       exact hs₀ h hrs
     obtain ⟨y, hy1, hy2⟩ := Set.not_subset_iff_exists_mem_notMem.mp hq
     replace hy2 : y ∈ S := by
@@ -200,10 +199,10 @@ lemma comap_localized₀_eq_iInf
     (s₀ : Finset N.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set N.associatedPrimes))
     (s : Finset (Submodule R M)) (hs : s ⊆ t)
     (hs' : (s.image fun q ↦ (q.colon Set.univ).radical) = s₀.image (↑)) :
-    letI S := ⨅ q ∈ s₀, q.1.primeCompl
+    letI S := ⨅ q ∈ s₀, q.val.primeCompl
     letI f := mkLinearMap S M
     (N.localized₀ S f).comap f = ⨅ q ∈ s, q := by
-  set S := ⨅ q ∈ s₀, q.1.primeCompl
+  set S := ⨅ q ∈ s₀, q.val.primeCompl
   set f := mkLinearMap S M
   rw [← ht.inf_eq, ← localized₀FrameHom_apply, map_finset_inf, Submodule.comap_finsetInf]
   simp_rw [Function.comp_def, id_eq, localized₀FrameHom_apply]
@@ -259,7 +258,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
   · refine le_antisymm (fun r ⟨h1, h2⟩ ↦ ?_) (le_inf (fun x ↦ N.smul_mem (a ^ n)) (by simp))
     simp only [add_eq_sup, SetLike.mem_coe, mem_sup, mem_smul_pointwise_iff_exists] at h2
     obtain ⟨x, hx, -, ⟨y, -, rfl⟩, rfl⟩ := h2
-    have h : (a ^ n • y ∈ N) = (a ^ (n + n) • y ∈ N) := congr_arg (y ∈ ·) (hn (n + n) le_add_self)
+    have h : (a ^ n • y ∈ N) = (a ^ (n + n) • y ∈ N) := congr(y ∈ $(hn (n + n) le_add_self))
     rw [pow_add, mul_smul] at h
     rwa [N.add_mem_iff_right hx, h, ← N.add_mem_iff_right (N.smul_mem (a ^ n) hx), ← smul_add]
   rw [add_eq_sup, sup_eq_left] at h

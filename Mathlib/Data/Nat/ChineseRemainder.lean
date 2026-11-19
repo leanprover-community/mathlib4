@@ -6,9 +6,9 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.List
-public import Mathlib.Data.Nat.ModEq
-public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Data.Nat.ModEq
 
 /-!
 # Chinese Remainder Theorem
