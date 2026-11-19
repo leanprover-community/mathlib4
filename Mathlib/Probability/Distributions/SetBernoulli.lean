@@ -164,13 +164,16 @@ end Countable
 variable (X u p P) in
 /-- A random variable `X : Ω → Set ι` is `p`-bernoulli on a set `u : Set ι` if its distribution is
 the product over `u` of `p`-bernoulli distributions. -/
+@[deprecated HasLaw +typeChanged (since := "2026-11-19")]
 abbrev IsSetBernoulli : Prop := HasLaw X setBer(u, p) P
 
+@[deprecated hasLaw_congr +typeChanged (since := "2026-11-19")]
 lemma isSetBernoulli_congr (hXY : X =ᵐ[P] Y) : IsSetBernoulli X u p P ↔ IsSetBernoulli Y u p P :=
   hasLaw_congr hXY
 
 variable [Countable ι]
 
+@[deprecated "Use `HasLaw.ae_iff` and `setBernoulli_ae_subset`." (since := "2026-11-19")]
 lemma IsSetBernoulli.ae_subset (hX : IsSetBernoulli X u p P) : ∀ᵐ ω ∂P, X ω ⊆ u :=
   (hX.ae_iff <| by fun_prop).2 setBernoulli_ae_subset
 
