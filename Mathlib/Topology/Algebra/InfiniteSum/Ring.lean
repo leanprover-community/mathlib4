@@ -40,9 +40,11 @@ theorem HasSum.mul_left (a₂) (h : HasSum f a₁ L) : HasSum (fun i ↦ a₂ * 
 theorem HasSum.mul_right (a₂) (hf : HasSum f a₁ L) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) L := by
   simpa only using! hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul continuous_const)
 
+@[fun_prop]
 theorem Summable.mul_left (a) (hf : Summable f L) : Summable (fun i ↦ a * f i) L :=
   (hf.hasSum.mul_left _).summable
 
+@[fun_prop]
 theorem Summable.mul_right (a) (hf : Summable f L) : Summable (fun i ↦ f i * a) L :=
   (hf.hasSum.mul_right _).summable
 
@@ -220,7 +222,7 @@ theorem summable_sum_mul_antidiagonal_of_summable_mul
     (h : Summable fun x : A × A ↦ f x.1 * g x.2) :
     Summable fun n ↦ ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 := by
   rw [summable_mul_prod_iff_summable_mul_sigma_antidiagonal] at h
-  conv => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype (L := .unconditional _)]
+  conv => enter [1, _]; rw [← Finset.sum_finset_coe, ← tsum_fintype (L := .unconditional _)]
   exact h.sigma' fun n ↦ (hasSum_fintype _).summable
 
 /-- The **Cauchy product formula** for the product of two infinite sums indexed by `ℕ`, expressed
@@ -231,7 +233,7 @@ summable. -/
 protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f)
     (hg : Summable g) (hfg : Summable fun x : A × A ↦ f x.1 * g x.2) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 := by
-  conv_rhs => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype (L := .unconditional _)]
+  conv_rhs => enter [1, _]; rw [← Finset.sum_finset_coe, ← tsum_fintype (L := .unconditional _)]
   rw [hf.tsum_mul_tsum hg hfg, ← HasAntidiagonal.sigmaAntidiagonalEquivProd.tsum_eq (_ : A × A → α)]
   exact (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg).tsum_sigma'
     (fun n ↦ (hasSum_fintype _).summable)

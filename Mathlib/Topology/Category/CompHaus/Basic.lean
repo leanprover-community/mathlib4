@@ -30,7 +30,6 @@ definitions are introduced.
 
 The category `CompHaus` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section
@@ -92,10 +91,10 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     (stoneCechObj X ⟶ Y) ≃ (X ⟶ compHausToTop.obj Y) where
   toFun f := TopCat.ofHom
     { toFun := f ∘ stoneCechUnit
-      continuous_toFun := f.hom.hom.2.comp (@continuous_stoneCechUnit X _) }
+      continuous_toFun := Continuous.comp (by fun_prop) (@continuous_stoneCechUnit X _) }
   invFun f := CompHausLike.ofHom _
-    { toFun := stoneCechExtend f.hom.2
-      continuous_toFun := continuous_stoneCechExtend f.hom.2 }
+    { toFun := stoneCechExtend (by fun_prop)
+      continuous_toFun := continuous_stoneCechExtend (map_continuous f.hom) }
   left_inv := by
     rintro ⟨f, hf : Continuous f⟩
     ext x
@@ -209,7 +208,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       rw [← cancel_epi f]
       ext x : 4
       simp [g, h, Z, hφ0 (Set.mem_range_self x)]
-    apply_fun fun e => (e y).down.1 at H
+    apply_fun fun e => (e y).down.val at H
     dsimp [g, h, Z] at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H

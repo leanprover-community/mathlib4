@@ -34,7 +34,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `p : MvPolynomial σ α`
-
 -/
 
 @[expose] public section
@@ -309,8 +308,8 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
   obtain ⟨s₂, q₂, rfl⟩ := exists_finset_rename p₂
   classical
     use s₁ ∪ s₂
-    use rename (fun x ↦ ⟨x, Finset.subset_union_left x.2⟩) q₁
-    use rename (fun x ↦ ⟨x, Finset.subset_union_right x.2⟩) q₂
+    use rename (fun x ↦ ⟨x, Finset.subset_union_left x.property⟩) q₁
+    use rename (fun x ↦ ⟨x, Finset.subset_union_right x.property⟩) q₂
     constructor <;> simp [Function.comp_def]
 
 /-- Every polynomial is a polynomial in finitely many variables. -/

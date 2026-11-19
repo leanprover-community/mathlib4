@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
-
 # Weakly Quasi-finite primes
 
 The definition `Algebra.QuasiFiniteAt` is equivalent to the usual definition "isolated in fibers"
@@ -30,7 +29,6 @@ This is fine mathematically because the set of quasi-finite primes is open
 to be stated with an a priori weaker notion of quasi-finite.
 Hence we introduce `Algebra.WeaklyQuasiFiniteAt` where we mod out all the primes that lie in a
 different fiber.
-
 -/
 
 @[expose] public section
@@ -93,7 +91,7 @@ lemma of_algHom_localization (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
     intro x hx
     by_contra hx'
     have : IsLocalHom f.toRingHom := .of_surjective _ hf
-    have := this.1 (algebraMap _ _ x) (by
+    have := this.map_nonunit (algebraMap _ _ x) (by
       suffices IsUnit (IsLocalization.mk' (M := q.primeCompl) (Localization.AtPrime q)
         (algebraMap _ _ x) 1) by simpa [IsLocalization.mk'_one] using! this
       simpa [IsLocalization.AtPrime.isUnit_mk'_iff])

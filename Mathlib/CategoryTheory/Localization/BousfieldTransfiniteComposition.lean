@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 If `P : ObjectProperty C`, then `P.isLocal : MorphismProperty C`
 is stable under transfinite compositions.
-
 -/
 
 public section
@@ -50,19 +49,19 @@ instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT 
         .ofExists (fun j hj ↦ (hf.map_mem j hj _ hZ).2) (fun j hj s ↦ by
           let c : Cocone ((Set.principalSegIio j).monotone.functor ⋙ hf.F) :=
             { pt := Z
-              ι.app k := s.1 (op k)
+              ι.app k := s.val (op k)
               ι.naturality _ _ g := by
                 dsimp
-                simpa only [Category.comp_id] using! s.2 g.op }
+                simpa only [Category.comp_id] using! s.property g.op }
           exact ⟨(hf.F.isColimitOfIsWellOrderContinuous j hj).desc c, fun k hk ↦
             by simpa using! (hf.F.isColimitOfIsWellOrderContinuous j hj).fac c ⟨k, hk⟩⟩)
       let σ := d.sectionsMk (hf.isoBot.hom ≫ g)
       let c : Cocone hf.F :=
         { pt := Z
-          ι.app j := σ.1 (op j)
+          ι.app j := σ.val (op j)
           ι.naturality _ _ f := by
             dsimp
-            simpa only [Category.comp_id] using! σ.2 f.op }
+            simpa only [Category.comp_id] using! σ.property f.op }
       exact ⟨hf.isColimit.desc c, by
         simp only [← hf.fac, Category.assoc, hf.isColimit.fac c ⊥, c, σ,
           d.sectionsMk_val_op_bot, Iso.inv_hom_id_assoc]⟩

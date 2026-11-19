@@ -120,7 +120,7 @@ abbrev end_ : Type max w u :=
 
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ Type*`, this is the projection `end_ F ⟶ (F.obj (op j)).obj j`
 for any `j : J`, which sends `x` to `x.1 j`. -/
-def end_.π (j : J) : end_ F ⟶ (F.obj (op j)).obj j := ↾fun x ↦ x.1 j
+def end_.π (j : J) : end_ F ⟶ (F.obj (op j)).obj j := ↾fun x ↦ x.val j
 
 variable {F}
 
@@ -128,7 +128,7 @@ variable {F}
 lemma end_.condition {i j : J} (f : i ⟶ j) :
     end_.π F i ≫ (F.obj (op i)).map f = end_.π F j ≫ (F.map f.op).app j := by
   ext x
-  exact x.2 f
+  exact x.property f
 
 variable (F)
 
@@ -161,7 +161,7 @@ lemma Types.chosenEnd_def : chosenEnd F = Types.end_ F := rfl
 attribute [local simp] Types.chosenEnd_def
 
 lemma chosenEnd.π_apply (j : J) (x : Types.end_ F) :
-    dsimp% chosenEnd.π (C := Type max w u) F j x = x.1 j :=
+    dsimp% chosenEnd.π (C := Type max w u) F j x = x.val j :=
   rfl
 
 lemma chosenEnd.lift_apply {X : Type max w u} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
@@ -173,10 +173,10 @@ lemma chosenEnd.lift_apply {X : Type max w u} (f : ∀ j, X ⟶ (F.obj (op j)).o
 lemma chosenEnd.map_apply {G : Jᵒᵖ ⥤ J ⥤ Type max w u} (f : F ⟶ G)
     (x : Types.end_ F) :
     dsimp% chosenEnd.map (C := Type max w u) f x =
-      ⟨fun j ↦ (f.app (op j)).app j (x.1 j), by
+      ⟨fun j ↦ (f.app (op j)).app j (x.val j), by
         intro i j g
         rw [← (f.app (op i)).naturality_apply]
-        simp [x.2 g, ← comp_apply, -types_comp_apply]⟩ :=
+        simp [x.property g, ← comp_apply, -types_comp_apply]⟩ :=
   rfl
 
 end CategoryTheory.Limits

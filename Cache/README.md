@@ -101,11 +101,11 @@ contract `/{container}/{key}`. Container names accepted by `--cache-from=LIST`:
 `cache get` resolves a file by trying a default chain of containers in
 order, depending on the repo:
 
-| GitHub repo                                         | Container order tried |
-|-----------------------------------------------------|-----------------------|
-| `leanprover-community/mathlib4`                     | `master`              |
-| any fork (PRs), `mathlib4-nightly-testing` included | `master`, `forks`     |
-| downstream with mathlib as a dependency             | `master`              |
+| GitHub repo                             | Container order tried |
+|-----------------------------------------|-----------------------|
+| `leanprover-community/mathlib4`         | `master`              |
+| any fork (PRs)                          | `master`, `forks`     |
+| downstream with mathlib as a dependency | `master`              |
 
 Override the read chain with `--cache-from=LIST`:
 
@@ -319,10 +319,13 @@ Mathlib or `MathlibTest`. Exits 0 on success, non-zero on failure.
 
 The cache system automatically downloads and manages:
 
-- **curl** (>=7.75, preferably >=7.84) - for HTTP transfers
+- **curl** (>=7.84) - for parallel downloads
 - **leantar** - for `.ltar` compression/decompression
 
-If your system curl is too old, a static binary is downloaded automatically on Linux.
+Downloads use a static curl on Linux x86_64 and aarch64 if the system version is too old.
+On other platforms, older curl versions use serial downloads.
+curl 8.18 and 8.19 run parallel downloads without retries (these versions hang on parallel retries).
+Uploads require curl >=8.20 on `PATH`.
 
 ## File Locations
 

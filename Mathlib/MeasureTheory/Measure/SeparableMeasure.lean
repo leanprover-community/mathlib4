@@ -118,8 +118,7 @@ theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.comp
     refine ⟨t, ht, ?_⟩
     convert hμst using 1
     rw [completion_apply]
-    exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm
-      Filter.EventuallyEq.rfl
+    exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm .rfl
 
 /-- If a family of sets `𝒜` is measure-dense in `X`, then any measurable set with finite measure
 can be approximated by sets in `𝒜` with finite measure. -/
@@ -443,7 +442,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   -- we define the function `key` which given an integer `n` and two families of `n` elements
   -- in `u` and `𝒜₀` associates the corresponding sum.
   let key (n : ℕ) (d : Fin n → u) (s : Fin n → 𝒜₀) : (Lp E p μ) :=
-    ∑ i, indicatorConstLp p (h𝒜₀.measurable (s i) (Subtype.mem (s i))) (s i).2.2 (d i : E)
+    ∑ i, indicatorConstLp p (h𝒜₀.measurable (s i) (Subtype.mem (s i))) (s i).property.2 (d i : E)
   let D := {s : Lp E p μ | ∃ n d t, s = key n d t}
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below

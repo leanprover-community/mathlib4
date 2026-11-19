@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives on `WithLp`
 -/

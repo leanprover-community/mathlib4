@@ -45,7 +45,6 @@ Given a `CommShift` structure on a functor `F`, we define a `CommShift` structur
 We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures on
 `F` and `G`, then the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite
 `CommShift` structures.
-
 -/
 
 @[expose] public section
@@ -62,6 +61,7 @@ namespace HasShift
 
 /-- Construction of the naive shift on the opposite category of a category `C`:
 the shiftfunctor by `n` is `(shiftFunctor C n).op`. -/
+@[implicit_reducible]
 def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
   F n := (shiftFunctor C n).op
   zero := (NatIso.op (shiftFunctorZero C A)).symm
@@ -78,7 +78,7 @@ end HasShift
 
 /-- The category `OppositeShift C A` is the opposite category `Cᵒᵖ` equipped
 with the naive shift: `shiftFunctor (OppositeShift C A) n` is `(shiftFunctor C n).op`. -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, implicit_reducible]
 def OppositeShift (A : Type*) [AddMonoid A] [HasShift C A] := Cᵒᵖ
 
 instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)

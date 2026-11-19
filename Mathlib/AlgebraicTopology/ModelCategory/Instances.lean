@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 
 In this file, we deduce basic properties of fibrations, cofibrations,
 and weak equivalences from the axioms of model categories.
-
 -/
 
 public section

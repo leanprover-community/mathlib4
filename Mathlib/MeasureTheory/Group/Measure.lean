@@ -119,7 +119,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
   · simp_rw [Measure.ext_iff]
     refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_const_mul g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.map_mul_left_eq_self⟩
 
 /-- An alternative way to prove that `μ` is right invariant under multiplication. -/
 @[to_additive /-- An alternative way to prove that `μ` is right invariant under addition. -/]
@@ -130,7 +130,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
   · simp_rw [Measure.ext_iff]
     refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_mul_const g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.map_mul_right_eq_self⟩
 
 @[to_additive]
 instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] {H : Type*}
@@ -292,7 +292,8 @@ lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : Measurab
     _ = μ univ := by
       rw [← measure_iUnion _ fun _ ↦ hH.const_smul _]
       · simp [hs.mul_eq]
-      · exact fun a b hab ↦ hs.pairwiseDisjoint_smul a.2 b.2 (Subtype.val_injective.ne hab)
+      · exact fun a b hab ↦
+          hs.pairwiseDisjoint_smul a.property b.property (Subtype.val_injective.ne hab)
 
 end Group
 
@@ -632,7 +633,7 @@ theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) 
 @[to_additive]
 theorem measure_ne_zero_iff_nonempty_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {s : Set G}
     (hs : IsOpen s) : μ s ≠ 0 ↔ s.Nonempty := by
-  simpa [null_iff_of_isMulLeftInvariant (μ := μ) hs, hμ] using nonempty_iff_ne_empty.symm
+  simp [null_iff_of_isMulLeftInvariant (μ := μ) hs, hμ]
 
 @[to_additive]
 theorem measure_pos_iff_nonempty_of_isMulLeftInvariant [Regular μ] (h3μ : μ ≠ 0) {s : Set G}

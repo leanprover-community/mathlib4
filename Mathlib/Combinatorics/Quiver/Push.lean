@@ -8,12 +8,10 @@ module
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 
 /-!
-
 # Pushing a quiver structure along a map
 
 Given a map `σ : V → W` and a `Quiver` instance on `V`, this file defines a `Quiver` instance
 on `W` by associating to each arrow `v ⟶ v'` in `V` an arrow `σ v ⟶ σ v'` in `W`.
-
 -/
 
 @[expose] public section

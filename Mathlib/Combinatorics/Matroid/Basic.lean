@@ -452,7 +452,7 @@ theorem empty_not_isBase [h : RankPos M] : ¬M.IsBase ∅ :=
   h.empty_not_isBase
 
 theorem IsBase.nonempty [RankPos M] (hB : M.IsBase B) : B.Nonempty := by
-  rw [nonempty_iff_ne_empty]; rintro rfl; exact M.empty_not_isBase hB
+  by_contra! rfl; exact M.empty_not_isBase hB
 
 theorem IsBase.rankPos_of_nonempty (hB : M.IsBase B) (h : B.Nonempty) : M.RankPos := by
   rw [rankPos_iff]
@@ -599,7 +599,7 @@ theorem IsBase.indep (hB : M.IsBase B) : M.Indep B :=
   Exists.elim M.exists_isBase (fun _ hB ↦ hB.indep.subset (empty_subset _))
 
 theorem Dep.nonempty (hD : M.Dep D) : D.Nonempty := by
-  rw [nonempty_iff_ne_empty]; rintro rfl; exact hD.not_indep M.empty_indep
+  by_contra! rfl; exact hD.not_indep M.empty_indep
 
 theorem Indep.finite [RankFinite M] (hI : M.Indep I) : I.Finite :=
   let ⟨_, hB, hIB⟩ := hI.exists_isBase_superset
@@ -670,7 +670,7 @@ theorem IsBase.exchange_isBase_of_indep (hB : M.IsBase B) (hf : f ∉ B)
   rw [h, encard_singleton, encard_eq_one] at hcard
   obtain ⟨x, hx⟩ := hcard
   obtain (rfl : f = x) := hx.subset ⟨hfB, hf⟩
-  simp_rw [← h, ← singleton_union, ← hx, _root_.sdiff_sdiff_right_self, inf_eq_inter, inter_comm B,
+  simp_rw [← h, ← singleton_union, ← hx, _root_.sdiff_sdiff_right_self, inter_comm B,
     sdiff_union_inter]
   exact hB'
 
