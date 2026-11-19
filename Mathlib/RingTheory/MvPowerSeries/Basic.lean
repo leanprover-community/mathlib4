@@ -552,8 +552,7 @@ theorem mapAddMonoidHom_X (s : σ) : mapAddMonoidHom f (X s) = f 1 • X s := by
   simp [X, smul_eq_C_mul, coeff_C_mul, coeff_monomial]
 
 @[simp]
-theorem mapAddMonoidHom_mapAddMonoidHom {S₁ S₂ : Type*} [CommSemiring S₁] [CommSemiring S₂]
-    (f : R →+ S₁) (g : S₁ →+ S₂) (p : MvPowerSeries σ R) :
+theorem mapAddMonoidHom_mapAddMonoidHom (p : MvPowerSeries σ R) :
     mapAddMonoidHom g (mapAddMonoidHom f p) = mapAddMonoidHom (g.comp f) p := by
   ext n
   simp
@@ -618,9 +617,7 @@ theorem map_C (a : R) : map (σ := σ) f (C a) = C (f a) :=
 theorem map_X (s : σ) : map f (X s) = X s := by simp [MvPowerSeries.X]
 
 @[simp]
-theorem map_map {S₁ S₂ : Type*} [CommSemiring S₁] [CommSemiring S₂]
-    (f : R →+* S₁) (g : S₁ →+* S₂) (p : MvPowerSeries σ R) :
-    map g (map f p) = map (g.comp f) p := by
+theorem map_map (p : MvPowerSeries σ R) : map g (map f p) = map (g.comp f) p := by
   ext n
   simp
 
