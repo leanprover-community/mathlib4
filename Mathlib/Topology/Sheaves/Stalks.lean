@@ -303,7 +303,7 @@ def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
   colimit.desc ((OpenNhds.inclusion x).op ⋙ (Presheaf.pullback C f).obj F)
     { pt := F.stalk (f x)
       ι :=
-        { app := fun U => F.germToPullbackStalk _ f (unop U).1 x (unop U).2
+        { app := fun U => F.germToPullbackStalk _ f (unop U).val x (unop U).property
           naturality := fun U V i => by
             dsimp
             ext W hW
@@ -347,14 +347,15 @@ noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
   refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
-        (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.is_open' (unop U).2 :)⟩)
+        (op ⟨(unop U).val,
+          (specializes_iff_forall_open.mp h _ (unop U).val.is_open' (unop U).property :)⟩)
   · intro U V i
     dsimp
     rw [Category.comp_id]
     let U' : OpenNhds x :=
-      ⟨_, (specializes_iff_forall_open.mp h _ (unop U).1.is_open' (unop U).2 :)⟩
+      ⟨_, (specializes_iff_forall_open.mp h _ (unop U).val.is_open' (unop U).property :)⟩
     let V' : OpenNhds x :=
-      ⟨_, (specializes_iff_forall_open.mp h _ (unop V).1.is_open' (unop V).2 :)⟩
+      ⟨_, (specializes_iff_forall_open.mp h _ (unop V).val.is_open' (unop V).property :)⟩
     exact colimit.w ((OpenNhds.inclusion x).op ⋙ F) (show V' ⟶ U' from i.unop).op
 
 @[reassoc (attr := simp), elementwise nosimp]
@@ -447,7 +448,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
     (h : F.germ U x mU s = F.germ V x mV t) :
     ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
   obtain ⟨W, iU, iV, e⟩ := (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)).eq_iff.mp h
-  exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
+  exact ⟨(unop W).val, (unop W).property, iU.unop, iV.unop, e⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F ⟶ G}
@@ -510,7 +511,8 @@ theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : ToType (F.obj.obj (op U
     (h : ∀ (x : X) (hx : x ∈ U), F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) : s = t := by
   -- We use `germ_eq` and the axiom of choice, to pick for every point `x` a neighbourhood
   -- `V x`, such that the restrictions of `s` and `t` to `V x` coincide.
-  choose V m i₁ i₂ heq using fun x : U => F.presheaf.germ_eq x.1 x.2 x.2 s t (h x.1 x.2)
+  choose V m i₁ i₂ heq using fun x : U =>
+    F.presheaf.germ_eq x.val x.property x.property s t (h x.val x.property)
   -- Since `F` is a sheaf, we can prove the equality locally, if we can show that these
   -- neighborhoods form a cover of `U`.
   apply F.eq_of_locally_eq' V U i₁
@@ -647,7 +649,7 @@ theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : O
   apply app_bijective_of_stalkFunctor_map_bijective
   intro x hx
   apply (bijective_iff_isIso_ofHom _).mpr
-  exact Functor.map_isIso (forget C) ((stalkFunctor C (⟨x, hx⟩ : U).1).map f.hom)
+  exact Functor.map_isIso (forget C) ((stalkFunctor C (⟨x, hx⟩ : U).val).map f.hom)
 
 include instCC in
 -- Making this an instance would cause a loop in typeclass resolution with `Functor.map_isIso`

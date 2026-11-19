@@ -239,7 +239,7 @@ theorem ext_ring [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} (h : f 1 =
   coe_inj.1 <| LinearMap.ext_ring h
 
 @[simp]
-theorem apply_val_ker (f : M₁ →SL[σ₁₂] M₂) (x : f.ker) : f x = 0 := x.2
+theorem apply_val_ker (f : M₁ →SL[σ₁₂] M₂) (x : f.ker) : f x = 0 := x.property
 
 /-- If two continuous linear maps are equal on a set `s`, then they are equal on the closure
 of the `Submodule.span` of this set. -/

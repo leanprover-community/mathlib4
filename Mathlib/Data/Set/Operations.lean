@@ -148,7 +148,7 @@ theorem mem_image_of_mem (f : α → β) {x : α} {a : Set α} (h : x ∈ a) : f
 
 /-- Restriction of `f` to `s` factors through `s.imageFactorization f : s → f '' s`. -/
 def imageFactorization (f : α → β) (s : Set α) : s → f '' s := fun p =>
-  ⟨f p.1, mem_image_of_mem f p.2⟩
+  ⟨f p.val, mem_image_of_mem f p.property⟩
 
 /-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
 def kernImage (f : α → β) (s : Set α) : Set β := {y | ∀ ⦃x⦄, f x = y → x ∈ s}
@@ -190,16 +190,16 @@ def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_
 
 lemma rangeFactorization_eq_iff {ι : Sort*} {α : Type*} {f : ι → α} (a : ι) (b : Set.range f) :
     Set.rangeFactorization f a = b ↔ f a = b := by
-  rw [Set.rangeFactorization, ← b.coe_eta b.2, Subtype.ext_iff]
+  rw [Set.rangeFactorization, ← b.coe_eta b.property, Subtype.ext_iff]
 
 end Range
 
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
-noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
+noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.property.choose
 
 -- This cannot be a `@[simp]` lemma because the head of the left-hand side is a variable.
 theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
-  x.2.choose_spec
+  x.property.choose_spec
 
 @[simp]
 theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.val := by

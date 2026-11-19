@@ -1148,8 +1148,8 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   · rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
     simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation,
       OneMemClass.coe_one, map_one, div_one]
-    rw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.1,
-      embedding_restrict₀ s.1]
+    rw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.val,
+      embedding_restrict₀ s.val]
     simpa using h
   · simp [restrict₀_apply, embed]
   · simp [restrict₀_apply, embed]

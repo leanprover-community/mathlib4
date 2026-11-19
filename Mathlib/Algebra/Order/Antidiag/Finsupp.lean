@@ -43,8 +43,9 @@ variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq �
 
 /-- The finset of functions `ι →₀ μ` with support contained in `s` and sum equal to `n`. -/
 def finsuppAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
-  (piAntidiagonal s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
-    simpa using (mem_piAntidiagonal.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
+  (piAntidiagonal s n).attach.map ⟨fun f ↦ ⟨s.filter (f.val · ≠ 0), f.val, by
+    simpa using (mem_piAntidiagonal.1 f.property).2⟩,
+    fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
 
 @[deprecated (since := "2026-09-06")] alias finsuppAntidiag := finsuppAntidiagonal
 

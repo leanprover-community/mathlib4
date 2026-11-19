@@ -225,7 +225,7 @@ lemma lift_ι : lift f hf ≫ B.ι = f := rfl
 
 @[simp]
 lemma lift_app_coe {n : SimplexCategoryᵒᵖ} (x : X.obj n) :
-    dsimp% ((lift f hf).app _ x).1 = f.app _ x := rfl
+    dsimp% ((lift f hf).app _ x).val = f.app _ x := rfl
 
 end
 

@@ -44,11 +44,11 @@ whose sum is `n`. -/
 noncomputable def finsuppAntidiagonalEquivSubtype :
     s.finsuppAntidiagonal n ≃ { P : s →₀ μ // (P.sum fun (_ : s) ↦ id) = n } where
   toFun f := ⟨subtypeDomain (· ∈ s) f.val, by
-    have hf := f.2
+    have hf := f.property
     rw [mem_finsuppAntidiagonal'] at hf
     simpa [sum, filter_mem_eq_inter, inter_eq_left.mpr hf.2] using hf.1⟩
   invFun f := ⟨extendDomain f.val, mem_finsuppAntidiagonal'.mpr
-    ⟨by simpa [sum] using f.2, by simp [map_eq_image, image_subset_iff]⟩⟩
+    ⟨by simpa [sum] using f.property, by simp [map_eq_image, image_subset_iff]⟩⟩
   left_inv f := by
     obtain ⟨hsum, hs⟩ := mem_finsuppAntidiagonal.mp f.prop
     ext1

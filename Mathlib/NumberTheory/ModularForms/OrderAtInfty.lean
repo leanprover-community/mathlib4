@@ -131,7 +131,7 @@ lemma orderAtInfty_comp_equiv (e : ℍ ≃ ℍ) {a : ℝ} (ha : 0 < a) (he : ∀
       grind
   refine le_antisymm (iSup_le fun t ↦ ?_) ?_
   · rw [← EReal.div_le_iff_le_mul (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a), ← EReal.coe_div]
-    exact le_orderAtInfty_of_isBigO ((hbigO t).mp t.2)
+    exact le_orderAtInfty_of_isBigO ((hbigO t).mp t.property)
   · rw [EReal.mul_comm, ← EReal.le_div_iff_mul_le (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a)]
     refine iSup_le fun ⟨s, hs⟩ ↦ ?_
     rw [EReal.le_div_iff_mul_le (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a), ← EReal.coe_mul]
@@ -150,7 +150,7 @@ variable {F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] {g : 
 
 lemma _root_.Asymptotics.IsBigO.orderAtInfty_le (hfg : f =O[atImInfty] g) :
     orderAtInfty g ≤ orderAtInfty f :=
-  iSup_le fun t ↦ le_orderAtInfty_of_isBigO (hfg.trans t.2)
+  iSup_le fun t ↦ le_orderAtInfty_of_isBigO (hfg.trans t.property)
 
 lemma _root_.Asymptotics.IsTheta.orderAtInfty_eq (hfg : f =Θ[atImInfty] g) :
     orderAtInfty f = orderAtInfty g :=

@@ -251,11 +251,11 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
       exacts [Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
-        fun _ => by ext; rfl⟩
+      ⟨fun p => ⟨p.val.1, by convert p.property⟩, fun x => ⟨⟨_, _⟩, x.property⟩,
+        fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, p.2.trans congr(Sum.inr $(Subsingleton.elim ..))⟩,
-        fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
+      ⟨fun p => ⟨p.val.1, p.property.trans congr(Sum.inr $(Subsingleton.elim ..))⟩,
+        fun x => ⟨⟨_, _⟩, x.property⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
     · exact fun s => ↾fun x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
         fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
@@ -290,12 +290,12 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
   have h₁ : Set.range (TopCat.pullbackFst f (TopCat.binaryCofan ↧PUnit ↧PUnit).inl) =
       f ⁻¹' Set.range Sum.inl := by
     apply le_antisymm
-    · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.2.symm⟩
+    · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.property.symm⟩
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   have h₂ : Set.range (TopCat.pullbackFst f (TopCat.binaryCofan ↧PUnit ↧PUnit).inr) =
       f ⁻¹' Set.range Sum.inr := by
     apply le_antisymm
-    · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.2.symm⟩
+    · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.property.symm⟩
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩

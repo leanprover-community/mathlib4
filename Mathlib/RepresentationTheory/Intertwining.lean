@@ -652,7 +652,7 @@ noncomputable def centralAlgebraMul {z : A[G]} (hz : z ∈ Submonoid.center A[G]
 /-- `centralAlgebraMul` as monoid homomorphism from the center of `A[G]` to intertwining map
   from any representation of `G` to itself. -/
 @[simps] noncomputable def centralAlgebraMulHom : Submonoid.center A[G] →* ρ.IntertwiningMap ρ where
-  toFun z := centralAlgebraMul _ z.2
+  toFun z := centralAlgebraMul _ z.property
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
