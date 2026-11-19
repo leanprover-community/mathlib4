@@ -1138,17 +1138,21 @@ where finally
   · exact (integral_smul · ·)
   · rcases hμ.exists_integrable with ⟨n, h⟩
     let m := (n, 0)
-    use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
-    refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
-    have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
-        (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
-      intro x
-      rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff₀' (by positivity), rpow_natCast]
-      simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
-    apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
-    · unfold schwartzSeminormFamily
-      rw [integral_mul_const, ← mul_assoc, mul_comm (2 ^ n)]
-    apply h.mul_const
+    use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ, by positivity
+    intro f
+    calc
+      _ ≤ ∫ x, ‖f x‖ ∂μ := norm_integral_le_integral_norm f
+      _ ≤ ∫ x, (1 + ‖x‖) ^ (-(n : ℝ)) *
+          (2 ^ n * ((Finset.Iic m).sup fun m' ↦ SchwartzMap.seminorm 𝕜 m'.1 m'.2) f) ∂μ := by
+        refine integral_mono ?_ (h.mul_const _) ?_
+        · simpa using f.integrable_pow_mul μ 0
+        · intro x
+          simp only [rpow_neg_natCast, zpow_neg, zpow_natCast]
+          rw [← div_eq_inv_mul, le_div_iff₀' (by positivity)]
+          simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
+      _ ≤ _ := by
+        unfold schwartzSeminormFamily
+        rw [integral_mul_const, ← mul_assoc, mul_comm (2 ^ n)]
 
 variable (𝕜) in
 @[simp]
