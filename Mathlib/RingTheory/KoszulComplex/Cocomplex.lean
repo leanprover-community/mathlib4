@@ -90,13 +90,8 @@ noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} 
   CochainComplex.of (fun n ↦ of R (⋀[R]^n M))
     (fun n ↦ ofHom (koszulCocomplex.d R M x n))
     (fun n ↦ by
-      simp only [← ofHom_comp]
-      congr
-      refine LinearMap.ext fun x ↦ Subtype.ext ?_
-      simp [exteriorPower.oneEquiv_symm_apply, LinearMap.coe_comp, Function.comp_apply,
-        GradedAlgebra.linearGMul_eq_mul, exteriorPower.ιMulti_apply_coe,
-        ExteriorAlgebra.ιMulti_succ_apply, ExteriorAlgebra.ιMulti_zero_apply, mul_one, ← mul_assoc,
-        CliffordAlgebra.ι_sq_scalar, zero_apply, map_zero, zero_mul])
+      ext
+      simp [← mul_assoc, exteriorPower.oneEquiv_symm_apply])
 
 namespace koszulCocomplex
 
