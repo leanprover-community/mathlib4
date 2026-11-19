@@ -227,7 +227,7 @@ and the base type should not be `ℕ` or `ℤ`, as that is handled by `abel_nf`.
 -/
 def moduleNF : NormTactic where
   tacStx loc? := `(tactic| module_nf $[$loc?]?)
-  convStx := failure
+  convStx := failure -- `module_nf` doesn't have a `conv` verions.
   run e := do
     let base ← ModuleNF.inferBase #[e]
     guard !(base.2 matches .const ``Nat _ | .const ``Int _)

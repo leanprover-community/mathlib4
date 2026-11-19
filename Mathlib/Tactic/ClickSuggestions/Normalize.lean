@@ -37,20 +37,20 @@ public structure PositionInfo where
   /-- At which subexpression. -/
   convPath? : Option Conv.Path
 
-/-- A `NormStx` stores the syntax for a normalization tactic. -/
+/-- The various syntaxes for a normalization tactic. -/
 public structure NormStx where
-  /-- The `tactic` syntax. -/
+  /-- The `tactic` syntax, which can depend on a location (e.g. `at h`). -/
   tacStx : Option (TSyntax ``Parser.Tactic.location) → CoreM (TSyntax `tactic)
-  /-- The `conv` syntax. -/
+  /-- The `conv` syntax. In some cases this is not available, in which case it is set to `none`. -/
   convStx : OptionT CoreM (TSyntax `conv)
 
-/-- `NormTactic` stores the information needed for suggesting a normalizing tactic. -/
+/-- The information for suggesting a normalizing tactic. -/
 public structure NormTactic extends NormStx where
   /-- Normalize the given expression, throwing an error if the tactic doesn't apply. -/
   run : Expr → MetaM Expr
 
 /--
-Given that some normalization tactic changes `old` to `new`, return the suggestion for this tactic.
+If `new` is different from `old`, return a suggestion for normalizing to `new`.
 Note that some tactics have no `conv` analogue, so in that case we
 default to suggesting the usual version of the tactic.
 -/
@@ -61,13 +61,12 @@ def suggestNormalize (old new : Expr) (info : PositionInfo) (stx : NormStx) :
     | some convStx, some path => Conv.pathToStx convStx path info.hyp?
     | _, _ => stx.tacStx (← info.hyp?.mapM fun hyp ↦
       `(Lean.Parser.Tactic.location| at $(mkIdent hyp):ident))
-  let mut html ← exprToHtml new
   let solves := info.convPath?.isNone &&
     (info.hyp?.isNone && new.isTrue || info.hyp?.isSome && new.isFalse)
   if solves then
     addSolvingSuggestion tac
   let button := (← PrettyPrinter.ppTactic (← stx.tacStx none)).pretty
-  mkSuggestion tac button html (solves := solves)
+  mkSuggestion tac button (← exprToHtml new) (solves := solves)
 
 section Cast
 
@@ -85,8 +84,7 @@ public def pushCast : NormTactic where
       (congrTheorems := ← getSimpCongrTheorems)
     return (← Lean.Meta.simp e ctx).1.expr
   tacStx loc? := `(tactic| push_cast $[$loc?:location]?)
-  -- There is no `conv` version of `push_cast`.
-  convStx := failure
+  convStx := failure -- `push_cast` doesn't have a `conv` version.
 
 end Cast
 
@@ -120,24 +118,28 @@ def getHead (e : Expr) : Option Push.Head :=
   | .const c _ => some (.const c)
   | _ => none
 
-/-- Create a suggestion for `push` using the head constant of `e`.
+/--
+Create a suggestion for `push` using the head constant of `e`.
 If the constant is `Not`, then also suggest `push +distrib Not` if that does something different.
 -/
 public def suggestPush (e : Expr) (info : PositionInfo)
   (update : ProofWidgets.Html → ClickSuggestionsM Unit) : ClickSuggestionsM Unit := do
   let some head := getHead (← whnfR e) | return
   if let .const headConst := head then
-    -- Make sure that there are actually push theorems for this constant, otherwise return.
+    -- If there are no push theorems for this head constant, return.
     let thms := Push.pushExt.getState (← getEnv)
     try
-      thms.root.forM fun key _ ↦ do if let .const c _ := key then if c == headConst then failure
+      thms.root.forM fun discrTreeKey _ ↦ do
+        if let .const c _ := discrTreeKey then
+          if c == headConst then
+            failure
       return
     catch _ => pure ()
   let e₁ ← runPush head false e
   if let some html ← suggestNormalize e e₁ info (pushStx head false) then
     update html
+    -- Also suggest `push +distrib Not` if it does something else than `push Not`.
     if head matches .const ``Not then
-      -- Also suggest `push +distrib Not` if it behaves differently from `push Not`.
       let e₂ ← runPush head true e
       if let some html ← suggestNormalize e₁ e₂ info (pushStx head true) then
         update html
@@ -161,14 +163,13 @@ def simpStx : NormStx where
 
 /-- Run `dsimp only`. -/
 def runDSimpOnly (e : Expr) : MetaM Expr := do
-  let ctx ← Simp.mkContext (congrTheorems := ← getSimpCongrTheorems)
+  let ctx ← Simp.mkContext
   return (← Lean.Meta.dsimp e ctx).1
 
 /-- Run `dsimp`. -/
 def runDSimp (e : Expr) : MetaM Expr := do
   let ctx ← Simp.mkContext
     (simpTheorems := #[← getSimpTheorems])
-    (congrTheorems := ← getSimpCongrTheorems)
   return (← Lean.Meta.dsimp e ctx #[← Simp.getSimprocs]).1
 
 /-- Run `simp`. -/
@@ -178,8 +179,9 @@ def runSimp (e : Expr) : MetaM Expr := do
     (congrTheorems := ← getSimpCongrTheorems)
   return (← Lean.Meta.simp e ctx #[← Simp.getSimprocs]).1.expr
 
-/-- Create suggestions for `dsimp only`, `dsimp` and/or `simp`.
-Only suggest a tactic if it gives a different result from the previous one.
+/--
+Create suggestions for `dsimp only`, `dsimp` and/or `simp`.
+Only suggest each tactic if it gives a different result from the previous one.
 -/
 public def suggestSimp (e : Expr) (info : PositionInfo)
     (update : ProofWidgets.Html → ClickSuggestionsM Unit) : ClickSuggestionsM Unit := do
@@ -195,12 +197,14 @@ public def suggestSimp (e : Expr) (info : PositionInfo)
 
 end Simp
 
-/-- An `IO.Ref` for normalization tactics in `#click_suggestions`. -/
+/-- A global ref for normalization tactics in `#click_suggestions`. -/
 public initialize normTacticRef : IO.Ref (Array NormTactic) ← IO.mkRef #[normCast, pushCast]
 
-/-- Create a suggestion for tactics that normalize the selected expression.
+/--
+Create a suggestion for tactics that normalize the selected expression.
+This suggests `push`, `dsimp`/`simp` and tactics from `normTacticRef`.
 The suggestions are shown incrementally, so they show up as soon as they are computed.
-We currently use one thread for these, but we might parallelize it in the future.
+At the moment, we only use one thread for this computation.
 -/
 public def suggestNormTactics (e rootExpr : Expr) (fvarId? : Option FVarId) (pos : SubExpr.Pos) :
     ClickSuggestionsM ProofWidgets.Html :=
@@ -218,7 +222,10 @@ public def suggestNormTactics (e rootExpr : Expr) (fvarId? : Option FVarId) (pos
 
 section Algebra
 
-/-- Run a tactic like `ring_nf` or `abel_nf`. -/
+/--
+Normalize `e` using a tactic like `ring_nf` or `abel_nf`, assuming it applies to `e`
+or if `e` is `_ = _`, `_ ≤ _` or `_ < _` where it applies to the two sides of the relation.
+-/
 public def runNF (e : Expr) (evalExpr : Expr → AtomM Simp.Result)
     (cleanup : Simp.Result → MetaM Simp.Result) : MetaM Expr := do
   let expr ← AtomM.run .reducible do
@@ -232,16 +239,14 @@ public def runNF (e : Expr) (evalExpr : Expr → AtomM Simp.Result)
             pure (lhs, rhs)
           catch _ =>
             pure (lhs, (← evalExpr rhs).expr)
-        if ← isDefEq lhs rhs then
-          if rel.isAppOfArity ``LT.lt 2 then
-            return .const ``False []
-          else
+        if rel.isAppOfArity ``Eq 1 then
+          if ← isDefEq lhs rhs then
             return .const ``True []
         return mkApp2 rel lhs rhs
     return (← evalExpr e).expr
   return (← cleanup { expr }).expr
 
-/-- Simplify `e` using normalization tactic `tac`, such as `group` or `noncomm_ring`. -/
+/-- Simplify `e` by running normalization tactic `tac`, such as `group` or `noncomm_ring`. -/
 public def runFromStx (tac : TSyntax `tactic) (e : Expr) : MetaM Expr := do
   let e' ← mkFreshExprMVar (← inferType e)
   let mvar ← mkFreshExprMVar (← mkAppM ``Eq #[e, e'])
@@ -249,10 +254,10 @@ public def runFromStx (tac : TSyntax `tactic) (e : Expr) : MetaM Expr := do
   _ ← mvarId.applyConst ``rfl
   instantiateMVars e'
 
-/-- Check that `e` is suitable for normalization by a tactic for class `cls`.
-This is used for unstructured normalization tactics such as `group` and `noncomm_ring`. -/
+/-- Check whether `e` is suitable for normalization by a tactic that requires class `cls`. -/
 public def involvesClass (e : Expr) (cls : Name) : MetaM Bool := do
-  let type ← match_expr e with
+  let type ←
+    match_expr e with
     | Eq α _ _ => pure α
     | LE.le α _ _ _ => pure α
     | LT.lt α _ _ _ => pure α

@@ -95,8 +95,7 @@ open Lean
 /-- The entry for `group` in `#click_suggestions`. -/
 def group : NormTactic where
   tacStx loc? := `(tactic| group $[$loc?]?)
-  -- `group` doesn't have a `conv` version.
-  convStx := failure
+  convStx := failure -- `group` doesn't have a `conv` version.
   run e := do
     guard (← involvesClass e ``Group)
     runFromStx (← `(tactic| group)) e

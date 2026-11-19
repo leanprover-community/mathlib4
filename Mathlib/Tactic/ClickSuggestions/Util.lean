@@ -353,26 +353,34 @@ def addSolvingSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
     {.element "div" #[] (← get).solvedSuggestions}
     </details>}
 
-/-- Make a list of suggestions by running `k` in a separate thread,
-letting it add them one by one. -/
+/--
+Incrementally generate a sequence of HTMLs by running `k` in a separate thread.
+The resulting HTML starts out empty.
+Every time when `k` calls its argument with some HTML,
+it is appended to the HTML sequence and this sequence is displayed immediately,
+inside a drop-down section titled `title`.
+-/
 def mkIncrementalSuggestions (title : String)
     (k : (ProofWidgets.Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) :
     ClickSuggestionsM ProofWidgets.Html :=
-  mkRefreshComponentM (.text "") fun token ↦ trackingComputation title do
-    let htmls ← IO.mkRef #[]
-    k fun html ↦ do
-      markProgress
-      htmls.modify (·.push html)
-      token.update jsx%{<details open={true}>
-          <summary className="mv2 pointer">{.text title}⏳️</summary>
-          {.element "div" #[] (← htmls.get)}
-        </details>}
-    let htmls ← htmls.get
-    unless htmls.isEmpty do
-      token.update jsx%{<details open={true}>
-          <summary className="mv2 pointer">{.text title}</summary>
-          {.element "div" #[] htmls}
-        </details>}
+  mkRefreshComponentM (.text "") fun token ↦
+    trackingComputation title do
+      let htmls ← IO.mkRef #[]
+      k fun html ↦ do
+        markProgress
+        htmls.modify (·.push html)
+        token.update jsx%{<details open={true}>
+            <summary className="mv2 pointer">{.text title}⏳️</summary>
+            {.element "div" #[] (← htmls.get)}
+          </details>}
+      let htmls ← htmls.get
+      -- If the HTMLs are nonempty, then remove the `⏳️` emoji.
+      -- Otherwise, leave the ouput empty.
+      unless htmls.isEmpty do
+        token.update jsx%{<details open={true}>
+            <summary className="mv2 pointer">{.text title}</summary>
+            {.element "div" #[] htmls}
+          </details>}
 
 end Widget
 

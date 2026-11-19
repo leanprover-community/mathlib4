@@ -102,8 +102,7 @@ open Lean
 It is not suggested when `ring_nf` can be used instead. -/
 def noncommRing : NormTactic where
   tacStx loc? := `(tactic| noncomm_ring $[$loc?:location]?)
-  -- `noncomm_ring` doesn't have a `conv` version.
-  convStx := failure
+  convStx := failure -- `noncomm_ring` doesn't have a `conv` version.
   run e := do
     guard !(← involvesClass e ``CommSemiring)
     guard (← involvesClass e ``NonUnitalNonAssocSemiring)
