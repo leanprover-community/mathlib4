@@ -81,7 +81,7 @@ theorem toPiLocalization_injective : Function.Injective (toPiLocalization R) := 
   by_contra ne
   have ⟨I, mI, hI⟩ := (Module.eqIdeal R r r').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
   have ⟨s, hs⟩ := (IsLocalization.eq_iff_exists I.primeCompl _).mp congr($eq ⟨I, mI⟩)
-  exact s.2 (hI hs)
+  exact s.property (hI hs)
 
 theorem toPiLocalization_apply_apply {r I} : toPiLocalization R r I = algebraMap R _ r := rfl
 

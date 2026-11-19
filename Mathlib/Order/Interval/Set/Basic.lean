@@ -181,13 +181,13 @@ instance isEmpty_Iio_one [One α] [IsBotOneClass α] : IsEmpty (Set.Iio (1 : α)
 instance [NoMinOrder α] : NoMinOrder (Iio a) :=
   ⟨fun a =>
     let ⟨b, hb⟩ := exists_lt (a : α)
-    ⟨⟨b, lt_trans hb a.2⟩, hb⟩⟩
+    ⟨⟨b, lt_trans hb a.property⟩, hb⟩⟩
 
 @[to_dual]
 instance [NoMinOrder α] : NoMinOrder (Iic a) :=
   ⟨fun a =>
     let ⟨b, hb⟩ := exists_lt (a : α)
-    ⟨⟨b, hb.le.trans a.2⟩, hb⟩⟩
+    ⟨⟨b, hb.le.trans a.property⟩, hb⟩⟩
 
 @[simp, to_dual self]
 theorem Icc_eq_empty (h : ¬a ≤ b) : Icc a b = ∅ :=
@@ -468,7 +468,7 @@ theorem Icc_self (a : α) : Icc a a = {a} :=
 
 instance instIccUnique : Unique (Icc a a) where
   default := ⟨a, by simp⟩
-  uniq y := Subtype.ext <| by simpa using y.2
+  uniq y := Subtype.ext <| by simpa using y.property
 
 @[simp, to_dual none]
 theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by

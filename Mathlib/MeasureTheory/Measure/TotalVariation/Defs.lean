@@ -130,7 +130,7 @@ lemma etvDist_eq_iSup_finPartition_eNorm [IsFiniteMeasure μ] [IsFiniteMeasure �
   rw [etvDist_eq_etvDist_toSignedMeasure, VectorMeasure.etvDist_eq_iSup_finPartition_eNorm]
   simp only [Measure.toSignedMeasure_apply]
   congrm ⨆ P, ∑ s ∈ _, ?_
-  simp [s.2]
+  simp [s.property]
 
 @[deprecated (since := "2026-11-06")]
 alias etvDist_eq_iSup_finPartition_enorm := etvDist_eq_iSup_finPartition_eNorm
@@ -168,7 +168,7 @@ lemma etvDist_of_ge [IsFiniteMeasure ν] (hμν : ν ≤ μ) :
       simp only [etvDist_eq_iSup_finPartition_eNorm, measureReal_zero, Pi.zero_apply, sub_zero]
       congrm ⨆ P, ∑ s ∈ _, ‖?_‖ₑ
       simp only [Measure.real]
-      rw [Measure.sub_apply s.2 hμν, ENNReal.toReal_sub_of_le (hμν s) (by simp)]
+      rw [Measure.sub_apply s.property hμν, ENNReal.toReal_sub_of_le (hμν s) (by simp)]
     _ = (μ - ν) Set.univ := by simp
     _ = μ Set.univ - ν Set.univ := by rw [Measure.sub_apply .univ hμν]
   · rw [etvDist_of_not_isFiniteMeasure_left hμ, not_isFiniteMeasure_iff.mp hμ,

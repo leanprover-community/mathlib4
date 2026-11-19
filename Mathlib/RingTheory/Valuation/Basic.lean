@@ -556,7 +556,7 @@ lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
 lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.val := by
   set u := WithZero.unzero (Units.ne_zero γ) with hu_def
-  obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
+  obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.property
   have hx : 0 < v x := by
     rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
     aesop

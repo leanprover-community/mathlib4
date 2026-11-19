@@ -53,13 +53,13 @@ variable (U : Opens (ProjectiveSpectrum 𝒜)) (V : Opens (ProjectiveSpectrum �
 
 /-- The underlying function of `Proj ℬ ⟶ Proj 𝒜` on the level of structure sheaves. -/
 noncomputable def comapStructureSheafFun
-    (s : ∀ x : U, AtPrime 𝒜 x.1.asHomogeneousIdeal.toSubmodule) (y : V) :
-    AtPrime ℬ y.1.asHomogeneousIdeal.toSubmodule :=
-  localRingHom f _ y.1.asHomogeneousIdeal.toSubmodule rfl <| s ⟨.comap f hf y.1, hUV y.2⟩
+    (s : ∀ x : U, AtPrime 𝒜 x.val.asHomogeneousIdeal.toSubmodule) (y : V) :
+    AtPrime ℬ y.val.asHomogeneousIdeal.toSubmodule :=
+  localRingHom f _ y.val.asHomogeneousIdeal.toSubmodule rfl <| s ⟨.comap f hf y.val, hUV y.property⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyFraction_comapStructureSheafFun
-    (s : ∀ x : U, AtPrime 𝒜 x.1.asHomogeneousIdeal.toSubmodule)
+    (s : ∀ x : U, AtPrime 𝒜 x.val.asHomogeneousIdeal.toSubmodule)
     (hs : (isLocallyFraction 𝒜).pred s) :
     (isLocallyFraction ℬ).pred (comapStructureSheafFun f hf U V hUV s) := by
   rintro ⟨p, hpV⟩
@@ -75,8 +75,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The underlying ring hom of `Proj ℬ ⟶ Proj 𝒜` on the level of structure sheaves. -/
 noncomputable def comapStructureSheaf :
     (Proj.structureSheaf 𝒜).obj.obj (.op U) →+* (Proj.structureSheaf ℬ).obj.obj (.op V) where
-  toFun s := ⟨comapStructureSheafFun _ _ _ _ hUV s.1,
-      isLocallyFraction_comapStructureSheafFun _ _ _ _ hUV _ s.2⟩
+  toFun s := ⟨comapStructureSheafFun _ _ _ _ hUV s.val,
+      isLocallyFraction_comapStructureSheafFun _ _ _ _ hUV _ s.property⟩
   map_one' := by ext; simp [comapStructureSheafFun]
   map_zero' := by ext; simp [comapStructureSheafFun]
   map_add' x y := by ext; simp [comapStructureSheafFun]
@@ -117,7 +117,7 @@ lemma germ_map_sectionInBasicOpen {p : ProjectiveSpectrum ℬ}
 @[simp] lemma val_sectionInBasicOpen_apply (p : ProjectiveSpectrum.top 𝒜)
     (c : NumDenSameDeg 𝒜 p.asHomogeneousIdeal.toIdeal.primeCompl)
     (q : ProjectiveSpectrum.basicOpen 𝒜 c.den) :
-    ((sectionInBasicOpen 𝒜 p c).val q).val = .mk c.num ⟨c.den, q.2⟩ :=
+    ((sectionInBasicOpen 𝒜 p c).val q).val = .mk c.num ⟨c.den, q.property⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -200,7 +200,8 @@ Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
 an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positive degree. -/
 @[simps! I₀ f] noncomputable def mapAffineOpenCover : (Proj ℬ).AffineOpenCover :=
   affineOpenCoverOfIrrelevantLESpan _ (fun s : (affineOpenCover 𝒜).I₀ ↦ f s.2)
-    (fun s ↦ f.map_mem s.2.2) (fun s ↦ s.1.2) <| (toIdeal_le_toIdeal_iff.mpr hf).trans <|
+    (fun s ↦ f.map_mem s.2.property) (fun s ↦ s.1.property) <|
+    (toIdeal_le_toIdeal_iff.mpr hf).trans <|
     Ideal.map_le_of_le_comap <| (toIdeal_irrelevant_le _).mpr fun i hi x hx ↦
     Ideal.subset_span ⟨⟨⟨i, hi⟩, ⟨x, hx⟩⟩, rfl⟩
 
@@ -208,13 +209,13 @@ set_option backward.isDefEq.respectTransparency false in
 theorem map_comp : map (g.comp f) (irrelevant_le_map_comp hf hg) = map g hg ≫ map f hf := by
   refine (mapAffineOpenCover _ <| irrelevant_le_map_comp hf hg).openCover.hom_ext _ _ fun s ↦ ?_
   simp only [Scheme.AffineOpenCover.openCover_f, mapAffineOpenCover_f,
-    awayι_comp_map (g.comp f) _ s.1.2 _ s.2.2]
-  simp [awayι_comp_map_assoc _ _ _ _ (map_mem f s.2.2), awayι_comp_map _ _ _ _ s.2.2]
+    awayι_comp_map (g.comp f) _ s.1.property _ s.2.property]
+  simp [awayι_comp_map_assoc _ _ _ _ (map_mem f s.2.property), awayι_comp_map _ _ _ _ s.2.property]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem map_id : map (.id 𝒜) (by simp) = 𝟙 (Proj 𝒜) := by
   refine (affineOpenCover _).openCover.hom_ext _ _ fun s ↦ ?_
-  convert! awayι_comp_map (.id 𝒜) _ _ _ s.2.2 using 1
+  convert! awayι_comp_map (.id 𝒜) _ _ _ s.2.property using 1
   simp
 
 end Proj

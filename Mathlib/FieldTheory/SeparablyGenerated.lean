@@ -53,7 +53,7 @@ def toPolynomialAdjoinImageCompl (F : MvPolynomial ι k) (a : ι → K) (i : ι)
   letI := Classical.typeDecidableEq ι
   (optionEquivLeft k _ (renameEquiv k (Equiv.optionSubtypeNe i).symm F)).mapAlgHom
     (aeval fun j : {j // j ≠ i} ↦
-      (⟨a j, Algebra.subset_adjoin ⟨j, j.2, rfl⟩⟩ : Algebra.adjoin k (a '' {i}ᶜ)))
+      (⟨a j, Algebra.subset_adjoin ⟨j, j.property, rfl⟩⟩ : Algebra.adjoin k (a '' {i}ᶜ)))
 
 theorem aeval_toPolynomialAdjoinImageCompl_eq_zero
     {a : ι → K} {F : MvPolynomial ι k} (hFa : F.aeval a = 0) (i : ι) :
@@ -142,7 +142,7 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
     choose σ' hσ' using (this · σ hσ)
     exact ⟨⟨σ.support, σ', by simp [hσ', hp.ne_zero]⟩, Finsupp.ext hσ'⟩
   choose! σ' hσ' using this
-  have hσ'' (σ : F.support) : σ.1 = p • σ' σ := hσ' σ.1 σ.2
+  have hσ'' (σ : F.support) : σ.val = p • σ' σ := hσ' σ.val σ.property
   classical
   replace H (ι : Type u_3) (_ : Fintype ι) (v : ι → K) (hv : LinearIndependent k v) :
       LinearIndependent k (v · ^ p) := by
@@ -155,10 +155,10 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
     rw [F.support.sum_attach (fun i ↦ monomial i (F.coeff i)), support_sum_monomial_coeff, hFa])
   simp only [LinearIndependent, injective_iff_map_eq_zero, not_forall] at this
   obtain ⟨F', hF', hF'0⟩ := this
-  let F'' : MvPolynomial ι k := .ofCoeff <| F'.mapDomain fun s ↦ σ' s.1
+  let F'' : MvPolynomial ι k := .ofCoeff <| F'.mapDomain fun s ↦ σ' s.val
   have hF''0 : F'' ≠ 0 := ne_of_ne_of_eq (AddMonoidAlgebra.ofCoeff_eq_zero.ne.2 <|
     (Finsupp.mapDomain_injective fun s t h ↦ Subtype.ext
-    (Finsupp.ext fun i ↦ by rw [hσ' _ s.2, hσ' _ t.2, h])).ne hF'0) (by simp)
+    (Finsupp.ext fun i ↦ by rw [hσ' _ s.property, hσ' _ t.property, h])).ne hF'0) (by simp)
   have hF'' : aeval a F'' = 0 := by
     have : (aeval a).toLinearMap ∘ₗ (AddMonoidAlgebra.coeffLinearEquiv _).symm.toLinearMap ∘ₗ
       Finsupp.lmapDomain k k (fun s : F.support ↦ σ' s) =
@@ -175,8 +175,8 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
   rw [totalDegree, Finset.mul_sup₀, Finset.sup_le_iff]
   intro σ hσ
   obtain ⟨σ, hσ₂, rfl⟩ := Finset.mem_image.mp (Finsupp.mapDomain_support hσ)
-  refine le_trans ?_ (Finset.le_sup σ.2)
-  conv_rhs => rw [hσ' _ σ.2, Finsupp.sum_smul_index (fun _ ↦ rfl), ← Finsupp.mul_sum]
+  refine le_trans ?_ (Finset.le_sup σ.property)
+  conv_rhs => rw [hσ' _ σ.property, Finsupp.sum_smul_index (fun _ ↦ rfl), ← Finsupp.mul_sum]
 
 end MvPolynomial
 
@@ -246,9 +246,10 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
     ⟨fun x ↦ ⟨x, by aesop⟩, fun x ↦ ⟨⟨x, by aesop⟩, by aesop⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
   obtain ⟨i, hi, hi'⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow p hp H
     (a := fun i : ↥(insert n s) ↦ a i) ⟨n, by simp⟩ (ha.comp_equiv e₁)
-  let e₂ : {j // j ≠ i} ≃ ↥(insert n s \ {i.1}) := ⟨fun x ↦ ⟨x, x.1.2, fun h ↦ x.2 (Subtype.ext h)⟩,
-    fun x ↦ ⟨⟨x, x.2.1⟩, fun h ↦ x.2.2 congr($h.1)⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
-  have : a '' (insert n s \ {i.1}) = (a ·.1) '' {i}ᶜ := by ext; aesop
+  let e₂ : {j // j ≠ i} ≃ ↥(insert n s \ {i.val}) :=
+    ⟨fun x ↦ ⟨x, x.val.property, fun h ↦ x.property (Subtype.ext h)⟩,
+      fun x ↦ ⟨⟨x, x.property.1⟩, fun h ↦ x.property.2 congr(($h).val)⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
+  have : a '' (insert n s \ {i.val}) = (a ·.val) '' {i}ᶜ := by ext; aesop
   refine ⟨i, hi.comp_equiv e₂.symm, by convert hi'⟩
 
 /--
