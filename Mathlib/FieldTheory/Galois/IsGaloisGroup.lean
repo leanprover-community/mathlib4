@@ -491,6 +491,8 @@ theorem restrictHom_smul_under [Finite G] [Finite G'] [MulSemiringAction G C]
     restrictHom G G' A B C g • I.under B = (g • I).under B := by
   simp [Ideal.ext_iff, Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv]
 
+/-- The homomorphism `restrictHom` is the unique homomorphism `G →* G'` for which
+`algebraMap B C` is compatible with the actions of `G'` on `B` and of `G` on `C`. -/
 theorem restrictHom_eq_of_algebraMap_smul [Finite G] [Finite G'] [MulSemiringAction G C]
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (f : G →* G')
     (hf : ∀ g x, algebraMap B C (f g • x) = g • algebraMap B C x) :
