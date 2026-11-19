@@ -163,8 +163,7 @@ theorem nondegenerate_map_op_iff :
   simp [nondegenerate_iff, separatingLeft_map_op_iff, separatingRight_map_op_iff, and_comm]
 
 /-- Auxiliary transfer lemma unifying `SeparatingRight.of_submatrix` and
-`SeparatingRight.submatrix`: if `A.submatrix id s = B.submatrix r id` with `s` injective, then
-`A.SeparatingRight` implies `B.SeparatingRight`. -/
+`SeparatingRight.submatrix`. -/
 private lemma SeparatingRight.of_submatrix_eq {A : Matrix k l R} {B : Matrix m n R}
     (r : k → m) {s : n → l} (hs : Function.Injective s) (hAB : A.submatrix id s = B.submatrix r id)
     (hA : A.SeparatingRight) : B.SeparatingRight := by
