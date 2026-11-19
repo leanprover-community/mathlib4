@@ -13,6 +13,9 @@ public import Mathlib.Basic.Logic.Basic  -- shake: keep (dependency of tactic ou
 public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 The `tauto` tactic.
 -/

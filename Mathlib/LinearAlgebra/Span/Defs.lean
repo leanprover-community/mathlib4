@@ -18,7 +18,6 @@ public import Mathlib.Algebra.Module.Submodule.Lattice
 
 * We introduce the notation `R ∙ v` for the span of a singleton, `Submodule.span R {v}`.  This is
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
-
 -/
 
 @[expose] public section
@@ -74,7 +73,7 @@ theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_span_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ span R s := subset_span hx
 
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
@@ -463,7 +462,7 @@ theorem le_span_singleton_iff {s : Submodule R M} {v₀ : M} :
 theorem eq_span_singleton_of_surjective {s : Submodule R M}
     {f : R →ₗ[R] s} (hf : Surjective f) : s = span R {(f 1 : M)} := by
   refine le_antisymm (fun x hx ↦ mem_span_singleton.mpr ?_)
-    (span_le.mpr <| by rintro _ rfl; exact (f 1).2)
+    (span_le.mpr <| by rintro _ rfl; exact (f 1).property)
   have ⟨r, eq⟩ := hf ⟨x, hx⟩
   exact ⟨r, by rw [← coe_smul, ← map_smul, smul_eq_mul, mul_one, eq]⟩
 
@@ -673,11 +672,11 @@ theorem Module.isPrincipal_submodule_iff {p : Submodule R M} :
     IsPrincipal R p ↔ p.IsPrincipal := by
   simp_rw [IsPrincipal, isPrincipal_iff]
   constructor <;> rintro ⟨a, ha⟩
-  · refine ⟨a, le_antisymm (fun m hm ↦ ?_) <| (span_singleton_le_iff_mem ..).mpr a.2⟩
+  · refine ⟨a, le_antisymm (fun m hm ↦ ?_) <| (span_singleton_le_iff_mem ..).mpr a.property⟩
     have ⟨r, hr⟩ := mem_span_singleton.mp (ha ▸ (trivial : (⟨m, hm⟩ : p) ∈ ⊤))
     exact mem_span_singleton.mpr ⟨r, congr($hr)⟩
   · refine ⟨⟨a, ha ▸ mem_span_singleton_self a⟩, .symm <| top_unique fun x _ ↦ ?_⟩
-    have ⟨r, hr⟩ := mem_span_singleton.mp (ha.le x.2)
+    have ⟨r, hr⟩ := mem_span_singleton.mp (ha.le x.property)
     exact mem_span_singleton.mpr ⟨r, Subtype.ext hr⟩
 
 theorem Module.IsPrincipal.of_surjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f)

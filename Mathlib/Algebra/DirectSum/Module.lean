@@ -22,7 +22,6 @@ the construction is of particular importance when this linear map is an equivale
 the submodules provide an internal decomposition of `M`.  The property is defined more generally
 elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s are established
 in this file.
-
 -/
 
 @[expose] public section
@@ -267,11 +266,11 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
     (lmap (fun i ↦ (g i) ∘ₗ (f i))) = (lmap g) ∘ₗ (lmap f) :=
   DFinsupp.mapRange.linearMap_comp _ _
 
-theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
-  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) :=
+  DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
-theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) := by
-  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) :=
+  DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma lmap_eq_iff (x y : ⨁ i, M i) :
     lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
@@ -587,8 +586,8 @@ theorem coe_congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
 def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     (⨁ i, N i) ≃ₗ[R] ⨁ i, P i where
   toAddEquiv := congrAddEquiv (fun i ↦ (u i).toAddEquiv)
-  map_smul' r x := by
-    exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
+  map_smul' r x :=
+    (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
 
 theorem coe_congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     ⇑(congrLinearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=

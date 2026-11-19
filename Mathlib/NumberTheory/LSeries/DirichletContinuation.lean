@@ -109,7 +109,7 @@ lemma Even.LFunction_neg_two_mul_nat_add_one {χ : DirichletCharacter ℂ N} (h�
 lemma Even.LFunction_neg_two_mul_nat {χ : DirichletCharacter ℂ N} (hχ : Even χ) (n : ℕ) [NeZero n] :
     LFunction χ (-(2 * n)) = 0 := by
   obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
-  exact_mod_cast hχ.LFunction_neg_two_mul_nat_add_one m
+  exact mod_cast hχ.LFunction_neg_two_mul_nat_add_one m
 
 /-- The L-function of an odd Dirichlet character vanishes at negative odd integers. -/
 @[simp] lemma Odd.LFunction_neg_two_mul_nat_sub_one
@@ -213,6 +213,14 @@ lemma Even.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Even) (s : 
 lemma Odd.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Odd) (s : ℂ) :
     gammaFactor χ s = Gammaℝ (s + 1) := by
   simp [gammaFactor, hχ.not_even]
+
+lemma gammaFactor_eq_zero_iff_of_even {χ : DirichletCharacter ℂ N} (hχ : χ.Even) {s : ℂ} :
+    gammaFactor χ s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
+  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
+
+lemma gammaFactor_eq_zero_iff_of_odd {χ : DirichletCharacter ℂ N} (hχ : χ.Odd) {s : ℂ} :
+    gammaFactor χ s = 0 ↔ ∃ n : ℕ, s + 1 = -(2 * n) := by
+  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
 
 end gammaFactor
 

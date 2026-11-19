@@ -14,7 +14,6 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 ## Main results
 * `treesOfNumNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
   is `catalan n`
-
 -/
 
 @[expose] public section
@@ -35,10 +34,10 @@ def treesOfNumNodesEq : ℕ → Finset (BinaryTree Unit)
   | 0 => {nil}
   | n + 1 =>
     (antidiagonal n).attach.biUnion fun ijh =>
-      pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
+      pairwiseNode (treesOfNumNodesEq ijh.val.1) (treesOfNumNodesEq ijh.val.2)
   decreasing_by
-    · simp_wf; have := fst_le ijh.2; lia
-    · simp_wf; have := snd_le ijh.2; lia
+    · simp_wf; have := fst_le ijh.property; lia
+    · simp_wf; have := snd_le ijh.property; lia
 
 /-- **Alias** of `BinaryTree.treesOfNumNodesEq`. -/
 @[deprecated BinaryTree.treesOfNumNodesEq (since := "2026-06-07")]
@@ -73,8 +72,8 @@ theorem coe_treesOfNumNodesEq (n : ℕ) :
 
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = catalan n := by
   induction n using Nat.case_strong_induction_on with
-  | hz => simp
-  | hi n ih =>
+  | zero => simp
+  | succ n ih =>
     rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
     · apply sum_congr rfl
       rintro ⟨i, j⟩ H

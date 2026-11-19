@@ -21,11 +21,13 @@ splitting of rational primes in number fields.
 
 Let `K` be a number field and `θ` an algebraic integer of `K`.
 
-* `RingOfIntegers.exponent`: the smallest positive integer `d` contained in the conductor of `θ`.
-  It is the smallest integer such that `d • 𝓞 K ⊆ ℤ[θ]`, see `RingOfIntegers.exponent_eq_sInf`.
+* `NumberField.RingOfIntegers.exponent`: the smallest positive integer `d` contained in the
+  conductor of `θ`. It is the smallest integer such that `d • 𝓞 K ⊆ ℤ[θ]`, see
+  `NumberField.RingOfIntegers.exponent_eq_sInf`.
 
-* `RingOfIntegers.ZModXQuotSpanEquivQuotSpan`: The isomorphism between `(ℤ / pℤ)[X] / (minpoly θ)`
-  and `𝓞 K / p(𝓞 K)` for a prime `p` which doesn't divide the exponent of `θ`.
+* `NumberField.RingOfIntegers.ZModXQuotSpanEquivQuotSpan`: The isomorphism between
+  `(ℤ / pℤ)[X] / (minpoly θ)` and `𝓞 K / p(𝓞 K)` for a prime `p` which doesn't divide the exponent
+  of `θ`.
 
 * `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod`: The bijection between the prime ideals
   of `K` above `p` and the monic irreducible factors of `minpoly ℤ θ` modulo `p` for a prime `p`
@@ -45,7 +47,6 @@ Let `K` be a number field and `θ` an algebraic integer of `K`.
   ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
   `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the multiplicity of `Q mod p`
   in `minpoly ℤ θ`.
-
 -/
 
 @[expose] public section
@@ -56,7 +57,7 @@ open Polynomial NumberField Ideal KummerDedekind UniqueFactorizationMonoid
 
 variable {K : Type*} [Field K]
 
-namespace RingOfIntegers
+namespace NumberField.RingOfIntegers
 
 /--
 The smallest positive integer `d` contained in the conductor of `θ`. It is the smallest integer
@@ -125,15 +126,15 @@ theorem mem_monicFactorsMod_iff {Q : (ZMod p)[X]} :
 
 theorem irreducible_monicFactorsMod (Q : monicFactorsMod θ p) :
     Irreducible (Q : (ZMod p)[X]) :=
-  (mem_monicFactorsMod_iff.mp Q.2).1
+  (mem_monicFactorsMod_iff.mp Q.property).1
 
 theorem monic_monicFactorsMod (Q : monicFactorsMod θ p) :
     (Q : (ZMod p)[X]).Monic :=
-  (mem_monicFactorsMod_iff.mp Q.2).2.1
+  (mem_monicFactorsMod_iff.mp Q.property).2.1
 
 theorem monicFactorsMod_dvd_map_minpoly (Q : monicFactorsMod θ p) :
     (Q : (ZMod p)[X]) ∣ (minpoly ℤ θ).map (Int.castRingHom (ZMod p)) :=
-  (mem_monicFactorsMod_iff.mp Q.2).2.2
+  (mem_monicFactorsMod_iff.mp Q.property).2.2
 
 end monicFactorsMod
 
@@ -159,7 +160,7 @@ def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
         simp [map_span, ZModXQuotSpanEquivQuotSpan_mk_apply])).trans <|
     (DoubleQuot.quotQuotEquivQuotSup _ _).trans (Ideal.quotEquivOfEq h_eq₂)
 
-end RingOfIntegers
+end NumberField.RingOfIntegers
 
 open RingOfIntegers IsDedekindDomain
 namespace NumberField.Ideal
@@ -295,7 +296,7 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ expon
     inertiaDeg (P : Ideal (𝓞 K)) ℤ =
       natDegree (primesOverSpanEquivMonicFactorsMod hp P : (ZMod p)[X]) := by
   simpa using inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
-    (primesOverSpanEquivMonicFactorsMod hp P).2
+    (primesOverSpanEquivMonicFactorsMod hp P).property
 
 /--
 The ramification index of a prime above `p` is the multiplicity of the corresponding factor of
@@ -308,6 +309,36 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ 
         ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
   simpa only [Subtype.coe_eta, Equiv.symm_apply_apply] using
     ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
-      (primesOverSpanEquivMonicFactorsMod hp P).2
+      (primesOverSpanEquivMonicFactorsMod hp P).property
 
 end NumberField.Ideal
+
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.exponent := NumberField.RingOfIntegers.exponent
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.exponent_eq_one_iff := NumberField.RingOfIntegers.exponent_eq_one_iff
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.not_dvd_exponent_iff := NumberField.RingOfIntegers.not_dvd_exponent_iff
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.exponent_eq_sInf := NumberField.RingOfIntegers.exponent_eq_sInf
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.ZModXQuotSpanEquivQuotSpan :=
+  NumberField.RingOfIntegers.ZModXQuotSpanEquivQuotSpan
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.ZModXQuotSpanEquivQuotSpan_mk_apply :=
+  NumberField.RingOfIntegers.ZModXQuotSpanEquivQuotSpan_mk_apply
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.monicFactorsMod := NumberField.RingOfIntegers.monicFactorsMod
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.mem_monicFactorsMod_iff := NumberField.RingOfIntegers.mem_monicFactorsMod_iff
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.irreducible_monicFactorsMod :=
+  NumberField.RingOfIntegers.irreducible_monicFactorsMod
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.monic_monicFactorsMod := NumberField.RingOfIntegers.monic_monicFactorsMod
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.monicFactorsMod_dvd_map_minpoly :=
+  NumberField.RingOfIntegers.monicFactorsMod_dvd_map_minpoly
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.ZModXQuotSpanEquivQuotSpanPair :=
+  NumberField.RingOfIntegers.ZModXQuotSpanEquivQuotSpanPair

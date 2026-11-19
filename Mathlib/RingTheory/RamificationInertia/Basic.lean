@@ -30,7 +30,6 @@ flat extension of an integral domain.
   and let `p` be prime ideal of `R`. Assume that `R` is the invariant subring of a finite group `G`
   acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
   index of `q` times the inertia degree of `q` equals the cardinality of `G`.
-
 -/
 
 public section
@@ -44,18 +43,18 @@ variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRin
 open IsLocalRing Module OrderIso PrimeSpectrum in
 theorem sum_ramification_inertia_eq_finrank_fiber
     [Algebra.QuasiFinite R S] [Fintype (p.primesOver S)] :
-    ∑ q : p.primesOver S, q.1.ramificationIdx R * q.1.inertiaDeg R =
+    ∑ q : p.primesOver S, q.val.ramificationIdx R * q.val.inertiaDeg R =
       finrank p.ResidueField (p.Fiber S) := by
   let := Fintype.ofFinite (PrimeSpectrum (p.Fiber S))
   rw [IsArtinianRing.finrank_eq_sum_primeSpectrum, ← (primesOverOrderIsoFiber R S p).symm.sum_comp]
   apply Finset.sum_congr rfl
   intro q _
   simp_rw [toEquiv_symm, coe_symm_toEquiv, coe_primesOverOrderIsoFiber_symm_apply]
-  set r := q.1.comap Algebra.TensorProduct.includeRight
+  set r := q.asIdeal.comap Algebra.TensorProduct.includeRight
   let := Localization.AtPrime.algebraOfLiesOver p r
   rw [ramificationIdx_eq p r, inertiaDeg_eq p r]
   let Rp := Localization.AtPrime p
-  let Sq := Localization.AtPrime q.1
+  let Sq := Localization.AtPrime q.asIdeal
   let Sr := Localization.AtPrime r
   let κp := p.ResidueField
   let κr := r.ResidueField
@@ -63,7 +62,8 @@ theorem sum_ramification_inertia_eq_finrank_fiber
   suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr($(this).toNat)
   calc length Sr A * finrank κp κr = length Sr A * length κp κr := by rw [length_eq_finrank]
     _ = length Rp A := (length_restrictScalars Rp Sr A).symm
-    _ = length Rp Sq := (Fiber.localizationAlgEquivQuotient p q.1).toLinearEquiv.length_eq.symm
+    _ = length Rp Sq :=
+      (Fiber.localizationAlgEquivQuotient p q.asIdeal).toLinearEquiv.length_eq.symm
     _ = length κp Sq := length_eq_of_surjective residue_surjective
     _ = finrank κp Sq := length_eq_finrank κp Sq
 
@@ -72,7 +72,7 @@ ideal of `R`. Then the sum over all prime ideals `q` of `S` lying over `p` of th
 index of `q` times the inertia degree of `q` equals the rank of `S` as an `R`-module. -/
 theorem sum_ramification_inertia_eq_finrank
     [IsDomain R] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)] :
-    ∑ q : p.primesOver S, q.1.ramificationIdx R * q.1.inertiaDeg R = Module.finrank R S := by
+    ∑ q : p.primesOver S, q.val.ramificationIdx R * q.val.inertiaDeg R = Module.finrank R S := by
   rw [sum_ramification_inertia_eq_finrank_fiber, finrank_fiber_eq_finrank]
 
 /-- Let `S/R` be a finite flat extension of integral domains, and let `p` be prime ideal of `R`.
@@ -82,7 +82,7 @@ degree of `q` equals the cardinality of `G`. -/
 theorem sum_ramification_inertia_eq_card
     [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)]
     {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
-    ∑ q : p.primesOver S, q.1.ramificationIdx R * q.1.inertiaDeg R = Nat.card G := by
+    ∑ q : p.primesOver S, q.val.ramificationIdx R * q.val.inertiaDeg R = Nat.card G := by
   let := IsGaloisGroup.finite G R S
   rw [sum_ramification_inertia_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
 

@@ -37,7 +37,7 @@ variable {α : Type*} [PseudoEMetricSpace α]
 
 theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0∞}
     (h : hausdorffEDist s t < δ) : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 < δ} := by
-  rw [hausdorffEDist, max_lt_iff] at h
+  rw [hausdorffEDist_def, max_lt_iff] at h
   rw [hausdorffEntourage, Set.mem_ofPred]
   conv => enter [2, 2, 1, 1, _]; rw [edist_comm]
   have {s t : Set α} (h : ⨆ x ∈ s, infEDist x t < δ) :
@@ -48,7 +48,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
 
 theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
     (h : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 ≤ δ}) : hausdorffEDist s t ≤ δ := by
-  rw [hausdorffEDist, max_le_iff]
+  rw [hausdorffEDist_def, max_le_iff]
   rw [hausdorffEntourage, Set.mem_ofPred] at h
   conv at h => enter [2, 2, 1, 1, _]; rw [edist_comm]
   have {s t : Set α} (h : s ⊆ SetRel.preimage {p | edist p.1 p.2 ≤ δ} t) :
@@ -144,7 +144,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
       have : ∀ (l) (z : s (n + l)), ∃ z' : s (n + l + 1), edist (z : α) z' ≤ B n / 2 ^ l := by
         intro l z
         obtain ⟨z', z'_mem, hz'⟩ : ∃ z' ∈ s (n + l + 1), edist (z : α) z' < B n / 2 ^ l := by
-          refine exists_edist_lt_of_hausdorffEDist_lt (s := s (n + l)) z.2 ?_
+          refine exists_edist_lt_of_hausdorffEDist_lt (s := s (n + l)) z.property ?_
           simp only [ENNReal.inv_pow, div_eq_mul_inv]
           rw [← pow_add]
           apply hs <;> simp
@@ -164,7 +164,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
         mem_closure_of_tendsto y_lim
           (by
             simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop]
-            exact ⟨k, fun m hm => ⟨n + m, by lia, (z m).2⟩⟩)
+            exact ⟨k, fun m hm => ⟨n + m, by lia, (z m).property⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.

@@ -15,7 +15,6 @@ edges of simplicial sets, and we show that if `X` is a quasicategory,
 then edges can be composed (see `SSet.Edge.comp` and `SSet.Edge.compStruct`)
 and that this composition satisfies some form of associativity.
 The results are deduced from similar results for `2`-truncated quasicategories.
-
 -/
 
 @[expose] public section

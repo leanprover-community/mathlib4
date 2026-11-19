@@ -6,7 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 
 /-!
@@ -38,7 +37,6 @@ section Equalizers
 
 variable {X Y Z : C} {f g : X ⟶ Y} {h : Z ⟶ X} (w : h ≫ f = h ≫ g)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map of a fork is a limit iff the fork consisting of the mapped morphisms is a limit. This
 essentially lets us commute `Fork.ofι` with `Functor.mapCone`.
 -/
