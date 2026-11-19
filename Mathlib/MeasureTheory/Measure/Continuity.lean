@@ -117,7 +117,7 @@ theorem _root_.Directed.measure_iInter [Countable ι]
     use j
     rw [← measure_sdiff hjk (h _) (this _ hjk)]
     gcongr
-  · exact hd.mono_comp _ fun _ _ => sdiff_subset_sdiff_right
+  · exact hd.mono_comp fun _ _ => sdiff_subset_sdiff_right
 
 /-- **Continuity from above**:
 the measure of the intersection of a monotone family of measurable sets

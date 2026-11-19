@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
+public import Mathlib.Order.Hom.Basic
 public import Mathlib.Tactic.FunProp.Attr
 
-import Mathlib.Order.Bounds.Image
+import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.ToFun
 
 /-!
@@ -74,6 +75,10 @@ protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : 
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
   exact isLeast_Ici
+
+variable (D) in
+protected theorem OrderIso.scottContinuousOn (f : α ≃o β) : ScottContinuousOn D f :=
+  fun _ _ _ _ _ ↦ f.isLUB_image'.mpr
 
 @[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuousOn.id : ScottContinuousOn D (id : α → α) := by simp [ScottContinuousOn]
@@ -156,6 +161,9 @@ lemma ScottContinuous.scottContinuousOn {D : Set (Set α)} :
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
   h.scottContinuousOn.monotone univ (fun _ _ _ ↦ mem_univ _)
+
+protected theorem OrderIso.scottContinuous (f : α ≃o β) : ScottContinuous f :=
+  fun _ _ _ _ ↦ f.isLUB_image'.mpr
 
 @[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]

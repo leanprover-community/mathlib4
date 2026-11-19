@@ -182,6 +182,12 @@ lemma StrictAnti.map_isLeast (hf : StrictAnti f) : IsLeast (f '' s) (f a) ↔ Is
 
 end StrictAnti
 
+@[to_dual]
+theorem OrderEmbedding.preimage_upperBounds_image [Preorder α] [Preorder β] (f : α ↪o β)
+    (s : Set α) : f ⁻¹' upperBounds (f '' s) = upperBounds s := by
+  ext
+  simp [mem_upperBounds]
+
 section Image2
 
 variable [Preorder α] [Preorder β] [Preorder γ] {f : α → β → γ} {s : Set α} {t : Set β} {a : α}
@@ -409,6 +415,11 @@ theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x 
     {s : Set α} {x : α} (hx : IsGLB (f '' s) (f x)) : IsGLB s x :=
   ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
     hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy⟩
+
+@[to_dual]
+theorem OrderEmbedding.isGLB_of_image [Preorder α] [Preorder β] {f : α ↪o β} {s : Set α} {x : α}
+    (hx : IsGLB (f '' s) (f x)) : IsGLB s x :=
+  hx.of_image f.le_iff_le
 
 @[to_dual (reorder := f g)]
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)

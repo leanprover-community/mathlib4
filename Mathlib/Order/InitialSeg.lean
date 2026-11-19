@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.UpperLower.Basic
 
+import Mathlib.Order.Bounds.Image
+
 /-!
 # Initial and principal segments
 
@@ -635,6 +637,13 @@ theorem lt_apply_iff [PartialOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a
     rwa [← hc, f.lt_iff_lt] at h
   · rintro ⟨c, hc, rfl⟩
     exact f.strictMono hc
+
+theorem image_lowerBounds [PartialOrder α] (f : α ≤i β) {s : Set α} (h : s.Nonempty) :
+    f '' lowerBounds s = lowerBounds (f '' s) := by
+  refine f.monotone.image_lowerBounds_subset_lowerBounds_image.antisymm fun a ha ↦ ?_
+  obtain ⟨_, b, hmem, rfl⟩ := h.image f
+  obtain ⟨a, rfl⟩ := f.mem_range_of_le <| ha ⟨b, hmem, rfl⟩
+  simpa [mem_lowerBounds] using ha
 
 end InitialSeg
 
