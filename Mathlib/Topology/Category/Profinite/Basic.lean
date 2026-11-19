@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types
@@ -36,17 +35,17 @@ The category `Profinite` is defined using the structure `CompHausLike`. See the 
 ## Tags
 
 profinite
-
 -/
 
 @[expose] public section
 
 universe v u
 
-open CategoryTheory Topology CompHausLike
+open CategoryTheory CompHausLike
+
+open scoped Topology
 
 /-- The type of profinite topological spaces. -/
-@[to_additive_do_translate] -- This is required
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
@@ -60,10 +59,15 @@ compact, Hausdorff and totally disconnected topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
-  CompHausLike.of _ X
+  ↧X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Profinite.of X` as `↧X`. -/
+@[app_delab Profinite.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 instance : Inhabited Profinite :=
-  ⟨Profinite.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.prop
@@ -95,7 +99,7 @@ section Profinite
 to Profinite spaces, given by quotienting a space by its connected components. -/
 @[stacks 0900]
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
-  toTop := TopCat.of (ConnectedComponents X)
+  toTop := ↧(ConnectedComponents X)
   is_compact := Quotient.compactSpace
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace
@@ -108,8 +112,8 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     (CompHaus.toProfiniteObj X ⟶ Y) ≃ (X ⟶ profiniteToCompHaus.obj Y) where
   toFun f := ofHom _ (f.hom.hom.comp ⟨Quotient.mk'', continuous_quotient_mk'⟩)
   invFun g := ConcreteCategory.ofHom
-    { toFun := Continuous.connectedComponentsLift g.hom.hom.2
-      continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.hom.2 }
+    { toFun := Continuous.connectedComponentsLift (map_continuous g.hom.hom)
+      continuous_toFun := Continuous.connectedComponentsLift_continuous (map_continuous g.hom.hom) }
   left_inv f :=
     InducedCategory.hom_ext (TopCat.ext (fun y ↦ by
       obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
@@ -142,7 +146,7 @@ attribute [local instance] FintypeCat.discreteTopology
 discrete topology. -/
 @[simps! -isSimp map_hom_hom_apply obj]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
-  obj A := Profinite.of A
+  obj A := ↧A
   map f := ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
@@ -259,6 +263,6 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     apply (forget Profinite).epi_of_epi_map
 
 /-- The pi-type of profinite spaces is profinite. -/
-def pi {α : Type u} (β : α → Profinite) : Profinite := .of (Π (a : α), β a)
+def pi {α : Type u} (β : α → Profinite) : Profinite := ↧(Π (a : α), β a)
 
 end Profinite

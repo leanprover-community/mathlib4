@@ -6,13 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Group.Submonoid.Basic
-public import Mathlib.Algebra.Group.ULift
-public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Theory of topological monoids
@@ -101,13 +97,6 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
   refine ⟨continuous_induced_rng.2 ?_⟩
   simp only [Function.comp_def, map_mul]
   fun_prop
-
-@[deprecated (since := "2026-02-20")] alias continuous_add_left := continuous_const_add
-@[deprecated (since := "2026-02-20")] alias continuous_add_right := continuous_add_const
-@[to_additive existing, deprecated (since := "2026-02-20")]
-alias continuous_mul_left := continuous_const_mul
-@[to_additive existing, deprecated (since := "2026-02-20")]
-alias continuous_mul_right := continuous_mul_const
 
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
@@ -387,7 +376,7 @@ end PointwiseLimits
 theorem Topology.IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
     [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
     (hf : IsInducing f) : ContinuousMul M :=
-  ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
+  ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).continuous_smul⟩
 
 @[to_additive]
 theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
@@ -410,10 +399,10 @@ open MulOpposite in
 theorem Topology.IsInducing.separatelyContinuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
     [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [SeparatelyContinuousMul N]
     (f : F) (hf : IsInducing f) : SeparatelyContinuousMul M where
-  continuous_const_mul := (hf.continuousConstSMul f (map_mul f _ _)).1 _
+  continuous_const_mul := (hf.continuousConstSMul f (map_mul f _ _)).continuous_const_smul _
   continuous_mul_const {m} :=
     have := ((opHomeomorph.isInducing.comp hf).comp (opHomeomorph.symm.isInducing)
-      |>.continuousConstSMul (fun x ↦ op (f (unop x))) (by simp)).1 (op m)
+      |>.continuousConstSMul (fun x ↦ op (f (unop x))) (by simp)).continuous_const_smul (op m)
     continuous_unop.comp <| this.comp continuous_op
 
 @[to_additive]
@@ -668,7 +657,7 @@ closure.
 
 See note [reducible non-instances] -/
 @[to_additive (attr := deprecated Subsemigroup.isMulCommutative_topologicalClosure
-(since := "2026-07-29"))
+  +typeChanged (since := "2026-07-29"))
 /-- If a subsemigroup of an additive topological semigroup is commutative, then so is its
 topological closure.
 
@@ -745,7 +734,7 @@ instance Submonoid.isMulCommutative_topologicalClosure [T2Space M] (s : Submonoi
 open scoped IsMulCommutative in
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive (attr := deprecated Submonoid.isMulCommutative_topologicalClosure
-(since := "2026-07-29"))
+  +typeChanged (since := "2026-07-29"))
 /-- If a submonoid of an additive topological monoid is commutative, then so is its
 topological closure.
 
@@ -760,7 +749,7 @@ inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
     Filter.Tendsto (fun x : M => a * x) (Filter.cocompact M) (Filter.cocompact M) := by
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_const_mul b))
-  convert! Filter.tendsto_id
+  convert Filter.tendsto_id
   ext x
   simp [← mul_assoc, ha]
 
@@ -869,18 +858,24 @@ theorem ContinuousAt.pow {f : X → M} {x : X} (hf : ContinuousAt f x) (n : ℕ)
 theorem ContinuousOn.pow {f : X → M} {s : Set X} (hf : ContinuousOn f s) (n : ℕ) :
     ContinuousOn (f ^ n) s := fun x hx => (hf x hx).pow n
 
+@[to_additive]
+theorem IsScalarTower.continuousConstSMul (R S M : Type*) [Monoid S] [MulAction S M] [SMul R M]
+    [SMul R S] [IsScalarTower R S M] [TopologicalSpace M] [ContinuousConstSMul S M] :
+    ContinuousConstSMul R M where
+  continuous_const_smul q := by
+    simp +singlePass only [← smul_one_smul S]
+    fun_prop
+
 /-- If `R` acts on `A` via `A`, then continuous multiplication implies continuous scalar
 multiplication by constants.
 
 Notably, this instance applies when `R = A`, or when `[Algebra R A]` is available. -/
 @[to_additive /-- If `R` acts on `A` via `A`, then continuous addition implies
 continuous affine addition by constants. -/]
-instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
+instance (priority := 100) IsScalarTower.continuousConstSMul' {R A : Type*} [Monoid A] [SMul R A]
     [IsScalarTower R A A] [TopologicalSpace A] [SeparatelyContinuousMul A] :
-    ContinuousConstSMul R A where
-  continuous_const_smul q := by
-    simp +singlePass only [← smul_one_mul q (_ : A)]
-    fun_prop
+    ContinuousConstSMul R A :=
+  IsScalarTower.continuousConstSMul R A A
 
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
@@ -948,11 +943,6 @@ theorem tendsto_finsetProd {f : ι → α → M} {x : Filter α} {a : ι → M} 
       Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) :=
   tendsto_multiset_prod _
 
-@[deprecated (since := "2026-04-08")] alias tendsto_finset_sum := tendsto_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias tendsto_finset_prod := tendsto_finsetProd
-
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => (s.map fun i => f i a).prod := by
@@ -970,20 +960,10 @@ theorem continuous_finsetProd {f : ι → X → M} (s : Finset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => ∏ i ∈ s, f i a :=
   continuous_multiset_prod _
 
-@[deprecated (since := "2026-04-08")] alias continuous_finset_sum := continuous_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias continuous_finset_prod := continuous_finsetProd
-
 @[to_additive]
 theorem continuousOn_finsetProd {f : ι → X → M} (s : Finset ι) {t : Set X} :
     (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => ∏ i ∈ s, f i a) t :=
   continuousOn_multiset_prod _
-
-@[deprecated (since := "2026-04-08")] alias continuousOn_finset_sum := continuousOn_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias continuousOn_finset_prod := continuousOn_finsetProd
 
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
@@ -1023,7 +1003,7 @@ theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀
     (hf : LocallyFinite fun i => mulSupport (f i)) :
     Continuous fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
-  exact continuous_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  exact continuous_finprod (fun i => hc i i.property) (hf.comp_injective Subtype.coe_injective)
 
 end
 

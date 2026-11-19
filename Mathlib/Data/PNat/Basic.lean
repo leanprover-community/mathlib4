@@ -11,6 +11,11 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.PNat.Equiv
 
+import Mathlib.Tactic.Basify.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The positive natural numbers
 
@@ -31,14 +36,14 @@ instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
-  rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
+  rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.property]
 
 @[simp]
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 
 @[gcongr, mono]
-theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
+theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.property.ne' h
 
 @[gcongr, mono]
 theorem natPred_monotone : Monotone natPred :=
@@ -59,7 +64,7 @@ theorem natPred_le_natPred {m n : ℕ+} : m.natPred ≤ n.natPred ↔ m ≤ n :=
 theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 lemma val_ofNat (n : ℕ) [NeZero n] :
     ((ofNat(n) : ℕ+) : ℕ) = OfNat.ofNat n :=
   rfl
@@ -106,11 +111,11 @@ similar structures on `ℕ`. Most of these behave in a completely
 obvious way, but there are a few things to be said about
 subtraction, division and powers.
 -/
-@[simp, norm_cast]
+@[simp, norm_cast, basify_simp ←]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
   Subtype.ext_iff.symm
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
@@ -139,7 +144,7 @@ instance instOrderBot : OrderBot ℕ+ where
   bot_le a := a.property
 
 instance : IsBotOneClass ℕ+ where
-  isBot_one a := a.2
+  isBot_one a := a.property
 
 @[simp]
 theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
@@ -193,7 +198,7 @@ theorem ofNat_inj {m n : ℕ} [NeZero m] [NeZero n] :
     (ofNat(m) : ℕ+) = ofNat(n) ↔ OfNat.ofNat m = OfNat.ofNat n :=
   Subtype.mk_eq_mk
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
   rfl
 
@@ -207,12 +212,12 @@ def coeMonoidHom : ℕ+ →* ℕ where
 theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = (↑) :=
   rfl
 
-@[deprecated le_one_iff_eq_one (since := "2026-05-07")]
+@[deprecated le_one_iff_eq_one +typeChanged (since := "2026-05-07")]
 theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 := by
   simp
 
 theorem lt_add_left (n m : ℕ+) : n < m + n :=
-  lt_add_of_pos_left _ m.2
+  lt_add_of_pos_left _ m.property
 
 theorem lt_add_right (n m : ℕ+) : n < n + m :=
   (lt_add_left n m).trans_eq (add_comm _ _)
@@ -221,7 +226,7 @@ theorem lt_add_right (n m : ℕ+) : n < n + m :=
 theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 
-@[deprecated one_lt_of_gt (since := "2026-05-07")]
+@[deprecated one_lt_of_gt +typeChanged (since := "2026-05-07")]
 theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := hab.one_lt
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
@@ -234,6 +239,7 @@ theorem lt_succ_self (a : ℕ+) : a < succPNat a := Nat.lt_add_one a
 instance instSub : Sub ℕ+ :=
   ⟨fun a b => toPNat' (a - b : ℕ)⟩
 
+@[basify_op]
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
   change (toPNat' _ : ℕ) = ite _ _ _
   split_ifs with h
@@ -245,7 +251,7 @@ theorem sub_le (a b : ℕ+) : a - b ≤ a := by
   rw [← coe_le_coe, sub_coe]
   split_ifs with h
   · exact Nat.sub_le a b
-  · exact a.2
+  · exact a.property
 
 theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
   rw [← coe_le_coe, sub_coe]

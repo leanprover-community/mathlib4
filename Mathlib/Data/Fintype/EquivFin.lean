@@ -32,7 +32,6 @@ See `Infinite.of_injective` and `Infinite.of_surjective`.
 We provide `Infinite` instances for
 * specific types: `ℕ`, `ℤ`, `String`
 * type constructors: `Multiset α`, `List α`
-
 -/
 
 @[expose] public section
@@ -43,7 +42,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 
@@ -69,7 +68,7 @@ def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card �
         (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
       univ.val
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
-      mem_univ_val univ.2
+      mem_univ_val univ.nodup
 
 /-- There is (noncomputably) an equivalence between `α` and `Fin (card α)`.
 
@@ -98,7 +97,7 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
         (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
       univ.val
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
-      mem_univ_val univ.2
+      mem_univ_val univ.nodup
 
 end Fintype
 
@@ -343,7 +342,7 @@ namespace Function.Embedding
 
 /-- An embedding from a `Fintype` to itself can be promoted to an equivalence. -/
 noncomputable def equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
-  Equiv.ofBijective e e.2.bijective_of_finite
+  Equiv.ofBijective e e.inj'.bijective_of_finite
 
 @[simp]
 theorem toEmbedding_equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) :
@@ -522,7 +521,6 @@ instance [Infinite α] : Infinite (Equiv.Perm α) := by
 
 namespace Infinite
 
-set_option backward.privateInPublic true in
 private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → α
   | n =>
     letI := Classical.decEq α
@@ -531,7 +529,6 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
         ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
-set_option backward.privateInPublic true in
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
@@ -546,10 +543,8 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
   rw [h, natEmbeddingAux]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Embedding of `ℕ` into an infinite type. -/
-noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
+@[no_expose] noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩
 
 /-- See `Infinite.exists_superset_card_eq` for a version that, for an `s : Finset α`,
@@ -588,7 +583,7 @@ theorem not_injective_infinite_finite {α β} [Infinite α] [Finite β] (f : α 
   fun hf => (Finite.of_injective f hf).false
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
-  ⟨fun f => not_injective_infinite_finite f f.2⟩
+  ⟨fun f => not_injective_infinite_finite f f.inj'⟩
 
 theorem not_surjective_finite_infinite {α β} [Finite α] [Infinite β] (f : α → β) : ¬Surjective f :=
   fun hf => (Infinite.of_surjective f hf).not_finite ‹_›

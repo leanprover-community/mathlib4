@@ -5,8 +5,8 @@ Authors: Kim Morrison, Markus Himmel, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.WalkingPair
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Cospan & Span
@@ -130,7 +130,6 @@ open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Ho
 
 variable {C : Type u} [Category.{v} C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- To construct an isomorphism of cones over the walking cospan,
 it suffices to construct an isomorphism
 of the cone points and check it commutes with the legs to `left` and `right`. -/
@@ -149,7 +148,6 @@ def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.p
   · exact w₁
   · exact w₂
 
-set_option backward.defeqAttrib.useBackward true in
 /-- To construct an isomorphism of cocones over the walking span,
 it suffices to construct an isomorphism
 of the cocone points and check it commutes with the legs from `left` and `right`. -/
@@ -226,7 +224,6 @@ theorem cospan_map_id {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (w : WalkingCospan
 theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every diagram indexing a pullback is naturally isomorphic (actually, equal) to a `cospan` -/
 @[simps (rhsMd := default)]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
@@ -234,7 +231,6 @@ def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
 @[simps (rhsMd := default)]
 def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) :=
@@ -244,7 +240,6 @@ def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) 
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor applied to a cospan is a cospan. -/
 def cospanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     cospan f g ⋙ F ≅ cospan (F.map f) (F.map g) :=
@@ -289,7 +284,6 @@ theorem cospanCompIso_inv_app_one : (cospanCompIso F f g).inv.app WalkingCospan.
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor applied to a span is a span. -/
 def spanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     span f g ⋙ F ≅ span (F.map f) (F.map g) :=

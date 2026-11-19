@@ -6,11 +6,11 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 module
 
 public import Mathlib.GroupTheory.QuotientGroup.Finite
-public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Tactic.FinCases
+
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Ideal quotients
@@ -23,14 +23,13 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 ## Main definitions
 
 - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
-
 -/
 
 @[expose] public section
 
 open Set
 
-variable {ι ι' R S : Type*} [Ring R] (I J : Ideal R) {a b : R}
+variable {ι ι' R : Type*} [Ring R] (I J : Ideal R) {a b : R}
 
 namespace Ideal.Quotient
 
@@ -88,12 +87,12 @@ instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
         (Or.inr ∘ eq_zero_iff_mem.2)
 
 instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
-  let _ := Quotient.nontrivial_iff.mpr hI.1
+  let _ := Quotient.nontrivial_iff.mpr hI.ne_top'
   NoZeroDivisors.to_isDomain _
 
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
-  · have : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
+  · have : Nontrivial (R ⧸ I) := ⟨H.toNontrivial.exists_pair_ne⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
     have := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H

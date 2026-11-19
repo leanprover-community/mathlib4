@@ -7,16 +7,17 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
-public import Mathlib.Algebra.Order.Ring.Finset
+
+import Mathlib.Algebra.Order.Ring.Finset
 
 /-!
-## Expand multivariate polynomials
+# Expand multivariate polynomials
 
 Given a multivariate polynomial `φ`, one may replace every occurrence of `X i` by `X i ^ n`,
 for some natural number `n`.
 This operation is called `MvPolynomial.expand` and it is an algebra homomorphism.
 
-### Main declaration
+## Main declaration
 
 * `MvPolynomial.expand`: expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
@@ -34,7 +35,7 @@ variable {σ τ R S : Type*} [CommSemiring R] [CommSemiring S] (p : ℕ)
 
 See also `Polynomial.expand`. -/
 noncomputable def expand : MvPolynomial σ R →ₐ[R] MvPolynomial σ R :=
-  bind₁ fun i ↦ X i ^ p
+  aeval fun i ↦ X i ^ p
 
 theorem coe_expand :
     (expand p (R := R) (σ := σ)) = eval₂ C ((fun s ↦ X s : σ → MvPolynomial σ R) ^ p) := rfl
@@ -49,9 +50,10 @@ theorem expand_X (i : σ) : expand p (X i : MvPolynomial σ R) = X i ^ p :=
 @[simp]
 theorem expand_monomial (d : σ →₀ ℕ) (r : R) :
     expand p (monomial d r) = monomial (p • d) r := by
-  rw [expand, bind₁_monomial, monomial_eq, Finsupp.prod_of_support_subset _ Finsupp.support_smul]
-  · simp [pow_mul]
-  · simp
+  rw [expand, aeval_monomial, algebraMap_eq, monomial_eq,
+    Finsupp.prod_of_support_subset d subset_rfl _ (by simp),
+    Finsupp.prod_of_support_subset (p • d) Finsupp.support_smul _ (by simp)]
+  simp [pow_mul]
 
 @[simp]
 lemma expand_zero :
@@ -75,13 +77,13 @@ theorem expand_mul_eq_comp (q : ℕ) :
   simp [pow_mul]
 
 theorem expand_mul (q : ℕ) (φ : MvPolynomial σ R) : φ.expand (p * q) = (φ.expand q).expand p :=
-  DFunLike.congr_fun (expand_mul_eq_comp p q) φ
+  congr($(expand_mul_eq_comp p q) φ)
 
 @[simp]
 lemma coeff_expand_smul (hp : p ≠ 0) (φ : MvPolynomial σ R) (m : σ →₀ ℕ) :
     (expand p φ).coeff (p • m) = φ.coeff m := by
   classical
-  induction φ using induction_on' <;> simp [*, nsmul_right_inj hp]
+  induction φ using induction_on' <;> simp [*]
 
 @[simp]
 lemma coeff_expand_zero (hp : p ≠ 0) (φ : MvPolynomial σ R) :
@@ -109,18 +111,28 @@ theorem expand_eq_C {p : ℕ} (hp : 0 < p) {f : MvPolynomial σ R} {r : R} :
     expand p f = C r ↔ f = C r := by
   rw [← expand_C, expand_inj hp, expand_C]
 
-theorem expand_comp_bind₁ (p : ℕ) (f : σ → MvPolynomial τ R) :
-    (expand p).comp (bind₁ f) = bind₁ fun i ↦ expand p (f i) := by
-  ext1 i
-  simp
+theorem expand_comp_aeval (p : ℕ) (f : σ → MvPolynomial τ R) :
+    (expand p).comp (aeval f) = aeval fun i ↦ expand p (f i) := by
+  ext; simp
 
+@[deprecated expand_comp_aeval +typeChanged (since := "2026-09-02")]
+theorem expand_comp_bind₁ (p : ℕ) (f : σ → MvPolynomial τ R) :
+    (expand p).comp (bind₁ f) = bind₁ fun i ↦ expand p (f i) :=
+  expand_comp_aeval p f
+
+theorem expand_aeval (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
+    expand p (aeval f φ) = aeval (fun i ↦ expand p (f i)) φ :=
+  AlgHom.congr_fun (expand_comp_aeval p f) φ
+
+@[deprecated expand_aeval +typeChanged (since := "2026-09-02")]
 theorem expand_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     expand p (bind₁ f φ) = bind₁ (fun i ↦ expand p (f i)) φ := by
   rw [← AlgHom.comp_apply, expand_comp_bind₁]
 
 @[simp]
 theorem map_expand (f : R →+* S) (φ : MvPolynomial σ R) :
-    map f (expand p φ) = expand p (map f φ) := by simp [expand, map_bind₁]
+    map f (expand p φ) = expand p (map f φ) := by
+  simp [coe_expand, map_eval₂, Function.comp_def, Pi.pow_def]
 
 @[simp]
 theorem rename_comp_expand (f : σ → τ) :
@@ -132,7 +144,7 @@ theorem rename_comp_expand (f : σ → τ) :
 @[simp]
 theorem rename_expand (f : σ → τ) (φ : MvPolynomial σ R) :
     rename f (expand p φ) = expand p (rename f φ) :=
-  DFunLike.congr_fun (rename_comp_expand p f) φ
+  congr($(rename_comp_expand p f) φ)
 
 lemma eval₂Hom_comp_expand (f : R →+* S) (g : σ → S) :
     (eval₂Hom f g).comp (expand p (σ := σ) (R := R) : MvPolynomial σ R →+* MvPolynomial σ R) =
@@ -142,7 +154,7 @@ lemma eval₂Hom_comp_expand (f : R →+* S) (g : σ → S) :
 @[simp]
 lemma eval₂_expand (f : R →+* S) (g : σ → S) (φ : MvPolynomial σ R) :
     eval₂ f g (expand p φ) = eval₂ f (g ^ p) φ :=
-  DFunLike.congr_fun (eval₂Hom_comp_expand p f g) φ
+  congr($(eval₂Hom_comp_expand p f g) φ)
 
 @[simp]
 lemma aeval_comp_expand {A : Type*} [CommSemiring A] [Algebra R A] (f : σ → A) :

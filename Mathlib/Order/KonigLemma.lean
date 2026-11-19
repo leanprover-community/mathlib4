@@ -5,9 +5,10 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.Grade
+
+import Mathlib.Data.Fintype.Pigeonhole
 
 /-!
 # Kőnig's infinity lemma
@@ -48,7 +49,6 @@ We leave the explicitly graph-theoretic version of the statement as TODO.
 ## TODO
 
 Formulate the lemma as a statement about graphs.
-
 -/
 
 public section
@@ -64,9 +64,9 @@ then there is a sequence starting with `b` in which each element is covered by t
 theorem exists_seq_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
     (hb : (Ici b).Infinite) : ∃ f : ℕ → α, f 0 = b ∧ ∀ i, f i ⋖ f (i + 1) :=
   let h := fun a : {a : α // (Ici a).Infinite} ↦
-    exists_covby_infinite_Ici_of_infinite_Ici a.2 (hfin a)
+    exists_covby_infinite_Ici_of_infinite_Ici a.property (hfin a)
   let ks : ℕ → {a : α // (Ici a).Infinite} := Nat.rec ⟨b, hb⟩ fun _ a ↦ ⟨_, (h a).choose_spec.2⟩
-  ⟨fun i ↦ (ks i).1, by simp [ks], fun i ↦ by simpa using (h (ks i)).choose_spec.1⟩
+  ⟨fun i ↦ (ks i).val, by simp [ks], fun i ↦ by simpa using (h (ks i)).choose_spec.1⟩
 
 /-- The sequence given by Kőnig's lemma as an order embedding -/
 theorem exists_orderEmbedding_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
@@ -123,8 +123,8 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     rintro i a j b ⟨h : i ≤ j, rfl : π h b = a⟩
     refine ⟨fun ⟨hne, h'⟩ ↦ ?_, ?_⟩
     · have hle' : i + 1 ≤ j := h.lt_of_ne <| by rintro rfl; simp [π_refl] at hne
-      exact congr_arg Sigma.fst <| h' (i + 1) (π hle' b) ⟨by simp, by rw [π_trans]⟩ ⟨hle', by simp⟩
-        (fun h ↦ by simp at h)
+      congrm $(h' (i + 1) (π hle' b) ⟨by simp, by rw [π_trans]⟩ ⟨hle', by simp⟩
+       (fun h ↦ by simp at h)).fst
     rintro rfl
     refine ⟨fun h ↦ by simp at h, ?_⟩
     rintro j c ⟨hij : i ≤ j, hcb : π _ c = π _ b⟩ ⟨hji : j ≤ i + 1, rfl : π hji b = c⟩ hne

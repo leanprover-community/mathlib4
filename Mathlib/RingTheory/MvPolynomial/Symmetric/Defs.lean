@@ -5,8 +5,7 @@ Authors: Hanting Zhang, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 
 /-!
@@ -52,7 +51,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `φ ψ : MvPolynomial σ R`
-
 -/
 
 @[expose] public section
@@ -70,13 +68,21 @@ variable {R : Type*} [CommSemiring R]
 def esymm (s : Multiset R) (n : ℕ) : R :=
   ((s.powersetCard n).map Multiset.prod).sum
 
+@[simp] lemma esymm_zero (s : Multiset R) :
+    s.esymm 0 = 1 := by
+  simp [esymm]
+
+lemma esymm_of_card_lt {s : Multiset R} {n : ℕ} (h : s.card < n) :
+    s.esymm n = 0 := by
+  simp [esymm, powersetCard_eq_empty _ h]
+
 theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
     (s.val.map f).esymm n = (s.powersetCard n).sum fun t => t.prod f := by
   simp only [esymm, powersetCard_map, ← Finset.map_val_val_powersetCard, map_map]
   simp only [Function.comp_apply, Finset.prod_map_val, Finset.sum_map_val]
 
 lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
-    [SMulCommClass S R R] (s : S) (n : ℕ) (m : Multiset R) :
+    (s : S) (n : ℕ) (m : Multiset R) :
     s ^ n • m.esymm n = (m.map (s • ·)).esymm n := by
   rw [esymm, smul_sum, map_map]
   trans ((powersetCard n m).map (fun x : Multiset R ↦ s ^ card x • x.prod)).sum
@@ -179,8 +185,8 @@ set_option backward.isDefEq.respectTransparency false in
 def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
   AlgEquiv.ofAlgHom
-    (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x => x.2.rename e)
-    (((rename e.symm).comp <| Subalgebra.val _).codRestrict _ <| fun x => x.2.rename e.symm)
+    (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x => x.property.rename e)
+    (((rename e.symm).comp <| Subalgebra.val _).codRestrict _ <| fun x => x.property.rename e.symm)
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
 
@@ -203,8 +209,8 @@ def esymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map 
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
-theorem esymm_eq_multiset_esymm : esymm σ R = (univ.val.map X).esymm := by
-  exact funext fun n => (esymm_map_val X _ n).symm
+theorem esymm_eq_multiset_esymm : esymm σ R = (univ.val.map X).esymm :=
+  funext fun n => (esymm_map_val X _ n).symm
 
 theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (n : ℕ) (f : σ → S) :
     aeval f (esymm σ R n) = (univ.val.map f).esymm n := by
@@ -260,7 +266,7 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   rw [Finsupp.support_single _ one_ne_zero]
   simp only [mem_singleton]
   rintro a h rfl
-  have := congr_arg Finsupp.support h
+  have := congr($(h).support)
   rw [Finsupp.support_sum_eq_biUnion _ (by simp), Finsupp.support_sum_eq_biUnion _ (by simp)]
     at this
   simp_all
@@ -302,7 +308,7 @@ variable [DecidableEq σ] [DecidableEq τ]
 
 /-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`.
 It is the sum over all the degree n monomials in `MvPolynomial σ R`. -/
-def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
+def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.val.map X).prod
 
 /-- `hsymmPart` is the product of the symmetric polynomials `hsymm μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
@@ -376,7 +382,7 @@ variable [DecidableEq σ] [DecidableEq τ] {n : ℕ}
 It is the sum over all the monomials in `MvPolynomial σ R` such that
 the multiset of exponents is equal to the multiset of parts of μ. -/
 def msymm (μ : n.Partition) : MvPolynomial σ R :=
-  ∑ s : {a : Sym σ n // .ofSym a = μ}, (s.1.1.map X).prod
+  ∑ s : {a : Sym σ n // .ofSym a = μ}, (s.val.val.map X).prod
 
 @[simp]
 theorem msymm_zero : msymm σ R (.indiscrete 0) = 1 := by
@@ -390,7 +396,7 @@ theorem msymm_one : msymm σ R (.indiscrete 1) = ∑ i, X i := by
     simp_rw [Set.mem_univ, Nat.Partition.ofSym_one]
   symm
   rw [Fintype.sum_equiv (Equiv.trans Sym.oneEquiv (Equiv.Set.univ (Sym σ 1)).symm)
-    _ (fun s ↦ (s.1.1.map X).prod)]
+    _ (fun s ↦ (s.val.val.map X).prod)]
   · apply Fintype.sum_equiv (Equiv.subtypeEquivProp this)
     intro x
     congr

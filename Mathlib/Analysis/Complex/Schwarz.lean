@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.Analysis.Complex.RemovableSingularity
-public import Mathlib.Analysis.Normed.Module.HahnBanach
+
+import Mathlib.Analysis.Complex.RemovableSingularity
+import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
 # Schwarz lemma
@@ -77,13 +78,12 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
       fun_prop (disch := positivity)
     rw [mem_ball_iff_norm] at hz
     filter_upwards [Ioo_mem_nhdsLT hz] with r ⟨hzr, hrR₁⟩
-    apply this
-    · exact hd.mono <| by gcongr
-    · exact h_maps.mono_left <| by gcongr
+    specialize @this r
+    grw [hrR₁] at this
+    apply this hd h_maps
     · rwa [mem_ball_iff_norm]
     · exact (norm_nonneg _).trans_lt hzr
-    · exact ⟨hd.mono <| closedBall_subset_ball hrR₁, h_maps.mono_left <|
-        closedBall_subset_ball hrR₁⟩
+    · exact ⟨hd, h_maps⟩
   -- Cleanup, discard the case `z = c`.
   clear hd h_maps
   rcases hd' with ⟨hd, h_maps⟩
@@ -164,7 +164,7 @@ theorem dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO {f : E → F} {c z : E} 
     simpa [lt_div_iff₀, hne, dist_comm c] using hw
   have hmaps : MapsTo h (ball 0 (R₁ / dist z c)) (closedBall (h 0) R₂) := by
     refine MapsTo.comp ?_ (h_maps.comp hmaps_line)
-    simpa [hg, h] using g.lipschitz.mapsTo_closedBall (f c) R₂
+    simpa [hg, h] using g.lipschitzWith.mapsTo_closedBall (f c) R₂
   have hdiff : DifferentiableOn ℂ h (ball 0 (R₁ / dist z c)) :=
     g.differentiable.comp_differentiableOn <| hd.comp (lineMap c z).differentiableOn hmaps_line
   -- This map also satisfies `h(w) - h(0) = o(w ^ n)`, thus we can apply the auxiliary lemma above.

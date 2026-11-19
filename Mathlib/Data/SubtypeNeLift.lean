@@ -5,14 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Data.Subtype
+
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extending a function from the complement of a singleton
 
 In this file, we define `Function.subtypeNeLift` which allows to
 extend a (dependent) function defined on the complement of a singleton.
-
 -/
 
 @[expose] public section

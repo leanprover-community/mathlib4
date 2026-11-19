@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -214,8 +213,8 @@ theorem sumCongrHom_injective {α β : Type*} : Function.Injective (sumCongrHom 
   rintro ⟨⟩ ⟨⟩ h
   rw [Prod.mk_inj]
   constructor <;> ext i
-  · simpa using Equiv.congr_fun h (Sum.inl i)
-  · simpa using Equiv.congr_fun h (Sum.inr i)
+  · simpa using congr($h (Sum.inl i))
+  · simpa using congr($h (Sum.inr i))
 
 @[simp]
 theorem sumCongr_swap_one {α β : Type*} [DecidableEq α] [DecidableEq β] (i j : α) :
@@ -259,7 +258,7 @@ theorem sigmaCongrRightHom_injective {α : Type*} {β : α → Type*} :
     Function.Injective (sigmaCongrRightHom β) := by
   intro x y h
   ext a b
-  simpa using Equiv.congr_fun h ⟨a, b⟩
+  simpa using congr($h ⟨a, b⟩)
 
 /-- `Equiv.Perm.subtypeCongr` as a `MonoidHom`. -/
 @[simps]
@@ -273,7 +272,7 @@ theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
     Function.Injective (subtypeCongrHom p) := by
   rintro ⟨⟩ ⟨⟩ h
   rw [Prod.mk_inj]
-  constructor <;> ext i <;> simpa using Equiv.congr_fun h i
+  constructor <;> ext i <;> simpa using congr($h i)
 
 /-- If `e` is also a permutation, we can write `permCongr`
 completely in terms of the group structure. -/
@@ -365,14 +364,14 @@ variable {p : α → Prop} {f : Perm α}
 /-- If the permutation `f` fixes the subtype `{x // p x}`, then this returns the permutation
   on `{x // p x}` induced by `f`. -/
 def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
-  toFun := fun x => ⟨f x, (h _).2 x.2⟩
-  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
+  toFun := fun x => ⟨f x, (h _).2 x.property⟩
+  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.property⟩
   left_inv _ := by simp
   right_inv _ := by simp
 
 @[simp]
 theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p (f x) ↔ p x) (x : { x // p x }) :
-    subtypePerm f h x = ⟨f x, (h _).2 x.2⟩ :=
+    subtypePerm f h x = ⟨f x, (h _).2 x.property⟩ :=
   rfl
 
 @[simp]
@@ -466,10 +465,9 @@ theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubty
 theorem ofSubtype_apply_mem_iff_mem (f : Perm (Subtype p)) (x : α) :
     p ((ofSubtype f : α → α) x) ↔ p x :=
   if h : p x then by
-    simpa only [h, iff_true, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
+    simpa only [h, iff_true, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).property
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) → Perm α) := by
   intro x y h
   rw [Perm.ext_iff] at h ⊢
@@ -507,11 +505,11 @@ protected def subtypeEquivSubtypePerm (p : α → Prop) [DecidablePred p] :
     Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.prop a)
 
 theorem subtypeEquivSubtypePerm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
-    (Perm.subtypeEquivSubtypePerm p f).1 a = f ⟨a, h⟩ :=
+    (Perm.subtypeEquivSubtypePerm p f).val a = f ⟨a, h⟩ :=
   f.ofSubtype_apply_of_mem h
 
 theorem subtypeEquivSubtypePerm_apply_of_not_mem (f : Perm (Subtype p)) (h : ¬p a) :
-    ((Perm.subtypeEquivSubtypePerm p) f).1 a = a :=
+    ((Perm.subtypeEquivSubtypePerm p) f).val a = a :=
   f.ofSubtype_apply_of_not_mem h
 
 end Subtype

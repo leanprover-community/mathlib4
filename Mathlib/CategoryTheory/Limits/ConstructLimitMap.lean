@@ -5,8 +5,13 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Final
 public import Mathlib.CategoryTheory.Presentable.Basic
+
+import Mathlib.CategoryTheory.Comma.Final
+import Mathlib.CategoryTheory.Limits.ConeCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Morphisms between (co)filtered (co)limits
@@ -72,7 +77,6 @@ variable [IsCofiltered I']
 end ConstructLimitMap
 
 open ConstructLimitMap in
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism `f` between cofiltered limits, where every object of the target diagram is
 presentable relative to the source diagram, is initially induced by a natural transformation of
 diagrams. -/
@@ -95,8 +99,6 @@ lemma Limits.exists_eq_isLimitMap_of_preservesColimit_yoneda
   rw [IsLimit.map_π]
   exact (Under.w A.hom).symm
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism `f` between filtered colimits, where every object of the source diagram is
 presentable relative to the target diagram, is finally induced by a natural transformation of
 diagrams.is induced by a natural transformation of diagrams. -/
@@ -118,9 +120,8 @@ lemma Limits.exists_eq_isColimitMap_of_preservesColimit_coyoneda
     exact preservesColimit_of_iso_diagram _ iso.symm
   obtain ⟨J, _, _, G, G', _, _, g, hg⟩ :=
     exists_eq_isLimitMap_of_preservesColimit_yoneda hc'.op hc.op f.op
-  have := NatTrans.leftOp g
   refine ⟨Jᵒᵖ, inferInstance, inferInstance, G'.leftOp, G.leftOp, inferInstance, inferInstance,
-    NatTrans.leftOp g, ?_⟩
+    (Functor.leftOpCompOp G' D).inv ≫ NatTrans.leftOp g ≫ (Functor.leftOpCompOp G D').hom, ?_⟩
   refine Quiver.Hom.op_inj ?_
   rw [hg]
   refine ((Functor.Initial.isLimitWhiskerEquiv G' c.op).symm hc.op).hom_ext fun k ↦ ?_

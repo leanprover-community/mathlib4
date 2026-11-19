@@ -5,12 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # Kernels and cokernels in categories of homological complexes
-
 -/
 
 public section

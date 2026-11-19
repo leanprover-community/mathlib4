@@ -5,18 +5,14 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.Kaehler.TensorProduct
-public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Smooth
 
 /-!
-
 # Some lemmas about formally smooth under quotient
 
 In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism `f : R →+* S`,
 `I` an ideal of `R` which is square zero, if `R ⧸ I →+* S ⧸ IS` is formally smooth, so is `f`.
-
 -/
 
 public section
@@ -163,7 +159,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
     ext x
     rcases Ideal.toCotangent_surjective _ x with ⟨y, rfl⟩
     have : (KaehlerDifferential.kerToTensor R' P'.Ring S')
-      ⟨(algebraMap P.Ring P'.Ring) y.1, Jle y.2⟩ =
+      ⟨(algebraMap P.Ring P'.Ring) y.val, Jle y.property⟩ =
       mapTen ((KaehlerDifferential.kerToTensor R P.Ring S) y) := by
       simp [KaehlerDifferential.kerToTensor, mapTen]
     simpa [mapcot] using! this

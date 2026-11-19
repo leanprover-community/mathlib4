@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Piecewise functions
 
@@ -15,7 +18,7 @@ This file contains basic results on piecewise defined functions.
 
 public section
 
-variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ δ : Type*} {ι : Sort*}
 
 open Equiv.Perm Function
 

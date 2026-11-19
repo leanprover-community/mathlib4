@@ -9,13 +9,16 @@ public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Casts of rational numbers into linear ordered fields.
 -/
 
 @[expose] public section
 
-variable {F ι α β : Type*}
+variable {α : Type*}
 
 namespace Rat
 variable {p q : ℚ}

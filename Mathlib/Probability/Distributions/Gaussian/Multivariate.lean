@@ -5,12 +5,11 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Matrix
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
-public import Mathlib.Probability.Distributions.Gaussian.Basic
-public import Mathlib.Probability.Moments.CovarianceBilin
+public import Mathlib.Analysis.Matrix.MeasurableSpace
+public import Mathlib.Analysis.Matrix.Order
+public import Mathlib.Probability.Distributions.Gaussian.CharFun
 
-import Mathlib.Probability.Distributions.Gaussian.CharFun
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Measurable
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
@@ -35,14 +34,13 @@ Gaussian distributions over `EuclideanSpace ℝ ι`.
 ## Tags
 
 multivariate Gaussian distribution
-
 -/
 
 @[expose] public section
 
 
 open MeasureTheory Matrix WithLp Module Complex
-open scoped RealInnerProductSpace MatrixOrder
+open scoped RealInnerProductSpace MatrixOrder Matrix.Norms.L2Operator
 
 namespace ProbabilityTheory
 
@@ -69,8 +67,9 @@ def stdGaussian : Measure E :=
 
 variable [BorelSpace E]
 
-instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E) :=
-  Measure.isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E) := by
+  rw [stdGaussian]
+  infer_instance
 
 @[simp]
 lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
@@ -169,10 +168,7 @@ def multivariateGaussian (μ : EuclideanSpace ℝ ι) (S : Matrix ι ι ℝ) :
 
 lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : Matrix ι ι ℝ}
     (hS : ¬ S.PosSemidef) : multivariateGaussian μ S = .dirac μ := by
-  rw [multivariateGaussian, CFC.sqrt, cfcₙ_apply_of_not_predicate]
-  · simp
-  change ¬ (S - 0).PosSemidef
-  simpa
+  simp [multivariateGaussian, CFC.sqrt_of_not_nonneg, nonneg_iff_posSemidef, hS]
 
 @[simp]
 lemma multivariateGaussian_zero_one :
@@ -245,7 +241,8 @@ lemma measurePreserving_restrict₂_multivariateGaussian {ι : Type*} [Decidable
     {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} (hS : S.PosSemidef) (hJI : J ⊆ I) :
     MeasurePreserving (EuclideanSpace.restrict₂ hJI) (multivariateGaussian μ S)
       (multivariateGaussian (μ.restrict₂ hJI)
-        (S.submatrix (fun i : J ↦ ⟨i.1, hJI i.2⟩) (fun i : J ↦ ⟨i.1, hJI i.2⟩))) where
+        (S.submatrix (fun i : J ↦ ⟨i.val, hJI i.property⟩)
+          (fun i : J ↦ ⟨i.val, hJI i.property⟩))) where
   measurable := by fun_prop
   map_eq := by
     apply IsGaussian.ext
@@ -257,13 +254,26 @@ lemma measurePreserving_restrict₂_multivariateGaussian {ι : Type*} [Decidable
     rw [ContinuousLinearMap.toBilinForm_apply, ContinuousLinearMap.toBilinForm_apply,
       covarianceBilin_apply_eq_cov, covariance_map]
     · have (i : J) : (fun u ↦ ⟪(EuclideanSpace.basisFun J ℝ).toBasis i, u⟫) ∘
-          EuclideanSpace.restrict₂ hJI = fun u ↦ u ⟨i.1, hJI i.2⟩ := by ext; simp [PiLp.inner_apply]
+          EuclideanSpace.restrict₂ hJI = fun u ↦ u ⟨i.val, hJI i.property⟩ := by
+        ext; simp [PiLp.inner_apply]
       simp_rw [this, covariance_eval_multivariateGaussian hS,
         covarianceBilin_multivariateGaussian (hS.submatrix _)]
       simp
     any_goals exact Measurable.aestronglyMeasurable (by fun_prop)
     · fun_prop
     · exact IsGaussian.memLp_two_id
+
+@[fun_prop]
+lemma measurable_multivariateGaussian : Measurable (multivariateGaussian (ι := ι)).uncurry := by
+  rw [Measure.measurable_measure]
+  intro s hs
+  simp only [Function.uncurry, multivariateGaussian]
+  conv =>
+    rhs
+    intro b
+    rw [Measure.map_apply (by fun_prop) hs]
+  let A := {((μ, S), x) | μ + toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S) x ∈ s}
+  exact measurable_measure_prodMk_left (s := A) <| hs.preimage (by fun_prop)
 
 end multivariateGaussian
 

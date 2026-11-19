@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Order.Compare
+public import Batteries.Data.List.Basic
 public import Mathlib.Data.Nat.PSub
-public import Batteries.Data.List.Lemmas
 public import Mathlib.Data.Tree.Basic
+public import Mathlib.Order.Compare
 
 /-!
 # Ordered sets
@@ -60,7 +60,6 @@ Ported from Haskell's `Data.Set`.
 ## Tags
 
 ordered map, ordered set, data structure
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ These are weak limits for diagrams of shape `WalkingCospan`.
 
 If a category has binary products and weak equalizers, then it has weak pullbacks
 (see `hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakEqualizers`).
-
 -/
 
 @[expose] public section
@@ -62,7 +61,6 @@ abbrev weakPullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasWeakPullb
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ weakPullback f g :=
   weakLimit.lift _ (PullbackCone.mk h k w)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma weakPullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g]
     (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) :
     ∃ (l : W ⟶ weakPullback f g),
@@ -157,8 +155,8 @@ def isWeakLimitAux' (t : PullbackCone f g)
     (create :
       ∀ s : PullbackCone f g, { l // l ≫ t.fst = s.fst ∧ l ≫ t.snd = s.snd}) :
     Limits.IsWeakLimit t :=
-  PullbackCone.isWeakLimitAux t (fun s => (create s).1)
-    (fun s => (create s).2.1) (fun s => (create s).2.2)
+  PullbackCone.isWeakLimitAux t (fun s => (create s).val)
+    (fun s => (create s).property.1) (fun s => (create s).property.2)
 
 /-- This is a more convenient formulation to show that a `PullbackCone` constructed using
 `PullbackCone.mk` is a weak limit cone.
@@ -221,7 +219,6 @@ instance (priority := 100) HasWeakPullbacksOfHasPullbacks [HasPullbacks C] :
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the product `X ⨯ Y` and the weak equalizer of `π₁ ≫ f` and `π₂ ≫ g` exist, then the
 weak pullback of `f` and `g` exists: it is given by composing the equalizer with the projections. -/
 theorem hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair [HasLimit (pair X Y)]

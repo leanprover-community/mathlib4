@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public import Mathlib.Tactic.Ring.Common
 public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat -- for the `Ord Rat` instance
+public meta import Mathlib.Tactic.Ring.Common
+public import Mathlib.Tactic.Ring.Common
 
 /-!
 # `ring` tactic
@@ -530,7 +531,7 @@ instance (priority := low) {α β} [CSLift α β] (a : α) : CSLiftVal a (CSLift
 
 theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
     [h1 : CSLiftVal a a'] [h2 : CSLiftVal b b'] (h : a' = b') : a = b :=
-  inst.2 <| by rwa [← h1.1, ← h2.1]
+  inst.inj <| by rwa [← h1.eq, ← h2.eq]
 
 open Lean Parser.Tactic Elab Command Elab.Tactic
 

@@ -5,7 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.RamificationInertia.Ramification
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Primes in an extension of localization at prime
@@ -29,12 +32,11 @@ bijection and that the residual degree and ramification index are preserved by t
 - `IsDedekindDomain.primesOverEquivPrimesOver`: the bijection between the primes over
   `p` in `S` and the primes over the maximal ideal of `Rₚ` in `Sₚ`.
 
-- `IsDedekindDomain.primesOverEquivPrimesOver_inertiagDeg_eq`: the bijection
+- `IsDedekindDomain.primesOverEquivPrimesOver_inertiaDeg_eq`: the bijection
   `primesOverEquivPrimesOver` preserves the inertia degree.
 
 - `IsDedekindDomain.primesOverEquivPrimesOver_ramificationIdx_eq`: the bijection
   `primesOverEquivPrimesOver` preserves the ramification index.
-
 -/
 
 @[expose] public section
@@ -89,7 +91,7 @@ theorem exists_algebraMap_quot_eq_of_mem_quot [P.IsMaximal]
   use x * s'
   rw [← sub_eq_zero, ← map_sub, Quotient.eq_zero_iff_mem]
   have h₀ : (P.map (algebraMap S Sₚ)).IsPrime := isPrime_map_of_liesOver S p Sₚ P
-  have h₁ : s.1 ∉ P := (Set.disjoint_left.mp <| disjoint_primeCompl_of_liesOver P p) s.prop
+  have h₁ : s.val ∉ P := (Set.disjoint_left.mp <| disjoint_primeCompl_of_liesOver P p) s.prop
   have h₂ : algebraMap S Sₚ s ∉ Ideal.map (algebraMap S Sₚ) P := by
     rwa [← mem_comap, comap_map_eq_self_of_isMaximal _ h₀.ne_top]
   refine (h₀.mem_or_mem ?_).resolve_left h₂
@@ -158,18 +160,11 @@ theorem algebraMap_equivQuotMaximalIdeal_symm_apply [p.IsMaximal] [P.IsMaximal]
   simp [equivQuotMaximalIdeal_symm_apply_mk, map_mul, Quotient.algebraMap_mk_of_liesOver,
     IsLocalization.algebraMap_mk' S Rₚ Sₚ]
 
--- Lean thinks that the instance [p.IsPrime] is not necessary here, but it is needed
--- for the definition of `Rₚ`.
-set_option linter.unusedSectionVars false in
-@[simp]
-theorem equivQuotientMapMaximalIdeal_apply_mk [p.IsMaximal] (x : S) :
-    equivQuotientMapMaximalIdeal S p Rₚ Sₚ (Ideal.Quotient.mk _ x) =
-      (Ideal.Quotient.mk _ (algebraMap S Sₚ x)) := rfl
-
 theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
     [(Ideal.map (algebraMap S Sₚ) P).LiesOver (maximalIdeal Rₚ)] :
-    (maximalIdeal Rₚ).inertiaDeg' (P.map (algebraMap S Sₚ)) = p.inertiaDeg' P := by
-  rw [inertiaDeg'_algebraMap, inertiaDeg'_algebraMap]
+    (P.map (algebraMap S Sₚ)).inertiaDeg Rₚ = P.inertiaDeg R := by
+  have := isMaximal_of_isMaximal_disjoint _ Sₚ P (disjoint_primeCompl_of_liesOver P p)
+  rw [inertiaDeg_eq_of_isMaximal p, inertiaDeg_eq_of_isMaximal (maximalIdeal Rₚ)]
   refine Algebra.finrank_eq_of_equiv_equiv (equivQuotMaximalIdeal p Rₚ).symm
     (equivQuotientMapOfIsMaximal p Sₚ P).symm ?_
   ext x
@@ -214,19 +209,19 @@ between the primes of `S` over `p` and the primes over the maximal ideal of `R�
 -/
 noncomputable def primesOverEquivPrimesOver (hp : p ≠ ⊥) :
     p.primesOver S ≃o (maximalIdeal Rₚ).primesOver Sₚ where
-  toFun P := ⟨map (algebraMap S Sₚ) P.1, isPrime_map_of_liesOver S p Sₚ P.1,
-    liesOver_map_of_liesOver p Rₚ Sₚ P.1⟩
+  toFun P := ⟨map (algebraMap S Sₚ) P.val, isPrime_map_of_liesOver S p Sₚ P.val,
+    liesOver_map_of_liesOver p Rₚ Sₚ P.val⟩
   map_rel_iff' {Q Q'} := by
     refine ⟨fun h ↦ ?_, fun h ↦ map_mono h⟩
-    have : Q'.1.IsMaximal :=
+    have : Q'.val.IsMaximal :=
       (primesOver.isPrime p Q').isMaximal (ne_bot_of_mem_primesOver hp Q'.prop)
     simpa [under_map_of_isMaximal S p] using le_comap_of_map_le h
-  invFun Q := ⟨comap (algebraMap S Sₚ) Q.1, IsPrime.under S Q.1,
-    liesOver_comap_of_liesOver p Rₚ Q.1⟩
+  invFun Q := ⟨comap (algebraMap S Sₚ) Q.val, IsPrime.under S Q.val,
+    liesOver_comap_of_liesOver p Rₚ Q.val⟩
   left_inv P := by
     have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
       (ne_bot_of_mem_primesOver hp P.prop) (primesOver.isPrime p P)
-    exact SetCoe.ext <| IsLocalization.AtPrime.under_map_of_isMaximal S p Sₚ P.1
+    exact SetCoe.ext <| IsLocalization.AtPrime.under_map_of_isMaximal S p Sₚ P.val
   right_inv Q := SetCoe.ext <| map_under (algebraMapSubmonoid S p.primeCompl) Sₚ Q
 
 @[simp]
@@ -235,16 +230,20 @@ theorem primesOverEquivPrimesOver_apply (hp : p ≠ ⊥) (P : p.primesOver S) :
 
 @[simp]
 theorem primesOverEquivPrimesOver_symm_apply (hp : p ≠ ⊥) (Q : (maximalIdeal Rₚ).primesOver Sₚ) :
-    ((primesOverEquivPrimesOver p Rₚ Sₚ hp).symm Q).1 = Ideal.comap (algebraMap S Sₚ) Q := rfl
+    ((primesOverEquivPrimesOver p Rₚ Sₚ hp).symm Q).val = Ideal.comap (algebraMap S Sₚ) Q := rfl
 
-theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) (P : p.primesOver S) :
-    (maximalIdeal Rₚ).inertiaDeg' (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
-      p.inertiaDeg' P.val := by
+theorem primesOverEquivPrimesOver_inertiaDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) (P : p.primesOver S) :
+    (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ).inertiaDeg Rₚ =
+      P.val.inertiaDeg R := by
   have : NeZero p := ⟨hp⟩
   have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
     (ne_bot_of_mem_primesOver (NeZero.ne _) P.prop) inferInstance
-  have : (P.1.map (algebraMap S Sₚ)).LiesOver (maximalIdeal Rₚ) := liesOver_map_of_liesOver p _ _ _
+  have : (P.val.map (algebraMap S Sₚ)).LiesOver (maximalIdeal Rₚ) :=
+    liesOver_map_of_liesOver p _ _ _
   exact inertiaDeg_map_eq_inertiaDeg p _ _ _
+
+@[deprecated (since := "2026-09-17")]
+alias primesOverEquivPrimesOver_inertiagDeg_eq := primesOverEquivPrimesOver_inertiaDeg_eq
 
 theorem primesOverEquivPrimesOver_ramificationIdx_eq (hp : p ≠ ⊥) (P : p.primesOver S) :
     (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ).ramificationIdx Rₚ =

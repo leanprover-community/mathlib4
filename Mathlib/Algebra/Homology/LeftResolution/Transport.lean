@@ -14,7 +14,6 @@ If `ι : C ⥤ A` is equipped with `Λ : LeftResolution ι` and
 `ι' : C' ⥤ A'` is a functor which corresponds to `ι` via
 equivalences of categories `A' ≌ A` and `C' ≌ C`, we
 define `Λ.transport .. : LeftResolution ι'`.
-
 -/
 
 @[expose] public section
@@ -28,7 +27,6 @@ namespace LeftResolution
 
 open CategoryTheory.Functor
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Transport `LeftResolution` via equivalences of categories. -/
 def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}
     (eA : A' ≌ A) (eC : C' ≌ C) (e : ι' ⋙ eA.functor ≅ eC.functor ⋙ ι) :

@@ -5,9 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Logic.Function.FiberPartition
+public import Mathlib.Topology.LocallyConstant.Basic
+
 /-!
+# Fibers of a map from a topological space
 
 This file provides some API surrounding `Function.Fiber` (see
 `Mathlib/Logic/Function/FiberPartition.lean`) in the presence of a topology on the domain of the
@@ -67,7 +69,7 @@ variable (l : LocallyConstant S Y) [CompactSpace S]
 instance (x : Fiber l) : CompactSpace x.val := by
   obtain ⟨y, hy⟩ := x.prop
   rw [← isCompact_iff_compactSpace, ← hy]
-  exact (l.2.isClosed_fiber _).isCompact
+  exact (l.isLocallyConstant.isClosed_fiber _).isCompact
 
 instance : Finite (Fiber l) :=
   have : Finite (Set.range l) := l.range_finite
