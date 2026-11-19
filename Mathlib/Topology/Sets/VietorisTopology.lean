@@ -509,11 +509,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     · apply this (u ∪ w) <;> grind [sUnion_union, Finite.union]
     rw [exists_mem_image]
     exists w
-    #adaptation_note /-- Before leanprover/lean4#13166, this was just `grind`.
-    The new canonicalizer using `isDefEq` less,
-    and so does not unify as many of the conditions that `grind` wants to case split on.
-    Alternatively `simp; grind` also works here. -/
-    grind (splits := 12)
+    grind
 
 /-- The topology of `Compacts α` has a basis consisting of sets of the form
 `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ` are open sets.
@@ -821,11 +817,11 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
       {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ (K : Set α) ⊆ U} by
     rw [this]
     exact .image
-      (isPreconnected_univ_pi fun U => isPreconnected_nonempty_finite_subsets (hu U.2).2)
+      (isPreconnected_univ_pi fun U => isPreconnected_nonempty_finite_subsets (hu U.property).2)
       _ (by fun_prop)
   apply subset_antisymm
   · exact fun K ⟨hK₁, hK₂, hK₃⟩ => ⟨fun U => ⟨K ∩ U, (hK₃.inter_of_left _).isCompact⟩,
-      fun U _ => ⟨hK₂ U U.2, hK₃.inter_of_left _, inter_subset_right⟩, by aesop⟩
+      fun U _ => ⟨hK₂ U U.property, hK₃.inter_of_left _, inter_subset_right⟩, by aesop⟩
   · simp_rw [image_subset_iff, preimage_ofPred_eq, coe_finset_sup, Finset.sup_eq_iSup,
       iSup_eq_iUnion, Finset.mem_univ, iUnion_true, iUnion_subset_iff]
     refine fun f hf => ⟨by grind, fun U hU => ?_, finite_iUnion (by grind)⟩

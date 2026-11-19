@@ -159,7 +159,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
     ext x
     rcases Ideal.toCotangent_surjective _ x with ⟨y, rfl⟩
     have : (KaehlerDifferential.kerToTensor R' P'.Ring S')
-      ⟨(algebraMap P.Ring P'.Ring) y.1, Jle y.2⟩ =
+      ⟨(algebraMap P.Ring P'.Ring) y.val, Jle y.property⟩ =
       mapTen ((KaehlerDifferential.kerToTensor R P.Ring S) y) := by
       simp [KaehlerDifferential.kerToTensor, mapTen]
     simpa [mapcot] using! this

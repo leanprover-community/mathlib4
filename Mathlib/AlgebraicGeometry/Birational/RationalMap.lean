@@ -556,15 +556,15 @@ noncomputable def RationalMap.equivFunctionField
     (sX : X ⟶ S) (sY : Y ⟶ S) [IsIntegral X] [LocallyOfFiniteType sY] :
     { f : Spec X.functionField ⟶ Y // f ≫ sY = X.fromSpecStalk _ ≫ sX } ≃
       { f : X ⤏ Y // f.compHom sY = sX.toRationalMap } where
-  toFun f := ⟨.ofFunctionField sX sY f f.2, PartialMap.toRationalMap_eq_iff.mpr
+  toFun f := ⟨.ofFunctionField sX sY f f.property, PartialMap.toRationalMap_eq_iff.mpr
       ⟨_, PartialMap.dense_domain _, le_rfl, le_top, by simp [PartialMap.ofFromSpecStalk_comp]⟩⟩
-  invFun f := ⟨f.1.fromFunctionField, by
+  invFun f := ⟨f.val.fromFunctionField, by
     obtain ⟨f, hf⟩ := f
     obtain ⟨f, rfl⟩ := f.exists_rep
     simpa [fromFunctionField_toRationalMap] using! congr(RationalMap.fromFunctionField $hf)⟩
   left_inv f := Subtype.ext (RationalMap.fromFunctionField_ofFunctionField _ _ _ _)
   right_inv f := Subtype.ext (RationalMap.eq_of_fromFunctionField_eq
-      (ofFunctionField sX sY f.1.fromFunctionField _) f
+      (ofFunctionField sX sY f.val.fromFunctionField _) f
       (RationalMap.fromFunctionField_ofFunctionField _ _ _ _))
 
 /--
@@ -604,13 +604,14 @@ consisting of all the domains of the partial maps in the equivalence class. -/
 noncomputable
 def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover where
   I₀ := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
-  X U := U.1.toScheme
-  f U := X.homOfLE (le_sSup U.2)
+  X U := U.val.toScheme
+  f U := X.homOfLE (le_sSup U.property)
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
-    use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
-    exact ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
+    use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.property).choose_spec.1⟩
+    exact ⟨⟨x.val, (TopologicalSpace.Opens.mem_sSup.mp x.property).choose_spec.2⟩,
+      Subtype.ext (by simp)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
@@ -619,12 +620,13 @@ then `f` can be represented as a partial map on its domain of definition. -/
 noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
-    (fun x ↦ (X.isoOfEq x.2.choose_spec.2).inv ≫ x.2.choose.hom) ?_⟩
+    (fun x ↦ (X.isoOfEq x.property.choose_spec.2).inv ≫ x.property.choose.hom) ?_⟩
   intro x y
-  let g (x : f.openCoverDomain.I₀) := x.2.choose
-  have hg₁ (x) : (g x).toRationalMap = f := x.2.choose_spec.1
-  have hg₂ (x) : (g x).domain = x.1 := x.2.choose_spec.2
-  refine (cancel_epi (isPullback_opens_inf_le (le_sSup x.2) (le_sSup y.2)).isoPullback.hom).mp ?_
+  let g (x : f.openCoverDomain.I₀) := x.property.choose
+  have hg₁ (x) : (g x).toRationalMap = f := x.property.choose_spec.1
+  have hg₂ (x) : (g x).domain = x.val := x.property.choose_spec.2
+  refine (cancel_epi
+    (isPullback_opens_inf_le (le_sSup x.property) (le_sSup y.property)).isoPullback.hom).mp ?_
   simp only [openCoverDomain, IsPullback.isoPullback_hom_fst_assoc,
     IsPullback.isoPullback_hom_snd_assoc]
   change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom

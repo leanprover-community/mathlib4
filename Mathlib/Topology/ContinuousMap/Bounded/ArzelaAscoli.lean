@@ -68,7 +68,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
   /- Associate to every function a discrete approximation, mapping each point in `tα`
     to a point in `tβ` close to its true image by the function. -/
   classical
-  refine ⟨tα → tβ, by infer_instance, fun f a => ⟨F (f.1 a), (hF (f.1 a)).1⟩, ?_⟩
+  refine ⟨tα → tβ, by infer_instance, fun f a => ⟨F (f.val a), (hF (f.val a)).1⟩, ?_⟩
   rintro ⟨f, hf⟩ ⟨g, hg⟩ f_eq_g
   -- If two functions have the same approximation, then they are within distance `ε`
   refine lt_of_le_of_lt ((dist_le <| le_of_lt ε₁0).2 fun x => ?_) εε₁

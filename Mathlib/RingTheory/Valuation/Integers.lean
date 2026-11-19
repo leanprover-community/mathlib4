@@ -60,7 +60,7 @@ instance : Algebra v.integer R :=
 
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
-    map_le_one := fun r => r.2
+    map_le_one := fun r => r.property
     exists_of_le_one := fun r hr => ⟨⟨r, hr⟩, rfl⟩ }
 
 namespace Integers
@@ -289,7 +289,7 @@ open Integers in
 theorem Integer.not_isUnit_iff_valuation_lt_one {x : v.integer} : ¬IsUnit x ↔ v x < 1 := by
   rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one (F := F) (Γ₀ := Γ₀),
     le_antisymm_iff]
-  exacts [and_iff_right x.2, integer.integers v]
+  exacts [and_iff_right x.property, integer.integers v]
 
 namespace integer
 

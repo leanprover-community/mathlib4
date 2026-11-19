@@ -134,8 +134,8 @@ instance {X : Scheme.{u}} (𝒰 : PreZeroHypercover.{w} X) [QuasiCompactCover �
     choose t ht W hcW hV using this
     have : Finite s := hs
     have (i) (hi) : Finite (t i hi) := ht i hi
-    refine .of_finite (κ := Σ (i : s), t i.1 i.2) (fun p ↦ ⟨p.1, p.2⟩) (fun p ↦ W _ p.1.2 _ p.2.2)
-      (fun p ↦ hcW ..) ?_
+    refine .of_finite (κ := Σ (i : s), t i.val i.property) (fun p ↦ ⟨p.1, p.2⟩)
+      (fun p ↦ W _ p.1.property _ p.2.property) (fun p ↦ hcW ..) ?_
     simpa [← hV, Set.iUnion_sigma, Set.iUnion_subtype, Set.image_iUnion, Set.image_image] using! hU
 
 instance of_finite {𝒰 : S.Cover K} [Scheme.JointlySurjective K]
@@ -218,8 +218,9 @@ This cover is again quasi-compact.
 noncomputable def ulift {S : Scheme.{u}} (𝒰 : PreZeroHypercover.{w} S) [QuasiCompactCover 𝒰] :
     PreZeroHypercover.{u} S :=
   𝒰.restrictIndex
-      fun i : (Σ U : S.affineOpens, Fin (exists_isAffineOpen_of_isCompact 𝒰 U.2.isCompact).choose) ↦
-    (exists_isAffineOpen_of_isCompact 𝒰 i.1.2.isCompact).choose_spec.choose i.2
+      fun i : (Σ U : S.affineOpens,
+        Fin (exists_isAffineOpen_of_isCompact 𝒰 U.property.isCompact).choose) ↦
+    (exists_isAffineOpen_of_isCompact 𝒰 i.1.property.isCompact).choose_spec.choose i.2
 
 /-- The refinement morphism of the lifted cover. -/
 noncomputable def uliftHom {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :

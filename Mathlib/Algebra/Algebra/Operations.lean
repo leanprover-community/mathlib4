@@ -462,11 +462,11 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
       apply congr_arg sSup
       ext S
       constructor <;> rintro ⟨y, hy⟩
-      · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩
+      · use ⟨f y, mem_map.mpr ⟨y.val, y.property, rfl⟩⟩
         refine Eq.trans ?_ hy
         ext
         simp
-      · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.2
+      · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.property
         use ⟨y', hy'⟩
         refine Eq.trans ?_ hy
         rw [f.toLinearMap_apply] at fy_eq

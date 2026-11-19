@@ -307,7 +307,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
       pullback (h.V j k).inclusion' (h.V j i).inclusion' := by
   refine (pullbackIsoProdSubtype _ _).hom ≫ ofHom ⟨?_, ?_⟩ ≫ (pullbackIsoProdSubtype _ _).inv
   · intro x
-    refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
+    refine ⟨⟨⟨(h.t i j x.val.1).val, ?_⟩, h.t i j x.val.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
   fun_prop
@@ -356,7 +356,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
     { J
       U := fun i => (Opens.toTopCat ↧α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
-      t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
+      t := fun i j => ofHom ⟨fun x => ⟨⟨x.val.val, x.property⟩, x.val.property⟩, by fun_prop⟩
       V_id := fun i => by simp
       t_id := fun i => by ext; rfl
       t_inter := fun _ _ _ _ hx => hx

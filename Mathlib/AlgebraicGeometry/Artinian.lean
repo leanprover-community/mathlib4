@@ -69,7 +69,7 @@ lemma IsLocallyArtinian.of_topologicalKrullDim_le_zero
     rw [isArtinianRing_iff_krullDimLE_zero, Ring.KrullDimLE, Order.krullDimLE_iff, ← ringKrullDim,
       Nat.cast_zero, ← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim Γ(X, U)]
     change topologicalKrullDim (Spec Γ(X, U)) ≤ 0
-    rw [← IsHomeomorph.topologicalKrullDim_eq _ U.2.isoSpec.hom.homeomorph.isHomeomorph]
+    rw [← IsHomeomorph.topologicalKrullDim_eq _ U.property.isoSpec.hom.homeomorph.isHomeomorph]
     exact (topologicalKrullDim_subspace_le X U).trans h
 
 theorem IsLocallyArtinian.of_isLocallyNoetherian_of_discreteTopology
@@ -82,7 +82,7 @@ private lemma IsLocallyArtinian.of_isOpenImmersion [IsOpenImmersion f] [IsLocall
     IsLocallyArtinian X where
   isArtinianRing_presheaf_obj U :=
     have : IsArtinianRing ↑Γ(Y, f ''ᵁ ↑U) :=
-      IsLocallyArtinian.isArtinianRing_presheaf_obj ⟨_, U.2.image_of_isOpenImmersion f⟩
+      IsLocallyArtinian.isArtinianRing_presheaf_obj ⟨_, U.property.image_of_isOpenImmersion f⟩
     (f.appIso U).commRingCatIsoToRingEquiv.surjective.isArtinianRing
 
 instance [IsLocallyArtinian X] {U : X.Opens} : IsLocallyArtinian U := .of_isOpenImmersion U.ι

@@ -734,14 +734,14 @@ theorem toPiLocalization_surjective_of_discreteTopology :
     ⟨f, hfp.antisymm <| Set.singleton_subset_iff.mpr hpf⟩
   choose f hf using this
   let e := Equiv.ofInjective f fun p q eq ↦ Set.singleton_injective (hf p ▸ eq ▸ hf q)
-  have loc a : IsLocalization.AtPrime (Localization.Away a.1) (e.symm a).asIdeal :=
+  have loc a : IsLocalization.AtPrime (Localization.Away a.val) (e.symm a).asIdeal :=
     (isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton <| hf _).mp <| by
       simp_rw [e, Equiv.apply_ofInjective_symm]; infer_instance
   let algE a := IsLocalization.algEquiv (e.symm a).asIdeal.primeCompl
-    (Localization.AtPrime (e.symm a).asIdeal) (Localization.Away a.1)
+    (Localization.AtPrime (e.symm a).asIdeal) (Localization.Away a.val)
   have span_eq : Ideal.span (Set.range f) = ⊤ := iSup_basicOpen_eq_top_iff.mp <| top_unique
     fun p _ ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨p, (hf p).ge rfl⟩
-  replace hf a : (basicOpen a.1 : Set _) = {e.symm a} := by
+  replace hf a : (basicOpen a.val : Set _) = {e.symm a} := by
     simp_rw [e, ← hf, Equiv.apply_ofInjective_symm]
   obtain ⟨r, eq, -⟩ := Localization.existsUnique_algebraMap_eq_of_span_eq_top _ span_eq
     (fun a ↦ algE a (x _)) fun a b ↦ by
@@ -977,7 +977,7 @@ protected def zeroLocusEquivIrreducibleCloseds (I : Set R) :
     zeroLocus I ≃o (TopologicalSpace.IrreducibleCloseds (zeroLocus I))ᵒᵈ where
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} := (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans
-    ((subtype_specializes_iff p q).trans (le_iff_specializes p.1 q.1).symm)
+    ((subtype_specializes_iff p q).trans (le_iff_specializes p.val q.val).symm)
 
 lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
     StableUnderSpecialization {x} ↔ x.asIdeal.IsMaximal := by
@@ -1109,7 +1109,8 @@ semiring `{0, 0.5, 1}` with `⊔` as `+` and `⊓` as `*`, `0.5` has no compleme
 def mulZeroAddOneEquivClopens :
     {e : R × R // e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃o Clopens (PrimeSpectrum R) where
   toEquiv := .ofBijective
-    (fun e ↦ ⟨basicOpen e.1.1, isClopen_iff_mul_add.mpr ⟨_, _, e.2.1, e.2.2, rfl⟩⟩) <| by
+    (fun e ↦ ⟨basicOpen e.val.1,
+      isClopen_iff_mul_add.mpr ⟨_, _, e.property.1, e.property.2, rfl⟩⟩) <| by
       refine ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ eq ↦ mul_eq_zero_add_eq_one_ext_left ?_, fun s ↦ ?_⟩
       · exact basicOpen_injOn_isIdempotentElem (IsIdempotentElem.of_mul_add hx.1 hx.2).1
           (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' congr($(eq).carrier)
@@ -1119,9 +1120,9 @@ def mulZeroAddOneEquivClopens :
     rw [← inf_eq_left, ← basicOpen_mul]
     refine ⟨fun h ↦ ?_, (by rw [·])⟩
     rw [← inf_eq_left]
-    have := (IsIdempotentElem.of_mul_add a.2.1 a.2.2).1
+    have := (IsIdempotentElem.of_mul_add a.property.1 a.property.2).1
     exact mul_eq_zero_add_eq_one_ext_left (basicOpen_injOn_isIdempotentElem
-      (this.mul (IsIdempotentElem.of_mul_add b.2.1 b.2.2).1) this h)
+      (this.mul (IsIdempotentElem.of_mul_add b.property.1 b.property.2).1) this h)
 
 lemma isRetrocompact_zeroLocus_compl {s : Set R} (hs : s.Finite) :
     IsRetrocompact (zeroLocus s)ᶜ :=
@@ -1233,8 +1234,8 @@ irreducible component is a zero locus of some minimal prime ideal. -/
 protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R) :
     I.minimalPrimes ≃o (irreducibleComponents (zeroLocus (I : Set R)))ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ I ≤ p} ≃o zeroLocus (I : Set R) :=
-    ⟨⟨fun x ↦ ⟨⟨x.1, x.2.1⟩, x.2.2⟩, fun x ↦ ⟨x.1.asIdeal, x.1.isPrime, x.2⟩,
-      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun x ↦ ⟨⟨x.val, x.property.1⟩, x.property.2⟩,
+      fun x ↦ ⟨x.val.asIdeal, x.val.isPrime, x.property⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.zeroLocusEquivIrreducibleCloseds (I : Set R)).trans
@@ -1249,8 +1250,8 @@ irreducible component is a zero locus of some minimal prime ideal. -/
 protected def _root_.minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
-    ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.asIdeal, x.isPrime, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩,
-      Iff.rfl⟩
+    ⟨⟨fun x ↦ ⟨x.val, x.property.1⟩, fun x ↦ ⟨x.asIdeal, x.isPrime, bot_le⟩, fun _ ↦ rfl,
+      fun _ ↦ rfl⟩, Iff.rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
@@ -1407,31 +1408,32 @@ def isIdempotentElemEquivClopens :
   .trans .isIdempotentElemMulZeroAddOne mulZeroAddOneEquivClopens
 
 lemma basicOpen_isIdempotentElemEquivClopens_symm (s) :
-    basicOpen (isIdempotentElemEquivClopens (R := R).symm s).1 = s.toOpens :=
+    basicOpen (isIdempotentElemEquivClopens (R := R).symm s).val = s.toOpens :=
   Opens.ext congr($(isIdempotentElemEquivClopens.apply_symm_apply s).carrier)
 
 lemma coe_isIdempotentElemEquivClopens_apply (e) :
-    (isIdempotentElemEquivClopens e : Set (PrimeSpectrum R)) = basicOpen (e.1 : R) := rfl
+    (isIdempotentElemEquivClopens e : Set (PrimeSpectrum R)) = basicOpen (e.val : R) := rfl
 
 lemma isIdempotentElemEquivClopens_apply_toOpens (e) :
-    (isIdempotentElemEquivClopens e).toOpens = basicOpen (e.1 : R) := rfl
+    (isIdempotentElemEquivClopens e).toOpens = basicOpen (e.val : R) := rfl
 
 lemma isIdempotentElemEquivClopens_mul (e₁ e₂ : {e : R | IsIdempotentElem e}) :
-    isIdempotentElemEquivClopens ⟨_, e₁.2.mul e₂.2⟩ =
+    isIdempotentElemEquivClopens ⟨_, e₁.property.mul e₂.property⟩ =
       isIdempotentElemEquivClopens e₁ ⊓ isIdempotentElemEquivClopens e₂ :=
   map_inf ..
 
 lemma isIdempotentElemEquivClopens_one_sub (e : {e : R | IsIdempotentElem e}) :
-    isIdempotentElemEquivClopens ⟨_, e.2.one_sub⟩ = (isIdempotentElemEquivClopens e)ᶜ :=
+    isIdempotentElemEquivClopens ⟨_, e.property.one_sub⟩ = (isIdempotentElemEquivClopens e)ᶜ :=
   map_compl ..
 
 lemma isIdempotentElemEquivClopens_symm_inf (s₁ s₂) :
     letI e := isIdempotentElemEquivClopens (R := R).symm
-    e (s₁ ⊓ s₂) = ⟨_, (e s₁).2.mul (e s₂).2⟩ :=
+    e (s₁ ⊓ s₂) = ⟨_, (e s₁).property.mul (e s₂).property⟩ :=
   map_inf ..
 
 lemma isIdempotentElemEquivClopens_symm_compl (s : Clopens (PrimeSpectrum R)) :
-    isIdempotentElemEquivClopens.symm sᶜ = ⟨_, (isIdempotentElemEquivClopens.symm s).2.one_sub⟩ :=
+    isIdempotentElemEquivClopens.symm sᶜ =
+      ⟨_, (isIdempotentElemEquivClopens.symm s).property.one_sub⟩ :=
   map_compl ..
 
 lemma isIdempotentElemEquivClopens_symm_top :
@@ -1444,7 +1446,7 @@ lemma isIdempotentElemEquivClopens_symm_bot :
 
 lemma isIdempotentElemEquivClopens_symm_sup (s₁ s₂ : Clopens (PrimeSpectrum R)) :
     letI e := isIdempotentElemEquivClopens (R := R).symm
-    e (s₁ ⊔ s₂) = ⟨_, (e s₁).2.add_sub_mul (e s₂).2⟩ :=
+    e (s₁ ⊔ s₂) = ⟨_, (e s₁).property.add_sub_mul (e s₂).property⟩ :=
   map_sup ..
 
 end PrimeSpectrum

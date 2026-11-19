@@ -452,7 +452,7 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducibl
 @[simps apply symm_apply]
 def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x } where
   toFun a  := ⟨a.carrier, a.isIrreducible', a.isClosed'⟩
-  invFun a := ⟨a.1, a.2.1, a.2.2⟩
+  invFun a := ⟨a.val, a.property.1, a.property.2⟩
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
@@ -461,7 +461,7 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x �
 @[simps apply symm_apply]
 def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x } where
   toFun a  := ⟨a.carrier, a.isClosed', a.isIrreducible'⟩
-  invFun a := ⟨a.1, a.2.2, a.2.1⟩
+  invFun a := ⟨a.val, a.property.2, a.property.1⟩
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an
@@ -520,15 +520,15 @@ def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
     nonempty_preimage_closure_image h.continuous T T.isIrreducible'.nonempty⟩
   invFun V :=
     { carrier := f ⁻¹' V
-      isIrreducible' := ⟨V.2, V.1.isIrreducible'.isPreirreducible.preimage h⟩
-      isClosed' := V.1.isClosed'.preimage h.continuous }
+      isIrreducible' := ⟨V.property, V.val.isIrreducible'.isPreirreducible.preimage h⟩
+      isClosed' := V.val.isClosed'.preimage h.continuous }
   left_inv V := by
     ext
     simp [h.isOpenMap.preimage_closure_image h.injective h.continuous _ V.isClosed]
   right_inv V := by
     ext
-    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.2 V.1.isIrreducible'.2
-      V.1.isClosed']
+    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.property
+      V.val.isIrreducible'.2 V.val.isClosed']
   map_rel_iff' {a b} := by
     refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
     simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,
