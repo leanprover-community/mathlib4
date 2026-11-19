@@ -47,10 +47,10 @@ variable {p : ℕ → Prop}
 
 /-- Lift the "greater than" relation on natural numbers to `Nat.Upto`. -/
 protected def GT (p) (x y : Upto p) : Prop :=
-  x.1 > y.1
+  x.val > y.val
 
 instance : LT (Upto p) :=
-  ⟨fun x y => x.1 < y.1⟩
+  ⟨fun x y => x.val < y.val⟩
 
 /-- The "greater than" relation on `Upto p` is well founded if (and only if) there exists a value
 satisfying `p`. -/
@@ -70,7 +70,7 @@ def zero : Nat.Upto p :=
 /-- The successor of `n` is in `Nat.Upto p` provided that `n` doesn't satisfy `p`. -/
 def succ (x : Nat.Upto p) (h : ¬p x.val) : Nat.Upto p :=
   ⟨x.val.succ, fun j h' => by
-    rcases Nat.lt_succ_iff_lt_or_eq.1 h' with (h' | rfl) <;> [exact x.2 _ h'; exact h]⟩
+    rcases Nat.lt_succ_iff_lt_or_eq.1 h' with (h' | rfl) <;> [exact x.property _ h'; exact h]⟩
 
 end Upto
 

@@ -113,7 +113,7 @@ theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
   ext l a
   by_cases h : a ∈ s
   · simp [h]
-  simpa [h] using ((mem_supported' R l.1).1 l.2 a h).symm
+  simpa [h] using ((mem_supported' R l.val).1 l.property a h).symm
 
 theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
     LinearMap.range (restrictDom M R s) = ⊤ :=
@@ -239,7 +239,7 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
   · rcases Finset.mem_image.1 (mapDomain_support hx) with ⟨c, hc, rfl⟩
     exact Function.invFunOn_mem (by simpa using hl hc)
   · rw [← LinearMap.comp_apply, ← lmapDomain_comp]
-    refine (mapDomain_congr fun c hc => ?_).trans mapDomain_id
+    refine (mapDomain_congr rfl fun c hc => ?_).trans mapDomain_id
     exact Function.invFunOn_eq (by simpa using hl hc)
 
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}

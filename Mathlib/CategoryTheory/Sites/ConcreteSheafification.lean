@@ -49,7 +49,7 @@ variable [ConcreteCategory.{t} D FD]
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, ToType (P.obj (op I.Y)) :=
-  ⟨fun x => x.1⟩
+  ⟨fun x => x.val⟩
 
 lemma congr_apply {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) {Y}
     {f g : Y ⟶ X} (h : f = g) (hf : S f) :
@@ -64,7 +64,7 @@ theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x y : Meq P S) (h : ∀ I :
 
 theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.Relation) :
     P.map I.r.g₁.op (x (S.shape.fst I)) = P.map I.r.g₂.op (x (S.shape.snd I)) :=
-  x.2 _
+  x.property _
 
 /-- Refine a term of `Meq P T` with respect to a refinement `S ⟶ T` of covers. -/
 def refine {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T) (e : S ⟶ T) : Meq P S :=
@@ -375,7 +375,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     ⟨I.Y, _, _, I.hf, Sieve.downward_closed _ II.hf _, rfl⟩⟩
   let IB : S.Arrow := IA.fromMiddle
   let IC : (T IB).Arrow := IA.toMiddle
-  let ID : (T I).Arrow := ⟨IV.Y, IV.f ≫ II.f, Sieve.downward_closed (T I).1 II.hf IV.f⟩
+  let ID : (T I).Arrow := ⟨IV.Y, IV.f ≫ II.f, Sieve.downward_closed (T I).val II.hf IV.f⟩
   change t IB IC = t I ID
   apply inj IV.Y
   rw [toPlus_apply (T I) (t I) ID]

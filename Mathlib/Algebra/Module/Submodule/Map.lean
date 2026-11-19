@@ -279,8 +279,8 @@ theorem map_subtype_submoduleOf (p q : Submodule R M) :
 
 /-- `p` as a submodule of `q` is isomorphic to `q ⊓ p`. -/
 def submoduleOfEquivInf (p q : Submodule R M) : p.submoduleOf q ≃ₗ[R] (q ⊓ p :) where
-  toFun m := ⟨m.1, m.1.2, m.2⟩
-  invFun m := ⟨⟨m.1, m.2.1⟩, m.2.2⟩
+  toFun m := ⟨m.val, m.val.property, m.property⟩
+  invFun m := ⟨⟨m.val, m.property.1⟩, m.property.2⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -290,8 +290,8 @@ def submoduleOfEquivInf (p q : Submodule R M) : p.submoduleOf q ≃ₗ[R] (q ⊓
 --   := submoduleOfEquivInf p q |>.trans <| .ofEq _ _ (by simp)
 /-- If `p ≤ q`, then `p` as a submodule of `q` is isomorphic to `p`. -/
 def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
-  toFun m := ⟨m.1, m.2⟩
-  invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
+  toFun m := ⟨m.val, m.property⟩
+  invFun m := ⟨⟨m.val, h m.property⟩, m.property⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -552,8 +552,8 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 of `t.subtype`. -/
 @[simps apply_coe symm_apply]
 def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtype p ≃ₗ[R] p where
-  toFun x := ⟨x, x.2⟩
-  invFun x := ⟨⟨x, hpq x.2⟩, x.2⟩
+  toFun x := ⟨x, x.property⟩
+  invFun x := ⟨⟨x, hpq x.property⟩, x.property⟩
   left_inv x := by simp
   right_inv x := by simp
   map_add' _ _ := rfl
@@ -677,7 +677,7 @@ def submoduleComap (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂) : 
 theorem submoduleComap_surjective_of_surjective (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂)
     (hf : Surjective f) : Surjective (f.submoduleComap q) := fun y ↦ by
   obtain ⟨x, hx⟩ := hf y
-  use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.2)⟩
+  use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.property)⟩
   apply Subtype.val_injective
   simp [hx]
 

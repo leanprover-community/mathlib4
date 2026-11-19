@@ -267,7 +267,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
     have A : ∀ n : ℕ, P (f n) := by
       intro n
       induction n using Nat.strong_induction_on with | _ n IH
-      have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.1 n.2
+      have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.val n.isLt
       rw [hf, seqOfForallFinsetExistsAux]
       exact
         (Classical.choose_spec

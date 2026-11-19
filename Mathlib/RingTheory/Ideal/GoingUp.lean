@@ -453,8 +453,8 @@ section IsIntegral
 variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
   [Algebra A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
-instance primesOver.isMaximal : Q.1.IsMaximal :=
-  Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
+instance primesOver.isMaximal : Q.val.IsMaximal :=
+  Ideal.IsMaximal.of_liesOver_isMaximal Q.val p
 
 theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : P.IsMaximal :=
   primesOver.isMaximal ⟨P, hP⟩

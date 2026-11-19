@@ -557,7 +557,7 @@ def fst : Submodule R (M × M₂) :=
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
-  toFun x := x.1.1
+  toFun x := x.val.1
   invFun m := ⟨⟨m, 0⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
@@ -577,7 +577,7 @@ def snd : Submodule R (M × M₂) :=
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
-  toFun x := x.1.2
+  toFun x := x.val.2
   invFun n := ⟨⟨0, n⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp

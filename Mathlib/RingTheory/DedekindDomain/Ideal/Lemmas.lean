@@ -360,8 +360,8 @@ end Ideal
 lemma FractionalIdeal.sup_mul_inf (I J : FractionalIdeal A⁰ K) :
     (I ⊓ J) * (I ⊔ J) = I * J := by
   apply mul_left_injective₀ (b := spanSingleton A⁰ (algebraMap A K
-    (I.den.1 * I.den.1 * J.den.1 * J.den.1))) (by simp)
-  have := Ideal.sup_mul_inf (Ideal.span {J.den.1} * I.num) (Ideal.span {I.den.1} * J.num)
+    (I.den.val * I.den.val * J.den.val * J.den.val))) (by simp)
+  have := Ideal.sup_mul_inf (Ideal.span {J.den.val} * I.num) (Ideal.span {I.den.val} * J.num)
   simp only [← coeIdeal_inj (K := K), coeIdeal_mul, coeIdeal_sup, coeIdeal_inf,
     ← den_mul_self_eq_num', coeIdeal_span_singleton] at this
   rw [mul_left_comm, ← mul_add, ← mul_add, ← mul_inf₀ (FractionalIdeal.zero_le _),
@@ -895,8 +895,8 @@ def quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i ∈ s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
-  quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
-    (fun i => prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
+  quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i) (fun i => prime i i.property)
+    (fun i j h => coprime i i.property j j.property (Subtype.coe_injective.ne h))
     (_root_.trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R / P i ^ e i`,
@@ -1117,7 +1117,7 @@ noncomputable def equivPrimesOver (hp : p ≠ 0) :
 @[simp]
 theorem equivPrimesOver_apply (hp : p ≠ 0)
     (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
-    equivPrimesOver B hp v = v.1.asIdeal := rfl
+    equivPrimesOver B hp v = v.val.asIdeal := rfl
 
 variable (A) in
 /-- The pullback of a height one prime in `B` to `A`. -/

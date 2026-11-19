@@ -190,7 +190,7 @@ lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m
   Iff.rfl
 
 instance : SMulCommClass M (FixedPoints.submonoid M α) α where
-  smul_comm g x y := by simp_rw [Submonoid.smul_def, smul_eq_mul, smul_mul', x.2 g]
+  smul_comm g x y := by simp_rw [Submonoid.smul_def, smul_eq_mul, smul_mul', x.property g]
 
 end Monoid
 

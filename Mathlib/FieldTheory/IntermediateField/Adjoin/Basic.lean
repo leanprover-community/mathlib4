@@ -337,7 +337,7 @@ lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
   rw [← Subalgebra.bot_eq_top_iff_finrank_eq_one, ← top_le_iff, ← top_le_iff]
   intro H x _
   obtain ⟨x, rfl⟩ := @H x IntermediateField.mem_top
-  exact x.2
+  exact x.property
 
 theorem bot_eq_top_iff_finrank_eq_one :
     (⊥ : IntermediateField F E) = ⊤ ↔ Module.finrank F E = 1 := by
@@ -609,7 +609,7 @@ theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
 theorem isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
     Algebra.IsAlgebraic K (adjoin K S) := by
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
-  exact isAlgebraic_iSup fun x ↦ isAlgebraic_adjoin_simple (hS x x.2)
+  exact isAlgebraic_iSup fun x ↦ isAlgebraic_adjoin_simple (hS x x.property)
 
 /-- If `L / K` is a field extension, `S` is a finite subset of `L`, such that every element of `S`
 is integral (= algebraic) over `K`, then `K(S) / K` is a finite extension.
@@ -617,7 +617,7 @@ A direct corollary of `finiteDimensional_iSup_of_finite`. -/
 theorem finiteDimensional_adjoin {S : Set L} [Finite S] (hS : ∀ x ∈ S, IsIntegral K x) :
     FiniteDimensional K (adjoin K S) := by
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
-  have (x : S) := adjoin.finiteDimensional (hS x.1 x.2)
+  have (x : S) := adjoin.finiteDimensional (hS x.val x.property)
   exact finiteDimensional_iSup_of_finite
 
 instance {S : Set L} [Finite S] [Algebra.IsIntegral K L] :
@@ -656,7 +656,7 @@ lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
     (x : { x // x ∈ (minpoly F α).aroots K }) :
     (algHomAdjoinIntegralEquiv F h).symm x (AdjoinSimple.gen F α) = x :=
   (adjoin.powerBasis h).lift_gen x.val <| by
-    rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.2).2
+    rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.property).2
 
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
 @[instance_reducible]

@@ -466,7 +466,7 @@ theorem coe_inclusion {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) 
   rfl
 
 theorem inclusion_apply {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) :
-    inclusion h x = ⟨x.1, h x.2⟩ :=
+    inclusion h x = ⟨x.val, h x.property⟩ :=
   rfl
 
 theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :

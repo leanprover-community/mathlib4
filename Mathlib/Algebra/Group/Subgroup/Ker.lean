@@ -537,14 +537,14 @@ set_option backward.isDefEq.respectTransparency false in
 additive subgroups that are less than or equal to `H`. -/]
 def MapSubtype.orderIso (H : Subgroup G) : Subgroup ↥H ≃o { H' : Subgroup G // H' ≤ H } where
   toFun H' := ⟨H'.map H.subtype, map_subtype_le H'⟩
-  invFun sH' := sH'.1.subgroupOf H
+  invFun sH' := sH'.val.subgroupOf H
   left_inv H' := comap_map_eq_self_of_injective H.subtype_injective H'
-  right_inv sH' := Subtype.ext (map_subgroupOf_eq_of_le sH'.2)
+  right_inv sH' := Subtype.ext (map_subgroupOf_eq_of_le sH'.property)
   map_rel_iff' := by simp
 
 @[to_additive (attr := simp)]
 lemma MapSubtype.orderIso_symm_apply (H : Subgroup G) (sH' : { H' : Subgroup G // H' ≤ H }) :
-    (MapSubtype.orderIso H).symm sH' = sH'.1.subgroupOf H :=
+    (MapSubtype.orderIso H).symm sH' = sH'.val.subgroupOf H :=
   rfl
 
 @[to_additive]

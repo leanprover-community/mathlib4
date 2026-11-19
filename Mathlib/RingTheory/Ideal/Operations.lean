@@ -1229,7 +1229,7 @@ theorem range_finsuppTotal :
     LinearMap.range (finsuppTotal ι M I v) = I • Submodule.span R (Set.range v) := by
   ext
   rw [Submodule.mem_ideal_smul_span_iff_exists_sum]
-  refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
+  refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).property, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
     refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0)

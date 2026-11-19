@@ -170,15 +170,16 @@ def mkModuleKey! (name : Name) (env : Environment) : ModuleKey :=
   (libraryNumber mod, mod.toString)
 
 /-- Return the list of duplicate declarations, grouped by the name of the module
-with the biggest `ModuleKey`. -/
+with the biggest `ModuleKey`. Within a module, the groups are sorted by their least name,
+so that the result does not depend on the `HashMap` order of `duplicateDeclarations`. -/
 def sortedDuplicateDeclarations (cfg : Target) :
     CoreM (Array (String × Array (Array Name))) := do
   let env ← getEnv
-  let dups ← duplicateDeclarations cfg
+  let dups := (← duplicateDeclarations cfg).map (·.qsort Name.lt) |>.qsort (Name.lt ·[0]! ·[0]!)
   let mut result : Std.TreeMap ModuleKey (Array (Array Name)) := {}
   for names in dups do
     let moduleKey := names.map (mkModuleKey! · env) |>.max?.get!
-    result := result.alter moduleKey (·.getD #[] |>.push (names.qsort Name.lt))
+    result := result.alter moduleKey (·.getD #[] |>.push names)
   return result.toArray.map fun (a, dups) ↦ (a.2, dups)
 
 /-- The duplicate declarations linter. It tells you which duplicate declarations there are

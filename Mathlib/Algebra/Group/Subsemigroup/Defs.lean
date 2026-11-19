@@ -264,7 +264,7 @@ variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
 /-- A submagma of a magma inherits a multiplication. -/
 @[to_additive /-- An additive submagma of an additive magma inherits an addition. -/]
 instance (priority := 900) mul : Mul S' :=
-  ⟨fun a b => ⟨a.1 * b.1, mul_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a.val * b.val, mul_mem a.property b.property⟩⟩
 
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp low, norm_cast)]
@@ -278,7 +278,7 @@ theorem mk_mul_mk (x y : M) (hx : x ∈ S') (hy : y ∈ S') :
   rfl
 
 @[to_additive]
-theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
+theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.property y.property⟩ :=
   rfl
 
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/

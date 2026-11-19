@@ -71,10 +71,10 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) : #{b : α | b ^ orderOf
         (@Fintype.card_le_of_injective (zpowers a)
           (({b : α | b ^ orderOf a = 1} : Finset _) : Set α) (id _) (id _)
           (fun b =>
-            ⟨b.1,
+            ⟨b.val,
               mem_filter.2
                 ⟨mem_univ _, by
-                  let ⟨i, hi⟩ := b.2
+                  let ⟨i, hi⟩ := b.property
                   rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
           fun _ _ h => Subtype.ext (Subtype.mk.inj h))

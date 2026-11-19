@@ -56,7 +56,7 @@ lemma closedPoints_eq_univ [T1Space X] :
 
 lemma Set.Finite.isDiscrete_of_subset_closedPoints
     {s : Set X} (hs : s.Finite) (hs' : s ⊆ closedPoints X) : IsDiscrete s := by
-  have : T1Space s := ⟨fun x ↦ by convert! (hs' x.2).preimage continuous_subtype_val; aesop⟩
+  have : T1Space s := ⟨fun x ↦ by convert! (hs' x.property).preimage continuous_subtypeVal; aesop⟩
   have : Finite s := hs
   exact ⟨inferInstance⟩
 
@@ -80,7 +80,7 @@ lemma jacobsonSpace_iff_locallyClosed :
   rw [jacobsonSpace_iff]
   constructor
   · simp_rw [isLocallyClosed_iff_isOpen_coborder, coborder, isOpen_compl_iff,
-      Set.nonempty_iff_ne_empty]
+      ← Set.ne_empty_iff_nonempty]
     intro H Z hZ hZ' e
     have : Z ⊆ closure Z \ Z := by
       refine subset_closure.trans ?_
@@ -96,7 +96,7 @@ lemma jacobsonSpace_iff_locallyClosed :
       ← Set.not_nonempty_iff_eq_empty]
     intro H'
     have := H _ H' (isClosed_closure.isOpen_compl.isLocallyClosed.inter hZ.isLocallyClosed)
-    rw [Set.nonempty_iff_ne_empty, Set.inter_assoc, ne_eq,
+    rw [← Set.ne_empty_iff_nonempty, Set.inter_assoc, ne_eq,
       ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset] at this
     exact this subset_closure
 
@@ -172,7 +172,7 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
   rw [← hU.iUnion_inter Z, Set.nonempty_iUnion] at hZ
   obtain ⟨i, x, hx, hx'⟩ := hZ
   obtain ⟨y, hy, hy'⟩ := (jacobsonSpace_iff_locallyClosed.mp (H i)) _ ⟨⟨x, hx'⟩, hx⟩
-    (hZ'.preimage continuous_subtype_val)
+    (hZ'.preimage continuous_subtypeVal)
   refine ⟨y, hy, hU.isClosed_iff_coe_preimage.mpr fun j ↦ ?_⟩
   by_cases h : (y : X) ∈ U j
   · convert_to IsClosed {(⟨y, h⟩ : U j)}
@@ -181,13 +181,13 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
     convert
       (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
             (U i).is_open'.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
-        continuous_subtype_val
+        continuous_subtypeVal
     ext
     simp [← Subtype.coe_inj]
   · convert isClosed_empty
     rw [Set.eq_empty_iff_forall_notMem]
-    intro z (hz : z.1 = y.1)
-    exact h (hz ▸ z.2)
+    intro z (hz : z.val = y.val)
+    exact h (hz ▸ z.property)
 
 theorem subsingleton_image_closure_of_finite_of_isPreirreducible [JacobsonSpace X]
     {S : Set X} (hS : IsLocallyClosed S) (hS' : IsPreirreducible S)

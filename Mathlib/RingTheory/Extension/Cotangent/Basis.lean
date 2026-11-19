@@ -139,7 +139,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     D.tensorCotangentHom (1 ⊗ₜ[D.T] Extension.Cotangent.mk x) =
-      .mk ⟨x.val, D.ker_presLeft_le x.2⟩ := by
+      .mk ⟨x.val, D.ker_presLeft_le x.property⟩ := by
   simp_rw +instances [tensorCotangentHom, LinearMap.liftBaseChange_tmul, one_smul, presLeft,
     Extension.Cotangent.map_mk, Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom,
     toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, toExtension_Ring,

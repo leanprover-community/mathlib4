@@ -1057,11 +1057,11 @@ def preOneHypercover : PreOneHypercover.{max u v} X where
   w _ _ r := r.w
 
 @[simp]
-lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.1 := by
+lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.val := by
   ext Y f
   constructor
   · rintro ⟨_, _, _, ⟨g⟩, rfl⟩
-    exact S.1.downward_closed g.hf _
+    exact S.val.downward_closed g.hf _
   · intro hf
     exact Sieve.ofArrows_mk _ _ ({ hf := hf, .. } : S.Arrow)
 
