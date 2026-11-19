@@ -31,7 +31,6 @@ proved along the way.
 ## References
 
 * https://en.wikipedia.org/wiki/British_flag_theorem
-
 -/
 
 public section

@@ -5,8 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Tactic.Abel
 public import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.Tactic.Abel
 
 /-!
 # Two Sided Ideals
@@ -20,7 +20,6 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 * `TwoSidedIdeal.setLike`: Every `I : TwoSidedIdeal R` can be interpreted as a set of `R` where
   `x ∈ I` if and only if `I.ringCon x 0`.
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
-
 -/
 
 @[expose] public section
@@ -59,10 +58,10 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · have H' : a - b ∈ {x | t₁ x 0} := sub_self b ▸ t₁.sub H (t₁.refl b)
       rw [h] at H'
-      convert! t₂.add H' (t₂.refl b) using 1 <;> abel
+      convert t₂.add H' (t₂.refl b) using 1 <;> abel
     · have H' : a - b ∈ {x | t₂ x 0} := sub_self b ▸ t₂.sub H (t₂.refl b)
       rw [← h] at H'
-      convert! t₁.add H' (t₁.refl b) using 1 <;> abel
+      convert t₁.add H' (t₁.refl b) using 1 <;> abel
 
 instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R)
 
@@ -87,8 +86,8 @@ lemma coe_mk {c : RingCon R} : (mk c : Set R) = {x | c x 0} := rfl
 lemma rel_iff (x y : R) : I.ringCon x y ↔ x - y ∈ I := by
   rw [mem_iff]
   constructor
-  · intro h; convert! I.ringCon.sub h (I.ringCon.refl y); abel
-  · intro h; convert! I.ringCon.add h (I.ringCon.refl y) <;> abel
+  · intro h; convert I.ringCon.sub h (I.ringCon.refl y); abel
+  · intro h; convert I.ringCon.add h (I.ringCon.refl y) <;> abel
 
 /--
 the coercion from two-sided-ideals to sets is an order embedding
@@ -193,20 +192,22 @@ instance : SMulMemClass (TwoSidedIdeal R) R R where
 -- This is not an instance, because together with the instance above,
 -- it violates the `outParam` of `SMulMemClass`.
 -- See: https://github.com/leanprover-community/mathlib4/pull/40718
-theorem instSMulMemClassMulOpposite : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
+theorem smulMemClass_mulOpposite : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_right _ _ _ h
 
-instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
+@[deprecated (since := "2026-11-05")] alias instSMulMemClassMulOpposite := smulMemClass_mulOpposite
+
+instance : Add I where add x y := ⟨x.val + y.val, I.add_mem x.property y.property⟩
 
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
 
-instance : SMul ℕ I where smul n x := ⟨n • x.1, I.nsmul_mem n x.2⟩
+instance : SMul ℕ I where smul n x := ⟨n • x.val, I.nsmul_mem n x.property⟩
 
-instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
+instance : Neg I where neg x := ⟨-x.val, I.neg_mem x.property⟩
 
-instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
+instance : Sub I where sub x y := ⟨x.val - y.val, I.sub_mem x.property y.property⟩
 
-instance : SMul ℤ I where smul n x := ⟨n • x.1, I.zsmul_mem n x.2⟩
+instance : SMul ℤ I where smul n x := ⟨n • x.val, I.zsmul_mem n x.property⟩
 
 instance addCommGroup : AddCommGroup I :=
   Function.Injective.addCommGroup _ Subtype.coe_injective

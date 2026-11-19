@@ -87,19 +87,19 @@ instance instBotCoe : Bot L where bot := ⟨⊥, bot_mem⟩
 instance instTopCoe : Top L where top := ⟨⊤, top_mem⟩
 
 /-- A Boolean subalgebra of a lattice inherits a supremum. -/
-instance instSupCoe : Max L where max a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
+instance instSupCoe : Max L where max a b := ⟨a ⊔ b, L.supClosed a.property b.property⟩
 
 /-- A Boolean subalgebra of a lattice inherits an infimum. -/
-instance instInfCoe : Min L where min a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
+instance instInfCoe : Min L where min a b := ⟨a ⊓ b, L.infClosed a.property b.property⟩
 
 /-- A Boolean subalgebra of a lattice inherits a complement. -/
-instance instComplCoe : Compl L where compl a := ⟨aᶜ, compl_mem a.2⟩
+instance instComplCoe : Compl L where compl a := ⟨aᶜ, compl_mem a.property⟩
 
 /-- A Boolean subalgebra of a lattice inherits a difference. -/
-instance instSDiffCoe : SDiff L where sdiff a b := ⟨a \ b, sdiff_mem a.2 b.2⟩
+instance instSDiffCoe : SDiff L where sdiff a b := ⟨a \ b, sdiff_mem a.property b.property⟩
 
 /-- A Boolean subalgebra of a lattice inherits a Heyting implication. -/
-instance instHImpCoe : HImp L where himp a b := ⟨a ⇨ b, himp_mem a.2 b.2⟩
+instance instHImpCoe : HImp L where himp a b := ⟨a ⇨ b, himp_mem a.property b.property⟩
 
 @[simp, norm_cast] lemma val_bot : (⊥ : L) = (⊥ : α) := rfl
 @[simp, norm_cast] lemma val_top : (⊤ : L) = (⊤ : α) := rfl
@@ -349,7 +349,7 @@ lemma mem_closure {x : α} : x ∈ closure s ↔ ∀ ⦃L : BooleanSubalgebra α
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 lemma subset_closure : s ⊆ closure s := fun _ hx ↦ mem_closure.2 fun _ hK ↦ hK hx
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_closure_of_mem {s : Set α} {x : α} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 @[simp] lemma closure_le : closure s ≤ L ↔ s ⊆ L := ⟨subset_closure.trans, fun h ↦ sInf_le h⟩
@@ -397,13 +397,13 @@ variable (isSublattice : IsSublattice s) (bot_mem : ⊥ ∈ s) (top_mem : ⊤ �
 include isSublattice bot_mem top_mem
 
 theorem mem_closure_iff_sup_sdiff {a : α} :
-    a ∈ closure s ↔ ∃ t : Finset (s × s), a = t.sup fun x ↦ x.1.1 \ x.2.1 := by
+    a ∈ closure s ↔ ∃ t : Finset (s × s), a = t.sup fun x ↦ x.1.val \ x.2.val := by
   classical
   refine ⟨closure_bot_sup_induction
     (fun x h ↦ ⟨{(⟨x, h⟩, ⟨⊥, bot_mem⟩)}, by simp⟩) ⟨∅, by simp⟩ ?_ ?_, ?_⟩
   · rintro ⟨t, rfl⟩
     exact t.sup_mem _ (subset_closure bot_mem) (fun _ h _ ↦ sup_mem h) _
-      fun x hx ↦ sdiff_mem (subset_closure x.1.2) (subset_closure x.2.2)
+      fun x hx ↦ sdiff_mem (subset_closure x.1.property) (subset_closure x.2.property)
   · rintro _ - _ - ⟨t₁, rfl⟩ ⟨t₂, rfl⟩
     exact ⟨t₁ ∪ t₂, by rw [Finset.sup_union]⟩
   rintro x - ⟨t, rfl⟩
@@ -411,9 +411,10 @@ theorem mem_closure_iff_sup_sdiff {a : α} :
   simp_rw [Finset.sup_insert, compl_sup, eq]
   refine tc.induction ⟨∅, by simp⟩ fun ⟨z, w⟩ tc _ ⟨t, eq⟩ ↦ ?_
   simp_rw [Finset.sup_insert, inf_sup_left, eq]
-  use {(z, ⟨_, isSublattice.supClosed x.2 w.2⟩), (⟨_, isSublattice.infClosed y.2 z.2⟩, w)} ∪ t
+  use {(z, ⟨_, isSublattice.supClosed x.property w.property⟩),
+    (⟨_, isSublattice.infClosed y.property z.property⟩, w)} ∪ t
   simp_rw [Finset.sup_union, Finset.sup_insert, Finset.sup_singleton, _root_.sdiff_eq,
-    compl_sup, inf_left_comm z.1, compl_inf, compl_compl, inf_sup_right, inf_assoc]
+    compl_sup, inf_left_comm z.val, compl_inf, compl_compl, inf_sup_right, inf_assoc]
 
 @[elab_as_elim] theorem closure_sdiff_sup_induction {p : ∀ g ∈ closure s, Prop}
     (sdiff : ∀ x hx y hy, p (x \ y) (sdiff_mem (subset_closure hx) (subset_closure hy)))
@@ -425,7 +426,7 @@ theorem mem_closure_iff_sup_sdiff {a : α} :
   refine t.induction (by simpa using sdiff _ bot_mem _ bot_mem) fun x t _ ih hxt ↦ ?_
   simp only [Finset.sup_insert] at hxt ⊢
   exact sup _ _ _ ((mem_closure_iff_sup_sdiff isSublattice bot_mem top_mem).mpr ⟨_, rfl⟩)
-    (sdiff _ x.1.2 _ x.2.2) (ih _)
+    (sdiff _ x.1.property _ x.2.property) (ih _)
 
 end sdiff_sup
 

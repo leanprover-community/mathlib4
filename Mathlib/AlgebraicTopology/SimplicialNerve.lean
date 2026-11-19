@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-/-!
 
+/-!
 # The simplicial nerve of a simplicial category
 
 This file defines the simplicial nerve (sometimes called homotopy coherent nerve) of a simplicial
@@ -113,7 +113,7 @@ Composition of morphisms in `SimplicialThickening J`, as a functor `(i ⟶ j) ×
 def compFunctor {J : Type*} [LinearOrder J]
     (i j k : SimplicialThickening J) : (i ⟶ j) × (j ⟶ k) ⥤ (i ⟶ k) where
   obj x := x.1 ≫ x.2
-  map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
+  map f := ⟨⟨⟨Set.union_subset_union f.1.hom.down.down f.2.hom.down.down⟩⟩⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -137,10 +137,7 @@ abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
   obj I := ⟨f '' I.I, Set.mem_image_of_mem f I.left, Set.mem_image_of_mem f I.right,
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
-  map f := ⟨⟨⟨Set.image_mono f.1.1.1⟩⟩⟩
-
-@[deprecated "No replacement, was using a bad instance" (since := "01-12-2026")]
-alias orderHom := functorMap
+  map f := ⟨⟨⟨Set.image_mono f.hom.down.down⟩⟩⟩
 
 attribute [local simp] nerveMap_app
 

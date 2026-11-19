@@ -50,7 +50,6 @@ so that `m` factors through the `m'` in any other such factorisation.
 ## Future work
 * TODO: coimages, and abelian categories.
 * TODO: connect this with existing work in the group theory and ring theory libraries.
-
 -/
 
 @[expose] public section
@@ -490,7 +489,7 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
   have t : v ≫ q = 𝟙 (image f) :=
     (cancel_mono_id (image.ι f)).1
       (by
-        convert! t₀ using 1
+        convert t₀ using 1
         rw [Category.assoc])
   -- The proof from wikipedia next proves `q ≫ v = 𝟙 _`,
   -- and concludes that `equalizer g h ≅ image f`,
@@ -769,9 +768,6 @@ theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
     {sq : f ⟶ g} (F G : ImageMap sq) : F.map = G.map := by
   apply ImageMap.map_uniq_aux _ F.map_ι _ G.map_ι
 
-@[deprecated (since := "2026-04-08")]
-alias ImageMap.mk.injEq' := ImageMap.mk.injEq
-
 instance : Subsingleton (ImageMap sq) :=
   Subsingleton.intro fun a b =>
     ImageMap.ext <| ImageMap.map_uniq a b
@@ -803,7 +799,7 @@ variable [HasImageMap sq']
 def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map sq'
 
 @[simp]
-theorem image.map_comp [HasImageMap (sq ≫ sq')] :
+theorem image.map_comp :
     image.map (sq ≫ sq') = image.map sq ≫ image.map sq' :=
   show (HasImageMap.imageMap (sq ≫ sq')).map = (imageMapComp sq sq').map by
     congr; simp only [eq_iff_true_of_subsingleton]
@@ -819,7 +815,7 @@ morphism `𝟙 f` in the arrow category. -/
 def imageMapId : ImageMap (𝟙 f) where map := 𝟙 (image f.hom)
 
 @[simp]
-theorem image.map_id [HasImageMap (𝟙 f)] : image.map (𝟙 f) = 𝟙 (image f.hom) :=
+theorem image.map_id : image.map (𝟙 f) = 𝟙 (image f.hom) :=
   show (HasImageMap.imageMap (𝟙 f)).map = (imageMapId f).map by
     congr; simp only [eq_iff_true_of_subsingleton]
 

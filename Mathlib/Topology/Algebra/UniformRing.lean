@@ -6,8 +6,8 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Topology.Algebra.GroupCompletion
-public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!
@@ -271,10 +271,10 @@ noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* 
     (ue : IsUniformInducing i) (dr : DenseRange i) (hf : UniformContinuous f) : β →+* γ where
   toFun := (ue.isDenseInducing dr).extend f
   map_one' := by
-    convert! IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 1
+    convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 1
     exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
-    convert! IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 0 <;>
+    convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 0 <;>
     simp only [map_zero]
   map_add' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous

@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.Ring.StandardPart
 public import Mathlib.Order.Filter.FilterProduct
+public import Mathlib.Topology.MetricSpace.Bounded
+
 import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Data.EReal.Inv
 import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences
@@ -145,11 +146,11 @@ theorem coe_abs (x : ℝ) : ((|x| : ℝ) : ℝ*) = |↑x| :=
 
 @[simp, norm_cast]
 theorem coe_max (x y : ℝ) : ((max x y : ℝ) : ℝ*) = max ↑x ↑y :=
-  Germ.const_max _ _
+  Germ.const_sup _ _
 
 @[simp, norm_cast]
 theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
-  Germ.const_min _ _
+  Germ.const_inf _ _
 
 /-- The canonical map `ℝ → ℝ*` as an `OrderRingHom`. -/
 @[simps]

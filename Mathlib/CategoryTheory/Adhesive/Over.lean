@@ -6,6 +6,7 @@ Authors: Dénes Pápai
 module
 
 public import Mathlib.CategoryTheory.Adhesive.Basic
+
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 
 /-! # Adhesive structure on slice categories

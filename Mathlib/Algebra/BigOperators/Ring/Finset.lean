@@ -13,6 +13,9 @@ public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Int.Cast.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about big operators with values in a (semi)ring
 
@@ -32,7 +35,7 @@ namespace Finset
 
 lemma prod_neg [CommMonoid M] [HasDistribNeg M] (f : ι → M) :
     ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
-  simpa using (s.1.map f).prod_map_neg
+  simpa using (s.val.map f).prod_map_neg
 
 section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne R]
@@ -122,7 +125,7 @@ variable [DecidableEq ι]
 /-- The product over a sum can be written as a sum over the product of sets, `Finset.Pi`.
   `Finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
 lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R) :
-    ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
+    ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.val (p x.val x.property) := by
   classical
   induction s using Finset.induction with
   | empty => simp
@@ -164,7 +167,7 @@ lemma sum_prod_piFinset [Fintype ι] (s : Finset κ) (g : ι → κ → R) :
 
 lemma sum_pow' (s : Finset κ) (f : κ → R) (n : ℕ) :
     (∑ a ∈ s, f a) ^ n = ∑ p ∈ piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
-  convert! @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
+  convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
 `f` over a subset `t` times the product of `g` over the complement of `t` -/
@@ -175,7 +178,7 @@ theorem prod_add (f g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, (f i + g i) =
         ∏ i ∈ s, ∑ p ∈ ({True, False} : Finset Prop), if p then f i else g i := by simp
     _ = ∑ p ∈ (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
-          ∏ a ∈ s.attach, if p a.1 a.2 then f a.1 else g a.1 := prod_sum _ _ _
+          ∏ a ∈ s.attach, if p a.val a.property then f a.val else g a.val := prod_sum _ _ _
     _ = ∑ t ∈ s.powerset, (∏ a ∈ t, f a) * ∏ a ∈ s \ t, g a :=
       sum_bij'
         (fun f _ ↦ {a ∈ s | ∃ h : a ∈ s, f a h})
@@ -269,7 +272,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
       (∏ i ∈ s, f i) -
         ∑ i ∈ s, g i * (∏ j ∈ s with j < i, (f j - g j)) * ∏ j ∈ s with i < j, f j := by
   simp only [sub_eq_add_neg]
-  convert! prod_add_ordered s f fun i => -g i
+  convert prod_add_ordered s f fun i => -g i
   simp
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of

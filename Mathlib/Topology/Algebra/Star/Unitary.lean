@@ -6,8 +6,8 @@ Authors: Jireh Loreaux, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Star
 
 /-! # Topological properties of the unitary (sub)group
 
@@ -20,7 +20,7 @@ public section
 variable {R : Type*} [Monoid R] [StarMul R] [TopologicalSpace R]
 
 instance [ContinuousStar R] : ContinuousStar (unitary R) where
-  continuous_star := continuous_induced_rng.mpr continuous_subtype_val.star
+  continuous_star := continuous_induced_rng.mpr continuous_subtypeVal.star
 
 instance [ContinuousStar R] : ContinuousInv (unitary R) where
   continuous_inv := continuous_star

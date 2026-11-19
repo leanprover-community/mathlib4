@@ -600,7 +600,7 @@ theorem iSup_split (f : ι → α) (p : ι → Prop) :
 
 @[to_dual]
 theorem iSup_split_single (f : ι → α) (i₀ : ι) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
-  convert! iSup_split f (fun i => i = i₀)
+  convert iSup_split f (fun i => i = i₀)
   simp
 
 @[to_dual]
@@ -848,11 +848,11 @@ variable [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α
 
 @[to_dual]
 protected lemma Monotone.sSup (hs : ∀ f ∈ s, Monotone f) : Monotone (sSup s) :=
-  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h
+  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.property h
 
 @[to_dual]
 protected lemma Antitone.sSup (hs : ∀ f ∈ s, Antitone f) : Antitone (sSup s) :=
-  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h
+  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.property h
 
 @[to_dual]
 protected lemma Monotone.iSup (hf : ∀ i, Monotone (f i)) : Monotone (⨆ i, f i) :=

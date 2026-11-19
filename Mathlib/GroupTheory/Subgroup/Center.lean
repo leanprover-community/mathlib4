@@ -10,7 +10,6 @@ public import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
 # Centers of subgroups
-
 -/
 
 @[expose] public section
@@ -40,7 +39,7 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
 
 instance center.isMulCommutative : IsMulCommutative (center G) :=
-  ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
+  ⟨⟨fun a b => Subtype.ext (b.property.comm a).symm⟩⟩
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
@@ -102,8 +101,8 @@ theorem center_eq_top [hG : IsMulCommutative G] : center G = ⊤ :=
     center_eq_top_iff.mpr hG
 
 /-- A group is commutative if the center is the whole group. -/
-@[to_additive /-- An additive group is commutative if the center is the whole group. -/,
-  instance_reducible]
+@[to_additive (attr := instance_reducible)
+/-- An additive group is commutative if the center is the whole group. -/]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by

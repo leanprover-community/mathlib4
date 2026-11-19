@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.SuccPred.Archimedean
+
+import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Intervals `Ixx (f x) (f (Order.succ x))`

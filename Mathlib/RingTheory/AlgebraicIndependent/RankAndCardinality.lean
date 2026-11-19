@@ -5,11 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
-public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Cardinality of a transcendence basis
@@ -22,12 +23,9 @@ This file concerns the cardinality of a transcendence basis.
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
-
 -/
 
 public section
-
-noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
@@ -81,11 +79,6 @@ theorem IntermediateField.rank_sup_le
   have := Algebra.Transcendental.infinite F B
   simp_rw [Algebra.Transcendental.rank_eq_cardinalMk]
   rw [sup_def, mul_mk_eq_max, ← Cardinal.lift_le.{u}]
-  refine (lift_cardinalMk_adjoin_le _ _).trans ?_
-  calc
-    _ ≤ Cardinal.lift.{v} #F ⊔ Cardinal.lift.{u} (#A ⊔ #B) ⊔ ℵ₀ := by
-      gcongr
-      rw [Cardinal.lift_le]
-      exact (mk_union_le _ _).trans_eq (by simp)
-    _ = _ := by
-      simp [lift_mk_le_lift_mk_of_injective (algebraMap F A).injective]
+  grw [lift_cardinalMk_adjoin_le, mk_union_le,
+    lift_mk_le_lift_mk_of_injective (algebraMap F A).injective]
+  simp

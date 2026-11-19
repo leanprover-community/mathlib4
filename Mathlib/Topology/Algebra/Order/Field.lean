@@ -6,9 +6,13 @@ Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.Order.Group
+
+import Mathlib.Tactic.NormNum.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topologies on linear ordered fields
@@ -68,7 +72,7 @@ theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (
 theorem tendsto_nhdsGT_zero_of_comp_inv_tendsto_atTop {f : 𝕜 → α}
     (h : Tendsto (fun x ↦ f x⁻¹) atTop l) :
     Tendsto f (𝓝[>] 0) l := by
-  convert! h.comp tendsto_inv_nhdsGT_zero
+  convert h.comp tendsto_inv_nhdsGT_zero
   grind [inv_inv]
 
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
@@ -183,6 +187,31 @@ theorem Filter.Tendsto.neg_mul_atBot {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
     (hg : Tendsto g l atBot) : Tendsto (fun x => f x * g x) l atTop := by
   simpa only [mul_comm] using hg.atBot_mul_neg hC hf
 
+theorem Filter.tendsto_nhds_iff_of_tendsto_div_nhds_one
+    (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) {c : 𝕜} :
+    Tendsto f l (𝓝 c) ↔ Tendsto g l (𝓝 c) := by
+  refine ⟨fun hlim ↦ ?_, fun hlim ↦ ?_⟩
+  · convert (hlim.mul (h.inv₀ (by simp))).congr' ?_
+    · simp
+    · filter_upwards [h.eventually_ne one_ne_zero]
+      grind
+  · convert (hlim.mul h).congr' ?_
+    · simp
+    · filter_upwards [h.eventually_ne one_ne_zero]
+      grind
+
+theorem Filter.tendsto_atTop_iff_of_tendsto_div_nhds_one
+    (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) :
+    Tendsto f l atTop ↔ Tendsto g l atTop := by
+  refine ⟨fun hlim ↦ (hlim.atTop_mul_pos (by simp) (h.inv₀ (by simp))).congr' ?_,
+    fun hlim ↦ (hlim.atTop_mul_pos (by simp) h).congr' ?_⟩ <;>
+    (filter_upwards [h.eventually_ne one_ne_zero]; grind)
+
+theorem Filter.tendsto_atBot_iff_of_tendsto_div_nhds_one
+    (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) :
+    Tendsto f l atBot ↔ Tendsto g l atBot := by
+  simpa [← tendsto_neg_atTop_iff] using tendsto_atTop_iff_of_tendsto_div_nhds_one (by simpa)
+
 @[simp]
 lemma inv_atBot₀ : (atBot : Filter 𝕜)⁻¹ = 𝓝[<] 0 :=
   (((atBot_basis_Iio' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
@@ -199,7 +228,7 @@ theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 :
 theorem tendsto_nhdsLT_zero_of_comp_inv_tendsto_atBot {f : 𝕜 → α}
     (h : Tendsto (fun x ↦ f x⁻¹) atBot l) :
     Tendsto f (𝓝[<] 0) l := by
-  convert! h.comp tendsto_inv_nhdsLT_zero
+  convert h.comp tendsto_inv_nhdsLT_zero
   grind
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
@@ -239,7 +268,7 @@ theorem bdd_le_mul_tendsto_zero' {f g : α → 𝕜} (C : 𝕜) (hf : ∀ᶠ x i
     (hg : Tendsto g l (𝓝 0)) : Tendsto (fun x ↦ f x * g x) l (𝓝 0) := by
   rw [tendsto_zero_iff_abs_tendsto_zero]
   have hC : Tendsto (fun x ↦ |C * g x|) l (𝓝 0) := by
-    convert! (hg.const_mul C).abs
+    convert (hg.const_mul C).abs
     simp_rw [mul_zero, abs_zero]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hC
   · filter_upwards [hf] with x _ using abs_nonneg _
@@ -300,6 +329,17 @@ theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠
     · simp only [h.left, h.right, zpow_zero, mul_one]
       exact tendsto_const_nhds
     · exact h.2.symm ▸ tendsto_const_mul_zpow_atTop_zero h.1
+
+theorem tendsto_const_mul_zpow_atTop_atTop_iff {n : ℤ} {c : 𝕜} :
+    Tendsto (fun x => c * x ^ n) atTop atTop ↔ 0 < n ∧ 0 < c := by
+  refine ⟨fun h => ?_, fun ⟨hn, hc⟩ => ?_⟩
+  · cases n with
+    | ofNat n =>
+      simpa [tendsto_const_mul_pow_atTop_iff, Nat.pos_iff_ne_zero] using h
+    | negSucc n =>
+      cases (tendsto_const_mul_zpow_atTop_zero (Int.negSucc_lt_zero n)).not_tendsto
+        (disjoint_nhds_atTop _) h
+  · exact (tendsto_zpow_atTop_atTop hn).const_mul_atTop hc
 
 instance (priority := 100) IsStrictOrderedRing.toIsTopologicalDivisionRing :
     IsTopologicalDivisionRing 𝕜 := ⟨⟩

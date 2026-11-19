@@ -133,7 +133,7 @@ theorem starConvex_iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → 
 theorem starConvex_sUnion {S : Set (Set E)} (hS : ∀ s ∈ S, StarConvex 𝕜 x s) :
     StarConvex 𝕜 x (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
-  exact starConvex_iUnion fun s => hS _ s.2
+  exact starConvex_iUnion fun s => hS _ s.property
 
 theorem StarConvex.prod {y : F} {s : Set E} {t : Set F} (hs : StarConvex 𝕜 x s)
     (ht : StarConvex 𝕜 y t) : StarConvex 𝕜 (x, y) (s ×ˢ t) := fun _ hy _ _ ha hb hab =>
@@ -151,7 +151,7 @@ variable [Module 𝕜 E] [Module 𝕜 F] {x y z : E} {s : Set E}
 
 theorem StarConvex.mem [ZeroLEOneClass 𝕜] (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := by
   obtain ⟨y, hy⟩ := h
-  convert! hs hy zero_le_one le_rfl (add_zero 1)
+  convert hs hy zero_le_one le_rfl (add_zero 1)
   rw [one_smul, zero_smul, add_zero]
 
 theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔

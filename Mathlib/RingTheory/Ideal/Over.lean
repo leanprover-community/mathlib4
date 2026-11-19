@@ -5,9 +5,13 @@ Authors: Anne Baanen, Yongle Hu
 -/
 module
 
-import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.RingTheory.Ideal.Pointwise
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+
+import Mathlib.Algebra.Algebra.Tower
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ideals over/under ideals
@@ -338,7 +342,7 @@ end algEquiv
 
 /-- If `P` lies over `p`, then the stabilizer of `P` acts on the extension `(B ⧸ P) / (A ⧸ p)`. -/
 def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P)) where
-  toFun g := algEquivOfEqMap p (MulSemiringAction.toAlgEquiv A B g) g.2.symm
+  toFun g := algEquivOfEqMap p (MulSemiringAction.toAlgEquiv A B g) g.property.symm
   map_one' := by
     ext ⟨x⟩
     exact congrArg (Ideal.Quotient.mk P) (one_smul G x)
@@ -377,11 +381,11 @@ def primesOver : Set (Ideal B) :=
 
 variable {B}
 
-instance primesOver.isPrime (Q : primesOver p B) : Q.1.IsPrime :=
-  Q.2.1
+instance primesOver.isPrime (Q : primesOver p B) : Q.val.IsPrime :=
+  Q.property.1
 
-instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
-  Q.2.2
+instance primesOver.liesOver (Q : primesOver p B) : Q.val.LiesOver p :=
+  Q.property.2
 
 /-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
 abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=

@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 In this file we show that the supremum of two subalgebras that are finitely generated as modules,
 is again finitely generated.
-
 -/
 
 public section
@@ -107,7 +106,8 @@ lemma Module.exists_isPrincipal_quotient_of_finite :
   let s := { m : ℕ | Submodule.span R (f '' Fin.val ⁻¹' Set.Iio m) ≠ ⊤ }
   have hns : ∀ x ∈ s, x < n := by
     refine fun x hx ↦ lt_iff_not_ge.mpr fun e ↦ ?_
-    have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by ext y; simpa using y.2.trans_le e
+    have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by
+      ext y; simpa using y.isLt.trans_le e
     simp [s, this, hf] at hx
   have hs₁ : s.Nonempty := ⟨0, by simp [s]⟩
   have hs₂ : BddAbove s := ⟨n, fun x hx ↦ (hns x hx).le⟩
@@ -173,7 +173,7 @@ lemma RingHom.Finite.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
     (Algebra.TensorProduct.map f g).toRingHom.Finite := by
-  convert!
+  convert
     RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
       (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
         RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|

@@ -15,7 +15,6 @@ Given an injective resolution `R` of an object `X` in an abelian category `C`,
 we define `R.cochainComplex : CochainComplex C ℤ`, which is the extension
 of `R.cocomplex : CochainComplex C ℕ`, and the quasi-isomorphism
 `R.ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainComplex`.
-
 -/
 
 @[expose] public section
@@ -55,10 +54,6 @@ lemma cochainComplex_d (n₁ n₂ : ℤ) (k₁ k₂ : ℕ) (h₁ : k₁ = n₁) 
     R.cochainComplex.d n₁ n₂ = (cochainComplexXIso _ _ _ h₁).hom ≫
       R.cocomplex.d k₁ k₂ ≫ (cochainComplexXIso _ _ _ h₂).inv :=
   HomologicalComplex.extend_d_eq _ _ h₁ h₂
-
-instance : R.cochainComplex.IsStrictlyGE 0 := by
-  dsimp [cochainComplex]
-  infer_instance
 
 instance (n : ℤ) : Injective (R.cochainComplex.X n) := by
   by_cases hn : 0 ≤ n

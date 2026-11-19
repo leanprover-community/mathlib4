@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.PythagoreanTriples
+
 import Mathlib.Tactic.LinearCombination
 
 /-!
