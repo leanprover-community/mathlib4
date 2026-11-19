@@ -170,7 +170,7 @@ lemma ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFinite
     · simp [hab, contDiffOn_const]
   simp_rw [intervalIntegral.integral_of_le hab.le]
   apply hf.parametric_integral hu isCompact_Icc
-  · simpa [hab.le] using Ioc_subset_Icc_self
+  · simp [hab.le]
   · exact ((measure_mono Ioc_subset_Icc_self).trans_lt isCompact_Icc.measure_lt_top).ne
 
 /-- If `f : H × ℝ → E` is Cⁿ, the parametric integral
