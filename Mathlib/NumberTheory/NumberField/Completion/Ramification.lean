@@ -104,7 +104,7 @@ open scoped Classical in
 /-- The inertia degree of `w` over `v`. -/
 protected noncomputable def inertiaDeg : ℕ :=
   if _ : w.LiesOver v then
-    letI := algebraOfLiesOver v.1 w.1
+    letI := algebraOfLiesOver v.val w.val
     (⊥ : Ideal w.Completion).inertiaDeg v.Completion
   else 0
 
@@ -115,26 +115,26 @@ variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Com
 
 theorem inertiaDeg_of_liesOver [w.LiesOver v] :
     v.inertiaDeg w = (⊥ : Ideal w.Completion).inertiaDeg v.Completion := by
-  rw [algebra_eq_of_liesOver v.1 w.1, InfinitePlace.inertiaDeg, dite_eq_left]
+  rw [algebra_eq_of_liesOver v.val w.val, InfinitePlace.inertiaDeg, dite_eq_left]
 
 theorem inertiaDeg_eq_finrank [w.LiesOver v] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
   rw [inertiaDeg_of_liesOver, Ideal.inertiaDeg_eq_of_isMaximal ⊥]
   exact Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
-    (RingEquiv.quotientBot w.Completion) (by ext; simp [algebraMap_apply_of_liesOver v.1 w.1])
+    (RingEquiv.quotientBot w.Completion) (by ext; simp [algebraMap_apply_of_liesOver v.val w.val])
 
 end Algebra
 
 variable {v w} in
 theorem inertiaDeg_eq_one (hw : w ∈ unramifiedPlacesOver L v) : v.inertiaDeg w = 1 :=
   have := (Set.mem_ofPred.1 hw).1
-  let := algebraOfLiesOver v.1 w.1
+  let := algebraOfLiesOver v.val w.val
   hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
 
 variable {v w} in
 theorem inertiaDeg_eq_two (hw : w ∈ ramifiedPlacesOver L v) : v.inertiaDeg w = 2 :=
   have := (Set.mem_ofPred.1 hw).1
-  let := algebraOfLiesOver v.1 w.1
+  let := algebraOfLiesOver v.val w.val
   hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
 
 variable (K L) in

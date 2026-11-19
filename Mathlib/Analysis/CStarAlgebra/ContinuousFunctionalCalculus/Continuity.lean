@@ -91,7 +91,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     rw [← tendsto_comap'_iff (i := ((↑) : s → X)) (by simpa)]
     conv =>
       enter [1, x]
-      rw [Function.comp_apply, cfc_apply (hf := x.2)]
+      rw [Function.comp_apply, cfc_apply (hf := x.property)]
     rw [cfc_apply ..]
     apply cfcHom_continuous _ |>.tendsto _ |>.comp
     rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn Subtype.property]
@@ -237,9 +237,10 @@ theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     convert!
       continuous_cfcHomSuperset_left hs ⟨_, hf.domRestrict⟩
         ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A)
-        continuous_subtypeVal (fun x ↦ x.2.2) with
+        continuous_subtypeVal (fun x ↦ x.property.2) with
       x
-    rw [cfcHomSuperset_apply, Set.domRestrict_apply, cfc_apply _ _ x.2.1 (hf.mono x.2.2)]
+    rw [cfcHomSuperset_apply, Set.domRestrict_apply,
+      cfc_apply _ _ x.property.1 (hf.mono x.property.2)]
     congr!
 
 open UniformOnFun in
@@ -349,7 +350,7 @@ theorem ContinuousOn.cfc_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X] {
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum 𝕜 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      spectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+      spectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
     exact upperHemicontinuous_spectrum 𝕜 A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet
@@ -533,7 +534,7 @@ theorem ContinuousOn.cfc_nnreal_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpa
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      spectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+      spectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
     exact upperHemicontinuous_spectrum_nnreal A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet
@@ -619,13 +620,13 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     rw [← tendsto_comap'_iff (i := ((↑) : s → X)) (by simpa)]
     conv =>
       enter [1, x]
-      rw [Function.comp_apply, cfcₙ_apply (hf := x.2.1) (hf0 := x.2.2)]
+      rw [Function.comp_apply, cfcₙ_apply (hf := x.property.1) (hf0 := x.property.2)]
     rw [cfcₙ_apply ..]
     apply cfcₙHom_continuous _ |>.tendsto _ |>.comp
     rw [ContinuousMapZero.isEmbedding_toContinuousMap.isInducing.tendsto_nhds_iff]
-    change Tendsto (fun x : s ↦ (⟨_, x.2.1.domRestrict⟩ : C(quasispectrum R a, R))) _
+    change Tendsto (fun x : s ↦ (⟨_, x.property.1.domRestrict⟩ : C(quasispectrum R a, R))) _
       (𝓝 ⟨_, hf.domRestrict⟩)
-    rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
+    rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn (fun x ↦ x.property.1)]
     intro t
     simp only [eventually_comap, Subtype.forall]
     gconvert h_tendsto t with ht x
@@ -771,9 +772,10 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
   · rw [continuousOn_iff_continuous_domRestrict]
     convert!
       continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.domRestrict⟩, hf0⟩ (X :=
-        {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtypeVal (fun x ↦ x.2.2) with
+        {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtypeVal (fun x ↦ x.property.2) with
       x
-    rw [cfcₙHomSuperset_apply, Set.domRestrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
+    rw [cfcₙHomSuperset_apply, Set.domRestrict_apply,
+      cfcₙ_apply _ _ (hf.mono x.property.2) hf0 x.property.1]
     congr!
   · convert continuousOn_empty _ using 1
     rw [Set.eq_empty_iff_forall_notMem]
@@ -892,7 +894,8 @@ theorem ContinuousOn.cfcₙ_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum 𝕜 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      quasispectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+      quasispectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp
+        (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
     exact upperHemicontinuous_quasispectrum 𝕜 A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet
@@ -1084,7 +1087,7 @@ theorem ContinuousOn.cfcₙ_nnreal_of_mem_nhdsSet [CompleteSpace A] [Topological
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      quasispectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+      quasispectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
     exact upperHemicontinuous_quasispectrum_nnreal A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet

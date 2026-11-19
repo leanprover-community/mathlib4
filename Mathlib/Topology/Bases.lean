@@ -205,7 +205,7 @@ theorem IsTopologicalBasis.open_eq_iUnion {B : Set (Set α)} (hB : IsTopological
     (ou : IsOpen u) : ∃ (β : Type u) (f : β → Set α), (u = ⋃ i, f i) ∧ ∀ i, f i ∈ B :=
   ⟨↥({ s ∈ B | s ⊆ u }), (↑), by
     rw [← sUnion_eq_iUnion]
-    apply hB.open_eq_sUnion' ou, fun s => And.left s.2⟩
+    apply hB.open_eq_sUnion' ou, fun s => And.left s.property⟩
 
 @[elab_as_elim]
 lemma IsTopologicalBasis.isOpen_induction {P : Set α → Prop} (hB : IsTopologicalBasis B)
@@ -237,7 +237,7 @@ theorem IsTopologicalBasis.isOpenMap_iff [TopologicalSpace β] {B : Set (Set α)
     (hB : IsTopologicalBasis B) {f : α → β} : IsOpenMap f ↔ ∀ s ∈ B, IsOpen (f '' s) := by
   refine ⟨fun H o ho => H _ (hB.isOpen ho), fun hf o ho => ?_⟩
   rw [hB.open_eq_sUnion' ho, sUnion_eq_iUnion, image_iUnion]
-  exact isOpen_iUnion fun s => hf s s.2.1
+  exact isOpen_iUnion fun s => hf s s.property.1
 
 theorem IsTopologicalBasis.exists_nonempty_subset {B : Set (Set α)} (hb : IsTopologicalBasis B)
     {u : Set α} (hu : u.Nonempty) (ou : IsOpen u) : ∃ v ∈ B, Set.Nonempty v ∧ v ⊆ u :=
@@ -443,7 +443,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     refine ⟨⟨range f, countable_range f, dense_iff_inter_open.2 fun U hU ⟨g, hg⟩ ↦ ?_⟩⟩
     rcases isOpen_pi_iff.1 hU g hg with ⟨I, u, huo, huU⟩
     have : ∀ i : I, ∃ y ∈ t i, y ∈ u i := fun i ↦
-      (htd i).exists_mem_open (huo i i.2).1 ⟨_, (huo i i.2).2⟩
+      (htd i).exists_mem_open (huo i i.property).1 ⟨_, (huo i i.property).2⟩
     choose y hyt hyu using this
     lift y to ∀ i : I, t i using hyt
     refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self (f := f) ⟨I, y⟩⟩
@@ -556,7 +556,7 @@ theorem IsSeparable.univ_pi {ι : Type*} [Countable ι] {X : ι → Type*} {s : 
     · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self (f := g) ⟨I, f⟩⟩
     suffices H : ∀ i ∈ I, (u i ∩ c i).Nonempty by
       choose f hfu hfc using H
-      refine ⟨fun i ↦ ⟨f i i.2, hfc i i.2⟩, fun i (hi : i ∈ I) ↦ ?_⟩
+      refine ⟨fun i ↦ ⟨f i i.property, hfc i i.property⟩, fun i (hi : i ∈ I) ↦ ?_⟩
       simpa only [g, dite_eq_left hi] using hfu i hi
     intro i hi
     exact mem_closure_iff.1 (hc i <| hf _ trivial) _ (huo i hi).1 (huo i hi).2
@@ -918,7 +918,7 @@ instance {ι : Type*} {X : ι → Type*} [Countable ι] [∀ a, TopologicalSpace
 -- see Note [lower instance priority]
 instance (priority := 100) SecondCountableTopology.to_separableSpace [SecondCountableTopology α] :
     SeparableSpace α := by
-  choose p hp using fun s : countableBasis α => nonempty_of_mem_countableBasis s.2
+  choose p hp using fun s : countableBasis α => nonempty_of_mem_countableBasis s.property
   exact ⟨⟨range p, countable_range _, (isBasis_countableBasis α).dense_iff.2 fun o ho _ =>
           ⟨p ⟨o, ho⟩, hp ⟨o, _⟩, mem_range_self _⟩⟩⟩
 
@@ -937,7 +937,7 @@ In particular, any open covering of `α` has a countable subcover: α is a Linde
 theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Set α)
     (H : ∀ i, IsOpen (s i)) : ∃ T : Set ι, T.Countable ∧ ⋃ i ∈ T, s i = ⋃ i, s i := by
   let B := { b ∈ countableBasis α | ∃ i, b ⊆ s i }
-  choose f hf using fun b : B => b.2.2
+  choose f hf using fun b : B => b.property.2
   have : Countable B := ((countable_countableBasis α).mono (sep_subset _ _)).to_subtype
   refine ⟨_, countable_range f, (iUnion₂_subset_iUnion _ _).antisymm (sUnion_subset ?_)⟩
   rintro _ ⟨i, rfl⟩ x xs
@@ -947,7 +947,7 @@ theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Se
 theorem isOpen_biUnion_countable [SecondCountableTopology α] {ι : Type*} (I : Set ι) (s : ι → Set α)
     (H : ∀ i ∈ I, IsOpen (s i)) : ∃ T ⊆ I, T.Countable ∧ ⋃ i ∈ T, s i = ⋃ i ∈ I, s i := by
   simp_rw [← Subtype.exists_set_subtype, biUnion_image]
-  rcases isOpen_iUnion_countable (fun i : I ↦ s i) fun i ↦ H i i.2 with ⟨T, hTc, hU⟩
+  rcases isOpen_iUnion_countable (fun i : I ↦ s i) fun i ↦ H i i.property with ⟨T, hTc, hU⟩
   exact ⟨T, hTc.image _, hU.trans <| iUnion_subtype ..⟩
 
 theorem isOpen_sUnion_countable [SecondCountableTopology α] (S : Set (Set α))
@@ -968,7 +968,7 @@ theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (h
 
 theorem countable_cover_nhdsWithin [SecondCountableTopology α] {f : α → Set α} {s : Set α}
     (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t ⊆ s, t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
-  have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x => preimage_coe_mem_nhds_subtype.2 (hf x x.2)
+  have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x => preimage_coe_mem_nhds_subtype.2 (hf x x.property)
   rcases countable_cover_nhds this with ⟨t, htc, htU⟩
   refine ⟨(↑) '' t, Subtype.coe_image_subset _ _, htc.image _, fun x hx => ?_⟩
   simp only [biUnion_image, eq_univ_iff_forall, ← preimage_iUnion, mem_preimage] at htU ⊢

@@ -120,20 +120,20 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
   toLinearMap := Dual.eval R M
   root := Embedding.subtype fun x ↦ IsReflective B x
   coroot :=
-    { toFun := fun x => IsReflective.coroot B x.2
+    { toFun := fun x => IsReflective.coroot B x.property
       inj' := by
         intro x y hxy
         simp only [mem_ofPred_eq] at hxy -- x* = y*
-        have h1 : ∀ z, IsReflective.coroot B x.2 z = IsReflective.coroot B y.2 z :=
+        have h1 : ∀ z, IsReflective.coroot B x.property z = IsReflective.coroot B y.property z :=
           fun z => congrFun (congrArg DFunLike.coe hxy) z
-        have h2x : ∀ z, B x x * IsReflective.coroot B x.2 z =
-            B x x * IsReflective.coroot B y.2 z :=
+        have h2x : ∀ z, B x x * IsReflective.coroot B x.property z =
+            B x x * IsReflective.coroot B y.property z :=
           fun z => congrArg (HMul.hMul ((B x) x)) (h1 z)
-        have h2y : ∀ z, B y y * IsReflective.coroot B x.2 z =
-            B y y * IsReflective.coroot B y.2 z :=
+        have h2y : ∀ z, B y y * IsReflective.coroot B x.property z =
+            B y y * IsReflective.coroot B y.property z :=
           fun z => congrArg (HMul.hMul ((B y) y)) (h1 z)
-        simp_rw [apply_self_mul_coroot_apply B x.2] at h2x -- 2(x,z) = (x,x)y*(z)
-        simp_rw [apply_self_mul_coroot_apply B y.2] at h2y -- (y,y)x*(z) = 2(y,z)
+        simp_rw [apply_self_mul_coroot_apply B x.property] at h2x -- 2(x,z) = (x,x)y*(z)
+        simp_rw [apply_self_mul_coroot_apply B y.property] at h2y -- (y,y)x*(z) = 2(y,z)
         have h2xy : B x x = B y y := by
           refine h2.left ?_
           dsimp only
@@ -148,18 +148,18 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
         refine h2.left ?_
         dsimp only
         rw [h2x z, ← h2y z, hxy, h2xy] }
-  root_coroot_two x := coroot_apply_self B x.2
+  root_coroot_two x := coroot_apply_self B x.property
   reflectionPerm x :=
-    { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
-        reflective_reflection B hSB x.2 y.2⟩
-      invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
-        reflective_reflection B hSB x.2 y.2⟩
+    { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.property) y),
+        reflective_reflection B hSB x.property y.property⟩
+      invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.property) y),
+        reflective_reflection B hSB x.property y.property⟩
       left_inv := by
         intro y
-        simp [involutive_reflection (coroot_apply_self B x.2) y]
+        simp [involutive_reflection (coroot_apply_self B x.property) y]
       right_inv := by
         intro y
-        simp [involutive_reflection (coroot_apply_self B x.2) y] }
+        simp [involutive_reflection (coroot_apply_self B x.property) y] }
   reflectionPerm_root := by
     simp [coe_ofPred, Module.reflection_apply]
   reflectionPerm_coroot x y := by
@@ -167,16 +167,17 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
       Dual.eval_apply, Equiv.coe_fn_mk]
     ext z
     simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
-    refine y.2.regular.left ?_
-    simp only [mem_ofPred_eq, mul_sub, apply_self_mul_coroot_apply B y.2, ← mul_assoc]
-    rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB.eq z,
+    refine y.property.regular.left ?_
+    simp only [mem_ofPred_eq, mul_sub, apply_self_mul_coroot_apply B y.property, ← mul_assoc]
+    rw [← isOrthogonal_reflection B x.property hSB y y, apply_self_mul_coroot_apply, ← hSB.eq z,
       ← hSB.eq z, RingHom.id_apply, RingHom.id_apply, Module.reflection_apply, map_sub,
       mul_sub, sub_eq_sub_iff_comm, sub_left_inj]
-    refine x.2.regular.left ?_
+    refine x.property.regular.left ?_
     simp only [mem_ofPred_eq, map_smul, smul_eq_mul]
     rw [← mul_assoc _ _ (B z x), ← mul_assoc _ _ (B z x), mul_left_comm,
-      apply_self_mul_coroot_apply B x.2, mul_left_comm (B x x), apply_self_mul_coroot_apply B x.2,
-      ← hSB.eq x y, RingHom.id_apply, ← hSB.eq x z, RingHom.id_apply]
+      apply_self_mul_coroot_apply B x.property, mul_left_comm (B x x),
+      apply_self_mul_coroot_apply B x.property, ← hSB.eq x y, RingHom.id_apply, ← hSB.eq x z,
+      RingHom.id_apply]
     ring
 
 end RootPairing

@@ -93,13 +93,13 @@ lemma of_iUnion_eq_of_finite {κ : Type*} [Finite κ] (s : κ → Set S) (hs : �
 lemma of_biUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : s.Finite)
     (H : ∀ t ∈ s, IsCompactOpenCovered f t) : IsCompactOpenCovered f U := by
   have := hf.to_subtype
-  exact of_iUnion_eq_of_finite (fun i : s ↦ i.1) (by simpa) (by simpa)
+  exact of_iUnion_eq_of_finite (fun i : s ↦ i.val) (by simpa) (by simpa)
 
 lemma of_biUnion_eq_of_isCompact [TopologicalSpace S] {U : Set S} (hU : IsCompact U)
     (s : Set (Opens S)) (hs : ⋃ t ∈ s, t = U) (H : ∀ t ∈ s, IsCompactOpenCovered f t) :
     IsCompactOpenCovered f U := by
   classical
-  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.1) (fun V ↦ V.1.is_open')
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.val) (fun V ↦ V.val.is_open')
     (by simp [← hs])
   refine of_biUnion_eq_of_finite (SetLike.coe '' (t.image Subtype.val : Set (Opens S))) ?_ ?_ ?_
   · exact subset_antisymm (fun x h ↦ by aesop) (subset_trans ht <| by simp)
@@ -140,11 +140,11 @@ lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis 
     refine ⟨Fintype.card κ, a ∘ (Fintype.equivFin κ).symm, fun i ↦ V _, fun i ↦ hB _, ?_⟩
     simp [← hU, ← (Fintype.equivFin κ).symm.surjective.iUnion_comp, Function.comp_apply]
   obtain ⟨s, hs, V, hc, hunion⟩ := hU
-  choose Us UsB hUsf hUs using fun i : s ↦ (hB i.1).exists_finite_of_isCompact (hc i i.2)
+  choose Us UsB hUsf hUs using fun i : s ↦ (hB i.val).exists_finite_of_isCompact (hc i i.property)
   let σ := Σ i : s, Us i
   have : Finite s := hs
   have (i : _) : Finite (Us i) := hUsf i
-  refine ⟨σ, inferInstance, fun i ↦ i.1.1, fun i ↦ i.2.1, fun i ↦ UsB _ (by simp),
+  refine ⟨σ, inferInstance, fun i ↦ i.1.val, fun i ↦ i.2.val, fun i ↦ UsB _ (by simp),
       fun _ ↦ hBc _ _ (UsB _ (by simp)), ?_⟩
   rw [← hunion]
   ext x

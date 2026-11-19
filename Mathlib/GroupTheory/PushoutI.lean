@@ -150,7 +150,7 @@ def homEquiv :
     (PushoutI φ →* K) ≃ { f : (Π i, G i →* K) × (H →* K) // ∀ i, (f.1 i).comp (φ i) = f.2 } :=
   { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
       fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
-    invFun := fun f => lift f.1.1 f.1.2 f.2,
+    invFun := fun f => lift f.val.1 f.val.2 f.property,
     left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
     right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }

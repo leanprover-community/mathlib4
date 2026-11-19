@@ -852,7 +852,7 @@ variable {α : Type*} [PartialOrder α] {s : Set α} [s.OrdConnected]
 
 open scoped Classical in
 noncomputable instance Set.OrdConnected.predOrder [PredOrder α] : PredOrder s where
-  pred x := if h : Order.pred x.1 ∈ s then ⟨Order.pred x.1, h⟩ else x
+  pred x := if h : Order.pred x.val ∈ s then ⟨Order.pred x.val, h⟩ else x
   pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp_all [Order.pred_le]
   min_of_le_pred := @fun ⟨x, hx⟩ h ↦ by
     dsimp at h
@@ -876,8 +876,8 @@ noncomputable instance Set.OrdConnected.predOrder [PredOrder α] : PredOrder s w
     · exact h.le
 
 @[simp, norm_cast]
-lemma coe_pred_of_mem [PredOrder α] {a : s} (h : pred a.1 ∈ s) :
-    (pred a).1 = pred ↑a := by classical
+lemma coe_pred_of_mem [PredOrder α] {a : s} (h : pred a.val ∈ s) :
+    (pred a).val = pred ↑a := by classical
   change Subtype.val (dite ..) = _
   simp [h]
 
@@ -890,7 +890,7 @@ lemma pred_notMem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
     pred ↑a ∉ s ↔ IsMin a where
   mp := isMin_of_pred_notMem
   mpr h nh := by
-    replace h := congr($h.pred_eq.1)
+    replace h := congr($(h.pred_eq).val)
     rw [coe_pred_of_mem nh] at h
     simp at h
 
@@ -902,7 +902,7 @@ noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
 set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ ↑a ∈ s) :
-    (succ a).1 = succ ↑a := by classical
+    (succ a).val = succ ↑a := by classical
   change Subtype.val (dite ..) = _
   split_ifs <;> trivial
 
@@ -917,7 +917,7 @@ lemma succ_notMem_iff_isMax [SuccOrder α] [NoMaxOrder α] {a : s} :
     succ ↑a ∉ s ↔ IsMax a where
   mp := isMax_of_succ_notMem
   mpr h nh := by
-    replace h := congr($h.succ_eq.1)
+    replace h := congr($(h.succ_eq).val)
     rw [coe_succ_of_mem nh] at h
     simp at h
 

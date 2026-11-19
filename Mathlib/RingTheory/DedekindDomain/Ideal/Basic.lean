@@ -356,10 +356,10 @@ instance : PosMulStrictMono (FractionalIdeal A⁰ K) := PosMulMono.toPosMulStric
 instance : MulPosStrictMono (FractionalIdeal A⁰ K) := MulPosMono.toMulPosStrictMono
 
 instance : PosMulReflectLE (FractionalIdeal A⁰ K) where
-  elim I J K hJK := by simpa [I.2.ne'] using mul_right_mono (a := I.1⁻¹) hJK
+  elim I J K hJK := by simpa [I.property.ne'] using mul_right_mono (a := I.val⁻¹) hJK
 
 instance : MulPosReflectLE (FractionalIdeal A⁰ K) where
-  elim I J K hJK := by simpa [I.2.ne'] using mul_left_mono (a := I.1⁻¹) hJK
+  elim I J K hJK := by simpa [I.property.ne'] using mul_left_mono (a := I.val⁻¹) hJK
 
 lemma mul_left_strictMono {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : StrictMono (· * I) :=
   fun _J _K hJK ↦ mul_lt_mul_of_pos_right hJK <| pos_iff_ne_zero.2 hI
@@ -371,8 +371,8 @@ instance : PosMulReflectLE (Ideal A) where
   elim I J K e := by
     dsimp
     rwa [← FractionalIdeal.coeIdeal_le_coeIdeal (FractionRing A),
-      ← mul_le_mul_iff_right₀ (α := FractionalIdeal A⁰ (FractionRing A)) (a := I.1)
-        (by simpa [pos_iff_ne_zero] using I.2.ne'),
+      ← mul_le_mul_iff_right₀ (α := FractionalIdeal A⁰ (FractionRing A)) (a := I.val)
+        (by simpa [pos_iff_ne_zero] using I.property.ne'),
       ← FractionalIdeal.coeIdeal_mul, ← FractionalIdeal.coeIdeal_mul,
       FractionalIdeal.coeIdeal_le_coeIdeal]
 

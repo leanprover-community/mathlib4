@@ -418,7 +418,7 @@ theorem add_const' [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countab
     cases τ ω with
     | top => simp
     | coe a => simp; norm_cast
-  exact h ▸ MeasurableSet.iUnion fun k => hτ.measurableSet_eq_le (le_of_add_le_left k.2)
+  exact h ▸ MeasurableSet.iUnion fun k => hτ.measurableSet_eq_le (le_of_add_le_left k.property)
 
 theorem add [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countable ι]
     [TopologicalSpace ι] [OrderTopology ι]
@@ -435,7 +435,8 @@ theorem add [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countable ι]
       cases π ω with
       | top => simp
       | coe b => norm_cast; simpa using le_of_add_le_right
-  exact h ▸ MeasurableSet.iUnion fun k => (hπ.measurableSet_eq_le k.2).inter (hτ.add_const' k.1 j)
+  exact h ▸ MeasurableSet.iUnion fun k =>
+    (hπ.measurableSet_eq_le k.property).inter (hτ.add_const' k.val j)
 
 section Preorder
 
