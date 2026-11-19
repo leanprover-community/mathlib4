@@ -46,6 +46,8 @@ namespace IsLocalRing
 variable {R : Type*} [CommRing R] [IsLocalRing R] [Fintype (ResidueField R)]
   [DecidableEq (ResidueField R)]
 
+-- TODO: Switch over to Finite and Nat.card once the rest of the finite field material has been
+-- switched over
 noncomputable def legendreSym : MulChar R ℤ :=
   (quadraticChar (ResidueField R)).compLocalHom (residue R)
 
@@ -122,76 +124,23 @@ theorem eq_neg_one_iff (ha : IsUnit a) :
     legendreSym a = -1 ↔ ¬ IsSquare (residue R a) := by
   rw [IsLocalRing.legendreSym.eq_neg_one_iff_not_one ha, eq_one_iff ha]
 
-/-- We have the congruence `legendreSym a ≡ a ^ (p / 2) mod p`. -/
-theorem eq_pow {p : ℕ} [Fact (Nat.Prime p)] (hp : Fintype.card (ResidueField R) = p) :
-    residue R (legendreSym a) = (residue R a) ^ (p / 2) := by
-    simp only [map_intCast]
-    simp only [legendreSym]
-    simp only [MulChar.compLocalHom_apply, quadraticChar_apply]
-    simp only [quadraticCharFun]
-    split_ifs with h1 h2
-    · rw [h1]
-      rw [zero_pow]
-      · lia
+/-- For a ring with `|R|=q` have the congruence `legendreSym a ≡ a ^ (q / 2) mod p`. -/
+theorem eq_pow {p : ℕ} [Fact (Nat.Prime p)] (hR : ringChar (ResidueField R) ≠ 2) :
+    legendreSym a = (residue R a) ^ (Fintype.card (ResidueField R) / 2) := by
+    simp only [legendreSym, MulChar.compLocalHom_apply]
+    by_cases h0 : (residue R) a = 0
+    · rw [h0, zero_pow]
+      · simp only [quadraticChar_apply, quadraticCharFun_zero, Int.cast_zero]
       · simp only [ne_eq, Nat.div_eq_zero_iff, OfNat.ofNat_ne_zero, Order.lt_two_iff, false_or,
         not_le]
-        rw [← hp]
         exact Fintype.one_lt_card
-    · obtain ⟨w, h⟩ := h2
-      rw [h]
-      simp only [Int.cast_one]
-      rw [← pow_two]
-      rw [← pow_mul']
-      rw [← hp]
-      rw [pow_mul]
-      have : w ^ (Fintype.card (ResidueField R) / 2) = 1 ∨ w ^ (Fintype.card (ResidueField R) / 2)
-      = -1 := by
-        by_cases hp2 : ringChar (ResidueField R) = 2
-        · have h6 : IsSquare w := by apply (FiniteField.isSquare_of_char_two hp2 w)
-          obtain ⟨b, h6⟩ := h6
-          rw [FiniteField.even_card_iff_char_two] at hp2
-          refine sq_eq_one_iff.mp ?_
-          rw [hp]
-          rw [← pow_mul]
-          push Not at h1
-          rw [h] at h1
-          rw [mul_self_ne_zero] at h1
-          rw [hp] at hp2
-          rw [← Nat.even_iff] at hp2
-          rw [Nat.div_two_mul_two_of_even hp2]
-          rw [ne_eq] at h1
-          have that : w = 0 ∨ w = 1 := by sorry
-          rcases that with h5 | h5
-          · have : w ^ p = 1 := absurd h5 h1
-            exact this
-          · rw [h5]
-            simp [one_pow]
-        · refine FiniteField.pow_dichotomy ?_ ?_
-          · push Not at hp2
-            exact hp2
-          · push Not at h1
-            rw [h] at h1
-            exact zero_ne_mul_self.mp (id (Ne.symm h1))
-      rcases this with h3 | h3 <;>
-      simp [h3]
-    · push Not at h1
-      have h8: (residue R) a ≠ 0 := by apply h1
-      rw [IsLocalRing.residue_ne_zero_iff_isUnit] at h1
-      rw [← eq_neg_one_iff h1] at h2
-      simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one]
-      rw [eq_neg_one_iff h1] at h2
-      by_cases hp2 : ringChar (ResidueField R) = 2
-      · have h6 : IsSquare ((residue R) a) := by apply (FiniteField.isSquare_of_char_two hp2
-        ((residue R) a))
-        have : -1 = (residue R) a ^ (p / 2) := absurd h6 h2
-        exact this
-      · rw [FiniteField.isSquare_iff hp2 h8] at h2
-        have h9 : (residue R) a ^ (Fintype.card (ResidueField R) / 2) = 1 ∨
-        (residue R) a ^ (Fintype.card (ResidueField R) / 2) = -1 := by apply
-        (FiniteField.pow_dichotomy hp2 h8)
-        rw [hp] at h9
-        rw [hp] at h2
-        tauto
+    · have : (residue R) a ^ (Fintype.card (ResidueField R) / 2) = 1 ∨ (residue R) a ^
+      (Fintype.card (ResidueField R) / 2) = -1 := by refine FiniteField.pow_dichotomy hR h0
+      rw [quadraticChar_eq_pow_of_char_ne_two hR h0]
+      simp only [Int.reduceNeg, Int.cast_ite, Int.cast_one, Int.cast_neg]
+      split_ifs with h1
+      · rw [h1]
+      · tauto
 
 end legendreSym
 
