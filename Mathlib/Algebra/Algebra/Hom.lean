@@ -142,9 +142,11 @@ instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
 theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
 
-@[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+@[simp, norm_cast]
+theorem mk_coe {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
   rfl
+
+@[deprecated (since := "2026-11-19")] alias coe_mks := mk_coe
 
 @[simp, norm_cast]
 theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
@@ -209,10 +211,6 @@ protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
-
-@[simp]
-theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
-  rfl
 
 @[simp] lemma addHomMk_coe (f : A →ₐ[R] B) : AddHom.mk f (map_add f) = f := rfl
 

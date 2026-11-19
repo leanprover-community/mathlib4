@@ -144,10 +144,12 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f
 theorem coe_mk {f : A →ₗc[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A → B) = f :=
   rfl
 
-@[norm_cast]
-theorem coe_mks {f : A → B} (h₀ h₁ h₂ h₃ h₄ h₅) :
-    ⇑(⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
+@[simp, norm_cast]
+theorem mk_coe {f : A → B} (h₀ h₁ h₂ h₃ h₄ h₅) :
+    (⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
   rfl
+
+@[deprecated (since := "2026-11-19")] alias coe_mks := mk_coe
 
 @[simp, norm_cast]
 theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
@@ -216,11 +218,6 @@ theorem ext {φ₁ φ₂ : A →ₐc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ�
 @[ext high]
 theorem ext_of_ring {f g : R →ₐc[R] A} : f = g :=
   coe_linearMap_injective (by ext; exact (map_one f).trans (map_one g).symm)
-
-@[simp]
-theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
-    (⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
-  rfl
 
 /-- Copy of a `BialgHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
