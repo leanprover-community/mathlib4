@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.PowerSeries.Inverse
 
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Tactic.Field
 
 /-!
 # Exponential Power Series
