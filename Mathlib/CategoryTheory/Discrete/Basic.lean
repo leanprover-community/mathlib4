@@ -294,8 +294,8 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
 def equivOfEquivalence {α : Type u₁} {β : Type u₂} (h : Discrete α ≌ Discrete β) : α ≃ β where
   toFun := Discrete.as ∘ h.functor.obj ∘ Discrete.mk
   invFun := Discrete.as ∘ h.inverse.obj ∘ Discrete.mk
-  left_inv a := by simpa using eq_of_hom (h.unitIso.app (Discrete.mk a)).2
-  right_inv a := by simpa using eq_of_hom (h.counitIso.app (Discrete.mk a)).1
+  left_inv a := by simpa using eq_of_hom (h.unitIso.app (Discrete.mk a)).inv
+  right_inv a := by simpa using eq_of_hom (h.counitIso.app (Discrete.mk a)).hom
 
 end Discrete
 

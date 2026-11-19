@@ -536,10 +536,10 @@ theorem ext (p q : MvPolynomial σ R) : (∀ m, p.coeff m = q.coeff m) → p = q
 protected theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) :
     coeff (p + q) m = coeff p m + coeff q m := by simp
 
-@[simp]
+@[deprecated coeff_smul +typeChanged (since := "2026-10-06")]
+protected
 theorem coeff_smul {S₁ : Type*} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C : S₁) (p : MvPolynomial σ R) :
-    coeff (C • p) m = C • coeff p m :=
-  AddMonoidAlgebra.coeff_smul_apply ..
+    coeff (C • p) m = C • coeff p m := by simp
 
 @[deprecated coeff_zero +typeChanged (since := "2026-07-06")]
 protected lemma coeff_zero : (0 : MvPolynomial σ R).coeff = 0 := rfl
@@ -566,7 +566,7 @@ variable (R) in
 def lcoeff (m : σ →₀ ℕ) : MvPolynomial σ R →ₗ[R] R where
   toFun := (coeff · m)
   map_add' := fun _ _ ↦ by simp
-  map_smul' := coeff_smul m
+  map_smul' := by simp
 
 theorem coeff_sum {X : Type*} (s : Finset X) (f : X → MvPolynomial σ R) (m : σ →₀ ℕ) :
     (∑ x ∈ s, f x).coeff m = ∑ x ∈ s, (f x).coeff m :=
@@ -765,7 +765,7 @@ theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 := 
 
 @[simp]
 lemma support_nonempty {p : MvPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 := by
-  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, p.coeff d ≠ 0 :=
   ne_zero_iff.mp h

@@ -50,7 +50,7 @@ def dual (s : Set M) : PointedCone R N where
   carrier := {y | ∀ ⦃x⦄, x ∈ s → 0 ≤ p x y}
   zero_mem' := by simp
   add_mem' {u v} hu hv x hx := by rw [map_add]; exact add_nonneg (hu hx) (hv hx)
-  smul_mem' c y hy x hx := by rw [← Nonneg.coe_smul, map_smul]; exact mul_nonneg c.2 (hy hx)
+  smul_mem' c y hy x hx := by rw [← Nonneg.coe_smul, map_smul]; exact mul_nonneg c.property (hy hx)
 
 @[simp] lemma mem_dual : y ∈ dual p s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ p x y := .rfl
 
@@ -106,7 +106,7 @@ lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
   | zero => simp
   | add y z _hy _hz hy hz => rw [map_add, LinearMap.add_apply]; exact add_nonneg hy hz
   | smul t y _hy hy =>
-    rw [map_smul_of_tower, Nonneg.mk_smul, LinearMap.smul_apply]; exact mul_nonneg t.2 hy
+    rw [map_smul_of_tower, Nonneg.mk_smul, LinearMap.smul_apply]; exact mul_nonneg t.property hy
 
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
   := by simp [← dual_hull]

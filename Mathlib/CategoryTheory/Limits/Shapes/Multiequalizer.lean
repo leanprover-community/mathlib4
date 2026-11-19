@@ -84,8 +84,8 @@ corresponding to situations where we want to coequalize two families of maps
 def MultispanShape.ofLinearOrder (ι : Type w) [LinearOrder ι] : MultispanShape where
   L := {x : ι × ι | x.1 < x.2}
   R := ι
-  fst x := x.1.1
-  snd x := x.1.2
+  fst x := x.val.1
+  snd x := x.val.2
 
 instance : Unique (MultispanShape.ofLinearOrder Bool).L where
   default := ⟨⟨False, True⟩, by simp⟩
@@ -1165,10 +1165,10 @@ end
 def WalkingMultispan.inclusionOfLinearOrder (ι : Type w) [LinearOrder ι] :
     WalkingMultispan (.ofLinearOrder ι) ⥤ WalkingMultispan (.prod ι) :=
   MultispanIndex.multispan
-    { left j := .left j.1
+    { left j := .left j.val
       right i := .right i
-      fst j := WalkingMultispan.Hom.fst (J := .prod ι) j.1
-      snd j := WalkingMultispan.Hom.snd (J := .prod ι) j.1 }
+      fst j := WalkingMultispan.Hom.fst (J := .prod ι) j.val
+      snd j := WalkingMultispan.Hom.snd (J := .prod ι) j.val }
 
 section symmetry
 
@@ -1194,10 +1194,10 @@ variable [LinearOrder ι]
 a multispan index for `MultispanShape.prod ι` when `ι` is linearly ordered. -/
 @[simps, implicit_reducible]
 def toLinearOrder : MultispanIndex (.ofLinearOrder ι) C where
-  left j := I.left j.1
+  left j := I.left j.val
   right i := I.right i
-  fst j := I.fst j.1
-  snd j := I.snd j.1
+  fst j := I.fst j.val
+  snd j := I.snd j.val
 
 /-- Given a linearly ordered type `ι` and `I : MultispanIndex (.prod ι) C`,
 this is the isomorphism of functors between

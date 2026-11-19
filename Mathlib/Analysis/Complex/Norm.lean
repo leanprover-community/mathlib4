@@ -350,7 +350,7 @@ theorem lim_im (f : CauSeq ℂ (‖·‖)) : lim (cauSeqIm f) = (lim f).im := by
 
 theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
     IsCauSeq (‖·‖) fun n ↦ conj (f n) := fun ε ε0 ↦
-  let ⟨i, hi⟩ := f.2 ε ε0
+  let ⟨i, hi⟩ := f.property ε ε0
   ⟨i, fun j hj => by
     simp_rw [← map_sub, norm_conj]; exact hi j hj⟩
 
@@ -367,7 +367,7 @@ theorem lim_conj (f : CauSeq ℂ (‖·‖)) : lim (cauSeqConj f) = conj (lim f)
 
 /-- The norm of a complex Cauchy sequence, as a real Cauchy sequence. -/
 noncomputable def cauSeqNorm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
-  ⟨_, isCauSeq_norm f.2⟩
+  ⟨_, isCauSeq_norm f.property⟩
 
 @[simp]
 theorem cauSeqNorm_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqNorm f x = ‖f x‖ := rfl
