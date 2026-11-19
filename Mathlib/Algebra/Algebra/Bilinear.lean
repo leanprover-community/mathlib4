@@ -197,7 +197,7 @@ variable [CommSemiring R]
   [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
   [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
-lemma comp_mul' (f : A →ₙₐ[R] B) : (f : A →ₗ[R] B) ∘ₗ μ = μ[R] ∘ₗ (f ⊗ₘ f) :=
+lemma comp_mul' (f : A →ₙₐ[R] B) : (.ofClass f) ∘ₗ μ = μ[R] ∘ₗ ((.ofClass f) ⊗ₘ (.ofClass f)) :=
   TensorProduct.ext' <| by simp
 
 end NonUnitalAlgHom

@@ -447,7 +447,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
     [Star A] [NonUnitalNonAssocSemiring B] [Module R B] [Star B] (f : A →⋆ₙₐ[R] B) :
     CStarMatrix n n A →⋆ₙₐ[R] CStarMatrix n n B where
-  toFun := fun M => M.mapₗ (f : A →ₗ[R] B)
+  toFun := fun M => M.mapₗ (.ofClass f)
   map_smul' := by simp
   map_zero' := by simp [map_zero]
   map_add' := by simp [map_add]

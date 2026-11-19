@@ -150,7 +150,7 @@ theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
 
 @[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := coe_coalgHomOfClass
 
-theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
+theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = .ofClass (e : A →ₗc[R] B) :=
   rfl
 
 section
@@ -219,7 +219,7 @@ theorem coe_symm_toLinearEquiv (e : A ≃ₗc[R] B) :
 
 @[simp]
 theorem symm_toCoalgHom (e : A ≃ₗc[R] B) :
-    ((e.symm : B →ₗc[R] A) : B →ₗ[R] A) = (e : A ≃ₗ[R] B).symm := rfl
+    LinearMap.ofClass (e.symm : B →ₗc[R] A) = (e : A ≃ₗ[R] B).symm := rfl
 
 @[simp]
 theorem symm_apply_apply (e : A ≃ₗc[R] B) (x) :
@@ -295,7 +295,7 @@ variable {f : A →ₗc[R] B} (hf : Function.Bijective f)
 noncomputable def ofBijective : A ≃ₗc[R] B where
   toFun := f
   __ := f
-  __ := LinearEquiv.ofBijective (f : A →ₗ[R] B) hf
+  __ := LinearEquiv.ofBijective (.ofClass f) hf
 
 @[simp] lemma coe_ofBijective : (ofBijective hf : A → B) = f := rfl
 

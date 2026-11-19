@@ -235,7 +235,7 @@ theorem normalizedTrace_algebraMap_eq_id :
 /-- The normalized trace commutes with (injective) maps. -/
 @[simp]
 theorem normalizedTrace_comp_algHom {E : Type*} [Field E] [Algebra F E] [Algebra.IsIntegral F E]
-    (f : E →ₐ[F] K) : normalizedTrace F K ∘ₗ f = normalizedTrace F E :=
+    (f : E →ₐ[F] K) : normalizedTrace F K ∘ₗ f.toLinearMap = normalizedTrace F E :=
   LinearMap.ext <| normalizedTrace_map F K f
 
 theorem normalizedTrace_surjective : Function.Surjective (normalizedTrace F K) :=

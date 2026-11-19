@@ -156,15 +156,10 @@ theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp [map_smulₛₗ _]
 
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
-@[coe]
 def _root_.LinearMap.ofClass : M →ₛₗ[σ] M₃ where
   toFun := f
   map_add' := map_add f
   map_smul' := map_smulₛₗ f
-
-/-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
-instance instCoeToSemilinearMap : CoeHead F (M →ₛₗ[σ] M₃) where
-  coe f := LinearMap.ofClass f
 
 end SemilinearMapClass
 
@@ -198,7 +193,7 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 
-@[simp, norm_cast]
+@[simp]
 lemma coe_ofClass {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
     ⇑(ofClass f) = f :=
   rfl
@@ -370,7 +365,7 @@ theorem map_smul_of_tower [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) 
 theorem _root_.LinearMapClass.map_smul_of_tower {F : Type*} [CompatibleSMul M M₂ R S]
     [FunLike F M M₂] [LinearMapClass F S M M₂] (fₗ : F) (c : R) (x : M) :
     fₗ (c • x) = c • fₗ x :=
-  LinearMap.CompatibleSMul.map_smul (fₗ : M →ₗ[S] M₂) c x
+  LinearMap.CompatibleSMul.map_smul (ofClass fₗ) c x
 
 variable (R R) in
 theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsScalarTower R S M₂]
@@ -626,11 +621,11 @@ instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
 
 @[simp]
-theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : ((f : M →ₛₗ[σ] M₂) : M → M₂) = f :=
+theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : (LinearMap.ofClass f : M → M₂) = f :=
   rfl
 
 theorem toLinearMap_injective {f g : M →ₑ+[σ.toMonoidHom] M₂}
-    (h : (f : M →ₛₗ[σ] M₂) = (g : M →ₛₗ[σ] M₂)) :
+    (h : LinearMap.ofClass f = .ofClass g) :
     f = g := by
   ext m
   congrm $h m

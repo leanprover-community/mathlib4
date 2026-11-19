@@ -179,7 +179,7 @@ private theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
     (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁.toSubalgebra ⊔ F₂.toSubalgebra = ⊤)
     (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
       ((differentIdeal A R₂).map (algebraMap R₂ B))) {ι : Type*} (b : Basis ι K F₂)
-    (hb : span A (Set.range b) = LinearMap.range (IsScalarTower.toAlgHom A R₂ F₂ : R₂ →ₗ[A] F₂)) :
+    (hb : span A (Set.range b) = (IsScalarTower.toAlgHom A R₂ F₂).toLinearMap.range) :
     span R₁ (Set.range (h₁.basisOfBasisRight h₂ b)) =
       Submodule.restrictScalars R₁ (1 : Submodule B L) := by
   classical

@@ -286,7 +286,7 @@ theorem kronecker_apply [Mul α] (A : Matrix l m α) (B : Matrix n p α) (i₁ i
 /-- `Matrix.kronecker` as a bilinear map. -/
 def kroneckerBilinear [CommSemiring R] [Semiring α] [Algebra R α] :
     Matrix l m α →ₗ[R] Matrix n p α →ₗ[R] Matrix (l × n) (m × p) α :=
-  kroneckerMapBilinear (Algebra.lmul R α)
+  kroneckerMapBilinear (.ofClass <| Algebra.lmul R α)
 
 /-! What follows is a copy, in order, of every `Matrix.kroneckerMap` lemma above that has
 hypotheses which can be filled by properties of `*`. -/

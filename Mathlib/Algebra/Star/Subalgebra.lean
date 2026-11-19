@@ -840,7 +840,7 @@ variable (R : Type*) {S A B : Type*} [CommSemiring R] [CommSemiring S]
 /-- Restrict the scalar ring of a star algebra equivalence. -/
 @[simps]
 def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
-  { (f : A →ₗ[S] B).restrictScalars R, f with
+  { (LinearMap.ofClass f).restrictScalars R, f with
     toFun := f }
 
 theorem StarAlgEquiv.restrictScalars_injective :

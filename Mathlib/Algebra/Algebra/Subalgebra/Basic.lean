@@ -399,7 +399,7 @@ theorem toSubring_subtype {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S :
     S.toSubring.subtype = (S.val : S →+* A) := rfl
 
 @[simp]
-theorem toSubmodule_subtype : S.toSubmodule.subtype = (S.val : S →ₗ[R] A) := rfl
+theorem toSubmodule_subtype : S.toSubmodule.subtype = .ofClass S.val := rfl
 
 /-- Linear equivalence between `S : Submodule R A` and `S`. Though these types are equal,
 we define it as a `LinearEquiv` to avoid type equalities. -/

@@ -75,7 +75,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [K.HasOrthogonalProject
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjection]
     {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
-    (K.map (f.toLinearIsometry : E →ₗ[𝕜] E')).HasOrthogonalProjection :=
+    (K.map (.ofClass f.toLinearIsometry)).HasOrthogonalProjection :=
   HasOrthogonalProjection.map_linearIsometryEquiv K f
 
 instance HasOrthogonalProjection.comap {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
@@ -355,8 +355,8 @@ theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGr
 theorem _root_.LinearIsometry.map_starProjection' {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [p.HasOrthogonalProjection]
-    [(p.map (f : E →ₗ[𝕜] E')).HasOrthogonalProjection] (x : E) :
-    f (p.starProjection x) = (p.map (f : E →ₗ[𝕜] E')).starProjection (f x) :=
+    [(p.map (.ofClass f)).HasOrthogonalProjection] (x : E) :
+    f (p.starProjection x) = (p.map (.ofClass f)).starProjection (f x) :=
   have : (p.map f.toLinearMap).HasOrthogonalProjection := ‹_›
   f.map_starProjection p x
 

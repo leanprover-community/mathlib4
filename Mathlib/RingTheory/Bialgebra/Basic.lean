@@ -187,8 +187,8 @@ abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
       = (Algebra.TensorProduct.rid R R A).symm) :
     Bialgebra R A :=
   letI : Coalgebra R A := {
-    comul := comul
-    counit := counit
+    comul := .ofClass comul
+    counit := .ofClass counit
     coassoc := congr(($h_coassoc).toLinearMap)
     rTensor_counit_comp_comul := congr(($h_rTensor).toLinearMap)
     lTensor_counit_comp_comul := congr(($h_lTensor).toLinearMap)

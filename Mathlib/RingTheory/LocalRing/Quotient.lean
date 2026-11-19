@@ -36,7 +36,7 @@ local notation "pS" => Ideal.map (algebraMap R S) p
 theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s) = ⊤ ↔ span R s = ⊤ := by
   have H : (span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s)).restrictScalars R =
-      (span R s).map (IsScalarTower.toAlgHom R S (S ⧸ pS) : S →ₗ[R] S ⧸ pS) := by
+      (span R s).map (.ofClass <| IsScalarTower.toAlgHom R S (S ⧸ pS)) := by
     rw [map_span, ← restrictScalars_span R (R ⧸ p) Ideal.Quotient.mk_surjective,
       LinearMap.coe_ofClass, IsScalarTower.coe_toAlgHom', Ideal.Quotient.algebraMap_eq]
   constructor
@@ -47,7 +47,7 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     · exact (ringJacobson_eq_maximalIdeal R).ge
     · rw [Ideal.smul_top_eq_map]
       rintro x -
-      have : LinearMap.ker (IsScalarTower.toAlgHom R S (S ⧸ pS) : S →ₗ[R] S ⧸ pS) =
+      have : LinearMap.ker (.ofClass <| IsScalarTower.toAlgHom R S (S ⧸ pS)) =
           Submodule.restrictScalars R pS := by
         ext; simp [Ideal.Quotient.eq_zero_iff_mem]
       rw [← this, ← comap_map_eq, mem_comap, ← H, hs, restrictScalars_top]

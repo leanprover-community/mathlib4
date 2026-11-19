@@ -710,7 +710,8 @@ In categorical terms, this is an adjunction between:
 -/
 def liftEquiv : (A →ₐ[R] B) ≃ (S ⊗[R] A →ₐ[S] B) where
   toFun f :=
-    .ofLinearMap (.liftBaseChange S f) (by simp [Algebra.TensorProduct.one_def]) fun x y ↦ by
+    .ofLinearMap (.liftBaseChange S (.ofClass f)) (by simp [Algebra.TensorProduct.one_def])
+        fun x y ↦ by
       rw [← LinearMap.mul_apply_apply S, ← LinearMap.compr₂_apply,
         ← LinearMap.mul_apply_apply S, ← LinearMap.compl₁₂_apply]
       congr; ext; simp

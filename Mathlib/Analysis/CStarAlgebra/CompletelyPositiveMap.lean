@@ -82,7 +82,7 @@ variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   map. -/
 @[coe]
 def toCompletelyPositiveLinearMap [CompletelyPositiveMapClass F A₁ A₂] (f : F) : A₁ →CP A₂ :=
-  { (f : A₁ →ₗ[ℂ] A₂) with
+  { LinearMap.ofClass f with
     map_cstarMatrix_nonneg' := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' f }
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
@@ -134,7 +134,7 @@ lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M :
     (hM : 0 ≤ M) : 0 ≤ M.map φ := by
   let k := Fintype.card n
   let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
-  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
+  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (.ofClass φ) := by
     simp only [mapₗ, LinearMap.coe_ofClass, LinearMap.coe_mk, AddHom.coe_mk]
     exact CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
