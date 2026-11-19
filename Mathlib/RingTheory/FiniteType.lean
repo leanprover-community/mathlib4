@@ -647,8 +647,8 @@ instance (priority := 100) CommRing.orzechProperty
    IsNoetherian.injective_of_surjective_of_injective
      ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
      ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
-     (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
-     fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1
+     (fun _ _ h ↦ injective_subtype _ (hi congr(($h).val)))
+     fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).val
   · induction hx using span_induction with
     | mem x hx =>
       change i x ∈ M'

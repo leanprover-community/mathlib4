@@ -37,13 +37,13 @@ section kernel
 abbrev ker : TopModuleCat R := .of R φ.hom.ker
 
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
-def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
+def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtypeVal⟩
 
 instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) Subtype.val_injective
 
 @[simp] lemma kerι_comp : kerι φ ≫ φ = 0 := by ext ⟨_, hm⟩; exact hm
 
-@[simp] lemma kerι_apply (x) : kerι φ x = x.1 := rfl
+@[simp] lemma kerι_apply (x) : kerι φ x = x.val := rfl
 
 /-- `TopModuleCat.ker` is indeed the kernel in `TopModuleCat R`. -/
 def isLimitKer : IsLimit (KernelFork.ofι (kerι φ) (kerι_comp φ)) :=

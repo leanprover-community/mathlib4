@@ -118,7 +118,7 @@ variable (S : Profinite.{u})
 open scoped Classical in
 /-- The embedding `S → (I → Bool)` where `I` is the set of clopens of `S`. -/
 noncomputable
-def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
+def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.val)
 
 /-- The map `Nobeling.ι` is a closed embedding. -/
 theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
@@ -130,11 +130,11 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     rw [← IsLocallyConstant.iff_continuous, IsLocallyConstant.iff_isOpen_fiber]
     rintro ⟨⟩
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
-      convert C.2
+      convert C.property
       ext x
       simp
     · refine IsClopen.isOpen ?_
-      convert C.2
+      convert C.property
       ext x
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h

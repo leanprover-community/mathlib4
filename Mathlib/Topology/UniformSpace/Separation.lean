@@ -125,29 +125,29 @@ theorem UniformSpace.completelyNormalSpace_of_hasAntitoneBasis {ι : Type*} [Lin
     {B : ι → SetRel α α} (hB : (uniformity α).HasAntitoneBasis B) : CompletelyNormalSpace α where
   completely_normal s t hSt hsT := by
     let S (b : Bool) : Set α := b.casesOn (false := s) (true := t)
-    have hx (b : Bool) (x : S b) : ∃ i, Disjoint (((B i).inv.comp (B i)).ball x.1) (S (!b)) := by
+    have hx (b : Bool) (x : S b) : ∃ i, Disjoint (((B i).inv.comp (B i)).ball x.val) (S (!b)) := by
       have hST : Disjoint (S b) (closure (S !b)) := b.casesOn (false := hsT) (true := hSt.symm)
       rw [← disjoint_nhdsSet_principal, disjoint_principal_right] at hST
-      obtain ⟨U, hUu, hU⟩ := UniformSpace.mem_nhds_iff.1 (nhds_le_nhdsSet x.2 hST)
+      obtain ⟨U, hUu, hU⟩ := UniformSpace.mem_nhds_iff.1 (nhds_le_nhdsSet x.property hST)
       obtain ⟨(V : SetRel α α), hV, hVs, hVU⟩ := comp_symm_mem_uniformity_sets hUu
       obtain ⟨i, hi⟩ := hB.mem_iff.1 hV
       refine ⟨i, subset_compl_iff_disjoint_right.1 (subset_trans (SetRel.ball_mono ?_ _) hU)⟩
       grw [hi, hi, V.inv_eq_self, hVU]
     choose U hU using hx
-    have hUS (b : Bool) : ⋃ x, (B (U b x)).ball x.1 ∈ nhdsSet (S b) := by
+    have hUS (b : Bool) : ⋃ x, (B (U b x)).ball x.val ∈ nhdsSet (S b) := by
       rw [mem_nhdsSet_iff_forall]
       intro x hx
       apply mem_of_superset (SetRel.ball_mem_nhds x (hB.mem (U b ⟨x, hx⟩)))
-      exact subset_iUnion (fun x => (B (U b x)).ball x.1) ⟨x, hx⟩
+      exact subset_iUnion (fun x => (B (U b x)).ball x.val) ⟨x, hx⟩
     rw [Filter.disjoint_iff]
     refine ⟨_, hUS false, _, hUS true, ?_⟩
     have hdj (b : Bool) (x : S b) (y : S (!b)) (hxy : U b x ≤ U (!b) y) :
-        Disjoint ((B (U b x)).ball x.1) ((B (U (!b) y)).ball y.1) := by
+        Disjoint ((B (U b x)).ball x.val) ((B (U (!b) y)).ball y.val) := by
       rw [Set.disjoint_iff]
       intro z hz
-      have h₁ : (z, x.1) ∈ B (U b x) := hz.1
-      have h₂ : (z, y.1) ∈ B (U b x) := hB.antitone hxy hz.2
-      exact (hU b x).notMem_of_mem_left (SetRel.prodMk_mem_comp h₂ h₁) y.2
+      have h₁ : (z, x.val) ∈ B (U b x) := hz.1
+      have h₂ : (z, y.val) ∈ B (U b x) := hB.antitone hxy hz.2
+      exact (hU b x).notMem_of_mem_left (SetRel.prodMk_mem_comp h₂ h₁) y.property
     simp_rw [disjoint_iUnion_left, disjoint_iUnion_right]
     intro x y
     exact (le_total (U false x) (U true y)).elim

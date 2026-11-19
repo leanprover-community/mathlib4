@@ -369,8 +369,8 @@ omit [IsLocalRing R] in
 /-- useful lemma for applications of `SpecToEquivOfLocalRing` -/
 lemma SpecToEquivOfLocalRing_eq_iff
     {f₁ f₂ : Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f.hom }} :
-    f₁ = f₂ ↔ ∃ h₁ : f₁.1 = f₂.1, f₁.2.1 =
-      (X.presheaf.stalkCongr (by rw [h₁]; rfl)).hom ≫ f₂.2.1 := by
+    f₁ = f₂ ↔ ∃ h₁ : f₁.1 = f₂.1, f₁.2.val =
+      (X.presheaf.stalkCongr (by rw [h₁]; rfl)).hom ≫ f₂.2.val := by
   constructor
   · rintro rfl; simp
   · obtain ⟨x₁, ⟨f₁, h₁⟩⟩ := f₁
@@ -390,7 +390,7 @@ noncomputable
 def SpecToEquivOfLocalRing :
     (Spec R ⟶ X) ≃ Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f.hom } where
   toFun f := ⟨f (closedPoint R), Scheme.stalkClosedPointTo f, inferInstance⟩
-  invFun xf := Spec.map xf.2.1 ≫ X.fromSpecStalk xf.1
+  invFun xf := Spec.map xf.2.val ≫ X.fromSpecStalk xf.1
   left_inv := Scheme.Spec_stalkClosedPointTo_fromSpecStalk
   right_inv xf := by
     obtain ⟨x, ⟨f, hf⟩⟩ := xf

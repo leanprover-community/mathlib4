@@ -593,7 +593,7 @@ open RingHom
 
 /-- The ring homomorphism associated to an inclusion of subfields. -/
 def inclusion {S T : Subfield K} (h : S ≤ T) : S →+* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.property
 
 @[simp]
 theorem fieldRange_subtype (s : Subfield K) : s.subtype.fieldRange = s :=

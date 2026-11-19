@@ -501,8 +501,8 @@ lemma pairwise_coprime_pow_primeFactors_factorization :
   intro p1 p2 hp
   refine Nat.Coprime.pow (n.factorization p1) (n.factorization p2) ?_
   refine (Nat.coprime_primes ?_ ?_).mpr <| Subtype.coe_ne_coe.mpr hp
-  · exact Nat.prime_of_mem_primeFactors p1.2
-  · exact Nat.prime_of_mem_primeFactors p2.2
+  · exact Nat.prime_of_mem_primeFactors p1.property
+  · exact Nat.prime_of_mem_primeFactors p2.property
 
 theorem dvd_prod_primeFactors_pow_self {n : ℕ} (hn : n ≠ 0) :
     n ∣ (∏ p ∈ n.primeFactors, p) ^ n := by

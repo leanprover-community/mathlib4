@@ -34,14 +34,15 @@ theorem two_pow_mk_le_two_pow_mk_dense [NormalSpace X] {s d : Set X} (hs : IsClo
     [DiscreteTopology s] (hd : Dense d) : (2 : Cardinal) ^ #s ≤ 2 ^ #d := by
   have h_closed (t) (ht : t ∈ 𝒫 s) : IsClosed t := by
     rw [← inter_eq_self_of_subset_right ht, ← Subtype.image_preimage_val]
-    exact hs.isClosedMap_subtype_val _ (isClosed_discrete _)
+    exact hs.isClosedMap_subtypeVal _ (isClosed_discrete _)
   choose U V hU hV hUs hVs hUV using fun t : 𝒫 s ↦
-    normal_separation (h_closed t t.2) (h_closed _ sdiff_subset) disjoint_sdiff_right
-  have hUd {t₁ t₂} (h : U t₁ ∩ d = U t₂ ∩ d) : t₁.1 ⊆ t₂.1 := by
+    normal_separation (h_closed t t.property) (h_closed _ sdiff_subset) disjoint_sdiff_right
+  have hUd {t₁ t₂} (h : U t₁ ∩ d = U t₂ ∩ d) : t₁.val ⊆ t₂.val := by
     by_contra ht
     rw [← sdiff_nonempty] at ht
     have hUVd := hd.inter_open_nonempty _ ((hU t₁).inter (hV t₂)) <| ht.mono <|
-      subset_inter (sdiff_subset.trans (hUs t₁)) ((sdiff_subset_sdiff_left t₁.2).trans (hVs t₂))
+      subset_inter (sdiff_subset.trans (hUs t₁))
+        ((sdiff_subset_sdiff_left t₁.property).trans (hVs t₂))
     rw [inter_right_comm, h] at hUVd
     exact hUVd.not_disjoint <| disjoint_of_subset_left inter_subset_left (hUV t₂)
   have h_inj : Injective (U · ∩ d) := fun _ _ h ↦ SetCoe.ext <| (hUd h).antisymm (hUd h.symm)
