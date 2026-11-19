@@ -60,7 +60,6 @@ We follow the proof of [Komiya (1988)][Komiya-1988].
 
 - [Komiya, Hidetoshi (1988).
   “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).][Komiya-1988]
-
 -/
 
 open Set Filter
@@ -133,7 +132,7 @@ theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
     (b : β) (y y' : Y) (z : segment ℝ y.val y'.val) :
     sublevelLeft X f b z ⊆ sublevelLeft X f b y ∪ sublevelLeft X f b y' := fun x hx ↦ by
     simp only [Set.mem_union, mem_sublevelLeft_iff, ← inf_le_iff]
-    specialize hfx' x x.2 (f x y ⊓ f x y')
+    specialize hfx' x x.property (f x y ⊓ f x y')
     rw [convex_iff_segment_subset] at hfx'
     specialize hfx' ⟨y.prop, inf_le_left⟩ ⟨y'.prop, inf_le_right⟩ z.prop
     exact le_trans hfx'.2 hx
@@ -256,7 +255,8 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
   have mem_J2_iff (z : segment ℝ (y1 : F) y2) :
       z ∈ J2 ↔ sublevelLeft X f t z ⊆ sublevelLeft X f t' y2 := by
     simp [J2, setOfPred_sublevelLeft_subset, φ, Homeomorph.setCongr]
-  have h_mem_Y (z : segment ℝ (y1 : F) y2) : (z : F) ∈ Y := cY.segment_subset y1.2 y2.2 z.prop
+  have h_mem_Y (z : segment ℝ (y1 : F) y2) : (z : F) ∈ Y :=
+    cY.segment_subset y1.property y2.property z.prop
   have hJ1J2 : J1 ∩ J2 = ∅ := by
     rw [Set.eq_empty_iff_forall_notMem]
     simp only [mem_inter_iff, mem_J1_iff, mem_J2_iff]

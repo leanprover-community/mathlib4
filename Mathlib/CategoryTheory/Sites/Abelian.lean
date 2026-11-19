@@ -16,7 +16,6 @@ Let `C, D` be categories and `J` be a Grothendieck topology on `C`, when `D` is 
 sheafification is possible in `C`, `Sheaf J D` is abelian as well (`sheafIsAbelian`).
 
 Hence, `presheafToSheaf` is an additive functor (`presheafToSheaf_additive`).
-
 -/
 
 public section

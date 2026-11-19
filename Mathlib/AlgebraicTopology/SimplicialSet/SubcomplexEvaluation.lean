@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Limits.Set
 We define an evaluation functor `SSet.Subcomplex.evaluation : X.Subcomplex ⥤ Set (X.obj j)`
 when `X : SSet` and `j : SimplexCategoryᵒᵖ`. We use it to show that the functor
 `Subcomplex.toSSetFunctor : X.Subcomplex ⥤ SSet` preserves filtered colimits.
-
 -/
 
 @[expose] public section

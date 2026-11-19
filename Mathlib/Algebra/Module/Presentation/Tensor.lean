@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Basic
 # Presentation of the tensor product of two modules
 
 Given presentations of two `A`-modules `M₁` and `M₂`, we obtain a presentation of `M₁ ⊗[A] M₂`.
-
 -/
 
 @[expose] public section

@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
-
 # Projective Spaces
 
 This file contains the definition of the projectivization of a vector space over a field,
@@ -31,7 +30,6 @@ We have three ways to construct terms of `ℙ K V`:
 - `Projectivization.equivSubmodule` is the equivalence between `ℙ K V`
   and `{ H : Submodule K V // finrank H = 1 }`.
 - For `v : ℙ K V`, `v.rep : V` is a representative of `v`.
-
 -/
 
 @[expose] public section
@@ -65,7 +63,7 @@ def mk' (v : { v : V // v ≠ 0 }) : ℙ K V :=
   Quotient.mk'' v
 
 @[simp]
-theorem mk'_eq_mk (v : { v : V // v ≠ 0 }) : mk' K v = mk K ↑v v.2 := rfl
+theorem mk'_eq_mk (v : { v : V // v ≠ 0 }) : mk' K v = mk K ↑v v.property := rfl
 
 instance [Nontrivial V] : Nonempty (ℙ K V) :=
   let ⟨v, hv⟩ := exists_ne (0 : V)
@@ -92,7 +90,7 @@ protected noncomputable def rep (v : ℙ K V) : V :=
   v.out
 
 theorem rep_ne_zero (v : ℙ K V) : v.rep ≠ 0 :=
-  v.out.2
+  v.out.property
 
 @[deprecated (since := "2026-10-13")] alias rep_nonzero := rep_ne_zero
 
@@ -183,7 +181,7 @@ noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K 
     rcases finrank_eq_one_iff'.1 h with ⟨v : H, hv₀, hv : ∀ w : H, _⟩
     use mk K (v : V) (Subtype.coe_injective.ne hv₀)
     rw [submodule_mk, SetLike.ext'_iff, Submodule.span_singleton_eq_range]
-    refine (Set.range_subset_iff.2 fun _ ↦ H.smul_mem _ v.2).antisymm fun x hx ↦ ?_
+    refine (Set.range_subset_iff.2 fun _ ↦ H.smul_mem _ v.property).antisymm fun x hx ↦ ?_
     rcases hv ⟨x, hx⟩ with ⟨c, hc⟩
     exact ⟨c, congr($(hc).val)⟩
 
@@ -207,7 +205,7 @@ variable {L W : Type*} [DivisionRing L] [AddCommGroup W] [Module L W]
 
 /-- An injective semilinear map of vector spaces induces a map on projective spaces. -/
 def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : ℙ K V → ℙ L W :=
-  Quotient.map' (fun v => ⟨f v, fun c => v.2 (hf (by simp [c]))⟩)
+  Quotient.map' (fun v => ⟨f v, fun c => v.property (hf (by simp [c]))⟩)
     (by
       rintro ⟨u, hu⟩ ⟨v, hv⟩ ⟨a, ha⟩
       use Units.map σ.toMonoidHom a

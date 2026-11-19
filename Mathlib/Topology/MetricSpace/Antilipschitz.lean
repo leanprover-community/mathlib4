@@ -38,7 +38,7 @@ def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ�
 
 protected lemma AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β]
     {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y < ⊤ :=
-  (h x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top (edist_lt_top _ _)
+  (h x y).trans_lt <| by finiteness
 
 theorem AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y ≠ ⊤ :=
@@ -182,8 +182,10 @@ theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSp
     IsClosedEmbedding f :=
   { (hf.isUniformEmbedding hfc).isEmbedding with isClosed_range := hf.isClosed_range hfc }
 
-theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
+theorem subtypeVal (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.domRestrict s
+
+@[deprecated (since := "2026-11-10")] alias subtype_coe := subtypeVal
 
 @[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
@@ -198,7 +200,7 @@ protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β]
 protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}
     (hf : AntilipschitzWith K f) : 0 < K := by
   by_contra! h₀
-  obtain rfl : K = 0 := by rwa [le_zero_iff] at h₀
+  obtain rfl := h₀.eq_zero
   exact not_subsingleton α hf.subsingleton
 
 end AntilipschitzWith

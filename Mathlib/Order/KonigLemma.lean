@@ -49,7 +49,6 @@ We leave the explicitly graph-theoretic version of the statement as TODO.
 ## TODO
 
 Formulate the lemma as a statement about graphs.
-
 -/
 
 public section
@@ -65,9 +64,9 @@ then there is a sequence starting with `b` in which each element is covered by t
 theorem exists_seq_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
     (hb : (Ici b).Infinite) : ∃ f : ℕ → α, f 0 = b ∧ ∀ i, f i ⋖ f (i + 1) :=
   let h := fun a : {a : α // (Ici a).Infinite} ↦
-    exists_covby_infinite_Ici_of_infinite_Ici a.2 (hfin a)
+    exists_covby_infinite_Ici_of_infinite_Ici a.property (hfin a)
   let ks : ℕ → {a : α // (Ici a).Infinite} := Nat.rec ⟨b, hb⟩ fun _ a ↦ ⟨_, (h a).choose_spec.2⟩
-  ⟨fun i ↦ (ks i).1, by simp [ks], fun i ↦ by simpa using (h (ks i)).choose_spec.1⟩
+  ⟨fun i ↦ (ks i).val, by simp [ks], fun i ↦ by simpa using (h (ks i)).choose_spec.1⟩
 
 /-- The sequence given by Kőnig's lemma as an order embedding -/
 theorem exists_orderEmbedding_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)

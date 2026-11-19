@@ -25,7 +25,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 ## References
 
 https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_by_functor_categories_and_localizations
-
 -/
 
 @[expose] public section

@@ -16,7 +16,6 @@ import Mathlib.CategoryTheory.Generator.Type
 In this file, we show that if `κ : Cardinal.{u}` is a regular cardinal,
 then `X : Type u` is `κ`-presentable in the category of types iff
 `HasCardinalLT X κ` holds, i.e. the cardinal number of `X` is less than `κ`.
-
 -/
 
 @[expose] public section
@@ -71,7 +70,7 @@ instance [Fact κ.IsRegular] :
     (fun ι A hι ↦ ⟨⟨⋃ (i : ι), (A i).val,
       hasCardinalLT_iUnion _
         (by rwa [hasCardinalLT_iff_cardinal_mk_lt]) (fun i ↦ (A i).prop)⟩,
-      le_iSup (fun i ↦ (A i).1)⟩)
+      le_iSup (fun i ↦ (A i).val)⟩)
 
 instance [Fact κ.IsRegular] :
     IsFiltered (HasCardinalLT.Set X κ) :=

@@ -20,7 +20,6 @@ An important result about `withDensity` is the Radon-Nikodym theorem. It states 
 `ν` if and only if there exists a measurable function `f : α → ℝ≥0∞` such that
 `μ = ν.withDensity f`.
 See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
-
 -/
 
 @[expose] public section

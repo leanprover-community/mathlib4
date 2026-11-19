@@ -283,7 +283,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (x y) (r : R x y) : x = y := by
   have := M.bisim₀ P (Relation.EqvGen R) ?_ ?_
   · solve_by_elim [Relation.EqvGen.rel]
-  · apply Relation.EqvGen.is_equivalence
+  · apply Relation.EqvGen.equivalence
   · clear r x y
     introv Hr
     have : ∀ x y, R x y → Relation.EqvGen R x y := @Relation.EqvGen.rel _ R
