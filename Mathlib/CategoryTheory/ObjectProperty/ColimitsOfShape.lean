@@ -41,7 +41,6 @@ to `limitsOfShape` in the opposite category `Cᵒᵖ` and vice versa.
   iterating over `ℕ`), and more generally the closure under colimits
   indexed by a category whose type of arrows has a cardinality
   that is bounded by a certain regular cardinal (@joelriou)
-
 -/
 
 @[expose] public section

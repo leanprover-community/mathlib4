@@ -43,7 +43,6 @@ in this file.
 * [Hazewinkel, *Witt Vectors*][Haze09]
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
-
 -/
 
 @[expose] public section

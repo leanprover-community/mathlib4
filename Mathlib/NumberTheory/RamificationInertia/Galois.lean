@@ -40,7 +40,6 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 ## References
 
 * [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
-
 -/
 
 @[expose] public section

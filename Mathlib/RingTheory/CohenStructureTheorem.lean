@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.Algebra.CharP.MixedCharZero
 public import Mathlib.Algebra.GroupWithZero.Action.Regular
 public import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.RingTheory.AdicCompletion.LocalRing
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.AdicCompletion.Topology
@@ -75,7 +76,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   let := ZMod.algebra k p
   let := ((algebraMap (ZMod p) k).comp PadicInt.toZMod).toAlgebra
   let : IsLocalHom (algebraMap ℤ_[p] k) := by
-    apply ((local_hom_TFAE _).out 1 4).mpr
+    apply ((local_hom_tfae _).out 1 4).mpr
     simp [PadicInt.maximalIdeal_eq_span_p]
   rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, flat, maxeq, ⟨iso⟩⟩
   simp only [PadicInt.maximalIdeal_eq_span_p, Ideal.map_span, Set.image_singleton,
@@ -407,7 +408,7 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
   have : RingHom.ker ((residue R).comp f) = maximalIdeal S := by
     simp [eqe, ← RingHom.comap_ker, ← RingHom.ker_eq_comap_bot, IsLocalRing.ker_residue]
   rw [← RingHom.comap_ker, IsLocalRing.ker_residue] at this
-  have : IsLocalHom f := ((IsLocalRing.local_hom_TFAE f).out 1 5).mpr this
+  have : IsLocalHom f := ((IsLocalRing.local_hom_tfae f).out 1 5).mpr this
   use f, ‹_›
   rw [(RingHom.cancel_right residue_surjective).mp ((ResidueField.map_comp_residue f).trans eqe)]
   exact e.bijective
@@ -426,7 +427,7 @@ lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing
   let : WithIdeal R := { i := maximalIdeal R }
   let : WithIdeal S := { i := maximalIdeal S }
   have f_cont : Continuous f := (WithIdeal.uniformContinuous_of_map_le
-    (((IsLocalRing.local_hom_TFAE f).out 1 3).mp ‹_›)).continuous
+    (((IsLocalRing.local_hom_tfae f).out 1 3).mp ‹_›)).continuous
   have : CompleteSpace R := (IsAdic.isPrecomplete_iff (by rfl)).mp inferInstance
   have : T2Space R := (IsAdic.isHausdorff_iff (by rfl)).mp inferInstance
   rcases fg with ⟨s, hs⟩

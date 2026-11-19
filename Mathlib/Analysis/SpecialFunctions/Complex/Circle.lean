@@ -279,9 +279,9 @@ lemma compl_path_image_Ioc (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '
     (disjoint_path_image_Ioc h.symm).subset_compl_right
 
 lemma compl_range_path (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
-  rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,
+  rw [range_path, ← insert_left_Ioc (by simp), image_insert_eq,
     ← path_image_Ioc_of_ne h, ← union_singleton, compl_union, compl_path_image_Ioc h,
-    ← Ioo_insert_right (by simp), image_insert_eq, (y.path x).target, exp_arg,
+    ← insert_right_Ioo (by simp), image_insert_eq, (y.path x).target, exp_arg,
     insert_inter_of_notMem (by simp), inter_eq_left]
   rintro z ⟨t, ht, rfl⟩
   exact (path_injective_of_ne h.symm).ne ht.2.ne |>.trans_eq (y.path x).target
@@ -296,8 +296,8 @@ lemma range_path_ssubset_univ (x y : Circle) : range (path x y) ⊂ univ := by
   linarith
 
 lemma range_path_inter_range_path (h : x ≠ y) : range (path x y) ∩ range (path y x) = {x, y} := by
-  rw [← image_univ, ← image_univ, unitInterval.univ_eq_Icc, ← Ioc_insert_left (by simp),
-    ← Ioo_insert_right (by simp)]
+  rw [← image_univ, ← image_univ, unitInterval.univ_eq_Icc, ← insert_left_Ioc (by simp),
+    ← insert_right_Ioo (by simp)]
   have h : Disjoint ((x.path y) '' Ioo 0 1) ((y.path x) '' Ioo 0 1) := by
     refine (disjoint_path_image_Ioc h).mono ?_ ?_ <;> exact image_mono Ioo_subset_Ioc_self
   grind [image_insert_eq]

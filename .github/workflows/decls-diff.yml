@@ -175,12 +175,12 @@ jobs:
         id: diff
         uses: ./ci-tools/.github/actions/decls-diff
         with:
-          reference-decls-file:   ${{ github.workspace }}/ref-artifact/decls.txt
-          reference-imports-file: ${{ github.workspace }}/ref-artifact/imports.json
-          new-decls-file:         ${{ github.workspace }}/new-artifact/decls.txt
-          new-imports-file:       ${{ github.workspace }}/new-artifact/imports.json
-          new-sha:                ${{ steps.meta.outputs.new-sha }}
-          with-heading:           'true'
+          # The downloaded artifacts, as dump directories. The names come from
+          # `api.jsonl`, or from `decls.txt` in artifacts that predate it.
+          reference-dir: ${{ github.workspace }}/ref-artifact
+          new-dir:       ${{ github.workspace }}/new-artifact
+          new-sha:       ${{ steps.meta.outputs.new-sha }}
+          with-heading:  'true'
 
       # Keep both patcher steps gated on a non-empty PR number: given an empty
       # PR_NUMBER, the patcher looks one up from the commit SHA, unverified.

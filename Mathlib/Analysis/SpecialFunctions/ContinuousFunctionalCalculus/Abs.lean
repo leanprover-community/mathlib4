@@ -21,7 +21,6 @@ and provides basic API.
 ## Main declarations
 
 + `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
-
 -/
 
 @[expose] public section

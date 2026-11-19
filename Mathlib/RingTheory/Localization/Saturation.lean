@@ -14,7 +14,6 @@ In this file we show that `A` is a localization of `R` on the submonoid `S` if a
 on the saturation of `S`.
 
 Crucially, the saturation of `S` is precisely the elements that become a unit in `A`.
-
 -/
 
 @[expose] public section

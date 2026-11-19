@@ -6,7 +6,10 @@ Authors: Oliver Nash, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Star
 
@@ -37,8 +40,6 @@ This file is a place to collect topological results about matrices.
 -/
 
 public section
-
-assert_not_exists Matrix.GeneralLinearGroup Matrix.SpecialLinearGroup -- guard against import creep
 
 open Matrix
 
@@ -366,6 +367,20 @@ theorem Matrix.conjTranspose_tsum [StarAddMonoid R] [ContinuousStar R] [T2Space 
     continuous_id.matrix_conjTranspose continuous_id.matrix_conjTranspose
     conjTranspose_conjTranspose
 
+lemma Matrix.isClosed_setOfPred_isHermitian [StarAddMonoid R] [ContinuousStar R] [T2Space R] :
+    IsClosed {X : Matrix n n R | X.IsHermitian} :=
+  isClosed_setOfPred_isSelfAdjoint
+
+lemma Matrix.IsHermitian.of_hasSum [StarAddMonoid R] [ContinuousStar R] [T2Space R] [L.NeBot]
+    {f : X → Matrix n n R} {a : Matrix n n R} (h : HasSum f a L) (hf : ∀ i, (f i).IsHermitian) :
+    a.IsHermitian :=
+  h.isSelfAdjoint hf
+
+lemma Matrix.IsHermitian.tsum [StarAddMonoid R] [ContinuousStar R] [T2Space R]
+    {f : X → Matrix n n R} (hf : ∀ i, (f i).IsHermitian) :
+    (∑'[L] a, f a).IsHermitian :=
+  IsSelfAdjoint.tsum hf
+
 theorem HasSum.matrix_diagonal [DecidableEq n] {f : X → n → R} {a : n → R} (hf : HasSum f a L) :
     HasSum (fun x => diagonal (f x)) (diagonal a) L :=
   hf.map (diagonalAddMonoidHom n R) continuous_id.matrix_diagonal
@@ -392,6 +407,23 @@ theorem HasSum.matrix_diag {f : X → Matrix n n R} {a : Matrix n n R} (hf : Has
 theorem Summable.matrix_diag {f : X → Matrix n n R} (hf : Summable f L) :
     Summable (fun x => diag (f x)) L :=
   hf.hasSum.matrix_diag.summable
+
+section trace
+variable [Fintype n] [ContinuousAdd R]
+
+theorem HasSum.matrix_trace {f : X → Matrix n n R} {a : Matrix n n R} (hf : HasSum f a L) :
+    HasSum (fun x => trace (f x)) (trace a) L :=
+  hf.map (traceAddMonoidHom n R) continuous_id.matrix_trace
+
+theorem Summable.matrix_trace {f : X → Matrix n n R} (hf : Summable f L) :
+    Summable (fun x => trace (f x)) L :=
+  hf.hasSum.matrix_trace.summable
+
+theorem Matrix.trace_tsum [T2Space R] [L.NeBot] {f : X → Matrix n n R} (hf : Summable f L) :
+    trace (∑'[L] x, f x) = ∑'[L] x, trace (f x) :=
+  hf.hasSum.matrix_trace.tsum_eq.symm
+
+end trace
 
 section BlockMatrices
 
@@ -456,3 +488,26 @@ theorem Summable.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R
 end BlockMatrices
 
 end tsum
+
+section tsum_possemidef
+variable [Ring R] [TopologicalSpace R] [StarRing R] [IsTopologicalRing R] [ContinuousStar R]
+variable [PartialOrder R] [OrderClosedTopology R]
+
+lemma isClosed_setOfPred_posSemidef : IsClosed {A : Matrix n n R | PosSemidef A} := by
+  simp only [PosSemidef, Set.ofPred_and, Set.ofPred_forall]
+  refine isClosed_setOfPred_isHermitian.inter
+    (isClosed_iInter fun x => isClosed_le continuous_const ?_)
+  fun_prop [Finsupp.sum]
+
+lemma PosSemidef.of_hasSum [IsOrderedAddMonoid R]
+    {f : α → Matrix n n R} {a : Matrix n n R} {L : SummationFilter α} [L.NeBot] (h : HasSum f a L)
+    (hf : ∀ i, (f i).PosSemidef) :
+    a.PosSemidef :=
+  h.mem (s := PosSemidef.addSubmonoid n R) isClosed_setOfPred_posSemidef hf
+
+lemma PosSemidef.tsum [IsOrderedAddMonoid R]
+    {f : α → Matrix n n R} {L : SummationFilter α} (hf : ∀ i, (f i).PosSemidef) :
+    (∑'[L] a, f a).PosSemidef :=
+  tsum_mem (s := PosSemidef.addSubmonoid n R) isClosed_setOfPred_posSemidef hf L
+
+end tsum_possemidef

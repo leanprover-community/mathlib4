@@ -27,7 +27,6 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * Cartesian product is the product
 * arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
-
 -/
 
 @[expose] public section
@@ -319,7 +318,7 @@ def piFan : Fan R :=
 The categorical product of rings is the Cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
-  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.1 ⟨i⟩).hom
+  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.app ⟨i⟩).hom
   fac s i := by rfl
   uniq _ _ h := hom_ext <| DFunLike.ext _ _ fun x ↦ funext fun i ↦
     congr($(h ⟨i⟩).hom x)

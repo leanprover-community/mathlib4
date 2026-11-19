@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
-
 # Base change of exterior algebra
 
 In this file, we proved that Exterior algebra behaves well with respect to base change.
@@ -18,7 +17,6 @@ In this file, we proved that Exterior algebra behaves well with respect to base 
 
 * `ExteriorAlgebra.baseChangeEquiv`: for `R`-algebra `S`, the base change isomorphism
   `S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M)`
-
 -/
 
 noncomputable section
