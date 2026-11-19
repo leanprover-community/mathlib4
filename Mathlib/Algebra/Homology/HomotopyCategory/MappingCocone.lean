@@ -121,7 +121,7 @@ lemma ext_to_iff (i j : ℤ) (hij : i + -1 = j) {A : C} (f g : A ⟶ (mappingCoc
 open HomComplex in
 lemma ext_from (i j : ℤ) (hij : i + 1 = j) {A : C} {f g : (mappingCocone φ).X j ⟶ A}
     (h₁ : (inl φ).v j j (add_zero j) ≫ f = (inl φ).v j j (add_zero j) ≫ g)
-    (h₂ : (inr φ).1.v i j hij ≫ f = (inr φ).val.v i j hij ≫ g) :
+    (h₂ : (inr φ).val.v i j hij ≫ f = (inr φ).val.v i j hij ≫ g) :
     f = g := by
   dsimp [mappingCocone]
   refine mappingCone.ext_from _ j (j + -1) (by lia) ?_ ?_
@@ -132,7 +132,7 @@ lemma ext_from (i j : ℤ) (hij : i + 1 = j) {A : C} {f g : (mappingCocone φ).X
 
 lemma ext_from_iff (i j : ℤ) (hij : i + 1 = j) {A : C} (f g : (mappingCocone φ).X j ⟶ A) :
     f = g ↔ (inl φ).v j j (add_zero j) ≫ f = (inl φ).v j j (add_zero j) ≫ g ∧
-      (inr φ).1.v i j hij ≫ f = (inr φ).val.v i j hij ≫ g := by
+      (inr φ).val.v i j hij ≫ f = (inr φ).val.v i j hij ≫ g := by
   constructor
   · rintro rfl
     tauto
