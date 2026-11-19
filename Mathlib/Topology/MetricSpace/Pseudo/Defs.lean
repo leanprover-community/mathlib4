@@ -400,13 +400,13 @@ theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x �
   simpa [mem_ball] using exists_between' h
 
 theorem ball_eq_ball (ε : ℝ) (x : α) :
-    UniformSpace.ball x { p | dist p.2 p.1 < ε } = Metric.ball x ε :=
-  rfl
+    SetRel.ball {p | dist p.2 p.1 < ε} x = Metric.ball x ε := by
+  ext
+  simp [dist_comm, SetRel.ball]
 
 theorem ball_eq_ball' (ε : ℝ) (x : α) :
-    UniformSpace.ball x { p | dist p.1 p.2 < ε } = Metric.ball x ε := by
-  ext
-  simp [dist_comm, UniformSpace.ball]
+    SetRel.ball {p | dist p.1 p.2 < ε} x = Metric.ball x ε :=
+  rfl
 
 @[simp]
 theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
@@ -1085,9 +1085,10 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace 
 abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a : X) :
     PseudoMetricSpace (boundedComponent a) :=
   PseudoEMetricSpace.toPseudoMetricSpace fun p q ↦ by
-    refine ((edist_triangle p.1 a q.1).trans_lt (ENNReal.add_lt_top.2 ⟨?_, q.2.lt_top⟩)).ne
+    refine ((edist_triangle p.val a q.val).trans_lt
+      (ENNReal.add_lt_top.2 ⟨?_, q.property.lt_top⟩)).ne
     rw [edist_comm]
-    exact p.2.lt_top
+    exact p.property.lt_top
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionally) equal to some given bornology structure.

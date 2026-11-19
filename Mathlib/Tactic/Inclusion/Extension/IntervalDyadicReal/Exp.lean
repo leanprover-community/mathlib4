@@ -25,8 +25,8 @@ This file is opt-in so that `dyadic_interval` doesn't import unnecessary theorie
 
 For larger exponents, we would eventually want to implement another optimisation that shifts the
 `exp` exponent by multiples of `log 2` (which only shifts the exponent of the dyadic result).
-This is deferred since it requires a certified computation of `log 2` to arbitrary precision, which
-is a separate from the main instance.
+This requires a certified computation of `log 2` to arbitrary precision, which is available as
+`Inclusion.IntervalDyadicReal.logTwo` (with bounds `Inclusion.IntervalDyadicReal.logTwo_spec`).
 -/
 
 public section
@@ -38,6 +38,7 @@ open scoped Nat
 namespace Inclusion
 
 namespace IntervalDyadicReal
+open Inclusion.IntervalDyadicReal
 
 /-- The numerator of the partial Taylor sum `∑ m ∈ range n, (a / b) ^ m / m!` as an unreduced
 fraction over the common denominator `b ^ n * n!`. -/
@@ -112,7 +113,7 @@ theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint 
   generalize hm : 16 * (2 * x.toRat.num.natAbs / x.toRat.den + 1) = m
   have hm0 : m ≠ 0 := by lia
   have hred : Real.exp x.toReal = Real.exp (x.toRat.num / (x.toRat.den * m : ℕ)) ^ m := by
-    rw [← Real.exp_nat_mul, Dyadic.toReal, Rat.cast_def]
+    rw [← Real.exp_natCast_mul, Dyadic.toReal, Rat.cast_def]
     push_cast
     field_simp
   have hab : x.toRat.num.natAbs ≤ x.toRat.den * m := by

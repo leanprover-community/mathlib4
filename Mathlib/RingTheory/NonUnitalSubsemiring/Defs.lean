@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled non-unital subsemirings
 
@@ -349,6 +352,6 @@ open NonUnitalRingHom NonUnitalSubsemiringClass
 /-- The non-unital ring homomorphism associated to an inclusion of
 non-unital subsemirings. -/
 def inclusion {S T : NonUnitalSubsemiring R} (h : S ≤ T) : S →ₙ+* T :=
-  codRestrict (subtype S) _ fun x => h x.2
+  codRestrict (subtype S) _ fun x => h x.property
 
 end NonUnitalSubsemiring

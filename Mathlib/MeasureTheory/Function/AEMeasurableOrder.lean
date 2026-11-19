@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability criterion for ennreal-valued functions
 
@@ -69,7 +72,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {β : Type
         apply measure_iUnion_le
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
         gcongr with p q
-        exact biInter_subset_of_mem q.2
+        exact biInter_subset_of_mem q.property
       _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), 0 := by grind
       _ = 0 := by simp only [tsum_zero]
   have ff' : ∀ᵐ x ∂μ, f x = f' x := by

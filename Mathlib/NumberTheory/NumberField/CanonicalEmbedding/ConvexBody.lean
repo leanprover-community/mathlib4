@@ -448,7 +448,7 @@ noncomputable def minkowskiBound : ℝ≥0∞ :=
 open scoped Classical in
 theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
     volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) =
-      .ofReal (FractionalIdeal.absNorm I.1) * volume (fundamentalDomain (latticeBasis K)) := by
+      .ofReal (FractionalIdeal.absNorm I.val) * volume (fundamentalDomain (latticeBasis K)) := by
   let e : (Module.Free.ChooseBasisIndex ℤ I) ≃ (Module.Free.ChooseBasisIndex ℤ (𝓞 K)) := by
     refine Fintype.equivOfCardEq ?_
     rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex,
@@ -462,9 +462,8 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   classical
-  -- FIXME: Make `finiteness` work here
-  exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top <|
-    ENNReal.pow_lt_top ENNReal.ofNat_lt_top
+  -- FIXME: Make `finiteness` work all the way
+  exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top (by finiteness)
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I :=
   -- TODO: The `NormedAddCommGroup (mixedSpace K)` instance should not need any decidability.

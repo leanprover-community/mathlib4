@@ -26,7 +26,6 @@ In this file we prove some results about a separable linearly ordered topologica
 ## TODO
 
 Define the class of GO-spaces and generalize the hereditary separability result.
-
 -/
 
 public section
@@ -71,16 +70,16 @@ section Separable
 
 private lemma countable_isolated_inter_Ioi_aux [SeparableSpace α] {s : Set α} {W : s → Set α}
     (hWo : ∀ x, IsOpen {x} → IsOpen (W x)) (hWc : ∀ x, IsOpen {x} → (W x).OrdConnected)
-    (hWx : ∀ x, IsOpen {x} → {x.1} = W x ∩ s) :
+    (hWx : ∀ x, IsOpen {x} → {x.val} = W x ∩ s) :
     {x : s | IsOpen {x} ∧ (W x ∩ Ioi x).Nonempty}.Countable := by
   refine PairwiseDisjoint.countable_of_isOpen ?_ ?_ fun _ hx ↦ hx.2
   · rintro x ⟨hx, -⟩ y ⟨hy, -⟩ hxy
     refine disjoint_left.2 fun z hzx hzy ↦ ?_
     rcases lt_or_gt_of_ne (Subtype.coe_injective.ne hxy) with h | h
     · exact h.ne' ((hWx x hx).ge
-        ⟨(hWc x hx).out ((hWx x hx).le rfl).1 hzx.1 ⟨h.le, hzy.2.le⟩, y.2⟩)
+        ⟨(hWc x hx).out ((hWx x hx).le rfl).1 hzx.1 ⟨h.le, hzy.2.le⟩, y.property⟩)
     · exact h.ne' ((hWx y hy).ge
-        ⟨(hWc y hy).out ((hWx y hy).le rfl).1 hzy.1 ⟨h.le, hzx.2.le⟩, x.2⟩)
+        ⟨(hWc y hy).out ((hWx y hy).le rfl).1 hzy.1 ⟨h.le, hzx.2.le⟩, x.property⟩)
   · exact fun x hx ↦ (hWo x hx.1).inter isOpen_Ioi
 
 /-- In a separable linearly ordered topological space, the points of a subset `s` that are
@@ -89,10 +88,10 @@ theorem countable_ofPred_isolated_subtype [SeparableSpace α] (s : Set α) :
     {x : s | IsOpen {x}}.Countable := by
   obtain ⟨D, hDc, hDd⟩ := exists_countable_dense α
   -- Each such point `x` has an open order connected neighbourhood `W x` meeting `s` only in `x`.
-  have key (x : s) (hx : IsOpen {x}) : ∃ W, IsOpen W ∧ W.OrdConnected ∧ {x.1} = W ∩ s := by
+  have key (x : s) (hx : IsOpen {x}) : ∃ W, IsOpen W ∧ W.OrdConnected ∧ {x.val} = W ∩ s := by
     obtain ⟨U, hU, hUx⟩ := Topology.IsInducing.subtypeVal.isOpen_iff.1 hx
     obtain ⟨W, hWo, hWc, hxW, hWU⟩ := exists_isOpen_ordConnected_mem_subset hU (hUx.ge rfl)
-    refine ⟨W, hWo, hWc, Subset.antisymm (fun _ h ↦ h ▸ ⟨hxW, x.2⟩) fun y hy ↦ ?_⟩
+    refine ⟨W, hWo, hWc, Subset.antisymm (fun _ h ↦ h ▸ ⟨hxW, x.property⟩) fun y hy ↦ ?_⟩
     exact congrArg Subtype.val <|
       hUx.le (show (⟨y, hy.2⟩ : s) ∈ Subtype.val ⁻¹' U from hWU hy.1)
   choose! W hWo hWc hWx using key
@@ -105,9 +104,9 @@ theorem countable_ofPred_isolated_subtype [SeparableSpace α] (s : Set α) :
   refine ((hcr.union hcl).union (hDc.preimage Subtype.val_injective)).mono fun x hx ↦ ?_
   rcases (W x ∩ Ioi x).eq_empty_or_nonempty with h₁ | h₁
   · rcases (W x ∩ Iio x).eq_empty_or_nonempty with h₂ | h₂
-    · have hsing : W x = {x.1} := calc
-        _ = W x ∩ Iio x ∪ W x ∩ {x.1} ∪ W x ∩ Ioi x := by grind
-        _ = {x.1} := by grind
+    · have hsing : W x = {x.val} := calc
+        _ = W x ∩ Iio x ∪ W x ∩ {x.val} ∪ W x ∩ Ioi x := by grind
+        _ = {x.val} := by grind
       exact .inr (hDd.mem_of_isOpen_singleton (hsing ▸ hWo x hx))
     · exact .inl (.inr ⟨hx, h₂⟩)
   · exact .inl (.inl ⟨hx, h₁⟩)
@@ -146,10 +145,10 @@ instance Set.separableSpace [SeparableSpace α] (s : Set α) : SeparableSpace s 
     rw [isOpen_singleton_iff_punctured_nhds] at hxiso
     have : NeBot (𝓝[≠] x) := ⟨hxiso⟩
     have hWinf : (Subtype.val ⁻¹' W).Infinite :=
-      infinite_of_mem_nhds x ((hWo.preimage continuous_subtype_val).mem_nhds hWx)
+      infinite_of_mem_nhds x ((hWo.preimage continuous_subtypeVal).mem_nhds hWx)
     by_contra! h
     exact hWinf (finite_of_forall_not_lt_lt fun a ha b hb c hc hab hbc ↦
-      (h b b.2 ⟨a, ha, hab⟩).subset ⟨hc, hbc⟩)
+      (h b b.property ⟨a, ha, hab⟩).subset ⟨hc, hbc⟩)
   obtain ⟨p, hpD, hpW⟩ := hd.exists_mem_open (hWo.inter isOpen_Iio) hlo
   obtain ⟨q, hqD, hqW⟩ := hd.exists_mem_open (hWo.inter isOpen_Ioi) hhi
   obtain ⟨hasq, hapq⟩ := ha p q ⟨b, hbs, hpW.2, hqW.2⟩

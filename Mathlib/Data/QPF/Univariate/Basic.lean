@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
-
 # Quotients of Polynomial Functors
 
 We assume the following:
@@ -36,7 +35,6 @@ The present theory focuses on the univariate case for qpfs
 
 * [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial
   Functors*][avigad-carneiro-hudon2019]
-
 -/
 
 @[expose] public section
@@ -123,7 +121,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : F α) :
   constructor
   · rintro ⟨u, rfl, rfl⟩
     cases h : repr u with | mk a f
-    refine ⟨a, fun i => (f i).1.1, fun i => (f i).1.2, ?_, ?_, fun i => (f i).2⟩
+    refine ⟨a, fun i => (f i).val.1, fun i => (f i).val.2, ?_, ?_, fun i => (f i).property⟩
     · rw [← abs_repr u, h, ← abs_map]
       rfl
     · rw [← abs_repr u, h, ← abs_map]

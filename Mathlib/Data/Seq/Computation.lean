@@ -9,6 +9,9 @@ public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Logic.Relator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coinductive formalization of unbounded computations.
 
@@ -49,10 +52,10 @@ instance : CoeTC α (Computation α) :=
 /-- `think c` is the computation that delays for one "tick" and then performs
   computation `c`. -/
 def think (c : Computation α) : Computation α :=
-  ⟨Stream'.cons none c.1, fun n a h => by
+  ⟨Stream'.cons none c.val, fun n a h => by
     rcases n with - | n
     · contradiction
-    · exact c.2 h⟩
+    · exact c.property h⟩
 
 /-- `thinkN c n` is the computation that delays for `n` ticks and then performs
   computation `c`. -/
@@ -64,13 +67,13 @@ def thinkN (c : Computation α) : ℕ → Computation α
 /-- `head c` is the first step of computation, either `some a` if `c = pure a`
   or `none` if `c = think c'`. -/
 def head (c : Computation α) : Option α :=
-  c.1.head
+  c.val.head
 
 -- one step of computation
 /-- `tail c` is the remainder of computation, either `c` if `c = pure a`
   or `c'` if `c = think c'`. -/
 def tail (c : Computation α) : Computation α :=
-  ⟨c.1.tail, fun _ _ h => c.2 h⟩
+  ⟨c.val.tail, fun _ _ h => c.property h⟩
 
 /-- `empty α` is the computation that never returns, an infinite sequence of
   `think`s. -/
@@ -88,7 +91,7 @@ def runFor : Computation α → ℕ → Option α :=
 /-- `destruct c` is the destructor for `Computation α` as a coinductive type.
   It returns `inl a` if `c = pure a` and `inr c'` if `c = think c'`. -/
 def destruct (c : Computation α) : α ⊕ (Computation α) :=
-  match c.1 0 with
+  match c.val 0 with
   | none => Sum.inr (tail c)
   | some a => Sum.inl a
 
@@ -102,17 +105,17 @@ unsafe def run : Computation α → α
 
 theorem destruct_eq_pure {s : Computation α} {a : α} : destruct s = Sum.inl a → s = pure a := by
   dsimp [destruct]
-  cases f0 : s.1 0 <;> intro h
+  cases f0 : s.val 0 <;> intro h
   · contradiction
   · apply Subtype.ext
     funext n
     induction n with
     | zero => injection h with h'; rwa [h'] at f0
-    | succ n IH => exact s.2 IH
+    | succ n IH => exact s.property IH
 
 theorem destruct_eq_think {s : Computation α} {s'} : destruct s = Sum.inr s' → s = think s' := by
   dsimp [destruct]
-  rcases f0 : s.1 0 with - | a' <;> intro h
+  rcases f0 : s.val 0 with - | a' <;> intro h
   · injection h with h'
     rw [← h']
     obtain ⟨f, al⟩ := s
@@ -251,7 +254,7 @@ def IsBisimulation :=
 -- If two computations are bisimilar, then they are equal
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.ext
-  apply Stream'.eq_of_bisim fun x y => ∃ s s' : Computation α, s.1 = x ∧ s'.1 = y ∧ R s s'
+  apply Stream'.eq_of_bisim fun x y => ∃ s s' : Computation α, s.val = x ∧ s'.val = y ∧ R s s'
   · dsimp [Stream'.IsBisimulation]
     intro t₁ t₂ e
     match t₁, t₂, e with
@@ -277,12 +280,13 @@ end Bisim
 -- asserts that the computation limits to the given value.
 /-- Assertion that a `Computation` limits to a given value -/
 protected def Mem (s : Computation α) (a : α) :=
-  some a ∈ s.1
+  some a ∈ s.val
 
 instance : Membership α (Computation α) :=
   ⟨Computation.Mem⟩
 
-theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
+theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) :
+    s.val m = some a → s.val n = some a := by
   obtain ⟨f, al⟩ := s
   induction h with
   | refl => exact id
@@ -302,12 +306,12 @@ class Terminates (s : Computation α) : Prop where
   term : ∃ a, a ∈ s
 
 theorem terminates_iff (s : Computation α) : Terminates s ↔ ∃ a, a ∈ s :=
-  ⟨fun h => h.1, Terminates.mk⟩
+  ⟨fun h => h.term, Terminates.mk⟩
 
 theorem terminates_of_mem {s : Computation α} {a : α} (h : a ∈ s) : Terminates s :=
   ⟨⟨a, h⟩⟩
 
-theorem terminates_def (s : Computation α) : Terminates s ↔ ∃ n, (s.1 n).isSome :=
+theorem terminates_def (s : Computation α) : Terminates s ↔ ∃ n, (s.val n).isSome :=
   ⟨fun ⟨⟨a, n, h⟩⟩ =>
     ⟨n, by
       dsimp [Stream'.get] at h

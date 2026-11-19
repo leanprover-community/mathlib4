@@ -255,7 +255,6 @@ lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
   exact Real.sigmoid_neg x
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma range_sigmoid : range unitInterval.sigmoid = Ioo 0 1 := by
   rw [sigmoid, Subtype.range_coind, Real.range_sigmoid]
@@ -284,7 +283,7 @@ noncomputable def OrderEmbedding.sigmoid : ℝ ↪o I :=
 
 lemma Topology.isEmbedding_sigmoid : IsEmbedding unitInterval.sigmoid :=
   OrderEmbedding.sigmoid.isEmbedding_of_ordConnected (ordConnected_of_Ioo <|
-    fun a _ b _ _ => unitInterval.range_sigmoid ▸ Ioo_subset_Ioo a.2.1 b.2.2)
+    fun a _ b _ _ => unitInterval.range_sigmoid ▸ Ioo_subset_Ioo a.property.1 b.property.2)
 
 lemma measurableEmbedding_sigmoid : MeasurableEmbedding unitInterval.sigmoid :=
   Topology.isEmbedding_sigmoid.measurableEmbedding <| unitInterval.range_sigmoid ▸ measurableSet_Ioo

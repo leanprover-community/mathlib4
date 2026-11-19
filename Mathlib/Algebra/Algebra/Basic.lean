@@ -127,7 +127,7 @@ variable {S : Type*} [Semiring S] [Algebra R S]
 
 theorem mem_algebraMapSubmonoid_of_mem {M : Submonoid R}
     (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
-  Set.mem_image_of_mem (algebraMap R S) x.2
+  Set.mem_image_of_mem (algebraMap R S) x.property
 
 @[simp]
 lemma algebraMapSubmonoid_self (M : Submonoid R) : Algebra.algebraMapSubmonoid R M = M :=

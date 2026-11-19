@@ -9,6 +9,9 @@ public import Mathlib.Init
 
 import Lean.PrettyPrinter.Delaborator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additions to the delaborator
 -/

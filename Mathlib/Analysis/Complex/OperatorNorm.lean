@@ -41,11 +41,15 @@ theorem reCLM_norm : ‖reCLM‖ = 1 :=
       _ ≤ ‖reCLM‖ := unit_le_opNorm _ _ (by simp)
 
 @[simp]
-theorem reCLM_enorm : ‖reCLM‖ₑ = 1 := by simp [← ofReal_norm]
+theorem reCLM_eNorm : ‖reCLM‖ₑ = 1 := by simp [← ofReal_norm]
+
+@[deprecated (since := "2026-11-06")] alias reCLM_enorm := reCLM_eNorm
 
 @[simp]
-theorem reCLM_nnnorm : ‖reCLM‖₊ = 1 :=
+theorem reCLM_nnNorm : ‖reCLM‖₊ = 1 :=
   Subtype.ext reCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias reCLM_nnnorm := reCLM_nnNorm
 
 @[simp]
 theorem imCLM_norm : ‖imCLM‖ = 1 :=
@@ -55,34 +59,46 @@ theorem imCLM_norm : ‖imCLM‖ = 1 :=
       _ ≤ ‖imCLM‖ := unit_le_opNorm _ _ (by simp)
 
 @[simp]
-theorem imCLM_enorm : ‖imCLM‖ₑ = 1 := by simp [← ofReal_norm]
+theorem imCLM_eNorm : ‖imCLM‖ₑ = 1 := by simp [← ofReal_norm]
+
+@[deprecated (since := "2026-11-06")] alias imCLM_enorm := imCLM_eNorm
 
 @[simp]
-theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
+theorem imCLM_nnNorm : ‖imCLM‖₊ = 1 :=
   Subtype.ext imCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias imCLM_nnnorm := imCLM_nnNorm
 
 @[simp]
 theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
   conjLIE.toLinearIsometry.norm_toContinuousLinearMap
 
 @[simp]
-theorem conjCLE_enorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ₑ = 1 := by simp [← ofReal_norm]
+theorem conjCLE_eNorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ₑ = 1 := by simp [← ofReal_norm]
+
+@[deprecated (since := "2026-11-06")] alias conjCLE_enorm := conjCLE_eNorm
 
 @[simp]
-theorem conjCLE_nnnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
+theorem conjCLE_nnNorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
   Subtype.ext conjCLE_norm
 
-@[deprecated (since := "2026-09-28")] alias conjCLE_nnorm := conjCLE_nnnorm
+@[deprecated (since := "2026-10-31")] alias conjCLE_nnnorm := conjCLE_nnNorm
+
+@[deprecated (since := "2026-09-28")] alias conjCLE_nnorm := conjCLE_nnNorm
 
 @[simp]
 theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
   ofRealLI.norm_toContinuousLinearMap
 
 @[simp]
-theorem ofRealCLM_enorm : ‖ofRealCLM‖ₑ = 1 := by simp [← ofReal_norm]
+theorem ofRealCLM_eNorm : ‖ofRealCLM‖ₑ = 1 := by simp [← ofReal_norm]
+
+@[deprecated (since := "2026-11-06")] alias ofRealCLM_enorm := ofRealCLM_eNorm
 
 @[simp]
-theorem ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
+theorem ofRealCLM_nnNorm : ‖ofRealCLM‖₊ = 1 :=
   Subtype.ext ofRealCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias ofRealCLM_nnnorm := ofRealCLM_nnNorm
 
 end Complex

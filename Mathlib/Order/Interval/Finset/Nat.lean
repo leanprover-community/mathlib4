@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Order.Interval.Multiset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite intervals of naturals
 
@@ -43,7 +46,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
 
 instance : Unique (Iic 0) where
   default := ⟨0, by simp⟩
-  uniq a := Subtype.ext (Nat.le_zero.1 (mem_Iic.1 a.2))
+  uniq a := Subtype.ext (Nat.le_zero.1 (mem_Iic.1 a.property))
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
@@ -87,7 +90,7 @@ theorem range_succ_eq_Iic (n : ℕ) : range (n + 1) = Iic n := by
 
 @[simp]
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 :=
-  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, Int.ofNat_sub] <;> omega
+  (card_Icc _ _).trans <| by lia
 
 @[simp]
 lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]
@@ -114,7 +117,7 @@ variable {a b c}
 lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
 
 lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by lia)⟩ :=
-  Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
+  Subtype.val_inj.1 (mem_Ioc_succ.1 a.property)
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
