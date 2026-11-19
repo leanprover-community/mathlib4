@@ -119,6 +119,7 @@ theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
       ∃ F : Perm (Option α), F ∈ derangements (Option α) ∧ F none = a ∧ removeNone F = f := by
   simp [RemoveNone.fiber, derangements]
 
+@[simp]
 theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
   rw [Set.eq_empty_iff_forall_notMem]
   intro f hyp
@@ -174,9 +175,8 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     derangements (Option α) ≃ Equiv.Perm.decomposeOption '' derangements (Option α) :=
       Equiv.image _ _
     _ ≃ Σ a : Option α, ↥(Equiv.RemoveNone.fiber a) := setProdEquivSigma _
-    _ ≃ Σ a : α, ↥(Equiv.RemoveNone.fiber (some a)) := sigmaOptionEquivOfSome _ <| by
-        rw [Equiv.RemoveNone.fiber_none]
-        infer_instance
+    _ ≃ Σ a : α, ↥(Equiv.RemoveNone.fiber (some a)) :=
+      sigmaOptionEquivOfSome _ <| by simp
     _ ≃ Σ a : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
       simp_rw [Equiv.RemoveNone.fiber_some]
       rfl
