@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Basic.Complex.Basic
 public import Mathlib.Basic.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+
 import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.Monoid.Submonoid
 
@@ -503,11 +504,11 @@ lemma map_imaginaryPart (f : F) (x : A) : f (ℑ x) = ℑ (f x) := by
 
 end StarHomClass
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := by
   ext x
-  simp [selfAdjoint.submodule, selfAdjoint.mem_iff, imaginaryPart, Subtype.ext_iff]
+  conv_rhs => rw [← Submodule.mem_toAddSubgroup]
+  simp [selfAdjoint.mem_iff, imaginaryPart, Subtype.ext_iff]
   grind
 
 @[simp]
@@ -656,6 +657,6 @@ instance {F E A : Type*} [AddCommGroup E] [PartialOrder E]
     StarHomClass F E A where
   map_star φ x := by
     rw [← realPart_add_I_smul_imaginaryPart x]
-    simp [(ℜ x).2.map' φ, IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
+    simp [(ℜ x).property.map' φ, IsSelfAdjoint.star_eq, (ℑ x).property.map' φ]
 
 end RealImaginaryPart

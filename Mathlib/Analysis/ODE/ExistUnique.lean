@@ -5,8 +5,9 @@ Authors: Winston Yin
 -/
 module
 
-import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
+
+import Mathlib.Analysis.ODE.Gronwall
 
 /-!
 # Existence and uniqueness of solutions to ODEs
@@ -59,7 +60,7 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt
       ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t := by
   obtain ⟨α, hα⟩ := FunSpace.exists_isFixedPt_next hf hx
   refine ⟨α.compProj, by rw [FunSpace.compProj_val, ← hα, FunSpace.next_apply₀], fun t ht ↦ ?_⟩
-  apply hasDerivWithinAt_picard_Icc t₀.2 hf.continuousOn_uncurry
+  apply hasDerivWithinAt_picard_Icc t₀.property hf.continuousOn_uncurry
     α.continuous_compProj.continuousOn (fun _ ht' ↦ α.compProj_mem_closedBall hf.mul_max_le)
     x ht |>.congr_of_mem _ ht
   intro t' ht'
@@ -92,7 +93,7 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
   · rw [hα']
     beta_reduce
     rw [dite_eq_left hx, FunSpace.compProj_apply]
-    apply hasDerivWithinAt_picard_Icc t₀.2 hf.continuousOn_uncurry
+    apply hasDerivWithinAt_picard_Icc t₀.property hf.continuousOn_uncurry
       (α x hx |>.continuous_compProj.continuousOn)
       (fun _ ht' ↦ α x hx |>.compProj_mem_closedBall hf.mul_max_le)
       x ht |>.congr_of_mem _ ht
@@ -236,12 +237,12 @@ theorem ODE_solution_unique_of_mem_Icc_left
     (hf.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hfs _ (hmt2 ht))
     (hg.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hgs _ (hmt2 ht)) (by simp [hb])
   · intro t ht
-    convert!
+    convert
       HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
         (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
   · intro t ht
-    convert!
+    convert
       HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
         (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp

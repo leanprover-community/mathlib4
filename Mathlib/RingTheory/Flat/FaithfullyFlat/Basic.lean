@@ -5,9 +5,10 @@ Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 module
 
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Flat.Stability
+
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
 
 /-!
 # Faithfully flat modules
@@ -43,7 +44,6 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
   `M` is `R`-faithfully flat.
 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
-
 -/
 
 @[expose] public section
@@ -298,10 +298,10 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
     let r : ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
-      Submodule.mem_span_singleton.1 (b ha).2 |>.choose
+      Submodule.mem_span_singleton.1 (b ha).property |>.choose
     have hr : ∀ ⦃i : E ⊗[R] M⦄ (hi : i ∈ c.support), b hi =
         r hi • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩ := fun a ha =>
-      Subtype.ext <| Submodule.mem_span_singleton.1 (b ha).2 |>.choose_spec.symm
+      Subtype.ext <| Submodule.mem_span_singleton.1 (b ha).property |>.choose_spec.symm
     -- Since `M` is flat and `E -> N1` is injective, we only need to check that x = 0
     -- in `N1 ⊗ M`. We write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
     -- (remember `E = span {l23 (l12 n1)}` and `eq1`)
@@ -442,7 +442,6 @@ In this section we prove that an `R`-module `M` is faithfully flat iff the follo
 
 - `M` is flat
 - for any `R`-linear map `f : N → N'`, `f` = 0 iff `f ⊗ 𝟙M = 0` iff `𝟙M ⊗ f = 0`
-
 -/
 
 section arbitrary_universe
@@ -465,7 +464,7 @@ lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `f ⊗ id = 0`, if and only
 if `f = 0`. -/
-lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
+lemma zero_iff_rTensor_zero [h : FaithfullyFlat R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     {N' : Type*} [AddCommGroup N'] [Module R N']
     (f : N →ₗ[R] N') :

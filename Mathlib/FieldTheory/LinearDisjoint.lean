@@ -6,11 +6,11 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 public import Mathlib.RingTheory.LinearDisjoint
 
-/-!
+import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 
+/-!
 # Linearly disjoint fields
 
 This file contains basics about the linearly disjoint fields.
@@ -130,7 +130,6 @@ The following results are related to the equivalent characterizations in
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
 -/
 
 @[expose] public section
@@ -225,7 +224,7 @@ theorem map'' {L' : Type*} [Field L'] [Algebra F L'] [Algebra L' E] [IsScalarTow
   have := H.map (IsScalarTower.toAlgHom F E K) (RingHom.injective _)
   simp_rw [AlgHom.fieldRange_toSubalgebra, ← AlgHom.range_comp] at this
   rw [AlgHom.fieldRange_toSubalgebra]
-  convert! this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
+  convert this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
 
 variable (A) in
 theorem self_right : A.LinearDisjoint F := Subalgebra.LinearDisjoint.bot_right _
@@ -331,7 +330,7 @@ theorem of_basis_right' {ι : Type*} (b : Basis ι F L)
 are linearly independent over `F`. -/
 theorem linearIndependent_mul (H : A.LinearDisjoint B) {κ ι : Type*} {a : κ → A} {b : ι → B}
     (ha : LinearIndependent F a) (hb : LinearIndependent F b) :
-    LinearIndependent F fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
+    LinearIndependent F fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
   (linearDisjoint_iff'.1 H).linearIndependent_mul_of_flat_left ha hb
 
 /-- If `A` and `L` are linearly disjoint, then for any `F`-linearly independent families
@@ -339,20 +338,20 @@ theorem linearIndependent_mul (H : A.LinearDisjoint B) {κ ι : Type*} {a : κ �
 are linearly independent over `F`. -/
 theorem linearIndependent_mul' (H : A.LinearDisjoint L) {κ ι : Type*} {a : κ → A} {b : ι → L}
     (ha : LinearIndependent F a) (hb : LinearIndependent F b) :
-    LinearIndependent F fun (i : κ × ι) ↦ (a i.1).1 * algebraMap L E (b i.2) := by
+    LinearIndependent F fun (i : κ × ι) ↦ (a i.1).val * algebraMap L E (b i.2) := by
   apply Subalgebra.LinearDisjoint.linearIndependent_mul_of_flat_left H ha <| hb.map' _
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv.ker
 
 /-- If there are `F`-bases `{ u_i }`, `{ v_j }` of `A`, `B`, such that the products
 `{ u_i * v_j }` are linearly independent over `F`, then `A` and `B` are linearly disjoint. -/
 theorem of_basis_mul {κ ι : Type*} (a : Basis κ F A) (b : Basis ι F B)
-    (H : LinearIndependent F fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1) : A.LinearDisjoint B :=
+    (H : LinearIndependent F fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val) : A.LinearDisjoint B :=
   linearDisjoint_iff'.2 (.of_basis_mul _ _ a b H)
 
 /-- If there are `F`-bases `{ u_i }`, `{ v_j }` of `A`, `L`, such that the products
 `{ u_i * v_j }` are linearly independent over `F`, then `A` and `L` are linearly disjoint. -/
 theorem of_basis_mul' {κ ι : Type*} (a : Basis κ F A) (b : Basis ι F L)
-    (H : LinearIndependent F fun (i : κ × ι) ↦ (a i.1).1 * algebraMap L E (b i.2)) :
+    (H : LinearIndependent F fun (i : κ × ι) ↦ (a i.1).val * algebraMap L E (b i.2)) :
     A.LinearDisjoint L :=
   Subalgebra.LinearDisjoint.of_basis_mul _ _ a
     (b.map (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv) H
@@ -370,7 +369,7 @@ theorem of_le_right' (H : A.LinearDisjoint L) (L' : Type*) [Field L']
     [Algebra F L'] [Algebra L' L] [IsScalarTower F L' L]
     [Algebra L' E] [IsScalarTower F L' E] [IsScalarTower L' L E] : A.LinearDisjoint L' := by
   refine Subalgebra.LinearDisjoint.of_le_right_of_flat H ?_
-  convert! AlgHom.range_comp_le_range (IsScalarTower.toAlgHom F L' L) (IsScalarTower.toAlgHom F L E)
+  convert AlgHom.range_comp_le_range (IsScalarTower.toAlgHom F L' L) (IsScalarTower.toAlgHom F L E)
   ext; exact IsScalarTower.algebraMap_apply L' L E _
 
 /-- If `A` and `B` are linearly disjoint, `A'` and `B'` are contained in `A` and `B`,

@@ -6,10 +6,10 @@ Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro, Thomas Zhu
 module
 
 public meta import Lean.Elab.Tactic.Basic
+
 import Mathlib.Init
 
 /-!
-
 # polyrith Tactic
 
 The `polyrith` tactic relied on an external Sage server which has been shut down.

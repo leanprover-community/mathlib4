@@ -211,6 +211,10 @@ theorem ofBijective.symm_eq {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective
     (ofBijective hφ).symm.toEquiv = (Equiv.ofBijective _ hφ).symm :=
   rfl
 
+@[simp]
+lemma toEquiv_ofBijective (φ : P₁ →ᵃ[k] P₂) (hφ) :
+    (ofBijective (φ := φ) hφ).toEquiv = .ofBijective φ hφ := rfl
+
 theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ := by simp
 
 @[simp]
@@ -414,6 +418,9 @@ def prodComm : P₁ × P₂ ≃ᵃ[k] P₂ × P₁ where
 @[simp]
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm k P₁ P₂).trans (prodComm k P₂ P₁) = .refl _ _ := rfl
 
 /-- Product of affine spaces is associative up to affine isomorphism. -/
 @[simps! apply symm_apply linear]

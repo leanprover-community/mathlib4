@@ -5,9 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
+
+import Mathlib.RingTheory.FiniteStability
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Chevalley's theorem
@@ -62,7 +66,7 @@ lemma isOpenMap_comap_of_hasGoingDown_of_finitePresentation
   rw [isBasis_basic_opens.isOpenMap_iff]
   rintro _ ⟨_, ⟨f, rfl⟩, rfl⟩
   exact isOpen_of_stableUnderGeneralization_of_isConstructible
-    ((basicOpen f).2.stableUnderGeneralization.image
+    ((basicOpen f).is_open'.stableUnderGeneralization.image
       (Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap.mp ‹_›))
     (isConstructible_comap_image (RingHom.finitePresentation_algebraMap.mpr ‹_›)
       isConstructible_basicOpen)
@@ -80,7 +84,7 @@ theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
   obtain ⟨B', hB, f, rfl⟩ := exists_fg_and_mem_baseChange f
   have : Algebra.FinitePresentation K B' :=
     Algebra.FinitePresentation.of_finiteType.mp ⟨B'.fg_top.mpr hB⟩
-  convert!
+  convert
     isOpenMap_comap_of_hasGoingDown_of_finitePresentation (R := A) (S := A ⊗[K] B') _
       (basicOpen f).isOpen using 1
   ext x

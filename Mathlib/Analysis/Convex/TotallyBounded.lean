@@ -5,8 +5,9 @@ Authors: Christopher Hoskin
 -/
 module
 
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Totally Bounded sets and Convex Hulls

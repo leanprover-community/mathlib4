@@ -5,10 +5,11 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery, Seed Prover, Huanyu Zheng
 -/
 module
 
-import Mathlib.LinearAlgebra.Matrix.Action
-import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.LinearAlgebra.Matrix.Action
+import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -187,7 +188,7 @@ theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ * J l R * A = J l R := by
 
 instance hasInv : Inv (symplecticGroup l R) where
   inv A := ⟨(-J l R) * (A : Matrix (l ⊕ l) (l ⊕ l) R)ᵀ * J l R,
-      mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
+      mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.property) <| J_mem _ _⟩
 
 theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
 
@@ -215,7 +216,7 @@ instance : Group (symplecticGroup l R) :=
     inv_mul_cancel := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
-      exact inv_left_mul_aux A.2 }
+      exact inv_left_mul_aux A.property }
 
 section Determinant
 

@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.Monoid.Defs
 
 We define the closures of convex and pointed cones. This construction is primarily needed for
 defining maps between proper cones. The current API is basic and should be extended as necessary.
-
 -/
 
 @[expose] public section
@@ -63,7 +62,8 @@ construction is mainly used for defining maps between proper cones. -/
 protected def closure (K : PointedCone 𝕜 E) : PointedCone 𝕜 E where
   carrier := closure ↑K
   zero_mem' := subset_closure (zero_mem K)
-  smul_mem' c _ h₁ := map_mem_closure (continuous_const_smul c.1) h₁ fun _ h₂ ↦ K.smul_mem c.2 h₂
+  smul_mem' c _ h₁ :=
+    map_mem_closure (continuous_const_smul c.val) h₁ fun _ h₂ ↦ K.smul_mem c.property h₂
   add_mem' h₁ h₂ := map_mem_closure₂ continuous_add h₁ h₂ (fun _ ha _ hb ↦ K.add_mem ha hb)
 
 @[simp, norm_cast]

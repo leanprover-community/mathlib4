@@ -112,7 +112,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     simp_rw [c, Finset.mem_image]
     constructor
     · rintro ⟨w, hw, rfl⟩
-      exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
+      exact ⟨(mem_rootSet.mp w.property).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
     · rintro ⟨hz1, hz2⟩
       exact ⟨⟨z, mem_rootSet.mpr ⟨hp, hz1⟩⟩, Equiv.Perm.mem_support.mpr (mt (hc0 _).mp hz2), rfl⟩
   rw [← Finset.card_union_of_disjoint]
@@ -185,7 +185,7 @@ then `p` is divisible by a quadratic polynomial. -/
 lemma Polynomial.quadratic_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ} (h0 : aeval z p = 0)
     (hz : z.im ≠ 0) : X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2) ∣ p := by
   rw [← map_dvd_map' (algebraMap ℝ ℂ)]
-  convert! p.mul_star_dvd_of_aeval_eq_zero_im_ne_zero h0 hz
+  convert p.mul_star_dvd_of_aeval_eq_zero_im_ne_zero h0 hz
   calc
     map (algebraMap ℝ ℂ) (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2))
     _ = X ^ 2 - C (↑(2 * z.re) : ℂ) * X + C (‖z‖ ^ 2 : ℂ) := by simp

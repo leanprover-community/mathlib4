@@ -5,10 +5,11 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.Analysis.Convex.Star
-public import Mathlib.Tactic.Field
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+public import Mathlib.Tactic.Field
+
+import Mathlib.Algebra.Ring.Action.Pointwise.Set
 import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -120,7 +121,7 @@ theorem Directed.convex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed 
 theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) c)
     (hc : ∀ ⦃A : Set E⦄, A ∈ c → Convex 𝕜 A) : Convex 𝕜 (⋃₀ c) := by
   rw [sUnion_eq_iUnion]
-  exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
+  exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.property
 
 theorem Convex.setOfPred_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
   by_cases hP : P <;> simp [hP, hs, convex_univ]
@@ -449,7 +450,8 @@ theorem convex_vadd (a : E) : Convex 𝕜 (a +ᵥ s) ↔ Convex 𝕜 s :=
 
 /-- Affine subspaces are convex. -/
 theorem AffineSubspace.convex (Q : AffineSubspace 𝕜 E) : Convex 𝕜 (Q : Set E) :=
-  fun x hx y hy a b _ _ hab ↦ by simpa [Convex.combo_eq_smul_sub_add hab] using! Q.2 _ hy hx hx
+  fun x hx y hy a b _ _ hab ↦ by
+    simpa [Convex.combo_eq_smul_sub_add hab] using! Q.smul_vsub_vadd_mem' _ hy hx hx
 
 /-- The preimage of a convex set under an affine map is convex. -/
 theorem Convex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : Convex 𝕜 s) : Convex 𝕜 (f ⁻¹' s) :=

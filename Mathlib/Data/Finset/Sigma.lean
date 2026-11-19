@@ -28,6 +28,8 @@ worth it, we must first refactor the functor library so that the `alternative` i
 is computable and universe-polymorphic.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 
@@ -197,7 +199,7 @@ variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σ i, α i} {
 
 theorem sigmaLift_nonempty :
     (sigmaLift f a b).Nonempty ↔ ∃ h : a.1 = b.1, (f (h ▸ a.2) b.2).Nonempty := by
-  simp_rw [nonempty_iff_ne_empty, sigmaLift]
+  simp_rw [sigmaLift]
   split_ifs with h <;> simp [h]
 
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
@@ -217,7 +219,7 @@ theorem sigmaLift_mono
 variable (f a b)
 
 theorem card_sigmaLift :
-    (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
+    #(sigmaLift f a b) = dite (a.1 = b.1) (fun h => #(f (h ▸ a.2) b.2)) fun _ => 0 := by
   simp_rw [sigmaLift]
   split_ifs with h <;> simp
 

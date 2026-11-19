@@ -109,7 +109,7 @@ section symmetry
 lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
   rw [(div_div_cancel₀ (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx) :), ← mul_smul]
-  convert! (one_smul ℂ (P.g (1 / x))).symm using 2
+  convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field [P.hε, (rpow_pos_of_pos hx _).ne']
 
@@ -152,7 +152,7 @@ variable (P : WeakFEPair E)
 lemma hf_zero (r : ℝ) :
     (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
   have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_nhdsGT_zero
-  simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
+  simp_rw [isBigO_iff, eventually_nhdsWithin_iff] at this ⊢
   obtain ⟨C, hC⟩ := this
   use ‖P.ε‖ * C
   filter_upwards [hC] with x hC' (hx : 0 < x)
@@ -162,7 +162,7 @@ lemma hf_zero (r : ℝ) :
   simp_rw [Function.comp_apply, ← one_div, P.h_feq' _ hx] at hC'
   rw [← ((mul_inv_cancel₀ h_nv).symm ▸ one_smul ℂ P.g₀ :), mul_smul _ _ P.g₀, ← smul_sub, norm_smul,
     ← le_div_iff₀' (lt_of_le_of_ne (norm_nonneg _) (norm_ne_zero_iff.mpr h_nv).symm)] at hC'
-  convert! hC' using 1
+  convert hC' using 1
   · congr 3
     rw [rpow_neg hx.le]
     simp [field]

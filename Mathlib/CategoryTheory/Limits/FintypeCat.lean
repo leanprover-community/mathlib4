@@ -5,13 +5,17 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.Basic.Finite.Sigma
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Products
+
+import Mathlib.Basic.Finite.Sigma
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # (Co)limits in the category of finite types

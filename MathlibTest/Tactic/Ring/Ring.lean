@@ -1,11 +1,13 @@
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Ring
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
 -- We deliberately mock R here so that we don't have to import the deps
-axiom Real : Type
+public axiom Real : Type
 notation "ℝ" => Real
 @[instance] axiom Real.field : Field ℝ
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
@@ -278,7 +280,7 @@ example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
 -- Test that `ring` works for division without subtraction
 example {R : Type} [Semifield R] [CharZero R] {x : R} : x / 2 + x / 2 = x := by ring
 
-theorem test_axioms {R : Type} [CommRing R] (a b : R) :
+public theorem test_axioms {R : Type} [CommRing R] (a b : R) :
     (a + b) ^ 2 + (a * b) ^ 3 = a ^ 2 + (2 : R) * a * b + b ^ 2 + a ^ 3 * b ^ 3 := by
   ring
 

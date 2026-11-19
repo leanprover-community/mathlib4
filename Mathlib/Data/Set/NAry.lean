@@ -27,6 +27,11 @@ namespace Set
 variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → β → γ}
 variable {s s' : Set α} {t t' : Set β} {u : Set γ} {v : Set δ} {a : α} {b : β}
 
+theorem image2_eq_range (f : α → β → γ) (s : Set α) (t : Set β) :
+    image2 f s t = range fun x : s × t ↦ f x.1 x.2 := by
+  ext
+  simp
+
 theorem mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s ∧ b ∈ t :=
   ⟨by
     rintro ⟨a', ha', b', hb', h⟩

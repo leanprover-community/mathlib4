@@ -31,6 +31,7 @@ lie algebra, lie subalgebra
 
 @[expose] public section
 
+open scoped Pointwise
 
 universe u v w w₁ w₂
 
@@ -145,6 +146,7 @@ protected theorem sub_mem {x y : L} : x ∈ L' → y ∈ L' → (x - y : L) ∈ 
 protected theorem smul_mem (t : R) {x : L} (h : x ∈ L') : t • x ∈ L' :=
   SMulMemClass.smul_mem _ h
 
+@[membership .]
 theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈ L' :=
   L'.lie_mem' hx hy
 
@@ -387,12 +389,6 @@ def comap : LieSubalgebra R L :=
 
 section LatticeStructure
 
-open Set
-
-instance : PartialOrder (LieSubalgebra R L) :=
-  { PartialOrder.lift ((↑) : LieSubalgebra R L → Set L) coe_injective with
-    le := fun N N' ↦ ∀ ⦃x⦄, x ∈ N → x ∈ N' }
-
 theorem le_def : K ≤ K' ↔ (K : Set L) ⊆ K' :=
   Iff.rfl
 
@@ -568,7 +564,7 @@ def inclusion : K →ₗ⁅R⁆ K' :=
 theorem coe_inclusion (x : K) : (inclusion h x : L) = x :=
   rfl
 
-theorem inclusion_apply (x : K) : inclusion h x = ⟨x.1, h x.2⟩ :=
+theorem inclusion_apply (x : K) : inclusion h x = ⟨x.val, h x.property⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by
@@ -664,7 +660,7 @@ theorem coe_lieSpan_submodule_eq_iff {p : Submodule R L} :
 
 open Submodule in
 theorem coe_lieSpan_eq_span_of_forall_lie_eq_zero
-    {s : Set L} (hs : ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0) :
+    {s : Set L} (hs : ∀ x ∈ s, ∀ y ∈ s, ⁅x, y⁆ = 0) :
     lieSpan R L s = span R s := by
   suffices ∀ {x y}, x ∈ span R s → y ∈ span R s → ⁅x, y⁆ ∈ span R s by
     refine le_antisymm ?_ submodule_span_le_lieSpan
@@ -703,7 +699,7 @@ theorem span_empty : lieSpan R L (∅ : Set L) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set L) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_lieSpan
+  eq_top_iff.2 fun _ _ ↦ subset_lieSpan (Set.mem_univ _)
 
 variable {L}
 

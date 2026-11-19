@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Commute.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
+
 import Mathlib.Data.Fintype.Basic
 
 /-!
@@ -246,7 +247,7 @@ given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
 given a proof that `+` commutes on all elements `f x` for `x ∈ s`. -/]
 def noncommProd (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) : β :=
-  (s.1.map f).noncommProd <| noncommProd_lemma s f comm
+  (s.val.map f).noncommProd <| noncommProd_lemma s f comm
 
 @[to_additive]
 lemma noncommProd_induction (s : Finset α) (f : α → β) (comm)
@@ -344,14 +345,14 @@ theorem mul_noncommProd_erase [DecidableEq α] (s : Finset α) {a : α} (h : a �
     f a * (s.erase a).noncommProd f comm' = s.noncommProd f comm := by
   classical
   simpa only [← Multiset.map_erase_of_mem _ _ h] using!
-    Multiset.mul_noncommProd_erase (s.1.map f) (Multiset.mem_map_of_mem f h) _
+    Multiset.mul_noncommProd_erase (s.val.map f) (Multiset.mem_map_of_mem f h) _
 
 theorem noncommProd_erase_mul [DecidableEq α] (s : Finset α) {a : α} (h : a ∈ s) (f : α → β) (comm)
     (comm' := fun _ hx _ hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     (s.erase a).noncommProd f comm' * f a = s.noncommProd f comm := by
   classical
   simpa only [← Multiset.map_erase_of_mem _ _ h] using!
-    Multiset.noncommProd_erase_mul (s.1.map f) (Multiset.mem_map_of_mem f h) _
+    Multiset.noncommProd_erase_mul (s.val.map f) (Multiset.mem_map_of_mem f h) _
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
@@ -416,7 +417,7 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   case a =>
     intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
-  convert! (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
+  convert (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
   · intro j
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp

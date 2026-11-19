@@ -6,6 +6,7 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
+
 import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Formal group laws over commutative ring
@@ -35,7 +36,6 @@ when `F` is a commutative formal group law
 
 ## References
 * [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
-
 -/
 
 @[expose] public section

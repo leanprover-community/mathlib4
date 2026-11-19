@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Generator.Basic
+
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 import Mathlib.CategoryTheory.Subobject.Comma
@@ -34,7 +35,6 @@ Finally, we prove the following corollaries of the special adjoint functor theor
   `hasColimits_of_hasLimits_of_isCoseparating`, `hasColimits_of_hasLimits_of_hasCoseparator`
 * If `C` is cocomplete, co-well-powered and has a small separating set, then it is complete:
   `hasLimits_of_hasColimits_of_isSeparating`, `hasLimits_of_hasColimits_of_hasSeparator`
-
 -/
 
 @[expose] public section
