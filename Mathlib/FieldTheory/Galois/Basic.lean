@@ -58,7 +58,7 @@ class IsGalois : Prop where
 variable {F E}
 
 theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h =>
+  ⟨fun h => ⟨h.to_isSeparable, h.to_normal⟩, fun h =>
     { to_isSeparable := h.1
       to_normal := h.2 }⟩
 
@@ -271,12 +271,12 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
 
 @[simp]
 theorem coe_fixingSubgroupEquiv_apply (σ : K.fixingSubgroup) :
-    ⇑(K.fixingSubgroupEquiv σ) = ⇑σ.1 :=
+    ⇑(K.fixingSubgroupEquiv σ) = ⇑σ.val :=
   rfl
 
 @[simp]
 theorem coe_fixingSubgroupEquiv_symm_apply (σ : Gal(E/K)) :
-    ⇑(K.fixingSubgroupEquiv.symm σ).1 = ⇑σ :=
+    ⇑(K.fixingSubgroupEquiv.symm σ).val = ⇑σ :=
   rfl
 
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
@@ -300,17 +300,18 @@ def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup Gal(E/F)) :
 
 @[simp]
 theorem coe_subgroupEquivAlgEquiv_apply [FiniteDimensional F E] (σ : H) :
-    ⇑(subgroupEquivAlgEquiv H σ) = ⇑σ.1 :=
+    ⇑(subgroupEquivAlgEquiv H σ) = ⇑σ.val :=
   rfl
 
 @[simp]
 theorem coe_subgroupEquivAlgEquiv_symm_apply [FiniteDimensional F E] (σ : Gal(E/fixedField H)) :
-    ⇑((subgroupEquivAlgEquiv H).symm σ).1 = ⇑σ :=
+    ⇑((subgroupEquivAlgEquiv H).symm σ).val = ⇑σ :=
   rfl
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
-    rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.2 x, show ϕ • (y : E) = ↑y from y.2 ϕ]⟩
+    rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.property x,
+      show ϕ • (y : E) = ↑y from y.property ϕ]⟩
 
 instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   algebraMap :=
@@ -449,7 +450,7 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
   to_normal := by
     apply normal_iff_forall_map_le'.mpr
     rintro σ x ⟨a, ha, rfl⟩ τ
-    exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.1 τ.2 σ⟩)
+    exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.val τ.property σ⟩)
 
 /-- If `H` is a normal Subgroup of `Gal(L / K)`, then `Gal(fixedField H / K)` is isomorphic to
 `Gal(L / K) ⧸ H`. -/

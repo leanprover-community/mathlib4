@@ -426,7 +426,7 @@ theorem IsReproducing.of_span_eq_top {R : Type*} {M : Type*} [Ring R] [LinearOrd
   rw [IsReproducing, Set.eq_univ_iff_forall]
   intro x
   -- A generating cone in a nontrivial module must be nonempty
-  have hne : (C : Set M).Nonempty := Set.nonempty_iff_ne_empty.2 fun h' => by simp [h'] at h
+  have hne : (C : Set M).Nonempty := Set.ne_empty_iff_nonempty.1 fun h' => by simp [h'] at h
   -- Build the submodule S = C - C and show span C ⊆ S
   let S : Submodule R M := {
     carrier := (C : Set M) - (C : Set M)
