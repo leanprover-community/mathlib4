@@ -17,7 +17,6 @@ In this file we define the induced map on prime spectra induced by a ring homomo
 
 * `PrimeSpectrum.comap`: The induced map on prime spectra by a ring homomorphism. The proof that
   it is continuous is in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
-
 -/
 
 @[expose] public section
@@ -114,9 +113,6 @@ def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
 lemma sigmaToPi_apply (i : ι) (p : PrimeSpectrum (R i)) :
     sigmaToPi R ⟨i, p⟩ = comap (Pi.evalRingHom R i) p :=
   rfl
-
-@[deprecated (since := "2026-04-17")]
-alias coe_sigmaToPi_asIdeal := sigmaToPi_apply
 
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
   classical

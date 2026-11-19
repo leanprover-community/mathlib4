@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
-
 -/
 
 @[expose] public section

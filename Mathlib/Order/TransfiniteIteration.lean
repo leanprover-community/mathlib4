@@ -29,7 +29,6 @@ when we know `Cardinal.mk I < Cardinal.mk J`).
   such that any monomorphism is a transfinite composition of pushouts of morphisms in `I`,
   and then an object `X` is injective iff `X ⟶ 0` has the right lifting
   property with respect to `I`.
-
 -/
 
 @[expose] public section

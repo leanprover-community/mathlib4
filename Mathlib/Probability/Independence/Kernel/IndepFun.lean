@@ -181,12 +181,10 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
   have A i (hi : i ∈ S) : (κ a) (g i ⁻¹' sets i) = (κ a) (f i ⁻¹' sets i) := by
     apply measure_congr
     filter_upwards [ha i hi] with ω hω
-    change (g i ω ∈ sets i) = (f i ω ∈ sets i)
     simp [hω]
   have B : (κ a) (⋂ i ∈ S, g i ⁻¹' sets i) = (κ a) (⋂ i ∈ S, f i ⁻¹' sets i) := by
     apply measure_congr
     filter_upwards [(ae_ball_iff (Finset.countable_toSet S)).2 ha] with ω hω
-    change (ω ∈ ⋂ i ∈ S, g i ⁻¹' sets i) = (ω ∈ ⋂ i ∈ S, f i ⁻¹' sets i)
     simp +contextual [hω]
   convert! h'a using 2 with i hi
   exact A i hi
@@ -239,8 +237,8 @@ theorem IndepFun.congr' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     IndepFun f' g' κ μ := by
   rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   filter_upwards [hf, hg, hfg _ _ ⟨_, hA, rfl⟩ ⟨_, hB, rfl⟩] with a hf' hg' hfg'
-  have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.fun_comp (· ∈ A)
-  have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp (· ∈ B)
+  have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.preimage A
+  have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.preimage B
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
 
 theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}

@@ -5,10 +5,10 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public import Lean.Linter.Deprecated
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 
 import Lean.Meta.CompletionName
-public import Lean.Linter.Deprecated
 
 /-!
 # Constructing a RefinedDiscrTree
@@ -24,7 +24,6 @@ and does this with a parallel computation.
 
 There is also `createModuleDiscrTree` which does the same but with the constants
 from the current file.
-
 -/
 
 public section

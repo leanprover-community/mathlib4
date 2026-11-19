@@ -25,7 +25,6 @@ This file defines poles and polars for spheres in Euclidean spaces.
 ## Main theorems
 
 * `EuclideanGeometry.Sphere.mem_polar_iff_mem_polar`: La Hire's theorem.
-
 -/
 
 @[expose] public noncomputable section

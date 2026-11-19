@@ -6,6 +6,8 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus
@@ -43,7 +45,6 @@ Later files endow it with a topological structure, see the docstring of
 * `M →L⋆[σ] N`: the type of conjugate-linear (antilinear) continuous maps from `M` to `N`;
 * `f ∘L g`: the composition of two continuous linear maps;
 * `f ∘SL g`: the composition of two continuous semilinear maps.
-
 -/
 
 @[expose] public section
@@ -570,6 +571,15 @@ theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
 @[simp, norm_cast]
 theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
   rfl
+
+instance : NPow (M₁ →L[R₁] M₁) where
+  npow := npowRec
+
+instance : IsNPowApplyEqIterate (M₁ →L[R₁] M₁) where
+  pow_apply_eq_iterate f n x := by
+    induction n generalizing x with
+    | zero => rfl
+    | succ n ih => rw [Function.iterate_succ_apply]; exact ih (f x)
 
 @[deprecated (since := "2026-05-20")] alias coe_mul := toLinearMap_mul
 

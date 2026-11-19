@@ -25,7 +25,6 @@ We prove
   `IsRCLikeNormedField`.
 * `StrongDual.exists_extension`: Hahn-Banach theorem for continuous linear functionals on
   polynormable spaces over fields satisfying `IsRCLikeNormedField`.
-
 -/
 
 public section

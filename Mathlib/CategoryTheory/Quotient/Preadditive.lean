@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Quotient
 If an equivalence relation `r : HomRel C` on the morphisms of a preadditive category
 is compatible with the addition, then the quotient category `Quotient r` is also
 preadditive.
-
 -/
 
 @[expose] public section

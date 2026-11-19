@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Higher differentiability in finite dimensions.
-
 -/
 
 public section

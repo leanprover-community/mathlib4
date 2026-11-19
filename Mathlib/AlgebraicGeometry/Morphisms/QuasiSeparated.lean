@@ -26,7 +26,6 @@ and is stable under compositions and base-changes.
 ## Main result
 - `AlgebraicGeometry.isLocalization_basicOpen_of_qcqs` (**Qcqs lemma**):
   If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
-
 -/
 
 public section

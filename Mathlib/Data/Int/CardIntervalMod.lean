@@ -94,8 +94,8 @@ lemma Ico_filter_modEq_cast {v : ℕ} :
   ext x
   simp only [mem_map, mem_filter, mem_Ico, castEmbedding_apply]
   constructor
-  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact mod_cast h
+  · intro h; lift x to ℕ using (by lia); use x; simp_all
 
 lemma Ioc_filter_modEq_cast {v : ℕ} :
     {x ∈ Ioc a b | x ≡ v [MOD r]}.map castEmbedding =
@@ -103,8 +103,8 @@ lemma Ioc_filter_modEq_cast {v : ℕ} :
   ext x
   simp only [mem_map, mem_filter, mem_Ioc, castEmbedding_apply]
   constructor
-  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by lia); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact mod_cast h
+  · intro h; lift x to ℕ using (by lia); use x; simp_all
 
 variable (hr : 0 < r)
 include hr
