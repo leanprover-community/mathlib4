@@ -74,6 +74,22 @@ def proveEq (goal : Q(Prop)) : MetaM Expr := do
   catch _ => throwError "could not match the polynomial with its coefficients"
   instantiateMVars g
 
+/-- Compute the Sturm certificate `d` of an explicit nonzero polynomial `f` over `R` and construct a
+proof that `d.s` is the coefficient list of `d.k * f`. -/
+def certificateOf {u : Level} {R : Q(Type u)} (_ : Q(CommRing $R)) (f : Q(Polynomial $R)) :
+    MetaM (SturmCertificate × ((dE : Q(SturmCertificate)) × Q((($dE).k : Polynomial $R) * $f =
+      (Polynomial.ofCoeffList ($dE).s).map (Int.castRingHom $R)))) := do
+  let p ← try coeffsOf f catch _ => throwError
+    "could not parse{indentExpr f}\nas an explicit polynomial with rational coefficients"
+  -- the coefficients `p` of `f`, without trailing zeros
+  let p := (p.reverse.dropWhile (· == 0)).reverse
+  if p.isEmpty then throwError "expected a nonzero polynomial"
+  let d := SturmCertificate.fromCoeffList p
+  have kE : Q(ℕ) := toExpr d.k
+  have sE : Q(List ℤ) := toExpr d.s
+  return ⟨d, toExpr d, ← proveEq
+    q(($kE : Polynomial $R) * $f = (Polynomial.ofCoeffList $sE).map (Int.castRingHom $R))⟩
+
 /-- For an input expression `e = Fintype.card (f.rootSet ℝ)` compute the number `n` of distinct real
 roots of `f` and construct a proof of `e = n`. -/
 def proveCardRootSet (e : Expr) : MetaM (Q(ℕ) × Expr) := do
@@ -83,26 +99,14 @@ def proveCardRootSet (e : Expr) : MetaM (Q(ℕ) × Expr) := do
   let_expr Polynomial.rootSet R iR f S _ _ iA := s | throwError err
   unless ← isDefEq S q(ℝ) do throwError err
   let ⟨_, R⟩ ← getLevelQ' R
-  have : Q(CommRing $R) := iR
+  have iR : Q(CommRing $R) := iR
   have : Q(Algebra $R ℝ) := iA
   have f : Q(Polynomial $R) := f
   have : Q(Fintype (Polynomial.rootSet $f ℝ)) := inst
-  let p ← try coeffsOf f catch _ => throwError
-    "could not parse{indentExpr f}\nas an explicit polynomial with rational coefficients"
-  -- the coefficients `p` of `f`, without trailing zeros
-  let p := (p.reverse.dropWhile (· == 0)).reverse
-  if p.isEmpty then throwError "expected a nonzero polynomial"
-  let d := SturmCertificate.fromCoeffList p
+  let ⟨d, dE, hf⟩ ← certificateOf iR f
   let some n := realRootCount? d
     | throwError "the computed Sturm sequence is invalid"
-  have dE : Q(SturmCertificate) := toExpr d
-  have kE : Q(ℕ) := toExpr d.k
-  have sE : Q(List ℤ) := toExpr d.s
   have nE : Q(ℕ) := toExpr n
-  -- `d.s` is the coefficient list of `d.k * f`
-  have hf : Q((($dE).k : Polynomial $R) * $f =
-      (Polynomial.ofCoeffList ($dE).s).map (Int.castRingHom $R)) :=
-    ← proveEq q(($kE : Polynomial $R) * $f = (Polynomial.ofCoeffList $sE).map (Int.castRingHom $R))
   -- the kernel checks `h` by evaluating `realRootCount?`
   have h : Q(realRootCount? $dE = some $nE) := (q(Eq.refl (some $nE)) : Expr)
   return (nE, q(card_rootSet_of_realRootCount? $hf $h))
