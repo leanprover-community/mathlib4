@@ -287,8 +287,7 @@ lemma spectrum_cfcAux (f : C(σ 𝕜 x, 𝕜)) : σ 𝕜 (cfcAux x hx f) = Set.r
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem continuousFunctionalCalculus (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) :
     ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁ where
-  predicate_zero := (hp₁ 0).mpr <| by
-    simpa using NonUnitalContinuousFunctionalCalculus.predicate_zero (R := 𝕜) (p := p)
+  predicate_zero := (hp₁ 0).mpr <| by simpa using cfcₙ_predicate_zero 𝕜
   compactSpace_spectrum y := Unitization.compactSpace_spectrum y
   spectrum_nonempty y _ := ⟨y.fst, fst_mem_spectrum y⟩
   exists_cfc_of_predicate y hy := by
