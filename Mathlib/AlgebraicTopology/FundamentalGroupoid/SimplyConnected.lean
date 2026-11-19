@@ -51,7 +51,7 @@ theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
 
 theorem ContinuousMap.HomotopyEquiv.simplyConnectedSpace [hY : SimplyConnectedSpace Y]
     (e : X ≃ₕ Y) : SimplyConnectedSpace X :=
-  ⟨hY.1.map (FundamentalGroupoidFunctor.equivOfHomotopyEquiv e).trans⟩
+  ⟨hY.equiv_unit.map (FundamentalGroupoidFunctor.equivOfHomotopyEquiv e).trans⟩
 
 theorem ContinuousMap.HomotopyEquiv.simplyConnectedSpace_iff (e : X ≃ₕ Y) :
     SimplyConnectedSpace X ↔ SimplyConnectedSpace Y :=
@@ -176,8 +176,8 @@ theorem isSimplyConnected_iff_exists_homotopy_refl_forall_mem {s : Set X} :
       source' := by simp
       target' := by simp
     } with ⟨F⟩
-    exact ⟨F.map (.restrict s (.id _)), fun t ↦ (F t).2⟩
-  · rcases h x (p.map continuous_subtype_val) (fun t ↦ (p t).2) with ⟨F, hF⟩
+    exact ⟨F.map (.restrict s (.id _)), fun t ↦ (F t).property⟩
+  · rcases h x (p.map continuous_subtypeVal) (fun t ↦ (p t).property) with ⟨F, hF⟩
     exact ⟨{
       toFun t := ⟨F t, hF t⟩
       map_zero_left := by simp

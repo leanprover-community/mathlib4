@@ -9,7 +9,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 
 /-!
-
 # Computing limits of monomials
 
 In this file we define the `Monomial` structure, representing monomials in a basis, i.e.
@@ -23,13 +22,12 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 
 * `Monomial`: type to represent monomials.
 * `UnitMonomial.toFun`/`Monomial.toFun`: converts structures to real functions.
-* `UnitMonomial.toLogFun_isEquivalent_of_nonzero_head`: `log m.toFun` is asymptotically equivalent
+* `UnitMonomial.toLogFun_isEquivalent_of_head_ne_zero`: `log m.toFun` is asymptotically equivalent
   to its first summand - `m[0] • log basis[0]` if `m[0] ≠ 0`. Using this theorem we can prove that
   the asymptotic behaviour of the monomials is determined by its first non-zero exponent.
 * `toFun_tendsto_top_of_FirstNonzeroIsPos` and its variants are used to infer the limit of
   `t.toFun` from `FirstNonzeroIsPos`/`FirstNonzeroIsNeg`/`AllZero`.
 * `IsLittleO_of_lt_exps` and its variants are used to asymptotically compare two monomials.
-
 -/
 
 @[expose] public section
@@ -212,7 +210,7 @@ theorem log_toFun_eq_toLogFun {m : UnitMonomial} {basis : Basis} (h_basis : Well
             Real.log_rpow (hx b (by simp)), ← heq]
       rfl
 
-theorem toLogFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : UnitMonomial}
+theorem toLogFun_isEquivalent_of_head_ne_zero {exps_hd : ℝ} {exps_tl : UnitMonomial}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (h_nonzero : exps_hd ≠ 0) :
     UnitMonomial.toLogFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
@@ -235,6 +233,9 @@ theorem toLogFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : UnitMon
     | cons b bs =>
       exact (IsLittleO.const_mul_left (hlo b (by simp)) e).add (ih (by grind))
 
+@[deprecated (since := "2026-10-13")]
+alias toLogFun_isEquivalent_of_nonzero_head := toLogFun_isEquivalent_of_head_ne_zero
+
 theorem toFun_tendsto_top_of_head_pos {exps_hd : ℝ} {exps_tl : UnitMonomial} {basis_hd : ℝ → ℝ}
     {basis_tl : Basis}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
@@ -242,7 +243,7 @@ theorem toFun_tendsto_top_of_head_pos {exps_hd : ℝ} {exps_tl : UnitMonomial} {
     Tendsto (UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl)) atTop atTop := by
   have h_equiv : Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
       exps_hd • Real.log ∘ basis_hd :=
-    (toLogFun_isEquivalent_of_nonzero_head h_basis h_nonzero.ne').congr_left
+    (toLogFun_isEquivalent_of_head_ne_zero h_basis h_nonzero.ne').congr_left
       (log_toFun_eq_toLogFun h_basis).symm
   suffices h_log : Tendsto (Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl))
       atTop atTop by
@@ -263,7 +264,7 @@ theorem toFun_tendsto_zero_of_head_neg {exps_hd : ℝ} {exps_tl : UnitMonomial} 
     Tendsto (UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl)) atTop (𝓝 0) := by
   have h_equiv : Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
       exps_hd • Real.log ∘ basis_hd :=
-    (toLogFun_isEquivalent_of_nonzero_head h_basis h_nonzero.ne).congr_left
+    (toLogFun_isEquivalent_of_head_ne_zero h_basis h_nonzero.ne).congr_left
       (log_toFun_eq_toLogFun h_basis).symm
   suffices h_log : Tendsto (Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl))
       atTop atBot by
@@ -466,8 +467,8 @@ theorem toFun_pos {t : Monomial} {basis : Basis}
 
 theorem zeros_append_toFun (coef : ℝ) {exps : UnitMonomial} {left right : Basis} :
     let t : Monomial := ⟨coef, List.replicate left.length 0 ++ exps⟩;
-    t.toFun (left ++ right) = (mk coef exps).toFun right := by
-  exact congrArg (coef • ·) UnitMonomial.zeros_append_toFun
+    t.toFun (left ++ right) = (mk coef exps).toFun right :=
+  congrArg (coef • ·) UnitMonomial.zeros_append_toFun
 
 /-- `t.toFun` tends to `𝓝 0` when `t.coef = 0`. -/
 theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : UnitMonomial} (basis : Basis)
@@ -530,8 +531,8 @@ theorem toFun_tendsto_const_of_allZero {coef : ℝ} {exps : UnitMonomial} {basis
 theorem majorized_tail_toFun_head {t : Monomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_length : t.unit.length = basis_tl.length)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
-    Majorized (t.toFun basis_tl) basis_hd 0 := by
-  exact Majorized.smul (UnitMonomial.majorized_tail_toFun_head h_length h_basis)
+    Majorized (t.toFun basis_tl) basis_hd 0 :=
+  Majorized.smul (UnitMonomial.majorized_tail_toFun_head h_length h_basis)
 
 lemma isLittleO_of_lt_exps {basis : Basis} {t1 t2 : Monomial}
     (h_basis : WellFormedBasis basis)

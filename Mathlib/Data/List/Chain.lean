@@ -12,6 +12,9 @@ public import Mathlib.Logic.Function.Iterate
 
 import Mathlib.Data.List.Pairwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation chain
 
@@ -512,7 +515,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       · apply ih b (List.isChain_cons_cons.1 hl).1
     /- make l' a free variable and induct on l' -/
     revert hl
-    rw [(by rfl : l = l'.1)]
+    rw [(by rfl : l = l'.val)]
     clear_value l'
     induction this with
     | intro l _ ihl =>

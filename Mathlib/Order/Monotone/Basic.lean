@@ -596,9 +596,9 @@ theorem exists_strictAnti' [NoMinOrder α] (a : α) : ∃ f : ℕ → α, Strict
 theorem exists_strictMono_subsequence {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
   have : NoMaxOrder {n // P n} :=
-    ⟨fun n ↦ Exists.intro ⟨(h n.1).choose, (h n.1).choose_spec.2⟩ (h n.1).choose_spec.1⟩
+    ⟨fun n ↦ Exists.intro ⟨(h n.val).choose, (h n.val).choose_spec.2⟩ (h n.val).choose_spec.1⟩
   obtain ⟨f, hf, _⟩ := Nat.exists_strictMono' (⟨(h 0).choose, (h 0).choose_spec.2⟩ : {n // P n})
-  exact Exists.intro (fun n ↦ (f n).1) ⟨hf, fun n ↦ (f n).2⟩
+  exact Exists.intro (fun n ↦ (f n).val) ⟨hf, fun n ↦ (f n).property⟩
 
 variable (α)
 
@@ -746,7 +746,7 @@ lemma Nat.stabilises_of_antitone {f : ℕ → ℕ} (hfmono : Antitone f)
       `Antitone g` was `by grind [Antitone]`; now it fails to find a witness. -/
       have hg_anti : Antitone g := fun _ _ hab => hfmono (by lia)
       obtain ⟨p, hp, hp'⟩ := ih (f 1) (by grind) hg_anti (by grind) rfl
-      refine ⟨p + 1, by omega, fun m hm => ?_⟩
+      refine ⟨p + 1, by lia, fun m hm => ?_⟩
       specialize hp' (m - 1) (by lia)
       grind
 

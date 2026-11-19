@@ -182,7 +182,7 @@ variable [Fintype G]
 theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
   classical
     obtain ⟨x, hx⟩ := IsCyclic.exists_monoid_generator (α := MonoidHom.range f.toHomUnits)
-    have hx1 : (x.1 : R) - 1 ≠ 0 := by
+    have hx1 : (x.val : R) - 1 ≠ 0 := by
       rw [sub_ne_zero]
       contrapose hf
       ext g
@@ -195,9 +195,9 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       _ = ∑ u ∈ univ.image f.toHomUnits, c • (u : R) :=
         (sum_congr rfl fun u hu => congr_arg₂ _ ?_ rfl)
       -- remaining goal 1, proven below
-      _ = ∑ b : MonoidHom.range f.toHomUnits, c • (b.1 : R) :=
+      _ = ∑ b : MonoidHom.range f.toHomUnits, c • (b.val : R) :=
         (Finset.sum_subtype _ (by simp) _)
-      _ = c • ∑ b : MonoidHom.range f.toHomUnits, (b.1 : R) := smul_sum.symm
+      _ = c • ∑ b : MonoidHom.range f.toHomUnits, (b.val : R) := smul_sum.symm
       _ = c • 0 := congr_arg₂ _ rfl ?_
       -- remaining goal 2, proven below
       _ = 0 := smul_zero _
@@ -207,8 +207,8 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       · exact ⟨1, f.toHomUnits.map_one⟩
     -- remaining goal 2
     calc
-      (∑ b : MonoidHom.range f.toHomUnits, (b.1 : R))
-        = ∑ n ∈ range (orderOf x), (x.1 : R) ^ n :=
+      (∑ b : MonoidHom.range f.toHomUnits, (b.val : R))
+        = ∑ n ∈ range (orderOf x), (x.val : R) ^ n :=
         Eq.symm <|
           sum_nbij (x ^ ·) (by simp)
             (by simpa using pow_injOn_Iio_orderOf)

@@ -97,7 +97,7 @@ Valid arguments are:
                           Allows third parties to use their own cache endpoint.
                           An empty value means unset.
 * MATHLIB_CACHE_PARALLEL_MAX
-                          Number of simultaneous downloads (default: 50).
+                          Number of simultaneous curl transfers (default: 50).
                           Keep it well below the open-file limit (`ulimit -n`).
 "
 
@@ -202,7 +202,7 @@ def main (args : List String) : IO Unit := do
   match args with
   | ["query"] =>
     let repo ← resolveQueryRepo repo?
-    cacheQuery repo (cap := 50)
+    cacheQuery repo (cap := 50) (repoExplicit? := repo?)
     return
   | ["query", ref] =>
     let repo ← resolveQueryRepo repo?
@@ -246,7 +246,8 @@ def main (args : List String) : IO Unit := do
 
   let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
-  let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
+  let curlMode ← if curlArgs.contains (args.headD "") then validateCurl
+    else pure { parallel := true }
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     -- Resolve the repo once (single git-remote probe) and thread it through the
@@ -269,12 +270,13 @@ def main (args : List String) : IO Unit := do
           for s in scopes do IO.eprintln s!"  {s}"
         pure scopes
       | none => pure []
-    let missing ← getFiles resolvedRepo hashMap force force goodCurl decompress
+    let missing ← getFiles resolvedRepo hashMap force force curlMode decompress
       (unsafeScopes := unsafeScopes)
     -- Explain any files no location served — keyed on the actual outcome, so
     -- a read fully served by the configured locations stays silent even when
     -- HEAD has no fork cache of its own.
     warnIfMissingFiles resolvedRepo missing (unsafeMode := unsafeWindow?.isSome)
+      (repoExplicit? := repo?)
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   -- `pack`-and-upload: the hash memo scopes the file list to what this

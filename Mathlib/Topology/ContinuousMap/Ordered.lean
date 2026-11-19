@@ -10,7 +10,6 @@ public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Bundled continuous maps into orders, with order-compatible topology
-
 -/
 
 @[expose] public section

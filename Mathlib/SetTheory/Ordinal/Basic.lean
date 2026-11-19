@@ -143,12 +143,15 @@ theorem _root_.OrderIso.ordinalType_congr {α β} [LinearOrder α] [LinearOrder 
     [WellFoundedLT α] [WellFoundedLT β] (h : α ≃o β) : typeLT α = typeLT β :=
   h.toRelIsoLT.ordinalType_congr
 
-theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
+theorem type_of_isEmpty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
   (RelIso.relIsoOfIsEmpty r _).ordinalType_congr
+
+@[deprecated (since := "2026-11-26")]
+alias type_eq_zero_of_empty := type_of_isEmpty
 
 @[simp]
 theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ type_eq_zero_of_empty r⟩
+  refine ⟨fun h ↦ ?_, fun _ ↦ type_of_isEmpty r⟩
   let ⟨s⟩ := type_eq.1 h
   exact s.toEquiv.isEmpty
 
@@ -161,7 +164,7 @@ theorem type_pEmpty : type (@emptyRelation PEmpty) = 0 :=
   rfl
 
 theorem type_empty : type (@emptyRelation Empty) = 0 :=
-  type_eq_zero_of_empty _
+  type_of_isEmpty _
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
@@ -521,7 +524,7 @@ theorem mk_le_of_forall_mk_setOfPred_lt {α β : Type u} {c : Cardinal}
   let : LinearOrder α := LinearOrder.lift' f hf
   have := OrderEmbedding.wellFoundedLT ⟨⟨f, hf⟩, .rfl⟩
   have hi (x) : #(Iio x) ≤ #(Iio (f x)) :=
-    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.2⟩, fun _ ↦ by grind⟩
+    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.property⟩, fun _ ↦ by grind⟩
   rw [← card_type (· < ·), ← card_type (· < ·)]
   refine Ordinal.card_le_card <| le_of_forall_lt fun d hd ↦ ?_
   obtain ⟨a, rfl⟩ := typein_surj (· < ·) hd
@@ -726,7 +729,7 @@ theorem lift_lift (a : Ordinal.{u}) : lift.{w} (lift.{v} a) = lift.{max v w} a :
 
 @[simp]
 theorem lift_zero : lift 0 = 0 :=
-  type_eq_zero_of_empty _
+  type_of_isEmpty _
 
 @[simp]
 theorem lift_one : lift 1 = 1 :=
@@ -749,10 +752,12 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
   liftInitialSeg.lt_apply_iff
 
 @[simp]
-theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
+theorem cardinalMk_Iio (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← typein_ordinal]
   rfl
+
+@[deprecated (since := "2026-10-20")] alias _root_.Cardinal.mk_Iio_ordinal := cardinalMk_Iio
 
 /-! ### The first infinite ordinal ω -/
 
@@ -898,7 +903,7 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, zero_lt_one' Ordinal⟩
-  uniq a := Subtype.ext <| lt_one_iff.1 a.2
+  uniq a := Subtype.ext <| lt_one_iff.1 a.property
 
 @[simp]
 theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
@@ -915,7 +920,6 @@ instance uniqueToTypeOne : Unique (ToType 1) where
 theorem one_toType_eq (x : ToType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
   Unique.eq_default x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem type_lt_mem_range_succ_iff [LinearOrder α] [WellFoundedLT α] :
     typeLT α ∈ range succ ↔ ∃ x : α, IsMax x := by
   simp_rw [← isTop_iff_isMax]
@@ -949,7 +953,6 @@ theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrd
 
 -- TODO: use `ToType.mk` for lemmas on `ToType` rather than `enum` and `typein`.
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem typein_one_toType (x : ToType 1) : typein (α := ToType 1) (· < ·) x = 0 := by
   rw [one_toType_eq x, typein_enum]
@@ -958,7 +961,6 @@ theorem typein_le_typein' (o : Ordinal) {x y : o.ToType} :
     typein (α := o.ToType) (· < ·) x ≤ typein (α := o.ToType) (· < ·) y ↔ x ≤ y := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) :
     a ≤ enum (α := (succ o).ToType) (· < ·) ⟨o, (type_toType _ ▸ lt_succ o)⟩ := by
   rw [← enum_typein (α := (succ o).ToType) (· < ·) a, enum_le_enum', Subtype.mk_le_mk,
@@ -976,20 +978,21 @@ open Ordinal
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal whose cardinal is `c`. -/
 @[no_expose]
 def ord (c : Cardinal) : Ordinal :=
-  Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
+  Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.val r.property) <| by
   rintro α β ⟨f⟩
   refine congr_arg sInf <| ext fun o ↦ ⟨?_, ?_⟩ <;>
     rintro ⟨⟨r, hr⟩, rfl⟩ <;>
     refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
   exacts [f.symm, f]
 
-theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+theorem ord_eq_iInf (α : Type u) :
+    ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.val r.property :=
   (rfl)
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
-  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
-  ⟨r.1, r.2, wo.symm⟩
+  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.val r.property
+  ⟨r.val, r.property, wo.symm⟩
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq_type_lt (α) :
@@ -1040,17 +1043,23 @@ theorem ord_card_le (o : Ordinal) : o.card.ord ≤ o :=
 theorem lt_ord_succ_card (o : Ordinal) : o < (succ o.card).ord :=
   lt_ord.2 <| lt_succ _
 
-theorem card_le_iff {o : Ordinal} {c : Cardinal} : o.card ≤ c ↔ o < (succ c).ord := by
+theorem _root_.Ordinal.card_le_iff {o : Ordinal} {c : Cardinal} :
+    o.card ≤ c ↔ o < (succ c).ord := by
   rw [lt_ord, lt_succ_iff]
+
+@[deprecated (since := "2026-10-20")] protected alias card_le_iff := Ordinal.card_le_iff
 
 /--
 A variation on `Cardinal.lt_ord` using `≤`: If `o` is no greater than the
 initial ordinal of cardinality `c`, then its cardinal is no greater than `c`.
 
-The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
+The converse, however, is false (for instance, `o = ω + 1` and `c = ℵ₀`).
 -/
-lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
+lemma _root_.Ordinal.card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) :
+    o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
+
+@[deprecated (since := "2026-10-20")] protected alias card_le_of_le_ord := Ordinal.card_le_of_le_ord
 
 @[gcongr, mono]
 theorem ord_strictMono : StrictMono ord :=
@@ -1175,11 +1184,13 @@ lemma exists_le_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u}) 
   simpa [T] using Cardinal.mk_le_of_injective
     (sigma_mk_injective (β := fun i ↦ (κ ((equivShrink _).symm i)).ord.ToType))
 
-lemma mk_iio_le_lift (κ : Cardinal.{u}) :
+lemma mk_Iio_le_lift (κ : Cardinal.{u}) :
     Cardinal.mk (Set.Iio κ) ≤ Cardinal.lift.{u + 1} κ := by
-  conv_rhs => rw [← card_ord κ, ← mk_Iio_ordinal]
+  conv_rhs => rw [← card_ord κ, ← cardinalMk_Iio]
   rw [Cardinal.le_def]
   exact ⟨⟨fun ⟨a, ha⟩ ↦ ⟨a.ord, by simpa⟩, fun _ _ h ↦ by aesop⟩⟩
+
+@[deprecated (since := "2026-10-20")] alias mk_iio_le_lift := mk_Iio_le_lift
 
 end Cardinal
 
@@ -1312,7 +1323,7 @@ end Ordinal
 /-! ### Sorted lists -/
 
 theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List α}
-    {o : Ordinal} (hl : l.SortedGT) (hm : m.SortedGT) (hmltl : m < l)
+    {o : Ordinal} (hm : m.SortedGT) (hmltl : m < l)
     (hlt : ∀ i ∈ l, Ordinal.typein (α := α) (· < ·) i < o) :
       ∀ i ∈ m, Ordinal.typein (α := α) (· < ·) i < o := by
   replace hmltl : List.Lex (· < ·) m l := hmltl
