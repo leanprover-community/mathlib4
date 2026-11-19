@@ -26,9 +26,9 @@ open scoped Topology
 namespace Real
 
 theorem tendsto_Icc_vitaliFamily_right (x : ℝ) :
-    Tendsto (fun y => Icc x y) (𝓝[>] x) ((vitaliFamily (volume : Measure ℝ) 1).filterAt x) := by
+    Tendsto (fun y => Icc x y) (𝓝[>] x) ((vitaliFamily (volume : Measure ℝ)).filterAt x) := by
   simp only [Icc_eq_closedBall]
-  refine tendsto_closedBall_filterAt volume _ _ ?_ ?_
+  refine tendsto_closedBall_filterAt volume (K := 1) _ _ ?_ ?_
   · refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_
     · refine tendsto_nhdsWithin_of_tendsto_nhds ?_
       simpa using ((continuous_sub_right x).div_const 2).tendsto x
@@ -39,9 +39,9 @@ theorem tendsto_Icc_vitaliFamily_right (x : ℝ) :
     constructor <;> linarith
 
 theorem tendsto_Icc_vitaliFamily_left (x : ℝ) :
-    Tendsto (fun y => Icc y x) (𝓝[<] x) ((vitaliFamily (volume : Measure ℝ) 1).filterAt x) := by
+    Tendsto (fun y => Icc y x) (𝓝[<] x) ((vitaliFamily (volume : Measure ℝ)).filterAt x) := by
   simp only [Icc_eq_closedBall]
-  refine tendsto_closedBall_filterAt volume _ _ ?_ ?_
+  refine tendsto_closedBall_filterAt volume (K := 1) _ _ ?_ ?_
   · refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_
     · refine tendsto_nhdsWithin_of_tendsto_nhds ?_
       simpa using ((continuous_sub_left x).div_const 2).tendsto x

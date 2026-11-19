@@ -36,7 +36,8 @@ ball, i.e., we only need `μ (B (x, 3 r)) ≤ C x * μ a` for some function `C`.
 
 A way to restate this theorem is to say that the set of closed sets `a` with nonempty interior
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * diam a)` forms a Vitali family.
-This version is given in `Vitali.vitaliFamily`.
+This version is given in `Vitali.vitaliFamily`. It only requires that, around almost every point
+`x`, the measure is doubling at arbitrarily small scales, with a constant that may depend on `x`.
 -/
 
 @[expose] public section
@@ -563,63 +564,138 @@ theorem exists_disjoint_covering_ae'
   obtain ⟨_, _, ⟨a, ha₁, ha₂, ha₃⟩, _⟩ := hf (Ioo (-ε) ε) (by grind) isOpen_Ioo
   exact ⟨a, ha₁, by grind, ha₃⟩
 
-/-- Assume that around every point `x` there are arbitrarily small scales at which the measure is
-doubling, with a doubling constant `C x` that may depend on `x`. Then the set of closed sets `a`
-with nonempty interior contained in `closedBall x r` and covering a proportion `1 / C x` of the ball
-`closedBall x (3 * r)` forms a Vitali family.
-This is essentially a restatement of the measurable Vitali theorem. -/
-protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : α → ℝ≥0)
-    (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r)) :
-    VitaliFamily μ where
-  filterAt x := (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
-    ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a}
-  filterAt_le_smallSets_nhds _ := inf_le_left
-  eventually_measurableSet _ := mem_inf_of_right fun _ ha ↦ ha.1.measurableSet
-  filterAt_neBot x := by
-    refine (nhds_basis_closedBall.smallSets.inf_principal _).neBot_iff.2 fun {ε} εpos ↦ ?_
-    obtain ⟨r, μr, rpos, rε⟩ :
-        ∃ r, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
-      ((h x).and_eventually (Ioc_mem_nhdsGT εpos)).exists
-    refine ⟨closedBall x r, closedBall_subset_closedBall rε, isClosed_closedBall, ?_, r, Subset.rfl,
-      μr⟩
-    exact (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
-  exists_covering s P hP := by
-    let t : Set (ℝ × α × Set α) :=
-      { p | p.2.2 ⊆ closedBall p.2.1 p.1 ∧ μ (closedBall p.2.1 (3 * p.1)) ≤ C p.2.1 * μ p.2.2 ∧
-            (interior p.2.2).Nonempty ∧ IsClosed p.2.2 ∧ P p.2.1 p.2.2 ∧ p.2.1 ∈ s }
-    have A : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ p, p ∈ t ∧ p.1 ≤ ε ∧ p.2.1 = x := by
-      intro x xs ε εpos
-      have hev : ∀ᶠ a in (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
-          ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a},
-          a ⊆ closedBall x ε ∧ a ∈ {a | IsClosed a ∧ (interior a).Nonempty ∧
-            ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a} :=
-        ((eventually_smallSets_subset.2 (closedBall_mem_nhds x εpos)).filter_mono
-          inf_le_left).and (mem_inf_of_right (mem_principal_self _))
-      obtain ⟨a, haP, ha_ε, a_closed, a_int, r, ar, μr⟩ := ((hP x xs).and_eventually hev).exists
-      refine ⟨⟨min r ε, x, a⟩, ⟨?_, ?_, a_int, a_closed, haP, xs⟩, min_le_right _ _, rfl⟩
-      · rcases min_cases r ε with (h' | h') <;> rwa [h'.1]
-      · apply le_trans ?_ μr
-        gcongr
-        apply min_le_left
-    rcases exists_disjoint_covering_ae μ s t C (fun p => p.1) (fun p => p.2.1) (fun p => p.2.2)
-        (fun p hp => hp.1) (fun p hp => hp.2.1) (fun p hp => hp.2.2.1) (fun p hp => hp.2.2.2.1) A
-      with ⟨t', t't, t'_count, t'_disj, μt'⟩
-    refine ⟨(fun p : ℝ × α × Set α => p.2) '' t', t'_count.image _, ?_, ?_, ?_, ?_⟩
-    · rintro - ⟨q, hq, rfl⟩
-      exact (t't hq).2.2.2.2.2
-    · rintro p ⟨q, hq, rfl⟩ p' ⟨q', hq', rfl⟩ hqq'
-      exact t'_disj hq hq' (ne_of_apply_ne _ hqq')
-    · rintro - ⟨q, hq, rfl⟩
-      exact (t't hq).2.2.2.2.1
-    · rw [biUnion_image]
-      exact ae_subset.2 μt'
+section VitaliFamily
 
-theorem filterAt_vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : α → ℝ≥0)
-    (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r)) (x : α) :
-    (Vitali.vitaliFamily μ C h).filterAt x = (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧
-      (interior a).Nonempty ∧ ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a} :=
+variable [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+  [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ]
+
+/-- Auxiliary lemma for `Vitali.vitaliFamily`: the covering property for the filters of closed sets
+with nonempty interior covering a proportion `1 / C x` of a ball centered at `x`. -/
+private theorem exists_covering_aux (s : Set α) (P : α → Set α → Prop) (C : α → ℝ≥0)
+    (hP : ∀ x ∈ s, ∃ᶠ a in (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
+      ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a}, P x a) :
+    ∃ t : Set (α × Set α), t.Countable ∧ MapsTo Prod.fst t s ∧ t.PairwiseDisjoint Prod.snd ∧
+      (∀ p ∈ t, P p.1 p.2) ∧ μ (s \ ⋃ p ∈ t, p.2) = 0 := by
+  let t : Set (ℝ × α × Set α) :=
+    { p | p.2.2 ⊆ closedBall p.2.1 p.1 ∧ μ (closedBall p.2.1 (3 * p.1)) ≤ C p.2.1 * μ p.2.2 ∧
+          (interior p.2.2).Nonempty ∧ IsClosed p.2.2 ∧ P p.2.1 p.2.2 ∧ p.2.1 ∈ s }
+  have A : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ p, p ∈ t ∧ p.1 ≤ ε ∧ p.2.1 = x := by
+    intro x xs ε εpos
+    have hev : ∀ᶠ a in (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
+        ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a},
+        a ⊆ closedBall x ε ∧ a ∈ {a | IsClosed a ∧ (interior a).Nonempty ∧
+          ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a} :=
+      ((eventually_smallSets_subset.2 (closedBall_mem_nhds x εpos)).filter_mono
+        inf_le_left).and (mem_inf_of_right (mem_principal_self _))
+    obtain ⟨a, haP, ha_ε, a_closed, a_int, r, ar, μr⟩ := ((hP x xs).and_eventually hev).exists
+    refine ⟨⟨min r ε, x, a⟩, ⟨?_, ?_, a_int, a_closed, haP, xs⟩, min_le_right _ _, rfl⟩
+    · rcases min_cases r ε with (h' | h') <;> rwa [h'.1]
+    · apply le_trans ?_ μr
+      gcongr
+      apply min_le_left
+  rcases exists_disjoint_covering_ae μ s t C (fun p => p.1) (fun p => p.2.1) (fun p => p.2.2)
+      (fun p hp => hp.1) (fun p hp => hp.2.1) (fun p hp => hp.2.2.1) (fun p hp => hp.2.2.2.1) A
+    with ⟨t', t't, t'_count, t'_disj, μt'⟩
+  refine ⟨(fun p : ℝ × α × Set α => p.2) '' t', t'_count.image _, ?_, ?_, ?_, ?_⟩
+  · rintro - ⟨q, hq, rfl⟩
+    exact (t't hq).2.2.2.2.2
+  · rintro p ⟨q, hq, rfl⟩ p' ⟨q', hq', rfl⟩ hqq'
+    exact t'_disj hq hq' (ne_of_apply_ne _ hqq')
+  · rintro - ⟨q, hq, rfl⟩
+    exact (t't hq).2.2.2.2.1
+  · rwa [biUnion_image]
+
+open scoped Classical in
+/-- Assume that around almost every point `x` there are arbitrarily small scales at which the
+measure is doubling, with a doubling constant that may depend on `x`. Then the closed sets `a`
+with nonempty interior contained in a ball `closedBall x r` and covering a proportion `1 / C` of
+the ball `closedBall x (3 * r)` form a Vitali family. Here the constant `C` may be arbitrarily
+large, but it has to stay fixed as `a` shrinks to `x`: the filter `filterAt x` is the supremum over
+`C` of the corresponding filters. At the remaining points (a null set), we use the closed balls
+centered at `x` instead.
+
+This is essentially a restatement of the measurable Vitali theorem. -/
+protected noncomputable def vitaliFamily
+    (h : ∀ᵐ x ∂μ, ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)) :
+    VitaliFamily μ where
+  filterAt x :=
+    if ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) then
+      ⨆ C : ℝ≥0, (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
+        ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C * μ a}
+    else (𝓝[>] 0).map (closedBall x)
+  filterAt_le_smallSets_nhds x := by
+    split_ifs
+    exacts [iSup_le fun _ ↦ inf_le_left,
+      (tendsto_closedBall_smallSets x).mono_left nhdsWithin_le_nhds]
+  eventually_measurableSet x := by
+    split_ifs
+    exacts [eventually_iSup.2 fun _ ↦ mem_inf_of_right fun _ ha ↦ ha.1.measurableSet,
+      eventually_map.2 <| .of_forall fun _ ↦ isClosed_closedBall.measurableSet]
+  filterAt_neBot x := by
+    split_ifs with hx
+    · obtain ⟨C, hC⟩ := hx
+      refine NeBot.mono ?_ (le_iSup _ C)
+      refine (nhds_basis_closedBall.smallSets.inf_principal _).neBot_iff.2 fun {ε} εpos ↦ ?_
+      obtain ⟨r, μr, rpos, rε⟩ :
+          ∃ r, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
+        (hC.and_eventually (Ioc_mem_nhdsGT εpos)).exists
+      exact ⟨closedBall x r, closedBall_subset_closedBall rε, isClosed_closedBall,
+        (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall, r, Subset.rfl, μr⟩
+    · infer_instance
+  exists_covering s P hP := by
+    -- At the good points, we choose a doubling constant `C x` along which `P x` frequently holds.
+    have : ∀ x, ∃ C : ℝ≥0, x ∈ s ∧ (∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0,
+        μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)) →
+        ∃ᶠ a in (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
+          ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C * μ a}, P x a := by
+      intro x
+      by_cases hx : x ∈ s ∧ ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0,
+        μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)
+      · have := hP x hx.1
+        rw [ite_eq_left hx.2, frequently_iSup] at this
+        exact this.imp fun _ h _ ↦ h
+      · exact ⟨0, fun h ↦ (hx h).elim⟩
+    choose C hC using this
+    obtain ⟨t, htc, hts, htd, htP, hμt⟩ := exists_covering_aux μ
+      {x | x ∈ s ∧ ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)}
+      P C hC
+    refine ⟨t, htc, fun p hp ↦ (hts hp).1, htd, htP, ae_subset.2 ?_⟩
+    -- The bad points form a null set.
+    refine measure_mono_null (fun x hx ↦ ?_) (measure_union_null hμt (ae_iff.1 h))
+    by_cases hxG : ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)
+    exacts [Or.inl ⟨⟨hx.1, hxG⟩, hx.2⟩, Or.inr hxG]
+
+open scoped Classical in
+theorem filterAt_vitaliFamily
+    (h : ∀ᵐ x ∂μ, ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r))
+    (x : α) :
+    (Vitali.vitaliFamily μ h).filterAt x =
+      if ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) then
+        ⨆ C : ℝ≥0, (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧ (interior a).Nonempty ∧
+          ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C * μ a}
+      else (𝓝[>] 0).map (closedBall x) :=
   rfl
+
+/-- At a point `x` around which the measure is doubling at arbitrarily small scales, the filter
+`(Vitali.vitaliFamily μ h).filterAt x` is the supremum over `C` of the filters of closed sets `a`
+with nonempty interior contained in a ball `closedBall x r` and covering a proportion `1 / C` of
+the ball `closedBall x (3 * r)`. -/
+theorem filterAt_vitaliFamily_of_exists
+    (h : ∀ᵐ x ∂μ, ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r))
+    {x : α}
+    (hx : ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)) :
+    (Vitali.vitaliFamily μ h).filterAt x = ⨆ C : ℝ≥0, (𝓝 x).smallSets ⊓ 𝓟 {a | IsClosed a ∧
+      (interior a).Nonempty ∧ ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C * μ a} := by
+  classical
+  exact ite_eq_left hx
+
+/-- A version of `Vitali.vitaliFamily` for a measure which is doubling at arbitrarily small scales
+around every point `x`, with a doubling constant `C x` that may depend on `x`. -/
+protected noncomputable abbrev vitaliFamilyOfForall (C : α → ℝ≥0)
+    (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r)) :
+    VitaliFamily μ :=
+  Vitali.vitaliFamily μ (.of_forall fun x ↦ ⟨C x, h x⟩)
+
+end VitaliFamily
 
 end Vitali
