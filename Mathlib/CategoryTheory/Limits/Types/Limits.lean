@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 # Limits in the category of types.
 
 We show that the category of types has all limits, by providing the usual concrete models.
-
 -/
 
 @[expose] public section
@@ -34,6 +33,7 @@ def coneOfSection {s} (hs : s ∈ F.sections) : Cone F where
 
 /-- Given a cone over a functor F into `Type*` and an element in the cone point,
   construct a section of F. -/
+@[simps]
 def sectionOfCone (c : Cone F) (x : c.pt) : F.sections :=
   ⟨fun j ↦ c.π.app j x, fun f ↦ congr_hom (c.π.naturality f).symm x⟩
 

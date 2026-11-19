@@ -18,7 +18,6 @@ directions uniformly continuous. We denote uniform isomorphisms with the notatio
 
 * `UniformEquiv α β`: The type of uniform isomorphisms from `α` to `β`.
   This type can be denoted using the following notation: `α ≃ᵤ β`.
-
 -/
 
 @[expose] public section

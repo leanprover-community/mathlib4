@@ -105,7 +105,6 @@ Generalize more results to topological vector spaces.
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
-
 -/
 
 public section
@@ -199,6 +198,7 @@ theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     HasFDerivWithinAt f f' s x :=
   h.mono <| prod_mono_left _ (nhdsWithin_le_iff.mpr hst)
 
+@[gcongr]
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
   h.mono <| by gcongr
@@ -231,7 +231,7 @@ theorem differentiableWithinAt_univ :
   simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
 
 theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
-  rw [fderiv, fderivWithin_zero_of_not_differentiableWithinAt]
+  rw [← fderivWithin_univ, fderivWithin_zero_of_not_differentiableWithinAt]
   rwa [differentiableWithinAt_univ]
 
 theorem hasFDerivWithinAt_of_mem_nhds (h : s ∈ 𝓝 x) :
@@ -377,7 +377,7 @@ theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWit
 
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, ite_eq_left (.of_not_accPt h)]
+  rw [fderivWithin_def, ite_eq_left (.of_not_accPt h)]
 
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) :
     fderivWithin 𝕜 f s x = 0 :=
@@ -389,13 +389,13 @@ theorem fderivWithin_zero_of_not_uniqueDiffWithinAt {f : 𝕜 → F} {x : 𝕜} 
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  simp only [fderivWithin, dite_eq_left h]
+  simp only [fderivWithin_def, dite_eq_left h]
   split_ifs with h₀
   exacts [h₀, Classical.choose_spec h]
 
 theorem DifferentiableAt.hasFDerivAt (h : DifferentiableAt 𝕜 f x) :
     HasFDerivAt f (fderiv 𝕜 f x) x := by
-  rw [fderiv, ← hasFDerivWithinAt_univ]
+  rw [← fderivWithin_univ, ← hasFDerivWithinAt_univ]
   rw [← differentiableWithinAt_univ] at h
   exact h.hasFDerivWithinAt
 
@@ -428,6 +428,7 @@ protected theorem HasFDerivWithinAt.fderivWithin
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = f' :=
   (hxs.eq h h.differentiableWithinAt.hasFDerivWithinAt).symm
 
+@[gcongr]
 theorem DifferentiableWithinAt.mono (h : DifferentiableWithinAt 𝕜 f t x) (st : s ⊆ t) :
     DifferentiableWithinAt 𝕜 f s x := by
   rcases h with ⟨f', hf'⟩
@@ -484,6 +485,7 @@ protected theorem DifferentiableAt.fderivWithin
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x :=
   h.hasFDerivAt.hasFDerivWithinAt.fderivWithin hxs
 
+@[gcongr]
 theorem DifferentiableOn.mono (h : DifferentiableOn 𝕜 f t) (st : s ⊆ t) : DifferentiableOn 𝕜 f s :=
   fun x hx => (h x (st hx)).mono st
 
@@ -516,7 +518,7 @@ theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
 set_option backward.isDefEq.respectTransparency false in
 theorem fderivWithin_inter (ht : t ∈ 𝓝 x) : fderivWithin 𝕜 f (s ∩ t) x = fderivWithin 𝕜 f s x := by
   classical
-  simp [fderivWithin, hasFDerivWithinAt_inter ht, DifferentiableWithinAt]
+  simp [fderivWithin_def, hasFDerivWithinAt_inter ht, DifferentiableWithinAt]
 
 theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
   rw [← fderivWithin_univ, ← univ_inter s, fderivWithin_inter h]
@@ -875,20 +877,24 @@ section Lipschitz
 
 /-- If `f` is strictly differentiable at `x` with derivative `f'` and `K > ‖f'‖₊`, then `f` is
 `K`-Lipschitz in a neighborhood of `x`. -/
-theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDerivAt f f' x)
+theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt (hf : HasStrictFDerivAt f f' x)
     (K : ℝ≥0) (hK : ‖f'‖₊ < K) : ∃ s ∈ 𝓝 x, LipschitzOnWith K f s := by
   have := hf.isLittleO.add_isBigOWith (f'.isBigOWith_comp _ _) hK
-  simp only [sub_add_cancel, IsBigOWith] at this
+  simp only [sub_add_cancel, isBigOWith_iff] at this
   rcases exists_nhds_square this with ⟨U, Uo, xU, hU⟩
   exact
     ⟨U, Uo.mem_nhds xU, lipschitzOnWith_iff_norm_sub_le.2 fun x hx y hy => hU (mk_mem_prod hx hy)⟩
 
+@[deprecated (since := "2026-10-31")]
+alias HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt :=
+  HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt
+
 /-- If `f` is strictly differentiable at `x` with derivative `f'`, then `f` is Lipschitz in a
-neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt` for a
+neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt` for a
 more precise statement. -/
 theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x) :
     ∃ K, ∃ s ∈ 𝓝 x, LipschitzOnWith K f s :=
-  (exists_gt _).imp hf.exists_lipschitzOnWith_of_nnnorm_lt
+  (exists_gt _).imp hf.exists_lipschitzOnWith_of_nnNorm_lt
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version

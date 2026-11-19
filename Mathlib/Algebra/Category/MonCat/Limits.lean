@@ -17,7 +17,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
-
 -/
 
 @[expose] public section

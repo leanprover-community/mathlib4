@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
-
 # Limits and colimits of sheaves
 
 ## Limits
@@ -25,7 +24,6 @@ Given a diagram `F : K ⥤ Sheaf J D` of sheaves, and a colimit cocone on the le
 we show that the cocone obtained by sheafifying the cocone point is a colimit cocone of sheaves.
 
 This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soon as `D` does.
-
 -/
 
 @[expose] public section
@@ -89,7 +87,6 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
 
 variable [HasLimitsOfShape K D]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a cone of shape `K` of sheaves, which is a limit on the level of presheaves,
 this definition shows that the limit presheaf satisfies the multifork variant of the sheaf
@@ -190,7 +187,6 @@ noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma sheafifyCocone_ι_app_val

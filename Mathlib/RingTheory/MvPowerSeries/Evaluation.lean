@@ -36,7 +36,6 @@ Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properti
 * `MvPowerSeries.uniformContinuous_eval₂`: uniform continuity of the evaluation
 * `MvPowerSeries.continuous_eval₂`: continuity of the evaluation
 * `MvPowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
-
 -/
 
 @[expose] public section

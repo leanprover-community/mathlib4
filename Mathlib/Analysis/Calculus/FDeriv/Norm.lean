@@ -35,7 +35,6 @@ at `t • x` when `t ≠ 0`.
 ## Tags
 
 differentiability, norm
-
 -/
 
 public section

@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 
 In this file, we show that for any additive category `C`,
 the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is triangulated.
-
 -/
 
 @[expose] public section

@@ -22,7 +22,6 @@ So far, I don't see a way to state nicely what we really want:
 The problem is that the limits API doesn't promise you any particular model of the cokernel,
 and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 (and hence making `cokernel.π f` arbitrarily large in norm), obtaining another categorical cokernel.
-
 -/
 
 @[expose] public section
@@ -91,7 +90,7 @@ section EqualizersAndKernels
 noncomputable instance {V W : SemiNormedGrp.{u}} : Norm (V ⟶ W) where
   norm f := norm f.hom
 noncomputable instance {V W : SemiNormedGrp.{u}} : NNNorm (V ⟶ W) where
-  nnnorm f := nnnorm f.hom
+  nnNorm f := nnNorm f.hom
 
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
 noncomputable def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=
@@ -212,7 +211,6 @@ theorem explicitCokernelπ_desc_apply {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} 
   show (explicitCokernelπ f ≫ explicitCokernelDesc cond) x = g x by rw [explicitCokernelπ_desc]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 theorem explicitCokernelDesc_unique {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
     (w : f ≫ g = 0) (e : explicitCokernel f ⟶ Z) (he : explicitCokernelπ f ≫ e = g) :
     e = explicitCokernelDesc w := by

@@ -89,7 +89,8 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   refine Finset.sum_eq_zero fun n _ => ?_
   dsimp
   rw [eval₂_monomial (C.comp (Quotient.mk I)) X]
-  refine mul_eq_zero_of_left (Polynomial.ext fun m => ?_) (X ^ n)
+  refine mul_eq_zero_of_left ?_ (X ^ n)
+  ext m
   rw [RingHom.comp_apply, coeff_C]
   by_cases h : m = 0
   · simpa [h] using Quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)

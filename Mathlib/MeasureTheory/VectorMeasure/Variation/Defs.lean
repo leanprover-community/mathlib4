@@ -27,7 +27,6 @@ not less than this function. It turns out that this function is a measure.
 ## References
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
-
 -/
 
 @[expose] public section
@@ -41,15 +40,18 @@ namespace MeasureTheory.VectorMeasure
 variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
 /-- The norm of a vector measure is σ-subadditive on measurable sets. -/
-lemma isSigmaSubadditiveSetFun_enorm (μ : VectorMeasure X V) :
+lemma isSigmaSubadditiveSetFun_eNorm (μ : VectorMeasure X V) :
     IsSigmaSubadditiveSetFun (‖μ ·‖ₑ) := by
   intro s hs
   have hmeas : ∀ i, MeasurableSet (s i).val := fun i => (s i).prop
-  simpa [VectorMeasure.of_disjoint_iUnion hmeas hs] using enorm_tsum_le_tsum_enorm
+  simpa [VectorMeasure.of_disjoint_iUnion hmeas hs] using eNorm_tsum_le_tsum_eNorm
+
+@[deprecated (since := "2026-11-06")]
+alias isSigmaSubadditiveSetFun_enorm := isSigmaSubadditiveSetFun_eNorm
 
 /-- The variation of a `VectorMeasure` as a `Measure`. -/
 noncomputable def variation (μ : VectorMeasure X V) : Measure X :=
-  preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp)
+  preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_eNorm μ) (by simp)
 
 /-- The variation of a `VectorMeasure` as an `ℝ≥0∞`-valued `VectorMeasure`. -/
 noncomputable def ennrealVariation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=

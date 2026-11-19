@@ -31,7 +31,6 @@ composition of right derived functors, even though the
 definition only assumes that `RF₁₃` is a right derived functor.
 (In applications, both `RF₁₂` and `RF₂₃` would usually
 be derived functors as well.)
-
 -/
 
 @[expose] public section

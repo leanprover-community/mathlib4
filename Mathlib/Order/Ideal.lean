@@ -47,7 +47,6 @@ in line with most presentations of forcing.
 ## Tags
 
 ideal, cofinal, dense, countable, generic
-
 -/
 
 @[expose] public section
