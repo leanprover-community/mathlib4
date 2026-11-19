@@ -1018,56 +1018,34 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
 /-- In a space with the Besicovitch covering property, the set of closed balls with positive radius
 forms a Vitali family. This is essentially a restatement of the measurable Besicovitch theorem. -/
 protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ where
-  setsAt x := (fun r : ℝ => closedBall x r) '' Ioi (0 : ℝ)
-  measurableSet _ := forall_mem_image.2 fun _ _ ↦ isClosed_closedBall.measurableSet
-  nonempty_interior _ := forall_mem_image.2 fun _ rpos ↦
-    (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
-  nontrivial x ε εpos := ⟨closedBall x ε, mem_image_of_mem _ εpos, Subset.rfl⟩
-  covering := by
-    intro s f fsubset ffine
-    let g : α → Set ℝ := fun x => {r | 0 < r ∧ closedBall x r ∈ f x}
-    have A : ∀ x ∈ s, ∀ δ > 0, (g x ∩ Ioo 0 δ).Nonempty := by
-      intro x xs δ δpos
-      obtain ⟨t, tf, ht⟩ : ∃ (t : Set α), t ∈ f x ∧ t ⊆ closedBall x (δ / 2) :=
-        ffine x xs (δ / 2) (half_pos δpos)
-      obtain ⟨r, rpos, rfl⟩ : ∃ r : ℝ, 0 < r ∧ closedBall x r = t := by simpa using fsubset x xs tf
-      rcases le_total r (δ / 2) with (H | H)
-      · exact ⟨r, ⟨rpos, tf⟩, ⟨rpos, H.trans_lt (half_lt_self δpos)⟩⟩
-      · have : closedBall x r = closedBall x (δ / 2) := Subset.antisymm ht (by gcongr)
-        rw [this] at tf
-        exact ⟨δ / 2, ⟨half_pos δpos, tf⟩, ⟨half_pos δpos, half_lt_self δpos⟩⟩
-    obtain ⟨t, r, _, ts, tg, μt, tdisj⟩ :
-      ∃ (t : Set α) (r : α → ℝ),
-        t.Countable ∧
-          t ⊆ s ∧
-            (∀ x ∈ t, r x ∈ g x ∩ Ioo 0 1) ∧
-              μ (s \ ⋃ x ∈ t, closedBall x (r x)) = 0 ∧
-                t.PairwiseDisjoint fun x => closedBall x (r x) :=
-      exists_disjoint_closedBall_covering_ae μ g s A (fun _ => 1) fun _ _ => zero_lt_one
-    let F : α → α × Set α := fun x => (x, closedBall x (r x))
-    refine ⟨F '' t, ?_, ?_, ?_, ?_⟩
+  filterAt x := (𝓝[>] (0 : ℝ)).map (closedBall x)
+  filterAt_le_smallSets_nhds x := (tendsto_closedBall_smallSets x).mono_left nhdsWithin_le_nhds
+  eventually_measurableSet _ := eventually_map.2 <| .of_forall fun _ ↦ measurableSet_closedBall
+  filterAt_neBot _ := inferInstance
+  exists_covering s P hP := by
+    have A : ∀ x ∈ s, ∀ δ > 0, ({r | P x (closedBall x r)} ∩ Ioo 0 δ).Nonempty := fun x hx δ hδ ↦
+      ((frequently_map.1 (hP x hx)).and_eventually (Ioo_mem_nhdsGT hδ)).exists
+    obtain ⟨t, r, htc, ts, htP, μt, tdisj⟩ :=
+      exists_disjoint_closedBall_covering_ae μ _ s A (fun _ ↦ 1) fun _ _ ↦ zero_lt_one
+    refine ⟨(fun x ↦ (x, closedBall x (r x))) '' t, htc.image _, ?_, ?_, ?_, ?_⟩
     · rintro - ⟨x, hx, rfl⟩; exact ts hx
     · rintro p ⟨x, hx, rfl⟩ q ⟨y, hy, rfl⟩ hxy
-      exact tdisj hx hy (ne_of_apply_ne F hxy)
-    · rintro - ⟨x, hx, rfl⟩; exact (tg x hx).1.2
-    · rwa [biUnion_image]
+      exact tdisj hx hy fun h ↦ hxy (h ▸ rfl)
+    · rintro - ⟨x, hx, rfl⟩; exact (htP x hx).1
+    · rw [biUnion_image]
+      exact ae_subset.2 μt
 
 /-- The main feature of the Besicovitch Vitali family is that its filter at a point `x` corresponds
-to convergence along closed balls. We record one of the two implications here, which will enable us
-to deduce specific statements on differentiation of measures in this context from the general
-versions. -/
+to convergence along closed balls. -/
+theorem filterAt_vitaliFamily (μ : Measure α) [SFinite μ] (x : α) :
+    (Besicovitch.vitaliFamily μ).filterAt x = (𝓝[>] (0 : ℝ)).map (closedBall x) :=
+  rfl
+
+/-- Closed balls centered at `x` tend to the Besicovitch Vitali family filter at `x`
+as the radius tends to `0⁺`. -/
 theorem tendsto_filterAt (μ : Measure α) [SFinite μ] (x : α) :
-    Tendsto (fun r => closedBall x r) (𝓝[>] 0) ((Besicovitch.vitaliFamily μ).filterAt x) := by
-  intro s hs
-  simp only [mem_map]
-  obtain ⟨ε, εpos, hε⟩ :
-    ∃ (ε : ℝ), ε > 0 ∧
-      ∀ a : Set α, a ∈ (Besicovitch.vitaliFamily μ).setsAt x → a ⊆ closedBall x ε → a ∈ s :=
-    (VitaliFamily.mem_filterAt_iff _).1 hs
-  filter_upwards [Ioc_mem_nhdsGT εpos] with _r hr
-  apply hε
-  · exact mem_image_of_mem _ hr.1
-  · exact closedBall_subset_closedBall hr.2
+    Tendsto (fun r => closedBall x r) (𝓝[>] 0) ((Besicovitch.vitaliFamily μ).filterAt x) :=
+  tendsto_map
 
 variable [MetricSpace β] [MeasurableSpace β] [BorelSpace β] [SecondCountableTopology β]
   [HasBesicovitchCovering β]

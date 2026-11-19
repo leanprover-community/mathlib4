@@ -142,7 +142,7 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
 (This is a trivial result, following from the fact that the measure is locally finite). -/
 theorem eventually_measure_lt_top [IsLocallyFiniteMeasure μ] (x : α) :
     ∀ᶠ a in v.filterAt x, μ a < ∞ :=
-  (μ.finiteAt_nhds x).eventually.filter_mono inf_le_left
+  (μ.finiteAt_nhds x).eventually.filter_mono (v.filterAt_le_smallSets_nhds x)
 
 section OuterMeasure
 
@@ -439,7 +439,8 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
   have A {ε : ℝ≥0∞} (hε : ε > 0) : ∀ᵐ x ∂μ, ∀ᶠ a in v.filterAt x, ρ a < ε * μ a := by
     rcases eq_top_or_lt_top ε with rfl | hε'
     · filter_upwards [v.ae_eventually_measure_pos] with x hx
-      filter_upwards [hx, (ρ.finiteAt_nhds x).eventually.filter_mono inf_le_left] with s hs _
+      filter_upwards [hx, (ρ.finiteAt_nhds x).eventually.filter_mono
+        (v.filterAt_le_smallSets_nhds x)] with s hs _
       rwa [ENNReal.top_mul hs.ne']
     set s := {x | ¬∀ᶠ a in v.filterAt x, ρ a < ε * μ a} with hs
     change μ s = 0
