@@ -48,8 +48,10 @@ jobs:
           # Test the newest pushed commit whose build succeeded, so that the cache has its oleans.
           for sha in $(gh run list --workflow build.yml --branch "$ref" --event push --limit 10 \
               --json headSha --jq '.[].headSha'); do
+            # A commit can have several `ci / Build` runs, for example when it is also on master.
+            # They build the same tree, so one success is enough.
             conclusions=$(gh api "repos/$GH_REPO/commits/$sha/check-runs?check_name=ci%20%2F%20Build" \
-              --jq '[.check_runs[].conclusion] | join(",")')
+              --jq '[.check_runs[].conclusion] | if any(. == "success") then "success" else join(",") end')
             if [ "$conclusions" = success ]; then
               echo "Testing $ref@$sha"
               {
@@ -470,3 +472,4 @@ jobs:
           topic: 'nanoda failure'
           content: |
             ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
+
