@@ -304,7 +304,7 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
   have hs : IsAntichain (Subrel r (· ∈ s)) (univ : Set s) :=
-    fun a _ b _ hab ↦ ha a.2 b.2 (Subtype.coe_ne_coe.2 hab)
+    fun a _ b _ hab ↦ ha a.property b.property (Subtype.coe_ne_coe.2 hab)
   have h := IsAntichain.finite_of_wellQuasiOrdered hs hp
   exact finite_coe_iff.mp (finite_univ_iff.mp h)
 
