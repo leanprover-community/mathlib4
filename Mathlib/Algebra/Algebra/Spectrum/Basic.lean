@@ -428,9 +428,7 @@ local notation "σ" => spectrum R
 local notation "↑ₐ" => algebraMap R A
 
 theorem apply_mem_spectrum [Nontrivial R] (φ : F) (a : A) : φ a ∈ σ a := by
-  have h : ↑ₐ (φ a) - a ∈ RingHom.ker (φ : A →+* R) := by
-    simp only [RingHom.mem_ker, map_sub, RingHom.coe_coe, AlgHomClass.commutes,
-      Algebra.algebraMap_self, RingHom.id_apply, sub_self]
+  have h : ↑ₐ (φ a) - a ∈ RingHom.ker (φ : A →+* R) := by simp [AlgHomClass.commutes]
   simp only [spectrum.mem_iff, ← mem_nonunits_iff,
     coe_subset_nonunits (RingHom.ker_ne_top (φ : A →+* R)) h]
 

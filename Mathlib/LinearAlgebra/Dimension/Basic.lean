@@ -319,9 +319,8 @@ theorem lift_rank_le_of_surjective_injective
     (hc : (algebraMap R' S').comp i = j.comp (algebraMap R S)) :
     lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
-  have := congr($hc r)
-  simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_ofClass, map_mul, this]
+  have : (algebraMap R' S') (i r) = j ((algebraMap R S) r) := by simpa using congr($hc r)
+  simp [smul_def, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
 ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
