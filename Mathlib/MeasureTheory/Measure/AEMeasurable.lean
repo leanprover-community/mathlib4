@@ -261,7 +261,7 @@ theorem MeasurableEmbedding.aemeasurable_comp_iff {g : β → γ} (hg : Measurab
 
 theorem aemeasurable_restrict_iff_comap_subtype {s : Set α} (hs : MeasurableSet s) {μ : Measure α}
     {f : α → β} : AEMeasurable f (μ.restrict s) ↔ AEMeasurable (f ∘ (↑) : s → β) (comap (↑) μ) := by
-  rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).aemeasurable_map_iff]
+  rw [← map_comap_subtypeVal hs, (MeasurableEmbedding.subtypeVal hs).aemeasurable_map_iff]
 
 @[to_additive]
 theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
@@ -377,7 +377,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
     [hc : MeasurableSpace.CountablyGenerated β] (h : NullMeasurable f μ) : AEMeasurable f μ := by
   classical
   nontriviality β; inhabit β
-  rcases hc.1 with ⟨S, hSc, rfl⟩
+  rcases hc.isCountablyGenerated with ⟨S, hSc, rfl⟩
   choose! T hTf hTm hTeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_subset_ae_eq
   choose! U hUf hUm hUeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_superset_ae_eq
   set v := ⋃ s ∈ S, U s \ T s
@@ -414,7 +414,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable_of_aerange {f : α → β} {t : 
     rw [range_subset_iff] at hf't
     lift f' to α → t using hf't
     replace hf'm : NullMeasurable f' μ := hf'm.measurable'.subtype_mk
-    exact (measurable_subtype_coe.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
+    exact (measurable_subtypeVal.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
 
 section prop
 

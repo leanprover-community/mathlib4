@@ -112,7 +112,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     simp_rw [c, Finset.mem_image]
     constructor
     · rintro ⟨w, hw, rfl⟩
-      exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
+      exact ⟨(mem_rootSet.mp w.property).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
     · rintro ⟨hz1, hz2⟩
       exact ⟨⟨z, mem_rootSet.mpr ⟨hp, hz1⟩⟩, Equiv.Perm.mem_support.mpr (mt (hc0 _).mp hz2), rfl⟩
   rw [← Finset.card_union_of_disjoint]

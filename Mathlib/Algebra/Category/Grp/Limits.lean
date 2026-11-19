@@ -446,7 +446,7 @@ def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         simp }
-  inv := kernel.lift f (ofHom (AddSubgroup.subtype f.hom.ker)) <| by ext x; exact x.2
+  inv := kernel.lift f (ofHom (AddSubgroup.subtype f.hom.ker)) <| by ext x; exact x.property
   hom_inv_id := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): it would be nice to do the next two steps by a single `ext`,
     -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.

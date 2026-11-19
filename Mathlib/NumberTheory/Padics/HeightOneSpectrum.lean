@@ -56,7 +56,7 @@ equivalent. It is best to do this after `Valued` has been refactored, or at leas
 
 open IsDedekindDomain UniformSpace.Completion NumberField PadicInt HeightOneSpectrum
 
-local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
+local instance (p : Nat.Primes) : Fact p.val.Prime := ⟨p.property⟩
 
 variable (R : Type*) [CommRing R] [Algebra R ℚ]
 
@@ -203,7 +203,7 @@ theorem adicCompletion.padicEquiv_bijOn (v : HeightOneSpectrum R) :
   · rw [← adicCompletionIntegers.coe_padicIntEquiv_apply v ⟨x, hx⟩]
     exact norm_le_one ((adicCompletionIntegers.padicIntEquiv v) ⟨x, hx⟩)
   · obtain ⟨x, hx⟩ := (adicCompletionIntegers.padicIntEquiv v).surjective ⟨y, hy⟩
-    refine ⟨x, x.2, by rw [← adicCompletionIntegers.coe_padicIntEquiv_apply, hx]⟩
+    refine ⟨x, x.property, by rw [← adicCompletionIntegers.coe_padicIntEquiv_apply, hx]⟩
 
 end Rat.HeightOneSpectrum
 

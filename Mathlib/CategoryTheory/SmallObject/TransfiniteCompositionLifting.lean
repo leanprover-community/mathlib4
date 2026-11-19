@@ -153,15 +153,15 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def liftHom : F.obj j ⟶ X :=
   (F.isColimitOfIsWellOrderContinuous j hj).desc
     (Cocone.mk _
-      { app := fun i ↦ (s.1 ⟨i⟩).f'
+      { app := fun i ↦ (s.val ⟨i⟩).f'
         naturality i i' g := by
-          have := congr(SqStruct.f' $(s.2 g.op))
+          have := congr(SqStruct.f' $(s.property g.op))
           dsimp at this ⊢
           rw [this, comp_id] })
 
 @[reassoc]
 lemma liftHom_fac (i : J) (hi : i < j) :
-    F.map (homOfLE hi.le) ≫ liftHom hj s = (s.1 ⟨⟨i, hi⟩⟩).f' :=
+    F.map (homOfLE hi.le) ≫ liftHom hj s = (s.val ⟨⟨i, hi⟩⟩).f' :=
   (F.isColimitOfIsWellOrderContinuous j hj).fac _ ⟨i, hi⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -175,14 +175,14 @@ noncomputable def lift : (sqFunctor c p f g).obj (Opposite.op j) where
       rintro rfl
       exact Order.not_isSuccLimit_bot hj)
     rw [liftHom_fac hj s ⊥ h]
-    simpa using (s.1 ⟨⊥, h⟩).w₁
+    simpa using (s.val ⟨⊥, h⟩).w₁
   w₂ := (F.isColimitOfIsWellOrderContinuous j hj).hom_ext (fun ⟨i, hij⟩ ↦ by
-    have := (s.1 ⟨i, hij⟩).w₂
+    have := (s.val ⟨i, hij⟩).w₂
     dsimp at this ⊢
     rw [liftHom_fac_assoc _ _ _ hij, this, Cocone.w_assoc])
 
 lemma map_lift {i : J} (hij : i < j) :
-    (lift hj s).map (homOfLE hij.le) = s.1 ⟨⟨i, hij⟩⟩ := by
+    (lift hj s).map (homOfLE hij.le) = s.val ⟨⟨i, hij⟩⟩ := by
   ext
   apply liftHom_fac
 
@@ -224,10 +224,10 @@ lemma hasLift : sq.HasLift := by
   replace hs := congr(SqStruct.f' $hs)
   dsimp at hs
   let t : Cocone F := Cocone.mk X
-    { app j := (s.1 ⟨j⟩).f'
-      naturality j j' g := by simpa using congr(SqStruct.f' $(s.2 g.op)) }
+    { app j := (s.val ⟨j⟩).f'
+      naturality j j' g := by simpa using congr(SqStruct.f' $(s.property g.op)) }
   let l := hc.desc t
-  have hl (j : J) : c.ι.app j ≫ l = (s.1 ⟨j⟩).f' := hc.fac t j
+  have hl (j : J) : c.ι.app j ≫ l = (s.val ⟨j⟩).f' := hc.fac t j
   exact ⟨⟨{
     l := l
     fac_left := by rw [hl, hs]
