@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.BaseChange
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
@@ -35,12 +36,8 @@ namespace exteriorPower
 `TensorProduct.mk R S M 1`. -/
 def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
   toFun m := ExteriorAlgebra.ιMulti S i ((TensorProduct.mk R S M 1) ∘ m)
-  map_update_add' {_i} := by
-    cases Subsingleton.elim _i (by clear _i; infer_instance)
-    simp [Function.comp_update, map_add]
-  map_update_smul' {_i} := by
-    cases Subsingleton.elim _i (by clear _i; infer_instance)
-    intro m j r
+  map_update_add' _ := by simp [Function.comp_update, map_add]
+  map_update_smul' {_} m j r := by
     simp [Function.comp_update, -algebraMap_smul, ← algebraMap_smul S r]
   map_eq_zero_of_eq' m j k hjk hjk_ne := by
     have : ((mk R S M 1) ∘ m) j = ((mk R S M 1) ∘ m) k := by
@@ -69,41 +66,28 @@ lemma baseChangeEquivForward_apply_one_tmul_ιMulti (i : ℕ) (m : Fin i → M) 
     exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
   rfl
 
-/-- Projection from `ExteriorAlgebra` to exterior power. -/
-def degreeProjection (i : ℕ) : ExteriorAlgebra R M →ₗ[R] (⋀[R]^i M) :=
-  ExteriorAlgebra.liftAlternating (Function.update 0 i (exteriorPower.ιMulti R i))
-
-lemma degreeProjection_apply_ιMulti (i : ℕ) (m : Fin i → M) :
-    degreeProjection R M i (ExteriorAlgebra.ιMulti R i m) = ιMulti R i m := by
-  simp [exteriorPower.degreeProjection]
-
 /-- Auxiliary alternating map for `exteriorPower.baseChangeEquivInverse`. -/
 def baseChangeInverseAlternating (i : ℕ) : (S ⊗[R] M) [⋀^Fin i]→ₗ[S] S ⊗[R] (⋀[R]^i M) :=
-  (((exteriorPower.degreeProjection R M i).baseChange S).comp
+  (((ExteriorAlgebra.toExteriorPower R M i).baseChange S).comp
     (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom.toLinearMap).compAlternatingMap
       (ExteriorAlgebra.ιMulti S i)
 
 lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
     baseChangeInverseAlternating R M S i (fun j ↦ s j ⊗ₜ[R] m j) =
-      (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] exteriorPower.ιMulti R i m := by
-  simp only [baseChangeInverseAlternating, LinearMap.comp_apply,
-    LinearMap.compAlternatingMap_apply, AlgHom.toLinearMap_apply, ExteriorAlgebra.ιMulti_apply]
-  have hprod : (List.ofFn fun j ↦ s j ⊗ₜ[R] ExteriorAlgebra.ι R (m j)).prod =
-    (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] (List.ofFn fun j ↦ ExteriorAlgebra.ι R (m j)).prod := by
+      (∏ j, s j) ⊗ₜ[R] exteriorPower.ιMulti R i m := by
+  trans ((ExteriorAlgebra.toExteriorPower R M i).baseChange S)
+    ((∏ j, s j) ⊗ₜ[R] (ExteriorAlgebra.ιMulti R i) m)
+  · simp only [baseChangeInverseAlternating, AlgEquiv.toAlgHom_toLinearMap, LinearMap.coe_comp,
+      AlgEquiv.toLinearEquiv_symm, LinearMap.compAlternatingMap_apply, Function.comp_apply,
+      LinearEquiv.coe_coe, AlgEquiv.coe_symm_toLinearEquiv, ExteriorAlgebra.ιMulti_apply]
+    congr
     induction i with
     | zero => simp [Algebra.TensorProduct.one_def]
     | succ i ih =>
-      rw [List.ofFn_succ, List.ofFn_succ, List.prod_cons, List.prod_cons, ih]
-      simp [Algebra.TensorProduct.tmul_mul_tmul, Fin.prod_univ_succ]
-  rw [map_list_prod (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom]
-  have himages : List.map (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom
-    (List.ofFn fun j ↦ ExteriorAlgebra.ι S (s j ⊗ₜ[R] m j)) =
-      List.ofFn fun j ↦ s j ⊗ₜ[R] ExteriorAlgebra.ι R (m j) := by
-    ext j
-    simp [ExteriorAlgebra.baseChangeEquiv_symm_apply]
-  rw [himages, hprod]
-  simpa [ExteriorAlgebra.ιMulti_apply] using
-    congrArg ((Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ·) (degreeProjection_apply_ιMulti R M i m)
+      rw [List.ofFn_succ, List.ofFn_succ, List.prod_cons, List.prod_cons, map_mul, ih,
+        ExteriorAlgebra.baseChangeEquiv_symm_apply, Algebra.TensorProduct.tmul_mul_tmul]
+      simp only [Fin.prod_univ_succAbove s 0, Fin.zero_succAbove]
+  · simp [← exteriorPower.ιMulti_apply_coe, ExteriorAlgebra.toExteriorPower_eq]
 
 /-- Inverse function of `exteriorPower.baseChangeEquiv`,
 obtained from `exteriorPower.baseChangeInverseAlternating`. -/
@@ -149,8 +133,8 @@ lemma baseChange_right_inverse (i : ℕ) :
 public def baseChangeEquiv (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
   __ := baseChangeEquivForward R M S i
   invFun := baseChangeEquivInverse R M S i
-  left_inv x := LinearMap.congr_fun (exteriorPower.baseChange_left_inverse R M S i) x
-  right_inv x := LinearMap.congr_fun (exteriorPower.baseChange_right_inverse R M S i) x
+  left_inv x := congr($(exteriorPower.baseChange_left_inverse R M S i) x)
+  right_inv x := congr($(exteriorPower.baseChange_right_inverse R M S i) x)
 
 public lemma baseChangeEquiv_apply_tmul (i : ℕ) (m : Fin i → M) :
     baseChangeEquiv R M S i (1 ⊗ₜ[R] (ιMulti R i m)) =
