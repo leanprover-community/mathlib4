@@ -137,6 +137,9 @@ theorem sub_def (l m : Language α) : l - m = ofSet (l.toSet \ m.toSet) := rfl
 @[deprecated toSet_mul +typeChanged (since := "2026-11-18")]
 theorem mul_def (l m : Language α) : l * m = ofSet (image2 (· ++ ·) l.toSet m.toSet) := rfl
 
+lemma singleton_mul_singleton (a b : List α) : ({a} * {b} : Language α) = {a ++ b} := by
+  ext; simp
+
 /-- The Kleene star of a language `L` is the set of all strings which can be written by
 concatenating strings from `L`. -/
 instance : KStar (Language α) where
@@ -215,6 +218,9 @@ theorem map_id (l : Language α) : map id l = l := by simp [map]
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
+
+@[simp] lemma map_singleton (f : α → β) (x : List α) : map f {x} = {x.map f} :=
+  Language.ext image_singleton
 
 /-- Pulls back the alphabet of a language along `f`. -/
 @[simps apply]

@@ -114,6 +114,8 @@ lemma mul_def (s t : SetSemiring α) : s * t = ofSet (s.toSet * t.toSet) := rfl
 @[simp] lemma toSet_mul (s t : SetSemiring α) : (s * t).toSet = s.toSet * t.toSet := rfl
 @[simp] lemma ofSet_mul (s t : Set α) : ofSet (s * t) = ofSet s * ofSet t := rfl
 
+lemma singleton_mul_singleton (a b : α) : ({a} * {b} : SetSemiring α) = {a * b} := by ext; simp
+
 instance : NoZeroDivisors (SetSemiring α) where
   eq_zero_or_eq_zero_of_mul_eq_zero := by simp [SetSemiring.ext_iff]
 
