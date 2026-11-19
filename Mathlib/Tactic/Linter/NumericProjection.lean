@@ -66,7 +66,7 @@ along with the projection function's constant name (which is recorded in the inf
 Note that the projection name from the `expr` is guaranteed to be the projection function Lean has
 actually found for the projection syntax being used.
 
-Note also that not every projection goes through the `elabProj` elaborator which is resposible for
+Note also that not every projection goes through the `elabProj` elaborator which is responsible for
 elaborating projection syntax like `a.1`. In particular, syntax including: `a.1 x` (surprisingly),
 the inner `a.1` in `a.1.2`, `@a.1`, `a |>.1`, and so on all do not record the `elabProj` elaborator
 as responsible for their elaboration in the infotrees. As such, we do not gate on this.
@@ -85,7 +85,7 @@ as responsible for their elaboration in the infotrees. As such, we do not gate o
 allowed to have been created by numeric projection syntax, consulting `allowsNumericProj`. -/
 @[inline] def disallowedNumericProjFn? (env : Environment) (projFn : Name) :
     Option (Name × Name) := do
-  -- Note: we silently return `none` these fail, since the numeric projection may be for a
+  -- Note: we silently return `none` if these fail, since the numeric projection may be for a
   -- one-constructor inductive (which has no fields to suggest replacing it with).
   let { ctorName, i, .. } ← env.getProjectionFnInfo? projFn
   let .ctorInfo { induct := structName, .. } ← env.find? ctorName | none
@@ -115,8 +115,8 @@ def numericProjections : Linter where
         let mut loggedRanges := Array.emptyWithCapacity warnings.size
         for (stx, structName, fieldName) in warnings do
           let some range := stx.getRange? (canonicalOnly := true) | continue
-            if loggedRanges.contains range then continue else
-              loggedRanges := loggedRanges.push range
+          if loggedRanges.contains range then continue
+          loggedRanges := loggedRanges.push range
           let msg ← liftCoreM <|
             Hint.mkSuggestionsMessage (ref := stx)
               (codeActionPrefix? := none) (forceList := false)
