@@ -160,7 +160,7 @@ lemma coindToInd_indToCoind : A.indToCoind ∘ₗ A.coindToInd = LinearMap.id :=
   · simp [indToCoind_mk _]
   · intro b _ hb
     induction b using Quotient.inductionOn with | h b =>
-    simpa [indToCoind_mk _] using indToCoindAux_of_not_rel b a (g.1 b) (mt Quotient.sound hb.symm)
+    simpa [indToCoind_mk _] using indToCoindAux_of_not_rel b a (g.val b) (mt Quotient.sound hb.symm)
   · simp
 
 lemma indToCoind_coindToInd : A.coindToInd ∘ₗ A.indToCoind = LinearMap.id := by
