@@ -18,21 +18,24 @@ This file contains results about Legendre symbols for local rings with finite re
 
 ## Main definitions
 
-We define `IsLocalRing.legendreSym p a`, where `p` is a prime and `a : ℤ_[p]ˣ`, as the composition
-of the reduction map modulo `p` and the usual Legendre symbol `legendreSym`, which is defined
-over `ℤ`.
+For a local ring `R` with finite residue field, we define `IsLocalRing.legendreSym a` as the
+composition of the reduction map to `ResidueField R` and the quadratic character of
+`ResidueField R`.
 
 ## Main results
 
 The main results are
 
-* `IsLocalRing.legendreSym.eq_one_or_neg_one` shows the Legendre symbol of a unit is 1 or -1.
+* `IsLocalRing.legendreSym.eq_one_or_neg_one` shows the Legendre symbol of a unit `a` is 1 or -1.
 
-* `IsLocalRing.legendreSym.eq_zero_iff` shows the Legendre symbol is 0 if and only if `p` divides
-`a`.
+* `IsLocalRing.legendreSym.eq_zero_iff` shows the Legendre symbol is 0 if and only if `a` is not
+a unit.
 
 * `IsLocalRing.legendreSym.eq_one_iff` shows that if `a` is a unit, then the Legendre symbol is 1
-  if and only if `a` is a square mod `p`.
+  if and only if `a` is a square in `ResidueField R`.
+
+* `IsLocalRing.legendreSym.eq_pow` shows that if `ringChar R` is odd, then `legendreSym a` can
+be computed in terms of `a ^ (Fintype.card (ResidueField R) / 2)`.
 
 ## Tags
 
@@ -65,7 +68,7 @@ theorem eq_neg_one_iff_not_one (ha : IsUnit a) :
   have := eq_one_or_neg_one ha
   lia
 
-/-- The Legendre symbol of `a` is zero iff `p ∣ a`. -/
+/-- The Legendre symbol of `a` is zero iff `a` is not a unit. -/
 theorem eq_zero_iff : legendreSym a = 0 ↔ ¬ IsUnit a :=
   ⟨fun _ h ↦ by have := eq_one_or_neg_one h; lia, fun h ↦ by rw [MulChar.map_nonunit
   legendreSym h]⟩
@@ -101,7 +104,8 @@ lemma isSquare_residue_iff {p : ℕ} [Fact (Nat.Prime p)]
   · rw [show residue R z = ZMod.ringEquiv _ rfl (z : ZMod (Fintype.card (ResidueField R))) by simp]
     exact IsSquare.map _ h
 
-/-- The `p`-adic Legendre symbol agrees with the classical Legendre symbol on ℤ. -/
+/-- The Legendre symbol for local rings with finite residue fields agrees with the classical
+Legendre symbol on ℤ. -/
 lemma intCast {p : ℕ} [Fact (Nat.Prime p)]
     (hp : Fintype.card (ResidueField R) = p) (z : ℤ) :
     legendreSym (z : R) = _root_.legendreSym p z := by
@@ -114,17 +118,18 @@ lemma intCast {p : ℕ} [Fact (Nat.Prime p)]
   · rw [ite_eq_right (by rwa [residue_eq_zero_iff_of_prime hp]), ite_eq_left hsq]
   · rw [ite_eq_right (by rwa [residue_eq_zero_iff_of_prime hp]), ite_eq_right hsq]
 
-/-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square mod `p`. -/
+/-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square in `ResidueField R`. -/
 theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (residue R a) := by
   rw [legendreSym, MulChar.compLocalHom_apply, quadraticChar_one_iff_isSquare]
   simpa using ha
 
-/-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
+/-- `legendreSym a = -1` iff `a` is a nonsquare in `ResidueField R`. -/
 theorem eq_neg_one_iff (ha : IsUnit a) :
     legendreSym a = -1 ↔ ¬ IsSquare (residue R a) := by
   rw [IsLocalRing.legendreSym.eq_neg_one_iff_not_one ha, eq_one_iff ha]
 
-/-- For a ring with `|R|=q` have the congruence `legendreSym a ≡ a ^ (q / 2) mod p`. -/
+/-- If `ringChar R` is odd, then `legendreSym a` can be computed in terms of
+`a ^ (Fintype.card (ResidueField R) / 2)`. -/
 theorem eq_pow {p : ℕ} [Fact (Nat.Prime p)] (hR : ringChar (ResidueField R) ≠ 2) :
     legendreSym a = (residue R a) ^ (Fintype.card (ResidueField R) / 2) := by
     simp only [legendreSym, MulChar.compLocalHom_apply]
