@@ -157,7 +157,7 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
     · simp [x, ← mul_apply_eq_comp, ← map_mul, hmk, hγ]
     · simp only [coindFunctor_obj, coindFunctor_map, hom_ofHom,
         Representation.coe_coindMap_apply_apply, hom_comm_apply, x]
-      simp_all [← y.2 (γ g), γ]
+      simp_all [← y.property (γ g), γ]
 
 end Coind
 section Coind'
