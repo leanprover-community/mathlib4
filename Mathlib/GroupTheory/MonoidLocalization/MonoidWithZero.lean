@@ -12,7 +12,6 @@ import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
-
 -/
 
 @[expose] public section
@@ -34,7 +33,7 @@ theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) : S
 
 theorem LocalizationMap.subsingleton_iff (f : LocalizationMap S N) : Subsingleton N ↔ 0 ∈ S :=
   ⟨fun _ ↦ have ⟨c, eq⟩ := f.exists_of_eq (Subsingleton.elim (f 0) (f 1))
-    by rw [mul_zero, mul_one] at eq; exact eq ▸ c.2, f.subsingleton⟩
+    by rw [mul_zero, mul_one] at eq; exact eq ▸ c.property, f.subsingleton⟩
 
 theorem LocalizationMap.nontrivial (f : LocalizationMap S N) (h : 0 ∉ S) : Nontrivial N := by
   rwa [← not_subsingleton_iff_nontrivial, f.subsingleton_iff]
@@ -109,7 +108,7 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n hn
   have ⟨ms, eq⟩ := f.surj n
-  refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).2.of_mul
+  refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).right.of_mul
   refine fun h ↦ hn ?_
   rwa [h, map_zero, (f.map_units _).mul_left_eq_zero] at eq
 

@@ -22,7 +22,6 @@ We also show that certain localizer morphisms are localized weak equivalences,
 which can be understood by saying that we obtain the same localized
 category (up to equivalence) by inverting weak equivalences in `C`,
 `CofibrantObject C`, `FibrantObject C` or `BifibrantObject C`.
-
 -/
 
 @[expose] public section
@@ -271,7 +270,7 @@ instance (X : CofibrantObject C) :
   infer_instance
 
 instance (X : BifibrantObject C) :
-    IsFibrant (ι.obj (BifibrantObject.ιCofibrantObject.obj X)) := X.2.2
+    IsFibrant (ι.obj (BifibrantObject.ιCofibrantObject.obj X)) := X.property.2
 
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_bifibrant_map {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :

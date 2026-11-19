@@ -46,8 +46,8 @@ because it would require more code without performance gain.
 instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (Finset α) :=
   .ofIcc _ (fun s t ↦
     if s ⊆ t then
-      (t \ s).powerset.attach.map ⟨fun u ↦ u.1.disjUnion s <|
-        disjoint_sdiff_self_left.mono_left <| mem_powerset.mp u.2, fun u₁ u₂ h ↦ by
+      (t \ s).powerset.attach.map ⟨fun u ↦ u.val.disjUnion s <|
+        disjoint_sdiff_self_left.mono_left <| mem_powerset.mp u.property, fun u₁ u₂ h ↦ by
           simpa only [disjUnion_inj_left, Subtype.ext_iff] using h⟩
     else ∅) fun s t u ↦ by
       by_cases hst : s ⊆ t

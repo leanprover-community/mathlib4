@@ -623,7 +623,7 @@ theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
   · exact ⟨0, by simp⟩
   · refine ⟨f y, fun x hx ↦ ?_⟩
     have h₁ := hs.isOpen_inter_preimage_of_fderiv_eq_zero hf hf' {f y}
-    have h₂ := hf.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)
+    have h₂ := hf.continuousOn.comp_continuous continuous_subtypeVal (fun x ↦ x.property)
     by_contra h₃
     obtain ⟨t, ht, ht'⟩ := (isClosed_singleton (x := f y)).preimage h₂
     have ht'' : ∀ a ∈ s, a ∈ t ↔ f a ≠ f y := by simpa [Set.ext_iff] using ht'
@@ -858,6 +858,6 @@ theorem hasStrictDerivAt_of_hasDerivAt_of_continuousAt {f f' : 𝕜 → G} {x : 
     (hder : ∀ᶠ y in 𝓝 x, HasDerivAt f (f' y) y) (hcont : ContinuousAt f' x) :
     HasStrictDerivAt f (f' x) x :=
   hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt (hder.mono fun _ hy => hy.hasFDerivAt) <|
-    (smulRightL 𝕜 𝕜 G 1).continuous.continuousAt.comp hcont
+    (StrongDual.smulRightL 𝕜 𝕜 G 1).continuous.continuousAt.comp hcont
 
 end RCLike

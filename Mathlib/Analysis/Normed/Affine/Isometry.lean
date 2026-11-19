@@ -31,7 +31,6 @@ We introduce the notation `P →ᵃⁱ[𝕜] P₂` for `AffineIsometry 𝕜 P P�
 for isometric equivalences, etc., the "i" here is a superscript.  This is for aesthetic reasons to
 match the superscript "a" (note that in mathlib `→ᵃ` is an affine map, since `→ₐ` has been taken by
 algebra-homomorphisms.)
-
 -/
 
 @[expose] public section
@@ -247,18 +246,43 @@ theorem comp_assoc {V₄ P₄ : Type*} [SeminormedAddCommGroup V₄] [NormedSpac
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
-instance : Monoid (P →ᵃⁱ[𝕜] P) where
+instance : One (P →ᵃⁱ[𝕜] P) where
   one := id
-  mul := comp
-  mul_assoc := comp_assoc
-  one_mul := id_comp
-  mul_one := comp_id
+
+instance : IsOneApplyEqSelf (P →ᵃⁱ[𝕜] P) where
 
 @[simp]
+theorem toAffineMap_one : (1 : P →ᵃⁱ[𝕜] P).toAffineMap = 1 := rfl
+
+instance : Mul (P →ᵃⁱ[𝕜] P) where
+  mul := comp
+
+instance : IsMulApplyEqComp (P →ᵃⁱ[𝕜] P) where
+
+@[simp]
+theorem toAffineMap_mul (f g : P →ᵃⁱ[𝕜] P) : (f * g).toAffineMap = f.toAffineMap * g.toAffineMap :=
+  rfl
+
+instance : Pow (P →ᵃⁱ[𝕜] P) ℕ where
+  pow f n :=
+    { toAffineMap := f.toAffineMap ^ n
+      norm_map x := by
+        induction n with
+        | zero => rfl
+        | succ n hn => simp [pow_succ', hn, -AffineMap.pow_linear] }
+
+instance : IsNPowApplyEqIterate (P →ᵃⁱ[𝕜] P) where
+
+@[simp]
+theorem toAffineMap_pow (f : P →ᵃⁱ[𝕜] P) (n : ℕ) : (f ^ n).toAffineMap = f.toAffineMap ^ n := rfl
+
+instance : Monoid (P →ᵃⁱ[𝕜] P) := fast_instance% FunLike.compMonoid
+
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-11-02")]
 theorem coe_one : ⇑(1 : P →ᵃⁱ[𝕜] P) = _root_.id :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-11-02")]
 theorem coe_mul (f g : P →ᵃⁱ[𝕜] P) : ⇑(f * g) = f ∘ g :=
   rfl
 
@@ -352,7 +376,7 @@ theorem coeFn_injective : @Injective (P ≃ᵃⁱ[𝕜] P₂) (P → P₂) (fun 
 
 /-- Reinterpret an `AffineIsometryEquiv` as an `AffineIsometry`. -/
 def toAffineIsometry : P →ᵃⁱ[𝕜] P₂ :=
-  ⟨e.1.toAffineMap, e.2⟩
+  ⟨e.toAffineEquiv.toAffineMap, e.norm_map⟩
 
 @[simp]
 theorem coe_toAffineIsometry : ⇑e.toAffineIsometry = e :=
@@ -630,13 +654,13 @@ theorem edist_map (x y : P) : edist (e x) (e y) = edist x y :=
   e.toAffineIsometry.edist_map x y
 
 protected theorem bijective : Bijective e :=
-  e.1.bijective
+  e.toAffineEquiv.bijective
 
 protected theorem injective : Injective e :=
-  e.1.injective
+  e.toAffineEquiv.injective
 
 protected theorem surjective : Surjective e :=
-  e.1.surjective
+  e.toAffineEquiv.surjective
 
 theorem map_eq_iff {x y : P} : e x = e y ↔ x = y :=
   e.injective.eq_iff

@@ -30,7 +30,6 @@ This file declares the notations:
 
 Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access this notation in
 your own code.
-
 -/
 
 @[expose] public section
@@ -41,7 +40,7 @@ open Function
 
 lemma Irreducible.coe_ne_zero {M₀ S : Type*} [MonoidWithZero M₀] [SetLike S M₀]
     [SubmonoidClass S M₀] {s : S} {x : s} (hx : Irreducible x) : (x : M₀) ≠ 0 :=
-  fun h ↦ hx.1 <| by simpa using hx.2 (a := x) (b := x) (by ext; simp [h])
+  fun h ↦ hx.not_isUnit <| by simpa using hx.isUnit_or_isUnit (a := x) (b := x) (by ext; simp [h])
 
 section
 variable (M₀ : Type*) [MonoidWithZero M₀] {x : M₀}
@@ -175,7 +174,7 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
   ne_of_mem_of_not_mem hx zero_notMem_nonZeroDivisors
 
 @[simp]
-theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
+theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.property
 
 instance [IsLeftCancelMulZero M₀] : LeftCancelMonoid M₀⁰ where
   mul_left_cancel z _ _ h := Subtype.ext <|
@@ -221,7 +220,7 @@ lemma IsRightRegular.mem_nonZeroDivisorsRight (h : IsRightRegular r) :
     r ∈ nonZeroDivisorsRight M₀ := fun _x hx ↦ h.mul_right_eq_zero_iff.mp hx
 
 lemma IsRegular.mem_nonZeroDivisors (h : IsRegular r) : r ∈ M₀⁰ :=
-  ⟨h.1.mem_nonZeroDivisorsLeft, h.2.mem_nonZeroDivisorsRight⟩
+  ⟨h.left.mem_nonZeroDivisorsLeft, h.right.mem_nonZeroDivisorsRight⟩
 
 lemma noZeroDivisors_iff_forall_mem_nonZeroDivisorsLeft :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroDivisorsLeft M₀ :=
@@ -348,7 +347,7 @@ variable {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
 /-- Canonical isomorphism between the non-zero-divisors and units of a group with zero. -/
 @[simps]
 noncomputable def nonZeroDivisorsEquivUnits : G₀⁰ ≃* G₀ˣ where
-  toFun u := .mk0 _ <| mem_nonZeroDivisors_iff_ne_zero.1 u.2
+  toFun u := .mk0 _ <| mem_nonZeroDivisors_iff_ne_zero.1 u.property
   invFun u := ⟨u, u.isUnit.mem_nonZeroDivisors⟩
   right_inv u := by simp
   map_mul' u v := by simp

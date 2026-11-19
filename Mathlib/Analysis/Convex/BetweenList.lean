@@ -17,7 +17,6 @@ This file defines notions of lists of points in an affine space being in order o
 
 * `List.Wbtw R l`: The points in list `l` are weakly in order on a line.
 * `List.Sbtw R l`: The points in list `l` are strictly in order on a line.
-
 -/
 
 @[expose] public section

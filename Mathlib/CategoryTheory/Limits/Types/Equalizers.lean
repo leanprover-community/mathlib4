@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 # Equalizers in Type
 
 The equalizer of a pair of maps `(g, h)` from `X` to `Y` is the subtype `{x : Y // g x = h x}`.
-
 -/
 
 @[expose] public section
@@ -48,7 +47,7 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
   rw [((mono_iff_injective f).1 (Fork.IsLimit.mono t)).existsUnique_iff_exists]
   let y' : PUnit ⟶ Y := ↾fun _ => y
   have hy' : y' ≫ g = y' ≫ h := by ext; exact hy
-  exact ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_hom (Fork.IsLimit.lift' t y' _).2 ⟨⟩⟩
+  exact ⟨(Fork.IsLimit.lift' t _ hy').val ⟨⟩, congr_hom (Fork.IsLimit.lift' t y' _).property ⟨⟩⟩
 
 theorem type_equalizer_iff_unique :
     Nonempty (IsLimit (Fork.ofι _ w)) ↔ ∀ y : Y, g y = h y → ∃! x : X, f x = y :=

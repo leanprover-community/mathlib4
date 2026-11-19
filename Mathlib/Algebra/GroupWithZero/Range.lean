@@ -109,11 +109,11 @@ abbrev ValueGroup₀ := WithZero (valueGroup f)
 lemma mem_valueMonoid {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueMonoid f := by
   tauto
 
-lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
+lemma mem_valueGroup {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueGroup f := by
   suffices b ∈ valueMonoid f from Subgroup.mem_closure.mpr fun _ a ↦ a this
   exact mem_valueMonoid _ hb
 
-lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGroup f :=
+lemma inv_mem_valueGroup {b : Bˣ} (hb : b.val ∈ range f) : b⁻¹ ∈ valueGroup f :=
   Subgroup.inv_mem _ (mem_valueGroup f hb)
 
 end MonoidWithZeroHom
@@ -298,7 +298,7 @@ lemma mk_eq_div {r s : A} (hr : f r ≠ 0) (hs : f s ≠ 0) :
 
 theorem exists_mk (f : A →*₀ B) (x : f.valueGroup) :
     ∃ r s hr hs, x = valueGroup.mk f r s hr hs := by
-  obtain ⟨r, hr, s, hs, hrs⟩ := (mem_valueGroup_iff_of_comm' f).mp x.2
+  obtain ⟨r, hr, s, hs, hrs⟩ := (mem_valueGroup_iff_of_comm' f).mp x.property
   exact ⟨r, s, hr, hs, by simp [valueGroup.mk, ← hrs]⟩
 
 end valueGroup
@@ -334,7 +334,7 @@ theorem zero_or_exists_mk (x : ValueGroup₀ f) :
 
 theorem zero_or_exists_mk' (x : ValueGroup₀ f) :
     x = 0 ∨ ∃ d : {xy : A × A // f xy.1 ≠ 0 ∧ f xy.2 ≠ 0}, x =
-      valueGroup.mk f d.1.1 d.1.2 d.2.1 d.2.2 :=
+      valueGroup.mk f d.val.1 d.val.2 d.property.1 d.property.2 :=
   x.zero_or_exists_mk.imp _root_.id fun ⟨r, s, hr, hs, hx⟩ ↦ ⟨⟨(r, s), ⟨hr, hs⟩⟩, hx⟩
 
 end ValueGroup₀

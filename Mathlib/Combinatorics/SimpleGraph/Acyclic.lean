@@ -10,7 +10,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
 /-!
-
 # Acyclic graphs and trees
 
 This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.

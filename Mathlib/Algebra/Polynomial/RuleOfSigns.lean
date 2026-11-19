@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Data.List.SignVariations
 
 /-!
-
 # Descartes' Rule of Signs
 
 We define the "sign changes" in the coefficients of a polynomial, and prove Descartes'

@@ -56,12 +56,12 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
     InvImage.wf _ (DFinsupp.Lex.wellFounded' (fun _ ↦ hbot) hr)
 
 instance Lex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [hα : WellFoundedGT α]
-    [AddMonoid N] [PartialOrder N] [IsBotZeroClass N]
+    [Zero N] [PartialOrder N] [IsBotZeroClass N]
     [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
   Lex.wellFounded' (fun _ ↦ not_lt_zero) hN hα
 
 instance Colex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [WellFoundedLT α]
-    [AddMonoid N] [PartialOrder N] [IsBotZeroClass N]
+    [Zero N] [PartialOrder N] [IsBotZeroClass N]
     [WellFoundedLT N] : WellFoundedLT (Colex (α →₀ N)) :=
   Lex.wellFoundedLT (α := αᵒᵈ)
 
@@ -84,7 +84,7 @@ protected theorem wellFoundedLT [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N
   InvImage.wf toDFinsupp (DFinsupp.wellFoundedLT fun _ a => hbot a)
 
 instance wellFoundedLT' {N}
-    [AddMonoid N] [PartialOrder N] [IsBotZeroClass N] [WellFoundedLT N] :
+    [Zero N] [PartialOrder N] [IsBotZeroClass N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   Finsupp.wellFoundedLT fun _ => not_lt_zero
 
