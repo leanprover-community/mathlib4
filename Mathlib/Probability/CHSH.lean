@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 <owner name>. All rights reserved.
+Copyright (c) 2026 Meshal Alawein. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: <owner name>
+Authors: Meshal Alawein
 -/
 module
 
@@ -92,7 +92,7 @@ theorem abs_chsh_integral_cond_le_two (μ : Measure Ω) [IsProbabilityMeasure μ
     (hB₀m : AEStronglyMeasurable B₀ μ) (hB₁m : AEStronglyMeasurable B₁ μ)
     (hA₀ : ∀ ω, |A₀ ω| ≤ 1) (hA₁ : ∀ ω, |A₁ ω| ≤ 1)
     (hB₀ : ∀ ω, |B₀ ω| ≤ 1) (hB₁ : ∀ ω, |B₁ ω| ≤ 1)
-    {s : Set Ω} (hs : MeasurableSet s) (hμs : μ s ≠ 0) :
+    {s : Set Ω} (hμs : μ s ≠ 0) :
     |(∫ ω, A₀ ω * B₀ ω ∂μ[|s]) + (∫ ω, A₀ ω * B₁ ω ∂μ[|s]) + (∫ ω, A₁ ω * B₀ ω ∂μ[|s]) -
       ∫ ω, A₁ ω * B₁ ω ∂μ[|s]| ≤ 2 := by
   have := cond_isProbabilityMeasure (μ := μ) hμs
