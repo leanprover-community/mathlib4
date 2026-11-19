@@ -343,7 +343,7 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
     Continuous (Subtype.val.extend f 1) :=
   continuous_of_mulTSupport fun x h ↦ by
     rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
-      (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
+      (supp.mulTSupport_extend_one_subset continuous_subtypeVal h)⟩ : U) by rfl,
       ← (hU.isOpenEmbedding_subtypeVal).continuousAt_iff, extend_comp Subtype.val_injective]
     exact cont.continuousAt
 

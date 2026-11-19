@@ -122,10 +122,10 @@ instance bot : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
 instance inf : Min (Regular α) :=
-  ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
+  ⟨fun a b => ⟨a ⊓ b, a.property.inf b.property⟩⟩
 
 instance himp : HImp (Regular α) :=
-  ⟨fun a b => ⟨a ⇨ b, a.2.himp b.2⟩⟩
+  ⟨fun a b => ⟨a ⇨ b, a.property.himp b.property⟩⟩
 
 instance : Compl (Regular α) :=
   ⟨fun a => ⟨aᶜ, isRegular_compl _⟩⟩
@@ -178,14 +178,14 @@ theorem coe_toRegular (a : α) : (toRegular a : α) = aᶜᶜ :=
 
 @[simp]
 theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
-  coe_injective a.2
+  coe_injective a.property
 
 /-- The Galois insertion between `Regular.toRegular` and `coe`. -/
 def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
     coe_le_coe.symm.trans
-      ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.2⟩
+      ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.property⟩
   le_l_u _ := le_compl_compl
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 

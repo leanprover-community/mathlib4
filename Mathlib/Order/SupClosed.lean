@@ -290,7 +290,7 @@ protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite :=
   lift s to Finset α using hs
   classical
   refine ({t ∈ s.powerset | t.Nonempty}.attach.image
-    fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
+    fun t ↦ t.val.sup' (mem_filter.1 t.property).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, mem_filter]

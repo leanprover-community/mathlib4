@@ -115,7 +115,7 @@ theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
     (rename f φ).vars ⊆ φ.vars.image f := by
   obtain ⟨p, hp⟩ := exists_rename_coe_vars_eq φ
   rw [← Finset.coe_subset, coe_vars_subset_iff, AlgHom.mem_range]
-  refine ⟨p.rename (fun x => ⟨f x, Finset.mem_image.2 ⟨x, x.2, rfl⟩⟩), ?_⟩
+  refine ⟨p.rename (fun x => ⟨f x, Finset.mem_image.2 ⟨x, x.property, rfl⟩⟩), ?_⟩
   rw [rename_rename, Function.comp_def, ← Function.comp_def f, ← rename_rename, hp]
 
 theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j ∈ (rename f φ).vars) :
@@ -288,7 +288,7 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
   rintro rfl h rfl
   obtain ⟨p, hp⟩ := exists_rename_coe_vars_eq p₁
   rw [← hp, eval₂Hom_rename, eval₂Hom_rename]
-  congrm eval₂Hom f₁ (fun x : p₁.vars => $(h x.1 x.2 x.2)) p
+  congrm eval₂Hom f₁ (fun x : p₁.vars => $(h x.val x.property x.property)) p
 
 theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : MvPolynomial σ R}
     (hp : ∀ i ∈ p.vars, g i = 0) : eval₂Hom f g p = f (constantCoeff p) := by
