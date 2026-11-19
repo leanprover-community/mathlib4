@@ -472,4 +472,3 @@ jobs:
           topic: 'nanoda failure'
           content: |
             ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
-
