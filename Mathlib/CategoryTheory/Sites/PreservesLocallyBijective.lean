@@ -48,7 +48,7 @@ lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
         (F.map m.op a) (F.map m.op b) ?_)
     · intro W q hq
       simpa using hq
-    · simp only [comp_obj, op_obj, whiskerLeft_app, Opposite.op_unop]
+    · simp only [comp_obj, Functor.op_obj, whiskerLeft_app, Opposite.op_unop]
       rw [NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
 lemma isLocallyInjective_whisker_iff (hH : CoverPreserving J K H) [H.IsCocontinuous J K]

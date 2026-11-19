@@ -376,7 +376,7 @@ theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} 
     [Inhabited γ] (e₁₂ : α₁ ↪ α₂) (e₂₃ : α₂ ↪ α₃) :
     e₁₂.arrowCongrLeft.trans e₂₃.arrowCongrLeft = (e₁₂.trans e₂₃).arrowCongrLeft (γ := γ) := by
   ext f a
-  simp only [trans_apply, arrowCongrLeft_apply, Pi.default_def, coe_trans]
+  simp only [Embedding.trans_apply, arrowCongrLeft_apply, Pi.default_def, coe_trans]
   rw [e₁₂.injective.extend_comp e₂₃.injective, Function.comp_def]
 
 /-- Restrict both domain and codomain of an embedding. -/

@@ -125,7 +125,7 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       congr
       exact colimit.w (F ⋙ PresheafedSpace.forget C) g
     simp only [map_comp_c_app, pushforward_obj_obj, pushforward_map_app, comp_base,
-      pushforwardEq_hom_app, op_obj, Opens.map_comp_obj, id_comp, assoc, eqToHom_map_comp,
+      pushforwardEq_hom_app, Functor.op_obj, Opens.map_comp_obj, id_comp, assoc, eqToHom_map_comp,
       NatTrans.naturality_assoc, pushforward_obj_map, eqToHom_unop]
     simp [NatTrans.congr (α := (F.map f).c) this]
 
@@ -233,7 +233,8 @@ theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) 
   -- but this has to be expanded a bit
   ext U
   · simp [desc]
-  · simp only [op_obj, desc, descCApp, Presheaf.comp_app, comp_c_app, colimitCocone_ι_app_c, assoc]
+  · simp only [Functor.op_obj, desc, descCApp, Presheaf.comp_app, comp_c_app, colimitCocone_ι_app_c,
+      assoc]
     rw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc]
     simp
 

@@ -213,8 +213,8 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     -- simp? [spineEquiv] says:
     simp only [spineEquiv, RightExtension.coneAt_pt, rightExtensionInclusion_left,
       TypeCat.Fun.toFun_apply, Equiv.coe_fn_mk, lift, Nat.reduceAdd, ObjectProperty.ι_obj,
-      const_obj_obj, comp_obj, proj_obj, mk_right, op_obj, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
-      spine_spineToSimplex_apply]
+      const_obj_obj, comp_obj, proj_obj, mk_right, Functor.op_obj, TypeCat.hom_ofHom,
+      TypeCat.Fun.coe_mk, spine_spineToSimplex_apply]
     ext i
     · congrm $(hm (StructuredArrow.mk (Y := op ⦋0⦌₂) (⦋0⦌.const ⦋n⦌ i).op)) x
     · congrm $(hm (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x

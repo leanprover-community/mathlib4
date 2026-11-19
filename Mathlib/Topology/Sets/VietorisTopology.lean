@@ -997,7 +997,8 @@ theorem _root_.Continuous.nonemptyCompacts_map (hf : Continuous f) :
 theorem _root_.Continuous.nonemptyCompacts_map' {f : α → NonemptyCompacts β} {g : α → β → γ}
     (hf : Continuous f) (hg : Continuous g.uncurry) :
     Continuous (fun x => (f x).map (g x) (by fun_prop)) := by
-  simp_rw [isEmbedding_toCompacts.continuous_iff, Function.comp_def, toCompacts_map]
+  simp_rw [isEmbedding_toCompacts.continuous_iff, Function.comp_def,
+    NonemptyCompacts.toCompacts_map]
   fun_prop
 
 @[fun_prop]

@@ -265,7 +265,8 @@ variable {f} in
 lemma ModularForm.norm_ne_zero [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢 k]
     (hf : (f : ℍ → ℂ) ≠ 0) : ModularForm.norm ℋ f ≠ 0 := by
   contrapose hf
-  rw [← DFunLike.coe_injective.eq_iff, coe_norm, FunLike.coe_zero, prod_eq_zero_iff] at hf
+  rw [← DFunLike.coe_injective.eq_iff, ModularForm.coe_norm, FunLike.coe_zero,
+    prod_eq_zero_iff] at hf
   · simpa [QuotientGroup.exists_mk] using hf
   · exact Quotient.forall.mpr fun r _ ↦ (translate f r.val⁻¹).holo'
 

@@ -300,7 +300,7 @@ theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a)
   intro b hb
   have hb : b ∈ Finpartition.parts (dite _ _ _) := hb
   split_ifs at hb
-  · simp only [copy_parts, empty_parts, notMem_empty] at hb
+  · simp only [copy_parts, Finpartition.empty_parts, notMem_empty] at hb
   · exact hb
 
 theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :

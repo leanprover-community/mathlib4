@@ -211,7 +211,7 @@ theorem reverse_eq_id : (reverse : CliffordAlgebra Q →ₗ[ℝ] _) = LinearMap.
 @[simp]
 theorem ofComplex_conj (c : ℂ) : ofComplex (conj c) = involute (ofComplex c) :=
   CliffordAlgebraComplex.equiv.injective <| by
-    rw [equiv_apply, equiv_apply, toComplex_involute, toComplex_ofComplex, toComplex_ofComplex]
+    simp_rw [CliffordAlgebraComplex.equiv_apply, toComplex_involute, toComplex_ofComplex]
 
 end CliffordAlgebraComplex
 
@@ -321,8 +321,7 @@ protected def equiv : CliffordAlgebra (Q c₁ c₂) ≃ₐ[R] ℍ[R,c₁,0,c₂]
 @[simp]
 theorem ofQuaternion_star (q : ℍ[R,c₁,0,c₂]) : ofQuaternion (star q) = star (ofQuaternion q) :=
   CliffordAlgebraQuaternion.equiv.injective <| by
-    rw [equiv_apply, equiv_apply, toQuaternion_star, toQuaternion_ofQuaternion,
-      toQuaternion_ofQuaternion]
+    simp_rw [CliffordAlgebraQuaternion.equiv_apply, toQuaternion_star, toQuaternion_ofQuaternion]
 
 end CliffordAlgebraQuaternion
 

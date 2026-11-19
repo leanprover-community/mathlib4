@@ -38,7 +38,7 @@ protected def equalizer : Subfunctor F₁ where
       (NatTrans.naturality_apply f φ ⟨x, hx⟩).trans (Eq.trans (by rw [h])
         (NatTrans.naturality_apply g φ ⟨x, hx⟩).symm)⟩
 
-attribute [local simp] equalizer_obj
+attribute [local simp] Subfunctor.equalizer_obj
 
 lemma equalizer_le : Subfunctor.equalizer f g ≤ A :=
   fun _ _ h ↦ h.1

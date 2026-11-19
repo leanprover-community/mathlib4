@@ -183,7 +183,7 @@ lemma vertexSet_deleteVerts (G : Graph α β) (X : Set α) : V(G.deleteVerts X) 
 @[simp, grind =]
 lemma deleteVerts_isLink (G : Graph α β) (X : Set α) :
     (G.deleteVerts X).IsLink e x y ↔ (G.IsLink e x y ∧ x ∉ X ∧ y ∉ X) := by
-  simp only [deleteVerts, induce_isLink, mem_sdiff, and_congr_right_iff]
+  simp only [deleteVerts, Graph.induce_isLink, mem_sdiff, and_congr_right_iff]
   exact fun h ↦ by simp [h.left_mem, h.right_mem]
 
 @[simp]

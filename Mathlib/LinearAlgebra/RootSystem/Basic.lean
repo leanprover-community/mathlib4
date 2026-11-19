@@ -187,7 +187,8 @@ def mk' [CharZero R] [IsDomain R]
   reflectionPerm_coroot i j := by
     have : IsReflexive R M := .of_isPerfPair p
     refine (coroot_eq_coreflection_of_root_eq' p root coroot hp hr hc ?_).symm
-    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec]
+    rw [RootPairing.equiv_of_mapsTo_apply,
+      (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec]
 
 variable [P.IsRootSystem]
 
@@ -266,7 +267,8 @@ def mk'' :
     rintro i - ⟨j, rfl⟩
     use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
-    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hs).choose_spec]
+    rw [RootPairing.equiv_of_mapsTo_apply,
+      (exist_eq_reflection_of_mapsTo p root coroot i j hs).choose_spec]
 
 variable {p root coroot hp hs hsp} in
 lemma isRootSystem_mk'' (h_int : ∀ i j, ∃ z : ℤ, z = p (root i) (coroot j)) :

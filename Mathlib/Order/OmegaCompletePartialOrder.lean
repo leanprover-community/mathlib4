@@ -684,7 +684,7 @@ lemma ωScottContinuous_apply
   · intro x y hxy
     exact OrderHom.apply_mono (hf.monotone hxy) (hg.monotone hxy)
   · rw [hf.map_ωSup, hg.map_ωSup]
-    simp only [ωSup_def, ωSup_apply]
+    simp only [ωSup_def, ContinuousHom.ωSup_apply]
     apply le_antisymm
     · apply ωSup_le
       intro i

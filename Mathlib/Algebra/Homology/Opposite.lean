@@ -128,8 +128,8 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
   NatIso.ofComponents
     (fun X =>
       (HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _) fun i j _ => by
-            simp only [Iso.refl_hom, Category.id_comp, unopSymm_d, op_d, Quiver.Hom.unop_op,
-              Category.comp_id] :
+            simp only [Iso.refl_hom, Category.id_comp, HomologicalComplex.unopSymm_d,
+              HomologicalComplex.op_d, Quiver.Hom.unop_op, Category.comp_id] :
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
     (fun _ ↦ by ext; simp)
 
@@ -172,8 +172,8 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
   NatIso.ofComponents
     (fun X =>
       (HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _) fun i j _ => by
-            simp only [Iso.refl_hom, Category.id_comp, unopSymm_d, op_d, Quiver.Hom.unop_op,
-              Category.comp_id] :
+            simp only [Iso.refl_hom, Category.id_comp, HomologicalComplex.unopSymm_d,
+              HomologicalComplex.op_d, Quiver.Hom.unop_op, Category.comp_id] :
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
     (fun _ ↦ by ext; simp)
 

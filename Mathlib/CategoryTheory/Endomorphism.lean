@@ -60,8 +60,8 @@ protected instance : Mul (End X) where
 
 variable {X}
 
-@[deprecated (since := "2026-09-12")] alias one_def := one_asHom
-@[deprecated (since := "2026-09-12")] alias mul_def := mul_asHom
+@[deprecated (since := "2026-09-12")] alias one_def := End.one_asHom
+@[deprecated (since := "2026-09-12")] alias mul_def := End.mul_asHom
 
 end Struct
 
