@@ -44,7 +44,7 @@ instance injective_isZariskiLocalAtTarget :
   refine topologically_isZariskiLocalAtTarget _ (fun _ s _ _ h ↦ h.restrictPreimage s)
     fun f ι U H _ hf x₁ x₂ e ↦ ?_
   obtain ⟨i, hxi⟩ : ∃ i, f x₁ ∈ U i := by simpa using congr(f x₁ ∈ $H)
-  congrm ($(@hf i ⟨x₁, hxi⟩ ⟨x₂, show f x₂ ∈ U i from e ▸ hxi⟩ (Subtype.ext e))).1
+  congrm ($(@hf i ⟨x₁, hxi⟩ ⟨x₂, show f x₂ ∈ U i from e ▸ hxi⟩ (Subtype.ext e))).val
 
 end Injective
 
@@ -96,7 +96,7 @@ instance surjective_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Surjective 
   intro α β _ _ f ι U H _ hf x
   obtain ⟨i, hxi⟩ : ∃ i, x ∈ U i := by simpa using congr(x ∈ $H)
   obtain ⟨⟨y, _⟩, hy⟩ := hf i ⟨x, hxi⟩
-  exact ⟨y, congr(($hy).1)⟩
+  exact ⟨y, congr(($hy).val)⟩
 
 @[simp]
 lemma range_eq_univ [Surjective f] : Set.range f = Set.univ := by

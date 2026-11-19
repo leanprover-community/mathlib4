@@ -192,7 +192,7 @@ theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
 theorem trivial_iff_le_maximal_trivial (N : LieSubmodule R L M) :
     IsTrivial L N ↔ N ≤ maxTrivSubmodule R L M :=
   ⟨fun h m hm x => IsTrivial.casesOn h fun h => Subtype.ext_iff.mp (h x ⟨m, hm⟩), fun h =>
-    { trivial := fun x m => Subtype.ext (h m.2 x) }⟩
+    { trivial := fun x m => Subtype.ext (h m.property x) }⟩
 
 theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M = ⊤ := by
   constructor

@@ -269,12 +269,12 @@ theorem homeoRealMixedSpacePolarSpace_apply (x : realMixedSpace K) :
 
 theorem homeoRealMixedSpacePolarSpace_apply_fst_ofIsReal (x : realMixedSpace K)
     (w : {w // IsReal w}) :
-    (homeoRealMixedSpacePolarSpace K x).1 w.1 = x.1 w := by
+    (homeoRealMixedSpacePolarSpace K x).1 w.val = x.1 w := by
   simp_rw [homeoRealMixedSpacePolarSpace_apply, dite_eq_left w.prop]
 
 theorem homeoRealMixedSpacePolarSpace_apply_fst_ofIsComplex (x : realMixedSpace K)
     (w : {w // IsComplex w}) :
-    (homeoRealMixedSpacePolarSpace K x).1 w.1 = (x.2 w).1 := by
+    (homeoRealMixedSpacePolarSpace K x).1 w.val = (x.2 w).1 := by
   simp_rw [homeoRealMixedSpacePolarSpace_apply, dite_eq_right (not_isReal_iff_isComplex.mpr w.prop)]
 
 theorem homeoRealMixedSpacePolarSpace_apply_snd (x : realMixedSpace K) (w : {w // IsComplex w}) :
@@ -323,7 +323,7 @@ open scoped Classical in
 theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : mixedSpace K → E) :
     ∫ x in (polarSpaceCoord K).target,
-      (∏ w : {w // IsComplex w}, x.1 w.1) • f ((polarSpaceCoord K).symm x) = ∫ x, f x := by
+      (∏ w : {w // IsComplex w}, x.1 w.val) • f ((polarSpaceCoord K).symm x) = ∫ x, f x := by
   rw [← (volume_preserving_homeoRealMixedSpacePolarSpace K).setIntegral_preimage_emb
     (homeoRealMixedSpacePolarSpace K).measurableEmbedding,
     ← mixedEmbedding.integral_comp_polarCoord_symm, polarSpaceCoord_target,
@@ -336,7 +336,7 @@ theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormedAd
 open scoped Classical in
 theorem lintegral_comp_polarSpaceCoord_symm [NumberField K] (f : mixedSpace K → ℝ≥0∞) :
     ∫⁻ x in (polarSpaceCoord K).target,
-      (∏ w : {w // IsComplex w}, .ofReal (x.1 w.1)) * f ((polarSpaceCoord K).symm x) =
+      (∏ w : {w // IsComplex w}, .ofReal (x.1 w.val)) * f ((polarSpaceCoord K).symm x) =
         ∫⁻ x, f x := by
   rw [← (volume_preserving_homeoRealMixedSpacePolarSpace K).setLIntegral_comp_preimage_emb
     (homeoRealMixedSpacePolarSpace K).measurableEmbedding,
@@ -388,7 +388,7 @@ integral over `normAtComplexPlaces '' A`.
 theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
     (hA : normAtComplexPlaces ⁻¹' normAtComplexPlaces '' A = A) (hm : MeasurableSet A) :
     volume A = .ofReal (2 * π) ^ nrComplexPlaces K *
-      ∫⁻ x in normAtComplexPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
+      ∫⁻ x in normAtComplexPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.val) := by
   have hA' {x} : (A.indicator 1 x : ℝ≥0∞) =
       (normAtComplexPlaces '' A).indicator 1 (normAtComplexPlaces x) := by
     simp_rw [← Set.indicator_comp_right, Function.comp_def, Pi.one_def, hA]
@@ -410,7 +410,7 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
 
 private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
     (hA : normAtAllPlaces ⁻¹' normAtAllPlaces '' A = A) :
-    normAtAllPlaces '' A ∩ (⋂ w : {w // IsReal w}, {x | x w.1 ≠ 0}) =
+    normAtAllPlaces '' A ∩ (⋂ w : {w // IsReal w}, {x | x w.val ≠ 0}) =
       normAtComplexPlaces '' plusPart A := by
   ext x
   refine ⟨?_, ?_⟩
@@ -439,7 +439,7 @@ over `normAtAllPlaces '' A`.
 theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
     (hA : normAtAllPlaces ⁻¹' normAtAllPlaces '' A = A) (hm : MeasurableSet A) :
     volume A = 2 ^ nrRealPlaces K * .ofReal (2 * π) ^ nrComplexPlaces K *
-      ∫⁻ x in normAtAllPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
+      ∫⁻ x in normAtAllPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.val) := by
   have hA₁ (x : mixedSpace K) : x ∈ A ↔ (fun w ↦ ‖x.1 w‖, x.2) ∈ A := by
     rw [← hA]
     simp_rw [Set.mem_preimage, Set.mem_image, normAtAllPlaces_norm_at_real_places]
@@ -457,8 +457,8 @@ theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
   rw [← volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux hA]
   refine inter_ae_eq_left_of_ae_eq_univ <| ae_eq_univ.mpr
     <| Set.compl_iInter _ ▸ measure_iUnion_null_iff.mpr fun w ↦ ?_
-  rw [show {x : realSpace K | x w.1 ≠ 0}ᶜ = {x | x w.1 = 0} by ext; simp]
-  exact realSpace.volume_eq_zero w.1
+  rw [show {x : realSpace K | x w.val ≠ 0}ᶜ = {x | x w.val = 0} by ext; simp]
+  exact realSpace.volume_eq_zero w.val
 
 end polarSpace
 

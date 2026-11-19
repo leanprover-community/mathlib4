@@ -110,7 +110,7 @@ def toLp (f : α → E) (h_mem_ℒp : MemLp f p μ) : Lp E p μ :=
   ⟨AEEqFun.mk f h_mem_ℒp.aestronglyMeasurable, h_mem_ℒp.eLpNorm_mk_lt_top⟩
 
 theorem toLp_val {f : α → E} (h : MemLp f p μ) :
-    (toLp f h).1 = AEEqFun.mk f h.aestronglyMeasurable := rfl
+    (toLp f h).val = AEEqFun.mk f h.aestronglyMeasurable := rfl
 
 theorem coeFn_toLp {f : α → E} (hf : MemLp f p μ) : hf.toLp f =ᵐ[μ] f :=
   AEEqFun.coeFn_mk _ _
@@ -641,23 +641,23 @@ variable {β : Type*} [MeasurableSpace β] {μb : MeasureTheory.Measure β} {f :
 /-- Composition of an `L^p` function with a measure-preserving function is an `L^p` function. -/
 def compMeasurePreserving (f : α → β) (hf : MeasurePreserving f μ μb) :
     Lp E p μb →+ Lp E p μ where
-  toFun g := ⟨g.1.compMeasurePreserving f hf, g.1.compMeasurePreserving_mem_Lp g.2 hf⟩
+  toFun g := ⟨g.val.compMeasurePreserving f hf, g.val.compMeasurePreserving_mem_Lp g.property hf⟩
   map_zero' := rfl
   map_add' := by rintro ⟨⟨_⟩, _⟩ ⟨⟨_⟩, _⟩; rfl
 
 @[simp]
 theorem compMeasurePreserving_val (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
-    (compMeasurePreserving f hf g).1 = g.1.compMeasurePreserving f hf :=
+    (compMeasurePreserving f hf g).val = g.val.compMeasurePreserving f hf :=
   rfl
 
 theorem coeFn_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
     compMeasurePreserving f hf g =ᵐ[μ] g ∘ f :=
-  g.1.coeFn_compMeasurePreserving hf
+  g.val.coeFn_compMeasurePreserving hf
 
 @[simp]
 theorem norm_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
     ‖compMeasurePreserving f hf g‖ = ‖g‖ :=
-  congr($(g.1.eLpNorm_compMeasurePreserving hf).toReal)
+  congr($(g.val.eLpNorm_compMeasurePreserving hf).toReal)
 
 theorem isometry_compMeasurePreserving [Fact (1 ≤ p)] (hf : MeasurePreserving f μ μb) :
     Isometry (compMeasurePreserving f hf : Lp E p μb → Lp E p μ) :=

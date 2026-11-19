@@ -228,7 +228,7 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
       refine tsum_congr fun p ↦ tsum_congr fun k ↦ ?_
       have : Complex.log p ≠ 0 := mod_cast p.prop.log_ne_zero
       simp [mul_pow, ← cpow_nat_mul, ← natCast_cpow_natCast_mul, vonMangoldt_apply_pow,
-        vonMangoldt_apply_prime p.2, field]
+        vonMangoldt_apply_prime p.property, field]
     _ = ∑' n : {n : ℕ // IsPrimePow n}, f n := by
       rw [← tsum_primes_pow_eq]
       · exact tsum_congr fun p ↦ tsum_congr fun k ↦ (by unfold f; simp; ring)

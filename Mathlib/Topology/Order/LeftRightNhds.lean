@@ -200,7 +200,7 @@ theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology �
   · exact ⟨x, hxu, .inr ⟨hxs, empty_mem_iff_bot.1 <| h ▸ inter_mem
       (mem_nhdsWithin_of_mem_nhds (hu.mem_nhds hxu)) self_mem_nhdsWithin⟩, le_rfl⟩
   · obtain ⟨z, hzd, hz⟩ := hd.exists_mem_open
-      ((hu.inter isOpen_Ioi).preimage continuous_subtype_val) ⟨⟨y, hys⟩, hyu, hyx⟩
+      ((hu.inter isOpen_Ioi).preimage continuous_subtypeVal) ⟨⟨y, hys⟩, hyu, hyx⟩
     exact ⟨z, hz.1, .inl ⟨z, hzd, rfl⟩, hz.2.le⟩
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`

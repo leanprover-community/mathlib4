@@ -547,7 +547,7 @@ lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
   have hP : P.absNorm = p ^ (n : ℕ) := by
     rw [Ideal.absNorm_eq_natCard]
     exact Nat.card_eq_fintype_card.trans e
-  refine ⟨p, n, n.2, ?_, hp, hP⟩
+  refine ⟨p, n, n.property, ?_, hp, hP⟩
   rw [← Ideal.IsPrime.pow_mem_iff_mem (I := P) inferInstance _ n.pos, ← Nat.cast_pow, ← hP]
   exact P.absNorm_mem
 

@@ -126,11 +126,11 @@ This bijection sends the zeroth vertex `Pi.single 0 1` to `0` and
 the first vertex `Pi.single 1 1` to `1`. -/
 @[simps -fullyApplied, deprecated StdSimplex.equivIcc +typeChanged (since := "2026-08-29")]
 def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
-  toFun f := ⟨f.1 1, f.2.1 _, f.2.2 ▸
-    Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
-  invFun x := ⟨![1 - x, x], Fin.forall_fin_two.2 ⟨sub_nonneg.2 x.2.2, x.2.1⟩, by simp⟩
+  toFun f := ⟨f.val 1, f.property.1 _, f.property.2 ▸
+    Finset.single_le_sum (fun i _ ↦ f.property.1 i) (Finset.mem_univ _)⟩
+  invFun x := ⟨![1 - x, x], Fin.forall_fin_two.2 ⟨sub_nonneg.2 x.property.2, x.property.1⟩, by simp⟩
   left_inv f := Subtype.ext <| funext <| Fin.forall_fin_two.2 <| by
-    simp [← (show f.1 0 + f.1 1 = 1 by simpa using f.2.2)]
+    simp [← (show f.val 0 + f.val 1 = 1 by simpa using f.property.2)]
 
 @[simp, deprecated StdSimplex.equivIcc_single_zero +typeChanged (since := "2026-08-29")]
 lemma stdSimplexEquivIcc_zero :
@@ -262,11 +262,11 @@ is homeomorphic to the unit interval. -/
 @[simps! -fullyApplied, deprecated StdSimplex.homeomorphI +typeChanged (since := "2026-08-29")]
 def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toEquiv := stdSimplexEquivIcc ℝ
-  continuous_toFun := .subtype_mk ((continuous_apply 1).comp continuous_subtype_val) _
+  continuous_toFun := .subtype_mk ((continuous_apply 1).comp continuous_subtypeVal) _
   continuous_invFun := by
     apply Continuous.subtype_mk
     exact (continuous_pi <| Fin.forall_fin_two.2
-      ⟨continuous_const.sub continuous_subtype_val, continuous_subtype_val⟩)
+      ⟨continuous_const.sub continuous_subtypeVal, continuous_subtypeVal⟩)
 
 @[simp, deprecated StdSimplex.homeomorphI_single_zero +typeChanged (since := "2026-08-29")]
 lemma stdSimplexHomeomorphUnitInterval_zero :
@@ -328,10 +328,10 @@ lemma ext {s t : stdSimplex S X} (h : (s : X → S) = t) : s = t := by
   assumption
 
 @[simp, deprecated StdSimplex.weights_nonneg +typeChanged (since := "2026-08-29")]
-lemma zero_le (s : stdSimplex S X) (x : X) : 0 ≤ s x := s.2.1 x
+lemma zero_le (s : stdSimplex S X) (x : X) : 0 ≤ s x := s.property.1 x
 
 @[simp, deprecated StdSimplex.total +typeChanged (since := "2026-08-29")]
-lemma sum_eq_one (s : stdSimplex S X) : ∑ x, s x = 1 := s.2.2
+lemma sum_eq_one (s : stdSimplex S X) : ∑ x, s x = 1 := s.property.2
 
 @[simp, deprecated StdSimplex.total_fin_two +typeChanged (since := "2026-08-29")]
 lemma add_eq_one (s : stdSimplex S (Fin 2)) :

@@ -339,7 +339,7 @@ lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.
 
 instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) [hU : Nonempty U] :
     Nontrivial (X.presheaf.obj <| op U) :=
-  (X.presheaf.germ _ _ hU.some.2).hom.domain_nontrivial
+  (X.presheaf.germ _ _ hU.some.property).hom.domain_nontrivial
 
 @[simp]
 lemma iso_hom_base_inv_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :

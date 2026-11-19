@@ -71,7 +71,7 @@ theorem mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
 
 /-- Replace `s` in a `Semiquot` with a superset. -/
 def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
-  ⟨s, Trunc.lift (fun a : q.s => Trunc.mk ⟨a.1, h a.2⟩) (fun _ _ => Trunc.eq _ _) q.val⟩
+  ⟨s, Trunc.lift (fun a : q.s => Trunc.mk ⟨a.val, h a.property⟩) (fun _ _ => Trunc.eq _ _) q.val⟩
 
 /-- Replace `s` in a `q : Semiquot α` with a union `s ∪ q.s` -/
 def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
@@ -95,7 +95,7 @@ def toTrunc (q : Semiquot α) : Trunc α :=
 /-- If `f` is a constant on `q.s`, then `q.liftOn f` is the value of `f`
 at any point of `q`. -/
 def liftOn (q : Semiquot α) (f : α → β) (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) : β :=
-  Trunc.liftOn q.val (fun x => f x.1) fun x y => h _ x.2 _ y.2
+  Trunc.liftOn q.val (fun x => f x.val) fun x y => h _ x.property _ y.property
 
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a := by
@@ -103,7 +103,7 @@ theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
 
 /-- Apply a function to the unknown value stored in a `Semiquot α`. -/
 def map (f : α → β) (q : Semiquot α) : Semiquot β :=
-  ⟨f '' q.s, q.val.map fun x => ⟨f x.1, Set.mem_image_of_mem _ x.2⟩⟩
+  ⟨f '' q.s, q.val.map fun x => ⟨f x.val, Set.mem_image_of_mem _ x.property⟩⟩
 
 @[simp]
 theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ ∃ a, a ∈ q ∧ f a = b :=
@@ -111,7 +111,8 @@ theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ �
 
 /-- Apply a function returning a `Semiquot` to a `Semiquot`. -/
 def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
-  ⟨⋃ a ∈ q.s, (f a).s, q.val.bind fun a => (f a.1).val.map fun b => ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
+  ⟨⋃ a ∈ q.s, (f a).s, q.val.bind fun a => (f a.val).val.map fun b =>
+    ⟨b.val, Set.mem_biUnion a.property b.property⟩⟩
 
 @[simp]
 theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) :

@@ -662,7 +662,7 @@ theorem isClopen_setOfPred_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) 
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
     intro z hz
-    rcases (hf z.1 z.2).eventually_eq_zero_or_eventually_ne_zero with h | h
+    rcases (hf z.val z.property).eventually_eq_zero_or_eventually_ne_zero with h | h
     · -- Case: f is locally zero in a punctured neighborhood of z
       rw [← analyticOrderAt_eq_top] at h
       tauto
@@ -674,7 +674,8 @@ theorem isClopen_setOfPred_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) 
         push _ ∈ _
         by_cases h₁w : w = z
         · rwa [h₁w]
-        · rw [(hf _ w.2).analyticOrderAt_eq_zero.2 ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
+        · rw [(hf _ w.property).analyticOrderAt_eq_zero.2
+            ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
           exact ENat.zero_ne_top
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr

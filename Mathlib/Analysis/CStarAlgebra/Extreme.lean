@@ -18,7 +18,7 @@ This file contains results on the extreme points of the closed unit ball in (uni
 
 public section
 
-open Set Metric CStarAlgebra Unitization
+open Set Metric CStarAlgebra Unitization ComplexOrder
 
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 
@@ -72,13 +72,13 @@ theorem isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosed
     Then using the extremity of `e`, we get `e * e = e` since `e * e` is obviously in the
     nonnegative closed unit ball, and `e = 2⁻¹ • e * e + 2⁻¹ • (2 • e - e * e)`. -/
     have : 0 ≤ (2 : ℝ) • e - e * e := by
-      have : e * e ≤ e := le_of_inr <| by
-        simpa using mul_self_le_of_nonneg_of_norm_le_one h1.inr (by simpa [norm_inr])
+      have : e * e ≤ e := le_of_inr (R := ℂ) <| by
+        simpa using mul_self_le_of_nonneg_of_norm_le_one (h1.inr ℂ) (by simpa [norm_inr])
       simpa [two_smul] using le_add_of_nonneg_of_le h1 this
     refine ⟨h3 _ (Commute.mul_nonneg h1 h1 rfl) ?_ ((2 : ℝ) • e - e * e) this ?_
       ⟨2⁻¹, 2⁻¹, by simp [smul_sub, ← one_div, smul_smul]⟩, h1.isSelfAdjoint⟩
     · grw [norm_mul_le, h2, h2, one_mul]
-    · rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _ this.inr, ← sub_nonneg]
+    · rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _ (this.inr ℂ), ← sub_nonneg]
       calc 0 ≤ star (1 - e : A⁺¹) * (1 - e) := star_mul_self_nonneg _
         _ = _ := by simp [LE.le.star_eq, h1, mul_sub, sub_mul, two_smul, sub_sub, add_sub]
 

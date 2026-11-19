@@ -174,7 +174,7 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
   ne_of_mem_of_not_mem hx zero_notMem_nonZeroDivisors
 
 @[simp]
-theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
+theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.property
 
 instance [IsLeftCancelMulZero M₀] : LeftCancelMonoid M₀⁰ where
   mul_left_cancel z _ _ h := Subtype.ext <|
@@ -347,7 +347,7 @@ variable {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
 /-- Canonical isomorphism between the non-zero-divisors and units of a group with zero. -/
 @[simps]
 noncomputable def nonZeroDivisorsEquivUnits : G₀⁰ ≃* G₀ˣ where
-  toFun u := .mk0 _ <| mem_nonZeroDivisors_iff_ne_zero.1 u.2
+  toFun u := .mk0 _ <| mem_nonZeroDivisors_iff_ne_zero.1 u.property
   invFun u := ⟨u, u.isUnit.mem_nonZeroDivisors⟩
   right_inv u := by simp
   map_mul' u v := by simp

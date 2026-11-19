@@ -54,7 +54,7 @@ theorem eventually_isUnit_of_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : IsUnit
   simp only [isUnit_iff_exists, RestrictedProduct.ext_iff, ← forall_and] at hx
   simp only [isUnit_iff_exists]
   choose b hb using hx
-  exact ⟨Classical.skolem.symm.1 ⟨b, hb⟩, by filter_upwards [x.2, b.2] using
+  exact ⟨Classical.skolem.symm.1 ⟨b, hb⟩, by filter_upwards [x.property, b.property] using
     fun i hx hb ↦ ⟨hx, ⟨b i, hb⟩, by simp_all [← SetLike.coe_eq_coe]⟩⟩
 
 theorem isUnit_iff {x : Πʳ i, [R i, B i]_[𝓕]} :
@@ -79,8 +79,9 @@ variable (R) in
 /-- The ring isomorphism between the units of a restricted product `Πʳ i, [R i, B i]_[𝓕]` and
 the restricted product of `(R i)ˣ` with respect to `(B i)ˣ`. -/
 def unitsEquiv : Πʳ i, [R i, B i]_[𝓕]ˣ ≃* Πʳ i, [(R i)ˣ, (Submonoid.ofClass (B i)).units]_[𝓕] where
-  toFun x := ⟨coeUnits x, by filter_upwards [x.val.2, x.inv.2] using fun i hi hi' ↦ ⟨hi, hi'⟩⟩
-  invFun y := mkUnit y.1 y.2
+  toFun x := ⟨coeUnits x, by
+    filter_upwards [x.val.property, x.inv.property] using fun i hi hi' ↦ ⟨hi, hi'⟩⟩
+  invFun y := mkUnit y.val y.property
   left_inv _ := rfl
   right_inv _ := rfl
   map_mul' _ _ := rfl
@@ -89,6 +90,6 @@ def unitsEquiv : Πʳ i, [R i, B i]_[𝓕]ˣ ≃* Πʳ i, [(R i)ˣ, (Submonoid.o
     (unitsEquiv R x i) = x.val i := rfl
 
 @[simp] lemma coe_unitsEquiv_apply (x : Πʳ i, [R i, B i]_[𝓕]ˣ) (i : ι) :
-    (unitsEquiv R x).1 i = unitsEquiv R x i := rfl
+    (unitsEquiv R x).val i = unitsEquiv R x i := rfl
 
 end RestrictedProduct

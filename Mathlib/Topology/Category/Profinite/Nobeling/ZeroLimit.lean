@@ -175,12 +175,12 @@ def range_equiv_smaller (o : Ordinal) : range (π C (ord I · < o)) ≃ smaller 
   Equiv.ofBijective (range_equiv_smaller_toFun C o) (range_equiv_smaller_toFun_bijective C o)
 
 theorem smaller_factorization (o : Ordinal) :
-    (fun (p : smaller C o) ↦ p.1) ∘ (range_equiv_smaller C o).toFun =
-    (πs C o) ∘ (fun (p : range (π C (ord I · < o))) ↦ p.1) := by rfl
+    (fun (p : smaller C o) ↦ p.val) ∘ (range_equiv_smaller C o).toFun =
+    (πs C o) ∘ (fun (p : range (π C (ord I · < o))) ↦ p.val) := by rfl
 
 theorem linearIndependent_iff_smaller (o : Ordinal) :
     LinearIndependent ℤ (GoodProducts.eval (π C (ord I · < o))) ↔
-    LinearIndependent ℤ (fun (p : smaller C o) ↦ p.1) := by
+    LinearIndependent ℤ (fun (p : smaller C o) ↦ p.val) := by
   rw [GoodProducts.linearIndependent_iff_range,
     ← LinearMap.linearIndependent_iff (πs C o)
     (LinearMap.ker_eq_bot_of_injective (injective_πs _ _)), ← smaller_factorization C o]
@@ -246,12 +246,12 @@ noncomputable def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}
   Set.equivOfEq (union C ho hsC)
 
 theorem GoodProducts.range_equiv_factorization :
-    (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) ∘ (range_equiv C ho hsC).toFun =
-    (fun (p : range C) ↦ (p.1 : LocallyConstant C ℤ)) := rfl
+    (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.val) ∘ (range_equiv C ho hsC).toFun =
+    (fun (p : range C) ↦ (p.val : LocallyConstant C ℤ)) := rfl
 
 theorem GoodProducts.linearIndependent_iff_union_smaller :
     LinearIndependent ℤ (GoodProducts.eval C) ↔
-      LinearIndependent ℤ (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) := by
+      LinearIndependent ℤ (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.val) := by
   rw [GoodProducts.linearIndependent_iff_range, ← range_equiv_factorization C ho hsC]
   exact linearIndependent_equiv (range_equiv C ho hsC)
 

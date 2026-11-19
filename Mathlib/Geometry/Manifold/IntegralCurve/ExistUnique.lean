@@ -209,12 +209,12 @@ theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     apply IsClosed.closure_subset (isClosed_eq _ _)
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
-      apply ContinuousAt.comp _ continuousAt_subtype_val
+      apply ContinuousAt.comp _ continuousAt_subtypeVal
       rw [Subtype.coe_mk]
       exact hγ.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
-      apply ContinuousAt.comp _ continuousAt_subtype_val
+      apply ContinuousAt.comp _ continuousAt_subtypeVal
       rw [Subtype.coe_mk]
       exact hγ'.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
   · rw [isOpen_iff_mem_nhds]

@@ -995,7 +995,7 @@ protected theorem Measurable.sSup {ι} {f : ι → δ → α} {s : Set ι} (hs :
     Measurable fun x => sSup ((fun i => f i x) '' s) := by
   simp_rw [image_eq_range]
   have : Countable s := hs.to_subtype
-  exact .iSup fun i ↦ hf i i.2
+  exact .iSup fun i ↦ hf i i.property
 
 protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
@@ -1009,12 +1009,12 @@ theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Counta
   · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b :=
       fun b ↦ cbiSup_eq_of_forall (f := fun i ↦ f i b) H
     simp only [this]
-    exact .iSup (fun (i : s) ↦ hf i i.2)
+    exact .iSup (fun (i : s) ↦ hf i i.property)
   · have : ∀ b, ⨆ i ∈ s, f i b = (⨆ (i : s), f i b) ⊔ sSup ∅ :=
       fun b ↦ cbiSup_eq_of_not_forall (f := fun i ↦ f i b) H
     simp only [this]
     apply Measurable.sup _ measurable_const
-    exact .iSup (fun (i : s) ↦ hf i i.2)
+    exact .iSup (fun (i : s) ↦ hf i i.property)
 
 theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by

@@ -84,11 +84,11 @@ theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [Topological
     ∃ m ∈ s, m * m = m := by
   let M' := { m // m ∈ s }
   let : Semigroup M' :=
-    { mul := fun p q => ⟨p.1 * q.1, s_add _ p.2 _ q.2⟩
+    { mul := fun p q => ⟨p.val * q.val, s_add _ p.property _ q.property⟩
       mul_assoc := fun p q r => Subtype.ext (mul_assoc _ _ _) }
   have : CompactSpace M' := isCompact_iff_compactSpace.mp s_compact
   have : Nonempty M' := nonempty_subtype.mpr snemp
   have : ∀ p : M', Continuous (· * p) := fun p =>
-    ((continuous_const_mul p.1).comp continuous_subtype_val).subtype_mk _
+    ((continuous_const_mul p.val).comp continuous_subtypeVal).subtype_mk _
   obtain ⟨⟨m, hm⟩, idem⟩ := exists_idempotent_of_compact_t2_of_continuous_mul_left this
   exact ⟨m, hm, Subtype.ext_iff.mp idem⟩

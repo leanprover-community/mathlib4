@@ -507,18 +507,19 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     contrapose hx'
     obtain ⟨a, ha1, ha2⟩ := mem_support_of_mem_noncommProd_support hx'
     simp only [Finset.mem_erase, Finset.mem_univ, and_true, Ne, Subtype.ext_iff] at ha1
-    have key := cycleFactorsFinset_pairwise_disjoint g a.2 hx ha1
+    have key := cycleFactorsFinset_pairwise_disjoint g a.property hx ha1
     rw [disjoint_iff_disjoint_support, Finset.disjoint_left] at key
-    obtain ⟨k, hk⟩ := mem_zpowers_iff.mp (v a).2
-    replace ha2 := key (support_zpow_le a.1 k (hk ▸ ha2))
-    obtain ⟨k, hk⟩ := mem_zpowers_iff.mp (v ⟨g.cycleOf x, hx⟩).2
+    obtain ⟨k, hk⟩ := mem_zpowers_iff.mp (v a).property
+    replace ha2 := key (support_zpow_le a.val k (hk ▸ ha2))
+    obtain ⟨k, hk⟩ := mem_zpowers_iff.mp (v ⟨g.cycleOf x, hx⟩).property
     rwa [← hk, zpow_apply_mem_support, notMem_support, cycleOf_apply_self] at ha2
   · rw [cycleOf_mem_cycleFactorsFinset_iff] at hx
     rw [kerParam, MonoidHom.noncommCoprod_apply, mul_apply, Equiv.apply_eq_iff_eq,
       ← notMem_support]
     contrapose hx
     obtain ⟨a, -, ha⟩ := mem_support_of_mem_noncommProd_support
-      (comm := fun a ha b hb h ↦ g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).2 (v b).2) hx
+      (comm := fun a ha b hb h ↦
+        g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).property (v b).property) hx
     exact support_zpowers_of_mem_cycleFactorsFinset_le (v a) ha
 
 theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
@@ -531,7 +532,7 @@ theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
       apply disjoint_closure_of_disjoint_support
       rintro - ⟨-⟩ - ⟨-, ⟨b, rfl⟩, -, ⟨h, rfl⟩, ⟨-⟩⟩
       rw [← disjoint_iff_disjoint_support]
-      apply cycleFactorsFinset_pairwise_disjoint g a.2 b.2
+      apply cycleFactorsFinset_pairwise_disjoint g a.property b.property
       simp only [ne_eq, ← Subtype.ext_iff]
       exact ne_comm.mp h
     · exact fun i ↦ subtype_injective _
@@ -539,7 +540,7 @@ theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
     simp only [zpowers_eq_closure, ← closure_iUnion]
     apply disjoint_closure_of_disjoint_support
     rintro - ⟨a, rfl⟩ - ⟨-, ⟨b, rfl⟩, ⟨-⟩⟩
-    exact (ofSubtype_support_disjoint a).mono_right (mem_cycleFactorsFinset_support_le b.2)
+    exact (ofSubtype_support_disjoint a).mono_right (mem_cycleFactorsFinset_support_le b.property)
 
 theorem kerParam_range_eq :
     (kerParam g).range = (toPermHom g).ker.map (Subgroup.subtype _) := by
@@ -553,18 +554,20 @@ theorem kerParam_range_eq :
         exact Disjoint.commute (disjoint_iff_disjoint_support.mpr (ofSubtype_support_disjoint a))
       · exact Perm.ext fun x ↦ Subtype.ext (disjoint_iff_disjoint_support.mpr
           ((ofSubtype_support_disjoint a).mono_right
-            (mem_cycleFactorsFinset_support_le x.2))).commute.mul_inv_cancel
+            (mem_cycleFactorsFinset_support_le x.property))).commute.mul_inv_cancel
     · intro i
-      refine ⟨⟨i, mem_centralizer_singleton_iff.mpr (self_mem_cycle_factors_commute i.2)⟩, ?_, rfl⟩
-      exact Perm.ext fun x ↦ Subtype.ext (cycleFactorsFinset_mem_commute' g i.2 x.2).mul_inv_cancel
+      refine ⟨⟨i, mem_centralizer_singleton_iff.mpr (self_mem_cycle_factors_commute i.property)⟩,
+        ?_, rfl⟩
+      exact Perm.ext fun x ↦
+        Subtype.ext (cycleFactorsFinset_mem_commute' g i.property x.property).mul_inv_cancel
   · rintro - ⟨p, hp, rfl⟩
     simp only [coe_subtype]
     set u : Perm (Function.fixedPoints g) :=
-      subtypePerm p (fun x ↦ apply_mem_fixedPoints_iff_mem_of_mem_centralizer p.2)
+      subtypePerm p (fun x ↦ apply_mem_fixedPoints_iff_mem_of_mem_centralizer p.property)
     simp only [SetLike.mem_coe, mem_ker_toPermHom_iff, IsCycle.forall_commute_iff] at hp
     set v : (c : g.cycleFactorsFinset) → (Subgroup.zpowers c.val) :=
       fun c => ⟨ofSubtype
-          (p.1.subtypePerm (Classical.choose (hp c.val c.prop))),
+          (p.val.subtypePerm (Classical.choose (hp c.val c.prop))),
             Classical.choose_spec (hp c.val c.prop)⟩
     use (u, v)
     ext x

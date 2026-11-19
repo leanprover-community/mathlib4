@@ -300,7 +300,7 @@ theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
   toIsEmbedding := .inclusion i
   isOpen_range := by
     rw [Set.range_inclusion i]
-    exact U.isOpen.preimage continuous_subtype_val
+    exact U.isOpen.preimage continuous_subtypeVal
 
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
@@ -357,7 +357,7 @@ lemma IsBasis.exists_iSup_eq {X : Type u} [TopologicalSpace X] {ι : Type*}
     (W : TopologicalSpace.Opens X) : ∃ (κ : Type u) (a : κ → ι), W = ⨆ (k : κ), U (a k) := by
   obtain ⟨Us, hsub, hUs⟩ := Opens.isBasis_iff_cover.mp hU W
   choose a ha using hsub
-  use Us, fun i ↦ a i.2
+  use Us, fun i ↦ a i.property
   simp [hUs, ha, sSup_eq_iSup' Us]
 
 lemma IsBasis.exists_iSup_eq_of_isCompact {X : Type u} [TopologicalSpace X] {ι : Type*}
@@ -388,7 +388,7 @@ lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {
     (hU : IsCompact U.carrier) : ∃ Us ⊆ B, Us.Finite ∧ U = sSup Us := by
   classical
   obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
-  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.is_open')
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.val) (fun s ↦ s.val.is_open')
     (by simp [hsup])
   refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
   exact le_antisymm (subset_trans (a := U.carrier) ht (by simp))

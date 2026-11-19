@@ -43,7 +43,7 @@ variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRin
 open IsLocalRing Module OrderIso PrimeSpectrum in
 theorem sum_ramification_inertia_eq_finrank_fiber
     [Algebra.QuasiFinite R S] [Fintype (p.primesOver S)] :
-    ∑ q : p.primesOver S, q.1.ramificationIdx R * q.1.inertiaDeg R =
+    ∑ q : p.primesOver S, q.val.ramificationIdx R * q.val.inertiaDeg R =
       finrank p.ResidueField (p.Fiber S) := by
   let := Fintype.ofFinite (PrimeSpectrum (p.Fiber S))
   rw [IsArtinianRing.finrank_eq_sum_primeSpectrum, ← (primesOverOrderIsoFiber R S p).symm.sum_comp]
@@ -72,7 +72,7 @@ ideal of `R`. Then the sum over all prime ideals `q` of `S` lying over `p` of th
 index of `q` times the inertia degree of `q` equals the rank of `S` as an `R`-module. -/
 theorem sum_ramification_inertia_eq_finrank
     [IsDomain R] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)] :
-    ∑ q : p.primesOver S, q.1.ramificationIdx R * q.1.inertiaDeg R = Module.finrank R S := by
+    ∑ q : p.primesOver S, q.val.ramificationIdx R * q.val.inertiaDeg R = Module.finrank R S := by
   rw [sum_ramification_inertia_eq_finrank_fiber, finrank_fiber_eq_finrank]
 
 /-- Let `S/R` be a finite flat extension of integral domains, and let `p` be prime ideal of `R`.
@@ -82,7 +82,7 @@ degree of `q` equals the cardinality of `G`. -/
 theorem sum_ramification_inertia_eq_card
     [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)]
     {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
-    ∑ q : p.primesOver S, q.1.ramificationIdx R * q.1.inertiaDeg R = Nat.card G := by
+    ∑ q : p.primesOver S, q.val.ramificationIdx R * q.val.inertiaDeg R = Nat.card G := by
   let := IsGaloisGroup.finite G R S
   rw [sum_ramification_inertia_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
 

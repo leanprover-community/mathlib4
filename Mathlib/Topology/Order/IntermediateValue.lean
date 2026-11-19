@@ -100,7 +100,7 @@ theorem IsPreconnected.intermediate_value₂ {s : Set X} (hs : IsPreconnected s)
     @intermediate_value_univ₂ s α _ _ _ _ (Subtype.preconnectedSpace hs) ⟨a, ha⟩ ⟨b, hb⟩ _ _
       (continuousOn_iff_continuous_domRestrict.1 hf)
       (continuousOn_iff_continuous_domRestrict.1 hg) ha' hb'
-  ⟨x, x.2, hx⟩
+  ⟨x, x.property, hx⟩
 
 theorem IsPreconnected.intermediate_value₂_eventually₁ {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f g : X → α} (hf : ContinuousOn f s)

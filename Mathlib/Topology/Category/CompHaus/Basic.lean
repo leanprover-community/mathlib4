@@ -208,7 +208,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       rw [← cancel_epi f]
       ext x : 4
       simp [g, h, Z, hφ0 (Set.mem_range_self x)]
-    apply_fun fun e => (e y).down.1 at H
+    apply_fun fun e => (e y).down.val at H
     dsimp [g, h, Z] at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H

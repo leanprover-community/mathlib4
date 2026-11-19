@@ -582,7 +582,7 @@ def inclusion : N →ₗ⁅R,L⁆ N' where
 theorem coe_inclusion (m : N) : (inclusion h m : M) = m :=
   rfl
 
-theorem inclusion_apply (m : N) : inclusion h m = ⟨m.1, h m.2⟩ :=
+theorem inclusion_apply (m : N) : inclusion h m = ⟨m.val, h m.property⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by

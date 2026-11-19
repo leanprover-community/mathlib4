@@ -98,14 +98,15 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     intro N' N'_le x x_mem x_ortho
     apply rank_ih
     intro m v hli
-    refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
+    refine Nat.succ_le_succ_iff.mp
+      (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).property⟩) ?_)
     convert hli.finCons' x _ ?_
     · ext i
       refine Fin.cases ?_ ?_ i <;> simp
     · intro c y hy hc
       refine x_ortho c y (Submodule.span_le.mpr ?_ hy) hc
       rintro _ ⟨z, rfl⟩
-      exact (v z).2
+      exact (v z).property
 
 end Induction
 

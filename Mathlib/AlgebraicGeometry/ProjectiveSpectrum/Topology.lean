@@ -284,12 +284,12 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
     (by
       intro Zs h
       rw [Set.sInter_eq_iInter]
-      let f : Zs → Set _ := fun i => Classical.choose (h i.2)
+      let f : Zs → Set _ := fun i => Classical.choose (h i.property)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
       convert H using 2
       funext i
-      exact (Classical.choose_spec (h i.2)).symm)
+      exact (Classical.choose_spec (h i.property)).symm)
     (by
       rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩
       exact ⟨_, (union_zeroLocus 𝒜 s t).symm⟩)

@@ -320,7 +320,7 @@ theorem _root_.Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot
   exists_isPrimitiveRoot {n} hn1 hn2 := by
     obtain ⟨r, hr1, hr2⟩ := h n hn1 hn2
     exact ⟨⟨r, subset_adjoin ⟨n, hn1, hn2, hr1⟩⟩, Subtype.val_injective hr1,
-      fun l hl ↦ hr2 l congr($hl.1)⟩
+      fun l hl ↦ hr2 l congr(($hl).val)⟩
   adjoin_roots := by
     rintro ⟨x, hx⟩
     induction hx using adjoin_induction with
@@ -810,19 +810,20 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
       replace := this.surj
       obtain ⟨⟨z, w⟩, hw⟩ := this k
       refine ⟨⟨algebraMap A (CyclotomicRing n A K) z, algebraMap A (CyclotomicRing n A K) w,
-        map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.2⟩, ?_⟩
+        map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.property⟩, ?_⟩
       let : IsScalarTower A K (CyclotomicField n K) :=
         IsScalarTower.of_algebraMap_eq (congr_fun rfl)
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
         ← map_mul, hw, ← IsScalarTower.algebraMap_apply]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
-      refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
+      refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2,
+        mul_mem_nonZeroDivisors.2 ⟨a.2.property, b.2.property⟩⟩, ?_⟩
       rw [map_mul, add_mul, ← mul_assoc, ha,
         mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
       simp only [map_add, map_mul]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
-      refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
+      refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.property, b.2.property⟩⟩, ?_⟩
       rw [map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]

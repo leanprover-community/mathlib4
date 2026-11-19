@@ -328,7 +328,7 @@ abbrev limitCone : Limits.Cone F where
   pt := ofProfinite (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt
   π :=
   { app := fun j => ⟨{
-      toFun := fun x => x.1 j
+      toFun := fun x => x.val j
       map_one' := rfl
       map_mul' := fun x y => rfl
       continuous_toFun :=
@@ -337,7 +337,7 @@ abbrev limitCone : Limits.Cone F where
       simp only [Functor.const_obj_obj, Functor.comp_obj,
         Functor.const_obj_map, Category.id_comp, Functor.comp_map]
       congr
-      exact funext fun x => (x.2 f).symm }
+      exact funext fun x => (x.property f).symm }
 
 /-- `ProfiniteGrp.limitCone` is a limit cone. -/
 @[to_additive /-- `ProfiniteAddGrp.limitCone` is a limit cone. -/]

@@ -221,7 +221,7 @@ theorem dense_biInter_of_Gδ {S : Set α} {f : ∀ x ∈ S, Set X} (ho : ∀ s (
     (hS : S.Countable) (hd : ∀ s (H : s ∈ S), Dense (f s H)) : Dense (⋂ s ∈ S, f s ‹_›) := by
   rw [biInter_eq_iInter]
   have := hS.to_subtype
-  exact dense_iInter_of_Gδ (fun s => ho s s.2) fun s => hd s s.2
+  exact dense_iInter_of_Gδ (fun s => ho s s.property) fun s => hd s s.property
 
 /-- The intersection of two dense Gδ sets is dense. -/
 theorem Dense.inter_of_Gδ {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) (hsc : Dense s)

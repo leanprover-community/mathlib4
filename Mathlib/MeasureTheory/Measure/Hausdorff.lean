@@ -605,7 +605,7 @@ theorem isSeparable_of_hausdorffMeasure_ne_top {d : ℝ} {s : Set X} (h : μH[d]
   rw [hausdorffMeasure_apply] at h
   obtain ⟨c, -, hcc, hsc⟩ := EMetric.subset_countable_closure_of_almost_dense_set s fun ε hε ↦ by
     obtain ⟨t, htd, hst, -⟩ := by simpa [iInf_lt_iff] using (le_iSup₂ ε hε).trans_lt h.lt_top
-    refine ⟨range fun m : {n // (t n).Nonempty} ↦ m.2.some, countable_range _, fun x hx ↦ ?_⟩
+    refine ⟨range fun m : {n // (t n).Nonempty} ↦ m.property.some, countable_range _, fun x hx ↦ ?_⟩
     obtain ⟨n, hn⟩ := mem_iUnion.1 (hst hx)
     exact mem_biUnion (mem_range_self ⟨n, x, hn⟩)
       (mem_closedEBall.2 ((edist_le_ediam_of_mem hn (Nonempty.some_mem _)).trans (htd n)))

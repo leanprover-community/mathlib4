@@ -126,16 +126,16 @@ Hahn-Banach. -/
 def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     boundedIntegrableFunctions μ →L[ℝ] ℝ :=
   LinearMap.mkContinuous (E := ↥(boundedIntegrableFunctions μ))
-    { toFun := fun f => ∫ x, f.1 x ∂μ
-      map_add' := fun f g => integral_add f.2 g.2
-      map_smul' := fun c f => integral_smul c f.1 } (μ.real univ)
+    { toFun := fun f => ∫ x, f.val x ∂μ
+      map_add' := fun f g => integral_add f.property g.property
+      map_smul' := fun c f => integral_smul c f.val } (μ.real univ)
     (by
       intro f
       rw [mul_comm]
       apply norm_integral_le_of_norm_le_const
       apply Filter.Eventually.of_forall
       intro x
-      exact BoundedContinuousFunction.norm_coe_le_norm f.1 x)
+      exact BoundedContinuousFunction.norm_coe_le_norm f.val x)
 
 /-- Given a measure, there exists a continuous linear form on the space of all bounded functions
 (not necessarily measurable) that coincides with the integral on bounded measurable functions. -/
@@ -260,7 +260,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       exact f.le_bound _
     let S := iSup fun t : A => f (↑t \ ↑s)
     have S_pos : 0 < S := by
-      rcases h s.1 s.2 with ⟨t, t_count, ht⟩
+      rcases h s.val s.property with ⟨t, t_count, ht⟩
       apply ht.trans_le
       let t' : A := ⟨t, t_count⟩
       change f (↑t' \ ↑s) ≤ S
@@ -273,11 +273,11 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
-  let G : A → A := fun u => ⟨(↑u : Set α) ∪ ↑(F u), u.2.union (F u).2⟩
+  let G : A → A := fun u => ⟨(↑u : Set α) ∪ ↑(F u), u.property.union (F u).property⟩
   let s : ℕ → A := fun n => G^[n] empty
   -- We will get a contradiction from the fact that there is a countable set `u` with positive
   -- measure in the complement of `⋃ n, s n`.
-  rcases h (⋃ n, ↑(s n)) (countable_iUnion fun n => (s n).2) with ⟨t, t_count, ht⟩
+  rcases h (⋃ n, ↑(s n)) (countable_iUnion fun n => (s n).property) with ⟨t, t_count, ht⟩
   let u : A := ⟨t \ ⋃ n, ↑(s n), t_count.mono sdiff_subset⟩
   set ε := f ↑u with hε
   have ε_pos : 0 < ε := ht
@@ -297,7 +297,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [s, empty, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, le_rfl]
     | succ n IH =>
-      have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+      have : (s (n + 1)).val = (s (n + 1)).val \ (s n).val ∪ (s n).val := by
         simpa only [s, Function.iterate_succ', union_sdiff_self]
           using! (sdiff_union_of_subset subset_union_left).symm
       rw [this, f.additive]

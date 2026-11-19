@@ -172,10 +172,10 @@ noncomputable
 def CC'₁ : C' C ho → C :=
   fun g ↦ ⟨SwapTrue o g.val, (swapTrue_mem_C1 C hsC ho ⟨g.val,g.prop.2⟩).1⟩
 
-theorem continuous_CC'₀ : Continuous (CC'₀ C ho) := Continuous.subtype_mk continuous_subtype_val _
+theorem continuous_CC'₀ : Continuous (CC'₀ C ho) := Continuous.subtype_mk continuous_subtypeVal _
 
 theorem continuous_CC'₁ : Continuous (CC'₁ C hsC ho) :=
-  Continuous.subtype_mk (Continuous.comp (continuous_swapTrue o) continuous_subtype_val) _
+  Continuous.subtype_mk (Continuous.comp (continuous_swapTrue o) continuous_subtypeVal) _
 
 /-- The `ℤ`-linear map induced by precomposing with `CC'₀` -/
 noncomputable
@@ -247,7 +247,7 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
   let C₁C : π (C1 C ho) (ord I · < o) → C :=
     fun x ↦ ⟨SwapTrue o x.val, (swapTrue_mem_C1 C hsC ho x).1⟩
   have h₁ : Continuous C₁C := Continuous.subtype_mk
-    ((continuous_swapTrue o).comp continuous_subtype_val) _
+    ((continuous_swapTrue o).comp continuous_subtypeVal) _
   refine ⟨LocallyConstant.piecewise' ?_ (isClosed_C0 C hC ho)
       (isClosed_proj _ o (isClosed_C1 C hC ho)) (f.comap ⟨C₀C, h₀⟩) (f.comap ⟨C₁C, h₁⟩) ?_, ?_⟩
   · rintro _ ⟨y, hyC, rfl⟩
@@ -345,8 +345,8 @@ def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (· < ·
        _ ≃ _ := Set.equivOfEq <| by rw [sum_to_range C ho, union_succ C hsC ho]
 
 theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
-    (Sum.elim (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
-    (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
+    (Sum.elim (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.val)
+    (fun (l : MaxProducts C ho) ↦ Products.eval C l.val)) := by
   ext ⟨_, _⟩ <;> [rfl; rfl]
 
 /-- Let
@@ -375,7 +375,7 @@ by `succ_exact` and `succ_mono`. The left square commutes by `GoodProducts.squar
 -/
 def SumEval : GoodProducts (π C (ord I · < o)) ⊕ MaxProducts C ho →
     LocallyConstant C ℤ :=
-  Sum.elim (fun l ↦ l.1.eval C) (fun l ↦ l.1.eval C)
+  Sum.elim (fun l ↦ l.val.eval C) (fun l ↦ l.val.eval C)
 
 set_option backward.isDefEq.respectTransparency false in
 include hsC in
@@ -388,8 +388,8 @@ theorem linearIndependent_iff_sum :
 set_option backward.isDefEq.respectTransparency false in
 include hsC in
 theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
-    (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
-    (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
+    (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.val)
+    (fun (l : MaxProducts C ho) ↦ Products.eval C l.val)) := by
   rw [← sum_equiv_comp_eval_eq_elim C hsC ho, Equiv.toFun_as_coe,
     EquivLike.range_comp (e := sum_equiv C hsC ho)]
 
@@ -545,7 +545,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   -- Write the image of `l` under `Linear_CC'` as `Linear_CC'` applied to the linear combination
   -- above, with leading `term I ho`'s added to each term:
   have : (Linear_CC' C hsC ho) (l.val.eval C) = (Linear_CC' C hsC ho)
-      (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.1).map (e C)).prod) := by
+      (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.val).map (e C)).prod) := by
     rw [← hmsum]
     simp only [map_finsuppSum]
     apply Finsupp.sum_congr

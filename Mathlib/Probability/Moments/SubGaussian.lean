@@ -762,8 +762,8 @@ lemma sum_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun
   have : HasSubgaussianMGF (fun ω ↦ ∑ (i : s), X i ω) (∑ (i : s), c i) μ := by
     apply sum_of_iIndepFun_of_forall_aemeasurable
     · exact h_indep.precomp Subtype.val_injective
-    · exact fun i ↦ (h_subG i i.2).aemeasurable
-    · exact fun i _ ↦ h_subG i i.2
+    · exact fun i ↦ (h_subG i i.property).aemeasurable
+    · exact fun i _ ↦ h_subG i i.property
   rw [Finset.sum_coe_sort] at this
   exact this.congr (ae_of_all _ fun ω ↦ Finset.sum_attach s (fun i ↦ X i ω))
 
