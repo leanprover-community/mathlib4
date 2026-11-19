@@ -754,15 +754,6 @@ theorem exists_root_of_odd_natDegree_irreducible_imp_natDegree_eq_one
   rcases q.exists_root_of_natDegree_eq_one (by grind) with ⟨x, hx⟩
   exact ⟨x, hx.dvd hd⟩
 
-open UniqueFactorizationMonoid in
-theorem sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
-    ((normalizedFactors a).map natDegree).sum = a.natDegree := by
-  by_cases h0: a = 0
-  · simp [h0]
-  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors a]
-  rw [Polynomial.natDegree_C_mul (by simp [h0]),
-      natDegree_multiset_prod _ (zero_notMem_normalizedFactors a)]
-
 /-- If every monic irreducible factor of a polynomial `f` has `natDegree` divisible by `n`,
   then so does `f` itself. -/
 lemma dvd_natDegree_of_monic_of_irreducible (f : R[X]) {n : ℕ}
