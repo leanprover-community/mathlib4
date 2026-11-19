@@ -15,7 +15,6 @@ homology of `K : HomologicalComplex C c'` in degree `j'` and
 that of `K.restriction e` in degree `j` when `e : Embedding c c'`
 is an embedding of complex shapes. See `restriction.sc'Iso`
 and `restriction.hasHomology`.
-
 -/
 
 @[expose] public section
@@ -35,8 +34,6 @@ variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   {i' j' k' : ι'} (hi' : e.f i = i') (hj' : e.f j = j') (hk' : e.f k = k')
   (hi'' : c'.prev j' = i') (hk'' : c'.next j' = k')
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism `(K.restriction e).sc' i j k ≅ K.sc' i' j' k'` when
 `e` is an embedding of complex shapes, `i'`, `j`, `k`' are the respective
 images of `i`, `j`, `k` by `e.f`, `j` is the previous index of `i`, etc. -/
@@ -125,7 +122,6 @@ noncomputable def restrictionHomologyIso :
     (K.homologyIsoSc' i' j' k' hi'' hk'').symm
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma homologyπ_restrictionHomologyIso_hom :
     (K.restriction e).homologyπ j ≫
@@ -153,7 +149,6 @@ lemma homologyπ_restrictionHomologyIso_inv :
     Iso.inv_hom_id_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma restrictionHomologyIso_inv_homologyι :
     (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').inv ≫

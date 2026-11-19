@@ -52,7 +52,7 @@ theorem ordConnected_of_Ioo {α : Type*} [PartialOrder α] {s : Set α}
   rw [ordConnected_iff]
   intro x hx y hy hxy
   rcases eq_or_lt_of_le hxy with (rfl | hxy'); · simpa
-  rw [← Ioc_insert_left hxy, ← Ioo_insert_right hxy']
+  rw [← insert_left_Ioc hxy, ← insert_right_Ioo hxy']
   exact insert_subset_iff.2 ⟨hx, insert_subset_iff.2 ⟨hy, hs x hx y hy hxy'⟩⟩
 
 theorem OrdConnected.preimage_mono {f : β → α} (hs : OrdConnected s) (hf : Monotone f) :

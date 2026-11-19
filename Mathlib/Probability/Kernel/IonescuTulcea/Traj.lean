@@ -49,8 +49,8 @@ expectation.
 
 ## Main statements
 
-* `map_traj_succ_self`: the pushforward of `traj κ a` along the the point at time `a + 1` is the
-  kernel `κ a`.
+* `map_traj_succ_self`: the pushforward of `traj κ a` along the point at time `a + 1` is the kernel
+  `κ a`.
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
   the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
 * `traj_comp_partialTraj`: Given the distribution up to time `a`, `partialTraj κ a b`
@@ -278,8 +278,8 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
       (update (updateFinset x (Iic k) y) (k + 1) z) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
-    | hi m hm =>
+    | zero => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
+    | succ m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
       exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
@@ -350,8 +350,8 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     Tendsto (fun n ↦ trajContent κ x₀ (A n)) atTop (𝓝 0) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
-    | hi m hm =>
+    | zero => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
+    | succ m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
       exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
@@ -542,7 +542,7 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
       deterministic (frestrictLe₂ hab) (measurable_frestrictLe₂ _) := by
   rw [traj_map_frestrictLe, partialTraj_le]
 
-/-- The pushforward of `traj κ a` along the the point at time `a + 1` is the kernel `κ a`. -/
+/-- The pushforward of `traj κ a` along the point at time `a + 1` is the kernel `κ a`. -/
 lemma map_traj_succ_self {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
   have hf : (fun x : Π n, X n ↦ x (a + 1)) =
       (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ frestrictLe (a + 1) := rfl

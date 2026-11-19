@@ -36,7 +36,6 @@ TODO (Artie Khovanov) : real algebraic numbers, hyperreals form a real closed fi
 ## Tags
 
 real closed, rcf
-
 -/
 
 public section
@@ -92,7 +91,7 @@ theorem exists_eq_zpow_of_odd (x : R) {k : ℤ} (hk : Odd k) : ∃ r, x = r ^ k 
 theorem exists_eq_pow_of_isSquare {x : R} (hx : IsSquare x) {n : ℕ} (hn : n ≠ 0) :
     ∃ r, x = r ^ n := by
   induction n using Nat.strong_induction_on generalizing x with
-  | h n ih =>
+  | ind n ih =>
     rcases Nat.even_or_odd n with (even | odd)
     · rcases even with ⟨m, hm⟩
       rcases hx with ⟨s, hs⟩

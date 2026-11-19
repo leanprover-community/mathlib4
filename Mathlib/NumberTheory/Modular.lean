@@ -68,7 +68,7 @@ The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows T
 
 open Complex hiding I
 
-open Matrix hiding mul_smul
+open Matrix hiding mul_smul zpow_neg_one
 
 open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
@@ -346,13 +346,12 @@ theorem g_eq_of_c_eq_one (hc : g 1 0 = 1) : g = T ^ g 0 0 * S * T ^ g 1 1 := by
   replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; lia
   refine Subtype.ext ?_
   conv_lhs => rw [(g : Matrix _ _ ℤ).eta_fin_two]
-  simp only [hg, sub_eq_add_neg, hc, coe_mul, coe_T_zpow, coe_S, mul_fin_two, mul_zero, mul_one,
-    zero_add, one_mul, add_zero, zero_mul]
+  simp [hg, hc, sub_eq_add_neg, coe_T_zpow]
 
 /-- If `1 < |z|`, then `|S • z| < 1`. -/
 theorem normSq_S_smul_lt_one (h : 1 < normSq z) : normSq ↑(S • z) < 1 := by
   rw [UpperHalfPlane.coe_specialLinearGroup_apply]
-  simpa [coe_S, num, denom] using (inv_lt_inv₀ z.normSq_pos zero_lt_one).mpr h
+  simpa [num, denom] using (inv_lt_inv₀ z.normSq_pos zero_lt_one).mpr h
 
 /-- If `|z| < 1`, then applying `S` strictly decreases `im`. -/
 theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
@@ -361,7 +360,7 @@ theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
     have imz : 0 < z.im := im_pos z
     apply (lt_div_iff₀ z.normSq_pos).mpr
     nlinarith
-  simpa [denom, coe_S, SpecialLinearGroup.toGL]
+  simpa [denom, SpecialLinearGroup.toGL]
 
 /-- The standard (closed) fundamental domain of the action of `SL(2,ℤ)` on `ℍ`. -/
 def fd : Set ℍ :=
@@ -675,7 +674,7 @@ private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g 
     rcases Int.abs_le_one_iff.mp (cases_d_of_c_eq_one hz hden hc) with hd | hd | hd
     · rcases cases_c_one_d_zero hz hg hden hc hd with
         ⟨rfl, hnm⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-      · simp [normSq_eq_norm_sq, denom, coe_S, hnm]
+      · simp [normSq_eq_norm_sq, denom, hnm]
       · rw [show T⁻¹ * S = ⟨!![-1, -1; 1, 0], by simp⟩ by decide]
         norm_num [ρ, denom, ← pow_two, div_pow]
       · rw [show T * S = ⟨!![1, -1; 1, 0], by simp⟩ by decide]
@@ -733,7 +732,7 @@ lemma stabilizer_of_ne (hz : z ∈ 𝒟) (hg : g • z = z)
       inv_mul_eq_iff_eq_mul₀ (neg_ne_zero.mpr z.ne_zero), neg_mul, ← neg_eq_iff_eq_neg, ← I_sq,
       ← sq, sq_eq_sq_iff_eq_or_eq_neg, ← coe_I, ← UpperHalfPlane.ext_iff] at hzI
     grind
-  all_goals grind [cases_of_mem_fd_smul_mem_fd hz (hg ▸ hz), SL_neg_smul]
+  grind [cases_of_mem_fd_smul_mem_fd hz (hg ▸ hz), SL_neg_smul]
 
 lemma stabilizer_I : g • I = I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) := by
   constructor

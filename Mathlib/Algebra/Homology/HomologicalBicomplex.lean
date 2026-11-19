@@ -20,7 +20,6 @@ for each `i₁ : I₁`, `K.X i₁` is a column of `K`.
 In this file, we obtain the equivalence of categories
 `HomologicalComplex₂.flipEquivalence : HomologicalComplex₂ C c₁ c₂ ≌ HomologicalComplex₂ C c₂ c₁`
 which is obtained by exchanging the horizontal and vertical directions.
-
 -/
 
 @[expose] public section

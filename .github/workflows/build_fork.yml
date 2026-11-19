@@ -119,6 +119,7 @@ jobs:
     # errors. A superseded run never reaches this job: `guard` cancels the run,
     # ending the job as well.
     if: ${{ !cancelled() && needs.guard.result != 'skipped' }}
+    cache-mode: read
     uses: ./.github/workflows/build_template.yml
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}

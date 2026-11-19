@@ -41,7 +41,6 @@ partition of a `U`-large set, one of the parts is `U`-large.
 ## Tags
 
 Ramsey theory, ultrafilter
-
 -/
 
 @[expose] public section

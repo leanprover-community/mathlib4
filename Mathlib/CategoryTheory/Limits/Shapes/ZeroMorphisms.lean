@@ -134,8 +134,10 @@ lemma comp_eq_zero_iff_of_epi {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] :
 theorem eq_zero_of_image_eq_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : image.ι f = 0) :
     f = 0 := by rw [← image.fac f, w, comp_zero]
 
-theorem nonzero_image_of_nonzero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : f ≠ 0) : image.ι f ≠ 0 :=
+theorem image_ne_zero_of_ne_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : f ≠ 0) : image.ι f ≠ 0 :=
   fun h => w (eq_zero_of_image_eq_zero h)
+
+@[deprecated (since := "2026-10-13")] alias nonzero_image_of_nonzero := image_ne_zero_of_ne_zero
 
 end
 
@@ -257,10 +259,10 @@ theorem zeroIsoIsInitial_hom {X : C} (t : IsInitial X) : (zeroIsoIsInitial t).ho
 theorem zeroIsoIsInitial_inv {X : C} (t : IsInitial X) : (zeroIsoIsInitial t).inv = 0 := by ext
 
 @[to_dual (attr := simp) zeroIsoTerminal_inv]
-theorem zeroIsoInitial_hom [HasInitial C] : zeroIsoInitial.hom = (0 : 0 ⟶ ⊥_ C) := by ext
+theorem zeroIsoInitial_hom : zeroIsoInitial.hom = (0 : 0 ⟶ ⊥_ C) := by ext
 
 @[to_dual (attr := simp) zeroIsoTerminal_hom]
-theorem zeroIsoInitial_inv [HasInitial C] : zeroIsoInitial.inv = (0 : ⊥_ C ⟶ 0) := by ext
+theorem zeroIsoInitial_inv : zeroIsoInitial.inv = (0 : ⊥_ C ⟶ 0) := by ext
 
 end HasZeroMorphisms
 
@@ -479,7 +481,7 @@ def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 
   image.eqToIso h ≪≫ imageZero
 
 @[simp]
-theorem image.ι_zero {X Y : C} [HasImage (0 : X ⟶ Y)] : image.ι (0 : X ⟶ Y) = 0 := by
+theorem image.ι_zero {X Y : C} : image.ι (0 : X ⟶ Y) = 0 := by
   rw [← image.lift_fac (monoFactorisationZero X Y)]
   simp
 

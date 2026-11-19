@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
 
 /-!
-
 # Restricting adjunctions
 
 `Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
