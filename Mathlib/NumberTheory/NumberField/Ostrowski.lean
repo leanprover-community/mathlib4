@@ -75,38 +75,40 @@ theorem exists_infinitePlace_isEquiv (v : AbsoluteValue K ℝ) (hv : ¬ IsNonarc
   have hQ := Rat.AbsoluteValue.under_isEquiv_real_of_not_isNonarchimedean hv
   -- The rational restriction gives `v 2 > 1`, hence nontriviality for approximation.
   have hv2 : 1 < v (2 : K) := by
-    simpa using (hQ.one_lt_iff (x := 2)).mpr (by norm_num [Rat.AbsoluteValue.real_eq_abs])
+    simp [-eq_ratCast, ← map_ofNat (algebraMap ℚ K) 2, ← AbsoluteValue.under_apply, hQ.one_lt_iff]
   by_contra! h
   -- Index approximation by the finite set consisting of `v` and all infinite places.
   let S : Set (AbsoluteValue K ℝ) := {v} ∪ (Set.range (fun w : InfinitePlace K ↦ w.val))
-  let : Fintype S := ((Set.finite_range (fun w : InfinitePlace K ↦ w.val)).insert v).fintype
   have hS : ∀ w : S, w.val.IsNontrivial := by
     rintro ⟨w, rfl | ⟨u, rfl⟩⟩
-    · exact ⟨2, by norm_num, ne_of_gt hv2⟩
+    · exact ⟨2, two_ne_zero, ne_of_gt hv2⟩
     · exact u.isNontrivial
   -- Distinct infinite places are inequivalent; the contradiction hypothesis
   -- also separates `v` from every infinite place.
   have hp : Pairwise (fun w w' : S ↦ ¬ w.val.IsEquiv w'.val) := by
-    rintro ⟨w, rfl | ⟨u, rfl⟩⟩ ⟨w', rfl | ⟨u', rfl⟩⟩ hne he
+    rintro ⟨w, rfl | ⟨u, rfl⟩⟩ ⟨w, rfl | ⟨u', rfl⟩⟩ hne he
     · exact hne rfl
     · exact h u' he
     · exact h u he.symm
-    · exact hne (Subtype.ext (congrArg (fun u : InfinitePlace K ↦ u.val)
-        (InfinitePlace.eq_iff_isEquiv.mpr he)))
-  -- Approximation gives one element large at `v` and small at every infinite place.
+    · simp_all [← InfinitePlace.eq_iff_isEquiv]
+  -- Approximation gives one element `a` large at `v` and small at every infinite place.
   obtain ⟨a, ha, hall⟩ :=
     AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv hS hp ⟨v, .inl rfl⟩
-  have hs (σ : K →+* ℂ) : ‖σ a‖ < 1 := by
+  -- `v a ^ n` is unbounded.
+  obtain ⟨n, hn⟩ := pow_unbounded_of_one_lt
+    (v ((Module.finrank ℚ K).choose (Module.finrank ℚ K / 2) : K) + 1) ha
+  -- `v a ^ n` is bounded because of the previous lemma.
+  have hb : v a ^ n < v ↑((Module.finrank ℚ K).choose (Module.finrank ℚ K / 2)) + 1 := by
+    rw [← map_pow]
+    apply abv_lt_of_complexEmbedding_norm_le_one v hQ (a ^ n)
+    intro σ
+    rw [map_pow, norm_pow]
+    apply pow_le_one₀ (norm_nonneg (σ a)) (le_of_lt _)
     apply hall ⟨(InfinitePlace.mk σ).val, .inr ⟨InfinitePlace.mk σ, rfl⟩⟩
     intro he
     apply h (InfinitePlace.mk σ)
-    rw [congrArg Subtype.val he]
-  -- The conjugates of every power stay bounded, whereas `v a ^ n` is unbounded.
-  obtain ⟨n, hn⟩ := pow_unbounded_of_one_lt
-    (v ((Module.finrank ℚ K).choose (Module.finrank ℚ K / 2) : K) + 1) ha
-  have hb := abv_lt_of_complexEmbedding_norm_le_one v hQ (a ^ n) (fun σ ↦ by
-    simpa using pow_le_one₀ (norm_nonneg (σ a)) (hs σ).le (n := n))
-  exact hn.not_ge (by simpa using hb.le)
+    rw [Subtype.mk.inj he]
+  linarith
 
 /-- **Ostrowski's Theorem, archimedean case**: every archimedean absolute value on a number
   field `K` is equivalent to the absolute value of a unique infinite place of `K`. -/
@@ -122,11 +124,9 @@ theorem exists_complexEmbedding_rpow_eq (v : AbsoluteValue K ℝ)
     (hv : ¬ IsNonarchimedean v) :
     ∃ (σ : K →+* ℂ) (t : ℝ), 0 < t ∧ ∀ x : K, v x = ‖σ x‖ ^ t := by
   obtain ⟨w, hw⟩ := exists_infinitePlace_isEquiv v hv
-  -- Use the symmetric equivalence so that `w ^ t = v`, in the desired direction.
   obtain ⟨t, ht, h⟩ := AbsoluteValue.isEquiv_iff_exists_rpow_eq.mp hw.symm
   refine ⟨w.embedding, t, ht, fun x ↦ ?_⟩
-  -- A representative embedding has norm exactly equal to its infinite place.
-  simpa [InfinitePlace.norm_embedding_eq, InfinitePlace.coe_apply] using (congrFun h x).symm
+  grind [InfinitePlace.norm_embedding_eq, InfinitePlace.coe_apply]
 
 end archimedean
 
