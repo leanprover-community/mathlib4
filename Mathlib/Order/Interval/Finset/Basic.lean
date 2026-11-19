@@ -387,6 +387,7 @@ theorem sup_Iic_of_monotone {β : Type*} [SemilatticeSup β] [OrderBot β] {f : 
 
 variable [LocallyFiniteOrder α]
 
+@[to_dual]
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_gt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
