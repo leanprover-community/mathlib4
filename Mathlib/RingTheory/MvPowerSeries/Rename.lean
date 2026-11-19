@@ -33,7 +33,6 @@ This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 * `MvPowerSeries.rename`
 * `MvPowerSeries.renameEquiv`
 * `MvPowerSeries.killCompl`
-
 -/
 
 @[expose] public section

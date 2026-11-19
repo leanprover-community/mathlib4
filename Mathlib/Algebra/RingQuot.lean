@@ -66,7 +66,7 @@ theorem Rel.smul {r : A → A → Prop} (k : S) ⦃a b : A⦄ (h : Rel r a b) : 
 /-- `EqvGen (RingQuot.Rel r)` is a ring congruence. -/
 def ringCon (r : R → R → Prop) : RingCon R where
   r := Relation.EqvGen (Rel r)
-  iseqv := Relation.EqvGen.is_equivalence _
+  iseqv := Relation.EqvGen.equivalence _
   add' {_ b c _} hab hcd :=
     (hab.lift (· + c) fun _ _ h ↦ h.add_left).trans _ _ _
       (hcd.lift (b + ·) fun _ _ h ↦ h.add_right)

@@ -22,7 +22,6 @@ preservation of certain coproducts by the tensor products in `C`, we
 obtain a monoidal category structure on `GradedObject I C`.
 In particular, if `C` has finite coproducts to which the tensor
 product commutes, we obtain a monoidal category structure on `GradedObject ℕ C`.
-
 -/
 
 @[expose] public section
@@ -467,6 +466,7 @@ section TensorUnit
 variable [DecidableEq I] [HasInitial C]
 
 /-- The unit of the tensor product on graded objects is `(single₀ I).obj (𝟙_ C)`. -/
+@[implicit_reducible]
 noncomputable def tensorUnit : GradedObject I C := (single₀ I).obj (𝟙_ C)
 
 /-- The canonical isomorphism `tensorUnit 0 ≅ 𝟙_ C` -/
@@ -610,7 +610,7 @@ instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n
     (⟨⟨i₁, by lia⟩, ⟨i₂, by lia⟩, ⟨i₃, by lia⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
   intro _ _ h
-  exact Subtype.ext (congrArg (fun x => (x.1.1, x.2.1.1, x.2.2.1)) h)
+  exact Subtype.ext (congrArg (fun x => (x.1.val, x.2.1.val, x.2.2.val)) h)
 
 /-!
 The monoidal category structure on `GradedObject ℕ C` can be inferred

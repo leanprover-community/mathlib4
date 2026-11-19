@@ -64,7 +64,6 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 ## TODO
 
 - Show existence of Fraïssé limits
-
 -/
 
 @[expose] public section
@@ -168,8 +167,8 @@ theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
     ⟨Embedding.comp (inclusion le_sup_right) hP.2.some.equivRange.toEmbedding⟩⟩
 
 variable {M} in
-theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M := by
-  exact ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
+theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M :=
+  ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
 
 /-- Any class in the age of a structure has a representative which is a finitely generated
 substructure. -/
@@ -236,14 +235,14 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     -- to `x ≈ a` in hF
     replace hP2 := Setoid.trans (Setoid.symm (Quotient.mk_out P)) hP2
     exact (hp.is_equiv_invariant_of_fg fg _ _ hP2).1 hP1
-  choose P hPK hP hFP using fun (N : K) (n : ℕ) => jep N N.2 (F (n + 1)).out (hF' _)
+  choose P hPK hP hFP using fun (N : K) (n : ℕ) => jep N N.property (F (n + 1)).out (hF' _)
   let G : ℕ → K := @Nat.rec (fun _ => K) ⟨(F 0).out, hF' 0⟩ fun n N => ⟨P N n, hPK N n⟩
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val :=
     DirectedSystem.natLERec fun n => (hP _ n).some
   refine ⟨Bundled.of (@DirectLimit L _ _ (fun n ↦ (G n).val) _ f _ _), ?_, ?_⟩
-  · exact DirectLimit.cg _ (fun n => (fg _ (G n).2).cg)
+  · exact DirectLimit.cg _ (fun n => (fg _ (G n).property).cg)
   · refine (age_directLimit (fun n ↦ (G n).val) f).trans
-      (subset_antisymm (iUnion_subset fun n N hN => hp (G n).val (G n).2 hN) fun N KN => ?_)
+      (subset_antisymm (iUnion_subset fun n N hN => hp (G n).val (G n).property hN) fun N KN => ?_)
     have : Quotient.out (Quotient.mk' N) ≈ N := Quotient.eq_mk_iff_out.mp rfl
     obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, this⟩
     refine mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp ?_ e.symm.toEmbedding⟩⟩

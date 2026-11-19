@@ -12,13 +12,11 @@ import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 import Mathlib.Topology.Algebra.Module.Compact
 
 /-!
-
 # Definition of (Non-archimedean) local fields
 
 Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),
 we say that it is a non-archimedean local field if the topology comes from the given valuation,
 and it is locally compact and non-discrete.
-
 -/
 
 @[expose] public section
@@ -59,7 +57,7 @@ section TopologicalSpace
 
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 
-attribute [local simp] zero_lt_iff
+attribute [local simp] pos_iff_ne_zero
 
 instance : IsTopologicalDivisionRing K := by
   let := IsTopologicalAddGroup.rightUniformSpace K

@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 In this file, we define the restriction of scalars functor
 `restrictScalars α : PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R`
 attached to a morphism of presheaves of rings `α : R ⟶ R'`.
-
 -/
 
 @[expose] public section

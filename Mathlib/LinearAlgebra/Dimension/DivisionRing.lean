@@ -27,7 +27,6 @@ For vector spaces (i.e. modules over a division ring), we have
   is at most the `R`-rank of `M`.
 
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
-
 -/
 
 public section
@@ -144,11 +143,11 @@ theorem rank_span_eq_rank_of_linearIndepOn
   apply le_antisymm (rank_span_le_rank M)
   rw [Module.rank_def]
   refine ciSup_le' fun s ↦ ?_
-  apply LinearIndependent.cardinal_le_rank (v := fun x ↦ ⟨(x.1 : V), subset_span x.1.2⟩)
+  apply LinearIndependent.cardinal_le_rank (v := fun x ↦ ⟨(x.val : V), subset_span x.val.property⟩)
   apply LinearIndependent.of_comp (span K (M : Set V)).subtype
-  have hli := s.2.map' M.subtype (ker_subtype _)
+  have hli := s.property.map' M.subtype (ker_subtype _)
   exact (linearIndepOn_id_range_iff hli.injective).mp
-    (H _ (Set.range_subset_iff.mpr fun x ↦ (x : M).2) hli.linearIndepOn_id)
+    (H _ (Set.range_subset_iff.mpr fun x ↦ (x : M).property) hli.linearIndepOn_id)
 
 /-- If every `R`-linearly independent subset of `M` is `K`-linearly independent, then the
 `K`-rank of the `K`-span of `M` equals the `R`-rank of `M`.
@@ -181,7 +180,7 @@ theorem linearIndepOn_of_finrank_le_finrank_span (hfg : M.FG)
   refine eq_of_subset_of_ncard_le (by grind) ?_ ?_
   · grw [← finrank_span_set_eq_ncard hu, finrank_mono (span_le.mpr huM), h,
       le_antisymm (span_le.mpr hMc) (span_mono hcM), finrank_span_set_eq_ncard hcK]
-  · exact (hu.linearIndependent.codRestrict M (fun x ↦ huM x.2)).finite
+  · exact (hu.linearIndependent.codRestrict M (fun x ↦ huM x.property)).finite
 
 /-- The `K`-rank of the `K`-span of a finitely generated `M` is equal to the `R`-rank of `M` if
 and only if every `R`-linearly independent subset of `M` is `K`-linearly independent. See also

@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
-
 # Generators of algebras
 
 ## Main definition
@@ -36,7 +35,6 @@ public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 - `Algebra.Generators.mvPolynomial`: The canonical `R`-generators of the polynomial algebra
   `MvPolynomial ι R`, indexed by `ι` via the variables `X`.
-
 -/
 
 @[expose] public section
@@ -448,7 +446,7 @@ def Hom.equivAlgHom :
     Hom P P' ≃ { f : P.Ring →ₐ[R] P'.Ring //
       ∀ x, aeval P'.val (f x) = algebraMap S S' (aeval P.val x) } where
   toFun f := ⟨f.toAlgHom, f.algebraMap_toAlgHom⟩
-  invFun f := ⟨fun i ↦ f.1 (.X i), fun i ↦ by simp [f.2]⟩
+  invFun f := ⟨fun i ↦ f.val (.X i), fun i ↦ by simp [f.property]⟩
   left_inv f := by ext; simp
   right_inv f := by ext; simp
 
@@ -725,13 +723,13 @@ to `ker(R[X][Y] → S[Y] → T)` constructed from `P.σ`.
 noncomputable
 def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.comp P).ker := by
-  refine ⟨(AddMonoidAlgebra.coeff x.1).sum fun n r ↦ ?_, ?_⟩
+  refine ⟨(AddMonoidAlgebra.coeff x.val).sum fun n r ↦ ?_, ?_⟩
   · -- The use of `refine` is intentional to control the elaboration order
     -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.ι ⊕ P.ι) R`
     refine rename ?_ (P.σ r) * monomial ?_ 1
     exacts [Sum.inr, n.mapDomain Sum.inl]
   · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
-    conv_rhs => rw [← aeval_val_eq_zero x.2, ← x.1.support_sum_monomial_coeff]
+    conv_rhs => rw [← aeval_val_eq_zero x.property, ← x.val.support_sum_monomial_coeff]
     simp only [Finsupp.sum, map_sum, map_mul, aeval_rename, Function.comp_def, comp_val,
       Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
       Sum.elim_inl, one_mul]
@@ -740,7 +738,7 @@ def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker)
 
 lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by
-  conv_rhs => rw [← x.1.support_sum_monomial_coeff]
+  conv_rhs => rw [← x.val.support_sum_monomial_coeff]
   rw [kerCompPreimage, map_finsuppSum, Finsupp.sum]
   refine Finset.sum_congr rfl fun j _ ↦ ?_
   simp only [map_mul, Hom.toAlgHom_monomial]
@@ -762,7 +760,7 @@ lemma map_ofComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
       RingHom.mem_ker] at hx ⊢
     rw [← hx, Hom.algebraMap_toAlgHom, algebraMap_self_apply]
   · intro hx
-    exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).2, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
+    exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).property, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
 
 lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
     (Q.comp P).ker =

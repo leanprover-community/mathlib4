@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 In this file, we give the natural isomorphism between cones on `F` with cone point `X` and the type
 `lim Hom(X, F·)`, and similarly the natural isomorphism between cocones on `F` with cocone point `X`
 and the type `lim Hom(F·, X)`.
-
 -/
 
 @[expose] public section

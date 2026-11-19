@@ -43,15 +43,15 @@ point of view are in the `ZLattice` namespace.
 
 ## Note
 
-There is also `Submodule.IsLattice` which has slightly different applications. There no
-topology is needed and the discrete condition is replaced by finitely generated.
+There is also `Submodule.IsFullLattice` which has slightly different applications. There no
+topology is needed and discreteness is replaced by finite generation together with a linear
+independence condition.
 
 ## Implementation Notes
 
 A `ZLattice` could be defined either as a `AddSubgroup E` or a `Submodule ℤ E`. However, the module
 aspect appears to be the more useful one (especially in computations involving basis) and is also
 consistent with the `ZSpan` construction of `ℤ`-lattices.
-
 -/
 
 @[expose] public section
@@ -799,7 +799,7 @@ lemma IsZLattice.isCompact_range_of_periodic
   rintro _ ⟨x, rfl⟩
   let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm
     fun i ↦ ⌊(b.ofZLatticeBasis ℝ).repr x i⌋)
-  refine ⟨x + (- x'), ?_, hf' _ _ (- x').2⟩
+  refine ⟨x + (- x'), ?_, hf' _ _ (- x').property⟩
   simp [parallelepiped_basis_eq, x', Int.floor_le, Int.lt_floor_add_one, le_of_lt, add_comm (1 : ℝ)]
 
 end ZLattice

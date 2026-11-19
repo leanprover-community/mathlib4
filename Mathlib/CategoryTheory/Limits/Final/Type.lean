@@ -21,7 +21,6 @@ initial functors, but we provide a more down to earth proof.
 We also obtain the dual result that if `F` is final,
 then `F.colimitTypePrecomp : (F ⋙ P).ColimitType → P.ColimitType`
 is a bijection.
-
 -/
 
 @[expose] public section
@@ -67,6 +66,13 @@ lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
       simp [← hval Y₁ X, ← hval Y₂ ((CostructuredArrow.map f).obj X)]
     · ext X : 2
       simpa using (hval (F.obj X) (CostructuredArrow.mk (𝟙 _))).symm
+
+/-- When `F : C ⥤ D` is an initial functor, sections of `P : D ⥤ Type w` are equivalent
+to sections of `F ⋙ P` via `Functor.sectionsPrecomp`. -/
+@[implicit_reducible, simps! apply]
+noncomputable def sectionsEquivOfInitial (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
+    P.sections ≃ (F ⋙ P).sections :=
+  Equiv.ofBijective _ (bijective_sectionsPrecomp F P)
 
 /-- Given `P : D ⥤ Type w` and `F : C ⥤ D`, this is the obvious map
 `(F ⋙ P).ColimitType → P.ColimitType`. -/
