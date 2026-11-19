@@ -142,6 +142,8 @@ def mapZeroObject [PreservesZeroMorphisms F] : F.obj 0 ≅ 0 where
   hom_inv_id := by rw [← F.map_id, id_zero, F.map_zero, zero_comp]
   inv_hom_id := by rw [id_zero, comp_zero]
 
+attribute [to_dual existing mapZeroObject_inv] mapZeroObject_hom
+
 variable {F}
 
 theorem preservesZeroMorphisms_of_map_zero_object (i : F.obj 0 ≅ 0) : PreservesZeroMorphisms F where

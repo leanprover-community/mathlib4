@@ -330,9 +330,9 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine hd ⟨x, @Int.cast_injective ℝ _ _ d (x * x) ?_⟩
     rw [← sq_sqrt <| Int.cast_nonneg h₀.le, Int.cast_mul, ← hx, sq]
   obtain ⟨M, hM₁⟩ := exists_int_gt (2 * |ξ| + 1)
-  have hM : {q : ℚ | |q.1 ^ 2 - d * (q.2 : ℤ) ^ 2| < M}.Infinite := by
+  have hM : {q : ℚ | |q.num ^ 2 - d * (q.den : ℤ) ^ 2| < M}.Infinite := by
     refine Infinite.mono (fun q h => ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
-    have h0 : 0 < (q.2 : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
+    have h0 : 0 < (q.den : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
     have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
     rw [mem_ofPred, abs_sub_comm, ← @Int.cast_lt ℝ,
       ← div_lt_div_iff_of_pos_right (abs_pos_of_pos h0)]
@@ -345,7 +345,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine (abs_sub_abs_le_abs_sub (q : ℝ) ξ).trans (h.le.trans ?_)
     rw [div_le_one h0, one_le_sq_iff_one_le_abs, Nat.abs_cast, Nat.one_le_cast]
     exact q.pos
-  obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.1 ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
+  obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.num ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
     contrapose! hM
     refine (congr_arg _ (ext fun x => ?_)).mp (Finite.biUnion (finite_Ioo (-M) M) fun m _ => hM m)
     simp only [abs_lt, mem_ofPred, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']

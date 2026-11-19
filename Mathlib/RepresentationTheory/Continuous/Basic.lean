@@ -112,7 +112,7 @@ variable {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
 abbrev toIntertwiningMap (f : π₁ →ⁱL π₂) :
     Representation.IntertwiningMap π₁.toRepresentation π₂.toRepresentation where
   __ := f.toContinuousLinearMap.toLinearMap
-  isIntertwining' g := congr(ContinuousLinearMap.toLinearMap $(f.2 g))
+  isIntertwining' g := congr(ContinuousLinearMap.toLinearMap $(f.isIntertwining' g))
 
 /-- The identity continuous intertwining map. -/
 def id : π₁ →ⁱL π₁ where
@@ -168,7 +168,8 @@ open ContinuousLinearMap in
 def comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     {π₃ : ContRepresentation R G U} (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : π₁ →ⁱL π₃ where
   __ := f.toContinuousLinearMap.comp g.toContinuousLinearMap
-  isIntertwining' h := by rw [comp_assoc, g.2, ← comp_assoc, f.2, comp_assoc]
+  isIntertwining' h := by
+    rw [comp_assoc, g.isIntertwining', ← comp_assoc, f.isIntertwining', comp_assoc]
 
 @[simp]
 lemma toContinuousLinearMap_comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
@@ -182,7 +183,8 @@ lemma comp_id (f : π₁ →ⁱL π₂) : f.comp .id = f := rfl
 lemma id_comp (f : π₁ →ⁱL π₂) : ContIntertwiningMap.id.comp f = f := rfl
 
 instance : Add (π₁ →ⁱL π₂) where
-  add f g := ⟨f.toContinuousLinearMap + g.toContinuousLinearMap, by simp [g.2, f.2]⟩
+  add f g := ⟨f.toContinuousLinearMap + g.toContinuousLinearMap, by
+    simp [g.isIntertwining', f.isIntertwining']⟩
 
 @[simp]
 lemma toContinuousLinearMap_add (f g : π₁ →ⁱL π₂) :
@@ -224,7 +226,7 @@ variable {S : Type*} [DistribSMul S W] [SMulCommClass R S W]
 instance instSMul :
     SMul S (π₁ →ⁱL π₂) where
   smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
-    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
+    rw [ContinuousLinearMap.smul_comp, f.isIntertwining', ContinuousLinearMap.comp_smul]⟩
 
 @[simp]
 lemma toContinuousLinearMap_smul (s : S) (f : π₁ →ⁱL π₂) :
@@ -239,7 +241,7 @@ instance : AddCommSemigroup (π₁ →ⁱL π₂) :=
     toContinuousLinearMap_add
 
 instance : Neg (π₁ →ⁱL π₂) where
-  neg f := ⟨-f.toContinuousLinearMap, by simp [f.2]⟩
+  neg f := ⟨-f.toContinuousLinearMap, by simp [f.isIntertwining']⟩
 
 @[simp]
 lemma toContinuousLinearMap_neg (f : π₁ →ⁱL π₂) :
@@ -248,7 +250,8 @@ lemma toContinuousLinearMap_neg (f : π₁ →ⁱL π₂) :
 lemma neg_apply (f : π₁ →ⁱL π₂) (v : V) : (-f) v = -f v := rfl
 
 instance : Sub (π₁ →ⁱL π₂) where
-  sub f g := ⟨f.toContinuousLinearMap - g.toContinuousLinearMap, by simp [g.2, f.2]⟩
+  sub f g := ⟨f.toContinuousLinearMap - g.toContinuousLinearMap, by
+    simp [g.isIntertwining', f.isIntertwining']⟩
 
 @[simp]
 lemma toContinuousLinearMap_sub (f g : π₁ →ⁱL π₂) :
@@ -584,7 +587,7 @@ def coind (π : ContRepresentation R G V) : ContRepresentation R H (π.coindV φ
     map_add' _ _ := by simp
     map_smul' _ _ := by simp
     cont := continuous_induced_rng.2 <| by
-      simpa using! (ContinuousMap.mulRight h).continuous_precomp.comp continuous_subtype_val}
+      simpa using! (ContinuousMap.mulRight h).continuous_precomp.comp continuous_subtypeVal}
   toMonoidHom.map_one' := by ext; simp
   toMonoidHom.map_mul' h1 h2 := by ext; simp [ContinuousMap.mulRight_mul]
 
@@ -655,15 +658,15 @@ linearly equivalent to `C(G, V)`, via the twist `f ↦ fun g ↦ π g (f g⁻¹)
 @[simps]
 def coindLEquivCoind₁ (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
     (trivial R Unit V).coindV (1 : Unit →ₜ* G) ≃L[R] C(G, V) where
-  toFun f := ⟨fun g ↦ π g (f.1 g⁻¹),
-      hπ.comp <| continuous_id.prodMk <| f.1.continuous.comp continuous_inv⟩
+  toFun f := ⟨fun g ↦ π g (f.val g⁻¹),
+      hπ.comp <| continuous_id.prodMk <| f.val.continuous.comp continuous_inv⟩
   invFun f' := ⟨⟨fun g ↦ π g (f' g⁻¹),
       hπ.comp <| continuous_id.prodMk <| f'.continuous.comp continuous_inv⟩, by simp⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-  continuous_toFun := by exact (continuous_coindEquivCoind₁_aux π hπ).comp continuous_subtype_val
+  continuous_toFun := by exact (continuous_coindEquivCoind₁_aux π hπ).comp continuous_subtypeVal
   continuous_invFun := by exact (continuous_coindEquivCoind₁_aux π hπ).subtype_mk (by simp)
 
 /-- If the action map `G × V → V`, `(g, v) ↦ π g v` is (jointly) continuous, then the coinduction

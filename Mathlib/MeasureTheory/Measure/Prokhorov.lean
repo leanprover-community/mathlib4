@@ -195,7 +195,7 @@ lemma isCompact_setOfPred_finiteMeasure_le_of_isCompact
       refine ⟨μ.comap f, (FiniteMeasure.mass_comap_le _ _).trans hμ.1, ?_⟩
       ext s hs
       simp only [toMeasure_map, F]
-      rw [Measure.map_apply measurable_subtype_coe hs]
+      rw [Measure.map_apply measurable_subtypeVal hs]
       simp only [toMeasure_comap]
       rw [Measure.comap_apply _ (Subtype.val_injective), image_preimage_eq_inter_range]
       · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
@@ -596,7 +596,7 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
     ∃ (k : ℕ), ∀ μ ∈ S, 1 - ε < μ (⋃ i ≤ k, U i) := by
   have εfin : ε ≠ ∞ := ne_top_of_le_ne_top (by simp) hεbound
   lift ε to ℝ≥0 using εfin
-  obtain ⟨ε, hε', rfl⟩ : ∃ (ε' : ℝ) (hε' : 0 ≤ ε'), ε = .mk ε' hε' := ⟨↑ε, ε.2, rfl⟩
+  obtain ⟨ε, hε', rfl⟩ : ∃ (ε' : ℝ) (hε' : 0 ≤ ε'), ε = .mk ε' hε' := ⟨↑ε, ε.property, rfl⟩
   simp only [ENNReal.coe_pos, ← NNReal.coe_lt_coe, NNReal.coe_zero, coe_mk, coe_le_one_iff,
       ← NNReal.coe_le_coe, NNReal.coe_one] at hε hεbound
   by_contra! nh

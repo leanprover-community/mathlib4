@@ -260,13 +260,17 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
   toFun c :=
     ⟨c ⊔ b,
       le_sup_right.trans_lt <|
-        sup_strictMonoOn_Icc_inf (left_mem_Icc.2 inf_le_left) (Ioo_subset_Icc_self c.2) c.2.1,
-      sup_strictMonoOn_Icc_inf (Ioo_subset_Icc_self c.2) (right_mem_Icc.2 inf_le_left) c.2.2⟩
+        sup_strictMonoOn_Icc_inf (left_mem_Icc.2 inf_le_left) (Ioo_subset_Icc_self c.property)
+          c.property.1,
+      sup_strictMonoOn_Icc_inf (Ioo_subset_Icc_self c.property) (right_mem_Icc.2 inf_le_left)
+        c.property.2⟩
   invFun c :=
     ⟨a ⊓ c,
-      inf_strictMonoOn_Icc_sup (left_mem_Icc.2 le_sup_right) (Ioo_subset_Icc_self c.2) c.2.1,
+      inf_strictMonoOn_Icc_sup (left_mem_Icc.2 le_sup_right) (Ioo_subset_Icc_self c.property)
+        c.property.1,
       inf_le_left.trans_lt' <|
-        inf_strictMonoOn_Icc_sup (Ioo_subset_Icc_self c.2) (right_mem_Icc.2 le_sup_right) c.2.2⟩
+        inf_strictMonoOn_Icc_sup (Ioo_subset_Icc_self c.property) (right_mem_Icc.2 le_sup_right)
+          c.property.2⟩
   left_inv c :=
     Subtype.ext <| by
       dsimp
@@ -276,8 +280,8 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
       dsimp
       rw [inf_comm, inf_sup_assoc_of_le _ c.prop.1.le, inf_eq_left.2 c.prop.2.le]
   map_rel_iff' := @fun c d =>
-    @OrderIso.le_iff_le _ _ _ _ (infIccOrderIsoIccSup _ _) ⟨c.1, Ioo_subset_Icc_self c.2⟩
-      ⟨d.1, Ioo_subset_Icc_self d.2⟩
+    @OrderIso.le_iff_le _ _ _ _ (infIccOrderIsoIccSup _ _) ⟨c.val, Ioo_subset_Icc_self c.property⟩
+      ⟨d.val, Ioo_subset_Icc_self d.property⟩
 
 /-- The diamond isomorphism between the open intervals `(a ⊓ b, b)` and `(a, a ⊔ b)`. -/
 @[simps!]

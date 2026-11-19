@@ -40,7 +40,7 @@ lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
     s.toFinset = {a} ↔ card s ≠ 0 ∧ s = card s • {a} := by
   refine ⟨fun H ↦ ⟨fun h ↦ ?_, ext' fun x ↦ ?_⟩, fun H ↦ ?_⟩
   · rw [card_eq_zero.1 h, toFinset_zero] at H
-    exact Finset.empty_ne_singleton _ H
+    exact (Finset.singleton_nonempty _).ne_empty H.symm
   · rw [count_nsmul, count_singleton]
     by_cases hx : x = a
     · simp_rw [hx, ite_true, mul_one, count_eq_card]

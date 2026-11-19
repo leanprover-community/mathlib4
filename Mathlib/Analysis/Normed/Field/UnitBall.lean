@@ -202,7 +202,8 @@ theorem Metric.unitSphere.coe_inv [NormedDivisionRing 𝕜] (x : sphere (0 : �
 
 instance Metric.unitSphere.instDiv [NormedDivisionRing 𝕜] : Div (sphere (0 : 𝕜) 1) where
   div x y := .mk (x / y) <| mem_sphere_zero_iff_norm.2 <| by
-    rw [norm_div, mem_sphere_zero_iff_norm.1 x.2, mem_sphere_zero_iff_norm.1 y.coe_prop, div_one]
+    rw [norm_div, mem_sphere_zero_iff_norm.1 x.property, mem_sphere_zero_iff_norm.1 y.coe_prop,
+      div_one]
 
 @[simp, norm_cast]
 protected theorem Metric.unitSphere.coe_div [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
@@ -272,6 +273,6 @@ instance Metric.sphere.instContinuousMul [SeminormedRing 𝕜] [NormMulClass �
 
 instance Metric.sphere.instIsTopologicalGroup [NormedDivisionRing 𝕜] :
     IsTopologicalGroup (sphere (0 : 𝕜) 1) where
-  continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
+  continuous_inv := (continuous_subtypeVal.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 
 instance Metric.sphere.instCommGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) where
