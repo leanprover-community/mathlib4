@@ -1,6 +1,6 @@
 /-
 Copyright (c) 2026 E. S. Markov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE-APACHE.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: E. S. Markov
 -/
 module
@@ -88,9 +88,7 @@ with second derivative `f''` at `t`. -/
 lemma second_order_peano_bound {f : ℝ → ℝ} {t f'' : ℝ}
     (hf_nhds : ∀ᶠ x in 𝓝 t, DifferentiableAt ℝ f x)
     (hf'' : HasDerivAt (deriv f) f'' t) :
-    ∀ ε > 0, ∀ᶠ h in 𝓝 0,
-
-      |f (t + h) - f t - deriv f t * h - (1 / 2) * f'' * h ^ 2| ≤ ε * h ^ 2 := by
+    ∀ ε > 0, ∀ᶠ h in 𝓝 0, |f (t + h) - f t - deriv f t * h - (1 / 2) * f'' * h ^ 2| ≤ ε * h ^ 2 := by
   intro ε hε
   have h_rem := hasDerivAt_remainder_bound hf'' ε hε
   rw [Metric.eventually_nhds_iff] at hf_nhds h_rem ⊢
@@ -122,9 +120,7 @@ lemma second_order_peano_bound {f : ℝ → ℝ} {t f'' : ℝ}
       convert hsq.const_mul ((1 / 2) * f'') using 1
       ring
     exact ((h_comp.sub_const (f t)).sub h_lin).sub h_quad
-  have h_deriv_bound : ∀ s : ℝ, |s| ≤ |h| →
-
-      |deriv f (t + s) - deriv f t - f'' * s| ≤ ε * |h| := by
+  have h_deriv_bound : ∀ s : ℝ, |s| ≤ |h| → |deriv f (t + s) - deriv f t - f'' * s| ≤ ε * |h| := by
     intro s hs_abs
     have hs_d₂ : dist s 0 < δ₂ := by
       rw [dist_zero_right, Real.norm_eq_abs]
