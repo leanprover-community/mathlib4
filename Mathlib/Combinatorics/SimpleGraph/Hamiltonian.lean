@@ -389,7 +389,7 @@ theorem isHamiltonian_iff_exists_adj_and_isHamiltonian [Nontrivial α] :
 
 /-- A finite simple graph with a bridge is not hamiltonian. -/
 theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHamiltonian := by
-  induction e with | h u v
+  induction e with | mk u v
   have := he.nontrivial
   intro hG
   obtain ⟨p, hp⟩ := hG.exists_isHamiltonianCycle u
