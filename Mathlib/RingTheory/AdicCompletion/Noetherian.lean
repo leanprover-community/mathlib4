@@ -5,14 +5,15 @@ Authors: Andrew Yang, Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
-public import Mathlib.RingTheory.AdicCompletion.LocalRing
-public import Mathlib.RingTheory.Filtration
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+public import Mathlib.RingTheory.ReesAlgebra
+
+import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
+import Mathlib.RingTheory.AdicCompletion.LocalRing
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -29,147 +30,72 @@ universe u
 
 variable {R : Type u} [CommRing R] (I : Ideal R)
 
-section
-
-variable (M : Type*) [AddCommGroup M] [Module R M]
-
-variable [IsNoetherianRing R] [Module.Finite R M]
-
-lemma IsHausdorff.of_le_jacobson (h : I ≤ Ring.jacobson R) : IsHausdorff I M :=
-  ⟨fun x hx ↦ (Ideal.iInf_pow_smul_eq_bot_of_le_jacobson I h).le (by simpa [SModEq.zero] using hx)⟩
-
-theorem IsHausdorff.of_isLocalRing [IsLocalRing R] (h : I ≠ ⊤) : IsHausdorff I M :=
-  of_le_jacobson I M ((le_maximalIdeal h).trans (ringJacobson_eq_maximalIdeal R).ge)
-
-instance [IsLocalRing R] : IsHausdorff (maximalIdeal R) M :=
-  .of_le_jacobson _ _ (ringJacobson_eq_maximalIdeal R).ge
-
-lemma IsHausdorff.of_isTorsionFree [IsDomain R] [IsTorsionFree R M] (h : I ≠ ⊤) : IsHausdorff I M :=
-  ⟨fun x hx ↦ (I.iInf_pow_smul_eq_bot_of_isTorsionFree h).le (by simpa [SModEq.zero] using hx)⟩
-
-theorem IsHausdorff.of_isDomain [IsDomain R] (h : I ≠ ⊤) : IsHausdorff I R :=
-  .of_isTorsionFree I R h
-
-end
-
-instance (priority := 100) {A : Type*} [CommRing A] [IsArtinianRing A] [IsLocalRing A] :
-    IsAdicComplete (IsLocalRing.maximalIdeal A) A where
-  prec' f hf := by
-    obtain ⟨n, hn⟩ := (isArtinianRing_iff_isNilpotent_maximalIdeal A).mp ‹_›
-    use f n; intro m
-    by_cases h : m ≤ n
-    · exact hf h
-    specialize hf (show n ≤ m by lia)
-    rw [hn, zero_smul, Ideal.zero_eq_bot, SModEq.bot] at hf
-    rw [hf]
-
 open Polynomial
 
-/-- The canonical morphism from `reesAlgebra` to associated graded ring. -/
-noncomputable abbrev reesAlgebraToAssociatedGraded :
-    (reesAlgebra I) →+* (reesAlgebra I) ⧸ I.map (algebraMap R (reesAlgebra I)) :=
-  Ideal.Quotient.mk (I.map (algebraMap R (reesAlgebra I)))
+section
 
-/-- The ideal `⨁ i, J ⊓ Iⁱ / J ⊓ Iⁱ⁺¹` corresponding to an ideal `J` of `R`. -/
-noncomputable abbrev Ideal.toAssociatedGraded (J I : Ideal R) :
-    Ideal ((reesAlgebra I) ⧸ (I.map (algebraMap R (reesAlgebra I)))) :=
-  ((J.map Polynomial.C).comap (reesAlgebra I).val).map (reesAlgebraToAssociatedGraded I)
+variable {I} (n : ℕ) {J : Ideal R} {ι : Type u} {f : ι → reesAlgebra I}
+  (span_eq : (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
+    J.toAssociatedGraded I) (deg : ι → ℕ)
 
-lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG) :
-    ∃ (ι : Type u) (f : ι → reesAlgebra I) (deg : ι → ℕ) (coeff : ι → R), Finite ι ∧
-      (∀ i : ι, (f i).1 = monomial (deg i) (coeff i)) ∧ (∀ i : ι, coeff i ∈ J) ∧
-        (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
-          J.toAssociatedGraded I := by
-  obtain ⟨s, hs⟩ := fg
-  have smem : ∀ x ∈ s, x ∈ J.toAssociatedGraded I := fun x hx ↦ by
-    simpa [← hs] using Ideal.subset_span hx
-  have : (J.toAssociatedGraded I).comap (reesAlgebraToAssociatedGraded I) = _ :=
-    (Ideal.comap_map_of_surjective' (reesAlgebraToAssociatedGraded I) Ideal.Quotient.mk_surjective
-      ((J.map Polynomial.C).comap (reesAlgebra I).val)).trans (sup_comm _ _)
-  let g : s → reesAlgebra I := fun x ↦ Classical.choose
-    (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
-  have g_spec (x : s) : g x ∈ _ ∧ reesAlgebraToAssociatedGraded I (g x) = x := Classical.choose_spec
-    (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
-  let ι := Sigma (fun (x : s) ↦ (g x).1.support)
-  let deg : ι → ℕ := fun ⟨i, j⟩ ↦ j
-  let coeff : ι → R := fun ⟨i, j⟩ ↦ (g i).1.coeff j.1
-  have monomial_mem (i : ι) : monomial (deg i) (coeff i) ∈ reesAlgebra I := by
-    match i with
-    | ⟨i, j⟩ => exact reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp (g i).2 j)
-  have monomial_mem' (i : ι) : monomial (deg i) (coeff i) ∈ J.map C := by
-    match i with
-    | ⟨i, j⟩ =>
-      rw [Ideal.mem_map_C_iff]
-      intro n
-      by_cases eq : n = deg ⟨i, j⟩
-      · have := (g_spec i).1
-        simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff] at this
-        simpa [eq, coeff] using this j
-      · simp [coeff_monomial_of_ne _ eq]
-  let f : ι → reesAlgebra I := fun i ↦ ⟨monomial (deg i) (coeff i), monomial_mem i⟩
-  use ι, f, deg, coeff
-  refine ⟨inferInstance, fun i ↦ rfl, fun ⟨i, j⟩ ↦ ?_, le_antisymm ?_ ?_⟩
-  · have := (g_spec i).1
-    simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff] at this
-    exact this j
-  · simp only [Ideal.map_span, Ideal.span_le, Set.image_subset_iff]
-    rintro x ⟨y, hy⟩
-    apply Ideal.mem_map_of_mem
-    simpa [← hy] using monomial_mem' y
-  · simp only [← hs, Ideal.span_le]
-    intro x hx
-    have : _ = x := (g_spec ⟨x, hx⟩).2
-    rw [← this]
-    apply Ideal.mem_map_of_mem
-    have : g ⟨x, hx⟩ =
-      ∑ j, ⟨monomial (deg ⟨⟨x, hx⟩, j⟩) (coeff ⟨⟨x, hx⟩, j⟩), monomial_mem ⟨⟨x, hx⟩, j⟩⟩ := by
-      apply SetCoe.ext
-      simp only [Finset.univ_eq_attach, AddSubmonoidClass.coe_finsetSum, deg, coeff]
-      rw [(g ⟨x, hx⟩).1.support.sum_attach (fun n ↦ (monomial n) ((g ⟨x, hx⟩).1.coeff n))]
-      exact (sum_monomial_eq (g ⟨x, hx⟩).1).symm
-    rw [this]
-    apply sum_mem (fun i hi ↦ Ideal.subset_span ?_)
-    exact ⟨⟨⟨x, hx⟩, i⟩, rfl⟩
+include span_eq
 
-lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
-    (deg : ι → ℕ) (coeff : ι → R) (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i))
-    (span_eq : (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
-      J.toAssociatedGraded I)
-    (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : ι → R),
-    (∀ i : ι, coeff' i ∈ I ^ (n - deg i)) ∧ (∀ i : ι, deg i > n → coeff' i = 0) ∧
-      r - ∑ x : ι, coeff' x * coeff x ∈ I ^ (n + 1) := by
-  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ ∈
-    J.toAssociatedGraded I := by
-    apply Ideal.mem_map_of_mem
-    simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff]
-    intro m
-    by_cases eq : m = n
-    · simpa [eq]
-    · simp [coeff_monomial_of_ne _ eq]
-  rw [← span_eq, Ideal.map_span, ← Set.range_comp, Ideal.mem_span_range_iff_exists_fun] at this
-  rcases this with ⟨c, hc⟩
-  let c' : ι → (reesAlgebra I) := fun i ↦ Classical.choose (Ideal.Quotient.mk_surjective (c i))
-  let c'_spec (i : ι) : (reesAlgebraToAssociatedGraded I) (c' i) = c i :=
-    Classical.choose_spec (Ideal.Quotient.mk_surjective (c i))
-  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ =
-    (reesAlgebraToAssociatedGraded I) (∑ i, c' i * f i) := by simp [← hc, c'_spec]
+private lemma reesAlgebraToAssociatedGraded_monomial_mem_span
+    {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) :
+    (reesAlgebraToAssociatedGraded I) ⟨(monomial n) r, reesAlgebra.monomial_mem.mpr mem_pow⟩ ∈
+      Ideal.span (Set.range (⇑(reesAlgebraToAssociatedGraded I) ∘ f)):= by
+  rw [Set.range_comp, ← Ideal.map_span, span_eq]
+  apply Ideal.mem_map_of_mem
+  simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff]
+  intro m
+  by_cases eq : m = n
+  · simpa [eq]
+  · simp only [coeff_monomial_of_ne _ eq, zero_mem]
+
+variable [Fintype ι]
+
+private noncomputable def coeffsOfMemAux {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) :
+    ι → (reesAlgebra I) :=
+  (Function.surjInv Ideal.Quotient.mk_surjective).comp
+    (Classical.choose (Ideal.mem_span_range_iff_exists_fun.mp
+      (reesAlgebraToAssociatedGraded_monomial_mem_span n span_eq mem_J mem_pow)))
+
+private noncomputable def coeffsOfMem {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) : ι → R :=
+  fun i ↦ if deg i ≤ n then (coeffsOfMemAux n span_eq mem_J mem_pow i).1.coeff (n - (deg i)) else 0
+
+private lemma coeffsOfMemAux_spec {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) :
+    (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr mem_pow⟩ =
+    (reesAlgebraToAssociatedGraded I) (∑ i, coeffsOfMemAux n span_eq mem_J mem_pow i * f i) := by
+  simpa [coeffsOfMemAux, Function.surjInv_eq]
+    using (Classical.choose_spec (Ideal.mem_span_range_iff_exists_fun.mp
+      (reesAlgebraToAssociatedGraded_monomial_mem_span n span_eq mem_J mem_pow))).symm
+
+private lemma coeffsOfMem_mem_pow {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) (i : ι) :
+    coeffsOfMem n span_eq deg mem_J mem_pow i ∈ I ^ (n - deg i) := by
+  by_cases degle : deg i ≤ n
+  · simpa [degle, coeffsOfMem, mem_reesAlgebra_iff] using
+      (coeffsOfMemAux n span_eq mem_J mem_pow i).2 (n - deg i)
+  · simp [degle, coeffsOfMem]
+
+private lemma coeffsOfMem_eq_zero_of_lt {r : R} (mem_J : r ∈ J) (mem_pow : r ∈ I ^ n) (i : ι) :
+    n < deg i → coeffsOfMem n span_eq deg mem_J mem_pow i = 0 := by
+  simp only [coeffsOfMem, ite_eq_right_iff, ← not_le]
+  tauto
+
+private lemma sub_sum_coeffsOfMem_mem_pow {coeff : ι → R}
+    (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i)){r : R} (mem_J : r ∈ J)
+    (mem_pow : r ∈ I ^ n) :
+    r - ∑ x : ι, coeffsOfMem n span_eq deg mem_J mem_pow x * coeff x ∈ I ^ (n + 1) := by
+  have := coeffsOfMemAux_spec n span_eq mem_J mem_pow
   rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, mem_map_algebraMap_reesAlgebra_iff] at this
   have coeff_eq := this n
   simp only [AddSubgroupClass.coe_sub, AddSubmonoidClass.coe_finsetSum, MulMemClass.coe_mul, eq,
     coeff_sub, coeff_monomial_same, finsetSum_coeff] at coeff_eq
-  let coeff' : ι → R := fun i ↦ if deg i ≤ n then (c' i).1.coeff (n - (deg i)) else 0
-  have : ∑ i, ((c' i).1 * (monomial (deg i)) (coeff i)).coeff n =
-    ∑ i, (coeff' i) * (coeff i) := by
-    congr
-    ext i
-    rw [← Polynomial.C_mul_X_pow_eq_monomial, ← mul_assoc]
-    simp [coeff_mul_X_pow', coeff']
-  rw [this] at coeff_eq
-  refine ⟨coeff', fun i ↦ ?_, fun i hi ↦ ?_, coeff_eq⟩
-  · by_cases degle : deg i ≤ n
-    · simpa [degle, coeff'] using (mem_reesAlgebra_iff I _).mp (c' i).2 (n - deg i)
-    · simp [degle, coeff']
-  · simp [coeff', hi]
+  convert coeff_eq
+  rw [← Polynomial.C_mul_X_pow_eq_monomial, ← mul_assoc]
+  simp [coeff_mul_X_pow', coeffsOfMem]
+
+end
 
 lemma exists_coeffs_isAdicCauchy (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
     (deg : ι → ℕ) (coeff : ι → R) (memJ : ∀ i, coeff i ∈ J)
@@ -178,24 +104,22 @@ lemma exists_coeffs_isAdicCauchy (J : Ideal R) (ι : Type u) [Fintype ι] (f : �
       J.toAssociatedGraded I) (r : R) (hr : r ∈ J) :
     ∃ (g : ι → ℕ → R), (∀ i, AdicCompletion.IsAdicCauchy I R (g i)) ∧
       ∀ n, r - ∑ x : ι, g x n * coeff x ∈ I ^ (n + 1) := by
-  have exist (n : ℕ) := exists_coeffs_sub_mem I n J ι f deg coeff eq span_eq
   have memJ' (g' : ι → R) : r - ∑ x, g' x * coeff x ∈ J :=
     sub_mem hr (sum_mem (fun i _ ↦ (Ideal.mul_mem_left _ _ (memJ i))))
   let coeffs' (n : ℕ) : {f : (ι → R) // r - ∑ x, f x * coeff x ∈ I ^ (n + 1)} := by
     induction n with
-    | zero =>
-      exact ⟨Classical.choose (exist 0 r hr (by simp)),
-        (Classical.choose_spec (exist 0 r hr (by simp))).2.2⟩
-    | succ n coeffs'n =>
-      refine ⟨coeffs'n + Classical.choose (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2), ?_⟩
-      simp only [gt_iff_lt, Pi.add_apply, add_mul, Finset.sum_add_distrib, ← sub_sub]
-      exact (Classical.choose_spec (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2)).2.2
+    | zero => exact ⟨coeffsOfMem 0 span_eq deg hr (by simp),
+        sub_sum_coeffsOfMem_mem_pow 0 span_eq deg eq hr (by simp)⟩
+    | succ n c =>
+      refine ⟨c + coeffsOfMem (n + 1) span_eq deg (memJ' c.1) c.2, ?_⟩
+      simp only [Pi.add_apply, add_mul, Finset.sum_add_distrib, ← sub_sub]
+      exact sub_sum_coeffsOfMem_mem_pow (n + 1) span_eq deg eq (memJ' c.1) c.2
   have coeffs'_spec_aux (n : ℕ) : (coeffs' (n + 1)).1 = (coeffs' n).1 +
-      Classical.choose (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2) := rfl
+    coeffsOfMem (n + 1) span_eq deg (memJ' (coeffs' n).1) (coeffs' n).2 := rfl
   have coeffs'_spec (n : ℕ) :
     ∀ i, (coeffs' (n + 1)).1 i - (coeffs' n).1 i ∈ I ^ (n + 1 - deg i) := by
     simpa [coeffs'_spec_aux]
-      using (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).1
+      using coeffsOfMem_mem_pow (n + 1) span_eq deg (memJ' (coeffs' n).1) (coeffs' n).2
   let d := ∑ i, deg i
   use fun i n ↦ (coeffs' (d + n)).1 i
   refine ⟨fun i ↦ ?_, fun n ↦ Ideal.pow_le_pow_right (by omega) (coeffs' (d + n)).2⟩
@@ -212,7 +136,7 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
   apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
   have := isNoetherianRing_reesAlgebra_quotient fg
   obtain ⟨ι, f, deg, coeff, fin, eq, memJ, span_eq⟩ :=
-    exists_monomial_span_of_fg I J (Ideal.fg_of_isNoetherianRing _)
+    exists_monomial_span_of_toAssociatedGraded_fg I J (Ideal.fg_of_isNoetherianRing _)
   have : Fintype ι := Fintype.ofFinite ι
   have : Fintype (Set.range coeff) := Fintype.ofFinite _
   use (Set.range coeff).toFinset
@@ -223,9 +147,7 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
     simpa [← hi] using memJ i
   · intro j hj
     rcases exists_coeffs_isAdicCauchy I J ι f deg coeff memJ eq span_eq j hj with ⟨c, cauchy, hc⟩
-    let c_lim (i : ι) : R := Classical.choose (‹IsAdicComplete I R›.prec' (c i) (cauchy i))
-    have c_lim_spec (i : ι) : ∀ (n : ℕ), c i n ≡ c_lim i [SMOD I ^ n • (⊤ : Ideal R)] :=
-      Classical.choose_spec (‹IsAdicComplete I R›.prec' (c i) (cauchy i))
+    choose c_lim c_lim_spec using fun i ↦ ‹IsAdicComplete I R›.prec' (c i) (cauchy i)
     rw [Ideal.mem_span_range_iff_exists_fun]
     use c_lim
     rw [IsHausdorff.eq_iff_smodEq (I := I)]
