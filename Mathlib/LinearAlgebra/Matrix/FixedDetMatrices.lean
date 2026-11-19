@@ -48,7 +48,7 @@ theorem mk_inj {m : R} {A B : Matrix n n R} (hA : det A = m) (hB : det B = m) :
     FixedDetMatrix.mk A hA = .mk B hB ↔ A = B :=
   Subtype.mk_eq_mk
 
-lemma mk_coe {m : R} (A : FixedDetMatrix n R m) : FixedDetMatrix.mk (A.val) (A.property) = A := rfl
+lemma mk_coe {m : R} (A : FixedDetMatrix n R m) : .mk (A.val) (A.property) = A := rfl
 
 /-- Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
 entrywise. -/
@@ -63,10 +63,10 @@ lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j, A.val i j = B.val i
   apply h
 
 instance (m : R) : SMul (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  smul g A := FixedDetMatrix.mk (g * A.val) (by simp [A.property])
+  smul g A := .mk (g * A.val) (by simp [A.property])
 
 lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m)) :
-    g • A = FixedDetMatrix.mk ((g : Matrix n n R) * A.val) (by simp [A.property]) :=
+    g • A = .mk ((g : Matrix n n R) * A.val) (by simp [A.property]) :=
   rfl
 
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
@@ -221,7 +221,7 @@ variable {C : Δ m → Prop}
 private lemma prop_red_S (hS : ∀ B, C B → C (S • B)) (B) : C (S • B) ↔ C B := by
   refine ⟨?_, hS _⟩
   intro ih
-  rw [← (S_smul_four B)]
+  rw [← S_smul_four B]
   solve_by_elim
 
 private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) (B) :
@@ -229,7 +229,7 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
   refine ⟨?_, hT _⟩
   intro ih
   rw [show B = T⁻¹ • T • B by simp, ← T_S_rel_smul]
-  grind
+  grind [← T_S_rel_smul]
 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T ^ n • B) ↔ C B := by
