@@ -271,7 +271,7 @@ lemma iIndepFun.hasLaw_sum_map_cast_binomial [Fintype ι]
 lemma iIndepFun.hasLaw_finsetSum_map_cast_binomial
     (hX : iIndepFun (s.restrict X) P) (lX : ∀ i ∈ s, HasLaw (X i) Bin(R, n i, p) P) :
     HasLaw (∑ i ∈ s, X i) Bin(R, ∑ i ∈ s, n i, p) P := by
-  convert hX.hasLaw_sum_map_cast_binomial (n := s.restrict n) fun i ↦ lX i.1 i.2
+  convert hX.hasLaw_sum_map_cast_binomial (n := s.restrict n) fun i ↦ lX i.val i.property
   all_goals simp [Finset.sum_attach]
 
 /-- A sum of independent Bernoulli random variables is a binomial random variable. -/
