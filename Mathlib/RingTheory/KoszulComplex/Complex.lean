@@ -15,6 +15,8 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
+public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.Product
 public import Mathlib.RingTheory.Regular.RegularSequence
