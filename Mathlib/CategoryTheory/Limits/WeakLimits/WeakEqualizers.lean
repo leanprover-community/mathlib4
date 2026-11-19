@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.WeakLimits.Basic
 # Weak equalizers
 
 These are weak limits for diagrams of shape `WalkingParallelPair`.
-
 -/
 
 @[expose] public section
@@ -121,6 +120,6 @@ same `s` for all parts. -/
 def Fork.IsWeakLimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Fork f g)
     (create : ∀ s : Fork f g, { l // l ≫ t.ι = s.ι}) :
     IsWeakLimit t :=
-  Fork.IsWeakLimit.mk t (fun s => (create s).1) (fun s => (create s).2)
+  Fork.IsWeakLimit.mk t (fun s => (create s).val) (fun s => (create s).property)
 
 end CategoryTheory.Limits

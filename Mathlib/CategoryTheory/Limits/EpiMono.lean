@@ -25,8 +25,6 @@ X ⟶ Y
 ```
 
 is a pullback square.
-
-
 -/
 
 public section

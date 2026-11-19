@@ -29,7 +29,6 @@ use this to show the comultiplication and counit on a tensor product of coalgebr
 the coalgebra axioms, but our actual `MonoidalCategory` instance on `CoalgCat` is
 constructed in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` to have better
 definitional equalities.
-
 -/
 
 @[expose] public section
@@ -62,10 +61,10 @@ variable (R) in
 def toComon : CoalgCat R ⥤ Comon (ModuleCat R) where
   obj X := toComonObj X
   map f :=
-    { hom := ModuleCat.ofHom f.1
+    { hom := ModuleCat.ofHom f.toCoalgHom'
       isComonHom_hom :=
-        { hom_counit := ModuleCat.hom_ext f.1.counit_comp
-          hom_comul := ModuleCat.hom_ext f.1.map_comp_comul.symm } }
+        { hom_counit := ModuleCat.hom_ext f.toCoalgHom'.counit_comp
+          hom_comul := ModuleCat.hom_ext f.toCoalgHom'.map_comp_comul.symm } }
 
 /-- A comonoid object in the category of `R`-modules has a natural comultiplication
 and counit. -/
@@ -138,20 +137,20 @@ theorem tensorObj_comul (K L : CoalgCat R) :
   rfl
 
 theorem tensorHom_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
-    (CoalgCat.ofHom f ⊗ₘ CoalgCat.ofHom g).1.toLinearMap
+    (CoalgCat.ofHom f ⊗ₘ CoalgCat.ofHom g).toCoalgHom'.toLinearMap
       = TensorProduct.map f.toLinearMap g.toLinearMap := rfl
 
 theorem associator_hom_toLinearMap :
-    (α_ (CoalgCat.of R M) (CoalgCat.of R N) (CoalgCat.of R P)).hom.1.toLinearMap
+    (α_ (CoalgCat.of R M) (CoalgCat.of R N) (CoalgCat.of R P)).hom.toCoalgHom'.toLinearMap
       = (TensorProduct.assoc R M N P).toLinearMap :=
   TensorProduct.ext <| TensorProduct.ext <| by ext; rfl
 
 theorem leftUnitor_hom_toLinearMap :
-    (λ_ (CoalgCat.of R M)).hom.1.toLinearMap = (TensorProduct.lid R M).toLinearMap :=
+    (λ_ (CoalgCat.of R M)).hom.toCoalgHom'.toLinearMap = (TensorProduct.lid R M).toLinearMap :=
   TensorProduct.ext <| by ext; rfl
 
 theorem rightUnitor_hom_toLinearMap :
-    (ρ_ (CoalgCat.of R M)).hom.1.toLinearMap = (TensorProduct.rid R M).toLinearMap :=
+    (ρ_ (CoalgCat.of R M)).hom.toCoalgHom'.toLinearMap = (TensorProduct.rid R M).toLinearMap :=
   TensorProduct.ext <| by ext; rfl
 
 open TensorProduct
@@ -178,7 +177,6 @@ theorem comul_tensorObj_tensorObj_right :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_left :

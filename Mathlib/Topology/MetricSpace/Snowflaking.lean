@@ -45,8 +45,7 @@ However, if we change the metric on the first component to the one introduced in
 then these sets become balls, and we can apply Vitali theorem.
 
 ## References
-* [Carlos Gustavo T. de A. Moreira, _Hausdorff measures and the Morse-Sard theorem_]
-  [Moreira2001]
+* [Carlos Gustavo T. de A. Moreira, *Hausdorff measures and the Morse-Sard theorem*][Moreira2001]
 -/
 
 @[expose] public section
@@ -85,7 +84,7 @@ theorem toSnowflaking.sizeOf_spec [SizeOf X] (x : X) :
     sizeOf (toSnowflaking x : Snowflaking X α hα₀ hα₁) = 1 + sizeOf x :=
   rfl
 
-attribute [nolint simpNF] mk.injEq
+attribute [nolint simpNF] mk.injEq mk.sizeOf_spec
 
 /-- This definition makes `cases x` and `induction x` use `toSnowflaking` instead of `mk`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]

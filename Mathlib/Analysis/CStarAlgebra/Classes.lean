@@ -19,7 +19,6 @@ noncommutative) Banach algebra over `ℂ` with an antimultiplicative conjugate-l
 
 These classes are not defined in `Mathlib/Analysis/CStarAlgebra/Basic.lean` because they require
 heavier imports.
-
 -/
 
 public section

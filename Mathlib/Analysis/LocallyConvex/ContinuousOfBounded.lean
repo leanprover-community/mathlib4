@@ -19,7 +19,6 @@ if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ
 ## References
 
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-
 -/
 
 @[expose] public section
@@ -88,7 +87,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   rcases (nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
   simp only [_root_.id] at bE
   have bE' : (𝓝 (0 : E)).HasBasis (fun _ ↦ True) (fun n : ℕ ↦ (c ^ n) • b n) := by
-    refine bE.1.to_hasBasis' ?_ ?_
+    refine bE.toHasBasis.to_hasBasis' ?_ ?_
     · intro n _
       use n
       exact ⟨trivial, (bE1 n).2 _ (by grw [norm_pow, hc1, one_pow])⟩

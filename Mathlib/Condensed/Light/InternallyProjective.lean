@@ -10,7 +10,6 @@ public import Mathlib.Condensed.Light.Epi
 public import Mathlib.Condensed.Light.Monoidal
 
 /-!
-
 # Characterization of internal projectivity in light condensed modules
 
 This file gives an explicit condition on light condensed modules over a ring `R` to be internally
@@ -87,7 +86,6 @@ lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (�
   simpa [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply] using!
     (GrothendieckTopology.yonedaEquiv_naturality _ _ _).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 `P : LightCondMod R` is internally projective if and
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
@@ -107,7 +105,7 @@ lemma internallyProjective_iff_tensor_condition (P : LightCondMod R) : Internall
         (π : S' ⟶ S) (_ : Function.Surjective π) (g' : P ⊗ (free R).obj S'.toCondensed ⟶ A),
           (P ◁ ((lightProfiniteToLightCondSet ⋙ free R).map π)) ≫ g = g' ≫ e) := by
   refine ⟨fun ⟨h⟩ A B e he S g ↦ ?_, fun h ↦ ⟨⟨fun {A B} e he ↦ ?_⟩⟩⟩
-  · have hh := h.1 e
+  · have hh := h.preserves e
     rw [LightCondMod.epi_iff_locallySurjective_on_lightProfinite] at hh
     specialize hh S ((ihomPoints R P B S).symm g)
     obtain ⟨S', π, hπ, g', hh⟩ := hh
@@ -127,7 +125,6 @@ lemma internallyProjective_iff_tensor_condition (P : LightCondMod R) : Internall
     rw [hh] at this
     simp [this, Quiver.Hom.op]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 `P : LightCondMod R` is internally projective if and
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
@@ -194,7 +191,6 @@ lemma free_internallyProjective_iff_tensor_condition (P : LightCondSet.{u}) :
     simp only [Functor.comp_map, μIso_hom, ← μ_natural_right, μIso_inv, assoc, μ_δ,
       comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a `P : LightCondSet`, the light free light condensed module `R[P]` is internally projective if
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all

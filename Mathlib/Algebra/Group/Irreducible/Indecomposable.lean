@@ -51,7 +51,7 @@ lemma IsMulIndecomposable.baseOf_subset_one_lt [Monoid S] (v : ι → M) (f : M 
 
 @[to_additive]
 lemma IsMulIndecomposable.image_baseOf_inv_comp_eq [InvolutiveInv ι]
-    [CommGroup S] [IsOrderedMonoid S]
+    [CommGroup S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) :
     v '' baseOf v (invMonoidHom.comp f) = (invMonoidHom ∘ v) '' baseOf v f := by

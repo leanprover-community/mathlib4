@@ -25,7 +25,7 @@ This tactic is implemented using the machinery of `Ring.Common`
 * Normalized expressions are stored as an `Common.ExSum`, with a custom type for
 representing coefficients in `R`.
 * While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
-coefficients as experssions in the base ring `R`, normalized by `ring`.
+coefficients as expressions in the base ring `R`, normalized by `ring`.
 * These coefficients are sums, not products. The normal form of `a • x + b • x` is `(a + b) • x`.
 
 This tactic is used internally to implement the `polynomial` tactic.
@@ -37,7 +37,6 @@ with polynomials, but would be an issue when working with a number field over it
 
 When inferring the base ring, we assume that any two rings `R` and `S` that appear are comparable,
 in the sense that either `R` is an `S`-algebra or `S` is an `R`-algebra.
-
 -/
 
 open Lean hiding Module
@@ -89,7 +88,7 @@ def ExSum := Common.ExSum (BaseType sAlg) sA
 set_option linter.unusedVariables false in
 variable {a} in
 /-- Evaluates a numeric literal in the algebra `A` by lifting it through the base ring `R`. -/
-def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
+def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)) :
     NormNum.Result a → Option (Common.Result (ExSum sAlg) q($a))
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute

@@ -100,15 +100,6 @@ to the base functions.
 instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
   coe f := hom f
 
-/-- A non-instance `FunLike` instance on `X ⟶ Y`. -/
-@[deprecated "No replacement" (since := "2026-04-23")]
-abbrev instFunLike {X Y : C} :
-    FunLike (X ⟶ Y) (ToType X) (ToType Y) where
-  coe f := f
-  coe_injective f g h := by
-    rw [← ofHom_hom f, ← ofHom_hom g]
-    simp_all
-
 /--
 `ConcreteCategory.hom` bundled as an `Equiv`.
 -/
@@ -193,16 +184,13 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
 instance ObjectProperty.FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
-    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
+    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.obj Y.obj) where
   hom f := hom f.hom
   ofHom g := homMk (ofHom g)
   hom_ofHom _ := hom_ofHom _
   ofHom_hom _ := by ext; simp [ofHom_hom]
   comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
   id_apply _ := ConcreteCategory.id_apply _
-
-@[deprecated (since := "2026-04-18")] alias FullSubcategory.concreteCategory :=
-  ObjectProperty.FullSubcategory.concreteCategory
 
 end ConcreteCategory
 

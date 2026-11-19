@@ -26,7 +26,6 @@ by Gabriel and Zisman.
 ## References
 
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
-
 -/
 
 @[expose] public section
@@ -110,7 +109,7 @@ lemma map'_last (f : Fin (n + 1) →o Fin (m + 1)) :
 @[simp]
 lemma map'_zero (f : Fin (n + 1) →o Fin (m + 1)) :
     map' f 0 = 0 := by
-  simp [← Fin.castSucc_zero, -Fin.castSucc_zero', map'_eq_castSucc_iff]
+  simp [← Fin.castSucc_zero, map'_eq_castSucc_iff]
 
 @[simp]
 lemma map'_id (x : Fin (n + 2)) : map' OrderHom.id x = x := by
