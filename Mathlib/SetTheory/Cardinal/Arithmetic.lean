@@ -797,7 +797,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     by_cases h' : ∃ z : s, g z = y
     · rw [dite_eq_left h'] at h
       cases Sum.inl.inj h
-      exact (Classical.choose h').2
+      exact (Classical.choose h').property
     · rw [dite_eq_right h'] at h
       cases h
   · intro h
@@ -807,7 +807,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     rw [dite_eq_left this]
     congr
     suffices Classical.choose this = ⟨x, h⟩ from congr($(this).val)
-    apply g.2
+    apply g.inj'
     exact Classical.choose_spec this
 
 theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
@@ -826,7 +826,7 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine le_trans ?_ (mk_bounded_set_le s c)
   refine ⟨.codRestrict {t : Set s | #t ≤ c} ?_ ?_⟩
-  · use fun t => (↑) ⁻¹' t.1
+  · use fun t => (↑) ⁻¹' t.val
     rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.ext
     dsimp only at h ⊢
@@ -911,7 +911,7 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
   have := h; obtain ⟨g⟩ := this
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
-      ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))
+      ((sumCongr (Equiv.ofInjective f f.inj') g).trans (Set.sumCompl (range f)))
   refine ⟨h, ?_⟩; rintro ⟨x, hx⟩; simp [h, Set.sumCompl_symm_apply_of_mem, hx]
 
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
@@ -919,7 +919,7 @@ theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set 
   apply extend_function.{u, v} f
   rw [← lift_mk_eq'] at h
   rw [← lift_mk_eq', mk_compl_eq_mk_compl_finite_lift h]
-  rw [mk_range_eq_of_injective]; exact f.2
+  rw [mk_range_eq_of_injective]; exact f.inj'
 
 theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : #s < #α)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by

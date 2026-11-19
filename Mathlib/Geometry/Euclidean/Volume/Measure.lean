@@ -225,11 +225,11 @@ omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
 
 theorem euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
     (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
-  isometry_subtype_coe.euclideanHausdorffMeasure_image _
+  isometry_subtypeVal.euclideanHausdorffMeasure_image _
 
 theorem euclideanHausdorffMeasure_preimage_coe (d : ℕ) {s : AffineSubspace ℝ P} {t : Set P} :
     μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] (t ∩ s) := by
-  rw [isometry_subtype_coe.euclideanHausdorffMeasure_preimage, Subtype.range_coe]
+  rw [isometry_subtypeVal.euclideanHausdorffMeasure_preimage, Subtype.range_coe]
 
 theorem euclideanHausdorffMeasure_preimage_coe_of_subset (d : ℕ) {s : AffineSubspace ℝ P}
     {t : Set P} (ht : t ⊆ s) :
@@ -305,7 +305,7 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
   congr with x
   let u : Set (mk' (x +ᵥ p).val s.directionᗮ) := Subtype.val ⁻¹' (t ∩ mk' (x +ᵥ p).val s.directionᗮ)
   have hu : MeasurableSet u :=
-    (ht.inter (isClosed_of_finiteDimensional _).measurableSet).preimage measurable_subtype_coe
+    (ht.inter (isClosed_of_finiteDimensional _).measurableSet).preimage measurable_subtypeVal
   have hinter : t ∩ (mk' (x +ᵥ p).val s.directionᗮ) = Subtype.val '' u := by
     ext x
     simp [u]
@@ -319,8 +319,8 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
     Lucky we have just developed euclideanHausdorffMeasure, which allows us to move the measure to
     the global vector space. -/
   simp_rw [← InnerProductSpace.euclideanHausdorffMeasure_eq_volume]
-  conv_lhs => rw [← isometry_subtype_coe.euclideanHausdorffMeasure_image]
-  conv_rhs => rw [← isometry_subtype_coe.euclideanHausdorffMeasure_image]
+  conv_lhs => rw [← isometry_subtypeVal.euclideanHausdorffMeasure_image]
+  conv_rhs => rw [← isometry_subtypeVal.euclideanHausdorffMeasure_image]
   congrm μHE[$hrank] ?_
   ext y
   simp [u, vadd_vadd, add_comm]
@@ -374,7 +374,7 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral_of_subset (p : 
   let v' : s.direction := ⟨v, hvs⟩
   rw [← s.euclideanHausdorffMeasure_preimage_coe_of_subset _ hts,
     euclideanHausdorffMeasure_eq_lintegral (orthogonalProjection s p)
-      (show v' ≠ 0 by simpa [v'] using hv) (ht.preimage measurable_subtype_coe)]
+      (show v' ≠ 0 by simpa [v'] using hv) (ht.preimage measurable_subtypeVal)]
   congrm ‖v'‖ₑ * ∫⁻ (x : ℝ), ?_
   suffices mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ =
       comap s.subtype (mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) from by

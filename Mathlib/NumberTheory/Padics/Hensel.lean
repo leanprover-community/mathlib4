@@ -266,20 +266,20 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
 
 private def newton_seq_aux : ∀ n : ℕ, { z : ℤ_[p] // ih n z }
   | 0 => ⟨a, ih_0 hnorm⟩
-  | k + 1 => ih_n hnorm (newton_seq_aux k).2
+  | k + 1 => ih_n hnorm (newton_seq_aux k).property
 
 private def newton_seq_gen (n : ℕ) : ℤ_[p] :=
-  (newton_seq_aux hnorm n).1
+  (newton_seq_aux hnorm n).val
 
 local notation "newton_seq" => newton_seq_gen hnorm
 
 private theorem newton_seq_deriv_norm (n : ℕ) :
     ‖F.derivative.aeval (newton_seq n)‖ = ‖F.derivative.aeval a‖ :=
-  (newton_seq_aux hnorm n).2.1
+  (newton_seq_aux hnorm n).property.1
 
 private theorem newton_seq_norm_le (n : ℕ) :
     ‖F.aeval (newton_seq n)‖ ≤ ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n :=
-  (newton_seq_aux hnorm n).2.2
+  (newton_seq_aux hnorm n).property.2
 
 private theorem newton_seq_norm_eq (n : ℕ) :
     ‖newton_seq (n + 1) - newton_seq n‖ =

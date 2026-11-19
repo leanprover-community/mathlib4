@@ -335,7 +335,7 @@ lemma ordFrac_eq_ord {x : R} :
   simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mpr hx]
 
 lemma ordFrac_eq_div (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
-    ordFrac R (IsLocalization.mk' K a.1 b) =
+    ordFrac R (IsLocalization.mk' K a.val b) =
       ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
   simp [ordFrac_eq_ord]
 
