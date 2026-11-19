@@ -5,20 +5,19 @@ Authors: Nailin Guan, Jingting Wang, Yi Yuan, Yongle Hu
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
 public import Mathlib.Algebra.Homology.Augment
-public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.Product
 public import Mathlib.RingTheory.Regular.RegularSequence
-public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
-public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
 # The Koszul complex
