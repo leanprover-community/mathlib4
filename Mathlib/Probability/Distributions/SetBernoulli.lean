@@ -86,6 +86,12 @@ lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
       rw [setBernoulli_apply']; congr!; ext; simp [funext_iff]
     _ = 0 := by simp [infinitePi_cylinder, hi]
 
+lemma HasLaw.ae_subset_of_setBernoulli (hX : HasLaw X setBer(u, p) P) : ∀ᵐ ω ∂P, X ω ⊆ u :=
+  (hX.ae_iff <| by fun_prop).2 setBernoulli_ae_subset
+
+@[deprecated (since := "2026-11-19")] alias IsSetBernoulli.ae_subset :=
+  HasLaw.ae_subset_of_setBernoulli
+
 @[simp]
 lemma setBernoulli_singleton_of_not_subset {s : Set ι} (p : I) (hs : ¬ s ⊆ u) :
     setBer(u, p) {s} = 0 :=
@@ -159,8 +165,6 @@ lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
 
 end Countable
 
-/-! ### Bernoulli random variables -/
-
 variable (X u p P) in
 /-- A random variable `X : Ω → Set ι` is `p`-bernoulli on a set `u : Set ι` if its distribution is
 the product over `u` of `p`-bernoulli distributions. -/
@@ -170,11 +174,5 @@ abbrev IsSetBernoulli : Prop := HasLaw X setBer(u, p) P
 @[deprecated hasLaw_congr +typeChanged (since := "2026-11-19")]
 lemma isSetBernoulli_congr (hXY : X =ᵐ[P] Y) : IsSetBernoulli X u p P ↔ IsSetBernoulli Y u p P :=
   hasLaw_congr hXY
-
-variable [Countable ι]
-
-@[deprecated "Use `HasLaw.ae_iff` and `setBernoulli_ae_subset`." (since := "2026-11-19")]
-lemma IsSetBernoulli.ae_subset (hX : IsSetBernoulli X u p P) : ∀ᵐ ω ∂P, X ω ⊆ u :=
-  (hX.ae_iff <| by fun_prop).2 setBernoulli_ae_subset
 
 end ProbabilityTheory
