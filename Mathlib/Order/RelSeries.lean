@@ -274,10 +274,8 @@ lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p
   grind [length_toList, last, Fin.last, toList_getElem]
 
 @[simp]
-lemma nodup_toList_iff_injective_toFun (p : RelSeries r) : p.toList.Nodup ↔ p.toFun.Injective := by
-  rw [List.nodup_iff_injective_get, Function.Injective, Function.Injective,
-    Function.Surjective.forall₂ (f := finCongr p.length_toList) (Equiv.surjective _)]
-  simp [Fin.cast, Fin.val_eq_val]
+lemma nodup_toList_iff_injective_toFun (p : RelSeries r) : p.toList.Nodup ↔ p.toFun.Injective :=
+  List.nodup_ofFn
 
 @[simp]
 lemma injective_toFun_fromListIsChain_iff_nodup
