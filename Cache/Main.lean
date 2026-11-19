@@ -9,6 +9,7 @@ public import Cache.Cli
 import Cache.Requests
 import Cache.Upload
 import Cache.Query
+import Cache.Lake
 import Cache.Warning
 
 public section
@@ -41,7 +42,11 @@ Commands:
   unstage      Copy *.ltar files from the staging directory to the local cache
   unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
 
-The upload commands (put, put!, put-staged) and their options and variables
+  # Lake's cache
+  lake put|get   Upload or download mathlib and its dependencies in the
+                 format of Lake's cache; run `cache lake` for its options
+
+The upload commands (put, put!, put-staged, lake put) and their options and variables
 are internal to mathlib CI. To operate an external cache, 'stage' the
 artifacts, upload the staging directory under your endpoint's `f/` path with
 any storage client, and serve it to readers via MATHLIB_CACHE_GET_URL.
@@ -111,6 +116,10 @@ def main (args : List String) : IO Unit := do
   if args.isEmpty || parseFlagOpt "help" args then
     println help
     Process.exit 0
+  -- `lake` parses its own options.
+  if let "lake" :: rest := args then
+    CacheM.run (Cache.LakeCache.main rest)
+    return
   CacheM.run do
 
   -- split args and named options
