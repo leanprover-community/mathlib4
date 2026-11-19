@@ -31,7 +31,6 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 * `MvPowerSeries.toAdicCompletionAlgEquiv` : the canonical isomorphism from
   multivariate power series to the adic completion of multivariate polynomials
   with respect to the ideal spanned by all variables when the index is finite.
-
 -/
 
 @[expose] public section

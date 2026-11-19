@@ -19,7 +19,6 @@ See also `LinearAlgebra.Trace` for the trace of an endomorphism.
 ## Tags
 
 matrix, trace, diagonal
-
 -/
 
 @[expose] public section

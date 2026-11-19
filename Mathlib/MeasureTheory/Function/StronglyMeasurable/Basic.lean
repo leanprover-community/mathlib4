@@ -38,7 +38,6 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 @[expose] public section
@@ -976,19 +975,23 @@ protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommG
   continuous_norm.comp_stronglyMeasurable hf
 
 @[fun_prop]
-protected theorem nnnorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem nnNorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖₊ :=
-  continuous_nnnorm.comp_stronglyMeasurable hf
+  continuous_nnNorm.comp_stronglyMeasurable hf
 
-/-- The `enorm` of a strongly measurable function is measurable.
+@[deprecated (since := "2026-10-31")] protected alias nnnorm := StronglyMeasurable.nnNorm
 
-Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma proves measurability,
+/-- The `eNorm` of a strongly measurable function is measurable.
+
+Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnNorm`, this lemma proves measurability,
 **not** strong measurability. This is an intentional decision: for functions taking values in
 ℝ≥0∞, measurability is much more useful than strong measurability. -/
 @[fun_prop]
-protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+protected theorem eNorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
-  (continuous_enorm.comp_stronglyMeasurable hf).measurable
+  (continuous_eNorm.comp_stronglyMeasurable hf).measurable
+
+@[deprecated (since := "2026-11-06")] protected alias enorm := StronglyMeasurable.eNorm
 
 @[fun_prop]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :
@@ -1080,10 +1083,10 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
       (∀ n, MeasurableSet[m] (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, ‖f x‖ ≤ n) ∧
       ⋃ i, s i = Set.univ := by
   obtain ⟨s, hs, hs_univ⟩ :=
-    @exists_spanning_measurableSet_le _ m _ hf.nnnorm.measurable (μ.trim hm) _
+    @exists_spanning_measurableSet_le _ m _ hf.nnNorm.measurable (μ.trim hm) _
   refine ⟨s, fun n ↦ ⟨(hs n).1, (le_trim hm).trans_lt (hs n).2.1, fun x hx ↦ ?_⟩, hs_univ⟩
-  have hx_nnnorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
-  rw [← coe_nnnorm]
+  have hx_nnNorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
+  rw [← coe_nnNorm]
   norm_cast
 
 end StronglyMeasurable

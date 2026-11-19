@@ -17,7 +17,6 @@ This file concerns `Multiset.dedup` and `List.dedup` as a way to create `Finset`
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

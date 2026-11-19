@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Dimension.Constructions
 # Conditions for rank to be finite
 
 Also contains characterization for when rank equals zero or rank equals one.
-
 -/
 
 @[expose] public section

@@ -71,7 +71,7 @@ end Countable
 namespace Cardinal
 
 theorem mk_abelianization_le (G : Type u) [Group G] :
-    #(Abelianization G) ≤ #G := Cardinal.mk_le_of_surjective Quotient.mk_surjective
+    #(Group.Abelianization G) ≤ #G := Cardinal.mk_le_of_surjective Quotient.mk_surjective
 
 @[to_additive]
 lemma mk_freeMonoid_eq_mk_list : #(FreeMonoid α) = #(List α) :=

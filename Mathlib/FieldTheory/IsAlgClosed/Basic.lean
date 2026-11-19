@@ -45,7 +45,6 @@ algebraic closure, algebraically closed
   see `IsAlgClosure.of_exists_root`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
-
 -/
 
 @[expose] public section

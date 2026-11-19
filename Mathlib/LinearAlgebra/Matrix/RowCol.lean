@@ -18,7 +18,6 @@ This file provides results about row and column matrices.
 * `Matrix.replicateCol ι c : Matrix m ι α`: the matrix where every column is the vector `c : m → α`
 * `Matrix.updateRow M i r`: update the `i`th row of `M` to `r`
 * `Matrix.updateCol M j c`: update the `j`th column of `M` to `c`
-
 -/
 
 @[expose] public section

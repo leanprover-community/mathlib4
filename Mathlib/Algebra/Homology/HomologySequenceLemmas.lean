@@ -25,7 +25,6 @@ in terms of properties of the other two in the same or neighboring degrees.
 
 So far, we state only four lemmas for `φ.τ₃`. Eight more similar lemmas
 for `φ.τ₁` and `φ.τ₂` shall also be obtained (TODO).
-
 -/
 
 @[expose] public section

@@ -25,7 +25,6 @@ Similarly, we define `S.opcycles` to be the `Q` field.
 In `Homology.lean`, when `S` has two compatible left and right homology data
 (i.e. they give the same `H` up to a canonical isomorphism), we shall define
 `[S.HasHomology]` and `S.homology`.
-
 -/
 
 @[expose] public section
@@ -904,14 +903,14 @@ variable [HasKernels C] [HasCokernels C]
 /-- The right homology functor `ShortComplex C ⥤ C`, where the right homology of a
 short complex `S` is understood as a kernel of the obvious map `S.fromOpcycles : S.opcycles ⟶ S.X₃`
 where `S.opcycles` is a cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def rightHomologyFunctor : ShortComplex C ⥤ C where
   obj S := S.rightHomology
   map := rightHomologyMap
 
 /-- The opcycles functor `ShortComplex C ⥤ C` which sends a short complex `S` to `S.opcycles`
 which is a cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def opcyclesFunctor :
     ShortComplex C ⥤ C where
   obj S := S.opcycles
@@ -924,7 +923,6 @@ noncomputable def rightHomologyιNatTrans :
   app S := rightHomologyι S
   naturality := fun _ _ φ => rightHomologyι_naturality φ
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `S.X₂ ⟶ S.opcycles` for all short complexes `S`. -/
 @[simps]
 noncomputable def pOpcyclesNatTrans :

@@ -44,7 +44,6 @@ and show how to compute the components.
   Eventually, we shall get a right derived functor
   `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
   and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
-
 -/
 
 @[expose] public section

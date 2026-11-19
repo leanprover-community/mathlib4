@@ -31,7 +31,6 @@ second countable.
 ## TODO
 
 Prove that the Sorgenfrey line is a paracompact space.
-
 -/
 
 @[expose] public noncomputable section

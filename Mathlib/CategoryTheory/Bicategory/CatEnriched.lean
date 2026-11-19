@@ -29,7 +29,6 @@ Thus, we define a type alias `CatEnrichedOrdinary C` for a type `C` with an
 `EnrichedOrdinaryCategory Cat C` structure. We provide this with an instance of a strict bicategory
 structure extending the category structure provided by the given instance `Category C` constructing
 `Bicategory.Strict (CatEnrichedOrdinary C)`.
-
 -/
 
 @[expose] public section

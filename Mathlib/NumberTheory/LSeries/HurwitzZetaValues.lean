@@ -136,10 +136,10 @@ theorem hurwitzZetaEven_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : 
   rw [hurwitzZetaEven_one_sub _ h1 (Or.inr h2), ← Gammaℂ, cosZeta_two_mul_nat' hk hx, ← mul_assoc,
     ← mul_div_assoc, mul_assoc, mul_div_cancel_left₀ _ h3, ← mul_div_assoc]
   congr 2
-  rw [mul_div_assoc, mul_div_cancel_left₀ _ two_ne_zero, ← ofReal_natCast, ← ofReal_mul,
-    ← ofReal_cos, mul_comm π, ← sub_zero (k * π), cos_nat_mul_pi_sub, Real.cos_zero, mul_one,
-    ofReal_pow, ofReal_neg, ofReal_one, pow_succ, mul_neg_one, mul_neg, ← mul_pow, neg_one_mul,
-    neg_neg, one_pow]
+  calc
+    _ = Complex.cos (k * π) * (-1) ^ (k + 1) := by congr; ring
+    _ = Real.cos (k * π) * (-1) ^ (k + 1) := by simp
+    _ = -1 := by simp [cos_nat_mul_pi, ← pow_add]
 
 theorem hurwitzZetaOdd_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZetaOdd x (-(2 * k)) =
@@ -156,12 +156,10 @@ theorem hurwitzZetaOdd_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 
     hurwitzZetaOdd_one_sub _ h1, ← Gammaℂ, sinZeta_two_mul_nat_add_one' hk hx, ← mul_assoc,
     ← mul_div_assoc, mul_assoc, mul_div_cancel_left₀ _ h3, ← mul_div_assoc]
   congr 2
-  rw [mul_div_assoc, add_div, mul_div_cancel_left₀ _ two_ne_zero, ← ofReal_natCast,
-    ← ofReal_one, ← ofReal_ofNat, ← ofReal_div, ← ofReal_add, ← ofReal_mul,
-    ← ofReal_sin, mul_comm π, add_mul, mul_comm (1 / 2), mul_one_div, Real.sin_add_pi_div_two,
-    ← sub_zero (k * π), cos_nat_mul_pi_sub, Real.cos_zero, mul_one,
-    ofReal_pow, ofReal_neg, ofReal_one, pow_succ, mul_neg_one, mul_neg, ← mul_pow, neg_one_mul,
-    neg_neg, one_pow]
+  calc
+    _ = Complex.sin ((k * π) + π / 2) * (-1) ^ (k + 1) := by congr; ring
+    _ = Real.sin ((k * π) + π / 2) * (-1) ^ (k + 1) := by simp
+    _ = -1 := by simp [Real.sin_add_pi_div_two, cos_nat_mul_pi, ← pow_add]
 
 -- private because it is superseded by `hurwitzZeta_neg_nat` below
 private lemma hurwitzZeta_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
