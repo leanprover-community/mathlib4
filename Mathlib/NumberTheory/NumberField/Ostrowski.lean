@@ -63,7 +63,7 @@ lemma abv_lt_of_complexEmbedding_norm_le_one (v : AbsoluteValue K ℝ)
       aeval_algHom_apply]
   -- The polynomial is monic, so Cauchy's root bound is at most `v C + 1`.
   have hb : (p.cauchyBound : ℝ) ≤ v C + 1 := by
-    rw [cauchyBound, hm.leadingCoeff, nnnorm_one, div_one, NNReal.coe_add,
+    rw [cauchyBound, hm.leadingCoeff, nnNorm_one, div_one, NNReal.coe_add,
       NNReal.coe_one, add_le_add_iff_right, ← Real.le_toNNReal_iff_coe_le (v.nonneg _)]
     exact Finset.sup_le fun i _ ↦ (Real.le_toNNReal_iff_coe_le (v.nonneg _)).mpr (hc i)
   exact (NNReal.coe_lt_coe.mpr (hr.norm_lt_cauchyBound hm.ne_zero)).trans_le hb
