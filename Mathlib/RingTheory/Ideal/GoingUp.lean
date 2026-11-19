@@ -174,10 +174,10 @@ theorem comap_ne_bot_of_root_mem [IsDomain S] {r : S} (r_ne_zero : r ≠ 0) (hr 
 
 theorem isMaximal_of_isIntegral_of_isMaximal_under [Algebra R S] [Algebra.IsIntegral R S]
     (I : Ideal S) [I.IsPrime] (hI : IsMaximal (I.under R)) : IsMaximal I :=
-  ⟨⟨mt comap_eq_top_iff.mpr hI.1.1, fun _ I_lt_J =>
+  ⟨⟨mt comap_eq_top_iff.mpr hI.out.1, fun _ I_lt_J =>
       let ⟨I_le_J, x, hxJ, hxI⟩ := IsConcreteLE.lt_iff_le_and_exists.mp I_lt_J
       comap_eq_top_iff.1 <|
-        hI.1.2 _ (under_lt_under_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩
+        hI.out.2 _ (under_lt_under_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩
           (Algebra.IsIntegral.isIntegral x))⟩⟩
 
 theorem isMaximal_of_isIntegral_of_isMaximal_comap (f : R →+* S) (hf : f.IsIntegral) (I : Ideal S)
@@ -453,8 +453,8 @@ section IsIntegral
 variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
   [Algebra A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
-instance primesOver.isMaximal : Q.1.IsMaximal :=
-  Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
+instance primesOver.isMaximal : Q.val.IsMaximal :=
+  Ideal.IsMaximal.of_liesOver_isMaximal Q.val p
 
 theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : P.IsMaximal :=
   primesOver.isMaximal ⟨P, hP⟩

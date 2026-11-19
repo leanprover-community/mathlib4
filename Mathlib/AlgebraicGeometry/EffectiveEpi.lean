@@ -92,20 +92,20 @@ private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffin
   let 𝒰 := Y.openCoverOfIsOpenCover _ <| Y.isBasis_affineOpens.isOpenCover_mem_and_le
     (S.isBasis_affineOpens.isOpenCover.comap b.hom)
   refine ⟨𝒰, fun i ↦ ?_⟩
-  have : IsAffine (𝒰.X i) := i.2.1
-  let f' : pullback π (𝒰.f i) ⟶ i.1.2.1 := by
-    apply IsOpenImmersion.lift (Scheme.Opens.ι i.1.2.1) (pullback.fst _ _ ≫ f)
+  have : IsAffine (𝒰.X i) := i.property.1
+  let f' : pullback π (𝒰.f i) ⟶ i.val.2.val := by
+    apply IsOpenImmersion.lift (Scheme.Opens.ι i.val.2.val) (pullback.fst _ _ ≫ f)
     dsimp
     rw [← hfac, ← TopCat.coe_comp, ← Scheme.Hom.comp_base_assoc, pullback.condition]
     simp only [Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp,
       range_eq_univ, Set.image_univ, Opens.range_ι, Set.image_subset_iff]
-    exact trans (by simp [𝒰]) i.2.2
+    exact trans (by simp [𝒰]) i.property.2
   have h1 : fst (snd π (𝒰.f i)) _ ≫ fst _ _ = map _ _ _ _ (fst _ _) (fst _ _) _
     condition.symm condition.symm ≫ fst π π := by simp
   have h2 : snd (snd π (𝒰.f i)) _ ≫ fst _ _ = map _ _ _ _ (fst _ _) (fst _ _) _
     condition.symm condition.symm ≫ snd π π := by simp
   obtain ⟨u, hu⟩ := of_isAffine_target (pullback.snd π (𝒰.f i)) f' <| by
-    simp only [← cancel_mono (Scheme.Opens.ι i.1.2.1),
+    simp only [← cancel_mono (Scheme.Opens.ι i.val.2.val),
       Category.assoc, IsOpenImmersion.lift_fac, f', reassoc_of% h1, reassoc_of% h2, hf]
   refine ⟨u ≫ Scheme.Opens.ι _, ?_⟩
   simp [reassoc_of% hu, f']

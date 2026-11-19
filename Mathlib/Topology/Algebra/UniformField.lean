@@ -176,7 +176,7 @@ variable (L : Type*) [Field L] [UniformSpace L] [CompletableTopField L]
 instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K where
   nice F F_cau inf_F := by
     let i : K →+* L := K.subtype
-    have hi : IsUniformInducing i := isUniformEmbedding_subtype_val.isUniformInducing
+    have hi : IsUniformInducing i := isUniformEmbedding_subtypeVal.isUniformInducing
     rw [← hi.cauchy_map_iff] at F_cau ⊢
     rw [map_comm (show (i ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ i by ext; rfl)]
     apply CompletableTopField.nice _ F_cau

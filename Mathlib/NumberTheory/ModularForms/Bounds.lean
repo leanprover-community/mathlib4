@@ -232,7 +232,7 @@ lemma UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn {f : ℍ → ℂ
       fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩) n := by
   have hq (u : ℝ) : (1 / 𝕢 h (u + y * UpperHalfPlane.I) ^ n : ℂ) =
       ↑(Real.exp (2 * π * n * y / h)) * fourier (-(n : ℤ)) (u : AddCircle h) := by
-    push_cast [fourier_coe_apply, Function.Periodic.qParam, one_div, ← Complex.exp_nat_mul,
+    push_cast [fourier_coe_apply, Function.Periodic.qParam, one_div, ← Complex.exp_natCast_mul,
       ← Complex.exp_neg, ← Complex.exp_add]
     grind [Complex.I_sq]
   rw [qExpansion_coeff_eq_intervalIntegral hh hfper hfhol hfbdd n hy,
@@ -278,7 +278,7 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
       f ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ =
         Real.exp (2 * π * (n + 1) * y / h) * g ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ := by
     simp only [g, neg_neg, fourier_coe_apply, smul_eq_mul, Function.Periodic.qParam,
-      ← Complex.exp_nat_mul, Complex.ofReal_exp, ← mul_assoc, ← Complex.exp_add]
+      ← Complex.exp_natCast_mul, Complex.ofReal_exp, ← mul_assoc, ← Complex.exp_add]
     congr 2
     push_cast
     grind [Complex.I_sq]
@@ -452,7 +452,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   have hne : ‖(n : ℝ) ^ e‖ = n ^ e := Real.norm_of_nonneg (by positivity)
   have (x : ℝ) : F x ≤ 1 / h * (1 / Real.exp (-2 * π / h)) * (C * n ^ e) := by
     simp only [F, norm_mul, norm_div, norm_real, norm_one, norm_pow, mul_assoc]
-    rw [Real.norm_of_nonneg hh.le, Function.Periodic.norm_qParam, ← Real.exp_nat_mul]
+    rw [Real.norm_of_nonneg hh.le, Function.Periodic.norm_qParam, ← Real.exp_natCast_mul]
     gcongr
     · simp [field]
     · grw [hn' _ (by simp [← UpperHalfPlane.coe_im])]

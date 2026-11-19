@@ -267,7 +267,7 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
     ext; simp
   have h' (i : I) (hi : i ∈ Finset.univ) :
       MeasurableSet <| (SetLike.coe Finset.univ).pi fun (j : J i) ↦ t i j :=
-    .pi (Finset.countable_toSet _) (fun _ _ ↦ ht _ i.2 _)
+    .pi (Finset.countable_toSet _) (fun _ _ ↦ ht _ i.property _)
   filter_upwards [(h I (fun i ↦ J i)).measure_inter_preimage_eq_mul _ _ .univ h',
     η_eq] with ω hω hη
   rw [this, ← hη, hω, ← I.prod_coe_sort]

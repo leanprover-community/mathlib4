@@ -6,7 +6,7 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" from git "https://github.com/felixpernegger/batteries" @ "38a897d4eb198f42c38e16c0eb9d2a05490bdf8f"
+require "leanprover-community" / "batteries" from git "https://github.com/felixpernegger/batteries" @ "fad22145de60fe5c71e077fd8b8c7be9760b44b4"
 require "leanprover-community" / "Qq" @ git "master"
 
 require "leanprover-community" / "aesop" @ git "master"
@@ -168,12 +168,6 @@ lean_exe «lint-style» where
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check-title-labels» where
   srcDir := "scripts"
-
--- TODO: provided for backwards compatibility; delete after #44306
-lean_exe «check_title_labels» where
-  srcDir := "scripts"
-  -- TODO: modulise this script, so remove the need for this option
-  allowNonModules := true
 
 /-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
 lean_exe «nightly-testing-checklist» where

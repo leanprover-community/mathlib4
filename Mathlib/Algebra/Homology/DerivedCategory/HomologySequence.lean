@@ -38,8 +38,6 @@ noncomputable def homologyFunctorFactors (n : ℤ) : Q ⋙ homologyFunctor C n �
     HomologicalComplex.homologyFunctor _ _ n :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactors C (ComplexShape.up ℤ) n
 
--- needed in `homologyMap_comp_eq_zero_of_distTriang`
-set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 @[reassoc (attr := simp)]
 lemma homologyFunctorFactors_hom_naturality
@@ -123,7 +121,6 @@ lemma shiftMap_homologyFunctor_map_Qh
         (homologyFunctorFactorsh C a').inv.app _ :=
   Functor.ShiftSequence.induced_shiftMap ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftMap_homologyFunctor_map_Q
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧)

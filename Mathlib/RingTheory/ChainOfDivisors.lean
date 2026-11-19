@@ -49,7 +49,7 @@ theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔
             rw [ha] at h
             apply isUnit_of_associated_mul (show Associated (p * b) p by conv_rhs => rw [h]) h₁)⟩,
     fun hp =>
-    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using! hp.1,
+    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using! hp.not_isUnit,
       fun b ⟨⟨a, hab⟩, hb⟩ =>
       (hp.isUnit_or_isUnit hab).casesOn
         (fun hb => show b = ⊥ by rwa [Associates.isUnit_iff_eq_one, ← Associates.bot_eq_one] at hb)
@@ -78,7 +78,7 @@ theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (h
     rw [associated_iff_eq] at hi
     exact ⟨⟨i, Nat.lt_succ_of_le i_le⟩, hi⟩
   · rintro ⟨i, rfl⟩
-    exact ⟨p ^ (n - i : ℕ), (pow_mul_pow_sub p (Nat.succ_le_succ_iff.mp i.2)).symm⟩
+    exact ⟨p ^ (n - i : ℕ), (pow_mul_pow_sub p (Nat.succ_le_succ_iff.mp i.isLt)).symm⟩
 
 theorem element_of_chain_not_isUnit_of_index_ne_zero {n : ℕ} {i : Fin (n + 1)} (i_pos : i ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c) : ¬IsUnit (c i) :=
@@ -176,7 +176,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     use c 1 ^ (i - (a : ℕ))
     rw [pow_mul_pow_sub (c 1)]
     · exact H
-    · exact Nat.succ_le_succ_iff.mp a.2
+    · exact Nat.succ_le_succ_iff.mp a.isLt
 
 theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
@@ -207,7 +207,7 @@ theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : IsPrimePow q :=
   ⟨c 1, n, irreducible_iff_prime.mp (second_of_chain_is_irreducible hn h₁ (@h₂) hq),
-    zero_lt_iff.mpr hn, (eq_pow_second_of_chain_of_has_chain hn h₁ (@h₂) hq).symm⟩
+    hn.pos, (eq_pow_second_of_chain_of_has_chain hn h₁ (@h₂) hq).symm⟩
 
 end DivisorChain
 
@@ -264,7 +264,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
     (@fun r => ⟨@fun hr => ?_, ?_⟩) ?_).symm
   · rw [c₂_def, c₂_def, Subtype.coe_lt_coe, d.lt_iff_lt, Subtype.mk_lt_mk, hc₁'.lt_iff_lt]
     exact h
-  · have : r ≤ n := hr.trans (d ⟨c₁ 1 ^ s, _⟩).2
+  · have : r ≤ n := hr.trans (d ⟨c₁ 1 ^ s, _⟩).property
     suffices d.symm ⟨r, this⟩ ≤ ⟨c₁ 1 ^ s, hs'⟩ by
       obtain ⟨i, hi⟩ := hc₁''.1 this
       use i
