@@ -590,7 +590,9 @@ theorem lift_id : ∀ a, lift.{u, u} a = a :=
 theorem lift_uzero (a : Ordinal.{u}) : lift.{0} a = a :=
   lift_id' a
 
-private theorem lift_type_le' {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
+/-- A version of `lift_type_le` with more general universes.
+Note that Lean cannot infer `w` on its own. -/
+theorem lift_type_le' {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
     lift.{max v w} (type r) ≤ lift.{max u w} (type s) ↔ Nonempty (r ≼i s) := by
   constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
   · exact (RelIso.preimage Equiv.ulift r).symm.toInitialSeg.trans
@@ -602,19 +604,31 @@ theorem lift_type_le {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
     lift.{v} (type r) ≤ lift.{u} (type s) ↔ Nonempty (r ≼i s) :=
   lift_type_le'.{u, v, 0}
 
-theorem lift_type_eq {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
-    lift.{v} (type r) = lift.{u} (type s) ↔ Nonempty (r ≃r s) := by
+/-- A version of `lift_type_eq` with more general universes.
+Note that Lean cannot infer `w` on its own. -/
+theorem lift_type_eq' {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
+    lift.{max v w} (type r) = lift.{max u w} (type s) ↔ Nonempty (r ≃r s) := by
   refine Quotient.eq'.trans ⟨?_, ?_⟩ <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
   · exact (RelIso.preimage Equiv.ulift r).symm.trans <| f.trans (RelIso.preimage Equiv.ulift s)
   · exact (RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm
 
-theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
-    lift.{v} (type r) < lift.{u} (type s) ↔ Nonempty (r ≺i s) := by
+theorem lift_type_eq {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
+    lift.{v} (type r) = lift.{u} (type s) ↔ Nonempty (r ≃r s) :=
+  lift_type_eq'.{u, v, 0}
+
+/-- A version of `lift_type_lt` with more general universes.
+Note that Lean cannot infer `w` on its own. -/
+theorem lift_type_lt' {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
+    lift.{max v w} (type r) < lift.{max u w} (type s) ↔ Nonempty (r ≺i s) := by
   constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
   · exact (f.relIsoTrans (RelIso.preimage Equiv.ulift r).symm).transInitial
       (RelIso.preimage Equiv.ulift s).toInitialSeg
   · exact (f.relIsoTrans (RelIso.preimage Equiv.ulift r)).transInitial
       (RelIso.preimage Equiv.ulift s).symm.toInitialSeg
+
+theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
+    lift.{v} (type r) < lift.{u} (type s) ↔ Nonempty (r ≺i s) :=
+  lift_type_lt'.{u, v, 0}
 
 @[simp]
 theorem lift_le {a b : Ordinal} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
