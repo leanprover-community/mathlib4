@@ -26,7 +26,7 @@ namespace Pi
 namespace Lex
 
 private def inf [WellFoundedLT ι] (s : Set (Πₗ i, α i)) (i : ι) : α i :=
-  ⨅ e : {e ∈ s | ∀ j < i, e.ofLex j = inf s j}, e.1.ofLex i
+  ⨅ e : {e ∈ s | ∀ j < i, e.ofLex j = inf s j}, e.val.ofLex i
 termination_by wellFounded_lt.wrap i
 
 variable [WellFoundedLT ι]
@@ -36,7 +36,7 @@ instance : InfSet (Πₗ i, α i) where
   sInf s := Lex.toLex (inf s)
 
 theorem sInf_apply (s : Set (Πₗ i, α i)) (i : ι) :
-    (sInf s).ofLex i = ⨅ e : {e ∈ s | ∀ j < i, e.ofLex j = (sInf s).ofLex j}, e.1.ofLex i := by
+    (sInf s).ofLex i = ⨅ e : {e ∈ s | ∀ j < i, e.ofLex j = (sInf s).ofLex j}, e.val.ofLex i := by
   -- This still works without excluding `iInf_of_isEmpty`, but very slowly
   simp [sInf, inf, -iInf_of_isEmpty]
 
@@ -69,7 +69,7 @@ instance : SupSet (Πₗ i, α i) where
   sSup s := sInf (α := Πₗ i, (α i)ᵒᵈ) s
 
 theorem sSup_apply (s : Set (Πₗ i, α i)) (i : ι) :
-    (sSup s).ofLex i = ⨆ e : {e ∈ s | ∀ j < i, e.ofLex j = (sSup s).ofLex j}, e.1.ofLex i :=
+    (sSup s).ofLex i = ⨆ e : {e ∈ s | ∀ j < i, e.ofLex j = (sSup s).ofLex j}, e.val.ofLex i :=
   sInf_apply (α := fun i ↦ (α i)ᵒᵈ) ..
 
 theorem le_sSup_apply {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
@@ -107,7 +107,7 @@ end Lex
 namespace Colex
 
 private def inf [WellFoundedGT ι] (s : Set (Colex ((i : ι) → α i))) (i : ι) : α i :=
-  ⨅ e : {e ∈ s | ∀ j > i, e.ofColex j = inf s j}, e.1.ofColex i
+  ⨅ e : {e ∈ s | ∀ j > i, e.ofColex j = inf s j}, e.val.ofColex i
 termination_by wellFounded_gt.wrap i
 
 variable [WellFoundedGT ι]
@@ -118,7 +118,7 @@ instance : InfSet (Colex ((i : ι) → α i)) where
 
 theorem sInf_apply (s : Set (Colex ((i : ι) → α i))) (i : ι) :
     (sInf s).ofColex i =
-    ⨅ e : {e ∈ s | ∀ j > i, e.ofColex j = (sInf s).ofColex j}, e.1.ofColex i := by
+    ⨅ e : {e ∈ s | ∀ j > i, e.ofColex j = (sInf s).ofColex j}, e.val.ofColex i := by
   simp [sInf, inf, -iInf_of_isEmpty]
 
 theorem sInf_apply_le {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex ((i : ι) → α i)}
@@ -151,7 +151,8 @@ instance : SupSet (Colex ((i : ι) → α i)) where
   sSup s := sInf (α := Colex ((i : ι) → (α i)ᵒᵈ)) s
 
 theorem sSup_apply (s : Set (Colex ((i : ι) → α i))) (i : ι) :
-    (sSup s).ofColex i = ⨆ e : {e ∈ s | ∀ j > i, e.ofColex j = (sSup s).ofColex j}, e.1.ofColex i :=
+    (sSup s).ofColex i =
+    ⨆ e : {e ∈ s | ∀ j > i, e.ofColex j = (sSup s).ofColex j}, e.val.ofColex i :=
   sInf_apply (α := fun i ↦ (α i)ᵒᵈ) ..
 
 theorem le_sSup_apply {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex ((i : ι) → α i)}

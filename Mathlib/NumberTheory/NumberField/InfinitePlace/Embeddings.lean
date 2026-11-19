@@ -327,12 +327,12 @@ namespace Extension
 
 variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
 
-theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2.over
+theorem comp_eq : φ.val.comp (algebraMap K L) = ψ := φ.property.over
 
 theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
   simp_all [ComplexEmbedding.isReal_iff, comp_eq]
 
-theorem not_isReal_of_not_isReal (h : ¬IsReal ψ) : ¬IsReal φ.1 :=
+theorem not_isReal_of_not_isReal (h : ¬IsReal ψ) : ¬IsReal φ.val :=
   mt (IsReal.comp _) (comp_eq φ ▸ h)
 
 end Extension

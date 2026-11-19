@@ -797,7 +797,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     by_cases h' : ∃ z : s, g z = y
     · rw [dite_eq_left h'] at h
       cases Sum.inl.inj h
-      exact (Classical.choose h').2
+      exact (Classical.choose h').property
     · rw [dite_eq_right h'] at h
       cases h
   · intro h
@@ -826,7 +826,7 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine le_trans ?_ (mk_bounded_set_le s c)
   refine ⟨.codRestrict {t : Set s | #t ≤ c} ?_ ?_⟩
-  · use fun t => (↑) ⁻¹' t.1
+  · use fun t => (↑) ⁻¹' t.val
     rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.ext
     dsimp only at h ⊢

@@ -724,7 +724,7 @@ theorem IsCycleOn.isCycle_subtypePerm (hf : f.IsCycleOn s) (hs : s.Nontrivial) :
   obtain ⟨a, ha⟩ := hs.nonempty
   exact
     ⟨⟨a, ha⟩, ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs ha), fun b _ =>
-      (hf.2 (⟨a, ha⟩ : s).2 b.2).subtypePerm⟩
+      (hf.2 (⟨a, ha⟩ : s).property b.property).subtypePerm⟩
 
 /-- Note that the identity is a cycle on any subsingleton set, but not a cycle. -/
 protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
@@ -734,7 +734,7 @@ protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
     exact isCycleOn_of_subsingleton _ _
   convert (hf.isCycle_subtypePerm hs).isCycleOn using 1
   rw [eq_comm, Set.eq_univ_iff_forall]
-  exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
+  exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.property)
 
 -- TODO: Theory of order of an element under an action
 theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) {n : ℕ} :
@@ -743,13 +743,13 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
   · rw [coe_singleton, isCycleOn_singleton] at hf
     simpa using! IsFixedPt.iterate hf n
   classical
-    have h (x : s) : ¬f x = x := hf.apply_ne hs x.2
+    have h (x : s) : ¬f x = x := hf.apply_ne hs x.property
     have := (hf.isCycle_subtypePerm hs).orderOf
     simp only [coe_sort_coe, support_subtypePerm, ne_eq, h, not_false_eq_true, univ_eq_attach,
       mem_attach, imp_self, implies_true, filter_true_of_mem, card_attach] at this
     rw [← this, orderOf_dvd_iff_pow_eq_one,
       (hf.isCycle_subtypePerm hs).pow_eq_one_iff'
-        (ne_of_apply_ne ((↑) : s → α) <| hf.apply_ne hs (⟨a, ha⟩ : s).2)]
+        (ne_of_apply_ne ((↑) : s → α) <| hf.apply_ne hs (⟨a, ha⟩ : s).property)]
     simp [-SetLike.coe_sort_coe]
 
 theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
@@ -981,9 +981,8 @@ def subtypePerm_of_support_le (c : Perm α) {s : Finset α}
 
 /-- Support of a cycle is nonempty -/
 theorem IsCycle.nonempty_support {g : Perm α} (hg : g.IsCycle) :
-    g.support.Nonempty := by
-  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty_iff]
-  exact IsCycle.ne_one hg
+    g.support.Nonempty :=
+  let ⟨x, hx, _⟩ := hg; ⟨x, mem_support.2 hx⟩
 
 /-- Centralizer of a cycle is a power of that cycle on the cycle -/
 theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :

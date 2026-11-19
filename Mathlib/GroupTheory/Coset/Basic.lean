@@ -168,7 +168,7 @@ theorem rightCoset_mem_rightCoset {a : α} (ha : a ∈ s) : op a • (s : Set α
 
 @[to_additive]
 theorem orbit_subgroup_eq_rightCoset (a : α) : MulAction.orbit s a = op a • s :=
-  Set.ext fun _b => ⟨fun ⟨c, d⟩ => ⟨c, c.2, d⟩, fun ⟨c, d, e⟩ => ⟨⟨c, d⟩, e⟩⟩
+  Set.ext fun _b => ⟨fun ⟨c, d⟩ => ⟨c, c.property, d⟩, fun ⟨c, d, e⟩ => ⟨⟨c, d⟩, e⟩⟩
 
 @[to_additive]
 theorem orbit_subgroup_eq_self_of_mem {a : α} (ha : a ∈ s) : MulAction.orbit s a = s :=
@@ -319,13 +319,15 @@ variable [Group α] {s : Subgroup α}
 /-- The natural bijection between a left coset `g * s` and `s`. -/
 @[to_additive /-- The natural bijection between the cosets `g + s` and `s`. -/]
 def leftCosetEquivSubgroup (g : α) : (g • s : Set α) ≃ s :=
-  ⟨fun x => ⟨g⁻¹ * x.1, (mem_leftCoset_iff _).1 x.2⟩, fun x => ⟨g * x.1, x.1, x.2, rfl⟩,
+  ⟨fun x => ⟨g⁻¹ * x.val, (mem_leftCoset_iff _).1 x.property⟩,
+    fun x => ⟨g * x.val, x.val, x.property, rfl⟩,
     fun ⟨x, _⟩ => Subtype.ext <| by simp, fun ⟨g, _⟩ => Subtype.ext <| by simp⟩
 
 /-- The natural bijection between a right coset `s * g` and `s`. -/
 @[to_additive /-- The natural bijection between the cosets `s + g` and `s`. -/]
 def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
-  ⟨fun x => ⟨x.1 * g⁻¹, (mem_rightCoset_iff _).1 x.2⟩, fun x => ⟨x.1 * g, x.1, x.2, rfl⟩,
+  ⟨fun x => ⟨x.val * g⁻¹, (mem_rightCoset_iff _).1 x.property⟩,
+    fun x => ⟨x.val * g, x.val, x.property, rfl⟩,
     fun ⟨x, _⟩ => Subtype.ext <| by simp, fun ⟨g, _⟩ => Subtype.ext <| by simp⟩
 
 /-- A (non-canonical) bijection between a group `α` and the product `(α/s) × s` -/
@@ -375,7 +377,7 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     refine Quotient.ind' fun a => ?_
     refine Quotient.ind' fun b => ?_
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
-      (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
+      (QuotientGroup.mk_mul_of_mem (f a) b.property).trans (hf a)
     simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
 
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
@@ -532,12 +534,12 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
   toFun a :=
     ⟨⟨((Quotient.out (QuotientGroup.mk a)) : α)⁻¹ * a,
         leftRel_apply.mp (@Quotient.exact' _ (leftRel s) _ _ <| Quotient.out_eq' _)⟩,
-      ⟨QuotientGroup.mk a, a.2⟩⟩
+      ⟨QuotientGroup.mk a, a.property⟩⟩
   invFun a :=
-    ⟨Quotient.out a.2.1 * a.1.1,
+    ⟨Quotient.out a.2.val * a.1.val,
       show QuotientGroup.mk _ ∈ t by
-        rw [mk_mul_of_mem _ a.1.2, out_eq']
-        exact a.2.2⟩
+        rw [mk_mul_of_mem _ a.1.property, out_eq']
+        exact a.2.property⟩
   left_inv := fun ⟨a, _⟩ => Subtype.ext <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
 

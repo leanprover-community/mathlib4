@@ -761,7 +761,7 @@ theorem finprod_mem_empty : (∏ᶠ i ∈ (∅ : Set α), f i) = 1 := by simp
 @[to_additive
 /-- A set `s` is nonempty if the sum of some function over `s` is not equal to `0`. -/]
 theorem nonempty_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ finprod_mem_empty
+  ne_empty_iff_nonempty.1 fun h' => h <| h'.symm ▸ finprod_mem_empty
 
 /-- Given finite sets `s` and `t`, the product of `f i` over `i ∈ s ∪ t` times the product of
 `f i` over `i ∈ s ∩ t` equals the product of `f i` over `i ∈ s` times the product of `f i`
@@ -1038,7 +1038,8 @@ theorem finprod_mem_biUnion {I : Set ι} {t : ι → Set α} (h : I.PairwiseDisj
     (ht : ∀ i ∈ I, (t i).Finite) : ∏ᶠ a ∈ ⋃ x ∈ I, t x, f a = ∏ᶠ i ∈ I, ∏ᶠ j ∈ t i, f j := by
   have := hI.fintype
   rw [biUnion_eq_iUnion, finprod_mem_iUnion, ← finprod_set_coe_eq_finprod_mem]
-  exacts [fun x y hxy => h x.2 y.2 (Subtype.coe_injective.ne hxy), fun b => ht b b.2]
+  exacts [fun x y hxy => h x.property y.property (Subtype.coe_injective.ne hxy),
+    fun b => ht b b.property]
 
 /-- If `t` is a finite set of pairwise disjoint finite sets, then the product of `f a`
 over `a ∈ ⋃₀ t` is the product over `s ∈ t` of the products of `f a` over `a ∈ s`. -/
