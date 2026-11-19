@@ -158,13 +158,13 @@ theorem inner_integralOperator (f g : Lp V 2 μ) :
     ⟪f, integralOperator hK g⟫_𝕜 = starRingEnd 𝕜 (mercerForm hK g f) := by
   rw [← inner_conj_symm, integralOperator_inner]
 
+theorem isSymmetric_integralOperator (hK' : K.IsHermitian) :
+    (integralOperator hK).IsSymmetric := fun f g ↦ by
+  rw [ContinuousLinearMap.coe_coe, integralOperator_inner, inner_integralOperator,
+    mercerForm_conj_symm hK hK']
+
 theorem isSelfAdjoint_integralOperator (hK' : K.IsHermitian) :
-    IsSelfAdjoint (integralOperator hK) := by
-  ext f
-  apply Lp.ext_iff.mp
-  refine ext_inner_left 𝕜 fun g ↦ ?_
-  rw [ContinuousLinearMap.star_eq_adjoint, ContinuousLinearMap.adjoint_inner_right,
-    ← inner_conj_symm g ((integralOperator hK) f)]
-  simp [← mercerForm_conj_symm hK hK' f g]
+    IsSelfAdjoint (integralOperator hK) :=
+  (isSymmetric_integralOperator hK hK').isSelfAdjoint
 
 end RKHS
