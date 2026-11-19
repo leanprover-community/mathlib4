@@ -736,6 +736,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 public import Mathlib.Algebra.Homology.SpectralSequence.EdgeStep
+public import Mathlib.Algebra.Homology.SpectralSequence.EdgeSteps
 public import Mathlib.Algebra.Homology.Square
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.TotalComplexShift
