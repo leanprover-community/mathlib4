@@ -172,7 +172,7 @@ for some `a, d ∈ l₁` and `b, c ∈ l₂`. -/
 theorem TFAE.append {c d : Prop} (h₁ : TFAE l₁) (h₂ : TFAE l₂) (hab : a → b) (hcd : c → d)
     (ha : a ∈ l₁ := by simp) (hb : b ∈ l₂ := by simp) (hc : c ∈ l₂ := by simp)
     (hd : d ∈ l₁ := by simp) : TFAE (l₁ ++ l₂) :=
-  (tfae_append_of_mem ha hb).mpr ⟨⟨hab, fun h ↦ h₁.mp (hcd <| h₂.mp h hb hc) hd ha⟩, h₁, h₂⟩
+  (tfae_append_of_mem ha hb).mpr ⟨⟨hab, fun h ↦ h₁.mp hd ha <| hcd <| h₂.mp hb hc h⟩, h₁, h₂⟩
 
 theorem tfae_cons (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
   simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
@@ -185,7 +185,7 @@ theorem tfae_cons_of_mem (h : a ∈ l) : TFAE (a :: l) ↔ TFAE l := by
 `b, c ∈ l`. See also `List.tfae_cons`. -/
 theorem TFAE.cons {c : Prop} (hl : TFAE l) (hab : a → b) (hca : c → a)
     (hb : b ∈ l := by simp) (hc : c ∈ l := by simp) : TFAE (a :: l) :=
-  (tfae_cons hb).mpr ⟨⟨hab, fun h ↦ hca (hl.mp h hb hc)⟩, hl⟩
+  (tfae_cons hb).mpr ⟨⟨hab, fun h ↦ hca (hl.mp hb hc h)⟩, hl⟩
 
 theorem tfae_concat (h : b ∈ l) : TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
   simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
