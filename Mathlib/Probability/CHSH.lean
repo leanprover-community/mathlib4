@@ -31,9 +31,10 @@ The proof integrates the pointwise bound
 `|a₀ * b₀ + a₀ * b₁ + a₁ * b₀ - a₁ * b₁| ≤ 2`, valid whenever `|a₀|, |a₁|, |b₀|, |b₁| ≤ 1`.
 See `Mathlib/Algebra/Star/CHSH.lean` for the operator-algebraic counterpart, which proves the
 one-sided bound `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2` for commuting self-adjoint involutions
-in an ordered `*`-ring, together with Tsirelson's bound in the noncommutative case. Applied in the
-ring `Ω → ℝ`, it covers `±1`-valued random variables pointwise. This file covers random variables
-valued in `[-1, 1]` and states the two-sided bound on the absolute value, for integrals.
+in a commutative ordered `*`-algebra over `ℝ`, together with Tsirelson's bound in the
+noncommutative case. Applied in the ring `Ω → ℝ`, it covers `±1`-valued random variables
+pointwise. This file covers random variables valued in `[-1, 1]` and states the two-sided bound on
+the absolute value, for integrals.
 
 ## References
 
