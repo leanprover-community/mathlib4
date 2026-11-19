@@ -34,12 +34,16 @@ notion are deferred to other files:
   arbitrarily small diameters.
 
 Let `v` be such a Vitali family.
-* `v.FineSubfamilyOn` describes the subfamilies of `v` from which one can extract almost
-  everywhere disjoint coverings. This property, called
-  `v.FineSubfamilyOn.exists_disjoint_covering_ae`, is essentially a restatement of the definition
-  of a Vitali family. We also provide an API to use efficiently such a disjoint covering.
 * `v.filterAt x` is a filter on sets of `X`, such that convergence with respect to this filter
   means convergence when sets in the Vitali family shrink towards `x`.
+* `v.exists_covering` is the covering property of Vitali families, stated in terms of
+  `v.filterAt`: if for every `x ∈ s`, a predicate `P x a` holds for arbitrarily small sets `a` in
+  the family at `x`, then one can extract a countable disjoint family of such sets
+  covering almost all `s`.
+
+Users of Vitali families should only rely on `v.filterAt` and `v.exists_covering`. The fields
+`setsAt`, `measurableSet`, `nonempty_interior`, `nontrivial` and `covering` should only be used
+to construct Vitali families.
 
 ## References
 
@@ -51,7 +55,7 @@ Let `v` be such a Vitali family.
 
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
-open scoped Topology
+open scoped Topology ENNReal
 
 variable {X : Type*} [PseudoMetricSpace X]
 
@@ -99,14 +103,18 @@ def mono (v : VitaliFamily μ) (ν : Measure X) (hν : ν ≪ μ) : VitaliFamily
 every point `x` in `s` belongs to arbitrarily small sets in `v.setsAt x ∩ f x`. This is precisely
 the subfamilies for which the Vitali family definition ensures that one can extract a disjoint
 covering of almost all `s`. -/
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 def FineSubfamilyOn (v : VitaliFamily μ) (f : X → Set (Set X)) (s : Set X) : Prop :=
   ∀ x ∈ s, ∀ ε > 0, ∃ t ∈ v.setsAt x ∩ f x, t ⊆ closedBall x ε
 
 namespace FineSubfamilyOn
 
+set_option linter.deprecated false
+
 variable {v : VitaliFamily μ} {f : X → Set (Set X)} {s : Set X} (h : v.FineSubfamilyOn f s)
 include h
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem exists_disjoint_covering_ae :
     ∃ t : Set (X × Set X),
       (∀ p : X × Set X, p ∈ t → p.1 ∈ s) ∧
@@ -119,55 +127,75 @@ theorem exists_disjoint_covering_ae :
 covering of almost every `s`. -/
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
 -- See https://github.com/leanprover/lean4/issues/14084.
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 protected noncomputable def index : Set (X × Set X) :=
   h.exists_disjoint_covering_ae.choose
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.covering p` is a set in the family,
 for `p ∈ h.index`, such that these sets form a disjoint covering of almost every `s`. -/
-@[nolint unusedArguments]
+@[nolint unusedArguments,
+  deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 protected def covering (_h : FineSubfamilyOn v f s) : X × Set X → Set X :=
   fun p => p.2
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem index_subset : ∀ p : X × Set X, p ∈ h.index → p.1 ∈ s :=
   h.exists_disjoint_covering_ae.choose_spec.1
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem covering_disjoint : h.index.PairwiseDisjoint h.covering :=
   h.exists_disjoint_covering_ae.choose_spec.2.1
 
 open scoped Function in -- required for scoped `on` notation
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem covering_disjoint_subtype : Pairwise (Disjoint on fun x : h.index => h.covering x) :=
   (pairwise_subtype_iff_pairwise_set _ _).2 h.covering_disjoint
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem covering_mem {p : X × Set X} (hp : p ∈ h.index) : h.covering p ∈ f p.1 :=
   (h.exists_disjoint_covering_ae.choose_spec.2.2.1 p hp).2
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem covering_mem_family {p : X × Set X} (hp : p ∈ h.index) : h.covering p ∈ v.setsAt p.1 :=
   (h.exists_disjoint_covering_ae.choose_spec.2.2.1 p hp).1
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem measure_sdiff_biUnion : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
   h.exists_disjoint_covering_ae.choose_spec.2.2.2
 
 @[deprecated (since := "2026-06-03")] alias measure_diff_biUnion := measure_sdiff_biUnion
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem index_countable [SecondCountableTopology X] : h.index.Countable :=
   h.covering_disjoint.countable_of_nonempty_interior fun _ hx =>
     v.nonempty_interior _ _ (h.covering_mem_family hx)
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 protected theorem measurableSet_u {p : X × Set X} (hp : p ∈ h.index) :
     MeasurableSet (h.covering p) :=
   v.measurableSet p.1 _ (h.covering_mem_family hp)
 
-theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ : Measure X}
-    (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
+/-- Let `ρ` be an outer measure (or a measure) that vanishes on `μ`-null sets.
+Then the `ρ`-measure of `s` is at most the sum of the `ρ`-measures of the sets of the covering. -/
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
+theorem outerMeasure_le_tsum_of_null_imp_null [SecondCountableTopology X] {F : Type*}
+    [FunLike F (Set X) ℝ≥0∞] [OuterMeasureClass F X] {ρ : F}
+    (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
   calc
     ρ s ≤ ρ ((s \ ⋃ p ∈ h.index, h.covering p) ∪ ⋃ p ∈ h.index, h.covering p) :=
       measure_mono (by simp only [subset_union_left, sdiff_union_self])
     _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
       (measure_union_le _ _)
-    _ = ∑' p : h.index, ρ (h.covering p) := by
-      rw [hρ h.measure_sdiff_biUnion, zero_add,
-        measure_biUnion h.index_countable h.covering_disjoint fun x hx => h.measurableSet_u hx]
+    _ ≤ ∑' p : h.index, ρ (h.covering p) := by
+      rw [hρ h.measure_sdiff_biUnion, zero_add]
+      exact measure_biUnion_le _ h.index_countable _
 
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
+theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ : Measure X}
+    (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
+  h.outerMeasure_le_tsum_of_null_imp_null hρ
+
+@[deprecated "Use `VitaliFamily.exists_covering` instead." (since := "2026-11-18")]
 theorem measure_le_tsum [SecondCountableTopology X] : μ s ≤ ∑' x : h.index, μ (h.covering x) :=
   h.measure_le_tsum_of_absolutelyContinuous Measure.AbsolutelyContinuous.rfl
 
@@ -241,8 +269,13 @@ theorem eventually_filterAt_subset_closedBall (x : X) {ε : ℝ} (hε : 0 < ε) 
     ∀ᶠ t : Set X in v.filterAt x, t ⊆ closedBall x ε :=
   (v.tendsto_filterAt_iff.mp tendsto_id).2 ε hε
 
-theorem eventually_filterAt_measurableSet (x : X) : ∀ᶠ t in v.filterAt x, MeasurableSet t := by
+theorem filterAt_le_smallSets_nhds (x : X) : v.filterAt x ≤ (𝓝 x).smallSets := inf_le_left
+
+theorem eventually_measurableSet (x : X) : ∀ᶠ t in v.filterAt x, MeasurableSet t := by
   filter_upwards [v.eventually_filterAt_mem_setsAt x] with _ ha using v.measurableSet _ _ ha
+
+@[deprecated (since := "2026-11-18")]
+alias eventually_filterAt_measurableSet := eventually_measurableSet
 
 theorem frequently_filterAt_iff {x : X} {P : Set X → Prop} :
     (∃ᶠ t in v.filterAt x, P t) ↔ ∀ ε > (0 : ℝ), ∃ t ∈ v.setsAt x, t ⊆ closedBall x ε ∧ P t := by
@@ -251,6 +284,22 @@ theorem frequently_filterAt_iff {x : X} {P : Set X → Prop} :
 theorem eventually_filterAt_subset_of_nhds {x : X} {o : Set X} (hx : o ∈ 𝓝 x) :
     ∀ᶠ t in v.filterAt x, t ⊆ o :=
   (eventually_smallSets_subset.2 hx).filter_mono inf_le_left
+
+/-- **Covering property of Vitali families**. Let `s` be a (possibly non-measurable) set,
+and let `P x a` be a predicate on points and sets.
+If for every `x ∈ s`, `P x a` holds for arbitrarily small sets `a` in the Vitali family `v` at `x`,
+then there exists a countable disjoint family of pairs `(x, a)` with `x ∈ s` and `P x a`
+such that the sets `a` cover almost all of `s`. -/
+theorem exists_covering [SecondCountableTopology X] (s : Set X) (P : X → Set X → Prop)
+    (h : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, P x a) :
+    ∃ t : Set (X × Set X), t.Countable ∧ MapsTo Prod.fst t s ∧ t.PairwiseDisjoint Prod.snd ∧
+      (∀ p ∈ t, P p.1 p.2) ∧ s ≤ᵐ[μ] ⋃ p ∈ t, p.2 := by
+  obtain ⟨t, ts, disj, htP, hμ⟩ := v.covering s (fun x ↦ {a | a ∈ v.setsAt x ∧ P x a})
+    (fun _ _ _ ha ↦ ha.1) fun x hx ε hε ↦ by
+      obtain ⟨a, ha, haε, hPa⟩ := v.frequently_filterAt_iff.1 (h x hx) ε hε
+      exact ⟨a, ⟨ha, hPa⟩, haε⟩
+  exact ⟨t, disj.countable_of_nonempty_interior fun p hp ↦ v.nonempty_interior _ _ (htP p hp).1,
+    ts, disj, fun p hp ↦ (htP p hp).2, ae_subset.2 hμ⟩
 
 @[simp]
 theorem filterAt_enlarge (v : VitaliFamily μ) {δ : ℝ} (δpos : 0 < δ) :
@@ -263,11 +312,15 @@ theorem filterAt_enlarge (v : VitaliFamily μ) {δ : ℝ} (δpos : 0 < δ) :
   filter_upwards [eventually_smallSets_subset.mpr (closedBall_mem_nhds _ δpos)]
   simp +contextual
 
+set_option linter.deprecated false in
+@[deprecated exists_covering (since := "2026-11-18")]
 theorem fineSubfamilyOn_iff_frequently (v : VitaliFamily μ) {f : X → Set (Set X)} {s : Set X} :
     v.FineSubfamilyOn f s ↔ ∀ x ∈ s, ∃ᶠ t in v.filterAt x, t ∈ f x := by
   refine forall₂_congr fun x hx ↦ ?_
   simp [frequently_filterAt_iff, ← and_assoc, and_right_comm]
 
+set_option linter.deprecated false in
+@[deprecated exists_covering (since := "2026-11-18")]
 theorem fineSubfamilyOn_of_frequently (v : VitaliFamily μ) (f : X → Set (Set X)) (s : Set X)
     (h : ∀ x ∈ s, ∃ᶠ t in v.filterAt x, t ∈ f x) : v.FineSubfamilyOn f s := by
   rwa [fineSubfamilyOn_iff_frequently]
