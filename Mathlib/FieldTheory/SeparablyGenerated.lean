@@ -247,7 +247,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
   obtain ⟨i, hi, hi'⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow p hp H
     (a := fun i : ↥(insert n s) ↦ a i) ⟨n, by simp⟩ (ha.comp_equiv e₁)
   let e₂ : {j // j ≠ i} ≃ ↥(insert n s \ {i.val}) := ⟨fun x ↦ ⟨x, x.val.property, fun h ↦ x.property (Subtype.ext h)⟩,
-    fun x ↦ ⟨⟨x, x.property.1⟩, fun h ↦ x.property.2 congr($h.val)⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
+    fun x ↦ ⟨⟨x, x.property.1⟩, fun h ↦ x.property.2 congr(($h).val)⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
   have : a '' (insert n s \ {i.val}) = (a ·.val) '' {i}ᶜ := by ext; aesop
   refine ⟨i, hi.comp_equiv e₂.symm, by convert hi'⟩
 

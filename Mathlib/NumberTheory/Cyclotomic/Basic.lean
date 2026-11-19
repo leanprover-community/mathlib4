@@ -320,7 +320,7 @@ theorem _root_.Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot
   exists_isPrimitiveRoot {n} hn1 hn2 := by
     obtain ⟨r, hr1, hr2⟩ := h n hn1 hn2
     exact ⟨⟨r, subset_adjoin ⟨n, hn1, hn2, hr1⟩⟩, Subtype.val_injective hr1,
-      fun l hl ↦ hr2 l congr($hl.val)⟩
+      fun l hl ↦ hr2 l congr(($hl).val)⟩
   adjoin_roots := by
     rintro ⟨x, hx⟩
     induction hx using adjoin_induction with
