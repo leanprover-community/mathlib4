@@ -203,7 +203,8 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     Finset.coe_biUnion, Finset.coe_univ, Set.mem_univ, Set.iUnion_true, Set.iUnion_subset_iff] at hθ
   have : ϕ.carrier⟮α⟯.restrictScalars F ≤ θ.carrier := by
     rw [restrictScalars_adjoin_eq_sup, sup_le_iff, adjoin_simple_le_iff]; exact ⟨hθϕ.1, hθ.1⟩
-  exact hS ⟨(θ.emb.comp <| inclusion this).toRingHom, hθϕ.2⟩ θ ⟨this, fun _ ↦ rfl⟩ (hθ.2 _)
+  exact hS { (θ.emb.comp <| inclusion this).toRingHom with commutes' := hθϕ.2 } θ
+    ⟨this, fun _ ↦ rfl⟩ (hθ.2 _)
 
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
