@@ -551,10 +551,17 @@ theorem type_lt_ulift [LinearOrder α] [WellFoundedLT α] :
     typeLT (ULift α) = lift.{v} (typeLT α) :=
   rfl
 
-theorem _root_.RelIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → β → Prop}
+theorem _root_.RelIso.lift_ordinalType_congr {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (f : r ≃r s) : lift.{v} (type r) = lift.{u} (type s) :=
   ((RelIso.preimage Equiv.ulift r).trans <|
       f.trans (RelIso.preimage Equiv.ulift s).symm).ordinalType_congr
+
+@[deprecated (since := "2026-11-18")] alias _root_.RelIso.ordinal_lift_type_eq :=
+  RelIso.lift_ordinalType_congr
+
+theorem _root_.OrderIso.lift_ordinalType_congr [LinearOrder α] [LinearOrder β]
+    [WellFoundedLT α] [WellFoundedLT β] (h : α ≃o β) : lift.{v} (typeLT α) = lift.{u} (typeLT β) :=
+  h.toRelIsoLT.lift_ordinalType_congr
 
 @[simp]
 theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
@@ -564,7 +571,7 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
 @[simp]
 theorem type_lift_preimage (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (type (f ⁻¹'o r)) = lift.{v} (type r) :=
-  (RelIso.preimage f r).ordinal_lift_type_eq
+  (RelIso.preimage f r).lift_ordinalType_congr
 
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
@@ -629,12 +636,12 @@ theorem lift_lt {a b : Ordinal} : lift.{u, v} a < lift.{u, v} b ↔ a < b := by
 @[simp]
 theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (f : r ≺i s) : lift.{u} (typein s f.top) = lift (type r) :=
-  f.subrelIso.ordinal_lift_type_eq
+  f.subrelIso.lift_ordinalType_congr
 
 @[simp]
 theorem typein_ordinal (o : Ordinal.{u}) : typein LT.lt o = lift.{u + 1} o := by
   refine inductionOn o fun α r _ => ?_
-  rw [← type_Iio_lt, ← (enum r).ordinal_lift_type_eq, lift_id'.{u, u + 1}]
+  rw [← type_Iio_lt, ← (enum r).lift_ordinalType_congr, lift_id'.{u, u + 1}]
 
 theorem type_lt_Iio (o : Ordinal.{u}) : typeLT (Iio o) = lift.{u + 1} o := by simp
 
@@ -675,7 +682,7 @@ noncomputable instance (o : Ordinal) : CoeOut o.ToType Ordinal where
 
 @[simp]
 theorem type_toType (o : Ordinal.{u}) : typeLT o.ToType = o := by
-  rw [← lift_inj.{u + 1, u}, ← (orderIsoShrink (Iio o)).toRelIsoLT.ordinal_lift_type_eq,
+  rw [← lift_inj.{u + 1, u}, ← (orderIsoShrink (Iio o)).toRelIsoLT.lift_ordinalType_congr,
     lift_id'.{u, u + 1}, type_lt_Iio]
 
 @[simp]
