@@ -179,7 +179,7 @@ theorem secondCountableTopology_source [SecondCountableTopology Y] :
 theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
     𝓝 x = comap e (𝓝 (e x)) ⊓ 𝓟 e.source := by
   lift x to e.source using hx
-  rw [← e.open_source.nhdsWithin_eq x.2, ← map_nhds_subtype_val, ← map_comap_setCoe_val,
+  rw [← e.open_source.nhdsWithin_eq x.property, ← map_nhds_subtypeVal, ← map_comap_setCoe_val,
     e.toHomeomorphSourceTarget.nhds_eq_comap, nhds_subtype_eq_comap]
   simp only [Function.comp_def, toHomeomorphSourceTarget_apply_coe, comap_comap]
 
@@ -246,7 +246,7 @@ variable (s : Opens X) (hs : Nonempty s)
 /-- The inclusion of an open subset `s` of a space `X` into `X` is an open partial homeomorphism
 from the subtype `s` to `X`. -/
 noncomputable def openPartialHomeomorphSubtypeCoe : OpenPartialHomeomorph s X :=
-  IsOpenEmbedding.toOpenPartialHomeomorph _ s.2.isOpenEmbedding_subtypeVal
+  IsOpenEmbedding.toOpenPartialHomeomorph _ s.is_open'.isOpenEmbedding_subtypeVal
 
 @[simp, mfld_simps]
 theorem openPartialHomeomorphSubtypeCoe_coe :

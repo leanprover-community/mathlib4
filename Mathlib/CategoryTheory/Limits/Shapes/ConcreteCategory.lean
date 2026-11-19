@@ -31,7 +31,6 @@ to compatible tuples of elements in `X₁ × X₂`.
 
 Some results are also obtained for the terminal object, binary products,
 wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
-
 -/
 
 @[expose] public section
@@ -124,7 +123,11 @@ variable [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) (forget C)]
 noncomputable def terminalEquiv : ToType (⊤_ C) ≃ PUnit :=
   (PreservesTerminal.iso (forget C) ≪≫ Types.terminalIso).toEquiv
 
-noncomputable instance : Unique (ToType (⊤_ C)) where
+-- We use the `{}` binder for the `FunLike` instance in order to get the right synthOrder.
+noncomputable instance
+    {FC : C → C → Type*} {CC : C → Type w} {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
+    [ConcreteCategory.{w} C FC] [PreservesLimit (Functor.empty.{0} C) (forget C)] :
+    Unique (ToType (⊤_ C)) where
   default := (terminalEquiv C).symm PUnit.unit
   uniq _ := (terminalEquiv C).injective (Subsingleton.elim _ _)
 
@@ -280,27 +283,27 @@ def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex 
     (I.multicospan ⋙ forget C).sections ≃
     { x : ∀ i : J.L, ToType (I.left i) // ∀ i : J.R, I.fst i (x _) = I.snd i (x _) } where
   toFun x :=
-    ⟨fun _ => x.1 (WalkingMulticospan.left _), fun i => by
-      have a := x.2 (WalkingMulticospan.Hom.fst i)
-      have b := x.2 (WalkingMulticospan.Hom.snd i)
+    ⟨fun _ => x.val (WalkingMulticospan.left _), fun i => by
+      have a := x.property (WalkingMulticospan.Hom.fst i)
+      have b := x.property (WalkingMulticospan.Hom.snd i)
       rw [← b] at a
       exact a⟩
   invFun x :=
     { val := fun j =>
         match j with
-        | WalkingMulticospan.left _ => x.1 _
-        | WalkingMulticospan.right b => I.fst b (x.1 _)
+        | WalkingMulticospan.left _ => x.val _
+        | WalkingMulticospan.right b => I.fst b (x.val _)
       property := by
         rintro (a | b) (a' | b') (f | f | f)
         · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id]; rfl
         · rfl
         · dsimp
-          exact (x.2 b').symm
+          exact (x.property b').symm
         · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id]; rfl }
   left_inv := by
     intro x; ext (a | b)
     · rfl
-    · rw [← x.2 (WalkingMulticospan.Hom.fst b)]
+    · rw [← x.property (WalkingMulticospan.Hom.fst b)]
       rfl
   right_inv := by
     intro x

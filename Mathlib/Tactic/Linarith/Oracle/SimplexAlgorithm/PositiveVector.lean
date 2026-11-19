@@ -32,7 +32,6 @@ The function `findPositiveVector` solves this problem.
 
 3. We run the Simplex Algorithm until it finds a solution.
   See the file `SimplexAlgorithm.lean`.
-
 -/
 
 public meta section

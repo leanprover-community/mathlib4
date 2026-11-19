@@ -48,7 +48,8 @@ instance : CompactSpace (Iic ω₁) :=
 private lemma exists_lt_notMem_of_disjoint {U V : Set (Iic ω₁)} (hV : V ∈ 𝓝 ⊤)
     (hUV : Disjoint U V) (x : Iio ω₁) : ∃ y, x < y ∧ inc y ∉ U := by
   obtain ⟨c, hc, hcV⟩ := nhds_top_basis.mem_iff.mp hV
-  obtain ⟨z, hz', hz⟩ := (Cardinal.isSuccLimit_omega 1).lt_iff_nonempty_Ioo.mp (max_lt x.2 hc)
+  obtain ⟨z, hz', hz⟩ :=
+    (Cardinal.isSuccLimit_omega 1).lt_iff_nonempty_Ioo.mp (max_lt x.property hc)
   have hcz : c < inc ⟨z, hz⟩ := Subtype.coe_lt_coe.mp ((le_max_right _ _).trans_lt hz')
   exact ⟨⟨z, hz⟩, Subtype.coe_lt_coe.mp ((le_max_left _ _).trans_lt hz'),
     disjoint_right.mp hUV (hcV hcz)⟩
@@ -64,16 +65,17 @@ theorem not_normalSpace_Iio_prod_Iic_omega_one :
   have hAB : Disjoint A B := by
     rw [disjoint_left]
     intro ⟨a, b⟩ (ha : inc a = b) (hb : b = ⊤)
-    exact absurd (Subtype.ext_iff.mp (ha.trans hb)) a.2.ne
+    exact absurd (Subtype.ext_iff.mp (ha.trans hb)) a.property.ne
   obtain ⟨U, V, hU, hV, hAU, hBV, hUV⟩ := normal_separation hA hB hAB
   choose β hβ1 hβ2 using fun x => exists_lt_notMem_of_disjoint
     ((hV.preimage (.prodMk_right x)).mem_nhds (hBV rfl)) (hUV.preimage _) x
   let seq : ℕ → Iio ω₁ := Nat.rec ⟨0, (Cardinal.isSuccLimit_omega _).bot_lt⟩ fun _ ↦ β
-  have hmono : Monotone (fun n => (seq n).1) :=
+  have hmono : Monotone (fun n => (seq n).val) :=
     monotone_nat_of_le_succ fun n => (Subtype.coe_lt_coe.mpr (hβ1 (seq n))).le
-  have hbω₁ : ⨆ i, (seq i).1 < ω₁ := Ordinal.iSup_lt_omega_one fun n ↦ (seq n).2
-  have htf : Tendsto (fun n => (seq n).1) atTop (𝓝 (⨆ i, (seq i).1)) :=
-    tendsto_atTop_ciSup hmono ⟨ω₁, mem_upperBounds.mpr <| forall_mem_range.mpr fun n ↦ (seq n).2.le⟩
+  have hbω₁ : ⨆ i, (seq i).val < ω₁ := Ordinal.iSup_lt_omega_one fun n ↦ (seq n).property
+  have htf : Tendsto (fun n => (seq n).val) atTop (𝓝 (⨆ i, (seq i).val)) :=
+    tendsto_atTop_ciSup hmono
+      ⟨ω₁, mem_upperBounds.mpr <| forall_mem_range.mpr fun n ↦ (seq n).property.le⟩
   have htprod : Tendsto (fun n => ((seq n, inc (seq (n + 1))) : Iio ω₁ × Iic ω₁))
       atTop (𝓝 (⟨_, hbω₁⟩, inc ⟨_, hbω₁⟩)) :=
     (IsInducing.subtypeVal.tendsto_nhds_iff.mpr htf).prodMk_nhds

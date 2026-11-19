@@ -233,6 +233,4 @@ in Lean 4 core.
 * `#conv convTactic => e` is a command to apply the `convTactic` to the expression `e`, yielding
   the converted expression (and dropping the generated proof).
   This is used to implement `#simp`, `#whnf`, `#norm_num`, and `#push`. (Mathlib)
-
-
 -/

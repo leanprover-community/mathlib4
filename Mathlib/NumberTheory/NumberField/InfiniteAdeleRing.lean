@@ -67,7 +67,8 @@ instance [NumberField K] : Nontrivial K∞ :=
   (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
 
 @[simp] theorem algebraMap_apply (x : K) (v : InfinitePlace K) : algebraMap K K∞ x v = x :=
-  Completion.algebraMap_apply v x
+  (AbsoluteValue.Completion.algebraMap_def v.val x).trans <| by
+    rw [WithAbs.algebraMap_right_apply, Algebra.algebraMap_self_apply]
 
 /-- The infinite adele ring is locally compact. -/
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace K∞ :=
@@ -84,15 +85,15 @@ abbrev ringEquiv_mixedSpace : K∞ ≃+* mixedEmbedding.mixedSpace K :=
       (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquivRealOfIsReal hv))
       (RingEquiv.trans
         (RingEquiv.piCongrRight (fun v => Completion.ringEquivComplexOfIsComplex
-          ((not_isReal_iff_isComplex.1 v.2))))
+          ((not_isReal_iff_isComplex.1 v.property))))
         (RingEquiv.piCongrLeft (fun _ => ℂ) <|
           Equiv.subtypeEquivRight (fun _ => not_isReal_iff_isComplex))))
 
 @[simp]
 theorem ringEquiv_mixedSpace_apply (x : K∞) :
     ringEquiv_mixedSpace K x =
-      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbeddingOfIsReal v.2 (x v),
-       fun (v : {w : InfinitePlace K // IsComplex w}) => extensionEmbedding v.1 (x v)) := rfl
+      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbeddingOfIsReal v.property (x v),
+       fun (v : {w : InfinitePlace K // IsComplex w}) => extensionEmbedding v.val (x v)) := rfl
 
 /-- Transfers the embedding of `x ↦ (x)ᵥ` of the number field `K` into its infinite adele
 ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r₁ × ℂ ^ r₂`, where
@@ -107,11 +108,12 @@ theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
 The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
 -/
 theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ := by
-  have h : ⇑(algebraMap K K∞) = (Pi.map fun v (x : WithAbs v.1) => (x : v.Completion)) ∘
-      algebraMap K ((v : InfinitePlace K) → WithAbs v.1) :=
+  have h : ⇑(algebraMap K K∞) = (Pi.map fun v (x : WithAbs v.val) => (x : v.Completion)) ∘
+      algebraMap K ((v : InfinitePlace K) → WithAbs v.val) :=
     funext₂ (algebraMap_apply K)
-  exact h ▸ (DenseRange.piMap fun v => Completion.denseRange_coe v).comp
-    (InfinitePlace.denseRange_algebraMap_pi K) (.piMap fun v => Completion.continuous_coe v)
+  exact h ▸ (DenseRange.piMap fun v => AbsoluteValue.Completion.denseRange_coe v.val).comp
+    (InfinitePlace.denseRange_algebraMap_pi K)
+    (.piMap fun v => AbsoluteValue.Completion.continuous_coe v.val)
 
 /-- The norm on the infinite adele ring is given by the product of the normalized norms
 across infinite places. The normalized norm is the real norm at real places and the

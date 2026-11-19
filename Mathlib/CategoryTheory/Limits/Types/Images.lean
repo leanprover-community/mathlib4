@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
-
 -/
 
 @[expose] public section
@@ -44,12 +43,12 @@ variable {f}
 
 /-- the universal property for the image factorisation -/
 noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
-  ↾fun x => F'.e (Classical.indefiniteDescription _ x.2).1
+  ↾fun x => F'.e (Classical.indefiniteDescription _ x.property).val
 
 theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
   ext x
   change (F'.e ≫ F'.m) _ = _
-  rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
+  rw [F'.fac, (Classical.indefiniteDescription _ x.property).property]
   rfl
 
 end
@@ -74,7 +73,7 @@ instance : HasImages (Type u) where
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
-      (↾fun x => ⟨st.right x.val, ⟨st.left (Classical.choose x.2), by
+      (↾fun x => ⟨st.right x.val, ⟨st.left (Classical.choose x.property), by
         rw [elementwise_of% st.w]
         rw [Classical.choose_spec x.property]⟩⟩) rfl
 

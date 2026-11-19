@@ -31,7 +31,6 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   expresses the universal property of the exterior power as a
   linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
   alternating maps and linear maps from the exterior power.
-
 -/
 
 @[expose] public section
@@ -101,7 +100,7 @@ lemma ιMulti_span_fixedDegree_of_span_eq_top {s : Set M} (hs : span R s = ⊤) 
     · rw [ExteriorAlgebra.ιMulti_apply]
       apply congrArg (List.prod ∘ List.ofFn)
       ext i
-      obtain ⟨m, -, hm⟩ := (Set.mem_image _ _ _).mp (f i).2
+      obtain ⟨m, -, hm⟩ := (Set.mem_image _ _ _).mp (f i).property
       rw [Function.comp_apply, Function.comp_apply, ← hm, ExteriorAlgebra.ι_leftInverse]
 
 /-- The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`. -/
@@ -305,7 +304,7 @@ theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
   linearMap_ext <| AlternatingMap.ext fun m ↦ (by simp)
 
 @[simp]
-theorem coe_map (f : M →ₗ[R] N) (x : ⋀[R]^n M) : map n f x = ExteriorAlgebra.map f x.1 :=
+theorem coe_map (f : M →ₗ[R] N) (x : ⋀[R]^n M) : map n f x = ExteriorAlgebra.map f x.val :=
   congr($(subtype_comp_map_eq f) x)
 
 /-! Exactness properties of the exterior power functor. -/

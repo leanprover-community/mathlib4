@@ -14,7 +14,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 In this file, given a subcomplex `A` of a simplicial set `X`,
 we introduce the type `A.N` of nondegenerate simplices of `X`
 that are not in `A`.
-
 -/
 
 @[expose] public section

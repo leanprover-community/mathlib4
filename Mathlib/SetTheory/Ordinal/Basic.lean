@@ -143,12 +143,15 @@ theorem _root_.OrderIso.ordinalType_congr {α β} [LinearOrder α] [LinearOrder 
     [WellFoundedLT α] [WellFoundedLT β] (h : α ≃o β) : typeLT α = typeLT β :=
   h.toRelIsoLT.ordinalType_congr
 
-theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
+theorem type_of_isEmpty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
   (RelIso.relIsoOfIsEmpty r _).ordinalType_congr
+
+@[deprecated (since := "2026-11-26")]
+alias type_eq_zero_of_empty := type_of_isEmpty
 
 @[simp]
 theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ type_eq_zero_of_empty r⟩
+  refine ⟨fun h ↦ ?_, fun _ ↦ type_of_isEmpty r⟩
   let ⟨s⟩ := type_eq.1 h
   exact s.toEquiv.isEmpty
 
@@ -161,7 +164,7 @@ theorem type_pEmpty : type (@emptyRelation PEmpty) = 0 :=
   rfl
 
 theorem type_empty : type (@emptyRelation Empty) = 0 :=
-  type_eq_zero_of_empty _
+  type_of_isEmpty _
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
@@ -521,7 +524,7 @@ theorem mk_le_of_forall_mk_setOfPred_lt {α β : Type u} {c : Cardinal}
   let : LinearOrder α := LinearOrder.lift' f hf
   have := OrderEmbedding.wellFoundedLT ⟨⟨f, hf⟩, .rfl⟩
   have hi (x) : #(Iio x) ≤ #(Iio (f x)) :=
-    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.2⟩, fun _ ↦ by grind⟩
+    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.property⟩, fun _ ↦ by grind⟩
   rw [← card_type (· < ·), ← card_type (· < ·)]
   refine Ordinal.card_le_card <| le_of_forall_lt fun d hd ↦ ?_
   obtain ⟨a, rfl⟩ := typein_surj (· < ·) hd
@@ -726,7 +729,7 @@ theorem lift_lift (a : Ordinal.{u}) : lift.{w} (lift.{v} a) = lift.{max v w} a :
 
 @[simp]
 theorem lift_zero : lift 0 = 0 :=
-  type_eq_zero_of_empty _
+  type_of_isEmpty _
 
 @[simp]
 theorem lift_one : lift 1 = 1 :=
@@ -900,7 +903,7 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, zero_lt_one' Ordinal⟩
-  uniq a := Subtype.ext <| lt_one_iff.1 a.2
+  uniq a := Subtype.ext <| lt_one_iff.1 a.property
 
 @[simp]
 theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
@@ -917,7 +920,6 @@ instance uniqueToTypeOne : Unique (ToType 1) where
 theorem one_toType_eq (x : ToType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
   Unique.eq_default x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem type_lt_mem_range_succ_iff [LinearOrder α] [WellFoundedLT α] :
     typeLT α ∈ range succ ↔ ∃ x : α, IsMax x := by
   simp_rw [← isTop_iff_isMax]
@@ -951,7 +953,6 @@ theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrd
 
 -- TODO: use `ToType.mk` for lemmas on `ToType` rather than `enum` and `typein`.
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem typein_one_toType (x : ToType 1) : typein (α := ToType 1) (· < ·) x = 0 := by
   rw [one_toType_eq x, typein_enum]
@@ -960,7 +961,6 @@ theorem typein_le_typein' (o : Ordinal) {x y : o.ToType} :
     typein (α := o.ToType) (· < ·) x ≤ typein (α := o.ToType) (· < ·) y ↔ x ≤ y := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) :
     a ≤ enum (α := (succ o).ToType) (· < ·) ⟨o, (type_toType _ ▸ lt_succ o)⟩ := by
   rw [← enum_typein (α := (succ o).ToType) (· < ·) a, enum_le_enum', Subtype.mk_le_mk,
@@ -978,20 +978,21 @@ open Ordinal
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal whose cardinal is `c`. -/
 @[no_expose]
 def ord (c : Cardinal) : Ordinal :=
-  Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
+  Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.val r.property) <| by
   rintro α β ⟨f⟩
   refine congr_arg sInf <| ext fun o ↦ ⟨?_, ?_⟩ <;>
     rintro ⟨⟨r, hr⟩, rfl⟩ <;>
     refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
   exacts [f.symm, f]
 
-theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+theorem ord_eq_iInf (α : Type u) :
+    ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.val r.property :=
   (rfl)
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
-  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
-  ⟨r.1, r.2, wo.symm⟩
+  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.val r.property
+  ⟨r.val, r.property, wo.symm⟩
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq_type_lt (α) :

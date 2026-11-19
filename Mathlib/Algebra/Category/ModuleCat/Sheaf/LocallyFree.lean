@@ -20,7 +20,6 @@ A sheaf of modules is locally free if it is locally isomorphic to a free module.
 
 - `SheafOfModules.IsLocallyFree`: `M : SheafOfModules R` is locally free is there exists locally
   free data for it.
-
 -/
 
 public section
@@ -51,7 +50,7 @@ attribute [instance] IsLocallyFreeData.isIso
 
 instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : q.shrink.IsLocallyFreeData where
-  isIso i := inferInstanceAs (IsIso (q.generators i.2.choose).π)
+  isIso i := inferInstanceAs (IsIso (q.generators i.property.choose).π)
 
 end LocalGeneratorsData
 

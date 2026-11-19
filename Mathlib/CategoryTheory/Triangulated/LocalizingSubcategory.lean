@@ -23,7 +23,6 @@ faithful.
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*,
   Proposition 2.3.5, Chapitre II][verdier1996]
-
 -/
 
 @[expose] public section
@@ -189,7 +188,6 @@ lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : 
     · cat_disch
     · simp [dsimp% (A.ι.commShiftIso (1 : ℤ)).inv_hom_id_app X]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulated]
     [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
     (B.op.inverseImage A.op.ι).trW.inverseImage A.opEquivalence.inverse =
