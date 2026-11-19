@@ -79,7 +79,7 @@ def Gamma0 : Subgroup SL(2, ℤ) where
   carrier := { g | (g 1 0 : ZMod N) = 0 }
   one_mem' := by simp
   mul_mem' {a} {b} ha hb := by
-    have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
+    have h := (Matrix.two_mul_expl a.val b.val).2.2.1
     simp only [coe_mul, Set.mem_ofPred_eq] at *
     simp [h, ha, hb]
   inv_mem' {a} ha := by
@@ -93,11 +93,11 @@ theorem Gamma0_mem {N} {A : SL(2, ℤ)} : A ∈ Gamma0 N ↔ (A 1 0 : ZMod N) = 
 /-- The group homomorphism from `CongruenceSubgroup.Gamma0` to `ZMod N` given by
 mapping a matrix to its lower right-hand entry. -/
 def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
-  toFun g := g.1 1 1
+  toFun g := g.val 1 1
   map_one' := by simp
   map_mul' := by
     rintro ⟨A, hA⟩ ⟨B, _⟩
-    simp only [MulMemClass.mk_mul_mk, Fin.isValue, coe_mul, (two_mul_expl A.1 B).2.2.2,
+    simp only [MulMemClass.mk_mul_mk, Fin.isValue, coe_mul, (two_mul_expl A.val B).2.2.2,
       Int.cast_add, Int.cast_mul, Gamma0_mem.mp hA, zero_mul, zero_add]
 
 /-- The congruence subgroup `Gamma1` (as a subgroup of `Gamma0`) of matrices whose bottom
@@ -111,11 +111,11 @@ theorem Gamma1_mem' {N} {γ : Gamma0 N} : γ ∈ Gamma1' N ↔ Gamma0Map N γ = 
 
 theorem Gamma1_to_Gamma0_mem {N} (A : Gamma0 N) :
     A ∈ Gamma1' N ↔
-    ((A.1 0 0 : ℤ) : ZMod N) = 1 ∧ ((A.1 1 1 : ℤ) : ZMod N) = 1
-      ∧ ((A.1 1 0 : ℤ) : ZMod N) = 0 := by
+    ((A.val 0 0 : ℤ) : ZMod N) = 1 ∧ ((A.val 1 1 : ℤ) : ZMod N) = 1
+      ∧ ((A.val 1 0 : ℤ) : ZMod N) = 0 := by
   constructor
   · intro ha
-    have adet : (A.1.1.det : ZMod N) = 1 := by simp only [A.1.property, Int.cast_one]
+    have adet : (A.val.val.det : ZMod N) = 1 := by simp only [A.val.property, Int.cast_one]
     rw [Matrix.det_fin_two] at adet
     simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub,
       Int.cast_mul] at *
@@ -244,12 +244,12 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   refine ⟨a₁ * a₂ * M, mul_ne_zero (mul_ne_zero A₁.den_ne_zero A₂.den_ne_zero) (NeZero.ne _),
     fun y hy ↦ ?_⟩
   -- Show that `y` is of the form `1 + (a₁ * a₂) • k` for some integer matrix `k`.
-  have hy' : y.1.map (Int.cast : ℤ → ZMod (a₁ * a₂ * M)) = 1 := by
+  have hy' : y.val.map (Int.cast : ℤ → ZMod (a₁ * a₂ * M)) = 1 := by
     simp only [Gamma_mem, Fin.isValue] at hy
     ext i j
     fin_cases i <;> fin_cases j <;> simp [hy]
-  obtain ⟨k, hk⟩ : ∃ k, y.1 = 1 + (a₁ * a₂ * M) • k := by
-    use Matrix.of fun i j ↦ (y.1 - 1) i j / (a₁ * a₂ * M)
+  obtain ⟨k, hk⟩ : ∃ k, y.val = 1 + (a₁ * a₂ * M) • k := by
+    use Matrix.of fun i j ↦ (y.val - 1) i j / (a₁ * a₂ * M)
     rw [← sub_eq_iff_eq_add']
     ext i j
     simp_rw [Matrix.smul_apply, Matrix.of_apply, nsmul_eq_mul, Nat.cast_mul]
@@ -260,7 +260,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
       Nat.cast_mul] using! congr($hy' i j)
   -- use this `k` to cook up a new integer matrix, which we will show comes from `SL(2, ℤ)`
   let z := 1 + M • (A₁.num * k * A₂.num)
-  have hz_coe : z.map Int.cast = A₁ * (y.1.map Int.cast) * A₂ := by
+  have hz_coe : z.map Int.cast = A₁ * (y.val.map Int.cast) * A₂ := by
     simp only [Matrix.map_add _ Int.cast_add, Matrix.map_one _ Int.cast_zero Int.cast_one, hk,
       mul_add, mul_one, add_mul, hA₁₂, add_right_inj, z]
     conv_rhs => rw [← A₁.inv_denom_smul_num, ← A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
@@ -272,7 +272,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
       mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]
   have hz_det : z.det = 1 := by
     have := congr($(hz_coe).det)
-    simp_rw [Matrix.det_mul, ← Int.cast_det, y.2] at this
+    simp_rw [Matrix.det_mul, ← Int.cast_det, y.property] at this
     simpa [← Matrix.det_mul, hA₁₂]
   refine ⟨.mk z hz_det, ?_, by
     simpa only [Subtype.ext_iff, Subgroup.coe_mul, Units.ext_iff, Units.val_mul] using! hz_coe⟩

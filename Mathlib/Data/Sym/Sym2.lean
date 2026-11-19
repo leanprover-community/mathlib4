@@ -227,10 +227,11 @@ def lift₂ :
       (Sym2 α → Sym2 β → γ) where
   toFun f :=
     Quotient.lift₂ (s₁ := Sym2.Rel.setoid α) (s₂ := Sym2.Rel.setoid β)
-      (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
+      (fun (a : α × α) (b : β × β) => f.val a.1 a.2 b.1 b.2)
       (by
         rintro _ _ _ _ ⟨⟩ ⟨⟩
-        exacts [rfl, (f.2 _ _ _ _).2, (f.2 _ _ _ _).1, (f.2 _ _ _ _).1.trans (f.2 _ _ _ _).2])
+        exacts [rfl, (f.property _ _ _ _).2, (f.property _ _ _ _).1,
+          (f.property _ _ _ _).1.trans (f.property _ _ _ _).2])
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
@@ -566,7 +567,7 @@ theorem mk_fiber_of_isDiag (hz : z.IsDiag) :
 /-- `Sym2.diagElem` and `Sym2.diag` as an equivalence. -/
 @[simps]
 def diagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
-  toFun x := x.1.diagElem x.2
+  toFun x := x.val.diagElem x.property
   invFun a := ⟨diag a, rfl⟩
   left_inv x := by ext; simp
   right_inv a := by simp [diag]

@@ -40,12 +40,12 @@ set_option backward.isDefEq.respectTransparency.types false in
 def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   Cofork.ofπ
     (@SemiNormedGrp₁.mkHom _ (Y ⧸ NormedAddGroupHom.range f.hom') _ _
-      f.hom.1.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
+      f.hom.val.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
     (by
       ext x
       rw [Limits.zero_comp, comp_apply, SemiNormedGrp₁.mkHom_apply,
-        SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.hom.1.range.ker_normedMk,
-        f.hom.1.mem_range]
+        SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.hom.val.range.ker_normedMk,
+        f.hom.val.mem_range]
       use x)
 
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
@@ -97,7 +97,7 @@ noncomputable def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=
   @Fork.ofι _ _ _ _ _ _ (of (f - g).hom.ker)
     (ofHom (NormedAddGroupHom.incl (f - g).hom.ker)) <| by
     ext v
-    have : v.1 ∈ (f - g).hom.ker := v.2
+    have : v.val ∈ (f - g).hom.ker := v.property
     simpa [-SetLike.coe_mem, NormedAddGroupHom.mem_ker, sub_eq_zero] using this
 
 instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :

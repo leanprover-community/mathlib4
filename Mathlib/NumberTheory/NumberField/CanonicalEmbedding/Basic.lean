@@ -369,8 +369,8 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
     (∀ w, normAtPlace w x = 0) ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
-    · exact norm_eq_zero.mp (normAtPlace_apply_of_isReal w.prop _ ▸ h w.1)
-    · exact norm_eq_zero.mp (normAtPlace_apply_of_isComplex w.prop _ ▸ h w.1)
+    · exact norm_eq_zero.mp (normAtPlace_apply_of_isReal w.prop _ ▸ h w.val)
+    · exact norm_eq_zero.mp (normAtPlace_apply_of_isComplex w.prop _ ▸ h w.val)
   · simp_rw [h, map_zero, implies_true]
 
 @[simp]
@@ -391,8 +391,8 @@ theorem nnNorm_eq_sup_normAtPlace (x : mixedSpace K) :
     ‖x‖₊ = univ.sup fun w ↦ .mk (normAtPlace w x) (normAtPlace_nonneg w x) := by
   have :
       (univ : Finset (InfinitePlace K)) =
-      (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
-      (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1)) := by
+      (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.val)) ∪
+      (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.val)) := by
     ext; simp [isReal_or_isComplex]
   rw [this, sup_union, univ.sup_image, univ.sup_image,
     Prod.nnNorm_def, Pi.nnNorm_def, Pi.nnNorm_def]
@@ -1123,10 +1123,10 @@ The continuous linear map from `realSpace K` to `mixedSpace K` which is the iden
 places and the natural map `ℝ → ℂ` at complex places.
 -/
 def mixedSpaceOfRealSpace : realSpace K →L[ℝ] mixedSpace K :=
-  .prod (.pi fun w ↦ .proj w.1) (.pi fun w ↦ Complex.ofRealCLM.comp (.proj w.1))
+  .prod (.pi fun w ↦ .proj w.val) (.pi fun w ↦ Complex.ofRealCLM.comp (.proj w.val))
 
 theorem mixedSpaceOfRealSpace_apply (x : realSpace K) :
-    mixedSpaceOfRealSpace x = ⟨fun w ↦ x w.1, fun w ↦ x w.1⟩ := rfl
+    mixedSpaceOfRealSpace x = ⟨fun w ↦ x w.val, fun w ↦ x w.val⟩ := rfl
 
 variable (K) in
 theorem injective_mixedSpaceOfRealSpace :

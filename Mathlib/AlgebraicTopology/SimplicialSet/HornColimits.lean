@@ -138,8 +138,8 @@ of all `1`-codimensional faces of the standard simplex but one
 along suitable `2`-codimensional faces. -/
 lemma multicoequalizerDiagram (i : Fin (n + 1)) :
     Subcomplex.MulticoequalizerDiagram Λ[n, i]
-      (ι := ({i}ᶜ : Set (Fin (n + 1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
-      (fun j k ↦ stdSimplex.face {j.1, k.1}ᶜ) where
+      (ι := ({i}ᶜ : Set (Fin (n + 1)))) (fun j ↦ stdSimplex.face {j.val}ᶜ)
+      (fun j k ↦ stdSimplex.face {j.val, k.val}ᶜ) where
   iSup_eq := by rw [horn_eq_iSup]
   eq_inf j k := by
     rw [stdSimplex.face_inter_face]

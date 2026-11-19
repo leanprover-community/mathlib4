@@ -155,7 +155,7 @@ theorem Set.OrdConnected.csSup_image_mem {s : Set α} [hs : OrdConnected s] ⦃t
     (ht : t.Nonempty) (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
-  refine hs.out c.2 B.2 ⟨?_, ?_⟩
+  refine hs.out c.property B.property ⟨?_, ?_⟩
   · exact (Subtype.mono_coe (· ∈ s)).le_csSup_image hct ⟨B, hB⟩
   · exact (Subtype.mono_coe (· ∈ s)).csSup_image_le ⟨c, hct⟩ hB
 
@@ -165,7 +165,7 @@ theorem Set.OrdConnected.csInf_image_mem {s : Set α} [hs : OrdConnected s] ⦃t
     (ht : t.Nonempty) (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
-  refine hs.out B.2 c.2 ⟨?_, ?_⟩
+  refine hs.out B.property c.property ⟨?_, ?_⟩
   · exact (Subtype.mono_coe (· ∈ s)).le_csInf_image ⟨c, hct⟩ hB
   · exact (Subtype.mono_coe (· ∈ s)).csInf_image_le hct ⟨B, hB⟩
 
@@ -205,9 +205,9 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   __ := (inferInstance : BoundedOrder ↑(Icc a b))
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, Fact.out⟩ else ⟨sSup ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine ⟨?_, csSup_le (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
+    refine ⟨?_, csSup_le (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.property.2)⟩
     obtain ⟨c, hc⟩ := hS
-    exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
+    exact c.property.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.property.2⟩ ⟨c, hc, rfl⟩)⟩
   isLUB_sSup S := by
     split_ifs with hS
     · subst hS; simp only [isLUB_empty_iff, isBot_iff_eq_bot]; rfl
@@ -215,9 +215,9 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
         ((Subtype.mono_coe _).map_bddAbove (OrderTop.bddAbove S))
   sInf S := if hS : S = ∅ then ⟨b, Fact.out, le_rfl⟩ else ⟨sInf ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine ⟨le_csInf (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), ?_⟩
+    refine ⟨le_csInf (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.property.1), ?_⟩
     obtain ⟨c, hc⟩ := hS
-    exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
+    exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.property.1⟩ ⟨c, hc, rfl⟩) c.property.2⟩
   isGLB_sInf S := by
     split_ifs with hS
     · subst hS; simp only [isGLB_empty_iff, isTop_iff_eq_top]; rfl
