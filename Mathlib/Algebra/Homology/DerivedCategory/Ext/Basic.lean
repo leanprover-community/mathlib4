@@ -483,7 +483,7 @@ noncomputable def Ext.biproductAddEquiv {J : Type*} [Fintype J] {X : J → C} {c
     intro _ _ hij
     rw [c.ι_π, dite_eq_right hij.symm, mk₀_zero, zero_comp]
   map_add' _ _ := by
-    simp only [comp_add, Pi.add_def]
+    simp [comp_add, Pi.add_def]
 
 /-- `Ext` commutes with biproducts in its second variable. -/
 noncomputable def Ext.addEquivBiproduct (X : C) {J : Type*} [Fintype J] {Y : J → C} {c : Bicone Y}
@@ -491,7 +491,7 @@ noncomputable def Ext.addEquivBiproduct (X : C) {J : Type*} [Fintype J] {Y : J �
   toFun e i := e.comp (Ext.mk₀ (c.π i)) (add_zero n)
   invFun e := ∑ (i : J), (e i).comp (Ext.mk₀ (c.ι i)) (add_zero n)
   left_inv _ := by
-    simp only [comp_assoc_of_second_deg_zero, mk₀_comp_mk₀, ← Ext.comp_sum,
+    simp [comp_assoc_of_second_deg_zero, mk₀_comp_mk₀, ← Ext.comp_sum,
       ← Ext.mk₀_sum, IsBilimit.total hc, comp_mk₀_id]
   right_inv _ := by
     ext i
@@ -500,7 +500,7 @@ noncomputable def Ext.addEquivBiproduct (X : C) {J : Type*} [Fintype J] {Y : J �
     intro _ _ hij
     rw [c.ι_π, dite_eq_right hij, mk₀_zero, comp_zero]
   map_add' _ _ := by
-    simp only [add_comp, Pi.add_def]
+    simp [add_comp, Pi.add_def]
 
 end biproduct
 
@@ -511,7 +511,7 @@ noncomputable def Ext.biprodAddEquiv {X₁ X₂ Y : C} {n : ℕ} :
   toFun e := ⟨(mk₀ biprod.inl).comp e (zero_add n), (mk₀ biprod.inr).comp e (zero_add n)⟩
   invFun e := (mk₀ biprod.fst).comp e.1 (zero_add n) + (mk₀ biprod.snd).comp e.2 (zero_add n)
   left_inv _ := by
-    simp only [mk₀_comp_mk₀_assoc, ← add_comp, ← mk₀_add, biprod.total, mk₀_id_comp]
+    simp [mk₀_comp_mk₀_assoc, ← add_comp, ← mk₀_add, biprod.total, mk₀_id_comp]
   right_inv _ := by simp
   map_add' := by simp
 
@@ -522,7 +522,7 @@ noncomputable def Ext.addEquivBiprod {X : C} {Y₁ Y₂ : C} {n : ℕ} :
   toFun e := ⟨e.comp (mk₀ biprod.fst) (add_zero n), e.comp (mk₀ biprod.snd) (add_zero n)⟩
   invFun e := e.1.comp (mk₀ biprod.inl) (add_zero n) + e.2.comp (mk₀ biprod.inr) (add_zero n)
   left_inv e := by
-    simp only [comp_assoc_of_second_deg_zero, mk₀_comp_mk₀, ← comp_add, ← mk₀_add,
+    simp [comp_assoc_of_second_deg_zero, mk₀_comp_mk₀, ← comp_add, ← mk₀_add,
       biprod.total, comp_mk₀_id]
   right_inv _ := by simp
   map_add' := by simp

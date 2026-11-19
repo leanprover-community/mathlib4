@@ -189,7 +189,7 @@ lemma smul_extMk {R₀ : Type*} [Ring R₀] [Linear R₀ C]
     (hf : R.complex.d m n ≫ f = 0) :
     r • R.extMk f m hm hf =
       R.extMk (r • f) m hm (by simp [hf]) := by
-  simp only [extMk, Linear.comp_smul, ← extEquivCohomologyClass_symm_smul,
+  simp [extMk, Linear.comp_smul, ← extEquivCohomologyClass_symm_smul,
     ← CohomologyClass.mk_smul, ← Cocycle.toSingleMk_smul]
 
 lemma extMk_hom

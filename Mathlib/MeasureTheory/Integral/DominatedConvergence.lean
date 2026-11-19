@@ -104,7 +104,7 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
     dsimp [eNorm]
     rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnNorm,
       Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
-    simp only [coe_nnNorm]
+    simp [coe_nnNorm]
   rw [funext this]
   exact ENNReal.tsum_coe_ne_top_iff_summable.2 <| NNReal.summable_coe.1 hF_sum.abs
 

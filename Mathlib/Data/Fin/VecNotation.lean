@@ -138,7 +138,7 @@ theorem cons_val_succ (x : α) (u : Fin m → α) (i : Fin m) : vecCons x u i.su
 @[simp]
 theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → α) :
     vecCons x u ⟨i.succ, h⟩ = u ⟨i, Nat.lt_of_succ_lt_succ h⟩ := by
-  simp only [vecCons, Fin.cons, Fin.cases_succ']
+  simp [vecCons, Fin.cons, Fin.cases_succ']
 
 /-- We don't want to always simplify `Fin.cons` to `vecCons`.
 But in cases that we are already mixing the declarations for dependent tuples and non-dependent
@@ -441,7 +441,7 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp only [← Nat.add_assoc, Nat.add_right_comm, cons_val_succ',
+  · simp [← Nat.add_assoc, Nat.add_right_comm, cons_val_succ',
       vecAlt0]
 
 @[simp]
@@ -481,7 +481,7 @@ lemma cons_cons_comp_swap_zero_one (a b : α) (x : Fin n → α) :
   | 1 => simp
   | ⟨i + 2, h⟩ =>
     have h' : (⟨i + 2, h⟩ : Fin n.succ.succ) = Fin.succ (Fin.succ ⟨i, by lia⟩) := by grind
-    simp only [Nat.succ_eq_add_one, h', Function.comp_apply,
+    simp [Nat.succ_eq_add_one, h', Function.comp_apply,
       Equiv.swap_apply_of_ne_of_ne (Fin.succ_ne_zero _) (Fin.succ_succ_ne_one _), cons_val_succ]
 
 lemma cons_swap (a : α) (x : Fin n → α) (i j : Fin n) :

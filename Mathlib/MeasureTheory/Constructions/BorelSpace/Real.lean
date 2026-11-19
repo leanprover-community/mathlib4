@@ -92,22 +92,22 @@ theorem isPiSystem_Ioo_rat :
 theorem isPiSystem_Iio_rat : IsPiSystem (⋃ a : ℚ, {Iio (a : ℝ)}) := by
   convert isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
   ext x
-  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+  simp [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Ioi_rat : IsPiSystem (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
   convert isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
   ext x
-  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+  simp [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Iic_rat : IsPiSystem (⋃ a : ℚ, {Iic (a : ℝ)}) := by
   convert isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
   ext x
-  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+  simp [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Ici_rat : IsPiSystem (⋃ a : ℚ, {Ici (a : ℝ)}) := by
   convert isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
   ext x
-  simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
+  simp [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 /-- The intervals `(-(n + 1), (n + 1))` form a finite spanning set in the set of open intervals
 with rational endpoints for a locally finite measure `μ` on `ℝ`. -/
@@ -248,7 +248,7 @@ theorem measurable_toNNReal : Measurable ENNReal.toNNReal :=
 
 instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
   refine ⟨measurable_of_measurable_nnreal_nnreal ?_ ?_ ?_⟩
-  · simp only [← ENNReal.coe_mul, measurable_mul.coe_nnreal_ennreal]
+  · simp [← ENNReal.coe_mul, measurable_mul.coe_nnreal_ennreal]
   · simp only [ENNReal.top_mul', ENNReal.coe_eq_zero]
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const
   · simp only [ENNReal.mul_top', ENNReal.coe_eq_zero]

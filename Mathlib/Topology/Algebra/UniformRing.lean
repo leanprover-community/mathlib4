@@ -141,7 +141,7 @@ def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
 
 theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α) :
     Completion.extensionHom f hf a = f a := by
-  simp only [Completion.extensionHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+  simp [Completion.extensionHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     UniformSpace.Completion.extension_coe <| uniformContinuous_addMonoidHom_of_continuous hf]
 
 instance topologicalRing : IsTopologicalRing (Completion α) where
@@ -275,7 +275,7 @@ noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* 
     exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
     convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 0 <;>
-    simp only [map_zero]
+    simp [map_zero]
   map_add' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous
     refine fun x y => DenseRange.induction_on₂ dr ?_ (fun a b => ?_) x y

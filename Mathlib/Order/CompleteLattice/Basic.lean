@@ -325,18 +325,18 @@ theorem Antitone.le_map_sInf [CompleteLattice β] {s : Set α} {f : α → β} (
 theorem OrderIso.map_iSup [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨆ i, x i) = ⨆ i, f (x i) :=
   eq_of_forall_ge_iff <| f.surjective.forall.2
-  fun x => by simp only [f.le_iff_le, iSup_le_iff]
+  fun x => by simp [f.le_iff_le, iSup_le_iff]
 
 @[to_dual]
 lemma OrderIso.map_iSup₂ [CompleteLattice β] (f : α ≃o β) (x : ∀ i, κ i → α) :
     f (⨆ i, ⨆ j, x i j) = ⨆ i, ⨆ j, f (x i j) :=
   eq_of_forall_ge_iff <| f.surjective.forall.2
-  fun x => by simp only [f.le_iff_le, iSup_le_iff]
+  fun x => by simp [f.le_iff_le, iSup_le_iff]
 
 @[to_dual]
 theorem OrderIso.map_sSup [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sSup s) = ⨆ a ∈ s, f a := by
-  simp only [sSup_eq_iSup, OrderIso.map_iSup]
+  simp [sSup_eq_iSup, OrderIso.map_iSup]
 
 @[to_dual le_iInf_comp]
 theorem iSup_comp_le (f : ι' → α) (g : ι → ι') : ⨆ x, f (g x) ≤ ⨆ y, f y :=
@@ -397,7 +397,7 @@ theorem iSup_comm {f : ι → ι' → α} : ⨆ (i) (j), f i j = ⨆ (j) (i), f 
 theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
     (f : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → α) :
     ⨆ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨆ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
-  simp only [@iSup_comm _ (κ₁ _), @iSup_comm _ ι₁]
+  simp [@iSup_comm _ (κ₁ _), @iSup_comm _ ι₁]
 
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_left {b : ι} {f : ∀ x : ι, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
@@ -648,13 +648,13 @@ variable {ι : Type*} [PartialOrder ι] (f : ι → α) (i : ι)
 theorem biSup_le_eq_sup : (⨆ j ≤ i, f j) = (⨆ j < i, f j) ⊔ f i := by
   rw [iSup_split_single _ i]
   -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
-  simp only [le_refl, iSup_pos, iSup_and', lt_iff_le_and_ne, and_comm, sup_comm]
+  simp [le_refl, iSup_pos, iSup_and', lt_iff_le_and_ne, and_comm, sup_comm]
 
 @[to_dual (dont_translate := ι)]
 theorem biSup_ge_eq_sup : (⨆ j ≥ i, f j) = f i ⊔ (⨆ j > i, f j) := by
   rw [iSup_split_single _ i]
   -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
-  simp only [ge_iff_le, le_refl, iSup_pos, ne_comm, iSup_and', gt_iff_lt, lt_iff_le_and_ne,
+  simp [ge_iff_le, le_refl, iSup_pos, ne_comm, iSup_and', gt_iff_lt, lt_iff_le_and_ne,
     and_comm]
 
 end le
@@ -670,7 +670,7 @@ theorem isLUB_biSup {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, 
 
 @[to_dual]
 theorem iSup_sigma {p : β → Type*} {f : Sigma p → α} : ⨆ x, f x = ⨆ (i) (j), f ⟨i, j⟩ :=
-  eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Sigma.forall]
+  eq_of_forall_ge_iff fun c => by simp [iSup_le_iff, Sigma.forall]
 
 @[to_dual]
 lemma iSup_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
@@ -679,7 +679,7 @@ lemma iSup_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
 @[to_dual]
 lemma iSup_psigma (f : (Σ' i, κ i) → α) :
     ⨆ ij, f ij = ⨆ i, ⨆ j, f ⟨i, j⟩ :=
-  eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, PSigma.forall]
+  eq_of_forall_ge_iff fun c ↦ by simp [iSup_le_iff, PSigma.forall]
 
 @[to_dual]
 lemma iSup_psigma' (f : ∀ i, κ i → α) :
@@ -687,7 +687,7 @@ lemma iSup_psigma' (f : ∀ i, κ i → α) :
 
 @[to_dual]
 theorem iSup_prod {f : β × γ → α} : ⨆ x, f x = ⨆ (i) (j), f (i, j) :=
-  eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Prod.forall]
+  eq_of_forall_ge_iff fun c => by simp [iSup_le_iff, Prod.forall]
 
 @[to_dual]
 lemma iSup_prod' (f : β → γ → α) : (⨆ i, ⨆ j, f i j) = ⨆ x : β × γ, f x.1 x.2 :=
@@ -711,11 +711,11 @@ theorem iSup_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g 
 
 @[to_dual]
 theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
-  eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, iSup_le_iff, Sum.forall]
+  eq_of_forall_ge_iff fun c => by simp [sup_le_iff, iSup_le_iff, Sum.forall]
 
 @[to_dual]
 theorem iSup_option (f : Option β → α) : ⨆ o, f o = f none ⊔ ⨆ b, f (Option.some b) :=
-  eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, sup_le_iff, Option.forall]
+  eq_of_forall_ge_iff fun c => by simp [iSup_le_iff, sup_le_iff, Option.forall]
 
 /-- A version of `iSup_option` useful for rewriting right-to-left. -/
 @[to_dual /-- A version of `iInf_option` useful for rewriting right-to-left. -/]
@@ -728,7 +728,7 @@ dropped, without changing the result. -/
 can be dropped, without changing the result. -/, simp]
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
   by_cases! htriv : ∀ i, f i = ⊥
-  · simp only [iSup_bot, (funext htriv : f = _)]
+  · simp [iSup_bot, (funext htriv : f = _)]
   refine (iSup_comp_le f _).antisymm (iSup_mono' fun i => ?_)
   by_cases hi : f i = ⊥
   · rw [hi]

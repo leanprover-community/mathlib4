@@ -92,7 +92,7 @@ nonrec def even.ι : EvenHom Q (even Q) where
     Subtype.ext <|
       calc
         ι Q m₁ * ι Q m₂ * (ι Q m₂ * ι Q m₃) = ι Q m₁ * (ι Q m₂ * ι Q m₂ * ι Q m₃) := by
-          simp only [mul_assoc]
+          simp [mul_assoc]
         _ = Q m₂ • (ι Q m₁ * ι Q m₃) := by rw [Algebra.smul_def, ι_sq_scalar, Algebra.left_comm]
 
 instance : Inhabited (EvenHom Q (even Q)) :=

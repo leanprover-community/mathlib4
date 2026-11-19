@@ -62,7 +62,7 @@ noncomputable def zmultiplesEquivInt (ha : a ≠ 0) : zmultiples a ≃+ ℤ :=
 @[simp]
 theorem coe_zmultiplesEquivInt_symm_apply (ha : a ≠ 0) (n : ℤ) :
     ((zmultiplesEquivInt ha).symm n : A) = n • a := by
-  simp only [zmultiplesEquivInt, AddEquiv.symm_symm, AddEquiv.trans_apply,
+  simp [zmultiplesEquivInt, AddEquiv.symm_symm, AddEquiv.trans_apply,
     AddEquiv.addSubgroupCongr_apply, AddMonoidHom.ofInjective_apply, zmultiplesHom_apply]
 
 @[simp]

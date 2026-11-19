@@ -344,7 +344,7 @@ def associativity'Iso :
         obtain ⟨y, rfl⟩ := y.mk_surjective
         obtain ⟨z, rfl⟩ := z.mk_surjective
         dsimp
-        simp only [Category.comp_id, Category.id_comp, ← prod_id',
+        simp [Category.comp_id, Category.id_comp, ← prod_id',
           CategoryTheory.Functor.map_id, inverse_obj, inverse_map_mkHom_homMk_id]))
 
 variable {X Y Z} in

@@ -97,7 +97,7 @@ theorem ssubset_toFinset {s : Finset α} [Fintype t] : s ⊂ t.toFinset ↔ ↑s
 
 @[gcongr, mono]
 theorem toFinset_ssubset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
-  simp only [Finset.ssubset_def, toFinset_subset_toFinset, ssubset_def]
+  simp [Finset.ssubset_def, toFinset_subset_toFinset, ssubset_def]
 
 @[simp]
 theorem toFinset_subset [Fintype s] {t : Finset α} : s.toFinset ⊆ t ↔ s ⊆ t := by
@@ -110,7 +110,7 @@ alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 
 @[simp]
 theorem disjoint_toFinset [Fintype s] [Fintype t] :
-    Disjoint s.toFinset t.toFinset ↔ Disjoint s t := by simp only [← disjoint_coe, coe_toFinset]
+    Disjoint s.toFinset t.toFinset ↔ Disjoint s t := by simp [← disjoint_coe, coe_toFinset]
 
 @[simp]
 theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by

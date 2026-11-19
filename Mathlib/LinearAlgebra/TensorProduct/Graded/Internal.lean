@@ -305,7 +305,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] A ⊗[R] B))
     (by
       dsimp [Algebra.TensorProduct.one_def]
-      simp only [map_one, mul_one])
+      simp [map_one, mul_one])
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3
@@ -341,7 +341,7 @@ def liftEquiv :
     dsimp
     rw [← map_mul, ← map_mul F, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
       tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
-  left_inv fg := by ext <;> (dsimp; simp only [map_one, mul_one, one_mul])
+  left_inv fg := by ext <;> (dsimp; simp [map_one, mul_one, one_mul])
   right_inv F := by
     apply AlgHom.toLinearMap_injective
     ext

@@ -450,10 +450,10 @@ variable [LinearOrder α] {a b c : α} {x y : WithZero α}
 instance instLinearOrder : LinearOrder (WithZero α) := Lattice.toLinearOrder _
 
 protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
-  simp only [WithZero.coe_le_coe, le_max_iff]
+  simp [WithZero.coe_le_coe, le_max_iff]
 
 protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
-  simp only [WithZero.coe_le_coe, min_le_iff]
+  simp [WithZero.coe_le_coe, min_le_iff]
 
 theorem exists_ne_zero_and_le_and_le (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ z, z ≠ 0 ∧ z ≤ x ∧ z ≤ y :=

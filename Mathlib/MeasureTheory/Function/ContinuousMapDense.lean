@@ -117,7 +117,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     · simp [hgv hv, show x ∉ s from fun h => hv (hsv h)]
   have gc_support : (Function.support fun x : α => g x • c) ⊆ v := by
     refine Function.support_subset_iff'.2 fun x hx => ?_
-    simp only [hgv hx, Pi.zero_apply, zero_smul]
+    simp [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : MemLp (fun x => g x • c) p μ := by
     refine MemLp.smul ?_ (memLp_top_const _) (p := p) (q := ∞)
     have hv : MeasurableSet v := u_open.measurableSet.inter V_open.measurableSet
@@ -126,9 +126,9 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
         simp [lt_top_iff_ne_top, hμv.ne]
     refine (eLpNorm_mono g.continuous.aestronglyMeasurable fun x => ?_).trans_lt this
     by_cases hx : x ∈ v
-    · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
+    · simp [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
         indicator_of_mem, CStarRing.norm_one]
-    · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
+    · simp [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
   refine ⟨fun x ↦ g x • c, by fun_prop,
     (eLpNorm_mono (gc_mem.aestronglyMeasurable.sub
       (aestronglyMeasurable_const.indicator s_closed.measurableSet)) gc_bd).trans ?_, gc_bd0,
@@ -195,7 +195,7 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
         (∫ x, ‖f x - g x‖ ^ p ∂μ) ≤ ε ∧ Continuous g ∧ MemLp g (ENNReal.ofReal p) μ := by
   have I : 0 < ε ^ (1 / p) := Real.rpow_pos_of_pos hε _
   have A : ENNReal.ofReal (ε ^ (1 / p)) ≠ 0 := by
-    simp only [Ne, ENNReal.ofReal_eq_zero, not_le, I]
+    simp [Ne, ENNReal.ofReal_eq_zero, not_le, I]
   have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
   rcases hf.exists_hasCompactSupport_eLpNorm_sub_le ENNReal.coe_ne_top A with
     ⟨g, g_support, hg, g_cont, g_mem⟩
@@ -285,7 +285,7 @@ theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {
     ∃ g : α →ᵇ E, (∫ x, ‖f x - g x‖ ^ p ∂μ) ≤ ε ∧ MemLp g (ENNReal.ofReal p) μ := by
   have I : 0 < ε ^ (1 / p) := Real.rpow_pos_of_pos hε _
   have A : ENNReal.ofReal (ε ^ (1 / p)) ≠ 0 := by
-    simp only [Ne, ENNReal.ofReal_eq_zero, not_le, I]
+    simp [Ne, ENNReal.ofReal_eq_zero, not_le, I]
   have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
   rcases hf.exists_boundedContinuous_eLpNorm_sub_le ENNReal.coe_ne_top A with ⟨g, hg, g_mem⟩
   change eLpNorm _ (ENNReal.ofReal p) _ ≤ _ at hg

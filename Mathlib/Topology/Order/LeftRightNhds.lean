@@ -115,7 +115,7 @@ theorem nhdsGT_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a �
   · simp [ha, ha.isMax.Ioi_eq]
   · simp only [ha, false_or]
     rw [isTop_iff_isMax, not_isMax_iff] at ha
-    simp only [(nhdsGT_basis_of_exists_gt ha).eq_bot_iff, covBy_iff_Ioo_eq]
+    simp [(nhdsGT_basis_of_exists_gt ha).eq_bot_iff, covBy_iff_Ioo_eq]
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u`. -/
@@ -327,7 +327,7 @@ theorem LinearOrderedCommGroup.tendsto_nhds {x : Filter β} {a : α} :
 @[to_additive]
 theorem eventually_mabs_div_lt (a : α) {ε : α} (hε : 1 < ε) : ∀ᶠ x in 𝓝 a, |x / a|ₘ < ε :=
   (nhds_eq_iInf_mabs_div a).symm ▸
-    mem_iInf_of_mem ε (mem_iInf_of_mem hε <| by simp only [mabs_div_comm, mem_principal_self])
+    mem_iInf_of_mem ε (mem_iInf_of_mem hε <| by simp [mabs_div_comm, mem_principal_self])
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atTop` then `f * g` tends to `atTop`. -/
@@ -379,7 +379,7 @@ theorem nhds_basis_Ioo_one_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => Ioo (a / ε) (a * ε) := by
   refine (nhds_basis_mabs_div_lt a).congr (fun _ => Iff.rfl) fun ε _ => ?_
   ext b
-  simp only [mem_ofPred_eq, mem_Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul,
+  simp [mem_ofPred_eq, mem_Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul,
     div_lt_comm]
 
 @[to_additive]

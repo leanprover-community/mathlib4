@@ -206,7 +206,7 @@ theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x :=
 
 @[to_additive (attr := simp)]
 theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y := by
-  simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
+  simp [SemiconjBy, ← op_mul, op_inj, eq_comm]
 
 @[to_additive (attr := simp, nolint simpComm)]
 theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :

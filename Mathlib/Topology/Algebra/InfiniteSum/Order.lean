@@ -87,8 +87,8 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
     (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
   apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
-    (by simp only [Subtype.range_coe_subtype, Set.ofPred_mem_eq, h, implies_true])
-    (by simp only [le_refl, implies_true])
+    (by simp [Subtype.range_coe_subtype, Set.ofPred_mem_eq, h, implies_true])
+    (by simp [le_refl, implies_true])
     (by apply hf.subtype)
   apply hf
 
@@ -436,7 +436,7 @@ theorem tsum_comp_le_tsum_of_injective {f : ι → ι'} (hf : Injective f) (g : 
 
 theorem tsum_le_tsum_comp_of_surjective {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ∑' y, g y ≤ ∑' x, g (f x) :=
-  calc ∑' y, g y = ∑' y, g (f (surjInv hf y)) := by simp only [surjInv_eq hf]
+  calc ∑' y, g y = ∑' y, g (f (surjInv hf y)) := by simp [surjInv_eq hf]
     _ ≤ ∑' x, g (f x) := tsum_comp_le_tsum_of_injective (injective_surjInv hf) (g ∘ f)
 
 theorem tsum_comp_eq_tsum_of_bijective {f : ι → ι'} (hf : f.Bijective) (g : ι' → α) :
@@ -571,8 +571,8 @@ theorem multipliable_mabs_iff [CommGroup α] [LinearOrder α] [IsOrderedMonoid �
   calc (Multipliable fun x ↦ mabs (f x)) ↔
       (Multipliable fun x : s ↦ mabs (f x)) ∧ Multipliable fun x : ↑sᶜ ↦ mabs (f x) :=
         multipliable_subtype_and_compl.symm
-  _ ↔ (Multipliable fun x : s ↦ f x) ∧ Multipliable fun x : ↑sᶜ ↦ (f x)⁻¹ := by simp only [h1, h2]
-  _ ↔ Multipliable f := by simp only [multipliable_inv_iff, multipliable_subtype_and_compl]
+  _ ↔ (Multipliable fun x : s ↦ f x) ∧ Multipliable fun x : ↑sᶜ ↦ (f x)⁻¹ := by simp [h1, h2]
+  _ ↔ Multipliable f := by simp [multipliable_inv_iff, multipliable_subtype_and_compl]
 
 alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 

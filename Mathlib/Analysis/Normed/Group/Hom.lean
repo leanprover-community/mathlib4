@@ -395,7 +395,7 @@ theorem neg_apply (f : NormedAddGroupHom V₁ V₂) (v : V₁) :
   rfl
 
 theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
-  simp only [norm_def, coe_neg, norm_neg, Pi.neg_apply]
+  simp [norm_def, coe_neg, norm_neg, Pi.neg_apply]
 
 /-! ### Subtraction of normed group homs -/
 
@@ -539,7 +539,7 @@ theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ 
   map_sum coeAddHom f s
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) (v : V₁) :
-    (∑ i ∈ s, f i) v = ∑ i ∈ s, f i v := by simp only [coe_sum, Finset.sum_apply]
+    (∑ i ∈ s, f i) v = ∑ i ∈ s, f i v := by simp [coe_sum, Finset.sum_apply]
 
 /-! ### Module structure on normed group homs -/
 
@@ -590,7 +590,7 @@ def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ 
     (by
       intros
       ext
-      simp only [comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
+      simp [comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
         AddMonoidHom.mk'_apply, coe_add])
 
 @[simp]
@@ -650,7 +650,7 @@ the corestriction of `f` to the kernel of `g`. -/
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
   toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩
-  map_add' v w := by simp only [map_add, AddMemClass.mk_add_mk]
+  map_add' v w := by simp [map_add, AddMemClass.mk_add_mk]
   bound' := f.bound'
 
 @[simp]
@@ -785,7 +785,7 @@ def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
         rw [NormedAddGroupHom.sub_apply, sub_eq_zero, ← comp_apply, h, comp_apply]⟩
   map_add' v₁ v₂ := by
     ext
-    simp only [map_add, AddSubgroup.coe_add]
+    simp [map_add, AddSubgroup.coe_add]
   bound' := by
     obtain ⟨C, _C_pos, hC⟩ := φ.bound
     exact ⟨C, hC⟩
@@ -812,7 +812,7 @@ def map (φ : NormedAddGroupHom V₁ V₂) (ψ : NormedAddGroupHom W₁ W₂) (h
     (hg : ψ.comp g₁ = g₂.comp φ) : NormedAddGroupHom (f₁.equalizer g₁) (f₂.equalizer g₂) :=
   lift (φ.comp <| ι _ _) <| by
     simp only [← comp_assoc, ← hf, ← hg]
-    simp only [comp_assoc, comp_ι_eq f₁ g₁]
+    simp [comp_assoc, comp_ι_eq f₁ g₁]
 
 variable {φ : NormedAddGroupHom V₁ V₂} {ψ : NormedAddGroupHom W₁ W₂}
 variable {φ' : NormedAddGroupHom V₂ V₃} {ψ' : NormedAddGroupHom W₂ W₃}

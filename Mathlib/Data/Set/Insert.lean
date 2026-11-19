@@ -236,7 +236,7 @@ theorem forall_mem_singleton {P : α → Prop} {a : α} :
 
 @[simp]
 theorem singleton_inter_nonempty : ({a} ∩ s).Nonempty ↔ a ∈ s := by
-  simp only [Set.Nonempty, mem_inter_iff, mem_singleton_iff, exists_eq_left]
+  simp [Set.Nonempty, mem_inter_iff, mem_singleton_iff, exists_eq_left]
 
 @[simp]
 theorem inter_singleton_nonempty : (s ∩ {a}).Nonempty ↔ a ∈ s := by
@@ -343,7 +343,7 @@ lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b := by
 
 @[simp]
 theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
-  simp only [Set.disjoint_left, Set.mem_insert_iff, forall_eq_or_imp]
+  simp [Set.disjoint_left, Set.mem_insert_iff, forall_eq_or_imp]
 
 @[simp]
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t := by

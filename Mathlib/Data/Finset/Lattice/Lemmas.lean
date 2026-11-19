@@ -74,15 +74,15 @@ lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
 
 @[simp, grind =]
 theorem insert_union (a : α) (s t : Finset α) : insert a s ∪ t = insert a (s ∪ t) := by
-  simp only [insert_eq, union_assoc]
+  simp [insert_eq, union_assoc]
 
 @[simp, grind =]
 theorem union_insert (a : α) (s t : Finset α) : s ∪ insert a t = insert a (s ∪ t) := by
-  simp only [insert_eq, union_left_comm]
+  simp [insert_eq, union_left_comm]
 
 theorem insert_union_distrib (a : α) (s t : Finset α) :
     insert a (s ∪ t) = insert a s ∪ insert a t := by
-  simp only [insert_union, union_insert, insert_idem]
+  simp [insert_union, union_insert, insert_idem]
 
 /-- To prove a relation on pairs of `Finset X`, it suffices to show that it is
   * symmetric,
@@ -112,7 +112,7 @@ theorem insert_inter_of_mem {s₁ s₂ : Finset α} {a : α} (h : a ∈ s₂) :
     insert a s₁ ∩ s₂ = insert a (s₁ ∩ s₂) :=
   ext fun x => by
     have : x = a ∨ x ∈ s₂ ↔ x ∈ s₂ := or_iff_right_of_imp <| by rintro rfl; exact h
-    simp only [mem_inter, mem_insert, or_and_left, this]
+    simp [mem_inter, mem_insert, or_and_left, this]
 
 @[simp]
 theorem inter_insert_of_mem {s₁ s₂ : Finset α} {a : α} (h : a ∈ s₁) :
@@ -123,7 +123,7 @@ theorem insert_inter_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₂)
     insert a s₁ ∩ s₂ = s₁ ∩ s₂ :=
   ext fun x => by
     have : ¬(x = a ∧ x ∈ s₂) := by rintro ⟨rfl, H⟩; exact h H
-    simp only [mem_inter, mem_insert, or_and_right, this, false_or]
+    simp [mem_inter, mem_insert, or_and_right, this, false_or]
 
 @[simp]
 theorem inter_insert_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₁) :

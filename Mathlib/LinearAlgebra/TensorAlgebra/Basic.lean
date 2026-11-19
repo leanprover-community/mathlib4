@@ -168,7 +168,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem lift_unique {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
     (g : TensorAlgebra R M →ₐ[R] A) : g.toLinearMap.comp (ι R) = f ↔ g = lift R f := by
   rw [← (lift R).symm_apply_eq]
-  simp only [lift, Equiv.coe_fn_symm_mk]
+  simp [lift, Equiv.coe_fn_symm_mk]
 
 -- Marking `TensorAlgebra` irreducible makes `Ring` instances inaccessible on quotients.
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241

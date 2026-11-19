@@ -306,7 +306,7 @@ theorem existsUnique_iff_card_one {α} [Fintype α] (p : α → Prop) [Decidable
     (∃! a : α, p a) ↔ #{x | p x} = 1 := by
   rw [Finset.card_eq_one]
   refine exists_congr fun x => ?_
-  simp only [Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff, and_comm,
+  simp [Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff, and_comm,
     mem_filter_univ]
 
 nonrec theorem two_lt_card_iff : 2 < card α ↔ ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
@@ -404,7 +404,7 @@ theorem Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x /
     rw [Fintype.card_of_subtype (Set.toFinset { x | p x }ᶜ), Set.toFinset_compl,
       Finset.card_compl, Fintype.card_of_subtype] <;>
     · intro
-      simp only [Set.mem_toFinset, Set.mem_compl_iff, Set.mem_ofPred]
+      simp [Set.mem_toFinset, Set.mem_compl_iff, Set.mem_ofPred]
 
 theorem Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x // p x }]
     [Fintype { x // q x }] : Fintype.card { x // p x } ≤ Fintype.card { x // q x } :=
@@ -416,7 +416,7 @@ theorem Fintype.card_compl_eq_card_compl [Finite α] (p q : α → Prop) [Fintyp
     (h : Fintype.card { x // p x } = Fintype.card { x // q x }) :
     Fintype.card { x // ¬p x } = Fintype.card { x // ¬q x } := by
   cases nonempty_fintype α
-  simp only [Fintype.card_subtype_compl, h]
+  simp [Fintype.card_subtype_compl, h]
 
 theorem Fintype.card_quotient_le [Fintype α] (s : Setoid α)
     [DecidableRel ((· ≈ ·) : α → α → Prop)] : Fintype.card (Quotient s) ≤ Fintype.card α :=

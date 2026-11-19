@@ -63,7 +63,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
   rcases Metric.mem_closure_range_iff.1 (H a) (e / 2) (half_pos epos) with ⟨n, hn⟩
   -- Second step: use the norm control at index n to conclude
   have C : dist b (x n) - dist a (x n) = embeddingOfSubset x b n - embeddingOfSubset x a n := by
-    simp only [embeddingOfSubset_coe, sub_sub_sub_cancel_right]
+    simp [embeddingOfSubset_coe, sub_sub_sub_cancel_right]
   have :=
     calc
       dist a b ≤ dist a (x n) + dist (x n) b := dist_triangle _ _ _

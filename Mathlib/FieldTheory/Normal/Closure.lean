@@ -231,7 +231,7 @@ lemma le_normalClosure : K ≤ normalClosure F K L :=
   K.fieldRange_val.symm.trans_le K.val.fieldRange_le_normalClosure
 
 lemma normalClosure_of_normal [Normal F K] : normalClosure F K L = K := by
-  simp only [normalClosure_def, AlgHom.fieldRange_of_normal, iSup_const]
+  simp [normalClosure_def, AlgHom.fieldRange_of_normal, iSup_const]
 
 variable [Normal F L]
 

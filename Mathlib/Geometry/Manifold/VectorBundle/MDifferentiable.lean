@@ -51,7 +51,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
   · simp_rw [Function.comp, OpenPartialHomeomorph.coe_toPartialEquiv, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
-  · simp only [mfld_simps]
+  · simp [mfld_simps]
 
 /-- Characterization of differentiable functions into a vector bundle.
 Version at a point -/

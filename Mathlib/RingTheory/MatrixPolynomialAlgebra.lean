@@ -111,7 +111,7 @@ theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ
     (matPolyEquiv.symm p i j).coeff k = p.coeff k i j := by
   have t : p = matPolyEquiv (matPolyEquiv.symm p) := by simp
   conv_rhs => rw [t]
-  simp only [matPolyEquiv_coeff_apply]
+  simp [matPolyEquiv_coeff_apply]
 
 theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv (p • (1 : Matrix n n R[X])) = p.map (algebraMap R (Matrix n n R)) := by
@@ -162,7 +162,7 @@ theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
 lemma eval_det_add_X_smul {R : Type*} [CommRing R] (A : Matrix n n R[X]) (M : Matrix n n R) :
     (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by
   simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, map_mul]
-  simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
+  simp [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
     mul_zero, add_zero]
 
 variable {A}

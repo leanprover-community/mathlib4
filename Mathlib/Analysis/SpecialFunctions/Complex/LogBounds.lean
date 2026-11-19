@@ -48,7 +48,7 @@ lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
         (fun _ ht ↦
           hasDerivAt_log <|
             StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using 1
-  simp only [log_one, sub_zero]
+  simp [log_one, sub_zero]
 
 /-- Represent `log (1 - z)⁻¹` as an integral over the unit interval -/
 lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
@@ -68,7 +68,7 @@ def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j ∈ Finset.range n, (-1
 
 lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
   funext
-  simp only [logTaylor, Finset.range_zero,
+  simp [logTaylor, Finset.range_zero,
     Finset.sum_empty]
 
 lemma logTaylor_succ (n : ℕ) :
@@ -155,8 +155,8 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
       continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
     convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
-    · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
-    · simp only [f', real_smul, zero_add,
+    · simp [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
+    · simp [f', real_smul, zero_add,
         smul_eq_mul]
   unfold f at H
   simp only [H, norm_mul]

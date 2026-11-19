@@ -299,10 +299,10 @@ theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
 
 theorem subset_iff_notMem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
-  simp only [subset_def, not_imp_not]
+  simp [subset_def, not_imp_not]
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
-  simp only [subset_def, not_forall, exists_prop]
+  simp [subset_def, not_forall, exists_prop]
 
 theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
@@ -469,7 +469,7 @@ theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
 /-- See also `Set.ne_empty_iff_nonempty`. -/
 @[push]
 theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
-  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
+  simp [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
 @[simp, push]

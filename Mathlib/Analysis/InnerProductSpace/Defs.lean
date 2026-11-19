@@ -239,11 +239,11 @@ theorem inner_add_left (x y z : F) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
   c.add_left _ _ _
 
 theorem inner_add_right (x y z : F) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ := by
-  rw [← inner_conj_symm, inner_add_left, map_add]; simp only [inner_conj_symm]
+  rw [← inner_conj_symm, inner_add_left, map_add]; simp [inner_conj_symm]
 
 theorem ofReal_normSq_eq_inner_self (x : F) : (normSqF x : 𝕜) = ⟪x, x⟫ := by
   rw [ext_iff]
-  exact ⟨by simp only [ofReal_re, normSq], by simp only [inner_self_im, ofReal_im]⟩
+  exact ⟨by simp [ofReal_re, normSq], by simp [inner_self_im, ofReal_im]⟩
 
 theorem inner_re_symm (x y : F) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← inner_conj_symm, conj_re]
 
@@ -254,14 +254,14 @@ theorem inner_smul_left (x y : F) {r : 𝕜} : ⟪r • x, y⟫ = r† * ⟪x, y
 
 theorem inner_smul_right (x y : F) {r : 𝕜} : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
   rw [← inner_conj_symm, inner_smul_left]
-  simp only [conj_conj, inner_conj_symm, map_mul]
+  simp [conj_conj, inner_conj_symm, map_mul]
 
 theorem inner_zero_left (x : F) : ⟪0, x⟫ = 0 := by
   rw [← zero_smul 𝕜 (0 : F), inner_smul_left]
-  simp only [zero_mul, map_zero]
+  simp [zero_mul, map_zero]
 
 theorem inner_zero_right (x : F) : ⟪x, 0⟫ = 0 := by
-  rw [← inner_conj_symm, inner_zero_left]; simp only [map_zero]
+  rw [← inner_conj_symm, inner_zero_left]; simp [map_zero]
 
 theorem inner_self_of_eq_zero {x : F} : x = 0 → ⟪x, x⟫ = 0 := by
   rintro rfl
@@ -284,7 +284,7 @@ theorem inner_neg_left (x y : F) : ⟪-x, y⟫ = -⟪x, y⟫ := by
   simp
 
 theorem inner_neg_right (x y : F) : ⟪x, -y⟫ = -⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_neg_left]; simp only [map_neg, inner_conj_symm]
+  rw [← inner_conj_symm, inner_neg_left]; simp [map_neg, inner_conj_symm]
 
 theorem inner_sub_left (x y z : F) : ⟪x - y, z⟫ = ⟪x, z⟫ - ⟪y, z⟫ := by
   simp [sub_eq_add_neg, inner_add_left, inner_neg_left]
@@ -323,7 +323,7 @@ lemma cauchy_schwarz_aux' (x y : F) (t : ℝ) : 0 ≤ normSqF x * t * t + 2 * re
       + ⟪y, (ofReal t : 𝕜) • x⟫ + ⟪y, y⟫) := by rw [inner_add_add_self ((ofReal t : 𝕜) • x) y]
   _ = re ⟪(ofReal t : 𝕜) • x, (ofReal t : 𝕜) • x⟫
       + re ⟪(ofReal t : 𝕜) • x, y⟫ + re ⟪y, (ofReal t : 𝕜) • x⟫ + re ⟪y, y⟫ := by
-      simp only [map_add]
+      simp [map_add]
   _ = normSq x * t * t + re (⟪x, y⟫ * t) + re (⟪y, x⟫ * t) + re ⟪y, y⟫ := by rw
     [re_inner_smul_ofReal_smul_self, inner_smul_ofReal_left, inner_smul_ofReal_right]
   _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + re ⟪y, y⟫ := by rw [mul_comm ⟪x, y⟫ _,
@@ -400,8 +400,8 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := fun x => √(re ⟪x, x⟫)
-      map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
-      neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
+      map_zero' := by simp [sqrt_zero, inner_zero_right, map_zero]
+      neg' := fun x => by simp [inner_neg_left, neg_neg, inner_neg_right]
       add_le' := fun x y => by
         have h₁ : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := norm_inner_le_norm _ _
         have h₂ : re ⟪x, y⟫ ≤ ‖⟪x, y⟫‖ := re_le_norm _
@@ -460,7 +460,7 @@ theorem inner_self_eq_zero {x : F} : ⟪x, x⟫ = 0 ↔ x = 0 :=
 
 theorem normSq_eq_zero {x : F} : normSqF x = 0 ↔ x = 0 :=
   Iff.trans
-    (by simp only [normSq, ext_iff, map_zero, inner_self_im, and_true])
+    (by simp [normSq, ext_iff, map_zero, inner_self_im, and_true])
     (inner_self_eq_zero (𝕜 := 𝕜))
 
 theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
@@ -473,8 +473,8 @@ attribute [local instance] toNorm
 def toNormedAddCommGroup : NormedAddCommGroup F :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := fun x => √(re ⟪x, x⟫)
-      map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
-      neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
+      map_zero' := by simp [sqrt_zero, inner_zero_right, map_zero]
+      neg' := fun x => by simp [inner_neg_left, neg_neg, inner_neg_right]
       add_le' := fun x y => by
         have h₁ : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := norm_inner_le_norm _ _
         have h₂ : re ⟪x, y⟫ ≤ ‖⟪x, y⟫‖ := re_le_norm _

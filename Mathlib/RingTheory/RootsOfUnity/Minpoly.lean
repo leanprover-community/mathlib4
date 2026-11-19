@@ -42,7 +42,7 @@ theorem isIntegral (hpos : 0 < n) : IsIntegral ℤ μ := by
   use X ^ n - 1
   constructor
   · exact monic_X_pow_sub_C 1 (ne_of_lt hpos).symm
-  · simp only [((IsPrimitiveRoot.iff_def μ n).mp h).left, eval₂_one, eval₂_X_pow, eval₂_sub,
+  · simp [((IsPrimitiveRoot.iff_def μ n).mp h).left, eval₂_one, eval₂_X_pow, eval₂_sub,
       sub_self]
 
 section IsDomain
@@ -54,7 +54,7 @@ theorem minpoly_dvd_x_pow_sub_one : minpoly ℤ μ ∣ X ^ n - 1 := by
   rcases n.eq_zero_or_pos with (rfl | h0)
   · simp
   apply minpoly.isIntegrallyClosed_dvd (isIntegral h h0)
-  simp only [((IsPrimitiveRoot.iff_def μ n).mp h).left, aeval_X_pow,
+  simp [((IsPrimitiveRoot.iff_def μ n).mp h).left, aeval_X_pow,
     aeval_one, map_sub, sub_self]
 
 /-- The reduction modulo `p` of the minimal polynomial of a root of unity `μ` is separable. -/
@@ -62,7 +62,7 @@ theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     Separable (map (Int.castRingHom (ZMod p)) (minpoly ℤ μ)) := by
   have hdvd : map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣ X ^ n - 1 := by
     convert! _root_.map_dvd (mapRingHom (Int.castRingHom (ZMod p))) (minpoly_dvd_x_pow_sub_one h)
-    simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
+    simp [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
   refine Separable.of_dvd (separable_X_pow_sub_C 1 ?_ one_ne_zero) hdvd
   by_contra hzero
   exact hdiv ((ZMod.natCast_eq_zero_iff n p).1 hzero)
@@ -154,7 +154,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   · replace hunit := degree_eq_zero_of_isUnit hunit
     rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom (ZMod p)) _] at hunit
     · exact (minpoly.degree_pos (isIntegral h hpos)).ne' hunit
-    simp only [Pmonic, eq_intCast, Monic.leadingCoeff, Int.cast_one, Ne, not_false_iff,
+    simp [Pmonic, eq_intCast, Monic.leadingCoeff, Int.cast_one, Ne, not_false_iff,
       one_ne_zero]
 
 /-- If `m : ℕ` is coprime with `n`,

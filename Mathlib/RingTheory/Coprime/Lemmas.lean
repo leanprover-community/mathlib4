@@ -111,7 +111,7 @@ theorem Finset.prod_dvd_of_coprime
       exact Hs (by simp) (by simp [hir]) (ne_of_mem_of_not_mem hir har).symm
     · exact Hs1 a (Finset.mem_insert_self a r)
     · refine ih (Hs.mono ?_) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi
-      simp only [Finset.coe_insert, Set.subset_insert]
+      simp [Finset.coe_insert, Set.subset_insert]
 
 theorem Fintype.prod_dvd_of_coprime [Fintype I] (Hs : Pairwise (IsCoprime on s))
     (Hs1 : ∀ i, s i ∣ z) : (∏ x, s x) ∣ z :=
@@ -177,7 +177,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
     (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
-  simp only [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
+  simp [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
@@ -259,7 +259,7 @@ theorem Finset.prod_dvd_of_isRelPrime :
                 rintro rfl
                 exact har hir).mul_dvd
           (Hs1 a aux1) (ih (Hs.mono ?_) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi)
-      simp only [Finset.coe_insert, Set.subset_insert])
+      simp [Finset.coe_insert, Set.subset_insert])
 
 theorem Fintype.prod_dvd_of_isRelPrime [Fintype I] (Hs : Pairwise (IsRelPrime on s))
     (Hs1 : ∀ i, s i ∣ z) : (∏ x, s x) ∣ z :=

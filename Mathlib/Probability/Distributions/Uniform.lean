@@ -248,7 +248,7 @@ theorem uniformOfFinset_apply :
       refine Finset.sum_congr rfl fun x hx ↦ ?_
       split_ifs with hx' <;> simp_all
     _ = #{x ∈ s | x ∈ t} / #s := by
-        simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
+        simp [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.toOuterMeasure_uniformOfFinset_apply :=
   uniformOfFinset_apply

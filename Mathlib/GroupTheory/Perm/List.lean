@@ -285,7 +285,7 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
     congrm Finset.card ?_
     rw [← Finset.coe_inj, ← support_formPerm_of_nodup' _ hd (by simp), ←
       support_formPerm_of_nodup' _ hd' (by simp)]
-    simp only [h]
+    simp [h]
   use n
   apply List.ext_getElem
   · rw [length_rotate, hl]

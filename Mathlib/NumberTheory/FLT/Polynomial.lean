@@ -226,7 +226,7 @@ theorem Polynomial.flt
   rw [← sub_eq_zero, ← one_mul (a ^ n), ← one_mul (b ^ n), ← one_mul (c ^ n), sub_eq_add_neg,
     ← neg_mul] at heq
   have hone : (1 : k[X]) = C 1 := by rfl
-  have hneg_one : (-1 : k[X]) = C (-1) := by simp only [map_neg, map_one]
+  have hneg_one : (-1 : k[X]) = C (-1) := by simp [map_neg, map_one]
   simp_rw [hneg_one, hone] at heq
   apply flt_catalan hn'.ne' hn'.ne' hn'.ne' _
     chn chn chn ha hb hc hab one_ne_zero one_ne_zero (neg_ne_zero.mpr one_ne_zero) heq

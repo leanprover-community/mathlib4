@@ -367,7 +367,7 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
       refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
       obtain rfl : k₂ = ⊥ := by simpa using h₂
       obtain rfl : k₁ = ⊥ := by simpa using h₁₂
-      apply mapEq_refl _ _ (by simp only [obj_bot])
+      apply mapEq_refl _ _ (by simp [obj_bot])
     | succ j hj₁ hj₂ =>
       intro iter₁ iter₂
       refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
@@ -380,21 +380,21 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
         · exact this _ _ _ _ ((Order.lt_succ_iff_of_not_isMax hj₁).1 h₂)
         · by_cases h' : k₁ ≤ j
           · apply mapEq_trans _ h₀ (this k₁ j h' h₀ (by simp))
-            simp only [MapEq, ← arrowSucc_def _ _ (Order.lt_succ_of_not_isMax hj₁),
+            simp [MapEq, ← arrowSucc_def _ _ (Order.lt_succ_of_not_isMax hj₁),
               arrowSucc_eq, hsucc]
           · simp only [not_le] at h'
             obtain rfl : k₁ = Order.succ j := le_antisymm h₁₂
               ((Order.succ_le_iff_of_not_isMax hj₁).2 h')
             rw [MapEq, arrowMap_refl, arrowMap_refl,
               obj_succ _ _ h', obj_succ _ _ h', hsucc]
-      simp only [MapEq, ← arrowMap_restrictionLE _ (Order.le_succ j) _ _ _ h, hj₂]
+      simp [MapEq, ← arrowMap_restrictionLE _ (Order.le_succ j) _ _ _ h, hj₂]
     | isSuccLimit j h₁ h₂ =>
       intro iter₁ iter₂
       refine ext (fun k₁ k₂ h₁₂ h₃ ↦ ?_)
       wlog h₄ : k₂ < j generalizing k₁ k₂; swap
       · have := h₂ k₂ h₄ (iter₁.trunc h₄.le) (iter₂.trunc h₄.le)
         simp at this
-        simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
+        simp [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
       · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
         have : restrictionLT iter₁.F le_rfl = restrictionLT iter₂.F le_rfl :=
           Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.2)
@@ -403,7 +403,7 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
           simp_rw [arrowMap_limit _ _ h₁ _ _ h₅, this]
         · obtain rfl : k₁ = j := le_antisymm h₁₂ (by simpa using h₅)
           apply mapEq_refl
-          simp only [obj_limit _ _ h₁, this]
+          simp [obj_limit _ _ h₁, this]
 
 set_option backward.defeqAttrib.useBackward true in
 lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)

@@ -171,7 +171,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
       · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
       · exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
   · exact h3
-  · simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I (g x₀)) h2]
+  · simp [Function.comp_def, PartialEquiv.left_inv (extChartAt I (g x₀)) h2]
   · exact hx.mdifferentiableWithinAt one_ne_zero
   · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
     · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
@@ -412,7 +412,7 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
   have N : I.symm ⁻¹' (chartAt H x).target ∈ 𝓝 (I ((chartAt H x) x)) := by
     apply IsOpen.mem_nhds
     · apply (OpenPartialHomeomorph.open_target _).preimage I.continuous_invFun
-    · simp only [mfld_simps]
+    · simp [mfld_simps]
   have A : MDiffAt (fun x ↦ TotalSpace.mk' E (x : M) (0 : TangentSpace I x)) x :=
     haveI : CMDiff 1 (zeroSection E (TangentSpace I : M → Type _)) :=
       Bundle.contMDiff_zeroSection 𝕜 (TangentSpace I : M → Type _)
@@ -433,8 +433,8 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
   congr 1
   refine fderivWithin_congr (fun y hy ↦ ?_) ?_
   · simp only [mfld_simps] at hy
-    simp only [hy, mfld_simps]
-  · simp only [mfld_simps]
+    simp [hy, mfld_simps]
+  · simp [mfld_simps]
 
 end TangentBundle
 

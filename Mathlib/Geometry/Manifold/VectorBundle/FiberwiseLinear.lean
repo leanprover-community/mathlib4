@@ -235,7 +235,7 @@ private theorem mem_aux {e : OpenPartialHomeomorph (B × F) (B × F)} {n : ℕ�
         (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x).symm : B → F →L[𝕜] F) U),
           e.EqOnSource
             (FiberwiseLinear.openPartialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
-  simp only [mem_iUnion, mem_ofPred_eq]
+  simp [mem_iUnion, mem_ofPred_eq]
 
 variable (F B IB)
 
@@ -276,7 +276,7 @@ def contMDiffFiberwiseLinear (n : ℕ∞ω) : StructureGroupoid (B × F) where
     simp_rw [mem_aux]
     refine ⟨fun _ ↦ ContinuousLinearEquiv.refl 𝕜 F, univ, isOpen_univ, contMDiffOn_const,
       contMDiffOn_const, ⟨?_, fun b _hb ↦ rfl⟩⟩
-    simp only [FiberwiseLinear.openPartialHomeomorph, OpenPartialHomeomorph.refl_partialEquiv,
+    simp [FiberwiseLinear.openPartialHomeomorph, OpenPartialHomeomorph.refl_partialEquiv,
       PartialEquiv.refl_source, univ_prod_univ]
   locality' := by
     -- the hard work has been extracted to `locality_aux₁` and `locality_aux₂`

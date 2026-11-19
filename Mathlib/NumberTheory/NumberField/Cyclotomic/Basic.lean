@@ -285,7 +285,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K
     simpa only [zero_add, pow_one, AddSubgroupClass.coe_sub, OneMemClass.coe_one,
         pow_zero]
       using! hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat
-        (by simp only [zero_add, pow_one, Nat.ofNat_pos]))
+        (by simp [zero_add, pow_one, Nat.ofNat_pos]))
   convert Int.prime_two
   apply RingHom.injective_int (algebraMap ℤ ℚ)
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), algebraMap_int_eq]
@@ -434,7 +434,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
     simp [integralPowerBasisOfPrimePow_dim, pB, Nat.totient_prime_pow hp.out (Nat.zero_lt_succ k)]
   replace hdim : 1 < pB.dim := by
     rw [Nat.one_lt_iff_ne_zero_and_ne_one, hdim]
-    refine ⟨by simp only [ne_eq, mul_eq_zero, NeZero.ne _, Nat.sub_eq_zero_iff_le, false_or,
+    refine ⟨by simp [ne_eq, mul_eq_zero, NeZero.ne _, Nat.sub_eq_zero_iff_le, false_or,
       not_le, Nat.Prime.one_lt hp.out], ne_of_gt ?_⟩
     by_cases hk : k = 0
     · simp only [hk, zero_add, pow_one, pow_zero, one_mul, Nat.lt_sub_iff_add_lt,

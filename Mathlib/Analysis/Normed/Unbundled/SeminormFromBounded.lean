@@ -217,8 +217,8 @@ theorem seminormFromBounded_one (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
       use (1 : ℝ)
       rintro r ⟨y, rfl⟩
       by_cases hy : f y = 0
-      · simp only [hy, div_zero, zero_le_one]
-      · simp only [div_self hy, le_refl]
+      · simp [hy, div_zero, zero_le_one]
+      · simp [div_self hy, le_refl]
     exact le_ciSup h_bdd (1 : R)
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
@@ -230,7 +230,7 @@ theorem seminormFromBounded_one_le (f_nonneg : 0 ≤ f)
   · exact le_of_eq (seminormFromBounded_one f_ne_zero f_nonneg f_mul)
   · simp_rw [seminormFromBounded', one_mul]
     refine ciSup_le (fun _ ↦ ?_)
-    simp only [f_ne_zero, Pi.zero_apply, div_zero, zero_le_one]
+    simp [f_ne_zero, Pi.zero_apply, div_zero, zero_le_one]
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, subadditive function, then
   `seminormFromBounded' f` is subadditive. -/
@@ -244,7 +244,7 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
       (le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul x) z (le_refl _))
       (le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z (le_refl _)))
   by_cases hz : f z = 0
-  · simp only [hz, div_zero, zero_add, le_refl]
+  · simp [hz, div_zero, zero_add, le_refl]
   · rw [← add_div, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
@@ -271,7 +271,7 @@ theorem seminormFromBounded_isNonarchimedean (f_nonneg : 0 ≤ f)
     · exact Or.inl <| le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul x) z hfx
     · exact Or.inr <| le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z hfy
   by_cases hz : f z = 0
-  · simp only [hz, div_zero, le_refl, or_self_iff]
+  · simp [hz, div_zero, le_refl, or_self_iff]
   · rw [div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz),
       div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul, ← le_max_iff]
     exact hna _ _
@@ -384,7 +384,7 @@ theorem seminormFromBounded_of_mul_is_mul (f_nonneg : 0 ≤ f)
     (hx : ∀ y : R, f (x * y) = f x * f y) (y : R) :
     seminormFromBounded' f (x * y) = seminormFromBounded' f x * seminormFromBounded' f y := by
   rw [seminormFromBounded_of_mul_apply f_nonneg f_mul hx]
-  simp only [seminormFromBounded', mul_assoc, hx, mul_div_assoc,
+  simp [seminormFromBounded', mul_assoc, hx, mul_div_assoc,
     Real.mul_iSup_of_nonneg (f_nonneg _)]
 
 end seminormFromBounded

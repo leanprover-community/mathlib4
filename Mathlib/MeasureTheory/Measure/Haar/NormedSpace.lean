@@ -98,7 +98,7 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
     · have : Subsingleton E := finrank_zero_iff.1 hE
       have : f = fun _ => f 0 := by ext x; rw [Subsingleton.elim x 0]
       conv_rhs => rw [this]
-      simp only [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
+      simp [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
     · have : Nontrivial E := finrank_pos_iff.1 hE
       simp [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, measureReal_def]
   · calc
@@ -106,7 +106,7 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
         (integral_map_equiv (Homeomorph.smul (isUnit_iff_ne_zero.2 hR).unit).toMeasurableEquiv
             f).symm
       _ = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
-        simp only [map_addHaar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]
+        simp [map_addHaar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]
 
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`

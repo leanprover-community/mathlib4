@@ -398,7 +398,7 @@ theorem dpow_mem_span_of_mem_span {S : Set A} (hS : S ⊆ I) {k : ℕ} (hk : k �
       rw [hxy, hI.dpow_comp hm (hS hxS)]
       exact mul_mem_left _ _ (subset_span ⟨n * m, mul_ne_zero hn hm, x, hxS, rfl⟩)
     · -- Zero
-      exact fun _ hn ↦ by simp only [hI.dpow_eval_zero hn, zero_mem]
+      exact fun _ hn ↦ by simp [hI.dpow_eval_zero hn, zero_mem]
     · intro x y hx hy hx_pow hy_pow n hn
       rw [hI.dpow_add' (hSI hx) (hSI hy)]
       apply Submodule.sum_mem (span _)
@@ -426,7 +426,7 @@ theorem span_carrier_eq_dpow_span {S : Set A} (hS : S ⊆ I) :
       Set.mem_insert_of_mem _
         (fun x hx ↦ subset_span ⟨1, one_ne_zero, x, hx, by rw [hI.dpow_one (hS hx)]⟩)
     refine sInf_le_of_le ⟨J, ?_⟩ (le_refl _)
-    simp only [h, ciInf_pos, J]
+    simp [h, ciInf_pos, J]
   · rw [le_iInf₂_iff]
     intro K hK
     have : S ≤ K := by
@@ -523,7 +523,7 @@ def subDPIdeal_inf_of_quot {A : Type*} [CommRing A] {I : Ideal A} {hI : DividedP
     (hφ : φ.toRingHom = Ideal.Quotient.mk J) :
     SubDPIdeal hI where
   carrier    := J ⊓ I
-  isSubideal := by simp only [inf_le_right]
+  isSubideal := by simp [inf_le_right]
   dpow_mem   := fun _ hn a ⟨haJ, haI⟩ ↦ by
     refine ⟨?_, hI.dpow_mem hn haI⟩
     rw [SetLike.mem_coe, ← Quotient.eq_zero_iff_mem, ← hφ, ← φ.dpow_comp a haI]

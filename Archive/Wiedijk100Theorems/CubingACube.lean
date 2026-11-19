@@ -75,12 +75,12 @@ theorem univ_pi_side (c : Cube n) : pi univ (side c) = c.toSet :=
   ext fun _ => mem_univ_pi
 
 theorem toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
-  simp only [← univ_pi_side, univ_pi_subset_univ_pi_iff, (c.side_nonempty _).ne_empty, exists_false,
+  simp [← univ_pi_side, univ_pi_subset_univ_pi_iff, (c.side_nonempty _).ne_empty, exists_false,
     or_false]
 
 theorem toSet_disjoint {c c' : Cube n} :
     Disjoint c.toSet c'.toSet ↔ ∃ j, Disjoint (c.side j) (c'.side j) := by
-  simp only [← univ_pi_side, disjoint_univ_pi]
+  simp [← univ_pi_side, disjoint_univ_pi]
 
 theorem b_mem_toSet (c : Cube n) : c.b ∈ c.toSet := by simp [toSet]
 
@@ -286,7 +286,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
   have hp : p ∈ c.bottom := by
     constructor
-    · simp only [p, ite_eq_right hj]
+    · simp [p, ite_eq_right hj]
     intro j'; simp only [tail, side_tail]
     by_cases hj' : j'.succ = j
     · simp [p, ite_eq_left, side, hj', hw', w_lt_w h v h2i]

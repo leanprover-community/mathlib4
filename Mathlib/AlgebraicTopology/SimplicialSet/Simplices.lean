@@ -77,7 +77,7 @@ that is equal to `s`, but whose dimension if definitionally equal to `d`. -/
 @[implicit_reducible, simps dim]
 def cast : X.S where
   dim := d
-  simplex := _root_.cast (by simp only [hd]) s.simplex
+  simplex := _root_.cast (by simp [hd]) s.simplex
 
 lemma cast_eq_self : s.cast hd = s := by
   obtain ⟨d, _, rfl⟩ := s.mk_surjective

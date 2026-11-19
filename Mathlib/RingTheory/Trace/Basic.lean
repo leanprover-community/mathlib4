@@ -243,7 +243,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
     let : Algebra L E := σ.toRingHom.toAlgebra
     simp_rw [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
   · intro σ
-    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.domRestrict, AlgHom.comp_apply,
+    simp [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.domRestrict, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
 
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L] {x : L} :
@@ -263,9 +263,9 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← trace_eq_sum_embeddings (AlgebraicClosure L) (x := x)]
-    simp only [algebraMap_eq_smul_one, smul_one_smul]
+    simp [algebraMap_eq_smul_one, smul_one_smul]
   · intro σ
-    simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
+    simp [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
 
 end EqSumEmbeddings
@@ -484,9 +484,9 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableE
             ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =
           (pb.basis.toMatrix b * (b.toMatrix pb.basis * pb.basis.toMatrix b)ᵀ *
               b.toMatrix pb.basis).det := by
-        simp only [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
+        simp [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
       _ = 1 := by
-        simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
+        simp [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
           Matrix.det_one]
   simpa only [traceMatrix_of_basis] using det_traceMatrix_ne_zero' pb
 

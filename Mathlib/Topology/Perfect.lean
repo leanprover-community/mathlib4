@@ -89,7 +89,7 @@ structure Perfect (C : Set α) : Prop where
 @[deprecated (since := "2026-11-12")] alias Perfect.acc := Perfect.preperfect
 
 theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
-  simp only [Preperfect, accPt_iff_nhds]
+  simp [Preperfect, accPt_iff_nhds]
 
 section PerfectSpace
 

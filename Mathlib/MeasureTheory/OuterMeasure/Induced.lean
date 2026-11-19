@@ -328,7 +328,7 @@ theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
 
 theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, MeasurableSet s → m₁ s = m₂ s) :
     m₁.trim = m₂.trim := by
-  simp +contextual only [trim, H]
+  simp +contextual [trim, H]
 
 @[gcongr, mono]
 theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun _m₁ _m₂ H _s =>
@@ -347,7 +347,7 @@ theorem trim_le_trim_iff {m₁ m₂ : OuterMeasure α} :
 
 theorem trim_eq_trim_iff {m₁ m₂ : OuterMeasure α} :
     m₁.trim = m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s = m₂ s := by
-  simp only [le_antisymm_iff, trim_le_trim_iff, forall_and]
+  simp [le_antisymm_iff, trim_le_trim_iff, forall_and]
 
 theorem trim_eq_iInf (s : Set α) : m.trim s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), m t := by
   simp +singlePass only [iInf_comm]

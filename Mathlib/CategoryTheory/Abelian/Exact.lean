@@ -48,7 +48,7 @@ attribute [local instance] hasEqualizers_of_hasKernels
 theorem exact_iff_epi_imageToKernel' : S.Exact ↔ Epi (imageToKernel' S.f S.g S.zero) := by
   rw [S.exact_iff_epi_kernel_lift]
   have : factorThruImage S.f ≫ imageToKernel' S.f S.g S.zero = kernel.lift S.g S.f S.zero := by
-    simp only [← cancel_mono (kernel.ι _), kernel.lift_ι, imageToKernel',
+    simp [← cancel_mono (kernel.ι _), kernel.lift_ι, imageToKernel',
       Category.assoc, image.fac]
   constructor
   · intro
@@ -210,10 +210,10 @@ lemma reflects_exact_of_faithful [F.Faithful] (S : ShortComplex C) (hS : (S.map 
   apply F.zero_of_map_zero
   obtain ⟨k, hk⟩ :=
     kernel.lift' (F.map S.g) (F.map (kernel.ι S.g))
-      (by simp only [← F.map_comp, kernel.condition, CategoryTheory.Functor.map_zero])
+      (by simp [← F.map_comp, kernel.condition, CategoryTheory.Functor.map_zero])
   obtain ⟨l, hl⟩ :=
     cokernel.desc' (F.map S.f) (F.map (cokernel.π S.f))
-      (by simp only [← F.map_comp, cokernel.condition, CategoryTheory.Functor.map_zero])
+      (by simp [← F.map_comp, cokernel.condition, CategoryTheory.Functor.map_zero])
   rw [F.map_comp, ← hl, ← hk, Category.assoc, reassoc_of% hS, zero_comp, comp_zero]
 
 end

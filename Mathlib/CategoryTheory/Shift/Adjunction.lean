@@ -99,7 +99,7 @@ lemma compatibilityCounit_of_compatibilityUnit (h : CompatibilityUnit adj e₁ e
   simp only [assoc, ← Functor.map_comp, Iso.inv_hom_id_app_assoc]
   erw [← e₂.inv.naturality]
   dsimp
-  simp only [right_triangle_components, ← Functor.map_comp_assoc, Functor.map_id, id_comp,
+  simp [right_triangle_components, ← Functor.map_comp_assoc, Functor.map_id, id_comp,
     Iso.hom_inv_id_app, Functor.comp_obj]
 
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
@@ -114,7 +114,7 @@ lemma compatibilityUnit_right (h : CompatibilityUnit adj e₁ e₂) (Y : D) :
   erw [comp_id] at this
   rw [← assoc, ← this, assoc]; erw [← e₂.inv.naturality]
   rw [← cancel_mono (e₂.hom.app _)]
-  simp only [Functor.comp_obj, Iso.inv_hom_id_app, Functor.id_obj, Functor.comp_map, assoc, comp_id,
+  simp [Functor.comp_obj, Iso.inv_hom_id_app, Functor.id_obj, Functor.comp_map, assoc, comp_id,
     ← (shiftFunctor C a).map_comp, right_triangle_components, Functor.map_id]
 
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
@@ -129,7 +129,7 @@ lemma compatibilityCounit_left (h : CompatibilityCounit adj e₁ e₂) (X : C) :
     id_comp] at this
   dsimp only [Functor.comp_obj, Functor.id_obj]
   rw [this, dsimp% e₁.hom.naturality_assoc, ← Functor.map_comp, left_triangle_components]
-  simp only [Functor.map_id, comp_id]
+  simp [Functor.map_id, comp_id]
 
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
@@ -161,7 +161,7 @@ compatible with the unit of an adjunction `F ⊣ G`.
 lemma compatibilityUnit_isoZero : CompatibilityUnit adj (Functor.CommShift.isoZero F A)
     (Functor.CommShift.isoZero G A) := by
   intro
-  simp only [Functor.id_obj, Functor.comp_obj, Functor.CommShift.isoZero_hom_app,
+  simp [Functor.id_obj, Functor.comp_obj, Functor.CommShift.isoZero_hom_app,
     Functor.map_comp, assoc, unit_naturality_assoc,
     ← cancel_mono ((shiftFunctorZero C A).hom.app _), ← G.map_comp_assoc, Iso.inv_hom_id_app,
     Functor.id_obj, Functor.map_id, id_comp, NatTrans.naturality, Functor.id_map, assoc, comp_id]
@@ -282,7 +282,7 @@ lemma shift_counit_app [adj.CommShift A] (a : A) (Y : D) :
   have eq := NatTrans.shift_app_comm adj.counit a Y
   simp only [Functor.comp_obj, Functor.id_obj, Functor.commShiftIso_comp_hom_app, assoc,
     Functor.commShiftIso_id_hom_app, comp_id] at eq
-  simp only [← eq, Functor.comp_obj, Functor.id_obj, ← F.map_comp_assoc, Iso.inv_hom_id_app,
+  simp [← eq, Functor.comp_obj, Functor.id_obj, ← F.map_comp_assoc, Iso.inv_hom_id_app,
     F.map_id, id_comp, Iso.inv_hom_id_app_assoc]
 
 end Adjunction
@@ -339,7 +339,7 @@ lemma iso_inv_app (Y : D) :
     comp_counit_app, Equivalence.toAdjunction_counit, Equivalence.Equivalence_mk'_counit,
     Functor.map_shiftFunctorCompIsoId_hom_app, assoc, Functor.map_comp]
   slice_lhs 3 4 => rw [← Functor.map_comp, ← Functor.map_comp, Iso.inv_hom_id_app]
-  simp only [Functor.comp_obj, Functor.map_id, id_comp, assoc]
+  simp [Functor.comp_obj, Functor.map_id, id_comp, assoc]
 
 /--
 The commutation isomorphisms of `Adjunction.RightAdjointCommShift.iso` are compatible with

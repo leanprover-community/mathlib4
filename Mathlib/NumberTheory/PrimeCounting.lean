@@ -259,7 +259,7 @@ theorem primesBelow_card_eq_primeCounting' (n : ℕ) : #n.primesBelow = π' n :=
 `primeCounting` at `n`. -/
 @[simp]
 theorem primesLE_card_eq_primeCounting (n : ℕ) : #(primesLE n) = π n := by
-  simp only [primesLE, primeCounting, primesBelow_card_eq_primeCounting']
+  simp [primesLE, primeCounting, primesBelow_card_eq_primeCounting']
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
 theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) :

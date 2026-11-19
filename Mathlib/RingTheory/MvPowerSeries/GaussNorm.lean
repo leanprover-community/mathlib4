@@ -197,7 +197,7 @@ lemma Finset.Nonempty.map_sum_le_sup'_map
     g (∑ i ∈ s, f i) ≤ s.sup' hs fun x ↦ g (f x) := by
   simp only [Finset.le_sup'_iff]
   induction hs using Finset.Nonempty.cons_induction with
-  | singleton j => simp only [Finset.mem_singleton, Finset.sum_singleton, exists_eq_left, le_refl]
+  | singleton j => simp [Finset.mem_singleton, Finset.sum_singleton, exists_eq_left, le_refl]
   | cons j s hj _ IH =>
       simp only [Finset.sum_cons, Finset.mem_cons, exists_eq_or_imp]
       refine (le_total (g (∑ i ∈ s, f i)) (g (f j))).imp ?_ ?_ <;> intro h

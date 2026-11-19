@@ -244,7 +244,7 @@ lemma rightDerived_app_eq
     Functor.map_comp, Functor.map_comp, assoc]
   erw [← (HomotopyCategory.homologyFunctorFactors D (ComplexShape.up ℕ) n).hom.naturality_assoc
     ((NatTrans.mapHomologicalComplex α (ComplexShape.up ℕ)).app P.cocomplex)]
-  simp only [Functor.comp_map, Iso.hom_inv_id_app_assoc]
+  simp [Functor.comp_map, Iso.hom_inv_id_app_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `P : InjectiveResolution X` and `F` is an additive functor, this is
@@ -274,7 +274,7 @@ lemma toRightDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f 
     F.map f ≫ Q.toRightDerivedZero' F =
       P.toRightDerivedZero' F ≫
         HomologicalComplex.cyclesMap ((F.mapHomologicalComplex _).map φ) 0 := by
-  simp only [← cancel_mono (HomologicalComplex.iCycles _ _), assoc,
+  simp [← cancel_mono (HomologicalComplex.iCycles _ _), assoc,
     toRightDerivedZero'_comp_iCycles,
     CochainComplex.single₀_obj_zero, HomologicalComplex.cyclesMap_i,
     Functor.mapHomologicalComplex_map_f, toRightDerivedZero'_comp_iCycles_assoc,

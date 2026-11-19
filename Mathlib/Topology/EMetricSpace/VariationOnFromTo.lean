@@ -41,14 +41,14 @@ protected theorem self (a : α) : variationOnFromTo f s a a = 0 := by
   exact fun x hx y hy => hx.2.trans hy.2.symm
 
 protected theorem nonneg_of_le {a b : α} (h : a ≤ b) : 0 ≤ variationOnFromTo f s a b := by
-  simp only [variationOnFromTo, ite_eq_left h, ENNReal.toReal_nonneg]
+  simp [variationOnFromTo, ite_eq_left h, ENNReal.toReal_nonneg]
 
 protected theorem eq_neg_swap (a b : α) :
     variationOnFromTo f s a b = -variationOnFromTo f s b a := by
   rcases lt_trichotomy a b with (ab | rfl | ba)
-  · simp only [variationOnFromTo, ite_eq_left ab.le, ite_eq_right ab.not_ge, neg_neg]
-  · simp only [variationOnFromTo.self, neg_zero]
-  · simp only [variationOnFromTo, ite_eq_left ba.le, ite_eq_right ba.not_ge]
+  · simp [variationOnFromTo, ite_eq_left ab.le, ite_eq_right ab.not_ge, neg_neg]
+  · simp [variationOnFromTo.self, neg_zero]
+  · simp [variationOnFromTo, ite_eq_left ba.le, ite_eq_right ba.not_ge]
 
 protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s a b ≤ 0 := by
   rw [variationOnFromTo.eq_neg_swap]
@@ -77,7 +77,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
   symm
   refine additive_of_total (· ≤ · : α → α → Prop) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
-    simp only [variationOnFromTo.eq_neg_swap f s y x, add_neg_cancel]
+    simp [variationOnFromTo.eq_neg_swap f s y x, add_neg_cancel]
   · rintro x y z xy yz xs ys zs
     rw [variationOnFromTo.eq_of_le f s xy, variationOnFromTo.eq_of_le f s yz,
       variationOnFromTo.eq_of_le f s (xy.trans yz),
@@ -109,7 +109,7 @@ protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
 protected theorem eq_left_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b c : α} (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b = variationOnFromTo f s a c ↔ variationOnFromTo f s b c = 0 := by
-  simp only [← variationOnFromTo.add hf ha hb hc, left_eq_add]
+  simp [← variationOnFromTo.add hf ha hb hc, left_eq_add]
 
 protected theorem eq_zero_iff_of_le {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (ab : a ≤ b) :

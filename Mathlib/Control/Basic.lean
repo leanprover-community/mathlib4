@@ -77,17 +77,17 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 
 @[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
-  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp [(· >=> ·), functor_norm]
 
 @[functor_norm]
 theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
-  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp [(· >=> ·), functor_norm]
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp [(· >=> ·), functor_norm]
 
 variable {β' γ' : Type v}
 variable {m' : Type v → Type w} [Monad m']
@@ -118,14 +118,14 @@ variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
     joinM (Functor.map f <$> a) = f <$> joinM a := by
-  simp only [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind]
+  simp [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind]
 
 theorem joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
-  simp only [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind]
+  simp [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind]
 
 @[simp]
 theorem joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
-  simp only [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
+  simp [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
 
 @[simp]
 theorem joinM_pure {α : Type u} (a : m α) : joinM (pure a) = a :=
@@ -216,7 +216,7 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
     f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
-      simp only [map_seq, map_map, Function.comp_def]
+      simp [map_seq, map_map, Function.comp_def]
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [map_seq, map_map]

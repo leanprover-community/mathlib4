@@ -190,7 +190,7 @@ theorem eq_zero_iff_forall_coeff_zero {f : MvPowerSeries σ R} :
 
 theorem ne_zero_iff_exists_coeff_ne_zero (f : MvPowerSeries σ R) :
     f ≠ 0 ↔ (∃ d : σ →₀ ℕ, coeff d f ≠ 0) := by
-  simp only [MvPowerSeries.ext_iff, ne_eq, coeff_zero, not_forall]
+  simp [MvPowerSeries.ext_iff, ne_eq, coeff_zero, not_forall]
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 
@@ -276,11 +276,11 @@ protected theorem mul_one : φ * 1 = φ :=
 
 protected theorem mul_add (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * (φ₂ + φ₃) = φ₁ * φ₂ + φ₁ * φ₃ :=
   ext fun n => by
-    classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, map_add]
+    classical simp [coeff_mul, mul_add, Finset.sum_add_distrib, map_add]
 
 protected theorem add_mul (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : (φ₁ + φ₂) * φ₃ = φ₁ * φ₃ + φ₂ * φ₃ :=
   ext fun n => by
-    classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, map_add]
+    classical simp [coeff_mul, add_mul, Finset.sum_add_distrib, map_add]
 
 protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * φ₂ * φ₃ = φ₁ * (φ₂ * φ₃) := by
   ext1 n
@@ -379,7 +379,7 @@ theorem coeff_X [DecidableEq σ] (n : σ →₀ ℕ) (s : σ) :
 
 theorem coeff_index_single_X [DecidableEq σ] (s t : σ) :
     coeff (single t 1) (X s : MvPowerSeries σ R) = if t = s then 1 else 0 := by
-  simp only [coeff_X, single_left_inj (one_ne_zero : (1 : ℕ) ≠ 0)]
+  simp [coeff_X, single_left_inj (one_ne_zero : (1 : ℕ) ≠ 0)]
 
 @[simp]
 theorem coeff_index_single_self_X (s : σ) : coeff (single s 1) (X s : MvPowerSeries σ R) = 1 :=
@@ -425,7 +425,7 @@ theorem coeff_C_mul (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) (a : R) :
 
 theorem coeff_zero_mul_X (φ : MvPowerSeries σ R) (s : σ) : coeff (0 : σ →₀ ℕ) (φ * X s) = 0 := by
   have : ¬single s 1 ≤ 0 := fun h => by simpa using h s
-  simp only [X, coeff_mul_monomial, ite_eq_right this]
+  simp [X, coeff_mul_monomial, ite_eq_right this]
 
 theorem coeff_zero_X_mul (φ : MvPowerSeries σ R) (s : σ) : coeff (0 : σ →₀ ℕ) (X s * φ) = 0 := by
   rw [← (φ.commute_X s).eq, coeff_zero_mul_X]
@@ -518,8 +518,8 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         classical
         rw [coeff_one, coeff_one]
         split_ifs with h
-        · simp only [map_one]
-        · simp only [map_zero]
+        · simp [map_one]
+        · simp [map_zero]
   map_add' φ ψ :=
     ext fun n => show f (coeff n (φ + ψ)) = f (coeff n φ) + f (coeff n ψ) by simp
   map_mul' φ ψ :=
@@ -630,7 +630,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
           rw [← hij, ← hi, Prod.mk_inj]
           refine ⟨rfl, ?_⟩
           ext t
-          simp only [add_tsub_cancel_left]
+          simp [add_tsub_cancel_left]
         · exact zero_mul _
       · intro hni
         exfalso
@@ -680,8 +680,8 @@ theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
   | empty =>
     simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, finsuppAntidiag_empty]
     split_ifs
-    · simp only [card_singleton, Nat.cast_one]
-    · simp only [card_empty, Nat.cast_zero]
+    · simp [card_singleton, Nat.cast_one]
+    · simp [card_empty, Nat.cast_zero]
   | insert a s ha ih =>
     rw [finsuppAntidiag_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
@@ -759,8 +759,8 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
     ← sum_sdiff (hs), sum_eq_zero (s := s) hs'', add_zero]
   rw [← hs_def]
   convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
-  · simp only [smul_eq_mul, mul_one]
-  · simp only [degree_eq_weight_one, map_sum]
+  · simp [smul_eq_mul, mul_one]
+  · simp [degree_eq_weight_one, map_sum]
   · simp only [hs_def, mem_filter, mem_sdiff, mem_range, not_and, and_imp]
     intro i hi hi'
     rw [← not_lt, Nat.lt_one_iff, degree_eq_zero_iff]
@@ -795,7 +795,7 @@ def mapAlgHom (φ : A →ₐ[R] B) :
     MvPowerSeries σ A →ₐ[R] MvPowerSeries σ B where
   toRingHom := MvPowerSeries.map φ
   commutes' r := by
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+    simp [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       MonoidHom.coe_ofClass, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe,
       AlgHom.commutes]
 
@@ -923,7 +923,7 @@ theorem _root_.MvPowerSeries.monomial_one_eq
     MvPowerSeries.monomial e (1 : R) =
       e.prod fun s n ↦ (MvPowerSeries.X s) ^ n := by
   simp only [← coe_X, ← coe_pow, ← coe_monomial, monomial_eq, map_one, one_mul]
-  simp only [← coeToMvPowerSeries.ringHom_apply, ← map_finsuppProd]
+  simp [← coeToMvPowerSeries.ringHom_apply, ← map_finsuppProd]
 
 theorem _root_.MvPowerSeries.monomial_eq' (e : σ →₀ ℕ) (r : R) :
     MvPowerSeries.monomial e r
@@ -970,7 +970,7 @@ theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
       MvPowerSeries.C ((algebraMap A R) a) * f := by
       rw [← MvPowerSeries.smul_eq_C_mul, IsScalarTower.algebraMap_smul]
     simp only [mul_pow, Finsupp.prod_mul, ← map_pow, ← MvPowerSeries.monomial_one_eq, this]
-    simp only [map_finsuppProd, map_pow]
+    simp [map_finsuppProd, map_pow]
   · intro x _
     rw [algebra_compatible_smul R, MvPowerSeries.smul_eq_C_mul]
 
@@ -985,7 +985,7 @@ theorem _root_.MvPowerSeries.monomial_smul_const
     MvPowerSeries.monomial e (r ^ (e.sum fun _ n => n))
       = (e.prod fun s e => (r • MvPowerSeries.X s) ^ e) := by
   rw [MvPowerSeries.prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
-  simp only [Finsupp.sum, Finsupp.prod, Finset.prod_pow_eq_pow_sum]
+  simp [Finsupp.sum, Finsupp.prod, Finset.prod_pow_eq_pow_sum]
 
 end Algebra
 

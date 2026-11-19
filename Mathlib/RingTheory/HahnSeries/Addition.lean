@@ -58,7 +58,7 @@ theorem coeff_smul {r : R} {x : V⟦Γ⟧} {a : Γ} : (r • x).coeff a = r • 
 instance : SMulZeroClass R V⟦Γ⟧ where
   smul_zero _ := by
     ext
-    simp only [coeff_smul, coeff_zero, smul_zero]
+    simp [coeff_smul, coeff_zero, smul_zero]
 
 theorem orderTop_smul_not_lt (r : R) (x : V⟦Γ⟧) : ¬ (r • x).orderTop < x.orderTop := by
   by_cases hrx : r • x = 0
@@ -382,13 +382,13 @@ protected lemma map_neg [AddGroup S] (f : R →+ S) {x : R⟦Γ⟧} :
 
 @[simp]
 theorem orderTop_neg {x : R⟦Γ⟧} : (-x).orderTop = x.orderTop := by
-  classical simp only [orderTop, support_neg, neg_eq_zero]
+  classical simp [orderTop, support_neg, neg_eq_zero]
 
 @[simp]
 theorem order_neg [Zero Γ] {f : R⟦Γ⟧} : (-f).order = f.order := by
   classical
   by_cases hf : f = 0
-  · simp only [hf, neg_zero]
+  · simp [hf, neg_zero]
   simp only [order, support_neg, neg_eq_zero]
 
 theorem leadingCoeff_neg {x : R⟦Γ⟧} : (-x).leadingCoeff = -x.leadingCoeff := by

@@ -108,7 +108,7 @@ theorem not_summable_one_div_on_primes :
     inter_eq_left.mpr fun n (hn : n ∈ {p | Nat.Prime p} ∩ {p | k ≤ p}) ↦ hn.1, mem_Iio] at hk
   have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n) := by
     convert h.indicator {n : ℕ | k ≤ n} using 1
-    simp only [indicator_indicator, inter_comm]
+    simp [indicator_indicator, inter_comm]
   refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
   convert!
     Summable.sum_le_tsum (primesBelow ((4 ^ (#k.primesBelow + 1)).succ) \ primesBelow k)

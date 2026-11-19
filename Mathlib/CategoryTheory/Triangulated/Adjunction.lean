@@ -64,7 +64,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
     have h₂' : g ≫ (G.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
         adj.homEquiv _ _ h ≫ G.map T.mor₃ := by
       apply (adj.homEquiv _ _).symm.injective
-      simp only [Functor.comp_obj, homEquiv_counit, Functor.id_obj, Functor.map_comp, assoc,
+      simp [Functor.comp_obj, homEquiv_counit, Functor.id_obj, Functor.map_comp, assoc,
         homEquiv_unit, counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
         ← h₂, adj.shift_counit_app, Iso.hom_inv_id_app_assoc]
     rw [assoc] at h₂
@@ -117,7 +117,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
     · simp
     · apply (adj.homEquiv _ _).symm.injective
       dsimp
-      simp only [homEquiv_unit, homEquiv_counit, Functor.map_comp, assoc,
+      simp [homEquiv_unit, homEquiv_counit, Functor.map_comp, assoc,
         counit_naturality, left_triangle_components_assoc, h₁, id_comp]
     · dsimp
       rw [Functor.map_id, comp_id, homEquiv_unit, assoc, ← G.map_comp_assoc, ← h₂,

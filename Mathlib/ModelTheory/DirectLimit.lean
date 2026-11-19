@@ -258,7 +258,7 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → Di
   have : (.mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd) : Σˣ f).fst ≤ i :=
     le_rfl
   rw [equiv_iff G f (i := i) (hi _) this]
-  · simp only [DirectedSystem.map_self]
+  · simp [DirectedSystem.map_self]
   exact ⟨a, rfl⟩
 
 variable (L ι)
@@ -277,7 +277,7 @@ noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
   map_rel' := by
     intro n R x
     change RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
-    simp only [relMap_quotient_mk'_sigma_mk']
+    simp [relMap_quotient_mk'_sigma_mk']
 
 
 
@@ -293,7 +293,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x := by
   rw [of_apply, of_apply, Quotient.eq]
   refine Setoid.symm ⟨j, hij, refl j, ?_⟩
-  simp only [DirectedSystem.map_self]
+  simp [DirectedSystem.map_self]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Every element of the direct limit corresponds to some element in
@@ -363,7 +363,7 @@ variable (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i 
 @[simp]
 theorem lift_quotient_mk'_sigma_mk' {i} (x : G i) : lift L ι G f g Hg ⟦.mk f i x⟧ = (g i) x := by
   change (lift L ι G f g Hg).toFun ⟦.mk f i x⟧ = _
-  simp only [lift, Quotient.lift_mk]
+  simp [lift, Quotient.lift_mk]
 
 theorem lift_of {i} (x : G i) : lift L ι G f g Hg (of L ι G f i x) = g i x := by simp
 
@@ -391,7 +391,7 @@ noncomputable def equiv_lift (H_commuting : ∀ i j hij x, g j (f i j hij x) = f
   let U i : G i ↪[L] DirectLimit G' f' := (of L _ G' f' i).comp (g i).toEmbedding
   let F : DirectLimit G f ↪[L] DirectLimit G' f' := lift L _ G f U <| by
     intro _ _ _ _
-    simp only [U, Embedding.comp_apply, Equiv.coe_toEmbedding, H_commuting, of_f]
+    simp [U, Embedding.comp_apply, Equiv.coe_toEmbedding, H_commuting, of_f]
   have surj_f : Function.Surjective F := by
     intro x
     rcases x with ⟨i, pre_x⟩
@@ -423,7 +423,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonem
     refine hS (out x).1 ⟨(out x).2, ?_, ?_⟩
     · rw [(Classical.choose_spec (h (out x).1).out).2]
       trivial
-    · simp only [out, Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
+    · simp [out, Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
 
 instance cg' {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)

@@ -115,7 +115,7 @@ theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type*} {L : Filter ι
     (E_mble : MeasurableSet E) (h : (L.limsup fun i ↦ μs i E) ≤ μ E) :
     μ Eᶜ ≤ L.liminf fun i ↦ μs i Eᶜ := by
   rcases L.eq_or_neBot with rfl | hne
-  · simp only [liminf_bot, le_top]
+  · simp [liminf_bot, le_top]
   have meas_Ec : μ Eᶜ = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
   have meas_i_Ec : ∀ i, μs i Eᶜ = 1 - μs i E := by
@@ -139,7 +139,7 @@ theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type*} {L : Filter ι
     (E_mble : MeasurableSet E) (h : μ E ≤ L.liminf fun i ↦ μs i E) :
     (L.limsup fun i ↦ μs i Eᶜ) ≤ μ Eᶜ := by
   rcases L.eq_or_neBot with rfl | hne
-  · simp only [limsup_bot, bot_le]
+  · simp [limsup_bot, bot_le]
   have meas_Ec : μ Eᶜ = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
   have meas_i_Ec : ∀ i, μs i Eᶜ = 1 - μs i E := by
@@ -281,7 +281,7 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
     {μs : ι → FiniteMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {F : Set Ω} (F_closed : IsClosed F) :
     (L.limsup fun i ↦ (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
   rcases L.eq_or_neBot with rfl | hne
-  · simp only [limsup_bot, bot_le]
+  · simp [limsup_bot, bot_le]
   apply ENNReal.le_of_forall_pos_le_add
   intro ε ε_pos _
   have ε_pos' := (ENNReal.half_pos (ENNReal.coe_ne_zero.mpr ε_pos.ne.symm)).ne.symm
@@ -302,7 +302,7 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
   apply (Filter.limsup_le_limsup ev_near').trans
   rw [limsup_const]
   apply le_trans (add_le_add (hM M rfl.le).le (le_refl (ε / 2 : ℝ≥0∞)))
-  simp only [add_assoc, ENNReal.add_halves, le_refl]
+  simp [add_assoc, ENNReal.add_halves, le_refl]
 
 /-- One implication of the portmanteau theorem:
 Weak convergence of probability measures implies that the limsup of the measures of any closed
@@ -401,7 +401,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set 
   have disjs := Metric.frontier_thickening_disjoint s
   have key := Measure.countable_meas_pos_of_disjoint_iUnion (μ := μ) mbles disjs
   have aux := measure_sdiff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
-  have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
+  have len_pos : 0 < ENNReal.ofReal (b - a) := by simp [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
   simpa [Set.Nonempty] using nonempty_of_measure_ne_zero len_pos.ne'
 
@@ -433,7 +433,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
     L.limsup (fun i ↦ μs i F) ≤ μ F := by
   let : PseudoMetricSpace Ω := TopologicalSpace.pseudoMetrizableSpacePseudoMetric Ω
   rcases L.eq_or_neBot with rfl | _
-  · simp only [limsup_bot, bot_eq_zero', zero_le]
+  · simp [limsup_bot, bot_eq_zero', zero_le]
   have ex := exists_null_frontiers_thickening μ F
   let rs := Classical.choose ex
   have rs_lim : Tendsto rs atTop (𝓝 0) := (Classical.choose_spec ex).1
@@ -446,7 +446,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   apply ENNReal.le_of_forall_pos_le_add
   intro ε ε_pos μF_finite
   have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
-                ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
+                ⟨1, ⟨by simp [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
   have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
     Iio_mem_nhds <| ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
   specialize rs_lim (keyB nhds)
@@ -566,7 +566,7 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
   have obs := ENNReal.coe_mono h_opens
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
   convert! obs
-  simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+  simp [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
 condition `μ(G) ≤ liminf μsₙ(G)`, then the measures `μsₙ` converge weakly to the measure `μ`.

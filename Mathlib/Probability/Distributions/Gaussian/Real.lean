@@ -624,7 +624,7 @@ lemma integral_continuousLinearMap_gaussianReal (L : ℝ →L[ℝ] ℝ) :
 lemma variance_linearMap_gaussianReal (L : ℝ →ₗ[ℝ] ℝ) :
     Var[L; gaussianReal μ v] = (L 1 ^ 2).toNNReal * v := by
   rw [← variance_id_map, gaussianReal_map_linearMap, variance_id_gaussianReal]
-  · simp only [NNReal.coe_mul, Real.coe_toNNReal']
+  · simp [NNReal.coe_mul, Real.coe_toNNReal']
   · fun_prop
 
 @[simp]

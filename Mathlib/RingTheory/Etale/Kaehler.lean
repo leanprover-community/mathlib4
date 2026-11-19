@@ -166,10 +166,10 @@ def tensorCotangentInvFun
     clear hx ha
     induction x with
     | add x y _ _ =>
-      simp only [map_add, Submodule.coe_add, add_smul, zero_add, *]
+      simp [map_add, Submodule.coe_add, add_smul, zero_add, *]
     | tmul a b =>
       induction y with
-      | add x y hx hy => simp only [LinearMap.map_add, smul_add, hx, hy, zero_add]
+      | add x y hx hy => simp [LinearMap.map_add, smul_add, hx, hy, zero_add]
       | tmul c d =>
         simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,
           LinearMap.coe_restrictScalars, Function.comp_apply, mk_apply, smul_eq_mul, e,
@@ -206,7 +206,7 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
     left_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       induction x with
-      | add x y _ _ => simp only [map_add, *]
+      | add x y _ _ => simp [map_add, *]
       | tmul a b =>
         obtain ⟨b, rfl⟩ := Cotangent.mk_surjective b
         obtain ⟨a, rfl⟩ := Q.algebraMap_surjective a
@@ -219,7 +219,7 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
       obtain ⟨x, rfl⟩ := H.surjective x
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       induction x with
-      | add x y _ _ => simp only [map_add, *]
+      | add x y _ _ => simp [map_add, *]
       | tmul a b =>
         simp only [LinearMap.liftBaseChange_tmul, map_smul]
         simp [Hom.mapKer, tensorCotangentInvFun_smul_mk] }
@@ -255,7 +255,7 @@ def tensorH1CotangentOfFormallyEtale [alg : Algebra P.Ring Q.Ring]
       have : (CotangentSpace.map f).liftBaseChange T ∘ₗ P.cotangentComplex.baseChange T =
           Q.cotangentComplex ∘ₗ (Cotangent.map f).liftBaseChange T := by
         ext x; obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x; dsimp
-        simp only [CotangentSpace.map_tmul,
+        simp [CotangentSpace.map_tmul,
           map_one, Hom.toAlgHom_apply, one_smul, cotangentComplex_mk]
       exact congr($this _).trans (DFunLike.congr_arg Q.cotangentComplex
         ((tensorCotangent f halg H₂).apply_symm_apply x.1)))

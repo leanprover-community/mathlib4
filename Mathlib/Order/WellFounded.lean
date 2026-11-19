@@ -167,7 +167,7 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
 @[to_dual]
 theorem wellFoundedLT_iff_exists_minimal [Preorder α] :
     WellFoundedLT α ↔ ∀ s : Set α, s.Nonempty → ∃ m, Minimal (· ∈ s) m := by
-  simp only [wellFounded_iff_has_min, not_lt_iff_le_imp_ge, Minimal]
+  simp [wellFounded_iff_has_min, not_lt_iff_le_imp_ge, Minimal]
 
 @[to_dual]
 alias ⟨_root_.WellFoundedLT.exists_minimal, _⟩ := wellFoundedLT_iff_exists_minimal

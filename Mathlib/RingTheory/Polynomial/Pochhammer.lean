@@ -303,7 +303,7 @@ end
 theorem descPochhammer_eval_cast (n : ℕ) (k : ℤ) :
     (((descPochhammer ℤ n).eval k : ℤ) : R) = ((descPochhammer R n).eval k : R) := by
   rw [← descPochhammer_map (algebraMap ℤ R), eval_map, ← eq_intCast (algebraMap ℤ R)]
-  simp only [algebraMap_int_eq, eq_intCast, eval₂_at_intCast, Int.cast_id]
+  simp [algebraMap_int_eq, eq_intCast, eval₂_at_intCast, Int.cast_id]
 
 theorem descPochhammer_eval_zero {n : ℕ} :
     (descPochhammer R n).eval 0 = if n = 0 then 1 else 0 := by
@@ -374,7 +374,7 @@ theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
   | succ n ih =>
     rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_eval, ih,
       ascPochhammer_succ_left, X_mul, eval_mul_X, show (X + 1 : R[X]) =
-      (X + 1 : ℕ[X]).map (algebraMap ℕ R) by simp only [Polynomial.map_add, map_X,
+      (X + 1 : ℕ[X]).map (algebraMap ℕ R) by simp [Polynomial.map_add, map_X,
       Polynomial.map_one], ascPochhammer_eval_comp, eval₂_add, eval₂_X, eval₂_one]
 
 theorem descPochhammer_mul (n m : ℕ) :
@@ -389,7 +389,7 @@ theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
     (ascPochhammer R k).eval (-r) = (-1) ^ k * (descPochhammer R k).eval r
   | 0 => by
     rw [ascPochhammer_zero, descPochhammer_zero]
-    simp only [eval_one, pow_zero, mul_one]
+    simp [eval_one, pow_zero, mul_one]
   | (k + 1) => by
     rw [ascPochhammer_succ_right, mul_add, eval_add, eval_mul_X, ← Nat.cast_comm, eval_natCast_mul,
       Nat.cast_comm, ← mul_add, ascPochhammer_eval_neg_eq_descPochhammer r k, mul_assoc,
@@ -437,7 +437,7 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
     (n : ℕ) (r : R) : (ascPochhammer R n).eval r = 0 ↔ ∃ k < n, k = -r := by
   refine ⟨fun zero' ↦ ?_, fun hrn ↦ ?_⟩
   · induction n with
-    | zero => simp only [ascPochhammer_zero, Polynomial.eval_one, one_ne_zero] at zero'
+    | zero => simp [ascPochhammer_zero, Polynomial.eval_one, one_ne_zero] at zero'
     | succ n ih =>
       rw [ascPochhammer_succ_eval, mul_eq_zero] at zero'
       cases zero' with

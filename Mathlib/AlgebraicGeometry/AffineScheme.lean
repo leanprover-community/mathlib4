@@ -68,7 +68,7 @@ def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
 @[reassoc]
 theorem Scheme.isoSpec_hom_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     X.isoSpec.hom ≫ Spec.map (f.appTop) = f ≫ Y.isoSpec.hom := by
-  simp only [isoSpec, asIso_hom, Scheme.toSpecΓ_naturality]
+  simp [isoSpec, asIso_hom, Scheme.toSpecΓ_naturality]
 
 @[reassoc]
 theorem Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
@@ -364,7 +364,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Scheme.Opens.toSpecΓ_naturality {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) :
     (f ⁻¹ᵁ U).toSpecΓ ≫ Spec.map (f.app U) = f ∣_ U ≫ U.toSpecΓ := by
-  simp only [toSpecΓ, topIso, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv,
+  simp [toSpecΓ, topIso, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv,
     eqToHom_op, Hom.app_eq_appLE, Category.assoc, ← Spec.map_comp, Hom.appLE_map,
     toSpecΓ_naturality_assoc, TopologicalSpace.Opens.map_top, morphismRestrict_appLE, Hom.map_appLE]
 
@@ -915,7 +915,7 @@ def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens)
     dsimp [← AlgEquiv.symm_toRingEquiv]
     simp only [IsLocalization.map_eq, RingHom.id_apply, Localization.localRingHom_to_map,
       RingHomCompTriple.comp_apply]
-    simp only [RingHom.algebraMap_toAlgebra, Scheme.Hom.germ_stalkMap_apply, Scheme.Hom.appLE,
+    simp [RingHom.algebraMap_toAlgebra, Scheme.Hom.germ_stalkMap_apply, Scheme.Hom.appLE,
       homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
       X.presheaf.germ_res_apply]
 
@@ -958,7 +958,7 @@ theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
   · simp only [Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [← Set.compl_iInter, Set.compl_univ_iff, ← PrimeSpectrum.zeroLocus_iUnion, ←
       PrimeSpectrum.zeroLocus_empty_iff_eq_top, PrimeSpectrum.zeroLocus_span]
-    simp only [Set.iUnion_singleton_eq_range, Subtype.range_val_subtype, Set.ofPred_mem_eq]
+    simp [Set.iUnion_singleton_eq_range, Subtype.range_val_subtype, Set.ofPred_mem_eq]
 
 include hU in
 theorem self_le_iSup_basicOpen_iff {s : Set Γ(X, U)} :
@@ -1182,10 +1182,10 @@ lemma Scheme.zeroLocus_inf (X : Scheme.{u}) {U : X.Opens} (I J : Ideal Γ(X, U))
     ext x
     by_cases hxU : x ∈ U
     · simpa [hxU] using congr(⟨x, hxU⟩ ∈ $this)
-    · simp only [Submodule.coe_inf, Set.mem_union,
+    · simp [Submodule.coe_inf, Set.mem_union,
         codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) (I ∩ J)) hxU,
         codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) I) hxU, true_or]
-  simp only [← U.toSpecΓ_preimage_zeroLocus, PrimeSpectrum.zeroLocus_inf I J,
+  simp [← U.toSpecΓ_preimage_zeroLocus, PrimeSpectrum.zeroLocus_inf I J,
     Set.preimage_union]
 
 lemma Scheme.zeroLocus_biInf

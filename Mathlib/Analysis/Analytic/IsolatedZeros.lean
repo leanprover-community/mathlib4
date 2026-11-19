@@ -69,7 +69,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
     convert! h2.const_smul (z⁻¹ ^ n) using 2 with x
     · match_scalars
       simp [field, pow_add]
-    · simp only [inv_pow]
+    · simp [inv_pow]
 
 end HasSum
 
@@ -242,7 +242,7 @@ theorem eqOn_or_eventually_ne_of_preconnected (hf : AnalyticOnNhd 𝕜 f U) (hg 
     (hU : IsPreconnected U) : EqOn f g U ∨ ∀ᶠ x in codiscreteWithin U, f x ≠ g x :=
   (eqOn_zero_or_eventually_ne_zero_of_preconnected (hf.sub hg) hU).imp
     (fun h _ hx ↦ eq_of_sub_eq_zero (h hx))
-    (by simp only [Pi.sub_apply, ne_eq, sub_eq_zero, imp_self])
+    (by simp [Pi.sub_apply, ne_eq, sub_eq_zero, imp_self])
 
 theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : z₀ ∈ closure ({z | f z = g z} \ {z₀})) :

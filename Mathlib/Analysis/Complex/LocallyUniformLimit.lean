@@ -92,7 +92,7 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
     (hδ : 0 < δ) (hFn : ∀ᶠ n in φ, ContinuousOn (F n) (cthickening δ K)) :
     TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) φ K := by
   rcases φ.eq_or_neBot with rfl | hne
-  · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
+  · simp [TendstoUniformlyOn, eventually_bot, imp_true_iff]
   have e1 : ContinuousOn f (cthickening δ K) := TendstoUniformlyOn.continuousOn hF hFn.frequently
   rw [tendstoUniformlyOn_iff] at hF ⊢
   rintro ε hε
@@ -156,7 +156,7 @@ theorem _root_.TendstoLocallyUniformlyOn.deriv (hf : TendstoLocallyUniformlyOn F
     TendstoLocallyUniformlyOn (deriv ∘ F) (deriv f) φ U := by
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hU]
   rcases φ.eq_or_neBot with rfl | hne
-  · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
+  · simp [TendstoUniformlyOn, eventually_bot, imp_true_iff]
   rintro K hKU hK
   obtain ⟨δ, hδ, hK4, h⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
   refine h.congr_right fun z hz => cderiv_eq_deriv hU (hf.differentiableOn hF hU) hδ ?_

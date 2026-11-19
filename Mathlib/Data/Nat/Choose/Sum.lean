@@ -36,9 +36,9 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   let t : ℕ → ℕ → R := fun n m ↦ x ^ m * y ^ (n - m) * n.choose m
   change (x + y) ^ n = ∑ m ∈ range (n + 1), t n m
   have h_first : ∀ n, t n 0 = y ^ n := fun n ↦ by
-    simp only [t, choose_zero_right, pow_zero, cast_one, mul_one, one_mul, Nat.sub_zero]
+    simp [t, choose_zero_right, pow_zero, cast_one, mul_one, one_mul, Nat.sub_zero]
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
-    simp only [t, choose_succ_self, cast_zero, mul_zero]
+    simp [t, choose_succ_self, cast_zero, mul_zero]
   have h_middle :
       ∀ n i : ℕ, i ∈ range n.succ → (t n.succ i.succ) = x * t n i + y * t n i.succ := by
     intro n i h_mem
@@ -210,7 +210,7 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
 theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset α} :
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = if x = ∅ then 1 else 0 := by
   rw [sum_powerset_apply_card]
-  simp only [nsmul_eq_mul', ← card_eq_zero, Int.alternating_sum_range_choose]
+  simp [nsmul_eq_mul', ← card_eq_zero, Int.alternating_sum_range_choose]
 
 theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (h0 : x.Nonempty) :
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = 0 := by

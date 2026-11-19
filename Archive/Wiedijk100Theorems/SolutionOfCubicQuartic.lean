@@ -90,7 +90,7 @@ theorem cubic_depressed_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p
     (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r) (ht : t * s = p) (x : K) :
     x ^ 3 + 3 * p * x - 2 * q = 0 ↔ x = s - t ∨ x = s * ω - t * ω ^ 2 ∨ x = s * ω ^ 2 - t * ω := by
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
-    intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
+    intros; simp [mul_eq_zero, sub_eq_zero, or_assoc]
   rw [h₁]
   apply Eq.congr_left
   have hs_nonzero : s ≠ 0 := by
@@ -131,7 +131,7 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
     a * x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
       x = s - b / (3 * a) ∨ x = s * ω - b / (3 * a) ∨ x = s * ω ^ 2 - b / (3 * a) := by
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
-    intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
+    intros; simp [mul_eq_zero, sub_eq_zero, or_assoc]
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz; rw [hpz]
   have hb3 : b ^ 3 = 3 * a * b * c := by rw [pow_succ, hb2]; ring

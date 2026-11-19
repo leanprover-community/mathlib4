@@ -65,7 +65,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
   isLimit := isLimitOfReflects F <|
     IsLimit.ofConeEquiv (Cone.postcomposeEquivalence (compNatIso F)) <|
       (IsLimit.ofIsoLimit (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
-        simp only [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
+        simp [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
         hf.isLimit)) (Fork.ext (Iso.refl _) (by simp [compNatIso, Fork.ι]))
 
 end
@@ -98,7 +98,7 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
   g := k ≫ hn.g
   w := by
     have reassoc' {W : C} (h' : S ⟶ W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by
-      simp only [← Category.assoc, eq_whisker comm]
+      simp [← Category.assoc, eq_whisker comm]
     rw [← reassoc', hn.w, HasZeroMorphisms.comp_zero]
   isLimit := by
     letI gr := regularOfIsPullbackSndOfRegular hn.regularMono comm t

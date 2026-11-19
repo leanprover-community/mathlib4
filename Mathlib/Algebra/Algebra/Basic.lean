@@ -169,7 +169,7 @@ abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z
-    intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
+    intCast_ofNat := fun z => by simp [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
 
 /-- The `CommRing` structure on a `CommSemiring` induced by a ring morphism from a `CommRing`. -/

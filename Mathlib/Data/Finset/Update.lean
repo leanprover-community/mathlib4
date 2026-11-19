@@ -45,7 +45,7 @@ theorem updateFinset_singleton {y} :
   congr with j
   by_cases hj : j = i
   · cases hj
-    simp only [dite_eq_left, Finset.mem_singleton, update_self, updateFinset]
+    simp [dite_eq_left, Finset.mem_singleton, update_self, updateFinset]
   · simp [hj, updateFinset]
 
 theorem update_eq_updateFinset {y} :

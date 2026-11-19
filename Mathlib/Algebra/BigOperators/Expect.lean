@@ -259,14 +259,14 @@ lemma expect_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : �
 For rewriting in the reverse direction, use `Finset.expect_product'`. -/
 lemma expect_product (s : Finset ι) (t : Finset κ) (f : ι × κ → M) :
     𝔼 x ∈ s ×ˢ t, f x = 𝔼 i ∈ s, 𝔼 j ∈ t, f (i, j) := by
-  simp only [expect, card_product, sum_product, smul_sum, mul_inv, mul_smul, Nat.cast_mul]
+  simp [expect, card_product, sum_product, smul_sum, mul_inv, mul_smul, Nat.cast_mul]
 
 /-- Expectation over a product set equals the expectation of the fiberwise expectations.
 
 For rewriting in the reverse direction, use `Finset.expect_product`. -/
 lemma expect_product' (s : Finset ι) (t : Finset κ) (f : ι → κ → M) :
     𝔼 i ∈ s ×ˢ t, f i.1 i.2 = 𝔼 i ∈ s, 𝔼 j ∈ t, f i j := by
-  simp only [expect, card_product, sum_product', smul_sum, mul_inv, mul_smul, Nat.cast_mul]
+  simp [expect, card_product, sum_product', smul_sum, mul_inv, mul_smul, Nat.cast_mul]
 
 @[simp]
 lemma expect_image [DecidableEq ι] {m : κ → ι} (hm : (t : Set κ).InjOn m) :
@@ -281,7 +281,7 @@ lemma expect_inv_index [DecidableEq ι] [InvolutiveInv ι] (s : Finset ι) (f : 
 
 lemma _root_.map_expect {F : Type*} [FunLike F M N] [LinearMapClass F ℚ≥0 M N]
     (g : F) (f : ι → M) (s : Finset ι) :
-    g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_sum]
+    g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp [expect, map_smul, map_sum]
 
 @[simp]
 lemma card_smul_expect (s : Finset ι) (f : ι → M) : #s • 𝔼 i ∈ s, f i = ∑ i ∈ s, f i := by
@@ -299,7 +299,7 @@ lemma card_smul_expect (s : Finset ι) (f : ι → M) : #s • 𝔼 i ∈ s, f i
 
 lemma smul_expect {G : Type*} [DistribSMul G M] [SMulCommClass G ℚ≥0 M] (a : G)
     (s : Finset ι) (f : ι → M) : a • 𝔼 i ∈ s, f i = 𝔼 i ∈ s, a • f i := by
-  simp only [expect, smul_sum, smul_comm]
+  simp [expect, smul_sum, smul_comm]
 
 end AddCommMonoid
 
@@ -308,7 +308,7 @@ variable [AddCommGroup M] [Module ℚ≥0 M]
 
 lemma expect_sub_distrib (s : Finset ι) (f g : ι → M) :
     𝔼 i ∈ s, (f i - g i) = 𝔼 i ∈ s, f i - 𝔼 i ∈ s, g i := by
-  simp only [expect, sum_sub_distrib, smul_sub]
+  simp [expect, sum_sub_distrib, smul_sub]
 
 @[simp]
 lemma expect_neg_distrib (s : Finset ι) (f : ι → M) : 𝔼 i ∈ s, -f i = -𝔼 i ∈ s, f i := by

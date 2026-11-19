@@ -118,7 +118,7 @@ instance [GeometricallyIrreducible g] [UniversallyOpen g] [IrreducibleSpace X] :
 
 lemma GeometricallyIrreducible.iff_geometricallyIrreducible_fiber :
     GeometricallyIrreducible f ↔ ∀ s, GeometricallyIrreducible (f.fiberToSpecResidueField s) := by
-  simp only [GeometricallyIrreducible.eq_geometrically,
+  simp [GeometricallyIrreducible.eq_geometrically,
     ← geometrically_iff_forall_fiberToSpecResidueField]
 
 lemma GeometricallyIrreducible.comp

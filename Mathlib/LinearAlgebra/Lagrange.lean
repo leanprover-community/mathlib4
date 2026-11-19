@@ -147,7 +147,7 @@ def basisDivisor (x y : F) : F[X] :=
   C (x - y)⁻¹ * (X - C y)
 
 theorem basisDivisor_self : basisDivisor x x = 0 := by
-  simp only [basisDivisor, sub_self, inv_zero, map_zero, zero_mul]
+  simp [basisDivisor, sub_self, inv_zero, map_zero, zero_mul]
 
 theorem basisDivisor_inj (hxy : basisDivisor x y = 0) : x = y := by
   simp_rw [basisDivisor, mul_eq_zero, X_sub_C_ne_zero, or_false, C_eq_zero, inv_eq_zero,
@@ -177,7 +177,7 @@ theorem natDegree_basisDivisor_of_ne (hxy : x ≠ y) : (basisDivisor x y).natDeg
 
 @[simp]
 theorem eval_basisDivisor_right : eval y (basisDivisor x y) = 0 := by
-  simp only [basisDivisor, eval_mul, eval_C, eval_sub, eval_X, sub_self, mul_zero]
+  simp [basisDivisor, eval_mul, eval_C, eval_sub, eval_X, sub_self, mul_zero]
 
 theorem eval_basisDivisor_left_of_ne (hxy : x ≠ y) : eval x (basisDivisor x y) = 1 := by
   simp only [basisDivisor, eval_mul, eval_C, eval_sub, eval_X]
@@ -208,7 +208,7 @@ theorem basis_singleton (i : ι) : Lagrange.basis {i} v i = 1 := by
 
 @[simp]
 theorem basis_pair_left (hij : i ≠ j) : Lagrange.basis {i, j} v i = basisDivisor (v i) (v j) := by
-  simp only [Lagrange.basis, hij, erase_insert_eq_erase, erase_eq_of_notMem, mem_singleton,
+  simp [Lagrange.basis, hij, erase_insert_eq_erase, erase_eq_of_notMem, mem_singleton,
     not_false_iff, prod_singleton]
 
 @[simp]
@@ -553,7 +553,7 @@ theorem nodal_ne_zero [Nontrivial R] : nodal s v ≠ 0 := by
   rcases s.eq_empty_or_nonempty with (rfl | h)
   · exact one_ne_zero
   · apply ne_zero_of_natDegree_gt (n := 0)
-    simp only [natDegree_nodal, h.card_pos]
+    simp [natDegree_nodal, h.card_pos]
 
 @[simp]
 theorem degree_nodal [Nontrivial R] : (nodal s v).degree = #s := by
@@ -698,7 +698,7 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hx : ∀ i ∈ s, x
   · simp
   rw [← div_one (eval x (interpolate s v r)), ← @eval_one _ _ x, ← interpolate_one hvs hs,
     eval_interpolate_not_at_node r hx, eval_interpolate_not_at_node 1 hx]
-  simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]
+  simp [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]
 
 end LagrangeBarycentric
 

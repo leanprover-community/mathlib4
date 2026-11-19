@@ -175,7 +175,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
       (equivOpposite.symm (MulOpposite.op M)) := by
-  simp only [linearDisjoint_iff, mulMap_op, LinearMap.coe_comp,
+  simp [linearDisjoint_iff, mulMap_op, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
 
 alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op

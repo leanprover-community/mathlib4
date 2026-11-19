@@ -204,7 +204,7 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
     exact (box n ν).measurableSet_coe.nullMeasurableSet
   · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _).aedisjoint
   · exact lt_top_iff_ne_top.mp <| measure_lt_top_of_subset
-      (by simp only [Set.iUnion_subset_iff, Set.inter_subset_right, implies_true]) hs₂
+      (by simp [Set.iUnion_subset_iff, Set.inter_subset_right, implies_true]) hs₂
   · rw [Set.mem_ofPred, Set.inter_eq_self_of_subset_left hν, volume_box]
 
 /-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.box` that are subsets of `B`.
@@ -446,8 +446,8 @@ theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : 
     rw [one_div, inv_le_comm₀ (mod_cast (Nat.pos_of_neZero n)) (r 0 0).prop]
     exact le_trans (Nat.le_ceil _) (Nat.cast_le.mpr hn)
   · exact prepartition_isHenstock n B
-  · simp only [IntegrationParams.Riemann, Bool.false_eq_true] at h
-  · simp only [IntegrationParams.Riemann, Bool.false_eq_true] at h
+  · simp [IntegrationParams.Riemann, Bool.false_eq_true] at h
+  · simp [IntegrationParams.Riemann, Bool.false_eq_true] at h
 
 /-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has zero volume. Then the limit
 as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι` tends to the volume of `s`. This is a

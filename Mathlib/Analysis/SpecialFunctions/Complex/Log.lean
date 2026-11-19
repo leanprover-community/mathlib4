@@ -34,9 +34,9 @@ theorem log_re (x : ℂ) : x.log.re = Real.log ‖x‖ := by simp [log]
 
 theorem log_im (x : ℂ) : x.log.im = x.arg := by simp [log]
 
-theorem neg_pi_lt_log_im (x : ℂ) : -π < (log x).im := by simp only [log_im, neg_pi_lt_arg]
+theorem neg_pi_lt_log_im (x : ℂ) : -π < (log x).im := by simp [log_im, neg_pi_lt_arg]
 
-theorem log_im_le_pi (x : ℂ) : (log x).im ≤ π := by simp only [log_im, arg_le_pi]
+theorem log_im_le_pi (x : ℂ) : (log x).im ≤ π := by simp [log_im, arg_le_pi]
 
 theorem exp_log {x : ℂ} (hx : x ≠ 0) : exp (log x) = x := by
   rw [log, exp_add_mul_I, ← ofReal_sin, sin_arg, ← ofReal_cos, cos_arg hx, ← ofReal_exp,
@@ -190,7 +190,7 @@ theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y
   rw [exp_sub, div_eq_one_iff_eq (exp_ne_zero _)]
 
 theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
-  simp only [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
+  simp [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
 
 @[grind .] lemma re_eq_re_of_cexp_eq_cexp {x y : ℂ} (h : cexp x = cexp y) :
     x.re = y.re := by

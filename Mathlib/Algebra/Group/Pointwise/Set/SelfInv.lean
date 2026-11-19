@@ -33,7 +33,7 @@ variable [Inv α] [Inv β] {s t : Set α}
 
 @[to_additive]
 lemma isSelfInv_iff_forall_inv_mem_iff : IsSelfInv s ↔ ∀ x, x⁻¹ ∈ s ↔ x ∈ s := by
-  simp only [isSelfInv_iff, Set.ext_iff, mem_inv]
+  simp [isSelfInv_iff, Set.ext_iff, mem_inv]
 
 @[to_additive (attr := simp)]
 protected lemma IsSelfInv.empty : IsSelfInv (∅ : Set α) := inv_empty
@@ -78,7 +78,7 @@ protected lemma IsSelfInv.prod {t : Set β} (hs : IsSelfInv s) (ht : IsSelfInv t
 
 @[to_additive (attr := simp)]
 lemma isSelfInv_compl_iff : IsSelfInv sᶜ ↔ IsSelfInv s := by
-  simp only [isSelfInv_iff, compl_inv, compl_inj_iff]
+  simp [isSelfInv_iff, compl_inv, compl_inj_iff]
 
 @[to_additive]
 protected alias ⟨IsSelfInv.of_compl, IsSelfInv.compl⟩ := isSelfInv_compl_iff

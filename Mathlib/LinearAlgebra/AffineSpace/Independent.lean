@@ -245,7 +245,7 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
       let w1 : ι → k := Function.update (Function.const ι 0) i0 1
       have hw1 : ∑ i ∈ s, w1 i = 1 := by
         rw [Finset.sum_update_of_mem hi0]
-        simp only [Finset.sum_const_zero, add_zero, const_apply]
+        simp [Finset.sum_const_zero, add_zero, const_apply]
       have hw1s : s.affineCombination k p w1 = p i0 :=
         s.affineCombination_of_eq_one_of_eq_zero w1 p hi0 (Function.update_self ..)
           fun _ _ hne => Function.update_of_ne hne ..
@@ -795,7 +795,7 @@ theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
         rename V => x
         by_cases hx : x ∈ t <;> simp [hx]
     all_goals
-      simp only [f, Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
+      simp [f, Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
 
 variable {s : Finset ι} {w w₁ w₂ : ι → k} {p : ι → V}
 
@@ -869,7 +869,7 @@ theorem affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndepend
     AffineSubspace.vadd_mem_iff_mem_direction _ (left_mem_affineSpan_pair _ _ _),
     direction_affineSpan, s.affineCombination_vsub, Set.pair_comm,
     weightedVSub_mem_vectorSpan_pair h _ hw₂ hw₁]
-  · simp only [Pi.sub_apply, sub_eq_iff_eq_add]
+  · simp [Pi.sub_apply, sub_eq_iff_eq_add]
   · simp_all only [Pi.sub_apply, Finset.sum_sub_distrib, sub_self]
 
 /-- Given an affinely independent family of points, an affine combination (with sum of weights 1)

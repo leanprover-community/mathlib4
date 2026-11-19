@@ -86,7 +86,7 @@ theorem sort_range (n : ℕ) : sort (range n) = List.range n :=
 open scoped List in
 theorem sort_perm_toList : sort s r ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
-  simp only [coe_toList, sort_eq]
+  simp [coe_toList, sort_eq]
 
 theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
     sort l.toFinset r = l ↔ l.Pairwise r := by
@@ -224,7 +224,7 @@ theorem orderEmbOfFin_mem (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k)
 @[simp]
 theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Set.range (s.orderEmbOfFin h) = s := by
-  simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
+  simp [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
     OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
     Subtype.range_coe_subtype, Finset.setOfPred_mem]
@@ -249,7 +249,7 @@ theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
     orderEmbOfFin s h ⟨0, hz⟩ = s.min' (card_pos.mp (h.symm ▸ hz)) := by
-  simp only [orderEmbOfFin_apply, Fin.getElem_fin, sorted_zero_eq_min']
+  simp [orderEmbOfFin_apply, Fin.getElem_fin, sorted_zero_eq_min']
 
 /-- The bijection `orderEmbOfFin s h` sends `k-1` to the maximum of `s`. -/
 theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
@@ -299,7 +299,7 @@ def orderEmbOfCardLe (s : Finset α) {k : ℕ} (h : k ≤ s.card) : Fin k ↪o �
 
 theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
     orderEmbOfCardLe s h a ∈ s := by
-  simp only [orderEmbOfCardLe, RelEmbedding.coe_trans, Finset.orderEmbOfFin_mem,
+  simp [orderEmbOfCardLe, RelEmbedding.coe_trans, Finset.orderEmbOfFin_mem,
     Function.comp_apply]
 
 lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}

@@ -84,7 +84,7 @@ lemma le_centralizer_centralizer {s : Submonoid M} : s ≤ centralizer (centrali
 lemma centralizer_centralizer_centralizer {s : Set M} :
     centralizer s.centralizer.centralizer = centralizer s := by
   apply SetLike.coe_injective
-  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
+  simp [coe_centralizer, Set.centralizer_centralizer_centralizer]
 
 variable {M} in
 @[to_additive]

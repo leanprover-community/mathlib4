@@ -246,7 +246,7 @@ alias LinearEquiv.nonempty_equiv_iff_rank_eq := Module.nonempty_linearEquiv_iff_
 theorem FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
     [Module.Finite R M] [Module.Finite R M'] (cond : finrank R M = finrank R M') :
     Nonempty (M ≃ₗ[R] M') :=
-  nonempty_linearEquiv_of_lift_rank_eq <| by simp only [← finrank_eq_rank, cond, lift_natCast]
+  nonempty_linearEquiv_of_lift_rank_eq <| by simp [← finrank_eq_rank, cond, lift_natCast]
 
 /-- Two finite and free modules are isomorphic if and only if they have the same (finite) rank. -/
 theorem FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq [Module.Finite R M]
@@ -286,7 +286,7 @@ theorem finite_of_finrank_eq_succ {n : ℕ} (hn : finrank R M = n.succ) : Module
 theorem finite_iff_of_rank_eq_nsmul {W} [AddCommMonoid W] [Module R W] [Module.Free R W] {n : ℕ}
     (hn : n ≠ 0) (hVW : Module.rank R M = n • Module.rank R W) :
     Module.Finite R M ↔ Module.Finite R W := by
-  simp only [← rank_lt_aleph0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
+  simp [← rank_lt_aleph0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
 
 variable (R S M) in
 omit [Module.Free R M] in

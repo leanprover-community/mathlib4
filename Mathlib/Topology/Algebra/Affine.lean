@@ -42,28 +42,28 @@ private theorem linear_decomp {f : P →ᵃ[R] Q} :
 
 /-- If `f` is an affine map, then its linear part is continuous iff `f` is continuous. -/
 theorem continuous_linear_iff {f : P →ᵃ[R] Q} : Continuous f.linear ↔ Continuous f := by
-  simp only [linear_decomp, Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
+  simp [linear_decomp, Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
 
 /-- If `f` is an affine map, then its linear part is an open map iff `f` is an open map. -/
 theorem isOpenMap_linear_iff {f : P →ᵃ[R] Q} : IsOpenMap f.linear ↔ IsOpenMap f := by
-  simp only [linear_decomp, Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
+  simp [linear_decomp, Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
 
 /-- If `f` is an affine map, then its linear part is an embedding iff `f` is an embedding. -/
 theorem isEmbedding_linear_iff {f : P →ᵃ[R] Q} : IsEmbedding f.linear ↔ IsEmbedding f := by
-  simp only [linear_decomp, Homeomorph.comp_isEmbedding_iff, Homeomorph.isEmbedding_comp_iff]
+  simp [linear_decomp, Homeomorph.comp_isEmbedding_iff, Homeomorph.isEmbedding_comp_iff]
 
 /-- If `f` is an affine map, then its linear part is an open embedding iff `f` is an open embedding.
 -/
 theorem isOpenEmbedding_linear_iff {f : P →ᵃ[R] Q} :
     IsOpenEmbedding f.linear ↔ IsOpenEmbedding f := by
-  simp only [linear_decomp, Homeomorph.comp_isOpenEmbedding_iff,
+  simp [linear_decomp, Homeomorph.comp_isOpenEmbedding_iff,
     Homeomorph.isOpenEmbedding_comp_iff]
 
 /-- If `f` is an affine map, then its linear part is a closed embedding iff `f` is a closed
 embedding. -/
 theorem isClosedEmbedding_linear_iff {f : P →ᵃ[R] Q} :
     IsClosedEmbedding f.linear ↔ IsClosedEmbedding f := by
-  simp only [linear_decomp, Homeomorph.comp_isClosedEmbedding_iff,
+  simp [linear_decomp, Homeomorph.comp_isClosedEmbedding_iff,
     Homeomorph.isClosedEmbedding_comp_iff]
 
 variable [TopologicalSpace R] [ContinuousSMul R V]

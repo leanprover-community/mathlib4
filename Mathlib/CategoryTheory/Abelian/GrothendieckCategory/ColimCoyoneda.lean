@@ -73,7 +73,7 @@ def g : (Functor.const _).obj X ⟶ Under.forget j₀ ⋙ Y where
   app t := y ≫ Y.map t.hom
   naturality t₁ t₂ f := by
     dsimp
-    simp only [Category.id_comp, Category.assoc, ← Functor.map_comp, Under.w]
+    simp [Category.id_comp, Category.assoc, ← Functor.map_comp, Under.w]
 
 /-- The obvious morphism `colimit (kernel (g y)) ⟶ X` (which is an epimorphism
 if `J` is filtered, see `epi_f`). -/

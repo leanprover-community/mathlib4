@@ -352,7 +352,7 @@ lemma isPushout_of_isPullback_of_mono {k : X₄ ⟶ X₅}
       b' x₃ = b' y₃ → x₃ = y₃) :
     IsPushout t l r b := by
   obtain ⟨φ, hφ₁, hφ₂⟩ := pushout.exists_desc t l r b
-    (by simp only [← cancel_mono k, Category.assoc, facr, facb, h₁.w])
+    (by simp [← cancel_mono k, Category.assoc, facr, facb, h₁.w])
   have := mono_of_isPushout_of_isPullback (IsPushout.of_hasPushout t l) h₁
     (k := φ ≫ k) (by cat_disch) (by cat_disch) H
   have : IsIso φ := by

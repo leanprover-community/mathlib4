@@ -45,7 +45,7 @@ def EventuallyConst (f : α → β) (l : Filter α) : Prop := (map f l).Subsingl
 
 theorem HasBasis.eventuallyConst_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     (h : l.HasBasis p s) : EventuallyConst f l ↔ ∃ i, p i ∧ ∀ x ∈ s i, ∀ y ∈ s i, f x = f y :=
-  (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, forall_mem_image]
+  (h.map f).subsingleton_iff.trans <| by simp [Set.Subsingleton, forall_mem_image]
 
 theorem HasBasis.eventuallyConst_iff' {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     {x : ι → α} (h : l.HasBasis p s) (hx : ∀ i, p i → x i ∈ s i) :
@@ -70,7 +70,7 @@ alias ⟨EventuallyConst.eventuallyEq_const, _⟩ := eventuallyConst_iff_exists_
 
 theorem eventuallyConst_pred' {p : α → Prop} :
     EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
-  simp only [eventuallyConst_iff_exists_eventuallyEq, Prop.exists]
+  simp [eventuallyConst_iff_exists_eventuallyEq, Prop.exists]
 
 theorem eventuallyConst_pred {p : α → Prop} :
     EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
@@ -113,7 +113,7 @@ theorem eventuallyConst_preimage {s : Set β} {f : α → β} :
 
 theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
     EventuallyConst f l ↔ EventuallyConst g l := by
-  simp only [EventuallyConst, map_congr h]
+  simp [EventuallyConst, map_congr h]
 
 @[simp] theorem eventuallyConst_id : EventuallyConst id l ↔ l.Subsingleton := Iff.rfl
 
@@ -237,7 +237,7 @@ end EventuallyConst
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) :=
   (atTop_basis.eventuallyConst_iff' fun _ _ ↦ self_mem_Ici).trans <| by
-    simp only [true_and, mem_Ici]
+    simp [true_and, mem_Ici]
 
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :
     EventuallyConst f atTop ↔ ∃ n, ∀ m, n ≤ m → f (m + 1) = f m := by

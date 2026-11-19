@@ -117,7 +117,7 @@ variable (K : LieSubalgebra R L)
 
 theorem exists_lieIdeal_coe_eq_iff :
     (∃ I : LieIdeal R L, ↑I = K) ↔ ∀ x y : L, y ∈ K → ⁅x, y⁆ ∈ K := by
-  simp only [← toSubmodule_inj, LieIdeal.toLieSubalgebra_toSubmodule,
+  simp [← toSubmodule_inj, LieIdeal.toLieSubalgebra_toSubmodule,
     Submodule.exists_lieSubmodule_coe_eq_iff L, mem_toSubmodule]
 
 theorem exists_nested_lieIdeal_coe_eq_iff {K' : LieSubalgebra R L} (h : K ≤ K') :
@@ -339,7 +339,7 @@ variable {f} in
 @[simp]
 theorem mem_ker {x : L} : x ∈ ker f ↔ f x = 0 :=
   show x ∈ LieSubmodule.toSubmodule (f.ker) ↔ _ by
-    simp only [ker_toSubmodule, LinearMap.mem_ker, coe_toLinearMap]
+    simp [ker_toSubmodule, LinearMap.mem_ker, coe_toLinearMap]
 
 @[simp]
 lemma comap_bot : LieIdeal.comap f ⊥ = ker f :=
@@ -472,7 +472,7 @@ theorem inclusion_apply {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁
 theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :
     Function.Injective (inclusion h) :=
   fun x y ↦ by
-  simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
+  simp [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
 theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := by
   refine le_antisymm ?_ (LieIdeal.map_mono le_sup_left)

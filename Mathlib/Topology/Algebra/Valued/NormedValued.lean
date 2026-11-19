@@ -160,7 +160,7 @@ def toNormedField : NormedField L :=
     norm := val.v.norm
     dist := fun x y => val.v.norm (x - y)
     dist_self := fun x => by
-      simp only [sub_self, Valuation.norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
+      simp [sub_self, Valuation.norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
     dist_comm := fun x y => by simp only [Valuation.norm]; rw [← neg_sub, Valuation.map_neg]
     dist_triangle := fun x y z => by
       simp only [← sub_add_sub_cancel x y z]
@@ -170,7 +170,7 @@ def toNormedField : NormedField L :=
     dist_eq := fun x y => by
       simp only [Valuation.norm]
       rw [← v.restrict.map_neg, neg_sub, sub_eq_add_neg, add_comm]
-    norm_mul := fun x y => by simp only [Valuation.norm, ← NNReal.coe_mul, map_mul]
+    norm_mul := fun x y => by simp [Valuation.norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       have : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype

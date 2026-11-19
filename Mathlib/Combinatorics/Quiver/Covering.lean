@@ -234,7 +234,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
   induction p with
   | nil =>
     use ⟨u, Path.nil⟩
-    simp only [Prefunctor.mapPath_nil]
+    simp [Prefunctor.mapPath_nil]
   | cons p' ev ih =>
     obtain ⟨⟨u', q'⟩, h⟩ := ih
     simp only at h
@@ -246,7 +246,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
     simp only [heq_eq_eq] at k
     subst k
     use ⟨_, q'.cons eu⟩
-    simp only [Prefunctor.mapPath_cons]
+    simp [Prefunctor.mapPath_cons]
 
 theorem Prefunctor.pathStar_bijective (hφ : ∀ u, Bijective (φ.star u)) (u : U) :
     Bijective (φ.pathStar u) :=

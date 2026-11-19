@@ -159,7 +159,7 @@ instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α
     induction_on₂ x y
       (isClosed_eq ((continuous_fst.fun_add continuous_snd).fun_const_smul _)
         ((continuous_fst.fun_const_smul _).fun_add (continuous_snd.fun_const_smul _)))
-      fun a b ↦ by simp only [← coe_add, ← coe_smul, smul_add]
+      fun a b ↦ by simp [← coe_add, ← coe_smul, smul_add]
   smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, smul_zero r]
 
 /-- The map from a group to its completion as a group hom. -/

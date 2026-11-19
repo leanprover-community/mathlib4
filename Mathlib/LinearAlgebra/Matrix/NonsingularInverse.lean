@@ -123,7 +123,7 @@ def unitOfDetInvertible [Invertible A.det] : (Matrix n n α)ˣ :=
 
 /-- When lowered to a prop, `Matrix.invertibleEquivDetInvertible` forms an `iff`. -/
 theorem isUnit_iff_isUnit_det : IsUnit A ↔ IsUnit A.det := by
-  simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivDetInvertible A).nonempty_congr]
+  simp [← nonempty_invertible_iff_isUnit, (invertibleEquivDetInvertible A).nonempty_congr]
 
 @[simp]
 theorem isUnits_det_units (A : (Matrix n n α)ˣ) : IsUnit (A : Matrix n n α).det :=
@@ -222,7 +222,7 @@ instance [Invertible A] : Invertible A⁻¹ := by
 
 @[simp]
 theorem inv_inv_of_invertible [Invertible A] : A⁻¹⁻¹ = A := by
-  simp only [← invOf_eq_nonsing_inv, invOf_invOf]
+  simp [← invOf_eq_nonsing_inv, invOf_invOf]
 
 @[simp]
 theorem mul_nonsing_inv_cancel_right (B : Matrix m n α) (h : IsUnit A.det) : B * A * A⁻¹ = B := by
@@ -572,7 +572,7 @@ def diagonalInvertibleEquivInvertible (v : n → α) : Invertible (diagonal v) �
 /-- When lowered to a prop, `Matrix.diagonalInvertibleEquivInvertible` forms an `iff`. -/
 @[simp]
 theorem isUnit_diagonal {v : n → α} : IsUnit (diagonal v) ↔ IsUnit v := by
-  simp only [← nonempty_invertible_iff_isUnit,
+  simp [← nonempty_invertible_iff_isUnit,
     (diagonalInvertibleEquivInvertible v).nonempty_congr]
 
 theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal v⁻¹ʳ := by
@@ -727,7 +727,7 @@ def submatrixEquivInvertibleEquivInvertible (A : Matrix m m α) (e₁ e₂ : n �
 @[simp]
 theorem isUnit_submatrix_equiv {A : Matrix m m α} (e₁ e₂ : n ≃ m) :
     IsUnit (A.submatrix e₁ e₂) ↔ IsUnit A := by
-  simp only [← nonempty_invertible_iff_isUnit,
+  simp [← nonempty_invertible_iff_isUnit,
     (submatrixEquivInvertibleEquivInvertible A _ _).nonempty_congr]
 
 @[simp]

@@ -232,9 +232,9 @@ def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
   f i := dNext i hom + prevD i hom
   comm' i j hij := by
     have eq1 : prevD i hom ≫ D.d i j = 0 := by
-      simp only [prevD, AddMonoidHom.mk'_apply, assoc, d_comp_d, comp_zero]
+      simp [prevD, AddMonoidHom.mk'_apply, assoc, d_comp_d, comp_zero]
     have eq2 : C.d i j ≫ dNext j hom = 0 := by
-      simp only [dNext, AddMonoidHom.mk'_apply, d_comp_d_assoc, zero_comp]
+      simp [dNext, AddMonoidHom.mk'_apply, d_comp_d_assoc, zero_comp]
     rw [dNext_eq hom hij, prevD_eq hom hij, Preadditive.comp_add, Preadditive.add_comp, eq1, eq2,
       add_zero, zero_add, assoc]
 
@@ -863,7 +863,7 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
   h₀_f := by
     split_ifs with h
     · dsimp
-      simp only [assoc, d_comp_d, comp_zero]
+      simp [assoc, d_comp_d, comp_zero]
     · dsimp
       rw [L.shape _ _ h, comp_zero]
   g_h₃ := by

@@ -89,7 +89,7 @@ theorem inner_map_self_eq_zero (T : V →ₗ[ℂ] V) : (∀ x : V, ⟪T x, x⟫_
     simp only [hT]
     simp
   · rintro rfl x
-    simp only [LinearMap.zero_apply, inner_zero_left]
+    simp [LinearMap.zero_apply, inner_zero_left]
 
 /--
 Two linear maps `S` and `T` are equal, if and only if the identity `⟪S x, x⟫_ℂ = ⟪T x, x⟫_ℂ` holds
@@ -123,7 +123,7 @@ theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E)
 
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
-  ⟨f, fun x => by simp only [@norm_eq_sqrt_re_inner 𝕜, h]⟩
+  ⟨f, fun x => by simp [@norm_eq_sqrt_re_inner 𝕜, h]⟩
 
 @[simp]
 theorem LinearMap.coe_isometryOfInner (f : E →ₗ[𝕜] E') (h) : ⇑(f.isometryOfInner h) = f :=
@@ -162,7 +162,7 @@ in `InnerProductSpace.Dual` is a version of this given as a linear isometry (res
 isometric equivalence). -/
 def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
   LinearMap.mkContinuous₂ (innerₛₗ 𝕜) 1 fun x y => by
-    simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply_apply]
+    simp [norm_inner_le_norm, one_mul, innerₛₗ_apply_apply]
 
 @[simp]
 theorem coe_innerSL_apply (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
@@ -279,7 +279,7 @@ theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
 
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :
     T.reApplyInnerSelf (c • x) = ‖c‖ ^ 2 * T.reApplyInnerSelf x := by
-  simp only [map_smul, ContinuousLinearMap.reApplyInnerSelf_apply, inner_smul_left,
+  simp [map_smul, ContinuousLinearMap.reApplyInnerSelf_apply, inner_smul_left,
     inner_smul_right, ← mul_assoc, mul_conj, ← ofReal_pow, ← smul_re,
     Algebra.smul_def (‖c‖ ^ 2) ⟪T x, x⟫, algebraMap_eq_ofReal]
 

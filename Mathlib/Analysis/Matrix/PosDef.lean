@@ -98,7 +98,7 @@ private def PosSemidef.preInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosSem
     rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
       star_mulVec, dotProduct_comm (M *ᵥ y), dotProduct_mulVec, hM.isHermitian.eq]
   re_inner_nonneg x := dotProduct_comm _ (star x) ▸ hM.re_dotProduct_nonneg x
-  add_left := by simp only [star_add, dotProduct_add, forall_const]
+  add_left := by simp [star_add, dotProduct_add, forall_const]
   smul_left _ _ _ := by rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul]
 
 set_option backward.privateInPublic true in

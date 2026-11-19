@@ -352,7 +352,7 @@ lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
   intro hk
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   cases n with
-  | zero => simp only [Fin.isValue, Fin.zero_le]
+  | zero => simp [Fin.isValue, Fin.zero_le]
   | succ n => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, val_ne_zero_iff]
 
 lemma val_sub_one_of_ne_zero {i : Fin n} :

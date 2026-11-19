@@ -61,7 +61,7 @@ theorem tendsto_atTop_pure [PartialOrder α] [OrderTop α] (f : α → β) :
 @[to_dual]
 theorem tendsto_atTop [Preorder β] {m : α → β} {f : Filter α} :
     Tendsto m f atTop ↔ ∀ b, ∀ᶠ a in f, b ≤ m a := by
-  simp only [atTop, tendsto_iInf, tendsto_principal, mem_Ici]
+  simp [atTop, tendsto_iInf, tendsto_principal, mem_Ici]
 
 @[to_dual]
 theorem tendsto_atTop_mono' [Preorder β] (l : Filter α) ⦃f₁ f₂ : α → β⦄ (h : f₁ ≤ᶠ[l] f₂)

@@ -469,7 +469,7 @@ This is a special case of `IsColimit.homIso'`, often useful to construct adjunct
 -/]
 def Fork.IsLimit.homIso {X Y : C} {f g : X ⟶ Y} {t : Fork f g} (ht : IsLimit t) (Z : C) :
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // h ≫ f = h ≫ g } where
-  toFun k := ⟨k ≫ t.ι, by simp only [Category.assoc, t.condition]⟩
+  toFun k := ⟨k ≫ t.ι, by simp [Category.assoc, t.condition]⟩
   invFun h := (Fork.IsLimit.lift' ht _ h.prop).1
   left_inv _ := Fork.IsLimit.hom_ext ht (Fork.IsLimit.lift' _ _ _).prop
   right_inv _ := Subtype.ext (Fork.IsLimit.lift' ht _ _).prop
@@ -945,7 +945,7 @@ theorem equalizerComparison_comp_π [HasEqualizer f g] [HasEqualizer (G.map f) (
 theorem map_lift_equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] {Z : C}
     {h : Z ⟶ X} (w : h ≫ f = h ≫ g) :
     G.map (equalizer.lift h w) ≫ equalizerComparison f g G =
-      equalizer.lift (G.map h) (by simp only [← G.map_comp, w]) := by
+      equalizer.lift (G.map h) (by simp [← G.map_comp, w]) := by
   apply equalizer.hom_ext
   simp [← G.map_comp]
 

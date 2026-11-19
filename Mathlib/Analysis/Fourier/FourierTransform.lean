@@ -93,7 +93,7 @@ theorem fourierIntegral_const_smul (e : AddChar 𝕜 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
     fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
-  simp only [Pi.smul_apply, fourierIntegral, smul_comm _ r, integral_smul]
+  simp [Pi.smul_apply, fourierIntegral, smul_comm _ r, integral_smul]
 
 /-- The uniform norm of the Fourier integral of `f` is bounded by the `L¹` norm of `f`. -/
 theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure V)
@@ -229,7 +229,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
   _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ :=
     integral_fourierIntegral_swap M.flip he hL hf hg
   _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by
-    simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower,
+    simp [ContinuousLinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower,
       smul_apply, LinearMap.flip_apply]
   _ = ∫ x, M (f x) (∫ ξ, e (-L.flip ξ x) • g ξ ∂ν) ∂μ := by
     congr with x
@@ -268,11 +268,11 @@ theorem integral_sesq_fourierIntegral_eq_neg_flip
     congr with x
     congr with ξ
     rw [← smul_one_smul ℂ _ (f x), ← smul_one_smul ℂ _ (g ξ)]
-    simp only [map_smulₛₗ, ContinuousLinearMap.flip_apply, LinearMap.flip_apply, RingHom.id_apply,
+    simp [map_smulₛₗ, ContinuousLinearMap.flip_apply, LinearMap.flip_apply, RingHom.id_apply,
       Circle.smul_def, smul_eq_mul, mul_one, ← Circle.coe_inv_eq_conj, AddChar.map_neg_eq_inv,
       inv_inv]
   _ = ∫ x, (∫ ξ, M (f x) (e (-(-L.flip ξ) x) • g ξ) ∂ν) ∂μ := by
-    simp only [LinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower, LinearMap.neg_apply,
+    simp [LinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower, LinearMap.neg_apply,
       neg_neg]
   _ = ∫ x, M (f x) (∫ ξ, e (-(-L.flip ξ) x) • g ξ ∂ν) ∂μ := by
     congr with x
@@ -457,7 +457,7 @@ lemma fourierInv_eq' (f : V → E) (w : V) :
 
 lemma fourier_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕 (f ∘ A) w = (𝓕 f) (A w) := by
-  simp only [fourier_eq, ← A.inner_map_map, Function.comp_apply,
+  simp [fourier_eq, ← A.inner_map_map, Function.comp_apply,
     ← MeasurePreserving.integral_comp A.measurePreserving A.toHomeomorph.measurableEmbedding]
 
 lemma fourierInv_eq_fourier_neg (f : V → E) (w : V) :

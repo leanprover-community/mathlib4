@@ -301,11 +301,11 @@ theorem monomial_eq_monomial_iff {α : Type*} (a₁ a₂ : α →₀ ℕ) (b₁ 
     monomial a₁ b₁ = monomial a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ b₁ = 0 ∧ b₂ = 0 := single_inj
 
 theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolynomial σ R) := by
-  simp only [X_pow_eq_monomial, ← monomial_finsupp_sum_index, Finsupp.sum_single]
+  simp [X_pow_eq_monomial, ← monomial_finsupp_sum_index, Finsupp.sum_single]
 
 @[simp]
 lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : R) := by
-  simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
+  simp [monomial_eq, map_one, one_mul, Finsupp.prod]
 
 theorem prod_X_pow (x : σ → ℕ) (t : Finset σ) :
     ∏ y ∈ t, (X y : MvPolynomial σ R) ^ x y = monomial (indicator t (fun i _ ↦ x i)) (1 : R) := by
@@ -671,7 +671,7 @@ theorem coeff_X_mul (m) (s : σ) (p : MvPolynomial σ R) :
 lemma coeff_single_X_pow [DecidableEq σ] (s s' : σ) (n n' : ℕ) :
     (X (R := R) s ^ n).coeff (Finsupp.single s' n')
     = if s = s' ∧ n = n' ∨ n = 0 ∧ n' = 0 then 1 else 0 := by
-  simp only [coeff_X_pow, single_eq_single_iff]
+  simp [coeff_X_pow, single_eq_single_iff]
 
 @[simp]
 lemma coeff_single_X [DecidableEq σ] (s s' : σ) (n : ℕ) :
@@ -758,7 +758,7 @@ theorem X_ne_zero [Nontrivial R] (s : σ) :
     X (R := R) s ≠ 0 := by
   rw [ne_zero_iff]
   use Finsupp.single s 1
-  simp only [coeff_X_same, ne_eq, one_ne_zero, not_false_eq_true]
+  simp [coeff_X_same, ne_eq, one_ne_zero, not_false_eq_true]
 
 @[simp]
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 := by simp [support]

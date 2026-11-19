@@ -206,7 +206,7 @@ theorem rank_matrix_module (m : Type w) (n : Type w') [Finite m] [Finite n] :
   cases nonempty_fintype n
   obtain ⟨I, b⟩ := Module.Free.exists_basis (R := R) (M := M)
   rw [← (b.matrix m n).mk_eq_rank'']
-  simp only [mk_prod, lift_mul, lift_lift, ← mul_assoc, b.mk_eq_rank'']
+  simp [mk_prod, lift_mul, lift_lift, ← mul_assoc, b.mk_eq_rank'']
 
 
 /-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices over a
@@ -253,7 +253,7 @@ theorem finrank_finsupp_self {ι : Type v} [Fintype ι] : finrank R (ι →₀ R
 theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (⨁ i, M i) = ∑ i, finrank R (M i) := by
-  simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
+  simp [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
     mk_toNat_eq_card, card_sigma]
 
 /-- If `m` and `n` are `Fintype`, the `finrank` of `m × n` matrices over a module `M` is
@@ -295,7 +295,7 @@ theorem Module.finrank_pi_fintype
     {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
-  simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
+  simp [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
     mk_toNat_eq_card, Fintype.card_sigma]
 
 variable {R}
@@ -423,7 +423,7 @@ theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
   rw [Finsupp.span_eq_range_linearCombination, ← lift_strictMono.le_iff_le]
   refine (lift_rank_range_le _).trans ?_
   rw [rank_finsupp_self]
-  simp only [lift_lift, le_refl]
+  simp [lift_lift, le_refl]
 
 theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
   simpa using rank_span_le (s : Set M)

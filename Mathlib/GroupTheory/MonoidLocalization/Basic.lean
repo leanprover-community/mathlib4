@@ -189,7 +189,7 @@ variable {S}
 
 @[to_additive]
 theorem r_iff_exists {x y : M × S} : r S x y ↔ ∃ c : S, ↑c * (↑y.2 * x.1) = c * (x.2 * y.1) := by
-  simp only [r_eq_r' S, r', Con.rel_mk]
+  simp [r_eq_r' S, r', Con.rel_mk]
 
 @[to_additive]
 theorem r_iff_oreEqv_r {x y : M × S} : r S x y ↔ (OreLocalization.oreEqv S M).r x y := by
@@ -222,7 +222,7 @@ def mk (x : M) (y : S) : Localization S := x /ₒ y
 
 @[to_additive]
 theorem mk_eq_mk_iff {a c : M} {b d : S} : mk a b = mk c d ↔ r S ⟨a, b⟩ ⟨c, d⟩ := by
-  simp +instances only [mk, OreLocalization.oreDiv_eq_iff, r_iff_oreEqv_r, OreLocalization.oreEqv]
+  simp +instances [mk, OreLocalization.oreDiv_eq_iff, r_iff_oreEqv_r, OreLocalization.oreEqv]
 
 universe u
 
@@ -415,7 +415,7 @@ theorem hasUniqueRoots {F : Type*} [FunLike F M N] [MulHomClass F M N] {f : F}
     obtain ⟨⟨b₁, b₂⟩, hb⟩ := hf.surj y
     obtain ⟨c, hc⟩ : ∃ c : S, c * (a₁ ^ n * b₂ ^ n) = c * (b₁ ^ n * a₂ ^ n) :=
       hf.exists_of_eq <|
-        by simp only [map_mul, hf.map_pow, ← ha, ← hb, mul_pow, hxy, mul_right_comm]
+        by simp [map_mul, hf.map_pow, ← ha, ← hb, mul_pow, hxy, mul_right_comm]
     suffices c * (a₁ * b₂) = c * (b₁ * a₂) by
       rw [← (hf.map_units a₂).mul_left_inj, ha, ← (hf.map_units b₂).mul_left_inj, mul_right_comm,
         hb, ← (hf.map_units c).mul_right_inj, ← map_mul, ← map_mul, ← map_mul, ← map_mul, this]
@@ -633,7 +633,7 @@ theorem mk'_eq_iff_eq {x₁ x₂} {y₁ y₂ : S} :
 @[to_additive]
 theorem mk'_eq_iff_eq' {x₁ x₂} {y₁ y₂ : S} :
     f.mk' x₁ y₁ = f.mk' x₂ y₂ ↔ f (x₁ * y₂) = f (x₂ * y₁) := by
-  simp only [f.mk'_eq_iff_eq, mul_comm]
+  simp [f.mk'_eq_iff_eq, mul_comm]
 
 @[to_additive]
 protected theorem eq {a₁ b₁} {a₂ b₂ : S} :

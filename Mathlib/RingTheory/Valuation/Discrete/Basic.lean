@@ -374,7 +374,7 @@ theorem Uniformizer.is_generator (π : Uniformizer v) :
       have hn : Not (IsUnit x) := fun h ↦
         (maximalIdeal.isMaximal _).ne_top (eq_top_of_isUnit_mem _ hx h)
       replace hn : n ≠ 0 := fun h ↦ by
-        simp only [hu, h, pow_zero, one_mul, Units.isUnit, not_true] at hn
+        simp [hu, h, pow_zero, one_mul, Units.isUnit, not_true] at hn
       simp [Ideal.mem_span_singleton, hu, dvd_pow_self _ hn]
 
 theorem IsUniformizer.is_generator {π : v.valuationSubring} (hπ : IsUniformizer v π) :
@@ -425,7 +425,7 @@ theorem ideal_isPrincipal [IsCyclic v.valueGroup]
     by_cases hn : n = 0
     · rw [← Subring.coe_mul, hn, pow_zero, one_mul, SetLike.coe_eq_coe] at hu
       refine (hP.ne_top (Ideal.eq_top_of_isUnit_mem P hx_mem ?_)).elim
-      simp only [hu, Units.isUnit]
+      simp [hu, Units.isUnit]
     · rw [← Subring.coe_mul, SetLike.coe_eq_coe] at hu
       rw [hu, Ideal.mul_unit_mem_iff_mem P u.isUnit,
         IsPrime.pow_mem_iff_mem hP _ (pos_iff_ne_zero.mpr hn),

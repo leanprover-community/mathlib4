@@ -40,7 +40,7 @@ theorem Module.Finite.of_basis {R M ι : Type*} [Semiring R] [AddCommMonoid M] [
   cases nonempty_fintype ι
   classical
     refine ⟨⟨Finset.univ.image b, ?_⟩⟩
-    simp only [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
+    simp [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
 
 instance Module.Finite.matrix {R ι₁ ι₂ M : Type*}
     [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M] [Module.Finite R M]

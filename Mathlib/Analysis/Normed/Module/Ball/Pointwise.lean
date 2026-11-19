@@ -87,12 +87,12 @@ theorem smul_sphere' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
   ext y
   rw [mem_smul_set_iff_inv_smul_mem₀ hc]
   conv_lhs => rw [← inv_smul_smul₀ hc x]
-  simp only [mem_sphere, dist_smul₀, norm_inv, ← div_eq_inv_mul, div_eq_iff (norm_pos_iff.2 hc).ne',
+  simp [mem_sphere, dist_smul₀, norm_inv, ← div_eq_inv_mul, div_eq_iff (norm_pos_iff.2 hc).ne',
     mul_comm r]
 
 theorem smul_closedBall' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
     c • closedBall x r = closedBall (c • x) (‖c‖ * r) := by
-  simp only [← ball_union_sphere, Set.smul_set_union, _root_.smul_ball hc, smul_sphere' hc]
+  simp [← ball_union_sphere, Set.smul_set_union, _root_.smul_ball hc, smul_sphere' hc]
 
 theorem set_smul_sphere_zero {s : Set 𝕜} (hs : 0 ∉ s) (r : ℝ) :
     s • sphere (0 : E) r = (‖·‖) ⁻¹' ((‖·‖ * r) '' s) :=
@@ -125,7 +125,7 @@ theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bornology
         gcongr
         exacts [mem_closedBall_zero_iff.1 hr, mem_closedBall_zero_iff.1 (hR zs)]
       _ = ε := by field
-  have : y = x + r • z := by simp only [hz, add_neg_cancel_left]
+  have : y = x + r • z := by simp [hz, add_neg_cancel_left]
   apply hε
   simpa only [this, dist_eq_norm, add_sub_cancel_left, mem_closedBall] using I
 

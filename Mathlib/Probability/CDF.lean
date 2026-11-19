@@ -83,7 +83,7 @@ lemma cdf_eq_real [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = μ.real (Iic 
 
 instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := by
   constructor
-  simp only [StieltjesFunction.measure_univ _ (tendsto_cdf_atBot μ) (tendsto_cdf_atTop μ), sub_zero,
+  simp [StieltjesFunction.measure_univ _ (tendsto_cdf_atBot μ) (tendsto_cdf_atTop μ), sub_zero,
     ENNReal.ofReal_one]
 
 /-- The measure associated to the cdf of a probability measure is the same probability measure. -/

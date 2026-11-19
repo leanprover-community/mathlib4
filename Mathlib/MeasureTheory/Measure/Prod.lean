@@ -255,7 +255,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
 @[simp]
 theorem _root_.MeasureTheory.measureReal_prod_prod (s : Set α) (t : Set β) :
     (μ.prod ν).real (s ×ˢ t) = μ.real s * ν.real t := by
-  simp only [measureReal_def, prod_prod, ENNReal.toReal_mul]
+  simp [measureReal_def, prod_prod, ENNReal.toReal_mul]
 
 @[simp] lemma map_fst_prod : Measure.map Prod.fst (μ.prod ν) = (ν univ) • μ := by
   ext s hs
@@ -780,7 +780,7 @@ theorem prodAssoc_prod [SFinite τ] :
         (sfiniteSeq μ p.1.1).prod ((sfiniteSeq ν p.1.2).prod (sfiniteSeq τ p.2))) := by
     ext s hs
     rw [Measure.sum_apply _ hs, Measure.sum_apply _ hs, ← (Equiv.prodAssoc _ _ _).tsum_eq]
-    simp only [Equiv.prodAssoc_apply]
+    simp [Equiv.prodAssoc_apply]
   rw [← sum_sfiniteSeq μ, ← sum_sfiniteSeq ν, ← sum_sfiniteSeq τ, prod_sum, prod_sum,
     map_sum MeasurableEquiv.prodAssoc.measurable.aemeasurable, prod_sum, prod_sum, this]
   congr

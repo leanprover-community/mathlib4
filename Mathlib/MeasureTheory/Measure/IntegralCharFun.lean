@@ -55,7 +55,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     ext p
     rw [← Prod.mk.eta (p := p)]
     norm_cast
-    simp only [Function.uncurry_apply_pair, norm_exp_ofReal_mul_I]
+    simp [Function.uncurry_apply_pair, norm_exp_ofReal_mul_I]
   calc ∫ t in -r..r, charFun μ t
   _ = ∫ x in -r..r, ∫ y, cexp (x * y * I) ∂μ := by simp_rw [charFun_apply_real]
   _ = ∫ y, ∫ x in -r..r, cexp (x * y * I) ∂volume ∂μ := by

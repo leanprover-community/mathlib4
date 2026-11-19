@@ -389,7 +389,7 @@ theorem _root_.IsTop.Iic_eq (h : IsTop a) : Iic a = univ :=
 
 @[to_dual (attr := simp)]
 theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := by
-  simp only [isMin_iff_forall_not_lt, eq_empty_iff_forall_notMem, mem_Iio]
+  simp [isMin_iff_forall_not_lt, eq_empty_iff_forall_notMem, mem_Iio]
 
 @[to_dual (attr := simp)] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
 

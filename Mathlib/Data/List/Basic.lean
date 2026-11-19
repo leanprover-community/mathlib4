@@ -217,7 +217,7 @@ theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _
   mem_singleton.2 (eq_of_mem_replicate h)
 
 theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = replicate n a := by
-  simp only [eq_replicate_iff, subset_def, mem_singleton, exists_eq_left']
+  simp [eq_replicate_iff, subset_def, mem_singleton, exists_eq_left']
 
 theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
   fun _ _ h => (eq_replicate_iff.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
@@ -229,7 +229,7 @@ theorem replicate_right_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
 theorem replicate_right_inj' {a b : α} : ∀ {n},
     replicate n a = replicate n b ↔ n = 0 ∨ a = b
   | 0 => by simp
-  | n + 1 => (replicate_right_inj n.succ_ne_zero).trans <| by simp only [n.succ_ne_zero, false_or]
+  | n + 1 => (replicate_right_inj n.succ_ne_zero).trans <| by simp [n.succ_ne_zero, false_or]
 
 theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
   LeftInverse.injective (length_replicate (n := ·))
@@ -264,7 +264,7 @@ theorem bind_eq_flatMap {α β} (f : α → List β) (l : List α) : l >>= f = l
 /-! ### reverse -/
 
 theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (reverse l) a := by
-  simp only [reverse_cons, concat_eq_append]
+  simp [reverse_cons, concat_eq_append]
 
 theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.reverse := by
   rw [reverse_append]; rfl
@@ -288,7 +288,7 @@ theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a 
 
 theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
-  simp only [reverseAux_eq, map_append, map_reverse]
+  simp [reverseAux_eq, map_append, map_reverse]
 
 -- TODO: Rename `List.reverse_perm` to `List.reverse_perm_self`
 @[simp] lemma reverse_perm' : l₁.reverse ~ l₂ ↔ l₁ ~ l₂ where
@@ -814,17 +814,17 @@ theorem foldr_ext (f g : α → β → β) (b : β) {l : List α} (H : ∀ a ∈
     foldr f b l = foldr g b l := by
   induction l with | nil => rfl | cons hd tl ih => ?_
   simp only [mem_cons, or_imp, forall_and, forall_eq] at H
-  simp only [foldr, ih H.2, H.1]
+  simp [foldr, ih H.2, H.1]
 
 theorem foldl_concat
     (f : β → α → β) (b : β) (x : α) (xs : List α) :
     List.foldl f b (xs ++ [x]) = f (List.foldl f b xs) x := by
-  simp only [List.foldl_append, List.foldl]
+  simp [List.foldl_append, List.foldl]
 
 theorem foldr_concat
     (f : α → β → β) (b : β) (x : α) (xs : List α) :
     List.foldr f b (xs ++ [x]) = (List.foldr f (f x b) xs) := by
-  simp only [List.foldr_append, List.foldr]
+  simp [List.foldr_append, List.foldr]
 
 theorem foldl_fixed' {f : α → β → α} {a : α} (hf : ∀ b, f a b = a) : ∀ l : List β, foldl f a l = a
   | [] => rfl
@@ -850,13 +850,13 @@ theorem foldl_hom₂ (l : List ι) (f : α → β → γ) (op₁ : α → ι →
     foldl op₃ (f a b) l = f (foldl op₁ a l) (foldl op₂ b l) :=
   Eq.symm <| by
     revert a b
-    induction l <;> intros <;> [rfl; simp only [*, foldl]]
+    induction l <;> intros <;> [rfl; simp [*, foldl]]
 
 theorem foldr_hom₂ (l : List ι) (f : α → β → γ) (op₁ : ι → α → α) (op₂ : ι → β → β)
     (op₃ : ι → γ → γ) (a : α) (b : β) (h : ∀ a b i, f (op₁ i a) (op₂ i b) = op₃ i (f a b)) :
     foldr op₃ (f a b) l = f (foldr op₁ a l) (foldr op₂ b l) := by
   revert a
-  induction l <;> intros <;> [rfl; simp only [*, foldr]]
+  induction l <;> intros <;> [rfl; simp [*, foldr]]
 
 theorem injective_foldl_comp {l : List (α → α)} {f : α → α}
     (hl : ∀ f ∈ l, Function.Injective f) (hf : Function.Injective f) :
@@ -901,7 +901,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     by simp [← h (pure b)]
   induction l with
   | nil => simp
-  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
+  | cons _ _ l_ih => intro; simp [List.foldlM, foldl, ← l_ih, functor_norm]
 
 end FoldlMFoldrM
 
@@ -1037,7 +1037,7 @@ theorem map_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {
 
 theorem map_foldl_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
     map f (foldl List.erase l₁ l₂) = foldl (fun l a => l.erase (f a)) (map f l₁) l₂ := by
-  induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
+  induction l₂ generalizing l₁ <;> [rfl; simp [foldl_cons, map_erase finj, *]]
 
 theorem erase_getElem [BEq ι] [LawfulBEq ι] {l : List ι} {i : ℕ} (hi : i < l.length) :
     Perm (l.erase l[i]) (l.eraseIdx i) := by
@@ -1058,7 +1058,7 @@ section Diff
 theorem map_diff [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
     (finj : Injective f) {l₁ l₂ : List α} :
     map f (l₁.diff l₂) = (map f l₁).diff (map f l₂) := by
-  simp only [diff_eq_foldl, foldl_map, map_foldl_erase finj]
+  simp [diff_eq_foldl, foldl_map, map_foldl_erase finj]
 
 end Diff
 

@@ -512,9 +512,9 @@ theorem unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.un
   constructor
   · intro h x hx
     rw [← A.valuation_le_one_iff x, le_iff_lt_or_eq] at hx
-    by_cases h_1 : x = 0; · simp only [h_1, zero_mem]
+    by_cases h_1 : x = 0; · simp [h_1, zero_mem]
     by_cases h_2 : 1 + x = 0
-    · simp only [← add_eq_zero_iff_neg_eq.1 h_2, neg_mem _ _ (one_mem _)]
+    · simp [← add_eq_zero_iff_neg_eq.1 h_2, neg_mem _ _ (one_mem _)]
     rcases hx with hx | hx
     · have := h (show Units.mk0 _ h_2 ∈ A.unitGroup from A.valuation.map_one_add_of_lt hx)
       simpa using
@@ -569,7 +569,7 @@ theorem inv_mem_nonunits_iff {x : K} : x⁻¹ ∈ A.nonunits ↔ x = 0 ∨ x ∉
 theorem nonunits_le_nonunits {A B : ValuationSubring K} : B.nonunits ≤ A.nonunits ↔ A ≤ B := by
   constructor
   · intro h x hx
-    by_cases h_1 : x = 0; · simp only [h_1, zero_mem]
+    by_cases h_1 : x = 0; · simp [h_1, zero_mem]
     rw [← valuation_le_one_iff, ← not_lt, Valuation.one_lt_val_iff _ h_1] at hx ⊢
     by_contra h_2; exact hx (h h_2)
   · intro h x hx
@@ -656,7 +656,7 @@ theorem principalUnitGroup_le_principalUnitGroup {A B : ValuationSubring K} :
     B.principalUnitGroup ≤ A.principalUnitGroup ↔ A ≤ B := by
   constructor
   · intro h x hx
-    by_cases h_1 : x = 0; · simp only [h_1, zero_mem]
+    by_cases h_1 : x = 0; · simp [h_1, zero_mem]
     by_cases h_2 : x⁻¹ + 1 = 0
     · rw [add_eq_zero_iff_eq_neg, inv_eq_iff_eq_inv, inv_neg, inv_one] at h_2
       simpa only [h_2] using B.neg_mem _ B.one_mem

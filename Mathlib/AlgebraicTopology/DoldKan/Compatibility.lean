@@ -221,7 +221,7 @@ theorem equivalenceCounitIso_eq (hη : τ₀ = τ₁ hF hG η) :
   simp only [← e'.functor.map_comp_assoc]
   simp only [Functor.comp_map, Equivalence.fun_inv_map, comp_obj, id_obj, map_comp, assoc]
   simp only [← e'.functor.map_comp_assoc]
-  simp only [Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_obj, comp_id,
+  simp [Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_obj, comp_id,
     Equivalence.functor_unit_comp, map_id, id_comp]
 
 variable (hF)
@@ -270,7 +270,7 @@ theorem equivalenceUnitIso_eq (hε : υ hF = ε) :
     (equivalence hF hG).unitIso = equivalenceUnitIso hG ε := by
   ext1; apply NatTrans.ext; ext X
   dsimp [equivalence]
-  simp only [assoc, comp_id, equivalenceUnitIso_hom_app, equivalence₂_inverse, Functor.comp_obj,
+  simp [assoc, comp_id, equivalenceUnitIso_hom_app, equivalence₂_inverse, Functor.comp_obj,
     id_comp, equivalence₂UnitIso_eq eB hF, equivalence₂UnitIso_hom_app,
     ← eA.inverse.map_comp_assoc, assoc, ← hε, υ_hom_app]
 

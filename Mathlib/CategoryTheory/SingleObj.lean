@@ -144,7 +144,7 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   map {x y} _ := f y * (f x)⁻¹
   map_id := by
     intro
-    simp only [SingleObj.id_as_one, mul_inv_cancel]
+    simp [SingleObj.id_as_one, mul_inv_cancel]
   map_comp := by
     intros
     rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_cancel, mul_one]

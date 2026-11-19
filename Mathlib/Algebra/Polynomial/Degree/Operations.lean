@@ -263,7 +263,7 @@ theorem monic_of_degree_le (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) 
 theorem leadingCoeff_add_of_degree_lt (h : degree p < degree q) :
     leadingCoeff (p + q) = leadingCoeff q := by
   have : coeff p (natDegree q) = 0 := coeff_natDegree_eq_zero_of_degree_lt h
-  simp only [leadingCoeff, natDegree_eq_of_degree_eq (degree_add_eq_right_of_degree_lt h), this,
+  simp [leadingCoeff, natDegree_eq_of_degree_eq (degree_add_eq_right_of_degree_lt h), this,
     coeff_add, zero_add]
 
 theorem leadingCoeff_add_of_degree_lt' (h : degree q < degree p) :
@@ -277,7 +277,7 @@ theorem leadingCoeff_add_of_degree_eq (h : degree p = degree q)
   have : natDegree (p + q) = natDegree p := by
     apply natDegree_eq_of_degree_eq
     rw [degree_add_eq_of_leadingCoeff_add_ne_zero hlc, h, max_self]
-  simp only [leadingCoeff, this, natDegree_eq_of_degree_eq h, coeff_add]
+  simp [leadingCoeff, this, natDegree_eq_of_degree_eq h, coeff_add]
 
 @[simp]
 theorem coeff_mul_degree_add_degree (p q : R[X]) :
@@ -674,9 +674,9 @@ variable [NoZeroDivisors R] {p q : R[X]}
 @[simp]
 lemma degree_mul : degree (p * q) = degree p + degree q :=
   letI := Classical.decEq R
-  if hp0 : p = 0 then by simp only [hp0, degree_zero, zero_mul, WithBot.bot_add]
+  if hp0 : p = 0 then by simp [hp0, degree_zero, zero_mul, WithBot.bot_add]
   else
-    if hq0 : q = 0 then by simp only [hq0, degree_zero, mul_zero, WithBot.add_bot]
+    if hq0 : q = 0 then by simp [hq0, degree_zero, mul_zero, WithBot.add_bot]
     else degree_mul' <| mul_ne_zero (mt leadingCoeff_eq_zero.1 hp0) (mt leadingCoeff_eq_zero.1 hq0)
 
 /-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
@@ -693,9 +693,9 @@ lemma degree_pow [Nontrivial R] (p : R[X]) (n : ℕ) : degree (p ^ n) = n • de
 @[simp]
 lemma leadingCoeff_mul (p q : R[X]) : leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
   by_cases hp : p = 0
-  · simp only [hp, zero_mul, leadingCoeff_zero]
+  · simp [hp, zero_mul, leadingCoeff_zero]
   · by_cases hq : q = 0
-    · simp only [hq, mul_zero, leadingCoeff_zero]
+    · simp [hq, mul_zero, leadingCoeff_zero]
     · rw [leadingCoeff_mul']
       exact mul_ne_zero (mt leadingCoeff_eq_zero.1 hp) (mt leadingCoeff_eq_zero.1 hq)
 

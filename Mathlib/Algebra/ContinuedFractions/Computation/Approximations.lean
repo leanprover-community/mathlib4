@@ -268,7 +268,7 @@ theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
       · simp
       · have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
           contsAux_stable_step_of_terminated terminated
-        simp only [g, this, IH]
+        simp [g, this, IH]
     · -- non-terminating case
       calc
         (0 : K) ≤ fib (n + 1) := mod_cast (n + 1).fib.zero_le
@@ -476,7 +476,7 @@ theorem abs_sub_convergents_le' {b : K}
   -- to consider the case `(GenContFract.of v).dens n = 0`.
   rcases (zero_le_of_den (K := K)).eq_or_lt' with
     ((hB : (GenContFract.of v).dens n = 0) | hB)
-  · simp only [hB, mul_zero, zero_mul, div_zero, le_refl]
+  · simp [hB, mul_zero, zero_mul, div_zero, le_refl]
   · apply one_div_le_one_div_of_le
     · have : 0 < b := zero_lt_one.trans_le (of_one_le_get?_partDen nth_partDen_eq)
       apply_rules [mul_pos]

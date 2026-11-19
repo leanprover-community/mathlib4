@@ -53,7 +53,7 @@ lemma iteratedDeriv_alternating {a : ℕ → ℂ} (hn : 0 ≤ a) {x : ℝ}
     | succ n IH =>
         rw [Function.iterate_succ_apply']
         refine mul_nonneg ?_ IH
-        simp only [← natCast_log, zero_le_real, Real.log_natCast_nonneg]
+        simp [← natCast_log, zero_le_real, Real.log_natCast_nonneg]
 
 /-- If all values of `a : ℕ → ℂ` are nonnegative reals and `a 1` is positive,
 then `L a x` is positive real for all real `x` larger than `abscissaOfAbsConv a`. -/
@@ -73,7 +73,7 @@ lemma positive_of_differentiable_of_eqOn {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha
   have hxy : x < max x y + 1 := (le_max_left x y).trans_lt (lt_add_one _)
   have hxy' : abscissaOfAbsConv a < max x y + 1 := hx.trans_lt <| mod_cast hxy
   have hys : (max x y + 1 : ℂ) ∈ {s | x < s.re} := by
-    simp only [Set.mem_ofPred_eq, add_re, ofReal_re, one_re, hxy]
+    simp [Set.mem_ofPred_eq, add_re, ofReal_re, one_re, hxy]
   have hfx : 0 < f (max x y + 1) := by
     simpa only [hf' hys, ofReal_add, ofReal_one] using positive ha₀ ha₁ hxy'
   refine (hfx.trans_le <| hf.apply_le_of_iteratedDeriv_alternating (fun n _ ↦ ?_) ?_)

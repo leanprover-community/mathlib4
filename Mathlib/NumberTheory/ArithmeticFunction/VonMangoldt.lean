@@ -84,7 +84,7 @@ theorem vonMangoldt_nonneg {n : ℕ} : 0 ≤ Λ n := by
   rfl
 
 theorem vonMangoldt_apply_pow {n k : ℕ} (hk : k ≠ 0) : Λ (n ^ k) = Λ n := by
-  simp only [vonMangoldt_apply, isPrimePow_pow_iff hk, pow_minFac hk]
+  simp [vonMangoldt_apply, isPrimePow_pow_iff hk, pow_minFac hk]
 
 theorem vonMangoldt_apply_prime {p : ℕ} (hp : p.Prime) : Λ p = Real.log p := by
   rw [vonMangoldt_apply, Prime.minFac_eq hp, ite_eq_left hp.prime.isPrimePow]

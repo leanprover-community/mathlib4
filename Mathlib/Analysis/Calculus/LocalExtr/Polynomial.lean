@@ -70,7 +70,7 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
       (Eq.symm <| Finset.sum_congr rfl fun _ hx => tsub_add_cancel_of_le <|
         Nat.succ_le_iff.2 <| Multiset.count_pos.2 <| Multiset.mem_toFinset.1 hx)
     _ = (∑ x ∈ p.roots.toFinset, (p.rootMultiplicity x - 1)) + p.roots.toFinset.card := by
-      simp only [Finset.sum_add_distrib, Finset.card_eq_sum_ones, count_roots]
+      simp [Finset.sum_add_distrib, Finset.card_eq_sum_ones, count_roots]
     _ ≤ (∑ x ∈ p.roots.toFinset, p.derivative.rootMultiplicity x) +
           ((p.derivative.roots.toFinset \ p.roots.toFinset).card + 1) :=
       (add_le_add

@@ -170,7 +170,7 @@ protected theorem Inseparable.mul {a b c d : M} (hab : Inseparable a b) (hcd : I
 @[to_additive]
 protected theorem Specializes.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
     {a b : M} (h : a ⤳ b) (n : ℕ) : (a ^ n) ⤳ (b ^ n) :=
-  Nat.recOn n (by simp only [pow_zero, specializes_rfl]) fun _ ihn ↦ by
+  Nat.recOn n (by simp [pow_zero, specializes_rfl]) fun _ ihn ↦ by
     simpa only [pow_succ] using ihn.mul h
 
 @[to_additive]
@@ -970,7 +970,7 @@ theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filt
     {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i ∈ s, f i =ᶠ[l] ∏ i ∈ s, g i := by
   replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x := by rwa [eventually_all_finset]
   filter_upwards [hs] with x hx
-  simp only [Finset.prod_apply, Finset.prod_congr rfl hx]
+  simp [Finset.prod_apply, Finset.prod_congr rfl hx]
 
 open Function
 

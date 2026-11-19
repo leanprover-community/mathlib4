@@ -68,7 +68,7 @@ lemma lcs_sup {N₁ N₂ : LieSubmodule R L M} {k : ℕ} :
     (N₁ ⊔ N₂).lcs k = N₁.lcs k ⊔ N₂.lcs k := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [LieSubmodule.lcs_succ, ih, LieSubmodule.lie_sup]
+  | succ k ih => simp [LieSubmodule.lcs_succ, ih, LieSubmodule.lie_sup]
 
 end LieSubmodule
 
@@ -201,7 +201,7 @@ variable [LieModule R L M]
 theorem iterate_toEnd_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) :
     (toEnd R L M x)^[k] m ∈ lowerCentralSeries R L M k := by
   induction k with
-  | zero => simp only [Function.iterate_zero, lowerCentralSeries_zero, LieSubmodule.mem_top]
+  | zero => simp [Function.iterate_zero, lowerCentralSeries_zero, LieSubmodule.mem_top]
   | succ k ih =>
     simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ',
       toEnd_apply_apply]
@@ -224,7 +224,7 @@ variable {R L M}
 theorem map_lowerCentralSeries_le (f : M →ₗ⁅R,L⁆ M₂) :
     (lowerCentralSeries R L M k).map f ≤ lowerCentralSeries R L M₂ k := by
   induction k with
-  | zero => simp only [lowerCentralSeries_zero, le_top]
+  | zero => simp [lowerCentralSeries_zero, le_top]
   | succ k ih =>
     simp only [LieModule.lowerCentralSeries_succ, LieSubmodule.map_bracket_eq]
     exact LieSubmodule.mono_lie_right ⊤ ih
@@ -250,7 +250,7 @@ theorem derivedSeries_le_lowerCentralSeries (k : ℕ) :
   induction k with
   | zero => rw [derivedSeries_def, derivedSeriesOfIdeal_zero, lowerCentralSeries_zero]
   | succ k h =>
-    have h' : derivedSeries R L k ≤ ⊤ := by simp only [le_top]
+    have h' : derivedSeries R L k ≤ ⊤ := by simp [le_top]
     rw [derivedSeries_def, derivedSeriesOfIdeal_succ, lowerCentralSeries_succ]
     exact LieSubmodule.mono_lie h' h
 
@@ -771,7 +771,7 @@ theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
       LieSubmodule.toSubmodule (lowerCentralSeries R (L ⧸ I) (L ⧸ I) k) := by
   induction k with
   | zero =>
-    simp only [LieModule.lowerCentralSeries_zero, LieSubmodule.top_toSubmodule]
+    simp [LieModule.lowerCentralSeries_zero, LieSubmodule.top_toSubmodule]
   | succ k ih =>
     simp only [LieModule.lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span]
     congr
@@ -813,7 +813,7 @@ theorem LieAlgebra.non_trivial_center_of_isNilpotent [Nontrivial L] [IsNilpotent
 theorem LieIdeal.map_lowerCentralSeries_le (k : ℕ) {f : L →ₗ⁅R⁆ L'} :
     LieIdeal.map f (lowerCentralSeries R L L k) ≤ lowerCentralSeries R L' L' k := by
   induction k with
-  | zero => simp only [LieModule.lowerCentralSeries_zero, le_top]
+  | zero => simp [LieModule.lowerCentralSeries_zero, le_top]
   | succ k ih =>
     simp only [LieModule.lowerCentralSeries_succ]
     exact le_trans (LieIdeal.map_bracket_le f) (LieSubmodule.mono_lie le_top ih)
@@ -825,7 +825,7 @@ theorem LieIdeal.lowerCentralSeries_map_eq (k : ℕ) {f : L →ₗ⁅R⁆ L'} (h
     exact f.idealRange_eq_top_of_surjective h
   induction k with
   | zero => simp only [LieModule.lowerCentralSeries_zero]; exact h'
-  | succ k ih => simp only [LieModule.lowerCentralSeries_succ, LieIdeal.map_bracket_eq f h, ih, h']
+  | succ k ih => simp [LieModule.lowerCentralSeries_succ, LieIdeal.map_bracket_eq f h, ih, h']
 
 theorem Function.Injective.lieAlgebra_isNilpotent [h₁ : IsNilpotent L'] {f : L →ₗ⁅R⁆ L'}
     (h₂ : Function.Injective f) : IsNilpotent L := by
@@ -839,7 +839,7 @@ theorem Function.Surjective.lieAlgebra_isNilpotent [h₁ : IsNilpotent L] {f : L
   rw [LieRing.IsNilpotent, LieModule.isNilpotent_iff R] at h₁ ⊢
   gconvert h₁ with k hk
   rw [← LieIdeal.lowerCentralSeries_map_eq k h₂, hk]
-  simp only [LieIdeal.map_eq_bot_iff, bot_le]
+  simp [LieIdeal.map_eq_bot_iff, bot_le]
 
 theorem LieEquiv.nilpotent_iff_equiv_nilpotent (e : L ≃ₗ⁅R⁆ L') :
     IsNilpotent L ↔ IsNilpotent L' := by
@@ -933,7 +933,7 @@ lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :
     (lowerCentralSeries R L M k).baseChange A := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [lowerCentralSeries_succ, ih, ← baseChange_top, lie_baseChange]
+  | succ k ih => simp [lowerCentralSeries_succ, ih, ← baseChange_top, lie_baseChange]
 
 instance LieModule.instIsNilpotentTensor [IsNilpotent L M] :
     IsNilpotent (A ⊗[R] L) (A ⊗[R] M) := by

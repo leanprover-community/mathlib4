@@ -323,7 +323,7 @@ def FamilyOfElements.functorPullback (x : FamilyOfElements P T) :
 theorem FamilyOfElements.Compatible.functorPullback (h : x.Compatible) :
     (x.functorPullback F).Compatible := by
   intro Z₁ Z₂ W g₁ g₂ f₁ f₂ h₁ h₂ eq
-  exact h (F.map g₁) (F.map g₂) h₁ h₂ (by simp only [← F.map_comp, eq])
+  exact h (F.map g₁) (F.map g₂) h₁ h₂ (by simp [← F.map_comp, eq])
 
 end FunctorPullback
 
@@ -352,7 +352,7 @@ theorem FamilyOfElements.Compatible.pullback (f : Y ⟶ X) {x : FamilyOfElements
   unfold FamilyOfElements.pullback
   rw [← h (f₁ ≫ f) f₂ hf]
   congr 1
-  simp only [assoc]
+  simp [assoc]
 
 end Pullback
 
@@ -686,13 +686,13 @@ lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Ty
     IsSheafFor P₂ R := fun x₂ hx₂ ↦ by
   have he' : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₂.obj (op Y)),
     e.symm (P₂.map f.op x) = P₁.map f.op (e.symm x) := fun X Y f x ↦
-      e.injective (by simp only [Equiv.apply_symm_apply, he])
+      e.injective (by simp [Equiv.apply_symm_apply, he])
   let x₁ : FamilyOfElements P₁ R := fun Y f hf ↦ e.symm (x₂ f hf)
   have hx₁ : x₁.Compatible := fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac ↦ e.injective
-    (by simp only [he, Equiv.apply_symm_apply, hx₂ g₁ g₂ h₁ h₂ fac, x₁])
+    (by simp [he, Equiv.apply_symm_apply, hx₂ g₁ g₂ h₁ h₂ fac, x₁])
   have : ∀ (t₂ : P₂.obj (op X)),
       x₂.IsAmalgamation t₂ ↔ x₁.IsAmalgamation (e.symm t₂) := fun t₂ ↦ by
-    simp only [FamilyOfElements.IsAmalgamation, x₁,
+    simp [FamilyOfElements.IsAmalgamation, x₁,
       ← he', EmbeddingLike.apply_eq_iff_eq]
   refine ⟨e (hP₁.amalgamate x₁ hx₁), ?_, ?_⟩
   · dsimp
@@ -715,7 +715,7 @@ lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ �
   intro X Y f x
   obtain ⟨y, rfl⟩ := e.surjective x
   refine e.injective ?_
-  simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply, he]
+  simp [Equiv.apply_symm_apply, Equiv.symm_apply_apply, he]
 
 /-- If `P` is a sheaf for `S`, and it is iso to `P'`, then `P'` is a sheaf for `S`. This shows that
 "being a sheaf for a presieve" is a mathematical or hygienic property.
@@ -915,7 +915,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
         convert this <;> cat_disch⟩
       invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
         s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
-          (by simp only [← Functor.map_comp, h])⟩ }
+          (by simp [← Functor.map_comp, h])⟩ }
   simp only [isSheafFor_ofArrows_iff_bijective_toCompatible,
     ← e.bijective.of_comp_iff']
   rfl

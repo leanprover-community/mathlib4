@@ -28,7 +28,7 @@ instance (priority := 100) instDistribSMul : DistribSMul ℚ≥0 R where
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 
 instance instIsScalarTowerRight : IsScalarTower ℚ≥0 R R where
-  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
+  smul_assoc a x y := by simp [smul_def, smul_eq_mul, mul_assoc]
 
 end NNRat
 
@@ -40,6 +40,6 @@ instance (priority := 100) instDistribSMul : DistribSMul ℚ R where
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 
 instance instIsScalarTowerRight : IsScalarTower ℚ R R where
-  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
+  smul_assoc a x y := by simp [smul_def, smul_eq_mul, mul_assoc]
 
 end Rat

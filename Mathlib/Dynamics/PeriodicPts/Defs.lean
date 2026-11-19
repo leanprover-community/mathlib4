@@ -120,10 +120,10 @@ protected theorem sub (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
     apply isPeriodicPt_zero
 
 protected theorem mul_const (hm : IsPeriodicPt f m x) (n : ℕ) : IsPeriodicPt f (m * n) x := by
-  simp only [IsPeriodicPt, iterate_mul, hm.isFixedPt.iterate n]
+  simp [IsPeriodicPt, iterate_mul, hm.isFixedPt.iterate n]
 
 protected theorem const_mul (hm : IsPeriodicPt f m x) (n : ℕ) : IsPeriodicPt f (n * m) x := by
-  simp only [mul_comm n, hm.mul_const n]
+  simp [mul_comm n, hm.mul_const n]
 
 theorem trans_dvd (hm : IsPeriodicPt f m x) {n : ℕ} (hn : m ∣ n) : IsPeriodicPt f n x :=
   let ⟨k, hk⟩ := hn
@@ -271,14 +271,14 @@ theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < mi
   simp only [minimalPeriod, dite_eq_left hx, (Nat.find_spec hx).1.lt]
 
 theorem minimalPeriod_eq_zero_of_notMem_periodicPts (hx : x ∉ periodicPts f) :
-    minimalPeriod f x = 0 := by simp only [minimalPeriod, dite_eq_right hx]
+    minimalPeriod f x = 0 := by simp [minimalPeriod, dite_eq_right hx]
 
 theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     0 < minimalPeriod f x :=
   minimalPeriod_pos_of_mem_periodicPts <| mk_mem_periodicPts hn hx
 
 theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ periodicPts f :=
-  ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dite_eq_right h, lt_irrefl 0, not_false_iff],
+  ⟨not_imp_not.1 fun h => by simp [minimalPeriod, dite_eq_right h, lt_irrefl 0, not_false_iff],
     minimalPeriod_pos_of_mem_periodicPts⟩
 
 theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :

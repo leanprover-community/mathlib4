@@ -227,13 +227,13 @@ theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
 multiplication is by division ring elements. -/
 lemma deriv_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (fun y ↦ c • f y) x = c • deriv f x := by
-  simp only [← derivWithin_univ, derivWithin_fun_const_smul_field]
+  simp [← derivWithin_univ, derivWithin_fun_const_smul_field]
 
 /-- A variant of `deriv_const_smul` without differentiability assumption when the scalar
 multiplication is by division ring elements. -/
 lemma deriv_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (c • f) x = c • deriv f x := by
-  simp only [← derivWithin_univ, derivWithin_const_smul_field]
+  simp [← derivWithin_univ, derivWithin_const_smul_field]
 
 end ConstSMul
 
@@ -327,7 +327,7 @@ theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u
   · exact deriv_mul_const hu v
   · rw [deriv_zero_of_not_differentiableAt hu, zero_mul]
     rcases eq_or_ne v 0 with (rfl | hd)
-    · simp only [mul_zero, deriv_const]
+    · simp [mul_zero, deriv_const]
     · refine deriv_zero_of_not_differentiableAt (mt (fun H => ?_) hu)
       simpa only [mul_inv_cancel_right₀ hd] using H.mul_const v⁻¹
 
@@ -379,11 +379,11 @@ theorem deriv_const_mul_field' (u : 𝕜') : (deriv fun x => u * v x) = fun x =>
   funext fun _ => deriv_const_mul_field u
 
 theorem deriv_const_mul_id (c : 𝕜) : deriv (fun y => c * y) x = c := by
-  simp only [deriv_const_mul c differentiableAt_fun_id, deriv_id'', mul_one]
+  simp [deriv_const_mul c differentiableAt_fun_id, deriv_id'', mul_one]
 
 @[simp]
 theorem deriv_const_mul_id' (c : 𝕜) : deriv (fun x => c * x) = fun _ => c :=
-  funext fun _ => by simp only [deriv_const_mul_id]
+  funext fun _ => by simp [deriv_const_mul_id]
 
 end Mul
 
@@ -529,7 +529,7 @@ theorem derivWithin_div_const (c : 𝕜 → 𝕜') (d : 𝕜') :
 
 @[simp]
 theorem deriv_div_const (d : 𝕜') : deriv (fun x => c x / d) x = deriv c x / d := by
-  simp only [div_eq_mul_inv, deriv_mul_const_field]
+  simp [div_eq_mul_inv, deriv_mul_const_field]
 
 end Div
 

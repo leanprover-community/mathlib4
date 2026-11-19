@@ -175,7 +175,7 @@ theorem toPadicInt_comp_fromPadicInt : (toPadicInt p).comp (fromPadicInt p) = Ri
   rw [← RingHom.comp_assoc, toPadicInt, PadicInt.lift_spec]
   simp only [fromPadicInt, toZModPow, RingHom.comp_id]
   rw [RingHom.comp_assoc, truncate_comp_lift, ← RingHom.comp_assoc]
-  simp only [RingEquiv.symm_toRingHom_comp_toRingHom, RingHom.id_comp]
+  simp [RingEquiv.symm_toRingHom_comp_toRingHom, RingHom.id_comp]
 
 theorem toPadicInt_comp_fromPadicInt_ext (x) :
     (toPadicInt p).comp (fromPadicInt p) x = RingHom.id ℤ_[p] x := by
@@ -186,7 +186,7 @@ theorem fromPadicInt_comp_toPadicInt :
   apply WittVector.hom_ext
   intro n
   rw [fromPadicInt, ← RingHom.comp_assoc, truncate_comp_lift, RingHom.comp_assoc]
-  simp only [toPadicInt, toZModPow, RingHom.comp_id, PadicInt.lift_spec, RingHom.id_comp, ←
+  simp [toPadicInt, toZModPow, RingHom.comp_id, PadicInt.lift_spec, RingHom.id_comp, ←
     RingHom.comp_assoc, RingEquiv.toRingHom_comp_symm_toRingHom]
 
 theorem fromPadicInt_comp_toPadicInt_ext (x) :

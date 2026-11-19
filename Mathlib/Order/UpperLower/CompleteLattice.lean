@@ -201,7 +201,7 @@ theorem mem_sSup_iff : a ∈ sSup S ↔ ∀ s ∈ S, a ∈ s :=
 
 @[to_dual (attr := simp)]
 theorem mem_sInf_iff : a ∈ sInf S ↔ ∃ s ∈ S, a ∈ s :=
-  mem_iUnion₂.trans <| by simp only [exists_prop, SetLike.mem_coe]
+  mem_iUnion₂.trans <| by simp [exists_prop, SetLike.mem_coe]
 
 @[to_dual (attr := simp)]
 theorem mem_iSup_iff {f : ι → UpperSet α} : (a ∈ ⨆ i, f i) ↔ ∀ i, a ∈ f i := by
@@ -266,19 +266,19 @@ protected theorem compl_bot : (⊥ : UpperSet α).compl = ⊥ :=
 
 @[to_dual (attr := simp)]
 protected theorem compl_sSup (S : Set (UpperSet α)) : (sSup S).compl = ⨆ s ∈ S, UpperSet.compl s :=
-  LowerSet.ext <| by simp only [coe_compl, coe_sSup, compl_iInter₂, LowerSet.coe_iSup₂]
+  LowerSet.ext <| by simp [coe_compl, coe_sSup, compl_iInter₂, LowerSet.coe_iSup₂]
 
 @[to_dual (attr := simp)]
 protected theorem compl_sInf (S : Set (UpperSet α)) : (sInf S).compl = ⨅ s ∈ S, UpperSet.compl s :=
-  LowerSet.ext <| by simp only [coe_compl, coe_sInf, compl_iUnion₂, LowerSet.coe_iInf₂]
+  LowerSet.ext <| by simp [coe_compl, coe_sInf, compl_iUnion₂, LowerSet.coe_iInf₂]
 
 @[to_dual (attr := simp)]
 protected theorem compl_iSup (f : ι → UpperSet α) : (⨆ i, f i).compl = ⨆ i, (f i).compl :=
-  LowerSet.ext <| by simp only [coe_compl, coe_iSup, compl_iInter, LowerSet.coe_iSup]
+  LowerSet.ext <| by simp [coe_compl, coe_iSup, compl_iInter, LowerSet.coe_iSup]
 
 @[to_dual (attr := simp)]
 protected theorem compl_iInf (f : ι → UpperSet α) : (⨅ i, f i).compl = ⨅ i, (f i).compl :=
-  LowerSet.ext <| by simp only [coe_compl, coe_iInf, compl_iUnion, LowerSet.coe_iInf]
+  LowerSet.ext <| by simp [coe_compl, coe_iInf, compl_iUnion, LowerSet.coe_iInf]
 
 @[to_dual]
 theorem compl_iSup₂ (f : ∀ i, κ i → UpperSet α) :

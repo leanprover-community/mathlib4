@@ -85,7 +85,7 @@ instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     InnerProductSpace 𝕜 (PiLp 2 f) where
   inner x y := ∑ i, ⟪x i, y i⟫
   norm_sq_eq_re_inner x := by
-    simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_re_inner]
+    simp [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_re_inner]
   conj_inner_symm := by
     intro x y
     unfold inner
@@ -95,10 +95,10 @@ instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     apply inner_conj_symm
   add_left x y z :=
     show (∑ i, ⟪x i + y i, z i⟫ = ∑ i, ⟪x i, z i⟫ + ∑ i, ⟪y i, z i⟫) by
-      simp only [inner_add_left, Finset.sum_add_distrib]
+      simp [inner_add_left, Finset.sum_add_distrib]
   smul_left x y r :=
     show (∑ i : ι, ⟪r • x i, y i⟫ = conj r * ∑ i, ⟪x i, y i⟫) by
-      simp only [Finset.mul_sum, inner_smul_left]
+      simp [Finset.mul_sum, inner_smul_left]
 
 theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, NormedAddCommGroup (f i)]
     [∀ i, InnerProductSpace 𝕜 (f i)] (x y : PiLp 2 f) : ⟪x, y⟫ = ∑ i, ⟪x i, y i⟫ :=
@@ -273,7 +273,7 @@ def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι �
     convert! this (toLp 2 (e₁ (e₂.symm v₀))) (toLp 2 (e₁ (e₂.symm w₀))) <;> simp
   intro v w
   trans ⟪∑ i, (V i).subtypeₗᵢ (v i), ∑ i, (V i).subtypeₗᵢ (w i)⟫
-  · simp only [sum_inner, hV'.inner_right_fintype, PiLp.inner_apply]
+  · simp [sum_inner, hV'.inner_right_fintype, PiLp.inner_apply]
   · congr <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -422,7 +422,7 @@ protected theorem repr_apply_apply (b : OrthonormalBasis ι 𝕜 E) (v : E) (i :
     b.repr v i = ⟪b i, v⟫ := by
   classical
     rw [← b.repr.inner_map_map (b i) v, b.repr_self i, EuclideanSpace.inner_single_left]
-    simp only [one_mul, map_one]
+    simp [one_mul, map_one]
 
 @[simp]
 protected theorem orthonormal (b : OrthonormalBasis ι 𝕜 E) : Orthonormal 𝕜 b := by
@@ -724,7 +724,7 @@ protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s
 @[simp]
 protected theorem span_apply [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι')
     (i : s) : (OrthonormalBasis.span h s i : E) = v' i := by
-  simp only [OrthonormalBasis.span, Basis.span_apply, LinearIsometryEquiv.ofEq_symm,
+  simp [OrthonormalBasis.span, Basis.span_apply, LinearIsometryEquiv.ofEq_symm,
     OrthonormalBasis.map_apply, OrthonormalBasis.coe_mk, LinearIsometryEquiv.coe_ofEq_apply,
     comp_apply]
 
@@ -1164,10 +1164,10 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     have dim_LS_perp : finrank 𝕜 LSᗮ = d :=
       calc
         finrank 𝕜 LSᗮ = finrank 𝕜 V - finrank 𝕜 LS := by
-          simp only [← LS.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
+          simp [← LS.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
         _ = finrank 𝕜 V - finrank 𝕜 S := by
-          simp only [LS, LinearMap.finrank_range_of_inj L.injective]
-        _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
+          simp [LS, LinearMap.finrank_range_of_inj L.injective]
+        _ = finrank 𝕜 Sᗮ := by simp [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
     exact
       (stdOrthonormalBasis 𝕜 Sᗮ).repr.trans
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
@@ -1184,7 +1184,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     intro x
     -- Apply M to the orthogonal decomposition of x
     have Mx_decomp : M x = L (p1 x) + L3 (p2 x) := by
-      simp only [M, LinearMap.add_apply, LinearMap.comp_apply, LinearMap.comp_apply,
+      simp [M, LinearMap.add_apply, LinearMap.comp_apply, LinearMap.comp_apply,
         LinearIsometry.coe_toLinearMap]
     -- Mx_decomp is the orthogonal decomposition of M x
     have Mx_orth : ⟪L (p1 x), L3 (p2 x)⟫ = 0 := by

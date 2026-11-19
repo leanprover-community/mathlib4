@@ -114,7 +114,7 @@ theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) gra
   induction zz using DirectSum.induction_on with
   | zero => decide
   | of => decide +revert
-  | add d1 d2 ih1 ih2 => simp only [map_add, ih1, ih2]
+  | add d1 d2 ih1 ih2 => simp [map_add, ih1, ih2]
 
 instance : GradedAlgebra (grading R) where
   one_mem := grading.one_mem R

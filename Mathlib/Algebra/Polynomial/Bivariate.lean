@@ -61,15 +61,15 @@ lemma evalEval_CC (x y : R) (p : R) : (CC p).evalEval x y = p := by
 
 @[simp]
 lemma evalEval_zero (x y : R) : (0 : R[X][Y]).evalEval x y = 0 := by
-  simp only [evalEval, eval_zero]
+  simp [evalEval, eval_zero]
 
 @[simp]
 lemma evalEval_one (x y : R) : (1 : R[X][Y]).evalEval x y = 1 := by
-  simp only [evalEval, eval_one]
+  simp [evalEval, eval_one]
 
 @[simp]
 lemma evalEval_natCast (x y : R) (n : ℕ) : (n : R[X][Y]).evalEval x y = n := by
-  simp only [evalEval, eval_natCast]
+  simp [evalEval, eval_natCast]
 
 @[simp]
 lemma evalEval_X (x y : R) : X.evalEval x y = y := by
@@ -78,20 +78,20 @@ lemma evalEval_X (x y : R) : X.evalEval x y = y := by
 @[simp]
 lemma evalEval_add (x y : R) (p q : R[X][Y]) :
     (p + q).evalEval x y = p.evalEval x y + q.evalEval x y := by
-  simp only [evalEval, eval_add]
+  simp [evalEval, eval_add]
 
 lemma evalEval_sum (x y : R) (p : R[X]) (f : ℕ → R → R[X][Y]) :
     (p.sum f).evalEval x y = p.sum fun n a => (f n a).evalEval x y := by
-  simp only [evalEval, eval, eval₂_sum]
+  simp [evalEval, eval, eval₂_sum]
 
 lemma evalEval_finsetSum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
     (∑ i ∈ s, f i).evalEval x y = ∑ i ∈ s, (f i).evalEval x y := by
-  simp only [evalEval, eval_finsetSum]
+  simp [evalEval, eval_finsetSum]
 
 @[simp]
 lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
     (p : R[X][Y]) : (s • p).evalEval x y = s • p.evalEval x y := by
-  simp only [evalEval, eval_smul]
+  simp [evalEval, eval_smul]
 
 lemma evalEval_surjective (x y : R) : Function.Surjective <| evalEval x y :=
   fun y => ⟨CC y, evalEval_CC ..⟩
@@ -104,16 +104,16 @@ variable [Ring R]
 
 @[simp]
 lemma evalEval_neg (x y : R) (p : R[X][Y]) : (-p).evalEval x y = -p.evalEval x y := by
-  simp only [evalEval, eval_neg]
+  simp [evalEval, eval_neg]
 
 @[simp]
 lemma evalEval_sub (x y : R) (p q : R[X][Y]) :
     (p - q).evalEval x y = p.evalEval x y - q.evalEval x y := by
-  simp only [evalEval, eval_sub]
+  simp [evalEval, eval_sub]
 
 @[simp]
 lemma evalEval_intCast (x y : R) (n : ℤ) : (n : R[X][Y]).evalEval x y = n := by
-  simp only [evalEval, eval_intCast]
+  simp [evalEval, eval_intCast]
 
 end Ring
 
@@ -124,11 +124,11 @@ variable [CommSemiring R]
 @[simp]
 lemma evalEval_mul (x y : R) (p q : R[X][Y]) :
     (p * q).evalEval x y = p.evalEval x y * q.evalEval x y := by
-  simp only [evalEval, eval_mul]
+  simp [evalEval, eval_mul]
 
 lemma evalEval_prod {ι : Type*} (s : Finset ι) (x y : R) (p : ι → R[X][Y]) :
     (∏ j ∈ s, p j).evalEval x y = ∏ j ∈ s, (p j).evalEval x y := by
-  simp only [evalEval, eval_prod]
+  simp [evalEval, eval_prod]
 
 lemma evalEval_list_prod (x y : R) (l : List R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
@@ -140,7 +140,7 @@ lemma evalEval_multiset_prod (x y : R) (l : Multiset R[X][Y]) :
 
 @[simp]
 lemma evalEval_pow (x y : R) (p : R[X][Y]) (n : ℕ) : (p ^ n).evalEval x y = p.evalEval x y ^ n := by
-  simp only [evalEval, eval_pow]
+  simp [evalEval, eval_pow]
 
 lemma evalEval_dvd (x y : R) {p q : R[X][Y]} : p ∣ q → p.evalEval x y ∣ q.evalEval x y :=
   eval_dvd ∘ eval_dvd

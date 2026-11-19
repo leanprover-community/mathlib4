@@ -153,7 +153,7 @@ noncomputable def induced : HasShift D A :=
             (s m₂).map_id, (s m₃).map_id]
         erw [Category.comp_id, ← NatTrans.naturality_assoc, reassoc_of% eq,
           dcongr_arg (fun a => (i a).hom.app X) (add_assoc m₁ m₂ m₃).symm]
-        simp only [Functor.comp_obj, eqToHom_map, eqToHom_app, NatTrans.naturality_assoc,
+        simp [Functor.comp_obj, eqToHom_map, eqToHom_app, NatTrans.naturality_assoc,
           Induced.add_hom_app_obj, Functor.comp_map, Category.assoc, Iso.inv_hom_id_app_assoc,
           eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, Category.comp_id,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id] }
@@ -172,14 +172,14 @@ lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
     (shiftFunctorZero D A).hom.app (F.obj X) =
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
-  simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_hom_app_obj]
+  simp [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_hom_app_obj]
 
 @[simp]
 lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
     (shiftFunctorZero D A).inv.app (F.obj X) =
       F.map ((shiftFunctorZero C A).inv.app X) ≫ (i 0).inv.app X := by
-  simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_inv_app_obj]
+  simp [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_inv_app_obj]
 
 variable {A}
 
@@ -191,7 +191,7 @@ lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
         F.map ((shiftFunctorAdd C a b).hom.app X) ≫
         (i b).inv.app ((shiftFunctor C a).obj X) ≫
         (s b).map ((i a).inv.app X) := by
-  simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_hom_app_obj]
+  simp [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_hom_app_obj]
 
 @[simp]
 lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
@@ -201,7 +201,7 @@ lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
       (i b).hom.app ((shiftFunctor C a).obj X) ≫
       F.map ((shiftFunctorAdd C a b).inv.app X) ≫
       (i (a + b)).inv.app X := by
-  simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_inv_app_obj]
+  simp [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_inv_app_obj]
 
 variable (A)
 
@@ -218,7 +218,7 @@ noncomputable def Functor.CommShift.ofInduced :
       commShiftIso_zero := by
         ext X
         dsimp
-        simp only [isoZero_hom_app, shiftFunctorZero_inv_app_obj_of_induced,
+        simp [isoZero_hom_app, shiftFunctorZero_inv_app_obj_of_induced,
           ← F.map_comp_assoc, Iso.hom_inv_id_app, F.map_id, Category.id_comp]
       commShiftIso_add := fun a b => by
         ext X

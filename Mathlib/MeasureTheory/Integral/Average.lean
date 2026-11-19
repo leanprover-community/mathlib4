@@ -129,23 +129,23 @@ theorem setLAverage_eq (f : α → ℝ≥0∞) (s : Set α) :
 
 theorem setLAverage_eq' (f : α → ℝ≥0∞) (s : Set α) :
     ⨍⁻ x in s, f x ∂μ = ∫⁻ x, f x ∂(μ s)⁻¹ • μ.restrict s := by
-  simp only [laverage_eq', restrict_apply_univ]
+  simp [laverage_eq', restrict_apply_univ]
 
 variable {μ}
 
 theorem laverage_congr {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ⨍⁻ x, f x ∂μ = ⨍⁻ x, g x ∂μ := by
-  simp only [laverage_eq, lintegral_congr_ae h]
+  simp [laverage_eq, lintegral_congr_ae h]
 
 theorem setLAverage_congr (h : s =ᵐ[μ] t) : ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in t, f x ∂μ := by
-  simp only [setLAverage_eq, setLIntegral_congr h, measure_congr h]
+  simp [setLAverage_eq, setLIntegral_congr h, measure_congr h]
 
 theorem setLAverage_congr_fun_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
-  simp only [laverage_eq, setLIntegral_congr_fun_ae hs h]
+  simp [laverage_eq, setLIntegral_congr_fun_ae hs h]
 
 theorem setLAverage_congr_fun (hs : MeasurableSet s) (h : EqOn f g s) :
     ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
-  simp only [laverage_eq, setLIntegral_congr_fun hs h]
+  simp [laverage_eq, setLIntegral_congr_fun hs h]
 
 theorem laverage_lt_top (hf : ∫⁻ x, f x ∂μ ≠ ∞) : ⨍⁻ x, f x ∂μ < ∞ := by
   obtain rfl | hμ := eq_or_ne μ 0
@@ -165,7 +165,7 @@ theorem laverage_add_measure :
   by_cases hν : IsFiniteMeasure ν; swap
   · rw [not_isFiniteMeasure_iff] at hν
     simp [laverage_eq, hν]
-  simp only [← ENNReal.mul_div_right_comm, measure_mul_laverage, ← ENNReal.add_div,
+  simp [← ENNReal.mul_div_right_comm, measure_mul_laverage, ← ENNReal.add_div,
     ← lintegral_add_measure, ← add_apply, ← laverage_eq]
 
 theorem measure_mul_setLAverage (f : α → ℝ≥0∞) (h : μ s ≠ ∞) :
@@ -209,10 +209,10 @@ theorem laverage_mem_openSegment_compl_self [IsFiniteMeasure μ] (hs : NullMeasu
 @[simp]
 theorem laverage_const (μ : Measure α) [IsFiniteMeasure μ] [h : NeZero μ] (c : ℝ≥0∞) :
     ⨍⁻ _x, c ∂μ = c := by
-  simp only [laverage, lintegral_const, measure_univ, mul_one]
+  simp [laverage, lintegral_const, measure_univ, mul_one]
 
 theorem setLAverage_const (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : ℝ≥0∞) : ⨍⁻ _x in s, c ∂μ = c := by
-  simp only [setLAverage_eq, lintegral_const, Measure.restrict_apply, MeasurableSet.univ,
+  simp [setLAverage_eq, lintegral_const, Measure.restrict_apply, MeasurableSet.univ,
     univ_inter, div_eq_mul_inv, mul_assoc, ENNReal.mul_inv_cancel hs₀ hs, mul_one]
 
 theorem laverage_one [IsFiniteMeasure μ] [NeZero μ] : ⨍⁻ _x, (1 : ℝ≥0∞) ∂μ = 1 :=
@@ -404,16 +404,16 @@ theorem setAverage_eq (s : Set α) : ⨍ x in s, f x ∂μ = (μ.real s)⁻¹ �
 
 variable (μ f) in
 theorem setAverage_eq' (s : Set α) : ⨍ x in s, f x ∂μ = ∫ x, f x ∂(μ s)⁻¹ • μ.restrict s := by
-  simp only [average_eq', restrict_apply_univ]
+  simp [average_eq', restrict_apply_univ]
 
 theorem average_congr (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = ⨍ x, g x ∂μ := by
-  simp only [average_eq, integral_congr_ae h]
+  simp [average_eq, integral_congr_ae h]
 
 theorem setAverage_congr (h : s =ᵐ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
-  simp only [setAverage_eq, setIntegral_congr_set h, measureReal_congr h]
+  simp [setAverage_eq, setIntegral_congr_set h, measureReal_congr h]
 
 theorem setAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
-    ⨍ x in s, f x ∂μ = ⨍ x in s, g x ∂μ := by simp only [average_eq, setIntegral_congr_ae hs h]
+    ⨍ x in s, f x ∂μ = ⨍ x in s, g x ∂μ := by simp [average_eq, setIntegral_congr_ae hs h]
 
 theorem average_add_measure [IsFiniteMeasure μ] {ν : Measure α} [IsFiniteMeasure ν] {f : α → E}
     (hμ : Integrable f μ) (hν : Integrable f ν) :
@@ -844,11 +844,11 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
   have g_int : ∀ᶠ i in l, Integrable (g i) μ := by
     filter_upwards [(tendsto_order.1 hg).1 _ zero_lt_one] with i hi
     contrapose hi
-    simp only [integral_undef hi, lt_self_iff_false, not_false_eq_true]
+    simp [integral_undef hi, lt_self_iff_false, not_false_eq_true]
   have I : ∀ᶠ i in l, ∫ y, g i y • (f y - c) ∂μ + (∫ y, g i y ∂μ) • c = ∫ y, g i y • f y ∂μ := by
     filter_upwards [f_int, g_int, g_supp, g_bound] with i hif hig hisupp hibound
     rw [← integral_smul_const, ← integral_add]
-    · simp only [smul_sub, sub_add_cancel]
+    · simp [smul_sub, sub_add_cancel]
     · simp_rw [smul_sub]
       apply Integrable.sub _ (hig.smul_const _)
       have A : Function.support (fun y ↦ g i y • f y) ⊆ a i := by

@@ -258,7 +258,7 @@ def substFunc : L.Term α → (∀ {n : ℕ}, L.Functions n → L'.Term (Fin n))
 theorem substFunc_term (t : L.Term α) : t.substFunc Functions.term = t := by
   induction t
   · rfl
-  · simp only [substFunc, Functions.term, subst, ‹∀ _, _›]
+  · simp [substFunc, Functions.term, subst, ‹∀ _, _›]
 
 end Term
 
@@ -439,7 +439,7 @@ theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormu
     rw [← Function.comp_assoc, Term.relabel_comp_relabel]
     simp
   | imp _ _ ih1 ih2 => simp [ih1, ih2]
-  | all _ ih3 => intros; simp only [castLE, ih3]
+  | all _ ih3 => intros; simp [castLE, ih3]
 
 @[simp]
 theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
@@ -666,8 +666,8 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   | equal => simp [Term.bdEqual]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
-    simp only [onBoundedFormula, Function.comp_apply, ih1, ih2]
-  | all _ ih3 => simp only [ih3, onBoundedFormula, Function.comp_apply]
+    simp [onBoundedFormula, Function.comp_apply, ih1, ih2]
+  | all _ ih3 => simp [ih3, onBoundedFormula, Function.comp_apply]
 
 /-- Maps a formula's symbols along a language map. -/
 def onFormula (g : L →ᴸ L') : L.Formula α → L'.Formula α :=

@@ -441,7 +441,7 @@ theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R m) = ι R (f m) :
 theorem map_apply_ιMulti {n : ℕ} (f : M →ₗ[R] N) (m : Fin n → M) :
     map f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
   rw [ιMulti_apply, ιMulti_apply, map_list_prod]
-  simp only [List.map_ofFn, Function.comp_def, map_apply_ι]
+  simp [List.map_ofFn, Function.comp_def, map_apply_ι]
 
 @[simp]
 theorem map_comp_ιMulti {n : ℕ} (f : M →ₗ[R] N) :
@@ -471,7 +471,7 @@ theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Mo
     toTrivSqZeroExt.comp (map f) = (TrivSqZeroExt.map f).comp toTrivSqZeroExt := by
   apply hom_ext
   apply LinearMap.ext
-  simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
+  simp [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
     AlgHom.toLinearMap_apply, map_apply_ι, toTrivSqZeroExt_ι, TrivSqZeroExt.map_inr, forall_const]
 
 theorem ιInv_comp_map (f : M →ₗ[R] N) :

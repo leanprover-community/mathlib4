@@ -427,8 +427,8 @@ def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G w
   map f :=
     { hom := F.map f.hom
       comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
-  map_id M := by ext; simp only [Action.id_hom, F.map_id]
-  map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
+  map_id M := by ext; simp [Action.id_hom, F.map_id]
+  map_comp f g := by ext; simp [Action.comp_hom, F.map_comp]
 
 instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] : (F.mapAction G).Faithful where
   map_injective eq := by

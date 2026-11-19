@@ -675,7 +675,7 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
 are the same. -/
 theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
   rw [decomp]
-  simp only [map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
+  simp [map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 
 theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
     (f : k →ᵃ[k] k) (a b : k) :
@@ -684,9 +684,9 @@ theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
     ext x
     change f x = x • (f 1 -ᵥ f 0) +ᵥ f 0
     rw [← f.linear_apply_vsub, ← f.linear.map_smul, ← f.map_vadd]
-    simp only [vsub_eq_sub, add_zero, mul_one, vadd_eq_add, sub_zero, smul_eq_mul]
+    simp [vsub_eq_sub, add_zero, mul_one, vadd_eq_add, sub_zero, smul_eq_mul]
   rw [this, Set.image_comp]
-  simp only [Set.image_add_const_uIcc, Set.image_mul_const_uIcc, Function.comp_apply]
+  simp [Set.image_add_const_uIcc, Set.image_mul_const_uIcc, Function.comp_apply]
 
 section
 
@@ -888,7 +888,7 @@ theorem homothety_apply_same (c : P1) (r : k) : homothety c r c = c :=
 
 theorem homothety_mul_apply (c : P1) (r₁ r₂ : k) (p : P1) :
     homothety c (r₁ * r₂) p = homothety c r₁ (homothety c r₂ p) := by
-  simp only [homothety_apply, mul_smul, vadd_vsub]
+  simp [homothety_apply, mul_smul, vadd_vsub]
 
 theorem homothety_mul (c : P1) (r₁ r₂ : k) :
     homothety c (r₁ * r₂) = (homothety c r₁).comp (homothety c r₂) :=
@@ -902,7 +902,7 @@ theorem homothety_zero (c : P1) : homothety c (0 : k) = const k P1 c := by
 @[simp]
 theorem homothety_add (c : P1) (r₁ r₂ : k) :
     homothety c (r₁ + r₂) = r₁ • (id k P1 -ᵥ const k P1 c) +ᵥ homothety c r₂ := by
-  simp only [homothety_def, add_smul, vadd_vadd]
+  simp [homothety_def, add_smul, vadd_vadd]
 
 theorem homothety_eq_iff_of_mul_eq_one {c p q : P1} {r₁ r₂ : k} (h : r₁ * r₂ = 1) :
     homothety c r₁ p = q ↔ homothety c r₂ q = p := by

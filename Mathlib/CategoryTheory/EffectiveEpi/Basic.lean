@@ -176,7 +176,7 @@ lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type*} (X : α → C) (π : (a 
     [EffectiveEpiFamily X π] (m₁ m₂ : B ⟶ W) (h : ∀ a, π a ≫ m₁ = π a ≫ m₂) :
     m₁ = m₂ := by
   have : m₂ = EffectiveEpiFamily.desc X π (fun a => π a ≫ m₂)
-      (fun a₁ a₂ g₁ g₂ h => by simp only [← assoc, h]) := by
+      (fun a₁ a₂ g₁ g₂ h => by simp [← assoc, h]) := by
     apply EffectiveEpiFamily.uniq; intro; rfl
   rw [this]
   exact EffectiveEpiFamily.uniq _ _ _ _ _ h
@@ -227,10 +227,10 @@ def effectiveEpiFamilyStructOfIsIsoDesc {B : C} {α : Type*} (X : α → C)
   desc e _ := (asIso (Sigma.desc π)).inv ≫ (Sigma.desc e)
   fac e h := by
     intro a
-    have : π a = Sigma.ι X a ≫ (asIso (Sigma.desc π)).hom := by simp only [asIso_hom,
+    have : π a = Sigma.ι X a ≫ (asIso (Sigma.desc π)).hom := by simp [asIso_hom,
       colimit.ι_desc, Cofan.mk_ι_app]
     rw [this, assoc]
-    simp only [asIso_hom, asIso_inv, IsIso.hom_inv_id_assoc, colimit.ι_desc,
+    simp [asIso_hom, asIso_inv, IsIso.hom_inv_id_assoc, colimit.ι_desc,
       Cofan.mk_ι_app]
   uniq e h m hm := by
     simp only [asIso_inv, IsIso.eq_inv_comp]

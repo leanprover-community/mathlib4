@@ -195,7 +195,7 @@ theorem support_zero : (0 : SkewMonoidAlgebra k G).support = ∅ := rfl
 @[simp]
 theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) = 0 := by
   rcases p
-  simp only [support, Finsupp.support_eq_empty, ofCoeff_eq_zero]
+  simp [support, Finsupp.support_eq_empty, ofCoeff_eq_zero]
 
 lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
     (p + q).support ⊆ p.support ∪ q.support := by
@@ -213,11 +213,11 @@ theorem toFinsupp_apply (f : SkewMonoidAlgebra k G) (g) : f.coeff g = f.coeff g 
 @[simp]
 theorem mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} : a ∈ f.support ↔ f.coeff a ≠ 0 := by
   rcases f with ⟨⟩
-  simp only [support_ofCoeff, Finsupp.mem_support_iff, ne_eq]
+  simp [support_ofCoeff, Finsupp.mem_support_iff, ne_eq]
 
 theorem notMem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
     a ∉ f.support ↔ f.coeff a = 0 := by
-  simp only [mem_support_iff, ne_eq, not_not]
+  simp [mem_support_iff, ne_eq, not_not]
 
 theorem ext_iff {p q : SkewMonoidAlgebra k G} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : G →₀ k⟩
@@ -403,7 +403,7 @@ lemma coeff_finsuppSum {k' G' : Type*} [AddCommMonoid k'] (f : G →₀ k)
 theorem ofCoeff_finsuppSum {k' G' : Type*} [AddCommMonoid k'] (f : G →₀ k)
     (g : G → k → G' →₀ k') :
     ofCoeff (f.sum g) = f.sum (⟨g · ·⟩) := by
-  apply coeff_injective; simp only [coeff_finsuppSum]
+  apply coeff_injective; simp [coeff_finsuppSum]
 
 @[deprecated (since := "2026-07-04")] alias ofFinsupp_sum := ofCoeff_finsuppSum
 @[deprecated (since := "2026-07-06")] alias ofCoeff_sum := ofCoeff_finsuppSum
@@ -456,12 +456,12 @@ theorem sum_sum_index {α β M N P : Type*} [AddCommMonoid M] [AddCommMonoid N] 
 @[deprecated Finsupp.sum_mul +typeChanged (since := "2026-07-04")]
 theorem sum_mul {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoidAlgebra k G)
     {f : G → k → S} : s.sum f * b = s.sum fun a c ↦ f a c * b := by
-  simp only [sum, Finsupp.sum, Finset.sum_mul]
+  simp [sum, Finsupp.sum, Finset.sum_mul]
 
 @[deprecated Finsupp.mul_sum +typeChanged (since := "2026-07-04")]
 theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoidAlgebra k G)
     {f : G → k → S} : b * s.sum f = s.sum fun a c ↦ b * f a c := by
-  simp only [sum, Finsupp.sum, Finset.mul_sum]
+  simp [sum, Finsupp.sum, Finset.mul_sum]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Analogue of `Finsupp.sum_ite_eq'` for `SkewMonoidAlgebra`. -/
@@ -469,7 +469,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
     (a : G) (b : G → k → N) : (f.sum fun (x : G) (v : k) ↦ if x = a then b x v else 0) =
       if a ∈ f.support then b a (f.coeff a) else 0 := by
-  simp only [sum_def', f.coeff.support.sum_ite_eq', support]
+  simp [sum_def', f.coeff.support.sum_ite_eq', support]
 
 @[deprecated Finsupp.smul_sum +typeChanged (since := "2026-07-04")]
 theorem smul_sum {M : Type*} {R : Type*} [AddCommMonoid M] [DistribSMul R M]
@@ -649,12 +649,12 @@ theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
     [DistribSMul R k] [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : R} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b • ·) := by
-  simp only [sum_def, coeff_smul, Finsupp.sum_smul_index' h0]
+  simp [sum_def, coeff_smul, Finsupp.sum_smul_index' h0]
 
 @[simp]
 theorem liftNC_one {g_hom R : Type*} [NonAssocSemiring k] [One G] [Semiring R] [FunLike g_hom G R]
     [OneHomClass g_hom G R] (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 := by
-  simp only [one_def, liftNC_single, AddMonoidHom.coe_ofClass, map_one, mul_one]
+  simp [one_def, liftNC_single, AddMonoidHom.coe_ofClass, map_one, mul_one]
 
 end Mul
 
@@ -1078,10 +1078,10 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
     (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
     mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   induction x with
-  | add p q hp hq => simp only [add_mul, map_add, hp, hq]
+  | add p q hp hq => simp [add_mul, map_add, hp, hq]
   | single a b =>
   induction y with
-  | add p q hp hq => simp only [mul_add, map_add, hp, hq]
+  | add p q hp hq => simp [mul_add, map_add, hp, hq]
   | single a' b' => simp [single_mul_single, mapDomain_single, map_mul, hf]
 
 /-- If f : G → H is a multiplicative homomorphism between two monoids and
@@ -1239,7 +1239,7 @@ instance [MulSemiringAction G A]
   smul_def' r a := by ext; simp [Algebra.smul_def, singleOneRingHom, coeff_single_one_mul]
   commutes' r f := by
     ext
-    simp only [singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk,
+    simp [singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk,
       MonoidHom.coe_mk, OneHom.coe_mk, coeff_single_one_mul, Algebra.commutes, coeff_mul_single_one,
       smul_algebraMap, RingHom.coe_comp, comp_apply]
 

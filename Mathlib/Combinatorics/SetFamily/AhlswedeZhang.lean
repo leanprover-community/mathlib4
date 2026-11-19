@@ -149,7 +149,7 @@ lemma map_truncatedSup [DecidableLE β] (e : α ≃o β) (s : Finset α) (a : α
   have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s := by simp
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
   congr with h
-  simp only [filter_map, Function.comp_def, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
+  simp [filter_map, Function.comp_def, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
     OrderIso.le_iff_le, id, sup'_map]
 
 lemma truncatedSup_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
@@ -169,7 +169,7 @@ lemma truncatedSup_union (hs : a ∈ lowerClosure s) (ht : a ∈ lowerClosure t)
 lemma truncatedSup_union_left (hs : a ∈ lowerClosure s) (ht : a ∉ lowerClosure t) :
     truncatedSup (s ∪ t) a = truncatedSup s a := by
   simp only [mem_lowerClosure, mem_coe, not_exists, not_and] at ht
-  simp only [truncatedSup_of_mem, hs, filter_union, filter_false_of_mem ht, union_empty,
+  simp [truncatedSup_of_mem, hs, filter_union, filter_false_of_mem ht, union_empty,
     lower_aux.2 (Or.inl hs)]
 
 lemma truncatedSup_union_right (hs : a ∉ lowerClosure s) (ht : a ∈ lowerClosure t) :
@@ -226,7 +226,7 @@ lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
   have : e a ∈ upperClosure (s.map e.toEquiv.toEmbedding) ↔ a ∈ upperClosure s := by simp
   simp_rw [truncatedInf, apply_dite e, map_finset_inf', map_bot, this]
   congr with h
-  simp only [filter_map, Function.comp_def, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
+  simp [filter_map, Function.comp_def, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
     OrderIso.le_iff_le, id, inf'_map]
 
 lemma truncatedInf_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
@@ -246,7 +246,7 @@ lemma truncatedInf_union (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t)
 lemma truncatedInf_union_left (hs : a ∈ upperClosure s) (ht : a ∉ upperClosure t) :
     truncatedInf (s ∪ t) a = truncatedInf s a := by
   simp only [mem_upperClosure, mem_coe, not_exists, not_and] at ht
-  simp only [truncatedInf_of_mem, hs, filter_union, filter_false_of_mem ht, union_empty,
+  simp [truncatedInf_of_mem, hs, filter_union, filter_false_of_mem ht, union_empty,
     upper_aux.2 (Or.inl hs)]
 
 lemma truncatedInf_union_right (hs : a ∉ upperClosure s) (ht : a ∈ upperClosure t) :
@@ -400,7 +400,7 @@ lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
     infSum 𝒜ᶜˢ + supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ + 1 := by
   unfold infSum supSum
   rw [← @map_univ_of_surjective (Finset α) _ _ _ ⟨compl, compl_injective⟩ compl_surjective, sum_map]
-  simp only [Function.Embedding.coeFn_mk, univ_map_embedding, ← compl_truncatedSup,
+  simp [Function.Embedding.coeFn_mk, univ_map_embedding, ← compl_truncatedSup,
     ← sum_add_distrib, card_compl, cast_sub (card_le_univ _), choose_symm (card_le_univ _),
     ← add_div, sub_add_cancel, Fintype.sum_div_mul_card_choose_card]
 

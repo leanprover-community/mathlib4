@@ -162,7 +162,7 @@ instance : Coe (A →A[R] B) (A →ₐ[R] B) where coe := toAlgHom
 
 @[simp, norm_cast]
 theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
-  cases f; cases g; simp only [mk.injEq]
+  cases f; cases g; simp [mk.injEq]
 
 theorem coe_mk (f : A →ₐ[R] B) (h) : (mk f h : A →ₐ[R] B) = f := rfl
 
@@ -201,7 +201,7 @@ def copy (f : A →A[R] B) (f' : A → B) (h : f' = ⇑f) : A →A[R] B where
   toAlgHom := {
     toRingHom := (f : A →A[R] B).toRingHom.copy f' h
     commutes' := fun r => by
-      simp only [AlgHom.toRingHom_eq_coe, h, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+      simp [AlgHom.toRingHom_eq_coe, h, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
         MonoidHom.toOneHom_coe, MonoidHom.coe_ofClass, RingHom.coe_copy, AlgHomClass.commutes f r] }
   cont := show Continuous f' from h.symm ▸ f.continuous
 

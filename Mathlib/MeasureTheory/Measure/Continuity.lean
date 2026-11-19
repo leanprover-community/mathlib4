@@ -261,7 +261,7 @@ theorem exists_measure_iInter_lt [SemilatticeSup ι] [Countable ι]
     rw [ENNReal.tendsto_atTop_zero_iff_lt_of_antitone hFAnti] at this
     exact this ε hε
   have hzero : μ (⋂ n, s n) = 0 := by
-    simp only [hfem, measure_empty]
+    simp [hfem, measure_empty]
   rw [← hzero]
   exact tendsto_measure_iInter_le hm hfin
 

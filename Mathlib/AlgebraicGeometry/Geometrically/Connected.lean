@@ -109,7 +109,7 @@ instance [GeometricallyConnected g] [UniversallyOpen g] [ConnectedSpace X] :
 
 lemma GeometricallyConnected.iff_geometricallyConnected_fiber :
     GeometricallyConnected f ↔ ∀ s, GeometricallyConnected (f.fiberToSpecResidueField s) := by
-  simp only [eq_geometrically, ← geometrically_iff_forall_fiberToSpecResidueField]
+  simp [eq_geometrically, ← geometrically_iff_forall_fiberToSpecResidueField]
 
 lemma GeometricallyConnected.comp
     (f : X ⟶ Y) (g : Y ⟶ Z) [GeometricallyConnected f] [GeometricallyConnected g]

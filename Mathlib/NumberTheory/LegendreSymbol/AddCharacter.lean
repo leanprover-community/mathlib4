@@ -52,7 +52,7 @@ variable {R : Type u} [CommRing R] {R' : Type v} [CommMonoid R']
 /-- The values of an additive character on a ring of positive characteristic are roots of unity. -/
 lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
     (φ.val_isUnit a).unit ∈ rootsOfUnity (ringChar R).toPNat' R' := by
-  simp only [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte,
+  simp [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte,
     ← map_nsmul_eq_pow, nsmul_eq_mul, CharP.cast_eq_zero, zero_mul, map_zero_eq_one]
 
 /-- An additive character is *primitive* iff all its multiplicative shifts by nonzero
@@ -91,7 +91,7 @@ lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
   simp only [isUnit_iff_mem_nonZeroDivisors_of_finite,
     mem_nonZeroDivisors_iff_right, not_forall] at hr
   rcases hr with ⟨x, h, h'⟩
-  exact ⟨x, h', by simp only [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff]⟩
+  exact ⟨x, h', by simp [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff]⟩
 
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
@@ -120,7 +120,7 @@ lemma exists_divisor_of_not_isPrimitive (he : ¬e.IsPrimitive) :
   -- We have `AddChar.mulShift e b = 1`, but `b ≠ 0`.
   obtain ⟨d, hd, u, hu, rfl⟩ := b.eq_unit_mul_divisor
   refine ⟨d, hd, lt_of_le_of_ne (Nat.le_of_dvd (NeZero.pos _) hd) ?_, ?_⟩
-  · exact fun h ↦ by simp only [h, ZMod.natCast_self, mul_zero, ne_eq, not_true_eq_false] at hb_ne
+  · exact fun h ↦ by simp [h, ZMod.natCast_self, mul_zero, ne_eq, not_true_eq_false] at hb_ne
   · rw [← mulShift_unit_eq_one_iff _ hu, ← hb, mul_comm]
     ext1 y
     rw [mulShift_apply, mulShift_apply, mulShift_apply, mul_assoc]
@@ -137,8 +137,8 @@ section ZModCharDef
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
 def zmodChar (n : ℕ) [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) : AddChar (ZMod n) C where
   toFun a := ζ ^ a.val
-  map_zero_eq_one' := by simp only [ZMod.val_zero, pow_zero]
-  map_add_eq_mul' x y := by simp only [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
+  map_zero_eq_one' := by simp [ZMod.val_zero, pow_zero]
+  map_add_eq_mul' x y := by simp [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
 
 /-- The additive character on `ZMod n` defined using `ζ` sends `a` to `ζ^a`. -/
 theorem zmodChar_apply {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ZMod n) :

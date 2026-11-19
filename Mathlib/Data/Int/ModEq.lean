@@ -116,7 +116,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  simp only [modEq_iff_dvd, (by lia : -b - -a = -(b - a)), Int.dvd_neg]
+  simp [modEq_iff_dvd, (by lia : -b - -a = -(b - a)), Int.dvd_neg]
 
 @[simp]
 theorem modEq_neg : a ≡ b [ZMOD -n] ↔ a ≡ b [ZMOD n] := by simp [modEq_iff_dvd]
@@ -129,9 +129,9 @@ protected theorem of_dvd (d : m ∣ n) (h : a ≡ b [ZMOD n]) : a ≡ b [ZMOD m]
 protected theorem mul_left' (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n] := by
   obtain hc | rfl | hc := lt_trichotomy c 0
   · rw [← neg_modEq_neg, ← modEq_neg, ← Int.neg_mul, ← Int.neg_mul, ← Int.neg_mul]
-    simp only [ModEq, mul_emod_mul_of_pos _ _ (neg_pos.2 hc), h.eq]
-  · simp only [Int.zero_mul, ModEq.rfl]
-  · simp only [ModEq, mul_emod_mul_of_pos _ _ hc, h.eq]
+    simp [ModEq, mul_emod_mul_of_pos _ _ (neg_pos.2 hc), h.eq]
+  · simp [Int.zero_mul, ModEq.rfl]
+  · simp [ModEq, mul_emod_mul_of_pos _ _ hc, h.eq]
 
 protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * c] := by
   rw [mul_comm a, mul_comm b, mul_comm n]; exact h.mul_left'
@@ -354,7 +354,7 @@ theorem add_modEq_right : a + n ≡ a [ZMOD n] := by simp
 
 theorem modEq_and_modEq_iff_modEq_lcm {a b m n : ℤ} :
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m.lcm n] := by
-  simp only [modEq_iff_dvd, coe_lcm_dvd_iff]
+  simp [modEq_iff_dvd, coe_lcm_dvd_iff]
 
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.natAbs) :
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] := by

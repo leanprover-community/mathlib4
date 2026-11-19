@@ -96,7 +96,7 @@ protected theorem map_of_aemeasurable (h : μ ≪ ν) {f : α → β} (hf : AEMe
 
 protected theorem smul_left [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
     c • μ ≪ ν := fun s hνs => by
-  simp only [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
+  simp [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
 
 /-- If `μ ≪ ν`, then `c • μ ≪ c • ν`.
 

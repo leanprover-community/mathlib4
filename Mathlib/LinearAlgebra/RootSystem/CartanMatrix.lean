@@ -123,7 +123,7 @@ variable [IsDomain R]
 lemma cartanMatrix_apply_eq_zero_iff_symm {i j : b.support} :
     b.cartanMatrix i j = 0 ↔ b.cartanMatrix j i = 0 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  simp only [cartanMatrix_apply_eq_zero_iff_pairing, P.pairing_eq_zero_iff]
+  simp [cartanMatrix_apply_eq_zero_iff_pairing, P.pairing_eq_zero_iff]
 
 variable [Finite ι]
 

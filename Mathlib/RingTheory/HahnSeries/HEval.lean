@@ -172,12 +172,12 @@ def heval : PowerSeries R →ₐ[R] R⟦Γ⟧ where
     rw [finsum_eq_single _ (0 : ℕ) (fun n hn => by simp [hn])]
     simp
   map_mul' a b := by
-    simp only [← hsum_mul, hsum_powerSeriesFamily_mul]
+    simp [← hsum_mul, hsum_powerSeriesFamily_mul]
   map_zero' := by
-    simp only [hsum, smulFamily_toFun, map_zero, zero_smul,
+    simp [hsum, smulFamily_toFun, map_zero, zero_smul,
       coeff_zero, finsum_zero, mk_eq_zero, Pi.zero_def]
   map_add' a b := by
-    simp only [powerSeriesFamily_add, hsum_add]
+    simp [powerSeriesFamily_add, hsum_add]
   commutes' r := by
     simp only [algebraMap_eq]
     ext g

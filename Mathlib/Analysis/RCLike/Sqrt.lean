@@ -33,7 +33,7 @@ theorem Complex.sqrt_eq_real_add_ite {a : ℂ} :
   rw [← cpow_inv_two_re, sqrt]
   by_cases! h : 0 ≤ a.im
   · simp [← cpow_inv_two_im_eq_sqrt h, h]
-  simp only [re_add_im, ↓reduceIte, h.not_ge, neg_one_mul, ← ofReal_neg,
+  simp [re_add_im, ↓reduceIte, h.not_ge, neg_one_mul, ← ofReal_neg,
     ← cpow_inv_two_im_eq_neg_sqrt h]
 
 open Complex in

@@ -88,9 +88,9 @@ and `S₂.X₁.homology i ⟶ S₂.X₂.homology i ⟶ S₂.X₃.homology i` tha
 noncomputable def mapComposableArrows₂ (i : ι) : composableArrows₂ S₁ i ⟶ composableArrows₂ S₂ i :=
   homMk₂ (homologyMap φ.τ₁ i) (homologyMap φ.τ₂ i) (homologyMap φ.τ₃ i) (by
     dsimp
-    simp only [← homologyMap_comp, φ.comm₁₂]) (by
+    simp [← homologyMap_comp, φ.comm₁₂]) (by
     dsimp [Precomp.map]
-    simp only [← homologyMap_comp, φ.comm₂₃])
+    simp [← homologyMap_comp, φ.comm₂₃])
 
 /-- The map `composableArrows₅ hS₁ i j hij ⟶ composableArrows₅ hS₂ i j hij` of exact
 sequences induced by a morphism `φ : S₁ ⟶ S₂` between short exact short complexes of

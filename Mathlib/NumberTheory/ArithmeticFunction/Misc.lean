@@ -184,7 +184,7 @@ theorem sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i
 
 @[simp]
 theorem sigma_one (k : ℕ) : σ k 1 = 1 := by
-  simp only [sigma_apply, divisors_one, sum_singleton, one_pow]
+  simp [sigma_apply, divisors_one, sum_singleton, one_pow]
 
 theorem sigma_pos (k n : ℕ) (hn0 : n ≠ 0) : 0 < σ k n := by
   rwa [sigma_pos_iff, pos_iff_ne_zero]
@@ -451,11 +451,11 @@ open ArithmeticFunction
 
 theorem card_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
     #(m * n).divisors = #m.divisors * #n.divisors := by
-  simp only [← sigma_zero_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
+  simp [← sigma_zero_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
 
 theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
     ∑ d ∈ (m * n).divisors, d = (∑ d ∈ m.divisors, d) * ∑ d ∈ n.divisors, d := by
-  simp only [← sigma_one_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
+  simp [← sigma_one_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
 
 end Nat.Coprime
 

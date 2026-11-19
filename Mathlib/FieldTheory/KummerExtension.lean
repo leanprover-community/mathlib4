@@ -69,7 +69,7 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     (X ^ n - C a).Splits := by
   cases n.eq_zero_or_pos with
   | inl hn =>
-    simp only [hn, pow_zero, ← C.map_one, ← map_sub, Splits.C]
+    simp [hn, pow_zero, ← C.map_one, ← map_sub, Splits.C]
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C,
       ite_eq_left ⟨α, e⟩]
@@ -291,7 +291,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       have : (η : Kˣ) = 1 := (pow_one _).symm.trans η.prop
-      simp only [this, Units.val_one, map_one]
+      simp [this, Units.val_one, map_one]
     · exact mul_div_cancel_right₀ _ (root_X_pow_sub_C_ne_zero' (NeZero.pos n) h)
   right_inv := by
     intro e
@@ -544,7 +544,7 @@ lemma irreducible_X_pow_sub_C_of_root_adjoin_eq_top
     Irreducible (X ^ (finrank K L) - C a) := by
   have : X ^ (finrank K L) - C a = minpoly K α := by
     refine minpoly.unique _ _ (monic_X_pow_sub_C _ finrank_pos.ne.symm) ?_ ?_
-    · simp only [aeval_def, eval₂_sub, eval₂_X_pow, ha, eval₂_C, sub_self]
+    · simp [aeval_def, eval₂_sub, eval₂_X_pow, ha, eval₂_C, sub_self]
     · intro q hq hq'
       refine le_trans ?_ (degree_le_of_dvd (minpoly.dvd _ _ hq') hq.ne_zero)
       rw [degree_X_pow_sub_C finrank_pos,

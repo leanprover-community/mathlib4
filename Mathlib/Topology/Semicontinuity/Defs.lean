@@ -100,19 +100,19 @@ variable {r r' : α → β → Prop} {x : α} {s t : Set α}
 
 lemma semicontinuousWithinAt_iff_frequently :
     SemicontinuousWithinAt r s x ↔ ∀ y, (∃ᶠ x' in 𝓝[s] x, ¬ r x' y) → ¬ r x y := by
-  simp only [← not_eventually, not_imp_not, SemicontinuousWithinAt]
+  simp [← not_eventually, not_imp_not, SemicontinuousWithinAt]
 
 lemma semicontinuousOn_iff_frequently :
     SemicontinuousOn r s ↔ ∀ x ∈ s, ∀ y, (∃ᶠ x' in 𝓝[s] x, ¬ r x' y) → ¬ r x y := by
-  simp only [← not_eventually, not_imp_not, SemicontinuousWithinAt, SemicontinuousOn]
+  simp [← not_eventually, not_imp_not, SemicontinuousWithinAt, SemicontinuousOn]
 
 lemma semicontinuousAt_iff_frequently :
     SemicontinuousAt r x ↔ ∀ y, (∃ᶠ x' in 𝓝 x, ¬ r x' y) → ¬ r x y := by
-  simp only [← not_eventually, not_imp_not, SemicontinuousAt]
+  simp [← not_eventually, not_imp_not, SemicontinuousAt]
 
 lemma semicontinuous_iff_frequently :
     Semicontinuous r ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, ¬ r x' y) → ¬ r x y := by
-  simp only [← not_eventually, not_imp_not, Semicontinuous, SemicontinuousAt]
+  simp [← not_eventually, not_imp_not, Semicontinuous, SemicontinuousAt]
 
 theorem SemicontinuousWithinAt.mono (h : SemicontinuousWithinAt r s x) (hst : t ⊆ s) :
     SemicontinuousWithinAt r t x := fun y hy =>
@@ -150,7 +150,7 @@ theorem semicontinuousOn_univ_iff : SemicontinuousOn r univ ↔ Semicontinuous r
     Semicontinuous (s.domRestrict r) ↔ SemicontinuousOn r s := by
   rw [SemicontinuousOn, Semicontinuous, SetCoe.forall]
   refine forall₂_congr fun a ha ↦ forall₂_congr fun b _ ↦ ?_
-  simp only [nhdsWithin_eq_map_subtypeVal ha, eventually_map, domRestrict]
+  simp [nhdsWithin_eq_map_subtypeVal ha, eventually_map, domRestrict]
 
 theorem Semicontinuous.semicontinuousAt (h : Semicontinuous r) (x : α) :
     SemicontinuousAt r x :=

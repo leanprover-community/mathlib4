@@ -49,13 +49,13 @@ instance : LieRingModule L (⨁ i, M i) where
   bracket x m := m.mapRange (fun _ m' => ⁅x, m'⁆) fun _ => lie_zero x
   add_lie x y m := by
     ext
-    simp only [mapRange_apply, add_apply, add_lie]
+    simp [mapRange_apply, add_apply, add_lie]
   lie_add x m n := by
     ext
-    simp only [mapRange_apply, add_apply, lie_add]
+    simp [mapRange_apply, add_apply, lie_add]
   leibniz_lie x y m := by
     ext
-    simp only [mapRange_apply, lie_lie, add_apply, sub_add_cancel]
+    simp [mapRange_apply, lie_lie, add_apply, sub_add_cancel]
 
 @[simp]
 theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ i = ⁅x, m i⁆ :=
@@ -64,10 +64,10 @@ theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ 
 instance : LieModule R L (⨁ i, M i) where
   smul_lie t x m := by
     ext
-    simp only [smul_lie, lie_module_bracket_apply, smul_apply]
+    simp [smul_lie, lie_module_bracket_apply, smul_apply]
   lie_smul t x m := by
     ext
-    simp only [lie_smul, lie_module_bracket_apply, smul_apply]
+    simp [lie_smul, lie_module_bracket_apply, smul_apply]
 
 variable (R ι L M)
 
@@ -106,13 +106,13 @@ instance lieRing : LieRing (⨁ i, L i) :=
     bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
     add_lie := fun x y z => by
       ext
-      simp only [zipWith_apply, add_apply, add_lie]
+      simp [zipWith_apply, add_apply, add_lie]
     lie_add := fun x y z => by
       ext
-      simp only [zipWith_apply, add_apply, lie_add]
+      simp [zipWith_apply, add_apply, lie_add]
     lie_self := fun x => by
       ext
-      simp only [zipWith_apply, lie_self, zero_apply]
+      simp [zipWith_apply, lie_self, zero_apply]
     leibniz_lie := fun x y z => by
       ext
       simp only [zipWith_apply, add_apply]
@@ -138,14 +138,14 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
 theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = if hij : i = j then of L i ⁅x, hij.symm.recOn y⁆ else 0 := by
   obtain rfl | hij := Decidable.eq_or_ne i j
-  · simp only [lie_of_same L x y, dite_eq_left]
-  · simp only [lie_of_of_ne L hij x y, hij, dite_false]
+  · simp [lie_of_same L x y, dite_eq_left]
+  · simp [lie_of_of_ne L hij x y, hij, dite_false]
 
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
   { (inferInstance : Module R _) with
     lie_smul := fun c x y => by
       ext
-      simp only [smul_apply, bracket_apply, lie_smul] }
+      simp [smul_apply, bracket_apply, lie_smul] }
 
 variable (R ι)
 

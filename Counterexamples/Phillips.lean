@@ -199,14 +199,14 @@ theorem le_bound (f : BoundedAdditiveMeasure α) (s : Set α) : f s ≤ f.C :=
 
 @[simp]
 theorem empty (f : BoundedAdditiveMeasure α) : f ∅ = 0 := by
-  have : (∅ : Set α) = ∅ ∪ ∅ := by simp only [empty_union]
+  have : (∅ : Set α) = ∅ ∪ ∅ := by simp [empty_union]
   apply_fun f at this
   rwa [f.additive _ _ (empty_disjoint _), right_eq_add] at this
 
 instance : Neg (BoundedAdditiveMeasure α) :=
   ⟨fun f =>
     { toFun := fun s => -f s
-      additive' := fun s t hst => by simp only [f.additive s t hst, add_comm, neg_add_rev]
+      additive' := fun s t hst => by simp [f.additive s t hst, add_comm, neg_add_rev]
       exists_bound := ⟨f.C, fun s => by simp [f.abs_le_bound]⟩ }⟩
 
 @[simp]
@@ -289,12 +289,12 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [u, not_exists, mem_iUnion, mem_sdiff]
       tauto
     · congr 1
-      simp only [G, s, Function.iterate_succ', union_sdiff_left, Function.comp]
+      simp [G, s, Function.iterate_succ', union_sdiff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction n with
     | zero =>
-      simp only [s, empty, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
+      simp [s, empty, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, le_rfl]
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
@@ -350,7 +350,7 @@ theorem eq_add_parts (f : BoundedAdditiveMeasure α) (s : Set α) :
     f s = f.discretePart s + f.continuousPart s := by
   simp only [discretePart, continuousPart, restrict_apply]
   rw [← f.additive, ← union_inter_distrib_right]
-  · simp only [union_univ, union_sdiff_self, univ_inter]
+  · simp [union_univ, union_sdiff_self, univ_inter]
   · have : Disjoint f.discreteSupport (univ \ f.discreteSupport) := disjoint_sdiff_self_right
     exact this.mono inter_subset_left inter_subset_left
 
@@ -502,7 +502,7 @@ theorem apply_f_eq_continuousPart (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy �
     φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
   set ψ := φ.toBoundedAdditiveMeasure
   have : φ (f Hcont x) = ψ (spf Hcont x) := rfl
-  have U : univ = spf Hcont x ∪ univ \ spf Hcont x := by simp only [union_univ, union_sdiff_self]
+  have U : univ = spf Hcont x ∪ univ \ spf Hcont x := by simp [union_univ, union_sdiff_self]
   rw [this, eq_add_parts, discretePart_apply, hx, ψ.empty, zero_add, U,
     ψ.continuousPart.additive _ _ disjoint_sdiff_self_right,
     ψ.continuousPart_apply_eq_zero_of_countable _ (countable_compl_spf Hcont x), add_zero]
@@ -532,7 +532,7 @@ theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ 
   apply ae_restrict_of_ae
   refine measure_mono_null ?_ ((countable_ne Hcont φ).measure_zero _)
   intro x
-  simp only [imp_self, mem_ofPred_eq, mem_compl_iff]
+  simp [imp_self, mem_ofPred_eq, mem_compl_iff]
 
 theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by

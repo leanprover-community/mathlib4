@@ -344,7 +344,7 @@ lemma lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ
       exact hx.1
   -- The integral of a constant is the constant times the measure of the set
   _ = .ofReal (rexp (C * t (n + 1) ^ 2)) * μ (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)) := by
-    simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, C, t]
+    simp [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, C, t]
   _ ≤ .ofReal (rexp (C * t (n + 1) ^ 2)) * μ {x | t n < ‖x‖} := by
     gcongr
     intro x

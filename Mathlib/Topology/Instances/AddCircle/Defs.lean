@@ -596,7 +596,7 @@ variable {p}
 theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜) : AddCircle p) = n := by
   rw [addOrderOf_eq_iff h]
   replace h : 0 < (n : 𝕜) := Nat.cast_pos.2 h
-  refine ⟨?_, fun m hn h0 => ?_⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
+  refine ⟨?_, fun m hn h0 => ?_⟩ <;> simp [Ne, ← coe_nsmul, nsmul_eq_mul]
   · rw [mul_div_cancel₀ _ h.ne', coe_period]
   rw [coe_eq_zero_of_pos_iff p hp.out (mul_pos (Nat.cast_pos.2 h0) <| div_pos hp.out h)]
   rintro ⟨k, hk⟩
@@ -710,7 +710,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
       exact Nat.card_of_isEmpty
   · rw [← coe_ofPred, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]
-    simp only [Nat.gcd_comm]
+    simp [Nat.gcd_comm]
 
 end FiniteOrderPoints
 

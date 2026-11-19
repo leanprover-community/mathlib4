@@ -156,7 +156,7 @@ protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne
 protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
-    natCast_zero := by simp only [Nat.binCast],
+    natCast_zero := by simp [Nat.binCast],
     natCast_succ := fun n => by
       let : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }

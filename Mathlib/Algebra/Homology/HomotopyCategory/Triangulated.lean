@@ -58,7 +58,7 @@ lemma mappingConeCompTriangle_mor₃_naturality {Y₁ Y₂ Y₃ : CochainComplex
   ext n
   dsimp [map]
   -- the following list of lemmas was obtained by doing simp? [ext_from_iff _ (n + 1) _ rfl]
-  simp only [Int.reduceNeg, Fin.isValue, assoc, inr_f_desc_f, HomologicalComplex.comp_f,
+  simp [Int.reduceNeg, Fin.isValue, assoc, inr_f_desc_f, HomologicalComplex.comp_f,
     ext_from_iff _ (n + 1) _ rfl, inl_v_desc_f_assoc, Cochain.zero_cochain_comp_v, Cochain.ofHom_v,
     inl_v_triangle_mor₃_f_assoc, triangle_obj₁, shiftFunctor_obj_X',
     shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, Preadditive.neg_comp,

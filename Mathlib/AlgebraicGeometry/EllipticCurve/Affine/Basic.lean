@@ -140,7 +140,7 @@ lemma evalEval_polynomial (x y : R) : W.polynomial.evalEval x y =
 
 @[simp]
 lemma evalEval_polynomial_zero : W.polynomial.evalEval 0 0 = -W.a₆ := by
-  simp only [evalEval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
+  simp [evalEval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
 variable (W) in
 /-- The proposition that an affine point `(x, y)` lies in a Weierstrass curve `W`.
@@ -183,7 +183,7 @@ lemma evalEval_polynomialX (x y : R) :
 
 @[simp]
 lemma evalEval_polynomialX_zero : W.polynomialX.evalEval 0 0 = -W.a₄ := by
-  simp only [evalEval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
+  simp [evalEval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
 variable (W) in
 /-- The partial derivative `W_Y(X, Y)` with respect to `Y` of the polynomial `W(X, Y)` associated to
@@ -199,7 +199,7 @@ lemma evalEval_polynomialY (x y : R) : W.polynomialY.evalEval x y = 2 * y + W.a�
 
 @[simp]
 lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
-  simp only [evalEval_polynomialY, zero_add, mul_zero]
+  simp [evalEval_polynomialY, zero_add, mul_zero]
 
 variable (W) in
 /-- The proposition that an affine point `(x, y)` on a Weierstrass curve `W` is nonsingular.
@@ -278,7 +278,7 @@ lemma Equation.map {x y : R} (h : W.Equation x y) : (W.map f).Equation (f x) (f 
 variable {f} in
 lemma map_equation (hf : Function.Injective f) (x y : R) :
     (W.map f).Equation (f x) (f y) ↔ W.Equation x y := by
-  simp only [Equation, map_polynomial, map_mapRingHom_evalEval, map_eq_zero_iff f hf]
+  simp [Equation, map_polynomial, map_mapRingHom_evalEval, map_eq_zero_iff f hf]
 
 lemma map_polynomialX : (W.map f).polynomialX = W.polynomialX.map (mapRingHom f) := by
   simp only [polynomialX]
@@ -291,7 +291,7 @@ lemma map_polynomialY : (W.map f).polynomialY = W.polynomialY.map (mapRingHom f)
 variable {f} in
 lemma map_nonsingular (hf : Function.Injective f) (x y : R) :
     (W.map f).Nonsingular (f x) (f y) ↔ W.Nonsingular x y := by
-  simp only [Nonsingular, evalEval, W.map_equation hf, map_polynomialX, map_polynomialY,
+  simp [Nonsingular, evalEval, W.map_equation hf, map_polynomialX, map_polynomialY,
     map_mapRingHom_evalEval, map_ne_zero_iff f hf]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]

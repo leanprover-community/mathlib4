@@ -65,7 +65,7 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
     simp only [Algebra.smul_def, map_mul, AlgHom.commutes,
       RingHom.id_apply, Submodule.coe_smul_of_tower]
     ring
-  map_one_eq_zero' := by simp only [LinearMap.coe_mk, AddHom.coe_mk, map_one, sub_self,
+  map_one_eq_zero' := by simp [LinearMap.coe_mk, AddHom.coe_mk, map_one, sub_self,
     Submodule.mk_eq_zero]
   leibniz' a b := by
     have : (a - g (f a)) * (b - g (f b)) = 0 := by
@@ -167,7 +167,7 @@ def sectionOfRetractionKerToTensorAux : S →ₐ[R] P where
       SetLike.val_smul, smul_eq_mul, mul_sub, sub_mul, this, sub_zero]
     ring
   map_add' a b := by
-    simp only [sectionOfRetractionKerToTensorAux_prop l hl (σ (a + b)) (σ a + σ b) (by simp [hσ]),
+    simp [sectionOfRetractionKerToTensorAux_prop l hl (σ (a + b)) (σ a + σ b) (by simp [hσ]),
       map_add, tmul_add, Submodule.coe_add, add_sub_add_comm]
   map_zero' := by simp [sectionOfRetractionKerToTensorAux_prop l hl (σ 0) 0 (by simp [hσ])]
   commutes' r := by
@@ -234,7 +234,7 @@ def retractionKerToTensorEquivSection :
       Function.comp_apply, curry_apply, retractionOfSectionOfKerSqZero_tmul_D,
       sectionOfRetractionKerToTensor_algebraMap, ← mul_sub, sub_sub_cancel]
     rw [sub_mul]
-    simp only [this, Algebra.algebraMap_eq_smul_one, ← smul_tmul', LinearMapClass.map_smul,
+    simp [this, Algebra.algebraMap_eq_smul_one, ← smul_tmul', LinearMapClass.map_smul,
       SetLike.val_smul, smul_eq_mul, sub_zero]
   right_inv g := by ext s; obtain ⟨s, rfl⟩ := hf s; simp
 
@@ -255,9 +255,9 @@ def derivationQuotKerSq :
       Derivation.coeFn_coe, Function.comp_apply, mk_apply]
     refine Submodule.smul_induction_on hx ?_ ?_
     · intro x hx y hy
-      simp only [smul_eq_mul, Derivation.leibniz, tmul_add, ← smul_tmul, Algebra.smul_def,
+      simp [smul_eq_mul, Derivation.leibniz, tmul_add, ← smul_tmul, Algebra.smul_def,
         mul_one, RingHom.mem_ker.mp hx, RingHom.mem_ker.mp hy, zero_tmul, zero_add]
-    · intro x y hx hy; simp only [map_add, hx, hy, tmul_add, zero_add]
+    · intro x y hx hy; simp [map_add, hx, hy, tmul_add, zero_add]
   · change (1 : S) ⊗ₜ[P] KaehlerDifferential.D R P 1 = 0; simp
   · intro a b
     obtain ⟨a, rfl⟩ := Submodule.Quotient.mk_surjective _ a
@@ -265,7 +265,7 @@ def derivationQuotKerSq :
     change (1 : S) ⊗ₜ[P] KaehlerDifferential.D R P (a * b) =
       Ideal.Quotient.mk _ a • ((1 : S) ⊗ₜ[P] KaehlerDifferential.D R P b) +
       Ideal.Quotient.mk _ b • ((1 : S) ⊗ₜ[P] KaehlerDifferential.D R P a)
-    simp only [← Ideal.Quotient.algebraMap_eq, IsScalarTower.algebraMap_smul,
+    simp [← Ideal.Quotient.algebraMap_eq, IsScalarTower.algebraMap_smul,
       Derivation.leibniz, tmul_add, tmul_smul]
 
 @[simp]
@@ -356,13 +356,13 @@ def retractionKerCotangentToTensorEquivSection :
     congrm $hl (e₁ x)
   · intro f
     ext x
-    simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
+    simp [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Derivation.coeFn_coe, Function.comp_apply, curry_apply,
       LinearEquiv.coe_coe, LinearMap.coe_mk, AddHom.coe_coe,
       LinearEquiv.apply_symm_apply, LinearEquiv.symm_apply_apply]
   · intro f
     ext x
-    simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
+    simp [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Derivation.coeFn_coe, Function.comp_apply, curry_apply,
       LinearMap.coe_mk, AddHom.coe_coe, LinearEquiv.coe_coe,
       LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply]

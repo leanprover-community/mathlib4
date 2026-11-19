@@ -183,7 +183,7 @@ lemma isHomotopyInvariant_iff :
 
 instance : IsClosedUnderIsomorphisms (isHomotopyInvariant.{u} C c) where
   of_iso e _ := ⟨fun F _ ↦ by
-    simp only [← cancel_epi ((e.hom.homₚ _).app _), ← NatTrans.naturality,
+    simp [← cancel_epi ((e.hom.homₚ _).app _), ← NatTrans.naturality,
       map_eq_of_homotopy _ F _]⟩
 
 /-- A `HomologyPretheory` has the excision-isomorphism, if cutting out a sufficiently nice subspace

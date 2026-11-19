@@ -112,16 +112,16 @@ def isScalarTower_restriction {A : Type*} [CommRing A] [Algebra R A] [Algebra A 
     [IsScalarTower R A S] (hinj : Function.Injective (algebraMap A S)) (f : AlgebraNorm R S) :
     AlgebraNorm R A where
   toFun x     := f (algebraMap A S x)
-  map_zero'   := by simp only [map_zero]
-  add_le' x y := by simp only [map_add, map_add_le_add]
-  neg' x      := by simp only [map_neg, map_neg_eq_map]
-  mul_le' x y := by simp only [map_mul, map_mul_le_mul]
+  map_zero'   := by simp [map_zero]
+  add_le' x y := by simp [map_add, map_add_le_add]
+  neg' x      := by simp [map_neg, map_neg_eq_map]
+  mul_le' x y := by simp [map_mul, map_mul_le_mul]
   eq_zero_of_map_eq_zero' x hx := by
     rw [← map_eq_zero_iff (algebraMap A S) hinj]
     exact eq_zero_of_map_eq_zero f hx
   smul' r x := by
     simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply]
-    simp only [← smul_eq_mul, algebraMap_smul, map_smul_eq_mul]
+    simp [← smul_eq_mul, algebraMap_smul, map_smul_eq_mul]
 
 end AlgebraNorm
 

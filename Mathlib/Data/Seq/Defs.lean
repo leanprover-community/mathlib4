@@ -469,7 +469,7 @@ theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.Terminat
   le_stable
 
 theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
-  simp only [Terminates, TerminatedAt, ← Ne.eq_def, Option.ne_none_iff_isSome, not_exists, iff_self]
+  simp [Terminates, TerminatedAt, ← Ne.eq_def, Option.ne_none_iff_isSome, not_exists, iff_self]
 
 theorem terminatedAt_nil {n : ℕ} : TerminatedAt (nil : Seq α) n := rfl
 

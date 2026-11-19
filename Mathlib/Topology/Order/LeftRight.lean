@@ -80,7 +80,7 @@ variable {α β : Type*} [TopologicalSpace α] [PartialOrder α] [TopologicalSpa
 @[to_dual]
 theorem continuousWithinAt_Ioi_iff_Ici {a : α} {f : α → β} :
     ContinuousWithinAt f (Ioi a) a ↔ ContinuousWithinAt f (Ici a) a := by
-  simp only [← Ici_sdiff_left, continuousWithinAt_sdiff_self]
+  simp [← Ici_sdiff_left, continuousWithinAt_sdiff_self]
 
 @[to_dual]
 theorem continuousWithinAt_inter_Ioi_iff_Ici {a : α} {f : α → β} {s : Set α} :
@@ -130,7 +130,7 @@ theorem nhdsWithinLT_sup_nhdsWithinGT (a : α) :
 @[to_dual nhdsLT_sup_nhdsWithin_singleton]
 lemma nhdsGT_sup_nhdsWithin_singleton (a : α) :
     𝓝[>] a ⊔ 𝓝[{a}] a = 𝓝[≥] a := by
-  simp only [union_singleton, insert_Ioi, ← nhdsWithin_union]
+  simp [union_singleton, insert_Ioi, ← nhdsWithin_union]
 
 lemma nhdsWithin_uIoo_left_le_nhdsNE {a b : α} : 𝓝[uIoo a b] a ≤ 𝓝[≠] a :=
   nhdsWithin_mono _ (by simp)
@@ -141,7 +141,7 @@ lemma nhdsWithin_uIoo_right_le_nhdsNE {a b : α} : 𝓝[uIoo a b] b ≤ 𝓝[≠
 @[to_dual none]
 theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iic a) a ∧ ContinuousWithinAt f (Ici a) a := by
-  simp only [ContinuousWithinAt, ContinuousAt, ← tendsto_sup, nhdsLE_sup_nhdsGE]
+  simp [ContinuousWithinAt, ContinuousAt, ← tendsto_sup, nhdsLE_sup_nhdsGE]
 
 @[to_dual none]
 theorem continuousAt_iff_continuous_left'_right' {a : α} {f : α → β} :
@@ -153,7 +153,7 @@ theorem continuousAt_iff_continuous_left'_right' {a : α} {f : α → β} :
 theorem continuousWithinAt_iff_continuous_left_right {a : α} {f : α → β} :
     ContinuousWithinAt f s a ↔
       ContinuousWithinAt f (s ∩ Iic a) a ∧ ContinuousWithinAt f (s ∩ Ici a) a := by
-  simp only [ContinuousWithinAt, ← tendsto_sup, nhdsWithinLE_sup_nhdsWithinGE]
+  simp [ContinuousWithinAt, ← tendsto_sup, nhdsWithinLE_sup_nhdsWithinGE]
 
 @[to_dual none]
 theorem continuousWithinAt_iff_continuous_left'_right' {a : α} {f : α → β} :

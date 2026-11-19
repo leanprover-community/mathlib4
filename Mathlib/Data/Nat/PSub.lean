@@ -92,7 +92,7 @@ theorem psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
     induction k with
     | zero => simp
-    | succ n ih => simp only [ih, add_succ, psub_succ, bind_assoc]
+    | succ n ih => simp [ih, add_succ, psub_succ, bind_assoc]
 
 /-- Same as `psub`, but with a more efficient implementation. -/
 @[inline]

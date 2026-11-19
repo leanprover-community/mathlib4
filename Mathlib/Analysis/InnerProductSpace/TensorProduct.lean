@@ -345,8 +345,8 @@ noncomputable def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F
     inner 𝕜 (TensorProduct.comm 𝕜 E F x) (TensorProduct.comm 𝕜 E F y) = inner 𝕜 x y :=
   x.inductionOn (fun _ _ =>
     y.inductionOn (by simp [mul_comm])
-    fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
-  fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
+    fun _ _ h1 h2 => by simp [inner_add_right, map_add, h1, h2])
+  fun _ _ h1 h2 => by simp [inner_add_left, map_add, h1, h2]
 
 variable (𝕜 E F) in
 /-- The linear isometry equivalence version of `TensorProduct.comm`. -/
@@ -375,8 +375,8 @@ noncomputable def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
     inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
   x.inductionOn (fun _ _ =>
     y.inductionOn (by simp [inner_smul_left, inner_smul_right, mul_assoc])
-    fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
-  fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
+    fun _ _ h1 h2 => by simp [inner_add_right, map_add, h1, h2])
+  fun _ _ h1 h2 => by simp [inner_add_left, map_add, h1, h2]
 
 variable (𝕜 E) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
@@ -444,10 +444,10 @@ lemma lidIsometry_eq_ridIsometry : lidIsometry 𝕜 𝕜 = ridIsometry 𝕜 𝕜
     y.inductionOn (fun c _ =>
       a.inductionOn (fun _ _ =>
         c.inductionOn (by simp [mul_assoc])
-        fun _ _ h1 h2 => by simp only [add_tmul, inner_add_right, map_add, h1, h2])
-      fun _ _ h1 h2 => by simp only [add_tmul, inner_add_left, map_add, h1, h2])
-    fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
-  fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
+        fun _ _ h1 h2 => by simp [add_tmul, inner_add_right, map_add, h1, h2])
+      fun _ _ h1 h2 => by simp [add_tmul, inner_add_left, map_add, h1, h2])
+    fun _ _ h1 h2 => by simp [inner_add_right, map_add, h1, h2])
+  fun _ _ h1 h2 => by simp [inner_add_left, map_add, h1, h2]
 
 variable (𝕜 E F G) in
 /-- The linear isometry equivalence version of `TensorProduct.assoc`. -/

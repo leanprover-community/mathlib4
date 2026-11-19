@@ -166,8 +166,8 @@ lemma gaussSum_mul {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing
   simp only [← ψ.map_add_eq_mul]
   have sum_eq x : ∑ y : R, χ x * φ y * ψ (x + y) = ∑ y : R, χ x * φ (y - x) * ψ y := by
     rw [sum_bij (fun a _ ↦ a + x)]
-    · simp only [mem_univ, forall_const]
-    · simp only [mem_univ, add_left_inj, imp_self, forall_const]
+    · simp [mem_univ, forall_const]
+    · simp [mem_univ, add_left_inj, imp_self, forall_const]
     · exact fun b _ ↦ ⟨b - x, mem_univ _, by rw [sub_add_cancel]⟩
     · exact fun a _ ↦ by rw [add_sub_cancel_right, add_comm]
   rw [sum_congr rfl fun x _ ↦ sum_eq x, sum_comm]
@@ -189,7 +189,7 @@ private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : χ ≠ 1) (ψ : AddC
     ∑ a, χ (a * b⁻¹) * ψ (a - b) = ∑ c, χ c * ψ (b * (c - 1)) := by
   rcases eq_or_ne b 0 with hb | hb
   · -- case `b = 0`
-    simp only [hb, inv_zero, mul_zero, MulChar.map_zero, zero_mul,
+    simp [hb, inv_zero, mul_zero, MulChar.map_zero, zero_mul,
       Finset.sum_const_zero, map_zero_eq_one, mul_one, χ.sum_eq_zero_of_ne_one hχ]
   · -- case `b ≠ 0`
     refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x ↦ ?_).symm

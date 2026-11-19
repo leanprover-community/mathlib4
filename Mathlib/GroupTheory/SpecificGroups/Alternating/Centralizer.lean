@@ -193,11 +193,11 @@ theorem count_le_one_of_centralizer_le_alternating
     simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
     have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
     simp only [τ, support_swap H]
-    rw [Finset.sum_insert (by simp only [mem_singleton, H, not_false_eq_true]),
+    rw [Finset.sum_insert (by simp [mem_singleton, H, not_false_eq_true]),
       Finset.sum_singleton, hm, mul_two]
   rw [that]
   simp only [cycleType_def, Multiset.mem_map]
-  exact ⟨c, hc, by simp only [Function.comp_apply]⟩
+  exact ⟨c, hc, by simp [Function.comp_apply]⟩
 
 theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
     (h_count : ∀ i, g.cycleType.count i ≤ 1) :

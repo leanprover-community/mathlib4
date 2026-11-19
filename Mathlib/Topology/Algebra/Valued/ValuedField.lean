@@ -108,7 +108,7 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     rw [Filter.Eventually, Valued.mem_nhds_zero]
     obtain ⟨x, hx⟩ := hsurj γ
     use Units.mk0 (restrict₀ (hv.v : K →*₀ Γ₀) x) (by simp [restrict₀_apply, hx, hγ])
-    simp only [Units.val_mk0, ofPred_subset_ofPred, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
+    simp [Units.val_mk0, ofPred_subset_ofPred, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
       imp_self, implies_true]
   · have h0 : hv.v x ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero h0]
@@ -224,10 +224,10 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
     have nhds_right : (fun x => x * x₀) '' V' ∈ 𝓝 x₀ := by
       have l : Function.LeftInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
-        simp only [mul_assoc, mul_inv_cancel₀ h, mul_one]
+        simp [mul_assoc, mul_inv_cancel₀ h, mul_one]
       have r : Function.RightInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
-        simp only [mul_assoc, inv_mul_cancel₀ h, mul_one]
+        simp [mul_assoc, inv_mul_cancel₀ h, mul_one]
       have c : Continuous fun x : hat K => x * x₀⁻¹ := by fun_prop
       rw [image_eq_preimage_of_inverse l r]
       rw [← mul_inv_cancel₀ h] at V'_in

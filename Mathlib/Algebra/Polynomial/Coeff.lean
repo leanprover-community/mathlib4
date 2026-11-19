@@ -63,7 +63,7 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
-    simp only [sum_def, Finset.smul_sum, coeff_smul_apply, map_smul, RingHom.id_apply]
+    simp [sum_def, Finset.smul_sum, coeff_smul_apply, map_smul, RingHom.id_apply]
 
 variable (R) in
 /-- The nth coefficient, as a linear map. -/
@@ -168,7 +168,7 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 
 @[simp, grind =]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
-  simp only [one_mul, map_one, ← coeff_C_mul_X_pow]
+  simp [one_mul, map_one, ← coeff_C_mul_X_pow]
 
 theorem coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp
 
@@ -329,7 +329,7 @@ end Coeff
 section cast
 
 theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff 0 = n := by
-  simp only [coeff_natCast_ite, ite_true]
+  simp [coeff_natCast_ite, ite_true]
 
 @[norm_cast]
 theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :

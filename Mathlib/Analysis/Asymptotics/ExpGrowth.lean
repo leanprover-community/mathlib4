@@ -252,7 +252,7 @@ lemma expGrowthInf_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, 
     expGrowthInf u ≤ expGrowthInf v := by
   apply (expGrowthInf_eventually_monotone h).trans
   rcases eq_zero_or_pos b with rfl | b_pos
-  · simp only [zero_mul, ← Pi.zero_def, expGrowthInf_zero, bot_le]
+  · simp [zero_mul, ← Pi.zero_def, expGrowthInf_zero, bot_le]
   · apply (expGrowthInf_mul_le _ _).trans_eq <;> rw [expGrowthSup_const b_pos.ne' hb]
     · exact zero_add (expGrowthInf v)
     · exact .inl zero_ne_bot
@@ -264,7 +264,7 @@ lemma expGrowthSup_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, 
     expGrowthSup u ≤ expGrowthSup v := by
   apply (expGrowthSup_eventually_monotone h).trans
   rcases eq_zero_or_pos b with rfl | b_pos
-  · simp only [zero_mul, ← Pi.zero_def, expGrowthSup_zero, bot_le]
+  · simp [zero_mul, ← Pi.zero_def, expGrowthSup_zero, bot_le]
   · apply (expGrowthSup_mul_le _ _).trans_eq <;> rw [expGrowthSup_const b_pos.ne' hb]
     · exact zero_add (expGrowthSup v)
     · exact .inl zero_ne_bot

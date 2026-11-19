@@ -111,7 +111,7 @@ variable {B : Type u} [Bicategory.{w, v} B] {a b c : B}
 
 theorem structuralIso_inv {f g : a ⟶ b} (η : f ≅ g) :
     η.symm.hom = η.inv := by
-  simp only [Iso.symm_hom]
+  simp [Iso.symm_hom]
 
 theorem structuralIsoOfExpr_comp {f g h : a ⟶ b}
     (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η)

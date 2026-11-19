@@ -58,14 +58,14 @@ variable [Monoid M] [Monoid N] [Monoid O]
 variable (R A M) in
 @[to_additive (dont_translate := R A)]
 instance instBialgebra : Bialgebra R A[M] where
-  counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
+  counit_one := by simp [one_def, counit_single, Bialgebra.counit_one]
   mul_compr₂_counit := by ext; simp
   comul_one := by
-    simp only [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
+    simp [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
       TensorProduct.map_tmul, lsingle_apply]
   mul_compr₂_comul := by
     ext a b c d
-    simp only [Function.comp_apply, LinearMap.coe_comp, LinearMap.compr₂_apply,
+    simp [Function.comp_apply, LinearMap.coe_comp, LinearMap.compr₂_apply,
       LinearMap.mul_apply', single_mul_single, comul_single, Bialgebra.comul_mul,
       ← (Coalgebra.Repr.arbitrary R b).eq, ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
       Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,

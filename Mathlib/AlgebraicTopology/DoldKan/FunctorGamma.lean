@@ -99,12 +99,12 @@ def mapMono (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ)
 variable (Δ) in
 theorem mapMono_id : mapMono K (𝟙 Δ) = 𝟙 _ := by
   unfold mapMono
-  simp only [eqToHom_refl, dite_eq_ite, ite_true]
+  simp [eqToHom_refl, dite_eq_ite, ite_true]
 
 theorem mapMono_δ₀' (i : Δ' ⟶ Δ) [Mono i] (hi : Isδ₀ i) : mapMono K i = K.d Δ.len Δ'.len := by
   unfold mapMono
   suffices Δ ≠ Δ' by
-    simp only [dite_eq_right this, dite_eq_left hi]
+    simp [dite_eq_right this, dite_eq_left hi]
   rintro rfl
   simpa only [left_eq_add, Nat.one_ne_zero] using hi.1
 
@@ -126,7 +126,7 @@ theorem mapMono_naturality (i : Δ ⟶ Δ') [Mono i] :
   unfold mapMono
   split_ifs with h
   · subst h
-    simp only [id_comp, eqToHom_refl, comp_id]
+    simp [id_comp, eqToHom_refl, comp_id]
   · rw [HomologicalComplex.Hom.comm]
   · rw [zero_comp, comp_zero]
 
@@ -138,18 +138,18 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   -- case where i : Δ' ⟶ Δ is the identity
   by_cases h₁ : Δ = Δ'
   · subst h₁
-    simp only [SimplexCategory.eq_id_of_mono i, comp_id, id_comp, mapMono_id K]
+    simp [SimplexCategory.eq_id_of_mono i, comp_id, id_comp, mapMono_id K]
   -- case where i' : Δ'' ⟶ Δ' is the identity
   by_cases h₂ : Δ' = Δ''
   · subst h₂
-    simp only [SimplexCategory.eq_id_of_mono i', comp_id, id_comp, mapMono_id K]
+    simp [SimplexCategory.eq_id_of_mono i', comp_id, id_comp, mapMono_id K]
   -- then the RHS is always zero
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i h₁)
   obtain ⟨k', hk'⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i' h₂)
   have eq : Δ.len = Δ''.len + (k + k' + 2) := by lia
   rw [mapMono_eq_zero K (i' ≫ i) _ _]; rotate_left
   · by_contra h
-    simp only [left_eq_add, h, add_eq_zero, and_false, reduceCtorEq] at eq
+    simp [left_eq_add, h, add_eq_zero, and_false, reduceCtorEq] at eq
   · by_contra h
     simp only [h.1, add_right_inj] at eq
     lia
@@ -157,8 +157,8 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   by_cases h₃ : Isδ₀ i
   · by_cases h₄ : Isδ₀ i'
     · rw [mapMono_δ₀' K i h₃, mapMono_δ₀' K i' h₄, HomologicalComplex.d_comp_d]
-    · simp only [mapMono_eq_zero K i' h₂ h₄, comp_zero]
-  · simp only [mapMono_eq_zero K i h₁ h₃, zero_comp]
+    · simp [mapMono_eq_zero K i' h₂ h₄, comp_zero]
+  · simp [mapMono_eq_zero K i h₁ h₃, zero_comp]
 
 end Termwise
 

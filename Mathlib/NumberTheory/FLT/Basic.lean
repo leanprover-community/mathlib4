@@ -91,40 +91,40 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [hn.pow_abs, habc]
+      simp [hn.pow_abs, habc]
     obtain ha | ha := ha.lt_or_gt <;> obtain hb | hb := hb.lt_or_gt <;>
       obtain hc | hc := hc.lt_or_gt
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, *]
+      simp [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, *]
     · exact (by positivity : 0 < c ^ n).not_gt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) <|
         hn.pow_neg hb
     · refine h b.natAbs c.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, add_neg_eq_iff_eq_add,
+      simp [abs_of_pos, abs_of_neg, hn.neg_pow, add_neg_eq_iff_eq_add,
         eq_neg_add_iff_add_eq, *]
     · refine h a.natAbs c.natAbs b.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, neg_add_eq_iff_eq_add,
+      simp [abs_of_pos, abs_of_neg, hn.neg_pow, neg_add_eq_iff_eq_add,
         *]
     · refine h c.natAbs a.natAbs b.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, neg_add_eq_iff_eq_add,
+      simp [abs_of_pos, abs_of_neg, hn.neg_pow, neg_add_eq_iff_eq_add,
         eq_add_neg_iff_add_eq, *]
     · refine h c.natAbs b.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, add_neg_eq_iff_eq_add,
+      simp [abs_of_pos, abs_of_neg, hn.neg_pow, add_neg_eq_iff_eq_add,
         *]
     · exact (by positivity : 0 < a ^ n + b ^ n).not_gt <| habc.trans_lt <| hn.pow_neg hc
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, *]
+      simp [abs_of_pos, *]
   tfae_have 2 → 3
   | h, a, b, c, ha, hb, hc, habc => by
     rw [← Rat.num_ne_zero] at ha hb hc
@@ -133,7 +133,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     have : (a.den * b.den * c.den : ℚ) ^ n ≠ 0 := by positivity
     refine Int.cast_injective <| (div_left_inj₀ this).1 ?_
     push_cast
-    simp only [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
+    simp [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),
       one_mul, mul_one, Rat.num_div_den, habc]
   tfae_have 3 → 1
@@ -196,14 +196,14 @@ lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
     simp only [Nat.isUnit_iff]
     intro _ _ _ ha hb hc
     rw [ha, hb, hc]
-    simp only [one_pow, Nat.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
+    simp [one_pow, Nat.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
   tfae_have 3 ↔ 1 := by
     rw [fermatLastTheoremFor_iff_int]
     apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
     intro a b c ha hb hc
     by_cases hn : n = 0
     · subst hn
-      simp only [pow_zero, Int.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
+      simp [pow_zero, Int.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
     · rw [← isUnit_pow_iff hn, Int.isUnit_iff] at ha hb hc
       -- case division
       rcases ha with ha | ha <;> rcases hb with hb | hb <;> rcases hc with hc | hc <;>
@@ -242,15 +242,15 @@ lemma dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT {n : ℕ} {p : ℤ} (hp : Prime p)
 lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd : Finset.gcd {a, b, c} id = 1)
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
+  · simp [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
   refine isCoprime_of_prime_dvd ?_ (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · rintro ⟨rfl, rfl⟩
     simp only [ne_eq, hn, not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
       at HF
-    simp only [HF, Finset.mem_singleton, Finset.insert_eq_of_mem, Finset.gcd_singleton, id_eq,
+    simp [HF, Finset.mem_singleton, Finset.insert_eq_of_mem, Finset.gcd_singleton, id_eq,
       normalize_zero, zero_ne_one] at Hgcd
   · rw [← Hgcd]
     refine Finset.dvd_gcd_iff.mpr fun x hx ↦ ?_
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx
-    rcases hx with hx | hx | hx <;> simp only [id_eq, hx, hpa, hpb,
+    rcases hx with hx | hx | hx <;> simp [id_eq, hx, hpa, hpb,
       dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT hp hpa hpb HF]

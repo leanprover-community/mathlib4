@@ -219,15 +219,15 @@ def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
 theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) :
     IsUnit (divXPowOrder f) :=
   ⟨Unit_of_divided_by_X_pow_order f,
-    by simp only [Unit_of_divided_by_X_pow_order, dite_eq_right hf, Units.val_mk]⟩
+    by simp [Unit_of_divided_by_X_pow_order, dite_eq_right hf, Units.val_mk]⟩
 
 theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
     ↑(Unit_of_divided_by_X_pow_order f) = divXPowOrder f := by
-  simp only [Unit_of_divided_by_X_pow_order, dite_eq_right hf, Units.val_mk]
+  simp [Unit_of_divided_by_X_pow_order, dite_eq_right hf, Units.val_mk]
 
 @[simp]
 theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
-  simp only [Unit_of_divided_by_X_pow_order, dite_eq_left]
+  simp [Unit_of_divided_by_X_pow_order, dite_eq_left]
 
 theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divXPowOrder f ↔ IsUnit f :=
@@ -290,10 +290,10 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
 
 instance : StrongNormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
-  normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]
+  normUnit_zero := by simp [Unit_of_divided_by_X_pow_order_zero, inv_one]
   normUnit_mul hf hg := by
     simp only [← mul_inv, inv_inj]
-    simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
+    simp [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
       Units.ext_iff, Units.val_mul, ← divXPowOrder_mul]
   normUnit_coe_units u := by
@@ -306,7 +306,7 @@ theorem normUnit_X : normUnit (X : k⟦X⟧) = 1 := by
   simp [normUnit, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero]
 
 theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
-  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+  simp [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 open UniqueFactorizationMonoid
 

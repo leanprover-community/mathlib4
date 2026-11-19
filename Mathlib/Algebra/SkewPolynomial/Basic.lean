@@ -116,7 +116,7 @@ def support (p : SkewPolynomial R) : Finset ℕ :=
   can relate them using the following lemma. -/
 lemma support_eq_skewMonoidAlgebra_support (p : SkewPolynomial R) :
     p.support = Finset.map (Multiplicative.toAdd (α := ℕ)) (SkewMonoidAlgebra.support p) := by
-  simp only [support]
+  simp [support]
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
@@ -202,7 +202,7 @@ lemma monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
     monomial m a = monomial n b ↔ m = n ∧ a = b ∨ a = 0 ∧ b = 0 := by
   rw [← Finsupp.single_eq_single_iff m n a b]
   simp only [monomial_def, ← coeff_single, coeff_inj]
-  simp only [← ofCoeff_single, SkewMonoidAlgebra.ofCoeff_inj, Finsupp.single_eq_single_iff,
+  simp [← ofCoeff_single, SkewMonoidAlgebra.ofCoeff_inj, Finsupp.single_eq_single_iff,
     EmbeddingLike.apply_eq_iff_eq]
 
 lemma induction {motive : SkewPolynomial R → Prop} (p : SkewPolynomial R) (h0 : motive 0)
@@ -298,7 +298,7 @@ variable [MulSemiringAction (Multiplicative ℕ) R]
 
 lemma monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
   induction n with
-  | zero      => simp only [monomial_zero_left, ← CRingHom_eq_C, map_one, pow_zero]
+  | zero      => simp [monomial_zero_left, ← CRingHom_eq_C, map_one, pow_zero]
   | succ n ih =>
     rw [pow_succ', ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial]
     simp [add_comm]
@@ -310,7 +310,7 @@ lemma X_mul : X * p = sum p (fun a b ↦ monomial a (φ b)) * X := by
 
 lemma X_pow_mul {n : ℕ} : X ^ n * p = sum p (fun (a : ℕ) b ↦ monomial a (φ^[n] b)) * X ^ n := by
   induction n generalizing p with
-  | zero      => simp only [pow_zero, one_mul, Function.iterate_zero, id_eq, sum_monomial, mul_one]
+  | zero      => simp [pow_zero, one_mul, Function.iterate_zero, id_eq, sum_monomial, mul_one]
   | succ n ih =>
     conv_lhs => rw [pow_succ]
     rw [mul_assoc, X_mul, ← mul_assoc, ih, mul_assoc, ← pow_succ, sum_sum_index (by simp) (by simp)]
@@ -496,7 +496,7 @@ variable {a b : R}
 lemma X_pow_eq_monomial (n) [MulSemiringAction (Multiplicative ℕ) R] :
     X ^ n = monomial n (1 : R) := by
   induction n with
-  | zero      => simp only [pow_zero, monomial_zero_left, ← CRingHom_eq_C, map_one]
+  | zero      => simp [pow_zero, monomial_zero_left, ← CRingHom_eq_C, map_one]
   | succ n hn =>
     rw [pow_succ', hn, X, monomial_mul_monomial]
     simp [add_comm]
@@ -504,7 +504,7 @@ lemma X_pow_eq_monomial (n) [MulSemiringAction (Multiplicative ℕ) R] :
 lemma smul_X_eq_monomial {n} [MulSemiringAction (Multiplicative ℕ) R] :
     a • X ^ n = monomial n (a : R) := by
   rw [eq_comm]
-  calc monomial n a = monomial n (a * 1) := by simp only [mul_one]
+  calc monomial n a = monomial n (a * 1) := by simp [mul_one]
     _ = monomial n (a • 1) := by simp [mul_one, smul_eq_mul]
     _ = a • monomial n 1 := (SkewMonoidAlgebra.smul_single _ _ _).symm
     _ = a • X ^ n  := by rw [X_pow_eq_monomial]
@@ -600,7 +600,7 @@ variable [Ring R] {a b : R}
 
 @[simp] lemma sum_sub {S : Type*} [Ring S] (p : SkewPolynomial R) (f g : ℕ → R → S) :
     (p.sum fun n x ↦ f n x - g n x) = p.sum f - p.sum g := by
-  simp only [sub_eq_add_neg, sum_add, sum_neg]
+  simp [sub_eq_add_neg, sum_add, sum_neg]
 
 instance instRing [MulSemiringAction (Multiplicative ℕ) R] : Ring (SkewPolynomial R) :=
   SkewMonoidAlgebra.instRing

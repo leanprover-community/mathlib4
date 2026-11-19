@@ -133,7 +133,7 @@ lemma SpecMap_tensorInl_fromSpecResidueField :
     ← Hom.SpecMap_residueFieldMap_fromSpecResidueField]
   rw [← residueFieldCongr_fromSpecResidueField T.hx.symm,
     ← residueFieldCongr_fromSpecResidueField T.hy.symm]
-  simp only [← Category.assoc, ← Spec.map_comp, pushout.condition]
+  simp [← Category.assoc, ← Spec.map_comp, pushout.condition]
 
 /-- Given `x : X`, `y : Y` and `s : S` such that `f x = s = g y`,
 this is `Spec (κ(x) ⊗[κ(s)] κ(y)) ⟶ X ×ₛ Y`. -/
@@ -227,7 +227,7 @@ lemma SpecTensorTo_SpecOfPoint (t : ↑(pullback f g)) :
 lemma tensorCongr_SpecTensorTo {T T' : Triplet f g} (h : T = T') :
     Spec.map (Triplet.tensorCongr h).hom ≫ T.SpecTensorTo = T'.SpecTensorTo := by
   subst h
-  simp only [Triplet.tensorCongr_refl, Iso.refl_hom, Spec.map_id, Category.id_comp]
+  simp [Triplet.tensorCongr_refl, Iso.refl_hom, Spec.map_id, Category.id_comp]
 
 lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
     Spec.map (Hom.residueFieldMap T.SpecTensorTo p) ≫

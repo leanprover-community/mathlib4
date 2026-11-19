@@ -61,7 +61,7 @@ lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} 
     (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁) :
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
   by_cases ε_top : ε₂ = ∞
-  · simp only [ε_top, toReal_top,
+  · simp [ε_top, toReal_top,
                 add_top, le_top]
   apply hε₁.trans (add_le_add ?_ h_le)
   exact measure_mono (μ := ν) (thickening_mono (toReal_mono ε_top h_le) B)
@@ -87,7 +87,7 @@ lemma levyProkhorovEDist_le_of_forall_add_pos_le (μ ν : Measure Ω) (δ : ℝ�
   apply ENNReal.le_of_forall_pos_le_add
   intro ε hε _
   by_cases ε_top : ε = ∞
-  · simp only [ε_top, add_top, le_top]
+  · simp [ε_top, add_top, le_top]
   apply sInf_le
   intro B B_mble
   simpa only [add_assoc] using h ε B (by positivity) coe_lt_top B_mble
@@ -98,11 +98,11 @@ lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
         μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε) :
     levyProkhorovEDist μ ν ≤ δ := by
   by_cases δ_top : δ = ∞
-  · simp only [δ_top, le_top]
+  · simp [δ_top, le_top]
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro x B x_pos x_lt_top B_mble
   simpa only [← add_assoc] using h (δ + x) B (ENNReal.lt_add_right δ_top x_pos.ne.symm)
-    (by simp only [add_lt_top, Ne.lt_top δ_top, x_lt_top, and_self]) B_mble
+    (by simp [add_lt_top, Ne.lt_top δ_top, x_lt_top, and_self]) B_mble
 
 lemma levyProkhorovEDist_le_max_measure_univ (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν ≤ max (μ univ) (ν univ) := by
@@ -123,7 +123,7 @@ lemma levyProkhorovEDist_le_max_measure_univ (μ ν : Measure Ω) :
 
 lemma levyProkhorovEDist_comm (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν = levyProkhorovEDist ν μ := by
-  simp only [levyProkhorovEDist, and_comm]
+  simp [levyProkhorovEDist, and_comm]
 
 lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure Ω) :
     levyProkhorovEDist μ κ ≤ levyProkhorovEDist μ ν + levyProkhorovEDist ν κ := by
@@ -169,11 +169,11 @@ noncomputable def levyProkhorovDist (μ ν : Measure Ω) : ℝ :=
 
 lemma levyProkhorovDist_self (μ : Measure Ω) :
     levyProkhorovDist μ μ = 0 := by
-  simp only [levyProkhorovDist, levyProkhorovEDist_self, toReal_zero]
+  simp [levyProkhorovDist, levyProkhorovEDist_self, toReal_zero]
 
 lemma levyProkhorovDist_comm (μ ν : Measure Ω) :
     levyProkhorovDist μ ν = levyProkhorovDist ν μ := by
-  simp only [levyProkhorovDist, levyProkhorovEDist_comm]
+  simp [levyProkhorovDist, levyProkhorovEDist_comm]
 
 lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure Ω)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure κ] :
@@ -181,7 +181,7 @@ lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure �
   have dμν_finite := (levyProkhorovEDist_lt_top μ ν).ne
   have dνκ_finite := (levyProkhorovEDist_lt_top ν κ).ne
   convert! ENNReal.toReal_mono ?_ <| levyProkhorovEDist_triangle μ ν κ
-  · simp only [levyProkhorovDist, ENNReal.toReal_add dμν_finite dνκ_finite]
+  · simp [levyProkhorovDist, ENNReal.toReal_add dμν_finite dνκ_finite]
   · exact ENNReal.add_ne_top.mpr ⟨dμν_finite, dνκ_finite⟩
 
 variable [OpensMeasurableSpace Ω]
@@ -635,7 +635,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
       obtain ⟨j, j_small, ω_in_Esj⟩ := con
       exact disjoint_left.mp (Es_disjoint (show j ≠ i by lia)) ω_in_Esj ω_in_Esi
     intro ω ω_in_B
-    obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
+    obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp [← mem_iUnion, Es_cover, mem_univ]
     simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]
     by_cases i_small : i ∈ Iio N
     · refine Or.inl ⟨i, ?_, self_subset_thickening third_ε_pos _ hi⟩

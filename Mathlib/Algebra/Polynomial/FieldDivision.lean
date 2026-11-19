@@ -50,7 +50,7 @@ theorem derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors
     (hnzd : (p.rootMultiplicity t : R) ∈ nonZeroDivisors R) :
     (derivative p).rootMultiplicity t = p.rootMultiplicity t - 1 := by
   by_cases h : p = 0
-  · simp only [h, map_zero, rootMultiplicity_zero]
+  · simp [h, map_zero, rootMultiplicity_zero]
   obtain ⟨g, hp, hndvd⟩ := p.exists_eq_pow_rootMultiplicity_mul_and_not_dvd h t
   set m := p.rootMultiplicity t
   have hm : m - 1 + 1 = m := Nat.sub_add_cancel <| (rootMultiplicity_pos h).2 hpt
@@ -234,7 +234,7 @@ theorem leadingCoeff_normalize (p : R[X]) :
     leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp [normalize_apply]
 
 theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := by
-  simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
+  simp [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
 theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p : R[X]} :
@@ -315,7 +315,7 @@ def mod (p q : R[X]) :=
 
 private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
   by_cases h : q = 0
-  · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
+  · simp [h, zero_mul, mod, modByMonic_zero, zero_add]
   · conv =>
       rhs
       rw [← modByMonic_add_div p (q * C q.leadingCoeff⁻¹)]
@@ -340,11 +340,11 @@ theorem neg_mod : (-p) % q = -(p % q) := by rw [mod_def, mod_def, neg_modByMonic
 
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
-    simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
+    simp [Monic.def.1 hq, inv_one, mul_one, C_1]
 
 theorem divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
   show p /ₘ q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) by
-    simp only [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
+    simp [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
 
 theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
   modByMonic_eq_mod p (monic_X_sub_C a) ▸ modByMonic_X_sub_C_eq_C_eval _ _
@@ -371,7 +371,7 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
     rw [mod_def, modByMonic, dite_eq_left (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
-    simp only [this, false_and, ite_false]⟩
+    simp [this, false_and, ite_false]⟩
 
 protected theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
@@ -692,7 +692,7 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,
       natDegree_mul_leadingCoeff_inv _ hp0]
-  simp only [IsUnit.dvd_mul_right
+  simp [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
 section normalizedFactors

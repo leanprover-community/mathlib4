@@ -172,7 +172,7 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
     SMulCommClass M Nᵐᵒᵖ N where
   smul_comm x y z := by
     induction y using MulOpposite.rec'
-    simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]
+    simp [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]
 
 -- The above instance does not create an unwanted diamond, the two paths to
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.

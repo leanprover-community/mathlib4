@@ -104,7 +104,7 @@ lemma mahler_apply (k : ℕ) (x : ℤ_[p]) : mahler k x = Ring.choose x k := rfl
 
 /-- The function `mahler k` extends `n ↦ n.choose k` on `ℕ`. -/
 lemma mahler_natCast_eq (k n : ℕ) : mahler k (n : ℤ_[p]) = n.choose k := by
-  simp only [mahler_apply, Ring.choose_natCast]
+  simp [mahler_apply, Ring.choose_natCast]
 
 section fwdDiff
 
@@ -137,7 +137,7 @@ private lemma bojanic_mahler_step1 [AddCommMonoidWithOne M] [AddCommGroup G] (f 
   have : ∑ k ∈ Finset.range (R + 1), R.choose k • Δ_[1]^[n + k] f 0 = Δ_[1]^[n] f R := by
     simpa only [← Function.iterate_add_apply, add_comm, nsmul_one, add_zero] using
       (shift_eq_sum_fwdDiff_iter 1 (Δ_[1]^[n] f) R 0).symm
-  simp only [this, fwdDiff_iter_eq_sum_shift (1 : M) f n, mul_comm, nsmul_one, mul_smul, add_comm,
+  simp [this, fwdDiff_iter_eq_sum_shift (1 : M) f n, mul_comm, nsmul_one, mul_smul, add_comm,
     add_zero, smul_sub, sum_sub_distrib]
 
 end fwdDiff
@@ -169,7 +169,7 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     rw [norm_neg, ← coe_nnNorm, coe_le_coe]
     refine nnNorm_sum_le_of_forall_le (fun i hi ↦ Finset.le_sup_of_le hi ?_)
     rw [← Nat.cast_smul_eq_nsmul ℤ_[p], div_eq_inv_mul]
-    refine (nnNorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
+    refine (nnNorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     rw [mem_range] at hi
     have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
@@ -250,7 +250,7 @@ A single term of a Mahler series, given by the product of the scalar-valued cont
 noncomputable def mahlerTerm : C(ℤ_[p], E) := (mahler n : C(_, ℤ_[p])) • .const _ a
 
 lemma mahlerTerm_apply : mahlerTerm a n x = mahler n x • a := by
-  simp only [mahlerTerm, ContinuousMap.smul_apply', ContinuousMap.const_apply]
+  simp [mahlerTerm, ContinuousMap.smul_apply', ContinuousMap.const_apply]
 
 @[simp]
 lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
@@ -287,7 +287,7 @@ lemma hasSum_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) :
 /-- Evaluation of a Mahler series is just the pointwise sum. -/
 lemma mahlerSeries_apply (ha : Tendsto a atTop (𝓝 0)) (x : ℤ_[p]) :
     mahlerSeries a x = ∑' n, mahler n x • a n := by
-  simp only [mahlerSeries, ← ContinuousMap.tsum_apply (hasSum_mahlerSeries ha).summable,
+  simp [mahlerSeries, ← ContinuousMap.tsum_apply (hasSum_mahlerSeries ha).summable,
     mahlerTerm_apply]
 
 /--
@@ -299,7 +299,7 @@ lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : 
   have h_van (i) : m.choose (i + (n + 1)) = 0 := Nat.choose_eq_zero_of_lt (by lia)
   have aux : Summable fun i ↦ m.choose (i + (n + 1)) • a (i + (n + 1)) := by
     simpa only [h_van, zero_smul] using summable_zero
-  simp only [mahlerSeries_apply ha, mahler_natCast_eq, Nat.cast_smul_eq_nsmul, add_zero,
+  simp [mahlerSeries_apply ha, mahler_natCast_eq, Nat.cast_smul_eq_nsmul, add_zero,
     ← aux.sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i), h_van, zero_smul, tsum_zero]
 
 /--
@@ -321,11 +321,11 @@ lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     rw [sum_comm]
   -- bring `Δ_[1]` inside scalar-mult
   _ = ∑ j ∈ range (n + 1), (Δ_[1]^[n] (fun k ↦ k.choose j : ℕ → ℤ) 0) • (a j) := by
-    simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc,
+    simp [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc,
       natCast_zsmul]
   -- finish using `fwdDiff_iter_choose_zero`
   _ = a n := by
-    simp only [fwdDiff_iter_choose_zero, ite_smul, one_smul, zero_smul, sum_ite_eq,
+    simp [fwdDiff_iter_choose_zero, ite_smul, one_smul, zero_smul, sum_ite_eq,
       Finset.mem_range, lt_add_iff_pos_right, zero_lt_one, ↓reduceIte]
 
 /--

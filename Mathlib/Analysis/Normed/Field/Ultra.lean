@@ -96,7 +96,7 @@ lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm
     rw [pow_left_monotoneOn.map_max (by simp [zero_le_one]) (norm_nonneg x), one_pow]
   rw [hp] at hm
   refine le_of_pow_le_pow_left₀ (fun h ↦ ?_) (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
-  simp only [h, zero_add, pow_zero, max_self, one_smul, lt_self_iff_false] at hm
+  simp [h, zero_add, pow_zero, max_self, one_smul, lt_self_iff_false] at hm
 
 /-- To prove that a normed division ring is nonarchimedean, it suffices to prove that the norm
 of the image of any natural is less than or equal to one. -/
@@ -110,7 +110,7 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
   replace h (x : R) (n : ℕ) : ‖n • x‖ ≤ ‖x‖ := by
     rw [nsmul_eq_mul, norm_mul]
     rcases (norm_nonneg x).eq_or_lt with hx | hx
-    · simp only [← hx, mul_zero, le_refl]
+    · simp [← hx, mul_zero, le_refl]
     · simpa only [mul_le_iff_le_one_left hx] using h _
   -- we expand the LHS using the binomial theorem, and apply the hypothesis to bound each term by
   -- a power of ‖x‖
@@ -125,7 +125,7 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
   -- which we show by comparing the terms in the sum one by one
   gcongr with i hi
   · rcases eq_or_ne m 0 with rfl | hm
-    · simp only [pow_zero, le_refl,
+    · simp [pow_zero, le_refl,
         show i = 0 by simpa only [zero_add, Finset.range_one, Finset.mem_singleton] using hi]
     · rw [pow_le_one_iff_of_nonneg (norm_nonneg _) hm] at hx
       exact pow_le_one₀ (norm_nonneg _) hx

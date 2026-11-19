@@ -77,7 +77,7 @@ def approxOrderOf (A : Type*) [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :
 @[to_additive mem_approx_add_orderOf_iff]
 theorem mem_approxOrderOf_iff {A : Type*} [SeminormedGroup A] {n : ℕ} {δ : ℝ} {a : A} :
     a ∈ approxOrderOf A n δ ↔ ∃ b : A, orderOf b = n ∧ a ∈ ball b δ := by
-  simp only [approxOrderOf, thickening_eq_biUnion_ball, mem_iUnion₂, mem_ofPred_eq, exists_prop]
+  simp [approxOrderOf, thickening_eq_biUnion_ball, mem_iUnion₂, mem_ofPred_eq, exists_prop]
 
 /-- In a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`, `wellApproximable A δ`
 is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it is the set of points that
@@ -108,7 +108,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
     rw [← hb] at hmn ⊢; exact hmn.orderOf_pow
   apply ball_subset_thickening hb ((m : ℝ) • δ)
   convert pow_mem_ball hm hab using 1
-  simp only [nsmul_eq_mul, smul_eq_mul]
+  simp [nsmul_eq_mul, smul_eq_mul]
 
 @[to_additive]
 theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
@@ -119,7 +119,7 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
     rw [mem_ofPred_eq, orderOf_pow' b hm.ne', hb, Nat.gcd_mul_left_left, n.mul_div_cancel hm]
   apply ball_subset_thickening hb (m * δ)
   convert pow_mem_ball hm hab using 1
-  simp only [nsmul_eq_mul]
+  simp [nsmul_eq_mul]
 
 @[to_additive]
 theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
@@ -150,7 +150,7 @@ theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
     · rw [mem_ofPred_eq, ← orderOf_inv, mul_inv_rev, inv_inv, mul_comm]
       apply han
       simpa
-    · simp only [f, mul_inv_cancel_left]
+    · simp [f, mul_inv_cancel_left]
   simpa only [mem_ofPred_eq, Subtype.coe_mk, iUnion_coe_set] using
     hf.iUnion_comp fun b => ball (b : A) δ
 
@@ -311,9 +311,9 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [hE₁ p]
     cases hp
     · rcases hA p with _ | h; · contradiction
-      simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left]
+      simp [μ, h, union_ae_eq_univ_of_ae_eq_univ_left]
     · rcases hB p with _ | h; · contradiction
-      simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left,
+      simp [μ, h, union_ae_eq_univ_of_ae_eq_univ_left,
         union_ae_eq_univ_of_ae_eq_univ_right]
 
 /-- A general version of **Dirichlet's approximation theorem**.

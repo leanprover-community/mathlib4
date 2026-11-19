@@ -79,7 +79,7 @@ theorem weightedTotalDegree'_eq_bot_iff (w : σ → M) (p : MvPolynomial σ R) :
 /-- The `weightedTotalDegree'` of the zero polynomial is `⊥`. -/
 theorem weightedTotalDegree'_zero (w : σ → M) :
     weightedTotalDegree' w (0 : MvPolynomial σ R) = ⊥ := by
-  simp only [weightedTotalDegree', support_zero, Finset.sup_empty]
+  simp [weightedTotalDegree', support_zero, Finset.sup_empty]
 
 section OrderBot
 
@@ -107,7 +107,7 @@ theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p �
 /-- The `weightedTotalDegree` of the zero polynomial is `⊥`. -/
 theorem weightedTotalDegree_zero (w : σ → M) :
     weightedTotalDegree w (0 : MvPolynomial σ R) = ⊥ := by
-  simp only [weightedTotalDegree, support_zero, Finset.sup_empty]
+  simp [weightedTotalDegree, support_zero, Finset.sup_empty]
 
 theorem le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}
     (hd : d ∈ φ.support) : weight w d ≤ φ.weightedTotalDegree w :=
@@ -135,7 +135,7 @@ def weightedHomogeneousSubmodule (w : σ → M) (m : M) : Submodule R (MvPolynom
     rw [coeff_add, Finsupp.add_apply] at hc
     obtain h | h : a.coeff c ≠ 0 ∨ b.coeff c ≠ 0 := by
       contrapose! hc
-      simp only [hc, add_zero]
+      simp [hc, add_zero]
     · exact ha h
     · exact hb h
 
@@ -224,7 +224,7 @@ lemma isWeightedHomogeneous_of_isEmpty [IsEmpty σ] (w : σ → M) (f : MvPolyno
 theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
     IsWeightedHomogeneous w (X i : MvPolynomial σ R) (w i) := by
   apply isWeightedHomogeneous_monomial
-  simp only [weight, LinearMap.toAddMonoidHom_coe, linearCombination_single, one_nsmul]
+  simp [weight, LinearMap.toAddMonoidHom_coe, linearCombination_single, one_nsmul]
 
 namespace IsWeightedHomogeneous
 
@@ -310,7 +310,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
   classical
   refine Finset.induction_on s ?_ ?_
   · intro
-    simp only [isWeightedHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
+    simp [isWeightedHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
   · intro i s his IH h
     simp only [his, Finset.prod_insert, Finset.sum_insert, not_false_iff]
     apply (h i (Finset.mem_insert_self _ _)).mul (IH _)
@@ -409,7 +409,7 @@ theorem weightedHomogeneousComponent_mem (w : σ → M) (φ : MvPolynomial σ R)
 @[simp]
 theorem weightedHomogeneousComponent_C_mul (n : M) (r : R) :
     weightedHomogeneousComponent w n (C r * φ) = C r * weightedHomogeneousComponent w n φ := by
-  simp only [C_mul', map_smul]
+  simp [C_mul', map_smul]
 
 theorem weightedHomogeneousComponent_eq_zero'
     (h : ∀ d : σ →₀ ℕ, d ∈ φ.support → weight w d ≠ n) :
@@ -570,7 +570,7 @@ theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [HasUniqueDi
   classical
   ext1 d
   rcases Classical.em (d = 0) with (rfl | hd)
-  · simp only [coeff_weightedHomogeneousComponent, ite_eq_left, map_zero, coeff_zero_C]
+  · simp [coeff_weightedHomogeneousComponent, ite_eq_left, map_zero, coeff_zero_C]
   · rw [coeff_weightedHomogeneousComponent, ite_eq_right, coeff_C, ite_eq_right (Ne.symm hd)]
     simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.linearCombination_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
@@ -660,7 +660,7 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
     (decompose' R w φ m : MvPolynomial σ R) = weightedHomogeneousComponent w m φ := by
   rw [decompose']
   by_cases hm : m ∈ Finset.image (weight w) φ.support
-  · simp only [DirectSum.mk_apply_of_mem hm, Subtype.coe_mk]
+  · simp [DirectSum.mk_apply_of_mem hm, Subtype.coe_mk]
   · rw [DirectSum.mk_apply_of_notMem hm, Submodule.coe_zero,
       weightedHomogeneousComponent_eq_zero_of_notMem w φ m hm]
 

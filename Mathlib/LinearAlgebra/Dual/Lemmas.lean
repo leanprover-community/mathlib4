@@ -392,7 +392,7 @@ theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 
     refine h <| (Submodule.mem_iInf _).2 fun i ↦ (mem_bot 𝕜).1 ?_
     rw [← hφ, Submodule.mem_map]
     exact ⟨L i, Submodule.subset_span ⟨i, rfl⟩, (apply_evalEquiv_symm_apply 𝕜 E _ φ).symm⟩
-  simp only [apply_evalEquiv_symm_apply, φs, φne] at this
+  simp [apply_evalEquiv_symm_apply, φs, φne] at this
 
 /-- Given some linear forms $L_1, ..., L_n, K$ over a vector space $E$, if
 $\bigcap_{i=1}^n \mathrm{ker}(L_i) \subseteq \mathrm{ker}(K)$, then $K$ is in the space generated
@@ -873,7 +873,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
     (W ⊓ W').dualAnnihilator = W.dualAnnihilator ⊔ W'.dualAnnihilator := by
   refine le_antisymm ?_ (sup_dualAnnihilator_le_inf W W')
   let F : V₁ →ₗ[K] (V₁ ⧸ W) × V₁ ⧸ W' := (Submodule.mkQ W).prod (Submodule.mkQ W')
-  have : LinearMap.ker F = W ⊓ W' := by simp only [F, LinearMap.ker_prod, ker_mkQ]
+  have : LinearMap.ker F = W ⊓ W' := by simp [F, LinearMap.ker_prod, ker_mkQ]
   rw [← this, ← LinearMap.range_dualMap_eq_dualAnnihilator_ker]
   intro φ
   rw [LinearMap.mem_range]
@@ -1022,7 +1022,7 @@ theorem dualCoannihilator_iInf {ι : Type*} (W : ι → Subspace K (Module.Dual 
   have := Module.Finite.iff_fg.mpr <|
     FG.of_le (Module.Finite.iff_fg.mp inferInstance) (iInf_le W <| Classical.arbitrary ι)
   rw [← dualAnnihilator_inj, dualCoannihilator_dualAnnihilator_eq, dualAnnihilator_iSup_eq]
-  simp only [dualCoannihilator_dualAnnihilator_eq]
+  simp [dualCoannihilator_dualAnnihilator_eq]
 
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order

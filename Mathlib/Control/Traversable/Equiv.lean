@@ -134,11 +134,11 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) 
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
   rw [traverse_def, comp_traverse, Comp.map_mk]
-  simp only [map_map, traverse_def, symm_apply_apply]
+  simp [map_map, traverse_def, symm_apply_apply]
 
 protected theorem naturality (f : α → F β) (x : t' α) :
     η (Equiv.traverse eqv f x) = Equiv.traverse eqv (@η _ ∘ f) x := by
-  simp only [Equiv.traverse, functor_norm]
+  simp [Equiv.traverse, functor_norm]
 
 /-- The fact that `t` is a lawful traversable functor carries over the
 equivalences to `t'`, with the traversable functor structure given by

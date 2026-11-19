@@ -49,7 +49,7 @@ theorem separable_def' (f : R[X]) : f.Separable ↔ ∃ a b : R[X], a * f + b * 
 
 theorem not_separable_zero [Nontrivial R] : ¬Separable (0 : R[X]) := by
   rintro ⟨x, y, h⟩
-  simp only [derivative_zero, mul_zero, add_zero, zero_ne_one] at h
+  simp [derivative_zero, mul_zero, add_zero, zero_ne_one] at h
 
 theorem Separable.ne_zero [Nontrivial R] {f : R[X]} (h : f.Separable) : f ≠ 0 :=
   (not_separable_zero <| · ▸ h)
@@ -136,7 +136,7 @@ theorem Separable.eval₂_derivative_ne_zero [Nontrivial S] (f : R →+* S) {p :
   intro hx'
   obtain ⟨a, b, e⟩ := h
   apply_fun Polynomial.eval₂ f x at e
-  simp only [eval₂_add, eval₂_mul, hx, mul_zero, hx', add_zero, eval₂_one, zero_ne_one] at e
+  simp [eval₂_add, eval₂_mul, hx, mul_zero, hx', add_zero, eval₂_one, zero_ne_one] at e
 
 theorem Separable.aeval_derivative_ne_zero [Nontrivial S] [Algebra R S] {p : R[X]}
     (h : p.Separable) {x : S} (hx : aeval x p = 0) :
@@ -241,7 +241,7 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
       simp only [C.map_mul, C_eq_natCast]
       ring
     _ = 1 := by
-      simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
+      simp [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
 
 /-- If `n = 0` in `R` and `b` is a unit, then `a * X ^ n + b * X + c` is separable. -/
@@ -599,7 +599,7 @@ include e
 
 /-- Transfer `IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F x := by
-  simp only [IsSeparable, minpoly.algEquiv_eq e x]
+  simp [IsSeparable, minpoly.algEquiv_eq e x]
 
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.Algebra.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=

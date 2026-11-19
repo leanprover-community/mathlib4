@@ -62,7 +62,7 @@ lemma δ_δ₀Iter' {n : ℕ} (i : Fin (n + 2)) (j : ℕ) {m : ℕ}
     (hi'' : i'.val = i.val + j := by grind) :
     X.δ i' ≫ X.δ₀Iter j = X.δ₀Iter j ≫ X.δ i := by
   dsimp [δ, δ₀Iter]
-  simp only [← Functor.map_comp, ← op_comp, SimplexCategory.δ₀Iter_δ' _ _ _ _ hi'']
+  simp [← Functor.map_comp, ← op_comp, SimplexCategory.δ₀Iter_δ' _ _ _ _ hi'']
 
 @[reassoc]
 lemma σ_δ₀Iter (i : ℕ) {n m : ℕ} (j : Fin (m + 1))
@@ -109,7 +109,7 @@ lemma σ₀Iter_succ' (i : ℕ) {n m : ℕ} (h : n + i = m := by lia) :
 lemma σ₀Iter_δ {n : ℕ} (i : Fin (n + 2)) (j : ℕ) {m : ℕ} (h : m + (j + 1) = n + 1 := by lia)
     (hi' : i.val ≤ j + 1 := by grind) :
     X.σ₀Iter (n := m) (j + 1) h ≫ X.δ i = X.σ₀Iter j := by
-  simp only [σ₀Iter, δ, ← Functor.map_comp, ← op_comp, SimplexCategory.δ_σ₀Iter i j h]
+  simp [σ₀Iter, δ, ← Functor.map_comp, ← op_comp, SimplexCategory.δ_σ₀Iter i j h]
 
 @[reassoc]
 lemma σ₀Iter_δ' {n : ℕ} (i : Fin (n + 2)) (j : ℕ) {m : ℕ}
@@ -117,7 +117,7 @@ lemma σ₀Iter_δ' {n : ℕ} (i : Fin (n + 2)) (j : ℕ) {m : ℕ}
     (hi' : j < i.val := by grind)
     (hi'' : i.val = i'.val + j := by grind) :
     X.σ₀Iter (n := m + 1) j ≫ X.δ i = X.δ i' ≫ X.σ₀Iter j := by
-  simp only [σ₀Iter, δ, ← Functor.map_comp, ← op_comp,
+  simp [σ₀Iter, δ, ← Functor.map_comp, ← op_comp,
     SimplexCategory.δ_σ₀Iter' i j i']
 
 @[reassoc]

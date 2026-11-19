@@ -243,7 +243,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     dsimp only [e₀, IsIdempotentElem]
     nth_rw 2 [eq_sub_iff_add_eq.mpr hcd]
     rw [← map_mul, mul_sub, mul_one, mul_mul_mul_comm, ← hfab']
-    simp only [map_mul, map_sub, aeval_map_algebraMap, hs₀'f, mul_zero, sub_zero]
+    simp [map_mul, map_sub, aeval_map_algebraMap, hs₀'f, mul_zero, sub_zero]
   let e : R' ⊗[R] S := aeval s' (c * a')
   let φ := Algebra.TensorProduct.map (.id R' R') (integralClosure R S).val
   have he₀e : φ e₀ = e := by
@@ -362,7 +362,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   apply IsLocalization.ringHom_ext (.powers f)
   dsimp [-AlgEquiv.symm_toRingEquiv,
     ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_ofClass]
-  simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
+  simp [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
 
 /--
 Let `S` be a finite type `R`-algebra, and `q` a prime lying over `p` such that `S` is quasi-finite
@@ -535,7 +535,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
       have := (Set.ncard_eq_zero hpSfin).mp h
       refine ⟨R, inferInstance, inferInstance, inferInstance, p, inferInstance, ⟨rfl⟩, 0, 1,
         ⟨⟨by simp [IsIdempotentElem],
-          by simp only [Nat.reduceAdd, Pi.one_apply, mul_one, Subsingleton.pairwise]⟩,
+          by simp [Nat.reduceAdd, Pi.one_apply, mul_one, Subsingleton.pairwise]⟩,
           by simp⟩, nofun, nofun, nofun, ?_, nofun, ?_⟩
       · rw! [ofId_self, Ideal.ResidueField.mapₐ_id]; exact Function.bijective_id
       · exact fun P h₁ h₂ ↦ (this.le

@@ -137,7 +137,7 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
     ∫⁻ ω, ∏ i ∈ s, (X i ω) ∂μ = ∏ i ∈ s, ∫⁻ ω, X i ω ∂μ := by
   have : IsProbabilityMeasure μ := hX.isProbabilityMeasure
   induction s using Finset.cons_induction with
-  | empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
+  | empty => simp [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
   | cons j s hj ihs =>
     simp only [← Finset.prod_apply, Finset.prod_cons, ← ihs]
     apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'

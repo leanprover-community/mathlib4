@@ -213,7 +213,7 @@ instance Sum.discreteTopology [TopologicalSpace X] [TopologicalSpace Y] [h : Dis
 
 instance Sigma.discreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
     [h : ∀ i, DiscreteTopology (Y i)] : DiscreteTopology (Sigma Y) :=
-  ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
+  ⟨iSup_eq_bot.2 fun _ => by simp [(h _).eq_bot, coinduced_bot]⟩
 
 instance Prod.indiscreteTopology [TopologicalSpace X] [TopologicalSpace Y]
     [h : IndiscreteTopology X] [hY : IndiscreteTopology Y] : IndiscreteTopology (X × Y) :=
@@ -221,7 +221,7 @@ instance Prod.indiscreteTopology [TopologicalSpace X] [TopologicalSpace Y]
 
 instance Pi.indiscreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
     [h : ∀ i, IndiscreteTopology (Y i)] : IndiscreteTopology ((i : ι) → Y i) :=
-  ⟨iInf_eq_top.2 fun _ => by simp only [(h _).eq_top, induced_top]⟩
+  ⟨iInf_eq_top.2 fun _ => by simp [(h _).eq_top, induced_top]⟩
 
 @[simp] lemma comap_nhdsWithin_range {α β} [TopologicalSpace β] (f : α → β) (y : β) :
     comap f (𝓝[range f] y) = comap f (𝓝 y) := comap_inf_principal_range
@@ -310,10 +310,10 @@ theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → 
     finite_image_iff (WithTopology.ofTopology_injective _).injOn]
 
 theorem isOpen_iff' {s : Set (CofiniteTopology X)} : IsOpen s ↔ s = ∅ ∨ sᶜ.Finite := by
-  simp only [isOpen_iff, ← ne_empty_iff_nonempty, or_iff_not_imp_left]
+  simp [isOpen_iff, ← ne_empty_iff_nonempty, or_iff_not_imp_left]
 
 theorem isClosed_iff {s : Set (CofiniteTopology X)} : IsClosed s ↔ s = univ ∨ s.Finite := by
-  simp only [← isOpen_compl_iff, isOpen_iff', compl_compl, compl_empty_iff]
+  simp [← isOpen_compl_iff, isOpen_iff', compl_compl, compl_empty_iff]
 
 theorem nhds_eq (x : CofiniteTopology X) : 𝓝 x = pure x ⊔ cofinite := by
   ext U
@@ -685,7 +685,7 @@ lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ clos
 
 theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
     frontier (s ∩ t) ∩ t = frontier s ∩ t := by
-  simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
+  simp [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
     ht.isOpenMap_subtypeVal.preimage_frontier_eq_frontier_preimage continuous_subtypeVal,
     Subtype.preimage_coe_self_inter]
 
@@ -788,7 +788,7 @@ variable {ι : Type*} {A B : ι → Type*} {κ : Type*} [TopologicalSpace X]
   [T : ∀ i, TopologicalSpace (A i)] [∀ i, TopologicalSpace (B i)] {f : X → ∀ i : ι, A i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
-  simp only [continuous_iInf_rng, continuous_induced_rng, comp_def]
+  simp [continuous_iInf_rng, continuous_induced_rng, comp_def]
 
 @[continuity, fun_prop]
 theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
@@ -817,7 +817,7 @@ protected theorem Continuous.piMap
   continuous_pi fun i ↦ (hf i).comp (continuous_apply i)
 
 theorem nhds_pi {a : ∀ i, A i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
-  simp only [nhds_iInf, nhds_induced, Filter.pi]
+  simp [nhds_iInf, nhds_induced, Filter.pi]
 
 protected theorem IsOpenMap.piMap {f : ∀ i, A i → B i}
     (hfo : ∀ i, IsOpenMap (f i)) (hsurj : ∀ᶠ i in cofinite, Surjective (f i)) :
@@ -1121,7 +1121,7 @@ theorem isOpen_pi_iff {s : Set (∀ a, A a)} :
         simp_rw [ite_eq_right hi]
         exact ⟨Subset.rfl, isOpen_univ, mem_univ _⟩
     · rw [← univ_pi_ite]
-      simp only [← ite_and, ← Finset.mem_coe, and_self_iff, univ_pi_ite, h2]
+      simp [← ite_and, ← Finset.mem_coe, and_self_iff, univ_pi_ite, h2]
 
 theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, A a)} :
     IsOpen s ↔
@@ -1170,7 +1170,7 @@ theorem set_pi_mem_nhds_iff {I : Set ι} (hI : I.Finite) {s : ∀ i, Set (A i)} 
 theorem interior_pi_set {I : Set ι} (hI : I.Finite) {s : ∀ i, Set (A i)} :
     interior (pi I s) = I.pi fun i => interior (s i) := by
   ext a
-  simp only [Set.mem_pi, mem_interior_iff_mem_nhds, set_pi_mem_nhds_iff hI]
+  simp [Set.mem_pi, mem_interior_iff_mem_nhds, set_pi_mem_nhds_iff hI]
 
 theorem exists_finset_piecewise_mem_of_mem_nhds [DecidableEq ι] {s : Set (∀ a, A a)} {x : ∀ a, A a}
     (hs : s ∈ 𝓝 x) (y : ∀ a, A a) : ∃ I : Finset ι, I.piecewise x y ∈ s := by
@@ -1199,7 +1199,7 @@ theorem pi_eq_generateFrom :
         { g | ∃ (s : ∀ a, Set (A a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
   _ = @Pi.topologicalSpace ι A fun _ => generateFrom { s | IsOpen s } := by
-    simp +instances only [generateFrom_setOfPred_isOpen]
+    simp +instances [generateFrom_setOfPred_isOpen]
   _ = _ := pi_generateFrom_eq
 
 theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))} [Finite ι]
@@ -1244,7 +1244,7 @@ instance Pi.discreteTopology : DiscreteTopology (∀ i, A i) :=
 lemma Function.Surjective.isEmbedding_comp {n m : Type*} (f : m → n) (hf : Function.Surjective f) :
     IsEmbedding ((· ∘ f) : (n → X) → (m → X)) := by
   refine ⟨isInducing_iff_nhds.mpr fun x ↦ ?_, hf.injective_comp_right⟩
-  simp only [nhds_pi, Filter.pi, Filter.comap_iInf, ← hf.iInf_congr, Filter.comap_comap,
+  simp [nhds_pi, Filter.pi, Filter.comap_iInf, ← hf.iInf_congr, Filter.comap_comap,
     Function.comp_def]
 
 end Pi
@@ -1263,7 +1263,7 @@ theorem isOpen_sigma_iff {s : Set (Sigma σ)} : IsOpen s ↔ ∀ i, IsOpen (Sigm
   rfl
 
 theorem isClosed_sigma_iff {s : Set (Sigma σ)} : IsClosed s ↔ ∀ i, IsClosed (Sigma.mk i ⁻¹' s) := by
-  simp only [← isOpen_compl_iff, isOpen_sigma_iff, preimage_compl]
+  simp [← isOpen_compl_iff, isOpen_sigma_iff, preimage_compl]
 
 theorem isOpenMap_sigmaMk {i : ι} : IsOpenMap (@Sigma.mk ι σ i) := by
   intro s hs
@@ -1349,7 +1349,7 @@ theorem inducing_sigma {f : Sigma σ → X} :
 theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     Continuous (Sigma.map f₁ f₂) ↔ ∀ i, Continuous (f₂ i) :=
   continuous_sigma_iff.trans <| by
-    simp only [Sigma.map, IsEmbedding.sigmaMk.continuous_iff, comp_def]
+    simp [Sigma.map, IsEmbedding.sigmaMk.continuous_iff, comp_def]
 
 @[continuity, fun_prop]
 theorem Continuous.sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (hf : ∀ i, Continuous (f₂ i)) :
@@ -1357,7 +1357,7 @@ theorem Continuous.sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁
   continuous_sigma_map.2 hf
 
 theorem isOpenMap_sigma {f : Sigma σ → X} : IsOpenMap f ↔ ∀ i, IsOpenMap fun a => f ⟨i, a⟩ := by
-  simp only [isOpenMap_iff_nhds_le, Sigma.forall, Sigma.nhds_eq, map_map, comp_def]
+  simp [isOpenMap_iff_nhds_le, Sigma.forall, Sigma.nhds_eq, map_map, comp_def]
 
 theorem isOpenMap_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     IsOpenMap (Sigma.map f₁ f₂) ↔ ∀ i, IsOpenMap (f₂ i) :=
@@ -1366,17 +1366,17 @@ theorem isOpenMap_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ 
 
 lemma Topology.isInducing_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
     (h₁ : Injective f₁) : IsInducing (Sigma.map f₁ f₂) ↔ ∀ i, IsInducing (f₂ i) := by
-  simp only [isInducing_iff_nhds, Sigma.forall, Sigma.nhds_mk, Sigma.map_mk,
+  simp [isInducing_iff_nhds, Sigma.forall, Sigma.nhds_mk, Sigma.map_mk,
     ← map_sigma_mk_comap h₁, map_inj sigma_mk_injective]
 
 lemma Topology.isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
     (h : Injective f₁) : IsEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsEmbedding (f₂ i) := by
-  simp only [isEmbedding_iff, isInducing_sigmaMap h, forall_and,
+  simp [isEmbedding_iff, isInducing_sigmaMap h, forall_and,
     h.sigma_map_iff]
 
 lemma Topology.isOpenEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (h : Injective f₁) :
     IsOpenEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsOpenEmbedding (f₂ i) := by
-  simp only [isOpenEmbedding_iff_isEmbedding_isOpenMap, isOpenMap_sigma_map, isEmbedding_sigmaMap h,
+  simp [isOpenEmbedding_iff_isEmbedding_isOpenMap, isOpenMap_sigma_map, isEmbedding_sigmaMap h,
     forall_and]
 
 end Sigma
@@ -1414,7 +1414,7 @@ lemma Topology.IsEmbedding.uliftDown [TopologicalSpace X] :
 @[fun_prop]
 lemma Topology.IsClosedEmbedding.uliftDown [TopologicalSpace X] :
     IsClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=
-  ⟨.uliftDown, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
+  ⟨.uliftDown, by simp [ULift.down_surjective.range_eq, isClosed_univ]⟩
 
 instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
   IsEmbedding.uliftDown.discreteTopology

@@ -96,7 +96,7 @@ lemma nnreal_smul_lt_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x �
 @[simp]
 theorem smul_toNNReal (a : ℝ≥0) (b : ℝ≥0∞) : (a • b).toNNReal = a * b.toNNReal := by
   change ((a : ℝ≥0∞) * b).toNNReal = a * b.toNNReal
-  simp only [ENNReal.toNNReal_mul, ENNReal.toNNReal_coe]
+  simp [ENNReal.toNNReal_mul, ENNReal.toNNReal_coe]
 
 theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.toReal := by
   rw [ENNReal.smul_def, smul_eq_mul, toReal_mul, coe_toReal]

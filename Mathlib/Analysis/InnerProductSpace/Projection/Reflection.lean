@@ -59,7 +59,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
       convert norm_sub_eq_norm_add this
       · dsimp [reflectionLinearEquiv, v, w]
         abel
-      · simp only [v, add_sub_cancel] }
+      · simp [v, add_sub_cancel] }
 
 variable {K}
 

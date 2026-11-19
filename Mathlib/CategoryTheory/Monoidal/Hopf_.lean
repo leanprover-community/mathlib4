@@ -204,7 +204,7 @@ theorem antipode_comul₂ (A : C) [HopfObj A] :
     ε[A] ≫ (λ_ (𝟙_ C)).inv ≫ (η[A] ⊗ₘ η[A]) := by
   -- We should write a version of `slice_lhs` that zooms through whiskerings.
   slice_lhs 6 6 =>
-    simp only [tensorHom_def', whiskerLeft_comp]
+    simp [tensorHom_def', whiskerLeft_comp]
   slice_lhs 7 8 =>
     rw [← whiskerLeft_comp, associator_inv_naturality_middle, whiskerLeft_comp]
   slice_lhs 8 9 =>
@@ -223,30 +223,30 @@ theorem antipode_comul₂ (A : C) [HopfObj A] :
     simp only [← whiskerLeft_comp]
     rw [← BraidedCategory.hexagon_reverse_assoc, Iso.inv_hom_id_assoc,
       ← BraidedCategory.braiding_naturality_left]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   rw [ComonObj.comul_assoc_flip_assoc, Iso.inv_hom_id_assoc]
   slice_lhs 2 3 =>
     simp only [← whiskerLeft_comp]
     rw [ComonObj.comul_assoc]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   slice_lhs 3 7 =>
     simp only [← whiskerLeft_comp]
     rw [← associator_naturality_middle_assoc, Iso.hom_inv_id_assoc]
     simp only [← comp_whiskerRight]
     rw [antipode_right]
     simp only [comp_whiskerRight]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   slice_lhs 2 3 =>
     simp only [← whiskerLeft_comp]
     rw [ComonObj.counit_comul]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
     rw [BraidedCategory.braiding_naturality_left]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   slice_lhs 4 5 =>
     simp only [← whiskerLeft_comp]
     rw [whisker_exchange]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   slice_lhs 5 7 =>
     rw [associator_inv_naturality_right_assoc, whisker_exchange]
   simp only [braiding_tensorUnit_left,
@@ -349,7 +349,7 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 11 12 =>
     simp only [← comp_whiskerRight]
     rw [MonObj.mul_assoc]
-    simp only [comp_whiskerRight]
+    simp [comp_whiskerRight]
   rw [tensorHom_def]
   rw [tensor_whiskerLeft _ _ (β_ A A).hom]
   rw [pentagon_inv_inv_hom_hom_inv_assoc]
@@ -359,41 +359,41 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 5 7 =>
     simp only [← whiskerLeft_comp]
     rw [← BraidedCategory.hexagon_forward]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   simp only [tensor_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc, pentagon_inv_inv_hom_inv_inv,
     whisker_assoc, MonObj.mul_assoc, whiskerLeft_inv_hom_assoc]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
     rw [BraidedCategory.braiding_naturality_right]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   rw [tensorHom_def']
   simp only [whiskerLeft_comp]
   slice_lhs 5 6 =>
     simp only [← whiskerLeft_comp]
     rw [← associator_naturality_right]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   slice_lhs 4 5 =>
     simp only [← whiskerLeft_comp]
     rw [← whisker_exchange]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   slice_lhs 5 9 =>
     simp only [← whiskerLeft_comp]
     rw [associator_inv_naturality_middle_assoc, Iso.hom_inv_id_assoc]
     simp only [← comp_whiskerRight]
     rw [antipode_right]
     simp only [comp_whiskerRight]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   slice_lhs 6 7 =>
     simp only [← whiskerLeft_comp]
     rw [MonObj.one_mul]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
     rw [← BraidedCategory.braiding_naturality_left]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   slice_lhs 4 5 =>
     simp only [← whiskerLeft_comp]
     rw [← BraidedCategory.braiding_naturality_right]
-    simp only [whiskerLeft_comp]
+    simp [whiskerLeft_comp]
   rw [← associator_naturality_middle_assoc]
   simp only [braiding_tensorUnit_right, whiskerLeft_comp]
   slice_lhs 6 7 =>
@@ -408,7 +408,7 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 1 3 =>
     simp only [← comp_whiskerRight]
     rw [antipode_right]
-    simp only [comp_whiskerRight]
+    simp [comp_whiskerRight]
   slice_lhs 2 3 =>
     rw [← whisker_exchange]
   slice_lhs 1 2 =>

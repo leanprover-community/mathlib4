@@ -38,7 +38,7 @@ lemma Real.norm_inv_mul_rpow_sub_one_sub_log_le {p x : ℝ} (p_pos : 0 < p) (x_p
     _ ≤ p⁻¹ * ‖p * log x‖ ^ 2 := by
           gcongr
           refine Real.norm_exp_sub_one_sub_id_le ?_
-          simp only [hx]
+          simp [hx]
     _ = p * ‖log x‖ ^ 2 := by
           simp only [norm_mul]
           grind [Real.norm_of_nonneg]

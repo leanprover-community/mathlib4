@@ -142,15 +142,15 @@ instance AddCommMonoid.subsingletonNatModule : Subsingleton (Module ℕ M) :=
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y := by
     induction n with
-    | zero => simp only [zero_smul]
-    | succ n ih => simp only [add_smul, one_smul, ih]
+    | zero => simp [zero_smul]
+    | succ n ih => simp [add_smul, one_smul, ih]
 
 end AddCommMonoid
 
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
-  simp only [Nat.cast_smul_eq_nsmul, map_nsmul]
+  simp [Nat.cast_smul_eq_nsmul, map_nsmul]
 
 theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
@@ -198,7 +198,7 @@ instance AddCommMonoid.subsingletonIntModule [AddCommMonoid M] : Subsingleton (M
 theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
     (x : ℤ) (a : M) :
-    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
+    f ((x : R) • a) = (x : S) • f a := by simp [Int.cast_smul_eq_zsmul, map_zsmul]
 
 instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
     [Module R M] : IsScalarTower ℤ R M where

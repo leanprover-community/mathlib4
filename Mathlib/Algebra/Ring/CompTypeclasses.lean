@@ -105,11 +105,11 @@ instance ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) :=
 
 instance triples {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁) :=
-  ⟨by simp only [comp_eq]⟩
+  ⟨by simp [comp_eq]⟩
 
 instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₂₁ σ₁₂ (RingHom.id R₂) :=
-  ⟨by simp only [comp_eq₂]⟩
+  ⟨by simp [comp_eq₂]⟩
 
 variable (σ σ') in
 /-- The ring equivalence defined by a pair of ring homomorphisms satisfying `RingHomInvPair`. -/

@@ -391,7 +391,7 @@ instance {C} [Category* C] {D} [Category* D] (F : C ⥤ D)
   have := hasPullback_of_left_iso f g
   preservesLimit_of_preserves_limit_cone (IsPullback.of_hasPullback f g).isLimit
     ((isLimitMapConePullbackConeEquiv _ pullback.condition).symm
-      (IsPullback.of_vert_isIso ⟨by simp only [← F.map_comp, pullback.condition]⟩).isLimit)
+      (IsPullback.of_vert_isIso ⟨by simp [← F.map_comp, pullback.condition]⟩).isLimit)
 
 instance {C} [Category* C] {D} [Category* D] (F : C ⥤ D)
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso g] : PreservesLimit (cospan f g) F :=

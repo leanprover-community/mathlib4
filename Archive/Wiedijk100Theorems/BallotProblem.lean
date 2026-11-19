@@ -76,7 +76,7 @@ open scoped List in
 theorem mem_countedSequence_iff_perm {p q l} :
     l ∈ countedSequence p q ↔ l ~ List.replicate p (1 : ℤ) ++ List.replicate q (-1) := by
   rw [List.perm_replicate_append_replicate]
-  · simp only [countedSequence, List.subset_def, mem_ofPred_eq, List.mem_cons (b := (1 : ℤ)),
+  · simp [countedSequence, List.subset_def, mem_ofPred_eq, List.mem_cons (b := (1 : ℤ)),
       List.mem_singleton]
   · norm_num1
 

@@ -141,7 +141,7 @@ lemma mul (hf : IsCauSeq abv f) (hg : IsCauSeq abv g) : IsCauSeq abv (f * g) := 
     Hδ (hF j) (hG i) (H₁ _ ij) (H₂ _ ij)⟩
 
 @[simp] lemma _root_.isCauSeq_neg : IsCauSeq abv (-f) ↔ IsCauSeq abv f := by
-  simp only [IsCauSeq, Pi.neg_apply, ← neg_sub', abv_neg]
+  simp [IsCauSeq, Pi.neg_apply, ← neg_sub', abv_neg]
 
 protected alias ⟨of_neg, neg⟩ := isCauSeq_neg
 
@@ -512,7 +512,7 @@ theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 :
 
 theorem pow_equiv_pow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ) : f1 ^ n ≈ f2 ^ n := by
   induction n with
-  | zero => simp only [pow_zero, Setoid.refl]
+  | zero => simp [pow_zero, Setoid.refl]
   | succ n ih => simpa only [pow_succ'] using mul_equiv_mul hf ih
 
 end Ring

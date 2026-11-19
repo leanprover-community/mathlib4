@@ -356,7 +356,7 @@ lemma prod_map_val [CommMonoid M] (s : Finset ι) (f : ι → M) : (s.val.map f)
 
 @[simp]
 theorem sum_multiset_singleton (s : Finset ι) : ∑ a ∈ s, {a} = s.val := by
-  simp only [sum_eq_multiset_sum, Multiset.sum_map_singleton]
+  simp [sum_eq_multiset_sum, Multiset.sum_map_singleton]
 
 end Finset
 
@@ -388,7 +388,7 @@ theorem prod_of_isEmpty [IsEmpty ι] (s : Finset ι) : ∏ i ∈ s, f i = 1 := b
 
 @[to_additive (attr := simp)]
 theorem prod_const_one : (∏ _x ∈ s, (1 : M)) = 1 := by
-  simp only [Finset.prod, Multiset.map_const', Multiset.prod_replicate, one_pow]
+  simp [Finset.prod, Multiset.map_const', Multiset.prod_replicate, one_pow]
 
 @[to_additive (attr := simp)]
 theorem prod_map (s : Finset ι) (e : ι ↪ κ) (f : κ → M) :
@@ -481,7 +481,7 @@ theorem prod_bij' (i : ∀ a ∈ s, κ) (j : ∀ a ∈ t, ι) (hi : ∀ a ha, i 
     ∏ x ∈ s, f x = ∏ x ∈ t, g x := by
   refine prod_bij i hi (fun a1 h1 a2 h2 eq ↦ ?_) (fun b hb ↦ ⟨_, hj b hb, right_inv b hb⟩) h
   rw [← left_inv a1 h1, ← left_inv a2 h2]
-  simp only [eq]
+  simp [eq]
 
 /-- Reorder a product.
 
@@ -583,12 +583,12 @@ theorem prod_dite_irrel (p : Prop) [Decidable p] (s : Finset ι) (f : p → ι �
 @[to_additive]
 theorem ite_prod_one (p : Prop) [Decidable p] (s : Finset ι) (f : ι → M) :
     (if p then (∏ x ∈ s, f x) else 1) = ∏ x ∈ s, if p then f x else 1 := by
-  simp only [prod_ite_irrel, prod_const_one]
+  simp [prod_ite_irrel, prod_const_one]
 
 @[to_additive]
 theorem ite_one_prod (p : Prop) [Decidable p] (s : Finset ι) (f : ι → M) :
     (if p then 1 else (∏ x ∈ s, f x)) = ∏ x ∈ s, if p then 1 else f x := by
-  simp only [prod_ite_irrel, prod_const_one]
+  simp [prod_ite_irrel, prod_const_one]
 
 @[to_additive]
 theorem nonempty_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : s.Nonempty :=
@@ -775,7 +775,7 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     Disjoint l.sum a ↔ ∀ b ∈ l, Disjoint b a := by
   induction l with
   | nil =>
-    simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
+    simp [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
   | cons b bs ih =>
     simp [ih]
 

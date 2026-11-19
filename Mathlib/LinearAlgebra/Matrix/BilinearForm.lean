@@ -99,7 +99,7 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₁) : Matrix.toBilin'Aux M = Mat
 theorem Matrix.toBilin'_apply (M : Matrix n n R₁) (x y : n → R₁) :
     Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
   (Matrix.toLinearMap₂'_apply _ _ _).trans
-    (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
+    (by simp [smul_eq_mul, mul_comm, mul_left_comm])
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₁) (v w : n → R₁) :
     Matrix.toBilin' M v w = v ⬝ᵥ M *ᵥ w := Matrix.toLinearMap₂'_apply' _ _ _
@@ -166,7 +166,7 @@ end LinearMap
 theorem Matrix.toBilin'_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
     M.toBilin'.comp P.toLin' Q.toLin' = (Pᵀ * M * Q).toBilin' :=
   BilinForm.toMatrix'.injective
-    (by simp only [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_toLin'])
+    (by simp [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_toLin'])
 
 end ToMatrix'
 
@@ -208,7 +208,7 @@ lemma LinearMap.BilinForm.apply_eq_dotProduct_toMatrix_mulVec (B : BilinForm R�
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
   (Matrix.toLinearMap₂_apply _ _ _ _ _).trans
-    (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
+    (by simp [smul_eq_mul, mul_comm, mul_left_comm])
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
 theorem LinearMap.BilinForm.toMatrixAux_eq (B : BilinForm R₁ M₁) :
@@ -225,7 +225,7 @@ theorem Matrix.toBilin_symm : (Matrix.toBilin b).symm = LinearMap.BilinForm.toMa
 
 theorem Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₁ n) = Matrix.toBilin' := by
   ext M
-  simp only [coe_comp, coe_single, Function.comp_apply, toBilin_apply, Pi.basisFun_repr,
+  simp [coe_comp, coe_single, Function.comp_apply, toBilin_apply, Pi.basisFun_repr,
     toBilin'_apply]
 
 theorem LinearMap.BilinForm.toMatrix_basisFun :
@@ -326,7 +326,7 @@ variable [DecidableEq n]
 @[deprecated mem_pairSelfAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_pairSelfAdjointMatricesSubmodule' :
     A ∈ pairSelfAdjointMatricesSubmodule J J₃ ↔ Matrix.IsAdjointPair J J₃ A A := by
-  simp only [mem_pairSelfAdjointMatricesSubmodule]
+  simp [mem_pairSelfAdjointMatricesSubmodule]
 
 /-- The submodule of self-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
@@ -337,7 +337,7 @@ def selfAdjointMatricesSubmodule' : Submodule R₂ (Matrix n n R₂) :=
 @[deprecated mem_selfAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_selfAdjointMatricesSubmodule' :
     A ∈ selfAdjointMatricesSubmodule J ↔ J.IsSelfAdjoint A := by
-  simp only [mem_selfAdjointMatricesSubmodule]
+  simp [mem_selfAdjointMatricesSubmodule]
 
 /-- The submodule of skew-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
@@ -348,7 +348,7 @@ def skewAdjointMatricesSubmodule' : Submodule R₂ (Matrix n n R₂) :=
 @[deprecated mem_skewAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_skewAdjointMatricesSubmodule' :
     A ∈ skewAdjointMatricesSubmodule J ↔ J.IsSkewAdjoint A := by
-  simp only [mem_skewAdjointMatricesSubmodule]
+  simp [mem_skewAdjointMatricesSubmodule]
 
 end MatrixAdjoints
 

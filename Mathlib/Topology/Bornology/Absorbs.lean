@@ -160,7 +160,7 @@ alias ⟨eventually_cobounded_mapsTo, _⟩ := absorbs_iff_eventually_cobounded_m
 
 @[simp]
 lemma absorbs_inter : Absorbs G₀ (s ∩ t) u ↔ Absorbs G₀ s u ∧ Absorbs G₀ t u := by
-  simp only [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_inter, eventually_and]
+  simp [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_inter, eventually_and]
 
 protected lemma Absorbs.inter (hs : Absorbs G₀ s u) (ht : Absorbs G₀ t u) : Absorbs G₀ (s ∩ t) u :=
   absorbs_inter.2 ⟨hs, ht⟩
@@ -199,7 +199,7 @@ protected alias ⟨_, Absorbs.biInter⟩ := Set.Finite.absorbs_biInter
 lemma absorbs_zero_iff [NeBot (cobounded G₀)]
     {E : Type*} [AddMonoid E] [DistribMulAction G₀ E] {s : Set E} :
     Absorbs G₀ s 0 ↔ 0 ∈ s := by
-  simp only [absorbs_iff_eventually_cobounded_mapsTo, ← singleton_zero,
+  simp [absorbs_iff_eventually_cobounded_mapsTo, ← singleton_zero,
     mapsTo_singleton, smul_zero, eventually_const]
 
 end GroupWithZero
@@ -260,7 +260,7 @@ lemma absorbent_univ : Absorbent G₀ (univ : Set α) := fun _ ↦ .univ
 
 lemma absorbent_iff_inv_smul {s : Set α} :
     Absorbent G₀ s ↔ ∀ x, ∀ᶠ c in cobounded G₀, c⁻¹ • x ∈ s :=
-  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_singleton]
+  forall_congr' fun x ↦ by simp [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_singleton]
 
 lemma Absorbent.zero_mem [NeBot (cobounded G₀)] [AddMonoid E] [DistribMulAction G₀ E]
     {s : Set E} (hs : Absorbent G₀ s) : (0 : E) ∈ s :=

@@ -39,7 +39,7 @@ open GenContFract
 theorem convs_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GenContFract.of ξ).convs n = ξ.convergent n := by
   induction n generalizing ξ with
-  | zero => simp only [zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
+  | zero => simp [zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
   | succ n ih => rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]; norm_cast
 
 end Real

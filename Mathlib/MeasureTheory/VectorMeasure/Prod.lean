@@ -320,7 +320,7 @@ theorem integral_prod {B : G →L[ℝ] F →L[ℝ] J} {C : J →L[ℝ] E →L[�
     (h : ∀ x y z, D x (A y z) = C (B x z) y) :
     ∫ᵛ z, f z ∂[D; μ.prod ν A] = ∫ᵛ x, (∫ᵛ y, f (x, y) ∂[B; ν]) ∂[C; μ] := by
   by_cases hI : CompleteSpace I; swap
-  · simp only [integral_of_not_completeSpace hI]
+  · simp [integral_of_not_completeSpace hI]
   revert f
   apply Integrable.induction
   · intro c s hs h2s

@@ -72,7 +72,7 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   simp +contextual [floorRoot, not_or]
 
 @[simp] lemma floorRoot_eq_zero : floorRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
-  floorRoot_ne_zero.not_right.trans <| by simp only [not_and_or, ne_eq, not_not]
+  floorRoot_ne_zero.not_right.trans <| by simp [not_and_or, ne_eq, not_not]
 
 @[simp] lemma factorization_floorRoot (n a : ℕ) :
     (floorRoot n a).factorization = a.factorization ⌊/⌋ n := by
@@ -133,7 +133,7 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   simp +contextual [ceilRoot_def, not_or]
 
 @[simp] lemma ceilRoot_eq_zero : ceilRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
-  ceilRoot_ne_zero.not_right.trans <| by simp only [not_and_or, ne_eq, not_not]
+  ceilRoot_ne_zero.not_right.trans <| by simp [not_and_or, ne_eq, not_not]
 
 @[simp] lemma factorization_ceilRoot (n a : ℕ) :
     (ceilRoot n a).factorization = a.factorization ⌈/⌉ n := by

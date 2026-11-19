@@ -265,7 +265,7 @@ lemma linearGrowthInf_le_of_eventually_le (hb : b ≠ ⊤) (h : ∀ᶠ n in atTo
     linearGrowthInf u ≤ linearGrowthInf v := by
   apply (linearGrowthInf_eventually_monotone h).trans
   rcases eq_bot_or_bot_lt b with rfl | b_bot
-  · simp only [add_bot, ← Pi.bot_def, linearGrowthInf_bot, bot_le]
+  · simp [add_bot, ← Pi.bot_def, linearGrowthInf_bot, bot_le]
   · apply (linearGrowthInf_add_le' _ _).trans_eq <;> rw [linearGrowthSup_const b_bot.ne' hb]
     · exact add_zero (linearGrowthInf v)
     · exact Or.inr EReal.zero_ne_top
@@ -275,7 +275,7 @@ lemma linearGrowthSup_le_of_eventually_le (hb : b ≠ ⊤) (h : ∀ᶠ n in atTo
     linearGrowthSup u ≤ linearGrowthSup v := by
   apply (linearGrowthSup_eventually_monotone h).trans
   rcases eq_bot_or_bot_lt b with rfl | b_bot
-  · simp only [add_bot, ← Pi.bot_def, linearGrowthSup_bot, bot_le]
+  · simp [add_bot, ← Pi.bot_def, linearGrowthSup_bot, bot_le]
   · apply (linearGrowthSup_add_le _ _).trans_eq <;> rw [linearGrowthSup_const b_bot.ne' hb]
     · exact add_zero (linearGrowthSup v)
     · exact Or.inr EReal.zero_ne_top

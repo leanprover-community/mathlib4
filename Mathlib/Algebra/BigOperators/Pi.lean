@@ -119,7 +119,7 @@ theorem MonoidHom.functions_ext [Finite I] (N : Type*) [CommMonoid N] (g h : (‚à
   cases nonempty_fintype I
   ext k
   rw [‚Üê Finset.univ_prod_mulSingle k, map_prod, map_prod]
-  simp only [H]
+  simp [H]
 
 /-- This is used as the ext lemma instead of `MonoidHom.functions_ext` for reasons explained in
 note [partially-applied ext lemmas]. -/

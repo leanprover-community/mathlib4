@@ -151,7 +151,7 @@ def multifork (F : Cᵒᵖ ⥤ A) :
   Multifork.ofι _ (F.obj (Opposite.op S)) (fun i₀ => F.map (E.f i₀).op) (by
     rintro ⟨⟨i₁, i₂⟩, (j : E.I₁ i₁ i₂)⟩
     dsimp
-    simp only [← F.map_comp, ← op_comp, E.w])
+    simp [← F.map_comp, ← op_comp, E.w])
 
 @[simp]
 lemma multifork_ι (F : Cᵒᵖ ⥤ A) (i : E.I₀) : (E.multifork F).ι i = F.map (E.f i).op := rfl
@@ -985,7 +985,7 @@ variable (J) in
 @[simps toPreOneHypercover]
 def trivial (S : C) : OneHypercover.{w} J S where
   __ := PreOneHypercover.trivial S
-  mem₀ := by simp only [PreOneHypercover.sieve₀_trivial, J.top_mem]
+  mem₀ := by simp [PreOneHypercover.sieve₀_trivial, J.top_mem]
   mem₁ _ _ _ _ _ h := by
     simp only [PreOneHypercover.trivial_toPreZeroHypercover, PreZeroHypercover.singleton_X,
       PreZeroHypercover.singleton_f, Category.comp_id] at h

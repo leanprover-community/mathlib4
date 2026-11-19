@@ -99,7 +99,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     exact not_and_of_not_left (n = 0) ha
   dpow_zero ha := by
     rw [mem_bot.mp ha]
-    simp only [and_self, ite_true]
+    simp [and_self, ite_true]
   dpow_one ha := by
     simp [mem_bot.mp ha]
   dpow_mem {n a} hn _ := by
@@ -118,12 +118,12 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     simp only [mul_zero, true_and, mul_ite, mul_one]
     by_cases hn : n = 0
     · rw [ite_eq_left hn, hn, ite_eq_left rfl, _root_.pow_zero]
-    · simp only [ite_eq_right hn]
+    · simp [ite_eq_right hn]
   mul_dpow {m n x} hx := by
     rw [mem_bot.mp hx]
     simp only [true_and, mul_ite, mul_one, mul_zero, add_eq_zero]
     by_cases hn : n = 0
-    · simp only [hn, ite_true, and_true, add_zero, choose_self, cast_one]
+    · simp [hn, ite_true, and_true, add_zero, choose_self, cast_one]
     · rw [ite_eq_right hn, ite_eq_right]
       exact not_and_of_not_right (m = 0) hn
   dpow_comp m {n a} hn ha := by
@@ -131,7 +131,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     simp only [true_and, ite_eq_right_iff, _root_.mul_eq_zero, mul_ite, mul_one, mul_zero]
     by_cases hm : m = 0
     · simp [hm, uniformBell_zero_left, hn]
-    · simp only [hm, and_false, ite_false, false_or, ite_eq_right hn]
+    · simp [hm, and_false, ite_false, false_or, ite_eq_right hn]
 
 lemma dividedPowersBot_dpow_eq [DecidableEq A] (n : ℕ) (a : A) :
     (dividedPowersBot A).dpow n a =
@@ -185,7 +185,7 @@ theorem exp_add' (dp : ℕ → A → A)
     PowerSeries.mk (fun n ↦ dp n (a + b)) =
       (PowerSeries.mk fun n ↦ dp n a) * (PowerSeries.mk fun n ↦ dp n b) := by
   ext n
-  simp only [PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
+  simp [PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
     sum_antidiagonal_eq_sum_range_succ_mk]
 
 theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :
@@ -198,7 +198,7 @@ variable (hI : DividedPowers I)
 
 theorem dpow_smul {n : ℕ} (ha : a ∈ I) :
     hI.dpow n (b • a) = b ^ n • hI.dpow n a := by
-  simp only [smul_eq_mul, hI.dpow_mul, ha]
+  simp [smul_eq_mul, hI.dpow_mul, ha]
 
 theorem dpow_mul_right {n : ℕ} (ha : a ∈ I) :
     hI.dpow n (a * b) = hI.dpow n a * b ^ n := by
@@ -284,7 +284,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
     by_cases hn : n = 0
     · rw [hn]
       rw [dpow_zero I.zero_mem]
-      simp only [sym_zero, card_singleton, cast_one]
+      simp [sym_zero, card_singleton, cast_one]
     · rw [dpow_eval_zero hn, eq_comm, ← cast_zero]
       apply congr_arg
       rw [card_eq_zero, sym_eq_empty]
@@ -402,20 +402,20 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     simp only [map_add]
     rw [hI.dpow_add (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))
         (symm_apply_mem_of_equiv_iff.mpr (h ▸ hy))]
-    simp only [map_sum, map_mul]
+    simp [map_sum, map_mul]
   dpow_mul hx := by
     simp only [map_mul]
     rw [hI.dpow_mul (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))]
     rw [map_mul, map_pow]
-    simp only [RingEquiv.apply_symm_apply]
+    simp [RingEquiv.apply_symm_apply]
   mul_dpow hx := by
     rw [← map_mul, hI.mul_dpow, map_mul]
-    · simp only [map_natCast]
+    · simp [map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
   dpow_comp hn hx := by
     simp only [RingEquiv.symm_apply_apply]
     rw [hI.dpow_comp hn]
-    · simp only [map_mul, map_natCast]
+    · simp [map_mul, map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
 
 @[simp]

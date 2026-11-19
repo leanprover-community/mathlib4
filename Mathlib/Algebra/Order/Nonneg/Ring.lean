@@ -93,12 +93,12 @@ instance noZeroDivisors [Semiring α] [PartialOrder α] [IsOrderedRing α] [NoZe
     NoZeroDivisors (Nonneg α) :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
-      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self] }
+      simp [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self] }
 
 instance orderedSub [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     OrderedSub (Nonneg α) :=
   ⟨by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩
-    simp only [sub_le_iff_le_add, Subtype.mk_le_mk, mk_sub_mk, mk_add_mk, toNonneg_le]⟩
+    simp [sub_le_iff_le_add, Subtype.mk_le_mk, mk_sub_mk, mk_add_mk, toNonneg_le]⟩
 
 end Nonneg

@@ -48,11 +48,11 @@ variable (R K)
 @[no_expose] def toPrincipalIdeal : Kˣ →* (FractionalIdeal R⁰ K)ˣ :=
   { toFun := fun x =>
       ⟨spanSingleton _ x, spanSingleton _ x⁻¹, by
-        simp only [map_one, Units.mul_inv', ← map_mul], by
-        simp only [map_one, Units.inv_mul', ← map_mul]⟩
+        simp [map_one, Units.mul_inv', ← map_mul], by
+        simp [map_one, Units.inv_mul', ← map_mul]⟩
     map_mul' := fun x y =>
-      ext (by simp only [Units.val_mul, map_mul])
-    map_one' := ext (by simp only [map_one, Units.val_one]) }
+      ext (by simp [Units.val_mul, map_mul])
+    map_one' := ext (by simp [map_one, Units.val_one]) }
 
 variable {R K}
 
@@ -197,7 +197,7 @@ def ClassGroup.equiv :
       · simp only [RingEquiv.toMulEquiv_eq_coe, coe_mapEquiv, ← hx, RingEquiv.coe_toMulEquiv,
           canonicalEquiv_spanSingleton]
         rfl
-      · simp only [RingEquiv.toMulEquiv_eq_coe, MulEquiv.coe_toMonoidHom, coe_mapEquiv,
+      · simp [RingEquiv.toMulEquiv_eq_coe, MulEquiv.coe_toMonoidHom, coe_mapEquiv,
           RingEquiv.coe_toMulEquiv, canonicalEquiv_canonicalEquiv, canonicalEquiv_self,
           RingEquiv.refl_apply]
   exact QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range (toPrincipalIdeal R K).range
@@ -242,7 +242,7 @@ theorem FractionalIdeal.canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type*) [Fi
     [Algebra R K'] [IsFractionRing R K'] (I : (Ideal R)⁰) :
     FractionalIdeal.canonicalEquiv R⁰ K K' (FractionalIdeal.mk0 K I) =
     FractionalIdeal.mk0 K' I := by
-  simp only [FractionalIdeal.coe_mk0, FractionalIdeal.canonicalEquiv_coeIdeal]
+  simp [FractionalIdeal.coe_mk0, FractionalIdeal.canonicalEquiv_coeIdeal]
 
 @[simp]
 theorem FractionalIdeal.map_canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type*) [Field K']
@@ -361,7 +361,7 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
   obtain ⟨x, hx⟩ := @Submodule.IsPrincipal.principal _ _ _ _ _ _ hI
   have hx' : (I : FractionalIdeal R⁰ K) = spanSingleton R⁰ x := by
     apply Subtype.coe_injective
-    simp only [val_eq_coe, hx, coeToSubmodule_spanSingleton]
+    simp [val_eq_coe, hx, coeToSubmodule_spanSingleton]
   refine ⟨Units.mk0 x ?_, ?_⟩
   · intro x_eq; apply Units.ne_zero I; simp [hx', x_eq]
   · simp [hx']

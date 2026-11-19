@@ -391,11 +391,11 @@ theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
 
 @[simp, grind =]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
-  simp only [← monomial_zero_left, monomial_mul_monomial, zero_add]
+  simp [← monomial_zero_left, monomial_mul_monomial, zero_add]
 
 @[simp, grind =]
 theorem monomial_mul_C : monomial n a * C b = monomial n (a * b) := by
-  simp only [← monomial_zero_left, monomial_mul_monomial, add_zero]
+  simp [← monomial_zero_left, monomial_mul_monomial, add_zero]
 
 /-- `X` is the polynomial variable (aka indeterminate). -/
 def X : R[X] :=
@@ -550,7 +550,7 @@ theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, 
 lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
 
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
-  simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
+  simp [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
 theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] : coeff (ofNat(a) : R[X]) 0 = ofNat(a) := by simp
 theorem coeff_ofNat_succ (a n : ℕ) [a.AtLeastTwo] : coeff (ofNat(a) : R[X]) (n + 1) = 0 := by simp

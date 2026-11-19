@@ -321,7 +321,7 @@ theorem product_cons : s ×ˢ (b ::ₘ t) = (s.map fun a => (a, b)) + s ×ˢ t :
 
 @[simp]
 theorem product_singleton : ({a} : Multiset α) ×ˢ ({b} : Multiset β) = {(a, b)} := by
-  simp only [SProd.sprod, product, bind_singleton, map_singleton]
+  simp [SProd.sprod, product, bind_singleton, map_singleton]
 
 @[simp]
 theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s ×ˢ u + t ×ˢ u := by

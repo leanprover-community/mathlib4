@@ -173,10 +173,10 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
 lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
     a * (l.erase a).prod = l.prod := by
   induction l with
-  | nil => simp only [not_mem_nil] at ha
+  | nil => simp [not_mem_nil] at ha
   | cons b l ih =>
     obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem ha
-    · simp only [erase_cons_head, prod_cons]
+    · simp [erase_cons_head, prod_cons]
     rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
       comm a ha b mem_cons_self, mul_assoc,
       ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
@@ -244,8 +244,8 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
     ∀ {l : List α}, a ∈ l → f a * ((l.erase a).map f).prod = (l.map f).prod
   | b :: l, h => by
     obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem h
-    · simp only [map, erase_cons_head, prod_cons]
-    · simp only [map, erase_cons_tail (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
+    · simp [map, erase_cons_head, prod_cons]
+    · simp [map, erase_cons_tail (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
@@ -281,9 +281,9 @@ lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : Lis
     rw [ih]
     clear ih
     by_cases hx : p x
-    · simp only [hx, ↓reduceIte, decide_not, decide_true, map_cons, prod_cons, not_true_eq_false,
+    · simp [hx, ↓reduceIte, decide_not, decide_true, map_cons, prod_cons, not_true_eq_false,
         decide_false, Bool.false_eq_true, mul_assoc]
-    · simp only [hx, ↓reduceIte, decide_not, decide_false, Bool.false_eq_true, not_false_eq_true,
+    · simp [hx, ↓reduceIte, decide_not, decide_false, Bool.false_eq_true, not_false_eq_true,
       decide_true, map_cons, prod_cons, mul_left_comm]
 
 @[to_additive]
@@ -291,7 +291,7 @@ lemma prod_map_filter_mul_prod_map_filter_not (p : α → Prop) [DecidablePred p
     (l : List α) :
     ((l.filter p).map f).prod * ((l.filter fun x => ¬p x).map f).prod = (l.map f).prod := by
   rw [← prod_map_ite]
-  simp only [ite_self]
+  simp [ite_self]
 
 end CommMonoid
 
@@ -376,9 +376,9 @@ lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (
     rw [ih]
     clear ih
     by_cases hx : x = a
-    · simp only [hx, ite_true, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm,
+    · simp [hx, ite_true, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm,
       mul_inv_cancel_left, beq_self_eq_true]
-    · simp only [hx, ite_false, add_zero, mul_assoc, mul_comm (g x) _, beq_iff_eq]
+    · simp [hx, ite_false, add_zero, mul_assoc, mul_comm (g x) _, beq_iff_eq]
 
 end CommGroup
 
@@ -447,13 +447,13 @@ end Alternating
 
 lemma sum_nat_mod (l : List ℕ) (n : ℕ) : l.sum % n = (l.map (· % n)).sum % n := by
   induction l with
-  | nil => simp only [map_nil]
+  | nil => simp [map_nil]
   | cons a l ih =>
     simpa only [map_cons, sum_cons, Nat.mod_add_mod, Nat.add_mod_mod] using congr((a + $ih) % n)
 
 lemma prod_nat_mod (l : List ℕ) (n : ℕ) : l.prod % n = (l.map (· % n)).prod % n := by
   induction l with
-  | nil => simp only [map_nil]
+  | nil => simp [map_nil]
   | cons a l ih =>
     simpa only [prod_cons, map_cons, Nat.mod_mul_mod, Nat.mul_mod_mod] using congr((a * $ih) % n)
 

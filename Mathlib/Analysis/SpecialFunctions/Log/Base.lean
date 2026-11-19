@@ -56,11 +56,11 @@ theorem logb_zero : logb b 0 = 0 := by simp [logb]
 @[simp]
 theorem logb_one : logb b 1 = 0 := by simp [logb]
 
-theorem logb_zero_left : logb 0 x = 0 := by simp only [← log_div_log, log_zero, div_zero]
+theorem logb_zero_left : logb 0 x = 0 := by simp [← log_div_log, log_zero, div_zero]
 
 @[simp] theorem logb_zero_left_eq_zero : logb 0 = 0 := by ext; rw [logb_zero_left, Pi.zero_apply]
 
-theorem logb_one_left : logb 1 x = 0 := by simp only [← log_div_log, log_one, div_zero]
+theorem logb_one_left : logb 1 x = 0 := by simp [← log_div_log, log_one, div_zero]
 
 @[simp] theorem logb_one_left_eq_zero : logb 1 = 0 := by ext; rw [logb_one_left, Pi.zero_apply]
 
@@ -142,7 +142,7 @@ theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
   · simp only [Set.mem_Ioi]
     apply rpow_pos_of_pos b_pos
-  · simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
+  · simp [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
   field [log_ne_zero_of_pos_of_ne_one b_pos b_ne_one]
 
@@ -504,7 +504,7 @@ protected theorem _root_.Finsupp.logb_prod {α β : Type*} [Zero β] (f : α →
 
 theorem logb_nat_eq_sum_factorization (n : ℕ) :
     logb b n = n.factorization.sum fun p t => t * logb b p := by
-  simp only [logb, mul_div_assoc', log_nat_eq_sum_factorization n, Finsupp.sum, Finset.sum_div]
+  simp [logb, mul_div_assoc', log_nat_eq_sum_factorization n, Finsupp.sum, Finset.sum_div]
 
 theorem tendsto_pow_logb_div_mul_add_atTop (a c : ℝ) (n : ℕ) (ha : a ≠ 0) :
     Tendsto (fun x => logb b x ^ n / (a * x + c)) atTop (𝓝 0) := by

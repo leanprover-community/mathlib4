@@ -447,7 +447,7 @@ private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOf
     (Spec.map_injective (by
       simp only [coconeLeftOpOfCone_pt, Functor.const_obj_obj,
         Functor.leftOp_obj, coconeLeftOpOfCone_ι_app, Spec.map_comp]
-      simp only [← Scheme.Spec_map, ← liftedLimitMapsToOriginal_hom_π, Category.assoc, hab]))
+      simp [← Scheme.Spec_map, ← liftedLimitMapsToOriginal_hom_π, Category.assoc, hab]))
   exact ⟨k.unop, hik.unop, hjk.unop, by simpa [← Spec.map_comp, Spec.map_inj] using! H⟩
 
 /-- (Implementation)
@@ -1226,7 +1226,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     refine ⟨i', fi'i, fun j ↦ ?_⟩
     rw [← hfi', Functor.map_comp, Hom.comp_preimage]
     refine (Hom.preimage_mono _ (hk _)).trans ?_
-    simp only [← Hom.comp_preimage, t.naturality, Functor.const_obj_obj,
+    simp [← Hom.comp_preimage, t.naturality, Functor.const_obj_obj,
       Functor.const_obj_map, Category.comp_id, le_refl]
   -- Using the affine version `exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine`,
   -- one can now factor `Dⱼ ⁻¹ 𝒱ⱼ ⟶ lim Dᵢ ⟶ X` through some `Dⱼₖ ⁻¹ 𝒱ⱼ` for each `𝒱ⱼ`,
@@ -1240,7 +1240,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     let t𝒱 (j : _) : opensDiagram D i' (𝒱' j) ⟶ (Functor.const (Over i')).obj j.1.1.2.1.2 :=
     { app k := (t.app k.left).resLE _ _ <| by
         refine (Hom.preimage_mono _ (hi' _)).trans ?_
-        simp only [Functor.const_obj_obj, ← Hom.comp_preimage, t.naturality,
+        simp [Functor.const_obj_obj, ← Hom.comp_preimage, t.naturality,
           Functor.const_obj_map, Category.comp_id, le_refl]
       naturality {k₁ k₂} f₁₂ := by simp [Hom.resLE_comp_resLE] }
     have (j : s) : IsAffine j.1.1.2.1.1 := j.1.1.2.prop.1

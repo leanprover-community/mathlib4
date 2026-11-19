@@ -70,7 +70,7 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
   refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, ?_⟩
   use Cofan.IsColimit.mk _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by simp)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
-  exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
+  exact ⟨by simp [IsEmpty.forall_iff], inferInstance⟩
 
 variable [GaloisCategory C]
 
@@ -158,7 +158,7 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have hv : G.map v y = b := fiberPullbackEquiv_symm_snd_apply _ _ _ h
   rw [← hu, ← hv]
   change (F.map u ≫ F.map _) y = F.map v y
-  simp only [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,
+  simp [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,
     IsIso.hom_inv_id_assoc]
 
 end Decomposition

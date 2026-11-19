@@ -87,7 +87,7 @@ theorem pimage_eq_image_filter : s.pimage f =
 
 theorem pimage_union [DecidableEq α] : (s ∪ t).pimage f = s.pimage f ∪ t.pimage f :=
   coe_inj.1 <| by
-  simp only [coe_pimage, coe_union, ← PFun.image_union]
+  simp [coe_pimage, coe_union, ← PFun.image_union]
 
 @[simp]
 theorem pimage_empty : pimage f ∅ = ∅ := by
@@ -102,6 +102,6 @@ theorem pimage_mono (h : s ⊆ t) : s.pimage f ⊆ t.pimage f :=
   pimage_subset.2 fun x hx _ hy => mem_pimage.2 ⟨x, h hx, hy⟩
 
 theorem pimage_inter [DecidableEq α] : (s ∩ t).pimage f ⊆ s.pimage f ∩ t.pimage f := by
-  simp only [← coe_subset, coe_pimage, coe_inter, PFun.image_inter]
+  simp [← coe_subset, coe_pimage, coe_inter, PFun.image_inter]
 
 end Finset

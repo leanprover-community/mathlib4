@@ -255,7 +255,7 @@ theorem inseparable_iff_of_le_nhds {f g : CauchyFilter α} {a b : α}
     (ha : f.1 ≤ 𝓝 a) (hb : g.1 ≤ 𝓝 b) : Inseparable a b ↔ Inseparable f g := by
   rw [← tendsto_id'] at ha hb
   rw [inseparable_iff, (ha.comp tendsto_fst).inseparable_iff_uniformity (hb.comp tendsto_snd)]
-  simp only [Function.comp_apply, id_eq, Prod.mk.eta, ← Function.id_def, tendsto_id']
+  simp [Function.comp_apply, id_eq, Prod.mk.eta, ← Function.id_def, tendsto_id']
 
 theorem inseparable_lim_iff [CompleteSpace α] {f g : CauchyFilter α} :
     haveI := f.2.1.nonempty; Inseparable (lim f.1) (lim g.1) ↔ Inseparable f g :=

@@ -151,7 +151,7 @@ lemma f_eq {i : ι} {i' : ι'} (h : e.f i = i') :
 lemma comm (i j : ι) :
     f ψ i ≫ L.d i j = K.d (e.f i) (e.f j) ≫ f ψ j := by
   dsimp [f]
-  simp only [assoc, ← ψ.comm_assoc, L.extend_d_eq e rfl rfl, Iso.inv_hom_id, comp_id]
+  simp [assoc, ← ψ.comm_assoc, L.extend_d_eq e rfl rfl, Iso.inv_hom_id, comp_id]
 
 end homRestrict
 

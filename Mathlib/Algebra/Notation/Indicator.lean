@@ -83,7 +83,7 @@ lemma mulIndicator_apply_eq_self : s.mulIndicator f a = f a ↔ a ∉ s → f a 
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_eq_self : s.mulIndicator f = f ↔ mulSupport f ⊆ s := by
-  simp only [funext_iff, subset_def, mem_mulSupport, mulIndicator_apply_eq_self, not_imp_comm]
+  simp [funext_iff, subset_def, mem_mulSupport, mulIndicator_apply_eq_self, not_imp_comm]
 
 @[to_additive]
 lemma mulIndicator_eq_self_of_superset (h1 : s.mulIndicator f = f) (h2 : s ⊆ t) :
@@ -98,7 +98,7 @@ lemma mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a = 1
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_eq_one : (mulIndicator s f = fun _ => 1) ↔ Disjoint (mulSupport f) s := by
-  simp only [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport,
+  simp [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport,
     not_imp_not]
 
 @[to_additive (attr := simp)]
@@ -107,7 +107,7 @@ lemma mulIndicator_eq_one' : mulIndicator s f = 1 ↔ Disjoint (mulSupport f) s 
 
 @[to_additive]
 lemma mulIndicator_apply_ne_one {a : α} : s.mulIndicator f a ≠ 1 ↔ a ∈ s ∩ mulSupport f := by
-  simp only [Ne, mulIndicator_apply_eq_one, Classical.not_imp, mem_inter_iff, mem_mulSupport]
+  simp [Ne, mulIndicator_apply_eq_one, Classical.not_imp, mem_inter_iff, mem_mulSupport]
 
 @[to_additive (attr := simp)]
 lemma mulSupport_mulIndicator :
@@ -180,7 +180,7 @@ variable (M)
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_one (s : Set α) : (mulIndicator s fun _ => (1 : M)) = fun _ => (1 : M) :=
-  mulIndicator_eq_one.2 <| by simp only [mulSupport_fun_one, empty_disjoint]
+  mulIndicator_eq_one.2 <| by simp [mulSupport_fun_one, empty_disjoint]
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_one' {s : Set α} : s.mulIndicator (1 : α → M) = 1 :=

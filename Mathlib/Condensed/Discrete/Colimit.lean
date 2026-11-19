@@ -246,7 +246,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Finite X] [Finite Y
   simp only [Iso.inv_hom_id_apply]
   ext x
   rw [isoFinYonedaComponents_hom_apply]
-  simp only [← Functor.map_comp_apply, ← op_comp, CompHausLike.const_comp,
+  simp [← Functor.map_comp_apply, ← op_comp, CompHausLike.const_comp,
     ← isoFinYonedaComponents_hom_apply, Iso.inv_hom_id_apply, Function.comp_apply]
 
 attribute [local simp] toProfinite_obj
@@ -534,7 +534,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Finite X] [Fin
   simp only [Iso.inv_hom_id_apply]
   ext x
   rw [isoFinYonedaComponents_hom_apply]
-  simp only [← Functor.map_comp_apply, ← op_comp, CompHausLike.const_comp,
+  simp [← Functor.map_comp_apply, ← op_comp, CompHausLike.const_comp,
     ← isoFinYonedaComponents_hom_apply, Iso.inv_hom_id_apply, Function.comp_apply]
 
 attribute [local simp] toLightProfinite_obj

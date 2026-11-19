@@ -65,7 +65,7 @@ theorem gramSchmidt_def' (f : ι → E) (n : ι) :
 theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
     f n = gramSchmidt 𝕜 f n + ∑ i ∈ Iio n,
       (⟪gramSchmidt 𝕜 f i, f n⟫ / (‖gramSchmidt 𝕜 f i‖ : 𝕜) ^ 2) • gramSchmidt 𝕜 f i := by
-  simp only [← map_pow, ← starProjection_singleton, ← gramSchmidt_def' 𝕜 f n]
+  simp [← map_pow, ← starProjection_singleton, ← gramSchmidt_def' 𝕜 f n]
 
 @[simp]
 theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
@@ -93,7 +93,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
     starProjection_singleton, inner_smul_right]
   rw [Finset.sum_eq_single_of_mem a (Finset.mem_Iio.mpr h₀)]
   · by_cases h : gramSchmidt 𝕜 f a = 0
-    · simp only [h, inner_zero_left, zero_div, zero_mul, sub_zero]
+    · simp [h, inner_zero_left, zero_div, zero_mul, sub_zero]
     · rw [RCLike.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel₀, sub_self]
       rwa [inner_self_ne_zero]
   intro i hi hia
@@ -201,7 +201,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
     rw [image_comp]
     simpa using h₁
   apply LinearIndependent.notMem_span_image h₀ _ h₂
-  simp only [Set.mem_Iio, lt_self_iff_false, not_false_iff]
+  simp [Set.mem_Iio, lt_self_iff_false, not_false_iff]
 
 /-- If the input vectors of `gramSchmidt` are linearly independent,
 then the output vectors are non-zero. -/
@@ -240,7 +240,7 @@ noncomputable def gramSchmidtNormed (f : ι → E) (n : ι) : E :=
 
 theorem gramSchmidtNormed_unit_length_coe {f : ι → E} (n : ι)
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
-  simp only [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne,
+  simp [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne,
     not_false_iff]
 
 theorem gramSchmidtNormed_unit_length {f : ι → E} (n : ι) (h₀ : LinearIndependent 𝕜 f) :
@@ -260,7 +260,7 @@ theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent �
     Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) := by
   unfold Orthonormal
   constructor
-  · simp only [gramSchmidtNormed_unit_length, h₀, imp_true_iff]
+  · simp [gramSchmidtNormed_unit_length, h₀, imp_true_iff]
   · intro i j hij
     simp only [gramSchmidtNormed, inner_smul_left, inner_smul_right, RCLike.conj_inv,
       RCLike.conj_ofReal, mul_eq_zero, inv_eq_zero, RCLike.ofReal_eq_zero, norm_eq_zero]

@@ -526,13 +526,13 @@ theorem compLinearMap_assoc (f : M [⋀^ι]→ₗ[R] N) (g₁ : M₂ →ₗ[R] M
 @[simp]
 theorem zero_compLinearMap (g : M₂ →ₗ[R] M) : (0 : M [⋀^ι]→ₗ[R] N).compLinearMap g = 0 := by
   ext
-  simp only [compLinearMap_apply, zero_apply]
+  simp [compLinearMap_apply, zero_apply]
 
 @[simp]
 theorem add_compLinearMap (f₁ f₂ : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) :
     (f₁ + f₂).compLinearMap g = f₁.compLinearMap g + f₂.compLinearMap g := by
   ext
-  simp only [compLinearMap_apply, add_apply]
+  simp [compLinearMap_apply, add_apply]
 
 @[simp]
 theorem compLinearMap_zero [Nonempty ι] (f : M [⋀^ι]→ₗ[R] N) :
@@ -854,7 +854,7 @@ theorem alternatization_coe (m : (ι → M) →ₘₗ[R] N') :
 
 theorem alternatization_apply (m : (ι → M) →ₘₗ[R] N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
-  simp only [alternatization_def, smul_apply, sum_apply]
+  simp [alternatization_def, smul_apply, sum_apply]
 
 @[simp]
 theorem alternatization_compLinearMap (f : (ι → M') →ₘₗ[R] N') (g : M →ₗ[R] M') :

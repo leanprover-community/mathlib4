@@ -341,7 +341,7 @@ namespace Real
 
 theorem toNNReal_mul_nnNorm {x : ℝ} (y : ℝ) (hx : 0 ≤ x) : x.toNNReal * ‖y‖₊ = ‖x * y‖₊ := by
   ext
-  simp only [NNReal.coe_mul, nnNorm_mul, coe_nnNorm, Real.toNNReal_of_nonneg, norm_of_nonneg, hx,
+  simp [NNReal.coe_mul, nnNorm_mul, coe_nnNorm, Real.toNNReal_of_nonneg, norm_of_nonneg, hx,
     NNReal.coe_mk]
 
 @[deprecated (since := "2026-10-31")] alias toNNReal_mul_nnnorm := toNNReal_mul_nnNorm

@@ -40,7 +40,7 @@ theorem _root_.Set.Subsingleton.measure_zero (hs : s.Subsingleton) (μ : Measure
   hs.induction_on (p := fun s => μ s = 0) measure_empty measure_singleton
 
 theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
-  simp only [measure_singleton, Measure.restrict_eq_zero]
+  simp [measure_singleton, Measure.restrict_eq_zero]
 
 instance Measure.restrict.instNullSingletonClass (s : Set α) :
     NullSingletonClass (μ.restrict s) := by

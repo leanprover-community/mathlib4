@@ -75,7 +75,7 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
     linear_combination (norm := ring_nf) cexp (-2 * π * ⟪v, w⟫ * I) * H
   rw [this, integral_add_right_eq_self (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
         ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
-  simp only [integral_neg]
+  simp [integral_neg]
 
 /-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
 theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
@@ -199,7 +199,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
   replace := add_lt_add_of_le_of_lt this hI
   rw [add_halves] at this
   refine ((le_of_eq ?_).trans (norm_add_le _ _)).trans_lt this
-  simp only [sub_zero, sub_add_cancel]
+  simp [sub_zero, sub_add_cancel]
 
 /-- The Riemann-Lebesgue lemma for functions on `ℝ`. -/
 theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :

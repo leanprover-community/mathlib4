@@ -334,11 +334,11 @@ theorem compl_iInter₂ (s : ∀ i, κ i → Set α) : (⋂ (i) (j), s i j)ᶜ =
 
 -- classical -- complete_boolean_algebra
 theorem iUnion_eq_compl_iInter_compl (s : ι → Set β) : ⋃ i, s i = (⋂ i, (s i)ᶜ)ᶜ := by
-  simp only [compl_iInter, compl_compl]
+  simp [compl_iInter, compl_compl]
 
 -- classical -- complete_boolean_algebra
 theorem iInter_eq_compl_iUnion_compl (s : ι → Set β) : ⋂ i, s i = (⋃ i, (s i)ᶜ)ᶜ := by
-  simp only [compl_iUnion, compl_compl]
+  simp [compl_iUnion, compl_compl]
 
 theorem inter_iUnion (s : Set β) (t : ι → Set β) : (s ∩ ⋃ i, t i) = ⋃ i, s ∩ t i :=
   inf_iSup_eq _ _
@@ -381,17 +381,17 @@ theorem insert_iInter (x : β) (t : ι → Set β) : insert x (⋂ i, t i) = ⋂
   simp_rw [← union_singleton, iInter_union]
 
 theorem iUnion_sdiff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s := by
-  simp only [sdiff_eq, iUnion_inter]
+  simp [sdiff_eq, iUnion_inter]
 
 @[deprecated (since := "2026-06-03")] alias iUnion_diff := iUnion_sdiff
 
 theorem sdiff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i, t i) = ⋂ i, s \ t i := by
-  simp only [sdiff_eq, compl_iUnion, inter_iInter]
+  simp [sdiff_eq, compl_iUnion, inter_iInter]
 
 @[deprecated (since := "2026-06-03")] alias diff_iUnion := sdiff_iUnion
 
 theorem sdiff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i, s \ t i := by
-  simp only [sdiff_eq, compl_iInter, inter_iUnion]
+  simp [sdiff_eq, compl_iInter, inter_iUnion]
 
 @[deprecated (since := "2026-06-03")] alias diff_iInter := sdiff_iInter
 
@@ -602,35 +602,35 @@ theorem iInter₂_comm (s : ∀ i, κ i → ∀ i', κ' i' → Set α) :
 theorem biUnion_and (p : ι → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p x ∧ q x y → Set α) :
     ⋃ (x : ι) (y : ι') (h : p x ∧ q x y), s x y h =
       ⋃ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ := by
-  simp only [iUnion_and, @iUnion_comm _ ι']
+  simp [iUnion_and, @iUnion_comm _ ι']
 
 @[simp]
 theorem biUnion_and' (p : ι' → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p y ∧ q x y → Set α) :
     ⋃ (x : ι) (y : ι') (h : p y ∧ q x y), s x y h =
       ⋃ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ := by
-  simp only [iUnion_and, @iUnion_comm _ ι]
+  simp [iUnion_and, @iUnion_comm _ ι]
 
 @[simp]
 theorem biInter_and (p : ι → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p x ∧ q x y → Set α) :
     ⋂ (x : ι) (y : ι') (h : p x ∧ q x y), s x y h =
       ⋂ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ := by
-  simp only [iInter_and, @iInter_comm _ ι']
+  simp [iInter_and, @iInter_comm _ ι']
 
 @[simp]
 theorem biInter_and' (p : ι' → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p y ∧ q x y → Set α) :
     ⋂ (x : ι) (y : ι') (h : p y ∧ q x y), s x y h =
       ⋂ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ := by
-  simp only [iInter_and, @iInter_comm _ ι]
+  simp [iInter_and, @iInter_comm _ ι]
 
 @[simp]
 theorem iUnion_iUnion_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x = b ∨ p x → Set α} :
     ⋃ (x) (h), s x h = s b (Or.inl rfl) ∪ ⋃ (x) (h : p x), s x (Or.inr h) := by
-  simp only [iUnion_or, iUnion_union_distrib, iUnion_iUnion_eq_left]
+  simp [iUnion_or, iUnion_union_distrib, iUnion_iUnion_eq_left]
 
 @[simp]
 theorem iInter_iInter_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x = b ∨ p x → Set α} :
     ⋂ (x) (h), s x h = s b (Or.inl rfl) ∩ ⋂ (x) (h : p x), s x (Or.inr h) := by
-  simp only [iInter_or, iInter_inter_distrib, iInter_iInter_eq_left]
+  simp [iInter_or, iInter_inter_distrib, iInter_iInter_eq_left]
 
 lemma iUnion_sum {s : α ⊕ β → Set γ} : ⋃ x, s x = (⋃ x, s (.inl x)) ∪ ⋃ x, s (.inr x) := iSup_sum
 

@@ -51,7 +51,7 @@ theorem isGenericPoint_closure {x : α} : IsGenericPoint x (closure ({x} : Set �
 variable {x y : α} {S U Z : Set α}
 
 theorem isGenericPoint_iff_specializes : IsGenericPoint x S ↔ ∀ y, x ⤳ y ↔ y ∈ S := by
-  simp only [specializes_iff_mem_closure, IsGenericPoint, Set.ext_iff]
+  simp [specializes_iff_mem_closure, IsGenericPoint, Set.ext_iff]
 
 namespace IsGenericPoint
 

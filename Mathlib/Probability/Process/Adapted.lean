@@ -303,7 +303,7 @@ protected theorem finsetProd' {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
 protected theorem finsetProd {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsStronglyProgressive f (U c)) :
     IsStronglyProgressive f fun i a => ∏ c ∈ s, U c i a := by
-  convert IsStronglyProgressive.finsetProd' h using 1; ext (i a); simp only [Finset.prod_apply]
+  convert IsStronglyProgressive.finsetProd' h using 1; ext (i a); simp [Finset.prod_apply]
 
 @[to_additive]
 protected theorem inv [Group β] [ContinuousInv β] (hu : IsStronglyProgressive f u) :

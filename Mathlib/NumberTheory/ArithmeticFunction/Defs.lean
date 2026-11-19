@@ -346,16 +346,16 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
   mul_smul := mul_smul'
   smul_add r x y := by
     ext
-    simp only [ArithmeticFunction.smul_apply, add_apply, smul_add, sum_add_distrib]
+    simp [ArithmeticFunction.smul_apply, add_apply, smul_add, sum_add_distrib]
   smul_zero r := by
     ext
-    simp only [ArithmeticFunction.smul_apply, zero_apply, smul_zero, sum_const_zero]
+    simp [ArithmeticFunction.smul_apply, zero_apply, smul_zero, sum_const_zero]
   add_smul r s x := by
     ext
-    simp only [ArithmeticFunction.smul_apply, add_apply, add_smul, sum_add_distrib]
+    simp [ArithmeticFunction.smul_apply, add_apply, add_smul, sum_add_distrib]
   zero_smul r := by
     ext
-    simp only [ArithmeticFunction.smul_apply, zero_apply, zero_smul, sum_const_zero]
+    simp [ArithmeticFunction.smul_apply, zero_apply, zero_smul, sum_const_zero]
 
 section DirichletInverse
 
@@ -589,9 +589,9 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
     (hf : f.IsMultiplicative) {x y : ℕ} :
     f (x.lcm y) * f (x.gcd y) = f x * f y := by
   by_cases hx : x = 0
-  · simp only [hx, f.map_zero, zero_mul, lcm_zero_left, gcd_zero_left]
+  · simp [hx, f.map_zero, zero_mul, lcm_zero_left, gcd_zero_left]
   by_cases hy : y = 0
-  · simp only [hy, f.map_zero, mul_zero, lcm_zero_right, gcd_zero_right, zero_mul]
+  · simp [hy, f.map_zero, mul_zero, lcm_zero_right, gcd_zero_right, zero_mul]
   have hgcd_ne_zero : x.gcd y ≠ 0 := gcd_ne_zero_left hx
   have hlcm_ne_zero : x.lcm y ≠ 0 := lcm_ne_zero hx hy
   have hfi_zero : ∀ {i}, f (i ^ 0) = 1 := by
@@ -603,7 +603,7 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
     apply prod_congr rfl
     intro p _
     rcases Nat.le_or_le (x.factorization p) (y.factorization p) with h | h <;>
-      simp only [factorization_lcm hx hy, Finsupp.sup_apply, h, sup_of_le_right,
+      simp [factorization_lcm hx hy, Finsupp.sup_apply, h, sup_of_le_right,
         sup_of_le_left, inf_of_le_right, factorization_gcd hx hy, Finsupp.inf_apply,
         inf_of_le_left, mul_comm]
   · apply subset_union_right
@@ -627,7 +627,7 @@ theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticF
     (h_zero : f m = 0) :
     f n = 0 := by
   rcases hmn with ⟨k, rfl⟩
-  simp only [zero_mul, hf.map_mul_of_coprime (coprime_of_squarefree_mul hn), h_zero]
+  simp [zero_mul, hf.map_mul_of_coprime (coprime_of_squarefree_mul hn), h_zero]
 
 end IsMultiplicative
 

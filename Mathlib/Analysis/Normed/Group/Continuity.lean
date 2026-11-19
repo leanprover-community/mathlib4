@@ -73,7 +73,7 @@ end ContinuousENorm
 @[to_additive]
 theorem tendsto_iff_norm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖(f e)⁻¹ * b‖) a (𝓝 0) := by
-  simp only [← dist_eq_norm_inv_mul, ← tendsto_iff_dist_tendsto_zero]
+  simp [← dist_eq_norm_inv_mul, ← tendsto_iff_dist_tendsto_zero]
 
 @[to_additive]
 theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
@@ -83,7 +83,7 @@ theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
 @[to_additive]
 theorem tendsto_iff_eNorm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖(f e)⁻¹ * b‖ₑ) a (𝓝 0) := by
-  simp only [← eDist_eq_eNorm_inv_mul, ← tendsto_iff_edist_tendsto_0]
+  simp [← eDist_eq_eNorm_inv_mul, ← tendsto_iff_edist_tendsto_0]
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
 alias tendsto_iff_enorm_inv_mul_tendsto_zero := tendsto_iff_eNorm_inv_mul_tendsto_zero
@@ -315,7 +315,7 @@ theorem SeminormedGroup.mem_closure_iff :
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
-  simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
+  simp [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
 
 @[to_additive]
 theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one {f : ι → κ → G}
@@ -352,12 +352,12 @@ variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E}
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖) a (𝓝 0) := by
-  simp only [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
+  simp [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
 
 @[to_additive]
 theorem tendsto_iff_eNorm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖ₑ) a (𝓝 0) := by
-  simp only [← eDist_eq_eNorm_div, ← tendsto_iff_edist_tendsto_0]
+  simp [← eDist_eq_eNorm_div, ← tendsto_iff_edist_tendsto_0]
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
 alias tendsto_iff_enorm_div_tendsto_zero := tendsto_iff_eNorm_div_tendsto_zero

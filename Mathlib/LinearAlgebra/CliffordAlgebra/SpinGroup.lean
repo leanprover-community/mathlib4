@@ -134,7 +134,7 @@ theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzG
     · exact this _ hx
     · have := smul_mono_right (ConjAct.toConjAct x) <| this _ (inv_mem hx)
       refine Eq.trans_le ?_ this
-      simp only [map_inv, smul_inv_smul]
+      simp [map_inv, smul_inv_smul]
   intro x hx
   rw [Submodule.pointwise_smul_def, Submodule.map_le_iff_le_comap]
   rintro _ ⟨m, rfl⟩
@@ -211,14 +211,14 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pi
   simp only [Subgroup.coe_toSubmonoid, SetLike.mem_coe] at hy₁
   simp only [Units.coeHom_apply] at hy₂
   simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply]
-  refine ⟨star y, ?_, by simp only [hy₂, Units.coe_star]⟩
+  refine ⟨star y, ?_, by simp [hy₂, Units.coe_star]⟩
   rw [← hy₂] at hx₃
   have hy₃ : y * star y = 1 := by
     rw [← Units.val_inj]
-    simp only [hx₃, Units.val_mul, Units.coe_star, Units.val_one]
+    simp [hx₃, Units.val_mul, Units.coe_star, Units.val_one]
   apply_fun fun x => y⁻¹ * x at hy₃
   simp only [inv_mul_cancel_left, mul_one] at hy₃
-  simp only [hy₃, hy₁, inv_mem_iff]
+  simp [hy₃, hy₁, inv_mem_iff]
 
 /-- An element is in `pinGroup Q` if and only if `star x` is in `pinGroup Q`.
 See `star_mem` for only one direction. -/
@@ -348,7 +348,7 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ s
   refine ⟨pinGroup.star_mem hx₁, ?_⟩
   dsimp only [CliffordAlgebra.even] at hx₂ ⊢
   simp only [Submodule.mem_toSubalgebra] at hx₂ ⊢
-  simp only [star_def, reverse_mem_evenOdd_iff, involute_mem_evenOdd_iff, hx₂]
+  simp [star_def, reverse_mem_evenOdd_iff, involute_mem_evenOdd_iff, hx₂]
 
 /-- An element is in `spinGroup Q` if and only if `star x` is in `spinGroup Q`.
 See `star_mem` for only one direction.

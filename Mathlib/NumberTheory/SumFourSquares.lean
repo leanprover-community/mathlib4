@@ -41,7 +41,7 @@ theorem Nat.euler_four_squares (a b c d x y z w : ℕ) :
       (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) * (x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by
   rw [← Int.natCast_inj]
   push_cast
-  simp only [sq_abs, _root_.euler_four_squares]
+  simp [sq_abs, _root_.euler_four_squares]
 
 namespace Int
 
@@ -163,7 +163,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     rcases (zero_le r).eq_or_lt with rfl | hr₀
     · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0 := by simpa [and_assoc] using hr
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩, ⟨d, rfl⟩⟩ : m ∣ a ∧ m ∣ b ∧ m ∣ c ∧ m ∣ d := by
-        simp only [← ZMod.natCast_eq_zero_iff, ← hf_mod, hr, Int.cast_zero, and_self]
+        simp [← ZMod.natCast_eq_zero_iff, ← hf_mod, hr, Int.cast_zero, and_self]
       have : m * m ∣ m * p := habcd ▸ ⟨a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2, by ring⟩
       rw [mul_dvd_mul_iff_left hm₀.ne'] at this
       exact (hp.eq_one_or_self_of_dvd _ this).elim hm₁.ne' hmp.ne
@@ -179,7 +179,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     · have : (w / m) ^ 2 + (x / m) ^ 2 + (y / m) ^ 2 + (z / m) ^ 2 = ↑(r * p) := by
         refine mul_left_cancel₀ (pow_ne_zero 2 (Nat.cast_ne_zero.2 hm₀.ne')) ?_
         conv_rhs => rw [← Nat.cast_pow, ← Nat.cast_mul, sq m, mul_mul_mul_comm, Nat.cast_mul, ← h]
-        simp only [mul_add, ← mul_pow, Int.mul_ediv_cancel', *]
+        simp [mul_add, ← mul_pow, Int.mul_ediv_cancel', *]
       rw [← natAbs_iff] at this
       exact hmin r hrm ⟨hrm.trans hmp, hr₀, _, _, _, _, this⟩
     -- To do the last step, we apply the Euler's four square identity once more

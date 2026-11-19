@@ -51,7 +51,7 @@ def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
   upper := s.piecewise I.upper fun i ↦ (I.lower i + I.upper i) / 2
   lower_lt_upper i := by
     dsimp only [Set.piecewise]
-    split_ifs <;> simp only [left_lt_add_div_two, add_div_two_lt_right, I.lower_lt_upper]
+    split_ifs <;> simp [left_lt_add_div_two, add_div_two_lt_right, I.lower_lt_upper]
 
 theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
     y ∈ I.splitCenterBox s ↔ y ∈ I ∧ ∀ i, (I.lower i + I.upper i) / 2 < y i ↔ i ∈ s := by
@@ -135,7 +135,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   have hJsub (m i) : (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
     induction m with
     | zero => simp [J]
-    | succ m ihm => simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
+    | succ m ihm => simp [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
   have h0 : J 0 = I := rfl
   clear_value J
   clear hpI hs J_succ s

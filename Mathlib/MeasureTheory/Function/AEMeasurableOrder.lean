@@ -74,7 +74,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {β : Type
         gcongr with p q
         exact biInter_subset_of_mem q.2
       _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), 0 := by grind
-      _ = 0 := by simp only [tsum_zero]
+      _ = 0 := by simp [tsum_zero]
   have ff' : ∀ᵐ x ∂μ, f x = f' x := by
     filter_upwards [compl_mem_ae_iff.2 μt] with x hx
     rw [mem_compl_iff] at hx
@@ -82,7 +82,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {β : Type
     · intro i
       by_cases H : x ∈ u' i
       swap
-      · simp only [H, le_top, not_false_iff, piecewise_eq_of_notMem]
+      · simp [H, le_top, not_false_iff, piecewise_eq_of_notMem]
       simp only [H, piecewise_eq_of_mem]
       contrapose! hx
       obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (i : β) (f x) ∩ s :=
@@ -96,7 +96,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {β : Type
         dense_iff_inter_open.1 s_dense (Ioo (f x) q) isOpen_Ioo (nonempty_Ioo.2 hq)
       refine ⟨⟨r, rs⟩, ?_⟩
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
-      simp only [A, rq, piecewise_eq_of_mem]
+      simp [A, rq, piecewise_eq_of_mem]
   exact ⟨f', f'_meas, ff'⟩
 
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable

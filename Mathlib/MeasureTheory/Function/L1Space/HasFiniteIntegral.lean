@@ -46,14 +46,14 @@ namespace MeasureTheory
 /-! ### Some results about the Lebesgue integral involving a normed group -/
 
 lemma lintegral_eNorm_eq_lintegral_edist (f : α → β) :
-    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_right]
+    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp [edist_zero_right]
 
 @[deprecated (since := "2026-11-06")]
 alias lintegral_enorm_eq_lintegral_edist := lintegral_eNorm_eq_lintegral_edist
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [ofReal_norm, edist_zero_right]
+  simp [ofReal_norm, edist_zero_right]
 
 theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable f μ)
     (hh : AEStronglyMeasurable h μ) :
@@ -98,18 +98,18 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → ε) (μ : Mea
   Iff.rfl
 
 theorem hasFiniteIntegral_iff_eNorm {f : α → ε} : HasFiniteIntegral f μ ↔ ∫⁻ a, ‖f a‖ₑ ∂μ < ∞ := by
-  simp only [HasFiniteIntegral]
+  simp [HasFiniteIntegral]
 
 @[deprecated (since := "2026-11-06")]
 alias hasFiniteIntegral_iff_enorm := hasFiniteIntegral_iff_eNorm
 
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
-  simp only [hasFiniteIntegral_iff_eNorm, ofReal_norm]
+  simp [hasFiniteIntegral_iff_eNorm, ofReal_norm]
 
 theorem hasFiniteIntegral_iff_edist (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, edist (f a) 0 ∂μ) < ∞ := by
-  simp only [hasFiniteIntegral_iff_norm, edist_dist, dist_zero_right]
+  simp [hasFiniteIntegral_iff_norm, edist_dist, dist_zero_right]
 
 theorem hasFiniteIntegral_iff_ofReal {f : α → ℝ} (h : 0 ≤ᵐ[μ] f) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal (f a) ∂μ) < ∞ := by
@@ -282,7 +282,7 @@ theorem HasFiniteIntegral.smul_measure {f : α → ε} (h : HasFiniteIntegral f 
 @[fun_prop, simp]
 theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → ε) :
     HasFiniteIntegral f (0 : Measure α) := by
-  simp only [HasFiniteIntegral, lintegral_zero_measure, zero_lt_top]
+  simp [HasFiniteIntegral, lintegral_zero_measure, zero_lt_top]
 
 variable (α μ) in
 @[to_fun (attr := fun_prop, simp) hasFiniteIntegral_fun_zero]
@@ -551,7 +551,7 @@ variable [MeasurableSingletonClass α]
 -- Note that asking for mere summability makes no sense, as every sequence in ℝ≥0∞ is summable.
 lemma hasFiniteIntegral_count_iff_eNorm {f : α → ε} :
     HasFiniteIntegral f Measure.count ↔ tsum (‖f ·‖ₑ) < ⊤ := by
-  simp only [hasFiniteIntegral_iff_eNorm, lintegral_count]
+  simp [hasFiniteIntegral_iff_eNorm, lintegral_count]
 
 @[deprecated (since := "2026-11-06")]
 alias hasFiniteIntegral_count_iff_enorm := hasFiniteIntegral_count_iff_eNorm
@@ -559,7 +559,7 @@ alias hasFiniteIntegral_count_iff_enorm := hasFiniteIntegral_count_iff_eNorm
 /-- A function has finite integral for the counting measure iff its norm is summable. -/
 lemma hasFiniteIntegral_count_iff {f : α → β} :
     HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
-  simp only [hasFiniteIntegral_iff_eNorm, eNorm, lintegral_count, lt_top_iff_ne_top,
+  simp [hasFiniteIntegral_iff_eNorm, eNorm, lintegral_count, lt_top_iff_ne_top,
     tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnNorm]
 
 end count

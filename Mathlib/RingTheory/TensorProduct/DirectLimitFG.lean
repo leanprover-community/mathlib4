@@ -294,7 +294,7 @@ theorem TensorProduct.Algebra.eq_of_fg_of_subtype_eq
   have hBA : A ≤ B := by
     simp only [B, ← hw]
     apply Algebra.adjoin_mono
-    simp only [Finset.coe_union, Set.subset_union_right]
+    simp [Finset.coe_union, Set.subset_union_right]
   use B, hBA, Subalgebra.fg_adjoin_finset _
   rw [← hu, ← hu']
   simp only [← comp_apply, ← rTensor_comp]

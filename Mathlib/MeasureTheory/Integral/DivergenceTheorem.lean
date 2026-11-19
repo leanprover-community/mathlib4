@@ -327,13 +327,13 @@ theorem integral_divergence_of_hasFDerivAt_off_countable_of_equiv {F : Type*}
             f i (eL.symm <| i.insertNth (eL a i) x)) :=
   have he_emb : MeasurableEmbedding eL := eL.toHomeomorph.measurableEmbedding
   have hIcc : eL ⁻¹' Icc (eL a) (eL b) = Icc a b := by
-    ext1 x; simp only [Set.mem_preimage, Set.mem_Icc, he_ord]
+    ext1 x; simp [Set.mem_preimage, Set.mem_Icc, he_ord]
   have hIcc' : Icc (eL a) (eL b) = eL.symm ⁻¹' Icc a b := by rw [← hIcc, eL.symm_preimage_preimage]
   calc
-    ∫ x in Icc a b, DF x = ∫ x in Icc a b, ∑ i, f' i x (eL.symm <| e i) := by simp only [hDF]
+    ∫ x in Icc a b, DF x = ∫ x in Icc a b, ∑ i, f' i x (eL.symm <| e i) := by simp [hDF]
     _ = ∫ x in Icc (eL a) (eL b), ∑ i, f' i (eL.symm x) (eL.symm <| e i) := by
       rw [← he_vol.setIntegral_preimage_emb he_emb]
-      simp only [hIcc, eL.symm_apply_apply]
+      simp [hIcc, eL.symm_apply_apply]
     _ = ∑ i : Fin (n + 1),
           ((∫ x in Icc (eL a ∘ i.succAbove) (eL b ∘ i.succAbove),
               f i (eL.symm <| i.insertNth (eL b i) x)) -
@@ -527,7 +527,7 @@ theorem integral2_divergence_prod_of_hasFDerivAt_off_countable (f g : ℝ × ℝ
   calc
     (∫ x in a₁..b₁, ∫ y in a₂..b₂, f' (x, y) (1, 0) + g' (x, y) (0, 1)) =
         ∫ x in Icc a₁ b₁, ∫ y in Icc a₂ b₂, f' (x, y) (1, 0) + g' (x, y) (0, 1) := by
-      simp only [intervalIntegral.integral_of_le, h₁, h₂,
+      simp [intervalIntegral.integral_of_le, h₁, h₂,
         setIntegral_congr_set (Ioc_ae_eq_Icc (α := ℝ) (μ := volume))]
     _ = ∫ x in Icc a₁ b₁ ×ˢ Icc a₂ b₂, f' x (1, 0) + g' x (0, 1) := (setIntegral_prod _ Hi).symm
     _ = (((∫ x in a₁..b₁, g (x, b₂)) - ∫ x in a₁..b₁, g (x, a₂)) + ∫ y in a₂..b₂, f (b₁, y)) -

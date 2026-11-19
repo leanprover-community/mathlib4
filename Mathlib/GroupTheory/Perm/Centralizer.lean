@@ -117,12 +117,12 @@ lemma Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset {k c : Perm α}
     MulAut.conj k • c ∈ g.cycleFactorsFinset := by
   suffices (g.cycleFactorsFinset : Set (Perm α)) = MulAut.conj k • g.cycleFactorsFinset by
     rw [← Finset.mem_coe, this]
-    simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, c_mem]
+    simp [Set.smul_mem_smul_set_iff, Finset.mem_coe, c_mem]
   have := cycleFactorsFinset_conj_eq k g
   rw [MulAut.conj_apply, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
   simp only [mul_inv_cancel, mul_one] at this
   conv_lhs => rw [this]
-  simp only [Finset.coe_smul_finset]
+  simp [Finset.coe_smul_finset]
 
 @[deprecated (since := "2026-09-21")]
 alias Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset :=
@@ -236,7 +236,7 @@ theorem injective : Function.Injective a := by
   simp only [Disjoint, not_forall, not_or]
   use a c
   conv_rhs => rw [h]
-  simp only [← Perm.mem_support, a.mem_support_self c, a.mem_support_self d, and_self]
+  simp [← Perm.mem_support, a.mem_support_self c, a.mem_support_self d, and_self]
 
 theorem cycleOf_eq : g.cycleOf (a c) = c :=
   (cycle_is_cycleOf (a.mem_support_self c) c.prop).symm
@@ -300,7 +300,7 @@ theorem ofPermHomFun_apply_mem_support_cycle_iff {x : α} {c : g.cycleFactorsFin
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨d, hd, m, hm⟩)
   · simp only [ofPermHomFun_apply_of_mem_fixedPoints a τ hx]
     suffices ∀ (d : g.cycleFactorsFinset), x ∉ (d : Perm α).support by
-      simp only [this]
+      simp [this]
     intro d hx'
     rw [Function.mem_fixedPoints_iff, ← notMem_support] at hx
     apply hx
@@ -308,7 +308,7 @@ theorem ofPermHomFun_apply_mem_support_cycle_iff {x : α} {c : g.cycleFactorsFin
   · rw [ofPermHomFun_apply_of_cycleOf_mem a τ hd hm] --
     rw [zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff]
     by_cases h : c = d
-    · simp only [h, hd, mem_support_self]
+    · simp [h, hd, mem_support_self]
     · have H : Disjoint c.val d.val :=
         cycleFactorsFinset_pairwise_disjoint g c.prop d.prop (Subtype.coe_ne_coe.mpr h)
       have H' : Disjoint ((τ : Perm g.cycleFactorsFinset) c : Perm α)
@@ -318,7 +318,7 @@ theorem ofPermHomFun_apply_mem_support_cycle_iff {x : α} {c : g.cycleFactorsFin
           intro h'; apply h
           simpa only [Subtype.coe_inj, EmbeddingLike.apply_eq_iff_eq] using h')
       rw [disjoint_iff_disjoint_support, Finset.disjoint_right] at H H'
-      simp only [H hd, H' (mem_support_self a _)]
+      simp [H hd, H' (mem_support_self a _)]
 
 theorem ofPermHomFun_commute_zpow_apply (x : α) (j : ℤ) :
     ofPermHomFun a τ ((g ^ j) x) = (g ^ j) (ofPermHomFun a τ x) := by
@@ -336,7 +336,7 @@ theorem ofPermHomFun_commute_zpow_apply (x : α) (j : ℤ) :
 theorem ofPermHomFun_mul (σ τ : range_toPermHom' g) (x) :
     ofPermHomFun a (σ * τ) x = (ofPermHomFun a σ) (ofPermHomFun a τ x) := by
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
-  · simp only [ofPermHomFun_apply_of_mem_fixedPoints a _ hx]
+  · simp [ofPermHomFun_apply_of_mem_fixedPoints a _ hx]
   · simp only [ofPermHomFun_apply_of_cycleOf_mem a _ hc hm]
     rw [ofPermHomFun_apply_of_cycleOf_mem a _ _ rfl]
     · rfl
@@ -406,8 +406,8 @@ on `range_toPermHom' g` -/
 noncomputable def toCentralizer :
     range_toPermHom' g →* centralizer {g} where
   toFun τ := ⟨ofPermHom a τ, ofPermHom_mem_centralizer a τ⟩
-  map_one' := by simp only [map_one, mk_eq_one]
-  map_mul' σ τ := by simp only [map_mul, MulMemClass.mk_mul_mk]
+  map_one' := by simp [map_one, mk_eq_one]
+  map_mul' σ τ := by simp [map_mul, MulMemClass.mk_mul_mk]
 
 theorem toCentralizer_apply (x) : (toCentralizer a τ : Perm α) x = ofPermHomFun a τ x := rfl
 
@@ -453,7 +453,7 @@ theorem mem_range_toPermHom_iff' {τ} : τ ∈ (toPermHom g).range ↔
     (fun (c : g.cycleFactorsFinset) ↦ #c.val.support) ∘ τ =
       fun (c : g.cycleFactorsFinset) ↦ #c.val.support := by
   rw [mem_range_toPermHom_iff, funext_iff]
-  simp only [Subtype.forall, Function.comp_apply]
+  simp [Subtype.forall, Function.comp_apply]
 
 /-- Computes the range of `Equiv.Perm.toPermHom g` -/
 theorem range_toPermHom_eq_range_toPermHom' :
@@ -475,7 +475,7 @@ theorem nat_card_range_toPermHom :
     ext n
     simp only [Finset.mem_image, Finset.mem_attach,
         true_and, Subtype.exists, exists_prop, Multiset.mem_toFinset]
-    simp only [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
+    simp [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
   simp only [Fintype.card_eq_nat_card]
   congr
   ext
@@ -652,7 +652,7 @@ theorem card_isConj_mul_eq :
   rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
   convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
-  · simp only [Set.mem_eq_mem, ConjAct.mem_orbit_conjAct, isConj_comm]
+  · simp [Set.mem_eq_mem, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
 
 /-- Cardinality of a conjugacy class in `Equiv.Perm α` of a given `cycleType` -/

@@ -142,7 +142,7 @@ theorem norm_sub_eq_lintegral (f g : α →₁[μ] β) : ‖f - g‖ = (∫⁻ x
   congr 1
   rw [lintegral_congr_ae]
   filter_upwards [Lp.coeFn_sub f g] with _ ha
-  simp only [ha, Pi.sub_apply]
+  simp [ha, Pi.sub_apply]
 
 theorem ofReal_norm_eq_lintegral (f : α →₁[μ] β) : ENNReal.ofReal ‖f‖ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   rw [norm_def, ENNReal.ofReal_toReal]
@@ -156,7 +156,7 @@ theorem ofReal_norm_sub_eq_lintegral (f g : α →₁[μ] β) :
   simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_right]
   apply lintegral_congr_ae
   filter_upwards [Lp.coeFn_sub f g] with _ ha
-  simp only [ha, Pi.sub_apply]
+  simp [ha, Pi.sub_apply]
 
 end L1
 
@@ -203,7 +203,7 @@ theorem toL1_sub (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ)
 theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = (∫⁻ a, edist (f a) 0 ∂μ).toReal := by
   rw [toL1, Lp.norm_toLp, eLpNorm_one_eq_lintegral_eNorm hf.aestronglyMeasurable]
-  simp only [edist_zero_right]
+  simp [edist_zero_right]
 
 theorem eNorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
   rw [Lp.eNorm_def, toL1_eq_mk, eLpNorm_aeeqFun hf.aestronglyMeasurable,

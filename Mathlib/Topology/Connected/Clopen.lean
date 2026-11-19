@@ -657,7 +657,7 @@ theorem connectedComponents_preimage_singleton {x : α} :
 is the union of the connected components of the elements in it. -/
 theorem connectedComponents_preimage_image (U : Set α) :
     (↑) ⁻¹' ((↑) '' U : Set (ConnectedComponents α)) = ⋃ x ∈ U, connectedComponent x := by
-  simp only [connectedComponents_preimage_singleton, preimage_iUnion₂, image_eq_iUnion]
+  simp [connectedComponents_preimage_singleton, preimage_iUnion₂, image_eq_iUnion]
 
 lemma ConnectedComponents.discreteTopology_iff :
     DiscreteTopology (ConnectedComponents α) ↔ ∀ x : α, IsOpen (connectedComponent x) := by

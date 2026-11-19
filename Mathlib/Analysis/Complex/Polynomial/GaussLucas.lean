@@ -67,9 +67,9 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
       rw [Finset.centerMass, ← Finset.sum_smul, inv_smul_smul₀]
       exact (sum_derivRootWeight_pos hP z).ne'
     _ = s.centerMass weight (z - ·) + s.centerMass weight id := by
-      simp only [Finset.centerMass, ← smul_add, ← Finset.sum_add_distrib, id, sub_add_cancel]
+      simp [Finset.centerMass, ← smul_add, ← Finset.sum_add_distrib, id, sub_add_cancel]
     _ = s.centerMass weight id := by
-      simp only [add_eq_right, Finset.centerMass, this, smul_zero]
+      simp [add_eq_right, Finset.centerMass, this, smul_zero]
   by_cases hzP : P.eval z = 0
   · simp only [weight, derivRootWeight, ite_eq_left hzP]
     rw [Finset.sum_eq_single z] <;> simp_all
@@ -83,7 +83,7 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
         simp_all [s]
       simp [← Complex.conj_mul', field]
     _ = conj (P.roots.map fun x ↦ 1 / (z - x)).sum := by
-      simp only [Finset.sum_multiset_map_count, P.count_roots, s]
+      simp [Finset.sum_multiset_map_count, P.count_roots, s]
     _ = 0 := by
       rw [← (IsAlgClosed.splits _).eval_derivative_div_eval_of_ne_zero hzP]
       simp [hz]

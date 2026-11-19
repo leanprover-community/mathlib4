@@ -583,13 +583,13 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
   invFun f := (e₂.symm.comp f).comp e₁.toLinearMap
   left_inv f := by
     ext x
-    simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
+    simp [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
   right_inv f := by
     ext x
-    simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
+    simp [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
   map_add' f g := by
     ext x
-    simp only [map_add, LinearMap.add_apply, Function.comp_apply, coe_comp, coe_coe]
+    simp [map_add, LinearMap.add_apply, Function.comp_apply, coe_comp, coe_coe]
 
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.
@@ -718,7 +718,7 @@ theorem arrowCongr_comp
     (f : M₁ →ₛₗ[σ₁₁'] M₁') (g : M₁' →ₛₗ[σ₁'₁''] M₁'') :
     arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
   ext
-  simp only [symm_apply_apply, arrowCongr_apply, LinearMap.comp_apply]
+  simp [symm_apply_apply, arrowCongr_apply, LinearMap.comp_apply]
 
 theorem arrowCongr_trans
     (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₁' : M₁' ≃ₛₗ[σ₁'₂'] M₂')

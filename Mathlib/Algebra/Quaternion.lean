@@ -462,10 +462,10 @@ lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
   algebraMap :=
   { toFun s := coe (algebraMap S R s)
-    map_one' := by simp only [map_one, coe_one]
-    map_zero' := by simp only [map_zero, coe_zero]
-    map_mul' x y := by simp only [map_mul, coe_mul]
-    map_add' x y := by simp only [map_add, coe_add] }
+    map_one' := by simp [map_one, coe_one]
+    map_zero' := by simp [map_zero, coe_zero]
+    map_mul' x y := by simp [map_mul, coe_mul]
+    map_add' x y := by simp [map_add, coe_add] }
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
   commutes' s x := by ext <;> simp [Algebra.commutes]
 
@@ -1025,8 +1025,8 @@ theorem coe_starAe : ⇑(starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ) = op ∘ sta
 /-- Square of the norm. -/
 def normSq : ℍ[R] →*₀ R where
   toFun a := (a * star a).re
-  map_zero' := by simp only [star_zero, zero_mul, re_zero]
-  map_one' := by simp only [star_one, one_mul, re_one]
+  map_zero' := by simp [star_zero, zero_mul, re_zero]
+  map_one' := by simp [star_one, one_mul, re_one]
   map_mul' x y := coe_injective <| by
     conv_lhs => rw [← mul_star_eq_coe, star_mul, mul_assoc, ← mul_assoc y, y.mul_star_eq_coe,
       coe_commutes, ← mul_assoc, x.mul_star_eq_coe, ← coe_mul]
@@ -1034,7 +1034,7 @@ def normSq : ℍ[R] →*₀ R where
 theorem normSq_def : normSq a = (a * star a).re := rfl
 
 theorem normSq_def' : normSq a = a.1 ^ 2 + a.2 ^ 2 + a.3 ^ 2 + a.4 ^ 2 := by
-  simp only [normSq_def, sq, mul_neg, sub_neg_eq_add, re_mul, re_star, imI_star, imJ_star,
+  simp [normSq_def, sq, mul_neg, sub_neg_eq_add, re_mul, re_star, imI_star, imJ_star,
     imK_star]
 
 theorem normSq_coe : normSq (x : ℍ[R]) = x ^ 2 := by
@@ -1052,7 +1052,7 @@ theorem normSq_intCast (z : ℤ) : normSq (z : ℍ[R]) = (z : R) ^ 2 := by
   rw [← coe_intCast, normSq_coe]
 
 @[simp]
-theorem normSq_neg : normSq (-a) = normSq a := by simp only [normSq_def, star_neg, neg_mul_neg]
+theorem normSq_neg : normSq (-a) = normSq a := by simp [normSq_def, star_neg, neg_mul_neg]
 
 theorem self_mul_star : a * star a = normSq a := by rw [mul_star_eq_coe, normSq_def]
 
@@ -1062,10 +1062,10 @@ theorem im_sq : a.im ^ 2 = -normSq a.im := by
   simp_rw [sq, ← star_mul_self, star_im, neg_mul, neg_neg]
 
 theorem coe_normSq_add : normSq (a + b) = normSq a + a * star b + b * star a + normSq b := by
-  simp only [star_add, ← self_mul_star, mul_add, add_mul, add_assoc, add_left_comm]
+  simp [star_add, ← self_mul_star, mul_add, add_mul, add_assoc, add_left_comm]
 
 theorem normSq_smul (r : R) (q : ℍ[R]) : normSq (r • q) = r ^ 2 * normSq q := by
-  simp only [normSq_def', re_smul, imI_smul, imJ_smul, imK_smul, mul_pow, mul_add, smul_eq_mul]
+  simp [normSq_def', re_smul, imI_smul, imJ_smul, imK_smul, mul_pow, mul_add, smul_eq_mul]
 
 theorem normSq_add (a b : ℍ[R]) : normSq (a + b) = normSq a + normSq b + 2 * (a * star b).re :=
   calc

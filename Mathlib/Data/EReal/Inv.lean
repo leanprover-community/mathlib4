@@ -51,8 +51,8 @@ theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
 theorem abs_eq_zero_iff {x : EReal} : x.abs = 0 ↔ x = 0 := by
   induction x
   · simp
-  · simp only [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
-  · simp only [abs_top, ENNReal.top_ne_zero, top_ne_zero]
+  · simp [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
+  · simp [abs_top, ENNReal.top_ne_zero, top_ne_zero]
 
 @[simp]
 theorem abs_zero : (0 : EReal).abs = 0 := by rw [abs_eq_zero_iff]
@@ -70,10 +70,10 @@ protected theorem abs_neg : ∀ x : EReal, (-x).abs = x.abs
 @[simp]
 theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   induction x, y using induction₂_symm_neg with
-  | top_zero => simp only [mul_zero, abs_zero]
+  | top_zero => simp [mul_zero, abs_zero]
   | top_top => rfl
   | symm h => rwa [mul_comm, EReal.mul_comm]
-  | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
+  | coe_coe => simp [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
     rw [Ne, abs_eq_zero_iff, coe_eq_zero]
@@ -91,7 +91,7 @@ theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
-  simp only [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
+  simp [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
 
 @[simp, norm_cast]
 theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> rfl
@@ -104,10 +104,10 @@ theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> 
 @[simp]
 theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
   induction x, y using induction₂_symm_neg with
-  | top_zero => simp only [mul_zero, sign_zero]
+  | top_zero => simp [mul_zero, sign_zero]
   | top_top => rfl
   | symm h => rwa [mul_comm, EReal.mul_comm]
-  | coe_coe => simp only [← coe_mul, sign_coe, _root_.sign_mul]
+  | coe_coe => simp [← coe_mul, sign_coe, _root_.sign_mul]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, sign_top, one_mul, sign_pos (EReal.coe_pos.2 h)]
   | neg_left h => rw [neg_mul, sign_neg, sign_neg, h, neg_mul]
@@ -149,7 +149,7 @@ instance : CommMonoidWithZero EReal :=
   { (inferInstance : MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
-      simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
+      simp [mul_assoc, abs_mul, sign_mul, and_self_iff]
     mul_comm := EReal.mul_comm }
 
 instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by

@@ -201,7 +201,7 @@ def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
     change _ ≤ (J ^ unop k).radical
     rcases unop k with - | n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
-    · simp only [J.radical_pow n.succ_ne_zero, Ideal.le_radical]
+    · simp [J.radical_pow n.succ_ne_zero, Ideal.le_radical]
 
 variable {J K : Ideal R}
 

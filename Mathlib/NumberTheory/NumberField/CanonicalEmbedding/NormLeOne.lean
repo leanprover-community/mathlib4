@@ -220,8 +220,8 @@ def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
   open_target := isOpen_Ioi
   map_source' _ _ := Real.exp_pos _
   map_target' _ _ := trivial
-  left_inv' _ _ := by simp only [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]
-  right_inv' _ h := by simp only [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log h]
+  left_inv' _ _ := by simp [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]
+  right_inv' _ h := by simp [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log h]
   continuousOn_toFun := (continuousOn_const.mul continuousOn_id).rexp
   continuousOn_invFun := continuousOn_const.mul (Real.continuousOn_log.mono (by simp))
 

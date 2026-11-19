@@ -368,6 +368,6 @@ theorem exists_subset_iUnion_compact_subset_t2space (hs : IsCompact s) (uo : ∀
   use fun i => closure (v i)
   refine ⟨?_, ?_, hv⟩
   · exact Subset.trans hsv (iUnion_mono fun _ => subset_closure)
-  · simp only [isClosed_closure, implies_true]
+  · simp [isClosed_closure, implies_true]
 
 end T2LocallyCompactSpace

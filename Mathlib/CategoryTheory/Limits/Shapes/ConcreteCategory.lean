@@ -257,7 +257,7 @@ theorem widePullback_ext' {B : C} {ι : Type w} [Nonempty ι] {X : ι → C}
     (h : ∀ j, π f j x = π f j y) : x = y := by
   apply Concrete.widePullback_ext _ _ _ _ h
   inhabit ι
-  simp only [← π_arrow f default, ConcreteCategory.comp_apply, h]
+  simp [← π_arrow f default, ConcreteCategory.comp_apply, h]
 
 end WidePullback
 
@@ -356,7 +356,7 @@ theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → 
   rcases Concrete.widePushout_exists_rep f x with (⟨y, rfl⟩ | ⟨i, y, rfl⟩)
   · inhabit α
     use default, f _ y
-    simp only [← arrow_ι _ default, ConcreteCategory.comp_apply]
+    simp [← arrow_ι _ default, ConcreteCategory.comp_apply]
   · use i, y
 
 end WidePushout

@@ -127,7 +127,7 @@ lemma re_eq_neg_norm {z : ℂ} : z.re = -‖z‖ ↔ z ≤ 0 := by rw [← neg_e
 
 lemma monotone_ofReal : Monotone ofReal := by
   intro x y hxy
-  simp only [real_le_real, hxy]
+  simp [real_le_real, hxy]
 
 end Complex
 

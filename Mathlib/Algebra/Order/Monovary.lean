@@ -378,7 +378,7 @@ lemma antivaryOn_iff_forall_smul_nonpos :
 
 lemma monovary_iff_forall_smul_nonneg : Monovary f g ↔ ∀ i j, 0 ≤ (f j - f i) • (g j - g i) :=
   monovaryOn_univ.symm.trans <| monovaryOn_iff_forall_smul_nonneg.trans <| by
-    simp only [Set.mem_univ, forall_true_left]
+    simp [Set.mem_univ, forall_true_left]
 
 lemma antivary_iff_forall_smul_nonpos : Antivary f g ↔ ∀ i j, (f j - f i) • (g j - g i) ≤ 0 :=
 monovary_toDual_right.symm.trans <| by rw [monovary_iff_forall_smul_nonneg]; rfl
@@ -401,7 +401,7 @@ lemma antivaryOn_iff_smul_rearrangement :
 lemma monovary_iff_smul_rearrangement :
     Monovary f g ↔ ∀ i j, f i • g j + f j • g i ≤ f i • g i + f j • g j :=
   monovaryOn_univ.symm.trans <| monovaryOn_iff_smul_rearrangement.trans <| by
-    simp only [Set.mem_univ, forall_true_left]
+    simp [Set.mem_univ, forall_true_left]
 
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivary_iff_smul_rearrangement :
@@ -424,39 +424,39 @@ variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {f g : ι → α} {
 
 lemma monovaryOn_iff_forall_mul_nonneg :
     MonovaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → 0 ≤ (f j - f i) * (g j - g i) := by
-  simp only [smul_eq_mul, monovaryOn_iff_forall_smul_nonneg]
+  simp [smul_eq_mul, monovaryOn_iff_forall_smul_nonneg]
 
 lemma antivaryOn_iff_forall_mul_nonpos :
     AntivaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f j - f i) * (g j - g i) ≤ 0 := by
-  simp only [smul_eq_mul, antivaryOn_iff_forall_smul_nonpos]
+  simp [smul_eq_mul, antivaryOn_iff_forall_smul_nonpos]
 
 lemma monovary_iff_forall_mul_nonneg : Monovary f g ↔ ∀ i j, 0 ≤ (f j - f i) * (g j - g i) := by
-  simp only [smul_eq_mul, monovary_iff_forall_smul_nonneg]
+  simp [smul_eq_mul, monovary_iff_forall_smul_nonneg]
 
 lemma antivary_iff_forall_mul_nonpos : Antivary f g ↔ ∀ i j, (f j - f i) * (g j - g i) ≤ 0 := by
-  simp only [smul_eq_mul, antivary_iff_forall_smul_nonpos]
+  simp [smul_eq_mul, antivary_iff_forall_smul_nonpos]
 
 /-- Two functions monovary iff the rearrangement inequality holds. -/
 lemma monovaryOn_iff_mul_rearrangement :
     MonovaryOn f g s ↔
       ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → f i * g j + f j * g i ≤ f i * g i + f j * g j := by
-  simp only [smul_eq_mul, monovaryOn_iff_smul_rearrangement]
+  simp [smul_eq_mul, monovaryOn_iff_smul_rearrangement]
 
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivaryOn_iff_mul_rearrangement :
     AntivaryOn f g s ↔
       ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → f i * g i + f j * g j ≤ f i * g j + f j * g i := by
-  simp only [smul_eq_mul, antivaryOn_iff_smul_rearrangement]
+  simp [smul_eq_mul, antivaryOn_iff_smul_rearrangement]
 
 /-- Two functions monovary iff the rearrangement inequality holds. -/
 lemma monovary_iff_mul_rearrangement :
     Monovary f g ↔ ∀ i j, f i * g j + f j * g i ≤ f i * g i + f j * g j := by
-  simp only [smul_eq_mul, monovary_iff_smul_rearrangement]
+  simp [smul_eq_mul, monovary_iff_smul_rearrangement]
 
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivary_iff_mul_rearrangement :
     Antivary f g ↔ ∀ i j, f i * g i + f j * g j ≤ f i * g j + f j * g i := by
-  simp only [smul_eq_mul, antivary_iff_smul_rearrangement]
+  simp [smul_eq_mul, antivary_iff_smul_rearrangement]
 
 alias ⟨MonovaryOn.sub_mul_sub_nonneg, _⟩ := monovaryOn_iff_forall_mul_nonneg
 alias ⟨AntivaryOn.sub_mul_sub_nonpos, _⟩ := antivaryOn_iff_forall_mul_nonpos

@@ -91,7 +91,7 @@ theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Fins
 /-- `t` is in the shadow of `𝒜` iff there is a `s ∈ 𝒜` from which we can remove one element to
 get `t`. -/
 lemma mem_shadow_iff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∈ s, erase s a = t := by
-  simp only [shadow, mem_sup, mem_image]
+  simp [shadow, mem_sup, mem_image]
 
 theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ 𝒜 :=
   mem_shadow_iff.2 ⟨s, hs, a, ha, rfl⟩

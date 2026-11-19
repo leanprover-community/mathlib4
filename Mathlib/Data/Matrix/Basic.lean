@@ -598,7 +598,7 @@ theorem mapMatrix_trans (f : α ≃ₛₗ[σᵣₛ] β) (g : β ≃ₛₗ[σₛ�
 lemma entryLinearMap_comp_mapMatrix (f : α ≃ₛₗ[σᵣₛ] β) (i : m) (j : n) :
     (entryLinearMap S _ i j).comp f.mapMatrix.toLinearMap =
       f.toLinearMap.comp (entryLinearMap R _ i j) := by
-  simp only [mapMatrix_toLinearMap, LinearMap.entryLinearMap_comp_mapMatrix]
+  simp [mapMatrix_toLinearMap, LinearMap.entryLinearMap_comp_mapMatrix]
 
 end LinearEquiv
 
@@ -1137,12 +1137,12 @@ theorem sum_mulVec (s : Finset ι) (x : ι → Matrix m n α) (y : n → α) :
 theorem mulVec_sum (x : Matrix m n α) (s : Finset ι) (y : ι → (n → α)) :
     x *ᵥ ∑ i ∈ s, y i = ∑ i ∈ s, x *ᵥ y i := by
   ext
-  simp only [mulVec, dotProduct_sum, Finset.sum_apply]
+  simp [mulVec, dotProduct_sum, Finset.sum_apply]
 
 theorem sum_vecMul (s : Finset ι) (x : ι → (n → α)) (y : Matrix n m α) :
     (∑ i ∈ s, x i) ᵥ* y = ∑ i ∈ s, x i ᵥ* y := by
   ext
-  simp only [vecMul, sum_dotProduct, Finset.sum_apply]
+  simp [vecMul, sum_dotProduct, Finset.sum_apply]
 
 theorem vecMul_sum (x : n → α) (s : Finset ι) (y : ι → Matrix n m α) :
     x ᵥ* (∑ i ∈ s, y i) = ∑ i ∈ s, x ᵥ* y i := by

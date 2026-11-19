@@ -146,7 +146,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, ite_false, le_refl]
+        swap; · simp [h_nonempty, ite_false, le_refl]
         simp only [h_nonempty, ite_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine fun f hf_mem => le_trans ?_ (f.mono hij)
@@ -154,7 +154,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
         exact sInf_le hfi_mem
       le' := fun i => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, ite_false, le_refl]
+        swap; · simp [h_nonempty, ite_false, le_refl]
         simp only [h_nonempty, ite_true]
         obtain ⟨f, hf_mem⟩ := h_nonempty
         exact le_trans (sInf_le ⟨f, hf_mem, rfl⟩) (f.le i) }⟩
@@ -292,7 +292,7 @@ open scoped Classical in
 lemma rightCont_apply [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) (i : ι) :
     𝓕₊ i = if (𝓝[>] i).NeBot then ⨅ j > i, 𝓕 j else 𝓕 i := by
-  simp +instances only [rightCont, OrderTopology.topology_eq_generate_intervals]
+  simp +instances [rightCont, OrderTopology.topology_eq_generate_intervals]
 
 lemma rightCont_eq_of_nhdsGT_eq_bot [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : 𝓝[>] i = ⊥) :

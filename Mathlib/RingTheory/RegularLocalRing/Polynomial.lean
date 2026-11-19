@@ -46,7 +46,7 @@ lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdea
       maximalIdeal (Localization.AtPrime p) := by
       rw [IsScalarTower.algebraMap_eq R R[X] (Localization.AtPrime p), RingHom.coe_comp,
         Set.image_comp, ← Ideal.map_span, ← Ideal.map_span]
-      simp only [Ideal.span, (maximalIdeal R).span_generators, algebraMap_eq, q, ← eq,
+      simp [Ideal.span, (maximalIdeal R).span_generators, algebraMap_eq, q, ← eq,
         Localization.AtPrime.map_eq_maximalIdeal]
     simp only [← maximalIdeal_height_eq_ringKrullDim, ← IsLocalization.height_under p.primeCompl,
       IsLocalization.AtPrime.under_maximalIdeal _ p, ge_iff_le]

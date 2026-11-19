@@ -308,7 +308,7 @@ theorem mem_topologicalClosure_span_kerFun {ι : Type*} (x : ι → X) (L : (ι 
 lemma isHermitian_kernel : (kernel H).IsHermitian := by
   ext
   refine ext_inner_right 𝕜 fun w ↦ ?_
-  simp only [Matrix.conjTranspose_apply, star, adjoint_inner_left,
+  simp [Matrix.conjTranspose_apply, star, adjoint_inner_left,
     ← inner_conj_symm _ (kernel H _ _ _), kernel_inner, inner_conj_symm]
 
 open scoped ComplexOrder in

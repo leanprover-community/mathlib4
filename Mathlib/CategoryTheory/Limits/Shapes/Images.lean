@@ -153,7 +153,7 @@ def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsI
   m := F.m ≫ sq.right
   e := inv sq.left ≫ F.e
   m_mono := mono_comp _ _
-  fac := by simp only [fac_assoc, Arrow.w, IsIso.inv_comp_eq, Category.assoc]
+  fac := by simp [fac_assoc, Arrow.w, IsIso.inv_comp_eq, Category.assoc]
 
 /--
 Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` gives a new mono
@@ -529,7 +529,7 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
     { I := image f'
       m := image.ι f'
       e := factorThruImage f'
-      fac := by rw [h]; simp only [image.fac] }
+      fac := by rw [h]; simp [image.fac] }
 
 instance (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
@@ -645,7 +645,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
           have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
             image.lift (MonoFactorisation.ofCompIso F') ≫
             ((MonoFactorisation.ofCompIso F').m) := by
-              simp only [Category.assoc,
+              simp [Category.assoc,
                 MonoFactorisation.ofCompIso_m]
           rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'), image.as_ι] } }
 
@@ -802,7 +802,7 @@ def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map
 theorem image.map_comp :
     image.map (sq ≫ sq') = image.map sq ≫ image.map sq' :=
   show (HasImageMap.imageMap (sq ≫ sq')).map = (imageMapComp sq sq').map by
-    congr; simp only [eq_iff_true_of_subsingleton]
+    congr; simp [eq_iff_true_of_subsingleton]
 
 end
 
@@ -817,7 +817,7 @@ def imageMapId : ImageMap (𝟙 f) where map := 𝟙 (image f.hom)
 @[simp]
 theorem image.map_id : image.map (𝟙 f) = 𝟙 (image f.hom) :=
   show (HasImageMap.imageMap (𝟙 f)).map = (imageMapId f).map by
-    congr; simp only [eq_iff_true_of_subsingleton]
+    congr; simp [eq_iff_true_of_subsingleton]
 
 end
 
@@ -964,10 +964,10 @@ instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [
                   m_mono := mono_comp _ _
                   e := pullback.lift _ _ sq.w } ≫
               pullback.fst h y
-          fac_left := by simp only [image.fac_lift_assoc, pullback.lift_fst]
+          fac_left := by simp [image.fac_lift_assoc, pullback.lift_fst]
           fac_right := by
             apply image.ext
-            simp only [sq.w, Category.assoc, image.fac_lift_assoc, pullback.lift_fst_assoc] }
+            simp [sq.w, Category.assoc, image.fac_lift_assoc, pullback.lift_fst_assoc] }
 
 end HasStrongEpiImages
 
@@ -1031,7 +1031,7 @@ theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEqu
           e := F.asEquivalence.counitIso.inv.app X ≫ F.map em.e
           m := F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y
           fac := by
-            simp only [Category.assoc, ← F.map_comp_assoc,
+            simp [Category.assoc, ← F.map_comp_assoc,
               MonoFactorisation.fac, fun_inv_map, id_obj, Iso.inv_hom_id_app, Category.comp_id,
               Iso.inv_hom_id_app_assoc] }⟩
 

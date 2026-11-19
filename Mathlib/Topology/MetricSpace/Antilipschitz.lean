@@ -108,7 +108,7 @@ theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) :
   (ediam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))
 
 protected theorem id : AntilipschitzWith 1 (id : α → α) := fun x y => by
-  simp only [ENNReal.coe_one, one_mul, id, le_refl]
+  simp [ENNReal.coe_one, one_mul, id, le_refl]
 
 theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : ℝ≥0} {f : α → β}
     (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
@@ -189,7 +189,7 @@ theorem subtypeVal (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
 
 @[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
-  simp only [Subsingleton.elim x y, edist_self, zero_le]
+  simp [Subsingleton.elim x y, edist_self, zero_le]
 
 /-- If `f : α → β` is `0`-antilipschitz, then `α` is a `subsingleton`. -/
 protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}

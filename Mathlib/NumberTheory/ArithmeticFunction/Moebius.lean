@@ -90,19 +90,19 @@ theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2
   rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
 
 theorem abs_moebius_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : |μ l| = 1 := by
-  simp only [moebius_apply_of_squarefree hl, abs_pow, abs_neg, abs_one, one_pow]
+  simp [moebius_apply_of_squarefree hl, abs_pow, abs_neg, abs_one, one_pow]
 
 theorem moebius_sq {n : ℕ} :
     μ n ^ 2 = if Squarefree n then 1 else 0 := by
   split_ifs with h
   · exact moebius_sq_eq_one_of_squarefree h
-  · simp only [moebius_eq_zero_of_not_squarefree h, zero_pow (show 2 ≠ 0 by simp)]
+  · simp [moebius_eq_zero_of_not_squarefree h, zero_pow (show 2 ≠ 0 by simp)]
 
 theorem abs_moebius {n : ℕ} :
     |μ n| = if Squarefree n then 1 else 0 := by
   split_ifs with h
   · exact abs_moebius_eq_one_of_squarefree h
-  · simp only [moebius_eq_zero_of_not_squarefree h, abs_zero]
+  · simp [moebius_eq_zero_of_not_squarefree h, abs_zero]
 
 theorem abs_moebius_le_one {n : ℕ} : |μ n| ≤ 1 := by
   rw [abs_moebius, apply_ite (· ≤ 1)]
@@ -130,7 +130,7 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
   refine ⟨by simp, fun {n m} hn hm hnm => ?_⟩
-  simp only [moebius, coe_mk, squarefree_mul hnm, ite_zero_mul_ite_zero, cardFactors_mul hn hm,
+  simp [moebius, coe_mk, squarefree_mul hnm, ite_zero_mul_ite_zero, cardFactors_mul hn hm,
     pow_add]
 
 theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
@@ -240,7 +240,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
       rw [sum_congr rfl fun x hx => ite_eq_right (pos_of_mem_divisors hx).ne']
   trans μ • g' = f'
   · constructor <;> intro h <;>
-      simp only [← h, ← mul_smul, moebius_mul_coe_zeta, coe_zeta_mul_moebius, one_smul]
+      simp [← h, ← mul_smul, moebius_mul_coe_zeta, coe_zeta_mul_moebius, one_smul]
   · rw [ArithmeticFunction.ext_iff]
     apply forall_congr'
     intro n

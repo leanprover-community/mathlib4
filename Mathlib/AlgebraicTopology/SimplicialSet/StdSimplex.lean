@@ -262,7 +262,7 @@ def triangle {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) : �
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_two]
   dsimp
-  simp only [*, true_and]
+  simp [*, true_and]
 
 lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) :
     ↑(triangle a b c hab hbc).down.toOrderHom = ![a, b, c] :=
@@ -681,7 +681,7 @@ between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinali
       apply h
       obtain h'' | h'' := (monotone_apply x.val h'.le).lt_or_eq
       · assumption
-      · simp only [this h'', lt_self_iff_false] at h'
+      · simp [this h'', lt_self_iff_false] at h'
     · intro h
       exact monotone_apply _ h
 

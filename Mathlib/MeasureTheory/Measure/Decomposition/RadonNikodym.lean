@@ -122,7 +122,7 @@ lemma rnDeriv_withDensity_left_of_absolutelyContinuous {ν : Measure α} [SigmaF
     rw [setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ _ _ _ hs]
     · congr with x
       rw [mul_comm]
-      simp only [Pi.mul_apply]
+      simp [Pi.mul_apply]
     · refine ae_restrict_of_ae ?_
       exact Measure.rnDeriv_lt_top _ _
     · exact (Measure.measurable_rnDeriv _ _).aemeasurable
@@ -298,7 +298,7 @@ lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
 
 lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (ν.rnDeriv μ)⁻¹ =ᵐ[μ] μ.rnDeriv ν := by
-  filter_upwards [inv_rnDeriv hμν] with x hx; simp only [Pi.inv_apply, ← hx, inv_inv]
+  filter_upwards [inv_rnDeriv hμν] with x hx; simp [Pi.inv_apply, ← hx, inv_inv]
 
 variable (ν) in
 lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
@@ -565,14 +565,14 @@ theorem lintegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ 
     (hf : AEMeasurable f ν) : ∫⁻ x, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x, f x ∂μ := by
   nth_rw 2 [← withDensity_rnDeriv_eq μ ν hμν]
   rw [lintegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf]
-  simp only [Pi.mul_apply]
+  simp [Pi.mul_apply]
 
 lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f ν) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ x in s, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x in s, f x ∂μ := by
   nth_rw 2 [← Measure.withDensity_rnDeriv_eq μ ν hμν]
   rw [setLIntegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf hs]
-  simp only [Pi.mul_apply]
+  simp [Pi.mul_apply]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HaveLebesgueDecomposition μ ν]
   [SigmaFinite μ] {f : α → E}

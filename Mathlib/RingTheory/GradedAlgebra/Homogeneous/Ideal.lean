@@ -233,7 +233,7 @@ theorem bot : Ideal.IsHomogeneous 𝒜 ⊥ := fun i r hr => by
   rw [hr, decompose_zero, DirectSum.zero_apply]
   apply Ideal.zero_mem
 
-theorem top : Ideal.IsHomogeneous 𝒜 ⊤ := fun i r _ => by simp only [Submodule.mem_top]
+theorem top : Ideal.IsHomogeneous 𝒜 ⊤ := fun i r _ => by simp [Submodule.mem_top]
 
 variable {𝒜}
 
@@ -515,7 +515,7 @@ theorem Ideal.toIdeal_homogeneousHull_eq_iSup :
   rw [← Ideal.span_iUnion]
   apply congr_arg Ideal.span _
   ext1
-  simp only [Set.mem_iUnion, Set.mem_image, mem_ofPred_eq, GradedRing.proj_apply, SetLike.exists,
+  simp [Set.mem_iUnion, Set.mem_image, mem_ofPred_eq, GradedRing.proj_apply, SetLike.exists,
     exists_prop, SetLike.mem_coe]
 
 theorem Ideal.homogeneousHull_eq_iSup :

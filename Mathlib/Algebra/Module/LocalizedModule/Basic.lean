@@ -141,7 +141,7 @@ theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
 theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
   refine ⟨fun a b ↦ ?_⟩
   induction a, b using LocalizedModule.induction_on₂
-  exact mk_eq.mpr ⟨⟨0, h⟩, by simp only [Submonoid.mk_smul, zero_smul]⟩
+  exact mk_eq.mpr ⟨⟨0, h⟩, by simp [Submonoid.mk_smul, zero_smul]⟩
 
 theorem zero_mk (s : S) : mk (0 : M) s = 0 := by simp [mk]
 
@@ -167,7 +167,7 @@ protected def mul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
     rw [mk_eq]
     use u₁ * u₂
     dsimp [Submonoid.smul_def] at *
-    simp only [mul_smul_mul_comm, e₁, e₂])
+    simp [mul_smul_mul_comm, e₁, e₂])
 
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Monoid (LocalizedModule S A) :=
@@ -176,15 +176,15 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
     mul := LocalizedModule.mul
     one_mul := by
       rintro ⟨a, s⟩
-      with_unfolding_all exact mk_eq.mpr ⟨1, by simp only [one_mul, mul_one, one_smul]⟩
+      with_unfolding_all exact mk_eq.mpr ⟨1, by simp [one_mul, mul_one, one_smul]⟩
     mul_one := by
       rintro ⟨a, s⟩
-      with_unfolding_all exact mk_eq.mpr ⟨1, by simp only [mul_one, one_smul, one_mul]⟩
+      with_unfolding_all exact mk_eq.mpr ⟨1, by simp [mul_one, one_smul, one_mul]⟩
     mul_assoc := by with_unfolding_all
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
       apply mk_eq.mpr _
       use 1
-      simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
+      simp [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
 
 private lemma example_oreLocalizationInstMonoid_eq_localizedModuleInstMonoid :
     OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := rfl
@@ -202,7 +202,7 @@ theorem mk_pow {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} (n : ℕ
   | zero =>
     rw [pow_zero, pow_zero, pow_zero, OreLocalization.one_def]
   | succ n ih =>
-    simp only [pow_succ', ih, LocalizedModule.mk_mul_mk]
+    simp [pow_succ', ih, LocalizedModule.mk_mul_mk]
 
 -- For the instance on `Localization S`, we prefer `OreLocalization.instSemiring`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
@@ -217,21 +217,21 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
       rw [← mk, ← mk, ← mk, mk_mul_mk, mk_mul_mk, mk_add_mk, mk_mul_mk, mk_add_mk]
       apply mk_eq.mpr _
       use 1
-      simp only [← mul_assoc, mul_right_comm, mul_add, mul_smul_comm, smul_add, smul_smul, one_mul]
+      simp [← mul_assoc, mul_right_comm, mul_add, mul_smul_comm, smul_add, smul_smul, one_mul]
     right_distrib := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
       change (a₁ /ₒ s₁ + a₂ /ₒ s₂) * (a₃ /ₒ s₃) = a₁ /ₒ s₁ * (a₃ /ₒ s₃) + a₂ /ₒ s₂ * (a₃ /ₒ s₃)
       rw [← mk, ← mk, ← mk, mk_mul_mk, mk_mul_mk, mk_add_mk, mk_mul_mk, mk_add_mk]
       apply mk_eq.mpr _
       use 1
-      simp only [one_mul, smul_add, add_mul, smul_smul, ← mul_assoc, smul_mul_assoc,
+      simp [one_mul, smul_add, add_mul, smul_smul, ← mul_assoc, smul_mul_assoc,
         mul_right_comm]
     zero_mul := by with_unfolding_all
       rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [zero_mul, smul_zero]⟩
+      exact mk_eq.mpr ⟨1, by simp [zero_mul, smul_zero]⟩
     mul_zero := by with_unfolding_all
       rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩ }
+      exact mk_eq.mpr ⟨1, by simp [mul_zero, smul_zero]⟩ }
 
 -- For the instance on `Localization S`, we prefer `OreLocalization.instCommSemiring`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
@@ -241,7 +241,7 @@ instance (priority := 900) {A : Type*} [CommSemiring A] [Algebra R A] {S : Submo
   { __ := (inferInstance : Semiring (LocalizedModule S A))
     mul_comm := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
-      exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩ }
+      exact mk_eq.mpr ⟨1, by simp [one_smul, mul_comm]⟩ }
 
 -- For the instance on `Localization S`, we prefer `OreLocalization.instRing`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
@@ -619,7 +619,7 @@ noncomputable def lift' (g : M →ₗ[R] M'')
     rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, ← map_smul, eq_comm,
       Module.End.algebraMap_isUnit_inv_apply_eq_iff]
     have : c • s • g m' = c • s' • g m := by
-      simp only [Submonoid.smul_def, ← g.map_smul, eq1]
+      simp [Submonoid.smul_def, ← g.map_smul, eq1]
     have : Function.Injective (h c).unit.inv := ((Module.End.isUnit_iff _).1 (by simp)).1
     apply_fun (h c).unit.inv
     rw [Units.inv_eq_val_inv, Module.End.algebraMap_isUnit_inv_apply_eq_iff, ←
@@ -705,7 +705,7 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
   rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, ← hl, LinearMap.coe_comp,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, ← l.map_smul, LocalizedModule.smul'_mk]
   congr 1; rw [LocalizedModule.mk_eq]
-  refine ⟨1, ?_⟩; simp only [one_smul, Submonoid.smul_def]
+  refine ⟨1, ?_⟩; simp [one_smul, Submonoid.smul_def]
 
 end LocalizedModule
 
@@ -1213,10 +1213,10 @@ def map : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[R] N') where
   toFun h := lift S f (g ∘ₗ h) (IsLocalizedModule.map_units g)
   map_add' h₁ h₂ := by
     apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
-    simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add]
+    simp [lift_comp, LinearMap.add_comp, LinearMap.comp_add]
   map_smul' r h := by
     apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
-    simp only [lift_comp, LinearMap.smul_comp, LinearMap.comp_smul, RingHom.id_apply]
+    simp [lift_comp, LinearMap.smul_comp, LinearMap.comp_smul, RingHom.id_apply]
 
 lemma map_comp (h : M →ₗ[R] N) : (map S f g h) ∘ₗ f = g ∘ₗ h :=
   lift_comp S f (g ∘ₗ h) (IsLocalizedModule.map_units g)

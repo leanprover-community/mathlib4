@@ -317,7 +317,7 @@ def count (I : FractionalIdeal R⁰ K) : ℤ :=
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ)
 
 /-- `val_v(0) = 0`. -/
-lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dite_eq_left]
+lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp [count, dite_eq_left]
 
 open Classical in
 lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
@@ -325,7 +325,7 @@ lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
       (choose (choose_spec (exists_eq_spanSingleton_mul I)))).factors -
       (Associates.mk v.asIdeal).count
         (Associates.mk (Ideal.span {choose (exists_eq_spanSingleton_mul I)})).factors : ℤ) := by
-  simp only [count, dite_eq_right hI]
+  simp [count, dite_eq_right hI]
 
 open Classical in
 /-- `val_v(I)` does not depend on the choice of `a` and `J` used to represent `I`. -/
@@ -516,7 +516,7 @@ theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
 theorem count_finsuppProd (exps : HeightOneSpectrum R →₀ ℤ) :
     count K v (exps.prod (HeightOneSpectrum.asIdeal · ^ ·)) = exps v := by
   rw [Finsupp.prod, count_prod]
-  · classical simp only [count_zpow, count_maximal, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
+  · classical simp [count_zpow, count_maximal, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
       exps.mem_support_iff, ne_eq, ite_not, ite_eq_right_iff, @eq_comm ℤ 0, imp_self]
   · exact fun v hv ↦ zpow_ne_zero _ (coeIdeal_ne_zero.mpr v.ne_bot)
 
@@ -540,14 +540,14 @@ theorem count_coeIdeal {J : Ideal R} (hJ : J ≠ 0) :
     Nat.cast_eq_zero, ← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero v.associates_irreducible]
   · simpa only [ne_eq, coeIdeal_eq_zero]
-  · simp only [map_one, inv_one, one_mul]
+  · simp [map_one, inv_one, one_mul]
 
 @[deprecated (since := "2026-11-10")] alias count_coe := count_coeIdeal
 
 theorem count_coeIdeal_nonneg (J : Ideal R) : 0 ≤ count K v J := by
   by_cases hJ : J = 0
-  · simp only [hJ, Submodule.zero_eq_bot, coeIdeal_bot, count_zero, le_refl]
-  · classical simp only [count_coeIdeal K v hJ, Nat.cast_nonneg]
+  · simp [hJ, Submodule.zero_eq_bot, coeIdeal_bot, count_zero, le_refl]
+  · classical simp [count_coeIdeal K v hJ, Nat.cast_nonneg]
 
 @[deprecated (since := "2026-11-10")] alias count_coe_nonneg := count_coeIdeal_nonneg
 
@@ -603,7 +603,7 @@ open Classical in
 theorem finite_factors (I : FractionalIdeal R⁰ K) :
     ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, count K v I = 0 := by
   by_cases hI : I = 0
-  · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, ofPred_false,
+  · simp [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, ofPred_false,
       finite_empty]
   · convert! finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
     rw [count_ne_zero K _ hI]

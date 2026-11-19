@@ -266,7 +266,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries
     (MvPowerSeries.eval₂ φ a f) := by
   rw [← coe_eval₂Hom hφ ha, eval₂Hom_eq_extend hφ ha]
   convert! (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
-  · simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
+  · simp [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
       eval₂_coe, eval₂_monomial]
   · rw [coe_eval₂Hom]; exact continuous_eval₂ hφ ha
 
@@ -293,7 +293,7 @@ theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     simp only [Function.comp_apply, eval₂_coe]
     rw [← MvPolynomial.coe_eval₂Hom, ← comp_apply, MvPolynomial.comp_eval₂Hom,
       MvPolynomial.coe_eval₂Hom]
-  · simp only [coe_comp, Continuous.comp hε hφ]
+  · simp [coe_comp, Continuous.comp hε hφ]
 
 variable [Algebra R S] [ContinuousSMul R S]
 
@@ -307,7 +307,7 @@ noncomputable def aeval (ha : HasEval a) : MvPowerSeries σ R →ₐ[R] S where
 
 theorem coe_aeval (ha : HasEval a) :
     ↑(aeval ha) = eval₂ (algebraMap R S) a := by
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  simp [aeval, AlgHom.coe_mk, coe_eval₂Hom]
 
 theorem continuous_aeval (ha : HasEval a) :
     Continuous (aeval ha : MvPowerSeries σ R → S) := by
@@ -352,7 +352,7 @@ theorem comp_aeval (ha : HasEval a)
   rw [← RingHom.coe_coe,
     comp_eval₂ (continuous_algebraMap R S) ha (show Continuous (ε : S →+* T) from hε), coe_aeval]
   congr!
-  simp only [AlgHom.comp_algebraMap_of_tower]
+  simp [AlgHom.comp_algebraMap_of_tower]
 
 end Evaluation
 

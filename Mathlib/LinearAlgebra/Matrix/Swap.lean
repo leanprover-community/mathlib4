@@ -38,7 +38,7 @@ def swap (i j : n) : Matrix n n R :=
 
 lemma swap_comm (i j : n) :
     swap R i j = swap R j i := by
-  simp only [swap, Equiv.swap_comm]
+  simp [swap, Equiv.swap_comm]
 
 @[simp]
 lemma transpose_swap (i j : n) : (swap R i j).transpose = swap R i j := by

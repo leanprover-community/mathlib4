@@ -58,7 +58,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     have h : Tendsto (fun _ : ℕ => δ) atTop (𝓝 δ) := tendsto_const_nhds
     have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (𝓝 δ) := by
       convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
-      simp only [add_zero]
+      simp [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
   have seq_is_cauchy : CauchySeq fun n => (w n : F) := by
@@ -163,7 +163,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
           _ = ‖u - v - θ • (w - v)‖ ^ 2 := by
             have : u - (θ • w + (1 - θ) • v) = u - v - θ • (w - v) := by
               rw [smul_sub, sub_smul, one_smul]
-              simp only [sub_eq_add_neg, add_comm, add_left_comm, add_assoc, neg_add_rev]
+              simp [sub_eq_add_neg, add_comm, add_left_comm, add_assoc, neg_add_rev]
             rw [this]
           _ = ‖u - v‖ ^ 2 - 2 * θ * ⟪u - v, w - v⟫_ℝ + θ * θ * ‖w - v‖ ^ 2 := by
             rw [@norm_sub_sq ℝ, inner_smul_right, norm_smul]
@@ -261,7 +261,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
         have : w' ∈ K := Submodule.add_mem _ hw hv
         have h₁ := h w' this
         have h₂ : w' - v = w := by
-          simp only [w', add_neg_cancel_right, sub_eq_add_neg]
+          simp [w', add_neg_cancel_right, sub_eq_add_neg]
         rw [h₂] at h₁
         exact h₁
       have ge : ⟪u - v, w⟫_ℝ ≥ 0 := by
@@ -269,7 +269,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
         have : w'' ∈ K := Submodule.add_mem _ (Submodule.neg_mem _ hw) hv
         have h₁ := h w'' this
         have h₂ : w'' - v = -w := by
-          simp only [w'', add_neg_cancel_right, sub_eq_add_neg]
+          simp [w'', add_neg_cancel_right, sub_eq_add_neg]
         rw [h₂, inner_neg_right] at h₁
         linarith
       exact le_antisymm le ge)

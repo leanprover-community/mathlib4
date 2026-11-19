@@ -211,7 +211,7 @@ private lemma pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
 private lemma pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] (n : ℕ+) :
     ((n : Rˣ) : R) = ↑n := by
   change ((PNat.isUnit_natCast (R := R) n).unit : R) = ↑n
-  simp only [IsUnit.unit_spec]
+  simp [IsUnit.unit_spec]
 
 /-- Equal characteristic implies `ℚ`-algebra. -/
 @[instance_reducible]

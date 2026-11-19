@@ -344,7 +344,7 @@ component is. -/
 @[to_additive pi_norm_le_iff_of_nonneg /-- The seminorm of an element in a product space is `≤ r` if
 and only if the norm of each component is. -/]
 lemma pi_norm_le_iff_of_nonneg' (hr : 0 ≤ r) : ‖x‖ ≤ r ↔ ∀ i, ‖x i‖ ≤ r := by
-  simp only [← dist_one_right, dist_pi_le_iff hr, Pi.one_apply]
+  simp [← dist_one_right, dist_pi_le_iff hr, Pi.one_apply]
 
 @[to_additive pi_nnNorm_le_iff]
 lemma pi_nnNorm_le_iff' {r : ℝ≥0} : ‖x‖₊ ≤ r ↔ ∀ i, ‖x i‖₊ ≤ r :=
@@ -366,7 +366,7 @@ component is. -/
 @[to_additive pi_norm_lt_iff /-- The seminorm of an element in a product space is `< r` if and only
 if the norm of each component is. -/]
 lemma pi_norm_lt_iff' (hr : 0 < r) : ‖x‖ < r ↔ ∀ i, ‖x i‖ < r := by
-  simp only [← dist_one_right, dist_pi_lt_iff hr, Pi.one_apply]
+  simp [← dist_one_right, dist_pi_lt_iff hr, Pi.one_apply]
 
 @[to_additive pi_nnNorm_lt_iff]
 lemma pi_nnNorm_lt_iff' {r : ℝ≥0} (hr : 0 < r) : ‖x‖₊ < r ↔ ∀ i, ‖x i‖₊ < r :=

@@ -117,7 +117,7 @@ theorem eventuallyEq_of_mem_source (hx : x ∈ (chartAt H c).source) :
 
 theorem one_of_dist_le (hs : x ∈ (chartAt H c).source)
     (hd : dist (extChartAt I c x) (extChartAt I c c) ≤ f.rIn) : f x = 1 := by
-  simp only [f.eqOn_source hs, (· ∘ ·), f.one_of_mem_closedBall hd]
+  simp [f.eqOn_source hs, (· ∘ ·), f.one_of_mem_closedBall hd]
 
 theorem support_eq_inter_preimage :
     support f = (chartAt H c).source ∩ extChartAt I c ⁻¹' ball (extChartAt I c c) f.rOut := by
@@ -236,7 +236,7 @@ def updateRIn (r : ℝ) (hr : r ∈ Ioo 0 f.rOut) : SmoothBumpFunction I c :=
 @[simp]
 theorem support_updateRIn {r : ℝ} (hr : r ∈ Ioo 0 f.rOut) :
     support (f.updateRIn r hr) = support f := by
-  simp only [support_eq_inter_preimage, updateRIn_rOut]
+  simp [support_eq_inter_preimage, updateRIn_rOut]
 
 instance : Nonempty (SmoothBumpFunction I c) := nhdsWithin_range_basis.nonempty
 

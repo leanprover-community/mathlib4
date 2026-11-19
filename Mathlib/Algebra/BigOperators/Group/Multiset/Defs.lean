@@ -75,7 +75,7 @@ theorem prod_cons (a : M) (s) : prod (a ::ₘ s) = a * prod s :=
 
 @[to_additive (attr := simp)]
 theorem prod_singleton (a : M) : prod {a} = a := by
-  simp only [mul_one, prod_cons, ← cons_zero, prod_zero]
+  simp [mul_one, prod_cons, ← cons_zero, prod_zero]
 
 @[to_additive]
 theorem prod_pair (a b : M) : ({a, b} : Multiset M).prod = a * b := by
@@ -94,7 +94,7 @@ theorem prod_hom_rel (s : Multiset ι) {r : M → N → Prop} {f : ι → M} {g 
     (h₁ : r 1 1) (h₂ : ∀ ⦃a b c⦄, r b c → r (f a * b) (g a * c)) :
     r (s.map f).prod (s.map g).prod :=
   Quotient.inductionOn s fun l => by
-    simp only [l.prod_hom_rel h₁ h₂, quot_mk_to_coe, map_coe, prod_coe]
+    simp [l.prod_hom_rel h₁ h₂, quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive]
 theorem prod_map_one : prod (m.map fun _ => (1 : M)) = 1 := by

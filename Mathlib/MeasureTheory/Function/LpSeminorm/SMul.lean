@@ -161,7 +161,7 @@ theorem eLpNorm_const_mul_ennreal {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hf :
   rcases eq_or_ne p 0 with rfl | hp
   · simp [hf, hcf]
   rcases eq_or_ne p ∞ with rfl | hp'
-  · simp only [eLpNorm_exponent_top, hf, hcf, eLpNormEssSup, eNorm_eq_self, c.essSup_const_mul]
+  · simp [eLpNorm_exponent_top, hf, hcf, eLpNormEssSup, eNorm_eq_self, c.essSup_const_mul]
   simp only [eLpNorm_eq_eLpNorm' hp hp', hf, (hf.aemeasurable.const_mul c).aestronglyMeasurable]
   exact eLpNorm'_const_mul_ennreal (ENNReal.toReal_pos hp hp') hf
 

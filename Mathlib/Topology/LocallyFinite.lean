@@ -83,7 +83,7 @@ protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
     𝓝[⋃ i, f i] a = 𝓝[⋃ i, f i ∩ U] a := by
       rw [← iUnion_inter, ← nhdsWithin_inter_of_mem' (nhdsWithin_le_nhds haU)]
     _ = 𝓝[⋃ i ∈ {j | (f j ∩ U).Nonempty}, (f i ∩ U)] a := by
-      simp only [mem_ofPred_eq, iUnion_nonempty_self]
+      simp [mem_ofPred_eq, iUnion_nonempty_self]
     _ = ⨆ i ∈ {j | (f j ∩ U).Nonempty}, 𝓝[f i ∩ U] a := nhdsWithin_biUnion hfin _ _
     _ ≤ ⨆ i, 𝓝[f i ∩ U] a := iSup₂_le_iSup _ _
     _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ inter_subset_left
@@ -123,11 +123,11 @@ protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closur
 
 theorem closure_iUnion (h : LocallyFinite f) : closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   ext x
-  simp only [mem_closure_iff_nhdsWithin_neBot, h.nhdsWithin_iUnion, iSup_neBot, mem_iUnion]
+  simp [mem_closure_iff_nhdsWithin_neBot, h.nhdsWithin_iUnion, iSup_neBot, mem_iUnion]
 
 theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
     IsClosed (⋃ i, f i) := by
-  simp only [← closure_eq_iff_isClosed, hf.closure_iUnion, (hc _).closure_eq]
+  simp [← closure_eq_iff_isClosed, hf.closure_iUnion, (hc _).closure_eq]
 
 /-- If `f : β → Set α` is a locally finite family of closed sets, then for any `x : α`, the
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
@@ -200,7 +200,7 @@ theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) 
 
 theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ Sum.inl) ∧ LocallyFinite (f ∘ Sum.inr) := by
-  simp only [locallyFinite_iff_smallSets, ← forall_and, ← finite_preimage_inl_and_inr,
+  simp [locallyFinite_iff_smallSets, ← forall_and, ← finite_preimage_inl_and_inr,
     preimage_ofPred_eq, (· ∘ ·), eventually_and]
 
 theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :

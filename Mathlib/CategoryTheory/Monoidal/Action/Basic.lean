@@ -217,7 +217,7 @@ theorem tensor_actionHomRight (x y : C) {z z' : D} (f : z ⟶ z') :
 @[reassoc, simp]
 theorem comp_actionHomLeft {w x y : C} (f : w ⟶ x) (g : x ⟶ y) (z : D) :
     (f ≫ g) ⊵ₗ z = f ⊵ₗ z ≫ g ⊵ₗ z := by
-  simp only [← actionHom_id, ← actionHom_comp, Category.id_comp]
+  simp [← actionHom_id, ← actionHom_comp, Category.id_comp]
 
 @[reassoc, simp]
 theorem actionHomLeft_action {x x' : C} (f : x ⟶ x') (y : C) (z : D) :
@@ -227,7 +227,7 @@ theorem actionHomLeft_action {x x' : C} (f : x ⟶ x') (y : C) (z : D) :
 @[reassoc]
 theorem action_exchange {w x : C} {y z : D} (f : w ⟶ x) (g : y ⟶ z) :
     w ⊴ₗ g ≫ f ⊵ₗ z = f ⊵ₗ y ≫ x ⊴ₗ g := by
-  simp only [← id_actionHom, ← actionHom_id, ← actionHom_comp, id_comp, comp_id]
+  simp [← id_actionHom, ← actionHom_id, ← actionHom_comp, id_comp, comp_id]
 
 @[reassoc]
 theorem actionHom_def' {x₁ y₁ : C} {x₂ y₂ : D} (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂) :
@@ -552,7 +552,7 @@ theorem actionHomLeft_tensor {z z' : D} (f : z ⟶ z') (x y : C) :
 @[reassoc, simp]
 theorem comp_actionHomLeft {w x y : D} (f : w ⟶ x) (g : x ⟶ y) (z : C) :
     (f ≫ g) ⊵ᵣ z = f ⊵ᵣ z ≫ g ⊵ᵣ z := by
-  simp only [← actionHom_id, ← actionHom_comp, Category.id_comp]
+  simp [← actionHom_id, ← actionHom_comp, Category.id_comp]
 
 @[reassoc, simp]
 theorem action_actionHomRight (y : D) (z : C) {x x' : C} (f : x ⟶ x') :
@@ -562,7 +562,7 @@ theorem action_actionHomRight (y : D) (z : C) {x x' : C} (f : x ⟶ x') :
 @[reassoc]
 theorem action_exchange {w x : D} {y z : C} (f : w ⟶ x) (g : y ⟶ z) :
     w ⊴ᵣ g ≫ f ⊵ᵣ z = f ⊵ᵣ y ≫ x ⊴ᵣ g := by
-  simp only [← id_actionHom, ← actionHom_id, ← actionHom_comp, id_comp, comp_id]
+  simp [← id_actionHom, ← actionHom_id, ← actionHom_comp, id_comp, comp_id]
 
 @[reassoc]
 theorem actionHom_def' {x₁ y₁ : D} {x₂ y₂ : C} (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂) :

@@ -119,8 +119,8 @@ theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
   | nil => exact Iff.rfl
   | cons a l hl =>
     by_cases h : a ∈ l
-    · simp only [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h, reduceCtorEq]
-    · simp only [List.dedup_cons_of_notMem h, List.cons_ne_nil]
+    · simp [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h, reduceCtorEq]
+    · simp [List.dedup_cons_of_notMem h, List.cons_ne_nil]
 
 protected theorem Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=
   List.dedup_eq_self.2 h

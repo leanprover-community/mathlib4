@@ -49,7 +49,7 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 
 protected theorem div_right_comm : a / b / c = a / c / b := by
-  simp only [div_eq_mul_inv, mul_right_comm]
+  simp [div_eq_mul_inv, mul_right_comm]
 
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
@@ -92,7 +92,7 @@ instance : DivInvOneMonoid ℝ≥0∞ :=
     inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_inj.2 inv_one }
 
 protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻¹ ^ n
-  | _, 0 => by simp only [pow_zero, inv_one]
+  | _, 0 => by simp [pow_zero, inv_one]
   | ⊤, n + 1 => by simp [top_pow]
   | (a : ℝ≥0), n + 1 => by
     rcases eq_or_ne a 0 with (rfl | ha)
@@ -190,10 +190,10 @@ protected lemma mul_div_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (b / a) 
   ENNReal.mul_div_cancel' (by simp [ha₀]) (by simp [ha])
 
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
-  simp only [div_eq_mul_inv, mul_left_comm, mul_comm]
+  simp [div_eq_mul_inv, mul_left_comm, mul_comm]
 
 protected theorem mul_div_right_comm : a * b / c = a / c * b := by
-  simp only [div_eq_mul_inv, mul_right_comm]
+  simp [div_eq_mul_inv, mul_right_comm]
 
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
@@ -210,7 +210,7 @@ protected alias ⟨_, Finiteness.inv_ne_top⟩ := ENNReal.inv_ne_top
 
 @[simp]
 theorem inv_lt_top {x : ℝ≥0∞} : x⁻¹ < ∞ ↔ 0 < x := by
-  simp only [lt_top_iff_ne_top, inv_ne_top, pos_iff_ne_zero]
+  simp [lt_top_iff_ne_top, inv_ne_top, pos_iff_ne_zero]
 
 theorem div_lt_top {x y : ℝ≥0∞} (h1 : x ≠ ∞) (h2 : y ≠ 0) : x / y < ∞ :=
   mul_lt_top h1.lt_top (inv_ne_top.mpr h2).lt_top
@@ -614,7 +614,7 @@ def orderIsoIicOneBirational : ℝ≥0∞ ≃o Iic (1 : ℝ≥0∞) := by
     (fun x y hxy => ?_) (fun x => (x.1⁻¹ - 1)⁻¹) fun x => Subtype.ext ?_
   · simpa only [Subtype.mk_lt_mk, ENNReal.inv_lt_inv, ENNReal.add_lt_add_iff_right one_ne_top]
   · have : (1 : ℝ≥0∞) ≤ x.1⁻¹ := ENNReal.one_le_inv.2 x.2
-    simp only [inv_inv, tsub_add_cancel_of_le this]
+    simp [inv_inv, tsub_add_cancel_of_le this]
 
 @[simp]
 theorem orderIsoIicOneBirational_symm_apply (x : Iic (1 : ℝ≥0∞)) :
@@ -630,7 +630,7 @@ def orderIsoIicCoe (a : ℝ≥0) : Iic (a : ℝ≥0∞) ≃o Iic a :=
       left_inv := fun _ => Subtype.ext <| toNNReal_coe _
       right_inv := fun x => Subtype.ext <| coe_toNNReal (ne_top_of_le_ne_top coe_ne_top x.2)
       map_rel_iff' := fun {_ _} => by
-        simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, coe_le_coe, Subtype.coe_le_coe] }
+        simp [Equiv.coe_fn_mk, Subtype.mk_le_mk, coe_le_coe, Subtype.coe_le_coe] }
 
 @[simp]
 theorem orderIsoIicCoe_symm_apply_coe (a : ℝ≥0) (b : Iic a) :
@@ -647,7 +647,7 @@ theorem orderIsoUnitIntervalBirational_apply_coe (x : ℝ≥0∞) :
   rfl
 
 theorem exists_inv_nat_lt {a : ℝ≥0∞} (h : a ≠ 0) : ∃ n : ℕ, (n : ℝ≥0∞)⁻¹ < a :=
-  inv_inv a ▸ by simp only [ENNReal.inv_lt_inv, ENNReal.exists_nat_gt (inv_ne_top.2 h)]
+  inv_inv a ▸ by simp [ENNReal.inv_lt_inv, ENNReal.exists_nat_gt (inv_ne_top.2 h)]
 
 theorem exists_nat_pos_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n > 0, b < (n : ℕ) * a :=
   let ⟨n, hn⟩ := ENNReal.exists_nat_gt (div_lt_top hb ha).ne
@@ -679,9 +679,9 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by
   rcases n with n | n
-  · simp only [Int.ofNat_eq_natCast, coe_pow, zpow_natCast]
+  · simp [Int.ofNat_eq_natCast, coe_pow, zpow_natCast]
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
-    simp only [zpow_negSucc, coe_inv this, coe_pow]
+    simp [zpow_negSucc, coe_inv this, coe_pow]
 
 lemma zero_zpow_def (n : ℤ) : (0 : ℝ≥0∞) ^ n = if n = 0 then 1 else if 0 < n then 0 else ⊤ := by
   obtain ((_ | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
@@ -692,13 +692,13 @@ lemma top_zpow_def (n : ℤ) : (⊤ : ℝ≥0∞) ^ n = if n = 0 then 1 else if 
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
   · simpa using ENNReal.pow_pos ha.bot_lt _
-  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne, ENNReal.inv_pos, false_and,
+  · simp [h'a, pow_eq_top_iff, zpow_negSucc, Ne, ENNReal.inv_pos, false_and,
       not_false_eq_true]
 
 theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := by
   cases n
   · simpa using ENNReal.pow_lt_top h'a.lt_top
-  · simp only [ENNReal.pow_pos ha.bot_lt, zpow_negSucc, inv_lt_top]
+  · simp [ENNReal.pow_pos ha.bot_lt, zpow_negSucc, inv_lt_top]
 
 @[aesop (rule_sets := [finiteness]) unsafe apply]
 lemma zpow_ne_top {a : ℝ≥0∞} (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n ≠ ∞ :=
@@ -774,7 +774,7 @@ protected theorem zpow_add {x : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (m 
     x ^ (m + n) = x ^ m * x ^ n := by
   lift x to ℝ≥0 using h'x
   replace hx : x ≠ 0 := by simpa only [Ne, coe_eq_zero] using hx
-  simp only [← coe_zpow hx, zpow_add₀ hx, coe_mul]
+  simp [← coe_zpow hx, zpow_add₀ hx, coe_mul]
 
 protected theorem zpow_neg (x : ℝ≥0∞) (m : ℤ) : x ^ (-m) = (x ^ m)⁻¹ := by
   obtain hx₀ | hx₀ := eq_or_ne x 0
@@ -838,10 +838,10 @@ lemma iSup_mul (f : ι → ℝ≥0∞) (a : ℝ≥0∞) : (⨆ i, f i) * a = ⨆
   simp [mul_comm, mul_iSup]
 
 lemma mul_sSup {a : ℝ≥0∞} : a * sSup s = ⨆ b ∈ s, a * b := by
-  simp only [sSup_eq_iSup, mul_iSup]
+  simp [sSup_eq_iSup, mul_iSup]
 
 lemma sSup_mul {a : ℝ≥0∞} : sSup s * a = ⨆ b ∈ s, b * a := by
-  simp only [sSup_eq_iSup, iSup_mul]
+  simp [sSup_eq_iSup, iSup_mul]
 
 lemma iSup_div (f : ι → ℝ≥0∞) (a : ℝ≥0∞) : iSup f / a = ⨆ i, f i / a := iSup_mul ..
 lemma sSup_div (s : Set ℝ≥0∞) (a : ℝ≥0∞) : sSup s / a = ⨆ b ∈ s, b / a := sSup_mul ..
@@ -946,7 +946,7 @@ lemma iInf_mul_iInf {f g : ι → ℝ≥0∞} (hf : ∃ i, f i ≠ ∞) (hg : �
 
 lemma smul_iSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞) (c : R) :
     c • ⨆ i, f i = ⨆ i, c • f i := by
-  simp only [← smul_one_mul c (f _), ← smul_one_mul c (iSup _), ENNReal.mul_iSup]
+  simp [← smul_one_mul c (f _), ← smul_one_mul c (iSup _), ENNReal.mul_iSup]
 
 lemma smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (s : Set ℝ≥0∞) (c : R) :
     c • sSup s = ⨆ a ∈ s, c • a := by
@@ -983,7 +983,7 @@ theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
   rw [div_eq_mul_inv, toNNReal_mul, toNNReal_inv, div_eq_mul_inv]
 
 @[simp] theorem toReal_inv (a : ℝ≥0∞) : a⁻¹.toReal = a.toReal⁻¹ := by
-  simp only [ENNReal.toReal, toNNReal_inv, NNReal.coe_inv]
+  simp [ENNReal.toReal, toNNReal_inv, NNReal.coe_inv]
 
 @[simp] theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := by
   rw [div_eq_mul_inv, toReal_mul, toReal_inv, div_eq_mul_inv]

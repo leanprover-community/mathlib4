@@ -229,8 +229,8 @@ instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
     mul_add := fun _ _ _ => map_add _ _ _
     add_mul := fun _ _ _ => LinearMap.map_add₂ _ _ _ _
     natCast := fun n => algebraMap₀ (n : R)
-    natCast_zero := by simp only [Nat.cast_zero, map_zero]
-    natCast_succ := fun n => by simp only [Nat.cast_succ, map_add, algebraMap₀_one] }
+    natCast_zero := by simp [Nat.cast_zero, map_zero]
+    natCast_succ := fun n => by simp [Nat.cast_succ, map_add, algebraMap₀_one] }
 
 example : Semiring (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
 

@@ -47,13 +47,13 @@ def exponentialPDF (r x : ℝ) : ℝ≥0∞ :=
 lemma exponentialPDF_eq (r x : ℝ) :
     exponentialPDF r x = ENNReal.ofReal (if 0 ≤ x then r * exp (-(r * x)) else 0) := by
   rw [exponentialPDF, exponentialPDFReal, gammaPDFReal]
-  simp only [rpow_one, Gamma_one, div_one, sub_self, rpow_zero, mul_one]
+  simp [rpow_one, Gamma_one, div_one, sub_self, rpow_zero, mul_one]
 
 lemma exponentialPDF_of_neg {r x : ℝ} (hx : x < 0) : exponentialPDF r x = 0 := gammaPDF_of_neg hx
 
 lemma exponentialPDF_of_nonneg {r x : ℝ} (hx : 0 ≤ x) :
     exponentialPDF r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
-  simp only [exponentialPDF_eq, ite_eq_left hx]
+  simp [exponentialPDF_eq, ite_eq_left hx]
 
 /-- The Lebesgue integral of the exponential pdf over nonpositive reals equals 0 -/
 lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
@@ -111,8 +111,8 @@ open Topology
 lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
     HasDerivAt (fun a ↦ -exp (-(r * a))) (r * exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
-  · simp only [one_mul, id_eq, neg_mul]
-  simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
+  · simp [one_mul, id_eq, neg_mul]
+  simp [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
 /-- A negative exponential function is integrable on intervals in `R≥0` -/
 lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :

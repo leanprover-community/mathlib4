@@ -39,7 +39,7 @@ instance instOrderedSub : OrderedSub ℕ := by
   refine ⟨fun m n k ↦ ?_⟩
   induction n generalizing k with
   | zero => simp
-  | succ n ih => simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
+  | succ n ih => simp [sub_succ, pred_le_iff, ih, succ_add, add_succ]
 
 /-! ### Miscellaneous lemmas -/
 

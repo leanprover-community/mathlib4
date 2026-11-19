@@ -507,7 +507,7 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set
     convert this
     simp [γ', hγx]
   convert mem_preimage.1 this
-  simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
+  simp [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
 
 @[deprecated (since := "2026-07-09")]

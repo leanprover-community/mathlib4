@@ -37,11 +37,11 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
     { nsmul n α :=
         { app := n • α.app
           naturality X Y f := by
-            simp only [Pi.smul_apply, comp_nsmul, NatTrans.naturality, nsmul_comp] }
+            simp [Pi.smul_apply, comp_nsmul, NatTrans.naturality, nsmul_comp] }
       zsmul n α :=
         { app := n • α.app
           naturality X Y f := by
-            simp only [Pi.smul_apply, comp_zsmul, NatTrans.naturality, zsmul_comp] }
+            simp [Pi.smul_apply, comp_zsmul, NatTrans.naturality, zsmul_comp] }
       sub α β := { app := fun X => α.app X - β.app X }
       add_assoc _ _ _ := NatTrans.ext <| add_assoc _ _ _
       zero_add _ := NatTrans.ext <| zero_add _
@@ -100,7 +100,7 @@ theorem app_units_zsmul (X : C) (α : F ⟶ G) (n : ℤˣ) : (n • α).app X = 
 @[simp]
 theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
     (∑ i ∈ s, α i).app X = ∑ i ∈ s, (α i).app X := by
-  simp only [← appHom_apply, map_sum]
+  simp [← appHom_apply, map_sum]
 
 end NatTrans
 

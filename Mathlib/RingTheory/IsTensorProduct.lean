@@ -156,7 +156,7 @@ protected theorem map_pow (i : M₁ →ₗ[R] M₁) (j : M₂ →ₗ[R] M₂) (n
     hf.map hf i j ^ n = hf.map hf (i ^ n) (j ^ n) := by
   induction n with
   | zero => simp
-  | succ n ih => simp only [pow_succ, ih, hf.map_mul]
+  | succ n ih => simp [pow_succ, ih, hf.map_mul]
 
 end map
 
@@ -803,7 +803,7 @@ def IsPushout.cancelBaseChange : B ⊗[A] M ≃ₗ[S] S ⊗[R] M :=
   AddEquiv.toLinearEquiv (IsPushout.cancelBaseChangeAux R S A B M).symm <| by
     intro s x
     induction x with
-    | add x y hx hy => simp only [smul_add, map_add, hx, hy]
+    | add x y hx hy => simp [smul_add, map_add, hx, hy]
     | tmul s' m => simp [Algebra.smul_def, TensorProduct.smul_tmul']
 
 @[simp]

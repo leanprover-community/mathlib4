@@ -260,7 +260,7 @@ private abbrev PosSemidef.matrixPreInnerProductSpace {M : Matrix n n 𝕜} (hM :
     PreInnerProductSpace.Core 𝕜 (Matrix m n 𝕜) where
   inner x y := (y * M * xᴴ).trace
   conj_inner_symm _ _ := by
-    simp only [Matrix.mul_assoc, starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
+    simp [Matrix.mul_assoc, starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
       conjTranspose_conjTranspose, hM.isHermitian.eq]
   re_inner_nonneg x := RCLike.nonneg_iff.mp (hM.mul_mul_conjTranspose_same x).trace_nonneg |>.1
   add_left := by simp [Matrix.mul_add]

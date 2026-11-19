@@ -263,7 +263,7 @@ def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C wh
     simp only [NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
       Category.assoc, NatTrans.naturality_assoc]
     slice_lhs 2 4 =>
-      simp only [← T.map_comp]
+      simp [← T.map_comp]
     simp
   assoc X := by
     simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Category.assoc, Functor.map_comp,

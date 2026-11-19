@@ -424,7 +424,7 @@ lemma span_eq_hull_neg_sup_hull (s : Set E) : span R s = hull R (-s) ⊔ hull R 
 variable (x) in
 @[simp] lemma hull_neg_pair_eq_span_singleton : hull R {-x, x} = R ∙ x := by
   change hull R ({-x} ∪ {x}) = (R ∙ x)
-  simp only [span_union, span_eq_hull_neg_sup_hull, Set.neg_singleton]
+  simp [span_union, span_eq_hull_neg_sup_hull, Set.neg_singleton]
 
 lemma hull_eq_span_of_neg_eq {s : Set E} (hs : IsSelfNeg s) :
     hull R s = span R s := by

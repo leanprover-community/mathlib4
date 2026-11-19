@@ -482,7 +482,7 @@ theorem comap_lt_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Fun
 
 @[to_additive]
 theorem comap_injective {f : G →* N} (h : Function.Surjective f) : Function.Injective (comap f) :=
-  fun K L => by simp only [le_antisymm_iff, comap_le_comap_of_surjective h, imp_self]
+  fun K L => by simp [le_antisymm_iff, comap_le_comap_of_surjective h, imp_self]
 
 @[to_additive (attr := simp)]
 theorem comap_eq_ker {f : G →* N} {H : Subgroup N} : H.comap f = f.ker ↔ Disjoint H f.range := by
@@ -510,11 +510,11 @@ theorem map_le_map_iff {f : G →* N} {H K : Subgroup G} : H.map f ≤ K.map f �
 @[to_additive]
 theorem map_le_map_iff' {f : G →* N} {H K : Subgroup G} :
     H.map f ≤ K.map f ↔ H ⊔ f.ker ≤ K ⊔ f.ker := by
-  simp only [map_le_map_iff, sup_le_iff, le_sup_right, and_true]
+  simp [map_le_map_iff, sup_le_iff, le_sup_right, and_true]
 
 @[to_additive]
 theorem map_eq_map_iff {f : G →* N} {H K : Subgroup G} :
-    H.map f = K.map f ↔ H ⊔ f.ker = K ⊔ f.ker := by simp only [le_antisymm_iff, map_le_map_iff']
+    H.map f = K.map f ↔ H ⊔ f.ker = K ⊔ f.ker := by simp [le_antisymm_iff, map_le_map_iff']
 
 @[to_additive]
 theorem map_eq_range_iff {f : G →* N} {H : Subgroup G} :

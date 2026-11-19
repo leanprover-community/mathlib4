@@ -237,14 +237,14 @@ grind_pattern card_image_le => #(s.image f)
 grind_pattern card_image_le => s.image f, #s
 
 theorem card_image_of_injOn [DecidableEq β] (H : Set.InjOn f s) : #(s.image f) = #s := by
-  simp only [card, image_val_of_injOn H, card_map]
+  simp [card, image_val_of_injOn H, card_map]
 
 theorem injOn_of_card_image_eq [DecidableEq β] (H : #(s.image f) = #s) : Set.InjOn f s := by
   rw [card_def, card_def, image, toFinset] at H
   dsimp only at H
   have : (s.val.map f).dedup = s.val.map f := by
     refine Multiset.eq_of_le_of_card_le (Multiset.dedup_le _) ?_
-    simp only [H, Multiset.card_map, le_rfl]
+    simp [H, Multiset.card_map, le_rfl]
   rw [Multiset.dedup_eq_self] at this
   exact inj_on_of_nodup_map this
 
@@ -383,7 +383,7 @@ lemma card_bij' (i : ∀ a ∈ s, β) (j : ∀ a ∈ t, α) (hi : ∀ a ha, i a 
     (right_inv : ∀ a ha, i (j a ha) (hj a ha) = a) : #s = #t := by
   refine card_bij i hi (fun a1 h1 a2 h2 eq ↦ ?_) (fun b hb ↦ ⟨_, hj b hb, right_inv b hb⟩)
   rw [← left_inv a1 h1, ← left_inv a2 h2]
-  simp only [eq]
+  simp [eq]
 
 /-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
 are equal.
@@ -693,7 +693,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
 
 theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
   cases s
-  simp only [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
+  simp [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
 
 theorem card_eq_one_iff_existsUnique : #s = 1 ↔ ∃! a, a ∈ s := by
   simp [card_eq_one, Finset.singleton_iff_unique_mem]
@@ -750,7 +750,7 @@ theorem one_lt_card : 1 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
 
 theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]
-  simp only [exists_and_left]
+  simp [exists_and_left]
 
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
@@ -795,7 +795,7 @@ theorem card_eq_succ : #s = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ #t
   ⟨fun h =>
     let ⟨a, has⟩ := card_pos.mp (h.symm ▸ Nat.zero_lt_succ _ : 0 < #s)
     ⟨a, s.erase a, s.notMem_erase a, insert_erase has, by
-      simp only [h, card_erase_of_mem has, Nat.add_sub_cancel_right]⟩,
+      simp [h, card_erase_of_mem has, Nat.add_sub_cancel_right]⟩,
     fun ⟨_, _, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_notMem hat⟩
 
 theorem card_eq_two : #s = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by

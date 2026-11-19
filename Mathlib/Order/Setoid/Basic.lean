@@ -210,7 +210,7 @@ theorem bot_def : ⇑(⊥ : Setoid α) = (· = ·) :=
 
 theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
-  simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
+  simp [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 
 @[simp]
 theorem ker_eq_bot_iff {f : α → β} : ker f = ⊥ ↔ f.Injective := le_bot_iff.symm
@@ -282,7 +282,7 @@ theorem sup_eq_eqvGen (r s : Setoid α) :
     r ⊔ s = EqvGen.setoid fun x y => r x y ∨ s x y := by
   rw [eqvGen_eq]
   apply congr_arg sInf
-  simp only [le_def, or_imp, ← forall_and]
+  simp [le_def, or_imp, ← forall_and]
 
 /-- The supremum of 2 equivalence relations r and s is the equivalence closure of the
 supremum of the underlying binary operations. -/
@@ -304,7 +304,7 @@ supremum of the set's image under the map to the underlying binary operation. -/
 theorem sSup_def {s : Set (Setoid α)} : sSup s = EqvGen.setoid (sSup ((⇑) '' s)) := by
   rw [sSup_eq_eqvGen, sSup_image]
   congr with (x y)
-  simp only [iSup_apply, iSup_Prop_eq, exists_prop]
+  simp [iSup_apply, iSup_Prop_eq, exists_prop]
 
 /-- The equivalence closure of an equivalence relation r is r. -/
 @[simp]

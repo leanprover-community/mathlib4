@@ -65,7 +65,7 @@ protected alias ⟨_, Directed.directedOn_range⟩ := directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
-  simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
+  simp [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, Order.Preimage]
 
 @[to_dual directedOn_ge_image]
@@ -144,7 +144,7 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
     simp [Function.extend_apply' _ _ _ hb]
   rcases hf i j with ⟨k, hi, hj⟩
   use e k
-  simp only [he.extend_apply, *, true_and]
+  simp [he.extend_apply, *, true_and]
 
 /-- A set stable by infimum is `≥`-directed. -/
 theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}

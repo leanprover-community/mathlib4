@@ -118,9 +118,9 @@ theorem truncation_eq_of_nonneg {f : α → ℝ} {A : ℝ} (h : ∀ x, 0 ≤ f x
   · simp only [truncation, indicator, hx, Set.mem_Ioc, id, Function.comp_apply]
     by_cases h'x : f x ≤ A
     · have : -A < f x := by linarith [h x]
-      simp only [this, true_and]
-    · simp only [h'x, and_false]
-  · simp only [truncation, indicator, hx, id, Function.comp_apply, ite_self]
+      simp [this, true_and]
+    · simp [h'x, and_false]
+  · simp [truncation, indicator, hx, id, Function.comp_apply, ite_self]
 
 theorem truncation_nonneg {f : α → ℝ} (A : ℝ) {x : α} (h : 0 ≤ f x) : 0 ≤ truncation f A x :=
   Set.indicator_apply_nonneg fun _ => h
@@ -139,7 +139,7 @@ theorem moment_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {
   change ∫ x, (fun z => indicator (Set.Ioc (-A) A) id z ^ n) (f x) ∂μ = _
   rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le,
     ← integral_indicator M]
-  · simp only [indicator, zero_pow hn, id, ite_pow]
+  · simp [indicator, zero_pow hn, id, ite_pow]
   · linarith
   · exact ((measurable_id.indicator M).pow_const n).aestronglyMeasurable
 
@@ -153,7 +153,7 @@ theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurab
   rcases le_or_gt 0 A with (hA | hA)
   · rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le hA,
       ← integral_indicator M]
-    · simp only [indicator, zero_pow hn, id, ite_pow]
+    · simp [indicator, zero_pow hn, id, ite_pow]
     · exact ((measurable_id.indicator M).pow_const n).aestronglyMeasurable
   · rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_ge hA.le,
       ← integral_indicator M']
@@ -237,12 +237,12 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         simp only [Nat.cast_add, Nat.cast_one, sum_const, card_range, nsmul_eq_mul, Nat.cast_min]
         refine mul_le_mul_of_nonneg_right (min_le_left _ _) ?_
         apply intervalIntegral.integral_nonneg
-        · simp only [le_add_iff_nonneg_right, zero_le_one]
-        · simp only [zero_le_one, imp_true_iff]
+        · simp [le_add_iff_nonneg_right, zero_le_one]
+        · simp [zero_le_one, imp_true_iff]
       _ ≤ ∑ i ∈ range N, ∫ x in i..(i + 1 : ℕ), x + 1 ∂ρ := by
         gcongr with i
         have I : (i : ℝ) ≤ (i + 1 : ℕ) := by
-          simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
+          simp [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
         simp_rw [intervalIntegral.integral_of_le I, ← integral_const_mul]
         apply setIntegral_mono_on
         · exact continuous_const.integrableOn_Ioc
@@ -300,7 +300,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
       · intro ω hω
         obtain ⟨N, hN⟩ : ∃ N : ℕ, X ω ≤ N := exists_nat_ge (X ω)
         exact Set.mem_iUnion.2 ⟨N, hω, hN⟩
-      · simp +contextual only [Set.mem_Ioc, Set.mem_Ioi,
+      · simp +contextual [Set.mem_Ioc, Set.mem_Ioi,
           Set.iUnion_subset_iff, Set.ofPred_subset_ofPred, imp_true_iff]
     rw [this]
     apply tendsto_measure_iUnion_atTop
@@ -429,11 +429,11 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         gcongr ∑ _ ∈ _, ?_ with j
         rcases eq_zero_or_pos j with (rfl | hj)
         · simp only [Nat.cast_zero]
-          simp only [Y, Nat.cast_zero, truncation_zero, variance_zero, mul_zero, le_rfl]
+          simp [Y, Nat.cast_zero, truncation_zero, variance_zero, mul_zero, le_rfl]
         apply mul_le_mul_of_nonneg_right _ (variance_nonneg _ _)
         convert! sum_div_nat_floor_pow_sq_le_div_sq N (Nat.cast_pos.2 hj) c_one using 2
-        · simp only [u, Nat.cast_lt]
-        · simp only [u, one_div]
+        · simp [u, Nat.cast_lt]
+        · simp [u, one_div]
       _ = c ^ 5 * (c - 1)⁻¹ ^ 3 * ∑ j ∈ range (u (N - 1)), ((j : ℝ) ^ 2)⁻¹ * Var[Y j] := by
         simp_rw [mul_sum, div_eq_mul_inv, mul_assoc]
       _ ≤ c ^ 5 * (c - 1)⁻¹ ^ 3 * (2 * 𝔼[X 0]) := by
@@ -468,7 +468,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
       ENNReal.ofReal_lt_top
   filter_upwards [ae_eventually_notMem I4.ne] with ω hω
   simp_rw [S, not_le, mul_comm, Finset.sum_apply] at hω
-  convert! hω; simp only [Y, u, Finset.sum_apply]
+  convert! hω; simp [Y, u, Finset.sum_apply]
 
 include hint hindep hident hnonneg in
 /-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
@@ -555,7 +555,7 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c ^ n⌋₊ := by
     intro n
     refine zero_lt_one.trans_le ?_
-    simp only [Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow₀ c_one.le]
+    simp [Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow₀ c_one.le]
   filter_upwards [strong_law_aux4 X hint hindep hident hnonneg c_one,
     strong_law_aux5 X hint hident hnonneg] with ω hω h'ω
   rw [← tendsto_sub_nhds_zero_iff, ← Asymptotics.isLittleO_one_iff ℝ]
@@ -565,7 +565,7 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
       tendsto_nat_floor_atTop.comp (tendsto_pow_atTop_atTop_of_one_lt c_one)
     convert hω.sub (h'ω.comp_tendsto A) using 1
     ext1 n
-    simp only [Function.comp_apply, sub_sub_sub_cancel_left]
+    simp [Function.comp_apply, sub_sub_sub_cancel_left]
   convert L.mul_isBigO (isBigO_refl (fun n : ℕ => (⌊c ^ n⌋₊ : ℝ)⁻¹) atTop) using 1 <;>
   (ext1 n; field [(H n).ne'])
 
@@ -625,9 +625,9 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
       (fun i => (hident i).comp negm) fun i ω => le_max_right _ _
   filter_upwards [A, B] with ω hωpos hωneg
   convert! hωpos.sub hωneg using 2
-  · simp only [pos, neg, ← sub_div, ← sum_sub_distrib, max_zero_sub_max_neg_zero_eq_self,
+  · simp [pos, neg, ← sub_div, ← sum_sub_distrib, max_zero_sub_max_neg_zero_eq_self,
       Function.comp_apply]
-  · simp +instances only [pos, neg, ← integral_sub hint.pos_part hint.neg_part,
+  · simp +instances [pos, neg, ← integral_sub hint.pos_part hint.neg_part,
       max_zero_sub_max_neg_zero_eq_self, Function.comp_apply, mΩ]
 
 end StrongLawAeReal
@@ -862,7 +862,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
     apply uniformIntegrable_average hp
     exact MemLp.uniformIntegrable_of_identDistrib hp hp' hℒp hident
   · ext n ω
-    simp only [Pi.smul_apply, Finset.sum_apply]
+    simp [Pi.smul_apply, Finset.sum_apply]
 
 end StrongLawLp
 

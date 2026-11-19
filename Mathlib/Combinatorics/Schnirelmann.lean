@@ -153,7 +153,7 @@ lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
     schnirelmannDensity A ≤ x ↔
       ∀ ε : ℝ, 0 < ε → ∃ n : ℕ, 0 < n ∧ #{a ∈ Ioc 0 n | a ∈ A} / n < x + ε := by
   rw [le_iff_forall_pos_lt_add]
-  simp only [schnirelmannDensity_lt_iff]
+  simp [schnirelmannDensity_lt_iff]
 
 lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
     (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B := by

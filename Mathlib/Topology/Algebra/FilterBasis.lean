@@ -132,7 +132,7 @@ def N (B : GroupFilterBasis G) : G → Filter G :=
 
 @[to_additive (attr := simp)]
 theorem N_one (B : GroupFilterBasis G) : B.N 1 = B.toFilterBasis.filter := by
-  simp only [N, one_mul, map_id']
+  simp [N, one_mul, map_id']
 
 @[to_additive]
 protected theorem hasBasis (B : GroupFilterBasis G) (x : G) :
@@ -328,7 +328,7 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
         rintro U (rfl : U ∈ {{(0 : M)}})
         use univ, univ_mem, {0}, rfl
         rintro a ⟨x, -, m, rfl, rfl⟩
-        simp only [smul_zero, mem_singleton_iff]
+        simp [smul_zero, mem_singleton_iff]
       smul_left' := by
         rintro x₀ U (h : U ∈ {{(0 : M)}})
         rw [mem_singleton_iff] at h

@@ -153,7 +153,7 @@ theorem differentiableAt_arccos {x : ℝ} : DifferentiableAt ℝ arccos x ↔ x 
 
 @[simp]
 theorem deriv_arccos : deriv arccos = fun x => -(1 / √(1 - x ^ 2)) :=
-  funext fun x => (deriv_const_sub _).trans <| by simp only [deriv_arcsin]
+  funext fun x => (deriv_const_sub _).trans <| by simp [deriv_arcsin]
 
 theorem differentiableOn_arccos : DifferentiableOn ℝ arccos {-1, 1}ᶜ :=
   differentiableOn_arcsin.const_sub _

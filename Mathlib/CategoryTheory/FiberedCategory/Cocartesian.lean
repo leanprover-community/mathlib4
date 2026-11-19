@@ -116,7 +116,7 @@ protected lemma ext (φ : a ⟶ b) [IsCocartesian p f φ] {b' : 𝒳} (ψ ψ' : 
 lemma map_self : IsCocartesian.map p f φ φ = 𝟙 b := by
   subst_hom_lift p f φ; symm
   apply map_uniq
-  simp only [comp_id]
+  simp [comp_id]
 
 /-- The canonical isomorphism between the codomains of two co-Cartesian morphisms
 lying over the same object. -/
@@ -127,11 +127,11 @@ noncomputable def codomainUniqueUpToIso {b' : 𝒳} (φ' : a ⟶ b') [IsCocartes
   hom_inv_id := by
     subst_hom_lift p f φ
     apply IsCocartesian.ext p (p.map φ) φ
-    simp only [fac_assoc, fac, comp_id]
+    simp [fac_assoc, fac, comp_id]
   inv_hom_id := by
     subst_hom_lift p f φ'
     apply IsCocartesian.ext p (p.map φ') φ'
-    simp only [fac_assoc, fac, comp_id]
+    simp [fac_assoc, fac, comp_id]
 
 /-- Postcomposing a co-Cartesian morphism with an isomorphism lifting the identity is
 co-Cartesian. -/
@@ -156,7 +156,7 @@ instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom]
     refine ⟨⟨inferInstance, by simp⟩, ?_⟩
     rintro τ ⟨hτ₁, hτ₂⟩
     apply map_uniq
-    simp only [Iso.eq_inv_comp, ← assoc, hτ₂]
+    simp [Iso.eq_inv_comp, ← assoc, hτ₂]
 
 end IsCocartesian
 
@@ -235,7 +235,7 @@ protected lemma ext (φ : a ⟶ b) [IsStronglyCocartesian p f φ] {S' : 𝒮} {b
 lemma map_self : map p f φ (comp_id f).symm φ = 𝟙 b := by
   subst_hom_lift p f φ; symm
   apply map_uniq
-  simp only [comp_id]
+  simp [comp_id]
 
 /-- When its possible to compare the two, the composition of two `IsStronglyCocartesian.map` will
 also be given by a `IsStronglyCocartesian.map`. In other words, given diagrams
@@ -270,7 +270,7 @@ lemma map_comp_map {S' S'' : 𝒮} {b' b'' : 𝒳} {f' : R ⟶ S'} {f'' : R ⟶ 
     map p f φ H φ' ≫ map p f' φ' H' φ'' =
       map p f φ (show f'' = f ≫ (g ≫ g') by rwa [← assoc, ← H]) φ'' := by
   apply map_uniq p f φ
-  simp only [fac_assoc, fac]
+  simp [fac_assoc, fac]
 
 end
 
@@ -292,11 +292,11 @@ instance comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p g ψ] :
     intro c' h τ hτ
     use map p g ψ (f' := g ≫ h) rfl <| map p f φ (assoc f g h) τ
     refine ⟨⟨inferInstance, ?_⟩, ?_⟩
-    · simp only [assoc, fac]
+    · simp [assoc, fac]
     · intro π' ⟨hπ'₁, hπ'₂⟩
       apply map_uniq
       apply map_uniq
-      simp only [← hπ'₂, assoc]
+      simp [← hπ'₂, assoc]
 
 /-- Given two commutative squares
 ```
@@ -316,7 +316,7 @@ protected lemma of_comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p 
     refine ⟨⟨inferInstance, ?_⟩, ?_⟩
     /- The fact that `ψ ≫ π = τ` follows from `φ ≫ ψ ≫ π = φ ≫ τ` and the universal property of
     `φ`. -/
-    · apply IsStronglyCocartesian.ext p f φ (g ≫ h) <| by simp only [← assoc, fac]
+    · apply IsStronglyCocartesian.ext p f φ (g ≫ h) <| by simp [← assoc, fac]
     -- Finally, uniqueness of `π` comes from the universal property of `φ ≫ ψ`.
     · intro π' ⟨hπ'₁, hπ'₂⟩
       apply map_uniq
@@ -352,7 +352,7 @@ lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCocartesian p f φ] [IsIso f
     rw [← IsIso.inv_hom_id (p.map φ)]
     apply IsHomLift.comp
   apply IsStronglyCocartesian.ext p (p.map φ) φ (𝟙 (p.obj b))
-  simp only [← assoc, inv_hom, comp_id, id_comp]
+  simp [← assoc, inv_hom, comp_id, id_comp]
 
 end
 

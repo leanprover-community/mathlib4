@@ -148,10 +148,10 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
       ContinuousOn.circleIntegrable (pos_of_mem_ball hw₀).le (h1.smul continuousOn_const)
     have h4 : (∮ z : ℂ in C(c, R), ((z - w₀) ^ 2)⁻¹) = 0 := by
       simpa using! circleIntegral.integral_sub_zpow_of_ne (by decide : (-2 : ℤ) ≠ -1) c w₀ R
-    simp only [smul_sub, circleIntegral.integral_sub h2 h3, h4, circleIntegral.integral_smul_const,
+    simp [smul_sub, circleIntegral.integral_sub h2 h3, h4, circleIntegral.integral_smul_const,
       zero_smul, sub_zero]
   · refine circleIntegral.integral_congr (pos_of_mem_ball hw₀).le fun z hz => ?_
-    simp only [dslope_of_ne, Metric.sphere_disjoint_ball.ne_of_mem hz hw₀, slope, ← smul_assoc, sq,
+    simp [dslope_of_ne, Metric.sphere_disjoint_ball.ne_of_mem hz hw₀, slope, ← smul_assoc, sq,
       mul_inv, Ne, not_false_iff, vsub_eq_sub, smul_eq_mul]
 
 end Complex

@@ -42,11 +42,11 @@ def eraseLead (f : R[X]) : R[X] :=
 section EraseLead
 
 theorem eraseLead_support (f : R[X]) : f.eraseLead.support = f.support.erase f.natDegree := by
-  simp only [eraseLead, support_erase]
+  simp [eraseLead, support_erase]
 
 theorem eraseLead_coeff (i : ℕ) :
     f.eraseLead.coeff i = if i = f.natDegree then 0 else f.coeff i := by
-  simp only [eraseLead, coeff_erase]
+  simp [eraseLead, coeff_erase]
 
 @[simp]
 theorem eraseLead_coeff_natDegree : f.eraseLead.coeff f.natDegree = 0 := by simp [eraseLead_coeff]
@@ -56,7 +56,7 @@ theorem eraseLead_coeff_of_ne (i : ℕ) (hi : i ≠ f.natDegree) : f.eraseLead.c
 
 @[simp]
 theorem eraseLead_zero : eraseLead (0 : R[X]) = 0 := by
-  simp only [eraseLead, AddMonoidAlgebra.erase_zero]
+  simp [eraseLead, AddMonoidAlgebra.erase_zero]
 
 @[simp]
 theorem eraseLead_add_monomial_natDegree_leadingCoeff (f : R[X]) :
@@ -133,7 +133,7 @@ theorem eraseLead_monomial (i : ℕ) (r : R) : eraseLead (monomial i r) = 0 := b
   classical
   by_cases hr : r = 0
   · subst r
-    simp only [monomial_zero_right, eraseLead_zero]
+    simp [monomial_zero_right, eraseLead_zero]
   · rw [eraseLead, natDegree_monomial, ite_eq_right hr, erase_monomial]
 
 @[simp]
@@ -214,7 +214,7 @@ theorem eraseLead_natDegree_lt_or_eraseLead_eq_zero (f : R[X]) :
 theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDegree - 1 := by
   rcases f.eraseLead_natDegree_lt_or_eraseLead_eq_zero with (h | h)
   · exact Nat.le_sub_one_of_lt h
-  · simp only [h, natDegree_zero, zero_le]
+  · simp [h, natDegree_zero, zero_le]
 
 lemma natDegree_eraseLead (h : f.nextCoeff ≠ 0) : f.eraseLead.natDegree = f.natDegree - 1 := by
   have := natDegree_pos_of_nextCoeff_ne_zero h

@@ -147,11 +147,11 @@ theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := b
 
 @[gcongr, mono]
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
-  simp only [← Finset.coe_subset, Finite.coe_toFinset]
+  simp [← Finset.coe_subset, Finite.coe_toFinset]
 
 @[gcongr, mono]
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
-  simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
+  simp [← Finset.coe_ssubset, Finite.coe_toFinset]
 
 protected alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 
@@ -886,7 +886,7 @@ alias Infinite.inter_of_finite_diff := Infinite.inter_of_finite_sdiff
 
 @[simp]
 theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.Infinite := by
-  simp only [Set.Infinite, finite_union, not_and_or]
+  simp [Set.Infinite, finite_union, not_and_or]
 
 theorem Infinite.of_image (f : α → β) {s : Set α} (hs : (f '' s).Infinite) : s.Infinite :=
   mt (Finite.image f) hs

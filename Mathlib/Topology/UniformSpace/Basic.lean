@@ -198,7 +198,7 @@ end
 theorem closure_eq_uniformity (s : Set <| α × α) :
     closure s = ⋂ V ∈ {V | V ∈ 𝓤 α ∧ SetRel.IsSymm V}, V ○ s ○ V := by
   ext ⟨x, y⟩
-  simp +contextual only
+  simp +contextual
     [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_ofPred_eq,
       and_imp, SetRel.mem_comp_comp, ← mem_inter_iff, inter_comm, Set.Nonempty, SetRel.inv_eq_self]
 
@@ -295,7 +295,7 @@ theorem uniformity_hasBasis_open : HasBasis (𝓤 α) (fun V : SetRel α α => V
 theorem Filter.HasBasis.mem_uniformity_iff {p : β → Prop} {s : β → SetRel α α}
     (h : (𝓤 α).HasBasis p s) {t : SetRel α α} :
     t ∈ 𝓤 α ↔ ∃ i, p i ∧ ∀ a b, (a, b) ∈ s i → (a, b) ∈ t :=
-  h.mem_iff.trans <| by simp only [Prod.forall, subset_def]
+  h.mem_iff.trans <| by simp [Prod.forall, subset_def]
 
 /-- Open elements `s : SetRel α α` of `𝓤 α` such that `(x, y) ∈ s ↔ (y, x) ∈ s` form a basis
 of `𝓤 α`. -/
@@ -425,7 +425,7 @@ protected theorem UniformSpace.isGLB_sInf {tt : Set (UniformSpace α)} : IsGLB t
   ⟨fun _ ↦ UniformSpace.sInf_le, fun _ ↦ UniformSpace.le_sInf⟩
 
 instance : Top (UniformSpace α) :=
-  ⟨@UniformSpace.mk α ⊤ ⊤ le_top le_top fun x ↦ by simp only [nhds_top, comap_top]⟩
+  ⟨@UniformSpace.mk α ⊤ ⊤ le_top le_top fun x ↦ by simp [nhds_top, comap_top]⟩
 
 instance : Bot (UniformSpace α) :=
   ⟨{  toTopologicalSpace := ⊥
@@ -496,7 +496,7 @@ abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace �
     (comap_mono u.comp)
   toTopologicalSpace := u.toTopologicalSpace.induced f
   nhds_eq_comap_uniformity x := by
-    simp only [nhds_induced, nhds_eq_comap_uniformity, comap_comap, Function.comp_def]
+    simp [nhds_induced, nhds_eq_comap_uniformity, comap_comap, Function.comp_def]
 
 theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
     𝓤[UniformSpace.comap f ‹_›] = comap (Prod.map f f) (𝓤 β) :=
@@ -515,7 +515,7 @@ theorem UniformSpace.comap_id {α : Type*} : UniformSpace.comap (id : α → α)
 theorem UniformSpace.comap_comap {α β γ} {uγ : UniformSpace γ} {f : α → β} {g : β → γ} :
     UniformSpace.comap (g ∘ f) uγ = UniformSpace.comap f (UniformSpace.comap g uγ) := by
   ext1
-  simp only [uniformity_comap, Filter.comap_comap, Prod.map_comp_map]
+  simp [uniformity_comap, Filter.comap_comap, Prod.map_comp_map]
 
 theorem UniformSpace.comap_inf {α γ} {u₁ u₂ : UniformSpace γ} {f : α → γ} :
     (u₁ ⊓ u₂).comap f = u₁.comap f ⊓ u₂.comap f :=
@@ -631,13 +631,13 @@ theorem toTopologicalSpace_top : @UniformSpace.toTopologicalSpace α ⊤ = ⊤ :
 
 theorem toTopologicalSpace_iInf {ι : Sort*} {u : ι → UniformSpace α} :
     (iInf u).toTopologicalSpace = ⨅ i, (u i).toTopologicalSpace :=
-  TopologicalSpace.ext_nhds fun a ↦ by simp only [@nhds_eq_comap_uniformity _ (iInf u), nhds_iInf,
+  TopologicalSpace.ext_nhds fun a ↦ by simp [@nhds_eq_comap_uniformity _ (iInf u), nhds_iInf,
     iInf_uniformity, @nhds_eq_comap_uniformity _ (u _), Filter.comap_iInf]
 
 theorem toTopologicalSpace_sInf {s : Set (UniformSpace α)} :
     (sInf s).toTopologicalSpace = ⨅ i ∈ s, @UniformSpace.toTopologicalSpace α i := by
   rw [sInf_eq_iInf]
-  simp only [← toTopologicalSpace_iInf]
+  simp [← toTopologicalSpace_iInf]
 
 theorem toTopologicalSpace_inf {u v : UniformSpace α} :
     (u ⊓ v).toTopologicalSpace = u.toTopologicalSpace ⊓ v.toTopologicalSpace :=

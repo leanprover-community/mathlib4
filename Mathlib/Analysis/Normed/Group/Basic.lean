@@ -334,7 +334,7 @@ variable {E}
 @[to_additive]
 theorem NormedGroup.tendsto_nhds_one {f : α → E} {l : Filter α} :
     Tendsto f l (𝓝 1) ↔ ∀ ε > 0, ∀ᶠ x in l, ‖f x‖ < ε :=
-  Metric.tendsto_nhds.trans <| by simp only [dist_one_right]
+  Metric.tendsto_nhds.trans <| by simp [dist_one_right]
 
 @[to_additive]
 theorem NormedGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
@@ -1080,7 +1080,7 @@ theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
 @[to_additive (attr := simp)]
 theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = sphere (a / b) r := by
   ext c
-  simp only [Set.mem_preimage, mem_sphere_iff_norm', div_div_eq_mul_div, mul_comm]
+  simp [Set.mem_preimage, mem_sphere_iff_norm', div_div_eq_mul_div, mul_comm]
 
 @[to_additive]
 theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :

@@ -61,7 +61,7 @@ theorem Orientation.measure_orthonormalBasis (o : Orientation ℝ F (Fin n))
     rw [← _i.out, finrank_eq_card_basis b.toBasis]
   have A : ⇑b = b.reindex e ∘ e := by
     ext x
-    simp only [OrthonormalBasis.coe_reindex, Function.comp_apply, Equiv.symm_apply_apply]
+    simp [OrthonormalBasis.coe_reindex, Function.comp_apply, Equiv.symm_apply_apply]
   rw [A, parallelepiped_comp_equiv, AlternatingMap.measure_parallelepiped,
     o.abs_volumeForm_apply_of_orthonormal, ENNReal.ofReal_one]
 
@@ -73,7 +73,7 @@ theorem Orientation.measure_eq_volume (o : Orientation ℝ F (Fin n)) :
     Orientation.measure_orthonormalBasis o (stdOrthonormalBasis ℝ F)
   rw [addHaarMeasure_unique o.volumeForm.measure
     (stdOrthonormalBasis ℝ F).toBasis.parallelepiped, A, one_smul]
-  simp only [volume, Basis.addHaar_def]
+  simp [volume, Basis.addHaar_def]
 
 end
 

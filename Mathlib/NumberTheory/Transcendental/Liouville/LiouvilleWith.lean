@@ -122,7 +122,7 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
     calc _ < C / ↑n ^ p * |↑r| := by gcongr
       _ = ↑r.den ^ p * (↑|r| * C) / (↑r.den * ↑n) ^ p := ?_
     rw [mul_rpow, mul_div_mul_left, mul_comm, mul_div_assoc]
-    · simp only [Rat.cast_abs]
+    · simp [Rat.cast_abs]
     all_goals positivity
 
 /-- The product `x * r`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if

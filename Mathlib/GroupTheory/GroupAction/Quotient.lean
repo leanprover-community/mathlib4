@@ -274,7 +274,7 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
   exists_smul_eq := by
     { rintro ⟨x⟩ ⟨y⟩
       refine ⟨y * x⁻¹, QuotientGroup.eq.mpr ?_⟩
-      simp only [smul_eq_mul, H.one_mem, inv_mul_cancel, inv_mul_cancel_right]}
+      simp [smul_eq_mul, H.one_mem, inv_mul_cancel, inv_mul_cancel_right]}
 
 variable {G}
 

@@ -372,11 +372,11 @@ theorem norm_mul (f g : PadicSeq p) : (f * g).norm = f.norm * g.norm := by
   classical
   exact if hf : f ≈ 0 then by
     have hg : f * g ≈ 0 := mul_equiv_zero' _ hf
-    simp only [hf, hg, norm, dite_eq_left, zero_mul]
+    simp [hf, hg, norm, dite_eq_left, zero_mul]
   else
     if hg : g ≈ 0 then by
       have hf : f * g ≈ 0 := mul_equiv_zero _ hg
-      simp only [hf, hg, norm, dite_eq_left, mul_zero]
+      simp [hf, hg, norm, dite_eq_left, mul_zero]
     else by
       unfold norm
       have hfg := mul_not_equiv_zero hf hg
@@ -486,10 +486,10 @@ theorem norm_eq {f g : PadicSeq p} (h : ∀ k, padicNorm p (f k) = padicNorm p (
   classical
   exact if hf : f ≈ 0 then by
     have hg : g ≈ 0 := equiv_zero_of_val_eq_of_equiv_zero h hf
-    simp only [hf, hg, norm, dite_eq_left]
+    simp [hf, hg, norm, dite_eq_left]
   else by
     have hg : ¬g ≈ 0 := fun hg ↦
-      hf <| equiv_zero_of_val_eq_of_equiv_zero (by simp only [h, forall_const]) hg
+      hf <| equiv_zero_of_val_eq_of_equiv_zero (by simp [h, forall_const]) hg
     simp only [hg, hf, norm, dite_eq_right, not_false_iff]
     let i := max (stationaryPoint hf) (stationaryPoint hg)
     have hpf : padicNorm p (f (stationaryPoint hf)) = padicNorm p (f i) := by
@@ -814,7 +814,7 @@ instance normedField : NormedField ℚ_[p] where
     rw [add_comm, ← sub_eq_add_neg]
     change ‖x - y‖ = ‖y - x‖
     have : y - x = (-1) * (x - y) := by ring
-    simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
+    simp [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
   norm_mul := by simp [Norm.norm, map_mul]
   norm := norm
 
@@ -1076,7 +1076,7 @@ theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : �
 @[simp]
 lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q := by
   rcases eq_or_ne q 0 with rfl | hq
-  · simp only [Rat.cast_zero, valuation_zero, padicValRat.zero]
+  · simp [Rat.cast_zero, valuation_zero, padicValRat.zero]
   refine neg_injective ((zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).injective
     <| (norm_eq_zpow_neg_valuation (mod_cast hq)).symm.trans ?_)
   rw [eq_padicNorm, ← Rat.cast_natCast, ← Rat.cast_zpow, Rat.cast_inj]
@@ -1238,7 +1238,7 @@ def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
 @[simp]
 theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) :
     Padic.addValuation x = (x.valuation : WithTop ℤ) := by
-  simp only [Padic.addValuation, AddValuation.of_apply, addValuationDef, ite_eq_right hx]
+  simp [Padic.addValuation, AddValuation.of_apply, addValuationDef, ite_eq_right hx]
 
 section NormLEIff
 
@@ -1261,7 +1261,7 @@ theorem norm_lt_pow_iff_norm_le_pow_sub_one (x : ℚ_[p]) (n : ℤ) :
 
 theorem norm_le_one_iff_val_nonneg (x : ℚ_[p]) : ‖x‖ ≤ 1 ↔ 0 ≤ x.valuation := by
   by_cases hx : x = 0
-  · simp only [hx, norm_zero, valuation_zero, zero_le_one, le_refl]
+  · simp [hx, norm_zero, valuation_zero, zero_le_one, le_refl]
   · rw [norm_eq_zpow_neg_valuation hx, ← zpow_zero (p : ℝ), zpow_le_zpow_iff_right₀, neg_nonpos]
     exact Nat.one_lt_cast.2 (Nat.Prime.one_lt' p).out
 

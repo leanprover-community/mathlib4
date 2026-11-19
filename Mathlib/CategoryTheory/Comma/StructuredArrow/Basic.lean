@@ -130,7 +130,7 @@ theorem id_right (X : StructuredArrow S T) : (𝟙 X : X ⟶ X).right = 𝟙 X.r
 theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
     (eqToHom h).right = eqToHom (by rw [h]) := by
   subst h
-  simp only [eqToHom_refl, id_right]
+  simp [eqToHom_refl, id_right]
 
 @[simp]
 theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 X.left := rfl
@@ -577,7 +577,7 @@ theorem id_left (X : CostructuredArrow S T) : (𝟙 X : X ⟶ X).left = 𝟙 X.l
 theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
     (eqToHom h).left = eqToHom (by rw [h]) := by
   subst h
-  simp only [eqToHom_refl, id_left]
+  simp [eqToHom_refl, id_left]
 
 @[simp]
 theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 X.right := rfl
@@ -1079,7 +1079,7 @@ def StructuredArrow.preEquivalenceInverse (f : StructuredArrow e G) :
               (f.hom ≫ (G.map g.hom : G.obj f.right ⟶ (F ⋙ G).obj g.right)))
             (homMk g.hom)
   map φ := homMk <| homMk φ.right <| by
-    simp only [Functor.comp_obj, mk_right, mk_hom_eq_self,
+    simp [Functor.comp_obj, mk_right, mk_hom_eq_self,
       Functor.comp_map, Category.assoc, ← w φ, Functor.map_comp]
 
 /-- A structured arrow category on a `StructuredArrow.pre e F G` functor is equivalent to the
@@ -1116,7 +1116,7 @@ def CostructuredArrow.preEquivalence.inverse (f : CostructuredArrow G e) :
     CostructuredArrow F f.left ⥤ CostructuredArrow (pre F G e) f where
   obj g := mk (Y := mk (Y := g.left) (G.map g.hom ≫ f.hom)) (homMk g.hom)
   map φ := homMk <| homMk φ.left <| by
-    simp only [Functor.comp_obj, mk_left, Functor.comp_map, mk_hom_eq_self,
+    simp [Functor.comp_obj, mk_left, Functor.comp_map, mk_hom_eq_self,
       ← w φ, Functor.map_comp, Category.assoc]
 
 /-- A costructured arrow category on a `CostructuredArrow.pre F G e` functor is equivalent to the

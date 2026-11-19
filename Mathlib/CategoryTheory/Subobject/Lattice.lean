@@ -213,7 +213,7 @@ theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
 
 theorem underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Subobject B).arrow := by
   convert! underlyingIso_hom_comp_eq_mk (𝟙 B)
-  simp only [comp_id]
+  simp [comp_id]
 
 instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
   rw [← underlyingIso_top_hom]
@@ -312,7 +312,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Factors f ↔ f = 0 :=
   ⟨by
     rintro ⟨h, rfl⟩
-    simp only [MonoOver.bot_arrow_eq_zero, MonoOver.bot_left, comp_zero],
+    simp [MonoOver.bot_arrow_eq_zero, MonoOver.bot_left, comp_zero],
    by
     rintro rfl
     exact ⟨0, by simp⟩⟩
@@ -524,9 +524,9 @@ def supIsImage {A : C} (f g : Subobject A) :
   lift F := by
     refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
     · refine le_mk_of_comm (coprod.inl ≫ F.e) ?_
-      simp only [assoc, MonoFactorisation.fac, coprod.inl_desc]
+      simp [assoc, MonoFactorisation.fac, coprod.inl_desc]
     · refine le_mk_of_comm (coprod.inr ≫ F.e) ?_
-      simp only [assoc, MonoFactorisation.fac, coprod.inr_desc]
+      simp [assoc, MonoFactorisation.fac, coprod.inr_desc]
 
 /-- If `C` has binary coproducts, then `f ⊔ g ≅ image (f ⨿ g ⟶ A)`. -/
 @[simps!]

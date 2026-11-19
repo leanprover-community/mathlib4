@@ -25,7 +25,7 @@ open Function
 
 @[to_additive]
 lemma SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
-    Semiconj (a * ·) (b * ·) (c * ·) := fun j ↦ by simp only [← mul_assoc, h.eq]
+    Semiconj (a * ·) (b * ·) (c * ·) := fun j ↦ by simp [← mul_assoc, h.eq]
 
 @[to_additive]
 lemma Commute.function_commute_mul_left (h : Commute a b) : Function.Commute (a * ·) (b * ·) :=
@@ -33,7 +33,7 @@ lemma Commute.function_commute_mul_left (h : Commute a b) : Function.Commute (a 
 
 @[to_additive]
 lemma SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
-    Function.Semiconj (· * a) (· * c) (· * b) := fun j ↦ by simp only [mul_assoc, ← h.eq]
+    Function.Semiconj (· * a) (· * c) (· * b) := fun j ↦ by simp [mul_assoc, ← h.eq]
 
 @[to_additive]
 lemma Commute.function_commute_mul_right (h : Commute a b) : Function.Commute (· * a) (· * b) :=

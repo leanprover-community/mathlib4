@@ -254,7 +254,7 @@ theorem isTree_iff_existsUnique_path :
       obtain ⟨p, _⟩ := h v w
       exact p.reachable
     · rintro v w ⟨p, hp⟩ ⟨q, hq⟩
-      simp only [ExistsUnique.unique (h v w) hp hq]
+      simp [ExistsUnique.unique (h v w) hp hq]
 
 lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
   (isTree_iff_existsUnique_path.1 hG).2

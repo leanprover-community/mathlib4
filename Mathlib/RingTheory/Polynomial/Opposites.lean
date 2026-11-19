@@ -53,7 +53,7 @@ theorem opRingEquiv_op_X : opRingEquiv R (op (X : R[X])) = X :=
 
 theorem opRingEquiv_op_C_mul_X_pow (r : R) (n : ℕ) :
     opRingEquiv R (op (C r * X ^ n : R[X])) = C (op r) * X ^ n := by
-  simp only [X_pow_mul, op_mul, op_pow, map_mul, map_pow, opRingEquiv_op_X, opRingEquiv_op_C]
+  simp [X_pow_mul, op_mul, op_pow, map_mul, map_pow, opRingEquiv_op_X, opRingEquiv_op_C]
 
 /-!  Lemmas to get started, using `(opRingEquiv R).symm` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
@@ -90,8 +90,8 @@ theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (u
 @[simp]
 theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree = (unop p).natDegree := by
   by_cases p0 : p = 0
-  · simp only [p0, map_zero, natDegree_zero, unop_zero]
-  · simp only [p0, natDegree_eq_support_max', Ne, EmbeddingLike.map_eq_zero_iff, not_false_iff,
+  · simp [p0, map_zero, natDegree_zero, unop_zero]
+  · simp [p0, natDegree_eq_support_max', Ne, EmbeddingLike.map_eq_zero_iff, not_false_iff,
       support_opRingEquiv, unop_eq_zero_iff]
 
 @[simp]

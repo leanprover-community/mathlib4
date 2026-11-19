@@ -150,7 +150,7 @@ def freeOn (E : Set α) : Matroid α := (loopyOn E)✶
   simp [freeOn]
 
 @[simp] theorem freeOn_isBase_iff : (freeOn E).IsBase B ↔ B = E := by
-  simp only [freeOn, loopyOn_ground, dual_isBase_iff', loopyOn_isBase_iff, sdiff_eq_empty,
+  simp [freeOn, loopyOn_ground, dual_isBase_iff', loopyOn_isBase_iff, sdiff_eq_empty,
     ← subset_antisymm_iff, eq_comm (a := E)]
 
 @[simp] theorem freeOn_indep_iff : (freeOn E).Indep I ↔ I ⊆ E := by

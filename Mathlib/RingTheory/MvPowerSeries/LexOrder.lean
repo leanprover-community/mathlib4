@@ -45,7 +45,7 @@ theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
   suffices ne : Set.Nonempty (toLex '' φ.support) by
     use ne
     unfold lexOrder
-    simp only [dite_eq_right hφ]
+    simp [dite_eq_right hφ]
   exact (Function.support_nonempty_iff.mpr hφ).image _
 
 @[simp]
@@ -53,8 +53,8 @@ theorem lexOrder_eq_top_iff_eq_zero (φ : MvPowerSeries σ R) :
     lexOrder φ = ⊤ ↔ φ = 0 := by
   unfold lexOrder
   split_ifs with h
-  · simp only [h]
-  · simp only [h, WithTop.coe_ne_top]
+  · simp [h]
+  · simp [h, WithTop.coe_ne_top]
 
 @[simp] theorem lexOrder_zero : lexOrder (0 : MvPowerSeries σ R) = ⊤ := by
   unfold lexOrder
@@ -64,12 +64,12 @@ theorem exists_finsupp_eq_lexOrder_of_ne_zero {φ : MvPowerSeries σ R} (hφ : �
     ∃ (d : σ →₀ ℕ), lexOrder φ = toLex d := by
   simp only [ne_eq, ← lexOrder_eq_top_iff_eq_zero, WithTop.ne_top_iff_exists] at hφ
   obtain ⟨p, hp⟩ := hφ
-  exact ⟨ofLex p, by simp only [toLex_ofLex, hp]⟩
+  exact ⟨ofLex p, by simp [toLex_ofLex, hp]⟩
 
 theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : toLex d = lexOrder φ) : coeff d φ ≠ 0 := by
   have hφ : φ ≠ 0 := by
-    simp only [ne_eq, ← lexOrder_eq_top_iff_eq_zero, ← h, WithTop.coe_ne_top, not_false_eq_true]
+    simp [ne_eq, ← lexOrder_eq_top_iff_eq_zero, ← h, WithTop.coe_ne_top, not_false_eq_true]
   have hφ' := lexOrder_def_of_ne_zero hφ
   rcases hφ' with ⟨ne, hφ'⟩
   simp only [← h, WithTop.coe_eq_coe] at hφ'
@@ -82,7 +82,7 @@ theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
 theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : toLex d < lexOrder φ) : coeff d φ = 0 := by
   by_cases hφ : φ = 0
-  · simp only [hφ, map_zero]
+  · simp [hφ, map_zero]
   · rcases lexOrder_def_of_ne_zero hφ with ⟨ne, hφ'⟩
     rw [hφ', WithTop.coe_lt_coe] at h
     by_contra h'
@@ -149,7 +149,7 @@ theorem le_lexOrder_mul (φ ψ : MvPowerSeries σ R) :
   intro hu hv
   rw [← not_le] at hd
   apply hd
-  simp only [← h, toLex_add, WithTop.coe_add, add_le_add hu hv]
+  simp [← h, toLex_add, WithTop.coe_add, add_le_add hu hv]
 
 alias lexOrder_mul_ge := le_lexOrder_mul
 

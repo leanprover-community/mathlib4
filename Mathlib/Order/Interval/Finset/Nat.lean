@@ -167,7 +167,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
       suffices k = n by contradiction
       refine ih hk ?_ hkl
       simpa using Nat.lt_add_of_pos_right (n := n) ha
-    · refine ih ?_ ?_ hkl <;> simp only [Finset.mem_coe, hk, hl]
+    · refine ih ?_ ?_ hkl <;> simp [Finset.mem_coe, hk, hl]
 
 /-- Note that while this lemma cannot be easily generalized to a type class, it holds for ℤ as
 well. See `Int.image_Ico_emod` for the ℤ version. -/

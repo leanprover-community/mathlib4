@@ -49,7 +49,7 @@ lemma count_diff (a : α) (l₁ : List α) :
     ∀ l₂, count a (l₁.diff l₂) = count a l₁ - count a l₂
   | [] => rfl
   | b :: l₂ => by
-    simp only [diff_cons, count_diff, count_erase, beq_iff_eq, Nat.sub_right_comm, count_cons,
+    simp [diff_cons, count_diff, count_erase, beq_iff_eq, Nat.sub_right_comm, count_cons,
       Nat.sub_add_eq]
 
 lemma countP_diff (hl : l₂ <+~ l₁) (p : α → Bool) :
@@ -64,6 +64,6 @@ theorem count_map_of_injective [BEq β] [LawfulBEq β] (l : List α) (f : α →
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countP_map]
   unfold Function.comp
-  simp only [hf.beq_eq]
+  simp [hf.beq_eq]
 
 end List

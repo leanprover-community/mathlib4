@@ -634,7 +634,7 @@ theorem LinearIndependent.option (hv : LinearIndependent K v)
 theorem linearIndependent_option {v : Option ι → V} : LinearIndependent K v ↔
     LinearIndependent K (v ∘ (↑) : ι → V) ∧
       v none ∉ Submodule.span K (range (v ∘ (↑) : ι → V)) := by
-  simp only [← linearIndependent_option', Option.casesOn'_none_coe]
+  simp [← linearIndependent_option', Option.casesOn'_none_coe]
 
 theorem linearIndepOn_insert {s : Set ι} {a : ι} {f : ι → V} (has : a ∉ s) :
     LinearIndepOn K f (insert a s) ↔ LinearIndepOn K f s ∧ f a ∉ Submodule.span K (f '' s) := by
@@ -769,8 +769,8 @@ def equiv_linearIndependent (n : ℕ) :
     ⟨s.val 0, (linearIndependent_finSucc.mp s.property).right⟩⟩
   invFun s := ⟨Fin.cons s.2.val s.1.val,
     linearIndependent_finCons.mpr ⟨s.1.property, s.2.property⟩⟩
-  left_inv _ := by simp only [Fin.cons_self_tail, Subtype.coe_eta]
-  right_inv := fun ⟨_, _⟩ => by simp only [Fin.cons_zero, Subtype.coe_eta, Sigma.mk.inj_iff,
+  left_inv _ := by simp [Fin.cons_self_tail, Subtype.coe_eta]
+  right_inv := fun ⟨_, _⟩ => by simp [Fin.cons_zero, Subtype.coe_eta, Sigma.mk.inj_iff,
     Fin.tail_cons, heq_eq_eq, and_self]
 
 theorem linearIndependent_fin2 {f : Fin 2 → V} :
@@ -893,7 +893,7 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
         have hb₂t' : b₂ ∉ s' ∪ t := fun h => hb₂t <| subset_span h
         have : s ⊆ (span K ↑(insert b₂ s' ∪ t) : Submodule K V) := fun b₃ hb₃ => by
           have : ↑(s' ∪ insert b₁ t) ⊆ insert b₁ (insert b₂ ↑(s' ∪ t) : Set V) := by
-            simp only [insert_eq, union_subset_union, Subset.refl,
+            simp [insert_eq, union_subset_union, Subset.refl,
               subset_union_right, Finset.union_insert, Finset.coe_insert]
           have hb₃ : b₃ ∈ span K (insert b₁ (insert b₂ ↑(s' ∪ t) : Set V)) :=
             span_mono this (hss' hb₃)
@@ -914,7 +914,7 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
         (by simp +contextual [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
-    ⟨u, Subset.trans h.1 (by grind), h.2.1, by simp only [h.2.2, eq]⟩
+    ⟨u, Subset.trans h.1 (by grind), h.2.1, by simp [h.2.2, eq]⟩
 
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set V} (ht : t.Finite)
     (hs : LinearIndepOn K id s) (hst : s ⊆ span K t) :
@@ -938,7 +938,7 @@ lemma LinearMap.BilinForm.exists_pos_and_pos_apply_sum_smul {R M ι : Type*} [Fi
   have hX : X ≠ 0 := fun hX ↦
     hc fun k ↦ max_eq_right_iff.mp <| Fintype.linearIndependent_iff.mp hv _ hX k
   have hx : x = X + ∑ k, min (c k) 0 • v k := by
-    simp only [x, X, ← Finset.sum_add_distrib, ← add_smul, max_add_min, add_zero]
+    simp [x, X, ← Finset.sum_add_distrib, ← add_smul, max_add_min, add_zero]
   have : 0 < B x X := by
     rw [hx, map_add, LinearMap.add_apply]
     refine add_pos_of_pos_of_nonneg (hB X hX) ?_

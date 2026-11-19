@@ -97,7 +97,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) :
     intro x _
     have c := HasDerivAt.comp (x : ℂ) (hasDerivAt_pow (n - 1) _) (Complex.hasDerivAt_cos x)
     convert ((Complex.hasDerivAt_sin x).fun_mul c).comp_ofReal using 1
-    · simp only [Complex.ofReal_sin, Complex.ofReal_cos, Function.comp]
+    · simp [Complex.ofReal_sin, Complex.ofReal_cos, Function.comp]
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
       congr 1

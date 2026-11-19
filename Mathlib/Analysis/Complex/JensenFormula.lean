@@ -358,7 +358,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
         with z h₁z h₂z
       simpa [h₂f ⟨z, h₂z⟩] using (not_iff_not.2 h₁z.meromorphicOrderAt_eq_zero_iff)
     rw [circleAverage_congr_codiscreteWithin (f₂ := 0) _ hR]
-    · simp only [circleAverage, mul_inv_rev, Pi.zero_apply, intervalIntegral.integral_zero,
+    · simp [circleAverage, mul_inv_rev, Pi.zero_apply, intervalIntegral.integral_zero,
         smul_eq_mul, mul_zero]
     apply Filter.codiscreteWithin_mono (s := CB) sphere_subset_closedBall
     filter_upwards [this] with z hz

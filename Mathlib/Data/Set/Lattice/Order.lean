@@ -36,7 +36,7 @@ variable [CompleteLattice α]
 
 @[to_dual]
 theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
-  ext fun _ => by simp only [mem_Ici, iSup_le_iff, mem_iInter]
+  ext fun _ => by simp [mem_Ici, iSup_le_iff, mem_iInter]
 
 @[to_dual]
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⋂ (i) (j), Ici (f i j) := by
@@ -95,7 +95,7 @@ theorem sSup_iUnion (t : ι → Set β) : sSup (⋃ i, t i) = ⨆ i, sSup (t i) 
 
 @[to_dual]
 theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t := by
-  simp only [sUnion_eq_biUnion, sSup_eq_iSup, iSup_iUnion]
+  simp [sUnion_eq_biUnion, sSup_eq_iSup, iSup_iUnion]
 
 @[to_dual]
 lemma iSup_sUnion (S : Set (Set α)) (f : α → β) :

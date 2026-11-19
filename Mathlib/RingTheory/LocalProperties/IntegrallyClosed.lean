@@ -62,7 +62,7 @@ theorem IsIntegrallyClosed.of_localization [IsDomain R] (S : Set (PrimeSpectrum 
   apply IsIntegrallyClosed.of_localization_submonoid (fun p : S ↦ p.1.asIdeal.primeCompl)
     (fun p ↦ p.1.asIdeal.primeCompl_le_nonZeroDivisors) (fun p ↦ h p.1 p.2)
   ext x
-  simp only [← hs, Algebra.mem_iInf, Subtype.forall]
+  simp [← hs, Algebra.mem_iInf, Subtype.forall]
 
 /-- An integral domain `R` is integral closed if `Rₘ` is integral closed
   for any maximal ideal `m` of `R`. -/

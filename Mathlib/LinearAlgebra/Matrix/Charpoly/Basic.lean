@@ -55,12 +55,12 @@ theorem charmatrix_apply :
 
 @[simp]
 theorem charmatrix_apply_eq : charmatrix M i i = (X : R[X]) - C (M i i) := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_apply, scalar_apply, map_apply,
+  simp [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_apply, scalar_apply, map_apply,
     diagonal_apply_eq]
 
 @[simp]
 theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_apply, scalar_apply,
+  simp [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_apply, scalar_apply,
     diagonal_apply_ne _ h, map_apply, sub_eq_neg_self]
 
 @[simp]
@@ -186,13 +186,13 @@ lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
 @[simp]
 lemma charpoly_fromBlocks_zero₁₂ :
     (fromBlocks M₁₁ 0 M₂₁ M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
-  simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
+  simp [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
     det_fromBlocks_zero₁₂]
 
 @[simp]
 lemma charpoly_fromBlocks_zero₂₁ :
     (fromBlocks M₁₁ M₁₂ 0 M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
-  simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
+  simp [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
     det_fromBlocks_zero₂₁]
 
 lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
@@ -202,7 +202,7 @@ lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a :
 
 lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
-  simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
+  simp [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 
 lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by

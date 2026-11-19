@@ -177,7 +177,7 @@ theorem natDegree_one : natDegree (1 : R[X]) = 0 :=
 
 @[simp, grind =]
 theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
-  simp only [← C_eq_natCast, natDegree_C]
+  simp [← C_eq_natCast, natDegree_C]
 
 @[simp]
 theorem natDegree_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
@@ -489,12 +489,12 @@ theorem degree_zero_le : degree (0 : R[X]) ≤ 0 := natDegree_eq_zero_iff_degree
 
 theorem degree_le_iff_coeff_zero (f : R[X]) (n : WithBot ℕ) :
     degree f ≤ n ↔ ∀ m : ℕ, n < m → coeff f m = 0 := by
-  simp only [degree, Finset.max, Finset.sup_le_iff, mem_support_iff, Ne, ← not_le,
+  simp [degree, Finset.max, Finset.sup_le_iff, mem_support_iff, Ne, ← not_le,
     not_imp_comm, Nat.cast_withBot]
 
 theorem degree_lt_iff_coeff_zero (f : R[X]) (n : ℕ) :
     degree f < n ↔ ∀ m : ℕ, n ≤ m → coeff f m = 0 := by
-  simp only [degree, Finset.sup_lt_iff (WithBot.bot_lt_coe n), mem_support_iff,
+  simp [degree, Finset.sup_lt_iff (WithBot.bot_lt_coe n), mem_support_iff,
     WithBot.coe_lt_coe, ← @not_le ℕ, max_eq_sup_coe, Nat.cast_withBot, Ne, not_imp_not]
 
 theorem natDegree_pos_iff_degree_pos : 0 < natDegree p ↔ 0 < degree p :=

@@ -152,7 +152,7 @@ lemma add_comp' : (⇑κ + ⇑η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by 
 @[simp]
 lemma comp_smul (a : ℝ≥0∞) : κ ∘ₘ (a • μ) = a • (κ ∘ₘ μ) := by
   ext s hs
-  simp only [bind_apply hs κ.aemeasurable, lintegral_smul_measure, smul_apply, smul_eq_mul]
+  simp [bind_apply hs κ.aemeasurable, lintegral_smul_measure, smul_apply, smul_eq_mul]
 
 end AddSMul
 

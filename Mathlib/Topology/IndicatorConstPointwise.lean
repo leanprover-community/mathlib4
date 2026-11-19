@@ -59,7 +59,7 @@ lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [D
       tauto
   · have obs : (fun _ ↦ if q then a else b) =ᶠ[L] (fun i ↦ if p i then a else b) := by
       filter_upwards [h] with i hi
-      simp only [hi]
+      simp [hi]
     apply Tendsto.congr' obs
     by_cases hq : q
     · simp only [hq, ite_true]
@@ -67,7 +67,7 @@ lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [D
       simp
     · simp only [hq, ite_false]
       apply le_trans _ hbG
-      simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
+      simp [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
         Set.preimage_const_of_mem, univ_mem]
 
 lemma tendsto_indicator_const_apply_iff_eventually' (b : β)
@@ -99,8 +99,8 @@ evaluated at `x` if and only if we eventually have the equivalence `x ∈ Asᵢ 
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L (𝓝 (A.indicator (fun (_ : α) ↦ b) x))
       ↔ ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
   apply tendsto_indicator_const_apply_iff_eventually' _ b
-  · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
-  · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
+  · simp [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
+  · simp [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
 
 /-- The indicator functions of `Asᵢ` tend to the indicator function of `A` pointwise if and only if
 for every `x`, we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
@@ -108,8 +108,8 @@ for every `x`, we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
       ↔ ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
   apply tendsto_indicator_const_iff_forall_eventually' _ b
-  · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
-  · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
+  · simp [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
+  · simp [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
 
 lemma tendsto_indicator_const_iff_tendsto_pi_pure'
     (b : β) (nhds_b : {0}ᶜ ∈ 𝓝 b) (nhds_o : {b}ᶜ ∈ 𝓝 0) :

@@ -148,7 +148,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
           { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j } =
             ⋂ (i : J) (j : J) (f : i ⟶ j), { u | F.map f (u i) = u j } := by
           ext1
-          simp only [Set.mem_iInter, Set.mem_ofPred_eq]
+          simp [Set.mem_iInter, Set.mem_ofPred_eq]
         rw [this]
         apply isClosed_iInter
         intro i
@@ -219,4 +219,4 @@ end CompHaus
 
 /-- Every `CompHausLike` admits a functor to `CompHaus`. -/
 abbrev compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus :=
-  CompHausLike.toCompHausLike (by simp only [implies_true])
+  CompHausLike.toCompHausLike (by simp [implies_true])

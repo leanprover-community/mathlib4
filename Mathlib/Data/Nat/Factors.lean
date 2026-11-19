@@ -85,7 +85,7 @@ theorem primeFactorsList_prime {p : ℕ} (hp : Nat.Prime p) : p.primeFactorsList
   rw [this, primeFactorsList]
   simp only [Eq.symm this]
   have : Nat.minFac p = p := (Nat.prime_def_minFac.mp hp).2
-  simp only [this, primeFactorsList, Nat.div_self (Nat.Prime.pos hp)]
+  simp [this, primeFactorsList, Nat.div_self (Nat.Prime.pos hp)]
 
 theorem isChain_cons_primeFactorsList {n : ℕ} :
     ∀ {a}, (∀ p, Prime p → p ∣ n → a ≤ p) → List.IsChain (· ≤ ·) (a :: primeFactorsList n) := by

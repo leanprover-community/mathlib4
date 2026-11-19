@@ -163,7 +163,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
     rfl
   rw [this]
   have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
-  simp only [map_smul, eNorm_smul, ← Real.eNorm_of_nonneg this, f_im]
+  simp [map_smul, eNorm_smul, ← Real.eNorm_of_nonneg this, f_im]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under an antitone reparametrization. -/
@@ -196,7 +196,7 @@ lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Antit
     rfl
   rw [this]
   have : 0 ≤ -derivWithin f (Icc a b) t := by simp [hf.derivWithin_nonpos]
-  simp only [map_smul, eNorm_smul, f_im, ← Real.eNorm_of_nonneg this, eNorm_neg]
+  simp [map_smul, eNorm_smul, f_im, ← Real.eNorm_of_nonneg this, eNorm_neg]
 
 section
 
@@ -231,7 +231,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : CMDiff[Icc a b] 1 �
   have hf : CMDiff 1 f := by
     rw [← contMDiffOn_comp_projIcc_iff]
     apply hη.congr (fun t ht ↦ ?_)
-    simp only [Function.comp_apply, f, projIcc_of_mem, ht]
+    simp [Function.comp_apply, f, projIcc_of_mem, ht]
   let g : Path x y := by
     refine ⟨⟨f, hf.continuous⟩, ?_, ?_⟩ <;>
     simp [f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]

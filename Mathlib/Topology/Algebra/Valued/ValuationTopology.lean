@@ -99,7 +99,7 @@ theorem subgroups_basis :
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use 1
         rintro y _
-        simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq, Valuation.map_mul, Hx,
+        simp [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq, Valuation.map_mul, Hx,
           mul_zero, Units.zero_lt]
       · set u : v.ValueGroup₀ˣ := Units.mk0 (restrict₀ (v : R →*₀ Γ₀) x)
           (by simp [restrict₀_apply]; aesop) with hu_def
@@ -167,12 +167,12 @@ variable {R Γ₀}
 theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : _i.v.ValueGroup₀ˣ,
     { y | (v.restrict (y - x) ) < γ.val } ⊆ s := by
-  simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_ofPred_eq, true_and,
+  simp [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_ofPred_eq, true_and,
     ((hasBasis_nhds_zero R Γ₀).comap fun y ↦ y - x).mem_iff]
 
 theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : _i.v.ValueGroup₀ˣ, { x | v.restrict x < γ.val } ⊆ s := by
-  simp only [mem_nhds, sub_zero]
+  simp [mem_nhds, sub_zero]
 
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
 This does not imply that `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),

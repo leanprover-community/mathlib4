@@ -224,7 +224,7 @@ instance {α} [IsLocalizedModule S f] :
     simpa [e', Finsupp.single_apply, -EmbeddingLike.apply_eq_iff_eq, apply_ite]
   split_ifs with h
   · simp [e]
-  · simp only [tmul_zero, map_zero]
+  · simp [tmul_zero, map_zero]
 
 open Finsupp in
 theorem IsLocalizedModule.map_linearCombination {α : Type*} {v : α → M} [IsLocalizedModule S f] :

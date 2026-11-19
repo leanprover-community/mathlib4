@@ -117,11 +117,11 @@ theorem vandermonde_succ (v : Fin n.succ → R) :
 
 theorem vandermonde_mul_vandermonde_transpose (v w : Fin n → R) (i j) :
     (vandermonde v * (vandermonde w)ᵀ) i j = ∑ k : Fin n, (v i * w j) ^ (k : ℕ) := by
-  simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, mul_pow]
+  simp [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, mul_pow]
 
 theorem vandermonde_transpose_mul_vandermonde (v : Fin n → R) (i j) :
     ((vandermonde v)ᵀ * vandermonde v) i j = ∑ k : Fin n, v k ^ (i + j : ℕ) := by
-  simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, pow_add]
+  simp [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, pow_add]
 
 theorem rectVandermonde_apply_zero_right {α : Type*} {v w : α → R} {i : α} (hw : w i = 0) :
     rectVandermonde v w (n + 1) i = Pi.single (Fin.last n) ((v i) ^ n) := by
@@ -194,7 +194,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
     field_simp
     simp only [Finset.prod_div_distrib, Finset.prod_const, Finset.card_fin, Function.comp_apply]
     field_simp
-    simp only [prod_univ_succ, Ioi_zero_eq_map, Finset.prod_map, coe_succEmb, prod_Ioi_succ]
+    simp [prod_univ_succ, Ioi_zero_eq_map, Finset.prod_map, coe_succEmb, prod_Ioi_succ]
   intro j _ hj0
   obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero hj0
   rw [mul_eq_zero, mul_eq_zero]
@@ -234,7 +234,7 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {v : Fin n → R} :
 theorem det_vandermonde_ne_zero_iff [IsDomain R] {v : Fin n → R} :
     det (vandermonde v) ≠ 0 ↔ Function.Injective v := by
   unfold Function.Injective
-  simp only [det_vandermonde_eq_zero_iff, Ne, not_exists, not_and, Classical.not_not]
+  simp [det_vandermonde_eq_zero_iff, Ne, not_exists, not_and, Classical.not_not]
 
 @[simp]
 theorem det_vandermonde_add (v : Fin n → R) (a : R) :
@@ -245,7 +245,7 @@ theorem det_vandermonde_add (v : Fin n → R) (a : R) :
 theorem det_vandermonde_sub (v : Fin n → R) (a : R) :
     (Matrix.vandermonde fun i ↦ v i - a).det = (Matrix.vandermonde v).det := by
   rw [← det_vandermonde_add v (-a)]
-  simp only [← sub_eq_add_neg]
+  simp [← sub_eq_add_neg]
 
 theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero [IsDomain R] {f v : Fin n → R}
     (hf : Function.Injective f) (hfv : ∀ j, (∑ i : Fin n, f j ^ (i : ℕ) * v i) = 0) : v = 0 :=

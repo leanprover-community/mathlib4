@@ -78,7 +78,7 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
     refine ⟨⟨x, algebraMap A C m, m, SetLike.coe_mem m, rfl⟩, ?_⟩
     rw [Subtype.coe_mk, ← IsScalarTower.algebraMap_apply, hx, mul_comm, Submonoid.smul_def,
       smul_def]
-  · simp only [IsIntegralClosure.algebraMap_injective C A L h]
+  · simp [IsIntegralClosure.algebraMap_injective C A L h]
 
 theorem IsIntegralClosure.isLocalization_of_isSeparable [IsDomain A] [Algebra.IsSeparable K L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
@@ -137,8 +137,8 @@ theorem FiniteDimensional.exists_is_basis_integral :
     invFun := fun x => (algebraMap A L y)⁻¹ * x
     left_inv := ?_
     right_inv := ?_}, ?_⟩
-  · intro x; simp only [inv_mul_cancel_left₀ hy']
-  · intro x; simp only [mul_inv_cancel_left₀ hy']
+  · intro x; simp [inv_mul_cancel_left₀ hy']
+  · intro x; simp [mul_inv_cancel_left₀ hy']
   · rintro ⟨x', hx'⟩
     simp only [Algebra.smul_def, Finset.mem_image, Finset.mem_univ,
       true_and] at his'

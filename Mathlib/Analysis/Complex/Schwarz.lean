@@ -319,7 +319,7 @@ theorem affine_of_mapsTo_ball_of_norm_dslope_eq_div [StrictConvexSpace ℝ E]
       using norm_eqOn_of_isPreconnected_of_isMaxOn (convex_ball c R₁).isPreconnected
         isOpen_ball (g_diff.add_const (g z₀)) h_z₀ g_max.norm_add_self hz
   have : dslope f c z = dslope f c z₀ := eq_of_norm_eq_of_norm_add_eq heq <| by
-    simp only [heq, SameRay.rfl.norm_add, heq_add]
+    simp [heq, SameRay.rfl.norm_add, heq_add]
   simp [← this]
 
 /-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,

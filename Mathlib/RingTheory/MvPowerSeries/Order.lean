@@ -145,7 +145,7 @@ def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
 
 theorem ne_zero_iff_weightedOrder_finite :
     f ≠ 0 ↔ (f.weightedOrder w).toNat = f.weightedOrder w := by
-  simp only [weightedOrder, ne_eq, natCast_toNat_eq_self, dite_eq_left_iff,
+  simp [weightedOrder, ne_eq, natCast_toNat_eq_self, dite_eq_left_iff,
     ENat.natCast_ne_top, imp_false, not_not]
 
 /-- The `0` power series is the unique power series with infinite order. -/
@@ -211,9 +211,9 @@ theorem weightedOrder_eq_nat {n : ℕ} :
       (∃ d, coeff d f ≠ 0 ∧ weight w d = n) ∧ ∀ d, weight w d < n → coeff d f = 0 := by
   constructor
   · intro h
-    obtain ⟨d, hd⟩ := f.exists_coeff_ne_zero_and_weightedOrder w (by simp only [h, toNat_natCast])
+    obtain ⟨d, hd⟩ := f.exists_coeff_ne_zero_and_weightedOrder w (by simp [h, toNat_natCast])
     exact ⟨⟨d, by simpa [h, Nat.cast_inj, ne_eq] using hd⟩,
-      fun e he ↦ f.coeff_eq_zero_of_lt_weightedOrder w (by simp only [h, Nat.cast_lt, he])⟩
+      fun e he ↦ f.coeff_eq_zero_of_lt_weightedOrder w (by simp [h, Nat.cast_lt, he])⟩
   · rintro ⟨⟨d, hd', hd⟩, h⟩
     exact le_antisymm (hd.symm ▸ f.weightedOrder_le w hd') (nat_le_weightedOrder w h)
 
@@ -227,7 +227,7 @@ theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
   · rw [weightedOrder_eq_nat]
     constructor
     · use d
-      simp only [coeff_monomial_same, ne_eq, h, not_false_eq_true, and_self]
+      simp [coeff_monomial_same, ne_eq, h, not_false_eq_true, and_self]
     · intro b hb
       rw [coeff_monomial, ite_eq_right]
       rintro rfl
@@ -247,7 +247,7 @@ theorem weightedOrder_one [Nontrivial R] : (1 : MvPowerSeries σ R).weightedOrde
 theorem min_weightedOrder_le_add :
     min (f.weightedOrder w) (g.weightedOrder w) ≤ (f + g).weightedOrder w := by
   apply le_weightedOrder w
-  simp +contextual only
+  simp +contextual
     [coeff_eq_zero_of_lt_weightedOrder w, lt_min_iff, map_add, add_zero,
       imp_true_iff]
 
@@ -350,7 +350,7 @@ theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (
     coeff d (f * ∏ i ∈ s, (1 - g i)) = coeff d f := by
   classical
   induction s using Finset.induction_on with
-  | empty => simp only [Finset.prod_empty, mul_one]
+  | empty => simp [Finset.prod_empty, mul_one]
   | insert a s ha ih =>
     simp only [Finset.mem_insert, forall_eq_or_imp] at h
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm,
@@ -648,7 +648,7 @@ def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowe
     · rw [add_zero]
   map_smul' a f := by
     ext d
-    simp only [map_smul,
+    simp [map_smul,
       smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, mul_zero]
 
 theorem coeff_weightedHomogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : MvPowerSeries σ R) :

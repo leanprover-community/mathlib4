@@ -102,7 +102,7 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
     F.mapDerivedCategoryFactorsh.hom F.mapDerivedCategoryFactors.hom ℤ (by
       ext K
       dsimp
-      simp only [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
+      simp [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app, map_id, comp_obj])
 
 instance :

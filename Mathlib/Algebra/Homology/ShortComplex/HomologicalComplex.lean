@@ -207,7 +207,7 @@ variable [K.HasHomology i]
 lemma comp_liftCycles {A' A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
     (hk : k ≫ K.d i j = 0) (α : A' ⟶ A) :
     α ≫ K.liftCycles k j hj hk = K.liftCycles (α ≫ k) j hj (by rw [assoc, hk, comp_zero]) := by
-  simp only [← cancel_mono (K.iCycles i), assoc, liftCycles_i]
+  simp [← cancel_mono (K.iCycles i), assoc, liftCycles_i]
 
 @[reassoc]
 lemma liftCycles_homologyπ_eq_zero_of_boundary {A : C} (k : A ⟶ K.X i) (j : ι)
@@ -303,7 +303,7 @@ instance : Mono (K.homologyι i) :=
 @[reassoc (attr := simp)]
 lemma fromOpcycles_d :
     K.fromOpcycles i j ≫ K.d j k = 0 := by
-  simp only [← cancel_epi (K.pOpcycles i), p_fromOpcycles_assoc, d_comp_d, comp_zero]
+  simp [← cancel_epi (K.pOpcycles i), p_fromOpcycles_assoc, d_comp_d, comp_zero]
 
 variable {i j} in
 lemma fromOpcycles_eq_zero (hij : ¬ c.Rel i j) :
@@ -317,7 +317,7 @@ lemma descOpcycles_comp {A A' : C} (k : K.X i ⟶ A) (j : ι) (hj : c.prev i = j
     (hk : K.d j i ≫ k = 0) (α : A ⟶ A') :
     K.descOpcycles k j hj hk ≫ α = K.descOpcycles (k ≫ α) j hj
       (by rw [reassoc_of% hk, zero_comp]) := by
-  simp only [← cancel_epi (K.pOpcycles i), p_descOpcycles_assoc, p_descOpcycles]
+  simp [← cancel_epi (K.pOpcycles i), p_descOpcycles_assoc, p_descOpcycles]
 
 @[reassoc]
 lemma homologyι_descOpcycles_eq_zero_of_boundary {A : C} (k : K.X i ⟶ A) (j : ι)
@@ -489,14 +489,14 @@ lemma opcyclesMap_comp_descOpcycles {A : C} (k : L.X i ⟶ A) (j : ι) (hj : c.p
     (hk : L.d j i ≫ k = 0) (φ : K ⟶ L) :
     opcyclesMap φ i ≫ L.descOpcycles k j hj hk = K.descOpcycles (φ.f i ≫ k) j hj
       (by rw [← φ.comm_assoc, hk, comp_zero]) := by
-  simp only [← cancel_epi (K.pOpcycles i), p_opcyclesMap_assoc, p_descOpcycles]
+  simp [← cancel_epi (K.pOpcycles i), p_opcyclesMap_assoc, p_descOpcycles]
 
 @[reassoc (attr := simp)]
 lemma liftCycles_comp_cyclesMap {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
     (hk : k ≫ K.d i j = 0) (φ : K ⟶ L) :
     K.liftCycles k j hj hk ≫ cyclesMap φ i = L.liftCycles (k ≫ φ.f i) j hj
       (by rw [assoc, φ.comm, reassoc_of% hk, zero_comp]) := by
-  simp only [← cancel_mono (L.iCycles i), assoc, cyclesMap_i, liftCycles_i_assoc, liftCycles_i]
+  simp [← cancel_mono (L.iCycles i), assoc, cyclesMap_i, liftCycles_i_assoc, liftCycles_i]
 
 section
 
@@ -756,7 +756,7 @@ variable {K L}
 lemma isoHomologyι₀_inv_naturality [L.HasHomology 0] :
     K.isoHomologyι₀.inv ≫ HomologicalComplex.homologyMap φ 0 =
       HomologicalComplex.opcyclesMap φ 0 ≫ L.isoHomologyι₀.inv := by
-  simp only [assoc, ← cancel_mono (L.homologyι 0),
+  simp [assoc, ← cancel_mono (L.homologyι 0),
     HomologicalComplex.homologyι_naturality, HomologicalComplex.isoHomologyι_inv_hom_id_assoc,
     HomologicalComplex.isoHomologyι_inv_hom_id, comp_id]
 
@@ -790,7 +790,7 @@ variable {K L}
 lemma isoHomologyπ₀_inv_naturality [L.HasHomology 0] :
     HomologicalComplex.homologyMap φ 0 ≫ L.isoHomologyπ₀.inv =
       K.isoHomologyπ₀.inv ≫ HomologicalComplex.cyclesMap φ 0 := by
-  simp only [← cancel_epi (K.homologyπ 0), HomologicalComplex.homologyπ_naturality_assoc,
+  simp [← cancel_epi (K.homologyπ 0), HomologicalComplex.homologyπ_naturality_assoc,
     HomologicalComplex.isoHomologyπ_hom_inv_id, comp_id,
     HomologicalComplex.isoHomologyπ_hom_inv_id_assoc]
 
@@ -892,7 +892,7 @@ lemma cyclesIsoSc'_inv_iCycles :
 @[reassoc (attr := simp)]
 lemma toCycles_cyclesIsoSc'_hom :
     K.toCycles i j ≫ (K.cyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).toCycles := by
-  simp only [← cancel_mono (K.sc' i j k).iCycles, assoc, cyclesIsoSc'_hom_iCycles,
+  simp [← cancel_mono (K.sc' i j k).iCycles, assoc, cyclesIsoSc'_hom_iCycles,
     toCycles_i, ShortComplex.toCycles_i, shortComplexFunctor'_obj_f]
 
 /-- The homology of a homological complex in degree `j` can be computed
@@ -914,7 +914,7 @@ lemma pOpcycles_opcyclesIsoSc'_hom :
 lemma opcyclesIsoSc'_inv_fromOpcycles :
     (K.opcyclesIsoSc' i j k hi hk).inv ≫ K.fromOpcycles j k =
       (K.sc' i j k).fromOpcycles := by
-  simp only [← cancel_epi (K.sc' i j k).pOpcycles, pOpcycles_opcyclesIsoSc'_inv_assoc,
+  simp [← cancel_epi (K.sc' i j k).pOpcycles, pOpcycles_opcyclesIsoSc'_inv_assoc,
     p_fromOpcycles, ShortComplex.p_fromOpcycles, shortComplexFunctor'_obj_g]
 
 /-- The opcycles of a homological complex in degree `j` can be computed

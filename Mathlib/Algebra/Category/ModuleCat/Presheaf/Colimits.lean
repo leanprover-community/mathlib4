@@ -43,7 +43,7 @@ def evaluationJointlyReflectsColimits (c : Cocone F)
         have h₁ := (c.ι.app j).naturality f
         have h₂ := (hc Y).fac ((evaluation R Y).mapCocone s)
         dsimp at h₁ h₂ ⊢
-        simp only [← reassoc_of% h₁, ← Functor.map_comp, h₂, Hom.naturality]) }
+        simp [← reassoc_of% h₁, ← Functor.map_comp, h₂, Hom.naturality]) }
   fac s j := by
     ext1 X
     exact (hc X).fac ((evaluation R X).mapCocone s) j

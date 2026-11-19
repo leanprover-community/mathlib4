@@ -104,7 +104,7 @@ lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
           · exact c.π.app WalkingParallelPair.zero
           apply (mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd _ _)).hom_ext
           rintro (_ | _)
-          · simp only [Category.assoc, ← G.map_comp, prod.lift_fst, BinaryFan.π_app_left,
+          · simp [Category.assoc, ← G.map_comp, prod.lift_fst, BinaryFan.π_app_left,
               BinaryFan.mk_fst]
           · simp only [BinaryFan.π_app_right, BinaryFan.mk_snd, Category.assoc, ← G.map_comp,
               prod.lift_snd]
@@ -122,7 +122,7 @@ lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
           have := h WalkingParallelPair.zero
           dsimp [equalizerCone] at this
           ext <;>
-            simp only [PreservesPullback.iso_hom_snd, Category.assoc,
+            simp [PreservesPullback.iso_hom_snd, Category.assoc,
               PreservesPullback.iso_hom_fst, pullback.lift_fst, pullback.lift_snd,
               Category.comp_id, ← pullbackFst_eq_pullback_snd, ← this] }⟩
 
@@ -201,7 +201,7 @@ lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinary
           · exact c.ι.app WalkingParallelPair.one
           apply (mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod _ _)).hom_ext
           rintro (_ | _)
-          · simp only [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, ←
+          · simp [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, ←
               G.map_comp_assoc, coprod.inl_desc]
           · simp only [BinaryCofan.ι_app_right, BinaryCofan.mk_inr, ←
               G.map_comp_assoc, coprod.inr_desc]
@@ -219,7 +219,7 @@ lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinary
           have := h WalkingParallelPair.one
           dsimp [coequalizerCocone] at this
           ext <;>
-            simp only [PreservesPushout.inl_iso_hom_assoc, Category.id_comp, pushout.inl_desc,
+            simp [PreservesPushout.inl_iso_hom_assoc, Category.id_comp, pushout.inl_desc,
               pushout.inr_desc, PreservesPushout.inr_iso_hom_assoc, ← pushoutInl_eq_pushout_inr, ←
               this] }⟩
 

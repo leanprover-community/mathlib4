@@ -116,7 +116,7 @@ theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a 
   push Not
   intro k
   induction k with
-  | zero => simp only [zero_le, exists_const]
+  | zero => simp [zero_le, exists_const]
   | succ k ih =>
     obtain ⟨N, hN⟩ := ih
     obtain ⟨N₁, hN₁, hN₁'⟩ := h₁ N
@@ -175,8 +175,8 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         · rw [posPart_eq_zero.2 hnonneg.le]
           exact norm_nonneg _
       · finiteness
-    · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · left; simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
+    · simp [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
+  · left; simp [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
   · left; finiteness
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -328,7 +328,7 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
   have hev : ∀ m ≥ n, eLpNorm (μ[f m - g | ℱ n]) 1 μ = eLpNorm (f n - μ[g | ℱ n]) 1 μ := by
     refine fun m hm => eLpNorm_congr_ae ((condExp_sub (hf.integrable m) hg _).trans ?_)
     filter_upwards [hf.2 n m hm] with x hx
-    simp only [hx, Pi.sub_apply]
+    simp [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
 
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
@@ -375,7 +375,7 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
   induction s, hs
     using MeasurableSpace.induction_on_inter (MeasurableSpace.measurableSpace_iSup_eq ℱ) hpi with
   | empty =>
-    simp only [Measure.restrict_empty, integral_zero_measure]
+    simp [Measure.restrict_empty, integral_zero_measure]
   | basic s hs =>
     rcases hs with ⟨n, hn⟩
     exact this n _ hn
@@ -434,7 +434,7 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
     condExp_condExp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
   refine ht.congr fun n => eLpNorm_congr_ae ?_
   filter_upwards [heq n] with x hxeq
-  simp only [hxeq, Pi.sub_apply]
+  simp [hxeq, Pi.sub_apply]
 
 end L1Convergence
 

@@ -277,7 +277,7 @@ theorem perm_insert {a} {b : β a} {s₁ s₂ : AList β} (p : s₁.entries ~ s�
 
 @[simp]
 theorem lookup_insert {a} {b : β a} (s : AList β) : lookup a (insert a b s) = some b := by
-  simp only [lookup, insert, dlookup_kinsert]
+  simp [lookup, insert, dlookup_kinsert]
 
 @[simp]
 theorem lookup_insert_ne {a a'} {b' : β a'} {s : AList β} (h : a ≠ a') :
@@ -297,7 +297,7 @@ theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlook
 @[simp]
 theorem insert_insert {a} {b b' : β a} (s : AList β) :
     (s.insert a b).insert a b' = s.insert a b' := by
-  ext : 1; simp only [AList.entries_insert, List.kerase_cons_eq]
+  ext : 1; simp [AList.entries_insert, List.kerase_cons_eq]
 
 theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a ≠ a') :
     ((s.insert a b).insert a' b').entries ~ ((s.insert a' b').insert a b).entries := by
@@ -307,7 +307,7 @@ theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a
 @[simp]
 theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b') = singleton a b :=
   ext <| by
-    simp only [AList.entries_insert, List.kerase_cons_eq, AList.singleton_entries]
+    simp [AList.entries_insert, List.kerase_cons_eq, AList.singleton_entries]
 
 @[simp]
 theorem entries_toAList (xs : List (Sigma β)) : (List.toAList xs).entries = dedupKeys xs :=

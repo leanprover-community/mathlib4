@@ -95,7 +95,7 @@ def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
     simp only [hom_ext_iff, comp_f, F.map_comp] at h h'
     slice_rhs 2 3 => rw [← h]
     slice_rhs 1 2 => rw [h']
-    simp only [assoc]
+    simp [assoc]
 
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
 using `functorExtension₁` actually extend the original functors `C ⥤ Karoubi D`. -/

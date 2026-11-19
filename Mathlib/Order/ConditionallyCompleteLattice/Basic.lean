@@ -409,7 +409,7 @@ theorem csSup_empty : (sSup ∅ : α) = ⊥ :=
 
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
-  · simp only [csSup_empty, isLUB_empty]
+  · simp [csSup_empty, isLUB_empty]
   · exact isLUB_csSup hne hs
 
 /-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted

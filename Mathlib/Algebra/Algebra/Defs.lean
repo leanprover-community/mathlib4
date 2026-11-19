@@ -220,7 +220,7 @@ abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
   algebraMap :=
   { toFun r := r • (1 : A)
     map_one' := one_smul _ _
-    map_mul' r₁ r₂ := by simp only [h₁, mul_smul]
+    map_mul' r₁ r₂ := by simp [h₁, mul_smul]
     map_zero' := zero_smul _ _
     map_add' r₁ r₂ := add_smul r₁ r₂ 1 }
   commutes' r x := by simp [h₁, h₂]

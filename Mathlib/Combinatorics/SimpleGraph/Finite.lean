@@ -262,7 +262,7 @@ protected alias ⟨IsIsolated.of_degree_eq_zero, IsIsolated.degree_eq_zero⟩ :=
 attribute [simp] IsIsolated.degree_eq_zero
 
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
-  simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
+  simp [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
 
 variable {G v} in
 theorem degree_pos_iff_nonempty : 0 < G.degree v ↔ (G.neighborSet v).Nonempty :=
@@ -293,7 +293,7 @@ theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.nei
 theorem degree_eq_one_iff_existsUnique_adj {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)] :
     G.degree v = 1 ↔ ∃! w : V, G.Adj v w := by
   rw [degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
-  simp only [mem_neighborFinset]
+  simp [mem_neighborFinset]
 
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
@@ -415,7 +415,7 @@ theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
 
 theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     Gᶜ.neighborFinset v = (G.neighborFinset v)ᶜ \ {v} := by
-  simp only [neighborFinset, neighborSet_compl, Set.toFinset_sdiff, Set.toFinset_compl,
+  simp [neighborFinset, neighborSet_compl, Set.toFinset_sdiff, Set.toFinset_compl,
     Set.toFinset_singleton]
 
 @[simp]

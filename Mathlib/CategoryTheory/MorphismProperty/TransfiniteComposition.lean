@@ -228,7 +228,7 @@ variable {J} in
 lemma isStableUnderTransfiniteCompositionOfShape_iff_of_orderIso (e : J ≃o J') :
     W.IsStableUnderTransfiniteCompositionOfShape J ↔
       W.IsStableUnderTransfiniteCompositionOfShape J' := by
-  simp only [isStableUnderTransfiniteCompositionOfShape_iff,
+  simp [isStableUnderTransfiniteCompositionOfShape_iff,
     W.transfiniteCompositionsOfShape_eq_of_orderIso e]
 
 end
@@ -345,7 +345,7 @@ lemma transfiniteCompositions_iff {X Y : C} (f : X ⟶ Y) :
     transfiniteCompositions.{w} W f ↔
       ∃ (J : Type w) (_ : LinearOrder J) (_ : SuccOrder J) (_ : OrderBot J)
         (_ : WellFoundedLT J), W.transfiniteCompositionsOfShape J f := by
-  simp only [transfiniteCompositions, iSup_iff]
+  simp [transfiniteCompositions, iSup_iff]
 
 lemma transfiniteCompositionsOfShape_le_transfiniteCompositions
     (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :

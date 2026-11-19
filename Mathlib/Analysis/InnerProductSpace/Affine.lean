@@ -74,7 +74,7 @@ theorem dist_sq_lineMap_lineMap_of_inner_eq_zero {a b c : P} (t₁ t₂ : ℝ)
     rw [AffineMap.lineMap_apply, AffineMap.lineMap_apply, vadd_vsub_vadd_cancel_right]
   rw [dist_eq_norm_vsub V, hvec, norm_sub_sq_real, norm_smul, norm_smul,
       Real.norm_eq_abs, Real.norm_eq_abs, inner_smul_left, inner_smul_right, h_inner]
-  simp only [mul_zero, sub_zero, mul_pow, sq_abs, ← dist_eq_norm_vsub' V]
+  simp [mul_zero, sub_zero, mul_pow, sq_abs, ← dist_eq_norm_vsub' V]
 
 /-- Squared distance from `p` to a point on the line from `a` to `b`,
 given that `p -ᵥ a` is orthogonal to `b -ᵥ a`. -/

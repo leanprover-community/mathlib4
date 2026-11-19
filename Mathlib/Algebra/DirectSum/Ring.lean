@@ -194,11 +194,11 @@ instance instMul : Mul (⨁ i, A i) where
   mul := fun a b => mulHom A a b
 
 instance : NonUnitalNonAssocSemiring (⨁ i, A i) where
-  zero_mul := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
-  mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero]
-  left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, map_add]
+  zero_mul := fun _ => by simp [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
+  mul_zero := fun _ => by simp [Mul.mul, HMul.hMul, map_zero]
+  left_distrib := fun _ _ _ => by simp [Mul.mul, HMul.hMul, map_add]
   right_distrib := fun _ _ _ => by
-    simp only [Mul.mul, HMul.hMul, map_add, AddMonoidHom.add_apply]
+    simp [Mul.mul, HMul.hMul, map_add, AddMonoidHom.add_apply]
 
 variable {A}
 
@@ -253,7 +253,7 @@ instance semiring : Semiring (⨁ i, A i) where
   mul_one := private mul_one A
   mul_assoc := private mul_assoc A
   toNatCast := instNatCast _
-  natCast_zero := by simp only [NatCast.natCast, GSemiring.natCast_zero, map_zero]
+  natCast_zero := by simp [NatCast.natCast, GSemiring.natCast_zero, map_zero]
   natCast_succ := fun n => by
     simp_rw [NatCast.natCast, GSemiring.natCast_succ]
     rw [map_add]
@@ -300,7 +300,7 @@ theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)
     a * a' =
       ∑ ij ∈ DFinsupp.support a ×ˢ DFinsupp.support a',
         DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) := by
-  simp only [mul_eq_dfinsuppSum, DFinsupp.sum, Finset.sum_product]
+  simp [mul_eq_dfinsuppSum, DFinsupp.sum, Finset.sum_product]
 
 end Semiring
 
@@ -591,7 +591,7 @@ def liftRingHom :
   right_inv F := by
     apply RingHom.toAddMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
-    simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_toAddMonoidHom]
+    simp [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_toAddMonoidHom]
 
 end ToSemiring
 

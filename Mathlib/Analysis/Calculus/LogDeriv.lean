@@ -35,7 +35,7 @@ theorem logDeriv_apply (f : 𝕜 → 𝕜') (x : 𝕜) : logDeriv f x = deriv f 
 
 lemma logDeriv_eq_zero_of_not_differentiableAt (f : 𝕜 → 𝕜') (x : 𝕜) (h : ¬DifferentiableAt 𝕜 f x) :
     logDeriv f x = 0 := by
-  simp only [logDeriv_apply, deriv_zero_of_not_differentiableAt h, zero_div]
+  simp [logDeriv_apply, deriv_zero_of_not_differentiableAt h, zero_div]
 
 /-- If two functions agree in a neighborhood of `x`, then so do their logarithmic derivatives. -/
 lemma logDeriv_congr_nhds {f g : 𝕜 → 𝕜'} {x : 𝕜} (h : f =ᶠ[𝓝 x] g) :
@@ -92,11 +92,11 @@ theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g 
 
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0) :
     logDeriv (fun z => f z * a) x = logDeriv f x := by
-  simp only [logDeriv_apply, deriv_mul_const_field, mul_div_mul_right _ _ ha]
+  simp [logDeriv_apply, deriv_mul_const_field, mul_div_mul_right _ _ ha]
 
 theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0) :
     logDeriv (fun z => a * f z) x = logDeriv f x := by
-  simp only [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
+  simp [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
 
 /-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
 @[to_fun logDeriv_fun_prod]

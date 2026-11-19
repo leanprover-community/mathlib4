@@ -185,8 +185,8 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S] [Module S 
     [SMulCommClass R S M] : ((i : ι) → φ i →ₗ[R] M) ≃ₗ[S] ((i : ι) → φ i) →ₗ[R] M where
   toFun f := ∑ i : ι, (f i).comp (proj i)
   invFun f i := f.comp (single R φ i)
-  map_add' f g := by simp only [Pi.add_apply, add_comp, Finset.sum_add_distrib]
-  map_smul' c f := by simp only [Pi.smul_apply, smul_comp, Finset.smul_sum, RingHom.id_apply]
+  map_add' f g := by simp [Pi.add_apply, add_comp, Finset.sum_add_distrib]
+  map_smul' c f := by simp [Pi.smul_apply, smul_comp, Finset.smul_sum, RingHom.id_apply]
   left_inv f := by
     ext i x
     simp [apply_single]
@@ -703,7 +703,7 @@ def LinearMap.vecCons₂ {n} (f : M →ₗ[R] M₂ →ₗ[R] M₃) (g : M →ₗ
   toFun m := LinearMap.vecCons (f m) (g m)
   map_add' x y :=
     LinearMap.ext fun z => by
-      simp only [f.map_add, g.map_add, LinearMap.add_apply, LinearMap.vecCons_apply,
+      simp [f.map_add, g.map_add, LinearMap.add_apply, LinearMap.vecCons_apply,
         Matrix.cons_add_cons (f x z)]
   map_smul' r x := LinearMap.ext fun z => by simp [Matrix.smul_cons r (f x z)]
 

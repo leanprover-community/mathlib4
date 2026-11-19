@@ -158,7 +158,7 @@ theorem coe_map : (s.map f : Set L) = f '' s :=
 @[simp]
 theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   unfold map
-  simp only [mem_mk, Subring.mem_map, mem_toSubring]
+  simp [mem_mk, Subring.mem_map, mem_toSubring]
 
 -- Higher priority to apply before `mem_map`.
 @[simp 1100]
@@ -269,11 +269,11 @@ theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, 
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subfield K} : (↑(⨅ i, S i) : Set K) = ⋂ i, S i := by
-  simp only [iInf, coe_sInf, Set.biInter_range]
+  simp [iInf, coe_sInf, Set.biInter_range]
 
 @[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_mem_range]
+  simp [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem sInf_toSubring (s : Set (Subfield K)) :
@@ -486,7 +486,7 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (h
 theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   have : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
+  simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=

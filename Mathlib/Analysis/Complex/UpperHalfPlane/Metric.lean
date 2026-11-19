@@ -79,7 +79,7 @@ theorem sinh_half_dist_add_dist (a b c : ℍ) : sinh ((dist a b + dist b c) / 2)
       mul_comm] <;> exact (im_pos _).le
 
 protected theorem dist_comm (z w : ℍ) : dist z w = dist w z := by
-  simp only [dist_eq, dist_comm (z : ℂ), mul_comm]
+  simp [dist_eq, dist_comm (z : ℂ), mul_comm]
 
 theorem dist_le_iff_le_sinh :
     dist z w ≤ r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) ≤ sinh (r / 2) := by
@@ -315,7 +315,7 @@ theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (
   exacts [congr_arg₂ _ (log_exp _) (log_exp _), rfl]
 
 theorem isometry_real_vadd (a : ℝ) : Isometry (a +ᵥ · : ℍ → ℍ) :=
-  Isometry.of_dist_eq fun y₁ y₂ => by simp only [dist_eq, coe_vadd, vadd_im, dist_add_left]
+  Isometry.of_dist_eq fun y₁ y₂ => by simp [dist_eq, coe_vadd, vadd_im, dist_add_left]
 
 theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ → ℍ) := by
   refine Isometry.of_dist_eq fun y₁ y₂ => ?_

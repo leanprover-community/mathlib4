@@ -106,10 +106,10 @@ theorem polar_add (f g : M → N) (x y : M) : polar (f + g) x y = polar f x y + 
   abel
 
 theorem polar_neg (f : M → N) (x y : M) : polar (-f) x y = -polar f x y := by
-  simp only [polar, Pi.neg_apply, sub_eq_add_neg, neg_add]
+  simp [polar, Pi.neg_apply, sub_eq_add_neg, neg_add]
 
 theorem polar_smul [Monoid S] [DistribMulAction S N] (f : M → N) (s : S) (x y : M) :
-    polar (s • f) x y = s • polar f x y := by simp only [polar, Pi.smul_apply, smul_sub]
+    polar (s • f) x y = s • polar f x y := by simp [polar, Pi.smul_apply, smul_sub]
 
 theorem polar_comm (f : M → N) (x y : M) : polar f x y = polar f y x := by
   rw [polar, polar, add_comm, sub_sub, sub_sub, add_comm (f x) (f y)]
@@ -127,7 +127,7 @@ theorem polar_add_left_iff {f : M → N} {x x' y : M} :
 theorem polar_comp {F : Type*} [AddCommGroup S] [FunLike F N S] [AddMonoidHomClass F N S]
     (f : M → N) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
-  simp only [polar, Function.comp_apply, map_sub]
+  simp [polar, Function.comp_apply, map_sub]
 
 /-- `QuadraticMap.polar` as a function from `Sym2`. -/
 def polarSym2 (f : M → N) : Sym2 M → N :=
@@ -268,7 +268,7 @@ protected theorem map_sub (x y : M) : Q (x - y) = Q (y - x) := by rw [← neg_su
 
 @[simp]
 theorem polar_zero_left (y : M) : polar Q 0 y = 0 := by
-  simp only [polar, zero_add, QuadraticMap.map_zero, sub_zero, sub_self]
+  simp [polar, zero_add, QuadraticMap.map_zero, sub_zero, sub_self]
 
 @[simp]
 theorem polar_add_left (x x' y : M) : polar Q (x + x') y = polar Q x y + polar Q x' y :=
@@ -289,7 +289,7 @@ theorem polar_sub_left (x x' y : M) : polar Q (x - x') y = polar Q x y - polar Q
 
 @[simp]
 theorem polar_zero_right (y : M) : polar Q y 0 = 0 := by
-  simp only [add_zero, polar, QuadraticMap.map_zero, sub_self]
+  simp [add_zero, polar, QuadraticMap.map_zero, sub_self]
 
 @[simp]
 theorem polar_add_right (x y y' : M) : polar Q x (y + y') = polar Q x y + polar Q x y' := by
@@ -421,8 +421,8 @@ end SMul
 
 instance : Zero (QuadraticMap R M N) :=
   ⟨{  toFun := fun _ => 0
-      toFun_smul := fun a _ => by simp only [smul_zero]
-      exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
+      toFun_smul := fun a _ => by simp [smul_zero]
+      exists_companion' := ⟨0, fun _ _ => by simp [add_zero, LinearMap.zero_apply]⟩ }⟩
 
 instance : IsZeroApply (QuadraticMap R M N) where
 
@@ -436,7 +436,7 @@ instance : Inhabited (QuadraticMap R M N) :=
 instance : Add (QuadraticMap R M N) :=
   ⟨fun Q Q' =>
     { toFun := Q + Q'
-      toFun_smul := fun a x => by simp only [Pi.add_apply, smul_add, QuadraticMap.map_smul]
+      toFun_smul := fun a x => by simp [Pi.add_apply, smul_add, QuadraticMap.map_smul]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
         let ⟨B', h'⟩ := Q'.exists_companion
@@ -479,7 +479,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N
 instance : Neg (QuadraticMap R M N) :=
   ⟨fun Q =>
     { toFun := -Q
-      toFun_smul := fun a x => by simp only [Pi.neg_apply, Q.map_smul, smul_neg]
+      toFun_smul := fun a x => by simp [Pi.neg_apply, Q.map_smul, smul_neg]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
         ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
@@ -519,7 +519,7 @@ def restrictScalars (Q : QuadraticMap R M N) : QuadraticMap S M N where
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
     ⟨B.restrictScalars₁₂ (S := R) (R' := S) (S' := S), fun x y => by
-      simp only [LinearMap.restrictScalars₁₂_apply_apply, h]⟩
+      simp [LinearMap.restrictScalars₁₂_apply_apply, h]⟩
 
 end restrictScalars
 
@@ -531,7 +531,7 @@ variable [AddCommMonoid P] [Module R P]
 /-- Compose the quadratic map with a linear function on the right. -/
 def comp (Q : QuadraticMap R N P) (f : M →ₗ[R] N) : QuadraticMap R M P where
   toFun x := Q (f x)
-  toFun_smul a x := by simp only [Q.map_smul, map_smul]
+  toFun_smul a x := by simp [Q.map_smul, map_smul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
     ⟨B.compl₁₂ f f, fun x y => by simp_rw [f.map_add]; exact h (f x) (f y)⟩
@@ -545,10 +545,10 @@ theorem comp_apply (Q : QuadraticMap R N P) (f : M →ₗ[R] N) (x : M) : (Q.com
 def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M N) :
     QuadraticMap R M P where
   toFun x := f (Q x)
-  toFun_smul b x := by simp only [Q.map_smul, map_smul]
+  toFun_smul b x := by simp [Q.map_smul, map_smul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨B.compr₂ f, fun x y => by simp only [h, map_add, LinearMap.compr₂_apply]⟩
+    ⟨B.compr₂ f, fun x y => by simp [h, map_add, LinearMap.compr₂_apply]⟩
 
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps! +simpRhs]
@@ -666,7 +666,7 @@ variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
   toFun x := B x x
-  toFun_smul a x := by simp only [map_smul, LinearMap.smul_apply, smul_smul]
+  toFun_smul a x := by simp [map_smul, LinearMap.smul_apply, smul_smul]
   exists_companion' := ⟨B + LinearMap.flip B, fun x y => by simp [add_add_add_comm, add_comm]⟩
 
 @[simp]
@@ -755,7 +755,7 @@ theorem toQuadraticMap_sub (B₁ B₂ : BilinMap R M N) :
   rfl
 
 theorem polar_toQuadraticMap (x y : M) : polar (toQuadraticMap B) x y = B x y + B y x := by
-  simp only [polar, toQuadraticMap_apply, map_add, LinearMap.add_apply, add_assoc,
+  simp [polar, toQuadraticMap_apply, map_add, LinearMap.add_apply, add_assoc,
     add_comm (B y x) _, add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
 
 theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :=
@@ -868,7 +868,7 @@ set_option backward.defeqAttrib.useBackward true in
 
 theorem associated_isSymm (Q : QuadraticMap R M N) (x y : M) :
     associatedHom S Q x y = associatedHom S Q y x := by
-  simp only [associated_apply, sub_eq_add_neg, add_assoc, add_comm, add_left_comm]
+  simp [associated_apply, sub_eq_add_neg, add_assoc, add_comm, add_left_comm]
 
 theorem _root_.QuadraticForm.associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (associatedHom S Q).IsSymm :=
@@ -878,14 +878,14 @@ theorem _root_.QuadraticForm.associated_isSymm (Q : QuadraticForm R M) [Invertib
 (using `flip` because `IsSymm` does not apply here). -/
 lemma associated_flip : (associatedHom S Q).flip = associatedHom S Q := by
   ext
-  simp only [LinearMap.flip_apply, associated_apply, add_comm, sub_eq_add_neg, add_left_comm,
+  simp [LinearMap.flip_apply, associated_apply, add_comm, sub_eq_add_neg, add_left_comm,
     add_assoc]
 
 @[simp]
 theorem associated_comp {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N' →ₗ[R] M) :
     associatedHom S (Q.comp f) = (associatedHom S Q).compl₁₂ f f := by
   ext
-  simp only [associated_apply, comp_apply, map_add, LinearMap.compl₁₂_apply]
+  simp [associated_apply, comp_apply, map_add, LinearMap.compl₁₂_apply]
 
 theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     associatedHom S B.toQuadraticMap x y = ⅟(2 : Module.End R N) • (B x y + B y x) := by
@@ -1056,7 +1056,7 @@ def Anisotropic (Q : QuadraticMap R M N) : Prop :=
 
 theorem not_anisotropic_iff_exists (Q : QuadraticMap R M N) :
     ¬Anisotropic Q ↔ ∃ x, x ≠ 0 ∧ Q x = 0 := by
-  simp only [Anisotropic, not_forall, exists_prop, and_comm]
+  simp [Anisotropic, not_forall, exists_prop, and_comm]
 
 theorem Anisotropic.eq_zero_iff {Q : QuadraticMap R M N} (h : Anisotropic Q) {x : M} :
     Q x = 0 ↔ x = 0 :=
@@ -1185,7 +1185,7 @@ open Matrix
 theorem toMatrix'_comp (Q : QuadraticForm R (m → R)) (f : (n → R) →ₗ[R] m → R) :
     QuadraticForm.toMatrix' (Q.comp f) =
       (LinearMap.toMatrix' f)ᵀ * Q.toMatrix' * (LinearMap.toMatrix' f) := by
-  simp only [QuadraticMap.associated_comp, LinearMap.toMatrix₂'_compl₁₂, toMatrix']
+  simp [QuadraticMap.associated_comp, LinearMap.toMatrix₂'_compl₁₂, toMatrix']
 
 @[deprecated (since := "2026-05-15")] alias QuadraticMap.toMatrix' := QuadraticForm.toMatrix'
 @[deprecated (since := "2026-05-15")] alias QuadraticMap.toMatrix'_smul :=
@@ -1229,7 +1229,7 @@ open Matrix
 theorem toMatrix_comp (b' : Basis m R P) (Q : QuadraticForm R P) (f : N →ₗ[R] P) :
     QuadraticForm.toMatrix b (Q.comp f) =
       (f.toMatrix b b')ᵀ * (Q.toMatrix b') * (f.toMatrix b b') := by
-  simp only [QuadraticMap.associated_comp, LinearMap.toMatrix₂_compl₁₂ b' b', toMatrix]
+  simp [QuadraticMap.associated_comp, LinearMap.toMatrix₂_compl₁₂ b' b', toMatrix]
 
 end Basis
 
@@ -1366,7 +1366,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   rw [Basis.coe_mkFinCons]
   intro j i
   refine Fin.cases ?_ (fun i => ?_) i <;> refine Fin.cases ?_ (fun j => ?_) j <;> intro hij <;>
-    simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
+    simp [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
   · exact (hij rfl).elim
   · rw [← hB₂.eq]
     exact (v' j).prop _ (Submodule.mem_span_singleton_self x)

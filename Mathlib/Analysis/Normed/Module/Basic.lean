@@ -145,7 +145,7 @@ instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
 instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
   { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
     norm_smul_le := fun s x => by
-      simp only [norm_smul, Prod.norm_def, le_rfl] }
+      simp [norm_smul, Prod.norm_def, le_rfl] }
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
 instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
@@ -291,13 +291,13 @@ theorem nnNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x�
 @[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap := nnNorm_algebraMap
 
 theorem eNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ₑ = ‖x‖ₑ * ‖(1 : 𝕜')‖ₑ := by
-  simp only [eNorm_eq_nnNorm, nnNorm_algebraMap, ENNReal.coe_mul]
+  simp [eNorm_eq_nnNorm, nnNorm_algebraMap, ENNReal.coe_mul]
 
 @[deprecated (since := "2026-11-06")] alias enorm_algebraMap := eNorm_algebraMap
 
 theorem dist_algebraMap (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
-  simp only [dist_eq_norm, ← map_sub, norm_algebraMap]
+  simp [dist_eq_norm, ← map_sub, norm_algebraMap]
 
 /-- This is a simpler version of `norm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
@@ -326,7 +326,7 @@ theorem eNorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖(algebraMap 𝕜 
 @[simp]
 theorem dist_algebraMap' [NormOneClass 𝕜'] (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y := by
-  simp only [dist_eq_norm, ← map_sub, norm_algebraMap']
+  simp [dist_eq_norm, ← map_sub, norm_algebraMap']
 
 section NNReal
 
@@ -377,7 +377,7 @@ instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [Norm
     rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_cast, norm_smul, Rat.norm_cast_real]
 
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
-  norm_smul_le q _ := by simp only [norm_eq_zero, mul_zero, le_refl]
+  norm_smul_le q _ := by simp [norm_eq_zero, mul_zero, le_refl]
 
 instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
   { ULift.normedSpace, ULift.algebra with }

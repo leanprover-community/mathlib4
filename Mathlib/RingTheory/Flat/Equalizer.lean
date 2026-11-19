@@ -330,13 +330,13 @@ def Algebra.kerTensorProductMapIdToAlgHomEquiv
     { __ := e₄'.symm, map_smul' r' x := by
         dsimp
         induction x with
-        | add x y _ _ => simp only [smul_add, LinearEquiv.map_add, *]
+        | add x y _ _ => simp [smul_add, LinearEquiv.map_add, *]
         | tmul x y =>
         induction x with
-        | add x y _ _ => simp only [smul_add, add_tmul, LinearEquiv.map_add, *]
+        | add x y _ _ => simp [smul_add, add_tmul, LinearEquiv.map_add, *]
         | tmul x z =>
         induction r' with
-        | add x y _ _ => simp only [add_smul, LinearEquiv.map_add, *]
+        | add x y _ _ => simp [add_smul, LinearEquiv.map_add, *]
         | tmul r s =>
         rw [smul_tmul']
         ext1

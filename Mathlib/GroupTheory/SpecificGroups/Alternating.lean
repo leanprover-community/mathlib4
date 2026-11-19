@@ -127,11 +127,11 @@ def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β)
 
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
-  simp only [← alternatingGroup.index_eq_two (α := α), index_mul_card]
+  simp [← alternatingGroup.index_eq_two (α := α), index_mul_card]
 
 theorem two_mul_card_alternatingGroup [Nontrivial α] :
     2 * card (alternatingGroup α) = card (Perm α) := by
-  simp only [← Nat.card_eq_fintype_card, two_mul_nat_card_alternatingGroup]
+  simp [← Nat.card_eq_fintype_card, two_mul_nat_card_alternatingGroup]
 
 theorem card_alternatingGroup [Nontrivial α] :
     card (alternatingGroup α) = (card α).factorial / 2 :=
@@ -139,7 +139,7 @@ theorem card_alternatingGroup [Nontrivial α] :
 
 theorem nat_card_alternatingGroup [Nontrivial α] :
     Nat.card (alternatingGroup α) = (Nat.card α).factorial / 2 := by
-  simp only [Nat.card_eq_fintype_card, card_alternatingGroup]
+  simp [Nat.card_eq_fintype_card, card_alternatingGroup]
 
 namespace alternatingGroup
 
@@ -344,7 +344,7 @@ theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
     rw [this, hka]; exact hc.right.symm
   rw [Subgroup.mem_center_iff] at hg'
   suffices k ∈ alternatingGroup α by
-    simp only [← Subgroup.mk_smul k this, ← mul_smul, hg']
+    simp [← Subgroup.mk_smul k this, ← mul_smul, hg']
   simp [k, hc.2.symm, hd.2.symm]
 
 theorem isMulCommutative_iff_card_le_three :

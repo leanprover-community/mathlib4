@@ -68,7 +68,7 @@ theorem Rat.int_algebraMap_surjective [IsFractionRing R ℚ] :
   intro x
   obtain ⟨y, hy⟩ := IsIntegrallyClosed.isIntegral_iff.1 <|
     IsIntegral.algebraMap (B := ℚ) (IsIntegralClosure.isIntegral ℤ ℚ x)
-  exact ⟨y, IsFractionRing.injective R ℚ <| by simp only [← IsScalarTower.algebraMap_apply, hy]⟩
+  exact ⟨y, IsFractionRing.injective R ℚ <| by simp [← IsScalarTower.algebraMap_apply, hy]⟩
 
 /-- If `R` has field of fractions `ℚ` and is the integral closure of `ℤ` in `ℚ` then it is
 isomorphic to `ℤ`. -/

@@ -67,7 +67,7 @@ variable {hs ht a} {u : Set α} {hu : u.IsPWO} {x : α × α}
 
 @[to_additive (attr := simp)]
 theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
-  simp only [mulAntidiagonal, Set.Finite.mem_toFinset, Set.mem_mulAntidiagonal]
+  simp [mulAntidiagonal, Set.Finite.mem_toFinset, Set.mem_mulAntidiagonal]
 
 @[to_additive]
 theorem mulAntidiagonal_mono_left (h : u ⊆ s) : mulAntidiagonal hu ht a ⊆ mulAntidiagonal hs ht a :=

@@ -204,7 +204,7 @@ section InvolutiveInv
 variable [InvolutiveInv α] {s t : Set α} {a : α}
 
 @[to_additive]
-theorem inv_mem_inv : a⁻¹ ∈ s⁻¹ ↔ a ∈ s := by simp only [mem_inv, inv_inv]
+theorem inv_mem_inv : a⁻¹ ∈ s⁻¹ ↔ a ∈ s := by simp [mem_inv, inv_inv]
 
 @[to_additive (attr := simp)]
 theorem nonempty_inv : s⁻¹.Nonempty ↔ s.Nonempty :=
@@ -226,7 +226,7 @@ theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
 @[to_additive (attr := simp, instance_reducible)
   /-- Pointwise negation of sets is involutive in scope `Pointwise`. -/]
 def involutiveInv : InvolutiveInv (Set α) where
-  inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
+  inv_inv s := by simp [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
 
 scoped [Pointwise] attribute [instance] Set.involutiveInv Set.involutiveNeg
 
@@ -907,7 +907,7 @@ theorem isUnit_singleton (a : α) : IsUnit ({a} : Set α) :=
 
 @[to_additive (attr := simp)]
 theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
-  simp only [isUnit_iff, Group.isUnit, and_true]
+  simp [isUnit_iff, Group.isUnit, and_true]
 
 @[to_additive (attr := simp)]
 theorem image_mul_left : (a * ·) '' t = (a⁻¹ * ·) ⁻¹' t := by

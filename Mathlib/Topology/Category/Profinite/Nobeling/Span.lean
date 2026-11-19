@@ -63,7 +63,7 @@ instance : Fintype (π C (· ∈ s)) := by
   ext i
   by_cases hi : i ∈ s
   · congrm $h ⟨i, hi⟩
-  · simp only [Proj, ite_eq_right hi]
+  · simp [Proj, ite_eq_right hi]
 
 open scoped Classical in
 /-- The Kronecker delta as a locally constant map from `π C (· ∈ s)` to `ℤ`. -/
@@ -109,7 +109,7 @@ theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x)
   · rw [e, LocallyConstant.coe_mk, ite_eq_left hh]
   · rw [LocallyConstant.sub_apply, e, LocallyConstant.coe_mk, LocallyConstant.coe_mk,
       ite_eq_right hh]
-    simp only [LocallyConstant.toFun_eq_coe, LocallyConstant.coe_one, Pi.one_apply, sub_zero]
+    simp [LocallyConstant.toFun_eq_coe, LocallyConstant.coe_one, Pi.one_apply, sub_zero]
 
 theorem e_mem_of_eq_true {x : (π C (· ∈ s))} {a : I} (hx : x.val a = true) :
     e (π C (· ∈ s)) a ∈ factors C s x := by
@@ -166,7 +166,7 @@ theorem GoodProducts.finsuppSum_mem_span_eval {a : I} {as : List I}
     apply hc
     simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm
   refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.cons_le_cons a hmas, ?_⟩⟩
-  simp only [Products.eval, List.map, List.prod_cons]
+  simp [Products.eval, List.map, List.prod_cons]
 
 /-- If `s` is a finite subset of `I`, then the good products span. -/
 theorem GoodProducts.spanFin [WellFoundedLT I] :

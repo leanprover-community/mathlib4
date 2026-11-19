@@ -147,12 +147,12 @@ theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 :=
 
 @[to_additive (attr := simp)]
 theorem smul_mem_ae (c : G) {s : Set α} : c • s ∈ ae μ ↔ s ∈ ae μ := by
-  simp only [mem_ae_iff, ← smul_set_compl, measure_smul_eq_zero_iff]
+  simp [mem_ae_iff, ← smul_set_compl, measure_smul_eq_zero_iff]
 
 @[to_additive (attr := simp)]
 theorem smul_ae (c : G) : c • ae μ = ae μ := by
   ext s
-  simp only [mem_smul_filter, preimage_smul, smul_mem_ae]
+  simp [mem_smul_filter, preimage_smul, smul_mem_ae]
 
 @[to_additive (attr := simp)]
 theorem eventuallyEmptyOrUniv_smul_set_ae (c : G) {s : Set α} :
@@ -161,11 +161,11 @@ theorem eventuallyEmptyOrUniv_smul_set_ae (c : G) {s : Set α} :
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by
-  simp only [ae_subset, ← smul_set_sdiff, measure_smul_eq_zero_iff]
+  simp [ae_subset, ← smul_set_sdiff, measure_smul_eq_zero_iff]
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
-  simp only [Filter.eventuallySubset_antisymm_iff, smul_set_ae_le]
+  simp [Filter.eventuallySubset_antisymm_iff, smul_set_ae_le]
 
 end AE
 

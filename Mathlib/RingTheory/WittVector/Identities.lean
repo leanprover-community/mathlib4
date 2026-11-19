@@ -55,7 +55,7 @@ variable (p R)
 
 theorem coeff_p_pow [CharP R p] (i : ℕ) : ((p : 𝕎 R) ^ i).coeff i = 1 := by
   induction i with
-  | zero => simp only [one_coeff_zero, pow_zero]
+  | zero => simp [one_coeff_zero, pow_zero]
   | succ i h =>
     rw [pow_succ, ← frobenius_verschiebung, coeff_frobenius_charP,
       verschiebung_coeff_succ, h, one_pow]
@@ -220,7 +220,7 @@ theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
   · convert iterate_verschiebung_coeff (p := p) (R := R) _ _ _ using 2
     rw [zero_add]
   · apply mul_coeff_zero
-  · simp only [iterate_frobenius_coeff]
+  · simp [iterate_frobenius_coeff]
 
 theorem iterate_verschiebung_iterate_frobenius (x : 𝕎 R) (n : ℕ) :
     verschiebung^[n] (frobenius^[n] x) = x * (p ^ n) := by

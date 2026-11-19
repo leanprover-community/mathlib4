@@ -138,14 +138,14 @@ noncomputable def conjAct : E →* MulAut N where
     (MulAut.conjNormal e).trans (MonoidHom.ofInjective S.inl_injective).symm
   map_one' := by
     ext _
-    simp only [map_one, MulEquiv.trans_apply, MulAut.one_apply, MulEquiv.symm_apply_apply]
+    simp [map_one, MulEquiv.trans_apply, MulAut.one_apply, MulEquiv.symm_apply_apply]
   map_mul' _ _ := by
     ext _
-    simp only [map_mul, MulEquiv.trans_apply, MulAut.mul_apply, MulEquiv.apply_symm_apply]
+    simp [map_mul, MulEquiv.trans_apply, MulAut.mul_apply, MulEquiv.apply_symm_apply]
 
 /-- The inclusion and a conjugation commute. -/
 theorem inl_conjAct_comm {e : E} {n : N} : S.inl (S.conjAct e n) = e * S.inl n * e⁻¹ := by
-  simp only [conjAct, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.trans_apply,
+  simp [conjAct, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.trans_apply,
     MonoidHom.apply_ofInjective_symm, MulAut.conjNormal_apply, MonoidHom.ofInjective_apply]
 
 /-- `GroupExtension`s are equivalent iff there is an isomorphism making a commuting diagram.
@@ -307,7 +307,7 @@ theorem rightHom_splitting (g : G) : S.rightHom (s g) = g := s.rightInverse_righ
 @[to_additive (attr := simp)]
 theorem rightHom_comp_splitting : S.rightHom.comp s = MonoidHom.id G := by
   ext g
-  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_ofClass, rightHom_splitting]
+  simp [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_ofClass, rightHom_splitting]
 
 end Splitting
 

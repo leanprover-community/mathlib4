@@ -232,7 +232,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear (.id R) M N M N) (trace R (M
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
         (show Surjective (dualTensorHom R N N) from (dualTensorHomEquiv R N N).surjective)).1
   ext f m g n
-  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+  simp [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, mapBilinear_apply,
     trace_eq_contract_apply, contractLeft_apply, lsmul_apply, smul_eq_mul,
     map_dualTensorHom, dualDistrib_apply]
@@ -243,7 +243,7 @@ theorem trace_comp_comm :
     (compl₁₂_inj (show Surjective (dualTensorHom R N M) from (dualTensorHomEquiv R N M).surjective)
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext g m f n
-  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+  simp [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, flip_apply, llcomp_apply',
     comp_dualTensorHom, LinearMapClass.map_smul, trace_eq_contract_apply,
     contractLeft_apply, smul_eq_mul, mul_comm]

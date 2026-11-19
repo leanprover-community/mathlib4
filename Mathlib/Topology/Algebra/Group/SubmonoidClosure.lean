@@ -88,7 +88,7 @@ theorem mapClusterPt_atTop_pow_iff_mem_topologicalClosure_zpowers {x y : G} :
 @[to_additive (attr := simp)]
 theorem mapClusterPt_inv_atTop_pow {x y : G} :
     MapClusterPt x⁻¹ atTop (y ^ · : ℕ → G) ↔ MapClusterPt x atTop (y ^ · : ℕ → G) := by
-  simp only [mapClusterPt_atTop_pow_iff_mem_topologicalClosure_zpowers, inv_mem_iff]
+  simp [mapClusterPt_atTop_pow_iff_mem_topologicalClosure_zpowers, inv_mem_iff]
 
 @[to_additive]
 theorem closure_range_zpow_eq_pow (x : G) :
@@ -99,7 +99,7 @@ theorem closure_range_zpow_eq_pow (x : G) :
 @[to_additive]
 theorem denseRange_zpow_iff_pow {x : G} :
     DenseRange (x ^ · : ℤ → G) ↔ DenseRange (x ^ · : ℕ → G) := by
-  simp only [DenseRange, dense_iff_closure_eq, closure_range_zpow_eq_pow]
+  simp [DenseRange, dense_iff_closure_eq, closure_range_zpow_eq_pow]
 
 @[to_additive]
 theorem topologicalClosure_subgroupClosure_toSubmonoid (s : Set G) :
@@ -122,4 +122,4 @@ theorem closure_submonoidClosure_eq_closure_subgroupClosure (s : Set G) :
 @[to_additive]
 theorem dense_submonoidClosure_iff_subgroupClosure {s : Set G} :
     Dense (Submonoid.closure s : Set G) ↔ Dense (Subgroup.closure s : Set G) := by
-  simp only [dense_iff_closure_eq, closure_submonoidClosure_eq_closure_subgroupClosure]
+  simp [dense_iff_closure_eq, closure_submonoidClosure_eq_closure_subgroupClosure]

@@ -220,7 +220,7 @@ theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith 
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : IsBigOWith c l (fun x => (g x)⁻¹) fun x => (f x)⁻¹ := by
   refine IsBigOWith.of_bound (h.bound.mp (h₀.mono fun x h₀ hle => ?_))
   rcases eq_or_ne (f x) 0 with hx | hx
-  · simp only [hx, h₀ hx, inv_zero, norm_zero, mul_zero, le_rfl]
+  · simp [hx, h₀ hx, inv_zero, norm_zero, mul_zero, le_rfl]
   · have hc : 0 < c := pos_of_mul_pos_left ((norm_pos_iff.2 hx).trans_le hle) (norm_nonneg _)
     replace hle := inv_anti₀ (norm_pos_iff.2 hx) hle
     simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff₀ hc] using! hle

@@ -121,10 +121,10 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
     rw [Function.notMem_support, coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h, smul_zero]
   map_add' f g := by
     ext
-    simp only [ofSuppBddBelow, coeff_add', Pi.add_apply, smul_add]
+    simp [ofSuppBddBelow, coeff_add', Pi.add_apply, smul_add]
   map_smul' r f := by
     ext
-    simp only [ofSuppBddBelow, HahnSeries.coeff_smul, RingHom.id_apply, smul_comm r]
+    simp [ofSuppBddBelow, HahnSeries.coeff_smul, RingHom.id_apply, smul_comm r]
 
 variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
 
@@ -202,7 +202,7 @@ theorem iterate_derivative_map {W : Type*} [AddCommGroup W] [Module R W]
   induction k generalizing f with
   | zero => simp
   | succ k ih =>
-    simp only [Function.iterate_succ, Function.comp_apply, ih, derivative_map]
+    simp [Function.iterate_succ, Function.comp_apply, ih, derivative_map]
 
 @[simp]
 theorem derivative_iterate_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
@@ -275,7 +275,7 @@ theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
 
 theorem X_order_mul_powerSeriesPart {n : ℕ} {f : R⸨X⸩} (hn : n = f.order) :
     (PowerSeries.X ^ n * f.powerSeriesPart : R⟦X⟧) = f := by
-  simp only [map_mul, map_pow, ofPowerSeries_X, single_pow, nsmul_eq_mul, mul_one, one_pow, hn,
+  simp [map_mul, map_pow, ofPowerSeries_X, single_pow, nsmul_eq_mul, mul_one, one_pow, hn,
     single_order_mul_powerSeriesPart]
 
 end Semiring
@@ -416,7 +416,7 @@ theorem single_zpow (n : ℤ) :
 theorem algebraMap_apply_div :
     algebraMap (RatFunc F) F⸨X⸩ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap F[X] F⸨X⸩ p / algebraMap _ _ q := by
-  simp only [map_div₀, IsScalarTower.algebraMap_apply F[X] (RatFunc F) F⸨X⸩]
+  simp [map_div₀, IsScalarTower.algebraMap_apply F[X] (RatFunc F) F⸨X⸩]
 
 end RatFunc
 
@@ -448,11 +448,11 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   simp only [idealX_span, exp_neg, inv_inj, exp_inj, Nat.cast_inj]
   have span_ne_zero :
     (Ideal.span {P} : Ideal K[X]) ≠ 0 ∧ (Ideal.span {Polynomial.X} : Ideal K[X]) ≠ 0 := by
-    simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
+    simp [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
       not_false_iff, and_self_iff]
   have span_ne_zero' :
     (Ideal.span {↑P} : Ideal K⟦X⟧) ≠ 0 ∧ ((idealX K).asIdeal : Ideal K⟦X⟧) ≠ 0 := by
-    simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
+    simp [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
       not_false_eq_true, true_and, (idealX K).ne_bot]
   classical
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
@@ -630,7 +630,7 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) �
   rw [valuation_le_iff_coeff_lt_log_eq_zero _ one_ne_zero, log_one, neg_zero]
   refine ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
   on_goal 1 => ext (_ | n)
-  · simp only [Int.ofNat_eq_natCast, coeff_coe_powerSeries, coeff_mk]
+  · simp [Int.ofNat_eq_natCast, coeff_coe_powerSeries, coeff_mk]
   on_goal 1 => simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]
   on_goal 2 => rintro ⟨F, rfl⟩ _ _
   all_goals
@@ -638,7 +638,7 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) �
     simp only [Nat.coe_castAddMonoidHom, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
       Set.mem_range, not_exists, reduceCtorEq]
     intro
-  · simp only [not_false_eq_true]
+  · simp [not_false_eq_true]
   · lia
 
 end LaurentSeries

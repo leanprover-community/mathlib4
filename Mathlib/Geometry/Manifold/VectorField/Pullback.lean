@@ -211,7 +211,7 @@ lemma mpullbackWithin_eq_pullbackWithin {f : E → E'} {V : E' → E'} {s : Set 
 set_option backward.isDefEq.respectTransparency false in
 lemma mpullback_eq_pullback {f : E → E'} {V : E' → E'} :
     mpullback 𝓘(𝕜, E) 𝓘(𝕜, E') f V = pullback 𝕜 f V := by
-  simp only [← mpullbackWithin_univ, ← pullbackWithin_univ, mpullbackWithin_eq_pullbackWithin]
+  simp [← mpullbackWithin_univ, ← pullbackWithin_univ, mpullbackWithin_eq_pullbackWithin]
 
 @[simp] lemma mpullback_id {V : Π (x : M), TangentSpace I x} : mpullback I I id V = V := by
   ext x
@@ -649,7 +649,7 @@ lemma eventuallyEq_mpullback_mpullbackWithin_extChartAt (V : Π (x : M), Tangent
   rw [mpullback_apply, mpullbackWithin_apply,
     ← (isInvertible_mfderiv_extChartAt hy).inverse_comp_apply_of_right,
     mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' hy, A]
-  simp only [ContinuousLinearMap.inverse_id, ContinuousLinearMap.coe_id', id_eq]
+  simp [ContinuousLinearMap.inverse_id, ContinuousLinearMap.coe_id', id_eq]
 
 end ContMDiff
 

@@ -98,7 +98,7 @@ theorem comp_smul_smul {f : Dual R V} {v : V} {r s : R} :
       transvection f ((r + s + s * f v * r) • v) := by
   ext x
   simp only [LinearMap.comp_apply, apply, map_add, map_smul, add_assoc]
-  simp only [smul_add, ← mul_smul, ← add_smul, ← mul_add (f x), mul_assoc]
+  simp [smul_add, ← mul_smul, ← add_smul, ← mul_add (f x), mul_assoc]
 
 theorem eq_id_of_finrank_le_one
     {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
@@ -478,7 +478,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
       · simp_all [v, LinearMap.transvection.apply]
     suffices e w - w ∈ LinearMap.ker f by
       simp only [LinearMap.mem_ker, map_sub] at this
-      simp only [v, LinearMap.map_smul, map_sub, this, smul_zero]
+      simp [v, LinearMap.map_smul, map_sub, this, smul_zero]
     rw [← hf', ← Submodule.ker_mkQ e.fixedSubmodule, LinearMap.mem_ker]
     simp [Submodule.mkQ_apply, Submodule.Quotient.mk_sub, ← fixedReduce_mk, he']
 

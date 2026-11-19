@@ -127,7 +127,7 @@ theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
 theorem eqToHom_f {P Q : Karoubi C} (h : P = Q) :
     Karoubi.Hom.f (eqToHom h) = P.p ≫ eqToHom congr(Karoubi.X $h) := by
   subst h
-  simp only [eqToHom_refl, Karoubi.id_f, comp_id]
+  simp [eqToHom_refl, Karoubi.id_f, comp_id]
 
 end Karoubi
 
@@ -136,7 +136,7 @@ formal direct factor of `X` given by `𝟙 X`. -/
 @[simps, implicit_reducible]
 def toKaroubi : C ⥤ Karoubi C where
   obj X := ⟨X, 𝟙 X, by rw [comp_id]⟩
-  map f := ⟨f, by simp only [comp_id, id_comp]⟩
+  map f := ⟨f, by simp [comp_id, id_comp]⟩
 
 /-- The functor `toKaroubi C : C ⥤ Karoubi C` is fully faithful. -/
 def fullyFaithfulToKaroubi : (toKaroubi C).FullyFaithful where
@@ -158,7 +158,7 @@ instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
 
 @[simps zero]
 instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
-  zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
+  zero := ⟨0, by simp [comp_zero, zero_comp]⟩
 
 instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   zero_add f := by
@@ -256,11 +256,11 @@ is actually a direct factor in the category `Karoubi C`. -/
 @[reassoc]
 theorem decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
   ext
-  simp only [comp_f, id_f, P.idem, decompId_i, decompId_p]
+  simp [comp_f, id_f, P.idem, decompId_i, decompId_p]
 
 theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ decompId_i P := by
   ext
-  simp only [comp_f, decompId_p_f, decompId_i_f, P.idem, toKaroubi_map_f]
+  simp [comp_f, decompId_p_f, decompId_i_f, P.idem, toKaroubi_map_f]
 
 theorem decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ :=
   rfl

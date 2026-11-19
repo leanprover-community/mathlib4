@@ -63,7 +63,7 @@ def dualFamily (𝒜 : Finset (Finset α)) (X : Finset α) :
 @[simp]
 lemma mem_dualFamily :
     𝒞 ∈ 𝒜.dualFamily X ↔ ∃ x ∈ X, {A ∈ 𝒜 | x ∈ A} = 𝒞 := by
-  simp only [dualFamily, mem_image]
+  simp [dualFamily, mem_image]
 
 /-- A subfamily shattered by `𝒜.dualFamily X` is itself a subfamily of `𝒜`:
 take `t = S` in the shattering hypothesis, then any superset `u ∈ 𝒜.dualFamily X`

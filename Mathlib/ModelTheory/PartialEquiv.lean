@@ -101,10 +101,10 @@ theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃ h : f.dom ≤ g.dom,
 @[gcongr] theorem cod_le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.cod ≤ g.cod := by
   rintro ⟨_, eq_fun⟩ n hn
   let m := f.toEquiv.symm ⟨n, hn⟩
-  have : ((subtype _).comp f.toEquiv.toEmbedding) m = n := by simp only [m, Embedding.comp_apply,
+  have : ((subtype _).comp f.toEquiv.toEmbedding) m = n := by simp [m, Embedding.comp_apply,
     Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coe_subtype]
   rw [← this, ← eq_fun]
-  simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
+  simp [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
     SetLike.coe_mem]
 
 theorem subtype_toEquiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
@@ -360,7 +360,7 @@ theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
     #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
     these two `simp` calls cannot be combined. -/
     simp only [partialEquivLimit_comp_inclusion]
-    simp only [cod_partialEquivLimit, ← Embedding.comp_assoc,
+    simp [cod_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩
 
 end DirectLimit
@@ -436,11 +436,11 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
   refine ⟨fun h S S_FG f m => ?_, fun h ⟨f, f_FG⟩ m => ?_⟩
   · obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
     refine ⟨f'.toEmbedding.comp (Substructure.inclusion ?_), ?_⟩
-    · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
+    · simp [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
         and_self]
     · ext ⟨x, hx⟩
       rw [Embedding.subtype_equivRange] at ff'2
-      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion,
+      simp [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion,
         Equiv.coe_toEmbedding, coe_subtype, PartialEquiv.toEmbedding_apply]
   · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
     refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
@@ -448,7 +448,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
       subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
       ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
     rw [PartialEquiv.toEmbedding] at eq_f'
-    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
+    simp [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
       Embedding.equivRange_apply, eq_f']
 
 namespace IsExtensionPair

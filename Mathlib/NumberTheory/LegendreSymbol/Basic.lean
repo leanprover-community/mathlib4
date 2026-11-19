@@ -50,7 +50,7 @@ variable (p : ℕ) [Fact p.Prime]
 theorem euler_criterion_units (x : (ZMod p)ˣ) : (∃ y : (ZMod p)ˣ, y ^ 2 = x) ↔ x ^ (p / 2) = 1 := by
   by_cases hc : p = 2
   · subst hc
-    simp only [eq_iff_true_of_subsingleton, exists_const]
+    simp [eq_iff_true_of_subsingleton, exists_const]
   · have h₀ := FiniteField.unit_isSquare_iff (by rwa [ringChar_zmod_n]) x
     have hs : (∃ y : (ZMod p)ˣ, y ^ 2 = x) ↔ IsSquare x := by
       rw [isSquare_iff_exists_sq x]
@@ -174,7 +174,7 @@ theorem sq_one' {a : ℤ} (ha : (a : ZMod p) ≠ 0) : legendreSym p (a ^ 2) = 1 
 
 /-- The Legendre symbol depends only on `a` mod `p`. -/
 protected theorem mod (a : ℤ) : legendreSym p a = legendreSym p (a % p) := by
-  simp only [legendreSym, intCast_mod]
+  simp [legendreSym, intCast_mod]
 
 /-- When `p ∤ a`, then `legendreSym p a = 1` iff `a` is a square mod `p`. -/
 theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 ↔ IsSquare (a : ZMod p) :=
@@ -272,7 +272,7 @@ open ZMod
 
 /-- `legendreSym p (-1)` is given by `χ₄ p`. -/
 theorem legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := by
-  simp only [legendreSym, card p, quadraticChar_neg_one ((ringChar_zmod_n p).substr hp),
+  simp [legendreSym, card p, quadraticChar_neg_one ((ringChar_zmod_n p).substr hp),
     Int.cast_neg, Int.cast_one]
 
 /-- The value of the Legendre symbol at `-a` is `χ₄ p` times the value at `a`. -/

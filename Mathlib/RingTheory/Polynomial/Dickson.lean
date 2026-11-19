@@ -75,7 +75,7 @@ theorem dickson_one : dickson k a 1 = X :=
   rfl
 
 theorem dickson_two : dickson k a 2 = X ^ 2 - C a * (3 - k : R[X]) := by
-  simp only [dickson, sq]
+  simp [dickson, sq]
 
 @[simp]
 theorem dickson_add_two (n : ℕ) :
@@ -92,7 +92,7 @@ variable {k a}
 theorem map_dickson (f : R →+* S) : ∀ n : ℕ, map f (dickson k a n) = dickson k (f a) n
   | 0 => by
     simp_rw [dickson_zero, Polynomial.map_sub, Polynomial.map_natCast, Polynomial.map_ofNat]
-  | 1 => by simp only [dickson_one, map_X]
+  | 1 => by simp [dickson_one, map_X]
   | n + 2 => by
     simp only [dickson_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, map_C]
     rw [map_dickson f n, map_dickson f (n + 1)]
@@ -102,7 +102,7 @@ theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
   | 0 => by
     simp only [dickson_zero, pow_zero]
     norm_num
-  | 1 => by simp only [dickson_one, pow_one]
+  | 1 => by simp [dickson_one, pow_one]
   | n + 2 => by
     simp only [dickson_add_two, C_0, zero_mul, sub_zero]
     rw [dickson_two_zero (n + 1), pow_add X (n + 1) 1, mul_comm, pow_one]
@@ -122,7 +122,7 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
     ∀ n, (dickson 1 (1 : R) n).eval (x + y) = x ^ n + y ^ n
   | 0 => by
     simp only [pow_zero, dickson_zero]; norm_num
-  | 1 => by simp only [eval_X, dickson_one, pow_one]
+  | 1 => by simp [eval_X, dickson_one, pow_one]
   | n + 2 => by
     simp only [eval_sub, eval_mul, dickson_one_one_eval_add_inv x y h _, eval_X, dickson_add_two,
       C_1, eval_one]
@@ -181,7 +181,7 @@ theorem chebyshev_U_eq_dickson_two_one (n : ℕ) :
 `n`-th. -/
 theorem dickson_one_one_mul (m n : ℕ) :
     dickson 1 (1 : R) (m * n) = (dickson 1 1 m).comp (dickson 1 1 n) := by
-  have h : (1 : R) = Int.castRingHom R 1 := by simp only [eq_intCast, Int.cast_one]
+  have h : (1 : R) = Int.castRingHom R 1 := by simp [eq_intCast, Int.cast_one]
   rw [h]
   simp only [← map_dickson (Int.castRingHom R), ← map_comp]
   congr 1
@@ -220,7 +220,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   -- The two polynomials agree on all `x` of the form `x = y + y⁻¹`.
   apply @Set.Infinite.mono _ { x : K | ∃ y, x = y + y⁻¹ ∧ y ≠ 0 }
   · rintro _ ⟨x, rfl, hx⟩
-    simp only [eval_X, eval_pow, Set.mem_ofPred_eq, ZMod.cast_one', add_pow_char,
+    simp [eval_X, eval_pow, Set.mem_ofPred_eq, ZMod.cast_one', add_pow_char,
       dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), ZMod.castHom_apply]
   -- Now we need to show that the set of such `x` is infinite.
   -- If the set is finite, then we will show that `K` is also finite.
@@ -250,7 +250,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,
           Multiset.mem_singleton]
         by_cases hy : y = 0
-        · simp only [hy, or_true]
+        · simp [hy, or_true]
         apply or_congr _ Iff.rfl
         rw [← mul_left_inj' hy, eq_comm, ← sub_eq_zero, add_mul, inv_mul_cancel₀ hy]
         apply eq_iff_eq_cancel_right.mpr
@@ -267,7 +267,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
 
 theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by
   have h : (1 : R) = ZMod.castHom (dvd_refl p) R 1 := by
-    simp only [ZMod.castHom_apply, ZMod.cast_one']
+    simp [ZMod.castHom_apply, ZMod.cast_one']
   rw [h, ← map_dickson (ZMod.castHom (dvd_refl p) R), dickson_one_one_zmod_p, Polynomial.map_pow,
     map_X]
 

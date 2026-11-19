@@ -193,7 +193,7 @@ theorem eval₂ :
     Polynomial.eval₂ (Subring.subtype (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =
       0 := by
   rw [← prodXSubSMul.eval G F x, Polynomial.eval₂_eq_eval_map]
-  simp only [minpoly, Polynomial.map_toSubring]
+  simp [minpoly, Polynomial.map_toSubring]
 
 theorem eval₂' :
     Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x (minpoly G F x) = 0 :=

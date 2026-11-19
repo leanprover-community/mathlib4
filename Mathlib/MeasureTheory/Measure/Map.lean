@@ -238,7 +238,7 @@ open Measure
 
 theorem mem_ae_map_iff {f : α → β} (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
     s ∈ ae (μ.map f) ↔ f ⁻¹' s ∈ ae μ := by
-  simp only [mem_ae_iff, map_apply_of_aemeasurable hf hs.compl, preimage_compl]
+  simp [mem_ae_iff, map_apply_of_aemeasurable hf hs.compl, preimage_compl]
 
 theorem mem_ae_of_mem_ae_map {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
     (hs : s ∈ ae (μ.map f)) : f ⁻¹' s ∈ ae μ :=

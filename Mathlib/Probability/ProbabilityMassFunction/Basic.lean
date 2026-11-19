@@ -115,7 +115,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
       congr
       exact symm (tsum_eq_single a fun b hb => ite_eq_right hb)
     _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := tsum_add.symm
-    _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero]
+    _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp [zero_add, add_zero]
 
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
   classical
@@ -188,7 +188,7 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
 @[simp]
 theorem toOuterMeasure_apply_inter_support :
     p.toOuterMeasure (s ∩ p.support) = p.toOuterMeasure s := by
-  simp only [toOuterMeasure_apply, PMF.support, Set.indicator_inter_support]
+  simp [toOuterMeasure_apply, PMF.support, Set.indicator_inter_support]
 
 /-- Slightly stronger than `OuterMeasure.mono` having an intersection with `p.support`. -/
 theorem toOuterMeasure_mono {s t : Set α} (h : s ∩ p.support ⊆ t) :

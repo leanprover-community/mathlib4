@@ -54,7 +54,7 @@ lemma hom_comp_singleFunctor_map_shift [HasDerivedCategory.{w'} C]
     {X Y Z : C} {n : ℕ} (x : Ext X Y n) (f : Y ⟶ Z) :
     x.hom ≫ ((DerivedCategory.singleFunctor C 0).map f)⟦(n : ℤ)⟧' =
       (x.comp (mk₀ f) (add_zero n)).hom := by
-  simp only [comp_hom, mk₀_hom, ShiftedHom.comp_mk₀]
+  simp [comp_hom, mk₀_hom, ShiftedHom.comp_mk₀]
 
 variable {X : C} {S : ShortComplex C} (hS : S.ShortExact)
 
@@ -77,7 +77,7 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
       (AddCommGrpCat.ofHom ((mk₀ S.g).postcomp X (add_zero n))) (by
         ext x
         dsimp
-        simp only [bilinearComp_apply_apply, comp_assoc_of_third_deg_zero, mk₀_comp_mk₀,
+        simp [bilinearComp_apply_apply, comp_assoc_of_third_deg_zero, mk₀_comp_mk₀,
           ShortComplex.zero, mk₀_zero, comp_zero])).Exact := by
   let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
@@ -97,7 +97,7 @@ lemma covariant_sequence_exact₃' :
       (AddCommGrpCat.ofHom (hS.extClass.postcomp X h)) (by
         ext x
         dsimp
-        simp only [bilinearComp_apply_apply, comp_assoc_of_second_deg_zero,
+        simp [bilinearComp_apply_apply, comp_assoc_of_second_deg_zero,
           ShortComplex.ShortExact.comp_extClass, comp_zero])).Exact := by
   let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
@@ -116,7 +116,7 @@ lemma covariant_sequence_exact₁' :
       (AddCommGrpCat.ofHom ((mk₀ S.f).postcomp X (add_zero n₁))) (by
         ext x
         dsimp
-        simp only [bilinearComp_apply_apply, comp_assoc_of_third_deg_zero,
+        simp [bilinearComp_apply_apply, comp_assoc_of_third_deg_zero,
           ShortComplex.ShortExact.extClass_comp, comp_zero])).Exact := by
   let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
@@ -194,7 +194,7 @@ lemma singleFunctor_map_comp_hom [HasDerivedCategory.{w'} C]
     {X Y Z : C} (f : X ⟶ Y) {n : ℕ} (x : Ext Y Z n) :
     (DerivedCategory.singleFunctor C 0).map f ≫ x.hom =
       ((mk₀ f).comp x (zero_add n)).hom := by
-  simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp]
+  simp [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp]
 
 lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
     [HasDerivedCategory.{w'} C] {Y : C} {n₀ : ℕ} (x : Ext S.X₁ Y n₀)
@@ -213,7 +213,7 @@ lemma contravariant_sequence_exact₂' (n : ℕ) :
       (AddCommGrpCat.ofHom ((mk₀ S.f).precomp Y (zero_add n))) (by
         ext
         dsimp
-        simp only [bilinearComp_apply_apply, mk₀_comp_mk₀_assoc, ShortComplex.zero,
+        simp [bilinearComp_apply_apply, mk₀_comp_mk₀_assoc, ShortComplex.zero,
           mk₀_zero, zero_comp])).Exact := by
   let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₂ _
@@ -233,7 +233,7 @@ lemma contravariant_sequence_exact₁' :
       (AddCommGrpCat.ofHom (hS.extClass.precomp Y h)) (by
         ext
         dsimp
-        simp only [bilinearComp_apply_apply,
+        simp [bilinearComp_apply_apply,
           ShortComplex.ShortExact.extClass_comp_assoc])).Exact := by
   let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₃ _
@@ -253,7 +253,7 @@ lemma contravariant_sequence_exact₃' :
       (AddCommGrpCat.ofHom (((mk₀ S.g).precomp Y (zero_add n₁)))) (by
         ext
         dsimp
-        simp only [bilinearComp_apply_apply,
+        simp [bilinearComp_apply_apply,
           ShortComplex.ShortExact.comp_extClass_assoc])).Exact := by
   let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₁ _

@@ -238,7 +238,7 @@ theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
 noncomputable instance instDivInvMonoid : DivInvMonoid (Cauchy abv) where
 
 lemma ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
-  simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
+  simp [div_eq_mul_inv, ofRat_inv, ofRat_mul]
 
 /-- The Cauchy completion forms a division ring. -/
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where

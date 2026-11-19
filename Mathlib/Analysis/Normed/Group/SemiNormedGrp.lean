@@ -154,7 +154,7 @@ instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGrp where
 
 theorem isZero_of_subsingleton (V : SemiNormedGrp) [Subsingleton V] : Limits.IsZero V := by
   refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
-  · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
+  · ext x; have : x = 0 := Subsingleton.elim _ _; simp [this, map_zero]
   · ext; apply Subsingleton.elim
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGrp.{u} :=
@@ -373,7 +373,7 @@ instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGrp₁ where
 
 theorem isZero_of_subsingleton (V : SemiNormedGrp₁) [Subsingleton V] : Limits.IsZero V := by
   refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
-  · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
+  · ext x; have : x = 0 := Subsingleton.elim _ _; simp [this, map_zero]
   · ext; apply Subsingleton.elim
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGrp₁.{u} :=

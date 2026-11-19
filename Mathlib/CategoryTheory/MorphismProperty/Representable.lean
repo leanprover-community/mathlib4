@@ -425,7 +425,7 @@ section
 lemma presheaf_monomorphisms_le_monomorphisms :
     (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
   suffices ∀ {X : C} {a b : yoneda.obj X ⟶ F}, a ≫ f = b ≫ f → a = b from
-    ⟨fun _ _ h ↦ hom_ext_yoneda (fun _ _ ↦ this (by simp only [assoc, h]))⟩
+    ⟨fun _ _ h ↦ hom_ext_yoneda (fun _ _ ↦ this (by simp [assoc, h]))⟩
   intro X a b h
   /- It suffices to show that the lifts of `a` and `b` to morphisms
   `X ⟶ hf.rep.pullback g` are equal, where `g = a ≫ f = a ≫ f`. -/
@@ -434,7 +434,7 @@ lemma presheaf_monomorphisms_le_monomorphisms :
     simpa using yoneda.congr_map this =≫ (hf.rep.fst (a ≫ f))
   -- This follows from the fact that the induced maps `hf.rep.pullback g ⟶ X` are mono.
   have : Mono (hf.rep.snd (a ≫ f)) := hf.property_snd (a ≫ f)
-  simp only [← cancel_mono (hf.rep.snd (a ≫ f)), lift_snd]
+  simp [← cancel_mono (hf.rep.snd (a ≫ f)), lift_snd]
 
 variable {G : Cᵒᵖ ⥤ Type v₁}
 

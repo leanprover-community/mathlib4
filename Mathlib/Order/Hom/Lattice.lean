@@ -122,7 +122,7 @@ variable [EquivLike F α β]
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
     [OrderIsoClass F α β] : SupHomClass F α β where
   map_sup := fun f a b =>
-    eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff]
+    eq_of_forall_ge_iff fun c => by simp [← le_map_inv_iff, sup_le_iff]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toLatticeHomClass [Lattice α] [Lattice β]

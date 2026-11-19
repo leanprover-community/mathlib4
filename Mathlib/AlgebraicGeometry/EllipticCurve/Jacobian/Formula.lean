@@ -738,7 +738,7 @@ lemma map_dblY : (W'.map f).dblY (f ∘ P) = f (W'.dblY P) := by
 
 @[simp]
 lemma map_dblXYZ : (W'.map f).dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
-  simp only [dblXYZ, map_dblX, map_dblY, map_dblZ, comp_fin3]
+  simp [dblXYZ, map_dblX, map_dblY, map_dblZ, comp_fin3]
 
 @[simp]
 lemma map_addU (f : F →+* K) (P Q : Fin 3 → F) : addU (f ∘ P) (f ∘ Q) = f (addU P Q) := by
@@ -767,7 +767,7 @@ lemma map_addY : (W'.map f).addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
 
 @[simp]
 lemma map_addXYZ : (W'.map f).addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
-  simp only [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
+  simp [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P Q : Fin 3 → A)

@@ -268,7 +268,7 @@ lemma isMulFreimanIso_two :
 @[to_additive]
 lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom n A B fun _ ↦ b where
   mapsTo _ _ := hb
-  map_prod_eq_map_prod s t _ _ hs ht _ := by simp only [map_const', hs, prod_replicate, ht]
+  map_prod_eq_map_prod s t _ _ hs ht _ := by simp [map_const', hs, prod_replicate, ht]
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_zero_iff : IsMulFreimanHom 0 A B f ↔ MapsTo f A B :=

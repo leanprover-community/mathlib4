@@ -281,7 +281,7 @@ def CWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
   (continuousOn := continuousOn)
   (continuousOn_symm := continuousOn_symm)
   (pairwiseDisjoint' := pairwiseDisjoint')
-  (disjointBase' := by simp only [disjoint_empty, implies_true])
+  (disjointBase' := by simp [disjoint_empty, implies_true])
   (mapsTo := by simpa only [empty_union])
   (isClosedBase := isClosed_empty)
   (union' := by simpa only [empty_union])).toCWComplex

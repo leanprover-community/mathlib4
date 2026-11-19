@@ -78,9 +78,9 @@ lemma coeff_preHilbertPoly_self [CharZero F] (d k : ℕ) :
   nth_rw 3 [heq]
   calc
   _ = (d ! : F)⁻¹ • ((ascPochhammer F d).comp (X - C ((k : F) - 1))).leadingCoeff := by
-    simp only [sub_add, ← C_1, ← map_sub, AddMonoidAlgebra.coeff_smul_apply, coeff_natDegree]
+    simp [sub_add, ← C_1, ← map_sub, AddMonoidAlgebra.coeff_smul_apply, coeff_natDegree]
   _ = (d ! : F)⁻¹ := by
-    simp only [leadingCoeff_comp (ne_of_eq_of_ne (natDegree_X_sub_C _) one_ne_zero), Monic.def.1
+    simp [leadingCoeff_comp (ne_of_eq_of_ne (natDegree_X_sub_C _) one_ne_zero), Monic.def.1
       (monic_ascPochhammer _ _), leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
 
 lemma leadingCoeff_preHilbertPoly [CharZero F] (d k : ℕ) :
@@ -120,8 +120,8 @@ noncomputable def hilbertPoly (p : F[X]) : (d : ℕ) → F[X]
 
 lemma hilbertPoly_zero_left (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
   delta hilbertPoly; induction d with
-  | zero => simp only
-  | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
+  | zero => simp
+  | succ d _ => simp [coeff_zero, zero_smul, Finset.sum_const_zero]
 
 lemma hilbertPoly_zero_right (p : F[X]) : hilbertPoly p 0 = 0 := rfl
 
@@ -136,7 +136,7 @@ lemma hilbertPoly_add_left (p q : F[X]) (d : ℕ) :
     hilbertPoly (p + q) d = hilbertPoly p d + hilbertPoly q d := by
   delta hilbertPoly
   induction d with
-  | zero => simp only [add_zero]
+  | zero => simp [add_zero]
   | succ d _ =>
       simp only
       rw [← sum_def _ fun _ r => r • _]
@@ -146,12 +146,12 @@ lemma hilbertPoly_smul (a : F) (p : F[X]) (d : ℕ) :
     hilbertPoly (a • p) d = a • hilbertPoly p d := by
   delta hilbertPoly
   induction d with
-  | zero => simp only [smul_zero]
+  | zero => simp [smul_zero]
   | succ d _ =>
       simp only
       rw [← sum_def _ fun _ r => r • _, ← sum_def _ fun _ r => r • _, Polynomial.smul_sum,
         sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
-      simp only [smul_assoc]
+      simp [smul_assoc]
 
 variable (F) in
 /--
@@ -229,7 +229,7 @@ lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
     hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
   apply eq_hilbertPoly_of_forall_coeff_eq_eval (p * (1 - X)).natDegree
   intro n hn
-  have heq : 1 - PowerSeries.X = ((1 - X : F[X]) : F⟦X⟧) := by simp only [coe_sub, coe_one, coe_X]
+  have heq : 1 - PowerSeries.X = ((1 - X : F[X]) : F⟦X⟧) := by simp [coe_sub, coe_one, coe_X]
   rw [← one_sub_pow_mul_invOneSubPow_val_add_eq_invOneSubPow_val F d 1, pow_one, ← mul_assoc, heq,
     ← coe_mul, coeff_mul_invOneSubPow_eq_hilbertPoly_eval (d + 1) hn]
 
@@ -265,7 +265,7 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
   · apply natDegree_sum_le_of_forall_le _ _ <| fun _ _ => ?_
     apply le_trans (natDegree_smul_le _ _)
     rw [natDegree_preHilbertPoly]
-  · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp only [one_pow, mul_one]
+  · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp [one_pow, mul_one]
     simp only [finsetSum_coeff, AddMonoidAlgebra.coeff_smul_apply, smul_eq_mul,
       coeff_preHilbertPoly_self, ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum,
       eval_mul, eval_pow, eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero,

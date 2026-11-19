@@ -114,7 +114,7 @@ theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteg
     apply_fun algebraMap A K
     · simp only [map_mul, h]
       rw [mul_comm, ← div_eq_iff]
-      · simp only [mk'_num_den']
+      · simp [mk'_num_den']
       simp
     exact FaithfulSMul.algebraMap_injective A K
 

@@ -104,28 +104,28 @@ lemma XIsoOfEq_hom_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p�
     (h₁₂ : p₁ = p₂) (h₂₃ : p₂ = p₃) :
     (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₁₂.trans h₂₃)).hom := by
   dsimp [XIsoOfEq]
-  simp only [eqToHom_trans]
+  simp [eqToHom_trans]
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
     (h₁₂ : p₁ = p₂) (h₃₂ : p₃ = p₂) :
     (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₁₂.trans h₃₂.symm)).hom := by
   dsimp [XIsoOfEq]
-  simp only [eqToHom_trans]
+  simp [eqToHom_trans]
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_inv_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
     (h₂₁ : p₂ = p₁) (h₂₃ : p₂ = p₃) :
     (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₂₁.symm.trans h₂₃)).hom := by
   dsimp [XIsoOfEq]
-  simp only [eqToHom_trans]
+  simp [eqToHom_trans]
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_inv_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
     (h₂₁ : p₂ = p₁) (h₃₂ : p₃ = p₂) :
     (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₃₂.trans h₂₁).symm).hom := by
   dsimp [XIsoOfEq]
-  simp only [eqToHom_trans]
+  simp [eqToHom_trans]
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_d (K : HomologicalComplex V c) {p₁ p₂ : ι} (h : p₁ = p₂) (p₃ : ι) :
@@ -379,7 +379,7 @@ and so the differentials only differ by an `eqToHom`.
 theorem d_comp_eqToHom {i j j' : ι} (rij : c.Rel i j) (rij' : c.Rel i j') :
     C.d i j' ≫ eqToHom congr(C.X $(c.next_eq rij' rij)) = C.d i j := by
   obtain rfl := c.next_eq rij rij'
-  simp only [eqToHom_refl, comp_id]
+  simp [eqToHom_refl, comp_id]
 
 /-- If `C.d i j` and `C.d i' j` are both allowed, then we must have `i = i'`,
 and so the differentials only differ by an `eqToHom`.
@@ -388,7 +388,7 @@ and so the differentials only differ by an `eqToHom`.
 theorem eqToHom_comp_d {i i' j : ι} (rij : c.Rel i j) (rij' : c.Rel i' j) :
     eqToHom congr(C.X $(c.prev_eq rij rij')) ≫ C.d i' j = C.d i j := by
   obtain rfl := c.prev_eq rij rij'
-  simp only [eqToHom_refl, id_comp]
+  simp [eqToHom_refl, id_comp]
 
 theorem kernel_eq_kernel [HasKernels V] {i j j' : ι} (r : c.Rel i j) (r' : c.Rel i j') :
     kernelSubobject (C.d i j) = kernelSubobject (C.d i j') := by
@@ -535,7 +535,7 @@ abbrev prev (f : Hom C₁ C₂) (j : ι) : C₁.xPrev j ⟶ C₂.xPrev j :=
 theorem prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
     f.prev j = (C₁.xPrevIso w).hom ≫ f.f i ≫ (C₂.xPrevIso w).inv := by
   obtain rfl := c.prev_eq' w
-  simp only [xPrevIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
+  simp [xPrevIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
 /-- `f.next i` is `f.f j` if there is some `r i j`, and `f.f j` otherwise. -/
 abbrev next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
@@ -544,7 +544,7 @@ abbrev next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
 theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
     f.next i = (C₁.xNextIso w).hom ≫ f.f j ≫ (C₂.xNextIso w).inv := by
   obtain rfl := c.next_eq' w
-  simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
+  simp [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
 @[reassoc, elementwise]
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
@@ -635,7 +635,7 @@ abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) �
     d_comp_d' := fun i j k hij hjk => by
       dsimp [of.d] at hij hjk ⊢
       subst hij hjk
-      simp only [eqToHom_refl, id_comp, dite_eq_ite, ite_true, sq] }
+      simp [eqToHom_refl, id_comp, dite_eq_ite, ite_true, sq] }
 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
 

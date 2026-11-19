@@ -131,7 +131,7 @@ for products (indexed or not) of complete linear orders, and we have instances w
 that cover these cases. -/
 instance (priority := 100) compactSpace_of_completeLinearOrder {α : Type*} [CompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] : CompactSpace α :=
-  ⟨by simp only [← Icc_bot_top, isCompact_Icc]⟩
+  ⟨by simp [← Icc_bot_top, isCompact_Icc]⟩
 
 section
 

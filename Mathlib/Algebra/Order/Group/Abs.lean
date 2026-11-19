@@ -44,7 +44,7 @@ variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b c : G}
   have : (|a * b|ₘ = a⁻¹ * b ↔ b ≤ 1) ↔
     (|a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1) := by
     simp [ha.le, ha.not_ge, hb, mabs_of_le_one, mabs_of_one_le]
-  refine this.mp ⟨fun h ↦ ?_, fun h ↦ by simp only [h.antisymm hb, mabs_of_lt_one ha, mul_one]⟩
+  refine this.mp ⟨fun h ↦ ?_, fun h ↦ by simp [h.antisymm hb, mabs_of_lt_one ha, mul_one]⟩
   obtain ab | ab := le_or_gt (a * b) 1
   · refine (eq_one_of_inv_eq' ?_).le
     rwa [mabs_of_le_one ab, mul_inv_rev, mul_comm, mul_right_inj] at h
@@ -137,7 +137,7 @@ theorem mabs_div_lt_of_one_le_of_lt {a b n : G} (one_le_a : 1 ≤ a) (a_lt_n : a
 @[to_additive]
 theorem mabs_eq (hb : 1 ≤ b) : |a|ₘ = b ↔ a = b ∨ a = b⁻¹ := by
   refine ⟨eq_or_eq_inv_of_mabs_eq, ?_⟩
-  rintro (rfl | rfl) <;> simp only [mabs_inv, mabs_of_one_le hb]
+  rintro (rfl | rfl) <;> simp [mabs_inv, mabs_of_one_le hb]
 
 @[to_additive]
 theorem mabs_le_max_mabs_mabs (hab : a ≤ b) (hbc : b ≤ c) : |b|ₘ ≤ max |a|ₘ |c|ₘ :=

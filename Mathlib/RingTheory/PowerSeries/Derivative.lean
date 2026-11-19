@@ -134,7 +134,7 @@ theorem iterate_derivative_sum {ι : Type*} (k : ℕ) (s : Finset ι) (f : ι �
     d⁄dX^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, d⁄dX^[k] (f b) := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [Function.iterate_succ_apply', ih, map_sum]
+  | succ k ih => simp [Function.iterate_succ_apply', ih, map_sum]
 
 @[simp]
 theorem iterate_derivative_smul {S : Type*} [SMul S R⟦X⟧]

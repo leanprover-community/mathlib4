@@ -23,17 +23,17 @@ namespace SemiconjBy
 
 @[simp]
 theorem zero_right [MulZeroClass G₀] (a : G₀) : SemiconjBy a 0 0 := by
-  simp only [SemiconjBy, mul_zero, zero_mul]
+  simp [SemiconjBy, mul_zero, zero_mul]
 
 @[simp]
 theorem zero_left [MulZeroClass G₀] (x y : G₀) : SemiconjBy 0 x y := by
-  simp only [SemiconjBy, mul_zero, zero_mul]
+  simp [SemiconjBy, mul_zero, zero_mul]
 
 variable [GroupWithZero G₀] {a x y x' y' : G₀}
 
 @[simp]
 theorem inv_symm_left_iff₀ : SemiconjBy a⁻¹ x y ↔ SemiconjBy a y x :=
-  Classical.by_cases (fun ha : a = 0 => by simp only [ha, inv_zero, SemiconjBy.zero_left]) fun ha =>
+  Classical.by_cases (fun ha : a = 0 => by simp [ha, inv_zero, SemiconjBy.zero_left]) fun ha =>
     @units_inv_symm_left_iff _ _ (Units.mk0 a ha) _ _
 
 theorem inv_symm_left₀ (h : SemiconjBy a x y) : SemiconjBy a⁻¹ y x :=
@@ -41,7 +41,7 @@ theorem inv_symm_left₀ (h : SemiconjBy a x y) : SemiconjBy a⁻¹ y x :=
 
 theorem inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
   by_cases ha : a = 0
-  · simp only [ha, zero_left]
+  · simp [ha, zero_left]
   by_cases hx : x = 0
   · subst x
     simp only [SemiconjBy, mul_zero, @eq_comm _ _ (y * a), mul_eq_zero] at h
@@ -61,7 +61,7 @@ theorem div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
 
 lemma zpow_right₀ {a x y : G₀} (h : SemiconjBy a x y) : ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
   | (n : ℕ) => by simp [h.pow_right n]
-  | .negSucc n => by simp only [zpow_negSucc, (h.pow_right (n + 1)).inv_right₀]
+  | .negSucc n => by simp [zpow_negSucc, (h.pow_right (n + 1)).inv_right₀]
 
 end SemiconjBy
 

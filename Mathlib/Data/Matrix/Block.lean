@@ -137,7 +137,7 @@ theorem fromBlocks_transpose (A : Matrix n l α) (B : Matrix n m α) (C : Matrix
 
 theorem fromBlocks_conjTranspose [Star α] (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D)ᴴ = fromBlocks Aᴴ Cᴴ Bᴴ Dᴴ := by
-  simp only [conjTranspose, fromBlocks_transpose, fromBlocks_map]
+  simp [conjTranspose, fromBlocks_transpose, fromBlocks_map]
 
 @[simp]
 theorem fromBlocks_submatrix_sumMap {r s : Type*} (A : Matrix n l α) (B : Matrix n m α)
@@ -224,7 +224,7 @@ theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring �
     fromBlocks A B C D * fromBlocks A' B' C' D' =
       fromBlocks (A * A' + B * C') (A * B' + B * D') (C * A' + D * C') (C * B' + D * D') := by
   ext i j
-  rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp only [fromBlocks, Matrix.mul_apply, of_apply,
+  rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks, Matrix.mul_apply, of_apply,
       Sum.elim_inr, Fintype.sum_sum_type, Sum.elim_inl, Matrix.add_apply]
 
 theorem fromBlocks_diagonal_pow [Semiring α] [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
@@ -281,14 +281,14 @@ lemma toBlocks₁₁_diagonal (v : l ⊕ m → α) :
     toBlocks₁₁ (diagonal v) = diagonal (fun i => v (Sum.inl i)) := by
   unfold toBlocks₁₁
   funext i j
-  simp only [Sum.inl.injEq, of_apply, diagonal_apply]
+  simp [Sum.inl.injEq, of_apply, diagonal_apply]
 
 @[simp]
 lemma toBlocks₂₂_diagonal (v : l ⊕ m → α) :
     toBlocks₂₂ (diagonal v) = diagonal (fun i => v (Sum.inr i)) := by
   unfold toBlocks₂₂
   funext i j
-  simp only [Sum.inr.injEq, of_apply, diagonal_apply]
+  simp [Sum.inr.injEq, of_apply, diagonal_apply]
 
 @[simp]
 lemma toBlocks₁₂_diagonal (v : l ⊕ m → α) : toBlocks₁₂ (diagonal v) = 0 := rfl

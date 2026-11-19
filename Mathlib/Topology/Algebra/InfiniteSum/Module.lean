@@ -196,7 +196,7 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   congr
   ext
   congr 1
-  simp only [mul_smul]
+  simp [mul_smul]
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/

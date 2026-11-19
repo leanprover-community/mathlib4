@@ -275,7 +275,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     · simp only [← CommRingCat.comp_apply, ← Functor.map_comp]
       rfl
     · rw [map_zero]
-    · simp only [Scheme.basicOpen_res, inf_le_right]
+    · simp [Scheme.basicOpen_res, inf_le_right]
   choose n hn using H'
   have := hs.to_subtype
   cases nonempty_fintype s

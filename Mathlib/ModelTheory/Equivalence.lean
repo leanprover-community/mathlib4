@@ -59,10 +59,10 @@ end Imp
 section Imp
 
 lemma bot_imp (φ : L.BoundedFormula α n) : ⊥ ⟹[T] φ := fun M v xs => by
-  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_bot, false_implies]
+  simp [BoundedFormula.realize_imp, BoundedFormula.realize_bot, false_implies]
 
 lemma imp_top (φ : L.BoundedFormula α n) : φ ⟹[T] ⊤ := fun M v xs => by
-  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_top, implies_true]
+  simp [BoundedFormula.realize_imp, BoundedFormula.realize_top, implies_true]
 
 lemma imp_sup_left (φ ψ : L.BoundedFormula α n) : φ ⟹[T] φ ⊔ ψ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_sup]
@@ -114,7 +114,7 @@ notation:51 φ:50 " ⇔[" T "] " ψ:51 => Language.Theory.Iff T φ ψ
 
 theorem iff_iff_imp_and_imp {φ ψ : L.BoundedFormula α n} :
     (φ ⇔[T] ψ) ↔ (φ ⟹[T] ψ) ∧ (ψ ⟹[T] φ) := by
-  simp only [Theory.Imp, ModelsBoundedFormula, BoundedFormula.realize_imp, ← forall_and,
+  simp [Theory.Imp, ModelsBoundedFormula, BoundedFormula.realize_imp, ← forall_and,
     Theory.Iff, BoundedFormula.realize_iff, iff_iff_implies_and_implies]
 
 theorem imp_antisymm {φ ψ : L.BoundedFormula α n} (h₁ : φ ⟹[T] ψ) (h₂ : ψ ⟹[T] φ) :
@@ -233,11 +233,11 @@ theorem iff_all_liftAt : φ ⇔[T] (φ.liftAt 1 n).all :=
 
 lemma inf_not_iff_bot :
     φ ⊓ ∼φ ⇔[T] ⊥ := fun M v xs => by
-  simp only [realize_iff, realize_inf, realize_not, and_not_self, realize_bot]
+  simp [realize_iff, realize_inf, realize_not, and_not_self, realize_bot]
 
 lemma sup_not_iff_top :
     φ ⊔ ∼φ ⇔[T] ⊤ := fun M v xs => by
-  simp only [realize_iff, realize_sup, realize_not, realize_top, or_not]
+  simp [realize_iff, realize_sup, realize_not, realize_top, or_not]
 
 end BoundedFormula
 

@@ -286,7 +286,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}
   have H₁ : ‖f x‖ = ‖f c‖ := norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hd hcU hm hx
   have H₂ : ‖f x + f c‖ = ‖f c + f c‖ :=
     norm_eqOn_of_isPreconnected_of_isMaxOn hc ho (hd.add_const _) hcU hm.norm_add_self hx
-  eq_of_norm_eq_of_norm_add_eq H₁ <| by simp only [H₂, SameRay.rfl.norm_add, H₁, Function.const]
+  eq_of_norm_eq_of_norm_add_eq H₁ <| by simp [H₂, SameRay.rfl.norm_add, H₁, Function.const]
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
 complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U` and is
@@ -308,7 +308,7 @@ theorem eq_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E} (hd : D
   have H₁ : ‖f w‖ = ‖f z‖ := norm_eq_norm_of_isMaxOn_of_ball_subset hd hz hsub
   have H₂ : ‖f w + f z‖ = ‖f z + f z‖ :=
     norm_eq_norm_of_isMaxOn_of_ball_subset (hd.add_const _) hz.norm_add_self hsub
-  eq_of_norm_eq_of_norm_add_eq H₁ <| by simp only [H₂, SameRay.rfl.norm_add, H₁]
+  eq_of_norm_eq_of_norm_add_eq H₁ <| by simp [H₂, SameRay.rfl.norm_add, H₁]
 
 /-- **Maximum modulus principle** on a closed ball. Suppose that a function `f : E → F` from a
 normed complex space to a strictly convex normed complex space has the following properties:
@@ -418,7 +418,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
   have h₀ : (0 : ℂ) ∈ e ⁻¹' U := by simpa only [e, mem_preimage, lineMap_apply_zero]
   rcases exists_mem_frontier_isMaxOn_norm (hL.isBounded_preimage hU) ⟨0, h₀⟩ hd with ⟨ζ, hζU, hζ⟩
   calc
-    ‖f z‖ = ‖f (e 0)‖ := by simp only [e, lineMap_apply_zero]
+    ‖f z‖ = ‖f (e 0)‖ := by simp [e, lineMap_apply_zero]
     _ ≤ ‖f (e ζ)‖ := hζ (subset_closure h₀)
     _ ≤ C := hC _ (hde.continuous.frontier_preimage_subset _ hζU)
 

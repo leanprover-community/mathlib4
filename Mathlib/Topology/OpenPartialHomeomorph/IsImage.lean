@@ -159,7 +159,7 @@ theorem map_nhdsWithin_eq (h : e.IsImage s t) (hx : x ∈ e.source) : map e (�
   rw [e.map_nhdsWithin_eq hx, h.image_eq, e.nhdsWithin_target_inter (e.map_source hx)]
 
 protected theorem closure (h : e.IsImage s t) : e.IsImage (closure s) (closure t) := fun x hx => by
-  simp only [mem_closure_iff_nhdsWithin_neBot, ← h.map_nhdsWithin_eq hx, map_neBot_iff]
+  simp [mem_closure_iff_nhdsWithin_neBot, ← h.map_nhdsWithin_eq hx, map_neBot_iff]
 
 protected theorem interior (h : e.IsImage s t) : e.IsImage (interior s) (interior t) := by
   simpa only [closure_compl, compl_compl] using h.compl.closure.compl
@@ -357,7 +357,7 @@ theorem Set.EqOn.restr_eqOn_source {e e' : OpenPartialHomeomorph X Y}
     rw [e.restr_source' _ e'.open_source]
     exact Set.inter_comm _ _
   · rw [e.restr_source' _ e'.open_source]
-    refine (EqOn.trans ?_ h).trans ?_ <;> simp only [mfld_simps, eqOn_refl]
+    refine (EqOn.trans ?_ h).trans ?_ <;> simp [mfld_simps, eqOn_refl]
 
 theorem restr_eqOnSource_of_eqOn {e e' : OpenPartialHomeomorph X Y} {s : Set X}
     (heq : EqOn e e' (e'.source ∩ interior s)) (hsub : e'.source ∩ interior s ⊆ e.source) :

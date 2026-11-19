@@ -111,7 +111,7 @@ lemma sum_nonarchAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K �
 lemma mulHeight₁_eq (x : K) :
     mulHeight₁ x =
       (∏ v : InfinitePlace K, max (v x) 1 ^ v.mult) * ∏ᶠ v : FinitePlace K, max (v x) 1 := by
-  simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight₁_eq,
+  simp [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight₁_eq,
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ max (v x) 1]
 
 open Real in
@@ -119,7 +119,7 @@ open Real in
 lemma logHeight₁_eq (x : K) :
     logHeight₁ x =
       (∑ v : InfinitePlace K, v.mult * log⁺ (v x)) + ∑ᶠ v : FinitePlace K, log⁺ (v x) := by
-  simp only [← nsmul_eq_mul, FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.logHeight₁_eq,
+  simp [← nsmul_eq_mul, FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.logHeight₁_eq,
     sum_archAbsVal_eq, sum_nonarchAbsVal_eq fun v ↦ log⁺ (v x)]
 
 /-- This is the familiar definition of the multiplicative height on (nonzero) tuples
@@ -127,7 +127,7 @@ of number field elements. -/
 lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
     mulHeight x =
       (∏ v : InfinitePlace K, (⨆ i, v (x i)) ^ v.mult) * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) := by
-  simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight_eq hx,
+  simp [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight_eq hx,
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ ⨆ i, v (x i)]
 
 open Classical IntermediateField in

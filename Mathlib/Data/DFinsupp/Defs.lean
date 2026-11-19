@@ -140,7 +140,7 @@ theorem mapRange_comp (f : ∀ i, β₁ i → β₂ i) (f₂ : ∀ i, β i → �
 theorem mapRange_zero (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
     mapRange f hf (0 : Π₀ i, β₁ i) = 0 := by
   ext
-  simp only [mapRange_apply, coe_zero, Pi.zero_apply, hf]
+  simp [mapRange_apply, coe_zero, Pi.zero_apply, hf]
 
 /-- Let `f i` be a binary operation `β₁ i → β₂ i → β i` such that `f i 0 0 = 0`.
 Then `zipWith f hf` is a binary operation `Π₀ i, β₁ i → Π₀ i, β₂ i → Π₀ i, β i`. -/
@@ -282,7 +282,7 @@ section FilterAndSubtypeDomain
 def filter [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : Π₀ i, β i) : Π₀ i, β i :=
   ⟨fun i => if p i then x i else 0,
     x.support'.map fun xs =>
-      ⟨xs.1, fun i => (xs.prop i).imp_right fun H : x i = 0 => by simp only [H, ite_self]⟩⟩
+      ⟨xs.1, fun i => (xs.prop i).imp_right fun H : x i = 0 => by simp [H, ite_self]⟩⟩
 
 @[simp, grind =]
 theorem filter_apply [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (i : ι) (f : Π₀ i, β i) :
@@ -298,7 +298,7 @@ theorem filter_apply_neg [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p
 @[simp] theorem filter_add_filter_not [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i) (p : ι → Prop)
     [DecidablePred p] : (f.filter p + f.filter fun i => ¬p i) = f :=
   ext fun i => by
-    simp only [add_apply, filter_apply]; split_ifs <;> simp only [add_zero, zero_add]
+    simp only [add_apply, filter_apply]; split_ifs <;> simp [add_zero, zero_add]
 
 @[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
 
@@ -532,7 +532,7 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _).symm (Pi.single i m) = DFinsupp.single i m := by
-  simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
+  simp [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 
 @[simp] lemma filter_eq (f : Π₀ i, β i) (i : ι) : f.filter (i = ·) = single i (f i) := by
   ext
@@ -559,7 +559,7 @@ end SingleAndZipWith
 /-- Redefine `f i` to be `0`. -/
 def erase (i : ι) (x : Π₀ i, β i) : Π₀ i, β i :=
   ⟨fun j ↦ if j = i then 0 else x.toFun j,
-    x.support'.map fun xs ↦ ⟨xs.1, fun j ↦ (xs.prop j).imp_right (by simp only [·, ite_self])⟩⟩
+    x.support'.map fun xs ↦ ⟨xs.1, fun j ↦ (xs.prop j).imp_right (by simp [·, ite_self])⟩⟩
 
 @[simp, grind =]
 theorem erase_apply {i j : ι} {f : Π₀ i, β i} : (f.erase i) j = if j = i then 0 else f j :=
@@ -719,17 +719,17 @@ theorem erase_sub {β : ι → Type v} [∀ i, AddGroup (β i)] (i : ι) (f g : 
 theorem single_add_erase (i : ι) (f : Π₀ i, β i) : single i (f i) + f.erase i = f :=
   ext fun i' =>
     if h : i = i' then by
-      subst h; simp only [add_apply, single_apply, erase_apply, add_zero, dite_eq_ite, ite_true]
+      subst h; simp [add_apply, single_apply, erase_apply, add_zero, dite_eq_ite, ite_true]
     else by
-      simp only [add_apply, single_apply, erase_apply, dite_eq_right h, ite_eq_right (Ne.symm h),
+      simp [add_apply, single_apply, erase_apply, dite_eq_right h, ite_eq_right (Ne.symm h),
         zero_add]
 
 theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f i) = f :=
   ext fun i' =>
     if h : i = i' then by
-      subst h; simp only [add_apply, single_apply, erase_apply, zero_add, dite_eq_ite, ite_true]
+      subst h; simp [add_apply, single_apply, erase_apply, zero_add, dite_eq_ite, ite_true]
     else by
-      simp only [add_apply, single_apply, erase_apply, dite_eq_right h, ite_eq_right (Ne.symm h),
+      simp [add_apply, single_apply, erase_apply, dite_eq_right h, ite_eq_right (Ne.symm h),
         add_zero]
 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
@@ -1206,7 +1206,7 @@ theorem mapRange_add (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0)
     (hf' : ∀ i x y, f i (x + y) = f i x + f i y) (g₁ g₂ : Π₀ i, β₁ i) :
     mapRange f hf (g₁ + g₂) = mapRange f hf g₁ + mapRange f hf g₂ := by
   ext
-  simp only [mapRange_apply f, coe_add, Pi.add_apply, hf']
+  simp [mapRange_apply f, coe_add, Pi.add_apply, hf']
 
 /-- `DFinsupp.mapRange` as an `AddMonoidHom`. -/
 @[simps apply]

@@ -89,13 +89,13 @@ theorem map_swap_antidiagonal (s : Multiset α) :
   induction s using Multiset.induction_on with
   | empty => rfl
   | cons a s ih =>
-    simp only [antidiagonal_cons, map_add, map_map, ← Prod.map_comp_swap,
+    simp [antidiagonal_cons, map_add, map_map, ← Prod.map_comp_swap,
       ← Multiset.map_map _ Prod.swap, ih, add_comm]
 
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by
   induction s using Multiset.induction_on with
-  | empty => simp only [antidiagonal_zero, powerset_zero, Multiset.zero_sub, map_singleton]
+  | empty => simp [antidiagonal_zero, powerset_zero, Multiset.zero_sub, map_singleton]
   | cons a s hs =>
     simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_apply,
       id, sub_cons, erase_cons_head]

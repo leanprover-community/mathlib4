@@ -239,7 +239,7 @@ theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (
     (hf' : ∀ i x, f i (r • x) = r • f i x) (g : Π₀ i, β₁ i) :
     mapRange f hf (r • g) = r • mapRange f hf g := by
   ext
-  simp only [mapRange_apply f, coe_smul, Pi.smul_apply, hf']
+  simp [mapRange_apply f, coe_smul, Pi.smul_apply, hf']
 
 /-- `DFinsupp.mapRange` as a `LinearMap`. -/
 @[simps! apply]
@@ -390,7 +390,7 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
   apply le_antisymm
   · refine iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, ?_⟩
     rw [LinearMap.comp_apply, filterLinearMap_apply, filter_single_pos _ _ hi]
-    simp only [lsum_apply_apply, sumAddHom_single, LinearMap.toAddMonoidHom_coe, coe_subtype]
+    simp [lsum_apply_apply, sumAddHom_single, LinearMap.toAddMonoidHom_coe, coe_subtype]
   · rintro x ⟨v, rfl⟩
     refine dfinsuppSumAddHom_mem _ _ _ fun i _ => ?_
     refine mem_iSup_of_mem i ?_

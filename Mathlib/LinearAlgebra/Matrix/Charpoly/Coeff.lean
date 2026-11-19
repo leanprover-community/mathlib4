@@ -162,7 +162,7 @@ lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
       derivative_C, zero_mul, derivative_X, mul_one, zero_add, eval_add, eval_mul, eval_C, eval_X,
       mul_zero, add_zero, eval_det_add_X_smul, eval_pow, eval_neg, eval_one]
     rw [Finset.sum_eq_single 0]
-    · simp only [Fin.val_zero, pow_zero, derivative_one, eval_zero, one_apply_eq, eval_one,
+    · simp [Fin.val_zero, pow_zero, derivative_one, eval_zero, one_apply_eq, eval_one,
         mul_one, zero_add, one_mul, Fin.succAbove_zero, submatrix_one _ (Fin.succ_injective _),
         det_one, IH, trace_submatrix_succ]
     · intro i _ hi
@@ -190,7 +190,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
 
 lemma coeff_det_one_add_X_smul_one (M : Matrix n n R) :
     (det (1 + (X : R[X]) • M.map C)).coeff 1 = trace M := by
-  simp only [← derivative_det_one_add_X_smul, ← coeff_zero_eq_eval_zero,
+  simp [← derivative_det_one_add_X_smul, ← coeff_zero_eq_eval_zero,
     coeff_derivative, zero_add, Nat.cast_zero, mul_one]
 
 lemma det_one_add_X_smul (M : Matrix n n R) :
@@ -383,11 +383,11 @@ lemma det_piecewise_one_eq_submatrix_det
         (M.submatrix Subtype.val Subtype.val)
         (M.submatrix Subtype.val Subtype.val) 0 1 := by
     ext (i | i) (j | j) <;> dsimp [A, e]
-    · simp only [Finset.piecewise, ite_eq_left i.prop]
-    · simp only [Finset.piecewise, ite_eq_left i.prop]
+    · simp [Finset.piecewise, ite_eq_left i.prop]
+    · simp [Finset.piecewise, ite_eq_left i.prop]
     · simp only [Finset.piecewise, ite_eq_right i.prop]
       exact Matrix.one_apply_ne (fun h => i.prop (h ▸ j.prop))
-    · simp only [Finset.piecewise, ite_eq_right i.prop, Matrix.one_apply, Subtype.ext_iff]
+    · simp [Finset.piecewise, ite_eq_right i.prop, Matrix.one_apply, Subtype.ext_iff]
   rw [h_blocks, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, mul_one]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -434,11 +434,11 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
           split_ifs <;> rfl
         rw [h_smul, D.map_smul_univ]
         congr 1
-        simp only [Finset.prod_ite_mem, Finset.univ_inter, Finset.prod_const]
+        simp [Finset.prod_ite_mem, Finset.univ_inter, Finset.prod_const]
       _ = ∑ s : Finset n, ((X : R[X]) ^ s.card •
             D (Finset.piecewise s (fun i ↦ (M.map C) i)
               (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
-        simp only [Polynomial.finsetSum_coeff]
+        simp [Polynomial.finsetSum_coeff]
       _ = _ := by
         simp_rw [h_det, smul_eq_mul, mul_comm (X ^ _) (C _)]
         simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial, Finsupp.single_apply, ← Finset.sum_filter]

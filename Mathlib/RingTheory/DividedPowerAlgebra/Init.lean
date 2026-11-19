@@ -196,7 +196,7 @@ lemma prod_dp {ι : Type*} {s : Finset ι} {n : ι → ℕ} {m : M} :
   classical
   induction s using Finset.induction with
   | empty =>
-    simp only [prod_empty, multinomial_empty, cast_one, sum_empty, one_mul, dp_zero]
+    simp [prod_empty, multinomial_empty, cast_one, sum_empty, one_mul, dp_zero]
   | insert _ _ hi hrec =>
     rw [prod_insert hi, hrec, ← mul_assoc, mul_comm (dp R (n _) m),
       mul_assoc, dp_mul, ← sum_insert hi, nsmul_eq_mul, ← mul_assoc]

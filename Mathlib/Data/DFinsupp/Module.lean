@@ -48,17 +48,17 @@ theorem coe_smul [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] (b : γ)
 instance smulCommClass {δ : Type*} [∀ i, Zero (β i)]
     [∀ i, SMulZeroClass γ (β i)] [∀ i, SMulZeroClass δ (β i)] [∀ i, SMulCommClass γ δ (β i)] :
     SMulCommClass γ δ (Π₀ i, β i) where
-  smul_comm r s m := ext fun i => by simp only [smul_apply, smul_comm r s (m i)]
+  smul_comm r s m := ext fun i => by simp [smul_apply, smul_comm r s (m i)]
 
 instance isScalarTower {δ : Type*} [∀ i, Zero (β i)]
     [∀ i, SMulZeroClass γ (β i)] [∀ i, SMulZeroClass δ (β i)] [SMul γ δ]
     [∀ i, IsScalarTower γ δ (β i)] : IsScalarTower γ δ (Π₀ i, β i) where
-  smul_assoc r s m := ext fun i => by simp only [smul_apply, smul_assoc r s (m i)]
+  smul_assoc r s m := ext fun i => by simp [smul_apply, smul_assoc r s (m i)]
 
 instance isCentralScalar [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
     [∀ i, SMulZeroClass γᵐᵒᵖ (β i)] [∀ i, IsCentralScalar γ (β i)] :
     IsCentralScalar γ (Π₀ i, β i) where
-  op_smul_eq_smul r m := ext fun i => by simp only [smul_apply, op_smul_eq_smul r (m i)]
+  op_smul_eq_smul r m := ext fun i => by simp [smul_apply, op_smul_eq_smul r (m i)]
 
 /-- Dependent functions with finite support inherit a `DistribMulAction` structure from such a
 structure on each coordinate. -/
@@ -71,8 +71,8 @@ each coordinate. -/
 instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
     Module γ (Π₀ i, β i) :=
   { (inferInstance : DistribMulAction γ (Π₀ i, β i)) with
-    zero_smul := fun c => ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
-    add_smul := fun c x y => ext fun i => by simp only [add_apply, smul_apply, add_smul] }
+    zero_smul := fun c => ext fun i => by simp [smul_apply, zero_smul, zero_apply]
+    add_smul := fun c x y => ext fun i => by simp [add_apply, smul_apply, add_smul] }
 
 end Algebra
 

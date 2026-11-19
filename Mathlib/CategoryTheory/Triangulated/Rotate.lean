@@ -90,7 +90,7 @@ def rotate : Triangle C ⥤ Triangle C where
     hom₃ := f.hom₁⟦1⟧'
     comm₃ := by
       dsimp
-      simp only [comp_neg, neg_comp, ← Functor.map_comp, f.comm₁] }
+      simp [comp_neg, neg_comp, ← Functor.map_comp, f.comm₁] }
 
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/

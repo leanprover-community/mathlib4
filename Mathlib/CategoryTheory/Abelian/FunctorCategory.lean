@@ -75,7 +75,7 @@ theorem coimageImageComparison_app :
 theorem coimageImageComparison_app' :
     (coimageImageComparison α).app X =
       (coimageObjIso α X).hom ≫ coimageImageComparison (α.app X) ≫ (imageObjIso α X).inv := by
-  simp only [coimageImageComparison_app, Iso.hom_inv_id_assoc, Iso.hom_inv_id, Category.assoc,
+  simp [coimageImageComparison_app, Iso.hom_inv_id_assoc, Iso.hom_inv_id, Category.assoc,
     Category.comp_id]
 
 instance functor_category_isIso_coimageImageComparison :

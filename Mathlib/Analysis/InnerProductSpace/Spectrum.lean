@@ -197,7 +197,7 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
       congr(hT.diagonalization $(this (hT.diagonalization v)) μ)
   intro w
   have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
-  simp only [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
+  simp [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
 
 end Version1
 
@@ -396,7 +396,7 @@ section Nonneg
 -- Cannot be @[simp] because the LHS is not in simp normal form
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
     (h : T v = μ • v) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
-  simp only [h, inner_smul_right, inner_self_eq_norm_sq_to_K]
+  simp [h, inner_smul_right, inner_self_eq_norm_sq_to_K]
 
 theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by

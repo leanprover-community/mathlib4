@@ -144,11 +144,11 @@ lemma mulSupport_eq_univ (hf : ∀ x, f x ≠ 1) : mulSupport f = Set.univ :=
 @[to_additive]
 lemma mulSupport_binop_subset (op : M → N → P) (op1 : op 1 1 = 1) (f : ι → M) (g : ι → N) :
     mulSupport (fun x ↦ op (f x) (g x)) ⊆ mulSupport f ∪ mulSupport g := fun x hx ↦
-  not_or_of_imp fun hf hg ↦ hx <| by simp only [hf, hg, op1]
+  not_or_of_imp fun hf hg ↦ hx <| by simp [hf, hg, op1]
 
 @[to_additive]
 lemma mulSupport_comp_subset {g : M → N} (hg : g 1 = 1) (f : ι → M) :
-    mulSupport (g ∘ f) ⊆ mulSupport f := fun x ↦ mt fun h ↦ by simp only [(· ∘ ·), *]
+    mulSupport (g ∘ f) ⊆ mulSupport f := fun x ↦ mt fun h ↦ by simp [(· ∘ ·), *]
 
 @[to_additive]
 lemma mulSupport_subset_comp {g : M → N} (hg : ∀ {x}, g x = 1 → x = 1) (f : ι → M) :
@@ -173,12 +173,12 @@ lemma mulSupport_comp_eq_preimage (g : κ → M) (f : ι → κ) :
 lemma mulSupport_prodMk (f : ι → M) (g : ι → N) :
     mulSupport (fun x ↦ (f x, g x)) = mulSupport f ∪ mulSupport g :=
   Set.ext fun x ↦ by
-    simp only [mulSupport, not_and_or, mem_union, mem_ofPred_eq, Prod.mk_eq_one, Ne]
+    simp [mulSupport, not_and_or, mem_union, mem_ofPred_eq, Prod.mk_eq_one, Ne]
 
 @[to_additive support_prodMk']
 lemma mulSupport_prodMk' (f : ι → M × N) :
     mulSupport f = (mulSupport fun x ↦ (f x).1) ∪ mulSupport fun x ↦ (f x).2 := by
-  simp only [← mulSupport_prodMk]
+  simp [← mulSupport_prodMk]
 
 @[to_additive]
 lemma mulSupport_along_fiber_subset (f : ι × κ → M) (i : ι) :

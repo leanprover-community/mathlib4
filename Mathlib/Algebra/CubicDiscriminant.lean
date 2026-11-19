@@ -243,11 +243,11 @@ section Degree
 def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   toFun P := ⟨P.toPoly, degree_cubic_le⟩
   invFun f := ⟨f.1.coeff 3, f.1.coeff 2, f.1.coeff 1, f.1.coeff 0⟩
-  left_inv P := by ext <;> simp only [coeffs]
+  left_inv P := by ext <;> simp [coeffs]
   right_inv f := by
     ext n
     obtain hn | hn := le_or_gt n 3
-    · interval_cases n <;> simp only <;> ring_nf <;> simp only [coeffs]
+    · interval_cases n <;> simp only <;> ring_nf <;> simp [coeffs]
     · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
       simpa using hn
 
@@ -370,7 +370,7 @@ def map (φ : R →+* S) (P : Cubic R) : Cubic S :=
   ⟨φ P.a, φ P.b, φ P.c, φ P.d⟩
 
 theorem map_toPoly : (map φ P).toPoly = Polynomial.map φ P.toPoly := by
-  simp only [map, toPoly, map_C, map_X, Polynomial.map_add, Polynomial.map_mul, Polynomial.map_pow]
+  simp [map, toPoly, map_C, map_X, Polynomial.map_add, Polynomial.map_mul, Polynomial.map_pow]
 
 end Map
 
@@ -397,7 +397,7 @@ theorem map_roots [IsDomain S] : (map φ P).roots = (Polynomial.map φ P.toPoly)
 theorem mem_roots_iff [IsDomain R] (h0 : P.toPoly ≠ 0) (x : R) :
     x ∈ P.roots ↔ P.a * x ^ 3 + P.b * x ^ 2 + P.c * x + P.d = 0 := by
   rw [roots, mem_roots h0, IsRoot, toPoly]
-  simp only [eval_C, eval_X, eval_add, eval_mul, eval_pow]
+  simp [eval_C, eval_X, eval_add, eval_mul, eval_pow]
 
 theorem card_roots_le [IsDomain R] [DecidableEq R] : #P.roots.toFinset ≤ 3 := by
   apply (toFinset_card_le P.toPoly.roots).trans

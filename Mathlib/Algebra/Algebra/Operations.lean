@@ -165,7 +165,7 @@ theorem bot_smul : (⊥ : Submodule R A) • N = ⊥ :=
 
 theorem smul_sup : I • (N ⊔ P) = I • N ⊔ I • P :=
   toAddSubmonoid_injective <| by
-    simp only [smul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.addSubmonoid_smul_sup]
+    simp [smul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.addSubmonoid_smul_sup]
 
 theorem sup_smul : (I ⊔ J) • N = I • N ⊔ J • N :=
   le_antisymm (smul_le.mpr fun mn hmn p hp ↦ by
@@ -188,7 +188,7 @@ protected theorem smul_assoc {B} [Semiring B] [Module R B] [Module A B] [Module 
 theorem smul_iSup {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
     I • (⨆ i, t i) = ⨆ i, I • t i :=
   toAddSubmonoid_injective <| by
-    simp only [smul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.smul_iSup]
+    simp [smul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.smul_iSup]
 
 theorem iSup_smul {ι : Sort*} {t : ι → Submodule R A} {N : Submodule R M} :
     (⨆ i, t i) • N = ⨆ i, t i • N :=

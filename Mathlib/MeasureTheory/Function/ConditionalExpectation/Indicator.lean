@@ -97,8 +97,8 @@ theorem condExp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
         · rw [Set.indicator_indicator, Set.inter_self]
       filter_upwards [this] with x hx
       by_cases hxs : x ∈ s
-      · simp only [hx, hxs, Set.indicator_of_mem]
-      · simp only [hxs, Set.indicator_of_notMem, not_false_iff]
+      · simp [hx, hxs, Set.indicator_of_mem]
+      · simp [hxs, Set.indicator_of_notMem, not_false_iff]
     _ =ᵐ[μ] s.indicator (μ[s.indicator f | m]) := by
       rw [Set.indicator_indicator, Set.inter_compl_self, Set.indicator_empty', add_zero]
     _ =ᵐ[μ] μ[s.indicator f | m] := by

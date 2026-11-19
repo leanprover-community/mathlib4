@@ -773,7 +773,7 @@ lemma cyclesMk₁_eq (x : cycles₁ A) :
       (isoCycles₁ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 1).1 inferInstance <| by
     rw [iCycles_mk]
-    simp only [ChainComplex.of_X, isoCycles₁_inv_comp_iCycles_apply]
+    simp [ChainComplex.of_X, isoCycles₁_inv_comp_iCycles_apply]
 
 end isoCycles₁
 
@@ -818,7 +818,7 @@ lemma cyclesMk₂_eq (x : cycles₂ A) :
       simp) = (isoCycles₂ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 2).1 inferInstance <| by
     rw [iCycles_mk]
-    simp only [ChainComplex.of_X, isoCycles₂_inv_comp_iCycles_apply]
+    simp [ChainComplex.of_X, isoCycles₂_inv_comp_iCycles_apply]
 
 end isoCycles₂
 

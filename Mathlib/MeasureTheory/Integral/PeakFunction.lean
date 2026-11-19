@@ -85,7 +85,7 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
       rw [inter_comm] at hx
       exact (norm_lt_of_mem_ball (hu x hx)).le
   convert A.union B
-  simp only [sdiff_union_inter]
+  simp [sdiff_union_inter]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -286,7 +286,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     obtain ⟨t, t_pos, tx₀, ht⟩ : ∃ t, 0 ≤ t ∧ t < c x₀ ∧ ∀ x ∈ s \ u, c x ≤ t := by
       rcases eq_empty_or_nonempty (s \ u) with (h | h)
       · exact
-          ⟨0, le_rfl, hnc₀, by simp only [h, mem_empty_iff_false, IsEmpty.forall_iff, imp_true_iff]⟩
+          ⟨0, le_rfl, hnc₀, by simp [h, mem_empty_iff_false, IsEmpty.forall_iff, imp_true_iff]⟩
       obtain ⟨x, hx, h'x⟩ : ∃ x ∈ s \ u, ∀ y ∈ s \ u, c y ≤ c x :=
         IsCompact.exists_isMaxOn (hs.diff u_open) h (hc.mono sdiff_subset)
       refine ⟨c x, hnc x hx.1, h'c x hx.1 ?_, h'x⟩

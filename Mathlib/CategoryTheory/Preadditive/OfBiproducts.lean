@@ -71,12 +71,12 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
     intro f
     ext
     · simp
-    · simp only [biprod.inr_desc, BinaryBicone.inr_snd_assoc]
+    · simp [biprod.inr_desc, BinaryBicone.inr_snd_assoc]
   have h₁ : ∀ f : X ⟶ Y, biprod.desc f (0 : X ⟶ Y) = biprod.fst ≫ f := by
     intro f
     ext
     · simp
-    · simp only [biprod.inr_desc, BinaryBicone.inr_fst_assoc, zero_comp]
+    · simp [biprod.inr_desc, BinaryBicone.inr_fst_assoc, zero_comp]
   exact {
     left_id := fun f => by simp [h₂ f, rightAdd, biprod.lift_snd_assoc, Category.id_comp],
     right_id := fun f => by simp [h₁ f, rightAdd, biprod.lift_fst_assoc, Category.id_comp]

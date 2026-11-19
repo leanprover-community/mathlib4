@@ -138,7 +138,7 @@ instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure 
 
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
-    bot_le := fun a s => by simp only [zero_apply, zero_le] }
+    bot_le := fun a s => by simp [zero_apply, zero_le] }
 
 theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
   ⟨fun h => bot_unique fun s => (measure_mono <| subset_univ s).trans_eq h, fun h => h.symm ▸ rfl⟩
@@ -183,7 +183,7 @@ theorem sup_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ ⊔ m₂) s
 theorem smul_iSup {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     {ι : Sort*} (f : ι → OuterMeasure α) (c : R) :
     (c • ⨆ i, f i) = ⨆ i, c • f i :=
-  ext fun s => by simp only [smul_apply, iSup_apply, ENNReal.smul_iSup]
+  ext fun s => by simp [smul_apply, iSup_apply, ENNReal.smul_iSup]
 
 end Supremum
 
@@ -220,11 +220,11 @@ theorem map_mono {β} (f : α → β) : Monotone (map f) := fun _ _ h _ => h _
 
 @[simp]
 theorem map_sup {β} (f : α → β) (m m' : OuterMeasure α) : map f (m ⊔ m') = map f m ⊔ map f m' :=
-  ext fun s => by simp only [map_apply, sup_apply]
+  ext fun s => by simp [map_apply, sup_apply]
 
 @[simp]
 theorem map_iSup {β ι} (f : α → β) (m : ι → OuterMeasure α) : map f (⨆ i, m i) = ⨆ i, map f (m i) :=
-  ext fun s => by simp only [map_apply, iSup_apply]
+  ext fun s => by simp [map_apply, iSup_apply]
 
 instance instFunctor : Functor OuterMeasure where map {_ _} f := map f
 
@@ -257,7 +257,7 @@ theorem sum_apply {ι} (f : ι → OuterMeasure α) (s : Set α) : sum f s = ∑
 
 theorem smul_dirac_apply (a : ℝ≥0∞) (b : α) (s : Set α) :
     (a • dirac b) s = indicator s (fun _ => a) b := by
-  simp only [smul_apply, smul_eq_mul, dirac_apply, ← indicator_mul_right _ fun _ => a, mul_one]
+  simp [smul_apply, smul_eq_mul, dirac_apply, ← indicator_mul_right _ fun _ => a, mul_one]
 
 /-- Pullback of an `OuterMeasure`: `comap f μ s = μ (f '' s)`. -/
 def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure α where
@@ -279,7 +279,7 @@ theorem comap_mono {β} (f : α → β) : Monotone (comap f) := fun _ _ h _ => h
 @[simp]
 theorem comap_iSup {β ι} (f : α → β) (m : ι → OuterMeasure β) :
     comap f (⨆ i, m i) = ⨆ i, comap f (m i) :=
-  ext fun s => by simp only [comap_apply, iSup_apply]
+  ext fun s => by simp [comap_apply, iSup_apply]
 
 /-- Restrict an `OuterMeasure` to a set. -/
 def restrict (s : Set α) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure α :=
@@ -309,7 +309,7 @@ theorem restrict_iSup {ι} (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨆ i, m i) = ⨆ i, restrict s (m i) := by simp [restrict]
 
 theorem map_comap {β} (f : α → β) (m : OuterMeasure β) : map f (comap f m) = restrict (range f) m :=
-  ext fun s => congr(m $(by simp only [image_preimage_eq_inter_range, Subtype.range_coe]))
+  ext fun s => congr(m $(by simp [image_preimage_eq_inter_range, Subtype.range_coe]))
 
 theorem map_comap_le {β} (f : α → β) (m : OuterMeasure β) : map f (comap f m) ≤ m := fun _ =>
   m.mono <| image_preimage_subset _ _

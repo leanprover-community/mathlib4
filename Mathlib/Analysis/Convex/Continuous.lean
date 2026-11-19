@@ -42,7 +42,7 @@ lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (h�
     replace hxy : 0 < ‖x - y‖ := by rwa [norm_sub_pos_iff]
     have hz : z ∈ ball x₀ r := mem_ball_iff_norm.2 <| by
       calc
-        _ = ‖(x - x₀) + (ε / ‖x - y‖) • (x - y)‖ := by simp only [z, add_sub_right_comm]
+        _ = ‖(x - x₀) + (ε / ‖x - y‖) • (x - y)‖ := by simp [z, add_sub_right_comm]
         _ ≤ ‖x - x₀‖ + ‖(ε / ‖x - y‖) • (x - y)‖ := norm_add_le ..
         _ < r - ε + ε :=
           add_lt_add_of_lt_of_le (mem_ball_iff_norm.1 hx) <| by

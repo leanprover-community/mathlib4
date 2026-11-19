@@ -334,12 +334,12 @@ theorem nhdsWithin_Ioo_eq_nhdsLT (h : a < b) : 𝓝[Ioo a b] b = 𝓝[<] b :=
 @[to_dual (attr := simp)]
 theorem continuousWithinAt_Ico_iff_Iio (h : a < b) :
     ContinuousWithinAt f (Ico a b) b ↔ ContinuousWithinAt f (Iio b) b := by
-  simp only [ContinuousWithinAt, nhdsWithin_Ico_eq_nhdsLT h]
+  simp [ContinuousWithinAt, nhdsWithin_Ico_eq_nhdsLT h]
 
 @[to_dual (attr := simp)]
 theorem continuousWithinAt_Ioo_iff_Iio (h : a < b) :
     ContinuousWithinAt f (Ioo a b) b ↔ ContinuousWithinAt f (Iio b) b := by
-  simp only [ContinuousWithinAt, nhdsWithin_Ioo_eq_nhdsLT h]
+  simp [ContinuousWithinAt, nhdsWithin_Ioo_eq_nhdsLT h]
 
 /-!
 #### Point included
@@ -387,12 +387,12 @@ theorem nhdsWithin_Ioc_eq_nhdsLE (h : a < b) : 𝓝[Ioc a b] b = 𝓝[≤] b :=
 @[to_dual (attr := simp)]
 theorem continuousWithinAt_Icc_iff_Iic (h : a < b) :
     ContinuousWithinAt f (Icc a b) b ↔ ContinuousWithinAt f (Iic b) b := by
-  simp only [ContinuousWithinAt, nhdsWithin_Icc_eq_nhdsLE h]
+  simp [ContinuousWithinAt, nhdsWithin_Icc_eq_nhdsLE h]
 
 @[to_dual (attr := simp)]
 theorem continuousWithinAt_Ioc_iff_Iic (h : a < b) :
     ContinuousWithinAt f (Ioc a b) b ↔ ContinuousWithinAt f (Iic b) b := by
-  simp only [ContinuousWithinAt, nhdsWithin_Ioc_eq_nhdsLE h]
+  simp [ContinuousWithinAt, nhdsWithin_Ioc_eq_nhdsLE h]
 
 end LinearOrder
 
@@ -600,7 +600,7 @@ theorem interior_Ioo : interior (Ioo a b) = Ioo a b :=
 
 @[to_dual self]
 theorem Ioo_subset_closure_interior : Ioo a b ⊆ closure (interior (Ioo a b)) := by
-  simp only [interior_Ioo, subset_closure]
+  simp [interior_Ioo, subset_closure]
 
 @[to_dual self (reorder := a b, ha hb)]
 theorem Ioo_mem_nhds {a b x : α} (ha : a < x) (hb : x < b) : Ioo a b ∈ 𝓝 x :=

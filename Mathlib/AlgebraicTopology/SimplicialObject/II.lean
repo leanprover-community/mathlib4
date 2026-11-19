@@ -196,7 +196,7 @@ lemma map'_predAbove {n : ℕ} (i : Fin (n + 1)) (x : Fin (n + 2)) :
     · rw [Fin.succAbove_of_castSucc_lt _ _ (by simpa), map'_eq_castSucc_iff]
       simp only [OrderHom.coe_mk, Fin.castSucc_le_castSucc_iff, Fin.castSucc_lt_castSucc_iff]
       constructor
-      · simp only [i.predAbove_of_le_castSucc x.castSucc (by simpa),
+      · simp [i.predAbove_of_le_castSucc x.castSucc (by simpa),
           Fin.castPred_castSucc, le_refl]
       · intro j hj
         by_cases! h : i.castSucc < j

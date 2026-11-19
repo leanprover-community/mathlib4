@@ -683,12 +683,12 @@ def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPair
 @[simp]
 theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Iso.refl Y := by
   ext
-  simp only [rightDualIso, Iso.refl_hom, @rightAdjointMate_id]
+  simp [rightDualIso, Iso.refl_hom, @rightAdjointMate_id]
 
 @[simp]
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext
-  simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id]
+  simp [leftDualIso, Iso.refl_hom, @leftAdjointMate_id]
 
 /-- The right dual of a tensor product is isomorphic to the reversed tensor product of
 the right duals. -/

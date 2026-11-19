@@ -75,7 +75,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     ← coeff_map,
     hf.coeff_zero_eq_prod_roots_of_monic (this.map _),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
-  simp only [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
+  simp [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
 
 end EqProdRoots
 
@@ -162,7 +162,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx, aroots_def]
   rw [← adjoin.powerBasis_gen hx, PowerBasis.norm_gen_eq_prod_roots] <;>
     rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
-    simp only [AdjoinSimple.algebraMap_gen _ _, hf]
+    simp [AdjoinSimple.algebraMap_gen _ _, hf]
 
 end IntermediateField
 
@@ -184,7 +184,7 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
       Multiset.dedup_eq_self.mpr, Multiset.map_id]
     · exact nodup_roots (.map hfx)
     · intro x; rfl
-  · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
+  · intro σ; simp [PowerBasis.liftEquiv'_apply_coe]
 
 theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAlgClosed E]
     [Algebra.IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
@@ -202,7 +202,7 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
     congr
     exact AlgHom.card L F E
   · intro σ
-    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.domRestrict, AlgHom.comp_apply,
+    simp [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.domRestrict, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
 
 lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
@@ -239,7 +239,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     simp [e']
   intro c x
   apply e₂.symm.injective
-  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_mul,
+  simp [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_mul,
     RingEquiv.symm_apply_apply, commutes]
 
 end EqProdEmbeddings

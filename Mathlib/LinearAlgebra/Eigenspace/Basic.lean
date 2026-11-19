@@ -132,7 +132,7 @@ lemma genEigenspace_eq_iSup_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ∞
 lemma genEigenspace_top (f : End R M) (μ : R) :
     f.genEigenspace μ ⊤ = ⨆ k : ℕ, f.genEigenspace μ k := by
   rw [genEigenspace_eq_iSup_genEigenspace_nat, iSup_subtype]
-  simp only [le_top, iSup_pos]
+  simp [le_top, iSup_pos]
 
 lemma genEigenspace_one {f : End R M} {μ : R} :
     f.genEigenspace μ 1 = LinearMap.ker (f - μ • 1) := by
@@ -429,7 +429,7 @@ lemma eigenspace_def {f : End R M} {μ : R} :
 
 @[simp]
 theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by
-  simp only [eigenspace, ← Nat.cast_one (R := ℕ∞), genEigenspace_zero_nat, pow_one]
+  simp [eigenspace, ← Nat.cast_one (R := ℕ∞), genEigenspace_zero_nat, pow_one]
 
 /-- A nonzero element of an eigenspace is an eigenvector. (Def 5.8 of [axler2024]) -/
 abbrev HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
@@ -923,12 +923,12 @@ lemma hasEigenvalue_neg_iff :
 lemma hasEigenvalue_add_iff :
     HasEigenvalue (f + ρ • .id) μ ↔ HasEigenvalue f (μ - ρ) := by
   have aux : f + ρ • .id - μ • 1 = f - (μ - ρ) • 1 := by module
-  simp only [hasEigenvalue_iff, eigenspace_def, aux]
+  simp [hasEigenvalue_iff, eigenspace_def, aux]
 
 lemma hasEigenvalue_add'_iff :
     HasEigenvalue (ρ • .id + f) μ ↔ HasEigenvalue f (μ - ρ) := by
   have aux : ρ • .id + f - μ • 1 = f - (μ - ρ) • 1 := by module
-  simp only [hasEigenvalue_iff, eigenspace_def, aux]
+  simp [hasEigenvalue_iff, eigenspace_def, aux]
 
 lemma hasEigenvalue_sub_iff :
     HasEigenvalue (f - ρ • .id) μ ↔ HasEigenvalue f (μ + ρ) := by

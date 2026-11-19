@@ -334,7 +334,7 @@ theorem mul_divp_cancel (a : α) (u : αˣ) : a * u /ₚ u = a :=
   (mul_assoc _ _ _).trans <| by rw [Units.mul_inv, mul_one]
 
 theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u₂ = x /ₚ (u₂ * u₁) := by
-  simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
+  simp [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 
 @[simp]
 theorem one_divp (u : αˣ) : 1 /ₚ u = ↑u⁻¹ :=
@@ -602,7 +602,7 @@ protected lemma div_mul_cancel_right (h : IsUnit b) (a : α) : b / (a * b) = a�
 
 @[to_additive]
 protected lemma mul_div_mul_right (h : IsUnit c) (a b : α) : a * c / (b * c) = a / b := by
-  simp only [div_eq_mul_inv, mul_inv_rev, mul_assoc, h.mul_inv_cancel_left]
+  simp [div_eq_mul_inv, mul_inv_rev, mul_assoc, h.mul_inv_cancel_left]
 
 end DivisionMonoid
 

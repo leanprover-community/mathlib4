@@ -299,7 +299,7 @@ theorem contMDiffWithinAt_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) 
 theorem contMDiffOn_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : N → M'} {s} (hm : m ≤ n) :
     CMDiff[s] m (f ∘ h) ↔ CMDiff[h.symm ⁻¹' s] m f :=
   h.toEquiv.forall_congr fun {_} => by
-    simp only [hm, coe_toEquiv, h.symm_apply_apply, contMDiffWithinAt_comp_diffeomorph_iff,
+    simp [hm, coe_toEquiv, h.symm_apply_apply, contMDiffWithinAt_comp_diffeomorph_iff,
       mem_preimage]
 
 @[simp]
@@ -358,7 +358,7 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) {s : 
 @[simp]
 theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : n ≠ 0) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
-  simp only [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image _ hn]
+  simp [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image _ hn]
 
 @[simp]
 theorem uniqueDiffOn_preimage (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : n ≠ 0) {s : Set F} :
@@ -443,7 +443,7 @@ theorem coe_extChartAt_transContinuousLinearEquiv_symm (x : M) :
 theorem extChartAt_transContinuousLinearEquiv_target (x : M) :
     (extChartAt (I.transContinuousLinearEquiv e) x).target
       = e.symm ⁻¹' (extChartAt I x).target := by
-  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage_symm,
+  simp [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage_symm,
     mfld_simps, ← comp_def]
 
 end ModelWithCorners
@@ -469,18 +469,18 @@ def toTransContinuousLinearEquiv (e : E ≃L[𝕜] F) : M ≃ₘ^n⟮I, I.transC
   contMDiff_toFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
     refine e.contDiff.contDiffWithinAt.congr_of_mem (fun y hy ↦ ?_) ?_
-    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transContinuousLinearEquiv,
+    · simp [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transContinuousLinearEquiv,
         (extChartAt I x).right_inv hy.1]
     · exact
-      ⟨(extChartAt I x).map_source (mem_extChartAt_source x), trivial, by simp only [mfld_simps]⟩
+      ⟨(extChartAt I x).map_source (mem_extChartAt_source x), trivial, by simp [mfld_simps]⟩
   contMDiff_invFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
     refine e.symm.contDiff.contDiffWithinAt.congr_of_mem (fun y hy => ?_) ?_
     · simp only [mem_inter_iff, I.extChartAt_transContinuousLinearEquiv_target] at hy
-      simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
+      simp [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
         I.coe_extChartAt_transContinuousLinearEquiv_symm, (extChartAt I x).right_inv hy.1]
     exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source x), trivial, by
-      simp only [e.symm_apply_apply, Equiv.refl_symm, Equiv.coe_refl, mfld_simps]⟩
+      simp [e.symm_apply_apply, Equiv.refl_symm, Equiv.coe_refl, mfld_simps]⟩
 
 variable {I M}
 

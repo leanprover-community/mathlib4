@@ -189,7 +189,7 @@ theorem _root_.Polynomial.toLaurent_C_mul_T (n : ℕ) (r : R) :
 @[simp]
 theorem _root_.Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r := by
   convert! Polynomial.toLaurent_C_mul_T 0 r
-  simp only [Int.ofNat_zero, T_zero, mul_one]
+  simp [Int.ofNat_zero, T_zero, mul_one]
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_comp_C : toLaurent (R := R) ∘ Polynomial.C = C :=
@@ -207,15 +207,15 @@ theorem _root_.Polynomial.toLaurent_one : (Polynomial.toLaurent : R[X] → R[T;T
 @[simp]
 theorem _root_.Polynomial.toLaurent_C_mul_eq (r : R) (f : R[X]) :
     toLaurent (Polynomial.C r * f) = C r * toLaurent f := by
-  simp only [map_mul, Polynomial.toLaurent_C]
+  simp [map_mul, Polynomial.toLaurent_C]
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) = T n := by
-  simp only [map_pow, Polynomial.toLaurent_X, T_pow, mul_one]
+  simp [map_pow, Polynomial.toLaurent_X, T_pow, mul_one]
 
 theorem _root_.Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
     toLaurent (Polynomial.C r * X ^ n) = C r * T n := by
-  simp only [map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
+  simp [map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
 
 instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   invOf := T (-n)
@@ -243,7 +243,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
   have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.coeff n) * T n) := by
     apply Finset.induction
     · convert h_C 0
-      simp only [Finset.sum_empty, map_zero]
+      simp [Finset.sum_empty, map_zero]
     · intro n s ns ih
       rw [Finset.sum_insert ns]
       exact h_add A ih
@@ -311,9 +311,9 @@ theorem leftInverse_trunc_toLaurent :
     Function.LeftInverse (trunc : R[T;T⁻¹] → R[X]) Polynomial.toLaurent := by
   refine fun f => f.induction_on' ?_ ?_
   · intro f g hf hg
-    simp only [hf, hg, map_add]
+    simp [hf, hg, map_add]
   · intro n r
-    simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.natCast_nonneg, Int.toNat_natCast,
+    simp [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.natCast_nonneg, Int.toNat_natCast,
       ite_true]
 
 @[simp]
@@ -339,12 +339,12 @@ theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f'
   refine f.induction_on' ?_ fun n a => ?_ <;> clear f
   · rintro f g ⟨m, fn, hf⟩ ⟨n, gn, hg⟩
     refine ⟨m + n, fn * X ^ n + gn * X ^ m, ?_⟩
-    simp only [hf, hg, add_mul, add_comm (n : ℤ), map_add, map_mul, Polynomial.toLaurent_X_pow,
+    simp [hf, hg, add_mul, add_comm (n : ℤ), map_add, map_mul, Polynomial.toLaurent_X_pow,
       mul_T_assoc, Int.natCast_add]
   · rcases n with n | n
     · exact ⟨0, Polynomial.C a * X ^ n, by simp⟩
     · refine ⟨n + 1, Polynomial.C a, ?_⟩
-      simp only [Int.negSucc_eq, Polynomial.toLaurent_C, Int.natCast_succ, mul_T_assoc,
+      simp [Int.negSucc_eq, Polynomial.toLaurent_C, Int.natCast_succ, mul_T_assoc,
         neg_add_cancel, T_zero, mul_one]
 
 /-- This is a version of `exists_T_pow` stated as an induction principle. -/
@@ -427,7 +427,7 @@ theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n
 theorem degree_C_mul_T_ite [DecidableEq R] (n : ℤ) (a : R) :
     degree (C a * T n) = if a = 0 then ⊥ else ↑n := by
   split_ifs with h <;>
-    simp only [h, map_zero, zero_mul, degree_zero, degree_C_mul_T, Ne,
+    simp [h, map_zero, zero_mul, degree_zero, degree_C_mul_T, Ne,
       not_false_iff]
 
 @[simp]
@@ -440,7 +440,7 @@ theorem degree_C {a : R} (a0 : a ≠ 0) : (C a).degree = 0 := by
   exact degree_C_mul_T 0 a a0
 
 theorem degree_C_ite [DecidableEq R] (a : R) : (C a).degree = if a = 0 then ⊥ else 0 := by
-  split_ifs with h <;> simp only [h, map_zero, degree_zero, degree_C, Ne, not_false_iff]
+  split_ifs with h <;> simp [h, map_zero, degree_zero, degree_C, Ne, not_false_iff]
 
 end ExactDegrees
 
@@ -448,7 +448,7 @@ section DegreeBounds
 
 theorem degree_C_mul_T_le (n : ℤ) (a : R) : degree (C a * T n) ≤ n := by
   by_cases a0 : a = 0
-  · simp only [a0, map_zero, zero_mul, degree_zero, bot_le]
+  · simp [a0, map_zero, zero_mul, degree_zero, bot_le]
   · exact (degree_C_mul_T n a a0).le
 
 theorem degree_T_le (n : ℤ) : (T n : R[T;T⁻¹]).degree ≤ n :=
@@ -494,7 +494,7 @@ instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
       induction f using LaurentPolynomial.induction_on_mul_T with | _ f n
       have : X ^ n ∈ Submonoid.powers (X : R[X]) := ⟨n, rfl⟩
       refine ⟨(f, ⟨_, this⟩), ?_⟩
-      simp only [algebraMap_eq_toLaurent, toLaurent_X_pow, mul_T_assoc, neg_add_cancel, T_zero,
+      simp [algebraMap_eq_toLaurent, toLaurent_X_pow, mul_T_assoc, neg_add_cancel, T_zero,
         mul_one]
     exists_of_eq := fun {f g} => by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]

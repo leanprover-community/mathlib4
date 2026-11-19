@@ -157,13 +157,13 @@ theorem prod_ite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
 @[to_additive]
 theorem prod_ite_eq_of_mem [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) (h : a ∈ s) :
     (∏ x ∈ s, if a = x then b x else 1) = b a := by
-  simp only [prod_ite_eq, ite_eq_left h]
+  simp [prod_ite_eq, ite_eq_left h]
 
 /-- The difference with `Finset.prod_ite_eq_of_mem` is that the arguments to `Eq` are swapped. -/
 @[to_additive]
 theorem prod_ite_eq_of_mem' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) (h : a ∈ s) :
     (∏ x ∈ s, if x = a then b x else 1) = b a := by
-  simp only [prod_ite_eq', ite_eq_left h]
+  simp [prod_ite_eq', ite_eq_left h]
 
 @[to_additive (attr := simp)]
 theorem prod_pi_mulSingle' [DecidableEq ι] (a : ι) (x : M) (s : Finset ι) :

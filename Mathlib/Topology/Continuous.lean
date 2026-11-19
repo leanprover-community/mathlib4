@@ -65,7 +65,7 @@ theorem continuousAt_def : ContinuousAt f x ↔ ∀ A ∈ 𝓝 (f x), f ⁻¹' A
 
 theorem continuousAt_congr {g : X → Y} (h : f =ᶠ[𝓝 x] g) :
     ContinuousAt f x ↔ ContinuousAt g x := by
-  simp only [ContinuousAt, tendsto_congr' h, h.eq_of_nhds]
+  simp [ContinuousAt, tendsto_congr' h, h.eq_of_nhds]
 
 theorem ContinuousAt.congr {g : X → Y} (hf : ContinuousAt f x) (h : f =ᶠ[𝓝 x] g) :
     ContinuousAt g x :=
@@ -183,7 +183,7 @@ theorem ContinuousAt.iterate {f : X → X} (hf : ContinuousAt f x) (hx : f x = x
 
 theorem continuous_iff_isClosed : Continuous f ↔ ∀ s, IsClosed s → IsClosed (f ⁻¹' s) :=
   continuous_def.trans <| compl_surjective.forall.trans <| by
-    simp only [isOpen_compl_iff, preimage_compl]
+    simp [isOpen_compl_iff, preimage_compl]
 
 theorem IsClosed.preimage (hf : Continuous f) {t : Set Y} (h : IsClosed t) :
     IsClosed (f ⁻¹' t) :=

@@ -31,7 +31,7 @@ namespace EisensteinSeries
 lemma norm_eq_max_natAbs (x : Fin 2 → ℤ) : ‖x‖ = max (x 0).natAbs (x 1).natAbs := by
   rw [← coe_nnNorm, ← NNReal.coe_natCast, NNReal.coe_inj, Nat.cast_max]
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  simp only [pi_nnNorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
+  simp [pi_nnNorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
 
 lemma norm_symm (x y : ℤ) : ‖![x, y]‖ = ‖![y, x]‖ := by
   simp [EisensteinSeries.norm_eq_max_natAbs, max_comm]
@@ -88,7 +88,7 @@ defined by `z ↦ min z.im √(z.im ^ 2 / (z.re ^ 2 + z.im ^ 2))`. -/
 def r : ℝ := min z.im √(r1 z)
 
 lemma r_pos : 0 < r z := by
-  simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]
+  simp [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]
 
 lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (hz : z ∈ verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z := by
@@ -118,12 +118,12 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
   refine (max_choice (x 0).natAbs (x 1).natAbs).imp (fun H0 ↦ ?_) (fun H1 ↦ ?_)
   · have : x 0 ≠ 0 := by
       rwa [← norm_ne_zero_iff, norm_eq_max_natAbs, H0, Nat.cast_ne_zero, Int.natAbs_ne_zero] at hx
-    simp only [norm_eq_max_natAbs, H0, Nat.cast_natAbs, Int.cast_abs, div_pow, sq_abs, ne_eq,
+    simp [norm_eq_max_natAbs, H0, Nat.cast_natAbs, Int.cast_abs, div_pow, sq_abs, ne_eq,
       OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Int.cast_eq_zero, this, div_self,
       le_refl]
   · have : x 1 ≠ 0 := by
       rwa [← norm_ne_zero_iff, norm_eq_max_natAbs, H1, Nat.cast_ne_zero, Int.natAbs_ne_zero] at hx
-    simp only [norm_eq_max_natAbs, H1, Nat.cast_natAbs, Int.cast_abs, div_pow, sq_abs, ne_eq,
+    simp [norm_eq_max_natAbs, H1, Nat.cast_natAbs, Int.cast_abs, div_pow, sq_abs, ne_eq,
       OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Int.cast_eq_zero, this, div_self,
       le_refl]
 
@@ -170,7 +170,7 @@ lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
   apply IsTheta.add_isLittleO
   · simp_rw [mul_comm]
     apply Asymptotics.IsTheta.const_mul_left hz Int.cast_complex_isTheta_cast_real
-  · simp only [isLittleO_const_left, Int.cast_eq_zero,
+  · simp [isLittleO_const_left, Int.cast_eq_zero,
       tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real, or_true]
 
 lemma linear_inv_isBigO_right_add (c e : ℤ) (z : ℂ) :
@@ -206,7 +206,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
     refine ⟨fun n ↦ (hasSum_fintype (β := box (α := ℤ × ℤ) n) _).summable, ?_⟩
     suffices Summable fun n : ℕ ↦ ∑' (_ : box (α := ℤ × ℤ) n), (n : ℝ) ^ (-k) by
       refine this.congr fun n ↦ tsum_congr fun p ↦ ?_
-      simp only [← Int.mem_box.mp p.2, Nat.cast_max, norm_eq_max_natAbs, Matrix.cons_val_zero,
+      simp [← Int.mem_box.mp p.2, Nat.cast_max, norm_eq_max_natAbs, Matrix.cons_val_zero,
         Matrix.cons_val_one]
     simp only [tsum_fintype, univ_eq_attach, sum_const, card_attach, nsmul_eq_mul]
     apply ((Real.summable_nat_rpow.mpr (by linarith : 1 - k < -1)).mul_left

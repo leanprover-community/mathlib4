@@ -191,7 +191,7 @@ theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     _ =Θ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
     _ =ᶠ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [div_one, EventuallyEq.rfl]
+      simp [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
@@ -203,7 +203,7 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
     _ =Θ[l] fun x => ‖f x‖ ^ (g x).re / (1 : ℝ) :=
       (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
     _ =ᶠ[l] (fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [div_one, EventuallyEq.rfl]
+      simp [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
     (fun x => f x ^ b) =Θ[l] fun x => ‖f x‖ ^ b.re :=
@@ -375,7 +375,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)
     _ =ᶠ[atTop] fun x => x ^ s :=
-      (eventually_ge_atTop 0).mono fun x hx ↦ by simp only [← rpow_mul hx, div_mul_cancel₀ _ hr.ne']
+      (eventually_ge_atTop 0).mono fun x hx ↦ by simp [← rpow_mul hx, div_mul_cancel₀ _ hr.ne']
 
 theorem isLittleO_abs_log_rpow_rpow_nhdsGT_zero {s : ℝ} (r : ℝ) (hs : s < 0) :
     (fun x => |log x| ^ r) =o[𝓝[>] 0] fun x => x ^ s :=
@@ -406,10 +406,10 @@ lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (�
   have h_eq : ∀ x ∈ Set.Iio 0, (-(fun x ↦ log x * x) ∘ (fun x ↦ |x|)) x = log x * x := by
     simp only [Set.mem_Iio, Pi.neg_apply, Function.comp_apply, log_abs]
     intro x hx
-    simp only [abs_of_nonpos hx.le, mul_neg, neg_neg]
+    simp [abs_of_nonpos hx.le, mul_neg, neg_neg]
   refine tendsto_nhdsWithin_congr h_eq ?_
   nth_rewrite 3 [← neg_zero]
   refine (h.comp (tendsto_abs_nhdsNE_zero.mono_left ?_)).neg
   refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
   push _ ∈ _ at hx
-  simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]
+  simp [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]

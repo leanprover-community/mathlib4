@@ -206,7 +206,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
       (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
     ext x
-    simp only [Trivialization.source_eq, mfld_simps]
+    simp [Trivialization.source_eq, mfld_simps]
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
   continuousOn_toFun := Prod.continuous_to_fun
   continuousOn_invFun := Prod.continuous_inv_fun

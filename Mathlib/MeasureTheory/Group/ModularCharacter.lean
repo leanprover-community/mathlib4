@@ -121,7 +121,7 @@ lemma modularCharacterFun_map_mul (g h : G) : modularCharacterFun (g * h) =
       rw [modularCharacterFun_eq_haarScalarFactor (map (· * g) ν) _]
     _ = haarScalarFactor (map (· * h) (map (· * g) ν)) (map (· * g) ν) *
       haarScalarFactor (map (· * g) ν) ν := rfl
-    _ = haarScalarFactor (map (· * (g * h)) ν) ν := by simp only [map_map mul_h_meas mul_g_meas,
+    _ = haarScalarFactor (map (· * (g * h)) ν) ν := by simp [map_map mul_h_meas mul_g_meas,
       comp_mul_right, ← haarScalarFactor_eq_mul]
 
 /-- The modular character homomorphism. The underlying function is `modularCharacterFun`, which is

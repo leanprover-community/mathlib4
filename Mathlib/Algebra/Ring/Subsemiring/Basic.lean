@@ -215,11 +215,11 @@ theorem mem_sInf {S : Set (Subsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ 
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subsemiring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
-  simp only [iInf, coe_sInf, Set.biInter_range]
+  simp [iInf, coe_sInf, Set.biInter_range]
 
 @[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_mem_range]
+  simp [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem sInf_toSubmonoid (s : Set (Subsemiring R)) :
@@ -367,7 +367,7 @@ lemma le_centralizer_centralizer {R} [Semiring R] {s : Subsemiring R} :
 lemma centralizer_centralizer_centralizer {R} [Semiring R] {s : Set R} :
     centralizer s.centralizer.centralizer = centralizer s := by
   apply SetLike.coe_injective
-  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
+  simp [coe_centralizer, Set.centralizer_centralizer_centralizer]
 
 end Centralizer
 
@@ -708,7 +708,7 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
 theorem mem_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   have : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
+  simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=

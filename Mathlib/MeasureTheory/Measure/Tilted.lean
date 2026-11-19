@@ -63,7 +63,7 @@ lemma tilted_const' (μ : Measure α) (c : ℝ) :
   | inr h0 =>
     simp only [Measure.tilted, withDensity_const, integral_const, smul_eq_mul]
     by_cases h_univ : μ Set.univ = ∞
-    · simp only [measureReal_def, h_univ, ENNReal.toReal_top, zero_mul, div_zero,
+    · simp [measureReal_def, h_univ, ENNReal.toReal_top, zero_mul, div_zero,
       ENNReal.ofReal_zero, zero_smul, ENNReal.inv_top]
     congr
     rw [div_eq_mul_inv, mul_inv, mul_comm, mul_assoc, inv_mul_cancel₀ (exp_pos _).ne', mul_one,
@@ -150,12 +150,12 @@ lemma setLIntegral_tilted' (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α}
       = ∫⁻ x in s, ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ) * g x ∂μ := by
   by_cases hf : AEMeasurable f μ
   · rw [Measure.tilted, setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀]
-    · simp only [Pi.mul_apply]
+    · simp [Pi.mul_apply]
     · refine AEMeasurable.restrict ?_
       exact ((measurable_exp.comp_aemeasurable hf).div_const _).ennreal_ofReal
     · exact hs
     · filter_upwards
-      simp only [ENNReal.ofReal_lt_top, implies_true]
+      simp [ENNReal.ofReal_lt_top, implies_true]
   · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ :=
       fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
     simp only [hf, not_false_eq_true, tilted_of_not_aemeasurable, Measure.restrict_zero,
@@ -168,11 +168,11 @@ lemma setLIntegral_tilted [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞) 
       = ∫⁻ x in s, ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ) * g x ∂μ := by
   by_cases hf : AEMeasurable f μ
   · rw [Measure.tilted, setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀']
-    · simp only [Pi.mul_apply]
+    · simp [Pi.mul_apply]
     · refine AEMeasurable.restrict ?_
       exact ((measurable_exp.comp_aemeasurable hf).div_const _).ennreal_ofReal
     · filter_upwards
-      simp only [ENNReal.ofReal_lt_top, implies_true]
+      simp [ENNReal.ofReal_lt_top, implies_true]
   · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ :=
       fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
     simp only [hf, not_false_eq_true, tilted_of_not_aemeasurable, Measure.restrict_zero,

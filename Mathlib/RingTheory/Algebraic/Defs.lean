@@ -101,6 +101,6 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
 /-- An algebra is algebraic if and only if it is algebraic as a subalgebra. -/
 theorem Algebra.isAlgebraic_iff : Algebra.IsAlgebraic R A ↔ (⊤ : Subalgebra R A).IsAlgebraic := by
   delta Subalgebra.IsAlgebraic
-  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true]
+  simp [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true]
 
 end

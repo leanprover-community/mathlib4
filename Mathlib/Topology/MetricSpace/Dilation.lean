@@ -158,7 +158,7 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
   · rcases DilationClass.edist_eq' f with ⟨r, hne, hr⟩
     replace hr := hr x y
     rcases key x y with h | h
-    · simp only [hr, h, mul_zero]
+    · simp [hr, h, mul_zero]
     · simp [hr, h, hne]
   exact (DilationClass.edist_eq' f).choose_spec.2 x y
 
@@ -166,13 +166,13 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
 theorem nndist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :
     nndist (f x) (f y) = ratio f * nndist x y := by
-  simp only [← ENNReal.coe_inj, ← edist_nndist, ENNReal.coe_mul, edist_eq]
+  simp [← ENNReal.coe_inj, ← edist_nndist, ENNReal.coe_mul, edist_eq]
 
 @[simp]
 theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :
     dist (f x) (f y) = ratio f * dist x y := by
-  simp only [dist_nndist, nndist_eq, NNReal.coe_mul]
+  simp [dist_nndist, nndist_eq, NNReal.coe_mul]
 
 /-- The `ratio` is equal to the distance ratio for any two points with nonzero finite distance.
 `dist` and `nndist` versions below -/
@@ -275,7 +275,7 @@ protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β] [Di
 /-- The identity is a dilation -/
 protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   toFun := id
-  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id, ENNReal.coe_one, one_mul]⟩
+  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp [id, ENNReal.coe_one, one_mul]⟩
 
 instance : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩

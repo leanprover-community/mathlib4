@@ -409,7 +409,7 @@ instance : IsHausdorff I (AdicCompletion I M) where
     · simp only [val_smul_apply, val_zero]
       induction x.val n using Quotient.inductionOn' with | _ a
       exact SModEq.zero.2 <| smul_mem_smul hr mem_top
-    · simp only [val_add_apply, hx, val_zero_apply, hy, add_zero]
+    · simp [val_add_apply, hx, val_zero_apply, hy, add_zero]
 
 @[simp]
 theorem transitionMap_comp_eval_apply {m n : ℕ} (hmn : m ≤ n) (x : AdicCompletion I M) :
@@ -906,7 +906,7 @@ theorem le_jacobson [IsAdicComplete I R] : I ≤ Ring.jacobson R := by
     convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
     ring
   cases n
-  · simp only [Ideal.one_eq_top, pow_zero, mem_top]
+  · simp [Ideal.one_eq_top, pow_zero, mem_top]
   · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm (_ ^ _), ← sub_sub,
       sub_self, zero_sub, @neg_mem_iff, mul_pow]
     exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)

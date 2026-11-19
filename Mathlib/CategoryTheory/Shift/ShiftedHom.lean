@@ -44,7 +44,7 @@ lemma comp_assoc {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
     (h₁₂ : a₂ + a₁ = a₁₂) (h₂₃ : a₃ + a₂ = a₂₃) (h : a₃ + a₂ + a₁ = a) :
     (α.comp β h₁₂).comp γ (show a₃ + a₁₂ = a by rw [← h₁₂, ← add_assoc, h]) =
       α.comp (β.comp γ h₂₃) (by rw [← h₂₃, h]) := by
-  simp only [comp, assoc, Functor.map_comp,
+  simp [comp, assoc, Functor.map_comp,
     shiftFunctorAdd'_assoc_inv_app a₃ a₂ a₁ a₂₃ a₁₂ a h₂₃ h₁₂ h,
     ← NatTrans.naturality_assoc, Functor.comp_map]
 
@@ -77,7 +77,7 @@ lemma mk₀_id_comp (m₀ : M) (hm₀ : m₀ = 0) {a : M} (f : ShiftedHom X Y a)
 lemma comp_mk₀ {a : M} (f : ShiftedHom X Y a) (m₀ : M) (hm₀ : m₀ = 0) (g : Y ⟶ Z) :
     f.comp (mk₀ m₀ hm₀ g) (by rw [hm₀, zero_add]) = f ≫ g⟦a⟧' := by
   subst hm₀
-  simp only [comp, shiftFunctorAdd'_zero_add_inv_app, mk₀, shiftFunctorZero',
+  simp [comp, shiftFunctorAdd'_zero_add_inv_app, mk₀, shiftFunctorZero',
     eqToIso_refl, Iso.refl_trans, ← Functor.map_comp, assoc, Iso.inv_hom_id_app,
     Functor.id_obj, comp_id]
 
@@ -232,7 +232,7 @@ lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
     (f.comp g h).map F = (f.map F).comp (g.map F) h := by
   dsimp [comp, map]
   simp only [Functor.map_comp, assoc, ← Functor.commShiftIso_hom_naturality_assoc]
-  simp only [F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
+  simp [F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id]
 
 section Preadditive

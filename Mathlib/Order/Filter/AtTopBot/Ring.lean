@@ -90,7 +90,7 @@ theorem Tendsto.atTop_of_mul_const₀ {c : α} (hc : 0 < c) (hf : Tendsto (fun x
 
 @[simp]
 theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop atTop ↔ n ≠ 0 :=
-  ⟨fun h hn => by simp only [hn, pow_zero, not_tendsto_const_atTop] at h, tendsto_pow_atTop⟩
+  ⟨fun h hn => by simp [hn, pow_zero, not_tendsto_const_atTop] at h, tendsto_pow_atTop⟩
 
 end LinearOrderedSemiring
 

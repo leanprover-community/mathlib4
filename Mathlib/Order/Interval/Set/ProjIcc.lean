@@ -172,15 +172,15 @@ theorem IccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
 
 @[simp]
 theorem range_IciExtend (f : Ici a → β) : range (IciExtend f) = range f := by
-  simp only [IciExtend, range_comp f, range_projIci, image_univ]
+  simp [IciExtend, range_comp f, range_projIci, image_univ]
 
 @[simp]
 theorem range_IicExtend (f : Iic b → β) : range (IicExtend f) = range f := by
-  simp only [IicExtend, range_comp f, range_projIic, image_univ]
+  simp [IicExtend, range_comp f, range_projIic, image_univ]
 
 @[simp]
 theorem IccExtend_range (f : Icc a b → β) : range (IccExtend h f) = range f := by
-  simp only [IccExtend, range_comp f, range_projIcc, image_univ]
+  simp [IccExtend, range_comp f, range_projIcc, image_univ]
 
 theorem IciExtend_of_le (f : Ici a → β) (hx : x ≤ a) : IciExtend f x = f ⟨a, le_rfl⟩ :=
   congr(f $(projIci_of_le hx))

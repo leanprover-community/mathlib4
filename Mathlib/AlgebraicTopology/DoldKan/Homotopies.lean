@@ -157,7 +157,7 @@ def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapCo
     rw [nullHomotopicMap'_comp, comp_nullHomotopicMap']
     congr
     ext n m hnm
-    simp only [alternatingFaceMapComplex_map_f, hσ'_naturality]
+    simp [alternatingFaceMapComplex_map_f, hσ'_naturality]
 
 /-- The maps `hσ' q n m hnm` are compatible with the application of additive functors. -/
 theorem map_hσ' {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
@@ -166,7 +166,7 @@ theorem map_hσ' {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Addi
       G.map (hσ' q n m hnm : K[X].X n ⟶ _) := by
   unfold hσ' hσ
   split_ifs
-  · simp only [Functor.map_zero, zero_comp]
+  · simp [Functor.map_zero, zero_comp]
   · simp only [eqToHom_map, Functor.map_comp, Functor.map_zsmul]
     rfl
 

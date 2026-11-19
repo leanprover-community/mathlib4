@@ -59,7 +59,7 @@ theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
     rcases exists_pos_of_sum_zero_of_exists_nonzero _ h_wsum ⟨nonzero_w_index, h1, h2⟩
       with ⟨pos_w_index, h1', h2'⟩
     exact sum_pos' (fun _i hi ↦ (mem_filter.1 hi).2)
-      ⟨pos_w_index, by simp only [I, mem_filter, h1', h2'.le, and_self, h2']⟩
+      ⟨pos_w_index, by simp [I, mem_filter, h1', h2'.le, and_self, h2']⟩
   have hp : centerMass J w f = p := centerMass_of_sum_add_sum_eq_zero hJI <| by
     simpa only [← h_vsum, not_lt] using sum_filter_add_sum_filter_not s (fun i ↦ w i < 0) _
   refine ⟨I, p, ?_, ?_⟩
@@ -196,7 +196,7 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
   classical
   /- If `ι` is empty the statement is trivial. -/
   rcases isEmpty_or_nonempty ι with _ | h_nonempty
-  · simp only [iInter_of_empty, Set.univ_nonempty]
+  · simp [iInter_of_empty, Set.univ_nonempty]
   /- By the finite version of theorem, every finite subfamily has an intersection. -/
   have h_fin (I : Finset ι) : (⋂ i ∈ I, F i).Nonempty := by
     apply helly_theorem' (s := I) (𝕜 := 𝕜) (by simp [h_convex])

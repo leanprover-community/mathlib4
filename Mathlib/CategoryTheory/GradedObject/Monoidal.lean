@@ -388,7 +388,7 @@ lemma tensorObj₄_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ (te
   intro i₁ i₂₃₄ h'
   apply left_tensor_tensorObj₃_ext
   intro i₂ i₃ i₄ h''
-  have hj : i₁ + i₂ + i₃ + i₄ = j := by simp only [← h', ← h'', add_assoc]
+  have hj : i₁ + i₂ + i₃ + i₄ = j := by simp [← h', ← h'', add_assoc]
   simpa only [assoc, ιTensorObj₄_eq X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ j hj i₂₃₄ h''] using h i₁ i₂ i₃ i₄ hj
 
 end

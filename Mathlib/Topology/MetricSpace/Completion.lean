@@ -200,7 +200,7 @@ theorem Isometry.completion_extension [PseudoMetricSpace β] [CompleteSpace β] 
     {f : α → β} (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
     (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
-      simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
+      simp [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
 
 theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.map f) :=

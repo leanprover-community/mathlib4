@@ -199,7 +199,7 @@ theorem iInf_toSubfield {ι : Sort*} (S : ι → IntermediateField F E) :
 @[simp]
 theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField F E) :
     (iSup S).toSubfield = ⨆ i, (S i).toSubfield := by
-  simp only [iSup, Set.range_nonempty, sSup_toSubfield, ← Set.range_comp, Function.comp_def]
+  simp [iSup, Set.range_nonempty, sSup_toSubfield, ← Set.range_comp, Function.comp_def]
 
 variable (F E)
 
@@ -423,7 +423,7 @@ theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
 
 theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
     lift (adjoin F {α}) = adjoin F {α.1} := by
-  simp only [lift_adjoin, Set.image_singleton]
+  simp [lift_adjoin, Set.image_singleton]
 
 @[simp]
 theorem lift_bot (K : IntermediateField F E) :
@@ -667,7 +667,7 @@ theorem fg_adjoin_of_finite {t : Set E} (h : Set.Finite t) : (adjoin F t).FG :=
   fg_def.mpr ⟨t, h, rfl⟩
 
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
-  ⟨∅, by simp only [Finset.coe_empty, adjoin_empty]⟩
+  ⟨∅, by simp [Finset.coe_empty, adjoin_empty]⟩
 
 theorem fg_sup {S T : IntermediateField F E} (hS : S.FG) (hT : T.FG) : (S ⊔ T).FG := by
   obtain ⟨s, rfl⟩ := hS; obtain ⟨t, rfl⟩ := hT

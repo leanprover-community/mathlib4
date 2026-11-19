@@ -119,7 +119,7 @@ theorem mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {f :
     simp_rw [notMem_compl_iff, mem_fixedBy, Perm.smul_def, Perm.mul_apply, swap_apply_def,
       apply_eq_iff_eq]
     by_cases hb' : f b = b
-    · rw [hb']; split_ifs with h <;> simp only [h]
+    · rw [hb']; split_ifs with h <;> simp [h]
     simp [show b = a by simpa [hb] using supp_subset hb']
 
 /-- A permutation is a product of transpositions if and only if it has finite support. -/

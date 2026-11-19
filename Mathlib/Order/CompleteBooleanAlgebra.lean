@@ -156,7 +156,7 @@ private lemma inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i,
 @[to_dual]
 private lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
     (a ⊓ ⨆ i, ⨆ j, f i j) = ⨆ i, ⨆ j, a ⊓ f i j := by
-  simp only [minAx.inf_iSup_eq]
+  simp [minAx.inf_iSup_eq]
 
 end
 
@@ -368,12 +368,12 @@ theorem inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓
 @[to_dual]
 theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) :
     (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a := by
-  simp only [iSup_inf_eq]
+  simp [iSup_inf_eq]
 
 @[to_dual]
 theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
     (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j := by
-  simp only [inf_iSup_eq]
+  simp [inf_iSup_eq]
 
 @[to_dual iSup_sdiff_eq]
 theorem himp_iInf_eq {f : ι → α} : a ⇨ (⨅ x, f x) = ⨅ x, a ⇨ f x :=
@@ -398,7 +398,7 @@ theorem biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : S
 
 @[to_dual]
 theorem sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
-  simp only [sSup_eq_iSup, biSup_inf_biSup]
+  simp [sSup_eq_iSup, biSup_inf_biSup]
 
 @[to_dual]
 theorem biSup_inter_of_pairwise_disjoint {ι : Type*} {f : ι → α}
@@ -414,7 +414,7 @@ theorem biSup_inter_of_pairwise_disjoint {ι : Type*} {f : ι → α}
 
 @[to_dual]
 theorem iSup_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
-  simp only [disjoint_iff, iSup_inf_eq, iSup_eq_bot]
+  simp [disjoint_iff, iSup_inf_eq, iSup_eq_bot]
 
 @[to_dual]
 theorem disjoint_iSup_iff {f : ι → α} : Disjoint a (⨆ i, f i) ↔ ∀ i, Disjoint a (f i) := by
@@ -432,7 +432,7 @@ theorem disjoint_iSup₂_iff {f : ∀ i, κ i → α} :
 
 @[to_dual]
 theorem sSup_disjoint_iff {s : Set α} : Disjoint (sSup s) a ↔ ∀ b ∈ s, Disjoint b a := by
-  simp only [disjoint_iff, sSup_inf_eq, iSup_eq_bot]
+  simp [disjoint_iff, sSup_inf_eq, iSup_eq_bot]
 
 @[to_dual]
 theorem disjoint_sSup_iff {s : Set α} : Disjoint a (sSup s) ↔ ∀ b ∈ s, Disjoint a b := by
@@ -590,7 +590,7 @@ instance Pi.instCompletelyDistribLattice {ι : Type*} {π : ι → Type*}
     [∀ i, CompletelyDistribLattice (π i)] : CompletelyDistribLattice (∀ i, π i) where
   __ := instFrame
   __ := instCoframe
-  iInf_iSup_eq f := by ext i; simp only [iInf_apply, iSup_apply, iInf_iSup_eq]
+  iInf_iSup_eq f := by ext i; simp [iInf_apply, iSup_apply, iInf_iSup_eq]
 
 end CompletelyDistribLattice
 
@@ -636,9 +636,9 @@ theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
 theorem compl_iSup : (iSup f)ᶜ = ⨅ i, (f i)ᶜ :=
   compl_injective (by simp [compl_iInf])
 
-theorem compl_sInf : (sInf s)ᶜ = ⨆ i ∈ s, iᶜ := by simp only [sInf_eq_iInf, compl_iInf]
+theorem compl_sInf : (sInf s)ᶜ = ⨆ i ∈ s, iᶜ := by simp [sInf_eq_iInf, compl_iInf]
 
-theorem compl_sSup : (sSup s)ᶜ = ⨅ i ∈ s, iᶜ := by simp only [sSup_eq_iSup, compl_iSup]
+theorem compl_sSup : (sSup s)ᶜ = ⨅ i ∈ s, iᶜ := by simp [sSup_eq_iSup, compl_iSup]
 
 theorem compl_sInf' : (sInf s)ᶜ = sSup (Compl.compl '' s) :=
   compl_sInf.trans sSup_image.symm

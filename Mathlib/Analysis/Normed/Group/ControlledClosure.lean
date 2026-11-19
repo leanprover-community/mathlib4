@@ -94,7 +94,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     have : (∑ k ∈ range (n + 1), C * b k) ≤ ε * ‖h‖ :=
       calc (∑ k ∈ range (n + 1), C * b k)
         _ = (∑ k ∈ range (n + 1), (1 / 2 : ℝ) ^ k) * (ε * ‖h‖ / 2) := by
-          simp only [b, mul_div_cancel₀ _ hC.ne.symm, ← sum_mul]
+          simp [b, mul_div_cancel₀ _ hC.ne.symm, ← sum_mul]
         _ ≤ 2 * (ε * ‖h‖ / 2) := by gcongr; apply sum_geometric_two_le
         _ = ε * ‖h‖ := mul_div_cancel₀ _ two_ne_zero
     calc

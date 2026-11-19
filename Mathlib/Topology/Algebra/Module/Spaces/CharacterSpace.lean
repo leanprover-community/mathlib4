@@ -139,7 +139,7 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   haveI map_one' : ∀ φ : characterSpace 𝕜 A, φ 1 = 1 := fun φ => by
     have h₁ : φ 1 * (1 - φ 1) = 0 := by rw [mul_sub, sub_eq_zero, mul_one, ← map_mul φ, one_mul]
     rcases mul_eq_zero.mp h₁ with (h₂ | h₂)
-    · have : ∀ a, φ (a * 1) = 0 := fun a => by simp only [map_mul φ, h₂, mul_zero]
+    · have : ∀ a, φ (a * 1) = 0 := fun a => by simp [map_mul φ, h₂, mul_zero]
       exact False.elim (φ.prop.1 <| ContinuousLinearMap.ext <| by simpa only [mul_one] using! this)
     · exact (sub_eq_zero.mp h₂).symm
   { CharacterSpace.instNonUnitalAlgHomClass with
@@ -221,10 +221,10 @@ noncomputable def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, �
   toFun a :=
     { toFun := fun φ => φ a
       continuous_toFun := (eval_continuous a).comp continuous_induced_dom }
-  map_one' := by ext a; simp only [coe_mk, coe_one, Pi.one_apply, map_one a]
-  map_mul' a b := by ext; simp only [map_mul, coe_mk, coe_mul, Pi.mul_apply]
-  map_zero' := by ext; simp only [map_zero, coe_mk, coe_zero, Pi.zero_apply]
-  map_add' a b := by ext; simp only [map_add, coe_mk, coe_add, Pi.add_apply]
+  map_one' := by ext a; simp [coe_mk, coe_one, Pi.one_apply, map_one a]
+  map_mul' a b := by ext; simp [map_mul, coe_mk, coe_mul, Pi.mul_apply]
+  map_zero' := by ext; simp [map_zero, coe_mk, coe_zero, Pi.zero_apply]
+  map_add' a b := by ext; simp [map_add, coe_mk, coe_add, Pi.add_apply]
   commutes' k := by ext; simp [AlgHomClass.commutes]
 
 end GelfandTransform

@@ -63,7 +63,7 @@ lemma whiskerVertical_iff (α : L ≅ L') (β : R ≅ R') :
   · intro h
     have : w = (w.whiskerVertical α.hom β.inv).whiskerVertical α.inv β.hom := by
       ext X₁
-      simp only [Functor.comp_obj, whiskerVertical_app, assoc, Iso.hom_inv_id_app_assoc,
+      simp [Functor.comp_obj, whiskerVertical_app, assoc, Iso.hom_inv_id_app_assoc,
         ← B.map_comp, Iso.hom_inv_id_app, B.map_id, comp_id]
     rw [this]
     exact whiskerVertical (w.whiskerVertical α.hom β.inv) α.symm β.symm

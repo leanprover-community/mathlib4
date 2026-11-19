@@ -41,8 +41,8 @@ theorem le_coeff_eq_iff_le_sub_coeff_eq_zero {x y : 𝕎 k} {n : ℕ} :
       simp [h i]
     · rw [← coeff_truncate x ⟨i, hi⟩, ← coeff_truncate y ⟨i, hi⟩, h]
   _ ↔ (x - y).truncate n = 0 := by
-    simp only [map_sub, sub_eq_zero]
-  _ ↔ _ := by simp only [← mem_ker_truncate, RingHom.mem_ker]
+    simp [map_sub, sub_eq_zero]
+  _ ↔ _ := by simp [← mem_ker_truncate, RingHom.mem_ker]
 
 section PerfectRing
 
@@ -93,7 +93,7 @@ theorem mem_span_p_pow_iff_le_coeff_eq_zero (x : 𝕎 k) (n : ℕ) :
       · rw [← WittVector.frobeniusEquiv_apply, ← RingEquiv.coe_trans]
         simp
       · rw [Function.Commute, Function.Semiconj, ← WittVector.frobeniusEquiv_apply]
-        simp only [RingEquiv.apply_symm_apply, RingEquiv.symm_apply_apply, implies_true]
+        simp [RingEquiv.apply_symm_apply, RingEquiv.symm_apply_apply, implies_true]
 
 lemma ker_constantCoeff : RingHom.ker constantCoeff = Ideal.span {(p : 𝕎 k)} := by
   ext

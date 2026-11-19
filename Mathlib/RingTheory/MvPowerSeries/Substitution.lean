@@ -182,7 +182,7 @@ theorem hasSubst_of_constantCoeff_nilpotent [Finite σ]
 theorem hasSubst_of_constantCoeff_zero [Finite σ]
     {a : σ → MvPowerSeries τ S} (ha : ∀ s, constantCoeff (a s) = 0) :
     HasSubst a :=
-  hasSubst_of_constantCoeff_nilpotent (fun s ↦ by simp only [ha s, IsNilpotent.zero])
+  hasSubst_of_constantCoeff_nilpotent (fun s ↦ by simp [ha s, IsNilpotent.zero])
 
 lemma HasSubst.X_X {i j : σ} : HasSubst (S := R) ![X i, X j] :=
   hasSubst_of_constantCoeff_zero (by simp)
@@ -275,7 +275,7 @@ theorem substAlgHom_apply (ha : HasSubst a) (f : MvPowerSeries σ R) :
 
 theorem subst_add (ha : HasSubst a) (f g : MvPowerSeries σ R) :
     subst a (f + g) = subst a f + subst a g := by
-  simp only [← substAlgHom_apply ha, map_add]
+  simp [← substAlgHom_apply ha, map_add]
 
 theorem subst_sub (ha : HasSubst a) (f g : MvPowerSeries σ R) :
     subst a (f - g) = subst a f - subst a g := by
@@ -283,15 +283,15 @@ theorem subst_sub (ha : HasSubst a) (f g : MvPowerSeries σ R) :
 
 theorem subst_mul (ha : HasSubst a) (f g : MvPowerSeries σ R) :
     subst a (f * g) = subst a f * subst a g := by
-  simp only [← substAlgHom_apply ha, map_mul]
+  simp [← substAlgHom_apply ha, map_mul]
 
 theorem subst_pow (ha : HasSubst a) (f : MvPowerSeries σ R) (n : ℕ) :
     subst a (f ^ n) = (subst a f) ^ n := by
-  simp only [← substAlgHom_apply ha, map_pow]
+  simp [← substAlgHom_apply ha, map_pow]
 
 theorem subst_smul (ha : HasSubst a) (r : A) (f : MvPowerSeries σ R) :
     subst a (r • f) = r • (subst a f) := by
-  simp only [← substAlgHom_apply ha, AlgHom.map_smul_of_tower]
+  simp [← substAlgHom_apply ha, AlgHom.map_smul_of_tower]
 
 theorem substAlgHom_coe (ha : HasSubst a) (p : MvPolynomial σ R) :
     substAlgHom (R := R) ha p = MvPolynomial.aeval a p := by
@@ -346,7 +346,7 @@ theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ �
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     constantCoeff (subst a f) =
       finsum (fun d ↦ coeff d f • (constantCoeff (d.prod fun s e => (a s) ^ e))) := by
-  simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
+  simp [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
 theorem constantCoeff_subst_eq_zero (ha : HasSubst a) (ha' : ∀ i, (a i).constantCoeff = 0)
     {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :

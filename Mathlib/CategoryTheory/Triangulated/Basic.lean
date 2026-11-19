@@ -189,11 +189,11 @@ def Triangle.isoMk (A B : Triangle C)
     (comm₃ : A.mor₃ ≫ iso₁.hom⟦1⟧' = iso₃.hom ≫ B.mor₃ := by cat_disch) : A ≅ B where
   hom := Triangle.homMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
   inv := Triangle.homMk _ _ iso₁.inv iso₂.inv iso₃.inv
-    (by simp only [← cancel_mono iso₂.hom, assoc, Iso.inv_hom_id, comp_id,
+    (by simp [← cancel_mono iso₂.hom, assoc, Iso.inv_hom_id, comp_id,
       comm₁, Iso.inv_hom_id_assoc])
-    (by simp only [← cancel_mono iso₃.hom, assoc, Iso.inv_hom_id, comp_id,
+    (by simp [← cancel_mono iso₃.hom, assoc, Iso.inv_hom_id, comp_id,
       comm₂, Iso.inv_hom_id_assoc])
-    (by simp only [← cancel_mono (iso₁.hom⟦(1 : ℤ)⟧'), Category.assoc, comm₃,
+    (by simp [← cancel_mono (iso₁.hom⟦(1 : ℤ)⟧'), Category.assoc, comm₃,
       Iso.inv_hom_id_assoc, ← Functor.map_comp, Iso.inv_hom_id,
       Functor.map_id, Category.comp_id])
 
@@ -520,9 +520,9 @@ def functorIsoMk (A B : J ⥤ Triangle C) (iso₁ : A ⋙ π₁ ≅ B ⋙ π₁)
       iso₃.hom ≫ whiskerLeft B π₃Toπ₁) : A ≅ B where
   hom := functorHomMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
   inv := functorHomMk _ _ iso₁.inv iso₂.inv iso₃.inv
-    (by simp only [← cancel_epi iso₁.hom, ← reassoc_of% comm₁,
+    (by simp [← cancel_epi iso₁.hom, ← reassoc_of% comm₁,
           Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc])
-    (by simp only [← cancel_epi iso₂.hom, ← reassoc_of% comm₂,
+    (by simp [← cancel_epi iso₂.hom, ← reassoc_of% comm₂,
           Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc])
     (by
       simp only [← cancel_epi iso₃.hom, ← reassoc_of% comm₃, Iso.hom_inv_id_assoc,

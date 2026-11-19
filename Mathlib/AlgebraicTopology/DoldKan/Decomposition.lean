@@ -56,7 +56,7 @@ theorem decomposition_Q (n q : ℕ) :
       ∑ i : Fin (n + 1) with i.val < q, (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
   induction q with
   | zero =>
-    simp only [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
+    simp [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_false, Finset.sum_empty]
   | succ q hq =>
     by_cases! hqn : n < q
@@ -113,7 +113,7 @@ def id : MorphComponents X n (X _⦋n + 1⦌) where
 theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
   congr 1
-  · simp only [id, PInfty_f, P_f_idem]
+  · simp [id, PInfty_f, P_f_idem]
   · exact Eq.trans (by simp) (decomposition_Q n (n + 1)).symm
 
 variable {X n}
@@ -127,7 +127,7 @@ def postComp : MorphComponents X n Z' where
 @[simp]
 theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
   unfold φ postComp
-  simp only [add_comp, sum_comp, assoc]
+  simp [add_comp, sum_comp, assoc]
 
 /-- A `MorphComponents` can be precomposed with a morphism of simplicial objects. -/
 @[simps]
@@ -141,7 +141,7 @@ theorem preComp_φ : (f.preComp g).φ = g.app (op ⦋n + 1⦌) ≫ f.φ := by
   simp only [PInfty_f, comp_add]
   congr 1
   · simp
-  · simp only [comp_sum, P_f_naturality_assoc, SimplicialObject.δ_naturality_assoc]
+  · simp [comp_sum, P_f_naturality_assoc, SimplicialObject.δ_naturality_assoc]
 
 end MorphComponents
 

@@ -202,7 +202,7 @@ theorem IsAddTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsAddTors
     IsAddTorsion M :=
   fun f ↦ isOfFinAddOrder_iff_nsmul_eq_zero.mpr <| by
     obtain ⟨n, npos, hn⟩ := (tR 1).exists_nsmul_eq_zero
-    exact ⟨n, npos, by simp only [← Nat.cast_smul_eq_nsmul R _ f, ← nsmul_one, hn, zero_smul]⟩
+    exact ⟨n, npos, by simp [← Nat.cast_smul_eq_nsmul R _ f, ← nsmul_one, hn, zero_smul]⟩
 
 @[deprecated (since := "2026-07-01")] alias AddMonoid.IsTorsion.module_of_torsion :=
   IsAddTorsion.module_of_torsion

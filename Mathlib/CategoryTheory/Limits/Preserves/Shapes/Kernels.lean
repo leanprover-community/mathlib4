@@ -100,7 +100,7 @@ which we can't use directly between `G.map 0 = 0` does not hold definitionally.
 def isLimitMapConeForkEquiv' :
     IsLimit (G.mapCone (KernelFork.ofι h w)) ≃
       IsLimit
-        (KernelFork.ofι (G.map h) (by simp only [← G.map_comp, w, Functor.map_zero]) :
+        (KernelFork.ofι (G.map h) (by simp [← G.map_comp, w, Functor.map_zero]) :
           Fork (G.map f) 0) :=
   KernelFork.isLimitMapConeEquiv _ _
 
@@ -118,7 +118,7 @@ which we can't use directly between `G.map 0 = 0` does not hold definitionally.
 def isLimitForkMapOfIsLimit' [PreservesLimit (parallelPair f 0) G]
     (l : IsLimit (KernelFork.ofι h w)) :
     IsLimit
-      (KernelFork.ofι (G.map h) (by simp only [← G.map_comp, w, Functor.map_zero]) :
+      (KernelFork.ofι (G.map h) (by simp [← G.map_comp, w, Functor.map_zero]) :
         Fork (G.map f) 0) :=
   isLimitMapConeForkEquiv' G w (isLimitOfPreserves G l)
 
@@ -136,7 +136,7 @@ a cokernel cofork is a colimit.
 def isLimitOfHasKernelOfPreservesLimit [PreservesLimit (parallelPair f 0) G] :
     IsLimit
       (Fork.ofι (G.map (kernel.ι f))
-          (by simp only [← G.map_comp, kernel.condition, comp_zero, Functor.map_zero]) :
+          (by simp [← G.map_comp, kernel.condition, comp_zero, Functor.map_zero]) :
         Fork (G.map f) 0) :=
   isLimitForkMapOfIsLimit' G (kernel.condition f) (kernelIsKernel f)
 

@@ -152,7 +152,7 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
     rw [iteratedDerivWithin_const_sub hk, iteratedDerivWithin_fun_neg,
       iteratedDerivWithin_const_mul (by simpa using z.coe_im_pos)
         (isOpen_upperHalfPlaneSet.uniqueDiffOn)]
-    · simp only [iteratedDerivWithin_tsum_cexp_eq, neg_mul]
+    · simp [iteratedDerivWithin_tsum_cexp_eq, neg_mul]
     · exact (contDiffOn_tsum_cexp k).contDiffWithinAt (by simpa using z.coe_im_pos)
   have h : -(2 * π * I * (2 * π * I) ^ k) * ∑' (n : ℕ), n ^ k * cexp (2 * π * I * z) ^ n =
         -(2 * π * I) * ∑' n : ℕ, (2 * π * I * n) ^ k * cexp (2 * π * I * z) ^ n := by

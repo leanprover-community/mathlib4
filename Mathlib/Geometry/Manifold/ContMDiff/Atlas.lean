@@ -228,12 +228,12 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : OpenPartialHomeomorp
   obtain
     ⟨e, he, he' : EqOn (c' ∘ f ∘ c.symm) e (c.symm ⁻¹' f.source ∩ e.source), hex :
       c x ∈ e.source⟩ :=
-    hxf (by simp only [hx, mfld_simps])
+    hxf (by simp [hx, mfld_simps])
   -- We choose a convenient set `s` in `M`.
   let s : Set M := (f.trans c').source ∩ ((c.trans e).trans c'.symm).source
   refine ⟨s, (f.trans c').open_source.inter ((c.trans e).trans c'.symm).open_source, ?_, ?_⟩
   · simp only [s, mfld_simps]
-    rw [← he'] <;> simp only [c, c', hx, hex, mfld_simps]
+    rw [← he'] <;> simp [c, c', hx, hex, mfld_simps]
   -- We need to show `f` is `ContMDiffOn` the domain `s ∩ f.source`.  We show this in two
   -- steps: `f` is equal to `c'.symm ∘ e ∘ c` on that domain and that function is
   -- `ContMDiffOn` it.
@@ -247,9 +247,9 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : OpenPartialHomeomorp
   have H₂ : EqOn f (c'.symm ∘ e ∘ c) s := by
     intro y hy
     simp only [s, mfld_simps] at hy
-    have hy₁ : f y ∈ c'.source := by simp only [hy, mfld_simps]
-    have hy₂ : y ∈ c.source := by simp only [hy, mfld_simps]
-    have hy₃ : c y ∈ c.symm ⁻¹' f.source ∩ e.source := by simp only [hy, mfld_simps]
+    have hy₁ : f y ∈ c'.source := by simp [hy, mfld_simps]
+    have hy₂ : y ∈ c.source := by simp [hy, mfld_simps]
+    have hy₃ : c y ∈ c.symm ⁻¹' f.source ∩ e.source := by simp [hy, mfld_simps]
     calc
       f y = c'.symm (c' (f y)) := by rw [c'.left_inv hy₁]
       _ = c'.symm (c' (f (c.symm (c y)))) := by rw [c.left_inv hy₂]
@@ -280,19 +280,19 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
         e ∈ contDiffGroupoid n I ∧
           e.source ⊆ (c.symm ≫ₕ f ≫ₕ c').source ∧
             EqOn (c' ∘ f ∘ c.symm) e e.source ∧ c x ∈ e.source := by
-      have h1 : c' = chartAt H (f x) := by simp only [x, c', f.right_inv hX]
+      have h1 : c' = chartAt H (f x) := by simp [x, c', f.right_inv hX]
       have h2 : c' ∘ f ∘ c.symm = ⇑(c.symm ≫ₕ f ≫ₕ c') := rfl
-      have hcx : c x ∈ c.symm ⁻¹' f.source := by simp only [c, hx, mfld_simps]
+      have hcx : c x ∈ c.symm ⁻¹' f.source := by simp [c, hx, mfld_simps]
       rw [h2]
       rw [← h1, h2, OpenPartialHomeomorph.isLocalStructomorphWithinAt_iff'] at hxf
       · exact hxf hcx
       · dsimp [x, c]; mfld_set_tac
       · apply Or.inl
-        simp only [c, hx, h1, mfld_simps]
+        simp [c, hx, h1, mfld_simps]
     have h2X : c' X = e (c (f.symm X)) := by
       rw [← hef hex]
       dsimp only [Function.comp_def]
-      have hfX : f.symm X ∈ c.source := by simp only [c, x, mfld_simps]
+      have hfX : f.symm X ∈ c.source := by simp [c, x, mfld_simps]
       rw [c.left_inv hfX, f.right_inv hX]
     have h3e : EqOn (c ∘ f.symm ∘ c'.symm) e.symm (c'.symm ⁻¹' f.target ∩ e.target) := by
       have h1 : EqOn (c.symm ≫ₕ f ≫ₕ c').symm e.symm (e.target ∩ e.target) := by
@@ -325,14 +325,14 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
       simp only [mfld_simps] at hy
       have H : ContMDiffWithinAt I I n f (f ≫ₕ c').source ((extChartAt I x).symm y) := by
         refine (h₁ ((extChartAt I x).symm y) ?_).mono ?_
-        · simp only [c, hy, mfld_simps]
+        · simp [c, hy, mfld_simps]
         · mfld_set_tac
-      have hy' : (extChartAt I x).symm y ∈ c.source := by simp only [c, hy, mfld_simps]
+      have hy' : (extChartAt I x).symm y ∈ c.source := by simp [c, hy, mfld_simps]
       have hy'' : f ((extChartAt I x).symm y) ∈ c'.source := by
-        simp only [c, hy, mfld_simps]
+        simp [c, hy, mfld_simps]
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
       convert! H.2.mono _
-      · simp only [c, hy, mfld_simps]
+      · simp [c, hy, mfld_simps]
       · dsimp [c, c']; mfld_set_tac
     · -- regularity of the candidate local structomorphism in the reverse direction
       intro y hy
@@ -340,18 +340,18 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
       have H : ContMDiffWithinAt I I n f.symm (f.symm ≫ₕ c).source
           ((extChartAt I (f x)).symm y) := by
         refine (h₂ ((extChartAt I (f x)).symm y) ?_).mono ?_
-        · simp only [c', hy, mfld_simps]
+        · simp [c', hy, mfld_simps]
         · mfld_set_tac
-      have hy' : (extChartAt I (f x)).symm y ∈ c'.source := by simp only [c', hy, mfld_simps]
+      have hy' : (extChartAt I (f x)).symm y ∈ c'.source := by simp [c', hy, mfld_simps]
       have hy'' : f.symm ((extChartAt I (f x)).symm y) ∈ c.source := by
-        simp only [c', hy, mfld_simps]
+        simp [c', hy, mfld_simps]
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
       convert! H.2.mono _
-      · simp only [c', hy, mfld_simps]
+      · simp [c', hy, mfld_simps]
       · dsimp [c, c']; mfld_set_tac
     -- now check the candidate local structomorphism agrees with `f` where it is supposed to
     · simp only [mfld_simps]; apply eqOn_refl
-    · simp only [c, c', hx', mfld_simps]
+    · simp [c, c', hx', mfld_simps]
 
 end IsLocalStructomorph
 

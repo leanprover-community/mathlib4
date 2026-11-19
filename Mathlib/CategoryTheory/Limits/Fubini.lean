@@ -366,7 +366,7 @@ noncomputable def coneOfHasLimitCurryCompLim : Cone G :=
         dsimp [Q] at this ⊢
         rw [← limit.w (F := curry.obj G ⋙ lim) (f := f₁)]
         dsimp
-        simp only [Category.assoc, Category.id_comp, Prod.fac (f₁, f₂),
+        simp [Category.assoc, Category.id_comp, Prod.fac (f₁, f₂),
           G.map_comp, limMap_π, curry_obj_map_app, reassoc_of% this] } }
 
 set_option backward.defeqAttrib.useBackward true in

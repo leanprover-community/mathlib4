@@ -156,7 +156,7 @@ lemma δ_succ_nonDegenerateEquiv (j : Fin (p + 1)) :
   · exact stdSimplex.objEquiv.injective SimplexCategory.δ_comp_σ_succ
   · dsimp
     rw [stdSimplex.δ_objMk₁_of_le _ _ (by simp)]
-    simp only [Fin.succ_castSucc, Fin.castPred_castSucc]
+    simp [Fin.succ_castSucc, Fin.castPred_castSucc]
 
 end prodStdSimplex₁
 

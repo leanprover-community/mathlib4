@@ -104,7 +104,7 @@ theorem empty_val : (∅ : Finset α).val = 0 :=
 
 @[simp, grind ←]
 theorem notMem_empty (a : α) : a ∉ (∅ : Finset α) := by
-  simp only [mem_def, empty_val, notMem_zero, not_false_iff]
+  simp [mem_def, empty_val, notMem_zero, not_false_iff]
 
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Finset α).Nonempty := fun ⟨x, hx⟩ => notMem_empty x hx

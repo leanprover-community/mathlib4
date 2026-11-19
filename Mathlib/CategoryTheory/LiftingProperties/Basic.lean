@@ -85,8 +85,8 @@ instance (priority := 100) of_left_iso [IsIso i] : HasLiftingProperty i p :=
   ⟨fun {f} {g} sq =>
     CommSq.HasLift.mk'
       { l := inv i ≫ f
-        fac_left := by simp only [IsIso.hom_inv_id_assoc]
-        fac_right := by simp only [sq.w, assoc, IsIso.inv_hom_id_assoc] }⟩
+        fac_left := by simp [IsIso.hom_inv_id_assoc]
+        fac_right := by simp [sq.w, assoc, IsIso.inv_hom_id_assoc] }⟩
 
 @[to_dual]
 instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
@@ -97,8 +97,8 @@ instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
     exact
       CommSq.HasLift.mk'
         { l := (CommSq.mk (CommSq.mk fac).fac_right).lift
-          fac_left := by simp only [assoc, CommSq.fac_left]
-          fac_right := by simp only [CommSq.fac_right] }⟩
+          fac_left := by simp [assoc, CommSq.fac_left]
+          fac_right := by simp [CommSq.fac_right] }⟩
 
 @[to_dual (reorder := i i' e p)]
 theorem of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}

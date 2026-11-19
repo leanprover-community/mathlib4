@@ -29,7 +29,7 @@ public section
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
     f = ∑ a : ZMod m, {n : ℕ | (n : ZMod m) = a}.indicator f := by
   ext n
-  simp only [Finset.sum_apply, Set.indicator_apply, Set.mem_ofPred_eq, Finset.sum_ite_eq,
+  simp [Finset.sum_apply, Set.indicator_apply, Set.mem_ofPred_eq, Finset.sum_ite_eq,
     Finset.mem_univ, ↓reduceIte]
 
 open Set in
@@ -40,7 +40,7 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
     Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) ↔ Summable fun n ↦ f (m * n + k) := by
   trans Summable ({n : ℕ | (n : ZMod m) = k ∧ k ≤ n}.indicator f)
   · rw [← (finite_lt_nat k).summable_compl_iff (f := {n : ℕ | (n : ZMod m) = k}.indicator f)]
-    simp only [summable_subtype_iff_indicator, indicator_indicator, inter_comm, ofPred_and,
+    simp [summable_subtype_iff_indicator, indicator_indicator, inter_comm, ofPred_and,
       compl_ofPred, not_lt]
   · let g : ℕ → ℕ := fun n ↦ m * n + k
     have hg : Function.Injective g := fun m n hmn ↦ by simpa [g, hm.ne] using hmn
@@ -49,7 +49,7 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
       contrapose! hn
       exact (Nat.range_mul_add m k).symm ▸ mem_of_indicator_ne_zero hn
     convert (Function.Injective.summable_iff hg hg').symm
-    simp only [Function.comp_apply, mem_ofPred_eq, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
+    simp [Function.comp_apply, mem_ofPred_eq, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
       zero_mul, zero_add, le_add_iff_nonneg_left, zero_le, and_self, indicator_of_mem, g]
 
 /-- If `f : ℕ → ℝ` is decreasing and has a negative term, then `f` is not summable. -/
@@ -83,7 +83,7 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
   by_cases! hf₀ : ∀ n, 0 ≤ f n -- the interesting case
   · rw [← ZMod.natCast_zmod_val k, summable_indicator_mod_iff_summable] at hs
     have hl : (l.val + m : ZMod m) = l := by
-      simp only [ZMod.natCast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
+      simp [ZMod.natCast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
     rw [← hl, ← Nat.cast_add, summable_indicator_mod_iff_summable]
     exact hs.of_nonneg_of_le (fun _ ↦ hf₀ _)
       fun _ ↦ hf <| Nat.add_le_add Nat.le.refl (k.val_lt.trans_le <| m.le_add_left l.val).le
@@ -99,7 +99,7 @@ lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : An
   convert!
     summable_sum (s := Finset.univ) fun a _ ↦
       summable_indicator_mod_iff_summable_indicator_mod hf a H
-  simp only [Finset.sum_apply]
+  simp [Finset.sum_apply]
 
 open ZMod
 

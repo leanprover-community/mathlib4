@@ -46,7 +46,7 @@ variable {f g : α → ℝ≥0∞}
 @[norm_cast]
 protected theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} :
     HasSum (fun a => (f a : ℝ≥0∞)) ↑r ↔ HasSum f r := by
-  simp only [HasSum, ← ofNNReal_finsetSum, tendsto_coe]
+  simp [HasSum, ← ofNNReal_finsetSum, tendsto_coe]
 
 protected theorem tsum_coe_eq {f : α → ℝ≥0} (h : HasSum f r) : (∑' a, (f a : ℝ≥0∞)) = r :=
   (ENNReal.hasSum_coe.2 h).tsum_eq
@@ -185,7 +185,7 @@ theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞}
     ∑' _ : α, c = ∞ := by
   have A : Tendsto (fun n : ℕ => (n : ℝ≥0∞) * c) atTop (𝓝 (∞ * c)) := by
     apply ENNReal.Tendsto.mul_const tendsto_nat_nhds_top
-    simp only [true_or, top_ne_zero, Ne, not_false_iff]
+    simp [true_or, top_ne_zero, Ne, not_false_iff]
   have B : ∀ n : ℕ, (n : ℝ≥0∞) * c ≤ ∑' _ : α, c := fun n => by
     rcases Infinite.exists_subset_card_eq α n with ⟨s, hs⟩
     simpa [hs] using sum_le_tsum (f := fun _ : α => c) s
@@ -264,7 +264,7 @@ protected theorem tsum_apply {ι α : Type*} {f : ι → α → ℝ≥0∞} {x :
 theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' i, g i ≠ ∞) (h₂ : g ≤ f) :
     ∑' i, (f i - g i) = ∑' i, f i - ∑' i, g i :=
   have : ∀ i, f i - g i + g i = f i := fun i => tsub_add_cancel_of_le (h₂ i)
-  ENNReal.eq_sub_of_add_eq h₁ <| by simp only [← tsum_add, this]
+  ENNReal.eq_sub_of_add_eq h₁ <| by simp [← tsum_add, this]
 
 @[deprecated tsum_comp_le_tsum_of_injective +typeChanged (since := "2026-10-20")]
 protected theorem tsum_comp_le_tsum_of_injective {f : α → β} (hf : Injective f) (g : β → ℝ≥0∞) :
@@ -375,7 +375,7 @@ theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b
   · rw [← ENNReal.coe_tsum h, ENNReal.toNNReal_coe]
   · have A := tsum_eq_zero_of_not_summable h
     simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Classical.not_not] at h
-    simp only [h, ENNReal.toNNReal_top, A]
+    simp [h, ENNReal.toNNReal_top, A]
 
 /-- Comparison test of convergence of `ℝ≥0`-valued series. -/
 theorem exists_le_hasSum_of_le {f g : β → ℝ≥0} {r : ℝ≥0} (hgf : ∀ b, g b ≤ f b) (hfr : HasSum f r) :
@@ -505,7 +505,7 @@ theorem tsum_toNNReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
 
 theorem tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
     (∑' a, f a).toReal = ∑' a, (f a).toReal := by
-  simp only [ENNReal.toReal, tsum_toNNReal_eq hf, NNReal.coe_tsum]
+  simp [ENNReal.toReal, tsum_toNNReal_eq hf, NNReal.coe_tsum]
 
 theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) :
     Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
@@ -554,7 +554,7 @@ theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf
 theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n => (f n).toNNReal := by
   apply NNReal.summable_coe.1
   refine .of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => ?_) hf.abs
-  simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
+  simp [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 
 lemma Summable.tsum_ofReal_lt_top {f : α → ℝ} (hf : Summable f) : ∑' i, .ofReal (f i) < ∞ := by
   unfold ENNReal.ofReal

@@ -55,7 +55,7 @@ theorem norm_neg_period (x : ℝ) : ‖(x : AddCircle (-p))‖ = ‖(x : AddCirc
   suffices ‖(↑(-1 * x) : AddCircle (-1 * p))‖ = ‖(x : AddCircle p)‖ by
     rw [← this, neg_one_mul]
     simp
-  simp only [norm_coe_mul, abs_neg, abs_one, one_mul]
+  simp [norm_coe_mul, abs_neg, abs_one, one_mul]
 
 @[simp]
 theorem norm_eq_of_zero {x : ℝ} : ‖(x : AddCircle (0 : ℝ))‖ = |x| := by

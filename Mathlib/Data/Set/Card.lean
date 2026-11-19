@@ -823,7 +823,7 @@ theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
 lemma odd_card_insert_iff {a : α} (ha : a ∉ s) (hs : s.Finite := by toFinite_tac) :
     Odd (insert a s).ncard ↔ Even s.ncard := by
   rw [ncard_insert_of_notMem ha hs, Nat.odd_add]
-  simp only [← Nat.not_even_iff_odd, Nat.not_even_one, iff_false, Decidable.not_not]
+  simp [← Nat.not_even_iff_odd, Nat.not_even_one, iff_false, Decidable.not_not]
 
 lemma even_card_insert_iff {a : α} (ha : a ∉ s) (hs : s.Finite := by toFinite_tac) :
     Even (insert a s).ncard ↔ Odd s.ncard := by
@@ -1406,7 +1406,7 @@ theorem one_lt_ncard (hs : s.Finite := by toFinite_tac) :
 theorem one_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     1 < s.ncard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_ncard hs]
-  simp only [exists_and_left]
+  simp [exists_and_left]
 
 lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s := by toFinite_tac)
     (he : Even (s.ncard)) : 1 < s.ncard := by
@@ -1420,7 +1420,7 @@ theorem two_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
 
 theorem two_lt_ncard (hs : s.Finite := by toFinite_tac) :
     2 < s.ncard ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
-  simp only [two_lt_ncard_iff hs, exists_and_left]
+  simp [two_lt_ncard_iff hs, exists_and_left]
 
 theorem three_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     3 < s.ncard ↔
@@ -1430,7 +1430,7 @@ theorem three_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
 theorem three_lt_ncard (hs : s.Finite := by toFinite_tac) :
     3 < s.ncard ↔
     ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, ∃ d ∈ s, a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
-  simp only [three_lt_ncard_iff hs, exists_and_left]
+  simp [three_lt_ncard_iff hs, exists_and_left]
 
 theorem exists_ne_of_one_lt_ncard (hs : 1 < s.ncard) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
   have hsf := finite_of_ncard_ne_zero (zero_lt_one.trans hs).ne.symm

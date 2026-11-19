@@ -84,9 +84,9 @@ theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter
     Tendsto (fun n ↦ lintegral μ fun ω ↦ fs n ω) L (𝓝 (μ E)) := by
   convert tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
   have aux : ∀ ω, indicator E (fun _ ↦ (1 : ℝ≥0∞)) ω = ↑(indicator E (fun _ ↦ (1 : ℝ≥0)) ω) :=
-    fun ω ↦ by simp only [ENNReal.coe_indicator, ENNReal.coe_one]
+    fun ω ↦ by simp [ENNReal.coe_indicator, ENNReal.coe_one]
   simp_rw [← aux, lintegral_indicator E_mble]
-  simp only [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
+  simp [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
 
 /-- If a sequence of bounded continuous functions tends to the indicator of a measurable set and
 the functions are uniformly bounded, then their integrals against a finite measure tend to the
@@ -189,8 +189,8 @@ lemma indicator_le_apprSeq (n : ℕ) :
     indicator F (fun _ ↦ 1) ≤ hF.apprSeq n := by
   intro x
   by_cases hxF : x ∈ F
-  · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n, le_refl]
-  · simp only [hxF, not_false_eq_true, indicator_of_notMem, zero_le]
+  · simp [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n, le_refl]
+  · simp [hxF, not_false_eq_true, indicator_of_notMem, zero_le]
 
 /-- The measure of a closed set is at most the integral of any function in a decreasing
 approximating sequence to the indicator of the set. -/
@@ -198,12 +198,12 @@ theorem measure_le_lintegral [MeasurableSpace X] [OpensMeasurableSpace X] (μ : 
     μ F ≤ ∫⁻ x, (hF.apprSeq n x : ℝ≥0∞) ∂μ := by
   convert_to ∫⁻ x, (F.indicator (fun _ ↦ (1 : ℝ≥0∞))) x ∂μ ≤ ∫⁻ x, hF.apprSeq n x ∂μ
   · rw [lintegral_indicator hF.measurableSet]
-    simp only [lintegral_one, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
+    simp [lintegral_one, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
   · apply lintegral_mono
     intro x
     by_cases hxF : x ∈ F
-    · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n hxF, ENNReal.coe_one, le_refl]
-    · simp only [hxF, not_false_eq_true, indicator_of_notMem, zero_le]
+    · simp [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n hxF, ENNReal.coe_one, le_refl]
+    · simp [hxF, not_false_eq_true, indicator_of_notMem, zero_le]
 
 /-- The integrals along a decreasing approximating sequence to the indicator of a closed set
 tend to the measure of the closed set. -/

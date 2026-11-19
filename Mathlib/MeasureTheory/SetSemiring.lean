@@ -84,8 +84,8 @@ lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C where
     refine fun s hs t ht => ⟨{s \ t}, ?_, ?_, ?_⟩
     · simp only [coe_singleton, Set.singleton_subset_iff]
       exact hC.sdiff_mem hs ht
-    · simp only [coe_singleton, pairwiseDisjoint_singleton]
-    · simp only [coe_singleton, sUnion_singleton]
+    · simp [coe_singleton, pairwiseDisjoint_singleton]
+    · simp [coe_singleton, sUnion_singleton]
 
 lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
@@ -253,7 +253,7 @@ lemma sUnion_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C)
     (ht : t ∈ C) (hst : t ⊆ s) :
     ⋃₀ insert t (hC.disjointOfDiff hs ht) = s := by
   conv_rhs => rw [← union_sdiff_cancel hst, ← hC.sUnion_disjointOfDiff hs ht]
-  simp only [sUnion_insert]
+  simp [sUnion_insert]
 
 lemma disjoint_sUnion_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     Disjoint t (⋃₀ hC.disjointOfDiff hs ht) := by

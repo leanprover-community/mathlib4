@@ -141,16 +141,16 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
             { f := fun n => P.p.f n
               comm' := fun i j _ => by
                 dsimp
-                simp only [HomologicalComplex.Hom.comm, HomologicalComplex.Hom.comm_assoc,
+                simp [HomologicalComplex.Hom.comm, HomologicalComplex.Hom.comm_assoc,
                   HomologicalComplex.p_idem] }
           comm := by
             ext n
             dsimp
-            simp only [HomologicalComplex.p_idem] }
+            simp [HomologicalComplex.p_idem] }
       naturality := fun P Q φ => by
         ext
         dsimp
-        simp only [HomologicalComplex.comp_p_d,
+        simp [HomologicalComplex.comp_p_d,
           HomologicalComplex.p_comp_d] }
   inv :=
     { app := fun P =>
@@ -158,23 +158,23 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
             { f := fun n => P.p.f n
               comm' := fun i j _ => by
                 dsimp
-                simp only [HomologicalComplex.Hom.comm, assoc, HomologicalComplex.p_idem] }
+                simp [HomologicalComplex.Hom.comm, assoc, HomologicalComplex.p_idem] }
           comm := by
             ext n
             dsimp
-            simp only [HomologicalComplex.p_idem] }
+            simp [HomologicalComplex.p_idem] }
       naturality := fun P Q φ => by
         ext
         dsimp
-        simp only [HomologicalComplex.comp_p_d, HomologicalComplex.p_comp_d] }
+        simp [HomologicalComplex.comp_p_d, HomologicalComplex.p_comp_d] }
   hom_inv_id := by
     ext
     dsimp
-    simp only [HomologicalComplex.p_idem]
+    simp [HomologicalComplex.p_idem]
   inv_hom_id := by
     ext
     dsimp
-    simp only [HomologicalComplex.p_idem]
+    simp [HomologicalComplex.p_idem]
 
 end KaroubiHomologicalComplexEquivalence
 

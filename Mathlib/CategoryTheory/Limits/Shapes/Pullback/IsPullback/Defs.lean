@@ -178,12 +178,12 @@ theorem isoIsPullback_hom_snd (h : IsPullback fst snd f g) (h' : IsPullback fst'
 @[reassoc (attr := simp)]
 theorem isoIsPullback_inv_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
     (h.isoIsPullback _ _ h').inv ≫ fst = fst' := by
-  simp only [Iso.inv_comp_eq, isoIsPullback_hom_fst]
+  simp [Iso.inv_comp_eq, isoIsPullback_hom_fst]
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_inv_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
     (h.isoIsPullback _ _ h').inv ≫ snd = snd' := by
-  simp only [Iso.inv_comp_eq, isoIsPullback_hom_snd]
+  simp [Iso.inv_comp_eq, isoIsPullback_hom_snd]
 
 end
 
@@ -313,12 +313,12 @@ theorem inr_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl
 @[reassoc (attr := simp)]
 theorem inl_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
     inl' ≫ (h.isoIsPushout _ _ h').inv = inl := by
-  simp only [Iso.comp_inv_eq, inl_isoIsPushout_hom]
+  simp [Iso.comp_inv_eq, inl_isoIsPushout_hom]
 
 @[reassoc (attr := simp)]
 theorem inr_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
     inr' ≫ (h.isoIsPushout _ _ h').inv = inr := by
-  simp only [Iso.comp_inv_eq, inr_isoIsPushout_hom]
+  simp [Iso.comp_inv_eq, inr_isoIsPushout_hom]
 
 end
 

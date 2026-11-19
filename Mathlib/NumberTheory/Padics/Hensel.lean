@@ -198,7 +198,7 @@ private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
     ‖F.derivative.aeval z' - F.derivative.aeval z‖ < ‖F.derivative.aeval a‖ :=
   calc
     ‖F.derivative.aeval z' - F.derivative.aeval z‖ ≤ ‖z' - z‖ := padic_polynomial_dist _ _ _
-    _ = ‖z1‖ := by simp only [sub_eq_add_neg, add_assoc, hz', add_add_neg_cancel'_right, norm_neg]
+    _ = ‖z1‖ := by simp [sub_eq_add_neg, add_assoc, hz', add_add_neg_cancel'_right, norm_neg]
     _ = ‖F.aeval z‖ / ‖F.derivative.aeval a‖ := hz1
     _ ≤ ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.aeval a‖ := by
       gcongr
@@ -241,7 +241,7 @@ private theorem calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q}
       gcongr
       exact hz.2
     _ = (‖F.derivative.aeval a‖ ^ 2) ^ 2 * (T ^ 2 ^ n) ^ 2 / ‖F.derivative.aeval a‖ ^ 2 := by
-      simp only [mul_pow]
+      simp [mul_pow]
     _ = ‖F.derivative.aeval a‖ ^ 2 * (T ^ 2 ^ n) ^ 2 := div_sq_cancel _ _
     _ = ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ (n + 1) := by rw [← pow_mul, pow_succ 2]
 

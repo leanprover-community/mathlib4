@@ -93,7 +93,7 @@ lemma Ideal.exact_mulQuot_quotOfMul {a : R} (I : Ideal R) :
     Function.Exact (Ideal.mulQuot a I) (Ideal.quotOfMul a I) := by
   simp only [exact_iff]
   have : ker (Ideal.quotOfMul a I) = a • ⊤ := by
-    simp only [← submodule_span_eq, quotOfMul, Submodule.factor, Submodule.mapQ, comp_id,
+    simp [← submodule_span_eq, quotOfMul, Submodule.factor, Submodule.mapQ, comp_id,
       Submodule.ker_liftQ, Submodule.ker_mkQ, Submodule.map_span, Submodule.mkQ_apply,
       Quotient.mk_eq_mk, Set.image_singleton, Quotient.smul_top]
   simp [this, Ideal.mulQuot, Submodule.mapQ.eq_1, Submodule.range_liftQ,

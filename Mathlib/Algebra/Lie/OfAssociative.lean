@@ -47,7 +47,7 @@ namespace LieRing
 def ofAssociativeRing : LieRing A where
   add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
-  lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
+  lie_self := by simp [Ring.lie_def, forall_const, sub_self]
   leibniz_lie _ _ _ := by
     simp only [Ring.lie_def, mul_sub_left_distrib, mul_sub_right_distrib, mul_assoc]; abel
 
@@ -272,7 +272,7 @@ lemma LieSubmodule.coe_toEnd_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : �
     ((toEnd R L N x ^ n) y : M) = (toEnd R L M x ^ n) y := by
   induction n generalizing y with
   | zero => rfl
-  | succ n ih => simp only [pow_succ', mul_apply_eq_comp, ih, LieSubmodule.coe_toEnd]
+  | succ n ih => simp [pow_succ', mul_apply_eq_comp, ih, LieSubmodule.coe_toEnd]
 
 lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
     (ad R H x y : L) = ad R L x y := rfl
@@ -374,7 +374,7 @@ theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra
 theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
     (ad R L ↑x).comp (K.incl : K →ₗ[R] L) = (K.incl : K →ₗ[R] L).comp (ad R K x) := by
   ext y
-  simp only [ad_apply, LieHom.coe_toLinearMap, LieSubalgebra.coe_incl, LinearMap.coe_comp,
+  simp [ad_apply, LieHom.coe_toLinearMap, LieSubalgebra.coe_incl, LinearMap.coe_comp,
     LieSubalgebra.coe_bracket, Function.comp_apply]
 
 end AdjointAction
@@ -401,7 +401,7 @@ def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with
     map_lie' := fun {f g} =>
       show e.conj ⁅f, g⁆ = ⁅e.conj f, e.conj g⁆ by
-        simp only [LieRing.of_associative_ring_bracket, Module.End.mul_eq_comp, e.conj_comp,
+        simp [LieRing.of_associative_ring_bracket, Module.End.mul_eq_comp, e.conj_comp,
           map_sub] }
 
 @[simp]

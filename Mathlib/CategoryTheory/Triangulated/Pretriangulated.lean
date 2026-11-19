@@ -176,7 +176,7 @@ lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
     isomorphic_distinguished _ (inv_rot_of_distTriang _ (inv_rot_of_distTriang _ mem)) _ ?_⟩
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
     (by cat_disch) (by cat_disch)
-    (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
+    (by dsimp; simp [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
 /-- A commutative square involving the morphisms `mor₂` of two distinguished triangles
 can be extended as morphism of triangles -/
@@ -203,12 +203,12 @@ lemma complete_distinguished_triangle_morphism₂ (T₁ T₂ : Triangle C)
   obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := complete_distinguished_triangle_morphism _ _
     (inv_rot_of_distTriang _ hT₁) (inv_rot_of_distTriang _ hT₂) (c⟦(-1 : ℤ)⟧') a (by
     dsimp
-    simp only [neg_comp, comp_neg, ← Functor.map_comp_assoc, ← comm,
+    simp [neg_comp, comp_neg, ← Functor.map_comp_assoc, ← comm,
       Functor.map_comp, shift_shift_neg', Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id])
   refine ⟨a, ⟨ha₁, ?_⟩⟩
   dsimp only [Triangle.invRotate, Triangle.mk] at ha₂
   rw [← cancel_mono ((shiftEquiv C (1 : ℤ)).counitIso.inv.app T₂.obj₃), assoc, assoc, ← ha₂]
-  simp only [shiftEquiv'_counitIso, shift_neg_shift', assoc, Iso.inv_hom_id_app_assoc]
+  simp [shiftEquiv'_counitIso, shift_neg_shift', assoc, Iso.inv_hom_id_app_assoc]
 
 /-- Obvious triangles `0 ⟶ X ⟶ X ⟶ 0⟦1⟧` are distinguished -/
 lemma contractible_distinguished₁ (X : C) :
@@ -225,7 +225,7 @@ lemma contractible_distinguished₂ (X : C) :
     (inv_rot_of_distTriang _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ ?_
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
     (by simp) (by simp)
-    (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
+    (by dsimp; simp [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
 namespace Triangle
 
@@ -362,7 +362,7 @@ lemma isZero₂_iff_isIso₃ : IsZero T.obj₂ ↔ IsIso T.mor₃ :=
 lemma isZero₃_iff_isIso₁ : IsZero T.obj₃ ↔ IsIso T.mor₁ := by
   refine Iff.trans ?_ (Triangle.isZero₁_iff_isIso₂ _ (inv_rot_of_distTriang _ hT))
   dsimp
-  simp only [IsZero.iff_id_eq_zero, ← Functor.map_id, Functor.map_eq_zero_iff]
+  simp [IsZero.iff_id_eq_zero, ← Functor.map_id, Functor.map_eq_zero_iff]
 
 lemma isZero₁_of_isIso₂ (h : IsIso T.mor₂) : IsZero T.obj₁ := (T.isZero₁_iff_isIso₂ hT).2 h
 lemma isZero₂_of_isIso₃ (h : IsIso T.mor₃) : IsZero T.obj₂ := (T.isZero₂_iff_isIso₃ hT).2 h
@@ -515,11 +515,11 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
         inl := T.mor₁
         inr := inr
         inl_fst := by
-          simp only [← cancel_mono T.mor₁, assoc, id_comp, eq, comp_sub, comp_id,
+          simp [← cancel_mono T.mor₁, assoc, id_comp, eq, comp_sub, comp_id,
             comp_distTriang_mor_zero₁₂_assoc _ hT, zero_comp, sub_zero]
         inl_snd := comp_distTriang_mor_zero₁₂ _ hT
         inr_fst := by
-          simp only [← cancel_mono T.mor₁, assoc, eq, comp_sub, reassoc_of% inr_snd,
+          simp [← cancel_mono T.mor₁, assoc, eq, comp_sub, reassoc_of% inr_snd,
             comp_id, sub_self, zero_comp]
         inr_snd := inr_snd }
       isBilimit := isBinaryBilimitOfTotal _ total }
@@ -531,10 +531,10 @@ instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
   obtain ⟨fst : X₂ ⟶ X₁, hfst : 𝟙 X₂ - snd ≫ inr = fst ≫ inl⟩ :=
     Triangle.coyoneda_exact₂ _ mem (𝟙 X₂ - snd ≫ inr) (by
       dsimp
-      simp only [sub_comp, assoc, id_comp, ← inr_snd, comp_id, sub_self])
+      simp [sub_comp, assoc, id_comp, ← inr_snd, comp_id, sub_self])
   refine ⟨⟨binaryBiproductData _ mem rfl inr inr_snd.symm fst ?_⟩⟩
   dsimp
-  simp only [← hfst, sub_add_cancel]⟩
+  simp [← hfst, sub_add_cancel]⟩
 
 instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
 instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
@@ -548,7 +548,7 @@ lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ dist
   have := isSplitEpi_of_epi T.mor₂
   obtain ⟨fst, hfst⟩ := T.coyoneda_exact₂ hT (𝟙 T.obj₂ - T.mor₂ ≫ section_ T.mor₂) (by simp)
   let d := binaryBiproductData _ hT zero (section_ T.mor₂) (by simp) fst
-    (by simp only [← hfst, sub_add_cancel])
+    (by simp [← hfst, sub_add_cancel])
   refine ⟨biprod.uniqueUpToIso _ _ d.isBilimit, ⟨?_, by simp [d]⟩⟩
   ext
   · simpa [d] using d.bicone.inl_fst

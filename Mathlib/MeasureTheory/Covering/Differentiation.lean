@@ -111,7 +111,7 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
   calc
     μ s ≤ ∑' x : h.index, μ (h.covering x) := h.measure_le_tsum
     _ = ∑' x : h.index, 0 := by congr; ext1 x; exact h.covering_mem x.2
-    _ = 0 := by simp only [tsum_zero]
+    _ = 0 := by simp [tsum_zero]
 
 /-- For every point `x`, sufficiently small sets in a Vitali family around `x` have finite measure.
 (This is a trivial result, following from the fact that the measure is locally finite). -/
@@ -332,7 +332,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         have : μ sᶜ = 0 := v.ae_tendsto_div hρ; rw [measure_toMeasurable, this, zero_add]
       _ ≤ ∑' (m) (n), μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
         ((measure_iUnion_le _).trans (tsum_le_tsum fun m => measure_iUnion_le _))
-      _ = 0 := by simp only [H, tsum_zero]
+      _ = 0 := by simp [H, tsum_zero]
   -- now starts the nontrivial part of the argument. We fix `m` and `n`, and show that the
   -- measurable supersets of `u m` and `w n` have zero measure intersection by using the lemmas
   -- `measure_toMeasurable_add_inter_left` (to reduce to `u m` or `w n` instead of the measurable
@@ -530,7 +530,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
       (∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ) ≤ ∫⁻ _ in s ∩ f ⁻¹' I, t ^ (n + 1) ∂μ :=
         lintegral_mono_ae ((ae_restrict_iff' M).2 (Eventually.of_forall fun x hx => hx.2.2.le))
       _ = t ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
-        simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
+        simp [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
       _ = t ^ (2 : ℤ) * (t ^ (n - 1) * μ (s ∩ f ⁻¹' I)) := by
         rw [← mul_assoc, ← ENNReal.zpow_add t_ne_zero ht']
         congr 2
@@ -595,7 +595,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
         apply hx.2.2.trans_le (le_of_eq _)
         norm_cast
       _ = ∫⁻ _ in s ∩ f ⁻¹' I, t ^ (n + 1) ∂μ := by
-        simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
+        simp [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
       _ ≤ ∫⁻ x in s ∩ f ⁻¹' I, t * f x ∂μ := by
         apply lintegral_mono_ae ((ae_restrict_iff' M).2 (Eventually.of_forall fun x hx => ?_))
         grw [add_comm, ENNReal.zpow_add t_ne_zero ht', zpow_one, hx.2.1]
@@ -670,7 +670,7 @@ theorem ae_tendsto_rnDeriv :
   · ext1 a
     conv_lhs => rw [eq_add]
     simp [ENNReal.add_div]
-  · simp only [Bx, zero_add]
+  · simp [Bx, zero_add]
 
 /-! ### Lebesgue density points -/
 
@@ -766,7 +766,7 @@ theorem ae_tendsto_lintegral_eNorm_sub_div'_of_integrable {f : α → E} (hf : I
           lintegral_add_left h'f.eNorm _
         _ < ∞ + ∞ :=
           haveI I : Integrable ((A.set n).indicator fun _ : α => c) μ := by
-            simp only [integrable_indicator_iff (IsOpen.measurableSet (A.set_mem n)),
+            simp [integrable_indicator_iff (IsOpen.measurableSet (A.set_mem n)),
               integrableOn_const_iff (C := c), A.finite n, or_true]
           ENNReal.add_lt_add hf.2 I.2
   filter_upwards [main, v.ae_eventually_measure_pos] with x hx h'x
@@ -780,7 +780,7 @@ theorem ae_tendsto_lintegral_eNorm_sub_div'_of_integrable {f : α → E} (hf : I
       v.eventually_filterAt_measurableSet x] with a ha h'a
     congr 1
     apply setLIntegral_congr_fun h'a (fun y hy ↦ ?_)
-    simp only [ha hy, indicator_of_mem]
+    simp [ha hy, indicator_of_mem]
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
   obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, ‖f x - c‖ₑ < ε / 2 := by
     simp_rw [← eDist_eq_eNorm_sub]
@@ -860,7 +860,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
     exact (h''a.sub (integrableOn_const h'a.ne)).norm
   dsimp [eNorm]
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
-  simp only [coe_nnNorm, measureReal_def]
+  simp [coe_nnNorm, measureReal_def]
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family. -/

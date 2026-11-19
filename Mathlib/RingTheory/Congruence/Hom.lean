@@ -215,7 +215,7 @@ theorem lift_injective_iff {h : c ≤ ker f} :
 theorem lift_bijective_iff {h : c ≤ ker f} :
     Function.Bijective (c.lift f h) ↔ c = ker f ∧ Surjective f := by
   unfold Function.Bijective
-  simp only [lift_injective_iff, lift_surjective_iff]
+  simp [lift_injective_iff, lift_surjective_iff]
 
 /-- Given a ring homomorphism `f` from `M` to `P`, the kernel of `f` is the
 unique ring congruence relation on `M` whose induced map from the quotient of

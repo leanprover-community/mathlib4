@@ -192,8 +192,8 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
   toFun x :=
     ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ =>
       v.valuation_of_unit_mod_eq n x⟩
-  map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one]
-  map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, QuotientGroup.mk_mul,
+  map_one' := by simp [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one]
+  map_mul' _ _ := by simp [RingHom.toMonoidHom_eq_coe, map_mul, QuotientGroup.mk_mul,
     MulMemClass.mk_mul_mk]
 
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
@@ -221,7 +221,7 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
   · rintro ⟨x, hx⟩
     rw [← hx]
     exact Subtype.mk_eq_mk.mpr <| (QuotientGroup.eq_one_iff _).mpr ⟨Units.map (algebraMap R K) x,
-      by simp only [powMonoidHom_apply, RingHom.toMonoidHom_eq_coe, map_pow]⟩
+      by simp [powMonoidHom_apply, RingHom.toMonoidHom_eq_coe, map_pow]⟩
 
 /-- The injection induced by the natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
 def fromUnitLift [Fact <| 0 < n] : (R / n) →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ :=

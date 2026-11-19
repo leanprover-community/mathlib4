@@ -117,7 +117,7 @@ variable (M) in
 @[simp]
 theorem evalFrom_append (S : Set σ) (x y : List α) :
     M.evalFrom S (x ++ y) = M.evalFrom (M.evalFrom S x) y := by
-  simp only [evalFrom, List.foldl_append]
+  simp [evalFrom, List.foldl_append]
 
 variable (M) in
 @[simp]

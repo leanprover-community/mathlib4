@@ -109,10 +109,10 @@ theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
   Ioo_eq_empty h.not_gt
 
 @[to_dual (rename := a ↔ b) right_mem_Icc]
-theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and, le_rfl]
+theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp [mem_Icc, true_and, le_rfl]
 
 @[to_dual (rename := a ↔ b) right_mem_Ioc]
-theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and, le_refl]
+theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp [mem_Ico, true_and, le_refl]
 
 @[to_dual (rename := a ↔ b) right_notMem_Ico]
 theorem left_notMem_Ioc : a ∉ Ioc a b := fun h => lt_irrefl _ (mem_Ioc.1 h).1
@@ -318,7 +318,7 @@ theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_t
 
 @[to_dual (attr := simp)]
 theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
-  ext a; simp only [mem_Ici, bot_le, mem_univ]
+  ext a; simp [mem_Ici, bot_le, mem_univ]
 
 @[to_dual (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩

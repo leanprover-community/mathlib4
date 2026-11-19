@@ -116,7 +116,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
   have hd' : MDiff[U] (f · + f c) := hd.add mdifferentiableOn_const
   have H₂ : ‖f x + f c‖ = ‖f c + f c‖ :=
     hd'.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm.norm_add_self hx
-  eq_of_norm_eq_of_norm_add_eq H₁ <| by simp only [H₂, SameRay.rfl.norm_add, H₁, Function.const]
+  eq_of_norm_eq_of_norm_add_eq H₁ <| by simp [H₂, SameRay.rfl.norm_add, H₁, Function.const]
 
 /-- If a function `f : M → F` from a complex manifold to a complex normed space is holomorphic on a
 (pre)connected compact open set, then it is a constant on this set. -/

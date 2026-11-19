@@ -240,10 +240,10 @@ protected def equiv (f : α ≃ₜ β) : Compacts α ≃ Compacts β where
   invFun := Compacts.map _ f.symm.continuous
   left_inv s := by
     ext1
-    simp only [coe_map, ← image_comp, f.symm_comp_self, image_id]
+    simp [coe_map, ← image_comp, f.symm_comp_self, image_id]
   right_inv s := by
     ext1
-    simp only [coe_map, ← image_comp, f.self_comp_symm, image_id]
+    simp [coe_map, ← image_comp, f.self_comp_symm, image_id]
 
 @[simp]
 theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=

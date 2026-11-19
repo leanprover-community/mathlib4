@@ -115,7 +115,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
     -- They must have opposite sign, so that P^{k + 1}(t) - P^k(t) = P^{k + 2}(t) - P^{k + 1}(t).
     rcases Int.natAbs_eq_natAbs_iff.1 (Habs n n.succ) with hn' | hn'
     · apply (hn _).elim
-      convert! hn' <;> simp only [Function.iterate_succ_apply']
+      convert! hn' <;> simp [Function.iterate_succ_apply']
     -- We deduce P^{k + 2}(t) = P^k(t) and hence P(P(t)) = t.
     · rw [neg_sub, sub_right_inj] at hn'
       simp only [Function.iterate_succ_apply'] at hn'

@@ -382,7 +382,7 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
   rcases isTrivialBlock_of_isBlock (G := G) (IsBlock.of_subset a hfA) with hyp | hyp
   · -- B.subsingleton
     apply Set.Subsingleton.eq_singleton_of_mem hyp
-    rw [Set.mem_iInter]; intro g; simp only [Set.mem_iInter, imp_self]
+    rw [Set.mem_iInter]; intro g; simp [Set.mem_iInter, imp_self]
   · -- B = Set.univ: contradiction
     change B = Set.univ at hyp
     exfalso; apply hA'

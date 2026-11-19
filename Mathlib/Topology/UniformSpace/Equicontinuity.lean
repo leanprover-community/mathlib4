@@ -259,11 +259,11 @@ theorem equicontinuousWithinAt_finite [Finite ι] {F : ι → X → α} {S : Set
 
 theorem equicontinuous_finite [Finite ι] {F : ι → X → α} :
     Equicontinuous F ↔ ∀ i, Continuous (F i) := by
-  simp only [Equicontinuous, equicontinuousAt_finite, continuous_iff_continuousAt, @forall_comm ι]
+  simp [Equicontinuous, equicontinuousAt_finite, continuous_iff_continuousAt, @forall_comm ι]
 
 theorem equicontinuousOn_finite [Finite ι] {F : ι → X → α} {S : Set X} :
     EquicontinuousOn F S ↔ ∀ i, ContinuousOn (F i) S := by
-  simp only [EquicontinuousOn, equicontinuousWithinAt_finite, ContinuousOn, @forall_comm ι]
+  simp [EquicontinuousOn, equicontinuousWithinAt_finite, ContinuousOn, @forall_comm ι]
 
 theorem uniformEquicontinuous_finite [Finite ι] {F : ι → β → α} :
     UniformEquicontinuous F ↔ ∀ i, UniformContinuous (F i) := by
@@ -447,13 +447,13 @@ protected theorem Set.UniformEquicontinuousOn.mono {H H' : Set <| β → α} {S 
 i.e the family `(↑) : range F → X → α` is equicontinuous at `x₀`. -/
 theorem equicontinuousAt_iff_range {F : ι → X → α} {x₀ : X} :
     EquicontinuousAt F x₀ ↔ EquicontinuousAt ((↑) : range F → X → α) x₀ := by
-  simp only [EquicontinuousAt, forall_subtype_range_iff]
+  simp [EquicontinuousAt, forall_subtype_range_iff]
 
 /-- A family `𝓕 : ι → X → α` is equicontinuous at `x₀` within `S` iff `range 𝓕` is equicontinuous
 at `x₀` within `S`, i.e the family `(↑) : range F → X → α` is equicontinuous at `x₀` within `S`. -/
 theorem equicontinuousWithinAt_iff_range {F : ι → X → α} {S : Set X} {x₀ : X} :
     EquicontinuousWithinAt F S x₀ ↔ EquicontinuousWithinAt ((↑) : range F → X → α) S x₀ := by
-  simp only [EquicontinuousWithinAt, forall_subtype_range_iff]
+  simp [EquicontinuousWithinAt, forall_subtype_range_iff]
 
 /-- A family `𝓕 : ι → X → α` is equicontinuous iff `range 𝓕` is equicontinuous,
 i.e the family `(↑) : range F → X → α` is equicontinuous. -/
@@ -548,7 +548,7 @@ theorem equicontinuousWithinAt_iInf_rng {u : κ → UniformSpace α'} {F : ι �
 theorem equicontinuousAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
     {x₀ : X} :
     EquicontinuousAt (uα := ⨅ k, u k) F x₀ ↔ ∀ k, EquicontinuousAt (uα := u k) F x₀ := by
-  simp only [← equicontinuousWithinAt_univ (uα := _), equicontinuousWithinAt_iInf_rng]
+  simp [← equicontinuousWithinAt_univ (uα := _), equicontinuousWithinAt_iInf_rng]
 
 theorem equicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'} :
     Equicontinuous (uα := ⨅ k, u k) F ↔ ∀ k, Equicontinuous (uα := u k) F := by

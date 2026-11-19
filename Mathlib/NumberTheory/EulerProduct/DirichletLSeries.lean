@@ -62,7 +62,7 @@ lemma tsum_riemannZetaSummand (hs : 1 < s.re) :
     ∑' (n : ℕ), riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n = riemannZeta s := by
   have hsum := summable_riemannZetaSummand hs
   rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, hsum.of_norm.tsum_eq_zero_add, map_zero, zero_add]
-  simp only [riemannZetaSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+  simp [riemannZetaSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     Nat.cast_add, Nat.cast_one, one_div]
 
 /-- When `s.re > 1`, the map `n ↦ χ(n) * n^(-s)` is norm-summable. -/
@@ -75,7 +75,7 @@ lemma summable_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 
 open scoped LSeries.notation in
 lemma tsum_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
     ∑' (n : ℕ), dirichletSummandHom χ (ne_zero_of_one_lt_re hs) n = L ↗χ s := by
-  simp only [dirichletSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, LSeries,
+  simp [dirichletSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, LSeries,
     LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs), div_eq_mul_inv]
 
 open Filter Nat EulerProduct
@@ -138,8 +138,8 @@ theorem DirichletCharacter.LSeries_eulerProduct_exp_log {N : ℕ} (χ : Dirichle
   let f := dirichletSummandHom χ <| ne_zero_of_one_lt_re hs
   have h n : term ↗χ s n = f n := by
     rcases eq_or_ne n 0 with rfl | hn
-    · simp only [term_zero, map_zero]
-    · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, div_eq_mul_inv,
+    · simp [term_zero, map_zero]
+    · simp [ne_eq, hn, not_false_eq_true, term_of_ne_zero, div_eq_mul_inv,
         dirichletSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, f]
   simpa only [LSeries, h]
     using! exp_tsum_primes_log_eq_tsum (f := f) <| summable_dirichletSummand χ hs
@@ -184,13 +184,13 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
     simp only [Set.mulIndicator_apply, Set.mem_ofPred_eq, Finset.mem_coe, Nat.mem_primeFactors,
       ne_eq, mul_ite, mul_one]
     by_cases h : p.Prime; swap
-    · simp only [h, false_and, ite_false]
+    · simp [h, false_and, ite_false]
     simp only [h, true_and, ite_true]
     by_cases hp' : p ∣ N; swap
     · simp only [hp', false_and, ↓reduceIte, inv_inj, sub_right_inj, mul_eq_mul_right_iff,
         cpow_eq_zero_iff, Nat.cast_eq_zero, h.ne_zero, ne_eq, neg_eq_zero, or_false]
       have hq : IsUnit (p : ZMod N) := (ZMod.isUnit_prime_iff_not_dvd h).mpr hp'
-      simp only [hq.unit_spec ▸ DirichletCharacter.changeLevel_eq_cast_of_dvd χ hMN hq.unit,
+      simp [hq.unit_spec ▸ DirichletCharacter.changeLevel_eq_cast_of_dvd χ hMN hq.unit,
         ZMod.cast_natCast hMN]
     · simp only [hp', NeZero.ne N, not_false_eq_true, and_self, ↓reduceIte]
       have : ¬IsUnit (p : ZMod N) := by rwa [ZMod.isUnit_prime_iff_not_dvd h, not_not]

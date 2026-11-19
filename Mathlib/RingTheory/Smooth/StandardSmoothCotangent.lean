@@ -58,7 +58,7 @@ lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S �
     P.cotangentComplexAux (Cotangent.mk x) i = (aeval P.val) (pderiv (P.map i) x.val) := by
   dsimp only [cotangentComplexAux, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     cotangentComplex_mk]
-  simp only [Generators.toExtension_Ring, Finsupp.lcomapDomain_apply,
+  simp [Generators.toExtension_Ring, Finsupp.lcomapDomain_apply,
     Finsupp.linearEquivFunOnFinite_apply, Finsupp.comapDomain_apply,
     Generators.cotangentSpaceBasis_repr_tmul, one_mul]
 
@@ -244,7 +244,7 @@ attribute [local instance] Fintype.ofFinite in
 of relations. -/
 theorem rank_kaehlerDifferential [Nontrivial S] [Finite ι]
     (P : SubmersivePresentation R S ι σ) : Module.rank S Ω[S⁄R] = P.dimension := by
-  simp only [rank_eq_card_basis P.basisKaehler, Fintype.card_compl_set,
+  simp [rank_eq_card_basis P.basisKaehler, Fintype.card_compl_set,
     Presentation.dimension, Nat.card_eq_fintype_card, Set.card_range_of_injective P.map_inj]
 
 end SubmersivePresentation

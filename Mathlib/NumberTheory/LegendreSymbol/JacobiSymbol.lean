@@ -103,18 +103,18 @@ namespace jacobiSym
 /-- The symbol `J(a | 0)` has the value `1`. -/
 @[simp]
 theorem zero_right (a : ℤ) : J(a | 0) = 1 := by
-  simp only [jacobiSym, primeFactorsList_zero, List.prod_nil, List.pmap]
+  simp [jacobiSym, primeFactorsList_zero, List.prod_nil, List.pmap]
 
 /-- The symbol `J(a | 1)` has the value `1`. -/
 @[simp]
 theorem one_right (a : ℤ) : J(a | 1) = 1 := by
-  simp only [jacobiSym, primeFactorsList_one, List.prod_nil, List.pmap]
+  simp [jacobiSym, primeFactorsList_one, List.prod_nil, List.pmap]
 
 /-- The Legendre symbol `legendreSym p a` with an integer `a` and a prime number `p`
 is the same as the Jacobi symbol `J(a | p)`. -/
 theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) :
     legendreSym p a = J(a | p) := by
-  simp only [jacobiSym, primeFactorsList_prime fp.out, List.prod_cons, List.prod_nil, mul_one,
+  simp [jacobiSym, primeFactorsList_prime fp.out, List.prod_cons, List.prod_nil, mul_one,
     List.pmap]
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
@@ -233,14 +233,14 @@ theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : J(a | p)
 /-- We can pull out a product over a list in the first argument of the Jacobi symbol. -/
 theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a => J(a | n)).prod := by
   induction l with
-  | nil => simp only [List.prod_nil, List.map_nil, one_left]
+  | nil => simp [List.prod_nil, List.map_nil, one_left]
   | cons n l' ih => rw [List.map, List.prod_cons, List.prod_cons, mul_left, ih]
 
 /-- We can pull out a product over a list in the second argument of the Jacobi symbol. -/
 theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
     J(a | l.prod) = (l.map fun n => J(a | n)).prod := by
   induction l with
-  | nil => simp only [List.prod_nil, one_right, List.map_nil]
+  | nil => simp [List.prod_nil, one_right, List.map_nil]
   | cons n l' ih =>
     have hn := hl n List.mem_cons_self
     -- `n ≠ 0`
@@ -531,7 +531,7 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
   unfold fastJacobiSymAux
   split <;> rename_i ha4
   · rw [IH (a / 4) (a.div_lt_self ha0 (by decide)) hb2 hb1]
-    simp only [Int.natCast_ediv, Nat.cast_ofNat, div_four_left (a := a) (mod_cast ha4) hb2]
+    simp [Int.natCast_ediv, Nat.cast_ofNat, div_four_left (a := a) (mod_cast ha4) hb2]
   split <;> rename_i ha2
   · rw [IH (a / 2) (a.div_lt_self ha0 (by decide)) hb2 hb1]
     simp only [Int.natCast_ediv, Nat.cast_ofNat, ← even_odd (a := a) (mod_cast ha2) hb2]

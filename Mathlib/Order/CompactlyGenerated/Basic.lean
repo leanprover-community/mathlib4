@@ -565,7 +565,7 @@ lemma disjoint_biSup_of_finite_disjoint_biSup {ι : Type*} {f : ι → α} {s : 
   obtain ⟨t, ht, ht', htu⟩ : ∃ t ⊆ s, ∃ hu : t.Finite, f '' t = u :=
     Set.Finite.exists_subset_finite_image_eq u.finite_toSet <| by rwa [Set.image_eq_range f s]
   replace htu : u.sup id = ⨆ i ∈ t, f i := by
-    simp only [Finset.sup_eq_iSup, id_eq, ← Finset.mem_coe, ← htu, iSup_image]
+    simp [Finset.sup_eq_iSup, id_eq, ← Finset.mem_coe, ← htu, iSup_image]
   rw [inf_comm, ← disjoint_iff, htu]
   exact hs t ht ht'
 
@@ -610,7 +610,7 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
   constructor
   rintro ⟨b, hbk⟩
   obtain rfl | H := eq_or_ne b k
-  · left; ext; simp only [Set.Iic.coe_top]
+  · left; ext; simp [Set.Iic.coe_top]
   right
   have ⟨a, ba, h⟩ := zorn_le_nonempty₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
   · refine ⟨⟨a, le_of_lt h.prop⟩, ⟨ne_of_lt h.prop, fun c hck => by_contradiction fun c₀ => ?_⟩, ba⟩
@@ -622,7 +622,7 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
       intro; apply le_sSup
     exact
       ⟨b, lt_of_le_of_ne hbk H, by
-        simp only [Set.not_nonempty_iff_eq_empty.mp hS, Set.mem_empty_iff_false, forall_const,
+        simp [Set.not_nonempty_iff_eq_empty.mp hS, Set.mem_empty_iff_false, forall_const,
           forall_prop_of_false, not_false_iff]⟩
 
 theorem coatomic_of_top_compact (h : IsCompactElement (⊤ : α)) : IsCoatomic α :=

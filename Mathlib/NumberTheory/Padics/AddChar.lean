@@ -126,7 +126,7 @@ for rings with strictly multiplicative norm. -/
 noncomputable def continuousAddCharEquiv_of_norm_mul :
     {κ : AddChar ℤ_[p] R // Continuous κ} ≃ {r : R // ‖r‖ < 1} :=
   (continuousAddCharEquiv p R).trans <|
-    .subtypeEquivProp (by simp only [tendsto_pow_atTop_nhds_zero_iff_norm_lt_one])
+    .subtypeEquivProp (by simp [tendsto_pow_atTop_nhds_zero_iff_norm_lt_one])
 
 @[simp] lemma continuousAddCharEquiv_of_norm_mul_apply {κ : AddChar ℤ_[p] R} (hκ : Continuous κ) :
     continuousAddCharEquiv_of_norm_mul p R ⟨κ, hκ⟩ = κ 1 - 1 :=

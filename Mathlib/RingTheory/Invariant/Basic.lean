@@ -105,7 +105,7 @@ noncomputable def charpoly (b : B) : B[X] := ∏ g : G, (X - C (g • b))
 theorem charpoly_eq (b : B) : charpoly G b = ∏ g : G, (X - C (g • b)) := rfl
 
 theorem charpoly_eq_prod_smul (b : B) : charpoly G b = ∏ g : G, g • (X - C b) := by
-  simp only [smul_sub, smul_C, smul_X, charpoly_eq]
+  simp [smul_sub, smul_C, smul_X, charpoly_eq]
 
 theorem monic_charpoly (b : B) : (charpoly G b).Monic :=
   monic_prod_of_monic _ _ (fun _ _ ↦ monic_X_sub_C _)

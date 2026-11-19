@@ -59,19 +59,19 @@ lemma pOpcycles_opcyclesToCycles_iCycles :
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesToCycles :
     K.pOpcycles i ≫ K.opcyclesToCycles i j = K.toCycles i j := by
-  simp only [← cancel_mono (K.iCycles j), assoc, opcyclesToCycles_iCycles,
+  simp [← cancel_mono (K.iCycles j), assoc, opcyclesToCycles_iCycles,
     p_fromOpcycles, toCycles_i]
 
 @[reassoc (attr := simp)]
 lemma homologyι_opcyclesToCycles :
     K.homologyι i ≫ K.opcyclesToCycles i j = 0 := by
-  simp only [← cancel_mono (K.iCycles j), assoc, opcyclesToCycles_iCycles,
+  simp [← cancel_mono (K.iCycles j), assoc, opcyclesToCycles_iCycles,
     homologyι_comp_fromOpcycles, zero_comp]
 
 @[reassoc (attr := simp)]
 lemma opcyclesToCycles_homologyπ :
     K.opcyclesToCycles i j ≫ K.homologyπ j = 0 := by
-  simp only [← cancel_epi (K.pOpcycles i),
+  simp [← cancel_epi (K.pOpcycles i),
     pOpcycles_opcyclesToCycles_assoc, toCycles_comp_homologyπ, comp_zero]
 
 variable {K L}
@@ -79,7 +79,7 @@ variable {K L}
 @[reassoc (attr := simp)]
 lemma opcyclesToCycles_naturality :
     opcyclesMap φ i ≫ opcyclesToCycles L i j = opcyclesToCycles K i j ≫ cyclesMap φ j := by
-  simp only [← cancel_mono (L.iCycles j), ← cancel_epi (K.pOpcycles i),
+  simp [← cancel_mono (L.iCycles j), ← cancel_epi (K.pOpcycles i),
     assoc, p_opcyclesMap_assoc, pOpcycles_opcyclesToCycles_iCycles, Hom.comm, cyclesMap_i,
     pOpcycles_opcyclesToCycles_iCycles_assoc]
 
@@ -327,7 +327,7 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.X₃.X i) (hx₃ : x₃ ≫ S.X₃.d i j = 0
   simpa only [assoc] using hS.δ_eq' i j hij (S.X₃.liftCycles x₃ j
     (c.next_eq' hij) hx₃ ≫ S.X₃.homologyπ i)
     (x₂ ≫ S.X₂.pOpcycles i) (S.X₁.liftCycles x₁ k hk _)
-      (by simp only [assoc, HomologicalComplex.p_opcyclesMap,
+      (by simp [assoc, HomologicalComplex.p_opcyclesMap,
         HomologicalComplex.homology_π_ι,
         HomologicalComplex.liftCycles_i_assoc, reassoc_of% hx₂])
       (by rw [← cancel_mono (S.X₂.iCycles j), HomologicalComplex.liftCycles_comp_cyclesMap,

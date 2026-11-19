@@ -70,7 +70,7 @@ def leftInv : Submonoid M where
   carrier := { x : M | ∃ y : S, x * y = 1 }
   one_mem' := ⟨1, mul_one 1⟩
   mul_mem' := fun {a} _b ⟨a', ha⟩ ⟨b', hb⟩ ↦
-    ⟨b' * a', by simp only [coe_mul, ← mul_assoc, mul_assoc a, hb, mul_one, ha]⟩
+    ⟨b' * a', by simp [coe_mul, ← mul_assoc, mul_assoc a, hb, mul_one, ha]⟩
 
 @[to_additive]
 theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
@@ -170,7 +170,7 @@ theorem leftInvEquiv_mul (x : S.leftInv) : (S.leftInvEquiv hS x : M) * x = 1 := 
 
 @[to_additive]
 theorem mul_leftInvEquiv (x : S.leftInv) : (x : M) * S.leftInvEquiv hS x = 1 := by
-  simp only [leftInvEquiv_apply, fromCommLeftInv, mul_fromLeftInv]
+  simp [leftInvEquiv_apply, fromCommLeftInv, mul_fromLeftInv]
 
 @[to_additive (attr := simp)]
 theorem leftInvEquiv_symm_mul (x : S) : ((S.leftInvEquiv hS).symm x : M) * x = 1 := by

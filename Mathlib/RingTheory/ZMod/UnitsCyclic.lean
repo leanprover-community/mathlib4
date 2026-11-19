@@ -214,7 +214,7 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
   have ha : IsUnit a := by
     rw [ha_def, ← Nat.cast_one (R := ZMod _), ← Nat.cast_add, ZMod.isUnit_iff_coprime]
     apply Nat.Coprime.pow_right
-    simp only [Nat.coprime_add_self_left, Nat.coprime_one_left_eq_true]
+    simp [Nat.coprime_add_self_left, Nat.coprime_one_left_eq_true]
   have ha' : orderOf ha.unit = p ^ n := by
     rw [← orderOf_injective _ Units.coeHom_injective ha.unit, Units.coeHom_apply, IsUnit.unit_spec]
     exact orderOf_one_add_prime hp hp2 n
@@ -420,12 +420,12 @@ theorem isComplement'_zpowers_unitFive_neg_one (n : ℕ) :
       (Subgroup.zpowers (-1 : (ZMod (2 ^ n))ˣ)) := by
   refine Subgroup.isComplement'_of_card_mul_and_disjoint ?_ (disjoint_zpowers_unitFive_neg_one _)
   match n with
-  | 0 => simp only [Nat.pow_zero, Nat.card_unique]
+  | 0 => simp [Nat.pow_zero, Nat.card_unique]
   | 1 =>
     have : Subsingleton (ZMod (2 ^ 1))ˣ := by
       rw [pow_one]
       infer_instance
-    simp only [Nat.card_unique]
+    simp [Nat.card_unique]
   | n + 2 =>
     have : Nontrivial (ZMod (2 ^ (n + 2))) := ZMod.nontrivial_iff.mpr (by grind)
     rw [Nat.card_zpowers, Nat.card_zpowers, orderOf_unitFive, Units.orderOf_neg_one,

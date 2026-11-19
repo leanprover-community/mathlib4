@@ -313,7 +313,7 @@ theorem isIrreducible_iff_sUnion_isClosed :
     sUnion_image, Equiv.coe_toEmbedding, Function.Involutive.coe_toPerm, isClosed_compl_iff,
     exists_exists_and_eq_and]
   refine forall_congr' fun _ => Iff.trans ?_ not_imp_not
-  simp only [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
+  simp [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
 
 /-- A nonempty open subset of a preirreducible subspace is dense in the subspace. -/

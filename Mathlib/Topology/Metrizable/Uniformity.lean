@@ -68,7 +68,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
       rw [← sum_reverse, reverse_zipWith, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm dist_comm]
-      simp only [length, length_append]
+      simp [length, length_append]
   dist_triangle x y z := by
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
     refine NNReal.le_iInf_add_iInf fun lxy lyz ↦ ?_
@@ -123,7 +123,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   set L := zipWith d (x::l) (l ++ [y])
   have hL_len : length L = length l + 1 := by simp [L]
   rcases eq_or_ne (d x y) 0 with hd₀ | hd₀
-  · simp only [hd₀, zero_le]
+  · simp [hd₀, zero_le]
   rsuffices ⟨z, z', hxz, hzz', hz'y⟩ : ∃ z z' : X, d x z ≤ L.sum ∧ d z z' ≤ L.sum ∧ d z' y ≤ L.sum
   · grw [hd x z z' y, max_le hxz (max_le hzz' hz'y)]
   set s : Set ℕ := { m : ℕ | 2 * (take m L).sum ≤ L.sum }
@@ -158,7 +158,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
-    · simp only [getElem_append_right le_rfl, getElem_singleton, dist_self, zero_le]
+    · simp [getElem_append_right le_rfl, getElem_singleton, dist_self, zero_le]
     rw [getElem_append_left hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
@@ -205,7 +205,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     split_ifs with h
     · simp [h, pow_eq_zero_iff']
     · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
-  have hd_symm x y : d x y = d y x := by simp only [d, (U _).comm]
+  have hd_symm x y : d x y = d y x := by simp [d, (U _).comm]
   have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
   let I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 rfl) hd_symm
   have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPreNNDist_le _ _ _
@@ -216,7 +216,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_ge, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push Not at h
-      simp only [h, not_true, (pow_pos hr.1 _).not_ge]
+      simp [h, not_true, (pow_pos hr.1 _).not_ge]
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n

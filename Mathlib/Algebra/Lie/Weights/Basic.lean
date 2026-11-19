@@ -88,7 +88,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   refine t.inductionOn ?_ ?_
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
-    simp only [map_add, Module.End.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
+    simp [map_add, Module.End.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
       Module.End.pow_map_zero_of_le (le_max_right k₁ k₂) hk₂, add_zero]
   -- Now the main argument: pure tensors.
   rintro ⟨m₁, hm₁⟩ ⟨m₂, hm₂⟩
@@ -114,14 +114,14 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   obtain ⟨k₁, hk₁⟩ := hm₁
   obtain ⟨k₂, hk₂⟩ := hm₂
   have hf₁ : (f₁ ^ k₁) (m₁ ⊗ₜ m₂) = 0 := by
-    simp only [f₁, hk₁, zero_tmul, LinearMap.rTensor_tmul, LinearMap.rTensor_pow]
+    simp [f₁, hk₁, zero_tmul, LinearMap.rTensor_tmul, LinearMap.rTensor_pow]
   have hf₂ : (f₂ ^ k₂) (m₁ ⊗ₜ m₂) = 0 := by
-    simp only [f₂, hk₂, tmul_zero, LinearMap.lTensor_tmul, LinearMap.lTensor_pow]
+    simp [f₂, hk₂, tmul_zero, LinearMap.lTensor_tmul, LinearMap.lTensor_pow]
   -- It's now just an application of the binomial theorem.
   use k₁ + k₂ - 1
   have hf_comm : Commute f₁ f₂ := by
     ext m₁ m₂
-    simp only [f₁, f₂, mul_apply_eq_comp, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
+    simp [f₁, f₂, mul_apply_eq_comp, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
       AlgebraTensorModule.curry_apply, LinearMap.lTensor_tmul, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
@@ -144,7 +144,7 @@ lemma lie_mem_maxGenEigenspace_toEnd
   simp only [LieModuleHom.coe_toLinearMap, Function.comp_apply, LinearMap.coe_comp,
     TensorProduct.mapIncl, LinearMap.mem_range]
   use ⟨y, hy⟩ ⊗ₜ ⟨m, hm⟩
-  simp only [Submodule.subtype_apply, toModuleHom_apply, TensorProduct.map_tmul]
+  simp [Submodule.subtype_apply, toModuleHom_apply, TensorProduct.map_tmul]
 
 variable (M)
 

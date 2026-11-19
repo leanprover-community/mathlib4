@@ -240,10 +240,10 @@ def ofMapMulInv {H : Type*} [Group H] (f : G → H)
   (mk' f) fun x y =>
     calc
       f (x * y) = f x * (f <| 1 * 1⁻¹ * y⁻¹)⁻¹ := by
-        { simp only [one_mul, inv_one, ← map_div, inv_inv] }
+        { simp [one_mul, inv_one, ← map_div, inv_inv] }
       _ = f x * f y := by
         { simp only [map_div]
-          simp only [mul_inv_cancel, one_mul, inv_inv] }
+          simp [mul_inv_cancel, one_mul, inv_inv] }
 
 @[to_additive (attr := simp)]
 theorem coe_of_map_mul_inv {H : Type*} [Group H] (f : G → H)

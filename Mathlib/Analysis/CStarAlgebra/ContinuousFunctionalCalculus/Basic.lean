@@ -293,7 +293,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   set c := b * a⁻
   have h_eq_negPart_a : -(star c * c) = a⁻ ^ 3 := calc
     -(star c * c) = - a⁻ * a * a⁻ := by
-      simp only [star_mul, c, mul_assoc, ← mul_assoc (star b), ← a_def, CFC.negPart_def,
+      simp [star_mul, c, mul_assoc, ← mul_assoc (star b), ← a_def, CFC.negPart_def,
         neg_mul, IsSelfAdjoint.cfcₙ (f := (·⁻)).star_eq]
     _ = - a⁻ * (a⁺ - a⁻) * a⁻ :=
       congr(- a⁻ * $(CFC.posPart_sub_negPart a ha) * a⁻).symm

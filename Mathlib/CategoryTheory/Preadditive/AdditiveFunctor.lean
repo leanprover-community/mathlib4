@@ -98,7 +98,7 @@ variable {F}
 lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   constructor
   intro X Y f g
-  simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
+  simp [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
     NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
 omit [F.Additive] in

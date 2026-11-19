@@ -111,7 +111,7 @@ theorem contDiffAt_pi : ContDiffAt 𝕜 n Φ x ↔ ∀ i, ContDiffAt 𝕜 n (fun
   contDiffWithinAt_pi
 
 theorem contDiff_pi : ContDiff 𝕜 n Φ ↔ ∀ i, ContDiff 𝕜 n fun x => Φ x i := by
-  simp only [← contDiffOn_univ, contDiffOn_pi]
+  simp [← contDiffOn_univ, contDiffOn_pi]
 
 @[fun_prop]
 theorem contDiff_pi' (hΦ : ∀ i, ContDiff 𝕜 n fun x => Φ x i) : ContDiff 𝕜 n Φ :=

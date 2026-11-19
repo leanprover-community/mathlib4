@@ -384,7 +384,7 @@ nonrec def posPart (f : α →₁ₛ[μ] ℝ) : α →₁ₛ[μ] ℝ :=
   ⟨Lp.posPart (f : α →₁[μ] ℝ), by
     rcases f with ⟨f, s, hsf⟩
     use s.posPart
-    simp only [SimpleFunc.posPart, SimpleFunc.coe_map, Function.comp_def, coe_posPart, ← hsf,
+    simp [SimpleFunc.posPart, SimpleFunc.coe_map, Function.comp_def, coe_posPart, ← hsf,
       posPart_mk] ⟩
 
 /-- Negative part of a simple function in L1 space. -/
@@ -535,7 +535,7 @@ def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
   integralCLM
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM f := by
-  simp only [integral]
+  simp [integral]
 
 theorem integral_eq_setToL1 (f : α →₁[μ] E) :
     integral f = setToL1 (dominatedFinMeasAdditive_weightedSMul μ) f := by
@@ -599,7 +599,7 @@ theorem nnNorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)�
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
-    ‖integral f‖ = ‖integralCLM f‖ := by simp only [integral]
+    ‖integral f‖ = ‖integralCLM f‖ := by simp [integral]
     _ ≤ ‖integralCLM (α := α) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
     _ ≤ 1 * ‖f‖ := mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _
     _ = ‖f‖ := one_mul _

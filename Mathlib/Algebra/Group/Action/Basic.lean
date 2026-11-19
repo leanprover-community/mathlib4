@@ -104,10 +104,10 @@ def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul f := by
     change (fun x => f ((1 : G)⁻¹ • x)) = f
-    simp only [inv_one, one_smul]
+    simp [inv_one, one_smul]
   mul_smul x y f := by
     change (fun a => f ((x * y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
-    simp only [mul_smul, mul_inv_rev]
+    simp [mul_smul, mul_inv_rev]
 
 attribute [local instance] arrowAction
 
@@ -169,8 +169,8 @@ homomorphism. -/
 protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B where
   __ := hf.mulAction f smul
-  smul_mul c x y := hf <| by simp only [smul, f.map_mul, smul_mul']
-  smul_one c := hf <| by simp only [smul, f.map_one, smul_one]
+  smul_mul c x y := hf <| by simp [smul, f.map_mul, smul_mul']
+  smul_one c := hf <| by simp [smul, f.map_one, smul_one]
 
 /-- Pushforward a multiplicative distributive multiplicative action along a surjective monoid
 homomorphism. -/
@@ -178,7 +178,7 @@ homomorphism. -/
 protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B where
   __ := hf.mulAction f smul
-  smul_mul c := by simp only [hf.forall, smul_mul', ← smul, ← f.map_mul, implies_true]
+  smul_mul c := by simp [hf.forall, smul_mul', ← smul, ← f.map_mul, implies_true]
   smul_one c := by rw [← f.map_one, ← smul, smul_one]
 
 variable (A) in

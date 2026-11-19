@@ -90,13 +90,13 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
     fun ⟨_, hmn, hm⟩ ↦ Nat.lt_of_le_of_lt (Nat.find_min' h hm) hmn⟩
 
 @[simp] lemma find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [← Nat.lt_succ_iff, find_lt_iff]
+  simp [← Nat.lt_succ_iff, find_lt_iff]
 
 @[simp] lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
-  simp only [← not_lt, find_lt_iff, not_exists, not_and]
+  simp [← not_lt, find_lt_iff, not_exists, not_and]
 
 @[simp] lemma lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
-  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
+  simp [← succ_le_iff, le_find_iff, succ_le_succ_iff]
 
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 

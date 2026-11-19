@@ -617,7 +617,7 @@ theorem shiftComm' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftComm _ _ _).hom ≫ f⟦j⟧'⟦i⟧' ≫ (shiftComm _ _ _).hom := by
   erw [← shiftComm_symm Y i j, ← ((shiftFunctorComm C i j).hom.naturality_assoc f)]
   dsimp
-  simp only [Iso.hom_inv_id_app, Functor.comp_obj, Category.comp_id]
+  simp [Iso.hom_inv_id_app, Functor.comp_obj, Category.comp_id]
 
 @[reassoc]
 theorem shiftComm_hom_comp (i j : A) :
@@ -643,7 +643,7 @@ lemma shiftFunctorZero_inv_app_shift (n : A) :
 lemma shiftFunctorComm_zero_hom_app (a : A) :
     (shiftFunctorComm C a 0).hom.app X =
       (shiftFunctorZero C A).hom.app (X⟦a⟧) ≫ ((shiftFunctorZero C A).inv.app X)⟦a⟧' := by
-  simp only [shiftFunctorZero_hom_app_shift, Category.assoc, ← Functor.map_comp,
+  simp [shiftFunctorZero_hom_app_shift, Category.assoc, ← Functor.map_comp,
     Iso.hom_inv_id_app, Functor.map_id, Functor.comp_obj, Category.comp_id]
 
 @[reassoc]
@@ -662,7 +662,7 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
   simp only [Functor.map_id, Category.comp_id,
     shiftFunctorComm_eq C _ _ _ rfl, ← shiftFunctorAdd'_eq_shiftFunctorAdd]
   dsimp
-  simp only [Category.assoc, Iso.hom_inv_id_app_assoc, Iso.inv_hom_id_app_assoc,
+  simp [Category.assoc, Iso.hom_inv_id_app_assoc, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp,
     shiftFunctorAdd'_assoc_hom_app_assoc m₂ m₃ m₁ (m₂ + m₃) (m₁ + m₃) (m₁ + (m₂ + m₃)) rfl
       (add_comm m₃ m₁) (add_comm _ m₁) X,

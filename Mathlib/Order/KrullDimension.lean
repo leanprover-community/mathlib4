@@ -991,7 +991,7 @@ variable {α : Type*} [Preorder α]
   induction n using Nat.strongRecOn with | ind n ih =>
   apply le_antisymm
   · apply height_le_coe_iff.mpr
-    simp +contextual only [ih, Nat.cast_lt, implies_true]
+    simp +contextual [ih, Nat.cast_lt, implies_true]
   · exact length_le_height_last (p := LTSeries.range n)
 
 @[simp] lemma coheight_of_noMaxOrder [NoMaxOrder α] (a : α) : coheight a = ⊤ := by
@@ -1077,7 +1077,7 @@ set_option backward.isDefEq.respectTransparency false in
           simp [hlast])
       step := fun i => by simpa [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
     have hlast' : p'.last = x := by
-      simp only [p', RelSeries.last, WithTop.untop_eq_iff, ← hlast]
+      simp [p', RelSeries.last, WithTop.untop_eq_iff, ← hlast]
     suffices p'.length ≤ height p'.last by
       rw [hlast'] at this
       simpa [p'] using this
@@ -1128,13 +1128,13 @@ lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
 @[simp]
 lemma height_enat (n : ℕ∞) : height n = n := by
   cases n with
-  | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_enat, WithBot.coe_top]
+  | top => simp [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_enat, WithBot.coe_top]
   | coe n => exact (height_coe_withTop _).trans (height_nat _)
 
 @[simp]
 lemma coheight_coe_enat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
   apply (coheight_coe_withTop _).trans
-  simp only [coheight_nat, top_add]
+  simp [coheight_nat, top_add]
 
 end calculations
 

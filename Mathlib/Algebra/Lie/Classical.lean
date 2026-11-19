@@ -169,7 +169,7 @@ def so [Fintype n] : LieSubalgebra R (Matrix n n R) :=
 @[simp]
 theorem mem_so [Fintype n] (A : Matrix n n R) : A ∈ so n R ↔ Aᵀ = -A := by
   rw [so, mem_skewAdjointMatricesLieSubalgebra, mem_skewAdjointMatricesSubmodule]
-  simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, Matrix.mul_one, Matrix.one_mul]
+  simp [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, Matrix.mul_one, Matrix.one_mul]
 
 /-- The indefinite diagonal matrix with `p` 1s and `q` -1s. -/
 def indefiniteDiagonal : Matrix (p ⊕ q) (p ⊕ q) R :=
@@ -233,7 +233,7 @@ theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (p ⊕ q) (p ⊕ q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (p ⊕ q) (p ⊕ q) R) * Pso p q R i := by
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
-  simp only [so', skewAdjointMatricesLieSubalgebraEquiv_apply]
+  simp [so', skewAdjointMatricesLieSubalgebraEquiv_apply]
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
 
@@ -346,7 +346,7 @@ variable [Fintype l]
 
 theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟(PD l R)) = 1 := by
   rw [PB, Matrix.fromBlocks_multiply, mul_invOf_self]
-  simp only [Matrix.mul_zero, Matrix.mul_one, Matrix.zero_mul, zero_add, add_zero,
+  simp [Matrix.mul_zero, Matrix.mul_one, Matrix.zero_mul, zero_add, add_zero,
     Matrix.fromBlocks_one]
 
 instance invertiblePB [Invertible (2 : R)] : Invertible (PB l R) :=

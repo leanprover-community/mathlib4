@@ -36,7 +36,7 @@ theorem permanent_diagonal {d : n → R} : permanent (diagonal d) = ∏ i, d i :
   refine (sum_eq_single 1 (fun σ _ hσ ↦ ?_) (fun h ↦ (h <| mem_univ _).elim)).trans ?_
   · match not_forall.mp (mt Equiv.ext hσ) with
     | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (ite_eq_right hx)
-  · simp only [Perm.one_apply, diagonal_apply_eq]
+  · simp [Perm.one_apply, diagonal_apply_eq]
 
 @[simp]
 theorem permanent_zero [Nonempty n] : permanent (0 : Matrix n n R) = 0 := by simp [permanent]
@@ -103,7 +103,7 @@ theorem permanent_updateCol_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R
     smul_eq_mul, mul_sum, ← mul_assoc]
   congr 1 with p
   rw [Finset.prod_congr rfl (fun i hi ↦ ?_)]
-  simp only [ne_eq, ne_of_mem_erase hi, not_false_eq_true, updateCol_ne]
+  simp [ne_eq, ne_of_mem_erase hi, not_false_eq_true, updateCol_ne]
 
 @[simp]
 theorem permanent_updateRow_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :

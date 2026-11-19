@@ -18,7 +18,7 @@ public section
 
 lemma harmonic_eq_sum_Icc {n : ℕ} : harmonic n = ∑ i ∈ Finset.Icc 1 n, (↑i)⁻¹ := by
   rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1)]
-  simp only [Finset.Ico_add_one_right_eq_Icc]
+  simp [Finset.Ico_add_one_right_eq_Icc]
 
 theorem log_add_one_le_harmonic (n : ℕ) :
     Real.log ↑(n + 1) ≤ harmonic n := by
@@ -27,7 +27,7 @@ theorem log_add_one_le_harmonic (n : ℕ) :
        _ = harmonic n := ?_
   · rw [Nat.cast_one, integral_inv (by simp [(show ¬ (1 : ℝ) ≤ 0 by simp)]), div_one]
   · exact (inv_antitoneOn_Icc_right <| by simp).integral_le_sum_Ico (Nat.le_add_left 1 n)
-  · simp only [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
+  · simp [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
 
 theorem harmonic_le_one_add_log (n : ℕ) :
     harmonic n ≤ 1 + Real.log n := by
@@ -49,10 +49,10 @@ theorem harmonic_le_one_add_log (n : ℕ) :
       sub_inv_antitoneOn_Icc_right (by simp)
   · convert intervalIntegral.integral_comp_sub_right _ 1
     · norm_num
-    · simp only [Nat.cast_add, Nat.cast_one, add_sub_cancel_right]
+    · simp [Nat.cast_add, Nat.cast_one, add_sub_cancel_right]
   · convert integral_inv _
     · rw [div_one]
-    · simp only [Nat.one_le_cast, hn, Set.uIcc_of_le, Set.mem_Icc, Nat.cast_nonneg,
+    · simp [Nat.one_le_cast, hn, Set.uIcc_of_le, Set.mem_Icc, Nat.cast_nonneg,
         and_true, not_le, zero_lt_one]
 
 theorem log_le_harmonic_floor (y : ℝ) (hy : 0 ≤ y) :

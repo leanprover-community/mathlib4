@@ -135,7 +135,7 @@ variable (p : α → Prop) [DecidablePred p]
 
 lemma filter_nsmul (s : Multiset α) (n : ℕ) : filter p (n • s) = n • filter p s := by
   refine s.induction_on ?_ ?_
-  · simp only [filter_zero, nsmul_zero]
+  · simp [filter_zero, nsmul_zero]
   · intro a ha ih
     rw [nsmul_cons, filter_add, ih, filter_cons, nsmul_add]
     congr
@@ -199,8 +199,8 @@ theorem le_card_smul_iff_subset {s t : Multiset α} : s ≤ s.card • t ↔ s �
 lemma addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f {x} = g {x}) : f = g := by
   ext s
   induction s using Multiset.induction_on with
-  | empty => simp only [_root_.map_zero]
-  | cons a s ih => simp only [← singleton_add, _root_.map_add, ih, h]
+  | empty => simp [_root_.map_zero]
+  | cons a s ih => simp [← singleton_add, _root_.map_add, ih, h]
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
   ⟨s.card, le_card_smul_iff_subset.mpr s.subset_dedup⟩

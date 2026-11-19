@@ -52,11 +52,11 @@ This is an auxiliary definition for the equivalence `Matrix.toLinearMap₂'`. -/
 def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂ :=
   -- porting note: we don't seem to have `∑ i j` as valid notation yet
   mk₂'ₛₗ σ₁ σ₂ (fun (v : n → R₁) (w : m → R₂) => ∑ i, ∑ j, σ₂ (w j) • σ₁ (v i) • f i j)
-    (fun _ _ _ => by simp only [Pi.add_apply, map_add, smul_add, sum_add_distrib, add_smul])
+    (fun _ _ _ => by simp [Pi.add_apply, map_add, smul_add, sum_add_distrib, add_smul])
     (fun c v w => by
-      simp only [Pi.smul_apply, smul_sum, smul_eq_mul, σ₁.map_mul, ← smul_comm _ (σ₁ c), mul_smul])
-    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
-    (fun _ v w => by simp only [Pi.smul_apply, smul_eq_mul, map_mul, mul_smul, smul_sum])
+      simp [Pi.smul_apply, smul_sum, smul_eq_mul, σ₁.map_mul, ← smul_comm _ (σ₁ c), mul_smul])
+    (fun _ _ _ => by simp [Pi.add_apply, map_add, add_smul, sum_add_distrib])
+    (fun _ v w => by simp [Pi.smul_apply, smul_eq_mul, map_mul, mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
 
@@ -67,7 +67,7 @@ theorem Matrix.toLinearMap₂'Aux_single (f : Matrix n m N₂) (i : n) (j : m) :
         (if j = j' then (1 : S₂) else (0 : S₂)) • f i' j') =
       f i j := by
     simp_rw [← Finset.smul_sum]
-    simp only [ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ, ↓reduceIte]
+    simp [ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ, ↓reduceIte]
   rw [← this]
   exact Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by aesop
 
@@ -262,10 +262,10 @@ theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) �
     rw [Finsupp.sum_fintype]
     · apply sum_congr rfl
       rintro j' -
-      simp only [smul_eq_mul, Pi.basisFun_repr, mul_assoc, mul_comm, mul_left_comm,
+      simp [smul_eq_mul, Pi.basisFun_repr, mul_assoc, mul_comm, mul_left_comm,
         Pi.basisFun_apply, of_apply]
     · intros
-      simp only [zero_smul, smul_zero]
+      simp [zero_smul, smul_zero]
   · intros
     simp
 
@@ -286,11 +286,11 @@ theorem LinearMap.mul_toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ
 
 theorem LinearMap.mul_toMatrix' (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix n' n R) :
     M * toMatrix₂' R B = toMatrix₂' R (B.comp <| toLin' Mᵀ) := by
-  simp only [B.toMatrix₂'_comp, transpose_transpose, toMatrix'_toLin']
+  simp [B.toMatrix₂'_comp, transpose_transpose, toMatrix'_toLin']
 
 theorem LinearMap.toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix m m' R) :
     toMatrix₂' R B * M = toMatrix₂' R (B.compl₂ <| toLin' M) := by
-  simp only [B.toMatrix₂'_compl₂, toMatrix'_toLin']
+  simp [B.toMatrix₂'_compl₂, toMatrix'_toLin']
 
 theorem Matrix.toLinearMap₂'_comp (M : Matrix n m R) (P : Matrix n n' R) (Q : Matrix m m' R) :
     LinearMap.compl₁₂ (Matrix.toLinearMap₂' R M) (toLin' P) (toLin' Q) =
@@ -342,7 +342,7 @@ noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[
 @[simp]
 theorem LinearMap.toMatrix₂_apply (B : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] N₂) (i : n) (j : m) :
     LinearMap.toMatrix₂ b₁ b₂ B i j = B (b₁ i) (b₂ j) := by
-  simp only [toMatrix₂, LinearEquiv.trans_apply, toMatrixₛₗ₂'_apply, LinearEquiv.arrowCongr_apply,
+  simp [toMatrix₂, LinearEquiv.trans_apply, toMatrixₛₗ₂'_apply, LinearEquiv.arrowCongr_apply,
     Basis.equivFun_symm_apply, Pi.single_apply, ite_smul, one_smul, zero_smul, sum_ite_eq',
     mem_univ, ↓reduceIte, LinearEquiv.refl_apply]
 
@@ -419,7 +419,7 @@ theorem Matrix.toLinearMap₂_basisFun :
     Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) =
       Matrix.toLinearMap₂' R (N₂ := N₂) := by
   ext M
-  simp only [coe_comp, coe_single, Function.comp_apply, toLinearMap₂_apply, Pi.basisFun_repr,
+  simp [coe_comp, coe_single, Function.comp_apply, toLinearMap₂_apply, Pi.basisFun_repr,
     toLinearMap₂'_apply]
 
 theorem LinearMap.toMatrix₂_basisFun :
@@ -470,10 +470,10 @@ theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) 
     rw [Finsupp.sum_fintype]
     · apply sum_congr rfl
       rintro j' -
-      simp only [smul_eq_mul, mul_assoc, mul_comm,
+      simp [smul_eq_mul, mul_assoc, mul_comm,
         mul_left_comm]
     · intros
-      simp only [zero_smul, smul_zero]
+      simp [zero_smul, smul_zero]
   · intros
     simp
 
@@ -518,7 +518,7 @@ theorem Matrix.toLinearMap₂_compl₁₂ (M : Matrix n m R) (P : Matrix n n' R)
       Matrix.toLinearMap₂ b₁' b₂' (Pᵀ * M * Q) :=
   (LinearMap.toMatrix₂ b₁' b₂').injective
     (by
-      simp only [LinearMap.toMatrix₂_compl₁₂ b₁ b₂, LinearMap.toMatrix₂_toLinearMap₂,
+      simp [LinearMap.toMatrix₂_compl₁₂ b₁ b₂, LinearMap.toMatrix₂_toLinearMap₂,
         toMatrix_toLin])
 
 end
@@ -623,7 +623,7 @@ def pairSelfAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 @[simp]
 theorem mem_pairSelfAdjointMatricesSubmodule :
     A₁ ∈ pairSelfAdjointMatricesSubmodule J J₂ ↔ Matrix.IsAdjointPair J J₂ A₁ A₁ := by
-  simp only [pairSelfAdjointMatricesSubmodule, Submodule.mem_map_equiv,
+  simp [pairSelfAdjointMatricesSubmodule, Submodule.mem_map_equiv,
     mem_isPairSelfAdjointSubmodule, toMatrix'_symm, ← isAdjointPair_toLinearMap₂',
     IsPairSelfAdjoint, toLin'_apply']
 

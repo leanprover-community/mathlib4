@@ -40,7 +40,7 @@ theorem measurable_kernel_prodMk_left_of_finite {t : Set (α × β)} (ht : Measu
   -- by boxes to prove the result by induction.
   induction t, ht
     using MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod with
-  | empty => simp only [preimage_empty, measure_empty, measurable_const]
+  | empty => simp [preimage_empty, measure_empty, measurable_const]
   | basic t ht =>
     simp only [Set.mem_image2, Set.mem_ofPred_eq] at ht
     obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := ht
@@ -56,7 +56,7 @@ theorem measurable_kernel_prodMk_left_of_finite {t : Set (α × β)} (ht : Measu
     have h_eq_sdiff : ∀ a, Prod.mk a ⁻¹' tᶜ = Set.univ \ Prod.mk a ⁻¹' t := by
       intro a
       ext1 b
-      simp only [mem_compl_iff, mem_preimage, Set.mem_sdiff, mem_univ, true_and]
+      simp [mem_compl_iff, mem_preimage, Set.mem_sdiff, mem_univ, true_and]
     simp_rw [h_eq_sdiff]
     have : (fun a => κ a (Set.univ \ Prod.mk a ⁻¹' t)) =
         fun a => κ a Set.univ - κ a (Prod.mk a ⁻¹' t) := by

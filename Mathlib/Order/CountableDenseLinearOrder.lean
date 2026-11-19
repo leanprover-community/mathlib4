@@ -95,9 +95,9 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
       then
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
-      else simp only [Finset.eq_of_mem_insert_of_notMem hy hyS, lt_self_iff_false] at hxy
+      else simp [Finset.eq_of_mem_insert_of_notMem hy hyS, lt_self_iff_false] at hxy
   · ext x
-    simp only [OrderEmbedding.coe_ofStrictMono,
+    simp [OrderEmbedding.coe_ofStrictMono,
       Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
 
 variable (α β)
@@ -179,7 +179,7 @@ def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty 
         Finset.subset_insert _ _⟩
     rw [Finset.mem_insert] at hp hq
     rcases hp with (rfl | pf) <;> rcases hq with (rfl | qf)
-    · simp only [cmp_self_eq_eq]
+    · simp [cmp_self_eq_eq]
     · rw [cmp_eq_cmp_symm]
       exact a_b _ qf
     · exact a_b _ pf

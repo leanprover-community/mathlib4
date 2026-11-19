@@ -96,7 +96,7 @@ theorem Derivation.tensorProductTo_mul (D : Derivation R S M) (x y : S ⊗[R] S)
     TensorProduct.lmul'_apply_tmul]
   dsimp
   rw [D.leibniz]
-  simp only [smul_smul, smul_add, mul_comm (x * y) x₁, mul_right_comm x₁ x₂, ← mul_assoc]
+  simp [smul_smul, smul_add, mul_comm (x * y) x₁, mul_right_comm x₁ x₂, ← mul_assoc]
 
 variable (R S)
 
@@ -790,8 +790,8 @@ noncomputable
 def KaehlerDifferential.kerToTensor :
     RingHom.ker (algebraMap A B) →ₗ[A] B ⊗[A] Ω[A⁄R] where
   toFun x := 1 ⊗ₜ D R A x
-  map_add' x y := by simp only [Submodule.coe_add, map_add, TensorProduct.tmul_add]
-  map_smul' r x := by simp only [SetLike.val_smul, smul_eq_mul, Derivation.leibniz,
+  map_add' x y := by simp [Submodule.coe_add, map_add, TensorProduct.tmul_add]
+  map_smul' r x := by simp [SetLike.val_smul, smul_eq_mul, Derivation.leibniz,
     TensorProduct.tmul_add, TensorProduct.tmul_smul, TensorProduct.smul_tmul', ←
     algebraMap_eq_smul_one, RingHom.mem_ker.mp x.prop, TensorProduct.zero_tmul, add_zero,
     RingHom.id_apply]
@@ -805,7 +805,7 @@ def KaehlerDifferential.kerCotangentToTensor :
     apply iSup_le_iff.mpr
     simp only [Submodule.map_le_iff_le_comap, Subtype.forall]
     rintro x hx y -
-    simp only [Submodule.mem_comap, LinearMap.lsmul_apply, LinearMap.mem_ker, map_smul,
+    simp [Submodule.mem_comap, LinearMap.lsmul_apply, LinearMap.mem_ker, map_smul,
       kerToTensor_apply, TensorProduct.smul_tmul', ← algebraMap_eq_smul_one,
       RingHom.mem_ker.mp hx, TensorProduct.zero_tmul]
 
@@ -824,7 +824,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
   constructor
   · rintro ⟨x, rfl⟩
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
-    simp only [kerCotangentToTensor_toCotangent, Submodule.restrictScalars_mem, LinearMap.mem_ker,
+    simp [kerCotangentToTensor_toCotangent, Submodule.restrictScalars_mem, LinearMap.mem_ker,
       mapBaseChange_tmul, map_D, RingHom.mem_ker.mp x.2, map_zero, smul_zero]
   · intro hx
     obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective Ω[A⁄R] (g := Algebra.linearMap A B) h x

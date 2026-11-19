@@ -271,7 +271,7 @@ theorem IsUniformInducing.image_hausdorff {f : α → β} (hf : IsUniformInducin
   rw [Filter.comap_lift'_eq, ← hf.comap_uniformity,
     Filter.comap_lift'_eq2 monotone_hausdorffEntourage]
   congr with U ⟨s, t⟩
-  simp only [Function.comp, hausdorffEntourage, SetRel.preimage, SetRel.image, Set.preimage,
+  simp [Function.comp, hausdorffEntourage, SetRel.preimage, SetRel.image, Set.preimage,
     Set.mem_ofPred, Set.image_subset_iff, Set.exists_mem_image]
 
 /-- When `Set` is equipped with the Hausdorff uniformity, taking the image under a uniform

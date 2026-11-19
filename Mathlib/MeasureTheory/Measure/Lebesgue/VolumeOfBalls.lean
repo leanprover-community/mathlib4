@@ -350,7 +350,7 @@ theorem volume_ball (x : E) (r : ℝ) :
   have := EuclideanSpace.volume_ball (Fin (finrank ℝ E)) ((stdOrthonormalBasis ℝ E).repr x) r
   simp_rw [Fintype.card_fin] at this
   convert this
-  simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm]
+  simp [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm]
 
 theorem volume_closedBall (x : E) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ finrank ℝ E *

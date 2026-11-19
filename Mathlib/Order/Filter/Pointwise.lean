@@ -757,7 +757,7 @@ theorem isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
 
 @[simp]
 theorem isUnit_iff_singleton : IsUnit f ↔ ∃ a, f = pure a := by
-  simp only [isUnit_iff, Group.isUnit, and_true]
+  simp [isUnit_iff, Group.isUnit, and_true]
 
 @[to_additive]
 theorem map_inv' : f⁻¹.map m = (f.map m)⁻¹ :=
@@ -1114,8 +1114,8 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
   /-- An additive action of an additive monoid on a type `β` gives an additive action on
 `Filter β`. -/]
 protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
-  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
-  one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
+  mul_smul a b f := by simp [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
+  one_smul f := by simp [← Filter.map_smul, one_smul, map_id']
 
 scoped[Pointwise] attribute [instance] Filter.mulAction Filter.addAction Filter.mulActionFilter
   Filter.addActionFilter

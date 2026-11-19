@@ -51,7 +51,7 @@ theorem eventually_nhdsWithin_iff {a : α} {s : Set α} {p : α → Prop} :
 
 theorem frequently_nhdsWithin_iff {z : α} {s : Set α} {p : α → Prop} :
     (∃ᶠ x in 𝓝[s] z, p x) ↔ ∃ᶠ x in 𝓝 z, p x ∧ x ∈ s :=
-  frequently_inf_principal.trans <| by simp only [and_comm]
+  frequently_inf_principal.trans <| by simp [and_comm]
 
 theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
     z ∈ closure (s \ {z}) ↔ ∃ᶠ x in 𝓝[≠] z, x ∈ s := by
@@ -254,7 +254,7 @@ theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α)
     𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a := by
   induction I, hI using Set.Finite.induction_on with
   | empty => simp
-  | insert _ _ hT => simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
+  | insert _ _ hT => simp [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
 
 theorem nhdsWithin_sUnion {S : Set (Set α)} (hS : S.Finite) (a : α) :
     𝓝[⋃₀ S] a = ⨆ s ∈ S, 𝓝[s] a := by
@@ -294,7 +294,7 @@ theorem insert_mem_nhdsWithin_insert {a : α} {s t : Set α} (h : t ∈ 𝓝[s] 
     insert a t ∈ 𝓝[insert a s] a := by simp [mem_of_superset h]
 
 theorem insert_mem_nhds_iff {a : α} {s : Set α} : insert a s ∈ 𝓝 a ↔ s ∈ 𝓝[≠] a := by
-  simp only [nhdsWithin, mem_inf_principal, mem_compl_iff, mem_singleton_iff, or_iff_not_imp_left,
+  simp [nhdsWithin, mem_inf_principal, mem_compl_iff, mem_singleton_iff, or_iff_not_imp_left,
     insert_def]
 
 @[simp]
@@ -335,7 +335,7 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 theorem nhdsWithin_pi_eq' {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (X i)) (x : ∀ i, X i) :
     𝓝[pi I s] x = ⨅ i, comap (fun x => x i) (𝓝 (x i) ⊓ ⨅ (_ : i ∈ I), 𝓟 (s i)) := by
-  simp only [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_iInf, pi_def, comap_principal, ←
+  simp [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_iInf, pi_def, comap_principal, ←
     iInf_principal_finite hI, ← iInf_inf_eq]
 
 theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (X i)) (x : ∀ i, X i) :
@@ -345,7 +345,7 @@ theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (X i)) (x 
   simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← iInf_principal_finite hI, comap_inf,
     comap_principal]
   rw [iInf_split _ fun i => i ∈ I, inf_right_comm]
-  simp only [iInf_inf_eq]
+  simp [iInf_inf_eq]
 
 theorem nhdsWithin_pi_univ_eq [Finite ι] (s : ∀ i, Set (X i)) (x : ∀ i, X i) :
     𝓝[pi univ s] x = ⨅ i, comap (fun x => x i) (𝓝[s i] x i) := by
@@ -353,7 +353,7 @@ theorem nhdsWithin_pi_univ_eq [Finite ι] (s : ∀ i, Set (X i)) (x : ∀ i, X i
 
 theorem nhdsWithin_pi_eq_bot {I : Set ι} {s : ∀ i, Set (X i)} {x : ∀ i, X i} :
     𝓝[pi I s] x = ⊥ ↔ ∃ i ∈ I, 𝓝[s i] x i = ⊥ := by
-  simp only [nhdsWithin, nhds_pi, pi_inf_principal_pi_eq_bot]
+  simp [nhdsWithin, nhds_pi, pi_inf_principal_pi_eq_bot]
 
 theorem nhdsWithin_pi_neBot {I : Set ι} {s : ∀ i, Set (X i)} {x : ∀ i, X i} :
     (𝓝[pi I s] x).NeBot ↔ ∀ i ∈ I, (𝓝[s i] x i).NeBot := by
@@ -424,7 +424,7 @@ theorem DenseRange.nhdsWithin_neBot {ι : Type*} {f : ι → α} (h : DenseRange
 
 theorem mem_closure_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {I : Set ι}
     {s : ∀ i, Set (α i)} {x : ∀ i, α i} : x ∈ closure (pi I s) ↔ ∀ i ∈ I, x i ∈ closure (s i) := by
-  simp only [mem_closure_iff_nhdsWithin_neBot, nhdsWithin_pi_neBot]
+  simp [mem_closure_iff_nhdsWithin_neBot, nhdsWithin_pi_neBot]
 
 theorem closure_pi_set {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] (I : Set ι)
     (s : ∀ i, Set (α i)) : closure (pi I s) = pi I fun i => closure (s i) :=
@@ -432,7 +432,7 @@ theorem closure_pi_set {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace
 
 theorem dense_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {s : ∀ i, Set (α i)}
     (I : Set ι) (hs : ∀ i ∈ I, Dense (s i)) : Dense (pi I s) := by
-  simp only [dense_iff_closure_eq, closure_pi_set, pi_congr rfl fun i hi => (hs i hi).closure_eq,
+  simp [dense_iff_closure_eq, closure_pi_set, pi_congr rfl fun i hi => (hs i hi).closure_eq,
     pi_univ]
 
 theorem DenseRange.piMap {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]

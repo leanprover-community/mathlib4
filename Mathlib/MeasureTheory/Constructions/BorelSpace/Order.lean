@@ -609,7 +609,7 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   refine ext_of_Ioc_finite μ ν ?_ fun a b hlt => ?_
   · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, -, hst⟩
     have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (Subtype.mono_coe _).directed_le
-    simp only [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
+    simp [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
   rw [← Iic_sdiff_Iic, measure_sdiff (Iic_subset_Iic.2 hlt.le) nullMeasurableSet_Iic,
     measure_sdiff (Iic_subset_Iic.2 hlt.le) nullMeasurableSet_Iic, h a, h b]
   · rw [← h a]
@@ -1081,9 +1081,9 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
     have A : reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := rfl
     split_ifs with hjx
     · have : reparam x j = j := by rw [A, ite_eq_left hjx]
-      simp only [hF1, this]
+      simp [hF1, this]
     · have : reparam x j = g (Nat.find (Z x)) := by rw [A, ite_eq_right hjx]
-      simp only [hF1, this]
+      simp [hF1, this]
   rw [this]
   apply Measurable.piecewise (m_meas j) (F0_meas j)
   apply Measurable.find (fun n ↦ F0_meas (g n)) (fun n ↦ ?_)
@@ -1157,8 +1157,8 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       ext x
       simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
       obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
-      · simp only [H, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
-      · simp only [H, H.ne, and_true, false_or]
+      · simp [H, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
+      · simp [H, H.ne, and_true, false_or]
     · refine disjoint_left.2 fun x hx h'x => ?_
       have : f x < ∞ := h'x.2.2
       exact lt_irrefl _ (this.trans_le (le_of_eq hx.2.symm))

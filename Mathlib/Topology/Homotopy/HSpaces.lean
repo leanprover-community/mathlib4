@@ -161,7 +161,7 @@ theorem continuous_qRight : Continuous qRight :=
     Continuous.div (by fun_prop) (by fun_prop) fun _ ↦ (add_pos zero_lt_one).ne'
 
 theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
-  Set.projIcc_of_le_left _ <| by simp only [coe_zero, mul_zero, zero_div, le_refl]
+  Set.projIcc_of_le_left _ <| by simp [coe_zero, mul_zero, zero_div, le_refl]
 
 theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
   Set.projIcc_of_right_le _ <|
@@ -232,10 +232,10 @@ theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayRefl
       continuous_fst.prodMk <| Path.continuous_symm.comp continuous_snd
 
 theorem delayReflLeft_zero (γ : Path x y) : delayReflLeft 0 γ = (Path.refl x).trans γ := by
-  simp only [delayReflLeft, delayReflRight_zero, trans_symm, refl_symm, Path.symm_symm]
+  simp [delayReflLeft, delayReflRight_zero, trans_symm, refl_symm, Path.symm_symm]
 
 theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
-  simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
+  simp [delayReflLeft, delayReflRight_one, Path.symm_symm]
 
 /-- The loop space at x carries a structure of an H-space. Note that the field `eHmul`
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`

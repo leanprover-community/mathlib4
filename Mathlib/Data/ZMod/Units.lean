@@ -92,8 +92,8 @@ lemma eq_unit_mul_divisor {N : ℕ} (a : ZMod N) :
     · refine ⟨0, dvd_zero _, 1, isUnit_one, by rw [Nat.cast_zero, mul_zero]⟩
     refine ⟨a.natAbs, dvd_zero _, Int.sign a, ?_, (Int.sign_mul_natAbs a).symm⟩
     rcases lt_or_gt_of_ne ha with h | h
-    · simp only [Int.sign_eq_neg_one_of_neg h, IsUnit.neg_iff, isUnit_one]
-    · simp only [Int.sign_eq_one_of_pos h, isUnit_one]
+    · simp [Int.sign_eq_neg_one_of_neg h, IsUnit.neg_iff, isUnit_one]
+    · simp [Int.sign_eq_one_of_pos h, isUnit_one]
   -- now the interesting case
   have : NeZero N := ⟨hN⟩
   -- Define `d` as the GCD of a lift of `a` and `N`.

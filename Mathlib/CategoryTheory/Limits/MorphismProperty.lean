@@ -267,7 +267,7 @@ instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
     ext
     simp only [mk_left, homMk_hom, Over.homMk_left]
     rw [← Over.w a]
-    simp only [mk_left, Functor.const_obj_obj, mk_hom, Category.comp_id]
+    simp [mk_left, Functor.const_obj_obj, mk_hom, Category.comp_id]
 
 /-- `X ⟶ X` is the terminal object of `P.Over ⊤ X`. -/
 def mkIdTerminal [P.ContainsIdentities] :

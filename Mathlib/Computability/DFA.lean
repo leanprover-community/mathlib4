@@ -91,7 +91,7 @@ theorem evalFrom_singleton (s : σ) (a : α) : M.evalFrom s [a] = M.step s a :=
 @[simp]
 theorem evalFrom_append_singleton (s : σ) (x : List α) (a : α) :
     M.evalFrom s (x ++ [a]) = M.step (M.evalFrom s x) a := by
-  simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
+  simp [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
 
 /-- `M.eval x` evaluates `M` with input `x` starting from the state `M.start`. -/
 def eval : List α → σ :=
@@ -302,7 +302,7 @@ theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : �
   simp_rw [↑Set.mem_ofPred]
   induction x generalizing s1 s2 with
   | nil => simp
-  | cons a x ih => simp only [evalFrom_cons, union_step, ih]
+  | cons a x ih => simp [evalFrom_cons, union_step, ih]
 
 @[simp]
 theorem accepts_union (M1 : DFA α σ1) (M2 : DFA α σ2) :
@@ -331,7 +331,7 @@ theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
   simp_rw [↑Set.mem_ofPred]
   induction x generalizing s1 s2 with
   | nil => simp
-  | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
+  | cons a x ih => simp [evalFrom_cons, inter_step, ih]
 
 @[simp]
 theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ⊓ M2.accepts := by

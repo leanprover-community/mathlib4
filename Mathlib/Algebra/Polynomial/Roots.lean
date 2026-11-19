@@ -234,7 +234,7 @@ theorem roots_one : (1 : R[X]).roots = ∅ :=
 @[simp]
 theorem roots_C_mul (p : R[X]) (ha : a ≠ 0) : (C a * p).roots = p.roots := by
   by_cases hp : p = 0 <;>
-    simp only [roots_mul, *, Ne, mul_eq_zero, C_eq_zero, or_self_iff, not_false_iff, roots_C,
+    simp [roots_mul, *, Ne, mul_eq_zero, C_eq_zero, or_self_iff, not_false_iff, roots_C,
       zero_add, mul_zero]
 
 theorem _root_.Associated.roots_eq {p q : R[X]} (h : Associated p q) : p.roots = q.roots := by
@@ -384,7 +384,7 @@ theorem mem_nthRoots {n : ℕ} (hn : 0 < n) {a x : R} : x ∈ nthRoots n a ↔ x
 
 @[simp]
 theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
-  simp only [pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
+  simp [pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
 
 @[simp]
 theorem nthRoots_zero_right {R} [CommRing R] [IsDomain R] (n : ℕ) :
@@ -452,7 +452,7 @@ theorem mul_mem_nthRootsFinset
     η₁ * η₂ ∈ nthRootsFinset n (a₁ * a₂) := by
   cases n with
   | zero =>
-    simp only [nthRootsFinset_zero, notMem_empty] at hη₁
+    simp [nthRootsFinset_zero, notMem_empty] at hη₁
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos] at hη₁ hη₂ ⊢
     rw [mul_pow, hη₁, hη₂]
@@ -462,7 +462,7 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} {a : R} (ha : a ≠ 0) (hη : η 
   rintro rfl
   cases n with
   | zero =>
-    simp only [nthRootsFinset_zero, notMem_empty] at hη
+    simp [nthRootsFinset_zero, notMem_empty] at hη
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_ne_zero] at hη
     exact ha hη.symm
@@ -828,7 +828,7 @@ end
 theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
     (p.roots.map fun a => X - C a).prod =
       p.roots.toFinset.prod fun a => (X - C a) ^ rootMultiplicity a p := by
-  simp only [count_roots, Finset.prod_multiset_map_count]
+  simp [count_roots, Finset.prod_multiset_map_count]
 
 /-- The product `∏ (X - a)` for `a` inside the multiset `p.roots` divides `p`. -/
 theorem prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a => X - C a).prod ∣ p := by
@@ -938,7 +938,7 @@ theorem le_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0
 
 theorem eq_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hf : Function.Injective f) (a : A) :
     rootMultiplicity a p = rootMultiplicity (f a) (p.map f) := by
-  by_cases hp0 : p = 0; · simp only [hp0, rootMultiplicity_zero, Polynomial.map_zero]
+  by_cases hp0 : p = 0; · simp [hp0, rootMultiplicity_zero, Polynomial.map_zero]
   apply le_antisymm (le_rootMultiplicity_map ((Polynomial.map_ne_zero_iff hf).mpr hp0) a)
   rw [le_rootMultiplicity_iff hp0, ← map_dvd_map f hf ((monic_X_sub_C a).pow _),
     Polynomial.map_pow, Polynomial.map_sub, map_X, map_C]
@@ -953,14 +953,14 @@ theorem count_map_roots [IsDomain A] [DecidableEq B] {p : A[X]} {f : A →+* B} 
   refine
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
   convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
-  simp only [Polynomial.map_multiset_prod, Multiset.map_map, Function.comp_apply,
+  simp [Polynomial.map_multiset_prod, Multiset.map_map, Function.comp_apply,
     Polynomial.map_sub, map_X, map_C]
 
 theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f : A →+* B}
     (hf : Function.Injective f) (b : B) :
     (p.roots.map f).count b ≤ rootMultiplicity b (p.map f) := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Multiset.map_zero, Multiset.count_zero, Polynomial.map_zero,
+  · simp [hp0, roots_zero, Multiset.map_zero, Multiset.count_zero, Polynomial.map_zero,
       rootMultiplicity_zero, le_refl]
   · exact count_map_roots ((Polynomial.map_ne_zero_iff hf).mpr hp0) b
 
@@ -974,7 +974,7 @@ theorem map_roots_le [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p
 theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A →+* B}
     (hf : Function.Injective f) : p.roots.map f ≤ (p.map f).roots := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero, le_rfl]
+  · simp [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero, le_rfl]
   exact map_roots_le ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 
 theorem card_roots_map_le_degree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
@@ -1013,7 +1013,7 @@ theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (
 theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B}
     (hf : Function.Injective f) : Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero, le_rfl]
+  · simp [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero, le_rfl]
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 
 theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}

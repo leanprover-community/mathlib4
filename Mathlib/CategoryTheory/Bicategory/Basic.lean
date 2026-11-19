@@ -235,7 +235,7 @@ instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso �
 theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
     inv (f ◁ η) = f ◁ inv η := by
   apply IsIso.inv_eq_of_hom_inv_id
-  simp only [← whiskerLeft_comp, whiskerLeft_id, IsIso.hom_inv_id]
+  simp [← whiskerLeft_comp, whiskerLeft_id, IsIso.hom_inv_id]
 
 /-- The right whiskering of a 2-isomorphism is a 2-isomorphism. -/
 @[simps!]
@@ -250,7 +250,7 @@ instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso 
 theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] :
     inv (η ▷ h) = inv η ▷ h := by
   apply IsIso.inv_eq_of_hom_inv_id
-  simp only [← comp_whiskerRight, id_whiskerRight, IsIso.hom_inv_id]
+  simp [← comp_whiskerRight, id_whiskerRight, IsIso.hom_inv_id]
 
 @[inherit_doc whiskerLeftIso]
 scoped infixr:82 " ◁ᵢ " => whiskerLeftIso

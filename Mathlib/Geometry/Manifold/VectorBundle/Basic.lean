@@ -185,7 +185,7 @@ theorem contMDiffWithinAt_totalSpace_iff {f : M → TotalSpace F E} {s : Set M} 
   · simp_rw [Function.comp, OpenPartialHomeomorph.coe_toPartialEquiv, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
-  · simp only [mfld_simps]
+  · simp [mfld_simps]
 
 @[deprecated (since := "2026-11-02")]
 alias contMDiffWithinAt_totalSpace := contMDiffWithinAt_totalSpace_iff
@@ -475,7 +475,7 @@ instance ContMDiffFiberwiseLinear.hasGroupoid :
     refine ⟨_, _, e.open_baseSet.inter e'.open_baseSet, contMDiffOn_coordChangeL e e',
       contMDiffOn_symm_coordChangeL e e', ?_⟩
     refine OpenPartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
-    · simp only [FiberwiseLinear.openPartialHomeomorph, trans_toPartialEquiv, symm_toPartialEquiv,
+    · simp [FiberwiseLinear.openPartialHomeomorph, trans_toPartialEquiv, symm_toPartialEquiv,
         e.symm_trans_source_eq e']
     · rintro ⟨b, v⟩ hb
       exact (e.apply_symm_apply_eq_coordChangeL e' hb.1 v).symm

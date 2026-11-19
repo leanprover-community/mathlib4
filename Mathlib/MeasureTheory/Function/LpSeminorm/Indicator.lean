@@ -45,7 +45,7 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : N
     simp [eLpNorm_of_not_aestronglyMeasurable, hfi, hfr]
   have hfr : AEStronglyMeasurable f (μ.restrict s) := A.1 hfi
   by_cases hp_zero : p = 0
-  · simp only [hp_zero, eLpNorm_exponent_zero hfi, eLpNorm_exponent_zero hfr]
+  · simp [hp_zero, eLpNorm_exponent_zero hfi, eLpNorm_exponent_zero hfr]
   by_cases hp_top : p = ∞
   · simp_rw [hp_top, eLpNorm_exponent_top hfi, eLpNorm_exponent_top hfr,
       eLpNormEssSup_eq_essSup_eNorm, eNorm_indicator_eq_indicator_eNorm,

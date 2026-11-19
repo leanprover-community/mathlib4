@@ -167,7 +167,7 @@ theorem run_monadLift [Monad m] {α} (x : m α) (k : α → m r) :
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
-  simp only [bind_assoc, run_bind, run_monadLift, Function.comp_apply]
+  simp [bind_assoc, run_bind, run_monadLift, Function.comp_apply]
 
 instance : MonadCont (ContT r m) where
   callCC f := .mk fun k => f ⟨fun x => .mk fun _ => k x⟩ k

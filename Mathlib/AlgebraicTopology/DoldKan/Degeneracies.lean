@@ -44,12 +44,12 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
     HigherFacesVanish q
       (φ ≫
         X.σ ⟨b, by
-          simp only [hnbq, Nat.lt_add_one_iff, le_add_iff_nonneg_right, zero_le]⟩) :=
+          simp [hnbq, Nat.lt_add_one_iff, le_add_iff_nonneg_right, zero_le]⟩) :=
   fun j hj => by
   rw [assoc, SimplicialObject.δ_comp_σ_of_gt', Fin.pred_succ, v.comp_δ_eq_zero_assoc _ _ hj,
     zero_comp]
   · intro hj'
-    simp only [hnbq, add_comm b, add_assoc, hj', Fin.val_zero, zero_add, add_le_iff_nonpos_right,
+    simp [hnbq, add_comm b, add_assoc, hj', Fin.val_zero, zero_add, add_le_iff_nonpos_right,
       nonpos_iff_eq_zero, add_eq_zero, false_and, reduceCtorEq] at hj
   · dsimp
     rw [Fin.lt_def, Fin.val_succ]
@@ -87,7 +87,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
             (show (0 : Fin 2) ≤ Fin.castSucc 0 by rw [Fin.castSucc_zero]),
           ← Fin.castSucc_zero (n := 1), SimplicialObject.δ_comp_σ_self_assoc,
           SimplicialObject.δ_comp_σ_succ_assoc]
-        simp only [add_neg_cancel, add_zero, zero_add]
+        simp [add_neg_cancel, add_zero, zero_add]
       · rw [← id_comp (X.σ i), ← (P_add_Q_f q n.succ : _ = 𝟙 (X.obj _)), add_comp, add_comp,
           P_succ]
         have v : HigherFacesVanish q ((P q).f n.succ ≫ X.σ i) :=
@@ -105,7 +105,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         rw [add_comm] at hk
         have hi' : i = Fin.castSucc ⟨i, by lia⟩ := by
           ext
-          simp only [Fin.castSucc_mk, Fin.eta]
+          simp [Fin.castSucc_mk, Fin.eta]
         have eq := hq j.rev.succ (by
           simp only [← hk, Fin.rev_eq j hk.symm, Fin.succ_mk, Fin.val_mk]
           lia)
@@ -119,7 +119,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
 theorem σ_comp_PInfty (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
     dsimp% X.σ i ≫ PInfty.f (n + 1) = 0 := by
   rw [PInfty_f, σ_comp_P_eq_zero X i]
-  simp only [le_add_iff_nonneg_left, zero_le]
+  simp [le_add_iff_nonneg_left, zero_le]
 
 @[reassoc]
 theorem degeneracy_comp_PInfty (X : SimplicialObject C) (n : ℕ) {Δ' : SimplexCategory}

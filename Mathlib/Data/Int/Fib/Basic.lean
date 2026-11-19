@@ -80,10 +80,10 @@ theorem fib_add_two (n : ℤ) : fib (n + 2) = fib n + fib (n + 1) := by
 
 theorem fib_eq_fib_add_two_sub_fib_add_one (n : ℤ) :
     fib n = fib (n + 2) - fib (n + 1) := by
-  simp only [fib_add_two, add_sub_cancel_right]
+  simp [fib_add_two, add_sub_cancel_right]
 
 theorem fib_add_one (n : ℤ) : fib (n + 1) = fib (n + 2) - fib n := by
-  simp only [fib_add_two, add_sub_cancel_left]
+  simp [fib_add_two, add_sub_cancel_left]
 
 @[simp] theorem fib_eq_zero {n : ℤ} : fib n = 0 ↔ n = 0 := by
   obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg <;> simp [fib_neg_natCast]

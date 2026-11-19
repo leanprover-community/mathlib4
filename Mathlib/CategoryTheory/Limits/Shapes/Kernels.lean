@@ -206,7 +206,7 @@ theorem isKernelCompMono_lift {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ 
 def isKernelOfComp {W : C} (g : Y ⟶ W) (h : X ⟶ W) {c : KernelFork h} (i : IsLimit c)
     (hf : c.ι ≫ f = 0) (hfg : f ≫ g = h) : IsLimit (KernelFork.ofι c.ι hf) :=
   Fork.IsLimit.mk _ (fun s => i.lift (KernelFork.ofι s.ι (by simp [← hfg])))
-    (fun s => by simp only [KernelFork.ι_ofι, Fork.IsLimit.lift_ι]) fun s m h => by
+    (fun s => by simp [KernelFork.ι_ofι, Fork.IsLimit.lift_ι]) fun s m h => by
     apply Fork.IsLimit.hom_ext i; simpa using h
 
 /-- `X` identifies to the kernel of a zero map `X ⟶ Y`. -/
@@ -214,7 +214,7 @@ def isKernelOfComp {W : C} (g : Y ⟶ W) (h : X ⟶ W) {c : KernelFork h} (i : I
 def KernelFork.IsLimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
     IsLimit (KernelFork.ofι (𝟙 X) (show 𝟙 X ≫ f = 0 by rw [hf, comp_zero])) :=
   KernelFork.IsLimit.ofι _ _ (fun x _ => x) (fun _ _ => Category.comp_id _)
-    (fun _ _ _ hb => by simp only [← hb, Category.comp_id])
+    (fun _ _ _ hb => by simp [← hb, Category.comp_id])
 
 /-- Any zero object identifies to the kernel of a given monomorphisms. -/
 @[to_dual /-- Any zero object identifies to the cokernel of a given epimorphisms. -/]
@@ -338,7 +338,7 @@ theorem kernel.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : kernel.lift f k
 
 @[to_dual (attr := simp)]
 theorem kernel.lift_zero {W : C} {h} : kernel.lift f (0 : W ⟶ X) h = 0 := by
-  ext; simp only [equalizer_as_kernel, lift_ι, zero_comp]
+  ext; simp [equalizer_as_kernel, lift_ι, zero_comp]
 
 @[to_dual]
 instance kernel.lift_mono {W : C} (k : W ⟶ X) (h : k ≫ f = 0) [Mono k] : Mono (kernel.lift f k h) :=
@@ -839,7 +839,7 @@ This is an isomorphism iff `G` preserves the kernel of `f`; see
 @[to_dual /-- The comparison morphism for the cokernel of `f`. -/]
 def kernelComparison [HasKernel f] [HasKernel (G.map f)] : G.obj (kernel f) ⟶ kernel (G.map f) :=
   kernel.lift _ (G.map (kernel.ι f))
-    (by simp only [← G.map_comp, kernel.condition, Functor.map_zero])
+    (by simp [← G.map_comp, kernel.condition, Functor.map_zero])
 
 @[to_dual (attr := reassoc (attr := simp)) π_comp_cokernelComparison]
 theorem kernelComparison_comp_ι [HasKernel f] [HasKernel (G.map f)] :
@@ -850,7 +850,7 @@ theorem kernelComparison_comp_ι [HasKernel f] [HasKernel (G.map f)] :
 theorem map_lift_kernelComparison [HasKernel f] [HasKernel (G.map f)] {Z : C} {h : Z ⟶ X}
     (w : h ≫ f = 0) :
     G.map (kernel.lift _ h w) ≫ kernelComparison f G =
-      kernel.lift _ (G.map h) (by simp only [← G.map_comp, w, Functor.map_zero]) := by
+      kernel.lift _ (G.map h) (by simp [← G.map_comp, w, Functor.map_zero]) := by
   ext; simp [← G.map_comp]
 
 @[to_dual (attr := reassoc) cokernel_map_comp_cokernelComparison]

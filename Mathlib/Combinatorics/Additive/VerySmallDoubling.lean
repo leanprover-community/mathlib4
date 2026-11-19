@@ -221,7 +221,7 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
   have : ((1 / 2 : ℚ) * #A) * #(A⁻¹ * A) < (#A : ℚ) ^ 2 := by
     rw [← Nat.cast_pow, sq, ← card_product, card_eq_sum_card_fiberwise h₂, Nat.cast_sum]
     refine (sum_lt_sum_of_nonempty (by simp [h₀]) h₁).trans_eq' ?_
-    simp only [sum_const, nsmul_eq_mul, mul_comm]
+    simp [sum_const, nsmul_eq_mul, mul_comm]
   rw [← Nat.cast_lt (α := ℚ), Nat.cast_mul, Nat.cast_two]
   -- passing between ℕ- and ℚ-inequalities is annoying, here and above
   nlinarith
@@ -340,7 +340,7 @@ omit [DecidableEq G] in
 private lemma op_smul_eq_iff_mem {H : Subgroup G} {c : Set G} {x : G}
     (hc : c ∈ orbit Gᵐᵒᵖ (H : Set G)) : x ∈ c ↔ H <• x = c := by
   refine ⟨fun hx => ?_, fun hx =>
-    by simp only [← hx, mem_rightCoset_iff, mul_inv_cancel, SetLike.mem_coe, one_mem]⟩
+    by simp [← hx, mem_rightCoset_iff, mul_inv_cancel, SetLike.mem_coe, one_mem]⟩
   obtain ⟨⟨a⟩, rfl⟩ := hc
   change _ = _ <• _
   rw [eq_comm, smul_eq_iff_eq_inv_smul, ← op_inv, op_smul_op_smul, rightCoset_mem_rightCoset]
@@ -534,7 +534,7 @@ private lemma mul_card_le_expansion (hS : S.Nonempty) : (1 - K) * #A ≤ expansi
 private lemma expansion_submodularity :
     expansion K S (A ∩ B) + expansion K S (A ∪ B) ≤ expansion K S A + expansion K S B := by
   have : (#(A ∩ B) + #(A ∪ B) : ℝ) = #A + #B := mod_cast card_inter_add_card_union A B
-  have : K * #(A ∩ B) + K * #(A ∪ B) = K * #A + K * #B := by simp only [← mul_add, this]
+  have : K * #(A ∩ B) + K * #(A ∪ B) = K * #A + K * #B := by simp [← mul_add, this]
   have : (#(A * S ∩ (B * S)) + #(A * S ∪ B * S) : ℝ) = #(A * S) + #(B * S) :=
     mod_cast card_inter_add_card_union (A * S) (B * S)
   have : (#((A ∩ B) * S) : ℝ) ≤ #(A * S ∩ (B * S)) := by grw [inter_mul_subset]
@@ -751,7 +751,7 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
     calc
             ε / 2 * (Fintype.card H)
         _ = ε / 2 * #(H : Set G).toFinset   := by
-          simp only [Set.toFinset_card, SetLike.coe_sort_coe]
+          simp [Set.toFinset_card, SetLike.coe_sort_coe]
         _ = (1 - K) * #(H : Set G).toFinset := by ring
         _ ≤ ex (Set.toFinset H)             := mul_card_le_expansion hS
         _ ≤ (1 - ε / 2) * #S                := calc₁
@@ -783,7 +783,7 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
         grw [calc₁]
         gcongr
         · linarith
-        · simp only [Set.mem_toFinset, SetLike.mem_coe, H.one_mem, subset_mul_right]
+        · simp [Set.mem_toFinset, SetLike.mem_coe, H.one_mem, subset_mul_right]
 
 /-- Corollary of `card_mul_finset_lt_two` in the case `A = S`, giving characterisation of sets of
 doubling less than `2 - ε`. -/

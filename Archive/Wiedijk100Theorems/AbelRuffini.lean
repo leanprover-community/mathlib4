@@ -84,7 +84,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
       rw [mem_span_singleton]
       rw [degree_Phi] at hn; norm_cast at hn
       interval_cases n <;>
-      simp +decide only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
+      simp +decide [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
         hpb, ite_true, coeff_C_mul, ite_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero,
         coeff_sub, add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
     · simp only [degree_Phi, ← WithBot.coe_zero]
@@ -139,7 +139,7 @@ theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootS
   have key : ↑({x, y} : Finset ℝ) ⊆ (Φ ℚ a b).rootSet ℝ := by
     simp [Set.insert_subset, mem_rootSet_of_ne q_ne_zero, hx, hy]
   convert! Fintype.card_le_of_embedding (Set.embeddingOfSubset _ _ key)
-  simp only [Finset.coe_sort_coe, Fintype.card_coe, Finset.card_singleton,
+  simp [Finset.coe_sort_coe, Fintype.card_coe, Finset.card_singleton,
     Finset.card_insert_of_notMem (mt Finset.mem_singleton.mp hxy)]
 
 theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a b).rootSet ℂ) = 5 :=

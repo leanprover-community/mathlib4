@@ -105,15 +105,15 @@ theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ ∃ k : ℤ, k * (2 * π) = x :
 
 theorem cos_eq_neg_one_iff {x : ℂ} : cos x = -1 ↔ ∃ k : ℤ, π + k * (2 * π) = x := by
   rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff]
-  simp only [eq_sub_iff_add_eq']
+  simp [eq_sub_iff_add_eq']
 
 theorem sin_eq_one_iff {x : ℂ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x := by
   rw [← cos_sub_pi_div_two, cos_eq_one_iff]
-  simp only [eq_sub_iff_add_eq']
+  simp [eq_sub_iff_add_eq']
 
 theorem sin_eq_neg_one_iff {x : ℂ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x := by
   rw [← neg_eq_iff_eq_neg, ← cos_add_pi_div_two, cos_eq_one_iff]
-  simp only [← sub_eq_neg_add, sub_eq_iff_eq_add]
+  simp [← sub_eq_neg_add, sub_eq_iff_eq_add]
 
 theorem tan_add {x y : ℂ}
     (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
@@ -123,7 +123,7 @@ theorem tan_add {x y : ℂ}
   · rw [tan, sin_add, cos_add, ←
       div_div_div_cancel_right₀ (mul_ne_zero (cos_ne_zero_iff.mpr h1) (cos_ne_zero_iff.mpr h2)),
       add_div, sub_div]
-    simp only [← div_mul_div_comm, tan, mul_one, one_mul, div_self (cos_ne_zero_iff.mpr h1),
+    simp [← div_mul_div_comm, tan, mul_one, one_mul, div_self (cos_ne_zero_iff.mpr h1),
       div_self (cos_ne_zero_iff.mpr h2)]
   · have t := tan_int_mul_pi_div_two
     obtain ⟨hx, hy, hxy⟩ := t (2 * k + 1), t (2 * l + 1), t (2 * k + 1 + (2 * l + 1))
@@ -233,7 +233,7 @@ theorem cos_surjective : Function.Surjective cos := by
       ⟨w, hw⟩
     refine ⟨w, ?_, hw⟩
     rintro rfl
-    simp only [zero_add, one_ne_zero, mul_zero] at hw
+    simp [zero_add, one_ne_zero, mul_zero] at hw
   refine ⟨log w / I, cos_eq_iff_quadratic.2 ?_⟩
   rw [div_mul_cancel₀ _ I_ne_zero, exp_log w₀]
   convert hw using 1

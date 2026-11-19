@@ -315,7 +315,7 @@ semigroup. See note [reducible non-instances]. -/
 surjective map that preserves `+` from an additive semigroup. -/]
 protected abbrev semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : Semigroup M₂ where
-  mul_assoc := hf.forall₃.2 fun x y z => by simp only [← mul, mul_assoc]
+  mul_assoc := hf.forall₃.2 fun x y z => by simp [← mul, mul_assoc]
 
 /-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
 `*` from a commutative semigroup. See note [reducible non-instances]. -/

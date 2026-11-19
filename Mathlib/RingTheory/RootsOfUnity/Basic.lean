@@ -80,12 +80,12 @@ theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ
 @[simp]
 theorem rootsOfUnity_one (M : Type*) [CommMonoid M] : rootsOfUnity 1 M = ⊥ := by
   ext1
-  simp only [mem_rootsOfUnity, pow_one, Subgroup.mem_bot]
+  simp [mem_rootsOfUnity, pow_one, Subgroup.mem_bot]
 
 @[simp]
 lemma rootsOfUnity_zero (M : Type*) [CommMonoid M] : rootsOfUnity 0 M = ⊤ := by
   ext1
-  simp only [mem_rootsOfUnity, pow_zero, Subgroup.mem_top]
+  simp [mem_rootsOfUnity, pow_zero, Subgroup.mem_top]
 
 theorem rootsOfUnity.coe_injective {n : ℕ} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
@@ -135,9 +135,9 @@ def rootsOfUnityUnitsMulEquiv (M : Type*) [CommMonoid M] (n : ℕ) :
   invFun ζ := ⟨toUnits ζ.val, by
     simp only [mem_rootsOfUnity, ← map_pow, EmbeddingLike.map_eq_one_iff]
     exact (mem_rootsOfUnity ..).mp ζ.prop⟩
-  left_inv ζ := by simp only [toUnits_val_apply, Subtype.coe_eta]
-  right_inv ζ := by simp only [val_toUnits_apply, Subtype.coe_eta]
-  map_mul' ζ ζ' := by simp only [Subgroup.coe_mul, Units.val_mul, MulMemClass.mk_mul_mk]
+  left_inv ζ := by simp [toUnits_val_apply, Subtype.coe_eta]
+  right_inv ζ := by simp [val_toUnits_apply, Subtype.coe_eta]
+  map_mul' ζ ζ' := by simp [Subgroup.coe_mul, Units.val_mul, MulMemClass.mk_mul_mk]
 
 section CommMonoid
 
@@ -149,9 +149,9 @@ def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) :
   { toFun := fun ξ ↦ ⟨Units.map σ (ξ : Rˣ), by
       rw [mem_rootsOfUnity, ← map_pow, Units.ext_iff, Units.coe_map, ξ.prop]
       exact map_one σ⟩
-    map_one' := by ext1; simp only [OneMemClass.coe_one, map_one]
+    map_one' := by ext1; simp [OneMemClass.coe_one, map_one]
     map_mul' := fun ξ₁ ξ₂ ↦ by
-      ext1; simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk] }
+      ext1; simp [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk] }
 
 @[simp]
 theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
@@ -212,7 +212,7 @@ variable [NeZero k] [CommRing R] [IsDomain R]
 
 theorem mem_rootsOfUnity_iff_mem_nthRoots {ζ : Rˣ} :
     ζ ∈ rootsOfUnity k R ↔ (ζ : R) ∈ nthRoots k (1 : R) := by
-  simp only [mem_rootsOfUnity, mem_nthRoots (NeZero.pos k), Units.ext_iff, Units.val_one,
+  simp [mem_rootsOfUnity, mem_nthRoots (NeZero.pos k), Units.ext_iff, Units.val_one,
     Units.val_pow_eq_pow_val]
 
 variable (k R)
@@ -229,7 +229,7 @@ def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 
     all_goals
       rcases x with ⟨x, hx⟩; rw [mem_nthRoots <| NeZero.pos k] at hx
       simp only [← pow_succ, ← pow_succ', hx, tsub_add_cancel_of_le NeZero.one_le]
-    simp only [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, hx, Units.val_one]
+    simp [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, hx, Units.val_one]
 
 variable {k R}
 
@@ -291,7 +291,7 @@ variable (R) [CommRing R] [IsReduced R]
 -- simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
     ζ ∈ rootsOfUnity (p ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
-  simp only [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]
+  simp [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]
 
 /-- A variant of `mem_rootsOfUnity_prime_pow_mul_iff` in terms of `ζ ^ _` -/
 @[simp]
@@ -315,17 +315,17 @@ def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
     (hg : ∀ (x : G), x ∈ Subgroup.zpowers g) (G' : Type*) [CommGroup G'] :
     (G →* G') ≃* rootsOfUnity (Nat.card G) G' where
   toFun φ := ⟨(IsUnit.map φ <| Group.isUnit g).unit, by
-    simp only [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec,
+    simp [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec,
       ← map_pow, pow_card_eq_one', map_one, Units.val_one]⟩
   invFun ζ := monoidHomOfForallMemZpowers hg (g' := (ζ.val : G')) <| by
     simpa only [orderOf_eq_card_of_forall_mem_zpowers hg, orderOf_dvd_iff_pow_eq_one,
       ← Units.val_pow_eq_pow_val, Units.val_eq_one] using! ζ.prop
   left_inv φ := (MonoidHom.eq_iff_eq_on_generator hg _ φ).mpr <| by
-    simp only [IsUnit.unit_spec, monoidHomOfForallMemZpowers_apply_gen]
+    simp [IsUnit.unit_spec, monoidHomOfForallMemZpowers_apply_gen]
   right_inv φ := Subtype.ext <| by
-    simp only [monoidHomOfForallMemZpowers_apply_gen, IsUnit.unit_of_val_units]
+    simp [monoidHomOfForallMemZpowers_apply_gen, IsUnit.unit_of_val_units]
   map_mul' x y := by
-    simp only [MonoidHom.mul_apply, MulMemClass.mk_mul_mk, Subtype.mk.injEq, Units.ext_iff,
+    simp [MonoidHom.mul_apply, MulMemClass.mk_mul_mk, Subtype.mk.injEq, Units.ext_iff,
       IsUnit.unit_spec, Units.val_mul]
 
 /-- The group of group homomorphisms from a finite cyclic group `G` of order `n` into another

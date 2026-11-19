@@ -57,7 +57,7 @@ variable {R : Type*} [Ring R] (I : TwoSidedIdeal R)
 lemma listProd_mem {ι : Type*} (l : List ι) (f : ι → R) (hl : ∃ x ∈ l, f x ∈ I) :
     (l.map f).prod ∈ I := by
   induction l with
-  | nil => simp only [List.not_mem_nil, false_and, exists_false] at hl
+  | nil => simp [List.not_mem_nil, false_and, exists_false] at hl
   | cons x l ih =>
     simp only [List.mem_cons, exists_eq_or_imp] at hl
     rcases hl with h | hal

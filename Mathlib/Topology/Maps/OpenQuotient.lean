@@ -68,7 +68,7 @@ theorem continuous_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} :
 
 theorem continuousAt_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} {x : X} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
-  simp only [ContinuousAt, ← h.map_nhds_eq, tendsto_map'_iff, comp_def]
+  simp [ContinuousAt, ← h.map_nhds_eq, tendsto_map'_iff, comp_def]
 
 theorem isOpenMap_iff (hf : IsOpenQuotientMap f) {g : Y → Z} :
     IsOpenMap g ↔ IsOpenMap (g ∘ f) :=

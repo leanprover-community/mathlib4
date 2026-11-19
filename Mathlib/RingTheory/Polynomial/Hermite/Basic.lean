@@ -64,7 +64,7 @@ theorem hermite_zero : hermite 0 = C 1 :=
 
 theorem hermite_one : hermite 1 = X := by
   rw [hermite_succ, hermite_zero]
-  simp only [map_one, mul_one, derivative_one, sub_zero]
+  simp [map_one, mul_one, derivative_one, sub_zero]
 
 /-! ### Lemmas about `Polynomial.coeff` -/
 

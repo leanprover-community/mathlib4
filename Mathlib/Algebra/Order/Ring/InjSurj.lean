@@ -29,7 +29,7 @@ protected lemma isOrderedRing [IsOrderedRing R] [Semiring S] [PartialOrder S]
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
     IsOrderedRing S where
   __ := Function.Injective.isOrderedAddMonoid f add le
-  zero_le_one := by simp only [← le, zero, one, zero_le_one]
+  zero_le_one := by simp [← le, zero, one, zero_le_one]
   mul_le_mul_of_nonneg_left a ha b c hbc := by
     rw [← le, mul, mul]; refine mul_le_mul_of_nonneg_left (le.2 hbc) ?_; rwa [← zero, le]
   mul_le_mul_of_nonneg_right a ha b c hbc := by

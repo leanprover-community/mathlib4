@@ -105,15 +105,15 @@ theorem realize_functions_apply₁ {f : L.Functions 1} {t : L.Term α} {v : α �
     (f.apply₁ t).realize v = funMap f ![t.realize v] := by
   rw [Functions.apply₁, Term.realize]
   refine congr rfl (funext fun i => ?_)
-  simp only [Matrix.cons_val_fin_one]
+  simp [Matrix.cons_val_fin_one]
 
 @[simp]
 theorem realize_functions_apply₂ {f : L.Functions 2} {t₁ t₂ : L.Term α} {v : α → M} :
     (f.apply₂ t₁ t₂).realize v = funMap f ![t₁.realize v, t₂.realize v] := by
   rw [Functions.apply₂, Term.realize]
   refine congr rfl (funext (Fin.cases ?_ ?_))
-  · simp only [Matrix.cons_val_zero]
-  · simp only [Matrix.cons_val_succ, Matrix.cons_val_fin_one, forall_const]
+  · simp [Matrix.cons_val_zero]
+  · simp [Matrix.cons_val_succ, Matrix.cons_val_fin_one, forall_const]
 
 theorem realize_con {A : Set M} {a : A} {v : α → M} : (L.con a).term.realize v = a :=
   rfl
@@ -221,7 +221,7 @@ theorem realize_onTerm [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] 
     (v : α → M) : (φ.onTerm t).realize v = t.realize v := by
   induction t with
   | var => rfl
-  | func f ts ih => simp only [Term.realize, LHom.onTerm, LHom.map_onFunction, ih]
+  | func f ts ih => simp [Term.realize, LHom.onTerm, LHom.map_onFunction, ih]
 
 end LHom
 
@@ -283,7 +283,7 @@ theorem realize_foldr_inf (l : List (L.BoundedFormula α n)) (v : α → M) (xs 
 
 @[simp]
 theorem realize_imp : (φ.imp ψ).Realize v xs ↔ φ.Realize v xs → ψ.Realize v xs := by
-  simp only [Realize]
+  simp [Realize]
 
 /-- List.foldr on BoundedFormula.imp gives a big "And" of input conditions. -/
 theorem realize_foldr_imp {k : ℕ} (l : List (L.BoundedFormula α k))
@@ -306,7 +306,7 @@ theorem realize_rel₁ {R : L.Relations 1} {t : L.Term _} :
     (R.boundedFormula₁ t).Realize v xs ↔ RelMap R ![t.realize (Sum.elim v xs)] := by
   rw [Relations.boundedFormula₁, realize_rel, iff_eq_eq]
   refine congr rfl (funext fun _ => ?_)
-  simp only [Matrix.cons_val_fin_one]
+  simp [Matrix.cons_val_fin_one]
 
 @[simp]
 theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
@@ -314,8 +314,8 @@ theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
       RelMap R ![t₁.realize (Sum.elim v xs), t₂.realize (Sum.elim v xs)] := by
   rw [Relations.boundedFormula₂, realize_rel, iff_eq_eq]
   refine congr rfl (funext (Fin.cases ?_ ?_))
-  · simp only [Matrix.cons_val_zero]
-  · simp only [Matrix.cons_val_succ, Matrix.cons_val_fin_one, forall_const]
+  · simp [Matrix.cons_val_zero]
+  · simp [Matrix.cons_val_succ, Matrix.cons_val_fin_one, forall_const]
 
 @[simp]
 theorem realize_sup : (φ ⊔ ψ).Realize v xs ↔ φ.Realize v xs ∨ ψ.Realize v xs := by
@@ -342,12 +342,12 @@ theorem realize_ex : θ.ex.Realize v xs ↔ ∃ a : M, θ.Realize v (Fin.snoc xs
 
 @[simp]
 theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Realize v xs) := by
-  simp only [BoundedFormula.iff, realize_inf, realize_imp, ← iff_def]
+  simp [BoundedFormula.iff, realize_inf, realize_imp, ← iff_def]
 
 theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
     {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ Fin.cast h) := by
   subst h
-  simp only [castLE_rfl, cast_refl, Function.comp_id]
+  simp [castLE_rfl, cast_refl, Function.comp_id]
 
 theorem realize_mapTermRel_id [L'.Structure M]
     {ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Term (β ⊕ (Fin n))}
@@ -363,7 +363,7 @@ theorem realize_mapTermRel_id [L'.Structure M]
   | equal => simp [mapTermRel, Realize, h1]
   | rel => simp [mapTermRel, Realize, h1, h2]
   | imp _ _ ih1 ih2 => simp [mapTermRel, Realize, ih1, ih2]
-  | all _ ih => simp only [mapTermRel, Realize, ih, id]
+  | all _ ih => simp [mapTermRel, Realize, ih, id]
 
 theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
     {ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Term (β ⊕ (Fin (k + n)))}
@@ -399,7 +399,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
   | falsum => simp [mapTermRel, Realize]
   | equal => simp [mapTermRel, Realize, Sum.elim_comp_map]
   | rel => simp [mapTermRel, Realize, Sum.elim_comp_map]
-  | imp _ _ ih1 ih2 => simp only [mapTermRel, Realize, ih1 hmn, ih2 hmn]
+  | imp _ _ ih1 ih2 => simp [mapTermRel, Realize, ih1 hmn, ih2 hmn]
   | @all k _ ih3 =>
     have h : k + 1 + n' = k + n' + 1 := by rw [add_assoc, add_comm 1 n', ← add_assoc]
     simp only [mapTermRel, Realize, realize_castLE_of_eq h, ih3 (hmn.trans k.le_succ)]
@@ -433,7 +433,7 @@ theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : 
       rw [Term.realize_subst]
       rcongr a
       cases a
-      · simp only [Sum.elim_inl, Function.comp_apply, Term.realize_relabel, Sum.elim_comp_inl]
+      · simp [Sum.elim_inl, Function.comp_apply, Term.realize_relabel, Sum.elim_comp_inl]
       · rfl)
     (by simp)
 
@@ -515,8 +515,8 @@ theorem realize_onBoundedFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpan
     simp only [onBoundedFormula, realize_rel, LHom.map_onRelation,
       Function.comp_apply, realize_onTerm]
     rfl
-  | imp _ _ ih1 ih2 => simp only [onBoundedFormula, ih1, ih2, realize_imp]
-  | all _ ih3 => simp only [onBoundedFormula, ih3, realize_all]
+  | imp _ _ ih1 ih2 => simp [onBoundedFormula, ih1, ih2, realize_imp]
+  | all _ ih3 => simp [onBoundedFormula, ih3, realize_all]
 
 end LHom
 
@@ -558,15 +558,15 @@ theorem realize_rel₁ {R : L.Relations 1} {t : L.Term _} :
     (R.formula₁ t).Realize v ↔ RelMap R ![t.realize v] := by
   rw [Relations.formula₁, realize_rel, iff_eq_eq]
   refine congr rfl (funext fun _ => ?_)
-  simp only [Matrix.cons_val_fin_one]
+  simp [Matrix.cons_val_fin_one]
 
 @[simp]
 theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
     (R.formula₂ t₁ t₂).Realize v ↔ RelMap R ![t₁.realize v, t₂.realize v] := by
   rw [Relations.formula₂, realize_rel, iff_eq_eq]
   refine congr rfl (funext (Fin.cases ?_ ?_))
-  · simp only [Matrix.cons_val_zero]
-  · simp only [Matrix.cons_val_succ, Matrix.cons_val_fin_one, forall_const]
+  · simp [Matrix.cons_val_zero]
+  · simp [Matrix.cons_val_succ, Matrix.cons_val_fin_one, forall_const]
 
 @[simp]
 theorem realize_sup : (φ ⊔ ψ).Realize v ↔ φ.Realize v ∨ ψ.Realize v :=
@@ -721,7 +721,7 @@ theorem mem_completeTheory {φ : Sentence L} : φ ∈ L.completeTheory M ↔ M �
   Iff.rfl
 
 theorem elementarilyEquivalent_iff : M ≅[L] N ↔ ∀ φ : L.Sentence, M ⊨ φ ↔ N ⊨ φ := by
-  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_ofPred_eq]
+  simp [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_ofPred_eq]
 
 variable (M)
 
@@ -898,14 +898,14 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
 theorem realize_iSup [Finite β] {f : β → L.BoundedFormula α n}
     {v : α → M} {v' : Fin n → M} :
     (iSup f).Realize v v' ↔ ∃ b, (f b).Realize v v' := by
-  simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
+  simp [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
     exists_exists_eq_and]
 
 @[simp]
 theorem realize_iInf [Finite β] {f : β → L.BoundedFormula α n}
     {v : α → M} {v' : Fin n → M} :
     (iInf f).Realize v v' ↔ ∀ b, (f b).Realize v v' := by
-  simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
+  simp [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
     forall_exists_index, forall_apply_eq_imp_iff]
 
 @[simp]
@@ -986,7 +986,7 @@ theorem realize_boundedFormula (φ : L.BoundedFormula α n) {v : α → M}
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term,
+    simp [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term,
       EmbeddingLike.apply_eq_iff_eq g]
   | rel =>
     simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
@@ -1090,7 +1090,7 @@ instance model_infiniteTheory [h : Infinite M] : M ⊨ L.infiniteTheory :=
 
 @[simp]
 theorem model_nonemptyTheory_iff : M ⊨ L.nonemptyTheory ↔ Nonempty M := by
-  simp only [nonemptyTheory, Theory.model_iff, Set.mem_singleton_iff, forall_eq,
+  simp [nonemptyTheory, Theory.model_iff, Set.mem_singleton_iff, forall_eq,
     Sentence.realize_cardGe, Nat.cast_one, Cardinal.one_le_iff_ne_zero, mk_ne_zero_iff]
 
 instance model_nonempty [h : Nonempty M] : M ⊨ L.nonemptyTheory :=

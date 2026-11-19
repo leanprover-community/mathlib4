@@ -396,7 +396,7 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) : a ≡ b [
     rw [Int.mul_sub]
     exact modEq_iff_dvd.mp h
   · show Int.gcd (m / d) (c / d) = 1
-    simp only [d, ← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d),
+    simp [d, ← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d),
       gcd_div hmd hcd, Nat.div_self (gcd_pos_of_pos_left c hm)]
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
@@ -572,7 +572,7 @@ theorem le_mod_add_mod_of_dvd_add_of_not_dvd {a b c : ℕ} (h : c ∣ a + b) (ha
     simp_all [dvd_iff_mod_eq_zero]
 
 lemma mod_sub_of_le {a b n : ℕ} (h : b ≤ a % n) : a % n - b = (a - b) % n := by
-  rcases n.eq_zero_or_pos with rfl | hn; · simp only [mod_zero]
+  rcases n.eq_zero_or_pos with rfl | hn; · simp [mod_zero]
   nth_rw 2 [← div_add_mod a n]; rw [Nat.add_sub_assoc h, mul_add_mod]
   exact (mod_eq_of_lt <| (sub_le ..).trans_lt (mod_lt a hn)).symm
 

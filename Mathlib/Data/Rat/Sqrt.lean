@@ -43,7 +43,7 @@ instance : DecidablePred (IsSquare : ℚ → Prop) :=
 
 @[simp, norm_cast]
 theorem sqrt_intCast (z : ℤ) : Rat.sqrt (z : ℚ) = Int.sqrt z := by
-  simp only [sqrt, num_intCast, den_intCast, Nat.sqrt_one, mkRat_one]
+  simp [sqrt, num_intCast, den_intCast, Nat.sqrt_one, mkRat_one]
 
 @[simp, norm_cast]
 theorem sqrt_natCast (n : ℕ) : Rat.sqrt (n : ℚ) = Nat.sqrt n := by

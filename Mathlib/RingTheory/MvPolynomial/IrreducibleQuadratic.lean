@@ -186,7 +186,7 @@ theorem irreducible_sumSMulX [IsDomain R]
       simp only [Finsupp.mem_support_iff] at hi
       specialize h (Finsupp.single i 1) (by
         rwa [mem_support_iff, coeff_sumSMulX]) i
-      simp only [Finsupp.single_eq_same, one_ne_zero] at h
+      simp [Finsupp.single_eq_same, one_ne_zero] at h
   · intro r hr
     apply hc_gcd
     intro i

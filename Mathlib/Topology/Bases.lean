@@ -147,7 +147,7 @@ theorem IsTopologicalBasis.of_isOpen_of_subset {s s' : Set (Set α)} (h_open : �
 
 theorem IsTopologicalBasis.nhds_hasBasis {b : Set (Set α)} (hb : IsTopologicalBasis b) {a : α} :
     (𝓝 a).HasBasis (fun t : Set α => t ∈ b ∧ a ∈ t) fun t => t :=
-  ⟨fun s => hb.mem_nhds_iff.trans <| by simp only [and_assoc]⟩
+  ⟨fun s => hb.mem_nhds_iff.trans <| by simp [and_assoc]⟩
 
 protected theorem IsTopologicalBasis.isOpen {s : Set α} {b : Set (Set α)}
     (hb : IsTopologicalBasis b) (hs : s ∈ b) : IsOpen s := by
@@ -225,7 +225,7 @@ lemma IsTopologicalBasis.eq_of_forall_subset_iff {t : Set α} (hB : IsTopologica
 /-- A point `a` is in the closure of `s` iff all basis sets containing `a` intersect `s`. -/
 theorem IsTopologicalBasis.mem_closure_iff {b : Set (Set α)} (hb : IsTopologicalBasis b) {s : Set α}
     {a : α} : a ∈ closure s ↔ ∀ o ∈ b, a ∈ o → (o ∩ s).Nonempty :=
-  (mem_closure_iff_nhds_basis' hb.nhds_hasBasis).trans <| by simp only [and_imp]
+  (mem_closure_iff_nhds_basis' hb.nhds_hasBasis).trans <| by simp [and_imp]
 
 /-- A set is dense iff it has non-trivial intersection with all basis sets. -/
 theorem IsTopologicalBasis.dense_iff {b : Set (Set α)} (hb : IsTopologicalBasis b) {s : Set α} :
@@ -529,7 +529,7 @@ theorem IsSeparable.union {s u : Set α} (hs : IsSeparable s) (hu : IsSeparable 
 
 @[simp]
 theorem isSeparable_closure : IsSeparable (closure s) ↔ IsSeparable s := by
-  simp only [IsSeparable, isClosed_closure.closure_subset_iff]
+  simp [IsSeparable, isClosed_closure.closure_subset_iff]
 
 protected alias ⟨_, IsSeparable.closure⟩ := isSeparable_closure
 

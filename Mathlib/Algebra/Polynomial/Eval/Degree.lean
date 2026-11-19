@@ -73,7 +73,7 @@ $$(d + 1) (1 + y)^d - (d + 1)y^d = \sum_{i = 0}^d {d + 1 \choose i} \cdot i \cdo
 theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
     eval (1 + y) (monomial d (d + 1 : S)) - eval y (monomial d (d + 1 : S)) =
       ∑ x_1 ∈ range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
-  have cast_succ : (d + 1 : S) = ((d.succ : ℕ) : S) := by simp only [Nat.cast_succ]
+  have cast_succ : (d + 1 : S) = ((d.succ : ℕ) : S) := by simp [Nat.cast_succ]
   rw [cast_succ, eval_monomial, eval_monomial, add_comm, add_pow]
   simp only [one_pow, mul_one, mul_comm (y ^ _) (d.choose _)]
   rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
@@ -92,7 +92,7 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
   rw [comp, eval₂_eq_sum, coeff_sum]
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
   case h₂ =>
-    simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
+    simp [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
   case h₀ =>
     intro b hbs hbp
     refine coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt ?_)
@@ -134,9 +134,9 @@ def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
 theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
   ⟨fun hfp x =>
     calc
-      f x = f x * f p.leadingCoeff := by simp only [mul_one, hp.leadingCoeff, f.map_one]
+      f x = f x * f p.leadingCoeff := by simp [mul_one, hp.leadingCoeff, f.map_one]
       _ = f x * (p.map f).coeff p.natDegree := congr_arg _ (coeff_map _ _).symm
-      _ = 0 := by simp only [hfp, mul_zero, coeff_zero],
+      _ = 0 := by simp [hfp, mul_zero, coeff_zero],
     fun h => by ext n; simp [h]⟩
 
 theorem map_monic_ne_zero (hp : p.Monic) [Nontrivial S] : p.map f ≠ 0 := fun h =>

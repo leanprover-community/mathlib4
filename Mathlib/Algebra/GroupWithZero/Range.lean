@@ -203,7 +203,7 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     SetLike.mem_coe, mem_valueMonoid_iff, mem_preimage, mem_range]
   constructor
   · rintro ⟨y, hy, rfl⟩
-    simp only [Units.ne_zero, not_false_eq_true, and_true, hy]
+    simp [Units.ne_zero, not_false_eq_true, and_true, hy]
   · rintro ⟨⟨y, hy⟩, hx₀⟩
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
@@ -251,7 +251,7 @@ theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
       obtain ⟨u, hu, a, ha⟩ := hcy
       exact ⟨a, by simp [← ha, hu], u, by simp [← ha]⟩
   · have hv : f x ≠ 0 := by
-      simp only [← hy, ne_eq, mul_eq_zero, ha, Units.ne_zero, or_self, not_false_eq_true]
+      simp [← hy, ne_eq, mul_eq_zero, ha, Units.ne_zero, or_self, not_false_eq_true]
     let v := (Ne.isUnit hv).unit
     have hv₀ : f x = ↑v := IsUnit.unit_spec (Ne.isUnit hv)
     let u := (Ne.isUnit ha).unit

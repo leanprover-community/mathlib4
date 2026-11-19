@@ -178,7 +178,7 @@ lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Io
 
 @[to_additive Icc_sub_Icc_subset]
 lemma Icc_div_Icc_subset' (a b c d : α) : Icc a b / Icc c d ⊆ Icc (a / d) (b / c) := by
-  simp only [div_eq_mul_inv, inv_Icc, Icc_mul_Icc_subset']
+  simp [div_eq_mul_inv, inv_Icc, Icc_mul_Icc_subset']
 
 /-!
 ### Preimages under `x ↦ a * x`
@@ -472,12 +472,12 @@ variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 
 @[to_additive (attr := simp)]
 lemma inv_uIcc (a b : α) : [[a, b]]⁻¹ = [[a⁻¹, b⁻¹]] := by
-  simp only [uIcc, inv_Icc, inv_sup, inv_inf]
+  simp [uIcc, inv_Icc, inv_sup, inv_inf]
 
 @[to_additive]
 lemma Icc_div_Icc {a b c d : α} (hab : a ≤ b) (hcd : c ≤ d) :
     Icc a b / Icc c d = Icc (a / d) (b / c) := by
-  simp only [div_eq_mul_inv, inv_Icc, Icc_mul_Icc hab <| inv_le_inv_iff.mpr hcd]
+  simp [div_eq_mul_inv, inv_Icc, Icc_mul_Icc hab <| inv_le_inv_iff.mpr hcd]
 
 end LinearOrderedCommGroup
 
@@ -487,7 +487,7 @@ variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] (a b c d : �
 
 @[simp]
 theorem preimage_const_add_uIcc : (fun x => a + x) ⁻¹' [[b, c]] = [[b - a, c - a]] := by
-  simp only [← Icc_min_max, preimage_const_add_Icc, min_sub_sub_right, max_sub_sub_right]
+  simp [← Icc_min_max, preimage_const_add_Icc, min_sub_sub_right, max_sub_sub_right]
 
 @[simp]
 theorem preimage_add_const_uIcc : (fun x => x + a) ⁻¹' [[b, c]] = [[b - a, c - a]] := by
@@ -500,7 +500,7 @@ theorem preimage_sub_const_uIcc : (fun x => x - a) ⁻¹' [[b, c]] = [[b + a, c 
 @[simp]
 theorem preimage_const_sub_uIcc : (fun x => a - x) ⁻¹' [[b, c]] = [[a - b, a - c]] := by
   simp_rw [← Icc_min_max, preimage_const_sub_Icc]
-  simp only [sub_eq_add_neg, min_add_add_left, max_add_add_left, min_neg_neg, max_neg_neg]
+  simp [sub_eq_add_neg, min_add_add_left, max_add_add_left, min_neg_neg, max_neg_neg]
 
 -- simp can prove this modulo `add_comm`
 theorem image_const_add_uIcc : (fun x => a + x) '' [[b, c]] = [[a + b, a + c]] := by simp [add_comm]
@@ -843,12 +843,12 @@ theorem preimage_mul_const_uIcc (ha : a ≠ 0) (b c : α) :
 @[simp]
 theorem preimage_const_mul_uIcc (ha : a ≠ 0) (b c : α) :
     (a * ·) ⁻¹' [[b, c]] = [[b / a, c / a]] := by
-  simp only [← preimage_mul_const_uIcc ha, mul_comm]
+  simp [← preimage_mul_const_uIcc ha, mul_comm]
 
 @[simp]
 theorem preimage_div_const_uIcc (ha : a ≠ 0) (b c : α) :
     (fun x => x / a) ⁻¹' [[b, c]] = [[b * a, c * a]] := by
-  simp only [div_eq_mul_inv, preimage_mul_const_uIcc (inv_ne_zero ha), inv_inv]
+  simp [div_eq_mul_inv, preimage_mul_const_uIcc (inv_ne_zero ha), inv_inv]
 
 lemma preimage_const_mul_Ioi_or_Iio (hb : a ≠ 0) {U V : Set α}
     (hU : U ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a}) (hV : V = (a * ·) ⁻¹' U) :
@@ -868,7 +868,7 @@ theorem image_mul_const_uIcc (a b c : α) : (· * a) '' [[b, c]] = [[b * a, c * 
   else calc
     (fun x => x * a) '' [[b, c]] = (· * a⁻¹) ⁻¹' [[b, c]] :=
       (Units.mk0 a ha).mulRight.image_eq_preimage_symm _
-    _ = (fun x => x / a) ⁻¹' [[b, c]] := by simp only [div_eq_mul_inv]
+    _ = (fun x => x / a) ⁻¹' [[b, c]] := by simp [div_eq_mul_inv]
     _ = [[b * a, c * a]] := preimage_div_const_uIcc ha _ _
 
 @[simp]
@@ -877,7 +877,7 @@ theorem image_const_mul_uIcc (a b c : α) : (a * ·) '' [[b, c]] = [[a * b, a * 
 
 @[simp]
 theorem image_div_const_uIcc (a b c : α) : (fun x => x / a) '' [[b, c]] = [[b / a, c / a]] := by
-  simp only [div_eq_mul_inv, image_mul_const_uIcc]
+  simp [div_eq_mul_inv, image_mul_const_uIcc]
 
 /-- The (pre)image under `inv` of `Ioo a 0` is `Iio a⁻¹`. -/
 theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := by

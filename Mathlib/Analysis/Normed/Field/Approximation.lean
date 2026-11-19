@@ -137,7 +137,7 @@ theorem exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt
   by_cases h : f.natDegree = 0
   · use 1
     rw [hf.natDegree_eq_zero.mp]
-    · simp only [monic_one, natDegree_one, Polynomial.map_one, sub_self, norm_zero, hε,
+    · simp [monic_one, natDegree_one, Polynomial.map_one, sub_self, norm_zero, hε,
       implies_true, and_self]
     · exact h
   choose c hc using fun i ↦ Metric.denseRange_iff.mp hd (f.coeff i) ε hε

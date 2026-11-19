@@ -244,7 +244,7 @@ variable [Module R M]
 instance lieModule [LieModule R L M] : LieModule R L' M where
   smul_lie t x m := by
     rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]
-  lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
+  lie_smul t x m := by simp [coe_bracket_of_module, lie_smul]
 
 /-- An `L`-equivariant map of Lie modules `M → N` is `L'`-equivariant for any Lie subalgebra
 `L' ⊆ L`. -/
@@ -316,7 +316,7 @@ theorem surjective_rangeRestrict : Function.Surjective f.rangeRestrict := by
   rintro ⟨y, hy⟩
   rw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
   use x
-  simp only [rangeRestrict_apply]
+  simp [rangeRestrict_apply]
 
 /-- A Lie algebra is equivalent to its range under an injective Lie algebra morphism. -/
 noncomputable def equivRangeOfInjective (h : Function.Injective f) : L ≃ₗ⁅R⁆ f.range :=
@@ -568,7 +568,7 @@ theorem inclusion_apply (x : K) : inclusion h x = ⟨x.1, h x.2⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by
-  simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
+  simp [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
 /-- Given two nested Lie subalgebras `K ⊆ K'`, we can view `K` as a Lie subalgebra of `K'`,
 regarded as Lie algebra in its own right. -/
@@ -771,7 +771,7 @@ lemma comap_lieSpan_range_eq {ι : Type*} (f : ι → K) :
     exact subset_lieSpan <| by simp
 
 @[simp] theorem comap_incl_eq_top : K'.comap K.incl = ⊤ ↔ K ≤ K' := by
-  simp only [SetLike.ext_iff, mem_comap, coe_incl, mem_top, iff_true, le_def, Set.subset_def,
+  simp [SetLike.ext_iff, mem_comap, coe_incl, mem_top, iff_true, le_def, Set.subset_def,
     SetLike.mem_coe, Subtype.forall]
 
 end LieSpan

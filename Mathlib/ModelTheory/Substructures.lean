@@ -203,12 +203,12 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 
 theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} :
-    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
     ((⨅ i, S i : L.Substructure M) : Set M) = ⋂ i, (S i : Set M) := by
-  simp only [iInf, coe_sInf, Set.biInter_range]
+  simp [iInf, coe_sInf, Set.biInter_range]
 
 /-- Substructures of a structure form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
@@ -271,7 +271,7 @@ theorem coe_closure_eq_range_term_realize :
   let S : L.Substructure M := ⟨range (Term.realize (L := L) ((↑) : s → M)), fun {n} f x hx => by
     simp only [mem_range] at *
     refine ⟨func f fun i => Classical.choose (hx i), ?_⟩
-    simp only [Term.realize, fun i => Classical.choose_spec (hx i)]⟩
+    simp [Term.realize, fun i => Classical.choose_spec (hx i)]⟩
   change _ = (S : Set M)
   rw [← SetLike.ext'_iff]
   refine closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => ?_)
@@ -403,7 +403,7 @@ theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : M} :
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   have : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
+  simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 variable (L) (M)
 
@@ -415,7 +415,7 @@ instance [IsEmpty L.Constants] : IsEmpty (⊥ : L.Substructure M) := by
     cases n
     · exact isEmptyElim f
     · intro x hx
-      simp only [mem_empty_iff_false, forall_const] at hx
+      simp [mem_empty_iff_false, forall_const] at hx
   rw [← closure_empty, ← SetLike.mem_coe, h]
   exact Set.notMem_empty _
 

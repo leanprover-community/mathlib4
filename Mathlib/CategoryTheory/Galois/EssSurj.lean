@@ -249,7 +249,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
     let p : A ⟶ X := f ≫ Pi.π (fun Z : I => (Z : C)) ⟨X, hX⟩
     have : IsConnected X := hc X hX
     obtain ⟨a, rfl⟩ := surjective_of_nonempty_fiber_of_isConnected F p x
-    simp only [FintypeCat.id_apply, NatTrans.naturality_apply, h1 σ σinU]
+    simp [FintypeCat.id_apply, NatTrans.naturality_apply, h1 σ σinU]
   have hUinV : (U : Set (Aut F)) ≤ V := fun u uinU ↦ hi u (h2 u uinU)
   have := V.quotient_finite_of_isOpen' (U.subgroupOf V) V.isOpen (V.subgroupOf_isOpen U U.isOpen)
   exact ⟨colimit (quotientDiag V hUnormal u),

@@ -645,7 +645,7 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
     qExpansion h (f.pow n) = (qExpansion h f) ^ n := by
   induction n with
-  | zero => simp only [coe_pow, pow_zero, qExpansion_one]
+  | zero => simp [coe_pow, pow_zero, qExpansion_one]
   | succ n ih =>
     rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
       pow_succ]

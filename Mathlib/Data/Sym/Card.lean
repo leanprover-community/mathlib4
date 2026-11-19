@@ -88,7 +88,7 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
     refine (Sym.map_congr fun v hv ↦ ?_).trans (map_id' _)
     exact Fin.succAbove_predAbove (ne_of_mem_of_not_mem hv s.2)
   right_inv s := by
-    simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
+    simp [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
 
 theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
   | n, 0 => by simp

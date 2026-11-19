@@ -314,14 +314,14 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
         induction j with | op j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
-          simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
+          simp [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
   inv :=
     { hom := 𝟙 _
       w := fun j => by
         induction j with | op j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
-          simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
+          simp [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
@@ -362,7 +362,7 @@ def coneEquivCounitIso :
     fun {c d} f => by
     ext
     dsimp
-    simp only [Category.comp_id, Category.id_comp]
+    simp [Category.comp_id, Category.id_comp]
 
 set_option backward.defeqAttrib.useBackward true in
 /--

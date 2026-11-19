@@ -75,11 +75,11 @@ theorem mem_sInf {S : Set (Subsemigroup M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈
 
 @[to_additive (attr := simp)]
 theorem mem_iInf {ι : Sort*} {S : ι → Subsemigroup M} {x : M} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_mem_range]
+  simp [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_iInf {ι : Sort*} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
-  simp only [iInf, coe_sInf, Set.biInter_range]
+  simp [iInf, coe_sInf, Set.biInter_range]
 
 /-- subsemigroups of a monoid form a complete lattice. -/
 @[to_additive /-- The `AddSubsemigroup`s of an `AddMonoid` form a complete lattice. -/]
@@ -235,7 +235,7 @@ theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} 
 theorem mem_iSup {ι : Sort*} (p : ι → Subsemigroup M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← closure_singleton_le_iff_mem, le_iSup_iff]
-  simp only [closure_singleton_le_iff_mem]
+  simp [closure_singleton_le_iff_mem]
 
 @[to_additive]
 theorem iSup_eq_closure {ι : Sort*} (p : ι → Subsemigroup M) :
@@ -282,7 +282,7 @@ def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : cl
   toFun := f
   map_mul' x y :=
     dense_induction _ hs (fun y hy x => hmul x y hy)
-      (fun y₁ y₂ h₁ h₂ x => by simp only [← mul_assoc, h₁, h₂]) y x
+      (fun y₁ y₂ h₁ h₂ x => by simp [← mul_assoc, h₁, h₂]) y x
 
 /-- Let `s` be a subset of an additive semigroup `M` such that the closure of `s` is the whole
 semigroup.  Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof

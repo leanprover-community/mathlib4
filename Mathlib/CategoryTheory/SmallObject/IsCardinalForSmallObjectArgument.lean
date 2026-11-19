@@ -399,7 +399,7 @@ lemma πFunctorObj_eq (j : κ.ord.ToType) :
     ← cancel_epi (relativeCellComplexιObjFObjSuccIso I κ f j).hom, Iso.hom_inv_id_assoc]
   dsimp [relativeCellComplexιObjFObjSuccIso,
     relativeCellComplexιObj, transfiniteCompositionOfShapeιIterationAppRight]
-  simp only [reassoc_of% h₁, comp_id, comp_id, Arrow.w_mk_right, ← h₂,
+  simp [reassoc_of% h₁, comp_id, comp_id, Arrow.w_mk_right, ← h₂,
     NatTrans.comp_app, Arrow.comp_right,
     iterationFunctorMapSuccAppArrowIso_hom_right_right_comp_assoc]
 

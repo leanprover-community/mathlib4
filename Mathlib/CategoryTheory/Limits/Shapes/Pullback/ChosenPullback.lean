@@ -86,7 +86,7 @@ variable {h} {Y : C} {g₁ : Y ⟶ X₁} {g₂ : Y ⟶ X₂} {b : Y ⟶ S}
 
 @[reassoc]
 lemma w (l : h.LiftStruct g₁ g₂ b) : g₁ ≫ f₁ = g₂ ≫ f₂ := by
-  simp only [← l.f_p₁, ← l.f_p₂, Category.assoc, h.condition]
+  simp [← l.f_p₁, ← l.f_p₂, Category.assoc, h.condition]
 
 instance : Subsingleton (h.LiftStruct g₁ g₂ b) where
   allEq := by

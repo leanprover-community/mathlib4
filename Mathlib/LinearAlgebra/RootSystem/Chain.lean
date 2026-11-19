@@ -125,11 +125,11 @@ variable {i j}
 
 lemma chainTopCoeff_of_not_linearIndependent (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.chainTopCoeff i j = 0 := by
-  simp only [chainTopCoeff, h, reduceDIte]
+  simp [chainTopCoeff, h, reduceDIte]
 
 lemma chainBotCoeff_of_not_linearIndependent (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.chainBotCoeff i j = 0 := by
-  simp only [chainBotCoeff, h, reduceDIte]
+  simp [chainBotCoeff, h, reduceDIte]
 
 variable (h : LinearIndependent R ![P.root i, P.root j])
 include h
@@ -243,7 +243,7 @@ private lemma chainCoeff_reflectionPerm_left_aux :
       reflection_apply_self, smul_neg, ← neg_smul, P.root_add_zsmul_mem_range_iff h, mem_Icc]
     grind
   · have h' : ¬ LinearIndependent R ![P.root (-i), P.root j] := by simpa
-    simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
+    simp [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
 private lemma chainCoeff_reflectionPerm_right_aux :
@@ -258,7 +258,7 @@ private lemma chainCoeff_reflectionPerm_right_aux :
       reflection_apply_self, ← sub_neg_eq_add, ← neg_sub', neg_mem_range_root_iff,
       P.root_sub_zsmul_mem_range_iff h, mem_Icc]
   · have h' : ¬ LinearIndependent R ![P.root i, P.root (-j)] := by simpa
-    simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
+    simp [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
 @[simp]
@@ -388,7 +388,7 @@ lemma root_chainTopIdx :
   · simp only [chainTopIdx, reduceDIte, h]
     exact (P.root_add_nsmul_mem_range_iff_le_chainTopCoeff h).mpr
       (le_refl <| P.chainTopCoeff i j) |>.choose_spec
-  · simp only [chainTopIdx, chainTopCoeff, h, reduceDIte, zero_smul, add_zero]
+  · simp [chainTopIdx, chainTopCoeff, h, reduceDIte, zero_smul, add_zero]
 
 @[simp]
 lemma root_chainBotIdx :
@@ -397,7 +397,7 @@ lemma root_chainBotIdx :
   · simp only [chainBotIdx, reduceDIte, h]
     exact (P.root_sub_nsmul_mem_range_iff_le_chainBotCoeff h).mpr
       (le_refl <| P.chainBotCoeff i j) |>.choose_spec
-  · simp only [chainBotIdx, chainBotCoeff, h, reduceDIte, zero_smul, sub_zero]
+  · simp [chainBotIdx, chainBotCoeff, h, reduceDIte, zero_smul, sub_zero]
 
 include h
 

@@ -235,14 +235,14 @@ lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
 
 lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
-  .of_comp h.continuous h.symm.continuous <| by simp only [symm_comp_self, IsInducing.id]
+  .of_comp h.continuous h.symm.continuous <| by simp [symm_comp_self, IsInducing.id]
 
 theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
   h.isInducing.eq_induced.symm
 
 theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
   IsQuotientMap.of_comp h.symm.continuous h.continuous <| by
-    simp only [self_comp_symm, IsQuotientMap.id]
+    simp [self_comp_symm, IsQuotientMap.id]
 
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
   h.isQuotientMap.isCoinducing.eq_coinduced.symm
@@ -284,7 +284,7 @@ protected theorem isOpenQuotientMap (h : X ≃ₜ Y) : IsOpenQuotientMap h :=
 
 @[simp]
 theorem isClosed_preimage (h : X ≃ₜ Y) {s : Set Y} : IsClosed (h ⁻¹' s) ↔ IsClosed s := by
-  simp only [← isOpen_compl_iff, ← preimage_compl, isOpen_preimage]
+  simp [← isOpen_compl_iff, ← preimage_compl, isOpen_preimage]
 
 @[simp]
 theorem isClosed_image (h : X ≃ₜ Y) {s : Set X} : IsClosed (h '' s) ↔ IsClosed s := by
@@ -592,19 +592,19 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
 /-- Precomposing by a homeomorphism does not change the image of the interior of a preimage. -/
 theorem image_interior_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
     (f ∘ e) '' interior ((f ∘ e) ⁻¹' s) = f '' interior (f ⁻¹' s) := by
-  simp only [Set.preimage_comp, Set.image_comp, he.image_interior,
+  simp [Set.preimage_comp, Set.image_comp, he.image_interior,
     Set.image_preimage_eq _ he.surjective]
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
 /-- Precomposing by a homeomorphism does not change the image of the frontier of a preimage. -/
 theorem image_frontier_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
     (f ∘ e) '' frontier ((f ∘ e) ⁻¹' s) = f '' frontier (f ⁻¹' s) := by
-  simp only [Set.preimage_comp, Set.image_comp, he.image_frontier,
+  simp [Set.preimage_comp, Set.image_comp, he.image_frontier,
     Set.image_preimage_eq _ he.surjective]
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
 /-- Precomposing by a homeomorphism does not change the image of the closure of a preimage. -/
 theorem image_closure_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
     (f ∘ e) '' closure ((f ∘ e) ⁻¹' s) = f '' closure (f ⁻¹' s) := by
-  simp only [Set.preimage_comp, Set.image_comp, he.image_closure,
+  simp [Set.preimage_comp, Set.image_comp, he.image_closure,
     Set.image_preimage_eq _ he.surjective]

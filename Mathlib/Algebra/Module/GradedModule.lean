@@ -141,8 +141,8 @@ instance module [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M] 
   mul_smul := by exact mul_smul' _ _
   smul_add r := (smulAddMonoidHom A M r).map_add
   smul_zero r := (smulAddMonoidHom A M r).map_zero
-  add_smul r s x := by simp only [smul_def, map_add, AddMonoidHom.add_apply]
-  zero_smul x := by simp only [smul_def, map_zero, AddMonoidHom.zero_apply]
+  add_smul r s x := by simp [smul_def, map_add, AddMonoidHom.add_apply]
+  zero_smul x := by simp [smul_def, map_zero, AddMonoidHom.zero_apply]
 
 end
 

@@ -96,7 +96,7 @@ local notation "⟪" x ", " y "⟫" => inner A x y
 @[simp]
 lemma inner_add_left {x y z : E} : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ := by
   rw [← star_star (r := ⟪x + y, z⟫)]
-  simp only [inner_add_right, star_add, star_inner]
+  simp [inner_add_right, star_add, star_inner]
 
 @[simp]
 lemma inner_op_smul_left {a : A} {x y : E} : ⟪a • x, y⟫ = ⟪x, y⟫ * star a := by
@@ -239,8 +239,8 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
                 exact mul_star_self_nonneg ⟪x, y⟫_A
     _ = ‖x‖ ^ 2 * ‖⟪y, y⟫‖ := by simp [norm_smul]
     _ = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
-                simp only [norm_eq_sqrt_norm_inner_self (A := A), norm_nonneg, Real.sq_sqrt]
-    _ = (‖x‖ * ‖y‖) ^ 2 := by simp only [mul_pow]
+                simp [norm_eq_sqrt_norm_inner_self (A := A), norm_nonneg, Real.sq_sqrt]
+    _ = (‖x‖ * ‖y‖) ^ 2 := by simp [mul_pow]
   refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by simp)).mp this
   exact mul_nonneg (CStarModule.norm_nonneg A) (CStarModule.norm_nonneg A)
 

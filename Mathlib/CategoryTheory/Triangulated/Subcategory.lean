@@ -164,7 +164,7 @@ instance [P.IsTriangulatedClosed₂] : P.isoClosure.IsTriangulatedClosed₂ wher
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by simp) (by simp) (by
           dsimp
-          simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id,
+          simp [assoc, ← Functor.map_comp, e₁.hom_inv_id,
             Functor.map_id, comp_id]))) h₁ h₃)
 
 /-- The property that `P : ObjectProperty C` is a triangulated subcategory
@@ -489,7 +489,7 @@ instance : P.trW.RespectsIso where
     refine ⟨Z, g, h ≫ inv e⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
     refine Triangle.isoMk _ _ (asIso e) (Iso.refl _) (Iso.refl _) (by simp) (by simp) ?_
     dsimp
-    simp only [Functor.map_inv, assoc, IsIso.inv_hom_id, comp_id, id_comp]
+    simp [Functor.map_inv, assoc, IsIso.inv_hom_id, comp_id, id_comp]
   postcomp {X Y Y'} e (he : IsIso e) := by
     rintro f ⟨Z, g, h, mem, mem'⟩
     refine ⟨Z, inv e ≫ g, h, isomorphic_distinguished _ mem _ ?_, mem'⟩

@@ -182,7 +182,7 @@ theorem _root_.Function.Injective.sameRay_map_iff
     {F : Type*} [FunLike F M N] [LinearMapClass F R M N]
     {f : F} (hf : Function.Injective f) :
     SameRay R (f x) (f y) ↔ SameRay R x y := by
-  simp only [SameRay, map_zero, ← hf.eq_iff, map_smul]
+  simp [SameRay, map_zero, ← hf.eq_iff, map_smul]
 
 /-- The images of two vectors under a linear equivalence are on the same ray if and only if the
 original vectors are on the same ray. -/
@@ -381,7 +381,7 @@ variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R 
 /-- `SameRay.neg` as an `iff`. -/
 @[simp]
 theorem sameRay_neg_iff : SameRay R (-x) (-y) ↔ SameRay R x y := by
-  simp only [SameRay, neg_eq_zero, smul_neg, neg_inj]
+  simp [SameRay, neg_eq_zero, smul_neg, neg_inj]
 
 alias ⟨SameRay.of_neg, SameRay.neg⟩ := sameRay_neg_iff
 
@@ -453,7 +453,7 @@ theorem ne_neg_self [IsDomain R] [IsTorsionFree R M] (x : Module.Ray R M) : x �
 
 theorem neg_units_smul (u : Rˣ) (v : Module.Ray R M) : -u • v = -(u • v) := by
   induction v using Module.Ray.ind
-  simp only [smul_rayOfNeZero, Units.smul_def, Units.val_neg, neg_smul, neg_rayOfNeZero]
+  simp [smul_rayOfNeZero, Units.smul_def, Units.val_neg, neg_smul, neg_rayOfNeZero]
 
 /-- Scaling by a negative unit is negation. -/
 theorem units_smul_of_neg (u : Rˣ) (hu : (u : R) < 0) (v : Module.Ray R M) : u • v = -v := by
@@ -513,7 +513,7 @@ theorem sameRay_smul_right_iff {v : M} {r : R} : SameRay R v (r • v) ↔ 0 ≤
 is positive. -/
 theorem sameRay_smul_right_iff_of_ne {v : M} (hv : v ≠ 0) {r : R} (hr : r ≠ 0) :
     SameRay R v (r • v) ↔ 0 < r := by
-  simp only [sameRay_smul_right_iff, hv, or_false, hr.symm.le_iff_lt]
+  simp [sameRay_smul_right_iff, hv, or_false, hr.symm.le_iff_lt]
 
 @[simp]
 theorem sameRay_smul_left_iff {v : M} {r : R} : SameRay R (r • v) v ↔ 0 ≤ r ∨ v = 0 :=
@@ -531,7 +531,7 @@ theorem sameRay_neg_smul_right_iff {v : M} {r : R} : SameRay R (-v) (r • v) �
 
 theorem sameRay_neg_smul_right_iff_of_ne {v : M} {r : R} (hv : v ≠ 0) (hr : r ≠ 0) :
     SameRay R (-v) (r • v) ↔ r < 0 := by
-  simp only [sameRay_neg_smul_right_iff, hv, or_false, hr.le_iff_lt]
+  simp [sameRay_neg_smul_right_iff, hv, or_false, hr.le_iff_lt]
 
 @[simp]
 theorem sameRay_neg_smul_left_iff {v : M} {r : R} : SameRay R (r • v) (-v) ↔ r ≤ 0 ∨ v = 0 :=
@@ -544,7 +544,7 @@ theorem sameRay_neg_smul_left_iff_of_ne {v : M} {r : R} (hv : v ≠ 0) (hr : r �
 @[simp]
 theorem units_smul_eq_self_iff {u : Rˣ} {v : Module.Ray R M} : u • v = v ↔ 0 < (u : R) := by
   induction v using Module.Ray.ind with | h v hv =>
-  simp only [smul_rayOfNeZero, ray_eq_iff, Units.smul_def, sameRay_smul_left_iff_of_ne hv u.ne_zero]
+  simp [smul_rayOfNeZero, ray_eq_iff, Units.smul_def, sameRay_smul_left_iff_of_ne hv u.ne_zero]
 
 @[simp]
 theorem units_smul_eq_neg_iff {u : Rˣ} {v : Module.Ray R M} : u • v = -v ↔ u.val < 0 := by

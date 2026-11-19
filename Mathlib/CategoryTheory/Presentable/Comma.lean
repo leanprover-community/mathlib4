@@ -126,7 +126,7 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
         κ (isColimitOfPreserves (snd _ _ ⋙ F₂) hc)
         (F₁.map f₁ ≫ (G.obj j).hom) (f ≫ F₂.map f₂) (by
           dsimp
-          simp only [Category.assoc, ← Functor.map_comp, hf₂,
+          simp [Category.assoc, ← Functor.map_comp, hf₂,
             ← (c.ι.app j).w, Functor.const_obj_obj,
             ← Functor.map_comp_assoc, hf₁, g.w])
       refine ⟨j', { left := f₁ ≫ (G.map a).left, right := f₂ ≫ (G.map a).right }, ?_⟩

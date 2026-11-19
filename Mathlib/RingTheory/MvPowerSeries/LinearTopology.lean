@@ -52,7 +52,7 @@ noncomputable def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R 
   TwoSidedIdeal.mk' {f | ∀ e ≤ Jd.2, coeff e f ∈ Jd.1}
     (by simp [coeff_zero])
     (fun hf hg e he ↦ by rw [map_add]; exact add_mem (hf e he) (hg e he))
-    (fun {f} hf e he ↦ by simp only [map_neg, neg_mem, hf e he])
+    (fun {f} hf e he ↦ by simp [map_neg, neg_mem, hf e he])
     (fun {f g} hg e he ↦ by
       classical
       rw [coeff_mul]

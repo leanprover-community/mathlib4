@@ -176,7 +176,7 @@ theorem domRestrict_comp_codRestrict {f : ι → α} {g : α → β} {b : Set α
 @[simp]
 theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
     Injective (codRestrict f s h) ↔ Injective f := by
-  simp only [Injective, Subtype.ext_iff, val_codRestrict_apply]
+  simp [Injective, Subtype.ext_iff, val_codRestrict_apply]
 
 alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
 
@@ -245,7 +245,7 @@ theorem MapsTo.coe_iterate_restrict {f : α → α} (h : MapsTo f s s) (x : s) (
     h.restrict^[k] x = f^[k] x := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [iterate_succ', comp_apply, val_restrict_apply, ih]
+  | succ k ih => simp [iterate_succ', comp_apply, val_restrict_apply, ih]
 
 /-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
@@ -293,7 +293,7 @@ theorem image_restrictPreimage :
 
 variable (f) in
 theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
-  simp only [← image_univ, ← image_restrictPreimage, preimage_univ]
+  simp [← image_univ, ← image_restrictPreimage, preimage_univ]
 
 @[simp]
 theorem restrictPreimage_mk (h : a ∈ f ⁻¹' t) : t.restrictPreimage f ⟨a, h⟩ = ⟨f a, h⟩ := rfl

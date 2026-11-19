@@ -311,7 +311,7 @@ def Module.subsingletonEquiv (R M ι : Type*) [Semiring R] [Subsingleton R] [Add
   left_inv m :=
     have := Module.subsingleton R M
     Subsingleton.elim _ _
-  right_inv f := by simp only [eq_iff_true_of_subsingleton]
+  right_inv f := by simp [eq_iff_true_of_subsingleton]
   map_add' _ _ := (add_zero 0).symm
   map_smul' r _ := (smul_zero r).symm
 

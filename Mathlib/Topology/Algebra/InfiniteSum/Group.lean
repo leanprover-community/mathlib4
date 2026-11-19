@@ -76,7 +76,7 @@ theorem HasProd.update [L.LeAtTop] (hf : HasProd f a₁ L) (b : β) [DecidableEq
   by_cases h : b' = b
   · rw [h, update_self]
     simp
-  · simp only [h, update_of_ne, ite_false, Ne, one_mul, not_false_iff]
+  · simp [h, update_of_ne, ite_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
 theorem Multipliable.update [L.LeAtTop] (hf : Multipliable f L) (b : β) [DecidableEq β] (a : α) :
@@ -396,7 +396,7 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
   rcases finite_or_infinite β with hβ | hβ
   · let : Fintype β := Fintype.ofFinite β
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
-    simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]
+    simp [prod_const, Nat.card_eq_fintype_card, Fintype.card]
   · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
     rcases eq_or_ne a 1 with rfl | ha
     · simp

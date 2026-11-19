@@ -65,7 +65,7 @@ theorem apply_le_of_iteratedDeriv_nonneg {f : ℂ → ℂ} {c : ℂ} (hf : Diffe
     f c ≤ f z := by
   have h' (n : ℕ) : 0 ≤ iteratedDeriv n (f · - f c) c := by
     cases n with
-    | zero => simp only [iteratedDeriv_zero, sub_self, le_refl]
+    | zero => simp [iteratedDeriv_zero, sub_self, le_refl]
     | succ n =>
       specialize h (n + 1) n.succ_ne_zero
       rw [iteratedDeriv_succ'] at h ⊢
@@ -81,8 +81,8 @@ theorem apply_le_of_iteratedDeriv_alternating {f : ℂ → ℂ} {c : ℂ} (hf : 
   convert
     apply_le_of_iteratedDeriv_nonneg (f := fun z ↦ f (-z)) (hf.comp differentiable_neg)
       (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using 1
-  · simp only [neg_neg]
-  · simp only [neg_neg]
+  · simp [neg_neg]
+  · simp [neg_neg]
   · simpa only [iteratedDeriv_comp_neg, neg_neg, smul_eq_mul] using h n hn
 
 end Differentiable

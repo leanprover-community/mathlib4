@@ -117,7 +117,7 @@ theorem mapClusterPt_leftLim [TopologicalSpace α] [OrderTopology α]
     simp only [mem_map] at hs'
     apply mem_of_mem_nhdsWithin self_mem_Iic hs'
   rcases eq_or_neBot (𝓝[<] a) with h' | h'
-  · simp only [MapClusterPt, ClusterPt, h', leftLim_eq_of_eq_bot, A]
+  · simp [MapClusterPt, ClusterPt, h', leftLim_eq_of_eq_bot, A]
   by_cases! H : ¬ ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)
   · simp [MapClusterPt, ClusterPt, H, leftLim_eq_of_not_tendsto, A]
   have : MapClusterPt (f.leftLim a) (𝓝[<] a) f := (tendsto_leftLim_of_tendsto H).mapClusterPt

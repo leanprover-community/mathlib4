@@ -116,7 +116,7 @@ theorem colimitLimitToLimitColimit_injective :
             simp only [true_and, Finset.mem_univ,
               Finset.mem_image]
             refine ⟨j, ?_⟩
-            simp only))
+            simp))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
@@ -126,7 +126,7 @@ theorem colimitLimitToLimitColimit_injective :
             simp only [true_and, Finset.mem_univ,
               Finset.mem_image]
             refine ⟨j, ?_⟩
-            simp only))
+            simp))
     -- Our goal is now an equation between equivalence classes of representatives of a colimit,
     -- and so it suffices to show those representative become equal somewhere, in particular at `S`.
     apply colimit_sound' (T kxO) (T kyO)

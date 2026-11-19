@@ -101,9 +101,9 @@ lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1
     Nat.cast_pow, map_pow]
   rcases MulChar.isQuadratic_iff_sq_eq_one.mpr hχ p with h | h | h
   · refine Finset.sum_nonneg fun i _ ↦ ?_
-    simp only [h, le_refl, pow_nonneg]
+    simp [h, le_refl, pow_nonneg]
   · refine Finset.sum_nonneg fun i _ ↦ ?_
-    simp only [h, one_pow, zero_le_one]
+    simp [h, one_pow, zero_le_one]
   · simp only [h, neg_one_geom_sum]
     split_ifs
     exacts [le_rfl, zero_le_one]
@@ -112,7 +112,7 @@ lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1
 lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ) :
     0 ≤ zetaMul χ n := by
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [ArithmeticFunction.map_zero, le_refl]
+  · simp [ArithmeticFunction.map_zero, le_refl]
   · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using!
       Finset.prod_nonneg
         fun p hp ↦ zetaMul_prime_pow_nonneg hχ (Nat.prime_of_mem_primeFactors hp) _
@@ -157,7 +157,7 @@ private lemma F_differentiableAt_of_ne (B : BadChar N) {s : ℂ} (hs : s ≠ 1) 
 private lemma F_eq_LSeries (B : BadChar N) {s : ℂ} (hs : 1 < s.re) :
     B.F s = LSeries B.χ.zetaMul s := by
   rw [F, zetaMul, ← coe_mul, LSeries_convolution']
-  · have hs' : s ≠ 1 := fun h ↦ by simp only [h, one_re, lt_self_iff_false] at hs
+  · have hs' : s ≠ 1 := fun h ↦ by simp [h, one_re, lt_self_iff_false] at hs
     simp only [ne_eq, hs', not_false_eq_true, Function.update_of_ne, B.χ.LFunction_eq_LSeries hs]
     congr 1
     · simp_rw [← LSeries_zeta_eq_riemannZeta hs, ← natCoe_apply]
@@ -183,8 +183,8 @@ private lemma F_differentiable (B : BadChar N) : Differentiable ℂ B.F := by
   have : B.F = G * H := by
     ext1 t
     rcases eq_or_ne t 1 with rfl | ht
-    · simp only [F, G, H, Pi.mul_apply, one_mul, Function.update_self]
-    · simp only [F, G, H, Function.update_of_ne ht, mul_comm _ (riemannZeta _), B.hχ, sub_zero,
+    · simp [F, G, H, Pi.mul_apply, one_mul, Function.update_self]
+    · simp [F, G, H, Function.update_of_ne ht, mul_comm _ (riemannZeta _), B.hχ, sub_zero,
       Pi.mul_apply, mul_assoc, mul_div_cancel₀ _ (sub_ne_zero.mpr ht)]
   rw [this]
   apply ContinuousAt.mul
@@ -227,7 +227,7 @@ variable (χ : DirichletCharacter ℂ N)
 private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z : ℂ} (hz : ‖z‖ = 1) :
       0 ≤ 3 * (-log (1 - a)).re + 4 * (-log (1 - a * z)).re + (-log (1 - a * z ^ 2)).re := by
   have hac₀ : ‖(a : ℂ)‖ < 1 := by
-    simp only [Complex.norm_of_nonneg ha₀, ha₁]
+    simp [Complex.norm_of_nonneg ha₀, ha₁]
   have hac₁ : ‖a * z‖ < 1 := by rwa [norm_mul, hz, mul_one]
   have hac₂ : ‖a * z ^ 2‖ < 1 := by rwa [norm_mul, norm_pow, hz, one_pow, mul_one]
   rw [← ((hasSum_re <| hasSum_taylorSeries_neg_log hac₀).mul_left 3).add
@@ -256,18 +256,18 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
     have hz : ‖χ n * (n : ℂ) ^ (-(I * y))‖ = 1 := by
       rw [norm_mul, ← hn'.unit_spec, DirichletCharacter.unit_norm_eq_one χ hn'.unit,
         ← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos (mod_cast by lia)]
-      simp only [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
+      simp [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
     convert re_log_comb_nonneg' (by positivity) hn hz using 6
-    · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
+    · simp [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
       rw [neg_add, cpow_add _ _ <| mod_cast by lia, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, mul_left_comm]
     · rw [neg_add, cpow_add _ _ <| mod_cast by lia, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, show -(2 * I * y) = (2 : ℕ) * -(I * y) by ring, cpow_nat_mul, mul_pow,
         mul_left_comm]
-  · simp only [MulChar.map_nonunit _ hn', zero_mul, sub_zero, log_one, neg_zero, zero_re, mul_zero,
+  · simp [MulChar.map_nonunit _ hn', zero_mul, sub_zero, log_one, neg_zero, zero_re, mul_zero,
       neg_add_rev, add_zero, pow_two, le_refl]
 
 /-- The logarithms of the Euler factors of a Dirichlet L-series form a summable sequence. -/
@@ -278,11 +278,11 @@ lemma summable_neg_log_one_sub_mul_prime_cpow {s : ℂ} (hs : 1 < s.re) :
       using mul_le_of_le_one_left (by positivity) (χ.norm_le_one _)
   refine (Nat.Primes.summable_rpow.mpr ?_).of_nonneg_of_le (fun _ ↦ norm_nonneg _) this
     |>.of_norm.clog_one_sub.neg
-  simp only [neg_re, neg_lt_neg_iff, hs]
+  simp [neg_re, neg_lt_neg_iff, hs]
 
 private lemma one_lt_re_one_add {x : ℝ} (hx : 0 < x) (y : ℝ) :
     1 < (1 + x : ℂ).re ∧ 1 < (1 + x + I * y).re ∧ 1 < (1 + x + 2 * I * y).re := by
-  simp only [add_re, one_re, ofReal_re, lt_add_iff_pos_right, hx, mul_re, I_re, zero_mul, I_im,
+  simp [add_re, one_re, ofReal_re, lt_add_iff_pos_right, hx, mul_re, I_re, zero_mul, I_im,
     ofReal_im, mul_zero, sub_self, add_zero, re_ofNat, im_ofNat, mul_one, mul_im, and_self]
 
 open scoped LSeries.notation in
@@ -325,7 +325,7 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
     have H : Tendsto (fun w ↦ w * LFunctionTrivChar N (1 + w)) (𝓝[≠] 0)
         (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
       convert (LFunctionTrivChar_residue_one (N := N)).comp (f := fun w ↦ 1 + w) ?_ using 1
-      · simp only [Function.comp_def, add_sub_cancel_left]
+      · simp [Function.comp_def, add_sub_cancel_left]
       · simpa only [tendsto_iff_comap, Homeomorph.coe_addLeft, add_zero, map_le_iff_le_comap] using
           ((Homeomorph.addLeft (1 : ℂ)).map_punctured_nhds_eq 0).le
     exact (isBigO_mul_iff_isBigO_div eventually_mem_nhdsWithin).mp <| H.isBigO_one ℂ
@@ -361,7 +361,7 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
   intro Hz
   have hz₁ : t ≠ 0 ∨ χ ≠ 1 := by
     refine h.symm.imp_right (fun h H ↦ ?_)
-    simp only [H, one_pow, ne_eq, not_true_eq_false] at h
+    simp [H, one_pow, ne_eq, not_true_eq_false] at h
   have hz₂ : 2 * t ≠ 0 ∨ χ ^ 2 ≠ 1 :=
     h.symm.imp_left <| mul_ne_zero two_ne_zero
   have help (x : ℝ) : ((1 / x) ^ 3 * x ^ 4 * 1 : ℂ) = x := by

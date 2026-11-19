@@ -69,7 +69,7 @@ noncomputable def fromBiprod (n : ℕ) :
 
 @[reassoc (attr := simp)]
 lemma toBiprod_fromBiprod (n : ℕ) : S.toBiprod F n ≫ S.fromBiprod F n = 0 := by
-  simp only [toBiprod, fromBiprod, biprod.lift_desc, Preadditive.comp_neg,
+  simp [toBiprod, fromBiprod, biprod.lift_desc, Preadditive.comp_neg,
     ← sub_eq_add_neg, sub_eq_zero, ← Functor.map_comp, ← op_comp, S.toSquare.fac]
 
 lemma fromBiprod_biprodIsoProd_inv_apply {n : ℕ}

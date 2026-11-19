@@ -48,7 +48,7 @@ theorem val_eq_neg_one {a : αˣ} : (a : α) = -1 ↔ a = -1 := by
 
 instance : HasDistribNeg αˣ := val_injective.hasDistribNeg _ Units.val_neg val_mul
 
-theorem neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp only [divp, neg_mul]
+theorem neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp [divp, neg_mul]
 
 end HasDistribNeg
 
@@ -57,13 +57,13 @@ section Semiring
 variable [Semiring α]
 
 theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
-  simp only [divp, add_mul]
+  simp [divp, add_mul]
 
 theorem add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
-  simp only [divp, add_mul, Units.mul_inv_cancel_right]
+  simp [divp, add_mul, Units.mul_inv_cancel_right]
 
 theorem divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
-  simp only [divp, add_mul, Units.mul_inv_cancel_right]
+  simp [divp, add_mul, Units.mul_inv_cancel_right]
 
 end Semiring
 
@@ -75,7 +75,7 @@ theorem divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b)
   rw [sub_eq_add_neg, sub_eq_add_neg, neg_divp, divp_add_divp_same]
 
 theorem sub_divp (a b : α) (u : αˣ) : a - b /ₚ u = (a * u - b) /ₚ u := by
-  simp only [divp, sub_mul, Units.mul_inv_cancel_right]
+  simp [divp, sub_mul, Units.mul_inv_cancel_right]
 
 theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
   simp only [divp, sub_mul, sub_right_inj]
@@ -84,11 +84,11 @@ theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
 @[simp]
 protected theorem map_neg {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
     (f : F) (u : αˣ) : map (f : α →* β) (-u) = -map (f : α →* β) u :=
-  ext (by simp only [coe_map, Units.val_neg, MonoidHom.coe_ofClass, map_neg])
+  ext (by simp [coe_map, Units.val_neg, MonoidHom.coe_ofClass, map_neg])
 
 protected theorem map_neg_one {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
     (f : F) : map (f : α →* β) (-1) = -1 := by
-  simp only [Units.map_neg, map_one]
+  simp [Units.map_neg, map_one]
 
 end Ring
 
@@ -118,7 +118,7 @@ theorem divp_add_divp [CommSemiring α] (a b : α) (u₁ u₂ : αˣ) :
 
 theorem divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ - b /ₚ u₂ = (a * u₂ - u₁ * b) /ₚ (u₁ * u₂) := by
-  simp only [sub_eq_add_neg, neg_divp, divp_add_divp, mul_neg]
+  simp [sub_eq_add_neg, neg_divp, divp_add_divp, mul_neg]
 
 theorem add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (1 + ↑a⁻¹ * b) := by
   rw [mul_add, mul_one, ← mul_assoc, Units.mul_inv, one_mul]

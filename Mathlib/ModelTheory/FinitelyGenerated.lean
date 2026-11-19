@@ -100,7 +100,7 @@ theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
 
 set_option backward.isDefEq.respectTransparency false in
 theorem FG.of_finite {s : L.Substructure M} [h : Finite s] : s.FG :=
-  ⟨Set.Finite.toFinset h, by simp only [Finite.coe_toFinset, closure_eq]⟩
+  ⟨Set.Finite.toFinset h, by simp [Finite.coe_toFinset, closure_eq]⟩
 
 theorem FG.finite [L.IsRelational] {S : L.Substructure M} (h : S.FG) : Finite S := by
   obtain ⟨s, rfl⟩ := h
@@ -246,7 +246,7 @@ instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
   FG.countable_embedding N h
 
 theorem FG.of_finite [Finite M] : FG L M := by
-  simp only [fg_def, Substructure.FG.of_finite]
+  simp [fg_def, Substructure.FG.of_finite]
 
 theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
   Finite.of_finite_univ (Substructure.FG.finite (fg_def.1 h))
@@ -275,7 +275,7 @@ theorem cg_iff_countable [Countable (Σ l, L.Functions l)] : CG L M ↔ Countabl
   rw [cg_def, Substructure.cg_iff_countable, topEquiv.toEquiv.countable_iff]
 
 theorem cg_of_countable [Countable M] : CG L M := by
-  simp only [cg_def, Substructure.cg_of_countable]
+  simp [cg_def, Substructure.cg_of_countable]
 
 theorem FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg

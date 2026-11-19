@@ -57,16 +57,16 @@ theorem boxProd_adj {x y : α × β} :
 
 theorem boxProd_adj_left {a₁ : α} {b : β} {a₂ : α} :
     (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
-  simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
+  simp [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
 
 theorem boxProd_adj_right {a : α} {b₁ b₂ : β} : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
-  simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
+  simp [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 
 theorem neighborSet_boxProd (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
-  simp only [eq_comm, and_comm]
+  simp [eq_comm, and_comm]
 
 variable (G H)
 
@@ -78,7 +78,7 @@ def boxProdComm : G □ H ≃g H □ G := ⟨Equiv.prodComm _ _, or_comm⟩
 @[simps!]
 def boxProdAssoc (I : SimpleGraph γ) : G □ H □ I ≃g G □ (H □ I) :=
   ⟨Equiv.prodAssoc _ _ _, fun {x y} => by
-    simp only [boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
+    simp [boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
       and_assoc, @and_comm (x.fst.fst = _)]⟩
 
 /-- The embedding of `G` into `G □ H` given by `b`. -/
@@ -237,7 +237,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
     ((Equiv.refl _).subtypeEquiv fun y => by
       simp_rw [Finset.mem_disjUnion, Finset.mem_product, Finset.mem_singleton, mem_neighborFinset,
         mem_neighborSet, Equiv.refl_apply, boxProd_adj]
-      simp only [eq_comm, and_comm])
+      simp [eq_comm, and_comm])
 
 theorem neighborFinset_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
@@ -284,7 +284,7 @@ lemma edist_boxProd (x y : α × β) :
     refine le_antisymm ?_ ?_
     · calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := mod_cast w_len
-          _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
+          _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp [hwG, hwH]
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)

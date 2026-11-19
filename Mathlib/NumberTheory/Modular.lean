@@ -149,7 +149,7 @@ theorem tendsto_normSq_coprime_pair :
     · change (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
       rw [f_def, map_add, map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
-      simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
+      simp [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf
   have h₂ : Tendsto (fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p) cofinite (cocompact _) := by
     convert! Tendsto.pi_map_coprodᵢ fun _ => Int.tendsto_coe_cofinite
@@ -192,7 +192,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
     refine continuous_matrix ?_
-    simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
+    simp [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
   refine Filter.Tendsto.of_tendsto_comp ?_ (comap_cocompact_le hmB)
   let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
@@ -652,7 +652,7 @@ private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g 
   rcases hc with hc | hc
   · rcases cases_c_zero hz hg hc with h | h | h | h <;>
     rcases h with ⟨(rfl | rfl), -⟩ <;>
-    simp only [← zpow_neg_one, im_T_zpow_smul, im_T_smul, one_smul, SL_neg_smul]
+    simp [← zpow_neg_one, im_T_zpow_smul, im_T_smul, one_smul, SL_neg_smul]
   · rw [im_smul_eq_div_normSq, div_eq_iff (normSq_denom_pos _ z.im_ne_zero).ne',
     eq_comm, mul_eq_left₀ z.im_ne_zero]
     rcases Int.abs_le_one_iff.mp (cases_d_of_c_eq_one hz hden hc) with hd | hd | hd
@@ -974,7 +974,7 @@ lemma exists_one_half_le_im_smul_and_norm_denom_le (τ : ℍ) :
     ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) ∧ ‖denom γ τ‖ ≤ 1 := by
   rcases le_total (1 / 2) τ.im with h | h
   · exact ⟨1, (one_smul SL(2, ℤ) τ).symm ▸ h, by
-      simp only [map_one, denom_one, norm_one, le_refl]⟩
+      simp [map_one, denom_one, norm_one, le_refl]⟩
   · refine (exists_one_half_le_im_smul τ).imp (fun γ hγ ↦ ⟨hγ, ?_⟩)
     have h1 : τ.im ≤ (γ • τ).im := h.trans hγ
     rw [im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos γ τ.im_ne_zero),

@@ -57,7 +57,7 @@ theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
     rw [e, ← add_left_cancel_iff, div_add_mod, add_zero]
     have := Classical.dec
     by_cases b0 : b = 0
-    · simp only [b0, zero_mul]
+    · simp [b0, zero_mul]
     · rw [mul_div_cancel_left₀ _ b0]⟩
 
 @[simp]
@@ -115,7 +115,7 @@ theorem div_dvd_of_dvd {p q : R} (hpq : q ∣ p) : p / q ∣ p := by
 
 theorem dvd_div_of_mul_dvd {a b c : R} (h : a * b ∣ c) : b ∣ c / a := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · simp only [div_zero, dvd_zero]
+  · simp [div_zero, dvd_zero]
   rcases h with ⟨d, rfl⟩
   refine ⟨d, ?_⟩
   rw [mul_assoc, mul_div_cancel_left₀ _ ha]
@@ -127,7 +127,7 @@ variable [DecidableEq R]
 @[simp]
 theorem gcd_zero_right (a : R) : gcd a 0 = a := by
   rw [gcd]
-  split_ifs with h <;> simp only [h, zero_mod, gcd_zero_left]
+  split_ifs with h <;> simp [h, zero_mod, gcd_zero_left]
 
 theorem gcd_val (a b : R) : gcd a b = gcd (b % a) a := by
   rw [gcd]
@@ -262,7 +262,7 @@ theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := b
     subst hs
     rw [mul_left_comm, mul_div_cancel_left₀ _ hxy, ← mul_left_inj' hxy, hp]
     rw [← mul_assoc]
-    simp only [mul_right_comm]
+    simp [mul_right_comm]
   rw [gcd_eq_gcd_ab, mul_add]
   apply dvd_add
   · rw [mul_left_comm]
@@ -369,14 +369,14 @@ theorem mul_sub_div_right (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (x * z - y
 theorem div_mul {x y z : R} (h1 : y ∣ x) (h2 : y * z ∣ x) :
     x / (y * z) = x / y / z := by
   rcases eq_or_ne z 0 with rfl | hz
-  · simp only [mul_zero, div_zero]
+  · simp [mul_zero, div_zero]
   apply eq_div_of_mul_eq_right hz
   rw [← EuclideanDomain.mul_div_assoc z h2, mul_comm y z, mul_div_mul_cancel hz h1]
 
 theorem div_div {x y z : R} (h1 : y ∣ x) (h2 : z ∣ (x / y)) :
     x / y / z = x / (y * z) := by
   rcases eq_or_ne y 0 with rfl | hy
-  · simp only [div_zero, zero_div, zero_mul]
+  · simp [div_zero, zero_div, zero_mul]
   rw [← mul_dvd_mul_iff_left hy, EuclideanDomain.mul_div_cancel' hy h1] at h2
   exact (div_mul h1 h2).symm
 
@@ -396,7 +396,7 @@ theorem div_eq_iff_eq_mul_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) :
     x / y = z ↔ x = y * z := by
   obtain ⟨a, ha⟩ := h2
   rw [ha, mul_div_cancel_left₀ _ h1]
-  simp only [mul_eq_mul_left_iff, h1, or_false]
+  simp [mul_eq_mul_left_iff, h1, or_false]
 
 theorem eq_div_iff_mul_eq_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) :
     x = y / z ↔ z * x = y := by

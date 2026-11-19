@@ -182,7 +182,7 @@ theorem inseparable_iff_clusterPt_uniformity {x y : α} :
 
 theorem t0Space_iff_uniformity :
     T0Space α ↔ ∀ x y, (∀ r ∈ 𝓤 α, (x, y) ∈ r) → x = y := by
-  simp only [t0Space_iff_inseparable, inseparable_iff_ker_uniformity, mem_ker]
+  simp [t0Space_iff_inseparable, inseparable_iff_ker_uniformity, mem_ker]
 
 theorem t0Space_iff_uniformity' :
     T0Space α ↔ Pairwise fun x y ↦ ∃ r ∈ 𝓤 α, (x, y) ∉ r := by
@@ -264,7 +264,7 @@ instance instUniformSpace : UniformSpace (SeparationQuotient α) where
     exact @hUt (x, z) ⟨y', this.mem_open (hUo.preimage (Continuous.prodMk_right x)) hxyU, hyzU⟩
   nhds_eq_comap_uniformity := surjective_mk.forall.2 fun x ↦ comap_injective surjective_mk <| by
     conv_lhs => rw [comap_mk_nhds_mk, nhds_eq_comap_uniformity, ← comap_map_mk_uniformity]
-    simp only [Filter.comap_comap, Function.comp_def, Prod.map_apply]
+    simp [Filter.comap_comap, Function.comp_def, Prod.map_apply]
 
 theorem uniformity_eq : 𝓤 (SeparationQuotient α) = (𝓤 α).map (Prod.map mk mk) := rfl
 
@@ -334,7 +334,7 @@ theorem map_id : map (@id α) = id := map_unique uniformContinuous_id rfl
 
 theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg : UniformContinuous g) :
     map g ∘ map f = map (g ∘ f) :=
-  (map_unique (hg.comp hf) <| by simp only [Function.comp_def, map_mk, hf, hg]).symm
+  (map_unique (hg.comp hf) <| by simp [Function.comp_def, map_mk, hf, hg]).symm
 
 end SeparationQuotient
 

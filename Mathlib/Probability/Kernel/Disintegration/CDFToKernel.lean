@@ -510,7 +510,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
   -- measurable set `t`.
   induction t, ht
     using MeasurableSpace.induction_on_inter (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic with
-  | empty => simp only [measure_empty, lintegral_const, zero_mul, prod_empty]
+  | empty => simp [measure_empty, lintegral_const, zero_mul, prod_empty]
   | basic t ht =>
     obtain ⟨q, rfl⟩ := ht
     exact setLIntegral_toKernel_Iic hf a _ hs
@@ -530,7 +530,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     _ = κ a (s ×ˢ tᶜ) := by
         rw [← measure_sdiff _ (hs.prod ht).nullMeasurableSet (measure_ne_top _ _)]
         · rw [prod_sdiff_prod, compl_eq_univ_sdiff]
-          simp only [sdiff_self, empty_prod, union_empty]
+          simp [sdiff_self, empty_prod, union_empty]
         · rw [prod_subset_prod_iff]
           exact Or.inl ⟨subset_rfl, subset_univ t⟩
   | iUnion f hf_disj hf_meas ihf =>
@@ -552,7 +552,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
   induction s, hs
     using MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod with
   | empty =>
-    simp only [preimage_empty, measure_empty, lintegral_const, zero_mul]
+    simp [preimage_empty, measure_empty, lintegral_const, zero_mul]
   | basic s hs =>
     rcases hs with ⟨t₁, ht₁, t₂, ht₂, rfl⟩
     simp only [mem_ofPred_eq] at ht₁ ht₂
@@ -566,10 +566,10 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
       suffices h_eq_zero :
           ∀ x ∈ t₁ᶜ, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) = 0 by
         rw [setLIntegral_congr_fun ht₁.compl h_eq_zero]
-        simp only [lintegral_const, zero_mul]
+        simp [lintegral_const, zero_mul]
       intro a hat₁
       rw [mem_compl_iff] at hat₁
-      simp only [hat₁, not_false_eq_true, mk_preimage_prod_right_eq_empty, measure_empty]
+      simp [hat₁, not_false_eq_true, mk_preimage_prod_right_eq_empty, measure_empty]
     rw [h_eq1, h_eq2, add_zero]
     exact setLIntegral_toKernel_prod hf a ht₁ ht₂
   | compl t ht ht_eq =>
@@ -594,7 +594,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     _ = κ a tᶜ := (measure_compl ht (measure_ne_top _ _)).symm
   | iUnion f' hf_disj hf_meas hf_eq =>
     have h_eq : ∀ a, Prod.mk a ⁻¹' ⋃ i, f' i = ⋃ i, Prod.mk a ⁻¹' f' i := by
-      simp only [preimage_iUnion, implies_true]
+      simp [preimage_iUnion, implies_true]
     simp_rw [h_eq]
     have h_disj : ∀ a, Pairwise (Disjoint on fun i ↦ Prod.mk a ⁻¹' f' i) := by
       intro _ _ _ hij

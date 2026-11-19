@@ -141,7 +141,7 @@ theorem coe_sInf (S : Set (Subalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ 
 
 @[simp]
 theorem mem_sInf {S : Set (Subalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
-  simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
+  simp [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
 @[simp]
 theorem sInf_toSubmodule (S : Set (Subalgebra R A)) :
@@ -175,7 +175,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : S
 
 @[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_mem_range]
+  simp [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : A →ₐ[R] B) (hf : Function.Injective f)
     (s : ι → Subalgebra R A) : (iInf s).map f = ⨅ (i : ι), (s i).map f := by
@@ -191,12 +191,12 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
 @[simp]
 theorem iInf_toSubsemiring {ι : Sort*} (S : ι → Subalgebra R A) :
     (iInf S).toSubsemiring = ⨅ i, (S i).toSubsemiring := by
-  simp only [iInf, sInf_toSubsemiring, ← Set.range_comp, Function.comp_def]
+  simp [iInf, sInf_toSubsemiring, ← Set.range_comp, Function.comp_def]
 
 @[simp]
 theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A) :
     (iSup S).toSubsemiring = ⨆ i, (S i).toSubsemiring := by
-  simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp, Function.comp_def]
+  simp [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp, Function.comp_def]
 
 lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Subalgebra R A} (i : ι) {x : A} (hx : x ∈ S i) :
     x ∈ iSup S :=
@@ -346,7 +346,7 @@ instance : Unique (Subalgebra R R) :=
       intro S
       refine le_antisymm ?_ bot_le
       intro _ _
-      simp only [Set.mem_range, mem_bot, algebraMap_self_apply, exists_apply_eq_apply, default] }
+      simp [Set.mem_range, mem_bot, algebraMap_self_apply, exists_apply_eq_apply, default] }
 
 section Center
 
@@ -866,7 +866,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
 theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
-  simp only [← this, SetLike.coe_subset_coe, adjoin_le_iff]
+  simp [← this, SetLike.coe_subset_coe, adjoin_le_iff]
 
 theorem adjoin_ext {s : Set A} ⦃φ₁ φ₂ : adjoin R s →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin hx⟩ = φ₂ ⟨x, subset_adjoin hx⟩) : φ₁ = φ₂ :=

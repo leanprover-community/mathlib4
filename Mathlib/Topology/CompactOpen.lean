@@ -154,7 +154,7 @@ then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology 
 theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
     IsInducing (g.comp : C(X, Y) → C(X, Z)) where
   eq_induced := by
-    simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, hg.setOfPred_isOpen,
+    simp [compactOpen_eq, induced_generateFrom_eq, image_image2, hg.setOfPred_isOpen,
       image2_image_right, MapsTo, mem_preimage, preimage_ofPred_eq, comp_apply]
 
 /-- If `g : C(Y, Z)` is a topological embedding,
@@ -329,7 +329,7 @@ lemma specializes_coe {f g : C(X, Y)} : ⇑f ⤳ ⇑g ↔ f ⤳ g := by
 
 @[norm_cast]
 lemma inseparable_coe {f g : C(X, Y)} : Inseparable (f : X → Y) g ↔ Inseparable f g := by
-  simp only [inseparable_iff_specializes_and, specializes_coe]
+  simp [inseparable_iff_specializes_and, specializes_coe]
 
 instance [T0Space Y] : T0Space C(X, Y) :=
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coeFun
@@ -411,7 +411,7 @@ theorem compactOpen_eq_iInf_induced :
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
     𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_iInf_induced]
-  simp only [nhds_iInf, nhds_induced]
+  simp [nhds_iInf, nhds_induced]
 
 theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set X) :

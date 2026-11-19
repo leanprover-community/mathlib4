@@ -106,8 +106,8 @@ theorem eq_neg_of_valMinAbs_eq_neg_valMinAbs (h : a.valMinAbs = -b.valMinAbs) : 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma valMinAbs_zero : ∀ n, (0 : ZMod n).valMinAbs = 0
-  | 0 => by simp only [valMinAbs_def_zero]
-  | n + 1 => by simp only [valMinAbs_def_pos, ite_true, Int.ofNat_zero, zero_le, val_zero]
+  | 0 => by simp [valMinAbs_def_zero]
+  | n + 1 => by simp [valMinAbs_def_pos, ite_true, Int.ofNat_zero, zero_le, val_zero]
 
 @[simp]
 lemma valMinAbs_eq_zero (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 :=

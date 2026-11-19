@@ -366,12 +366,12 @@ lemma finite_universalFactorizationMap :
     refine RingHom.IsIntegralElem.mul _ ?_ ?_
     · induction x using MvPolynomial.induction_on with
       | C a => simpa using! (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
-      | add p q _ _ => simp only [TensorProduct.add_tmul, RingHom.IsIntegralElem.add, *]
+      | add p q _ _ => simp [TensorProduct.add_tmul, RingHom.IsIntegralElem.add, *]
       | mul_X p i IH => simpa [← map_mul] using! IH.mul _ (H₁ i)
     · induction y using MvPolynomial.induction_on with
       | C a => simpa [← algebraMap_eq, ← algebraMap_apply, Algebra.algebraMap_eq_smul_one] using!
           (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
-      | add p q _ _ => simp only [TensorProduct.tmul_add, RingHom.IsIntegralElem.add, *]
+      | add p q _ _ => simp [TensorProduct.tmul_add, RingHom.IsIntegralElem.add, *]
       | mul_X p i IH => simpa [← map_mul] using! IH.mul _ (H₂ i)
 
 end MvPolynomial
@@ -406,7 +406,7 @@ def UniversalFactorizationRing.fromTensor :
 /-- The image of `p` in the universal factorization ring of `p`. -/
 @[simps] def UniversalFactorizationRing.monicDegreeEq :
     MonicDegreeEq 𝓡 n :=
-  ⟨p.1.map (algebraMap _ _), by simp +contextual only [Polynomial.coeff_map, p.2,
+  ⟨p.1.map (algebraMap _ _), by simp +contextual [Polynomial.coeff_map, p.2,
     map_one, map_zero, gt_iff_lt, implies_true, and_self]⟩
 
 lemma UniversalFactorizationRing.fromTensor_comp_universalFactorizationMap :

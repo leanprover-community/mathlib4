@@ -378,7 +378,7 @@ theorem _root_.Set.exists_isOpen_lt_add [OuterRegular μ] (A : Set α) (hA : μ 
 theorem _root_.Set.exists_isOpen_le_add (A : Set α) (μ : Measure α) [OuterRegular μ] {ε : ℝ≥0∞}
     (hε : ε ≠ 0) : ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U ≤ μ A + ε := by
   rcases eq_or_ne (μ A) ∞ with (H | H)
-  · exact ⟨univ, subset_univ _, isOpen_univ, by simp only [H, _root_.top_add, le_top]⟩
+  · exact ⟨univ, subset_univ _, isOpen_univ, by simp [H, _root_.top_add, le_top]⟩
   · rcases A.exists_isOpen_lt_add H hε with ⟨U, AU, U_open, hU⟩
     exact ⟨U, AU, U_open, hU.le⟩
 
@@ -633,7 +633,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     refine
       ⟨Uᶜ, compl_subset_compl.2 hsU, Fᶜ, compl_subset_compl.2 hFs, hUo.isClosed_compl,
         hFc.isOpen_compl, ?_⟩
-    simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and]
+    simp [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and]
   -- check for disjoint unions
   · intro s hsd hsm H ε ε0
     have ε0' : ε / 2 ≠ 0 := (ENNReal.half_pos ε0).ne'
@@ -982,7 +982,7 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
   · constructor
     convert! InnerRegularWRT.smul h.innerRegular c using 2 with s
     have : (c • μ) s ≠ ∞ ↔ μ s ≠ ∞ := by simp [ENNReal.mul_eq_top, hc, h'c]
-    simp only [this]
+    simp [this]
 
 instance smul_nnreal [InnerRegularCompactLTTop μ] (c : ℝ≥0) :
     InnerRegularCompactLTTop (c • μ) :=

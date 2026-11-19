@@ -97,7 +97,7 @@ theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree :=
   natDegree_divX_eq_natDegree_tsub_one.trans_le (Nat.pred_le _)
 
 theorem divX_C_mul_X_pow : divX (C a * X ^ n) = if n = 0 then 0 else C a * X ^ (n - 1) := by
-  simp only [divX_C_mul, divX_X_pow, mul_ite, mul_zero]
+  simp [divX_C_mul, divX_X_pow, mul_ite, mul_zero]
 
 theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
   have := Nontrivial.of_polynomial_ne hp0

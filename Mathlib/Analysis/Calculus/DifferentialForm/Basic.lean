@@ -135,7 +135,7 @@ is the 1-form given by the derivative of `f` within the set. -/
 theorem extDerivWithin_constOfIsEmpty (f : E → F) (hs : UniqueDiffWithinAt 𝕜 s x) :
     extDerivWithin (fun x ↦ constOfIsEmpty 𝕜 E (Fin 0) (f x)) s x =
       .ofSubsingleton _ _ _ (0 : Fin 1) (fderivWithin 𝕜 f s x) := by
-  simp only [extDerivWithin, ← constOfIsEmptyLIE_apply, ← Function.comp_def _ f,
+  simp [extDerivWithin, ← constOfIsEmptyLIE_apply, ← Function.comp_def _ f,
     (constOfIsEmptyLIE 𝕜 E F (Fin 0)).comp_fderivWithin hs,
     alternatizeUncurryFin_constOfIsEmptyLIE_comp]
 
@@ -148,7 +148,7 @@ theorem extDeriv_constOfIsEmpty (f : E → F) (x : E) :
 
 theorem Filter.EventuallyEq.extDerivWithin_eq (hs : ω₁ =ᶠ[𝓝[s] x] ω₂) (hx : ω₁ x = ω₂ x) :
     extDerivWithin ω₁ s x = extDerivWithin ω₂ s x := by
-  simp only [extDerivWithin, alternatizeUncurryFin, hs.fderivWithin_eq hx]
+  simp [extDerivWithin, alternatizeUncurryFin, hs.fderivWithin_eq hx]
 
 theorem Filter.EventuallyEq.extDerivWithin_eq_of_mem (hs : ω₁ =ᶠ[𝓝[s] x] ω₂) (hx : x ∈ s) :
     extDerivWithin ω₁ s x = extDerivWithin ω₂ s x :=

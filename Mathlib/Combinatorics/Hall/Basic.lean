@@ -78,7 +78,7 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
     apply (all_card_le_biUnion_card_iff_existsInjective' fun i : ι' => t i).mp
     intro s'
     convert h (s'.image (↑)) using 1
-    · simp only [card_image_of_injective s' Subtype.coe_injective]
+    · simp [card_image_of_injective s' Subtype.coe_injective]
     · rw [image_biUnion]
 
 /-- This is the `hallMatchingsOn` sets assembled into a directed system.
@@ -133,7 +133,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       refine ⟨?_, ?_, ?_⟩
       · -- Build the matching function from the section
         exact fun i =>
-          (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [mem_singleton]⟩
+          (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp [mem_singleton]⟩
       · -- Show that it is injective
         intro i i'
         have subi : ({i} : Finset ι) ⊆ {i, i'} := by simp

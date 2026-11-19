@@ -89,7 +89,7 @@ section Metric
 
 noncomputable local instance : PseudoMetricSpace ℕ where
   dist := fun n m ↦ |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|
-  dist_self := by simp only [zpow_neg, zpow_natCast, sub_self, abs_zero, implies_true]
+  dist_self := by simp [zpow_neg, zpow_natCast, sub_self, abs_zero, implies_true]
   dist_comm := fun _ _ ↦ abs_sub_comm ..
   dist_triangle := fun _ _ _ ↦ abs_sub_le ..
 
@@ -180,7 +180,7 @@ lemma fundamentalEntourage_ext (t : ℕ) (T : Set (ℕ × ℕ)) : fundamentalEnt
 
 lemma mem_range_fundamentalEntourage (S : Set (ℕ × ℕ)) :
     S ∈ (range fundamentalEntourage) ↔ ∃ n, fundamentalEntourage n = S := by
-  simp only [Set.mem_range, Eq.symm]
+  simp [Set.mem_range, Eq.symm]
 
 lemma mem_fundamentalEntourage (n : ℕ) (P : ℕ × ℕ) : P ∈ fundamentalEntourage n ↔
     (n ≤ P.1 ∧ n ≤ P.2) ∨ (P.1 = P.2) := by

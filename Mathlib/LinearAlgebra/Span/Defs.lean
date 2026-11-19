@@ -110,7 +110,7 @@ lemma coe_span_eq_self [SetLike S M] [AddSubmonoidClass S M] [SMulMemClass S R M
 theorem span_insert_zero : span R (insert (0 : M) s) = span R s := by
   refine le_antisymm ?_ (Submodule.span_mono (Set.subset_insert 0 s))
   rw [span_le, Set.insert_subset_iff]
-  exact ⟨by simp only [SetLike.mem_coe, Submodule.zero_mem], Submodule.subset_span⟩
+  exact ⟨by simp [SetLike.mem_coe, Submodule.zero_mem], Submodule.subset_span⟩
 
 @[simp]
 lemma span_sdiff_singleton_zero : span R (s \ {0}) = span R s := by
@@ -182,7 +182,7 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
       | mem _ h =>
         obtain ⟨r₂, -, x, hx, rfl⟩ := h
         exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
-      | zero => simp only [smul_zero, zero_mem]
+      | zero => simp [smul_zero, zero_mem]
       | add _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
   case of_mem_closure =>
     refine closure_le.2 ?_ hx
@@ -328,7 +328,7 @@ meta def span.unexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 theorem span_eq_iSup_of_singleton_spans (s : Set M) : span R s = ⨆ x ∈ s, R ∙ x := by
-  simp only [← span_iUnion, Set.biUnion_of_singleton s]
+  simp [← span_iUnion, Set.biUnion_of_singleton s]
 
 theorem span_range_eq_iSup {ι : Sort*} {v : ι → M} : span R (range v) = ⨆ i, R ∙ v i := by
   rw [span_eq_iSup_of_singleton_spans, iSup_range]
@@ -362,7 +362,7 @@ theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : 
 theorem mem_sSup_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
     (hdir : DirectedOn (· ≤ ·) s) : z ∈ sSup s ↔ ∃ y ∈ s, z ∈ y := by
   have : Nonempty s := hs.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists,
+  simp [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists,
     exists_prop]
 
 @[norm_cast, simp]
@@ -394,7 +394,7 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
     exact add_mem ((le_sup_left : p ≤ p ⊔ p') hy) ((le_sup_right : p' ≤ p ⊔ p') hz)⟩
 
 theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
-  mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
+  mem_sup.trans <| by simp [Subtype.exists, exists_prop]
 
 theorem codisjoint_iff_exists_add_eq :
     Codisjoint p p' ↔ ∀ z, ∃ x y, x ∈ p ∧ y ∈ p' ∧ x + y = z := by
@@ -574,7 +574,7 @@ theorem lt_sup_iff_notMem {I : Submodule R M} {a : M} : I < I ⊔ R ∙ a ↔ a 
 theorem mem_iSup {ι : Sort*} (p : ι → Submodule R M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← span_singleton_le_iff_mem, le_iSup_iff]
-  simp only [span_singleton_le_iff_mem]
+  simp [span_singleton_le_iff_mem]
 
 theorem mem_sSup {s : Set (Submodule R M)} {m : M} :
     (m ∈ sSup s) ↔ ∀ N, (∀ p ∈ s, p ≤ N) → m ∈ N := by

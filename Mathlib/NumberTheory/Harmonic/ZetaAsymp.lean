@@ -95,7 +95,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
     term n 1 = (log (n + 1) - log n) - 1 / (n + 1) := by
   have hv : ∀ x ∈ uIcc (n : ℝ) (n + 1), 0 < x := by
     intro x hx
-    rw [uIcc_of_le (by simp only [le_add_iff_nonneg_right, zero_le_one])] at hx
+    rw [uIcc_of_le (by simp [le_add_iff_nonneg_right, zero_le_one])] at hx
     exact (Nat.cast_pos.mpr hn).trans_le hx.1
   calc term n 1
     _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ 2 := by
@@ -169,7 +169,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     - n / s * (1 / n ^ s - 1 / (n + 1) ^ s) := by
   have hv : ∀ x ∈ uIcc (n : ℝ) (n + 1), 0 < x := by
     intro x hx
-    rw [uIcc_of_le (by simp only [le_add_iff_nonneg_right, zero_le_one])] at hx
+    rw [uIcc_of_le (by simp [le_add_iff_nonneg_right, zero_le_one])] at hx
     exact (Nat.cast_pos.mpr hn).trans_le hx.1
   calc term n s
     _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ (s + 1) := by rfl
@@ -394,7 +394,7 @@ lemma tendsto_Gamma_term_aux : Tendsto (fun s ↦ 1 / (s - 1) - 1 / Gammaℝ s /
   refine this.congr' ?_
   have : {z | 0 < re z} ∈ 𝓝 (1 : ℂ) := by
     apply (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds
-    simp only [mem_preimage, one_re, mem_Ioi, zero_lt_one]
+    simp [mem_preimage, one_re, mem_Ioi, zero_lt_one]
   rw [EventuallyEq, eventually_nhdsWithin_iff]
   filter_upwards [this] with a ha _
   rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' (Gammaℝ_ne_zero_of_re_pos ha), one_mul]

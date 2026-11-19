@@ -376,7 +376,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       | succ n IH =>
         refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
           (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
-        simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, ite_false,
+        simp [hf, hm n.lt_succ_self, Part.bind_some, List.headI, ite_false,
           Part.mem_some_iff, List.tail_cons]
 
 end Code
@@ -525,13 +525,13 @@ def Cont.then : Cont → Cont → Cont
 set_option backward.isDefEq.respectTransparency false in
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
-  | halt => simp only [Cont.eval, Cont.then, pure_bind]
-  | cons₁ => simp only [Cont.eval, Cont.then, bind_assoc, *]
-  | cons₂ => simp only [Cont.eval, Cont.then, *]
-  | comp _ _ k_ih => simp only [Cont.eval, Cont.then, bind_assoc, ← k_ih]
+  | halt => simp [Cont.eval, Cont.then, pure_bind]
+  | cons₁ => simp [Cont.eval, Cont.then, bind_assoc, *]
+  | cons₂ => simp [Cont.eval, Cont.then, *]
+  | comp _ _ k_ih => simp [Cont.eval, Cont.then, bind_assoc, ← k_ih]
   | fix _ _ k_ih =>
     simp only [Cont.eval, Cont.then, *]
-    split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
+    split_ifs <;> [rfl; simp [← k_ih, bind_assoc]]
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
 `k` to the continuation of a `Cfg.ret` state, and to run `k` on `v` if we are in the `Cfg.halt v`
@@ -548,9 +548,9 @@ theorem stepNormal_then (c) (k k' : Cont) (v) :
   induction c generalizing k v with simp only [stepNormal, *]
   | cons c c' ih _ => rw [← ih, Cont.then]
   | comp c c' _ ih' => rw [← ih', Cont.then]
-  | case => cases v.headI <;> simp only [Nat.rec_zero]
+  | case => cases v.headI <;> simp [Nat.rec_zero]
   | fix c ih => rw [← ih, Cont.then]
-  | _ => simp only [Cfg.then]
+  | _ => simp [Cfg.then]
 
 /-- The `stepRet` function respects the `then k'` homomorphism. Note that this is an exact
 equality, not a simulation; the original and embedded machines move in lock-step until the
@@ -567,7 +567,7 @@ theorem stepRet_then {k k' : Cont} {v} : stepRet (k.then k') v = (stepRet k v).t
     · rw [← k_ih]
     · rw [← stepNormal_then]
       rfl
-  | _ => simp only [Cfg.then]
+  | _ => simp [Cfg.then]
 
 open StateTransition
 
@@ -691,7 +691,7 @@ theorem code_is_ok (c) : Code.Ok c := by
     simp only [Code.eval]
     cases v.headI <;> simp only [Nat.rec_zero, Part.bind_eq_bind] <;> [apply IHf; apply IHg]
   | fix f IHf => rw [cont_eval_fix IHf]
-  | _ => simp only [Code.eval, pure_bind]
+  | _ => simp [Code.eval, pure_bind]
 
 theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt <$> c.eval v :=
   (code_is_ok c).zero

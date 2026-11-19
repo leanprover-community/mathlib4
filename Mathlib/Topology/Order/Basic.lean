@@ -355,7 +355,7 @@ theorem nhdsGE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderT
 @[to_dual nhdsLE_eq_iInf_principal]
 theorem nhdsGE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
-  simp only [nhdsGE_eq_iInf_inf_principal, biInf_inf ha, inf_principal, Iio_inter_Ici]
+  simp [nhdsGE_eq_iInf_inf_principal, biInf_inf ha, inf_principal, Iio_inter_Ici]
 
 @[to_dual nhdsLE_basis_of_exists_lt]
 theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}

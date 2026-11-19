@@ -172,7 +172,7 @@ theorem lift_of' : lift (fun i ↦ (of : M i →* CoprodI M)) = .id (CoprodI M) 
 
 theorem of_leftInverse [DecidableEq ι] (i : ι) :
     Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x => by
-  simp only [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply]
+  simp [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply]
 
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
@@ -182,7 +182,7 @@ theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
   rw [lift, Equiv.coe_fn_mk, Con.lift_range, FreeMonoid.mrange_lift,
     range_sigma_eq_iUnion_range, Submonoid.closure_iUnion]
-  simp +instances only [MonoidHom.mclosure_range]
+  simp +instances [MonoidHom.mclosure_range]
 
 theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N} :
     MonoidHom.mrange (lift f) ≤ s ↔ ∀ i, MonoidHom.mrange (f i) ≤ s := by
@@ -255,7 +255,7 @@ theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = �
   apply le_antisymm (lift_range_le _ f fun i => le_iSup (fun i => MonoidHom.range (f i)) i)
   apply iSup_le _
   rintro i _ ⟨x, rfl⟩
-  exact ⟨of x, by simp only [lift_of]⟩
+  exact ⟨of x, by simp [lift_of]⟩
 
 end Group
 

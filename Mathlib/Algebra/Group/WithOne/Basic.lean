@@ -114,7 +114,7 @@ theorem mapMulHom_injective {f : α →ₙ* β} (hf : Function.Injective f) :
 @[to_additive]
 theorem mapMulHom_injective' :
     Function.Injective (WithOne.mapMulHom (α := α) (β := β)) :=
-  fun f g h ↦ MulHom.ext fun x ↦ coe_injective <| by simp only [← mapMulHom_coe, h]
+  fun f g h ↦ MulHom.ext fun x ↦ coe_injective <| by simp [← mapMulHom_coe, h]
 
 @[to_additive (attr := simp)]
 theorem mapMulHom_inj {f g : α →ₙ* β} : mapMulHom f = mapMulHom g ↔ f = g :=

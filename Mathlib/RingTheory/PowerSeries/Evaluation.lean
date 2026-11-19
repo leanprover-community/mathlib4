@@ -198,7 +198,7 @@ theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε a) := by
-  refine eval₂_unique (by simp only [RingHom.coe_comp, hε.comp hφ]) (ha.map hε)
+  refine eval₂_unique (by simp [RingHom.coe_comp, hε.comp hφ]) (ha.map hε)
     (hε.comp (continuous_eval₂ hφ ha)) (fun p ↦ ?_)
   simpa [Function.comp_apply, eval₂_coe] using p.hom_eval₂ φ ε a
 

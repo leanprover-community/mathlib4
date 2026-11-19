@@ -54,7 +54,7 @@ def mul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
 
 @[simp] lemma mul_tprod_tprod (x y : (i : ι) → A i) :
     mul (tprod R x) (tprod R y) = tprod R (x * y) := by
-  simp only [mul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply', Pi.mul_def]
+  simp [mul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply', Pi.mul_def]
 
 instance instMul : Mul (⨂[R] i, A i) where
   mul x y := mul x y
@@ -76,7 +76,7 @@ nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a
 
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by
-  simp only [mul_def, map_smul, LinearMap.smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
+  simp [mul_def, map_smul, LinearMap.smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
@@ -240,7 +240,7 @@ protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
     congr($this x y)
   ext x y
   dsimp
-  simp only [mul_tprod_tprod, mul_tprod_tprod, mul_comm x y]
+  simp [mul_tprod_tprod, mul_tprod_tprod, mul_comm x y]
 
 instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
   __ := instSemiring

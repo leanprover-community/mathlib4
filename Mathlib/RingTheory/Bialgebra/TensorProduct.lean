@@ -48,7 +48,7 @@ noncomputable instance _root_.TensorProduct.instBialgebra : Bialgebra S (A ⊗[R
   have hcomul := congr($(comul_eq_algHom_toLinearMap R S A B))
   refine Bialgebra.mk' S (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_) <;>
   simp_all only [AlgHom.toLinearMap_apply] <;>
-  simp only [map_one, map_mul]
+  simp [map_one, map_mul]
 
 lemma counitAlgHom_def :
     counitAlgHom (R := S) (A := A ⊗[R] B) =

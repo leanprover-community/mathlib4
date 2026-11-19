@@ -79,7 +79,7 @@ lemma ae_toFinite [SFinite μ] : ae μ.toFinite = ae μ := by
 
 @[simp]
 lemma toFinite_apply_eq_zero_iff [SFinite μ] {s : Set α} : μ.toFinite s = 0 ↔ μ s = 0 := by
-  simp only [← compl_mem_ae_iff, ae_toFinite]
+  simp [← compl_mem_ae_iff, ae_toFinite]
 
 @[simp]
 lemma toFinite_eq_zero_iff [SFinite μ] : μ.toFinite = 0 ↔ μ = 0 := by

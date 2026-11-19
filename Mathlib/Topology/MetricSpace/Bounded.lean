@@ -177,7 +177,7 @@ theorem tendsto_dist_right_atTop_iff (c : α) {f : β → α} {l : Filter β} :
 @[simp]
 theorem tendsto_dist_left_atTop_iff (c : α) {f : β → α} {l : Filter β} :
     Tendsto (fun x ↦ dist c (f x)) l atTop ↔ Tendsto f l (cobounded α) := by
-  simp only [dist_comm c, tendsto_dist_right_atTop_iff]
+  simp [dist_comm c, tendsto_dist_right_atTop_iff]
 
 theorem tendsto_dist_right_cobounded_atTop (c : α) : Tendsto (dist · c) (cobounded α) atTop :=
   tendsto_iff_comap.2 (comap_dist_right_atTop c).ge
@@ -230,11 +230,11 @@ theorem mem_cocompact_iff_closedBall_compl_subset [ProperSpace α] (c : α) :
 
 /-- Characterization of the boundedness of the range of a function -/
 theorem isBounded_range_iff {f : β → α} : IsBounded (range f) ↔ ∃ C, ∀ x y, dist (f x) (f y) ≤ C :=
-  isBounded_iff.trans <| by simp only [forall_mem_range]
+  isBounded_iff.trans <| by simp [forall_mem_range]
 
 theorem isBounded_image_iff {f : β → α} {s : Set β} :
     IsBounded (f '' s) ↔ ∃ C, ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ C :=
-  isBounded_iff.trans <| by simp only [forall_mem_image]
+  isBounded_iff.trans <| by simp [forall_mem_image]
 
 theorem isBounded_range_of_tendsto_cofinite_uniformity {f : β → α}
     (hf : Tendsto (Prod.map f f) (.cofinite ×ˢ .cofinite) (𝓤 α)) : IsBounded (range f) := by
@@ -438,7 +438,7 @@ theorem diam_one [One α] : diam (1 : Set α) = 0 :=
 
 -- Does not work as a simp-lemma, since {x, y} reduces to (insert y {x})
 theorem diam_pair : diam ({x, y} : Set α) = dist x y := by
-  simp only [diam, ediam_pair, dist_edist]
+  simp [diam, ediam_pair, dist_edist]
 
 -- Does not work as a simp-lemma, since {x, y, z} reduces to (insert z (insert y {x}))
 theorem diam_triple :

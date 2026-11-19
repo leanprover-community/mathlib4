@@ -323,7 +323,7 @@ theorem mulCasesOn_of_mul {motive : FreeMonoid α → Sort*} (x : α) (xs : Free
 @[to_additive (attr := ext)]
 theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   MonoidHom.ext fun l ↦ mulRecOn l (f.map_one.trans g.map_one.symm)
-    (fun x xs hxs ↦ by simp only [h, hxs, map_mul])
+    (fun x xs hxs ↦ by simp [h, hxs, map_mul])
 
 /-- A variant of `List.prod` that has `[x].prod = x` true definitionally.
 The purpose is to make `FreeMonoid.lift_eval_of` true by `rfl`. -/
@@ -345,7 +345,7 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
   toFun f :=
   { toFun := fun l ↦ prodAux ((toList l).map f)
     map_one' := rfl
-    map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
+    map_mul' := fun _ _ ↦ by simp [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
 
 @[to_additive (attr := simp)]
@@ -423,7 +423,7 @@ theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_ma
 theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
     map f (map g x) = map (f ∘ g) x := by
   unfold map
-  simp only [MonoidHom.coe_mk, OneHom.coe_mk, List.map_map]
+  simp [MonoidHom.coe_mk, OneHom.coe_mk, List.map_map]
 
 @[to_additive (attr := simp)]
 theorem toList_map (f : α → β) (xs : FreeMonoid α) : toList (map f xs) = xs.toList.map f := rfl

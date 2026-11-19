@@ -77,7 +77,7 @@ def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
   exact
   { one_smul _ := by simp [smulOfRingMorphism_smul_eq]
     mul_smul _ _ _ := by simp [smulOfRingMorphism_smul_eq, CatCenter.mul_app]
-    smul_zero _ := by simp only [smulOfRingMorphism_smul_eq, comp_zero]
+    smul_zero _ := by simp [smulOfRingMorphism_smul_eq, comp_zero]
     zero_smul _ := by simp [smulOfRingMorphism_smul_eq]
     smul_add _ _ := by simp [smulOfRingMorphism_smul_eq]
     add_smul _ _ _ := by simp [smulOfRingMorphism_smul_eq] }
@@ -88,8 +88,8 @@ a ring morphism `R →+* CatCenter C`. -/
 def ofRingMorphism : Linear R C := by
   letI := homModuleOfRingMorphism φ
   exact
-    { smul_comp := fun X Y Z r f g => by simp only [smulOfRingMorphism_smul_eq, assoc]
-      comp_smul := fun X Y Z f r g => by simp only [smulOfRingMorphism_smul_eq', assoc] }
+    { smul_comp := fun X Y Z r f g => by simp [smulOfRingMorphism_smul_eq, assoc]
+      comp_smul := fun X Y Z f r g => by simp [smulOfRingMorphism_smul_eq', assoc] }
 
 end
 

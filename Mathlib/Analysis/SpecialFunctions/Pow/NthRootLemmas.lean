@@ -140,7 +140,7 @@ theorem le_nthRoot_iff (hn : n ≠ 0) : a ≤ nthRoot n b ↔ a ^ n ≤ b := by
 
 @[simp]
 theorem nthRoot_lt_iff (hn : n ≠ 0) : nthRoot n a < b ↔ a < b ^ n := by
-  simp only [← not_le, le_nthRoot_iff hn]
+  simp [← not_le, le_nthRoot_iff hn]
 
 @[simp]
 theorem nthRoot_pow (hn : n ≠ 0) (a : ℕ) : nthRoot n (a ^ n) = a := by

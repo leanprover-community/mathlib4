@@ -138,7 +138,7 @@ def isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization
   uniq s m hm := by
     have := hm (CostructuredArrow.mk (𝟙 (L.obj Y)))
     dsimp at this m hm ⊢
-    simp only [← this, map_id, comp_id, Iso.inv_hom_id_app_assoc]
+    simp [← this, map_id, comp_id, Iso.inv_hom_id_app_assoc]
 
 /-- If `L` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
 then `e.hom` makes `G` a pointwise left Kan extension of `F` along `L`. -/

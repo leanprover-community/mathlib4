@@ -300,7 +300,7 @@ theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a)
   intro b hb
   have hb : b ∈ Finpartition.parts (dite _ _ _) := hb
   split_ifs at hb
-  · simp only [copy_parts, empty_parts, notMem_empty] at hb
+  · simp [copy_parts, empty_parts, notMem_empty] at hb
   · exact hb
 
 theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
@@ -496,7 +496,7 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
   have hz : ∑ x ∈ P.parts.filter (¬ · ⊓ b ≠ ⊥), f (x ⊓ b) = 0 := Finset.sum_eq_zero fun x hx => by
     simp only [ne_eq, Decidable.not_not, Finset.mem_filter] at hx
     rw [hx.2, hf]
-  simp only [parts_restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
+  simp [parts_restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
     Finset.sum_image hinj, add_zero]
 
 /-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
@@ -916,7 +916,7 @@ variable {F : Finset (Finset α)}
 theorem mem_atomise :
     t ∈ (atomise s F).parts ↔
       t.Nonempty ∧ ∃ Q ⊆ F, {i ∈ s | ∀ u ∈ F, u ∈ Q ↔ i ∈ u} = t := by
-  simp only [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, ← ne_empty_iff_nonempty,
+  simp [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, ← ne_empty_iff_nonempty,
     mem_powerset]
 
 theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
@@ -949,7 +949,7 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
     and_imp, Finset.Nonempty, exists_imp, and_imp]
   rintro P' i hi P PQ rfl hy₂ j _hj
   refine ⟨P.erase t, erase_subset_erase _ PQ, ?_⟩
-  simp only [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi)]
+  simp [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi)]
 
 end Atomise
 

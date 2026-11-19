@@ -134,7 +134,7 @@ noncomputable abbrev hessCharpoly : R[X] := hessP n H n
 variable {n H}
 
 theorem hessP_zero : hessP n H 0 = 1 := by
-  simp only [hessP]
+  simp [hessP]
 
 theorem hessP_succ (k : ℕ) :
     hessP n H (k + 1) =
@@ -142,7 +142,7 @@ theorem hessP_succ (k : ℕ) :
         ∑ t : Fin k, C (H.getD (n * (t : ℕ) + k) 0 *
           ∏ j ∈ Finset.Ico (t : ℕ) k, H.getD (n * (j + 1) + j) 0) *
           hessP n H (t : ℕ) := by
-  simp only [hessP]
+  simp [hessP]
 
 theorem hessCharpoly_eq : hessCharpoly n H = hessP n H n := rfl
 

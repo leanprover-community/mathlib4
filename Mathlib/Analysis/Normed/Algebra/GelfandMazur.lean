@@ -195,7 +195,7 @@ private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
   --  `‖x - algebraMap ℂ F w‖ ≤ M * (1 + (‖x - algebraMap ℂ F w - (x - algebraMap ℂ F y)‖ / M) ^ n)`
   rw [sub_sub_sub_cancel_left, ← map_sub, norm_algebraMap, norm_sub_rev y w, norm_one, mul_one,
     show M * (1 + (‖w - y‖ / M) ^ n) = (M ^ n + ‖w - y‖ ^ n) / M ^ (n - 1) by
-      simp only [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn],
+      simp [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn],
     le_div_iff₀ (by positivity)]
   obtain ⟨p, hp, hrel⟩ :=
     (isMonicOfDegree_X_pow ℂ n).of_dvd_sub (by grind)
@@ -298,7 +298,7 @@ private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinO
   refine norm_eq_of_isMinOn_of_forall_le hM₀ hM.symm h (continuous_φ x) (fun {w} u hw n hn ↦ ?_) w
   -- show `‖φ x u‖ ≤ M * (1 + (‖φ x u - φ x w‖ / M) ^ n)`
   have HH : M * (1 + (‖φ x u - φ x w‖ / M) ^ n) = (M ^ n + ‖φ x u - φ x w‖ ^ n) / M ^ (n - 1) := by
-    simp only [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn]
+    simp [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn]
   rw [HH, le_div_iff₀ (by positivity)]; clear HH
   -- show `‖φ x u‖ * M ^ (n - 1) ≤ M ^ n + ‖φ x u - φ x w‖ ^ n`
   let q (y : ℝ × ℝ) : ℝ[X] := X ^ 2 - C y.1 * X + C y.2

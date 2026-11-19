@@ -359,7 +359,7 @@ lemma eq_top_of_isEmpty [IsEmpty C] (J : GrothendieckTopology C) : J = ⊤ := by
 lemma bot_eq_top_iff_isEmpty : (⊥ : GrothendieckTopology C) = ⊤ ↔ IsEmpty C := by
   refine ⟨fun h ↦ ⟨fun X ↦ ?_⟩, fun h ↦ eq_top_of_isEmpty _⟩
   apply bot_ne_top (α := Sieve X)
-  simp only [← GrothendieckTopology.bot_covering, h, top_covering]
+  simp [← GrothendieckTopology.bot_covering, h, top_covering]
 
 @[simp]
 lemma bot_lt_top_iff_nonempty : (⊥ : GrothendieckTopology C) < ⊤ ↔ Nonempty C := by
@@ -641,7 +641,7 @@ abbrev multifork {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒ�
     (by
       intro I
       dsimp
-      simp only [← P.map_comp, ← op_comp, I.r.w])
+      simp [← P.map_comp, ← op_comp, I.r.w])
 
 /-- The canonical map from `P.obj (op X)` to the multiequalizer associated to a covering sieve,
 assuming such a multiequalizer exists. This will be used in `Sheaf.lean` to provide an equivalent
@@ -653,7 +653,7 @@ noncomputable abbrev toMultiequalizer {D : Type u₁} [Category.{v₁} D] (S : J
     (by
       intro I
       dsimp only [shape, index, Relation.fst, Relation.snd]
-      simp only [← P.map_comp, ← op_comp, I.r.w])
+      simp [← P.map_comp, ← op_comp, I.r.w])
 
 end Cover
 

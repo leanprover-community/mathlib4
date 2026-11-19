@@ -163,7 +163,7 @@ lemma δ_comp (h : n₀ + 1 = n₁ := by lia) :
 
 lemma exact₂ :
     (ShortComplex.mk ((homologyFunctor C n₀).map T.mor₁) ((homologyFunctor C n₀).map T.mor₂)
-      (by simp only [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT,
+      (by simp [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT,
         Functor.map_zero])).Exact :=
   (homologyFunctor C 0).homologySequence_exact₂ _ hT _
 

@@ -487,7 +487,7 @@ theorem apply_eq_prod_continuousLinearEquivAt (e : Trivialization F (π F E)) [e
   · refine e.coe_fst ?_
     rw [e.source_eq]
     exact hb
-  · simp only [continuousLinearEquivAt_apply]
+  · simp [continuousLinearEquivAt_apply]
 
 protected theorem zeroSection (e : Trivialization F (π F E)) [e.IsLinear R] {x : B}
     (hx : x ∈ e.baseSet) : e (zeroSection F E x) = (x, 0) := by
@@ -676,8 +676,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The standard local trivializations of a vector bundle constructed from core are linear. -/
 instance localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
   linear x _ :=
-    { map_add := fun _ _ => by simp only [map_add, localTriv_apply, mfld_simps]
-      map_smul := fun _ _ => by simp only [map_smul, localTriv_apply, mfld_simps] }
+    { map_add := fun _ _ => by simp [map_add, localTriv_apply, mfld_simps]
+      map_smul := fun _ _ => by simp [map_smul, localTriv_apply, mfld_simps] }
 
 variable (i j : ι)
 

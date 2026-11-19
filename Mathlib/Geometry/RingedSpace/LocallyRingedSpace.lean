@@ -344,7 +344,7 @@ instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier)
 @[simp]
 lemma iso_hom_base_inv_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
     e.hom.base ≫ e.inv.base = 𝟙 _ := by
-  simp only [← comp_base, Iso.hom_inv_id, id_toHom, PresheafedSpace.id_base]
+  simp [← comp_base, Iso.hom_inv_id, id_toHom, PresheafedSpace.id_base]
 
 @[simp]
 lemma iso_hom_base_inv_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
@@ -355,7 +355,7 @@ lemma iso_hom_base_inv_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (
 @[simp]
 lemma iso_inv_base_hom_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
     e.inv.base ≫ e.hom.base = 𝟙 _ := by
-  simp only [← comp_base, Iso.inv_hom_id, id_toHom, PresheafedSpace.id_base]
+  simp [← comp_base, Iso.inv_hom_id, id_toHom, PresheafedSpace.id_base]
 
 @[simp]
 lemma iso_inv_base_hom_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (y : Y) :

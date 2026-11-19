@@ -100,14 +100,14 @@ variable [Fintype m] [Fintype n] [Semiring R] [NonUnitalSemiring A] [Module R A]
 theorem mulLeftLinearMap_mul [SMulCommClass R A A] (a : Matrix l m A) (b : Matrix m n A) :
     mulLeftLinearMap o R (a * b) = (mulLeftLinearMap o R a).comp (mulLeftLinearMap o R b) := by
   ext
-  simp only [mulLeftLinearMap_apply, LinearMap.comp_apply, Matrix.mul_assoc]
+  simp [mulLeftLinearMap_apply, LinearMap.comp_apply, Matrix.mul_assoc]
 
 /-- A version of `LinearMap.mulRight_mul` for matrix multiplication. -/
 @[simp]
 theorem mulRightLinearMap_mul [IsScalarTower R A A] (a : Matrix m n A) (b : Matrix n o A) :
     mulRightLinearMap l R (a * b) = (mulRightLinearMap l R b).comp (mulRightLinearMap l R a) := by
   ext
-  simp only [mulRightLinearMap_apply, LinearMap.comp_apply, Matrix.mul_assoc]
+  simp [mulRightLinearMap_apply, LinearMap.comp_apply, Matrix.mul_assoc]
 
 end one_side
 

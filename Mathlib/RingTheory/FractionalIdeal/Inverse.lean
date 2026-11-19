@@ -195,7 +195,7 @@ lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
   rw [← Algebra.smul_def (I.den : R₁) i, ← mem_coeToSubmodule, coeToSubmodule_one]
   suffices Submodule.map (Algebra.linearMap R₁ K) I.num ≤ 1 from
     this <| (den_mul_self_eq_num I).symm ▸ smul_mem_pointwise_smul i I.den I.coeToSubmodule hi
-  apply le_trans <| map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top])
+  apply le_trans <| map_mono (show I.num ≤ 1 by simp [Ideal.one_eq_top, le_top])
   rw [Ideal.one_eq_top, Submodule.map_top, one_eq_range]
 
 lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := by

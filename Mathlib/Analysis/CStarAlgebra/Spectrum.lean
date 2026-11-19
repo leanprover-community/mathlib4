@@ -337,7 +337,7 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
   map_star φ a := by
     suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s by
       rw [← realPart_add_I_smul_imaginaryPart a]
-      simp only [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
+      simp [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
     intro s
     rw [selfAdjoint.mem_spectrum_eq_re s (AlgHom.apply_mem_spectrum φ (s : A))]
     simp

@@ -349,7 +349,7 @@ theorem _root_.DifferentiableWithinAt.lieBracketWithin_congr_mono
 theorem _root_.Filter.EventuallyEq.lieBracketWithin_vectorField_eq
     (hV : V₁ =ᶠ[𝓝[s] x] V) (hxV : V₁ x = V x) (hW : W₁ =ᶠ[𝓝[s] x] W) (hxW : W₁ x = W x) :
     lieBracketWithin 𝕜 V₁ W₁ s x = lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, hV.fderivWithin_eq hxV, hW.fderivWithin_eq hxW, hxV, hxW]
+  simp [lieBracketWithin, hV.fderivWithin_eq hxV, hW.fderivWithin_eq hxW, hxV, hxW]
 
 theorem _root_.Filter.EventuallyEq.lieBracketWithin_vectorField_eq_of_mem
     (hV : V₁ =ᶠ[𝓝[s] x] V) (hW : W₁ =ᶠ[𝓝[s] x] W) (hx : x ∈ s) :
@@ -560,7 +560,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
     have : ContDiffWithinAt 𝕜 1 (ContinuousLinearMap.inverse ∘ (fun y ↦ (N y : E →L[𝕜] F))) s x :=
       (contDiffAt_map_inverse (N x)).comp_contDiffWithinAt x hN
     convert! this with y
-    simp only [Function.comp_apply, ContinuousLinearMap.inverse_equiv]
+    simp [Function.comp_apply, ContinuousLinearMap.inverse_equiv]
   refine ⟨N, hN, hN', eN, fun v ↦ ?_⟩
   have A' y : ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F) ((N y).symm : F →L[𝕜] E)
       = ContinuousLinearMap.id 𝕜 F := by ext; simp

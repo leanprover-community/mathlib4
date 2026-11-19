@@ -211,11 +211,11 @@ lemma L₀_exact : S.L₀.Exact := by
   obtain ⟨A₁, π₁, hπ₁, y₁, hy₁⟩ := S.L₁_exact.exact_up_to_refinements (x₂ ≫ S.v₀₁.τ₂)
     (by rw [assoc, S.v₀₁.comm₂₃, reassoc_of% hx₂, zero_comp])
   have hy₁' : y₁ ≫ S.v₁₂.τ₁ = 0 := by
-    simp only [← cancel_mono S.L₂.f, assoc, zero_comp, S.v₁₂.comm₁₂,
+    simp [← cancel_mono S.L₂.f, assoc, zero_comp, S.v₁₂.comm₁₂,
       ← reassoc_of% hy₁, w₀₂_τ₂, comp_zero]
   obtain ⟨x₁, hx₁⟩ : ∃ x₁, x₁ ≫ S.v₀₁.τ₁ = y₁ := ⟨_, S.exact_C₁_up.lift_f y₁ hy₁'⟩
   refine ⟨A₁, π₁, hπ₁, x₁, ?_⟩
-  simp only [← cancel_mono S.v₀₁.τ₂, assoc, ← S.v₀₁.comm₁₂, reassoc_of% hx₁, hy₁]
+  simp [← cancel_mono S.v₀₁.τ₂, assoc, ← S.v₀₁.comm₁₂, reassoc_of% hx₁, hy₁]
 
 lemma L₃_exact : S.L₃.Exact := S.op.L₀_exact.unop
 
@@ -234,7 +234,7 @@ lemma lift_φ₂ {A : C} (a : A ⟶ S.L₁.X₂) (b : A ⟶ S.L₀.X₃) (h : a 
 /-- The canonical map `P ⟶ L₂.X₁`. -/
 noncomputable def φ₁ : S.P ⟶ S.L₂.X₁ :=
   S.L₂_exact.lift S.φ₂
-    (by simp only [φ₂, assoc, S.v₁₂.comm₂₃, pullback.condition_assoc, w₀₂_τ₃, comp_zero])
+    (by simp [φ₂, assoc, S.v₁₂.comm₂₃, pullback.condition_assoc, w₀₂_τ₃, comp_zero])
 
 @[reassoc (attr := simp)] lemma φ₁_L₂_f : S.φ₁ ≫ S.L₂.f = S.φ₂ := S.L₂_exact.lift_f _ _
 
@@ -250,7 +250,7 @@ noncomputable def L₀' : ShortComplex C where
 
 @[reassoc] lemma L₁_f_φ₁ : S.L₀'.f ≫ S.φ₁ = S.v₁₂.τ₁ := by
   dsimp only [L₀']
-  simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, φ₂, pullback.lift_fst_assoc,
+  simp [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, φ₂, pullback.lift_fst_assoc,
     S.v₁₂.comm₁₂]
 
 instance : Epi S.L₀'.g := by dsimp only [L₀']; infer_instance
@@ -268,7 +268,7 @@ lemma L₀'_exact : S.L₀'.Exact := by
 
 /-- The connecting homomorphism `δ : L₀.X₃ ⟶ L₃.X₁`. -/
 noncomputable def δ : S.L₀.X₃ ⟶ S.L₃.X₁ :=
-  S.L₀'_exact.desc (S.φ₁ ≫ S.v₂₃.τ₁) (by simp only [L₁_f_φ₁_assoc, w₁₃_τ₁])
+  S.L₀'_exact.desc (S.φ₁ ≫ S.v₂₃.τ₁) (by simp [L₁_f_φ₁_assoc, w₁₃_τ₁])
 
 @[reassoc (attr := simp)]
 lemma snd_δ : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.τ₁ :=
@@ -279,7 +279,7 @@ noncomputable abbrev P' := pushout S.L₂.f S.v₂₃.τ₁
 
 lemma snd_δ_inr : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr _ _ : _ ⟶ S.P') =
     pullback.fst _ _ ≫ S.v₁₂.τ₂ ≫ pushout.inl _ _ := by
-  simp only [snd_δ_assoc, ← pushout.condition, φ₂, φ₁_L₂_f_assoc, assoc]
+  simp [snd_δ_assoc, ← pushout.condition, φ₂, φ₁_L₂_f_assoc, assoc]
 
 /-- The canonical morphism `L₀.X₂ ⟶ P`. -/
 @[simp]
@@ -290,7 +290,7 @@ lemma L₀X₂ToP_comp_pullback_snd : S.L₀X₂ToP ≫ pullback.snd _ _ = S.L�
 
 @[reassoc]
 lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
-  simp only [← cancel_mono S.L₂.f, L₀X₂ToP, assoc, φ₂, φ₁_L₂_f,
+  simp [← cancel_mono S.L₂.f, L₀X₂ToP, assoc, φ₂, φ₁_L₂_f,
     pullback.lift_fst_assoc, w₀₂_τ₂, zero_comp]
 
 lemma L₀_g_δ : S.L₀.g ≫ S.δ = 0 := by
@@ -321,13 +321,13 @@ lemma L₁'_exact : S.L₁'.Exact := by
   let x₂' := x₁ ≫ S.L₁.f
   let x₂ := π₂ ≫ p ≫ pullback.fst _ _
   have hx₂' : (x₂ - x₂') ≫ S.v₁₂.τ₂ = 0 := by
-    simp only [x₂, x₂', sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
+    simp [x₂, x₂', sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
   let k₂ : A₂ ⟶ S.L₀.X₂ := S.exact_C₂_up.lift _ hx₂'
   have hk₂ : k₂ ≫ S.v₀₁.τ₂ = x₂ - x₂' := S.exact_C₂_up.lift_f _ _
   have hk₂' : k₂ ≫ S.L₀.g = π₂ ≫ p ≫ pullback.snd _ _ := by
-    simp only [x₂, x₂', ← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂,
+    simp [x₂, x₂', ← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂,
       sub_comp, S.L₁.zero, comp_zero, sub_zero, pullback.condition]
-  exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, k₂, by simp only [assoc, L₁'_f, ← hk₂', hp]⟩
+  exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, k₂, by simp [assoc, L₁'_f, ← hk₂', hp]⟩
 
 /-- The duality isomorphism `S.P ≅ Opposite.unop S.op.P'`. -/
 noncomputable def PIsoUnopOpP' : S.P ≅ Opposite.unop S.op.P' := pullbackIsoUnopPushout _ _
@@ -348,7 +348,7 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
   ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
-    (by dsimp; simp only [id_comp, comp_id, S.op_δ])
+    (by dsimp; simp [id_comp, comp_id, S.op_δ])
 
 /-- Exactness of `L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂`. -/
 lemma L₂'_exact : S.L₂'.Exact := by
@@ -376,7 +376,7 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ 
   rw [pullback.lift_snd_assoc] at H
   rw [H, ← assoc]
   congr 1
-  simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
+  simp [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
 
 theorem mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
   (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
@@ -431,9 +431,9 @@ def comp (f : Hom S₁ S₂) (g : Hom S₂ S₃) : Hom S₁ S₃ where
   f₁ := f.f₁ ≫ g.f₁
   f₂ := f.f₂ ≫ g.f₂
   f₃ := f.f₃ ≫ g.f₃
-  comm₀₁ := by simp only [assoc, comm₀₁, comm₀₁_assoc]
-  comm₁₂ := by simp only [assoc, comm₁₂, comm₁₂_assoc]
-  comm₂₃ := by simp only [assoc, comm₂₃, comm₂₃_assoc]
+  comm₀₁ := by simp [assoc, comm₀₁, comm₀₁_assoc]
+  comm₁₂ := by simp [assoc, comm₁₂, comm₁₂_assoc]
+  comm₂₃ := by simp [assoc, comm₂₃, comm₂₃_assoc]
 
 end Hom
 
@@ -495,11 +495,11 @@ noncomputable def functorP : SnakeInput C ⥤ C where
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by
   dsimp [φ₂]
-  simp only [assoc, pullback.lift_fst_assoc, ← comp_τ₂, f.comm₁₂]
+  simp [assoc, pullback.lift_fst_assoc, ← comp_τ₂, f.comm₁₂]
 
 @[reassoc]
 lemma naturality_φ₁ (f : S₁ ⟶ S₂) : S₁.φ₁ ≫ f.f₂.τ₁ = functorP.map f ≫ S₂.φ₁ := by
-  simp only [← cancel_mono S₂.L₂.f, assoc, φ₁_L₂_f, ← naturality_φ₂, f.f₂.comm₁₂, φ₁_L₂_f_assoc]
+  simp [← cancel_mono S₂.L₂.f, assoc, φ₁_L₂_f, ← naturality_φ₂, f.f₂.comm₁₂, φ₁_L₂_f_assoc]
 
 @[reassoc]
 lemma naturality_δ (f : S₁ ⟶ S₂) : S₁.δ ≫ f.f₃.τ₁ = f.f₀.τ₃ ≫ S₂.δ := by

@@ -94,7 +94,7 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
         ← opShiftFunctorEquivalence_counitIso_inv_naturality_assoc,
         opShiftFunctorEquivalence_counitIso_inv_app_shift, ← Functor.map_comp,
         Iso.hom_inv_id_app, Functor.map_id]
-      simp only [Functor.id_obj, comp_id])
+      simp [Functor.id_obj, comp_id])
     (by cat_disch)
 
 end TriangleOpEquivalence

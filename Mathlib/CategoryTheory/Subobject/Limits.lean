@@ -142,7 +142,7 @@ theorem kernelSubobject_arrow' :
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem kernelSubobject_arrow_comp : (kernelSubobject f).arrow ≫ f = 0 := by
   rw [← kernelSubobject_arrow]
-  simp only [Category.assoc, kernel.condition, comp_zero]
+  simp [Category.assoc, kernel.condition, comp_zero]
 
 theorem kernelSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = 0) :
     (kernelSubobject f).Factors h :=
@@ -267,7 +267,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
         refine Subobject.mk_eq_mk_of_comm _ _ (Iso.op ?_) (Quiver.Hom.unop_inj ?_)
         · exact (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
             (isCokernelEpiComp (colimit.isColimit _) i.hom rfl)).symm
-        · simp only [Iso.comp_inv_eq, Iso.op_hom, Iso.symm_hom, unop_comp, Quiver.Hom.unop_op,
+        · simp [Iso.comp_inv_eq, Iso.op_hom, Iso.symm_hom, unop_comp, Quiver.Hom.unop_op,
             colimit.comp_coconePointUniqueUpToIso_hom, Cofork.ofπ_ι_app,
             coequalizer.cofork_π])
   monotone' :=
@@ -293,7 +293,7 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
             IsLimit.conePointUniqueUpToIso (limit.isLimit _)
               (isKernelCompMono (limit.isLimit (parallelPair g.unop 0)) i.unop.hom rfl)
         · dsimp
-          simp only [← Iso.eq_inv_comp, limit.conePointUniqueUpToIso_inv_comp,
+          simp [← Iso.eq_inv_comp, limit.conePointUniqueUpToIso_inv_comp,
             Fork.ofι_π_app])
   monotone' :=
     Subobject.ind₂ _ <| by

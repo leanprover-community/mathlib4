@@ -161,7 +161,7 @@ theorem prod_univ_add {a b : ℕ} (f : Fin (a + b) → M) :
   rw [Fintype.prod_equiv finSumFinEquiv.symm f fun i => f (finSumFinEquiv.toFun i)]
   · apply Fintype.prod_sum_type
   · intro x
-    simp only [Equiv.toFun_as_coe, Equiv.apply_symm_apply]
+    simp [Equiv.toFun_as_coe, Equiv.apply_symm_apply]
 
 @[to_additive]
 theorem prod_trunc {a b : ℕ} (f : Fin (a + b) → M) (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
@@ -446,7 +446,7 @@ is written as `f (Fin.castSucc i) j + f (Fin.succ j) i` over `i j : Fin n`, `j �
 theorem prod_prod_eq_prod_triangle_mul (f : Fin (n + 1) → Fin n → M) :
     ∏ i, ∏ j, f i j = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := calc
   _ = (∏ i, ∏ j with i ≤ j.castSucc, f i j) * ∏ i, ∏ j with j.castSucc < i, f i j := by
-    simp only [← Finset.prod_mul_distrib, ← not_le, Finset.prod_filter_mul_prod_filter_not]
+    simp [← Finset.prod_mul_distrib, ← not_le, Finset.prod_filter_mul_prod_filter_not]
   _ = (∏ i, ∏ j ≥ i, f i.castSucc j) * ∏ i, ∏ j ≤ i, f i.succ j := by
     rw [Fin.prod_univ_castSucc, Fin.prod_univ_succ]
     simp [Finset.filter_le_eq_Ici, Finset.filter_ge_eq_Iic]
@@ -455,7 +455,7 @@ theorem prod_prod_eq_prod_triangle_mul (f : Fin (n + 1) → Fin n → M) :
     apply Finset.prod_comm'
     simp
   _ = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := by
-    simp only [Finset.prod_mul_distrib]
+    simp [Finset.prod_mul_distrib]
 
 end CommMonoid
 

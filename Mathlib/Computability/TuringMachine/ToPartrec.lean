@@ -623,7 +623,7 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
   · convert! move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [Function.update_comm h₁.1, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
-    simp only [Function.update_of_ne h₁.2.2.symm, Function.update_of_ne h₁.2.1,
+    simp [Function.update_of_ne h₁.2.2.symm, Function.update_of_ne h₁.2.1,
       Function.update_of_ne h₁.1.symm, List.reverseAux_eq, h₂, Function.update_self,
       List.append_nil, List.reverse_reverse]
   · simp only [Option.getD_some]
@@ -631,7 +631,7 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
     simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_self,
       List.append_nil, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
-    simp only [Function.update_of_ne h₁.1.symm, Function.update_of_ne h₁.2.2.symm,
+    simp [Function.update_of_ne h₁.1.symm, Function.update_of_ne h₁.2.2.symm,
       Function.update_of_ne h₁.2.1, Function.update_self, List.reverse_reverse]
 
 theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p (S k) = (L₁, o, L₂)) :
@@ -985,7 +985,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
       simp only [Finset.mem_insert]
       exact Or.inr (Or.inr <| q_ih h h')
   · refine ⟨fun h x h' => ?_, fun _ x h' => ?_, fun h x h' => ?_⟩ <;>
-    simp only [Finset.union_insert, Finset.mem_insert, Finset.mem_union]
+    simp [Finset.union_insert, Finset.mem_insert, Finset.mem_union]
     · exact Or.inr (Or.inr <| Or.inl <| q₁_ih h h')
     · rcases Finset.mem_insert.1 h' with h' | h' <;> simp [h', unrev]
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')

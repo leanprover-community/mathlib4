@@ -215,7 +215,7 @@ theorem integrableOn_singleton_iff {f : α → ε'} {x : α}
     IntegrableOn f {x} μ ↔ ‖f x‖ₑ = 0 ∨ μ {x} < ∞ := by
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
-    simp only [mem_singleton_iff.1 ha]
+    simp [mem_singleton_iff.1 ha]
   rw [IntegrableOn, integrable_congr this, integrable_const_iff_eNorm, isFiniteMeasure_restrict,
     lt_top_iff_ne_top]
   exact hfx
@@ -316,7 +316,7 @@ theorem integrableOn_iff_comap_subtypeVal (hs : MeasurableSet s) :
 
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → ε} {μ : Measure α}
     {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
-  simp only [IntegrableOn, e.restrict_map, integrable_map_equiv e]
+  simp [IntegrableOn, e.restrict_map, integrable_map_equiv e]
 
 theorem MeasurePreserving.integrableOn_comp_preimage [MeasurableSpace β] {e : α → β} {ν}
     (h₁ : MeasurePreserving e μ ν) (h₂ : MeasurableEmbedding e) {f : β → ε} {s : Set β} :

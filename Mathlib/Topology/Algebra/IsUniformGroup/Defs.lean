@@ -544,7 +544,7 @@ theorem uniformContinuous_of_tendsto_one {hom : Type*} [UniformSpace β] [Group 
     UniformContinuous f := by
   have :
     ((fun x : β × β => x.2 / x.1) ∘ fun x : α × α => (f x.1, f x.2)) = fun x : α × α =>
-      f (x.2 / x.1) := by ext; simp only [Function.comp_apply, map_div]
+      f (x.2 / x.1) := by ext; simp [Function.comp_apply, map_div]
   rw [UniformContinuous, uniformity_eq_comap_nhds_one α, uniformity_eq_comap_nhds_one β,
     tendsto_comap_iff, this]
   exact Tendsto.comp h tendsto_comap
@@ -636,7 +636,7 @@ def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₂ _ hz₁
   nhds_eq_comap_uniformity _ := by
-    simp only [comap_comap, Function.comp_def, nhds_translation_mul_inv]
+    simp [comap_comap, Function.comp_def, nhds_translation_mul_inv]
 
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
@@ -679,7 +679,7 @@ def IsTopologicalGroup.leftUniformSpace : UniformSpace G where
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₁ _ hz₂
   nhds_eq_comap_uniformity _ := by
-    simp only [comap_comap, Function.comp_def, nhds_translation_inv_mul]
+    simp [comap_comap, Function.comp_def, nhds_translation_inv_mul]
 
 attribute [local instance] IsTopologicalGroup.leftUniformSpace
 

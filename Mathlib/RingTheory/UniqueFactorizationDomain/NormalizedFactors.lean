@@ -313,7 +313,7 @@ theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x
     DvdNotUnit x y ↔ normalizedFactors x < normalizedFactors y := by
   constructor
   · rintro ⟨_, c, hc, rfl⟩
-    simp only [hx, right_ne_zero_of_mul hy, normalizedFactors_mul, Ne, not_false_iff,
+    simp [hx, right_ne_zero_of_mul hy, normalizedFactors_mul, Ne, not_false_iff,
       lt_add_iff_pos_right, normalizedFactors_pos, hc]
   · intro h
     exact

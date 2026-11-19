@@ -410,7 +410,7 @@ theorem IsSmoothAt.exists_isStandardEtale_mvPolynomial
       .mul' (Localization.Away f) _ _ _
     refine IsLocalization.Away.of_associated (r := g₀)
       ⟨(IsLocalization.Away.algebraMap_pow_isUnit f m).unit, ?_⟩
-    simp only [← hg₀, IsUnit.unit_spec, ← map_pow, mul_comm, IsLocalization.mk'_spec'_mk]
+    simp [← hg₀, IsUnit.unit_spec, ← map_pow, mul_comm, IsLocalization.mk'_spec'_mk]
   let e : Localization.Away g₀ ≃ₐ[S] Localization.Away (f * g) :=
     IsLocalization.algEquiv (.powers (f * g)) _ _
   let : Algebra (MvPolynomial (Fin n) R) (Localization.Away (f * g)) :=

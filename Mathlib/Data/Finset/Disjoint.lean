@@ -56,7 +56,7 @@ theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
 alias ⟨_root_.Disjoint.notMem_of_mem_right_finset, _⟩ := disjoint_right
 
 theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
-  simp only [disjoint_left, imp_not_comm, forall_eq']
+  simp [disjoint_left, imp_not_comm, forall_eq']
 
 @[simp]
 theorem disjoint_val : Disjoint s.val t.val ↔ Disjoint s t :=
@@ -87,7 +87,7 @@ theorem disjoint_empty_right (s : Finset α) : Disjoint s ∅ :=
 -- simplifies to `a ≠ b`.
 @[simp default + 1]
 theorem disjoint_singleton_left : Disjoint (singleton a) s ↔ a ∉ s := by
-  simp only [disjoint_left, mem_singleton, forall_eq]
+  simp [disjoint_left, mem_singleton, forall_eq]
 
 @[simp]
 theorem disjoint_singleton_right : Disjoint s (singleton a) ↔ a ∉ s :=
@@ -102,7 +102,7 @@ theorem disjoint_self_iff_empty (s : Finset α) : Disjoint s s ↔ s = ∅ :=
 
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
-  simp only [Finset.disjoint_left, Set.disjoint_left, mem_coe]
+  simp [Finset.disjoint_left, Set.disjoint_left, mem_coe]
 
 @[simp, norm_cast]
 theorem pairwiseDisjoint_coe {ι : Type*} {s : Set ι} {f : ι → Finset α} :
@@ -179,7 +179,7 @@ variable [DecidableEq α] {s t u v : Finset α} {a b : α} {f : α → β}
 
 @[simp, grind =]
 theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
-  simp only [disjoint_left, mem_insert, or_imp, forall_and, forall_eq]
+  simp [disjoint_left, mem_insert, or_imp, forall_and, forall_eq]
 
 @[simp, grind =]
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=

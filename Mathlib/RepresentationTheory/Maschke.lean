@@ -99,7 +99,7 @@ def sumOfConjugatesEquivariant : W →ₗ[k[G]] V :=
   MonoidAlgebra.equivariantOfLinearOfComm (π.sumOfConjugates G) fun g v => by
     simp only [sumOfConjugates_apply, Finset.smul_sum, conjugate_apply]
     refine Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ fun i ↦ ?_
-    simp only [smul_smul, single_mul_single, mul_inv_rev, mul_inv_cancel_left, one_mul]
+    simp [smul_smul, single_mul_single, mul_inv_rev, mul_inv_cancel_left, one_mul]
 
 theorem sumOfConjugatesEquivariant_apply (v : W) :
     π.sumOfConjugatesEquivariant G v = ∑ g : G, π.conjugate g v :=
@@ -115,7 +115,7 @@ def equivariantProjection : W →ₗ[k[G]] V :=
 
 theorem equivariantProjection_apply (v : W) :
     π.equivariantProjection G v = (Nat.card G : k)⁻¹ʳ • ∑ g : G, π.conjugate g v := by
-  simp only [equivariantProjection, LinearMap.smul_apply, sumOfConjugatesEquivariant_apply,
+  simp [equivariantProjection, LinearMap.smul_apply, sumOfConjugatesEquivariant_apply,
     Fintype.card_eq_nat_card]
 
 theorem equivariantProjection_condition (hcard : IsUnit (Nat.card G : k))

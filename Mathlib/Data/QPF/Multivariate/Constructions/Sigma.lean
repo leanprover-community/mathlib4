@@ -69,9 +69,9 @@ instance : MvQPF (Sigma F) where
   P := Sigma.P F
   abs {α} := @Sigma.abs _ _ F _ α
   repr {α} := @Sigma.repr _ _ F _ α
-  abs_repr := by rintro α ⟨x, f⟩; simp only [Sigma.abs, Sigma.repr, Sigma.eta, abs_repr]
+  abs_repr := by rintro α ⟨x, f⟩; simp [Sigma.abs, Sigma.repr, Sigma.eta, abs_repr]
   abs_map := by rintro α β f ⟨x, g⟩; simp only [Sigma.abs, MvPFunctor.map_eq]
-                simp only [(· <$$> ·), ← abs_map, ← MvPFunctor.map_eq]
+                simp [(· <$$> ·), ← abs_map, ← MvPFunctor.map_eq]
 
 end Sigma
 
@@ -100,7 +100,7 @@ instance : MvQPF (Pi F) where
   repr := @Pi.repr _ _ F _
   abs_repr := by
     rintro α f
-    simp +instances only [Pi.abs, Pi.repr, Sigma.eta, abs_repr]
+    simp +instances [Pi.abs, Pi.repr, Sigma.eta, abs_repr]
   abs_map := by rintro α β f ⟨x, g⟩; simp only [Pi.abs, (· <$$> ·), ← abs_map]; rfl
 
 end Pi

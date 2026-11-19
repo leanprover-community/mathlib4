@@ -127,7 +127,7 @@ lemma left_fac_of_isStrictlyGE {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.o
     simp only [Functor.map_comp] at eq eq'
     simp only [Functor.map_comp, ← cancel_mono (Q.map (CochainComplex.πTruncGE Y n) ≫
       Q.map (CochainComplex.truncGEMap s n)), assoc, IsIso.inv_hom_id, comp_id]
-    simp only [eq, IsIso.inv_hom_id_assoc, eq']
+    simp [eq, IsIso.inv_hom_id_assoc, eq']
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category
 with `X` strictly `≥ a` and `≤ b`, and `Y` strictly `≥ a`

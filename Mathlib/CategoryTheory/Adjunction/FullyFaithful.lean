@@ -130,7 +130,7 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
     use ((h.homEquiv X (L.obj Y)) f ≫ section_ (h.unit.app Y))
     suffices L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) by simp [this]
     rw [← comp_id (L.map (section_ (h.unit.app Y)))]
-    simp only [Functor.id_obj, ← h.left_triangle_components Y,
+    simp [Functor.id_obj, ← h.left_triangle_components Y,
       ← assoc, ← Functor.map_comp, IsSplitEpi.id, Functor.map_id, id_comp]
 
 /-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
@@ -150,7 +150,7 @@ lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R
     use (retraction (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f)
     suffices R.map (retraction (h.counit.app X)) = h.unit.app (R.obj X) by simp [this]
     rw [← id_comp (R.map (retraction (h.counit.app X)))]
-    simp only [Functor.id_obj, ← h.right_triangle_components X,
+    simp [Functor.id_obj, ← h.right_triangle_components X,
       assoc, ← Functor.map_comp, IsSplitMono.id, Functor.map_id, comp_id]
 
 /-- If the counit is an isomorphism, then the right adjoint is fully faithful. -/

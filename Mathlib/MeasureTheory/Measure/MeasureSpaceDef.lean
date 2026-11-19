@@ -264,7 +264,7 @@ theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s 
 
 @[simp]
 theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = ∞ :=
-  not_iff_not.1 <| by simp only [← lt_top_iff_ne_top, ← Ne.eq_def, not_or, measure_union_lt_top_iff]
+  not_iff_not.1 <| by simp [← lt_top_iff_ne_top, ← Ne.eq_def, not_or, measure_union_lt_top_iff]
 
 theorem exists_measure_pos_of_not_measure_iUnion_null [Countable ι] {s : ι → Set α}
     (hs : μ (⋃ n, s n) ≠ 0) : ∃ n, 0 < μ (s n) := by

@@ -170,7 +170,7 @@ def ker (f : Filter α) : Set α := ⋂₀ f.sets
 /-- The join of a filter of filters is defined by the relation `s ∈ join f ↔ {t | s ∈ t} ∈ f`. -/
 def join (f : Filter (Filter α)) : Filter α where
   sets := { s | { t : Filter α | s ∈ t } ∈ f }
-  univ_sets := by simp only [mem_ofPred_eq, univ_mem, ofPred_true]
+  univ_sets := by simp [mem_ofPred_eq, univ_mem, ofPred_true]
   sets_of_superset hx xy := mem_of_superset hx fun f h => mem_of_superset h xy
   inter_sets hx hy := mem_of_superset (inter_mem hx hy) fun f ⟨h₁, h₂⟩ => inter_mem h₁ h₂
 

@@ -470,7 +470,7 @@ def Equivalence.congrElements {D : Type*} [Category* D] (e : C ≌ D) (P : D ⥤
     Functor.elementsMk _ (e.inverse.obj x.obj) (P.map (e.counitIso.inv.app x.obj) x.val)
   functor.map f :=
     Functor.Elements.homMk (e.inverse.map f.hom) (by
-      simp only [← f.map_val, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
+      simp [← f.map_val, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
         fun_inv_map, Functor.comp_obj, Functor.id_obj, Iso.inv_hom_id_app_assoc,
         Functor.comp_map])
   inverse.obj x := Functor.elementsMk _ (e.functor.obj x.obj) x.val

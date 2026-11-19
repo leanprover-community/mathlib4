@@ -44,7 +44,7 @@ section GammaHasDeriv
 
 /-- Rewrite the Gamma integral as an example of a Mellin transform. -/
 theorem GammaIntegral_eq_mellin : GammaIntegral = mellin fun x => ↑(Real.exp (-x)) :=
-  funext fun s => by simp only [mellin, GammaIntegral, smul_eq_mul, mul_comm]
+  funext fun s => by simp [mellin, GammaIntegral, smul_eq_mul, mul_comm]
 
 /-- The derivative of the `Γ` integral, at any `s ∈ ℂ` with `1 < re s`, is given by the Mellin
 transform of `log t * exp (-t)`. -/
@@ -98,7 +98,7 @@ theorem continuousAt_Gamma_one : ContinuousAt Gamma 1 :=
 
 /-- At `s = 0`, the Gamma function has a simple pole with residue 1. -/
 theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) (𝓝[≠] 0) (𝓝 1) := by
-  rw [show 𝓝 (1 : ℂ) = 𝓝 (Gamma (0 + 1)) by simp only [zero_add, Complex.Gamma_one]]
+  rw [show 𝓝 (1 : ℂ) = 𝓝 (Gamma (0 + 1)) by simp [zero_add, Complex.Gamma_one]]
   refine tendsto_nhdsWithin_congr Gamma_add_one (continuousAt_iff_punctured_nhds.mp ?_)
   exact ContinuousAt.comp' (by simp [continuousAt_Gamma_one]) (continuous_add_const 1).continuousAt
 

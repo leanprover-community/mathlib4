@@ -163,7 +163,7 @@ theorem isMulLeftInvariant_map {H : Type*} [MeasurableSpace H] [Mul H] [Measurab
   rw [map_map hf (measurable_const_mul _)]
   congr 2
   ext y
-  simp only [comp_apply, map_mul]
+  simp [comp_apply, map_mul]
 
 end MeasurableMul
 
@@ -627,7 +627,7 @@ theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) 
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
-  · simp only [or_false, hs.measure_eq_zero_iff μ, NeZero.ne μ]
+  · simp [or_false, hs.measure_eq_zero_iff μ, NeZero.ne μ]
 
 @[to_additive]
 theorem measure_ne_zero_iff_nonempty_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {s : Set G}
@@ -693,14 +693,14 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
       apply IsClosed.union IH (Kclosed.smul (g (L n)))
   have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := fun n ↦ by
     induction n with
-    | zero => simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_add]
+    | zero => simp [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_add]
     | succ n IH =>
       calc
         μ (L (n + 1)) = μ (L n) + μ (g (L n) • K) := by
           simp_rw [L, iterate_succ']
           exact measure_union' (hg _ (Lcompact _)) (Lclosed _).measurableSet
         _ = (n + 1 + 1 : ℕ) * μ K := by
-          simp only [IH, measure_smul, add_mul, Nat.cast_add, Nat.cast_one, one_mul]
+          simp [IH, measure_smul, add_mul, Nat.cast_add, Nat.cast_one, one_mul]
   have N : Tendsto (fun n => μ (L n)) atTop (𝓝 (∞ * μ K)) := by
     simp_rw [M]
     apply ENNReal.Tendsto.mul_const _ (Or.inl ENNReal.top_ne_zero)
@@ -792,7 +792,7 @@ variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
 @[to_additive (attr := simp)]
 theorem haar_singleton [ContinuousMul G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
   convert measure_preimage_mul μ g⁻¹ _
-  simp only [mul_one, preimage_mul_left_singleton, inv_inv]
+  simp [mul_one, preimage_mul_left_singleton, inv_inv]
 
 @[to_additive IsAddHaarMeasure.smul]
 theorem IsHaarMeasure.smul [MeasurableConstSMul G G] {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) :

@@ -435,8 +435,8 @@ theorem finite_of_discr_bdd_of_isReal :
       exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
       convert hx₁
-      · simp only [IntermediateField.lift_top]
-      · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
+      · simp [IntermediateField.lift_top]
+      · simp [IntermediateField.lift_adjoin, Set.image_singleton]
   calc
     minkowskiBound K 1 < B := minkowskiBound_lt_boundOfDiscBdd hK₂
     _ = 1 * B := by rw [one_mul]
@@ -484,8 +484,8 @@ theorem finite_of_discr_bdd_of_isComplex :
       exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
       convert hx₁
-      · simp only [IntermediateField.lift_top]
-      · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
+      · simp [IntermediateField.lift_top]
+      · simp [IntermediateField.lift_adjoin, Set.image_singleton]
   calc
     minkowskiBound K 1 < B := minkowskiBound_lt_boundOfDiscBdd hK₂
     _ = 1 * B := by rw [one_mul]

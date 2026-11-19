@@ -269,10 +269,10 @@ theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
   cases n
   · cases k
     · rw [ascFactorial_zero, choose_zero_right, factorial_zero, Nat.mul_one]
-    · simp only [zero_ascFactorial, Nat.zero_add, succ_sub_succ_eq_sub,
+    · simp [zero_ascFactorial, Nat.zero_add, succ_sub_succ_eq_sub,
         Nat.sub_zero, choose_succ_self, Nat.mul_zero]
   rw [ascFactorial_eq_factorial_mul_choose]
-  simp only [succ_add_sub_one]
+  simp [succ_add_sub_one]
 
 theorem factorial_dvd_ascFactorial (n k : ℕ) : k ! ∣ n.ascFactorial k :=
   ⟨(n + k - 1).choose k, ascFactorial_eq_factorial_mul_choose' _ _⟩

@@ -108,7 +108,7 @@ theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
 
 @[simp]
 theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ ∃ x ∈ s, f x = 0 := by
-  simp only [lcm_def, Multiset.lcm_eq_zero_iff, Multiset.mem_map, mem_val]
+  simp [lcm_def, Multiset.lcm_eq_zero_iff, Multiset.mem_map, mem_val]
 
 theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠ 0 := by
   simp [lcm_eq_zero_iff]
@@ -206,7 +206,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
       · intro a s _ h
         rw [filter_insert]
         split_ifs with h1 <;> simp [h, h1]
-    simp only [gcd_zero_left, normalize_gcd]
+    simp [gcd_zero_left, normalize_gcd]
 
 nonrec theorem gcd_mul_left {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
     {s : Finset β} {f : β → α} {a : α} :
@@ -249,7 +249,7 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     · choose g' hg using @gcd_dvd _ _ _ _ s f
       refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
           extract_gcd' f _ h fun b hb ↦ ?_⟩
-      · simp only [hb, hg, dite_true]
+      · simp [hb, hg, dite_true]
       rw [dite_eq_left hb, hg hb]
 
 variable [Div α] [MulDivCancelClass α] {f : ι → α} {s : Finset ι} {i : ι}

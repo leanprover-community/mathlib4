@@ -173,7 +173,7 @@ theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] 
     (∏ x ∈ s with (Xor (p x) (q x)), f x) =
       (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
   classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
-  simp only [Xor]
+  simp [Xor]
 
 @[to_additive]
 theorem _root_.IsCompl.prod_mul_prod [Fintype ι] {s t : Finset ι} (h : IsCompl s t) (f : ι → M) :
@@ -565,7 +565,7 @@ theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :
 @[to_additive]
 theorem prod_range_succ (f : ℕ → M) (n : ℕ) :
     (∏ x ∈ range (n + 1), f x) = (∏ x ∈ range n, f x) * f n := by
-  simp only [mul_comm, prod_range_succ_comm]
+  simp [mul_comm, prod_range_succ_comm]
 
 @[to_additive]
 theorem prod_range_succ' (f : ℕ → M) :
@@ -599,7 +599,7 @@ open List
 theorem prod_list_map_count [DecidableEq ι] (l : List ι) (f : ι → M) :
     (l.map f).prod = ∏ m ∈ l.toFinset, f m ^ l.count m := by
   induction l with
-  | nil => simp only [map_nil, prod_nil, count_nil, pow_zero, prod_const_one]
+  | nil => simp [map_nil, prod_nil, count_nil, pow_zero, prod_const_one]
   | cons a s IH =>
   simp only [List.map, List.prod_cons, toFinset_cons, IH]
   by_cases has : a ∈ s.toFinset
@@ -1022,7 +1022,7 @@ theorem card_biUnion_le [DecidableEq M] {s : Finset ι} {t : ι → Finset M} :
 
 theorem card_eq_sum_card_fiberwise [DecidableEq M] {f : ι → M} {s : Finset ι} {t : Finset M}
     (H : (s : Set ι).MapsTo f t) : #s = ∑ b ∈ t, #{a ∈ s | f a = b} := by
-  simp only [card_eq_sum_ones, sum_fiberwise_of_maps_to H]
+  simp [card_eq_sum_ones, sum_fiberwise_of_maps_to H]
 
 theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :
     #s = ∑ b ∈ s.image f, #{a ∈ s | f a = b} :=

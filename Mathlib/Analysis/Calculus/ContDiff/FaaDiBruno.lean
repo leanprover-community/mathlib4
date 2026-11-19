@@ -447,7 +447,7 @@ lemma range_emb_extendMiddle_ne_singleton_zero (c : OrderedFinpartition n) (i j 
       simp only [Nat.succ_eq_add_one, mem_range]
       have A : (c.extendMiddle j).partSize j = c.partSize j + 1 := by simp [extendMiddle]
       refine ⟨Fin.cast A.symm (succ 0), ?_⟩
-      simp only [extendMiddle, ↓reduceDIte, comp_apply, Fin.cast_cast, cast_eq_self, cases_succ]
+      simp [extendMiddle, ↓reduceDIte, comp_apply, Fin.cast_cast, cast_eq_self, cases_succ]
     simp only [mem_singleton_iff] at this
     exact Fin.succ_ne_zero _ this
   · have : (c.extendMiddle i).emb j 0 ∈ range ((c.extendMiddle i).emb j) :=
@@ -482,7 +482,7 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     have : c.length - 1 + 1 = c.length := Nat.sub_add_cancel (c.length_pos (Nat.zero_lt_succ n))
     refine Fin.pred (c.emb (Fin.cast this (succ i)) j) ?_
     have := c.disjoint (mem_univ (Fin.cast this (succ i))) (mem_univ 0) (ne_of_beq_false rfl)
-    exact Set.disjoint_iff_forall_ne.1 this (by simp) (by simp only [mem_singleton_iff, hc])
+    exact Set.disjoint_iff_forall_ne.1 this (by simp) (by simp [mem_singleton_iff, hc])
   emb_strictMono i a b hab := by
     simp only [pred_lt_pred_iff, Nat.succ_eq_add_one]
     apply c.emb_strictMono _ hab
@@ -699,12 +699,12 @@ def extendEquiv (n : ℕ) :
       simp only [extend, extendMiddle, eraseMiddle, ↓reduceDIte]
       ext
       · rfl
-      · simp only [update_self, update_idem, heq_eq_eq, update_eq_self_iff, B]
+      · simp [update_self, update_idem, heq_eq_eq, update_eq_self_iff, B]
       · refine hfunext rfl ?_
         simp only [heq_eq_eq, forall_eq']
         intro i
         refine ((Fin.heq_fun_iff ?_).mpr ?_).symm
-        · simp only [update_self, B, update_idem, update_eq_self]
+        · simp [update_self, B, update_idem, update_eq_self]
         · intro j
           rcases eq_or_ne i (c.index 0) with rfl | hi
           · simp only [↓reduceDIte, comp_apply]
@@ -783,10 +783,10 @@ def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E 
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ f (c.applyOrderedFinpartition p v))
       (fun v i x y ↦ by
-        simp only [applyOrderedFinpartition_update_right,
+        simp [applyOrderedFinpartition_update_right,
           ContinuousMultilinearMap.map_update_add])
       (fun v i c x ↦ by
-        simp only [applyOrderedFinpartition_update_right,
+        simp [applyOrderedFinpartition_update_right,
           ContinuousMultilinearMap.map_update_smul, RingHom.id_apply])
   cont := by
     apply f.cont.comp
@@ -1081,7 +1081,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       have K : HasFDerivWithinAt f ((continuousMultilinearCurryFin1 𝕜 E F) (p x 1)) s x :=
         hf.hasFDerivWithinAt hm.ne_bot hx
       convert! HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
-      simp only [B, Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
+      simp [B, Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
         faaDiBruno_aux2]
     have B : HasFDerivWithinAt (fun x ↦ (q (f x)).taylorComp (p x) m)
         (∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),
@@ -1093,7 +1093,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       rw [← this]
       convert B
       ext v
-      simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
+      simp [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
         FormalMultilinearSeries.compAlongOrderedFinpartition_apply, sum_apply, add_apply]
     rw [Finset.sum_sigma']
     exact Fintype.sum_equiv (OrderedFinpartition.extendEquiv m) _ _ (fun p ↦ rfl)

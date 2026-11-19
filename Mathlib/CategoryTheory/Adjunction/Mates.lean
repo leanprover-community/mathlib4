@@ -107,7 +107,7 @@ def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
       counit_naturality, counit_naturality_assoc, left_triangle_components_assoc]
     rw [← assoc, ← Functor.comp_map, α.naturality, Functor.comp_map, assoc, ← H.map_comp,
       left_triangle_components, map_id]
-    simp only [comp_obj, comp_id]
+    simp [comp_obj, comp_id]
   right_inv β := by
     ext
     simp only [comp_obj, whiskerRight_comp, whiskerRight_twice, assoc, Iso.inv_hom_id_assoc,
@@ -143,7 +143,7 @@ theorem unit_mateEquiv (α : TwoSquare G L₁ L₂ H) (c : C) :
   rw [R₂.map_comp]
   slice_lhs 3 4 =>
     rw [← R₂.map_comp, Functor.comp_map L₁ H, ← H.map_comp, left_triangle_components]
-  simp only [comp_obj, map_id, comp_id]
+  simp [comp_obj, map_id, comp_id]
 
 /-- A component of a transposed version of the inverse mates correspondence. -/
 theorem unit_mateEquiv_symm (α : TwoSquare R₁ H G R₂) (c : C) :
@@ -187,7 +187,7 @@ theorem mateEquiv_vcomp (α : TwoSquare G₁ L₁ L₂ H₁) (β : TwoSquare G�
   simp only [comp_obj, id_obj, Functor.id_map, map_comp, assoc]
   slice_rhs 3 4 =>
     rw [← R₃.map_comp, ← H₂.map_comp, left_triangle_components]
-  simp only [map_id, id_comp]
+  simp [map_id, id_comp]
 
 end mateEquivVComp
 
@@ -217,7 +217,7 @@ theorem mateEquiv_hcomp (α : TwoSquare G L₁ L₂ H) (β : TwoSquare H L₃ L�
   rw [R₂.map_comp, L₄.map_comp, R₄.map_comp, R₂.map_comp]
   slice_rhs 4 5 =>
     rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄, β.naturality]
-  simp only [comp_obj, Functor.comp_map, map_comp, assoc]
+  simp [comp_obj, Functor.comp_map, map_comp, assoc]
 
 end mateEquivHComp
 
@@ -314,7 +314,7 @@ theorem conjugateEquiv_id : conjugateEquiv adj₁ adj₁ (𝟙 _) = 𝟙 _ := by
 @[simp]
 theorem conjugateEquiv_symm_id : (conjugateEquiv adj₁ adj₁).symm (𝟙 _) = 𝟙 _ := by
   rw [Equiv.symm_apply_eq]
-  simp only [conjugateEquiv_id]
+  simp [conjugateEquiv_id]
 
 theorem conjugateEquiv_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (α : 𝟭 C ⟶ L) (c : C) :
     (conjugateEquiv adj Adjunction.id α).app c = α.app (R.obj c) ≫ adj.counit.app c := by
@@ -354,7 +354,7 @@ theorem conjugateEquiv_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
     (conjugateEquiv adj₂ adj₃).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α =
       (conjugateEquiv adj₁ adj₃).symm (α ≫ β) := by
   rw [Equiv.eq_symm_apply, ← conjugateEquiv_comp _ adj₂]
-  simp only [Equiv.apply_symm_apply]
+  simp [Equiv.apply_symm_apply]
 
 theorem conjugateEquiv_comm {α : L₂ ⟶ L₁} {β : L₁ ⟶ L₂} (βα : β ≫ α = 𝟙 _) :
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₁ β = 𝟙 _ := by

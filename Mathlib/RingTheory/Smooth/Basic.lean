@@ -175,7 +175,7 @@ theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
     ← FormallySmooth.mk_lift (A := A) _ hg']
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
   rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply]
-  simp only [liftOfSurjective, ← RingHom.ker_coe_toRingHom g, RingHom.kerLift_mk, RingHom.coe_coe]
+  simp [liftOfSurjective, ← RingHom.ker_coe_toRingHom g, RingHom.kerLift_mk, RingHom.coe_coe]
 
 @[simp]
 theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
@@ -358,7 +358,7 @@ theorem of_comp_surjective
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.coe_toAlgHom, AlgEquiv.symm_apply_apply,
     AlgHom.coe_id, id_eq]
-  simp only [Ideal.quotientKerAlgEquivOfSurjective_apply]
+  simp [Ideal.quotientKerAlgEquivOfSurjective_apply]
 
 /--
 An `R`-algebra `A` is formally smooth iff "for every `R`-algebra `B`,
@@ -482,7 +482,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
     intro x
     apply (IsNilpotent.isUnit_quotient_mk_iff ⟨2, e⟩).mp
     convert (IsLocalization.map_units Rₘ x).map f
-    simp only [Ideal.Quotient.mk_algebraMap, AlgHom.commutes]
+    simp [Ideal.Quotient.mk_algebraMap, AlgHom.commutes]
   let : Rₘ →ₐ[R] Q :=
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }
   use this

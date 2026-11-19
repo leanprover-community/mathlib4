@@ -37,7 +37,7 @@ def orderIsoIooNegOneOne (k : Type*) [Field k] [LinearOrder k] [IsStrictOrderedR
       _ < 1 := (div_lt_one H).2 (lt_one_add _)
   · refine (strictMono_of_odd_strictMonoOn_nonneg ?_ ?_).codRestrict _
     · intro x
-      simp only [abs_neg, neg_div]
+      simp [abs_neg, neg_div]
     · rintro x (hx : 0 ≤ x) y (hy : 0 ≤ y) hxy
       simp [abs_of_nonneg, mul_add, mul_comm x y, div_lt_div_iff₀, hx.trans_lt (lt_one_add _),
         hy.trans_lt (lt_one_add _), *]

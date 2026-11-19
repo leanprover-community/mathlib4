@@ -82,7 +82,7 @@ theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
       apply Nat.pos_of_ne_zero
       exact Finset.prod_ne_zero_iff.mp h.ne.symm _ (mem_univ _)
   · simp only [not_lt, nonpos_iff_eq_zero] at h
-    simp only [h, notMem_empty, ne_eq, not_true_eq_false, and_false]
+    simp [h, notMem_empty, ne_eq, not_true_eq_false, and_false]
 
 @[simp]
 theorem finMulAntidiag_zero_right (d : ℕ) :
@@ -215,7 +215,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
       (mem_primeFactors_iff_mem_primeFactorsList.mp hp) t ht)
   choose f hf hf_unique using existsUnique
   refine ⟨f, ?_, ?_⟩
-  · simp only [mem_pi, mem_univ, forall_true_iff]
+  · simp [mem_pi, mem_univ, forall_true_iff]
   funext i
   have : t i ∣ n := dvd_of_mem_finMulAntidiag ht _
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)

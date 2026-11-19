@@ -148,7 +148,7 @@ lemma comul_right_inv : toConv δ * toConv 𝑭 = 1 := by
   calc μ ∘ₗ map δ (δ ∘ₗ 𝑺) ∘ₗ δ
       = μ ∘ₗ ((δ ∘ₗ id) ⊗ₘ (δ ∘ₗ 𝑺)) ∘ₗ δ := rfl
     _ = μ ∘ₗ (δ ⊗ₘ δ) ∘ₗ (id ⊗ₘ 𝑺) ∘ₗ δ := by
-        simp only [_root_.TensorProduct.map_comp, comp_assoc]
+        simp [_root_.TensorProduct.map_comp, comp_assoc]
     _ = δ ∘ₗ μ ∘ₗ (id ⊗ₘ 𝑺) ∘ₗ δ := by
         have : (μ ∘ₗ (δ ⊗ₘ δ) : C ⊗[R] C →ₗ[R] C ⊗[R] C) = δ ∘ₗ μ := by ext; simp
         simp [this, ← comp_assoc]

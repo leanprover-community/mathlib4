@@ -73,7 +73,7 @@ instance instMulZeroClass : MulZeroClass (WithZero α) where
 
 lemma unzero_mul {x y : WithZero α} (hxy : x * y ≠ 0) :
     unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy) := by
-  simp only [← coe_inj, coe_mul, coe_unzero]
+  simp [← coe_inj, coe_mul, coe_unzero]
 
 instance instNoZeroDivisors : NoZeroDivisors (WithZero α) := ⟨Option.map₂_eq_none_iff.1⟩
 
@@ -312,15 +312,15 @@ instance instGroupWithZero : GroupWithZero (WithZero α) where
 def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   toFun a := unzero a.ne_zero
   invFun a := Units.mk0 a coe_ne_zero
-  left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
-  map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
+  left_inv _ := Units.ext <| by simp [coe_unzero, Units.mk0_val]
+  map_mul' _ _ := coe_inj.mp <| by simp [Units.val_mul, coe_unzero, coe_mul]
 
 instance [Nontrivial α] : Nontrivial (WithZero α)ˣ :=
   unitsWithZeroEquiv.toEquiv.surjective.nontrivial
 
 theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
     ↑(unitsWithZeroEquiv γ) = γ.val := by
-  simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
+  simp [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
 
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
 @[simps]

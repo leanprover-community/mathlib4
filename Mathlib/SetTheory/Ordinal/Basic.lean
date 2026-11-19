@@ -835,7 +835,7 @@ theorem type_lt_withBot {α : Type u} [LinearOrder α] [WellFoundedLT α] :
 
 @[simp]
 theorem card_nat (n : ℕ) : card.{u} n = n := by
-  induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
+  induction n <;> [simp; simp [card_add, card_one, Nat.cast_succ, *]]
 
 @[simp]
 theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -1258,7 +1258,7 @@ theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem card_eq_nat {o} {n : ℕ} : card o = n ↔ o = n := by
-  simp only [le_antisymm_iff, card_le_nat, nat_le_card]
+  simp [le_antisymm_iff, card_le_nat, nat_le_card]
 
 @[simp]
 theorem card_eq_zero {o} : card o = 0 ↔ o = 0 := by

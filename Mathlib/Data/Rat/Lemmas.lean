@@ -157,7 +157,7 @@ theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.de
   constructor
   · rintro ⟨qr, rfl⟩
     rw [Rat.mul_self_num, mul_self_den]
-    simp only [IsSquare.mul_self, and_self]
+    simp [IsSquare.mul_self, and_self]
   · rintro ⟨⟨nr, hnr⟩, ⟨dr, hdr⟩⟩
     refine ⟨nr / dr, ?_⟩
     rw [div_mul_div_comm, ← Int.cast_mul, ← Nat.cast_mul, ← hnr, ← hdr, num_div_den]
@@ -232,7 +232,7 @@ end Casts
 
 protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
   rw [← num_divInt_den q]
-  simp only [Rat.neg_divInt, Rat.inv_divInt, Rat.divInt_neg]
+  simp [Rat.neg_divInt, Rat.inv_divInt, Rat.divInt_neg]
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
@@ -258,7 +258,7 @@ theorem intCast_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   · subst hn
     simp
   · have : (n : ℚ) ≠ 0 := by rwa [← intCast_inj]  at hn
-    simp only [Int.ediv_self hn, Int.cast_one, div_self this]
+    simp [Int.ediv_self hn, Int.cast_one, div_self this]
 
 @[norm_cast]
 theorem natCast_div_self (n : ℕ) : ((n / n : ℕ) : ℚ) = n / n :=

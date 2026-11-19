@@ -696,7 +696,7 @@ lemma d_eq :
           · rw [d₃_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₃]
   · rw [mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₁, comp_zero]
     trans 0 + 0
-    · simp only [add_zero]
+    · simp [add_zero]
     · congr 1
       · rw [d₂_eq_zero]
         intro h₂
@@ -803,7 +803,7 @@ noncomputable def mapBifunctorAssociator :
       mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄ :=
   Hom.isoOfComponents (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄) (by
     intro j j' _
-    simp only [mapBifunctor₁₂.d_eq, mapBifunctor₂₃.d_eq _ _ _ _ _ c₁₂,
+    simp [mapBifunctor₁₂.d_eq, mapBifunctor₂₃.d_eq _ _ _ _ _ c₁₂,
       Preadditive.add_comp, Preadditive.comp_add,
       mapBifunctorAssociatorX_hom_D₁, mapBifunctorAssociatorX_hom_D₂,
       mapBifunctorAssociatorX_hom_D₃])

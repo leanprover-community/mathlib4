@@ -601,7 +601,7 @@ lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints f))
     Disjoint (ofSubtype u) ((Subgroup.noncommPiCoprod f.pairwise_commute_of_mem_zpowers) v) := by
   apply Finset.noncommProd_induction
   · intro a _ b _ h
-    apply f.pairwise_commute_of_mem_zpowers h <;> simp only [Subgroup.coe_subtype, SetLike.coe_mem]
+    apply f.pairwise_commute_of_mem_zpowers h <;> simp [Subgroup.coe_subtype, SetLike.coe_mem]
   · intro x y
     exact Disjoint.mul_right
   · exact disjoint_one_right _
@@ -701,7 +701,7 @@ theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
   let hfc := (Equiv.Perm.disjoint_mul_inv_of_mem_cycleFactorsFinset hc).symm
   let hfc2 := Perm.Disjoint.commute hfc
   rw [← Equiv.Perm.cycleOf_mul_of_apply_right_eq_self hfc2]
-  · simp only [hfc2.eq, inv_mul_cancel_right]
+  · simp [hfc2.eq, inv_mul_cancel_right]
   -- `a` is in the support of `c`, hence it is not in the support of `g c⁻¹`
   exact
     Equiv.Perm.notMem_support.mp

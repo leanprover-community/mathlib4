@@ -73,14 +73,14 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
 instance lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
-    simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
+    simp [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
       LinearMap.lTensor_smul, map_smul, LinearMap.add_apply]
   lie_smul c _ := map_smul _ c
 
 @[simp]
 theorem lie_tmul_right (x : L) (m : M) (n : N) : ⁅x, m ⊗ₜ[R] n⁆ = ⁅x, m⁆ ⊗ₜ n + m ⊗ₜ ⁅x, n⁆ :=
   show hasBracketAux x (m ⊗ₜ[R] n) = _ by
-    simp only [hasBracketAux, LinearMap.rTensor_tmul, toEnd_apply_apply,
+    simp [hasBracketAux, LinearMap.rTensor_tmul, toEnd_apply_apply,
       LinearMap.add_apply, LinearMap.lTensor_tmul]
 
 variable (R L M N P Q)
@@ -115,7 +115,7 @@ theorem coe_liftLie_eq_lift_coe (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) :
 
 theorem liftLie_apply (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) (m : M) (n : N) :
     liftLie R L M N P f (m ⊗ₜ n) = f m n := by
-  simp only [coe_liftLie_eq_lift_coe, LieModuleHom.coe_toLinearMap, lift_apply]
+  simp [coe_liftLie_eq_lift_coe, LieModuleHom.coe_toLinearMap, lift_apply]
 
 variable {R L M N P Q}
 
@@ -127,9 +127,9 @@ nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N 
       simp only [LinearMap.toFun_eq_coe]
       refine t.inductionOn ?_ ?_
       · intro m n
-        simp only [LieModuleHom.coe_toLinearMap, lie_tmul_right, LieModuleHom.map_lie, map_tmul,
+        simp [LieModuleHom.coe_toLinearMap, lie_tmul_right, LieModuleHom.map_lie, map_tmul,
           map_add]
-      · intro t₁ t₂ ht₁ ht₂; simp only [ht₁, ht₂, lie_add, map_add] }
+      · intro t₁ t₂ ht₁ ht₂; simp [ht₁, ht₂, lie_add, map_add] }
 
 @[simp]
 theorem toLinearMap_map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) :
@@ -170,7 +170,7 @@ def toModuleHom : L ⊗[R] M →ₗ⁅R,L⁆ M :=
 
 @[simp]
 theorem toModuleHom_apply (x : L) (m : M) : toModuleHom R L M (x ⊗ₜ m) = ⁅x, m⁆ := by
-  simp only [toModuleHom, TensorProduct.LieModule.liftLie_apply, LieModuleHom.coe_mk,
+  simp [toModuleHom, TensorProduct.LieModule.liftLie_apply, LieModuleHom.coe_mk,
     LieHom.coe_toLinearMap, toEnd_apply_apply]
 
 end LieModule

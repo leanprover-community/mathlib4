@@ -46,15 +46,15 @@ theorem eval₂_mul' :
 theorem eval₂_pow' (n : ℕ) :
     (p ^ n).eval₂ (algebraMap R S) x = (p.eval₂ (algebraMap R S) x) ^ n := by
   induction n with
-  | zero => simp only [pow_zero, eval₂_one]
+  | zero => simp [pow_zero, eval₂_one]
   | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
 
 @[simp]
 theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
     eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
   induction p using Polynomial.induction_on' with
-  | add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
-  | monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
+  | add r s hr hs => simp [add_comp, eval₂_add, hr, hs]
+  | monomial n a => simp [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
 
 end Algebra
 

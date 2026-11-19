@@ -37,7 +37,7 @@ variable {R : Type*} [Semiring R] (r : R) (f : R[X])
 def taylor (r : R) : R[X] →ₗ[R] R[X] where
   toFun f := f.comp (X + C r)
   map_add' _ _ := add_comp
-  map_smul' c f := by simp only [smul_eq_C_mul, C_mul_comp, RingHom.id_apply]
+  map_smul' c f := by simp [smul_eq_C_mul, C_mul_comp, RingHom.id_apply]
 
 theorem taylor_apply : taylor r f = f.comp (X + C r) :=
   rfl
@@ -158,10 +158,10 @@ theorem taylor_pow (n : ℕ) : taylor r (f ^ n) = taylor r f ^ n :=
   rfl
 
 theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
-  simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, add_assoc]
+  simp [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, add_assoc]
 
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
-  simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
+  simp [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 
 /-- Taylor expansion commutes with differentiation. -/
 theorem taylor_derivative (r : R) (p : R[X]) :
@@ -187,7 +187,7 @@ theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
 theorem aeval_add_of_sq_eq_zero {S : Type*} [CommRing S] [Algebra R S]
     (p : R[X]) (x y : S) (hy : y ^ 2 = 0) :
     p.aeval (x + y) = p.aeval x + p.derivative.aeval x * y := by
-  simp only [← eval_map_algebraMap, Polynomial.eval_add_of_sq_eq_zero _ _ _ hy, derivative_map]
+  simp [← eval_map_algebraMap, Polynomial.eval_add_of_sq_eq_zero _ _ _ hy, derivative_map]
 
 end CommSemiring
 

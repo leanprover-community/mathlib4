@@ -50,7 +50,7 @@ def bifunctorComp₁₂ (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C
       naturality := fun {X₂ Y₂} ψ => by
         ext X₃
         dsimp
-        simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
+        simp [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
 
 /-- Auxiliary definition for `bifunctorComp₁₂Functor`. -/
 @[simps, implicit_reducible]
@@ -64,11 +64,11 @@ def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
           naturality := fun X₂ Y₂ f ↦ by
             ext X₃
             dsimp
-            simp only [← NatTrans.comp_app, NatTrans.naturality] }
+            simp [← NatTrans.comp_app, NatTrans.naturality] }
       naturality X₁ Y₁ f := by
         ext X₂ X₃
         dsimp
-        simp only [← NatTrans.comp_app, NatTrans.naturality] }
+        simp [← NatTrans.comp_app, NatTrans.naturality] }
 
 /-- Auxiliary definition for `bifunctorComp₁₂Functor`. -/
 @[simps, implicit_reducible]
@@ -80,15 +80,15 @@ def bifunctorComp₁₂FunctorMap {F₁₂ F₁₂' : C₁ ⥤ C₂ ⥤ C₁₂}
           naturality := fun X₂ Y₂ f ↦ by
             ext X₃
             dsimp
-            simp only [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }
+            simp [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }
       naturality X₁ Y₁ f := by
         ext X₂ X₃
         dsimp
-        simp only [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }
+        simp [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }
   naturality G G' f := by
     ext X₁ X₂ X₃
     dsimp
-    simp only [← NatTrans.comp_app, NatTrans.naturality]
+    simp [← NatTrans.comp_app, NatTrans.naturality]
 
 /-- The functor `(C₁ ⥤ C₂ ⥤ C₁₂) ⥤ (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` which
 sends `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂` and `G : C₁₂ ⥤ C₃ ⥤ C₄` to the functor
@@ -145,7 +145,7 @@ def bifunctorComp₂₃FunctorMap {F F' : C₁ ⥤ C₂₃ ⥤ C₄} (φ : F ⟶
       naturality X₁ Y₁ f := by
         ext X₂ X₃
         dsimp
-        simp only [← NatTrans.comp_app, NatTrans.naturality] }
+        simp [← NatTrans.comp_app, NatTrans.naturality] }
 
 /-- The functor `(C₁ ⥤ C₂₃ ⥤ C₄) ⥤ (C₂ ⥤ C₃ ⥤ C₂₃) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` which
 sends `F : C₁ ⥤ C₂₃ ⥤ C₄` and `G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃` to the

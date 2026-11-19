@@ -43,7 +43,7 @@ theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     simp [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp, comp_def]
   | succ n IH =>
     rw [iteratedFDerivWithin_succ_eq_comp_left, IH]
-    simp only [Pi.zero_def, comp_def, fderivWithin_fun_const, map_zero]
+    simp [Pi.zero_def, comp_def, fderivWithin_fun_const, map_zero]
 
 @[simp]
 theorem iteratedFDerivWithin_zero {i : ℕ} :
@@ -71,7 +71,7 @@ theorem ftaylorSeriesWithin_fun_zero :
 @[simp]
 theorem iteratedFDeriv_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (0 : E → F) = 0 :=
-  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero]
+  funext fun x ↦ by simp [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero]
 
 @[simp]
 theorem iteratedFDeriv_fun_zero {n : ℕ} :
@@ -134,7 +134,7 @@ theorem iteratedFDerivWithin_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) (s : S
 
 theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
     (iteratedFDeriv 𝕜 n fun _ : E ↦ c) = 0 := by
-  simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_const_of_ne hn]
+  simp [← iteratedFDerivWithin_univ, iteratedFDerivWithin_const_of_ne hn]
 
 theorem iteratedFDeriv_succ_const (n : ℕ) (c : F) :
     (iteratedFDeriv 𝕜 (n + 1) fun _ : E ↦ c) = 0 :=
@@ -262,7 +262,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
       (g : F →L[𝕜] G).compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) := by
   induction i generalizing x with ext1 m
   | zero =>
-    simp only [iteratedFDerivWithin_zero_apply, comp_apply,
+    simp [iteratedFDerivWithin_zero_apply, comp_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, coe_coe]
   | succ i IH =>
     rw [iteratedFDerivWithin_succ_apply_left]
@@ -333,7 +333,7 @@ theorem ContinuousLinearEquiv.comp_contDiffWithinAt_iff (e : F ≃L[𝕜] G) :
 point. -/
 theorem ContinuousLinearEquiv.comp_contDiffAt_iff (e : F ≃L[𝕜] G) :
     ContDiffAt 𝕜 n (e ∘ f) x ↔ ContDiffAt 𝕜 n f x := by
-  simp only [← contDiffWithinAt_univ, e.comp_contDiffWithinAt_iff]
+  simp [← contDiffWithinAt_univ, e.comp_contDiffWithinAt_iff]
 
 /-- Composition by continuous linear equivs on the left respects higher differentiability on
 domains. -/
@@ -344,7 +344,7 @@ theorem ContinuousLinearEquiv.comp_contDiffOn_iff (e : F ≃L[𝕜] G) :
 /-- Composition by continuous linear equivs on the left respects higher differentiability. -/
 theorem ContinuousLinearEquiv.comp_contDiff_iff (e : F ≃L[𝕜] G) :
     ContDiff 𝕜 n (e ∘ f) ↔ ContDiff 𝕜 n f := by
-  simp only [← contDiffOn_univ, e.comp_contDiffOn_iff]
+  simp [← contDiffOn_univ, e.comp_contDiffOn_iff]
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is affine, then `f ∘ g` admits a Taylor
 series in `g ⁻¹' s`, whose `k`-th term at `x` is given
@@ -433,7 +433,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g := by
   induction i generalizing x with ext1 m
   | zero =>
-    simp only [iteratedFDerivWithin_zero_apply, comp_apply,
+    simp [iteratedFDerivWithin_zero_apply, comp_apply,
       ContinuousMultilinearMap.compContinuousLinearMap_apply]
   | succ i IH =>
     simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply,

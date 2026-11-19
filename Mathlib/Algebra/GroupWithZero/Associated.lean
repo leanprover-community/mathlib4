@@ -650,7 +650,7 @@ instance [DecidableRel ((· ∣ ·) : M → M → Prop)] :
 @[simp]
 theorem prime_mk {p : M} : Prime (Associates.mk p) ↔ Prime p := by
   rw [Prime, _root_.Prime, forall_associated]
-  simp only [forall_associated, mk_ne_zero, isUnit_mk, mk_mul_mk, mk_dvd_mk]
+  simp [forall_associated, mk_ne_zero, isUnit_mk, mk_mul_mk, mk_dvd_mk]
 
 @[simp]
 theorem irreducible_mk {a : M} : Irreducible (Associates.mk a) ↔ Irreducible a := by

@@ -122,7 +122,7 @@ lemma tendsto_image_smallSets {f : α → β} :
   rw [tendsto_smallSets_iff]
   refine forall₂_congr fun u hu ↦ ?_
   rw [eventually_smallSets' fun s t hst ht ↦ (image_mono hst).trans ht]
-  simp only [image_subset_iff, exists_mem_subset_iff, mem_map]
+  simp [image_subset_iff, exists_mem_subset_iff, mem_map]
 
 alias ⟨_, Tendsto.image_smallSets⟩ := tendsto_image_smallSets
 
@@ -192,8 +192,8 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
   calc
     _ ↔ ∃ s ∈ l, ∀ᶠ x in l', x ∈ s → p x :=
       eventually_smallSets' fun _ _ hst ht => ht.mono fun _ hx hs => hx (hst hs)
-    _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
-    _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
+    _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp [eventually_iff_exists_mem]
+    _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
 
 @[simp]
 theorem eventually_smallSets_forall {p : α → Prop} :

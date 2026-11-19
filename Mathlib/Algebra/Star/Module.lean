@@ -185,11 +185,11 @@ def selfAdjointPart : A →ₗ[R] selfAdjoint A where
 def skewAdjointPart : A →ₗ[R] skewAdjoint A where
   toFun x :=
     ⟨(⅟2 : R) • (x - star x), by
-      simp only [skewAdjoint.mem_iff, star_smul, star_sub, star_star, star_trivial, ← smul_neg,
+      simp [skewAdjoint.mem_iff, star_smul, star_sub, star_star, star_trivial, ← smul_neg,
         neg_sub]⟩
   map_add' x y := by
     ext
-    simp only [sub_add, ← smul_add, sub_sub_eq_add_sub, star_add, AddSubgroup.coe_add]
+    simp [sub_add, ← smul_add, sub_sub_eq_add_sub, star_add, AddSubgroup.coe_add]
   map_smul' r x := by
     ext
     simp [← mul_smul, ← smul_sub,
@@ -197,7 +197,7 @@ def skewAdjointPart : A →ₗ[R] skewAdjoint A where
 
 theorem StarModule.selfAdjointPart_add_skewAdjointPart (x : A) :
     (selfAdjointPart R x : A) + skewAdjointPart R x = x := by
-  simp only [smul_sub, selfAdjointPart_apply_coe, smul_add, skewAdjointPart_apply_coe,
+  simp [smul_sub, selfAdjointPart_apply_coe, smul_add, skewAdjointPart_apply_coe,
     add_add_sub_cancel, invOf_two_smul_add_invOf_two_smul]
 
 theorem IsSelfAdjoint.coe_selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
@@ -256,7 +256,7 @@ variable [StarMul A] [Algebra R A] [StarModule R A]
 
 @[simp]
 theorem algebraMap_star_comm (r : R) : algebraMap R A (star r) = star (algebraMap R A r) := by
-  simp only [Algebra.algebraMap_eq_smul_one, star_smul, star_one]
+  simp [Algebra.algebraMap_eq_smul_one, star_smul, star_one]
 
 variable (A) in
 protected lemma IsSelfAdjoint.algebraMap {r : R} (hr : IsSelfAdjoint r) :

@@ -79,7 +79,7 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
   split_ifs at hs with hp
   · refine ⟨⟨{ j | r j i → j ∈ p }, piecewise x₁ x { j | r j i }, x₂⟩,
       .fst ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_ofPred_eq]
-    · simp only [ite_eq_left hj]
+    · simp [ite_eq_left hj]
     · split_ifs with hi
       · rwa [hr i hi, ite_eq_left hp] at hs
       · assumption

@@ -233,7 +233,7 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
       ⋂ x, { f : Cb X Y | f (x, x) = 0 }) ∩
       ⋂ (x) (y), { f : Cb X Y | f (x, y) ≤ maxVar X Y } := by
     ext
-    simp only [candidatesB, candidates, mem_inter_iff, mem_iInter, mem_ofPred_eq]
+    simp [candidatesB, candidates, mem_inter_iff, mem_iInter, mem_ofPred_eq]
   rw [this]
   repeat'
     first

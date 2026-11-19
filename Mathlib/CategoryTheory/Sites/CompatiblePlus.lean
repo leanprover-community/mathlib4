@@ -172,7 +172,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   dsimp
   simp only [diagramCompIso_hom_ι_assoc, Multiequalizer.lift_ι, diagramCompIso_hom_ι,
     Category.assoc]
-  simp only [← F.map_comp, Multiequalizer.lift_ι]
+  simp [← F.map_comp, Multiequalizer.lift_ι]
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `P`. -/
 @[simps! hom_app inv_app]
@@ -193,7 +193,7 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   dsimp only [diagram] -- Need to unfold `diagram` before `ext` applies.
   ext a
   rw [Category.assoc, diagramCompIso_hom_ι, ← F.map_comp]
-  simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]
+  simp [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]
 
 @[simp]
 theorem toPlus_comp_plusCompIso_inv :

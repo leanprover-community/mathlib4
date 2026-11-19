@@ -71,8 +71,8 @@ lemma apply_mulSingle₂ (f' : ∀ i, M i → N i → O i) (hf' : ∀ i, f' i 1 
     f' j (mulSingle i x j) (mulSingle i y j) = mulSingle i (f' i x y) j := by
   by_cases h : j = i
   · subst h
-    simp only [mulSingle_eq_same]
-  · simp only [mulSingle_eq_of_ne h, hf']
+    simp [mulSingle_eq_same]
+  · simp [mulSingle_eq_of_ne h, hf']
 
 @[to_additive]
 lemma mulSingle_op (op : ∀ i, M i → N i) (h : ∀ i, op i 1 = 1) (i : ι) (x : M i) :

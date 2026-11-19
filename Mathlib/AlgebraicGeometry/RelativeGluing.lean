@@ -154,7 +154,7 @@ lemma preimage_toBase_eq_range_ι (i : 𝒰.I₀) :
   refine ⟨fun ⟨ui, h⟩ ↦ ?_, ?_⟩
   · obtain ⟨j, xj, rfl⟩ := IsLocallyDirected.ι_jointly_surjective _ x
     obtain ⟨k, fi, fj, uk, rfl, h⟩ := 𝒰.exists_of_f_eq_f ui (d.natTrans.app j xj) <| by
-      simp only [h, functorOfLocallyDirected_obj, ← Scheme.Hom.comp_apply, ι_toBase]
+      simp [h, functorOfLocallyDirected_obj, ← Scheme.Hom.comp_apply, ι_toBase]
     obtain ⟨xk, rfl, h2⟩ := exists_preimage_of_isPullback (d.equifibered fj) xj uk <| by
       apply (𝒰.f j).injective
       simp only [functorOfLocallyDirected_obj, functorOfLocallyDirected_map]

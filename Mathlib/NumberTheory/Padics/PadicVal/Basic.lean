@@ -812,6 +812,6 @@ theorem padicValInt.mul [hp : Fact p.Prime] {a b : ℤ} (ha : a ≠ 0) (hb : b �
 theorem padicValInt_mul_eq_succ [hp : Fact p.Prime] (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
   rw [padicValInt.mul ha (Int.natCast_ne_zero.mpr hp.out.ne_zero)]
-  simp only [padicValInt.of_nat, Nat.Prime.multiplicity_self]
+  simp [padicValInt.of_nat, Nat.Prime.multiplicity_self]
 
 end padicValInt

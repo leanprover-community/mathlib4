@@ -109,7 +109,7 @@ lemma mem_idealizer {x : L} : x ∈ N.idealizer ↔ ∀ m : M, ⁅x, m⁆ ∈ N 
 @[simp]
 lemma _root_.LieIdeal.idealizer_eq_normalizer (I : LieIdeal R L) :
     I.idealizer = I.normalizer := by
-  ext x; exact forall_congr' fun y ↦ by simp only [← lie_skew x y, neg_mem_iff]
+  ext x; exact forall_congr' fun y ↦ by simp [← lie_skew x y, neg_mem_iff]
 
 end LieSubmodule
 

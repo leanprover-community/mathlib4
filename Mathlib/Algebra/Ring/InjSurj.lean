@@ -37,12 +37,12 @@ variable [Add S] [Mul S]
 /-- Pullback a `LeftDistribClass` instance along an injective function. -/
 theorem leftDistribClass [Mul R] [Add R] [LeftDistribClass R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftDistribClass S where
-  left_distrib x y z := hf <| by simp only [*, left_distrib]
+  left_distrib x y z := hf <| by simp [*, left_distrib]
 
 /-- Pullback a `RightDistribClass` instance along an injective function. -/
 theorem rightDistribClass [Mul R] [Add R] [RightDistribClass R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightDistribClass S where
-  right_distrib x y z := hf <| by simp only [*, right_distrib]
+  right_distrib x y z := hf <| by simp [*, right_distrib]
 
 variable [Zero S] [One S] [Neg S] [Sub S] [SMul ℕ S] [SMul ℤ S]
   [Pow S ℕ] [NatCast S] [IntCast S]
@@ -287,12 +287,12 @@ variable [Add S] [Mul S]
 /-- Pushforward a `LeftDistribClass` instance along a surjective function. -/
 theorem leftDistribClass [Mul R] [Add R] [LeftDistribClass R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftDistribClass S where
-  left_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, left_distrib]
+  left_distrib := hf.forall₃.2 fun x y z => by simp [← add, ← mul, left_distrib]
 
 /-- Pushforward a `RightDistribClass` instance along a surjective function. -/
 theorem rightDistribClass [Mul R] [Add R] [RightDistribClass R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightDistribClass S where
-  right_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, right_distrib]
+  right_distrib := hf.forall₃.2 fun x y z => by simp [← add, ← mul, right_distrib]
 
 /-- Pushforward a `Distrib` instance along a surjective function. -/
 -- See note [reducible non-instances]

@@ -66,7 +66,7 @@ theorem cofinite_eq_bot [Finite α] : @cofinite α = ⊥ := cofinite_eq_bot_iff.
 
 theorem frequently_cofinite_iff_infinite {p : α → Prop} :
     (∃ᶠ x in cofinite, p x) ↔ Set.Infinite { x | p x } := by
-  simp only [Filter.Frequently, eventually_cofinite, not_not, Set.Infinite]
+  simp [Filter.Frequently, eventually_cofinite, not_not, Set.Infinite]
 
 lemma frequently_cofinite_mem_iff_infinite {s : Set α} : (∃ᶠ x in cofinite, x ∈ s) ↔ s.Infinite :=
   frequently_cofinite_iff_infinite
@@ -119,12 +119,12 @@ theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
 /-- The coproduct of the cofinite filters on two types is the cofinite filter on their product. -/
 theorem coprod_cofinite : (cofinite : Filter α).coprod (cofinite : Filter β) = cofinite :=
   Filter.coext fun s => by
-    simp only [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
+    simp [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
 
 theorem coprodᵢ_cofinite {α : ι → Type*} [Finite ι] :
     (Filter.coprodᵢ fun i => (cofinite : Filter (α i))) = cofinite :=
   Filter.coext fun s => by
-    simp only [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
+    simp [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
 
 theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by
   simp [l.basis_sets.disjoint_iff_right]

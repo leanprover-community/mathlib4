@@ -69,11 +69,11 @@ theorem max_div_div_right' (a b c : α) : max (a / c) (b / c) = max a b / c := b
 
 @[to_additive min_sub_sub_left]
 theorem min_div_div_left' (a b c : α) : min (a / b) (a / c) = a / max b c := by
-  simp only [div_eq_mul_inv, min_mul_mul_left, min_inv_inv']
+  simp [div_eq_mul_inv, min_mul_mul_left, min_inv_inv']
 
 @[to_additive max_sub_sub_left]
 theorem max_div_div_left' (a b c : α) : max (a / b) (a / c) = a / min b c := by
-  simp only [div_eq_mul_inv, max_mul_mul_left, max_inv_inv']
+  simp [div_eq_mul_inv, max_mul_mul_left, max_inv_inv']
 
 end LinearOrderedCommGroup
 

@@ -94,13 +94,13 @@ theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
 
 @[simp]
 theorem log_zero_left (r : R) : log 0 r = 0 := by
-  simp only [log, Nat.log_zero_left, Nat.cast_zero, Nat.clog_zero_left, neg_zero, ite_self]
+  simp [log, Nat.log_zero_left, Nat.cast_zero, Nat.clog_zero_left, neg_zero, ite_self]
 
 @[simp]
 theorem log_one_left (r : R) : log 1 r = 0 := by
   by_cases hr : 1 ≤ r
   · simp_all only [log, ↓reduceIte, Nat.log_one_left, Nat.cast_zero]
-  · simp only [log, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
+  · simp [log, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
 section
 
@@ -216,12 +216,12 @@ theorem clog_one_right (b : ℕ) : clog b (1 : R) = 0 := by
 @[simp]
 theorem clog_zero_left (r : R) : clog 0 r = 0 := by
   by_cases hr : 1 ≤ r
-  · simp only [clog, Nat.clog_zero_left, Nat.cast_zero, Nat.log_zero_left, neg_zero, ite_self]
-  · simp only [clog, hr, ite_eq_right_of_eq_false, Nat.log_zero_left, Nat.cast_zero, neg_zero]
+  · simp [clog, Nat.clog_zero_left, Nat.cast_zero, Nat.log_zero_left, neg_zero, ite_self]
+  · simp [clog, hr, ite_eq_right_of_eq_false, Nat.log_zero_left, Nat.cast_zero, neg_zero]
 
 @[simp]
 theorem clog_one_left (r : R) : clog 1 r = 0 := by
-  simp only [clog, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
+  simp [clog, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
 variable [IsStrictOrderedRing R]
 

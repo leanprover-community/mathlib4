@@ -531,7 +531,7 @@ theorem map_rightUnitor_inv (X : C) :
 
 @[simp] lemma inv_μ (X Y : C) : CategoryTheory.inv (μ F X Y) = δ F X Y := by
   rw [← Monoidal.μIso_inv, ← CategoryTheory.IsIso.inv_eq_inv]
-  simp only [IsIso.inv_inv, IsIso.Iso.inv_inv, μIso_hom]
+  simp [IsIso.inv_inv, IsIso.Iso.inv_inv, μIso_hom]
 
 @[simp] lemma inv_δ (X Y : C) : CategoryTheory.inv (δ F X Y) = μ F X Y := by simp [← inv_μ]
 
@@ -888,27 +888,27 @@ instance Monoidal.prod' [F.Monoidal] [G.Monoidal] :
   -- automation should work, but it is terribly slow
   ε_η := by
     ext
-    · simp only [CategoryTheory.prod_comp_fst, prod'_ε_fst, prod'_η_fst, ε_η,
+    · simp [CategoryTheory.prod_comp_fst, prod'_ε_fst, prod'_η_fst, ε_η,
         prodMonoidal_tensorUnit, prod_id]
-    · simp only [CategoryTheory.prod_comp_snd, prod'_ε_snd, prod'_η_snd, ε_η,
+    · simp [CategoryTheory.prod_comp_snd, prod'_ε_snd, prod'_η_snd, ε_η,
         prodMonoidal_tensorUnit, prod_id]
   η_ε := by
     ext
-    · simp only [CategoryTheory.prod_comp_fst, prod'_ε_fst, prod'_η_fst, η_ε,
+    · simp [CategoryTheory.prod_comp_fst, prod'_ε_fst, prod'_η_fst, η_ε,
         prod_id, prod'_obj]
-    · simp only [CategoryTheory.prod_comp_snd, prod'_ε_snd, prod'_η_snd, η_ε,
+    · simp [CategoryTheory.prod_comp_snd, prod'_ε_snd, prod'_η_snd, η_ε,
         prod_id, prod'_obj]
   μ_δ _ _ := by
     ext
-    · simp only [CategoryTheory.prod_comp_fst, prod'_μ_fst, prod'_δ_fst, μ_δ,
+    · simp [CategoryTheory.prod_comp_fst, prod'_μ_fst, prod'_δ_fst, μ_δ,
         prod'_obj, prodMonoidal_tensorObj, prod_id]
-    · simp only [CategoryTheory.prod_comp_snd, prod'_μ_snd, prod'_δ_snd, μ_δ,
+    · simp [CategoryTheory.prod_comp_snd, prod'_μ_snd, prod'_δ_snd, μ_δ,
         prod'_obj, prodMonoidal_tensorObj, prod_id]
   δ_μ _ _ := by
     ext
-    · simp only [CategoryTheory.prod_comp_fst, prod'_μ_fst, prod'_δ_fst, δ_μ,
+    · simp [CategoryTheory.prod_comp_fst, prod'_μ_fst, prod'_δ_fst, δ_μ,
         prod'_obj, prod_id]
-    · simp only [CategoryTheory.prod_comp_snd, prod'_μ_snd, prod'_δ_snd, δ_μ,
+    · simp [CategoryTheory.prod_comp_snd, prod'_μ_snd, prod'_δ_snd, δ_μ,
         prod'_obj, prod_id]
 
 end Prod'
@@ -1316,7 +1316,7 @@ def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMon
     congr 1
     slice_lhs 3 4 =>
       rw [← tensorHom_id, tensorHom_comp_tensorHom]
-      simp only [Iso.hom_inv_id_app, Category.id_comp, id_tensorHom]
+      simp [Iso.hom_inv_id_app, Category.id_comp, id_tensorHom]
     simp only [Category.assoc]
     rw [← whisker_exchange_assoc]
     simp only [tensor_whiskerLeft, Functor.LaxMonoidal.associativity, Category.assoc,

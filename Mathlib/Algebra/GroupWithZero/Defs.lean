@@ -282,7 +282,7 @@ lemma noZeroDivisors_iff_left_eq_zero_of_mul :
 
 lemma noZeroDivisors_iff_eq_zero_of_mul :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → (∀ y, x * y = 0 → y = 0) ∧ (∀ y, y * x = 0 → y = 0) := by
-  simp only [forall_and, ← noZeroDivisors_iff_right_eq_zero_of_mul,
+  simp [forall_and, ← noZeroDivisors_iff_right_eq_zero_of_mul,
     ← noZeroDivisors_iff_left_eq_zero_of_mul, and_self]
 
 variable [NoZeroDivisors M₀] {a b : M₀}

@@ -470,8 +470,8 @@ variable [LinearOrder α]
 @[to_dual]
 theorem map_sup [SemilatticeSup β] {f : α → β} (hf : Monotone f) (x y : α) :
     f (x ⊔ y) = f x ⊔ f y :=
-  (Std.Total.total x y).elim (fun h : x ≤ y => by simp only [h, hf h, sup_of_le_right]) fun h => by
-    simp only [h, hf h, sup_of_le_left]
+  (Std.Total.total x y).elim (fun h : x ≤ y => by simp [h, hf h, sup_of_le_right]) fun h => by
+    simp [h, hf h, sup_of_le_left]
 
 end Monotone
 

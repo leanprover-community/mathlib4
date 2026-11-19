@@ -57,7 +57,7 @@ theorem basisAux_tmul (a : A) (m : M) :
 
 theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a • basisAux A b x :=
   TensorProduct.inductionOn x
-    (fun x y => by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
+    (fun x y => by simp [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
     fun x y hx hy => by simp [hx, hy]
 
 variable (A) in
@@ -94,7 +94,7 @@ lemma _root_.Module.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι
   intro k
   conv_lhs => simp only [basis_apply, baseChange_tmul]
   simp_rw [Basis.linearMap_apply_apply, basis_apply]
-  split <;> simp only [TensorProduct.tmul_zero]
+  split <;> simp [TensorProduct.tmul_zero]
 
 variable [DecidableEq ι]
 

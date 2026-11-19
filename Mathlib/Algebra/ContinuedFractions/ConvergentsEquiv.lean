@@ -107,7 +107,7 @@ def squashSeq (s : Stream'.Seq <| Pair K) (n : ℕ) : Stream'.Seq (Pair K) :=
 theorem squashSeq_eq_self_of_terminated (terminatedAt_succ_n : s.TerminatedAt (n + 1)) :
     squashSeq s n = s := by
   change s.get? (n + 1) = none at terminatedAt_succ_n
-  cases s_nth_eq : s.get? n <;> simp only [*, squashSeq]
+  cases s_nth_eq : s.get? n <;> simp [*, squashSeq]
 
 /-- If the sequence has not terminated before position `n + 1`, the value at `n + 1` gets
 squashed into position `n`. -/
@@ -132,7 +132,7 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
   cases s_succ_succ_nth_eq : s.get? (n + 2) with
   | none =>
     cases s_succ_nth_eq : s.get? (n + 1) <;>
-      simp only [squashSeq, Stream'.Seq.get?_tail, s_succ_nth_eq, s_succ_succ_nth_eq]
+      simp [squashSeq, Stream'.Seq.get?_tail, s_succ_nth_eq, s_succ_succ_nth_eq]
   | some gp_succ_succ_n =>
     obtain ⟨gp_succ_n, s_succ_nth_eq⟩ : ∃ gp_succ_n, s.get? (n + 1) = some gp_succ_n :=
       s.ge_stable (n + 1).le_succ s_succ_succ_nth_eq
@@ -141,7 +141,7 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
     rcases Decidable.em (m = n) with m_eq_n | m_ne_n
     · simp [*, squashSeq]
     · cases s_succ_mth_eq : s.get? (m + 1)
-      · simp only [*, squashSeq, Stream'.Seq.get?_tail, Stream'.Seq.get?_zipWith,
+      · simp [*, squashSeq, Stream'.Seq.get?_tail, Stream'.Seq.get?_zipWith,
           Option.map₂_none_right]
       · simp [*, squashSeq]
 
@@ -196,7 +196,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
   cases n with
   | zero =>
     change g.s.get? 0 = none at terminatedAt_n
-    simp only [squashGCF, terminatedAt_n]
+    simp [squashGCF, terminatedAt_n]
   | succ =>
     cases g
     simp only [squashGCF, mk.injEq, true_and]
@@ -205,7 +205,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
 /-- The values before the squashed position stay the same. -/
 theorem squashGCF_nth_of_lt {m : ℕ} (m_lt_n : m < n) :
     (squashGCF g (n + 1)).s.get? m = g.s.get? m := by
-  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n]
+  simp [squashGCF, squashSeq_nth_of_lt m_lt_n]
 
 /-- `convs'` returns the same value for a gcf and the corresponding squashed gcf at the
 squashed position. -/
@@ -216,7 +216,7 @@ theorem succ_nth_conv'_eq_squashGCF_nth_conv' :
     cases g_s_head_eq : g.s.get? 0 <;>
       simp [g_s_head_eq, squashGCF, convs', convs'Aux, Stream'.Seq.head]
   | succ =>
-    simp only [succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq, convs',
+    simp [succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq, convs',
       squashGCF]
 
 /-- The auxiliary continuants before the squashed position stay the same. -/
@@ -251,7 +251,7 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
     g.convs (n + 1) = (squashGCF g n).convs n := by
   rcases Decidable.em (g.TerminatedAt n) with terminatedAt_n | not_terminatedAt_n
   · have : squashGCF g n = g := squashGCF_eq_self_of_terminated terminatedAt_n
-    simp only [this, convs_stable_of_terminated n.le_succ terminatedAt_n]
+    simp [this, convs_stable_of_terminated n.le_succ terminatedAt_n]
   · obtain ⟨⟨a, b⟩, s_nth_eq⟩ : ∃ gp_n, g.s.get? n = some gp_n :=
       Option.ne_none_iff_exists'.mp not_terminatedAt_n
     have b_ne_zero : b ≠ 0 := nth_partDen_ne_zero (partDen_eq_s_b s_nth_eq)

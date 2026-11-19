@@ -122,7 +122,7 @@ theorem SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s
   classical
   induction s using Finset.induction with
   | empty => simp [ha.ne_bot]
-  | insert i s _ ih => simp only [exists_mem_insert, sup_insert, ha.le_sup, ih]
+  | insert i s _ ih => simp [exists_mem_insert, sup_insert, ha.le_sup, ih]
 
 variable [WellFoundedLT α]
 

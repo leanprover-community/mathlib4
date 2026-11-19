@@ -102,7 +102,7 @@ noncomputable def F [NormedSpace ℂ E] (ε : ℝ) := fun z ↦ invInterpStrip f
 lemma sSupNormIm_nonneg (x : ℝ) : 0 ≤ sSupNormIm f x := by
   apply Real.sSup_nonneg
   rintro y ⟨z1, _, hz2⟩
-  simp only [← hz2, comp, norm_nonneg]
+  simp [← hz2, comp, norm_nonneg]
 
 /-- `sSup` of `norm` translated by `ε > 0` is positive applied to the image of `f` on the
 vertical line `re z = x` -/
@@ -126,7 +126,7 @@ lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
   · apply Differentiable.const_cpow (Differentiable.sub_const differentiable_id 1) _
     left
     rw [← ofReal_add, ofReal_ne_zero]
-    simp only [ne_eq, ne_of_gt (sSupNormIm_eps_pos f hε 0), not_false_eq_true]
+    simp [ne_eq, ne_of_gt (sSupNormIm_eps_pos f hε 0), not_false_eq_true]
   · apply Differentiable.const_cpow (Differentiable.neg differentiable_id)
     apply Or.inl
     rw [← ofReal_add, ofReal_ne_zero]
@@ -140,7 +140,7 @@ lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStr
   · gconvert hB
     exact preimage_mono (singleton_subset_iff.mpr hD)
   · apply mem_image_of_mem (norm ∘ f)
-    simp only [mem_preimage, mem_singleton]
+    simp [mem_preimage, mem_singleton]
 
 /-- Alternative version of `norm_le_sSupNormIm` with a strict inequality and a positive `ε`. -/
 lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
@@ -171,23 +171,23 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
   · by_cases hM0_one : 1 ≤ ε + sSupNormIm f 0
     -- `1 ≤ sSupNormIm f 0`
     · apply le_trans _ (le_max_left _ _)
-      simp only [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 0), sub_re,
+      simp [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 0), sub_re,
         one_re, Real.rpow_le_one_of_one_le_of_nonpos hM0_one (sub_nonpos.mpr hset.2)]
     -- `0 < sSupNormIm f 0 < 1`
     · rw [not_le] at hM0_one; apply le_trans _ (le_max_right _ _)
       simp only [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 0), sub_re,
         one_re]
       apply Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 0) (le_of_lt hM0_one) _
-      simp only [neg_le_sub_iff_le_add, le_add_iff_nonneg_left, hset.1]
+      simp [neg_le_sub_iff_le_add, le_add_iff_nonneg_left, hset.1]
   · by_cases hM1_one : 1 ≤ ε + sSupNormIm f 1
     -- `1 ≤ sSupNormIm f 1`
     · apply le_trans _ (le_max_left _ _)
-      simp only [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 1),
+      simp [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 1),
         neg_re, Real.rpow_le_one_of_one_le_of_nonpos
         hM1_one (Right.neg_nonpos_iff.mpr hset.1)]
     -- `0 < sSupNormIm f 1 < 1`
     · rw [not_le] at hM1_one; apply le_trans _ (le_max_right _ _)
-      simp only [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 1),
+      simp [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 1),
         neg_re, Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 1)
         (le_of_lt hM1_one) (neg_le_neg_iff.mpr hset.2)]
 
@@ -202,14 +202,14 @@ lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
       inv_mul_le_iff₀ (sSupNormIm_eps_pos f hε 0)]
     rw [← hz0]
     apply le_of_lt (norm_lt_sSupNormIm_eps f ε hε _ _ hB)
-    simp only [verticalClosedStrip, mem_preimage, zero_le_one, left_mem_Icc, hz0]
+    simp [verticalClosedStrip, mem_preimage, zero_le_one, left_mem_Icc, hz0]
   -- `z.re = 1`
   · rw [mem_singleton_iff] at hz1
     simp only [hz1, one_mul, Real.rpow_zero, sub_self, Real.rpow_neg_one,
       inv_mul_le_iff₀ (sSupNormIm_eps_pos f hε 1), mul_one]
     rw [← hz1]
     apply le_of_lt (norm_lt_sSupNormIm_eps f ε hε _ _ hB)
-    simp only [verticalClosedStrip, mem_preimage, zero_le_one, hz1, right_mem_Icc]
+    simp [verticalClosedStrip, mem_preimage, zero_le_one, hz1, right_mem_Icc]
 
 theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E) (ε : ℝ) (hε : 0 < ε)
     (z : ℂ) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
@@ -255,7 +255,7 @@ noncomputable def interpStrip (z : ℂ) : ℂ :=
 /-- Rewrite for `InterpStrip` when `0 < sSupNormIm f 0` and `0 < sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_pos (z : ℂ) (h0 : 0 < sSupNormIm f 0) (h1 : 0 < sSupNormIm f 1) :
     interpStrip f z = sSupNormIm f 0 ^ (1 - z) * sSupNormIm f 1 ^ z := by
-  simp only [ne_of_gt h0, ne_of_gt h1, interpStrip, ite_false, or_false]
+  simp [ne_of_gt h0, ne_of_gt h1, interpStrip, ite_false, or_false]
 
 /-- Rewrite for `InterpStrip` when `0 = sSupNormIm f 0` or `0 = sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_zero (z : ℂ) (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0) :
@@ -271,11 +271,11 @@ lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 
     · simp only [h0, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ne_eq, true_and, ofReal_eq_zero]
       left
       rw [sub_eq_zero, eq_comm]
-      simp only [Complex.ext_iff, one_re, ne_of_lt hz.2, false_and, not_false_eq_true]
+      simp [Complex.ext_iff, one_re, ne_of_lt hz.2, false_and, not_false_eq_true]
     · simp only [h1, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ofReal_eq_zero, ne_eq, true_and]
       right
       rw [eq_comm]
-      simp only [Complex.ext_iff, zero_re, ne_of_lt hz.1, false_and, not_false_eq_true]
+      simp [Complex.ext_iff, zero_re, ne_of_lt hz.1, false_and, not_false_eq_true]
   · replace h : (0 < sSupNormIm f 0) ∧ (0 < sSupNormIm f 1) :=
       ⟨(lt_of_le_of_ne (sSupNormIm_nonneg f 0) (ne_comm.mp h.1)),
         (lt_of_le_of_ne (sSupNormIm_nonneg f 1) (ne_comm.mp h.2))⟩
@@ -378,7 +378,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
     · intro h
       obtain ⟨z, hz₁, hz₂⟩ := h
       use ↑l + z * (↑u - ↑l)
-      simp only [add_re, ofReal_re, mul_re, hz₁, sub_re, one_mul, sub_im, ofReal_im, sub_self,
+      simp [add_re, ofReal_re, mul_re, hz₁, sub_re, one_mul, sub_im, ofReal_im, sub_self,
         mul_zero, sub_zero, add_sub_cancel, hz₂, and_self]
     · intro h
       obtain ⟨z, hz₁, hz₂⟩ := h
@@ -387,7 +387,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       · norm_cast
         grind [Complex.div_re, Complex.normSq_ofReal, sub_re, ofReal_re, ofReal_im, mul_eq_zero]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
-        simp only [one_mul, add_sub_cancel, hz₂]
+        simp [one_mul, add_sub_cancel, hz₂]
   rw [this]
 
 /-- A technical lemma relating the bounds given by the three lines lemma on a general strip
@@ -411,8 +411,8 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 
     mul_neg, mul_one, neg_sub, mul_assoc]
     simpa [F, norm_invInterpStrip _ _ hε, norm_smul, mul_comm] using
       norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip f ε hε z hd hB hz
-  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
-  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1 - z.re)]
+  · simp [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
+  · simp [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1 - z.re)]
 
 lemma eventuallyLE (z : ℂ) (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
@@ -429,18 +429,18 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
   apply tendsto_le_of_eventuallyLE _ _ (eventuallyLE f z hB hd hz)
-  · simp only [tendsto_const_nhds_iff]
+  · simp [tendsto_const_nhds_iff]
   -- Proof that we can let epsilon tend to zero.
   · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
     convert ContinuousWithinAt.tendsto _ using 2
-    · simp only [ofReal_zero, zero_add]
+    · simp [ofReal_zero, zero_add]
     · simp_rw [← ofReal_add]
       have : ∀ x ∈ Ioi 0, (x + sSupNormIm f 0) ^ (1 - z.re) * (x + sSupNormIm f 1) ^ z.re
           = ‖((x + sSupNormIm f 0 : ℝ) ^ (1 - z) * (x + sSupNormIm f 1 : ℝ) ^ z : ℂ)‖ := by
               intro x hx
               simp only [norm_mul]
               repeat rw [norm_cpow_eq_rpow_re_of_nonneg (le_of_lt (sSupNormIm_eps_pos f hx _)) _]
-              · simp only [sub_re, one_re]
+              · simp [sub_re, one_re]
               · simpa using (ne_comm.mpr (ne_of_lt hz.1))
               · simpa [sub_eq_zero] using (ne_comm.mpr (ne_of_lt hz.2))
       apply tendsto_nhdsWithin_congr this _
@@ -452,12 +452,12 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
           · nth_rw 2 [← zero_add (sSupNormIm f 0)]
             exact Tendsto.add_const (sSupNormIm f 0) (tendsto_nhdsWithin_of_tendsto_nhds
               (Continuous.tendsto continuous_id' _))
-          · right; simp only [sub_nonneg, le_of_lt hz.2]
+          · right; simp [sub_nonneg, le_of_lt hz.2]
         · apply Tendsto.rpow_const
           · nth_rw 2 [← zero_add (sSupNormIm f 1)]
             exact Tendsto.add_const (sSupNormIm f 1) (tendsto_nhdsWithin_of_tendsto_nhds
               (Continuous.tendsto continuous_id' _))
-          · right; simp only [le_of_lt hz.1]
+          · right; simp [le_of_lt hz.1]
       · simpa using (ne_comm.mpr (ne_of_lt hz.1))
       · simpa [sub_eq_zero] using (ne_comm.mpr (ne_of_lt hz.2))
 
@@ -498,7 +498,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
       simp only [norm_mul]
       rw [norm_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h0).mp (sSupNormIm_nonneg f _)) _]
       rw [norm_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h1).mp (sSupNormIm_nonneg f _)) _]
-      simp only [sub_re, one_re, le_refl]
+      simp [sub_re, one_re, le_refl]
   apply (norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ f hz hd hB).trans (this.trans _)
   apply mul_le_mul_of_nonneg _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
   · apply (Real.rpow_nonneg _ _)

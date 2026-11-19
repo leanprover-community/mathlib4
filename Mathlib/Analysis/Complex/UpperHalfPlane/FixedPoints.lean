@@ -133,7 +133,7 @@ theorem isElliptic_of_exists_smul_eq_self (h : 0 < g.val.det) (hgc : g ∉ Subgr
     ring
   rw [gl_smul_eq_self_iff_quadratic h, quadratic_eq_zero_iff (mod_cast hc) hd] at hz
   norm_cast at hz
-  simp only [z.ne_ofReal, false_or] at hz
+  simp [z.ne_ofReal, false_or] at hz
 
 /-- The unique fixed point of an orientation-preserving elliptic matrix acting on `ℍ`. -/
 def fixedPt (g : GL (Fin 2) ℝ) (hell : g.IsElliptic) : ℍ :=

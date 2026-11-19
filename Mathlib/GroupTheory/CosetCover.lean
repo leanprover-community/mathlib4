@@ -115,11 +115,11 @@ theorem pairwiseDisjoint_leftCoset_cover_const_of_index_eq (hind : H.index = s.c
     specialize hj' hx
     rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hi' hj'
     rw [ne_eq, ← Subtype.mk.injEq (p := (· ∈ (s : Set ι))) i hi j hj] at h'
-    exact h' <| this.injective <| by simp only [hi', hj']
+    exact h' <| this.injective <| by simp [hi', hj']
   rw [Fintype.bijective_iff_surjective_and_card]
   constructor
   · rwa [leftCoset_cover_const_iff_surjOn, Set.surjOn_iff_surjective] at hcovers
-  · simp only [Fintype.card_coe, ← hind, index_eq_card, Nat.card_eq_fintype_card]
+  · simp [Fintype.card_coe, ← hind, index_eq_card, Nat.card_eq_fintype_card]
 
 end leftCoset_cover_const
 
@@ -351,7 +351,7 @@ theorem exists_index_le_card_of_leftCoset_cover :
   by_contra! h
   apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_gt
   cases s.eq_empty_or_nonempty with
-  | inl hs => simp only [hs, Finset.sum_empty, zero_lt_one]
+  | inl hs => simp [hs, Finset.sum_empty, zero_lt_one]
   | inr hs =>
   have hs' : 0 < s.card := hs.card_pos
   have hlt : ∀ i ∈ s, ((H i).index : ℚ)⁻¹ < (s.card : ℚ)⁻¹ := fun i hi ↦ by

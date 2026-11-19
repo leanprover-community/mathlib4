@@ -141,7 +141,7 @@ instance (priority := 100) toExistsAddOfLE : ExistsAddOfLE R where
     | ⟨p, _, hp⟩ => ⟨p, hp⟩
 
 lemma nonneg_iff : 0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) := by
-  simp only [le_iff, zero_add, exists_eq_right']
+  simp [le_iff, zero_add, exists_eq_right']
 
 lemma pos_iff : 0 < x ↔ x ≠ 0 ∧ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) := by
   simp [lt_iff_le_and_ne, and_comm, eq_comm, le_iff]
@@ -266,7 +266,7 @@ theorem star_left_conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
   rw [StarOrderedRing.le_iff] at hab ⊢
   obtain ⟨p, hp, rfl⟩ := hab
   simp_rw [← StarOrderedRing.nonneg_iff] at hp ⊢
-  exact ⟨star c * p * c, star_left_conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
+  exact ⟨star c * p * c, star_left_conjugate_nonneg hp c, by simp [add_mul, mul_add]⟩
 
 theorem star_right_conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     c * a * star c ≤ c * b * star c := by
@@ -555,7 +555,7 @@ theorem le_one (hp : IsStarProjection p) : p ≤ 1 := sub_nonneg.mp hp.one_sub_n
 
 /-- For a star projection `p`, we have `0 ≤ p ≤ 1`. -/
 theorem mem_Icc (hp : IsStarProjection p) : p ∈ Set.Icc (0 : R) 1 := by
-  simp only [Set.mem_Icc, hp.nonneg, hp.le_one, and_self]
+  simp [Set.mem_Icc, hp.nonneg, hp.le_one, and_self]
 
 end Ring
 

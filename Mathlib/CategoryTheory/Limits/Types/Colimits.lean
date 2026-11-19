@@ -86,7 +86,7 @@ namespace Limits.Types
 
 theorem isColimit_iff_coconeTypesIsColimit {F : J ⥤ Type u} (c : Cocone F) :
     Nonempty (IsColimit c) ↔ (F.coconeTypesEquiv.symm c).IsColimit := by
-  simp only [Functor.CoconeTypes.isColimit_iff, Equiv.apply_symm_apply]
+  simp [Functor.CoconeTypes.isColimit_iff, Equiv.apply_symm_apply]
 
 /-- (internal implementation) the colimit cocone of a functor,
 implemented as a quotient of a sigma type

@@ -369,14 +369,14 @@ theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
     ∫ x in t..t + n • T, f x = n • ∫ x in t..t + T, f x := by
   -- Reduce to the case `b = 0`
   suffices (∫ x in 0..(n • T), f x) = n • ∫ x in 0..T, f x by
-    simp only [hf.intervalIntegral_add_eq t 0, (hf.zsmul n).intervalIntegral_add_eq t 0, zero_add,
+    simp [hf.intervalIntegral_add_eq t 0, (hf.zsmul n).intervalIntegral_add_eq t 0, zero_add,
       this]
   -- First prove it for natural numbers
   have : ∀ m : ℕ, (∫ x in 0..m • T, f x) = m • ∫ x in 0..T, f x := fun m ↦ by
     induction m with
     | zero => simp
     | succ m ih =>
-      simp only [succ_nsmul, hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
+      simp [succ_nsmul, hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
   -- Then prove it for all integers
   rcases n with n | n
   · simp [← this n]

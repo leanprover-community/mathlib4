@@ -52,7 +52,7 @@ def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type s
         dsimp
         rw [Category.id_comp, Category.assoc, ← E.w f]
         dsimp [diagramNatTrans]
-        simp only [Multiequalizer.lift_ι, Category.assoc] }
+        simp [Multiequalizer.lift_ι, Category.assoc] }
 
 /-- Auxiliary definition for `liftToDiagramLimitObj`. -/
 def liftToDiagramLimitObjAux {X : C} {K : Type s} [SmallCategory K] [HasLimitsOfShape K D]
@@ -101,7 +101,7 @@ instance preservesLimit_diagramFunctor
           intro E k
           dsimp [diagramNatTrans]
           refine Multiequalizer.hom_ext _ _ _ (fun a => ?_)
-          simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc,
+          simp [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc,
             liftToDiagramLimitObjAux_fac]
         uniq := by
           intro E m hm

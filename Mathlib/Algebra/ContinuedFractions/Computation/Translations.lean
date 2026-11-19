@@ -104,7 +104,7 @@ theorem stream_succ_of_int (a : ℤ) (n : ℕ) :
   induction n with
   | zero =>
     refine IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) ?_
-    simp only [IntFractPair.of, Int.fract_intCast]
+    simp [IntFractPair.of, Int.fract_intCast]
   | succ n ih => exact IntFractPair.succ_nth_stream_eq_none_iff.mpr (Or.inl ih)
 
 theorem exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
@@ -305,7 +305,7 @@ are all equal to `a`.
 -/
 theorem convs'_of_int (a : ℤ) : (of (a : K)).convs' n = a := by
   induction n with
-  | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast]
+  | zero => simp [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast]
   | succ =>
     rw [convs', of_h_eq_floor, floor_intCast, add_eq_left]
     exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Stream'.Seq.get?_nil 0) _

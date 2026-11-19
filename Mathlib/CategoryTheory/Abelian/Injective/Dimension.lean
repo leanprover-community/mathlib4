@@ -66,7 +66,7 @@ variable {X n} in
 lemma mk (hX : ∀ (i : ℕ) (_ : n ≤ i) ⦃Y : C⦄, ∀ (e : Ext Y X i), e = 0) :
     HasInjectiveDimensionLT X n where
   subsingleton' i hi Y := by
-    have : Subsingleton (Ext Y X i) := ⟨fun e₁ e₂ ↦ by simp only [hX i hi]⟩
+    have : Subsingleton (Ext Y X i) := ⟨fun e₁ e₂ ↦ by simp [hX i hi]⟩
     let := HasExt.standard C
     exact Ext.chgUniv.{max u v, w}.symm.subsingleton
 

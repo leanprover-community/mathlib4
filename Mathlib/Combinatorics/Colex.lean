@@ -286,7 +286,7 @@ private lemma max_mem_aux {s t : Colex (Finset α)} (hst : s ≠ t) :
 lemma toColex_lt_toColex_iff_exists_forall_lt :
     toColex s < toColex t ↔ ∃ a ∈ t, a ∉ s ∧ ∀ b ∈ s, b ∉ t → b < a := by
   rw [← not_le, toColex_le_toColex, not_forall]
-  simp only [not_forall, not_exists, not_and, not_le, exists_prop]
+  simp [not_forall, not_exists, not_and, not_le, exists_prop]
 
 lemma lt_iff_exists_forall_lt {s t : Colex (Finset α)} :
     s < t ↔ ∃ a ∈ ofColex t, a ∉ ofColex s ∧ ∀ b ∈ ofColex s, b ∉ ofColex t → b < a :=

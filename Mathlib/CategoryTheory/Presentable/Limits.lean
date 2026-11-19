@@ -115,7 +115,7 @@ lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
     (x := y₁.1 k) (y := y₂.1 k)).1 (by
       simp only [y₁, y₂, Types.isLimitEquivSections_apply]
       dsimp at h ⊢
-      simp only [← NatTrans.naturality_apply, h])
+      simp [← NatTrans.naturality_apply, h])
   let j₁ (k : K) : J := (H k).choose
   let f (k : K) : j ⟶ j₁ k := (H k).choose_spec.choose
   have hf (k : K) : (F.obj k).map (X.map (f k)) (y₁.1 k) =

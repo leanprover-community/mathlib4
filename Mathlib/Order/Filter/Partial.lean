@@ -225,7 +225,7 @@ theorem pmap_res (l : Filter α) (s : Set α) (f : α → β) :
 
 theorem tendsto_iff_ptendsto (l₁ : Filter α) (l₂ : Filter β) (s : Set α) (f : α → β) :
     Tendsto f (l₁ ⊓ 𝓟 s) l₂ ↔ PTendsto (PFun.res f s) l₁ l₂ := by
-  simp only [Tendsto, PTendsto, pmap_res]
+  simp [Tendsto, PTendsto, pmap_res]
 
 theorem tendsto_iff_ptendsto_univ (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
     Tendsto f l₁ l₂ ↔ PTendsto (PFun.res f Set.univ) l₁ l₂ := by

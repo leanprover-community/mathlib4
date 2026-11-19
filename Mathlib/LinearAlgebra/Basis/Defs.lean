@@ -139,7 +139,7 @@ theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.linearCombination R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
     _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsuppSum ..
-    _ = Finsupp.linearCombination R b v := by simp only [repr_symm_single,
+    _ = Finsupp.linearCombination R b v := by simp [repr_symm_single,
                                                          Finsupp.linearCombination_apply]
 
 @[simp]
@@ -314,17 +314,17 @@ variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-  simp only [map_sum, map_smulₛₗ, h]
+  simp [map_sum, map_smulₛₗ, h]
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
 theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-  simp only [map_sum, map_smulₛₗ, h]
+  simp [map_sum, map_smulₛₗ, h]
 
 /-- Two elements are equal iff their coordinates are equal. -/
 theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
-  simp only [← DFunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
+  simp [← DFunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 
 alias ⟨_, ext_elem⟩ := ext_elem_iff
 
@@ -436,7 +436,7 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
   apply (b.repr_apply_eq (fun x i => b.reindexRange.repr x ⟨b i, _⟩) _ _ _ x i).symm
   · intro x y
     ext i
-    simp only [Pi.add_apply, map_add, Finsupp.coe_add]
+    simp [Pi.add_apply, map_add, Finsupp.coe_add]
   · intro c x
     ext i
     simp
@@ -552,7 +552,7 @@ theorem constr_range {f : ι → M'} :
 @[simp]
 theorem constr_comp (f : M' →ₗ[R] M') (v : ι → M') :
     constr (M' := M') b S (f ∘ v) = f.comp (constr (M' := M') b S v) :=
-  b.ext fun i => by simp only [Basis.constr_basis, LinearMap.comp_apply, Function.comp]
+  b.ext fun i => by simp [Basis.constr_basis, LinearMap.comp_apply, Function.comp]
 
 variable (S : Type*) [Semiring S] [Module S M']
 variable [SMulCommClass R S M']
@@ -662,7 +662,7 @@ def coord : M →ₗ[R] R :=
   Finsupp.lapply i ∘ₗ ↑b.repr
 
 theorem forall_coord_eq_zero_iff {x : M} : (∀ i, b.coord i x = 0) ↔ x = 0 :=
-  Iff.trans (by simp only [b.coord_apply, DFunLike.ext_iff, Finsupp.zero_apply])
+  Iff.trans (by simp [b.coord_apply, DFunLike.ext_iff, Finsupp.zero_apply])
     b.repr.map_eq_zero_iff
 
 /-- The sum of the coordinates of an element `m : M` with respect to a basis. -/
@@ -676,13 +676,13 @@ theorem coe_sumCoords : (b.sumCoords : M → R) = fun m => (b.repr m).sum fun _ 
 @[simp high]
 theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i, b.coord i := by
   ext m
-  simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
+  simp [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
     id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
     LinearMap.coe_sum]
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by
-  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id, Basis.repr_self,
+  simp [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id, Basis.repr_self,
     Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Finsupp.sum_single_index]
 
 theorem dvd_coord_smul (i : ι) (m : M) (r : R) : r ∣ b.coord i (r • m) :=
@@ -690,11 +690,11 @@ theorem dvd_coord_smul (i : ι) (m : M) (r : R) : r ∣ b.coord i (r • m) :=
 
 theorem coord_repr_symm (b : Basis ι R M) (i : ι) (f : ι →₀ R) :
     b.coord i (b.repr.symm f) = f i := by
-  simp only [repr_symm_apply, coord_apply, repr_linearCombination]
+  simp [repr_symm_apply, coord_apply, repr_linearCombination]
 
 theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b.coord i m := by
   ext m
-  simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
+  simp [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
     LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
     finsum_eq_sum _ (b.repr m).hasFiniteSupport, Finsupp.sum, Finset.finite_toSet_toFinset, id,
     Finsupp.fun_support_eq]

@@ -200,13 +200,13 @@ theorem liftAux_map_mul (f : X → L) (a b : lib R X) :
 theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
     liftAux R f a = liftAux R f b := by
   induction h with
-  | lie_self a' => simp only [liftAux_map_mul, map_zero, lie_self]
+  | lie_self a' => simp [liftAux_map_mul, map_zero, lie_self]
   | leibniz_lie a' b' c' =>
-    simp only [liftAux_map_mul, liftAux_map_add, sub_add_cancel, lie_lie]
-  | smul b' _ h₂ => simp only [liftAux_map_smul, h₂]
-  | add_right c' _ h₂ => simp only [liftAux_map_add, h₂]
-  | mul_left c' _ h₂ => simp only [liftAux_map_mul, h₂]
-  | mul_right c' _ h₂ => simp only [liftAux_map_mul, h₂]
+    simp [liftAux_map_mul, liftAux_map_add, sub_add_cancel, lie_lie]
+  | smul b' _ h₂ => simp [liftAux_map_smul, h₂]
+  | add_right c' _ h₂ => simp [liftAux_map_add, h₂]
+  | mul_left c' _ h₂ => simp [liftAux_map_mul, h₂]
+  | mul_right c' _ h₂ => simp [liftAux_map_mul, h₂]
 
 /-- The quotient map as a `NonUnitalAlgHom`. -/
 def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
@@ -228,7 +228,7 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
   invFun F := F ∘ of R
   left_inv f := by
     ext x
-    simp only [liftAux, of, LieHom.coe_mk, Function.comp_apply, lib.lift_of_apply]
+    simp [liftAux, of, LieHom.coe_mk, Function.comp_apply, lib.lift_of_apply]
   right_inv F := by
     ext ⟨a⟩
     let F' := F.toNonUnitalAlgHom.comp (mk R)

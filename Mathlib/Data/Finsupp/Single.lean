@@ -59,7 +59,7 @@ theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b els
   simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
-    single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
+    single (f x) y (f z) = single x y z := by classical simp [single_apply, hf.eq_iff]
 
 theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b := by
   ext; simp [single_apply, Pi.single_apply, eq_comm]
@@ -173,7 +173,7 @@ theorem single_ne_zero : single a b ≠ 0 ↔ b ≠ 0 :=
   single_eq_zero.not
 
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
-  classical simp only [single_apply, eq_comm]
+  classical simp [single_apply, eq_comm]
 
 instance instNontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) := by
   inhabit α
@@ -216,11 +216,11 @@ theorem support_eq_singleton' {f : α →₀ M} {a : α} :
 
 theorem card_support_eq_one {f : α →₀ M} :
     #f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
-  simp only [card_eq_one, support_eq_singleton]
+  simp [card_eq_one, support_eq_singleton]
 
 theorem card_support_eq_one' {f : α →₀ M} :
     #f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
-  simp only [card_eq_one, support_eq_singleton']
+  simp [card_eq_one, support_eq_singleton']
 
 theorem support_subset_singleton {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ f = single a (f a) :=
   ⟨fun h => eq_single_iff.mpr ⟨h, rfl⟩, fun h => (eq_single_iff.mp h).left⟩
@@ -231,11 +231,11 @@ theorem support_subset_singleton' {f : α →₀ M} {a : α} : f.support ⊆ {a}
 
 theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
     #f.support ≤ 1 ↔ ∃ a, f = single a (f a) := by
-  simp only [card_le_one_iff_subset_singleton, support_subset_singleton]
+  simp [card_le_one_iff_subset_singleton, support_subset_singleton]
 
 theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
     #f.support ≤ 1 ↔ ∃ a b, f = single a b := by
-  simp only [card_le_one_iff_subset_singleton, support_subset_singleton']
+  simp [card_le_one_iff_subset_singleton, support_subset_singleton']
 
 /-- If `α` has a unique term, then finitely supported functions `α →₀ M` are in bijection with `M`.
 -/
@@ -364,7 +364,7 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
 theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
     f.erase a a' = if a' = a then 0 else f a' := by
   rw [erase, coe_mk]
-  simp only [ite_eq_ite]
+  simp [ite_eq_ite]
 
 @[simp]
 theorem support_erase [DecidableEq α] {a : α} {f : α →₀ M} :
@@ -433,7 +433,7 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
   classical
     have h_map_support : Finset.map f l.support = {a} := by
       rw [← support_embDomain, h, support_single _ hb]
-    have ha : a ∈ Finset.map f l.support := by simp only [h_map_support, Finset.mem_singleton]
+    have ha : a ∈ Finset.map f l.support := by simp [h_map_support, Finset.mem_singleton]
     rcases Finset.mem_map.1 ha with ⟨c, _hc₁, hc₂⟩
     use c
     constructor

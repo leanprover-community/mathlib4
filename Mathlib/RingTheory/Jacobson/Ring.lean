@@ -293,7 +293,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     obtain ⟨q'', hq''⟩ := isUnit_iff_exists_inv'.1 (IsLocalization.map_units Rₘ (⟨q', hq'⟩ : M))
     refine (hp.symm ▸ this).of_mul_unit φ' p (algebraMap (R[X] ⧸ P) Sₘ (φ q')) q'' ?_
     rw [← φ'.map_one, ← congr(φ' $hq''), φ'.map_mul, ← φ'.comp_apply]
-    simp only [φ', IsLocalization.map_comp _, RingHom.comp_apply]
+    simp [φ', IsLocalization.map_comp _, RingHom.comp_apply]
   dsimp at hp
   refine @IsIntegral.of_mem_closure'' Rₘ _ Sₘ _ φ'
     ((algebraMap (R[X] ⧸ P) Sₘ).comp (Ideal.Quotient.mk P) '' insert X { p | p.degree ≤ 0 }) ?_
@@ -306,7 +306,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
         (pX.map (Ideal.Quotient.mk P')) ?_ M ?_
       · rwa [eval₂_map, hφ', ← hom_eval₂, Quotient.eq_zero_iff_mem, eval₂_C_X]
       · use 1
-        simp only [P', pow_one]
+        simp [P', pow_one]
     · rw [degree_le_zero_iff] at hy
       rw [hy]
       refine ⟨X - C (algebraMap _ _ ((Ideal.Quotient.mk P') (p.coeff 0))), monic_X_sub_C _, ?_⟩
@@ -433,7 +433,7 @@ theorem isJacobsonRing_polynomial_iff_isJacobsonRing : IsJacobsonRing R[X] ↔ I
   refine ⟨?_, isJacobsonRing_polynomial_of_isJacobsonRing⟩
   intro H
   exact isJacobsonRing_of_surjective ⟨eval₂RingHom (RingHom.id _) 1, fun x =>
-    ⟨C x, by simp only [coe_eval₂RingHom, RingHom.id_apply, eval₂_C]⟩⟩
+    ⟨C x, by simp [coe_eval₂RingHom, RingHom.id_apply, eval₂_C]⟩⟩
 
 instance [IsJacobsonRing R] : IsJacobsonRing R[X] :=
   isJacobsonRing_polynomial_iff_isJacobsonRing.mpr ‹IsJacobsonRing R›
@@ -618,7 +618,7 @@ private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
   have h_eq : algebraMap R (T ⧸ P) =
     w.toRingEquiv.toRingHom.comp (w'.toRingHom.comp (algebraMap R (S ⧸ Q'))) := by
     ext r
-    simp only [AlgHom.toRingHom_eq_coe,
+    simp [AlgHom.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, coe_comp, coe_coe,
       AlgEquiv.coe_toRingEquiv, Function.comp_apply, AlgEquiv.commutes]
   rw [h_eq]

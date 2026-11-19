@@ -85,7 +85,7 @@ theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : �
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
     exact ciInf_le ⟨0, forall_mem_range.2 A⟩ p
-  simp only [glueDist, this, zero_add]
+  simp [glueDist, this, zero_add]
 
 private theorem glueDist_comm (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
     ∀ x y, glueDist Φ Ψ ε x y = glueDist Φ Ψ ε y x
@@ -98,8 +98,8 @@ theorem glueDist_swap (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
     ∀ x y, glueDist Ψ Φ ε x.swap y.swap = glueDist Φ Ψ ε x y
   | .inl _, .inl _ => rfl
   | .inr _, .inr _ => rfl
-  | .inl _, .inr _ => by simp only [glueDist, Sum.swap_inl, Sum.swap_inr, add_comm]
-  | .inr _, .inl _ => by simp only [glueDist, Sum.swap_inl, Sum.swap_inr, add_comm]
+  | .inl _, .inr _ => by simp [glueDist, Sum.swap_inl, Sum.swap_inr, add_comm]
+  | .inr _, .inl _ => by simp [glueDist, Sum.swap_inl, Sum.swap_inr, add_comm]
 
 theorem le_glueDist_inl_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inl x) (.inr y) :=
@@ -258,7 +258,7 @@ defined by the distance coincides with the disjoint union uniform structure. -/
 @[instance_reducible]
 def metricSpaceSum : MetricSpace (X ⊕ Y) where
   dist := Sum.dist
-  dist_self x := by cases x <;> simp only [Sum.dist, dist_self]
+  dist_self x := by cases x <;> simp [Sum.dist, dist_self]
   dist_comm := private Sum.dist_comm
   dist_triangle
     | .inl p, .inl q, .inl r => dist_triangle p q r
@@ -375,7 +375,7 @@ protected theorem dist_triangle (x y z : Σ i, E i) : dist x z ≤ dist x y + di
         calc
           dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z =
               dist x (Nonempty.some ⟨x⟩) + 1 + 0 + (0 + 0 + dist (Nonempty.some ⟨z⟩) z) := by
-            simp only [add_zero, zero_add]
+            simp [add_zero, zero_add]
           _ ≤ _ := by apply_rules [add_le_add, zero_le_one, dist_nonneg, le_rfl]
 
 protected theorem isOpen_iff (s : Set (Σ i, E i)) :
@@ -442,7 +442,7 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine completeSpace_of_isComplete_univ ?_
   convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
-  simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
+  simp [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 
 end Sigma
 

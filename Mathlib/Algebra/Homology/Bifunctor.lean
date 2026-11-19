@@ -67,7 +67,7 @@ def mapBifunctorHomologicalComplex :
         (((GradedObject.mapBifunctor F I₁ I₂).map f.f).app K₂.X) (by
           intros
           dsimp
-          simp only [← NatTrans.comp_app, ← F.map_comp, f.comm]) (by simp) }
+          simp [← NatTrans.comp_app, ← F.map_comp, f.comm]) (by simp) }
 
 variable {c₁ c₂}
 

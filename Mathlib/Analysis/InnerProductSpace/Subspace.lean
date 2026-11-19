@@ -126,8 +126,8 @@ theorem OrthogonalFamily.inner_right_dfinsupp
       simp only [DFinsupp.sum, Finset.sum_ite_eq,
         DFinsupp.mem_support_toFun]
       split_ifs with h
-      · simp only [LinearIsometry.inner_map_map]
-      · simp only [of_not_not h, inner_zero_right]
+      · simp [LinearIsometry.inner_map_map]
+      · simp [of_not_not h, inner_zero_right]
 
 theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : ι) (v : G i) :
     ⟪V i v, ∑ j : ι, V j (l j)⟫ = ⟪v, l i⟫ := by
@@ -137,26 +137,26 @@ theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : 
     _ = ∑ j, ite (i = j) ⟪V i v, V j (l j)⟫ 0 :=
       congr(Finset.sum Finset.univ $(funext fun j => hV.eq_ite v (l j)))
     _ = ⟪v, l i⟫ := by
-      simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, ite_true]
+      simp [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, ite_true]
 
 nonrec theorem OrthogonalFamily.inner_sum (l₁ l₂ : ∀ i, G i) (s : Finset ι) :
     ⟪∑ i ∈ s, V i (l₁ i), ∑ j ∈ s, V j (l₂ j)⟫ = ∑ i ∈ s, ⟪l₁ i, l₂ i⟫ := by
   classical
   calc
     ⟪∑ i ∈ s, V i (l₁ i), ∑ j ∈ s, V j (l₂ j)⟫ = ∑ j ∈ s, ∑ i ∈ s, ⟪V i (l₁ i), V j (l₂ j)⟫ := by
-      simp only [sum_inner, inner_sum]
+      simp [sum_inner, inner_sum]
     _ = ∑ j ∈ s, ∑ i ∈ s, ite (i = j) ⟪V i (l₁ i), V j (l₂ j)⟫ 0 := by
       congr with i
       congr with j
       apply hV.eq_ite
     _ = ∑ i ∈ s, ⟪l₁ i, l₂ i⟫ := by
-      simp only [Finset.sum_ite_of_true, Finset.sum_ite_eq', LinearIsometry.inner_map_map,
+      simp [Finset.sum_ite_of_true, Finset.sum_ite_eq', LinearIsometry.inner_map_map,
         imp_self, imp_true_iff]
 
 theorem OrthogonalFamily.norm_sum (l : ∀ i, G i) (s : Finset ι) :
     ‖∑ i ∈ s, V i (l i)‖ ^ 2 = ∑ i ∈ s, ‖l i‖ ^ 2 := by
   have : ((‖∑ i ∈ s, V i (l i)‖ : ℝ) : 𝕜) ^ 2 = ∑ i ∈ s, ((‖l i‖ : ℝ) : 𝕜) ^ 2 := by
-    simp only [← inner_self_eq_norm_sq_to_K, hV.inner_sum]
+    simp [← inner_self_eq_norm_sq_to_K, hV.inner_sum]
   exact mod_cast this
 
 /-- The composition of an orthogonal family of subspaces with an injective function is also an
@@ -190,7 +190,7 @@ theorem OrthogonalFamily.norm_sq_sdiff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
     dsimp only [F]
-    split_ifs <;> simp only [norm_neg]
+    split_ifs <;> simp [norm_neg]
   have :
     ‖(∑ i ∈ s₁ \ s₂, V i (F i)) + ∑ i ∈ s₂ \ s₁, V i (F i)‖ ^ 2 =
       (∑ i ∈ s₁ \ s₂, ‖F i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖F i‖ ^ 2 := by
@@ -198,11 +198,11 @@ theorem OrthogonalFamily.norm_sq_sdiff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
     simpa only [Finset.sum_union hs] using hV.norm_sum F (s₁ \ s₂ ∪ s₂ \ s₁)
   convert! this using 4
   · refine Finset.sum_congr rfl fun i hi => ?_
-    simp only [hF₁ i hi]
+    simp [hF₁ i hi]
   · refine Finset.sum_congr rfl fun i hi => ?_
-    simp only [hF₂ i hi, LinearIsometry.map_neg]
-  · simp only [hF]
-  · simp only [hF]
+    simp [hF₂ i hi, LinearIsometry.map_neg]
+  · simp [hF]
+  · simp [hF]
 
 @[deprecated (since := "2026-06-03")]
 alias OrthogonalFamily.norm_sq_diff_sum := OrthogonalFamily.norm_sq_sdiff_sum
@@ -276,7 +276,7 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
     ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
       simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using!
         (hV.inner_right_dfinsupp v i (v i)).symm
-    _ = 0 := by simp only [hv, inner_zero_right]
+    _ = 0 := by simp [hv, inner_zero_right]
 
 theorem DirectSum.IsInternal.collectedBasis_orthonormal [DecidableEq ι] {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)

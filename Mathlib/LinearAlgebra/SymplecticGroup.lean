@@ -174,7 +174,7 @@ theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGrou
       simp
     _ = (-Aᵀ) * (A * J l R * Aᵀ)⁻¹ * A := by rw [hA]
     _ = -(Aᵀ * (Aᵀ⁻¹ * (J l R)⁻¹)) * A⁻¹ * A := by
-      simp only [Matrix.mul_inv_rev, Matrix.mul_assoc, Matrix.neg_mul]
+      simp [Matrix.mul_inv_rev, Matrix.mul_assoc, Matrix.neg_mul]
     _ = -(J l R)⁻¹ := by
       rw [mul_nonsing_inv_cancel_left _ _ huAT, nonsing_inv_mul_cancel_right _ _ huA]
     _ = J l R := by simp [J_inv]
@@ -195,13 +195,13 @@ theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R
 theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l R * A) = 1 :=
   calc
     -(J l R * Aᵀ * J l R * A) = (-J l R) * (Aᵀ * J l R * A) := by
-      simp only [Matrix.mul_assoc, Matrix.neg_mul]
+      simp [Matrix.mul_assoc, Matrix.neg_mul]
     _ = (-J l R) * J l R := by
       rw [mem_iff'] at hA
       rw [hA]
-    _ = (-1 : R) • (J l R * J l R) := by simp only [Matrix.neg_mul, neg_smul, one_smul]
+    _ = (-1 : R) • (J l R * J l R) := by simp [Matrix.neg_mul, neg_smul, one_smul]
     _ = (-1 : R) • (-1 : Matrix _ _ _) := by rw [J_squared]
-    _ = 1 := by simp only [neg_smul_neg, one_smul]
+    _ = 1 := by simp [neg_smul_neg, one_smul]
 
 theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (l ⊕ l) (l ⊕ l) R) = (↑A)⁻¹ := by
   refine (coe_inv A).trans (inv_eq_left_inv ?_).symm
@@ -209,7 +209,7 @@ theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (l ⊕ l) (l �
 
 theorem inv_eq_symplectic_inv (A : Matrix (l ⊕ l) (l ⊕ l) R) (hA : A ∈ symplecticGroup l R) :
     A⁻¹ = (-J l R) * Aᵀ * J l R :=
-  inv_eq_left_inv (by simp only [Matrix.neg_mul, inv_left_mul_aux hA])
+  inv_eq_left_inv (by simp [Matrix.neg_mul, inv_left_mul_aux hA])
 
 instance : Group (symplecticGroup l R) :=
   { SymplecticGroup.hasInv, Submonoid.toMonoid _ with

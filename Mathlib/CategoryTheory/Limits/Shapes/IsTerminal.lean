@@ -61,7 +61,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
   invFun u :=
     { lift := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).uniq _ }
-  left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
+  left_inv := by dsimp [Function.LeftInverse]; intro x; simp [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.RightInverse, Function.LeftInverse]
     subsingleton
@@ -160,7 +160,7 @@ def isLimitChangeEmptyCone {c₁ : Cone F₁} (hl : IsLimit c₁) (c₂ : Cone F
   uniq c f _ := by
     dsimp
     rw [← hl.uniq _ (f ≫ hi.inv) _]
-    · simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id]
+    · simp [Category.assoc, Iso.inv_hom_id, Category.comp_id]
     · simp
 
 /-- Replacing an empty cone in `IsLimit` by another with the same cone point
@@ -172,10 +172,10 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
     IsLimit c₁ ≃ IsLimit c₂ where
   toFun hl := isLimitChangeEmptyCone C hl c₂ h
   invFun hl := isLimitChangeEmptyCone C hl c₁ h.symm
-  left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
+  left_inv := by dsimp [Function.LeftInverse]; intro; simp [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.LeftInverse, Function.RightInverse]; intro
-    simp only [eq_iff_true_of_subsingleton]
+    simp [eq_iff_true_of_subsingleton]
 
 /-- If `F` is an empty diagram, then a cone over `F` is limiting iff the cone point is terminal. -/
 @[to_dual
@@ -285,7 +285,7 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
       naturality := by
         intro i j f
         dsimp
-        simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.id_comp, ← F.map_comp,
+        simp [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.id_comp, ← F.map_comp,
           hX.hom_ext (hX.from i) (f ≫ hX.from j)] }
 
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J` and that the morphisms in the

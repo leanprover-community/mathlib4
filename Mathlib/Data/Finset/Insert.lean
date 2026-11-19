@@ -137,7 +137,7 @@ theorem nonempty_iff_eq_singleton_default [Unique α] {s : Finset α} :
 alias ⟨Nonempty.eq_singleton_default, _⟩ := nonempty_iff_eq_singleton_default
 
 theorem singleton_iff_unique_mem (s : Finset α) : (∃ a, s = {a}) ↔ ∃! a, a ∈ s := by
-  simp only [eq_singleton_iff_unique_mem, ExistsUnique]
+  simp [eq_singleton_iff_unique_mem, ExistsUnique]
 
 theorem singleton_subset_set_iff {s : Set α} {a : α} : ↑({a} : Finset α) ⊆ s ↔ a ∈ s := by
   grind
@@ -636,7 +636,7 @@ theorem toList_singleton : ∀ a, ({a} : Finset α).toList = [a] :=
 open scoped List in
 theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList ~ a :: s.toList :=
   (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x => by
-    simp only [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
+    simp [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
 
 open scoped List in
 theorem toList_insert [DecidableEq α] {a : α} {s : Finset α} (h : a ∉ s) :

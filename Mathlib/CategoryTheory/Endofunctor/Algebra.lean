@@ -318,7 +318,7 @@ def isoMk (h : V₀.V ≅ V₁.V) (w : V₀.str ≫ F.map h.hom = h.hom ≫ V₁
     { f := h.inv
       h := by
         rw [h.eq_inv_comp, ← Category.assoc, ← w, Category.assoc, ← F.map_comp]
-        simp only [Iso.hom_inv_id, Functor.map_id, Category.comp_id] }
+        simp [Iso.hom_inv_id, Functor.map_id, Category.comp_id] }
 
 /-- The forgetful functor from the category of coalgebras, forgetting the coalgebraic structure. -/
 @[simps]

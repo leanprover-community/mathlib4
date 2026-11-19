@@ -96,14 +96,14 @@ theorem odd_length : Odd (ℓ t) := by
 theorem length_mul_left_ne (w : W) : ℓ (w * t) ≠ ℓ w := by
   suffices cs.lengthParity (w * t) ≠ cs.lengthParity w by
     contrapose this
-    simp only [lengthParity_eq_ofAdd_length, this]
+    simp [lengthParity_eq_ofAdd_length, this]
   rcases ht with ⟨w, i, rfl⟩
   simp [lengthParity_simple]
 
 theorem length_mul_right_ne (w : W) : ℓ (t * w) ≠ ℓ w := by
   suffices cs.lengthParity (t * w) ≠ cs.lengthParity w by
     contrapose this
-    simp only [lengthParity_eq_ofAdd_length, this]
+    simp [lengthParity_eq_ofAdd_length, this]
   rcases ht with ⟨w, i, rfl⟩
   simp [lengthParity_simple]
 
@@ -468,7 +468,7 @@ theorem getElem_leftInvSeq_alternatingWord
     simp only [CoxeterSystem.getElem_leftInvSeq cs (alternatingWord i j (2 * p)) 0 (by simp [h]),
       take_zero, wordProd_nil, one_mul, inv_one, mul_one, alternatingWord, concat_eq_append,
       nil_append, wordProd_singleton]
-    simp only [getElem_alternatingWord i j (2 * p) 0 (by simp [h]), add_zero, even_two,
+    simp [getElem_alternatingWord i j (2 * p) 0 (by simp [h]), add_zero, even_two,
       Even.mul_right, ↓reduceIte]
   | succ k hk =>
     simp only [getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk _ _ (by lia),

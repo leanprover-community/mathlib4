@@ -187,7 +187,7 @@ theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
   have hw₂ : Derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     rcases mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero | h_one
     · -- `(2^m - c)/3 ≡ 0 [MOD 2]`
-      simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
+      simp [der_cons_replicate m, append_nil, List.replicate, h_zero]
     · -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
       rw [h_one, ← replicate_pow_sub_append, append_assoc]
       apply Derivable.r1
@@ -213,7 +213,7 @@ example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I)
   have hw₂ : Derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     rcases mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero | h_one
     · -- `(2^m - c)/3 ≡ 0 [MOD 2]`
-      simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
+      simp [der_cons_replicate m, append_nil, List.replicate, h_zero]
     · -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
       rw [h_one, ← replicate_pow_sub_append, append_assoc]
       apply Derivable.r1
@@ -270,7 +270,7 @@ theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Deri
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
     intro k
-    simp only [k, count, countP, countP.go, zero_mod, zero_ne_one, false_or,
+    simp [k, count, countP, countP.go, zero_mod, zero_ne_one, false_or,
       reduceCtorEq] at hi
   rcases exists_cons_of_ne_nil this with ⟨y, ys, rfl⟩
   rcases mhead

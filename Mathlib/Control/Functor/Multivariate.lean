@@ -115,7 +115,7 @@ theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
     apply (h₁ u).mp h₂
   · refine ⟨g <$$> u, ?_⟩
     rw [h₁]
-    simp only [MvFunctor.map_map, h₀, LawfulMvFunctor.id_map, h₂]
+    simp [MvFunctor.map_map, h₀, LawfulMvFunctor.id_map, h₂]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem LiftP_def (x : F α) : LiftP' P x ↔ ∃ u : F (Subtype_ P), subtypeVal P <$$> u = x :=

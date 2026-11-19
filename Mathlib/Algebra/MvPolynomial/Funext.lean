@@ -65,7 +65,7 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   refine funext_fin (s ∘ f) (fun _ ↦ hs _) fun x hx ↦ ?_
   choose g hg using fun i ↦ (hs i).nonempty
   convert h (Function.extend f x g) fun i _ ↦ ?_
-  · simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
+  · simp [eval, eval₂Hom_rename, Function.extend_comp hf]
   obtain ⟨i, rfl⟩ | nex := em (∃ x, f x = i)
   · rw [hf.extend_apply]; exact hx _ ⟨⟩
   · simp_rw [Function.extend, dite_eq_right nex, hg]
@@ -86,6 +86,6 @@ theorem funext {σ : Type*} {p q : MvPolynomial σ R}
 
 theorem funext_iff {σ : Type*} {p q : MvPolynomial σ R} :
     p = q ↔ ∀ x : σ → R, eval x p = eval x q :=
-  ⟨by rintro rfl; simp only [forall_const], funext⟩
+  ⟨by rintro rfl; simp [forall_const], funext⟩
 
 end MvPolynomial

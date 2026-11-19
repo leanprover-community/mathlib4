@@ -368,7 +368,7 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
   · rfl
   · exact fun _ _ ↦ Iff.not
   · intro f _ hf
-    simp only [mem_iUnion, hf]
+    simp [mem_iUnion, hf]
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
 the same sets as `g`, then `g` was already a `σ`-algebra. -/
@@ -470,7 +470,7 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
   unfold iSup
-  simp only [measurableSet_sSup, exists_range_iff]
+  simp [measurableSet_sSup, exists_range_iff]
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
     ⨆ n, m n = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by

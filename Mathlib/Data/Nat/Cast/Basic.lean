@@ -154,7 +154,7 @@ theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
 theorem NeZero.nat_of_neZero {R S} [NonAssocSemiring R] [NonAssocSemiring S]
     {F} [FunLike F R S] [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
-  .of_map (f := f) (neZero := by simp only [map_natCast, hn])
+  .of_map (f := f) (neZero := by simp [map_natCast, hn])
 
 end RingHomClass
 

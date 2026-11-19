@@ -113,25 +113,25 @@ variable {f g : C(α, β)} {C : ℝ}
 
 /-- The pointwise distance is controlled by the distance between functions, by definition. -/
 theorem dist_apply_le_dist (x : α) : dist (f x) (g x) ≤ dist f g := by
-  simp only [← dist_mkOfCompact, dist_coe_le_dist, ← mkOfCompact_apply]
+  simp [← dist_mkOfCompact, dist_coe_le_dist, ← mkOfCompact_apply]
 
 /-- The distance between two functions is controlled by the supremum of the pointwise distances. -/
 theorem dist_le (C0 : (0 : ℝ) ≤ C) : dist f g ≤ C ↔ ∀ x : α, dist (f x) (g x) ≤ C := by
-  simp only [← dist_mkOfCompact, BoundedContinuousFunction.dist_le C0, mkOfCompact_apply]
+  simp [← dist_mkOfCompact, BoundedContinuousFunction.dist_le C0, mkOfCompact_apply]
 
 theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (f x) (g x) ≤ C := by
-  simp only [← dist_mkOfCompact, BoundedContinuousFunction.dist_le_iff_of_nonempty,
+  simp [← dist_mkOfCompact, BoundedContinuousFunction.dist_le_iff_of_nonempty,
     mkOfCompact_apply]
 
 theorem dist_lt_iff_of_nonempty [Nonempty α] : dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C := by
-  simp only [← dist_mkOfCompact, dist_lt_iff_of_nonempty_compact, mkOfCompact_apply]
+  simp [← dist_mkOfCompact, dist_lt_iff_of_nonempty_compact, mkOfCompact_apply]
 
 theorem dist_lt_of_nonempty [Nonempty α] (w : ∀ x : α, dist (f x) (g x) < C) : dist f g < C :=
   dist_lt_iff_of_nonempty.2 w
 
 theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C := by
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
-  simp only [mkOfCompact_apply]
+  simp [mkOfCompact_apply]
 
 theorem dist_eq_iSup : dist f g = ⨆ x, dist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.dist_eq f g,
@@ -186,7 +186,7 @@ instance [Nonempty α] {E : Type*} [NormedAddCommGroup E] [Nontrivial E] :
   simpa [nontrivialTopology_iff_exists_norm_ne_zero] using exists_ne (0 : C(α, E))
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
-  norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
+  norm_one := by simp [← norm_mkOfCompact, mkOfCompact_one, norm_one]
 
 section
 
@@ -357,14 +357,14 @@ end
 @[simp] lemma nnNorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
-  simp only [nnNorm_eq_iSup_nnNorm, smul_apply', const_apply, nnNorm_smul, iSup_mul]
+  simp [nnNorm_eq_iSup_nnNorm, smul_apply', const_apply, nnNorm_smul, iSup_mul]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_smul_const := nnNorm_smul_const
 
 @[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
-  simp only [← coe_nnNorm, NNReal.coe_mul, nnNorm_smul_const]
+  simp [← coe_nnNorm, NNReal.coe_mul, nnNorm_smul_const]
 
 section NormSum
 

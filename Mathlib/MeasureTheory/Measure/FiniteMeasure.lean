@@ -209,7 +209,7 @@ theorem zero_mass : (0 : FiniteMeasure Ω).mass = 0 := rfl
 
 @[simp]
 theorem mass_zero_iff (μ : FiniteMeasure Ω) : μ.mass = 0 ↔ μ = 0 := by
-  refine ⟨fun μ_mass => ?_, fun hμ => by simp only [hμ, zero_mass]⟩
+  refine ⟨fun μ_mass => ?_, fun hμ => by simp [hμ, zero_mass]⟩
   apply toMeasure_injective
   apply Measure.measure_univ_eq_zero.mp
   rwa [← ennreal_mass, ENNReal.coe_eq_zero]
@@ -300,7 +300,7 @@ theorem restrict_apply (μ : FiniteMeasure Ω) (A : Set Ω) {s : Set Ω} (s_mble
 
 @[simp]
 theorem restrict_mass (μ : FiniteMeasure Ω) (A : Set Ω) : (μ.restrict A).mass = μ A := by
-  simp only [mass, restrict_apply μ A MeasurableSet.univ, univ_inter]
+  simp [mass, restrict_apply μ A MeasurableSet.univ, univ_inter]
 
 @[simp] lemma restrict_univ {μ : FiniteMeasure Ω} : μ.restrict univ = μ := by
   ext; simp
@@ -419,16 +419,16 @@ theorem testAgainstNN_one (μ : FiniteMeasure Ω) : μ.testAgainstNN 1 = μ.mass
 
 @[simp]
 theorem zero_testAgainstNN_apply (f : Ω →ᵇ ℝ≥0) : (0 : FiniteMeasure Ω).testAgainstNN f = 0 := by
-  simp only [testAgainstNN, toMeasure_zero, lintegral_zero_measure, ENNReal.toNNReal_zero]
+  simp [testAgainstNN, toMeasure_zero, lintegral_zero_measure, ENNReal.toNNReal_zero]
 
 theorem zero_testAgainstNN : (0 : FiniteMeasure Ω).testAgainstNN = 0 := by
   funext
-  simp only [zero_testAgainstNN_apply, Pi.zero_apply]
+  simp [zero_testAgainstNN_apply, Pi.zero_apply]
 
 @[simp]
 theorem smul_testAgainstNN_apply (c : ℝ≥0) (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
     (c • μ).testAgainstNN f = c • μ.testAgainstNN f := by
-  simp only [testAgainstNN, toMeasure_smul, smul_eq_mul, ← ENNReal.smul_toNNReal, ENNReal.smul_def,
+  simp [testAgainstNN, toMeasure_smul, smul_eq_mul, ← ENNReal.smul_toNNReal, ENNReal.smul_def,
     lintegral_smul_measure]
 
 section weak_convergence
@@ -552,7 +552,7 @@ theorem tendsto_zero_testAgainstNN_of_tendsto_zero_mass {γ : Type*} {F : Filter
   have obs := fun i ↦ (μs i).testAgainstNN_lipschitz_estimate f 0
   simp_rw [testAgainstNN_zero, zero_add] at obs
   simp_rw [show ∀ i, dist ((μs i).testAgainstNN f) 0 = (μs i).testAgainstNN f by
-      simp only [dist_nndist, NNReal.nndist_zero_eq_val', imp_true_iff]]
+      simp [dist_nndist, NNReal.nndist_zero_eq_val', imp_true_iff]]
   apply squeeze_zero (fun i ↦ NNReal.coe_nonneg _) obs
   have lim_pair : Tendsto (fun i ↦ (⟨nndist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nndist f 0, 0⟩) :=
     (Prod.tendsto_iff _ _).mpr ⟨tendsto_const_nhds, (NNReal.continuous_coe.tendsto 0).comp mass_lim⟩
@@ -710,7 +710,7 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   set f₀ := BoundedContinuousFunction.comp _ lip f with _def_f₀
   have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := rfl
   have f₀_nn : 0 ≤ ⇑f₀ := fun _ ↦ by
-    simp only [f₀_eq, Pi.zero_apply, Function.comp_apply, NNReal.zero_le_coe]
+    simp [f₀_eq, Pi.zero_apply, Function.comp_apply, NNReal.zero_le_coe]
   have f₀_ae_nn : 0 ≤ᵐ[(μ : Measure Ω)] ⇑f₀ := .of_forall f₀_nn
   have f₀_ae_nns : ∀ i, 0 ≤ᵐ[(μs i : Measure Ω)] ⇑f₀ := fun i ↦ .of_forall f₀_nn
   have aux :=
@@ -875,7 +875,7 @@ lemma _root_.Topology.IsClosedEmbedding.continuousOn_comap_finiteMeasure [Normal
   intro g
   obtain ⟨g', -, hg'⟩ : ∃ g' : Ω' →ᵇ ℝ, ‖g'‖ = ‖g‖ ∧ g' ∘ f = g :=
     exists_extension_norm_eq_of_isClosedEmbedding g hf
-  have A x : g x = g' (f x) := by change (⇑g) x = (⇑g' ∘ f) x; simp only [hg']
+  have A x : g x = g' (f x) := by change (⇑g) x = (⇑g' ∘ f) x; simp [hg']
   simp only [comap, toMeasure_mk, A, ← MeasurableEmbedding.integral_map hf.measurableEmbedding,
     MeasurableEmbedding.map_comap hf.measurableEmbedding]
   have B {ν : FiniteMeasure Ω'} (hν : ν (range f)ᶜ = 0) :

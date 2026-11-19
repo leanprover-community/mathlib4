@@ -793,10 +793,10 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
     · exact h.mono (fun _ _ ↦ .single) x y
 
 @[simp, grind =] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
-  simp only [← transGen_reflGen, reflGen_eq_self]
+  simp [← transGen_reflGen, reflGen_eq_self]
 
 @[simp, grind =] lemma reflTransGen_transGen : ReflTransGen (TransGen r) = ReflTransGen r := by
-  simp only [← reflGen_transGen, transGen_eq_self]
+  simp [← reflGen_transGen, transGen_eq_self]
 
 @[grind =]
 lemma reflTransGen_eq_transGen [Std.Refl r] : ReflTransGen r = TransGen r := by

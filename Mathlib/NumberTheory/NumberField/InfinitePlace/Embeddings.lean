@@ -205,7 +205,7 @@ theorem involutive_conjugate :
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 
 theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
-  ext; simp only [place_apply, norm_conj, conjugate_coe_eq]
+  ext; simp [place_apply, norm_conj, conjugate_coe_eq]
 
 /-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 abbrev IsReal (φ : K →+* ℂ) : Prop := IsSelfAdjoint φ
@@ -218,12 +218,12 @@ theorem isReal_conjugate_iff {φ : K →+* ℂ} : IsReal (conjugate φ) ↔ IsRe
 /-- A real embedding as a ring homomorphism from `K` to `ℝ` . -/
 def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   toFun x := (φ x).re
-  map_one' := by simp only [map_one, one_re]
+  map_one' := by simp [map_one, one_re]
   map_mul' := by
-    simp only [Complex.conj_eq_iff_im.mp congr($hφ _), map_mul, mul_re,
+    simp [Complex.conj_eq_iff_im.mp congr($hφ _), map_mul, mul_re,
       mul_zero, tsub_zero, forall_const]
-  map_zero' := by simp only [map_zero, zero_re]
-  map_add' := by simp only [map_add, add_re, forall_const]
+  map_zero' := by simp [map_zero, zero_re]
+  map_add' := by simp [map_add, add_re, forall_const]
 
 @[simp]
 theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
@@ -270,7 +270,7 @@ lemma IsConj.ext_iff {σ₁ σ₂ : Gal(K/k)} (h₁ : IsConj φ σ₁) : σ₁ =
 
 lemma IsConj.isReal_comp (h : IsConj φ σ) : IsReal (φ.comp (algebraMap k K)) := by
   ext1 x
-  simp only [conjugate_coe_eq, RingHom.coe_comp, Function.comp_apply, ← h.eq,
+  simp [conjugate_coe_eq, RingHom.coe_comp, Function.comp_apply, ← h.eq,
     starRingEnd_apply, AlgEquiv.commutes]
 
 lemma isConj_one_iff : IsConj φ (1 : Gal(K/k)) ↔ IsReal φ := Iff.rfl

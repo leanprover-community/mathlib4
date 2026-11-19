@@ -106,7 +106,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     have hf' : ((n : ℤ) : ℝ) ≤ fract (ξ * m) * (n + 1) := hf ▸ floor_le (fract (ξ * m) * (n + 1))
     have hm₀ : 0 < m := by
       have hf₀ : f 0 = 0 := by
-        simp only [f, cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
+        simp [f, cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
       refine Ne.lt_of_le (fun h => n_pos.ne ?_) (mem_Icc.mp hm).1
       exact mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
     refine ⟨⌊ξ * m⌋ + 1, m, hm₀, (mem_Icc.mp hm).2, ?_⟩
@@ -366,16 +366,16 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   induction n with
-  | zero => simp only [convergent_zero, floor_zero, cast_zero]
+  | zero => simp [convergent_zero, floor_zero, cast_zero]
   | succ n ih =>
-    simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
+    simp [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
   cases n
-  · simp only [convergent_zero, floor_intCast]
-  · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
+  · simp [convergent_zero, floor_intCast]
+  · simp [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
       inv_zero]
 
 end Real

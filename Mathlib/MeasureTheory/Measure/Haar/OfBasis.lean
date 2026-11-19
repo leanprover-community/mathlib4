@@ -68,7 +68,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, _root_.map_sum, map_smulₛₗ, RingHom.id_apply]
+  simp [Function.comp_apply, _root_.map_sum, map_smulₛₗ, RingHom.id_apply]
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
 @[simp]
@@ -97,11 +97,11 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     parallelepiped b = Icc 0 1 ∨ parallelepiped b = Icc (-1) 0 := by
   have e : ι ≃ Fin 1 := by
     apply Fintype.equivFinOfCardEq
-    simp only [← finrank_eq_card_basis b.toBasis, finrank_self]
+    simp [← finrank_eq_card_basis b.toBasis, finrank_self]
   have B : parallelepiped (b.reindex e) = parallelepiped b := by
     convert parallelepiped_comp_equiv b e.symm
     ext i
-    simp only [OrthonormalBasis.coe_reindex]
+    simp [OrthonormalBasis.coe_reindex]
   rw [← B]
   let F : ℝ → Fin 1 → ℝ := fun t => fun _i => t
   have A : Icc (0 : Fin 1 → ℝ) 1 = F '' Icc (0 : ℝ) 1 := by
@@ -109,17 +109,17 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     · intro x hx
       refine ⟨x 0, ⟨hx.1 0, hx.2 0⟩, ?_⟩
       ext j
-      simp only [F, Subsingleton.elim j 0]
+      simp [F, Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
       exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
     simp_rw [parallelepiped, H, A, smul_eq_mul, mul_one]
-    simp only [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
+    simp [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
       ← image_comp, Function.comp_apply, image_id']
   · right
     simp_rw [H, parallelepiped, smul_eq_mul, A]
-    simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
+    simp [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg_eq_neg, neg_Icc, neg_zero]
 
 theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
@@ -195,7 +195,7 @@ def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
       exact (b.equivFun_symm_apply _).symm
     have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) := by
       rw [← pi_univ_Icc, interior_pi_set (@finite_univ ι _)]
-      simp only [univ_pi_nonempty_iff, Pi.zero_apply, Pi.one_apply, interior_Icc, nonempty_Ioo,
+      simp [univ_pi_nonempty_iff, Pi.zero_apply, Pi.one_apply, interior_Icc, nonempty_Ioo,
         zero_lt_one, imp_true_iff]
     rwa [← Homeomorph.image_interior, image_nonempty]
 

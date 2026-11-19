@@ -108,7 +108,7 @@ theorem pderiv_monomial_single {i : σ} {n : ℕ} : pderiv i (monomial (single i
 
 theorem pderiv_mul {i : σ} {f g : MvPolynomial σ R} :
     pderiv i (f * g) = pderiv i f * g + f * pderiv i g := by
-  simp only [(pderiv i).leibniz f g, smul_eq_mul, mul_comm, add_comm]
+  simp [(pderiv i).leibniz f g, smul_eq_mul, mul_comm, add_comm]
 
 theorem pderiv_pow {i : σ} {f : MvPolynomial σ R} {n : ℕ} :
     pderiv i (f ^ n) = n * f ^ (n - 1) * pderiv i f := by

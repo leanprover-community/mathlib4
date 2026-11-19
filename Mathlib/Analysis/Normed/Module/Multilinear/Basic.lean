@@ -537,7 +537,7 @@ theorem isLeast_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) :
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by
-    simp only [opNNNorm_le_iff, prod_apply, Prod.nnNorm_def, max_le_iff, forall_and]
+    simp [opNNNorm_le_iff, prod_apply, Prod.nnNorm_def, max_le_iff, forall_and]
 
 theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
@@ -949,11 +949,11 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
           exact (f x).le_of_opNorm_le (f.le_opNorm x) _
       map_update_add' := fun m i x y => by
         ext1
-        simp only [add_apply, ContinuousMultilinearMap.map_update_add, LinearMap.coe_mk,
+        simp [add_apply, ContinuousMultilinearMap.map_update_add, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, AddHom.coe_mk]
       map_update_smul' := fun m i c x => by
         ext1
-        simp only [FunLike.coe_smul, ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
+        simp [FunLike.coe_smul, ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk, RingHom.id_apply] }
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
@@ -1023,7 +1023,7 @@ end ContinuousLinearMap
 theorem LinearIsometry.norm_compContinuousMultilinearMap (g : G →ₗᵢ[𝕜] G')
     (f : ContinuousMultilinearMap 𝕜 E G) :
     ‖g.toContinuousLinearMap.compContinuousMultilinearMap f‖ = ‖f‖ := by
-  simp only [ContinuousLinearMap.compContinuousMultilinearMap_coe,
+  simp [ContinuousLinearMap.compContinuousMultilinearMap_coe,
     LinearIsometry.coe_toContinuousLinearMap, LinearIsometry.norm_map,
     ContinuousMultilinearMap.norm_def, Function.comp_apply]
 
@@ -1042,7 +1042,7 @@ theorem norm_compContinuous_linearIsometry_le (g : ContinuousMultilinearMap 𝕜
     ‖g.compContinuousLinearMap fun i => (f i).toContinuousLinearMap‖ ≤ ‖g‖ := by
   refine opNorm_le_bound (norm_nonneg _) fun m => ?_
   apply (g.le_opNorm _).trans _
-  simp only [ContinuousLinearMap.coe_coe, LinearIsometry.coe_toContinuousLinearMap,
+  simp [ContinuousLinearMap.coe_coe, LinearIsometry.coe_toContinuousLinearMap,
     LinearIsometry.norm_map, le_rfl]
 
 theorem norm_compContinuous_linearIsometryEquiv (g : ContinuousMultilinearMap 𝕜 E₁ G)

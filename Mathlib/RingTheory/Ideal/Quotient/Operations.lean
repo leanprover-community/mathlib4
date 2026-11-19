@@ -57,7 +57,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) [I.IsTwoSided]
 
 /-- The induced map from the quotient by the kernel is injective. -/
 theorem kerLift_injective : Function.Injective (kerLift f) :=
-  lift_injective_of_ker_le_ideal (ker f) (fun a => by simp only [mem_ker, imp_self]) le_rfl
+  lift_injective_of_ker_le_ideal (ker f) (fun a => by simp [mem_ker, imp_self]) le_rfl
 
 
 variable {f}
@@ -71,7 +71,7 @@ def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f
     left_inv := by
       rintro ⟨x⟩
       apply kerLift_injective
-      simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, kerLift_mk,
+      simp [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, kerLift_mk,
         Function.comp_apply, hf (f x)]
     right_inv := hf }
 
@@ -624,7 +624,7 @@ theorem quotientMap_algebraMap {J : Ideal A} {I : Ideal S} [I.IsTwoSided] [J.IsT
 theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} [I.IsTwoSided] [J.IsTwoSided]
     {f : R →+* S} (H : J ≤ I.comap f) :
     (quotientMap I f H).comp (Quotient.mk J) = (Quotient.mk I).comp f :=
-  RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
+  RingHom.ext fun x => by simp [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ker_quotientMap_mk {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided] :
@@ -645,11 +645,11 @@ def quotientEquiv : R ⧸ I ≃+* S ⧸ J where
   invFun := quotientMap I f.symm (hIJ ▸ (map_comap_of_equiv f).le)
   left_inv := by
     rintro ⟨r⟩
-    simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,
+    simp [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,
       quotientMap_mk, RingEquiv.coe_toRingHom, RingEquiv.symm_apply_apply]
   right_inv := by
     rintro ⟨s⟩
-    simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,
+    simp [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,
       quotientMap_mk, RingEquiv.coe_toRingHom, RingEquiv.apply_symm_apply]
 
 -- Not `@[simp]` since `simp` proves it.
@@ -709,7 +709,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
-  { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp only [RingHom.toFun_eq_coe,
+  { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp [RingHom.toFun_eq_coe,
     quotientMap_algebraMap, AlgHom.coe_toRingHom, AlgHom.commutes, Quotient.mk_algebraMap] }
 
 @[simp]
@@ -719,7 +719,7 @@ theorem quotient_map_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) {x : A} 
 
 theorem quotient_map_comp_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
     (quotientMapₐ J f H).comp (Quotient.mkₐ R₁ I) = (Quotient.mkₐ R₁ J).comp f :=
-  AlgHom.ext fun x => by simp only [quotient_map_mkₐ, Quotient.mkₐ_eq_mk, AlgHom.comp_apply]
+  AlgHom.ext fun x => by simp [quotient_map_mkₐ, Quotient.mkₐ_eq_mk, AlgHom.comp_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (I) in
@@ -733,7 +733,7 @@ def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
 @[simp]
 lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (quotientEquivAlg I J f hIJ).symm = quotientEquivAlg J I f.symm
-      (by simp only [← AlgEquiv.toAlgHom_toRingHom, hIJ, map_map, ← AlgHom.comp_toRingHom,
+      (by simp [← AlgEquiv.toAlgHom_toRingHom, hIJ, map_map, ← AlgHom.comp_toRingHom,
         AlgEquiv.symm_comp, AlgHom.id_toRingHom, map_id]) :=
   rfl
 
@@ -803,7 +803,7 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] 
 lemma comap_map_quotientMk (I J : Ideal R) [I.IsTwoSided] :
     (J.map <| Ideal.Quotient.mk I).comap (Ideal.Quotient.mk I) = I ⊔ J := by
   ext x
-  simp only [mem_comap, mem_quotient_iff_mem_sup, sup_comm]
+  simp [mem_comap, mem_quotient_iff_mem_sup, sup_comm]
 
 lemma comap_map_mk {I J : Ideal R} [I.IsTwoSided] (h : I ≤ J) :
     Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J := by
@@ -884,7 +884,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of `quotLeftToQuotSup` -/
 theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
     J.map (Ideal.Quotient.mk I) := by
-  simp only [mk_ker, sup_idem, sup_comm, quotLeftToQuotSup, Quotient.factor, ker_quotient_lift,
+  simp [mk_ker, sup_idem, sup_comm, quotLeftToQuotSup, Quotient.factor, ker_quotient_lift,
     map_eq_iff_sup_ker_eq_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← sup_assoc]
 
 /-- The ring homomorphism `(R/I)/J' -> R/(I ⊔ J)` induced by `quotLeftToQuotSup` where `J'`

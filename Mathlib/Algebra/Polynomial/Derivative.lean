@@ -48,10 +48,10 @@ def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
     rw [sum_add_index] <;>
-      simp only [add_mul, forall_const, map_add, zero_mul, map_zero]
+      simp [add_mul, forall_const, map_add, zero_mul, map_zero]
   map_smul' a p := by
     dsimp; rw [sum_smul_index] <;>
-      simp only [mul_sum, ← C_mul', mul_assoc, map_mul, forall_const, zero_mul, map_zero, sum]
+      simp [mul_sum, ← C_mul', mul_assoc, map_mul, forall_const, zero_mul, map_zero, sum]
 
 theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a => C (a * n) * X ^ (n - 1) :=
   rfl
@@ -227,18 +227,18 @@ theorem iterate_derivative_X {k} (h : 1 < k) : derivative^[k] (X : R[X]) = 0 :=
 @[simp]
 theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f * derivative g := by
   induction f using Polynomial.induction_on' with
-  | add => simp only [add_mul, map_add, add_assoc, add_left_comm, *]
+  | add => simp [add_mul, map_add, add_assoc, add_left_comm, *]
   | monomial m a => ?_
   induction g using Polynomial.induction_on' with
-  | add => simp only [mul_add, map_add, add_assoc, add_left_comm, *]
+  | add => simp [mul_add, map_add, add_assoc, add_left_comm, *]
   | monomial n b => ?_
   simp only [monomial_mul_monomial, derivative_monomial]
   simp only [mul_assoc, (Nat.cast_commute _ _).eq, Nat.cast_add, mul_add, map_add]
   cases m with
-  | zero => simp only [zero_add, Nat.cast_zero, mul_zero, map_zero]
+  | zero => simp [zero_add, Nat.cast_zero, mul_zero, map_zero]
   | succ m =>
   cases n with
-  | zero => simp only [add_zero, Nat.cast_zero, mul_zero, map_zero]
+  | zero => simp [add_zero, Nat.cast_zero, mul_zero, map_zero]
   | succ n => grind
 
 theorem derivative_eval (p : R[X]) (x : R) :
@@ -252,7 +252,7 @@ theorem derivative_map [Semiring S] (p : R[X]) (f : R →+* S) :
   rw [derivative_apply, derivative_apply]
   rw [sum_over_range' _ _ (n + 1) ((le_max_left _ _).trans_lt (lt_add_one _))]
   on_goal 1 => rw [sum_over_range' _ _ (n + 1) ((le_max_right _ _).trans_lt (lt_add_one _))]
-  · simp only [Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_C, map_mul, coeff_map,
+  · simp [Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_C, map_mul, coeff_map,
       map_natCast, Polynomial.map_natCast, Polynomial.map_pow, map_X]
   all_goals intro n; rw [zero_mul, C_0, zero_mul]
 
@@ -262,7 +262,7 @@ theorem iterate_derivative_map [Semiring S] (p : R[X]) (f : R →+* S) (k : ℕ)
   induction k generalizing p with
   | zero => simp
   | succ k ih =>
-    simp only [ih, Function.iterate_succ, Polynomial.derivative_map, Function.comp_apply]
+    simp [ih, Function.iterate_succ, Polynomial.derivative_map, Function.comp_apply]
 
 theorem derivative_natCast_mul {n : ℕ} {f : R[X]} :
     derivative ((n : R[X]) * f) = n * derivative f := by
@@ -402,7 +402,7 @@ lemma mem_support_derivative : n ∈ (derivative p).support ↔ n + 1 ∈ p.supp
   suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
     simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
   rw [← nsmul_eq_mul', smul_eq_zero]
-  simp only [Nat.succ_ne_zero, false_or]
+  simp [Nat.succ_ne_zero, false_or]
 
 @[simp]
 lemma degree_derivative (hp : p.natDegree ≠ 0) : degree (derivative p) = ↑(natDegree p - 1) := by
@@ -780,7 +780,7 @@ variable [Semiring R] [NoZeroDivisors R]
 theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 where
   mp h := by
     by_cases hP : P = 0
-    · simp only [hP, derivative_zero]
+    · simp [hP, derivative_zero]
     exact eq_zero_of_dvd_of_degree_lt h (degree_derivative_lt hP)
   mpr h := by simp [h]
 

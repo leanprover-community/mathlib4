@@ -45,7 +45,7 @@ theorem mem_traverse_iff (fs : List β) (t : Set (List α)) :
   constructor
   · induction fs generalizing t with
     | nil =>
-      simp only [sequence, mem_pure, imp_self, forall₂_nil_left_iff, exists_eq_left, Set.pure_def,
+      simp [sequence, mem_pure, imp_self, forall₂_nil_left_iff, exists_eq_left, Set.pure_def,
         singleton_subset_iff, traverse_nil]
     | cons b fs ih =>
       intro ht

@@ -119,7 +119,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
   ext
   dsimp
-  simp only [one_smul, hε]
+  simp [one_smul, hε]
 
 /-- A ring morphism `R[ε] →+* R'` is determined by its restriction
 on `R` and its value on `ε`. -/
@@ -198,7 +198,7 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
 @[simp] theorem lift_apply_eps
     (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
     lift fe (ε : A[ε]) = fe.val.2 := by
-  simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, map_one, one_mul, zero_add]
+  simp [lift_apply_apply, fst_eps, map_zero, snd_eps, map_one, one_mul, zero_add]
 
 /-- Lifting `DualNumber.eps` itself gives the identity. -/
 @[simp]

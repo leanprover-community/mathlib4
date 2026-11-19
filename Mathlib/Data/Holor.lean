@@ -276,7 +276,7 @@ theorem cprankMax_add [Mul α] [AddMonoid α] :
       CPRankMax m x → CPRankMax n y → CPRankMax (m + n) (x + y)
   | 0, n, x, y, hx, hy => by
     match hx with
-    | CPRankMax.zero => simp only [zero_add, hy]
+    | CPRankMax.zero => simp [zero_add, hy]
   | m + 1, n, _, y, CPRankMax.succ _ x₁ x₂ hx₁ hx₂, hy => by
     suffices CPRankMax (m + n + 1) (x₁ + (x₂ + y)) by
       simpa only [add_comm, add_assoc, add_left_comm] using this

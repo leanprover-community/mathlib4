@@ -113,12 +113,12 @@ lemma reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f 
 @[simp]
 theorem reflect_add (f g : R[X]) (N : ℕ) : reflect N (f + g) = reflect N f + reflect N g := by
   ext
-  simp only [coeff_add, coeff_reflect]
+  simp [coeff_add, coeff_reflect]
 
 @[simp]
 theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r * reflect N f := by
   ext
-  simp only [coeff_reflect, coeff_C_mul]
+  simp [coeff_reflect, coeff_C_mul]
 
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
@@ -275,7 +275,7 @@ theorem reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
 theorem reverse_mul_of_domain {R : Type*} [Semiring R] [NoZeroDivisors R] (f g : R[X]) :
     reverse (f * g) = reverse f * reverse g := by
   by_cases f0 : f = 0
-  · simp only [f0, zero_mul, reverse_zero]
+  · simp [f0, zero_mul, reverse_zero]
   by_cases g0 : g = 0
   · rw [g0, mul_zero, reverse_zero, mul_zero]
   simp [reverse_mul, *]
@@ -289,7 +289,7 @@ theorem trailingCoeff_mul {R : Type*} [Semiring R] [NoZeroDivisors R] (p q : R[X
 theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
   rw [coeff_reverse, nextCoeff]
   split_ifs with hf
-  · have : coeff f 1 = 0 := coeff_eq_zero_of_natDegree_lt (by simp only [hf, zero_lt_one])
+  · have : coeff f 1 = 0 := coeff_eq_zero_of_natDegree_lt (by simp [hf, zero_lt_one])
     simp [*, revAt]
   · rw [revAt_le]
     exact Nat.succ_le_iff.2 (pos_iff_ne_zero.2 hf)

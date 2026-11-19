@@ -123,7 +123,7 @@ theorem mul_right_comm (a b c : G) : a * b * c = a * c * b := by
 
 @[to_additive]
 theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
-  simp only [mul_left_comm, mul_assoc]
+  simp [mul_left_comm, mul_assoc]
 
 @[to_additive]
 theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
@@ -131,11 +131,11 @@ theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
 
 @[to_additive]
 theorem mul_rotate (a b c : G) : a * b * c = b * c * a := by
-  simp only [mul_left_comm, mul_comm]
+  simp [mul_left_comm, mul_comm]
 
 @[to_additive]
 theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) := by
-  simp only [mul_left_comm, mul_comm]
+  simp [mul_left_comm, mul_comm]
 
 end CommSemigroup
 
@@ -146,7 +146,7 @@ variable [Monoid M] {a b : M} {m n : ℕ}
 
 @[to_additive boole_nsmul]
 lemma pow_boole (P : Prop) [Decidable P] (a : M) :
-    (a ^ if P then 1 else 0) = if P then a else 1 := by simp only [pow_ite, pow_one, pow_zero]
+    (a ^ if P then 1 else 0) = if P then a else 1 := by simp [pow_ite, pow_one, pow_zero]
 
 @[to_additive nsmul_add_sub_nsmul]
 lemma pow_mul_pow_sub (a : M) (h : m ≤ n) : a ^ m * a ^ (n - m) = a ^ n := by
@@ -176,7 +176,7 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
   | n + 1, h =>
     calc
       a ^ n.succ * b ^ n.succ = a ^ n * a * (b * b ^ n) := by rw [pow_succ, pow_succ']
-      _ = a ^ n * (a * b) * b ^ n := by simp only [mul_assoc]
+      _ = a ^ n * (a * b) * b ^ n := by simp [mul_assoc]
       _ = 1 := by simp [h, pow_mul_pow_eq_one]
 
 @[to_additive (attr := simp)]
@@ -338,7 +338,7 @@ theorem mul_div_assoc' (a b c : G) : a * (b / c) = a * b / c :=
   (mul_div_assoc _ _ _).symm
 
 @[to_additive]
-theorem mul_div (a b c : G) : a * (b / c) = a * b / c := by simp only [mul_assoc, div_eq_mul_inv]
+theorem mul_div (a b c : G) : a * (b / c) = a * b / c := by simp [mul_assoc, div_eq_mul_inv]
 
 @[to_additive]
 theorem div_eq_mul_one_div (a b : G) : a / b = a * (1 / b) := by rw [div_eq_mul_inv, one_div]
@@ -409,7 +409,7 @@ theorem one_div_one_div : 1 / (1 / a) = a := by simp
 
 @[to_additive]
 theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
-  inv_inj.symm.trans <| by simp only [inv_div]
+  inv_inj.symm.trans <| by simp [inv_div]
 
 @[to_additive]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
@@ -437,7 +437,7 @@ lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
 
 @[to_additive neg_one_zsmul_add]
 lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ (-1 : ℤ) := by
-  simp only [zpow_neg, zpow_one, mul_inv_rev]
+  simp [zpow_neg, zpow_one, mul_inv_rev]
 
 @[to_additive zsmul_neg]
 lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
@@ -448,10 +448,10 @@ lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
 lemma inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
 
 @[to_additive nsmul_zero_sub]
-lemma one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
+lemma one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp [one_div, inv_pow]
 
 @[to_additive zsmul_zero_sub]
-lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
+lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp [one_div, inv_zpow]
 
 @[to_additive]
 theorem zpow_eq_inv_pow_natAbs (a : α) {n : ℤ} (hn : n ≤ 0) : a ^ n = a⁻¹ ^ n.natAbs := by
@@ -509,7 +509,7 @@ theorem div_inv_eq_mul : a / b⁻¹ = a * b := by simp
 
 @[to_additive]
 theorem div_mul_eq_div_div_swap : a / (b * c) = a / c / b := by
-  simp only [mul_assoc, mul_inv_rev, div_eq_mul_inv]
+  simp [mul_assoc, mul_inv_rev, div_eq_mul_inv]
 
 end DivisionMonoid
 
@@ -596,11 +596,11 @@ theorem mul_div_mul_comm : a * b / (c * d) = a / c * (b / d) := by simp
 
 @[to_additive nsmul_sub]
 lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
-  simp only [div_eq_mul_inv, mul_pow, inv_pow]
+  simp [div_eq_mul_inv, mul_pow, inv_pow]
 
 @[to_additive zsmul_sub]
 lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
-  simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
+  simp [div_eq_mul_inv, mul_zpow, inv_zpow]
 
 end DivisionCommMonoid
 
@@ -712,7 +712,7 @@ lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_di
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
-  rw [div_mul_eq_div_div_swap]; simp only [mul_div_cancel_right]
+  rw [div_mul_eq_div_div_swap]; simp [mul_div_cancel_right]
 
 @[to_additive eq_sub_of_add_eq]
 theorem eq_div_of_mul_eq' (h : a * c = b) : a = b / c := by simp [← h]
@@ -807,7 +807,7 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.natCast_succ, zpow_natCast, pow_succ]
+  | (n : ℕ) => by simp [← Int.natCast_succ, zpow_natCast, pow_succ]
   | -1 => by simp [Int.add_left_neg]
   | .negSucc (n + 1) => by
     rw [zpow_negSucc, pow_succ', mul_inv_rev, inv_mul_cancel_right]
@@ -824,7 +824,7 @@ lemma zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
 lemma zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction n with
   | zero => simp
-  | succ n ihn => simp only [← Int.add_assoc, zpow_add_one, ihn, mul_assoc]
+  | succ n ihn => simp [← Int.add_assoc, zpow_add_one, ihn, mul_assoc]
   | pred n ihn => rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, Int.add_sub_assoc]
 
 @[to_additive one_add_zsmul]
@@ -995,7 +995,7 @@ theorem div_div_div_cancel_left (a b c : G) : c / a / (c / b) = b / a := by
 @[to_additive]
 theorem div_eq_div_iff_mul_eq_mul : a / b = c / d ↔ a * d = c * b := by
   rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, eq_comm, div_eq_iff_eq_mul']
-  simp only [mul_comm, eq_comm]
+  simp [mul_comm, eq_comm]
 
 @[to_additive]
 theorem mul_inv_eq_mul_inv_iff_mul_eq_mul : a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by

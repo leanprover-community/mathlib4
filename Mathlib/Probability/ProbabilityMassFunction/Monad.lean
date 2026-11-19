@@ -104,7 +104,7 @@ section Bind
 def bind (p : PMF α) (f : α → PMF β) : PMF β :=
   ⟨fun b => ∑' a, p a * f a b,
     summable.hasSum_iff.2
-      (tsum_comm.trans <| by simp only [ENNReal.tsum_mul_left, tsum_coe, mul_one])⟩
+      (tsum_comm.trans <| by simp [ENNReal.tsum_mul_left, tsum_coe, mul_one])⟩
 
 variable (p : PMF α) (f : α → PMF β) (g : β → PMF γ)
 
@@ -117,7 +117,7 @@ theorem support_bind : (p.bind f).support = ⋃ a ∈ p.support, (f a).support :
 
 theorem mem_support_bind_iff (b : β) :
     b ∈ (p.bind f).support ↔ ∃ a ∈ p.support, b ∈ (f a).support := by
-  simp only [support_bind, Set.mem_iUnion, exists_prop]
+  simp [support_bind, Set.mem_iUnion, exists_prop]
 
 @[simp]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
@@ -163,7 +163,7 @@ theorem toOuterMeasure_bind_apply :
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 :=
       (tsum_congr fun a => (congr_arg fun x => p a * x) <| tsum_congr fun b => by split_ifs <;> rfl)
     _ = ∑' a, p a * (f a).toOuterMeasure s :=
-      tsum_congr fun a => by simp only [toOuterMeasure_apply, Set.indicator_apply]
+      tsum_congr fun a => by simp [toOuterMeasure_apply, Set.indicator_apply]
 
 /-- The measure of a set under `p.bind f` is the sum over `a : α`
   of the probability of `a` under `p` times the measure of the set under `f a`. -/
@@ -192,7 +192,7 @@ def bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β) : PMF β :=
     refine tsum_comm.trans (_root_.trans (tsum_congr fun a => ?_) p.tsum_coe)
     simp_rw [ENNReal.tsum_mul_left]
     split_ifs with h
-    · simp only [h, zero_mul]
+    · simp [h, zero_mul]
     · rw [(f a h).tsum_coe, mul_one])⟩
 
 variable {p : PMF α} (f : ∀ a ∈ p.support, PMF β)
@@ -206,13 +206,13 @@ theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   ext
   -- `simp` suffices; squeezed for performance
-  simp only [mem_support_iff, bindOnSupport_apply, ne_eq, tsum_eq_zero_iff,
+  simp [mem_support_iff, bindOnSupport_apply, ne_eq, tsum_eq_zero_iff,
     dite_eq_left_iff, mul_eq_zero, not_forall, not_or, and_exists_self,
     Set.mem_iUnion]
 
 theorem mem_support_bindOnSupport_iff (b : β) :
     b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
-  simp only [support_bindOnSupport, Set.mem_iUnion]
+  simp [support_bindOnSupport, Set.mem_iUnion]
 
 /-- `bindOnSupport` reduces to `bind` if `f` doesn't depend on the additional hypothesis. -/
 @[simp]
@@ -221,7 +221,7 @@ theorem bindOnSupport_eq_bind (p : PMF α) (f : α → PMF β) :
   ext b
   have : ∀ a, ite (p a = 0) 0 (p a * f a b) = p a * f a b :=
     fun a => ite_eq_right_iff.2 fun h => h.symm ▸ symm (zero_mul <| f a b)
-  simp only [bindOnSupport_apply fun a _ => f a, p.bind_apply f, dite_eq_ite, mul_ite,
+  simp [bindOnSupport_apply fun a _ => f a, p.bind_apply f, dite_eq_ite, mul_ite,
     mul_zero, this]
 
 theorem bindOnSupport_eq_zero_iff (b : β) :
@@ -240,7 +240,7 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
   by_cases h : a' = a <;> simp [h]
 
 theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = p := by
-  simp only [PMF.bind_pure, PMF.bindOnSupport_eq_bind]
+  simp [PMF.bind_pure, PMF.bindOnSupport_eq_bind]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -284,13 +284,13 @@ theorem toOuterMeasure_bindOnSupport_apply :
   calc
     (∑' b, ite (b ∈ s) (∑' a, p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0) =
         ∑' (b) (a), ite (b ∈ s) (p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0 :=
-      tsum_congr fun b => by split_ifs with hbs <;> simp only [tsum_zero]
+      tsum_congr fun b => by split_ifs with hbs <;> simp [tsum_zero]
     _ = ∑' (a) (b), ite (b ∈ s) (p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0 :=
       tsum_comm
     _ = ∑' a, p a * ∑' b, ite (b ∈ s) (dite (p a = 0) (fun h => 0) fun h => f a h b) 0 :=
-      (tsum_congr fun a => by simp only [← ENNReal.tsum_mul_left, mul_ite, mul_zero])
+      (tsum_congr fun a => by simp [← ENNReal.tsum_mul_left, mul_ite, mul_zero])
     _ = ∑' a, p a * dite (p a = 0) (fun h => 0) fun h => ∑' b, ite (b ∈ s) (f a h b) 0 :=
-      tsum_congr fun a => by split_ifs with ha <;> simp only [ite_self, tsum_zero]
+      tsum_congr fun a => by split_ifs with ha <;> simp [ite_self, tsum_zero]
 
 /-- The measure of a set under `p.bindOnSupport f` is the sum over `a : α`
   of the probability of `a` under `p` times the measure of the set under `f a _`.
@@ -299,7 +299,7 @@ theorem toOuterMeasure_bindOnSupport_apply :
 theorem toMeasure_bindOnSupport_apply [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bindOnSupport f).toMeasure s =
       ∑' a, p a * if h : p a = 0 then 0 else (f a h).toMeasure s := by
-  simp only [toMeasure_apply_eq_toOuterMeasure_apply _ hs, toOuterMeasure_bindOnSupport_apply]
+  simp [toMeasure_apply_eq_toOuterMeasure_apply _ hs, toOuterMeasure_bindOnSupport_apply]
 
 end Measure
 

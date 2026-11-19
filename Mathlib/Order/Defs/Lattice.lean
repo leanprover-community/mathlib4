@@ -316,13 +316,13 @@ theorem sup_inf_left (a b c : α) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
   le_antisymm sup_inf_le le_sup_inf
 
 theorem sup_inf_right (a b c : α) : a ⊓ b ⊔ c = (a ⊔ c) ⊓ (b ⊔ c) := by
-  simp only [sup_inf_left, sup_comm _ c]
+  simp [sup_inf_left, sup_comm _ c]
 
 @[to_dual existing]
 theorem inf_sup_left (a b c : α) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c :=
   calc
     a ⊓ (b ⊔ c) = a ⊓ (a ⊔ c) ⊓ (b ⊔ c) := by rw [inf_sup_self]
-    _ = a ⊓ (a ⊓ b ⊔ c) := by simp only [inf_assoc, sup_inf_right]
+    _ = a ⊓ (a ⊓ b ⊔ c) := by simp [inf_assoc, sup_inf_right]
     _ = (a ⊔ a ⊓ b) ⊓ (a ⊓ b ⊔ c) := by rw [sup_inf_self]
     _ = (a ⊓ b ⊔ a) ⊓ (a ⊓ b ⊔ c) := by rw [sup_comm]
     _ = a ⊓ b ⊔ a ⊓ c := by rw [sup_inf_left]
@@ -333,7 +333,7 @@ theorem inf_sup_le {x y z : α} : x ⊓ (y ⊔ z) ≤ (x ⊓ y) ⊔ (x ⊓ z) :=
 
 @[to_dual existing]
 theorem inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by
-  simp only [inf_sup_left, inf_comm _ c]
+  simp [inf_sup_left, inf_comm _ c]
 
 @[to_dual self (reorder := x y, h₁ h₂)]
 theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y ⊔ z) : x ≤ y :=

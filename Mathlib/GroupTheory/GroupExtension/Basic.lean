@@ -52,12 +52,12 @@ variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G} (σ σ' : S.Sectio
 
 @[to_additive]
 theorem mul_inv_mem_range_inl : σ g * (σ' g)⁻¹ ∈ S.inl.range := by
-  simp only [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
+  simp [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
     mul_inv_cancel]
 
 @[to_additive]
 theorem inv_mul_mem_range_inl : (σ g)⁻¹ * σ' g ∈ S.inl.range := by
-  simp only [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
+  simp [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
     inv_mul_cancel]
 
 @[to_additive]
@@ -72,12 +72,12 @@ theorem exists_eq_mul_inl : ∃ n : N, σ g = σ' g * S.inl n := by
 
 @[to_additive]
 theorem mul_mul_mul_inv_mem_range_inl : σ g₁ * σ g₂ * (σ (g₁ * g₂))⁻¹ ∈ S.inl.range := by
-  simp only [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
+  simp [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
     mul_inv_cancel]
 
 @[to_additive]
 theorem mul_inv_mul_mul_mem_range_inl : (σ (g₁ * g₂))⁻¹ * σ g₁ * σ g₂ ∈ S.inl.range := by
-  simp only [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
+  simp [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
     mul_assoc, inv_mul_cancel]
 
 @[to_additive]
@@ -156,7 +156,7 @@ noncomputable def semidirectProductToGroupExtensionEquiv :
   toFun := fun ⟨n, g⟩ ↦ S.inl n * s g
   invFun := fun e ↦ ⟨Function.invFun S.inl (e * (s (S.rightHom e))⁻¹), S.rightHom e⟩
   left_inv := fun ⟨n, g⟩ ↦ by
-    simp only [map_mul, rightHom_inl, rightHom_splitting, one_mul, mul_inv_cancel_right,
+    simp [map_mul, rightHom_inl, rightHom_splitting, one_mul, mul_inv_cancel_right,
       Function.leftInverse_invFun S.inl_injective n]
   right_inv := fun e ↦ by
     simp only [← eq_mul_inv_iff_mul_eq]
@@ -168,11 +168,11 @@ noncomputable def semidirectProductToGroupExtensionEquiv :
     group
   inl_comm := by
     ext n
-    simp only [SemidirectProduct.toGroupExtension, Function.comp_apply, MulEquiv.coe_mk,
+    simp [SemidirectProduct.toGroupExtension, Function.comp_apply, MulEquiv.coe_mk,
       Equiv.coe_fn_mk, SemidirectProduct.left_inl, SemidirectProduct.right_inl, map_one, mul_one]
   rightHom_comm := by
     ext ⟨n, g⟩
-    simp only [SemidirectProduct.toGroupExtension, Function.comp_apply, MulEquiv.coe_mk,
+    simp [SemidirectProduct.toGroupExtension, Function.comp_apply, MulEquiv.coe_mk,
       Equiv.coe_fn_mk, map_mul, rightHom_inl, one_mul, rightHom_splitting,
       SemidirectProduct.rightHom_eq_right]
 
@@ -187,7 +187,7 @@ namespace IsConj
 /-- `N`-conjugacy is reflexive. -/
 @[to_additive /-- `N`-conjugacy is reflexive. -/]
 theorem refl (s : S.Splitting) : S.IsConj s s :=
-  ⟨1, by simp only [map_one, inv_one, one_mul, mul_one]⟩
+  ⟨1, by simp [map_one, inv_one, one_mul, mul_one]⟩
 
 /-- `N`-conjugacy is symmetric. -/
 @[to_additive /-- `N`-conjugacy is symmetric. -/]

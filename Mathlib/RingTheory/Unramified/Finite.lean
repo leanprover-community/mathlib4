@@ -69,7 +69,7 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
       (KaehlerDifferential.ideal_fg R S)]
   have : ∀ t : S ⊗[R] S, TensorProduct.lmul' R t = 1 ↔ 1 - t ∈ KaehlerDifferential.ideal R S := by
     intro t
-    simp only [KaehlerDifferential.ideal, RingHom.mem_ker, map_sub, map_one,
+    simp [KaehlerDifferential.ideal, RingHom.mem_ker, map_sub, map_one,
       sub_eq_zero, @eq_comm S 1]
   simp_rw [this, ← KaehlerDifferential.span_range_eq_ideal]
   constructor
@@ -119,10 +119,10 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
     · congr
       ext j s
       rw [Finsupp.sum_smul_index]
-      · simp only [mul_smul, Finsupp.sum, ← Finset.smul_sum]
-      intro; simp only [zero_smul]
-    · intro; simp only [zero_smul]
-    · intros; simp only [add_smul]
+      · simp [mul_smul, Finsupp.sum, ← Finset.smul_sum]
+      intro; simp [zero_smul]
+    · intro; simp [zero_smul]
+    · intros; simp [add_smul]
   have h₂ : ∀ (x : S), ((b.repr x).support.sum fun a ↦ b.repr x a • b a) = x := by
     simpa only [Finsupp.linearCombination_apply, Finsupp.sum] using b.linearCombination_repr
   simp only [a] at h₁
@@ -209,7 +209,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     · congr! with i hi
       rw [Finsupp.mem_support_iff] at hi
       rw [hj i hi, zero_smul]
-    · simp only [Finset.sum_const_zero, map_zero]
+    · simp [Finset.sum_const_zero, map_zero]
   -- And `G` such that `∑ₛ aᵢⱼfᵢ = ∑ Gᵢⱼbⱼ`, where `aᵢⱼ` are the coefficients `bᵢx = ∑ aᵢⱼbⱼ`.
   let G : I →₀ I →₀ R := Finsupp.onFinset (Finset.biUnion f.support (fun i ↦ (a i).support))
     (fun j ↦ b.repr (f.sum (fun i y ↦ a i j • y)))
@@ -266,13 +266,13 @@ def sec :
       ((LinearMap.flip (AlgHom.toLinearMap (lsmul R R M))) m)) ((1 ⊗ₜ r) * elem R S)
     · induction elem R S using TensorProduct.inductionOn
       · simp [smul_comm r]
-      · simp only [map_add, mul_add, *]
+      · simp [map_add, mul_add, *]
     · have := one_tmul_sub_tmul_one_mul_elem (R := R) r
       rw [sub_mul, sub_eq_zero] at this
       rw [this]
       induction elem R S using TensorProduct.inductionOn
       · simp [TensorProduct.smul_tmul']
-      · simp only [map_add, smul_add, mul_add, *]
+      · simp [map_add, smul_add, mul_add, *]
 
 variable {M} in
 lemma sec_apply (x : M) :

@@ -123,7 +123,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
   · simp only [add_apply, mul_apply', Unitization.snd_star, Unitization.snd_mul,
       Unitization.fst_mul, Unitization.fst_star, Algebra.algebraMap_eq_smul_one, smul_apply,
       one_apply_eq_self, smul_add, mul_add, add_mul]
-    simp only [smul_smul, smul_mul_assoc, ← add_assoc, ← mul_assoc, mul_smul_comm]
+    simp [smul_smul, smul_mul_assoc, ← add_assoc, ← mul_assoc, mul_smul_comm]
 
 variable {𝕜}
 variable [CStarRing 𝕜]
@@ -165,7 +165,7 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
     -- Show that `(Unitization.splitMul 𝕜 E x).fst` satisfies the C⋆-property
     have h₃ : ‖(Unitization.splitMul 𝕜 E (star x * x)).fst‖
         = ‖(Unitization.splitMul 𝕜 E x).fst‖ ^ 2 := by
-      simp only [Unitization.splitMul_apply, Unitization.fst_mul, Unitization.fst_star,
+      simp [Unitization.splitMul_apply, Unitization.fst_mul, Unitization.fst_star,
         norm_mul, norm_star, sq]
     rw [h₂, h₃]
     /- use the definition of the norm, and split into cases based on whether the norm in the first

@@ -141,7 +141,7 @@ theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ 
   rw [card_sdiff_of_subset, ← insert_eq, card_insert_of_notMem, card_singleton,
     ← Finset.compl_union]
   · rw [card_compl, h.card_neighborFinset_union_of_not_adj hne ha.2, ← h.card]
-  · simp only [hne.symm, not_false_iff, mem_singleton]
+  · simp [hne.symm, not_false_iff, mem_singleton]
   · intro u
     simp only [mem_union, mem_compl, mem_neighborFinset, mem_inter, mem_singleton]
     rintro (rfl | rfl) <;> simpa [adj_comm] using ha.2

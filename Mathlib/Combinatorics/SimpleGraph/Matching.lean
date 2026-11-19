@@ -242,7 +242,7 @@ theorem IsMatching.support_eq_verts (h : M.IsMatching) : M.support = M.verts := 
 
 theorem isMatching_iff_forall_degree [∀ v, Fintype (M.neighborSet v)] :
     M.IsMatching ↔ ∀ v : V, v ∈ M.verts → M.degree v = 1 := by
-  simp only [degree_eq_one_iff_existsUnique_adj, IsMatching]
+  simp [degree_eq_one_iff_existsUnique_adj, IsMatching]
 
 theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts.toFinset.card := by
   classical
@@ -282,7 +282,7 @@ lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMat
 @[simp]
 lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
     (G'.toSubgraph M.spanningCoe h).IsPerfectMatching ↔ M.IsPerfectMatching := by
-  simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
+  simp [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
 
 end Subgraph
 
@@ -402,7 +402,7 @@ lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
   rw [← h ⟨w, hw.2⟩]
   congr 1
   ext w'
-  simp only [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
+  simp [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
 
 lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.spanningCoe.IsCycles := by

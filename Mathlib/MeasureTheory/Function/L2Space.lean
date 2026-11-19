@@ -180,7 +180,7 @@ private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = ⟪f, g
   simp_rw [inner_def, ← integral_add (integrable_inner (𝕜 := 𝕜) f g) (integrable_inner f' g),
     ← inner_add_left]
   refine integral_congr_ae ((coeFn_add f f').mono fun x hx => ?_)
-  simp only [hx, Pi.add_apply]
+  simp [hx, Pi.add_apply]
 
 private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫ = conj r * ⟪f, g⟫ := by
   rw [inner_def, inner_def, ← smul_eq_mul, ← integral_smul]

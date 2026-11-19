@@ -42,7 +42,7 @@ lemma catalanSeries_coeff (n : ℕ) : (coeff n) catalanSeries = catalan n := by
 @[simp]
 lemma catalanSeries_constantCoeff : constantCoeff catalanSeries = 1 := by
   rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply]
-  simp only [catalanSeries_coeff, catalan_zero]
+  simp [catalanSeries_coeff, catalan_zero]
 
 theorem catalanSeries_sq_mul_X_add_one : catalanSeries ^ 2 * X + 1 = catalanSeries := by
   ext n

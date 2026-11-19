@@ -96,7 +96,7 @@ theorem inclusionOfMooreComplexMap_comp_PInfty (X : SimplicialObject A) :
     inclusionOfMooreComplexMap X ≫ PInfty = inclusionOfMooreComplexMap X := by
   ext (_ | n)
   · dsimp
-    simp only [comp_id]
+    simp [comp_id]
   · exact (HigherFacesVanish.inclusionOfMooreComplexMap n).comp_P_eq_self
 
 set_option backward.defeqAttrib.useBackward true in
@@ -113,7 +113,7 @@ def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
     SplitMono (inclusionOfMooreComplexMap X) where
   retraction := PInftyToNormalizedMooreComplex X
   id := by
-    simp only [← cancel_mono (inclusionOfMooreComplexMap X), assoc, id_comp,
+    simp [← cancel_mono (inclusionOfMooreComplexMap X), assoc, id_comp,
       PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,
       inclusionOfMooreComplexMap_comp_PInfty]
 
@@ -131,7 +131,7 @@ def N₁_iso_normalizedMooreComplex_comp_toKaroubi : N₁ ≅ normalizedMooreCom
     { app := fun X => { f := inclusionOfMooreComplexMap X } }
   hom_inv_id := by
     ext X : 3
-    simp only [PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,
+    simp [PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,
       NatTrans.comp_app, Karoubi.comp_f, N₁_obj_p, NatTrans.id_app, Karoubi.id_f]
   inv_hom_id := by
     ext X : 3

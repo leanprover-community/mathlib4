@@ -70,7 +70,7 @@ than `x`. A version for preorders is called `not_bddAbove_iff'`. -/
 than `x`. A version for preorders is called `not_bddBelow_iff'`. -/]
 theorem not_bddAbove_iff {α : Type*} [LinearOrder α] {s : Set α} :
     ¬BddAbove s ↔ ∀ x, ∃ y ∈ s, x < y := by
-  simp only [not_bddAbove_iff', not_le]
+  simp [not_bddAbove_iff', not_le]
 
 @[to_dual (attr := simp)]
 lemma bddAbove_preimage_ofDual {s : Set α} : BddAbove (ofDual ⁻¹' s) ↔ BddBelow s := Iff.rfl
@@ -630,11 +630,11 @@ theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by sim
 
 @[to_dual (attr := simp)]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_ofPred_eq, forall_mem_empty, forall_true_iff]
+  simp [upperBounds, eq_univ_iff_forall, mem_ofPred_eq, forall_mem_empty, forall_true_iff]
 
 @[to_dual (attr := simp)]
 theorem bddAbove_empty [Nonempty α] : BddAbove (∅ : Set α) := by
-  simp only [BddAbove, upperBounds_empty, univ_nonempty]
+  simp [BddAbove, upperBounds_empty, univ_nonempty]
 
 @[to_dual (attr := simp)] theorem isGLB_empty_iff : IsGLB ∅ a ↔ IsTop a := by
   simp [IsGLB]
@@ -661,7 +661,7 @@ theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonem
 @[to_dual (attr := simp) /-- Adding a point to a set preserves its boundedness below. -/]
 theorem bddAbove_insert [IsDirectedOrder α] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
-  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
+  simp [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
 
 @[to_dual]
 protected theorem BddAbove.insert [IsDirectedOrder α] {s : Set α} (a : α) :
@@ -939,7 +939,7 @@ theorem iSup_const_le [OrderBot α] : ⨆ _ : ι, a ≤ a := by
 
 @[to_dual]
 lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
-  simp only [congr_arg f (Unique.eq_default _), iSup_const]
+  simp [congr_arg f (Unique.eq_default _), iSup_const]
 
 @[to_dual (attr := simp)]
 theorem iSup_bot [OrderBot α] : (⨆ _ : ι, ⊥ : α) = ⊥ :=

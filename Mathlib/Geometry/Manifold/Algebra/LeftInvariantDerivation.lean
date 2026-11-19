@@ -108,7 +108,7 @@ theorem leibniz : X (f * f') = f • X f' + f' • X f :=
   X.leibniz' _ _
 
 instance : Zero (LeftInvariantDerivation I G) :=
-  ⟨⟨0, fun g => by simp only [map_zero]⟩⟩
+  ⟨⟨0, fun g => by simp [map_zero]⟩⟩
 
 instance : Inhabited (LeftInvariantDerivation I G) :=
   ⟨0⟩
@@ -116,7 +116,7 @@ instance : Inhabited (LeftInvariantDerivation I G) :=
 instance : Add (LeftInvariantDerivation I G) where
   add X Y :=
     ⟨X + Y, fun g => by
-      simp only [map_add, left_invariant']⟩
+      simp [map_add, left_invariant']⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by simp [left_invariant']⟩
@@ -258,6 +258,6 @@ instance : LieRing (LeftInvariantDerivation I G) where
 instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where
   lie_smul r Y Z := by
     ext1
-    simp only [commutator_apply, map_smul, smul_sub, coe_smul, Pi.smul_apply]
+    simp [commutator_apply, map_smul, smul_sub, coe_smul, Pi.smul_apply]
 
 end LeftInvariantDerivation

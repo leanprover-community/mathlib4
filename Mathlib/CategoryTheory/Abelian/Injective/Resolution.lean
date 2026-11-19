@@ -164,7 +164,7 @@ def descHomotopyZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolut
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) : Homotopy f 0 :=
   Homotopy.mkCoinductive _ (descHomotopyZeroZero f comm) (by simp)
     (descHomotopyZeroOne f comm) (by simp) (fun n ⟨g, g', w⟩ =>
-    ⟨descHomotopyZeroSucc f n g g' (by simp only [w, add_comm]), by simp⟩)
+    ⟨descHomotopyZeroSucc f n g g' (by simp [w, add_comm]), by simp⟩)
 
 /-- Two descents of the same morphism are homotopic. -/
 def descHomotopy {Y Z : C} (f : Y ⟶ Z) {I : InjectiveResolution Y} {J : InjectiveResolution Z}

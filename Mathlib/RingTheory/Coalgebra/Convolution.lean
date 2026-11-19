@@ -133,7 +133,7 @@ instance convNonUnitalSemiring : NonUnitalSemiring (WithConv (C →ₗ[R] A)) wh
       ext; simp [comp_assoc, coassoc_symm, convMul_def]
     _ = (μ ∘ₗ rTensor A μ ∘ₗ ↑(TensorProduct.assoc R A A A).symm) ∘ₗ
         (f.ofConv ⊗ₘ (g.ofConv ⊗ₘ h.ofConv)) ∘ₗ lTensor C δ ∘ₗ δ := by
-      simp only [map_map_comp_assoc_symm_eq, comp_assoc]
+      simp [map_map_comp_assoc_symm_eq, comp_assoc]
     _ = (μ ∘ₗ .lTensor _ μ) ∘ₗ (f.ofConv ⊗ₘ (g.ofConv ⊗ₘ h.ofConv)) ∘ₗ (lTensor C δ ∘ₗ δ) := by
       congr 1
       ext

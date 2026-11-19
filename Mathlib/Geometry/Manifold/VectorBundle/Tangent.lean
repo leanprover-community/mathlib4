@@ -172,7 +172,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
 lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
     ((extChartAt I x).source ∩ (extChartAt I y).source) := by
   convert (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
-  simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
+  simp [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
 
 end tangentCoordChange
 
@@ -239,7 +239,7 @@ theorem trivializationAt_fst (x : M) (z : TM) :
 @[simp, mfld_simps]
 theorem mem_chart_source_iff (p q : TM) :
     p ∈ (chartAt (ModelProd H E) q).source ↔ p.proj ∈ (chartAt H q.proj).source := by
-  simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
+  simp [FiberBundle.chartedSpace_chartAt, mfld_simps]
 
 @[simp, mfld_simps]
 theorem mem_chart_target_iff (p : H × E) (q : TM) :
@@ -250,7 +250,7 @@ theorem mem_chart_target_iff (p : H × E) (q : TM) :
   -/
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
   rw [PartialEquiv.prod_symm]
-  simp +contextual only [and_iff_left_iff_imp, mfld_simps]
+  simp +contextual [and_iff_left_iff_imp, mfld_simps]
 
 @[simp, mfld_simps]
 theorem coe_chartAt_fst (p q : TM) : ((chartAt (ModelProd H E) q) p).1 = chartAt H q.proj p.proj :=
@@ -374,7 +374,7 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
   simp_rw [TangentBundle.chartAt, FiberBundleCore.localTriv,
     FiberBundleCore.localTrivAsPartialEquiv, VectorBundleCore.toFiberBundleCore_baseSet,
     tangentBundleCore_baseSet]
-  simp only [mfld_simps]
+  simp [mfld_simps]
 
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt (p : TangentBundle I H) :
@@ -404,14 +404,14 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
       have : Continuous (chartAt (ModelProd H E) p) := by
         rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).continuousOn
-        simp only [mfld_simps]
+        simp [mfld_simps]
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p).symm := by
         rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).symm.continuousOn
-        simp only [mfld_simps]
+        simp [mfld_simps]
       simpa only [mfld_simps] using this }
 
 @[simp, mfld_simps]
@@ -478,7 +478,7 @@ space sense. -/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {x : E} :
     CMDiffAt n (T% V) x ↔ ContDiffAt 𝕜 n V x := by
-  simp only [← contMDiffWithinAt_univ, ← contDiffWithinAt_univ,
+  simp [← contMDiffWithinAt_univ, ← contDiffWithinAt_univ,
     contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
@@ -486,14 +486,14 @@ space sense. -/
 lemma contMDiffOn_vectorSpace_iff_contDiffOn
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
     CMDiff[s] n (T% V) ↔ ContDiffOn 𝕜 n V s := by
-  simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
+  simp [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiff_vectorSpace_iff_contDiff {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} :
     CMDiff n (T% V) ↔ ContDiff 𝕜 n V := by
-  simp only [← contMDiffOn_univ, ← contDiffOn_univ, contMDiffOn_vectorSpace_iff_contDiffOn]
+  simp [← contMDiffOn_univ, ← contDiffOn_univ, contMDiffOn_vectorSpace_iff_contDiffOn]
 
 section inTangentCoordinates
 
@@ -520,7 +520,7 @@ def inTangentCoordinates (f : N → M) (g : N → M')
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
     inTangentCoordinates I I' f g ϕ x₀ = ϕ := by
-  simp +unfoldPartialApp only [inTangentCoordinates,
+  simp +unfoldPartialApp [inTangentCoordinates,
     inCoordinates_tangent_bundle_core_model_space]
 
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and

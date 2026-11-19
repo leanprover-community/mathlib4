@@ -91,7 +91,7 @@ protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => i.elim0
 
 protected theorem cons {n m} {f : List.Vector ℕ n → ℕ} {g} (hf : @Partrec' n f)
     (hg : @Vec n m g) : Vec fun v => f v ::ᵥ g v := fun i =>
-  Fin.cases (by simpa using! hf) (fun i => by simp only [hg i, get_cons_succ]) i
+  Fin.cases (by simpa using! hf) (fun i => by simp [hg i, get_cons_succ]) i
 
 theorem idv {n} : @Vec n n id :=
   Vec.prim Nat.Primrec'.idv
@@ -152,14 +152,14 @@ theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ Par
   part_iff.trans
     ⟨fun h =>
       (h.comp (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
-        simp only [id, head_ofFn],
+        simp [id, head_ofFn],
       fun h => h.comp vector_head⟩
 
 theorem part_iff₂ {f : ℕ → ℕ →. ℕ} : (@Partrec' 2 fun v => f v.head v.tail.head) ↔ Partrec₂ f :=
   part_iff.trans
     ⟨fun h =>
       (h.comp <| vector_cons.comp fst <| vector_cons.comp snd (const nil)).of_eq fun v => by
-        simp only [head_cons, tail_cons],
+        simp [head_cons, tail_cons],
       fun h => h.comp vector_head (vector_head.comp vector_tail)⟩
 
 theorem vec_iff {m n f} : @Vec m n f ↔ Computable f :=

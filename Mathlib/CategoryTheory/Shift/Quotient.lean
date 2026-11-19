@@ -129,7 +129,7 @@ noncomputable instance liftCommShift :
       (NatTrans.app (Functor.commShiftIso (functor r) a).hom X))]
     simp only [← Functor.comp_map, ← Functor.comp_obj]
     rw [(LiftCommShift.iso F r hF b).hom.naturality_assoc (((functor r).commShiftIso a).hom.app X)]
-    simp only [Functor.comp_obj, LiftCommShift.iso_hom_app, Iso.hom_inv_id_app,
+    simp [Functor.comp_obj, LiftCommShift.iso_hom_app, Iso.hom_inv_id_app,
       Functor.comp_map, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
       Functor.map_id, id_comp, lift_obj_functor_obj]
 

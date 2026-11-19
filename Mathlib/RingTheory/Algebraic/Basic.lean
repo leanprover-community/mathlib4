@@ -98,7 +98,7 @@ theorem Polynomial.transcendental (f : R[X]) (hf : f.natDegree ≠ 0)
 
 theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by
-  simp only [IsAlgebraic, injective_iff_map_eq_zero, not_forall, and_comm, exists_prop]
+  simp [IsAlgebraic, injective_iff_map_eq_zero, not_forall, and_comm, exists_prop]
 
 /-- An element `x` is transcendental over `R` if and only if the map `Polynomial.aeval x`
 is injective. This is similar to `algebraicIndependent_iff_injective_aeval`. -/

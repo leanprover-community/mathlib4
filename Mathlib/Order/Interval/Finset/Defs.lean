@@ -566,10 +566,10 @@ abbrev Fintype.toLocallyFiniteOrder [Fintype α] [DecidableLT α] [DecidableLE �
   finsetIco a b := (Set.Ico a b).toFinset
   finsetIoc a b := (Set.Ioc a b).toFinset
   finsetIoo a b := (Set.Ioo a b).toFinset
-  finset_mem_Icc a b x := by simp only [Set.mem_toFinset, Set.mem_Icc]
-  finset_mem_Ico a b x := by simp only [Set.mem_toFinset, Set.mem_Ico]
-  finset_mem_Ioc a b x := by simp only [Set.mem_toFinset, Set.mem_Ioc]
-  finset_mem_Ioo a b x := by simp only [Set.mem_toFinset, Set.mem_Ioo]
+  finset_mem_Icc a b x := by simp [Set.mem_toFinset, Set.mem_Icc]
+  finset_mem_Ico a b x := by simp [Set.mem_toFinset, Set.mem_Ico]
+  finset_mem_Ioc a b x := by simp [Set.mem_toFinset, Set.mem_Ioc]
+  finset_mem_Ioo a b x := by simp [Set.mem_toFinset, Set.mem_Ioo]
 
 instance : Subsingleton (LocallyFiniteOrder α) :=
   Subsingleton.intro fun h₀ h₁ => by
@@ -1036,7 +1036,7 @@ theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [Ord
 theorem Set.finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFiniteOrder α] :
     s.Finite ↔ BddBelow s ∧ BddAbove s := by
   obtain (rfl | hs) := s.eq_empty_or_nonempty
-  · simp only [Set.finite_empty, bddBelow_empty, bddAbove_empty, and_self]
+  · simp [Set.finite_empty, bddBelow_empty, bddAbove_empty, and_self]
   exact ⟨fun h ↦ ⟨⟨h.toFinset.inf' ((Finite.toFinset_nonempty h).mpr hs) id,
     fun x hx ↦ Finset.inf'_le id ((Finite.mem_toFinset h).mpr hx)⟩,
     ⟨h.toFinset.sup' ((Finite.toFinset_nonempty h).mpr hs) id, fun x hx ↦ Finset.le_sup' id

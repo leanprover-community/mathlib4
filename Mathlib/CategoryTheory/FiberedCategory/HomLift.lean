@@ -88,13 +88,13 @@ lemma fac' : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫ eqToHom (codomain_e
   subst_hom_lift p f φ; simp
 
 lemma commSq : CommSq (p.map φ) (eqToHom (domain_eq p f φ)) (eqToHom (codomain_eq p f φ)) f where
-  w := by simp only [fac p f φ, eqToHom_trans_assoc, eqToHom_refl, id_comp]
+  w := by simp [fac p f φ, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
 end
 
 lemma eq_of_isHomLift {a b : 𝒳} (f : p.obj a ⟶ p.obj b) (φ : a ⟶ b) [p.IsHomLift f φ] :
     f = p.map φ := by
-  simp only [fac p f φ, eqToHom_refl, comp_id, id_comp]
+  simp [fac p f φ, eqToHom_refl, comp_id, id_comp]
 
 lemma of_fac {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
     (h : f = eqToHom ha.symm ≫ p.map φ ≫ eqToHom hb) : p.IsHomLift f φ := by

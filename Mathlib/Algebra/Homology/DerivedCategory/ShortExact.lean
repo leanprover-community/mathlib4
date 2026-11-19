@@ -78,9 +78,9 @@ noncomputable def triangleOfSESIso :
   refine Iso.symm (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     (asIso (Q.map (CochainComplex.mappingCone.descShortComplex S))) ?_ ?_ ?_)
   · dsimp [triangleOfSES]
-    simp only [comp_id, id_comp]
+    simp [comp_id, id_comp]
   · dsimp
-    simp only [← Q.map_comp, CochainComplex.mappingCone.inr_descShortComplex, id_comp]
+    simp [← Q.map_comp, CochainComplex.mappingCone.inr_descShortComplex, id_comp]
   · dsimp [triangleOfSESδ]
     rw [CategoryTheory.Functor.map_id, comp_id, IsIso.hom_inv_id_assoc]
 

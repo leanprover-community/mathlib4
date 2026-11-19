@@ -72,7 +72,7 @@ theorem withDensityᵥ_neg : μ.withDensityᵥ (-f) = -μ.withDensityᵥ f := by
   · ext1 i hi
     rw [_root_.neg_apply, withDensityᵥ_apply hf hi, ← integral_neg,
       withDensityᵥ_apply hf.neg hi]
-    simp only [Pi.neg_apply]
+    simp [Pi.neg_apply]
   · rw [withDensityᵥ, withDensityᵥ, dite_eq_right hf, dite_eq_right, neg_zero]
     rwa [integrable_neg_iff]
 
@@ -110,7 +110,7 @@ theorem withDensityᵥ_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norme
   · ext1 i hi
     rw [withDensityᵥ_apply (hf.smul r) hi, _root_.smul_apply, withDensityᵥ_apply hf hi, ←
       integral_smul r f]
-    simp only [Pi.smul_apply]
+    simp [Pi.smul_apply]
   · by_cases hr : r = 0
     · rw [hr, zero_smul, zero_smul, withDensityᵥ_zero]
     · rw [withDensityᵥ, withDensityᵥ, dite_eq_right hf, dite_eq_right, smul_zero]
@@ -128,7 +128,7 @@ theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity {f : α → ℝ≥0} {
   rw [withDensityᵥ_apply hfg hs,
     withDensityᵥ_apply ((integrable_withDensity_iff_integrable_smul₀ hf).mpr hfg) hs,
     setIntegral_withDensity_eq_setIntegral_smul₀ hf.restrict _ hs]
-  simp only [Pi.smul_apply']
+  simp [Pi.smul_apply']
 
 theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity' {f : α → ℝ≥0∞} {g : α → E}
     (hf : AEMeasurable f μ) (hflt : ∀ᵐ x ∂μ, f x < ∞)
@@ -210,7 +210,7 @@ theorem Integrable.withDensityᵥ_trim_absolutelyContinuous {m m0 : MeasurableSp
   refine VectorMeasure.AbsolutelyContinuous.mk fun j hj₁ hj₂ => ?_
   rw [Measure.toENNRealVectorMeasure_apply_measurable hj₁, trim_measurableSet_eq hm hj₁] at hj₂
   rw [VectorMeasure.trim_measurableSet_eq hm hj₁, withDensityᵥ_apply hfi (hm _ hj₁)]
-  simp only [Measure.restrict_eq_zero.mpr hj₂, integral_zero_measure]
+  simp [Measure.restrict_eq_zero.mpr hj₂, integral_zero_measure]
 
 end SignedMeasure
 

@@ -73,7 +73,7 @@ theorem inversion_zero_radius (c x : P) : inversion c 0 x = c := by simp [invers
 
 theorem inversion_mul (c : P) (a R : ℝ) (x : P) :
     inversion c (a * R) x = homothety c (a ^ 2) (inversion c R x) := by
-  simp only [inversion_eq_lineMap, ← homothety_eq_lineMap, ← homothety_mul_apply, mul_div_assoc,
+  simp [inversion_eq_lineMap, ← homothety_eq_lineMap, ← homothety_mul_apply, mul_div_assoc,
     mul_pow]
 
 @[simp]

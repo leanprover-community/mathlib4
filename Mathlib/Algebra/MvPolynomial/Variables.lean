@@ -140,7 +140,7 @@ theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
   rw [X, vars_monomial (one_ne_zero' R), Finsupp.support_single _ (one_ne_zero' ℕ)]
 
 theorem mem_vars_iff_mem_support (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
-  classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff]
+  classical simp [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff]
 
 theorem mem_vars_iff_degreeOf_ne_zero {i : σ} : i ∈ p.vars ↔ p.degreeOf i ≠ 0 := by
   classical simp [degreeOf, vars_def]

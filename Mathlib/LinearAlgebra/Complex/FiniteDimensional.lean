@@ -52,7 +52,7 @@ theorem rank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module.rank ℝ E = 2 * Module.rank ℂ E :=
   Cardinal.lift_inj.{_, 0}.1 <| by
     rw [← lift_rank_mul_lift_rank ℝ ℂ E, Complex.rank_real_complex']
-    simp only [Cardinal.lift_id']
+    simp [Cardinal.lift_id']
 
 theorem finrank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module.finrank ℝ E = 2 * Module.finrank ℂ E := by

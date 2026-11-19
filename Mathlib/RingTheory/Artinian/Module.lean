@@ -295,7 +295,7 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : Module.End R M) :
   simp_rw [← hn _ hm, Submodule.eq_top_iff', Submodule.mem_sup]
   intro x
   rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
-  · exact ⟨x - (f ^ n) y, by simp only [mem_ker, map_sub, hy, sub_self], (f ^ n) y, by simp⟩
+  · exact ⟨x - (f ^ n) y, by simp [mem_ker, map_sub, hy, sub_self], (f ^ n) y, by simp⟩
   simp_rw [pow_apply_eq_iterate, ← iterate_add_apply, ← pow_apply_eq_iterate, ← mem_range,
     ← hn _ (n.le_add_left m), hn _ hm]
   exact LinearMap.mem_range_self (f ^ m) x
@@ -562,7 +562,7 @@ lemma primeSpectrumEquivMaximalSpectrum_symm_comp_asIdeal :
 
 lemma primeSpectrum_asIdeal_range_eq :
     range PrimeSpectrum.asIdeal = (range <| MaximalSpectrum.asIdeal (R := R)) := by
-  simp only [PrimeSpectrum.range_asIdeal, MaximalSpectrum.range_asIdeal,
+  simp [PrimeSpectrum.range_asIdeal, MaximalSpectrum.range_asIdeal,
     isPrime_iff_isMaximal]
 
 variable (R)

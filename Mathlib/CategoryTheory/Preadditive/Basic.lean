@@ -477,9 +477,9 @@ instance : SMul (Units ℤ) (X ≅ Y) where
     { hom := (a : ℤ) • e.hom
       inv := ((a⁻¹ : Units ℤ) : ℤ) • e.inv
       hom_inv_id := by
-        simp only [comp_zsmul, zsmul_comp, smul_smul, Units.inv_mul, one_smul, e.hom_inv_id]
+        simp [comp_zsmul, zsmul_comp, smul_smul, Units.inv_mul, one_smul, e.hom_inv_id]
       inv_hom_id := by
-        simp only [comp_zsmul, zsmul_comp, smul_smul, Units.mul_inv, one_smul, e.inv_hom_id] }
+        simp [comp_zsmul, zsmul_comp, smul_smul, Units.mul_inv, one_smul, e.inv_hom_id] }
 
 @[simp]
 lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = a • e.hom := rfl

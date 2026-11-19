@@ -150,7 +150,7 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 @[to_additive]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ) where
-  smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
+  smul_assoc a b T := by simp [← image_smul, image_image, smul_assoc]
 
 @[to_additive]
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
@@ -180,8 +180,8 @@ protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction 
 @[to_additive (attr := instance_reducible)
 /-- An additive action of an additive monoid on a type `β` gives an additive action on `Set β`. -/]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
-  mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
-  one_smul _ := by simp only [← image_smul, one_smul, image_id']
+  mul_smul _ _ _ := by simp [← image_smul, image_image, ← mul_smul]
+  one_smul _ := by simp [← image_smul, one_smul, image_id']
 
 scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
 
@@ -251,7 +251,7 @@ theorem mem_smul_set_iff_inv_smul_mem : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
 
 @[to_additive]
 theorem mem_inv_smul_set_iff : x ∈ a⁻¹ • A ↔ a • x ∈ A := by
-  simp only [← image_smul, mem_image, inv_smul_eq_iff, exists_eq_right]
+  simp [← image_smul, mem_image, inv_smul_eq_iff, exists_eq_right]
 
 @[to_additive (attr := simp)]
 lemma mem_smul_set_inv {s : Set α} : a ∈ b • s⁻¹ ↔ b ∈ a • s := by

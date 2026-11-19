@@ -134,7 +134,7 @@ theorem mem_ae_iff {s : Set α} : s ∈ ae μ ↔ μ sᶜ = 0 :=
 theorem ae_iff {p : α → Prop} : (∀ᵐ a ∂μ, p a) ↔ μ { a | ¬p a } = 0 :=
   Iff.rfl
 
-theorem compl_mem_ae_iff {s : Set α} : sᶜ ∈ ae μ ↔ μ s = 0 := by simp only [mem_ae_iff, compl_compl]
+theorem compl_mem_ae_iff {s : Set α} : sᶜ ∈ ae μ ↔ μ s = 0 := by simp [mem_ae_iff, compl_compl]
 
 theorem frequently_ae_iff {p : α → Prop} : (∃ᵐ a ∂μ, p a) ↔ μ { a | p a } ≠ 0 :=
   not_congr compl_mem_ae_iff
@@ -194,7 +194,7 @@ theorem ae_le_of_ae_lt {β : Type*} [Preorder β] {f g : α → β} (h : ∀ᵐ 
 
 @[simp]
 theorem ae_eq_empty : s =ᵐ[μ] ∅ ↔ μ s = 0 :=
-  eventuallyEqSet_empty.trans <| by simp only [ae_iff, Classical.not_not, ofPred_mem_eq]
+  eventuallyEqSet_empty.trans <| by simp [ae_iff, Classical.not_not, ofPred_mem_eq]
 
 -- The priority should be higher than `eventuallyEqSet_univ`.
 @[simp high]
@@ -243,7 +243,7 @@ theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s =�
 
 @[simp]
 theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ =ᵐ[μ] tᶜ ↔ s =ᵐ[μ] t := by
-  simp only [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]
+  simp [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]
 
 theorem ae_eq_set_compl {s t : Set α} : sᶜ =ᵐ[μ] t ↔ s =ᵐ[μ] tᶜ := by
   rw [← ae_eq_set_compl_compl, compl_compl]

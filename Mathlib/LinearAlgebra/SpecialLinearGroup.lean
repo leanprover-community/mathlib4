@@ -57,7 +57,7 @@ instance : CoeFun (SpecialLinearGroup R V) (fun _ ↦ V → V) where
   coe u x := u.val x
 
 theorem ext_iff (u v : SpecialLinearGroup R V) : u = v ↔ ∀ x : V, u x = v x := by
-  simp only [← Subtype.coe_inj, LinearEquiv.ext_iff]
+  simp [← Subtype.coe_inj, LinearEquiv.ext_iff]
 
 @[ext]
 theorem ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
@@ -443,7 +443,7 @@ noncomputable def centerEquivRootsOfUnity :
     split_ifs with hR hV
     · simp [Subsingleton.eq_one g]
     · simp [Subsingleton.eq_one g]
-    · simp only [IsUnit.unit_spec, ← (mem_center_iff.mp g.prop).choose_spec.2]
+    · simp [IsUnit.unit_spec, ← (mem_center_iff.mp g.prop).choose_spec.2]
   right_inv r := by
     rw [← Subtype.val_inj, SetLike.coe_eq_coe]
     simp only [Or.by_cases]
@@ -544,7 +544,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
   · convert Eq.refl (1 : Rˣ) <;>
     · apply rootsOfUnity.eq_one
       rw [← Module.finrank_eq_zero_iff_of_free (R := R)] at hV
-      simp only [hV, sup_eq_right, zero_le_one, ← Module.finrank_eq_card_basis b]
+      simp [hV, sup_eq_right, zero_le_one, ← Module.finrank_eq_card_basis b]
   · have hι : ¬ IsEmpty ι := fun hι ↦ hV (by
       rw [← Module.finrank_eq_zero_iff_of_free (R := R),
         Module.finrank_eq_card_basis b, Fintype.card_of_isEmpty])

@@ -51,7 +51,7 @@ open MulOpposite in
 @[simp]
 lemma associator_op (x y z : Rᵐᵒᵖ) :
     associator x y z = -op (associator (unop z) (unop y) (unop x)) := by
-  simp only [associator_apply, ← unop_mul, ← unop_sub, op_unop, neg_sub]
+  simp [associator_apply, ← unop_mul, ← unop_sub, op_unop, neg_sub]
 
 end NonUnitalNonAssocRing
 

@@ -126,7 +126,7 @@ lemma prod_Iio_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
 @[to_additive (dont_translate := α)]
 lemma prod_Iic_add_one_comm [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
     (a : α) (f : α → M) : ∏ i ≤ a + 1, f i = f (a + 1) * (∏ i ≤ a, f i) := by
-  simp only [← insert_Iio, mem_Iio, lt_self_iff_false, not_false_eq_true, prod_insert,
+  simp [← insert_Iio, mem_Iio, lt_self_iff_false, not_false_eq_true, prod_insert,
     prod_Iio_add_one_comm]
 
 @[to_additive (dont_translate := α) (attr := simp)]

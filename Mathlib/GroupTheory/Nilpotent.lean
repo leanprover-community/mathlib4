@@ -672,7 +672,7 @@ theorem comap_upperCentralSeries_quotient_center (n : ℕ) :
     comap (mk' (center G)) (upperCentralSeries (G ⧸ center G) n) = upperCentralSeries G n.succ := by
   induction n with
   | zero =>
-    simp only [upperCentralSeries_zero, MonoidHom.comap_bot, ker_mk',
+    simp [upperCentralSeries_zero, MonoidHom.comap_bot, ker_mk',
       (upperCentralSeries_one G).symm]
   | succ n ih =>
     let Hn := upperCentralSeries (G ⧸ center G) n
@@ -908,7 +908,7 @@ theorem Group.nilpotencyClass_prod [IsNilpotent G₁] [IsNilpotent G₂] :
     Group.nilpotencyClass (G₁ × G₂) =
     max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂) := by
   refine eq_of_forall_ge_iff fun k => ?_
-  simp only [max_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+  simp [max_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
     top_lowerCentralSeries_prod, prod_eq_bot_iff]
 
 end Prod
@@ -953,7 +953,7 @@ theorem Group.nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
     Group.nilpotencyClass (∀ i, Gs i) = Finset.univ.sup fun i => Group.nilpotencyClass (Gs i) := by
   apply eq_of_forall_ge_iff
   intro k
-  simp only [Finset.sup_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+  simp [Finset.sup_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
     top_lowerCentralSeries_pi_of_finite, pi_eq_bot_iff, Finset.mem_univ, true_imp_iff]
 
 end FinitePi

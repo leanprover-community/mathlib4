@@ -104,10 +104,10 @@ variable (K L)
   all `σ : L ≃ₐ[K] L` is an algebra norm on `L`. -/
 def invariantExtension : AlgebraNorm K L where
   toFun x := iSup fun σ : L ≃ₐ[K] L ↦ algNormOfAlgEquiv σ x
-  map_zero' := by simp only [map_zero, ciSup_const]
+  map_zero' := by simp [map_zero, ciSup_const]
   add_le' x y := ciSup_le fun σ ↦ le_trans (map_add_le_add (algNormOfAlgEquiv σ) x y)
     (add_le_add (Finite.le_ciSup_of_le σ le_rfl) (Finite.le_ciSup_of_le σ le_rfl))
-  neg' x := by simp only [map_neg_eq_map]
+  neg' x := by simp [map_neg_eq_map]
   mul_le' x y := ciSup_le fun σ ↦ le_trans (map_mul_le_mul (algNormOfAlgEquiv σ) x y)
     (mul_le_mul (Finite.le_ciSup_of_le σ le_rfl)
       (Finite.le_ciSup_of_le σ le_rfl) (apply_nonneg _ _)
@@ -117,7 +117,7 @@ def invariantExtension : AlgebraNorm K L where
     exact fun hx ↦ ne_of_gt (lt_of_lt_of_le (map_pos_of_ne_zero _ hx)
       (Finite.le_ciSup (fun σ ↦ (algNormOfAlgEquiv σ) x) AlgEquiv.refl))
   smul' r x := by
-    simp only [AlgebraNormClass.map_smul_eq_mul,
+    simp [AlgebraNormClass.map_smul_eq_mul,
       Real.mul_iSup_of_nonneg (norm_nonneg _)]
 
 @[simp]

@@ -239,7 +239,7 @@ lemma δAux_monomial (n r) :
 lemma δAux_X (i) :
     δAux R Q (X i) = 0 := by
   rw [X, δAux_monomial]
-  simp only [Derivation.map_one_eq_zero, tmul_zero]
+  simp [Derivation.map_one_eq_zero, tmul_zero]
 
 lemma δAux_mul (x y) :
     δAux R Q (x * y) = x • (δAux R Q y) + y • (δAux R Q x) := by
@@ -250,7 +250,7 @@ lemma δAux_mul (x y) :
       simp only [monomial_mul_monomial, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
         smul_tmul', Algebra.smul_def, algebraMap_apply, aeval_monomial, mul_assoc]
       rw [mul_comm (m.prod _) (n.prod _)]
-      simp only [pow_zero, implies_true, pow_add, Finsupp.prod_add_index']
+      simp [pow_zero, implies_true, pow_add, Finsupp.prod_add_index']
     | add y₁ y₂ hy₁ hy₂ => simp only [map_add, smul_add, hy₁, hy₂, mul_add, add_smul]; abel
   | add x₁ x₂ hx₁ hx₂ => simp only [add_mul, map_add, hx₁, hx₂, add_smul, smul_add]; abel
 
@@ -289,10 +289,10 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s =>
-    simp only [algHom_C, δAux_C, derivation_C, Derivation.map_algebraMap,
+    simp [algHom_C, δAux_C, derivation_C, Derivation.map_algebraMap,
       tmul_zero, map_zero, MvPolynomial.algebraMap_apply, Prod.snd_zero]
   | add x₁ x₂ hx₁ hx₂ =>
-    simp only [map_add, hx₁, hx₂, tmul_add, Prod.snd_add]
+    simp [map_add, hx₁, hx₂, tmul_add, Prod.snd_add]
   | mul_X p n IH =>
     simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, algebraMap_apply, Hom.algebraMap_toAlgHom,
@@ -301,7 +301,7 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
       ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, aeval_X, map_smul, Prod.snd_add,
       Prod.smul_snd, map_add]
     obtain (n | n) := n
-    · simp only [Sum.elim_inl, δAux_X, smul_zero, aeval_X,
+    · simp [Sum.elim_inl, δAux_X, smul_zero, aeval_X,
         CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_symm_apply, zero_add,
         Basis.repr_self, Finsupp.linearCombination_single, Basis.prod_apply, LinearMap.coe_inl,
         LinearMap.coe_inr, Function.comp_apply, one_smul, map_zero]

@@ -138,7 +138,7 @@ protected def ker : LieIdeal R L :=
 
 @[simp]
 protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅x, m⁆ = 0 := by
-  simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
+  simp [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEnd_apply_apply]
 
 lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
@@ -196,7 +196,7 @@ theorem trivial_iff_le_maximal_trivial (N : LieSubmodule R L M) :
 
 theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M = ⊤ := by
   constructor
-  · rintro ⟨h⟩; ext; simp only [mem_maxTrivSubmodule, h, forall_const, LieSubmodule.mem_top]
+  · rintro ⟨h⟩; ext; simp [mem_maxTrivSubmodule, h, forall_const, LieSubmodule.mem_top]
   · intro h; constructor; intro x m; revert x
     rw [← mem_maxTrivSubmodule R L M, h]; exact LieSubmodule.mem_top m
 
@@ -232,7 +232,7 @@ theorem coe_maxTrivEquiv_apply (e : M ≃ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R
 @[simp]
 theorem maxTrivEquiv_of_refl_eq_refl :
     maxTrivEquiv (LieModuleEquiv.refl : M ≃ₗ⁅R,L⁆ M) = LieModuleEquiv.refl := by
-  ext; simp only [coe_maxTrivEquiv_apply, LieModuleEquiv.refl_apply]
+  ext; simp [coe_maxTrivEquiv_apply, LieModuleEquiv.refl_apply]
 
 @[simp]
 theorem maxTrivEquiv_of_equiv_symm_eq_symm (e : M ≃ₗ⁅R,L⁆ N) :
@@ -294,7 +294,7 @@ theorem ad_ker_eq_self_module_ker : (ad R L).ker = LieModule.ker R L L :=
 @[simp]
 theorem self_module_ker_eq_center : LieModule.ker R L L = center R L := by
   ext y
-  simp only [LieModule.mem_maxTrivSubmodule, LieModule.mem_ker, ← lie_skew _ y, neg_eq_zero]
+  simp [LieModule.mem_maxTrivSubmodule, LieModule.mem_ker, ← lie_skew _ y, neg_eq_zero]
 
 theorem abelian_of_le_center (I : LieIdeal R L) (h : I ≤ center R L) : IsLieAbelian I :=
   haveI : LieModule.IsTrivial L I := (LieModule.trivial_iff_le_maximal_trivial R L L I).mpr h

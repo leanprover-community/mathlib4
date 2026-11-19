@@ -603,7 +603,7 @@ theorem FiniteMultiplicity.neg_iff {a b : α} :
     FiniteMultiplicity a (-b) ↔ FiniteMultiplicity a b := by
   unfold FiniteMultiplicity
   congr! 3
-  simp only [dvd_neg]
+  simp [dvd_neg]
 
 alias ⟨_, FiniteMultiplicity.neg⟩ := FiniteMultiplicity.neg_iff
 
@@ -835,7 +835,7 @@ end Nat
 
 theorem Int.finiteMultiplicity_iff_finiteMultiplicity_natAbs {a b : ℤ} :
     FiniteMultiplicity a b ↔ FiniteMultiplicity a.natAbs b.natAbs := by
-  simp only [FiniteMultiplicity.def, ← Int.natAbs_dvd_natAbs, Int.natAbs_pow]
+  simp [FiniteMultiplicity.def, ← Int.natAbs_dvd_natAbs, Int.natAbs_pow]
 
 theorem Int.finiteMultiplicity_iff {a b : ℤ} : FiniteMultiplicity a b ↔ a.natAbs ≠ 1 ∧ b ≠ 0 := by
   rw [finiteMultiplicity_iff_finiteMultiplicity_natAbs, Nat.finiteMultiplicity_iff,

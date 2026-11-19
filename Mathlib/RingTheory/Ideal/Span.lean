@@ -148,7 +148,7 @@ theorem zero_ne_one_of_proper {I : Ideal α} (h : I ≠ ⊤) : (0 : α) ≠ 1 :=
   I.ne_top_iff_one.1 h <| hz ▸ I.zero_mem
 
 theorem span_pair_comm {x y : α} : (span {x, y} : Ideal α) = span {y, x} := by
-  simp only [span_insert, sup_comm]
+  simp [span_insert, sup_comm]
 
 theorem mem_span_pair {x y z : α} : z ∈ span ({x, y} : Set α) ↔ ∃ a b, a * x + b * y = z :=
   Submodule.mem_span_pair

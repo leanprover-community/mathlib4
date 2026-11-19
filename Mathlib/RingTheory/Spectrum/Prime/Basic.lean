@@ -103,10 +103,10 @@ noncomputable def primeSpectrumProd :
         constructor
         · rintro (⟨I, hI⟩ | ⟨J, hJ⟩) (⟨I', hI'⟩ | ⟨J', hJ'⟩) h <;>
           simp only [mk.injEq, Ideal.prod_inj, primeSpectrumProdOfSum] at h
-          · simp only [h]
+          · simp [h]
           · exact False.elim (hI.ne_top h.left)
           · exact False.elim (hJ.ne_top h.right)
-          · simp only [h]
+          · simp [h]
         · rintro ⟨I, hI⟩
           rcases (Ideal.ideal_prod_prime I).mp hI with (⟨p, ⟨hp, rfl⟩⟩ | ⟨p, ⟨hp, rfl⟩⟩)
           · exact ⟨Sum.inl ⟨p, hp⟩, rfl⟩
@@ -327,7 +327,7 @@ theorem zeroLocus_iUnion₂ {ι : Sort*} {κ : (i : ι) → Sort*} (s : ∀ i, �
   (gc_set R).l_iSup₂
 
 theorem zeroLocus_bUnion (s : Set (Set R)) :
-    zeroLocus (⋃ s' ∈ s, s' : Set R) = ⋂ s' ∈ s, zeroLocus s' := by simp only [zeroLocus_iUnion]
+    zeroLocus (⋃ s' ∈ s, s' : Set R) = ⋂ s' ∈ s, zeroLocus s' := by simp [zeroLocus_iUnion]
 
 theorem vanishingIdeal_iUnion {ι : Sort*} (t : ι → Set (PrimeSpectrum R)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=

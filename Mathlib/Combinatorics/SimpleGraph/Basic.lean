@@ -594,7 +594,7 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
   rwa [mem_edgeSet] at he
 
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
-  simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
+  simp [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
 
 @[simp]
 theorem edgeSet_subset_sym2_iff {s : Set V} :
@@ -696,14 +696,14 @@ lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s Sym2.d
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
+  simp [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
 
 @[simp] lemma fromEdgeSet_not_isDiag : @fromEdgeSet V Sym2.diagSetᶜ = ⊤ := by ext; simp
 
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_univ, true_and, top_adj]
+  simp [fromEdgeSet_adj, Set.mem_univ, true_and, top_adj]
 
 @[simp]
 theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
@@ -878,7 +878,7 @@ theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w 
 
 theorem mem_incidence_iff_neighbor {v w : V} :
     s(v, w) ∈ G.incidenceSet v ↔ w ∈ G.neighborSet v := by
-  simp only [mem_incidenceSet, mem_neighborSet]
+  simp [mem_incidenceSet, mem_neighborSet]
 
 theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : v ∈ e) :
     G.incidenceSet v ∩ G.incidenceSet (Sym2.Mem.other h) = {e} := by

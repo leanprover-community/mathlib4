@@ -423,15 +423,15 @@ theorem toNNReal_eq_toNNReal_iff (x y : ℝ≥0∞) :
 
 theorem toReal_eq_toReal_iff (x y : ℝ≥0∞) :
     x.toReal = y.toReal ↔ x = y ∨ x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0 := by
-  simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff]
+  simp [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff]
 
 theorem toNNReal_eq_toNNReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
     x.toNNReal = y.toNNReal ↔ x = y := by
-  simp only [ENNReal.toNNReal_eq_toNNReal_iff x y, hx, hy, and_false, false_and, or_false]
+  simp [ENNReal.toNNReal_eq_toNNReal_iff x y, hx, hy, and_false, false_and, or_false]
 
 theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
     x.toReal = y.toReal ↔ x = y := by
-  simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff' hx hy]
+  simp [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff' hx hy]
 
 theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 
@@ -642,37 +642,37 @@ theorem iUnion_Iic_natCast : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
 
 @[simp]
 theorem iUnion_Ioc_natCast : ⋃ n : ℕ, Ioc a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_natCast, sdiff_eq]
+  simp [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_natCast, sdiff_eq]
 
 @[deprecated (since := "2026-10-13")] alias iUnion_Ioc_coe_nat := iUnion_Ioc_natCast
 
 @[simp]
 theorem iUnion_Ioo_natCast : ⋃ n : ℕ, Ioo a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_natCast, sdiff_eq]
+  simp [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_natCast, sdiff_eq]
 
 @[deprecated (since := "2026-10-13")] alias iUnion_Ioo_coe_nat := iUnion_Ioo_natCast
 
 @[simp]
 theorem iUnion_Icc_natCast : ⋃ n : ℕ, Icc a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_natCast, sdiff_eq]
+  simp [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_natCast, sdiff_eq]
 
 @[deprecated (since := "2026-10-13")] alias iUnion_Icc_coe_nat := iUnion_Icc_natCast
 
 @[simp]
 theorem iUnion_Ico_natCast : ⋃ n : ℕ, Ico a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_natCast, sdiff_eq]
+  simp [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_natCast, sdiff_eq]
 
 @[deprecated (since := "2026-10-13")] alias iUnion_Ico_coe_nat := iUnion_Ico_natCast
 
 @[simp]
 theorem iInter_Ici_natCast : ⋂ n : ℕ, Ici (n : ℝ≥0∞) = {∞} := by
-  simp only [← compl_Iio, ← compl_iUnion, iUnion_Iio_natCast, compl_compl]
+  simp [← compl_Iio, ← compl_iUnion, iUnion_Iio_natCast, compl_compl]
 
 @[deprecated (since := "2026-10-13")] alias iInter_Ici_coe_nat := iInter_Ici_natCast
 
 @[simp]
 theorem iInter_Ioi_natCast : ⋂ n : ℕ, Ioi (n : ℝ≥0∞) = {∞} := by
-  simp only [← compl_Iic, ← compl_iUnion, iUnion_Iic_natCast, compl_compl]
+  simp [← compl_Iic, ← compl_iUnion, iUnion_Iic_natCast, compl_compl]
 
 @[deprecated (since := "2026-10-13")] alias iInter_Ioi_coe_nat := iInter_Ioi_natCast
 

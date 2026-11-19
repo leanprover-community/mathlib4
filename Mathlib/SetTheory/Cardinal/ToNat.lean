@@ -136,7 +136,7 @@ theorem toNat_eq_one_iff_unique : toNat #α = 1 ↔ Subsingleton α ∧ Nonempty
 
 @[simp]
 theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c := by
-  simp only [← toNat_toENat, toENat_lift]
+  simp [← toNat_toENat, toENat_lift]
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat #α = toNat #β := by
   -- Porting note: Inserted universe hint below

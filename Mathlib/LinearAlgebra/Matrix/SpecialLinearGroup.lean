@@ -112,7 +112,7 @@ instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLi
   ext i j
   rcases isEmpty_or_nonempty n with hn | hn; · exfalso; exact IsEmpty.false i
   rw [det_eq_elem_of_subsingleton _ i] at hA hB
-  simp only [Subsingleton.elim j i, hA, hB]
+  simp [Subsingleton.elim j i, hA, hB]
 
 instance hasInv : Inv (SpecialLinearGroup n R) :=
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
@@ -384,8 +384,8 @@ def center_equiv_rootsOfUnity' (i : n) :
     haveI : Nonempty n := ⟨i⟩
     rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
       obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
-      replace hr' : A.val i i = r := by simp only [← hr', scalar_apply, diagonal_apply_eq]
-      simp only [hr', hr]
+      replace hr' : A.val i i = r := by simp [← hr', scalar_apply, diagonal_apply_eq]
+      simp [hr', hr]
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun _ ↦ Subtype.val_injective <|
       ((coe_mul ..).trans (by simp)).trans (coe_mul ..).symm⟩

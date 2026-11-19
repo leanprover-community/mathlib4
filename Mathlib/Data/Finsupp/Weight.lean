@@ -230,7 +230,7 @@ lemma degree_eq_zero_iff {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
-  simp only [degree_apply, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
+  simp [degree_apply, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
 theorem le_degree {R : Type*}
@@ -240,7 +240,7 @@ theorem le_degree {R : Type*}
   by_cases h : s ∈ f.support
   · exact Finset.single_le_sum_of_canonicallyOrdered h
   · simp only [notMem_support_iff] at h
-    simp only [h, zero_le]
+    simp [h, zero_le]
 
 theorem degree_eq_weight_one {R : Type*} [Semiring R] :
     degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
@@ -252,7 +252,7 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   simp_rw [degree_eq_weight_one]
   refine finite_of_nat_weight_le (Function.const σ 1) ?_ n
   intro _
-  simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
+  simp [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
 lemma finite_of_degree_lt [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | degree f < n}.Finite :=
   Set.Finite.subset (finite_of_degree_le n) (by grind)

@@ -500,7 +500,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     toFun := fun x => (I x.1, I' x.2)
     invFun := fun x => (I.symm x.1, I'.symm x.2)
     source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
-    source_eq := by simp only [ofPred_true, mfld_simps]
+    source_eq := by simp [ofPred_true, mfld_simps]
     convex_range' := by
       have : range (fun (x : ModelProd H H') ↦ (I x.1, I' x.2)) = range (Prod.map I I') := rfl
       rw [this, Set.range_prodMap]
@@ -523,7 +523,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
   toPartialEquiv := PartialEquiv.pi fun i => (I i).toPartialEquiv
-  source_eq := by simp only [pi_univ, mfld_simps]
+  source_eq := by simp [pi_univ, mfld_simps]
   convex_range' := by
     rw [PartialEquiv.pi_apply, Set.range_piMap]
     split_ifs with h
@@ -645,7 +645,7 @@ def contDiffPregroupoid : Pregroupoid H where
     rintro x ⟨_, hx2⟩
     rcases mem_range.1 hx2 with ⟨y, hy⟩
     rw [← hy]
-    simp only [mfld_simps]
+    simp [mfld_simps]
   locality {f u} _ H := by
     apply contDiffOn_of_locally_contDiffOn
     rintro y ⟨hy1, hy2⟩

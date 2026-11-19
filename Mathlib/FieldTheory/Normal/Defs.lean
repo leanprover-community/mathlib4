@@ -166,7 +166,7 @@ theorem AlgHom.restrictNormal_commutes [Normal F E] (x : E) :
 theorem AlgHom.restrictNormal_comp [Normal F E] :
     (ψ.restrictNormal E).comp (ϕ.restrictNormal E) = (ψ.comp ϕ).restrictNormal E :=
   AlgHom.ext fun _ =>
-    (algebraMap E K₃).injective (by simp only [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
+    (algebraMap E K₃).injective (by simp [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
 
 /-- Restrict algebra isomorphism to a normal subfield -/
 def AlgEquiv.restrictNormal [Normal F E] : Gal(E/F) :=
@@ -189,7 +189,7 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
     (χ.trans ω).restrictNormal E = (χ.restrictNormal E).trans (ω.restrictNormal E) :=
   AlgEquiv.ext fun _ =>
     (algebraMap E K₃).injective
-      (by simp only [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
+      (by simp [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
 
 /-- Restriction to a normal subfield as a group homomorphism -/
 def AlgEquiv.restrictNormalHom [Normal F E] : Gal(K₁/F) →* Gal(E/F) :=
@@ -232,7 +232,7 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
   dsimp only [restrictNormalHom, MonoidHom.mk'_apply, MonoidHom.id_apply]
   apply (algebraMap K K).injective
   rw [AlgEquiv.restrictNormal_commutes]
-  simp only [Algebra.algebraMap_self, RingHom.id_apply]
+  simp [Algebra.algebraMap_self, RingHom.id_apply]
 
 namespace IsScalarTower
 
@@ -251,7 +251,7 @@ theorem AlgEquiv.restrictNormalHom_comp (F K₁ K₂ K₃ : Type*)
   ext f x
   apply (algebraMap K₁ K₃).injective
   rw [IsScalarTower.algebraMap_eq K₁ K₂ K₃]
-  simp only [AlgEquiv.restrictNormalHom, MonoidHom.mk'_apply, RingHom.coe_comp, Function.comp_apply,
+  simp [AlgEquiv.restrictNormalHom, MonoidHom.mk'_apply, RingHom.coe_comp, Function.comp_apply,
     ← algebraMap_apply, AlgEquiv.restrictNormal_commutes, MonoidHom.coe_comp]
 
 theorem AlgEquiv.restrictNormalHom_comp_apply (K₁ K₂ : Type*) {F K₃ : Type*}

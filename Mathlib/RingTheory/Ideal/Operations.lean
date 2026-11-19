@@ -190,10 +190,10 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   · exact ⟨0, fun _ => I.zero_mem, Finsupp.sum_zero_index⟩
   · rintro x y - - ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
     refine ⟨ax + ay, fun i => I.add_mem (hax i) (hay i), Finsupp.sum_add_index' ?_ ?_⟩ <;>
-      intros <;> simp only [zero_smul, add_smul]
+      intros <;> simp [zero_smul, add_smul]
   · rintro c x - ⟨a, ha, rfl⟩
     refine ⟨c • a, fun i => I.mul_mem_left c (ha i), ?_⟩
-    rw [Finsupp.sum_smul_index, Finsupp.smul_sum] <;> intros <;> simp only [zero_smul, mul_smul]
+    rw [Finsupp.sum_smul_index, Finsupp.smul_sum] <;> intros <;> simp [zero_smul, mul_smul]
 
 theorem mem_ideal_smul_span_iff_exists_sum' {ι : Type*} (s : Set ι) (f : ι → M) (x : M) :
     x ∈ I • span R (f '' s) ↔
@@ -420,7 +420,7 @@ theorem span_singleton_pow (s : R) [(span {s}).IsTwoSided] (n : ℕ) :
   | zero => simp [Submodule.pow_zero, Set.singleton_one]
   | succ n ih =>
     obtain rfl | ne := eq_or_ne n 0; · simp [Submodule.pow_one]
-    simp only [Submodule.pow_succ' _ ne, pow_succ', ih, span_singleton_mul_span_singleton]
+    simp [Submodule.pow_succ' _ ne, pow_succ', ih, span_singleton_mul_span_singleton]
 
 theorem mem_mul_span_singleton {x y : R} {I : Ideal R} [I.IsTwoSided] :
     x ∈ I * span {y} ↔ ∃ z ∈ I, z * y = x :=
@@ -432,7 +432,7 @@ theorem span_singleton_mul_left_mono [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
 
 theorem span_singleton_mul_left_inj [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
     {x : R} (hx : x ≠ 0) : I * span {x} = J * span {x} ↔ I = J := by
-  simp only [le_antisymm_iff, span_singleton_mul_left_mono hx]
+  simp [le_antisymm_iff, span_singleton_mul_left_mono hx]
 
 theorem mul_le_inf [I.IsTwoSided] : I * J ≤ I ⊓ J :=
   mul_le.2 fun r hri s hsj => ⟨I.mul_mem_right s hri, J.mul_mem_left r hsj⟩
@@ -576,7 +576,7 @@ protected theorem mul_comm : I * J = J * I :=
     (mul_le.2 fun _ hrJ _ hsI => mul_mem_mul_rev hsI hrJ)
 
 theorem mem_span_singleton_mul {x y : R} {I : Ideal R} : x ∈ span {y} * I ↔ ∃ z ∈ I, y * z = x := by
-  simp only [mul_comm, mem_mul_span_singleton]
+  simp [mul_comm, mem_mul_span_singleton]
 
 @[simp]
 lemma range_mul (A : Type*) [CommSemiring A] [Module R A]
@@ -589,7 +589,7 @@ lemma range_mul' (a : R) : LinearMap.range (LinearMap.mul R R a) = Ideal.span {a
 theorem le_span_singleton_mul_iff {x : R} {I J : Ideal R} :
     I ≤ span {x} * J ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI :=
   show (∀ {zI} (_ : zI ∈ I), zI ∈ span {x} * J) ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI by
-    simp only [mem_span_singleton_mul]
+    simp [mem_span_singleton_mul]
 
 theorem span_singleton_mul_le_iff {x : R} {I J : Ideal R} :
     span {x} * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J := by
@@ -597,7 +597,7 @@ theorem span_singleton_mul_le_iff {x : R} {I J : Ideal R} :
 
 theorem span_singleton_mul_le_span_singleton_mul {x y : R} {I J : Ideal R} :
     span {x} * I ≤ span {y} * J ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zI = y * zJ := by
-  simp only [span_singleton_mul_le_iff, mem_span_singleton_mul, eq_comm]
+  simp [span_singleton_mul_le_iff, mem_span_singleton_mul, eq_comm]
 
 theorem span_singleton_mul_right_mono [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I ≤ span {x} * J ↔ I ≤ J := by
@@ -606,7 +606,7 @@ theorem span_singleton_mul_right_mono [IsDomain R] {x : R} (hx : x ≠ 0) :
 
 theorem span_singleton_mul_right_inj [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I = span {x} * J ↔ I = J := by
-  simp only [le_antisymm_iff, span_singleton_mul_right_mono hx]
+  simp [le_antisymm_iff, span_singleton_mul_right_mono hx]
 
 theorem span_singleton_mul_right_injective [IsDomain R] {x : R} (hx : x ≠ 0) :
     Function.Injective ((span {x} : Ideal R) * ·) := fun _ _ =>
@@ -618,12 +618,12 @@ theorem span_singleton_mul_left_injective [IsDomain R] {x : R} (hx : x ≠ 0) :
 
 theorem eq_span_singleton_mul {x : R} (I J : Ideal R) :
     I = span {x} * J ↔ (∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI) ∧ ∀ z ∈ J, x * z ∈ I := by
-  simp only [le_antisymm_iff, le_span_singleton_mul_iff, span_singleton_mul_le_iff]
+  simp [le_antisymm_iff, le_span_singleton_mul_iff, span_singleton_mul_le_iff]
 
 theorem span_singleton_mul_eq_span_singleton_mul {x y : R} (I J : Ideal R) :
     span {x} * I = span {y} * J ↔
       (∀ zI ∈ I, ∃ zJ ∈ J, x * zI = y * zJ) ∧ ∀ zJ ∈ J, ∃ zI ∈ I, x * zI = y * zJ := by
-  simp only [le_antisymm_iff, span_singleton_mul_le_span_singleton_mul, eq_comm]
+  simp [le_antisymm_iff, span_singleton_mul_le_span_singleton_mul, eq_comm]
 
 theorem prod_span {ι : Type*} (s : Finset ι) (I : ι → Set R) :
     (∏ i ∈ s, Ideal.span (I i)) = Ideal.span (∏ i ∈ s, I i) :=
@@ -637,7 +637,7 @@ theorem prod_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R) :
 theorem multiset_prod_span_singleton (m : Multiset R) :
     (m.map fun x => Ideal.span {x}).prod = Ideal.span ({Multiset.prod m} : Set R) :=
   Multiset.induction_on m (by simp) fun a m ih => by
-    simp only [Multiset.map_cons, Multiset.prod_cons, ih, ← Ideal.span_singleton_mul_span_singleton]
+    simp [Multiset.map_cons, Multiset.prod_cons, ih, ← Ideal.span_singleton_mul_span_singleton]
 
 open scoped Function in -- required for scoped `on` notation
 theorem finset_inf_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R)
@@ -691,7 +691,7 @@ theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
 theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀ p ∈ s, I ⊔ p = ⊤) :
     I ⊔ s.prod = ⊤ :=
   Multiset.prod_induction (I ⊔ · = ⊤) s (fun _ _ hp hq ↦ (sup_mul_eq_of_coprime_left hp).trans hq)
-    (by simp only [one_eq_top, le_top, sup_of_le_right]) h
+    (by simp [one_eq_top, le_top, sup_of_le_right]) h
 
 theorem prod_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → J i ⊔ I = ⊤) :
     (∏ i ∈ s, J i) ⊔ I = ⊤ := by rw [sup_comm, sup_prod_eq_top]; intro i hi; rw [sup_comm, h i hi]
@@ -710,7 +710,7 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
     apply (show x * I + y * J ≤ I ⊔ J from
       sup_le (mul_le_right.trans le_sup_left) (mul_le_right.trans le_sup_right))
     rw [hxy]
-    simp only [one_eq_top, Submodule.mem_top]
+    simp [one_eq_top, Submodule.mem_top]
   · intro h
     refine ⟨1, 1, ?_⟩
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
@@ -885,7 +885,7 @@ theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
 lemma isRadical_bot_iff : (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
-  simp only [IsRadical, IsConcreteLE.le_iff, Ideal.mem_radical_iff, Ideal.mem_bot,
+  simp [IsRadical, IsConcreteLE.le_iff, Ideal.mem_radical_iff, Ideal.mem_bot,
     forall_exists_index, isReduced_iff, IsNilpotent]
 
 lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [isRadical_bot_iff]

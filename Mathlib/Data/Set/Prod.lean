@@ -122,11 +122,11 @@ theorem prod_union : s ×ˢ (t₁ ∪ t₂) = s ×ˢ t₁ ∪ s ×ˢ t₂ := by
 
 theorem inter_prod : (s₁ ∩ s₂) ×ˢ t = s₁ ×ˢ t ∩ s₂ ×ˢ t := by
   ext ⟨x, y⟩
-  simp only [← and_and_right, mem_inter_iff, mem_prod]
+  simp [← and_and_right, mem_inter_iff, mem_prod]
 
 theorem prod_inter : s ×ˢ (t₁ ∩ t₂) = s ×ˢ t₁ ∩ s ×ˢ t₂ := by
   ext ⟨x, y⟩
-  simp only [← and_and_left, mem_inter_iff, mem_prod]
+  simp [← and_and_left, mem_inter_iff, mem_prod]
 
 @[mfld_simps]
 theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×ˢ (t₁ ∩ t₂) := by
@@ -156,10 +156,10 @@ theorem prodMap_image_prod (f : α → β) (g : γ → δ) (s : Set α) (t : Set
   aesop
 
 theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
-  simp only [insert_eq, union_prod, singleton_prod]
+  simp [insert_eq, union_prod, singleton_prod]
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
-  simp only [insert_eq, prod_union, prod_singleton]
+  simp [insert_eq, prod_union, prod_singleton]
 
 theorem prod_preimage_eq {f : γ → α} {g : δ → β} :
     (f ⁻¹' s) ×ˢ (g ⁻¹' t) = (fun p : γ × δ => (f p.1, g p.2)) ⁻¹' s ×ˢ t :=
@@ -252,7 +252,7 @@ theorem prod_nonempty_iff : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
 
 @[simp]
 theorem prod_eq_empty_iff : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or]
+  simp [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or]
 
 theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
     s ×ˢ t ⊆ f ⁻¹' W ↔ ∀ a b, a ∈ s → b ∈ t → f (a, b) ∈ W := by simp [subset_def]
@@ -450,7 +450,7 @@ theorem diag_image (s : Set α) : Function.diag '' s = diagonal α ∩ s ×ˢ s 
   rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
-  simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
+  simp [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
 
 theorem diagonal_eq_univ [Subsingleton α] : diagonal α = univ := diagonal_eq_univ_iff.2 ‹_›
 
@@ -672,7 +672,7 @@ theorem univ_pi_empty [h : Nonempty ι] : pi univ (fun _ => ∅ : ∀ i, Set (α
 
 @[simp]
 theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Disjoint (t₁ i) (t₂ i) := by
-  simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff]
+  simp [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff]
 
 theorem Disjoint.set_pi (hi : i ∈ s) (ht : Disjoint (t₁ i) (t₂ i)) : Disjoint (s.pi t₁) (s.pi t₂) :=
   disjoint_left.2 fun _ h₁ h₂ => disjoint_left.1 ht (h₁ _ hi) (h₂ _ hi)
@@ -696,7 +696,7 @@ theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [p
 
 @[simp]
 theorem disjoint_pi : Disjoint (s.pi t₁) (s.pi t₂) ↔ ∃ i ∈ s, Disjoint (t₁ i) (t₂ i) := by
-  simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, pi_eq_empty_iff']
+  simp [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, pi_eq_empty_iff']
 
 end Nonempty
 
@@ -821,7 +821,7 @@ theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
 
 @[simp]
 theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
-  simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
+  simp [← image_univ, ← piMap_image_univ_pi, pi_univ]
 
 theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, s' ⊆ (· i) ⁻¹' t i := by
   grind

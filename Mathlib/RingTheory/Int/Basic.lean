@@ -39,7 +39,7 @@ theorem isCoprime_iff_nat_coprime {a b : ℤ} : IsCoprime a b ↔ Nat.Coprime a.
 /-- If `gcd a (m * n) ≠ 1`, then `gcd a m ≠ 1` or `gcd a n ≠ 1`. -/
 theorem gcd_ne_one_iff_gcd_mul_right_ne_one {a : ℤ} {m n : ℕ} :
     a.gcd (m * n) ≠ 1 ↔ a.gcd m ≠ 1 ∨ a.gcd n ≠ 1 := by
-  simp only [← isCoprime_iff_gcd_eq_one, ← not_and_or, not_iff_not, IsCoprime.mul_right_iff]
+  simp [← isCoprime_iff_gcd_eq_one, ← not_and_or, not_iff_not, IsCoprime.mul_right_iff]
 
 theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 2) :
     ∃ a0 : ℤ, a = a0 ^ 2 ∨ a = -a0 ^ 2 := by

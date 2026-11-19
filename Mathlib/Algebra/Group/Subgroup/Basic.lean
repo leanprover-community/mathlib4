@@ -583,7 +583,7 @@ def conjugatesOfSet (s : Set G) : Set G :=
 @[to_additive]
 theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x := by
   rw [conjugatesOfSet, Set.mem_iUnion₂]
-  simp only [conjugatesOf, isConj_iff, Set.mem_ofPred_eq, exists_prop]
+  simp [conjugatesOf, isConj_iff, Set.mem_ofPred_eq, exists_prop]
 
 @[to_additive]
 theorem subset_conjugatesOfSet : s ⊆ conjugatesOfSet s := fun (x : G) (h : x ∈ s) =>
@@ -699,7 +699,7 @@ theorem normalClosure_idempotent : normalClosure ↑(normalClosure s) = normalCl
 
 @[to_additive]
 theorem closure_le_normalClosure {s : Set G} : closure s ≤ normalClosure s := by
-  simp only [subset_normalClosure, closure_le]
+  simp [subset_normalClosure, closure_le]
 
 @[to_additive (attr := simp)]
 theorem normalClosure_closure_eq_normalClosure {s : Set G} :
@@ -893,7 +893,7 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : G₁ →* G�
     rw [← g.map_mul, ← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
     apply hg
     rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one, f.map_mul]
-    simp only [hf _]
+    simp [hf _]
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
@@ -903,7 +903,7 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
   rw [← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
   apply hg
   rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one]
-  simp only [hf _]
+  simp [hf _]
 
 /-- `liftOfRightInverse f hf g hg` is the unique group homomorphism `φ`
 
@@ -944,7 +944,7 @@ def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
   invFun φ := ⟨φ.comp f, fun x hx ↦ mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
-    simp only [comp_apply, liftOfRightInverseAux_comp_apply]
+    simp [comp_apply, liftOfRightInverseAux_comp_apply]
   right_inv φ := by
     ext b
     simp [liftOfRightInverseAux, hf b]

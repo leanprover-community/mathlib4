@@ -161,7 +161,7 @@ theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ 
     (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
   calc
     ρ s ≤ ρ ((s \ ⋃ p ∈ h.index, h.covering p) ∪ ⋃ p ∈ h.index, h.covering p) :=
-      measure_mono (by simp only [subset_union_left, sdiff_union_self])
+      measure_mono (by simp [subset_union_left, sdiff_union_self])
     _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
       (measure_union_le _ _)
     _ = ∑' p : h.index, ρ (h.covering p) := by
@@ -219,7 +219,7 @@ theorem filterAt_basis_closedBall (x : X) :
 
 theorem mem_filterAt_iff {x : X} {s : Set (Set X)} :
     s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ t ∈ v.setsAt x, t ⊆ closedBall x ε → t ∈ s := by
-  simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp, subset_def, mem_ofPred]
+  simp [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp, subset_def, mem_ofPred]
 
 instance filterAt_neBot (x : X) : (v.filterAt x).NeBot :=
   (v.filterAt_basis_closedBall x).neBot_iff.2 <| v.nontrivial _ _
@@ -231,7 +231,7 @@ theorem eventually_filterAt_iff {x : X} {P : Set X → Prop} :
 theorem tendsto_filterAt_iff {ι : Type*} {l : Filter ι} {f : ι → Set X} {x : X} :
     Tendsto f l (v.filterAt x) ↔
       (∀ᶠ i in l, f i ∈ v.setsAt x) ∧ ∀ ε > (0 : ℝ), ∀ᶠ i in l, f i ⊆ closedBall x ε := by
-  simp only [filterAt, tendsto_inf, nhds_basis_closedBall.smallSets.tendsto_right_iff,
+  simp [filterAt, tendsto_inf, nhds_basis_closedBall.smallSets.tendsto_right_iff,
     tendsto_principal, and_comm, mem_powerset_iff]
 
 theorem eventually_filterAt_mem_setsAt (x : X) : ∀ᶠ t in v.filterAt x, t ∈ v.setsAt x :=
@@ -246,7 +246,7 @@ theorem eventually_filterAt_measurableSet (x : X) : ∀ᶠ t in v.filterAt x, Me
 
 theorem frequently_filterAt_iff {x : X} {P : Set X → Prop} :
     (∃ᶠ t in v.filterAt x, P t) ↔ ∀ ε > (0 : ℝ), ∃ t ∈ v.setsAt x, t ⊆ closedBall x ε ∧ P t := by
-  simp only [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc, subset_def, mem_ofPred]
+  simp [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc, subset_def, mem_ofPred]
 
 theorem eventually_filterAt_subset_of_nhds {x : X} {o : Set X} (hx : o ∈ 𝓝 x) :
     ∀ᶠ t in v.filterAt x, t ⊆ o :=

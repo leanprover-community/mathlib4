@@ -186,7 +186,7 @@ theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
   obtain ⟨c, ⟨c_count, c_cov⟩⟩ := hs.elim_countable_subcover U hUo hsU
   rcases c.eq_empty_or_nonempty with rfl | c_nonempty
   · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty, subset_empty_iff] at c_cov
-    simp only [c_cov, empty_subset, exists_const]
+    simp [c_cov, empty_subset, exists_const]
   obtain ⟨f, f_surj⟩ := (Set.countable_iff_exists_surjective c_nonempty).mp c_count
   refine ⟨fun x ↦ f x, c_cov.trans <| iUnion₂_subset_iff.mpr (?_ : ∀ i ∈ c, U i ⊆ ⋃ n, U (f n))⟩
   intro x hx
@@ -463,11 +463,11 @@ theorem hasBasis_coclosedLindelof :
 
 theorem mem_coclosedLindelof : s ∈ coclosedLindelof X ↔
     ∃ t, IsClosed t ∧ IsLindelof t ∧ tᶜ ⊆ s := by
-  simp only [hasBasis_coclosedLindelof.mem_iff, and_assoc]
+  simp [hasBasis_coclosedLindelof.mem_iff, and_assoc]
 
 theorem mem_coclosed_Lindelof' : s ∈ coclosedLindelof X ↔
     ∃ t, IsClosed t ∧ IsLindelof t ∧ sᶜ ⊆ t := by
-  simp only [mem_coclosedLindelof, compl_subset_comm]
+  simp [mem_coclosedLindelof, compl_subset_comm]
 
 theorem coLindelof_le_coclosedLindelof : coLindelof X ≤ coclosedLindelof X :=
   iInf_mono fun _ => le_iInf fun _ => le_rfl

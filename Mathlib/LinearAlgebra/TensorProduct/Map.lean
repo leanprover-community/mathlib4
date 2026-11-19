@@ -132,7 +132,7 @@ attribute [local ext high] ext
 @[simp]
 theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   ext
-  simp only [mk_apply, id_coe, compr₂ₛₗ_apply, _root_.id, map_tmul]
+  simp [mk_apply, id_coe, compr₂ₛₗ_apply, _root_.id, map_tmul]
 
 @[simp]
 protected theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
@@ -146,18 +146,18 @@ protected theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N
 protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
     map f g ^ n = map (f ^ n) (g ^ n) := by
   induction n with
-  | zero => simp only [pow_zero, TensorProduct.map_one]
-  | succ n ih => simp only [pow_succ', ih, TensorProduct.map_mul]
+  | zero => simp [pow_zero, TensorProduct.map_one]
+  | succ n ih => simp [pow_succ', ih, TensorProduct.map_mul]
 
 theorem map_add_left (f₁ f₂ : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
-  simp only [add_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.add_apply]
+  simp [add_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.add_apply]
 
 theorem map_add_right (f : M →ₛₗ[σ₁₂] M₂) (g₁ g₂ : N →ₛₗ[σ₁₂] N₂) :
     map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
-  simp only [tmul_add, compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.add_apply]
+  simp [tmul_add, compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.add_apply]
 
 theorem map_smul_left (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (r • f) g = r • map f g := by
@@ -413,7 +413,7 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
   toFun := lTensor M
   map_add' f g := by
     ext x y
-    simp only [compr₂ₛₗ_apply, mk_apply, LinearMap.add_apply, lTensor_tmul, tmul_add]
+    simp [compr₂ₛₗ_apply, mk_apply, LinearMap.add_apply, lTensor_tmul, tmul_add]
   map_smul' r f := by
     dsimp
     ext x y
@@ -426,7 +426,7 @@ def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
     ext x y
-    simp only [compr₂ₛₗ_apply, mk_apply, LinearMap.add_apply, rTensor_tmul, add_tmul]
+    simp [compr₂ₛₗ_apply, mk_apply, LinearMap.add_apply, rTensor_tmul, add_tmul]
   map_smul' r f := by
     dsimp
     ext x y
@@ -466,14 +466,14 @@ theorem rTensor_smul (r : R) (f : N →ₗ[R] P) : (r • f).rTensor M = r • f
 
 theorem lTensor_comp : (g.comp f).lTensor M = (g.lTensor M).comp (f.lTensor M) := by
   ext m n
-  simp only [compr₂ₛₗ_apply, mk_apply, comp_apply, lTensor_tmul]
+  simp [compr₂ₛₗ_apply, mk_apply, comp_apply, lTensor_tmul]
 
 theorem lTensor_comp_apply (x : M ⊗[R] N) :
     (g.comp f).lTensor M x = (g.lTensor M) ((f.lTensor M) x) := by rw [lTensor_comp, coe_comp]; rfl
 
 theorem rTensor_comp : (g.comp f).rTensor M = (g.rTensor M).comp (f.rTensor M) := by
   ext m n
-  simp only [compr₂ₛₗ_apply, mk_apply, comp_apply, rTensor_tmul]
+  simp [compr₂ₛₗ_apply, mk_apply, comp_apply, rTensor_tmul]
 
 theorem rTensor_comp_apply (x : N ⊗[R] M) :
     (g.comp f).rTensor M x = (g.rTensor M) ((f.rTensor M) x) := by rw [rTensor_comp, coe_comp]; rfl
@@ -519,17 +519,17 @@ variable {N}
 @[simp]
 theorem lTensor_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g.lTensor P).comp (f.rTensor N) = map f g := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp [lTensor, rTensor, ← map_comp, id_comp, comp_id]
 
 @[simp]
 theorem rTensor_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (f.rTensor Q).comp (g.lTensor M) = map f g := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp [lTensor, rTensor, ← map_comp, id_comp, comp_id]
 
 @[simp]
 theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M) :
     (map f g).comp (f'.rTensor _) = map (f.comp f') g := by
-  simp only [rTensor, ← map_comp, comp_id]
+  simp [rTensor, ← map_comp, comp_id]
 
 @[simp]
 theorem map_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M) (x : S ⊗[R] N) :
@@ -539,7 +539,7 @@ theorem map_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M)
 @[simp]
 theorem map_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) :
     (map f g).comp (g'.lTensor _) = map f (g.comp g') := by
-  simp only [lTensor, ← map_comp, comp_id]
+  simp [lTensor, ← map_comp, comp_id]
 
 @[simp]
 lemma map_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) (x : M ⊗[R] S) :
@@ -549,7 +549,7 @@ lemma map_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) (
 @[simp]
 theorem rTensor_comp_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (f'.rTensor _).comp (map f g) = map (f'.comp f) g := by
-  simp only [rTensor, ← map_comp, id_comp]
+  simp [rTensor, ← map_comp, id_comp]
 
 @[simp]
 lemma rTensor_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : M ⊗[R] N) :
@@ -559,7 +559,7 @@ lemma rTensor_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (
 @[simp]
 theorem lTensor_comp_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g'.lTensor _).comp (map f g) = map f (g'.comp g) := by
-  simp only [lTensor, ← map_comp, id_comp]
+  simp [lTensor, ← map_comp, id_comp]
 
 @[simp]
 lemma lTensor_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : M ⊗[R] N) :

@@ -48,7 +48,7 @@ noncomputable def wittMulN : ℕ → ℕ → MvPolynomial ℕ ℤ
 theorem mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
     (x * n).coeff k = aeval x.coeff (wittMulN p n k) := by
   induction n generalizing k with
-  | zero => simp only [Nat.cast_zero, mul_zero, zero_coeff, wittMulN, Pi.zero_apply, map_zero]
+  | zero => simp [Nat.cast_zero, mul_zero, zero_coeff, wittMulN, Pi.zero_apply, map_zero]
   | succ n ih =>
     rw [wittMulN, Nat.cast_add, Nat.cast_one, mul_add, mul_one, comp_aeval_apply, add_coeff]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
@@ -73,7 +73,7 @@ theorem aeval_wittMulN_wittPolynomial (n k : ℕ) :
     rw [wittMulN, ← comp_aeval_apply, wittAdd, wittStructureInt_prop]
     simp only [map_add, Nat.cast_succ, aeval_X]
     rw [add_mul, one_mul, aeval_rename, aeval_rename]
-    simp only [ih, Function.uncurry, Function.comp_def, aeval_X_left, AlgHom.id_apply,
+    simp [ih, Function.uncurry, Function.comp_def, aeval_X_left, AlgHom.id_apply,
       Matrix.cons_val_zero, Matrix.cons_val_one]
 
 @[deprecated aeval_wittMulN_wittPolynomial +typeChanged (since := "2026-09-09")]

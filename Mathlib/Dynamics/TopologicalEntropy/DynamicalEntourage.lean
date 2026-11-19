@@ -61,7 +61,7 @@ lemma mem_dynEntourage : (x, y) ∈ dynEntourage T U n ↔ ∀ k < n, (T^[k] x, 
 
 lemma mem_ball_dynEntourage :
     y ∈ (dynEntourage T U n).ball x ↔ ∀ k < n, T^[k] y ∈ U.ball (T^[k] x) := by
-  simp only [SetRel.mem_ball, mem_dynEntourage]
+  simp [SetRel.mem_ball, mem_dynEntourage]
 
 lemma dynEntourage_mem_uniformity [UniformSpace X] (h : UniformContinuous T)
     (U_uni : U ∈ 𝓤 X) (n : ℕ) :
@@ -82,7 +82,7 @@ lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
   have : (dynEntourage T U n).ball x
       = ⋂ k : Ico 0 n, T^[(k : ℕ)] ⁻¹' U.ball (T^[(k : ℕ)] x) := by
     ext y
-    simp only [mem_ball_dynEntourage, mem_iInter, Subtype.forall, mem_Ico, Nat.zero_le, true_and,
+    simp [mem_ball_dynEntourage, mem_iInter, Subtype.forall, mem_Ico, Nat.zero_le, true_and,
       mem_preimage]
   rw [this, Filter.iInter_mem, Subtype.forall]
   intro k _

@@ -199,7 +199,7 @@ theorem exists_ne_one_of_nontrivial (H : Subgroup G) [Nontrivial H] :
 @[to_additive]
 theorem nontrivial_iff_ne_bot (H : Subgroup G) : Nontrivial H ↔ H ≠ ⊥ := by
   rw [nontrivial_iff_exists_ne_one, ne_eq, eq_bot_iff_forall]
-  simp only [ne_eq, not_forall, exists_prop]
+  simp [ne_eq, not_forall, exists_prop]
 
 /-- A subgroup is either the trivial subgroup or nontrivial. -/
 @[to_additive /-- A subgroup is either the trivial subgroup or nontrivial. -/]
@@ -216,7 +216,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 @[to_additive]
 lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
   rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
-  simp only [ne_eq, Subtype.exists, mk_eq_one, exists_prop]
+  simp [ne_eq, Subtype.exists, mk_eq_one, exists_prop]
 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive /-- The inf of two `AddSubgroup`s is their intersection. -/]
@@ -250,11 +250,11 @@ theorem mem_sInf {S : Set (Subgroup G)} {x : G} : x ∈ sInf S ↔ ∀ p ∈ S, 
 
 @[to_additive (attr := simp)]
 theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_mem_range]
+  simp [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_iInf {ι : Sort*} {S : ι → Subgroup G} : (↑(⨅ i, S i) : Set G) = ⋂ i, S i := by
-  simp only [iInf, coe_sInf, Set.biInter_range]
+  simp [iInf, coe_sInf, Set.biInter_range]
 
 /-- Subgroups of a group form a complete lattice. -/
 @[to_additive /-- The `AddSubgroup`s of an `AddGroup` form a complete lattice. -/]
@@ -580,7 +580,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Di
 theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : DirectedOn (· ≤ ·) K)
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
   have : Nonempty K := Kne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
+  simp [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
 
 @[to_additive]
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
@@ -618,7 +618,7 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 
 @[to_additive]
 theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
-  mem_sup.trans <| by simp only [SetLike.exists, exists_prop]
+  mem_sup.trans <| by simp [SetLike.exists, exists_prop]
 
 variable {P : C → Prop}
 
@@ -666,7 +666,7 @@ theorem mem_closure_pair {x y z : C} :
 
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
-  disjoint_iff_inf_le.trans <| by simp only [IsConcreteLE.le_iff, mem_inf, mem_bot, and_imp]
+  disjoint_iff_inf_le.trans <| by simp [IsConcreteLE.le_iff, mem_inf, mem_bot, and_imp]
 
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :

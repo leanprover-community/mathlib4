@@ -47,7 +47,7 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
   | [], _ => zip_nil_right.symm
   | l₁, [] => by rw [zip_nil_right]; rfl
   | a :: l₁, b :: l₂ => by
-    simp only [zip_cons_cons, map_cons, zip_swap l₁ l₂, Prod.swap_prod_mk]
+    simp [zip_cons_cons, map_cons, zip_swap l₁ l₂, Prod.swap_prod_mk]
 
 theorem forall_zipWith {f : α → β → γ} {p : γ → Prop} :
     ∀ {l₁ : List α} {l₂ : List β}, length l₁ = length l₂ →
@@ -110,7 +110,7 @@ instance (f : α → α → β) [IsSymmOp f] : IsSymmOp (zipWith f) :=
 
 @[simp]
 theorem length_revzip (l : List α) : length (revzip l) = length l := by
-  simp only [revzip, length_zip, length_reverse, min_self]
+  simp [revzip, length_zip, length_reverse, min_self]
 
 @[simp]
 theorem unzip_revzip (l : List α) : (revzip l).unzip = (l, l.reverse) :=

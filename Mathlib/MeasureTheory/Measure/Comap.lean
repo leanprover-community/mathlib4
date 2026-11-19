@@ -190,7 +190,7 @@ variable {α β : Type*} {ma : MeasurableSpace α} {mb : MeasurableSpace β}
 lemma MeasurableEmbedding.comap_add {f : α → β} (hf : MeasurableEmbedding f) (μ ν : Measure β) :
     (μ + ν).comap f = μ.comap f + ν.comap f := by
   ext s hs
-  simp only [← comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
+  simp [← comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
     map_add, add_apply]
 
 namespace MeasurableEquiv

@@ -422,7 +422,7 @@ theorem rank_pos_iff_of_free [Module.Free R M] :
   refine ⟨fun h ↦ ?_, fun _ ↦ rank_pos_of_free⟩
   rw [← not_subsingleton_iff_nontrivial]
   intro h'
-  simp only [rank_subsingleton', lt_self_iff_false] at h
+  simp [rank_subsingleton', lt_self_iff_false] at h
 
 theorem rank_zero_iff_of_free [Module.Free R M] :
     Module.rank R M = 0 ↔ Subsingleton M := by

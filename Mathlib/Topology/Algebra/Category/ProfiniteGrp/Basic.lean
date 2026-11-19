@@ -149,7 +149,7 @@ lemma hom_comp {A B C : ProfiniteGrp.{u}} (f : A ⟶ B) (g : B ⟶ C) :
 @[to_additive]
 lemma comp_apply {A B C : ProfiniteGrp.{u}} (f : A ⟶ B) (g : B ⟶ C) (a : A) :
     (f ≫ g) a = g (f a) := by
-  simp only [hom_comp, ContinuousMonoidHom.comp_toFun]
+  simp [hom_comp, ContinuousMonoidHom.comp_toFun]
 
 @[to_additive (attr := ext)]
 lemma hom_ext {A B : ProfiniteGrp.{u}} {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g :=
@@ -310,9 +310,9 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ ProfiniteGrp.{max v u})
 profinite additive groups. -/]
 def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   carrier := {x | ∀ ⦃i j : J⦄ (π : i ⟶ j), F.map π (x i) = x j}
-  mul_mem' hx hy _ _ π := by simp only [Pi.mul_apply, map_mul, hx π, hy π]
-  one_mem' := by simp only [Set.mem_ofPred_eq, Pi.one_apply, map_one, implies_true]
-  inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
+  mul_mem' hx hy _ _ π := by simp [Pi.mul_apply, map_mul, hx π, hy π]
+  one_mem' := by simp [Set.mem_ofPred_eq, Pi.one_apply, map_one, implies_true]
+  inv_mem' h _ _ π := by simp [Pi.inv_apply, map_inv, h π]
 
 @[to_additive]
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=

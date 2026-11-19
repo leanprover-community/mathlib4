@@ -73,7 +73,7 @@ protected theorem norm_neg (x : L) : B.norm (-x) = B.norm x := by
 
 /-- For any `K`-basis of `L`, and any `x : L`, we have `0 ≤ B.norm x`. -/
 protected theorem norm_nonneg (x : L) : 0 ≤ B.norm x := by
-  simp only [norm, le_sup'_iff, mem_univ, norm_nonneg, and_self, exists_const]
+  simp [norm, le_sup'_iff, mem_univ, norm_nonneg, and_self, exists_const]
 
 variable {B}
 
@@ -215,7 +215,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
       (seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k))
   have hF'_1 : F' 1 = 1 := by
     have h1 : (1 : L) = (algebraMap K L) 1 := by rw [map_one]
-    simp only [h1, hF'_ext (1 : K), norm_one]
+    simp [h1, hF'_ext (1 : K), norm_one]
   have hF'_0 : F' ≠ 0 := DFunLike.ne_iff.mpr ⟨(1 : L), by rw [hF'_1]; exact one_ne_zero⟩
   set F : AlgebraNorm K L :=
     { RingSeminorm.toRingNorm F' hF'_0 with

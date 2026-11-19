@@ -238,7 +238,7 @@ theorem integral_condExp (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
   · suffices ∫ x in Set.univ, (μ[f | m]) x ∂μ = ∫ x in Set.univ, f x ∂μ by
       simp_rw [setIntegral_univ] at this; exact this
     exact setIntegral_condExp hm hf .univ
-  simp only [condExp_of_not_integrable hf, Pi.zero_apply, integral_zero, integral_undef hf]
+  simp [condExp_of_not_integrable hf, Pi.zero_apply, integral_zero, integral_undef hf]
 
 /-- **Law of total probability** using `condExp` as conditional probability. -/
 theorem integral_condExp_indicator [mβ : MeasurableSpace β] {Y : α → β} (hY : Measurable Y)
@@ -321,7 +321,7 @@ theorem condExp_smul [NormedSpace 𝕜 E] (c : 𝕜) (f : α → E) (m : Measura
   rw [condExpL1_smul c f]
   refine (condExp_ae_eq_condExpL1 hm f).mp ?_
   refine (coeFn_smul c (condExpL1 hm μ f)).mono fun x hx1 hx2 => ?_
-  simp only [hx1, hx2, Pi.smul_apply]
+  simp [hx1, hx2, Pi.smul_apply]
 
 theorem condExp_neg (f : α → E) (m : MeasurableSpace α) : μ[-f | m] =ᵐ[μ] -μ[f | m] := by
   calc

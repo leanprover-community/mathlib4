@@ -454,7 +454,7 @@ lemma mk_lt_mk_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X}
 lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
     (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) :
     Subobject.mk i₁ < Subobject.mk i₂ ↔ ¬ IsIso f :=
-  ⟨fun h hf ↦ by simp only [mk_eq_mk_of_comm i₁ i₂ (asIso f) fac, lt_self_iff_false] at h,
+  ⟨fun h hf ↦ by simp [mk_eq_mk_of_comm i₁ i₂ (asIso f) fac, lt_self_iff_false] at h,
     mk_lt_mk_of_comm f fac⟩
 
 end Subobject

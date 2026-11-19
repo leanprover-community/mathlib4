@@ -122,18 +122,18 @@ protected lemma ext (φ : a ⟶ b) [IsCartesian p f φ] {a' : 𝒳} (ψ ψ' : a'
 lemma map_self : IsCartesian.map p f φ φ = 𝟙 a := by
   subst_hom_lift p f φ; symm
   apply map_uniq
-  simp only [id_comp]
+  simp [id_comp]
 
 instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
     IsCartesian p f (φ ≫ φ'.hom) where
   universal_property := by
     intro c ψ hψ
     use IsCartesian.map p f φ (ψ ≫ φ'.inv)
-    refine ⟨⟨inferInstance, by simp only [fac_assoc, assoc, Iso.inv_hom_id, comp_id]⟩, ?_⟩
+    refine ⟨⟨inferInstance, by simp [fac_assoc, assoc, Iso.inv_hom_id, comp_id]⟩, ?_⟩
     rintro τ ⟨hτ₁, hτ₂⟩
     apply map_uniq
     rw [Iso.eq_comp_inv]
-    simp only [assoc, hτ₂]
+    simp [assoc, hτ₂]
 
 /-- The canonical isomorphism between the domains of two Cartesian arrows
 lying over the same object. -/
@@ -144,11 +144,11 @@ noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian 
   hom_inv_id := by
     subst_hom_lift p f φ'
     apply IsCartesian.ext p (p.map φ') φ'
-    simp only [assoc, fac, id_comp]
+    simp [assoc, fac, id_comp]
   inv_hom_id := by
     subst_hom_lift p f φ
     apply IsCartesian.ext p (p.map φ) φ
-    simp only [assoc, fac, id_comp]
+    simp [assoc, fac, id_comp]
 
 instance domainUniqueUpToIso_inv_isHomLift {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] :
     IsHomLift p (𝟙 R) (domainUniqueUpToIso p f φ φ').hom :=
@@ -168,7 +168,7 @@ instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom]
     rintro τ ⟨hτ₁, hτ₂⟩
     rw [Iso.eq_comp_inv]
     apply map_uniq
-    simp only [assoc, hτ₂]
+    simp [assoc, hτ₂]
 
 end IsCartesian
 
@@ -246,7 +246,7 @@ protected lemma ext (φ : a ⟶ b) [IsStronglyCartesian p f φ] {R' : 𝒮} {a' 
 lemma map_self : map p f φ (id_comp f).symm φ = 𝟙 a := by
   subst_hom_lift p f φ; symm
   apply map_uniq
-  simp only [id_comp]
+  simp [id_comp]
 
 /-- When its possible to compare the two, the composition of two `IsStronglyCartesian.map` will also
 be given by a `IsStronglyCartesian.map`. In other words, given diagrams
@@ -280,7 +280,7 @@ lemma map_comp_map {R' R'' : 𝒮} {a' a'' : 𝒳} {f' : R' ⟶ S} {f'' : R'' �
     map p f' φ' H' φ'' ≫ map p f φ H φ' =
       map p f φ (show f'' = (g' ≫ g) ≫ f by rwa [assoc, ← H]) φ'' := by
   apply map_uniq p f φ
-  simp only [assoc, fac]
+  simp [assoc, fac]
 
 end
 
@@ -306,7 +306,7 @@ instance comp [IsStronglyCartesian p f φ] [IsStronglyCartesian p g ψ] :
     · intro π' ⟨hπ'₁, hπ'₂⟩
       apply map_uniq
       apply map_uniq
-      simp only [assoc, hπ'₂]
+      simp [assoc, hπ'₂]
 
 /-- Given two commutative squares
 ```
@@ -363,7 +363,7 @@ lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCartesian p f φ] [IsIso f] 
     rw [← IsIso.hom_inv_id (p.map φ)]
     apply IsHomLift.comp
   apply IsStronglyCartesian.ext p (p.map φ) φ (𝟙 (p.obj a))
-  simp only [assoc, inv_hom, comp_id, id_comp]
+  simp [assoc, inv_hom, comp_id, id_comp]
 
 end
 

@@ -309,7 +309,7 @@ def Functor.preimageHomotopy
     (H : Homotopy ((F.mapHomologicalComplex c).map f₁) ((F.mapHomologicalComplex c).map f₂)) :
     Homotopy f₁ f₂ where
   hom i j := F.preimage (H.hom i j)
-  zero i j hij := F.map_injective (by simp only [map_preimage, Functor.map_zero, H.zero i j hij])
+  zero i j hij := F.map_injective (by simp [map_preimage, Functor.map_zero, H.zero i j hij])
   comm i := F.map_injective (by simp [dsimp% H.comm i, dNext, prevD])
 
 instance (F : V ⥤ W) [F.Full] [F.Faithful] [F.Additive] :

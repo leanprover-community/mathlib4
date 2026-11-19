@@ -299,8 +299,8 @@ lemma mfderivWithin_extend_symm_comp_mfderiv_extend
   rw [← mfderivWithin_id U']
   apply Filter.EventuallyEq.mfderivWithin_eq
   · filter_upwards [e.extend_source_mem_nhdsWithin (I := I) h'y] with z hz
-    simp only [Function.comp_def, PartialEquiv.left_inv (e.extend I) hz, id_eq]
-  · simp only [Function.comp_def, PartialEquiv.right_inv (e.extend I) hy, id_eq]
+    simp [Function.comp_def, PartialEquiv.left_inv (e.extend I) hz, id_eq]
+  · simp [Function.comp_def, PartialEquiv.right_inv (e.extend I) hy, id_eq]
 
 /-- The composition of the derivative of the inverse of an extended chart `e.extend I` with the
 derivative of `e.extend I` gives the identity.

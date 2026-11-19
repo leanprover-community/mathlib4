@@ -103,7 +103,7 @@ theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual 
   rfl
 
 @[to_dual]
-theorem symmDiff_comm : a ∆ b = b ∆ a := by simp only [symmDiff, sup_comm]
+theorem symmDiff_comm : a ∆ b = b ∆ a := by simp [symmDiff, sup_comm]
 
 @[to_dual]
 instance symmDiff_isCommutative : Std.Commutative (α := α) (· ∆ ·) :=
@@ -268,7 +268,7 @@ theorem inf_symmDiff_distrib_right : a ∆ b ⊓ c = (a ⊓ c) ∆ (b ⊓ c) := 
   simp_rw [inf_comm _ c, inf_symmDiff_distrib_left]
 
 theorem sdiff_symmDiff : c \ a ∆ b = c ⊓ a ⊓ b ⊔ c \ a ⊓ c \ b := by
-  simp only [(· ∆ ·), sdiff_sdiff_sup_sdiff']
+  simp [(· ∆ ·), sdiff_sdiff_sup_sdiff']
 
 theorem sdiff_symmDiff' : c \ a ∆ b = c ⊓ a ⊓ b ⊔ c \ (a ⊔ b) := by
   rw [sdiff_symmDiff, sdiff_sup]
@@ -505,9 +505,9 @@ protected theorem Codisjoint.bihimp_right (ha : Codisjoint a b) (hb : Codisjoint
 
 end CogeneralizedBooleanAlgebra
 
-theorem symmDiff_eq : a ∆ b = a ⊓ bᶜ ⊔ b ⊓ aᶜ := by simp only [(· ∆ ·), sdiff_eq]
+theorem symmDiff_eq : a ∆ b = a ⊓ bᶜ ⊔ b ⊓ aᶜ := by simp [(· ∆ ·), sdiff_eq]
 
-theorem bihimp_eq : a ⇔ b = (a ⊔ bᶜ) ⊓ (b ⊔ aᶜ) := by simp only [(· ⇔ ·), himp_eq]
+theorem bihimp_eq : a ⇔ b = (a ⊔ bᶜ) ⊓ (b ⊔ aᶜ) := by simp [(· ⇔ ·), himp_eq]
 
 theorem symmDiff_eq' : a ∆ b = (a ⊔ b) ⊓ (aᶜ ⊔ bᶜ) := by
   rw [symmDiff_eq_sup_sdiff_inf, sdiff_eq, compl_inf]

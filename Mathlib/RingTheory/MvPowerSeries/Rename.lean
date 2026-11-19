@@ -182,7 +182,7 @@ theorem rename_coe (p : MvPolynomial σ R) : rename f (p : MvPowerSeries σ R) =
   induction p using MvPolynomial.induction_on with
   | C a => simp
   | add P Q hP hQ => simp [hP, hQ]
-  | mul_X P n hP => simp only [MvPolynomial.coe_mul, MvPolynomial.coe_X, map_mul, hP, rename_X,
+  | mul_X P n hP => simp [MvPolynomial.coe_mul, MvPolynomial.coe_X, map_mul, hP, rename_X,
     MvPolynomial.rename_X]
 
 variable (R) in

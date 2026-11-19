@@ -65,7 +65,7 @@ lemma toIsOrderedRing : IsOrderedRing R where
 @[simp]
 protected theorem mul_pos [NoZeroDivisors R] {a b : R} :
     0 < a * b ↔ 0 < a ∧ 0 < b := by
-  simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
+  simp [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 
 lemma pow_pos [IsReduced R] {a : R} (ha : 0 < a) (n : ℕ) : 0 < a ^ n :=
   pos_iff_ne_zero.2 <| pow_ne_zero _ ha.ne'

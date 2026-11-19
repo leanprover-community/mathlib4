@@ -799,7 +799,7 @@ def monoidHomOfForallMemZpowers : G →* G' where
     simp only [← zpow_add, zpow_eq_zpow_iff_modEq]
     apply Int.ModEq.of_dvd (Int.natCast_dvd_natCast.mpr hg')
     rw [← zpow_eq_zpow_iff_modEq, zpow_add]
-    simp only [fun x ↦ Classical.choose_spec <| mem_zpowers_iff.mp <| hg x]
+    simp [fun x ↦ Classical.choose_spec <| mem_zpowers_iff.mp <| hg x]
 
 @[to_additive (attr := simp)]
 lemma monoidHomOfForallMemZpowers_apply_gen :

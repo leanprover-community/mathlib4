@@ -82,17 +82,17 @@ def refl (f : X ⟶ Y) : Homotopy f f where
   h_zero_comp_δ_zero n := by
     have := Y.δ_comp_σ_self (n := n) (i := 0)
     dsimp at this
-    simp only [SimplicialObject.σ_naturality, Category.assoc, this, Category.comp_id]
+    simp [SimplicialObject.σ_naturality, Category.assoc, this, Category.comp_id]
   h_last_comp_δ_last n := by
     have := Y.δ_comp_σ_succ (i := Fin.last n)
     dsimp at this
-    simp only [SimplicialObject.σ_naturality, Category.assoc, this, Category.comp_id]
+    simp [SimplicialObject.σ_naturality, Category.assoc, this, Category.comp_id]
   h_succ_comp_δ_castSucc_of_lt i j hij := by simp [Y.δ_comp_σ_of_le hij]
   h_succ_comp_δ_castSucc_succ j := by
     have h₁ := Y.δ_comp_σ_self (i := j.succ)
     have h₂ := Y.δ_comp_σ_succ (i := j.castSucc)
     dsimp at h₁ h₂
-    simp only [SimplicialObject.σ_naturality, Category.assoc, h₁, Category.comp_id, h₂]
+    simp [SimplicialObject.σ_naturality, Category.assoc, h₁, Category.comp_id, h₂]
   h_castSucc_comp_δ_succ_of_lt i j hji := by simp [Y.δ_comp_σ_of_gt hji]
   h_comp_σ_castSucc_of_le i j hij := by simp [Y.σ_comp_σ hij]
   h_comp_σ_succ_of_lt i j hji := by simp [Y.σ_comp_σ hji]

@@ -58,11 +58,11 @@ def character (g : G) :=
 
 omit [FiniteDimensional k V] in
 theorem char_mul_comm (g : G) (h : G) :
-    ρ.character (h * g) = ρ.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
+    ρ.character (h * g) = ρ.character (g * h) := by simp [trace_mul_comm, character, map_mul]
 
 @[simp]
 theorem char_one (ρ : Representation k G V) : ρ.character 1 = Module.finrank k V := by
-  simp only [character, map_one, trace_one]
+  simp [character, map_one, trace_one]
 
 /-- The character is multiplicative under the tensor product. -/
 @[simp]
@@ -169,11 +169,11 @@ def character (V : FDRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
 
 theorem char_mul_comm (V : FDRep k G) (g : G) (h : G) :
-    V.character (h * g) = V.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
+    V.character (h * g) = V.character (g * h) := by simp [trace_mul_comm, character, map_mul]
 
 @[simp]
 theorem char_one (V : FDRep k G) : V.character 1 = Module.finrank k V := by
-  simp only [character, map_one, trace_one]
+  simp [character, map_one, trace_one]
 
 /-- The character is multiplicative under the tensor product. -/
 @[simp]

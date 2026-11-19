@@ -64,7 +64,7 @@ theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha :
   rw [mul_zero] at this
   have h1 : EqOn (fun t : ℝ => (↑(a * t) : ℂ) ^ (s - 1) • f (a * t))
       ((a : ℂ) ^ (s - 1) • fun t : ℝ => (t : ℂ) ^ (s - 1) • f (a * t)) (Ioi 0) := fun t ht ↦ by
-    simp only [ofReal_mul, ofReal_mul_cpow ha.le, mul_smul, Pi.smul_apply]
+    simp [ofReal_mul, ofReal_mul_cpow ha.le, mul_smul, Pi.smul_apply]
   have h2 : (a : ℂ) ^ (s - 1) ≠ 0 := by
     rw [Ne, cpow_eq_zero_iff, not_and_or, ofReal_eq_zero]
     exact Or.inl ha.ne'
@@ -107,7 +107,7 @@ general rings assuming *a priori* that the Mellin transform is defined, see
 theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*}
     [NormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     mellin (fun t => c • f t) s = c • mellin f s := by
-  simp only [mellin, smul_comm, integral_smul]
+  simp [mellin, smul_comm, integral_smul]
 
 theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]

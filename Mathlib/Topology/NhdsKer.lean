@@ -54,24 +54,24 @@ lemma IsOpen.nhdsKer_subset (ht : IsOpen t) : nhdsKer s ⊆ t ↔ s ⊆ t :=
 
 @[simp]
 theorem nhdsKer_iUnion (s : ι → Set X) : nhdsKer (⋃ i, s i) = ⋃ i, nhdsKer (s i) := by
-  simp only [nhdsKer, nhdsSet_iUnion, ker_iSup]
+  simp [nhdsKer, nhdsSet_iUnion, ker_iSup]
 
 theorem nhdsKer_biUnion {ι : Type*} (s : Set ι) (t : ι → Set X) :
     nhdsKer (⋃ i ∈ s, t i) = ⋃ i ∈ s, nhdsKer (t i) := by
-  simp only [nhdsKer_iUnion]
+  simp [nhdsKer_iUnion]
 
 @[simp]
 theorem nhdsKer_union (s t : Set X) : nhdsKer (s ∪ t) = nhdsKer s ∪ nhdsKer t := by
-  simp only [nhdsKer, nhdsSet_union, ker_sup]
+  simp [nhdsKer, nhdsSet_union, ker_sup]
 
 @[simp]
 theorem nhdsKer_sUnion (S : Set (Set X)) : nhdsKer (⋃₀ S) = ⋃ s ∈ S, nhdsKer s := by
-  simp only [sUnion_eq_biUnion, nhdsKer_iUnion]
+  simp [sUnion_eq_biUnion, nhdsKer_iUnion]
 
 theorem mem_nhdsKer_iff_specializes : x ∈ nhdsKer s ↔ ∃ y ∈ s, x ⤳ y := calc
   x ∈ nhdsKer s ↔ x ∈ nhdsKer (⋃ y ∈ s, {y}) := by simp
   _ ↔ ∃ y ∈ s, x ⤳ y := by
-    simp only [nhdsKer_iUnion, mem_nhdsKer_singleton, mem_iUnion₂, exists_prop]
+    simp [nhdsKer_iUnion, mem_nhdsKer_singleton, mem_iUnion₂, exists_prop]
 
 @[gcongr, mono] lemma nhdsKer_mono : Monotone (nhdsKer : Set X → Set X) :=
   fun _s _t h ↦ ker_mono <| nhdsSet_mono h
@@ -82,7 +82,7 @@ see `nhdsKer_subset_nhdsKer_iff_nhdsSet`.
 @[gcongr] lemma nhdsKer_subset_nhdsKer (h : s ⊆ t) : nhdsKer s ⊆ nhdsKer t := nhdsKer_mono h
 
 @[simp] lemma nhdsKer_subset_nhdsKer_iff_nhdsSet : nhdsKer s ⊆ nhdsKer t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
-  simp +contextual only [subset_nhdsKer_iff, (hasBasis_nhdsSet _).ge_iff,
+  simp +contextual [subset_nhdsKer_iff, (hasBasis_nhdsSet _).ge_iff,
     and_imp, IsOpen.mem_nhdsSet, IsOpen.nhdsKer_subset]
 
 theorem nhdsKer_eq_nhdsKer_iff_nhdsSet : nhdsKer s = nhdsKer t ↔ 𝓝ˢ s = 𝓝ˢ t := by
@@ -112,7 +112,7 @@ theorem nhdsKer_sInter_subset {s : Set (Set X)} : nhdsKer (⋂₀ s) ⊆ ⋂ x �
   exact fun U ⟨hUo, hsU⟩ ↦ hUo.mem_nhdsSet.2 <| hUo.nhdsKer_subset.2 hsU
 
 @[simp] lemma nhdsKer_nhdsKer (s : Set X) : nhdsKer (nhdsKer s) = nhdsKer s := by
-  simp only [nhdsKer_eq_nhdsKer_iff_nhdsSet, nhdsSet_nhdsKer]
+  simp [nhdsKer_eq_nhdsKer_iff_nhdsSet, nhdsSet_nhdsKer]
 
 lemma nhdsKer_pair {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x : X) (y : Y) : nhdsKer {(x, y)} = nhdsKer {x} ×ˢ nhdsKer {y} := by

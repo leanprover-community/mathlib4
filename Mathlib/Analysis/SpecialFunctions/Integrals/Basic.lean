@@ -204,7 +204,7 @@ theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
   exact this
 
 theorem integral_one : (∫ _ in a..b, (1 : ℝ)) = b - a := by
-  simp only [mul_one, smul_eq_mul, integral_const]
+  simp [mul_one, smul_eq_mul, integral_const]
 
 theorem integral_const_on_unit_interval : ∫ _ in a..a + 1, b = b := by simp
 
@@ -224,13 +224,13 @@ theorem integral_inv_of_neg (ha : a < 0) (hb : b < 0) : ∫ x in a..b, x⁻¹ = 
   integral_inv <| notMem_uIcc_of_gt ha hb
 
 theorem integral_one_div (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x : ℝ in a..b, 1 / x = log (b / a) := by
-  simp only [one_div, integral_inv h]
+  simp [one_div, integral_inv h]
 
 theorem integral_one_div_of_pos (ha : 0 < a) (hb : 0 < b) :
-    ∫ x : ℝ in a..b, 1 / x = log (b / a) := by simp only [one_div, integral_inv_of_pos ha hb]
+    ∫ x : ℝ in a..b, 1 / x = log (b / a) := by simp [one_div, integral_inv_of_pos ha hb]
 
 theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
-    ∫ x : ℝ in a..b, 1 / x = log (b / a) := by simp only [one_div, integral_inv_of_neg ha hb]
+    ∫ x : ℝ in a..b, 1 / x = log (b / a) := by simp [one_div, integral_inv_of_neg ha hb]
 
 @[simp]
 theorem integral_exp : ∫ x in a..b, exp x = exp b - exp a := by
@@ -323,7 +323,7 @@ theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
 theorem integral_cos : ∫ x in a..b, cos x = sin b - sin a := by
   rw [integral_deriv_eq_sub']
   · simp
-  · simp only [differentiableAt_sin, implies_true]
+  · simp [differentiableAt_sin, implies_true]
   · exact continuousOn_cos
 
 theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
@@ -353,7 +353,7 @@ theorem integral_one_div_one_add_sq :
 
 @[simp]
 theorem integral_inv_one_add_sq : (∫ x : ℝ in a..b, (↑1 + x ^ 2)⁻¹) = arctan b - arctan a := by
-  simp only [← one_div, integral_one_div_one_add_sq]
+  simp [← one_div, integral_one_div_one_add_sq]
 
 @[simp]
 theorem integral_inv_sq_add_sq {c : ℝ} (hc : c ≠ 0) :
@@ -476,7 +476,7 @@ theorem integral_sin_pow_aux :
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
   · calc
       (∫ x in a..b, sin x ^ (n + 2)) = ∫ x in a..b, sin x ^ (n + 1) * sin x := by
-        simp only [_root_.pow_succ]
+        simp [_root_.pow_succ]
       _ = C + (↑n + 1) * ∫ x in a..b, cos x ^ 2 * sin x ^ n := by simp [H, h, sq]; ring
       _ = C + (↑n + 1) * ∫ x in a..b, sin x ^ n - sin x ^ (n + 2) := by
         simp [cos_sq', sub_mul, ← pow_add, add_comm]
@@ -549,7 +549,7 @@ theorem integral_cos_pow_aux :
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
   · calc
       (∫ x in a..b, cos x ^ (n + 2)) = ∫ x in a..b, cos x ^ (n + 1) * cos x := by
-        simp only [_root_.pow_succ]
+        simp [_root_.pow_succ]
       _ = C + (n + 1) * ∫ x in a..b, sin x ^ 2 * cos x ^ n := by simp [C, H, h, sq, -neg_add_rev]
       _ = C + (n + 1) * ∫ x in a..b, cos x ^ n - cos x ^ (n + 2) := by
         simp [sin_sq, sub_mul, ← pow_add, add_comm]

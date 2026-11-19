@@ -175,7 +175,7 @@ homomorphism. -/
 def comp (f : B →⋆ₙₐ[R] C) (g : A →⋆ₙₐ[R] B) : A →⋆ₙₐ[R] C :=
   { f.toNonUnitalAlgHom.comp g.toNonUnitalAlgHom with
     map_star' := by
-      simp only [map_star, NonUnitalAlgHom.toFun_eq_coe, NonUnitalAlgHom.coe_comp,
+      simp [map_star, NonUnitalAlgHom.toFun_eq_coe, NonUnitalAlgHom.coe_comp,
         coe_toNonUnitalAlgHom, Function.comp_apply, forall_const] }
 
 @[simp]
@@ -415,7 +415,7 @@ instance : Inhabited (A →⋆ₐ[R] A) :=
 def comp (f : B →⋆ₐ[R] C) (g : A →⋆ₐ[R] B) : A →⋆ₐ[R] C :=
   { f.toAlgHom.comp g.toAlgHom with
     map_star' := by
-      simp only [map_star, AlgHom.toFun_eq_coe, AlgHom.coe_comp, coe_toAlgHom,
+      simp [map_star, AlgHom.toFun_eq_coe, AlgHom.coe_comp, coe_toAlgHom,
         Function.comp_apply, forall_const] }
 
 @[simp]
@@ -654,7 +654,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
-  { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+  { commutes := fun f r => by simp [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. -/

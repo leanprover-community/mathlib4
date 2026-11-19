@@ -416,7 +416,7 @@ def mkNatTrans : F ⟶ G where
     cases f
     all_goals
       dsimp
-      simp only [Functor.map_id, Category.id_comp, Category.comp_id, Functor.map_comp, h₁, h₂, h₃,
+      simp [Functor.map_id, Category.id_comp, Category.comp_id, Functor.map_comp, h₁, h₂, h₃,
         reassoc_of% h₁, reassoc_of% h₂, Category.assoc]
 
 set_option backward.privateInPublic true in
@@ -466,8 +466,8 @@ applying the functor at each map. -/
 def compRightIso {D : Type u₂} [Category.{v₂} D] {A B : C}
     (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B) (F : C ⥤ D) :
     (reflexivePair f g s sl sr) ⋙ F ≅ reflexivePair (F.map f) (F.map g) (F.map s)
-      (by simp only [← Functor.map_comp, sl, Functor.map_id])
-      (by simp only [← Functor.map_comp, sr, Functor.map_id]) :=
+      (by simp [← Functor.map_comp, sl, Functor.map_id])
+      (by simp [← Functor.map_comp, sr, Functor.map_id]) :=
   mkNatIso (Iso.refl _) (Iso.refl _)
 
 lemma whiskerRightMkNatTrans {F G : WalkingReflexivePair ⥤ C}
@@ -478,9 +478,9 @@ lemma whiskerRightMkNatTrans {F G : WalkingReflexivePair ⥤ C}
     {D : Type u₂} [Category.{v₂} D] (H : C ⥤ D) :
     Functor.whiskerRight (mkNatTrans e₀ e₁ : F ⟶ G) H =
       mkNatTrans (H.map e₀) (H.map e₁)
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₃]) := by
+          (by simp [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
+          (by simp [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
+          (by simp [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₃]) := by
   ext x; cases x <;> simp
 
 end
@@ -611,7 +611,7 @@ lemma ι_reflexiveCoequalizerIsoCoequalizer_hom :
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by
   rw [reflexiveCoequalizerIsoCoequalizer]
-  simp only [colimit.comp_coconePointUniqueUpToIso_inv,
+  simp [colimit.comp_coconePointUniqueUpToIso_inv,
     Cofork.ofπ_ι_app, ReflexiveCofork.π, colimit.cocone_ι]
 
 end

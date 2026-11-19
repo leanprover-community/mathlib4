@@ -285,7 +285,7 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
   | succ m =>
     have g_toEuler_mth_eq : g.toEuler.s.get? (m + 1) =
         some ⟨a * g.dens m / g.dens (m + 2), 1 - a * g.dens m / g.dens (m + 2)⟩ := by
-      simp only [toEuler_s_succ, g_mth_eq, Option.map_some]
+      simp [toEuler_s_succ, g_mth_eq, Option.map_some]
     grind [nums_recurrence g_mth_eq rfl rfl, dens_recurrence g_mth_eq rfl rfl,
       nums_recurrence g_toEuler_mth_eq rfl rfl, convs, hB m, hB (m + 1), hB (m + 2)]
 

@@ -49,7 +49,7 @@ theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSp
     rw [lipschitzOnWith_univ]
     convert hu
     ext x
-    simp only [g, add_sub_cancel_left, ContinuousLinearEquiv.coe_coe, Pi.sub_apply]
+    simp [g, add_sub_cancel_left, ContinuousLinearEquiv.coe_coe, Pi.sub_apply]
   have : FiniteDimensional ℝ E := f'.symm.finiteDimensional
   exact ⟨hg.toHomeomorph g hc, fg⟩
 

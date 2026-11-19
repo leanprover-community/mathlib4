@@ -293,7 +293,7 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
   map_smul' m x :=
     calc
       g (m • x) = g (m • f (g x)) := by rw [h₂]
-      _ = g (f (m • g x)) := by simp only [map_smul]
+      _ = g (f (m • g x)) := by simp [map_smul]
       _ = m • g x := by rw [h₁]
 
 

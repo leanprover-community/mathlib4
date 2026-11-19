@@ -355,7 +355,7 @@ lemma isIso_of_mono_of_eq_card_fiber {X Y : C} (f : X ⟶ Y) [Mono f]
     apply (ConcreteCategory.isIso_iff_bijective (F.map f)).mpr
     apply (Fintype.bijective_iff_injective_and_card (F.map f)).mpr
     refine ⟨injective_of_mono_of_preservesPullback (F.map f), ?_⟩
-    simp only [← Nat.card_eq_fintype_card, h]
+    simp [← Nat.card_eq_fintype_card, h]
   exact isIso_of_reflects_iso f F
 
 /-- Along a mono that is not an iso, the cardinality of the fiber strictly increases. -/

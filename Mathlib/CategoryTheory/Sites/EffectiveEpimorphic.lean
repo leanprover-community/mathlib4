@@ -96,7 +96,7 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
       let g₁' : Z' ⟶ Y' := ObjectProperty.homMk (Over.homMk g₁)
       let g₂' : Z' ⟶ Y' := ObjectProperty.homMk (Over.homMk g₂ (by simp [Y', Z', h]))
       change F.map g₁' ≫ _ = F.map g₂' ≫ _
-      simp only [Y', F, S.w]
+      simp [Y', F, S.w]
     fac := by
       rintro S ⟨T, g, hT⟩
       dsimp
@@ -213,7 +213,7 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
       let i₁ : Z' ⟶ A₁ := ObjectProperty.homMk (Over.homMk g₁)
       let i₂ : Z' ⟶ A₂ := ObjectProperty.homMk (Over.homMk g₂)
       change F.map i₁ ≫ _ = F.map i₂ ≫ _
-      simp only [F, A₁, A₂, S.w]
+      simp [F, A₁, A₂, S.w]
     fac := by
       intro S ⟨T, a, (g : T.left ⟶ X a), hT⟩
       dsimp

@@ -212,13 +212,13 @@ noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g
       rw [← TensorProduct.tmul_add, ← TensorProduct.tmul_sub]
       apply le_comap_range_lTensor f
       rw [exact_iff] at hfg
-      simp only [← hfg, mem_ker, map_sub, map_add, hgh _, sub_self]
+      simp [← hfg, mem_ker, map_sub, map_add, hgh _, sub_self]
     map_smul' := fun r p => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change q ⊗ₜ[R] (h (r • p)) - r • q ⊗ₜ[R] (h p) ∈ range (lTensor Q f)
       rw [← TensorProduct.tmul_smul, ← TensorProduct.tmul_sub]
       apply le_comap_range_lTensor f
       rw [exact_iff] at hfg
-      simp only [← hfg, mem_ker, map_sub, map_smul, hgh _, sub_self] }
+      simp [← hfg, mem_ker, map_sub, map_smul, hgh _, sub_self] }
 
 lemma lTensor.inverse_of_rightInverse_apply
     {h : P → N} (hgh : Function.RightInverse h g) (y : Q ⊗[R] N) :
@@ -241,7 +241,7 @@ lemma lTensor.inverse_of_rightInverse_comp_lTensor
       Submodule.mkQ (p := LinearMap.range (lTensor Q f)) := by
   rw [LinearMap.ext_iff]
   intro y
-  simp only [coe_comp, Function.comp_apply, Submodule.mkQ_apply,
+  simp [coe_comp, Function.comp_apply, Submodule.mkQ_apply,
     lTensor.inverse_of_rightInverse_apply]
 
 /-- The inverse map in `lTensor.equiv` -/
@@ -271,12 +271,12 @@ def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
   left_inv := fun y ↦ by
     simp only [lTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
-    simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_of_rightInverse_apply]
+    simp [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_of_rightInverse_apply]
   right_inv := fun z ↦ by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := lTensor_surjective Q (hgh.surjective) z
     rw [lTensor.inverse_of_rightInverse_apply]
-    simp only [lTensor.toFun, Submodule.liftQ_apply] }
+    simp [lTensor.toFun, Submodule.liftQ_apply] }
 
 /-- For a surjective `g : N → P`,
   the natural equivalence between `Q ⊗ N ⧸ (image of (id Q) ⊗ f)` to `Q ⊗ P`. -/
@@ -318,13 +318,13 @@ noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g
       rw [← TensorProduct.add_tmul, ← TensorProduct.sub_tmul]
       apply le_comap_range_rTensor f
       rw [exact_iff] at hfg
-      simp only [← hfg, mem_ker, map_sub, map_add, hgh _, sub_self]
+      simp [← hfg, mem_ker, map_sub, map_add, hgh _, sub_self]
     map_smul' := fun r p => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change h (r • p) ⊗ₜ[R] q - r • h p ⊗ₜ[R] q ∈ range (rTensor Q f)
       rw [TensorProduct.smul_tmul', ← TensorProduct.sub_tmul]
       apply le_comap_range_rTensor f
       rw [exact_iff] at hfg
-      simp only [← hfg, mem_ker, map_sub, map_smul, hgh _, sub_self] }
+      simp [← hfg, mem_ker, map_sub, map_smul, hgh _, sub_self] }
 
 lemma rTensor.inverse_of_rightInverse_apply
     {h : P → N} (hgh : Function.RightInverse h g) (y : N ⊗[R] Q) :
@@ -346,7 +346,7 @@ lemma rTensor.inverse_of_rightInverse_comp_rTensor
       Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
   rw [LinearMap.ext_iff]
   intro y
-  simp only [coe_comp, Function.comp_apply, Submodule.mkQ_apply,
+  simp [coe_comp, Function.comp_apply, Submodule.mkQ_apply,
     rTensor.inverse_of_rightInverse_apply]
 
 /-- The inverse map in `rTensor.equiv` -/
@@ -376,12 +376,12 @@ def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
   left_inv    := fun y ↦ by
     simp only [rTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
-    simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, rTensor.inverse_of_rightInverse_apply]
+    simp [Submodule.mkQ_apply, Submodule.liftQ_apply, rTensor.inverse_of_rightInverse_apply]
   right_inv   := fun z ↦ by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := rTensor_surjective Q hgh.surjective z
     rw [rTensor.inverse_of_rightInverse_apply]
-    simp only [rTensor.toFun, Submodule.liftQ_apply] }
+    simp [rTensor.toFun, Submodule.liftQ_apply] }
 
 /-- For a surjective `g : N → P`,
   the natural equivalence between `N ⊗ Q ⧸ (image of f ⊗ (id Q))` and `P ⊗ Q`. -/
@@ -460,10 +460,10 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       use ⟨y, hy⟩ ⊗ₜ[R] 1
       rfl
     · use 0
-      simp only [map_zero]
+      simp [map_zero]
     · rintro x y - - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
       use x + y
-      simp only [map_add]
+      simp [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
       induction a with
       | tmul a b =>
@@ -476,12 +476,12 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           obtain ⟨x', hx'⟩ := hx
           obtain ⟨y', hy'⟩ := hy
           use x' + y'
-          simp only [map_add, hx', smul_add, hy']
+          simp [map_add, hx', smul_add, hy']
       | add a b ha hb =>
         obtain ⟨x', ha'⟩ := ha
         obtain ⟨y', hb'⟩ := hb
         use x' + y'
-        simp only [map_add, ha', add_smul, hb']
+        simp [map_add, ha', add_smul, hb']
   · rintro x ⟨y, rfl⟩
     induction y with
     | tmul a b =>
@@ -493,7 +493,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           -- Note: adding `includeLeft` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeLeft
           exact Submodule.coe_mem a
-        simp only [Algebra.TensorProduct.tmul_mul_tmul,
+        simp [Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]
@@ -515,10 +515,10 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       use 1 ⊗ₜ[R] ⟨y, hy⟩
       rfl
     · use 0
-      simp only [map_zero]
+      simp [map_zero]
     · rintro x y - - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
       use x + y
-      simp only [map_add]
+      simp [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
       induction a with
       | tmul a b =>
@@ -531,12 +531,12 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           obtain ⟨x', hx'⟩ := hx
           obtain ⟨y', hy'⟩ := hy
           use x' + y'
-          simp only [map_add, hx', smul_add, hy']
+          simp [map_add, hx', smul_add, hy']
       | add a b ha hb =>
         obtain ⟨x', ha'⟩ := ha
         obtain ⟨y', hb'⟩ := hb
         use x' + y'
-        simp only [map_add, ha', add_smul, hb']
+        simp [map_add, ha', add_smul, hb']
   · rintro x ⟨y, rfl⟩
     induction y with
     | tmul a b =>
@@ -548,7 +548,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           -- Note: adding `includeRight` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeRight
           exact Submodule.coe_mem b
-        simp only [Algebra.TensorProduct.tmul_mul_tmul,
+        simp [Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]

@@ -124,7 +124,7 @@ theorem integralSum_sub_partitions (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L
           vol J (f <| (π₂.infPrepartition π₁.toPrepartition).tag J)) := by
   rw [← integralSum_inf_partition f vol π₁ h₂, ← integralSum_inf_partition f vol π₂ h₁,
     integralSum, integralSum, Finset.sum_sub_distrib]
-  simp only [infPrepartition_toPrepartition, inf_comm]
+  simp [infPrepartition_toPrepartition, inf_comm]
 
 @[simp]
 theorem integralSum_disjUnion (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) {π₁ π₂ : TaggedPrepartition I}
@@ -138,17 +138,17 @@ theorem integralSum_disjUnion (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ]
 @[simp]
 theorem integralSum_add (f g : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : TaggedPrepartition I) :
     integralSum (f + g) vol π = integralSum f vol π + integralSum g vol π := by
-  simp only [integralSum, Pi.add_apply, (vol _).map_add, Finset.sum_add_distrib]
+  simp [integralSum, Pi.add_apply, (vol _).map_add, Finset.sum_add_distrib]
 
 @[simp]
 theorem integralSum_neg (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : TaggedPrepartition I) :
     integralSum (-f) vol π = -integralSum f vol π := by
-  simp only [integralSum, Pi.neg_apply, (vol _).map_neg, Finset.sum_neg_distrib]
+  simp [integralSum, Pi.neg_apply, (vol _).map_neg, Finset.sum_neg_distrib]
 
 @[simp]
 theorem integralSum_smul (c : ℝ) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : TaggedPrepartition I) :
     integralSum (c • f) vol π = c • integralSum f vol π := by
-  simp only [integralSum, Finset.smul_sum, Pi.smul_apply, map_smul]
+  simp [integralSum, Finset.smul_sum, Pi.smul_apply, map_smul]
 
 variable [Fintype ι]
 
@@ -335,7 +335,7 @@ theorem Integrable.of_smul {c : ℝ} (hf : Integrable I l (c • f) vol) (hc : c
 
 @[simp]
 theorem integral_smul (c : ℝ) : integral I l (fun x => c • f x) vol = c • integral I l f vol := by
-  rcases eq_or_ne c 0 with (rfl | hc); · simp only [zero_smul, integral_zero]
+  rcases eq_or_ne c 0 with (rfl | hc); · simp [zero_smul, integral_zero]
   by_cases hf : Integrable I l f vol
   · exact (hf.hasIntegral.smul c).integral_eq
   · have : ¬Integrable I l (fun x => c • f x) vol := mt (fun h => h.of_smul hc) hf

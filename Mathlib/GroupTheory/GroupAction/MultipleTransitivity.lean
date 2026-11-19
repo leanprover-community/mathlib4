@@ -92,7 +92,7 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
   intro _ _ hxy
   ext
   apply hf
-  simp only [← hf.mulActionHom_embedding_apply, hxy]
+  simp [← hf.mulActionHom_embedding_apply, hxy]
 
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :
@@ -467,7 +467,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     rw [← hat'] at hfs
     rw [hfs, Subgroup.index_map,
       MonoidHom.ker_eq_bot (stabilizer G a).subtype
-        (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
+        (by simp [Subgroup.coe_subtype, Subtype.coe_injective])]
     simp only [sup_bot_eq, Subgroup.range_subtype]
     have htcard : t.ncard = k := by
       rw [← Nat.succ_inj, Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hat', eq_comm]
@@ -478,7 +478,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
       intro h
       obtain ⟨⟨b, hb⟩, _, hb'⟩ := h
       apply hb
-      simp only [← hb', Set.mem_singleton_iff]
+      simp [← hb', Set.mem_singleton_iff]
     suffices (fixingSubgroup (stabilizer G a) t).index *
       (Nat.card α - 1 - k).factorial =
         (Nat.card α - 1).factorial by

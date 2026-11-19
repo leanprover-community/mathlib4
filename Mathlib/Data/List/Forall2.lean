@@ -63,7 +63,7 @@ theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = Eq := 
   · intro h
     induction h
     · rfl
-    simp only [*]
+    simp [*]
   · rintro rfl
     exact forall₂_refl _
 
@@ -98,23 +98,23 @@ theorem forall₂_cons_right_iff {b l u} :
 theorem forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
-    simp only [forall₂_nil_left_iff, forall_prop_of_false not_mem_nil, imp_true_iff, true_and]
+    simp [forall₂_nil_left_iff, forall_prop_of_false not_mem_nil, imp_true_iff, true_and]
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       exists_and_left]
-    simp only [and_comm, and_assoc, ← exists_and_right]
+    simp [and_comm, and_assoc, ← exists_and_right]
 
 @[simp]
 theorem forall₂_map_left_iff {f : γ → α} :
     ∀ {l u}, Forall₂ R (map f l) u ↔ Forall₂ (fun c b => R (f c) b) l u
-  | [], _ => by simp only [map, forall₂_nil_left_iff]
-  | a :: l, _ => by simp only [map, forall₂_cons_left_iff, forall₂_map_left_iff]
+  | [], _ => by simp [map, forall₂_nil_left_iff]
+  | a :: l, _ => by simp [map, forall₂_cons_left_iff, forall₂_map_left_iff]
 
 @[simp]
 theorem forall₂_map_right_iff {f : γ → β} :
     ∀ {l u}, Forall₂ R l (map f u) ↔ Forall₂ (fun a c => R a (f c)) l u
-  | _, [] => by simp only [map, forall₂_nil_right_iff]
-  | _, b :: u => by simp only [map, forall₂_cons_right_iff, forall₂_map_right_iff]
+  | _, [] => by simp [map, forall₂_nil_right_iff]
+  | _, b :: u => by simp [map, forall₂_cons_right_iff, forall₂_map_right_iff]
 
 theorem left_unique_forall₂' (hr : LeftUnique R) : ∀ {a b c}, Forall₂ R a c → Forall₂ R b c → a = b
   | _, _, _, Forall₂.nil, Forall₂.nil => rfl
@@ -184,13 +184,13 @@ theorem forall₂_iff_zip {l₁ l₂} :
             simpa [zip] using h)⟩
 
 theorem forall₂_take : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (take n l₁) (take n l₂)
-  | 0, _, _, _ => by simp only [Forall₂.nil, take]
-  | _ + 1, _, _, Forall₂.nil => by simp only [Forall₂.nil, take]
+  | 0, _, _, _ => by simp [Forall₂.nil, take]
+  | _ + 1, _, _, Forall₂.nil => by simp [Forall₂.nil, take]
   | n + 1, _, _, Forall₂.cons h₁ h₂ => by simp [And.intro h₁ h₂, forall₂_take n]
 
 theorem forall₂_drop : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (drop n l₁) (drop n l₂)
-  | 0, _, _, h => by simp only [drop, h]
-  | _ + 1, _, _, Forall₂.nil => by simp only [Forall₂.nil, drop]
+  | 0, _, _, h => by simp [drop, h]
+  | _ + 1, _, _, Forall₂.nil => by simp [Forall₂.nil, drop]
   | n + 1, _, _, Forall₂.cons h₁ h₂ => by simp [And.intro h₁ h₂, forall₂_drop n]
 
 theorem forall₂_take_append (l : List α) (l₁ : List β) (l₂ : List β) (h : Forall₂ R l (l₁ ++ l₂)) :
@@ -206,7 +206,7 @@ theorem forall₂_drop_append (l : List α) (l₁ : List β) (l₂ : List β) (h
   rwa [drop_left] at h'
 
 theorem rel_mem (hr : BiUnique R) : (R ⇒ Forall₂ R ⇒ Iff) (· ∈ ·) (· ∈ ·)
-  | a, b, _, [], [], Forall₂.nil => by simp only [not_mem_nil]
+  | a, b, _, [], [], Forall₂.nil => by simp [not_mem_nil]
   | a, b, h, a' :: as, b' :: bs, Forall₂.cons h₁ h₂ => by
     simp only [mem_cons]
     exact rel_or (rel_eq hr h h₁) (rel_mem hr h h₂)
@@ -257,10 +257,10 @@ theorem rel_filter {p : α → Bool} {q : β → Bool}
     dsimp [LiftFun] at hpq
     by_cases h : p a
     · have : q b := by rwa [← hpq h₁]
-      simp only [filter_cons_of_pos h, filter_cons_of_pos this, forall₂_cons, h₁, true_and,
+      simp [filter_cons_of_pos h, filter_cons_of_pos this, forall₂_cons, h₁, true_and,
         rel_filter hpq h₂]
     · have : ¬q b := by rwa [← hpq h₁]
-      simp only [filter_cons_of_neg h, filter_cons_of_neg this, rel_filter hpq h₂]
+      simp [filter_cons_of_neg h, filter_cons_of_neg this, rel_filter hpq h₂]
 
 theorem rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) filterMap filterMap
   | _, _, _, _, _, Forall₂.nil => Forall₂.nil

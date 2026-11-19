@@ -231,12 +231,12 @@ theorem elim_one_one [One γ] : Sum.elim (1 : α → γ) (1 : β → γ) = 1 :=
 @[to_additive (attr := simp)]
 theorem elim_mulSingle_one [DecidableEq α] [DecidableEq β] [One γ] (i : α) (c : γ) :
     Sum.elim (Pi.mulSingle i c) (1 : β → γ) = Pi.mulSingle (Sum.inl i) c := by
-  simp only [Pi.mulSingle, Sum.elim_update_left, elim_one_one]
+  simp [Pi.mulSingle, Sum.elim_update_left, elim_one_one]
 
 @[to_additive (attr := simp)]
 theorem elim_one_mulSingle [DecidableEq α] [DecidableEq β] [One γ] (i : β) (c : γ) :
     Sum.elim (1 : α → γ) (Pi.mulSingle i c) = Pi.mulSingle (Sum.inr i) c := by
-  simp only [Pi.mulSingle, Sum.elim_update_right, elim_one_one]
+  simp [Pi.mulSingle, Sum.elim_update_right, elim_one_one]
 
 @[to_additive]
 theorem elim_inv_inv [Inv γ] : Sum.elim a⁻¹ b⁻¹ = (Sum.elim a b)⁻¹ :=

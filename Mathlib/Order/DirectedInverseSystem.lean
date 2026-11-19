@@ -191,8 +191,8 @@ def equivOfIsTop (m : ι) (hm : IsTop m) : DirectLimit F f ≃ F m where
   invFun x := ⟦⟨m, x⟩⟧
   left_inv z := by
     induction z using DirectLimit.induction with
-    | _ i x => simp only [lift_def, mk_apply]
-  right_inv := fun _ ↦ by simp only [lift_def, map_self']
+    | _ i x => simp [lift_def, mk_apply]
+  right_inv := fun _ ↦ by simp [lift_def, map_self']
 
 section map
 

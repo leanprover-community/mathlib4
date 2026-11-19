@@ -796,7 +796,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
         congr
         simp [eq_iff_true_of_subsingleton]
       rw [h]
-      simp only [Subalgebra.algebraMap_mem]⟩
+      simp [Subalgebra.algebraMap_mem]⟩
 
 end AlgebraStructure
 

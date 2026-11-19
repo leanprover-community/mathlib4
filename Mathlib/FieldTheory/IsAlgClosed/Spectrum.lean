@@ -81,10 +81,10 @@ because it holds over any field, whereas `spectrum.map_polynomial_aeval_of_degre
 theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
   rintro _ ⟨k, hk, rfl⟩
   let q := C (eval k p) - p
-  have hroot : IsRoot q k := by simp only [q, eval_C, eval_sub, sub_self, IsRoot.def]
+  have hroot : IsRoot q k := by simp [q, eval_C, eval_sub, sub_self, IsRoot.def]
   rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot
   have aeval_q_eq : ↑ₐ (eval k p) - aeval a p = aeval a q := by
-    simp only [q, aeval_C, map_sub]
+    simp [q, aeval_C, map_sub]
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
   have hcomm := (Commute.all (C k - X) (-(q / (X - C k)))).map (aeval a : 𝕜[X] →ₐ[𝕜] A)
   apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
@@ -106,7 +106,7 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
   /- leading coefficient is a unit so product of linear factors is not a unit;
     apply `exists_mem_of_not_is_unit_aeval_prod`. -/
   have p_a_eq : aeval a (C k - p) = ↑ₐ k - aeval a p := by
-    simp only [aeval_C, map_sub]
+    simp [aeval_C, map_sub]
   rw [mem_iff, ← p_a_eq, hprod, aeval_mul,
     ((Commute.all _ _).map (aeval a : 𝕜[X] →ₐ[𝕜] A)).isUnit_mul_iff, aeval_C] at hk
   replace hk := exists_mem_of_not_isUnit_aeval_prod (not_and.mp hk lead_unit)
@@ -120,7 +120,7 @@ theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X]
   nontriviality A
   refine Or.elim (le_or_gt (degree p) 0) (fun h => ?_) (map_polynomial_aeval_of_degree_pos a p)
   rw [eq_C_of_degree_le_zero h]
-  simp only [eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
+  simp [eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/
 theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by

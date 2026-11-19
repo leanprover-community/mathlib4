@@ -225,7 +225,7 @@ theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : Affine
   rw [eq_comm]
   have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   have hf : Function.Injective (S.subtype) := by
-    simp only [coe_subtype, Subtype.val_injective]
+    simp [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).centroid_map S.subtype hf
 
 variable [NeZero n]
@@ -282,7 +282,7 @@ theorem point_vsub_faceOppositeCentroid_eq_smul_sum_vsub [CharZero k] (s : Affin
     s.points i -ᵥ s.faceOppositeCentroid i = (n : k)⁻¹ • ∑ x, (s.points i -ᵥ s.points x) := by
   rw [← neg_vsub_eq_vsub_rev, faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, ← neg_smul,
     Lean.Grind.Ring.neg_eq_mul_neg_one, ← smul_smul, smul_sum]
-  simp only [neg_smul, one_smul, neg_vsub_eq_vsub_rev]
+  simp [neg_smul, one_smul, neg_vsub_eq_vsub_rev]
 
 theorem smul_faceOppositeCentroid_vsub_point_eq_sum_vsub [CharZero k] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) :
@@ -408,7 +408,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
   rw [eq_comm]
   have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   have hf : Function.Injective (S.subtype) := by
-    simp only [coe_subtype, Subtype.val_injective]
+    simp [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).faceOppositeCentroid_map S.subtype hf (i := i)
 
 @[simp] theorem faceOppositeCentroid_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P m)

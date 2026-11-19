@@ -161,7 +161,7 @@ lemma neg'_add'_self (f : L.obj X ⟶ L.obj Y) :
     add' W (neg' W f) f = L.map 0 := by
   obtain ⟨α, rfl⟩ := exists_leftFraction L W f
   rw [add'_eq W _ _ (LeftFraction₂.mk (-α.f) α.f α.s α.hs) (neg'_eq W _ _ rfl) rfl]
-  simp only [← cancel_mono (L.map α.s), LeftFraction.map_comp_map_s, ← L.map_comp,
+  simp [← cancel_mono (L.map α.s), LeftFraction.map_comp_map_s, ← L.map_comp,
     Limits.zero_comp, neg_add_cancel]
 
 lemma add'_assoc (f₁ f₂ f₃ : L.obj X ⟶ L.obj Y) :
@@ -203,7 +203,7 @@ lemma comp_add' (f : L.obj X ⟶ L.obj Y) (g₁ g₂ : L.obj Y ⟶ L.obj Z) :
     (by simpa only [hα, hβ₁] using! LeftFraction.map_comp_map_eq_map α β.fst γ.fst hγ₁ L)
     (by simpa only [hα, hβ₂] using! LeftFraction.map_comp_map_eq_map α β.snd γ.snd hγ₂ L),
     hα, LeftFraction.map_comp_map_eq_map α β.add γ.add
-      (by simp only [add_comp, hγ₁, hγ₂, comp_add])]
+      (by simp [add_comp, hγ₁, hγ₂, comp_add])]
   dsimp [LeftFraction₂.add]
   rw [comp_add]
 

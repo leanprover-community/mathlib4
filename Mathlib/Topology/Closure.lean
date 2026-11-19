@@ -37,7 +37,7 @@ variable {X : Type u} [TopologicalSpace X] {ι : Sort v} {x : X} {s s₁ s₂ t 
 section Interior
 
 theorem mem_interior : x ∈ interior s ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t := by
-  simp only [interior, mem_sUnion, mem_ofPred_eq, and_assoc, and_left_comm]
+  simp [interior, mem_sUnion, mem_ofPred_eq, and_assoc, and_left_comm]
 
 @[simp]
 theorem isOpen_interior : IsOpen (interior s) :=
@@ -65,7 +65,7 @@ theorem interior_eq_iff_isOpen : interior s = s ↔ IsOpen s :=
   ⟨fun h => h ▸ isOpen_interior, IsOpen.interior_eq⟩
 
 theorem subset_interior_iff_isOpen : s ⊆ interior s ↔ IsOpen s := by
-  simp only [interior_eq_iff_isOpen.symm, Subset.antisymm_iff, interior_subset, true_and]
+  simp [interior_eq_iff_isOpen.symm, Subset.antisymm_iff, interior_subset, true_and]
 
 theorem IsOpen.subset_interior_iff (h₁ : IsOpen s) : s ⊆ interior t ↔ s ⊆ t :=
   ⟨fun h => Subset.trans h interior_subset, fun h₂ => interior_maximal h₂ h₁⟩
@@ -156,7 +156,7 @@ theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
 
 theorem isOpen_iff_forall_mem_open : IsOpen s ↔ ∀ x ∈ s, ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
   rw [← subset_interior_iff_isOpen]
-  simp only [subset_def, mem_interior]
+  simp [subset_def, mem_interior]
 
 theorem interior_iInter_subset (s : ι → Set X) : interior (⋂ i, s i) ⊆ ⋂ i, interior (s i) :=
   subset_iInter fun _ => interior_mono <| iInter_subset _ _
@@ -293,7 +293,7 @@ theorem closure_closure : closure (closure s) = closure s :=
 
 theorem closure_eq_compl_interior_compl : closure s = (interior sᶜ)ᶜ := by
   rw [interior, closure, compl_sUnion, compl_image_ofPred]
-  simp only [compl_subset_compl, isOpen_compl_iff]
+  simp [compl_subset_compl, isOpen_compl_iff]
 
 @[simp]
 theorem closure_union : closure (s ∪ t) = closure s ∪ closure t := by
@@ -553,7 +553,7 @@ theorem frontier_interior_subset : frontier (interior s) ⊆ frontier s :=
 /-- The complement of a set has the same frontier as the original set. -/
 @[simp]
 theorem frontier_compl (s : Set X) : frontier sᶜ = frontier s := by
-  simp only [frontier_eq_closure_inter_closure, compl_compl, inter_comm]
+  simp [frontier_eq_closure_inter_closure, compl_compl, inter_comm]
 
 @[simp]
 theorem frontier_univ : frontier (univ : Set X) = ∅ := by simp [frontier]
@@ -565,7 +565,7 @@ theorem frontier_inter_subset (s t : Set X) :
     frontier (s ∩ t) ⊆ frontier s ∩ closure t ∪ closure s ∩ frontier t := by
   simp only [frontier_eq_closure_inter_closure, compl_inter, closure_union]
   refine (inter_subset_inter_left _ (closure_inter_subset_inter_closure s t)).trans_eq ?_
-  simp only [inter_union_distrib_left, inter_assoc,
+  simp [inter_union_distrib_left, inter_assoc,
     inter_comm (closure t)]
 
 theorem frontier_union_subset (s t : Set X) :
@@ -629,6 +629,6 @@ theorem frontier_eq_inter_compl_interior : frontier s = (interior s)ᶜ ∩ (int
 
 theorem compl_frontier_eq_union_interior : (frontier s)ᶜ = interior s ∪ interior sᶜ := by
   rw [frontier_eq_inter_compl_interior]
-  simp only [compl_inter, compl_compl]
+  simp [compl_inter, compl_compl]
 
 end Frontier

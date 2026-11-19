@@ -57,18 +57,18 @@ theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.m
     ⟨fun a =>
       Eq.symm <|
         Real.measure_ext_Ioo_rat fun p q => by
-          simp only [Measure.map_apply (measurable_const_add a) measurableSet_Ioo,
+          simp [Measure.map_apply (measurable_const_add a) measurableSet_Ioo,
             sub_sub_sub_cancel_right, StieltjesFunction.measure_Ioo, StieltjesFunction.id_leftLim,
             StieltjesFunction.id_apply, id, preimage_const_add_Ioo]⟩
   have A : StieltjesFunction.id.measure (stdOrthonormalBasis ℝ ℝ).toBasis.parallelepiped = 1 := by
     change StieltjesFunction.id.measure (parallelepiped (stdOrthonormalBasis ℝ ℝ)) = 1
     rcases parallelepiped_orthonormalBasis_one_dim (stdOrthonormalBasis ℝ ℝ) with (H | H) <;>
-      simp only [H, StieltjesFunction.measure_Icc, StieltjesFunction.id_apply, id, tsub_zero,
+      simp [H, StieltjesFunction.measure_Icc, StieltjesFunction.id_apply, id, tsub_zero,
         StieltjesFunction.id_leftLim, sub_neg_eq_add, zero_add, ENNReal.ofReal_one]
   conv_rhs =>
     rw [addHaarMeasure_unique StieltjesFunction.id.measure
         (stdOrthonormalBasis ℝ ℝ).toBasis.parallelepiped, A]
-  simp only [volume, Module.Basis.addHaar_def, one_smul]
+  simp [volume, Module.Basis.addHaar_def, one_smul]
 
 theorem volume_val (s) : volume s = StieltjesFunction.id.measure s := by
   simp [volume_eq_stieltjes_id]
@@ -202,7 +202,7 @@ instance locallyFinite_volume : IsLocallyFiniteMeasure (volume : Measure ℝ) :=
   ⟨fun x =>
     ⟨Ioo (x - 1) (x + 1),
       IsOpen.mem_nhds isOpen_Ioo ⟨sub_lt_self _ zero_lt_one, lt_add_of_pos_right _ zero_lt_one⟩, by
-      simp only [Real.volume_Ioo, ENNReal.ofReal_lt_top]⟩⟩
+      simp [Real.volume_Ioo, ENNReal.ofReal_lt_top]⟩⟩
 
 instance isFiniteMeasure_restrict_Icc (x y : ℝ) : IsFiniteMeasure (volume.restrict (Icc x y)) :=
   ⟨by simp⟩
@@ -235,12 +235,12 @@ theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a :
 
 theorem volume_Icc_pi {a b : ι → ℝ} : volume (Icc a b) = ∏ i, ENNReal.ofReal (b i - a i) := by
   rw [← pi_univ_Icc, volume_pi_pi]
-  simp only [Real.volume_Icc]
+  simp [Real.volume_Icc]
 
 @[simp]
 theorem volume_Icc_pi_toReal {a b : ι → ℝ} (h : a ≤ b) :
     (volume (Icc a b)).toReal = ∏ i, (b i - a i) := by
-  simp only [volume_Icc_pi, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
+  simp [volume_Icc_pi, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
 
 theorem volume_pi_Ioo {a b : ι → ℝ} :
     volume (pi univ fun i => Ioo (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
@@ -249,7 +249,7 @@ theorem volume_pi_Ioo {a b : ι → ℝ} :
 @[simp]
 theorem volume_pi_Ioo_toReal {a b : ι → ℝ} (h : a ≤ b) :
     (volume (pi univ fun i => Ioo (a i) (b i))).toReal = ∏ i, (b i - a i) := by
-  simp only [volume_pi_Ioo, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
+  simp [volume_pi_Ioo, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
 
 theorem volume_pi_Ioc {a b : ι → ℝ} :
     volume (pi univ fun i => Ioc (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
@@ -258,7 +258,7 @@ theorem volume_pi_Ioc {a b : ι → ℝ} :
 @[simp]
 theorem volume_pi_Ioc_toReal {a b : ι → ℝ} (h : a ≤ b) :
     (volume (pi univ fun i => Ioc (a i) (b i))).toReal = ∏ i, (b i - a i) := by
-  simp only [volume_pi_Ioc, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
+  simp [volume_pi_Ioc, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
 
 theorem volume_pi_Ico {a b : ι → ℝ} :
     volume (pi univ fun i => Ico (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
@@ -267,7 +267,7 @@ theorem volume_pi_Ico {a b : ι → ℝ} :
 @[simp]
 theorem volume_pi_Ico_toReal {a b : ι → ℝ} (h : a ≤ b) :
     (volume (pi univ fun i => Ico (a i) (b i))).toReal = ∏ i, (b i - a i) := by
-  simp only [volume_pi_Ico, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
+  simp [volume_pi_Ico, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
 
 @[simp]
 nonrec theorem volume_pi_ball (a : ι → ℝ) {r : ℝ} (hr : 0 < r) :
@@ -297,7 +297,7 @@ theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ ediam s ^ Fi
     _ ≤ ∏ _i : ι, (1 : ℝ≥0) * ediam s := by
       gcongr with i; exact (LipschitzWith.eval i).ediam_image_le s
     _ = ediam s ^ Fintype.card ι := by
-      simp only [ENNReal.coe_one, one_mul, Finset.prod_const, Fintype.card]
+      simp [ENNReal.coe_one, one_mul, Finset.prod_const, Fintype.card]
 
 /-!
 ### Images of the Lebesgue measure under multiplication in ℝ
@@ -308,11 +308,11 @@ theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
   refine (Real.measure_ext_Ioo_rat fun p q => ?_).symm
   rcases lt_or_gt_of_ne h with h | h
-  · simp only [Real.volume_Ioo, smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
+  · simp [Real.volume_Ioo, smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, neg_sub_neg, neg_mul,
       preimage_const_mul_Ioo_of_neg _ _ h, abs_of_neg h, mul_sub, smul_eq_mul,
       mul_div_cancel₀ _ (ne_of_lt h)]
-  · simp only [Real.volume_Ioo, smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
+  · simp [Real.volume_Ioo, smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, preimage_const_mul_Ioo₀ _ _ h,
       abs_of_pos h, mul_sub, mul_div_cancel₀ _ (ne_of_gt h), smul_eq_mul]
 
@@ -367,7 +367,7 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
     (Matrix.toLin' (diagonal D) ⁻¹' Set.pi Set.univ fun i : ι => s i) =
       Set.pi Set.univ fun i : ι => (D i * ·) ⁻¹' s i := by
     ext f
-    simp only [LinearMap.coe_proj, smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
+    simp [LinearMap.coe_proj, smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
       mem_preimage, LinearMap.pi_apply, diagonal_toLin']
   have B : ∀ i, ofReal (abs (D i)) * volume ((D i * ·) ⁻¹' s i) = volume (s i) := by
     intro i
@@ -378,7 +378,7 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
       mul_inv_cancel₀ A, abs_one, ENNReal.ofReal_one, one_mul]
   rw [this, volume_pi_pi, Finset.abs_prod,
     ENNReal.ofReal_prod_of_nonneg fun i _ => abs_nonneg (D i), ← Finset.prod_mul_distrib]
-  simp only [B]
+  simp [B]
 
 /-- A transvection preserves Lebesgue measure. -/
 theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionStruct ι ℝ) :
@@ -433,8 +433,8 @@ theorem map_linearMap_volume_pi_eq_smul_volume_pi {f : (ι → ℝ) →ₗ[ℝ] 
   classical
     -- this is deduced from the matrix case
     let M := LinearMap.toMatrix' f
-    have A : LinearMap.det f = det M := by simp only [M, LinearMap.det_toMatrix']
-    have B : f = toLin' M := by simp only [M, toLin'_toMatrix']
+    have A : LinearMap.det f = det M := by simp [M, LinearMap.det_toMatrix']
+    have B : f = toLin' M := by simp [M, toLin'_toMatrix']
     rw [A, B]
     apply map_matrix_volume_pi_eq_smul_volume_pi
     rwa [A] at hf
@@ -517,11 +517,11 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
         rw [indicator_apply]
         split_ifs with h
         · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = Ioo (f x) (g x) := by simp [h, Ioo]
-          simp only [hx, Real.volume_Ioo]
+          simp [hx, Real.volume_Ioo]
         · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = ∅ := by simp [h]
-          simp only [hx, measure_empty]
+          simp [hx, measure_empty]
       dsimp only [regionBetween, preimage_ofPred_eq]
-      rw [h, lintegral_indicator] <;> simp only [hs, Pi.sub_apply]
+      rw [h, lintegral_indicator] <;> simp [hs, Pi.sub_apply]
     · exact measurableSet_regionBetween hf hg hs
 
 /-- The volume of the region between two almost everywhere measurable functions on a measurable set
@@ -541,7 +541,7 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
     filter_upwards [quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk,
       quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk] with p hpf hpg
     simp only [Function.comp_apply] at hpf hpg
-    simp only [regionBetween, mem_ofPred_eq, mem_Ioo, hpf, hpg]
+    simp [regionBetween, mem_ofPred_eq, mem_Ioo, hpf, hpg]
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
   convert h₂ using 1
@@ -651,12 +651,12 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NullSingletonCl
   apply ae_restrict_of_ae_restrict_of_subset this
   rw [ae_restrict_union_iff, ae_restrict_biUnion_iff _ A_count]
   constructor
-  · have : μ.restrict (s \ u) = 0 := by simp only [restrict_eq_zero, hfinite.measure_zero]
-    simp only [this, ae_zero, eventually_bot]
+  · have : μ.restrict (s \ u) = 0 := by simp [restrict_eq_zero, hfinite.measure_zero]
+    simp [this, ae_zero, eventually_bot]
   · rintro ⟨⟨a, as⟩, ⟨b, bs⟩⟩ -
     dsimp [T]
     rcases le_or_gt b a with (hba | hab)
-    · simp only [Ioo_eq_empty_of_le hba, inter_empty, restrict_empty, ae_zero, eventually_bot]
+    · simp [Ioo_eq_empty_of_le hba, inter_empty, restrict_empty, ae_zero, eventually_bot]
     · exact h a b as bs hab
 
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for
@@ -679,7 +679,7 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NullSingletonClass 
     rintro ⟨⟨a, as⟩, ⟨b, bs⟩⟩ -
     change ∀ᵐ x : ℝ ∂μ, x ∈ s ∩ Ioo a b → p x
     rcases le_or_gt b a with (hba | hab)
-    · simp only [Ioo_eq_empty_of_le hba, inter_empty, IsEmpty.forall_iff, eventually_true,
+    · simp [Ioo_eq_empty_of_le hba, inter_empty, IsEmpty.forall_iff, eventually_true,
         mem_empty_iff_false]
     · exact h a b as bs hab
   filter_upwards [M, M'] with x hx h'x

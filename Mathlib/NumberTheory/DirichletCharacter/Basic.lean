@@ -548,7 +548,7 @@ lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
 
 lemma not_even_and_odd [NeZero (2 : S)] : ¬(ψ.Even ∧ ψ.Odd) := by
   rintro ⟨(h : _ = 1), (h' : _ = -1)⟩
-  simp only [h', neg_eq_iff_add_eq_zero, one_add_one_eq_two, two_ne_zero] at h
+  simp [h', neg_eq_iff_add_eq_zero, one_add_one_eq_two, two_ne_zero] at h
 
 lemma Even.not_odd [NeZero (2 : S)] (hψ : Even ψ) : ¬Odd ψ :=
   not_and.mp ψ.not_even_and_odd hψ

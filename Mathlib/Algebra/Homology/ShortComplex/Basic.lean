@@ -209,10 +209,10 @@ def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZero
       τ₃ := F.map φ.τ₃
       comm₁₂ := by
         dsimp
-        simp only [← F.map_comp, φ.comm₁₂]
+        simp [← F.map_comp, φ.comm₁₂]
       comm₂₃ := by
         dsimp
-        simp only [← F.map_comp, φ.comm₂₃] }
+        simp [← F.map_comp, φ.comm₂₃] }
 
 /-- A constructor for isomorphisms in the category `ShortComplex C` -/
 @[simps]
@@ -256,10 +256,10 @@ def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
   τ₃ := φ.τ₁.op
   comm₁₂ := by
     dsimp
-    simp only [← op_comp, φ.comm₂₃]
+    simp [← op_comp, φ.comm₂₃]
   comm₂₃ := by
     dsimp
-    simp only [← op_comp, φ.comm₁₂]
+    simp [← op_comp, φ.comm₁₂]
 
 @[simp]
 lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
@@ -277,10 +277,10 @@ def unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop 
   τ₃ := φ.τ₁.unop
   comm₁₂ := by
     dsimp
-    simp only [← unop_comp, φ.comm₂₃]
+    simp [← unop_comp, φ.comm₂₃]
   comm₂₃ := by
     dsimp
-    simp only [← unop_comp, φ.comm₁₂]
+    simp [← unop_comp, φ.comm₁₂]
 
 @[simp]
 lemma unopMap_id (S : ShortComplex Cᵒᵖ) : unopMap (𝟙 S) = 𝟙 S.unop := rfl

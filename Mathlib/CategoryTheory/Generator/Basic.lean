@@ -107,7 +107,7 @@ lemma IsSeparating.of_equivalence
     IsSeparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.toAdjunction.homEquiv _ _).surjective h
-    simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
+    simp [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
       H _ (P.strictMap_obj _ hZ) h']))
 
 lemma IsCoseparating.of_equivalence
@@ -115,7 +115,7 @@ lemma IsCoseparating.of_equivalence
     IsCoseparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h
-    simp only [Equivalence.symm_inverse, Equivalence.symm_functor,
+    simp [Equivalence.symm_inverse, Equivalence.symm_functor,
       Adjunction.homEquiv_counit, ← Functor.map_comp_assoc,
       H _ (P.strictMap_obj _ hZ) h']))
 
@@ -487,8 +487,8 @@ theorem eq_of_le_of_isDetecting {𝒢 : ObjectProperty C} (h𝒢 : 𝒢.IsDetect
   refine h𝒢 _ fun G hG f => ?_
   have : P.Factors (f ≫ Q.arrow) := h₂ _ hG ((factors_iff _ _).2 ⟨_, rfl⟩)
   refine ⟨factorThru _ _ this, ?_, fun g (hg : g ≫ _ = f) => ?_⟩
-  · simp only [← cancel_mono Q.arrow, Category.assoc, ofLE_arrow, factorThru_arrow]
-  · simp only [← cancel_mono (Subobject.ofLE _ _ h₁), ← cancel_mono Q.arrow, hg, Category.assoc,
+  · simp [← cancel_mono Q.arrow, Category.assoc, ofLE_arrow, factorThru_arrow]
+  · simp [← cancel_mono (Subobject.ofLE _ _ h₁), ← cancel_mono Q.arrow, hg, Category.assoc,
       ofLE_arrow, factorThru_arrow]
 
 theorem inf_eq_of_isDetecting [HasPullbacks C] {𝒢 : ObjectProperty C} (h𝒢 : 𝒢.IsDetecting) {X : C}

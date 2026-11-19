@@ -239,7 +239,7 @@ Lie module `M` of `L`, we may regard `M` as a Lie module of `L'` by restriction.
 instance lieModule [LieModule R L M] : LieModule R L' M where
   smul_lie t x m := by
     rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]
-  lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
+  lie_smul t x m := by simp [coe_bracket_of_module, lie_smul]
 
 end LieModule
 

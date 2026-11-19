@@ -152,7 +152,7 @@ theorem image_ι_op_comp_imageUnopOp_hom :
 
 theorem imageUnopOp_hom_comp_image_ι :
     (imageUnopOp g).hom ≫ image.ι g = (factorThruImage g.unop).op := by
-  simp only [← cancel_epi (image.ι g.unop).op, ← Category.assoc, image_ι_op_comp_imageUnopOp_hom,
+  simp [← cancel_epi (image.ι g.unop).op, ← Category.assoc, image_ι_op_comp_imageUnopOp_hom,
     ← op_comp, image.fac, Quiver.Hom.op_unop]
 
 theorem factorThruImage_comp_imageUnopOp_inv :

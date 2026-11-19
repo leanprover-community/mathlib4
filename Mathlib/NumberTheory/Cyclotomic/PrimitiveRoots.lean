@@ -227,7 +227,7 @@ theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
   replace key := (mul_le_iff_le_one_right (Nat.totient_pos.2 (NeZero.pos n))).mp (le_trans ineq key)
   have rpos : 0 < r := by
     refine Nat.pos_of_ne_zero (fun h ↦ ?_)
-    simp only [h, mul_zero, _root_.lcm_eq_zero_iff, NeZero.ne _, or_false] at hr
+    simp [h, mul_zero, _root_.lcm_eq_zero_iff, NeZero.ne _, or_false] at hr
   replace key := (Nat.dvd_prime Nat.prime_two).1 (Nat.dvd_two_of_totient_le_one rpos key)
   rcases key with (key | key)
   · rw [key, mul_one] at hr

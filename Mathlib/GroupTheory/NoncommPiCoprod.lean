@@ -150,9 +150,9 @@ def noncommPiCoprodEquiv [DecidableEq ι] :
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
   left_inv ϕ := by
     ext
-    simp only [coe_comp, Function.comp_apply, mulSingle_apply, noncommPiCoprod_mulSingle]
+    simp [coe_comp, Function.comp_apply, mulSingle_apply, noncommPiCoprod_mulSingle]
   right_inv f := pi_ext fun i x => by
-    simp only [noncommPiCoprod_mulSingle, coe_comp, Function.comp_apply, mulSingle_apply]
+    simp [noncommPiCoprod_mulSingle, coe_comp, Function.comp_apply, mulSingle_apply]
 
 @[to_additive]
 theorem noncommPiCoprod_mrange :
@@ -194,11 +194,11 @@ then `f ∘ (∐ᵢ φᵢ) = ∐ᵢ (f ∘ φᵢ)` -/]
 theorem comp_noncommPiCoprod {P : Type*} [Monoid P] {f : M →* P}
     (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
       Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by
-        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map (h y) f]))) :
+        simp [MonoidHom.coe_comp, Function.comp_apply, Commute.map (h y) f]))) :
     f.comp (MonoidHom.noncommPiCoprod ϕ hcomm) =
       MonoidHom.noncommPiCoprod (fun i ↦ f.comp (ϕ i)) hcomm' :=
   MonoidHom.ext fun _ ↦ by
-    simp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
+    simp [MonoidHom.noncommPiCoprod, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
       Function.comp_apply, Finset.map_noncommProd]
 
 end MonoidHom
@@ -349,7 +349,7 @@ theorem injective_noncommPiCoprod_of_iSupIndep
 theorem noncommPiCoprod_apply (comm) (u : (i : ι) → H i) :
     Subgroup.noncommPiCoprod comm u = Finset.noncommProd Finset.univ (fun i ↦ u i)
       (fun i _ j _ h ↦ comm h _ _ (u i).prop (u j).prop) := by
-  simp only [Subgroup.noncommPiCoprod, MonoidHom.noncommPiCoprod,
+  simp [Subgroup.noncommPiCoprod, MonoidHom.noncommPiCoprod,
     coe_subtype, MonoidHom.coe_mk, OneHom.coe_mk]
 
 end CommutingSubgroups

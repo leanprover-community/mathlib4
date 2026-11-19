@@ -182,7 +182,7 @@ variable (A) in
 theorem mapDomain_algebraMap {F : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N] (f : F) (r : R) :
     mapDomain f (algebraMap R A[M] r) = algebraMap R A[N] r := by
-  simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
+  simp [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
 
 section lift
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
@@ -238,7 +238,7 @@ theorem lift_apply' (F : M →* A) (f : R[M]) :
   rfl
 
 theorem lift_apply (F : M →* A) (f : R[M]) :
-    lift R A M F f = f.coeff.sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
+    lift R A M F f = f.coeff.sum fun a b => b • F a := by simp [lift_apply', Algebra.smul_def]
 
 theorem lift_def (F : M →* A) : ⇑(lift R A M F) = liftNC (algebraMap R A) F := rfl
 
@@ -601,7 +601,7 @@ theorem lift_apply' (F : Multiplicative M →* A) (f : R[M]) :
 
 theorem lift_apply (F : Multiplicative M →* A) (f : R[M]) :
     lift R A M F f = f.coeff.sum fun a b => b • F (.ofAdd a) := by
-  simp only [lift_apply', Algebra.smul_def]
+  simp [lift_apply', Algebra.smul_def]
 
 theorem lift_def (F : Multiplicative M →* A) :
     ⇑(lift R A M F) = liftNC ((algebraMap R A : R →+* A) : R →+ A) F :=

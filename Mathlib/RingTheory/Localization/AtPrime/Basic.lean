@@ -276,7 +276,7 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
     localRingHom I K (g.comp f) (by rw [hIJ, hJK, Ideal.comap_comap f g]) =
       (localRingHom J K g hJK).comp (localRingHom I J f hIJ) :=
   localRingHom_unique _ _ _ _ fun r => by
-    simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
+    simp [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
 /-- Isomorphic rings have isomorphic localizations. -/
 @[simps]

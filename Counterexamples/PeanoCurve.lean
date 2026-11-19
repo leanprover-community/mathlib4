@@ -27,11 +27,11 @@ lemma exists_long_peano_curve :
   let g' : C(cantorSet, I × I) :=
     ⟨g ∘ cantorSetHomeomorphNatToBool, Continuous.comp hg1 (Homeomorph.continuous _)⟩
   have hg' : Function.Surjective g' := by
-    simp only [ContinuousMap.coe_mk, EquivLike.surjective_comp, g', hg2]
+    simp [ContinuousMap.coe_mk, EquivLike.surjective_comp, g', hg2]
   -- Extend it to whole `ℝ`
   obtain ⟨f, hf⟩ := ContinuousMap.exists_restrict_eq isClosed_cantorSet g'
   use f
-  simp only [Set.surjOn_iff_surjective, ← ContinuousMap.coe_restrict, hf, hg']
+  simp [Set.surjOn_iff_surjective, ← ContinuousMap.coe_restrict, hf, hg']
 
 /-- There is a continuous surjection from the interval to the square. -/
 theorem exists_peano_curve :

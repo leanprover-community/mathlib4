@@ -58,7 +58,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   · rw [disjoint_iff_inf_le]
     rintro x ⟨hpx, hfx⟩
     rw [SetLike.mem_coe, mem_ker, hf ⟨x, hpx⟩, mk_eq_zero] at hfx
-    simp only [hfx, zero_mem]
+    simp [hfx, zero_mem]
   · rw [codisjoint_iff_le_sup]
     intro x _
     rw [mem_sup']
@@ -479,7 +479,7 @@ end
 theorem projectionOnto_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
     p.projectionOnto (ker f) (isCompl_of_proj hf) = f := by
   ext x
-  have : x ∈ p ⊔ (ker f) := by simp only [(isCompl_of_proj hf).sup_eq_top, mem_top]
+  have : x ∈ p ⊔ (ker f) := by simp [(isCompl_of_proj hf).sup_eq_top, mem_top]
   rcases mem_sup'.1 this with ⟨x, y, rfl⟩
   simp [hf]
 
@@ -514,7 +514,7 @@ such that `∀ x : p, f x = x`. -/
 def isComplEquivProj : { q // IsCompl p q } ≃ { f : E →ₗ[R] p // ∀ x : p, f x = x } where
   toFun q := ⟨projectionOnto p q q.2, projectionOnto_apply_left q.2⟩
   invFun f := ⟨ker (f : E →ₗ[R] p), isCompl_of_proj f.2⟩
-  left_inv := fun ⟨q, hq⟩ => by simp only [ker_projectionOnto]
+  left_inv := fun ⟨q, hq⟩ => by simp [ker_projectionOnto]
   right_inv := fun ⟨f, hf⟩ => Subtype.ext <| f.projectionOnto_of_proj hf
 
 @[simp]
@@ -608,9 +608,9 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
         prodMap id 0 ∘ₗ (p.prodEquivOfIsCompl (ker f) h.isCompl).symm.toLinearMap := by
   rw [← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   ext x
-  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coe_subtype,
+  · simp [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coe_subtype,
       map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
-  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
+  · simp [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
       coe_subtype, zero_add, map_coe_ker, prodMap_apply, LinearMap.zero_apply, add_zero]
 
 theorem submodule_unique {f : M →ₗ[S] M} {m₁ m₂ : Submodule S M}
@@ -623,7 +623,7 @@ protected theorem range {f : M →ₗ[S] M} (h : IsProj m f) : range f = m :=
 
 variable (S M) in
 protected theorem bot : IsProj (⊥ : Submodule S M) (0 : M →ₗ[S] M) :=
-  ⟨congrFun rfl, by simp only [mem_bot, LinearMap.zero_apply, forall_eq]⟩
+  ⟨congrFun rfl, by simp [mem_bot, LinearMap.zero_apply, forall_eq]⟩
 
 variable (S M) in
 protected theorem top : IsProj (⊤ : Submodule S M) (id (R := S)) :=

@@ -45,7 +45,7 @@ lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
     · rintro s
       dsimp
       infer_instance
-  · simp only [← Subcomplex.range_eq_top_iff, range_eq_iSup_sigma_ι,
+  · simp [← Subcomplex.range_eq_top_iff, range_eq_iSup_sigma_ι,
         colimit.ι_desc, Cofan.mk_ι_app, ← N.iSup_subcomplex_eq_top,
         Subcomplex.range_eq_ofSimplex, Equiv.apply_symm_apply]
 

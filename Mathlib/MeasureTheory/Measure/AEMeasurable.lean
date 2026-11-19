@@ -140,7 +140,7 @@ theorem _root_.aemeasurable_iUnion_iff [Countable ι] {s : ι → Set α} :
 theorem _root_.aemeasurable_union_iff {s t : Set α} :
     AEMeasurable f (μ.restrict (s ∪ t)) ↔
       AEMeasurable f (μ.restrict s) ∧ AEMeasurable f (μ.restrict t) := by
-  simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
+  simp [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 
 @[fun_prop]
 theorem smul_measure [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -200,7 +200,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     · simp only [g, hx, piecewise_eq_of_notMem, not_false_iff]
       contrapose hx
       apply subset_toMeasurable
-      simp +contextual only [hx, mem_compl_iff, mem_ofPred_eq, not_and,
+      simp +contextual [hx, mem_compl_iff, mem_ofPred_eq, not_and,
         not_false_iff, imp_true_iff]
   · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
@@ -210,7 +210,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     simp only [s, g, hx, piecewise_eq_of_notMem, not_false_iff]
     contrapose! hx
     apply subset_toMeasurable
-    simp only [hx, mem_compl_iff, mem_ofPred_eq, false_and, not_false_iff]
+    simp [hx, mem_compl_iff, mem_ofPred_eq, false_and, not_false_iff]
 
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
     (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by

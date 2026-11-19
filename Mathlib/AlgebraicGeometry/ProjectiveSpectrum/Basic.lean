@@ -208,7 +208,7 @@ lemma awayι_toSpecZero : awayι 𝒜 f f_deg hm ≫ toSpecZero 𝒜 =
   have (U) (e : U = ⊤) : (basicOpen 𝒜 f).ι ≫ (Scheme.topIso _).inv ≫ (Scheme.isoOfEq _ e).inv =
       Scheme.homOfLE _ (le_top.trans_eq e.symm) := by
     simp only [← Category.assoc, Iso.comp_inv_eq]
-    simp only [Scheme.topIso_hom, Category.assoc, Scheme.isoOfEq_hom_ι, Scheme.homOfLE_ι]
+    simp [Scheme.topIso_hom, Category.assoc, Scheme.isoOfEq_hom_ι, Scheme.homOfLE_ι]
   rw [reassoc_of% this, ← Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc, basicOpenToSpec,
     Category.assoc, ← Spec.map_comp, ← Spec.map_comp, ← Spec.map_comp]
   rfl

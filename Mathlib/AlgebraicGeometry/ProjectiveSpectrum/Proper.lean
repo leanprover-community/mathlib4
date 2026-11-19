@@ -220,7 +220,7 @@ theorem valuativeCriterion_existence_aux
     have (i : _) : ψ i = 0 := eq_zero_of_nonpos (hKmax ▸ Finset.le_max' _ _ (by simp))
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
     have : φ 1 = 0 := by convert (this j).1; ext; simp
-    simp only [map_one, one_ne_zero] at this
+    simp [map_one, one_ne_zero] at this
   let := (awayMap 𝒜 (f := x j) (hxdi i₀) rfl).toAlgebra
   have := Away.isLocalization_mul (hxdi j) (hxdi i₀) rfl (hdi _).ne'
   have hunit : IsUnit (φ (Away.isLocalizationElem (hxdi j) (hxdi i₀))) := isUnit_iff_ne_zero.mpr
@@ -242,7 +242,7 @@ theorem valuativeCriterion_existence_aux
     rw [RingHom.algebraMap_toAlgebra, awayMap_fromZeroRingHom 𝒜 (hxdi j) (mul_comm (x j) (x i₀)),
       ← awayMap_fromZeroRingHom 𝒜 (hxdi i₀) rfl a, hφ'1]
     change valuation O K (φ.comp (fromZeroRingHom 𝒜 (.powers (x j))) a) ≤ 1
-    simp only [← hcomm, RingHom.coe_comp, Function.comp_apply, ← Valuation.mem_integer_iff,
+    simp [← hcomm, RingHom.coe_comp, Function.comp_apply, ← Valuation.mem_integer_iff,
       IsFractionRing.coe_inj, exists_eq, mem_integer_iff]
   | mem x1 h =>
     obtain ⟨a, ai, hai, rfl⟩ := h

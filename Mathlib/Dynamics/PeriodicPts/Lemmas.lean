@@ -115,7 +115,7 @@ theorem injective_iff_periodicPts_eq_univ [Finite α] : Injective f ↔ periodic
 
 theorem injective_iff_iterate_factorial_card_eq_id [Fintype α] :
     Injective f ↔ f^[(card α)!] = id := by
-  simp only [injective_iff_periodicPts_eq_univ, mem_periodicPts_iff_isPeriodicPt_factorial_card,
+  simp [injective_iff_periodicPts_eq_univ, mem_periodicPts_iff_isPeriodicPt_factorial_card,
     funext_iff, eq_univ_iff_forall, IsPeriodicPt, id, IsFixedPt]
 
 end Fintype

@@ -67,7 +67,7 @@ theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
     refine (condExp_indicator ((B c).integrable_comp hg) hs).trans ?_
     filter_upwards [(B c).comp_condExp_comm hg (m := m)] with ω hω
     simp only [Function.comp_apply] at hω
-    simp only [Set.indicator, hω, Function.comp_def]
+    simp [Set.indicator, hω, Function.comp_def]
   · calc
       μ[fun ω ↦ B (g₁ ω + g₂ ω) (g ω) | m] =ᵐ[μ]
           μ[fun ω ↦ B (g₁ ω) (g ω) | m] + μ[fun ω ↦ B (g₂ ω) (g ω) | m] := by

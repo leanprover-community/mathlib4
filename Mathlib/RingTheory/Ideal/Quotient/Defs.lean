@@ -159,7 +159,7 @@ theorem lift_surjective_of_surjective {f : R →+* S} (H : ∀ a : R, a ∈ I �
   intro y
   obtain ⟨x, rfl⟩ := hf y
   use Ideal.Quotient.mk I x
-  simp only [Ideal.Quotient.lift_mk]
+  simp [Ideal.Quotient.lift_mk]
 
 variable {S T U : Ideal R} [S.IsTwoSided] [T.IsTwoSided] [U.IsTwoSided]
 

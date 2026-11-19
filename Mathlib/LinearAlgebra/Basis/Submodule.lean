@@ -169,7 +169,7 @@ noncomputable def restrictScalars : Basis ι R (span R (Set.range b)) :=
 
 @[simp]
 theorem restrictScalars_apply (i : ι) : (b.restrictScalars R i : M) = b i := by
-  simp only [Basis.restrictScalars, Basis.span_apply]
+  simp [Basis.restrictScalars, Basis.span_apply]
 
 @[simp]
 theorem restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
@@ -179,7 +179,7 @@ theorem restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
       ((b.repr : M →ₗ[S] ι →₀ S).restrictScalars R).domRestrict _
     from congr($this m i)
   refine Basis.ext (b.restrictScalars R) fun _ => ?_
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
+  simp [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
     Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
     Algebra.linearMap_apply, LinearMap.domRestrict_apply,
     Basis.restrictScalars_apply, LinearMap.coe_restrictScalars]

@@ -100,7 +100,7 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
   rw [← map_tensorProduct_mk_eq_top, Submodule.map_span, ← Submodule.restrictScalars_span R k
     Ideal.Quotient.mk_surjective, Submodule.restrictScalars_eq_top_iff,
     ← b.span_eq, ← Set.range_comp]
-  simp only [Function.comp_def, mk_apply, hb, Basis.span_eq]
+  simp [Function.comp_def, mk_apply, hb, Basis.span_eq]
 
 end IsLocalRing
 
@@ -146,7 +146,7 @@ theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
   obtain ⟨z, rfl⟩ := (lTensor_exact _ hgexact hgsurj _).mp this
   obtain rfl : f₁.rTensor N₁ z = x := by
     apply hginj
-    simp only [← hy, ← LinearMap.comp_apply, ← LinearMap.comp_apply, LinearMap.lTensor_comp_rTensor,
+    simp [← hy, ← LinearMap.comp_apply, ← LinearMap.comp_apply, LinearMap.lTensor_comp_rTensor,
       LinearMap.rTensor_comp_lTensor]
   rw [← LinearMap.comp_apply, ← LinearMap.rTensor_comp, hfexact.linearMap_comp_eq_zero]
   simp
@@ -206,7 +206,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
       rw [LinearMap.baseChange_eq_lTensor]
       erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
       rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
-      simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
+      simp [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
   use Basis.ofRepr iequiv.symm
   intro j
   simp [iequiv, i]

@@ -73,14 +73,14 @@ lemma map_id_comp (P : ProfunctorCore.{w} C D) (X : C) {Y Y' Y'' : D}
     (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
     P.map (𝟙 X) (g ≫ g') = P.map (𝟙 X) g' ≫ P.map (𝟙 X) g := by
   nth_rw 1 [← Category.id_comp (𝟙 X)]
-  simp only [P.map_comp]
+  simp [P.map_comp]
 
 @[simp]
 lemma map_comp_id (P : ProfunctorCore.{w} C D) {X X' X'' : C} (Y : D)
     (f : X ⟶ X') (f' : X' ⟶ X'') :
     P.map (f ≫ f') (𝟙 Y) = P.map f (𝟙 Y) ≫ P.map f' (𝟙 Y) := by
   nth_rw 1 [← Category.id_comp (𝟙 Y)]
-  simp only [P.map_comp]
+  simp [P.map_comp]
 
 @[reassoc (attr := simp)]
 lemma map_lid_comp_map_rid (P : ProfunctorCore.{w} C D) {X X' : C} {Y Y' : D}

@@ -67,7 +67,7 @@ theorem sub_smul_slope_vadd (f : k → PE) (a b : k) : (b - a) • slope f a b +
 @[simp]
 theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f := by
   ext a b
-  simp only [slope, vadd_vsub_vadd_cancel_right, vsub_eq_sub]
+  simp [slope, vadd_vsub_vadd_cancel_right, vsub_eq_sub]
 
 @[simp]
 theorem slope_sub_smul (f : k → E) {a b : k} (h : a ≠ b) :
@@ -79,7 +79,7 @@ theorem eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E))
 
 theorem AffineMap.slope_comp {F PF : Type*} [AddCommGroup F] [Module k F] [AddTorsor F PF]
     (f : PE →ᵃ[k] PF) (g : k → PE) (a b : k) : slope (f ∘ g) a b = f.linear (slope g a b) := by
-  simp only [slope, (· ∘ ·), f.linear.map_smul, f.linear_apply_vsub]
+  simp [slope, (· ∘ ·), f.linear.map_smul, f.linear_apply_vsub]
 
 theorem LinearMap.slope_comp {F : Type*} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
     (a b : k) : slope (f ∘ g) a b = f (slope g a b) :=
@@ -89,7 +89,7 @@ theorem slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
   rw [slope, slope, ← neg_vsub_eq_vsub_rev, smul_neg, ← neg_smul, neg_inv, neg_sub]
 
 @[simp] lemma slope_neg (f : k → E) (x y : k) : slope (fun t ↦ -f t) x y = -slope f x y := by
-  simp only [slope_def_module, neg_sub_neg, ← smul_neg, neg_sub]
+  simp [slope_def_module, neg_sub_neg, ← smul_neg, neg_sub]
 
 @[simp] lemma slope_neg_fun (f : k → E) : slope (-f) = -slope f := by
   ext x y; exact slope_neg f x y

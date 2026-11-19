@@ -287,9 +287,9 @@ lemma span_range_relation_eq_ker_baseChange :
         simp only [algHom_C, TensorProduct.algebraMap_apply,
           algebraMap_self, RingHom.id_apply, e]
         rw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
-        simp only [TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply,
+        simp [TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply,
           TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one]
-      | add p q hp hq => simp only [map_add, hp, hq]
+      | add p q hp hq => simp [map_add, hp, hq]
       | mul_X p i hp => simp [hp, e]
     rw [H] at H'
     replace H' : e.symm x ∈ Ideal.map TensorProduct.includeRight P.ker := H'
@@ -408,7 +408,7 @@ private lemma aux_image_relation :
     exact ⟨a, (Q.compRelationAux_map P a).symm⟩
   · rintro ⟨y, rfl⟩
     use Q.compRelationAux P y
-    simp only [Set.mem_range, exists_apply_eq_apply, true_and, compRelationAux_map]
+    simp [Set.mem_range, exists_apply_eq_apply, true_and, compRelationAux_map]
 
 private lemma aux_eq_comp : Q.aux P =
     (MvPolynomial.mapAlgHom (aeval P.val)).comp (sumAlgEquiv R ι' ι).toAlgHom := by

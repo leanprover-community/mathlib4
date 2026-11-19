@@ -22,7 +22,7 @@ variable [Zero A] [Zero B] [Zero C]
 instance [SMulZeroClass M B] : SMulZeroClass M (ZeroHom A B) where
   smul r f :=
     { toFun a := r • f a
-      map_zero' := by simp only [map_zero, smul_zero] }
+      map_zero' := by simp [map_zero, smul_zero] }
   smul_zero _ := ext fun _ => smul_zero _
 
 @[norm_cast] theorem coe_smul [SMulZeroClass M B] (m : M) (f : ZeroHom A B) : ⇑(m • f) = m • f :=
@@ -66,8 +66,8 @@ variable [AddZeroClass A] [AddZeroClass B] [AddZeroClass C]
 instance [DistribSMul M B] : SMulZeroClass M (A →+ B) where
   smul r f :=
     { toFun a := r • f a
-      map_zero' := by simp only [map_zero, smul_zero]
-      map_add' _ _ := by simp only [map_add, smul_add] }
+      map_zero' := by simp [map_zero, smul_zero]
+      map_add' _ _ := by simp [map_add, smul_add] }
   smul_zero _ := ext fun _ => smul_zero _
 
 @[norm_cast] theorem coe_smul [DistribSMul M B] (m : M) (f : A →+ B) : ⇑(m • f) = m • f := rfl

@@ -122,7 +122,7 @@ noncomputable def basisFun : Basis η R (η → R) :=
 @[simp]
 theorem basisFun_apply [DecidableEq η] (i) :
     basisFun R η i = Pi.single i 1 := by
-  simp only [basisFun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
+  simp [basisFun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
 
 @[simp]
 theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basisFun]

@@ -40,7 +40,7 @@ open scoped commutatorElement in
 @[to_additive]
 theorem mem_centralizer_iff_commutator_eq_one {g : G} {s : Set G} :
     g ∈ centralizer s ↔ ∀ h ∈ s, ⁅h, g⁆ = 1 := by
-  simp only [commutatorElement_def, mem_centralizer_iff, mul_inv_eq_iff_eq_mul, one_mul]
+  simp [commutatorElement_def, mem_centralizer_iff, mul_inv_eq_iff_eq_mul, one_mul]
 
 open scoped commutatorElement in
 @[to_additive]

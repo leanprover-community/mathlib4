@@ -62,7 +62,7 @@ lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else
   split_ifs <;> rfl
 
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
-  simp only [bitwise_zero_right, ite_self]
+  simp [bitwise_zero_right, ite_self]
 
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
@@ -141,12 +141,12 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
       binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n) := by
   funext x y
   induction x using binaryRec' generalizing y with
-  | zero => simp only [bitwise_zero_left, binaryRec_zero, Bool.cond_eq_ite]
+  | zero => simp [bitwise_zero_left, binaryRec_zero, Bool.cond_eq_ite]
   | bit xb x hxb ih =>
     rw [← bit_ne_zero_iff] at hxb
     simp_rw [binaryRec_of_ne_zero _ _ hxb, bodd_bit, div2_bit, eq_rec_constant]
     induction y using binaryRec' with
-    | zero => simp only [bitwise_zero_right, binaryRec_zero, Bool.cond_eq_ite]
+    | zero => simp [bitwise_zero_right, binaryRec_zero, Bool.cond_eq_ite]
     | bit yb y hyb =>
       rw [← bit_ne_zero_iff] at hyb
       simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, div2_bit,
@@ -290,7 +290,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     refine lt_of_testBit i ?_ h fun j hj => ?_
     · rw [testBit_xor, h, hi]
       rfl
-    · simp only [testBit_xor, hi' _ hj, Bool.bne_false]
+    · simp [testBit_xor, hi' _ hj, Bool.bne_false]
 
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
   obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero_iff.2 h.ne
@@ -352,7 +352,7 @@ theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
       apply zero_xor
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
-  simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]
+  simp [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]
 
 /-- Note that the LHS is the expression used within `Std.BitVec.append`, hence the name. -/
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by

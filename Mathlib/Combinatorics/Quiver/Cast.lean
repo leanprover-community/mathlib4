@@ -130,6 +130,6 @@ theorem eq_nil_of_length_zero {u v : U} (p : Path u v) (hzero : p.length = 0) :
     p.cast (eq_of_length_zero p hzero) rfl = Path.nil := by
   cases p
   · rfl
-  · simp only [Nat.succ_ne_zero, length_cons] at hzero
+  · simp [Nat.succ_ne_zero, length_cons] at hzero
 
 end Quiver

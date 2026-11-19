@@ -107,7 +107,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
     apply IsLocalizedModule.ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
     · exact IsLocalizedModule.map_units (LocalizedModule.mkLinearMap I.primeCompl N)
     ext
-    simp only [LocalizedModule.map_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
+    simp [LocalizedModule.map_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, LocalizedModule.mkLinearMap_apply, LinearMap.llcomp_apply,
       LocalizedModule.map_mk]
   · rintro ⟨g, rfl⟩
@@ -123,7 +123,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
     apply IsLocalizedModule.ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
     · exact IsLocalizedModule.map_units (LocalizedModule.mkLinearMap I.primeCompl N)
     ext
-    simp only [coe_comp, coe_restrictScalars, Function.comp_apply,
+    simp [coe_comp, coe_restrictScalars, Function.comp_apply,
       LocalizedModule.mkLinearMap_apply, LocalizedModule.map_mk, llcomp_apply]
 
 theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.IsMaximal),
@@ -178,5 +178,5 @@ theorem Module.projective_of_localization_maximal'
   apply ((Module.End.isUnit_iff _).mp
     (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
   dsimp [e]
-  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
+  simp [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
     IsLocalization.map_id_mk']

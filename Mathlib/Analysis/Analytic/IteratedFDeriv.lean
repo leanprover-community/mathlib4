@@ -95,7 +95,7 @@ lemma FormalMultilinearSeries.iteratedFDerivSeries_eq_zero {k n : ℕ}
     simp [FormalMultilinearSeries.iteratedFDerivSeries, this]
   | succ k ih =>
     ext
-    simp only [iteratedFDerivSeries, Nat.succ_eq_add_one,
+    simp [iteratedFDerivSeries, Nat.succ_eq_add_one,
       ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
       LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply,
@@ -239,7 +239,7 @@ theorem AnalyticOn.iteratedFDerivWithin_comp_perm
   rcases h x hx with ⟨p, r, hp⟩
   rw [hp.iteratedFDerivWithin_eq_sum h hs hx, hp.iteratedFDerivWithin_eq_sum h hs hx]
   conv_rhs => rw [← Equiv.sum_comp (Equiv.mulLeft σ)]
-  simp only [coe_mulLeft, Perm.coe_mul, Function.comp_apply]
+  simp [coe_mulLeft, Perm.coe_mul, Function.comp_apply]
 
 theorem AnalyticOn.domDomCongr_iteratedFDerivWithin
     (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (σ : Perm (Fin n)) :

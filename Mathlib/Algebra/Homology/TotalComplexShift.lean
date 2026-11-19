@@ -136,7 +136,7 @@ noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
   inv_hom_id := by
     ext
     dsimp
-    simp only [ι_totalDesc_assoc, Category.assoc, ι_totalDesc, XXIsoOfEq_inv_ιTotal, comp_id]
+    simp [ι_totalDesc_assoc, Category.assoc, ι_totalDesc, XXIsoOfEq_inv_ιTotal, comp_id]
 
 @[reassoc]
 lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x = n₀') (h₁ : n₁ + x = n₁') :
@@ -182,7 +182,7 @@ noncomputable def totalShift₁Iso :
   HomologicalComplex.Hom.isoOfComponents (fun n => K.totalShift₁XIso x n (n + x) rfl)
     (fun n n' _ => by
       dsimp
-      simp only [total_d, Preadditive.add_comp, Preadditive.comp_add, smul_add,
+      simp [total_d, Preadditive.add_comp, Preadditive.comp_add, smul_add,
         Linear.comp_units_smul, K.D₁_totalShift₁XIso_hom x n n' _ _ rfl rfl,
         K.D₂_totalShift₁XIso_hom x n n' _ _ rfl rfl])
 
@@ -236,7 +236,7 @@ noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
   inv_hom_id := by
     ext
     dsimp
-    simp only [ι_totalDesc_assoc, Linear.units_smul_comp, Category.assoc, ι_totalDesc,
+    simp [ι_totalDesc_assoc, Linear.units_smul_comp, Category.assoc, ι_totalDesc,
       Linear.comp_units_smul, XXIsoOfEq_inv_ιTotal, smul_smul, Int.units_mul_self, one_smul,
       comp_id]
 
@@ -292,7 +292,7 @@ noncomputable def totalShift₂Iso :
   HomologicalComplex.Hom.isoOfComponents (fun n => K.totalShift₂XIso y n (n + y) rfl)
     (fun n n' _ => by
       dsimp
-      simp only [total_d, Preadditive.add_comp, Preadditive.comp_add, smul_add,
+      simp [total_d, Preadditive.add_comp, Preadditive.comp_add, smul_add,
         Linear.comp_units_smul, K.D₁_totalShift₂XIso_hom y n n' _ _ rfl rfl,
         K.D₂_totalShift₂XIso_hom y n n' _ _ rfl rfl])
 

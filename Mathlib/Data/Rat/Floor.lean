@@ -96,7 +96,7 @@ theorem round_cast (x : ℚ) : round (x : α) = round x := by
 
 @[simp, norm_cast]
 theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract (x : α) := by
-  simp only [fract, cast_sub, cast_intCast, floor_cast]
+  simp [fract, cast_sub, cast_intCast, floor_cast]
 
 @[simp]
 theorem den_intFract (x : ℚ) : (fract x).den = x.den :=
@@ -227,13 +227,13 @@ theorem isNNRat_intFract_of_isNNRat (r : α) (n d : ℕ) :
     IsNNRat r n d → IsNNRat (Int.fract r) (n % d) d := by
   rintro ⟨inv, rfl⟩
   refine ⟨inv, ?_⟩
-  simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_natCast_eq_div_natCast_mod]
+  simp [invOf_eq_inv, ← div_eq_mul_inv, fract_div_natCast_eq_div_natCast_mod]
 
 theorem isRat_intFract_of_isRat_negOfNat (r : α) (n d : ℕ) :
     IsRat r (negOfNat n) d → IsRat (Int.fract r) (-n % d) d := by
   rintro ⟨inv, rfl⟩
   refine ⟨inv, ?_⟩
-  simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_intCast_eq_div_intCast_mod,
+  simp [invOf_eq_inv, ← div_eq_mul_inv, fract_div_intCast_eq_div_intCast_mod,
     negOfNat_eq, ofNat_eq_natCast]
 
 /-- `norm_num` extension for `Int.fract` -/

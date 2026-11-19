@@ -128,7 +128,7 @@ theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
   obtain hB | hB := hB
   · apply Or.intro_left; apply Set.Subsingleton.image hB
   · apply Or.intro_right; rw [hB]
-    simp only [Set.image_univ, Set.range_eq_univ, hf]
+    simp [Set.image_univ, Set.range_eq_univ, hf]
 
 @[to_additive]
 theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
@@ -159,7 +159,7 @@ theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
   constructor
   · intro H
     convert IsTrivialBlock.smul H g⁻¹
-    simp only [inv_smul_smul]
+    simp [inv_smul_smul]
   · intro H
     exact IsTrivialBlock.smul H g
 
@@ -446,7 +446,7 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
   · rintro ⟨⟨k, hk⟩, rfl⟩
     use ⟨g⁻¹ * k * g, nN.conj_mem' k hk g⟩
     simp only [Subgroup.mk_smul]
-    simp only [← smul_smul, smul_inv_smul]
+    simp [← smul_smul, smul_inv_smul]
 
 /-- An orbit of a normal subgroup is a block -/
 @[to_additive /-- An orbit of a normal subgroup is a block -/]
@@ -611,7 +611,7 @@ instance (a : X) : BoundedOrder (BlockMem G a) where
   top := ⟨Set.univ, Set.mem_univ a, .univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
-    simp only [Subtype.mk_le_mk, subset_univ]
+    simp [Subtype.mk_le_mk, subset_univ]
   bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
   bot_le := by
     rintro ⟨B, ha, hB⟩
@@ -736,7 +736,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
   obtain ⟨k : G, hk : k • a = b⟩ := exists_smul_eq G a b
   have hak : a ∈ k⁻¹ • B' := by
     refine ⟨b, hb, ?_⟩
-    simp only [← hk, inv_smul_smul]
+    simp [← hk, inv_smul_smul]
   have hagk : a ∈ (k⁻¹ * g) • B' := by
     rw [mul_smul, Set.mem_smul_set_iff_inv_smul_mem, inv_inv, hk]
     exact hb'

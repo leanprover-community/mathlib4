@@ -183,7 +183,7 @@ lemma measure_preimage_eq_zero_iff_of_countable {s : Set β} {f : α → β} (hs
 of the fibers `f ⁻¹' {y}`. -/
 theorem sum_measure_preimage_singleton (s : Finset β) {f : α → β}
     (hf : ∀ y ∈ s, MeasurableSet (f ⁻¹' {y})) : (∑ b ∈ s, μ (f ⁻¹' {b})) = μ (f ⁻¹' ↑s) := by
-  simp only [← measure_biUnion_finset (pairwiseDisjoint_fiber f s) hf,
+  simp [← measure_biUnion_finset (pairwiseDisjoint_fiber f s) hf,
     Finset.set_biUnion_preimage_singleton]
 
 @[simp] lemma sum_measure_singleton {s : Finset α} [MeasurableSingletonClass α] :
@@ -272,7 +272,7 @@ theorem measure_eq_measure_of_between_null_sdiff (h12 : s₁ ⊆ s₂) (h23 : s�
     calc
       μ s₃ = μ (s₃ \ s₁ ∪ s₁) := by rw [sdiff_union_of_subset (h12.trans h23)]
       _ ≤ μ (s₃ \ s₁) + μ s₁ := measure_union_le _ _
-      _ = μ s₁ := by simp only [h_nullsdiff, zero_add]
+      _ = μ s₁ := by simp [h_nullsdiff, zero_add]
   exact ⟨le12.antisymm (le23.trans key), le23.antisymm (key.trans le12)⟩
 
 @[deprecated (since := "2026-06-03")]
@@ -375,7 +375,7 @@ theorem measure_iUnion_toMeasurable {ι : Sort*} [Countable ι] (s : ι → Set 
 theorem measure_biUnion_toMeasurable {I : Set β} (hc : I.Countable) (s : β → Set α) :
     μ (⋃ b ∈ I, toMeasurable μ (s b)) = μ (⋃ b ∈ I, s b) := by
   have := hc.toEncodable
-  simp only [biUnion_eq_iUnion, measure_iUnion_toMeasurable]
+  simp [biUnion_eq_iUnion, measure_iUnion_toMeasurable]
 
 @[simp]
 theorem measure_toMeasurable_union : μ (toMeasurable μ s ∪ t) = μ (s ∪ t) :=

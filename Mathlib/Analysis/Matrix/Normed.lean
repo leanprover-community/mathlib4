@@ -127,7 +127,7 @@ alias nnnorm_entry_le_entrywise_sup_nnnorm := nnNorm_apply_le_nnNorm
 @[simp]
 theorem nnNorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖₊ = ‖a‖₊) :
     ‖A.map f‖₊ = ‖A‖₊ := by
-  simp only [nnNorm_def, Pi.nnNorm_def, Matrix.map_apply, hf]
+  simp [nnNorm_def, Pi.nnNorm_def, Matrix.map_apply, hf]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_map_eq := nnNorm_map_eq
 
@@ -511,7 +511,7 @@ variable [DecidableEq n]
 @[simp] lemma linfty_opNNNorm_toMatrix (f : (n → α) →L[α] (m → α)) :
     ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖₊ = ‖f‖₊ := by
   rw [linfty_opNNNorm_eq_opNNNorm]
-  simp only [← toLin'_apply', toLin'_toMatrix']
+  simp [← toLin'_apply', toLin'_toMatrix']
 
 @[simp] lemma linfty_opNorm_toMatrix (f : (n → α) →L[α] (m → α)) :
     ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖ = ‖f‖ :=
@@ -658,7 +658,7 @@ instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
 @[simp]
 lemma frobenius_norm_replicateRow (v : m → α) : ‖replicateRow ι v‖ = ‖toLp 2 v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [replicateRow_apply, Real.rpow_two]
+  simp [replicateRow_apply, Real.rpow_two]
 
 @[simp]
 lemma frobenius_nnNorm_replicateRow (v : m → α) : ‖replicateRow ι v‖₊ = ‖toLp 2 v‖₊ :=

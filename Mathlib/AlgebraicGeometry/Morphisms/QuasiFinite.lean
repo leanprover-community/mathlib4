@@ -372,7 +372,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.quasiFiniteAt_comp_iff_of_isOpenImmersion
     {Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} {x : X} [IsOpenImmersion f] :
     (f ≫ g).QuasiFiniteAt x ↔ g.QuasiFiniteAt (f x) := by
-  simp only [QuasiFiniteAt, stalkMap_comp, CommRingCat.hom_comp,
+  simp [QuasiFiniteAt, stalkMap_comp, CommRingCat.hom_comp,
     RingHom.QuasiFinite.respectsIso.cancel_right_isIso]
 
 lemma Scheme.Hom.quasiFiniteAt_comp_iff {Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} {x : X}

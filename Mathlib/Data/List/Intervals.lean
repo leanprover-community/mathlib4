@@ -132,7 +132,7 @@ theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
   filter_eq_self.2 fun k hk => by
-    simp only [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_true]
+    simp [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_true]
 
 theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x => x < l) = [] :=
   filter_eq_nil_iff.2 fun k hk => by

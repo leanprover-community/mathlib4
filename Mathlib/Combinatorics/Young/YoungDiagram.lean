@@ -150,10 +150,10 @@ instance : OrderBot YoungDiagram where
       isLowerSet := by
         intro a b _ h
         simp only [Finset.coe_empty, Set.mem_empty_iff_false]
-        simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h }
+        simp [Finset.coe_empty, Set.mem_empty_iff_false] at h }
   bot_le _ _ := by
     intro y
-    simp only [mem_mk, Finset.notMem_empty] at y
+    simp [mem_mk, Finset.notMem_empty] at y
 
 @[simp]
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
@@ -369,11 +369,11 @@ def rowLens (μ : YoungDiagram) : List ℕ :=
 
 @[simp]
 theorem get_rowLens {μ : YoungDiagram} {i : Nat} {h : i < μ.rowLens.length} :
-    μ.rowLens[i] = μ.rowLen i := by simp only [rowLens, List.getElem_range, List.getElem_map]
+    μ.rowLens[i] = μ.rowLen i := by simp [rowLens, List.getElem_range, List.getElem_map]
 
 @[simp]
 theorem length_rowLens {μ : YoungDiagram} : μ.rowLens.length = μ.colLen 0 := by
-  simp only [rowLens, List.length_map, List.length_range]
+  simp [rowLens, List.length_map, List.length_range]
 
 theorem rowLens_sorted (μ : YoungDiagram) : μ.rowLens.SortedGE :=
   (List.pairwise_le_range.map _ μ.rowLen_anti).sortedGE

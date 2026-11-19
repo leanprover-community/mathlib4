@@ -58,14 +58,14 @@ lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b]
               Limits.prod.hom_ext
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.fst =
-                      PullbackCone.snd s ≫ b ≫ f := by simp only [prod.lift_fst, Category.assoc]
+                      PullbackCone.snd s ≫ b ≫ f := by simp [prod.lift_fst, Category.assoc]
                   _ = PullbackCone.fst s ≫ a ≫ f := by rw [PullbackCone.condition_assoc]
                   _ = PullbackCone.fst s ≫ 0 := by rw [haf]
                   _ = 0 ≫ Limits.prod.fst := by rw [comp_zero, zero_comp])
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.snd =
                       PullbackCone.snd s ≫ b ≫ g := by
-                    simp only [prod.lift_snd, Category.assoc]
+                    simp [prod.lift_snd, Category.assoc]
                   _ = PullbackCone.snd s ≫ 0 := by rw [hbg]
                   _ = 0 ≫ Limits.prod.snd := by rw [comp_zero, zero_comp]))
           (fun s =>
@@ -119,8 +119,8 @@ lemma hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f
         Fork.IsLimit.mk _
           (fun s =>
             pullback.lift (Fork.ι s) (Fork.ι s) <|
-              Limits.prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
-                (by simp only [prod.comp_lift, Fork.condition s]))
+              Limits.prod.hom_ext (by simp [prod.lift_fst, Category.assoc])
+                (by simp [prod.comp_lift, Fork.condition s]))
           (fun s => by simp) fun s m h =>
           pullback.hom_ext (by simpa only [pullback.lift_fst] using! h)
             (by simpa only [huv.symm, pullback.lift_fst] using! h) }
@@ -262,14 +262,14 @@ lemma hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPa
       (pushout.inl _ _ : Y ⟶ Q f g) = 𝟙 _ ≫ pushout.inl _ _ := Eq.symm <| Category.id_comp _
       _ = (coprod.inl ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl _ _ := by rw [coprod.inl_desc]
       _ = (coprod.inl ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr _ _ := by
-        simp only [Category.assoc, pushout.condition]
+        simp [Category.assoc, pushout.condition]
       _ = pushout.inr _ _ := by rw [coprod.inl_desc, Category.id_comp]
   have hvu : f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = g ≫ pushout.inr _ _ :=
     calc
       f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = (coprod.inr ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl _ _ := by
         rw [coprod.inr_desc]
       _ = (coprod.inr ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr _ _ := by
-        simp only [Category.assoc, pushout.condition]
+        simp [Category.assoc, pushout.condition]
       _ = g ≫ pushout.inr _ _ := by rw [coprod.inr_desc]
   have huu : f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = g ≫ pushout.inl _ _ := by rw [hvu, huv]
   HasColimit.mk
@@ -278,9 +278,9 @@ lemma hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPa
         Cofork.IsColimit.mk _
           (fun s =>
             pushout.desc (Cofork.π s) (Cofork.π s) <|
-              coprod.hom_ext (by simp only [coprod.inl_desc_assoc])
-                (by simp only [coprod.desc_comp, Cofork.condition s]))
-          (fun s => by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
+              coprod.hom_ext (by simp [coprod.inl_desc_assoc])
+                (by simp [coprod.desc_comp, Cofork.condition s]))
+          (fun s => by simp [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
           pushout.hom_ext (by simpa only [pushout.inl_desc] using! h)
             (by simpa only [huv.symm, pushout.inl_desc] using! h) }
 

@@ -27,7 +27,7 @@ variable {X : Type*} [TopologicalSpace X] {s : Set X}
 theorem IsCompact.nhdsKer_iff : IsCompact (nhdsKer s) ↔ IsCompact s := by
   simp only [isCompact_iff_finite_subcover]
   congr! with ι U hUo
-  simp only [(isOpen_iUnion hUo).nhdsKer_subset,
+  simp [(isOpen_iUnion hUo).nhdsKer_subset,
     (isOpen_iUnion fun i ↦ isOpen_iUnion fun _ ↦ hUo i).nhdsKer_subset]
 
 protected alias ⟨IsCompact.of_nhdsKer, IsCompact.nhdsKer⟩ := IsCompact.nhdsKer_iff

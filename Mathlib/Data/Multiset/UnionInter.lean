@@ -211,7 +211,7 @@ lemma coe_inter (s t : List α) : (s ∩ t : Multiset α) = (s.bagInter t : List
 
 instance instDistribLattice : DistribLattice (Multiset α) where
   le_sup_inf s t u := ge_of_eq <| ext.2 fun a ↦ by
-    simp only [max_min_distrib_left, Multiset.count_inter, Multiset.sup_eq_union,
+    simp [max_min_distrib_left, Multiset.count_inter, Multiset.sup_eq_union,
       Multiset.count_union, Multiset.inf_eq_inter]
 
 @[simp] lemma filter_inter (p : α → Prop) [DecidablePred p] (s t : Multiset α) :
@@ -226,8 +226,8 @@ theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
   ext y
   rw [count_inter, count_replicate, count_replicate]
   by_cases h : x = y
-  · simp only [h, ite_true]
-  · simp only [h, ite_false, Nat.zero_min]
+  · simp [h, ite_true]
+  · simp [h, ite_false, Nat.zero_min]
 
 @[simp]
 theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :

@@ -56,7 +56,7 @@ instance isOrderedMonoid [CommMonoid α] [Preorder α] [MulLeftStrictMono α]
   mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left hxy _)
     (fun hxy => le_iff.2 <|
-      Or.inr ⟨by simp only [ofLex_mul, fst_mul, hxy.1], mul_le_mul_left hxy.2 _⟩)
+      Or.inr ⟨by simp [ofLex_mul, fst_mul, hxy.1], mul_le_mul_left hxy.2 _⟩)
 
 @[to_additive]
 instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]

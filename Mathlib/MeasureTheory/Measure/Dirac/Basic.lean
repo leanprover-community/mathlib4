@@ -138,7 +138,7 @@ theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass 
   calc
     (∑' x : α, s.indicator (fun x => μ {x}) x) =
       Measure.sum (fun a => μ {a} • Measure.dirac a) s := by
-      simp only [Measure.sum_apply _ hs, smul_apply, smul_eq_mul, Measure.dirac_apply,
+      simp [Measure.sum_apply _ hs, smul_apply, smul_eq_mul, Measure.dirac_apply,
         Set.indicator_apply, mul_ite, Pi.one_apply, mul_one, mul_zero]
     _ = μ s := by rw [μ.sum_smul_dirac]
 
@@ -251,10 +251,10 @@ lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
   · intro h
     ext A A_mble
     by_cases x_in_A : x ∈ A
-    · simp only [Measure.dirac_apply' _ A_mble, x_in_A, indicator_of_mem, Pi.one_apply,
+    · simp [Measure.dirac_apply' _ A_mble, x_in_A, indicator_of_mem, Pi.one_apply,
                  (h A A_mble).mp x_in_A]
     · have y_notin_A : y ∉ A := by simp_all only [not_false_eq_true]
-      simp only [Measure.dirac_apply' _ A_mble, x_in_A, y_notin_A,
+      simp [Measure.dirac_apply' _ A_mble, x_in_A, y_notin_A,
                  not_false_eq_true, indicator_of_notMem]
 
 /-- Dirac delta measures at two points are different if and only if there is a measurable set
@@ -263,9 +263,9 @@ lemma dirac_ne_dirac_iff_exists_measurableSet {x y : α} :
     Measure.dirac x ≠ Measure.dirac y ↔ ∃ A, MeasurableSet A ∧ x ∈ A ∧ y ∉ A := by
   apply not_iff_not.mp
   simp only [ne_eq, not_not, not_exists, not_and, dirac_eq_dirac_iff_forall_mem_iff_mem]
-  refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
+  refine ⟨fun h A A_mble ↦ by simp [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
   by_cases x_in_A : x ∈ A
-  · simp only [x_in_A, h A A_mble x_in_A]
+  · simp [x_in_A, h A A_mble x_in_A]
   · simpa only [x_in_A, false_iff] using! h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
 
 open MeasurableSpace

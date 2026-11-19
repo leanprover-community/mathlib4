@@ -65,9 +65,9 @@ theorem mem_nonZeroDivisorsRight_of_constantCoeff {φ : MvPowerSeries σ R}
   convert (coeff_mul e x φ).symm
   rw [Finset.sum_eq_single (e, 0), coeff_zero_eq_constantCoeff]
   · rintro ⟨u, _⟩ huv _
-    suffices u < e by simp only [he u this, zero_mul, map_zero]
+    suffices u < e by simp [he u this, zero_mul, map_zero]
     apply lt_of_le_of_ne
-    · simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_right, zero_le]
+    · simp [← mem_antidiagonal.mp huv, le_add_iff_nonneg_right, zero_le]
     · rintro rfl
       simp_all
   · simp
@@ -86,12 +86,12 @@ theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
   convert (coeff_mul e φ x).symm
   rw [Finset.sum_eq_single (0, e), coeff_zero_eq_constantCoeff]
   · rintro ⟨_, u⟩ huv _
-    suffices u < e by simp only [he u this, mul_zero, map_zero]
+    suffices u < e by simp [he u this, mul_zero, map_zero]
     apply lt_of_le_of_ne
-    · simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_left, zero_le]
+    · simp [← mem_antidiagonal.mp huv, le_add_iff_nonneg_left, zero_le]
     · rintro rfl
       simp_all
-  · simp only [mem_antidiagonal, zero_add, not_true_eq_false, coeff_zero_eq_constantCoeff,
+  · simp [mem_antidiagonal, zero_add, not_true_eq_false, coeff_zero_eq_constantCoeff,
       false_implies]
 
 /-- A multivariate power series is not a zero divisor

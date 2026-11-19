@@ -120,7 +120,7 @@ lemma _root_.CovBy.exists_finset_erase (h : s ⋖ t) : ∃ a ∈ t, t.erase a = 
   simpa only [← coe_inj, coe_erase] using! h.finset_coe.exists_set_sdiff_singleton
 
 lemma covBy_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t := by
-  simp only [← coe_covBy_coe, Set.covBy_iff_exists_insert, ← coe_inj, coe_insert, mem_coe]
+  simp [← coe_covBy_coe, Set.covBy_iff_exists_insert, ← coe_inj, coe_insert, mem_coe]
 
 lemma covBy_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ #(s \ t) = 1 := by
   rw [covBy_iff_exists_insert]
@@ -133,7 +133,7 @@ lemma covBy_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ #(s \ t) = 1 := by
     rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 lemma covBy_iff_exists_erase : s ⋖ t ↔ ∃ a ∈ t, t.erase a = s := by
-  simp only [← coe_covBy_coe, Set.covBy_iff_exists_sdiff_singleton, ← coe_inj, coe_erase, mem_coe]
+  simp [← coe_covBy_coe, Set.covBy_iff_exists_sdiff_singleton, ← coe_inj, coe_erase, mem_coe]
 
 end DecidableEq
 

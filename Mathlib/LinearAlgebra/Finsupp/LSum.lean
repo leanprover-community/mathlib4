@@ -46,7 +46,7 @@ theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddCommMonoi
     [AddCommMonoid M₂] [Module R₂ M₂] {σ : R →+* R₂} {v : α →₀ M} {c : R} {h : α → M →ₛₗ[σ] M₂} :
     ((c • v).sum fun a => h a) = σ c • v.sum fun a => h a := by
   rw [Finsupp.sum_smul_index', Finsupp.smul_sum]
-  · simp only [map_smulₛₗ]
+  · simp [map_smulₛₗ]
   · intro i
     exact (h i).map_zero
 
@@ -160,7 +160,7 @@ noncomputable def llift : (X → M) ≃ₗ[S] (X →₀ R) →ₗ[R] M :=
       intros
       dsimp
       ext
-      simp only [coe_comp, Function.comp_apply, lsingle_apply, lift_apply, Pi.smul_apply,
+      simp [coe_comp, Function.comp_apply, lsingle_apply, lift_apply, Pi.smul_apply,
         sum_single_index, zero_smul, one_smul, LinearMap.smul_apply] }
 
 @[simp]

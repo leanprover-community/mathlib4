@@ -52,7 +52,7 @@ section Evaluation
 
 @[simp]
 theorem bernoulliFun_zero (x : ℝ) : bernoulliFun 0 x = 1 := by
-  simp only [bernoulliFun, Polynomial.bernoulli_zero, Polynomial.map_one, Polynomial.eval_one]
+  simp [bernoulliFun, Polynomial.bernoulli_zero, Polynomial.map_one, Polynomial.eval_one]
 
 @[simp]
 theorem bernoulliFun_one (x : ℝ) : bernoulliFun 1 x = x - 1 / 2 := by
@@ -86,7 +86,7 @@ section Calculus
 theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (bernoulliFun k) (k * bernoulliFun (k - 1) x) x := by
   convert! ((Polynomial.bernoulli k).map <| algebraMap ℚ ℝ).hasDerivAt x using 1
-  simp only [bernoulliFun, Polynomial.derivative_map, Polynomial.derivative_bernoulli k,
+  simp [bernoulliFun, Polynomial.derivative_map, Polynomial.derivative_bernoulli k,
     Polynomial.map_mul, Polynomial.map_natCast, Polynomial.eval_mul, Polynomial.eval_natCast]
 
 variable (k : ℕ)
@@ -234,7 +234,7 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
   rw [QuotientAddGroup.mk_zero, fourier_eval_zero, one_mul, ← ofReal_sub, bernoulliFun_eval_one,
     add_sub_cancel_left]
   congr 2
-  · split_ifs <;> simp only [ofReal_one, ofReal_zero]
+  · split_ifs <;> simp [ofReal_one, ofReal_zero]
   · simp_rw [ofReal_mul, ofReal_natCast, fourierCoeffOn.const_mul]
 
 /-- The Fourier coefficients of `B₀(x) = 1`. -/
@@ -295,7 +295,7 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
   refine Summable.mul_left _ <| .of_norm ?_
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
-    simp only [one_div, norm_inv, norm_pow, norm_intCast, pow_abs, abs_inv]
+    simp [one_div, norm_inv, norm_pow, norm_intCast, pow_abs, abs_inv]
   simp_rw [this]
   rwa [summable_abs_iff, Real.summable_one_div_int_pow]
 

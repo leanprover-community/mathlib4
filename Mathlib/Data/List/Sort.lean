@@ -512,24 +512,24 @@ variable {n : ℕ} {f : Fin n → α}
 
 /-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
 @[simp] theorem sortedLE_ofFn_iff : (ofFn f).SortedLE ↔ Monotone f := by
-  simp only [sortedLE_iff_monotone_get, Monotone, Fin.forall_iff,
+  simp [sortedLE_iff_monotone_get, Monotone, Fin.forall_iff,
     length_ofFn, get_ofFn, Fin.cast_mk, Fin.mk_le_mk]
 
 /-- The list `List.ofFn f` is sorted with respect to `(· ≥ ·)` if and only if `f` is antitone. -/
 @[simp] theorem sortedGE_ofFn_iff : (ofFn f).SortedGE ↔ Antitone f := by
-  simp only [sortedGE_iff_antitone_get, Antitone, Fin.forall_iff,
+  simp [sortedGE_iff_antitone_get, Antitone, Fin.forall_iff,
     length_ofFn, get_ofFn, Fin.cast_mk, Fin.mk_le_mk]
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
 @[simp] theorem sortedLT_ofFn_iff : (ofFn f).SortedLT ↔ StrictMono f := by
-  simp only [sortedLT_iff_strictMono_get, StrictMono, Fin.forall_iff,
+  simp [sortedLT_iff_strictMono_get, StrictMono, Fin.forall_iff,
     length_ofFn, get_ofFn, Fin.cast_mk, Fin.mk_lt_mk]
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≥ ·)` if and only if `f` is
 strictly antitone. -/
 @[simp] theorem sortedGT_ofFn_iff : (ofFn f).SortedGT ↔ StrictAnti f := by
-  simp only [sortedGT_iff_strictAnti_get, StrictAnti, Fin.forall_iff,
+  simp [sortedGT_iff_strictAnti_get, StrictAnti, Fin.forall_iff,
     length_ofFn, get_ofFn, Fin.cast_mk, Fin.mk_lt_mk]
 
 /-- The list obtained from a monotone tuple is sorted. -/

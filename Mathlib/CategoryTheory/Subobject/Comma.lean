@@ -100,7 +100,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
   toFun P := ⟨projectSubobject P, projectSubobject_factors P⟩
   invFun P := liftSubobject P.val P.prop.choose_spec
   left_inv _ := lift_projectSubobject _ _
-  right_inv P := Subtype.ext (by simp only [liftSubobject, homMk_right, projectSubobject_mk,
+  right_inv P := Subtype.ext (by simp [liftSubobject, homMk_right, projectSubobject_mk,
       Subobject.mk_arrow])
   map_rel_iff' := by
     apply Subobject.ind₂
@@ -198,7 +198,7 @@ theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (Costruc
     enter [1]
     rw [← Quiver.Hom.unop_op g.unop.left]
   rw [← unop_comp]
-  simp only [Subobject.ofMkLEMk_comp, Quiver.Hom.unop_op]
+  simp [Subobject.ofMkLEMk_comp, Quiver.Hom.unop_op]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `A : S.obj B ⟶ T` is a costructured arrow for `S : C ⥤ D` and `T : D`, then we can
@@ -209,7 +209,7 @@ def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : Costruc
   toFun P := ⟨projectQuotient P, projectQuotient_factors P⟩
   invFun P := liftQuotient P.val P.prop.choose_spec
   left_inv _ := lift_projectQuotient _ _
-  right_inv P := Subtype.ext (by simp only [liftQuotient, Quiver.Hom.unop_op, homMk_left,
+  right_inv P := Subtype.ext (by simp [liftQuotient, Quiver.Hom.unop_op, homMk_left,
       Quiver.Hom.op_unop, projectQuotient_mk, Subobject.mk_arrow])
   map_rel_iff' := by
     apply Subobject.ind₂
@@ -217,7 +217,7 @@ def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : Costruc
     refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
     · refine (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 ?_)).op
       dsimp
-      simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,
+      simp [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,
         right_eq_id, Functor.const_obj_map]
     · apply Quiver.Hom.unop_inj
       ext

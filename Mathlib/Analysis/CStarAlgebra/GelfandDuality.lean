@@ -147,7 +147,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     self-adjoint, so also do their norms. Applying the C⋆-property of the norm and taking square
     roots shows that the norm is preserved. -/
   have : spectralRadius ℂ (gelfandTransform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
-    simp only [spectralRadius_eq_of_unital, spectrum.gelfandTransform_eq]
+    simp [spectralRadius_eq_of_unital, spectrum.gelfandTransform_eq]
   rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnNorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnNorm] at this
   simp only [ENNReal.coe_inj, CStarRing.nnNorm_star_mul_self, ← sq] at this
@@ -167,7 +167,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
         use star a
         ext1 φ
         dsimp
-        simp only [map_star, RCLike.star_def] }
+        simp [map_star, RCLike.star_def] }
   suffices rng = ⊤ from
     fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the

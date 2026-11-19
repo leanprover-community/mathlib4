@@ -146,11 +146,11 @@ theorem empty_notMem : ∅ ∉ f :=
 
 @[simp]
 theorem le_sup_iff {u : Ultrafilter α} {f g : Filter α} : ↑u ≤ f ⊔ g ↔ ↑u ≤ f ∨ ↑u ≤ g :=
-  not_iff_not.1 <| by simp only [← disjoint_iff_not_le, not_or, disjoint_sup_right]
+  not_iff_not.1 <| by simp [← disjoint_iff_not_le, not_or, disjoint_sup_right]
 
 @[simp]
 theorem union_mem_iff : s ∪ t ∈ f ↔ s ∈ f ∨ t ∈ f := by
-  simp only [← mem_coe, ← le_principal_iff, ← sup_principal, le_sup_iff]
+  simp [← mem_coe, ← le_principal_iff, ← sup_principal, le_sup_iff]
 
 theorem mem_or_compl_mem (f : Ultrafilter α) (s : Set α) : s ∈ f ∨ sᶜ ∈ f :=
   or_iff_not_imp_left.2 compl_mem_iff_notMem.2
@@ -166,7 +166,7 @@ theorem eventually_not : (∀ᶠ x in f, ¬p x) ↔ ¬∀ᶠ x in f, p x :=
   compl_mem_iff_notMem
 
 theorem eventually_imp : (∀ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) → ∀ᶠ x in f, q x := by
-  simp only [imp_iff_not_or, eventually_or, eventually_not]
+  simp [imp_iff_not_or, eventually_or, eventually_not]
 
 /-- Pushforward for ultrafilters. -/
 nonrec def map (m : α → β) (f : Ultrafilter α) : Ultrafilter β :=
@@ -200,7 +200,7 @@ nonrec def comap {m : α → β} (u : Ultrafilter β) (inj : Injective m) (large
   toFilter := comap m u
   neBot' := u.neBot'.comap_of_range_mem large
   le_of_le g hg hgu := by
-    simp only [← u.unique (map_le_iff_le_comap.2 hgu), comap_map inj, le_rfl]
+    simp [← u.unique (map_le_iff_le_comap.2 hgu), comap_map inj, le_rfl]
 
 @[simp]
 theorem mem_comap {m : α → β} (u : Ultrafilter β) (inj : Injective m) (large : Set.range m ∈ u)
@@ -263,7 +263,7 @@ instance [Nonempty α] : Nonempty (Ultrafilter α) :=
 defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
   ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
-    simp only [mem_bind', mem_coe, ← compl_mem_iff_notMem, compl_ofPred, compl_compl]
+    simp [mem_bind', mem_coe, ← compl_mem_iff_notMem, compl_ofPred, compl_compl]
 
 instance instBind : Bind Ultrafilter :=
   ⟨@Ultrafilter.bind⟩
@@ -349,7 +349,7 @@ theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : U
 /-- A filter equals the intersection of all the ultrafilters which contain it. -/
 theorem iSup_ultrafilter_le_eq (f : Filter α) :
     ⨆ (g : Ultrafilter α) (_ : g ≤ f), (g : Filter α) = f :=
-  eq_of_forall_ge_iff fun f' => by simp only [iSup_le_iff, ← le_iff_ultrafilter]
+  eq_of_forall_ge_iff fun f' => by simp [iSup_le_iff, ← le_iff_ultrafilter]
 
 theorem exists_ultrafilter_iff {f : Filter α} : (∃ u : Ultrafilter α, ↑u ≤ f) ↔ NeBot f :=
   ⟨fun ⟨_, uf⟩ => neBot_of_le uf, fun h => @exists_ultrafilter_le _ _ h⟩

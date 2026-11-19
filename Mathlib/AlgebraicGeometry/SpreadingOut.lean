@@ -223,7 +223,7 @@ lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
   have := ConcreteCategory.mono_of_injective _ HU
   rw [← cancel_mono (X.presheaf.germ U x hxU)]
   simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.Hom.germ_stalkMap, H]
-  simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.Hom.germ_stalkMap]
+  simp [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.Hom.germ_stalkMap]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /--

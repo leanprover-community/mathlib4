@@ -283,7 +283,7 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
     push_cast
     grind [Complex.I_sq]
   rw [fourierCoeffOn_eq_integral, sub_zero]
-  simp only [key, intervalIntegral.integral_const_mul, hint, mul_zero, smul_zero]
+  simp [key, intervalIntegral.integral_const_mul, hint, mul_zero, smul_zero]
 
 /-- **Parseval's identity** for the `q`-expansion: the sum of the squared norms of the
 `q`-expansion coefficients, weighted by `exp (-4 * π * n * y / h)`, is the mean square of `f`

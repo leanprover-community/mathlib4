@@ -287,7 +287,7 @@ theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
     changeForm h (d⌋x) = d⌋(changeForm h x) := by
   induction x using CliffordAlgebra.left_induction with
-  | algebraMap => simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]
+  | algebraMap => simp [contractLeft_algebraMap, changeForm_algebraMap, map_zero]
   | add _ _ hx hy => rw [map_add, map_add, map_add, map_add, hx, hy]
   | ι_mul _ _ hx =>
     simp only [contractLeft_ι_mul, changeForm_ι_mul, map_sub, map_smul]

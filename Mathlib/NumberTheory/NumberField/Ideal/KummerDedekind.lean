@@ -273,7 +273,7 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
   rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
     emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
     (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral]
-  · simp only [primesOverSpanEquivMonicFactorsMod_symm_apply,
+  · simp [primesOverSpanEquivMonicFactorsMod_symm_apply,
       Equiv.apply_symm_apply (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk _ _ _ _),
       Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom, mapEquiv_apply]
   · rw [← mem_primesOver_iff_mem_normalizedFactors _ (by simp [NeZero.ne p])]

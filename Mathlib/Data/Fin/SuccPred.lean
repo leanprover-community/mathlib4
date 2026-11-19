@@ -236,7 +236,7 @@ theorem coe_eq_castSucc {a : Fin n} : ((a : Nat) : Fin (n + 1)) = castSucc a := 
 
 open Fin.NatCast in
 theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j < k := by
-  simp only [coe_eq_castSucc, castSucc_lt_castSucc_iff]
+  simp [coe_eq_castSucc, castSucc_lt_castSucc_iff]
 
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
@@ -620,7 +620,7 @@ lemma succAbove_ne_last (a : Fin (n + 2)) {b : Fin (n + 1)} (hb : b ≠ last _) 
 
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around `last n` embeds by `castSucc`. -/
 @[simp] lemma succAbove_last : succAbove (last n) = castSucc := by
-  ext; simp only [succAbove_of_castSucc_lt, castSucc_lt_last]
+  ext; simp [succAbove_of_castSucc_lt, castSucc_lt_last]
 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 
@@ -662,7 +662,7 @@ lemma castPred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : castSucc x < y)
 
 lemma pred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : y ≤ castSucc x)
     (h' := Fin.ne_zero_of_lt <| (lt_succAbove_iff_le_castSucc ..).2 h) :
-    (y.succAbove x).pred h' = x := by simp only [succAbove_of_le_castSucc _ _ h, pred_succ]
+    (y.succAbove x).pred h' = x := by simp [succAbove_of_le_castSucc _ _ h, pred_succ]
 
 lemma exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove z = x := by
   obtain hxy | hyx := Fin.lt_or_lt_of_ne h

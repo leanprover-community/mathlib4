@@ -123,12 +123,12 @@ theorem asAlgebraHom_def : asAlgebraHom ρ = lift k _ G ρ := rfl
 @[simp]
 theorem asAlgebraHom_single (g : G) (r : k) :
     asAlgebraHom ρ (MonoidAlgebra.single g r) = r • ρ g := by
-  simp only [asAlgebraHom_def, MonoidAlgebra.lift_single]
+  simp [asAlgebraHom_def, MonoidAlgebra.lift_single]
 
 theorem asAlgebraHom_single_one (g : G) : asAlgebraHom ρ (MonoidAlgebra.single g 1) = ρ g := by simp
 
 theorem asAlgebraHom_of (g : G) : asAlgebraHom ρ (of k G g) = ρ g := by
-  simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul]
+  simp [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul]
 
 section
 
@@ -229,13 +229,13 @@ theorem ofModule_asAlgebraHom_apply_apply (r : k[G])
       (RestrictScalars.addEquiv _ _ _).symm (r • RestrictScalars.addEquiv _ _ _ m) := by
   apply MonoidAlgebra.induction_on r
   · intro g
-    simp only [one_smul, MonoidAlgebra.lift_symm_apply, MonoidAlgebra.of_apply,
+    simp [one_smul, MonoidAlgebra.lift_symm_apply, MonoidAlgebra.of_apply,
       Representation.asAlgebraHom_single, Representation.ofModule,
       RestrictScalars.lsmul_apply_apply]
   · intro f g fw gw
-    simp only [fw, gw, map_add, add_smul, LinearMap.add_apply]
+    simp [fw, gw, map_add, add_smul, LinearMap.add_apply]
   · intro r f w
-    simp only [w, map_smul, LinearMap.smul_apply, RestrictScalars.addEquiv_symm_map_smul_smul]
+    simp [w, map_smul, LinearMap.smul_apply, RestrictScalars.addEquiv_symm_map_smul_smul]
 
 @[simp]
 theorem ofModule_asModule_act (g : G) (x : RestrictScalars k k[G] ρ.asModule) :
@@ -249,7 +249,7 @@ theorem smul_ofModule_asModule (r : k[G]) (m : (ofModule M).asModule) :
     (RestrictScalars.addEquiv k _ _) ((ofModule M).asModuleEquiv (r • m)) =
       r • (RestrictScalars.addEquiv k _ _) ((ofModule M).asModuleEquiv (G := G) m) := by
   dsimp
-  simp only [AddEquiv.apply_symm_apply, ofModule_asAlgebraHom_apply_apply]
+  simp [AddEquiv.apply_symm_apply, ofModule_asAlgebraHom_apply_apply]
 
 end
 
@@ -513,7 +513,7 @@ def asGroupHom : G →* Units (V →ₗ[k] V) :=
   MonoidHom.toHomUnits ρ
 
 theorem asGroupHom_apply (g : G) : ↑(asGroupHom ρ g) = ρ g := by
-  simp only [asGroupHom, MonoidHom.coe_toHomUnits]
+  simp [asGroupHom, MonoidHom.coe_toHomUnits]
 
 section Finite
 
@@ -617,8 +617,8 @@ tensor product `V ⊗[k] W`.
 -/
 noncomputable def tprod : Representation k G (V ⊗[k] W) where
   toFun g := TensorProduct.map (ρV g) (ρW g)
-  map_one' := by simp only [map_one, TensorProduct.map_one]
-  map_mul' g h := by simp only [map_mul, TensorProduct.map_mul]
+  map_one' := by simp [map_one, TensorProduct.map_one]
+  map_mul' g h := by simp [map_mul, TensorProduct.map_mul]
 
 local notation ρV " ⊗ " ρW => tprod ρV ρW
 
@@ -639,7 +639,7 @@ theorem smul_one_tprod_asModule (r : k[G]) (x : V) (y : W) :
   change asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
     LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, one_apply_eq_self]
-  simp only [Finsupp.sum, TensorProduct.tmul_sum, TensorProduct.tmul_smul]
+  simp [Finsupp.sum, TensorProduct.tmul_sum, TensorProduct.tmul_smul]
 
 end TensorProduct
 
@@ -670,7 +670,7 @@ where `f : Module.Dual k V`.
 def dual : Representation k G (Module.Dual k V) where
   toFun g :=
     { toFun := fun f => f ∘ₗ ρV g⁻¹
-      map_add' := fun f₁ f₂ => by simp only [add_comp]
+      map_add' := fun f₁ f₂ => by simp [add_comp]
       map_smul' r f := by ext; simp }
   map_one' := by ext; simp
   map_mul' g h := by ext; simp

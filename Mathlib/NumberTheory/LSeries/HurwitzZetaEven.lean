@@ -504,7 +504,7 @@ lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · apply (((summable_one_div_int_add_rpow 0 s.re).mpr hs).div_const 2).of_norm_bounded
     intro i
-    simp only [c, (by { push_cast; ring } : 2 * π * I * a * i = ↑(2 * π * a * i) * I), norm_div,
+    simp [c, (by { push_cast; ring } : 2 * π * I * a * i = ↑(2 * π * a * i) * I), norm_div,
       RCLike.norm_ofNat, Complex.norm_exp_ofReal_mul_I, add_zero, norm_one,
       norm_of_nonneg (by positivity : 0 ≤ |(i : ℝ)| ^ s.re), div_right_comm, le_rfl]
   · simp [c, ← Int.cast_abs, div_right_comm, mul_div_assoc]
@@ -520,8 +520,8 @@ lemma hasSum_nat_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   rw [aux, div_zero, zero_div, add_zero] at hint
   refine hint.congr_fun fun n ↦ ?_
   split_ifs with h
-  · simp only [h, Nat.cast_zero, aux, div_zero, zero_div, neg_zero, zero_add]
-  · simp only [ofReal_cos, ofReal_mul, ofReal_ofNat, ofReal_natCast, Complex.cos,
+  · simp [h, Nat.cast_zero, aux, div_zero, zero_div, neg_zero, zero_add]
+  · simp [ofReal_cos, ofReal_mul, ofReal_ofNat, ofReal_natCast, Complex.cos,
       show 2 * π * a * n * I = 2 * π * I * a * n by ring, neg_mul, mul_div_assoc,
       div_right_comm _ (2 : ℂ), Int.cast_natCast, Nat.abs_cast, Int.cast_neg, mul_neg, abs_neg, ←
       mul_add, ← add_div]
@@ -669,7 +669,7 @@ lemma hasSum_int_hurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℤ ↦ 1 / (↑|n + a| : ℂ) ^ s / 2) (hurwitzZetaEven a s) := by
   rw [hurwitzZetaEven, Function.update_of_ne (ne_zero_of_one_lt_re hs)]
   have := (hasSum_int_completedHurwitzZetaEven a hs).div_const (Gammaℝ s)
-  exact this.congr_fun fun n ↦ by simp only [div_right_comm _ _ (Gammaℝ _),
+  exact this.congr_fun fun n ↦ by simp [div_right_comm _ _ (Gammaℝ _),
     div_self (Gammaℝ_ne_zero_of_re_pos (zero_lt_one.trans hs))]
 
 /-- Formula for `hurwitzZetaEven` as a Dirichlet series in the convergence range, with sum over `ℕ`

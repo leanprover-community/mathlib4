@@ -72,7 +72,7 @@ theorem _root_.IsTop.atTop_eq [Preorder α] {a : α} (ha : IsTop a) : atTop = �
 
 @[to_dual]
 theorem atTop_eq_generate_Ici [Preorder α] : atTop = generate (range (Ici (α := α))) := by
-  simp only [generate_eq_biInf, atTop, iInf_range]
+  simp [generate_eq_biInf, atTop, iInf_range]
 
 @[to_dual]
 theorem Frequently.forall_exists_of_atTop [Preorder α] {p : α → Prop}
@@ -113,9 +113,9 @@ theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type*} [Preorder ι
     ∀ᶠ i in atTop, (s i).piecewise f g a = (⋃ i, s i).piecewise f g a := by
   rcases em (∃ i, a ∈ s i) with ⟨i, hi⟩ | ha
   · refine (eventually_ge_atTop i).mono fun j hij ↦ ?_
-    simp only [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
+    simp [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
   · filter_upwards with i
-    simp only [Set.piecewise_eq_of_notMem, not_exists.1 ha i, mt mem_iUnion.1 ha,
+    simp [Set.piecewise_eq_of_notMem, not_exists.1 ha i, mt mem_iUnion.1 ha,
       not_false_eq_true]
 
 theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι] {s : ι → Set α}
@@ -125,4 +125,4 @@ theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι
   classical
   convert! ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
   · convert! congr_fun (Set.piecewise_compl (s _) g f) a
-  · simp only [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]
+  · simp [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]

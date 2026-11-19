@@ -349,7 +349,7 @@ theorem HasFPowerSeriesAt.eventually_eq_zero
 
 @[simp] lemma hasFPowerSeriesWithinAt_univ :
     HasFPowerSeriesWithinAt f p univ x ↔ HasFPowerSeriesAt f p x := by
-  simp only [HasFPowerSeriesWithinAt, hasFPowerSeriesWithinOnBall_univ, HasFPowerSeriesAt]
+  simp [HasFPowerSeriesWithinAt, hasFPowerSeriesWithinOnBall_univ, HasFPowerSeriesAt]
 
 lemma HasFPowerSeriesWithinOnBall.mono (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : t ⊆ s) :
     HasFPowerSeriesWithinOnBall f p t x r where
@@ -450,7 +450,7 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
 
 @[simp] lemma analyticOn_univ {f : E → F} :
     AnalyticOn 𝕜 f univ ↔ AnalyticOnNhd 𝕜 f univ := by
-  simp only [AnalyticOn, analyticWithinAt_univ, AnalyticOnNhd]
+  simp [AnalyticOn, analyticWithinAt_univ, AnalyticOnNhd]
 
 lemma AnalyticWithinAt.mono (hf : AnalyticWithinAt 𝕜 f s x) (h : t ⊆ s) :
     AnalyticWithinAt 𝕜 f t x := by
@@ -784,7 +784,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
       fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   lift r' to ℝ≥0 using ne_top_of_lt hr
   rcases eq_zero_or_pos r' with (rfl | hr'0)
-  · simp only [ENNReal.coe_zero, Metric.eball_zero, empty_inter, principal_empty, isBigO_bot]
+  · simp [ENNReal.coe_zero, Metric.eball_zero, empty_inter, principal_empty, isBigO_bot]
   obtain ⟨a, ha, C, hC : 0 < C, hp⟩ :
       ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ n : ℕ, ‖p n‖ * (r' : ℝ) ^ n ≤ C * a ^ n :=
     p.norm_mul_pow_le_mul_pow_of_lt_radius (hr.trans_le hf.r_le)
@@ -828,7 +828,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
     have hBL : HasSum B (L y) := by
       apply HasSum.mul_left
       simp only [add_mul]
-      have : ‖a‖ < 1 := by simp only [Real.norm_eq_abs, abs_of_pos ha.1, ha.2]
+      have : ‖a‖ < 1 := by simp [Real.norm_eq_abs, abs_of_pos ha.1, ha.2]
       rw [div_eq_mul_inv, div_eq_mul_inv]
       exact (hasSum_coe_mul_geometric_of_norm_lt_one this).add
           ((hasSum_geometric_of_norm_lt_one this).mul_left 2)

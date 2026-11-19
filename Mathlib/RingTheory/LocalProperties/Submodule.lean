@@ -188,11 +188,11 @@ theorem Submodule.eq_of_isLocalized₀_span {N P : Submodule R M}
 
 theorem Submodule.eq_bot_of_isLocalized₀_span {N : Submodule R M}
     (h : ∀ r : s, N.localized₀ (.powers r.1) (f r) = ⊥) : N = ⊥ :=
-  eq_of_isLocalized₀_span s span_eq Mₚ f fun _ ↦ by simp only [h, Submodule.localized₀_bot]
+  eq_of_isLocalized₀_span s span_eq Mₚ f fun _ ↦ by simp [h, Submodule.localized₀_bot]
 
 theorem Submodule.eq_top_of_isLocalized₀_span {N : Submodule R M}
     (h : ∀ r : s, N.localized₀ (.powers r.1) (f r) = ⊤) : N = ⊤ :=
-  eq_of_isLocalized₀_span s span_eq Mₚ f fun _ ↦ by simp only [h, Submodule.localized₀_top]
+  eq_of_isLocalized₀_span s span_eq Mₚ f fun _ ↦ by simp [h, Submodule.localized₀_top]
 
 theorem Submodule.eq_of_isLocalized'_span {N P : Submodule R M}
     (h : ∀ r, N.localized' (Rₚ r) (.powers r.1) (f r) = P.localized' (Rₚ r) (.powers r.1) (f r)) :
@@ -201,10 +201,10 @@ theorem Submodule.eq_of_isLocalized'_span {N P : Submodule R M}
 
 theorem Submodule.eq_bot_of_isLocalized'_span {N : Submodule R M}
     (h : ∀ r : s, N.localized' (Rₚ r) (.powers r.1) (f r) = ⊥) : N = ⊥ :=
-  eq_of_isLocalized'_span s span_eq Rₚ Mₚ f fun _ ↦ by simp only [h, Submodule.localized'_bot]
+  eq_of_isLocalized'_span s span_eq Rₚ Mₚ f fun _ ↦ by simp [h, Submodule.localized'_bot]
 
 theorem Submodule.eq_top_of_isLocalized'_span {N : Submodule R M}
     (h : ∀ r : s, N.localized' (Rₚ r) (.powers r.1) (f r) = ⊤) : N = ⊤ :=
-  eq_of_isLocalized'_span s span_eq Rₚ Mₚ f fun _ ↦ by simp only [h, Submodule.localized'_top]
+  eq_of_isLocalized'_span s span_eq Rₚ Mₚ f fun _ ↦ by simp [h, Submodule.localized'_top]
 
 end span

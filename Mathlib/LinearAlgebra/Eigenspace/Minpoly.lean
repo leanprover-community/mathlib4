@@ -58,7 +58,7 @@ theorem aeval_apply_of_hasEigenvector (h : f.HasEigenvector μ x) :
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
     rw [mul_comm, pow_succ', mul_assoc, map_mul, mul_apply_eq_comp, mul_comm, hna]
-    simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
+    simp [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       map_smulₛₗ, RingHom.id_apply, mul_comm]
 
 /-- A variant of `Module.End.aeval_apply_of_hasEigenvector` which does not require `x ≠ 0`. -/

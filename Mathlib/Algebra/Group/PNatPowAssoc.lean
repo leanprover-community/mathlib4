@@ -61,10 +61,10 @@ theorem ppow_one (x : M) : x ^ (1 : ℕ+) = x :=
 
 theorem ppow_mul_assoc (k m n : ℕ+) (x : M) :
     (x ^ k * x ^ m) * x ^ n = x ^ k * (x ^ m * x ^ n) := by
-  simp only [← ppow_add, add_assoc]
+  simp [← ppow_add, add_assoc]
 
 theorem ppow_mul_comm (m n : ℕ+) (x : M) :
-    x ^ m * x ^ n = x ^ n * x ^ m := by simp only [← ppow_add, add_comm]
+    x ^ m * x ^ n = x ^ n * x ^ m := by simp [← ppow_add, add_comm]
 
 theorem ppow_mul (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^ n := by
   induction n with

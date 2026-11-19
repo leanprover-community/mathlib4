@@ -100,10 +100,10 @@ theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMult
   calc
     (toMultiset f).count a = Finsupp.sum f (fun x n => (n • {x} : Multiset α).count a) := by
       rw [toMultiset_apply]; exact map_sum (Multiset.countAddMonoidHom a) _ f.support
-    _ = f.sum fun x n => n * ({x} : Multiset α).count a := by simp only [Multiset.count_nsmul]
+    _ = f.sum fun x n => n * ({x} : Multiset α).count a := by simp [Multiset.count_nsmul]
     _ = f a * ({a} : Multiset α).count a :=
       sum_eq_single _
-        (fun a' _ H => by simp only [Multiset.count_singleton, ite_false, H.symm, mul_zero])
+        (fun a' _ H => by simp [Multiset.count_singleton, ite_false, H.symm, mul_zero])
         (fun _ => zero_mul _)
     _ = f a := by rw [Multiset.count_singleton_self, mul_one]
 
@@ -141,7 +141,7 @@ def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
         Multiset.count_singleton, mul_boole, Finsupp.coe_mk, Finsupp.mem_support_iff,
         Multiset.count_nsmul, Finset.sum_ite_eq, ite_not, ite_eq_right_iff]
       exact Eq.symm
-  left_inv s := by simp only [Finsupp.toMultiset_apply, Finsupp.sum, Finsupp.coe_mk,
+  left_inv s := by simp [Finsupp.toMultiset_apply, Finsupp.sum, Finsupp.coe_mk,
     Multiset.toFinset_sum_count_nsmul_eq]
 
 @[simp]

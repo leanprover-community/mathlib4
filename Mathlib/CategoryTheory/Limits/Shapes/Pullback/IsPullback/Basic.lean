@@ -73,7 +73,7 @@ theorem of_horiz_isIso_mono [IsIso fst] [Mono g] (sq : CommSq fst snd f g) :
       refine
         PullbackCone.IsLimit.mk _ (fun s => s.fst ≫ inv fst) (by simp)
           (fun s => ?_) (by cat_disch)
-      simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
+      simp [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 
 theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) :
     IsPullback fst snd f g :=
@@ -111,10 +111,10 @@ lemma of_iso' (h : IsPullback fst snd f g)
     (commg : e₃.hom ≫ g = g' ≫ e₄.hom) :
     IsPullback fst' snd' f' g' := by
   apply h.of_iso e₁.symm e₂.symm e₃.symm e₄.symm
-  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commfst, Iso.inv_hom_id_assoc]
-  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commsnd, Iso.inv_hom_id_assoc]
-  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commf, Iso.inv_hom_id_assoc]
-  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commg, Iso.inv_hom_id_assoc]
+  · simp [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commfst, Iso.inv_hom_id_assoc]
+  · simp [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commsnd, Iso.inv_hom_id_assoc]
+  · simp [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commf, Iso.inv_hom_id_assoc]
+  · simp [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commg, Iso.inv_hom_id_assoc]
 
 section
 
@@ -284,7 +284,7 @@ theorem of_bot' {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ :
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₃₁ : X₁₁ ⟶ X₃₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₁₁ v₃₁ (v₁₂ ≫ v₂₂) h₃₁) (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPullback h₁₁ (t.lift (h₁₁ ≫ v₁₂) v₃₁ (by rw [Category.assoc, s.w])) v₁₂ h₂₁ :=
-  of_bot ((t.lift_snd _ _ _) ▸ s) (by simp only [lift_fst]) t
+  of_bot ((t.lift_snd _ _ _) ▸ s) (by simp [lift_fst]) t
 
 instance [HasPullbacksAlong f] (h : P ⟶ Y) : HasPullback h (pullback.fst g f) :=
   IsPullback.hasPullback (IsPullback.of_bot' (IsPullback.of_hasPullback (h ≫ g) f)
@@ -312,7 +312,7 @@ X --f--> Z
 ```
 -/
 lemma id_vert (f : X ⟶ Z) : IsPullback f (𝟙 X) (𝟙 Z) f :=
-  of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+  of_vert_isIso ⟨by simp [Category.id_comp, Category.comp_id]⟩
 
 /-- The following diagram is a pullback
 ```
@@ -324,7 +324,7 @@ Z --id--> Z
 ```
 -/
 lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
-  of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+  of_horiz_isIso ⟨by simp [Category.id_comp, Category.comp_id]⟩
 
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
@@ -484,10 +484,10 @@ lemma of_iso' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y
     (comminr : e₃.hom ≫ inr = inr' ≫ e₄.hom) :
     IsPushout f' g' inl' inr' := by
   apply h.of_iso e₁.symm e₂.symm e₃.symm e₄.symm
-  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commf, Iso.inv_hom_id_assoc]
-  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commg, Iso.inv_hom_id_assoc]
-  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← comminl, Iso.inv_hom_id_assoc]
-  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← comminr, Iso.inv_hom_id_assoc]
+  · simp [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commf, Iso.inv_hom_id_assoc]
+  · simp [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commg, Iso.inv_hom_id_assoc]
+  · simp [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← comminl, Iso.inv_hom_id_assoc]
+  · simp [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← comminr, Iso.inv_hom_id_assoc]
 
 section
 
@@ -655,7 +655,7 @@ theorem of_left' {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ 
     {h₂₃ : X₂₁ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
     (s : IsPushout (h₁₁ ≫ h₁₂) v₁₁ v₁₃ h₂₃) (t : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) :
     IsPushout h₁₂ v₁₂ v₁₃ (t.desc (h₁₂ ≫ v₁₃) h₂₃ (by rw [← Category.assoc, s.w])) :=
-  of_left ((t.inr_desc _ _ _).symm ▸ s) (by simp only [inl_desc]) t
+  of_left ((t.inr_desc _ _ _).symm ▸ s) (by simp [inl_desc]) t
 
 theorem of_horiz_isIso_epi [Epi f] [IsIso inr] (sq : CommSq f g inl inr) : IsPushout f g inl inr :=
   of_isColimit' sq
@@ -663,7 +663,7 @@ theorem of_horiz_isIso_epi [Epi f] [IsIso inr] (sq : CommSq f g inl inr) : IsPus
       refine
         PushoutCocone.IsColimit.mk _ (fun s => inv inr ≫ s.inr) (fun s => ?_)
           (by simp) (by simp)
-      simp only [← cancel_epi f, s.condition, sq.w_assoc, IsIso.hom_inv_id_assoc])
+      simp [← cancel_epi f, s.condition, sq.w_assoc, IsIso.hom_inv_id_assoc])
 
 theorem of_horiz_isIso [IsIso f] [IsIso inr] (sq : CommSq f g inl inr) : IsPushout f g inl inr :=
   of_horiz_isIso_epi sq
@@ -688,7 +688,7 @@ X --f--> Z
 ```
 -/
 lemma id_vert (f : X ⟶ Z) : IsPushout f (𝟙 X) (𝟙 Z) f :=
-  of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+  of_vert_isIso ⟨by simp [Category.id_comp, Category.comp_id]⟩
 
 /-- The following diagram is a pullback
 ```
@@ -700,7 +700,7 @@ Z --id--> Z
 ```
 -/
 lemma id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
-  of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+  of_horiz_isIso ⟨by simp [Category.id_comp, Category.comp_id]⟩
 
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,

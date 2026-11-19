@@ -89,7 +89,7 @@ theorem isConst_iff_exists_forall_eq_of_nonempty_domain [Nonempty α] {f : α �
 the function can be written as `Function.const α b`. -/
 theorem isConst_iff_exists_eq_const [Nonempty β] {f : α → β} :
     IsConst f ↔ ∃ b, f = const α b := by
-  simp only [isConst_iff_exists_forall_eq, funext_iff, const_apply]
+  simp [isConst_iff_exists_forall_eq, funext_iff, const_apply]
 
 alias ⟨IsConst.exists_eq_const, _⟩ := isConst_iff_exists_eq_const
 

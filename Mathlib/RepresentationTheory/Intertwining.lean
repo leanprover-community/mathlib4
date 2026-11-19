@@ -596,7 +596,7 @@ instance : Monoid (IntertwiningMap ρ ρ) :=
     (fun f n => by
       induction n with
       | zero => rfl
-      | succ n ih => simp only [pow_succ, coe_mul, show f ^ (n + 1) = f ^ n * f from rfl, ih])
+      | succ n ih => simp [pow_succ, coe_mul, show f ^ (n + 1) = f ^ n * f from rfl, ih])
 
 instance : NatCast (IntertwiningMap ρ ρ) where
   natCast n := n • (1 : IntertwiningMap ρ ρ)

@@ -103,7 +103,7 @@ theorem bernoulli'_spec' (n : ℕ) :
     (∑ k ∈ antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli' k.1) = 1 := by
   refine ((sum_antidiagonal_eq_sum_range_succ_mk _ n).trans ?_).trans (bernoulli'_spec n)
   refine sum_congr rfl fun x hx => ?_
-  simp only [add_tsub_cancel_of_le, mem_range_succ_iff.mp hx, cast_sub]
+  simp [add_tsub_cancel_of_le, mem_range_succ_iff.mp hx, cast_sub]
 
 /-! ### Examples -/
 
@@ -380,7 +380,7 @@ theorem sum_range_pow (n p : ℕ) :
     refine Eq.trans (mul_eq_mul_right_iff.mpr ?_) (Eq.trans h_cauchy ?_)
     · left
       congr
-    · simp only [mul_comm, factorial]
+    · simp [mul_comm, factorial]
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine sum_congr rfl fun x _ => ?_

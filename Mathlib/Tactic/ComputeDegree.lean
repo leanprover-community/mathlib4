@@ -202,7 +202,7 @@ theorem coeff_neg_of_eq {n : ℕ} {a : R} {f : R[X]} (hf : f.coeff n = a) :
     (-f).coeff n = -a := by subst hf; apply Polynomial.coeff_neg
 
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
-  simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
+  simp [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
 
 end ring
 

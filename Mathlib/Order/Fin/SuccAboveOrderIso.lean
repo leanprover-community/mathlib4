@@ -33,4 +33,4 @@ noncomputable def Fin.succAboveOrderIso {n : ℕ} (i : Fin (n + 2)) :
         · exact ⟨j.pred hj, by simp⟩
         · exact ⟨i.predAbove j, by aesop⟩)
   map_rel_iff' {a b} := by
-    simp only [Equiv.ofBijective_apply, Subtype.mk_le_mk, OrderEmbedding.le_iff_le]
+    simp [Equiv.ofBijective_apply, Subtype.mk_le_mk, OrderEmbedding.le_iff_le]

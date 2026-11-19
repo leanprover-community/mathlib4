@@ -217,7 +217,7 @@ lemma compProj_apply {α : FunSpace t₀ x₀ r L} {t : ℝ} :
     α.compProj t = α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t) := rfl
 
 lemma compProj_val {α : FunSpace t₀ x₀ r L} {t : Icc tmin tmax} :
-    α.compProj t = α t := by simp only [compProj_apply, projIcc_val]
+    α.compProj t = α t := by simp [compProj_apply, projIcc_val]
 
 lemma compProj_of_mem {α : FunSpace t₀ x₀ r L} {t : ℝ} (ht : t ∈ Icc tmin tmax) :
     α.compProj t = α ⟨t, ht⟩ := by rw [compProj_apply, projIcc_of_mem]
@@ -646,7 +646,7 @@ lemma exists_shrink_radius {f : ℝ → E → E} {t₀ ε : ℝ} (hε : 0 < ε) 
     {a' r' : ℝ≥0} (ha : a' ≤ a) (hr : r' < a') :
     ∃ (ε' : ℝ) (hε' : 0 < ε'), IsPicardLindelof f (tmin := t₀ - ε') (tmax := t₀ + ε')
       ⟨t₀, by simp [le_of_lt hε']⟩ x₀ a' r' L K := by
-  have ha'r' : (0 : ℝ) < a' - r' := by simp only [sub_pos, NNReal.coe_lt_coe, hr]
+  have ha'r' : (0 : ℝ) < a' - r' := by simp [sub_pos, NNReal.coe_lt_coe, hr]
   let ε' := min ε ((a' - r') / (L + 1))
   have hε'pos : 0 < ε' := lt_min hε (by positivity)
   have hε'_le : ε' ≤ ε := min_le_left _ _

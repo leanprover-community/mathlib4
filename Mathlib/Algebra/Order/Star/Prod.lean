@@ -32,5 +32,5 @@ instance Prod.instStarOrderedRing
       rw [← closure_prod (Set.mem_range.2 ⟨0, by simp⟩) (Set.mem_range.2 ⟨0, by simp⟩),
         Set.prod_range_range_eq]
       simp_rw [Prod.mul_def, Prod.star_def]
-    simp only [mk_le_mk, Prod.exists, mk_add_mk, mk.injEq, StarOrderedRing.le_iff, this,
+    simp [mk_le_mk, Prod.exists, mk_add_mk, mk.injEq, StarOrderedRing.le_iff, this,
       AddSubmonoid.mem_prod, exists_and_exists_comm, and_and_and_comm]

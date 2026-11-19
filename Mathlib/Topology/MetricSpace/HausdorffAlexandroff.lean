@@ -50,7 +50,7 @@ theorem fromBinary_continuous : Continuous fromBinary :=
 
 theorem fromBinary_surjective : fromBinary.Surjective := by
   refine Subtype.coind_surjective _ ((ofDigits_SurjOn (by simp)).comp ?_)
-  simp only [Set.surjOn_univ, Homeomorph.surjective _]
+  simp [Set.surjOn_univ, Homeomorph.surjective _]
 
 end Real
 

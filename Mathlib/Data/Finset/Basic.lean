@@ -341,12 +341,12 @@ theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
 @[simp]
 theorem disjoint_disjUnion_left {s t u : Finset α} (h : Disjoint s t) :
     Disjoint (s.disjUnion t h) u ↔ Disjoint s u ∧ Disjoint t u := by
-  simp only [disjoint_left, mem_disjUnion, or_imp, forall_and]
+  simp [disjoint_left, mem_disjUnion, or_imp, forall_and]
 
 @[simp]
 theorem disjoint_disjUnion_right {s t u : Finset α} (h : Disjoint t u) :
     Disjoint s (t.disjUnion u h) ↔ Disjoint s t ∧ Disjoint s u := by
-  simp only [disjoint_right, mem_disjUnion, or_imp, forall_and]
+  simp [disjoint_right, mem_disjUnion, or_imp, forall_and]
 
 section
 variable [DecidableEq α]

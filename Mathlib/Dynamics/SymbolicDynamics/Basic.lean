@@ -443,7 +443,7 @@ position `g + h`. -/]
 lemma mulOccursInAt_mulShift {A G : Type*} [Inhabited A] [Monoid G]
     (p : Pattern A G) (x : G → A) (g h : G) :
     p.mulOccursInAt (mulShift g x) h ↔ p.mulOccursInAt x (g * h) := by
-  simp only [Pattern.mulOccursInAt, mulShift_apply, mul_assoc]
+  simp [Pattern.mulOccursInAt, mulShift_apply, mul_assoc]
 
 /-- Configurations that avoid a family `F` of patterns are stable under the shift.
 

@@ -412,7 +412,7 @@ lemma _root_.norm_cfcₙ_pow (a : A) (n : ℕ) (hn : n ≠ 0) (ha : p a := by cf
   refine le_antisymm (norm_cfcₙ_le fun x hx ↦ ?_) ?_
   · grw [norm_pow, norm_quasispectrum_le a hx]
   have ⟨⟨x, hx, hx'⟩, h₂⟩ := isGreatest_norm_quasispectrum (𝕜 := 𝕜) a ha
-  simp only [← hx', ← norm_pow, norm_apply_le_norm_cfcₙ (· ^ n) a hx]
+  simp [← hx', ← norm_pow, norm_apply_le_norm_cfcₙ (· ^ n) a hx]
 
 /- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
 for general semigroups. -/

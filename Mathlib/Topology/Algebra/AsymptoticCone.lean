@@ -196,7 +196,7 @@ theorem asymptoticNhds_bind_asymptoticNhds (v : V) :
   rw [eventually_map]
   apply eventually_congr
   filter_upwards [tendsto_fst.eventually (eventually_gt_atTop 0)] with ⟨c, u⟩ (hc : 0 < c)
-  simp only [asymptoticNhds_smul _ hc]
+  simp [asymptoticNhds_smul _ hc]
 
 end AffineSpace
 
@@ -222,7 +222,7 @@ theorem asymptoticCone_mono {s t : Set P} (h : s ⊆ t) : asymptoticCone k s ⊆
 theorem asymptoticCone_union {s t : Set P} :
     asymptoticCone k (s ∪ t) = asymptoticCone k s ∪ asymptoticCone k t := by
   ext
-  simp only [Set.mem_union, mem_asymptoticCone_iff, Filter.frequently_or_distrib]
+  simp [Set.mem_union, mem_asymptoticCone_iff, Filter.frequently_or_distrib]
 
 theorem asymptoticCone_biUnion {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set P) :
     asymptoticCone k (⋃ i ∈ s, f i) = ⋃ i ∈ s, asymptoticCone k (f i) := by

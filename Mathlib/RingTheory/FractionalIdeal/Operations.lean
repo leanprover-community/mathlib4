@@ -753,7 +753,7 @@ theorem div_spanSingleton (J : FractionalIdeal R₁⁰ K) (d : K) :
     J / spanSingleton R₁⁰ d = spanSingleton R₁⁰ d⁻¹ * J := by
   rw [← one_div_spanSingleton]
   by_cases hd : d = 0
-  · simp only [hd, map_zero, div_zero, zero_mul]
+  · simp [hd, map_zero, div_zero, zero_mul]
   have h_spand : spanSingleton R₁⁰ d ≠ 0 := mt spanSingleton_eq_zero_iff.mp hd
   apply le_antisymm
   · intro x hx
@@ -819,7 +819,7 @@ instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Alg
 theorem le_spanSingleton_mul_iff {x : P} {I J : FractionalIdeal S P} :
     I ≤ spanSingleton S x * J ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI :=
   show (∀ {zI} (_ : zI ∈ I), zI ∈ spanSingleton _ x * J) ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI by
-    simp only [mem_singleton_mul, eq_comm]
+    simp [mem_singleton_mul, eq_comm]
 
 theorem spanSingleton_mul_le_iff {x : P} {I J : FractionalIdeal S P} :
     spanSingleton _ x * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J := by
@@ -833,7 +833,7 @@ theorem spanSingleton_mul_le_iff {x : P} {I J : FractionalIdeal S P} :
 
 theorem eq_spanSingleton_mul {x : P} {I J : FractionalIdeal S P} :
     I = spanSingleton _ x * J ↔ (∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI) ∧ ∀ z ∈ J, x * z ∈ I := by
-  simp only [le_antisymm_iff, le_spanSingleton_mul_iff, spanSingleton_mul_le_iff]
+  simp [le_antisymm_iff, le_spanSingleton_mul_iff, spanSingleton_mul_le_iff]
 
 theorem num_le (I : FractionalIdeal S P) :
     (I.num : FractionalIdeal S P) ≤ I := by
@@ -1026,7 +1026,7 @@ lemma ringEquivOfRingEquiv_trans {T : Type*} [CommRing T] [IsDomain T] (M : Type
       (ringEquivOfRingEquiv K L f).trans (ringEquivOfRingEquiv L M g) := by
   have : RingHomCompTriple f (g : S →+* T) (f.trans g : R →+* T) := ⟨rfl⟩
   ext1 I
-  simp only [ringEquivOfRingEquiv, Function.comp_apply,
+  simp [ringEquivOfRingEquiv, Function.comp_apply,
     semilinearEquivOfRingEquiv_comp K L f M, LinearEquiv.coe_trans,
     Submodule.map_comp, RingEquiv.coe_mk, Equiv.coe_fn_mk, RingEquiv.coe_trans]
 
@@ -1062,7 +1062,7 @@ lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
     exact .symm (map_smulₛₗ _ r x)
   · rintro ⟨s, rfl⟩
     use f.symm s
-    simp only [Algebra.smul_def, semilinearEquivOfRingEquiv_apply, map_mul, map_eq, RingHom.coe_coe,
+    simp [Algebra.smul_def, semilinearEquivOfRingEquiv_apply, map_mul, map_eq, RingHom.coe_coe,
       IsFractionRing.ringEquivOfRingEquiv_apply, RingEquiv.apply_symm_apply]
 
 lemma ringEquivOfRingEquiv_symm_eq :

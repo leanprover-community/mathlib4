@@ -143,8 +143,8 @@ theorem reverse_comp_involute :
   induction x using CliffordAlgebra.induction with
   | algebraMap => simp
   | ι => simp
-  | mul a b ha hb => simp only [ha, hb, reverse.map_mul, map_mul]
-  | add a b ha hb => simp only [ha, hb, reverse.map_add, map_add]
+  | mul a b ha hb => simp [ha, hb, reverse.map_mul, map_mul]
+  | add a b ha hb => simp [ha, hb, reverse.map_add, map_add]
 
 /-- `CliffordAlgebra.reverse` and `CliffordAlgebra.involute` commute. Note that the composition
 is sometimes referred to as the "clifford conjugate". -/

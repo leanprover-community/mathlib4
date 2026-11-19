@@ -287,7 +287,7 @@ nonrec def shiftFunctorAdd (m n : S) :
     simp only [Category.assoc, Iso.inv_hom_id_app_assoc]
     rw [← NatTrans.naturality_assoc]
     dsimp
-    simp only [Functor.map_comp, Category.assoc,
+    simp [Functor.map_comp, Category.assoc,
       shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app 1 m n X.obj,
       Iso.inv_hom_id_app_assoc]
   · ext; dsimp; exact NatTrans.naturality _ _
@@ -302,7 +302,7 @@ def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
   refine NatIso.ofComponents (fun X => mkIso ((shiftFunctorZero C S).app X.obj) ?_) (fun f => ?_)
   · erw [← NatTrans.naturality]
     dsimp
-    simp only [shiftFunctorZero_hom_app_shift, Category.assoc]
+    simp [shiftFunctorZero_hom_app_shift, Category.assoc]
   · cat_disch
 
 end

@@ -364,7 +364,7 @@ private theorem E_succ (n : ℕ) (hn : 4 ≤ n) :
   · simp only [E, of_apply, extendPath, Fin.lastCases_last, Fin.lastCases_castSucc,
       Fin.val_last, Fin.val_castSucc]
     grind
-  · simp only [E, of_apply, extendPath, Fin.lastCases_castSucc, Fin.val_castSucc,
+  · simp [E, of_apply, extendPath, Fin.lastCases_castSucc, Fin.val_castSucc,
       Fin.castSucc_inj]
 
 theorem det_E_add_two (n : ℕ) (hn : 4 ≤ n) :
@@ -392,13 +392,13 @@ theorem E_det {n : ℕ} (hn : 3 ≤ n) : (E n).det = 9 - n := by
 /-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively. -/
 
 theorem E₆_det : (E 6).det = 3 := by
-  simp only [E_six_eq, norm_det]
+  simp [E_six_eq, norm_det]
 
 theorem E₇_det : (E 7).det = 2 := by
-  simp only [E_seven_eq, norm_det]
+  simp [E_seven_eq, norm_det]
 
 theorem E₈_det : (E 8).det = 1 := by
-  simp only [E_eight_eq, norm_det]
+  simp [E_eight_eq, norm_det]
 
 /-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
 def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
@@ -457,19 +457,19 @@ theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by decide
 theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by decide
 
 theorem isIndecomposable_E_six : (E 6).IsIndecomposable := by
-  simp only [E_six_eq, reduceIsIndecomposable]
+  simp [E_six_eq, reduceIsIndecomposable]
 
 theorem isIndecomposable_E_seven : (E 7).IsIndecomposable := by
-  simp only [E_seven_eq, reduceIsIndecomposable]
+  simp [E_seven_eq, reduceIsIndecomposable]
 
 theorem isIndecomposable_E_eight : (E 8).IsIndecomposable := by
-  simp only [E_eight_eq, reduceIsIndecomposable]
+  simp [E_eight_eq, reduceIsIndecomposable]
 
 theorem isIndecomposable_F₄ : F₄.IsIndecomposable := by
-  simp only [F₄, reduceIsIndecomposable]
+  simp [F₄, reduceIsIndecomposable]
 
 theorem isIndecomposable_G₂ : G₂.IsIndecomposable := by
-  simp only [G₂, reduceIsIndecomposable]
+  simp [G₂, reduceIsIndecomposable]
 
 end Properties
 

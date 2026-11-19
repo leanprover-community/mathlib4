@@ -103,7 +103,7 @@ Note that the elaborator has a lot of trouble with this definition - it is often
 write `(DFinsupp.toFinsupp f : ι →₀ M)` instead of `f.toFinsupp`, as for some unknown reason
 using dot notation or omitting the type ascription prevents the type being resolved correctly. -/
 def DFinsupp.toFinsupp (f : Π₀ _ : ι, M) : ι →₀ M :=
-  ⟨f.support, f, fun i => by simp only [DFinsupp.mem_support_iff]⟩
+  ⟨f.support, f, fun i => by simp [DFinsupp.mem_support_iff]⟩
 
 @[simp]
 theorem DFinsupp.toFinsupp_coe (f : Π₀ _ : ι, M) : ⇑f.toFinsupp = f :=
@@ -267,7 +267,7 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η
     intro h
     dsimp at hg
     rw [h] at hg
-    simp only [coe_zero, Pi.zero_apply, not_true] at hg
+    simp [coe_zero, Pi.zero_apply, not_true] at hg
   left_inv f := by ext; simp [split]
   right_inv f := by ext; simp [split]
 

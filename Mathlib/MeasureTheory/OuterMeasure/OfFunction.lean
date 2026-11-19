@@ -219,7 +219,7 @@ theorem restrict_ofFunction (s : Set α) (hm : Monotone m) :
       rw [restrict]
       simp only [inter_comm _ s, LinearMap.comp_apply]
       rw [comap_ofFunction _ (Or.inl hm)]
-      simp only [map_ofFunction Subtype.coe_injective, Subtype.image_preimage_coe]
+      simp [map_ofFunction Subtype.coe_injective, Subtype.image_preimage_coe]
 
 theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.ofFunction m m_empty =
     OuterMeasure.ofFunction (c • m) (by simp [m_empty]) := by
@@ -370,7 +370,7 @@ sets that covers that set, where a different measure can be used for each set in
 theorem iInf_apply {ι} [Nonempty ι] (m : ι → OuterMeasure α) (s : Set α) :
     (⨅ i, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i, m i (t n) := by
   rw [iInf, sInf_apply (range_nonempty m)]
-  simp only [iInf_range]
+  simp [iInf_range]
 
 /-- The value of the Infimum of a family of outer measures on a nonempty set is not simply
 the minimum value of a measure on that set: it is the infimum sum of measures of countable set of
@@ -378,7 +378,7 @@ sets that covers that set, where a different measure can be used for each set in
 theorem iInf_apply' {ι} (m : ι → OuterMeasure α) {s : Set α} (hs : s.Nonempty) :
     (⨅ i, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i, m i (t n) := by
   rw [iInf, sInf_apply' hs]
-  simp only [iInf_range]
+  simp [iInf_range]
 
 /-- The value of the Infimum of a nonempty family of outer measures on a set is not simply
 the minimum value of a measure on that set: it is the infimum sum of measures of countable set of
@@ -386,14 +386,14 @@ sets that covers that set, where a different measure can be used for each set in
 theorem biInf_apply {ι} {I : Set ι} (hI : I.Nonempty) (m : ι → OuterMeasure α) (s : Set α) :
     (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
   have := hI.to_subtype
-  simp only [← iInf_subtype'', iInf_apply]
+  simp [← iInf_subtype'', iInf_apply]
 
 /-- The value of the Infimum of a nonempty family of outer measures on a set is not simply
 the minimum value of a measure on that set: it is the infimum sum of measures of countable set of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem biInf_apply' {ι} (I : Set ι) (m : ι → OuterMeasure α) {s : Set α} (hs : s.Nonempty) :
     (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
-  simp only [← iInf_subtype'', iInf_apply' _ hs]
+  simp [← iInf_subtype'', iInf_apply' _ hs]
 
 theorem map_iInf_le {ι β} (f : α → β) (m : ι → OuterMeasure α) :
     map f (⨅ i, m i) ≤ ⨅ i, map f (m i) :=
@@ -411,7 +411,7 @@ theorem comap_iInf {ι β} (f : α → β) (m : ι → OuterMeasure β) :
 theorem map_iInf {ι β} {f : α → β} (hf : Injective f) (m : ι → OuterMeasure α) :
     map f (⨅ i, m i) = restrict (range f) (⨅ i, map f (m i)) := by
   refine Eq.trans ?_ (map_comap _ _)
-  simp only [comap_iInf, comap_map hf]
+  simp [comap_iInf, comap_map hf]
 
 theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMeasure β) :
     map f (⨅ i, comap f (m i)) = ⨅ i, map f (comap f (m i)) := by
@@ -452,7 +452,7 @@ theorem restrict_biInf {ι} {I : Set ι} (hI : I.Nonempty) (s : Set α) (m : ι 
 outer measures is nonempty. -/
 theorem restrict_sInf_eq_sInf_restrict (m : Set (OuterMeasure α)) {s : Set α} (hm : m.Nonempty) :
     restrict s (sInf m) = sInf (restrict s '' m) := by
-  simp only [sInf_eq_iInf, restrict_biInf, hm, iInf_image]
+  simp [sInf_eq_iInf, restrict_biInf, hm, iInf_image]
 
 end sInfGen
 

@@ -296,7 +296,7 @@ theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
   · intro X
     rfl
   · intro X Y f
-    simp only [map_map, map_obj_base, map_obj_fiber, NatTrans.comp_app, Cat.Hom.comp_toFunctor,
+    simp [map_map, map_obj_base, map_obj_fiber, NatTrans.comp_app, Cat.Hom.comp_toFunctor,
       comp_obj, Cat.Hom₂.eqToHom_toNatTrans, eqToHom_app, Functor.comp_map, eqToHom_refl, map_comp,
       eqToHom_map, eqToHom_trans_assoc, Category.comp_id, Category.id_comp]
 
@@ -484,7 +484,7 @@ def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendie
       _ = map _ := ?_
       _ = map _ ⋙ map _ := map_comp_eq _ _
     congr; ext X
-    simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, Functor.id_obj,
+    simp [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, Functor.id_obj,
       Functor.map_id, NatTrans.comp_app, NatTrans.id_app, whiskerLeft_app, whiskerRight_app,
       Equivalence.counitInv_functor_comp]
   counitIso := preNatIso F G.counitIso.symm |>.symm
@@ -529,7 +529,7 @@ def ι (c : C) : F.obj c ⥤ Grothendieck F where
   map_id d := by
     dsimp
     congr
-    simp only [Category.comp_id]
+    simp [Category.comp_id]
   map_comp f g := by
     apply Grothendieck.ext _ _ (by simp)
     simp only [comp_base, ← Category.assoc, eqToHom_trans, comp_fiber, Functor.map_comp,

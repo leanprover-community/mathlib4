@@ -208,7 +208,7 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
     injection h with h'
     apply_fun ZMod.val at h'
     apply_fun (· / n) at h'
-    simp only [ZMod.val_natCast, ZMod.val_zero, Nat.zero_div, Nat.mod_mul_left_div_self,
+    simp [ZMod.val_natCast, ZMod.val_zero, Nat.zero_div, Nat.mod_mul_left_div_self,
       Nat.div_self (NeZero.pos n), reduceCtorEq] at h'
   · simp
 

@@ -350,11 +350,11 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
-  ext; simp only [map, Multiset.map_id', ← val_eq_coe]
+  ext; simp [map, Multiset.map_id', ← val_eq_coe]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
-  ext; simp only [map, id_eq, Multiset.map_id', ← val_eq_coe]
+  ext; simp [map, id_eq, Multiset.map_id', ← val_eq_coe]
 
 @[simp]
 theorem map_map {α β γ : Type*} {n : ℕ} (g : β → γ) (f : α → β) (s : Sym α n) :

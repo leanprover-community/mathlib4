@@ -56,11 +56,11 @@ protected def directSum :
       DirectSum.lof S (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
   · exact toModule S _ _ fun i => AlgebraTensorModule.map (lof S _ M₁ i.1) (lof R _ M₂ i.2)
   · ext ⟨i₁, i₂⟩ x₁ x₂ : 4
-    simp only [coe_comp, Function.comp_apply, toModule_lof, AlgebraTensorModule.map_tmul,
+    simp [coe_comp, Function.comp_apply, toModule_lof, AlgebraTensorModule.map_tmul,
       AlgebraTensorModule.lift_apply, lift.tmul, coe_restrictScalars, flip_apply,
       AlgebraTensorModule.curry_apply, curry_apply, id_comp]
   · ext i₁ i₂ x₁ x₂ : 5
-    simp only [coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply, curry_apply,
+    simp [coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply, curry_apply,
       coe_restrictScalars, AlgebraTensorModule.lift_apply, lift.tmul, toModule_lof, flip_apply,
       AlgebraTensorModule.map_tmul, id_coe, id_eq]
 

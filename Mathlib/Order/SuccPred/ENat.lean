@@ -96,7 +96,7 @@ lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := b
   rw [← WithBot.coe_one, ← ENat.natCast_one, WithBot.coe_natCast, ← Nat.cast_add,
     ← WithBot.coe_natCast]
   cases n
-  · simp only [bot_le, WithBot.bot_lt_coe]
+  · simp [bot_le, WithBot.bot_lt_coe]
   · rw [WithBot.coe_lt_coe, Nat.cast_add, natCast_one, ENat.lt_add_one_iff (natCast_ne_top _),
       ← WithBot.coe_le_coe, WithBot.coe_natCast]
 

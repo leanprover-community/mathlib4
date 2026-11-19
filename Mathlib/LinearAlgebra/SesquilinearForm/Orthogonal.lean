@@ -231,7 +231,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
     (K ∙ x) ⊔ (K ∙ x).orthogonalBilin B = ⊤ := by
-  simp only [Submodule.orthogonalBilin_span_singleton, span_singleton_sup_ker_eq_top _ hx]
+  simp [Submodule.orthogonalBilin_span_singleton, span_singleton_sup_ker_eq_top _ hx]
 
 -- todo: Generalize this to sesquilinear maps
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`

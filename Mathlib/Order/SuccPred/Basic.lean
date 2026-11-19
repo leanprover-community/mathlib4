@@ -676,7 +676,7 @@ theorem succ_pred [NoMinOrder α] (a : α) : succ (pred a) = a :=
 theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[n - 1] i)) :
     pred^[n] (succ^[n] i) = i := by
   induction n with
-  | zero => simp only [Function.iterate_zero, id]
+  | zero => simp [Function.iterate_zero, id]
   | succ n hn =>
     rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
     have h_not_max : ¬IsMax (succ^[n - 1] i) := by

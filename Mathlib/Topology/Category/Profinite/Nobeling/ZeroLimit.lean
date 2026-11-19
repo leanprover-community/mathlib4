@@ -49,13 +49,13 @@ theorem GoodProducts.linearIndependentEmpty {I} [LinearOrder I] :
     LinearIndependent ℤ (eval (∅ : Set (I → Bool))) := linearIndependent_empty_type
 
 /-- The empty list as a `Products` -/
-def Products.nil : Products I := ⟨[], by simp only [List.isChain_nil]⟩
+def Products.nil : Products I := ⟨[], by simp [List.isChain_nil]⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem Products.lt_nil_empty {I} [LinearOrder I] : { m : Products I | m < Products.nil } = ∅ := by
   ext ⟨m, hm⟩
   refine ⟨fun h ↦ ?_, by tauto⟩
-  simp only [Set.mem_ofPred_eq, lt_iff_lex_lt, nil, List.not_lex_nil] at h
+  simp [Set.mem_ofPred_eq, lt_iff_lex_lt, nil, List.not_lex_nil] at h
 
 instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) :=
   ⟨0, 1, ne_of_apply_ne DFunLike.coe <| (Function.const_injective (β := ℤ)).ne zero_ne_one⟩
@@ -74,7 +74,7 @@ theorem Products.span_nil_eq_top {I} [LinearOrder I] :
   refine ⟨f default, ?_⟩
   simp only [eval, List.map, List.prod_nil, zsmul_eq_mul, mul_one, Products.nil]
   ext x
-  obtain rfl : x = default := by simp only [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
+  obtain rfl : x = default := by simp [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in

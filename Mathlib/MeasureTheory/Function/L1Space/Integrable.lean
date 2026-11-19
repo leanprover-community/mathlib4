@@ -773,13 +773,13 @@ theorem ofReal_toReal_ae_eq {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x < 
     (fun x => ENNReal.ofReal (f x).toReal) =ᵐ[μ] f := by
   filter_upwards [hf]
   intro x hx
-  simp only [hx.ne, ofReal_toReal, Ne, not_false_iff]
+  simp [hx.ne, ofReal_toReal, Ne, not_false_iff]
 
 theorem coe_toNNReal_ae_eq {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x < ∞) :
     (fun x => ((f x).toNNReal : ℝ≥0∞)) =ᵐ[μ] f := by
   filter_upwards [hf]
   intro x hx
-  simp only [hx.ne, Ne, not_false_iff, coe_toNNReal]
+  simp [hx.ne, Ne, not_false_iff, coe_toNNReal]
 
 section count
 
@@ -821,7 +821,7 @@ theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf 
     rw [lintegral_withDensity_eq_lintegral_mul₀' hf.coe_nnreal_ennreal.aemeasurable]
     · simp [eNorm_smul]
     · simpa [aemeasurable_withDensity_ennreal_iff hf, eNorm_smul] using H.eNorm
-  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and]
+  · simp [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and]
 
 theorem integrable_withDensity_iff_integrable_smul {f : α → ℝ≥0} (hf : Measurable f) {g : α → E} :
     Integrable g (μ.withDensity fun x => f x) ↔ Integrable (fun x => f x • g x) μ :=
@@ -899,7 +899,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     intro x hu hv huv h' h''
     rw [huv, h', Pi.add_apply, hu, hv]
     rcases eq_or_ne (f x) 0 with (hx | hx)
-    · simp only [hx, zero_smul, add_zero]
+    · simp [hx, zero_smul, add_zero]
     · rw [h'' _, Pi.add_apply, smul_add]
       simpa
   map_smul' := by
@@ -912,7 +912,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     intro x h h' h'' h'''
     rw [RingHom.id_apply, h', h'', Pi.smul_apply, h''']
     rcases eq_or_ne (f x) 0 with (hx | hx)
-    · simp only [hx, zero_smul, smul_zero]
+    · simp [hx, zero_smul, smul_zero]
     · rw [h _, smul_comm, Pi.smul_apply]
       simpa
   norm_map' := by

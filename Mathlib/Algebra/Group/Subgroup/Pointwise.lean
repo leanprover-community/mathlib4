@@ -117,7 +117,7 @@ theorem closure_toSubmonoid (S : Set G) :
         (fun x hx => Submonoid.closure_mono subset_union_left (Submonoid.subset_closure hx))
         (Submonoid.one_mem _) (fun x y _ _ hx hy => Submonoid.mul_mem _ hx hy) (fun x _ hx => ?_) hx
     rwa [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
-  · simp only [true_and, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
+  · simp [true_and, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
 
 @[to_additive]
 lemma toSubmonoid_zpowers (g : G) :
@@ -168,7 +168,7 @@ theorem closure_induction_right {p : (x : G) → x ∈ closure s → Prop} (one 
 
 @[to_additive (attr := simp)]
 theorem closure_inv (s : Set G) : closure s⁻¹ = closure s := by
-  simp only [← toSubmonoid_inj, closure_toSubmonoid, inv_inv, union_comm]
+  simp [← toSubmonoid_inj, closure_toSubmonoid, inv_inv, union_comm]
 
 @[to_additive (attr := simp)]
 lemma closure_singleton_inv (x : G) : closure {x⁻¹} = closure {x} := by
@@ -292,7 +292,7 @@ theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ norm
     obtain ⟨x', hx', y', hy', rfl⟩ := hx'
     refine ⟨x * x', mul_mem hx hx', x'⁻¹ * y * x' * y', mul_mem ?_ hy', ?_⟩
     · exact (mem_normalizer_iff''.mp (hLE hx') y).mp hy
-    · simp only [mul_assoc, mul_inv_cancel_left]
+    · simp [mul_assoc, mul_inv_cancel_left]
 
 /-- The carrier of `N ⊔ H` is just `↑N * ↑H` (pointwise set product) when
 `H` is a subgroup of the normalizer of `N` in `G`. -/
@@ -378,7 +378,7 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
     rw [← SetLike.mem_coe, normal_mul] at hmem ⊢
     rcases hmem with ⟨h, hh, k, hk, rfl⟩
     refine ⟨g * h * g⁻¹, hH.conj_mem h hh g, g * k * g⁻¹, hK.conj_mem k hk g, ?_⟩
-    simp only [mul_assoc, inv_mul_cancel_left]
+    simp [mul_assoc, inv_mul_cancel_left]
 
 @[to_additive]
 instance iSup_normal {ι : Sort*} (H : ι → Subgroup G) [∀ i, (H i).Normal] :
@@ -573,7 +573,7 @@ theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
 lemma conjAct_pointwise_smul_iff {H : Subgroup G} {g : G} :
     ConjAct.toConjAct g • H = H ↔ g ∈ normalizer H := by
   rw [← (normalizer H : Subgroup G).inv_mem_iff]
-  simp only [Subgroup.ext_iff, mem_pointwise_smul_iff_inv_smul_mem,
+  simp [Subgroup.ext_iff, mem_pointwise_smul_iff_inv_smul_mem,
     ← ConjAct.toConjAct_inv, ConjAct.toConjAct_smul, mem_normalizer_iff, inv_inv, Iff.comm]
 
 lemma conjAct_pointwise_smul_eq_self {H : Subgroup G} {g : G} (hg : g ∈ normalizer H) :

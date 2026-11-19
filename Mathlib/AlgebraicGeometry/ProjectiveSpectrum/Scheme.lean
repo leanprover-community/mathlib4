@@ -307,9 +307,9 @@ theorem mem_carrier_iff_of_mem (hm : 0 < m) (q : Spec.T A⁰_ f) (a : A) {n} (hn
   · refine ⟨fun h ↦ h n, fun h i ↦ if hi : i = n then hi ▸ h else ?_⟩
     convert zero_mem q.asIdeal
     apply HomogeneousLocalization.val_injective
-    simp only [proj_apply, decompose_of_mem_ne _ hn (Ne.symm hi), zero_pow hm.ne',
+    simp [proj_apply, decompose_of_mem_ne _ hn (Ne.symm hi), zero_pow hm.ne',
       HomogeneousLocalization.val_mk, Localization.mk_zero, HomogeneousLocalization.val_zero]
-  · simp only [proj_apply, decompose_of_mem_same _ hn]
+  · simp [proj_apply, decompose_of_mem_same _ hn]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_carrier_iff_of_mem_mul (hm : 0 < m)
@@ -332,7 +332,7 @@ theorem num_mem_carrier_iff (hm : 0 < m) (q : Spec.T A⁰_ f)
     have := HomogeneousLocalization.subsingleton 𝒜 (x := .powers f) ⟨n, e⟩
     exact IsEmpty.elim (inferInstanceAs (IsEmpty (PrimeSpectrum (A⁰_ f)))) q
   convert mem_carrier_iff_of_mem_mul f_deg hm q z.num.1 (n := n) ?_ using 2
-  · apply HomogeneousLocalization.val_injective; simp only [hn, HomogeneousLocalization.val_mk]
+  · apply HomogeneousLocalization.val_injective; simp [hn, HomogeneousLocalization.val_mk]
   · have := degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded n f_deg) (hn.symm ▸ z.den.2) this
     rw [← smul_eq_mul, this]; exact z.num.2
 
@@ -415,11 +415,11 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
         · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
           rw [(_ : m • n = _)]
           · mem_tac
-          · simp only [smul_eq_mul, mul_comm]
+          · simp [smul_eq_mul, mul_comm]
       · simpa only [map_zero, zero_pow hm.ne'] using zero_mem f_deg hm q i
     rw [(_ : m • (i - n) = _)]
     · mem_tac
-    · simp only [smul_eq_mul, mul_comm]
+    · simp [smul_eq_mul, mul_comm]
   · simp_rw [add_smul]; exact fun _ _ => carrier.add_mem f_deg q
 
 /-- For a prime ideal `q` in `A⁰_f`, the set `{a | aᵢᵐ/fⁱ ∈ q}` as an ideal.
@@ -472,7 +472,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
           mul_pow, pow_add]
         simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
           HomogeneousLocalization.val_mul, Localization.mk_mul]
-        simp only [Submonoid.mk_mul_mk, mk_eq_monoidOf_mk']
+        simp [Submonoid.mk_mul_mk, mk_eq_monoidOf_mk']
       all_goals
         intro n hn; convert q.asIdeal.zero_mem
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
@@ -605,10 +605,10 @@ def awayToSection (f) : ↧(A⁰_ f) ⟶ (structureSheaf 𝒜).obj.obj (op (pbo 
         obtain ⟨n, hn : f ^ n = s.den.1⟩ := s.den_mem
         exact ⟨_, x.2, 𝟙 _, s.deg, s.num, s.den,
           fun x hsx ↦ x.2 (Ideal.IsPrime.mem_of_pow_mem inferInstance n (hn ▸ hsx)), fun _ ↦ rfl⟩⟩
-    map_add' _ _ := by ext; simp only [map_add, HomogeneousLocalization.val_add, Proj.add_apply]
-    map_mul' _ _ := by ext; simp only [map_mul, HomogeneousLocalization.val_mul, Proj.mul_apply]
-    map_zero' := by ext; simp only [map_zero, HomogeneousLocalization.val_zero, Proj.zero_apply]
-    map_one' := by ext; simp only [map_one, HomogeneousLocalization.val_one, Proj.one_apply] }
+    map_add' _ _ := by ext; simp [map_add, HomogeneousLocalization.val_add, Proj.add_apply]
+    map_mul' _ _ := by ext; simp [map_mul, HomogeneousLocalization.val_mul, Proj.mul_apply]
+    map_zero' := by ext; simp [map_zero, HomogeneousLocalization.val_zero, Proj.zero_apply]
+    map_one' := by ext; simp [map_one, HomogeneousLocalization.val_one, Proj.one_apply] }
 
 lemma awayToSection_germ (f x hx) :
     awayToSection 𝒜 f ≫ (structureSheaf 𝒜).presheaf.germ _ x hx =
@@ -744,7 +744,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
     refine .of_mul_eq_one
       (.mk ⟨y.deg, y.den, y.num, (mk_mem_toSpec_base_apply _ _ _).not.mp hy⟩) <| val_injective _ ?_
-    simp only [RingHom.algebraMap_toAlgebra, map_mk, GradedRingHom.id_apply, val_mul, val_mk,
+    simp [RingHom.algebraMap_toAlgebra, map_mk, GradedRingHom.id_apply, val_mul, val_mk,
       mk_eq_mk', val_one, IsLocalization.mk'_mul_mk'_eq_one']
   · intro z
     obtain ⟨⟨i, a, ⟨b, hb⟩, (hb' : b ∉ x.1.asHomogeneousIdeal)⟩, rfl⟩ := z.mk_surjective

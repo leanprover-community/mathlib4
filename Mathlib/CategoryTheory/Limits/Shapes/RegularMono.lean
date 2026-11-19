@@ -85,7 +85,7 @@ def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
   Z := h.Z
   left := e.inv.right ≫ h.left
   right := e.inv.right ≫ h.right
-  w := by simp only [← (Arrow.w_mk_assoc e.inv), h.w]
+  w := by simp [← (Arrow.w_mk_assoc e.inv), h.w]
   isLimit := Fork.isLimitOfIsos _ h.isLimit _
     (Arrow.rightFunc.mapIso e) (Iso.refl _) (Arrow.leftFunc.mapIso e)
 
@@ -223,7 +223,7 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
   right := k ≫ hr.right
   w := by
     repeat (rw [← Category.assoc, ← eq_whisker comm])
-    simp only [Category.assoc, hr.w]
+    simp [Category.assoc, hr.w]
   isLimit := by
     apply Fork.IsLimit.mk' _ _
     intro s
@@ -259,10 +259,10 @@ lemma RegularMono.strongMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :=
       have : v ≫ h.left = v ≫ h.right := by
         apply (cancel_epi z).1
         repeat (rw [← Category.assoc, ← eq_whisker sq.w])
-        simp only [Category.assoc, RegularMono.w]
+        simp [Category.assoc, RegularMono.w]
       obtain ⟨t, ht⟩ := RegularMono.lift' _ _ this
       refine CommSq.HasLift.mk' ⟨t, (cancel_mono f).1 ?_, ht⟩
-      simp only [Category.assoc, ht, sq.w])
+      simp [Category.assoc, ht, sq.w])
 
 instance (priority := 100) (f : X ⟶ Y) [IsRegularMono f] : StrongMono f :=
   IsRegularMono.getStruct f |>.strongMono
@@ -558,7 +558,7 @@ def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
   W := gr.W
   left := gr.left ≫ f
   right := gr.right ≫ f
-  w := by rw [Category.assoc, Category.assoc, comm]; simp only [← Category.assoc, eq_whisker gr.w]
+  w := by rw [Category.assoc, Category.assoc, comm]; simp [← Category.assoc, eq_whisker gr.w]
   isColimit := by
     apply Cofork.IsColimit.mk' _ _
     intro s
@@ -575,7 +575,7 @@ def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
     · exact z
     · erw [← cancel_epi g, ← Category.assoc, ← eq_whisker comm]
       erw [← Category.assoc, ← eq_whisker comm]
-      dsimp at z; simp only [Category.assoc, z]
+      dsimp at z; simp [Category.assoc, z]
 
 /-- The first leg of a pushout cocone is a regular epimorphism if the left component is too.
 

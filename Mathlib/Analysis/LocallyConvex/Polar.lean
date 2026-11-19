@@ -72,7 +72,7 @@ theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
-  simp only [map_zero, norm_zero, zero_le_one]
+  simp [map_zero, norm_zero, zero_le_one]
 
 theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
   use 0
@@ -80,7 +80,7 @@ theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
 
 theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
-  simp only [polar_mem_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  simp [polar_mem_iff, Set.mem_iInter, Set.mem_ofPred_eq]
 
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
@@ -110,10 +110,10 @@ theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_
   (fun y hy => (polar_mem_iff _ _ _).mp (fun _ hb => by rw [Set.mem_singleton_iff.mp hb]; exact hy))
 
 theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ ≤ 1 := by
-  simp only [polar_singleton, Set.mem_ofPred_eq]
+  simp [polar_singleton, Set.mem_ofPred_eq]
 
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
-  simp only [polar_singleton, map_zero, LinearMap.zero_apply, norm_zero, zero_le_one,
+  simp [polar_singleton, map_zero, LinearMap.zero_apply, norm_zero, zero_le_one,
     Set.ofPred_true]
 
 theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
@@ -143,7 +143,7 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
-  refine ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => ?_⟩
+  refine ⟨by simp [zero_mem_polar], fun y hy => h _ fun x => ?_⟩
   refine norm_le_zero_iff.mp (le_of_forall_gt_imp_ge_of_dense fun ε hε => ?_)
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
   calc
@@ -236,10 +236,10 @@ theorem polar_empty : polar 𝕜 (∅ : Set E) = Set.univ :=
 
 @[simp]
 theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
-  simp only [polar, LinearMap.polar_singleton, LinearMap.flip_apply, topDualPairing_apply]
+  simp [polar, LinearMap.polar_singleton, LinearMap.flip_apply, topDualPairing_apply]
 
 theorem mem_polar_singleton {a : E} (y : StrongDual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
-  simp only [polar_singleton, mem_ofPred_eq]
+  simp [polar_singleton, mem_ofPred_eq]
 
 theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ :=
   LinearMap.polar_zero _

@@ -151,7 +151,7 @@ lemma HomologyData.exact_iff_i_p_zero (h : S.HomologyData) :
   · intro z
     rw [IsZero.eq_of_src z h.iso.hom 0, zero_comp, comp_zero]
   · intro eq
-    simp only [IsZero.iff_id_eq_zero, ← cancel_mono h.iso.hom, id_comp, ← cancel_mono h.right.ι,
+    simp [IsZero.iff_id_eq_zero, ← cancel_mono h.iso.hom, id_comp, ← cancel_mono h.right.ι,
       ← cancel_epi h.left.π, eq, zero_comp, comp_zero]
 
 variable (S)
@@ -328,7 +328,7 @@ lemma LeftHomologyData.exact_iff_epi_f' [S.HasHomology] (h : LeftHomologyData S)
   · intro hS
     exact hS.epi_f' h
   · intro
-    simp only [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_epi h.π, ← cancel_epi h.f',
+    simp [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_epi h.π, ← cancel_epi h.f',
       comp_id, h.f'_π, comp_zero]
 
 lemma RightHomologyData.exact_iff_mono_g' [S.HasHomology] (h : RightHomologyData S) :
@@ -337,7 +337,7 @@ lemma RightHomologyData.exact_iff_mono_g' [S.HasHomology] (h : RightHomologyData
   · intro hS
     exact hS.mono_g' h
   · intro
-    simp only [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_mono h.ι, ← cancel_mono h.g',
+    simp [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_mono h.ι, ← cancel_mono h.g',
       id_comp, h.ι_g', zero_comp]
 
 /-- Given an exact short complex `S` and a limit kernel fork `kf` for `S.g`, this is the
@@ -529,7 +529,7 @@ lemma epi_g (s : S.Splitting) : Epi S.g := by
 @[reassoc (attr := simp)]
 lemma s_r (s : S.Splitting) : s.s ≫ s.r = 0 := by
   have := s.epi_g
-  simp only [← cancel_epi S.g, comp_zero, g_s_assoc, sub_comp, id_comp,
+  simp [← cancel_epi S.g, comp_zero, g_s_assoc, sub_comp, id_comp,
     assoc, f_r, comp_id, sub_self]
 
 lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
@@ -552,9 +552,9 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     LeftHomologyData S := by
   have hi := KernelFork.IsLimit.ofι S.f S.zero
     (fun x _ => x ≫ s.r)
-    (fun x hx => by simp only [assoc, s.r_f, comp_sub, comp_id,
+    (fun x hx => by simp [assoc, s.r_f, comp_sub, comp_id,
       sub_eq_self, reassoc_of% hx, zero_comp])
-    (fun x _ b hb => by simp only [← hb, assoc, f_r, comp_id])
+    (fun x _ b hb => by simp [← hb, assoc, f_r, comp_id])
   let f' := hi.lift (KernelFork.ofι S.f S.zero)
   have hf' : f' = 𝟙 _ := by simp [f']
   have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
@@ -576,8 +576,8 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     RightHomologyData S := by
   have hp := CokernelCofork.IsColimit.ofπ S.g S.zero
     (fun x _ => s.s ≫ x)
-    (fun x hx => by simp only [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
-    (fun x _ b hb => by simp only [← hb, s.s_g_assoc])
+    (fun x hx => by simp [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
+    (fun x _ b hb => by simp [← hb, s.s_g_assoc])
   let g' := hp.desc (CokernelCofork.ofπ S.g S.zero)
   have hg' : g' = 𝟙 _ := by simp [g']
   have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
@@ -625,10 +625,10 @@ def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
     rw [← F.map_comp, f_r, F.map_id]
   s_g := by
     dsimp [ShortComplex.map]
-    simp only [← F.map_comp, s_g, F.map_id]
+    simp [← F.map_comp, s_g, F.map_id]
   id := by
     dsimp [ShortComplex.map]
-    simp only [← F.map_id, ← s.id, Functor.map_comp, Functor.map_add]
+    simp [← F.map_id, ← s.id, Functor.map_comp, Functor.map_add]
 
 /-- A splitting on a short complex induces splittings on isomorphic short complexes. -/
 @[simps]
@@ -798,9 +798,9 @@ lemma mono_τ₂_of_exact_of_mono {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S�
   rw [mono_iff_cancel_zero]
   intro A x₂ hx₂
   obtain ⟨x₁, hx₁⟩ : ∃ x₁, x₁ ≫ S₁.f = x₂ := ⟨_, h₁.lift_f x₂
-    (by simp only [← cancel_mono φ.τ₃, assoc, zero_comp, ← φ.comm₂₃, reassoc_of% hx₂])⟩
+    (by simp [← cancel_mono φ.τ₃, assoc, zero_comp, ← φ.comm₂₃, reassoc_of% hx₂])⟩
   suffices x₁ = 0 by rw [← hx₁, this, zero_comp]
-  simp only [← cancel_mono φ.τ₁, ← cancel_mono S₂.f, assoc, φ.comm₁₂, zero_comp,
+  simp [← cancel_mono φ.τ₁, ← cancel_mono S₂.f, assoc, φ.comm₁₂, zero_comp,
     reassoc_of% hx₁, hx₂]
 
 attribute [local instance] balanced_opposite
@@ -926,7 +926,7 @@ lemma Exact.comp_descToInjective
     (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
     S.g ≫ hS.descToInjective f hf = f := by
   dsimp [descToInjective]
-  simp only [← p_fromOpcycles, assoc, Injective.comp_factorThru, p_descOpcycles]
+  simp [← p_fromOpcycles, assoc, Injective.comp_factorThru, p_descOpcycles]
 
 /-- If `S` is an exact short complex and `f : P ⟶ S.X₂` is a morphism from a projective object `P`
 such that `f ≫ S.g = 0`, this is a morphism `φ : P ⟶ S.X₁` such that `φ ≫ S.f = f`. -/

@@ -48,10 +48,10 @@ lemma isIntegralCurveOn_comp_add {dt : ℝ} :
   refine ⟨fun hγ ↦ ?_, fun hγ ↦ hγ.comp_add _⟩
   convert hγ.comp_add (-dt)
   · ext t
-    simp only [comp_apply, neg_add_cancel_right]
+    simp [comp_apply, neg_add_cancel_right]
   · ext t
-    simp only [comp_apply, neg_add_cancel_right]
-  · simp only [neg_neg, vadd_neg_vadd]
+    simp [comp_apply, neg_add_cancel_right]
+  · simp [neg_neg, vadd_neg_vadd]
 
 lemma isIntegralCurveOn_comp_sub {dt : ℝ} :
     IsIntegralCurveOn (γ ∘ (· - dt)) (v ∘ (· - dt)) (dt +ᵥ s) ↔ IsIntegralCurveOn γ v s := by
@@ -124,9 +124,9 @@ lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
       smul_inv_smul₀ ha]
   convert hs ▸ hγ.comp_mul a⁻¹
   · ext t
-    simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+    simp [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · ext t
-    simp only [comp_apply, Pi.smul_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one,
+    simp [comp_apply, Pi.smul_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one,
       smul_smul, one_smul]
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
@@ -145,11 +145,11 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   refine ⟨fun hγ ↦ ?_, fun hγ ↦ hγ.comp_mul_ne_zero ha⟩
   convert hγ.comp_mul_ne_zero (inv_ne_zero ha)
   · ext t
-    simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+    simp [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · ext t
-    simp only [comp_apply, Pi.smul_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one,
+    simp [comp_apply, Pi.smul_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one,
       smul_smul, one_smul]
-  · simp only [div_inv_eq_mul, div_mul_cancel₀ _ ha]
+  · simp [div_inv_eq_mul, div_mul_cancel₀ _ ha]
 
 lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
     IsIntegralCurve (γ ∘ (· * a)) (a • v ∘ (· * a)) := by
@@ -161,9 +161,9 @@ lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   refine ⟨fun hγ ↦ ?_, fun hγ ↦ hγ.comp_mul _⟩
   convert hγ.comp_mul a⁻¹
   · ext t
-    simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+    simp [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · ext t
-    simp only [comp_apply, Pi.smul_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one,
+    simp [comp_apply, Pi.smul_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one,
       smul_smul, one_smul]
 
 /-- If the vector field `v` vanishes at `x₀` for all times, then the constant curve at `x₀`

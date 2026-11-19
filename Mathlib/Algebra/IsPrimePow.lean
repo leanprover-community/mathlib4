@@ -72,7 +72,7 @@ theorem IsPrimePow.ne_one {n : R} (h : IsPrimePow n) : n ≠ 1 := fun t =>
 section Nat
 
 theorem isPrimePow_nat_iff (n : ℕ) : IsPrimePow n ↔ ∃ p k : ℕ, Nat.Prime p ∧ 0 < k ∧ p ^ k = n := by
-  simp only [isPrimePow_def, Nat.prime_iff]
+  simp [isPrimePow_def, Nat.prime_iff]
 
 theorem Nat.Prime.isPrimePow {p : ℕ} (hp : p.Prime) : IsPrimePow p :=
   _root_.Prime.isPrimePow (prime_iff.mp hp)

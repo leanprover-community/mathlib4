@@ -130,7 +130,7 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
   rw [modular_T_zpow_smul z (N * -n)]
   refine ⟨?_, by simp⟩
   have h : (N * (-n : ℝ) +ᵥ z).re = -N * Int.floor (z.re / N) + z.re := by
-    simp only [n, mul_neg, vadd_re, neg_mul]
+    simp [n, mul_neg, vadd_re, neg_mul]
   norm_cast at *
   rw [h, add_comm]
   simp only [neg_mul, Int.cast_neg, Int.cast_mul, Int.cast_natCast]
@@ -200,7 +200,7 @@ theorem periodic_comp_ofComplex {f : ℍ → ℂ} {h : ℝ} (hf : ∀ τ : ℍ, 
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
-  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
+  simp [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
 
 @[fun_prop]
 lemma continuousOn_ofComplex_I_mul :

@@ -295,7 +295,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
   simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum_apply, mk_apply_coe,
     AdicCauchySequence.map_apply_coe]
-  simp only [← Submodule.mkQ_apply, ← map_sum, ← apply_eq_component, lof_eq_of,
+  simp [← Submodule.mkQ_apply, ← map_sum, ← apply_eq_component, lof_eq_of,
     DirectSum.sum_univ_of]
 
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
@@ -358,7 +358,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem piEquivFin_apply (n : ℕ) (x : AdicCompletion I (Fin n → R)) :
     piEquivFin I n x = pi I (fun _ : Fin n ↦ R) x := by
-  simp only [piEquivFin, piEquivOfFintype_apply]
+  simp [piEquivFin, piEquivOfFintype_apply]
 
 end Pi
 

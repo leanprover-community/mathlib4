@@ -98,10 +98,10 @@ theorem mem_perpBisector_iff_dist_eq : c ∈ perpBisector p₁ p₂ ↔ dist c p
     neg_vsub_eq_vsub_rev, mem_perpBisector_iff_inner_eq_inner]
 
 theorem mem_perpBisector_iff_dist_eq' : c ∈ perpBisector p₁ p₂ ↔ dist p₁ c = dist p₂ c := by
-  simp only [mem_perpBisector_iff_dist_eq, dist_comm]
+  simp [mem_perpBisector_iff_dist_eq, dist_comm]
 
 theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisector p₂ p₁ := by
-  ext c; simp only [mem_perpBisector_iff_dist_eq, eq_comm]
+  ext c; simp [mem_perpBisector_iff_dist_eq, eq_comm]
 
 @[simp] theorem right_mem_perpBisector : p₂ ∈ perpBisector p₁ p₂ ↔ p₁ = p₂ := by
   simpa [mem_perpBisector_iff_inner_eq_inner] using eq_comm

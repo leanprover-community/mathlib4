@@ -48,7 +48,7 @@ lemma cofibrations_over_def :
 
 lemma cofibrations_over_iff {X Y : Over S} (f : X ⟶ Y) :
     Cofibration f ↔ Cofibration f.left := by
-  simp only [cofibration_iff, cofibrations_over_def, MorphismProperty.over_iff]
+  simp [cofibration_iff, cofibrations_over_def, MorphismProperty.over_iff]
 
 instance {X Y : Over S} (f : X ⟶ Y) [Cofibration f] : Cofibration f.left := by
   rwa [← cofibrations_over_iff]
@@ -72,7 +72,7 @@ lemma fibrations_over_def :
 
 lemma fibrations_over_iff {X Y : Over S} (f : X ⟶ Y) :
     Fibration f ↔ Fibration f.left := by
-  simp only [fibration_iff, fibrations_over_def, MorphismProperty.over_iff]
+  simp [fibration_iff, fibrations_over_def, MorphismProperty.over_iff]
 
 instance {X Y : Over S} (f : X ⟶ Y) [Fibration f] : Fibration f.left := by
   rwa [← fibrations_over_iff]
@@ -96,7 +96,7 @@ lemma weakEquivalences_over_def :
 
 lemma weakEquivalences_over_iff {X Y : Over S} (f : X ⟶ Y) :
     WeakEquivalence f ↔ WeakEquivalence f.left := by
-  simp only [weakEquivalence_iff, weakEquivalences_over_def, MorphismProperty.over_iff]
+  simp [weakEquivalence_iff, weakEquivalences_over_def, MorphismProperty.over_iff]
 
 instance {X Y : Over S} (f : X ⟶ Y) [WeakEquivalence f] : WeakEquivalence f.left := by
   rwa [← weakEquivalences_over_iff]

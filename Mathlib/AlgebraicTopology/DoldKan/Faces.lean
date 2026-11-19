@@ -78,7 +78,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   swap
   · rintro ⟨k, hk⟩
     suffices φ ≫ X.δ (⟨a + 2 + k, by lia⟩ : Fin (n + 2)) = 0 by
-      simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
+      simp [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
     convert v ⟨a + k + 1, by lia⟩ (by rw [Fin.val_mk]; lia)
     dsimp
     lia
@@ -115,7 +115,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   · -- d + e = 0
     rw [X.δ_comp_σ_self' (Fin.castSucc_mk _ _ _).symm,
       X.δ_comp_σ_succ' (Fin.succ_mk _ _ _).symm]
-    simp only [comp_id, pow_add _ (a + 1) 1, pow_one, mul_neg, mul_one, neg_mul, neg_smul,
+    simp [comp_id, pow_add _ (a + 1) 1, pow_one, mul_neg, mul_one, neg_mul, neg_smul,
       add_neg_cancel]
   · -- c + a = 0
     rw [← Finset.sum_add_distrib]
@@ -144,7 +144,7 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
       AlternatingFaceMapComplex.obj_d_eq]
     -- All terms of the sum but the first two are zeros
     rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fintype.sum_eq_zero, add_zero]
-    · simp only [Fin.val_zero, Fin.val_succ, Fin.val_castSucc, zero_add, pow_zero, one_smul,
+    · simp [Fin.val_zero, Fin.val_succ, Fin.val_castSucc, zero_add, pow_zero, one_smul,
         pow_one, neg_smul, comp_neg, ← Fin.castSucc_zero (n := n + 2), δ_comp_σ_self, δ_comp_σ_succ,
         add_neg_cancel]
     · intro j
@@ -152,7 +152,7 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
       · simp [Fin.succ_ne_zero]
       · dsimp
         lia
-      · simp only [Fin.succ_lt_succ_iff, j.succ_pos]
+      · simp [Fin.succ_lt_succ_iff, j.succ_pos]
 
 theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) :
     HigherFacesVanish (q + 1) (φ ≫ (𝟙 _ + Hσ q).f (n + 1)) := by
@@ -189,7 +189,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
     · rw [Fin.le_iff_val_le_val]
       dsimp
       lia
-    simp only [← assoc, v j (by lia), zero_comp]
+    simp [← assoc, v j (by lia), zero_comp]
   · -- in the last case, a=m, q=1 and j=a+1
     rw [X.δ_comp_δ_self'_assoc]
     swap
@@ -198,7 +198,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
       dsimp
       dsimp only [Nat.succ_eq_add_one] at *
       lia
-    simp only [← assoc, v j (by lia), zero_comp]
+    simp [← assoc, v j (by lia), zero_comp]
 
 end HigherFacesVanish
 

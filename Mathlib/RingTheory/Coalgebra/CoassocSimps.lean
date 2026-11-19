@@ -116,14 +116,14 @@ lemma assoc_comp_map_map_comp_assoc
     (f : M →ₗ[R] M ⊗[R] M₃) :
     α ∘ₗ (((f₁ ⊗ₘ f₂) ∘ₗ f₁₂) ⊗ₘ f₃) ∘ₗ f =
       (f₁ ⊗ₘ (f₂ ⊗ₘ f₃)) ∘ₗ α ∘ₗ (f₁₂ ⊗ₘ id) ∘ₗ f := by
-  simp only [← LinearMap.comp_assoc, assoc_comp_map_map_comp]
+  simp [← LinearMap.comp_assoc, assoc_comp_map_map_comp]
 
 -- This loops when tagged as a simp lemma,
 -- so we turn it into a simproc that only fires when `f₃ ≠ id`.
 lemma assoc_comp_map (f₃ : M₃ →ₗ[R] N₃) (f₁₂ : M →ₗ[R] M₁ ⊗[R] M₂) :
     α ∘ₗ (f₁₂ ⊗ₘ f₃) = (id ⊗ₘ (id ⊗ₘ f₃)) ∘ₗ α ∘ₗ (f₁₂ ⊗ₘ id) := by
   rw [← LinearMap.comp_assoc, map_map_comp_assoc_eq]
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 /-- Simproc version of `assoc_comp_map` that only fires when `f₃ ≠ id`. -/
 simproc_decl assoc_comp_map_simproc
@@ -176,7 +176,7 @@ lemma assoc_comp_map_assoc (f₃ : M₃ →ₗ[R] N₃)
     (f₁₂ : M →ₗ[R] M₁ ⊗[R] M₂) (f : P →ₗ[R] M ⊗[R] M₃) :
     α ∘ₗ (f₁₂ ⊗ₘ f₃) ∘ₗ f = (id ⊗ₘ (id ⊗ₘ f₃)) ∘ₗ α ∘ₗ (f₁₂ ⊗ₘ id) ∘ₗ f := by
   rw [← LinearMap.comp_assoc]
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 /-- Simproc version of `assoc_comp_map_assoc` that only fires when `f₃ ≠ id`. -/
 simproc_decl assoc_comp_map_assoc_simproc
@@ -236,7 +236,7 @@ lemma assoc_symm_comp_map
     (f₁ : M₁ →ₗ[R] N₁) (f₂₃ : M →ₗ[R] M₂ ⊗[R] M₃) :
     α⁻¹ ∘ₗ (f₁ ⊗ₘ f₂₃) = ((f₁ ⊗ₘ .id) ⊗ₘ .id) ∘ₗ α⁻¹ ∘ₗ (.id ⊗ₘ f₂₃) := by
   rw [← LinearMap.comp_assoc, map_map_comp_assoc_symm_eq]
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 /-- Simproc version of `assoc_symm_comp_map` that only fires when `f₁ ≠ id`. -/
 simproc_decl assoc_symm_comp_map_simproc
@@ -290,7 +290,7 @@ lemma assoc_symm_comp_map_assoc (f₁ : M₁ →ₗ[R] N₁)
     (f₂₃ : M →ₗ[R] M₂ ⊗[R] M₃) (f : P →ₗ[R] M₁ ⊗[R] M) :
     α⁻¹ ∘ₗ (f₁ ⊗ₘ f₂₃) ∘ₗ f = ((f₁ ⊗ₘ .id) ⊗ₘ .id) ∘ₗ α⁻¹ ∘ₗ (.id ⊗ₘ f₂₃) ∘ₗ f := by
   rw [← LinearMap.comp_assoc]
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 /-- Simproc version of `assoc_symm_comp_map_assoc` that only fires when `f₁ ≠ id`. -/
 simproc_decl assoc_symm_comp_map_assoc_simproc
@@ -358,7 +358,7 @@ lemma assoc_symm_comp_map_map_comp_assoc
     (f₁ : M₁ →ₗ[R] N₁) (f₂ : M₂ →ₗ[R] N₂) (f₃ : M₃ →ₗ[R] N₃) (f₂₃ : M →ₗ[R] M₂ ⊗[R] M₃)
     (f : N →ₗ[R] M₁ ⊗[R] M) :
     α⁻¹ ∘ₗ (f₁ ⊗ₘ (f₂ ⊗ₘ f₃ ∘ₗ f₂₃)) ∘ₗ f = ((f₁ ⊗ₘ f₂) ⊗ₘ f₃) ∘ₗ α⁻¹ ∘ₗ (id ⊗ₘ f₂₃) ∘ₗ f := by
-  simp only [← LinearMap.comp_assoc, assoc_symm_comp_map_map_comp]
+  simp [← LinearMap.comp_assoc, assoc_symm_comp_map_map_comp]
 
 @[coassoc_simps]
 lemma assoc_symm_comp_lid_symm :
@@ -460,7 +460,7 @@ attribute [coassoc_simps] lid_comp_map_simproc
 -- so we turn it into a simproc that only fires when `g ≠ id`.
 lemma lid_comp_map_assoc (f : M →ₗ[R] R) (g : N →ₗ[R] M') (h : P →ₗ[R] M ⊗[R] N) :
     λ ∘ₗ (f ⊗ₘ g) ∘ₗ h = g ∘ₗ λ ∘ₗ (f ⊗ₘ id) ∘ₗ h := by
-  simp only [← LinearMap.comp_assoc, lid_comp_map _ g]
+  simp [← LinearMap.comp_assoc, lid_comp_map _ g]
 
 /-- Simproc version of `lid_comp_map_assoc` that only fires when `g ≠ id`. -/
 simproc_decl lid_comp_map_assoc_simproc
@@ -545,7 +545,7 @@ attribute [coassoc_simps] rid_comp_map_simproc
 -- so we turn it into a simproc that only fires when `f ≠ id`.
 lemma rid_comp_map_assoc (f : M →ₗ[R] M') (g : N →ₗ[R] R) (h : P →ₗ[R] M ⊗[R] N) :
     ρ ∘ₗ (f ⊗ₘ g) ∘ₗ h = f ∘ₗ ρ ∘ₗ (.id ⊗ₘ g) ∘ₗ h := by
-  simp only [← LinearMap.comp_assoc, rid_comp_map f]
+  simp [← LinearMap.comp_assoc, rid_comp_map f]
 
 /-- Simproc version of `rid_comp_map_assoc` that only fires when `f ≠ id`. -/
 simproc_decl rid_comp_map_assoc_simproc
@@ -620,35 +620,35 @@ lemma symm_comp_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
 @[coassoc_simps]
 lemma symm_comp_map_assoc (f : M →ₗ[R] M') (g : N →ₗ[R] N') (h : P →ₗ[R] M ⊗[R] N) :
     β ∘ₗ (f ⊗ₘ g) ∘ₗ h = (g ⊗ₘ f) ∘ₗ β ∘ₗ h := by
-  simp only [← LinearMap.comp_assoc, symm_comp_map]
+  simp [← LinearMap.comp_assoc, symm_comp_map]
 
 @[coassoc_simps]
 lemma coassoc_left [Coalgebra R M] (f : M →ₗ[R] M') :
     α ∘ₗ (δ ⊗ₘ f) ∘ₗ δ = (id ⊗ₘ (id ⊗ₘ f)) ∘ₗ (id ⊗ₘ δ) ∘ₗ δ := by
   simp_rw [← LinearMap.lTensor_def, ← coassoc, ← LinearMap.comp_assoc, LinearMap.lTensor_def,
     map_map_comp_assoc_eq]
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 @[coassoc_simps]
 lemma coassoc_left_assoc [Coalgebra R M] (f : M →ₗ[R] M') (g : N →ₗ[R] M) :
     α ∘ₗ (δ ⊗ₘ f) ∘ₗ δ ∘ₗ g = (id ⊗ₘ (id ⊗ₘ f)) ∘ₗ (id ⊗ₘ δ) ∘ₗ δ ∘ₗ g := by
   simp only [← LinearMap.comp_assoc]
   congr 1
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 @[coassoc_simps]
 lemma coassoc_right [Coalgebra R M] (f : M →ₗ[R] M') :
     α⁻¹ ∘ₗ (f ⊗ₘ δ) ∘ₗ δ = ((f ⊗ₘ id) ⊗ₘ id) ∘ₗ (δ ⊗ₘ id) ∘ₗ δ := by
   simp_rw [← LinearMap.rTensor_def, ← coassoc_symm, ← LinearMap.comp_assoc, LinearMap.rTensor_def,
     map_map_comp_assoc_symm_eq]
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 @[coassoc_simps]
 lemma coassoc_right_assoc [Coalgebra R M] (f : M →ₗ[R] M') (g : N →ₗ[R] M) :
     α⁻¹ ∘ₗ (f ⊗ₘ δ) ∘ₗ δ ∘ₗ g = ((f ⊗ₘ id) ⊗ₘ id) ∘ₗ (δ ⊗ₘ id) ∘ₗ δ ∘ₗ g := by
   simp only [← LinearMap.comp_assoc]
   congr 1
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 lemma map_counit_comp_comul_left [Coalgebra R M] (f : M →ₗ[R] M') :
     (ε ⊗ₘ f) ∘ₗ δ = (id ⊗ₘ f) ∘ₗ λ⁻¹ := by
@@ -685,6 +685,6 @@ lemma assoc_comp_map_comm_comp_comul_comp_comul_assoc
     α ∘ₗ ((β ∘ₗ δ) ⊗ₘ f) ∘ₗ δ ∘ₗ h = (id ⊗ₘ ((id ⊗ₘ f) ∘ₗ β)) ∘ₗ α ∘ₗ δ ⊗ₘ id ∘ₗ β ∘ₗ δ ∘ₗ h := by
   simp_rw [← LinearMap.comp_assoc]
   congr 1
-  simp only [coassoc_simps]
+  simp [coassoc_simps]
 
 end CoassocSimps

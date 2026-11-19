@@ -57,7 +57,7 @@ theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
 @[simp]
 theorem antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) ::ₘ (antidiagonal n).map (Prod.map Nat.succ id) := by
-  simp only [antidiagonal, List.Nat.antidiagonal_succ, map_coe, cons_coe]
+  simp [antidiagonal, List.Nat.antidiagonal_succ, map_coe, cons_coe]
 
 theorem antidiagonal_succ' {n : ℕ} :
     antidiagonal (n + 1) = (n + 1, 0) ::ₘ (antidiagonal n).map (Prod.map id Nat.succ) := by

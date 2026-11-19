@@ -79,7 +79,7 @@ theorem natCard_extension : Nat.card (Extension k p n) = Nat.card k ^ n := by
 
 theorem finrank_extension : Module.finrank k (Extension k p n) = n := by
   refine Nat.pow_right_injective (Finite.one_lt_card : 2 ≤ Nat.card k) ?_
-  simp only [← Module.natCard_eq_pow_finrank, natCard_extension]
+  simp [← Module.natCard_eq_pow_finrank, natCard_extension]
 
 instance : IsSplittingField k (Extension k p n) (X ^ Nat.card k ^ n - X) := by
   have := Fintype.ofFinite (Extension k p n)

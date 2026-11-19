@@ -106,7 +106,7 @@ theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ 
   | n + 1 => by simpa [← add_assoc] using add_le_add_iff_right n
 
 theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := by
-  simp only [le_antisymm_iff, add_le_add_iff_right]
+  simp [le_antisymm_iff, add_le_add_iff_right]
 
 @[deprecated (since := "2026-07-07")]
 alias left_eq_zero_of_add_eq_zero := eq_zero_of_add_right

@@ -49,7 +49,7 @@ theorem setOfPred_liouvilleWith_subset_aux :
       ∃ a ∈ Finset.Icc (0 : ℤ) b, |y - a / b| < 1 / (b : ℝ) ^ (2 + 1 / (n + 1 : ℕ) : ℝ) by
     simp only [mem_iUnion, mem_preimage]
     have hx : x + ↑(-⌊x⌋) ∈ Ico (0 : ℝ) 1 := by
-      simp only [Int.floor_le, Int.lt_floor_add_one, add_neg_lt_iff_le_add', zero_add, and_self_iff,
+      simp [Int.floor_le, Int.lt_floor_add_one, add_neg_lt_iff_le_add', zero_add, and_self_iff,
         mem_Ico, Int.cast_neg, le_add_neg_iff_add_le]
     exact ⟨-⌊x⌋, n + 1, n.succ_pos, this _ (hxp.add_int _) hx⟩
   clear hxp x; intro x hxp hx01
@@ -72,7 +72,7 @@ theorem setOfPred_liouvilleWith_subset_aux :
     @Int.cast_lt ℝ, ← @Int.cast_lt ℝ]
   push_cast
   refine ⟨lt_of_le_of_lt ?_ hlt.1, hlt.2.trans_le ?_⟩
-  · simp only [mul_nonneg hx01.left b.cast_nonneg, neg_le_sub_iff_le_add, le_add_iff_nonneg_left]
+  · simp [mul_nonneg hx01.left b.cast_nonneg, neg_le_sub_iff_le_add, le_add_iff_nonneg_left]
   · rw [add_le_add_iff_left]
     exact mul_le_of_le_one_left hb0.le hx01.2.le
 
@@ -104,7 +104,7 @@ theorem volume_iUnion_setOfPred_liouvilleWith :
       volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤ ∑ a ∈ Finset.Icc (0 : ℤ) b, volume (B a b) :=
         measure_biUnion_finset_le _ _
       _ = ↑((b + 1) * (2 / (b : ℝ≥0) ^ r)) := by
-        simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero,
+        simp [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero,
           Int.toNat_natCast, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_natCast]
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith

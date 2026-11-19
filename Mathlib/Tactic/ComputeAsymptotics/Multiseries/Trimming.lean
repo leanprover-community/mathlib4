@@ -97,7 +97,7 @@ theorem trimmed_iff_seq_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp [hs]
     | @cons _ _ exp coef tl _ h_trimmed h_ne_zero =>
       convert Trimmed.cons h_trimmed h_ne_zero (exp := exp) (tl := tl) (f := ms.toFun)
-      simp only [ms_eq_mk_iff, hs, and_true]
+      simp [ms_eq_mk_iff, hs, and_true]
 
 namespace Multiseries.Trimmed
 

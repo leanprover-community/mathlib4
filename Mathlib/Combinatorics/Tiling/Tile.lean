@@ -181,7 +181,7 @@ lemma ext_iff_of_preimage {pt₁ pt₂ : PlacedTile ps} :
       (Quotient.mk _) ⁻¹' {pt₁.groupElts} = (Quotient.mk _) ⁻¹' {pt₂.groupElts} := by
   refine ⟨fun h ↦ ?_, fun ⟨hi, hq⟩ ↦ ?_⟩
   · subst h
-    simp only [and_self]
+    simp [and_self]
   · rcases pt₁ with ⟨i₁, g₁⟩
     rcases pt₂ with ⟨i₂, g₂⟩
     dsimp only at hi

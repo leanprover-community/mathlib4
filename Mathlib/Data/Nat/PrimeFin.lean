@@ -60,7 +60,7 @@ lemma primeFactors_mono (hmn : m ∣ n) (hn : n ≠ 0) : primeFactors m ⊆ prim
   exact fun p hp hpm _ ↦ ⟨hp, hpm.trans hmn, hn⟩
 
 lemma mem_primeFactors_iff_mem_primeFactorsList : p ∈ n.primeFactors ↔ p ∈ n.primeFactorsList := by
-  simp only [primeFactors, List.mem_toFinset]
+  simp [primeFactors, List.mem_toFinset]
 
 lemma prime_of_mem_primeFactors (hp : p ∈ n.primeFactors) : p.Prime := (mem_primeFactors.1 hp).1
 lemma dvd_of_mem_primeFactors (hp : p ∈ n.primeFactors) : p ∣ n := (mem_primeFactors.1 hp).2.1
@@ -97,7 +97,7 @@ lemma nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
 
 lemma primeFactors_mul (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).primeFactors = a.primeFactors ∪ b.primeFactors := by
-  ext; simp only [Finset.mem_union, mem_primeFactors_iff_mem_primeFactorsList,
+  ext; simp [Finset.mem_union, mem_primeFactors_iff_mem_primeFactorsList,
     mem_primeFactorsList_mul ha hb]
 
 lemma Coprime.primeFactors_mul {a b : ℕ} (hab : Coprime a b) :

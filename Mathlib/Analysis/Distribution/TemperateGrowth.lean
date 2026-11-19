@@ -291,7 +291,7 @@ end Multiplication
 lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     Function.HasTemperateGrowth f := by
   apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
-  · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
+  · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp [ContinuousLinearMap.fderiv]
     simp [this]
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 

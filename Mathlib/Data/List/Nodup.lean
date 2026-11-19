@@ -34,7 +34,7 @@ protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [Std.Irr
 
 open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
-  | _, _, Forall₂.nil => by simp only [nodup_nil]
+  | _, _, Forall₂.nil => by simp [nodup_nil]
   | _, _, Forall₂.cons hab h => by
     simpa only [nodup_cons] using
       Relator.rel_and (Relator.rel_not (rel_mem hr hab h)) (rel_nodup hr h)
@@ -171,7 +171,7 @@ theorem Nodup.of_append_right : Nodup (l₁ ++ l₂) → Nodup l₂ :=
 which does not use `Disjoint`. -/
 theorem nodup_append' {l₁ l₂ : List α} :
     Nodup (l₁ ++ l₂) ↔ Nodup l₁ ∧ Nodup l₂ ∧ Disjoint l₁ l₂ := by
-  simp only [Nodup, pairwise_append, disjoint_iff_ne]
+  simp [Nodup, pairwise_append, disjoint_iff_ne]
 
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
   (nodup_append'.1 d).2.2
@@ -182,11 +182,11 @@ theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁
   nodup_append'.2 ⟨d₁, d₂, dj⟩
 
 theorem nodup_append_comm {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup (l₂ ++ l₁) := by
-  simp only [nodup_append', and_left_comm, disjoint_comm]
+  simp [nodup_append', and_left_comm, disjoint_comm]
 
 theorem nodup_middle {a : α} {l₁ l₂ : List α} :
     Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) := by
-  simp only [nodup_append', not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
+  simp [nodup_append', not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
     disjoint_cons_right]
 
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
@@ -239,7 +239,7 @@ theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := b
 
 @[simp]
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
-  pairwise_reverse.trans <| by simp only [Nodup, Ne, eq_comm]
+  pairwise_reverse.trans <| by simp [Nodup, Ne, eq_comm]
 
 theorem nodup_concat (l : List α) (u : α) : (l.concat u).Nodup ↔ u ∉ l ∧ l.Nodup := by
   rw [← nodup_reverse]
@@ -304,7 +304,7 @@ theorem Nodup.diff [BEq α] [LawfulBEq α] : l₁.Nodup → (l₁.diff l₂).Nod
 
 theorem nodup_flatten {L : List (List α)} :
     Nodup (flatten L) ↔ (∀ l ∈ L, Nodup l) ∧ Pairwise Disjoint L := by
-  simp only [Nodup, pairwise_flatten, disjoint_left.symm, forall_mem_ne]
+  simp [Nodup, pairwise_flatten, disjoint_left.symm, forall_mem_ne]
 
 theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
     Nodup (l₁.flatMap f) ↔
@@ -356,7 +356,7 @@ theorem Nodup.sdiff_eq_filter [BEq α] [LawfulBEq α] :
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
     rw [diff_cons, (hl₁.erase _).sdiff_eq_filter, hl₁.erase_eq_filter, filter_filter]
-    simp only [decide_not, bne, Bool.and_comm, decide_mem_cons, Bool.not_or]
+    simp [decide_not, bne, Bool.and_comm, decide_mem_cons, Bool.not_or]
 
 @[deprecated (since := "2026-06-03")] alias Nodup.diff_eq_filter := Nodup.sdiff_eq_filter
 

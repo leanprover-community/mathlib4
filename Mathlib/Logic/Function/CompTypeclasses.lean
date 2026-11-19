@@ -43,11 +43,11 @@ instance {M : Type*} : IsId (@id M) where
 
 instance instComp_id {N P : Type*} {φ : N → N} [IsId φ] {ψ : N → P} :
     CompTriple φ ψ ψ where
-  comp_eq := by simp only [IsId.eq_id, Function.comp_id]
+  comp_eq := by simp [IsId.eq_id, Function.comp_id]
 
 instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
     CompTriple φ ψ φ where
-  comp_eq := by simp only [IsId.eq_id, Function.id_comp]
+  comp_eq := by simp [IsId.eq_id, Function.id_comp]
 
 /-- `φ`, `ψ` and `ψ ∘ φ` for a `CompTriple`. -/
 theorem comp {M N P : Type*}
@@ -58,7 +58,7 @@ theorem comp {M N P : Type*}
 lemma comp_inv {M N : Type*} {φ : M → N} {ψ : N → M}
     (h : Function.RightInverse φ ψ) {χ : M → M} [IsId χ] :
     CompTriple φ ψ χ where
-  comp_eq := by simp only [IsId.eq_id, h.id]
+  comp_eq := by simp [IsId.eq_id, h.id]
 
 lemma comp_apply {M N P : Type*}
     {φ : M → N} {ψ : N → P} {χ : M → P} (h : CompTriple φ ψ χ) (x : M) :

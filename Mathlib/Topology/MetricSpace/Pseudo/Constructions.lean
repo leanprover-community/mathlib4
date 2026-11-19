@@ -35,7 +35,7 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
-    simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_ofPred]
+    simp [← isBounded_def, isBounded_iff, forall_mem_image, mem_ofPred]
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
@@ -115,7 +115,7 @@ lemma NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 lemma NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
   eq_of_forall_ge_iff fun _ => by
     simp only [max_le_iff, tsub_le_iff_right (α := ℝ≥0)]
-    simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, abs_sub_le_iff,
+    simp [← NNReal.coe_le_coe, coe_nndist, dist_eq, abs_sub_le_iff,
       tsub_le_iff_right, NNReal.coe_add]
 
 @[simp]
@@ -176,7 +176,7 @@ instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
     (fun x y ↦ by positivity) fun x y => by
-      simp only [ENNReal.ofReal_max, Prod.edist_eq, edist_dist]
+      simp [ENNReal.ofReal_max, Prod.edist_eq, edist_dist]
   i.replaceBornology fun s => by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]

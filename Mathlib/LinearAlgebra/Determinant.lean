@@ -217,7 +217,7 @@ theorem det_toLin (b : Basis ι R M) (f : Matrix ι ι R) :
 
 @[simp]
 theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matrix.det f := by
-  simp only [← toLin_eq_toLin', det_toLin]
+  simp [← toLin_eq_toLin', det_toLin]
 
 /-- To show `P (LinearMap.det f)` it suffices to consider `P (Matrix.det (toMatrix _ _ f))` and
 `P 1`. -/
@@ -250,7 +250,7 @@ theorem det_smul [Module.Free A M] (c : A) (f : M →ₗ[A] M) :
   · have : Module.Finite A M := by
       rcases H with ⟨s, ⟨hs⟩⟩
       exact Module.Finite.of_basis hs
-    simp only [← det_toMatrix (Module.finBasis A M), map_smul, Fintype.card_fin, Matrix.det_smul]
+    simp [← det_toMatrix (Module.finBasis A M), map_smul, Fintype.card_fin, Matrix.det_smul]
   · classical
       have : Module.finrank A M = 0 := finrank_eq_zero_of_not_exists_basis H
       simp [coe_det, H, this]
@@ -267,7 +267,7 @@ the determinant to be `1`. -/
 @[simp]
 theorem det_zero [Module.Free A M] :
     LinearMap.det (0 : M →ₗ[A] M) = (0 : A) ^ Module.finrank A M := by
-  simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, map_one]
+  simp [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, map_one]
 
 theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[R] M) : f.det = 1 := by
   rw [LinearMap.det, dite_eq_right, MonoidHom.one_apply]
@@ -308,7 +308,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
         contrapose H
         rcases H with ⟨s, ⟨b⟩⟩
         exact ⟨_, ⟨(b.map e.symm).reindexFinsetRange⟩⟩
-      simp only [coe_det, H, H', MonoidHom.one_apply, dite_eq_right, not_false_eq_true]
+      simp [coe_det, H, H', MonoidHom.one_apply, dite_eq_right, not_false_eq_true]
 
 /-- If a linear map is invertible, so is its determinant. -/
 theorem isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :
@@ -396,7 +396,7 @@ theorem det_pi [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) 
       LinearMap.toMatrix_apply', LinearMap.coe_proj, Function.eval, Pi.single_apply]
     split_ifs with h
     · rw [h]
-    · simp only [map_zero, Finsupp.coe_zero, Pi.zero_apply]
+    · simp [map_zero, Finsupp.coe_zero, Pi.zero_apply]
   rw [this, Matrix.det_blockDiagonal]
 
 end LinearMap
@@ -577,7 +577,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
     Associated (LinearMap.det (f ∘ₗ ↑e)) (LinearMap.det (f ∘ₗ ↑e')) := by
   refine LinearMap.associated_det_of_eq_comp (e.trans e'.symm) _ _ ?_
   intro x
-  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+  simp [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
     LinearEquiv.apply_symm_apply]
 
 namespace Module.Basis
@@ -589,7 +589,7 @@ nonrec def det : M [⋀^ι]→ₗ[R] R where
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ det (e.toMatrix v))
       (fun v i x y ↦ by
-        simp only [e.toMatrix_update, map_add, Finsupp.coe_add, det_updateCol_add])
+        simp [e.toMatrix_update, map_add, Finsupp.coe_add, det_updateCol_add])
       (fun u i c x ↦ by
         simp only [e.toMatrix_update, smul_eq_mul, map_smul]
         apply det_updateCol_smul)

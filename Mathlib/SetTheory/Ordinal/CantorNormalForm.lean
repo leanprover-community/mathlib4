@@ -286,7 +286,7 @@ theorem eval_single_add (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordina
   | zero => simp
   | single_add e' y f hf hy =>
     obtain rfl | he' := (h e' (by simp [hy])).eq_or_lt
-    · simp only [← add_assoc, ← single_add, eval_single_add' _ hf, mul_add]
+    · simp [← add_assoc, ← single_add, eval_single_add' _ hf, mul_add]
     · rw [eval_single_add']
       refine fun a ha ↦ (h a ha).lt_of_ne ?_
       rintro rfl

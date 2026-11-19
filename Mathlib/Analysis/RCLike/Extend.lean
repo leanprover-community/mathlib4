@@ -49,14 +49,14 @@ noncomputable def extendRCLike (fr : Dual ℝ F) : Dual 𝕜 F :=
     abel
   have A (c : ℝ) (x : F) : (fr ((c : 𝕜) • x) : 𝕜) = (c : 𝕜) * (fr x : 𝕜) := by simp
   have smul_ℝ (c : ℝ) (x : F) : fc ((c : 𝕜) • x) = (c : 𝕜) * fc x := by
-    simp only [fc, A, smul_comm I, mul_comm I, mul_sub, mul_assoc]
+    simp [fc, A, smul_comm I, mul_comm I, mul_sub, mul_assoc]
   have smul_I (x : F) : fc ((I : 𝕜) • x) = (I : 𝕜) * fc x := by
     obtain (h | h) := @I_mul_I_ax 𝕜 _
     · simp [fc, h]
     · simp [fc, mul_sub, ← mul_assoc, smul_smul, h, add_comm]
   have smul_𝕜 (c : 𝕜) (x : F) : fc (c • x) = c • fc x := by
     rw [← re_add_im c]
-    simp only [add_smul, ← smul_smul, add, smul_ℝ, smul_I, ← mul_assoc, smul_eq_mul, add_mul]
+    simp [add_smul, ← smul_smul, add, smul_ℝ, smul_I, ← mul_assoc, smul_eq_mul, add_mul]
   { toFun := fc
     map_add' := add
     map_smul' := smul_𝕜 }
@@ -66,7 +66,7 @@ theorem extendRCLike_apply (fr : Dual ℝ F) (x : F) :
 
 @[simp]
 theorem re_extendRCLike_apply (fr : Dual ℝ F) (x : F) : re (fr.extendRCLike x : 𝕜) = fr x := by
-  simp only [extendRCLike_apply, map_sub, zero_mul, mul_zero, sub_zero, rclike_simps]
+  simp [extendRCLike_apply, map_sub, zero_mul, mul_zero, sub_zero, rclike_simps]
 
 @[simp]
 lemma im_extendRCLike_apply (g : Dual ℝ F) (x : F) :

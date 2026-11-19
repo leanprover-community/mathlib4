@@ -164,7 +164,7 @@ theorem isUnit_iff_coeff_isUnit_isNilpotent :
     IsUnit (C r + X * P) ↔ IsUnit r ∧ IsNilpotent P := by
   have : ∀ i, coeff (C r + X * P) (i + 1) = coeff P i := by simp
   simp_rw [isUnit_iff_coeff_isUnit_isNilpotent, Nat.forall_ne_zero_iff, this]
-  simp only [coeff_add, coeff_C_zero, mul_coeff_zero, coeff_X_zero, zero_mul, add_zero,
+  simp [coeff_add, coeff_C_zero, mul_coeff_zero, coeff_X_zero, zero_mul, add_zero,
     ← Polynomial.isNilpotent_iff]
 
 lemma isUnit_iff' :

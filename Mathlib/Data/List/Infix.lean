@@ -224,7 +224,7 @@ theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
 @[simp]
 theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
   | s, [] => by
-    simp only [tails, mem_singleton, suffix_nil]
+    simp [tails, mem_singleton, suffix_nil]
   | s, a :: t => by
     simp only [tails, mem_cons, mem_tails s t]
     exact
@@ -343,8 +343,8 @@ theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l el
 @[simp]
 theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
   by_cases h : a ∈ l
-  · simp only [insert_of_mem h, suffix_refl]
-  · simp only [insert_of_not_mem h, suffix_cons]
+  · simp [insert_of_mem h, suffix_refl]
+  · simp [insert_of_not_mem h, suffix_cons]
 
 theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
   (suffix_insert a l).isInfix

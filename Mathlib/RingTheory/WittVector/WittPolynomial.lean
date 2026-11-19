@@ -128,11 +128,11 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 
 @[simp]
 theorem wittPolynomial_zero : wittPolynomial p R 0 = X 0 := by
-  simp only [wittPolynomial, X, sum_singleton, range_one, pow_zero, zero_add, tsub_self]
+  simp [wittPolynomial, X, sum_singleton, range_one, pow_zero, zero_add, tsub_self]
 
 @[simp]
 theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p := by
-  simp only [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm, range_one, sum_singleton,
+  simp [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm, range_one, sum_singleton,
     one_mul, pow_one, C_1, pow_zero, tsub_self, tsub_zero]
 
 theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
@@ -163,7 +163,7 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars
     refine vars_monomial_single i (pow_ne_zero _ hp.out) ?_
     exact mod_cast pow_ne_zero i hp.out
   rw [wittPolynomial, vars_sum_of_disjoint]
-  · simp only [this, biUnion_singleton_eq_self]
+  · simp [this, biUnion_singleton_eq_self]
   · simp only [this]
     intro a b h
     apply disjoint_singleton_left.mpr

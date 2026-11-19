@@ -82,7 +82,7 @@ lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
     refine Sigma.hom_ext _ _ (fun j ↦ ?_)
     suffices (functorToAction F).map (gf j) = (gu j).inv ≫ i' j by
       simpa [is2, u']
-    simp only [h, Iso.inv_hom_id_assoc]
+    simp [h, Iso.inv_hom_id_assoc]
   refine ⟨∐ gZ, Sigma.desc gf, t.symm ≪≫ u' ≪≫ is2.symm, ?_, by simp [heq]⟩
   exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
 

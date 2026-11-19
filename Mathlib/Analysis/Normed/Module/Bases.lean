@@ -515,7 +515,7 @@ def basis : SchauderBasis 𝕜 X :=
     coord := fun n ↦ LinearMap.mkContinuous
       { toFun := coeff n
         map_add' := fun x y ↦ smul_left_injective 𝕜 (D.e_ne_zero n) <| by
-          simp only [add_smul, ← hcoeff, map_add]
+          simp [add_smul, ← hcoeff, map_add]
         map_smul' := fun c x ↦ smul_left_injective 𝕜 (D.e_ne_zero n) <| by
           dsimp only [RingHom.id_apply]
           rw [smul_eq_mul, ← smul_smul, ← hcoeff, ← hcoeff, map_smul] }

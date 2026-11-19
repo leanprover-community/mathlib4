@@ -137,7 +137,7 @@ def FunctorsInverting.mk {W : MorphismProperty C} {D : Type*} [Category* D] (F :
 theorem IsInvertedBy.iff_of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) :
     W.IsInvertedBy F₁ ↔ W.IsInvertedBy F₂ := by
   dsimp [IsInvertedBy]
-  simp only [NatIso.isIso_map_iff e]
+  simp [NatIso.isIso_map_iff e]
 
 @[simp]
 lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
@@ -171,7 +171,7 @@ lemma IsInvertedBy.iff_map_le_isomorphisms (W : MorphismProperty C) (F : C ⥤ D
 lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :
     (W.map F).IsInvertedBy G ↔ W.IsInvertedBy (F ⋙ G) := by
-  simp only [IsInvertedBy.iff_map_le_isomorphisms, map_map]
+  simp [IsInvertedBy.iff_map_le_isomorphisms, map_map]
 
 lemma isInvertedBy_isomorphisms (F : C ⥤ D) : (isomorphisms C).IsInvertedBy F := by
   intro _ _ _ hf

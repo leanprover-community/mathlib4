@@ -53,7 +53,7 @@ lemma Finset.mul_sup₀ (s : Finset ι) (f : ι → R) (a : R) :
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert _ _ _ IH => simp only [sup_insert, mul_max, ← IH]
+  | insert _ _ _ IH => simp [sup_insert, mul_max, ← IH]
 
 /-- Also see `Finset.sup'_mul₀` for a version for `GroupWithZero`s. -/
 lemma Finset.sup_mul₀ (s : Finset ι) (f : ι → R) (a : R) :
@@ -61,6 +61,6 @@ lemma Finset.sup_mul₀ (s : Finset ι) (f : ι → R) (a : R) :
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert _ _ _ IH => simp only [sup_insert, max_mul, ← IH]
+  | insert _ _ _ IH => simp [sup_insert, max_mul, ← IH]
 
 end

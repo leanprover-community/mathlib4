@@ -206,7 +206,7 @@ end Monoid
 section Ring
 variable [Ring α] {a b : α}
 
-lemma even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
+lemma even_neg_two : Even (-2 : α) := by simp [even_neg, even_two]
 
 lemma Odd.neg (hp : Odd a) : Odd (-a) := by
   obtain ⟨k, hk⟩ := hp

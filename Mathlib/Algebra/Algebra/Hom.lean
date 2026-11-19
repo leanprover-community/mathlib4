@@ -61,7 +61,7 @@ variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
     map_smulₛₗ := fun f r x => by
-      simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
+      simp [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
@@ -227,7 +227,7 @@ theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R 
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
   { f with
     toFun := f
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
+    commutes' := fun c => by simp [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
 
 @[simp]
 theorem coe_mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : ⇑(mk' f h) = f :=
@@ -328,7 +328,7 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     toFun := f
     map_one' := map_one
     map_mul' := map_mul
-    commutes' c := by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+    commutes' c := by simp [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :

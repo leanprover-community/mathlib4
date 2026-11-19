@@ -137,7 +137,7 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
       dsimp
       rw [tmul_smul, smul_assoc, one_smul, smul_tmul']
     · dsimp
-      simp only [one_smul]
+      simp [one_smul]
   lTensor_counit_comp_comul := by
     ext x y
     convert
@@ -151,7 +151,7 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
       dsimp
       rw [tmul_smul, smul_assoc, one_smul, smul_tmul']
     · dsimp
-      simp only [one_smul]
+      simp [one_smul]
 
 set_option backward.defeqAttrib.useBackward true in
 instance [IsCocomm S A] [IsCocomm R B] : IsCocomm S (A ⊗[R] B) where

@@ -177,8 +177,8 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 /-- The identity map as a `DPMorphism`. -/
 def id : DPMorphism hI hI where
   toRingHom     := RingHom.id A
-  ideal_comp    := by simp only [map_id, le_refl]
-  dpow_comp _ _ := by simp only [RingHom.id_apply]
+  ideal_comp    := by simp [map_id, le_refl]
+  dpow_comp _ _ := by simp [RingHom.id_apply]
 
 instance : Inhabited (DPMorphism hI hI) := ⟨DPMorphism.id hI⟩
 

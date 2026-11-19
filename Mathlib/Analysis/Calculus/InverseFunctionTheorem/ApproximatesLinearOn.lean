@@ -98,7 +98,7 @@ theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜
     {c : ℝ≥0} : ApproximatesLinearOn f f' s c ↔ LipschitzOnWith c (f - ⇑f') s := by
   have : ∀ x y, f x - f y - f' (x - y) = (f - f') x - (f - f') y := fun x y ↦ by
     simp only [map_sub, Pi.sub_apply]; abel
-  simp only [this, lipschitzOnWith_iff_norm_sub_le, ApproximatesLinearOn]
+  simp [this, lipschitzOnWith_iff_norm_sub_le, ApproximatesLinearOn]
 
 alias ⟨lipschitzOnWith, _root_.LipschitzOnWith.approximatesLinearOn⟩ :=
   approximatesLinearOn_iff_lipschitzOnWith
@@ -187,7 +187,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
       dist (f (g z)) y = ‖f (z + v) - y‖ := by rw [dist_eq_norm]
       _ = ‖f (z + v) - f z - f' v + f' v - (y - f z)‖ := by congr 1; abel
       _ = ‖f (z + v) - f z - f' (z + v - z)‖ := by
-        simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel_left,
+        simp [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel_left,
           sub_add_cancel]
       _ ≤ c * ‖z + v - z‖ := hf _ (hε hgz) _ (hε hz)
       _ ≤ c * (f'symm.nnNorm * dist (f z) y) := by

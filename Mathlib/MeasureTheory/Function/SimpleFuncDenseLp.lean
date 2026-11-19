@@ -402,12 +402,12 @@ def simpleFunc : AddSubgroup (Lp E p μ) where
   add_mem' := by
     rintro f g ⟨s, hs⟩ ⟨t, ht⟩
     use s + t
-    simp only [← hs, ← ht, AEEqFun.mk_add_mk, AddSubgroup.coe_add,
+    simp [← hs, ← ht, AEEqFun.mk_add_mk, AddSubgroup.coe_add,
       FunLike.coe_add]
   neg_mem' := by
     rintro f ⟨s, hs⟩
     use -s
-    simp only [← hs, AEEqFun.neg_mk, FunLike.coe_neg, AddSubgroup.coe_neg]
+    simp [← hs, AEEqFun.neg_mk, FunLike.coe_neg, AddSubgroup.coe_neg]
 
 variable {E p μ}
 
@@ -507,7 +507,7 @@ theorem toLp_neg (f : α →ₛ E) (hf : MemLp f p μ) : toLp (-f) hf.neg = -toL
 set_option backward.isDefEq.respectTransparency.types false in
 theorem toLp_sub (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
     toLp (f - g) (hf.sub hg) = toLp f hf - toLp g hg := by
-  simp only [sub_eq_add_neg, ← toLp_neg, ← toLp_add]
+  simp [sub_eq_add_neg, ← toLp_neg, ← toLp_add]
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
@@ -755,7 +755,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
   rw [mem_closure_iff_seq_limit]
   have hg_memLp : MemLp (g : α → G) p μ := Lp.memLp (g : Lp G p μ)
   have zero_mem : (0 : G) ∈ (range (g : α → G) ∪ {0} : Set G) ∩ { y | 0 ≤ y } := by
-    simp only [union_singleton, mem_inter_iff, mem_insert_iff, true_or,
+    simp [union_singleton, mem_inter_iff, mem_insert_iff, true_or,
       mem_ofPred_eq, le_refl, and_self_iff]
   have : SeparableSpace ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y } : Set G) := by
     apply IsSeparable.separableSpace
@@ -877,7 +877,7 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
     (h1P : ∀ f g, P f → P g → P (f + g)) {f : α → E}
     (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : α → E, eLpNorm (f - g) p μ ≤ ε ∧ P g := by
   rcases eq_or_ne p 0 with (rfl | hp_pos)
-  · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
+  · rcases h0P (0 : E) MeasurableSet.empty (by simp [measure_empty, zero_lt_top])
         one_ne_zero with ⟨g, h'g, Pg⟩
     have : g - (fun x ↦ 0) = g := by ext; simp
     simp [this] at h'g
@@ -895,11 +895,11 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
     rcases H f' η ηpos.ne' f'_mem with ⟨g, hg, Pg⟩
     refine ⟨g, ?_, Pg⟩
     convert (hη _ _ hf'.le hg).le using 2
-    simp only [sub_add_sub_cancel]
+    simp [sub_add_sub_cancel]
   apply SimpleFunc.induction
   · intro c s hs ε εpos Hs
     rcases eq_or_ne c 0 with (rfl | hc)
-    · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
+    · rcases h0P (0 : E) MeasurableSet.empty (by simp [measure_empty, zero_lt_top])
           εpos with ⟨g, hg, Pg⟩
       rw [← eLpNorm_neg, neg_sub] at hg
       refine ⟨g, ?_, Pg⟩

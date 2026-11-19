@@ -346,7 +346,7 @@ theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
   | zero =>
     intro n hn p
     rw [Finsupp.degree_eq_zero_iff] at hn
-    simp only [hn, monomial_zero', C_1, one_mul, nonpos_iff_eq_zero, exists_and_left,
+    simp [hn, monomial_zero', C_1, one_mul, nonpos_iff_eq_zero, exists_and_left,
       exists_eq_left, exists_eq_right', implies_true]
   | succ d hd =>
     intro n hn p q

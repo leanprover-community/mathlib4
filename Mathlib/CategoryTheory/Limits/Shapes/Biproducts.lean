@@ -664,7 +664,7 @@ lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
   ext j k
   by_cases h : k = e j
   · subst h
-    simp only [ι_desc_assoc, ← eqToHom_iso_hom_naturality_assoc w (e.symm_apply_apply j).symm,
+    simp [ι_desc_assoc, ← eqToHom_iso_hom_naturality_assoc w (e.symm_apply_apply j).symm,
       Equiv.symm_apply_apply, eqToHom_comp_ι, Category.assoc, bicone_ι_π_self, Category.comp_id,
       lift_π, bicone_ι_π_self_assoc]
   · simp only [ι_desc_assoc, Category.assoc, lift_π]
@@ -917,7 +917,7 @@ def cokernelCoforkBiproductFromSubtype (p : K → Prop) :
         simp only [Category.assoc, Pi.compl_apply, biproduct.ι_fromSubtype_assoc,
           biproduct.ι_toSubtype_assoc, comp_zero, zero_comp]
         rw [dite_eq_right]
-        · simp only [zero_comp]
+        · simp [zero_comp]
         · exact not_not.mpr k.2)
   isColimit :=
     CokernelCofork.IsColimit.ofπ _ _ (fun {_} g _ => biproduct.fromSubtype f pᶜ ≫ g)

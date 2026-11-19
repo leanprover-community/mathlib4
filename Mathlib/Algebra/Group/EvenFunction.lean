@@ -64,23 +64,23 @@ lemma Even.left_comp {g : α → β} (hg : g.Even) (f : β → γ) : (f ∘ g).E
 lemma Even.comp_odd [Neg β] {f : β → γ} (hf : f.Even) {g : α → β} (hg : g.Odd) :
     (f ∘ g).Even := by
   intro a
-  simp only [comp_apply, hg a, hf _]
+  simp [comp_apply, hg a, hf _]
 
 /-- If `f` and `g` are odd, then `f ∘ g` is odd. -/
 lemma Odd.comp_odd [Neg β] [Neg γ] {f : β → γ} (hf : f.Odd) {g : α → β} (hg : g.Odd) :
     (f ∘ g).Odd := by
   intro a
-  simp only [comp_apply, hg a, hf _]
+  simp [comp_apply, hg a, hf _]
 
 end composition
 
 lemma Even.add [Add β] {f g : α → β} (hf : f.Even) (hg : g.Even) : (f + g).Even := by
   intro a
-  simp only [hf a, hg a, Pi.add_apply]
+  simp [hf a, hg a, Pi.add_apply]
 
 lemma Odd.add [SubtractionCommMonoid β] {f g : α → β} (hf : f.Odd) (hg : g.Odd) : (f + g).Odd := by
   intro a
-  simp only [hf a, hg a, Pi.add_apply, neg_add]
+  simp [hf a, hg a, Pi.add_apply, neg_add]
 
 section smul
 
@@ -88,31 +88,31 @@ variable {γ : Type*} {f : α → β} {g : α → γ}
 
 lemma Even.smul_even [SMul β γ] (hf : f.Even) (hg : g.Even) : (f • g).Even := by
   intro a
-  simp only [Pi.smul_apply', hf a, hg a]
+  simp [Pi.smul_apply', hf a, hg a]
 
 lemma Even.smul_odd [Monoid β] [AddGroup γ] [DistribMulAction β γ] (hf : f.Even) (hg : g.Odd) :
     (f • g).Odd := by
   intro a
-  simp only [Pi.smul_apply', hf a, hg a, smul_neg]
+  simp [Pi.smul_apply', hf a, hg a, smul_neg]
 
 lemma Odd.smul_even [Ring β] [AddCommGroup γ] [Module β γ] (hf : f.Odd) (hg : g.Even) :
     (f • g).Odd := by
   intro a
-  simp only [Pi.smul_apply', hf a, hg a, neg_smul]
+  simp [Pi.smul_apply', hf a, hg a, neg_smul]
 
 lemma Odd.smul_odd [Ring β] [AddCommGroup γ] [Module β γ] (hf : f.Odd) (hg : g.Odd) :
     (f • g).Even := by
   intro a
-  simp only [Pi.smul_apply', hf a, hg a, smul_neg, neg_smul, neg_neg]
+  simp [Pi.smul_apply', hf a, hg a, smul_neg, neg_smul, neg_neg]
 
 lemma Even.const_smul [SMul β γ] (hg : g.Even) (r : β) : (r • g).Even := by
   intro a
-  simp only [Pi.smul_apply, hg a]
+  simp [Pi.smul_apply, hg a]
 
 lemma Odd.const_smul [Monoid β] [AddGroup γ] [DistribMulAction β γ] (hg : g.Odd) (r : β) :
     (r • g).Odd := by
   intro a
-  simp only [Pi.smul_apply, hg a, smul_neg]
+  simp [Pi.smul_apply, hg a, smul_neg]
 
 end smul
 
@@ -122,19 +122,19 @@ variable {R : Type*} [Mul R] {f g : α → R}
 
 lemma Even.mul_even (hf : f.Even) (hg : g.Even) : (f * g).Even := by
   intro a
-  simp only [Pi.mul_apply, hf a, hg a]
+  simp [Pi.mul_apply, hf a, hg a]
 
 lemma Even.mul_odd [HasDistribNeg R] (hf : f.Even) (hg : g.Odd) : (f * g).Odd := by
   intro a
-  simp only [Pi.mul_apply, hf a, hg a, mul_neg]
+  simp [Pi.mul_apply, hf a, hg a, mul_neg]
 
 lemma Odd.mul_even [HasDistribNeg R] (hf : f.Odd) (hg : g.Even) : (f * g).Odd := by
   intro a
-  simp only [Pi.mul_apply, hf a, hg a, neg_mul]
+  simp [Pi.mul_apply, hf a, hg a, neg_mul]
 
 lemma Odd.mul_odd [HasDistribNeg R] (hf : f.Odd) (hg : g.Odd) : (f * g).Even := by
   intro a
-  simp only [Pi.mul_apply, hf a, hg a, mul_neg, neg_mul, neg_neg]
+  simp [Pi.mul_apply, hf a, hg a, mul_neg, neg_mul, neg_neg]
 
 end mul
 

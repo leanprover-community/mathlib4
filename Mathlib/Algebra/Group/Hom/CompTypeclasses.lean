@@ -64,17 +64,17 @@ instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ where
 instance instComp_id {N P : Type*} [Monoid N] [Monoid P]
     {φ : N →* N} [IsId φ] {ψ : N →* P} :
     CompTriple φ ψ ψ where
-  comp_eq := by simp only [IsId.eq_id, MonoidHom.comp_id]
+  comp_eq := by simp [IsId.eq_id, MonoidHom.comp_id]
 
 instance instId_comp {M N : Type*} [Monoid M] [Monoid N]
     {φ : M →* N} {ψ : N →* N} [IsId ψ] :
     CompTriple φ ψ φ where
-  comp_eq := by simp only [IsId.eq_id, MonoidHom.id_comp]
+  comp_eq := by simp [IsId.eq_id, MonoidHom.id_comp]
 
 lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
     {χ : M →* M} [IsId χ] :
     CompTriple φ ψ χ where
-  comp_eq := by simp only [IsId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id, coe_id]
+  comp_eq := by simp [IsId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id, coe_id]
 
 instance instRootCompTriple {φ : M →* N} {ψ : N →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
     _root_.CompTriple φ ψ χ where
@@ -100,7 +100,7 @@ theorem comp_assoc {Q : Type*} [Monoid Q]
     CompTriple φ₁ φ₂₃ φ₁₂₃ ↔ CompTriple φ₁₂ φ₃ φ₁₂₃ := by
   constructor <;>
   · rintro ⟨h⟩
-    exact ⟨by simp only [← κ.comp_eq, ← h, ← κ'.comp_eq, MonoidHom.comp_assoc]⟩
+    exact ⟨by simp [← κ.comp_eq, ← h, ← κ'.comp_eq, MonoidHom.comp_assoc]⟩
 
 end MonoidHom.CompTriple
 

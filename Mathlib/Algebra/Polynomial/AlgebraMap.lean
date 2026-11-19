@@ -123,7 +123,7 @@ theorem algHom_eval₂_algebraMap {R A B : Type*} [CommSemiring R] [Semiring A] 
     [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
     f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
   simp only [eval₂_eq_sum, sum_def]
-  simp only [map_sum, map_mul, map_pow, AlgHom.commutes]
+  simp [map_sum, map_mul, map_pow, AlgHom.commutes]
 
 @[simp]
 theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
@@ -388,10 +388,10 @@ def algEquivAevalNegX {R : Type*} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
 theorem comp_neg_X_comp_neg_X {R : Type*} [CommRing R] (p : R[X]) :
     (p.comp (-X)).comp (-X) = p := by
   rw [comp_assoc]
-  simp only [neg_comp, X_comp, neg_neg, comp_X]
+  simp [neg_comp, X_comp, neg_neg, comp_X]
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
-  algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
+  algHom_ext <| by simp [aeval_X, AlgHom.comp_apply]
 
 @[simp]
 theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
@@ -579,12 +579,12 @@ theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
   ext s
-  simp only [eval_X, aevalTower_X, coe_aeval_eq_eval]
+  simp [eval_X, aevalTower_X, coe_aeval_eq_eval]
 
 @[simp]
 theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
   ext
-  simp only [aeval_X, aevalTower_X]
+  simp [aeval_X, aevalTower_X]
 
 end aevalTower
 

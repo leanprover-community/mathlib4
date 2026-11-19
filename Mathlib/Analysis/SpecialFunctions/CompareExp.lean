@@ -60,7 +60,7 @@ theorem of_isBigO_im_re_rpow (hre : Tendsto re l atTop) (r : ℝ) (hr : im =O[l]
         (fun z : ℂ => z.im ^ n) =O[l] fun z => (z.re ^ r) ^ n := hr.pow n
         _ =ᶠ[l] fun z => z.re ^ (r * n) :=
           ((hre.eventually_ge_atTop 0).mono fun z hz => by
-            simp only [Real.rpow_mul hz r n, Real.rpow_natCast])
+            simp [Real.rpow_mul hz r n, Real.rpow_natCast])
         _ =o[l] fun z => Real.exp z.re := (isLittleO_rpow_exp_atTop _).comp_tendsto hre ⟩
 
 theorem of_isBigO_im_re_pow (hre : Tendsto re l atTop) (n : ℕ) (hr : im =O[l] fun z => z.re ^ n) :
@@ -97,9 +97,9 @@ theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => z.im ^ n) =o[l] fun z => Real.exp z.re :=
   flip IsLittleO.of_pow two_ne_zero <|
     calc
-      (fun z : ℂ ↦ (z.im ^ n) ^ 2) = (fun z ↦ z.im ^ (2 * n)) := by simp only [pow_mul']
+      (fun z : ℂ ↦ (z.im ^ n) ^ 2) = (fun z ↦ z.im ^ (2 * n)) := by simp [pow_mul']
       _ =O[l] fun z ↦ Real.exp z.re := hl.isBigO_im_pow_re _
-      _ =     fun z ↦ (Real.exp z.re) ^ 1 := by simp only [pow_one]
+      _ =     fun z ↦ (Real.exp z.re) ^ 1 := by simp [pow_one]
       _ =o[l] fun z ↦ (Real.exp z.re) ^ 2 :=
         (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
           Real.tendsto_exp_atTop.comp hl.tendsto_re

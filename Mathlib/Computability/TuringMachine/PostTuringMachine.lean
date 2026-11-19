@@ -368,7 +368,7 @@ noncomputable def stmts₁ : Stmt Γ Λ σ → Finset (Stmt Γ Λ σ)
   | Q => {Q}
 
 theorem stmts₁_self {q : Stmt Γ Λ σ} : q ∈ stmts₁ q := by
-  cases q <;> simp only [stmts₁, Finset.mem_insert_self, Finset.mem_singleton_self]
+  cases q <;> simp [stmts₁, Finset.mem_insert_self, Finset.mem_singleton_self]
 
 theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ := by
   classical
@@ -708,7 +708,7 @@ theorem supportsStmt_move {S : Finset (Λ' Γ Λ σ)} {d : Dir} {q : Stmt Bool (
 
 theorem supportsStmt_write {S : Finset (Λ' Γ Λ σ)} {l : List Bool} {q : Stmt Bool (Λ' Γ Λ σ) σ} :
     SupportsStmt S (write l q) = SupportsStmt S q := by
-  induction l <;> simp only [write, SupportsStmt, *]
+  induction l <;> simp [write, SupportsStmt, *]
 
 theorem supportsStmt_read {S : Finset (Λ' Γ Λ σ)} :
     ∀ {f : Γ → Stmt Bool (Λ' Γ Λ σ) σ}, (∀ a, SupportsStmt S (f a)) →
@@ -716,7 +716,7 @@ theorem supportsStmt_read {S : Finset (Λ' Γ Λ σ)} :
   suffices
     ∀ (i) (f : List.Vector Bool i → Stmt Bool (Λ' Γ Λ σ) σ),
       (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
-    from fun hf ↦ this n _ (by intro; simp only [supportsStmt_move, hf])
+    from fun hf ↦ this n _ (by intro; simp [supportsStmt_move, hf])
   fun i f hf ↦ by
   induction i with
   | zero => exact hf _
@@ -743,7 +743,7 @@ def trTape (T : Tape Γ) : Tape Bool :=
   trTape' enc0 T.left T.right₀
 
 theorem trTape_mk' (L R : ListBlank Γ) : trTape enc0 (Tape.mk' L R) = trTape' enc0 L R := by
-  simp only [trTape, Tape.mk'_left, Tape.mk'_right₀]
+  simp [trTape, Tape.mk'_left, Tape.mk'_right₀]
 
 end
 
@@ -773,13 +773,13 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
   | cons b l₁ IH =>
     simp only [List.length, iterate_succ_apply]
     convert IH e
-    simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
+    simp [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
 
 theorem trTape'_move_right (L R : ListBlank Γ) :
     (Tape.move Dir.right)^[n] (trTape' enc0 L R) = trTape' enc0 (L.cons R.head) R.tail := by
   suffices ∀ i L, (Tape.move Dir.right)^[i] ((Tape.move Dir.left)^[i] L) = L by
     refine (Eq.symm ?_).trans (this n _)
-    simp only [trTape'_move_left, ListBlank.cons_head_tail, ListBlank.head_cons,
+    simp [trTape'_move_left, ListBlank.cons_head_tail, ListBlank.head_cons,
       ListBlank.tail_cons]
   intro i _
   induction i with
@@ -812,7 +812,7 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
   suffices ∀ f, stepAux (readAux n f) v (trTape' enc0 L R) =
       stepAux (f (enc R.head)) v (trTape' enc0 (L.cons R.head) R.tail) by
     rw [read, this, stepAux_move, encdec, trTape'_move_left enc0]
-    simp only [ListBlank.head_cons, ListBlank.cons_head_tail, ListBlank.tail_cons]
+    simp [ListBlank.head_cons, ListBlank.cons_head_tail, ListBlank.tail_cons]
   obtain ⟨a, R, rfl⟩ := R.exists_cons
   simp only [ListBlank.head_cons, ListBlank.tail_cons, trTape', ListBlank.cons_flatMap]
   suffices ∀ i f L' R' l₁ l₂ h,
@@ -914,7 +914,7 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
     | move d q IH =>
       unfold writes at hw ⊢
       replace IH := IH hs hw; refine ⟨?_, IH.2⟩
-      cases d <;> simp only [trNormal, supportsStmt_move, IH]
+      cases d <;> simp [trNormal, supportsStmt_move, IH]
     | write f q IH =>
       unfold writes at hw ⊢
       simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, true_and]
@@ -922,7 +922,7 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
       replace IH := IH hs fun q hq ↦ hw q (Or.inr hq)
       refine ⟨supportsStmt_read _ fun a _ s ↦ hw _ (Or.inl ⟨_, rfl⟩), fun q' hq ↦ ?_⟩
       rcases hq with (⟨a, q₂, rfl⟩ | hq)
-      · simp only [tr, supportsStmt_write, supportsStmt_move, IH.1]
+      · simp [tr, supportsStmt_write, supportsStmt_move, IH.1]
       · exact IH.2 _ hq
     | load a q IH =>
       unfold writes at hw ⊢
@@ -940,7 +940,7 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
       exact Finset.mem_biUnion.2 ⟨_, hs _ _, Finset.mem_insert_self _ _⟩
     | halt =>
       simp only [writes, Finset.notMem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
-      simp only [SupportsStmt, trNormal]⟩
+      simp [SupportsStmt, trNormal]⟩
 
 end TM1to1
 

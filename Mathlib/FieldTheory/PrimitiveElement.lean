@@ -241,14 +241,14 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     simp only [pow_zero, adjoin_one] at heq
     obtain ⟨y, h⟩ := mem_bot.1 (heq.symm ▸ mem_adjoin_simple_self F (α ^ n))
     refine ⟨X ^ n - C y, X_pow_sub_C_ne_zero hmn y, ?_⟩
-    simp only [map_sub, map_pow, aeval_X, aeval_C, h, sub_self]
+    simp [map_sub, map_pow, aeval_X, aeval_C, h, sub_self]
   obtain ⟨r, s, h⟩ := (mem_adjoin_simple_iff F _).1 (heq ▸ mem_adjoin_simple_self F (α ^ m))
   by_cases hzero : aeval (α ^ n) s = 0
   · simp only [hzero, div_zero, pow_eq_zero_iff hm] at h
     exact h.symm ▸ isAlgebraic_zero
   replace hm : 0 < m := Nat.pos_of_ne_zero hm
   rw [eq_div_iff hzero, ← sub_eq_zero] at h
-  replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero, not_true_eq_false] at hzero
+  replace hzero : s ≠ 0 := by rintro rfl; simp [map_zero, not_true_eq_false] at hzero
   let f : F[X] := X ^ m * expand F n s - expand F n r
   refine ⟨f, ?_, ?_⟩
   · have : f.coeff (n * s.natDegree + m) ≠ 0 := by
@@ -260,8 +260,8 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
         coeff_expand hn r, hndvd, ite_false, sub_zero]
       exact leadingCoeff_ne_zero.2 hzero
     intro h
-    simp only [h, coeff_zero, ne_eq, not_true_eq_false] at this
-  · simp only [f, map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
+    simp [h, coeff_zero, ne_eq, not_true_eq_false] at this
+  · simp [f, map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
 theorem isAlgebraic_of_finite_intermediateField
     [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := ⟨fun α ↦

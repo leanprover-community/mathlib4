@@ -116,7 +116,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 
 @[simp] lemma restrictScalars_pairing (i j : ι) :
     algebraMap K L ((P.restrictScalars' K).pairing i j) = P.pairing i j := by
-  simp only [pairing, restrictScalars_toLinearMap_apply_apply, restrictScalars_coe_root,
+  simp [pairing, restrictScalars_toLinearMap_apply_apply, restrictScalars_coe_root,
     restrictScalars_coe_coroot]
 
 end SubfieldValued

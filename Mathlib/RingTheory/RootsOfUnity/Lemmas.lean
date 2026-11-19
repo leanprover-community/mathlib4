@@ -44,7 +44,7 @@ lemma prod_one_sub_pow_eq_order {n : ℕ} {μ : R} (hμ : IsPrimitiveRoot μ (n 
 lemma prod_pow_sub_one_eq_order {n : ℕ} {μ : R} (hμ : IsPrimitiveRoot μ (n + 1)) :
     (-1) ^ n * ∏ k ∈ range n, (μ ^ (k + 1) - 1) = n + 1 := by
   have : (-1 : R) ^ n = ∏ k ∈ range n, -1 := by rw [prod_const, card_range]
-  simp only [this, ← prod_mul_distrib, neg_one_mul, neg_sub, ← prod_one_sub_pow_eq_order hμ]
+  simp [this, ← prod_mul_distrib, neg_one_mul, neg_sub, ← prod_one_sub_pow_eq_order hμ]
 
 open Algebra in
 /-- If `μ` is a primitive `n`th root of unity in `R` and `k < n`, then `n` is divisible

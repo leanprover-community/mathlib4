@@ -219,7 +219,7 @@ lemma associator_hom_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
   dsimp [associator]
   rw [lift₃NatTrans_app_app_app]
   dsimp [Lifting₃.iso, Lifting₃.bifunctorComp₁₂, Lifting₃.bifunctorComp₂₃]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 end
 

@@ -51,7 +51,7 @@ theorem Algebra.map_leftMulMatrix_localization {ι : Type*} [Fintype ι] [Decida
     (algebraMap R Rₘ).mapMatrix (leftMulMatrix b a) =
     leftMulMatrix (b.localizationLocalization Rₘ M Sₘ) (algebraMap S Sₘ a) := by
   ext i j
-  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, leftMulMatrix_eq_repr_mul, ← map_mul,
+  simp [Matrix.map_apply, RingHom.mapMatrix_apply, leftMulMatrix_eq_repr_mul, ← map_mul,
     Basis.localizationLocalization_apply, Basis.localizationLocalization_repr_algebraMap]
 
 /-- Let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M` of `R S` respectively.

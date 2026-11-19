@@ -707,7 +707,7 @@ where finally
     swap
     · norm_cast
       exact i.choose_le_middle n
-    specialize hgrowth (n - i) (by simp only [tsub_le_self]) x
+    specialize hgrowth (n - i) (by simp [tsub_le_self]) x
     grw [hgrowth]
     move_mul [C]
     gcongr ?_ * C
@@ -941,7 +941,7 @@ where finally
       nth_rw 1 [← one_mul (1 : ℝ)]
       gcongr
       apply one_le_pow₀
-      simp only [le_add_iff_nonneg_right, norm_nonneg]
+      simp [le_add_iff_nonneg_right, norm_nonneg]
     have hbound (i) (hi : i ≤ n) :
         ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
       have hpos : 0 < (1 + ‖g x‖) ^ k' := by positivity
@@ -956,10 +956,10 @@ where finally
       gcongr
       · exact le_trans (by simp) (le_self_pow₀ (by simp [hC]) hN₁')
       · refine le_self_pow₀ (one_le_pow₀ ?_) hN₁'
-        simp only [le_add_iff_nonneg_right, norm_nonneg]
+        simp [le_add_iff_nonneg_right, norm_nonneg]
     have := norm_iteratedFDeriv_comp_le (f.smooth ⊤) hg.1 (mod_cast le_top) x hbound hgrowth'
     have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
-      pow_le_pow_left₀ (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
+      pow_le_pow_left₀ (norm_nonneg _) (by simp [zero_le_one, le_add_iff_nonneg_left]) _
     grw [hxk, this]
     have rearrange :
       (1 + ‖x‖) ^ k *

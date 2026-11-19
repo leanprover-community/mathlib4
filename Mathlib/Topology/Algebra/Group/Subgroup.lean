@@ -90,7 +90,7 @@ theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneC
   have hmul : g ∈ connectedComponent (g * h) := by
     apply Continuous.image_connectedComponent_subset (continuous_const_mul g)
     rw [← connectedComponent_eq hh]
-    exact ⟨(1 : G), mem_connectedComponent, by simp only [mul_one]⟩
+    exact ⟨(1 : G), mem_connectedComponent, by simp [mul_one]⟩
   simpa [← connectedComponent_eq hmul] using mem_connectedComponent
 
 @[to_additive]

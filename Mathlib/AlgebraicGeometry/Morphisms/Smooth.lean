@@ -283,7 +283,7 @@ lemma exists_smooth_of_formallySmooth_stalk
     dsimp
     simp only [IsScalarTower.algebraMap_apply Γ(Y, U) Γ(X, V) (Localization _),
       IsLocalization.map_eq]
-    simp only [algebraMap_toAlgebra, RingHomCompTriple.comp_apply, ← ConcreteCategory.comp_apply,
+    simp [algebraMap_toAlgebra, RingHomCompTriple.comp_apply, ← ConcreteCategory.comp_apply,
       Scheme.Hom.appLE_map]
 
 lemma Scheme.Hom.isOpen_smoothLocus [LocallyOfFinitePresentation f] :

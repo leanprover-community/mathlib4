@@ -59,10 +59,10 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
   | empty =>
     simp_rw [subset_empty, ← subset_singleton_iff', subset_singleton_iff] at h𝒜s hℬs
     obtain rfl | rfl := h𝒜s
-    · simp only [card_empty, zero_mul, empty_inter, mul_zero, le_refl]
+    · simp [card_empty, zero_mul, empty_inter, mul_zero, le_refl]
     obtain rfl | rfl := hℬs
     · simp
-    · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
+    · simp [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
         le_refl]
   | insert a s hs ih =>
   rw [card_insert_of_notMem hs, ← card_memberSubfamily_add_card_nonMemberSubfamily a 𝒜, ←

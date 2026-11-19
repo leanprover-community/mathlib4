@@ -660,10 +660,10 @@ def normalizer (S : Set G) : Subgroup G where
   one_mem' := by simp
   mul_mem' {a b} (ha : ∀ n, n ∈ S ↔ a * n * a⁻¹ ∈ S) (hb : ∀ n, n ∈ S ↔ b * n * b⁻¹ ∈ S) n := by
     rw [hb, ha]
-    simp only [mul_assoc, mul_inv_rev]
+    simp [mul_assoc, mul_inv_rev]
   inv_mem' {a} (ha : ∀ n, n ∈ S ↔ a * n * a⁻¹ ∈ S) n := by
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
-    simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
+    simp [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
 variable {H} {S : Set G} {g : G}
 

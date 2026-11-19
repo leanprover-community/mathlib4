@@ -149,7 +149,7 @@ theorem coe_normComp : (f.normComp : α → ℝ) = norm ∘ f := rfl
 
 @[simp]
 theorem norm_normComp : ‖f.normComp‖ = ‖f‖ := by
-  simp only [norm_eq, coe_normComp, norm_norm, Function.comp]
+  simp [norm_eq, coe_normComp, norm_norm, Function.comp]
 
 theorem bddAbove_range_norm_comp : BddAbove <| Set.range <| norm ∘ f :=
   (@isBounded_range _ _ _ _ f.normComp).bddAbove
@@ -159,7 +159,7 @@ theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ := by
 
 /-- If `‖(1 : β)‖ = 1`, then `‖(1 : α →ᵇ β)‖ = 1` if `α` is nonempty. -/
 instance instNormOneClass [Nonempty α] [One β] [NormOneClass β] : NormOneClass (α →ᵇ β) where
-  norm_one := by simp only [norm_eq_iSup_norm, FunLike.coe_one, Pi.one_apply, norm_one, ciSup_const]
+  norm_one := by simp [norm_eq_iSup_norm, FunLike.coe_one, Pi.one_apply, norm_one, ciSup_const]
 
 /-- The pointwise opposite of a bounded continuous function is again bounded continuous. -/
 instance : Neg (α →ᵇ β) :=
@@ -199,7 +199,7 @@ instance : IsSMulApply ℤ (α →ᵇ β) where
 instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance% FunLike.addCommGroup
 
 instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
-  dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
+  dist_eq f g := by simp [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
@@ -531,7 +531,7 @@ instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
 
 @[simp]
 theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k a = k • (1 : γ) := by
-  simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply]
+  simp [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply]
 
 instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra

@@ -32,7 +32,7 @@ variable {ι : Type*} {α : ι → Type*}
 
 lemma MeasurableSpace.pi_eq_generateFrom_projections {mα : ∀ i, MeasurableSpace (α i)} :
     pi = generateFrom {B | ∃ (i : ι) (A : Set (α i)), MeasurableSet A ∧ eval i ⁻¹' A = B} := by
-  simp only [pi, ← generateFrom_iUnion_measurableSet, iUnion_ofPred, measurableSet_comap]
+  simp [pi, ← generateFrom_iUnion_measurableSet, iUnion_ofPred, measurableSet_comap]
 
 /-- Boxes formed by π-systems form a π-system. -/
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
@@ -100,7 +100,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
 theorem generateFrom_eq_pi [h : ∀ i, MeasurableSpace (α i)] {C : ∀ i, Set (Set (α i))}
     (hC : ∀ i, generateFrom (C i) = h i) (h2C : ∀ i, IsCountablySpanning (C i)) :
     generateFrom (pi univ '' pi univ C) = MeasurableSpace.pi := by
-  simp +instances only [← funext hC, generateFrom_pi_eq h2C]
+  simp +instances [← funext hC, generateFrom_pi_eq h2C]
 
 /-- The product σ-algebra is generated from boxes, i.e. `s ×ˢ t` for sets `s : set α` and
   `t : set β`. -/

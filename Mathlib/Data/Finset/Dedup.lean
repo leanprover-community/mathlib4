@@ -70,7 +70,7 @@ theorem coe_toFinset {s : Multiset α} : s.toFinset = {a | a ∈ s} := by
 
 @[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
-  simp only [Finset.subset_iff, Multiset.subset_iff, Multiset.mem_toFinset]
+  simp [Finset.subset_iff, Multiset.subset_iff, Multiset.mem_toFinset]
 
 @[simp]
 theorem toFinset_ssubset : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
@@ -142,7 +142,7 @@ theorem toFinset_eq_iff_perm_dedup : l.toFinset = l'.toFinset ↔ l.dedup ~ l'.d
   simp [Finset.ext_iff, perm_ext_iff_of_nodup (nodup_dedup _) (nodup_dedup _)]
 
 theorem toFinset.ext_iff {a b : List α} : a.toFinset = b.toFinset ↔ ∀ x, x ∈ a ↔ x ∈ b := by
-  simp only [Finset.ext_iff, mem_toFinset]
+  simp [Finset.ext_iff, mem_toFinset]
 
 theorem toFinset.ext : (∀ x, x ∈ l ↔ x ∈ l') → l.toFinset = l'.toFinset :=
   toFinset.ext_iff.mpr

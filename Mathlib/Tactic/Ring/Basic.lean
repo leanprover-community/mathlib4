@@ -354,12 +354,12 @@ lemma smul_eq_mul {α : Type*} [Mul α] {a a' : α} (h : a = a') (b : α) : a �
 
 theorem Nat.smul_eq_mul {n n' : ℕ} {r : R} (hr : n = r) (hn : n' = n) (a : R) : n' • a = r * a := by
   subst_vars
-  simp only [nsmul_eq_mul]
+  simp [nsmul_eq_mul]
 
 theorem Int.smul_eq_mul {R} {n n' : ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
     n' • a = r * a := by
   subst_vars
-  simp only [zsmul_eq_mul]
+  simp [zsmul_eq_mul]
 
 /-- Turn coefficient data into a NormNum.Result. -/
 def RatCoeff.toResult {a : Q($α)} : RatCoeff a → NormNum.Result a

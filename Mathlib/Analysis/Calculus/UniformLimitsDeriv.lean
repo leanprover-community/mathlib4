@@ -183,7 +183,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
   let : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   have : NeBot l := (cauchy_map_iff.1 hfg).1
   rcases le_or_gt r 0 with (hr | hr)
-  · simp only [Metric.ball_eq_empty.2 hr, UniformCauchySeqOn, Set.mem_empty_iff_false,
+  · simp [Metric.ball_eq_empty.2 hr, UniformCauchySeqOn, Set.mem_empty_iff_false,
       IsEmpty.forall_iff, eventually_const, imp_true_iff]
   rw [SeminormedAddGroup.uniformCauchySeqOn_iff_tendstoUniformlyOn_zero] at hf' ⊢
   suffices
@@ -328,7 +328,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     specialize this ε hε
     rw [eventually_curry_iff] at this
     simp only at this
-    exact (eventually_const.mp this).mono (by simp only [imp_self, forall_const])
+    exact (eventually_const.mp this).mono (by simp [imp_self, forall_const])
   -- With the new quantifier in hand, we can perform the famous `ε/3` proof. Specifically,
   -- we will break up the limit (the difference functions minus the derivative go to 0) into 3:
   --   * The difference functions of the `f n` converge *uniformly* to the difference functions
@@ -349,7 +349,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     simp only [map_sub, sub_add_sub_cancel, FunLike.coe_sub, Pi.sub_apply]
     abel
   simp_rw [this]
-  have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp only [add_zero]
+  have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp [add_zero]
   rw [this]
   refine Tendsto.add (Tendsto.add ?_ ?_) ?_
   · have := difference_quotients_converge_uniformly hf' hf hfg
@@ -398,7 +398,7 @@ theorem hasFDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set E} (hs : IsO
     (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
     HasFDerivAt g (g' x) x := by
   have h1 : s ∈ 𝓝 x := hs.mem_nhds hx
-  have h3 : Set.univ ×ˢ s ∈ l ×ˢ 𝓝 x := by simp only [h1, prod_mem_prod_iff, univ_mem, and_self_iff]
+  have h3 : Set.univ ×ˢ s ∈ l ×ˢ 𝓝 x := by simp [h1, prod_mem_prod_iff, univ_mem, and_self_iff]
   have h4 : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2 :=
     eventually_of_mem h3 fun ⟨n, z⟩ ⟨_, hz⟩ => hf n z hz
   refine hasFDerivAt_of_tendstoUniformlyOnFilter ?_ h4 (eventually_of_mem h1 hfg)

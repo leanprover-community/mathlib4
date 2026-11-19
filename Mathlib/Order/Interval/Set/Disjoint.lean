@@ -92,11 +92,11 @@ theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
 
 @[to_dual (attr := simp)]
 theorem iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by
-  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic, inter_univ]
+  simp [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic, inter_univ]
 
 @[to_dual (attr := simp)]
 theorem iUnion_Ioc_right (a : α) : ⋃ b, Ioc a b = Ioi a := by
-  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic, inter_univ]
+  simp [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic, inter_univ]
 
 @[to_dual (attr := simp)]
 theorem iUnion_Iio [NoMaxOrder α] : ⋃ a : α, Iio a = univ :=
@@ -104,11 +104,11 @@ theorem iUnion_Iio [NoMaxOrder α] : ⋃ a : α, Iio a = univ :=
 
 @[to_dual (attr := simp)]
 theorem iUnion_Ico_right [NoMaxOrder α] (a : α) : ⋃ b, Ico a b = Ici a := by
-  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio, inter_univ]
+  simp [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio, inter_univ]
 
 @[to_dual (attr := simp)]
 theorem iUnion_Ioo_right [NoMaxOrder α] (a : α) : ⋃ b, Ioo a b = Ioi a := by
-  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio, inter_univ]
+  simp [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio, inter_univ]
 
 end Preorder
 
@@ -244,7 +244,7 @@ theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_notMem : a ∉ s) :
 
 theorem iUnion_Ici_eq_Ioi_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (no_least_elem : ⨅ i, f i ∉ range f) : ⋃ i : ι, Ici (f i) = Ioi (⨅ i, f i) := by
-  simp only [← IsGLB.biUnion_Ici_eq_Ioi (@isGLB_iInf _ _ _ f) no_least_elem, mem_range,
+  simp [← IsGLB.biUnion_Ici_eq_Ioi (@isGLB_iInf _ _ _ f) no_least_elem, mem_range,
     iUnion_exists, iUnion_iUnion_eq']
 
 theorem iUnion_Iic_eq_Iio_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R}

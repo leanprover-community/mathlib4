@@ -93,11 +93,11 @@ theorem strongEpi_of_strongEpi [StrongEpi (f ≫ g)] : StrongEpi g :=
     llp := fun {X Y} z _ => by
       constructor
       intro u v sq
-      have h₀ : (f ≫ u) ≫ z = (f ≫ g) ≫ v := by simp only [Category.assoc, sq.w]
+      have h₀ : (f ≫ u) ≫ z = (f ≫ g) ≫ v := by simp [Category.assoc, sq.w]
       exact
         CommSq.HasLift.mk'
           ⟨(CommSq.mk h₀).lift, by
-            simp only [← cancel_mono z, Category.assoc, CommSq.fac_right, sq.w], by simp⟩ }
+            simp [← cancel_mono z, Category.assoc, CommSq.fac_right, sq.w], by simp⟩ }
 
 /-- An isomorphism is in particular a strong epimorphism. -/
 @[to_dual /-- An isomorphism is in particular a strong monomorphism. -/]

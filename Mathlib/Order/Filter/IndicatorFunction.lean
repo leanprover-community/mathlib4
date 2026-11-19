@@ -36,8 +36,8 @@ theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] 
     mulIndicator s f =ᶠ[l] mulIndicator t g :=
   (eventually_inf_principal.1 hf).mp <| hs.mono fun x hst hfg =>
     by_cases
-      (fun hxs : x ∈ s => by simp only [*, hst.1 hxs, mulIndicator_of_mem])
-      (fun hxs => by simp only [mulIndicator_of_notMem, hxs, mt hst.2 hxs, not_false_eq_true])
+      (fun hxs : x ∈ s => by simp [*, hst.1 hxs, mulIndicator_of_mem])
+      (fun hxs => by simp [mulIndicator_of_notMem, hxs, mt hst.2 hxs, not_false_eq_true])
 
 end One
 

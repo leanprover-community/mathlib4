@@ -76,7 +76,7 @@ private noncomputable def E₄CubeSubE₆SqForm : ModularForm 𝒮ℒ 12 :=
 
 private lemma E₄CubeSubE₆SqForm_apply (z : ℍ) :
     E₄CubeSubE₆SqForm z = E₄ z ^ 3 - E₆ z ^ 2 := by
-  simp only [E₄CubeSubE₆SqForm, coe_mcast, coe_pow, sub_apply, Pi.pow_apply]
+  simp [E₄CubeSubE₆SqForm, coe_mcast, coe_pow, sub_apply, Pi.pow_apply]
 
 private lemma E₄CubeSubE₆SqForm_qExpansion_eq :
     qExpansion 1 E₄CubeSubE₆SqForm = qExpansion 1 E₄ * qExpansion 1 E₄ * qExpansion 1 E₄ -

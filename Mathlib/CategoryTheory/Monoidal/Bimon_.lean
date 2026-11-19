@@ -294,7 +294,7 @@ theorem mul_counit (M : C) [BimonObj M] :
       M ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
       (μ[M] ⊗ₘ μ[M]) =
     μ[M] ≫ Δ[M] := by
-  simp only [BimonObj.mul_comul, tensorμ, Category.assoc]
+  simp [BimonObj.mul_comul, tensorμ, Category.assoc]
 
 /-- Auxiliary definition for `Bimon.mk'`. -/
 @[simps X]

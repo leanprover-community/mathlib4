@@ -79,7 +79,7 @@ theorem hasPDF_iff :
 theorem hasPDF_iff_of_aemeasurable (hX : AEMeasurable X ℙ) :
     HasPDF X ℙ μ ↔ (map X ℙ).HaveLebesgueDecomposition μ ∧ map X ℙ ≪ μ := by
   rw [hasPDF_iff]
-  simp only [hX, true_and]
+  simp [hX, true_and]
 
 variable (X ℙ μ) in
 theorem HasPDF.aemeasurable [HasPDF X ℙ μ] : AEMeasurable X ℙ := HasPDF.aemeasurable' μ
@@ -271,7 +271,7 @@ theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : p
     refine ae_eq_trans ((ae_eq_refl _).fun_mul (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
     simp_rw [← smul_eq_mul, eNorm_smul, smul_eq_mul]
     refine .fun_mul (ae_eq_refl _) ?_
-    simp only [Real.eNorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
+    simp [Real.eNorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 
 end Real

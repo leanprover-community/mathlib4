@@ -254,11 +254,11 @@ variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j �
 
 @[to_dual (attr := reassoc) ι_desc]
 theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
-  simp only [limit.lift_π, WidePullbackShape.mkCone_π_app]
+  simp [limit.lift_π, WidePullbackShape.mkCone_π_app]
 
 @[to_dual (attr := reassoc) head_desc]
 theorem lift_base : lift f fs w ≫ base arrows = f := by
-  simp only [limit.lift_π, WidePullbackShape.mkCone_π_app]
+  simp [limit.lift_π, WidePullbackShape.mkCone_π_app]
 
 @[to_dual eq_desc_of_comp_eq]
 theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :

@@ -416,6 +416,6 @@ theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
 theorem compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
-  simp only [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
+  simp [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
 
 end MetrizableSpaceSeqCompact

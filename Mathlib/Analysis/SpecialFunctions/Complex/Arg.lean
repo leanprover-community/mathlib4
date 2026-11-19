@@ -104,7 +104,7 @@ theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) =
 @[simp]
 theorem range_exp_mul_I : (Set.range fun x : ℝ => exp (x * I)) = Metric.sphere 0 1 := by
   ext x
-  simp only [mem_sphere_zero_iff_norm, norm_eq_one_iff, Set.mem_range]
+  simp [mem_sphere_zero_iff_norm, norm_eq_one_iff, Set.mem_range]
 
 theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) :
     arg (r * (cos θ + sin θ * I)) = θ := by
@@ -270,7 +270,7 @@ theorem arg_neg_I : arg (-I) = -(π / 2) := by simp [arg]
 @[simp]
 theorem tan_arg (x : ℂ) : Real.tan (arg x) = x.im / x.re := by
   by_cases h : x = 0
-  · simp only [h, zero_div, Complex.zero_im, Complex.arg_zero, Real.tan_zero, Complex.zero_re]
+  · simp [h, zero_div, Complex.zero_im, Complex.arg_zero, Real.tan_zero, Complex.zero_re]
   rw [Real.tan_eq_sin_div_cos, sin_arg, cos_arg h,
     div_div_div_cancel_right₀ (norm_ne_zero_iff.mpr h)]
 
@@ -343,11 +343,11 @@ theorem arg_of_re_nonneg {x : ℂ} (hx : 0 ≤ x.re) : arg x = Real.arcsin (x.im
 
 theorem arg_of_re_neg_of_im_nonneg {x : ℂ} (hx_re : x.re < 0) (hx_im : 0 ≤ x.im) :
     arg x = Real.arcsin ((-x).im / ‖x‖) + π := by
-  simp only [arg, hx_re.not_ge, hx_im, ite_true, ite_false]
+  simp [arg, hx_re.not_ge, hx_im, ite_true, ite_false]
 
 theorem arg_of_re_neg_of_im_neg {x : ℂ} (hx_re : x.re < 0) (hx_im : x.im < 0) :
     arg x = Real.arcsin ((-x).im / ‖x‖) - π := by
-  simp only [arg, hx_re.not_ge, hx_im.not_ge, ite_false]
+  simp [arg, hx_re.not_ge, hx_im.not_ge, ite_false]
 
 theorem arg_of_im_nonneg_of_ne_zero {z : ℂ} (h₁ : 0 ≤ z.im) (h₂ : z ≠ 0) :
     arg z = Real.arccos (z.re / ‖z‖) := by
@@ -402,7 +402,7 @@ lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π)
 
 theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im z < 0 := by
   rcases le_or_gt 0 (re z) with hre | hre
-  · simp only [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or]
+  · simp [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or]
   simp only [hre.not_ge, false_or]
   rcases le_or_gt 0 (im z) with him | him
   · simp only [him.not_gt]
@@ -416,7 +416,7 @@ theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im
 
 theorem neg_pi_div_two_le_arg_iff {z : ℂ} : -(π / 2) ≤ arg z ↔ 0 ≤ re z ∨ 0 ≤ im z := by
   rcases le_or_gt 0 (re z) with hre | hre
-  · simp only [hre, arg_of_re_nonneg hre, Real.neg_pi_div_two_le_arcsin, true_or]
+  · simp [hre, arg_of_re_nonneg hre, Real.neg_pi_div_two_le_arcsin, true_or]
   simp only [hre.not_ge, false_or]
   rcases le_or_gt 0 (im z) with him | him
   · simp only [him]
@@ -613,7 +613,7 @@ open ComplexOrder in
 /-- An alternative description of the slit plane as consisting of nonzero complex numbers
 whose argument is not π. -/
 lemma mem_slitPlane_iff_arg {z : ℂ} : z ∈ slitPlane ↔ z.arg ≠ π ∧ z ≠ 0 := by
-  simp only [mem_slitPlane_iff_not_le_zero, le_iff_lt_or_eq, ne_eq, arg_eq_pi_iff_lt_zero, not_or]
+  simp [mem_slitPlane_iff_not_le_zero, le_iff_lt_or_eq, ne_eq, arg_eq_pi_iff_lt_zero, not_or]
 
 lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :=
   (mem_slitPlane_iff_arg.mp hz).1

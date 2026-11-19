@@ -59,14 +59,14 @@ theorem mem_sumLift₂ :
 theorem inl_mem_sumLift₂ {c₁ : γ₁} :
     inl c₁ ∈ sumLift₂ f g a b ↔ ∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f a₁ b₁ := by
   rw [mem_sumLift₂, or_iff_left]
-  · simp only [inl.injEq, exists_and_left, exists_eq_left']
+  · simp [inl.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
   exact inl_ne_inr h
 
 theorem inr_mem_sumLift₂ {c₂ : γ₂} :
     inr c₂ ∈ sumLift₂ f g a b ↔ ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ g a₂ b₂ := by
   rw [mem_sumLift₂, or_iff_right]
-  · simp only [inr.injEq, exists_and_left, exists_eq_left']
+  · simp [inr.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
   exact inr_ne_inl h
 
@@ -88,7 +88,7 @@ theorem sumLift₂_nonempty :
     (sumLift₂ f g a b).Nonempty ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f a₁ b₁).Nonempty) ∨
         ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty := by
-  simp only [← ne_empty_iff_nonempty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, exists_prop]
+  simp [← ne_empty_iff_nonempty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, exists_prop]
 
 theorem sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
     ∀ a b, sumLift₂ f₁ f₂ a b ⊆ sumLift₂ g₁ g₂ a b
@@ -194,7 +194,7 @@ lemma sumLexLift_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f₁ a₁ b₁).Nonempty) ∨
         (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ ((g₁ a₁ b₂).Nonempty ∨ (g₂ a₁ b₂).Nonempty)) ∨
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
-  simp only [← ne_empty_iff_nonempty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop, not_forall]
+  simp [← ne_empty_iff_nonempty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop, not_forall]
 
 end SumLexLift
 end Finset

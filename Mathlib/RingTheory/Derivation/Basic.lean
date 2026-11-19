@@ -145,7 +145,7 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
     rcases eq_zero_or_pos n with (rfl | hpos)
     · simp
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
-      simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
+      simp [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
         Nat.add_succ_sub_one, add_zero, one_nsmul]
 
 open Polynomial in
@@ -160,7 +160,7 @@ theorem map_aeval (P : R[X]) (x : A) :
 theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun _ hx =>
   Algebra.adjoin_induction (hx := hx) h
     (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
-    (fun x y _ _ hx hy => by simp only [map_add, *]) fun x y _ _ hx hy => by simp only [leibniz, *]
+    (fun x y _ _ hx hy => by simp [map_add, *]) fun x y _ _ hx hy => by simp [leibniz, *]
 
 /-- If adjoin of a set is the whole algebra, then any two derivations equal on this set are equal
 on the whole algebra. -/
@@ -171,7 +171,7 @@ theorem ext_of_adjoin_eq_top (s : Set A) (hs : adjoin R s = ⊤) (h : Set.EqOn D
 instance : Zero (Derivation R A M) :=
   ⟨{  toLinearMap := 0
       map_one_eq_zero' := rfl
-      leibniz' := fun a b => by simp only [add_zero, LinearMap.zero_apply, smul_zero] }⟩
+      leibniz' := fun a b => by simp [add_zero, LinearMap.zero_apply, smul_zero] }⟩
 
 instance : IsZeroApply (Derivation R A M) where
 
@@ -192,7 +192,7 @@ instance : Add (Derivation R A M) :=
     { toLinearMap := D1 + D2
       map_one_eq_zero' := by simp
       leibniz' := fun a b => by
-        simp only [leibniz, LinearMap.add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
+        simp [leibniz, LinearMap.add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
 
 instance : IsAddApply (Derivation R A M) where
 
@@ -221,7 +221,7 @@ instance : SMul S (Derivation R A M) :=
   ⟨fun r D =>
     { toLinearMap := r • D.toLinearMap
       map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
-      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
+      leibniz' := fun a b => by simp [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
         smul_comm r (_ : A) (_ : M)] }⟩
 
 instance : IsSMulApply S (Derivation R A M) where
@@ -291,9 +291,9 @@ linear map is a derivation. Furthermore, this operation is linear on the spaces 
 def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
   toFun D :=
     { toLinearMap := (f : M →ₗ[R] N).comp (D : A →ₗ[R] M)
-      map_one_eq_zero' := by simp only [LinearMap.comp_apply, coeFn_coe, map_one_eq_zero, map_zero]
+      map_one_eq_zero' := by simp [LinearMap.comp_apply, coeFn_coe, map_one_eq_zero, map_zero]
       leibniz' := fun a b => by
-        simp only [coeFn_coe, LinearMap.comp_apply, map_add, leibniz,
+        simp [coeFn_coe, LinearMap.comp_apply, map_add, leibniz,
           LinearMap.coe_restrictScalars, LinearMap.map_smul] }
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _
   map_smul' r D := by ext; simp
@@ -482,7 +482,7 @@ theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :
   rw [neg_smul]
   refine eq_neg_of_add_eq_zero_left ?_
   calc
-    D a + a ^ 2 • D b = a • b • D a + a • a • D b := by simp only [smul_smul, h, one_smul, sq]
+    D a + a ^ 2 • D b = a • b • D a + a • a • D b := by simp [smul_smul, h, one_smul, sq]
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]
     _ = 0 := by rw [h, map_one_eq_zero, smul_zero]
 
@@ -535,7 +535,7 @@ end Field
 instance : Neg (Derivation R A M) :=
   ⟨fun D =>
     mk' (-D) fun a b => by
-      simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
+      simp [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
 
 instance : IsNegApply (Derivation R A M) where
 
@@ -554,7 +554,7 @@ protected theorem neg_apply : (-D) a = -D a :=
 instance : Sub (Derivation R A M) :=
   ⟨fun D1 D2 =>
     mk' (D1 - D2 : A →ₗ[R] M) fun a b => by
-      simp only [LinearMap.sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
+      simp [LinearMap.sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
 
 instance : IsSubApply (Derivation R A M) where
 

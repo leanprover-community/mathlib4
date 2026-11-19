@@ -127,6 +127,6 @@ lemma Complex.deriv_log_comp_eq_logDeriv {f : ℂ → ℂ} {x : ℂ} (h₁ : Dif
     (h₂ : f x ∈ Complex.slitPlane) : deriv (Complex.log ∘ f) x = logDeriv f x := by
   have A := (HasDerivAt.clog h₁.hasDerivAt h₂).deriv
   rw [← h₁.hasDerivAt.deriv] at A
-  simp only [logDeriv, Pi.div_apply, ← A, Function.comp_def]
+  simp [logDeriv, Pi.div_apply, ← A, Function.comp_def]
 
 end LogDeriv

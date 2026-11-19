@@ -95,10 +95,10 @@ noncomputable def divOfHom : Multiplicative G →* AddMonoid.End k[G] where
         (divOf_add _ _ _)
 
 theorem of'_mul_divOf (a : G) (x : k[G]) : of' k G a * x /ᵒᶠ a = x := by
-  ext; simp only [of'_apply, coeff_divOf, coeff_single_mul_add, one_mul]
+  ext; simp [of'_apply, coeff_divOf, coeff_single_mul_add, one_mul]
 
 theorem mul_of'_divOf (x : k[G]) (a : G) : x * of' k G a /ᵒᶠ a = x := by
-  ext; simp only [of'_apply, coeff_divOf, add_comm a, coeff_mul_single_add, mul_one]
+  ext; simp [of'_apply, coeff_divOf, add_comm a, coeff_mul_single_add, mul_one]
 
 theorem of'_divOf (a : G) : of' k G a /ᵒᶠ a = 1 := by
   simpa only [one_mul] using mul_of'_divOf (1 : k[G]) a

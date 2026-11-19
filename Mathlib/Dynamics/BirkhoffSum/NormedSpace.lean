@@ -49,7 +49,7 @@ variable [NormedAddCommGroup E]
 
 theorem dist_birkhoffSum_apply_birkhoffSum (f : α → α) (g : α → E) (n : ℕ) (x : α) :
     dist (birkhoffSum f g n (f x)) (birkhoffSum f g n x) = dist (g (f^[n] x)) (g x) := by
-  simp only [dist_eq_norm, birkhoffSum_apply_sub_birkhoffSum]
+  simp [dist_eq_norm, birkhoffSum_apply_sub_birkhoffSum]
 
 theorem dist_birkhoffSum_birkhoffSum_le (f : α → α) (g : α → E) (n : ℕ) (x y : α) :
     dist (birkhoffSum f g n x) (birkhoffSum f g n y) ≤

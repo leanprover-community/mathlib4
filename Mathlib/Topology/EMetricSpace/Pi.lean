@@ -48,7 +48,7 @@ theorem edist_le_pi_edist [∀ b, EDist (X b)] (f g : ∀ b, X b) (b : β) :
 
 theorem edist_pi_le_iff [∀ b, EDist (X b)] {f g : ∀ b, X b} {d : ℝ≥0∞} :
     edist f g ≤ d ↔ ∀ b, edist (f b) (g b) ≤ d :=
-  Finset.sup_le_iff.trans <| by simp only [Finset.mem_univ, forall_const]
+  Finset.sup_le_iff.trans <| by simp [Finset.mem_univ, forall_const]
 
 theorem edist_pi_const_le (a b : α) : (edist (fun _ : β => a) fun _ => b) ≤ edist a b :=
   edist_pi_le_iff.2 fun _ => le_rfl

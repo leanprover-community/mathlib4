@@ -175,7 +175,7 @@ lemma fst_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsMarkovK
 lemma compProd_smul_left (a : ℝ≥0∞) [SFinite μ] [IsSFiniteKernel κ] :
     (a • μ) ⊗ₘ κ = a • (μ ⊗ₘ κ) := by
   ext s hs
-  simp only [compProd_apply hs, lintegral_smul_measure, smul_apply, smul_eq_mul]
+  simp [compProd_apply hs, lintegral_smul_measure, smul_apply, smul_eq_mul]
 
 section Integral
 

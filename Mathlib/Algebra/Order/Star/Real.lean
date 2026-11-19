@@ -31,7 +31,7 @@ instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
   refine .of_le_iff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨d, rfl⟩ := exists_add_of_le h
     refine ⟨sqrt d, ?_⟩
-    simp only [star_trivial, mul_self_sqrt]
+    simp [star_trivial, mul_self_sqrt]
   · rintro ⟨p, -, rfl⟩
     exact le_self_add
 

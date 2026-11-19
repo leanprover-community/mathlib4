@@ -74,13 +74,13 @@ variable (a : R)
 lemma leftHomologyMap'_smul :
     leftHomologyMap' (a • φ) h₁ h₂ = a • leftHomologyMap' φ h₁ h₂ := by
   have γ : LeftHomologyMapData φ h₁ h₂ := default
-  simp only [(γ.smul a).leftHomologyMap'_eq, LeftHomologyMapData.smul_φH, γ.leftHomologyMap'_eq]
+  simp [(γ.smul a).leftHomologyMap'_eq, LeftHomologyMapData.smul_φH, γ.leftHomologyMap'_eq]
 
 @[simp]
 lemma cyclesMap'_smul :
     cyclesMap' (a • φ) h₁ h₂ = a • cyclesMap' φ h₁ h₂ := by
   have γ : LeftHomologyMapData φ h₁ h₂ := default
-  simp only [(γ.smul a).cyclesMap'_eq, LeftHomologyMapData.smul_φK, γ.cyclesMap'_eq]
+  simp [(γ.smul a).cyclesMap'_eq, LeftHomologyMapData.smul_φK, γ.cyclesMap'_eq]
 
 section
 
@@ -128,13 +128,13 @@ variable (a : R)
 lemma rightHomologyMap'_smul :
     rightHomologyMap' (a • φ) h₁ h₂ = a • rightHomologyMap' φ h₁ h₂ := by
   have γ : RightHomologyMapData φ h₁ h₂ := default
-  simp only [(γ.smul a).rightHomologyMap'_eq, RightHomologyMapData.smul_φH, γ.rightHomologyMap'_eq]
+  simp [(γ.smul a).rightHomologyMap'_eq, RightHomologyMapData.smul_φH, γ.rightHomologyMap'_eq]
 
 @[simp]
 lemma opcyclesMap'_smul :
     opcyclesMap' (a • φ) h₁ h₂ = a • opcyclesMap' φ h₁ h₂ := by
   have γ : RightHomologyMapData φ h₁ h₂ := default
-  simp only [(γ.smul a).opcyclesMap'_eq, RightHomologyMapData.smul_φQ, γ.opcyclesMap'_eq]
+  simp [(γ.smul a).opcyclesMap'_eq, RightHomologyMapData.smul_φQ, γ.opcyclesMap'_eq]
 
 section
 
@@ -207,15 +207,15 @@ def Homotopy.smul {φ₁ φ₂ : S₁ ⟶ S₂} (h : Homotopy φ₁ φ₂) (a : 
   comm₁ := by
     dsimp
     rw [h.comm₁]
-    simp only [smul_add, Linear.comp_smul]
+    simp [smul_add, Linear.comp_smul]
   comm₂ := by
     dsimp
     rw [h.comm₂]
-    simp only [smul_add, Linear.comp_smul, Linear.smul_comp]
+    simp [smul_add, Linear.comp_smul, Linear.smul_comp]
   comm₃ := by
     dsimp
     rw [h.comm₃]
-    simp only [smul_add, Linear.smul_comp]
+    simp [smul_add, Linear.smul_comp]
 
 end ShortComplex
 

@@ -857,7 +857,7 @@ theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)
 
 theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
-  simp only [degree, Fintype.card_pos_iff, nonempty_subtype, mem_neighborSet]
+  simp [degree, Fintype.card_pos_iff, nonempty_subtype, mem_neighborSet]
 
 theorem degree_eq_zero_of_subsingleton (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
     (hG : G'.verts.Subsingleton) : G'.degree v = 0 := by
@@ -870,7 +870,7 @@ theorem degree_eq_zero_of_subsingleton (G' : Subgraph G) (v : V) [Fintype (G'.ne
 theorem degree_eq_one_iff_existsUnique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
-  simp only [Set.mem_toFinset, mem_neighborSet]
+  simp [Set.mem_toFinset, mem_neighborSet]
 
 theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
@@ -983,7 +983,7 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).edgeSet = {s(v, w)} := by
   ext e
   refine e.ind ?_
-  simp only [eq_comm, Set.mem_singleton_iff, Subgraph.mem_edgeSet, subgraphOfAdj_adj,
+  simp [eq_comm, Set.mem_singleton_iff, Subgraph.mem_edgeSet, subgraphOfAdj_adj,
     forall₂_true_iff]
 
 lemma subgraphOfAdj_le_of_adj {v w : V} (H : G.Subgraph) (h : H.Adj v w) :

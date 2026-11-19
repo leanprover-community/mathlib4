@@ -138,13 +138,13 @@ theorem setOfTop_eq_univ [Nontrivial R] : setOfIdeal (⊤ : Ideal C(X, R)) = Set
 @[simp]
 theorem idealOfEmpty_eq_bot : idealOfSet R (∅ : Set X) = ⊥ :=
   Ideal.ext fun f => by
-    simp only [mem_idealOfSet, Set.compl_empty, Set.mem_univ, forall_true_left, Ideal.mem_bot,
+    simp [mem_idealOfSet, Set.compl_empty, Set.mem_univ, forall_true_left, Ideal.mem_bot,
       DFunLike.ext_iff, zero_apply]
 
 @[simp]
 theorem mem_idealOfSet_compl_singleton (x : X) (f : C(X, R)) :
     f ∈ idealOfSet R ({x}ᶜ : Set X) ↔ f x = 0 := by
-  simp only [mem_idealOfSet, compl_compl, Set.mem_singleton_iff, forall_eq]
+  simp [mem_idealOfSet, compl_compl, Set.mem_singleton_iff, forall_eq]
 
 variable (X R)
 
@@ -221,16 +221,16 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
         calc
           ‖((1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x : 𝕜)‖₊ =
               ‖1 - algebraMap ℝ≥0 𝕜 (g x)‖₊ := by
-            simp only [coe_sub, coe_one, coe_comp, ContinuousMap.coe_ofClass, Pi.sub_apply,
+            simp [coe_sub, coe_one, coe_comp, ContinuousMap.coe_ofClass, Pi.sub_apply,
               Pi.one_apply, Function.comp_apply, algebraMapCLM_apply]
           _ = ‖algebraMap ℝ≥0 𝕜 (1 - g x)‖₊ := by
-            simp only [Algebra.algebraMap_eq_smul_one, NNReal.smul_def, NNReal.coe_sub (hg x),
+            simp [Algebra.algebraMap_eq_smul_one, NNReal.smul_def, NNReal.coe_sub (hg x),
               NNReal.coe_one, sub_smul, one_smul]
           _ ≤ 1 := (nnNorm_algebraMap_nnReal 𝕜 (1 - g x)).trans_le tsub_le_self
       calc
         ‖f x - f x * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g x‖₊ =
             ‖f x * (1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ := by
-          simp only [mul_sub, coe_sub, coe_one, Pi.sub_apply, Pi.one_apply, mul_one]
+          simp [mul_sub, coe_sub, coe_one, Pi.sub_apply, Pi.one_apply, mul_one]
         _ ≤ ε / 2 * ‖(1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
           ((nnNorm_mul_le _ _).trans
             (mul_le_mul_left (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))

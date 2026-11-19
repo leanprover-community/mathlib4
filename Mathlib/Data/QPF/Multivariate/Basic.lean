@@ -261,7 +261,7 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPP
   · rintro α ⟨a, f⟩
     simp only [LiftPPreservation] at h
     ext
-    simp only [supp, h, mem_ofPred_eq]
+    simp [supp, h, mem_ofPred_eq]
 
 theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := by
   rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_isUniform]

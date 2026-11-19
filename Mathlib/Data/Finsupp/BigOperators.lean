@@ -62,7 +62,7 @@ theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι
   induction l with
   | nil => simp
   | cons hd tl IH =>
-    simp only [foldr, Finset.mem_union, Finsupp.mem_support_iff, ne_eq, IH,
+    simp [foldr, Finset.mem_union, Finsupp.mem_support_iff, ne_eq, IH,
       mem_cons, exists_eq_or_imp]
 
 theorem Multiset.mem_sup_map_support_iff [Zero M] {s : Multiset (ι →₀ M)} {x : ι} :
@@ -102,7 +102,7 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
   obtain ⟨l, hl, hd⟩ := hs
   suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
     convert! List.support_sum_eq a this
-    simp only [quot_mk_to_coe'', map_coe, sup_coe,
+    simp [quot_mk_to_coe'', map_coe, sup_coe,
       Finset.bot_eq_empty, List.foldr_map]
   simp only [Multiset.quot_mk_to_coe'', Multiset.coe_eq_coe] at hl
   exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h

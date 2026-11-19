@@ -414,7 +414,7 @@ namespace NNReal
 theorem continuousAt_rpow_const {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 ≤ y) :
     ContinuousAt (fun z => z ^ y) x :=
   h.elim (fun h => tendsto_id.nnrpow tendsto_const_nhds (Or.inl h)) fun h =>
-    h.eq_or_lt.elim (fun h => h ▸ by simp only [rpow_zero, continuousAt_const]) fun h =>
+    h.eq_or_lt.elim (fun h => h ▸ by simp [rpow_zero, continuousAt_const]) fun h =>
       tendsto_id.nnrpow tendsto_const_nhds (Or.inr h)
 
 @[fun_prop]

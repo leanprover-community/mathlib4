@@ -102,7 +102,7 @@ noncomputable abbrev localized : Submodule (Localization p) (LocalizedModule p M
 lemma localized₀_bot : (⊥ : Submodule R M).localized₀ p f = ⊥ := by
   rw [← le_bot_iff]
   rintro _ ⟨_, rfl, s, rfl⟩
-  simp only [IsLocalizedModule.mk'_zero, mem_bot]
+  simp [IsLocalizedModule.mk'_zero, mem_bot]
 
 @[simp]
 lemma localized'_bot : (⊥ : Submodule R M).localized' S p f = ⊥ :=
@@ -182,7 +182,7 @@ lemma localized₀_smul (I : Submodule R R) : (I • M').localized₀ p f = I �
     · intro r hr n hn
       rw [IsLocalizedModule.mk'_smul]
       exact Submodule.smul_mem_smul hr ⟨n, hn, s, rfl⟩
-    · simp +contextual only [IsLocalizedModule.mk'_add, add_mem, implies_true]
+    · simp +contextual [IsLocalizedModule.mk'_add, add_mem, implies_true]
   · refine Submodule.smul_le.mpr ?_
     rintro r hr _ ⟨a, ha, s, rfl⟩
     rw [← IsLocalizedModule.mk'_smul]
@@ -291,7 +291,7 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     obtain ⟨y, rfl⟩ := mk_surjective _ y
     obtain ⟨⟨y, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f y
     exact ⟨⟨Submodule.Quotient.mk y, s⟩,
-      by simp only [Function.uncurry_apply_pair, toLocalizedQuotient'_mk, ← mk_smul, mk'_cancel']⟩
+      by simp [Function.uncurry_apply_pair, toLocalizedQuotient'_mk, ← mk_smul, mk'_cancel']⟩
   exists_of_eq {m n} e := by
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
     obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ _ := by simpa [Submodule.Quotient.eq] using! e

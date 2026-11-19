@@ -348,7 +348,7 @@ theorem summable_iterate_mul_iff_isQuasiregular {x : R} (h : ‖x‖ < 1) :
     have key (n : ℕ) :
         (∑ i ∈ range (n + 1), (· * x)^[i] x) - s = x * ((∑ i ∈ range n, (· * x)^[i] x) - s) := by
       rw [sum_range_succ', mul_sub, hxy, mul_sum]
-      simp only [iterate_mul_succ', iterate_zero_apply, sub_sub_eq_add_sub]
+      simp [iterate_mul_succ', iterate_zero_apply, sub_sub_eq_add_sub]
     suffices ∀ n : ℕ, ‖(∑ i ∈ range n, (· * x)^[i] x) - s‖ ≤ ‖x‖ ^ n * ‖s‖ from
       squeeze_zero_norm this <| by
         simpa using (tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg x) h).mul_const ‖s‖
@@ -390,7 +390,7 @@ variable {R : Type*} [NormedRing R]
 
 lemma hasSummableGeomSeries_iff_summable_pow :
     HasSummableGeomSeries R ↔ ∀ ⦃ξ : R⦄, ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n) := by
-  simp only [hasSummableGeomSeries_iff_summable_iterate_mul, mul_right_iterate_apply_self,
+  simp [hasSummableGeomSeries_iff_summable_iterate_mul, mul_right_iterate_apply_self,
     summable_nat_add_iff 1]
 
 alias ⟨_, HasSummableGeomSeries.of_summable_pow⟩ := hasSummableGeomSeries_iff_summable_pow

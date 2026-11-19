@@ -301,7 +301,7 @@ protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 
 section Gcd
 
 theorem gcd_eq_zero_iff (a : ℤ√d) : Int.gcd a.re a.im = 0 ↔ a = 0 := by
-  simp only [Int.gcd_eq_zero_iff, Zsqrtd.ext_iff, im_zero, re_zero]
+  simp [Int.gcd_eq_zero_iff, Zsqrtd.ext_iff, im_zero, re_zero]
 
 theorem gcd_pos_iff (a : ℤ√d) : 0 < Int.gcd a.re a.im ↔ a ≠ 0 :=
   pos_iff_ne_zero.trans <| not_congr a.gcd_eq_zero_iff

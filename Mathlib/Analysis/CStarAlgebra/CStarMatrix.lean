@@ -454,7 +454,7 @@ def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
   map_mul' M N := by
     ext
     -- Un-squeezing this `simp` seems to add about half a second elaboration time.
-    simp only [mapₗ_apply, map, LinearMap.coe_ofClass, ofMatrix_apply, mul_apply, map_sum, map_mul,
+    simp [mapₗ_apply, map, LinearMap.coe_ofClass, ofMatrix_apply, mul_apply, map_sum, map_mul,
       ofMatrix_apply]
   map_star' M := by ext; simp [map, star_apply, map_star]
 

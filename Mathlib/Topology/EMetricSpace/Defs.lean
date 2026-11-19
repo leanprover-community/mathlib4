@@ -44,7 +44,7 @@ in terms of the elements of the uniformity. -/
 theorem uniformity_dist_of_mem_uniformity [LT β] {U : Filter (α × α)} (z : β)
     (D : α → α → β) (H : ∀ s, s ∈ U ↔ ∃ ε > z, ∀ {a b : α}, D a b < ε → (a, b) ∈ s) :
     U = ⨅ ε > z, 𝓟 { p : α × α | D p.1 p.2 < ε } :=
-  HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_ofPred]⟩
+  HasBasis.eq_biInf ⟨fun s => by simp [H, subset_def, Prod.forall, mem_ofPred]⟩
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
@@ -641,11 +641,11 @@ open Metric
 
 /-- ε-characterization of the closure in pseudoemetric spaces -/
 theorem mem_closure_iff : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, edist x y < ε :=
-  (mem_closure_iff_nhds_basis nhds_basis_eball).trans <| by simp only [mem_eball, edist_comm x]
+  (mem_closure_iff_nhds_basis nhds_basis_eball).trans <| by simp [mem_eball, edist_comm x]
 
 lemma dense_iff : Dense s ↔ ∀ (x : α), ∀ r > 0, (eball x r ∩ s).Nonempty :=
   forall_congr' fun x => by
-    simp only [mem_closure_iff, Set.Nonempty, mem_inter_iff, and_comm, mem_eball']
+    simp [mem_closure_iff, Set.Nonempty, mem_inter_iff, and_comm, mem_eball']
 
 theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
     Tendsto u f (𝓝 a) ↔ ∀ ε > 0, ∀ᶠ x in f, edist (u x) a < ε :=
@@ -654,7 +654,7 @@ theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
 theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} :
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
-    simp only [true_and, mem_Ici, mem_eball]
+    simp [true_and, mem_Ici, mem_eball]
 
 section
 
@@ -671,7 +671,7 @@ theorem tendsto_nhdsWithin_nhds {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔
       ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, x ∈ s → edist x a < δ → edist (f x) b < ε := by
   rw [← nhdsWithin_univ b, tendsto_nhdsWithin_nhdsWithin]
-  simp only [mem_univ, true_and]
+  simp [mem_univ, true_and]
 
 theorem tendsto_nhds_nhds {a b} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, edist x a < δ → edist (f x) b < ε :=

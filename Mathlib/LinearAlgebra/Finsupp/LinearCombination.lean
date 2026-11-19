@@ -83,7 +83,7 @@ theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [Decid
     linearCombination R (Pi.single a c) f = f a • c := by
   rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
   · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
-  · exact fun _ ↦ by simp only [zero_smul]
+  · exact fun _ ↦ by simp [zero_smul]
 
 variable {α M}
 
@@ -179,7 +179,7 @@ theorem mem_span_iff_linearCombination (s : Set M) (x : M) :
 variable {R} in
 theorem mem_span_range_iff_exists_finsupp {v : α → M} {x : M} :
     x ∈ span R (range v) ↔ ∃ c : α →₀ R, (c.sum fun i a => a • v i) = x := by
-  simp only [← Finsupp.range_linearCombination, LinearMap.mem_range, linearCombination_apply]
+  simp [← Finsupp.range_linearCombination, LinearMap.mem_range, linearCombination_apply]
 
 theorem span_image_eq_map_linearCombination (s : Set α) :
     span R (v '' s) = Submodule.map (linearCombination R v) (supported R R s) := by
@@ -216,7 +216,7 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
   classical
   simp only [linearCombination_apply]
   induction f using induction_linear with
-  | zero => simp only [sum_zero_index]
+  | zero => simp [sum_zero_index]
   | add f₁ f₂ h₁ h₂ => simp [sum_add_index, h₁, h₂, add_smul]
   | single => simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 

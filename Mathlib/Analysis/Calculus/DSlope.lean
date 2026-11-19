@@ -86,7 +86,7 @@ theorem dslope_sub_smul [DecidableEq 𝕜] (f : 𝕜 → E) (a : 𝕜) :
 
 @[simp]
 theorem continuousAt_dslope_same : ContinuousAt (dslope f a) a ↔ DifferentiableAt 𝕜 f a := by
-  simp only [dslope, continuousAt_update_same, ← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope]
+  simp [dslope, continuousAt_update_same, ← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope]
 
 theorem ContinuousWithinAt.of_dslope (h : ContinuousWithinAt (dslope f a) s b) :
     ContinuousWithinAt f s b := by
@@ -109,7 +109,7 @@ theorem continuousWithinAt_dslope_of_ne (h : b ≠ a) :
     (hc.sub continuousWithinAt_const)
 
 theorem continuousAt_dslope_of_ne (h : b ≠ a) : ContinuousAt (dslope f a) b ↔ ContinuousAt f b := by
-  simp only [← continuousWithinAt_univ, continuousWithinAt_dslope_of_ne h]
+  simp [← continuousWithinAt_univ, continuousWithinAt_dslope_of_ne h]
 
 theorem continuousOn_dslope (h : s ∈ 𝓝 a) :
     ContinuousOn (dslope f a) s ↔ ContinuousOn f s ∧ DifferentiableAt 𝕜 f a := by
@@ -146,7 +146,7 @@ theorem differentiableOn_dslope_of_notMem (h : a ∉ s) :
 
 theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableAt 𝕜 (dslope f a) b ↔ DifferentiableAt 𝕜 f b := by
-  simp only [← differentiableWithinAt_univ, differentiableWithinAt_dslope_of_ne h]
+  simp [← differentiableWithinAt_univ, differentiableWithinAt_dslope_of_ne h]
 
 lemma sub_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
     (b - a) • dslope f a b = f b := by

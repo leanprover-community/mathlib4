@@ -100,7 +100,7 @@ variable (R m n t)
 /-- The determinantal ideal is the span of the set of generic minors. -/
 theorem determinantalIdeal_eq_span_determinantalMinors :
     determinantalIdeal R m n t = Ideal.span (determinantalMinors R m n t) := by
-  simp only [determinantalIdeal]
+  simp [determinantalIdeal]
 
 /-- Determinantal ideals are finitely generated. -/
 theorem fg_determinantalIdeal [Finite m] [Finite n] : (determinantalIdeal R m n t).FG := by

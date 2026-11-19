@@ -97,7 +97,7 @@ theorem WellQuasiOrdered.pi {ι : Type*} {α : ι → Type*} [Finite ι] {r : �
   refine Finset.cons_induction ?_ ?_
   · intro f
     exists RelEmbedding.refl (· ≤ ·)
-    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
+    simp [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
   · intro i s hi ih f
     obtain ⟨g, hg⟩ := (hr i).exists_monotone_subseq (f · i)
     obtain ⟨g', hg'⟩ := ih (f ∘ g)

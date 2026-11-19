@@ -96,7 +96,7 @@ lemma basis_nhds {p : ι → Prop} {s : ι → Set Y} (hf : IsInducing f) {x : X
 
 lemma nhdsSet_eq_comap (hf : IsInducing f) (s : Set X) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
-  simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
+  simp [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
 
 lemma map_nhds_eq (hf : IsInducing f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.eq_induced ▸ map_nhds_induced_eq x
@@ -169,7 +169,7 @@ theorem setOfPred_isOpen (hf : IsInducing f) :
 
 theorem dense_iff (hf : IsInducing f) {s : Set X} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by
-  simp only [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]
+  simp [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]
 
 theorem of_subsingleton [Subsingleton X] (f : X → Y) : IsInducing f :=
   ⟨Subsingleton.elim _ _⟩
@@ -448,7 +448,7 @@ theorem preimage_interior_eq_interior_preimage (hf₁ : IsOpenMap f) (hf₂ : Co
 theorem preimage_closure_subset_closure_preimage (hf : IsOpenMap f) {s : Set Y} :
     f ⁻¹' closure s ⊆ closure (f ⁻¹' s) := by
   rw [← compl_subset_compl]
-  simp only [← interior_compl, ← preimage_compl, hf.interior_preimage_subset_preimage_interior]
+  simp [← interior_compl, ← preimage_compl, hf.interior_preimage_subset_preimage_interior]
 
 theorem preimage_closure_eq_closure_preimage (hf : IsOpenMap f) (hfc : Continuous f) (s : Set Y) :
     f ⁻¹' closure s = closure (f ⁻¹' s) :=
@@ -466,7 +466,7 @@ theorem preimage_frontier_subset_frontier_preimage (hf : IsOpenMap f) {s : Set Y
 
 theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continuous f) (s : Set Y) :
     f ⁻¹' frontier s = frontier (f ⁻¹' s) := by
-  simp only [frontier_eq_closure_inter_closure, preimage_inter, preimage_compl,
+  simp [frontier_eq_closure_inter_closure, preimage_inter, preimage_compl,
     hf.preimage_closure_eq_closure_preimage hfc]
 
 theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.elim
@@ -786,7 +786,7 @@ theorem isOpenMap_iff (hg : IsOpenEmbedding g) :
 
 theorem of_comp_iff (f : X → Y) (hg : IsOpenEmbedding g) :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by
-  simp only [isOpenEmbedding_iff_continuous_injective_isOpenMap, ← hg.isOpenMap_iff, ←
+  simp [isOpenEmbedding_iff_continuous_injective_isOpenMap, ← hg.isOpenMap_iff, ←
     hg.toIsEmbedding.continuous_iff, hg.injective.of_comp_iff]
 
 lemma of_comp (f : X → Y) (hg : IsOpenEmbedding g) (h : IsOpenEmbedding (g ∘ f)) :

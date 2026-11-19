@@ -120,7 +120,7 @@ lemma AnalyticAt.analyticOrderAt_ne_top (hf : AnalyticAt 𝕜 f z₀) :
     analyticOrderAt f z₀ ≠ ⊤ ↔
       ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
         f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ analyticOrderNatAt f z₀ • g z := by
-  simp only [← ENat.natCast_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.analyticOrderAt_eq_natCast,
+  simp [← ENat.natCast_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.analyticOrderAt_eq_natCast,
     analyticOrderNatAt]
 
 /-- An analytic function that does not vanish identically near a point is asymptotic, up to
@@ -634,7 +634,7 @@ lemma AnalyticAt.analyticOrderAt_comp (hf : AnalyticAt 𝕜 f (g z₀)) (hg : An
     -- non-vanishing analytic function `fun z ↦ (G z) ^ r • F (g z)`.
     refine ⟨fun z ↦ (G z) ^ r • F (g z), by fun_prop, by aesop, ?_⟩
     filter_upwards [EventuallyEq.comp_tendsto hfF hg.continuousAt, hgG] with z hfz hgz
-    simp only [hfz, Function.comp_def, hgz, smul_eq_mul, mul_pow, mul_smul, mul_comm r s, pow_mul]
+    simp [hfz, Function.comp_def, hgz, smul_eq_mul, mul_pow, mul_smul, mul_comm r s, pow_mul]
 
 /-- If `g` is analytic at `x`, and `g' x ≠ 0`, then the analytic order of
 `f ∘ g` at `x` is the analytic order of `f` at `g x` (even if `f` is not analytic). -/

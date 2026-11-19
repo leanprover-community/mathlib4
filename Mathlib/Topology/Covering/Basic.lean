@@ -290,7 +290,7 @@ def IsCoveringMap :=
 variable {f}
 
 theorem isCoveringMap_iff_isCoveringMapOn_univ : IsCoveringMap f ↔ IsCoveringMapOn f .univ := by
-  simp only [IsCoveringMap, IsCoveringMapOn, Set.mem_univ, forall_true_left]
+  simp [IsCoveringMap, IsCoveringMapOn, Set.mem_univ, forall_true_left]
 
 protected theorem IsCoveringMap.isCoveringMapOn (hf : IsCoveringMap f) : IsCoveringMapOn f .univ :=
   isCoveringMap_iff_isCoveringMapOn_univ.mp hf

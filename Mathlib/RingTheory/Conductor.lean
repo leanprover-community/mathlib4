@@ -30,7 +30,7 @@ local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
 biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simp only [zero_mul, zero_mem]
+  zero_mem' b := by simp [zero_mul, zero_mem]
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 
@@ -46,7 +46,7 @@ theorem mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈
   ⟨fun h => h, fun h => h⟩
 
 theorem conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
-  simp only [Ideal.eq_top_iff_one, mem_conductor_iff, h, mem_top, forall_const]
+  simp [Ideal.eq_top_iff_one, mem_conductor_iff, h, mem_top, forall_const]
 
 theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
   conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
@@ -128,7 +128,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     obtain ⟨z, hz⟩ := y
     obtain ⟨p, hp, q, hq, hpq⟩ := Submodule.mem_sup.mp ((Ideal.eq_top_iff_one _).mp hx)
     have temp : algebraMap R S p * z + algebraMap R S q * z = z := by
-      simp only [← add_mul, ← map_add (algebraMap R S), hpq, map_one, one_mul]
+      simp [← add_mul, ← map_add (algebraMap R S), hpq, map_one, one_mul]
     suffices z ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>) ↔
         (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>) by
       rw [← this, ← temp]
@@ -173,7 +173,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
     refine Ideal.Quotient.lift_surjective_of_surjective _ _ fun y => ?_
     obtain ⟨z, hz⟩ := Ideal.Quotient.mk_surjective y
     have : z ∈ conductor R x ⊔ I.map (algebraMap R S) := by
-      suffices conductor R x ⊔ I.map (algebraMap R S) = ⊤ by simp only [this, Submodule.mem_top]
+      suffices conductor R x ⊔ I.map (algebraMap R S) = ⊤ by simp [this, Submodule.mem_top]
       rw [Ideal.eq_top_iff_one] at hx ⊢
       replace hx := Ideal.mem_map_of_mem (algebraMap R S) hx
       rw [Ideal.map_sup, map_one] at hx

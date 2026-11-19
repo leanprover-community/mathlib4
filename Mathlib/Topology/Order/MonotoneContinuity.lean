@@ -256,7 +256,7 @@ theorem Monotone.continuous_of_denseRange [DenselyOrdered β] {f : α → β} (h
   continuous_iff_continuousAt.mpr fun a =>
     continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun _ _ _ _ hxy => h_mono hxy)
         univ_mem <|
-      by simp only [image_univ, h_dense.closure_eq, univ_mem]
+      by simp [image_univ, h_dense.closure_eq, univ_mem]
 
 /-- A monotone surjective function with a densely ordered codomain is continuous. -/
 theorem Monotone.continuous_of_surjective [DenselyOrdered β] {f : α → β} (h_mono : Monotone f)

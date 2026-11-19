@@ -101,7 +101,7 @@ def eval₂AddMonoidHom : R[X] →+ S where
 @[simp]
 theorem eval₂_natCast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
   induction n with
-  | zero => simp only [eval₂_zero, Nat.cast_zero]
+  | zero => simp [eval₂_zero, Nat.cast_zero]
   | succ n ih => rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 
 @[simp]
@@ -160,8 +160,8 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
   rw [eval₂_mul_noncomm, eval₂_C]
   intro k
   by_cases hk : k = 0
-  · simp only [hk, h, coeff_C_zero]
-  · simp only [coeff_C_of_ne_zero hk, map_zero, Commute.zero_left]
+  · simp [hk, h, coeff_C_zero]
+  · simp [coeff_C_of_ne_zero hk, map_zero, Commute.zero_left]
 
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
@@ -260,7 +260,7 @@ theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
 theorem eval₂_at_apply {S : Type*} [Semiring S] (f : R →+* S) (r : R) :
     p.eval₂ f (f r) = f (p.eval r) := by
   rw [eval₂_eq_sum, eval_eq_sum, sum, sum, map_sum f]
-  simp only [f.map_mul, f.map_pow]
+  simp [f.map_mul, f.map_pow]
 
 @[simp]
 theorem eval₂_at_one {S : Type*} [Semiring S] (f : R →+* S) : p.eval₂ f 1 = f (p.eval 1) := by
@@ -283,12 +283,12 @@ theorem eval_C : (C a).eval x = a :=
   eval₂_C _ _
 
 @[simp]
-theorem eval_natCast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq_natCast, eval_C]
+theorem eval_natCast {n : ℕ} : (n : R[X]).eval x = n := by simp [← C_eq_natCast, eval_C]
 
 @[simp]
 lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
     (ofNat(n) : R[X]).eval a = ofNat(n) := by
-  simp only [OfNat.ofNat, eval_natCast]
+  simp [OfNat.ofNat, eval_natCast]
 
 @[simp]
 theorem eval_X : X.eval x = x :=
@@ -313,8 +313,8 @@ theorem eval_one : (1 : R[X]).eval x = 1 :=
 @[simp]
 theorem eval_C_mul : (C a * p).eval x = a * p.eval x := by
   induction p using Polynomial.induction_on' with
-  | add p q ph qh => simp only [mul_add, eval_add, ph, qh]
-  | monomial n b => simp only [mul_assoc, C_mul_monomial, eval_monomial]
+  | add p q ph qh => simp [mul_add, eval_add, ph, qh]
+  | monomial n b => simp [mul_assoc, C_mul_monomial, eval_monomial]
 
 @[simp]
 theorem eval_natCast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := by
@@ -426,8 +426,8 @@ theorem monomial_comp (n : ℕ) : (monomial n a).comp p = C a * p ^ n :=
 @[simp]
 theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
   induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp only [hp, hq, add_mul, add_comp]
-  | monomial n b => simp only [pow_succ, mul_assoc, monomial_mul_X, monomial_comp]
+  | add p q hp hq => simp [hp, hq, add_mul, add_comp]
+  | monomial n b => simp [pow_succ, mul_assoc, monomial_mul_X, monomial_comp]
 
 @[simp]
 theorem X_pow_comp {k : ℕ} : (X ^ k).comp p = p ^ k := by
@@ -584,10 +584,10 @@ protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
   Polynomial.induction_on p (by simp)
     (by
-      simp +contextual only [Polynomial.map_add, add_comp, forall_const,
+      simp +contextual [Polynomial.map_add, add_comp, forall_const,
         imp_true_iff])
     (by
-      simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
+      simp +contextual [pow_succ, ← mul_assoc, comp, forall_const,
         eval₂_mul_X, imp_true_iff, map_X, Polynomial.map_mul])
 
 theorem eval_X_pow {x : R} (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
@@ -685,7 +685,7 @@ theorem prod_comp {ι : Type*} (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
 
 theorem isRoot_prod {R} [CommSemiring R] [IsDomain R] {ι : Type*} (s : Finset ι) (p : ι → R[X])
     (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
-  simp only [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
+  simp [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
 
 @[gcongr]
 theorem eval_dvd : p ∣ q → eval x p ∣ eval x q :=
@@ -742,7 +742,7 @@ protected theorem map_neg {S} [Ring S] (f : R →+* S) : (-p).map f = -p.map f :
 
 @[simp]
 theorem eval_intCast {n : ℤ} {x : R} : (n : R[X]).eval x = n := by
-  simp only [← C_eq_intCast, eval_C]
+  simp [← C_eq_intCast, eval_C]
 
 @[simp]
 theorem eval₂_neg {S} [Ring S] (f : R →+* S) {x : S} : (-p).eval₂ f x = -p.eval₂ f x := by

@@ -545,10 +545,10 @@ theorem comul_bA : comul bA = b₁ := by
   rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← b₁_smul]
 
 theorem left_lambda : left lambda = l₁ := by
-  simp only [lambda, map_mul, map_add, map_one]
+  simp [lambda, map_mul, map_add, map_one]
 
 theorem right_lambda : right lambda = l₂ := by
-  simp only [lambda, map_mul, map_add, map_one, right_aA, right_bA]
+  simp [lambda, map_mul, map_add, map_one, right_aA, right_bA]
 
 @[simp] theorem comul_lambda : comul lambda = left lambda * right lambda := by
   rw [left_lambda, right_lambda]
@@ -965,7 +965,7 @@ theorem id_pow_op_unop_hom (n : ℕ) :
           (Algebra.TensorProduct.lift (powerMap n) (AlgHom.id R A)
               fun _ _ ↦ Commute.all _ _).comp
             (Bialgebra.comulAlgHom R A) := by
-        simp only [pow_succ, Hom.mul_def, unop_comp, CommAlgCat.hom_comp,
+        simp [pow_succ, Hom.mul_def, unop_comp, CommAlgCat.hom_comp,
           CommAlgCat.mul_op_of_unop_hom, CommAlgCat.lift_unop_hom, unop_id, CommAlgCat.hom_id,
           ih]
       rw [h, ← Algebra.TensorProduct.lmul'_comp_map, AlgHom.comp_assoc]

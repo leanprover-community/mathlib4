@@ -417,9 +417,9 @@ theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
 see `norm_eq_norm`. -/
 protected def norm : (mixedSpace K) →*₀ ℝ where
   toFun x := ∏ w, (normAtPlace w x) ^ (mult w)
-  map_one' := by simp only [map_one, one_pow, prod_const_one]
+  map_one' := by simp [map_one, one_pow, prod_const_one]
   map_zero' := by simp [mult]
-  map_mul' _ _ := by simp only [map_mul, mul_pow, prod_mul_distrib]
+  map_mul' _ _ := by simp [map_mul, mul_pow, prod_mul_distrib]
 
 protected theorem norm_apply (x : mixedSpace K) :
     mixedEmbedding.norm x = ∏ w, (normAtPlace w x) ^ (mult w) := rfl
@@ -658,7 +658,7 @@ def latticeBasis :
 @[simp]
 theorem latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
     latticeBasis K i = (mixedEmbedding K) (integralBasis K i) := by
-  simp only [latticeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, Function.comp_apply,
+  simp [latticeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, Function.comp_apply,
     canonicalEmbedding.latticeBasis_apply, integralBasis_apply, commMap_canonical_eq_mixed]
 
 theorem mem_span_latticeBasis {x : (mixedSpace K)} :
@@ -769,7 +769,7 @@ def fractionalIdealLatticeBasis :
 @[simp]
 theorem fractionalIdealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
     fractionalIdealLatticeBasis K I i = (mixedEmbedding K) (basisOfFractionalIdeal K I i) := by
-  simp only [fractionalIdealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
+  simp [fractionalIdealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
     Equiv.apply_symm_apply]
 
 theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
@@ -1091,7 +1091,7 @@ open scoped Classical in
 `2^ nrRealPlaces K` times the volume of its `plusPart`. -/
 theorem volume_eq_two_pow_mul_volume_plusPart (hm : MeasurableSet A) :
     volume A = 2 ^ nrRealPlaces K * volume (plusPart A) := by
-  simp only [← measure_congr (iUnion_negAt_plusPart_ae A hA),
+  simp [← measure_congr (iUnion_negAt_plusPart_ae A hA),
     measure_iUnion (disjoint_negAt_plusPart A) (fun _ ↦ measurableSet_negAt_plusPart _ A hm),
     volume_negAt_plusPart hm, tsum_fintype, sum_const, card_univ, Fintype.card_set, nsmul_eq_mul,
     Nat.cast_pow, Nat.cast_ofNat, nrRealPlaces]

@@ -365,7 +365,7 @@ theorem symm_image_eq (h : e.IsImage s t) : e.symm '' (e.target ∩ t) = e.sourc
   h.symm.image_eq
 
 theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source ∩ s := by
-  simp only [IsImage, Set.ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
+  simp [IsImage, Set.ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
 
 alias ⟨preimage_eq, of_preimage_eq⟩ := iff_preimage_eq
 
@@ -445,7 +445,7 @@ theorem symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = 
 theorem source_inter_preimage_inv_preimage (s : Set α) :
     e.source ∩ e ⁻¹' e.symm ⁻¹' s = e.source ∩ s :=
   Set.ext fun x => and_congr_right_iff.2 fun hx =>
-    by simp only [mem_preimage, e.left_inv hx]
+    by simp [mem_preimage, e.left_inv hx]
 
 theorem source_inter_preimage_target_inter (s : Set β) :
     e.source ∩ e ⁻¹' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
@@ -700,7 +700,7 @@ theorem EqOnSource.eqOn {e e' : PartialEquiv α β} (h : e ≈ e') : e.source.Eq
 
 /-- Two equivalent partial equivs have the same target. -/
 theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.target = e'.target := by
-  simp only [← image_source_eq_target, ← source_eq h, h.2.image_eq]
+  simp [← image_source_eq_target, ← source_eq h, h.2.image_eq]
 
 /-- If two partial equivs are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈ e'.symm := by
@@ -742,7 +742,7 @@ theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
   refine ⟨by rw [A, ofSet_source], fun x hx => ?_⟩
   rw [A] at hx
-  simp only [hx, mfld_simps]
+  simp [hx, mfld_simps]
 
 /-- Composition of the inverse of a partial equivalence and this partial equivalence is equivalent
 to the restriction of the identity to the target. -/
@@ -964,12 +964,12 @@ theorem transPartialEquiv_eq_trans (e : α ≃ β) (f' : PartialEquiv β γ) :
 @[simp, mfld_simps]
 theorem transPartialEquiv_trans (e : α ≃ β) (f' : PartialEquiv β γ) (f'' : PartialEquiv γ δ) :
     (e.transPartialEquiv f').trans f'' = e.transPartialEquiv (f'.trans f'') := by
-  simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc]
+  simp [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc]
 
 @[simp, mfld_simps]
 theorem trans_transPartialEquiv (e : α ≃ β) (e' : β ≃ γ) (f'' : PartialEquiv γ δ) :
     (e.trans e').transPartialEquiv f'' = e.transPartialEquiv (e'.transPartialEquiv f'') := by
-  simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc, trans_toPartialEquiv]
+  simp [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc, trans_toPartialEquiv]
 
 @[simp]
 lemma coe_transPartialEquiv {f : α ≃ β} {g : PartialEquiv β γ} : f.transPartialEquiv g = g ∘ f :=
@@ -998,12 +998,12 @@ theorem transEquiv_eq_trans (e : PartialEquiv α β) (e' : β ≃ γ) :
 @[simp, mfld_simps]
 theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : γ ≃ δ) :
     (e.transEquiv f').transEquiv f'' = e.transEquiv (f'.trans f'') := by
-  simp only [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
+  simp [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
 
 @[simp, mfld_simps]
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
-  simp only [transEquiv_eq_trans, trans_assoc]
+  simp [transEquiv_eq_trans, trans_assoc]
 
 @[simp] lemma coe_transEquiv {f : PartialEquiv α β} {g : β ≃ γ} : f.transEquiv g = g ∘ f := rfl
 

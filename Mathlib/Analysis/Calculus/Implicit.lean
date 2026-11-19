@@ -362,7 +362,7 @@ theorem implicitToOpenPartialHomeomorphOfComplemented_apply (hf : HasStrictFDeri
 theorem implicitToOpenPartialHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) (hker : f'.ker.ClosedComplemented) (y : f'.ker) :
     hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker (y + a) = (f (y + a), y) := by
-  simp only [implicitToOpenPartialHomeomorphOfComplemented_apply, add_sub_cancel_right,
+  simp [implicitToOpenPartialHomeomorphOfComplemented_apply, add_sub_cancel_right,
     Classical.choose_spec hker]
 
 @[simp]
@@ -419,14 +419,14 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
       f'.ker.subtypeL _ _
   swap
   · ext
-    simp only [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
+    simp [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
       ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL, Submodule.coe_subtype,
       ContinuousLinearMap.id_apply]
   swap
   · ext
-    simp only [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL, Submodule.coe_subtype,
+    simp [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL, Submodule.coe_subtype,
       ContinuousLinearMap.apply_val_ker, zero_apply]
-  simp only [implicitFunctionDataOfComplemented, map_sub, sub_self]
+  simp [implicitFunctionDataOfComplemented, map_sub, sub_self]
 
 end Complemented
 

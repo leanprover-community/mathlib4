@@ -183,7 +183,7 @@ lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
   rw [hasBasis_cocompact.tendsto_right_iff]
   refine forall₂_congr (fun K _ ↦ ?_)
-  simp only [mem_compl_iff, eventually_cofinite, not_not, preimage]
+  simp [mem_compl_iff, eventually_cofinite, not_not, preimage]
 
 lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
@@ -287,7 +287,7 @@ theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin :
 
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
-  simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
+  simp [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
 /-- Any set is codiscrete within itself. -/
 @[simp] theorem Filter.self_mem_codiscreteWithin (s : Set X) :
@@ -466,7 +466,7 @@ lemma eventuallyEq_codiscrete_iff_forall_eventuallyEq_nhdsNE :
 
 lemma mem_codiscrete_accPt {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, ¬AccPt x (𝓟 Sᶜ) := by
-  simp only [mem_codiscrete, disjoint_iff, AccPt, not_neBot]
+  simp [mem_codiscrete, disjoint_iff, AccPt, not_neBot]
 
 lemma mem_codiscrete' {S : Set X} :
     S ∈ codiscrete X ↔ IsOpen S ∧ IsDiscrete Sᶜ := by
@@ -482,7 +482,7 @@ lemma codiscreteWithin_le_codiscrete_inf_principal (s : Set X) :
 
 theorem Topology.IsEmbedding.image_mem_codiscreteWithin {f : X → Y} (hf : IsEmbedding f)
     {s t : Set X} : f '' s ∈ codiscreteWithin (f '' t) ↔ s ∈ codiscreteWithin t := by
-  simp only [mem_codiscreteWithin_accPt, forall_mem_image, accPt_principal_iff_clusterPt,
+  simp [mem_codiscreteWithin_accPt, forall_mem_image, accPt_principal_iff_clusterPt,
     ← hf.mapClusterPt_iff, MapClusterPt, map_principal, image_sdiff hf.injective, image_singleton]
 
 theorem Topology.IsEmbedding.image_mem_codiscreteWithin_range {f : X → Y} (hf : IsEmbedding f)
@@ -559,7 +559,7 @@ section discrete_union
 theorem IsDiscrete.iUnion {ι : Sort*} [Finite ι] {s : ι → Set X} (hs : ∀ i, IsDiscrete (s i))
     (hsc : ∀ i, IsClosed (s i)) : IsDiscrete (⋃ i, s i) := by
   suffices (⋃ i, s i)ᶜ ∈ codiscrete X from (compl_mem_codiscrete_iff.mp this).2
-  simp only [compl_iUnion, iInter_mem, compl_mem_codiscrete_iff, and_self, implies_true, hsc, hs]
+  simp [compl_iUnion, iInter_mem, compl_mem_codiscrete_iff, and_self, implies_true, hsc, hs]
 
 /-- The union of two discrete closed subsets is discrete. -/
 theorem IsDiscrete.union {s t : Set X} (hs : IsDiscrete s) (ht : IsDiscrete t)

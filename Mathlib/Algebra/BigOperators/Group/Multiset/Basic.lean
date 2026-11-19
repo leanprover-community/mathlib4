@@ -87,7 +87,7 @@ theorem prod_hom_ne_zero {s : Multiset M} (hs : s ≠ 0) {F : Type*} [FunLike F 
 theorem prod_hom (s : Multiset M) {F : Type*} [FunLike F M N]
     [MonoidHomClass F M N] (f : F) :
     (s.map f).prod = f s.prod :=
-  Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, map_coe, prod_coe]
+  Quotient.inductionOn s fun l => by simp [l.prod_hom f, quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive]
 theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F M N]
@@ -107,7 +107,7 @@ theorem prod_hom₂ [CommMonoid O] (s : Multiset ι) (f : M → N → O)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (hf' : f 1 1 = 1) (f₁ : ι → M)
     (f₂ : ι → N) : (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod :=
   Quotient.inductionOn s fun l => by
-    simp only [l.prod_hom₂ f hf hf', quot_mk_to_coe, map_coe, prod_coe]
+    simp [l.prod_hom₂ f hf hf', quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul : (m.map fun i => f i * g i).prod = (m.map f).prod * (m.map g).prod :=
@@ -125,7 +125,7 @@ theorem prod_map_prod_map (m : Multiset ι) (n : Multiset κ) {f : ι → κ →
 
 theorem prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
   obtain ⟨z, rfl⟩ := exists_add_of_le h
-  simp only [prod_add, dvd_mul_right]
+  simp [prod_add, dvd_mul_right]
 
 @[to_additive]
 lemma _root_.map_multiset_prod [FunLike F M N] [MonoidHomClass F M N] (f : F) (s : Multiset M) :
@@ -198,7 +198,7 @@ theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map
 @[to_additive]
 theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
   convert! (m.map f).prod_hom (zpowGroupHom n : G →* G)
-  simp only [map_map, Function.comp_apply, zpowGroupHom_apply]
+  simp [map_map, Function.comp_apply, zpowGroupHom_apply]
 
 end DivisionCommMonoid
 
@@ -233,6 +233,6 @@ end OrderedSub
 
 instance {M : Type*} : HasUniqueDiv (Multiset M) :=
   ⟨fun n hn x y h ↦ open scoped Classical in Multiset.ext' fun _ ↦
-    (Nat.mul_right_inj hn).mp <| by simp only [← Multiset.count_nsmul, h]⟩
+    (Nat.mul_right_inj hn).mp <| by simp [← Multiset.count_nsmul, h]⟩
 
 end Multiset

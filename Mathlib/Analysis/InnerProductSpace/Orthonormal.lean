@@ -223,7 +223,7 @@ theorem Orthonormal.inner_finsupp_eq_zero {v : ι → E} (hv : Orthonormal 𝕜 
     (hi : i ∉ s) {l : ι →₀ 𝕜} (hl : l ∈ Finsupp.supported 𝕜 𝕜 s) :
     ⟪Finsupp.linearCombination 𝕜 v l, v i⟫ = 0 := by
   rw [Finsupp.mem_supported'] at hl
-  simp only [hv.inner_left_finsupp, hl i hi, map_zero]
+  simp [hv.inner_left_finsupp, hl i hi, map_zero]
 
 /-- Given an orthonormal family, a second family of vectors is orthonormal if every vector equals
 the corresponding vector in the original family or its negation. -/
@@ -398,7 +398,7 @@ theorem Orthonormal.equiv_trans {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) 
     (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') {v'' : Basis ι'' 𝕜 E''} (hv'' : Orthonormal 𝕜 v'')
     (e' : ι' ≃ ι'') : (hv.equiv hv' e).trans (hv'.equiv hv'' e') = hv.equiv hv'' (e.trans e') :=
   v.ext_linearIsometryEquiv fun i => by
-    simp only [LinearIsometryEquiv.trans_apply, Orthonormal.equiv_apply, e.coe_trans,
+    simp [LinearIsometryEquiv.trans_apply, Orthonormal.equiv_apply, e.coe_trans,
       Function.comp_apply]
 
 theorem Orthonormal.map_equiv {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
@@ -416,14 +416,14 @@ variable {ι : Type*} {ι' : Type*} {E' : Type*} [SeminormedAddCommGroup E'] [In
 theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :
     hv.equiv hv (Equiv.refl ι) = LinearIsometryEquiv.refl 𝕜 E :=
   v.ext_linearIsometryEquiv fun i => by
-    simp only [Orthonormal.equiv_apply, Equiv.coe_refl, id, LinearIsometryEquiv.coe_refl]
+    simp [Orthonormal.equiv_apply, Equiv.coe_refl, id, LinearIsometryEquiv.coe_refl]
 
 @[simp]
 theorem Orthonormal.equiv_symm {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
     (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') : (hv.equiv hv' e).symm = hv'.equiv hv e.symm :=
   v'.ext_linearIsometryEquiv fun i =>
     (hv.equiv hv' e).injective <| by
-      simp only [LinearIsometryEquiv.apply_symm_apply, Orthonormal.equiv_apply, e.apply_symm_apply]
+      simp [LinearIsometryEquiv.apply_symm_apply, Orthonormal.equiv_apply, e.apply_symm_apply]
 
 end
 
@@ -449,18 +449,18 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     norm_cast
   suffices hbf : ‖x - ∑ i ∈ s, ⟪v i, x⟫ • v i‖ ^ 2 = ‖x‖ ^ 2 - ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 by
     rw [← sub_nonneg, ← hbf]
-    simp only [norm_nonneg, pow_nonneg]
+    simp [norm_nonneg, pow_nonneg]
   rw [@norm_sub_sq 𝕜, sub_add]
   simp only [@InnerProductSpace.norm_sq_eq_re_inner 𝕜 E, inner_sum, sum_inner]
   simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
     add_sub_cancel_right, sub_right_inj]
-  simp only [map_sum, ← inner_conj_symm x, ← h₃]
+  simp [map_sum, ← inner_conj_symm x, ← h₃]
 
 /-- Bessel's inequality. -/
 theorem Orthonormal.tsum_inner_products_le (hv : Orthonormal 𝕜 v) :
     ∑' i, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   refine tsum_le_of_sum_le' ?_ fun s => hv.sum_inner_products_le x
-  simp only [norm_nonneg, pow_nonneg]
+  simp [norm_nonneg, pow_nonneg]
 
 /-- The sum defined in Bessel's inequality is summable. -/
 theorem Orthonormal.inner_products_summable (hv : Orthonormal 𝕜 v) :
@@ -468,7 +468,7 @@ theorem Orthonormal.inner_products_summable (hv : Orthonormal 𝕜 v) :
   use ⨆ s : Finset ι, ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2
   apply hasSum_of_isLUB_of_nonneg
   · intro b
-    simp only [norm_nonneg, pow_nonneg]
+    simp [norm_nonneg, pow_nonneg]
   · refine isLUB_ciSup ?_
     use ‖x‖ ^ 2
     rintro y ⟨s, rfl⟩

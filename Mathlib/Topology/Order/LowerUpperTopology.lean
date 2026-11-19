@@ -285,7 +285,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   constructor
   · rintro ⟨F, hF, rfl⟩
     refine ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, ?_⟩
-    simp only [sInter_image]
+    simp [sInter_image]
   · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
     have := hF.to_subtype
     rw [subset_def, Subtype.forall'] at hs
@@ -327,7 +327,7 @@ lemma isTopologicalBasis_insert_univ_subbasis :
 
 theorem tendsto_nhds_iff_lt {β : Type*} {f : β → α} {l : Filter β} {x : α} :
     Filter.Tendsto f l (𝓝 x) ↔ ∀ y, x < y → ∀ᶠ z in l, f z < y := by
-  simp only [tendsto_nhds_iff_not_le, not_le]
+  simp [tendsto_nhds_iff_not_le, not_le]
 
 end LinearOrder
 
@@ -337,7 +337,7 @@ variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsLower α]
 
 lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (Ici a)ᶜ = U := by
   by_cases hU : U = univ
-  · simp only [hU, isOpen_univ, compl_Ici, true_or]
+  · simp [hU, isOpen_univ, compl_Ici, true_or]
   refine ⟨?_, isTopologicalBasis_insert_univ_subbasis.isOpen⟩
   intro hO
   apply Or.inr

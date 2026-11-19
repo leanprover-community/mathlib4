@@ -44,10 +44,10 @@ def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
   leibniz' p q := by
     dsimp
     induction p using Polynomial.induction_on' with
-    | add => simp only [add_mul, map_add, add_smul, smul_add, add_add_add_comm, *]
+    | add => simp [add_mul, map_add, add_smul, smul_add, add_add_add_comm, *]
     | monomial n a =>
       induction q using Polynomial.induction_on' with
-      | add => simp only [mul_add, map_add, add_smul, smul_add, add_add_add_comm, *]
+      | add => simp [mul_add, map_add, add_smul, smul_add, add_add_add_comm, *]
       | monomial m b => ext; simp [Polynomial.monomial_mul_monomial, add_comm]
 
 @[simp]
@@ -166,7 +166,7 @@ lemma algHom_deriv (f : R →ₐ[A] R') (hf : Function.Injective f) (x : R) (h :
   simp only [AlgHom.coe_comp, Function.comp_apply, ← map_mul]
   apply add_left_cancel (a := aeval (f x) (mapCoeffs p))
   rw [← deriv_aeval_eq]
-  simp only [aeval_algHom, AlgHom.coe_comp, Function.comp_apply, ← map_add, ← deriv_aeval_eq,
+  simp [aeval_algHom, AlgHom.coe_comp, Function.comp_apply, ← map_add, ← deriv_aeval_eq,
     minpoly.aeval, map_zero, p]
 
 omit [Nontrivial R] in

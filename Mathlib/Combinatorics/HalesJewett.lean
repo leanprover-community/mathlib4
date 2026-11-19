@@ -277,13 +277,13 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
   refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
-  simp only [Multiset.notMem_zero, IsEmpty.forall_iff]
+  simp [Multiset.notMem_zero, IsEmpty.forall_iff]
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
 def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   idxFun i := (l.idxFun i).map f
-  proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none]⟩
+  proper := ⟨l.proper.choose, by simp [l.proper.choose_spec, Option.map_none]⟩
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
 def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (ι ⊕ ι') where
@@ -303,13 +303,13 @@ def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (ι ⊕ ι') 
 theorem apply_def (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x := rfl
 
 theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
-  simp only [Option.getD_none, h, l.apply_def]
+  simp [Option.getD_none, h, l.apply_def]
 
 lemma apply_some (h : l.idxFun i = some a) : l x i = a := by simp [h]
 
 @[simp]
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
-  simp only [Line.apply_def, Line.map, Option.getD_map, comp_def]
+  simp [Line.apply_def, Line.map, Option.getD_map, comp_def]
 
 @[simp]
 theorem vertical_apply {α ι ι'} (v : ι → α) (l : Line α ι') (x : α) :
@@ -434,8 +434,8 @@ private theorem exists_mono_in_high_dimension' :
     -- Our `r+1` lines have the same endpoint.
     · simp_rw [Multiset.mem_cons, Multiset.mem_map]
       rintro _ (rfl | ⟨q, hq, rfl⟩)
-      · simp only [vertical_apply]
-      · simp only [prod_apply, s.is_focused q hq]
+      · simp [vertical_apply]
+      · simp [prod_apply, s.is_focused q hq]
     -- Our `r+1` lines have distinct colors (this is why we needed to split into cases above).
     · rw [Multiset.map_cons, Multiset.map_map, Multiset.nodup_cons, Multiset.mem_map]
       exact ⟨h, s.distinct_colors⟩
