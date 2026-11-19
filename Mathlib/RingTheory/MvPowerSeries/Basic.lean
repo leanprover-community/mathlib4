@@ -502,6 +502,64 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
 
 end Semiring
 
+section MapAddMonoidHom
+
+variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
+variable (f : R →+ S) (g : S →+ T)
+
+/-- The additive map between multivariate formal power series obtained by applying an additive
+map `f : R →+ S` to each coefficient.
+
+See `MvPowerSeries.map` for the version where `f` is a ring homomorphism. -/
+def mapAddMonoidHom : MvPowerSeries σ R →+ MvPowerSeries σ S where
+  toFun φ n := f <| coeff n φ
+  map_zero' := ext fun _n => f.map_zero
+  map_add' _ _ := ext fun _ => map_add f _ _
+
+@[simp]
+theorem mapAddMonoidHom_id : mapAddMonoidHom (σ := σ) (AddMonoidHom.id R) = AddMonoidHom.id _ :=
+  rfl
+
+theorem mapAddMonoidHom_comp :
+    mapAddMonoidHom (σ := σ) (g.comp f) = (mapAddMonoidHom g).comp (mapAddMonoidHom f) :=
+  rfl
+
+@[simp]
+theorem coeff_mapAddMonoidHom (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+    coeff n (mapAddMonoidHom f φ) = f (coeff n φ) :=
+  rfl
+
+@[simp]
+theorem constantCoeff_mapAddMonoidHom (φ : MvPowerSeries σ R) :
+    constantCoeff (mapAddMonoidHom f φ) = f (constantCoeff φ) :=
+  rfl
+
+@[simp]
+theorem mapAddMonoidHom_monomial (n : σ →₀ ℕ) (a : R) :
+    mapAddMonoidHom f (monomial n a) = monomial n (f a) := by
+  classical
+  ext m
+  simp [coeff_monomial, apply_ite f]
+
+@[simp]
+theorem mapAddMonoidHom_C (a : R) : mapAddMonoidHom (σ := σ) f (C a) = C (f a) :=
+  mapAddMonoidHom_monomial _ _ _
+
+@[simp]
+theorem mapAddMonoidHom_X (s : σ) : mapAddMonoidHom f (X s) = f 1 • X s := by
+  classical
+  ext d
+  simp [X, smul_eq_C_mul, coeff_C_mul, coeff_monomial]
+
+@[simp]
+theorem mapAddMonoidHom_mapAddMonoidHom {S₁ S₂ : Type*} [CommSemiring S₁] [CommSemiring S₂]
+    (f : R →+ S₁) (g : S₁ →+ S₂) (p : MvPowerSeries σ R) :
+    mapAddMonoidHom g (mapAddMonoidHom f p) = mapAddMonoidHom (g.comp f) p := by
+  ext n
+  simp
+
+end MapAddMonoidHom
+
 section Map
 
 variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
