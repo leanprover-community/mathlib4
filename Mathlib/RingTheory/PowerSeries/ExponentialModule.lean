@@ -5,9 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.Ring.Ext
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.Substitution
+
+import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Exponential module of a commutative ring
 
@@ -298,7 +299,7 @@ noncomputable instance : AddCommGroup (ExponentialModule R) where
   zsmul_zero'      := by simp
   zsmul_succ'      := by simp [add_smul]
   zsmul_neg'       := by simp [Int.negSucc_eq, ← smul_assoc]
-  neg_add_cancel f := by simp [← coe_inj, ← f.2.neg_mul_self_eq_one]
+  neg_add_cancel f := by simp [← coe_inj, ← f.prop.neg_mul_self_eq_one]
 
 /-- Compatibility of module structures on `ExponentialModule A` in a tower `R S A` of commutative
   rings. -/
