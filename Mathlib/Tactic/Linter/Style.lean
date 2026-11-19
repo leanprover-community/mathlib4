@@ -423,7 +423,7 @@ public def isMisnamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
   let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
   let usedCoercions ← usedConstants.filterM (fun c ↦ return (← getCoeFnInfo? c).isSome)
   let coercionConstants := usedConstants.filter
-    fun c ↦ c.components.getLast? == some `coe || c == `UniformSpace.Completion.coe'
+    fun c ↦ (c matches .str _ "coe") || c == `UniformSpace.Completion.coe'
   if coercionConstants.isEmpty then return (true,
     m!"This declaration statement references the coercions(s) {usedCoercions}")
   return (false, "")
