@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
 public import Mathlib.Algebra.Homology.HomologicalComplex
-public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
+public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
 # The Koszul complex
