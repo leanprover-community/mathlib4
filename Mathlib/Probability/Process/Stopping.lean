@@ -50,7 +50,6 @@ property.
 ## Tags
 
 stopping time, stochastic process
-
 -/
 
 @[expose] public section
@@ -83,7 +82,8 @@ everywhere equal to a stopping time is a stopping time. -/
 theorem IsStoppingTime.congr_ae [Preorder ι] {f : Filtration ι m} {μ : Measure Ω} [f.IsComplete μ]
     {τ σ : Ω → WithTop ι} (hσ : IsStoppingTime f σ) (h : τ =ᵐ[μ] σ) :
     IsStoppingTime f τ :=
-  fun i ↦ Filtration.IsComplete.measurableSet_of_ae_eq (hσ i) (h.fun_comp (· ≤ i))
+  fun i ↦ Filtration.IsComplete.measurableSet_of_ae_eq (hσ i)
+    (eventuallyEqSet_iff'.2 <| h.fun_comp (· ≤ i))
 
 section MeasurableSet
 
@@ -418,7 +418,7 @@ theorem add_const' [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countab
     cases τ ω with
     | top => simp
     | coe a => simp; norm_cast
-  exact h ▸ MeasurableSet.iUnion fun k => hτ.measurableSet_eq_le (le_of_add_le_left k.2)
+  exact h ▸ MeasurableSet.iUnion fun k => hτ.measurableSet_eq_le (le_of_add_le_left k.property)
 
 theorem add [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countable ι]
     [TopologicalSpace ι] [OrderTopology ι]
@@ -435,7 +435,8 @@ theorem add [Add ι] [LinearOrder ι] [CanonicallyOrderedAdd ι] [Countable ι]
       cases π ω with
       | top => simp
       | coe b => norm_cast; simpa using le_of_add_le_right
-  exact h ▸ MeasurableSet.iUnion fun k => (hπ.measurableSet_eq_le k.2).inter (hτ.add_const' k.1 j)
+  exact h ▸ MeasurableSet.iUnion fun k =>
+    (hπ.measurableSet_eq_le k.property).inter (hτ.add_const' k.val j)
 
 section Preorder
 
@@ -497,7 +498,7 @@ theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
       simp only [hij, Set.ofPred_true, Set.inter_univ]
       exact f.mono hij _ h
     · norm_cast
-      simp only [hij, Set.ofPred_false, Set.inter_empty, @MeasurableSet.empty _ (f.1 j)]
+      simp only [hij, Set.ofPred_false, Set.inter_empty, @MeasurableSet.empty _ (f.seq j)]
 
 theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i : ι) :
     MeasurableSet[hτ.measurableSpace] (s ∩ {ω | τ ω = i}) ↔
@@ -952,7 +953,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
   have hs : MeasurableSet[m_prod] s := @measurable_snd (Set.Iic i) Ω _ (f i) _ (hτ i)
   have h_meas_fst : ∀ t : Set (Set.Iic i × Ω),
       Measurable[m_set t] fun x : t => ((x : Set.Iic i × Ω).fst : ι) :=
-    fun t => (@measurable_subtype_coe (Set.Iic i × Ω) m_prod _).fst.subtype_val
+    fun t => (@measurable_subtypeVal (Set.Iic i × Ω) m_prod _).fst.subtypeVal
   refine measurable_of_restrict_of_restrict_compl hs ?_ ?_
   · refine Measurable.min (h_meas_fst s).withTop_coe ?_
     refine measurable_of_Iic fun j ↦ ?_
@@ -968,7 +969,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
       rw [h_set_eq]
       suffices h_meas : @Measurable _ _ (m_set s) (f i) fun x : s ↦ (x : Set.Iic i × Ω).snd from
         h_meas (f.mono (min_le_left _ _) _ (hτ.measurableSet_le (min i j)))
-      exact measurable_snd.comp (@measurable_subtype_coe _ m_prod _)
+      exact measurable_snd.comp (@measurable_subtypeVal _ m_prod _)
   · let sc := sᶜ
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>
@@ -987,9 +988,6 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
       simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_ofPred_eq, ← ht]
       norm_cast
 
-@[deprecated (since := "2026-04-24")]
-alias progMeasurable_min_stopping_time := isStronglyProgressive_min_stopping_time
-
 theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
     (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
     IsStronglyProgressive f (stoppedProcess u τ) := by
@@ -1002,17 +1000,10 @@ theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
     · simp [(mod_cast h_it : (i : WithTop ι) ≤ t)]
     · simpa [(mod_cast h_ti : t ≤ (i : WithTop ι))]
 
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.stoppedProcess := IsStronglyProgressive.stoppedProcess
-
 theorem IsStronglyProgressive.stronglyAdapted_stoppedProcess [PseudoMetrizableSpace ι]
     (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
     StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (h.stoppedProcess hτ).stronglyAdapted
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.stronglyAdapted_stoppedProcess :=
-  IsStronglyProgressive.stronglyAdapted_stoppedProcess
 
 theorem IsStronglyProgressive.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
     (hu : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) (i : ι) :

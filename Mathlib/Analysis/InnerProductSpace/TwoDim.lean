@@ -65,7 +65,6 @@ notation which mentions the orientation explicitly (something like `ω[o]`). Wri
 local notation "ω" => o.areaForm
 local notation "J" => o.rightAngleRotation
 ```
-
 -/
 
 @[expose] public section
@@ -207,7 +206,8 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : finrank ℝ E = 2 := Fact.out
           lia
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
-        have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+        have hw' : ⟪x, (w : E)⟫ = 0 :=
+          Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.property
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
         refine le_of_mul_le_mul_right ?_ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
         rw [← o.abs_areaForm_of_orthogonal hw']

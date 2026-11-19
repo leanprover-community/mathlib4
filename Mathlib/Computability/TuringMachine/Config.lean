@@ -245,13 +245,13 @@ attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → List.Vector ℕ m →. ℕ}
-    (hf : ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v)
-    (hg : ∀ i, ∃ c : Code, ∀ v : List.Vector ℕ m, c.eval v.1 = pure <$> g i v) :
+    (hf : ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.val = pure <$> f v)
+    (hg : ∀ i, ∃ c : Code, ∀ v : List.Vector ℕ m, c.eval v.val = pure <$> g i v) :
     ∃ c : Code, ∀ v : List.Vector ℕ m,
-      c.eval v.1 = pure <$> ((List.Vector.mOfFn fun i => g i v) >>= f) := by
+      c.eval v.val = pure <$> ((List.Vector.mOfFn fun i => g i v) >>= f) := by
   rsuffices ⟨cg, hg⟩ :
     ∃ c : Code, ∀ v : List.Vector ℕ m,
-      c.eval v.1 = Subtype.val <$> List.Vector.mOfFn fun i => g i v
+      c.eval v.val = Subtype.val <$> List.Vector.mOfFn fun i => g i v
   · obtain ⟨cf, hf⟩ := hf
     exact
       ⟨cf.comp cg, fun v => by
@@ -270,7 +270,7 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
-    ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
+    ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.val = pure <$> f v := by
   induction hf with
   | prim hf =>
     induction hf with
@@ -360,8 +360,8 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
         exacts [hm _ h, h]
     · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
-      refine ⟨n.succ::v.1, ?_, rfl⟩
-      have : (n.succ::v.1 : List ℕ) ∈
+      refine ⟨n.succ::v.val, ?_, rfl⟩
+      have : (n.succ::v.val : List ℕ) ∈
         PFun.fix (fun v =>
           (cf.eval v).bind fun y =>
             Part.some <|
@@ -369,7 +369,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
                 else Sum.inr (v.headI.succ :: v.tail))
             (n::v.val) :=
         PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn]))
-      generalize (n.succ :: v.1 : List ℕ) = w at this ⊢
+      generalize (n.succ :: v.val : List ℕ) = w at this ⊢
       clear hn
       induction n with
       | zero => exact this

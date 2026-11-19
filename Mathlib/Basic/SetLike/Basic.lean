@@ -186,7 +186,7 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
-  x.2
+  x.property
 
 @[aesop 5% (rule_sets := [SetLike!])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx

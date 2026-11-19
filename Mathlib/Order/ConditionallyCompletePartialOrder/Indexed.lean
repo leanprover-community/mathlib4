@@ -14,7 +14,6 @@ import Mathlib.Order.GaloisConnection.Basic
 
 This file proves lemmas about `iSup` and `iInf` for functions valued in a conditionally complete
 partial order, as opposed to a conditionally complete lattice.
-
 -/
 
 public section
@@ -170,7 +169,8 @@ lemma Directed.Ici_ciSup [Nonempty ι] {f : ι → α} (hd : Directed (· ≤ ·
 @[to_dual]
 theorem ciSup_Iic [Preorder β] {f : β → α} (a : β) (hf : Monotone f) :
     ⨆ x : Iic a, f x = f a := by
-  have hd : Directed (· ≤ ·) (fun x : Iic a ↦ f x) := fun x y ↦ ⟨⟨a, le_refl a⟩, ⟨hf x.2, hf y.2⟩⟩
+  have hd : Directed (· ≤ ·) (fun x : Iic a ↦ f x) := fun x y ↦
+    ⟨⟨a, le_refl a⟩, ⟨hf x.property, hf y.property⟩⟩
   have H : BddAbove (range fun x : Iic a ↦ f x) := ⟨f a, fun _ ↦ by aesop⟩
   apply (hd.le_ciSup H (⟨a, le_refl a⟩ : Iic a)).antisymm'
   rw [hd.ciSup_le_iff H]

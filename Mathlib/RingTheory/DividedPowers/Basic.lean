@@ -61,7 +61,6 @@ For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
   should be provided as instances.
 
 * We do not provide any notation such as `a ^[n]` for `dpow a n`.
-
 -/
 
 @[expose] public section

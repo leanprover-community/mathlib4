@@ -177,8 +177,8 @@ advanced proof search engine, and adding any such instance has the potential to 
 slowdowns everywhere. We instead declare them as lemmata and make them local instances as required.
 -/
 
-theorem Fact.elim {p : Prop} (h : Fact p) : p := h.1
-theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
+theorem Fact.elim {p : Prop} (h : Fact p) : p := h.out
+theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.out, fun h ↦ ⟨h⟩⟩
 
 instance {p : Prop} [Decidable p] : Decidable (Fact p) :=
   decidable_of_iff _ fact_iff.symm
@@ -298,8 +298,6 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 /-- `Xor a b` is the exclusive-or of propositions. -/
 def Xor (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
-@[deprecated (since := "2026-04-27")] alias Xor' := Xor
-
 @[grind =] theorem xor_def {a b : Prop} : Xor a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
 
 instance [Decidable a] [Decidable b] : Decidable (Xor a b) := inferInstanceAs (Decidable (Or ..))
@@ -327,9 +325,6 @@ instance : Std.Irrefl Xor where
 theorem xor_not_not : Xor (¬a) (¬b) ↔ Xor a b := by grind
 
 protected theorem Xor.or (h : Xor a b) : a ∨ b := by grind
-
-@[deprecated (since := "2026-04-27")]
-protected alias Xor'.or := Xor.or
 
 /-! ### Declarations about `and` -/
 

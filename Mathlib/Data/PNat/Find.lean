@@ -12,7 +12,6 @@ public import Mathlib.Data.PNat.Basic
 # Explicit least witnesses to existentials on positive natural numbers
 
 Implemented via calling out to `Nat.find`.
-
 -/
 
 @[expose] public section

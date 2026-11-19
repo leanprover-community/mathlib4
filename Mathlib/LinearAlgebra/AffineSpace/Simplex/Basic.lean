@@ -26,7 +26,6 @@ This file defines n-dimensional simplices in affine space.
 ## References
 
 * https://en.wikipedia.org/wiki/Simplex
-
 -/
 
 @[expose] public section

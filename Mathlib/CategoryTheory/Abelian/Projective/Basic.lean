@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 
 In an abelian category, an object `P` is projective iff the functor
 `preadditiveCoyonedaObj P` preserves finite colimits.
-
 -/
 
 public section
