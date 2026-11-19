@@ -51,9 +51,9 @@ theorem card_derangements_fin_add_two (n : ℕ) :
     intro a
     rw [Fintype.card_compl_set]
     simp
-  have h2 : card (Fin (n + 2)) = card (Option (Fin (n + 1))) := by simp only [card_fin, card_option]
+  have h2 : card (Fin (n + 2)) = card (Option (Fin (n + 1))) := by simp [card_fin, card_option]
   -- rewrite the LHS and substitute in our fintype-level equivalence
-  simp only [card_derangements_invariant h2,
+  simp [card_derangements_invariant h2,
     card_congr
       (@derangementsRecursionEquiv (Fin (n + 1))
         _), -- push the cardinality through the Σ and ⊕ so that we can use `card_n`

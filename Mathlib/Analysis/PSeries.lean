@@ -321,13 +321,13 @@ if and only if `1 < p`. -/
 @[simp]
 theorem summable_nat_pow_inv {p : ℕ} :
     Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
-  simp only [← rpow_natCast, summable_nat_rpow_inv, Nat.one_lt_cast]
+  simp [← rpow_natCast, summable_nat_rpow_inv, Nat.one_lt_cast]
 
 /-- Test for convergence of the `p`-series: the real-valued series `∑' n : ℕ, 1 / n ^ p` converges
 if and only if `1 < p`. -/
 theorem summable_one_div_nat_pow {p : ℕ} :
     Summable (fun n => 1 / (n : ℝ) ^ p : ℕ → ℝ) ↔ 1 < p := by
-  simp only [one_div, Real.summable_nat_pow_inv]
+  simp [one_div, Real.summable_nat_pow_inv]
 
 /-- Summability of the `p`-series over `ℤ`. -/
 theorem summable_one_div_int_pow {p : ℕ} :
@@ -392,7 +392,7 @@ variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i ∈ Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by
   refine Nat.le_induction ?_ ?_ n h
-  · simp only [Ioc_self, sum_empty, sub_self, le_refl]
+  · simp [Ioc_self, sum_empty, sub_self, le_refl]
   intro n hn IH
   rw [sum_Ioc_succ_top hn]
   grw [IH]
@@ -407,7 +407,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i ∈ Ioo k n, (i ^ 2 : α)⁻¹) �
       apply sum_le_sum_of_subset_of_nonneg
       · intro x hx
         simp only [mem_Ioo] at hx
-        simp only [hx, hx.2.le, mem_Ioc, le_max_iff, or_true, and_self_iff]
+        simp [hx, hx.2.le, mem_Ioc, le_max_iff, or_true, and_self_iff]
       · intro i _hi _hident
         positivity
     _ ≤ ((k + 1 : α) ^ 2)⁻¹ + ∑ i ∈ Ioc k.succ (max (k + 1) n), ((i : α) ^ 2)⁻¹ := by
@@ -417,10 +417,10 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i ∈ Ioo k n, (i ^ 2 : α)⁻¹) �
       norm_cast
     _ ≤ ((k + 1 : α) ^ 2)⁻¹ + (k + 1 : α)⁻¹ := by
       refine add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub ?_ (le_max_left _ _)).trans ?_)
-      · simp only [Ne, Nat.succ_ne_zero, not_false_iff]
-      · simp only [Nat.cast_succ, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
+      · simp [Ne, Nat.succ_ne_zero, not_false_iff]
+      · simp [Nat.cast_succ, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
     _ ≤ 1 / (k + 1) + 1 / (k + 1) := by
-      have A : (1 : α) ≤ k + 1 := by simp only [le_add_iff_nonneg_left, Nat.cast_nonneg]
+      have A : (1 : α) ≤ k + 1 := by simp [le_add_iff_nonneg_left, Nat.cast_nonneg]
       simp_rw [← one_div]
       gcongr
       simpa using pow_right_mono₀ A one_le_two
@@ -436,7 +436,7 @@ lemma Real.not_summable_indicator_one_div_natCast {m : ℕ} (hm : m ≠ 0) (k : 
   rw [← summable_nat_add_iff 1] -- shift by one to avoid non-monotonicity at zero
   have h (n : ℕ) : {n : ℕ | (n : ZMod m) = k - 1}.indicator (fun n : ℕ ↦ (1 / (n + 1 :) : ℝ)) n =
       if (n : ZMod m) = k - 1 then (1 / (n + 1) : ℝ) else (0 : ℝ) := by
-    simp only [indicator_apply, mem_ofPred_eq, cast_add, cast_one]
+    simp [indicator_apply, mem_ofPred_eq, cast_add, cast_one]
   simp_rw [indicator_apply, mem_ofPred, cast_add, cast_one, ← eq_sub_iff_add_eq, ← h]
   rw [summable_indicator_mod_iff (fun n₁ n₂ h ↦ by gcongr) (k - 1)]
   exact mt (summable_nat_add_iff (f := fun n : ℕ ↦ 1 / (n : ℝ)) 1).mp not_summable_one_div_natCast

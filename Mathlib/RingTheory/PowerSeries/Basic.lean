@@ -117,7 +117,7 @@ theorem coeff_mk (n : ℕ) (f : ℕ → R) : coeff n (mk f) = f n :=
 theorem coeff_monomial (m n : ℕ) (a : R) : coeff m (monomial n a) = if m = n then a else 0 :=
   calc
     coeff m (monomial n a) = _ := MvPowerSeries.coeff_monomial _ _ _
-    _ = if m = n then a else 0 := by simp only [Finsupp.unique_single_eq_iff]
+    _ = if m = n then a else 0 := by simp [Finsupp.unique_single_eq_iff]
 
 theorem monomial_eq_mk (n : ℕ) (a : R) : monomial n a = mk fun m => if m = n then a else 0 :=
   ext fun m => by rw [coeff_monomial, coeff_mk]
@@ -446,7 +446,7 @@ theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
     φ = (mk fun p => coeff (p + 1) φ) * X + C (constantCoeff φ) := by
   ext (_ | n)
   · simp
-  · simp only [coeff_succ_mul_X, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
+  · simp [coeff_succ_mul_X, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
       ite_false, add_zero]
 
 /-- Split off the constant coefficient. -/
@@ -454,7 +454,7 @@ theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
     φ = (X * mk fun p => coeff (p + 1) φ) + C (constantCoeff φ) := by
   ext (_ | n)
   · simp
-  · simp only [coeff_succ_X_mul, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
+  · simp [coeff_succ_X_mul, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
       ite_false, add_zero]
 
 section Map
@@ -560,7 +560,7 @@ noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
   toFun f := PowerSeries.mk fun n => a ^ n * PowerSeries.coeff n f
   map_zero' := by
     ext
-    simp only [map_zero, PowerSeries.coeff_mk, mul_zero]
+    simp [map_zero, PowerSeries.coeff_mk, mul_zero]
   map_one' := by
     ext1
     simp only [mul_boole, PowerSeries.coeff_mk, PowerSeries.coeff_one]
@@ -803,7 +803,7 @@ theorem coe_add : ((φ + ψ : R[X]) : PowerSeries R) = φ + ψ := by
 
 @[simp, norm_cast]
 theorem coe_mul : ((φ * ψ : R[X]) : PowerSeries R) = φ * ψ :=
-  PowerSeries.ext fun n => by simp only [coeff_coe, PowerSeries.coeff_mul, coeff_mul]
+  PowerSeries.ext fun n => by simp [coeff_coe, PowerSeries.coeff_mul, coeff_mul]
 
 @[simp, norm_cast]
 lemma coe_smul (φ : R[X]) (r : R) :
@@ -886,7 +886,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUni
     --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
     --by any element.
     have : single () (d ()) = d := by ext; simp
-    simp only [MvPolynomial.coe_monomial, MvPolynomial.uniqueAlgEquiv_monomial,
+    simp [MvPolynomial.coe_monomial, MvPolynomial.uniqueAlgEquiv_monomial,
       Polynomial.coe_monomial, PowerSeries.monomial, this]
   | add f g hf hg => simp [hf, hg]
 
@@ -894,7 +894,7 @@ theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
     ((f.toPowerSeries) : MvPowerSeries PUnit R)
       = ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f).toMvPowerSeries := by
   set g := (MvPolynomial.uniqueAlgEquiv R PUnit).symm f
-  have : f = MvPolynomial.uniqueAlgEquiv R PUnit g := by simp only [g, AlgEquiv.apply_symm_apply]
+  have : f = MvPolynomial.uniqueAlgEquiv R PUnit g := by simp [g, AlgEquiv.apply_symm_apply]
   rw [this, MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
 
 variable (A : Type*) [Semiring A] [Algebra R A]

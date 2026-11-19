@@ -239,13 +239,13 @@ theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
       obtain ⟨x, h⟩ := x
       rw [Finset.mem_map] at h
       obtain ⟨a, _, rfl⟩ := h
-      simp only [Subtype.coe_prop, Embedding.coe_subtype]⟩
+      simp [Subtype.coe_prop, Embedding.coe_subtype]⟩
   convert! AlgebraicIndependent.comp li f _
   rintro ⟨x, hx⟩ ⟨y, hy⟩
   rw [Finset.mem_map] at hx hy
   obtain ⟨a, _, rfl⟩ := hx
   obtain ⟨b, _, rfl⟩ := hy
-  simp only [f, imp_self, Subtype.mk_eq_mk]
+  simp [f, imp_self, Subtype.mk_eq_mk]
 
 /-- If every finite set of algebraically independent element has cardinality at most `n`,
 then the same is true for arbitrary sets of algebraically independent elements. -/

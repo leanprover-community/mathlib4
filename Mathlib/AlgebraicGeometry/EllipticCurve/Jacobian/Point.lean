@@ -135,9 +135,9 @@ private lemma nonsingular_neg_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular
 
 lemma nonsingular_neg {P : Fin 3 → F} (hP : W.Nonsingular P) : W.Nonsingular <| W.neg P := by
   by_cases hPz : P z = 0
-  · simp only [neg_of_Z_eq_zero hP hPz, nonsingular_smul _
+  · simp [neg_of_Z_eq_zero hP hPz, nonsingular_smul _
         ((isUnit_Y_of_Z_eq_zero hP hPz).div <| isUnit_X_of_Z_eq_zero hP hPz).neg, nonsingular_zero]
-  · simp only [neg_of_Z_ne_zero hPz, nonsingular_smul _ <| Ne.isUnit hPz,
+  · simp [neg_of_Z_ne_zero hPz, nonsingular_smul _ <| Ne.isUnit hPz,
       nonsingular_neg_of_Z_ne_zero hP hPz]
 
 lemma addZ_neg (P : Fin 3 → R) : addZ P (W'.neg P) = 0 :=
@@ -282,7 +282,7 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsing
     W.Nonsingular <| W.add P Q := by
   by_cases hPz : P z = 0
   · by_cases hQz : Q z = 0
-    · simp only [add_of_Z_eq_zero hP hQ hPz hQz,
+    · simp [add_of_Z_eq_zero hP hQ hPz hQz,
         nonsingular_smul _ <| (isUnit_X_of_Z_eq_zero hP hPz).pow 2, nonsingular_zero]
     · simpa only [add_of_Z_eq_zero_left hP.left hPz hQz,
         nonsingular_smul _ <| (isUnit_X_of_Z_eq_zero hP hPz).mul <| Ne.isUnit hQz]
@@ -291,9 +291,9 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsing
         nonsingular_smul _ ((isUnit_X_of_Z_eq_zero hQ hQz).mul <| Ne.isUnit hPz).neg]
     · by_cases hxy : P x * Q z ^ 2 = Q x * P z ^ 2 ∧ P y * Q z ^ 3 = W.negY Q * P z ^ 3
       · by_cases hy : P y * Q z ^ 3 = Q y * P z ^ 3
-        · simp only [add_of_Y_eq hPz hQz hxy.left hy hxy.right, nonsingular_smul _ <|
+        · simp [add_of_Y_eq hPz hQz hxy.left hy hxy.right, nonsingular_smul _ <|
               isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right, nonsingular_zero]
-        · simp only [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
+        · simp [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
             nonsingular_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy, nonsingular_zero]
       · classical
         have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
@@ -463,7 +463,7 @@ lemma toAffine_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z 
 
 lemma toAffine_some {X Y : F} (h : W.Nonsingular ![X, Y, 1]) :
     toAffine W ![X, Y, 1] = .some _ _ ((nonsingular_some ..).mp h) := by
-  simp only [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, one_pow, div_one]
+  simp [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, one_pow, div_one]
 
 lemma toAffine_smul (P : Fin 3 → F) {u : F} (hu : IsUnit u) :
     toAffine W (u • P) = toAffine W P := by
@@ -472,7 +472,7 @@ lemma toAffine_smul (P : Fin 3 → F) {u : F} (hu : IsUnit u) :
     · rw [toAffine_of_Z_eq_zero <| mul_eq_zero_of_right u hPz, toAffine_of_Z_eq_zero hPz]
     · rw [toAffine_of_Z_ne_zero ((nonsingular_smul P hu).mpr hP) <| mul_ne_zero hu.ne_zero hPz,
         toAffine_of_Z_ne_zero hP hPz, Affine.Point.some.injEq]
-      simp only [smul_fin3_ext, mul_pow, mul_div_mul_left _ _ (hu.pow _).ne_zero, and_self]
+      simp [smul_fin3_ext, mul_pow, mul_div_mul_left _ _ (hu.pow _).ne_zero, and_self]
   · rw [toAffine_of_singular <| hP.comp (nonsingular_smul P hu).mp, toAffine_of_singular hP]
 
 lemma toAffine_of_equiv {P Q : Fin 3 → F} (h : P ≈ Q) : toAffine W P = toAffine W Q := by

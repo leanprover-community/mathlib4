@@ -83,8 +83,8 @@ structure StrictPseudofunctorCore extends StrictPseudofunctorPreCore B C where
     cat_disch
   map₂_associator :
       ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
-        map₂ (α_ f g h).hom = eqToHom (by simp only [map_comp]) ≫
-          (α_ (map f) (map g) (map h)).hom ≫ eqToHom (by simp only [map_comp]) := by
+        map₂ (α_ f g h).hom = eqToHom (by simp [map_comp]) ≫
+          (α_ (map f) (map g) (map h)).hom ≫ eqToHom (by simp [map_comp]) := by
     cat_disch
 
 namespace StrictPseudofunctor

@@ -244,7 +244,7 @@ variable {J} in
 lemma isClosedUnderLimitsOfShape_iff_of_equivalence (e : J ≌ J') :
     P.IsClosedUnderLimitsOfShape J ↔
       P.IsClosedUnderLimitsOfShape J' := by
-  simp only [isClosedUnderLimitsOfShape_iff, P.limitsOfShape_congr e]
+  simp [isClosedUnderLimitsOfShape_iff, P.limitsOfShape_congr e]
 
 variable {P J} in
 lemma IsClosedUnderLimitsOfShape.of_equivalence (e : J ≌ J')

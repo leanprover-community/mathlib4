@@ -110,7 +110,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
         rcases h'C with ⟨D, D_count, DC, hD⟩
         refine ⟨D ∪ {∅}, D_count.union (by simp), ?_⟩
         simp only [union_subset_iff, DC, singleton_subset_iff, true_and, and_true, hC.empty_mem]
-        simp only [union_singleton, sUnion_insert, empty_union, insert_nonempty, and_true, hD]
+        simp [union_singleton, sUnion_insert, empty_union, insert_nonempty, and_true, hD]
       obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, D = Set.range f := Set.Countable.exists_eq_range D_count Dne
       have fC n : Set.accumulate f n ∈ C := hC.accumulate_mem (fun n ↦ DC (by simp [hf])) n
       have : Tendsto (fun n ↦ μ (Set.accumulate f n)ᶜ) atTop (𝓝 0) := by

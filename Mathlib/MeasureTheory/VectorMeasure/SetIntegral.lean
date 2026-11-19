@@ -273,11 +273,11 @@ theorem setIntegral_dirac [MeasurableSpace X] [MeasurableSingletonClass X] [Comp
 
 theorem integral_singleton' [CompleteSpace G] {a : X} (hf : StronglyMeasurable f) :
     ∫ᵛ a in {a}, f a ∂[B; μ] = B (f a) (μ {a}) := by
-  simp only [restrict_singleton, integral_dirac' hf]
+  simp [restrict_singleton, integral_dirac' hf]
 
 theorem integral_singleton [MeasurableSingletonClass X] {a : X} [CompleteSpace G] :
     ∫ᵛ a in {a}, f a ∂[B; μ] = B (f a) (μ {a}) := by
-  simp only [restrict_singleton, integral_dirac]
+  simp [restrict_singleton, integral_dirac]
 
 theorem setIntegral_union_eq_left_of_ae (hs : MeasurableSet s) (ht : MeasurableSet t)
     (ht_eq : ∀ᵐ x ∂μ.variation.restrict t, f x = 0) :

@@ -297,7 +297,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
     have hfi : AEStronglyMeasurable ({ x | M ≤ ‖f x‖₊ }.indicator f) μ := by
       refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
       exact hf.aestronglyMeasurable.nnNorm.aemeasurable.coe_nnreal_real
-    simp only [eLpNorm_exponent_top hfi, hM, zero_le]
+    simp [eLpNorm_exponent_top hfi, hM, zero_le]
   obtain ⟨M, hM', hM⟩ := MemLp.integral_indicator_norm_ge_nonneg_le
     (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε toReal_nonneg)
   refine ⟨M ^ (1 / p.toReal), ?_⟩

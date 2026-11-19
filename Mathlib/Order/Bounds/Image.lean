@@ -346,7 +346,7 @@ lemma bddAbove_prod {s : Set (α × β)} :
 @[to_dual]
 lemma bddAbove_range_prod {F : ι → α × β} :
     BddAbove (range F) ↔ BddAbove (range <| Prod.fst ∘ F) ∧ BddAbove (range <| Prod.snd ∘ F) := by
-  simp only [bddAbove_prod, ← range_comp]
+  simp [bddAbove_prod, ← range_comp]
 
 @[to_dual]
 theorem isLUB_prod {s : Set (α × β)} {p : α × β} :

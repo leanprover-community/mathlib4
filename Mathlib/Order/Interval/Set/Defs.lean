@@ -53,7 +53,7 @@ def Iic (b : α) := { x | x ≤ b }
 @[implicit_reducible, to_dual self (reorder := a b)]
 def Ioo (a b : α) := { x | a < x ∧ x < b }
 
-to_dual_insert_cast Ioo := by simp only [and_comm]
+to_dual_insert_cast Ioo := by simp [and_comm]
 
 @[simp, grind =, push, to_dual none] theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := .rfl
 @[to_dual none] theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b := rfl
@@ -66,8 +66,8 @@ def Ico (a b : α) := { x | a ≤ x ∧ x < b }
 @[implicit_reducible, to_dual existing (reorder := a b)]
 def Ioc (a b : α) := { x | a < x ∧ x ≤ b }
 
-to_dual_insert_cast Ico := by simp only [and_comm]
-to_dual_insert_cast Ioc := by simp only [and_comm]
+to_dual_insert_cast Ico := by simp [and_comm]
+to_dual_insert_cast Ioc := by simp [and_comm]
 
 @[simp, grind =, push, to_dual none] theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b := .rfl
 @[to_dual none] theorem Ico_def (a b : α) : { x | a ≤ x ∧ x < b } = Ico a b := rfl
@@ -79,7 +79,7 @@ to_dual_insert_cast Ioc := by simp only [and_comm]
 @[implicit_reducible, to_dual self (reorder := a b)]
 def Icc (a b : α) := { x | a ≤ x ∧ x ≤ b }
 
-to_dual_insert_cast Icc := by simp only [and_comm]
+to_dual_insert_cast Icc := by simp [and_comm]
 
 @[simp, grind =, push, to_dual none] theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := .rfl
 @[to_dual none] theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b := rfl

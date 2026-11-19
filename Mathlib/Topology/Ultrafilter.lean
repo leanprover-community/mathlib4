@@ -55,4 +55,4 @@ theorem continuousAt_iff_ultrafilter :
 
 theorem continuous_iff_ultrafilter :
     Continuous f ↔ ∀ (x) (g : Ultrafilter X), ↑g ≤ 𝓝 x → Tendsto f g (𝓝 (f x)) := by
-  simp only [continuous_iff_continuousAt, continuousAt_iff_ultrafilter]
+  simp [continuous_iff_continuousAt, continuousAt_iff_ultrafilter]

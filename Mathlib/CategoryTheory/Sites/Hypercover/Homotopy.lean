@@ -182,7 +182,7 @@ lemma sieve₁'_cylinder (i j : Σ (i : E.I₀), F.I₁ (f.s₀ i) (g.s₀ i)) :
   · rw [sieve₁', Sieve.ofArrows, Sieve.generate_le_iff]
     rintro - - ⟨k⟩
     refine ⟨E.Y k.down, pullback.snd _ _, E.toPullback k.down, Presieve.ofArrows.mk k.down, ?_⟩
-    simp only [cylinder_Y, cylinder_f, toPullback_cylinder, pullback.condition]
+    simp [cylinder_Y, cylinder_f, toPullback_cylinder, pullback.condition]
   · rw [sieve₁', Sieve.ofArrows, ← Sieve.pullbackArrows_comm, Sieve.generate_le_iff]
     rintro Z u ⟨W, v, ⟨k⟩⟩
     simp_rw [← pullbackSymmetry_inv_comp_fst]

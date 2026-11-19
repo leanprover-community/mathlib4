@@ -128,7 +128,7 @@ theorem IsLocallyFaithful.ext [G.IsLocallyFaithful K] (ℱ : Sheaf K Type*)
 instance (priority := 900) IsLocallyFull.of_full [G.Full] : G.IsLocallyFull K where
   functorPushforward_imageSieve_mem f := by
     rw [← G.map_preimage f]
-    simp only [Functor.imageSieve_map, Sieve.functorPushforward_top, GrothendieckTopology.top_mem]
+    simp [Functor.imageSieve_map, Sieve.functorPushforward_top, GrothendieckTopology.top_mem]
 
 instance (priority := 900) IsLocallyFaithful.of_faithful [G.Faithful] : G.IsLocallyFaithful K where
   functorPushforward_equalizer_mem f₁ f₂ e := by obtain rfl := G.map_injective e; simp

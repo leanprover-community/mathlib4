@@ -153,7 +153,7 @@ noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X)
     { app := fun Y => mapBifunctorMapMap F p φ (𝟙 Y)
       naturality := fun {Y₁ Y₂} ψ => by
         dsimp
-        simp only [Functor.map_id, NatTrans.id_app, id_comp, comp_id,
+        simp [Functor.map_id, NatTrans.id_app, id_comp, comp_id,
           ← mapMap_comp, NatTrans.naturality] }
 
 end

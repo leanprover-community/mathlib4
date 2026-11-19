@@ -108,7 +108,7 @@ lemma nndist_le_pi_nndist (f g : ∀ b, X b) (b : β) : nndist (f b) (g b) ≤ n
   exact edist_le_pi_edist f g b
 
 lemma dist_le_pi_dist (f g : ∀ b, X b) (b : β) : dist (f b) (g b) ≤ dist f g := by
-  simp only [dist_nndist, NNReal.coe_le_coe, nndist_le_pi_nndist f g b]
+  simp [dist_nndist, NNReal.coe_le_coe, nndist_le_pi_nndist f g b]
 
 /-- An open ball in a product space is a product of open balls. See also `ball_pi'`
 for a version assuming `Nonempty β` instead of `0 < r`. -/
@@ -163,7 +163,7 @@ lemma Fin.nndist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
 lemma Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
     [∀ i, PseudoMetricSpace (α i)] (i : Fin (n + 1)) (x y : α i) (f g : ∀ j, α (i.succAbove j)) :
     dist (i.insertNth x f) (i.insertNth y g) = max (dist x y) (dist f g) := by
-  simp only [dist_nndist, Fin.nndist_insertNth_insertNth, NNReal.coe_max]
+  simp [dist_nndist, Fin.nndist_insertNth_insertNth, NNReal.coe_max]
 
 /-- The (sup metric) nonnegative distance between `Pi.single i a` and `Pi.single j b` for
 `i ≠ j` is `max (nndist a 0) (nndist b 0)`. -/
@@ -181,4 +181,4 @@ lemma nndist_single_single {Y : Type*} [PseudoMetricSpace Y] [Zero Y] [Decidable
 lemma dist_single_single {Y : Type*} [PseudoMetricSpace Y] [Zero Y] [DecidableEq β]
     (i j : β) (a b : Y) (h : i ≠ j) :
     dist (Pi.single i a : β → Y) (Pi.single j b) = max (dist a 0) (dist b 0) := by
-  simp only [dist_nndist, nndist_single_single i j a b h, NNReal.coe_max]
+  simp [dist_nndist, nndist_single_single i j a b h, NNReal.coe_max]

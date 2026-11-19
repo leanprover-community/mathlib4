@@ -100,7 +100,7 @@ def adj : free R ⊣ forget (ModuleCat.{u} R) :=
 @[simp]
 lemma adj_homEquiv (X : Type u) (M : ModuleCat.{u} R) :
     (adj R).homEquiv X M = freeHomEquiv := by
-  simp only [adj, Adjunction.mkOfHomEquiv_homEquiv]
+  simp [adj, Adjunction.mkOfHomEquiv_homEquiv]
 
 instance : (forget (ModuleCat.{u} R)).IsRightAdjoint :=
   (adj R).isRightAdjoint
@@ -320,22 +320,22 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
     | add f₁ f₂ w₁ w₂ =>
       rw [add_comp]
       rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
-      · simp only [w₁, w₂, add_comp]
+      · simp [w₁, w₂, add_comp]
       · intros; rw [zero_smul]
-      · intros; simp only [add_smul]
+      · intros; simp [add_smul]
       · intros; rw [zero_smul]
-      · intros; simp only [add_smul]
+      · intros; simp [add_smul]
     | single f' r =>
       induction g using Finsupp.induction_linear with
       | zero => simp
       | add f₁ f₂ w₁ w₂ =>
         rw [comp_add]
         rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
-        · simp only [w₁, w₂, comp_add]
+        · simp [w₁, w₂, comp_add]
         · intros; rw [zero_smul]
-        · intros; simp only [add_smul]
+        · intros; simp [add_smul]
         · intros; rw [zero_smul]
-        · intros; simp only [add_smul]
+        · intros; simp [add_smul]
       | single g' s =>
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]

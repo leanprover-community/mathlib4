@@ -64,7 +64,7 @@ noncomputable def arrowHomEquiv :
           have := Arrow.w β =≫ sq₁₃.fst
           dsimp at this
           simp only [Category.assoc, sq₁₃.π_fst] at this
-          simp only [← adj₂.homEquiv_symm_naturality_one,
+          simp [← adj₂.homEquiv_symm_naturality_one,
             ← adj₂.homEquiv_symm_naturality_two,
             Arrow.mk_left, Arrow.mk_right, this]))
       (adj₂.homEquiv.symm (β.right ≫ sq₁₃.snd)) (by
@@ -119,17 +119,17 @@ noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) 
       fac_left := by
         have := l.fac_left
         dsimp at this ⊢
-        simp only [← adj₂.homEquiv_naturality_two, ← this,
+        simp [← adj₂.homEquiv_naturality_two, ← this,
           sq₁₂.inl_ι_assoc]
       fac_right := by
         apply sq₁₃.isPullback.hom_ext
         · have := l.fac_left
           dsimp at this ⊢
-          simp only [Category.assoc, sq₁₃.π_fst, ← adj₂.homEquiv_naturality_one,
+          simp [Category.assoc, sq₁₃.π_fst, ← adj₂.homEquiv_naturality_one,
             arrowHomEquiv_apply_right_fst, Arrow.mk_left, ← this, sq₁₂.inr_ι_assoc]
         · have := l.fac_right
           dsimp at this ⊢
-          simp only [Category.assoc, sq₁₃.π_snd, ← this, adj₂.homEquiv_naturality_three,
+          simp [Category.assoc, sq₁₃.π_snd, ← this, adj₂.homEquiv_naturality_three,
             arrowHomEquiv_apply_right_snd, Arrow.mk_right] }
   invFun l :=
     { l := adj₂.homEquiv.symm l.l
@@ -137,12 +137,12 @@ noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) 
         apply sq₁₂.isPushout.hom_ext
         · have := l.fac_left
           dsimp at this ⊢
-          simp only [sq₁₂.inl_ι_assoc, ← adj₂.homEquiv_symm_naturality_two,
+          simp [sq₁₂.inl_ι_assoc, ← adj₂.homEquiv_symm_naturality_two,
             this, Equiv.symm_apply_apply]
         · have := l.fac_right =≫ sq₁₃.fst
           dsimp at this ⊢
           simp only [Category.assoc, sq₁₃.π_fst] at this
-          simp only [sq₁₂.inr_ι_assoc, ← adj₂.homEquiv_symm_naturality_one,
+          simp [sq₁₂.inr_ι_assoc, ← adj₂.homEquiv_symm_naturality_one,
             this, Equiv.symm_apply_apply, arrowHomEquiv_apply_right_fst, Arrow.mk_left]
       fac_right := by
         have := l.fac_right =≫ sq₁₃.snd

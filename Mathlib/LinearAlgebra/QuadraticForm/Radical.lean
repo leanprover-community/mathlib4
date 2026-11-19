@@ -151,7 +151,7 @@ lemma nondegenerate_iff_radical_eq_bot :
   refine ⟨Nondegenerate.radical_eq_bot, fun h ↦ ⟨h, ?_⟩⟩
   rw [← QuadraticMap.radical_eq_ker_polarBilin, h]
   nontriviality R
-  simp only [rank_subsingleton', zero_le]
+  simp [rank_subsingleton', zero_le]
 
 /-- If `2` is invertible in the coefficient ring,
 a quadratic map is nondegenerate

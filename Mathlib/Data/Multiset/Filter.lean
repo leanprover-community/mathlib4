@@ -129,7 +129,7 @@ theorem filter_cons {a : α} (s : Multiset α) :
 
 theorem filter_singleton {a : α} (p : α → Prop) [DecidablePred p] :
     filter p {a} = if p a then {a} else ∅ := by
-  simp only [singleton, filter_cons, filter_zero, Multiset.add_zero, empty_eq_zero]
+  simp [singleton, filter_cons, filter_zero, Multiset.add_zero, empty_eq_zero]
 
 variable (p)
 
@@ -147,9 +147,9 @@ theorem filter_add_filter (q) [DecidablePred q] (s : Multiset α) :
 
 theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) s = s := by
   rw [filter_add_filter, filter_eq_self.2, filter_eq_nil.2]
-  · simp only [Multiset.add_zero]
+  · simp [Multiset.add_zero]
   · simp [-Bool.not_eq_true, -not_and]
-  · simp only [implies_true, Decidable.em]
+  · simp [implies_true, Decidable.em]
 
 theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
   Quot.inductionOn s fun l => by simp [List.filter_map]; rfl
@@ -331,7 +331,7 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
     exact count_filter_of_pos rfl
   rw [eq_replicate_card.2 fun b hb => (hf H (mem_filter.1 hb).left _).symm]
   · simp
-  · simp only [mem_filter, and_imp, @eq_comm _ (f x), imp_self, implies_true]
+  · simp [mem_filter, and_imp, @eq_comm _ (f x), imp_self, implies_true]
 
 /-- `Multiset.map f` preserves `count` if `f` is injective -/
 theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (hf : Function.Injective f)
@@ -413,7 +413,7 @@ for more discussion.
 @[simp]
 theorem map_count_true_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p]
     [DecidableEq Prop] : (s.map p).count True = card (s.filter p) := by
-  simp only [count_eq_card_filter_eq, eq_iff_iff, true_iff, filter_map, comp_apply, card_map]
+  simp [count_eq_card_filter_eq, eq_iff_iff, true_iff, filter_map, comp_apply, card_map]
 
 @[deprecated (since := "2026-10-27")]
 alias map_count_True_eq_filter_card := map_count_true_eq_filter_card

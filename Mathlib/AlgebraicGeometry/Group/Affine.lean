@@ -365,13 +365,13 @@ lemma pullbackSpecIso'_symmetry [Algebra R T] :
       Algebra.TensorProduct.includeLeftRingHom =
       RingHomClass.toRingHom Algebra.TensorProduct.includeRight := rfl
     rw [Category.assoc, pullbackSymmetry_hom_comp_fst]
-    simp only [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_snd, Category.assoc,
+    simp [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_snd, Category.assoc,
       pullbackSpecIso_inv_fst, ← Spec.map_comp, ← CommRingCat.ofHom_comp, this]
   have : (RingHomClass.toRingHom (Algebra.TensorProduct.comm R S T)).comp
       (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) =
       Algebra.TensorProduct.includeLeftRingHom := rfl
   rw [Category.assoc, pullbackSymmetry_hom_comp_snd]
-  simp only [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_fst, Category.assoc,
+  simp [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_fst, Category.assoc,
     pullbackSpecIso_inv_snd, ← Spec.map_comp, ← CommRingCat.ofHom_comp, this]
 
 instance [Algebra R T] :

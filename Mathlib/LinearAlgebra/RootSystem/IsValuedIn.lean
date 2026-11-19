@@ -65,7 +65,7 @@ variable (S : Type*) [CommRing S] [Algebra S R]
 variable {S} in
 lemma isValuedIn_iff_mem_range :
     P.IsValuedIn S ↔ ∀ i j, P.pairing i j ∈ range (algebraMap S R) := by
-  simp only [isValuedIn_iff, mem_range]
+  simp [isValuedIn_iff, mem_range]
 
 instance [P.IsValuedIn S] : P.flip.IsValuedIn S := by
   rw [isValuedIn_iff, forall_comm]

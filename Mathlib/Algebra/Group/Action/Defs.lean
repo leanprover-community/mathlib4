@@ -183,13 +183,13 @@ add_decl_doc VAddCommClass.symm
 lemma Function.Injective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
     [SMulCommClass M N β] {f : α → β} (hf : Injective f) (h₁ : ∀ (c : M) x, f (c • x) = c • f x)
     (h₂ : ∀ (c : N) x, f (c • x) = c • f x) : SMulCommClass M N α where
-  smul_comm c₁ c₂ x := hf <| by simp only [h₁, h₂, smul_comm c₁ c₂ (f x)]
+  smul_comm c₁ c₂ x := hf <| by simp [h₁, h₂, smul_comm c₁ c₂ (f x)]
 
 @[to_additive]
 lemma Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
     [SMulCommClass M N α] {f : α → β} (hf : Surjective f) (h₁ : ∀ (c : M) x, f (c • x) = c • f x)
     (h₂ : ∀ (c : N) x, f (c • x) = c • f x) : SMulCommClass M N β where
-  smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp only [← h₁, ← h₂, smul_comm c₁ c₂ x]
+  smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp [← h₁, ← h₂, smul_comm c₁ c₂ x]
 
 @[to_additive]
 instance smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] : SMulCommClass M M α where
@@ -442,7 +442,7 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
-  mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
+  mul_smul c₁ c₂ x := hf <| by simp [smul, mul_smul]
 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/

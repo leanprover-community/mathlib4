@@ -123,7 +123,7 @@ lemma isUnit_jacobian_of_cotangentRestrict_bijective
   have heq : (fun j i ↦ (aeval P.val) (pderiv (P.map i) (P.relation j))) =
       Finsupp.linearEquivFunOnFinite S S _ ∘ P.cotangentRestrict P.map_inj ∘ ⇑b := by
     ext i j
-    simp only [Function.comp_apply, hb, Finsupp.linearEquivFunOnFinite_apply, cotangentRestrict_mk]
+    simp [Function.comp_apply, hb, Finsupp.linearEquivFunOnFinite_apply, cotangentRestrict_mk]
   apply P.isUnit_jacobian_of_linearIndependent_of_span_eq_top
   · rw [heq]
     exact (b.linearIndependent.map' _ (LinearMap.ker_eq_bot_of_injective h.injective)).map' _

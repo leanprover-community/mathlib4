@@ -275,7 +275,7 @@ theorem tendstoLocallyUniformlyOn_iff_forall_isCompact [LocallyCompactSpace α] 
 
 lemma tendstoLocallyUniformly_iff_forall_isCompact [LocallyCompactSpace α] :
     TendstoLocallyUniformly F f p ↔ ∀ K : Set α, IsCompact K → TendstoUniformlyOn F f p K := by
-  simp only [← tendstoLocallyUniformlyOn_univ,
+  simp [← tendstoLocallyUniformlyOn_univ,
     tendstoLocallyUniformlyOn_iff_forall_isCompact isOpen_univ, Set.subset_univ, forall_true_left]
 
 theorem tendstoLocallyUniformlyOn_iff_filter :

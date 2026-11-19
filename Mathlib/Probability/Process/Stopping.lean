@@ -75,7 +75,7 @@ def IsStoppingTime [Preorder ι] (f : Filtration ι m) (τ : Ω → WithTop ι) 
   ∀ i : ι, MeasurableSet[f i] <| {ω | τ ω ≤ i}
 
 theorem isStoppingTime_const [Preorder ι] (f : Filtration ι m) (i : ι) :
-    IsStoppingTime f fun _ => i := fun j => by simp only [MeasurableSet.const]
+    IsStoppingTime f fun _ => i := fun j => by simp [MeasurableSet.const]
 
 /-- If a filtration `f` is complete with respect to `μ`, then a random time that is `μ`-almost
 everywhere equal to a stopping time is a stopping time. -/
@@ -131,7 +131,7 @@ protected theorem measurableSet_eq_of_countable_range (hτ : IsStoppingTime f τ
     simp only [Set.mem_ofPred_eq, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
       Set.mem_sdiff, Set.mem_iUnion, exists_prop, not_exists, not_and]
     constructor <;> intro h
-    · simp only [h, lt_iff_le_not_ge, le_refl, and_imp, imp_self, imp_true_iff, and_self_iff]
+    · simp [h, lt_iff_le_not_ge, le_refl, and_imp, imp_self, imp_true_iff, and_self_iff]
     · exact h.1.eq_or_lt.resolve_right fun h_lt => h.2 a h_lt le_rfl
   rw [this]
   refine (hτ.measurableSet_le i).diff ?_
@@ -161,7 +161,7 @@ protected theorem measurableSet_ge_of_countable_range {ι} [LinearOrder ι] {τ 
     {f : Filtration ι m} (hτ : IsStoppingTime f τ) (h_countable : (Set.range τ).Countable) (i : ι) :
     MeasurableSet[f i] {ω | i ≤ τ ω} := by
   have : {ω | i ≤ τ ω} = {ω | τ ω < i}ᶜ := by
-    ext1 ω; simp only [Set.mem_ofPred_eq, Set.mem_compl_iff, not_lt]
+    ext1 ω; simp [Set.mem_ofPred_eq, Set.mem_compl_iff, not_lt]
   rw [this]
   exact (hτ.measurableSet_lt_of_countable_range h_countable i).compl
 
@@ -181,7 +181,7 @@ variable [LinearOrder ι] {f : Filtration ι m} {τ : Ω → WithTop ι}
 theorem IsStoppingTime.measurableSet_gt (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | i < τ ω} := by
   have : {ω | i < τ ω} = {ω | τ ω ≤ i}ᶜ := by
-    ext1 ω; simp only [Set.mem_ofPred_eq, Set.mem_compl_iff, not_le]
+    ext1 ω; simp [Set.mem_ofPred_eq, Set.mem_compl_iff, not_le]
   rw [this]
   exact (hτ.measurableSet_le i).compl
 
@@ -238,14 +238,14 @@ theorem IsStoppingTime.measurableSet_lt (hτ : IsStoppingTime f τ) (i : ι) :
 theorem IsStoppingTime.measurableSet_ge (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | i ≤ τ ω} := by
   have : {ω | i ≤ τ ω} = {ω | τ ω < i}ᶜ := by
-    ext1 ω; simp only [Set.mem_ofPred_eq, Set.mem_compl_iff, not_lt]
+    ext1 ω; simp [Set.mem_ofPred_eq, Set.mem_compl_iff, not_lt]
   rw [this]
   exact (hτ.measurableSet_lt i).compl
 
 theorem IsStoppingTime.measurableSet_eq (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | τ ω = i} := by
   have : {ω | τ ω = i} = {ω | τ ω ≤ i} ∩ {ω | τ ω ≥ i} := by
-    ext1 ω; simp only [Set.mem_ofPred_eq, Set.mem_inter_iff, le_antisymm_iff]
+    ext1 ω; simp [Set.mem_ofPred_eq, Set.mem_inter_iff, le_antisymm_iff]
   rw [this]
   exact (hτ.measurableSet_le i).inter (hτ.measurableSet_ge i)
 
@@ -454,7 +454,7 @@ protected def measurableSpace (hτ : IsStoppingTime f τ) : MeasurableSpace Ω w
         exact (hs.2 i).compl
       · exact hτ i
     · rw [Set.union_inter_distrib_right]
-      simp only [Set.compl_inter_self, Set.union_empty]
+      simp [Set.compl_inter_self, Set.union_empty]
   measurableSet_iUnion s hs := by
     refine ⟨MeasurableSet.iUnion fun i ↦ (hs i).1, fun i ↦ ?_⟩
     replace hs := fun i ↦ (hs i).2
@@ -497,7 +497,7 @@ theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
       simp only [hij, Set.ofPred_true, Set.inter_univ]
       exact f.mono hij _ h
     · norm_cast
-      simp only [hij, Set.ofPred_false, Set.inter_empty, @MeasurableSet.empty _ (f.seq j)]
+      simp [hij, Set.ofPred_false, Set.inter_empty, @MeasurableSet.empty _ (f.seq j)]
 
 theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i : ι) :
     MeasurableSet[hτ.measurableSpace] (s ∩ {ω | τ ω = i}) ↔
@@ -594,7 +594,7 @@ protected theorem measurableSet_lt' [TopologicalSpace ι] [OrderTopology ι]
     MeasurableSet[hτ.measurableSpace] {ω | τ ω < i} := by
   have : {ω | τ ω < i} = {ω | τ ω ≤ i} \ {ω | τ ω = i} := by
     ext1 ω
-    simp only [lt_iff_le_and_ne, Set.mem_ofPred_eq, Set.mem_sdiff]
+    simp [lt_iff_le_and_ne, Set.mem_ofPred_eq, Set.mem_sdiff]
   rw [this]
   exact (hτ.measurableSet_le' i).diff (hτ.measurableSet_eq' i)
 
@@ -633,7 +633,7 @@ protected theorem measurableSet_lt_of_countable_range' (hτ : IsStoppingTime f �
     MeasurableSet[hτ.measurableSpace] {ω | τ ω < i} := by
   have : {ω | τ ω < i} = {ω | τ ω ≤ i} \ {ω | τ ω = i} := by
     ext1 ω
-    simp only [lt_iff_le_and_ne, Set.mem_ofPred_eq, Set.mem_sdiff]
+    simp [lt_iff_le_and_ne, Set.mem_ofPred_eq, Set.mem_sdiff]
   rw [this]
   exact (hτ.measurableSet_le' i).diff (hτ.measurableSet_eq_of_countable_range' h_countable i)
 
@@ -773,7 +773,7 @@ theorem measurableSet_eq_stopping_time_min [TopologicalSpace ι]
     (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) :
     MeasurableSet[(hτ.min hπ).measurableSpace] {ω | τ ω = π ω} := by
   have : {ω | τ ω = π ω} = {ω | τ ω ≤ π ω} ∩ {ω | π ω ≤ τ ω} := by
-    ext; simp only [Set.mem_ofPred_eq, le_antisymm_iff, Set.mem_inter_iff]
+    ext; simp [Set.mem_ofPred_eq, le_antisymm_iff, Set.mem_inter_iff]
   rw [this]
   refine MeasurableSet.inter (measurableSet_stopping_time_le_min hτ hπ) ?_
   convert! (measurableSet_stopping_time_le_min hπ hτ) using 3
@@ -1015,7 +1015,7 @@ theorem stronglyMeasurable_stoppedValue_of_le (h : IsStronglyProgressive f u)
   have hτ_le' ω : (τ ω).untopA ≤ n := untopA_le (hτ_le ω)
   have : stoppedValue u τ =
       (fun p : Set.Iic n × Ω => u (↑p.fst) p.snd) ∘ fun ω => (⟨(τ ω).untopA, hτ_le' ω⟩, ω) := by
-    ext1 ω; simp only [stoppedValue, Function.comp_apply]
+    ext1 ω; simp [stoppedValue, Function.comp_apply]
   rw [this]
   refine StronglyMeasurable.comp_measurable (h n) ?_
   refine (Measurable.subtype_mk ?_).prodMk measurable_id
@@ -1214,7 +1214,7 @@ theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : �
   refine MemLp.add ?_ ?_
   · exact (hu n).indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)).nullMeasurableSet
   · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
-      convert this using 1; ext1 ω; simp only [Finset.sum_apply]
+      convert this using 1; ext1 ω; simp [Finset.sum_apply]
     refine memLp_finsetSum _ fun i _ ↦ (hu i).indicator ?_
     exact (ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)).nullMeasurableSet
 

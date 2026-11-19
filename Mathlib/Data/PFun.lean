@@ -589,12 +589,12 @@ theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
 
 @[simp]
 theorem comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp g).comp h = f.comp (g.comp h) :=
-  ext fun _ _ => by simp only [comp_apply, Part.bind_comp]
+  ext fun _ _ => by simp [comp_apply, Part.bind_comp]
 
 set_option backward.isDefEq.respectTransparency false in
 -- This can't be `simp`
 theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α →. γ) = (g : β →. γ).comp f :=
-  ext fun _ _ => by simp only [coe_val, comp_apply, Function.comp, Part.bind_some]
+  ext fun _ _ => by simp [coe_val, comp_apply, Function.comp, Part.bind_some]
 
 /-- Product of partial functions. -/
 def prodLift (f : α →. β) (g : α →. γ) : α →. β × γ := fun x =>
@@ -617,8 +617,8 @@ theorem prodLift_apply (f : α →. β) (g : α →. γ) (x : α) :
 theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
-  · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
+  · simp [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
+  · simp [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 /-- Product of partial functions. -/
 def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := fun x =>
@@ -641,8 +641,8 @@ theorem prodMap_apply (f : α →. γ) (g : β →. δ) (x : α × β) :
 theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × δ} :
     y ∈ f.prodMap g x ↔ y.1 ∈ f x.1 ∧ y.2 ∈ g x.2 := by
   trans ∃ hp hq, (f x.1).get hp = y.1 ∧ (g x.2).get hq = y.2
-  · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
+  · simp [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff]
+  · simp [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

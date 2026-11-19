@@ -143,7 +143,7 @@ a morphism `X ⟶ Y`. -/
 lemma map_val {Y : C} {η : yoneda.obj Y ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
     (p : OverArrows η s) : yoneda.map p.val ≫ η = s := by
   rw [← yonedaEquiv.injective.eq_iff, yonedaEquiv_comp, yonedaEquiv_yoneda_map]
-  simp only [unop_op, p.app_val]
+  simp [unop_op, p.app_val]
 
 /-- Functoriality of `OverArrows η s` in `η`. -/
 def map₁ {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
@@ -315,7 +315,7 @@ lemma map₁_fst {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶
 lemma map₁_yonedaEquivFst {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G)
     (p : YonedaCollection F X) :
     (YonedaCollection.map₁ η p).yonedaEquivFst = p.yonedaEquivFst := by
-  simp only [YonedaCollection.yonedaEquivFst_eq, map₁_fst]
+  simp [YonedaCollection.yonedaEquivFst_eq, map₁_fst]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -337,7 +337,7 @@ lemma map₂_fst {Y : C} (f : X ⟶ Y) (p : YonedaCollection F Y) :
 @[simp]
 lemma map₂_yonedaEquivFst {Y : C} (f : X ⟶ Y) (p : YonedaCollection F Y) :
     (YonedaCollection.map₂ F f p).yonedaEquivFst = A.map f.op p.yonedaEquivFst := by
-  simp only [YonedaCollection.yonedaEquivFst_eq, map₂_fst, yonedaEquiv_naturality]
+  simp [YonedaCollection.yonedaEquivFst_eq, map₂_fst, yonedaEquiv_naturality]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

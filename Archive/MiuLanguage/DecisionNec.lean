@@ -60,7 +60,7 @@ theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
   · rw [h2]; exact h1
   · rcases h1 with h1 | h1
     · right; simp [h2, mul_mod, h1]
-    · left; simp only [h2, mul_mod, h1, mod_mod]
+    · left; simp [h2, mul_mod, h1, mod_mod]
 
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
 is 1 or 2 modulo 3.
@@ -84,7 +84,7 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
   | r4 _ h_ih =>
     apply mod3_eq_1_or_mod3_eq_2 h_ih; left
     rw [count_append, count_append, count_append]
-    simp only [ne_eq, not_false_eq_true, count_cons_of_ne, count_nil, add_zero, reduceCtorEq]
+    simp [ne_eq, not_false_eq_true, count_cons_of_ne, count_nil, add_zero, reduceCtorEq]
 
 /-- Using the above theorem, we solve the MU puzzle, showing that `"MU"` is not derivable.
 Once we have proved that `Derivable` is an instance of `DecidablePred`, this will follow

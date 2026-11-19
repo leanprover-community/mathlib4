@@ -247,7 +247,7 @@ theorem generate_top : generate (⊤ : Presieve X) = ⊤ :=
 
 @[simp]
 lemma generate_bot : generate (⊥ : Presieve X) = ⊥ := by
-  simp only [eq_bot_iff, generate_le_iff, bot_le]
+  simp [eq_bot_iff, generate_le_iff, bot_le]
 
 @[simp]
 lemma generate_eq_bot_iff (R : Presieve X) : generate R = ⊥ ↔ R = ⊥ := by

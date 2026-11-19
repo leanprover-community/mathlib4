@@ -180,7 +180,7 @@ private lemma exists_eq_flip_toLinearMap (f : E' →SL[σ₁₃] F' →SL[σ₂�
   let : SeminormedAddCommGroup G' := IsNormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
   let : NormedSpace 𝕜₃ G' := IsNormableSpace.toNormedSpace 𝕜₃ G'
   exact ⟨LinearMap.mkContinuous₂ f.toLinearMap₁₂.flip
-    ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm], fun a b ↦ rfl⟩
+    ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp [mul_right_comm], fun a b ↦ rfl⟩
 
 /-- Flip the order of arguments of a continuous bilinear map.
 For a version bundled as `LinearIsometryEquiv`, see `ContinuousLinearMap.flipL`. -/
@@ -311,7 +311,7 @@ variable (σ₁₂ σ₂₃ E F G E' F' G')
 Do not use: use instead the version `compSL` which outputs a continuous semibilinear map. -/
 def compSLₗ : (F' →SL[σ₂₃] G') →ₗ[𝕜₃] (E' →SL[σ₁₂] F') →ₛₗ[σ₂₃] E' →SL[σ₁₃] G' :=
   LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add
-    fun c f g => by ext; simp only [map_smulₛₗ, comp_apply, smul_apply]
+    fun c f g => by ext; simp [map_smulₛₗ, comp_apply, smul_apply]
 
 private lemma exists_eq_compSLₗ :
     ∃ g : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G',

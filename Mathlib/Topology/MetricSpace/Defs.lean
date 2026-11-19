@@ -116,16 +116,16 @@ theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = 
 
 /-- Deduce the equality of points from the vanishing of the nonnegative distance -/
 theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
+  simp [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
 
 /-- Characterize the equality of points as the vanishing of the nonnegative distance -/
 @[simp]
 theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, dist_eq_zero]
+  simp [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, dist_eq_zero]
 
 @[simp]
 theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, zero_eq_dist]
+  simp [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, zero_eq_dist]
 
 namespace Metric
 

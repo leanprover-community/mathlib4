@@ -177,8 +177,8 @@ theorem seminormFromConst_apply_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f 
     have hseq : seminormFromConst_seq c f x = fun _n ↦ f x := by
       ext n
       by_cases hn : n = 0
-      · simp only [seminormFromConst_seq, hn, pow_zero, mul_one, div_one]
-      · simp only [seminormFromConst_seq, hx (c ^ n), hpm _ (Nat.one_le_iff_ne_zero.mpr hn),
+      · simp [seminormFromConst_seq, hn, pow_zero, mul_one, div_one]
+      · simp [seminormFromConst_seq, hx (c ^ n), hpm _ (Nat.one_le_iff_ne_zero.mpr hn),
           mul_div_assoc, div_self (pow_ne_zero n hc), mul_one]
     rw [hseq]
     exact tendsto_const_nhds
@@ -195,7 +195,7 @@ theorem seminormFromConst_isMul_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f 
     have hseq : seminormFromConst_seq c f (x * y) =
         fun n ↦ f x * seminormFromConst_seq c f y n := by
       ext n
-      simp only [seminormFromConst_seq, mul_assoc, hx, mul_div_assoc]
+      simp [seminormFromConst_seq, mul_assoc, hx, mul_div_assoc]
     simpa [hseq] using (tendsto_seminormFromConst c f y).const_mul _
   tendsto_nhds_unique (tendsto_seminormFromConst c f (x * y)) hlim
 

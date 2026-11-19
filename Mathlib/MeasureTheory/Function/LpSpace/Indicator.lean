@@ -185,7 +185,7 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt 
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
-  simp only [Lp.dist_edist, edist_indicatorConstLp_eq_eNorm, eNorm, ENNReal.coe_toReal,
+  simp [Lp.dist_edist, edist_indicatorConstLp_eq_eNorm, eNorm, ENNReal.coe_toReal,
     Lp.coe_nnNorm]
 
 /-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,
@@ -213,7 +213,7 @@ theorem continuous_indicatorConstLp_set [Fact (1 ≤ p)] {X : Type*} [Topologica
 @[simp]
 theorem indicatorConstLp_empty :
     indicatorConstLp p MeasurableSet.empty (by simp : μ ∅ ≠ ∞) c = 0 := by
-  simp only [indicatorConstLp, Set.indicator_empty', MemLp.toLp_zero]
+  simp [indicatorConstLp, Set.indicator_empty', MemLp.toLp_zero]
 
 theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
     (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0) :
@@ -265,7 +265,7 @@ lemma MemLp.toLp_const : MemLp.toLp _ (memLp_const c) = Lp.const p μ c := rfl
 lemma indicatorConstLp_univ :
     indicatorConstLp p .univ (measure_ne_top μ _) c = Lp.const p μ c := by
   rw [← MemLp.toLp_const, indicatorConstLp]
-  simp only [Set.indicator_univ]
+  simp [Set.indicator_univ]
 
 theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by

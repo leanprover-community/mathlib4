@@ -430,7 +430,7 @@ lemma cfc_rpow [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ} {f : ℝ 
   rfl
 
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
-  simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
+  simp [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
 
 @[simp]
 lemma one_rpow {x : ℝ} : (1 : A) ^ x = (1 : A) := by simp [rpow_def]
@@ -511,7 +511,7 @@ lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarR
 lemma inverse_eq_rpow_neg_one {a : A} (ha : IsStrictlyPositive a := by cfc_tac) :
     Ring.inverse a = a ^ (-1 : ℝ) := by
   obtain ⟨ax, hax⟩ := ha.isUnit
-  simp only [← hax, Ring.inverse_invertible, invOf_units, CFC.rpow_neg_one_eq_inv ax]
+  simp [← hax, Ring.inverse_invertible, invOf_units, CFC.rpow_neg_one_eq_inv ax]
 
 lemma rpow_neg [IsSemitopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
     (ha' : (0 : A) ≤ a := by cfc_tac) : (a : A) ^ (-x) = (↑a⁻¹ : A) ^ x := by

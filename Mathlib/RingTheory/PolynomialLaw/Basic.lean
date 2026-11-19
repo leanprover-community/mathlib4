@@ -150,32 +150,32 @@ theorem smul_def_apply (S : Type u) [CommSemiring S] [Algebra R S] (m : S ⊗[R]
     (r • f).toFun' S m = r • f.toFun' S m := rfl
 
 theorem add_smul : (a + b) • f = a • f + b • f := by
-  ext; simp only [add_def, smul_def, _root_.add_smul]
+  ext; simp [add_def, smul_def, _root_.add_smul]
 
 theorem zero_smul : (0 : R) • f = 0 := by
-  ext S; simp only [smul_def, _root_.zero_smul, zero_def, Pi.zero_apply]
+  ext S; simp [smul_def, _root_.zero_smul, zero_def, Pi.zero_apply]
 
 theorem one_smul : (1 : R) • f = f := by
-  ext S; simp only [smul_def, Pi.smul_apply, _root_.one_smul]
+  ext S; simp [smul_def, Pi.smul_apply, _root_.one_smul]
 
 instance : MulAction R (M →ₚₗ[R] N) where
   one_smul := one_smul
-  mul_smul a b f := by ext; simp only [smul_def, mul_smul]
+  mul_smul a b f := by ext; simp [smul_def, mul_smul]
 
 instance : AddCommMonoid (M →ₚₗ[R] N) where
-  add_assoc f g h := by ext; simp only [add_def, add_assoc]
-  zero_add f := by ext; simp only [add_def, zero_add, zero_def]
-  add_zero f := by ext; simp only [add_def, add_zero, zero_def]
+  add_assoc f g h := by ext; simp [add_def, add_assoc]
+  zero_add f := by ext; simp [add_def, zero_add, zero_def]
+  add_zero f := by ext; simp [add_def, add_zero, zero_def]
   nsmul n f := (n : R) • f
-  nsmul_zero f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Nat.cast_zero, zero_smul f]
+  nsmul_zero f := by simp_rw [HSMul.hSMul, SMul.smul]; simp [Nat.cast_zero, zero_smul f]
   nsmul_succ n f := by
     simp_rw [HSMul.hSMul, SMul.smul]
-    simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
-  add_comm f g := by ext; simp only [add_def, add_comm]
+    simp [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
+  add_comm f g := by ext; simp [add_def, add_comm]
 
 instance : Module R (M →ₚₗ[R] N) where
   smul_zero a := rfl
-  smul_add a f g := by ext; simp only [smul_def, add_def, smul_add]
+  smul_add a f g := by ext; simp [smul_def, add_def, smul_add]
   add_smul := add_smul
   zero_smul := zero_smul
 
@@ -199,10 +199,10 @@ theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
 
 instance : AddCommGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
-  zsmul_zero' f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Int.cast_zero, zero_smul]
+  zsmul_zero' f := by simp_rw [HSMul.hSMul, SMul.smul]; simp [Int.cast_zero, zero_smul]
   zsmul_succ' n f := by
     simp_rw [HSMul.hSMul, SMul.smul]
-    simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast, Int.cast_one, add_smul, one_smul]
+    simp [Nat.cast_succ, Int.cast_add, Int.cast_natCast, Int.cast_one, add_smul, one_smul]
   zsmul_neg' n f := by
     simp_rw [HSMul.hSMul, SMul.smul]
     ext S _ _ m
@@ -217,8 +217,8 @@ instance : AddCommGroup (M →ₚₗ[R] N) where
     simp only [add_def_apply, neg_def, Pi.smul_apply, zero_def, Pi.zero_apply]
     nth_rewrite 2 [← _root_.one_smul (M := R) (b := f.toFun' S m)]
     rw [← _root_.add_smul]
-    simp only [neg_add_cancel, _root_.zero_smul]
-  add_comm f g := by ext; simp only [add_def, add_comm]
+    simp [neg_add_cancel, _root_.zero_smul]
+  add_comm f g := by ext; simp [add_def, add_comm]
 
 end CommRing
 
@@ -242,7 +242,7 @@ theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : 
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
   convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
-  · simp only [includeRight_lid]
+  · simp [includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
 /-- The map ground assigning a function `M → N` to a polynomial map `f : M →ₚₗ[R] N` as a
@@ -272,7 +272,7 @@ variable (f : M →ₚₗ[R] N) (g : N →ₚₗ[R] P) (h : P →ₚₗ[R] Q)
 /-- Composition of polynomial maps. -/
 def comp (g : N →ₚₗ[R] P) (f : M →ₚₗ[R] N) : M →ₚₗ[R] P where
   toFun' S _ _ := (g.toFun' S).comp (f.toFun' S)
-  isCompat' φ := by ext; simp only [Function.comp_apply, isCompat_apply']
+  isCompat' φ := by ext; simp [Function.comp_apply, isCompat_apply']
 
 theorem comp_toFun' (S : Type u) [CommSemiring S] [Algebra R S] :
     (g.comp f).toFun' S = (g.toFun' S).comp (f.toFun' S) := rfl
@@ -317,7 +317,7 @@ theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   rw [← Algebra.adjoin_range_eq_range_aeval]
   congr
   rw [← Function.comp_def, Set.range_comp]
-  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOfPred_mem]
+  simp [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 variable (S)
 
@@ -337,7 +337,7 @@ variable {S}
 
 theorem exists_range_φ_eq_of_fg {B : Subalgebra R S} (hB : Subalgebra.FG B) :
     ∃ s : Finset S, (φ R s).range = B :=
-  ⟨hB.choose, by simp only [range_φ, hB.choose_spec]⟩
+  ⟨hB.choose, by simp [range_φ, hB.choose_spec]⟩
 
 section diagrams
 
@@ -401,7 +401,7 @@ theorem factorsThrough_toFunLifted_π :
   have huu' : rTensor M (Subalgebra.val _).toLinearMap u =
     rTensor M (Subalgebra.val _).toLinearMap u' := by
     simp only [π] at h
-    simp only [hu, hu', ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap,
+    simp [hu, hu', ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap,
       val_comp_rangeRestrict, h]
   obtain ⟨B, hAB, hA'B, ⟨t, hB⟩, h⟩ :=
     TensorProduct.Algebra.eq_of_fg_of_subtype_eq' (R := R) uFG u'FG huu'
@@ -504,26 +504,26 @@ theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ
     simp only [φ, AlgHom.comp_apply, aeval_rename, comp_aeval]
     congr
     ext n
-    simp only [Function.comp_apply, Equiv.symm_apply_apply, j]
+    simp [Function.comp_apply, Equiv.symm_apply_apply, j]
   let p' := rTensor M (rename j).toLinearMap p
   have ha' : π R M T (⟨s', p'⟩ : lifts R M T) = rTensor M h.toLinearMap t := by
-    simp only [← ha, π, p', ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap, eq_h_comp]
+    simp [← ha, π, p', ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap, eq_h_comp]
   rw [toFun_eq_rTensor_φ_toFun' f ha, toFun_eq_rTensor_φ_toFun' f ha', ← LinearMap.comp_apply,
     ← rTensor_comp, ← comp_toLinearMap]
   apply toFun'_eq_of_diagram f p p' h h'
-  · simp only [val_comp_codRestrict, h']
+  · simp [val_comp_codRestrict, h']
   · simp only [p', ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap]
     congr
     ext n
     simp only [AlgHom.coe_comp, Function.comp_apply, coe_codRestrict,
       Subalgebra.coe_val, rename_X, h', j]
-    simp only [φ, aeval_X, Equiv.symm_apply_apply]
+    simp [φ, aeval_X, Equiv.symm_apply_apply]
 
 /-- Extends `PolynomialLaw.isCompat` to all universes -/
 theorem isCompat {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ[R] T) :
     h.toLinearMap.rTensor N ∘ f.toFun S = f.toFun T ∘ h.toLinearMap.rTensor M := by
   ext t
-  simp only [Function.comp_apply, PolynomialLaw.isCompat_apply]
+  simp [Function.comp_apply, PolynomialLaw.isCompat_apply]
 
 end Lift
 
@@ -541,21 +541,21 @@ variable
 theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [toFun_eq_rTensor_φ_toFun' _ ha, zero_def, Pi.zero_apply, _root_.map_zero]
+  simp [toFun_eq_rTensor_φ_toFun' _ ha, zero_def, Pi.zero_apply, _root_.map_zero]
 
 /-- Extension of `PolynomialLaw.add_def_apply` -/
 @[simp]
 theorem toFun_add_apply (t : S ⊗[R] M) :
     (f + g).toFun S t = f.toFun S t + g.toFun S t := by
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [Pi.add_apply, toFun_eq_rTensor_φ_toFun' _ ha, add_def, map_add]
+  simp [Pi.add_apply, toFun_eq_rTensor_φ_toFun' _ ha, add_def, map_add]
 
 /-- Extension of `PolynomialLaw.add_def` -/
 @[simp]
 theorem toFun_add :
     (f + g).toFun S = f.toFun S + g.toFun S := by
   ext t
-  simp only [Pi.add_apply, toFun_add_apply]
+  simp [Pi.add_apply, toFun_add_apply]
 
 @[simp]
 theorem toFun_neg {R : Type u} [CommRing R]
@@ -566,7 +566,7 @@ theorem toFun_neg {R : Type u} [CommRing R]
     (-f).toFun S = (-1 : R) • (f.toFun S) := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [toFun_eq_rTensor_φ_toFun' _ ha, neg_def, Pi.smul_apply, map_smul]
+  simp [toFun_eq_rTensor_φ_toFun' _ ha, neg_def, Pi.smul_apply, map_smul]
 
 variable (S) in
 /-- Extension of `PolynomialLaw.smul_def` -/
@@ -574,7 +574,7 @@ variable (S) in
 theorem toFun_smul : (r • f).toFun S = r • (f.toFun S) := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [toFun_eq_rTensor_φ_toFun' _ ha, smul_def, Pi.smul_apply, map_smul]
+  simp [toFun_eq_rTensor_φ_toFun' _ ha, smul_def, Pi.smul_apply, map_smul]
 
 end Module
 
@@ -612,13 +612,13 @@ theorem toFun_comp (S : Type*) [CommSemiring S] [Algebra R S] :
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
   have hb : PolynomialLaw.π R N S ⟨s, f.toFun' _ p⟩ = f.toFun S t := by
-    simp only [toFun_eq_rTensor_φ_toFun' _ ha, π]
+    simp [toFun_eq_rTensor_φ_toFun' _ ha, π]
   rw [Function.comp_apply, toFun_eq_rTensor_φ_toFun' _ hb, toFun_eq_rTensor_φ_toFun' _ ha,
     comp_toFun', Function.comp_apply]
 
 theorem toFun_comp_apply (S : Type*) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
     (g.comp f).toFun S m = (g.toFun S) (f.toFun S m) := by
-  simp only [toFun_comp, Function.comp_apply]
+  simp [toFun_comp, Function.comp_apply]
 
 end Comp
 

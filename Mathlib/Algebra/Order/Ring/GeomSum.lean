@@ -46,7 +46,7 @@ lemma geom_sum_alternating_of_le_neg_one (hx : x + 1 ≤ 0) (n : ℕ) :
     if Even n then (∑ i ∈ range n, x ^ i) ≤ 0 else 1 ≤ ∑ i ∈ range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx
   induction n with
-  | zero => simp only [range_zero, sum_empty, le_refl, ite_true, Even.zero]
+  | zero => simp [range_zero, sum_empty, le_refl, ite_true, Even.zero]
   | succ n ih =>
     simp only [Nat.even_add_one, geom_sum_succ]
     split_ifs at ih ⊢ with h
@@ -77,7 +77,7 @@ lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :
     if Even n then ∑ i ∈ range n, x ^ i < 0 else 1 < ∑ i ∈ range n, x ^ i := by
   have hx0 : x < 0 := (le_add_of_nonneg_right zero_le_one).trans_lt hx
   refine Nat.le_induction ?_ ?_ n (show 2 ≤ n from hn)
-  · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, hx, even_two]
+  · simp [geom_sum_two, lt_add_iff_pos_left, ite_true, hx, even_two]
   clear hn
   intro n _ ihn
   simp only [Nat.even_add_one, geom_sum_succ]
@@ -97,7 +97,7 @@ variable [LinearOrder R] [IsStrictOrderedRing R] {n : ℕ} {x : R}
 lemma geom_sum_pos' (hx : 0 < x + 1) (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i := by
   obtain _ | _ | n := n
   · cases hn rfl
-  · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
+  · simp [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   obtain hx' | hx' := lt_or_ge x 0
   · exact (geom_sum_pos_and_lt_one hx' hx n.one_lt_succ_succ).1
   · exact geom_sum_pos hx' (by simp)
@@ -105,13 +105,13 @@ lemma geom_sum_pos' (hx : 0 < x + 1) (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^
 lemma Odd.geom_sum_pos (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
   rcases n with (_ | _ | k)
   · exact (Nat.not_odd_zero h).elim
-  · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
+  · simp [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   rw [← Nat.not_even_iff_odd] at h
   rcases lt_trichotomy (x + 1) 0 with (hx | hx | hx)
   · have := geom_sum_alternating_of_lt_neg_one hx k.one_lt_succ_succ
     simp only [h, ite_false] at this
     exact zero_lt_one.trans this
-  · simp only [eq_neg_of_add_eq_zero_left hx, h, neg_one_geom_sum, ite_false, zero_lt_one]
+  · simp [eq_neg_of_add_eq_zero_left hx, h, neg_one_geom_sum, ite_false, zero_lt_one]
   · exact geom_sum_pos' hx k.succ.succ_ne_zero
 
 lemma geom_sum_pos_iff (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i ↔ Odd n ∨ 0 < x + 1 := by
@@ -126,7 +126,7 @@ lemma geom_sum_pos_iff (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i ↔ Odd n �
 lemma geom_sum_ne_zero (hx : x ≠ -1) (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i ≠ 0 := by
   obtain _ | _ | n := n
   · cases hn rfl
-  · simp only [zero_add, range_one, sum_singleton, pow_zero, ne_eq, one_ne_zero, not_false_eq_true]
+  · simp [zero_add, range_one, sum_singleton, pow_zero, ne_eq, one_ne_zero, not_false_eq_true]
   rw [Ne, eq_neg_iff_add_eq_zero, ← Ne] at hx
   obtain h | h := hx.lt_or_gt
   · have := geom_sum_alternating_of_lt_neg_one h n.one_lt_succ_succ

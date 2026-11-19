@@ -130,13 +130,13 @@ lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   simp
 
 lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
-  not_iff_not.1 <| by simp only [lt_def, Nat.not_lt, val_fin_le, le_sub_one_iff, le_zero_iff]
+  not_iff_not.1 <| by simp [lt_def, Nat.not_lt, val_fin_le, le_sub_one_iff, le_zero_iff]
 
 @[simp] lemma neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
 open Fin.NatCast in
 lemma neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
-  simp only [natCast_eq_last, neg_last]
+  simp [natCast_eq_last, neg_last]
 
 lemma rev_add (a b : Fin n) : rev (a + b) = rev a - b := by
   cases n

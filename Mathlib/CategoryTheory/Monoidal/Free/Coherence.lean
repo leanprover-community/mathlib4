@@ -312,7 +312,7 @@ instance subsingleton_hom : Quiver.IsThin (F C) := fun X Y =>
     have hfg : (fullNormalize C).map f = (fullNormalize C).map g := Subsingleton.elim _ _
     have hf := NatIso.naturality_2 (fullNormalizeIso.{u} C) f
     have hg := NatIso.naturality_2 (fullNormalizeIso.{u} C) g
-    exact hf.symm.trans (Eq.trans (by simp only [Functor.comp_map, hfg]) hg)⟩
+    exact hf.symm.trans (Eq.trans (by simp [Functor.comp_map, hfg]) hg)⟩
 
 section Groupoid
 

@@ -452,7 +452,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : ‖x‖ / n.succ ≤ 1 / 2) :
     _ ≤ ‖x‖ ^ n / ↑n.factorial * 2 := ?_
   · gcongr
     exact mod_cast Nat.factorial_mul_pow_le_factorial
-  · simp only [pow_add, div_eq_inv_mul, mul_inv, mul_left_comm, mul_assoc]
+  · simp [pow_add, div_eq_inv_mul, mul_inv, mul_left_comm, mul_assoc]
   · rw [← mul_sum]
     gcongr
     simp_rw [← div_pow]

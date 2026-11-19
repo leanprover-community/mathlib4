@@ -81,10 +81,10 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
   let ⟨_,b,_⟩ := f
   let ⟨_,e,_⟩ := g
   congr
-  simp only [eq_iff_true_of_subsingleton]
+  simp [eq_iff_true_of_subsingleton]
 
 @[simp]
-theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
+theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp
 
 @[simp]
 theorem id_left (U : Over X) : Hom.left (𝟙 U) = 𝟙 U.left :=
@@ -671,10 +671,10 @@ lemma Hom.w : f.hom ≫ φ.right = g.hom := Under.w φ
 theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
     f = g := by
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
-  congr; simp only [eq_iff_true_of_subsingleton]
+  congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
-theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
+theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp
 
 @[simp]
 theorem id_right (U : Under X) : Hom.right (𝟙 U) = 𝟙 U.right :=
@@ -702,7 +702,7 @@ lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.right) (w_f w_g) :
-    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g]) = homMk f w_f ≫ homMk g w_g :=
+    homMk (f ≫ g) (by simp [reassoc_of% w_f, w_g]) = homMk f w_f ≫ homMk g w_g :=
   rfl
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward

@@ -81,7 +81,7 @@ def mapBifunctorHomologicalComplexShift₁Iso :
     intros
     ext
     dsimp
-    simp only [Linear.comp_units_smul, id_comp, Functor.map_units_smul,
+    simp [Linear.comp_units_smul, id_comp, Functor.map_units_smul,
       NatTrans.app_units_zsmul, comp_id])
 
 instance : HasMapBifunctor (K₁⟦x⟧) K₂ F :=

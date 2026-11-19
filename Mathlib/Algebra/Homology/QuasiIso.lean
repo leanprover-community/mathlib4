@@ -181,7 +181,7 @@ lemma quasiIso_iff_comp_left (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomolog
     [∀ i, L.HasHomology i] [∀ i, M.HasHomology i]
     [hφ : QuasiIso φ] :
     QuasiIso (φ ≫ φ') ↔ QuasiIso φ' := by
-  simp only [quasiIso_iff, quasiIsoAt_iff_comp_left φ φ']
+  simp [quasiIso_iff, quasiIsoAt_iff_comp_left φ φ']
 
 lemma quasiIso_of_comp_left (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomology i]
     [∀ i, L.HasHomology i] [∀ i, M.HasHomology i]
@@ -212,7 +212,7 @@ lemma quasiIso_iff_comp_right (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomolo
     [∀ i, L.HasHomology i] [∀ i, M.HasHomology i]
     [hφ' : QuasiIso φ'] :
     QuasiIso (φ ≫ φ') ↔ QuasiIso φ := by
-  simp only [quasiIso_iff, quasiIsoAt_iff_comp_right φ φ']
+  simp [quasiIso_iff, quasiIsoAt_iff_comp_right φ φ']
 
 lemma quasiIso_of_comp_right (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomology i]
     [∀ i, L.HasHomology i] [∀ i, M.HasHomology i]
@@ -279,7 +279,7 @@ instance quasiIso_map_of_preservesHomology [hφ : QuasiIso φ] :
 
 lemma quasiIso_map_iff_of_preservesHomology [F.ReflectsIsomorphisms] :
     QuasiIso ((F.mapHomologicalComplex c).map φ) ↔ QuasiIso φ := by
-  simp only [quasiIso_iff, quasiIsoAt_map_iff_of_preservesHomology φ F]
+  simp [quasiIso_iff, quasiIsoAt_map_iff_of_preservesHomology φ F]
 
 end
 

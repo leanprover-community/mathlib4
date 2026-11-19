@@ -195,7 +195,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
               · subst h h'
-                simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
+                simp [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
               · subst h
                 rw [eqToHom_refl, id_apply_of_ne _ _ _ h']
               · rfl }
@@ -368,7 +368,7 @@ lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
     biproduct.ι _ i ≫ (additiveObjIsoBiproduct F M).inv =
       F.map (biproduct.ι _ i ≫ M.isoBiproductEmbedding.inv) := by
   dsimp [additiveObjIsoBiproduct, Functor.mapBiproduct, Functor.mapBicone]
-  simp only [biproduct.ι_desc, biproduct.ι_desc_assoc, ← F.map_comp]
+  simp [biproduct.ι_desc, biproduct.ι_desc_assoc, ← F.map_comp]
 
 variable [HasFiniteBiproducts D]
 

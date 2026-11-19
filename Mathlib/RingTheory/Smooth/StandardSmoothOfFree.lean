@@ -72,7 +72,7 @@ theorem IsStandardSmooth.of_basis_kaehlerDifferential [FinitePresentation R S]
   have hbij : Function.Bijective (P'.cotangentRestrict P'.map_inj) := by
     apply P'.cotangentRestrict_bijective_of_basis_kaehlerDifferential P'.map_inj hcompl b
     intro k
-    simp only [hb, ← hcomp, P', Function.comp_def]
+    simp [hb, ← hcomp, P', Function.comp_def]
   let P'' : SubmersivePresentation R S _ _ :=
     ⟨P', P'.isUnit_jacobian_of_cotangentRestrict_bijective bcot hbcot hbij⟩
   exact P''.isStandardSmooth

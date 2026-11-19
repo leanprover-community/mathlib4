@@ -360,7 +360,7 @@ section AdjoinInv
 @[simp]
 theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
   convert sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
-    simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
+    simp [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 
 theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
@@ -623,11 +623,11 @@ noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) w
     rw [← map_natCast (of f), ← map_intCast (of f), ← map_div₀, ← Rat.cast_def]; rfl
   nnqsmul_def q x :=
     AdjoinRoot.induction_on f (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
-      simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.nnqsmul_eq_C_mul]
+      simp [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.nnqsmul_eq_C_mul]
   qsmul_def q x :=
     -- Porting note: I gave the explicit motive and changed `rw` to `simp`.
     AdjoinRoot.induction_on f (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
-      simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.qsmul_eq_C_mul]
+      simp [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.qsmul_eq_C_mul]
 
 theorem coe_injective (h : degree f ≠ 0) : Function.Injective ((↑) : K → AdjoinRoot f) :=
   have := AdjoinRoot.nontrivial f h
@@ -698,10 +698,10 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
     { toFun := fun f i => (modByMonicHom hg f).coeff i
       invFun := fun c => mk g <| ∑ i : Fin g.natDegree, monomial i (c i)
       map_add' := fun f₁ f₂ =>
-        funext fun i => by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
+        funext fun i => by simp [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
       map_smul' := fun f₁ f₂ =>
         funext fun i => by
-          simp only [(modByMonicHom hg).map_smul, AddMonoidAlgebra.coeff_smul_apply,
+          simp [(modByMonicHom hg).map_smul, AddMonoidAlgebra.coeff_smul_apply,
             Pi.smul_apply, RingHom.id_apply]
       left_inv f := AdjoinRoot.induction_on _ f fun f => Eq.symm <| mk_eq_mk.mpr <| by
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
@@ -780,7 +780,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
     ext
     · simp only [RingHom.comp_apply, mk_C, lift_of]
       rfl
-    · simp only [RingHom.comp_apply, mk_X, lift_root]
+    · simp [RingHom.comp_apply, mk_X, lift_root]
   rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
     Nat.cast_le, natDegree_mul hf, natDegree_C, add_zero]
   · apply natDegree_le_of_dvd
@@ -1001,7 +1001,7 @@ theorem Polynomial.quotQuotEquivComm_mk (p : R[X]) :
     (Polynomial.quotQuotEquivComm I f) (Ideal.Quotient.mk _ (p.map (Ideal.Quotient.mk I))) =
       Ideal.Quotient.mk (span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))))
       (Ideal.Quotient.mk (I.map C) p) := by
-  simp only [Polynomial.quotQuotEquivComm, quotientEquiv_mk,
+  simp [Polynomial.quotQuotEquivComm, quotientEquiv_mk,
     polynomialQuotientEquivQuotientPolynomial_map_mk]
 
 @[simp]
@@ -1009,7 +1009,7 @@ theorem Polynomial.quotQuotEquivComm_symm_mk_mk (p : R[X]) :
     (Polynomial.quotQuotEquivComm I f).symm (Ideal.Quotient.mk (span
     ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C)))) (Ideal.Quotient.mk (I.map C) p)) =
       Ideal.Quotient.mk (span {f.map (Ideal.Quotient.mk I)}) (p.map (Ideal.Quotient.mk I)) := by
-  simp only [Polynomial.quotQuotEquivComm, quotientEquiv_symm_mk,
+  simp [Polynomial.quotQuotEquivComm, quotientEquiv_symm_mk,
     polynomialQuotientEquivQuotientPolynomial_symm_mk]
 
 /-- The natural isomorphism `R[α]/I[α] ≅ (R/I)[X]/(f mod I)` for `α` a root of `f : R[X]`
@@ -1054,7 +1054,7 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
           Ideal.Quotient.mk (Ideal.map (AdjoinRoot.of f) I) ((mk f) (C x)) :=
         rfl
       rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C, Quotient.alg_map_eq]
-      simp only [RingHom.comp_apply, Quotient.algebraMap_eq, Polynomial.algebraMap_apply])
+      simp [RingHom.comp_apply, Quotient.algebraMap_eq, Polynomial.algebraMap_apply])
 
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :
     AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g)) =

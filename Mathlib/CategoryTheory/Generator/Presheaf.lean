@@ -62,7 +62,7 @@ lemma freeYonedaHomEquiv_symm_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A} (α : M
     (f : F ⟶ G) :
     freeYonedaHomEquiv.symm α ≫ f = freeYonedaHomEquiv.symm (α ≫ f.app (op X)) := by
   apply freeYonedaHomEquiv.injective
-  simp only [freeYonedaHomEquiv_comp, Equiv.apply_symm_apply]
+  simp [freeYonedaHomEquiv_comp, Equiv.apply_symm_apply]
 
 variable (C)
 

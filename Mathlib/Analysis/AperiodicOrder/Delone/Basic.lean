@@ -158,7 +158,7 @@ noncomputable def mapBilipschitz (f : X ≃ Y) (K₁ K₂ : ℝ≥0) (hK₁ : 0 
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mapBilipschitz_refl (D : DeloneSet X) (hK1 hK2 hA hL) :
     D.mapBilipschitz (.refl X) 1 1 hK1 hK2 hA hL = D := by
-  ext <;> simp only [mapBilipschitz, Equiv.refl_apply, Set.image_id', div_one, one_mul]
+  ext <;> simp [mapBilipschitz, Equiv.refl_apply, Set.image_id', div_one, one_mul]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
@@ -175,8 +175,8 @@ lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
   ext
   · simp only [mapBilipschitz_carrier, Equiv.trans_apply, Set.mem_image]
     exact exists_exists_and_eq_and
-  · simp only [mapBilipschitz_packingRadius, NNReal.coe_div, div_div]
-  · simp only [mapBilipschitz_coveringRadius, NNReal.coe_mul, mul_assoc]
+  · simp [mapBilipschitz_packingRadius, NNReal.coe_div, div_div]
+  · simp [mapBilipschitz_coveringRadius, NNReal.coe_mul, mul_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The image of a Delone set under an isometry. This is a specialization of

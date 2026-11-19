@@ -247,7 +247,7 @@ lemma toSubmodule_sup :
 lemma coe_sup :
     ↑(s ⊔ t) = closure (s.toSubmodule ⊔ t.toSubmodule).carrier := by
   simp only [← coe_toSubmodule, toSubmodule_sup]
-  simp only [coe_toSubmodule, Submodule.coe_closure, Submodule.carrier_eq_coe]
+  simp [coe_toSubmodule, Submodule.coe_closure, Submodule.carrier_eq_coe]
 
 @[simp] lemma mem_sup :
     x ∈ s ⊔ t ↔ x ∈ closure (s.toSubmodule ⊔ t.toSubmodule).carrier := Iff.rfl
@@ -268,7 +268,7 @@ lemma toSubmodule_iSup (f : ι → ClosedSubmodule R N) :
 lemma coe_sSup (S : Set (ClosedSubmodule R N)) :
     ↑(sSup S) = closure (⨆ s ∈ S, s.toSubmodule).carrier := by
   simp only [← coe_toSubmodule, toSubmodule_sSup]
-  simp only [coe_toSubmodule, Submodule.coe_closure, Submodule.carrier_eq_coe]
+  simp [coe_toSubmodule, Submodule.coe_closure, Submodule.carrier_eq_coe]
 
 @[simp, norm_cast]
 lemma coe_iSup (f : ι → ClosedSubmodule R N) :
@@ -347,7 +347,7 @@ lemma mapEquiv_top_eq_top : ((⊤ : ClosedSubmodule R M).mapEquiv f) = ⊤ := by
 lemma mapEquiv_inf_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
     (s ⊓ t).mapEquiv f = s.mapEquiv f ⊓ t.mapEquiv f := by
   ext x
-  simp only [Submodule.carrier_eq_coe, coe_toSubmodule, SetLike.mem_coe, toSubmodule_inf,
+  simp [Submodule.carrier_eq_coe, coe_toSubmodule, SetLike.mem_coe, toSubmodule_inf,
     Submodule.coe_inf, Set.mem_inter_iff, mem_mapEquiv_iff, mem_inf]
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] [ContinuousAdd M] [ContinuousConstSMul R M]

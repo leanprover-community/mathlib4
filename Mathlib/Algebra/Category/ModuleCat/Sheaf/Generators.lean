@@ -85,10 +85,10 @@ def equivOfIso (e : M ≅ N) :
   invFun σ := σ.ofEpi e.inv
   left_inv σ := by
     dsimp
-    simp only [← opEpi_comp, e.hom_inv_id, opEpi_id]
+    simp [← opEpi_comp, e.hom_inv_id, opEpi_id]
   right_inv σ := by
     dsimp
-    simp only [← opEpi_comp, e.inv_hom_id, opEpi_id]
+    simp [← opEpi_comp, e.inv_hom_id, opEpi_id]
 
 /-- `σ : M.GeneratingSections` is finite type if the index type `σ.I` is finite. -/
 class IsFiniteType (σ : M.GeneratingSections) : Prop where

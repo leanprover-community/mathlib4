@@ -141,7 +141,7 @@ lemma stronglyMeasurable_needleCrossesIndicator :
   refine stronglyMeasurable_iff_measurable_separable.mpr
     ⟨measurable_needleCrossesIndicator l, {0, 1}, ?separable⟩
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
-    simp only [Set.finite_singleton, Set.Finite.insert]
+    simp [Set.finite_singleton, Set.Finite.insert]
   refine ⟨range_finite.countable, ?subset_closure⟩
   rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
   intro x ⟨p, hxp⟩
@@ -159,7 +159,7 @@ lemma integrable_needleCrossesIndicator :
         (Measure.restrict ℙ (Set.Icc 0 π))) := by
   have needleCrossesIndicator_nonneg p : 0 ≤ needleCrossesIndicator l p := by
     apply Set.indicator_apply_nonneg
-    simp only [Pi.one_apply, zero_le_one, implies_true]
+    simp [Pi.one_apply, zero_le_one, implies_true]
   have needleCrossesIndicator_le_one p : needleCrossesIndicator l p ≤ 1 := by
     unfold needleCrossesIndicator
     by_cases hp : 0 ∈ needleProjX l p.1 p.2
@@ -314,7 +314,7 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     intro θ ⟨hθ₁, hθ₂⟩
     wlog hθ_ne_pi_div_two : θ ≠ π / 2
     · simp only [ne_eq, not_not] at hθ_ne_pi_div_two
-      simp only [hθ_ne_pi_div_two, Real.sin_pi_div_two, one_mul, min_eq_left h]
+      simp [hθ_ne_pi_div_two, Real.sin_pi_div_two, one_mul, min_eq_left h]
     simp only [min_eq_left (d / l).arcsin_le_pi_div_two,
       max_eq_right (d / l).arcsin_le_pi_div_two] at hθ₁ hθ₂
     have hθ_mem : θ ∈ Set.Ico (-(π / 2)) (π / 2) := by

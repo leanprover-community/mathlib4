@@ -87,13 +87,13 @@ lemma triangEnvelopeIter_succ' [IsTriangulated C] (n : ℕ) :
 lemma triangEnvelopeIter_add [IsTriangulated C] {n m n' : ℕ} (h : n = n' + 1 := by lia) :
     P.triangEnvelopeIter (n + m) =
       (extensionProduct (P.triangEnvelopeIter n') (P.triangEnvelopeIter m)).retractClosure := by
-  simp only [triangEnvelopeIter, retractClosure_extensionProduct_retractClosure_retractClosure,
+  simp [triangEnvelopeIter, retractClosure_extensionProduct_retractClosure_retractClosure,
     extensionProductIter_add _ h]
 
 lemma triangEnvelopeIter_add' [IsTriangulated C] {n m m' : ℕ} (h : m = m' + 1 := by lia) :
     P.triangEnvelopeIter (n + m) =
       (extensionProduct (P.triangEnvelopeIter n) (P.triangEnvelopeIter m')).retractClosure := by
-  simp only [triangEnvelopeIter, retractClosure_extensionProduct_retractClosure_retractClosure,
+  simp [triangEnvelopeIter, retractClosure_extensionProduct_retractClosure_retractClosure,
     extensionProductIter_add' _ h]
 
 variable {P} in

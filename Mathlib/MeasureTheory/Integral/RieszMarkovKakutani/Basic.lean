@@ -195,7 +195,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
       have : s₀ ⊆ (tsupport (f 0))ᶜ := by
         apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 0))
         rw [hso]
-        simp only [Fin.isValue, ↓reduceIte, compl_compl, subset_refl]
+        simp [Fin.isValue, ↓reduceIte, compl_compl, subset_refl]
       apply notMem_of_mem_compl
       exact mem_of_subset_of_mem (subset_trans this (compl_subset_compl_of_subset subset_closure))
         hx
@@ -210,7 +210,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
       have : s₁ ⊆ (tsupport (f 1))ᶜ := by
         apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 1))
         rw [hso]
-        simp only [Fin.isValue, one_ne_zero, ↓reduceIte, compl_compl, subset_refl]
+        simp [Fin.isValue, one_ne_zero, ↓reduceIte, compl_compl, subset_refl]
       apply notMem_of_mem_compl
       exact mem_of_subset_of_mem (subset_trans this (compl_subset_compl_of_subset subset_closure))
         hx
@@ -250,11 +250,11 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
       Eq.symm (RightDistribClass.right_distrib _ _ _)]
     by_cases h : f x = 0
     · rw [h]
-      simp only [NNReal.coe_zero, mul_zero]
+      simp [NNReal.coe_zero, mul_zero]
     · simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
         CompactlySupportedContinuousMap.coe_toContinuousMap] at sum_g
       rw [sum_g (mem_of_subset_of_mem subset_closure (mem_support.mpr h))]
-      simp only [Pi.one_apply, NNReal.coe_one, one_mul]
+      simp [Pi.one_apply, NNReal.coe_one, one_mul]
   rw [← Λf_eq_b, f_eq_sum, map_add]
   have aux₁ : ∀ x ∈ K₁, 1 ≤ (g₁ * f) x := by
     intro x x_in_K₁

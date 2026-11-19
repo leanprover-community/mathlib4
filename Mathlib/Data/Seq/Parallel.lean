@@ -130,7 +130,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         apply destruct_eq_pure
         rw [corec_eq, parallel.aux1]
         rw [h]
-        simp only [rmap]
+        simp [rmap]
       rw [C]
       infer_instance
     · have C : corec parallel.aux1 (l, S) = _ := destruct_eq_think (by
@@ -148,7 +148,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         apply destruct_eq_pure
         rw [corec_eq, parallel.aux1]
         rw [h]
-        simp only [rmap]
+        simp [rmap]
       rw [C]
       infer_instance
     · have C : corec parallel.aux1 (l, S) = _ := destruct_eq_think (by
@@ -194,7 +194,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         match o with
         | Sum.inl a => Sum.inl a
         | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c)) (Sum.inr List.nil) l <;>
-        intro IH <;> simp only
+        intro IH <;> simp
       · rcases IH with ⟨c', cl, ac⟩
         exact ⟨c', List.Mem.tail _ cl, ac⟩
       · rcases h : destruct c with a | c' <;> simp only [rmap]

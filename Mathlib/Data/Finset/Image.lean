@@ -105,7 +105,7 @@ theorem map_perm {σ : Equiv.Perm α} (hs : { a | σ a ≠ a } ⊆ s) : s.map (�
 
 theorem map_toFinset [DecidableEq α] [DecidableEq β] {s : Multiset α} :
     s.toFinset.map f = (s.map f).toFinset :=
-  ext fun _ => by simp only [mem_map, Multiset.mem_map, Multiset.mem_toFinset]
+  ext fun _ => by simp [mem_map, Multiset.mem_map, Multiset.mem_toFinset]
 
 @[simp]
 theorem map_refl : s.map (Embedding.refl _) = s :=
@@ -147,7 +147,7 @@ theorem subset_map_symm {t : Finset β} {f : α ≃ β} : s ⊆ t.map f.symm ↔
 
 /-- The `Finset` version of `Equiv.symm_image_subset`. -/
 theorem map_symm_subset {t : Finset β} {f : α ≃ β} : t.map f.symm ⊆ s ↔ t ⊆ s.map f := by
-  simp only [← subset_map_symm, Equiv.symm_symm]
+  simp [← subset_map_symm, Equiv.symm_symm]
 
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a finset to its
 image under `f`. -/
@@ -190,7 +190,7 @@ lemma filter_attach (p : α → Prop) [DecidablePred p] (s : Finset α) :
 
 theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
     (s.filter p).map f.toEmbedding = (s.map f.toEmbedding).filter (p ∘ f.symm) := by
-  simp only [filter_map, Function.comp_def, Equiv.toEmbedding_apply, Equiv.symm_apply_apply]
+  simp [filter_map, Function.comp_def, Equiv.toEmbedding_apply, Equiv.symm_apply_apply]
 
 @[simp]
 theorem disjoint_map {s t : Finset α} (f : α ↪ β) :
@@ -220,12 +220,12 @@ theorem map_sdiff [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ :
 
 @[simp]
 theorem map_singleton (f : α ↪ β) (a : α) : map f {a} = {f a} :=
-  coe_injective <| by simp only [coe_map, coe_singleton, Set.image_singleton]
+  coe_injective <| by simp [coe_map, coe_singleton, Set.image_singleton]
 
 @[simp]
 theorem map_insert [DecidableEq α] [DecidableEq β] (f : α ↪ β) (a : α) (s : Finset α) :
     (insert a s).map f = insert (f a) (s.map f) := by
-  simp only [insert_eq, map_union, map_singleton]
+  simp [insert_eq, map_union, map_singleton]
 
 @[simp]
 theorem map_cons (f : α ↪ β) (a : α) (s : Finset α) (ha : a ∉ s) :
@@ -290,7 +290,7 @@ variable {f g : α → β} {s : Finset α} {t : Finset β} {a : α} {b c : β}
 
 @[simp, grind =]
 theorem mem_image : b ∈ s.image f ↔ ∃ a ∈ s, f a = b := by
-  simp only [mem_def, image_val, mem_dedup, Multiset.mem_map]
+  simp [mem_def, image_val, mem_dedup, Multiset.mem_map]
 
 theorem mem_image_of_mem (f : α → β) {a} (h : a ∈ s) : f a ∈ s.image f :=
   mem_image.2 ⟨_, h, rfl⟩
@@ -328,7 +328,7 @@ theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
 
 @[simp, norm_cast]
 theorem coe_image : ↑(s.image f) = f '' ↑s :=
-  Set.ext <| by simp only [mem_coe, mem_image, Set.mem_image, implies_true]
+  Set.ext <| by simp [mem_coe, mem_image, Set.mem_image, implies_true]
 
 @[simp]
 lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty :=
@@ -362,21 +362,21 @@ theorem image_nontrivial_iff_of_injOn (hf : Set.InjOn f s) :
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
-  ext fun _ => by simp only [mem_image, Multiset.mem_toFinset, Multiset.mem_map]
+  ext fun _ => by simp [mem_image, Multiset.mem_toFinset, Multiset.mem_map]
 
 theorem image_val_of_injOn (H : Set.InjOn f s) : (image f s).val = s.val.map f :=
   (s.nodup.map_on H).dedup
 
 @[simp]
 theorem image_id [DecidableEq α] : s.image id = s :=
-  ext fun _ => by simp only [mem_image, id, exists_eq_right]
+  ext fun _ => by simp [mem_image, id, exists_eq_right]
 
 @[simp]
 theorem image_id' [DecidableEq α] : (s.image fun x => x) = s :=
   image_id
 
 theorem image_image [DecidableEq γ] {g : β → γ} : (s.image f).image g = s.image (g ∘ f) :=
-  eq_of_veq <| by simp only [image_val, dedup_map_dedup_eq, Multiset.map_map]
+  eq_of_veq <| by simp [image_val, dedup_map_dedup_eq, Multiset.map_map]
 
 /-- Reverse of `Finset.image_image`. The `Finset` analogue of `Set.image_comp`. -/
 theorem image_comp [DecidableEq γ] {g : β → γ} : s.image (g ∘ f) = (s.image f).image g :=
@@ -403,7 +403,7 @@ theorem _root_.Function.Commute.finset_image [DecidableEq α] {f g : α → α}
 
 @[gcongr]
 theorem image_subset_image {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₁.image f ⊆ s₂.image f := by
-  simp only [subset_def, image_val, subset_dedup', dedup_subset', Multiset.map_subset_map h]
+  simp [subset_def, image_val, subset_dedup', dedup_subset', Multiset.map_subset_map h]
 
 theorem image_subset_iff : s.image f ⊆ t ↔ ∀ x ∈ s, f x ∈ t :=
   calc
@@ -609,11 +609,11 @@ theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a 
 
 @[simp, norm_cast]
 theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
-  Set.ext (by simp only [mem_coe, mem_filterMap, Set.mem_ofPred_eq, implies_true])
+  Set.ext (by simp [mem_coe, mem_filterMap, Set.mem_ofPred_eq, implies_true])
 
 @[simp]
 theorem filterMap_some : s.filterMap some (by simp) = s :=
-  ext fun _ => by simp only [mem_filterMap, Option.some.injEq, exists_eq_right]
+  ext fun _ => by simp [mem_filterMap, Option.some.injEq, exists_eq_right]
 
 theorem filterMap_mono (h : s ⊆ t) :
     filterMap f s f_inj ⊆ filterMap f t f_inj := by grind
@@ -713,7 +713,7 @@ For the version where `s` is a set, see `subset_set_image_iff`.
 -/
 theorem subset_image_iff [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β} :
     t ⊆ s.image f ↔ ∃ s' : Finset α, s' ⊆ s ∧ s'.image f = t := by
-  simp only [← coe_subset, coe_image, subset_set_image_iff]
+  simp [← coe_subset, coe_image, subset_set_image_iff]
 
 /--
 A special case of `subset_image_iff`,

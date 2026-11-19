@@ -87,6 +87,6 @@ theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
     dedekindCutOrderIso A = sInf ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.right) := by
   conv_lhs => rw [← A.biInf_principal_right]
   rw [OrderIso.map_iInf₂, ← sInf_image]
-  simp only [dedekindCutOrderIso_principal]
+  simp [dedekindCutOrderIso_principal]
 
 end EReal

@@ -99,7 +99,7 @@ theorem star_iff [InvolutiveStar R] {x : R} : IsSelfAdjoint (star x) ↔ IsSelfA
 
 @[simp]
 theorem star_mul_self [Mul R] [StarMul R] (x : R) : IsSelfAdjoint (star x * x) := by
-  simp only [IsSelfAdjoint, star_mul, star_star]
+  simp [IsSelfAdjoint, star_mul, star_star]
 
 @[simp]
 theorem mul_star_self [Mul R] [StarMul R] (x : R) : IsSelfAdjoint (x * star x) := by
@@ -143,7 +143,7 @@ theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R 
 
 @[aesop 10% apply]
 theorem isStarNormal {R : Type*} [Mul R] [Star R] {x : R} (hx : IsSelfAdjoint x) :
-    IsStarNormal x := ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
+    IsStarNormal x := ⟨by simp [Commute, SemiconjBy, hx.star_eq]⟩
 
 section AddMonoid
 
@@ -154,7 +154,7 @@ variable (R) in
 
 @[aesop 90% apply]
 theorem add {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x + y) := by
-  simp only [isSelfAdjoint_iff, star_add, hx.star_eq, hy.star_eq]
+  simp [isSelfAdjoint_iff, star_add, hx.star_eq, hy.star_eq]
 
 end AddMonoid
 
@@ -164,11 +164,11 @@ variable [AddGroup R] [StarAddMonoid R]
 
 @[aesop safe apply]
 theorem neg {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (-x) := by
-  simp only [isSelfAdjoint_iff, star_neg, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_neg, hx.star_eq]
 
 @[aesop 90% apply]
 theorem sub {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x - y) := by
-  simp only [isSelfAdjoint_iff, star_sub, hx.star_eq, hy.star_eq]
+  simp [isSelfAdjoint_iff, star_sub, hx.star_eq, hy.star_eq]
 
 end AddGroup
 
@@ -178,11 +178,11 @@ variable [AddCommMonoid R] [StarAddMonoid R]
 
 @[simp]
 theorem add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
-  simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
+  simp [isSelfAdjoint_iff, add_comm, star_add, star_star]
 
 @[simp]
 theorem star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
-  simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
+  simp [isSelfAdjoint_iff, add_comm, star_add, star_star]
 
 end AddCommMonoid
 
@@ -192,11 +192,11 @@ variable [Semigroup R] [StarMul R]
 
 @[aesop safe apply]
 theorem conjugate {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (z * x * star z) := by
-  simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 
 @[aesop safe apply]
 theorem conjugate' {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (star z * x * z) := by
-  simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 
 @[aesop 90% apply]
 theorem conjugate_self {x : R} (hx : IsSelfAdjoint x) {z : R} (hz : IsSelfAdjoint z) :
@@ -220,7 +220,7 @@ variable [Monoid R] [StarMul R]
 
 @[aesop safe apply]
 theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
-  simp only [isSelfAdjoint_iff, star_pow, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_pow, hx.star_eq]
 
 @[simp]
 theorem invOf_iff (x : R) [Invertible x] : IsSelfAdjoint ⅟x ↔ IsSelfAdjoint x := by
@@ -270,7 +270,7 @@ section CommSemigroup
 variable [CommSemigroup R] [StarMul R]
 
 theorem mul {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x * y) := by
-  simp only [isSelfAdjoint_iff, star_mul', hx.star_eq, hy.star_eq]
+  simp [isSelfAdjoint_iff, star_mul', hx.star_eq, hy.star_eq]
 
 end CommSemigroup
 
@@ -299,7 +299,7 @@ variable [Group R] [StarMul R]
 
 @[aesop safe apply]
 theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
-  simp only [isSelfAdjoint_iff, star_inv, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_inv, hx.star_eq]
 
 @[simp]
 theorem inv_iff (x : R) : IsSelfAdjoint x⁻¹ ↔ IsSelfAdjoint x := by
@@ -307,7 +307,7 @@ theorem inv_iff (x : R) : IsSelfAdjoint x⁻¹ ↔ IsSelfAdjoint x := by
 
 @[aesop safe apply]
 theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
-  simp only [isSelfAdjoint_iff, star_zpow, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_zpow, hx.star_eq]
 
 end Group
 
@@ -317,7 +317,7 @@ variable [GroupWithZero R] [StarMul R]
 
 @[aesop safe apply]
 theorem inv₀ {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
-  simp only [isSelfAdjoint_iff, star_inv₀, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_inv₀, hx.star_eq]
 
 @[simp]
 theorem inv₀_iff (x : R) : IsSelfAdjoint x⁻¹ ↔ IsSelfAdjoint x := by
@@ -325,7 +325,7 @@ theorem inv₀_iff (x : R) : IsSelfAdjoint x⁻¹ ↔ IsSelfAdjoint x := by
 
 @[aesop safe apply]
 theorem zpow₀ {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
-  simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 
 end GroupWithZero
 
@@ -349,7 +349,7 @@ section Semifield
 variable [Semifield R] [StarRing R]
 
 theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) := by
-  simp only [isSelfAdjoint_iff, star_div₀, hx.star_eq, hy.star_eq]
+  simp [isSelfAdjoint_iff, star_div₀, hx.star_eq, hy.star_eq]
 
 end Semifield
 
@@ -359,7 +359,7 @@ section SMul
 theorem smul [Star R] [Star A] [SMul R A] [StarModule R A]
     {r : R} (hr : IsSelfAdjoint r) {x : A} (hx : IsSelfAdjoint x) :
     IsSelfAdjoint (r • x) := by
-  simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
+  simp [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
 
 theorem smul_iff [Monoid R] [StarMul R] [Star A]
     [MulAction R A] [StarModule R A] {r : R} (hr : IsSelfAdjoint r) (hu : IsUnit r) {x : A} :
@@ -395,10 +395,10 @@ def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
 /-- The skew-adjoint elements of a star additive group, as an additive subgroup. -/
 def skewAdjoint [AddCommGroup R] [StarAddMonoid R] : AddSubgroup R where
   carrier := { x | star x = -x }
-  zero_mem' := show star (0 : R) = -0 by simp only [star_zero, neg_zero]
+  zero_mem' := show star (0 : R) = -0 by simp [star_zero, neg_zero]
   add_mem' := @fun x y (hx : star x = -x) (hy : star y = -y) =>
     show star (x + y) = -(x + y) by rw [star_add x y, hx, hy, neg_add]
-  neg_mem' := @fun x (hx : star x = -x) => show star (-x) = - -x by simp only [hx, star_neg]
+  neg_mem' := @fun x (hx : star x = -x) => show star (-x) = - -x by simp [hx, star_neg]
 
 variable {R}
 
@@ -587,15 +587,15 @@ section Ring
 variable [Ring R] [StarRing R]
 
 theorem conjugate {x : R} (hx : x ∈ skewAdjoint R) (z : R) : z * x * star z ∈ skewAdjoint R := by
-  simp only [mem_iff, star_mul, star_star, mem_iff.mp hx, neg_mul, mul_neg, mul_assoc]
+  simp [mem_iff, star_mul, star_star, mem_iff.mp hx, neg_mul, mul_neg, mul_assoc]
 
 theorem conjugate' {x : R} (hx : x ∈ skewAdjoint R) (z : R) : star z * x * z ∈ skewAdjoint R := by
-  simp only [mem_iff, star_mul, star_star, mem_iff.mp hx, neg_mul, mul_neg, mul_assoc]
+  simp [mem_iff, star_mul, star_star, mem_iff.mp hx, neg_mul, mul_neg, mul_assoc]
 
 theorem isStarNormal_of_mem {x : R} (hx : x ∈ skewAdjoint R) : IsStarNormal x :=
   ⟨by
     simp only [mem_iff] at hx
-    simp only [hx, Commute.neg_left, Commute.refl]⟩
+    simp [hx, Commute.neg_left, Commute.refl]⟩
 
 instance (x : skewAdjoint R) : IsStarNormal (x : R) :=
   isStarNormal_of_mem (SetLike.coe_mem _)
@@ -655,10 +655,10 @@ alias ⟨of_subtypeVal, subtypeVal⟩ := Subtype.isStarNormal_iff
 
 protected instance zero [NonUnitalNonAssocSemiring R]
     [StarAddMonoid R] : IsStarNormal (0 : R) :=
-  ⟨by simp only [Commute.refl, star_zero]⟩
+  ⟨by simp [Commute.refl, star_zero]⟩
 
 protected instance one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
-  ⟨by simp only [Commute.refl, star_one]⟩
+  ⟨by simp [Commute.refl, star_one]⟩
 
 protected instance star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
     IsStarNormal (star x) :=

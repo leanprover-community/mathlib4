@@ -40,9 +40,9 @@ lemma le_sqrt : m ≤ sqrt n ↔ m * m ≤ n :=
 
 lemma le_sqrt' : m ≤ sqrt n ↔ m ^ 2 ≤ n := by simpa only [Nat.pow_two] using le_sqrt
 
-lemma sqrt_lt : sqrt m < n ↔ m < n * n := by simp only [← not_le, le_sqrt]
+lemma sqrt_lt : sqrt m < n ↔ m < n * n := by simp [← not_le, le_sqrt]
 
-lemma sqrt_lt' : sqrt m < n ↔ m < n ^ 2 := by simp only [← not_le, le_sqrt']
+lemma sqrt_lt' : sqrt m < n ↔ m < n ^ 2 := by simp [← not_le, le_sqrt']
 
 lemma sqrt_le_self (n : ℕ) : sqrt n ≤ n := le_trans (le_mul_self _) (sqrt_le n)
 

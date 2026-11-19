@@ -147,11 +147,11 @@ lemma atom_neg_right (a b : ℤ) : atom W a (-b) = atom W a b := by
 variable {W} in
 @[simp]
 lemma atom_abs_left (neg : W.Odd) (a b : ℤ) : atom W |a| b = atom W a b := by
-  rcases abs_choice a with h | h <;> simp only [h, atom_neg_left neg]
+  rcases abs_choice a with h | h <;> simp [h, atom_neg_left neg]
 
 @[simp]
 lemma atom_abs_right (a b : ℤ) : atom W a |b| = atom W a b := by
-  rcases abs_choice b with h | h <;> simp only [h, atom_neg_right]
+  rcases abs_choice b with h | h <;> simp [h, atom_neg_right]
 
 lemma atom_even (a b : ℤ) : atom W (2 * a) (2 * b) = W (a + b) * W (a - b) := by
   simp_rw [atom, ← mul_add, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero]

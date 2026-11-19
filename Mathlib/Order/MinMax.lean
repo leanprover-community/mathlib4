@@ -124,7 +124,7 @@ lemma min_right_comm (a b c : α) : min (min a b) c = min (min a c) b := by
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
   rcases le_total a b with h | h <;>
-    simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
+    simp [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
 
 @[to_dual]
 theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =

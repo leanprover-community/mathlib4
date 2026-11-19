@@ -117,7 +117,7 @@ protected lemma add_sup (hs : s.Nonempty) (f : ι → M) (a : M) :
 
 lemma sup_add_sup (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → M) (g : κ → M) :
     s.sup f + t.sup g = (s ×ˢ t).sup fun ij ↦ f ij.1 + g ij.2 := by
-  simp only [Finset.sup_add hs, Finset.add_sup ht, Finset.sup_product_left]
+  simp [Finset.sup_add hs, Finset.add_sup ht, Finset.sup_product_left]
 
 end CanonicallyLinearOrderedAddCommMonoid
 end Finset

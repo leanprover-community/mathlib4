@@ -82,7 +82,7 @@ include hG in
 theorem adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) :
     (G.adjMatrix R ^ 2 : Matrix V V R) v w = 1 := by
   rw [sq, ← Nat.cast_one, ← hG hvw]
-  simp only [mul_adjMatrix_apply, neighborFinset_eq_filter, adjMatrix_apply,
+  simp [mul_adjMatrix_apply, neighborFinset_eq_filter, adjMatrix_apply,
     sum_boole, filter_filter, and_comm, commonNeighbors,
     Fintype.card_ofFinset (s := filter (fun x ↦ x ∈ G.neighborSet v ∩ G.neighborSet w) univ),
     Set.mem_inter_iff, mem_neighborSet]
@@ -116,7 +116,7 @@ theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree
     ← adjMatrix_pow_three_of_not_adj ℕ hG fun h ↦ hvw h.symm]
   conv_lhs => rw [← transpose_adjMatrix]
   simp only [pow_succ _ 2, sq, ← transpose_mul, transpose_apply]
-  simp only [mul_assoc]
+  simp [mul_assoc]
 
 open scoped Classical in
 include hG in
@@ -191,7 +191,7 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
     rw [Finset.sum_const_nat, card_erase_of_mem (mem_univ v), mul_one]; · rfl
     intro x hx; simp [(ne_of_mem_erase hx).symm]
   · rw [sq, ← mulVec_mulVec]
-    simp only [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
+    simp [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
       card_neighborSet_eq_degree, hd v, Function.const_def, adjMatrix_mulVec_apply _ _ (mulVec _ _),
       mul_one, sum_const, Set.toFinset_card, smul_eq_mul, Nat.cast_id]
 
@@ -211,7 +211,7 @@ open scoped Classical in
 theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R * of (fun _ _ => 1) = of (fun _ _ => (d : R)) := by
   ext x
-  simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_cast,
+  simp [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_cast,
     of_apply]
 
 open scoped Classical in

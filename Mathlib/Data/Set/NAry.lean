@@ -187,7 +187,7 @@ theorem image2_congr' (h : ∀ a b, f a b = f' a b) : image2 f s t = image2 f' s
 
 theorem image_image2 (f : α → β → γ) (g : γ → δ) :
     g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
-  simp only [← image_prod, image_image]
+  simp [← image_prod, image_image]
 
 theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
     image2 f (g '' s) t = image2 (fun a b => f (g a) b) s t := by
@@ -212,7 +212,7 @@ lemma image2_range (f : α' → β' → γ) (g : α → α') (h : β → β') :
 theorem image2_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
     (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
     image2 f (image2 g s t) u = image2 f' s (image2 g' t u) :=
-  eq_of_forall_subset_iff fun _ ↦ by simp only [image2_subset_iff, forall_mem_image2, h_assoc]
+  eq_of_forall_subset_iff fun _ ↦ by simp [image2_subset_iff, forall_mem_image2, h_assoc]
 
 theorem image2_comm {g : β → α → γ} (h_comm : ∀ a b, f a b = g b a) : image2 f s t = image2 g t s :=
   (image2_swap _ _ _).trans <| by simp_rw [h_comm]

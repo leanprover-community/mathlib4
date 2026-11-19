@@ -155,7 +155,7 @@ lemma hom_rec_of_kanComplex {x y : X _⦋0⦌} (motive : (mk x ⟶ mk y) → Pro
 lemma homMk_eq_iff_nonempty_homotopyL {x y : X _⦋0⦌} {e e' : Edge x y} :
     homMk e = homMk e' ↔ Nonempty (Edge.HomotopyL e e') := by
   change _ ↔ Truncated.HomotopicL e.toTruncated e'.toTruncated
-  simp only [← Truncated.HomotopyCategory₂.homMk_eq_iff_homotopicL,
+  simp [← Truncated.HomotopyCategory₂.homMk_eq_iff_homotopicL,
     ← (isoCatFundamentalGroupoid X).functor.map_injective_iff,
     isoCatFundamentalGroupoid_functor_map_homMk]
 

@@ -44,10 +44,10 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
     intro a b
     have h₁ : (1 + 1 : R) * (a + b) = a + (a + b) + b := by
       rw [left_distrib]
-      simp only [right_distrib, one_mul, add_assoc]
+      simp [right_distrib, one_mul, add_assoc]
     have h₂ : (1 + 1 : R) * (a + b) = a + (b + a) + b := by
       rw [right_distrib]
-      simp only [left_distrib, one_mul, add_assoc]
+      simp [left_distrib, one_mul, add_assoc]
     have := h₁.symm.trans h₂
     rwa [add_left_inj, add_right_inj] at this
   haveI zero_mul : ∀ a, (0 : R) * a = 0 := fun a => by

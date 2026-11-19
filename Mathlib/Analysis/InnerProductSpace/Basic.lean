@@ -75,7 +75,7 @@ theorem inner_add_left (x y z : E) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
 
 theorem inner_add_right (x y z : E) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ := by
   rw [← inner_conj_symm, inner_add_left, map_add]
-  simp only [inner_conj_symm]
+  simp [inner_conj_symm]
 
 theorem inner_re_symm (x y : E) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← inner_conj_symm, conj_re]
 
@@ -177,26 +177,26 @@ protected theorem Finsupp.inner_sum {ι : Type*} {M : Type*} [Zero M] (l : ι �
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp +contextual only [DFinsupp.sum, sum_inner]
+  simp +contextual [DFinsupp.sum, sum_inner]
 
 protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp +contextual only [DFinsupp.sum, inner_sum]
+  simp +contextual [DFinsupp.sum, inner_sum]
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
   rw [← zero_smul 𝕜 (0 : E), inner_smul_left, map_zero, zero_mul]
 
 theorem inner_re_zero_left (x : E) : re ⟪0, x⟫ = 0 := by
-  simp only [inner_zero_left, map_zero]
+  simp [inner_zero_left, map_zero]
 
 @[simp]
 theorem inner_zero_right (x : E) : ⟪x, 0⟫ = 0 := by
   rw [← inner_conj_symm, inner_zero_left, map_zero]
 
 theorem inner_re_zero_right (x : E) : re ⟪x, 0⟫ = 0 := by
-  simp only [inner_zero_right, map_zero]
+  simp [inner_zero_right, map_zero]
 
 theorem inner_self_nonneg {x : E} : 0 ≤ re ⟪x, x⟫ :=
   PreInnerProductSpace.toCore.re_inner_nonneg x
@@ -232,7 +232,7 @@ theorem inner_neg_left (x y : E) : ⟪-x, y⟫ = -⟪x, y⟫ := by
 
 @[simp]
 theorem inner_neg_right (x y : E) : ⟪x, -y⟫ = -⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_neg_left]; simp only [map_neg, inner_conj_symm]
+  rw [← inner_conj_symm, inner_neg_left]; simp [map_neg, inner_conj_symm]
 
 theorem inner_neg_neg (x y : E) : ⟪-x, -y⟫ = ⟪x, y⟫ := by simp
 
@@ -493,7 +493,7 @@ theorem parallelogram_law_with_norm_mul (x y : E) :
     ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) := by
   simp only [← @inner_self_eq_norm_mul_norm 𝕜]
   rw [← re.map_add, parallelogram_law, two_mul, two_mul]
-  simp only [re.map_add]
+  simp [re.map_add]
 
 include 𝕜 in
 theorem parallelogram_law_with_norm (x y : E) :
@@ -556,7 +556,7 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
   rw [← re_add_im ⟪x, y⟫, re_inner_eq_norm_add_mul_self_sub_norm_sub_mul_self_div_four,
     im_inner_eq_norm_sub_i_smul_mul_self_sub_norm_add_i_smul_mul_self_div_four]
   push_cast
-  simp only [sq, ← mul_div_right_comm, ← add_div]
+  simp [sq, ← mul_div_right_comm, ← add_div]
 
 /-- Polarization identity: The real inner product, in terms of the norm. -/
 theorem real_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two (x y : F) :
@@ -587,7 +587,7 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (x y : E) (h : ⟪x,
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ := by
   rw [@norm_add_mul_self 𝕜, add_right_cancel_iff, add_eq_left, mul_eq_zero]
   apply Or.inr
-  simp only [h, zero_re]
+  simp [h, zero_re]
 
 /-- Pythagorean theorem, vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_real {x y : F} (h : ⟪x, y⟫_ℝ = 0) :
@@ -626,7 +626,7 @@ theorem real_inner_add_sub_eq_zero_iff (x y : F) : ⟪x + y, x - y⟫_ℝ = 0 �
 /-- Given two orthogonal vectors, their sum and difference have equal norms. -/
 theorem norm_sub_eq_norm_add {v w : E} (h : ⟪v, w⟫ = 0) : ‖w - v‖ = ‖w + v‖ := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg _) (norm_nonneg _)]
-  simp only [h, ← @inner_self_eq_norm_mul_norm 𝕜, sub_neg_eq_add, sub_zero, map_sub, zero_re,
+  simp [h, ← @inner_self_eq_norm_mul_norm 𝕜, sub_neg_eq_add, sub_zero, map_sub, zero_re,
     zero_sub, add_zero, map_add, inner_add_right, inner_sub_left, inner_sub_right, inner_re_symm,
     zero_add]
 
@@ -747,7 +747,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
     rintro (rfl | ⟨r, rfl⟩) <;>
     simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K,
       sq, mul_left_comm]
-  tfae_have 3 ↔ 4 := by simp only [Submodule.mem_span_singleton, eq_comm]
+  tfae_have 3 ↔ 4 := by simp [Submodule.mem_span_singleton, eq_comm]
   tfae_finish
 
 /-- If the inner product of two vectors is equal to the product of their norms, then the two vectors
@@ -975,11 +975,11 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
     conj_inner_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
-      simp +instances only [Inner.rclikeToReal, inner_add_left, map_add]
+      simp +instances [Inner.rclikeToReal, inner_add_left, map_add]
     smul_left := fun x y r => by
       let := NormedSpace.restrictScalars ℝ 𝕜 E
       have : r • x = (r : 𝕜) • x := rfl
-      simp +instances only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
+      simp +instances [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
         re_ofReal_mul] }
 
 variable {E}

@@ -158,7 +158,7 @@ lemma inr_fst_assoc {K : CochainComplex C ℤ} {d e f : ℤ} (γ : Cochain F K d
 
 @[simp]
 lemma inr_snd_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain G K d) (he : 0 + d = e) :
-    (Cochain.ofHom (inr φ)).comp ((snd φ).comp γ he) (by simp only [← he, zero_add]) = γ := by
+    (Cochain.ofHom (inr φ)).comp ((snd φ).comp γ he) (by simp [← he, zero_add]) = γ := by
   obtain rfl : d = e := by lia
   rw [← Cochain.comp_assoc_of_first_is_zero_cochain, inr_snd, Cochain.id_comp]
 
@@ -476,7 +476,7 @@ noncomputable def liftCocycle {K : CochainComplex C ℤ} {n m : ℤ}
     (eq : δ n m β + α.1.comp (Cochain.ofHom φ) (add_zero m) = 0) :
     Cocycle K (mappingCone φ) n :=
   Cocycle.mk (liftCochain φ α β h) m h (by
-    simp only [δ_liftCochain φ α β h (m + 1) rfl, eq,
+    simp [δ_liftCochain φ α β h (m + 1) rfl, eq,
       Cocycle.δ_eq_zero, Cochain.zero_comp, neg_zero, add_zero])
 
 section
@@ -494,7 +494,7 @@ noncomputable def lift :
 @[simp]
 lemma ofHom_lift :
     Cochain.ofHom (lift φ α β eq) = liftCochain φ α β (zero_add 1) := by
-  simp only [lift, Cocycle.cochain_ofHom_homOf_eq_coe, liftCocycle_coe]
+  simp [lift, Cocycle.cochain_ofHom_homOf_eq_coe, liftCocycle_coe]
 
 @[reassoc (attr := simp)]
 lemma lift_f_fst_v (p q : ℤ) (hpq : p + 1 = q) :
@@ -561,7 +561,7 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
     (eq' : δ (-1) 0 α' = Cochain.ofHom (φ ≫ β')) (n n' : ℤ) (hnn' : n + 1 = n') :
     (lift φ α β eq).f n ≫ (desc φ α' β' eq').f n =
     α.1.v n n' hnn' ≫ α'.v n' n (by omega) + β.v n n (add_zero n) ≫ β'.f n := by
-  simp only [lift, desc, Cocycle.homOf_f, liftCocycle_coe, descCocycle_coe, Cocycle.ofHom_coe,
+  simp [lift, desc, Cocycle.homOf_f, liftCocycle_coe, descCocycle_coe, Cocycle.ofHom_coe,
     liftCochain_v_descCochain_v φ α.1 β α' (Cochain.ofHom β') (zero_add 1) (neg_add_cancel 1) 0
     (add_zero 0) n n n (add_zero n) (add_zero n) n' hnn', Cochain.ofHom_v]
 
@@ -633,11 +633,11 @@ noncomputable def mapHomologicalComplexIso :
       mapHomologicalComplexXIso'_hom, mapHomologicalComplexXIso'_hom]
     constructor
     · dsimp
-      simp only [Functor.mapHomologicalComplex_obj_X, comp_neg, add_comp, assoc, inl_v_fst_v_assoc,
+      simp [Functor.mapHomologicalComplex_obj_X, comp_neg, add_comp, assoc, inl_v_fst_v_assoc,
         inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero, inl_v_fst_v, comp_id, inr_f_fst_v,
         ← H.map_comp, d_fst_v φ n (n + 1) (n + 2) rfl (by lia), Functor.map_neg]
     · dsimp
-      simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
+      simp [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
         Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc,
         inr_f_snd_v_assoc, zero_add, inl_v_snd_v, inr_f_snd_v, comp_id, ← H.map_comp,
         d_snd_v φ n (n + 1) rfl, Functor.map_add])
@@ -648,7 +648,7 @@ lemma map_inr :
     inr ((Functor.mapHomologicalComplex H (ComplexShape.up ℤ)).map φ) := by
   ext n
   dsimp [mapHomologicalComplexIso]
-  simp only [mapHomologicalComplexXIso_eq φ H n (n + 1) rfl, mappingCone.ext_to_iff _ _ _ rfl,
+  simp [mapHomologicalComplexXIso_eq φ H n (n + 1) rfl, mappingCone.ext_to_iff _ _ _ rfl,
     Functor.mapHomologicalComplex_obj_X, mapHomologicalComplexXIso'_hom, comp_add,
     add_comp, assoc, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero, add_zero, inl_v_snd_v,
     inr_f_snd_v, zero_add, ← H.map_comp, H.map_zero, H.map_id, and_self]

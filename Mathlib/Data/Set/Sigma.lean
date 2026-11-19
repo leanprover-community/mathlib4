@@ -186,7 +186,7 @@ theorem sigma_nonempty_iff : (s.sigma t).Nonempty ↔ ∃ i ∈ s, (t i).Nonempt
 theorem sigma_eq_empty_iff : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ :=
   not_nonempty_iff_eq_empty.symm.trans <|
     sigma_nonempty_iff.not.trans <| by
-      simp only [not_nonempty_iff_eq_empty, not_and, not_exists]
+      simp [not_nonempty_iff_eq_empty, not_and, not_exists]
 
 theorem image_sigmaMk_subset_sigma_left {a : ∀ i, α i} (ha : ∀ i, a i ∈ t i) :
     (fun i ↦ Sigma.mk i (a i)) '' s ⊆ s.sigma t :=

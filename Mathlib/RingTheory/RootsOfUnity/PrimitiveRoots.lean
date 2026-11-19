@@ -121,7 +121,7 @@ theorem of_subsingleton [Subsingleton M] (x : M) : IsPrimitiveRoot x 1 :=
 
 theorem pow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℕ) : ζ ^ l = 1 ↔ k ∣ l :=
   ⟨h.dvd_of_pow_eq_one l, by
-    rintro ⟨i, rfl⟩; simp only [pow_mul, h.pow_eq_one, one_pow]⟩
+    rintro ⟨i, rfl⟩; simp [pow_mul, h.pow_eq_one, one_pow]⟩
 
 theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : k ≠ 0) : IsUnit ζ :=
   .of_mul_eq_one (ζ ^ (k - 1)) <| by rw [← pow_succ', Nat.sub_one_add_one h0, h.pow_eq_one]
@@ -168,7 +168,7 @@ theorem coe_submonoidClass_iff {M B : Type*} [CommMonoid M] [SetLike B M] [Submo
 
 @[simp]
 theorem coe_units_iff {ζ : Mˣ} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoot ζ k := by
-  simp only [iff_def, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
+  simp [iff_def, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
 
 lemma isUnit_unit {ζ : M} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
     IsPrimitiveRoot (hζ.isUnit hn).unit n := coe_units_iff.mp hζ
@@ -362,7 +362,7 @@ theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 �
     rw [← h.pow_eq_one_iff_dvd, ← inv_inj, ← zpow_neg, ← hl', zpow_natCast, inv_one]
 
 theorem inv (h : IsPrimitiveRoot ζ k) : IsPrimitiveRoot ζ⁻¹ k :=
-  { pow_eq_one := by simp only [h.pow_eq_one, inv_one, inv_pow]
+  { pow_eq_one := by simp [h.pow_eq_one, inv_one, inv_pow]
     dvd_of_pow_eq_one := by
       intro l hl
       apply h.dvd_of_pow_eq_one l
@@ -408,7 +408,7 @@ variable {ζ : R} [CommRing R] [IsDomain R]
 @[simp]
 theorem primitiveRoots_one : primitiveRoots 1 R = {(1 : R)} := by
   refine Finset.eq_singleton_iff_unique_mem.2 ⟨?_, fun x hx ↦ ?_⟩
-  · simp only [IsPrimitiveRoot.one_right_iff, mem_primitiveRoots zero_lt_one]
+  · simp [IsPrimitiveRoot.one_right_iff, mem_primitiveRoots zero_lt_one]
   · rwa [mem_primitiveRoots zero_lt_one, IsPrimitiveRoot.one_right_iff] at hx
 
 theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
@@ -495,7 +495,7 @@ alias zmodEquivZPowers_apply_coe_int := zmodEquivZPowers_apply_intCast
 theorem zmodEquivZPowers_apply_natCast (i : ℕ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   have : (i : ZMod k) = (i : ℤ) := by norm_cast
-  simp only [this, zmodEquivZPowers_apply_intCast, zpow_natCast]
+  simp [this, zmodEquivZPowers_apply_intCast, zpow_natCast]
 
 @[deprecated (since := "2026-10-13")]
 alias zmodEquivZPowers_apply_coe_nat := zmodEquivZPowers_apply_natCast
@@ -601,7 +601,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (
   obtain (rfl | hn) := n.eq_zero_or_pos; · simp
   by_cases hα : α = 0
   · rw [hα, zero_pow hn.ne'] at e
-    simp only [hα, e.symm, nthRoots_zero_right, mul_zero,
+    simp [hα, e.symm, nthRoots_zero_right, mul_zero,
       Multiset.map_const', Multiset.card_range]
   classical
   symm; apply Multiset.eq_of_le_of_card_le
@@ -775,7 +775,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' [DecidableEq R] {n : ℕ} [NeZer
 theorem nthRoots_one_eq_biUnion_primitiveRoots [DecidableEq R] {n : ℕ} :
     nthRootsFinset n (1 : R) = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
   by_cases hn : n = 0
-  · simp only [hn, nthRootsFinset_zero, Nat.divisors_zero, biUnion_empty]
+  · simp [hn, nthRootsFinset_zero, Nat.divisors_zero, biUnion_empty]
   have : NeZero n := ⟨hn⟩
   exact nthRoots_one_eq_biUnion_primitiveRoots'
 
@@ -905,9 +905,9 @@ lemma ZMod.exists_monoidHom_apply_ne_one {M : Type*} [CommMonoid M] {n : ℕ} [N
     ∃ φ : Multiplicative (ZMod n) →* Mˣ, φ (Multiplicative.ofAdd a) ≠ 1 := by
   obtain ⟨ζ, hζ⟩ := hG
   have hc : n = Nat.card (Multiplicative (ZMod n)) := by
-    simp only [Nat.card_eq_fintype_card, Fintype.card_multiplicative, card]
+    simp [Nat.card_eq_fintype_card, Fintype.card_multiplicative, card]
   exact IsCyclic.exists_apply_ne_one
     (hc ▸ ⟨hζ.toRootsOfUnity.val, IsPrimitiveRoot.coe_units_iff.mp hζ⟩) <|
-    by simp only [ne_eq, ofAdd_eq_one, ha, not_false_eq_true]
+    by simp [ne_eq, ofAdd_eq_one, ha, not_false_eq_true]
 
 end cyclic

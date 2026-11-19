@@ -80,7 +80,7 @@ lemma homologyπ_singleObjHomologySelfIso_hom :
 lemma singleObjHomologySelfIso_hom_singleObjHomologySelfIso_inv :
     (singleObjCyclesSelfIso c j A).hom ≫ (singleObjHomologySelfIso c j A).inv =
       ((single C c j).obj A).homologyπ j := by
-  simp only [← cancel_mono (singleObjHomologySelfIso _ _ _).hom, assoc,
+  simp [← cancel_mono (singleObjHomologySelfIso _ _ _).hom, assoc,
     Iso.inv_hom_id, comp_id, homologyπ_singleObjHomologySelfIso_hom]
 
 @[reassoc (attr := simp)]
@@ -135,7 +135,7 @@ lemma singleObjCyclesSelfIso_hom_naturality :
       (singleObjCyclesSelfIso c j A).hom ≫ f := by
   rw [← cancel_mono (singleObjCyclesSelfIso c j B).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
     ← cancel_mono (iCycles _ _)]
-  simp only [cyclesMap_i, singleObjCyclesSelfIso, Iso.trans_hom, iCyclesIso_hom, Iso.trans_inv,
+  simp [cyclesMap_i, singleObjCyclesSelfIso, Iso.trans_hom, iCyclesIso_hom, Iso.trans_inv,
     assoc, iCyclesIso_inv_hom_id, comp_id, single_map_f_self]
 
 @[reassoc (attr := simp)]

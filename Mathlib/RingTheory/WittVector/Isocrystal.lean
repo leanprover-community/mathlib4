@@ -187,7 +187,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     refine ⟨a, ?_, ha.symm⟩
     intro ha'
     apply this
-    simp only [← ha, ha', zero_smul]
+    simp [← ha, ha', zero_smul]
   obtain ⟨b, hb, m, hmb⟩ := WittVector.exists_frobenius_solution_fractionRing p ha
   replace hmb : φ(p, k) b * a = (p : K(p, k)) ^ m * b := by convert! hmb
   use m

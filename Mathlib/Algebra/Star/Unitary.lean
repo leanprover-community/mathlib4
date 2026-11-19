@@ -37,11 +37,11 @@ unitary
 -/
 def unitary (R : Type*) [Monoid R] [StarMul R] : Submonoid R where
   carrier := { U | star U * U = 1 ∧ U * star U = 1 }
-  one_mem' := by simp only [mul_one, and_self_iff, Set.mem_ofPred_eq, star_one]
+  one_mem' := by simp [mul_one, and_self_iff, Set.mem_ofPred_eq, star_one]
   mul_mem' := @fun U B ⟨hA₁, hA₂⟩ ⟨hB₁, hB₂⟩ => by
     refine ⟨?_, ?_⟩
     · calc
-        star (U * B) * (U * B) = star B * star U * U * B := by simp only [mul_assoc, star_mul]
+        star (U * B) * (U * B) = star B * star U * U * B := by simp [mul_assoc, star_mul]
         _ = star B * (star U * U) * B := by rw [← mul_assoc]
         _ = 1 := by rw [hA₁, mul_one, hB₁]
     · calc
@@ -440,7 +440,7 @@ theorem coe_inv (U : unitary R) : ↑U⁻¹ = (U⁻¹ : R) :=
 
 @[norm_cast]
 theorem coe_div (U₁ U₂ : unitary R) : ↑(U₁ / U₂) = (U₁ / U₂ : R) := by
-  simp only [div_eq_mul_inv, coe_inv, Submonoid.coe_mul]
+  simp [div_eq_mul_inv, coe_inv, Submonoid.coe_mul]
 
 @[norm_cast]
 theorem coe_zpow (U : unitary R) (z : ℤ) : ↑(U ^ z) = (U : R) ^ z := by
@@ -497,7 +497,7 @@ end Unitary
 
 theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarRing R] {p : R}
     (hp : IsStarProjection p) : 2 * p - 1 ∈ unitary R := by
-  simp only [two_mul, Unitary.mem_iff, star_sub, star_add,
+  simp [two_mul, Unitary.mem_iff, star_sub, star_add,
     hp.isSelfAdjoint.star_eq, star_one, mul_sub, mul_add,
     sub_mul, add_mul, hp.isIdempotentElem.eq, one_mul, add_sub_cancel_right,
     mul_one, sub_sub_cancel, and_self]

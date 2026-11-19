@@ -120,7 +120,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
         (summable_one_div_pow_of_le m1 fun _ => le_self_add)
     -- split the sum in the exponent and massage
     _ = ∑' i : ℕ, (1 / m) ^ i * (1 / m ^ (n + 1)!) := by
-      simp only [pow_add, one_div, mul_inv, inv_pow]
+      simp [pow_add, one_div, mul_inv, inv_pow]
     -- factor the constant `(1 / m ^ (n + 1)!)` out of the series
     _ = (∑' i, (1 / m) ^ i) * (1 / m ^ (n + 1)!) := tsum_mul_right
     -- the series is the geometric series

@@ -43,12 +43,12 @@ def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : P
 distances. -/
 theorem isometry_iff_nndist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, nndist (f x) (f y) = nndist x y := by
-  simp only [Isometry, edist_nndist, ENNReal.coe_inj]
+  simp [Isometry, edist_nndist, ENNReal.coe_inj]
 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves distances. -/
 theorem isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, dist (f x) (f y) = dist x y := by
-  simp only [isometry_iff_nndist_eq, ← coe_nndist, NNReal.coe_inj]
+  simp [isometry_iff_nndist_eq, ← coe_nndist, NNReal.coe_inj]
 
 /-- An isometry preserves distances. -/
 alias ⟨Isometry.dist_eq, _⟩ := isometry_iff_dist_eq
@@ -79,7 +79,7 @@ theorem lipschitzWith (h : Isometry f) : LipschitzWith 1 f :=
 @[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
 
 theorem antilipschitzWith (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
-  simp only [h x y, ENNReal.coe_one, one_mul, le_refl]
+  simp [h x y, ENNReal.coe_one, one_mul, le_refl]
 
 @[deprecated (since := "2026-08-16")] alias antilipschitz := antilipschitzWith
 
@@ -93,12 +93,12 @@ theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
 
 theorem prodMap {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
-  simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
+  simp [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
 
 protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
     Isometry (Pi.map f) := fun x y => by
-  simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
+  simp [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
 
 protected lemma single [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, PseudoEMetricSpace (E i)]
     [∀ i, Zero (E i)] (i : ι) :
@@ -160,7 +160,7 @@ theorem preimage_eball (h : Isometry f) (x : α) (r : ℝ≥0∞) :
 
 /-- Isometries preserve the diameter in pseudoemetric spaces. -/
 theorem ediam_image (hf : Isometry f) (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
-  eq_of_forall_ge_iff fun d => by simp only [Metric.ediam_le_iff, forall_mem_image, hf.edist_eq]
+  eq_of_forall_ge_iff fun d => by simp [Metric.ediam_le_iff, forall_mem_image, hf.edist_eq]
 
 theorem ediam_range (hf : Isometry f) : Metric.ediam (range f) = Metric.ediam (univ : Set α) := by
   rw [← image_univ]
@@ -585,7 +585,7 @@ theorem mul_apply (e₁ e₂ : α ≃ᵢ α) (x : α) : (e₁ * e₂) x = e₁ (
 @[simp] theorem apply_inv_self (e : α ≃ᵢ α) (x : α) : e (e⁻¹ x) = x := e.apply_symm_apply x
 
 theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpace β := by
-  simp only [completeSpace_iff_isComplete_univ, ← e.range_eq_univ, ← image_univ,
+  simp [completeSpace_iff_isComplete_univ, ← e.range_eq_univ, ← image_univ,
     isComplete_image_iff e.isometry.isUniformInducing]
 
 protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=

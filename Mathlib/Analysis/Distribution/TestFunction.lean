@@ -176,7 +176,7 @@ theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : 
 section AddCommGroup
 
 instance : Zero 𝓓^{n}(Ω, F) where
-  zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
+  zero := ⟨0, contDiff_zero_fun, .zero, by simp [tsupport_zero, empty_subset]⟩
 
 instance : IsZeroApply 𝓓^{n}(Ω, F) where
 

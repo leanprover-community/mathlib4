@@ -195,7 +195,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
 
 theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R →+* S}
     (hf : Injective f) : (map f p).degrees = p.degrees := by
-  simp only [degrees, MvPolynomial.support_map_of_injective _ hf]
+  simp [degrees, MvPolynomial.support_map_of_injective _ hf]
 
 theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f) :
     degrees (rename f p) = (degrees p).map f := by
@@ -238,7 +238,7 @@ lemma degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
 
 @[simp]
 theorem degreeOf_zero (n : σ) : degreeOf n (0 : MvPolynomial σ R) = 0 := by
-  classical simp only [degreeOf_def, degrees_zero, Multiset.count_zero]
+  classical simp [degreeOf_def, degrees_zero, Multiset.count_zero]
 
 @[simp]
 theorem degreeOf_one (n : σ) : degreeOf n (1 : MvPolynomial σ R) = 0 := by
@@ -251,7 +251,7 @@ theorem degreeOf_C (a : R) (x : σ) : degreeOf x (C a : MvPolynomial σ R) = 0 :
 theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
     degreeOf i (X j : MvPolynomial σ R) = if i = j then 1 else 0 := by
   by_cases c : i = j
-  · simp only [c, ite_true, degreeOf_def, degrees_X, Multiset.count_singleton]
+  · simp [c, ite_true, degreeOf_def, degrees_X, Multiset.count_singleton]
   simp [c, degreeOf_def, degrees_X]
 
 @[simp] theorem degreeOf_X_self [Nontrivial R] (i : σ) :
@@ -311,7 +311,7 @@ Note that `degreeOf_mul_eq` proves equality with `NoZeroDivisors R` and nonzero 
 theorem degreeOf_prod_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
     degreeOf i (∏ j ∈ s, f j) ≤ ∑ j ∈ s, (f j).degreeOf i := by
   simp_rw [degreeOf_eq_sup]
-  exact supDegree_prod_le (by simp only [coe_zero, Pi.zero_apply]) (by simp)
+  exact supDegree_prod_le (by simp [coe_zero, Pi.zero_apply]) (by simp)
 
 /--
 Note that `degreeOf_pow_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
@@ -408,13 +408,13 @@ theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
   convert Multiset.count_le_of_le i degrees_mul_le
-  simp only [degrees_C, zero_add]
+  simp [degrees_C, zero_add]
 
 theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (p * C c).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
   convert Multiset.count_le_of_le i degrees_mul_le
-  simp only [degrees_C, add_zero]
+  simp [degrees_C, add_zero]
 
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)
     (i : σ) : degreeOf (f i) (rename f p) = degreeOf i p := by
@@ -468,7 +468,7 @@ theorem totalDegree_one : (1 : MvPolynomial σ R).totalDegree = 0 :=
 theorem totalDegree_X {R} [CommSemiring R] [Nontrivial R] (s : σ) :
     (X s : MvPolynomial σ R).totalDegree = 1 := by
   rw [totalDegree, support_X]
-  simp only [Finset.sup, Finsupp.sum_single_index, Finset.fold_singleton, sup_bot_eq]
+  simp [Finset.sup, Finsupp.sum_single_index, Finset.fold_singleton, sup_bot_eq]
 
 theorem totalDegree_add (a b : MvPolynomial σ R) :
     (a + b).totalDegree ≤ max a.totalDegree b.totalDegree :=
@@ -521,7 +521,7 @@ theorem totalDegree_monomial (s : σ →₀ ℕ) {c : R} (hc : c ≠ 0) :
 theorem totalDegree_monomial_le (s : σ →₀ ℕ) (c : R) :
     (monomial s c).totalDegree ≤ s.sum fun _ ↦ id := by
   if hc : c = 0 then
-    simp only [hc, map_zero, totalDegree_zero, zero_le]
+    simp [hc, map_zero, totalDegree_zero, zero_le]
   else
     rw [totalDegree_monomial _ hc, Function.id_def]
 
@@ -646,7 +646,7 @@ lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ
 variable (s) in
 lemma degreesLE_nsmul : ∀ n, degreesLE R σ (n • s) = degreesLE R σ s ^ n
   | 0 => by simp
-  | k + 1 => by simp only [pow_succ, degreesLE_nsmul, degreesLE_add, add_smul, one_smul]
+  | k + 1 => by simp [pow_succ, degreesLE_nsmul, degreesLE_add, add_smul, one_smul]
 
 end degreesLE
 end CommSemiring

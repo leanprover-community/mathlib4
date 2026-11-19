@@ -56,7 +56,7 @@ theorem einfsep_zero : s.einfsep = 0 ↔ ∀ C > 0, ∃ x ∈ s, ∃ y ∈ s, x 
 
 theorem einfsep_pos : 0 < s.einfsep ↔ ∃ C > 0, ∀ x ∈ s, ∀ y ∈ s, x ≠ y → C ≤ edist x y := by
   rw [pos_iff_ne_zero, Ne, einfsep_zero]
-  simp only [not_forall, not_exists, not_lt, exists_prop, not_and]
+  simp [not_forall, not_exists, not_lt, exists_prop, not_and]
 
 theorem einfsep_top :
     s.einfsep = ∞ ↔ ∀ x ∈ s, ∀ y ∈ s, x ≠ y → edist x y = ∞ := by
@@ -317,7 +317,7 @@ variable [PseudoEMetricSpace α] {x y : α}
 theorem infsep_pair_eq_toReal : ({x, y} : Set α).infsep = (edist x y).toReal := by
   by_cases hxy : x = y
   · rw [hxy]
-    simp only [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.toReal_zero]
+    simp [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.toReal_zero]
   · rw [infsep, einfsep_pair hxy]
 
 end PseudoEMetricSpace
@@ -360,7 +360,7 @@ theorem infsep_pair : ({x, y} : Set α).infsep = dist x y := by
 
 theorem infsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
     ({x, y, z} : Set α).infsep = dist x y ⊓ dist x z ⊓ dist y z := by
-  simp only [infsep, einfsep_triple hxy hyz hxz, ENNReal.toReal_inf, edist_ne_top x y,
+  simp [infsep, einfsep_triple hxy hyz hxz, ENNReal.toReal_inf, edist_ne_top x y,
     edist_ne_top x z, edist_ne_top y z, dist_edist, Ne, inf_eq_top_iff, and_self_iff,
     not_false_iff]
 

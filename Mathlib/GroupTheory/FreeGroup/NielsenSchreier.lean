@@ -207,7 +207,7 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inl e, H⟩), homOfPath]
     rfl
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
-    simp only [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
+    simp [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -254,7 +254,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
           apply dite_eq_right h
         intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
-          simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
+          simp [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
             one_mul, Functor.map_inv, Functor.map_comp]
         intro a p
         induction p with

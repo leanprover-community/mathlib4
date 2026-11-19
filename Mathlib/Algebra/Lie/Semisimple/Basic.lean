@@ -148,7 +148,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           rw [← sSup_union, Set.union_sdiff_self, Set.union_eq_self_of_subset_left,
             IsSemisimple.sSup_atoms_eq_top]
           · apply LieSubmodule.mem_top
-          · simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq, hI]
+          · simp [Set.singleton_subset_iff, Set.mem_ofPred_eq, hI]
         -- Hence we can write `x` as `a + b` with `a ∈ I`
         -- and `b` in the supremum of the atoms not equal to `I`.
         rw [LieSubmodule.mem_sup] at hx
@@ -162,7 +162,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           simp only [exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
           exact lie_mem_right R I J ⟨a, ha⟩ y hy
         -- Finally `⁅b, y⁆ = 0`, by the independence of the atoms.
-        · suffices ⁅b, y.val⁆ = 0 by erw [this]; simp only [zero_mem]
+        · suffices ⁅b, y.val⁆ = 0 by erw [this]; simp [zero_mem]
           rw [← LieSubmodule.mem_bot (R := R) (L := L),
               ← (IsSemisimple.sSupIndep_isAtom hI).eq_bot]
           exact ⟨lie_mem_right R L I b y y.2, lie_mem_left _ _ _ _ _ hb⟩ }

@@ -172,15 +172,15 @@ noncomputable def mkD [Zero X] (f : X → R) (default : C(X, R)₀) : C(X, R)₀
 
 lemma mkD_of_continuous [Zero X] {f : X → R} {g : C(X, R)₀} (hf : Continuous f) (hf₀ : f 0 = 0) :
     mkD f g = ⟨⟨f, hf⟩, hf₀⟩ := by
-  simp only [mkD, And.intro hf hf₀, true_and, ↓reduceDIte]
+  simp [mkD, And.intro hf hf₀, true_and, ↓reduceDIte]
 
 lemma mkD_of_not_continuous [Zero X] {f : X → R} {g : C(X, R)₀} (hf : ¬ Continuous f) :
     mkD f g = g := by
-  simp only [mkD, not_and_of_not_left _ hf, ↓reduceDIte]
+  simp [mkD, not_and_of_not_left _ hf, ↓reduceDIte]
 
 lemma mkD_of_not_zero [Zero X] {f : X → R} {g : C(X, R)₀} (hf : f 0 ≠ 0) :
     mkD f g = g := by
-  simp only [mkD, not_and_of_not_right _ hf, ↓reduceDIte]
+  simp [mkD, not_and_of_not_right _ hf, ↓reduceDIte]
 
 lemma mkD_apply_of_continuous [Zero X] {f : X → R} {g : C(X, R)₀} {x : X}
     (hf : Continuous f) (hf₀ : f 0 = 0) :

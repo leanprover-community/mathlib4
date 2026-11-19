@@ -369,10 +369,10 @@ variable [DistribMulAction R C]
 @[simps toFun]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
   toFun := Function.prod f g
-  map_zero' := by simp only [Function.prod_apply, Prod.mk_zero_zero, map_zero]
-  map_add' x y := by simp only [Function.prod_apply, Prod.mk_add_mk, map_add]
-  map_mul' x y := by simp only [Function.prod_apply, Prod.mk_mul_mk, map_mul]
-  map_smul' c x := by simp only [Function.prod_apply, map_smul, MonoidHom.id_apply, Prod.smul_mk]
+  map_zero' := by simp [Function.prod_apply, Prod.mk_zero_zero, map_zero]
+  map_add' x y := by simp [Function.prod_apply, Prod.mk_add_mk, map_add]
+  map_mul' x y := by simp [Function.prod_apply, Prod.mk_mul_mk, map_mul]
+  map_smul' c x := by simp [Function.prod_apply, map_smul, MonoidHom.id_apply, Prod.smul_mk]
 
 theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl

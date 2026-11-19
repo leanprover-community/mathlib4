@@ -433,7 +433,7 @@ theorem toFilteriUnion_mono (I : Box ι) {l₁ l₂ : IntegrationParams} (h : l�
 
 theorem toFilteriUnion_congr (I : Box ι) (l : IntegrationParams) {π₁ π₂ : Prepartition I}
     (h : π₁.iUnion = π₂.iUnion) : l.toFilteriUnion I π₁ = l.toFilteriUnion I π₂ := by
-  simp only [toFilteriUnion, toFilterDistortioniUnion, h]
+  simp [toFilteriUnion, toFilterDistortioniUnion, h]
 
 theorem hasBasis_toFilterDistortion (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) :
     (l.toFilterDistortion I c).HasBasis l.RCond fun r => { π | l.MemBaseSet I c r π } :=

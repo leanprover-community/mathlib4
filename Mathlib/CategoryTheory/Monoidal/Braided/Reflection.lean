@@ -65,7 +65,7 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
   simp only [id_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
     braiding_naturality_right_assoc]
   slice_lhs 2 3 =>
-    simp only [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp,
+    simp [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp,
       Category.comp_id]
   slice_lhs 2 4 =>
     rw [← adj.unit_naturality_assoc]

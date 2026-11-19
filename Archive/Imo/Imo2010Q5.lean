@@ -143,7 +143,7 @@ lemma doubles {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 4) (z
     simp_rw [Pi.sub_apply, Pi.add_apply, single_eq_same, single_succ, single_succ', add_zero,
       tsub_zero, ← two_mul, ← mul_rotate, ← pow_succ, Nat.sub_add_cancel hc]
     rcases eq_or_ne k (i + 1) with rfl | hk'
-    · simp only [mul_comm, update_self]
+    · simp [mul_comm, update_self]
     · simp_rw [update_of_ne hk', Pi.sub_apply, Pi.add_apply, single_eq_of_ne hk', add_zero]
       rcases eq_or_ne k i with rfl | hk
       · simp_rw [single_eq_same, tsub_self]

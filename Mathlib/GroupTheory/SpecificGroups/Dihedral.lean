@@ -120,7 +120,7 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
 @[simp]
 theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
   induction k with
-  | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
+  | zero => simp [pow_zero, Nat.cast_zero, mul_zero, r_zero]
   | succ k IH =>
     rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
 
@@ -162,10 +162,10 @@ theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   · rw [Nat.card_eq_fintype_card, card]
 
 theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  simp only [r_pow, one_mul]
+  simp [r_pow, one_mul]
 
 theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  simp only [r_zpow, one_mul]
+  simp [r_zpow, one_mul]
 
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   simp
@@ -347,6 +347,6 @@ theorem center_eq_closure_of_even_ne_two (heven : Even n) (hn2 : n ≠ 2) :
 
 theorem center_eq_bot_of_zero : Subgroup.center (DihedralGroup 0) = ⊥ := by
   rw [center_eq_closure_of_even_ne_two (by decide) (by decide)]
-  simp only [Nat.zero_div, CharP.cast_eq_zero, r_zero, Subgroup.zpowers_one_eq_bot]
+  simp [Nat.zero_div, CharP.cast_eq_zero, r_zero, Subgroup.zpowers_one_eq_bot]
 
 end DihedralGroup

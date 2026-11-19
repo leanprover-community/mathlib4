@@ -150,7 +150,7 @@ instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G
 
 lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
     G.comap e.symm.toEmbedding = G.map e.toEmbedding := by
-  ext; simp only [← Equiv.eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
+  ext; simp [← Equiv.eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
     exists_eq_right_right, exists_eq_right]
 
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
@@ -760,13 +760,13 @@ theorem image_neighborSet : f '' G.neighborSet v = G'.neighborSet (f v) := by
 @[simp]
 theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
   ext v
-  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+  simp [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
     RelIso.symm_apply_apply, RelHom.id_apply]
 
 @[simp]
 theorem toHom_comp_symm_toHom : f.toHom.comp f.symm.toHom = Hom.id := by
   ext v
-  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+  simp [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
     RelIso.apply_symm_apply, RelHom.id_apply]
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
@@ -906,7 +906,7 @@ theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
-  map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
+  map_rel_iff' := by simp [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 implies_true]
 
 /-- The isomorphism between `completeBipartiteGraph V₁ W₁` and

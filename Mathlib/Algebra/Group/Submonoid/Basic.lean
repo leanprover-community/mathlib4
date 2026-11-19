@@ -84,11 +84,11 @@ theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S,
 
 @[to_additive (attr := simp)]
 theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_mem_range]
+  simp [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
-  simp only [iInf, coe_sInf, Set.biInter_range]
+  simp [iInf, coe_sInf, Set.biInter_range]
 
 /-- Submonoids of a monoid form a complete lattice. -/
 @[to_additive /-- The `AddSubmonoid`s of an `AddMonoid` form a complete lattice. -/]
@@ -283,7 +283,7 @@ theorem closure_insert_one (s : Set M) : closure (insert 1 s) = closure s := by
 theorem mem_iSup {ι : Sort*} (p : ι → Submonoid M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← closure_singleton_le_iff_mem, le_iSup_iff]
-  simp only [closure_singleton_le_iff_mem]
+  simp [closure_singleton_le_iff_mem]
 
 @[to_additive]
 theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
@@ -348,7 +348,7 @@ section IsUnit
 @[to_additive /-- The additive submonoid consisting of the additive units of an additive monoid -/]
 def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
   carrier := Set.ofPred IsUnit
-  one_mem' := by simp only [isUnit_one, Set.mem_ofPred_eq]
+  one_mem' := by simp [isUnit_one, Set.mem_ofPred_eq]
   mul_mem' := by
     intro a b ha hb
     rw [Set.mem_ofPred_eq] at *

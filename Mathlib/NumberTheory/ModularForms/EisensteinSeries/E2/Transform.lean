@@ -201,7 +201,7 @@ lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by
   have : γ ∈ Subgroup.closure {S, T} := by simp [SpecialLinearGroup.SL2Z_generators]
   induction this using Subgroup.closure_induction with
-  | one => simp only [SlashAction.slash_one, D2_one, sub_zero]
+  | one => simp [SlashAction.slash_one, D2_one, sub_zero]
   | mem g hg =>
       simp only [mem_insert_iff, mem_singleton_iff] at hg
       rcases hg with (h1 | h2)

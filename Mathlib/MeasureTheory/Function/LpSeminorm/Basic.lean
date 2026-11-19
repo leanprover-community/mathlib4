@@ -119,7 +119,7 @@ theorem eLpNorm_zero : eLpNorm (0 : α → ε) p μ = 0 := by
   by_cases h0 : p = 0
   · simp [h0, aestronglyMeasurable_zero]
   by_cases h_top : p = ∞
-  · simp only [h_top, eLpNorm_exponent_top aestronglyMeasurable_zero, eLpNormEssSup_zero]
+  · simp [h_top, eLpNorm_exponent_top aestronglyMeasurable_zero, eLpNormEssSup_zero]
   rw [← Ne] at h0
   simp [eLpNorm_eq_eLpNorm' h0 h_top aestronglyMeasurable_zero,
     ENNReal.toReal_pos h0 h_top]
@@ -336,14 +336,14 @@ theorem eLpNorm'_mono_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀�
 theorem eLpNorm'_congr_eNorm_ae {f : α → ε'} {g : α → ε''} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm' f q μ = eLpNorm' g q μ := by
   have : (‖f ·‖ₑ ^ q) =ᵐ[μ] (‖g ·‖ₑ ^ q) := hfg.mono fun x hx ↦ by simp [hx]
-  simp only [eLpNorm'_eq_lintegral_eNorm, lintegral_congr_ae this]
+  simp [eLpNorm'_eq_lintegral_eNorm, lintegral_congr_ae this]
 
 @[deprecated (since := "2026-11-06")] alias eLpNorm'_congr_enorm_ae := eLpNorm'_congr_eNorm_ae
 
 theorem eLpNorm'_congr_nnNorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm' f q μ = eLpNorm' g q μ := by
   have : (‖f ·‖ₑ ^ q) =ᵐ[μ] (‖g ·‖ₑ ^ q) := hfg.mono fun x hx ↦ by simp [eNorm, hx]
-  simp only [eLpNorm'_eq_lintegral_eNorm, lintegral_congr_ae this]
+  simp [eLpNorm'_eq_lintegral_eNorm, lintegral_congr_ae this]
 
 @[deprecated (since := "2026-10-31")] alias eLpNorm'_congr_nnnorm_ae := eLpNorm'_congr_nnNorm_ae
 
@@ -1114,7 +1114,7 @@ theorem eLpNorm_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
   have hgf := hg.comp_aemeasurable hf
   by_cases hp_zero : p = 0
-  · simp only [hp_zero, eLpNorm_exponent_zero hg, eLpNorm_exponent_zero hgf]
+  · simp [hp_zero, eLpNorm_exponent_zero hg, eLpNorm_exponent_zero hgf]
   by_cases hp_top : p = ∞
   · rw [hp_top, eLpNorm_exponent_top hg, eLpNorm_exponent_top hgf]
     exact eLpNormEssSup_map_measure hg hf
@@ -1154,7 +1154,7 @@ theorem _root_.MeasurableEmbedding.eLpNorm_map_measure (hf : MeasurableEmbedding
     eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
   by_cases hg : AEStronglyMeasurable g (Measure.map f μ)
   · by_cases hp_zero : p = 0
-    · simp only [hp_zero, eLpNorm_exponent_zero hg,
+    · simp [hp_zero, eLpNorm_exponent_zero hg,
         eLpNorm_exponent_zero ((hf.aestronglyMeasurable_map_iff).1 hg)]
     by_cases hp : p = ∞
     · rw [hp, eLpNorm_exponent_top hg,

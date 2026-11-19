@@ -37,7 +37,7 @@ lemma pow_totient_mod_eq_one {x n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
 lemma pow_add_totient_mod_eq {x k n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
     (x ^ (k + φ n)) % n = (x ^ k) % n := by
   rw [pow_add, mul_mod, pow_totient_mod_eq_one hn h]
-  simp only [mul_one, dvd_refl, mod_mod_of_dvd]
+  simp [mul_one, dvd_refl, mod_mod_of_dvd]
 
 lemma pow_add_mul_totient_mod_eq {x k l n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
     (x ^ (k + l * φ n)) % n = (x ^ k) % n := by

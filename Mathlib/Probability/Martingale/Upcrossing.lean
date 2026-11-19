@@ -181,19 +181,19 @@ variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
 
 theorem upperCrossingTime_le : upperCrossingTime a b f N n ω ≤ N := by
   cases n
-  · simp only [upperCrossingTime_zero, Pi.bot_apply, bot_le]
-  · simp only [upperCrossingTime_succ, hittingBtwn_le]
+  · simp [upperCrossingTime_zero, Pi.bot_apply, bot_le]
+  · simp [upperCrossingTime_succ, hittingBtwn_le]
 
 @[simp]
 theorem upperCrossingTime_zero' : upperCrossingTime a b f ⊥ n ω = ⊥ :=
   eq_bot_iff.2 upperCrossingTime_le
 
 theorem lowerCrossingTime_le : lowerCrossingTime a b f N n ω ≤ N := by
-  simp only [lowerCrossingTime, hittingBtwn_le ω]
+  simp [lowerCrossingTime, hittingBtwn_le ω]
 
 theorem upperCrossingTime_le_lowerCrossingTime :
     upperCrossingTime a b f N n ω ≤ lowerCrossingTime a b f N n ω := by
-  simp only [lowerCrossingTime, le_hittingBtwn upperCrossingTime_le ω]
+  simp [lowerCrossingTime, le_hittingBtwn upperCrossingTime_le ω]
 
 theorem lowerCrossingTime_le_upperCrossingTime_succ :
     lowerCrossingTime a b f N n ω ≤ upperCrossingTime a b f N (n + 1) ω := by
@@ -396,7 +396,7 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
     have := (hf.sum_sub_upcrossingStrat_mul a b N).setIntegral_le (zero_le (a := n)) .univ
     rw [setIntegral_univ, setIntegral_univ] at this
     refine le_trans ?_ this
-    simp only [Finset.range_zero, Finset.sum_empty, integral_zero', le_refl]
+    simp [Finset.range_zero, Finset.sum_empty, integral_zero', le_refl]
   have h₂ : μ[∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)] =
     μ[∑ k ∈ Finset.range n, (f (k + 1) - f k)] -
       μ[∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
@@ -778,7 +778,7 @@ theorem upcrossings_lt_top_iff :
     refine ⟨m, fun N => Nat.cast_le.1 ((hk N).trans ?_)⟩
     rwa [← ENNReal.coe_natCast, ENNReal.coe_le_coe]
   · refine ⟨k, fun N => ?_⟩
-    simp only [ENNReal.coe_natCast, Nat.cast_le, hk N]
+    simp [ENNReal.coe_natCast, Nat.cast_le, hk N]
 
 /-- A variant of Doob's upcrossing estimate obtained by taking the supremum on both sides. -/
 theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteMeasure μ] (a b : ℝ)
@@ -799,7 +799,7 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
         lintegral_coe_eq_integral, ← ENNReal.ofReal_mul (sub_pos.2 hab).le]
       · simp_rw [NNReal.coe_natCast]
         grw [hf.mul_integral_upcrossingsBefore_le_integral_pos_part a b N, ← le_iSup _ N]
-      · simp only [NNReal.coe_natCast, hf.stronglyAdapted.integrable_upcrossingsBefore hab]
+      · simp [NNReal.coe_natCast, hf.stronglyAdapted.integrable_upcrossingsBefore hab]
     · exact fun n => measurable_from_top.comp_aemeasurable
         (hf.stronglyAdapted.measurable_upcrossingsBefore hab).aemeasurable
     · filter_upwards with ω N M hNM

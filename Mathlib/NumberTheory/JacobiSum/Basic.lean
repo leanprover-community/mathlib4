@@ -51,12 +51,12 @@ def jacobiSum (χ ψ : MulChar R R') : R' :=
 lemma jacobiSum_comm (χ ψ : MulChar R R') : jacobiSum χ ψ = jacobiSum ψ χ := by
   simp only [jacobiSum, mul_comm (χ _)]
   rw [← (Equiv.subLeft 1).sum_comp]
-  simp only [Equiv.subLeft_apply, sub_sub_cancel]
+  simp [Equiv.subLeft_apply, sub_sub_cancel]
 
 /-- The Jacobi sum is compatible with ring homomorphisms. -/
 lemma jacobiSum_ringHomComp {R'' : Type*} [CommRing R''] (χ ψ : MulChar R R') (f : R' →+* R'') :
     jacobiSum (χ.ringHomComp f) (ψ.ringHomComp f) = f (jacobiSum χ ψ) := by
-  simp only [jacobiSum, MulChar.ringHomComp, MulChar.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+  simp [jacobiSum, MulChar.ringHomComp, MulChar.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     map_sum, map_mul]
 
 end Def
@@ -76,7 +76,7 @@ lemma jacobiSum_eq_sum_sdiff (χ ψ : MulChar F R) :
   simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, left_eq_add,
     neg_eq_zero]
   apply sum_eq_zero
-  simp only [mem_insert, mem_singleton, forall_eq_or_imp, χ.map_zero, neg_zero, add_zero, map_one,
+  simp [mem_insert, mem_singleton, forall_eq_or_imp, χ.map_zero, neg_zero, add_zero, map_one,
     mul_one, forall_eq, add_neg_cancel, ψ.map_zero, mul_zero, and_self]
 
 private lemma jacobiSum_eq_aux (χ ψ : MulChar F R) :
@@ -128,7 +128,7 @@ theorem jacobiSum_one_nontrivial {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
   classical
   have : ∑ x ∈ univ \ {0, 1}, ((1 : MulChar F R) x - 1) * (χ (1 - x) - 1) = 0 := by
     apply Finset.sum_eq_zero
-    simp +contextual only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
+    simp +contextual [mem_sdiff, mem_univ, mem_insert, mem_singleton,
       not_or, ← isUnit_iff_ne_zero, true_and, MulChar.one_apply, sub_self, zero_mul,
       implies_true]
   simp only [jacobiSum_eq_aux, MulChar.sum_one_eq_card_units, MulChar.sum_eq_zero_of_ne_one hχ,
@@ -326,7 +326,7 @@ lemma gaussSum_pow_eq_prod_jacobiSum_aux (χ : MulChar F R) (ψ : AddChar F R) {
     (hn₁ : 0 < n) (hn₂ : n < orderOf χ) :
     gaussSum χ ψ ^ n = gaussSum (χ ^ n) ψ * ∏ j ∈ Ico 1 n, jacobiSum χ (χ ^ j) := by
   induction n, hn₁ using Nat.le_induction with
-  | base => simp only [pow_one, le_refl, Ico_eq_empty_of_le, prod_empty, mul_one]
+  | base => simp [pow_one, le_refl, Ico_eq_empty_of_le, prod_empty, mul_one]
   | succ n hn ih =>
       specialize ih <| lt_trans (Nat.lt_succ_self n) hn₂
       have gauss_rw : gaussSum (χ ^ n) ψ * gaussSum χ ψ =

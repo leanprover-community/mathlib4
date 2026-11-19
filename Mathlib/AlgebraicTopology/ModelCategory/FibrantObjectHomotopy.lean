@@ -109,7 +109,7 @@ lemma factorsThroughLocalization :
   let L := (weakEquivalences (FibrantObject C)).Q
   rw [areEqualizedByLocalization_iff L]
   suffices L.map (homMk P.i₀) = L.map (homMk P.i₁) by
-    simp only [show f = homMk P.i₀ ≫ homMk h.h by cat_disch,
+    simp [show f = homMk P.i₀ ≫ homMk h.h by cat_disch,
       show g = homMk P.i₁ ≫ homMk h.h by cat_disch, Functor.map_comp, this]
   have := Localization.inverts L (weakEquivalences _) (homMk P.π) (by
     simp only [← weakEquivalence_iff, weakEquivalence_homMk_iff]

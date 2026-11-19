@@ -332,11 +332,11 @@ noncomputable def mkD (f : α → β) (default : C(α, β)) : C(α, β) :=
 
 lemma mkD_of_continuous {f : α → β} {g : C(α, β)} (hf : Continuous f) :
     mkD f g = ⟨f, hf⟩ := by
-  simp only [mkD, hf, ↓reduceDIte]
+  simp [mkD, hf, ↓reduceDIte]
 
 lemma mkD_of_not_continuous {f : α → β} {g : C(α, β)} (hf : ¬ Continuous f) :
     mkD f g = g := by
-  simp only [mkD, hf, ↓reduceDIte]
+  simp [mkD, hf, ↓reduceDIte]
 
 lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Continuous f) :
     mkD f g x = f x := by
@@ -390,7 +390,7 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := b
 @[simp]
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
-  simp only [restrict_apply, liftCover_coe]
+  simp [restrict_apply, liftCover_coe]
 
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
   (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),

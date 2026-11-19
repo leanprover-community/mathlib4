@@ -124,6 +124,6 @@ lemma morphismProperty_eq_top
   have hW (d : ℕ) : W.inverseImage (Truncated.inclusion d) = ⊤ :=
     Truncated.morphismProperty_eq_top _ (fun _ _ i ↦ δ_mem i)
       (fun _ _ i ↦ σ_mem i)
-  simp only [hW, MorphismProperty.top_apply]
+  simp [hW, MorphismProperty.top_apply]
 
 end SimplexCategory

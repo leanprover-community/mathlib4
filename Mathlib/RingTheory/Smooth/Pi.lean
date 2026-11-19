@@ -38,7 +38,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
       simp [pow_two, sub_mul, mul_sub, ← Pi.single_mul]
     · intro x y
       change Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
-      simp +instances only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
+      simp +instances [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
   · ext x
     change (Pi.single i x) i = x
     simp
@@ -109,7 +109,7 @@ theorem pi_iff [Finite I] :
         rw [Pi.single_eq_of_ne (Ne.symm hij), map_zero, map_mul, this, mul_zero]
     · have : ι i (Ideal.Quotient.mk J (y * e i)) = ι i (g (Pi.single i x)) := by
         rw [← ha, ← hy']
-        simp only [Ideal.quotient_map_mkₐ, IsScalarTower.coe_toAlgHom',
+        simp [Ideal.quotient_map_mkₐ, IsScalarTower.coe_toAlgHom',
           Ideal.Quotient.algebraMap_eq, Ideal.Quotient.mkₐ_eq_mk, ι]
       rw [← sub_eq_zero, ← map_sub] at this
       replace this := hι _ _ this

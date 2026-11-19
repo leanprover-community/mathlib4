@@ -121,7 +121,7 @@ noncomputable abbrev ringOfCoalgebra :
     simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← comp_apply, ← adjoint_rTensor,
       ← adjoint_comp, ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply,
       ← toLinearEquiv_assocIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    simp only [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_coe, assoc_tmul,
+    simp [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_coe, assoc_tmul,
       lTensor_tmul]
   one := adjoint (counit (R := 𝕜) (A := E)) 1
   one_mul x := by

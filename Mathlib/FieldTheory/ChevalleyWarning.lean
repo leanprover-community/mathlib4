@@ -58,7 +58,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
   have : DecidableEq K := Classical.decEq K
   calc
     ∑ x, eval x f = ∑ x : σ → K, ∑ d ∈ f.support, f.coeff d * ∏ i, x i ^ d i := by
-      simp only [eval_eq']
+      simp [eval_eq']
     _ = ∑ d ∈ f.support, ∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i := sum_comm
     _ = 0 := sum_eq_zero ?_
   intro d hd

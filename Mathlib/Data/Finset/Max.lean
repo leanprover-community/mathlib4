@@ -138,7 +138,7 @@ variable (s : Finset α) (H : s.Nonempty) {x : α}
 
 @[to_dual]
 theorem max'_mem : s.max' H ∈ s :=
-  mem_of_max <| by simp only [max', Finset.max, id_eq, coe_sup', Function.comp_def]
+  mem_of_max <| by simp [max', Finset.max, id_eq, coe_sup', Function.comp_def]
 
 @[to_dual min'_le]
 theorem le_max' (x) (H2 : x ∈ s) : x ≤ s.max' ⟨x, H2⟩ :=
@@ -367,7 +367,7 @@ theorem induction_on_max_value
   induction s using Finset.eraseInduction with | _ s ihs
   rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
-    simp only [hne, empty]
+    simp [hne, empty]
   · have H : (s.image f).max' hne ∈ s.image f := max'_mem (s.image f) hne
     simp only [mem_image] at H
     rcases H with ⟨a, has, hfa⟩

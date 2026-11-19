@@ -88,7 +88,7 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
   · intro α hα h f
     rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax.{v, u}, mk_out, ←
         Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
-    simp only [lift_id]
+    simp [lift_id]
 
 /-! ### Basic cardinals -/
 
@@ -392,13 +392,13 @@ theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
-  ext fun x => by simp only [mem_Iio, mem_range, eq_comm, lt_aleph0]
+  ext fun x => by simp [mem_Iio, mem_range, eq_comm, lt_aleph0]
 
 theorem mk_eq_nat_iff {α : Type u} {n : ℕ} : #α = n ↔ Nonempty (α ≃ Fin n) := by
   rw [← lift_mk_fin, ← lift_uzero #α, lift_mk_eq']
 
 theorem lt_aleph0_iff_finite {α : Type u} : #α < ℵ₀ ↔ Finite α := by
-  simp only [lt_aleph0, mk_eq_nat_iff, finite_iff_exists_equiv_fin]
+  simp [lt_aleph0, mk_eq_nat_iff, finite_iff_exists_equiv_fin]
 
 theorem lt_aleph0_iff_fintype {α : Type u} : #α < ℵ₀ ↔ Nonempty (Fintype α) :=
   lt_aleph0_iff_finite.trans (finite_iff_nonempty_fintype _)
@@ -452,7 +452,7 @@ theorem add_lt_aleph0_iff {a b : Cardinal} : a + b < ℵ₀ ↔ a < ℵ₀ ∧ b
    fun ⟨h1, h2⟩ => add_lt_aleph0 h1 h2⟩
 
 theorem aleph0_le_add_iff {a b : Cardinal} : ℵ₀ ≤ a + b ↔ ℵ₀ ≤ a ∨ ℵ₀ ≤ b := by
-  simp only [← not_lt, add_lt_aleph0_iff, not_and_or]
+  simp [← not_lt, add_lt_aleph0_iff, not_and_or]
 
 /-- See also `Cardinal.nsmul_lt_aleph0_iff_of_ne_zero` if you already have `n ≠ 0`. -/
 theorem nsmul_lt_aleph0_iff {a : Cardinal} : ∀ {n : ℕ}, n • a < ℵ₀ ↔ n = 0 ∨ a < ℵ₀
@@ -482,7 +482,7 @@ theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 
       exact (mul_le_mul' le_rfl hb).trans_lt h
     · rw [← one_mul b]
       exact (mul_le_mul' ha le_rfl).trans_lt h
-  rintro (rfl | rfl | ⟨ha, hb⟩) <;> simp only [*, mul_lt_aleph0, aleph0_pos, zero_mul, mul_zero]
+  rintro (rfl | rfl | ⟨ha, hb⟩) <;> simp [*, mul_lt_aleph0, aleph0_pos, zero_mul, mul_zero]
 
 /-- See also `Cardinal.aleph0_le_mul_iff`. -/
 theorem aleph0_le_mul_iff {a b : Cardinal} : ℵ₀ ≤ a * b ↔ a ≠ 0 ∧ b ≠ 0 ∧ (ℵ₀ ≤ a ∨ ℵ₀ ≤ b) := by
@@ -493,7 +493,7 @@ theorem aleph0_le_mul_iff {a b : Cardinal} : ℵ₀ ≤ a * b ↔ a ≠ 0 ∧ b 
 theorem aleph0_le_mul_iff' {a b : Cardinal.{u}} : ℵ₀ ≤ a * b ↔ a ≠ 0 ∧ ℵ₀ ≤ b ∨ ℵ₀ ≤ a ∧ b ≠ 0 := by
   have : ∀ {a : Cardinal.{u}}, ℵ₀ ≤ a → a ≠ 0 := fun a => ne_bot_of_le_ne_bot aleph0_ne_zero a
   simp only [aleph0_le_mul_iff, and_or_left, and_iff_right_of_imp this, @and_left_comm (a ≠ 0)]
-  simp only [and_comm, or_comm]
+  simp [and_comm, or_comm]
 
 theorem mul_lt_aleph0_iff_of_ne_zero {a b : Cardinal} (ha : a ≠ 0) (hb : b ≠ 0) :
     a * b < ℵ₀ ↔ a < ℵ₀ ∧ b < ℵ₀ := by simp [mul_lt_aleph0_iff, ha, hb]
@@ -810,7 +810,7 @@ theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
 
 theorem mk_insert_le {α : Type u} {s : Set α} {a : α} : #(insert a s : Set α) ≤ #s + 1 := by
   by_cases h : a ∈ s
-  · simp only [insert_eq_of_mem h, self_le_add_right]
+  · simp [insert_eq_of_mem h, self_le_add_right]
   · rw [mk_insert h]
 
 theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α := by
@@ -870,7 +870,7 @@ lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := 
 
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     #(P ∪ Q : Set α) ≤ ℵ₀ ↔ #P ≤ ℵ₀ ∧ #Q ≤ ℵ₀ := by
-  simp only [le_aleph0_iff_subtype_countable, ofPred_mem_eq, Set.union_def,
+  simp [le_aleph0_iff_subtype_countable, ofPred_mem_eq, Set.union_def,
     ← countable_union]
 
 theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.1 } :=

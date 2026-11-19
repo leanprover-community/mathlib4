@@ -77,7 +77,7 @@ theorem lt_one_iff_le_zero {x : WithBot ℕ} : x < 1 ↔ x ≤ 0 :=
 
 theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
   cases n
-  · simp only [WithBot.bot_add, bot_le]
+  · simp [WithBot.bot_add, bot_le]
   cases m
   · exact (not_lt_bot h).elim
   · rwa [WithBot.coe_lt_coe, ← Nat.add_one_le_iff, ← WithBot.coe_le_coe, WithBot.coe_add,

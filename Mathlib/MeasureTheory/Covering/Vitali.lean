@@ -168,8 +168,8 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases! ht : ∀ a ∈ t, r a < 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
-      simp only [closedBall_eq_empty.2 (ht a ha), empty_disjoint, Function.onFun],
-      fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
+      simp [closedBall_eq_empty.2 (ht a ha), empty_disjoint, Function.onFun],
+      fun a ha => ⟨a, ha, by simp [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   let t' := { a ∈ t | 0 ≤ r a }
   rcases exists_disjoint_subfamily_covering_enlargement (fun a => closedBall (x a) (r a)) t' r
       ((τ - 1) / 2) (by linarith) (fun a ha => ha.2) R (fun a ha => hr a ha.1) fun a ha =>
@@ -187,7 +187,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
-    exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
+    exact ⟨c, cu, by simp [closedBall_eq_empty.2 h'a, empty_subset]⟩
 
 /- Note: it seems easier to do the analogous proof again than to apply the previous one, because the
 interior of a closed ball may not equal the open ball. -/
@@ -205,8 +205,8 @@ theorem exists_disjoint_subfamily_covering_enlargement_ball
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases! ht : ∀ a ∈ t, r a ≤ 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
-      simp only [ball_eq_empty.2 (ht a ha), empty_disjoint, Function.onFun],
-      fun a ha => ⟨a, ha, by simp only [ball_eq_empty.2 (ht a ha), empty_subset]⟩⟩
+      simp [ball_eq_empty.2 (ht a ha), empty_disjoint, Function.onFun],
+      fun a ha => ⟨a, ha, by simp [ball_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   let t' := { a ∈ t | 0 < r a }
   rcases exists_disjoint_subfamily_covering_enlargement (fun a => ball (x a) (r a)) t' r
       ((τ - 1) / 2) (by linarith) (fun a ha => ha.2.le) R (fun a ha => hr a ha.1) fun a ha =>
@@ -224,7 +224,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_ball
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
-    exact ⟨c, cu, by simp only [ball_eq_empty.2 h'a, empty_subset]⟩
+    exact ⟨c, cu, by simp [ball_eq_empty.2 h'a, empty_subset]⟩
 
 /-- The measurable **Vitali covering theorem**.
 
@@ -350,7 +350,7 @@ theorem exists_disjoint_covering_ae
   -- add up to an arbitrarily small number, say `ε / C`.
   obtain ⟨w, hw⟩ : ∃ w : Finset v, (∑' a : { a // a ∉ w }, μ (B a)) < ε / C :=
     haveI : 0 < ε / C := by
-      simp only [ENNReal.div_pos_iff, εpos.ne', ENNReal.coe_ne_top, Ne, not_false_iff,
+      simp [ENNReal.div_pos_iff, εpos.ne', ENNReal.coe_ne_top, Ne, not_false_iff,
         and_self_iff]
     ((tendsto_order.1 (ENNReal.tendsto_tsum_compl_atTop_zero I.ne)).2 _ this).exists
   -- main property: the points `z` of `s` which are not covered by `u` are contained in the

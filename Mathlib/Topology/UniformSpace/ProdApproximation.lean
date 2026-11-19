@@ -46,7 +46,7 @@ lemma exists_finite_sum_smul_approximation_of_mem_uniformity [TopologicalSpace R
     ∀ x y, (f (x, y), ∑ i, g i x • h i y) ∈ S := by
   have hS' : {(f, g) | ∀ y, (f y, g y) ∈ S} ∈ 𝓤 C(Y, V) :=
     (mem_compactConvergence_entourage_iff _).mpr
-      ⟨_, _, isCompact_univ, hS, by simp only [Set.mem_univ, true_implies, subset_refl]⟩
+      ⟨_, _, isCompact_univ, hS, by simp [Set.mem_univ, true_implies, subset_refl]⟩
   obtain ⟨n, U, v, hv⟩ := exists_finite_sum_const_indicator_approximation_of_mem_nhds_diagonal
     f.curry (nhdsSet_diagonal_le_uniformity hS')
   refine ⟨n, fun i ↦ ⟨_, (U i).isClopen.continuous_indicator <| continuous_const (y := 1)⟩,

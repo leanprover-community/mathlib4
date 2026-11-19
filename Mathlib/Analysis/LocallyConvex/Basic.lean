@@ -186,7 +186,7 @@ alias ⟨Absorbs.eventually_nhdsNE_zero, _⟩ := absorbs_iff_eventually_nhdsNE_z
 
 theorem absorbent_iff_eventually_nhdsNE_zero :
     Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
-  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
+  forall_congr' fun x ↦ by simp [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
 
 alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
@@ -208,7 +208,7 @@ variable [NormedRing 𝕝] [Module 𝕜 𝕝] [NormSMulClass 𝕜 𝕝] [SMulWit
 theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [norm_zero, norm_le_zero_iff] at h
-    simp only [h, ← image_smul, zero_smul, Subset.rfl]
+    simp [h, ← image_smul, zero_smul, Subset.rfl]
   · calc
       a • s = b • (b⁻¹ • a) • s := by rw [smul_assoc, smul_inv_smul₀ hb]
       _ ⊆ b • s := smul_set_mono <| hs _ <| by

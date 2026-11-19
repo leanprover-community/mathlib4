@@ -61,7 +61,7 @@ variable [Monoid T'] [DistribMulAction T' M] [SMulCommClass R T' M]
 instance : SMul S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M') where
   smul a f :=
     { toFun := a • (f : M → M')
-      map_add' := fun x y ↦ by simp only [DomMulAct.smul_apply, f.map_add, smul_add]
+      map_add' := fun x y ↦ by simp [DomMulAct.smul_apply, f.map_add, smul_add]
       map_smul' := fun c x ↦ by simp_rw [DomMulAct.smul_apply, ← smul_comm, f.map_smulₛₗ] }
 
 theorem _root_.DomMulAct.smul_linearMap_apply (a : S'ᵈᵐᵃ) (f : M →ₛₗ[σ₁₂] M') (x : M) :
@@ -129,13 +129,13 @@ variable (R A) [NonUnitalSemiring A] [Module R A]
 theorem mulLeft_mul [SMulCommClass R A A] (a b : A) :
     mulLeft R (a * b) = (mulLeft R a).comp (mulLeft R b) := by
   ext
-  simp only [mulLeft_apply, comp_apply, mul_assoc]
+  simp [mulLeft_apply, comp_apply, mul_assoc]
 
 @[simp]
 theorem mulRight_mul [IsScalarTower R A A] (a b : A) :
     mulRight R (a * b) = (mulRight R b).comp (mulRight R a) := by
   ext
-  simp only [mulRight_apply, comp_apply, mul_assoc]
+  simp [mulRight_apply, comp_apply, mul_assoc]
 
 end nonUnitalSemiring
 

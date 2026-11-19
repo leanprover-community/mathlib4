@@ -289,7 +289,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     apply integral_congr_ae
     filter_upwards [(ae_withDensity_iff f_meas.coe_nnreal_ennreal).1 huv] with x hx
     rcases eq_or_ne (f x) 0 with (h'x | h'x)
-    · simp only [h'x, zero_smul]
+    · simp [h'x, zero_smul]
     · rw [hx _]
       simpa only [Ne, ENNReal.coe_eq_zero] using h'x
 

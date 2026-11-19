@@ -292,7 +292,7 @@ lemma isLocal_isLocal_toSucc :
     dsimp
     ext d
     · apply (hT d.1.1.hom d.1.2).1
-      simp only [← D₁.ι_comp_t_assoc, pushout.condition_assoc, h]
+      simp [← D₁.ι_comp_t_assoc, pushout.condition_assoc, h]
     · exact h
   · choose f hf using fun (d : D₁ W Z) ↦ (hT d.1.1.hom d.1.2).2 (d.2 ≫ g)
     exact ⟨Multicoequalizer.desc _ _ (fun ⟨⟩ ↦ pushout.desc (Sigma.desc f) g)

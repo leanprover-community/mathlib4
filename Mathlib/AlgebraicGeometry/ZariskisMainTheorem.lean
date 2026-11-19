@@ -214,7 +214,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
     refine (MorphismProperty.arrow_mk_iso_iff (.isomorphisms _)
       ((morphismRestrictRestrict ..).symm ≪≫ morphismRestrictOpensRange ..)).mp ?_
     have : Opens.ι _ ''ᵁ (𝒰.f x).opensRange = V x := by
-      simp only [Opens.iSupOpenCover, 𝒰, ← opensRange_comp, homOfLE_ι, Opens.opensRange_ι]
+      simp [Opens.iSupOpenCover, 𝒰, ← opensRange_comp, homOfLE_ι, Opens.opensRange_ι]
     convert hV x
   refine ⟨⨆ x : { x | f.QuasiFiniteAt x }, V x, this, ?_⟩
   ext x
@@ -238,7 +238,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
       have : (f.toNormalization ⁻¹ᵁ V y).ι ⁻¹ᵁ f.toNormalization ⁻¹ᵁ V' =
           (f.toNormalization ⁻¹ᵁ V y).ι ⁻¹ᵁ W := by
         rw [← Scheme.Hom.comp_preimage, ← morphismRestrict_ι]
-        simp only [V', opensRange_comp, Scheme.Hom.preimage_image_eq, opensRange_homOfLE]
+        simp [V', opensRange_comp, Scheme.Hom.preimage_image_eq, opensRange_homOfLE]
       simpa only [image_preimage_eq_opensRange_inf, Opens.opensRange_ι, ← preimage_inf,
         inf_eq_right.mpr, hV'V, hWV] using congr((f.toNormalization ⁻¹ᵁ V y).ι ''ᵁ $this)
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open

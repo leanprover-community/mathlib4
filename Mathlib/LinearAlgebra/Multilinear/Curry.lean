@@ -143,7 +143,7 @@ def MultilinearMap.curryRight (f : (Π i, M i) →ₘₛₗ[σ] M₂) :
   MultilinearMap.mk' fun m ↦
     { toFun := fun x => f (snoc m x)
       map_add' := fun x y => by simp_rw [f.snoc_add]
-      map_smul' := fun c x => by simp only [f.snoc_smul] }
+      map_smul' := fun c x => by simp [f.snoc_smul] }
 
 @[simp]
 theorem MultilinearMap.curryRight_apply (f : (Π i, M i) →ₘₛₗ[σ] M₂)

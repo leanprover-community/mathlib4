@@ -115,7 +115,7 @@ instance [GeometricallyIntegral g] [Flat g] [UniversallyOpen g]
 
 lemma GeometricallyIntegral.iff_geometricallyIntegral_fiber :
     GeometricallyIntegral f ↔ ∀ s, GeometricallyIntegral (f.fiberToSpecResidueField s) := by
-  simp only [GeometricallyIntegral.eq_geometrically,
+  simp [GeometricallyIntegral.eq_geometrically,
     ← geometrically_iff_forall_fiberToSpecResidueField]
 
 end AlgebraicGeometry

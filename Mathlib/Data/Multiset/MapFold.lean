@@ -81,7 +81,7 @@ theorem map_singleton (f : α → β) (a : α) : ({a} : Multiset α).map f = {f 
 
 @[simp]
 theorem map_replicate (f : α → β) (k : ℕ) (a : α) : (replicate k a).map f = replicate k (f a) := by
-  simp only [← coe_replicate, map_coe, List.map_replicate]
+  simp [← coe_replicate, map_coe, List.map_replicate]
 
 @[simp]
 theorem map_add (f : α → β) (s t) : map f (s + t) = map f s + map f t :=
@@ -402,7 +402,7 @@ section Map
 theorem map_eq_map {f : α → β} (hf : Function.Injective f) {s t : Multiset α} :
     s.map f = t.map f ↔ s = t := by
   rw [← rel_eq, ← rel_eq, rel_map]
-  simp only [hf.eq_iff]
+  simp [hf.eq_iff]
 
 theorem map_injective {f : α → β} (hf : Function.Injective f) :
     Function.Injective (Multiset.map f) := fun _x _y => (map_eq_map hf).1

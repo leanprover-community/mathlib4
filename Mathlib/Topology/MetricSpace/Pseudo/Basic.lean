@@ -67,7 +67,7 @@ nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   isUniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
-      simp only [subset_def, Prod.forall, gt_iff_lt, preimage_ofPred_eq, Prod.map_apply, mem_ofPred]
+      simp [subset_def, Prod.forall, gt_iff_lt, preimage_ofPred_eq, Prod.map_apply, mem_ofPred]
 
 nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
@@ -142,7 +142,7 @@ theorem tendstoLocallyUniformly_iff [TopologicalSpace β] {F : ι → β → α}
     {p : Filter ι} :
     TendstoLocallyUniformly F f p ↔
       ∀ ε > 0, ∀ x : β, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, dist (f y) (F n y) < ε := by
-  simp only [← tendstoLocallyUniformlyOn_univ, tendstoLocallyUniformlyOn_iff, nhdsWithin_univ,
+  simp [← tendstoLocallyUniformlyOn_univ, tendstoLocallyUniformlyOn_iff, nhdsWithin_univ,
     mem_univ, forall_const]
 
 /-- Expressing uniform convergence using `dist`. -/

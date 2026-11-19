@@ -52,7 +52,7 @@ theorem length_product (l₁ : List α) (l₂ : List β) :
   induction l₁ with
   | nil => exact (Nat.zero_mul _).symm
   | cons x l₁ IH =>
-    simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
+    simp [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
       Nat.add_comm]
 
 /-! ### sigma -/

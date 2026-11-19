@@ -292,7 +292,7 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   have h := sum_addContent_le_of_subset (m := m) hC (I := {s}) ?_ ?_ ht ?_
   · simpa only [sum_singleton] using h
   · rwa [singleton_subset_set_iff]
-  · simp only [coe_singleton, pairwiseDisjoint_singleton]
+  · simp [coe_singleton, pairwiseDisjoint_singleton]
   · simp [hst]
 
 lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemiring C)
@@ -528,7 +528,7 @@ def IsSetRing.addContent_of_union (m : Set α → G) (hC : IsSetRing C) (m_empty
   empty' := m_empty
   sUnion' I h_ss h_dis h_mem := by
     induction I using Finset.induction with
-    | empty => simp only [Finset.coe_empty, Set.sUnion_empty, Finset.sum_empty, m_empty]
+    | empty => simp [Finset.coe_empty, Set.sUnion_empty, Finset.sum_empty, m_empty]
     | insert s I hsI h =>
       rw [Finset.coe_insert] at *
       rw [Set.insert_subset_iff] at h_ss

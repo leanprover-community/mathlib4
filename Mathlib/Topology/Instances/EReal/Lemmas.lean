@@ -42,7 +42,7 @@ theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ → EReal) :=
   coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe_eq_Ioo]; exact ordConnected_Ioo
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ → EReal) :=
-  ⟨isEmbedding_coe, by simp only [range_coe_eq_Ioo, isOpen_Ioo]⟩
+  ⟨isEmbedding_coe, by simp [range_coe_eq_Ioo, isOpen_Ioo]⟩
 
 @[norm_cast]
 theorem tendsto_coe {α : Type*} {f : Filter α} {m : α → ℝ} {a : ℝ} :
@@ -101,7 +101,7 @@ theorem continuous_coe_ennreal_iff {f : α → ℝ≥0∞} :
 /-! ### Neighborhoods of infinity -/
 
 theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
-  nhds_top_order.trans <| by simp only [lt_top_iff_ne_top]
+  nhds_top_order.trans <| by simp [lt_top_iff_ne_top]
 
 nonrec theorem nhds_top_basis : (𝓝 (⊤ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Ioi ·) := by
   refine (nhds_top_basis (α := EReal)).to_hasBasis (fun x hx => ?_)
@@ -112,14 +112,14 @@ nonrec theorem nhds_top_basis : (𝓝 (⊤ : EReal)).HasBasis (fun _ : ℝ ↦ T
 theorem nhds_top' : 𝓝 (⊤ : EReal) = ⨅ a : ℝ, 𝓟 (Ioi ↑a) := nhds_top_basis.eq_iInf
 
 theorem mem_nhds_top_iff {s : Set EReal} : s ∈ 𝓝 (⊤ : EReal) ↔ ∃ y : ℝ, Ioi (y : EReal) ⊆ s :=
-  nhds_top_basis.mem_iff.trans <| by simp only [true_and]
+  nhds_top_basis.mem_iff.trans <| by simp [true_and]
 
 theorem tendsto_nhds_top_iff_real {α : Type*} {m : α → EReal} {f : Filter α} :
     Tendsto m f (𝓝 ⊤) ↔ ∀ x : ℝ, ∀ᶠ a in f, ↑x < m a :=
-  nhds_top_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Ioi]
+  nhds_top_basis.tendsto_right_iff.trans <| by simp [true_implies, mem_Ioi]
 
 theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_ : a ≠ ⊥), 𝓟 (Iio a) :=
-  nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]
+  nhds_bot_order.trans <| by simp [bot_lt_iff_ne_bot]
 
 theorem nhds_bot_basis : (𝓝 (⊥ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Iio ·) := by
   refine (_root_.nhds_bot_basis (α := EReal)).to_hasBasis (fun x hx => ?_)
@@ -131,11 +131,11 @@ theorem nhds_bot' : 𝓝 (⊥ : EReal) = ⨅ a : ℝ, 𝓟 (Iio ↑a) :=
   nhds_bot_basis.eq_iInf
 
 theorem mem_nhds_bot_iff {s : Set EReal} : s ∈ 𝓝 (⊥ : EReal) ↔ ∃ y : ℝ, Iio (y : EReal) ⊆ s :=
-  nhds_bot_basis.mem_iff.trans <| by simp only [true_and]
+  nhds_bot_basis.mem_iff.trans <| by simp [true_and]
 
 theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α} :
     Tendsto m f (𝓝 ⊥) ↔ ∀ x : ℝ, ∀ᶠ a in f, m a < x :=
-  nhds_bot_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Iio]
+  nhds_bot_basis.tendsto_right_iff.trans <| by simp [true_implies, mem_Iio]
 
 lemma nhdsWithin_top : 𝓝[≠] (⊤ : EReal) = (atTop).map Real.toEReal := by
   apply (nhdsWithin_hasBasis nhds_top_basis_Ici _).ext (atTop_basis.map Real.toEReal)
@@ -387,7 +387,7 @@ end LimInfSup
 
 theorem continuousAt_add_coe_coe (a b : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, b) := by
-  simp only [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, Function.comp_def,
+  simp [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, Function.comp_def,
     tendsto_coe, tendsto_add]
 
 theorem continuousAt_add_top_coe (a : ℝ) :

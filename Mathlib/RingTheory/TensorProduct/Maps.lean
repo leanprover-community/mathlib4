@@ -323,8 +323,8 @@ where `T` is any other ring acting on `A` and whose action commutes with the `R`
 def mapOfCompatibleSMul : A ⊗[S] B →ₐ[T] A ⊗[R] B :=
   .ofLinearMap (_root_.TensorProduct.mapOfCompatibleSMul R S T A B) rfl fun x ↦
     x.inductionOn (fun _ _ y ↦ y.inductionOn (by simp)
-      fun _ _ h h' ↦ by simp only [mul_add, map_add, h, h'])
-      fun _ _ h h' _ ↦ by simp only [add_mul, map_add, h, h']
+      fun _ _ h h' ↦ by simp [mul_add, map_add, h, h'])
+      fun _ _ h h' _ ↦ by simp [add_mul, map_add, h, h']
 
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R S T A B (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
@@ -859,8 +859,8 @@ and bundled as `A`-algebra homomorphism. -/
 def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A ⊗[R] N) :=
   TensorProduct.AlgebraTensorModule.lift
   { toFun := fun a ↦ a • baseChangeHom R A M N
-    map_add' := by simp only [add_smul, forall_true_iff]
-    map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
+    map_add' := by simp [add_smul, forall_true_iff]
+    map_smul' := by simp [smul_assoc, RingHom.id_apply, forall_true_iff] }
 
 /-- The natural `A`-algebra homomorphism $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
 where `M` is an `R`-module, and `A` an `R`-algebra. -/
@@ -875,7 +875,7 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
     (by
       apply LinearMap.ext
       intro x
-      simp only [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
+      simp [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
         baseChangeHom_apply, baseChange_eq_lTensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])

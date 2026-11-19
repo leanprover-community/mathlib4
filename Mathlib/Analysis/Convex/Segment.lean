@@ -60,12 +60,12 @@ def openSegment (x y : E) : Set E :=
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [segment, image, Prod.exists, mem_ofPred_eq, and_assoc]
+  simp [segment, image, Prod.exists, mem_ofPred_eq, and_assoc]
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [openSegment, image, Prod.exists, mem_ofPred_eq, and_assoc]
+  simp [openSegment, image, Prod.exists, mem_ofPred_eq, and_assoc]
 
 theorem segment_symm (x y : E) : [x -[𝕜] y] = [y -[𝕜] x] :=
   Set.ext fun _ =>
@@ -140,7 +140,7 @@ theorem mem_openSegment_of_ne_left_right (hx : x ≠ z) (hy : y ≠ z) (hz : z �
 
 theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
     openSegment 𝕜 x y ⊆ s ↔ [x -[𝕜] y] ⊆ s := by
-  simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and]
+  simp [← insert_endpoints_openSegment, insert_subset_iff, *, true_and]
 
 section lift
 
@@ -191,14 +191,14 @@ theorem segment_eq_image (x y : E) :
     [x -[𝕜] y] = (fun θ : 𝕜 => (1 - θ) • x + θ • y) '' Icc (0 : 𝕜) 1 :=
   Set.ext fun _ =>
     ⟨fun ⟨a, b, ha, hb, hab, hz⟩ =>
-      ⟨b, ⟨hb, hab ▸ le_add_of_nonneg_left ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel_right]⟩,
+      ⟨b, ⟨hb, hab ▸ le_add_of_nonneg_left ha⟩, hab ▸ hz ▸ by simp [add_sub_cancel_right]⟩,
       fun ⟨θ, ⟨hθ₀, hθ₁⟩, hz⟩ => ⟨1 - θ, θ, sub_nonneg.2 hθ₁, hθ₀, sub_add_cancel _ _, hz⟩⟩
 
 theorem openSegment_eq_image (x y : E) :
     openSegment 𝕜 x y = (fun θ : 𝕜 => (1 - θ) • x + θ • y) '' Ioo (0 : 𝕜) 1 :=
   Set.ext fun _ =>
     ⟨fun ⟨a, b, ha, hb, hab, hz⟩ =>
-      ⟨b, ⟨hb, hab ▸ lt_add_of_pos_left _ ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel_right]⟩,
+      ⟨b, ⟨hb, hab ▸ lt_add_of_pos_left _ ha⟩, hab ▸ hz ▸ by simp [add_sub_cancel_right]⟩,
       fun ⟨θ, ⟨hθ₀, hθ₁⟩, hz⟩ => ⟨1 - θ, θ, sub_pos.2 hθ₁, hθ₀, sub_add_cancel _ _, hz⟩⟩
 
 theorem segment_eq_image' (x y : E) :
@@ -427,7 +427,7 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
     left
     have hc : 0 < c := h₀.trans hac
     refine ⟨a / c, ⟨div_pos h₀ hc, (div_lt_one hc).2 hac⟩, ?_⟩
-    simp only [← homothety_eq_lineMap, ← homothety_mul_apply, div_mul_cancel₀ _ hc.ne']
+    simp [← homothety_eq_lineMap, ← homothety_mul_apply, div_mul_cancel₀ _ hc.ne']
   · left
     rfl
   · right
@@ -437,7 +437,7 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
     refine
       ⟨(a - c) / (1 - c), ⟨div_pos (sub_pos.2 hca) hc, (div_lt_one hc).2 <| sub_lt_sub_right h₁ _⟩,
         ?_⟩
-    simp only [← homothety_eq_lineMap, ← homothety_mul_apply, sub_mul, one_mul,
+    simp [← homothety_eq_lineMap, ← homothety_mul_apply, sub_mul, one_mul,
       div_mul_cancel₀ _ hc.ne', sub_sub_sub_cancel_right]
 
 end LinearOrderedField
@@ -554,13 +554,13 @@ theorem segment_eq_uIcc (x y : 𝕜) : [x -[𝕜] y] = uIcc x y :=
 /-- A point is in an `Icc` iff it can be expressed as a convex combination of the endpoints. -/
 theorem Convex.mem_Icc (h : x ≤ y) :
     z ∈ Icc x y ↔ ∃ a b, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  simp only [← segment_eq_Icc h, segment, mem_ofPred_eq, smul_eq_mul, exists_and_left]
+  simp [← segment_eq_Icc h, segment, mem_ofPred_eq, smul_eq_mul, exists_and_left]
 
 /-- A point is in an `Ioo` iff it can be expressed as a strict convex combination of the endpoints.
 -/
 theorem Convex.mem_Ioo (h : x < y) :
     z ∈ Ioo x y ↔ ∃ a b, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  simp only [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_ofPred_eq]
+  simp [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_ofPred_eq]
 
 /-- A point is in an `Ioc` iff it can be expressed as a semistrict convex combination of the
 endpoints. -/
@@ -681,12 +681,12 @@ theorem image_update_segment (i : ι) (x₁ x₂ : M i) (y : ∀ i, M i) :
     update y i '' [x₁ -[𝕜] x₂] = [update y i x₁ -[𝕜] update y i x₂] := by
   rw [segment_eq_image₂, segment_eq_image₂, image_image]
   refine EqOn.image_eq fun a ha ↦ ?_
-  simp only [← update_smul, ← update_add, Convex.combo_self ha.2.2]
+  simp [← update_smul, ← update_add, Convex.combo_self ha.2.2]
 
 theorem image_update_openSegment (i : ι) (x₁ x₂ : M i) (y : ∀ i, M i) :
     update y i '' openSegment 𝕜 x₁ x₂ = openSegment 𝕜 (update y i x₁) (update y i x₂) := by
   rw [openSegment_eq_image₂, openSegment_eq_image₂, image_image]
   refine EqOn.image_eq fun a ha ↦ ?_
-  simp only [← update_smul, ← update_add, Convex.combo_self ha.2.2]
+  simp [← update_smul, ← update_add, Convex.combo_self ha.2.2]
 
 end Pi

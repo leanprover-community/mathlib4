@@ -90,7 +90,7 @@ instance {n m : SemiSimplexCategory} (f : n ⟶ m) : Mono (toSimplexCategory.map
 instance {n m : SemiSimplexCategory} (f : n ⟶ m) : Mono f where
   right_cancellation g₁ g₂ h := by
     apply toSimplexCategory.map_injective
-    simp only [← cancel_mono (toSimplexCategory.map f), ← Functor.map_comp, h]
+    simp [← cancel_mono (toSimplexCategory.map f), ← Functor.map_comp, h]
 
 /-- Constructor for morphisms in `SemiSimplexCategory` which takes as an input
 a monomorphism in `SimplexCategory`. -/

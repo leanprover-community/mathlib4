@@ -277,7 +277,7 @@ theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) 
 
 @[simp, norm_cast]
 theorem withBotCoe_inj {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) = J ↔ I = J := by
-  simp only [Subset.antisymm_iff, ← le_antisymm_iff, withBotCoe_subset_iff]
+  simp [Subset.antisymm_iff, ← le_antisymm_iff, withBotCoe_subset_iff]
 
 open scoped Classical in
 /-- Make a `WithBot (Box ι)` from a pair of corners `l u : ι → ℝ`. If `l i < u i` for all `i`,
@@ -321,7 +321,7 @@ theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (
   · change ∅ = _
     simp
   change ((mk' _ _ : WithBot (Box ι)) : Set (ι → ℝ)) = _
-  simp only [coe_eq_pi, ← pi_inter_distrib, Ioc_inter_Ioc, Pi.sup_apply, Pi.inf_apply, coe_mk',
+  simp [coe_eq_pi, ← pi_inter_distrib, Ioc_inter_Ioc, Pi.sup_apply, Pi.inf_apply, coe_mk',
     coe_coe]
 
 instance : Lattice (WithBot (Box ι)) :=

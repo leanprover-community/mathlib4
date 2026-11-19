@@ -65,7 +65,7 @@ lemma instStarOrderedRingRCLike
       obtain ⟨p, hp₁, -, hp₃⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts
         h.isSelfAdjoint h.spectrumRestricts
       refine ⟨p ^ 2, ?_, by symm; rwa [add_comm, ← eq_sub_iff_add_eq]⟩
-      exact AddSubmonoid.subset_closure ⟨p, by simp only [hp₁.star_eq, sq]⟩
+      exact AddSubmonoid.subset_closure ⟨p, by simp [hp₁.star_eq, sq]⟩
     · rintro ⟨p, hp, rfl⟩
       rw [le_def, add_sub_cancel_left]
       induction hp using AddSubmonoid.closure_induction with

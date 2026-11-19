@@ -79,13 +79,13 @@ private theorem teichmuller_mul_aux₁ {R : Type*} (x y : MvPolynomial R ℚ) :
   apply (ghostMap.bijective_of_invertible p (MvPolynomial R ℚ)).1
   rw [map_mul]
   ext1 n
-  simp only [Pi.mul_apply, ghostMap_apply, ghostComponent_teichmullerFun, mul_pow]
+  simp [Pi.mul_apply, ghostMap_apply, ghostComponent_teichmullerFun, mul_pow]
 
 private theorem teichmuller_mul_aux₂ {R : Type*} (x y : MvPolynomial R ℤ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   refine map_injective (MvPolynomial.map (Int.castRingHom ℚ))
     (MvPolynomial.map_injective _ Int.cast_injective) ?_
-  simp only [teichmuller_mul_aux₁, map_teichmullerFun, map_mul]
+  simp [teichmuller_mul_aux₁, map_teichmullerFun, map_mul]
 
 /-- The Teichmüller lift of an element of `R` to `𝕎 R`.
 The `0`-th coefficient of `teichmuller p r` is `r`, and all others are `0`.
@@ -100,7 +100,7 @@ def teichmuller : R →* 𝕎 R where
     intro x y
     rcases counit_surjective R x with ⟨x, rfl⟩
     rcases counit_surjective R y with ⟨y, rfl⟩
-    simp only [← map_teichmullerFun, ← map_mul, teichmuller_mul_aux₂]
+    simp [← map_teichmullerFun, ← map_mul, teichmuller_mul_aux₂]
 
 @[simp]
 theorem teichmuller_coeff_zero (r : R) : (teichmuller p r).coeff 0 = r :=

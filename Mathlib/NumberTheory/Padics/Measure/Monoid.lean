@@ -105,7 +105,7 @@ lemma mul_apply (μ ν : D(G, R)) (f : C(G, R)) : (μ * ν) f = μ (convolveFunR
 /-- Convolution of Dirac measures corresponds to addition in the group. -/
 lemma dirac_mul_dirac (x y : G) : dirac R x * dirac R y = dirac R (x * y) :=  by
   ext f
-  simp only [mul_apply, dirac_apply, convolveFunRight_apply, ContinuousMap.coe_mk]
+  simp [mul_apply, dirac_apply, convolveFunRight_apply, ContinuousMap.coe_mk]
 
 lemma convolveFunRight_mul (μ ν : D(G, R)) (f : C(G, R)) :
     convolveFunRight (μ * ν) f = convolveFunRight μ (convolveFunRight ν f) := by

@@ -59,7 +59,7 @@ def limit (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c) :
   mon.mul_one := hc.hom_ext <| by simp [whiskerLeft_comp_tensorHom_assoc]
   mon.mul_assoc := by
     apply hc.hom_ext
-    simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, IsLimit.fac,
+    simp [Functor.comp_obj, forget_obj, Functor.const_obj_obj, IsLimit.fac,
       mon_tauto, implies_true]
 
 set_option backward.isDefEq.respectTransparency false in

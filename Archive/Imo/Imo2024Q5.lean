@@ -153,7 +153,7 @@ lemma MonsterData.mk_mem_monsterCells_iff_of_le {m : MonsterData N} {r : Fin (N 
   simp only [monsterCells, Set.mem_range, Prod.mk.injEq]
   refine ⟨?_, ?_⟩
   · rintro ⟨r', rfl, rfl⟩
-    simp only
+    simp
   · rintro rfl
     exact ⟨⟨r, hr1, hrN⟩, rfl, rfl⟩
 
@@ -364,7 +364,7 @@ lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
       · simp only [List.getElem_cons_zero] at h1
         have h1' : htail.1 = 1 := by simp [Fin.ext_iff, h1]
         simp only [h1', decide_true, List.find?_cons_of_pos, Option.get_some] at h
-        simp only [h1', h, decide_true, List.find?_cons_of_pos]
+        simp [h1', h, decide_true, List.find?_cons_of_pos]
   case ind p ht =>
     have h1 : (1 : Fin (N + 2)) ≠ 0 := by simp
     rw [p.tail_findFstEq h1, p.tail_firstMonster m] at ht
@@ -577,7 +577,7 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
     convert! row1_mem_monsterCells_monsterData12 hN m1.2 m2.2
   refine ⟨m, fun i ↦ ?_⟩
   fin_cases i
-  · simp only [Strategy.play_zero, Path.firstMonster_eq_of_findFstEq_mem h1, Option.isSome_some]
+  · simp [Strategy.play_zero, Path.firstMonster_eq_of_findFstEq_mem h1, Option.isSome_some]
   · simp only [Strategy.play_one]
     suffices ((s ![some m1]).firstMonster m).isSome = true by
       rwa [Path.firstMonster_eq_of_findFstEq_mem h1]

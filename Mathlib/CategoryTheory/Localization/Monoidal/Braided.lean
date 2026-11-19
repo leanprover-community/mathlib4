@@ -94,7 +94,7 @@ lemma map_hexagon_forward (X Y Z : C) :
         ((L').obj Y) ◁ (((braidingNatIso L W ε).app ((L').obj X)).app ((L').obj Z)).hom := by
   simp only [associator_hom, Iso.app_hom, braidingNatIso_hom_app]
   slice_rhs 0 4 =>
-    simp only [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
+    simp [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
       Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, comp_whiskerRight, assoc,
       Functor.Monoidal.whiskerRight_δ_μ_assoc, Functor.LaxMonoidal.μ_natural_left]
   slice_lhs 6 7 =>
@@ -111,7 +111,7 @@ lemma map_hexagon_reverse (X Y Z : C) :
         (((braidingNatIso L W ε).app ((L').obj X)).app ((L').obj Z)).hom ▷ ((L').obj Y) := by
   simp only [associator_inv, Iso.app_hom, braidingNatIso_hom_app]
   slice_rhs 0 4 =>
-    simp only [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
+    simp [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
       Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, MonoidalCategory.whiskerLeft_comp, assoc,
       Functor.Monoidal.whiskerLeft_δ_μ, comp_id]
   slice_lhs 6 7 =>

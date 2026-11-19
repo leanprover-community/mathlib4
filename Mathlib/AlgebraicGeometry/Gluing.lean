@@ -726,7 +726,7 @@ def cocone : Cocone F where
   pt := (glueData F).glued
   ι.app j := F.map (eqToHom (by simp)) ≫ (glueData F).ι (equivShrink _ j)
   ι.naturality {i j} f := by
-    simp only [← IsIso.inv_comp_eq, ← Functor.map_inv, ← Functor.map_comp_assoc,
+    simp [← IsIso.inv_comp_eq, ← Functor.map_inv, ← Functor.map_comp_assoc,
       glueDataι_naturality, Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -821,7 +821,7 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
     colimit.ι F i xi = colimit.ι F j xj ↔
       ∃ k fi fj, ∃ (x : F.obj k), F.map fi x = xi ∧ F.map fj x = xj := by
   constructor; swap
-  · rintro ⟨k, fi, fj, x, rfl, rfl⟩; simp only [← Scheme.Hom.comp_apply, colimit.w]
+  · rintro ⟨k, fi, fj, x, rfl, rfl⟩; simp [← Scheme.Hom.comp_apply, colimit.w]
   obtain ⟨i, rfl⟩ := (equivShrink J).symm.surjective i
   obtain ⟨j, rfl⟩ := (equivShrink J).symm.surjective j
   rw [← ((isColimit F).coconePointUniqueUpToIso

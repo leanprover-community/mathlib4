@@ -352,7 +352,7 @@ lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : I
   ⟨g, mon, by
   rw [← (Ideal.Quotient.eq_zero_iff_mem.mpr h), eval₂_eq_sum_range]
   nth_rw 3 [(as_sum_range_C_mul_X_pow g)]
-  simp only [map_sum, algebraMap_eq, RingHom.coe_comp, Function.comp_apply, map_mul, map_pow]⟩
+  simp [map_sum, algebraMap_eq, RingHom.coe_comp, Function.comp_apply, map_mul, map_pow]⟩
 
 /- If `I` is an ideal of the polynomial ring `S[X]` and contains a monic polynomial `f`,
 then `S[X]/I` is integral over `S`. -/
@@ -361,13 +361,13 @@ lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal
   have eq_top : Algebra.adjoin S {(Ideal.Quotient.mkₐ S I) X} = ⊤ := by
     ext g
     constructor
-    · simp only [Algebra.mem_top, implies_true]
+    · simp [Algebra.mem_top, implies_true]
     · intro _
       obtain ⟨g', hg⟩ := Ideal.Quotient.mkₐ_surjective S I g
       have : g = (Polynomial.aeval ((Ideal.Quotient.mkₐ S I) X)) g' := by
         nth_rw 1 [← hg, aeval_eq_sum_range' (lt_add_one _),
           as_sum_range_C_mul_X_pow g', map_sum]
-        simp only [Polynomial.C_mul', ← map_pow, map_smul]
+        simp [Polynomial.C_mul', ← map_pow, map_smul]
       exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
   exact fun a ↦ (eq_top ▸ adjoin_le_integralClosure <| mon.quotient_isIntegralElem h)
     Algebra.mem_top
@@ -407,7 +407,7 @@ lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsT
   refine
     Function.Injective.moduleIsTorsionFree _ (IsIntegralClosure.algebraMap_injective A R B)
       fun _ _ => ?_
-  simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
+  simp [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
 variable {R} (A) {B}
 
@@ -443,12 +443,12 @@ theorem mk'_zero (h : IsIntegral R (0 : B) := isIntegral_zero) : mk' A 0 h = 0 :
 @[simp]
 theorem mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x + y) (hx.add hy) = mk' A x hx + mk' A y hy :=
-  algebraMap_injective A R B <| by simp only [algebraMap_mk', map_add]
+  algebraMap_injective A R B <| by simp [algebraMap_mk', map_add]
 
 @[simp]
 theorem mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x * y) (hx.mul hy) = mk' A x hx * mk' A y hy :=
-  algebraMap_injective A R B <| by simp only [algebraMap_mk', map_mul]
+  algebraMap_injective A R B <| by simp [algebraMap_mk', map_mul]
 
 @[simp]
 theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
@@ -483,8 +483,8 @@ then `S` maps (uniquely) into an integral closure `B / A / R`. -/
 noncomputable def lift : S →ₐ[R] A where
   toFun x := mk' A (algebraMap S B x) (IsIntegral.algebraMap
     (Algebra.IsIntegral.isIntegral (R := R) x))
-  map_one' := by simp only [map_one, mk'_one]
-  map_zero' := by simp only [map_zero, mk'_zero]
+  map_one' := by simp [map_one, mk'_one]
+  map_zero' := by simp [map_zero, mk'_zero]
   map_add' x y := by simp_rw [← mk'_add, map_add]
   map_mul' x y := by simp_rw [← mk'_mul, map_mul]
   commutes' x := by simp_rw [← IsScalarTower.algebraMap_apply, mk'_algebraMap]

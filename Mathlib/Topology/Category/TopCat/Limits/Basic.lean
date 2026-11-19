@@ -264,7 +264,7 @@ lemma isOpen_iff_of_isColimit (X : Set c.pt) :
 
 lemma isClosed_iff_of_isColimit (X : Set c.pt) :
     IsClosed X ↔ ∀ (j : J), IsClosed (c.ι.app j ⁻¹' X) := by
-  simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
+  simp [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
     Functor.const_obj_obj, Set.preimage_compl]
 
 lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt → X) :

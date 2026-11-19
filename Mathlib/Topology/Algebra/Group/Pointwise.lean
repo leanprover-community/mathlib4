@@ -86,7 +86,7 @@ theorem MulAction.isClosedMap_quotient [CompactSpace α] :
     MulAction.quotient_preimage_image_eq_union_mul]
   convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
-  simp only [image_smul]
+  simp [image_smul]
 
 end ContinuousSMul
 

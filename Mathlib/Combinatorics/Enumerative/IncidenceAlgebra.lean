@@ -293,7 +293,7 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
   algebraMap :=
   { toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
     map_one' := by
-      ext; simp only [mul_boole, one_apply, smul_eq_mul, constSMul_apply, map_one]
+      ext; simp [mul_boole, one_apply, smul_eq_mul, constSMul_apply, map_one]
     map_mul' c d := by
         ext a b
         obtain rfl | h := eq_or_ne a b

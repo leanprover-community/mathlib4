@@ -109,7 +109,7 @@ theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x
   isOpen_iff_mem_nhds.trans <| forall₂_congr fun x _ => (nhds_basis_Ico x).mem_iff
 
 theorem isClosed_iff {s : Set ℝₗ} : IsClosed s ↔ ∀ x, x ∉ s → ∃ y > x, Disjoint (Ico x y) s := by
-  simp only [← isOpen_compl_iff, isOpen_iff, mem_compl_iff, subset_compl_iff_disjoint_right]
+  simp [← isOpen_compl_iff, isOpen_iff, mem_compl_iff, subset_compl_iff_disjoint_right]
 
 theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed s) (ha : a ∉ s) :
     ∃ b > a, Disjoint (Ico a b) s :=

@@ -395,7 +395,7 @@ theorem rank_eq_finrank_range_toLin [Fintype n] [Finite m] [DecidableEq n] {M₁
   have aux₂ := Basis.equiv_apply (Pi.basisFun R n) i v₂
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply] at aux₁ aux₂
-  simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
+  simp [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
     aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [Semiring R] [StrongRankCondition R]
@@ -521,7 +521,7 @@ variable [Field R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 theorem ker_mulVecLin_conjTranspose_mul_self [Fintype n] [Fintype m] (A : Matrix m n R) :
     LinearMap.ker (Aᴴ * A).mulVecLin = LinearMap.ker (mulVecLin A) := by
   ext x
-  simp only [LinearMap.mem_ker, mulVecLin_apply, conjTranspose_mul_self_mulVec_eq_zero]
+  simp [LinearMap.mem_ker, mulVecLin_apply, conjTranspose_mul_self_mulVec_eq_zero]
 
 theorem rank_conjTranspose_mul_self [Fintype m] [Finite n] (A : Matrix m n R) :
     (Aᴴ * A).rank = A.rank := by
@@ -531,7 +531,7 @@ theorem rank_conjTranspose_mul_self [Fintype m] [Finite n] (A : Matrix m n R) :
   trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ * A)) } +
     finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ * A)) }
   · rw [ker_mulVecLin_conjTranspose_mul_self]
-  · simp only [LinearMap.finrank_range_add_finrank_ker]
+  · simp [LinearMap.finrank_range_add_finrank_ker]
 
 -- this follows the proof here https://math.stackexchange.com/a/81903/1896
 /-- TODO: prove this in greater generality. -/
@@ -573,7 +573,7 @@ theorem rank_transpose_mul_self [Finite n] (A : Matrix m n R) : (Aᵀ * A).rank 
   trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᵀ * A)) } +
     finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᵀ * A)) }
   · rw [ker_mulVecLin_transpose_mul_self]
-  · simp only [LinearMap.finrank_range_add_finrank_ker]
+  · simp [LinearMap.finrank_range_add_finrank_ker]
 
 end LinearOrderedField
 

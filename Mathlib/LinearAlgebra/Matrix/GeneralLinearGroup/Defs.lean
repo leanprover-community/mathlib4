@@ -335,13 +335,13 @@ variable (f : R →+* S)
 
 @[simp]
 protected lemma map_one : map f (1 : GL n R) = 1 := by
-  simp only [map_one]
+  simp [map_one]
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
-  simp only [map_mul]
+  simp [map_mul]
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
-  simp only [map_inv]
+  simp [map_inv]
 
 protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
@@ -351,20 +351,20 @@ protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
   exact Eq.symm (RingHom.map_det f g.val)
 
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
-  simp only [map_inv, mul_inv_cancel]
+  simp [map_inv, mul_inv_cancel]
 
 lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
-  simp only [map_inv, inv_mul_cancel]
+  simp [map_inv, inv_mul_cancel]
 
 @[simp]
 lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, map_one, Matrix.map_one]
+  simp [isUnits_det_units, mul_nonsing_inv, map_zero, map_one, Matrix.map_one]
 
 @[simp]
 lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
+  simp [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
 lemma map_scalar (u : Rˣ) : map f (scalar n u) = scalar n (Units.map f u) := by
   ext
@@ -380,8 +380,8 @@ open scoped Kronecker
 protected def kronecker (x : GL n R) (y : GL m R) : GL (n × m) R where
   val := x ⊗ₖ y
   inv := ↑x⁻¹ ⊗ₖ ↑y⁻¹
-  val_inv := by simp only [← mul_kronecker_mul, Units.mul_inv, one_kronecker_one]
-  inv_val := by simp only [← mul_kronecker_mul, Units.inv_mul, one_kronecker_one]
+  val_inv := by simp [← mul_kronecker_mul, Units.mul_inv, one_kronecker_one]
+  inv_val := by simp [← mul_kronecker_mul, Units.inv_mul, one_kronecker_one]
 
 theorem _root_.Matrix.IsUnit.kronecker {x : Matrix n n R} {y : Matrix m m R}
     (hx : IsUnit x) (hy : IsUnit y) : IsUnit (x ⊗ₖ y) :=

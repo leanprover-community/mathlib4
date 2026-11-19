@@ -110,7 +110,7 @@ lemma isKInjective_of_injective_aux {K L : CochainComplex C ℤ}
     have eq := hα n n (add_zero n) (by rfl)
     simp only [δ_v (-1) 0 (neg_add_cancel 1) α n n (add_zero _) (n - 1) (n + 1)
       (by lia) (by lia), Int.negOnePow_zero, one_smul, Cochain.ofHom_v] at eq
-    simp only [u, comp_sub, HomologicalComplex.d_comp_d_assoc, zero_comp,
+    simp [u, comp_sub, HomologicalComplex.d_comp_d_assoc, zero_comp,
       ← f.comm, ← eq, add_comp, Category.assoc, L.d_comp_d, comp_zero, zero_add, sub_self]
   rw [K.exactAt_iff' n (n + 1) (n + 2) (by simp) (by simp; lia)] at hK
   obtain ⟨β, hβ⟩ : ∃ (β : K.X (n + 2) ⟶ L.X (n + 1)), K.d (n + 1) (n + 2) ≫ β = u :=

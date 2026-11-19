@@ -87,8 +87,8 @@ lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
   induction z
   · rcases lt_trichotomy x 1 with x_0 | rfl | x_2
     · exact (h (Order.lt_one_iff.1 x_0)).rec
-    · simp only [one_epow, le_refl]
-    · simp only [epow_top x_2, le_top]
+    · simp [one_epow, le_refl]
+    · simp [epow_top x_2, le_top]
   · exact pow_right_mono₀ (Order.one_le_iff_ne_zero.2 h) (Nat.cast_le.1 y_z)
 
 lemma one_le_epow (h : x ≠ 0) : 1 ≤ x ^ y := by
@@ -105,7 +105,7 @@ lemma epow_left_mono : Monotone (fun x : ℕ∞ ↦ x ^ y) := by
     · rw [Order.lt_one_iff.1 x_0, zero_epow_top]; exact bot_le
     · rw [one_epow]; exact one_le_epow (Order.one_le_iff_ne_zero.1 x_z)
     · rw [epow_top (x_2.trans_le x_z)]; exact le_top
-  · simp only [epow_natCast, (pow_left_mono _) x_z]
+  · simp [epow_natCast, (pow_left_mono _) x_z]
 
 lemma epow_eq_zero_iff : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   refine ⟨fun h ↦ ⟨?_, fun y_0 ↦ ?_⟩, fun h ↦ h.1.symm ▸ zero_epow h.2⟩
@@ -126,29 +126,29 @@ lemma epow_add : x ^ (y + z) = x ^ y * x ^ z := by
   rcases lt_trichotomy x 1 with x_0 | rfl | x_2
   · rw [Order.lt_one_iff.1 x_0]
     rcases eq_zero_or_pos y with rfl | y_0
-    · simp only [zero_add, epow_zero, one_mul]
+    · simp [zero_add, epow_zero, one_mul]
     · rw [zero_epow y_0.ne.symm, zero_mul]
       exact zero_epow (add_pos_of_pos_of_nonneg y_0 bot_le).ne.symm
-  · simp only [one_epow, mul_one]
+  · simp [one_epow, mul_one]
   · induction y
     · rw [top_add, epow_top x_2, top_mul]
       exact (epow_pos x_2.ne_zero).ne'
     induction z
     · rw [add_top, epow_top x_2, mul_top]
       exact (epow_pos x_2.ne_zero).ne'
-    simp only [← Nat.cast_add, epow_natCast, pow_add x]
+    simp [← Nat.cast_add, epow_natCast, pow_add x]
 
 lemma mul_epow : (x * y) ^ z = x ^ z * y ^ z := by
   induction z
   · rcases lt_trichotomy x 1 with x_0 | rfl | x_2
-    · simp only [Order.lt_one_iff.1 x_0, zero_mul, zero_epow_top]
-    · simp only [one_mul, one_epow]
+    · simp [Order.lt_one_iff.1 x_0, zero_mul, zero_epow_top]
+    · simp [one_mul, one_epow]
     · rcases lt_trichotomy y 1 with y_0 | rfl | y_2
-      · simp only [Order.lt_one_iff.1 y_0, mul_zero, zero_epow_top]
+      · simp [Order.lt_one_iff.1 y_0, mul_zero, zero_epow_top]
       · simp
       · rw [epow_top x_2, epow_top y_2, mul_top top_ne_zero]
         exact epow_top (one_lt_mul x_2.le y_2)
-  · simp only [epow_natCast, mul_pow x y]
+  · simp [epow_natCast, mul_pow x y]
 
 lemma epow_mul : x ^ (y * z) = (x ^ y) ^ z := by
   rcases eq_or_ne y 0 with y_0 | y_0
@@ -157,13 +157,13 @@ lemma epow_mul : x ^ (y * z) = (x ^ y) ^ z := by
   · simp [z_0]
   rcases lt_trichotomy x 1 with x_0 | rfl | x_2
   · rw [Order.lt_one_iff.1 x_0, zero_epow y_0, zero_epow z_0, zero_epow (mul_ne_zero y_0 z_0)]
-  · simp only [one_epow]
+  · simp [one_epow]
   · induction y
     · rw [top_mul z_0, epow_top x_2, top_epow z_0]
     induction z
     · rw [mul_top y_0, epow_top x_2, epow_top]
       apply (epow_right_mono x_2.ne_zero (Order.one_le_iff_ne_zero.2 y_0)).trans_lt'
       simp [x_2]
-    · simp only [← Nat.cast_mul, epow_natCast, pow_mul x]
+    · simp [← Nat.cast_mul, epow_natCast, pow_mul x]
 
 end ENat

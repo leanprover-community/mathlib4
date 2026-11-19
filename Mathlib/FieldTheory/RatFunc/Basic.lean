@@ -336,7 +336,7 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) (n : R[X]) (d : R[X]⁰) :
     map φ hφ (ofFractionRing (Localization.mk n d)) =
       ofFractionRing (Localization.mk (φ n) ⟨φ d, hφ d.prop⟩) := by
-  simp only [map, MonoidHom.coe_mk, OneHom.coe_mk, liftOn_ofFractionRing_mk,
+  simp [map, MonoidHom.coe_mk, OneHom.coe_mk, liftOn_ofFractionRing_mk,
     Submonoid.mem_comap.mp (hφ d.2), ↓reduceDIte]
 
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
@@ -364,7 +364,7 @@ def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.co
       rintro ⟨x⟩ ⟨y⟩
       induction x using Localization.induction_on
       induction y using Localization.induction_on
-      simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
+      simp [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
         MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul,
         -- We have to specify `S[X]⁰` to `mk_mul_mk`, otherwise it will try to rewrite
         -- the wrong occurrence.
@@ -394,7 +394,7 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
     cases x using Localization.induction_on
     cases y using Localization.induction_on
     rw [← ofFractionRing_mul, Localization.mk_mul]
-    simp only [liftOn_ofFractionRing_mk, div_mul_div_comm, map_mul, Submonoid.coe_mul]
+    simp [liftOn_ofFractionRing_mk, div_mul_div_comm, map_mul, Submonoid.coe_mul]
   map_zero' := by
     simp_rw [← ofFractionRing_zero, ← Localization.mk_zero (1 : R[X]⁰), liftOn_ofFractionRing_mk,
       map_zero, zero_div]
@@ -437,7 +437,7 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯
       simp only [RingHom.coe_toMonoidWithZeroHom, liftMonoidWithZeroHom_apply_ofFractionRing_mk]
       rw [div_add_div, div_eq_div_iff]
       · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
-        simp only [map_add, map_mul, Submonoid.coe_mul]
+        simp [map_add, map_mul, Submonoid.coe_mul]
       all_goals
         try simp only [← map_mul, ← Submonoid.coe_mul]
         exact nonZeroDivisors.ne_zero (hφ (SetLike.coe_mem _)) }
@@ -484,10 +484,10 @@ variable [IsDomain K]
 instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R K⟮X⟯ where
   algebraMap :=
   { toFun x := RatFunc.mk (algebraMap _ _ x) 1
-    map_add' x y := by simp only [mk_one', map_add, ofFractionRing_add]
-    map_mul' x y := by simp only [mk_one', map_mul, ofFractionRing_mul]
-    map_one' := by simp only [mk_one', map_one, ofFractionRing_one]
-    map_zero' := by simp only [mk_one', map_zero, ofFractionRing_zero] }
+    map_add' x y := by simp [mk_one', map_add, ofFractionRing_add]
+    map_mul' x y := by simp [mk_one', map_mul, ofFractionRing_mul]
+    map_one' := by simp [mk_one', map_one, ofFractionRing_one]
+    map_zero' := by simp [mk_one', map_zero, ofFractionRing_zero] }
   smul_def' c x := by
     induction x using RatFunc.induction_on' with | _ p q hq
     rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mk_one', ← mk_smul,
@@ -525,7 +525,7 @@ def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
 
 @[simp]
 theorem mk_eq_div (p q : K[X]) : RatFunc.mk p q = algebraMap _ _ p / algebraMap _ _ q := by
-  simp only [mk_eq_div', ofFractionRing_div, ofFractionRing_algebraMap]
+  simp [mk_eq_div', ofFractionRing_div, ofFractionRing_algebraMap]
 
 @[simp]
 theorem div_smul {R} [Monoid R] [DistribMulAction R K[X]] [IsScalarTower R K[X] K[X]] (c : R)
@@ -545,7 +545,7 @@ theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
     map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (φ p) / algebraMap _ _ (φ q) := by
   have hq' : φ q ≠ 0 := nonZeroDivisors.ne_zero (hφ (mem_nonZeroDivisors_iff_ne_zero.mpr hq))
-  simp only [← mk_eq_div, mk_eq_localization_mk _ hq, map_apply_ofFractionRing_mk,
+  simp [← mk_eq_div, mk_eq_localization_mk _ hq, map_apply_ofFractionRing_mk,
     mk_eq_localization_mk _ hq']
 
 @[simp]
@@ -565,8 +565,8 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q := by
   rcases eq_or_ne q 0 with (rfl | hq)
-  · simp only [div_zero, map_zero]
-  simp only [← mk_eq_div, mk_eq_localization_mk _ hq,
+  · simp [div_zero, map_zero]
+  simp [← mk_eq_div, mk_eq_localization_mk _ hq,
     liftMonoidWithZeroHom_apply_ofFractionRing_mk]
 
 @[simp]
@@ -667,7 +667,7 @@ instance : IsFractionRing K[X] K⟮X⟯ where
   surj := by
     rintro ⟨z⟩
     convert! IsLocalization.surj K[X]⁰ z
-    simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
+    simp [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
       ofFractionRing.injEq]
 
 variable {K}
@@ -707,7 +707,7 @@ theorem ofFractionRing_mk' (x : K[X]) (y : K[X]⁰) :
 theorem mk_eq_mk' (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
     RatFunc.mk f g = IsLocalization.mk' K⟮X⟯ f
       ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 hg⟩ := by
-  simp only [mk_eq_div, IsFractionRing.mk'_eq_div]
+  simp [mk_eq_div, IsFractionRing.mk'_eq_div]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -715,7 +715,7 @@ theorem ofFractionRing_eq :
     (ofFractionRing : FractionRing K[X] → K⟮X⟯) = IsLocalization.algEquiv K[X]⁰ _ _ :=
   funext fun x =>
     Localization.induction_on x fun x => by
-      simp only [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
+      simp [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
         IsLocalization.map_mk', RingHom.id_apply]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -724,7 +724,7 @@ theorem toFractionRing_eq :
     (toFractionRing : K⟮X⟯ → FractionRing K[X]) = IsLocalization.algEquiv K[X]⁰ _ _ :=
   funext fun ⟨x⟩ =>
     Localization.induction_on x fun x => by
-      simp only [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
+      simp [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
         IsLocalization.map_mk', RingHom.id_apply]
 
 @[simp]

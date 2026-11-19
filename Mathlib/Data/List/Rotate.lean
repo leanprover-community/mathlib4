@@ -632,7 +632,7 @@ protected theorem IsRotated.cyclicPermutations {l l' : List α} (h : l ~r l') :
 @[simp]
 theorem isRotated_cyclicPermutations_iff {l l' : List α} :
     l.cyclicPermutations ~r l'.cyclicPermutations ↔ l ~r l' := by
-  simp only [IsRotated, ← cyclicPermutations_rotate, cyclicPermutations_inj]
+  simp [IsRotated, ← cyclicPermutations_rotate, cyclicPermutations_inj]
 
 section Decidable
 

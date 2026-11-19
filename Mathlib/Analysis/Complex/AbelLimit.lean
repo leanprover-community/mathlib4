@@ -106,7 +106,7 @@ lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
   replace H :=
     H (1 - z).re z.im ((mul_pos_iff_of_pos_left hs).mp <| (abs_nonneg z.im).trans_lt hzr) hzl hzr
   have h : z.im ^ 2 = (1 - z).im ^ 2 := by
-    simp only [sub_im, one_im, zero_sub, neg_sq]
+    simp [sub_im, one_im, zero_sub, neg_sq]
   rw [h, ← norm_eq_sqrt_sq_add_sq, ← h, sub_re, one_re, sub_sub_cancel,
     ← norm_eq_sqrt_sq_add_sq] at H
   exact ⟨sub_pos.mp <| (mul_pos_iff_of_pos_left hM).mp <| (norm_nonneg _).trans_lt H, H⟩
@@ -117,7 +117,7 @@ lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
   use M
   rw [nhdsWithin_le_iff, mem_nhdsWithin]
   refine ⟨{w | 1 - ε < w.re}, isOpen_lt continuous_const continuous_re, ?_, H⟩
-  simp only [Set.mem_ofPred_eq, one_re, sub_lt_self_iff, hε]
+  simp [Set.mem_ofPred_eq, one_re, sub_lt_self_iff, hε]
 
 end StolzSet
 

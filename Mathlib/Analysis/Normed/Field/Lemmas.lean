@@ -78,7 +78,7 @@ theorem tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
   rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsGT_zero, ← inv_atTop₀,
     ← Filter.comap_inv]
-  simp only [comap_comap, Function.comp_def, norm_inv]
+  simp [comap_comap, Function.comp_def, norm_inv]
 
 @[simp]
 lemma inv_nhdsNE_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
@@ -273,7 +273,7 @@ end NormedField
 instance Rat.instNormedField : NormedField ℚ where
   __ := instField
   __ := instNormedAddCommGroup
-  norm_mul a b := by simp only [norm, Rat.cast_mul, abs_mul]
+  norm_mul a b := by simp [norm, Rat.cast_mul, abs_mul]
 
 instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=

@@ -856,8 +856,8 @@ protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α 
   invFun := Quot.map e.symm fun b₁ b₂ h =>
     (eq (e.symm b₁) (e.symm b₂)).2
       ((e.apply_symm_apply b₁).symm ▸ (e.apply_symm_apply b₂).symm ▸ h)
-  left_inv := by rintro ⟨a⟩; simp only [Quot.map, Equiv.symm_apply_apply]
-  right_inv := by rintro ⟨a⟩; simp only [Quot.map, Equiv.apply_symm_apply]
+  left_inv := by rintro ⟨a⟩; simp [Quot.map, Equiv.symm_apply_apply]
+  right_inv := by rintro ⟨a⟩; simp [Quot.map, Equiv.apply_symm_apply]
 
 @[simp] theorem congr_mk {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
     (eq : ∀ a₁ a₂ : α, ra a₁ a₂ ↔ rb (e a₁) (e a₂)) (a : α) :
@@ -872,7 +872,7 @@ protected def congrRight {r r' : α → α → Prop} (eq : ∀ a₁ a₂, r a₁
 by a relation `ra` and the quotient space of `β` by the image of this relation under `e`. -/
 protected def congrLeft {r : α → α → Prop} (e : α ≃ β) :
     Quot r ≃ Quot fun b b' => r (e.symm b) (e.symm b') :=
-  Quot.congr e fun _ _ => by simp only [e.symm_apply_apply]
+  Quot.congr e fun _ _ => by simp [e.symm_apply_apply]
 
 end Quot
 

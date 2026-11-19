@@ -79,12 +79,12 @@ protected theorem mid_assoc {z : M} (h : IsMulCentral z) (a c) : a * z * c = a *
 -- cf. `Commute.left_comm`
 @[to_additive]
 protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) := by
-  simp only [(h.comm _).eq, h.right_assoc]
+  simp [(h.comm _).eq, h.right_assoc]
 
 -- cf. `Commute.right_comm`
 @[to_additive]
 protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b := by
-  simp only [h.right_assoc, h.mid_assoc, (h.comm _).eq]
+  simp [h.right_assoc, h.mid_assoc, (h.comm _).eq]
 
 @[to_additive]
 protected theorem map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMulCentral a)
@@ -95,7 +95,7 @@ protected theorem map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMul
   all_goals
     obtain ⟨_, rfl⟩ := hf a
     obtain ⟨_, rfl⟩ := hf b
-    simp only [← map_mul, h.left_assoc, h.right_assoc]
+    simp [← map_mul, h.left_assoc, h.right_assoc]
 
 @[to_additive]
 protected theorem of_map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMulCentral (f a))

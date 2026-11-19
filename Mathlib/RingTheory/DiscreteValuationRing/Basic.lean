@@ -193,7 +193,7 @@ theorem toUniqueFactorizationMonoid [IsCancelMulZero R]
       intro a b h
       by_cases ha : a = 0
       · rw [ha]
-        simp only [true_or, dvd_zero]
+        simp [true_or, dvd_zero]
       obtain ⟨m, u, rfl⟩ := spec.2 ha
       rw [mul_assoc, mul_left_comm, Units.dvd_mul_left] at h
       rw [Units.dvd_mul_right]
@@ -239,7 +239,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
   by_cases I0 : I = ⊥
   · rw [I0]
     use 0
-    simp only [Set.singleton_zero, Submodule.span_zero]
+    simp [Set.singleton_zero, Submodule.span_zero]
   obtain ⟨x, hxI, hx0⟩ : ∃ x ∈ I, x ≠ (0 : R) := I.ne_bot_iff.mp I0
   obtain ⟨p, _, H⟩ := HasUnitMulPowIrreducibleFactorization.of_ufd_of_unique_irreducible h₁ h₂
   have ex : ∃ n : ℕ, p ^ n ∈ I := by
@@ -252,7 +252,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
   apply le_antisymm
   · intro r hr
     by_cases hr0 : r = 0
-    · simp only [hr0, Submodule.zero_mem]
+    · simp [hr0, Submodule.zero_mem]
     obtain ⟨n, u, rfl⟩ := H hr0
     simp only [mem_span_singleton, Units.isUnit, IsUnit.dvd_mul_right]
     apply pow_dvd_pow
@@ -306,7 +306,7 @@ theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsD
     obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr
       <| IsDiscreteValuationRing.not_a_field A)
     rw [Submodule.ne_bot_iff]
-    refine ⟨e a, ⟨?_, by simp only [ne_eq, EmbeddingLike.map_eq_zero_iff, ZeroMemClass.coe_eq_zero,
+    refine ⟨e a, ⟨?_, by simp [ne_eq, EmbeddingLike.map_eq_zero_iff, ZeroMemClass.coe_eq_zero,
       ha, not_false_eq_true]⟩⟩
     rw [IsLocalRing.mem_maximalIdeal, map_mem_nonunits_iff e, ← IsLocalRing.mem_maximalIdeal]
     exact a.2

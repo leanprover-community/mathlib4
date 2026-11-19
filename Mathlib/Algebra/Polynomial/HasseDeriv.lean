@@ -75,13 +75,13 @@ theorem hasseDeriv_coeff (n : ℕ) :
     intro i _hi hink
     rw [coeff_monomial, Finsupp.single_apply]
     by_cases hik : i < k
-    · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
+    · simp [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
     · grind
   · intro h
-    simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
+    simp [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
-  simp only [hasseDeriv_apply, Nat.sub_zero, choose_zero_right, cast_one, one_mul, sum_monomial_eq]
+  simp [hasseDeriv_apply, Nat.sub_zero, choose_zero_right, cast_one, one_mul, sum_monomial_eq]
 
 @[simp]
 theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
@@ -94,7 +94,7 @@ theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree
   simp [Nat.choose_eq_zero_of_lt ((le_natDegree_of_mem_supp _ hx).trans_lt h)]
 
 theorem hasseDeriv_one' : hasseDeriv 1 f = derivative f := by
-  simp only [hasseDeriv_apply, derivative_apply, ← C_mul_X_pow_eq_monomial, Nat.choose_one_right,
+  simp [hasseDeriv_apply, derivative_apply, ← C_mul_X_pow_eq_monomial, Nat.choose_one_right,
     (Nat.cast_commute _ _).eq]
 
 @[simp]
@@ -232,10 +232,10 @@ theorem hasseDeriv_mul (f g : R[X]) :
     rw [mem_antidiagonal] at hx
     subst hx
     by_cases! hm : m < x.1
-    · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul,
+    · simp [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul,
                  monomial_zero_right]
     by_cases! hn : n < x.2
-    · simp only [Nat.choose_eq_zero_of_lt hn, Nat.cast_zero, zero_mul,
+    · simp [Nat.choose_eq_zero_of_lt hn, Nat.cast_zero, zero_mul,
                  mul_zero, monomial_zero_right]
     rw [tsub_add_eq_add_tsub hm, ← add_tsub_assoc_of_le hn, ← tsub_add_eq_tsub_tsub,
       add_comm x.2 x.1, mul_assoc, ← mul_assoc r, ← (Nat.cast_commute _ r).eq, mul_assoc, mul_assoc]

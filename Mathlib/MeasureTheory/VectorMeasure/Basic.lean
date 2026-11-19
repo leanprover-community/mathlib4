@@ -82,7 +82,7 @@ theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwi
   rcases Countable.exists_injective_nat β with ⟨e, he⟩
   rw [← hasSum_extend_zero he]
   convert! m_iUnion v (f := Function.extend e f fun _ ↦ ∅) _ _
-  · simp only [Pi.zero_def, Function.apply_extend v, Function.comp_def, empty]
+  · simp [Pi.zero_def, Function.apply_extend v, Function.comp_def, empty]
   · exact (iSup_extend_bot he _).symm
   · simp [Function.apply_extend MeasurableSet, Function.comp_def, hm]
   · exact hd.disjoint_extend_bot (he.factorsThrough _)
@@ -138,7 +138,7 @@ theorem of_sdiff_of_sdiff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : Me
     (h' : v (B \ A) = 0) : v (A \ B) + v B = v A := by
   symm
   calc
-    v A = v (A \ B ∪ A ∩ B) := by simp only [Set.sdiff_union_inter]
+    v A = v (A \ B ∪ A ∩ B) := by simp [Set.sdiff_union_inter]
     _ = v (A \ B) + v (A ∩ B) := by
       rw [of_union]
       · rw [disjoint_comm]

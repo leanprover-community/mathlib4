@@ -51,7 +51,7 @@ variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [Nor
 
 protected lemma LinearIsometryEquiv.strictConvexSpace_iff (e : E ≃ₗᵢ[𝕜] F) :
     StrictConvexSpace 𝕜 E ↔ StrictConvexSpace 𝕜 F := by
-  simp only [strictConvexSpace_iff, ← map_zero e, ← e.image_closedBall, e.strictConvex_image]
+  simp [strictConvexSpace_iff, ← map_zero e, ← e.image_closedBall, e.strictConvex_image]
 
 lemma LinearIsometry.strictConvexSpace_range_iff (e : E →ₗᵢ[𝕜] F) :
     StrictConvexSpace 𝕜 (e : E →ₗ[𝕜] F).range ↔ StrictConvexSpace 𝕜 E :=

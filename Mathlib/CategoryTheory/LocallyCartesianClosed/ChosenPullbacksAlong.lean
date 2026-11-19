@@ -230,7 +230,7 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
   let adj := mapPullbackAdj g
   let a' : (Over.map g).obj (Over.mk b) ⟶ Over.mk f := Over.homMk a h
   have : (Over.map g).map (adj.homEquiv (.mk b) (.mk f) (Over.homMk a)) ≫ fst' f g = a' := by
-    simp only [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
+    simp [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
   congrm $(this).left
 
 set_option backward.privateInPublic true in
@@ -272,13 +272,13 @@ variable {f g}
 theorem pullbackMap_fst {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [ChosenPullbacksAlong g']
     {γ₁ : Y' ⟶ Y} {γ₂ : Z' ⟶ Z} {γ₃ : X' ⟶ X} (comm₁ comm₂ := by cat_disch) :
     pullbackMap f g f' g' γ₁ γ₂ γ₃ comm₁ comm₂ ≫ fst f g = fst f' g' ≫ γ₁ := by
-  simp only [pullbackMap, lift_fst]
+  simp [pullbackMap, lift_fst]
 
 @[reassoc (attr := simp)]
 theorem pullbackMap_snd {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [ChosenPullbacksAlong g']
     {γ₁ : Y' ⟶ Y} {γ₂ : Z' ⟶ Z} {γ₃ : X' ⟶ X} (comm₁ comm₂ := by cat_disch) :
     pullbackMap f g f' g' γ₁ γ₂ γ₃ comm₁ comm₂ ≫ snd f g = snd f' g' ≫ γ₂ := by
-  simp only [pullbackMap, lift_snd]
+  simp [pullbackMap, lift_snd]
 
 @[simp]
 theorem pullbackMap_id : pullbackMap f g f g (𝟙 Y) (𝟙 Z) (𝟙 X) = 𝟙 _ := by

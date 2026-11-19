@@ -120,7 +120,7 @@ theorem withDensity_add_left (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
     (f : α → β → ℝ≥0∞) : withDensity (κ + η) f = withDensity κ f + withDensity η f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext a s
-    simp only [Kernel.withDensity_apply _ hf, add_apply, withDensity_add_measure]
+    simp [Kernel.withDensity_apply _ hf, add_apply, withDensity_add_measure]
   · simp_rw [withDensity_of_not_measurable _ hf]
     rw [zero_add]
 
@@ -185,7 +185,7 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKerne
         calc
           ∫⁻ b in Set.univ, f a b ∂κ a ≤ ∫⁻ _ in Set.univ, B ∂κ a := lintegral_mono (hf_B a)
           _ = B * κ a Set.univ := by
-            simp only [Measure.restrict_univ, MeasureTheory.lintegral_const]
+            simp [Measure.restrict_univ, MeasureTheory.lintegral_const]
           _ ≤ B * κ.bound := by grw [measure_le_bound]⟩⟩
   · rw [withDensity_of_not_measurable _ hf]
     infer_instance

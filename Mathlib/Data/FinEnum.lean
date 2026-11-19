@@ -94,7 +94,7 @@ noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum 
       intro x
       simp only [mem_toList, true_and, List.mem_filterMap]
       use f x
-      simp only [h, Function.partialInv_left])
+      simp [h, Function.partialInv_left])
 
 instance _root_.ULift.instFinEnum [FinEnum α] : FinEnum (ULift α) :=
   ⟨card α, Equiv.ulift.trans equiv⟩

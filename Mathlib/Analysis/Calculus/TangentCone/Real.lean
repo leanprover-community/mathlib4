@@ -86,10 +86,10 @@ end RealTVS
 section Real
 
 theorem uniqueDiffOn_Ici (a : ℝ) : UniqueDiffOn ℝ (Ici a) :=
-  uniqueDiffOn_convex (convex_Ici a) <| by simp only [interior_Ici, nonempty_Ioi]
+  uniqueDiffOn_convex (convex_Ici a) <| by simp [interior_Ici, nonempty_Ioi]
 
 theorem uniqueDiffOn_Iic (a : ℝ) : UniqueDiffOn ℝ (Iic a) :=
-  uniqueDiffOn_convex (convex_Iic a) <| by simp only [interior_Iic, nonempty_Iio]
+  uniqueDiffOn_convex (convex_Iic a) <| by simp [interior_Iic, nonempty_Iio]
 
 theorem uniqueDiffOn_Ioi (a : ℝ) : UniqueDiffOn ℝ (Ioi a) :=
   isOpen_Ioi.uniqueDiffOn
@@ -98,20 +98,20 @@ theorem uniqueDiffOn_Iio (a : ℝ) : UniqueDiffOn ℝ (Iio a) :=
   isOpen_Iio.uniqueDiffOn
 
 theorem uniqueDiffOn_Icc {a b : ℝ} (hab : a < b) : UniqueDiffOn ℝ (Icc a b) :=
-  uniqueDiffOn_convex (convex_Icc a b) <| by simp only [interior_Icc, nonempty_Ioo, hab]
+  uniqueDiffOn_convex (convex_Icc a b) <| by simp [interior_Icc, nonempty_Ioo, hab]
 
 theorem uniqueDiffOn_uIcc {a b : ℝ} (hab : a ≠ b) : UniqueDiffOn ℝ (uIcc a b) :=
   uniqueDiffOn_Icc <| min_lt_max.mpr hab
 
 theorem uniqueDiffOn_Ico (a b : ℝ) : UniqueDiffOn ℝ (Ico a b) :=
   if hab : a < b then
-    uniqueDiffOn_convex (convex_Ico a b) <| by simp only [interior_Ico, nonempty_Ioo, hab]
-  else by simp only [Ico_eq_empty hab, uniqueDiffOn_empty]
+    uniqueDiffOn_convex (convex_Ico a b) <| by simp [interior_Ico, nonempty_Ioo, hab]
+  else by simp [Ico_eq_empty hab, uniqueDiffOn_empty]
 
 theorem uniqueDiffOn_Ioc (a b : ℝ) : UniqueDiffOn ℝ (Ioc a b) :=
   if hab : a < b then
-    uniqueDiffOn_convex (convex_Ioc a b) <| by simp only [interior_Ioc, nonempty_Ioo, hab]
-  else by simp only [Ioc_eq_empty hab, uniqueDiffOn_empty]
+    uniqueDiffOn_convex (convex_Ioc a b) <| by simp [interior_Ioc, nonempty_Ioo, hab]
+  else by simp [Ioc_eq_empty hab, uniqueDiffOn_empty]
 
 theorem uniqueDiffOn_Ioo (a b : ℝ) : UniqueDiffOn ℝ (Ioo a b) :=
   isOpen_Ioo.uniqueDiffOn

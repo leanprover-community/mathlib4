@@ -150,7 +150,7 @@ theorem dist_mulExpNegMulSq_le_dist (hε : 0 < ε) {x y : ℝ} :
 theorem tendsto_mulExpNegMulSq {x : ℝ} :
     Tendsto (fun ε => mulExpNegMulSq ε x) (𝓝 0) (𝓝 x) := by
   have : x = (fun ε : ℝ => mulExpNegMulSq ε x) 0 := by
-    simp only [mulExpNegMulSq, zero_mul, neg_zero, exp_zero, mul_one]
+    simp [mulExpNegMulSq, zero_mul, neg_zero, exp_zero, mul_one]
   nth_rw 2 [this]
   apply Continuous.tendsto (Continuous.mul continuous_const (by fun_prop))
 

@@ -132,7 +132,7 @@ variable {F}
 lemma isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
     (h : F.leftAdjointObjIsDefined = ⊤) : F.IsRightAdjoint := by
   replace h : ∀ X, IsCorepresentable (F ⋙ coyoneda.obj (op X)) := fun X ↦ by
-    simp only [← leftAdjointObjIsDefined_iff, h, Pi.top_apply, Prop.top_eq_true]
+    simp [← leftAdjointObjIsDefined_iff, h, Pi.top_apply, Prop.top_eq_true]
   exact (Adjunction.adjunctionOfEquivLeft
     (fun X Y ↦ (F ⋙ coyoneda.obj (op X)).corepresentableBy.homEquiv)
     (fun X Y Y' g f ↦ by apply CorepresentableBy.homEquiv_comp)).isRightAdjoint
@@ -172,7 +172,7 @@ noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Categ
       right_inv := fun g ↦ hc.hom_ext (fun j ↦ by simp) }
   homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
     dsimp
-    simp only [IsColimit.fac, IsColimit.fac_assoc, partialLeftAdjointHomEquiv_comp,
+    simp [IsColimit.fac, IsColimit.fac_assoc, partialLeftAdjointHomEquiv_comp,
       F.map_comp, assoc])
 
 lemma leftAdjointObjIsDefined_of_isColimit {J : Type*} [Category* J] {R : J ⥤ C} {c : Cocone R}
@@ -282,7 +282,7 @@ variable {F}
 lemma isLeftAdjoint_of_rightAdjointObjIsDefined_eq_top
     (h : F.rightAdjointObjIsDefined = ⊤) : F.IsLeftAdjoint := by
   replace h : ∀ X, IsRepresentable (F.op ⋙ yoneda.obj X) := fun X ↦ by
-    simp only [← rightAdjointObjIsDefined_iff, h, Pi.top_apply, Prop.top_eq_true]
+    simp [← rightAdjointObjIsDefined_iff, h, Pi.top_apply, Prop.top_eq_true]
   exact (Adjunction.adjunctionOfEquivRight
     (fun X Y ↦ (F.op ⋙ yoneda.obj Y).representableBy.homEquiv.symm)
     (fun X Y Y' g f ↦ (RepresentableBy.comp_homEquiv_symm ..).symm)).isLeftAdjoint
@@ -323,7 +323,7 @@ noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J
       right_inv := fun g ↦ hc.hom_ext (fun j ↦ by simp) }
   homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
     dsimp
-    simp only [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc])
+    simp [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc])
 
 lemma rightAdjointObjIsDefined_of_isLimit {J : Type*} [Category* J] {R : J ⥤ D} {c : Cone R}
     (hc : IsLimit c) [HasLimitsOfShape J C]

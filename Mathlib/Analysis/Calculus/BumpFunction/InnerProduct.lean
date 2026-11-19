@@ -35,7 +35,7 @@ norm smooth away from zero but we do not have a typeclass for this. -/
 noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E where
   toFun R x := smoothTransition ((R - ‖x‖) / (R - 1))
   mem_Icc _ _ := ⟨smoothTransition.nonneg _, smoothTransition.le_one _⟩
-  symmetric _ _ := by simp only [norm_neg]
+  symmetric _ _ := by simp [norm_neg]
   smooth := by
     rintro ⟨R, x⟩ ⟨hR : 1 < R, -⟩
     apply ContDiffAt.contDiffWithinAt

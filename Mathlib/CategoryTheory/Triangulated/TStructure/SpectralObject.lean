@@ -111,7 +111,7 @@ noncomputable def triangleω₁δObjIso (X : C) :
       ← Functor.map_comp, eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app]
     simp
   · dsimp
-    simp only [triangleω₁δ_obj_mor₂, homOfLE_leOfHom, eTruncGEIsoGEGE_hom, eTruncGEToGEGE_app,
+    simp [triangleω₁δ_obj_mor₂, homOfLE_leOfHom, eTruncGEIsoGEGE_hom, eTruncGEToGEGE_app,
       Category.id_comp, ← t.eTruncGEπ_app_eTruncGE_map_app (homOfLE hab), ← NatTrans.naturality,
       eTruncGE_obj_map_eTruncGEπ_app]
   · simp [← Functor.map_comp_assoc, ← Functor.map_comp]

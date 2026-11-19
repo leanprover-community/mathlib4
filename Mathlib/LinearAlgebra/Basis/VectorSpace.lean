@@ -207,7 +207,7 @@ theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodul
     rcases h with ⟨s, ⟨hs, hz⟩⟩
     rcases mem_span_singleton.1 (hT.1 hs) with ⟨a, rfl⟩
     rcases eq_or_ne a 0 with rfl | h
-    · simp only [zero_smul, ne_eq, not_true] at hz
+    · simp [zero_smul, ne_eq, not_true] at hz
     · rwa [T.smul_mem_iff h] at hs
 
 /-- The atoms of the lattice of submodules of a module over a division ring are the
@@ -313,7 +313,7 @@ between them is nontrivial. -/
 instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   obtain ⟨w, hw⟩ := exists_ne (0 : V')
-  have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
+  have : v ∉ (⊥ : Submodule K V) := by simp [mem_bot, hv, not_false_eq_true]
   obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
   exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
 

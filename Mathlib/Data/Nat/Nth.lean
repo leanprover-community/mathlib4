@@ -115,7 +115,7 @@ theorem image_nth_Iio_card (hf : (Set.ofPred p).Finite) :
   calc
     nth p '' Set.Iio #hf.toFinset = Set.range (hf.toFinset.orderEmbOfFin rfl) := by
       ext x
-      simp only [Set.mem_image, Set.mem_range, Fin.exists_iff, ← nth_eq_orderEmbOfFin hf,
+      simp [Set.mem_image, Set.mem_range, Fin.exists_iff, ← nth_eq_orderEmbOfFin hf,
         Set.mem_Iio, exists_prop]
     _ = Set.ofPred p := by rw [range_orderEmbOfFin, Set.Finite.coe_toFinset]
 

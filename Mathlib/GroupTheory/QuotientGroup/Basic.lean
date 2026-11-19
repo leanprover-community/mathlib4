@@ -216,7 +216,7 @@ def homQuotientZPowOfHom :
     A ⧸ (zpowGroupHom n : A →* A).range →* B ⧸ (zpowGroupHom n : B →* B).range :=
   lift _ ((mk' _).comp f) fun g ⟨h, (hg : h ^ n = g)⟩ =>
     (eq_one_iff _).mpr ⟨f h, by
-      simp only [← hg, map_zpow, zpowGroupHom_apply]⟩
+      simp [← hg, map_zpow, zpowGroupHom_apply]⟩
 
 @[to_additive (attr := simp)]
 theorem homQuotientZPowOfHom_id : homQuotientZPowOfHom (MonoidHom.id A) n = MonoidHom.id _ :=
@@ -407,7 +407,7 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
     ((Subgroup.center ((G ⧸ H₁) ⧸ H₂)).comap (mk' H₂)).comap (mk' H₁) =
       (Subgroup.center (G ⧸ H₂.comap (mk' H₁))).comap (mk' (H₂.comap (mk' H₁))) := by
   ext x
-  simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_mk, ← mk_mul,
+  simp [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_mk, ← mk_mul,
     eq_iff_div_mem, mk_div]
 
 open Subgroup in

@@ -128,7 +128,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
   ext x
   dsimp
   induction x with
-  | add x y _ _ => simp only [LinearEquiv.map_add, LinearMap.map_add, *]
+  | add x y _ _ => simp [LinearEquiv.map_add, LinearMap.map_add, *]
   | tmul x y =>
   dsimp [eₗ, eᵣ, e₁, KaehlerDifferential.cotangentComplexBaseChange,
     TensorProduct.one_def, Pp, smul_tmul']
@@ -205,7 +205,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
   have : IsScalarTower R Sp Sq := .to₁₃₄ _ S _ _
   have : IsScalarTower Rp Sp Sq := .of_algebraMap_eq' <| by
     apply IsLocalization.ringHom_ext p.primeCompl
-    simp only [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq]
+    simp [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq]
   have : IsLocalization (algebraMapSubmonoid Sp q.primeCompl) Sq :=
     .isLocalization_of_submonoid_le _ _ (algebraMapSubmonoid S p.primeCompl) _
     (by rintro _ ⟨x, hx, rfl⟩; simp_all [q.over_def p])

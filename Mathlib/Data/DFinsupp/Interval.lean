@@ -142,7 +142,7 @@ theorem mem_pi {f : Π₀ i, Finset (α i)} {g : Π₀ i, α i} : g ∈ f.pi ↔
 @[simp]
 theorem card_pi (f : Π₀ i, Finset (α i)) : #f.pi = f.prod fun i ↦ #(f i) := by
   rw [pi, card_dfinsupp]
-  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
+  exact Finset.prod_congr rfl fun i _ => by simp [Pi.natCast_apply, Nat.cast_id]
 
 end Pi
 

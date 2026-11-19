@@ -232,7 +232,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
       split_ifs at h₃ with h
       · rw [Option.some_inj] at h₃
         subst x'; subst val
-        simp only [List.mem_cons, true_or]
+        simp [List.mem_cons, true_or]
       · obtain - | ⟨h₀, h₅⟩ := h₀
         obtain - | ⟨h₂, h₄⟩ := h₂
         have h₆ := Nat.succ.inj h₁
@@ -332,9 +332,9 @@ protected def shrink {α : Type} [DecidableEq α] :
     have h₄ : ys'.length ≤ xs'.length := le_of_eq (List.Perm.length_eq h₀.symm)
     pure
       ⟨(List.zip xs' ys').map Prod.toSigma,
-        by simp only [comp_def, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
+        by simp [comp_def, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
           Prod.snd_toSigma, List.map_map],
-        by simp only [comp_def, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map]⟩
+        by simp [comp_def, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map]⟩
 
 /-- Create an injective function from one list and a permutation of that list. -/
 protected def mk (xs ys : List α) (h : xs ~ ys) (h' : ys.Nodup) : InjectiveFunction α :=
@@ -342,9 +342,9 @@ protected def mk (xs ys : List α) (h : xs ~ ys) (h' : ys.Nodup) : InjectiveFunc
   have h₁ : ys.length ≤ xs.length := le_of_eq h.length_eq.symm
   InjectiveFunction.mapToSelf (List.toFinmap' (xs.zip ys))
     (by
-      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *,
+      simp [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *,
         List.map_map])
-    (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, List.map_map])
+    (by simp [List.toFinmap', comp_def, List.map_snd_zip, *, List.map_map])
 
 protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Injective (apply f) := by
   obtain ⟨xs, hperm, hnodup⟩ := f
@@ -354,7 +354,7 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
   have hxs : xs = TotalFunction.List.toFinmap' (xs₀.zip xs₁) := by
     rw [← h₀, ← h₁, List.toFinmap']; clear h₀ h₁ xs₀ xs₁ hperm hnodup
     induction xs with
-    | nil => simp only [List.zip_nil_right, List.map_nil]
+    | nil => simp [List.zip_nil_right, List.map_nil]
     | cons xs_hd xs_tl xs_ih =>
       simp only [Sigma.eta, List.zip_cons_cons,
         List.map, List.cons_inj_right]

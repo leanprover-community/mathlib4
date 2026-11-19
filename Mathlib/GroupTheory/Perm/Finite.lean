@@ -259,7 +259,7 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
     refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
     rw [Finset.coe_union, Set.union_subset_iff]
     exact ⟨hc, hd⟩
-  · simp only [support_inv, imp_self, implies_true]
+  · simp [support_inv, imp_self, implies_true]
 
 lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
     (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :

@@ -511,13 +511,13 @@ theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P 
 theorem whiskerLeft_eqToHom (X : C) {Y Z : C} (f : Y = Z) :
     X ◁ eqToHom f = eqToHom congr(tensorObj _ $f) := by
   cases f
-  simp only [whiskerLeft_id, eqToHom_refl]
+  simp [whiskerLeft_id, eqToHom_refl]
 
 @[simp]
 theorem eqToHom_whiskerRight {X Y : C} (f : X = Y) (Z : C) :
     eqToHom f ▷ Z = eqToHom congr(tensorObj $f _) := by
   cases f
-  simp only [id_whiskerRight, eqToHom_refl]
+  simp [id_whiskerRight, eqToHom_refl]
 
 @[reassoc]
 theorem associator_naturality_left {X X' : C} (f : X ⟶ X') (Y Z : C) :
@@ -562,7 +562,7 @@ theorem leftUnitor_inv_naturality {X Y : C} (f : X ⟶ Y) :
 @[reassoc]
 theorem id_whiskerLeft_symm {X X' : C} (f : X ⟶ X') :
     f = (λ_ X).inv ≫ 𝟙_ C ◁ f ≫ (λ_ X').hom := by
-  simp only [id_whiskerLeft, assoc, inv_hom_id, comp_id, inv_hom_id_assoc]
+  simp [id_whiskerLeft, assoc, inv_hom_id, comp_id, inv_hom_id_assoc]
 
 @[reassoc]
 theorem rightUnitor_inv_naturality {X X' : C} (f : X ⟶ X') :

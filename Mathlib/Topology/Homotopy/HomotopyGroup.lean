@@ -566,7 +566,7 @@ theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = 
   rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
   change Quotient.mk' _ = _
   apply congr_arg Quotient.mk'
-  simp only [fromLoop_trans_toLoop, transAt_distrib h, coe_toEquiv, loopHomeo_apply,
+  simp [fromLoop_trans_toLoop, transAt_distrib h, coe_toEquiv, loopHomeo_apply,
     coe_symm_toEquiv, loopHomeo_symm_apply]
 
 theorem transAt_indep {i} (j) (f g : Ω^ N X x) :
@@ -609,7 +609,7 @@ instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
     (by
       rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
       apply congr_arg Quotient.mk'
-      simp only [fromLoop_trans_toLoop, transAt_distrib <| Classical.choose_spec h, coe_toEquiv,
+      simp [fromLoop_trans_toLoop, transAt_distrib <| Classical.choose_spec h, coe_toEquiv,
         loopHomeo_apply, coe_symm_toEquiv, loopHomeo_symm_apply])
 
 /-- The homotopy group at `x` indexed by a singleton is isomorphic to the fundamental group,

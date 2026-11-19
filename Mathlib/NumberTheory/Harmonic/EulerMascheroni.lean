@@ -62,7 +62,7 @@ lemma strictMono_eulerMascheroniSeq : StrictMono eulerMascheroniSeq := by
   refine (log_lt_sub_one_of_pos ?_ (ne_of_gt <| lt_add_of_pos_right _ ?_)).trans_le (le_of_eq ?_)
   · positivity
   · positivity
-  · simp only [add_sub_cancel_left]
+  · simp [add_sub_cancel_left]
 
 lemma one_half_lt_eulerMascheroniSeq_six : 1 / 2 < eulerMascheroniSeq 6 := by
   have : eulerMascheroniSeq 6 = 49 / 20 - log 7 := by

@@ -88,7 +88,7 @@ theorem toPrefunctor_comp (f : α → β) (g : β → γ) :
 @[simp]
 theorem toPrefunctor_symm_comp (f : SingleObj α ⥤q SingleObj β) (g : SingleObj β ⥤q SingleObj γ) :
     toPrefunctor.symm (f ⋙q g) = toPrefunctor.symm g ∘ toPrefunctor.symm f := by
-  simp only [Equiv.symm_apply_eq, toPrefunctor_comp, Equiv.apply_symm_apply]
+  simp [Equiv.symm_apply_eq, toPrefunctor_comp, Equiv.apply_symm_apply]
 
 /-- Auxiliary definition for `quiver.SingleObj.pathEquivList`.
 Converts a path in the quiver `single_obj α` into a list of elements of type `a`.

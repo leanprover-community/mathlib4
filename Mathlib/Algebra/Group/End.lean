@@ -432,7 +432,7 @@ theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
   cases n with
   | ofNat n => exact subtypePerm_pow _ _ _
-  | negSucc n => simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
+  | negSucc n => simp [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
 
 variable [DecidablePred p] {a : α}
 

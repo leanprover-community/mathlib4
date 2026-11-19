@@ -88,7 +88,7 @@ variable [DivisionSemiring α] [TopologicalSpace α] [IsTopologicalSemiring α]
     {f : ι → α} {a a₁ a₂ : α}
 
 theorem HasSum.div_const (h : HasSum f a L) (b : α) : HasSum (fun i ↦ f i / b) (a / b) L := by
-  simp only [div_eq_mul_inv, h.mul_right b⁻¹]
+  simp [div_eq_mul_inv, h.mul_right b⁻¹]
 
 theorem Summable.div_const (h : Summable f L) (b : α) : Summable (fun i ↦ f i / b) L :=
   (h.hasSum.div_const _).summable

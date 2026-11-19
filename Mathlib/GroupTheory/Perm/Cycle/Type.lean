@@ -127,9 +127,9 @@ theorem Disjoint.cycleType_mul {σ τ : Perm α} (h : Disjoint σ τ) :
 @[simp]
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
-    (fun σ hσ => by simp only [hσ.cycleType, hσ.inv.cycleType, support_inv])
+    (fun σ hσ => by simp [hσ.cycleType, hσ.inv.cycleType, support_inv])
     fun σ τ hστ _ hσ hτ => by
-      simp only [mul_inv_rev, hστ.cycleType_mul, hστ.symm.inv_left.inv_right.cycleType_mul, hσ, hτ,
+      simp [mul_inv_rev, hστ.cycleType_mul, hστ.symm.inv_left.inv_right.cycleType_mul, hσ, hτ,
         add_comm]
 
 @[simp]
@@ -168,7 +168,7 @@ theorem sign_of_cycleType (f : Perm α) :
   | empty => rfl
   | cons a s ihs =>
     rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
-    simp only [pow_add, pow_one, neg_mul, mul_neg, mul_assoc, mul_one]
+    simp [pow_add, pow_one, neg_mul, mul_neg, mul_assoc, mul_one]
 
 @[simp]
 theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
@@ -244,13 +244,13 @@ theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Fi
   | empty => simp
   | insert i s hi hrec =>
     have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
-      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
+      hs.mono (by simp [Finset.coe_insert, Set.subset_insert])
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Finset.sum_insert hi]
     rw [Disjoint.cycleType_mul, hrec hs']
     apply disjoint_noncommProd_right
     intro j hj
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
-      simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
+      simp [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
 
 
 theorem cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub
@@ -506,7 +506,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   have hσ : ∀ k v, (σ ^ k) v = f k v := fun k =>
     Nat.rec (fun v => (hf1 v).symm) (fun k hk v => by
       rw [pow_succ, Perm.mul_apply, hk (σ v), Nat.succ_eq_one_add, ← hf2 1 k]
-      simp only [σ, coe_fn_mk]) k
+      simp [σ, coe_fn_mk]) k
   replace hσ : σ ^ p ^ 1 = 1 := Perm.ext fun v => by rw [pow_one, hσ, hf3, one_apply]
   let v₀ : vectorsProdEqOne G p :=
     ⟨List.Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩

@@ -136,7 +136,7 @@ theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
   have eq₂ : _ = (π₂ i, j, k).base := PreservesPullback.iso_hom_snd (forget C) _ _
   rw [← eq₁, ← eq₂, TopCat.coe_comp, Set.image_comp, TopCat.coe_comp, Set.preimage_comp,
     Set.image_preimage_eq]
-  · simp only [forget_obj, forget_map, TopCat.pullback_snd_image_fst_preimage]
+  · simp [forget_obj, forget_map, TopCat.pullback_snd_image_fst_preimage]
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 

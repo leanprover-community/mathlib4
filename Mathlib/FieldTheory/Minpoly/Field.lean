@@ -67,7 +67,7 @@ See also `minpoly.isIntegrallyClosed_dvd` which relaxes the assumptions on `A` i
 stronger assumptions on `B`. -/
 theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   by_cases hp0 : p = 0
-  · simp only [hp0, dvd_zero]
+  · simp [hp0, dvd_zero]
   have hx : IsIntegral A x := IsAlgebraic.isIntegral ⟨p, hp0, hp⟩
   rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
@@ -202,7 +202,7 @@ theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
       have H := minpoly.min A x qmo.neg_one_pow_natDegree_mul_comp_neg_X this
       simp_all
   · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
-    · simp only [natDegree_zero, pow_zero, mul_zero]
+    · simp [natDegree_zero, pow_zero, mul_zero]
     · exact IsIntegral.neg_iff.not.mpr hx
 
 theorem map_eq_of_equiv_equiv {R S T : Type*} [CommRing R] [IsDomain R] [Ring S] [Ring T]

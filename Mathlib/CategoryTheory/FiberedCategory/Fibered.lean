@@ -105,7 +105,7 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
     let τ := IsCartesian.map p (g ≫ f) (ψ ≫ φ) φ'
     use τ ≫ ψ
     -- It is easily verified that `τ ≫ ψ` lifts `g` and `τ ≫ ψ ≫ φ = φ'`
-    refine ⟨⟨inferInstance, by simp only [assoc, IsCartesian.fac, τ]⟩, ?_⟩
+    refine ⟨⟨inferInstance, by simp [assoc, IsCartesian.fac, τ]⟩, ?_⟩
     -- It remains to check that `τ ≫ ψ` is unique.
     -- So fix another lift `π` of `g` satisfying `π ≫ φ = φ'`.
     intro π ⟨hπ, hπ_comp⟩

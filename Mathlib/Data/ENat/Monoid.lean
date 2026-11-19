@@ -152,7 +152,7 @@ instance : Unique ℕ∞ˣ where
       simp [h] at this
     have x_inv_top : x.inv ≠ ⊤ := by
       intro h
-      simp only [h, ne_eq, x.ne_zero, not_false_eq_true, mul_top, top_ne_one] at this
+      simp [h, ne_eq, x.ne_zero, not_false_eq_true, mul_top, top_ne_one] at this
     obtain ⟨y, x_y⟩ := ne_top_iff_exists.1 x_top
     obtain ⟨z, x_z⟩ := ne_top_iff_exists.1 x_inv_top
     replace x_y := x_y.symm
@@ -173,7 +173,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   | (⊤ : ℕ∞) => simp
   | (n : ℕ) =>
     norm_cast
-    simp only [natCast_ne_top]
+    simp [natCast_ne_top]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 

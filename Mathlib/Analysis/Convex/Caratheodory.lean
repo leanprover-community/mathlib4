@@ -94,7 +94,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
       ∑ e ∈ t.erase i₀, k e • e = ∑ e ∈ t, k e • e := sum_erase _ (by rw [hk, zero_smul])
       _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) • e := rfl
       _ = t.centerMass f id := by
-        simp only [sub_smul, mul_smul, sum_sub_distrib, ← smul_sum, gcombo, smul_zero, sub_zero,
+        simp [sub_smul, mul_smul, sum_sub_distrib, ← smul_sum, gcombo, smul_zero, sub_zero,
           centerMass, fsum, inv_one, one_smul, id]
 
 end Caratheodory

@@ -129,7 +129,7 @@ theorem apriori_edist_iterate_efixedPoint_le (hf : ContractingWith K f) {x : α}
 theorem edist_efixedPoint_le (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint f hf x hx) ≤ edist x (f x) / (1 - K) := by
   convert! hf.apriori_edist_iterate_efixedPoint_le hx 0
-  simp only [pow_zero, mul_one]
+  simp [pow_zero, mul_one]
 
 theorem edist_efixedPoint_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint f hf x hx) < ∞ :=
@@ -159,7 +159,7 @@ theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s
   rcases hf.exists_fixedPoint ⟨x, hxs⟩ hx with ⟨y, hfy, h_tendsto, hle⟩
   refine ⟨y, y.2, Subtype.ext_iff.1 hfy, ?_, fun n ↦ ?_⟩
   · convert! (continuous_subtypeVal.tendsto _).comp h_tendsto
-    simp only [(· ∘ ·), MapsTo.iterate_restrict, MapsTo.val_restrict_apply]
+    simp [(· ∘ ·), MapsTo.iterate_restrict, MapsTo.val_restrict_apply]
   · convert! hle n
     rw [MapsTo.iterate_restrict]
     rfl

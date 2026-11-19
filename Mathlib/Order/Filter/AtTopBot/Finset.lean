@@ -51,7 +51,7 @@ alias _root_.Monotone.tendsto_atTop_finset := tendsto_atTop_finset_of_monotone
 theorem tendsto_finset_image_atTop_atTop [DecidableEq β] {i : β → γ} {j : γ → β}
     (h : Function.LeftInverse j i) : Tendsto (Finset.image j) atTop atTop :=
   (Finset.image_mono j).tendsto_atTop_finset fun a =>
-    ⟨{i a}, by simp only [Finset.image_singleton, h a, Finset.mem_singleton]⟩
+    ⟨{i a}, by simp [Finset.image_singleton, h a, Finset.mem_singleton]⟩
 
 theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injective f) :
     Tendsto (fun s : Finset β => s.preimage f (hf.injOn)) atTop atTop :=

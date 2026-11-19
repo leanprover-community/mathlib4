@@ -221,13 +221,13 @@ theorem transOpenPartialHomeomorph_eq_trans (e : X ≃ₜ Y) (f' : OpenPartialHo
 theorem transOpenPartialHomeomorph_trans (e : X ≃ₜ Y) (f : OpenPartialHomeomorph Y Z)
     (f' : OpenPartialHomeomorph Z Z') :
     (e.transOpenPartialHomeomorph f).trans f' = e.transOpenPartialHomeomorph (f.trans f') := by
-  simp only [transOpenPartialHomeomorph_eq_trans, OpenPartialHomeomorph.trans_assoc]
+  simp [transOpenPartialHomeomorph_eq_trans, OpenPartialHomeomorph.trans_assoc]
 
 @[simp, mfld_simps]
 theorem trans_transOpenPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
     (f'' : OpenPartialHomeomorph Z Z') : (e.trans e').transOpenPartialHomeomorph f'' =
       e.transOpenPartialHomeomorph (e'.transOpenPartialHomeomorph f'') := by
-  simp only [transOpenPartialHomeomorph_eq_trans, OpenPartialHomeomorph.trans_assoc,
+  simp [transOpenPartialHomeomorph_eq_trans, OpenPartialHomeomorph.trans_assoc,
     trans_toOpenPartialHomeomorph]
 
 @[simp]

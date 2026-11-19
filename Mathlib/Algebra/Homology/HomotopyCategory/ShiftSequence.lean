@@ -108,12 +108,12 @@ noncomputable instance :
   shiftIso_zero a := by
     ext K
     dsimp [homologyMap]
-    simp only [ShiftSequence.shiftIso_hom_app, comp_id,
+    simp [ShiftSequence.shiftIso_hom_app, comp_id,
       shiftShortComplexFunctorIso_zero_add_hom_app]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext K
     dsimp [homologyMap]
-    simp only [ShiftSequence.shiftIso_hom_app, id_comp,
+    simp [ShiftSequence.shiftIso_hom_app, id_comp,
       ← ShortComplex.homologyMap_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
       shiftShortComplexFunctorIso_add'_hom_app n m _ rfl a a' a'' ha' ha'' K]
 

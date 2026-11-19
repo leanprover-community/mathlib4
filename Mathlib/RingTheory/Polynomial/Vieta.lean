@@ -93,7 +93,7 @@ theorem prod_X_sub_X_eq_sum_esymm (s : Multiset R) :
     rw [sub_eq_add_neg, ← map_neg C x]
   convert prod_X_add_C_eq_sum_esymm (map (fun t => -t) s) using 1
   · rw [map_map]; rfl
-  · simp only [esymm_neg, card_map, mul_assoc, map_mul, map_pow, map_neg, map_one]
+  · simp [esymm_neg, card_map, mul_assoc, map_mul, map_pow, map_neg, map_one]
 
 theorem prod_X_sub_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s) :
     (s.map fun t => X - C t).prod.coeff k =

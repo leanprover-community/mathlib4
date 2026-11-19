@@ -96,7 +96,7 @@ lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
     rw [← cancel_epi (K.extendXIso e hi'').hom, comp_zero, ← this, assoc]
   · have h₁ : f' = 0 := by
       apply Fork.IsLimit.hom_ext hcone
-      simp only [zero_comp, hf', K.shape _ _ hij]
+      simp [zero_comp, hf', K.shape _ _ hij]
     have h₂ : f'' = 0 := by
       apply Fork.IsLimit.hom_ext hcone
       rw [← cancel_mono (extendXIso K e hj').inv, assoc, hf'', zero_comp, zero_comp,
@@ -187,7 +187,7 @@ lemma d_comp_desc_eq_zero_iff' ⦃W : C⦄ (f' : cocone.pt ⟶ K.X k)
     rw [← cancel_mono (K.extendXIso e hk'').inv, zero_comp, assoc, this]
   · have h₁ : f' = 0 := by
       apply Cofork.IsColimit.hom_ext hcocone
-      simp only [hf', comp_zero, K.shape _ _ hjk]
+      simp [hf', comp_zero, K.shape _ _ hjk]
     have h₂ : f'' = 0 := by
       apply Cofork.IsColimit.hom_ext hcocone
       rw [← cancel_epi (extendXIso K e hj').hom, hf'', comp_zero, comp_zero,
@@ -330,7 +330,7 @@ lemma extendCyclesIso_hom_iCycles :
 lemma extendCyclesIso_inv_iCycles :
     (K.extendCyclesIso e hj').inv ≫ (K.extend e).iCycles j' =
       K.iCycles j ≫ (K.extendXIso e hj').inv := by
-  simp only [← cancel_epi (K.extendCyclesIso e hj').hom, Iso.hom_inv_id_assoc,
+  simp [← cancel_epi (K.extendCyclesIso e hj').hom, Iso.hom_inv_id_assoc,
     extendCyclesIso_hom_iCycles_assoc, Iso.hom_inv_id, comp_id]
 
 @[reassoc (attr := simp)]
@@ -344,7 +344,7 @@ lemma homologyπ_extendHomologyIso_hom :
 lemma homologyπ_extendHomologyIso_inv :
     K.homologyπ j ≫ (K.extendHomologyIso e hj').inv =
       (K.extendCyclesIso e hj').inv ≫ (K.extend e).homologyπ j' := by
-  simp only [← cancel_mono (K.extendHomologyIso e hj').hom,
+  simp [← cancel_mono (K.extendHomologyIso e hj').hom,
     assoc, Iso.inv_hom_id, comp_id, homologyπ_extendHomologyIso_hom, Iso.inv_hom_id_assoc]
 
 @[reassoc (attr := simp)]
@@ -362,14 +362,14 @@ lemma pOpcycles_extendOpcyclesIso_inv :
 lemma pOpcycles_extendOpcyclesIso_hom :
     (K.extend e).pOpcycles j' ≫ (K.extendOpcyclesIso e hj').hom =
       (K.extendXIso e hj').hom ≫ K.pOpcycles j := by
-  simp only [← cancel_mono (K.extendOpcyclesIso e hj').inv,
+  simp [← cancel_mono (K.extendOpcyclesIso e hj').inv,
     assoc, Iso.hom_inv_id, comp_id, pOpcycles_extendOpcyclesIso_inv, Iso.hom_inv_id_assoc]
 
 @[reassoc (attr := simp)]
 lemma extendHomologyIso_hom_homologyι :
     (K.extendHomologyIso e hj').hom ≫ K.homologyι j =
       (K.extend e).homologyι j' ≫ (K.extendOpcyclesIso e hj').hom := by
-  simp only [← cancel_epi ((K.extend e).homologyπ j'),
+  simp [← cancel_epi ((K.extend e).homologyπ j'),
     homologyπ_extendHomologyIso_hom_assoc, homology_π_ι, extendCyclesIso_hom_iCycles_assoc,
     homology_π_ι_assoc, pOpcycles_extendOpcyclesIso_hom]
 
@@ -377,7 +377,7 @@ lemma extendHomologyIso_hom_homologyι :
 lemma extendHomologyIso_inv_homologyι :
     (K.extendHomologyIso e hj').inv ≫ (K.extend e).homologyι j' =
       K.homologyι j ≫ (K.extendOpcyclesIso e hj').inv := by
-  simp only [← cancel_epi (K.extendHomologyIso e hj').hom,
+  simp [← cancel_epi (K.extendHomologyIso e hj').hom,
     Iso.hom_inv_id_assoc, extendHomologyIso_hom_homologyι_assoc, Iso.hom_inv_id, comp_id]
 
 variable {K L}

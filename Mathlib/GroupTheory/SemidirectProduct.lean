@@ -102,7 +102,7 @@ def inl : N →* N ⋊[φ] G where
   toFun n := ⟨n, 1⟩
   map_one' := rfl
   map_mul' := by intros; ext <;>
-    simp only [mul_left, map_one, MulAut.one_apply, mul_right, mul_one]
+    simp [mul_left, map_one, MulAut.one_apply, mul_right, mul_one]
 
 @[simp]
 theorem left_inl (n : N) : (inl n : N ⋊[φ] G).left = n := rfl
@@ -201,7 +201,7 @@ def lift : N ⋊[φ] G →* H where
   map_mul' a b := by
     have := fun n g ↦ DFunLike.ext_iff.1 (h n) g
     simp only [MulAut.conj_apply, MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom] at this
-    simp only [mul_left, mul_right, map_mul, this, mul_assoc, inv_mul_cancel_left]
+    simp [mul_left, mul_right, map_mul, this, mul_assoc, inv_mul_cancel_left]
 
 @[simp]
 theorem lift_inl (n : N) : lift fn fg h (inl n) = fn n := by simp [lift]
@@ -218,7 +218,7 @@ theorem lift_comp_inr : (lift fn fg h).comp inr = fg := by ext; simp
 theorem lift_unique (F : N ⋊[φ] G →* H) :
     F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext; simp [inl_aut] := by
   rw [DFunLike.ext_iff]
-  simp only [lift, MonoidHom.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk, ← map_mul,
+  simp [lift, MonoidHom.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk, ← map_mul,
     inl_left_mul_inr_right, forall_const]
 
 /-- Two maps out of the semidirect product are equal if they're equal after composition
@@ -226,7 +226,7 @@ theorem lift_unique (F : N ⋊[φ] G →* H) :
 theorem hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
     (hr : f.comp inr = g.comp inr) : f = g := by
   rw [lift_unique f, lift_unique g]
-  simp only [*]
+  simp [*]
 
 /-- The homomorphism from a semidirect product of subgroups to the ambient group. -/
 @[simps!]

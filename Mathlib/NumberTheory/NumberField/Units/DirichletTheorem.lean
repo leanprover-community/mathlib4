@@ -281,8 +281,8 @@ theorem seq_norm_le (n : ℕ) :
   | zero =>
       have : 1 ≤ B := by
         contrapose! hB
-        simp only [Nat.lt_one_iff.mp hB, CharP.cast_eq_zero, mul_zero, zero_le]
-      simp only [ne_eq, seq, map_one, Int.natAbs_one, this]
+        simp [Nat.lt_one_iff.mp hB, CharP.cast_eq_zero, mul_zero, zero_le]
+      simp [ne_eq, seq, map_one, Int.natAbs_one, this]
   | succ n =>
       rw [← Nat.cast_le (α := ℚ), Nat.cast_natAbs, Int.cast_abs, Algebra.coe_norm_int]
       exact (seq_next K w₁ hB (seq K w₁ hB n).prop).choose_spec.2.2
@@ -513,7 +513,7 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin
     rw [add_eq_zero_iff_eq_neg, neg_neg]
     exact ((basisModTorsion K).sum_repr (Additive.ofMul ↑x)).symm
   refine ⟨⟨⟨ζ, h_tors⟩, ((basisModTorsion K).repr (Additive.ofMul ↑x) : Fin (rank K) → ℤ)⟩, ?_, ?_⟩
-  · simp only [ζ, _root_.inv_mul_cancel_right]
+  · simp [ζ, _root_.inv_mul_cancel_right]
   · rintro ⟨⟨ζ', h_tors'⟩, η⟩ hf
     simp only [ζ, ← fun_eq_repr K h_tors' hf, Prod.mk.injEq, Subtype.mk.injEq, and_true]
     nth_rewrite 1 [hf]

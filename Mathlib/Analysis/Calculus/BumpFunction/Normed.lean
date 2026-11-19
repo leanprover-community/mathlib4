@@ -80,7 +80,7 @@ theorem tsupport_normed_eq : tsupport (f.normed μ) = Metric.closedBall c f.rOut
   rw [tsupport, f.support_normed_eq, closure_ball _ f.rOut_pos.ne']
 
 theorem hasCompactSupport_normed : HasCompactSupport (f.normed μ) := by
-  simp only [HasCompactSupport, f.tsupport_normed_eq (μ := μ), isCompact_closedBall]
+  simp [HasCompactSupport, f.tsupport_normed_eq (μ := μ), isCompact_closedBall]
 
 theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) :

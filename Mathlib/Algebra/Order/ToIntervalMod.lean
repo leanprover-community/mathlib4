@@ -400,7 +400,7 @@ theorem toIcoMod_add_nsmul (a b : α) (m : ℕ) : toIcoMod hp a (b + m • p) = 
 @[simp]
 theorem toIcoMod_add_zsmul' (a b : α) (m : ℤ) :
     toIcoMod hp (a + m • p) b = toIcoMod hp a b + m • p := by
-  simp only [toIcoMod, toIcoDiv_add_zsmul', sub_smul, sub_add]
+  simp [toIcoMod, toIcoDiv_add_zsmul', sub_smul, sub_add]
 
 @[simp]
 theorem toIcoMod_add_nsmul' (a b : α) (m : ℕ) :
@@ -419,7 +419,7 @@ theorem toIocMod_add_nsmul (a b : α) (m : ℕ) : toIocMod hp a (b + m • p) = 
 @[simp]
 theorem toIocMod_add_zsmul' (a b : α) (m : ℤ) :
     toIocMod hp (a + m • p) b = toIocMod hp a b + m • p := by
-  simp only [toIocMod, toIocDiv_add_zsmul', sub_smul, sub_add]
+  simp [toIocMod, toIocDiv_add_zsmul', sub_smul, sub_add]
 
 @[simp]
 theorem toIocMod_add_nsmul' (a b : α) (m : ℕ) :

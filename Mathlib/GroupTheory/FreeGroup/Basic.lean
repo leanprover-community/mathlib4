@@ -709,7 +709,7 @@ theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   apply le_antisymm (range_lift_le Subgroup.subset_closure)
   rw [Subgroup.closure_le]
   rintro _ ⟨a, rfl⟩
-  exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
+  exact ⟨FreeGroup.of a, by simp [lift_apply_of]⟩
 
 @[to_additive]
 theorem lift_surjective_iff_closure_range_eq_top :

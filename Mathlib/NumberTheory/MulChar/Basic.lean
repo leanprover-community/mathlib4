@@ -107,8 +107,8 @@ noncomputable def trivial : MulChar R R' where
   toFun := by classical exact fun x => if IsUnit x then 1 else 0
   map_nonunit' := by
     intro a ha
-    simp only [ha, ite_false]
-  map_one' := by simp only [isUnit_one, ite_true]
+    simp [ha, ite_false]
+  map_one' := by simp [isUnit_one, ite_true]
   map_mul' := by
     intro x y
     classical
@@ -160,7 +160,7 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
   toFun := by classical exact fun x => if hx : IsUnit x then f hx.unit else 0
   map_one' := by
     have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.ext rfl
-    simp only [h1, dite_eq_left, Units.val_eq_one, map_one, isUnit_one]
+    simp [h1, dite_eq_left, Units.val_eq_one, map_one, isUnit_one]
   map_mul' := by
     classical
       intro x y
@@ -171,11 +171,11 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
           have hm : (hx.mul hy).unit = hx.unit * hy.unit := Units.ext rfl
           rw [hm, map_mul]
           norm_cast
-        · simp only [hy, not_false_iff, dite_eq_right, mul_zero]
-      · simp only [hx, IsUnit.mul_iff, false_and, not_false_iff, dite_eq_right, zero_mul]
+        · simp [hy, not_false_iff, dite_eq_right, mul_zero]
+      · simp [hx, IsUnit.mul_iff, false_and, not_false_iff, dite_eq_right, zero_mul]
   map_nonunit' := by
     intro a ha
-    simp only [ha, not_false_iff, dite_eq_right]
+    simp [ha, not_false_iff, dite_eq_right]
 
 theorem ofUnitHom_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : ofUnitHom f ↑a = f a := by simp [ofUnitHom]
 
@@ -190,7 +190,7 @@ noncomputable def equivToUnitHom : MulChar R R' ≃ (Rˣ →* R'ˣ) where
   right_inv := by
     intro f
     ext x
-    simp only [coe_toUnitHom, ofUnitHom_coe]
+    simp [coe_toUnitHom, ofUnitHom_coe]
 
 @[simp]
 theorem toUnitHom_eq (χ : MulChar R R') : toUnitHom χ = equivToUnitHom χ :=
@@ -268,7 +268,7 @@ lemma one_apply {x : R} (hx : IsUnit x) : (1 : MulChar R R') x = 1 := one_apply_
 def mul (χ χ' : MulChar R R') : MulChar R R' :=
   { χ.toMonoidHom * χ'.toMonoidHom with
     toFun := χ * χ'
-    map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, zero_mul, Pi.mul_apply] }
+    map_nonunit' := fun a ha => by simp [map_nonunit χ ha, zero_mul, Pi.mul_apply] }
 
 instance hasMul : Mul (MulChar R R') :=
   ⟨mul⟩
@@ -282,11 +282,11 @@ theorem coeToFun_mul (χ χ' : MulChar R R') : ⇑(χ * χ') = χ * χ' :=
 
 protected theorem one_mul (χ : MulChar R R') : (1 : MulChar R R') * χ = χ := by
   ext
-  simp only [one_mul, Pi.mul_apply, MulChar.coeToFun_mul, MulChar.one_apply_coe]
+  simp [one_mul, Pi.mul_apply, MulChar.coeToFun_mul, MulChar.one_apply_coe]
 
 protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
   ext
-  simp only [mul_one, Pi.mul_apply, MulChar.coeToFun_mul, MulChar.one_apply_coe]
+  simp [mul_one, Pi.mul_apply, MulChar.coeToFun_mul, MulChar.one_apply_coe]
 
 /-- The inverse of a multiplicative character. We define it as `inverse ∘ χ`. -/
 noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
@@ -341,11 +341,11 @@ noncomputable instance commGroup : CommGroup (MulChar R R') where
   mul_assoc := by
     intro χ₁ χ₂ χ₃
     ext a
-    simp only [mul_assoc, Pi.mul_apply, MulChar.coeToFun_mul]
+    simp [mul_assoc, Pi.mul_apply, MulChar.coeToFun_mul]
   mul_comm := by
     intro χ₁ χ₂
     ext a
-    simp only [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
+    simp [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
   one_mul := MulChar.one_mul
   mul_one := MulChar.mul_one
 
@@ -375,7 +375,7 @@ noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
     map_mul' := by
       intro χ ψ
       ext
-      simp only [Equiv.toFun_as_coe, coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply,
+      simp [Equiv.toFun_as_coe, coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply,
         MonoidHom.mul_apply, Units.val_mul]
   }
 
@@ -425,10 +425,10 @@ section nontrivial
 variable {R : Type*} [CommMonoid R] {R' : Type*} [CommMonoidWithZero R']
 
 lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
-  simp only [MulChar.ext_iff, one_apply_coe]
+  simp [MulChar.ext_iff, one_apply_coe]
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
-  simp only [Ne, eq_one_iff, not_forall]
+  simp [Ne, eq_one_iff, not_forall]
 
 theorem domRestrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
     {χ : MulChar R R'} : χ.domRestrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
@@ -458,28 +458,28 @@ theorem IsQuadratic.eq_of_eq_coe {χ : MulChar R ℤ} (hχ : IsQuadratic χ) {χ
 def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
   { f.toMonoidHom.comp χ.toMonoidHom with
     toFun := fun a => f (χ a)
-    map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, map_zero] }
+    map_nonunit' := fun a ha => by simp [map_nonunit χ ha, map_zero] }
 
 @[simp]
 lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 := by
   ext1
-  simp only [MulChar.ringHomComp_apply, MulChar.one_apply_coe, map_one]
+  simp [MulChar.ringHomComp_apply, MulChar.one_apply_coe, map_one]
 
 lemma ringHomComp_inv {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (f : R' →+* R'') :
     (χ.ringHomComp f)⁻¹ = χ⁻¹.ringHomComp f := by
   ext1
-  simp only [inv_apply, Ring.inverse_unit, ringHomComp_apply]
+  simp [inv_apply, Ring.inverse_unit, ringHomComp_apply]
 
 lemma ringHomComp_mul (χ φ : MulChar R R') (f : R' →+* R'') :
     (χ * φ).ringHomComp f = χ.ringHomComp f * φ.ringHomComp f := by
   ext1
-  simp only [ringHomComp_apply, coeToFun_mul, Pi.mul_apply, map_mul]
+  simp [ringHomComp_apply, coeToFun_mul, Pi.mul_apply, map_mul]
 
 lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
     χ.ringHomComp f ^ n = (χ ^ n).ringHomComp f := by
   induction n with
-  | zero => simp only [pow_zero, ringHomComp_one]
-  | succ n ih => simp only [pow_succ, ih, ringHomComp_mul]
+  | zero => simp [pow_zero, ringHomComp_one]
+  | succ n ih => simp [pow_succ, ih, ringHomComp_mul]
 
 /-- Bundled version of `MulChar.ringHomComp` as a `MonoidHom`. -/
 @[simps]
@@ -567,8 +567,8 @@ lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZer
   · rw [one_apply_coe, χ.pow_apply_coe]
     rcases h x with H | H | H
     · exact (not_isUnit_zero <| H ▸ IsUnit.map χ <| x.isUnit).elim
-    · simp only [H, one_pow]
-    · simp only [H, even_two, Even.neg_pow, one_pow]
+    · simp [H, one_pow]
+    · simp [H, even_two, Even.neg_pow, one_pow]
   · by_cases hx : IsUnit x
     · refine .inr <| sq_eq_one_iff.mp ?_
       rw [← χ.pow_apply' two_ne_zero, h, MulChar.one_apply hx]

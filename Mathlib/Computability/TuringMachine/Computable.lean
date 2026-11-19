@@ -222,7 +222,7 @@ def idComputableInPolyTime {α αΓ : Type} [Fintype αΓ] (ea : α → List α�
   outputsFun _ :=
     { steps := 1
       evals_in_steps := rfl
-      steps_le_m := by simp only [Polynomial.eval_one, le_refl] }
+      steps_le_m := by simp [Polynomial.eval_one, le_refl] }
 
 instance inhabitedTM2ComputableInPolyTime :
     Inhabited (TM2ComputableInPolyTime encodeBool encodeBool id) :=

@@ -91,7 +91,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
   exists hk
   simp only [mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
   obtain ⟨a', _, y, _, e⟩ | ⟨a', _, y, _, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
-    simp only [e.symm, encodek, coe_some, some_dom]
+    simp [e.symm, encodek, coe_some, some_dom]
 
 theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
     (H : ∀ (a), ∀ x ∈ f a, ∀ y ∈ g a, x = y) :
@@ -121,7 +121,7 @@ nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α
     (cond (sumCasesOn hf (const true).to₂ (const false).to₂)
           (sumCasesOn_left hf (option_some_iff.2 hg).to₂ (const Option.none).to₂)
           (sumCasesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
-      fun a => by cases f a <;> simp only [Bool.cond_true, Bool.cond_false]
+      fun a => by cases f a <;> simp [Bool.cond_true, Bool.cond_false]
 
 end Partrec
 

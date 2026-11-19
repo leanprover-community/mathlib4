@@ -181,7 +181,7 @@ variable [Nonempty α] [Preorder α] [IsDirectedOrder α] {f : α → β} {l : F
 
 @[to_dual]
 theorem tendsto_atTop' : Tendsto f atTop l ↔ ∀ s ∈ l, ∃ a, ∀ b, a ≤ b → f b ∈ s := by
-  simp only [tendsto_def, mem_atTop_sets, mem_preimage]
+  simp [tendsto_def, mem_atTop_sets, mem_preimage]
 
 @[to_dual]
 theorem tendsto_atTop_principal {s : Set β} :

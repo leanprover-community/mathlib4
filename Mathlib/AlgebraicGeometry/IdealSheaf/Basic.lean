@@ -95,7 +95,7 @@ instance : CompleteSemilatticeSup (IdealSheafData X) where
       have : sSup (ideal '' s) = ⨆ i : s, ideal i.1 := by
         conv_lhs => rw [← Subtype.range_val (s := s), ← Set.range_comp]
         rfl
-      simp only [this, iSup_apply, Ideal.map_iSup, map_ideal_basicOpen, implies_true] }
+      simp [this, iSup_apply, Ideal.map_iSup, map_ideal_basicOpen, implies_true] }
   isLUB_sSup _ := .of_image (f := ideal) le_def (isLUB_sSup _)
 
 /-- The largest ideal sheaf contained in a family of ideals. -/
@@ -193,7 +193,7 @@ lemma ideal_inf {I J : IdealSheafData X} : (I ⊓ J).ideal = I.ideal ⊓ J.ideal
 lemma ideal_biInf {ι : Type*} (I : ι → IdealSheafData X) {s : Set ι} (hs : s.Finite) :
     (⨅ i ∈ s, I i).ideal = ⨅ i ∈ s, (I i).ideal := by
   refine hs.induction_on _ (by simp) fun {i s} his hs e ↦ ?_
-  simp only [iInf_insert, e, ideal_inf]
+  simp [iInf_insert, e, ideal_inf]
 
 @[simp]
 lemma ideal_iInf {ι : Type*} (I : ι → IdealSheafData X) [Finite ι] :
@@ -226,7 +226,7 @@ lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
   apply_fun Ideal.map (X.presheaf.germ (X.basicOpen g) x (hfg ▸ hxf)).hom at this
   simp only [Ideal.map_map, ← CommRingCat.hom_comp, affineBasicOpen_coe, X.presheaf.germ_res]
     at this ⊢
-  simp only [homOfLE_leOfHom, TopCat.Presheaf.germ_res', this]
+  simp [homOfLE_leOfHom, TopCat.Presheaf.germ_res', this]
 
 /-- A form of `map_ideal` that is easier to rewrite with. -/
 lemma map_ideal' {U V : X.affineOpens} (h : Opposite.op V.1 ⟶ .op U.1) :
@@ -467,7 +467,7 @@ def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
     (fun U f ↦ by rw [Ideal.map_map, ← CommRingCat.hom_comp, ← Functor.map_comp]; rfl)
     (X.zeroLocus (U := ⊤) I)
     (fun U x hxU ↦ by
-      simp only [Ideal.map, zeroLocus_span, zeroLocus_map, Set.mem_union, Set.mem_compl_iff,
+      simp [Ideal.map, zeroLocus_span, zeroLocus_map, Set.mem_union, Set.mem_compl_iff,
         SetLike.mem_coe, hxU, not_true_eq_false, iff_self_or, IsEmpty.forall_iff])
 
 lemma le_of_isAffine [IsAffine X] {I J : IdealSheafData X}
@@ -518,7 +518,7 @@ def radical (I : IdealSheafData X) : IdealSheafData X :=
       congr($(I.map_ideal_basicOpen U f).radical))
   I.supportSet
   (fun U x hx ↦ by
-    simp only [mem_supportSet_iff_of_mem hx, AlgebraicGeometry.Scheme.zeroLocus_radical])
+    simp [mem_supportSet_iff_of_mem hx, AlgebraicGeometry.Scheme.zeroLocus_radical])
 
 @[simp]
 lemma support_radical (I : IdealSheafData X) : I.radical.support = I.support := rfl
@@ -547,13 +547,13 @@ lemma radical_sup {I J : IdealSheafData X} :
 lemma radical_inf {I J : IdealSheafData X} :
     radical (I ⊓ J) = radical I ⊓ radical J := by
   ext U : 2
-  simp only [radical_ideal, ideal_inf, Pi.inf_apply, Ideal.radical_inf]
+  simp [radical_ideal, ideal_inf, Pi.inf_apply, Ideal.radical_inf]
 
 @[simp]
 lemma radical_mul {I J : IdealSheafData X} :
     radical (I * J) = radical I ⊓ radical J := by
   ext U : 2
-  simp only [radical_ideal, ideal_mul, Pi.mul_apply, Ideal.radical_mul, ideal_inf, Pi.inf_apply]
+  simp [radical_ideal, ideal_mul, Pi.mul_apply, Ideal.radical_mul, ideal_inf, Pi.inf_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The vanishing ideal sheaf of a closed set,
@@ -808,7 +808,7 @@ lemma Hom.iUnion_support_ker_openCover_map_comp
       Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
     simpa [hxU] using congr(x ∈ $(this ⟨U, hU⟩))
   intro U
-  simp only [Set.iUnion_inter, coe_support_inter, ← f.iInf_ker_openCover_map_comp_apply 𝒰,
+  simp [Set.iUnion_inter, coe_support_inter, ← f.iInf_ker_openCover_map_comp_apply 𝒰,
     Scheme.zeroLocus_iInf_of_nonempty]
 
 lemma ker_morphismRestrict_ideal (f : X.Hom Y) [QuasiCompact f]
@@ -833,7 +833,7 @@ lemma ker_ideal_of_isPullback_of_isOpenImmersion {X Y U V : Scheme.{u}}
     X.presheaf.mapIso (eqToIso this).op ≪≫ iU.appIso _
   have : (iV.appIso W).inv ≫ f.app _ = f'.app W ≫ e.inv := by
     rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
-    simp only [Scheme.Hom.app_eq_appLE, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
+    simp [Scheme.Hom.app_eq_appLE, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
       eqToHom_op, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE, e, Scheme.Hom.appLE_comp_appLE, H.w]
   simp only [Scheme.Hom.ker_apply, RingHom.mem_ker, Ideal.mem_comap, ← RingHom.comp_apply,
     ← CommRingCat.hom_comp, this]

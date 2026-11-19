@@ -61,7 +61,7 @@ def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
     squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi '' univ.pi C := by
   ext1 f
-  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_ofPred_eq,
+  simp [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_ofPred_eq,
     eq_comm (a := f)]
 
 theorem squareCylinders_eq_iUnion_image' {C : ∀ i, Set (Set (α i))} (hC : ∀ i, (C i).Nonempty) :
@@ -127,8 +127,8 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
   · by_cases hji : j = i
     · simp only [hji, eq_mpr_eq_cast, dite_eq_left]
       convert! ht
-      simp only [cast_heq]
-    · simp only [hji, not_false_iff, dite_eq_right, MeasurableSet.univ]
+      simp [cast_heq]
+    · simp [hji, not_false_iff, dite_eq_right, MeasurableSet.univ]
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
     (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
     It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
@@ -214,11 +214,11 @@ theorem union_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂
 
 theorem compl_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) :
     (cylinder s S)ᶜ = cylinder s (Sᶜ) := by
-  ext1 f; simp only [mem_compl_iff, mem_cylinder]
+  ext1 f; simp [mem_compl_iff, mem_cylinder]
 
 theorem sdiff_cylinder_same (s : Finset ι) (S T : Set (∀ i : s, α i)) :
     cylinder s S \ cylinder s T = cylinder s (S \ T) := by
-  ext1 f; simp only [mem_sdiff, mem_cylinder]
+  ext1 f; simp [mem_sdiff, mem_cylinder]
 
 @[deprecated (since := "2026-06-03")] alias diff_cylinder_same := sdiff_cylinder_same
 
@@ -239,7 +239,7 @@ theorem cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (�
     (J : Finset ι) :
     cylinder I S =
       cylinder (I ∪ J) (Finset.restrict₂ Finset.subset_union_left ⁻¹' S) := by
-  ext1 f; simp only [mem_cylinder, Finset.restrict_def, Finset.restrict₂_def, mem_preimage]
+  ext1 f; simp [mem_cylinder, Finset.restrict_def, Finset.restrict₂_def, mem_preimage]
 
 theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
     {T : Set (∀ i : t, α i)} [DecidableEq ι] :
@@ -377,7 +377,7 @@ theorem generateFrom_measurableCylinders :
     refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i},
       measurable_pi_apply (⟨i, by simp⟩ : ({i} : Finset ι)) (ht i), ?_⟩
     ext1 x
-    simp only [mem_preimage, Function.eval, mem_cylinder, mem_ofPred_eq, Finset.restrict]
+    simp [mem_preimage, Function.eval, mem_cylinder, mem_ofPred_eq, Finset.restrict]
 
 /-- The cylinders of a product space indexed by `ℕ` can be seen as depending on the first
 coordinates. -/

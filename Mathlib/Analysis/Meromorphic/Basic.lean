@@ -167,7 +167,7 @@ theorem finsum (hF : ∀ i, MeromorphicAt (F i) x) :
 lemma neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
   convert (MeromorphicAt.const (-1 : 𝕜) x).smul hf
   ext1 z
-  simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
+  simp [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
 
 @[simp]
 lemma neg_iff {f : 𝕜 → E} :

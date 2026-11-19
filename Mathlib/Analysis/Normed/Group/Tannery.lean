@@ -54,7 +54,7 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
   · simpa only [tsum_empty] using tendsto_const_nhds
   -- WLOG 𝓕 ≠ ⊥
   rcases 𝓕.eq_or_neBot with rfl | _
-  · simp only [tendsto_bot]
+  · simp [tendsto_bot]
   -- Auxiliary lemmas
   have h_g_le (k : β) : ‖g k‖ ≤ bound k :=
     le_of_tendsto (tendsto_norm.comp (hab k)) <| h_bound.mono (fun n h => h k)

@@ -67,7 +67,7 @@ lemma disjointed_apply (f : ι → α) (i : ι) : disjointed f i = f i \ (Iio i)
 lemma disjointed_of_isMin (f : ι → α) {i : ι} (hn : IsMin i) :
     disjointed f i = f i := by
   have : Iio i = ∅ := by rwa [← Finset.coe_eq_empty, coe_Iio, Set.Iio_eq_empty_iff]
-  simp only [disjointed_apply, this, sup_empty, sdiff_bot]
+  simp [disjointed_apply, this, sup_empty, sdiff_bot]
 
 @[simp] lemma disjointed_bot [OrderBot ι] (f : ι → α) : disjointed f ⊥ = f ⊥ :=
   disjointed_of_isMin _ isMin_bot
@@ -128,7 +128,7 @@ theorem partialSups_disjointed (f : ι → α) :
   | zero =>
     -- Base case: `n` is minimal, so `partialSups f i = partialSups (disjointed f) n = f i`.
     simp only [Nat.le_zero, card_eq_zero] at hi
-    simp only [partialSups_apply, Iic_eq_cons_Iio, hi, disjointed_apply, sup'_eq_sup, sup_cons,
+    simp [partialSups_apply, Iic_eq_cons_Iio, hi, disjointed_apply, sup'_eq_sup, sup_cons,
       sup_empty, sdiff_bot]
   | succ n ih =>
     -- Induction step: first WLOG arrange that `#(Iio i) = r + 1`
@@ -143,7 +143,7 @@ theorem partialSups_disjointed (f : ι → α) :
     -- can rewrite via the induction hypothesis.
     rw [← hun, sup_biUnion, sup_congr rfl (g := partialSups f)]
     · simp only [funext (partialSups_apply f), sup'_eq_sup, ← sup_biUnion, hun]
-      simp only [disjointed, sdiff_sup_self, Iic_eq_cons_Iio, sup_cons]
+      simp [disjointed, sdiff_sup_self, Iic_eq_cons_Iio, sup_cons]
     · simp only [partialSups, sup'_eq_sup, OrderHom.coe_mk] at ih ⊢
       refine fun x hx ↦ ih x ?_
       -- Remains to show `∀ x in Iio i, #(Iio x) ≤ r`.
@@ -171,7 +171,7 @@ lemma disjointed_partialSups (f : ι → α) :
     rw [sdiff_eq_symm (sdiff_le.trans (le_partialSups f i))]
     simp only [funext (partialSups_apply f), sup'_eq_sup]
     rw [sdiff_sdiff_eq_sdiff_sup (sup_mono Iio_subset_Iic_self), sup_eq_right]
-    simp only [Iic_eq_cons_Iio, sup_cons, sup_sdiff_left_self, sdiff_le_iff, le_sup_right]
+    simp [Iic_eq_cons_Iio, sup_cons, sup_sdiff_left_self, sdiff_le_iff, le_sup_right]
   simp only [disjointed_apply, step1, funext (partialSups_apply f), sup'_eq_sup, ← sup_biUnion]
   congr 2 with r
   simpa only [mem_biUnion, mem_Iio, mem_Iic] using
@@ -243,7 +243,7 @@ lemma Monotone.disjointed_succ_sup {f : ι → α} (hf : Monotone f) (i : ι) :
   · rw [disjointed_apply]
     have : Iio (succ i) = Iic i := by
       ext
-      simp only [mem_Iio, lt_succ_iff_eq_or_lt_of_not_isMax h, mem_Iic, le_iff_lt_or_eq, Or.comm]
+      simp [mem_Iio, lt_succ_iff_eq_or_lt_of_not_isMax h, mem_Iic, le_iff_lt_or_eq, Or.comm]
     rw [this, ← sup'_eq_sup nonempty_Iic, ← partialSups_apply, hf.partialSups_eq,
       sdiff_sup_cancel <| hf <| le_succ i]
 
@@ -285,7 +285,7 @@ lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] (f : ι → α) :
     exact ⟨f, le_rfl, rfl, Subsingleton.pairwise⟩
   let R : ι ≃ Fin _ := equivFin ι
   let f' : Fin _ → α := f ∘ R.symm
-  have hf' : f = f' ∘ R := by ext; simp only [Function.comp_apply, Equiv.symm_apply_apply, f']
+  have hf' : f = f' ∘ R := by ext; simp [Function.comp_apply, Equiv.symm_apply_apply, f']
   refine ⟨disjointed f' ∘ R, ?_, ?_, ?_⟩
   · intro n
     simpa only [hf'] using! disjointed_le f' (R n)
@@ -306,7 +306,7 @@ theorem iSup_disjointed [PartialOrder ι] [LocallyFiniteOrderBot ι] (f : ι →
 
 theorem disjointed_eq_inf_compl [Preorder ι] [LocallyFiniteOrderBot ι] (f : ι → α) (i : ι) :
     disjointed f i = f i ⊓ ⨅ j < i, (f j)ᶜ := by
-  simp only [disjointed_apply, Finset.sup_eq_iSup, mem_Iio, sdiff_eq, compl_iSup]
+  simp [disjointed_apply, Finset.sup_eq_iSup, mem_Iio, sdiff_eq, compl_iSup]
 
 end CompleteBooleanAlgebra
 

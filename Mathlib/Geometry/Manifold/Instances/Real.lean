@@ -232,13 +232,13 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n) where
   toFun := Subtype.val
   invFun x := ⟨toLp 2 fun i ↦ max (x i) 0,
-    fun i ↦ by simp only [le_sup_right]⟩
+    fun i ↦ by simp [le_sup_right]⟩
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
-  left_inv' x _ := by ext i; simp only [x.2 i, sup_of_le_left]
-  right_inv' x hx := by ext1 i; simp only [hx i, sup_of_le_left]
+  left_inv' x _ := by ext i; simp [x.2 i, sup_of_le_left]
+  right_inv' x hx := by ext1 i; simp [hx i, sup_of_le_left]
   source_eq := rfl
   convex_range' := by
     simp only [instIsRCLikeNormedField, ↓reduceDIte]
@@ -313,7 +313,7 @@ lemma modelWithCornersEuclideanQuadrant_apply (n : ℕ) {p : EuclideanQuadrant n
 
 lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} (x : EuclideanSpace ℝ (Fin n)) :
     (𝓡c n).symm x = ⟨toLp 2 fun i ↦ max (x i) 0,
-    fun i ↦ by simp only [le_sup_right]⟩ := rfl
+    fun i ↦ by simp [le_sup_right]⟩ := rfl
 
 lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
     {x : EuclideanSpace ℝ (Fin n)} (hx : ∀ i, 0 ≤ x i) :
@@ -357,7 +357,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_ofPred_eq, mem_Icc] at hz h'z
-    simp only [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
+    simp [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
     rw [Subtype.mk_eq_mk]
@@ -365,7 +365,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     dsimp at hz h'z
     have A : x + z 0 ≤ y := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [Fin.isValue, add_comm, A, inf_of_le_left, add_sub_cancel_left]
+    simp [Fin.isValue, add_comm, A, inf_of_le_left, add_sub_cancel_left]
   open_source :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
     this.preimage continuous_subtypeVal
@@ -436,7 +436,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_ofPred_eq, mem_Icc] at hz h'z
-    simp only [Fin.isValue, sub_eq_add_neg, neg_add_rev, neg_neg,
+    simp [Fin.isValue, sub_eq_add_neg, neg_add_rev, neg_neg,
       add_neg_cancel_comm_assoc, hz, sup_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
@@ -445,7 +445,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     dsimp at hz h'z
     have A : x ≤ y - z 0 := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [Fin.isValue, A, sup_of_le_left, sub_sub_cancel]
+    simp [Fin.isValue, A, sup_of_le_left, sub_sub_cancel]
   open_source :=
     haveI : IsOpen { z : ℝ | x < z } := isOpen_Ioi
     this.preimage continuous_subtypeVal

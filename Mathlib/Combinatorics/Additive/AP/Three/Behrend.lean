@@ -98,7 +98,7 @@ an additive monoid homomorphism.
 def box (n d : ℕ) : Finset (Fin n → ℕ) :=
   Fintype.piFinset fun _ => range d
 
-theorem mem_box : x ∈ box n d ↔ ∀ i, x i < d := by simp only [box, Fintype.mem_piFinset, mem_range]
+theorem mem_box : x ∈ box n d ↔ ∀ i, x i < d := by simp [box, Fintype.mem_piFinset, mem_range]
 
 @[simp]
 theorem card_box : #(box n d) = d ^ n := by simp [box]

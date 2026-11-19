@@ -557,7 +557,7 @@ theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection = V.starProjection ↔ U = V := by
-  simp only [le_antisymm_iff, ← starProjection_le_starProjection_iff]
+  simp [le_antisymm_iff, ← starProjection_le_starProjection_iff]
 
 theorem LinearMap.IsPositive.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsPositive) :
     T.symm.IsPositive := by

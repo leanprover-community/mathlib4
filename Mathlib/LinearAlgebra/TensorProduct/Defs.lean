@@ -268,7 +268,7 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 
 instance addMonoid : AddMonoid (M ⊗[R] N) where
   nsmul_zero := by simp [TensorProduct.zero_smul]
-  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, forall_const]
+  nsmul_succ := by simp [TensorProduct.one_smul, TensorProduct.add_smul, forall_const]
 
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) where
 

@@ -136,7 +136,7 @@ theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : 
   constructor
   · exact fun h => ⟨_, _, (p.take_spec h).symm⟩
   · rintro ⟨q, r, rfl⟩
-    simp only [mem_support_append_iff, end_mem_support, start_mem_support, or_self_iff]
+    simp [mem_support_append_iff, end_mem_support, start_mem_support, or_self_iff]
 
 @[simp]
 theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :

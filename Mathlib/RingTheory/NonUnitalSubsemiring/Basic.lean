@@ -181,12 +181,12 @@ theorem mem_sInf {S : Set (NonUnitalSubsemiring R)} {x : R} : x ∈ sInf S ↔ �
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} :
     (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
-  simp only [iInf, coe_sInf, Set.biInter_range]
+  simp [iInf, coe_sInf, Set.biInter_range]
 
 @[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} {x : R} :
     x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_mem_range]
+  simp [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem sInf_toSubsemigroup (s : Set (NonUnitalSubsemiring R)) :
@@ -636,7 +636,7 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubse
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   have : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
+  simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=

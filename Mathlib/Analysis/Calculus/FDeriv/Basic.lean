@@ -222,13 +222,13 @@ theorem HasFDerivAt.differentiableAt (h : HasFDerivAt f f' x) : DifferentiableAt
 
 @[simp]
 theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f f' x := by
-  simp only [HasFDerivWithinAt, nhdsWithin_univ, HasFDerivAt]
+  simp [HasFDerivWithinAt, nhdsWithin_univ, HasFDerivAt]
 
 alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
 
 theorem differentiableWithinAt_univ :
     DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
-  simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
+  simp [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
 
 theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
   rw [← fderivWithin_univ, fderivWithin_zero_of_not_differentiableWithinAt]
@@ -247,7 +247,7 @@ theorem hasFDerivWithinAt_insert_self :
     HasFDerivWithinAt f f' (insert x s) x ↔ HasFDerivWithinAt f f' s x := by
   simp_rw [hasFDerivWithinAt_iff_isLittleOTVS]
   apply isLittleOTVS_insert
-  simp only [sub_self, map_zero]
+  simp [sub_self, map_zero]
 
 protected alias ⟨_, HasFDerivWithinAt.insert⟩ := hasFDerivWithinAt_insert_self
 
@@ -449,11 +449,11 @@ theorem differentiableWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t]
 
 theorem differentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
     DifferentiableWithinAt 𝕜 f (s ∩ t) x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  simp only [DifferentiableWithinAt, hasFDerivWithinAt_inter ht]
+  simp [DifferentiableWithinAt, hasFDerivWithinAt_inter ht]
 
 theorem differentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     DifferentiableWithinAt 𝕜 f (s ∩ t) x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  simp only [DifferentiableWithinAt, hasFDerivWithinAt_inter' ht]
+  simp [DifferentiableWithinAt, hasFDerivWithinAt_inter' ht]
 
 theorem differentiableWithinAt_insert_self :
     DifferentiableWithinAt 𝕜 f (insert x s) x ↔ DifferentiableWithinAt 𝕜 f s x :=
@@ -467,7 +467,7 @@ theorem DifferentiableWithinAt.of_insert {y : E} (h : DifferentiableWithinAt �
 
 theorem differentiableWithinAt_insert [T1Space E] {y : E} :
     DifferentiableWithinAt 𝕜 f (insert y s) x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  simp only [DifferentiableWithinAt, hasFDerivWithinAt_insert]
+  simp [DifferentiableWithinAt, hasFDerivWithinAt_insert]
 
 alias ⟨_, DifferentiableWithinAt.insert'⟩ := differentiableWithinAt_insert
 
@@ -490,7 +490,7 @@ theorem DifferentiableOn.mono (h : DifferentiableOn 𝕜 f t) (st : s ⊆ t) : D
   fun x hx => (h x (st hx)).mono st
 
 theorem differentiableOn_univ : DifferentiableOn 𝕜 f univ ↔ Differentiable 𝕜 f := by
-  simp only [DifferentiableOn, Differentiable, differentiableWithinAt_univ, mem_univ,
+  simp [DifferentiableOn, Differentiable, differentiableWithinAt_univ, mem_univ,
     forall_true_left]
 
 @[fun_prop]

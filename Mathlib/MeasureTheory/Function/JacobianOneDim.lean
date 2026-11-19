@@ -242,7 +242,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
     have B : IntegrableOn (fun x ↦ f' x • g (f x)) b := by
       have : IntegrableOn (fun x ↦ (0 : F)) b := by simp
       exact this.congr_fun (fun x hx ↦ by simp [deriv_b x hx]) hb
-    simp only [← h_union, integrableOn_union, A, B, true_and]
+    simp [← h_union, integrableOn_union, A, B, true_and]
   have J : IntegrableOn g (f '' s) ↔ IntegrableOn g (f '' c) := by
     apply integrableOn_congr_set_ae
     rw [← h_union, image_union, image_union]
@@ -482,7 +482,7 @@ lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_
       = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
   rw [hf.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul volume hs
     hg hf_int hf']
-  simp only [det_toSpanSingleton]
+  simp [det_toSpanSingleton]
 
 lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul
     (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
@@ -492,7 +492,7 @@ lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_d
       = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
   rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
       f hg hf_int hf']
-  simp only [det_toSpanSingleton]
+  simp [det_toSpanSingleton]
 
 lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul'
     {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
@@ -513,7 +513,7 @@ lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_d
   rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
       f (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
       (fun x _ => (hf' x).hasDerivWithinAt)]
-  simp only [det_toSpanSingleton]
+  simp [det_toSpanSingleton]
 
 end WithDensity
 

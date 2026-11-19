@@ -60,7 +60,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
   rw [mem_weightSpace] at hv ⊢
   intro a
   rcases eq_or_ne v 0 with (rfl | hv')
-  · simp only [lie_zero, smul_zero]
+  · simp [lie_zero, smul_zero]
   suffices χ ⁅z, a⁆ = 0 by
     rw [leibniz_lie, hv a, lie_smul, lie_swap_lie, hv, this, zero_smul, neg_zero, zero_add]
   let U' : ℕ →o Submodule R V :=
@@ -77,7 +77,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     simp only [Set.subset_def, Set.mem_ofPred_eq, Set.mem_preimage, SetLike.mem_coe,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     induction n generalizing w
-    · simp only [zero_add, Nat.lt_one_iff, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
+    · simp [zero_add, Nat.lt_one_iff, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
         LinearMap.smul_apply, one_apply_eq_self, forall_eq, pow_zero, hv w, sub_self, zero_mem]
     · next n hn =>
       intro m hm
@@ -110,7 +110,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     have hres : LieModule.toEnd R A U ⁅z, a⁆ = ⁅(π z).restrict hzU, LieModule.toEnd R A U a⁆ := by
       ext ⟨x, hx⟩
       change ⁅⁅z, a⁆, x⁆ = ⁅z, ⁅a, x⁆⁆ - ⁅a, ⁅z, x⁆⁆
-      simp only [leibniz_lie z a, add_sub_cancel_right]
+      simp [leibniz_lie z a, add_sub_cancel_right]
     rw [hres, LinearMap.trace_lie]
   have trace_T_U_zero (w : A) : (T χ w).trace R U = 0 := by
     have key (i : ℕ) (hi : i ≠ 0) : ∃ j < i, Submodule.map (T χ w) (U' i) ≤ U' j := by

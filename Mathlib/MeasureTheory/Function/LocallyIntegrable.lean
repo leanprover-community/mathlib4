@@ -160,7 +160,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   rcases hf.exists_countable_integrableOn with ⟨T, T_count, T_open, sT, hT⟩
   let T' : Set (Set X) := insert ∅ T
   have T'_count : T'.Countable := Countable.insert ∅ T_count
-  have T'_ne : T'.Nonempty := by simp only [T', insert_nonempty]
+  have T'_ne : T'.Nonempty := by simp [T', insert_nonempty]
   rcases T'_count.exists_eq_range T'_ne with ⟨u, hu⟩
   refine ⟨u, ?_, ?_, ?_⟩
   · intro n
@@ -177,7 +177,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
     rcases mem_insert_iff.1 this with h | h
-    · simp only [h, empty_inter, integrableOn_empty]
+    · simp [h, empty_inter, integrableOn_empty]
     · exact hT _ h
 
 theorem LocallyIntegrableOn.aestronglyMeasurable [PseudoMetrizableSpace ε]
@@ -411,7 +411,7 @@ theorem locallyIntegrable_map_homeomorph [BorelSpace X] [BorelSpace Y] (e : X �
     simp only [Homeomorph.toMeasurableEquiv_coe]
     convert h'U
     ext x
-    simp only [mem_preimage, Homeomorph.symm_apply_apply]
+    simp [mem_preimage, Homeomorph.symm_apply_apply]
 
 protected theorem LocallyIntegrable.add [ContinuousAdd ε''] {f g : X → ε''}
     (hf : LocallyIntegrable f μ) (hg : LocallyIntegrable g μ) : LocallyIntegrable (f + g) μ :=

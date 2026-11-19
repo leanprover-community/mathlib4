@@ -43,7 +43,7 @@ theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R 
     (piQuotientLift p q f hf fun i => Quotient.mk (x i)) = Quotient.mk (lsum _ _ R f x) := by
   rw [piQuotientLift, lsum_apply, LinearMap.sum_apply, ← mkQ_apply, lsum_apply, LinearMap.sum_apply,
     _root_.map_sum]
-  simp only [coe_proj, mapQ_apply, mkQ_apply, comp_apply]
+  simp [coe_proj, mapQ_apply, mkQ_apply, comp_apply]
 
 @[simp]
 theorem piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))

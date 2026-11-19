@@ -426,7 +426,7 @@ lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) 
     getElem_alternatingWord j i p k (by lia)]
   by_cases h_even : Even (p + k)
   · rw [ite_eq_left h_even, ← add_assoc]
-    simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
+    simp [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
       IsEmpty.forall_iff]
   · rw [ite_eq_right h_even, ← add_assoc]
     simp [Odd.add_one (Nat.not_even_iff_odd.mp h_even)]
@@ -436,7 +436,7 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
     if Even k then alternatingWord i j k else alternatingWord j i k := by
   induction k with
     | zero =>
-      simp only [take_zero, Even.zero, ↓reduceIte, alternatingWord]
+      simp [take_zero, Even.zero, ↓reduceIte, alternatingWord]
     | succ k h' =>
       have hk : k < 2 * p := by lia
       apply h' at hk

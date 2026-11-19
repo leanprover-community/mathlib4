@@ -85,7 +85,7 @@ lemma surjectiveOnStalks_iff_forall_maximal :
 lemma surjectiveOnStalks_iff_forall_maximal' :
     f.SurjectiveOnStalks ↔ ∀ I : Ideal S, I.IsMaximal →
       ∀ s : S, ∃ x r : R, ∃ c ∉ I, f r ∉ I ∧ c * f r * s = c * f x := by
-  simp only [surjectiveOnStalks_iff_forall_maximal, surjective_localRingHom_iff]
+  simp [surjectiveOnStalks_iff_forall_maximal, surjective_localRingHom_iff]
 
 lemma surjectiveOnStalks_of_exists_div (h : ∀ x : S, ∃ r s : R, IsUnit (f s) ∧ f s * x = f r) :
     SurjectiveOnStalks f :=
@@ -229,6 +229,6 @@ lemma surjectiveOnStalks_iff_of_isLocalHom [IsLocalRing S] [IsLocalHom f] :
   refine ⟨(isUnit_of_map_unit f r hr).unit⁻¹ * y, ?_⟩
   apply hr.mul_right_injective
   apply hc.mul_right_injective
-  simp only [← map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
+  simp [← map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
 
 end RingHom

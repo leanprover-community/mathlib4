@@ -128,7 +128,7 @@ lemma toENNReal_add_le {x y : EReal} : (x + y).toENNReal ≤ x.toENNReal + y.toE
 theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | _, ⊤, _ => le_top
   | ⊥, _, _ => bot_le
-  | ⊤, (z : ℝ), h => by simp only [coe_add_top, ← coe_add, top_le_iff, coe_ne_top] at h
+  | ⊤, (z : ℝ), h => by simp [coe_add_top, ← coe_add, top_le_iff, coe_ne_top] at h
   | _, ⊥, h => by simpa using h
   | (y : ℝ), (z : ℝ), h => by
     simpa only [← coe_add, EReal.coe_le_coe_iff, add_le_add_iff_left] using h
@@ -454,7 +454,7 @@ lemma le_sub_iff_add_le {a b c : EReal} (hb : b ≠ ⊥ ∨ c ≠ ⊥) (ht : b �
   induction b with
   | bot =>
     simp only [ne_eq, not_true_eq_false, false_or] at hb
-    simp only [sub_bot hb, le_top, add_bot, bot_le]
+    simp [sub_bot hb, le_top, add_bot, bot_le]
   | coe b =>
     rw [← (addLECancellable_coe b).add_le_add_iff_right, sub_add_cancel]
   | top =>
@@ -474,9 +474,9 @@ protected theorem lt_sub_iff_add_lt {a b c : EReal} (h₁ : b ≠ ⊥ ∨ c ≠ 
 
 theorem sub_le_of_le_add {a b c : EReal} (h : a ≤ b + c) : a - c ≤ b := by
   induction c with
-  | bot => rw [add_bot, le_bot_iff] at h; simp only [h, bot_sub, bot_le]
+  | bot => rw [add_bot, le_bot_iff] at h; simp [h, bot_sub, bot_le]
   | coe c => exact (sub_le_iff_le_add (.inl (coe_ne_bot c)) (.inl (coe_ne_top c))).2 h
-  | top => simp only [sub_top, bot_le]
+  | top => simp [sub_top, bot_le]
 
 /-- See also `EReal.sub_le_of_le_add`. -/
 theorem sub_le_of_le_add' {a b c : EReal} (h : a ≤ b + c) : a - b ≤ c :=
@@ -564,7 +564,7 @@ lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le :
   cases x with
   | top => simp [coe_nnreal_eq_coe_real]
   | coe x =>
-    simp only [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
+    simp [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
 
 /-! ### Multiplication -/
 
@@ -727,7 +727,7 @@ lemma induction₂_symm_neg {P : EReal → EReal → Prop}
 
 protected lemma neg_mul (x y : EReal) : -x * y = -(x * y) := by
   induction x, y using induction₂_neg_left with
-  | top_zero | zero_top | zero_bot => simp only [zero_mul, mul_zero, neg_zero]
+  | top_zero | zero_top | zero_bot => simp [zero_mul, mul_zero, neg_zero]
   | top_top | top_bot => rfl
   | neg_left h => rw [h, neg_neg, neg_neg]
   | coe_coe => norm_cast; exact neg_mul _ _

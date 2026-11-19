@@ -172,7 +172,7 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       map_add' y' z' := by
         rw [← add_smul, ← RingHom.map_add, H]
         have (w : R ∙ x) := Classical.choose_spec (mem_span_singleton.1 w.prop)
-        simp only [add_smul, this, ← coe_add]
+        simp [add_smul, this, ← coe_add]
       map_smul' c z := by
         rw [smul_smul, ← RingHom.map_mul, H]
         have (w : R ∙ x) := Classical.choose_spec (mem_span_singleton.1 w.prop)
@@ -333,7 +333,7 @@ private theorem sup_aux (f g : E →ₛₗ.[σ] F)
   · intro c z
     rw [smul_add, ← map_smulₛₗ, ← map_smulₛₗ]
     apply fg_eq
-    simp only [coe_smul, ← smul_add, hxy]
+    simp [coe_smul, ← smul_add, hxy]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -466,7 +466,7 @@ instance instInvolutiveNeg : InvolutiveNeg (E →ₛₗ.[σ] F) :=
   ⟨fun f => by
     ext x y hxy
     · rfl
-    · simp only [neg_apply, neg_neg]⟩
+    · simp [neg_apply, neg_neg]⟩
 
 section Add
 
@@ -484,8 +484,8 @@ theorem add_apply (f g : E →ₛₗ.[σ] F) (x : (f.domain ⊓ g.domain : Submo
 instance instAddSemigroup : AddSemigroup (E →ₛₗ.[σ] F) :=
   ⟨fun f g h => by
     ext x y hxy
-    · simp only [add_domain, inf_assoc]
-    · simp only [add_apply, add_assoc]⟩
+    · simp [add_domain, inf_assoc]
+    · simp [add_apply, add_assoc]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₛₗ.[σ] F) where
   zero_add := fun f => by
@@ -507,8 +507,8 @@ instance instAddMonoid : AddMonoid (E →ₛₗ.[σ] F) where
 instance instAddCommMonoid : AddCommMonoid (E →ₛₗ.[σ] F) :=
   ⟨fun f g => by
     ext x y hxy
-    · simp only [add_domain, inf_comm]
-    · simp only [add_apply, add_comm]⟩
+    · simp [add_domain, inf_comm]
+    · simp [add_apply, add_comm]⟩
 
 end Add
 
@@ -811,7 +811,7 @@ theorem graph_map_fst_eq_domain [Module R F] (f : E →ₗ.[R] F) :
   · rcases h with ⟨x, hx, _⟩
     exact hx
   · use f ⟨x, h⟩
-    simp only [h, exists_const]
+    simp [h, exists_const]
 
 theorem graph_map_snd_eq_range [Module R F] (f : E →ₗ.[R] F) :
     f.graph.map (LinearMap.snd R E F) = LinearMap.range f.toFun := by ext; simp
@@ -923,7 +923,7 @@ theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.grap
   simp only [hx, true_and]
   convert hx.2 using 1
   refine (h.2 ?_).symm
-  simp only [hx.1]
+  simp [hx.1]
 
 theorem le_graph_iff {f g : E →ₗ.[R] F} : f.graph ≤ g.graph ↔ f ≤ g :=
   ⟨le_of_le_graph, le_graph_of_le⟩

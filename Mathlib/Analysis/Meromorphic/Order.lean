@@ -89,7 +89,7 @@ lemma meromorphicOrderAt_eq_top_iff :
 
 lemma eventuallyConst_nhdsNE_iff_meromorphicOrderAt_sub_eq_top :
     EventuallyConst f (𝓝[≠] x) ↔ ∃ c, meromorphicOrderAt (f · - c) x = ⊤ := by
-  simp only [eventuallyConst_iff_exists_eventuallyEq, meromorphicOrderAt_eq_top_iff,
+  simp [eventuallyConst_iff_exists_eventuallyEq, meromorphicOrderAt_eq_top_iff,
     sub_eq_zero, EventuallyEq]
 
 /-- The order of a meromorphic function `f` at `z₀` equals an integer `n` iff `f` can locally be
@@ -408,7 +408,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 @[simp, to_fun] theorem meromorphicOrderAt_pow_id_sub_const {n : ℕ} :
     meromorphicOrderAt ((· - x) ^ n) x = n := by
   convert meromorphicOrderAt_zpow_id_sub_const
-  simp only [zpow_natCast]
+  simp [zpow_natCast]
 
 /-- The order of `· - x` at `x` is `1`. -/
 @[simp] theorem meromorphicOrderAt_id_sub_const :

@@ -257,11 +257,11 @@ theorem inv_left [IsIso sq] : (inv sq).left = inv sq.left :=
 
 @[to_dual none]
 theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.hom := by
-  simp only [← Category.assoc, IsIso.comp_inv_eq, w]
+  simp [← Category.assoc, IsIso.comp_inv_eq, w]
 
 @[to_dual none]
 theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.hom := by
-  simp only [w, IsIso.inv_comp_eq]
+  simp [w, IsIso.inv_comp_eq]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[to_dual epi_right]

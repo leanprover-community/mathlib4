@@ -194,7 +194,7 @@ theorem primaryComponent.map_surjective {M₁ M₂ : Type*}
   obtain ⟨f, hf⟩ : ∃ f : Π₀ i : HeightOneSpectrum A, primaryComponent M₁ i.asIdeal,
       (DFinsupp.lsum ℕ fun i : HeightOneSpectrum A ↦
       (primaryComponent M₁ i.asIdeal).subtype) f = b := by
-    simp only [← mem_iSup_iff_exists_dfinsupp, iSup_primaryComponent_eq_top hM₁, mem_top]
+    simp [← mem_iSup_iff_exists_dfinsupp, iSup_primaryComponent_eq_top hM₁, mem_top]
   refine ⟨f P, Subtype.ext ?_⟩
   simp only [map_apply_coe]
   rw [eq_comm, ← sub_eq_zero]

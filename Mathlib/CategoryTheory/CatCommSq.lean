@@ -121,7 +121,7 @@ lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
   dsimp
   simp only [Functor.comp_obj, assoc, ← Functor.map_comp, Iso.inv_hom_id_app,
     Equivalence.counitInv_app_functor, Functor.map_id]
-  simp only [Functor.map_comp, Equivalence.fun_inv_map, assoc,
+  simp [Functor.map_comp, Equivalence.fun_inv_map, assoc,
     Equivalence.counitInv_functor_comp, comp_id, Iso.inv_hom_id_app_assoc]
 
 /-- In a square of categories, when the top and bottom functors are part

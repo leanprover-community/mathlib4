@@ -149,10 +149,10 @@ theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
 -/
 
 @[simp] lemma div_pos_iff_of_pos_left (ha : 0 < a) : 0 < a / b ↔ 0 < b := by
-  simp only [div_eq_mul_inv, mul_pos_iff_of_pos_left ha, inv_pos]
+  simp [div_eq_mul_inv, mul_pos_iff_of_pos_left ha, inv_pos]
 
 @[simp] lemma div_pos_iff_of_pos_right (hb : 0 < b) : 0 < a / b ↔ 0 < a := by
-  simp only [div_eq_mul_inv, mul_pos_iff_of_pos_right (inv_pos.2 hb)]
+  simp [div_eq_mul_inv, mul_pos_iff_of_pos_right (inv_pos.2 hb)]
 
 theorem div_mul_le_div_mul_of_div_le_div (h : a / b ≤ c / d) (he : 0 ≤ e) :
     a / (b * e) ≤ c / (d * e) := by
@@ -574,7 +574,7 @@ section LinearOrderedField
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d : α} {n : ℤ}
 
 theorem div_pos_iff : 0 < a / b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
-  simp only [division_def, mul_pos_iff, inv_pos, inv_lt_zero]
+  simp [division_def, mul_pos_iff, inv_pos, inv_lt_zero]
 
 theorem div_neg_iff : a / b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
   simp [division_def, mul_neg_iff]

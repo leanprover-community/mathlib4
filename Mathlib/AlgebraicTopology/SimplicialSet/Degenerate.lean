@@ -92,7 +92,7 @@ lemma opObjEquiv_mem_degenerate_iff (x : X.op _⦋n⦌) :
 
 lemma opObjEquiv_mem_nonDegenerate_iff (x : X.op _⦋n⦌) :
     opObjEquiv x ∈ X.nonDegenerate n ↔ x ∈ X.op.nonDegenerate n := by
-  simp only [mem_nonDegenerate_iff_notMem_degenerate,
+  simp [mem_nonDegenerate_iff_notMem_degenerate,
     opObjEquiv_mem_degenerate_iff]
 
 lemma degenerate_eq_iUnion_range_σ :

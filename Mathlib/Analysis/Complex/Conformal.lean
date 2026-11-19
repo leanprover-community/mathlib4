@@ -124,15 +124,15 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
   · rintro ⟨⟨map, rfl⟩ | ⟨map, hmap⟩, h₂⟩
     · refine isConformalMap_complex_linear ?_
       contrapose h₂ with w
-      simp only [w, restrictScalars_zero]
+      simp [w, restrictScalars_zero]
     · have minor₁ : g = map.restrictScalars ℝ ∘L ↑conjCLE := by
         ext1
-        simp only [hmap, ContinuousLinearEquiv.coe_coe, comp_apply, conjCLE_apply,
+        simp [hmap, ContinuousLinearEquiv.coe_coe, comp_apply, conjCLE_apply,
           starRingEnd_self_apply]
       rw [minor₁] at h₂ ⊢
       refine isConformalMap_complex_linear_conj ?_
       contrapose h₂ with w
-      simp only [w, restrictScalars_zero, zero_comp]
+      simp [w, restrictScalars_zero, zero_comp]
 
 end ConformalIntoComplexPlane
 
@@ -190,7 +190,7 @@ lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I �
     ℓ (a • b) = a • ℓ b := by
   rw [← re_add_im a, ← re_add_im b, ← smul_eq_mul _ I, ← smul_eq_mul _ I]
   have t₀ : ((a.im : ℂ) • I) • (b.re : ℂ) = (↑(a.im * b.re) : ℂ) • I := by
-    simp only [smul_eq_mul, ofReal_mul, ← mul_assoc, mul_comm _ I]
+    simp [smul_eq_mul, ofReal_mul, ← mul_assoc, mul_comm _ I]
   have t₁ : ((a.im : ℂ) • I) • (b.im : ℂ) • I = (↑(- a.im * b.im) : ℂ) • (1 : ℂ) := by
     simp [mul_mul_mul_comm _ I]
   simp only [add_smul, smul_add, ℓ.map_add, t₀, t₁]

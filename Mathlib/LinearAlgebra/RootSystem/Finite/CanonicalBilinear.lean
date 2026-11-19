@@ -126,7 +126,7 @@ lemma coPolarization_apply_eq_zero_iff (n : N) :
 
 lemma ker_polarization_eq_ker_rootForm :
     LinearMap.ker P.Polarization = LinearMap.ker P.RootForm := by
-  ext; simp only [LinearMap.mem_ker, P.polarization_apply_eq_zero_iff]
+  ext; simp [LinearMap.mem_ker, P.polarization_apply_eq_zero_iff]
 
 lemma ker_copolarization_eq_ker_corootForm :
     LinearMap.ker P.CoPolarization = LinearMap.ker P.CorootForm :=
@@ -360,7 +360,7 @@ lemma posRootForm_eq :
     (P.posRootForm S).posForm = P.RootFormIn S := by
   ext
   apply FaithfulSMul.algebraMap_injective S R
-  simp only [algebraMap_posRootForm_posForm, algebraMap_rootFormIn]
+  simp [algebraMap_posRootForm_posForm, algebraMap_rootFormIn]
 
 theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
     ∃ s ≥ 0, algebraMap S R s = P.RootForm x x := by

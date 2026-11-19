@@ -478,7 +478,7 @@ lemma comp_apply (g : F →SWOT[σ₂₃] G) (f : E →SWOT[σ₁₂] F) (x : E)
 
 lemma comp_assoc (g₃₄ : G →SWOT[σ₃₄] H) (g₂₃ : F →SWOT[σ₂₃] G) (g₁₂ : E →SWOT[σ₁₂] F) :
     (g₃₄.comp g₂₃).comp g₁₂ = g₃₄.comp (g₂₃.comp g₁₂) := by
-  simp only [comp, ContinuousLinearMap.comp_assoc]
+  simp [comp, ContinuousLinearMap.comp_assoc]
 
 lemma mul_eq_comp [IsTopologicalAddGroup F] (f g : F →WOT[𝕜₂] F) : f * g = f.comp g := rfl
 

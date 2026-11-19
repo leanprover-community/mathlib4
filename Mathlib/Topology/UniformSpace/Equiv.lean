@@ -196,7 +196,7 @@ theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' h '' s = s :=
 
 theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
   IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
-    simp only [symm_comp_self, IsUniformInducing.id]
+    simp [symm_comp_self, IsUniformInducing.id]
 
 @[simp]
 theorem comp_uniformContinuous_iff (h : α ≃ᵤ β) {f : γ → α} :

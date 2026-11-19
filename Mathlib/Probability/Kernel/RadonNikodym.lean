@@ -289,9 +289,9 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFin
   simp_rw [rnDeriv]
   rw [← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
     mul_inv_cancel₀, one_mul, tsub_self, Pi.zero_apply]
-  · simp only [ne_eq, sub_eq_zero, hx.ne', not_false_eq_true]
-  · simp only [sub_nonneg, hx.le]
-  · simp only [sub_pos, hx]
+  · simp [ne_eq, sub_eq_zero, hx.ne', not_false_eq_true]
+  · simp [sub_nonneg, hx.le]
+  · simp [sub_pos, hx]
 
 lemma singularPart_of_subset_compl_mutuallySingularSetSlice [IsSFiniteKernel κ]
     [IsFiniteKernel η] {a : α} {s : Set γ} (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :

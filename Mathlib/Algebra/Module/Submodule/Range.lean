@@ -98,7 +98,7 @@ theorem range_add_le [RingHomSurjective τ₁₂] (f g : M →ₛₗ[τ₁₂] M
     range (f + g) ≤ range f ⊔ range g := by
   rintro - ⟨_, rfl⟩
   apply add_mem_sup
-  all_goals simp only [mem_range, exists_apply_eq_apply]
+  all_goals simp [mem_range, exists_apply_eq_apply]
 
 theorem range_le_iff_comap [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R₂ M₂} :
     range f ≤ p ↔ comap f p = ⊤ := by rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
@@ -147,7 +147,7 @@ def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
 set_option backward.isDefEq.respectTransparency false in
 lemma iterateRange_succ {f : M →ₗ[R] M} {n : ℕ} :
     iterateRange f (n + 1) = (iterateRange f n).map f := by
-  simp only [iterateRange_coe, range_eq_map, ← map_comp, Module.End.iterate_succ']
+  simp [iterateRange_coe, range_eq_map, ← map_comp, Module.End.iterate_succ']
 
 /-- Restrict the codomain of a linear map `f` to `f.range`.
 

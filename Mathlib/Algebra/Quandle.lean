@@ -663,7 +663,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
           toEnvelGroup.mapAux.well_def f hab
       map_one' := by
         change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1
-        simp only [Quotient.lift_mk, mapAux]
+        simp [Quotient.lift_mk, mapAux]
       map_mul' := fun x y =>
         Quotient.inductionOn₂ x y fun x y => by
           change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _

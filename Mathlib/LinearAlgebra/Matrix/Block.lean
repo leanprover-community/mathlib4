@@ -81,9 +81,9 @@ theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
     (reindex e e M).BlockTriangular b ↔ M.BlockTriangular (b ∘ e) := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · convert h.submatrix
-    simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
+    simp [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert! h.submatrix
-    simp only [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
+    simp [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
 
 protected theorem BlockTriangular.transpose :
     M.BlockTriangular b → Mᵀ.BlockTriangular (toDual ∘ b) :=
@@ -337,7 +337,7 @@ theorem det_toBlock (M : Matrix m m R) (p : m → Prop) [DecidablePred p] :
   congr; ext σ; congr; ext x
   generalize hy : σ x = y
   cases x <;> cases y <;>
-    simp only [Matrix.reindex_apply, toBlock_apply, Equiv.symm_symm, Equiv.sumCompl_apply_inr,
+    simp [Matrix.reindex_apply, toBlock_apply, Equiv.symm_symm, Equiv.sumCompl_apply_inr,
       Equiv.sumCompl_apply_inl, fromBlocks_apply₁₁, fromBlocks_apply₁₂, fromBlocks_apply₂₁,
       fromBlocks_apply₂₂, Matrix.submatrix_apply]
 
@@ -510,7 +510,7 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   let A := M.toBlock (fun i => b i < k) fun j => b j < k
   obtain hbi | hi : b i = k ∨ _ := (le_max' _ (b i) <| mem_image_of_mem _ <| mem_univ _).eq_or_lt
   · have : M⁻¹.toBlock (fun i => k ≤ b i) (fun i => b i < k) ⟨i, hbi.ge⟩ ⟨j, hbi ▸ hij⟩ = 0 := by
-      simp only [toBlock_inverse_eq_zero hM k, Matrix.zero_apply]
+      simp [toBlock_inverse_eq_zero hM k, Matrix.zero_apply]
     simp [this.symm]
   have : Invertible A := hM.invertibleToBlock _
   have hA : A.BlockTriangular b' := hM.submatrix

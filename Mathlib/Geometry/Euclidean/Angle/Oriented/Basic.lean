@@ -168,7 +168,7 @@ theorem ne_of_oangle_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sign = -1) : 
 
 /-- Swapping the two vectors passed to `oangle` negates the angle. -/
 theorem oangle_rev (x y : V) : o.oangle y x = -o.oangle x y := by
-  simp only [oangle, o.kahler_swap y x, Complex.arg_conj_coe_angle]
+  simp [oangle, o.kahler_swap y x, Complex.arg_conj_coe_angle]
 
 /-- Adding the angles between two vectors in each order results in 0. -/
 @[simp]
@@ -797,7 +797,7 @@ theorem eq_zero_or_oangle_eq_iff_inner_eq_zero {x y : V} :
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rwa [o.angle_eq_abs_oangle_toReal hx hy, Real.Angle.abs_toReal_eq_pi_div_two_iff]
   · convert o.oangle_eq_angle_or_eq_neg_angle hx hy using 2 <;> rw [h]
-    simp only [neg_div, Real.Angle.coe_neg]
+    simp [neg_div, Real.Angle.coe_neg]
 
 /-- If the oriented angle between two vectors is `π / 2`, the inner product of those vectors
 is zero. -/

@@ -161,7 +161,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         convert rfl
         ext ω
         change (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ) ↔ _
-        simp only [le_or_gt, Set.mem_univ]
+        simp [le_or_gt, Set.mem_univ]
       · grind
       · exact measurableSet_lt (measurable_range_sup'' fun n _ =>
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const
@@ -199,7 +199,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         convert rfl
         ext ω
         change _ ↔ (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ)
-        simp only [le_or_gt, Set.mem_univ]
+        simp [le_or_gt, Set.mem_univ]
       · grind
       · exact measurableSet_lt (measurable_range_sup'' fun n _ =>
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const

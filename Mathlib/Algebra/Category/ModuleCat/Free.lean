@@ -115,7 +115,7 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
     rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
     rw [← hm, map_finsuppSum]
-    simp only [Function.comp_apply, map_smul]
+    simp [Function.comp_apply, map_smul]
   obtain ⟨n, hnm⟩ := hsub
   have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
@@ -142,7 +142,7 @@ theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range w)) (hE : Epi S.g) :
     ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w))) := by
   refine span_exact hS ?_ hv ?_
-  · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
+  · simp [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
   · convert hw
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
     rw [ModuleCat.epi_iff_surjective] at hE
@@ -185,6 +185,6 @@ theorem free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.F
     finrank R S.X₂ = n + p := by
   apply finrank_eq_of_rank_eq
   rw [free_shortExact_rank_add hS', ← hN, ← hP]
-  simp only [Nat.cast_add, finrank_eq_rank]
+  simp [Nat.cast_add, finrank_eq_rank]
 
 end ModuleCat

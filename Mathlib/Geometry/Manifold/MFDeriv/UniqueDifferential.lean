@@ -47,7 +47,7 @@ theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffAt[s] x)
   /- Rewrite in coordinates, apply `HasFDerivWithinAt.uniqueDiffWithinAt`. -/
   have := hs.inter' <| hf.1 (extChartAt_source_mem_nhds (I := I') (f x))
   refine (((hf.2.mono ?sub1).uniqueDiffWithinAt this hd).mono ?sub2).congr_pt ?pt
-  case pt => simp only [mfld_simps]
+  case pt => simp [mfld_simps]
   case sub1 => mfld_set_tac
   case sub2 =>
     rintro _ ⟨y, ⟨⟨hys, hfy⟩, -⟩, rfl⟩

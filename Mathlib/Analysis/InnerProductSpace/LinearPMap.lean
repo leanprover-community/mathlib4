@@ -215,7 +215,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
       LinearPMap.mem_adjoint_domain_iff]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
   refine LinearPMap.adjoint_apply_eq hp _ fun v => ?_
-  simp only [adjoint_inner_left, LinearMap.toPMap_apply, coe_coe]
+  simp [adjoint_inner_left, LinearMap.toPMap_apply, coe_coe]
 
 end ContinuousLinearMap
 

@@ -439,7 +439,7 @@ lemma mem_orbit_subMul_iff {p : SubMulAction R M} {x m : p} :
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
   ext
-  simp only [MulAction.mem_stabilizerSubmonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
+  simp [MulAction.mem_stabilizerSubmonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
 
 end MulActionMonoid
 

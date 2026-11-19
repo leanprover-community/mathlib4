@@ -182,8 +182,8 @@ theorem eval₂_uniqueAlgEquiv [Unique σ] {f : MvPolynomial σ R} {φ : R →+*
     simp only [Polynomial.eval₂_monomial, eval₂_monomial]
     rw [Finsupp.unique_single d, Finsupp.prod_single_index]
     · simp
-    · simp only [pow_zero]
-  | add f g hf hg => simp only [eval₂_add, Polynomial.eval₂_add, hf, hg]
+    · simp [pow_zero]
+  | add f g hf hg => simp [eval₂_add, Polynomial.eval₂_add, hf, hg]
 
 theorem eval₂_uniqueAlgEquiv_symm [Unique σ] {f : Polynomial R} {φ : R →+* S}
     {a : σ → S} :
@@ -435,7 +435,7 @@ lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X :=
 
 @[simp]
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
-  simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
+  simp [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
 theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
     optionEquivLeft R S₁ (monomial m r) = .monomial (m none) (monomial m.some r) := by
@@ -443,7 +443,7 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
   · rw [MvPolynomial.monomial_eq, ← Polynomial.C_mul_X_pow_eq_monomial]
     simp only [Polynomial.algebraMap_apply, algebraMap_eq, Option.elim_none, Option.elim_some,
       map_mul, mul_assoc]
-    simp only [mul_comm, map_finsuppProd, map_pow]
+    simp [mul_comm, map_finsuppProd, map_pow]
   · simp
   · intros; rw [pow_add]
 
@@ -480,7 +480,7 @@ theorem optionEquivLeft_coeff_some_coeff_none
       simp only [Finsupp.ext_iff, Option.forall, hj_none, true_and]
       simpa only [Finsupp.ext_iff] using! hj_some
   | add p q hp hq =>
-    simp only [map_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
+    simp [map_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
 
 theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Option S₁) R) :
     eval (fun x ↦ Option.elim x y s) f =
@@ -497,7 +497,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Option.forall]
-  simp only [aeval_X, Option.elim_none, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
+  simp [aeval_X, Option.elim_none, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
     AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_toAlgHom, comp_apply,
     optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some,
     Polynomial.map_C, eval_X, Polynomial.eval_C, implies_true, and_self, φ]
@@ -580,12 +580,12 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
     (MvPolynomial.aevalTower (Polynomial.aeval (X none)) fun i => X (Option.some i))
     (by
       ext : 2 <;>
-        simp only [MvPolynomial.algebraMap_eq, Option.elim, AlgHom.coe_comp, AlgHom.id_comp,
+        simp [MvPolynomial.algebraMap_eq, Option.elim, AlgHom.coe_comp, AlgHom.id_comp,
           IsScalarTower.coe_toAlgHom', comp_apply, aevalTower_C, Polynomial.aeval_X, aeval_X,
           aevalTower_X, AlgHom.coe_id, id])
     (by
       ext ⟨i⟩ : 2 <;>
-        simp only [Option.elim, AlgHom.coe_comp, comp_apply, aeval_X, aevalTower_C,
+        simp [Option.elim, AlgHom.coe_comp, comp_apply, aeval_X, aevalTower_C,
           Polynomial.aeval_X, AlgHom.coe_id, id, aevalTower_X])
 
 lemma optionEquivRight_X_some (x : S₁) : optionEquivRight R S₁ (X (some x)) = X x := by
@@ -595,7 +595,7 @@ lemma optionEquivRight_X_none : optionEquivRight R S₁ (X none) = C Polynomial.
   simp [optionEquivRight_apply, aeval_X]
 
 lemma optionEquivRight_C (r : R) : optionEquivRight R S₁ (C r) = C (Polynomial.C r) := by
-  simp only [optionEquivRight_apply, aeval_C, algebraMap_apply, Polynomial.algebraMap_eq]
+  simp [optionEquivRight_apply, aeval_C, algebraMap_apply, Polynomial.algebraMap_eq]
 
 variable (n : ℕ)
 
@@ -630,7 +630,7 @@ theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
   refine
     (MvPolynomial.finSuccEquiv R n).injective
       (Trans.trans ((MvPolynomial.finSuccEquiv R n).apply_symm_apply _) ?_)
-  simp only [MvPolynomial.finSuccEquiv_apply, MvPolynomial.eval₂Hom_C]
+  simp [MvPolynomial.finSuccEquiv_apply, MvPolynomial.eval₂Hom_C]
 
 variable {n} {R}
 
@@ -645,7 +645,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
     ((finSuccEquiv R n f).coeff i).coeff m = f.coeff (m.cons i) := by
   induction f using MvPolynomial.induction_on' generalizing i m with
   | add p q hp hq =>
-    simp only [map_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
+    simp [map_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
   | monomial j r =>
     simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
       Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
@@ -656,7 +656,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
         Finsupp.prod_pow] using! coeff_monomial m m (1 : R)
     · simp only [hjmi, ite_false]
       obtain hij | rfl := ne_or_eq i (j 0)
-      · simp only [hij, ite_false, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
+      · simp [hij, ite_false, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
       simp only [ite_true]
       have hmj : m ≠ j.tail := by
         rintro rfl
@@ -680,7 +680,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Fin.forall_iff_succ]
-  simp only [aeval_X, Fin.cons_zero, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
+  simp [aeval_X, Fin.cons_zero, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
     AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_toAlgHom,
     comp_apply, finSuccEquiv_apply, eval₂Hom_X', Fin.cases_zero, Polynomial.map_X,
     Polynomial.eval_X, Fin.cons_succ, Fin.cases_succ, Polynomial.map_C, eval_X, Polynomial.eval_C,
@@ -688,7 +688,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
 
 theorem coeff_eval_eq_eval_coeff (s' : S₁ → R) (f : Polynomial (MvPolynomial S₁ R))
     (i : ℕ) : (Polynomial.map (eval s') f).coeff i = eval s' (f.coeff i) := by
-  simp only [Polynomial.coeff_map]
+  simp [Polynomial.coeff_map]
 
 theorem mem_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {m : Fin n →₀ ℕ} :
     m ∈ ((finSuccEquiv R n f).coeff i).support ↔ m.cons i ∈ f.support := by

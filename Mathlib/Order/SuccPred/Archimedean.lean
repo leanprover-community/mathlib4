@@ -266,7 +266,7 @@ protected lemma IsSuccArchimedean.of_orderIso [SuccOrder X] [IsSuccArchimedean X
     clear h
     induction n generalizing a with
     | zero => simp
-    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_succ]
+    | succ n IH => simp [Function.iterate_succ', Function.comp_apply, IH, f.map_succ]
 
 end OrderIso
 

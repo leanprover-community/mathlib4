@@ -198,9 +198,9 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
     F.mapHomologicalComplex c ≅ G.mapHomologicalComplex c where
   hom := NatTrans.mapHomologicalComplex α.hom c
   inv := NatTrans.mapHomologicalComplex α.inv c
-  hom_inv_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.hom_inv_id,
+  hom_inv_id := by simp [← NatTrans.mapHomologicalComplex_comp, α.hom_inv_id,
     NatTrans.mapHomologicalComplex_id]
-  inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
+  inv_hom_id := by simp [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
 /-- If additive functors are related by an isomorphism `F ⋙ G ≅ H`, this is

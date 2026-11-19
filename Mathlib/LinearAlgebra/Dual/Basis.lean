@@ -55,7 +55,7 @@ def toDual : M →ₗ[R] Module.Dual R M :=
 
 theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 := by
   rw [toDual, constr_basis b, constr_basis b]
-  simp only [eq_comm]
+  simp [eq_comm]
 
 @[simp]
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :

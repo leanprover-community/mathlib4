@@ -105,8 +105,8 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
       · simp [dedup_cons_of_mem ha]
       · simp only [dedup_cons_of_notMem ha, List.filter]
         match p a with
-        | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
-        | false => simp only
+        | true => simp [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
+        | false => simp
     · simp only [beq_iff_eq]
       by_cases hp : p a
       · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h.symm]) ?_
@@ -125,7 +125,7 @@ lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ 
     length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by
   induction l₁ with
   | nil => rfl
-  | cons x l₁ IH => simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
+  | cons x l₁ IH => simp [sigma_cons, length_append, length_map, IH, map, sum_cons]
 
 lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
@@ -147,7 +147,7 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
     (L.flatten.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
-  simp only [this, take_sum_flatten, drop_sum_flatten,
+  simp [this, take_sum_flatten, drop_sum_flatten,
     drop_take_succ_eq_cons_getElem, h, flatten_nil, flatten_cons, append_nil]
 
 end List
@@ -189,7 +189,7 @@ theorem alternatingProd_append :
 @[to_additive]
 theorem alternatingProd_reverse :
     ∀ l : List G, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
-  | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
+  | [] => by simp [alternatingProd_nil, one_zpow, reverse_nil]
   | a :: l => by
     simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,
       alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ',

@@ -226,7 +226,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
     _ ≤ ∑ k : Fin (n + 1), gauge U (bernstein n k x • (f k/ₙ - f x)) :=
       gauge_sum_le hUc (absorbent_nhds_zero hU₀) _ _
     _ = ∑ k : Fin (n + 1), bernstein n k x * gauge U (f k/ₙ - f x) := by
-      simp only [gauge_smul_of_nonneg, bernstein_nonneg, smul_eq_mul]
+      simp [gauge_smul_of_nonneg, bernstein_nonneg, smul_eq_mul]
     _ = (∑ k ∈ S, bernstein n k x * gauge U (f k/ₙ - f x)) +
           ∑ k ∈ Sᶜ, bernstein n k x * gauge U (f k/ₙ - f x) :=
       (S.sum_add_sum_compl _).symm
@@ -264,7 +264,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
       _ ≤ C * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 / δ ^ 2 * bernstein n k x := by
         gcongr; exact Sᶜ.subset_univ
       _ = C * (∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x) / δ ^ 2 := by
-        simp only [← mul_div_right_comm, ← mul_div_assoc, ← Finset.sum_div]
+        simp [← mul_div_right_comm, ← mul_div_assoc, ← Finset.sum_div]
       -- `bernstein.variance` and `x ∈ [0,1]` gives the uniform bound
       _ = C / δ ^ 2 * x * (1 - x) / n := by rw [variance hn₀]; ring
       _ ≤ C / δ ^ 2 * 1 * 1 / n := by gcongr <;> unit_interval

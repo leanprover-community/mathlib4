@@ -172,7 +172,7 @@ instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β where
   map_sSup := fun f s =>
     eq_of_forall_ge_iff fun c => by
-      simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image]
+      simp [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLattice α]
@@ -266,7 +266,7 @@ theorem id_apply (a : α) : sSupHom.id α a = a :=
 @[to_dual /-- Composition of `sInfHom`s as a `sInfHom`. -/]
 def comp (f : sSupHom β γ) (g : sSupHom α β) : sSupHom α γ where
   toFun := f ∘ g
-  map_sSup' s := by rw [comp_apply, map_sSup, map_sSup, Set.image_image]; simp only [Function.comp]
+  map_sSup' s := by rw [comp_apply, map_sSup, map_sSup, Set.image_image]; simp [Function.comp]
 
 @[to_dual (attr := simp)]
 theorem coe_comp (f : sSupHom β γ) (g : sSupHom α β) : ⇑(f.comp g) = f ∘ g :=
@@ -620,8 +620,8 @@ namespace CompleteLatticeHom
 See also `sSupHom.setImage`. -/
 def setPreimage (f : α → β) : CompleteLatticeHom (Set β) (Set α) where
   toFun := preimage f
-  map_sSup' s := preimage_sUnion.trans <| by simp only [Set.sSup_eq_sUnion, Set.sUnion_image]
-  map_sInf' s := preimage_sInter.trans <| by simp only [Set.sInf_eq_sInter, Set.sInter_image]
+  map_sSup' s := preimage_sUnion.trans <| by simp [Set.sSup_eq_sUnion, Set.sUnion_image]
+  map_sInf' s := preimage_sInter.trans <| by simp [Set.sInf_eq_sInter, Set.sInter_image]
 
 @[simp]
 theorem coe_setPreimage (f : α → β) : ⇑(setPreimage f) = preimage f :=
@@ -659,8 +659,8 @@ def sSupHom.setImage (f : α → β) : sSupHom (Set α) (Set β) where
 def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β where
   toFun s := e '' s
   invFun s := e.symm '' s
-  left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id, image_id']
-  right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id, image_id']
+  left_inv s := by simp [← image_comp, Equiv.symm_comp_self, id, image_id']
+  right_inv s := by simp [← image_comp, Equiv.self_comp_symm, id, image_id']
   map_rel_iff' :=
     ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
 

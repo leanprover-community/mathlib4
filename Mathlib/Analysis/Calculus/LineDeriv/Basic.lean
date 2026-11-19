@@ -138,7 +138,7 @@ theorem LineDifferentiableAt.hasLineDerivAt (h : LineDifferentiableAt 𝕜 f x v
 
 @[simp] lemma hasLineDerivWithinAt_univ :
     HasLineDerivWithinAt 𝕜 f f' univ x v ↔ HasLineDerivAt 𝕜 f f' x v := by
-  simp only [HasLineDerivWithinAt, HasLineDerivAt, preimage_univ, hasDerivWithinAt_univ]
+  simp [HasLineDerivWithinAt, HasLineDerivAt, preimage_univ, hasDerivWithinAt_univ]
 
 theorem lineDerivWithin_zero_of_not_lineDifferentiableWithinAt
     (h : ¬LineDifferentiableWithinAt 𝕜 f s x v) :
@@ -152,7 +152,7 @@ theorem lineDeriv_zero_of_not_lineDifferentiableAt (h : ¬LineDifferentiableAt �
 theorem hasLineDerivAt_iff_isLittleO_nhds_zero :
     HasLineDerivAt 𝕜 f f' x v ↔
       (fun t : 𝕜 => f (x + t • v) - f x - t • f') =o[𝓝 0] fun t => t := by
-  simp only [HasLineDerivAt, hasDerivAt_iff_isLittleO_nhds_zero, zero_add, zero_smul, add_zero]
+  simp [HasLineDerivAt, hasDerivAt_iff_isLittleO_nhds_zero, zero_add, zero_smul, add_zero]
 
 theorem HasLineDerivAt.unique (h₀ : HasLineDerivAt 𝕜 f f₀' x v) (h₁ : HasLineDerivAt 𝕜 f f₁' x v) :
     f₀' = f₁' :=
@@ -164,7 +164,7 @@ protected theorem HasLineDerivAt.lineDeriv (h : HasLineDerivAt 𝕜 f f' x v) :
 
 theorem lineDifferentiableWithinAt_univ :
     LineDifferentiableWithinAt 𝕜 f univ x v ↔ LineDifferentiableAt 𝕜 f x v := by
-  simp only [LineDifferentiableWithinAt, LineDifferentiableAt, preimage_univ,
+  simp [LineDifferentiableWithinAt, LineDifferentiableAt, preimage_univ,
     differentiableWithinAt_univ]
 
 theorem LineDifferentiableAt.lineDifferentiableWithinAt (h : LineDifferentiableAt 𝕜 f x v) :
@@ -213,7 +213,7 @@ theorem lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
 theorem hasLineDerivAt_iff_tendsto_slope_zero :
     HasLineDerivAt 𝕜 f f' x v ↔
       Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[≠] 0) (𝓝 f') := by
-  simp only [HasLineDerivAt, hasDerivAt_iff_tendsto_slope_zero, zero_add,
+  simp [HasLineDerivAt, hasDerivAt_iff_tendsto_slope_zero, zero_add,
     zero_smul, add_zero]
 
 alias ⟨HasLineDerivAt.tendsto_slope_zero, _⟩ := hasLineDerivAt_iff_tendsto_slope_zero

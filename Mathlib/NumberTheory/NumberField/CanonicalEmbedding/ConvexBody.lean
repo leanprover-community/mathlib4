@@ -457,7 +457,7 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
     measure_fundamentalDomain ((fractionalIdealLatticeBasis K I).reindex e)]
   · rw [show (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
         (basisOfFractionalIdeal K I) ∘ e.symm by
-      ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
+      ext1; simp [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
     rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
@@ -600,7 +600,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨a, ha, by simpa using h_nz, ?_⟩
-  rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
+  rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp [Rat.cast_abs, abs_nonneg])
       (rpow_nonneg h2 _) h1, ← rpow_mul h2, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff₀' (Nat.cast_pos.mpr finrank_pos)]
   refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)

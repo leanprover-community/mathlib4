@@ -117,14 +117,14 @@ theorem mul_smul (b b' : B) (x : X') : (b * b') • x = b • b' • x :=
   match x with
   | fromCoset y => by
     change fromCoset _ = fromCoset _
-    simp only [leftCoset_assoc]
+    simp [leftCoset_assoc]
   | ∞ => rfl
 
 theorem one_smul (x : X') : (1 : B) • x = x :=
   match x with
   | fromCoset y => by
     change fromCoset _ = fromCoset _
-    simp only [one_leftCoset]
+    simp [one_leftCoset]
   | ∞ => rfl
 
 theorem fromCoset_eq_of_mem_range {b : B} (hb : b ∈ f.hom.range) :
@@ -260,9 +260,9 @@ theorem agree : f.hom.range = { x | h x = g x } := by
       by_cases m : y ∈ f.hom.range
       · rw [h_apply_fromCoset' _ _ _ m, fromCoset_eq_of_mem_range _ m]
         change fromCoset _ = fromCoset ⟨f a • (y • _), _⟩
-        simp only [← fromCoset_eq_of_mem_range _ (Subgroup.mul_mem _ ⟨a, rfl⟩ m), smul_smul]
+        simp [← fromCoset_eq_of_mem_range _ (Subgroup.mul_mem _ ⟨a, rfl⟩ m), smul_smul]
       · rw [h_apply_fromCoset_nin_range f (f a) ⟨_, rfl⟩ _ m]
-        simp only [leftCoset_assoc]
+        simp [leftCoset_assoc]
     · rw [g_apply_infinity, h_apply_infinity f (f a) ⟨_, rfl⟩]
   · have eq1 : (h b) (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) =
         fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by

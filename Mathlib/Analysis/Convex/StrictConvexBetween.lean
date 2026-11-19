@@ -92,7 +92,7 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
   have :
       dist (a -ᵥ a) (b -ᵥ a) + dist (b -ᵥ a) (c -ᵥ a) = dist (a -ᵥ a) (c -ᵥ a) ↔
         b -ᵥ a ∈ segment ℝ (a -ᵥ a) (c -ᵥ a) := by
-    simp only [mem_segment_iff_sameRay, sameRay_iff_norm_add, dist_eq_norm', sub_add_sub_cancel',
+    simp [mem_segment_iff_sameRay, sameRay_iff_norm_add, dist_eq_norm', sub_add_sub_cancel',
       eq_comm]
   simp_rw [dist_vsub_cancel_right, ← affineSegment_eq_segment, ← affineSegment_vsub_const_image]
     at this
@@ -142,9 +142,9 @@ noncomputable def affineIsometryOfStrictConvexSpace (hi : Isometry f) : PF →�
       (fun x y => by
         apply eq_midpoint_of_dist_eq_half
         · rw [hi.dist_eq, hi.dist_eq]
-          simp only [dist_left_midpoint, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul]
+          simp [dist_left_midpoint, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul]
         · rw [hi.dist_eq, hi.dist_eq]
-          simp only [dist_midpoint_right, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul])
+          simp [dist_midpoint_right, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul])
       hi.continuous with
     norm_map := fun x => by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
 

@@ -163,7 +163,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
   swap
   · ext
     exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
-  simp only [map_mul, AlgEquiv.coe_toRingEquiv,
+  simp [map_mul, AlgEquiv.coe_toRingEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, AlgEquiv.algebraMap_eq_apply]
 
 variable [IsIntegrallyClosed A]
@@ -372,7 +372,7 @@ lemma dual_div_dual :
     dual A K J / dual A K I = I / J := by
   rw [dual_eq_mul_inv A K J, dual_eq_mul_inv A K I, mul_div_mul_comm, div_self, one_mul]
   · exact inv_div_inv J I
-  · simp only [ne_eq, dual_eq_zero_iff, one_ne_zero, not_false_eq_true]
+  · simp [ne_eq, dual_eq_zero_iff, one_ne_zero, not_false_eq_true]
 
 lemma dual_mul_self (hI : I ≠ 0) :
     dual A K I * I = dual A K 1 := by
@@ -539,7 +539,7 @@ variable (L)
 lemma coeIdeal_differentIdeal :
     ↑(differentIdeal A B) = (FractionalIdeal.dual A K (1 : FractionalIdeal B⁰ L))⁻¹ := by
   apply FractionalIdeal.coeToSubmodule_injective
-  simp only [FractionalIdeal.coeToSubmodule_div
+  simp [FractionalIdeal.coeToSubmodule_div
     (FractionalIdeal.dual_ne_zero _ _ (@one_ne_zero (FractionalIdeal B⁰ L) _ _ _)),
     FractionalIdeal.coeToSubmodule_coeIdeal, coeSubmodule_differentIdeal A K, inv_eq_one_div,
     FractionalIdeal.coeToSubmodule_dual_one, FractionalIdeal.coeToSubmodule_one]

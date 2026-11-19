@@ -73,7 +73,7 @@ def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
       (Y.spine 1 (by simp) (f₁ (X.map (δ₂ 0).op x))) (by
         simp only [spine_vertex]
         rw [← δ₂_one_eq_const, ← δ₂_zero_eq_const, ← hδ₁, ← hδ₀]
-        simp only [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_δ₂_two]))
+        simp [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_δ₂_two]))
 
 @[simp]
 lemma spineEquiv_f₂_arrow_zero (x : X _⦋2⦌₂) :

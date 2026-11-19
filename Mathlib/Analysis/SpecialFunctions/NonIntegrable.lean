@@ -202,7 +202,7 @@ theorem intervalIntegrable_sub_inv_iff {a b c : ℝ} :
 @[simp]
 theorem intervalIntegrable_inv_iff {a b : ℝ} :
     IntervalIntegrable (fun x => x⁻¹) volume a b ↔ a = b ∨ (0 : ℝ) ∉ [[a, b]] := by
-  simp only [← intervalIntegrable_sub_inv_iff, sub_zero]
+  simp [← intervalIntegrable_sub_inv_iff, sub_zero]
 
 /-- The function `fun x ↦ x⁻¹` is not integrable on any interval `[a, +∞)`. -/
 theorem not_integrableOn_Ici_inv {a : ℝ} :

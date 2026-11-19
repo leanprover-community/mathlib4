@@ -70,7 +70,7 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
+  smul_zero c := hf <| by simp [smul, map_zero, smul_zero]
 
 /-- Pushforward a zero-preserving scalar multiplication along a zero-preserving map.
 See note [reducible non-instances]. -/
@@ -254,9 +254,9 @@ variable [GroupWithZero G₀] [GroupWithZero G₀'] [MulActionWithZero G₀ G₀
 
 lemma smul_inv₀ (c : G₀) (x : G₀') : (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
   obtain rfl | hc := eq_or_ne c 0
-  · simp only [inv_zero, zero_smul]
+  · simp [inv_zero, zero_smul]
   obtain rfl | hx := eq_or_ne x 0
-  · simp only [inv_zero, smul_zero]
+  · simp [inv_zero, smul_zero]
   · refine inv_eq_of_mul_eq_one_left ?_
     rw [smul_mul_smul_comm, inv_mul_cancel₀ hc, inv_mul_cancel₀ hx, one_smul]
 
@@ -284,7 +284,7 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { hf.smulZeroClass f.toZeroHom smul with
-    smul_add := fun c x y => hf <| by simp only [smul, map_add, smul_add] }
+    smul_add := fun c x y => hf <| by simp [smul, map_add, smul_add] }
 
 /-- Pushforward a distributive scalar multiplication along a surjective additive monoid
 homomorphism.
@@ -295,7 +295,7 @@ protected abbrev Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f 
     smul_add := fun c x y => by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
-      simp only [smul_add, ← smul, ← map_add] }
+      simp [smul_add, ← smul, ← map_add] }
 
 /-- Push forward the multiplication of `R` on `M` along a compatible surjective map `f : R → S`.
 
@@ -305,7 +305,7 @@ abbrev Function.Surjective.distribSMulLeft {R S M : Type*} [AddZeroClass M] [Dis
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribSMul S M :=
   { hf.smulZeroClassLeft f hsmul with
-    smul_add := hf.forall.mpr fun c x y => by simp only [hsmul, smul_add] }
+    smul_add := hf.forall.mpr fun c x y => by simp [hsmul, smul_add] }
 
 variable (A)
 

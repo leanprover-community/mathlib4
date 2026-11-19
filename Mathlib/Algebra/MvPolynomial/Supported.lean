@@ -120,7 +120,7 @@ theorem exists_restrict_to_vars (R : Type*) [CommRing R] {F : MvPolynomial σ �
   obtain ⟨F', hF'⟩ := hF
   use fun z ↦ aeval z F'
   intro x
-  simp only [← hF', aeval_rename]
+  simp [← hF', aeval_rename]
 
 end CommSemiring
 

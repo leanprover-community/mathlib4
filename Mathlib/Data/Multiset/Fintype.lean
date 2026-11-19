@@ -184,7 +184,7 @@ attribute [irreducible] fintypeCoe
 theorem map_univ_coeEmbedding (m : Multiset α) :
     (Finset.univ : Finset m).map m.coeEmbedding = m.toEnumFinset := by
   ext ⟨x, i⟩
-  simp only [Fin.exists_iff, Finset.mem_map, Finset.mem_univ, Multiset.coeEmbedding_apply,
+  simp [Fin.exists_iff, Finset.mem_map, Finset.mem_univ, Multiset.coeEmbedding_apply,
     Prod.mk_inj, Multiset.exists_coe, Multiset.coe_mk,
     exists_prop, exists_eq_right_right, exists_eq_right, Multiset.mem_toEnumFinset, true_and]
 
@@ -216,7 +216,7 @@ theorem card_toEnumFinset (m : Multiset α) : m.toEnumFinset.card = Multiset.car
 @[simp]
 theorem card_coe (m : Multiset α) : Fintype.card m = Multiset.card m := by
   rw [Fintype.card_congr m.coeEquiv]
-  simp only [Fintype.card_coe, card_toEnumFinset]
+  simp [Fintype.card_coe, card_toEnumFinset]
 
 @[to_additive]
 theorem prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = ∏ x : m, (x : α) := by

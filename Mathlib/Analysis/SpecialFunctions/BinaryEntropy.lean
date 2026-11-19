@@ -109,7 +109,7 @@ lemma binEntropy_neg_of_neg (hp : p < 0) : binEntropy p < 0 := by
     nlinarith [log_pos_of_lt_neg_one hp']
   · have : -p * log p ≤ 0 := by
       wlog h : -1 < p
-      · simp only [show p = -1 by linarith, log_neg_eq_log, log_one, le_refl, mul_zero]
+      · simp [show p = -1 by linarith, log_neg_eq_log, log_one, le_refl, mul_zero]
       · nlinarith [log_neg_of_lt_zero hp h]
     nlinarith [(log_pos (by linarith) : 0 < log (1 - p))]
 
@@ -250,7 +250,7 @@ lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
     deriv (qaryEntropy q) p = log (q - 1) + log (1 - p) - log p := by
   unfold qaryEntropy
   rw [deriv_fun_add]
-  · simp only [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_fun_id,
+  · simp [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_fun_id,
       deriv_mul_const, deriv_id'', one_mul, deriv_binEntropy, add_sub_assoc]
   all_goals fun_prop
 
@@ -306,7 +306,7 @@ lemma not_continuousAt_deriv_qaryEntropy_one :
     apply tendsto_atBot_add_const_left
     exact tendsto_log_one_sub_sub_log_nhdsLT_one_atBot
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoBot) nhdsWithin_le_nhds
-  · simp only [disjoint_nhds_atBot_iff, not_isBot, not_false_eq_true]
+  · simp [disjoint_nhds_atBot_iff, not_isBot, not_false_eq_true]
   filter_upwards [Ioo_mem_nhdsLT (show 1 - 2⁻¹ < (1 : ℝ) by simp)]
   intros
   apply (deriv_qaryEntropy _ _).symm
@@ -323,7 +323,7 @@ lemma not_continuousAt_deriv_qaryEntropy_zero :
     rw [this]
     exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsGT_atTop
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoTop) nhdsWithin_le_nhds
-  · simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
+  · simp [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
   filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 2⁻¹ by simp)]
   intros
   apply (deriv_qaryEntropy _ _).symm
@@ -348,7 +348,7 @@ lemma deriv2_qaryEntropy :
         simp [field, sub_ne_zero_of_ne xne1.symm, this]
         ring
       · apply DifferentiableAt.add
-        · simp only [differentiableAt_const]
+        · simp [differentiableAt_const]
         exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr xne1.symm)
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
@@ -391,7 +391,7 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
       · have qpos : 0 < (q : ℝ) := by positivity
         have : q * p < q - 1 := by
           convert mul_lt_mul_of_pos_left hp.2 qpos using 1
-          simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
+          simp [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
             IsUnit.mul_inv_cancel]
         linarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp this : p < 1)).symm

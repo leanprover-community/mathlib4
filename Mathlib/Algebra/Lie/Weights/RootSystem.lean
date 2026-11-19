@@ -96,7 +96,7 @@ lemma apply_coroot_eq_cast' :
   rw [lie_eq_smul_of_mem_rootSpace hx, ← sub_eq_zero, ← sub_smul,
     smul_eq_zero_iff_left x_ne0, sub_eq_zero, coe_chainTop', nsmul_eq_mul, Pi.natCast_def,
     Pi.add_apply, Pi.mul_apply, root_apply_coroot hα] at this
-  simp only [Int.cast_sub, Int.cast_natCast, Int.cast_mul, Int.cast_ofNat, eq_sub_iff_add_eq',
+  simp [Int.cast_sub, Int.cast_natCast, Int.cast_mul, Int.cast_ofNat, eq_sub_iff_add_eq',
     this, mul_comm (2 : K)]
 
 lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength α β) :
@@ -138,7 +138,7 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
 
 lemma chainTopCoeff_le_chainLength : chainTopCoeff α β ≤ chainLength α β := by
   by_cases hα : α.IsZero
-  · simp only [hα.eq, chainTopCoeff_zero, zero_le]
+  · simp [hα.eq, chainTopCoeff_zero, zero_le]
   rw [← not_lt, ← Nat.succ_le_iff]
   intro e
   apply genWeightSpace_nsmul_add_ne_bot_of_le α β

@@ -213,7 +213,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
-  · simp only [add_zero, zero_add, AddMonoidAlgebra.ofCoeff_add, AddMonoidAlgebra.ofCoeff_single,
+  · simp [add_zero, zero_add, AddMonoidAlgebra.ofCoeff_add, AddMonoidAlgebra.ofCoeff_single,
       single_eq_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
   · simp
   · refine ⟨?_, by gcongr⟩

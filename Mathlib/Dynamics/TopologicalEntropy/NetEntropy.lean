@@ -275,7 +275,7 @@ lemma netEntropyInfEntourage_le_netEntropyEntourage (T : X → X) (F : Set X) (U
 lemma netEntropyEntourage_empty : netEntropyEntourage T ∅ U = ⊥ := by
   rw [netEntropyEntourage, ← expGrowthSup_zero]
   congr
-  simp only [netMaxcard_empty, ENat.toENNReal_zero, Pi.zero_def]
+  simp [netMaxcard_empty, ENat.toENNReal_zero, Pi.zero_def]
 
 @[simp]
 lemma netEntropyInfEntourage_empty : netEntropyInfEntourage T ∅ U = ⊥ :=
@@ -297,12 +297,12 @@ lemma netEntropyEntourage_nonneg (T : X → X) (h : F.Nonempty) (U : SetRel X X)
 lemma netEntropyInfEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
     netEntropyInfEntourage T F univ = 0 := by
   rw [← expGrowthInf_const one_ne_zero one_ne_top, netEntropyInfEntourage]
-  simp only [netMaxcard_univ T h, ENat.toENNReal_one]
+  simp [netMaxcard_univ T h, ENat.toENNReal_one]
 
 lemma netEntropyEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
     netEntropyEntourage T F univ = 0 := by
   rw [← expGrowthSup_const one_ne_zero one_ne_top, netEntropyEntourage]
-  simp only [netMaxcard_univ T h, ENat.toENNReal_one]
+  simp [netMaxcard_univ T h, ENat.toENNReal_one]
 
 lemma netEntropyInfEntourage_le_coverEntropyInfEntourage (T : X → X) (F : Set X) :
     netEntropyInfEntourage T F U ≤ coverEntropyInfEntourage T F U :=

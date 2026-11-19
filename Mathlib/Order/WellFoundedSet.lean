@@ -331,7 +331,7 @@ theorem Subsingleton.partiallyWellOrderedOn (hs : s.Subsingleton) : PartiallyWel
 @[simp]
 theorem partiallyWellOrderedOn_insert :
     PartiallyWellOrderedOn (insert a s) r ↔ PartiallyWellOrderedOn s r := by
-  simp only [← singleton_union, partiallyWellOrderedOn_union,
+  simp [← singleton_union, partiallyWellOrderedOn_union,
     partiallyWellOrderedOn_singleton, true_and]
 
 protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r) (a : α) :
@@ -402,7 +402,7 @@ protected theorem PartiallyWellOrderedOn.pi {α : ι → Type*} [Finite ι] {r :
   refine Finset.cons_induction ?_ ?_
   · intro f hf
     exists RelEmbedding.refl (· ≤ ·)
-    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
+    simp [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
   · intro i t hi ih f hf
     obtain ⟨g, hg⟩ := (hs i).exists_monotone_subseq (hf · i)
     obtain ⟨g', hg'⟩ := ih (f ∘ g) (hf <| g ·)
@@ -480,7 +480,7 @@ protected theorem Subsingleton.isPWO (hs : s.Subsingleton) : IsPWO s := hs.finit
 
 @[simp]
 theorem isPWO_insert {a} : IsPWO (insert a s) ↔ IsPWO s := by
-  simp only [← singleton_union, isPWO_union, isPWO_singleton, true_and]
+  simp [← singleton_union, isPWO_union, isPWO_singleton, true_and]
 
 protected theorem IsPWO.insert (h : IsPWO s) (a : α) : IsPWO (insert a s) :=
   isPWO_insert.2 h
@@ -493,7 +493,7 @@ protected theorem Subsingleton.isWF (hs : s.Subsingleton) : IsWF s := hs.isPWO.i
 
 @[simp]
 theorem isWF_insert {a} : IsWF (insert a s) ↔ IsWF s := by
-  simp only [← singleton_union, isWF_union, isWF_singleton, true_and]
+  simp [← singleton_union, isWF_union, isWF_singleton, true_and]
 
 protected theorem IsWF.insert (h : IsWF s) (a : α) : IsWF (insert a s) :=
   isWF_insert.2 h
@@ -539,11 +539,11 @@ protected theorem Subsingleton.wellFoundedOn (hs : s.Subsingleton) : s.WellFound
 
 @[simp]
 theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s r := by
-  simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and]
+  simp [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and]
 
 @[simp]
 theorem wellFoundedOn_sdiff_singleton : WellFoundedOn (s \ {a}) r ↔ WellFoundedOn s r := by
-  simp only [← wellFoundedOn_insert (a := a), insert_sdiff_singleton, mem_insert_iff, true_or,
+  simp [← wellFoundedOn_insert (a := a), insert_sdiff_singleton, mem_insert_iff, true_or,
     insert_eq_of_mem]
 
 protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :

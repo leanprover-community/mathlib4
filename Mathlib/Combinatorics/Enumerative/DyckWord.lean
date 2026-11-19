@@ -76,7 +76,7 @@ instance : Coe DyckWord (List DyckStep) := ⟨DyckWord.toList⟩
 
 instance : Add DyckWord where
   add p q := ⟨p ++ q, by
-    simp only [count_append, p.count_U_eq_count_D, q.count_U_eq_count_D], by
+    simp [count_append, p.count_U_eq_count_D, q.count_U_eq_count_D], by
     simp only [take_append, count_append]
     exact fun _ ↦ add_le_add (p.count_D_le_count_U _) (q.count_D_le_count_U _)⟩
 

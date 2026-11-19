@@ -137,7 +137,7 @@ protected theorem Commute.div_sub_div (hbc : Commute b c) (hbd : Commute b d) (h
 
 protected theorem Commute.inv_sub_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b ≠ 0) :
     a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
-  simp only [inv_eq_one_div, (Commute.one_right a).div_sub_div hab ha hb, one_mul, mul_one]
+  simp [inv_eq_one_div, (Commute.one_right a).div_sub_div hab ha hb, one_mul, mul_one]
 
 variable [NeZero (2 : K)]
 

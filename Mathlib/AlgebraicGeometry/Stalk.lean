@@ -318,7 +318,7 @@ lemma germ_stalkClosedPointTo (U : Opens X) (hU : f (closedPoint R) ∈ U) :
   rw [stalkClosedPointTo, Scheme.Hom.germ_stalkMap_assoc, Iso.trans_hom]
   congr 1
   rw [← Iso.eq_comp_inv, Category.assoc, ΓSpecIso_hom_stalkClosedPointIso_inv]
-  simp only [Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
+  simp [Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
     TopCat.Presheaf.germ_res]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -396,10 +396,10 @@ def SpecToEquivOfLocalRing :
     obtain ⟨x, ⟨f, hf⟩⟩ := xf
     symm
     refine SpecToEquivOfLocalRing_eq_iff.mpr ⟨?_, ?_⟩
-    · simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply, Spec_closedPoint,
+    · simp [Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply, Spec_closedPoint,
         Scheme.fromSpecStalk_closedPoint]
     · refine TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ?_
-      simp only [Scheme.germ_stalkClosedPointTo_Spec_fromSpecStalk,
+      simp [Scheme.germ_stalkClosedPointTo_Spec_fromSpecStalk,
         TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.germ_stalkSpecializes_assoc]
 
 end AlgebraicGeometry

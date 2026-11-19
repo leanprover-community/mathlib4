@@ -146,7 +146,7 @@ variable [CommRing R]
 
 @[simp]
 theorem truncateFun_out (x : TruncatedWittVector p n R) : x.out.truncateFun n = x := by
-  simp only [WittVector.truncateFun, coeff_out, mk_coeff]
+  simp [WittVector.truncateFun, coeff_out, mk_coeff]
 
 open WittVector
 
@@ -316,7 +316,7 @@ variable (p)
 theorem truncate_mk' (f : ℕ → R) :
     truncate n (mk p f) = TruncatedWittVector.mk _ fun k => f k := by
   ext i
-  simp only [coeff_truncate, TruncatedWittVector.coeff_mk]
+  simp [coeff_truncate, TruncatedWittVector.coeff_mk]
 
 end WittVector
 
@@ -353,12 +353,12 @@ theorem truncate_truncate {n₁ n₂ n₃ : ℕ} (h1 : n₁ ≤ n₂) (h2 : n₂
     (x : TruncatedWittVector p n₃ R) :
     (truncate h1) (truncate h2 x) = truncate (h1.trans h2) x := by
   obtain ⟨x, rfl⟩ := WittVector.truncate_surjective (p := p) n₃ R x
-  simp only [truncate_wittVector_truncate]
+  simp [truncate_wittVector_truncate]
 
 @[simp]
 theorem truncate_comp {n₁ n₂ n₃ : ℕ} (h1 : n₁ ≤ n₂) (h2 : n₂ ≤ n₃) :
     (truncate (p := p) (R := R) h1).comp (truncate h2) = truncate (h1.trans h2) := by
-  ext1 x; simp only [truncate_truncate, Function.comp_apply, RingHom.coe_comp]
+  ext1 x; simp [truncate_truncate, Function.comp_apply, RingHom.coe_comp]
 
 theorem truncate_surjective {m : ℕ} (hm : n ≤ m) : Surjective (truncate (p := p) (R := R) hm) := by
   intro x
@@ -369,7 +369,7 @@ theorem truncate_surjective {m : ℕ} (hm : n ≤ m) : Surjective (truncate (p :
 theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVector p m R) :
     (truncate hm x).coeff i = x.coeff (Fin.castLE hm i) := by
   obtain ⟨y, rfl⟩ := @WittVector.truncate_surjective p _ _ _ _ x
-  simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.val_castLE]
+  simp [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.val_castLE]
 
 end
 
@@ -382,7 +382,7 @@ variable (p n R)
 
 theorem card {R : Type*} [Fintype R] :
     Fintype.card (TruncatedWittVector p n R) = Fintype.card R ^ n := by
-  simp only [TruncatedWittVector, Fintype.card_fin, Fintype.card_fun]
+  simp [TruncatedWittVector, Fintype.card_fin, Fintype.card_fun]
 
 end Fintype
 
@@ -459,7 +459,7 @@ theorem lift_unique (g : S →+* 𝕎 R) (g_compat : ∀ k, (WittVector.truncate
   ext1 x
   rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]
   intro i
-  simp only [RingHom.mem_ker, g_compat, ← RingHom.comp_apply, truncate_comp_lift, map_sub, sub_self]
+  simp [RingHom.mem_ker, g_compat, ← RingHom.comp_apply, truncate_comp_lift, map_sub, sub_self]
 
 /-- The universal property of `𝕎 R` as projective limit of truncated Witt vector rings. -/
 @[simps]
@@ -469,8 +469,8 @@ def liftEquiv : { f : ∀ k, S →+* TruncatedWittVector p k R // ∀ (k₁ k₂
   invFun g :=
     ⟨fun k => (truncate k).comp g, by
       intro _ _ h
-      simp only [← RingHom.comp_assoc, truncate_comp_wittVector_truncate]⟩
-  left_inv := by rintro ⟨f, hf⟩; simp only [truncate_comp_lift]
+      simp [← RingHom.comp_assoc, truncate_comp_wittVector_truncate]⟩
+  left_inv := by rintro ⟨f, hf⟩; simp [truncate_comp_lift]
   right_inv _ := lift_unique _ _ fun _ => rfl
 
 theorem hom_ext (g₁ g₂ : S →+* 𝕎 R) (h : ∀ k, (truncate k).comp g₁ = (truncate k).comp g₂) :

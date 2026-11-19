@@ -71,7 +71,7 @@ theorem Term.realize_quotient_mk' {β : Type*} (t : L.Term β) (x : β → M) :
     (t.realize fun i => (⟦x i⟧ : Quotient s)) = ⟦@Term.realize _ _ ps.toStructure _ x t⟧ := by
   induction t with
   | var => rfl
-  | func _ _ ih => simp only [ih, funMap_quotient_mk', Term.realize]
+  | func _ _ ih => simp [ih, funMap_quotient_mk', Term.realize]
 
 end Language
 

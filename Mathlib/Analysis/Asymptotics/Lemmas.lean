@@ -70,7 +70,7 @@ theorem isBigO_top : f =O[⊤] g ↔ ∃ C, ∀ x, ‖f x‖ ≤ C * ‖g x‖ :
 
 @[simp]
 theorem isLittleO_top : f'' =o[⊤] g' ↔ ∀ x, f'' x = 0 := by
-  simp only [← principal_univ, isLittleO_principal, mem_univ, forall_true_left]
+  simp [← principal_univ, isLittleO_principal, mem_univ, forall_true_left]
 
 section
 
@@ -90,13 +90,13 @@ theorem isLittleO_const_iff_isLittleO_one {c : F''} (hc : c ≠ 0) :
 
 @[simp]
 theorem isLittleO_one_iff {f : α → E'''} : f =o[l] (fun _x => 1 : α → F) ↔ Tendsto f l (𝓝 0) := by
-  simp only [isLittleO_iff, norm_one, mul_one, Metric.nhds_basis_closedBall.tendsto_right_iff,
+  simp [isLittleO_iff, norm_one, mul_one, Metric.nhds_basis_closedBall.tendsto_right_iff,
     Metric.mem_closedBall, dist_zero_right]
 
 @[simp]
 theorem isBigO_one_iff : f =O[l] (fun _x => 1 : α → F) ↔
     IsBoundedUnder (· ≤ ·) l fun x => ‖f x‖ := by
-  simp only [isBigO_iff, norm_one, mul_one, IsBoundedUnder, IsBounded, eventually_map]
+  simp [isBigO_iff, norm_one, mul_one, IsBoundedUnder, IsBounded, eventually_map]
 
 alias ⟨_, _root_.Filter.IsBoundedUnder.isBigO_one⟩ := isBigO_one_iff
 
@@ -104,9 +104,9 @@ alias ⟨_, _root_.Filter.IsBoundedUnder.isBigO_one⟩ := isBigO_one_iff
 theorem isLittleO_one_left_iff : (fun _x => 1 : α → F) =o[l] f ↔ Tendsto (fun x => ‖f x‖) l atTop :=
   calc
     (fun _x => 1 : α → F) =o[l] f ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖(1 : F)‖ ≤ ‖f x‖ :=
-      isLittleO_iff_nat_mul_le_aux <| Or.inl fun _x => by simp only [norm_one, zero_le_one]
+      isLittleO_iff_nat_mul_le_aux <| Or.inl fun _x => by simp [norm_one, zero_le_one]
     _ ↔ ∀ n : ℕ, True → ∀ᶠ x in l, ‖f x‖ ∈ Ici (n : ℝ) := by
-      simp only [norm_one, mul_one, true_imp_iff, mem_Ici]
+      simp [norm_one, mul_one, true_imp_iff, mem_Ici]
     _ ↔ Tendsto (fun x => ‖f x‖) l atTop :=
       atTop_hasCountableBasis_of_archimedean.toHasBasis.tendsto_right_iff.symm
 
@@ -423,7 +423,7 @@ theorem isLittleO_const_left_of_ne {c : E''} (hc : c ≠ 0) :
 theorem isLittleO_const_left {c : E''} :
     (fun _x => c) =o[l] g'' ↔ c = 0 ∨ Tendsto (norm ∘ g'') l atTop := by
   rcases eq_or_ne c 0 with (rfl | hc)
-  · simp only [isLittleO_zero, true_or]
+  · simp [isLittleO_zero, true_or]
   · simp only [hc, false_or, isLittleO_const_left_of_ne hc]; rfl
 
 @[simp high] -- Increase priority so that this triggers before `isLittleO_const_left`
@@ -593,7 +593,7 @@ theorem isLittleO_norm_pow_norm_pow {m n : ℕ} (h : m < n) :
 
 theorem isLittleO_pow_id {n : ℕ} (h : 1 < n) : (fun x : 𝕜 => x ^ n) =o[𝓝 0] fun x => x := by
   convert! isLittleO_pow_pow h (𝕜 := 𝕜)
-  simp only [pow_one]
+  simp [pow_one]
 
 theorem isLittleO_norm_pow_id {n : ℕ} (h : 1 < n) :
     (fun x : E' => ‖x‖ ^ n) =o[𝓝 0] fun x => x := by
@@ -675,7 +675,7 @@ theorem isBigO_nat_atTop_iff {f : ℕ → E''} {g : ℕ → F''} (h : ∀ x, g x
 theorem isBigO_one_nat_atTop_iff {f : ℕ → E''} :
     f =O[atTop] (fun _n => 1 : ℕ → ℝ) ↔ ∃ C, ∀ n, ‖f n‖ ≤ C :=
   Iff.trans (isBigO_nat_atTop_iff fun _ h => (one_ne_zero h).elim) <| by
-    simp only [norm_one, mul_one]
+    simp [norm_one, mul_one]
 
 theorem IsBigO.nat_of_atTop {f : ℕ → E''} {g : ℕ → F''} (hfg : f =O[atTop] g)
     {l : Filter ℕ} (h : ∀ᶠ n in l, g n = 0 → f n = 0) : f =O[l] g := by
@@ -690,7 +690,7 @@ theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, Semi
     {f : α → ∀ i, E' i} {C : ℝ} (hC : 0 ≤ C) :
     IsBigOWith C l f g' ↔ ∀ i, IsBigOWith C l (fun x => f x i) g' := by
   have this (x) : 0 ≤ C * ‖g' x‖ := by positivity
-  simp only [isBigOWith_iff, pi_norm_le_iff_of_nonneg (this _), eventually_all]
+  simp [isBigOWith_iff, pi_norm_le_iff_of_nonneg (this _), eventually_all]
 
 @[simp]
 theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)]

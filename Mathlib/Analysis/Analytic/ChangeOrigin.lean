@@ -76,12 +76,12 @@ theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs 
 @[simp]
 theorem norm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     ‖p.changeOriginSeriesTerm k l s hs‖ = ‖p (k + l)‖ := by
-  simp only [changeOriginSeriesTerm, LinearIsometryEquiv.norm_map]
+  simp [changeOriginSeriesTerm, LinearIsometryEquiv.norm_map]
 
 @[simp]
 theorem nnNorm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     ‖p.changeOriginSeriesTerm k l s hs‖₊ = ‖p (k + l)‖₊ := by
-  simp only [changeOriginSeriesTerm, LinearIsometryEquiv.nnNorm_map]
+  simp [changeOriginSeriesTerm, LinearIsometryEquiv.nnNorm_map]
 
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_changeOriginSeriesTerm := nnNorm_changeOriginSeriesTerm
@@ -155,7 +155,7 @@ def changeOriginIndexEquiv :
     suffices ∀ k' l', k' = k → l' = l → ∀ (hkl : k + l = k' + l') (hs'),
         (⟨k', l', ⟨s.map (finCongr hkl).toEmbedding, hs'⟩⟩ :
           Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
-      apply this <;> simp only [hs, add_tsub_cancel_right]
+      apply this <;> simp [hs, add_tsub_cancel_right]
     simp
   right_inv := by
     rintro ⟨n, s⟩

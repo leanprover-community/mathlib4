@@ -122,7 +122,7 @@ instance : Nontrivial (ValueGroup A K) where
     obtain ⟨d, hd⟩ := Quotient.exact' c
     apply_fun fun t => d⁻¹ • t at hd
     dsimp at hd
-    simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd⟩
+    simp [inv_smul_smul, smul_zero, one_ne_zero] at hd⟩
 
 variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 

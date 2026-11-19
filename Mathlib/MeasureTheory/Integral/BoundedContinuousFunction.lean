@@ -32,7 +32,7 @@ variable {X : Type*} [TopologicalSpace X]
 lemma apply_le_nndist_zero (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ nndist 0 f := by
   convert nndist_coe_le_nndist x
-  simp only [FunLike.coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
+  simp [FunLike.coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
 
 lemma apply_le_edist_zero (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ edist 0 f := by
@@ -66,7 +66,7 @@ theorem integral_eq_integral_nnrealPart_sub [OpensMeasurableSpace X] (f : X →�
     ∫ x, f x ∂μ = (∫ x, (f.nnrealPart x : ℝ) ∂μ) - ∫ x, ((-f).nnrealPart x : ℝ) ∂μ := by
   simp only [f.self_eq_nnrealPart_sub_nnrealPart_neg, Pi.sub_apply, integral_sub,
              integrable_of_nnreal]
-  simp only [Function.comp_apply]
+  simp [Function.comp_apply]
 
 theorem lintegral_of_real_lt_top (f : X →ᵇ ℝ) :
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ < ∞ := lintegral_lt_top_of_nnreal _ f.nnrealPart
@@ -75,7 +75,7 @@ theorem toReal_lintegral_coe_eq_integral [OpensMeasurableSpace X] (f : X →ᵇ 
     (∫⁻ x, (f x : ℝ≥0∞) ∂μ).toReal = ∫ x, (f x : ℝ) ∂μ := by
   rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using!
         (NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable)]
-  · simp only [ENNReal.ofReal_coe_nnreal]
+  · simp [ENNReal.ofReal_coe_nnreal]
   · exact Eventually.of_forall (by simp)
 
 end NNRealValued
@@ -157,7 +157,7 @@ lemma tendsto_integral_of_forall_limsup_integral_le_integral {ι : Type*} {L : F
     (f : X →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, f x ∂(μs i)) L (𝓝 (∫ x, f x ∂μ)) := by
   rcases eq_or_neBot L with rfl | hL
-  · simp only [tendsto_bot]
+  · simp [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above := BddAbove.isBoundedUnder L.univ_mem (by simpa using obs.bddAbove)
   have bdd_below := BddBelow.isBoundedUnder L.univ_mem (by simpa using obs.bddBelow)
@@ -179,7 +179,7 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
     (f : X →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, f x ∂(μs i)) L (𝓝 (∫ x, f x ∂μ)) := by
   rcases eq_or_neBot L with rfl | hL
-  · simp only [tendsto_bot]
+  · simp [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above := BddAbove.isBoundedUnder L.univ_mem (by simpa using obs.bddAbove)
   have bdd_below := BddBelow.isBoundedUnder L.univ_mem (by simpa using obs.bddBelow)

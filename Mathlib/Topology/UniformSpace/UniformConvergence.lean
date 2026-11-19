@@ -424,7 +424,7 @@ lemma tendstoUniformly_iff {F : X → α → β} {f : α → β}
     {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)} (hβ : (uniformity β).HasBasis pβ sβ) :
     TendstoUniformly F f l ↔
       (∀ i, pβ i → ∃ j, pX j ∧ ∀ ⦃x⦄, x ∈ sX j → ∀ a, (f a, F x a) ∈ sβ i) := by
-  simp only [hβ.tendstoUniformly_iff_of_uniformity, hl.eventually_iff]
+  simp [hβ.tendstoUniformly_iff_of_uniformity, hl.eventually_iff]
 
 end Filter.HasBasis
 
@@ -470,7 +470,7 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto
     (hF' : ∀ᶠ x : α in p', Tendsto (fun n => F n x) p (𝓝 (f x))) :
     TendstoUniformlyOnFilter F f p p' := by
   rcases p.eq_or_neBot with rfl | _
-  · simp only [TendstoUniformlyOnFilter, bot_prod, eventually_bot, implies_true]
+  · simp [TendstoUniformlyOnFilter, bot_prod, eventually_bot, implies_true]
   -- Proof idea: |f_n(x) - f(x)| ≤ |f_n(x) - f_m(x)| + |f_m(x) - f(x)|. We choose `n`
   -- so that |f_n(x) - f_m(x)| is uniformly small across `s` whenever `m ≥ n`. Then for
   -- a fixed `x`, we choose `m` sufficiently large such that |f_m(x) - f(x)| is small.
@@ -521,7 +521,7 @@ theorem UniformCauchySeqOnFilter.comp {γ : Type*} (hf : UniformCauchySeqOnFilte
   obtain ⟨pa, hpa, pb, hpb, hpapb⟩ := eventually_prod_iff.mp (hf u hu)
   rw [eventually_prod_iff]
   refine ⟨pa, hpa, pb ∘ g, ?_, fun hx _ hy => hpapb hx hy⟩
-  exact eventually_comap.mpr (hpb.mono fun x hx y hy => by simp only [hx, hy, Function.comp_apply])
+  exact eventually_comap.mpr (hpb.mono fun x hx y hy => by simp [hx, hy, Function.comp_apply])
 
 /-- Composing on the right by a function preserves uniform Cauchy sequences -/
 theorem UniformCauchySeqOn.comp {γ : Type*} (hf : UniformCauchySeqOn F p s) (g : γ → α) :

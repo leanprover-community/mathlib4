@@ -185,7 +185,7 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
 
 instance instCoframe : Coframe (Closeds α) := fast_instance% .ofMinimalAxioms {
   iInf_sup_le_sup_sInf a s :=
-    (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
+    (SetLike.coe_injective <| by simp [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
 
 @[simps]
 instance [T1Space α] : Singleton α (Closeds α) where
@@ -298,7 +298,7 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
     IsCoatom s ↔ ∃ x, s = ({x} : Closeds α).compl := by
   rw [← s.compl_compl, ← isAtom_dual_iff_isCoatom]
   change IsAtom (Closeds.complOrderIso α s.compl) ↔ _
-  simp only [(Closeds.complOrderIso α).isAtom_iff, Closeds.isAtom_iff,
+  simp [(Closeds.complOrderIso α).isAtom_iff, Closeds.isAtom_iff,
     Closeds.compl_bijective.injective.eq_iff]
 
 /-! ### Clopen sets -/

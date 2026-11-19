@@ -236,7 +236,7 @@ theorem top_caratheodory : (⊤ : OuterMeasure α).caratheodory = ⊤ :=
   top_unique fun s _ =>
     (isCaratheodory_iff_le _).2 fun t =>
       t.eq_empty_or_nonempty.elim (fun ht => by simp [ht]) fun ht => by
-        simp only [ht, top_apply, le_top]
+        simp [ht, top_apply, le_top]
 
 theorem le_add_caratheodory (m₁ m₂ : OuterMeasure α) :
     m₁.caratheodory ⊓ m₂.caratheodory ≤ (m₁ + m₂ : OuterMeasure α).caratheodory :=

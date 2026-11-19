@@ -190,7 +190,7 @@ lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   have h2 : (-I * (I * ↑(1 / x))) = 1 / x := by
     rw [← mul_assoc, neg_mul, I_mul_I, neg_neg, one_mul, ofReal_div, ofReal_one]
   have h3 : (x : ℂ) ^ (3 / 2 : ℂ) ≠ 0 := by
-    simp only [Ne, cpow_eq_zero_iff, ofReal_eq_zero, hx.ne', false_and, not_false_eq_true]
+    simp [Ne, cpow_eq_zero_iff, ofReal_eq_zero, hx.ne', false_and, not_false_eq_true]
   have h4 : arg x ≠ π := by rw [arg_ofReal_of_nonneg hx.le]; exact pi_ne_zero.symm
   rw [← ofReal_inj, oddKernel_def, ofReal_mul, sinKernel_def, jacobiTheta₂'_functional_equation',
     h1, h2]
@@ -226,7 +226,7 @@ lemma hasSum_int_oddKernel (a : ℝ) {x : ℝ} (hx : 0 < x) :
 lemma hasSum_int_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) : HasSum
     (fun n : ℤ ↦ -I * n * cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t)) ↑(sinKernel a t) := by
   have h : -2 * (π : ℂ) ≠ (0 : ℂ) := by
-    simp only [neg_mul, ne_eq, neg_eq_zero, mul_eq_zero,
+    simp [neg_mul, ne_eq, neg_eq_zero, mul_eq_zero,
       OfNat.ofNat_ne_zero, ofReal_eq_zero, pi_ne_zero, or_self, not_false_eq_true]
   rw [sinKernel_def]
   refine ((hasSum_jacobiTheta₂'_term a
@@ -447,7 +447,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   rw [completedHurwitzZetaOdd, (isStrong_hurwitzOddFEPair _).Λ_eq]
   have := mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum
   refine this.congr_fun fun n ↦ ?_
-  simp only [r, c, mul_one_div, div_mul_eq_mul_div, div_right_comm]
+  simp [r, c, mul_one_div, div_mul_eq_mul_div, div_right_comm]
 
 /-!
 ## Non-completed zeta functions
@@ -507,7 +507,7 @@ lemma hasSum_nat_hurwitzZetaOdd_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : �
     (hurwitzZetaOdd a s) := by
   refine (hasSum_nat_hurwitzZetaOdd a hs).congr_fun fun n ↦ ?_
   suffices ∀ b : ℝ, 0 ≤ b → SignType.sign (n + b) / (↑|n + b| : ℂ) ^ s = 1 / (n + b) ^ s by
-    simp only [add_sub_assoc, this a ha.1, this (1 - a) (sub_nonneg.mpr ha.2), push_cast]
+    simp [add_sub_assoc, this a ha.1, this (1 - a) (sub_nonneg.mpr ha.2), push_cast]
   intro b hb
   rw [abs_of_nonneg (by positivity), (by simp : (n : ℂ) + b = ↑(n + b))]
   rcases lt_or_eq_of_le (by positivity : 0 ≤ n + b) with hb | hb
@@ -521,7 +521,7 @@ theorem hasSum_int_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   rw [sinZeta]
   refine ((hasSum_int_completedSinZeta a hs).div_const (Gammaℝ (s + 1))).congr_fun fun n ↦ ?_
   have : 0 < re (s + 1) := by rw [add_re, one_re]; positivity
-  simp only [mul_assoc, div_right_comm _ _ (Gammaℝ _),
+  simp [mul_assoc, div_right_comm _ _ (Gammaℝ _),
     mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos this)]
 
 /-- Formula for `sinZeta` as a Dirichlet series in the convergence range, with sum over `ℕ`. -/

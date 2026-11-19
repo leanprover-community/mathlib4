@@ -184,11 +184,11 @@ theorem norm_sub_le_of_mem_A {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0
     _ ≤ ε * r + ε * r := by
       apply add_le_add
       · apply le_of_mem_A h₂
-        · simp only [le_of_lt (half_pos hr), mem_closedBall, dist_self]
-        · simp only [dist_eq_norm, add_sub_cancel_left, mem_closedBall, ylt.le]
+        · simp [le_of_lt (half_pos hr), mem_closedBall, dist_self]
+        · simp [dist_eq_norm, add_sub_cancel_left, mem_closedBall, ylt.le]
       · apply le_of_mem_A h₁
-        · simp only [le_of_lt (half_pos hr), mem_closedBall, dist_self]
-        · simp only [dist_eq_norm, add_sub_cancel_left, mem_closedBall, ylt.le]
+        · simp [le_of_lt (half_pos hr), mem_closedBall, dist_self]
+        · simp [dist_eq_norm, add_sub_cancel_left, mem_closedBall, ylt.le]
     _ = 2 * ε * r := by ring
     _ ≤ 2 * ε * (2 * ‖c‖ * ‖y‖) := by gcongr
     _ = 4 * ‖c‖ * ε * ‖y‖ := by ring
@@ -629,7 +629,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     -- We need to show that `f y - f x - f' (y - x)` is small. For this, we will work at scale
     -- `k` where `k` is chosen with `‖y - x‖ ∼ 2 ^ (-k)`.
     rcases eq_or_lt_of_le hy.1 with (rfl | xy)
-    · simp only [sub_self, zero_smul, norm_zero, mul_zero, le_rfl]
+    · simp [sub_self, zero_smul, norm_zero, mul_zero, le_rfl]
     have yzero : 0 < y - x := sub_pos.2 xy
     have y_le : y - x ≤ (1 / 2) ^ (n e + 1) := by linarith [hy.2]
     have yone : y - x ≤ 1 := le_trans y_le (pow_le_one₀ (by norm_num) (by norm_num))
@@ -662,7 +662,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     calc
       ‖f y - f x - (y - x) • f'‖ =
           ‖f y - f x - (y - x) • L e (n e) m + (y - x) • (L e (n e) m - f')‖ := by
-        simp only [smul_sub, sub_add_sub_cancel]
+        simp [smul_sub, sub_add_sub_cancel]
       _ ≤ 4 * (1 / 2) ^ e * ‖y - x‖ + ‖y - x‖ * (12 * (1 / 2) ^ e) :=
         norm_add_le_of_le J <| by rw [norm_smul]; gcongr; exact Lf' _ _ m_ge
       _ = 16 * ‖y - x‖ * (1 / 2) ^ e := by ring

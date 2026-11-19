@@ -266,13 +266,13 @@ lemma notMem_uIoc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := 
 
 lemma forall_uIoc_iff {P : α → Prop} :
     (∀ x ∈ Ι a b, P x) ↔ (∀ x ∈ Ioc a b, P x) ∧ ∀ x ∈ Ioc b a, P x := by
-  simp only [uIoc_eq_union, mem_union, or_imp, forall_and]
+  simp [uIoc_eq_union, mem_union, or_imp, forall_and]
 
 lemma uIoc_subset_uIoc_of_uIcc_subset_uIcc {a b c d : α}
     (h : [[a, b]] ⊆ [[c, d]]) : Ι a b ⊆ Ι c d :=
   Ioc_subset_Ioc (uIcc_subset_uIcc_iff_le.1 h).1 (uIcc_subset_uIcc_iff_le.1 h).2
 
-lemma uIoc_comm (a b : α) : Ι a b = Ι b a := by simp only [uIoc, min_comm a b, max_comm a b]
+lemma uIoc_comm (a b : α) : Ι a b = Ι b a := by simp [uIoc, min_comm a b, max_comm a b]
 
 lemma Ioc_subset_uIoc : Ioc a b ⊆ Ι a b := Ioc_subset_Ioc (min_le_left _ _) (le_max_right _ _)
 lemma Ioc_subset_uIoc' : Ioc a b ⊆ Ι b a := Ioc_subset_Ioc (min_le_right _ _) (le_max_left _ _)

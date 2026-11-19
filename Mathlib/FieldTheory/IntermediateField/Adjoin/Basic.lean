@@ -60,7 +60,7 @@ theorem mem_adjoin_iff (x : E) :
 
 theorem mem_adjoin_simple_iff {α : E} (x : E) :
     x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by
-  simp only [mem_adjoin_iff_div, Algebra.adjoin_singleton_eq_range_aeval,
+  simp [mem_adjoin_iff_div, Algebra.adjoin_singleton_eq_range_aeval,
     AlgHom.mem_range, exists_exists_eq_and]
 
 theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]

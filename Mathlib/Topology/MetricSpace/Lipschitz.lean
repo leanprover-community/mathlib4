@@ -313,7 +313,7 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
     the extended function is also `K`-Lipschitz. -/
   rcases eq_empty_or_nonempty s with (rfl | hs)
   · exact ⟨fun _ => 0, (LipschitzWith.const _).weaken zero_le, eqOn_empty _ _⟩
-  have : Nonempty s := by simp only [hs, nonempty_coe_sort]
+  have : Nonempty s := by simp [hs, nonempty_coe_sort]
   let g := fun y : α => iInf fun x : s => f x + K * dist y x
   have B : ∀ y : α, BddBelow (range fun x : s => f x + K * dist y x) := fun y => by
     rcases hs with ⟨z, hz⟩

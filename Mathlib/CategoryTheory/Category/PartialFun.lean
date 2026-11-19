@@ -136,7 +136,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
       { toFun := fun a => ⟨some a, some_ne_none a⟩
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
         left_inv := fun _ => Option.get_some _ _
-        right_inv := fun a => by simp only [some_get, Subtype.coe_eta] })
+        right_inv := fun a => by simp [some_get, Subtype.coe_eta] })
       fun f =>
         PFun.ext fun a b => by
           dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun]

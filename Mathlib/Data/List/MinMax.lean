@@ -310,7 +310,7 @@ theorem le_maximum_of_length_pos_iff {b : α} (h : 0 < l.length) :
 theorem maximum_of_length_pos_mem (h : 0 < l.length) :
     maximum_of_length_pos h ∈ l := by
   apply maximum_mem
-  simp only [coe_maximum_of_length_pos]
+  simp [coe_maximum_of_length_pos]
 
 @[to_dual minimum_of_length_pos_le_of_mem]
 theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :

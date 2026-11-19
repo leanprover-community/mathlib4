@@ -72,7 +72,7 @@ theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   simp [NNReal.mul_finset_sup]
 
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
-  simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
+  simp [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
 
 /-- Let `α` be a non-zero algebraic integer. Then `α` has a conjugate `σ α` with `‖σ α‖ ≥ 1`. -/
 lemma exists_conjugate_one_le_norm {α : 𝓞 K} (hα0 : α ≠ 0) :
@@ -172,7 +172,7 @@ private def supOfBasis : ℝ := univ.sup' univ_nonempty
 end DecidableEq
 
 private theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
-  simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
+  simp [supOfBasis, le_sup'_iff, mem_univ, and_self,
     exists_const, house_nonneg]
 
 variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
@@ -227,7 +227,7 @@ private theorem ξ_ne_0 : ξ K x ≠ 0 := by
 
 private theorem lin_1 (l k r) : a k l * (newBasis K) r =
     ∑ u, (a' K a k l r u) * (newBasis K) u := by
-  simp only [Basis.sum_repr (newBasis K) (a k l * (newBasis K) r), a', ← zsmul_eq_mul]
+  simp [Basis.sum_repr (newBasis K) (a k l * (newBasis K) r), a', ← zsmul_eq_mul]
 
 -- Variable declarations can only reference public items.
 set_option backward.privateInPublic true
@@ -247,7 +247,7 @@ private theorem ξ_mulVec_eq_0 : a *ᵥ ξ K x = 0 := by
     rw [sum_comm] at hmulvec0
     exact mod_cast hmulvec0
   have : 0 = ∑ u, (∑ r, ∑ l, a' K a k l r u * x (l, r) : 𝓞 K) * (newBasis K) u := by
-    simp only [lin_0, zero_mul, sum_const_zero]
+    simp [lin_0, zero_mul, sum_const_zero]
   have : 0 = ∑ r, ∑ l, x (l, r) * ∑ u, a' K a k l r u * (newBasis K) u := by
     conv at this => enter [2, 2, u]; rw [sum_mul]
     rw [sum_comm] at this
@@ -327,7 +327,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
        _ ≤ c₁ K * ((c₁ K * ↑q * A) ^ ((p : ℝ) / (q - p))) := ?_
   · simp_rw [← map_mul, map_sum]; apply house_sum_le_sum_house
   · gcongr with r _; convert house_mul_le ..
-    simp only [map_intCast, house_intCast, Int.cast_abs, Int.norm_eq_abs]
+    simp [map_intCast, house_intCast, Int.cast_abs, Int.norm_eq_abs]
   · unfold supOfBasis
     gcongr with r _
     simp only [le_sup'_iff, mem_univ, true_and]; use r

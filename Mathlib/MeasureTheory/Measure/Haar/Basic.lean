@@ -125,7 +125,7 @@ def haarProduct (K₀ : Set G) : Set (Compacts G → ℝ) :=
 @[to_additive (attr := simp)]
 theorem mem_prehaar_empty {K₀ : Set G} {f : Compacts G → ℝ} :
     f ∈ haarProduct K₀ ↔ ∀ K : Compacts G, f K ∈ Icc (0 : ℝ) (index (K : Set G) K₀) := by
-  simp only [haarProduct, Set.pi, forall_prop_of_true, mem_univ, mem_ofPred_eq]
+  simp [haarProduct, Set.pi, forall_prop_of_true, mem_univ, mem_ofPred_eq]
 
 /-- The closure of the collection of elements of the form `prehaar K₀ U`,
   for `U` open neighbourhoods of `1`, contained in `V`. The closure is taken in the space
@@ -182,7 +182,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
     obtain ⟨g, hg⟩ := K.interior_nonempty
     change g ∈ (∅ : Set G)
     convert h1t (interior_subset hg); symm
-    simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
+    simp [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
 
 @[to_additive addIndex_mono]
@@ -230,11 +230,11 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   refine h.le_bot (?_ : g₁⁻¹ ∈ _)
   constructor <;> simp only [Set.mem_inv, Set.mem_mul]
   · refine ⟨_, h2g₂, (g₁ * g₂)⁻¹, ?_, ?_⟩
-    · simp only [inv_inv, h1g₂]
-    · simp only [mul_inv_rev, mul_inv_cancel_left]
+    · simp [inv_inv, h1g₂]
+    · simp [mul_inv_rev, mul_inv_cancel_left]
   · refine ⟨_, h2g₃, (g₁ * g₃)⁻¹, ?_, ?_⟩
-    · simp only [inv_inv, h1g₃]
-    · simp only [mul_inv_rev, mul_inv_cancel_left]
+    · simp [inv_inv, h1g₃]
+    · simp [mul_inv_rev, mul_inv_cancel_left]
 
 @[to_additive add_left_addIndex_le]
 theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (interior V).Nonempty)
@@ -247,7 +247,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   simp only [mem_preimage] at hg₁
   simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
     exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
-  refine ⟨_, hg₂, ?_⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
+  refine ⟨_, hg₂, ?_⟩; simp [mul_assoc, hg₁, inv_mul_cancel_left]
 
 @[to_additive is_left_invariant_addIndex]
 theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set G}
@@ -309,7 +309,7 @@ theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Comp
 theorem is_left_invariant_prehaar {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
     (g : G) (K : Compacts G) :
     prehaar (K₀ : Set G) U (K.map _ <| continuous_const_mul g) = prehaar (K₀ : Set G) U K := by
-  simp only [prehaar, Compacts.coe_map, is_left_invariant_index K.isCompact _ hU]
+  simp [prehaar, Compacts.coe_map, is_left_invariant_index K.isCompact _ hU]
 
 /-!
 ### Lemmas about `haarProduct`
@@ -431,7 +431,7 @@ theorem chaar_sup_eq {K₀ : PositiveCompacts G}
     mem_of_subset_of_mem _
       (chaar_mem_clPrehaar K₀
         ⟨⟨V⁻¹, (h2V₁.inter h2V₂).preimage continuous_inv⟩, by
-          simp only [V, mem_inv, inv_one, h3V₁, h3V₂, mem_inter_iff, true_and]⟩)
+          simp [V, mem_inv, inv_one, h3V₁, h3V₂, mem_inter_iff, true_and]⟩)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨h1U, h2U, h3U⟩, rfl⟩
     simp only [eval, mem_preimage, sub_eq_zero, mem_singleton_iff]; rw [eq_comm]
@@ -462,11 +462,11 @@ set_option backward.isDefEq.respectTransparency false in
 @[to_additive /-- additive version of `MeasureTheory.Measure.haar.haarContent` -/]
 noncomputable def haarContent (K₀ : PositiveCompacts G) : Content G where
   toFun K := ⟨chaar K₀ K, chaar_nonneg _ _⟩
-  mono' K₁ K₂ h := by simp only [← NNReal.coe_le_coe, NNReal.toReal, chaar_mono, h]
+  mono' K₁ K₂ h := by simp [← NNReal.coe_le_coe, NNReal.toReal, chaar_mono, h]
   sup_disjoint' K₁ K₂ h _h₁ h₂ := by simp only [chaar_sup_eq h]; rfl
   sup_le' K₁ K₂ := by
     simp only [← NNReal.coe_le_coe, NNReal.coe_add]
-    simp only [NNReal.toReal, chaar_sup_le]
+    simp [NNReal.toReal, chaar_sup_le]
 
 /-! We only prove the properties for `haarContent` that we use at least twice below. -/
 
@@ -524,7 +524,7 @@ noncomputable def haarMeasure (K₀ : PositiveCompacts G) : Measure G :=
 theorem haarMeasure_apply {K₀ : PositiveCompacts G} {s : Set G} (hs : MeasurableSet s) :
     haarMeasure K₀ s = (haarContent K₀).outerMeasure s / (haarContent K₀).measure K₀ := by
   change ((haarContent K₀).measure K₀)⁻¹ * (haarContent K₀).measure s = _
-  simp only [hs, div_eq_mul_inv, mul_comm, Content.measure_apply]
+  simp [hs, div_eq_mul_inv, mul_comm, Content.measure_apply]
 
 @[to_additive]
 instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
@@ -574,7 +574,7 @@ instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (
     isHaarMeasure_of_isCompact_nonempty_interior (haarMeasure K₀) K₀ K₀.isCompact
       K₀.interior_nonempty
   · simp only [haarMeasure_self]; exact one_ne_zero
-  · simp only [haarMeasure_self, ne_eq, ENNReal.one_ne_top, not_false_eq_true]
+  · simp [haarMeasure_self, ne_eq, ENNReal.one_ne_top, not_false_eq_true]
 
 /-- `haar` is some choice of a Haar measure, on a locally compact group. -/
 @[to_additive

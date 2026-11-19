@@ -166,7 +166,7 @@ instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
-  { mul_right_cancel _ _ := by simp only [mul_left_inj, imp_self, forall_const] }
+  { mul_right_cancel _ _ := by simp [mul_left_inj, imp_self, forall_const] }
 
 @[to_additive]
 instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
@@ -262,7 +262,7 @@ theorem snd_comp_prod (f : M →ₙ* N) (g : M →ₙ* P) : (snd N P).comp (f.pr
 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →ₙ* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
+  ext fun x => by simp [prod_apply, coe_fst, coe_snd, comp_apply]
 
 end Prod
 
@@ -636,7 +636,7 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
   toFun := (Units.map (MonoidHom.fst M N)).prod (Units.map (MonoidHom.snd M N))
   invFun u := ⟨(u.1, u.2), (↑u.1⁻¹, ↑u.2⁻¹), by simp, by simp⟩
   left_inv u := by
-    simp only [MonoidHom.prod_apply, Units.coe_map, MonoidHom.coe_fst, MonoidHom.coe_snd,
+    simp [MonoidHom.prod_apply, Units.coe_map, MonoidHom.coe_fst, MonoidHom.coe_snd,
       Prod.mk.eta, Units.coe_map_inv, Units.mk_val]
   right_inv := fun ⟨u₁, u₂⟩ => by
     simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
@@ -670,8 +670,8 @@ Used mainly to define the natural topology of `αˣ`. -/
 def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
   toFun x := ⟨x, op ↑x⁻¹⟩
   map_one' := by
-    simp only [inv_one, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
-  map_mul' x y := by simp only [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
+    simp [inv_one, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
+  map_mul' x y := by simp [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=

@@ -71,7 +71,7 @@ theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
 theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
   let _ := H.fintypeQuotientOfFiniteIndex
   Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun _ ↦ by
-    simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
+    simp [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
       inv_mul_cancel_left, toPerm_symm_apply]
 
 end leftTransversals
@@ -173,7 +173,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
       simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
         transferTransversal_apply'']
       rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out)) _]
-      · simp only [ite_eq_left, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
+      · simp [ite_eq_left, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
       · intro k hk
         simp only [ite_eq_right hk, inv_mul_cancel]
         exact map_one ϕ

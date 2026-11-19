@@ -87,14 +87,14 @@ theorem eq_lim_at_left_extendFrom_Ioo (hab : a < b)
     (ha : Tendsto f (𝓝[>] a) (𝓝 la)) : extendFrom (Ioo a b) f a = la := by
   apply extendFrom_eq
   · rw [closure_Ioo hab.ne]
-    simp only [le_of_lt hab, left_mem_Icc]
+    simp [le_of_lt hab, left_mem_Icc]
   · simpa [hab]
 
 theorem eq_lim_at_right_extendFrom_Ioo (hab : a < b)
     (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) : extendFrom (Ioo a b) f b = lb := by
   apply extendFrom_eq
   · rw [closure_Ioo hab.ne]
-    simp only [le_of_lt hab, right_mem_Icc]
+    simp [le_of_lt hab, right_mem_Icc]
   · simpa [hab]
 
 theorem eq_lim_at_left_extendFrom_uIoo (hab : a ≠ b)

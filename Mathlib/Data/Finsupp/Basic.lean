@@ -169,11 +169,11 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
     ext x
-    simp only [single_apply, ← Equiv.eq_symm_apply, equivMapDomain_apply]
+    simp [single_apply, ← Equiv.eq_symm_apply, equivMapDomain_apply]
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
-  ext; simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
+  ext; simp [equivMapDomain_apply, coe_zero, Pi.zero_apply]
 
 @[to_additive (attr := simp)]
 theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
@@ -186,7 +186,7 @@ theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g 
 This is the finitely-supported version of `Equiv.piCongrLeft`. -/
 def equivCongrLeft (f : α ≃ β) : (α →₀ M) ≃ (β →₀ M) := by
   refine ⟨equivMapDomain f, equivMapDomain f.symm, fun f => ?_, fun f => ?_⟩ <;> ext x <;>
-    simp only [equivMapDomain_apply, Equiv.symm_symm, Equiv.symm_apply_apply,
+    simp [equivMapDomain_apply, Equiv.symm_symm, Equiv.symm_apply_apply,
       Equiv.apply_symm_apply]
 
 @[simp]
@@ -314,7 +314,7 @@ theorem mapDomain_zero {f : α → β} : mapDomain f (0 : α →₀ M) = (0 : β
 
 @[congr] theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
     v.mapDomain f = v.mapDomain g :=
-  Finset.sum_congr rfl fun _ H => by simp only [h _ H]
+  Finset.sum_congr rfl fun _ H => by simp [h _ H]
 
 theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f v₁ + mapDomain f v₂ :=
   sum_add_index' (fun _ => single_zero _) fun _ => single_add _
@@ -680,7 +680,7 @@ theorem filter_eq_zero_iff : f.filter p = 0 ↔ ∀ x, p x → f x = 0 := by
   simp [DFunLike.ext_iff, filter_eq_indicator]
 
 theorem filter_eq_self_iff : f.filter p = f ↔ ∀ x, f x ≠ 0 → p x := by
-  simp only [DFunLike.ext_iff, filter_eq_indicator, Set.indicator_apply_eq_self, Set.mem_ofPred_eq,
+  simp [DFunLike.ext_iff, filter_eq_indicator, Set.indicator_apply_eq_self, Set.mem_ofPred_eq,
     not_imp_comm]
 
 @[simp]
@@ -1154,7 +1154,7 @@ def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃+ (�
     map_add' := by
       intros
       ext <;>
-        simp only [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, add_apply,
+        simp [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, add_apply,
           snd_sumFinsuppEquivProdFinsupp, fst_sumFinsuppEquivProdFinsupp] }
 
 theorem fst_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (x : α) :
@@ -1291,7 +1291,7 @@ protected def domCongr [AddCommMonoid M] (e : α ≃ β) : (α →₀ M) ≃+ (�
     intro v
     simp_rw [← equivMapDomain_trans, Equiv.symm_trans_self]
     exact equivMapDomain_refl _
-  map_add' a b := by simp only [equivMapDomain_eq_mapDomain, mapDomain_add]
+  map_add' a b := by simp [equivMapDomain_eq_mapDomain, mapDomain_add]
 
 @[simp]
 theorem domCongr_refl [AddCommMonoid M] :
@@ -1343,7 +1343,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mem_splitSupport_iff_ne_zero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
     Finset.ne_empty_iff_nonempty, split, comapDomain, Finset.Nonempty]
-  simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
+  simp [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
 
 @[deprecated (since := "2026-10-13")]
@@ -1368,7 +1368,7 @@ theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).su
 
 theorem sigma_sum [AddCommMonoid N] (f : (Σ i : ι, αs i) → M → N) :
     l.sum f = ∑ i ∈ splitSupport l, (split l i).sum fun (a : αs i) b => f ⟨i, a⟩ b := by
-  simp only [sum, sigma_support, sum_sigma, split_apply]
+  simp [sum, sigma_support, sum_sigma, split_apply]
 
 variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
 
@@ -1421,7 +1421,7 @@ lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M
 
 theorem embDomain_trans_apply [AddCommMonoid M] (v : α →₀ M) (f : α ↪ β) (g : β ↪ γ) :
     embDomain (f.trans g) v = embDomain g (embDomain f v) := by
-  simp only [embDomain_eq_mapDomain, ← mapDomain_comp, Embedding.coe_trans]
+  simp [embDomain_eq_mapDomain, ← mapDomain_comp, Embedding.coe_trans]
 
 theorem mapDomain_support_of_subsingletonAddUnits [DecidableEq β] [AddCommMonoid M]
     (f : α → β) [Subsingleton (AddUnits M)] (x : α →₀ M) :

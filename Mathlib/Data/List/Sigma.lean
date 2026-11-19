@@ -202,7 +202,7 @@ theorem mem_dlookup_iff {a : α} {b : β a} {l : List (Sigma β)} (nd : l.NodupK
 theorem perm_dlookup (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (p : l₁ ~ l₂) :
     dlookup a l₁ = dlookup a l₂ := by
   have nd₂ := (perm_nodupKeys p).mp nd₁
-  ext b; simp only [← Option.mem_def, mem_dlookup_iff nd₁, mem_dlookup_iff nd₂, p.mem_iff]
+  ext b; simp [← Option.mem_def, mem_dlookup_iff nd₁, mem_dlookup_iff nd₂, p.mem_iff]
 
 theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁ : l₁.NodupKeys)
     (h : ∀ x y, y ∈ l₀.dlookup x ↔ y ∈ l₁.dlookup x) : l₀ ~ l₁ := by
@@ -577,7 +577,7 @@ theorem Perm.kinsert {a} {b : β a} {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.
 
 theorem dlookup_kinsert {a} {b : β a} (l : List (Sigma β)) :
     dlookup a (kinsert a b l) = some b := by
-  simp only [kinsert, dlookup_cons_eq]
+  simp [kinsert, dlookup_cons_eq]
 
 theorem dlookup_kinsert_ne {a a'} {b' : β a'} {l : List (Sigma β)} (h : a ≠ a') :
     dlookup a (kinsert a' b' l) = dlookup a l := by simp [h]
@@ -696,7 +696,7 @@ theorem kunion_kerase {a} :
 
 theorem NodupKeys.kunion (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys) : (kunion l₁ l₂).NodupKeys := by
   induction l₁ generalizing l₂ with
-  | nil => simp only [nil_kunion, nd₂]
+  | nil => simp [nil_kunion, nd₂]
   | cons s l₁ ih =>
     simp only [nodupKeys_cons] at nd₁
     simp [nd₁.1, nd₂, ih nd₁.2 (nd₂.kerase s.1)]

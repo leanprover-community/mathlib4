@@ -25,11 +25,11 @@ variable {α β : Type*}
 @[simp]
 theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
     reduceOption (some x :: l) = x :: l.reduceOption := by
-  simp only [reduceOption, filterMap, id]
+  simp [reduceOption, filterMap, id]
 
 @[simp]
 theorem reduceOption_cons_of_none (l : List (Option α)) :
-    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id]
+    reduceOption (none :: l) = l.reduceOption := by simp [reduceOption, filterMap, id]
 
 @[simp]
 theorem reduceOption_nil : @reduceOption α [] = [] :=
@@ -39,7 +39,7 @@ theorem reduceOption_nil : @reduceOption α [] = [] :=
 theorem reduceOption_map {l : List (Option α)} {f : α → β} :
     reduceOption (map (Option.map f) l) = map f (reduceOption l) := by
   induction l with
-  | nil => simp only [reduceOption_nil, map_nil]
+  | nil => simp [reduceOption_nil, map_nil]
   | cons hd tl hl =>
     cases hd <;> simpa [Option.map_some, map, eq_self_iff_true, reduceOption_cons_of_some] using hl
 
@@ -74,7 +74,7 @@ theorem reduceOption_eq_singleton_iff (l : List (Option α)) (a : α) :
     rw [h, hl₁, hl₂]
     use l₁.length, l₂.length
   · intro ⟨_, _, h⟩
-    simp only [h, filterMap_append, filterMap_cons_some, filterMap_replicate_of_none, id_eq,
+    simp [h, filterMap_append, filterMap_cons_some, filterMap_replicate_of_none, id_eq,
       nil_append, Option.some.injEq]
 
 theorem reduceOption_eq_append_iff (l : List (Option α)) (l'₁ l'₂ : List α) :
@@ -137,10 +137,10 @@ theorem reduceOption_concat (l : List (Option α)) (x : Option α) :
 
 theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
     (l.concat (some x)).reduceOption = l.reduceOption.concat x := by
-  simp only [reduceOption_nil, concat_eq_append, reduceOption_append, reduceOption_cons_of_some]
+  simp [reduceOption_nil, concat_eq_append, reduceOption_append, reduceOption_cons_of_some]
 
 theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOption ↔ some x ∈ l := by
-  simp only [reduceOption, id, mem_filterMap, exists_eq_right]
+  simp [reduceOption, id, mem_filterMap, exists_eq_right]
 
 theorem reduceOption_getElem?_iff {l : List (Option α)} {x : α} :
     (∃ i : ℕ, l[i]? = some (some x)) ↔ ∃ i : ℕ, l.reduceOption[i]? = some x := by

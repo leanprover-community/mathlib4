@@ -48,7 +48,7 @@ def SeparatedNhds : Set X → Set X → Prop := fun s t : Set X =>
   ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ s ⊆ U ∧ t ⊆ V ∧ Disjoint U V
 
 theorem separatedNhds_iff_disjoint {s t : Set X} : SeparatedNhds s t ↔ Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
-  simp only [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, ←
+  simp [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, ←
     exists_and_left, and_assoc, and_comm, and_left_comm]
 
 alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
@@ -104,7 +104,7 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
 
 theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s :=
   ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
-   fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩
+   fun _ ↦ ⟨isOpen_empty, by simp [closure_empty, empty_disjoint]⟩⟩
 
 theorem Set.hasSeparatingCover_empty_right (s : Set X) : HasSeparatingCover s ∅ :=
   ⟨fun _ ↦ univ, (subset_univ s).trans univ.iUnion_const.symm.subset,

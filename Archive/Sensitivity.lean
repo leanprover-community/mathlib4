@@ -142,7 +142,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
 
 @[symm]
 theorem adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
-  simp only [adjacent, ne_comm, Set.mem_ofPred_eq]
+  simp [adjacent, ne_comm, Set.mem_ofPred_eq]
 
 end Q
 
@@ -283,7 +283,7 @@ using only the addition of `V`. -/
 set_option backward.isDefEq.respectTransparency false in
 theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
-  | zero => simp only [Nat.cast_zero, zero_smul, f_zero, LinearMap.zero_apply]
+  | zero => simp [Nat.cast_zero, zero_smul, f_zero, LinearMap.zero_apply]
   | succ n IH =>
     cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc]; abel
 
@@ -437,7 +437,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)
     _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
-      simp only [abs_mul, f_matrix]
+      simp [abs_mul, f_matrix]
     _ = ∑ p ∈ (coeffs y).support with p ∈ q.adjacent, |coeffs y p| := by
       simp [sum_filter]
     _ ≤ ∑ p ∈ (coeffs y).support with p ∈ q.adjacent, |coeffs y q| := sum_le_sum fun p _ ↦ H_max p

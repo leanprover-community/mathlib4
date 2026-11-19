@@ -453,7 +453,7 @@ section BaseChange
 variable {A : Type v} [CommRing A] (f : R →+* A)
 
 instance : (W.map f).IsElliptic := by
-  simp only [isElliptic_iff, map_Δ, W.isUnit_Δ.map]
+  simp [isElliptic_iff, map_Δ, W.isUnit_Δ.map]
 
 set_option linter.docPrime false in
 lemma coe_map_Δ' : (W.map f).Δ' = f W.Δ' := by

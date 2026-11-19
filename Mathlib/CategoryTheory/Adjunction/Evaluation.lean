@@ -58,7 +58,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             ext x
             dsimp
             ext g
-            simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
+            simp [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
               Discrete.functor_obj, Cofan.mk_pt, Category.id_comp]
           right_inv := fun f => by simp } }
@@ -104,7 +104,7 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
             ext x
             dsimp
             ext g
-            simp only [NatTrans.naturality_assoc,
+            simp [NatTrans.naturality_assoc,
               evaluationRightAdjoint_obj_obj, evaluationRightAdjoint_obj_map, limit.lift_π,
               Fan.mk_pt, Fan.mk_π_app, Category.comp_id] } }
 

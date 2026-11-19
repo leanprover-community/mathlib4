@@ -150,7 +150,7 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
       simpa using! (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
         (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
     rw [genWeightSpaceChain]
-    rcases eq_or_ne (k + 1) q with rfl | hk'; · simp only [hq, bot_le]
+    rcases eq_or_ne (k + 1) q with rfl | hk'; · simp [hq, bot_le]
     replace hk' : k + 1 ∈ Ioo p q := ⟨by linarith [hk.1], lt_of_le_of_ne hk.2 hk'⟩
     exact le_biSup (fun k ↦ genWeightSpace M (k • α + χ)) hk'
   | zero => simp
@@ -192,7 +192,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
     have hfg : toEnd R H _ u = ⁅f, g⁆ := by
       ext
       rw [toEnd_apply_apply, LieSubmodule.coe_bracket, LieSubalgebra.coe_bracket_of_module, ← hyz]
-      simp only [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
+      simp [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
         AddSubgroupClass.coe_sub, f, g]
     simp [hfg]
   | zero => simp

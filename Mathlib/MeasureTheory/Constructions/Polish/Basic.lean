@@ -293,7 +293,7 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
   let F : γ → α := fun ⟨n, x⟩ ↦ f n x
   have F_cont : Continuous F := continuous_sigma f_cont
   have F_range : range F = ⋃ n, s n := by
-    simp only [γ, F, range_sigma_eq_iUnion_range, f_range]
+    simp [γ, F, range_sigma_eq_iUnion_range, f_range]
   rw [← F_range]
   exact analyticSet_range_of_polishSpace F_cont
 
@@ -324,7 +324,7 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
     hs.isClopenable
   have A := @IsClosed.analyticSet α t' t'_polish s s_closed
   convert @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
-  simp only [id, image_id']
+  simp [id, image_id']
 
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
 a finer Polish topology on the source space for which the function is continuous. -/
@@ -432,12 +432,12 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   let p0 : A := ⟨⟨0, fun _ => 0, fun _ => 0⟩, by simp [hfg]⟩
   -- construct inductively decreasing sequences of cylinders whose images are not separated
   let p : ℕ → A := fun n => F^[n] p0
-  have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [p, iterate_succ', Function.comp]
+  have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp [p, iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
   have pn_fst : ∀ n, (p n).1.1 = n := fun n ↦ by
     induction n with
     | zero => rfl
-    | succ n IH => simp only [prec, hFn, IH]
+    | succ n IH => simp [prec, hFn, IH]
   -- check that the cylinders we construct are indeed decreasing, by checking that the coordinates
   -- are stationary.
   have Ix : ∀ m n, m + 1 ≤ n → (p n).1.2.1 m = (p (m + 1)).1.2.1 m := by
@@ -895,7 +895,7 @@ theorem MeasureTheory.borel_eq_borel_of_le {t t' : TopologicalSpace γ}
     _ _ (@borel _ t') t' _ _ (@BorelSpace.mk _ _ (borel γ) rfl)
     t _ (@borel _ t) (@BorelSpace.mk _ t (@borel _ t) rfl) (continuous_id_of_le hle) injective_id
   convert e.measurableSet_image.2 hs
-  simp only [id_eq, image_id']
+  simp [id_eq, image_id']
 
 /-- In a Polish space, a set is clopenable if and only if it is Borel-measurable. -/
 theorem MeasureTheory.isClopenable_iff_measurableSet

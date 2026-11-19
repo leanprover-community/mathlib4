@@ -66,7 +66,7 @@ theorem shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
 
 theorem shortlex_cons_iff [Std.Irrefl r] {a : α} {s t : List α} :
     Shortlex r (a :: s) (a :: t) ↔ Shortlex r s t := by
-  simp only [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.lex_cons_iff]
+  simp [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.lex_cons_iff]
 
 alias ⟨Shortlex.of_cons, Shortlex.cons⟩ := shortlex_cons_iff
 
@@ -80,7 +80,7 @@ theorem shortlex_nil_or_eq_nil : ∀ s : List α, Shortlex r [] s ∨ s = []
 
 @[simp]
 theorem shortlex_singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
-  simp only [shortlex_def, length_singleton, lt_self_iff_false, lex_singleton_iff, true_and,
+  simp [shortlex_def, length_singleton, lt_self_iff_false, lex_singleton_iff, true_and,
     false_or]
 
 namespace Shortlex

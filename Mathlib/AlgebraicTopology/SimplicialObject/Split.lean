@@ -80,7 +80,7 @@ theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e �
   simp only at h₁
   subst h₁
   simp only [eqToHom_refl, comp_id, IndexSet.e] at h₂
-  simp only [h₂]
+  simp [h₂]
 
 instance : Fintype (IndexSet Δ) :=
   Fintype.ofInjective
@@ -263,7 +263,7 @@ theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g :
   intro A
   induction Δ using SimplexCategory.rec with | _ n
   dsimp
-  simp only [s.cofan_inj_comp_app, h]
+  simp [s.cofan_inj_comp_app, h]
 
 /-- The map `X.obj Δ ⟶ Z` obtained by providing a family of morphisms on all the
 terms of decomposition given by a splitting `s : Splitting X` -/
@@ -365,7 +365,7 @@ instance : Category (Split C) where
       f := fun n => Φ₁₂.f n ≫ Φ₂₃.f n
       comm := fun n => by
         dsimp
-        simp only [assoc, Split.Hom.comm_assoc, Split.Hom.comm] }
+        simp [assoc, Split.Hom.comm_assoc, Split.Hom.comm] }
 
 variable {C}
 

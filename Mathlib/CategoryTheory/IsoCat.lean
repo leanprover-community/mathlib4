@@ -89,7 +89,7 @@ lemma IsoCat.functor_comp_injective
     (e : IsoCat C D) {F G : D ⥤ E} (h : e.functor ⋙ F = e.functor ⋙ G) :
     F = G := by
   have : (e.inverse ⋙ e.functor) ⋙ F = (e.inverse ⋙ e.functor) ⋙ G := by
-    simp only [Functor.assoc, h]
+    simp [Functor.assoc, h]
   simpa [counit_eq, Functor.id_comp] using this
 
 lemma IsoCat.comp_functor_injective

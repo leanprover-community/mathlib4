@@ -201,7 +201,7 @@ theorem hom_eval₂ [CommSemiring S₂] (p : MvPolynomial σ R) (f : R →+* S�
 
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
-  simp only [coe_eval₂Hom, eval₂_monomial]
+  simp [coe_eval₂Hom, eval₂_monomial]
 
 @[simp]
 theorem eval₂Hom_smul (f : R →+* S₁) (g : σ → S₁) (r : R) (P : MvPolynomial σ R) :
@@ -386,9 +386,9 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, (map f p).coe
   · intro r m
     simp_rw [map_C, coeff_C, apply_ite f, f.map_zero]
   · intro p q hp hq m
-    simp only [hp, hq, (map f).map_add, coeff_add, Finsupp.add_apply, f.map_add]
+    simp [hp, hq, (map f).map_add, coeff_add, Finsupp.add_apply, f.map_add]
   · intro p i hp m
-    simp only [(map f).map_mul, map_X, hp, coeff_mul_X', f.map_zero, apply_ite f]
+    simp [(map f).map_mul, map_X, hp, coeff_mul_X', f.map_zero, apply_ite f]
 
 lemma map_eq_eval₂Hom_C_comp : map (σ := σ) f = eval₂Hom (C.comp f) X := by ext a x <;> simp
 
@@ -480,7 +480,7 @@ theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf 
 theorem C_dvd_iff_map_hom_eq_zero (q : R →+* S₁) (r : R) (hr : ∀ r' : R, q r' = 0 ↔ r ∣ r')
     (φ : MvPolynomial σ R) : C r ∣ φ ↔ map q φ = 0 := by
   rw [C_dvd_iff_dvd_coeff, MvPolynomial.ext_iff]
-  simp only [coeff_map, coeff_zero, Finsupp.zero_apply, hr]
+  simp [coeff_map, coeff_zero, Finsupp.zero_apply, hr]
 
 theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) :
     map f (.ofCoeff <| Finsupp.mapRange g hg <| AddMonoidAlgebra.coeff φ) = φ ↔
@@ -723,7 +723,7 @@ variable (R)
 
 theorem _root_.Algebra.adjoin_range_eq_range_aeval :
     Algebra.adjoin R (Set.range f) = (MvPolynomial.aeval f).range := by
-  simp only [← Algebra.map_top, ← MvPolynomial.adjoin_range_X, AlgHom.map_adjoin, ← Set.range_comp,
+  simp [← Algebra.map_top, ← MvPolynomial.adjoin_range_X, AlgHom.map_adjoin, ← Set.range_comp,
     Function.comp_def, MvPolynomial.aeval_X]
 
 theorem _root_.Algebra.adjoin_eq_range (s : Set S₁) :
@@ -807,13 +807,13 @@ theorem aevalTower_comp_toAlgHom :
 theorem aevalTower_id :
     aevalTower (AlgHom.id S S) = (aeval : (σ → S) → MvPolynomial σ S →ₐ[S] S) := by
   ext
-  simp only [aevalTower_X, aeval_X]
+  simp [aevalTower_X, aeval_X]
 
 @[simp]
 theorem aevalTower_ofId :
     aevalTower (Algebra.ofId S A) = (aeval : (σ → A) → MvPolynomial σ S →ₐ[S] A) := by
   ext
-  simp only [aeval_X, aevalTower_X]
+  simp [aeval_X, aevalTower_X]
 
 end AevalTower
 

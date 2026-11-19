@@ -825,7 +825,7 @@ lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
 
 @[to_dual (attr := simp) bot_wcovBy_coe]
 lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
-  simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
+  simp [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
 
 @[to_dual not_bot_wcovBy]
 theorem not_coe_wcovBy_top [NoMaxOrder α] {a : α} : ¬(a : WithTop α) ⩿ ⊤ := by

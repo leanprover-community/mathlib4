@@ -99,7 +99,7 @@ lemma signVariations_cons_cons_of_ne_zero {a b : α} (as : List α) (ha : a ≠ 
 /-- `signVariations` only depends on the signs of the entries. -/
 lemma signVariations_congr {β : Type*} [Zero β] [LinearOrder β] {l₁ : List α} {l₂ : List β}
     (h : l₁.map sign = l₂.map sign) : signVariations l₁ = signVariations l₂ := by
-  simp only [signVariations, h]
+  simp [signVariations, h]
 
 /-- `signVariations` is invariant under any map that preserves signs (e.g. casts). -/
 lemma signVariations_map {β : Type*} [Zero β] [LinearOrder β] {f : α → β}
@@ -117,7 +117,7 @@ lemma signVariations_cons_replicate_zero_append (a : α) (n : ℕ) (l : List α)
     signVariations (a :: (replicate n 0 ++ l)) = signVariations (a :: l) := by
   have h : ((replicate n (0 : α) ++ l).map sign).filter (· ≠ 0) = (l.map sign).filter (· ≠ 0) := by
     simp [filter_append]
-  simp only [signVariations, map_cons, filter_cons, h]
+  simp [signVariations, map_cons, filter_cons, h]
 
 /-- A list whose only nonzero entry is the head has no sign variations. -/
 @[simp]
@@ -137,6 +137,6 @@ lemma signVariations_map_of_sign_eq_neg {β : Type*} [Zero β] [LinearOrder β] 
     congr 2
     funext s
     simp
-  simp only [signVariations, h1, h2, ← map_destutter_ne _ neg_injective, length_map]
+  simp [signVariations, h1, h2, ← map_destutter_ne _ neg_injective, length_map]
 
 end List

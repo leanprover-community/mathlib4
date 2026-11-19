@@ -172,7 +172,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
   convert
     integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
       (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
-  simp only [mul_zero, ofReal_zero, zero_pow, Ne,
+  simp [mul_zero, ofReal_zero, zero_pow, Ne,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add, reduceCtorEq]
 
 /-- The *square* of the Gaussian integral `∫ x:ℝ, exp (-b * x^2)` is equal to `π / b`. -/
@@ -192,7 +192,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
     _ = ∫ p in polarCoord.target, p.1 •
         cexp (-b * ((p.1 * Complex.cos p.2) ^ 2 + (p.1 * Complex.sin p.2) ^ 2)) := by
       rw [← integral_comp_polarCoord_symm]
-      simp only [polarCoord_symm_apply, ofReal_mul, ofReal_cos, ofReal_sin]
+      simp [polarCoord_symm_apply, ofReal_mul, ofReal_cos, ofReal_sin]
     _ = (∫ r in Ioi (0 : ℝ), r * cexp (-b * (r : ℂ) ^ 2)) * ∫ θ in Ioo (-π) π, 1 := by
       rw [← setIntegral_prod_mul]
       congr with p : 1
@@ -250,7 +250,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
   · -- equality at 1
     have : ∀ x : ℝ, cexp (-(1 : ℂ) * (x : ℂ) ^ 2) = exp (-(1 : ℝ) * x ^ 2) := by
       intro x
-      simp only [ofReal_exp, neg_mul, one_mul, ofReal_neg, ofReal_pow]
+      simp [ofReal_exp, neg_mul, one_mul, ofReal_neg, ofReal_pow]
     simp_rw [this, ← coe_algebraMap, RCLike.algebraMap_eq_ofReal, integral_ofReal,
       ← RCLike.algebraMap_eq_ofReal, coe_algebraMap]
     conv_rhs =>

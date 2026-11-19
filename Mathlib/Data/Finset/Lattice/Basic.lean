@@ -225,7 +225,7 @@ theorem inter_subset_union : s ∩ t ⊆ s ∪ t :=
 
 instance : DistribLattice (Finset α) :=
   { le_sup_inf := fun a b c => by
-      simp +contextual only [subset_iff, mem_inter, mem_union, and_imp,
+      simp +contextual [subset_iff, mem_inter, mem_union, and_imp,
         or_imp, true_or, imp_true_iff, true_and, or_true] }
 
 theorem union_left_idem (s t : Finset α) : s ∪ (s ∪ t) = s ∪ t := sup_left_idem _ _

@@ -39,7 +39,7 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     intro x
     induction x using Finsupp.induction_linear with
     | zero => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]; rw [map_zero, map_zero]
-    | add => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_add] at *; simp only [*]
+    | add => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_add] at *; simp [*]
     | single a b => simp [-map_smul]
   left_inv := by
     intro x
@@ -48,14 +48,14 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     | zero =>
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       rw [map_zero, map_zero, map_zero]
-    | add => simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp only [*]
+    | add => simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp [*]
     | single a b =>
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Finsupp.linearCombination_single,
         map_smul, Derivation.liftKaehlerDifferential_comp_D]
       congr 1
       induction a using MvPolynomial.induction_on
-      · simp only [MvPolynomial.derivation_C, map_zero]
-      · simp only [map_add, *]
+      · simp [MvPolynomial.derivation_C, map_zero]
+      · simp [map_add, *]
       · simp [*]
 
 /-- `{ dx | x ∈ σ }` forms a basis of the relative differential module

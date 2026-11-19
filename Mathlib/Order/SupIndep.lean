@@ -143,7 +143,7 @@ theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
 
 theorem supIndep_univ_bool (f : Bool → α) :
     (Finset.univ : Finset Bool).SupIndep f ↔ Disjoint (f false) (f true) :=
-  haveI : true ≠ false := by simp only [Ne, not_false_iff, reduceCtorEq]
+  haveI : true ≠ false := by simp [Ne, not_false_iff, reduceCtorEq]
   (supIndep_pair this).trans disjoint_comm
 
 @[simp]
@@ -418,9 +418,9 @@ theorem iSupIndep_ne_bot :
   | inl hi => simp [hi]
   | inr hi => ?_
   convert h ⟨i, hi⟩
-  have : ∀ j, ⨆ (_ : t j = ⊥), t j = ⊥ := fun j ↦ by simp only [iSup_eq_bot, imp_self]
+  have : ∀ j, ⨆ (_ : t j = ⊥), t j = ⊥ := fun j ↦ by simp [iSup_eq_bot, imp_self]
   rw [iSup_split _ (fun j ↦ t j = ⊥), iSup_subtype]
-  simp only [iSup_comm (ι' := _ ≠ i), this, ne_eq, sup_of_le_right, Subtype.mk.injEq, iSup_bot,
+  simp [iSup_comm (ι' := _ ≠ i), this, ne_eq, sup_of_le_right, Subtype.mk.injEq, iSup_bot,
     bot_le]
 
 theorem iSupIndep.injOn (ht : iSupIndep t) : InjOn t {i | t i ≠ ⊥} := by

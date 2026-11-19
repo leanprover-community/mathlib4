@@ -161,13 +161,13 @@ def unitsFstOne_mulEquiv_quasiregular : unitsFstOne R A ≃* (PreQuasiregular A)
           · simp only [mul_one, PreQuasiregular.equiv_symm_apply, one_mul, mul_add,
               add_mul, inr_add, inr_mul]
             abel
-          · simp only [inr_zero, add_zero]
+          · simp [inr_zero, add_zero]
         inv_val := by
           convert congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A))
           · simp only [mul_one, PreQuasiregular.equiv_symm_apply, one_mul, mul_add,
               add_mul, inr_add, inr_mul]
             abel
-          · simp only [inr_zero, add_zero] }
+          · simp [inr_zero, add_zero] }
       property := by simp }
   left_inv x := Subtype.ext <| Units.ext <| by simpa using x.val.val.inl_fst_add_inr_snd_eq
   right_inv x := Units.ext <| by simp [-PreQuasiregular.equiv_symm_apply]
@@ -201,7 +201,7 @@ lemma isQuasiregular_iff {x : R} :
       assumption
 
 lemma isQuasiregular_iff' {x : R} : IsQuasiregular x ↔ IsUnit (PreQuasiregular.equiv x) := by
-  simp only [IsQuasiregular, IsUnit, Equiv.apply_symm_apply,
+  simp [IsQuasiregular, IsUnit, Equiv.apply_symm_apply,
     ← PreQuasiregular.equiv (R := R).injective.eq_iff]
 
 end PreQuasiregular
@@ -582,7 +582,7 @@ variable [IsScalarTower S A A] [SMulCommClass S A A]
 
 lemma mul_comm_iff {f : S → R} {a b : A} :
     QuasispectrumRestricts (a * b) f ↔ QuasispectrumRestricts (b * a) f := by
-  simp only [quasispectrumRestricts_iff, quasispectrum.mul_comm]
+  simp [quasispectrumRestricts_iff, quasispectrum.mul_comm]
 
 alias ⟨mul_comm, _⟩ := mul_comm_iff
 
@@ -596,7 +596,7 @@ theorem algebraMap_image (h : QuasispectrumRestricts a f) :
   exact ⟨quasispectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
 
 theorem image (h : QuasispectrumRestricts a f) : f '' quasispectrum S a = quasispectrum R a := by
-  simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
+  simp [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
 
 theorem apply_mem (h : QuasispectrumRestricts a f) {s : S} (hs : s ∈ quasispectrum S a) :
     f s ∈ quasispectrum R a :=
@@ -689,7 +689,7 @@ theorem algebraMap_image (h : SpectrumRestricts a f) :
   exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
 
 theorem image (h : SpectrumRestricts a f) : f '' spectrum S a = spectrum R a := by
-  simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
+  simp [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
 
 theorem apply_mem (h : SpectrumRestricts a f) {s : S} (hs : s ∈ spectrum S a) :
     f s ∈ spectrum R a :=
@@ -717,7 +717,7 @@ lemma quasispectrumRestricts_iff_spectrumRestricts_inr'
     [Algebra R S'] [Algebra S' S] [Algebra R S] [IsScalarTower S' S A] [IsScalarTower R S A]
     {a : A} {f : S' → R} :
     QuasispectrumRestricts a f ↔ SpectrumRestricts (a : Unitization S A) f := by
-  simp only [quasispectrumRestricts_iff, SpectrumRestricts, Unitization.quasispectrum_inr_eq]
+  simp [quasispectrumRestricts_iff, SpectrumRestricts, Unitization.quasispectrum_inr_eq]
 
 theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield R] [Semifield S]
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] {a : A} {f : S → R} :

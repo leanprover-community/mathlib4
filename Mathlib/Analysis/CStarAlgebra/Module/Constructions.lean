@@ -227,7 +227,7 @@ open Finset in
 lemma pi_norm_le_sum_norm (x : C⋆ᵐᵒᵈ(A, Π i, E i)) : ‖x‖ ≤ ∑ i, ‖x i‖ := by
   refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
   calc ‖x‖ ^ 2 ≤ ∑ i, ‖⟪x i, x i⟫_A‖ := pi_norm_sq x ▸ norm_sum_le _ _
-    _ = ∑ i, ‖x i‖ ^ 2 := by simp only [norm_sq_eq A]
+    _ = ∑ i, ‖x i‖ ^ 2 := by simp [norm_sq_eq A]
     _ ≤ (∑ i, ‖x i‖) ^ 2 := sum_sq_le_sq_sum_of_nonneg (fun _ _ ↦ norm_nonneg _)
 
 variable [StarOrderedRing A]

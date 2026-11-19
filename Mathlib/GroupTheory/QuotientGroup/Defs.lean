@@ -66,7 +66,7 @@ protected def con : Con G where
     calc
       c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) ∈ N := N.mul_mem (nN.conj_mem _ hab _) hcd
       _ = (a * c)⁻¹ * (b * d) := by
-        simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
+        simp [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
 
 @[to_additive]
 instance Quotient.group : Group (G ⧸ N) :=
@@ -103,7 +103,7 @@ theorem mk'_surjective : Surjective <| mk' N :=
 @[to_additive]
 theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
   QuotientGroup.eq.trans <| by
-    simp only [← _root_.eq_inv_mul_iff_mul_eq, exists_eq_right]
+    simp [← _root_.eq_inv_mul_iff_mul_eq, exists_eq_right]
 
 /-- Two `MonoidHom`s from a quotient group are equal if their compositions with
 `QuotientGroup.mk'` are equal.
@@ -357,7 +357,7 @@ theorem map_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Norma
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _)))
     (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x := by
   refine induction_on x fun x => ?_
-  simp only [map_mk, MonoidHom.comp_apply]
+  simp [map_mk, MonoidHom.comp_apply]
 
 @[to_additive (attr := simp)]
 theorem map_comp_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Normal] [O.Normal]
@@ -379,7 +379,7 @@ lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N
   constructor
   · rintro ⟨b, hb, h⟩
     refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel _ _⟩
-    simp only [h, QuotientGroup.mk_div, div_self']
+    simp [h, QuotientGroup.mk_div, div_self']
   · rintro ⟨a, ha, b, hb, rfl⟩
     refine ⟨b, hb, ?_⟩
     simpa only [QuotientGroup.mk_mul, right_eq_mul, QuotientGroup.eq_one_iff]
@@ -406,12 +406,12 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
     left_inv := fun x => by
       rw [map_map G' H' G' e e.symm (he ▸ G'.le_comap_map (e : G →* H))
         (he ▸ (G'.map_equiv_eq_comap_symm e).le)]
-      simp only [← MulEquiv.toMonoidHom_trans, MulEquiv.self_trans_symm,
+      simp [← MulEquiv.toMonoidHom_trans, MulEquiv.self_trans_symm,
         MulEquiv.toMonoidHom_refl, map_id_apply]
     right_inv := fun x => by
       rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le)
         (he ▸ G'.le_comap_map (e : G →* H))]
-      simp only [← MulEquiv.toMonoidHom_trans, MulEquiv.symm_trans_self,
+      simp [← MulEquiv.toMonoidHom_trans, MulEquiv.symm_trans_self,
         MulEquiv.toMonoidHom_refl, map_id_apply] }
 
 @[simp]

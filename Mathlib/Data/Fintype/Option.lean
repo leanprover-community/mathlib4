@@ -83,14 +83,14 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
   induction n with
   | zero =>
     have : card PEmpty = card (ULift (Fin 0)) := by
-      simp only [card_fin, card_pempty, card_ulift]
+      simp [card_fin, card_pempty, card_ulift]
     apply Trunc.bind (truncEquivOfCardEq this)
     intro e
     apply Trunc.mk
     exact of_equiv e h_empty
   | succ n ih =>
     have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
-      simp only [card_fin, card_option, card_ulift]
+      simp [card_fin, card_option, card_ulift]
     apply Trunc.bind (truncEquivOfCardEq this)
     intro e
     apply Trunc.map _ ih

@@ -89,7 +89,7 @@ protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
   subsingleton
 
 protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) := by
-  simp only [ne_eq, p.eq_bot_iff, not_forall, exists_prop]
+  simp [ne_eq, p.eq_bot_iff, not_forall, exists_prop]
 
 theorem nonzero_mem_of_bot_lt {p : Submodule R M} (bot_lt : ⊥ < p) : ∃ a : p, a ≠ 0 :=
   let ⟨b, hb₁, hb₂⟩ := p.ne_bot_iff.mp bot_lt.ne'
@@ -227,7 +227,7 @@ theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
 
 @[simp, norm_cast]
 theorem coe_iInf {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
-  rw [iInf, coe_sInf]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
+  rw [iInf, coe_sInf]; simp [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
 
 @[simp]
 theorem mem_sInf {S : Set (Submodule R M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -240,7 +240,7 @@ theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : x ∈ ⨅ i, p i ↔ ∀ 
 @[simp]
 theorem mem_finsetInf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
     x ∈ s.inf p ↔ ∀ i ∈ s, x ∈ p i := by
-  simp only [← SetLike.mem_coe, coe_finsetInf, Set.mem_iInter]
+  simp [← SetLike.mem_coe, coe_finsetInf, Set.mem_iInter]
 
 lemma inf_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
     q ⊓ ⨅ i, p i = ⨅ i, q ⊓ p i :=

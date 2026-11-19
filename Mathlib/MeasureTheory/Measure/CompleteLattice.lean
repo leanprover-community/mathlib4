@@ -56,10 +56,10 @@ theorem measure_mono_both (h₁ : μ ≤ ν) (h₂ : s ⊆ t) : μ s ≤ ν t :=
 
 theorem lt_iff : μ < ν ↔ μ ≤ ν ∧ ∃ s, MeasurableSet s ∧ μ s < ν s :=
   lt_iff_le_not_ge.trans <|
-    and_congr Iff.rfl <| by simp only [le_iff, not_forall, not_le, exists_prop]
+    and_congr Iff.rfl <| by simp [le_iff, not_forall, not_le, exists_prop]
 
 theorem lt_iff' : μ < ν ↔ μ ≤ ν ∧ ∃ s, μ s < ν s :=
-  lt_iff_le_not_ge.trans <| and_congr Iff.rfl <| by simp only [le_iff', not_forall, not_le]
+  lt_iff_le_not_ge.trans <| and_congr Iff.rfl <| by simp [le_iff', not_forall, not_le]
 
 instance : IsOrderedAddMonoid (Measure α) where
   add_le_add_left _ _ h _ s := add_le_add_left (h s) _
@@ -160,7 +160,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       · exact add_le_add (inf_le_left.trans <| by simp [ht']) (inf_le_right.trans <| by simp [ht'])
       · simp only [ite_eq_left_iff]
         intro n hn₁ hn₀
-        simp only [ht', ite_eq_right hn₀, ite_eq_right hn₁, measure_empty, le_refl, inf_of_le_left]
+        simp [ht', ite_eq_right hn₀, ite_eq_right hn₁, measure_empty, le_refl, inf_of_le_left]
   · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
     -- Conversely, fixing `t' : ℕ → Set α` such that `s ⊆ ⋃ n, t' n`, we construct `t : Set α`
     -- for which `μ (t ∩ s) + ν (tᶜ ∩ s) ≤ ∑' n, μ (t' n) ⊓ ν (t' n)`.

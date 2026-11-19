@@ -347,10 +347,10 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
                   (q ((v ⊗ t) ∘ (inl ⊗ inr ∘ inr)))).symm))
       · -- Porting note: putting everything on the same line fails
         refine inject_dummies_lem _ (some ⊗ fun _ => none) ?_ _ _
-        exact fun _ => by simp only [elim_inl]
+        exact fun _ => by simp [elim_inl]
       · -- Porting note: putting everything on the same line fails
         refine inject_dummies_lem _ ((fun _ => none) ⊗ some) ?_ _ _
-        exact fun _ => by simp only [elim_inr]⟩
+        exact fun _ => by simp [elim_inr]⟩
 
 /-- A partial function is Diophantine if its graph is Diophantine. -/
 def DiophPFun (f : (α → ℕ) →. ℕ) : Prop :=

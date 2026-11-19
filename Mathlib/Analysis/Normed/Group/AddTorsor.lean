@@ -63,7 +63,7 @@ instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
 
 instance : NormedAddTorsor (V × W) (P × Q) where
   dist_eq_norm' x y := by
-    simp only [Prod.dist_eq, NormedAddTorsor.dist_eq_norm', Prod.norm_def, Prod.fst_vsub,
+    simp [Prod.dist_eq, NormedAddTorsor.dist_eq_norm', Prod.norm_def, Prod.fst_vsub,
       Prod.snd_vsub]
 
 section
@@ -169,7 +169,7 @@ theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
-  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, dist_vsub_vsub_le]
+  simp [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, dist_vsub_vsub_le]
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
@@ -190,7 +190,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   dist_self x := by simp
-  dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
+  dist_comm x y := by simp [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
     rw [← vsub_add_vsub_cancel]
     apply norm_add_le
@@ -203,7 +203,7 @@ def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup
   dist x y := ‖(x -ᵥ y : V)‖
   dist_self x := by simp
   eq_of_dist_eq_zero h := by simpa using h
-  dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
+  dist_comm x y := by simp [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
     rw [← vsub_add_vsub_cancel]
     apply norm_add_le

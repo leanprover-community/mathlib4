@@ -456,7 +456,7 @@ variable (n : ℕ) (f : 𝕜 → F) (s : 𝕜)
 lemma iteratedDeriv_comp_const_add :
     iteratedDeriv n (fun z ↦ f (s + z)) = fun t ↦ iteratedDeriv n f (s + t) := by
   induction n with
-  | zero => simp only [iteratedDeriv_zero]
+  | zero => simp [iteratedDeriv_zero]
   | succ n IH =>
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_const_add _ s
 
@@ -464,7 +464,7 @@ lemma iteratedDeriv_comp_const_add :
 lemma iteratedDeriv_comp_add_const :
     iteratedDeriv n (fun z ↦ f (z + s)) = fun t ↦ iteratedDeriv n f (t + s) := by
   induction n with
-  | zero => simp only [iteratedDeriv_zero]
+  | zero => simp [iteratedDeriv_zero]
   | succ n IH =>
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
 

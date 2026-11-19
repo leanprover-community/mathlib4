@@ -165,8 +165,8 @@ theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
   intro h
   induction h with
-  | ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp_def, ih]
-  | abs a f a' f' h => simp only [recF_eq', abs_map, h]
+  | ind a f f' _ ih => simp [recF_eq', PFunctor.map_eq, Function.comp_def, ih]
+  | abs a f a' f' h => simp [recF_eq', abs_map, h]
   | trans x y z _ _ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
 
 theorem Wequiv.abs' (x y : q.P.W) (h : QPF.abs x.dest = QPF.abs y.dest) : Wequiv x y := by
@@ -604,7 +604,7 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpP
   · intro α x
     cases x with | mk a f
     simp only [LiftpPreservation] at h
-    simp only [supp, h]
+    simp [supp, h]
 
 theorem liftpPreservation_iff_uniform : q.LiftpPreservation ↔ q.IsUniform := by
   rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_uniform]

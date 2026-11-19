@@ -478,9 +478,9 @@ variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R
 def comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂) :
     M₁ →ₛₗ[σ₁₃] M₃ where
   toFun x := f (g x)
-  map_add' := by simp only [map_add, forall_const]
+  map_add' := by simp [map_add, forall_const]
   -- Note that https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
-  map_smul' r x := by simp only [map_smulₛₗ _, RingHomCompTriple.comp_apply]
+  map_smul' r x := by simp [map_smulₛₗ _, RingHomCompTriple.comp_apply]
 
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
@@ -658,7 +658,7 @@ theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Modul
     IsLinearMap R fun z : M ↦ c • z := by
   refine IsLinearMap.mk (smul_add c) ?_
   intro _ _
-  simp only [smul_smul, mul_comm]
+  simp [smul_smul, mul_comm]
 
 theorem isLinearMap_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (a : M) :
     IsLinearMap R fun c : R ↦ c • a :=
@@ -736,7 +736,7 @@ variable [DistribSMul T M₂] [SMulCommClass R₂ T M₂]
 instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun a f ↦
     { toFun := a • (f : M → M₂)
-      map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
+      map_add' := fun x y ↦ by simp [Pi.smul_apply, f.map_add, smul_add]
       map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
 
 @[simp]
@@ -870,7 +870,7 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
 instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
-      map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
+      map_add' := fun x y ↦ by simp [Pi.sub_apply, map_add, add_sub_add_comm]
       map_smul' := fun r x ↦ by simp [Pi.sub_apply, smul_sub] }⟩
 
 @[simp]

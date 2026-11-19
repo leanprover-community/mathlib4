@@ -117,7 +117,7 @@ theorem pmul_comm [CommMonoidWithZero R] (f g : ArithmeticFunction R) : f.pmul g
 lemma pmul_assoc [SemigroupWithZero R] (f₁ f₂ f₃ : ArithmeticFunction R) :
     pmul (pmul f₁ f₂) f₃ = pmul f₁ (pmul f₂ f₃) := by
   ext
-  simp only [pmul_apply, mul_assoc]
+  simp [pmul_apply, mul_assoc]
 
 section NonAssocSemiring
 
@@ -173,7 +173,7 @@ section Pdiv
 
 /-- This is the pointwise division of `ArithmeticFunction`s. -/
 def pdiv [GroupWithZero R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
-  ⟨fun n => f n / g n, by simp only [map_zero, div_zero]⟩
+  ⟨fun n => f n / g n, by simp [map_zero, div_zero]⟩
 
 @[simp]
 theorem pdiv_apply [GroupWithZero R] (f g : ArithmeticFunction R) (n : ℕ) :

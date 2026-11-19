@@ -92,7 +92,7 @@ theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
     · intro hp
       exact (mul_pos ((f.nonneg d).lt_of_ne' hd) ((d.nonneg p).lt_of_ne' hp)).ne'
     · intro hp hp'
-      simp only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, hp', mul_zero,
+      simp [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, hp', mul_zero,
         not_true_eq_false] at hp
 
 end AddTorsor
@@ -175,7 +175,7 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
     trans (Finsupp.single x s + Finsupp.single y t).sum fun _ r => r
     · apply Finset.sum_congr rfl
       intro i _
-      simp only [Finsupp.coe_add, Pi.add_apply]
+      simp [Finsupp.coe_add, Pi.add_apply]
     · rw [Finsupp.sum_add_index (by simp) (by simp), Finsupp.sum_single_index (by simp),
         Finsupp.sum_single_index (by simp), h]
   -- Now simplify the weighted subtraction

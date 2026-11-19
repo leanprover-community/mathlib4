@@ -57,7 +57,7 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
   rw [cancelLeads, sub_eq_add_neg, tsub_eq_zero_iff_le.mpr h, pow_zero, mul_one]
   by_cases h0 :
     C p.leadingCoeff * q + -(C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p) = 0
-  · exact (le_of_eq (by simp only [h0, natDegree_zero])).trans_lt hq
+  · exact (le_of_eq (by simp [h0, natDegree_zero])).trans_lt hq
   apply lt_of_le_of_ne
   · compute_degree!
     rwa [Nat.sub_add_cancel]

@@ -143,7 +143,7 @@ theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ :=
 
 theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
   nth_rw 1 [← star_star x]
-  simp only [norm_star_mul_self, norm_star]
+  simp [norm_star_mul_self, norm_star]
 
 theorem norm_star_mul_self' {x : E} : ‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖ := by rw [norm_star_mul_self, norm_star]
 
@@ -278,7 +278,7 @@ variable [NormedRing E] [StarRing E] [CStarRing E]
 theorem IsSelfAdjoint.nnNorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction n with
-  | zero => simp only [pow_zero, pow_one]
+  | zero => simp [pow_zero, pow_one]
   | succ k hk =>
     rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnNorm_mul_self, hk, pow_mul']
 

@@ -81,7 +81,7 @@ theorem ciSup_const [hι : Nonempty ι] {a : α} : ⨆ _ : ι, a = a := by
 @[to_dual (attr := simp)]
 theorem ciSup_unique [Unique ι] {s : ι → α} : ⨆ i, s i = s default := by
   have : ∀ i, s i = s default := fun i => congr_arg s (Unique.eq_default i)
-  simp only [this, ciSup_const]
+  simp [this, ciSup_const]
 
 @[to_dual]
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
@@ -121,7 +121,7 @@ lemma cbiSup_eq_of_forall_not {p : ι → Prop} {f : ∀ i, p i → α} (hp : �
   cases isEmpty_or_nonempty ι
   · rw [iSup_of_empty']
   · have (i : ι) : IsEmpty (p i) := ⟨hp i⟩
-    simp only [iSup_of_empty', ciSup_const]
+    simp [iSup_of_empty', ciSup_const]
 
 @[to_dual]
 theorem cbiSup_empty {f : β → α} : ⨆ i ∈ (∅ : Set β), f i = sSup ∅ :=

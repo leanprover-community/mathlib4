@@ -134,11 +134,11 @@ variable [CompleteLattice α]
 
 @[to_dual (attr := simp)]
 theorem Ici_sSup (S : Set α) : Ici (sSup S) = ⨆ a ∈ S, Ici a :=
-  SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, sSup_le_iff]
+  SetLike.ext fun c => by simp [mem_Ici_iff, mem_iSup_iff, sSup_le_iff]
 
 @[to_dual (attr := simp)]
 theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⨆ i, Ici (f i) :=
-  SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
+  SetLike.ext fun c => by simp [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
 
 @[to_dual]
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⨆ (i) (j), Ici (f i j) := by

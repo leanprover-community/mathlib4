@@ -84,17 +84,17 @@ variable (J : Type u'') [Category.{v''} J]
 lemma functorCategory_isomorphisms :
     (isomorphisms C).functorCategory J = isomorphisms (J ⥤ C) := by
   ext _ _ f
-  simp only [functorCategory, isomorphisms.iff, NatTrans.isIso_iff_isIso_app]
+  simp [functorCategory, isomorphisms.iff, NatTrans.isIso_iff_isIso_app]
 
 lemma functorCategory_monomorphisms [HasPullbacks C] :
     (monomorphisms C).functorCategory J = monomorphisms (J ⥤ C) := by
   ext _ _ f
-  simp only [functorCategory, monomorphisms.iff, NatTrans.mono_iff_mono_app]
+  simp [functorCategory, monomorphisms.iff, NatTrans.mono_iff_mono_app]
 
 lemma functorCategory_epimorphisms [HasPushouts C] :
     (epimorphisms C).functorCategory J = epimorphisms (J ⥤ C) := by
   ext _ _ f
-  simp only [functorCategory, epimorphisms.iff, NatTrans.epi_iff_epi_app]
+  simp [functorCategory, epimorphisms.iff, NatTrans.epi_iff_epi_app]
 
 instance (K : Type u') [LinearOrder K] [SuccOrder K] [OrderBot K] [WellFoundedLT K]
     [(monomorphisms C).IsStableUnderTransfiniteCompositionOfShape K]

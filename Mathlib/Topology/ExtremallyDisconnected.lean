@@ -60,8 +60,8 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
     intro x _ y _ hxy
     obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy
     refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
-      by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
-      by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
+      by simp [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
+      by simp [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
     push Not
     refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, ?_⟩⟩

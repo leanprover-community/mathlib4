@@ -491,7 +491,7 @@ lemma map_negAddY : (W'.map f).negAddY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W
   map_simp
 
 lemma map_addY : (W'.map f).addY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.addY x₁ x₂ y₁ ℓ) := by
-  simp only [addY, map_negAddY, map_addX, map_negY]
+  simp [addY, map_negAddY, map_addX, map_negY]
 
 lemma map_slope [DecidableEq F] [DecidableEq K] (f : F →+* K) (x₁ x₂ y₁ y₂ : F) :
     (W.map f).slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W.slope x₁ x₂ y₁ y₂) := by

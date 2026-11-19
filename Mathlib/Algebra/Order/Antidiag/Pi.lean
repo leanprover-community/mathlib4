@@ -82,7 +82,7 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
           (aux d _).prop, Fin.sum_univ_succ]
         constructor
         · rintro ⟨a, b, rfl, g, rfl, rfl⟩
-          simp only [Fin.cons_zero, Fin.cons_succ]
+          simp [Fin.cons_zero, Fin.cons_succ]
         · intro hf
           exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩ }
 

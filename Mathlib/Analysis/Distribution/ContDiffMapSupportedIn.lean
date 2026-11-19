@@ -1057,7 +1057,7 @@ where finally
   case hadd | hsmul => intros; simp
   case hsmooth =>
     exact (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp (φ.contDiff.prodMk hg)
-  case hsupp => simp only [φ.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply]
+  case hsupp => simp [φ.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply]
   case hbound =>
     have hcont : Continuous fun x ↦ (Finset.range (k + 1)).sup' Finset.nonempty_range_add_one
         (fun i ↦ ‖iteratedFDeriv ℝ i g x‖) :=

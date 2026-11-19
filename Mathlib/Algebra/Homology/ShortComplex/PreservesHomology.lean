@@ -107,7 +107,7 @@ noncomputable def map : (S.map F).LeftHomologyData := by
   let f' : F.obj S.X₁ ⟶ F.obj h.K := hi.lift (KernelFork.ofι (S.map F).f (S.map F).zero)
   have hf' : f' = F.map h.f' := Fork.IsLimit.hom_ext hi (by
     rw [Fork.IsLimit.lift_ι hi]
-    simp only [KernelFork.map_ι, Fork.ι_ofι, map_f, ← F.map_comp, f'_i])
+    simp [KernelFork.map_ι, Fork.ι_ofι, map_f, ← F.map_comp, f'_i])
   have wπ : f' ≫ F.map h.π = 0 := by rw [hf', ← F.map_comp, f'_π, F.map_zero]
   have hπ : IsColimit (CokernelCofork.ofπ (F.map h.π) wπ) := by
     let e : parallelPair f' 0 ≅ parallelPair (F.map h.f') 0 :=
@@ -189,7 +189,7 @@ noncomputable def map : (S.map F).RightHomologyData := by
   have hg' : g' = F.map h.g' := by
     apply Cofork.IsColimit.hom_ext hp
     rw [Cofork.IsColimit.π_desc hp]
-    simp only [Cofork.π_ofπ, CokernelCofork.map_π, map_g, ← F.map_comp, p_g']
+    simp [Cofork.π_ofπ, CokernelCofork.map_π, map_g, ← F.map_comp, p_g']
   have wι : F.map h.ι ≫ g' = 0 := by rw [hg', ← F.map_comp, ι_g', F.map_zero]
   have hι : IsLimit (KernelFork.ofι (F.map h.ι) wι) := by
     let e : parallelPair g' 0 ≅ parallelPair (F.map h.g') 0 :=
@@ -596,7 +596,7 @@ lemma mapHomologyIso'_hom_naturality [S₁.HasHomology] [S₂.HasHomology]
     homologyMap (S₁ := S₁.map F) (S₂ := S₂.map F) (F.mapShortComplex.map φ) ≫
       (S₂.mapHomologyIso' F).hom = (S₁.mapHomologyIso' F).hom ≫ F.map (homologyMap φ) := by
   dsimp only [Iso.trans, Iso.symm, Functor.mapIso, mapHomologyIso']
-  simp only [RightHomologyData.map_H, assoc,
+  simp [RightHomologyData.map_H, assoc,
     ← RightHomologyData.rightHomologyIso_hom_naturality_assoc _
     ((homologyData S₁).right.map F) ((homologyData S₂).right.map F),
     ← RightHomologyData.map_rightHomologyMap', ← F.map_comp,

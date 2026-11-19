@@ -161,7 +161,7 @@ lemma span_relation_le_ker_π :
     Submodule.span A (Set.range relations.relation) ≤ LinearMap.ker solution.π := by
   rw [Submodule.span_le]
   rintro _ ⟨r, rfl⟩
-  simp only [SetLike.mem_coe, LinearMap.mem_ker, π_relation]
+  simp [SetLike.mem_coe, LinearMap.mem_ker, π_relation]
 
 /-- Given `relations : Relations A` and `solution : relations.Solution M`, this is
 the canonical linear map `relations.Quotient →ₗ[A] M` from the module. -/
@@ -259,7 +259,7 @@ lemma injective_fromQuotient_iff_ker_π_eq_span :
       simpa only [LinearMap.mem_ker, fromQuotient_toQuotient] using hx
     rw [h, ← range_map] at hx
     obtain ⟨x, rfl⟩ := hx
-    simp only [toQuotient_map_apply, Submodule.zero_mem]
+    simp [toQuotient_map_apply, Submodule.zero_mem]
 
 lemma surjective_fromQuotient_iff_surjective_π :
     Function.Surjective solution.fromQuotient ↔ Function.Surjective solution.π := by
@@ -321,7 +321,7 @@ def desc (s : relations.Solution N) : M →ₗ[A] N :=
 lemma desc_var (s : relations.Solution N) (g : relations.G) :
     h.desc s (solution.var g) = s.var g := by
   dsimp [desc]
-  simp only [linearEquiv_symm_var, fromQuotient_toQuotient, π_single]
+  simp [linearEquiv_symm_var, fromQuotient_toQuotient, π_single]
 
 @[simp]
 lemma desc_comp_π (s : relations.Solution N) : (h.desc s).comp solution.π = s.π := by aesop

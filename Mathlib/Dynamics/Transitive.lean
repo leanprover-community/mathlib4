@@ -118,6 +118,6 @@ theorem MulAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant
 instance MulAction.isTopologicallyTransitive_of_isMinimal [IsMinimal M α] :
     IsTopologicallyTransitive M α := by
   refine (isTopologicallyTransitive_iff_dense_iUnion_preimage M).mpr fun h hn ↦ ?_
-  simp only [h.iUnion_preimage_smul M hn, dense_univ]
+  simp [h.iUnion_preimage_smul M hn, dense_univ]
 
 end IsTopologicallyTransitive

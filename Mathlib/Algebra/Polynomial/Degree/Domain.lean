@@ -39,7 +39,7 @@ variable (p) in
 lemma natDegree_smul {S : Type*} [Semiring S] [IsDomain S] [Module S R] [Module.IsTorsionFree S R]
     {a : S} (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
   by_cases hp : p = 0
-  · simp only [hp, smul_zero]
+  · simp [hp, smul_zero]
   · apply natDegree_eq_of_le_of_coeff_ne_zero
     · exact (natDegree_smul_le _ _).trans (le_refl _)
     · simp only [AddMonoidAlgebra.coeff_smul_apply]

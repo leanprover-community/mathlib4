@@ -53,13 +53,13 @@ theorem _root_.Fintype.card_eq_nat_card {_ : Fintype α} : Fintype.card α = Nat
   mk_toNat_eq_card.symm
 
 lemma card_eq_finsetCard (s : Finset α) : Nat.card s = s.card := by
-  simp only [Nat.card_eq_fintype_card, Fintype.card_coe]
+  simp [Nat.card_eq_fintype_card, Fintype.card_coe]
 
 lemma card_eq_card_toFinset (s : Set α) [Fintype s] : Nat.card s = s.toFinset.card := by
-  simp only [← Nat.card_eq_finsetCard, s.mem_toFinset]
+  simp [← Nat.card_eq_finsetCard, s.mem_toFinset]
 
 lemma card_eq_card_finite_toFinset {s : Set α} (hs : s.Finite) : Nat.card s = hs.toFinset.card := by
-  simp only [← Nat.card_eq_finsetCard, hs.mem_toFinset]
+  simp [← Nat.card_eq_finsetCard, hs.mem_toFinset]
 
 theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
     Nat.card { x // p x } = Finset.card s := by
@@ -190,7 +190,7 @@ an equivalence between `α` and `Fin (Nat.card α)`. See also `Finite.equivFin`.
 def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
   cases fintypeOrInfinite α
   · simpa only [card_eq_fintype_card] using Fintype.equivFin α
-  · simp only [card_eq_zero_of_infinite, ne_eq, not_true_eq_false] at h
+  · simp [card_eq_zero_of_infinite, ne_eq, not_true_eq_false] at h
 
 theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   let := Fintype.ofSubsingleton a
@@ -225,7 +225,7 @@ theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + 
 
 @[simp]
 theorem card_prod (α β : Type*) : Nat.card (α × β) = Nat.card α * Nat.card β := by
-  simp only [Nat.card, mk_prod, toNat_mul, toNat_lift]
+  simp [Nat.card, mk_prod, toNat_mul, toNat_lift]
 
 @[simp]
 theorem card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
@@ -296,7 +296,7 @@ theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
 
 @[simp high]
 theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
-  simp only [card, toENat_eq_top, aleph0_le_mk]
+  simp [card, toENat_eq_top, aleph0_le_mk]
 
 @[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [← toENat_mk, aleph0_le_mk_iff]
 
@@ -307,7 +307,7 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
 @[simp]
 theorem card_sum (α β : Type*) :
     card (α ⊕ β) = card α + card β := by
-  simp only [card, mk_sum, map_add, toENat_lift]
+  simp [card, mk_sum, map_add, toENat_lift]
 
 theorem card_congr {α β : Type*} (f : α ≃ β) : card α = card β :=
   Cardinal.toENat_congr f
@@ -358,7 +358,7 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toENat]
-  simp only [ENat.card, Nat.cast_one]
+  simp [ENat.card, Nat.cast_one]
 
 @[simp] lemma one_lt_card [Nontrivial α] : 1 < card α := by simpa [one_lt_card_iff_nontrivial]
 

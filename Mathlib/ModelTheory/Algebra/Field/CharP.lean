@@ -74,7 +74,7 @@ theorem charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Formula.realize_not,
       realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact ⟨fun _ => CharP.ofCharZero _, fun _ => CharP.charP_to_charZero K⟩
-  · simp only [Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize, forall_eq,
+  · simp [Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize, forall_eq,
       realize_eqZero, ← CharP.charP_iff_prime_eq_zero hp]
   · simp only [Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize,
       forall_eq, Formula.realize_bot, false_iff]

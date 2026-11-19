@@ -371,7 +371,7 @@ theorem lintegral_rnDeriv_lt_top_of_measure_ne_top (ν : Measure α) {s : Set α
       _ ≤ (singularPart μ ν) (toMeasurable μ s) + _ := le_add_self
       _ = μ s := by rw [← add_apply, ← haveLebesgueDecomposition_add, measure_toMeasurable]
       _ < ⊤ := hs.lt_top
-  · simp only [Measure.rnDeriv, dite_eq_right hl, Pi.zero_apply, lintegral_zero,
+  · simp [Measure.rnDeriv, dite_eq_right hl, Pi.zero_apply, lintegral_zero,
       ENNReal.zero_lt_top]
 
 theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
@@ -866,7 +866,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         · rw [← hf₂ n]
           apply lintegral_mono
           convert! iSup_le_le f n n le_rfl
-          simp only [iSup_apply]
+          simp [iSup_apply]
         · exact le_sSup ⟨⨆ (k : ℕ) (_ : k ≤ n), f k, iSup_mem_measurableLE' _ hf₁ _, rfl⟩
       · intro n
         refine Measurable.aemeasurable ?_

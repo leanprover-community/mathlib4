@@ -155,7 +155,7 @@ alias coe_orthogonalProjection_apply := coe_orthogonalProjectionOnto_apply
 @[simp]
 lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (x : E) :
     U.starProjection x ∈ U := by
-  simp only [starProjection_apply, SetLike.coe_mem]
+  simp [starProjection_apply, SetLike.coe_mem]
 
 @[deprecated (since := "2026-06-10")] alias orthogonalProjectionFn_mem := starProjection_apply_mem
 
@@ -506,7 +506,7 @@ theorem IsOrtho.starProjection_comp_starProjection {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ⟂ V) :
     U.starProjection ∘L V.starProjection = 0 := calc
   _ = U.subtypeL ∘L (U.orthogonalProjectionOnto ∘L V.subtypeL) ∘L V.orthogonalProjectionOnto := by
-      simp only [starProjection, ContinuousLinearMap.comp_assoc]
+      simp [starProjection, ContinuousLinearMap.comp_assoc]
     _ = 0 := by simp [h.orthogonalProjectionOnto_comp_subtypeL]
 
 /-- The projection into `U` from `V` is the zero map if and only if `U` and `V` are orthogonal. -/

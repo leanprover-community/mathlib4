@@ -196,7 +196,7 @@ def pushforwardNatTrans (α : F ⟶ G) :
       dsimp
       change (X.val.presheaf.map (G.map i.unop).op ≫ X.val.presheaf.map (α.app V.unop).op) _ =
         (X.val.presheaf.map (α.app U.unop).op ≫ X.val.presheaf.map (F.map i.unop).op) _
-      simp only [← CategoryTheory.Functor.map_comp, ← op_comp, α.naturality] }
+      simp [← CategoryTheory.Functor.map_comp, ← op_comp, α.naturality] }
   naturality {X Y} f := by
     ext U x
     exact congr($(f.val.naturality (α.app U.unop).op) x).symm
@@ -231,13 +231,13 @@ noncomputable def pushforwardNatIso (α : F ≅ G) :
     ext X U x
     suffices X.val.presheaf.map (α.hom.app U.unop).op ≫
       X.val.presheaf.map (α.inv.app U.unop).op = 𝟙 _ from congr($this x)
-    simp only [← Functor.map_comp, ← op_comp,
+    simp [← Functor.map_comp, ← op_comp,
       Iso.inv_hom_id_app, op_id, CategoryTheory.Functor.map_id]
   inv_hom_id := by
     ext X U x
     suffices X.val.presheaf.map (α.inv.app U.unop).op ≫
       X.val.presheaf.map (α.hom.app U.unop).op = 𝟙 _ from congr($this x)
-    simp only [← Functor.map_comp, ← op_comp,
+    simp [← Functor.map_comp, ← op_comp,
       Iso.hom_inv_id_app, op_id, CategoryTheory.Functor.map_id]
 
 /-- More flexible variant of `SheafOfModules.pushforwardNatIso`. -/

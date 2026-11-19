@@ -225,7 +225,7 @@ variable {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY :
 This is an isomorphism under various circumstances. -/
 abbrev pushoutSection : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ⟶ Γ(Y, UY) :=
   pushout.desc (g.appLE UX UY (by simp [*])) (iY.appLE UT UY (by simp [*]))
-    (by simp only [Scheme.Hom.appLE_comp_appLE, H.w])
+    (by simp [Scheme.Hom.appLE_comp_appLE, H.w])
 
 lemma isIso_pushoutSection_iff :
     IsIso (pushoutSection H hUST hUSX hUY) ↔ IsPushout (iX.appLE US UX hUSX) (f.appLE US UT hUST)
@@ -273,7 +273,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   let ψ : Γ(X, UX) →ₐ[Γ(S, US)] Π i, Γ(X, VX i) := AlgHom.pi fun i ↦
     ⟨(X.presheaf.map (homOfLE (hVU ▸ le_iSup VX i)).op).hom, fun r ↦ by
       dsimp [RingHom.algebraMap_toAlgebra]
-      simp only [← CommRingCat.comp_apply, Scheme.Hom.appLE_map]⟩
+      simp [← CommRingCat.comp_apply, Scheme.Hom.appLE_map]⟩
   -- ... is injective by the sheaf axiom,
   have hψ : Function.Injective ψ := by
     intro s t est

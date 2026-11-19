@@ -66,7 +66,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds (I := I) x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
-    simp only [e, true_and, e.left_inv hx', st hx's, *]
+    simp [e, true_and, e.left_inv hx', st hx's, *]
   refine ((hg.2.comp _ (hf.2.mono inter_subset_right)
       ((mapsTo_preimage _ _).mono_left inter_subset_left)).mono_of_mem_nhdsWithin
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
@@ -76,8 +76,8 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     exact ⟨ht, mem_range_self _⟩
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
-    simp only [e, e', comp_apply, extChartAt_symm_writtenInExtChartAt hfx']
-  · simp only [e, e', comp_apply, extChartAt_to_inv,
+    simp [e, e', comp_apply, extChartAt_symm_writtenInExtChartAt hfx']
+  · simp [e, e', comp_apply, extChartAt_to_inv,
       writtenInExtChartAt_apply_extChartAt (mem_extChartAt_source x)]
 
 /-- See note [comp_of_eq lemmas] -/
@@ -193,7 +193,7 @@ theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
 
 @[to_additive]
 theorem contMDiff_one [One M'] : ContMDiff I I' n (1 : M → M') := by
-  simp only [Pi.one_def, contMDiff_const]
+  simp [Pi.one_def, contMDiff_const]
 
 theorem contMDiffOn_const : ContMDiffOn I I' n (fun _ : M => c) s :=
   contMDiff_const.contMDiffOn

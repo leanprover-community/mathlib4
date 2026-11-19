@@ -85,7 +85,7 @@ theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
     by_contra! hall
     apply hx
     ext i
-    simp only [hall, zero_coeff]
+    simp [hall, zero_coeff]
   let n := Nat.find hex
   use n, x.shift n
   refine ⟨Nat.find_spec hex, eq_iterate_verschiebung fun i hi => not_not.mp ?_⟩

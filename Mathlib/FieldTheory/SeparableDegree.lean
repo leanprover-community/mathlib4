@@ -310,11 +310,11 @@ theorem natSepDegree_le_natDegree : f.natSepDegree ≤ f.natDegree := by
 
 @[simp]
 theorem natSepDegree_X_sub_C (x : F) : (X - C x).natSepDegree = 1 := by
-  simp only [natSepDegree, aroots_X_sub_C, Multiset.toFinset_singleton, Finset.card_singleton]
+  simp [natSepDegree, aroots_X_sub_C, Multiset.toFinset_singleton, Finset.card_singleton]
 
 @[simp]
 theorem natSepDegree_X : (X : F[X]).natSepDegree = 1 := by
-  simp only [natSepDegree, aroots_X, Multiset.toFinset_singleton, Finset.card_singleton]
+  simp [natSepDegree, aroots_X, Multiset.toFinset_singleton, Finset.card_singleton]
 
 /-- A constant polynomial has zero separable degree. -/
 theorem natSepDegree_eq_zero (h : f.natDegree = 0) : f.natSepDegree = 0 := by
@@ -337,7 +337,7 @@ theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := b
   use rootOfSplits (SplittingField.splits f) (degree_ne_of_natDegree_ne (by rwa [natDegree_map]))
   classical
   rw [Multiset.mem_toFinset, mem_aroots]
-  exact ⟨ne_of_apply_ne _ h, by simp only [← eval_map_algebraMap, eval_rootOfSplits]⟩
+  exact ⟨ne_of_apply_ne _ h, by simp [← eval_map_algebraMap, eval_rootOfSplits]⟩
 
 /-- A polynomial has zero separable degree if and only if it is constant. -/
 theorem natSepDegree_eq_zero_iff : f.natSepDegree = 0 ↔ f.natDegree = 0 :=
@@ -408,27 +408,27 @@ theorem natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else
   classical
   simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_pow]
   by_cases h : n = 0
-  · simp only [h, zero_smul, Multiset.toFinset_zero, Finset.card_empty, ite_true]
+  · simp [h, zero_smul, Multiset.toFinset_zero, Finset.card_empty, ite_true]
   simp only [h, Multiset.toFinset_nsmul _ n h, ite_false]
 
 theorem natSepDegree_pow_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (f ^ n).natSepDegree = f.natSepDegree := by simp_rw [natSepDegree_pow, hn, ite_false]
 
 theorem natSepDegree_X_pow {n : ℕ} : (X ^ n : F[X]).natSepDegree = if n = 0 then 0 else 1 := by
-  simp only [natSepDegree_pow, natSepDegree_X]
+  simp [natSepDegree_pow, natSepDegree_X]
 
 theorem natSepDegree_X_sub_C_pow {x : F} {n : ℕ} :
     ((X - C x) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
-  simp only [natSepDegree_pow, natSepDegree_X_sub_C]
+  simp [natSepDegree_pow, natSepDegree_X_sub_C]
 
 theorem natSepDegree_C_mul_X_sub_C_pow {x y : F} {n : ℕ} (hx : x ≠ 0) :
     (C x * (X - C y) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
-  simp only [natSepDegree_C_mul _ hx, natSepDegree_X_sub_C_pow]
+  simp [natSepDegree_C_mul _ hx, natSepDegree_X_sub_C_pow]
 
 theorem natSepDegree_mul (g : F[X]) :
     (f * g).natSepDegree ≤ f.natSepDegree + g.natSepDegree := by
   by_cases h : f * g = 0
-  · simp only [h, natSepDegree_zero, zero_le]
+  · simp [h, natSepDegree_zero, zero_le]
   classical
   simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_mul h, Multiset.toFinset_add]
   exact Finset.card_union_le _ _
@@ -482,7 +482,7 @@ and `f` have the same separable degree. -/
 theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
   obtain - | hprime := hF
-  · simp only [one_pow, expand_one]
+  · simp [one_pow, expand_one]
   have := Fact.mk hprime
   classical
   simpa only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_def, map_expand,
@@ -636,7 +636,7 @@ theorem natSepDegree_eq_one_iff_eq_expand_X_sub_C : (minpoly F x).natSepDegree =
     ∃ (n : ℕ) (y : F), minpoly F x = expand F (q ^ n) (X - C y) := by
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
   · have halg : IsIntegral F x := by_contra fun h' ↦ by
-      simp only [eq_zero h', natSepDegree_zero, zero_ne_one] at h
+      simp [eq_zero h', natSepDegree_zero, zero_ne_one] at h
     exact (minpoly.irreducible halg).natSepDegree_eq_one_iff_of_monic' q
       (minpoly.monic halg) |>.1 h
   rw [h, natSepDegree_expand _ q, natSepDegree_X_sub_C]
@@ -646,7 +646,7 @@ separable degree one if and only if the minimal polynomial is of the form
 `X ^ (q ^ n) - C y` for some `n : ℕ` and `y : F`. -/
 theorem natSepDegree_eq_one_iff_eq_X_pow_sub_C : (minpoly F x).natSepDegree = 1 ↔
     ∃ (n : ℕ) (y : F), minpoly F x = X ^ q ^ n - C y := by
-  simp only [minpoly.natSepDegree_eq_one_iff_eq_expand_X_sub_C q, map_sub, expand_X, expand_C]
+  simp [minpoly.natSepDegree_eq_one_iff_eq_expand_X_sub_C q, map_sub, expand_X, expand_C]
 
 /-- The minimal polynomial of an element `x` of `E / F` of exponential characteristic `q` has
 separable degree one if and only if `x ^ (q ^ n) ∈ F` for some `n : ℕ`. -/

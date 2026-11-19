@@ -99,14 +99,14 @@ theorem iSup_rayleigh_eq_iSup_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     ⨆ x : { x : E // x ≠ 0 }, rayleighQuotient T x =
       ⨆ x : sphere (0 : E) r, rayleighQuotient T x :=
   show ⨆ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
-    simp only [← @sSup_image' _ _ _ _ (rayleighQuotient T),
+    simp [← @sSup_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 
 theorem iInf_rayleigh_eq_iInf_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     ⨅ x : { x : E // x ≠ 0 }, rayleighQuotient T x =
       ⨅ x : sphere (0 : E) r, rayleighQuotient T x :=
   show ⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
-    simp only [← @sInf_image' _ _ _ _ (rayleighQuotient T),
+    simp [← @sInf_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 
 theorem rayleighQuotient_le_norm (x : E) : |T.rayleighQuotient x| ≤ ‖T‖ := by
@@ -336,7 +336,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetr
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMaxOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by
-    have : ‖x₀‖ ≠ 0 := by simp only [hx₀, norm_eq_zero, hx, Ne, not_false_iff]
+    have : ‖x₀‖ ≠ 0 := by simp [hx₀, norm_eq_zero, hx, Ne, not_false_iff]
     simpa [← norm_eq_zero, Ne]
   exact hasEigenvalue_of_hasEigenvector (T'.prop.hasEigenvector_of_isMaxOn hx₀_ne this)
 
@@ -355,7 +355,7 @@ theorem hasEigenvalue_iInf_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetr
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMinOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by
-    have : ‖x₀‖ ≠ 0 := by simp only [hx₀, norm_eq_zero, hx, Ne, not_false_iff]
+    have : ‖x₀‖ ≠ 0 := by simp [hx₀, norm_eq_zero, hx, Ne, not_false_iff]
     simpa [← norm_eq_zero, Ne]
   exact hasEigenvalue_of_hasEigenvector (T'.prop.hasEigenvector_of_isMinOn hx₀_ne this)
 

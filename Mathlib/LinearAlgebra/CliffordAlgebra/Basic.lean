@@ -184,7 +184,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
   intro h
   apply (lift Q).symm.injective
   rw [lift_symm_apply, lift_symm_apply]
-  simp only [h]
+  simp [h]
 
 -- This proof closely follows `TensorAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
@@ -368,10 +368,10 @@ maps it induces between Clifford algebras is also surjective. -/
 lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
     (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) :=
   CliffordAlgebra.induction
-    (fun r ↦ ⟨algebraMap R (CliffordAlgebra Q₁) r, by simp only [AlgHom.commutes]⟩)
-    (fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x, by simp only [map_apply_ι, hx]⟩)
-    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x * y, by simp only [map_mul, hx, hy]⟩)
-    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simp only [map_add, hx, hy]⟩)
+    (fun r ↦ ⟨algebraMap R (CliffordAlgebra Q₁) r, by simp [AlgHom.commutes]⟩)
+    (fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x, by simp [map_apply_ι, hx]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x * y, by simp [map_mul, hx, hy]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simp [map_add, hx, hy]⟩)
 
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/

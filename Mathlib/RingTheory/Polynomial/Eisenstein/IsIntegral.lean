@@ -195,7 +195,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
         Q.coeff i • (B.gen ^ i * B.gen ^ n) = p • Q.coeff i • f (i + n) := by
       intro i hi
       rw [← pow_add, ← (hf _ (aux i hi)).2, ← Algebra.smul_def, smul_smul, mul_comm _ p, smul_smul]
-    simp only [add_mul, smul_mul_assoc, one_mul, sum_mul, sum_congr rfl this]
+    simp [add_mul, smul_mul_assoc, one_mul, sum_mul, sum_congr rfl this]
   · rw [aeval_eq_sum_range,
       Finset.add_sum_erase (range (Q.natDegree + 1)) fun i => Q.coeff i • B.gen ^ i]
     simp

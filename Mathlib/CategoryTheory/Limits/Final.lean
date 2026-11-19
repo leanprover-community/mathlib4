@@ -357,7 +357,7 @@ def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
     simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
       colim_map, colimitIso_hom]
     ext
-    simp only [comp_obj, ι_colimMap_assoc, whiskerLeft_app, colimit.ι_pre, colimit.ι_pre_assoc,
+    simp [comp_obj, ι_colimMap_assoc, whiskerLeft_app, colimit.ι_pre, colimit.ι_pre_assoc,
       ι_colimMap]
 
 end
@@ -983,7 +983,7 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
     · refine ⟨F.obj (IsFiltered.coeq q₁ q₂),
         Final.homToLift F Y ≫ F.map (q₁ ≫ IsFiltered.coeqHom q₁ q₂), ?_⟩
       conv_lhs => rw [IsFiltered.coeq_condition]
-      simp only [F.map_comp, ← reassoc_of% h, StructuredArrow.mk_hom_eq_self, Category.assoc]
+      simp [F.map_comp, ← reassoc_of% h, StructuredArrow.mk_hom_eq_self, Category.assoc]
     have h₀ : P (StructuredArrow.mk (f ≫ Final.homToLift F Y)) := ⟨_, 𝟙 _, 𝟙 _, by simp⟩
     refine isPreconnected_induction P ?_ ?_ h₀ _
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
@@ -991,7 +991,7 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
       refine ⟨W, q₄, q₂ ≫ q₃, ?_⟩
       rw [F.map_comp, ← reassoc_of% hq, ← F.map_comp, hq', F.map_comp, StructuredArrow.w_assoc]
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
-      exact ⟨Z, h.right ≫ q₁, q₂, by simp only [F.map_comp, StructuredArrow.w_assoc, hq]⟩
+      exact ⟨Z, h.right ≫ q₁, q₂, by simp [F.map_comp, StructuredArrow.w_assoc, hq]⟩
 
 /-- Final functors preserve filteredness.
 

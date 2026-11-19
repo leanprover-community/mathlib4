@@ -137,7 +137,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
             * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) (update x i t) ^ p) ∂(μ i)) ∂μ := by
           -- pull out the integral over `xᵢ`
           rw [lmarginal_insert' _ _ hi]
-          · simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
+          · simp [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
           · change Measurable (fun x ↦ _)
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
             refine (hf.pow_const _).mul <| Finset.measurable_fun_prod _ ?_
@@ -508,7 +508,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h2q : 1 / n' - 1 / q = 1 / p' := by
     simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
-    simp only [NNReal.coe_natCast, NNReal.coe_inv]
+    simp [NNReal.coe_natCast, NNReal.coe_inv]
   let γ : ℝ≥0 := .mk (p * (n - 1) / (n - p)) (by positivity)
   have h0γ : (γ : ℝ) = p * (n - 1) / (n - p) := rfl
   have h1γ : 1 < (γ : ℝ) := by

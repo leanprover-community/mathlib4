@@ -210,7 +210,7 @@ def fixedField : IntermediateField F E :=
 @[simp] lemma mem_fixedField_iff (x) :
     x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
   change x ∈ MulAction.fixedPoints H E ↔ _
-  simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
+  simp [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
 
 @[simp] lemma fixedField_bot : fixedField (⊥ : Subgroup Gal(E/F)) = ⊤ := by
   ext
@@ -353,7 +353,7 @@ i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : Gal(E/F), f x = x := by
   rw [← fixedField_top, mem_fixedField_iff]
-  simp only [Subgroup.mem_top, forall_const]
+  simp [Subgroup.mem_top, forall_const]
 
 /-- See `InfiniteGalois.mem_range_algebraMap_iff_fixed` for the infinite case,
 i.e. without the `[FiniteDimensional F E]` assumption. -/
@@ -435,7 +435,7 @@ open scoped Pointwise
 -- #count_heartbeats in
 lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, AlgEquiv.one_apply,
+  simp [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, AlgEquiv.one_apply,
     Subtype.ext_iff, restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
 
 namespace IsGalois

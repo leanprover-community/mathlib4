@@ -156,7 +156,7 @@ theorem leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :
   simp_rw [leadingCoeff, natDegree_expand, coeff_expand_mul hp]
 
 theorem monic_expand_iff {p : ℕ} {f : R[X]} (hp : 0 < p) : (expand R p f).Monic ↔ f.Monic := by
-  simp only [Monic, leadingCoeff_expand hp]
+  simp [Monic, leadingCoeff_expand hp]
 
 alias ⟨_, Monic.expand⟩ := monic_expand_iff
 

@@ -223,14 +223,14 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
   trans (n.choose (i + 1) : R); swap
   · simp only [finsetSum_coeff, ← C_eq_natCast, coeff_C_mul_X_pow]
     rw [Finset.sum_eq_single i, ite_eq_left rfl]
-    · simp +contextual only [@eq_comm _ i, ite_false,
+    · simp +contextual [@eq_comm _ i, ite_false,
         imp_true_iff]
-    · simp +contextual only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
+    · simp +contextual [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
         Nat.cast_zero, Finset.mem_range, not_lt, ite_true, imp_true_iff]
   induction n generalizing i with
-  | zero => dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
+  | zero => dsimp; simp [zero_comp, coeff_zero, Nat.cast_zero]
   | succ n ih =>
-    simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
+    simp [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
       Nat.cast_add, coeff_X_add_one_pow]
 
 theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : ℕ} (hn : n ≠ 0) :
@@ -255,7 +255,7 @@ theorem Monic.geom_sum' {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.degree) {n : ℕ
 theorem monic_geom_sum_X {n : ℕ} (hn : n ≠ 0) : (∑ i ∈ range n, (X : R[X]) ^ i).Monic := by
   nontriviality R
   apply monic_X.geom_sum _ hn
-  simp only [natDegree_X, zero_lt_one]
+  simp [natDegree_X, zero_lt_one]
 
 end Semiring
 
@@ -315,7 +315,7 @@ theorem monic_restriction {p : R[X]} : Monic (restriction p) ↔ Monic p := by
 
 @[simp]
 theorem restriction_zero : restriction (0 : R[X]) = 0 := by
-  simp only [restriction, Finset.sum_empty, support_zero]
+  simp [restriction, Finset.sum_empty, support_zero]
 
 @[simp]
 theorem restriction_one : restriction (1 : R[X]) = 1 := by
@@ -326,7 +326,7 @@ variable [Semiring S] {f : R →+* S} {x : S}
 theorem eval₂_restriction {p : R[X]} :
     eval₂ f x p =
       eval₂ (f.comp (Subring.subtype (Subring.closure (p.coeffs : Set R)))) x p.restriction := by
-  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p, RingHom.comp_apply,
+  simp [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p, RingHom.comp_apply,
     Subring.coe_subtype]
 
 end Ring
@@ -575,7 +575,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     constructor
     · rintro h (- | n)
       · rwa [coeff_C_zero]
-      · simp only [coeff_C_of_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
+      · simp [coeff_C_of_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
     · intro h
       simpa only [coeff_C_zero] using h 0
   · intro h
@@ -699,7 +699,7 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
   rw [← MulEquiv.prime_iff (renameEquiv R (Fintype.equivFin σ))]
   convert_to Prime (C r) ↔ _
   · congr!
-    simp only [renameEquiv_apply, algHom_C, algebraMap_eq]
+    simp [renameEquiv_apply, algHom_C, algebraMap_eq]
   · induction Fintype.card σ with
     | zero => simpa using MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
     | succ d hd =>
@@ -939,7 +939,7 @@ theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommSemiring S] [Finite σ]
   rw [MvPolynomial.eval₂_eq', map_sum ϕ]
   congr
   ext
-  simp only [monomial_eq, ϕ.map_pow, map_prod ϕ, ϕ.comp_apply, ϕ.map_mul, Finsupp.prod_pow]
+  simp [monomial_eq, ϕ.map_pow, map_prod ϕ, ϕ.comp_apply, ϕ.map_mul, Finsupp.prod_pow]
 
 /-- If every coefficient of a polynomial is in an ideal `I`, then so is the polynomial itself,
 multivariate version. -/

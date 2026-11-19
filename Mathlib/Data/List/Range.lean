@@ -91,13 +91,13 @@ theorem ranges_disjoint (l : List ℕ) :
 theorem ranges_length (l : List ℕ) :
     l.ranges.map length = l := by
   induction l with
-  | nil => simp only [ranges, map_nil]
+  | nil => simp [ranges, map_nil]
   | cons a l hl => -- (a :: l)
     simp only [ranges, map_cons, length_range, map_map, cons.injEq, true_and]
     conv_rhs => rw [← hl]
     apply map_congr_left
     intro s _
-    simp only [Function.comp_apply, length_map]
+    simp [Function.comp_apply, length_map]
 
 end Ranges
 

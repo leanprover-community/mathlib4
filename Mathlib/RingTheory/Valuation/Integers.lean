@@ -32,7 +32,7 @@ variable (v : Valuation R Γ₀)
 def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
-  mul_mem' {x y} hx hy := by simp only [Set.mem_ofPred_eq, map_mul, mul_le_one' hx hy]
+  mul_mem' {x y} hx hy := by simp [Set.mem_ofPred_eq, map_mul, mul_le_one' hx hy]
   zero_mem' := by simp
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
   neg_mem' {x} hx := by simp only [Set.mem_ofPred_eq] at hx; simpa only [Set.mem_ofPred_eq, map_neg]
@@ -156,7 +156,7 @@ over a field. Let `v` be a valuation on some field `F` and `O` be its integers. 
 -/
 theorem isUnit_of_one' (hv : Integers v O) {x : O} (hvx : v (algebraMap O F x) = 1) : IsUnit x := by
   refine isUnit_of_one hv (IsUnit.mk0 _ ?_) hvx
-  simp only [← v.ne_zero_iff, hvx, ne_eq, one_ne_zero, not_false_eq_true]
+  simp [← v.ne_zero_iff, hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
 lemma isUnit_iff_valuation_eq_one (hv : Integers v O) {x : O} :
     IsUnit x ↔ v (algebraMap O F x) = 1 :=

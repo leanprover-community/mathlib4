@@ -239,7 +239,7 @@ lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_ta
     (hf0 : ∀ i, f i 0 = 0 := by cfc_zero_tac) :
     (fun i => cfcₙ (f i) a) = (fun i => cfcₙHom (a := a) ha ⟨⟨_, (hf i).domRestrict⟩, hf0 i⟩) := by
   ext i
-  simp only [cfcₙ_apply (f i) a (hf i) (hf0 i)]
+  simp [cfcₙ_apply (f i) a (hf i) (hf0 i)]
 
 lemma cfcₙ_apply_of_not_and_and {f : R → R} (a : A)
     (ha : ¬ (p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0)) :
@@ -850,7 +850,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctional
     (IsUniformInducing.isUniformEmbedding ⟨?_⟩).isClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
     (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by
-      simp only [← Subtype.val_injective.image_injective.eq_iff, f, ContinuousMap.coe_mk,
+      simp [← Subtype.val_injective.image_injective.eq_iff, f, ContinuousMap.coe_mk,
         ContinuousMap.coe_zero, range_zero, image_union, image_singleton,
         quasispectrum.coe_zero, ← range_comp, val_comp_inclusion, image_univ, Subtype.range_coe,
         quasispectrum_eq_spectrum_union_zero]

@@ -47,7 +47,7 @@ theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i ∈ s, f i) ↔
       ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i ∈ t, f i‖ < ε := by
   rw [cauchySeq_finset_iff_sum_vanishing, nhds_basis_ball.forall_iff]
-  · simp only [ball_zero_eq, Set.mem_ofPred_eq]
+  · simp [ball_zero_eq, Set.mem_ofPred_eq]
   · rintro s t hst ⟨s', hs'⟩
     exact ⟨s', fun t' ht' => hst <| hs' _ ht'⟩
 
@@ -177,7 +177,7 @@ theorem nnNorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : �
 
 theorem tsum_eNorm_ne_top_iff_summable_nnNorm {ι : Type*} {f : ι → E} :
     ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable fun i ↦ ‖f i‖₊ := by
-  simp only [eNorm_eq_nnNorm, ENNReal.tsum_coe_ne_top_iff_summable]
+  simp [eNorm_eq_nnNorm, ENNReal.tsum_coe_ne_top_iff_summable]
 
 @[deprecated (since := "2026-11-06")]
 alias tsum_enorm_ne_top_iff_summable_nnNorm := tsum_eNorm_ne_top_iff_summable_nnNorm
@@ -187,7 +187,7 @@ alias tsum_enorm_ne_top_iff_summable_nnnorm := tsum_eNorm_ne_top_iff_summable_nn
 
 lemma tsum_eNorm_ne_top_iff_summable_norm {ι : Type*} {f : ι → E} :
     ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable fun i ↦ ‖f i‖ := by
-  simp only [tsum_eNorm_ne_top_iff_summable_nnNorm, ← coe_nnNorm, NNReal.summable_coe]
+  simp [tsum_eNorm_ne_top_iff_summable_nnNorm, ← coe_nnNorm, NNReal.summable_coe]
 
 @[deprecated (since := "2026-11-06")]
 alias tsum_enorm_ne_top_iff_summable_norm := tsum_eNorm_ne_top_iff_summable_norm

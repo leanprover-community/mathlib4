@@ -75,10 +75,10 @@ theorem sum_lt_half_of_not_tendsto
   have h0 :
     (fun n => ∑ p ∈ range n with p.Prime, 1 / (p : ℝ)) = fun n =>
       ∑ p ∈ range n, ite (Nat.Prime p) (1 / (p : ℝ)) 0 := by
-    simp only [sum_filter]
+    simp [sum_filter]
   have hf : ∀ n : ℕ, 0 ≤ ite (Nat.Prime n) (1 / (n : ℝ)) 0 := by
     intro n; split_ifs
-    · simp only [one_div, inv_nonneg, Nat.cast_nonneg]
+    · simp [one_div, inv_nonneg, Nat.cast_nonneg]
     · exact le_rfl
   rw [h0, ← summable_iff_not_tendsto_nat_atTop_of_nonneg hf, summable_iff_vanishing] at h
   obtain ⟨s, h⟩ := h (Set.Ioo (-1) (1 / 2)) (isOpen_Ioo.mem_nhds (by simp))
@@ -123,7 +123,7 @@ theorem card_le_mul_sum {x k : ℕ} : #(U x k) ≤ x * ∑ p ∈ P x k, 1 / (p :
     (#(P.biUnion N) : ℝ) ≤ ∑ p ∈ P, (#(N p) : ℝ) := by assumption_mod_cast
     _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := by
       gcongr with p _
-      simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
+      simp [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
     _ = x * ∑ p ∈ P, 1 / (p : ℝ) := by rw [mul_sum]
 
 /--

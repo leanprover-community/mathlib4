@@ -433,7 +433,7 @@ lemma hom_ext {M : ModuleCat R} {N : ModuleCat S}
   change α (s ⊗ₜ m) = β (s ⊗ₜ m)
   have : s ⊗ₜ[R] (m : M) = s • (1 : S) ⊗ₜ[R] m := by
     rw [ExtendScalars.smul_tmul, mul_one]
-  simp only [this, map_smul, h]
+  simp [this, map_smul, h]
 
 end ExtendScalars
 
@@ -1027,7 +1027,7 @@ lemma extendScalars_assoc' :
           Functor.whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).inv ≫
             (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).inv = 𝟙 _ := by
   rw [extendScalars_assoc_assoc]
-  simp only [Iso.inv_hom_id_assoc, ← Functor.whiskerLeft_comp_assoc, Iso.hom_inv_id,
+  simp [Iso.inv_hom_id_assoc, ← Functor.whiskerLeft_comp_assoc, Iso.hom_inv_id,
     Functor.whiskerLeft_id', Category.id_comp]
 
 set_option backward.isDefEq.respectTransparency false in

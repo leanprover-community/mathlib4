@@ -349,7 +349,7 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
         eqToHom_refl, comp_id]
       slice_lhs 2 4 => simp [← Cat.Hom.toNatIso_inv, Cat.Hom.comp_toFunctor,
         ← Cat.Hom.toNatIso_hom, ← map_comp, Iso.inv_hom_id_app, comp_obj, map_id, comp_id]
-      simp only [assoc, ← reassoc_of% Cat.Hom.comp_map,
+      simp [assoc, ← reassoc_of% Cat.Hom.comp_map,
         Cat.Hom.comp_toFunctor, Functor.comp_obj, NatTrans.naturality_assoc]
 
 set_option backward.defeqAttrib.useBackward true in

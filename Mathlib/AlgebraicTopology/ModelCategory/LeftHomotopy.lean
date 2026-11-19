@@ -92,10 +92,10 @@ noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubca
     { h := h.h.hom
       h₀ := by
         dsimp
-        simp only [← h.h₀, ObjectProperty.FullSubcategory.comp_hom]
+        simp [← h.h₀, ObjectProperty.FullSubcategory.comp_hom]
       h₁ := by
         dsimp
-        simp only [← h.h₁, ObjectProperty.FullSubcategory.comp_hom] }
+        simp [← h.h₁, ObjectProperty.FullSubcategory.comp_hom] }
   invFun h :=
     { h := P.homMk h.h
       h₀ := by ext; exact h.h₀
@@ -209,7 +209,7 @@ lemma factorsThroughLocalization [CategoryWithWeakEquivalences C] :
   let L := (weakEquivalences C).Q
   rw [areEqualizedByLocalization_iff L]
   suffices L.map P.i₀ = L.map P.i₁ by
-    simp only [← h.h₀, ← h.h₁, L.map_comp, this]
+    simp [← h.h₀, ← h.h₁, L.map_comp, this]
   have := Localization.inverts L (weakEquivalences C) P.π (by
     rw [← weakEquivalence_iff]
     infer_instance)

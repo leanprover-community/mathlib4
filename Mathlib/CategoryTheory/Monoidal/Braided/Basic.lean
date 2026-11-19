@@ -290,7 +290,7 @@ theorem braiding_leftUnitor_aux₂ (X : C) :
     _ = (α_ _ _ _).hom ≫ (β_ _ _).hom ≫ ((λ_ _).hom ▷ X) ≫ (β_ X _).inv := by
       rw [braiding_leftUnitor_aux₁]
     _ = (α_ _ _ _).hom ≫ (_ ◁ (λ_ _).hom) ≫ (β_ _ _).hom ≫ (β_ X _).inv := by
-      (slice_lhs 2 3 => rw [← braiding_naturality_right]); simp only [assoc]
+      (slice_lhs 2 3 => rw [← braiding_naturality_right]); simp [assoc]
     _ = (α_ _ _ _).hom ≫ (_ ◁ (λ_ _).hom) := by rw [Iso.hom_inv_id, comp_id]
     _ = (ρ_ X).hom ▷ 𝟙_ C := by rw [triangle]
 
@@ -315,10 +315,10 @@ theorem braiding_rightUnitor_aux₂ (X : C) :
       simp
     _ = (α_ _ _ _).inv ≫ (β_ _ _).hom ≫ (α_ _ _ _).inv ≫ ((β_ _ X).inv ▷ _) ≫ (α_ _ _ _).hom ≫
           (𝟙_ C ◁ (ρ_ X).hom) := by
-      (slice_lhs 1 3 => rw [← hexagon_reverse]); simp only [assoc]
+      (slice_lhs 1 3 => rw [← hexagon_reverse]); simp [assoc]
     _ = (α_ _ _ _).inv ≫ (β_ _ _).hom ≫ (X ◁ (ρ_ _).hom) ≫ (β_ _ X).inv := by simp
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ▷ _) ≫ (β_ _ X).hom ≫ (β_ _ _).inv := by
-      (slice_lhs 2 3 => rw [← braiding_naturality_left]); simp only [assoc]
+      (slice_lhs 2 3 => rw [← braiding_naturality_left]); simp [assoc]
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ▷ _) := by rw [Iso.hom_inv_id, comp_id]
     _ = 𝟙_ C ◁ (λ_ X).hom := by rw [triangle_assoc_comp_right]
 
@@ -343,7 +343,7 @@ theorem leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).hom 
 @[reassoc]
 theorem rightUnitor_inv_braiding (X : C) : (ρ_ X).inv ≫ (β_ X (𝟙_ C)).hom = (λ_ X).inv := by
   apply (cancel_mono (λ_ X).hom).1
-  simp only [assoc, braiding_leftUnitor, Iso.inv_hom_id]
+  simp [assoc, braiding_leftUnitor, Iso.inv_hom_id]
 
 @[reassoc, simp]
 theorem braiding_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).hom = (ρ_ X).hom ≫ (λ_ X).inv := by
@@ -395,7 +395,7 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
     slice_lhs 2 3 =>
       rw [← CategoryTheory.Functor.map_comp, braided, CategoryTheory.Functor.map_comp]
     slice_lhs 1 2 => rw [braided]
-    simp only [Category.assoc]
+    simp [Category.assoc]
 
 /--
 Given two lax monoidal, monoidally isomorphic functors, if one is lax braided, so is the other.
@@ -615,14 +615,14 @@ def tensorδ (X₁ X₂ Y₁ Y₂ : C) : (X₁ ⊗ Y₁) ⊗ X₂ ⊗ Y₂ ⟶ (
 @[reassoc (attr := simp)]
 lemma tensorμ_tensorδ (X₁ X₂ Y₁ Y₂ : C) :
     tensorμ X₁ X₂ Y₁ Y₂ ≫ tensorδ X₁ X₂ Y₁ Y₂ = 𝟙 _ := by
-  simp only [tensorμ, ← whiskerLeft_comp_assoc, tensorδ, assoc, Iso.inv_hom_id_assoc,
+  simp [tensorμ, ← whiskerLeft_comp_assoc, tensorδ, assoc, Iso.inv_hom_id_assoc,
     Iso.hom_inv_id_assoc, hom_inv_whiskerRight_assoc, Iso.inv_hom_id, whiskerLeft_id, id_comp,
     Iso.hom_inv_id]
 
 @[reassoc (attr := simp)]
 lemma tensorδ_tensorμ (X₁ X₂ Y₁ Y₂ : C) :
     tensorδ X₁ X₂ Y₁ Y₂ ≫ tensorμ X₁ X₂ Y₁ Y₂ = 𝟙 _ := by
-  simp only [tensorδ, ← whiskerLeft_comp_assoc, tensorμ, assoc, Iso.inv_hom_id_assoc,
+  simp [tensorδ, ← whiskerLeft_comp_assoc, tensorμ, assoc, Iso.inv_hom_id_assoc,
     Iso.hom_inv_id_assoc, inv_hom_whiskerRight_assoc, Iso.inv_hom_id, whiskerLeft_id, id_comp,
     Iso.hom_inv_id]
 
@@ -644,7 +644,7 @@ theorem tensorμ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X
     rw [tensorHom_comp_tensorHom, comp_id f₁, ← id_comp f₁, associator_naturality,
       ← tensorHom_comp_tensorHom]
   slice_lhs 5 6 => rw [associator_inv_naturality]
-  simp only [assoc]
+  simp [assoc]
 
 @[reassoc]
 theorem tensorμ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
@@ -782,7 +782,7 @@ lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y 
     comp_whiskerRight_assoc, pentagon_inv_assoc, μ_natural_left_assoc, μ_natural_left_assoc,
     Iso.hom_inv_id_assoc, ← associator_inv_naturality_left_assoc, μ_whiskerRight_comp_μ_assoc,
     Iso.inv_hom_id_assoc, ← tensorHom_def_assoc]
-  simp only [← Functor.map_comp, whisker_assoc, Category.assoc, pentagon_inv_inv_hom_hom_inv,
+  simp [← Functor.map_comp, whisker_assoc, Category.assoc, pentagon_inv_inv_hom_hom_inv,
     pentagon_inv_hom_hom_hom_inv_assoc]
 
 end Tensor

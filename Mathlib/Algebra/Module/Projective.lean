@@ -141,7 +141,7 @@ instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
       replace hg : ∀ i x, f (g i x) = DFinsupp.single i x := fun i ↦ DFunLike.congr_fun (hg i)
       refine ⟨DFinsupp.coprodMap g, ?_⟩
       ext i x j
-      simp only [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
+      simp [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
 
 /-- Free modules are projective. -/
 theorem Projective.of_basis (b : Basis ι R P) : Projective R P := by

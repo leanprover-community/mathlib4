@@ -102,7 +102,7 @@ theorem edist_mul_right [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒ�
 @[to_additive (attr := simp)]
 theorem edist_div_right [DivInvMonoid M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : edist (a / c) (b / c) = edist a b := by
-  simp only [div_eq_mul_inv, edist_mul_right]
+  simp [div_eq_mul_inv, edist_mul_right]
 
 @[to_additive (attr := simp)]
 theorem edist_inv_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
@@ -280,12 +280,12 @@ theorem nndist_mul_right [PseudoMetricSpace M] [Mul M] [IsIsometricSMul Mᵐᵒ�
 
 @[to_additive (attr := simp)]
 theorem dist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
-    (a b c : M) : dist (a / c) (b / c) = dist a b := by simp only [div_eq_mul_inv, dist_mul_right]
+    (a b c : M) : dist (a / c) (b / c) = dist a b := by simp [div_eq_mul_inv, dist_mul_right]
 
 @[to_additive (attr := simp)]
 theorem nndist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : nndist (a / c) (b / c) = nndist a b := by
-  simp only [div_eq_mul_inv, nndist_mul_right]
+  simp [div_eq_mul_inv, nndist_mul_right]
 
 @[to_additive (attr := simp)]
 theorem dist_inv_inv [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]

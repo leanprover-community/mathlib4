@@ -106,7 +106,7 @@ def sumInv (pqr : Multiset ℕ+) : ℚ :=
   Multiset.sum (pqr.map fun (x : ℕ+) => x⁻¹)
 
 theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ := by
-  simp only [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons,
+  simp [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons,
     map_singleton, sum_singleton]
 
 /-- A multiset `pqr` of positive natural numbers is `Admissible`
@@ -143,7 +143,7 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
   rintro (⟨p', q', H⟩ | ⟨n, H⟩ | H | H | H)
   · rw [← H, A', sumInv_pqr, add_assoc]
     simp only [lt_add_iff_pos_right, PNat.one_coe, inv_one, Nat.cast_one]
-    apply add_pos <;> simp only [PNat.pos, Nat.cast_pos, inv_pos]
+    apply add_pos <;> simp [PNat.pos, Nat.cast_pos, inv_pos]
   · rw [← H, D', sumInv_pqr]
     norm_num
   all_goals
@@ -217,7 +217,7 @@ theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
   rw [hpqr]
   rw [hpqr] at H
   apply admissible_of_one_lt_sumInv_aux hS _ H
-  simp only [S, insert_eq_cons, length_sort, card_cons, card_singleton]
+  simp [S, insert_eq_cons, length_sort, card_cons, card_singleton]
 
 /-- A multiset `{p,q,r}` of positive natural numbers
 is a solution to `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1` if and only if

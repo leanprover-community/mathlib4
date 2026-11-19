@@ -325,7 +325,7 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   · rcases h with ⟨a, h⟩
     obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (n := a) <| by
       rintro rfl
-      simp only [mul_zero, ne_zero] at h
+      simp [mul_zero, ne_zero] at h
     use ⟨n.succ, n.succ_pos⟩
     rw [← coe_inj, h, mul_coe, mk_coe]
 

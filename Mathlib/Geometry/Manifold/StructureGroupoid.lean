@@ -320,7 +320,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
   mem_of_eqOnSource' e e' he ee' := by
     constructor
     · apply PG.congr e'.open_source ee'.2
-      simp only [ee'.1, he.1]
+      simp [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
       convert he.2 using 1
@@ -407,10 +407,10 @@ def idRestrGroupoid : StructureGroupoid H where
     refine ⟨s, hs, ?_⟩
     rw [← ofSet_symm]
     exact OpenPartialHomeomorph.EqOnSource.symm' hse
-  id_mem' := ⟨univ, isOpen_univ, by simp only [mfld_simps, refl]⟩
+  id_mem' := ⟨univ, isOpen_univ, by simp [mfld_simps, refl]⟩
   locality' := by
     intro e h
-    refine ⟨e.source, e.open_source, by simp only [mfld_simps], ?_⟩
+    refine ⟨e.source, e.open_source, by simp [mfld_simps], ?_⟩
     intro x hx
     rcases h x hx with ⟨s, hs, hxs, s', hs', hes'⟩
     have hes : x ∈ (e.restr s).source := by
@@ -432,7 +432,7 @@ instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRes
     rintro e ⟨s', hs', he⟩ s hs
     use s' ∩ s, hs'.inter hs
     refine Setoid.trans (OpenPartialHomeomorph.EqOnSource.restr he s) ?_
-    exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
+    exact ⟨by simp [hs.interior_eq, mfld_simps], by simp [mfld_simps, eqOn_refl]⟩⟩
 
 /-- A groupoid is closed under restriction if and only if it contains the trivial restriction-closed
 groupoid. -/

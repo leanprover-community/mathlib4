@@ -57,7 +57,7 @@ lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
     Set.toFinset (⋃ (x : β), f x) =
     Finset.biUnion (Finset.univ : Finset β) (fun x => (f x).toFinset) := by
   ext v
-  simp only [mem_toFinset, mem_iUnion, Finset.mem_biUnion, Finset.mem_univ, true_and]
+  simp [mem_toFinset, mem_iUnion, Finset.mem_biUnion, Finset.mem_univ, true_and]
 
 /-- A union of sets with `Fintype` structure over a set with `Fintype` structure has a `Fintype`
 structure. -/
@@ -377,7 +377,7 @@ theorem _root_.iInf_iSup_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.
   | of_equiv e h => simp [← e.iInf_comp, ← e.piCongrLeft κ |>.iSup_comp, h]
   | h_empty => simp [iSup_const]
   | h_option h =>
-    simp only [iInf_option, h, ← (Equiv.piOptionEquivProd (β := κ)).symm.iSup_comp,
+    simp [iInf_option, h, ← (Equiv.piOptionEquivProd (β := κ)).symm.iSup_comp,
       Equiv.piOptionEquivProd_symm_apply, iSup_prod, ← inf_iSup_eq, ← iSup_inf_eq]
 
 theorem _root_.iSup_iInf_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.Coframe α] [Finite ι]
@@ -418,8 +418,8 @@ protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
 theorem Finite.bddAbove_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) := by
   induction I, H using Set.Finite.induction_on with
-  | empty => simp only [biUnion_empty, bddAbove_empty, forall_mem_empty]
-  | insert _ _ hs => simp only [biUnion_insert, forall_mem_insert, bddAbove_union, hs]
+  | empty => simp [biUnion_empty, bddAbove_empty, forall_mem_empty]
+  | insert _ _ hs => simp [biUnion_insert, forall_mem_insert, bddAbove_union, hs]
 
 @[to_dual]
 theorem infinite_of_not_bddAbove : ¬BddAbove s → s.Infinite :=

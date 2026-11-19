@@ -67,6 +67,6 @@ instance : ProperSpace ℕ :=
 instance : IsOrderBornology ℕ := .of_isCompactIcc 0 (by simp) (by simp [Nat.closedBall_eq_Icc])
 
 instance : NoncompactSpace ℕ :=
-  noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
+  noncompactSpace_of_neBot <| by simp [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
 
 end Nat

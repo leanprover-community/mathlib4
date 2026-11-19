@@ -98,11 +98,11 @@ theorem map_sup (hf : LeftOrdContinuous f) (x y : α) : f (x ⊔ y) = f x ⊔ f 
 
 @[to_dual]
 theorem le_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y ↔ x ≤ y := by
-  simp only [← sup_eq_right, ← hf.map_sup, h.eq_iff]
+  simp [← sup_eq_right, ← hf.map_sup, h.eq_iff]
 
 @[to_dual]
 theorem lt_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x < f y ↔ x < y := by
-  simp only [lt_iff_le_not_ge, hf.le_iff h]
+  simp [lt_iff_le_not_ge, hf.le_iff h]
 
 variable (f)
 

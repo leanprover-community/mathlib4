@@ -335,7 +335,7 @@ lemma properSpace_iff_compactSpace_integer [(Valued.v : Valuation K Γ₀).RankO
 lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField
     [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompleteSpace K ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
-  simp only [properSpace_iff_compactSpace_integer,
+  simp [properSpace_iff_compactSpace_integer,
       compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField,
       toNormedField.setOfPred_mem_integer_eq_closedBall,
       completeSpace_iff_isComplete_univ (α := 𝒪[K]), Subtype.isComplete_iff,

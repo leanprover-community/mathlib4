@@ -182,7 +182,7 @@ lemma eq_iff_forall_pairing_sRoot_eq [CharZero R] [IsDomain R]
 
 lemma pairing_reflection_left (i : n) (x : M) (y : N) :
     rl.pairing (rl.reflection i x) y = rl.pairing x (rl.coreflection i y) := by
-  simp only [reflection_apply, coreflection_apply, map_sub, map_smul, LinearMap.sub_apply,
+  simp [reflection_apply, coreflection_apply, map_sub, map_smul, LinearMap.sub_apply,
     LinearMap.smul_apply, smul_eq_mul, mul_comm]
 
 lemma pairing_reflection_coreflection (i : n) (x : M) (y : N) :

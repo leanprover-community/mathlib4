@@ -114,7 +114,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
   conv_rhs => simp only [hab, add_comp, assoc, inr_f_descShortComplex_f,
     inl_v_descShortComplex_f, comp_zero, zero_add]
   rw [hS.δ_eq n₀ n₁ (by simpa using h) (b ≫ S.g.f n₀) _ b rfl (-a)
-    (by simp only [neg_comp, neg_eq_iff_add_eq_zero, w.2]) (n₁ + 1) (by simp)]
+    (by simp [neg_comp, neg_eq_iff_add_eq_zero, w.2]) (n₁ + 1) (by simp)]
   /- We simplify the LHS. -/
   dsimp [Functor.shiftMap, homologyFunctor_shift]
   rw [HomologicalComplex.homologyπ_naturality_assoc,
@@ -122,7 +122,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
     S.X₁.liftCycles_shift_homologyπ_assoc _ _ _ _ n₁ (by lia) (n₁ + 1) (by simp),
     Iso.inv_hom_id_app]
   dsimp [homologyFunctor_shift]
-  simp only [hab, add_comp, assoc, inl_v_triangle_mor₃_f_assoc,
+  simp [hab, add_comp, assoc, inl_v_triangle_mor₃_f_assoc,
     shiftFunctorObjXIso, neg_comp, Iso.inv_hom_id, comp_neg, comp_id,
     inr_f_triangle_mor₃_f_assoc, zero_comp, comp_zero, add_zero]
 

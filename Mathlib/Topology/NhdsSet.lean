@@ -157,7 +157,7 @@ theorem tendsto_nhdsSet_of_tendsto_nhds {f : α → X} {l : Filter α} {x : X} (
 
 @[simp]
 theorem nhdsSet_union (s t : Set X) : 𝓝ˢ (s ∪ t) = 𝓝ˢ s ⊔ 𝓝ˢ t := by
-  simp only [nhdsSet, image_union, sSup_union]
+  simp [nhdsSet, image_union, sSup_union]
 
 theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ t₂) : s₁ ∪ s₂ ∈ 𝓝ˢ (t₁ ∪ t₂) := by
   rw [nhdsSet_union]
@@ -205,12 +205,12 @@ theorem Filter.Eventually.union {p : X → Prop} (hs : ∀ᶠ x in 𝓝ˢ s, p x
   Filter.Eventually.union_nhdsSet.mpr ⟨hs, ht⟩
 
 theorem nhdsSet_iUnion {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋃ i, s i) = ⨆ i, 𝓝ˢ (s i) := by
-  simp only [nhdsSet, image_iUnion, sSup_iUnion (β := Filter X)]
+  simp [nhdsSet, image_iUnion, sSup_iUnion (β := Filter X)]
 
 theorem eventually_nhdsSet_iUnion₂ {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {P : X → Prop} :
     (∀ᶠ x in 𝓝ˢ (⋃ (i) (_ : p i), s i), P x) ↔ ∀ i, p i → ∀ᶠ x in 𝓝ˢ (s i), P x := by
-  simp only [nhdsSet_iUnion, eventually_iSup]
+  simp [nhdsSet_iUnion, eventually_iSup]
 
 theorem eventually_nhdsSet_iUnion {ι : Sort*} {s : ι → Set X} {P : X → Prop} :
     (∀ᶠ x in 𝓝ˢ (⋃ i, s i), P x) ↔ ∀ i, ∀ᶠ x in 𝓝ˢ (s i), P x := by
-  simp only [nhdsSet_iUnion, eventually_iSup]
+  simp [nhdsSet_iUnion, eventually_iSup]

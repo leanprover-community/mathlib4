@@ -70,7 +70,7 @@ lemma IsPushout.IsVanKampen.exists_cube_filling {H : IsPushout f g h i} (H' : H.
     ∃ (W' : C) (f' : W' ⟶ X') (g' : W' ⟶ Y') (αW : W' ⟶ W),
       IsPullback f' αW αX f ∧ IsPullback g' αW αY g ∧ IsPushout f' g' h' i' := by
   let l := hi.lift ((pullback.fst αX f) ≫ h') ((pullback.snd αX f) ≫ g)
-    (by simp only [Category.assoc, hh.toCommSq.w, pullback.condition_assoc, ← H.w])
+    (by simp [Category.assoc, hh.toCommSq.w, pullback.condition_assoc, ← H.w])
   use (pullback αX f), (pullback.fst αX f), l, (pullback.snd αX f)
   refine ⟨IsPullback.of_hasPullback αX f, ?_, ?_⟩
   · refine IsPullback.of_right' ?_ hi
@@ -78,7 +78,7 @@ lemma IsPushout.IsVanKampen.exists_cube_filling {H : IsPushout f g h i} (H' : H.
     exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
   · refine (H' (pullback.fst αX f) l h' i' (pullback.snd αX f) αX αY αZ
       (IsPullback.of_hasPullback αX f) ?_
-        hh.toCommSq hi.toCommSq ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨hh, hi⟩
+        hh.toCommSq hi.toCommSq ⟨by simp [IsPullback.lift_fst, l]⟩).2 ⟨hh, hi⟩
     refine IsPullback.of_right' ?_ hi
     rw [← H.w]
     exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
@@ -100,13 +100,13 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
           (by convert! hα WalkingSpan.Hom.snd) ?_ ?_ ?_).trans ?_)
     · have : F'.map WalkingSpan.Hom.fst ≫ c'.ι.app WalkingSpan.left =
           F'.map WalkingSpan.Hom.snd ≫ c'.ι.app WalkingSpan.right := by
-        simp only [Cocone.w]
+        simp [Cocone.w]
       rw [(IsColimit.equivOfNatIsoOfIso (diagramIsoSpan F') c' (PushoutCocone.mk _ _ this)
             _).nonempty_congr]
       · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.isColimit'⟩
       · refine Cocone.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
-          simp only [c'.w, Category.id_comp, Category.comp_id]
+          simp [c'.w, Category.id_comp, Category.comp_id]
     · exact ⟨congr($(eα.symm).app _)⟩
     · exact ⟨congr($(eα.symm).app _)⟩
     · exact ⟨by simp⟩
@@ -120,7 +120,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       Iff.trans ?_ ((H w.cocone ⟨by rintro (_ | _ | _); exacts [αW, αX, αY], ?_⟩ αZ ?_ ?_).trans ?_)
     rotate_left
     · rintro i _ (_ | _ | _)
-      · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]
+      · dsimp; simp [Functor.map_id, Category.comp_id, Category.id_comp]
       exacts [hf.w, hg.w]
     · ext (_ | _ | _)
       · simp [hh.w, hf.w_assoc]

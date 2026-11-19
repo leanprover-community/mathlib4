@@ -93,7 +93,7 @@ theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f
 
 /-- `Option.map` as a function between functions is injective. -/
 theorem map_injective' : Function.Injective (@Option.map α β) := fun f g h ↦
-  funext fun x ↦ some_injective _ <| by simp only [← map_some, h]
+  funext fun x ↦ some_injective _ <| by simp [← map_some, h]
 
 @[simp]
 theorem map_inj {f g : α → β} : Option.map f = Option.map g ↔ f = g :=
@@ -219,7 +219,7 @@ lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
 @[simp]
 lemma getD_comp_some (d : α) : (fun x ↦ x.getD d) ∘ some = id := by
   ext
-  simp only [Function.comp_apply, getD_some, id_eq]
+  simp [Function.comp_apply, getD_some, id_eq]
 
 @[simp]
 theorem none_eq_map_iff {x : Option α} {f : α → β} : none = x.map f ↔ x = none := by

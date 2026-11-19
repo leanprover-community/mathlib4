@@ -59,7 +59,7 @@ partial def proveAscFactorial (n l : ℕ) (en el : Q(ℕ)) :
 lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (1).ascFactorial x = a) :
     IsNat (n !) a := by
   constructor
-  simp only [h₁.out, cast_id, ← h₂, one_ascFactorial]
+  simp [h₁.out, cast_id, ← h₂, one_ascFactorial]
 
 /-- Evaluates the `Nat.factorial` function. -/
 @[nolint unusedHavesSuffices, norm_num Nat.factorial _]

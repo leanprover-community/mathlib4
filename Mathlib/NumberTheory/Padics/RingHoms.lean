@@ -90,7 +90,7 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
   rw [mul_right_comm, mul_assoc, ← this]
   suffices rdcp : r.den.Coprime p by
     rw [rdcp.gcd_eq_one]
-    simp only [mul_one, cast_one, sub_self]
+    simp [mul_one, cast_one, sub_self]
   apply Coprime.symm
   apply (coprime_or_dvd_of_prime hp_prime.out _).resolve_right
   rw [← Int.natCast_dvd_natCast, ← norm_int_lt_one_iff_dvd, not_lt]
@@ -272,11 +272,11 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
   map_zero' := by
     rw [f_congr (0 : ℤ_[p]) _ 0, cast_zero]
     · exact f_spec _
-    · simp only [sub_zero, cast_zero, Submodule.zero_mem]
+    · simp [sub_zero, cast_zero, Submodule.zero_mem]
   map_one' := by
     rw [f_congr (1 : ℤ_[p]) _ 1, cast_one]
     · exact f_spec _
-    · simp only [sub_self, cast_one, Submodule.zero_mem]
+    · simp [sub_self, cast_one, Submodule.zero_mem]
   map_add' := by
     intro x y
     rw [f_congr (x + y) _ (f x + f y), cast_add]
@@ -363,7 +363,7 @@ noncomputable def appr : ℤ_[p] → ℕ → ℕ
 
 theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction n generalizing x with
-  | zero => simp only [appr, _root_.pow_zero, zero_lt_one]
+  | zero => simp [appr, _root_.pow_zero, zero_lt_one]
   | succ n ih =>
     simp only [appr, map_natCast, ZMod.natCast_self, map_pow, Int.natAbs, map_mul]
     have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.out.one_lt n.lt_add_one
@@ -390,7 +390,7 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h; clear h
   induction k with
   | zero =>
-    simp only [add_zero, le_refl, tsub_eq_zero_of_le, dvd_zero]
+    simp [add_zero, le_refl, tsub_eq_zero_of_le, dvd_zero]
   | succ k ih =>
     rw [← add_assoc]
     dsimp [appr]
@@ -404,7 +404,7 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
 theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p : ℤ_[p]) ^ n} := by
   simp only [Ideal.mem_span_singleton]
   induction n with
-  | zero => simp only [_root_.pow_zero, isUnit_one, IsUnit.dvd, forall_const]
+  | zero => simp [_root_.pow_zero, isUnit_one, IsUnit.dvd, forall_const]
   | succ n ih =>
     intro x
     dsimp only [appr]
@@ -463,7 +463,7 @@ theorem ker_toZModPow (n : ℕ) :
   · intro h
     suffices x.appr n = 0 by
       convert appr_spec n x
-      simp only [this, sub_zero, cast_zero]
+      simp [this, sub_zero, cast_zero]
     dsimp [toZModPow, toZModHom] at h
     rw [ZMod.natCast_eq_zero_iff] at h
     apply eq_zero_of_dvd_of_lt h (appr_lt _ _)
@@ -553,7 +553,7 @@ theorem pow_dvd_nthHom_sub (r : R) (i j : ℕ) (h : i ≤ j) :
   rw [← Int.natCast_pow, ← ZMod.intCast_zmod_eq_zero_iff_dvd, Int.cast_sub]
   dsimp [nthHom]
   rw [← f_compat, RingHom.comp_apply]
-  simp only [ZMod.cast_id, ZMod.castHom_apply, sub_self, ZMod.natCast_val, ZMod.intCast_cast]
+  simp [ZMod.cast_id, ZMod.castHom_apply, sub_self, ZMod.natCast_val, ZMod.intCast_cast]
 
 theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n := by
   intro ε hε
@@ -597,7 +597,7 @@ theorem nthHomSeq_add (r s : R) :
   dsimp [nthHom]
   simp only [ZMod.natCast_val, map_add, Int.cast_sub, ZMod.intCast_cast, Int.cast_add]
   rw [ZMod.cast_add (show p ^ n ∣ p ^ j from pow_dvd_pow _ hj)]
-  simp only [sub_self]
+  simp [sub_self]
 
 theorem nthHomSeq_mul (r s : R) :
     nthHomSeq f_compat (r * s) ≈ nthHomSeq f_compat r * nthHomSeq f_compat s := by

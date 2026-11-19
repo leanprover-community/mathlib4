@@ -165,9 +165,9 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
 instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithTop α) where
   mul_assoc a b c := by
-    rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
-    rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
-    rcases eq_or_ne c 0 with (rfl | hc); · simp only [mul_zero]
+    rcases eq_or_ne a 0 with (rfl | ha); · simp [zero_mul]
+    rcases eq_or_ne b 0 with (rfl | hb); · simp [zero_mul, mul_zero]
+    rcases eq_or_ne c 0 with (rfl | hc); · simp [mul_zero]
     cases a with | top => simp [hb, hc] | coe a => ?_
     cases b with | top => simp [mul_top ha, top_mul hc] | coe b => ?_
     cases c with
@@ -175,7 +175,7 @@ instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
       rw [mul_top hb, mul_top ha]
       rw [← coe_zero, ne_eq, coe_eq_coe] at ha hb
       simp [ha, hb]
-    | coe c => simp only [← coe_mul, mul_assoc]
+    | coe c => simp [← coe_mul, mul_assoc]
 
 section MonoidWithZero
 variable [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] {x : WithTop α} {n : ℕ}

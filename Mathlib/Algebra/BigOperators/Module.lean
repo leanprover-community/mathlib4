@@ -30,7 +30,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
       f (n - 1) • G n - f m • G m - ∑ i ∈ Ico m (n - 1), (f (i + 1) - f i) • G (i + 1) := by
   have h₁ : (∑ i ∈ Ico (m + 1) n, f i • G i) = ∑ i ∈ Ico m (n - 1), f (i + 1) • G (i + 1) := by
     rw [← Nat.sub_add_cancel (Nat.one_le_of_lt hmn), ← sum_Ico_add']
-    simp only [add_tsub_cancel_right]
+    simp [add_tsub_cancel_right]
   have h₂ :
     (∑ i ∈ Ico (m + 1) n, f i • G (i + 1)) =
       (∑ i ∈ Ico m (n - 1), f i • G (i + 1)) + f (n - 1) • G n - f m • G (m + 1) := by
@@ -64,7 +64,7 @@ theorem sum_range_by_parts :
   · simp [hn]
   · simp only [range_eq_Ico]
     rw [sum_Ico_by_parts f g (Nat.pos_of_ne_zero hn), sum_range_zero, smul_zero, sub_zero]
-    simp only [← range_eq_Ico]
+    simp [← range_eq_Ico]
 
 /-- **Summation by parts** for ranges, differencing the second (module) factor instead of the
 first: the mirror image of `sum_range_by_parts`. -/

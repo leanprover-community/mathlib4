@@ -105,7 +105,7 @@ class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : ou
 theorem tendstoIxxClass_principal {s t : Set α} {Ixx : α → α → Set α} :
     TendstoIxxClass Ixx (𝓟 s) (𝓟 t) ↔ ∀ x ∈ s, ∀ y ∈ s, Ixx x y ⊆ t :=
   Iff.trans ⟨fun h => h.tendsto_Ixx, fun h => ⟨h⟩⟩ <| by
-    simp only [smallSets_principal, prod_principal_principal, tendsto_principal_principal,
+    simp [smallSets_principal, prod_principal_principal, tendsto_principal_principal,
       forall_prod_set, mem_powerset_iff]
 
 theorem tendstoIxxClass_inf {l₁ l₁' l₂ l₂' : Filter α} {Ixx} [h : TendstoIxxClass Ixx l₁ l₂]

@@ -397,7 +397,7 @@ def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
         refine ((α.app _).hom.map_mul _ _).trans ?_
         change lift _ _ ≫ μ[N.X] = _
         congr 1
-        ext <;> simp only [lift_fst, tensorHom_fst, lift_snd, tensorHom_snd,
+        ext <;> simp [lift_fst, tensorHom_fst, lift_snd, tensorHom_snd,
           ← yonedaMon_naturality, Category.comp_id] }
   map_preimage {M N} α := by
     ext Y f

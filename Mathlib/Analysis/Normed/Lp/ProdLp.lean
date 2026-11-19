@@ -220,9 +220,9 @@ This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep i
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp only [prod_edist_eq_card, edist_comm]
-  · simp only [prod_edist_eq_sup, edist_comm]
-  · simp only [prod_edist_eq_add h, edist_comm]
+  · simp [prod_edist_eq_card, edist_comm]
+  · simp [prod_edist_eq_sup, edist_comm]
+  · simp [prod_edist_eq_add h, edist_comm]
 
 end EDistProp
 
@@ -406,16 +406,16 @@ private theorem edist_proj_le_edist_aux [PseudoEMetricSpace α] [PseudoEMetricSp
     constructor
     · calc
         edist x.fst y.fst ≤ (edist x.fst y.fst ^ p.toReal) ^ (1 / p.toReal) := by
-          simp only [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
+          simp [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
         _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
           gcongr
-          simp only [self_le_add_right]
+          simp [self_le_add_right]
     · calc
         edist x.snd y.snd ≤ (edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
-          simp only [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
+          simp [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
         _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
           gcongr
-          simp only [self_le_add_left]
+          simp [self_le_add_left]
 
 private lemma prod_lipschitzWith_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (@ofLp p (α × β)) := by
@@ -440,7 +440,7 @@ private lemma prod_antilipschitzWith_ofLp_aux [PseudoEMetricSpace α] [PseudoEMe
           edist (ofLp x) (ofLp y) ^ p.toReal) ^ (1 / p.toReal) := by
         gcongr <;> simp [edist]
       _ = (2 ^ (1 / p.toReal) : ℝ≥0) * edist (ofLp x) (ofLp y) := by
-        simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
+        simp [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
           ENNReal.rpow_one, ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
 private lemma isUniformInducing_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -752,7 +752,7 @@ variable {p α β}
 theorem prod_norm_eq_of_nat [Norm α] [Norm β] (n : ℕ) (h : p = n) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ n + ‖f.snd‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
-  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
+  simp [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
     prod_norm_eq_add this]
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
@@ -911,12 +911,12 @@ lemma dist_toLp_snd (y₁ y₂ : β) :
 
 @[simp]
 lemma edist_toLp_fst (x₁ x₂ : α) : edist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = edist x₁ x₂ := by
-  simp only [edist_nndist, nndist_toLp_fst p α β x₁ x₂]
+  simp [edist_nndist, nndist_toLp_fst p α β x₁ x₂]
 
 @[simp]
 lemma edist_toLp_snd (y₁ y₂ : β) :
     edist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = edist y₁ y₂ := by
-  simp only [edist_nndist, nndist_toLp_snd p α β y₁ y₂]
+  simp [edist_nndist, nndist_toLp_snd p α β y₁ y₂]
 
 end Single
 
@@ -952,7 +952,7 @@ instance instProdNormSMulClass [SeminormedRing 𝕜] [Module 𝕜 α] [Module �
     [NormSMulClass 𝕜 α] [NormSMulClass 𝕜 β] : NormSMulClass 𝕜 (WithLp p (α × β)) :=
   .of_nnNorm_smul fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [← prod_nnNorm_ofLp, WithLp.ofLp_smul, nnNorm_smul]
+    · simp [← prod_nnNorm_ofLp, WithLp.ofLp_smul, nnNorm_smul]
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [prod_nnNorm_eq_add hpt, prod_nnNorm_eq_add hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
@@ -1010,7 +1010,7 @@ lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp 
 
 lemma prod_norm_eq_idemFst_of_L1 (x : WithLp 1 (α × β)) : ‖x‖ = ‖idemFst x‖ + ‖idemSnd x‖ := by
   rw [prod_norm_eq_add_idemFst (lt_of_lt_of_eq zero_lt_one toReal_one.symm)]
-  simp only [toReal_one, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self]
+  simp [toReal_one, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self]
 
 end SeminormedAddCommGroup
 

@@ -271,7 +271,7 @@ theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ 
   exact image_iUnion
 
 theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
-  simp only [kstar_eq_iSup_pow, mul_iSup, iSup_mul, ← pow_succ, ← pow_succ']
+  simp [kstar_eq_iSup_pow, mul_iSup, iSup_mul, ← pow_succ, ← pow_succ']
 
 @[simp]
 theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ := by
@@ -397,7 +397,7 @@ lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n 
 
 @[simp]
 lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
-  simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
+  simp [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
 
 @[simp]
 lemma mem_inf {x : List α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by

@@ -185,7 +185,7 @@ theorem normalize_eq_normalize_iff_associated {a b : α} :
   mpr := by
     rintro ⟨u, rfl⟩
     nontriviality α
-    refine by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 ↦ ?_
+    refine by_cases (by rintro rfl; simp [zero_mul]) fun ha : a ≠ 0 ↦ ?_
     simp [normalize, normUnit_mul_units _ ha, mul_assoc]
 
 theorem Associated.eq_of_normalized
@@ -306,7 +306,7 @@ theorem coe_normalizeHom : normalizeHom (α := α) = normalize (α := α) :=
 
 theorem Associates.out_mul (a b : Associates α) : (a * b).out = a.out * b.out :=
   Quotient.inductionOn₂ a b fun _ _ => by
-    simp only [Associates.quotient_mk_eq_mk, out_mk, mk_mul_mk, normalize_mul]
+    simp [Associates.quotient_mk_eq_mk, out_mk, mk_mul_mk, normalize_mul]
 
 end StrongNormalizationMonoid
 
@@ -513,7 +513,7 @@ theorem gcd_mul_left [StrongNormalizedGCDMonoid α] (a b c : α) :
 theorem gcd_mul_left' [GCDMonoid α] (a b c : α) :
     Associated (gcd (a * b) (a * c)) (a * gcd b c) := by
   obtain rfl | ha := eq_or_ne a 0
-  · simp only [zero_mul, gcd_zero_left']
+  · simp [zero_mul, gcd_zero_left']
   obtain ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
   apply associated_of_dvd_dvd
   · rw [eq]
@@ -525,12 +525,12 @@ theorem gcd_mul_left' [GCDMonoid α] (a b c : α) :
 
 @[simp]
 theorem gcd_mul_right [StrongNormalizedGCDMonoid α] (a b c : α) :
-    gcd (b * a) (c * a) = gcd b c * normalize a := by simp only [mul_comm, gcd_mul_left]
+    gcd (b * a) (c * a) = gcd b c * normalize a := by simp [mul_comm, gcd_mul_left]
 
 @[simp]
 theorem gcd_mul_right' [GCDMonoid α] (a b c : α) :
     Associated (gcd (b * a) (c * a)) (gcd b c * a) := by
-  simp only [mul_comm, gcd_mul_left']
+  simp [mul_comm, gcd_mul_left']
 
 theorem gcd_eq_left_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize a = a) :
     gcd a b = a ↔ a ∣ b :=
@@ -765,7 +765,7 @@ section LCM
 theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ b ∣ c := by
   by_cases h : a = 0 ∨ b = 0
   · rcases h with (rfl | rfl) <;>
-      simp +contextual only [iff_def, lcm_zero_left, lcm_zero_right,
+      simp +contextual [iff_def, lcm_zero_left, lcm_zero_right,
         zero_dvd_iff, dvd_zero, and_true, imp_true_iff]
   · obtain ⟨h1, h2⟩ := not_or.1 h
     have h : gcd a b ≠ 0 := fun H => h1 ((gcd_eq_zero_iff _ _).1 H).1
@@ -881,7 +881,7 @@ theorem lcm_mul_left [StrongNormalizedGCDMonoid α] (a b c : α) :
 
 @[simp]
 theorem lcm_mul_right [StrongNormalizedGCDMonoid α] (a b c : α) :
-    lcm (b * a) (c * a) = lcm b c * normalize a := by simp only [mul_comm, lcm_mul_left]
+    lcm (b * a) (c * a) = lcm b c * normalize a := by simp [mul_comm, lcm_mul_left]
 
 theorem lcm_eq_left_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize a = a) :
     lcm a b = a ↔ b ∣ a :=
@@ -994,7 +994,7 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
     cases g₁
     cases g₂
     dsimp only at hgcd hlcm
-    simp only [hgcd, hlcm]⟩
+    simp [hgcd, hlcm]⟩
 
 instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (NormalizedGCDMonoid α) :=
   ⟨by

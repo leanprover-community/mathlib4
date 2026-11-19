@@ -85,7 +85,7 @@ lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
   | zero =>
     simp [preCantorSet]
   | succ n ih =>
-    exact Or.inl ⟨0, ih, by simp only [zero_div]⟩
+    exact Or.inl ⟨0, ih, by simp [zero_div]⟩
 
 theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
 

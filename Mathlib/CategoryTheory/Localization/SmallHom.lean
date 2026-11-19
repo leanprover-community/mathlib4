@@ -146,7 +146,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma equiv_mkInv (L : C ⥤ D) [L.IsLocalization W] {X Y : C} (f : Y ⟶ X) (hf : W f)
     [HasSmallLocalizedHom.{w} W X Y] :
     equiv.{w} W L (mkInv f hf) = (Localization.isoOfHom L W f hf).inv := by
-  simp only [equiv, mkInv, Equiv.symm_trans_apply, Equiv.symm_symm, homEquiv_symm_apply,
+  simp [equiv, mkInv, Equiv.symm_trans_apply, Equiv.symm_symm, homEquiv_symm_apply,
     Equiv.trans_apply, Equiv.symm_apply_apply, homEquiv_isoOfHom_inv]
 
 /-- The composition on `SmallHom W`. -/
@@ -167,7 +167,7 @@ lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocaliz
   obtain ⟨β, rfl⟩ := (equivShrink _).surjective β
   dsimp [equiv, comp]
   rw [Equiv.symm_apply_apply]
-  simp only [homEquiv_refl, homEquiv_comp]
+  simp [homEquiv_refl, homEquiv_comp]
 
 section
 
@@ -197,7 +197,7 @@ lemma comp_assoc [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W X 
     (α : SmallHom.{w} W X Y) (β : SmallHom.{w} W Y Z) (γ : SmallHom.{w} W Z T) :
     (α.comp β).comp γ = α.comp (β.comp γ) := by
   apply (equiv W W.Q).injective
-  simp only [equiv_comp, assoc]
+  simp [equiv_comp, assoc]
 
 @[simp]
 lemma mk_comp_mkInv [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y X]
@@ -227,7 +227,7 @@ lemma equiv_chgUniv (L : C ⥤ D) [L.IsLocalization W] {X Y : C}
     equiv W L (chgUniv.{w''} e) = equiv W L e := by
   obtain ⟨f, rfl⟩ := (equiv W W.Q).symm.surjective e
   dsimp [chgUniv]
-  simp only [Equiv.apply_symm_apply,
+  simp [Equiv.apply_symm_apply,
     equiv_equiv_symm W _ _ _ (Localization.compUniqFunctor W.Q L W)]
 
 end ChangeOfUniverse

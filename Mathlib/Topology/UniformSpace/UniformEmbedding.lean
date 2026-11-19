@@ -72,7 +72,7 @@ theorem IsUniformInducing.basis_uniformity {f : α → β} (hf : IsUniformInduci
 
 theorem IsUniformInducing.cauchy_map_iff {f : α → β} (hf : IsUniformInducing f) {F : Filter α} :
     Cauchy (map f F) ↔ Cauchy F := by
-  simp only [Cauchy, map_neBot_iff, prod_map_map_eq, map_le_iff_le_comap, ← hf.comap_uniformity]
+  simp [Cauchy, map_neBot_iff, prod_map_map_eq, map_le_iff_le_comap, ← hf.comap_uniformity]
 
 theorem IsUniformInducing.of_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f)
     (hg : UniformContinuous g) (hgf : IsUniformInducing (g ∘ f)) : IsUniformInducing f := by
@@ -87,7 +87,7 @@ theorem IsUniformInducing.uniformContinuous {f : α → β} (hf : IsUniformInduc
 theorem IsUniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (hg : IsUniformInducing g) :
     UniformContinuous f ↔ UniformContinuous (g ∘ f) := by
   dsimp only [UniformContinuous, Tendsto]
-  simp only [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, Function.comp_def]
+  simp [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, Function.comp_def]
 
 theorem IsUniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
     (hg : IsUniformInducing g) :
@@ -138,7 +138,7 @@ theorem Filter.HasBasis.isUniformEmbedding_iff {ι ι'} {p : ι → Prop} {p' : 
     (h : (𝓤 α).HasBasis p s) (h' : (𝓤 β).HasBasis p' s') {f : α → β} :
     IsUniformEmbedding f ↔ Injective f ∧ UniformContinuous f ∧
       (∀ j, p j → ∃ i, p' i ∧ ∀ x y, (f x, f y) ∈ s' i → (x, y) ∈ s j) := by
-  simp only [h.isUniformEmbedding_iff' h', h.uniformContinuous_iff h']
+  simp [h.isUniformEmbedding_iff' h', h.uniformContinuous_iff h']
 
 theorem isUniformEmbedding_subtypeVal {p : α → Prop} :
     IsUniformEmbedding (Subtype.val : Subtype p → α) :=

@@ -320,7 +320,7 @@ theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
 
 @[simp]
 theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →₀ M) = 0 :=
-  ext fun _ => by simp only [hf, zero_apply, mapRange_apply]
+  ext fun _ => by simp [hf, zero_apply, mapRange_apply]
 
 @[simp]
 theorem mapRange_eq_zero {a : α →₀ M} {f : M → N} (hf : f.Injective) (h) :

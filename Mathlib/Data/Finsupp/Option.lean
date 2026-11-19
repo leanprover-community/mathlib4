@@ -132,7 +132,7 @@ lemma optionElim_apply_eq_elim (y : M) (f : α →₀ M) (a : Option α) :
     f.optionElim y a = a.elim y f := by
   cases a with
   | none => exact optionElim_apply_none y f
-  | some x => simp only [optionElim_apply_some, Option.elim_some]
+  | some x => simp [optionElim_apply_some, Option.elim_some]
 
 lemma optionElim_eq_elim' (y : M) (f : α →₀ M) (a : Option α) :
     optionElim y f a = Option.elim' y f a := by

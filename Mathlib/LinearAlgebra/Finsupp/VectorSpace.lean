@@ -189,7 +189,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
     (∑ x : n, Finsupp.single x (if i = x then a else 0)) = Finsupp.single i a := by
-  simp only [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
+  simp [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
     ite_eq_left (Finset.mem_univ _)]
 
 @[simp]

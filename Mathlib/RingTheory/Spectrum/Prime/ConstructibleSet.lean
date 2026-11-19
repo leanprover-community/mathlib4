@@ -132,7 +132,7 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
     obtain ⟨S, rfl⟩ := Hs
     obtain ⟨T, rfl⟩ := Ht
     refine ⟨S ∪ T, ?_⟩
-    simp only [ConstructibleSetData.toSet, Set.biUnion_union, ← Finset.mem_coe, Finset.coe_union]
+    simp [ConstructibleSetData.toSet, Set.biUnion_union, ← Finset.mem_coe, Finset.coe_union]
 
 universe u in
 @[stacks 00F8 "without the finite presentation part"]

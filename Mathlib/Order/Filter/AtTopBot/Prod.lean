@@ -76,7 +76,7 @@ theorem eventually_atTop_prod_self [Nonempty α] [Preorder α] [IsDirectedOrder 
 @[to_dual]
 theorem eventually_atTop_prod_self' [Nonempty α] [Preorder α] [IsDirectedOrder α]
     {p : α × α → Prop} : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k, a ≤ k → ∀ l, a ≤ l → p (k, l) := by
-  simp only [eventually_atTop_prod_self, forall_cond_comm]
+  simp [eventually_atTop_prod_self, forall_cond_comm]
 
 @[to_dual]
 theorem eventually_atTop_curry [Preorder α] [Preorder β] {p : α × β → Prop}

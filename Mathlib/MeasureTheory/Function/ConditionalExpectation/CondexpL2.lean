@@ -125,7 +125,7 @@ theorem inner_condExpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫ = ⟪f, g⟫ := by
   symm
   rw [← sub_eq_zero, ← inner_sub_left, condExpL2]
-  simp only [← Submodule.starProjection_apply,
+  simp [← Submodule.starProjection_apply,
     mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
     Submodule.starProjection_inner_eq_zero f g]
 
@@ -201,7 +201,7 @@ theorem lintegral_nnNorm_condExpL2_indicator_le_real (hs : MeasurableSet s) (hμ
     simp_rw [Set.indicator_apply]
     split_ifs <;> simp
   rw [h_eq, lintegral_indicator hs, lintegral_const, Measure.restrict_restrict hs]
-  simp only [one_mul, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
+  simp [one_mul, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
 
 @[deprecated (since := "2026-10-31")]
 alias lintegral_nnnorm_condExpL2_indicator_le_real := lintegral_nnNorm_condExpL2_indicator_le_real
@@ -425,7 +425,7 @@ theorem integrable_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
 theorem condExpIndSMul_empty {x : G} : condExpIndSMul hm MeasurableSet.empty
     ((measure_empty (μ := μ)).le.trans_lt ENNReal.coe_lt_top).ne x = 0 := by
   rw [condExpIndSMul, indicatorConstLp_empty]
-  simp only [Submodule.coe_zero, map_zero]
+  simp [Submodule.coe_zero, map_zero]
 
 theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) :

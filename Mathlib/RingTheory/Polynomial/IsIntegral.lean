@@ -194,7 +194,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
     refine IsIntegral.sum _ fun n _ ↦ .mul ((H n).map (Algebra.ofId _ _)).tower_top
       (.prod _ fun i _ ↦ .pow ?_ _)
     convert isIntegral_algebraMap (x := MvPolynomial.X i)
-    simp only [algebraMap_def, map_X]
+    simp [algebraMap_def, map_X]
   unfold IsIntegral at H
   wlog hσ : Finite σ generalizing σ
   · obtain ⟨g, hg⟩ := MvPolynomial.exists_rename_eq_of_vars_subset_range (τ := f.vars) f _

@@ -103,8 +103,8 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     rcases h1 with (h | ⟨Q, hQ, rfl⟩) <;> rcases h2 with (i | ⟨R, hR, rfl⟩)
     · exact Or.inl (cond.inter_mem h i)
     · exact
-        Or.inr ⟨T1 ∩ R, cond.inter_mem h hR, by simp only [← Set.inter_assoc, Set.inter_comm _ A]⟩
-    · exact Or.inr ⟨Q ∩ T2, cond.inter_mem hQ i, by simp only [Set.inter_assoc]⟩
+        Or.inr ⟨T1 ∩ R, cond.inter_mem h hR, by simp [← Set.inter_assoc, Set.inter_comm _ A]⟩
+    · exact Or.inr ⟨Q ∩ T2, cond.inter_mem hQ i, by simp [Set.inter_assoc]⟩
     · exact
         Or.inr
           ⟨Q ∩ R, cond.inter_mem hQ hR, by

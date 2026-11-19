@@ -257,7 +257,7 @@ theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b �
 
 theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
-  simp only [e.symm_apply hb, TotalSpace.mk_cast (e.proj_symm_apply' hb), TotalSpace.eta]
+  simp [e.symm_apply hb, TotalSpace.mk_cast (e.proj_symm_apply' hb), TotalSpace.eta]
 
 @[simp, mfld_simps]
 theorem symm_proj_apply (e : Pretrivialization F (π F E)) (z : TotalSpace F E)
@@ -795,8 +795,8 @@ protected def coordChangeHomeomorph (e₁ e₂ : Trivialization F proj) {b : B} 
     (h₂ : b ∈ e₂.baseSet) : F ≃ₜ F where
   toFun := e₁.coordChange e₂ b
   invFun := e₂.coordChange e₁ b
-  left_inv x := by simp only [*, coordChange_coordChange, coordChange_same_apply]
-  right_inv x := by simp only [*, coordChange_coordChange, coordChange_same_apply]
+  left_inv x := by simp [*, coordChange_coordChange, coordChange_same_apply]
+  right_inv x := by simp [*, coordChange_coordChange, coordChange_same_apply]
   continuous_toFun := e₁.continuous_coordChange e₂ h₁ h₂
   continuous_invFun := e₂.continuous_coordChange e₁ h₂ h₁
 

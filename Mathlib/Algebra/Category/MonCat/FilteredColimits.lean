@@ -199,7 +199,7 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
         ⟨IsFiltered.max₃ j₁ j₂ j₃, IsFiltered.firstToMax₃ _ _ _,
           IsFiltered.secondToMax₃ _ _ _, IsFiltered.thirdToMax₃ _ _ _,
           _, _, _, rfl, rfl, rfl⟩
-      simp only [← M.map_mk F f₁, ← M.map_mk F f₂, ← M.map_mk F f₃, h₁, h₂, h₃,
+      simp [← M.map_mk F f₁, ← M.map_mk F f₂, ← M.map_mk F f₃, h₁, h₂, h₃,
         colimit_mul_mk_eq', mul_assoc] }
 
 /-- The bundled monoid giving the filtered colimit of a diagram. -/

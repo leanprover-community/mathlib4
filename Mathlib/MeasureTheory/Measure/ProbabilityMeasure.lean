@@ -168,7 +168,7 @@ theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
 theorem coeFn_empty (ν : ProbabilityMeasure Ω) : ν ∅ = 0 := by simp [coeFn_def]
 
 theorem coeFn_univ_ne_zero (ν : ProbabilityMeasure Ω) : ν univ ≠ 0 := by
-  simp only [coeFn_univ, Ne, one_ne_zero, not_false_iff]
+  simp [coeFn_univ, Ne, one_ne_zero, not_false_iff]
 
 @[simp] theorem measureReal_eq_coe_coeFn (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     (ν : Measure Ω).real s = ν s := by
@@ -492,7 +492,7 @@ theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeas
     ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
 
 theorem normalize_eq_of_ne_zero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
-  simp only [μ.self_eq_mass_mul_normalize, μ.mass_ne_zero_iff.mpr nonzero, inv_mul_cancel_left₀,
+  simp [μ.self_eq_mass_mul_normalize, μ.mass_ne_zero_iff.mpr nonzero, inv_mul_cancel_left₀,
     Ne, not_false_iff]
 
 @[deprecated (since := "2026-10-13")] alias normalize_eq_of_nonzero := normalize_eq_of_ne_zero
@@ -501,7 +501,7 @@ theorem normalize_eq_inv_mass_smul_of_ne_zero (nonzero : μ ≠ 0) :
     μ.normalize.toFiniteMeasure = μ.mass⁻¹ • μ := by
   nth_rw 3 [μ.self_eq_mass_smul_normalize]
   rw [← smul_assoc]
-  simp only [μ.mass_ne_zero_iff.mpr nonzero, smul_eq_mul, inv_mul_cancel₀, Ne,
+  simp [μ.mass_ne_zero_iff.mpr nonzero, smul_eq_mul, inv_mul_cancel₀, Ne,
     not_false_iff, one_smul]
 
 @[deprecated (since := "2026-10-13")]
@@ -523,7 +523,7 @@ theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : Measur
   apply ProbabilityMeasure.eq_of_forall_apply_eq
   intro s _s_mble
   rw [μ.toFiniteMeasure.normalize_eq_of_ne_zero μ.toFiniteMeasure_ne_zero s]
-  simp only [ProbabilityMeasure.mass_toFiniteMeasure, inv_one, one_mul, μ.coeFn_toFiniteMeasure]
+  simp [ProbabilityMeasure.mass_toFiniteMeasure, inv_one, one_mul, μ.coeFn_toFiniteMeasure]
 
 /-- Averaging with respect to a finite measure is the same as integrating against
 `MeasureTheory.FiniteMeasure.normalize`. -/

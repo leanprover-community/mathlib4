@@ -53,7 +53,7 @@ instance : TopologicalSpace (ContinuousMapGeneratedBy X Z T) :=
 
 lemma continuous_iff {A : Type*} [TopologicalSpace A] {φ : A → ContinuousMapGeneratedBy X Z T} :
     Continuous φ ↔ ∀ (i : ι) (f : C(X i, Z)), Continuous (precomp f ∘ φ) := by
-  simp only [continuous_iInf_rng, continuous_induced_rng]
+  simp [continuous_iInf_rng, continuous_induced_rng]
 
 @[continuity, fun_prop]
 lemma continuous_precomp {i : ι} (f : C(X i, Z)) : Continuous (precomp (T := T) f) := by

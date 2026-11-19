@@ -70,7 +70,7 @@ theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   obtain ⟨a, ha⟩ := hn
   refine ⟨n + 1, Ideal.mem_span_singleton'.mpr ⟨⟨a * y.val, ?_⟩, Subtype.ext ?_⟩⟩
   · exact ⟨0, by simp [hy_const]⟩
-  · simp only [Subring.coe_mul, SubmonoidClass.coe_pow, pow_succ, ← ha, mul_assoc, mul_comm x.val _]
+  · simp [Subring.coe_mul, SubmonoidClass.coe_pow, pow_succ, ← ha, mul_assoc, mul_comm x.val _]
 
 theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   apply le_antisymm

@@ -94,8 +94,8 @@ theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x => ⟨(0, x
 @[simps]
 def prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : M →ₗ[R] M₂ × M₃ where
   toFun := Function.prod f g
-  map_add' x y := by simp only [Function.prod_apply, Prod.mk_add_mk, map_add]
-  map_smul' c x := by simp only [Function.prod_apply, Prod.smul_mk, map_smul, RingHom.id_apply]
+  map_add' x y := by simp [Function.prod_apply, Prod.mk_add_mk, map_add]
+  map_smul' c x := by simp [Function.prod_apply, Prod.smul_mk, map_smul, RingHom.id_apply]
 
 theorem coe_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ⇑(f.prod g) = Function.prod f g :=
   rfl
@@ -206,16 +206,16 @@ theorem coprod_apply (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (x : M × 
 
 @[simp]
 theorem coprod_inl (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : (coprod f g).comp (inl R M M₂) = f := by
-  ext; simp only [map_zero, add_zero, coprod_apply, inl_apply, comp_apply]
+  ext; simp [map_zero, add_zero, coprod_apply, inl_apply, comp_apply]
 
 @[simp]
 theorem coprod_inr (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : (coprod f g).comp (inr R M M₂) = g := by
-  ext; simp only [map_zero, coprod_apply, inr_apply, zero_add, comp_apply]
+  ext; simp [map_zero, coprod_apply, inr_apply, zero_add, comp_apply]
 
 @[simp]
 theorem coprod_inl_inr : coprod (inl R M M₂) (inr R M M₂) = LinearMap.id := by
   ext <;>
-    simp only [Prod.mk_add_mk, add_zero, id_apply, coprod_apply, inl_apply, inr_apply, zero_add]
+    simp [Prod.mk_add_mk, add_zero, id_apply, coprod_apply, inl_apply, inr_apply, zero_add]
 
 theorem coprod_zero_left (g : M₂ →ₗ[R] M₃) : (0 : M →ₗ[R] M₃).coprod g = g.comp (snd R M M₂) :=
   zero_add _
@@ -258,11 +258,11 @@ def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
     ((M →ₗ[R] M₃) × (M₂ →ₗ[R] M₃)) ≃ₗ[S] M × M₂ →ₗ[R] M₃ where
   toFun f := f.1.coprod f.2
   invFun f := (f.comp (inl _ _ _), f.comp (inr _ _ _))
-  left_inv f := by simp only [coprod_inl, coprod_inr]
-  right_inv f := by simp only [← comp_coprod, comp_id, coprod_inl_inr]
+  left_inv f := by simp [coprod_inl, coprod_inr]
+  right_inv f := by simp [← comp_coprod, comp_id, coprod_inl_inr]
   map_add' a b := by
     ext
-    simp only [Prod.snd_add, LinearMap.add_apply, coprod_apply, Prod.fst_add, add_add_add_comm]
+    simp [Prod.snd_add, LinearMap.add_apply, coprod_apply, Prod.fst_add, add_add_add_comm]
   map_smul' r a := by
     dsimp
     ext
@@ -509,7 +509,7 @@ variable (p : Submodule R M) (q : Submodule R M₂)
 @[simp]
 theorem map_inl : p.map (inl R M M₂) = prod p ⊥ := by
   ext ⟨x, y⟩
-  simp only [and_left_comm, eq_comm, mem_map, Prod.mk_inj, inl_apply, mem_bot, exists_eq_left',
+  simp [and_left_comm, eq_comm, mem_map, Prod.mk_inj, inl_apply, mem_bot, exists_eq_left',
     mem_prod]
 
 @[simp]
@@ -632,11 +632,11 @@ theorem prod_le_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} {q : Submod
 
 theorem prod_eq_bot_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
     p₁.prod p₂ = ⊥ ↔ p₁ = ⊥ ∧ p₂ = ⊥ := by
-  simp only [eq_bot_iff, prod_le_iff, (gc_map_comap _).le_iff_le, comap_bot, ker_inl, ker_inr]
+  simp [eq_bot_iff, prod_le_iff, (gc_map_comap _).le_iff_le, comap_bot, ker_inl, ker_inr]
 
 theorem prod_eq_top_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
     p₁.prod p₂ = ⊤ ↔ p₁ = ⊤ ∧ p₂ = ⊤ := by
-  simp only [eq_top_iff, le_prod_iff, map_top, range_fst, range_snd]
+  simp [eq_top_iff, le_prod_iff, map_top, range_fst, range_snd]
 
 variable {M M₂} in
 theorem span_prod_eq {s : Set M} {t : Set M₂} (hs : 0 ∈ s) (ht : 0 ∈ t) :
@@ -865,7 +865,7 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
   simp only [Prod.mk_inj, ← sub_mem_ker_iff (f := f)]
-  have : y - x ∈ ker f ⊔ ker g := by simp only [h, mem_top]
+  have : y - x ∈ ker f ⊔ ker g := by simp [h, mem_top]
   rcases mem_sup.1 this with ⟨x', hx', y', hy', H⟩
   refine ⟨x' + x, ?_, ?_⟩
   · rwa [add_sub_cancel_right]
@@ -968,7 +968,7 @@ lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ 
   have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
     simp only [SetLike.ext_iff, LinearMap.mem_graph_iff] at he₁ he₂
     rw [Eq.comm, ← he₁ (h, i), Eq.comm, ← he₂ (i, h)]
-    simp only [mem_range, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    simp [mem_range, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       LinearEquiv.prodComm_apply, Prod.swap_eq_iff_eq_swap, Prod.swap_prod_mk]
   exact ⟨
   { toFun := e₁

@@ -93,12 +93,12 @@ theorem stirlingFirst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingFirst n
       stirlingFirst_eq_zero_of_lt (Nat.lt_of_succ_lt hk), mul_zero]
 
 theorem stirlingFirst_self (n : ℕ) : stirlingFirst n n = 1 := by
-  induction n <;> simp only [*, stirlingFirst, stirlingFirst_eq_zero_of_lt (Nat.lt_succ_self _),
+  induction n <;> simp [*, stirlingFirst, stirlingFirst_eq_zero_of_lt (Nat.lt_succ_self _),
     mul_zero]
 
 theorem stirlingFirst_succ_self_left (n : ℕ) : stirlingFirst (n + 1) n = (n + 1).choose 2 := by
   induction n with
-  | zero => simp only [zero_add, stirlingFirst_succ_zero, choose_succ_self]
+  | zero => simp [zero_add, stirlingFirst_succ_zero, choose_succ_self]
   | succ n ih =>
     rw [stirlingFirst_succ_succ, ih, stirlingFirst_self, mul_one, Nat.choose_succ_succ (n + 1),
       Nat.choose_one_right]
@@ -154,11 +154,11 @@ theorem stirlingSecond_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingSecond
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, _ + 1, _ => by rw [stirlingSecond]
   | n + 1, k + 1, hk => by
-    simp only [stirlingSecond_succ_succ, stirlingSecond_eq_zero_of_lt (Nat.lt_of_succ_lt_succ hk),
+    simp [stirlingSecond_succ_succ, stirlingSecond_eq_zero_of_lt (Nat.lt_of_succ_lt_succ hk),
       stirlingSecond_eq_zero_of_lt (Nat.lt_of_succ_lt hk), mul_zero]
 
 theorem stirlingSecond_self (n : ℕ) : stirlingSecond n n = 1 := by
-  induction n <;> simp only [*, stirlingSecond, stirlingSecond_eq_zero_of_lt (lt_succ_self _),
+  induction n <;> simp [*, stirlingSecond, stirlingSecond_eq_zero_of_lt (lt_succ_self _),
     mul_zero]
 
 theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n + 1) 1 = 1 := by
@@ -169,7 +169,7 @@ theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n + 1) 1 = 1 := by
 theorem stirlingSecond_succ_self_left (n : ℕ) :
     stirlingSecond (n + 1) n = (n + 1).choose 2 := by
   induction n with
-  | zero => simp only [zero_add, stirlingSecond_succ_zero, choose_succ_self]
+  | zero => simp [zero_add, stirlingSecond_succ_zero, choose_succ_self]
   | succ n ih =>
     rw [stirlingSecond_succ_succ, ih, stirlingSecond_self, mul_one,
       Nat.choose_succ_succ (n + 1), Nat.choose_one_right]

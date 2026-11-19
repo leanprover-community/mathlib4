@@ -156,7 +156,7 @@ theorem differentiableWithinAt_localInvariantProp :
   { is_local := by
       intro s x u f u_open xu
       have : I.symm ⁻¹' (s ∩ u) ∩ Set.range I = I.symm ⁻¹' s ∩ Set.range I ∩ I.symm ⁻¹' u := by
-        simp only [Set.inter_right_comm, Set.preimage_inter]
+        simp [Set.inter_right_comm, Set.preimage_inter]
       rw [DifferentiableWithinAtProp, DifferentiableWithinAtProp, this]
       symm
       apply differentiableWithinAt_inter
@@ -167,13 +167,13 @@ theorem differentiableWithinAt_localInvariantProp :
     right_invariance' := by
       intro s x f e he hx h
       rw [DifferentiableWithinAtProp] at h ⊢
-      have : I x = (I ∘ e.symm ∘ I.symm) (I (e x)) := by simp only [hx, mfld_simps]
+      have : I x = (I ∘ e.symm ∘ I.symm) (I (e x)) := by simp [hx, mfld_simps]
       rw [this] at h
-      have : I (e x) ∈ I.symm ⁻¹' e.target ∩ Set.range I := by simp only [hx, mfld_simps]
+      have : I (e x) ∈ I.symm ⁻¹' e.target ∩ Set.range I := by simp [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
       convert (h.comp' _ (this.differentiableWithinAt one_ne_zero)).mono_of_mem_nhdsWithin _
         using 1
-      · ext y; simp only [mfld_simps]
+      · ext y; simp [mfld_simps]
       refine
         mem_nhdsWithin.mpr
           ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
@@ -184,16 +184,16 @@ theorem differentiableWithinAt_localInvariantProp :
       apply hf.congr
       · intro y hy
         simp only [mfld_simps] at hy
-        simp only [h, hy, mfld_simps]
-      · simp only [hx, mfld_simps]
+        simp [h, hy, mfld_simps]
+      · simp [hx, mfld_simps]
     left_invariance' := by
       intro s x f e' he' hs hx h
       rw [DifferentiableWithinAtProp] at h ⊢
       have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ Set.range I' := by
-        simp only [hx, mfld_simps]
+        simp [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
       convert (this.differentiableWithinAt one_ne_zero).comp _ h _
-      · ext y; simp only [mfld_simps]
+      · ext y; simp [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 
 variable (I) in

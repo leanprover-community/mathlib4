@@ -80,7 +80,7 @@ lemma start_mem_vertices {a b : V} (p : Path a b) : a ∈ p.vertices := by
 @[simp]
 lemma vertices_head? {a b : V} (p : Path a b) : p.vertices.head? = some a := by
   induction p with
-  | nil => simp only [vertices_nil, head?_cons]
+  | nil => simp [vertices_nil, head?_cons]
   | cons p' e ih => simp [ih]
 
 /-- The head of the vertices list is the start vertex. -/
@@ -88,7 +88,7 @@ lemma vertices_head? {a b : V} (p : Path a b) : p.vertices.head? = some a := by
 lemma vertices_head_eq {a b : V} (p : Path a b) (h : p.vertices ≠ [] := p.vertices_ne_nil) :
     p.vertices.head h = a := by
   induction p with
-  | nil => simp only [vertices_nil, head_cons]
+  | nil => simp [vertices_nil, head_cons]
   | cons p' _ ih => simp [head_append_of_ne_nil (vertices_ne_nil p'), ih]
 
 @[simp]
@@ -101,7 +101,7 @@ lemma getElem_vertices_zero {a b : V} (p : Path a b) : p.vertices[0] = a := by
 lemma vertices_getLast {a b : V} (p : Path a b) (h : p.vertices ≠ [] := p.vertices_ne_nil) :
     p.vertices.getLast h = b := by
   induction p with
-  | nil => simp only [vertices_nil, getLast_singleton]
+  | nil => simp [vertices_nil, getLast_singleton]
   | cons p' e ih => simp
 
 @[simp]
@@ -220,8 +220,8 @@ theorem exists_eq_comp_and_notMem_tail_of_mem_vertices {v : V} (hv : v ∈ p.ver
     have hxa : v = a := by
       simpa [vertices_nil, List.mem_singleton] using hv
     subst hxa
-    exact ⟨Path.nil, Path.nil, by simp only [comp_nil],
-      by simp only [vertices_nil, tail_cons, not_mem_nil, not_false_eq_true]⟩
+    exact ⟨Path.nil, Path.nil, by simp [comp_nil],
+      by simp [vertices_nil, tail_cons, not_mem_nil, not_false_eq_true]⟩
   | cons pPrev e ih =>
     have hv' : v ∈ pPrev.vertices ∨ v = (pPrev.cons e).end := by
       simpa using (mem_vertices_cons pPrev e).1 hv

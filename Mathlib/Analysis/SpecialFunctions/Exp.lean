@@ -305,7 +305,7 @@ def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _
     (exp_strictMono.codRestrict fun x ↦ Set.mem_Ioi.mpr (exp_pos x)) <|
     (continuous_exp.subtype_mk _).surjective
-      (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
+      (by rw [tendsto_Ioi_atTop]; simp [tendsto_exp_atTop])
       (by simp [tendsto_exp_atBot_nhdsGT])
 
 @[simp]
@@ -419,48 +419,48 @@ theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Rea
 theorem isBigO_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =O[l] fun x => exp (g x)) ↔ IsBoundedUnder (· ≤ ·) l (f - g) :=
   Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun _ => exp_ne_zero _) <| by
-    simp only [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]
+    simp [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]
 
 @[simp]
 theorem isTheta_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =Θ[l] fun x => exp (g x)) ↔
       IsBoundedUnder (· ≤ ·) l fun x => |f x - g x| := by
-  simp only [isBoundedUnder_le_abs, ← isBoundedUnder_le_neg, neg_sub, IsTheta,
+  simp [isBoundedUnder_le_abs, ← isBoundedUnder_le_neg, neg_sub, IsTheta,
     isBigO_exp_comp_exp_comp, Pi.sub_def]
 
 @[simp]
 theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =o[l] fun x => exp (g x)) ↔ Tendsto (fun x => g x - f x) l atTop := by
-  simp only [isLittleO_iff_tendsto, exp_ne_zero, ← exp_sub, ← tendsto_neg_atTop_iff, false_imp_iff,
+  simp [isLittleO_iff_tendsto, exp_ne_zero, ← exp_sub, ← tendsto_neg_atTop_iff, false_imp_iff,
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by
-  simp only [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]
+  simp [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]
 
 /-- `Real.exp (f x)` is bounded away from zero along a filter if and only if this filter is bounded
 from below under `f`. -/
 @[simp]
 theorem isBigO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =O[l] fun x => exp (f x)) ↔ IsBoundedUnder (· ≥ ·) l f := by
-  simp only [← exp_zero, isBigO_exp_comp_exp_comp, Pi.sub_def, zero_sub, isBoundedUnder_le_neg]
+  simp [← exp_zero, isBigO_exp_comp_exp_comp, Pi.sub_def, zero_sub, isBoundedUnder_le_neg]
 
 /-- `Real.exp (f x)` is bounded away from zero along a filter if and only if this filter is bounded
 from below under `f`. -/
 theorem isBigO_exp_comp_one {f : α → ℝ} :
     (fun x => exp (f x)) =O[l] (fun _ => 1 : α → ℝ) ↔ IsBoundedUnder (· ≤ ·) l f := by
-  simp only [isBigO_one_iff, norm_eq_abs, abs_exp, isBoundedUnder_le_exp_comp]
+  simp [isBigO_one_iff, norm_eq_abs, abs_exp, isBoundedUnder_le_exp_comp]
 
 /-- `Real.exp (f x)` is bounded away from zero and infinity along a filter `l` if and only if
 `|f x|` is bounded from above along this filter. -/
 @[simp]
 theorem isTheta_exp_comp_one {f : α → ℝ} :
     (fun x => exp (f x)) =Θ[l] (fun _ => 1 : α → ℝ) ↔ IsBoundedUnder (· ≤ ·) l fun x => |f x| := by
-  simp only [← exp_zero, isTheta_exp_comp_exp_comp, sub_zero]
+  simp [← exp_zero, isTheta_exp_comp_exp_comp, sub_zero]
 
 lemma summable_exp_nat_mul_iff {a : ℝ} :
     Summable (fun n : ℕ ↦ exp (n * a)) ↔ a < 0 := by
-  simp only [exp_natCast_mul, summable_geometric_iff_norm_lt_one, norm_of_nonneg (exp_nonneg _),
+  simp [exp_natCast_mul, summable_geometric_iff_norm_lt_one, norm_of_nonneg (exp_nonneg _),
     exp_lt_one_iff]
 
 lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by
@@ -492,7 +492,7 @@ namespace Complex
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by
-      simp only [← comap_norm_atTop, comap_comap, comp_def, norm_exp]
+      simp [← comap_norm_atTop, comap_comap, comp_def, norm_exp]
     _ = comap re atTop := by rw [Real.comap_exp_atTop]
 
 @[simp]

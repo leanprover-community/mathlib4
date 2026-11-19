@@ -211,10 +211,10 @@ lemma iSup_add [Nonempty ι] (f : ι → ℕ∞) : (⨆ i, f i) + a = ⨆ i, f i
 lemma add_biSup' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℕ∞) :
     a + ⨆ i, ⨆ _ : p i, f i = ⨆ i, ⨆ _ : p i, a + f i := by
   have : Nonempty {i // p i} := nonempty_subtype.2 h
-  simp only [iSup_subtype', add_iSup]
+  simp [iSup_subtype', add_iSup]
 
 lemma biSup_add' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℕ∞) :
-    (⨆ i, ⨆ _ : p i, f i) + a = ⨆ i, ⨆ _ : p i, f i + a := by simp only [add_comm, add_biSup' h]
+    (⨆ i, ⨆ _ : p i, f i) + a = ⨆ i, ⨆ _ : p i, f i + a := by simp [add_comm, add_biSup' h]
 
 lemma add_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → ℕ∞) :
     a + ⨆ i ∈ s, f i = ⨆ i ∈ s, a + f i := add_biSup' hs _
@@ -305,7 +305,7 @@ lemma add_iInf₂ {κ : ι → Sort*} (f : (i : ι) → κ i → ℕ∞) :
 
 lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℕ∞) :
     (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
-  simp only [add_comm, add_iInf₂]
+  simp [add_comm, add_iInf₂]
 
 lemma add_sInf {s : Set ℕ∞} : a + sInf s = ⨅ b ∈ s, a + b := by
   rw [sInf_eq_iInf, add_iInf₂]

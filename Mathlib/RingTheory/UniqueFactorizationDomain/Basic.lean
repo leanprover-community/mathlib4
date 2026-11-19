@@ -252,7 +252,7 @@ theorem factors_pow_count_prod [DecidableEq α] {x : α} (hx : x ≠ 0) :
     (∏ p ∈ (factors x).toFinset, p ^ (factors x).count p) ~ᵤ x :=
   calc
   _ = prod (∑ a ∈ toFinset (factors x), count a (factors x) • {a}) := by
-    simp only [prod_sum, prod_nsmul, prod_singleton]
+    simp [prod_sum, prod_nsmul, prod_singleton]
   _ = prod (factors x) := by rw [toFinset_sum_count_nsmul_eq (factors x)]
   _ ~ᵤ x := factors_prod hx
 

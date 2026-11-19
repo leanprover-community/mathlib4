@@ -133,7 +133,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
   rw [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hs] at hf
   simp only [Finset.mem_range] at hi
   refine hf.1 i ?_
-  simp only [Nat.lt_succ_iff.mp hi]
+  simp [Nat.lt_succ_iff.mp hi]
 
 /-- Helper lemma for calculating the derivative of the monomial that appears in Taylor
 expansions. -/
@@ -142,7 +142,7 @@ theorem monomial_has_deriv_aux (t x : ℝ) (n : ℕ) :
   simp_rw [sub_eq_neg_add]
   rw [← neg_one_mul, mul_comm (-1 : ℝ), mul_assoc, mul_comm (-1 : ℝ), ← mul_assoc]
   convert! ((hasDerivAt_id t).neg.add_const x).pow (n + 1)
-  simp only [Nat.cast_add, Nat.cast_one]
+  simp [Nat.cast_add, Nat.cast_one]
 
 theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : ℕ} {s t : Set ℝ}
     (ht : UniqueDiffWithinAt ℝ t y) (hs : s ∈ 𝓝[t] y)

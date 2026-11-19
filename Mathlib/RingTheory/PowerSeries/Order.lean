@@ -461,7 +461,7 @@ variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈
 @[simp]
 theorem order_toSubring : (p.toSubring T hp).order = p.order := by
   apply ENat.eq_of_forall_natCast_le_iff
-  simp only [nat_le_order_iff, ← coeff_toSubring p T hp, ZeroMemClass.coe_eq_zero, implies_true]
+  simp [nat_le_order_iff, ← coeff_toSubring p T hp, ZeroMemClass.coe_eq_zero, implies_true]
 
 end Ring
 

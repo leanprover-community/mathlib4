@@ -22,7 +22,7 @@ namespace Nat
 variable {n : ℕ}
 
 theorem prime_mul_iff {a b : ℕ} : Nat.Prime (a * b) ↔ a.Prime ∧ b = 1 ∨ b.Prime ∧ a = 1 := by
-  simp only [irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
+  simp [irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
 
 theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b) := by
   simp [prime_mul_iff, *]

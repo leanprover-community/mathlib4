@@ -32,7 +32,7 @@ section MFDerivFDeriv
 
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
     UniqueMDiffAt[s] x ↔ UniqueDiffWithinAt 𝕜 s x := by
-  simp only [UniqueMDiffWithinAt, mfld_simps]
+  simp [UniqueMDiffWithinAt, mfld_simps]
 
 alias ⟨UniqueMDiffWithinAt.uniqueDiffWithinAt, UniqueDiffWithinAt.uniqueMDiffWithinAt⟩ :=
   uniqueMDiffWithinAt_iff_uniqueDiffWithinAt
@@ -90,7 +90,7 @@ alias ⟨MDifferentiableAt.differentiableAt, DifferentiableAt.mdifferentiableAt�
 /-- For maps between vector spaces, `MDifferentiableOn` and `DifferentiableOn` coincide -/
 theorem mdifferentiableOn_iff_differentiableOn :
     MDiff[s] f ↔ DifferentiableOn 𝕜 f s := by
-  simp only [MDifferentiableOn, DifferentiableOn,
+  simp [MDifferentiableOn, DifferentiableOn,
     mdifferentiableWithinAt_iff_differentiableWithinAt]
 
 alias ⟨MDifferentiableOn.differentiableOn, DifferentiableOn.mdifferentiableOn⟩ :=
@@ -98,7 +98,7 @@ alias ⟨MDifferentiableOn.differentiableOn, DifferentiableOn.mdifferentiableOn�
 
 /-- For maps between vector spaces, `MDifferentiable` and `Differentiable` coincide -/
 theorem mdifferentiable_iff_differentiable : MDiff f ↔ Differentiable 𝕜 f := by
-  simp only [MDifferentiable, Differentiable, mdifferentiableAt_iff_differentiableAt]
+  simp [MDifferentiable, Differentiable, mdifferentiableAt_iff_differentiableAt]
 
 alias ⟨MDifferentiable.differentiable, Differentiable.mdifferentiable⟩ :=
   mdifferentiable_iff_differentiable

@@ -147,7 +147,7 @@ theorem exists_unit_of_abs (a : ℤ) : ∃ (u : ℤ) (_ : IsUnit u), (Int.natAbs
     rw [← h, one_mul]
   · use -1, isUnit_one.neg
     rw [← neg_eq_iff_eq_neg.mpr h]
-    simp only [neg_mul, one_mul]
+    simp [neg_mul, one_mul]
 
 theorem gcd_eq_natAbs {a b : ℤ} : Int.gcd a b = Nat.gcd a.natAbs b.natAbs :=
   rfl

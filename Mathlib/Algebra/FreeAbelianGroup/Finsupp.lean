@@ -114,7 +114,7 @@ theorem notMem_support_iff (x : X) (a : FreeAddCommGroup X) : x ∉ a.support �
 
 @[simp]
 theorem support_zero : support (0 : FreeAddCommGroup X) = ∅ := by
-  simp only [support, Finsupp.support_zero, map_zero]
+  simp [support, Finsupp.support_zero, map_zero]
 
 @[simp]
 theorem support_of (x : X) : support (of x) = {x} := by
@@ -122,7 +122,7 @@ theorem support_of (x : X) : support (of x) = {x} := by
 
 @[simp]
 theorem support_neg (a : FreeAddCommGroup X) : support (-a) = support a := by
-  simp only [support, map_neg, Finsupp.support_neg]
+  simp [support, map_neg, Finsupp.support_neg]
 
 @[simp]
 theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAddCommGroup X) :

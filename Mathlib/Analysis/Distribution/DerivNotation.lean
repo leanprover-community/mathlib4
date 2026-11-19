@@ -67,9 +67,9 @@ theorem iteratedLineDerivOp_succ_right {n : ℕ} (m : Fin (n + 1) → V) (f : E)
   | zero => rfl
   -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n+1} ∂`
   | succ n IH =>
-    have hmzero : init m 0 = m 0 := by simp only [init_def, castSucc_zero]
+    have hmzero : init m 0 = m 0 := by simp [init_def, castSucc_zero]
     have hmtail : tail m (last n) = m (last n.succ) := by
-      simp only [tail_def, succ_last]
+      simp [tail_def, succ_last]
     calc
       _ = ∂_{m 0} (∂^{tail m} f) := iteratedLineDerivOp_succ_left _ _
       _ = ∂_{m 0} (∂^{init <| tail m} (∂_{tail m <| last n} f)) := by

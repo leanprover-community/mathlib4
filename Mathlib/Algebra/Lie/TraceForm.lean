@@ -73,15 +73,15 @@ See also `LieModule.traceForm_apply_lie_apply'`. -/
 lemma traceForm_apply_lie_apply (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = traceForm R L M x ⁅y, z⁆ := by
   calc traceForm R L M ⁅x, y⁆ z
-      = trace R _ (φ ⁅x, y⁆ ∘ₗ φ z) := by simp only [traceForm_apply_apply]
+      = trace R _ (φ ⁅x, y⁆ ∘ₗ φ z) := by simp [traceForm_apply_apply]
     _ = trace R _ ((φ x * φ y - φ y * φ x) * φ z) := ?_
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ y * (φ x * φ z)) := ?_
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
     _ = traceForm R L M x ⁅y, z⁆ := ?_
-  · simp only [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_eq_comp]
-  · simp only [sub_mul, map_sub, mul_assoc]
-  · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
-  · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
+  · simp [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_eq_comp]
+  · simp [sub_mul, map_sub, mul_assoc]
+  · simp [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
+  · simp [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← Module.End.mul_eq_comp]
 
 /-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint

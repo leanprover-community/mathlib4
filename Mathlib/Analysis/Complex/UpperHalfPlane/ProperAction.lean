@@ -55,10 +55,10 @@ open Topology in
 lemma σ_eventuallyEq (g : GL (Fin 2) ℝ) : σ =ᶠ[𝓝 g] fun _ ↦ σ g := by
   by_cases hg : 0 < g.det.val
   · suffices {h | 0 < h.det.val} ∈ 𝓝 g by
-      filter_upwards [this] with h hh using by simp only [σ, hh, ↓reduceIte, hg]
+      filter_upwards [this] with h hh using by simp [σ, hh, ↓reduceIte, hg]
     exact isOpen_Ioi (a := (0 : ℝ)) |>.preimage (by fun_prop) |>.mem_nhds hg
   · suffices {h | ¬0 < h.det.val} ∈ 𝓝 g by
-      filter_upwards [this] with h hh using by simp only [σ, hh, ↓reduceIte, hg]
+      filter_upwards [this] with h hh using by simp [σ, hh, ↓reduceIte, hg]
     simp only [not_lt, le_iff_lt_or_eq, Units.ne_zero, or_false] at hg ⊢
     exact isOpen_Iio (a := (0 : ℝ)) |>.preimage (by fun_prop) |>.mem_nhds hg
 

@@ -56,7 +56,7 @@ theorem Nonempty.star [InvolutiveStar α] {s : Set α} (h : s.Nonempty) : s⋆.N
 @[simp, push]
 theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s := Iff.rfl
 
-theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp only [mem_star, star_star]
+theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp [mem_star, star_star]
 
 @[simp]
 theorem star_preimage [Star α] : Star.star ⁻¹' s = s⋆ := rfl
@@ -64,7 +64,7 @@ theorem star_preimage [Star α] : Star.star ⁻¹' s = s⋆ := rfl
 @[simp]
 theorem image_star [InvolutiveStar α] : Star.star '' s = s⋆ := by
   simp only [← star_preimage]
-  rw [image_eq_preimage_of_inverse] <;> intro <;> simp only [star_star]
+  rw [image_eq_preimage_of_inverse] <;> intro <;> simp [star_star]
 
 @[simp]
 theorem inter_star [Star α] : (s ∩ t)⋆ = s⋆ ∩ t⋆ := preimage_inter
@@ -86,7 +86,7 @@ theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 /-- Pointwise star on sets is involutive in scope `Pointwise`. -/
 @[instance_reducible, simp]
 def instInvolutiveStar [InvolutiveStar α] : InvolutiveStar (Set α) where
-  star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
+  star_involutive s := by simp [← star_preimage, preimage_preimage, star_star, preimage_id']
 
 scoped [Pointwise] attribute [instance] Set.instInvolutiveStar
 
@@ -121,11 +121,11 @@ instance [Star α] [TrivialStar α] : TrivialStar (Set α) where
 
 protected theorem star_inv [Group α] [StarMul α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
-  simp only [mem_star, mem_inv, star_inv]
+  simp [mem_star, mem_inv, star_inv]
 
 protected theorem star_inv' [GroupWithZero α] [StarMul α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
-  simp only [mem_star, mem_inv, star_inv₀]
+  simp [mem_star, mem_inv, star_inv₀]
 
 end Set
 

@@ -172,7 +172,7 @@ noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfH
     rintro a ⟨i, rfl⟩
     simp only [SetLike.mem_coe, RingHom.mem_ker, AlgHom.coe_comp,
       AlgEquiv.coe_toAlgHom, Function.comp_apply, algebraTensorAlgEquiv_symm_relation]
-    simp only [TensorProduct.map_tmul, AlgHom.coe_id, id_eq, Ideal.Quotient.mkₐ_eq_mk,
+    simp [TensorProduct.map_tmul, AlgHom.coe_id, id_eq, Ideal.Quotient.mkₐ_eq_mk,
       Ideal.Quotient.mk_span_range, tmul_zero]).comp
     (P.quotientEquiv.restrictScalars R).symm.toAlgHom
 

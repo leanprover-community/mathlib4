@@ -83,7 +83,7 @@ theorem expComparison_ev (A B : C) :
       inv (prodComparison F _ _) ≫ F.map ((ihom.ev _).app _) := by
   convert! mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
-  simp only [prodComparisonNatTrans_app, prodComparisonNatIso_inv, NatIso.isIso_inv_app,
+  simp [prodComparisonNatTrans_app, prodComparisonNatIso_inv, NatIso.isIso_inv_app,
     IsIso.hom_inv_id]
 
 theorem coev_expComparison (A B : C) :

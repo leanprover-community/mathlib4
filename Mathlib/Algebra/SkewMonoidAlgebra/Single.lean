@@ -73,7 +73,7 @@ theorem induction {p : SkewMonoidAlgebra M α → Prop} (f : SkewMonoidAlgebra M
     apply ha
     · rw [support_erase, Finset.mem_erase]
       exact fun H ↦ H.1 rfl
-    · simp only [← mem_support_iff, hf, Finset.mem_cons_self]
+    · simp [← mem_support_iff, hf, Finset.mem_cons_self]
     · apply ih
       rw [support_erase, hf, Finset.erase_cons]
 

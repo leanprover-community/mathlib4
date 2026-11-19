@@ -83,12 +83,12 @@ def toMvPolynomial (M : Matrix m n R) (i : m) : MvPolynomial n R :=
 
 lemma toMvPolynomial_eval_eq_apply (M : Matrix m n R) (i : m) (c : n → R) :
     eval c (M.toMvPolynomial i) = (M *ᵥ c) i := by
-  simp only [toMvPolynomial, map_sum, eval_monomial, pow_zero, Finsupp.prod_single_index, pow_one,
+  simp [toMvPolynomial, map_sum, eval_monomial, pow_zero, Finsupp.prod_single_index, pow_one,
     mulVec, dotProduct]
 
 lemma toMvPolynomial_map (f : R →+* S) (M : Matrix m n R) (i : m) :
     (M.map f).toMvPolynomial i = MvPolynomial.map f (M.toMvPolynomial i) := by
-  simp only [toMvPolynomial, map_apply, map_sum, map_monomial]
+  simp [toMvPolynomial, map_apply, map_sum, map_monomial]
 
 lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
     (M.toMvPolynomial i).IsHomogeneous 1 := by
@@ -104,31 +104,31 @@ lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
 @[simp]
 lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
     constantCoeff (M.toMvPolynomial i) = 0 := by
-  simp only [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, map_mul, constantCoeff_X,
+  simp [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, map_mul, constantCoeff_X,
     mul_zero, Finset.sum_const_zero]
 
 @[simp]
 lemma toMvPolynomial_zero : (0 : Matrix m n R).toMvPolynomial = 0 := by
-  ext; simp only [toMvPolynomial, Matrix.zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
+  ext; simp [toMvPolynomial, Matrix.zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
 
 @[simp]
 lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X := by
   ext i : 1
   rw [toMvPolynomial, Finset.sum_eq_single i]
-  · simp only [one_apply_eq, ← C_mul_X_eq_monomial, C_1, one_mul]
+  · simp [one_apply_eq, ← C_mul_X_eq_monomial, C_1, one_mul]
   · rintro j - hj
-    simp only [one_apply_ne hj.symm, map_zero]
+    simp [one_apply_ne hj.symm, map_zero]
   · grind
 
 lemma toMvPolynomial_add (M N : Matrix m n R) :
     (M + N).toMvPolynomial = M.toMvPolynomial + N.toMvPolynomial := by
   ext i : 1
-  simp only [toMvPolynomial, Matrix.add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
+  simp [toMvPolynomial, Matrix.add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
     (M * N).toMvPolynomial i = aeval N.toMvPolynomial (M.toMvPolynomial i) := by
-  simp only [toMvPolynomial, Matrix.mul_apply, map_sum, Finset.sum_comm (γ := o), aeval,
+  simp [toMvPolynomial, Matrix.mul_apply, map_sum, Finset.sum_comm (γ := o), aeval,
     AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.algebraMap_self,
     RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
     monomial_mul_monomial, zero_add]
@@ -167,7 +167,7 @@ open Algebra.TensorProduct in
 lemma toMvPolynomial_baseChange (f : M₁ →ₗ[R] M₂) (i : ι₂) (A : Type*) [CommRing A] [Algebra R A] :
     (f.baseChange A).toMvPolynomial (basis A b₁) (basis A b₂) i =
       MvPolynomial.map (algebraMap R A) (f.toMvPolynomial b₁ b₂ i) := by
-  simp only [toMvPolynomial, toMatrix_baseChange, Matrix.toMvPolynomial_map]
+  simp [toMvPolynomial, toMatrix_baseChange, Matrix.toMvPolynomial_map]
 
 lemma toMvPolynomial_isHomogeneous (f : M₁ →ₗ[R] M₂) (i : ι₂) :
     (f.toMvPolynomial b₁ b₂ i).IsHomogeneous 1 :=
@@ -184,15 +184,15 @@ lemma toMvPolynomial_constantCoeff (f : M₁ →ₗ[R] M₂) (i : ι₂) :
 
 @[simp]
 lemma toMvPolynomial_zero : (0 : M₁ →ₗ[R] M₂).toMvPolynomial b₁ b₂ = 0 := by
-  unfold toMvPolynomial; simp only [map_zero, Matrix.toMvPolynomial_zero]
+  unfold toMvPolynomial; simp [map_zero, Matrix.toMvPolynomial_zero]
 
 @[simp]
 lemma toMvPolynomial_id : (id : M₁ →ₗ[R] M₁).toMvPolynomial b₁ b₁ = X := by
-  unfold toMvPolynomial; simp only [toMatrix_id, Matrix.toMvPolynomial_one]
+  unfold toMvPolynomial; simp [toMatrix_id, Matrix.toMvPolynomial_one]
 
 lemma toMvPolynomial_add (f g : M₁ →ₗ[R] M₂) :
     (f + g).toMvPolynomial b₁ b₂ = f.toMvPolynomial b₁ b₂ + g.toMvPolynomial b₁ b₂ := by
-  unfold toMvPolynomial; simp only [map_add, Matrix.toMvPolynomial_add]
+  unfold toMvPolynomial; simp [map_add, Matrix.toMvPolynomial_add]
 
 end
 
@@ -250,7 +250,7 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
   congr 1
   apply MvPolynomial.ringHom_ext
   · intro r
-    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+    simp [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
       map_C, aeval_C, algebraMap_eq]
   · rintro ij
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, aeval_X]
@@ -308,7 +308,7 @@ lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]
     (x : ι → R) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval x) =
       (φ (b.repr.symm (Finsupp.equivFunOnFinite.symm x))).charpoly := by
-  simp only [← polyCharpolyAux_map_eq_charpoly φ b bₘ, LinearEquiv.apply_symm_apply,
+  simp [← polyCharpolyAux_map_eq_charpoly φ b bₘ, LinearEquiv.apply_symm_apply,
     Finsupp.equivFunOnFinite, Equiv.coe_fn_symm_mk, Finsupp.coe_mk]
 
 open Algebra.TensorProduct TensorProduct in
@@ -346,7 +346,7 @@ lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM'
     Module.Finite.of_basis (basis (MvPolynomial ι R) bₘ)
   let _h2 : Module.Free (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
     Module.Free.of_basis (basis (MvPolynomial ι R) bₘ)
-  simp only [f, polyCharpolyAux_map_aeval, polyCharpolyAux_map_aeval]
+  simp [f, polyCharpolyAux_map_aeval, polyCharpolyAux_map_aeval]
 
 end aux
 
@@ -551,7 +551,7 @@ lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
     by_contra! h₀
     apply polyCharpoly_coeff_nilRank_ne_zero φ b
     apply aux.eq_zero_of_forall_eval_eq_zero_of_le_card h₀ (le_trans _ h)
-    simp only [n, finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
+    simp [n, finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
   let c := Finsupp.equivFunOnFinite.symm x
   use b.repr.symm c
   rwa [isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero _ b, LinearEquiv.apply_symm_apply]

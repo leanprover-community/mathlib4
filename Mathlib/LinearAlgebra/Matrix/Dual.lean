@@ -33,7 +33,7 @@ theorem LinearMap.toMatrix_transpose (u : V₁ →ₗ[K] V₂) :
     LinearMap.toMatrix B₂.dualBasis B₁.dualBasis (Module.Dual.transpose (R := K) u) =
       (LinearMap.toMatrix B₁ B₂ u)ᵀ := by
   ext i j
-  simp only [LinearMap.toMatrix_apply, Module.Dual.transpose_apply, B₁.dualBasis_repr,
+  simp [LinearMap.toMatrix_apply, Module.Dual.transpose_apply, B₁.dualBasis_repr,
     B₂.dualBasis_apply, Matrix.transpose_apply, LinearMap.comp_apply]
 
 @[simp]

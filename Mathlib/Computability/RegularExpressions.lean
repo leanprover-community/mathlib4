@@ -201,7 +201,7 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction x generalizing P Q with
-  | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
+  | nil => simp [rmatch, matchEpsilon, Bool.or_eq_true_iff]
   | cons _ _ ih =>
     rw [rmatch, deriv_add]
     exact ih _ _
@@ -285,7 +285,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · obtain - | ⟨b, t⟩ := t'
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [not_true, Ne, false_and] at helem
+            simp [not_true, Ne, false_and] at helem
           simp only [List.flatten_cons, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
@@ -314,7 +314,7 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
     simp only [comp_def, mul_rmatch_iff, matches'_mul, Language.mem_mul, *]
     tauto
   | star _ ih =>
-    simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_nonempty, and_comm]
+    simp [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_nonempty, and_comm]
 
 instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
   decidable_of_iff _ (rmatch_iff_matches' _ _)
@@ -351,9 +351,9 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
   | 0 => rfl
   | 1 => rfl
   | char _ => rfl
-  | R + S => by simp only [map, map_map]
-  | R * S => by simp only [map, map_map]
-  | star R => by simp only [map, map_map]
+  | R + S => by simp [map, map_map]
+  | R * S => by simp [map, map_map]
+  | star R => by simp [map, map_map]
 
 /-- The language of the map is the map of the language. -/
 @[simp]
@@ -364,7 +364,7 @@ theorem matches'_map (f : α → β) :
   | char a => by
     rw [eq_comm]
     exact image_singleton
-  | R + S => by simp only [matches'_map, map, matches'_add, map_add]
+  | R + S => by simp [matches'_map, map, matches'_add, map_add]
   | R * S => by simp [matches'_map]
   | star R => by simp [matches'_map]
 

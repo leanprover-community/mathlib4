@@ -171,7 +171,7 @@ lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
       hom_eval₂]
     congr 1
     refine ringHom_ext (fun a ↦ ?_) ?_
-    · simp only [RingHom.comp_apply, RingHom.coe_coe, AlgHom.toRingHom_eq_coe, ← algebraMap_eq,
+    · simp [RingHom.comp_apply, RingHom.coe_coe, AlgHom.toRingHom_eq_coe, ← algebraMap_eq,
         AlgHom.commutes, ← IsScalarTower.algebraMap_apply]
     · simp
   simpa using IsLocalization.Away.isIntegral_of_isIntegral_map t

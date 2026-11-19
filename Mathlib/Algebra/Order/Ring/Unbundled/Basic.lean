@@ -737,19 +737,19 @@ lemma mul_nonpos_iff [MulPosStrictMono R] [PosMulStrictMono R]
 lemma mul_nonneg_iff_neg_imp_nonpos [PosMulStrictMono R] [MulPosStrictMono R]
     [AddLeftMono R] :
     0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
-  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg (R := R)]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg (R := R)]; simp [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_pos_imp_nonpos [PosMulStrictMono R] [MulPosStrictMono R]
     [AddLeftMono R] :
     a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
   rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg (R := R)]
-  simp only [neg_pos, neg_nonneg]
+  simp [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_neg_imp_nonneg [PosMulStrictMono R] [MulPosStrictMono R]
     [AddLeftMono R] :
     a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
   rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg (R := R)]
-  simp only [neg_pos, neg_nonneg]
+  simp [neg_pos, neg_nonneg]
 
 lemma neg_one_lt_zero
     [ZeroLEOneClass R] [NeZero (1 : R)] [AddLeftStrictMono R] :

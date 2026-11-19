@@ -475,9 +475,9 @@ lemma cancelBaseChange_self_eq_lid :
   | tmul b y =>
     induction y using TensorProduct.inductionOn with
     | tmul a m =>
-      simp only [cancelBaseChange_tmul, lid_tmul, smul_tmul', smul_eq_mul, mul_comm]
+      simp [cancelBaseChange_tmul, lid_tmul, smul_tmul', smul_eq_mul, mul_comm]
     | add x y hx hy =>
-      simp only [tmul_add, map_add, lid_tmul, hx, hy]
+      simp [tmul_add, map_add, lid_tmul, hx, hy]
   | add x y hx hy => simp [hx, hy]
 
 end cancelBaseChange
@@ -750,7 +750,7 @@ theorem _root_.LinearEquiv.baseChange_one :
 theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R] P) :
     (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans (f.baseChange R A N P) := by
   ext x
-  simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
+  simp [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
     LinearEquiv.coe_trans, baseChange_eq_lTensor, lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_mul (e : M ≃ₗ[R] M) (f : M ≃ₗ[R] M) :
@@ -780,9 +780,9 @@ lemma _root_.LinearEquiv.baseChange_zpow (f : M ≃ₗ[R] M) (n : ℤ) :
   induction n with
   | zero => simp
   | succ n h =>
-    simp only [zpow_add_one, LinearEquiv.baseChange_mul, h]
+    simp [zpow_add_one, LinearEquiv.baseChange_mul, h]
   | pred n h =>
-    simp only [zpow_sub_one, LinearEquiv.baseChange_mul, h, LinearEquiv.baseChange_inv]
+    simp [zpow_sub_one, LinearEquiv.baseChange_mul, h, LinearEquiv.baseChange_inv]
 
 variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :

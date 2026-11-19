@@ -476,8 +476,8 @@ noncomputable def Hom.comp [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     rw [IsScalarTower.algebraMap_apply S S' S'', ← g.aeval_val]
     induction g.val x using MvPolynomial.induction_on with
     | C r => simp [← IsScalarTower.algebraMap_apply]
-    | add x y hx hy => simp only [map_add, hx, hy]
-    | mul_X p i hp => simp only [map_mul, hp, aeval_X, aeval_val]
+    | add x y hx hy => simp [map_add, hx, hy]
+    | mul_X p i hp => simp [map_mul, hp, aeval_X, aeval_val]
 
 @[simp]
 lemma Hom.comp_id [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] (f : Hom P P') :
@@ -499,8 +499,8 @@ lemma Hom.toAlgHom_comp_apply
     (f : Hom P P') (g : Hom P' P'') (x) :
     (g.comp f).toAlgHom x = g.toAlgHom (f.toAlgHom x) := by
   induction x using MvPolynomial.induction_on with
-  | C r => simp only [← MvPolynomial.algebraMap_eq, AlgHom.map_algebraMap]
-  | add x y hx hy => simp only [map_add, hx, hy]
+  | C r => simp [← MvPolynomial.algebraMap_eq, AlgHom.map_algebraMap]
+  | add x y hx hy => simp [map_add, hx, hy]
   | mul_X p i hp => simp only [map_mul, hp, toAlgHom_X, comp_val]; rfl
 
 variable {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -706,7 +706,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         simp only [Finset.mem_filter, Finset.mem_map_equiv, AddEquiv.coe_toEquiv_symm,
           mem_support_iff, coeff_monomial, ↓reduceIte, ne_eq, ite_and, ite_not]
         split
-        · simp only [*, map_zero, ite_self]
+        · simp [*, map_zero, ite_self]
         · congr
       | add p q hp hq =>
         simp only [AddMonoidAlgebra.coeff_add, Finsupp.add_apply, map_add, ite_add_zero]

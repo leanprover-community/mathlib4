@@ -83,7 +83,7 @@ theorem IsVonNBounded.subset {s₁ s₂ : Set E} (h : s₁ ⊆ s₂) (hs₂ : Is
 @[simp]
 theorem isVonNBounded_union {s t : Set E} :
     IsVonNBounded 𝕜 (s ∪ t) ↔ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
-  simp only [IsVonNBounded, absorbs_union, forall_and]
+  simp [IsVonNBounded, absorbs_union, forall_and]
 
 /-- The union of two bounded sets is bounded. -/
 theorem IsVonNBounded.union {s₁ s₂ : Set E} (hs₁ : IsVonNBounded 𝕜 s₁) (hs₂ : IsVonNBounded 𝕜 s₂) :
@@ -102,7 +102,7 @@ theorem IsVonNBounded.of_subsingleton [Subsingleton E] {s : Set E} : IsVonNBound
 @[simp]
 theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i, s i) ↔ ∀ i, IsVonNBounded 𝕜 (s i) := by
-  simp only [IsVonNBounded, absorbs_iUnion, @forall_comm ι]
+  simp [IsVonNBounded, absorbs_iUnion, @forall_comm ι]
 
 theorem isVonNBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, IsVonNBounded 𝕜 (s i) := by
@@ -168,7 +168,7 @@ lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormedDivisionR
     IsVonNBounded 𝕜 S ↔ Tendsto (· • S : 𝕜 → Set E) (𝓝 0) (𝓝 0).smallSets := by
   rw [tendsto_smallSets_iff]
   refine forall₂_congr fun V hV ↦ ?_
-  simp only [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV), mapsTo_iff_image_subset,
+  simp [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV), mapsTo_iff_image_subset,
     image_smul]
 
 alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto_smallSets_nhds
@@ -281,7 +281,7 @@ theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fu
 @[simp]
 theorem isVonNBounded_insert (x : E) {s : Set E} :
     IsVonNBounded 𝕜 (insert x s) ↔ IsVonNBounded 𝕜 s := by
-  simp only [← singleton_union, isVonNBounded_union, isVonNBounded_singleton, true_and]
+  simp [← singleton_union, isVonNBounded_union, isVonNBounded_singleton, true_and]
 
 protected alias ⟨_, IsVonNBounded.insert⟩ := isVonNBounded_insert
 

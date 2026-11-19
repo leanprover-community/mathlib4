@@ -147,7 +147,7 @@ lemma ediam_le_iff {k : ℕ∞} : G.ediam ≤ k ↔ ∀ u v, G.edist u v ≤ k :
   iSup₂_le_iff
 
 lemma ediam_eq_top : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
-  simp only [ediam, eccent, iSup_eq_top, lt_iSup_iff]
+  simp [ediam, eccent, iSup_eq_top, lt_iSup_iff]
 
 lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
   simp [ediam_def]

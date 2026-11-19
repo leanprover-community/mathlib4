@@ -104,7 +104,7 @@ lemma chosenCoend.map_apply {G : Jᵒᵖ ⥤ J ⥤ Type max w u} (f : F ⟶ G) (
         apply Quot.sound
         rw [Types.coendRel_iff]
         refine ⟨g, (f.app _).app _ y, ?_, ?_⟩
-        · simp only [← NatTrans.comp_app_apply, f.naturality]
+        · simp [← NatTrans.comp_app_apply, f.naturality]
         · simp [← NatTrans.naturality_apply]) x :=
   rfl
 

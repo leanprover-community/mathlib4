@@ -232,7 +232,7 @@ def lift (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
   __ := QuotientAddGroup.lift _ f.toAddMonoidHom <| fun x hx ↦ by
     simp only [Submodule.mem_toAddSubgroup, AddMonoidHom.mem_ker] at hx ⊢
     refine Submodule.smul_induction_on hx (fun r hr y _ ↦ hf ⟨r, hr⟩ y) fun x y hx hy ↦ ?_
-    simp only [map_add, hx, hy, add_zero]
+    simp [map_add, hx, hy, add_zero]
   map_smul' r x := by
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
     exact map_smul f _ _

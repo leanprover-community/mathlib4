@@ -73,7 +73,7 @@ theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {
       ∀ φ ∈ PointedCone.dual (Dual.eval R G) C₁,
       ∀ ψ ∈ PointedCone.dual (Dual.eval R H) C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  simp only [maxTensorProduct, minTensorProduct, dual_hull, mem_dual, Set.forall_mem_image2,
+  simp [maxTensorProduct, minTensorProduct, dual_hull, mem_dual, Set.forall_mem_image2,
     SetLike.mem_coe, mem_dual]
 
 /-- Elementary tensors are members of the maximal tensor product. -/

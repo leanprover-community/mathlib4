@@ -216,13 +216,13 @@ lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
 variable {P} in
 lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.root j) :
     P.pairing k l = P.pairing i l + P.pairing j l := by
-  simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
+  simp [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
 
 variable {P} in
 lemma pairing_eq_add_of_root_eq_smul_add_smul
     {i j k l : ι} {x y : R} (h : P.root k = x • P.root i + y • P.root l) :
     P.pairing k j = x • P.pairing i j + y • P.pairing l j := by
-  simp only [← root_coroot_eq_pairing, h, map_add, map_smul, LinearMap.add_apply,
+  simp [← root_coroot_eq_pairing, h, map_add, map_smul, LinearMap.add_apply,
     LinearMap.smul_apply, smul_eq_mul]
 
 lemma coroot_root_two :
@@ -274,7 +274,7 @@ lemma reflection_sq : P.reflection i ^ 2 = 1 :=
 lemma reflectionPerm_sq : P.reflectionPerm i ^ 2 = 1 := by
   ext j
   apply P.root.injective
-  simp only [sq, Equiv.Perm.mul_apply, root_reflectionPerm, reflection_same, Equiv.Perm.one_apply]
+  simp [sq, Equiv.Perm.mul_apply, root_reflectionPerm, reflection_same, Equiv.Perm.one_apply]
 
 @[simp]
 lemma reflectionPerm_inv : (P.reflectionPerm i)⁻¹ = P.reflectionPerm i :=
@@ -283,7 +283,7 @@ lemma reflectionPerm_inv : (P.reflectionPerm i)⁻¹ = P.reflectionPerm i :=
 @[simp]
 lemma reflectionPerm_self : P.reflectionPerm i (P.reflectionPerm i j) = j := by
   apply P.root.injective
-  simp only [root_reflectionPerm, reflection_same]
+  simp [root_reflectionPerm, reflection_same]
 
 lemma reflectionPerm_involutive : Involutive (P.reflectionPerm i) :=
   involutive_iff_iter_2_eq_id.mpr (by ext; simp)
@@ -497,13 +497,13 @@ lemma mem_range_coroot_of_mem_range_coreflection_of_mem_range_coroot
 lemma pairing_smul_root_eq (k : ι) (hij : P.reflectionPerm i = P.reflectionPerm j) :
     P.pairing k i • P.root i = P.pairing k j • P.root j := by
   have h : P.reflection i (P.root k) = P.reflection j (P.root k) := by
-    simp only [← root_reflectionPerm, hij]
+    simp [← root_reflectionPerm, hij]
   simpa only [reflection_apply_root, sub_right_inj] using h
 
 lemma pairing_smul_coroot_eq (k : ι) (hij : P.reflectionPerm i = P.reflectionPerm j) :
     P.pairing i k • P.coroot i = P.pairing j k • P.coroot j := by
   have h : P.coreflection i (P.coroot k) = P.coreflection j (P.coroot k) := by
-    simp only [← coroot_reflectionPerm, hij]
+    simp [← coroot_reflectionPerm, hij]
   simpa only [coreflection_apply_coroot, sub_right_inj] using h
 
 lemma two_nsmul_reflection_eq_of_perm_eq (hij : P.reflectionPerm i = P.reflectionPerm j) :
@@ -538,7 +538,7 @@ lemma reflectionPerm_eq_reflectionPerm_iff_of_span :
   · induction hx using Submodule.span_induction with
     | mem x hx =>
       obtain ⟨k, rfl⟩ := hx
-      simp only [← root_reflectionPerm, h]
+      simp [← root_reflectionPerm, h]
     | zero => simp
     | add x y _ _ hx hy => simp [hx, hy]
     | smul t x _ hx => simp [hx]
@@ -566,13 +566,13 @@ def coxeterWeight : R := pairing P i j * pairing P j i
   simp [coxeterWeight, mul_comm (P.pairing j i)]
 
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
-  simp only [coxeterWeight, mul_comm]
+  simp [coxeterWeight, mul_comm]
 
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 
 lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
-  simp only [IsOrthogonal, and_comm]
+  simp [IsOrthogonal, and_comm]
 
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]

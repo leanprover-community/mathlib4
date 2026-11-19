@@ -39,12 +39,12 @@ theorem coe_normSeminorm : ⇑(normSeminorm 𝕜 E) = norm := by rfl
 @[simp]
 theorem ball_normSeminorm : (normSeminorm 𝕜 E).ball = Metric.ball := by
   ext x r y
-  simp only [Seminorm.mem_ball, Metric.mem_ball, coe_normSeminorm, dist_eq_norm]
+  simp [Seminorm.mem_ball, Metric.mem_ball, coe_normSeminorm, dist_eq_norm]
 
 @[simp]
 theorem closedBall_normSeminorm : (normSeminorm 𝕜 E).closedBall = Metric.closedBall := by
   ext x r y
-  simp only [Seminorm.mem_closedBall, Metric.mem_closedBall, coe_normSeminorm, dist_eq_norm]
+  simp [Seminorm.mem_closedBall, Metric.mem_closedBall, coe_normSeminorm, dist_eq_norm]
 
 variable {𝕜 E}
 

@@ -73,8 +73,8 @@ def oreEqv : Setoid (X × S) where
       rcases ore_right_cancel (r₃ * v) (s₃ * s₂) s this with ⟨w, hw⟩
       refine ⟨w * (s₃ * s₂), w * (r₃ * u), ?_, ?_⟩ <;>
         simp only [Submonoid.coe_mul, Submonoid.smul_def, ← hw]
-      · simp only [mul_smul, hru, ← Submonoid.smul_def]
-      · simp only [mul_assoc, hsu]
+      · simp [mul_smul, hru, ← Submonoid.smul_def]
+      · simp [mul_assoc, hsu]
     · rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨r₃, s₃⟩ ⟨u, v, hur₁, hs₁u⟩ ⟨u', v', hur₂, hs₂u⟩
       rcases oreCondition v' u with ⟨r', s', h⟩; dsimp only at *
       refine ⟨s' * u', r' * v, ?_, ?_⟩ <;>
@@ -230,9 +230,9 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   simp only [Submonoid.coe_mul, Submonoid.smul_def]
   constructor
   · rw [smul_smul, mul_assoc (c := v₀), ← hs₄]
-    simp only [smul_smul, mul_assoc]
+    simp [smul_smul, mul_assoc]
   · rw [← mul_assoc (b := (u₀ : R)), mul_assoc (c := (u₀ : R)), h₃]
-    simp only [mul_assoc]
+    simp [mul_assoc]
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
 @[to_additive /-- The vector addition on the Ore localization of additive monoids. -/]
@@ -490,11 +490,11 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]
       have : (fS ⟨t * s, ht⟩ : T) = f t * fS s := by
-        simp only [← hf, map_mul]
+        simp [← hf, map_mul]
       conv_rhs =>
         rw [map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
-      simp only [one_mul, Units.inv_mul]
+      simp [one_mul, Units.inv_mul]
   map_one' := by rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
     cases x with | _ r₁ s₁
@@ -567,7 +567,7 @@ theorem oreDiv_one_smul (r : M) (x : X[S⁻¹]) : (r /ₒ (1 : S)) • x = r •
 @[to_additive]
 theorem smul_one_smul (r : R) (x : X[S⁻¹]) : (r • 1 : M) • x = r • x := by
   cases x
-  simp only [smul_oreDiv, smul_eq_mul, mul_one]
+  simp [smul_oreDiv, smul_eq_mul, mul_one]
 
 @[to_additive]
 theorem smul_one_oreDiv_one_smul (r : R) (x : X[S⁻¹]) :
@@ -579,7 +579,7 @@ instance : IsScalarTower R R' X[S⁻¹] where
   smul_assoc r m x := by
     rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul,
       ← mul_smul, mul_div_one]
-    simp only [smul_mul_assoc, smul_assoc, one_mul]
+    simp [smul_mul_assoc, smul_assoc, one_mul]
 
 @[to_additive]
 instance [SMulCommClass R R' M] : SMulCommClass R R' X[S⁻¹] where

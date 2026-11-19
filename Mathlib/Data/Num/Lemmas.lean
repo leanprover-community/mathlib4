@@ -220,16 +220,16 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
   @(Nat.binaryRec (by simp [zero_add]) fun b n ih => by
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
-      simp only [← bit1_of_bit1, ← bit0_of_bit0, cond]
+      simp [← bit1_of_bit1, ← bit0_of_bit0, cond]
     · rw [show n.bit true + 1 = (n + 1).bit false by simp [Nat.bit, mul_add],
         ofNat'_bit, ofNat'_bit, ih]
-      simp only [cond, add_one, bit1_succ])
+      simp [cond, add_one, bit1_succ])
 
 @[simp]
 theorem add_ofNat' (m n) : Num.ofNat' (m + n) = Num.ofNat' m + Num.ofNat' n := by
   induction n
-  · simp only [Nat.add_zero, ofNat'_zero, add_zero]
-  · simp only [Nat.add_succ, Nat.add_zero, ofNat'_succ, add_one, add_succ, *]
+  · simp [Nat.add_zero, ofNat'_zero, add_zero]
+  · simp [Nat.add_succ, Nat.add_zero, ofNat'_succ, add_one, add_succ, *]
 
 @[simp, norm_cast]
 theorem cast_zero [Zero α] [One α] [Add α] : ((0 : Num) : α) = 0 :=

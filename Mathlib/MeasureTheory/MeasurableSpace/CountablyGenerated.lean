@@ -511,7 +511,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
       refine ⟨(⋃ n, (S n : Set (Set α))).toFinset, ?_, ?_⟩
       · simp only [coe_toFinset, iUnion_subset_iff]
         exact hS_subset
-      · simp only [coe_toFinset, sUnion_iUnion, hS_eq]
+      · simp [coe_toFinset, sUnion_iUnion, hS_eq]
   · rw [hS_eq, sUnion_eq_biUnion]
     refine MeasurableSet.biUnion ?_ (fun t ht ↦ ?_)
     · exact S.countable_toSet

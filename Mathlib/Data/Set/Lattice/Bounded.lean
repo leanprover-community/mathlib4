@@ -161,7 +161,7 @@ theorem biUnion_pair (a b : α) (s : α → Set β) : ⋃ x ∈ ({a, b} : Set α
   simp
 
 theorem inter_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
-    (s ∩ ⋃ (i) (j), t i j) = ⋃ (i) (j), s ∩ t i j := by simp only [inter_iUnion]
+    (s ∩ ⋃ (i) (j), t i j) = ⋃ (i) (j), s ∩ t i j := by simp [inter_iUnion]
 
 theorem iUnion₂_inter (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) ∩ t = ⋃ (i) (j), s i j ∩ t := by simp_rw [iUnion_inter]
@@ -335,14 +335,14 @@ theorem sInter_range (f : ι → Set β) : ⋂₀ range f = ⋂ x, f x :=
   rfl
 
 theorem iUnion_eq_univ_iff {f : ι → Set α} : ⋃ i, f i = univ ↔ ∀ x, ∃ i, x ∈ f i := by
-  simp only [eq_univ_iff_forall, mem_iUnion]
+  simp [eq_univ_iff_forall, mem_iUnion]
 
 theorem iUnion₂_eq_univ_iff {s : ∀ i, κ i → Set α} :
     ⋃ (i) (j), s i j = univ ↔ ∀ a, ∃ i j, a ∈ s i j := by
-  simp only [iUnion_eq_univ_iff, mem_iUnion]
+  simp [iUnion_eq_univ_iff, mem_iUnion]
 
 theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b ∈ c, a ∈ b := by
-  simp only [eq_univ_iff_forall, mem_sUnion]
+  simp [eq_univ_iff_forall, mem_sUnion]
 
 theorem iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set α} (h : f i = ∅) :
     ⋂ j, f j = ∅ := by
@@ -355,7 +355,7 @@ theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, �
 -- classical
 theorem iInter₂_eq_empty_iff {s : ∀ i, κ i → Set α} :
     ⋂ (i) (j), s i j = ∅ ↔ ∀ a, ∃ i j, a ∉ s i j := by
-  simp only [eq_empty_iff_forall_notMem, mem_iInter, not_forall]
+  simp [eq_empty_iff_forall_notMem, mem_iInter, not_forall]
 
 -- classical
 theorem sInter_eq_empty_iff {c : Set (Set α)} : ⋂₀ c = ∅ ↔ ∀ a, ∃ b ∈ c, a ∉ b := by
@@ -444,10 +444,10 @@ theorem sInter_eq_biInter {s : Set (Set α)} : ⋂₀ s = ⋂ (i : Set α) (_ : 
   rw [← sInter_image, image_id']
 
 theorem sUnion_eq_iUnion {s : Set (Set α)} : ⋃₀ s = ⋃ i : s, i := by
-  simp only [← sUnion_range, Subtype.range_coe]
+  simp [← sUnion_range, Subtype.range_coe]
 
 theorem sInter_eq_iInter {s : Set (Set α)} : ⋂₀ s = ⋂ i : s, i := by
-  simp only [← sInter_range, Subtype.range_coe]
+  simp [← sInter_range, Subtype.range_coe]
 
 @[simp]
 theorem iUnion_of_empty [IsEmpty ι] (s : ι → Set α) : ⋃ i, s i = ∅ :=
@@ -478,10 +478,10 @@ theorem biInter_iUnion (s : ι → Set α) (t : α → Set β) :
     ⋂ x ∈ ⋃ i, s i, t x = ⋂ (i) (x ∈ s i), t x := by simp [@iInter_comm _ ι]
 
 theorem sUnion_iUnion (s : ι → Set (Set α)) : ⋃₀ ⋃ i, s i = ⋃ i, ⋃₀ s i := by
-  simp only [sUnion_eq_biUnion, biUnion_iUnion]
+  simp [sUnion_eq_biUnion, biUnion_iUnion]
 
 theorem sInter_iUnion (s : ι → Set (Set α)) : ⋂₀ ⋃ i, s i = ⋂ i, ⋂₀ s i := by
-  simp only [sInter_eq_biInter, biInter_iUnion]
+  simp [sInter_eq_biInter, biInter_iUnion]
 
 theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C, β → (s : Type _)}
     (hf : ∀ s : C, Surjective (f s)) : ⋃ y : β, range (fun s : C => (f s y).val) = ⋃₀ C := by
@@ -571,7 +571,7 @@ theorem pi_def (i : Set α) (s : ∀ a, Set (π a)) : pi i s = ⋂ a ∈ i, eval
   simp
 
 theorem univ_pi_eq_iInter (t : ∀ i, Set (π i)) : pi univ t = ⋂ i, eval i ⁻¹' t i := by
-  simp only [pi_def, iInter_true, mem_univ]
+  simp [pi_def, iInter_true, mem_univ]
 
 theorem pi_sdiff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
     pi i s \ pi i t ⊆ ⋃ a ∈ i, eval a ⁻¹' (s a \ t a) := by

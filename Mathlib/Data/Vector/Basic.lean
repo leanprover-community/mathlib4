@@ -110,7 +110,7 @@ theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
 @[simp]
 theorem getElem_map {β : Type*} (v : Vector α n) (f : α → β) {i : ℕ} (hi : i < n) :
     (v.map f)[i] = f v[i] := by
-  simp only [getElem_def, toList_map, List.getElem_map]
+  simp [getElem_def, toList_map, List.getElem_map]
 
 @[simp]
 theorem toList_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α n)
@@ -121,7 +121,7 @@ theorem toList_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector 
 theorem getElem_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α n)
     (hp : ∀ x ∈ v.toList, p x) {i : ℕ} (hi : i < n) :
     (v.pmap f hp)[i] = f v[i] (hp _ (by simp [getElem_def, List.getElem_mem])) := by
-  simp only [getElem_def, toList_pmap, List.getElem_pmap]
+  simp [getElem_def, toList_pmap, List.getElem_pmap]
 
 theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
@@ -205,7 +205,7 @@ retrieved via `toList`, is equal to the list of that single element. -/
 @[simp]
 theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] := by
   rw [← v.cons_head_tail]
-  simp only [toList_cons, toList_nil, head_cons, singleton_tail]
+  simp [toList_cons, toList_nil, head_cons, singleton_tail]
 
 @[simp]
 theorem empty_toList_eq_ff (v : Vector α (n + 1)) : v.toList.isEmpty = false :=
@@ -218,7 +218,7 @@ theorem not_empty_toList (v : Vector α (n + 1)) : ¬v.toList.isEmpty := by
 /-- Mapping under `id` does not change a vector. -/
 @[simp]
 theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
-  Vector.eq _ _ (by simp only [List.map_id, Vector.toList_map])
+  Vector.eq _ _ (by simp [List.map_id, Vector.toList_map])
 
 theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get := by
   obtain ⟨l, rfl⟩ := v
@@ -326,7 +326,7 @@ and the mapped `f b x : β` as the last value.
 @[simp]
 theorem scanl_singleton (v : Vector α 1) : scanl f b v = b ::ᵥ f b v.head ::ᵥ nil := by
   rw [← cons_head_tail v]
-  simp only [scanl_cons, scanl_nil, head_cons, singleton_tail]
+  simp [scanl_cons, scanl_nil, head_cons, singleton_tail]
 
 /-- The first element of `scanl` of a vector `v : Vector α n`,
 retrieved via `head`, is the starting value `b : β`.
@@ -334,8 +334,8 @@ retrieved via `head`, is the starting value `b : β`.
 @[simp]
 theorem scanl_head : (scanl f b v).head = b := by
   cases n
-  · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
-    simp only [this, scanl_nil, head_cons]
+  · have : v = nil := by simp [eq_iff_true_of_subsingleton]
+    simp [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
     simp [← get_zero, get_eq_get_toList]
 
@@ -361,7 +361,7 @@ theorem scanl_get (i : Fin n) :
     refine Fin.cases ?_ ?_ i
     · simp
     · intro i'
-      simp only [hn, Fin.castSucc_succ, get_cons_succ]
+      simp [hn, Fin.castSucc_succ, get_cons_succ]
 
 end Scan
 
@@ -722,7 +722,7 @@ theorem get_append_cons_succ {i : Fin (n + m)} {h} :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem append_nil : xs ++ (nil : Vector α 0) = xs := by
-  cases xs; simp only [append_def, append_nil]
+  cases xs; simp [append_def, append_nil]
 
 end Append
 
@@ -737,8 +737,8 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
   | cons ih =>
     rw [map₂_cons]
     cases i using Fin.cases
-    · simp only [get_zero, head_cons]
-    · simp only [get_cons_succ, ih]
+    · simp [get_zero, head_cons]
+    · simp [get_cons_succ, ih]
 
 @[simp]
 theorem mapAccumr_cons {f : α → σ → σ × β} :

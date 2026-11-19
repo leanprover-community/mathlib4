@@ -36,7 +36,7 @@ lemma Iic.succ_eq_of_not_isMax
       rw [← coe_succ_of_not_isMax hi]
       apply Subtype.coe_prop⟩ := by
   ext
-  simp only [coe_succ_of_not_isMax hi]
+  simp [coe_succ_of_not_isMax hi]
 
 lemma Ici.coe_pred_of_not_isMin
     [PredOrder J] {j : J} {i : Set.Ici j} (hi : ¬ IsMin i) :
@@ -51,6 +51,6 @@ lemma Ici.pred_eq_of_not_isMin
       rw [← coe_pred_of_not_isMin hi]
       apply Subtype.coe_prop⟩ := by
   ext
-  simp only [coe_pred_of_not_isMin hi]
+  simp [coe_pred_of_not_isMin hi]
 
 end Set

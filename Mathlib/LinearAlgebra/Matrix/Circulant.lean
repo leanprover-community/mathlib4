@@ -118,7 +118,7 @@ theorem circulant_mul [NonUnitalNonAssocSemiring α] [Fintype n] [AddGroup n] (v
   simp only [Matrix.mul_apply, mulVec, circulant_apply, dotProduct]
   refine Fintype.sum_equiv (Equiv.subRight j) _ _ ?_
   intro x
-  simp only [Equiv.subRight_apply, sub_sub_sub_cancel_right]
+  simp [Equiv.subRight_apply, sub_sub_sub_cancel_right]
 
 theorem Fin.circulant_mul [NonUnitalNonAssocSemiring α] :
     ∀ {n} (v w : Fin n → α), circulant v * circulant w = circulant (circulant v *ᵥ w)

@@ -79,7 +79,7 @@ def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
   simp only [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single]
   change (F.map _ ≫ c.ι.app _) _ - _ = 0
   rw [c.ι.naturality]
-  simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id, sub_self]
+  simp [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id, sub_self]
 
 @[simp]
 lemma Quot.ι_desc [DecidableEq J] (j : J) (x : F.obj j) :
@@ -218,7 +218,7 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
     dsimp
     conv_lhs => erw [← Quot.ι_desc F c j x]
     rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
-    simp only [Quot.ι_desc, Functor.const_obj_obj]
+    simp [Quot.ι_desc, Functor.const_obj_obj]
   uniq s m hm := by
     ext x
     obtain ⟨x, rfl⟩ := h.2 x

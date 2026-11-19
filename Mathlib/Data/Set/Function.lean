@@ -689,7 +689,7 @@ theorem BijOn.comp (hg : BijOn g t p) (hf : BijOn f s t) : BijOn (g ∘ f) s p :
 /-- If `f : α → β` and `g : β → γ` and if `f` is injective on `s`, then `g ∘ f` is a bijection
 on `s` iff `g` is a bijection on `f '' s`. -/
 theorem bijOn_comp_iff (hf : InjOn f s) : BijOn (g ∘ f) s p ↔ BijOn g (f '' s) p := by
-  simp only [BijOn, InjOn.comp_iff, surjOn_comp_iff, mapsTo_image_iff, hf]
+  simp [BijOn, InjOn.comp_iff, surjOn_comp_iff, mapsTo_image_iff, hf]
 
 /--
 If we have a commutative square
@@ -1103,9 +1103,9 @@ theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective
     (h : Classical.choice n ∈ s) : invFun f ⁻¹' s = f '' s ∪ (range f)ᶜ := by
   ext x
   rcases em (x ∈ range f) with (⟨a, rfl⟩ | hx)
-  · simp only [mem_preimage, mem_union, mem_compl_iff, mem_range_self, not_true, or_false,
+  · simp [mem_preimage, mem_union, mem_compl_iff, mem_range_self, not_true, or_false,
       leftInverse_invFun hf _, hf.mem_set_image]
-  · simp only [mem_preimage, invFun_neg hx, h, hx, mem_union, mem_compl_iff, not_false_iff, or_true]
+  · simp [mem_preimage, invFun_neg hx, h, hx, mem_union, mem_compl_iff, not_false_iff, or_true]
 
 theorem preimage_invFun_of_notMem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
     (h : Classical.choice n ∉ s) : invFun f ⁻¹' s = f '' s := by
@@ -1113,7 +1113,7 @@ theorem preimage_invFun_of_notMem [n : Nonempty α] {f : α → β} (hf : Inject
   rcases em (x ∈ range f) with (⟨a, rfl⟩ | hx)
   · rw [mem_preimage, leftInverse_invFun hf, hf.mem_set_image]
   · have : x ∉ f '' s := fun h' => hx (image_subset_range _ _ h')
-    simp only [mem_preimage, invFun_neg hx, h, this]
+    simp [mem_preimage, invFun_neg hx, h, this]
 
 lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn g t s :=
   ⟨h.2.mapsTo hf.surjOn, h.1.injOn, h.2.surjOn hf.mapsTo⟩
@@ -1194,7 +1194,7 @@ theorem bijOn_range (h : Semiconj f fa fb) (ha : Bijective fa) (hf : Injective f
   exact h.bijOn_image ha.bijOn_univ hf.injOn
 
 theorem mapsTo_preimage (h : Semiconj f fa fb) {s t : Set β} (hb : MapsTo fb s t) :
-    MapsTo fa (f ⁻¹' s) (f ⁻¹' t) := fun x hx => by simp only [mem_preimage, h x, hb hx]
+    MapsTo fa (f ⁻¹' s) (f ⁻¹' t) := fun x hx => by simp [mem_preimage, h x, hb hx]
 
 theorem injOn_preimage (h : Semiconj f fa fb) {s : Set β} (hb : InjOn fb s)
     (hf : InjOn f (f ⁻¹' s)) : InjOn fa (f ⁻¹' s) := by

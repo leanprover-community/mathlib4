@@ -396,11 +396,11 @@ lemma min_rec' (p : α → Prop) (ha : p a) (hb : p b) : p (min a b) :=
 
 @[to_dual max_def_lt']
 lemma min_def_lt (a b : α) : min a b = if a < b then a else b := by
-  rw [min_comm, min_def, ← ite_not]; simp only [not_le]
+  rw [min_comm, min_def, ← ite_not]; simp [not_le]
 
 @[to_dual min_def_lt']
 lemma max_def_lt (a b : α) : max a b = if a < b then b else a := by
-  rw [max_comm, max_def, ← ite_not]; simp only [not_le]
+  rw [max_comm, max_def, ← ite_not]; simp [not_le]
 
 end MinMaxRec
 end LinearOrder
@@ -708,7 +708,7 @@ abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] 
   toDecidableLE := ‹_›
   toDecidableEq := ‹_›
   toDecidableLT := ‹_›
-  le_total _ _ := by simp only [← le, le_total]
+  le_total _ _ := by simp [← le, le_total]
   min_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← min_def, min]
   max_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← max_def, max]
   compare_eq_compareOfLessAndEq _ _ := by

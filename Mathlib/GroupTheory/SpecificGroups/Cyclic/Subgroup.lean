@@ -312,7 +312,7 @@ variable [DecidableEq α]
 @[to_additive]
 theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
     Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
-  simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
+  simp [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
 
 @[to_additive]
 theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :

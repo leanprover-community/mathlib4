@@ -233,7 +233,7 @@ theorem mk_Ici_real (a : ℝ) : #(Ici a) = 𝔠 :=
 theorem mk_Iio_real (a : ℝ) : #(Iio a) = 𝔠 := by
   refine le_antisymm (mk_real ▸ mk_set_le _) ?_
   have h2 : (fun x => a + a - x) '' Iio a = Ioi a := by
-    simp only [image_const_sub_Iio, add_sub_cancel_right]
+    simp [image_const_sub_Iio, add_sub_cancel_right]
   exact mk_Ioi_real a ▸ h2 ▸ mk_image_le
 
 /-- The cardinality of the interval $(-∞, a]$. -/

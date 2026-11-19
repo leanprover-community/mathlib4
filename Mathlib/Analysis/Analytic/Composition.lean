@@ -190,8 +190,8 @@ def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : C
     (f : F [×c.length]→L[𝕜] G) : E [×n]→L[𝕜] G where
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ f (p.applyComposition c v))
-      (fun v i x y ↦ by simp only [applyComposition_update, map_update_add])
-      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul, RingHom.id_apply])
+      (fun v i x y ↦ by simp [applyComposition_update, map_update_add])
+      (fun v i c x ↦ by simp [applyComposition_update, map_update_smul, RingHom.id_apply])
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
@@ -476,7 +476,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
       _ ≤ Cq := hCq _
     have B := calc
       (∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n = ∏ i, ‖p (c.blocksFun i)‖₊ * rp ^ c.blocksFun i := by
-        simp only [Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, c.sum_blocksFun]
+        simp [Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, c.sum_blocksFun]
       _ ≤ ∏ _i : Fin c.length, Cp := by gcongr with i; exact hCp _
       _ = Cp ^ c.length := by simp
       _ ≤ Cp ^ n := pow_right_mono₀ hCp1 c.length_le
@@ -546,7 +546,7 @@ def compPartialSumSource (m M N : ℕ) : Finset (Σ n, Fin n → ℕ) :=
 theorem mem_compPartialSumSource_iff (m M N : ℕ) (i : Σ n, Fin n → ℕ) :
     i ∈ compPartialSumSource m M N ↔
       (m ≤ i.1 ∧ i.1 < M) ∧ ∀ a : Fin i.1, 1 ≤ i.2 a ∧ i.2 a < N := by
-  simp only [compPartialSumSource, Finset.mem_Ico, Fintype.mem_piFinset, Finset.mem_sigma]
+  simp [compPartialSumSource, Finset.mem_Ico, Fintype.mem_piFinset, Finset.mem_sigma]
 
 /-- Change of variables appearing to compute the composition of partial sums of formal
 power series -/
@@ -564,7 +564,7 @@ theorem compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     Composition.length (compChangeOfVariables m M N i hi).2 = i.1 := by
   rcases i with ⟨k, blocks_fun⟩
   dsimp [compChangeOfVariables]
-  simp only [Composition.length, length_ofFn]
+  simp [Composition.length, length_ofFn]
 
 theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     (hi : i ∈ compPartialSumSource m M N) (j : Fin i.1) :
@@ -573,7 +573,7 @@ theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
       i.2 j := by
   rcases i with ⟨n, f⟩
   dsimp [Composition.blocksFun, Composition.blocks, compChangeOfVariables]
-  simp only [List.getElem_ofFn]
+  simp [List.getElem_ofFn]
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
 power series, here given a a set. -/
@@ -625,7 +625,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     simp only [mem_compPartialSumTarget_iff, Composition.length, H.left,
       length_ofFn, true_and, compChangeOfVariables]
     intro j
-    simp only [Composition.blocksFun, (H.right _).right, List.get_ofFn]
+    simp [Composition.blocksFun, (H.right _).right, List.get_ofFn]
   -- 2 - show that the map is injective
   · rintro ⟨k, blocks_fun⟩ H ⟨k', blocks_fun'⟩ H' heq
     obtain rfl : k = k' := by
@@ -663,7 +663,7 @@ theorem compPartialSumTarget_tendsto_prod_atTop :
       ⟨max n c.length + 1, bot_le, lt_of_le_of_lt (le_max_right n c.length) (lt_add_one _), fun j =>
         lt_of_le_of_lt (le_trans ?_ (le_max_left _ _)) (lt_add_one _)⟩
     apply hn
-    simp only [Finset.mem_image_of_mem, Finset.mem_coe, Finset.mem_univ]
+    simp [Finset.mem_image_of_mem, Finset.mem_coe, Finset.mem_univ]
 
 /-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
 all possible compositions. -/
@@ -726,7 +726,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     exact ⟨δ, δpos, fun {z} hz => Hδ (by rwa [Set.inter_comm])⟩
   let rf' := min rf δ
   have min_pos : 0 < min rf' r := by
-    simp only [rf', r_pos, Hf.r_pos, δpos, lt_min_iff, ENNReal.coe_pos, and_self_iff]
+    simp [rf', r_pos, Hf.r_pos, δpos, lt_min_iff, ENNReal.coe_pos, and_self_iff]
   /- We will show that `g ∘ f` admits the power series `q.comp p` in the disk of
     radius `min (r, rf', δ)`. -/
   refine ⟨min rf' r, ?_⟩
@@ -1230,13 +1230,13 @@ def sigmaEquivSigmaPi (n : ℕ) :
       ext1
       dsimp [Composition.gather]
       rwa [splitWrtComposition_flatten]
-      simp only [map_ofFn, Function.comp_def]
+      simp [map_ofFn, Function.comp_def]
     · rw [Fin.heq_fun_iff]
       · intro i
         dsimp [Composition.sigmaCompositionAux]
         rw [getElem_of_eq (splitWrtComposition_flatten _ _ _)]
-        · simp only [List.getElem_ofFn]
-        · simp only [map_ofFn, Function.comp_def]
+        · simp [List.getElem_ofFn]
+        · simp [map_ofFn, Function.comp_def]
       · congr
 
 end Composition

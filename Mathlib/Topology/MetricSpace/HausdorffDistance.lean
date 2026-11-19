@@ -80,7 +80,7 @@ theorem infEDist_empty : infEDist x ∅ = ∞ :=
   iInf_emptyset
 
 theorem le_infEDist {d} : d ≤ infEDist x s ↔ ∀ y ∈ s, d ≤ edist x y := by
-  simp only [infEDist, le_iInf_iff]
+  simp [infEDist, le_iInf_iff]
 
 /-- The edist to a union is the minimum of the edists -/
 @[simp]
@@ -92,7 +92,7 @@ theorem infEDist_iUnion (f : ι → Set α) (x : α) : infEDist x (⋃ i, f i) =
   iInf_iUnion f _
 
 lemma infEDist_biUnion {ι : Type*} (f : ι → Set α) (I : Set ι) (x : α) :
-    infEDist x (⋃ i ∈ I, f i) = ⨅ i ∈ I, infEDist x (f i) := by simp only [infEDist_iUnion]
+    infEDist x (⋃ i ∈ I, f i) = ⨅ i ∈ I, infEDist x (f i) := by simp [infEDist_iUnion]
 
 /-- The edist to a singleton is the edistance to the single point of this singleton -/
 @[simp]
@@ -122,7 +122,7 @@ theorem infEDist_le_infEDist_add_edist : infEDist x s ≤ infEDist y s + edist x
   calc
     ⨅ z ∈ s, edist x z ≤ ⨅ z ∈ s, edist y z + edist x y :=
       iInf₂_mono fun _ _ => (edist_triangle _ _ _).trans_eq (add_comm _ _)
-    _ = (⨅ z ∈ s, edist y z) + edist x y := by simp only [ENNReal.iInf_add]
+    _ = (⨅ z ∈ s, edist y z) + edist x y := by simp [ENNReal.iInf_add]
 
 theorem infEDist_le_edist_add_infEDist : infEDist x s ≤ edist x y + infEDist y s := by
   rw [add_comm]
@@ -139,7 +139,7 @@ theorem edist_le_infEDist_add_ediam (hy : y ∈ s) : edist x y ≤ infEDist x s 
 @[continuity, fun_prop]
 theorem continuous_infEDist : Continuous fun x => infEDist x s :=
   continuous_of_le_add_edist 1 (by simp) <| by
-    simp only [one_mul, infEDist_le_infEDist_add_edist, forall₂_true_iff]
+    simp [one_mul, infEDist_le_infEDist_add_edist, forall₂_true_iff]
 
 /-- The edist to a set and to its closure coincide -/
 theorem infEDist_closure : infEDist x (closure s) = infEDist x s := by
@@ -197,7 +197,7 @@ theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x
 
 /-- The infimum edistance is invariant under isometries -/
 theorem infEDist_image (hΦ : Isometry Φ) : infEDist (Φ x) (Φ '' t) = infEDist x t := by
-  simp only [infEDist, iInf_image, hΦ.edist_eq]
+  simp [infEDist, iInf_image, hΦ.edist_eq]
 
 @[to_additive (attr := simp)]
 theorem infEDist_smul {M} [SMul M α] [IsIsometricSMul M α] (c : M) (x : α) (s : Set α) :
@@ -214,7 +214,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     exact this (infEDist_zero_of_mem h)
   refine ⟨F, fun n => IsClosed.preimage continuous_infEDist isClosed_Ici, F_subset, ?_, ?_⟩
   · show ⋃ n, F n = U
-    refine Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => ?_
+    refine Subset.antisymm (by simp [iUnion_subset_iff, F_subset, forall_const]) fun x hx => ?_
     have : x ∉ Uᶜ := by simpa using hx
     rw [mem_iff_infEDist_zero_of_closed hU.isClosed_compl] at this
     have B : 0 < infEDist x Uᶜ := by simpa [pos_iff_ne_zero] using this
@@ -330,7 +330,7 @@ theorem infEDist_le_infEDist_add_hausdorffEDist :
 /-- The Hausdorff edistance is invariant under isometries. -/
 theorem hausdorffEDist_image (h : Isometry Φ) :
     hausdorffEDist (Φ '' s) (Φ '' t) = hausdorffEDist s t := by
-  simp only [hausdorffEDist, iSup_image, infEDist_image h]
+  simp [hausdorffEDist, iSup_image, infEDist_image h]
 
 /-- The Hausdorff distance is controlled by the diameter of the union. -/
 theorem hausdorffEDist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
@@ -466,7 +466,7 @@ def infDist (x : α) (s : Set α) : ℝ :=
 
 theorem infDist_eq_iInf : infDist x s = ⨅ y : s, dist x y := by
   rw [infDist, infEDist, iInf_subtype', ENNReal.toReal_iInf]
-  · simp only [dist_edist]
+  · simp [dist_edist]
   · finiteness
 
 /-- The minimal distance is always nonnegative -/
@@ -521,7 +521,7 @@ theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := 
   rw [infDist, infDist, dist_edist]
   refine ENNReal.toReal_le_add_of_top_imp_top infEDist_le_infEDist_add_edist ?_
     (flip absurd (edist_ne_top _ _))
-  simp only [infEDist_eq_top_iff, imp_self]
+  simp [infEDist_eq_top_iff, imp_self]
 
 theorem notMem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
   h.not_ge <| infDist_le_dist_of_mem hy
@@ -592,7 +592,7 @@ theorem _root_.IsClosed.notMem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
-  · simp only [infDist_empty, continuousAt_const]
+  · simp [infDist_empty, continuousAt_const]
   · refine (continuous_infDist_pt s).continuousAt.inv₀ ?_
     rwa [Ne, ← mem_closure_iff_infDist_zero hs]
 

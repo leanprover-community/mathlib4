@@ -55,7 +55,7 @@ lemma hasSmallLocalizedShiftedHom_iff
   have eq := fun (a b : M) ↦ small_congr.{w}
     (Iso.homCongr ((L.commShiftIso a).app X) ((L.commShiftIso b).app Y))
   dsimp at eq
-  simp only [hasSmallLocalizedHom_iff _ L, eq]
+  simp [hasSmallLocalizedHom_iff _ L, eq]
 
 variable {Y} in
 lemma hasSmallLocalizedShiftedHom_iff_target [W.IsCompatibleWithShift M]
@@ -200,7 +200,7 @@ lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     SmallHom.equiv W L (f.shift n a' h) = (L.commShiftIso n).hom.app X ≫
       (SmallHom.equiv W L f)⟦n⟧' ≫ ((L.commShiftIso a).hom.app Y)⟦n⟧' ≫
         (shiftFunctorAdd' D a n a' h).inv.app (L.obj Y) ≫ (L.commShiftIso a').inv.app Y := by
-  simp only [shift, SmallHom.equiv_comp, SmallHom.equiv_shift, SmallHom.equiv_mk, assoc,
+  simp [shift, SmallHom.equiv_comp, SmallHom.equiv_shift, SmallHom.equiv_mk, assoc,
     L.commShiftIso_add' h, Functor.CommShift.isoAdd'_inv_app, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
@@ -245,7 +245,7 @@ lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
   dsimp [equiv, mk₀]
   erw [SmallHom.equiv_mk, Functor.map_comp]
   dsimp [equiv, mk₀, ShiftedHom.mk₀, shiftFunctorZero']
-  simp only [comp_id, L.commShiftIso_zero, Functor.CommShift.isoZero_hom_app, assoc,
+  simp [comp_id, L.commShiftIso_zero, Functor.CommShift.isoZero_hom_app, assoc,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id, id_comp]
 
 @[simp]
@@ -276,7 +276,7 @@ lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
     (α.comp β h₁₂).comp γ (show a₃ + a₁₂ = a by rw [← h₁₂, ← add_assoc, h]) =
       α.comp (β.comp γ h₂₃) (by rw [← h₂₃, h]) := by
   apply (equiv W W.Q).injective
-  simp only [equiv_comp, ShiftedHom.comp_assoc _ _ _ h₁₂ h₂₃ h]
+  simp [equiv_comp, ShiftedHom.comp_assoc _ _ _ h₁₂ h₂₃ h]
 
 end
 

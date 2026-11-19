@@ -85,7 +85,7 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
         · use pred_conts
           have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
             contsAux_stable_of_terminated (n + 1).le_succ s_ppred_nth_eq
-          simp only [g, this, pred_conts_eq]
+          simp [g, this, pred_conts_eq]
         -- option.some
         · -- invoke the IH a second time
           obtain ⟨ppred_conts, ppred_conts_eq⟩ :=
@@ -168,7 +168,7 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       IntFractPair.stream v n := by
   induction n with
   | zero =>
-    simp only [IntFractPair.stream, Option.map_some, coe_of_rat_eq v_eq_q]
+    simp [IntFractPair.stream, Option.map_some, coe_of_rat_eq v_eq_q]
   | succ n IH =>
     rw [v_eq_q] at IH
     cases stream_q_nth_eq : IntFractPair.stream q n with
@@ -292,7 +292,7 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
       stream_nth_fr_num_le_fr_num_sub_n_rat stream_nth_eq
     have : fract_q_num - n = -1 := by
       have : 0 ≤ fract_q_num := Rat.num_nonneg.mpr (Int.fract_nonneg q)
-      simp only [n, Nat.cast_add, Int.natAbs_of_nonneg this, Nat.cast_one,
+      simp [n, Nat.cast_add, Int.natAbs_of_nonneg this, Nat.cast_one,
         sub_add_eq_sub_sub_swap, sub_right_comm, sub_self, zero_sub]
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left
     have : 0 ≤ ifp.fr.num := Rat.num_nonneg.mpr this

@@ -91,7 +91,7 @@ theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype �
 
 @[simp]
 lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f f.injective.injOn = s :=
-  coe_injective <| by simp only [coe_preimage, coe_map, Set.preimage_image_eq _ f.injective]
+  coe_injective <| by simp [coe_preimage, coe_map, Set.preimage_image_eq _ f.injective]
 
 theorem monotone_preimage {f : α → β} (h : Injective f) :
     Monotone fun s => preimage s f h.injOn := fun _ _ H _ hx =>
@@ -99,7 +99,7 @@ theorem monotone_preimage {f : α → β} (h : Injective f) :
 
 theorem image_subset_iff_subset_preimage [DecidableEq β] {f : α → β} {s : Finset α} {t : Finset β}
     (hf : Set.InjOn f (f ⁻¹' ↑t)) : s.image f ⊆ t ↔ s ⊆ t.preimage f hf :=
-  image_subset_iff.trans <| by simp only [subset_iff, mem_preimage]
+  image_subset_iff.trans <| by simp [subset_iff, mem_preimage]
 
 theorem map_subset_iff_subset_preimage {f : α ↪ β} {s : Finset α} {t : Finset β} :
     s.map f ⊆ t ↔ s ⊆ t.preimage f f.injective.injOn := by
@@ -224,5 +224,5 @@ lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : 
     ⇑((e.restrictPreimageFinset s).piCongrLeft (fun b : s ↦ (π b))) ∘
     (s.preimage e e.injective.injOn).restrict := by
   ext x b
-  simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast,
+  simp [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast,
     Equiv.restrictPreimageFinset_symm_apply_coe]

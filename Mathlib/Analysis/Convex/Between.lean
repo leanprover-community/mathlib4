@@ -249,7 +249,7 @@ alias ⟨_, Wbtw.const_sub⟩ := wbtw_const_sub_iff
 @[simp]
 theorem wbtw_neg_iff {x y z : V} :
     Wbtw R (-x) (-y) (-z) ↔ Wbtw R x y z := by
-  simp only [← zero_sub, wbtw_const_sub_iff]
+  simp [← zero_sub, wbtw_const_sub_iff]
 
 alias ⟨_, Wbtw.neg⟩ := wbtw_neg_iff
 
@@ -315,7 +315,7 @@ alias ⟨_, Sbtw.const_sub⟩ := sbtw_const_sub_iff
 @[simp]
 theorem sbtw_neg_iff {x y z : V} :
     Sbtw R (-x) (-y) (-z) ↔ Sbtw R x y z := by
-  simp only [← zero_sub, sbtw_const_sub_iff]
+  simp [← zero_sub, sbtw_const_sub_iff]
 
 alias ⟨_, Sbtw.neg⟩ := sbtw_neg_iff
 

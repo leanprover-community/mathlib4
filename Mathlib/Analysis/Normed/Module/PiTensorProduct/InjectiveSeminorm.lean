@@ -137,11 +137,11 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   have heq : e (lift f'.toMultilinearMap x) = lift f.toMultilinearMap x := by
     induction x using PiTensorProduct.induction_on with
     | smul_tprod =>
-      simp only [lift_symm, map_smul, lift.tprod, ContinuousMultilinearMap.coe_coe,
+      simp [lift_symm, map_smul, lift.tprod, ContinuousMultilinearMap.coe_coe,
       MultilinearMap.coe_mkContinuous, LinearMap.compMultilinearMap_apply, LinearMap.coe_comp,
       LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.apply_symm_apply, SetLike.val_smul,
       LinearMap.codRestrict_apply, f', f'₀]
-    | add _ _ hx hy => simp only [map_add, Submodule.coe_add, hx, hy]
+    | add _ _ hx hy => simp [map_add, Submodule.coe_add, hx, hy]
   suffices h : ‖lift f'.toMultilinearMap x‖ ≤ ‖f'‖ * injectiveSeminorm x by
     change ‖(e (lift f'.toMultilinearMap x)).1‖ ≤ _ at h
     rw [heq] at h

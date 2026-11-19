@@ -47,7 +47,7 @@ theorem X_dvd_iff {f : R[X]} : X ∣ f ↔ f.coeff 0 = 0 :=
 
 theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff d = 0 :=
   ⟨fun ⟨g, hgf⟩ d hd => by
-    simp only [hgf, coeff_X_pow_mul', ite_eq_right_iff, not_le_of_gt hd, IsEmpty.forall_iff],
+    simp [hgf, coeff_X_pow_mul', ite_eq_right_iff, not_le_of_gt hd, IsEmpty.forall_iff],
     fun hd => by
     induction n with
     | zero => simp [pow_zero]
@@ -72,7 +72,7 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
     have hpn1 : leadingCoeff p ^ (natDegree q + 1) = 1 := by simp [show _ = _ from hmp]
     have hpn0' : leadingCoeff p ^ (natDegree q + 1) ≠ 0 := hpn1.symm ▸ zn0.symm
     have hpnr0 : leadingCoeff (p ^ (natDegree q + 1)) * leadingCoeff r ≠ 0 := by
-      simp only [leadingCoeff_pow' hpn0', leadingCoeff_eq_zero, hpn1, one_mul, Ne,
+      simp [leadingCoeff_pow' hpn0', leadingCoeff_eq_zero, hpn1, one_mul, Ne,
           hr0, not_false_eq_true]
     have hnp : 0 < natDegree p := Nat.cast_lt.1 <| by
       rw [← degree_eq_natDegree hp0]; exact hp
@@ -302,7 +302,7 @@ theorem degree_add_divByMonic (hq : Monic q) (h : degree q ≤ degree p) :
 
 theorem degree_divByMonic_le (p q : R[X]) : degree (p /ₘ q) ≤ degree p :=
   letI := Classical.decEq R
-  if hp0 : p = 0 then by simp only [hp0, zero_divByMonic, le_refl]
+  if hp0 : p = 0 then by simp [hp0, zero_divByMonic, le_refl]
   else
     if hq : Monic q then
       if h : degree q ≤ degree p then by
@@ -585,7 +585,7 @@ lemma pow_rootMultiplicity_not_dvd (p0 : p ≠ 0) (a : R) :
 /-- See `Polynomial.rootMultiplicity_eq_natTrailingDegree` for the general case. -/
 lemma rootMultiplicity_eq_natTrailingDegree' : p.rootMultiplicity 0 = p.natTrailingDegree := by
   by_cases h : p = 0
-  · simp only [h, rootMultiplicity_zero, natTrailingDegree_zero]
+  · simp [h, rootMultiplicity_zero, natTrailingDegree_zero]
   refine le_antisymm ?_ ?_
   · rw [rootMultiplicity_le_iff h, map_zero, sub_zero, X_pow_dvd_iff, not_forall]
     exact ⟨p.natTrailingDegree,
@@ -732,7 +732,7 @@ lemma mul_divByMonic_assoc (p₁ p₂ q : R[X]) (hd : q ∣ p₂) :
     (p₁ * p₂) /ₘ q = p₁ * (p₂ /ₘ q) := by
   by_cases h : q.Monic
   · obtain ⟨k, rfl⟩ := hd
-    rw [mul_left_comm]; simp only [mul_divByMonic_cancel_left _ h]
+    rw [mul_left_comm]; simp [mul_divByMonic_cancel_left _ h]
   · simp [divByMonic_eq_of_not_monic _ h]
 
 lemma mul_modByMonic (p₁ p₂ q : R[X]) : (p₁ * p₂) %ₘ q = (p₁ %ₘ q) * (p₂ %ₘ q) %ₘ q := by

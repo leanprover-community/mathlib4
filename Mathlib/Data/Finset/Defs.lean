@@ -228,7 +228,7 @@ theorem subset_iff {s₁ s₂ : Finset α} : s₁ ⊆ s₂ ↔ ∀ ⦃x⦄, x �
   Iff.rfl
 
 theorem subset_iff_notMem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
-  simp only [subset_iff, not_imp_not]
+  simp [subset_iff, not_imp_not]
 
 @[norm_cast, gcongr]
 theorem coe_subset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊆ s₂ ↔ s₁ ⊆ s₂ :=
@@ -241,7 +241,7 @@ theorem val_le_iff {s₁ s₂ : Finset α} : s₁.val ≤ s₂.val ↔ s₁ ⊆ 
 theorem Subset.antisymm_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ s₁ ⊆ s₂ ∧ s₂ ⊆ s₁ :=
   le_antisymm_iff
 
-theorem not_subset : ¬s ⊆ t ↔ ∃ x ∈ s, x ∉ t := by simp only [← coe_subset, Set.not_subset, mem_coe]
+theorem not_subset : ¬s ⊆ t ↔ ∃ x ∈ s, x ∉ t := by simp [← coe_subset, Set.not_subset, mem_coe]
 
 @[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_eq_subset : ((· ≤ ·) : Finset α → Finset α → Prop) = (· ⊆ ·) :=

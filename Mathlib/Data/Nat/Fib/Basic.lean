@@ -132,7 +132,7 @@ lemma le_fib_add_one : ∀ n, n ≤ fib n + 1
 theorem fib_coprime_fib_succ (n : ℕ) : Nat.Coprime (fib n) (fib (n + 1)) := by
   induction n with
   | zero => simp
-  | succ n ih => simp only [fib_add_two, coprime_add_self_right, Coprime, ih.symm]
+  | succ n ih => simp [fib_add_two, coprime_add_self_right, Coprime, ih.symm]
 
 /-- See https://proofwiki.org/wiki/Fibonacci_Number_in_terms_of_Smaller_Fibonacci_Numbers -/
 theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) := by

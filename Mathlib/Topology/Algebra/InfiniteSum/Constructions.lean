@@ -274,13 +274,13 @@ variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, Topol
 @[to_additive /-- See also `hasSum_apply` for `FunLike` types. -/]
 theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :
     HasProd f g L ↔ ∀ x, HasProd (fun i ↦ f i x) (g x) L := by
-  simp only [HasProd, tendsto_pi_nhds, Finset.prod_apply]
+  simp [HasProd, tendsto_pi_nhds, Finset.prod_apply]
 
 /-- See also `multipliable_apply` for `FunLike` types. -/
 @[to_additive /-- See also `summable_apply` for `FunLike` types. -/]
 theorem Pi.multipliable {f : ι → ∀ x, X x} :
     Multipliable f L ↔ ∀ x, Multipliable (fun i ↦ f i x) L := by
-  simp only [Multipliable, Pi.hasProd, Classical.skolem]
+  simp [Multipliable, Pi.hasProd, Classical.skolem]
 
 /-- See also `tprod_apply` for `FunLike` types. -/
 @[to_additive /-- See also `tsum_apply` for `FunLike` types. -/]

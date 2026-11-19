@@ -174,7 +174,7 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     simp
 
 protected theorem zero_lt_one : (0 : ONote) < 1 := by
-  simp only [lt_def, repr_zero, repr_one, Nat.cast_one, zero_lt_one]
+  simp [lt_def, repr_zero, repr_one, Nat.cast_one, zero_lt_one]
 
 /-- `NFBelow o b` says that `o` is a normal form ordinal notation satisfying `repr o < ω ^ b`. -/
 inductive NFBelow : ONote → Ordinal.{0} → Prop
@@ -698,7 +698,7 @@ instance nf_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
 
 @[simp]
 theorem repr_scale (x) [NF x] (o) [NF o] : repr (scale x o) = ω ^ repr x * repr o := by
-  simp only [scale_eq_mul, repr_mul, repr, PNat.one_coe, Nat.cast_one, mul_one, add_zero]
+  simp [scale_eq_mul, repr_mul, repr, PNat.one_coe, Nat.cast_one, mul_one, add_zero]
 
 theorem nf_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o = repr o' + m := by
   rcases e : split' o with ⟨a, n⟩
@@ -764,7 +764,7 @@ theorem scale_opowAux (e a0 a : ONote) [NF e] [NF a0] [NF a] :
     ∀ k m, repr (opowAux e a0 a k m) = ω ^ repr e * repr (opowAux 0 a0 a k m)
   | 0, m => by cases m <;> simp [opowAux]
   | k + 1, m => by
-    by_cases h : m = 0 <;> simp only [h, opowAux, mulNat_eq_mul, repr_add, repr_scale, repr_mul,
+    by_cases h : m = 0 <;> simp [h, opowAux, mulNat_eq_mul, repr_add, repr_scale, repr_mul,
       repr_ofNat, zero_add, mul_add, repr_zero, mul_zero, scale_opowAux e, opow_add, mul_assoc]
 
 theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr e ≠ 0)
@@ -815,9 +815,9 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     = (α' + m) ^ (succ ↑k : Ordinal) at IH
   have RR : R' = ω0 ^ (k : Ordinal) * (α' * m) + R := by
     by_cases h : m = 0
-    · simp only [R, R', h, ONote.ofNat, Nat.cast_zero, ONote.repr_zero,
+    · simp [R, R', h, ONote.ofNat, Nat.cast_zero, ONote.repr_zero,
         mul_zero, ONote.opowAux, add_zero]
-    · simp only [α', ω0, R, R', ONote.repr_scale, ONote.repr,
+    · simp [α', ω0, R, R', ONote.repr_scale, ONote.repr,
         ONote.mulNat_eq_mul, ONote.opowAux, ONote.repr_ofNat, ONote.repr_mul, ONote.repr_add,
         Ordinal.opow_mul, ONote.zero_add]
   have α0 : 0 < α' := by simpa [lt_def, repr] using oadd_pos a0 n a'
@@ -1001,7 +1001,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
             have := PNat.natPred_add_one m; rw [e'] at this; exact PNat.coe_inj.1 this.symm]) <;>
       (try rw [show m = (m' + 1).succPNat by
               rw [← e', ← PNat.coe_inj, Nat.succPNat_coe, ← Nat.add_one, PNat.natPred_add_one]]) <;>
-      simp only [repr, repr_zero, iha, ihb, opow_lt_opow_iff_right one_lt_omega0,
+      simp [repr, repr_zero, iha, ihb, opow_lt_opow_iff_right one_lt_omega0,
         add_lt_add_iff_left, add_zero, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero,
         Nat.cast_succ, Nat.succPNat_coe, succ_eq_add_one, opow_add_one, opow_zero, mul_add_one,
         PNat.one_coe, _root_.zero_add, zero_def]

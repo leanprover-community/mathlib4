@@ -105,7 +105,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
       simp only [hx₀, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine fun z _ hz => hx _ ?_
       simp only [zpow_neg, zpow_one] at hz
-      simp only [one_div, hz]
+      simp [one_div, hz]
     | succ k ih =>
       intro z hxz hz
       simp only [Nat.cast_add, Nat.cast_one] at *
@@ -245,7 +245,7 @@ protected lemma abs (hf : GrowsPolynomially f) : GrowsPolynomially (fun x => |f 
   | inr hf' =>
     have hmain : -f =ᶠ[atTop] fun x => |f x| := by
       filter_upwards [hf'] with x hx
-      simp only [Pi.neg_apply, abs_of_nonpos hx]
+      simp [Pi.neg_apply, abs_of_nonpos hx]
     rw [← iff_eventuallyEq hmain]
     exact hf.neg
 
@@ -350,7 +350,7 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have gx_nonneg : 0 ≤ g x := hg' x hbx
   refine ⟨?lb, ?ub⟩
   case lb => calc
-    min c₁ c₃ * (f x + g x) = min c₁ c₃ * f x + min c₁ c₃ * g x := by simp only [mul_add]
+    min c₁ c₃ * (f x + g x) = min c₁ c₃ * f x + min c₁ c₃ * g x := by simp [mul_add]
       _ ≤ c₁ * f x + c₃ * g x := by
               gcongr
               · exact min_le_left _ _
@@ -360,7 +360,7 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
               · exact (hf u hu).1
               · exact (hg u hu).1
   case ub => calc
-    max c₂ c₄ * (f x + g x) = max c₂ c₄ * f x + max c₂ c₄ * g x := by simp only [mul_add]
+    max c₂ c₄ * (f x + g x) = max c₂ c₄ * f x + max c₂ c₄ * g x := by simp [mul_add]
       _ ≥ c₂ * f x + c₄ * g x := by gcongr
                                     · exact le_max_left _ _
                                     · exact le_max_right _ _
@@ -400,7 +400,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     have hfu_nonneg : 0 ≤ f u := hf₂ _ hu_lb
     have hfg₃ : ‖g u‖ ≤ 1 / 2 * f u := by
       calc ‖g u‖ ≤ 1 / 2 * ‖f u‖ := hfg' _ hu_lb
-           _ = 1 / 2 * f u := by congr; simp only [norm_eq_abs, abs_eq_self, hfu_nonneg]
+           _ = 1 / 2 * f u := by congr; simp [norm_eq_abs, abs_eq_self, hfu_nonneg]
     refine ⟨?lb, ?ub⟩
     case lb =>
       calc f u + g u ≥ f u - ‖g u‖ := by
@@ -483,7 +483,7 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     filter_upwards [hf', (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf']
       with x hx hx'
     intro u hu
-    simp only [hx, inv_zero, mul_zero, Set.Icc_self, Set.mem_singleton_iff, hx' u hu.1]
+    simp [hx, inv_zero, mul_zero, Set.Icc_self, Set.mem_singleton_iff, hx' u hu.1]
   | inr hf_pos_or_neg =>
     suffices GrowsPolynomially fun x => |(f x)⁻¹| by
       cases hf_pos_or_neg with

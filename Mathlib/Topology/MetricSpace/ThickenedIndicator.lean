@@ -73,7 +73,7 @@ theorem thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
 
 theorem thickenedIndicatorAux_closure_eq (δ : ℝ) (E : Set α) :
     thickenedIndicatorAux δ (closure E) = thickenedIndicatorAux δ E := by
-  simp +unfoldPartialApp only [thickenedIndicatorAux, infEDist_closure]
+  simp +unfoldPartialApp [thickenedIndicatorAux, infEDist_closure]
 
 theorem thickenedIndicatorAux_one (δ : ℝ) (E : Set α) {x : α} (x_in_E : x ∈ E) :
     thickenedIndicatorAux δ E x = 1 := by
@@ -101,8 +101,8 @@ theorem indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
     (E.indicator fun _ => (1 : ℝ≥0∞)) ≤ thickenedIndicatorAux δ E := by
   intro a
   by_cases h : a ∈ E
-  · simp only [h, indicator_of_mem, thickenedIndicatorAux_one δ E h, le_refl]
-  · simp only [h, indicator_of_notMem, not_false_iff, zero_le]
+  · simp [h, indicator_of_mem, thickenedIndicatorAux_one δ E h, le_refl]
+  · simp [h, indicator_of_notMem, not_false_iff, zero_le]
 
 theorem thickenedIndicatorAux_subset (δ : ℝ) {E₁ E₂ : Set α} (subset : E₁ ⊆ E₂) :
     thickenedIndicatorAux δ E₁ ≤ thickenedIndicatorAux δ E₂ :=
@@ -134,10 +134,10 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
   by_cases x_mem_closure : x ∈ closure E
   · simp_rw [thickenedIndicatorAux_one_of_mem_closure _ E x_mem_closure]
     rw [show (indicator (closure E) fun _ => (1 : ℝ≥0∞)) x = 1 by
-        simp only [x_mem_closure, indicator_of_mem]]
+        simp [x_mem_closure, indicator_of_mem]]
     exact tendsto_const_nhds
   · rw [show (closure E).indicator (fun _ => (1 : ℝ≥0∞)) x = 0 by
-        simp only [x_mem_closure, indicator_of_notMem, not_false_iff]]
+        simp [x_mem_closure, indicator_of_notMem, not_false_iff]]
     rcases exists_real_pos_lt_infEDist_of_notMem_closure x_mem_closure with ⟨ε, ⟨ε_pos, ε_lt⟩⟩
     rw [Metric.tendsto_nhds] at δseq_lim
     specialize δseq_lim ε ε_pos
@@ -211,8 +211,8 @@ theorem indicator_le_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α
     (E.indicator fun _ => (1 : ℝ≥0)) ≤ thickenedIndicator δ_pos E := by
   intro a
   by_cases h : a ∈ E
-  · simp only [h, indicator_of_mem, thickenedIndicator_one δ_pos E h, le_refl]
-  · simp only [h, indicator_of_notMem, not_false_iff, zero_le]
+  · simp [h, indicator_of_mem, thickenedIndicator_one δ_pos E h, le_refl]
+  · simp [h, indicator_of_notMem, not_false_iff, zero_le]
 
 theorem thickenedIndicator_mono {δ₁ δ₂ : ℝ} (δ₁_pos : 0 < δ₁) (δ₂_pos : 0 < δ₂) (hle : δ₁ ≤ δ₂)
     (E : Set α) : ⇑(thickenedIndicator δ₁_pos E) ≤ thickenedIndicator δ₂_pos E := by
@@ -297,11 +297,11 @@ lemma mulIndicator_thickening_eventually_eq_mulIndicator_closure (f : α → β)
       (Metric.thickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
   by_cases x_mem_closure : x ∈ closure E
   · filter_upwards [self_mem_nhdsWithin] with δ δ_pos
-    simp only [closure_subset_thickening δ_pos E x_mem_closure, mulIndicator_of_mem, x_mem_closure]
+    simp [closure_subset_thickening δ_pos E x_mem_closure, mulIndicator_of_mem, x_mem_closure]
   · have obs := eventually_notMem_thickening_of_infEDist_pos x_mem_closure
     filter_upwards [mem_nhdsWithin_of_mem_nhds obs, self_mem_nhdsWithin]
       with δ x_notin_thE _
-    simp only [x_notin_thE, not_false_eq_true, mulIndicator_of_notMem, x_mem_closure]
+    simp [x_notin_thE, not_false_eq_true, mulIndicator_of_notMem, x_mem_closure]
 
 /-- Pointwise, the multiplicative indicators of closed δ-thickenings of a set eventually coincide
 with the multiplicative indicator of the set as δ tends to zero. -/
@@ -315,7 +315,7 @@ lemma mulIndicator_cthickening_eventually_eq_mulIndicator_closure (f : α → β
     have obs : x ∈ cthickening δ E := closure_subset_cthickening δ E x_mem_closure
     rw [mulIndicator_of_mem obs f, mulIndicator_of_mem x_mem_closure f]
   · filter_upwards [eventually_notMem_cthickening_of_infEDist_pos x_mem_closure] with δ hδ
-    simp only [hδ, not_false_eq_true, mulIndicator_of_notMem, x_mem_closure]
+    simp [hδ, not_false_eq_true, mulIndicator_of_notMem, x_mem_closure]
 
 variable [TopologicalSpace β]
 

@@ -58,7 +58,7 @@ theorem toFinset_normalizedFactors [DecidableEq M] :
   convert rfl
 
 lemma mem_primeFactors : a ∈ primeFactors b ↔ a ∈ normalizedFactors b := by
-  simp only [primeFactors, Multiset.mem_toFinset]
+  simp [primeFactors, Multiset.mem_toFinset]
 
 theorem _root_.Associated.primeFactors_eq {a b : M} (h : Associated a b) :
     primeFactors a = primeFactors b := by
@@ -131,10 +131,10 @@ theorem primeFactors_mul_eq_disjUnion (hc : IsRelPrime a b) :
       (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc) := by
   obtain rfl | ha := eq_or_ne a 0
   · rw [isRelPrime_zero_left] at hc
-    simp only [zero_mul, primeFactors_zero, Finset.empty_disjUnion, primeFactors_of_isUnit hc]
+    simp [zero_mul, primeFactors_zero, Finset.empty_disjUnion, primeFactors_of_isUnit hc]
   obtain rfl | hb := eq_or_ne b 0
   · rw [isRelPrime_zero_right] at hc
-    simp only [mul_zero, primeFactors_zero, primeFactors_of_isUnit hc, Finset.disjUnion_empty]
+    simp [mul_zero, primeFactors_zero, primeFactors_of_isUnit hc, Finset.disjUnion_empty]
   classical
   rw [Finset.disjUnion_eq_union, primeFactors_mul_eq_union ha hb]
 
@@ -187,7 +187,7 @@ theorem radical_dvd_self : radical a ∣ a := by
 theorem radical_of_prime (ha : Prime a) : radical a = normalize a := by
   rw [radical, primeFactors]
   rw [normalizedFactors_irreducible ha.irreducible]
-  simp only [Multiset.toFinset_singleton, id, Finset.prod_singleton]
+  simp [Multiset.toFinset_singleton, id, Finset.prod_singleton]
 
 theorem radical_pow_of_prime (ha : Prime a) {n : ℕ} (hn : n ≠ 0) :
     radical (a ^ n) = normalize a := by
@@ -226,7 +226,7 @@ lemma isRadical_radical : IsRadical (radical a) := by
     · exact dvd_of_mem_normalizedFactors hi
     · exact irreducible_of_normalized_factor i hi
     · rintro rfl
-      simp only [normalizedFactors_zero, Multiset.notMem_zero] at hi
+      simp [normalizedFactors_zero, Multiset.notMem_zero] at hi
   exact (prime_of_normalized_factor i hi).isRadical n p (this.trans ha)
 
 lemma squarefree_radical : Squarefree (radical a) := by
@@ -265,7 +265,7 @@ lemma radical_dvd_radical_iff_normalizedFactors_subset_normalizedFactors :
   have : Nontrivial M := ⟨a, 0, ha₀⟩
   rw [dvd_iff_normalizedFactors_le_normalizedFactors radical_ne_zero radical_ne_zero,
     Multiset.le_iff_subset (normalizedFactors_nodup isRadical_radical)]
-  simp only [Multiset.subset_iff, ← mem_primeFactors, primeFactors_radical]
+  simp [Multiset.subset_iff, ← mem_primeFactors, primeFactors_radical]
 
 lemma radical_dvd_radical_iff_primeFactors_subset_primeFactors :
     radical a ∣ radical b ↔ primeFactors a ⊆ primeFactors b := by

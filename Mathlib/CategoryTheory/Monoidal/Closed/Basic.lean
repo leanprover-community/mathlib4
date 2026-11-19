@@ -492,7 +492,7 @@ lemma curry'_id (X : C) [Closed X] : curry' (𝟙 X) = id X := by
 lemma whiskerLeft_curry'_ihom_ev_app {X Y : C} [Closed X] (f : X ⟶ Y) :
     X ◁ curry' f ≫ (ihom.ev X).app Y = (ρ_ _).hom ≫ f := by
   dsimp [curry']
-  simp only [whiskerLeft_curry_ihom_ev_app]
+  simp [whiskerLeft_curry_ihom_ev_app]
 
 @[reassoc]
 lemma curry'_whiskerRight_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) :
@@ -518,7 +518,7 @@ lemma whiskerLeft_curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : Y ⟶ Z) :
 
 lemma curry'_ihom_map {X Y Z : C} [Closed X] (f : X ⟶ Y) (g : Y ⟶ Z) :
     curry' f ≫ (ihom X).map g = curry' (f ≫ g) := by
-  simp only [curry', ← curry_natural_right, Category.assoc]
+  simp [curry', ← curry_natural_right, Category.assoc]
 
 lemma curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) (g : Y ⟶ Z) :
     curry' (f ≫ g) = (λ_ (𝟙_ C)).inv ≫ (curry' f ⊗ₘ curry' g) ≫ comp X Y Z := by

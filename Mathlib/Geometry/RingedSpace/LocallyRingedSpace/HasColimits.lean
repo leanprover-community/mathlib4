@@ -278,7 +278,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g) := by
   refine Cofork.IsColimit.mk' _ (fun s ↦ ?_)
   have e : f.toShHom ≫ s.π.toShHom = g.toShHom ≫ s.π.toShHom := by
-    simp only [← comp_toShHom, s.condition]
+    simp [← comp_toShHom, s.condition]
   refine ⟨⟨(coequalizer.desc s.π.toShHom e).hom, fun x ↦ ?_⟩,
     ⟨Hom.ext' (Functor.congr_map SheafedSpace.forgetToPresheafedSpace
       (coequalizer.π_desc (Hom.toShHom s.π) e)),

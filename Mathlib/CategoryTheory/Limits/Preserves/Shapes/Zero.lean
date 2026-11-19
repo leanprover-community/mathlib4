@@ -85,7 +85,7 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
       _ = 0 := ?_
     · rw [Adjunction.left_triangle_components]
       exact (Category.comp_id _).symm
-    · simp only [← Category.assoc, ← F.map_comp, zero_comp]
+    · simp [← Category.assoc, ← F.map_comp, zero_comp]
     · simp
 
 instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F] :
@@ -101,7 +101,7 @@ instance preservesZeroMorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
 
 lemma preservesZeroMorphisms_of_iso {F₁ F₂ : C ⥤ D} [F₁.PreservesZeroMorphisms] (e : F₁ ≅ F₂) :
     F₂.PreservesZeroMorphisms where
-  map_zero X Y := by simp only [← cancel_epi (e.hom.app X), ← e.hom.naturality,
+  map_zero X Y := by simp [← cancel_epi (e.hom.app X), ← e.hom.naturality,
     F₁.map_zero, zero_comp, comp_zero]
 
 instance preservesZeroMorphisms_evaluation_obj (j : D) :
@@ -151,7 +151,7 @@ theorem preservesZeroMorphisms_of_map_zero_object (i : F.obj 0 ≅ 0) : Preserve
     calc
       F.map (0 : X ⟶ Y) = F.map (0 : X ⟶ 0) ≫ F.map 0 := by rw [← Functor.map_comp, comp_zero]
       _ = F.map 0 ≫ (i.hom ≫ i.inv) ≫ F.map 0 := by rw [Iso.hom_inv_id, Category.id_comp]
-      _ = 0 := by simp only [zero_of_to_zero i.hom, zero_comp, comp_zero]
+      _ = 0 := by simp [zero_of_to_zero i.hom, zero_comp, comp_zero]
 
 @[to_dual]
 instance (priority := 100) preservesZeroMorphisms_of_preserves_terminal_object

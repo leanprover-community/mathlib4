@@ -196,7 +196,7 @@ theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
 
 theorem ofDigits_reverse_zero_cons {b : ℕ} (l : List ℕ) :
     ofDigits b (0 :: l).reverse = ofDigits b l.reverse := by
-  simp only [List.reverse_cons, ofDigits_append_zero]
+  simp [List.reverse_cons, ofDigits_append_zero]
 
 @[norm_cast]
 theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
@@ -247,7 +247,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
       | zero => rfl
       | succ n ih =>
         rw [Nat.zero_add] at ih ⊢
-        simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
+        simp [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · induction n using Nat.strongRecOn with | ind n h => ?_
       cases n
       · rw [digits_zero]
@@ -369,7 +369,7 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
   | cons hd tl IH =>
     rw [ofDigits, List.length_cons, pow_succ]
     have : (ofDigits (b + 2) tl + 1) * (b + 2) ≤ (b + 2) ^ tl.length * (b + 2) :=
-      mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
+      mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
     exact hl hd List.mem_cons_self
@@ -497,7 +497,7 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
   | zero => assumption
   | succ f ih =>
     if hx : n / b = 0 then
-      simp only [hx, ite_true, List.length, congrArg (fun l ↦ l + 1) hlen]
+      simp [hx, ite_true, List.length, congrArg (fun l ↦ l + 1) hlen]
     else
       simp only [hx, ite_false]
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
@@ -506,7 +506,7 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
 
 lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
-  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
+  induction f with (intro n c tl; simp [Nat.toDigitsCore, List.length])
   | succ f ih =>
     grind
 
@@ -520,7 +520,7 @@ it can be used for binary, decimal, and hex. -/
 lemma toDigitsCore_length (b f n e : Nat) (h_e_pos : 0 < e) (hlt : n < b ^ e) :
     (Nat.toDigitsCore b f n []).length ≤ e := by
   induction f generalizing n e hlt h_e_pos with
-  | zero => simp only [toDigitsCore, List.length, zero_le]
+  | zero => simp [toDigitsCore, List.length, zero_le]
   | succ f ih =>
     simp only [toDigitsCore]
     cases e with
@@ -534,7 +534,7 @@ lemma toDigitsCore_length (b f n e : Nat) (h_e_pos : 0 < e) (hlt : n < b ^ e) :
         specialize ih (n / b) _ (add_one_pos e) (Nat.div_lt_of_lt_mul <| by rwa [← pow_add_one'])
         split_ifs
         · simp
-        · simp only [toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b),
+        · simp [toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b),
             Nat.succ_le_succ_iff, ih]
 
 /-- The core implementation of `Nat.toDigits` returns a String with length less than or equal to the

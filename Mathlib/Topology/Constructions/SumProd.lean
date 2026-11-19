@@ -251,7 +251,7 @@ theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
 
 theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
     𝓝[s ×ˢ t] (x, y) = 𝓝[s] x ×ˢ 𝓝[t] y := by
-  simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
+  simp [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
 
 instance Prod.instNeBotNhdsWithinIio [Preorder X] [Preorder Y] {x : X × Y}
     [hx₁ : (𝓝[<] x.1).NeBot] [hx₂ : (𝓝[<] x.2).NeBot] : (𝓝[<] x).NeBot := by
@@ -288,7 +288,7 @@ theorem Filter.HasBasis.prod_nhds' {ιX ιY : Type*} {pX : ιX → Prop} {pY : �
 theorem mem_nhds_prod_iff' {x : X} {y : Y} {s : Set (X × Y)} :
     s ∈ 𝓝 (x, y) ↔ ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ y ∈ v ∧ u ×ˢ v ⊆ s :=
   ((nhds_basis_opens x).prod_nhds (nhds_basis_opens y)).mem_iff.trans <| by
-    simp only [Prod.exists, and_comm, and_assoc, and_left_comm]
+    simp [Prod.exists, and_comm, and_assoc, and_left_comm]
 
 theorem Prod.tendsto_iff {X} (seq : X → Y × Z) {f : Filter X} (p : Y × Z) :
     Tendsto seq f (𝓝 p) ↔
@@ -530,11 +530,11 @@ theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s
     simp_rw [mem_prod, mem_closure_iff_nhdsWithin_neBot, nhdsWithin_prod_eq, prod_neBot]
 
 theorem interior_prod_eq (s : Set X) (t : Set Y) : interior (s ×ˢ t) = interior s ×ˢ interior t :=
-  ext fun ⟨a, b⟩ => by simp only [mem_interior_iff_mem_nhds, mem_prod, prod_mem_nhds_iff]
+  ext fun ⟨a, b⟩ => by simp [mem_interior_iff_mem_nhds, mem_prod, prod_mem_nhds_iff]
 
 theorem frontier_prod_eq (s : Set X) (t : Set Y) :
     frontier (s ×ˢ t) = closure s ×ˢ frontier t ∪ frontier s ×ˢ closure t := by
-  simp only [frontier, closure_prod_eq, interior_prod_eq, prod_sdiff_prod]
+  simp [frontier, closure_prod_eq, interior_prod_eq, prod_sdiff_prod]
 
 @[simp]
 theorem frontier_prod_univ_eq (s : Set X) :
@@ -566,7 +566,7 @@ theorem map_mem_closure₂ {f : X → Y → Z} {x : X} {y : Y} {s : Set X} {t : 
 
 theorem IsClosed.prod {s₁ : Set X} {s₂ : Set Y} (h₁ : IsClosed s₁) (h₂ : IsClosed s₂) :
     IsClosed (s₁ ×ˢ s₂) :=
-  closure_eq_iff_isClosed.mp <| by simp only [h₁.closure_eq, h₂.closure_eq, closure_prod_eq]
+  closure_eq_iff_isClosed.mp <| by simp [h₁.closure_eq, h₂.closure_eq, closure_prod_eq]
 
 /-- The product of two dense sets is a dense set. -/
 theorem Dense.prod {s : Set X} {t : Set Y} (hs : Dense s) (ht : Dense t) : Dense (s ×ˢ t) :=
@@ -775,7 +775,7 @@ theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) 
 
 theorem isClosed_sum_iff {s : Set (X ⊕ Y)} :
     IsClosed s ↔ IsClosed (inl ⁻¹' s) ∧ IsClosed (inr ⁻¹' s) := by
-  simp only [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
+  simp [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
 
 theorem isOpenMap_inl : IsOpenMap (@inl X Y) := fun u hu => by
   simpa [isOpen_sum_iff, preimage_image_eq u Sum.inl_injective]
@@ -836,7 +836,7 @@ theorem Continuous.sumMap {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : 
 
 theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
-  simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp_def]
+  simp [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp_def]
 
 theorem IsOpenMap.sumMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Sum.map f g) :=
@@ -845,7 +845,7 @@ theorem IsOpenMap.sumMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : Is
 @[simp]
 theorem isOpenMap_sumElim {f : X → Z} {g : Y → Z} :
     IsOpenMap (Sum.elim f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
-  simp only [isOpenMap_sum, elim_inl, elim_inr]
+  simp [isOpenMap_sum, elim_inl, elim_inr]
 
 theorem IsOpenMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Sum.elim f g) :=
@@ -866,7 +866,7 @@ theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     rw [isClosed_sum_iff] at hZ
     convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
     ext
-    simp only [mem_image, Sum.exists, mem_union, mem_preimage]
+    simp [mem_image, Sum.exists, mem_union, mem_preimage]
 
 theorem IsClosedMap.sumMap {f : X → Y} {g : Z → W} (hf : IsClosedMap f) (hg : IsClosedMap g) :
     IsClosedMap (Sum.map f g) :=
@@ -875,7 +875,7 @@ theorem IsClosedMap.sumMap {f : X → Y} {g : Z → W} (hf : IsClosedMap f) (hg 
 @[simp]
 theorem isClosedMap_sumElim {f : X → Z} {g : Y → Z} :
     IsClosedMap (Sum.elim f g) ↔ IsClosedMap f ∧ IsClosedMap g := by
-  simp only [isClosedMap_sum, Sum.elim_inl, Sum.elim_inr]
+  simp [isClosedMap_sum, Sum.elim_inl, Sum.elim_inr]
 
 theorem IsClosedMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg : IsClosedMap g) :
     IsClosedMap (Sum.elim f g) :=

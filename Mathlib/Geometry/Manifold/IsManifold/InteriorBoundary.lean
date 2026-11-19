@@ -593,7 +593,7 @@ lemma interior_disjointUnion :
 lemma boundary_disjointUnion : ModelWithCorners.boundary (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.boundary (I := I) M)
       ∪ Sum.inr '' (ModelWithCorners.boundary (I := I) M') := by
-  simp only [← ModelWithCorners.compl_interior, interior_disjointUnion, inl_compl_union_inr_compl]
+  simp [← ModelWithCorners.compl_interior, interior_disjointUnion, inl_compl_union_inr_compl]
 
 /-- If `M` and `M'` are boundaryless, so is their disjoint union `M ⊔ M'`. -/
 instance boundaryless_disjointUnion

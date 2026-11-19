@@ -184,7 +184,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
     (hl.comp H)
   choose σ hσ using (show _ from H)
   have : Finsupp.linearCombination R Subtype.val '' σ '' t = t := by
-    simp only [Set.image_image, hσ, Set.image_id']
+    simp [Set.image_image, hσ, Set.image_id']
   rw [LinearMap.ker_comp, ← ht, ← this, ← Submodule.map_span, Submodule.comap_map_eq,
     ← Finset.coe_image]
   exact Submodule.FG.sup ⟨_, rfl⟩ hs'
@@ -387,7 +387,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   have : ∀ x : τ, ∃ s : S, s • (Finsupp.linearCombination R i x) = 0 := by
     intro x
     convert_to ∃ s : S, s • (Finsupp.linearCombination R i x) = s • 0
-    · simp only [smul_zero]
+    · simp [smul_zero]
     apply IsLocalizedModule.exists_of_eq (S := S) (f := f)
     rw [← LinearMap.comp_apply, map_zero, hi, LinearMap.comp_apply]
     convert map_zero (s₀ • g)

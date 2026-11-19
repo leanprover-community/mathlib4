@@ -454,7 +454,7 @@ noncomputable def δToCycles (hn₁ : n₀ + 1 = n₁ := by lia) :
 lemma δToCycles_iCycles (hn₁ : n₀ + 1 = n₁) :
     X.δToCycles f₁ f₂ f₃ n₀ n₁ hn₁ ≫ X.iCycles f₁ f₂ n₁ =
       X.δ f₂ f₃ n₀ n₁ hn₁ := by
-  simp only [δToCycles, liftCycles_i]
+  simp [δToCycles, liftCycles_i]
 
 @[reassoc (attr := simp)]
 lemma δ_toCycles (hn₁ : n₀ + 1 = n₁ := by lia) :
@@ -475,7 +475,7 @@ noncomputable def δFromOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :
 lemma pOpcycles_δFromOpcycles (hn₁ : n₀ + 1 = n₁) :
     X.pOpcycles f₂ f₃ n₀ ≫ X.δFromOpcycles f₁ f₂ f₃ n₀ n₁ hn₁ =
       X.δ f₁ f₂ n₀ n₁ hn₁ := by
-  simp only [δFromOpcycles, p_descOpcycles]
+  simp [δFromOpcycles, p_descOpcycles]
 
 @[reassoc (attr := simp)]
 lemma fromOpcycles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :

@@ -51,9 +51,9 @@ noncomputable def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
     RingHom.ker g →ₗ[R] RingHom.ker (IsLocalization.map Q g hy : S →+* Q) where
   toFun x := ⟨algebraMap R S x, by simp [RingHom.mem_ker, RingHom.mem_ker.mp x.property]⟩
   map_add' x y := by
-    simp only [Submodule.coe_add, map_add, AddMemClass.mk_add_mk]
+    simp [Submodule.coe_add, map_add, AddMemClass.mk_add_mk]
   map_smul' a x := by
-    simp only [SetLike.val_smul, smul_eq_mul, map_mul, id_apply, SetLike.mk_smul_of_tower_mk,
+    simp [SetLike.val_smul, smul_eq_mul, map_mul, id_apply, SetLike.mk_smul_of_tower_mk,
       Algebra.smul_def]
 
 @[simp]

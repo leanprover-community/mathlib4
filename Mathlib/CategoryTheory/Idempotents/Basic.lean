@@ -95,7 +95,7 @@ variable {C} in
 then `𝟙 X - p` is also idempotent. -/
 theorem idem_of_id_sub_idem [Preadditive C] {X : C} (p : X ⟶ X) (hp : p ≫ p = p) :
     (𝟙 _ - p) ≫ (𝟙 _ - p) = 𝟙 _ - p := by
-  simp only [comp_sub, sub_comp, id_comp, comp_id, hp, sub_self, sub_zero]
+  simp [comp_sub, sub_comp, id_comp, comp_id, hp, sub_self, sub_zero]
 
 /-- A preadditive category is pseudoabelian iff all idempotent endomorphisms have a kernel. -/
 theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :

@@ -180,7 +180,7 @@ theorem neg_rotation_pi_div_two (x : V) : -o.rotation (π / 2 : ℝ) x = o.rotat
 -/
 theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = (-θ).toCircle * o.kahler x y := by
-  simp only [Real.Angle.toCircle_neg, Circle.coe_inv_eq_conj, kahler_rotation_left]
+  simp [Real.Angle.toCircle_neg, Circle.coe_inv_eq_conj, kahler_rotation_left]
 
 /-- Rotating the second of two vectors by `θ` scales their Kähler form by `cos θ + sin θ * I`. -/
 @[simp]
@@ -339,7 +339,7 @@ theorem exists_linearIsometryEquiv_eq_of_det_pos {f : V ≃ₗᵢ[ℝ] V}
   fin_cases i
   · simp
   have : o.oangle (J x) (f (J x)) = o.oangle x (f x) := by
-    simp only [oangle, o.linearIsometryEquiv_comp_rightAngleRotation f hd,
+    simp [oangle, o.linearIsometryEquiv_comp_rightAngleRotation f hd,
       o.kahler_comp_rightAngleRotation]
   simp [← this]
 

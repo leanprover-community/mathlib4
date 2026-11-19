@@ -96,7 +96,7 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
       refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
       · intro a f' f₀ f₁ _h ih; simp only [recF_eq]
         congr 4; funext; apply ih
-      · intro a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
+      · intro a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
       · intro x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
 
 theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
@@ -325,7 +325,7 @@ def Fix.drec {β : Fix F α → Type u}
       rhs
       rw [← ih]
     rw [MvFunctor.map_map, ← appendFun_comp, id_comp]
-    simp only [Function.comp_def]
+    simp [Function.comp_def]
   cast (by rw [this]) y.2
 
 end MvQPF

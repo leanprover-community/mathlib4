@@ -144,7 +144,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
       polar_comm _ x.1 x.2, smul_sub, Module.End.smul_def, sub_add_sub_cancel,
       ← sub_eq_add_neg (Q x.1) (Q x.2)]
     rw [← map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]
-    simp only [Module.End.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
+    simp [Module.End.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
       invOf_mul_cancel_left']
 
 /-!

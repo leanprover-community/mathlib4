@@ -75,7 +75,7 @@ def fiberwiseColimit : C ⥤ H where
     rw [← Category.assoc, ← eqToHom_map G (by simp), ← G.map_comp, Grothendieck.eqToHom_eq]
     congr 2
     fapply Grothendieck.ext
-    · simp only [eqToHom_refl, Category.assoc, Grothendieck.comp_base,
+    · simp [eqToHom_refl, Category.assoc, Grothendieck.comp_base,
         Category.comp_id]
     · simp only [Grothendieck.ι_obj, eqToHom_refl,
         Grothendieck.comp_base, Category.comp_id, Grothendieck.comp_fiber, Functor.map_id]

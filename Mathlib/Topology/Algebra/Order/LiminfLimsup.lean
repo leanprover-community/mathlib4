@@ -207,7 +207,7 @@ lemma limsup_const_sub (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousS
       simp only [Set.mem_univ, true_implies]
       exact tsub_le_iff_tsub_le.1 (hx (x - y))
     · refine ⟨x, mem_upperBounds.2 fun y ↦ ?_⟩
-      simp only [Set.mem_univ, hx y, implies_true]
+      simp [Set.mem_univ, hx y, implies_true]
   · exact (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c).continuousAt cobdd bdd_below).symm
 
@@ -222,7 +222,7 @@ lemma limsup_sub_const (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousS
       simp only [IsCoboundedUnder, IsCobounded, map_bot, eventually_bot, true_implies] at cobdd
       rcases cobdd with ⟨x, hx⟩
       refine ⟨x, mem_lowerBounds.2 fun y ↦ ?_⟩
-      simp only [Set.mem_univ, hx y, implies_true]
+      simp [Set.mem_univ, hx y, implies_true]
     simp only [limsup, limsSup, map_bot, eventually_bot, Set.ofPred_true]
     exact this.antisymm (tsub_le_iff_right.2 this)
   · apply (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c) _ _).symm

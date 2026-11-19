@@ -89,7 +89,7 @@ theorem prod_apply_inr_snd (i) : (b.prod b' (Sum.inr i)).2 = b' i :=
 theorem prod_apply (i) :
     b.prod b' i = Sum.elim (LinearMap.inl R M M' ∘ b) (LinearMap.inr R M M' ∘ b') i := by
   ext <;> cases i <;>
-    simp only [prod_apply_inl_fst, Sum.elim_inl, LinearMap.inl_apply, prod_apply_inr_fst,
+    simp [prod_apply_inl_fst, Sum.elim_inl, LinearMap.inl_apply, prod_apply_inr_fst,
       Sum.elim_inr, LinearMap.inr_apply, prod_apply_inl_snd, prod_apply_inr_snd, Function.comp]
 
 end Prod

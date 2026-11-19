@@ -107,7 +107,7 @@ def conesEquivSieveCompatibleFamily :
         dsimp at this ⊢
         rw [id_comp, ← this]
         convert rfl
-        simp only [Over.w] }
+        simp [Over.w] }
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -647,16 +647,16 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type (max v₁ u₁))
     refine parallelPair.ext (PreservesProduct.iso s _) ((PreservesProduct.iso s _))
       (limit.hom_ext (fun j => ?_)) (limit.hom_ext (fun j => ?_))
     · dsimp [Equalizer.Presieve.firstMap, firstMap]
-      simp only [map_lift_piComparison, Functor.map_comp, limit.lift_π, Fan.mk_pt,
+      simp [map_lift_piComparison, Functor.map_comp, limit.lift_π, Fan.mk_pt,
         Fan.mk_π_app, assoc, piComparison_comp_π_assoc]
     · dsimp [Equalizer.Presieve.secondMap, secondMap]
-      simp only [map_lift_piComparison, Functor.map_comp, limit.lift_π, Fan.mk_pt,
+      simp [map_lift_piComparison, Functor.map_comp, limit.lift_π, Fan.mk_pt,
         Fan.mk_π_app, assoc, piComparison_comp_π_assoc]
   refine Equiv.trans (isLimitMapConeForkEquiv _ _) ?_
   refine (IsLimit.postcomposeHomEquiv e _).symm.trans
     (IsLimit.equivIsoLimit (Fork.ext (Iso.refl _) ?_))
   dsimp [Equalizer.forkMap, forkMap, e, Fork.ι]
-  simp only [id_comp, map_lift_piComparison]
+  simp [id_comp, map_lift_piComparison]
 
 -- Remark : this lemma uses `A'` not `A`; `A'` is `A` but with a universe
 -- restriction. Can it be generalised?

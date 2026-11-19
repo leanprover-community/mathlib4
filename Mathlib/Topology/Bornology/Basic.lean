@@ -153,7 +153,7 @@ theorem IsCobounded.inter (hs : IsCobounded s) (ht : IsCobounded t) : IsCobounde
 
 @[simp]
 theorem isBounded_union : IsBounded (s ∪ t) ↔ IsBounded s ∧ IsBounded t := by
-  simp only [← isCobounded_compl_iff, compl_union, isCobounded_inter]
+  simp [← isCobounded_compl_iff, compl_union, isCobounded_inter]
 
 theorem IsBounded.union (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ∪ t) :=
   isBounded_union.2 ⟨hs, ht⟩
@@ -226,7 +226,7 @@ theorem isCobounded_sInter {S : Set (Set α)} (hs : S.Finite) :
 
 theorem isBounded_biUnion {s : Set ι} {f : ι → Set α} (hs : s.Finite) :
     IsBounded (⋃ i ∈ s, f i) ↔ ∀ i ∈ s, IsBounded (f i) := by
-  simp only [← isCobounded_compl_iff, compl_iUnion, isCobounded_biInter hs]
+  simp [← isCobounded_compl_iff, compl_iUnion, isCobounded_biInter hs]
 
 theorem isBounded_biUnion_finset (s : Finset ι) {f : ι → Set α} :
     IsBounded (⋃ i ∈ s, f i) ↔ ∀ i ∈ s, IsBounded (f i) :=

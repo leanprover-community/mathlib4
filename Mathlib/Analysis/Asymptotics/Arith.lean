@@ -101,7 +101,7 @@ end Abs
 
 @[simp]
 theorem isBigOWith_neg_right : (IsBigOWith c l f fun x => -g' x) ↔ IsBigOWith c l f g' := by
-  simp only [isBigOWith_iff, norm_neg]
+  simp [isBigOWith_iff, norm_neg]
 
 alias ⟨IsBigOWith.of_neg_right, IsBigOWith.neg_right⟩ := isBigOWith_neg_right
 
@@ -121,7 +121,7 @@ alias ⟨IsLittleO.of_neg_right, IsLittleO.neg_right⟩ := isLittleO_neg_right
 
 @[simp]
 theorem isBigOWith_neg_left : IsBigOWith c l (fun x => -f' x) g ↔ IsBigOWith c l f' g := by
-  simp only [isBigOWith_iff, norm_neg]
+  simp [isBigOWith_iff, norm_neg]
 
 alias ⟨IsBigOWith.of_neg_left, IsBigOWith.neg_left⟩ := isBigOWith_neg_left
 
@@ -326,7 +326,7 @@ variable {g g' l}
 
 @[simp]
 theorem isBigOWith_zero_right_iff : (IsBigOWith c l f'' fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 := by
-  simp only [isBigOWith_iff, norm_zero, mul_zero, norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
+  simp [isBigOWith_iff, norm_zero, mul_zero, norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
 
 @[simp]
 theorem isBigO_zero_right_iff : (f'' =O[l] fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 :=

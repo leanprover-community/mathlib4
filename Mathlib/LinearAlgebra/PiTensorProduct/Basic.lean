@@ -236,13 +236,13 @@ instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
 
 instance smulCommClass' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
-    PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp only [smul_tprodCoeff', smul_comm])
+    PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp [smul_tprodCoeff', smul_comm])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]⟩
 
 instance isScalarTower' [SMul R₁ R₂] [IsScalarTower R₁ R₂ R] :
     IsScalarTower R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
-    PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp only [smul_tprodCoeff', smul_assoc])
+    PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp [smul_tprodCoeff', smul_assoc])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]⟩
 
 end DistribMulAction
@@ -287,7 +287,7 @@ theorem tprod_eq_tprodCoeff_one : ⇑(tprod R : (Π i, s i) →ₘₗ[R] ⨂[R] 
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z • tprod R f := by
-  have : z = z • (1 : R) := by simp only [mul_one, smul_eq_mul]
+  have : z = z • (1 : R) := by simp [mul_one, smul_eq_mul]
   conv_lhs => rw [this]
   rfl
 
@@ -314,7 +314,7 @@ if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the 
 -/
 lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
     p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) = x := by
-  simp only [lifts, Set.mem_ofPred_eq, FreeAddMonoid.toPiTensorProduct]
+  simp [lifts, Set.mem_ofPred_eq, FreeAddMonoid.toPiTensorProduct]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Every element of `⨂[R] i, s i` has a lift in `FreeAddMonoid (R × Π i, s i)`.
@@ -375,7 +375,7 @@ theorem span_tprod_eq_top :
     Submodule.span R (Set.range (tprod R)) = (⊤ : Submodule R (⨂[R] i, s i)) :=
   Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on
     (fun _ _ ↦ Submodule.smul_mem _ _
-      (Submodule.subset_span (by simp only [Set.mem_range, exists_apply_eq_apply])))
+      (Submodule.subset_span (by simp [Set.mem_range, exists_apply_eq_apply])))
     (fun _ _ hx hy ↦ Submodule.add_mem _ hx hy)
 
 end Module
@@ -495,7 +495,7 @@ theorem map_range_eq_span_tprod [RingHomSurjective σ₁₂] :
       Submodule.span R₂ {t | ∃ (m : Π i, s i), tprod R₂ (fun i ↦ f i (m i)) = t} := by
   rw [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span, ← Set.range_comp]
   apply congrArg; ext x
-  simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_ofPred_eq]
+  simp [Set.mem_range, comp_apply, map_tprod, Set.mem_ofPred_eq]
 
 /-- Given submodules `p i ⊆ s i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, s i`.
 This is `TensorProduct.mapIncl` for an arbitrary family of modules.
@@ -506,12 +506,12 @@ def mapIncl (p : Π i, Submodule R (s i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, 
 
 theorem map_comp : map (fun (i : ι) ↦ g i ∘ₛₗ f i) = map g ∘ₛₗ map f := by
   ext
-  simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.coe_comp, Function.comp_apply]
+  simp [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.coe_comp, Function.comp_apply]
 
 theorem lift_comp_map (h : (Π i, t i) →ₘₛₗ[σ₂₃] N₃) :
     lift h ∘ₛₗ map f = lift (h.compLinearMap f) := by
   ext
-  simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, Function.comp_apply,
+  simp [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, Function.comp_apply,
     map_tprod, lift.tprod, MultilinearMap.compLinearMap_apply]
 
 attribute [local ext high] ext
@@ -519,7 +519,7 @@ attribute [local ext high] ext
 @[simp]
 theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i)) = .id := by
   ext
-  simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.id_coe, id_eq]
+  simp [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.id_coe, id_eq]
 
 @[simp]
 protected theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
@@ -550,14 +550,14 @@ open Function in
 protected theorem map_update_add [DecidableEq ι] (i : ι) (u v : s i →ₛₗ[σ₁₂] t i) :
     map (update f i (u + v)) = map (update f i u) + map (update f i v) := by
   ext x
-  simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.add_apply,
+  simp [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.add_apply,
     MultilinearMap.map_update_add]
 
 open Function in
 protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R₂) (u : s i →ₛₗ[σ₁₂] t i) :
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
-  simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
+  simp [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
     MultilinearMap.map_update_smul, RingHom.id_apply]
 
 variable (R s t) in
@@ -607,12 +607,12 @@ noncomputable def congr (f : Π i, s i ≃ₛₗ[σ₁₂] t i) :
 @[simp]
 theorem congr_tprod (f : Π i, s i ≃ₛₗ[σ₁₂] t i) (m : Π i, s i) :
     congr f (tprod R m) = tprod R₂ (fun (i : ι) ↦ (f i) (m i)) := by
-  simp only [congr, LinearEquiv.coe_ofLinearMap, map_tprod, LinearEquiv.coe_coe]
+  simp [congr, LinearEquiv.coe_ofLinearMap, map_tprod, LinearEquiv.coe_coe]
 
 @[simp]
 theorem congr_symm_tprod (f : Π i, s i ≃ₛₗ[σ₁₂] t i) (p : Π i, t i) :
     (congr f).symm (tprod R₂ p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
-  simp only [congr, LinearEquiv.symm_ofLinearMap, LinearEquiv.coe_ofLinearMap, map_tprod,
+  simp [congr, LinearEquiv.symm_ofLinearMap, LinearEquiv.coe_ofLinearMap, map_tprod,
     LinearEquiv.coe_coe]
 
 /--
@@ -642,12 +642,12 @@ def piTensorHomMapFun₂ : (⨂[R₃] i, s i →ₛₗ[σ₁₃] t i →ₛₗ[�
 
 theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R₃] i, s i →ₛₗ[σ₁₃] t i →ₛₗ[σ₂₃] t' i) :
     piTensorHomMapFun₂ (φ + ψ) = piTensorHomMapFun₂ φ + piTensorHomMapFun₂ ψ := by
-  dsimp [piTensorHomMapFun₂]; ext; simp only [map_add, LinearMap.compMultilinearMap_apply,
+  dsimp [piTensorHomMapFun₂]; ext; simp [map_add, LinearMap.compMultilinearMap_apply,
     lift.tprod, add_apply, LinearMap.add_apply]
 
 theorem piTensorHomMapFun₂_smul (r : R₃) (φ : ⨂[R₃] i, s i →ₛₗ[σ₁₃] t i →ₛₗ[σ₂₃] t' i) :
     piTensorHomMapFun₂ (r • φ) = r • piTensorHomMapFun₂ φ := by
-  dsimp [piTensorHomMapFun₂]; ext; simp only [map_smul, LinearMap.compMultilinearMap_apply,
+  dsimp [piTensorHomMapFun₂]; ext; simp [map_smul, LinearMap.compMultilinearMap_apply,
     lift.tprod, smul_apply, LinearMap.smul_apply]
 
 /--
@@ -757,7 +757,7 @@ theorem map_comp_reindex_eq (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι₂)
     map (fun i ↦ f (e.symm i)) ∘ₛₗ (reindex R s e).toLinearMap =
       (reindex S t e).toLinearMap ∘ₛₗ map f := by
   ext m
-  simp only [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
+  simp [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
     LinearMap.comp_apply, reindex_tprod, map_tprod]
 
 theorem map_reindex (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
@@ -769,7 +769,7 @@ theorem map_comp_reindex_symm (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι�
       (reindex S t e).symm.toLinearMap ∘ₛₗ map (fun i => f (e.symm i)) := by
   ext m
   apply LinearEquiv.injective (reindex S t e)
-  simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  simp [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
     comp_apply, ← map_reindex, LinearEquiv.apply_symm_apply, map_tprod]
 
 theorem map_reindex_symm (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s (e.symm i)) :

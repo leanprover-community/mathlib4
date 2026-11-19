@@ -201,9 +201,9 @@ lemma leftUnitor'_inv_comm (i j : I) :
       unit_tensor_d₁, comp_zero, zero_add]
     rw [mapBifunctor.d₂_eq _ _ _ _ _ hij _ (by simp)]
     dsimp
-    simp only [ComplexShape.ε_zero, one_smul, ← whisker_exchange_assoc,
+    simp [ComplexShape.ε_zero, one_smul, ← whisker_exchange_assoc,
       id_whiskerLeft, assoc, Iso.inv_hom_id_assoc]
-  · simp only [shape _ _ _ hij, comp_zero, zero_comp]
+  · simp [shape _ _ _ hij, comp_zero, zero_comp]
 
 /-- The left unitor for the tensor product of homological complexes. -/
 noncomputable def leftUnitor :
@@ -243,8 +243,8 @@ lemma rightUnitor'_inv_comm (i j : I) :
       tensor_unit_d₂, comp_zero, add_zero]
     rw [mapBifunctor.d₁_eq _ _ _ _ hij _ _ (by simp)]
     dsimp
-    simp only [one_smul, whisker_exchange_assoc, whiskerRight_id, assoc, Iso.inv_hom_id_assoc]
-  · simp only [shape _ _ _ hij, comp_zero, zero_comp]
+    simp [one_smul, whisker_exchange_assoc, whiskerRight_id, assoc, Iso.inv_hom_id_assoc]
+  · simp [shape _ _ _ hij, comp_zero, zero_comp]
 
 /-- The right unitor for the tensor product of homological complexes. -/
 noncomputable def rightUnitor :

@@ -182,7 +182,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   have ha : 0 < a := by
     obtain ⟨x, hxI, hx_eq⟩ : p t₁ ∈ S := by
       refine (h_pathConn.somePath_mem t₁).elim id fun ⟨y, hy⟩ ↦ ?_
-      have : (p t₁).1 = 0 := by simp only [p, ← hy.2]
+      have : (p t₁).1 = 0 := by simp [p, ← hy.2]
       exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
     simpa only [a, ← hx_eq] using! hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=

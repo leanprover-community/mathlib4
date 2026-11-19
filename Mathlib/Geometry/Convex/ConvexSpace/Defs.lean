@@ -531,7 +531,7 @@ lemma iConvexComb_id (w : StdSimplex R X) : w.iConvexComb id = w.sConvexComb := 
 
 @[simp] lemma iConvexComb_map (s : StdSimplex R I) (f : I → J) (g : J → X) :
     (s.map f).iConvexComb g = s.iConvexComb (fun i ↦ g (f i)) := by
-  simp only [iConvexComb, map_map]
+  simp [iConvexComb, map_map]
 
 @[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → X}
     (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
@@ -685,7 +685,7 @@ theorem convexCombPair_same {x : X} :
     convexCombPair s t hs ht h x x = x := by
   unfold convexCombPair
   convert sConvexComb_single x
-  simp only [StdSimplex.duple, StdSimplex.single, ← single_add, h]
+  simp [StdSimplex.duple, StdSimplex.single, ← single_add, h]
 
 @[deprecated (since := "2026-05-15")] alias convexComboPair_symm := convexCombPair_same
 

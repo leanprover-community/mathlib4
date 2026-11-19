@@ -420,7 +420,7 @@ lemma nnNorm_natAbs (z : ℤ) :
 /-- If `α` is a seminormed ring, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n` for `n > 0`.
 See also `nnNorm_pow_le`. -/
 theorem nnNorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n
-  | 1, _ => by simp only [pow_one, le_rfl]
+  | 1, _ => by simp [pow_one, le_rfl]
   | n + 2, _ => by
     simpa only [pow_succ' _ (n + 1)] using
       le_trans (nnNorm_mul_le _ _) (mul_le_mul_right (nnNorm_pow_le' a n.succ_pos) _)

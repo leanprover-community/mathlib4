@@ -84,7 +84,7 @@ theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
 
 theorem two_mul_le_exp {x : ℝ} : 2 * x ≤ exp x := by
   by_cases hx0 : x < 0
-  · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by simp only [Nat.ofNat_nonneg]) hx0.le)
+  · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by simp [Nat.ofNat_nonneg]) hx0.le)
       (exp_nonneg x)
   · apply le_trans (mul_le_mul_of_nonneg_right _ (le_of_not_gt hx0)) exp_one_mul_le_exp
     have := Real.add_one_le_exp 1
@@ -278,7 +278,7 @@ theorem log_eq_zero {x : ℝ} : log x = 0 ↔ x = 0 ∨ x = 1 ∨ x = -1 := by
       exact eq_one_of_pos_of_log_eq_zero (neg_pos.mpr x_lt_zero) h
     · exact Or.inl rfl
     · exact Or.inr (Or.inl (eq_one_of_pos_of_log_eq_zero x_gt_zero h))
-  · rintro (rfl | rfl | rfl) <;> simp only [log_one, log_zero, log_neg_eq_log]
+  · rintro (rfl | rfl | rfl) <;> simp [log_one, log_zero, log_neg_eq_log]
 
 theorem log_ne_zero {x : ℝ} : log x ≠ 0 ↔ x ≠ 0 ∧ x ≠ 1 ∧ x ≠ -1 := by
   simpa only [not_or] using log_eq_zero.not

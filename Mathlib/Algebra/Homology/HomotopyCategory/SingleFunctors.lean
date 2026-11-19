@@ -44,7 +44,7 @@ noncomputable abbrev singleFunctors : SingleFunctors C (CochainComplex C ℤ) �
         obtain rfl : a' = a + n := by lia
         by_cases h : i = a
         · subst h
-          simp only [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
+          simp [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
         · dsimp [single]
           rw [ite_eq_right h, ite_eq_right (fun h' => h (by lia))])))
     (fun {X Y} f => by
@@ -54,12 +54,12 @@ noncomputable abbrev singleFunctors : SingleFunctors C (CochainComplex C ℤ) �
   shiftIso_zero a := by
     ext
     dsimp
-    simp only [single, shiftFunctorZero_eq, shiftFunctorZero'_hom_app_f,
+    simp [single, shiftFunctorZero_eq, shiftFunctorZero'_hom_app_f,
       XIsoOfEq, eqToIso.hom]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext
     dsimp
-    simp only [shiftFunctorAdd_eq, shiftFunctorAdd'_hom_app_f, XIsoOfEq,
+    simp [shiftFunctorAdd_eq, shiftFunctorAdd'_hom_app_f, XIsoOfEq,
       eqToIso.hom, eqToHom_trans, id_comp]
 
 instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by

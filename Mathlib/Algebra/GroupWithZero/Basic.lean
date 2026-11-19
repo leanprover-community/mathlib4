@@ -491,7 +491,7 @@ lemma zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
   rw [zero_zpow_eq, one_ne_zero.ite_eq_left_iff]
 
 lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.natCast_succ, zpow_natCast, pow_succ]
+  | (n : ℕ) => by simp [← Int.natCast_succ, zpow_natCast, pow_succ]
   | -1 => by simp [ha]
   | .negSucc (n + 1) => by
     rw [Int.negSucc_eq, zpow_neg, Int.neg_add, Int.neg_add_cancel_right, zpow_neg,
@@ -506,7 +506,7 @@ lemma zpow_sub_one₀ (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
 lemma zpow_add₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction n with
   | zero => simp
-  | succ n ihn => simp only [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
+  | succ n ihn => simp [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
   | pred n ihn => rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, Int.add_sub_assoc]
 
 lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :

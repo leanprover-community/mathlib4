@@ -107,12 +107,12 @@ lemma factorsThroughLocalization :
   let L := (weakEquivalences (CofibrantObject C)).Q
   rw [areEqualizedByLocalization_iff L]
   suffices L.map (homMk P.p₀) = L.map (homMk P.p₁) by
-    simp only [show f = homMk h.h ≫ homMk P.p₀ by cat_disch,
+    simp [show f = homMk h.h ≫ homMk P.p₀ by cat_disch,
       show g = homMk h.h ≫ homMk P.p₁ by cat_disch, Functor.map_comp, this]
   have := Localization.inverts L (weakEquivalences _) (homMk P.ι) (by
     simp only [← weakEquivalence_iff, weakEquivalence_homMk_iff]
     infer_instance)
-  simp only [← cancel_epi (L.map (homMk P.ι)), ← L.map_comp, homMk_homMk, P.ι_p₀, P.ι_p₁]
+  simp [← cancel_epi (L.map (homMk P.ι)), ← L.map_comp, homMk_homMk, P.ι_p₀, P.ι_p₁]
 
 instance : (toHoCatLocalizerMorphism C).IsLocalizedEquivalence := by
   apply (factorsThroughLocalization C).isLocalizedEquivalence

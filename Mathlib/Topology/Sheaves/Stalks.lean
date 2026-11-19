@@ -285,7 +285,7 @@ lemma germToPullbackStalk_stalkPullbackHom
       ((pullback C f).obj F).germ _ x hx := by
   ext V hV
   dsimp
-  simp only [pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk_assoc,
+  simp [pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk_assoc,
     germ_stalkPullbackHom, germ_res]
 
 @[reassoc (attr := simp)]

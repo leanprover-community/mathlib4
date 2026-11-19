@@ -92,7 +92,7 @@ theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
 -- todo: use this as a definition?
 theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
   refine (t2Space_iff X).trans (forall₃_congr fun x y _ => ?_)
-  simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), ← exists_and_left,
+  simp [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), ← exists_and_left,
     and_assoc, and_comm, and_left_comm]
 
 @[simp]
@@ -120,7 +120,7 @@ instance (priority := 100) T2Space.r1Space [T2Space X] : R1Space X :=
   ⟨fun x y ↦ (eq_or_ne x y).imp specializes_of_eq disjoint_nhds_nhds.2⟩
 
 theorem SeparationQuotient.t2Space_iff : T2Space (SeparationQuotient X) ↔ R1Space X := by
-  simp only [t2Space_iff_disjoint_nhds, Pairwise, surjective_mk.forall₂, ne_eq, mk_eq_mk,
+  simp [t2Space_iff_disjoint_nhds, Pairwise, surjective_mk.forall₂, ne_eq, mk_eq_mk,
     r1Space_iff_inseparable_or_disjoint_nhds, ← disjoint_comap_iff surjective_mk, comap_mk_nhds_mk,
     ← or_iff_not_imp_left]
 
@@ -136,14 +136,14 @@ theorem R1Space.t2Space_iff_t0Space [R1Space X] : T2Space X ↔ T0Space X := by
 
 /-- A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter. -/
 theorem t2_iff_nhds : T2Space X ↔ ∀ {x y : X}, NeBot (𝓝 x ⊓ 𝓝 y) → x = y := by
-  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne, not_imp_comm, Pairwise]
+  simp [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne, not_imp_comm, Pairwise]
 
 theorem eq_of_nhds_neBot [T2Space X] {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) : x = y :=
   t2_iff_nhds.mp ‹_› h
 
 theorem t2Space_iff_nhds :
     T2Space X ↔ Pairwise fun x y : X => ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
-  simp only [t2Space_iff_disjoint_nhds, Filter.disjoint_iff, Pairwise]
+  simp [t2Space_iff_disjoint_nhds, Filter.disjoint_iff, Pairwise]
 
 theorem t2_separation_nhds [T2Space X] {x y : X} (h : x ≠ y) :
     ∃ u v, u ∈ 𝓝 x ∧ v ∈ 𝓝 y ∧ Disjoint u v :=
@@ -157,10 +157,10 @@ theorem t2_separation_compact_nhds [LocallyCompactSpace X] [T2Space X] {x y : X}
 
 theorem t2_iff_ultrafilter :
     T2Space X ↔ ∀ {x y : X} (f : Ultrafilter X), ↑f ≤ 𝓝 x → ↑f ≤ 𝓝 y → x = y :=
-  t2_iff_nhds.trans <| by simp only [← exists_ultrafilter_iff, and_imp, le_inf_iff, exists_imp]
+  t2_iff_nhds.trans <| by simp [← exists_ultrafilter_iff, and_imp, le_inf_iff, exists_imp]
 
 theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
-  simp only [t2Space_iff_disjoint_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds, Prod.forall,
+  simp [t2Space_iff_disjoint_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds, Prod.forall,
     nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff, Pairwise]
 
 @[closedness ., grind .]

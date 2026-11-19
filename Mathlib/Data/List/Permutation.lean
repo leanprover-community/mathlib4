@@ -134,7 +134,7 @@ theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
     map (map f) (permutations'Aux t ts) = permutations'Aux (f t) (map f ts) := by
   induction ts with
   | nil => rfl
-  | cons a ts ih => simp only [permutations'Aux, map_cons, map_map, ← ih, Function.comp_def]
+  | cons a ts ih => simp [permutations'Aux, map_cons, map_map, ← ih, Function.comp_def]
 
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
     permutations'Aux t ts = (permutationsAux2 t [] [ts ++ [t]] ts id).2 := by
@@ -188,7 +188,7 @@ theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)
     ⟨fun ⟨_, aL, l₁, l₂, l0, e, h⟩ => ⟨l₁, l₂, l0, e ▸ aL, h⟩, fun ⟨l₁, l₂, l0, aL, h⟩ =>
       ⟨_, aL, l₁, l₂, l0, rfl, h⟩⟩
   rw [foldr_permutationsAux2]
-  simp only [mem_permutationsAux2', ← this, or_comm, and_left_comm, mem_append, mem_flatMap,
+  simp [mem_permutationsAux2', ← this, or_comm, and_left_comm, mem_append, mem_flatMap,
     append_assoc, cons_append]
 
 theorem length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
@@ -227,7 +227,7 @@ theorem map_permutationsAux (f : α → β) :
     List α, map (map f) (permutationsAux ts is) = permutationsAux (map f ts) (map f is) := by
   refine permutationsAux.rec (by simp) ?_
   introv IH1 IH2; rw [map] at IH2
-  simp only [foldr_permutationsAux2, map_append, map, map_map_permutationsAux2, permutations,
+  simp [foldr_permutationsAux2, map_append, map, map_map_permutationsAux2, permutations,
     flatMap_map, IH1, append_assoc, permutationsAux_cons, flatMap_cons, ← IH2, map_flatMap]
 
 theorem map_permutations (f : α → β) (ts : List α) :
@@ -250,7 +250,7 @@ theorem permutationsAux_append (is is' ts : List α) :
   funext _
   rw [map_permutationsAux2]
   simp +singlePass only [← permutationsAux2_comp_append]
-  simp only [id, append_assoc]
+  simp [id, append_assoc]
 
 theorem permutations_append (is ts : List α) :
     permutations (is ++ ts) = (permutations is).map (· ++ ts) ++ permutationsAux ts is.reverse := by
@@ -440,7 +440,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     · subst hx
       simpa [takeWhile, Nat.succ_inj, DecEq_eq] using IH _
     · rw [takeWhile]
-      simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
+      simp [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
         not_false_iff, count_eq_zero_of_not_mem, Nat.zero_add, hx, decide_false, length_nil]
 
 @[simp]
@@ -457,7 +457,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
   have hl : s.length = t.length := by simpa using congr(length $h)
   rw [← get_permutations'Aux s x s.length (by simp),
     ← get_permutations'Aux t x s.length (by simp [hl])]
-  simp only [get_eq_getElem, h, hl]
+  simp [get_eq_getElem, h, hl]
 
 theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
     Nodup (permutations'Aux x s) := by

@@ -205,7 +205,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     mul_left_cancel₀ a_zero
       (calc
         a • ϕ ⟨y', y'M⟩ = ϕ ⟨a • y', _⟩ := (ϕ.map_smul a ⟨y', y'M⟩).symm
-        _ = ϕ ⟨y, N_le_M yN⟩ := by simp only [a_smul_y']
+        _ = ϕ ⟨y, N_le_M yN⟩ := by simp [a_smul_y']
         _ = a := ϕy_eq
         _ = a * 1 := (mul_one a).symm)
   have ϕy'_ne_zero : ϕ ⟨y', y'M⟩ ≠ 0 := by simpa only [ϕy'_eq] using one_ne_zero
@@ -245,7 +245,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
       refine ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, ?_, ?_⟩⟩
       · refine LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from ?_)
         rw [map_sub, map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
-      · simp only [sub_eq_add_neg, neg_smul, coe_subtype]
+      · simp [sub_eq_add_neg, neg_smul, coe_subtype]
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
   refine ⟨Nat.succ_le_succ hn'm', ?_, ?_⟩
@@ -264,7 +264,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm
   · rw [Fin.castLE_succ]
-    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, h i]
+    simp [Fin.cons_succ, Function.comp_apply, coe_inclusion, h i]
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
@@ -492,7 +492,7 @@ noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (
     ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLEEmb hno), a,
       fun i ↦ ?_⟩
   ext
-  simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
+  simp [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
     Submodule.coe_smul_of_tower, Fin.castLEEmb_apply]
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
@@ -510,7 +510,7 @@ noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : 
   let bM' := bM.map (LinearEquiv.ofTop _ rfl)
   let e := bM'.indexEquiv b
   ⟨n, bM'.reindex e, bN.map (comapSubtypeEquivOfLe le_top), f.trans e.toEmbedding, a, fun i ↦ by
-    simp only [bM', snf, Basis.map_apply, LinearEquiv.ofTop_apply, Submodule.coe_smul_of_tower,
+    simp [bM', snf, Basis.map_apply, LinearEquiv.ofTop_apply, Submodule.coe_smul_of_tower,
       Submodule.comapSubtypeEquivOfLe_apply_coe, Basis.reindex_apply,
       Equiv.toEmbedding_apply, Function.Embedding.trans_apply, Equiv.symm_apply_apply]⟩
 
@@ -531,10 +531,10 @@ noncomputable def Submodule.smithNormalFormOfRankEq [Fintype ι] (b : Basis ι R
     Basis.SmithNormalForm N ι (Fintype.card ι) :=
   let ⟨n, bM, bN, f, a, snf⟩ := N.smithNormalForm b
   let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by
-    simp only [Fintype.card_fin, ← Module.finrank_eq_card_basis bM, ← h,
+    simp [Fintype.card_fin, ← Module.finrank_eq_card_basis bM, ← h,
       Module.finrank_eq_card_basis bN])
   ⟨bM, bN.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
-    simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
+    simp [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
       (· ∘ ·)]⟩
 
 variable [Finite ι]
@@ -558,7 +558,7 @@ theorem Submodule.exists_smith_normal_form_of_rank_eq (b : Basis ι R M)
   have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
   exact
     ⟨bM, a ∘ e.symm, bN.reindex e, fun i ↦ by
-      simp only [snf, fe,
+      simp [snf, fe,
           Basis.coe_reindex, (· ∘ ·)]⟩
 
 /--

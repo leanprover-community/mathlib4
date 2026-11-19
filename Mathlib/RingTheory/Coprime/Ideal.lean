@@ -44,7 +44,7 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
   · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true]
     refine fun a => ⟨fun i => if h : i = a then ⟨1, ?_⟩ else 0, ?_⟩
     · simp [h]
-    · simp only [dite_eq_left, Submodule.coe_mk]
+    · simp [dite_eq_left, Submodule.coe_mk]
   intro a t hat h ih
   have : Std.Symm (I · ⊔ I · = ⊤) := { symm i j := sup_comm .. |>.trans }
   rw [Finset.coe_cons, Set.pairwise_insert_of_symm]

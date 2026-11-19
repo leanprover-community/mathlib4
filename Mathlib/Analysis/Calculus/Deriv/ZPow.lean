@@ -56,7 +56,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
       zpow_add₀ hx]
     congr
     abel
-  · simp only [hm, zpow_zero, Int.cast_zero, zero_mul, hasStrictDerivAt_const]
+  · simp [hm, zpow_zero, Int.cast_zero, zero_mul, hasStrictDerivAt_const]
   · exact this m hm
 
 theorem hasDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
@@ -101,9 +101,9 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
       fun x => (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) := by
   induction k with
   | zero =>
-    simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero, Function.iterate_zero]
+    simp [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero, Function.iterate_zero]
   | succ k ihk =>
-    simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
+    simp [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
       Finset.prod_range_succ, Int.natCast_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast,
       mul_assoc]
 
@@ -118,7 +118,7 @@ theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
   · rw [Int.ofNat_sub hkn]
   · have : (∏ i ∈ Finset.range k, (n - i : 𝕜)) = 0 :=
       Finset.prod_eq_zero (Finset.mem_range.2 hnk) (sub_self _)
-    simp only [this, zero_mul]
+    simp [this, zero_mul]
 
 @[simp]
 theorem iter_deriv_pow' (n k : ℕ) :

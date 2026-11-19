@@ -213,7 +213,7 @@ noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) w
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one_left, (nhds_one_hasBasis.comap _).eq_biInf]
-    simp only [dist, preimage_ofPred_eq, norm_eq_groupSeminorm]
+    simp [dist, preimage_ofPred_eq, norm_eq_groupSeminorm]
 
 variable (S) in
 /-- The quotient in the category of normed groups. -/
@@ -270,7 +270,7 @@ theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
     ‖mk' S m‖ = sInf ((‖m + ·‖) '' S) := by
   rw [mk'_apply, norm_mk, sInf_image', ← infDist_image isometry_neg, image_neg_eq_neg,
     neg_coe_set (H := S), infDist_eq_iInf]
-  simp only [dist_eq_norm', sub_neg_eq_add, add_comm]
+  simp [dist_eq_norm', sub_neg_eq_add, add_comm]
 
 /-- The quotient norm satisfies the triangle inequality. -/
 theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ :=

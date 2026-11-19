@@ -98,7 +98,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
   · convert Commute.geom_sum₂_mul (R := AddMonoidAlgebra R A) _ (addOrderOf a)
     · rw [single_zero_one, one_pow, mul_one]
     · rw [single_pow, one_pow, addOrderOf_nsmul_eq_zero, single_zero_one, one_pow, sub_self]
-    · simp only [single_zero_one, Commute.one_right]
+    · simp [single_zero_one, Commute.one_right]
 
 example {R} [Ring R] [Nontrivial R] (n : ℕ) (n0 : 2 ≤ n) :
     ∃ f g : AddMonoidAlgebra R (ZMod n), f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=

@@ -134,7 +134,7 @@ def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
     (F.mapComp' (f i₁).op.toLoc f₁.op.toLoc q.op.toLoc (by grind)).inv.toNatTrans.app _ ≫
       (F.mapComp' (f i₂).op.toLoc f₂.op.toLoc q.op.toLoc (by grind)).hom.toNatTrans.app _
   pullHom_hom Y' Y g q q' hq i₁ i₂ f₁ f₂ hf₁ hf₂ gf₁ gf₂ hgf₁ hgf₂ := by
-    simp only [pullHom, Functor.map_comp, Category.assoc,
+    simp [pullHom, Functor.map_comp, Category.assoc,
       F.mapComp'₀₁₃_inv_app (f i₁).op.toLoc f₁.op.toLoc g.op.toLoc q.op.toLoc
         gf₁.op.toLoc q'.op.toLoc (by grind) (by grind) (by grind),
       F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app (f i₂).op.toLoc f₂.op.toLoc g.op.toLoc

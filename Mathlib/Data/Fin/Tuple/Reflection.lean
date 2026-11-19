@@ -104,7 +104,7 @@ theorem forall_iff : ∀ {m} (P : (Fin m → α) → Prop), Forall P ↔ ∀ x, 
   | 0, P => by
     simp only [Forall, Fin.forall_fin_zero_pi]
     rfl
-  | .succ n, P => by simp only [Forall, forall_iff, Fin.forall_fin_succ_pi, Matrix.vecCons]
+  | .succ n, P => by simp [Forall, forall_iff, Fin.forall_fin_succ_pi, Matrix.vecCons]
 
 example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀, a₁] :=
   (forall_iff _).symm
@@ -124,7 +124,7 @@ theorem exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, 
   | 0, P => by
     simp only [Exists, Fin.exists_fin_zero_pi, Matrix.vecEmpty]
     rfl
-  | .succ n, P => by simp only [Exists, exists_iff, Fin.exists_fin_succ_pi, Matrix.vecCons]
+  | .succ n, P => by simp [Exists, exists_iff, Fin.exists_fin_succ_pi, Matrix.vecCons]
 
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
   (exists_iff _).symm

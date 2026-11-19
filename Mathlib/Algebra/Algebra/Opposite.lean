@@ -43,10 +43,10 @@ set_option backward.isDefEq.respectTransparency false in
 instance instAlgebra : Algebra R Aᵐᵒᵖ where
   algebraMap := (algebraMap R A).toOpposite fun _ _ => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
-    simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul,
+    simp [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul,
       Algebra.smul_def, Algebra.commutes, unop_op]
   commutes' r := MulOpposite.rec' fun x => by
-    simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
+    simp [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
 
 @[simp]
 theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R A c) :=

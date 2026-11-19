@@ -104,7 +104,7 @@ lemma complete_distinguished_essImageDistTriang_morphism
   simp only [assoc] at comm₃
   obtain ⟨φ, hφ₁, hφ₂⟩ := H T₁' T₂' hT₁' hT₂' (e₁.inv.hom₁ ≫ a ≫ e₂.hom.hom₁)
     (e₁.inv.hom₂ ≫ b ≫ e₂.hom.hom₂)
-    (by simp only [assoc, ← comm₁', ← reassoc_of% fac, ← reassoc_of% comm₁])
+    (by simp [assoc, ← comm₁', ← reassoc_of% fac, ← reassoc_of% comm₁])
   have h₂ := φ.comm₂
   have h₃ := φ.comm₃
   dsimp at h₂ h₃
@@ -140,7 +140,7 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
   refine Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
     (Iso.refl _) e.inv.w.symm (by simp) ?_
   dsimp
-  simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
+  simp [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
     Functor.mapArrow_obj, Arrow.mk_left, Functor.map_id, comp_id]
 
 section
@@ -184,7 +184,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     rw [hα, MorphismProperty.LeftFraction.map_comp_map_s]
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₂, ← comp_hom₂, assoc, IsIso.inv_hom_id, comp_id]
     dsimp [ψ]
-    simp only [Functor.map_comp, reassoc_of% hγ,
+    simp [Functor.map_comp, reassoc_of% hγ,
       MorphismProperty.LeftFraction.map_comp_map_s_assoc]
 
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]

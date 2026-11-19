@@ -233,11 +233,11 @@ variable [DistribLattice α] [OrderBot α] {a b c : α}
 
 @[to_dual (attr := simp)]
 theorem disjoint_sup_left : Disjoint (a ⊔ b) c ↔ Disjoint a c ∧ Disjoint b c := by
-  simp only [disjoint_iff, inf_sup_right, sup_eq_bot_iff]
+  simp [disjoint_iff, inf_sup_right, sup_eq_bot_iff]
 
 @[to_dual (attr := simp)]
 theorem disjoint_sup_right : Disjoint a (b ⊔ c) ↔ Disjoint a b ∧ Disjoint a c := by
-  simp only [disjoint_iff, inf_sup_left, sup_eq_bot_iff]
+  simp [disjoint_iff, inf_sup_left, sup_eq_bot_iff]
 
 @[to_dual]
 theorem Disjoint.sup_left (ha : Disjoint a c) (hb : Disjoint b c) : Disjoint (a ⊔ b) c :=

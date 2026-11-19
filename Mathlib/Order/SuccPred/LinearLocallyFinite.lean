@@ -74,7 +74,7 @@ instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchime
     refine ⟨n, ?_⟩
     rw [← hn_eq]
     cases n with
-    | zero => simp only [Function.iterate_zero, id]
+    | zero => simp [Function.iterate_zero, id]
     | succ n =>
       rw [pred_succ_iterate_of_not_isMax]
       rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
@@ -244,7 +244,7 @@ theorem toZ_neg (hi : i < i0) : toZ i0 i < 0 := by
   · by_contra h
     have h_eq := iterate_pred_toZ i hi
     rw [← h_eq, h] at hi
-    simp only [neg_zero, Int.toNat_zero, Function.iterate_zero, id, lt_self_iff_false] at hi
+    simp [neg_zero, Int.toNat_zero, Function.iterate_zero, id, lt_self_iff_false] at hi
 
 theorem toZ_iterate_succ_le (n : ℕ) : toZ i0 (succ^[n] i0) ≤ n := by
   rw [toZ_of_ge (le_succ_iterate _ _)]
@@ -371,7 +371,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
       exact Int.toNat_of_nonneg hn
     · simp_rw [ite_eq_right (not_le.mpr hn)]
       rw [toZ_iterate_pred]
-      simp only [hn.le, Int.toNat_of_nonneg, Int.neg_nonneg_of_nonpos, Int.neg_neg]
+      simp [hn.le, Int.toNat_of_nonneg, Int.neg_nonneg_of_nonpos, Int.neg_neg]
   map_rel_iff' := by simp
 
 /-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/
@@ -410,7 +410,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
       rw [hn_max]
       exact Nat.lt_succ_iff.mp (Finset.mem_range.mp n.prop)
     · rw [toZ_iterate_succ_of_not_isMax _ hn_max]
-      simp only [Int.toNat_natCast, le_refl]
+      simp [Int.toNat_natCast, le_refl]
   map_rel_iff' := by
     intro i j
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Int.toNat_le]

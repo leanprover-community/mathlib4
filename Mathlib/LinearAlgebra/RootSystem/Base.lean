@@ -579,7 +579,7 @@ lemma height_reflectionPerm_self (i : ι) :
   let := P.indexNeg
   obtain ⟨f, hf₀, hf₁, hf₂⟩ := b.exists_root_eq_sum_int i
   have hf₃ : P.root (-i) = ∑ j ∈ b.support, (-f) j • P.root j := by simpa
-  simp only [height_eq_sum hf₂, height_eq_sum hf₃, Pi.neg_apply, Finset.sum_neg_distrib]
+  simp [height_eq_sum hf₂, height_eq_sum hf₃, Pi.neg_apply, Finset.sum_neg_distrib]
 
 variable {b} in
 lemma height_one_of_mem_support {i : ι} (hi : i ∈ b.support) :
@@ -761,7 +761,7 @@ lemma exists_eq_sum_and_forall_sum_mem_of_isPos {i : ι} (hi : b.IsPos i) :
   · by_cases hm : m < n
     · have : m = (⟨m, hm⟩ : Fin n).castSucc := rfl
       rw [this, Fin.sum_Iic_castSucc]
-      simp only [Fin.snoc_castSucc, h₄]
+      simp [Fin.snoc_castSucc, h₄]
     · replace hm : m = n := by lia
       replace hm : Finset.Iic m = Finset.univ := by ext; simp [hm, Fin.le_def, Fin.is_le]
       simp [hm, Fin.sum_univ_castSucc, ← h₃, ← h₁]

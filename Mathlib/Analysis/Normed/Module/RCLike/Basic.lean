@@ -55,7 +55,7 @@ theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0
 
 theorem ContinuousLinearEquiv.coord_norm' {x : E} (h : x ≠ 0) :
     ‖(‖x‖ : 𝕜) • ContinuousLinearEquiv.coord 𝕜 x h‖ = 1 := by
-  simp only [norm_smul, RCLike.norm_coe_norm, coord_norm, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+  simp [norm_smul, RCLike.norm_coe_norm, coord_norm, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
 
 theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by
@@ -72,7 +72,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
   have eq : f z = ‖z‖ / r * f z₁ := by
     rw [hz₁, map_smul, smul_eq_mul]
     rw [← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ r_ne_zero, mul_inv_cancel₀, one_mul]
-    simp only [z_zero, RCLike.ofReal_eq_zero, norm_eq_zero, Ne, not_false_iff]
+    simp [z_zero, RCLike.ofReal_eq_zero, norm_eq_zero, Ne, not_false_iff]
   rw [eq, norm_mul, norm_div, RCLike.norm_coe_norm, RCLike.norm_of_nonneg r_pos.le,
     div_mul_eq_mul_div, div_mul_eq_mul_div, mul_comm]
   apply div_le_div₀ _ _ r_pos rfl.ge
@@ -91,7 +91,7 @@ theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r)
   · apply div_nonneg _ r_pos.le
     exact
       (norm_nonneg _).trans
-        (h 0 (by simp only [norm_zero, mem_closedBall, dist_zero_left, r_pos.le]))
+        (h 0 (by simp [norm_zero, mem_closedBall, dist_zero_left, r_pos.le]))
   apply LinearMap.bound_of_ball_bound' r_pos
   exact fun z hz => h z hz
 

@@ -227,7 +227,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
     exact mul_le_mul' (le_max_left _ _) le_rfl
   · intro x hx
     have : A (f x) = g x := gs hx
-    simp only [(· ∘ ·), ← this, A.symm_apply_apply]
+    simp [(· ∘ ·), ← this, A.symm_apply_apply]
 
 theorem LinearMap.exists_antilipschitzWith [FiniteDimensional 𝕜 E] (f : E →ₗ[𝕜] F)
     (hf : LinearMap.ker f = ⊥) : ∃ K > 0, AntilipschitzWith K f := by
@@ -363,9 +363,9 @@ theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[
     set φ := v.equivFunL.toContinuousLinearMap
     calc
       ‖u e‖₊ = ‖u (∑ i, v.equivFun e i • v i)‖₊ := by rw [v.sum_equivFun]
-      _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp only [equivFun_apply, map_sum, map_smul]
+      _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp [equivFun_apply, map_sum, map_smul]
       _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := nnNorm_sum_le _ _
-      _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnNorm_smul]
+      _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp [nnNorm_smul]
       _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
       _ = (∑ i, ‖v.equivFun e i‖₊) * M := by rw [Finset.sum_mul]
       _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) * M := by
@@ -373,7 +373,7 @@ theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[
         calc
           ∑ i, ‖v.equivFun e i‖₊ ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnNorm_apply_le_nnNorm _
           _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_right (φ.le_opNNNorm e) _
-      _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
+      _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp [smul_mul_assoc, mul_right_comm]
 
 theorem opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
@@ -671,7 +671,7 @@ theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
         isBigO_norm_right.mpr
           (isBigO_norm_left.mpr
             (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
-      simp only [norm_pow, norm_mul]
+      simp [norm_pow, norm_mul]
 
 theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :

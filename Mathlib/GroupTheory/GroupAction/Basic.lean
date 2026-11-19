@@ -82,12 +82,12 @@ theorem subsingleton_orbit_iff_mem_fixedPoints {a : α} :
   constructor
   · exact fun h m ↦ h (mem_orbit a m) (mem_orbit_self a)
   · rintro h _ ⟨m, rfl⟩ y ⟨p, rfl⟩
-    simp only [h]
+    simp [h]
 
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
-  simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
+  simp [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
     Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
     Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, nonempty_orbit, implies_true]
 
@@ -353,8 +353,8 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     use g⁻¹ • x
     constructor
     · apply hyp g⁻¹ (inv_mem hg)
-      simp only [Set.smul_mem_smul_set_iff, hx]
-    · simp only [smul_inv_smul]
+      simp [Set.smul_mem_smul_set_iff, hx]
+    · simp [smul_inv_smul]
 
 @[to_additive (attr := simp)]
 theorem stabilizer_subgroupOf (H : Subgroup G) (a : α) :

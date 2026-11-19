@@ -101,7 +101,7 @@ theorem card_eq_card_functions_add_card_relations :
     L.card =
       (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
         Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
-  simp only [card, mk_sum, mk_sigma, lift_sum]
+  simp [card, mk_sum, mk_sigma, lift_sum]
 
 instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
   fun _ => instIsEmptySum
@@ -129,7 +129,7 @@ theorem card_relations_sum (i : ℕ) :
 
 theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
-  simp only [card, mk_sum, mk_sigma, card_functions_sum, sum_add_distrib', lift_add, lift_sum,
+  simp [card, mk_sum, mk_sigma, card_functions_sum, sum_add_distrib', lift_add, lift_sum,
     lift_lift, card_relations_sum, add_assoc,
     add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
 

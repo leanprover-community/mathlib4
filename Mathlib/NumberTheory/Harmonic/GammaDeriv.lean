@@ -41,7 +41,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
       (by positivity), Gamma_nat_eq_factorial, div_eq_iff_mul_eq (by positivity),
       mul_comm, Eq.comm] at this
   have hc : ConvexOn ℝ (Ioi 0) f := convexOn_log_Gamma
-  have h_rec (x : ℝ) (hx : 0 < x) : f (x + 1) = f x + log x := by simp only [f, Function.comp_apply,
+  have h_rec (x : ℝ) (hx : 0 < x) : f (x + 1) = f x + log x := by simp [f, Function.comp_apply,
       Gamma_add_one hx.ne', log_mul hx.ne' (Gamma_pos_of_pos hx).ne', add_comm]
   have hder {x : ℝ} (hx : 0 < x) : DifferentiableAt ℝ f x := by
     refine ((differentiableAt_Gamma ?_).log (Gamma_ne_zero ?_)) <;>

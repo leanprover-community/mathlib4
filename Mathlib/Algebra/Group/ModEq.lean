@@ -146,12 +146,12 @@ end ModEq
 
 theorem map_modEq_iff {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
     (f : F) (hf : Function.Injective f) : f a ≡ f b [PMOD f p] ↔ a ≡ b [PMOD p] := by
-  simp only [modEq_iff_nsmul, ← map_nsmul, ← map_add, hf.eq_iff]
+  simp [modEq_iff_nsmul, ← map_nsmul, ← map_add, hf.eq_iff]
 
 @[simp]
 theorem nsmul_modEq_nsmul [HasUniqueDiv M] {n : ℕ} (hn : n ≠ 0) :
     n • a ≡ n • b [PMOD n • p] ↔ a ≡ b [PMOD p] := by
-  simp only [modEq_iff_nsmul, ← mul_nsmul _ n, mul_nsmul' _ n, ← nsmul_add, nsmul_right_inj hn]
+  simp [modEq_iff_nsmul, ← mul_nsmul _ n, mul_nsmul' _ n, ← nsmul_add, nsmul_right_inj hn]
 
 alias ⟨ModEq.nsmul_cancel, _⟩ := nsmul_modEq_nsmul
 
@@ -216,7 +216,7 @@ theorem modEq_iff_zsmul : a ≡ b [PMOD p] ↔ ∃ m : ℤ, m • p = b - a := b
       sub_eq_add_neg, ← sub_zsmul, m.toNat_sub_toNat_neg]
 
 theorem modEq_iff_zsmul' : a ≡ b [PMOD p] ↔ ∃ m : ℤ, b - a = m • p := by
-  simp only [modEq_iff_zsmul, eq_comm]
+  simp [modEq_iff_zsmul, eq_comm]
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [PMOD p] ↔ a ≡ b [PMOD p] :=

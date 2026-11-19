@@ -142,7 +142,7 @@ def cocone (S : LightProfinite) :
     naturality := fun _ _ f ↦ (by
       have := f.w
       simp only [op_obj, op_map] at this
-      simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, const_obj_obj, Functor.comp_map,
+      simp [comp_obj, CostructuredArrow.proj_obj, op_obj, const_obj_obj, Functor.comp_map,
         CostructuredArrow.proj_map, op_map, ← map_comp, this, const_obj_map, Category.comp_id]) }
 
 example : G.mapCocone c.op = (cocone G c.pt).whisker

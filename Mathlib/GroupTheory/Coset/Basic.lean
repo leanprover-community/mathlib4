@@ -306,7 +306,7 @@ lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ 
 @[to_additive]
 lemma orbit_eq_out_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out • s := by
   induction x using QuotientGroup.induction_on
-  simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
+  simp [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
 
 end QuotientGroup
 

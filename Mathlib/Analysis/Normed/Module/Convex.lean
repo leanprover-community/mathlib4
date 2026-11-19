@@ -166,13 +166,13 @@ theorem convexHull_ediam (s : Set E) : ediam (convexHull ℝ s) = ediam s := by
 /-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
 theorem convexHull_diam (s : Set E) : diam (convexHull ℝ s) = diam s := by
-  simp only [diam, convexHull_ediam]
+  simp [diam, convexHull_ediam]
 
 /-- Convex hull of `s` is bounded if and only if `s` is bounded. -/
 @[simp]
 theorem isBounded_convexHull {s : Set E} :
     Bornology.IsBounded (convexHull ℝ s) ↔ Bornology.IsBounded s := by
-  simp only [isBounded_iff_ediam_ne_top, convexHull_ediam]
+  simp [isBounded_iff_ediam_ne_top, convexHull_ediam]
 
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
   IsTopologicalAddGroup.pathConnectedSpace

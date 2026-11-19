@@ -69,7 +69,7 @@ theorem map_birkhoffAverage (S : Type*) {F N : Type*}
     [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
-  simp only [birkhoffAverage, map_inv_natCast_smul g' R S, map_birkhoffSum]
+  simp [birkhoffAverage, map_inv_natCast_smul g' R S, map_birkhoffSum]
 
 theorem map_comp_birkhoffAverage (S : Type*) {F N : Type*}
     [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
@@ -90,7 +90,7 @@ theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
 
 theorem birkhoffAverage_comp_apply (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffAverage R f (g ∘ f) n x = birkhoffAverage R f g n (f x) := by
-  simp only [birkhoffAverage, birkhoffSum_comp_apply]
+  simp [birkhoffAverage, birkhoffSum_comp_apply]
 
 theorem birkhoffAverage_comp (f : α → α) (g : α → M) (n : ℕ) :
     birkhoffAverage R f (g ∘ f) n = (birkhoffAverage R f g n) ∘ f :=
@@ -157,7 +157,7 @@ is equal to `(n : R)⁻¹ • (g (f^[n] x) - g x)`. -/
 theorem birkhoffAverage_apply_sub_birkhoffAverage (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by
-  simp only [birkhoffAverage, birkhoffSum_apply_sub_birkhoffSum, ← smul_sub]
+  simp [birkhoffAverage, birkhoffSum_apply_sub_birkhoffSum, ← smul_sub]
 
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n ∘ f` and `birkhoffAverage R f g n`

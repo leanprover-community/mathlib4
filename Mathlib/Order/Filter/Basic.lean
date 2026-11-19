@@ -273,7 +273,7 @@ theorem neBot_of_le {f g : Filter α} [hf : NeBot f] (hg : f ≤ g) : NeBot g :=
   hf.mono hg
 
 @[simp] theorem sup_neBot {f g : Filter α} : NeBot (f ⊔ g) ↔ NeBot f ∨ NeBot g := by
-  simp only [neBot_iff, not_and_or, Ne, sup_eq_bot_iff]
+  simp [neBot_iff, not_and_or, Ne, sup_eq_bot_iff]
 
 instance neBot_sup_of_left {f g : Filter α} [f.NeBot] : NeBot (f ⊔ g) := by simp [*]
 instance neBot_sup_of_right {f g : Filter α} [g.NeBot] : NeBot (f ⊔ g) := by simp [*]
@@ -318,7 +318,7 @@ theorem union_mem_sup {f g : Filter α} {s t : Set α} (hs : s ∈ f) (ht : t �
 
 @[simp]
 theorem mem_iSup {x : Set α} {f : ι → Filter α} : x ∈ iSup f ↔ ∀ i, x ∈ f i := by
-  simp only [← Filter.mem_sets, iSup_sets_eq, mem_iInter]
+  simp [← Filter.mem_sets, iSup_sets_eq, mem_iInter]
 
 @[simp]
 theorem iSup_neBot {f : ι → Filter α} : (⨆ i, f i).NeBot ↔ ∃ i, (f i).NeBot := by
@@ -371,13 +371,13 @@ theorem Iic_principal (s : Set α) : Iic (𝓟 s) = { l | s ∈ l } :=
 
 @[gcongr]
 theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
-  simp only [le_principal_iff, mem_principal]
+  simp [le_principal_iff, mem_principal]
 
 @[mono]
 theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ => principal_mono.2
 
 @[simp] theorem principal_eq_iff_eq {s t : Set α} : 𝓟 s = 𝓟 t ↔ s = t := by
-  simp only [le_antisymm_iff, le_principal_iff, mem_principal]
+  simp [le_antisymm_iff, le_principal_iff, mem_principal]
 
 theorem principal_injective : Injective (𝓟 : Set α → Filter α) :=
   fun _ _ => principal_eq_iff_eq.mp
@@ -385,7 +385,7 @@ theorem principal_injective : Injective (𝓟 : Set α → Filter α) :=
 @[simp] theorem join_principal_eq_sSup {s : Set (Filter α)} : join (𝓟 s) = sSup s := rfl
 
 @[simp] theorem principal_univ : 𝓟 (univ : Set α) = ⊤ :=
-  top_unique <| by simp only [le_principal_iff, mem_top]
+  top_unique <| by simp [le_principal_iff, mem_top]
 
 @[simp]
 theorem principal_empty : 𝓟 (∅ : Set α) = ⊥ :=
@@ -418,7 +418,7 @@ theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
 
 protected lemma disjoint_iff {f g : Filter α} : Disjoint f g ↔ ∃ s ∈ f, ∃ t ∈ g, Disjoint s t := by
-  simp only [disjoint_iff, ← empty_mem_iff_bot, mem_inf_iff, bot_eq_empty,
+  simp [disjoint_iff, ← empty_mem_iff_bot, mem_inf_iff, bot_eq_empty,
     @eq_comm _ ∅]
 
 theorem disjoint_of_disjoint_of_mem {f g : Filter α} {s t : Set α} (h : Disjoint s t) (hs : s ∈ f)
@@ -429,7 +429,7 @@ theorem NeBot.not_disjoint (hf : f.NeBot) (hs : s ∈ f) (ht : t ∈ f) : ¬Disj
   not_disjoint_self_iff.2 hf <| Filter.disjoint_iff.2 ⟨s, hs, t, ht, h⟩
 
 theorem inf_eq_bot_iff {f g : Filter α} : f ⊓ g = ⊥ ↔ ∃ U ∈ f, ∃ V ∈ g, U ∩ V = ∅ := by
-  simp only [← disjoint_iff, Filter.disjoint_iff, Set.disjoint_iff_inter_eq_empty]
+  simp [← disjoint_iff, Filter.disjoint_iff, Set.disjoint_iff_inter_eq_empty]
 
 /-- There is exactly one filter on an empty type. -/
 instance unique [IsEmpty α] : Unique (Filter α) where
@@ -475,7 +475,7 @@ theorem eq_iInf_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
 theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ i, p i ∧ s ∈ f i) : l = ⨅ (i) (_ : p i), f i := by
   rw [iInf_subtype']
-  exact eq_iInf_of_mem_iff_exists_mem fun {_} => by simp only [Subtype.exists, h, exists_prop]
+  exact eq_iInf_of_mem_iff_exists_mem fun {_} => by simp [Subtype.exists, h, exists_prop]
 
 theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : Nonempty ι] :
     (iInf f).sets = ⋃ i, (f i).sets :=
@@ -496,7 +496,7 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
 
 theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f) [Nonempty ι] (s) :
     s ∈ iInf f ↔ ∃ i, s ∈ f i := by
-  simp only [← Filter.mem_sets, iInf_sets_eq h, mem_iUnion]
+  simp [← Filter.mem_sets, iInf_sets_eq h, mem_iUnion]
 
 theorem mem_biInf_of_directed {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻¹'o (· ≥ ·)) s)
     (ne : s.Nonempty) {t : Set α} : (t ∈ ⨅ i ∈ s, f i) ↔ ∃ i ∈ s, t ∈ f i := by
@@ -509,11 +509,11 @@ theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻
 
 @[simp]
 theorem sup_join {f₁ f₂ : Filter (Filter α)} : join f₁ ⊔ join f₂ = join (f₁ ⊔ f₂) :=
-  Filter.ext fun x => by simp only [mem_sup, mem_join]
+  Filter.ext fun x => by simp [mem_sup, mem_join]
 
 @[simp]
 theorem iSup_join {ι : Sort w} {f : ι → Filter (Filter α)} : ⨆ x, join (f x) = join (⨆ x, f x) :=
-  Filter.ext fun x => by simp only [mem_iSup, mem_join]
+  Filter.ext fun x => by simp [mem_iSup, mem_join]
 
 
 /-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
@@ -572,11 +572,11 @@ theorem inf_principal {s t : Set α} : 𝓟 s ⊓ 𝓟 t = 𝓟 (s ∩ t) :=
 
 @[simp]
 theorem sup_principal {s t : Set α} : 𝓟 s ⊔ 𝓟 t = 𝓟 (s ∪ t) :=
-  Filter.ext fun u => by simp only [union_subset_iff, mem_sup, mem_principal]
+  Filter.ext fun u => by simp [union_subset_iff, mem_sup, mem_principal]
 
 @[simp]
 theorem iSup_principal {ι : Sort w} {s : ι → Set α} : ⨆ x, 𝓟 (s x) = 𝓟 (⋃ i, s i) :=
-  Filter.ext fun x => by simp only [mem_iSup, mem_principal, iUnion_subset_iff]
+  Filter.ext fun x => by simp [mem_iSup, mem_principal, iUnion_subset_iff]
 
 @[simp]
 theorem principal_sdiff_principal {s t : Set α} : 𝓟 s \ 𝓟 t = 𝓟 (s \ t) :=
@@ -601,19 +601,19 @@ theorem isCompl_principal (s : Set α) : IsCompl (𝓟 s) (𝓟 sᶜ) :=
     rw [sup_principal, union_compl_self, principal_univ]
 
 theorem mem_inf_principal' {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t ↔ tᶜ ∪ s ∈ f := by
-  simp only [← le_principal_iff, (isCompl_principal s).le_left_iff, disjoint_assoc, inf_principal,
+  simp [← le_principal_iff, (isCompl_principal s).le_left_iff, disjoint_assoc, inf_principal,
     ← (isCompl_principal (t ∩ sᶜ)).le_right_iff, compl_inter, compl_compl]
 
 lemma mem_inf_principal {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t ↔ { x | x ∈ t → x ∈ s } ∈ f := by
-  simp only [mem_inf_principal', imp_iff_not_or, ofPred_or, compl_def, ofPred_mem_eq]
+  simp [mem_inf_principal', imp_iff_not_or, ofPred_or, compl_def, ofPred_mem_eq]
 
 lemma iSup_inf_principal (f : ι → Filter α) (s : Set α) : ⨆ i, f i ⊓ 𝓟 s = (⨆ i, f i) ⊓ 𝓟 s := by
   ext
-  simp only [mem_iSup, mem_inf_principal]
+  simp [mem_iSup, mem_inf_principal]
 
 theorem inf_principal_eq_bot {f : Filter α} {s : Set α} : f ⊓ 𝓟 s = ⊥ ↔ sᶜ ∈ f := by
   rw [← empty_mem_iff_bot, mem_inf_principal]
-  simp only [mem_empty_iff_false, imp_false, compl_def]
+  simp [mem_empty_iff_false, imp_false, compl_def]
 
 theorem mem_of_eq_bot {f : Filter α} {s : Set α} (h : f ⊓ 𝓟 sᶜ = ⊥) : s ∈ f := by
   rwa [inf_principal_eq_bot, compl_compl] at h
@@ -720,11 +720,11 @@ theorem eventually_or_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} 
 @[simp]
 theorem eventually_or_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
     (∀ᶠ x in f, p x ∨ q) ↔ (∀ᶠ x in f, p x) ∨ q := by
-  simp only [@or_comm _ q, eventually_or_distrib_left]
+  simp [@or_comm _ q, eventually_or_distrib_left]
 
 theorem eventually_imp_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
     (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x := by
-  simp only [imp_iff_not_or, eventually_or_distrib_left]
+  simp [imp_iff_not_or, eventually_or_distrib_left]
 
 @[simp]
 theorem eventually_bot {p : α → Prop} : ∀ᶠ x in ⊥, p x :=
@@ -829,7 +829,7 @@ theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filte
 
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
     (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x := by
-  simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _),
+  simp [frequently_iff_forall_eventually_exists_and, @and_comm (P _),
     Set.ofPred_bijective.surjective.forall, Filter.Eventually, mem_ofPred]
 
 @[simp, push]
@@ -838,7 +838,7 @@ theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x
 
 @[simp, push]
 theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, ¬p x := by
-  simp only [Filter.Frequently, not_not]
+  simp [Filter.Frequently, not_not]
 
 @[simp]
 theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _ in f, True) ↔ NeBot f := by
@@ -854,7 +854,7 @@ theorem frequently_const {f : Filter α} [NeBot f] {p : Prop} : (∃ᶠ _ in f, 
 @[simp]
 theorem frequently_or_distrib {f : Filter α} {p q : α → Prop} :
     (∃ᶠ x in f, p x ∨ q x) ↔ (∃ᶠ x in f, p x) ∨ ∃ᶠ x in f, q x := by
-  simp only [Filter.Frequently, ← not_and_or, not_or, eventually_and]
+  simp [Filter.Frequently, ← not_and_or, not_or, eventually_and]
 
 theorem frequently_or_distrib_left {f : Filter α} [NeBot f] {p : Prop} {q : α → Prop} :
     (∃ᶠ x in f, p ∨ q x) ↔ p ∨ ∃ᶠ x in f, q x := by simp
@@ -871,21 +871,21 @@ theorem frequently_imp_distrib_left {f : Filter α} [NeBot f] {p : Prop} {q : α
 
 theorem frequently_imp_distrib_right {f : Filter α} [NeBot f] {p : α → Prop} {q : Prop} :
     (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by
-  simp only [frequently_imp_distrib, frequently_const]
+  simp [frequently_imp_distrib, frequently_const]
 
 theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
     (∀ᶠ x in f, p x → q) ↔ (∃ᶠ x in f, p x) → q := by
-  simp only [imp_iff_not_or, eventually_or_distrib_right, not_frequently]
+  simp [imp_iff_not_or, eventually_or_distrib_right, not_frequently]
 
 @[simp]
 theorem frequently_and_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
     (∃ᶠ x in f, p ∧ q x) ↔ p ∧ ∃ᶠ x in f, q x := by
-  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, Classical.not_imp]
+  simp [Filter.Frequently, not_and, eventually_imp_distrib_left, Classical.not_imp]
 
 @[simp]
 theorem frequently_and_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
     (∃ᶠ x in f, p x ∧ q) ↔ (∃ᶠ x in f, p x) ∧ q := by
-  simp only [@and_comm _ q, frequently_and_distrib_left]
+  simp [@and_comm _ q, frequently_and_distrib_left]
 
 @[simp]
 theorem frequently_bot {p : α → Prop} : ¬∃ᶠ x in ⊥, p x := by simp
@@ -899,23 +899,23 @@ theorem frequently_principal {a : Set α} {p : α → Prop} : (∃ᶠ x in 𝓟 
 
 theorem frequently_inf_principal {f : Filter α} {s : Set α} {p : α → Prop} :
     (∃ᶠ x in f ⊓ 𝓟 s, p x) ↔ ∃ᶠ x in f, x ∈ s ∧ p x := by
-  simp only [Filter.Frequently, eventually_inf_principal, not_and]
+  simp [Filter.Frequently, eventually_inf_principal, not_and]
 
 alias ⟨Frequently.of_inf_principal, Frequently.inf_principal⟩ := frequently_inf_principal
 
 theorem frequently_sup {p : α → Prop} {f g : Filter α} :
     (∃ᶠ x in f ⊔ g, p x) ↔ (∃ᶠ x in f, p x) ∨ ∃ᶠ x in g, p x := by
-  simp only [Filter.Frequently, eventually_sup, not_and_or]
+  simp [Filter.Frequently, eventually_sup, not_and_or]
 
 @[simp]
 theorem frequently_sSup {p : α → Prop} {fs : Set (Filter α)} :
     (∃ᶠ x in sSup fs, p x) ↔ ∃ f ∈ fs, ∃ᶠ x in f, p x := by
-  simp only [Filter.Frequently, not_forall, eventually_sSup, exists_prop]
+  simp [Filter.Frequently, not_forall, eventually_sSup, exists_prop]
 
 @[simp]
 theorem frequently_iSup {p : α → Prop} {fs : β → Filter α} :
     (∃ᶠ x in ⨆ b, fs b, p x) ↔ ∃ b, ∃ᶠ x in fs b, p x := by
-  simp only [Filter.Frequently, eventually_iSup, not_forall]
+  simp [Filter.Frequently, eventually_iSup, not_forall]
 
 theorem Eventually.choice {r : α → β → Prop} {l : Filter α} [l.NeBot] (h : ∀ᶠ x in l, ∃ y, r x y) :
     ∃ f : α → β, ∀ᶠ x in l, r x (f x) := by
@@ -1024,7 +1024,7 @@ theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : �
   hf.mp <|
     hg.mono <| by
       intros
-      simp only [*]
+      simp [*]
 
 /-- See `EventuallyEq.comp_tendsto` in Mathlib.Order.Filter.Tendsto for a similar statement w.r.t.
 composition on the right. -/
@@ -1254,7 +1254,7 @@ theorem EventuallyLE.antisymm [PartialOrder β] {l : Filter α} {f g : α → β
 @[to_dual none]
 theorem eventuallyLE_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α → β} :
     f =ᶠ[l] g ↔ f ≤ᶠ[l] g ∧ g ≤ᶠ[l] f := by
-  simp only [EventuallyEq, EventuallyLE, le_antisymm_iff, eventually_and]
+  simp [EventuallyEq, EventuallyLE, le_antisymm_iff, eventually_and]
 
 @[to_dual ge_iff_eq']
 theorem EventuallyLE.ge_iff_eq [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
@@ -1344,7 +1344,7 @@ alias set_eventuallyLE_iff_mem_inf_principal := eventuallySubset_iff_mem_inf_pri
 theorem eventuallySubset_iff_inf_principal_le {s t : Set α} {l : Filter α} :
     s ≤ᶠ[l] t ↔ l ⊓ 𝓟 s ≤ l ⊓ 𝓟 t :=
   eventuallySubset_iff_mem_inf_principal.trans <| by
-    simp only [le_inf_iff, inf_le_left, true_and, le_principal_iff]
+    simp [le_inf_iff, inf_le_left, true_and, le_principal_iff]
 
 @[deprecated (since := "2026-08-14")]
 alias set_eventuallyLE_iff_inf_principal_le := eventuallySubset_iff_inf_principal_le
@@ -1355,7 +1355,7 @@ theorem eventuallySubset_antisymm_iff {s t : Set α} {l : Filter α} :
 
 theorem eventuallyEqSet_iff_inf_principal {s t : Set α} {l : Filter α} :
     s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
-  simp only [eventuallySubset_antisymm_iff, le_antisymm_iff, eventuallySubset_iff_inf_principal_le]
+  simp [eventuallySubset_antisymm_iff, le_antisymm_iff, eventuallySubset_iff_inf_principal_le]
 
 @[deprecated (since := "2026-08-14")]
 alias set_eventuallyEq_iff_inf_principal := eventuallyEqSet_iff_inf_principal

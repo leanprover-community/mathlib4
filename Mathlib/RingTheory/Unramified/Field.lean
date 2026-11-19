@@ -103,7 +103,7 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     conv_rhs => rw [← mul_one k, ← smul_eq_mul, Function.comp_apply, map_smul,
       LinearMap.map_smul_of_tower, map_one, hf₄, ← algebraMap_eq_smul_one]
   rw [this]
-  simp only [Function.comp_apply, AlgEquiv.apply_symm_apply, algebraMap_eq_smul_one,
+  simp [Function.comp_apply, AlgEquiv.apply_symm_apply, algebraMap_eq_smul_one,
     map_smul, hf₄, smul_eq_mul, mul_one]
 
 theorem isField_of_isAlgClosed_of_isLocalRing
@@ -187,7 +187,7 @@ theorem range_eq_top_of_isPurelyInseparable
       exact ⟨1, map_one _⟩
     have := DFunLike.congr_fun
       congr(((Basis.extend h).tensorProduct (Basis.extend h)).repr $H) (a, b)
-    simp only [Basis.tensorProduct_repr_tmul_apply, ← ha, ← hb, Basis.repr_self, smul_eq_mul,
+    simp [Basis.tensorProduct_repr_tmul_apply, ← ha, ← hb, Basis.repr_self, smul_eq_mul,
       Finsupp.single_apply, e, Ne.symm e, ↓reduceIte, mul_one, mul_zero, one_ne_zero] at this
   · rw [LinearIndependent.pair_iff] at h'
     simp only [not_forall, not_and, exists_prop] at h'

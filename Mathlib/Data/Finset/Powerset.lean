@@ -239,7 +239,7 @@ lemma card_filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : �
     ((congrArg (· \ s) hab).trans
       (union_sdiff_cancel_right
         (disjoint_of_subset_left (mem_powersetCard.mp hb).1 disjoint_sdiff_self_left)))
-  simp only [filter_powersetCard_subset s t n hst hsn, card_image_of_injOn hinj,
+  simp [filter_powersetCard_subset s t n hst hsn, card_image_of_injOn hinj,
              card_powersetCard, card_sdiff_of_subset hst]
 
 @[simp]

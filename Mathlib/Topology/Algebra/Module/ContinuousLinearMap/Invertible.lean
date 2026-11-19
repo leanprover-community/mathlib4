@@ -140,7 +140,7 @@ lemma IsInvertible.inverse_comp_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M
 
 lemma IsInvertible.inverse_comp_apply_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂} {v : M₃}
     (hg : g.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
-  simp only [hg.inverse_comp_of_left, comp_apply]
+  simp [hg.inverse_comp_of_left, comp_apply]
 
 lemma IsInvertible.inverse_comp_of_right {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
     (hf : f.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
@@ -149,7 +149,7 @@ lemma IsInvertible.inverse_comp_of_right {g : M₂ →L[R] M₃} {f : M →L[R] 
 
 lemma IsInvertible.inverse_comp_apply_of_right {g : M₂ →L[R] M₃} {f : M →L[R] M₂} {v : M₃}
     (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
-  simp only [hf.inverse_comp_of_right, comp_apply]
+  simp [hf.inverse_comp_of_right, comp_apply]
 
 @[simp]
 theorem ringInverse_equiv (e : M ≃L[R] M) : (↑e)⁻¹ʳ = inverse (e : M →L[R] M) := by

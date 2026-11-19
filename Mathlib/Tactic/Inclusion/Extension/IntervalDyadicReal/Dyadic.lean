@@ -56,13 +56,13 @@ theorem shiftLeft_add_int : d <<< (a + b) = d <<< a <<< b := by
   induction d <;> simp [Int.sub_sub]
 
 theorem shiftLeft_add_nat : d <<< (m + n) = d <<< m <<< n := by
-  simp only [← shiftLeft_natCast, Nat.cast_add, shiftLeft_add_int]
+  simp [← shiftLeft_natCast, Nat.cast_add, shiftLeft_add_int]
 
 theorem shiftRight_add_int : d >>> (a + b) = d >>> a >>> b := by
   induction d <;> simp [Int.add_assoc]
 
 theorem shiftRight_add_nat : d >>> (m + n) = d >>> m >>> n := by
-  simp only [← shiftRight_natCast, Nat.cast_add, shiftRight_add_int]
+  simp [← shiftRight_natCast, Nat.cast_add, shiftRight_add_int]
 
 @[simp] theorem shiftLeft_neg : d <<< (-a) = d >>> a := by
   induction d <;> simp

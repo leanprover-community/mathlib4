@@ -427,7 +427,7 @@ lemma iff_exact_iff_lTensor_exact :
       {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
       (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M)) := by
-  simp only [iff_exact_iff_rTensor_exact, LinearMap.rTensor_exact_iff_lTensor_exact]
+  simp [iff_exact_iff_rTensor_exact, LinearMap.rTensor_exact_iff_lTensor_exact]
 
 end fixed_universe
 

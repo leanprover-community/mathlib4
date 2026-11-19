@@ -120,12 +120,12 @@ namespace JointlyFaithful
 lemma jointlyReflectMonomorphisms (h : JointlyFaithful F) :
     JointlyReflectMonomorphisms F where
   mono {X Y} f _ := ⟨fun {Z} g₁ g₂ hg ↦ h.map_injective (fun i ↦ by
-    simp only [← cancel_mono ((F i).map f), ← Functor.map_comp, hg])⟩
+    simp [← cancel_mono ((F i).map f), ← Functor.map_comp, hg])⟩
 
 lemma jointlyReflectEpimorphisms (h : JointlyFaithful F) :
     JointlyReflectEpimorphisms F where
   epi {X Y} f _ := ⟨fun {Z} g₁ g₂ hg ↦ h.map_injective (fun i ↦ by
-    simp only [← cancel_epi ((F i).map f), ← Functor.map_comp, hg])⟩
+    simp [← cancel_epi ((F i).map f), ← Functor.map_comp, hg])⟩
 
 lemma jointlyReflectsIsomorphisms [Balanced C] (h : JointlyFaithful F) :
     JointlyReflectIsomorphisms F where

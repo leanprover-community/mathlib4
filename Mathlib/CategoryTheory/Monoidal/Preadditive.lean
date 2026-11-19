@@ -96,12 +96,12 @@ theorem monoidalPreadditive_of_faithful {D} [Category* D] [Preadditive D] [Monoi
     whiskerLeft_add := by
       intros
       apply F.map_injective
-      simp only [Functor.Monoidal.map_whiskerLeft, Functor.map_add, Preadditive.comp_add,
+      simp [Functor.Monoidal.map_whiskerLeft, Functor.map_add, Preadditive.comp_add,
         Preadditive.add_comp, MonoidalPreadditive.whiskerLeft_add]
     add_whiskerRight := by
       intros
       apply F.map_injective
-      simp only [Functor.Monoidal.map_whiskerRight, Functor.map_add, Preadditive.comp_add,
+      simp [Functor.Monoidal.map_whiskerRight, Functor.map_add, Preadditive.comp_add,
         Preadditive.add_comp, MonoidalPreadditive.add_whiskerRight] }
 
 theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) :
@@ -114,11 +114,11 @@ theorem sum_whiskerRight {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ 
 
 theorem tensor_sum {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (f ⊗ₘ ∑ j ∈ s, g j) = ∑ j ∈ s, f ⊗ₘ g j := by
-  simp only [tensorHom_def, whiskerLeft_sum, Preadditive.comp_sum]
+  simp [tensorHom_def, whiskerLeft_sum, Preadditive.comp_sum]
 
 theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (∑ j ∈ s, g j) ⊗ₘ f = ∑ j ∈ s, g j ⊗ₘ f := by
-  simp only [tensorHom_def, sum_whiskerRight, Preadditive.sum_comp]
+  simp [tensorHom_def, sum_whiskerRight, Preadditive.sum_comp]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -132,7 +132,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
-            simp only [tensorHom_comp_tensorHom, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
+            simp [tensorHom_comp_tensorHom, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
               IsBilimit.total i])⟩ } }
 
 set_option backward.defeqAttrib.useBackward true in
@@ -144,7 +144,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
-            simp only [tensorHom_comp_tensorHom, Category.comp_id, ← sum_tensor, ← id_tensorHom_id,
+            simp [tensorHom_comp_tensorHom, Category.comp_id, ← sum_tensor, ← id_tensorHom_id,
                IsBilimit.total i])⟩ } }
 
 variable [HasFiniteBiproducts C]

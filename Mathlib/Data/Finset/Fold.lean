@@ -60,12 +60,12 @@ theorem fold_singleton : ({a} : Finset α).fold op b f = f a * b :=
 
 @[simp]
 theorem fold_map {g : γ ↪ α} {s : Finset γ} : (s.map g).fold op b f = s.fold op b (f ∘ g) := by
-  simp only [fold, map, Multiset.map_map]
+  simp [fold, map, Multiset.map_map]
 
 @[simp]
 theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
     (H : Set.InjOn g s) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
-  simp only [fold, image_val_of_injOn H, Multiset.map_map]
+  simp [fold, image_val_of_injOn H, Multiset.map_map]
 
 @[congr]
 theorem fold_congr {g : α → β} (H : ∀ x ∈ s, f x = g x) : s.fold op b f = s.fold op b g := by
@@ -73,7 +73,7 @@ theorem fold_congr {g : α → β} (H : ∀ x ∈ s, f x = g x) : s.fold op b f 
 
 theorem fold_op_distrib {f g : α → β} {b₁ b₂ : β} :
     (s.fold op (b₁ * b₂) fun x => f x * g x) = s.fold op b₁ f * s.fold op b₂ g := by
-  simp only [fold, fold_distrib]
+  simp [fold, fold_distrib]
 
 theorem fold_const [hd : Decidable (s = ∅)] (c : β) (h : op c (op b c) = op b c) :
     Finset.fold op b (fun _ => c) s = if s = ∅ then b else op b c := by
@@ -91,7 +91,7 @@ theorem fold_hom {op' : γ → γ → γ} [Std.Commutative op'] [Std.Associative
     (hm : ∀ x y, m (op x y) = op' (m x) (m y)) :
     (s.fold op' (m b) fun x => m (f x)) = m (s.fold op b f) := by
   rw [fold, fold, ← Multiset.fold_hom op hm, Multiset.map_map]
-  simp only [Function.comp_apply]
+  simp [Function.comp_apply]
 
 theorem fold_disjUnion {s₁ s₂ : Finset α} {b₁ b₂ : β} (h) :
     (s₁.disjUnion s₂ h).fold op (b₁ * b₂) f = s₁.fold op b₁ f * s₂.fold op b₂ f :=
@@ -118,7 +118,7 @@ theorem fold_image_idem [DecidableEq α] {g : γ → α} {s : Finset γ} [hi : S
   | cons x xs hx ih =>
     have := Classical.decEq γ
     rw [fold_cons, cons_eq_insert, image_insert, fold_insert_idem, ih]
-    simp only [Function.comp_apply]
+    simp [Function.comp_apply]
 
 /-- A stronger version of `Finset.fold_ite`, but relies on
 an explicit proof of idempotency on the seed element, rather
@@ -168,7 +168,7 @@ theorem fold_op_rel_iff_or {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y
 theorem fold_union_empty_singleton [DecidableEq α] (s : Finset α) :
     Finset.fold (· ∪ ·) ∅ singleton s = s := by
   induction s using Finset.induction_on with
-  | empty => simp only [fold_empty]
+  | empty => simp [fold_empty]
   | insert a s has ih => rw [fold_insert has, ih, insert_eq]
 
 theorem fold_sup_bot_singleton [DecidableEq α] (s : Finset α) :

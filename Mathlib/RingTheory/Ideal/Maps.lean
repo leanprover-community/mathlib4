@@ -49,7 +49,7 @@ def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
   add_mem' {x y} hx hy := by
     simp only [Set.mem_preimage, SetLike.mem_coe, map_add f] at hx hy ⊢
     exact add_mem hx hy
-  zero_mem' := by simp only [Set.mem_preimage, map_zero, SetLike.mem_coe, Submodule.zero_mem]
+  zero_mem' := by simp [Set.mem_preimage, map_zero, SetLike.mem_coe, Submodule.zero_mem]
   smul_mem' c x hx := by
     simp only [smul_eq_mul, Set.mem_preimage, map_mul, SetLike.mem_coe] at *
     exact mul_mem_left I _ hx
@@ -668,7 +668,7 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
 def mapHom : Ideal R →+* Ideal S where
   toFun := map f
   map_mul' := Ideal.map_mul f
-  map_one' := by simp only [one_eq_top, Ideal.map_top f]
+  map_one' := by simp [one_eq_top, Ideal.map_top f]
   map_add' I J := Ideal.map_sup f I J
   map_zero' := Ideal.map_bot
 
@@ -904,7 +904,7 @@ lemma Module.annihilator_eq_bot {R M} [Ring R] [AddCommGroup M] [Module R M] :
   refine ⟨fun H ↦ ⟨fun {r s} H' ↦ ?_⟩, fun ⟨H⟩ {a} ha ↦ ?_⟩
   · rw [← sub_eq_zero]
     exact H (Module.mem_annihilator (r := r - s).mpr
-      (by simp only [sub_smul, H', sub_self, implies_true]))
+      (by simp [sub_smul, H', sub_self, implies_true]))
   · exact @H a 0 (by simp [Module.mem_annihilator.mp ha])
 
 theorem Module.annihilator_eq_top_iff : annihilator R M = ⊤ ↔ Subsingleton M :=
@@ -1187,7 +1187,7 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C)
       rw [← map_mul g, ← sub_eq_zero, ← map_sub g, ← mem_ker]
       apply hg
       rw [mem_ker, map_sub f, sub_eq_zero, map_mul f]
-      simp only [hf _] }
+      simp [hf _] }
 
 @[simp]
 theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : A →+* C)
@@ -1219,7 +1219,7 @@ def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
   invFun φ := ⟨φ.comp f, fun x hx => mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
-    simp only [comp_apply, liftOfRightInverseAux_comp_apply]
+    simp [comp_apply, liftOfRightInverseAux_comp_apply]
   right_inv φ := by
     ext b
     simp [liftOfRightInverseAux, hf b]

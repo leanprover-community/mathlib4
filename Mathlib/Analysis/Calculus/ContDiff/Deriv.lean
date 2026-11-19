@@ -92,7 +92,7 @@ protected lemma ContDiffWithinAt.derivWithin {x : 𝕜}
 theorem contDiff_succ_iff_deriv :
     ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧ (n = ω → AnalyticOn 𝕜 f univ) ∧
       ContDiff 𝕜 n (deriv f) := by
-  simp only [← contDiffOn_univ, contDiffOn_succ_iff_deriv_of_isOpen, isOpen_univ,
+  simp [← contDiffOn_univ, contDiffOn_succ_iff_deriv_of_isOpen, isOpen_univ,
     differentiableOn_univ]
 
 theorem contDiff_one_iff_deriv :

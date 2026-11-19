@@ -117,7 +117,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
       · simp only [mem_filter, mem_product, mem_range, mem_sigma, exists_prop, Sigma.exists,
           and_imp, Prod.forall, Prod.mk.injEq]
         exact fun x y _ _ _ ↦ ⟨x + y, x, by lia⟩
-      · simp only [mem_sigma, mem_range, implies_true]
+      · simp [mem_sigma, mem_range, implies_true]
   have z₁ : ∑ ij ∈ R2N ×ˢ R2N with ¬ ij.1 + ij.2 ≤ 2 * N,
       ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
     sum_eq_zero fun i hi ↦ by
@@ -161,8 +161,8 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
     · rw [sum_sigma']
       apply sum_bijective (fun ⟨i, j⟩ ↦ (i, j))
       · exact ⟨fun ⟨i, j⟩ ⟨i', j'⟩ h ↦ by cases h; rfl, fun ⟨i, j⟩ ↦ ⟨⟨i, j⟩, rfl⟩⟩
-      · simp only [mem_sigma, mem_product, implies_true]
-      · simp only [implies_true]
+      · simp [mem_sigma, mem_product, implies_true]
+      · simp [implies_true]
   rwa [s₂.symm] at s₁
 
 @[simp]

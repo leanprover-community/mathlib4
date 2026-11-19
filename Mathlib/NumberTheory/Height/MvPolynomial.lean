@@ -345,7 +345,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
       gcongr
       · exact HH₁ v.val
       · grw [← HH₂, ← le_max_left]
-    · exact mul_nonneg (iSup_nonneg fun _ ↦ by positivity) <| by simp only [HH₁]
+    · exact mul_nonneg (iSup_nonneg fun _ ↦ by positivity) <| by simp [HH₁]
 
 /-- Let `K` be a field with an admissible family of absolute values (giving rise
 to a multiplicative height).

@@ -212,7 +212,7 @@ lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
   have eq₂ := liftAux_map hF α s f' (g ≫ b) ⟨_, _, hg⟩ (𝟙 _) (by simp [w])
   dsimp at eq₁ eq₂
   simp only [Functor.map_comp, Functor.map_id] at eq₁ eq₂
-  simp only [Category.assoc, eq₁, eq₂]
+  simp [Category.assoc, eq₁, eq₂]
 
 variable {α}
 
@@ -328,7 +328,7 @@ lemma sheafAdjunctionCocontinuous_unit_app_hom (F : Sheaf K A) :
   dsimp
   erw [Functor.map_id]
   change _ ≫ 𝟙 _ ≫ 𝟙 _ = _
-  simp only [Category.comp_id]
+  simp [Category.comp_id]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

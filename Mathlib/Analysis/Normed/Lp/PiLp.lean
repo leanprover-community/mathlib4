@@ -294,9 +294,9 @@ protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp only [edist_eq_card, edist_comm]
-  · simp only [edist_eq_iSup, edist_comm]
-  · simp only [edist_eq_sum h, edist_comm]
+  · simp [edist_eq_card, edist_comm]
+  · simp [edist_eq_iSup, edist_comm]
+  · simp [edist_eq_sum h, edist_comm]
 
 end EDistProp
 
@@ -401,7 +401,7 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
     rcases p.dichotomy with (rfl | hp)
     · simp only [edist_eq_iSup]
       cases isEmpty_or_nonempty ι
-      · simp only [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
+      · simp [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
       -- Porting note: `le_iSup` needed some help
       refine
         iSup_le fun i => (edist_triangle _ (g i) _).trans <| add_le_add
@@ -684,12 +684,12 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
     SeminormedAddCommGroup (PiLp p β) where
   dist_eq := fun x y => by
     rcases p.dichotomy with (rfl | h)
-    · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, add_apply, neg_apply, norm_neg_add]
+    · simp [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, add_apply, neg_apply, norm_neg_add]
     · have : p ≠ ∞ := by
         intro hp
         rw [hp, ENNReal.toReal_top] at h
         linarith
-      simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
+      simp [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
         dist_eq_norm, add_apply, neg_apply, norm_neg_add]
 
 omit [Fintype ι] in
@@ -761,7 +761,7 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
-  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
+  simp [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
     norm_eq_sum this]
 
 section L1
@@ -938,7 +938,7 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
     · simp_rw [PiLp.norm_toLp, Pi.norm_def, LinearEquiv.piCongrRight_apply,
         LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnNorm_map]
     · have : 0 < p.toReal := zero_lt_one.trans_le <| by norm_cast
-      simp only [PiLp.norm_eq_sum this, LinearEquiv.piCongrRight_apply,
+      simp [PiLp.norm_eq_sum this, LinearEquiv.piCongrRight_apply,
         LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.norm_map, one_div]
 
 @[simp]
@@ -1105,7 +1105,7 @@ lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
 @[simp]
 lemma edist_single_same (i : ι) (b₁ b₂ : β i) :
     edist (single p i b₁) (single p i b₂) = edist b₁ b₂ := by
-  simp only [edist_nndist, nndist_single_same p β i b₁ b₂]
+  simp [edist_nndist, nndist_single_same p β i b₁ b₂]
 
 end Single
 
@@ -1132,7 +1132,7 @@ lemma nnNorm_toLp_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β)
     ‖toLp p (Function.const ι b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
   rcases em <| p = ∞ with (rfl | hp)
-  · simp only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
+  · simp [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
       one_mul, nnNorm_eq_ciSup, Function.const_apply, ciSup_const]
   · exact nnNorm_toLp_const hp b
 

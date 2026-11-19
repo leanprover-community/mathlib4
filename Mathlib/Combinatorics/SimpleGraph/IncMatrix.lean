@@ -91,7 +91,7 @@ theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix
 variable [Nontrivial R]
 
 theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenceSet a := by
-  simp only [incMatrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
+  simp [incMatrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
 
 theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
   convert! one_ne_zero.ite_eq_left_iff
@@ -171,7 +171,7 @@ theorem incMatrix_mul_transpose [G.LocallyFinite] :
   · subst b
     exact incMatrix_mul_transpose_diag (R := R) G
   · exact G.incMatrix_mul_transpose_apply_of_adj h'
-  · simp only [Matrix.mul_apply, Matrix.transpose_apply,
+  · simp [Matrix.mul_apply, Matrix.transpose_apply,
       G.incMatrix_apply_mul_incMatrix_apply_of_not_adj h h', sum_const_zero]
 
 end Semiring

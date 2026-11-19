@@ -442,7 +442,7 @@ def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     { toFun := fun g => ⟨kernel.ι f g, congr($(kernel.condition f) g)⟩
       map_zero' := by
         refine Subtype.ext ?_
-        simp only [map_zero, ZeroMemClass.coe_zero]
+        simp [map_zero, ZeroMemClass.coe_zero]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         simp }

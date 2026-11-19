@@ -137,7 +137,7 @@ theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
   delta minpoly; split_ifs with hx
   · refine le_of_not_gt <| degree_lt_wf.not_lt_min _ ?_
     exact ⟨pmonic, hp⟩
-  · simp only [degree_zero, bot_le]
+  · simp [degree_zero, bot_le]
 
 theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
     (hl : ∀ q : A[X], degree q < degree p → q = 0 ∨ Polynomial.aeval x q ≠ 0) :

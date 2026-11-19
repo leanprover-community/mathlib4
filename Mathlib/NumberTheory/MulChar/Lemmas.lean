@@ -77,7 +77,7 @@ lemma star_eq_inv (χ : MulChar R ℂ) : star χ = χ⁻¹ := by
   exact (inv_eq_conj <| norm_eq_one_of_mem_rootsOfUnity <| χ.apply_mem_rootsOfUnity a).symm
 
 lemma star_apply' (χ : MulChar R ℂ) (a : R) : star (χ a) = χ⁻¹ a := by
-  simp only [RCLike.star_def, ← star_eq_inv, star_apply]
+  simp [RCLike.star_def, ← star_eq_inv, star_apply]
 
 end Ring
 
@@ -104,7 +104,7 @@ noncomputable def ofRootOfUnity {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Fintype.c
 lemma ofRootOfUnity_spec {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Fintype.card Mˣ) R)
     {g : Mˣ} (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     ofRootOfUnity hζ hg g = ζ := by
-  simp only [ofRootOfUnity, ofUnitHom_eq, equivToUnitHom_symm_coe,
+  simp [ofRootOfUnity, ofUnitHom_eq, equivToUnitHom_symm_coe,
     monoidHomOfForallMemZpowers_apply_gen]
 
 variable (M R) in
@@ -114,16 +114,16 @@ noncomputable def equiv_rootsOfUnity [inst_cyc : IsCyclic Mˣ] :
     MulChar M R ≃* rootsOfUnity (Fintype.card Mˣ) R where
   toFun χ :=
     ⟨χ.toUnitHom <| Classical.choose inst_cyc.exists_generator, by
-      simp only [toUnitHom_eq, mem_rootsOfUnity, ← map_pow, pow_card_eq_one, map_one]⟩
+      simp [toUnitHom_eq, mem_rootsOfUnity, ← map_pow, pow_card_eq_one, map_one]⟩
   invFun ζ := ofRootOfUnity ζ.prop <| Classical.choose_spec inst_cyc.exists_generator
   left_inv χ := by
-    simp only [toUnitHom_eq, eq_iff <| Classical.choose_spec inst_cyc.exists_generator,
+    simp [toUnitHom_eq, eq_iff <| Classical.choose_spec inst_cyc.exists_generator,
       ofRootOfUnity_spec, coe_equivToUnitHom]
   right_inv ζ := by
     ext
-    simp only [toUnitHom_eq, coe_equivToUnitHom, ofRootOfUnity_spec]
+    simp [toUnitHom_eq, coe_equivToUnitHom, ofRootOfUnity_spec]
   map_mul' x y := by
-    simp only [toUnitHom_eq, equivToUnitHom_mul_apply, MulMemClass.mk_mul_mk]
+    simp [toUnitHom_eq, equivToUnitHom_mul_apply, MulMemClass.mk_mul_mk]
 
 end IsCyclic
 
@@ -187,7 +187,7 @@ lemma apply_mem_rootsOfUnity_orderOf (χ : MulChar F R) {a : F} (ha : a ≠ 0) :
   refine ⟨hu.unit, ?_, hu.unit_spec⟩
   rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one,
     IsUnit.unit_spec, ← χ.pow_apply' χ.orderOf_pos.ne', pow_orderOf_eq_one,
-    show a = (isUnit_iff_ne_zero.mpr ha).unit by simp only [IsUnit.unit_spec],
+    show a = (isUnit_iff_ne_zero.mpr ha).unit by simp [IsUnit.unit_spec],
     MulChar.one_apply_coe]
 
 /-- The non-zero values of a multiplicative character `χ` such that `χ^n = 1`

@@ -422,7 +422,7 @@ noncomputable def coeq₃Hom {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : j₂ ⟶ 
 
 theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
     f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h := by
-  simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
+  simp [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
@@ -431,7 +431,7 @@ theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
   slice_lhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
   slice_rhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
   slice_lhs 1 3 => rw [← Category.assoc, coeq_condition _ _]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 theorem coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
   Eq.trans (coeq₃_condition₁ f g h) (coeq₃_condition₂ f g h)
@@ -462,7 +462,7 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶
   obtain ⟨t, k₁t, k₂t, ht⟩ := span f₁ g₁
   obtain ⟨s, ts, hs⟩ := IsFilteredOrEmpty.cocone_maps (f₂ ≫ k₁t) (g₂ ≫ k₂t)
   simp_rw [Category.assoc] at hs
-  exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by simp only [← Category.assoc, ht], hs⟩
+  exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by simp [← Category.assoc, ht], hs⟩
 
 /-- Given a "crown" of morphisms
 ```
@@ -550,8 +550,8 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
       f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β := by
   obtain ⟨l', k₁l, k₂l, hl⟩ := span f₂ f₃
   obtain ⟨s, ls, l's, hs₁, hs₂⟩ := bowtie g₁ (f₁ ≫ k₁l) g₂ (f₄ ≫ k₂l)
-  refine ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, ?_, by simp only [← Category.assoc, hl], ?_⟩ <;>
-    simp only [hs₁, hs₂, Category.assoc]
+  refine ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, ?_, by simp [← Category.assoc, hl], ?_⟩ <;>
+    simp [hs₁, hs₂, Category.assoc]
 
 lemma wideSpan {I : Type*} [Finite I] {i : C} {j : I → C} (f : ∀ x, i ⟶ j x) :
     ∃ k fik, ∃ g : ∀ x, j x ⟶ k, ∀ x, f x ≫ g x = fik := by
@@ -701,8 +701,8 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : k₁ ⟶ j₁) (g₁ : k₂ ⟶
     ∃ (s : C) (α : s ⟶ k₁) (β : s ⟶ k₂), α ≫ f₁ = β ≫ g₁ ∧ α ≫ f₂ = β ≫ g₂ := by
   obtain ⟨t, k₁t, k₂t, ht⟩ := cospan f₁ g₁
   obtain ⟨s, ts, hs⟩ := IsCofilteredOrEmpty.cone_maps (k₁t ≫ f₂) (k₂t ≫ g₂)
-  exact ⟨s, ts ≫ k₁t, ts ≫ k₂t, by simp only [Category.assoc, ht],
-    by simp only [Category.assoc, hs]⟩
+  exact ⟨s, ts ≫ k₁t, ts ≫ k₂t, by simp [Category.assoc, ht],
+    by simp [Category.assoc, hs]⟩
 
 end AllowEmpty
 

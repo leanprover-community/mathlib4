@@ -499,7 +499,7 @@ theorem exists_contMDiffMap_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace 
   refine
     ⟨⟨_, g.contMDiff_sum.of_le (by simp)⟩, fun x hx => ?_, fun x => g.sum_eq_one, fun x =>
       ⟨g.sum_nonneg x, g.sum_le_one x⟩⟩
-  suffices ∀ i, g i x = 0 by simp only [this, ContMDiffMap.coeFn_mk, finsum_zero, Pi.zero_apply]
+  suffices ∀ i, g i x = 0 by simp [this, ContMDiffMap.coeFn_mk, finsum_zero, Pi.zero_apply]
   refine fun i => f.toSmoothPartitionOfUnity_zero_of_zero ?_
   exact notMem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
 
@@ -542,8 +542,8 @@ def single (i : ι) (s : Set M) : SmoothPartitionOfUnity ι I M s :=
   (BumpCovering.single i s).toSmoothPartitionOfUnity fun j => by
     classical
     rcases eq_or_ne j i with (rfl | h)
-    · simp only [contMDiff_one, ContinuousMap.coe_one, BumpCovering.coe_single, Pi.single_eq_same]
-    · simp only [contMDiff_zero, BumpCovering.coe_single, Pi.single_eq_of_ne h,
+    · simp [contMDiff_one, ContinuousMap.coe_one, BumpCovering.coe_single, Pi.single_eq_same]
+    · simp [contMDiff_zero, BumpCovering.coe_single, Pi.single_eq_of_ne h,
         ContinuousMap.coe_zero]
 
 instance [Inhabited ι] (s : Set M) : Inhabited (SmoothPartitionOfUnity ι I M s) :=
@@ -697,7 +697,7 @@ lemma IsOpen.exists_contMDiff_support_eq_aux {s : Set H} (hs : IsOpen s) :
   rcases h's.exists_contDiff_support_eq with ⟨f, f_supp, f_diff, f_range⟩
   refine ⟨f ∘ I, ?_, ?_, ?_⟩
   · rw [support_comp_eq_preimage, f_supp, ← preimage_comp]
-    simp only [ModelWithCorners.symm_comp_self, preimage_id_eq, id_eq]
+    simp [ModelWithCorners.symm_comp_self, preimage_id_eq, id_eq]
   · exact f_diff.comp_contMDiff I.contMDiff
   · exact Subset.trans (range_comp_subset_range _ _) f_range
 
@@ -732,7 +732,7 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
     · apply finsum_eq_zero_of_forall_eq_zero
       intro c
       by_cases Hx : x ∈ tsupport (f c)
-      · suffices g c (chartAt H c x) = 0 by simp only [this, mul_zero]
+      · suffices g c (chartAt H c x) = 0 by simp [this, mul_zero]
         rw [← notMem_support, g_supp, ← mem_preimage, preimage_inter]
         contrapose hx
         simp only [mem_inter_iff, mem_preimage, (chartAt H c).left_inv (hf c Hx)] at hx
@@ -778,7 +778,7 @@ theorem exists_contMDiff_support_eq_eq_one_iff
     simpa only [le_add_iff_nonneg_right] using g_pos x
   -- show that the support is `s`
   · have B : support (fun x ↦ f x + g x) = univ := eq_univ_of_forall (fun x ↦ (A x).ne')
-    simp only [support_div, f_supp, B, inter_univ]
+    simp [support_div, f_supp, B, inter_univ]
   -- show that the function equals one exactly on `t`
   · intro x
     simp [div_eq_one_iff_eq (A x).ne', left_eq_add, ← notMem_support, g_supp]

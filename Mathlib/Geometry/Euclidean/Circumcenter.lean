@@ -146,7 +146,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
       constructor
       · simp_rw [hi default, Set.singleton_subset_iff]
-        exact ⟨⟨⟩, by simp only [Metric.sphere_zero, Set.mem_singleton_iff]⟩
+        exact ⟨⟨⟩, by simp [Metric.sphere_zero, Set.mem_singleton_iff]⟩
       · rintro ⟨cc, cr⟩
         rintro ⟨rfl, hdist⟩
         replace hdist : 0 = cr := by simpa using hdist
@@ -281,11 +281,11 @@ theorem circumradius_pos {n : ℕ} (s : Simplex ℝ P (n + 1)) : 0 < s.circumrad
 /-- The circumcenter of a 0-simplex equals its unique point. -/
 theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter = s.points i := by
   have h := s.circumcenter_mem_affineSpan
-  have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a => by simp only [Fin.eq_zero]⟩
+  have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a => by simp [Fin.eq_zero]⟩
   simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton] at h
   rw [h]
   congr
-  simp only [eq_iff_true_of_subsingleton]
+  simp [eq_iff_true_of_subsingleton]
 
 lemma circumcenter_ne_point {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     s.circumcenter ≠ s.points i := by
@@ -369,7 +369,7 @@ theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Sim
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius := by
   rw [dist_comm, ← h₁ 0, s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
     p₁ (mem_affineSpan_range ..)]
-  simp only [h₁', dist_comm p₁, add_sub_cancel_left, Simplex.dist_circumcenter_eq_circumradius]
+  simp [h₁', dist_comm p₁, add_sub_cancel_left, Simplex.dist_circumcenter_eq_circumradius]
 
 /-- If there exists a distance that a point has from all vertices of a
 simplex, the orthogonal projection of that point onto the subspace
@@ -871,7 +871,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
   by_cases hp : p = s.orthogonalProjectionSpan p
   · rw [Simplex.orthogonalProjectionSpan] at hp
     rw [hp₁, hp₂, ← hp]
-    simp only [true_or, smul_zero, vsub_self]
+    simp [true_or, smul_zero, vsub_self]
   · have hz : ⟪p -ᵥ orthogonalProjection span_s p, p -ᵥ orthogonalProjection span_s p⟫ ≠ 0 := by
       simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using! hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁

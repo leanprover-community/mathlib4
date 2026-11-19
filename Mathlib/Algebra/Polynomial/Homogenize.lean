@@ -73,7 +73,7 @@ lemma homogenize_map {S : Type*} [CommSemiring S] (f : R →+* S) (p : R[X]) (n 
 @[simp]
 lemma homogenize_C_mul (c : R) (p : R[X]) (n : ℕ) :
     homogenize (C c * p) n = .C c * homogenize p n := by
-  simp only [C_mul', homogenize_smul, MvPolynomial.C_mul']
+  simp [C_mul', homogenize_smul, MvPolynomial.C_mul']
 
 @[simp]
 lemma homogenize_monomial {m n : ℕ} (h : m ≤ n) (r : R) :

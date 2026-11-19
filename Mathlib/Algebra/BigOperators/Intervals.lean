@@ -49,7 +49,7 @@ theorem prod_Ico_add [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMon
 theorem prod_Ico_add_right_sub_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     [ExistsAddOfLE α] [LocallyFiniteOrder α] [Sub α] [OrderedSub α] (a b c : α) :
     ∏ x ∈ Ico (a + c) (b + c), f (x - c) = ∏ x ∈ Ico a b, f x := by
-  simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
+  simp [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
 
 @[to_additive]
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
@@ -151,7 +151,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
   · have : n + 1 - k ≤ n + 1 - m := by
       rw [tsub_le_tsub_iff_left h]
       exact hkm
-    simp only [hkm, Ico_eq_empty_of_le, prod_empty, Ico_eq_empty_of_le this]
+    simp [hkm, Ico_eq_empty_of_le, prod_empty, Ico_eq_empty_of_le this]
 
 @[to_additive]
 theorem prod_range_reflect (f : ℕ → M) (n : ℕ) :

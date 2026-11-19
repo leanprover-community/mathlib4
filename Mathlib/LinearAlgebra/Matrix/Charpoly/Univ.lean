@@ -56,7 +56,7 @@ open MvPolynomial RingHomClass in
 lemma univ_map_eval₂Hom (M : n × n → S) :
     (univ R n).map (eval₂Hom f M) = charpoly (Matrix.of M.curry) := by
   rw [univ, ← charpoly_map, coe_eval₂Hom, ← mvPolynomialX_map_eval₂ f (Matrix.of M.curry)]
-  simp only [of_apply, Function.curry_apply, Prod.mk.eta]
+  simp [of_apply, Function.curry_apply, Prod.mk.eta]
 
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by
@@ -86,7 +86,7 @@ open MvPolynomial in
 lemma optionEquivLeft_symm_univ_isHomogeneous :
     ((optionEquivLeft R (n × n)).symm (univ R n)).IsHomogeneous (Fintype.card n) := by
   have aux : Fintype.card n = 0 + ∑ i : n, 1 := by
-    simp only [zero_add, Finset.sum_const, smul_eq_mul, mul_one, Fintype.card]
+    simp [zero_add, Finset.sum_const, smul_eq_mul, mul_one, Fintype.card]
   simp only [aux, univ, charpoly, charmatrix, scalar_apply, RingHom.mapMatrix_apply, det_apply',
     Matrix.sub_apply, map_apply, of_apply, map_sum, map_mul, map_intCast, map_prod, map_sub,
     optionEquivLeft_symm_apply, Polynomial.aevalTower_C, rename_X, diagonal, mvPolynomialX]
@@ -97,8 +97,8 @@ lemma optionEquivLeft_symm_univ_isHomogeneous :
   · apply IsHomogeneous.prod
     rintro j -
     by_cases h : i j = j
-    · simp only [h, ↓reduceIte, Polynomial.aevalTower_X, IsHomogeneous.sub, isHomogeneous_X]
-    · simp only [h, ↓reduceIte, map_zero, zero_sub, (isHomogeneous_X _ _).neg]
+    · simp [h, ↓reduceIte, Polynomial.aevalTower_X, IsHomogeneous.sub, isHomogeneous_X]
+    · simp [h, ↓reduceIte, map_zero, zero_sub, (isHomogeneous_X _ _).neg]
 
 lemma univ_coeff_isHomogeneous (i j : ℕ) (h : i + j = Fintype.card n) :
     ((univ R n).coeff i).IsHomogeneous j :=

@@ -111,7 +111,7 @@ theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
         (fun _ _ => (isometry_mul_right _).lipschitzWith.lipschitzOnWith) fun _ _ =>
         (isometry_mul_left _).lipschitzWith.lipschitzOnWith).trans_eq <|
-    by simp only [ENNReal.coe_one, one_mul]
+    by simp [ENNReal.coe_one, one_mul]
 
 end EMetric
 
@@ -140,7 +140,7 @@ theorem inv_sphere : (sphere x δ)⁻¹ = sphere x⁻¹ δ :=
 
 @[to_additive]
 theorem singleton_mul_ball : {x} * ball y δ = ball (x * y) δ := by
-  simp only [preimage_mul_ball, image_mul_left, singleton_mul, div_inv_eq_mul, mul_comm y x]
+  simp [preimage_mul_ball, image_mul_left, singleton_mul, div_inv_eq_mul, mul_comm y x]
 
 @[to_additive]
 theorem singleton_div_ball : {x} / ball y δ = ball (x / y) δ := by
@@ -273,7 +273,7 @@ theorem IsCompact.mul_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :
     s * closedBall (1 : E) δ = cthickening δ s := by
   rw [hs.cthickening_eq_biUnion_closedBall hδ]
   ext x
-  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_iUnion, mem_closedBall,
+  simp [mem_mul, dist_eq_norm_div, exists_prop, mem_iUnion, mem_closedBall,
     ← eq_div_iff_mul_eq'', div_one, exists_eq_right]
 
 @[to_additive]

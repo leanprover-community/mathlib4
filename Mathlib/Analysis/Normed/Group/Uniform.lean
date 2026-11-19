@@ -78,7 +78,7 @@ theorem MonoidHomClass.lipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (
 @[to_additive]
 theorem lipschitzOnWith_iff_norm_inv_mul_le {f : E → F} {C : ℝ≥0} :
     LipschitzOnWith C f s ↔ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ‖(f x)⁻¹ * f y‖ ≤ C * ‖x⁻¹ * y‖ := by
-  simp only [lipschitzOnWith_iff_dist_le_mul, dist_eq_norm_inv_mul]
+  simp [lipschitzOnWith_iff_dist_le_mul, dist_eq_norm_inv_mul]
 
 alias ⟨LipschitzOnWith.norm_inv_mul_le, _⟩ := lipschitzOnWith_iff_norm_inv_mul_le
 
@@ -92,7 +92,7 @@ theorem LipschitzOnWith.norm_inv_mul_le_of_le {f : E → F} {C : ℝ≥0} (h : L
 @[to_additive]
 theorem lipschitzWith_iff_norm_inv_mul_le {f : E → F} {C : ℝ≥0} :
     LipschitzWith C f ↔ ∀ x y, ‖(f x)⁻¹ * f y‖ ≤ C * ‖x⁻¹ * y‖ := by
-  simp only [lipschitzWith_iff_dist_le_mul, dist_eq_norm_inv_mul]
+  simp [lipschitzWith_iff_dist_le_mul, dist_eq_norm_inv_mul]
 
 alias ⟨LipschitzWith.norm_inv_mul_le, _⟩ := lipschitzWith_iff_norm_inv_mul_le
 
@@ -486,7 +486,7 @@ theorem LipschitzOnWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} {s : Set E
 @[to_additive]
 theorem lipschitzWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
     LipschitzWith C f ↔ ∀ x y, ‖f x / f y‖ ≤ C * ‖x / y‖ := by
-  simp only [lipschitzWith_iff_dist_le_mul, dist_eq_norm_div]
+  simp [lipschitzWith_iff_dist_le_mul, dist_eq_norm_div]
 
 alias ⟨LipschitzWith.norm_div_le, _⟩ := lipschitzWith_iff_norm_div_le
 

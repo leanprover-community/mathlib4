@@ -129,12 +129,12 @@ section
 @[simp]
 lemma eqToHom_hom {X Y : InducedBicategory C F} {f g : X ⟶ Y} (h : f = g) :
     (eqToHom h).hom = eqToHom (h ▸ rfl) := by
-  subst h; simp only [eqToHom_refl, Hom.category_id_hom]
+  subst h; simp [eqToHom_refl, Hom.category_id_hom]
 
 @[simp]
 lemma mkHom_eqToHom {X Y : InducedBicategory C F} {f g : F X ⟶ F Y} (h : f = g) :
     mkHom₂ (eqToHom h) = eqToHom (h ▸ rfl) := by
-  ext; subst h; simp only [eqToHom_refl, Hom.category_id_hom]
+  ext; subst h; simp [eqToHom_refl, Hom.category_id_hom]
 
 variable [Strict C]
 

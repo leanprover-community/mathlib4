@@ -101,7 +101,7 @@ theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
 theorem continuousOn_iff :
     ContinuousOn f s ↔
       ∀ x ∈ s, ∀ t : Set β, IsOpen t → f x ∈ t → ∃ u, IsOpen u ∧ x ∈ u ∧ u ∩ s ⊆ f ⁻¹' t := by
-  simp only [ContinuousOn, ContinuousWithinAt, tendsto_nhds, mem_nhdsWithin]
+  simp [ContinuousOn, ContinuousWithinAt, tendsto_nhds, mem_nhdsWithin]
 
 theorem ContinuousOn.continuousWithinAt (hf : ContinuousOn f s) (hx : x ∈ s) :
     ContinuousWithinAt f s x :=
@@ -135,7 +135,7 @@ theorem continuousOn_iff' :
     constructor <;>
       · rintro ⟨u, ou, useq⟩
         exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
-  rw [continuousOn_iff_continuous_domRestrict, continuous_def]; simp only [this]
+  rw [continuousOn_iff_continuous_domRestrict, continuous_def]; simp [this]
 
 /-- If a function is continuous on a set for some topologies, then it is
 continuous on the same set with respect to any finer topology on the source space. -/
@@ -156,8 +156,8 @@ theorem continuousOn_iff_isClosed :
   have : ∀ t, IsClosed (s.domRestrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
     rw [isClosed_induced_iff, Set.domRestrict_eq, Set.preimage_comp]
-    simp only [Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm, Set.inter_comm s]
-  rw [continuousOn_iff_continuous_domRestrict, continuous_iff_isClosed]; simp only [this]
+    simp [Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm, Set.inter_comm s]
+  rw [continuousOn_iff_continuous_domRestrict, continuous_iff_isClosed]; simp [this]
 
 theorem continuous_of_cover_nhds {ι : Sort*} {s : ι → Set α}
     (hs : ∀ x : α, ∃ i, s i ∈ 𝓝 x) (hf : ∀ i, ContinuousOn f (s i)) :
@@ -251,7 +251,7 @@ equivalent. See also `continuousWithinAt_congr_set'` which requires that the set
 locally away from a point `y`, in a T1 space. -/
 theorem continuousWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
-  simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEqSet.mpr h]
+  simp [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEqSet.mpr h]
 
 theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f t x :=
@@ -267,7 +267,7 @@ theorem continuousWithinAt_inter (h : t ∈ 𝓝 x) :
 
 theorem continuousWithinAt_union :
     ContinuousWithinAt f (s ∪ t) x ↔ ContinuousWithinAt f s x ∧ ContinuousWithinAt f t x := by
-  simp only [ContinuousWithinAt, nhdsWithin_union, tendsto_sup]
+  simp [ContinuousWithinAt, nhdsWithin_union, tendsto_sup]
 
 theorem ContinuousWithinAt.union (hs : ContinuousWithinAt f s x) (ht : ContinuousWithinAt f t x) :
     ContinuousWithinAt f (s ∪ t) x :=
@@ -275,12 +275,12 @@ theorem ContinuousWithinAt.union (hs : ContinuousWithinAt f s x) (ht : Continuou
 
 @[simp]
 theorem continuousWithinAt_singleton : ContinuousWithinAt f {x} x := by
-  simp only [ContinuousWithinAt, nhdsWithin_singleton, tendsto_pure_nhds]
+  simp [ContinuousWithinAt, nhdsWithin_singleton, tendsto_pure_nhds]
 
 @[simp]
 theorem continuousWithinAt_insert_self :
     ContinuousWithinAt f (insert x s) x ↔ ContinuousWithinAt f s x := by
-  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton, true_and]
+  simp [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton, true_and]
 
 protected alias ⟨_, ContinuousWithinAt.insert⟩ := continuousWithinAt_insert_self
 
@@ -289,7 +289,7 @@ from `x`. As this requires the space to be T1, and this property is not availabl
 this is found in another file although it is part of the basic API for `continuousWithinAt`. -/
 theorem ContinuousWithinAt.sdiff_iff
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
-  ⟨fun h => (h.union ht).mono <| by simp only [sdiff_union_self, subset_union_left], fun h =>
+  ⟨fun h => (h.union ht).mono <| by simp [sdiff_union_self, subset_union_left], fun h =>
     h.mono sdiff_subset⟩
 
 /-- See also `continuousWithinAt_sdiff_singleton` for the case of `s \ {y}`, but

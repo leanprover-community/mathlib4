@@ -52,7 +52,7 @@ theorem pythagoreanTriple_comm {x y z : ℤ} : PythagoreanTriple x y z ↔ Pytha
 
 /-- The zeroth Pythagorean triple is all zeros. -/
 theorem PythagoreanTriple.zero : PythagoreanTriple 0 0 0 := by
-  simp only [PythagoreanTriple, zero_mul, zero_add]
+  simp [PythagoreanTriple, zero_mul, zero_add]
 
 namespace PythagoreanTriple
 

@@ -162,7 +162,7 @@ lemma mulExact_iff_of_surjective_of_bijective_of_injective
     constructor
     · intro hx₂
       obtain ⟨x₁, rfl⟩ := (h x₂).1 (h₃ (by simpa only [map_one, comm₂₃] using hx₂))
-      exact ⟨τ₁ x₁, by simp only [comm₁₂]⟩
+      exact ⟨τ₁ x₁, by simp [comm₁₂]⟩
     · rintro ⟨y₁, hy₁⟩
       obtain ⟨x₁, rfl⟩ := h₁ y₁
       rw [comm₂₃, (h x₂).2 _, map_one]
@@ -170,12 +170,12 @@ lemma mulExact_iff_of_surjective_of_bijective_of_injective
   · intro h x₂
     constructor
     · intro hx₂
-      obtain ⟨y₁, hy₁⟩ := (h (τ₂ x₂)).1 (by simp only [comm₂₃, hx₂, map_one])
+      obtain ⟨y₁, hy₁⟩ := (h (τ₂ x₂)).1 (by simp [comm₂₃, hx₂, map_one])
       obtain ⟨x₁, rfl⟩ := h₁ y₁
       exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
     · rintro ⟨x₁, rfl⟩
       apply h₃
-      simp only [← comm₁₂, ← comm₂₃, h.apply_apply_eq_one (τ₁ x₁), map_one]
+      simp [← comm₁₂, ← comm₂₃, h.apply_apply_eq_one (τ₁ x₁), map_one]
 
 end MonoidHom
 
@@ -487,12 +487,12 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R
 
 lemma Exact.inr_fst : Function.Exact (LinearMap.inr R M N) (LinearMap.fst R M N) := by
   rintro ⟨x, y⟩
-  simp only [LinearMap.fst_apply, @eq_comm _ x, LinearMap.coe_inr, Set.mem_range, Prod.mk.injEq,
+  simp [LinearMap.fst_apply, @eq_comm _ x, LinearMap.coe_inr, Set.mem_range, Prod.mk.injEq,
     exists_eq_right]
 
 lemma Exact.inl_snd : Function.Exact (LinearMap.inl R M N) (LinearMap.snd R M N) := by
   rintro ⟨x, y⟩
-  simp only [LinearMap.snd_apply, @eq_comm _ y, LinearMap.coe_inl, Set.mem_range, Prod.mk.injEq,
+  simp [LinearMap.snd_apply, @eq_comm _ y, LinearMap.coe_inl, Set.mem_range, Prod.mk.injEq,
     exists_eq_left]
 
 end Prod

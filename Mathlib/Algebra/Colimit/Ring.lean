@@ -140,7 +140,7 @@ def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
       intro x hx
       rw [SetLike.mem_coe, Ideal.mem_comap, mem_bot]
       rcases hx with (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩) <;>
-        simp only [map_sub, lift_of, Hg, map_one, map_add, map_mul,
+        simp [map_sub, lift_of, Hg, map_one, map_add, map_mul,
           (g i).map_one, (g i).map_add, (g i).map_mul, sub_self])
 
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
@@ -283,7 +283,7 @@ lemma congr_symm_apply_of (e : (i : ι) → G i ≃+* G' i)
     (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
     (congr e he).symm (of G' _ i g) = of G (fun _ _ h ↦ f _ _ h) i ((e i).symm g) := by
-  simp only [congr, RingEquiv.ofRingHom_symm_apply, map_apply_of, RingHom.coe_coe]
+  simp [congr, RingEquiv.ofRingHom_symm_apply, map_apply_of, RingHom.coe_coe]
 
 end functorial
 

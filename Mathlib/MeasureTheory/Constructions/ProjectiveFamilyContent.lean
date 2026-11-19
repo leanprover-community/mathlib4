@@ -141,7 +141,7 @@ lemma projectiveFamilyContent_iUnion_le (hP : IsProjectiveMeasureFamily P)
       ≤ ∑ i ∈ range (n + 1), projectiveFamilyContent hP (s i) :=
   calc projectiveFamilyContent hP (⋃ i ≤ n, s i)
   _ = projectiveFamilyContent hP (⋃ i ∈ range (n + 1), s i) := by
-    simp only [mem_range_succ_iff]
+    simp [mem_range_succ_iff]
   _ ≤ ∑ i ∈ range (n + 1), projectiveFamilyContent hP (s i) :=
     addContent_biUnion_le isSetRing_measurableCylinders (fun i _ ↦ hs i)
 

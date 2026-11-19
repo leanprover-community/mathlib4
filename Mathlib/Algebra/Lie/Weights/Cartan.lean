@@ -108,16 +108,16 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
     { toFun := fun m =>
         ⟨⁅(x : L), (m : M)⁆,
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
-      map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
+      map_add' := fun m n => by simp [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
       map_smul' := fun t m => by simp }
   map_add' x y := by
     ext m
-    simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
+    simp [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
       AddMemClass.mk_add_mk]
   map_smul' t x := by
     simp only [RingHom.id_apply]
     ext m
-    simp only [SetLike.val_smul, smul_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.smul_apply,
+    simp [SetLike.val_smul, smul_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.smul_apply,
       SetLike.mk_smul_mk]
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
@@ -130,13 +130,13 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
         ext m
         simp only [rootSpaceWeightSpaceProductAux]
         dsimp
-        simp only [lie_lie] }
+        simp [lie_lie] }
 
 @[simp]
 theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
     (x : rootSpace H χ₁) (m : genWeightSpace M χ₂) :
     (rootSpaceWeightSpaceProduct R L H M χ₁ χ₂ χ₃ hχ (x ⊗ₜ m) : M) = ⁅(x : L), (m : M)⁆ := by
-  simp only [rootSpaceWeightSpaceProduct, rootSpaceWeightSpaceProductAux, coe_liftLie_eq_lift_coe,
+  simp [rootSpaceWeightSpaceProduct, rootSpaceWeightSpaceProductAux, coe_liftLie_eq_lift_coe,
     lift_apply, LinearMap.coe_mk, AddHom.coe_mk]
 
 theorem mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace (α χ : H → R)
@@ -159,7 +159,7 @@ theorem rootSpaceProduct_def : rootSpaceProduct R L H = rootSpaceWeightSpaceProd
 theorem rootSpaceProduct_tmul
     (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁) (y : rootSpace H χ₂) :
     (rootSpaceProduct R L H χ₁ χ₂ χ₃ hχ (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ := by
-  simp only [rootSpaceProduct_def, coe_rootSpaceWeightSpaceProduct_tmul]
+  simp [rootSpaceProduct_def, coe_rootSpaceWeightSpaceProduct_tmul]
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L`, the root space of the zero map `0 : H → R` is a Lie
 subalgebra of `L`. -/
@@ -177,7 +177,7 @@ theorem coe_zeroRootSubalgebra : (zeroRootSubalgebra R L H : Submodule R L) = ro
 theorem mem_zeroRootSubalgebra (x : L) :
     x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEnd R H L y ^ k) x = 0 := by
   change x ∈ rootSpace H 0 ↔ _
-  simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero]
+  simp [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero]
 
 theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 := by
   intro x hx

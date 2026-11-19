@@ -375,7 +375,7 @@ lemma nat_card_stabilizer_eq_one_or_two :
   · left
     trans Nat.card ({1} : Set Gal(K/k))
     · congr with x
-      simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp,
+      simp [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp,
         h x, IsEmpty.forall_iff]
     · simp
 
@@ -383,7 +383,7 @@ variable {k w}
 
 lemma isUnramified_iff_stabilizer_eq_bot [IsGalois k K] : IsUnramified k w ↔ Stab w = ⊥ := by
   rw [← mk_embedding w, isUnramified_mk_iff_forall_isConj]
-  simp only [eq_bot_iff, IsConcreteLE.le_iff, mem_stabilizer_mk_iff,
+  simp [eq_bot_iff, IsConcreteLE.le_iff, mem_stabilizer_mk_iff,
     Subgroup.mem_bot, forall_eq_or_imp, true_and]
 
 lemma isUnramified_iff_card_stabilizer_eq_one [IsGalois k K] :

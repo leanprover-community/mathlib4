@@ -168,9 +168,9 @@ theorem eq_zero_of_src {X Y : C} (o : IsZero X) (f : X ⟶ Y) : f = 0 :=
 theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
   ⟨fun h => h.eq_of_src _ _, fun h =>
     ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
-        rw [← id_comp f, ← id_comp (0 : X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
+        rw [← id_comp f, ← id_comp (0 : X ⟶ Y), h, zero_comp, zero_comp]; simp⟩⟩,
     fun Y => ⟨⟨⟨0⟩, fun f => by
-        rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
+        rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp ⟩⟩⟩⟩
 
 @[to_dual (reorder := X Y)]
 theorem of_epi_zero (X Y : C) [Epi (0 : X ⟶ Y)] : IsZero Y :=
@@ -241,12 +241,12 @@ def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
     change ((default : X ⟶ 0) ≫ default) ≫ f = (default : X ⟶ 0) ≫ default
     rw [Category.assoc]
     congr
-    simp only [eq_iff_true_of_subsingleton]
+    simp [eq_iff_true_of_subsingleton]
   comp_zero {X Y} f Z := by
     change f ≫ (default : Y ⟶ 0) ≫ default = (default : X ⟶ 0) ≫ default
     rw [← Category.assoc]
     congr
-    simp only [eq_iff_true_of_subsingleton]
+    simp [eq_iff_true_of_subsingleton]
 
 section HasZeroMorphisms
 
@@ -306,7 +306,7 @@ theorem zero_of_to_zero {X : C} (f : X ⟶ 0) : f = 0 := by ext
 
 @[to_dual zero_of_source_iso_zero]
 theorem zero_of_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : Y ≅ 0) : f = 0 := by
-  have h : f = f ≫ i.hom ≫ 𝟙 0 ≫ i.inv := by simp only [Iso.hom_inv_id, id_comp, comp_id]
+  have h : f = f ≫ i.hom ≫ 𝟙 0 ≫ i.inv := by simp [Iso.hom_inv_id, id_comp, comp_id]
   simpa using h
 
 @[to_dual zero_of_target_iso_zero']
@@ -372,7 +372,7 @@ def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0
     intro i
     rw [← IsIso.hom_inv_id (0 : X ⟶ Y)]
     rw [← IsIso.inv_hom_id (0 : X ⟶ Y)]
-    simp only [comp_zero, and_self, zero_comp]
+    simp [comp_zero, and_self, zero_comp]
   invFun h := ⟨⟨(0 : Y ⟶ X), by cat_disch⟩⟩
   left_inv := by cat_disch
   right_inv := by cat_disch

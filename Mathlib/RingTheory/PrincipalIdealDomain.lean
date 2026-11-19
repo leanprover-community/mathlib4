@@ -108,7 +108,7 @@ theorem generator_bot : generator (⊥ : Submodule R M) = 0 :=
   (eq_bot_iff_generator_eq_zero ⊥).mp rfl
 
 protected lemma fg {S : Submodule R M} (h : S.IsPrincipal) : S.FG :=
-  ⟨{h.generator}, by simp only [Finset.coe_singleton, span_singleton_generator]⟩
+  ⟨{h.generator}, by simp [Finset.coe_singleton, span_singleton_generator]⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) _root_.PrincipalIdealRing.isNoetherianRing [IsPrincipalIdealRing R] :
@@ -132,7 +132,7 @@ theorem associated_generator_span_self [IsDomain R] (r : R) :
   exact Ideal.span_singleton_generator _
 
 theorem mem_iff_generator_dvd (S : Ideal R) [S.IsPrincipal] {x : R} : x ∈ S ↔ generator S ∣ x :=
-  (mem_iff_eq_smul_generator S).trans (exists_congr fun a => by simp only [mul_comm, smul_eq_mul])
+  (mem_iff_eq_smul_generator S).trans (exists_congr fun a => by simp [mul_comm, smul_eq_mul])
 
 theorem prime_generator_of_isPrime (S : Ideal R) [S.IsPrincipal] [is_prime : S.IsPrime]
     (ne_bot : S ≠ ⊥) : Prime (generator S) :=

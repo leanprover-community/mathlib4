@@ -50,7 +50,7 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
     fromBlocks A B C D =
       fromBlocks 1 0 (C * ⅟A) 1 * fromBlocks A 0 0 (D - C * ⅟A * B) *
         fromBlocks 1 (⅟A * B) 0 1 := by
-  simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
+  simp [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
     Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_cancel_left,
     Matrix.mul_assoc, add_sub_cancel]
 
@@ -169,7 +169,7 @@ This is a propositional form of `Matrix.fromBlocksZero₂₁InvertibleEquiv`. -/
 @[simp]
 theorem isUnit_fromBlocks_zero₂₁ {A : Matrix m m α} {B : Matrix m n α} {D : Matrix n n α} :
     IsUnit (fromBlocks A B 0 D) ↔ IsUnit A ∧ IsUnit D := by
-  simp only [← nonempty_invertible_iff_isUnit, ← nonempty_prod,
+  simp [← nonempty_invertible_iff_isUnit, ← nonempty_prod,
     (fromBlocksZero₂₁InvertibleEquiv _ _ _).nonempty_congr]
 
 /-- A lower block-triangular matrix is invertible iff both elements of its diagonal are.
@@ -178,7 +178,7 @@ This is a propositional form of `Matrix.fromBlocksZero₁₂InvertibleEquiv` for
 @[simp]
 theorem isUnit_fromBlocks_zero₁₂ {A : Matrix m m α} {C : Matrix n m α} {D : Matrix n n α} :
     IsUnit (fromBlocks A 0 C D) ↔ IsUnit A ∧ IsUnit D := by
-  simp only [← nonempty_invertible_iff_isUnit, ← nonempty_prod,
+  simp [← nonempty_invertible_iff_isUnit, ← nonempty_prod,
     (fromBlocksZero₁₂InvertibleEquiv _ _ _).nonempty_congr]
 
 /-- An expression for the inverse of an upper block-triangular matrix, when either both elements of
@@ -251,7 +251,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
           (fromBlocks (⅟(A - B * ⅟D * C)) (-(⅟(A - B * ⅟D * C) * 0 * ⅟D)) 0 (⅟D) *
             fromBlocks 1 (-(1 * (B * ⅟D) * 1)) 0 1)
     -- combine into a single block matrix
-    simp only [fromBlocks_multiply, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
+    simp [fromBlocks_multiply, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
       Matrix.mul_zero, add_zero, zero_add, neg_zero, Matrix.mul_neg, Matrix.neg_mul, neg_neg, ←
       Matrix.mul_assoc, add_comm (⅟D)]
 
@@ -345,7 +345,7 @@ iff the corresponding Schur complement is. -/
 theorem isUnit_fromBlocks_iff_of_invertible₂₂ {A : Matrix m m α} {B : Matrix m n α}
     {C : Matrix n m α} {D : Matrix n n α} [Invertible D] :
     IsUnit (fromBlocks A B C D) ↔ IsUnit (A - B * ⅟D * C) := by
-  simp only [← nonempty_invertible_iff_isUnit,
+  simp [← nonempty_invertible_iff_isUnit,
     (invertibleEquivFromBlocks₂₂Invertible A B C D).nonempty_congr]
 
 /-- If the top-right element of a block matrix is invertible, then the whole matrix is invertible
@@ -353,7 +353,7 @@ iff the corresponding Schur complement is. -/
 theorem isUnit_fromBlocks_iff_of_invertible₁₁ {A : Matrix m m α} {B : Matrix m n α}
     {C : Matrix n m α} {D : Matrix n n α} [Invertible A] :
     IsUnit (fromBlocks A B C D) ↔ IsUnit (D - C * ⅟A * B) := by
-  simp only [← nonempty_invertible_iff_isUnit,
+  simp [← nonempty_invertible_iff_isUnit,
     (invertibleEquivFromBlocks₁₁Invertible A B C D).nonempty_congr]
 
 end Block

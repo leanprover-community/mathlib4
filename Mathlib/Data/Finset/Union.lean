@@ -51,7 +51,7 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 @[simp] lemma disjiUnion_empty (t : α → Finset β) : disjiUnion ∅ t (by simp) = ∅ := rfl
 
 @[simp, grind =] lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
-  simp only [mem_def, disjiUnion_val, Multiset.mem_bind]
+  simp [mem_def, disjiUnion_val, Multiset.mem_bind]
 
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
@@ -200,7 +200,7 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 @[simp] lemma biUnion_empty : Finset.biUnion ∅ t = ∅ := rfl
 
 @[simp, grind =] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
-  simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind]
+  simp [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind]
 
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
@@ -234,7 +234,7 @@ lemma biUnion_biUnion [DecidableEq γ] (s : Finset α) (f : α → Finset β) (g
 
 lemma bind_toFinset [DecidableEq α] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).toFinset = s.toFinset.biUnion fun a ↦ (t a).toFinset :=
-  ext fun x ↦ by simp only [Multiset.mem_toFinset, mem_biUnion, Multiset.mem_bind]
+  ext fun x ↦ by simp [Multiset.mem_toFinset, mem_biUnion, Multiset.mem_bind]
 
 lemma biUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.biUnion t₁ ⊆ s.biUnion t₂ := by grind
 
@@ -277,7 +277,7 @@ lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset �
   refine s.induction ?_ ?_
   · simp
   · intro i s his ih
-    simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
+    simp [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 
 @[grind =]
 lemma disjoint_biUnion_right (s : Finset β) (t : Finset α) (f : α → Finset β) :
@@ -287,12 +287,12 @@ lemma disjoint_biUnion_right (s : Finset β) (t : Finset α) (f : α → Finset 
 theorem image_biUnion [DecidableEq γ] {f : α → β} {s : Finset α} {t : β → Finset γ} :
     (s.image f).biUnion t = s.biUnion fun a => t (f a) :=
   haveI := Classical.decEq α
-  Finset.induction_on s rfl fun a s _ ih => by simp only [image_insert, biUnion_insert, ih]
+  Finset.induction_on s rfl fun a s _ ih => by simp [image_insert, biUnion_insert, ih]
 
 theorem biUnion_image [DecidableEq γ] {s : Finset α} {t : α → Finset β} {f : β → γ} :
     (s.biUnion t).image f = s.biUnion fun a => (t a).image f :=
   haveI := Classical.decEq α
-  Finset.induction_on s rfl fun a s _ ih => by simp only [biUnion_insert, image_union, ih]
+  Finset.induction_on s rfl fun a s _ ih => by simp [biUnion_insert, image_union, ih]
 
 theorem image_biUnion_filter_eq [DecidableEq α] (s : Finset β) (g : β → α) :
     ((s.image g).biUnion fun a => s.filter fun c => g c = a) = s :=

@@ -281,7 +281,7 @@ theorem closure_induction_left
   | of_mul x y ih =>
     simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
-    simp only [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]
+    simp [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_of_closure_eq_top_left {s : Set M} {motive : M → Prop} (hs : closure s = ⊤)
@@ -364,7 +364,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
   zpow z x := x ^ z.natMod n
   zpow_zero' z := by
     simp_rw [HPow.hPow, Pow.pow]
-    simp only [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
+    simp [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
   zpow_neg' m x := by
     change x ^ (Int.natMod _ n) = (x ^ (Int.natMod _ n)) ^ (n - 1)
     ext
@@ -419,7 +419,7 @@ def powLogEquiv [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n
   invFun m := Multiplicative.ofAdd (log m)
   left_inv := log_pow_eq_self h
   right_inv := pow_log_eq_self
-  map_mul' _ _ := by simp only [pow, map_mul, ofAdd_add, toAdd_mul]
+  map_mul' _ _ := by simp [pow, map_mul, ofAdd_add, toAdd_mul]
 
 theorem log_mul [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n ^ m)
     (x y : powers (n : M)) : log (x * y) = log x + log y :=
@@ -432,7 +432,7 @@ theorem log_pow_int_eq_self {x : ℤ} (h : 1 < x.natAbs) (m : ℕ) : log (pow x 
 theorem map_powers {N : Type*} {F : Type*} [Monoid N] [FunLike F M N] [MonoidHomClass F M N]
     (f : F) (m : M) :
     (powers m).map f = powers (f m) := by
-  simp only [powers_eq_closure, map_mclosure f, Set.image_singleton]
+  simp [powers_eq_closure, map_mclosure f, Set.image_singleton]
 
 end Submonoid
 
@@ -471,7 +471,7 @@ theorem sup_eq_range (s t : Submonoid N) : s ⊔ t = mrange (s.subtype.coprod t.
 
 @[to_additive]
 theorem mem_sup {s t : Submonoid N} {x : N} : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
-  simp only [sup_eq_range, mem_mrange, coprod_apply, coe_subtype, Prod.exists,
+  simp [sup_eq_range, mem_mrange, coprod_apply, coe_subtype, Prod.exists,
     Subtype.exists, exists_prop]
 
 variable {P : N → Prop}

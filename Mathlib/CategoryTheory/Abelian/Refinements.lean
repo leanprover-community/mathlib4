@@ -103,7 +103,7 @@ lemma ShortComplex.exact_iff_exact_up_to_refinements :
     exact ⟨A', π, hπ, x₁, by simpa only [assoc, liftCycles_i, toCycles_i] using fac =≫ S.iCycles⟩
   · intro hS A a
     obtain ⟨A', π, hπ, x₁, fac⟩ := hS (a ≫ S.iCycles) (by simp)
-    exact ⟨A', π, hπ, x₁, by simp only [← cancel_mono S.iCycles, assoc, toCycles_i, fac]⟩
+    exact ⟨A', π, hπ, x₁, by simp [← cancel_mono S.iCycles, assoc, toCycles_i, fac]⟩
 
 variable {S}
 
@@ -224,7 +224,7 @@ lemma ShortComplex.epi_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
     simp only [reassoc_of% fac, homologyπ_naturality, liftCycles_comp_cyclesMap_assoc,
       comp_liftCycles_assoc, liftCycles_comp_homologyπ_eq_iff_up_to_refinements] at hγ
     obtain ⟨A₃, π₃, hπ₃, x₁, hx₁⟩ := hγ
-    exact ⟨A₃, π₃ ≫ π₂ ≫ π₁, inferInstance, π₃ ≫ x₂, by simp only [assoc, hx₂, comp_zero],
+    exact ⟨A₃, π₃ ≫ π₂ ≫ π₁, inferInstance, π₃ ≫ x₂, by simp [assoc, hx₂, comp_zero],
       x₁, by simpa only [assoc] using hx₁⟩
   · intro h A γ
     obtain ⟨A₁, π₁, hπ₁, y₂, hy₂, fac⟩ := S₂.eq_liftCycles_homologyπ_up_to_refinements γ

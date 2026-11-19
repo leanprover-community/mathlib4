@@ -82,8 +82,8 @@ theorem iterate_one : f^[1] = f :=
   funext fun _ ↦ rfl
 
 theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
-  | 0 => by simp only [Nat.mul_zero, iterate_zero]
-  | n + 1 => by simp only [Nat.mul_succ, iterate_one, iterate_add, iterate_mul m n]
+  | 0 => by simp [Nat.mul_zero, iterate_zero]
+  | n + 1 => by simp [Nat.mul_succ, iterate_one, iterate_add, iterate_mul m n]
 
 variable {f}
 
@@ -139,14 +139,14 @@ theorem iterate_iterate (h : Commute f g) (m n : ℕ) : Commute f^[m] g^[n] :=
 theorem iterate_eq_of_map_eq (h : Commute f g) (n : ℕ) {x} (hx : f x = g x) :
     f^[n] x = g^[n] x :=
   Nat.recOn n rfl fun n ihn ↦ by
-    simp only [iterate_succ_apply, hx, (h.iterate_left n).eq, ihn, ((refl g).iterate_right n).eq]
+    simp [iterate_succ_apply, hx, (h.iterate_left n).eq, ihn, ((refl g).iterate_right n).eq]
 
 theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
   induction n with
   | zero => rfl
   | succ n ihn =>
     funext x
-    simp only [ihn, (h.iterate_right n).eq, iterate_succ, comp_apply]
+    simp [ihn, (h.iterate_right n).eq, iterate_succ, comp_apply]
 
 variable (f)
 

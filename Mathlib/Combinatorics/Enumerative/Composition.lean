@@ -471,7 +471,7 @@ theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ones_blocksFun (n : ℕ) (i : Fin (ones n).length) : (ones n).blocksFun i = 1 := by
-  simp only [blocksFun, ones, get_eq_getElem, getElem_replicate]
+  simp [blocksFun, ones, get_eq_getElem, getElem_replicate]
 
 @[simp]
 theorem ones_sizeUpTo (n : ℕ) (i : ℕ) : (ones n).sizeUpTo i = min i n := by
@@ -575,7 +575,7 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
       by_contra ji
       apply lt_irrefl (∑ k, c.blocksFun k)
       calc
-        ∑ k, c.blocksFun k ≤ c.blocksFun i := by simp only [c.sum_blocksFun, hi]
+        ∑ k, c.blocksFun k ≤ c.blocksFun i := by simp [c.sum_blocksFun, hi]
         _ < ∑ k, c.blocksFun k :=
           Finset.single_lt_sum ji (Finset.mem_univ _) (Finset.mem_univ _) (c.one_le_blocksFun j)
             fun _ _ _ => zero_le
@@ -799,7 +799,7 @@ one gets back the original list of lists. -/
 @[simp]
 theorem splitWrtComposition_flatten (L : List (List α)) (c : Composition L.flatten.length)
     (h : map length L = c.blocks) : splitWrtComposition (flatten L) c = L := by
-  simp only [and_self_iff, eq_iff_flatten_eq, flatten_splitWrtComposition,
+  simp [and_self_iff, eq_iff_flatten_eq, flatten_splitWrtComposition,
     map_length_splitWrtComposition, h]
 
 end List
@@ -953,7 +953,7 @@ theorem blocks_sum : c.blocks.sum = n := by
 blocks as a list of positive integers. -/
 def toComposition : Composition n where
   blocks := c.blocks
-  blocks_pos := by simp only [blocks, forall_mem_ofFn_iff, blocksFun_pos c, forall_true_iff]
+  blocks_pos := by simp [blocks, forall_mem_ofFn_iff, blocksFun_pos c, forall_true_iff]
   blocks_sum := c.blocks_sum
 
 end CompositionAsSet

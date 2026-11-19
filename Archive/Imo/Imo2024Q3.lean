@@ -117,7 +117,7 @@ lemma apply_add_one_eq_card {n : ℕ} (h : N ≤ n) :
 
 @[simp] lemma nth_apply_eq_zero (n : ℕ) : Nat.nth (a · = 0) n = 0 := by
   convert! Nat.nth_false _ with i
-  simp only [(hc.pos i).ne']
+  simp [(hc.pos i).ne']
 
 lemma nth_apply_add_one_eq {n : ℕ} (h : N ≤ n) : Nat.nth (a · = a n) (a (n + 1) - 1) = n := by
   rw [hc.apply_add_one_eq_card h]
@@ -181,7 +181,7 @@ lemma exists_infinite_setOfPred_apply_eq : ∃ m, {i | a i = m}.Infinite := by
   simp only [Set.mem_sdiff, Set.mem_range, Set.mem_Ico, zero_le, true_and, not_lt] at hi
   rcases hi with ⟨⟨_, rfl⟩, hi⟩
   exact hc.apply_nth_add_one_eq toFinset_card_pos
-    (N_lt_of_M_le_apply (a := a) (by simp only [apply_nth_zero, hi])).le
+    (N_lt_of_M_le_apply (a := a) (by simp [apply_nth_zero, hi])).le
 
 @[deprecated (since := "2026-07-09")]
 alias exists_infinite_setOf_apply_eq := exists_infinite_setOfPred_apply_eq
@@ -380,7 +380,7 @@ lemma k_pos : 0 < k a := by
 
 lemma small_one : Small a 1 := by
   by_contra hns
-  simp only [Small, not_le, Nat.lt_one_iff, hc.k_pos.ne'] at hns
+  simp [Small, not_le, Nat.lt_one_iff, hc.k_pos.ne'] at hns
 
 lemma infinite_setOfPred_apply_eq_one : {i | a i = 1}.Infinite :=
   (hc.infinite_setOfPred_apply_eq_iff_small (by decide)).mpr hc.small_one
@@ -469,7 +469,7 @@ include hc
 lemma nth_sup_k_le_N'aux_of_small {j : ℕ} (h : Small a j) :
     Nat.nth (a · = j) (k a) ≤ N'aux a N :=
   match j with
-  | 0 => by simp only [hc.nth_apply_eq_zero, zero_le]
+  | 0 => by simp [hc.nth_apply_eq_zero, zero_le]
   | j + 1 => ((Nat.nth_le_nth
       ((hc.infinite_setOfPred_apply_eq_iff_small (Nat.zero_lt_succ j)).mpr h)).2
       le_sup_left).trans (nth_sup_k_N_add_one_le_N'aux_of_small h)
@@ -477,7 +477,7 @@ lemma nth_sup_k_le_N'aux_of_small {j : ℕ} (h : Small a j) :
 lemma nth_sup_N_add_one_le_N'aux_of_small {j : ℕ} (h : Small a j) :
     Nat.nth (a · = j) (N + 1) ≤ N'aux a N :=
   match j with
-  | 0 => by simp only [hc.nth_apply_eq_zero, zero_le]
+  | 0 => by simp [hc.nth_apply_eq_zero, zero_le]
   | j + 1 => ((Nat.nth_le_nth
       ((hc.infinite_setOfPred_apply_eq_iff_small (Nat.zero_lt_succ j)).mpr h)).2
       le_sup_right).trans (nth_sup_k_N_add_one_le_N'aux_of_small h)
@@ -612,7 +612,7 @@ lemma setOfPred_apply_eq_of_apply_big_of_N'_le {i : ℕ} (h : Big a (a i)) (hN' 
   refine (Finset.eq_of_subset_of_card_le hs (hck.trans ?_)).symm
   have hs : #((Finset.Icc 1 (k a)).image (fun t ↦ Nat.nth (a · = t) (a i - 1) + 1)) = k a := by
     convert! Finset.card_image_of_injOn fun t ht u hu htu ↦ ?_
-    · simp only [Nat.card_Icc, add_tsub_cancel_right]
+    · simp [Nat.card_Icc, add_tsub_cancel_right]
     · simp only [add_left_inj] at htu
       simp only [Finset.coe_Icc, Set.mem_Icc] at ht hu
       rw [← Small, ← hc.infinite_setOfPred_apply_eq_iff_small (by lia)] at ht hu

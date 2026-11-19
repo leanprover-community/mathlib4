@@ -61,7 +61,7 @@ def engel (x : L) : LieSubalgebra R L :=
 
 lemma mem_engel_iff (x y : L) :
     y ∈ engel R x ↔ ∃ n : ℕ, ((ad R L x) ^ n) y = 0 :=
-  (Module.End.mem_maxGenEigenspace _ _ _).trans <| by simp only [zero_smul, sub_zero]
+  (Module.End.mem_maxGenEigenspace _ _ _).trans <| by simp [zero_smul, sub_zero]
 
 lemma self_mem_engel (x : L) : x ∈ engel R x := by
   simp only [mem_engel_iff]
@@ -73,7 +73,7 @@ lemma engel_zero : engel R (0 : L) = ⊤ := by
   rintro x -
   rw [mem_engel_iff, map_zero]
   use 1
-  simp only [pow_one, LinearMap.zero_apply]
+  simp [pow_one, LinearMap.zero_apply]
 
 /-- Engel subalgebras are self-normalizing.
 See `LieSubalgebra.normalizer_eq_self_of_engel_le` for a proof that Lie-subalgebras
@@ -137,7 +137,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rintro _ ⟨y, rfl⟩
     simp only [pow_succ', mul_apply_eq_comp, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
-    simp only [Submodule.coe_subtype, SetLike.coe_mem]
+    simp [Submodule.coe_subtype, SetLike.coe_mem]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A Lie subalgebra of a Noetherian Lie algebra is nilpotent

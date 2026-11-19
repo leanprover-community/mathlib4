@@ -274,12 +274,12 @@ theorem detp_mul :
   obtain ⟨i, j, hσ, hij⟩ := Function.not_injective_iff.mp hσ
   replace hσ k : σ (swap i j k) = σ k := by
     rw [swap_apply_def]
-    split_ifs with h h <;> simp only [hσ, h]
+    split_ifs with h h <;> simp [hσ, h]
   rw [← mul_neg_one, hf (mem_ofSign.mpr (sign_swap hij)), sum_map]
   simp_rw [prod_mul_distrib, mulRightEmbedding_apply, Perm.mul_apply]
   congr! 2 with τ hτ
   rw [← Equiv.prod_comp (swap i j)]
-  simp only [hσ]
+  simp [hσ]
 
 theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   have key := sum_fiberwise_eq_sum_filter (ofSign s) univ (· i) fun σ ↦ ∏ k, A k (σ k)

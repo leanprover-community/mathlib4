@@ -244,8 +244,8 @@ lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s
 
 lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n : ℂ) ^ m) ^ z := by
   refine cpow_nat_mul' (x := n) (n := m) ?_ ?_ z
-  · simp only [natCast_arg, mul_zero, Left.neg_neg_iff, pi_pos]
-  · simp only [natCast_arg, mul_zero, pi_pos.le]
+  · simp [natCast_arg, mul_zero, Left.neg_neg_iff, pi_pos]
+  · simp [natCast_arg, mul_zero, pi_pos.le]
 
 theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
     x⁻¹ ^ n = if x.arg = π then conj (x ^ conj n)⁻¹ else (x ^ n)⁻¹ := by

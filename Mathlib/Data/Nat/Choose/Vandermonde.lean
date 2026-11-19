@@ -32,7 +32,7 @@ theorem add_choose_eq (m n k : ℕ) :
     _ = ((X + 1) ^ m * (X + 1) ^ n).coeff k := by rw [pow_add]
     _ = ∑ ij ∈ antidiagonal k, m.choose ij.1 * n.choose ij.2 := by
       rw [coeff_mul, Finset.sum_congr rfl]
-      simp only [coeff_X_add_one_pow, cast_id, imp_true_iff]
+      simp [coeff_X_add_one_pow, cast_id, imp_true_iff]
 
 /-- The sum of entries squared in a row of Pascal's triangle -/
 theorem sum_range_choose_sq (n : ℕ) :

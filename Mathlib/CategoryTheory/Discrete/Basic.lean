@@ -329,7 +329,7 @@ end Discrete
 lemma Discrete.forall {α : Type*} {p : Discrete α → Prop} :
     (∀ (a : Discrete α), p a) ↔ ∀ (a' : α), p ⟨a'⟩ := by
   rw [iff_iff_eq, discreteEquiv.forall_congr_left]
-  simp only [discreteEquiv, Equiv.symm_mk, Equiv.coe_fn_mk]
+  simp [discreteEquiv, Equiv.symm_mk, Equiv.coe_fn_mk]
 
 @[simp]
 lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :

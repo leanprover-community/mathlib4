@@ -299,7 +299,7 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]
   apply (Embedding.equivRange (Embedding.comp r g)).injective
   ext
-  simp only [Equiv.apply_symm_apply, Embedding.equivRange_apply, s]
+  simp [Equiv.apply_symm_apply, Embedding.equivRange_apply, s]
 
 /-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
 finitely generated substructures can be extended to any element in the domain. -/
@@ -314,7 +314,7 @@ theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomoge
     refine ⟨⟨⟨S, f'.toHom.range, f'.equivRange⟩, f_FG.sup (fg_closure_singleton _)⟩,
       subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨dom_le_S, ?_⟩⟩
     ext
-    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, coe_subtype, eq_f',
+    simp [Embedding.comp_apply, Equiv.coe_toEmbedding, coe_subtype, eq_f',
       Embedding.equivRange_apply, Substructure.coe_inclusion]
   · intro h S S_FG f
     let ⟨g, ⟨dom_le_dom, eq⟩⟩ :=

@@ -93,11 +93,11 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
   simp only [diracProba, ProbabilityMeasure.coe_mk, fx_eq_one,
              lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
   apply not_tendsto_iff_exists_frequently_notMem.mpr
-  refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
+  refine ⟨Ioi 0, Ioi_mem_nhds (by simp [ENNReal.coe_one, zero_lt_one]),
           hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
   rw [f_vanishes_outside x (compl_subset_compl.mpr interior_subset x_notin_U)]
-  simp only [ENNReal.coe_zero, mem_Ioi, lt_self_iff_false, not_false_eq_true]
+  simp [ENNReal.coe_zero, mem_Ioi, lt_self_iff_false, not_false_eq_true]
 
 lemma tendsto_diracProba_iff_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X) :
     Tendsto diracProba L (𝓝 (diracProba x)) ↔ Tendsto id L (𝓝 x) := by
@@ -132,7 +132,7 @@ noncomputable def diracProbaEquiv [T0Space X] : X ≃ range (diracProba (X := X)
   toFun := fun x ↦ ⟨diracProba x, by exact mem_range_self x⟩
   invFun := diracProbaInverse
   left_inv x := by apply diracProbaInverse_eq; rfl
-  right_inv μ := Subtype.ext (by simp only [diracProba_diracProbaInverse])
+  right_inv μ := Subtype.ext (by simp [diracProba_diracProbaInverse])
 
 /-- The composition of `diracProbaEquiv.symm` and `diracProba` is the subtype inclusion. -/
 lemma diracProba_comp_diracProbaEquiv_symm_eq_val [T0Space X] :

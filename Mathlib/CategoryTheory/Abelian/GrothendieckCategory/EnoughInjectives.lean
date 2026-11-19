@@ -147,7 +147,7 @@ lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
     (MorphismProperty.arrow_mk_iso_iff _ ?_).2 hi⟩
   refine Arrow.isoMk (Subobject.underlyingIso f) (Subobject.underlyingIso p') ?_
   dsimp
-  simp only [← cancel_mono p', assoc, fac,
+  simp [← cancel_mono p', assoc, fac,
     Subobject.underlyingIso_hom_comp_eq_mk, Subobject.ofLE_arrow]
 
 variable {X : C}
@@ -176,7 +176,7 @@ lemma le_largerSubobject (A : Subobject X) :
     A ≤ largerSubobject hG A := by
   by_cases hA : A = ⊤
   · subst hA
-    simp only [largerSubobject_top, le_refl]
+    simp [largerSubobject_top, le_refl]
   · exact (lt_largerSubobject hG A hA).le
 
 set_option backward.isDefEq.respectTransparency false in

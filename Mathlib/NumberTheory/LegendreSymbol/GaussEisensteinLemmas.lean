@@ -50,7 +50,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     intro b hb
     refine ⟨(b / a : ZMod p).valMinAbs.natAbs, mem_Ico.mpr ⟨?_, ?_⟩, ?_⟩
     · apply Nat.pos_of_ne_zero
-      simp only [div_eq_mul_inv, hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hb, not_false_iff,
+      simp [div_eq_mul_inv, hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hb, not_false_iff,
         valMinAbs_eq_zero, inv_eq_zero, Int.natAbs_eq_zero, Ne, _root_.mul_eq_zero, or_self_iff]
     · apply lt_succ_of_le; apply natAbs_valMinAbs_le
     · rw [natCast_natAbs_valMinAbs]
@@ -115,7 +115,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
   calc
     ((∑ x ∈ Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
         ((∑ x ∈ Ico 1 (p / 2).succ, (a * x % p + p * (a * x / p)) : ℕ) : ZMod 2) := by
-      simp only [mod_add_div]
+      simp [mod_add_div]
     _ = (∑ x ∈ Ico 1 (p / 2).succ, ((a * x : ℕ) : ZMod p).val : ℕ) +
         (∑ x ∈ Ico 1 (p / 2).succ, a * x / p : ℕ) := by
       simp only [val_natCast]
@@ -167,7 +167,7 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
           calc
             x * q / p ≤ p / 2 * q / p := by have := le_of_lt_succ (mem_Ico.mp hx).2; gcongr
             _ ≤ _ := Nat.div_mul_div_le_div _ _ _
-      _ = _ := by simp only [card_eq_sum_ones, sum_filter, sum_product]
+      _ = _ := by simp [card_eq_sum_ones, sum_filter, sum_product]
 
 /-- Each of the sums in this lemma is the cardinality of the set of integer points in each of the
   two triangles formed by the diagonal of the rectangle `(0, p/2) × (0, q/2)`. Adding them
@@ -180,7 +180,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       #{x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} :=
     card_equiv (Equiv.prodComm _ _)
       (fun ⟨_, _⟩ => by
-        simp +contextual only [mem_filter, Prod.swap_prod_mk,
+        simp +contextual [mem_filter, Prod.swap_prod_mk,
           mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
   have hdisj :
     Disjoint {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q}
@@ -192,7 +192,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       simpa [hq0] using congr(($(le_antisymm hpq hqp) : ZMod p))
     apply_fun ZMod.val at this
     rw [val_cast_of_lt hxp, val_zero] at this
-    simp only [this, nonpos_iff_eq_zero, mem_Ico, one_ne_zero, false_and, mem_product] at hx
+    simp [this, nonpos_iff_eq_zero, mem_Ico, one_ne_zero, false_and, mem_product] at hx
   have hunion :
       {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q} ∪
         {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} =
@@ -203,7 +203,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       tauto
   rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_union_of_disjoint hdisj, hunion,
     card_product]
-  simp only [card_Ico, succ_sub_succ_eq_sub, Nat.sub_zero]
+  simp [card_Ico, succ_sub_succ_eq_sub, Nat.sub_zero]
 
 /-- **Eisenstein's lemma** -/
 theorem eisenstein_lemma {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) {a : ℕ} (ha1 : a % 2 = 1)

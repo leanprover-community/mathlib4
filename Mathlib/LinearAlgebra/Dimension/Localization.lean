@@ -45,7 +45,7 @@ include f
 lemma IsLocalizedModule.lift_rank_eq :
     Cardinal.lift.{uM} (Module.rank R N) = Cardinal.lift.{uN} (Module.rank R M) := by
   cases subsingleton_or_nontrivial R
-  · simp only [rank_subsingleton, lift_one]
+  · simp [rank_subsingleton, lift_one]
   apply le_antisymm <;>
     rw [Module.rank_def, lift_iSup bddAbove_of_small] <;>
     apply ciSup_le' <;>
@@ -65,7 +65,7 @@ lemma IsLocalizedModule.rank_eq {N : Type uM} [AddCommGroup N] [Module R N] (f :
 
 lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
   cases subsingleton_or_nontrivial R
-  · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton]
+  · have := (algebraMap R S).codomain_trivial; simp [rank_subsingleton]
   have inj := IsLocalization.injective S hp
   apply le_antisymm <;> (rw [Module.rank_def]; apply ciSup_le'; intro ⟨s, hs⟩)
   · have := (faithfulSMul_iff_algebraMap_injective R S).mpr inj
@@ -232,7 +232,7 @@ theorem lift_rank_eq :
   have inj := FaithfulSMul.algebraMap_injective R T
   have := inj.noZeroDivisors _ (map_zero _) (map_mul _)
   cases subsingleton_or_nontrivial R
-  · have := (algebraMap R T).codomain_trivial; simp only [rank_subsingleton, lift_one]
+  · have := (algebraMap R T).codomain_trivial; simp [rank_subsingleton, lift_one]
   have := (isDomain_iff_noZeroDivisors_and_nontrivial T).mpr
     ⟨‹_›, (FaithfulSMul.algebraMap_injective R T).nontrivial⟩
   let FR := FractionRing R

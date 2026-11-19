@@ -35,11 +35,11 @@ variable [TopologicalSpace X] [WeakPseudoEMetricSpace X]
 theorem ediam_eq_sSup (s : Set X) : ediam s = sSup (image2 edist s s) := sSup_image2.symm
 
 theorem ediam_le_iff {d : ℝ≥0∞} : ediam s ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ d := by
-  simp only [ediam, iSup_le_iff]
+  simp [ediam, iSup_le_iff]
 
 theorem ediam_image_le_iff {d : ℝ≥0∞} {f : α → X} {s : Set α} :
     ediam (f '' s) ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ d := by
-  simp only [ediam_le_iff, forall_mem_image]
+  simp [ediam_le_iff, forall_mem_image]
 
 theorem edist_le_of_ediam_le {d} (hx : x ∈ s) (hy : y ∈ s) (hd : ediam s ≤ d) : edist x y ≤ d :=
   ediam_le_iff.1 hd x hx y hy
@@ -82,7 +82,7 @@ theorem ediam_insert : ediam (insert x s) = max (⨆ y ∈ s, edist x y) (ediam 
 theorem ediam_pair : ediam {x, y} = edist x y := by simp [ediam_insert]
 
 theorem ediam_triple : ediam {x, y, z} = max (max (edist x y) (edist x z)) (edist y z) := by
-  simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, max_zero]
+  simp [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, max_zero]
 
 /-- The extended diameter is monotonous with respect to inclusion -/
 @[gcongr]
@@ -145,10 +145,10 @@ theorem ediam_eq_zero_iff : ediam s = 0 ↔ s.Subsingleton :=
   ⟨fun h _x hx _y hy => edist_le_zero.1 <| h ▸ edist_le_ediam_of_mem hx hy, ediam_subsingleton⟩
 
 theorem ediam_pos_iff : 0 < ediam s ↔ s.Nontrivial := by
-  simp only [pos_iff_ne_zero, Ne, ediam_eq_zero_iff, Set.not_subsingleton_iff]
+  simp [pos_iff_ne_zero, Ne, ediam_eq_zero_iff, Set.not_subsingleton_iff]
 
 theorem ediam_pos_iff' : 0 < ediam s ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
-  simp only [ediam_pos_iff, Set.Nontrivial]
+  simp [ediam_pos_iff, Set.Nontrivial]
 
 end WeakEMetricSpace
 

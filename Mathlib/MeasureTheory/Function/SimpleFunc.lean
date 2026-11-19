@@ -133,7 +133,7 @@ theorem mem_range_of_measure_ne_zero {f : α →ₛ β} {x : β} {μ : Measure �
   mem_range.2 ⟨a, ha⟩
 
 theorem forall_mem_range {f : α →ₛ β} {p : β → Prop} : (∀ y ∈ f.range, p y) ↔ ∀ x, p (f x) := by
-  simp only [mem_range, Set.forall_mem_range]
+  simp [mem_range, Set.forall_mem_range]
 
 theorem exists_range_iff {f : α →ₛ β} {p : β → Prop} : (∃ y ∈ f.range, p y) ↔ ∃ x, p (f x) := by
   simpa only [mem_range, exists_prop] using Set.exists_range_iff
@@ -266,7 +266,7 @@ open scoped Classical in
 theorem range_indicator {s : Set α} (hs : MeasurableSet s) (hs_nonempty : s.Nonempty)
     (hs_ne_univ : s ≠ univ) (x y : β) :
     (piecewise s hs (const α x) (const α y)).range = {x, y} := by
-  simp only [← Finset.coe_inj, coe_range, coe_piecewise, range_piecewise, coe_const,
+  simp [← Finset.coe_inj, coe_range, coe_piecewise, range_piecewise, coe_const,
     Finset.coe_insert, Finset.coe_singleton, hs_nonempty.image_const,
     (nonempty_compl.2 hs_ne_univ).image_const, singleton_union, Function.const]
 
@@ -303,7 +303,7 @@ theorem coe_map (g : β → γ) (f : α →ₛ β) : (f.map g : α → γ) = g �
 
 @[simp]
 theorem range_map [DecidableEq γ] (g : β → γ) (f : α →ₛ β) : (f.map g).range = f.range.image g :=
-  Finset.coe_injective <| by simp only [coe_range, coe_map, Finset.coe_image, range_comp]
+  Finset.coe_injective <| by simp [coe_range, coe_map, Finset.coe_image, range_comp]
 
 @[simp]
 theorem map_const (g : β → γ) (b : β) : (const α b).map g = const α (g b) :=
@@ -334,7 +334,7 @@ theorem coe_comp [MeasurableSpace β] (f : β →ₛ γ) {g : α → β} (hgm : 
 
 theorem range_comp_subset_range [MeasurableSpace β] (f : β →ₛ γ) {g : α → β} (hgm : Measurable g) :
     (f.comp g hgm).range ⊆ f.range :=
-  Finset.coe_subset.1 <| by simp only [coe_range, coe_comp, Set.range_comp_subset_range]
+  Finset.coe_subset.1 <| by simp [coe_range, coe_comp, Set.range_comp_subset_range]
 
 /-- Extend a `SimpleFunc` along a measurable embedding: `f₁.extend g hg f₂` is the function
 `F : β →ₛ γ` such that `F ∘ g = f₁` and `F y = f₂ y` whenever `y ∉ range g`. -/
@@ -780,7 +780,7 @@ theorem map_coe_nnreal_restrict (f : α →ₛ ℝ≥0) (s : Set α) :
   map_restrict_of_zero NNReal.coe_zero _ _
 
 theorem restrict_apply (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) (a) :
-    restrict f s a = indicator s f a := by simp only [f.coe_restrict hs]
+    restrict f s a = indicator s f a := by simp [f.coe_restrict hs]
 
 theorem restrict_preimage (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) {t : Set β}
     (ht : (0 : β) ∉ t) : restrict f s ⁻¹' t = s ∩ f ⁻¹' t := by
@@ -807,8 +807,8 @@ theorem restrict_mono [Preorder β] (s : Set α) {f g : α →ₛ β} (H : f ≤
     f.restrict s ≤ g.restrict s := by
   classical
   exact if hs : MeasurableSet s then fun x => by
-    simp only [coe_restrict _ hs, indicator_le_indicator (H x)]
-  else by simp only [restrict_of_not_measurable hs, le_refl]
+    simp [coe_restrict _ hs, indicator_le_indicator (H x)]
+  else by simp [restrict_of_not_measurable hs, le_refl]
 
 end Restrict
 
@@ -833,7 +833,7 @@ theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableS
   congr
   funext k
   rw [restrict_apply]
-  · simp only [coe_const, mem_ofPred_eq, indicator_apply, Function.const_apply]
+  · simp [coe_const, mem_ofPred_eq, indicator_apply, Function.const_apply]
   · exact hf measurableSet_Ici
 
 theorem monotone_approx (i : ℕ → β) (f : α → β) : Monotone (approx i f) := fun _ _ h =>
@@ -1047,17 +1047,17 @@ theorem restrict_lintegral (f : α →ₛ ℝ≥0∞) {s : Set α} (hs : Measura
     (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (restrict f s ⁻¹' {r}) :=
       lintegral_eq_of_subset _ fun x hx =>
         if hxs : x ∈ s then fun _ => by
-          simp only [f.restrict_apply hs, indicator_of_mem hxs, mem_range_self]
+          simp [f.restrict_apply hs, indicator_of_mem hxs, mem_range_self]
         else False.elim <| hx <| by simp [*]
     _ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) :=
       Finset.sum_congr rfl <|
         forall_mem_range.2 fun b =>
-          if hb : f b = 0 then by simp only [hb, zero_mul]
+          if hb : f b = 0 then by simp [hb, zero_mul]
           else by rw [restrict_preimage_singleton _ hs hb, inter_comm]
 
 theorem lintegral_restrict {m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (s : Set α) (μ : Measure α) :
     f.lintegral (μ.restrict s) = ∑ y ∈ f.range, y * μ (f ⁻¹' {y} ∩ s) := by
-  simp only [lintegral, Measure.restrict_apply, f.measurableSet_preimage]
+  simp [lintegral, Measure.restrict_apply, f.measurableSet_preimage]
 
 theorem restrict_lintegral_eq_lintegral_restrict (f : α →ₛ ℝ≥0∞) {s : Set α}
     (hs : MeasurableSet s) : (restrict f s).lintegral μ = f.lintegral (μ.restrict s) := by
@@ -1143,7 +1143,7 @@ open scoped Classical in
 theorem support_eq [MeasurableSpace α] [Zero β] (f : α →ₛ β) :
     support f = ⋃ y ∈ {y ∈ f.range | y ≠ 0}, f ⁻¹' {y} :=
   Set.ext fun x => by
-    simp only [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and, exists_prop,
+    simp [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and, exists_prop,
       mem_iUnion, mem_singleton_iff, exists_eq_right']
 
 variable {m : MeasurableSpace α} [Zero β] [Zero γ] {μ : Measure α} {f : α →ₛ β}

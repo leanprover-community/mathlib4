@@ -54,7 +54,7 @@ abbrev gaussNorm : ℝ := MvPowerSeries.gaussNorm v (fun _ => c) f
 lemma gaussNorm_eq : gaussNorm v c f = ⨆ i : ℕ, v (f.coeff i) * c ^ i := by
   refine Equiv.iSup_congr (Finsupp.uniqueEquiv ()) ?_
   intro x
-  simp only [coeff, Finsupp.uniqueEquiv_apply, PUnit.default_eq_unit, Finsupp.prod_pow,
+  simp [coeff, Finsupp.uniqueEquiv_apply, PUnit.default_eq_unit, Finsupp.prod_pow,
     Finset.univ_unique, Finset.prod_singleton, show (Finsupp.single () (x PUnit.unit)) = x by grind]
 
 /-- We say `f` HasGaussNorm if the values `v (coeff t f) * c ^ t` is bounded above, that is

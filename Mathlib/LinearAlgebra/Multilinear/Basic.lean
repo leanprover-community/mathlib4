@@ -551,8 +551,8 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
         congr
         apply Finset.card_le_one_iff.1 (Ai_singleton i) hj
         exact mem_piFinset.mp hr i
-      simp only [Finset.sum_congr rfl this, Finset.sum_const, Ai_card i, one_nsmul]
-    simp only [Finset.sum_congr rfl this, Ai_card, card_piFinset, prod_const_one, one_nsmul,
+      simp [Finset.sum_congr rfl this, Finset.sum_const, Ai_card i, one_nsmul]
+    simp [Finset.sum_congr rfl this, Ai_card, card_piFinset, prod_const_one, one_nsmul,
       Finset.sum_const]
   -- Remains the interesting case where one of the `A i`, say `A i₀`, has cardinality at least 2.
   -- We will split into two parts `B i₀` and `C i₀` of smaller cardinality, let `B i = C i = A i`
@@ -567,14 +567,14 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [B, Finset.sdiff_subset, update_self]
-    · simp only [B, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
+      simp [B, Finset.sdiff_subset, update_self]
+    · simp [B, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [C, hj₂, Finset.singleton_subset_iff, update_self]
-    · simp only [C, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
+      simp [C, hj₂, Finset.singleton_subset_iff, update_self]
+    · simp [C, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
   -- split the sum at `i₀` as the sum over `B i₀` plus the sum over `C i₀`, to use additivity.
   have A_eq_BC :
     (fun i => ∑ j ∈ A i, g i j) =
@@ -586,13 +586,13 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       have : A i₀ = B i₀ ∪ C i₀ := by
         simp only [B, C, Function.update_self, Finset.sdiff_union_self_eq_union]
         symm
-        simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left]
+        simp [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left]
       rw [this]
       refine Finset.sum_union <| Finset.disjoint_right.2 fun j hj => ?_
       have : j = j₂ := by
         simpa [C] using hj
       rw [this]
-      simp only [B, Finset.mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
+      simp [B, Finset.mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
         update_self, and_false]
     · simp [hi]
   have Beq :
@@ -601,16 +601,16 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     ext i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [update_self]
-    · simp only [B, hi, update_of_ne, Ne, not_false_iff]
+      simp [update_self]
+    · simp [B, hi, update_of_ne, Ne, not_false_iff]
   have Ceq :
     Function.update (fun i => ∑ j ∈ A i, g i j) i₀ (∑ j ∈ C i₀, g i₀ j) = fun i =>
       ∑ j ∈ C i, g i j := by
     ext i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [update_self]
-    · simp only [C, hi, update_of_ne, Ne, not_false_iff]
+      simp [update_self]
+    · simp [C, hi, update_of_ne, Ne, not_false_iff]
   -- Express the inductive assumption for `B`
   have Brec : (f fun i => ∑ j ∈ B i, g i j) = ∑ r ∈ piFinset B, f fun i => g i (r i) := by
     have : ∑ i, #(B i) < ∑ i, #(A i) := by
@@ -812,7 +812,7 @@ def linearDeriv [DecidableEq ι] [Fintype ι] (f : (Π i, M i) →ₘₛₗ[σ] 
 lemma linearDeriv_apply [DecidableEq ι] [Fintype ι] (f : (Π i, M i) →ₘₛₗ[σ] N)
     (x y : (i : ι) → M i) : f.linearDeriv x y = ∑ i, f (update x i (y i)) := by
   unfold linearDeriv
-  simp only [LinearMap.coe_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
+  simp [LinearMap.coe_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
     Function.comp_apply, Function.eval, toLinearMap_apply]
 
 end Semiring
@@ -991,36 +991,36 @@ def domDomCongrLinearEquiv' {ι' : Type*} (e : ι ≃ ι') :
         let := e.decidableEq
         rw [← e.apply_symm_apply i]
         intro x y
-        simp only [comp_apply, piCongrLeft'_symm_update, f.map_update_add]
+        simp [comp_apply, piCongrLeft'_symm_update, f.map_update_add]
       map_update_smul' := fun m i c => by
         let := e.decidableEq
         rw [← e.apply_symm_apply i]
         intro x
-        simp only [Function.comp, piCongrLeft'_symm_update, f.map_update_smul] }
+        simp [Function.comp, piCongrLeft'_symm_update, f.map_update_smul] }
   invFun f :=
     { toFun := f ∘ e.piCongrLeft' M₁
       map_update_add' := fun m i => by
         let := e.symm.decidableEq
         rw [← e.symm_apply_apply i]
         intro x y
-        simp only [comp_apply, piCongrLeft'_update, f.map_update_add]
+        simp [comp_apply, piCongrLeft'_update, f.map_update_add]
       map_update_smul' := fun m i c => by
         let := e.symm.decidableEq
         rw [← e.symm_apply_apply i]
         intro x
-        simp only [Function.comp, piCongrLeft'_update, f.map_update_smul] }
+        simp [Function.comp, piCongrLeft'_update, f.map_update_smul] }
   map_add' f₁ f₂ := by
     ext
-    simp only [Function.comp, coe_mk, add_apply]
+    simp [Function.comp, coe_mk, add_apply]
   map_smul' c f := by
     ext
-    simp only [Function.comp, coe_mk, smul_apply, RingHom.id_apply]
+    simp [Function.comp, coe_mk, smul_apply, RingHom.id_apply]
   left_inv f := by
     ext
-    simp only [coe_mk, comp_apply, Equiv.symm_apply_apply]
+    simp [coe_mk, comp_apply, Equiv.symm_apply_apply]
   right_inv f := by
     ext
-    simp only [coe_mk, comp_apply, Equiv.apply_symm_apply]
+    simp [coe_mk, comp_apply, Equiv.apply_symm_apply]
 
 /-- The space of constant maps is equivalent to the space of maps that are multilinear with respect
 to an empty family. -/
@@ -1351,7 +1351,7 @@ instance : Sub ((Π i, M i) →ₘₛₗ[σ] N) :=
     ⟨fun m => f m - g m, fun m i x y => by
       simp only [MultilinearMap.map_update_add, sub_eq_add_neg, neg_add]
       abel,
-      fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
+      fun m i c x => by simp [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
 instance : IsSubApply ((Π i, M i) →ₘₛₗ[σ] N) where
 

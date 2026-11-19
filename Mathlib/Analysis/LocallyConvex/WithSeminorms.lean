@@ -91,7 +91,7 @@ variable (p : SeminormFamily R E ι)
 
 theorem basisSets_iff {U : Set E} :
     U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : ℝ), 0 < r ∧ U = ball (i.sup p) 0 r := by
-  simp only [basisSets, mem_iUnion, exists_prop, mem_singleton_iff]
+  simp [basisSets, mem_iUnion, exists_prop, mem_singleton_iff]
 
 theorem basisSets_mem (i : Finset ι) {r : ℝ} (hr : 0 < r) : (i.sup p).ball 0 r ∈ p.basisSets :=
   (basisSets_iff _).mpr ⟨i, _, hr, rfl⟩
@@ -178,7 +178,7 @@ theorem basisSets_smul_left (x : 𝕜) (U : Set F) (hU : U ∈ p.basisSets) :
     use (s.sup p).ball 0 (r / ‖x‖)
     exact ⟨p.basisSets_mem s (div_pos hr (norm_pos_iff.mpr h)), Subset.rfl⟩
   refine ⟨(s.sup p).ball 0 r, p.basisSets_mem s hr, ?_⟩
-  simp only [not_ne_iff.mp h, Set.subset_def, mem_ball_zero, hr, mem_univ, map_zero, imp_true_iff,
+  simp [not_ne_iff.mp h, Set.subset_def, mem_ball_zero, hr, mem_univ, map_zero, imp_true_iff,
     preimage_const_of_mem, zero_smul]
 
 /-- The `moduleFilterBasis` induced by the filter basis `Seminorm.basisSets`. -/
@@ -249,7 +249,7 @@ theorem IsBounded.of_real {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm �
 theorem isBounded_const (ι' : Type*) [Nonempty ι'] {p : ι → Seminorm 𝕜 E} {q : Seminorm 𝕜₂ F}
     (f : E →ₛₗ[σ₁₂] F) :
     IsBounded p (fun _ : ι' => q) f ↔ ∃ (s : Finset ι) (C : ℝ≥0), q.comp f ≤ C • s.sup p := by
-  simp only [IsBounded, forall_const]
+  simp [IsBounded, forall_const]
 
 theorem const_isBounded (ι : Type*) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F}
     (f : E →ₛₗ[σ₁₂] F) : IsBounded (fun _ : ι => p) q f ↔ ∀ i, ∃ C : ℝ≥0, (q i).comp f ≤ C • p := by
@@ -257,7 +257,7 @@ theorem const_isBounded (ι : Type*) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι
   · rcases h i with ⟨s, C, h⟩
     exact ⟨C, h.trans (IsOrderedSMul.smul_le_smul_left _ p (Finset.sup_le fun _ _ ↦ le_rfl) C)⟩
   · use {Classical.arbitrary ι}
-    simp only [h, Finset.sup_singleton]
+    simp [h, Finset.sup_singleton]
 
 theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F} {f : E →ₛₗ[σ₁₂] F}
     (hf : IsBounded p q f) (s' : Finset ι') :
@@ -444,7 +444,7 @@ theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E
   refine hx (this ?_)
   rw [hp.hasBasis_zero_ball.specializes_iff]
   rintro ⟨s, r⟩ (hr : 0 < r)
-  simp only [ball_finset_sup_eq_iInter _ _ _ hr, mem_iInter₂, mem_ball_zero, h, hr, forall_true_iff]
+  simp [ball_finset_sup_eq_iInter _ _ _ hr, mem_iInter₂, mem_ball_zero, h, hr, forall_true_iff]
 
 /-- A family of seminorms is separating iff it induces a T₁ topology. -/
 theorem WithSeminorms.separating_iff_T1 (hp : WithSeminorms p) :
@@ -761,7 +761,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
       have : w = Finset.univ := by
         rcases Finset.nonempty_of_ne_empty w_ne with ⟨i, hi⟩
         ext j
-        simp only [Subsingleton.elim j i, hi, Finset.mem_univ]
+        simp [Subsingleton.elim j i, hi, Finset.mem_univ]
       simpa only [this, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
         Finset.sup_singleton] using hw
     rw [this]

@@ -45,15 +45,15 @@ lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j, A.1 i j = B.1 i j) 
   apply h
 
 instance (m : R) : SMul (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  smul g A := ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩
+  smul g A := ⟨g * A.1, by simp [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩
 
 lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m)) :
-    g • A = ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩ :=
+    g • A = ⟨g * A.1, by simp [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  one_smul b := by rw [smul_def]; simp only [coe_one, one_mul, Subtype.coe_eta]
+  one_smul b := by rw [smul_def]; simp [coe_one, one_mul, Subtype.coe_eta]
   mul_smul x y b := by simp_rw [smul_def, ← mul_assoc, coe_mul]
 
 lemma smul_coe (m : R) (g : SpecialLinearGroup n R) (A : FixedDetMatrix n R m) :
@@ -221,7 +221,7 @@ private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B 
      ∀ B (n : ℤ), C (T ^ n • B) ↔ C B := by
   intro B n
   induction n with
-  | zero => simp only [zpow_zero, one_smul]
+  | zero => simp [zpow_zero, one_smul]
   | succ n hn =>
     simpa only [add_comm (n : ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc,
       prop_red_T hS hT]
@@ -239,8 +239,8 @@ theorem induction_on {C : Δ m → Prop} {A : Δ m} (hm : m ≠ 0)
   apply reduce_rec
   · intro A h
     by_cases h1 : 0 < A.1 0 0
-    · simp only [reduce_of_pos h h1, prop_red_T_pow hS hT, imp_self]
-    · simp only [reduce_of_not_pos h h1, prop_red_T_pow hS hT, prop_red_S hS, imp_self]
+    · simp [reduce_of_pos h h1, prop_red_T_pow hS hT, imp_self]
+    · simp [reduce_of_not_pos h h1, prop_red_T_pow hS hT, prop_red_S hS, imp_self]
   intro A hc ih hA
   rw [← reduce_reduceStep hc] at hA
   simpa only [reduceStep, prop_red_S hS, prop_red_T_pow hS hT] using ih hA

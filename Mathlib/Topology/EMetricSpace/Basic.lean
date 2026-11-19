@@ -132,13 +132,13 @@ theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι �
     {p : Filter ι} :
     TendstoLocallyUniformly F f p ↔
       ∀ ε > 0, ∀ x : β, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
-  simp only [← tendstoLocallyUniformlyOn_univ, tendstoLocallyUniformlyOn_iff, mem_univ,
+  simp [← tendstoLocallyUniformlyOn_univ, tendstoLocallyUniformlyOn_iff, mem_univ,
     forall_const, nhdsWithin_univ]
 
 /-- Expressing uniform convergence using `edist`. -/
 theorem tendstoUniformly_iff {ι : Type*} {F : ι → β → γ} {f : β → γ} {p : Filter ι} :
     TendstoUniformly F f p ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x, edist (f x) (F n x) < ε := by
-  simp only [← tendstoUniformlyOn_univ, tendstoUniformlyOn_iff, mem_univ, forall_const]
+  simp [← tendstoUniformlyOn_univ, tendstoUniformlyOn_iff, mem_univ, forall_const]
 
 end EMetric
 

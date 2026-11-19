@@ -134,7 +134,7 @@ lemma degree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) : (C a * p).deg
 
 theorem natDegree_add_coeff_mul (f g : R[X]) :
     (f * g).coeff (f.natDegree + g.natDegree) = f.coeff f.natDegree * g.coeff g.natDegree := by
-  simp only [coeff_natDegree, coeff_mul_degree_add_degree]
+  simp [coeff_natDegree, coeff_mul_degree_add_degree]
 
 theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
     (p * q).coeff (m + n) = 0 :=
@@ -289,7 +289,7 @@ theorem natDegree_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f
 
 theorem leadingCoeff_map_of_injective {f : R →+* S} (hf : Function.Injective f)
     (p : Polynomial R) : (p.map f).leadingCoeff = f p.leadingCoeff := by
-  simp only [leadingCoeff, natDegree_map_eq_of_injective hf, coeff_map]
+  simp [leadingCoeff, natDegree_map_eq_of_injective hf, coeff_map]
 
 theorem nextCoeff_map {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
     (p.map f).nextCoeff = f p.nextCoeff := by
@@ -364,18 +364,18 @@ theorem degree_C_mul (a0 : a ≠ 0) : (C a * p).degree = p.degree := by
   rw [degree_mul, degree_C a0, zero_add]
 
 theorem natDegree_mul_C (a0 : a ≠ 0) : (p * C a).natDegree = p.natDegree := by
-  simp only [natDegree, degree_mul_C a0]
+  simp [natDegree, degree_mul_C a0]
 
 theorem natDegree_C_mul (a0 : a ≠ 0) : (C a * p).natDegree = p.natDegree := by
-  simp only [natDegree, degree_C_mul a0]
+  simp [natDegree, degree_C_mul a0]
 
 theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
   by_cases q0 : q.natDegree = 0
   · rw [degree_le_zero_iff.mp (natDegree_eq_zero_iff_degree_le_zero.mp q0), comp_C, natDegree_C,
       natDegree_C, mul_zero]
   · by_cases p0 : p = 0
-    · simp only [p0, zero_comp, natDegree_zero, zero_mul]
-    · simp only [Ne, mul_eq_zero, leadingCoeff_eq_zero, p0, natDegree_comp_eq_of_mul_ne_zero,
+    · simp [p0, zero_comp, natDegree_zero, zero_mul]
+    · simp [Ne, mul_eq_zero, leadingCoeff_eq_zero, p0, natDegree_comp_eq_of_mul_ne_zero,
         ne_zero_of_natDegree_gt (Nat.pos_of_ne_zero q0), not_false_eq_true, pow_ne_zero, or_self]
 
 @[simp]

@@ -181,7 +181,7 @@ lemma exists_zpow_uniformizingPolynomial {f : RatFunc K} (hf : f ≠ 0) :
   | f p q hq =>
     use (Associates.mk (Pᵥ).asIdeal).count (Associates.mk (Ideal.span {p})).factors -
       (Associates.mk (Pᵥ).asIdeal).count (Associates.mk (Ideal.span {q})).factors
-    simp only [map_div₀, map_pow, zpow_sub₀ h0, zpow_natCast,
+    simp [map_div₀, map_pow, zpow_sub₀ h0, zpow_natCast,
       valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hq,
       valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle
         (p := p) (by aesop)]

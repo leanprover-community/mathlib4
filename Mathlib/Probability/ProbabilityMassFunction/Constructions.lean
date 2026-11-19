@@ -77,7 +77,7 @@ theorem bind_map (p : PMF α) (f : α → β) (q : β → PMF γ) : (p.map f).bi
 
 @[simp]
 theorem map_const : p.map (Function.const α b) = pure b := by
-  simp only [map, Function.comp_def, bind_const, Function.const]
+  simp [map, Function.comp_def, bind_const, Function.const]
 
 section Measure
 
@@ -318,8 +318,8 @@ theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p 
       simp only [tsub_eq_zero_iff_le, one_le_coe_iff] at h'
       exact eq_of_le_of_ge h h'
     · intro h'
-      simp only [h', ENNReal.coe_one, tsub_self]
-  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_ofPred_eq, ne_eq,
+      simp [h', ENNReal.coe_one, tsub_self]
+  · simp [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_ofPred_eq, ne_eq,
       ENNReal.coe_eq_zero]
 
 @[deprecated ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem +typeChanged

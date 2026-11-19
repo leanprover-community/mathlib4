@@ -113,7 +113,7 @@ instance instAdd : Add 𝓜(𝕜, A) where
     { toProd := a.toProd + b.toProd
       central := fun x y =>
         show (a.snd + b.snd) x * y = x * (a.fst + b.fst) y by
-          simp only [add_apply, mul_add, add_mul, central] }
+          simp [add_apply, mul_add, add_mul, central] }
 
 instance instZero : Zero 𝓜(𝕜, A) where
   zero :=
@@ -125,14 +125,14 @@ instance instNeg : Neg 𝓜(𝕜, A) where
     { toProd := -a.toProd
       central := fun x y =>
         show -a.snd x * y = x * -a.fst y by
-          simp only [neg_mul, mul_neg, central] }
+          simp [neg_mul, mul_neg, central] }
 
 instance instSub : Sub 𝓜(𝕜, A) where
   sub a b :=
     { toProd := a.toProd - b.toProd
       central := fun x y =>
         show (a.snd - b.snd) x * y = x * (a.fst - b.fst) y by
-          simp only [sub_apply, _root_.sub_mul, _root_.mul_sub, central] }
+          simp [sub_apply, _root_.sub_mul, _root_.mul_sub, central] }
 
 section Scalars
 
@@ -144,7 +144,7 @@ instance instSMul : SMul S 𝓜(𝕜, A) where
     { toProd := s • a.toProd
       central := fun x y =>
         show (s • a.snd) x * y = x * (s • a.fst) y by
-          simp only [smul_apply, mul_smul_comm, smul_mul_assoc, central] }
+          simp [smul_apply, mul_smul_comm, smul_mul_assoc, central] }
 
 @[simp]
 theorem smul_toProd (s : S) (a : 𝓜(𝕜, A)) : (s • a).toProd = s • a.toProd :=
@@ -178,20 +178,20 @@ instance instOne : One 𝓜(𝕜, A) :=
 instance instMul : Mul 𝓜(𝕜, A) where
   mul a b :=
     { toProd := (a.fst.comp b.fst, b.snd.comp a.snd)
-      central := fun x y => show b.snd (a.snd x) * y = x * a.fst (b.fst y) by simp only [central] }
+      central := fun x y => show b.snd (a.snd x) * y = x * a.fst (b.fst y) by simp [central] }
 
 instance instNatCast : NatCast 𝓜(𝕜, A) where
   natCast n :=
     ⟨n, fun x y => by
       rw [Prod.snd_natCast, Prod.fst_natCast]
-      simp only [← Nat.smul_one_eq_cast, smul_apply, one_apply_eq_self, mul_smul_comm,
+      simp [← Nat.smul_one_eq_cast, smul_apply, one_apply_eq_self, mul_smul_comm,
         smul_mul_assoc]⟩
 
 instance instIntCast : IntCast 𝓜(𝕜, A) where
   intCast n :=
     ⟨n, fun x y => by
       rw [Prod.snd_intCast, Prod.fst_intCast]
-      simp only [← Int.smul_one_eq_cast, smul_apply, one_apply_eq_self, mul_smul_comm,
+      simp [← Int.smul_one_eq_cast, smul_apply, one_apply_eq_self, mul_smul_comm,
         smul_mul_assoc]⟩
 
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
@@ -542,8 +542,8 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
       simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 <| (h b).trans (h1 b)
     convert NNReal.rpow_le_rpow this two_pos.le
     · simp only [NNReal.rpow_two, div_pow, sq_sqrt]
-      simp only [sq, mul_self_div_self]
-    · simp only [NNReal.rpow_two, sq_sqrt]
+      simp [sq, mul_self_div_self]
+    · simp [NNReal.rpow_two, sq_sqrt]
   have h1 : ∀ b, ‖a.fst b‖₊ ^ 2 ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ := by
     intro b
     calc
@@ -571,7 +571,7 @@ theorem nnNorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ 
 
 @[simp]
 theorem norm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a‖ := by
-  simp only [norm_def, toProdHom_apply, Prod.norm_def, norm_fst_eq_snd, max_eq_right le_rfl]
+  simp [norm_def, toProdHom_apply, Prod.norm_def, norm_fst_eq_snd, max_eq_right le_rfl]
 
 @[simp]
 theorem norm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖ = ‖a‖ := by rw [← norm_fst, norm_fst_eq_snd]
@@ -621,7 +621,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
           _ ≤ ‖a.fst‖₊ * 1 * (‖a.fst‖₊ * 1) :=
             (mul_le_mul' (a.fst.le_opNorm_of_le ((nnNorm_star x).trans_le hx))
               (a.fst.le_opNorm_of_le hy))
-          _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnNorm_fst, le_rfl]
+          _ ≤ ‖a‖₊ * ‖a‖₊ := by simp [mul_one, nnNorm_fst, le_rfl]
       rw [← nnNorm_snd]
       simp only [mul_snd, ← sSup_unitClosedBall_eq_nnNorm, star_snd, mul_apply_eq_comp]
       simp only [← @opNNNorm_mul_apply 𝕜 _ A]

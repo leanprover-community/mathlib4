@@ -188,7 +188,7 @@ noncomputable def commShiftOfLocalization : F'.CommShift A where
       CommShift.isoZero_inv_app, map_comp, CommShift.isoZero_hom_app, Category.assoc,
       ← NatTrans.naturality_assoc, ← NatTrans.naturality]
     dsimp
-    simp only [← Functor.map_comp_assoc, ← Functor.map_comp,
+    simp [← Functor.map_comp_assoc, ← Functor.map_comp,
       Iso.inv_hom_id_app, id_obj, map_id, Category.id_comp, Iso.hom_inv_id_app_assoc]
   commShiftIso_add a b := by
     ext1
@@ -244,7 +244,7 @@ instance NatTrans.commShift_iso_hom_of_localization :
   constructor
   intro a
   ext X
-  simp only [comp_app, Functor.whiskerRight_app, Functor.whiskerLeft_app,
+  simp [comp_app, Functor.whiskerRight_app, Functor.whiskerLeft_app,
     Functor.commShiftIso_comp_hom_app,
     Functor.commShiftOfLocalization_iso_hom_app,
     Category.assoc, ← Functor.map_comp, ← Functor.map_comp_assoc,

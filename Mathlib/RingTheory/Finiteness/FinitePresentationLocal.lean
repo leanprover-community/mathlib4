@@ -87,7 +87,7 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     simp only [map_mul, map_sub, map_sum, map_one, hg', hh']
     rw [Finsupp.linearCombination_apply_of_mem_supported (α := (s : Set S)) S (s := s.attach)] at hl
     · rw [← hl]
-      simp only [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, zero_mul]
+      simp [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, zero_mul]
     · rintro a -
       simp
   let f' : A →ₐ[R] S := Ideal.Quotient.liftₐ I f hfI

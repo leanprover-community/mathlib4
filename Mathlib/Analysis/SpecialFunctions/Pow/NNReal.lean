@@ -81,7 +81,7 @@ lemma rpow_natCast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
 
 @[simp, norm_cast]
 lemma rpow_intCast (x : ℝ≥0) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
-  cases n <;> simp only [Int.ofNat_eq_natCast, Int.cast_natCast, rpow_natCast, zpow_natCast,
+  cases n <;> simp [Int.ofNat_eq_natCast, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
 @[simp]
@@ -278,10 +278,10 @@ theorem rpow_inv_le_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ 
   rw [← rpow_le_rpow_iff hz, ← one_div, rpow_self_rpow_inv hz.ne']
 
 theorem lt_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y := by
-  simp only [← not_le, rpow_inv_le_iff hz]
+  simp [← not_le, rpow_inv_le_iff hz]
 
 theorem rpow_inv_lt_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
-  simp only [← not_le, le_rpow_inv_iff hz]
+  simp [← not_le, le_rpow_inv_iff hz]
 
 section
 variable {y : ℝ≥0}
@@ -347,7 +347,7 @@ theorem rpow_pos {p : ℝ} {x : ℝ≥0} (hx_pos : 0 < x) : 0 < x ^ p := by
     exact rpow_lt_rpow hx_pos hp_pos
   rcases lt_trichotomy (0 : ℝ) p with (hp_pos | rfl | hp_neg)
   · exact rpow_pos_of_nonneg hp_pos
-  · simp only [zero_lt_one, rpow_zero]
+  · simp [zero_lt_one, rpow_zero]
   · rw [← neg_neg p, rpow_neg, inv_pos]
     exact rpow_pos_of_nonneg (neg_pos.mpr hp_neg)
 
@@ -449,10 +449,10 @@ theorem _root_.Real.toNNReal_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) :
   rw [← NNReal.coe_rpow, Real.toNNReal_coe]
 
 theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥0 => x ^ z :=
-  fun x y hxy => by simp only [NNReal.rpow_lt_rpow hxy h]
+  fun x y hxy => by simp [NNReal.rpow_lt_rpow hxy h]
 
 theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0 => x ^ z :=
-  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 =>
+  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp [rpow_zero, monotone_const]) fun h0 =>
     (strictMono_rpow_of_pos h0).monotone
 
 /-- Bundles `fun x : ℝ≥0 => x ^ y` into an order isomorphism when `y : ℝ` is positive,
@@ -600,7 +600,7 @@ theorem rpow_eq_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y =
   simp [rpow_eq_top_iff, hy, asymm hy]
 
 lemma rpow_lt_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y < ∞ ↔ x < ∞ := by
-  simp only [lt_top_iff_ne_top, Ne, rpow_eq_top_iff_of_pos hy]
+  simp [lt_top_iff_ne_top, Ne, rpow_eq_top_iff_of_pos hy]
 
 theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y = ⊤ → x = ⊤ := by
   simp +contextual [ENNReal.rpow_eq_top_iff, hy0.not_gt]
@@ -695,7 +695,7 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
-  cases n <;> simp only [Int.ofNat_eq_natCast, Int.cast_natCast, rpow_natCast, zpow_natCast,
+  cases n <;> simp [Int.ofNat_eq_natCast, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
@@ -705,7 +705,7 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   rcases eq_or_ne z 0 with (rfl | hz); · simp
   replace hz := hz.lt_or_gt
   wlog hxy : x ≤ y
-  · convert! this y x z hz (le_of_not_ge hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
+  · convert! this y x z hz (le_of_not_ge hxy) using 2 <;> simp [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
   · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_gt]
   rcases eq_or_ne y 0 with (rfl | hy0)
@@ -758,7 +758,7 @@ theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : �
   | insert _ _ hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
 
 theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
-  rcases eq_or_ne y 0 with (rfl | hy); · simp only [rpow_zero, inv_one]
+  rcases eq_or_ne y 0 with (rfl | hy); · simp [rpow_zero, inv_one]
   replace hy := hy.lt_or_gt
   rcases eq_or_ne x 0 with (rfl | h0); · cases hy <;> simp [*]
   rcases eq_or_ne x ⊤ with (rfl | h_top); · cases hy <;> simp [*]
@@ -773,12 +773,12 @@ theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥
   intro x y hxy
   lift x to ℝ≥0 using ne_top_of_lt hxy
   rcases eq_or_ne y ∞ with (rfl | hy)
-  · simp only [top_rpow_of_pos h, ← coe_rpow_of_nonneg _ h.le, coe_lt_top]
+  · simp [top_rpow_of_pos h, ← coe_rpow_of_nonneg _ h.le, coe_lt_top]
   · lift y to ℝ≥0 using hy
-    simp only [← coe_rpow_of_nonneg _ h.le, NNReal.rpow_lt_rpow (coe_lt_coe.1 hxy) h, coe_lt_coe]
+    simp [← coe_rpow_of_nonneg _ h.le, NNReal.rpow_lt_rpow (coe_lt_coe.1 hxy) h, coe_lt_coe]
 
 theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0∞ => x ^ z :=
-  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 =>
+  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp [rpow_zero, monotone_const]) fun h0 =>
     (strictMono_rpow_of_pos h0).monotone
 
 /-- Bundles `fun x : ℝ≥0∞ => x ^ y` into an order isomorphism when `y : ℝ` is positive,
@@ -827,16 +827,16 @@ theorem rpow_inv_le_iff_of_neg {x y : ℝ≥0∞} {z : ℝ} (hz : z < 0) : x ^ z
     inv_rpow, ← rpow_neg, neg_neg]
 
 theorem lt_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y := by
-  simp only [← not_le, rpow_inv_le_iff hz]
+  simp [← not_le, rpow_inv_le_iff hz]
 
 theorem rpow_inv_lt_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
-  simp only [← not_le, le_rpow_inv_iff hz]
+  simp [← not_le, le_rpow_inv_iff hz]
 
 theorem lt_rpow_inv_iff_of_neg {x y : ℝ≥0∞} {z : ℝ} (hz : z < 0) : x < y ^ z⁻¹ ↔ y < x ^ z := by
-  simp only [← not_le, rpow_inv_le_iff_of_neg hz]
+  simp [← not_le, rpow_inv_le_iff_of_neg hz]
 
 theorem rpow_inv_lt_iff_of_neg {x y : ℝ≥0∞} {z : ℝ} (hz : z < 0) : x ^ z⁻¹ < y ↔ y ^ z < x := by
-  simp only [← not_le, le_rpow_inv_iff_of_neg hz]
+  simp [← not_le, le_rpow_inv_iff_of_neg hz]
 
 @[gcongr]
 theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (hx' : x ≠ ⊤) (hyz : y < z) :

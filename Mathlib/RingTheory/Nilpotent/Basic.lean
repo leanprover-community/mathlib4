@@ -144,7 +144,7 @@ theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero (h_comm : Commute x y) {m 
   rw [h_comm.add_pow']
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
-  suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
+  suffices x ^ i * y ^ j = 0 by simp [this, nsmul_eq_mul, mul_zero]
   by_cases hi : m ≤ i
   · rw [pow_eq_zero_of_le hi hx, zero_mul]
   rw [pow_eq_zero_of_le ?_ hy, mul_zero]
@@ -182,7 +182,7 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
   by_cases h : HasFiniteSupport f
   · rw [finsum_def, dite_eq_left h]
     exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
-  · simp only [finsum_def, dite_eq_right h, IsNilpotent.zero]
+  · simp [finsum_def, dite_eq_right h, IsNilpotent.zero]
 
 protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by

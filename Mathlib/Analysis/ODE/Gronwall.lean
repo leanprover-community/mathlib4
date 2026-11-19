@@ -71,17 +71,17 @@ theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
 
 theorem gronwallBound_x0 (δ K ε : ℝ) : gronwallBound δ K ε 0 = δ := by
   by_cases hK : K = 0
-  · simp only [gronwallBound, ite_eq_left hK, mul_zero, add_zero]
-  · simp only [gronwallBound, ite_eq_right hK, mul_zero, exp_zero, sub_self, mul_one,
+  · simp [gronwallBound, ite_eq_left hK, mul_zero, add_zero]
+  · simp [gronwallBound, ite_eq_right hK, mul_zero, exp_zero, sub_self, mul_one,
       add_zero]
 
 theorem gronwallBound_ε0 (δ K x : ℝ) : gronwallBound δ K 0 x = δ * exp (K * x) := by
   by_cases hK : K = 0
-  · simp only [gronwallBound_K0, hK, zero_mul, exp_zero, add_zero, mul_one]
-  · simp only [gronwallBound_of_K_ne_0 hK, zero_div, zero_mul, add_zero]
+  · simp [gronwallBound_K0, hK, zero_mul, exp_zero, add_zero, mul_one]
+  · simp [gronwallBound_of_K_ne_0 hK, zero_div, zero_mul, add_zero]
 
 theorem gronwallBound_ε0_δ0 (K x : ℝ) : gronwallBound 0 K 0 x = 0 := by
-  simp only [gronwallBound_ε0, zero_mul]
+  simp [gronwallBound_ε0, zero_mul]
 
 theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwallBound δ K ε x := by
   by_cases hK : K = 0
@@ -124,7 +124,7 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
   intro x hx
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
   convert continuousWithinAt_const.closure_le _ _ (H x hx)
-  · simp only [closure_Ioi, self_mem_Ici]
+  · simp [closure_Ioi, self_mem_Ici]
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
 
 /-- A Grönwall-like inequality: if `f : ℝ → E` is continuous on `[a, b]`, has right derivative

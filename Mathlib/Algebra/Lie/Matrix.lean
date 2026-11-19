@@ -86,7 +86,7 @@ def reindexLieEquiv : Matrix n n R ≃ₗ⁅R⁆ Matrix m m R :=
   { Matrix.reindexLinearEquiv R R e e with
     toFun := Matrix.reindex e e
     map_lie' := fun {_ _} => by
-      simp only [LieRing.of_associative_ring_bracket, Matrix.reindex_apply,
+      simp [LieRing.of_associative_ring_bracket, Matrix.reindex_apply,
         Matrix.submatrix_mul_equiv, Matrix.submatrix_sub, Pi.sub_apply] }
 
 @[simp]
@@ -103,7 +103,7 @@ instance : LieRingModule (Matrix n n R) (n → R) where
   bracket := mulVec
   add_lie := add_mulVec
   lie_add := mulVec_add
-  leibniz_lie x y v := by simp only [Ring.lie_def, mulVec_mulVec, sub_mulVec, sub_add_cancel]
+  leibniz_lie x y v := by simp [Ring.lie_def, mulVec_mulVec, sub_mulVec, sub_add_cancel]
 
 instance : LieModule R (Matrix n n R) (n → R) where
   smul_lie := smul_mulVec

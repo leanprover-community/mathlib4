@@ -152,7 +152,7 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     · simp only [le_top, inf_of_le_left]
       congr
     · simp [hib]
-  simp only [← heq, hω i]
+  simp [← heq, hω i]
 
 theorem Submartingale.bddAbove_iff_exists_tendsto_aux [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
@@ -170,7 +170,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
     hf.sub_martingale (martingale_const_fun _ _ (hf.stronglyAdapted 0) (hf.integrable 0))
   have hg0 : g 0 = 0 := by
     ext ω
-    simp only [g, sub_self, Pi.zero_apply]
+    simp [g, sub_self, Pi.zero_apply]
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
@@ -225,7 +225,7 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
     · exact ⟨-c, hc.neg⟩
     · refine ⟨-c, ?_⟩
       convert! hc.neg
-      simp only [neg_neg, Pi.neg_apply]
+      simp [neg_neg, Pi.neg_apply]
   rw [hω₁, this, ← hω₂]
   constructor <;> rintro ⟨c, hc⟩ <;> refine ⟨-c, fun ω hω => ?_⟩
   · rw [mem_upperBounds] at hc
@@ -269,7 +269,7 @@ theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω)
       ∑ k ∈ Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1 | ℱ k]) := by
   simp only [martingalePart_eq_sum, process_zero, zero_add]
   refine Finset.sum_congr rfl fun k _ => ?_
-  simp only [process, Finset.sum_range_succ_sub_sum]
+  simp [process, Finset.sum_range_succ_sub_sum]
 
 theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω)
     (n : ℕ) : predictablePart (process s) ℱ μ n =

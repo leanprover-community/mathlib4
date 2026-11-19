@@ -227,7 +227,7 @@ end NNReal
 instance Int.instNormedCommRing : NormedCommRing ℤ where
   __ := instCommRing
   __ := instNormedAddCommGroup
-  norm_mul_le m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
+  norm_mul_le m n := by simp [norm, Int.cast_mul, abs_mul, le_rfl]
 
 instance Int.instNormOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩

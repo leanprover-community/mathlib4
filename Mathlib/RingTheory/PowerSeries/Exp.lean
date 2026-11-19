@@ -155,7 +155,7 @@ theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction k with
   | zero =>
-    simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero,
+    simp [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero,
       pow_zero (exp A), coe_comp]
   | succ k h =>
     simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
@@ -169,7 +169,7 @@ theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
         fun k => (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by
   simp only [exp_pow_eq_rescale_exp, rescale]
   ext
-  simp only [one_div, coeff_mk, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+  simp [one_div, coeff_mk, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     coeff_exp, map_sum]
 
 end PowerSeries

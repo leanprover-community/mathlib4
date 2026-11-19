@@ -228,7 +228,7 @@ theorem isOpen_iff_of_mem' (h : ∞ ∈ s) :
 
 theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
     IsOpen s ↔ IsClosed ((↑) ⁻¹' s : Set X)ᶜ ∧ IsCompact ((↑) ⁻¹' s : Set X)ᶜ := by
-  simp only [isOpen_iff_of_mem' h, isClosed_compl_iff, and_comm]
+  simp [isOpen_iff_of_mem' h, isClosed_compl_iff, and_comm]
 
 theorem isOpen_iff_of_notMem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
@@ -335,11 +335,11 @@ theorem comap_coe_nhds_infty : comap ((↑) : X → OnePoint X) (𝓝 ∞) = coc
 
 theorem le_nhds_infty {f : Filter (OnePoint X)} :
     f ≤ 𝓝 ∞ ↔ ∀ s : Set X, IsClosed s → IsCompact s → (↑) '' sᶜ ∪ {∞} ∈ f := by
-  simp only [hasBasis_nhds_infty.ge_iff, and_imp]
+  simp [hasBasis_nhds_infty.ge_iff, and_imp]
 
 theorem ultrafilter_le_nhds_infty {f : Ultrafilter (OnePoint X)} :
     (f : Filter (OnePoint X)) ≤ 𝓝 ∞ ↔ ∀ s : Set X, IsClosed s → IsCompact s → (↑) '' s ∉ f := by
-  simp only [le_nhds_infty, ← compl_image_coe, Ultrafilter.mem_coe,
+  simp [le_nhds_infty, ← compl_image_coe, Ultrafilter.mem_coe,
     Ultrafilter.compl_mem_iff_notMem]
 
 theorem tendsto_nhds_infty' {α : Type*} {f : OnePoint X → α} {l : Filter α} :
@@ -350,7 +350,7 @@ theorem tendsto_nhds_infty {α : Type*} {f : OnePoint X → α} {l : Filter α} 
     Tendsto f (𝓝 ∞) l ↔
       ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   tendsto_nhds_infty'.trans <| by
-    simp only [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and,
+    simp [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and,
       and_assoc]
 
 theorem continuousAt_infty' {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
@@ -360,7 +360,7 @@ theorem continuousAt_infty' {Y : Type*} [TopologicalSpace Y] {f : OnePoint X →
 theorem continuousAt_infty {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔
       ∀ s ∈ 𝓝 (f ∞), ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
-  continuousAt_infty'.trans <| by simp only [hasBasis_coclosedCompact.tendsto_left_iff, and_assoc]
+  continuousAt_infty'.trans <| by simp [hasBasis_coclosedCompact.tendsto_left_iff, and_assoc]
 
 theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} {x : X} :
     ContinuousAt f x ↔ ContinuousAt (f ∘ (↑)) x := by
@@ -368,7 +368,7 @@ theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y}
 
 lemma continuous_iff {Y : Type*} [TopologicalSpace Y] (f : OnePoint X → Y) : Continuous f ↔
     Tendsto (fun x : X ↦ f x) (coclosedCompact X) (𝓝 (f ∞)) ∧ Continuous (fun x : X ↦ f x) := by
-  simp only [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty',
+  simp [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty',
     Function.comp_def]
 
 /--

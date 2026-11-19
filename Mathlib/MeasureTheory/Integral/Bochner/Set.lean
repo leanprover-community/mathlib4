@@ -80,7 +80,7 @@ theorem setIntegral_congr_set (hst : s =ᵐ[μ] t) : ∫ x in s, f x ∂μ = ∫
 theorem setIntegral_union₀ (hst : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
     (hfs : IntegrableOn f s μ) (hft : IntegrableOn f t μ) :
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ := by
-  simp only [Measure.restrict_union₀ hst ht, integral_add_measure hfs hft]
+  simp [Measure.restrict_union₀ hst ht, integral_add_measure hfs hft]
 
 theorem setIntegral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ :=
@@ -225,7 +225,7 @@ theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpac
     ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
   calc
     ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = ENNReal.ofReal (∫ _ in s, ‖(1 : ℝ)‖ ∂μ) := by
-      simp only [norm_one]
+      simp [norm_one]
     _ = ∫⁻ _ in s, 1 ∂μ := by simp [measureReal_def, hs]
     _ = μ s := setLIntegral_one _
 
@@ -420,7 +420,7 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux (hts : s ⊆ t)
       simp only [Set.mem_sdiff, and_congr_left_iff]
       intro h'x
       by_cases xs : x ∈ s
-      · simp only [xs, hts xs]
+      · simp [xs, hts xs]
       · simp only [xs, iff_false]
         intro xt
         exact h'x (hx ⟨xt, xs⟩)
@@ -515,7 +515,7 @@ theorem integral_norm_eq_pos_sub_neg {f : X → ℝ} (hfi : Integrable f μ) :
       rw [Set.mem_compl_iff, Set.notMem_ofPred_iff] at hx
       linarith
     _ = ∫ x in {x | 0 ≤ f x}, f x ∂μ - ∫ x in {x | f x ≤ 0}, f x ∂μ := by
-      rw [← setIntegral_neg_eq_setIntegral_nonpos hfi.1, compl_ofPred]; simp only [not_le]
+      rw [← setIntegral_neg_eq_setIntegral_nonpos hfi.1, compl_ofPred]; simp [not_le]
 
 theorem setIntegral_const [CompleteSpace E] (c : E) : ∫ _ in s, c ∂μ = μ.real s • c := by
   rw [integral_const, measureReal_restrict_apply_univ]
@@ -975,7 +975,7 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
   refine (MemLp.coeFn_toLp ((Lp.memLp (c • f)).restrict s)).mp ?_
   refine
     (Lp.coeFn_smul c (MemLp.toLp f ((Lp.memLp f).restrict s))).mono fun x hx1 hx2 hx3 hx4 => ?_
-  simp only [hx2, hx1, hx3, hx4, Pi.smul_apply]
+  simp [hx2, hx1, hx3, hx4, Pi.smul_apply]
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memLp f).restrict s).toLp f`. This map is non-expansive. -/
@@ -1063,7 +1063,7 @@ theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) (δ : ℝ) : μ E ≤ ∫⁻ x, (thickenedIndicatorAux δ E x : ℝ≥0∞) ∂μ := by
   convert_to lintegral μ (E.indicator fun _ => (1 : ℝ≥0∞)) ≤ lintegral μ (thickenedIndicatorAux δ E)
   · rw [lintegral_indicator E_mble]
-    simp only [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
+    simp [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
   · apply lintegral_mono
     apply indicator_le_thickenedIndicatorAux
 
@@ -1073,7 +1073,7 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
     μ E ≤ ∫⁻ x, (thickenedIndicator δ_pos E x : ℝ≥0∞) ∂μ := by
   convert! measure_le_lintegral_thickenedIndicatorAux μ E_mble δ
   dsimp
-  simp only [thickenedIndicatorAux_lt_top.ne, ENNReal.coe_toNNReal, Ne, not_false_iff]
+  simp [thickenedIndicatorAux_lt_top.ne, ENNReal.coe_toNNReal, Ne, not_false_iff]
 
 end thickenedIndicator
 
@@ -1099,9 +1099,9 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) 
   have : Set.indicator s (Function.const X c) * f = s.indicator (c • f) := by
     ext1 x
     by_cases hx : x ∈ s
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, smul_eq_mul,
+    · simp [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, smul_eq_mul,
         ← Function.const_def]
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_notMem, not_false_iff, zero_mul]
+    · simp [hx, Pi.mul_apply, Set.indicator_of_notMem, not_false_iff, zero_mul]
   rw [this, integrable_indicator_iff hs]
   exact (hf.smul c).integrableOn
 
@@ -1203,7 +1203,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
         · specialize hv p hp y hy
           calc
           ‖L (g y) (f p y) - L (g y) (f q y)‖
-            = ‖L (g y) (f p y - f q y)‖ := by simp only [map_sub]
+            = ‖L (g y) (f p y - f q y)‖ := by simp [map_sub]
           _ ≤ ‖L‖ * ‖g y‖ * ‖f p y - f q y‖ := le_opNorm₂ _ _ _
           _ ≤ ‖L‖ * ‖g y‖ * δ := by gcongr
         · simp only [hfs p y h'p hy, hfs q y hq hy, sub_self, norm_zero]

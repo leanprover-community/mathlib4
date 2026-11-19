@@ -248,8 +248,8 @@ theorem ascFactorial_mul_ascFactorial (n l k : ℕ) :
   cases n with
   | zero =>
     cases l
-    · simp only [ascFactorial_zero, Nat.add_zero, Nat.one_mul, Nat.zero_add]
-    · simp only [Nat.add_right_comm, zero_ascFactorial, Nat.zero_add, Nat.zero_mul]
+    · simp [ascFactorial_zero, Nat.add_zero, Nat.one_mul, Nat.zero_add]
+    · simp [Nat.add_right_comm, zero_ascFactorial, Nat.zero_add, Nat.zero_mul]
   | succ n' =>
     apply Nat.mul_left_cancel (factorial_pos n')
     simp only [Nat.add_assoc, ← Nat.mul_assoc, factorial_mul_ascFactorial]
@@ -365,7 +365,7 @@ theorem descFactorial_self : ∀ n : ℕ, n.descFactorial n = n !
 
 @[simp]
 theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial k = 0 ↔ n < k
-  | 0 => by simp only [descFactorial_zero, Nat.one_ne_zero, Nat.not_lt_zero]
+  | 0 => by simp [descFactorial_zero, Nat.one_ne_zero, Nat.not_lt_zero]
   | succ k => by
     rw [descFactorial_succ, mul_eq_zero, descFactorial_eq_zero_iff_lt, Nat.lt_succ_iff,
       Nat.sub_eq_zero_iff_le, Nat.lt_iff_le_and_ne, or_iff_left_iff_imp, and_imp]

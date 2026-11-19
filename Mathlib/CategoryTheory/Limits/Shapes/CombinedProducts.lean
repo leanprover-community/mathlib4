@@ -56,7 +56,7 @@ def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
       cases w <;>
       · simp only [fan_mk_proj, combPairHoms]
         erw [← Category.assoc, h.fac]
-        simp only [mk_π_app, IsLimit.fac])
+        simp [mk_π_app, IsLimit.fac])
     (fun s m hm ↦ Fan.IsLimit.hom_ext h _ _ <| fun w ↦ by
       cases w
       · refine Fan.IsLimit.hom_ext h₁ _ _ (fun a ↦ by aesop)
@@ -92,7 +92,7 @@ def combPairIsColimit : IsColimit (Cofan.mk bc.pt (combPairHoms c₁ c₂ bc)) :
       cases w <;>
       · simp only [cofan_mk_inj, combPairHoms, Category.assoc]
         erw [h.fac]
-        simp only [Cofan.mk_ι_app, Cofan.IsColimit.fac])
+        simp [Cofan.mk_ι_app, Cofan.IsColimit.fac])
     (fun s m hm ↦ Cofan.IsColimit.hom_ext h _ _ <| fun w ↦ by
       cases w
       · refine Cofan.IsColimit.hom_ext h₁ _ _ (fun a ↦ by aesop)

@@ -247,7 +247,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- We rewrite into this particular form,
   -- so that simp lemmas about inequalities involving `Finset.inf'` can fire.
   rw [show ∀ a b ε : ℝ, dist a b < ε ↔ a < b + ε ∧ b - ε < a by
-        intros; simp only [← Metric.mem_ball, Real.ball_eq_Ioo, Set.mem_Ioo, and_comm]]
+        intros; simp [← Metric.mem_ball, Real.ball_eq_Ioo, Set.mem_Ioo, and_comm]]
   constructor
   · simp only [k, Finset.inf'_lt_iff, ContinuousMap.inf'_apply]
     exact Set.exists_set_mem_of_union_eq_top _ _ xs_w z
@@ -378,7 +378,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
   have hFA : F ∈ A := by
     refine A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ ?_ <| A.smul_mem A.one_mem <| f x₂)
     ext1
-    simp only [ContinuousMap.smul_apply, ContinuousMap.one_apply, smul_eq_mul, mul_one, const_apply]
+    simp [ContinuousMap.smul_apply, ContinuousMap.one_apply, smul_eq_mul, mul_one, const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
   refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
   · -- This is also an element of the subalgebra, and takes only real values
@@ -685,8 +685,8 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | zero => simp [map_zero]
   | id => exact hmul_id
   | star_id => exact hmul_star_id
-  | add _ _ h₁ h₂ => simp only [map_add, add_mul, h₁, h₂, zero_add]
-  | mul _ _ _ h => simp only [map_mul, mul_assoc, h, mul_zero]
+  | add _ _ h₁ h₂ => simp [map_add, add_mul, h₁, h₂, zero_add]
+  | mul _ _ _ h => simp [map_mul, mul_assoc, h, mul_zero]
   | smul _ _ h => rw [map_smul, smul_mul_assoc, h, smul_zero]
   | frequently f h =>
     exact h.mem_of_closed (s := {g | φ g * a = 0}) <|
@@ -702,8 +702,8 @@ lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
   | zero => simp [map_zero]
   | id => exact hmul_id
   | star_id => exact hmul_star_id
-  | add _ _ h₁ h₂ => simp only [map_add, mul_add, h₁, h₂, zero_add]
-  | mul _ _ h _ => simp only [map_mul, ← mul_assoc, h, zero_mul]
+  | add _ _ h₁ h₂ => simp [map_add, mul_add, h₁, h₂, zero_add]
+  | mul _ _ h _ => simp [map_mul, ← mul_assoc, h, zero_mul]
   | smul _ _ h => rw [map_smul, mul_smul_comm, h, smul_zero]
   | frequently f h =>
     exact h.mem_of_closed (s := {g | a * φ g = 0}) <|

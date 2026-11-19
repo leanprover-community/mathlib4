@@ -94,7 +94,7 @@ def dgoToHomologicalComplex :
         dsimp at h ⊢
         subst h
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := congr($f.comm i).symm
-        simp only [dite_true, Category.assoc, eqToHom_f', reassoc_of% this] }
+        simp [dite_true, Category.assoc, eqToHom_f', reassoc_of% this] }
 
 /-- The functor from homological complexes to differential graded objects.
 -/

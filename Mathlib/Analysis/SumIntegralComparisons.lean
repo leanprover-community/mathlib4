@@ -111,7 +111,7 @@ theorem AntitoneOn.integral_le_sum_Ico (hab : a ≤ b) (hf : AntitoneOn f (Set.I
   suffices ∫ x in a..a + ↑(b - a), f x ≤ ∑ x ∈ .Ico (0 + a) (b - a + a), f x by simp_all
   rw [← Finset.sum_Ico_add, Nat.Ico_zero_eq_range]
   suffices ∫ x in a..a + ↑(b - a), f x ≤ ∑ x ∈ .range (b - a), f (a + x) by simp_all
-  exact AntitoneOn.integral_le_sum (by simp only [hf, hab, Nat.cast_sub, add_sub_cancel])
+  exact AntitoneOn.integral_le_sum (by simp [hf, hab, Nat.cast_sub, add_sub_cancel])
 
 theorem AntitoneOn.sum_le_integral_of_integrableOn (hf : AntitoneOn f (Ioc x₀ (x₀ + a)))
     (hfi : IntegrableOn f (Icc x₀ (x₀ + a))) :

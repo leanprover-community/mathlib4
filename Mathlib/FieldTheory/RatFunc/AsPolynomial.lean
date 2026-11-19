@@ -304,7 +304,7 @@ theorem valuation_of_mk (f g : Polynomial K) :
       (Polynomial.idealX K).intValuation f / (Polynomial.idealX K).intValuation g := by
   rcases eq_or_ne g 0 with rfl | hg
   · simp
-  simp only [RatFunc.mk_eq_mk' _ hg, valuation_of_mk']
+  simp [RatFunc.mk_eq_mk' _ hg, valuation_of_mk']
 
 end HeightOneSpectrum
 

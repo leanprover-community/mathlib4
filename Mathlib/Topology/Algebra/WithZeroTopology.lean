@@ -128,7 +128,7 @@ theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ γ, 
     hasBasis_nhds_zero.mem_iff]
 
 theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ γ, γ ≠ 0 ∧ s ⊆ Ici γ := by
-  simp only [← isOpen_compl_iff, isOpen_iff, mem_compl_iff, not_not, ← compl_Ici,
+  simp [← isOpen_compl_iff, isOpen_iff, mem_compl_iff, not_not, ← compl_Ici,
     compl_subset_compl]
 
 theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=

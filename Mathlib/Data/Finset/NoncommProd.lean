@@ -298,7 +298,7 @@ theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       f a * noncommProd s f (comm.mono fun _ => mem_insert_of_mem) := by
-  simp only [← cons_eq_insert _ _ ha, noncommProd_cons]
+  simp [← cons_eq_insert _ _ ha, noncommProd_cons]
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
@@ -306,7 +306,7 @@ theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) 
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       noncommProd s f (comm.mono fun _ => mem_insert_of_mem) * f a := by
-  simp only [← cons_eq_insert _ _ ha, noncommProd_cons']
+  simp [← cons_eq_insert _ _ ha, noncommProd_cons']
 
 @[to_additive (attr := simp)]
 theorem noncommProd_singleton (a : α) (f : α → β) :
@@ -328,7 +328,7 @@ theorem map_noncommProd [MonoidHomClass F β γ] (s : Finset α) (f : α → β)
 theorem noncommProd_eq_pow_card (s : Finset α) (f : α → β) (comm) (m : β) (h : ∀ x ∈ s, f x = m) :
     s.noncommProd f comm = m ^ s.card := by
   rw [noncommProd, Multiset.noncommProd_eq_pow_card _ _ m]
-  · simp only [Finset.card_def, Multiset.card_map]
+  · simp [Finset.card_def, Multiset.card_map]
   · simpa using h
 
 @[to_additive]
@@ -423,7 +423,7 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · intro j _; dsimp
   · rw [noncommProd_insert_of_notMem _ _ _ _ (notMem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    · simp only [Pi.mulSingle_eq_same]
+    · simp [Pi.mulSingle_eq_same]
     · simpa using fun _ a ↦ Pi.mulSingle_eq_of_ne (a ·.symm) _
 
 set_option backward.isDefEq.respectTransparency false in

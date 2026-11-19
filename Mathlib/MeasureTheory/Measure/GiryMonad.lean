@@ -124,7 +124,7 @@ theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
 functions. -/
 def join (m : Measure (Measure α)) : Measure α :=
   Measure.ofMeasurable (fun s _ => ∫⁻ μ, μ s ∂m)
-    (by simp only [measure_empty, lintegral_const, zero_mul])
+    (by simp [measure_empty, lintegral_const, zero_mul])
     (by
       intro f hf h
       simp_rw [measure_iUnion h hf]
@@ -192,7 +192,7 @@ theorem join_zero : (0 : Measure (Measure α)).join = 0 := by
 @[fun_prop]
 theorem measurable_join : Measurable (join : Measure (Measure α) → Measure α) :=
   measurable_of_measurable_coe _ fun s hs => by
-    simp only [join_apply hs, measurable_lintegral (measurable_coe hs)]
+    simp [join_apply hs, measurable_lintegral (measurable_coe hs)]
 
 theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : AEMeasurable f (join m)) :
     ∫⁻ x, f x ∂join m = ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
@@ -345,7 +345,7 @@ theorem dirac_bind {f : α → Measure β} (hf : Measurable f) (a : α) : bind (
 @[simp]
 theorem bind_dirac {m : Measure α} : bind m dirac = m := by
   ext1 s hs
-  simp only [bind_apply hs measurable_dirac.aemeasurable, dirac_apply' _ hs, lintegral_indicator hs,
+  simp [bind_apply hs measurable_dirac.aemeasurable, dirac_apply' _ hs, lintegral_indicator hs,
     Pi.one_apply, lintegral_one, restrict_apply, MeasurableSet.univ, univ_inter]
 
 @[simp]

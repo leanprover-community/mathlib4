@@ -386,7 +386,7 @@ theorem hasStieltjesIntegral_congr (hBB' : B = B')
 theorem stieltjesIntegrable_congr (hBB' : B = B')
     (hf : Set.EqOn f₁ f₂ (.uIcc a b)) (hg : Set.EqOn g₁ g₂ (.uIcc a b)) :
     StieltjesIntegrable a b B f₁ g₁ ↔ StieltjesIntegrable a b B' f₂ g₂ := by
-  simp only [StieltjesIntegrable, hasStieltjesIntegral_congr hBB' hf hg]
+  simp [StieltjesIntegrable, hasStieltjesIntegral_congr hBB' hf hg]
 
 theorem stieltjesIntegral_congr (hBB' : B = B')
     (hf : Set.EqOn f₁ f₂ (.uIcc a b)) (hg : Set.EqOn g₁ g₂ (.uIcc a b)) :

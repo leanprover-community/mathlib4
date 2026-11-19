@@ -37,13 +37,13 @@ theorem mem_range_iff {m n r : ℤ} : r ∈ range m n ↔ m ≤ r ∧ r < n := b
 
 instance decidableLELT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m ≤ r → r < n → P r) :=
-  decidable_of_iff (∀ r ∈ range m n, P r) <| by simp only [mem_range_iff, and_imp]
+  decidable_of_iff (∀ r ∈ range m n, P r) <| by simp [mem_range_iff, and_imp]
 
 instance decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m ≤ r → r ≤ n → P r) :=
   -- Add empty type ascription, otherwise it fails to find `Decidable` instance.
   decidable_of_iff (∀ r ∈ range m (n + 1), P r :) <| by
-    simp only [mem_range_iff, and_imp, lt_add_one_iff]
+    simp [mem_range_iff, and_imp, lt_add_one_iff]
 
 instance decidableLTLT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m < r → r < n → P r) :=

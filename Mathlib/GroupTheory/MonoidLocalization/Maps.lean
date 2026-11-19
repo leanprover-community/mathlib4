@@ -359,7 +359,7 @@ theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
     k.map hl j (f.map hy k x) = f.map (fun x ↦ show l.comp g x ∈ U from hl ⟨g x, hy x⟩) j x := by
   -- Porting note: need to specify `k` explicitly
   rw [← f.map_comp_map (k := k) hy j hl]
-  simp only [MonoidHom.coe_comp, comp_apply]
+  simp [MonoidHom.coe_comp, comp_apply]
 
 @[to_additive] theorem map_injective_of_surjOn_or_injective
     (or : (S : Set M).SurjOn g T ∨ Injective k) (hg : Injective g) :

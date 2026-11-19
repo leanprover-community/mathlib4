@@ -93,7 +93,7 @@ theorem IsGaloisGroup.of_isFractionRing [hGKL : IsGaloisGroup G K L]
   · have := hGKL.faithful
     refine eq_of_smul_eq_smul fun (y : L) ↦ ?_
     obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective B y
-    simp only [smul_div₀', ← algebraMap.coe_smul', h]
+    simp [smul_div₀', ← algebraMap.coe_smul', h]
   · simp [Algebra.smul_def, algebraMap.coe_smul', ← hc]
   · obtain ⟨b, hb⟩ := hGKL.isInvariant.isInvariant (algebraMap B L x)
       (by simpa [← algebraMap.coe_smul'])

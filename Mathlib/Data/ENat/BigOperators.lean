@@ -39,7 +39,7 @@ theorem iInf_sum {ι α : Type*} {f : ι → α → ℕ∞} {s : Finset α} [Non
     (h : ∀ (t : Finset α) (i j : ι), ∃ k, ∀ a ∈ t, f k a ≤ f i a ∧ f k a ≤ f j a) :
     ⨅ i, ∑ a ∈ s, f i a = ∑ a ∈ s, ⨅ i, f i a := by
   induction s using Finset.cons_induction_on with
-  | empty => simp only [Finset.sum_empty, ciInf_const]
+  | empty => simp [Finset.sum_empty, ciInf_const]
   | cons a s ha ih =>
     simp only [Finset.sum_cons, ← ih]
     refine (iInf_add_iInf fun i j => ?_).symm

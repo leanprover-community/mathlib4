@@ -55,11 +55,11 @@ lemma gammaPDF_eq (a r x : ℝ) :
   rfl
 
 lemma gammaPDF_of_neg {a r x : ℝ} (hx : x < 0) : gammaPDF a r x = 0 := by
-  simp only [gammaPDF_eq, ite_eq_right (not_le.mpr hx), ENNReal.ofReal_zero]
+  simp [gammaPDF_eq, ite_eq_right (not_le.mpr hx), ENNReal.ofReal_zero]
 
 lemma gammaPDF_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
     gammaPDF a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x))) := by
-  simp only [gammaPDF_eq, ite_eq_left hx]
+  simp [gammaPDF_eq, ite_eq_left hx]
 
 /-- The Lebesgue integral of the gamma pdf over nonpositive reals equals 0 -/
 lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :

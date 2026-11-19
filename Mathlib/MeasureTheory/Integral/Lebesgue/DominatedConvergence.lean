@@ -44,7 +44,7 @@ theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} (g : α → ℝ≥0�
       · refine ne_top_of_le_ne_top h_fin (lintegral_mono_ae ?_)
         refine (ae_all_iff.2 h_bound).mono fun n hn => ?_
         exact iSup_le fun i => iSup_le fun _ => hn i
-    _ = ∫⁻ a, limsup (fun n => f n a) atTop ∂μ := by simp only [limsup_eq_iInf_iSup_of_nat]
+    _ = ∫⁻ a, limsup (fun n => f n a) atTop ∂μ := by simp [limsup_eq_iInf_iSup_of_nat]
 
 /-- **Dominated convergence theorem** for nonnegative `Measurable` functions. -/
 theorem tendsto_lintegral_of_dominated_convergence {F : ℕ → α → ℝ≥0∞} {f : α → ℝ≥0∞}

@@ -66,7 +66,7 @@ instance [SMul N β] [ContinuousConstSMul N β] : SMulCommClass N Mᵈᵐᵃ (α
 instance [SMul N α] [MeasurableConstSMul N α] [SMulInvariantMeasure N α μ] [SMulCommClass M N α] :
     SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (α →ₘ[μ] β) where
   smul_comm := mk.surjective.forall.2 fun c₁ ↦ mk.surjective.forall.2 fun c₂ ↦
-    (AEEqFun.induction_on · fun f hf ↦ by simp only [mk_smul_mk_aeeqFun, smul_comm])
+    (AEEqFun.induction_on · fun f hf ↦ by simp [mk_smul_mk_aeeqFun, smul_comm])
 
 instance [Zero β] : SMulZeroClass Mᵈᵐᵃ (α →ₘ[μ] β) where
   smul_zero _ := rfl
@@ -84,9 +84,9 @@ variable [Monoid M] [MulAction M α] [MeasurableConstSMul M α] [SMulInvariantMe
 @[to_additive]
 instance : MulAction Mᵈᵐᵃ (α →ₘ[μ] β) where
   one_smul := (AEEqFun.induction_on · fun _ _ ↦ by
-    simp only [← mk_one, mk_smul_mk_aeeqFun, one_smul])
+    simp [← mk_one, mk_smul_mk_aeeqFun, one_smul])
   mul_smul := mk.surjective.forall.2 fun _ ↦ mk.surjective.forall.2 fun _ ↦
-    (AEEqFun.induction_on · fun _ _ ↦ by simp only [← mk_mul, mk_smul_mk_aeeqFun, mul_smul])
+    (AEEqFun.induction_on · fun _ _ ↦ by simp [← mk_mul, mk_smul_mk_aeeqFun, mul_smul])
 
 instance [Monoid β] [ContinuousMul β] : MulDistribMulAction Mᵈᵐᵃ (α →ₘ[μ] β) where
   smul_one _ := rfl

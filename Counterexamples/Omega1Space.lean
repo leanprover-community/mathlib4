@@ -43,7 +43,7 @@ instance : Nontrivial (Iic ω₁) :=
   nontrivial_of_ne ⊥ ⊤ (fun h => (Cardinal.isSuccLimit_omega _).bot_lt.ne (Subtype.ext_iff.mp h))
 
 instance : CompactSpace (Iic ω₁) :=
-  isCompact_iff_compactSpace.mp (by simp only [← Icc_bot, bot_eq_zero, isCompact_Icc])
+  isCompact_iff_compactSpace.mp (by simp [← Icc_bot, bot_eq_zero, isCompact_Icc])
 
 private lemma exists_lt_notMem_of_disjoint {U V : Set (Iic ω₁)} (hV : V ∈ 𝓝 ⊤)
     (hUV : Disjoint U V) (x : Iio ω₁) : ∃ y, x < y ∧ inc y ∉ U := by

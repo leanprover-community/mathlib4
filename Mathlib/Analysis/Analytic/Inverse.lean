@@ -104,10 +104,10 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
   ext n v
   match n with
   | 0 =>
-    simp only [comp_coeff_zero', leftInv_coeff_zero, ContinuousMultilinearMap.uncurry0_apply,
+    simp [comp_coeff_zero', leftInv_coeff_zero, ContinuousMultilinearMap.uncurry0_apply,
       id_apply_zero]
   | 1 =>
-    simp only [leftInv_coeff_one, comp_coeff_one, h, id_apply_one, ContinuousLinearEquiv.coe_apply,
+    simp [leftInv_coeff_one, comp_coeff_one, h, id_apply_one, ContinuousLinearEquiv.coe_apply,
       ContinuousLinearEquiv.symm_apply_apply, continuousMultilinearCurryFin1_symm_apply]
   | n + 2 =>
     have A :
@@ -190,8 +190,8 @@ theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   ext1 n
   induction n using Nat.strong_induction_on with | _ n IH
   match n with
-  | 0 => simp only [rightInv_coeff_zero]
-  | 1 => simp only [rightInv_coeff_one]
+  | 0 => simp [rightInv_coeff_zero]
+  | 1 => simp [rightInv_coeff_one]
   | n + 2 =>
     simp only [rightInv, neg_inj]
     rw [removeZero_comp_of_pos _ _ (add_pos_of_nonneg_of_pos n.zero_le zero_lt_two)]
@@ -253,7 +253,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
     ext i
     exact i.elim0
   | 1 =>
-    simp only [comp_coeff_one, h, rightInv_coeff_one, ContinuousLinearEquiv.apply_symm_apply,
+    simp [comp_coeff_one, h, rightInv_coeff_one, ContinuousLinearEquiv.apply_symm_apply,
       id_apply_one, ContinuousLinearEquiv.coe_apply, continuousMultilinearCurryFin1_symm_apply]
   | n + 2 =>
     have N : 0 < n + 2 := by simp
@@ -436,7 +436,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {x : E} {n : ℕ} (hn : 2 ≤ n +
   calc
     ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i x k‖ =
         a * I + ∑ k ∈ Ico 2 (n + 1), a ^ k * ‖p.rightInv i x k‖ := by
-      simp only [I, LinearIsometryEquiv.norm_map, pow_one, rightInv_coeff_one,
+      simp [I, LinearIsometryEquiv.norm_map, pow_one, rightInv_coeff_one,
         show Ico (1 : ℕ) 2 = {1} from Nat.Ico_succ_singleton 1,
         sum_singleton, ← sum_Ico_consecutive _ one_le_two hn]
     _ =

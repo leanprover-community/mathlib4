@@ -149,7 +149,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
   ext
-  simp only [Abelian.coimageImageComparison, Category.assoc,
+  simp [Abelian.coimageImageComparison, Category.assoc,
     cokernel.π_desc_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -404,14 +404,14 @@ theorem coimageIsoImage'_hom :
     (coimageIsoImage' f).hom =
       cokernel.desc _ (factorThruImage f) (by simp [← cancel_mono (Limits.image.ι f)]) := by
   ext
-  simp only [← cancel_mono (Limits.image.ι f), IsImage.isoExt_hom, cokernel.π_desc,
+  simp [← cancel_mono (Limits.image.ι f), IsImage.isoExt_hom, cokernel.π_desc,
     Category.assoc, IsImage.lift_ι, coimageStrongEpiMonoFactorisation_m,
     Limits.image.fac]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem factorThruImage_comp_coimageIsoImage'_inv :
     factorThruImage f ≫ (coimageIsoImage' f).inv = cokernel.π _ := by
-  simp only [IsImage.isoExt_inv, image.isImage_lift, image.fac_lift,
+  simp [IsImage.isoExt_inv, image.isImage_lift, image.fac_lift,
     coimageStrongEpiMonoFactorisation_e]
 
 variable {Z : C} (g : Y ⟶ Z)
@@ -448,7 +448,7 @@ abbrev imageIsoImage : Abelian.image f ≅ image f :=
 
 set_option backward.isDefEq.respectTransparency false in
 theorem imageIsoImage_hom_comp_image_ι : (imageIsoImage f).hom ≫ Limits.image.ι _ = kernel.ι _ := by
-  simp only [IsImage.isoExt_hom, IsImage.lift_ι, imageStrongEpiMonoFactorisation_m]
+  simp [IsImage.isoExt_hom, IsImage.lift_ι, imageStrongEpiMonoFactorisation_m]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem imageIsoImage_inv :

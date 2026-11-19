@@ -193,7 +193,7 @@ theorem memSobolev_fun_zero (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
     MemSobolev s p (0 : 𝓢'(E, F)) := by
   use 0
   rw [← Lp.toTemperedDistributionCLM_apply]
-  simp only [map_zero]
+  simp [map_zero]
 
 @[simp]
 theorem memSobolev_besselPotential_iff {s r : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f : 𝓢'(E, F)} :

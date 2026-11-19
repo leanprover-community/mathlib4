@@ -211,10 +211,10 @@ def LinearMap.toMatrixRight' [DecidableEq m] : ((m → R) →ₗ[R] n → R) ≃
     simp
   map_add' f g := by
     ext i j
-    simp only [Pi.add_apply, LinearMap.add_apply, Matrix.add_apply]
+    simp [Pi.add_apply, LinearMap.add_apply, Matrix.add_apply]
   map_smul' c f := by
     ext i j
-    simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, Matrix.smul_apply]
+    simp [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, Matrix.smul_apply]
 
 /-- A `Matrix m n R` is linearly equivalent over `Rᵐᵒᵖ` to a linear map `(m → R) →ₗ[R] (n → R)`,
 by having matrices act by right multiplication. -/
@@ -337,7 +337,7 @@ theorem Matrix.mulVecLin_mul [Fintype m] (M : Matrix l m R) (N : Matrix m n R) :
 
 theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
     (LinearMap.ker M.mulVecLin) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
-  simp only [Submodule.eq_bot_iff, LinearMap.mem_ker, Matrix.mulVecLin_apply]
+  simp [Submodule.eq_bot_iff, LinearMap.mem_ker, Matrix.mulVecLin_apply]
 
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range M.col) := by
@@ -367,18 +367,18 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
   invFun := Matrix.mulVecLin
   right_inv M := by
     ext i j
-    simp only [Matrix.mulVec_single_one, col_apply, Matrix.mulVecLin_apply, of_apply]
+    simp [Matrix.mulVec_single_one, col_apply, Matrix.mulVecLin_apply, of_apply]
   left_inv f := by
     apply (Pi.basisFun R n).ext
     intro j; ext i
-    simp only [Pi.basisFun_apply, Matrix.mulVec_single_one, col_apply,
+    simp [Pi.basisFun_apply, Matrix.mulVec_single_one, col_apply,
       Matrix.mulVecLin_apply, of_apply]
   map_add' f g := by
     ext i j
-    simp only [Pi.add_apply, LinearMap.add_apply, of_apply, Matrix.add_apply]
+    simp [Pi.add_apply, LinearMap.add_apply, of_apply, Matrix.add_apply]
   map_smul' c f := by
     ext i j
-    simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, of_apply, Matrix.smul_apply]
+    simp [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, of_apply, Matrix.smul_apply]
 
 /-- A `Matrix m n R` is linearly equivalent to a linear map `(n → R) →ₗ[R] (m → R)`.
 
@@ -783,7 +783,7 @@ theorem Matrix.toLin_mul [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matr
 theorem Matrix.toLin_pow (A : Matrix n n R) (k : ℕ) :
     (A ^ k).toLin v₁ v₁ = (A.toLin v₁ v₁) ^ k := by
   induction k with
-  | zero => simp only [pow_zero, toLin_one, End.one_eq_id]
+  | zero => simp [pow_zero, toLin_one, End.one_eq_id]
   | succ n ih => rw [pow_succ, pow_succ, toLin_mul v₁ v₁, ih, Module.End.mul_eq_comp]
 
 /-- Shortcut lemma for `Matrix.toLin_mul` and `LinearMap.comp_apply`. -/
@@ -933,7 +933,7 @@ variable {m : Type*} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
 theorem toMatrix_lmul' (x : S) (i j) :
     LinearMap.toMatrix b b (lmul R S x) i j = b.repr (x * b j) i := by
-  simp only [LinearMap.toMatrix_apply', coe_lmul_eq_mul, LinearMap.mul_apply']
+  simp [LinearMap.toMatrix_apply', coe_lmul_eq_mul, LinearMap.mul_apply']
 
 @[simp]
 theorem toMatrix_lsmul (x : R) :
@@ -1016,7 +1016,7 @@ variable (b : Basis m R S) (c : Basis n S T)
 theorem smulTower_leftMulMatrix (x) (ik jk) :
     leftMulMatrix (b.smulTower c) x ik jk =
       leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
-  simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
+  simp [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
     Basis.smulTower_repr, Finsupp.smul_apply, smul_eq_mul, map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
 

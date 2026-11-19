@@ -245,13 +245,13 @@ theorem tendsto_approx_atTop (c : CU P) (x : X) :
   tendsto_atTop_ciSup (c.approx_mono x) ⟨1, fun _ ⟨_, hn⟩ => hn ▸ c.approx_le_one _ _⟩
 
 theorem lim_of_mem_C (c : CU P) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by
-  simp only [CU.lim, approx_of_mem_C, h, ciSup_const]
+  simp [CU.lim, approx_of_mem_C, h, ciSup_const]
 
 theorem disjoint_C_support_lim (c : CU P) : Disjoint c.C (Function.support c.lim) :=
   Function.disjoint_support_iff.mpr (fun x hx => lim_of_mem_C c x hx)
 
 theorem lim_of_notMem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
-  simp only [CU.lim, approx_of_notMem_U c _ h, ciSup_const]
+  simp [CU.lim, approx_of_notMem_U c _ h, ciSup_const]
 
 theorem lim_eq_midpoint (c : CU P) (x : X) :
     c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) := by

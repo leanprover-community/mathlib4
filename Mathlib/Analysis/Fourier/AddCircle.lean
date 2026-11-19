@@ -264,7 +264,7 @@ theorem span_fourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p 
   rw [map_span]
   unfold fourierLp
   rw [range_comp']
-  simp only [ContinuousLinearMap.coe_coe]
+  simp [ContinuousLinearMap.coe_coe]
 
 /-- The monomials `fourier n` are an orthonormal set with respect to normalised Haar measure. -/
 theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
@@ -422,7 +422,7 @@ theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
     fourierBasis.repr f i = fourierCoeff f i := by
   trans ∫ t : AddCircle T, conj ((@fourierLp T hT 2 _ i : AddCircle T → ℂ) t) * f t ∂haarAddCircle
   · rw [fourierBasis.repr_apply_apply f i, MeasureTheory.L2.inner_def, coe_fourierBasis]
-    simp only [RCLike.inner_apply']
+    simp [RCLike.inner_apply']
   · apply integral_congr_ae
     filter_upwards [coeFn_fourierLp 2 i] with _ ht
     rw [ht, ← fourier_neg, smul_eq_mul]

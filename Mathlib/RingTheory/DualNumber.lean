@@ -89,7 +89,7 @@ open TrivSqZeroExt
 
 lemma isNilpotent_iff_eps_dvd [DivisionSemiring R] {x : R[ε]} :
     IsNilpotent x ↔ ε ∣ x := by
-  simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero, fst_eq_zero_iff_eps_dvd]
+  simp [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero, fst_eq_zero_iff_eps_dvd]
 
 section Field
 

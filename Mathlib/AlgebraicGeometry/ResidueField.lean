@@ -353,7 +353,7 @@ lemma Spec.residueFieldIsoOfField_eq {k : Type u} [Field k] (x : Spec (.of k)) :
     Spec.residueFieldIsoOfField x = Spec.residueFieldIso (.of k) x ≪≫
       (Ideal.algEquivResidueFieldOfField x.asIdeal).symm.toRingEquiv.toCommRingCatIso := by
   refine Iso.ext ((Iso.inv_eq_inv _ _).mp ?_)
-  simp only [Spec.residueFieldIsoOfField_inv, Spec.Γevaluation_eq_of_field, Iso.inv_hom_id_assoc,
+  simp [Spec.residueFieldIsoOfField_inv, Spec.Γevaluation_eq_of_field, Iso.inv_hom_id_assoc,
     Iso.trans_inv, RingEquiv.toCommRingCatIso_hom, RingEquiv.toCommRingCatIso_inv,
     AlgEquiv.symm_toRingEquiv, RingEquiv.symm_symm]
 

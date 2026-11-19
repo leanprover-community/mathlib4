@@ -118,7 +118,7 @@ lemma Subcomplex.Pairing.strongInnerAnodyneExtensions {X : SSet.{u}} {A : X.Subc
     (P : A.Pairing) [h₁ : P.IsRegular] [h₂ : P.IsInner] :
     strongInnerAnodyneExtensions A.ι :=
   ⟨inferInstance, Pairing.ofIso P (Iso.refl _)
-    (by simp only [Iso.refl_hom, preimage_id, Subfunctor.range_ι]), inferInstance, inferInstance⟩
+    (by simp [Iso.refl_hom, preimage_id, Subfunctor.range_ι]), inferInstance, inferInstance⟩
 
 lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
     strongInnerAnodyneExtensions A.ι ↔ ∃ (P : A.Pairing) (_ : P.IsRegular), P.IsInner :=

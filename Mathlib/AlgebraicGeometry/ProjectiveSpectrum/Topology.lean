@@ -231,7 +231,7 @@ theorem zeroLocus_iUnion {γ : Sort*} (s : γ → Set A) :
 
 theorem zeroLocus_bUnion (s : Set (Set A)) :
     zeroLocus 𝒜 (⋃ s' ∈ s, s' : Set A) = ⋂ s' ∈ s, zeroLocus 𝒜 s' := by
-  simp only [zeroLocus_iUnion]
+  simp [zeroLocus_iUnion]
 
 theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=
@@ -413,7 +413,7 @@ where `x ≤ y` if and only if `y ∈ closure {x}`.
 
 
 instance : PartialOrder (ProjectiveSpectrum 𝒜) :=
-  PartialOrder.lift asHomogeneousIdeal fun ⟨_, _, _⟩ ⟨_, _, _⟩ => by simp only [mk.injEq, imp_self]
+  PartialOrder.lift asHomogeneousIdeal fun ⟨_, _, _⟩ ⟨_, _, _⟩ => by simp [mk.injEq, imp_self]
 
 @[simp]
 theorem as_ideal_le_as_ideal (x y : ProjectiveSpectrum 𝒜) :
@@ -429,7 +429,7 @@ theorem le_iff_mem_closure (x y : ProjectiveSpectrum 𝒜) :
     x ≤ y ↔ y ∈ closure ({x} : Set (ProjectiveSpectrum 𝒜)) := by
   rw [← as_ideal_le_as_ideal, ← zeroLocus_vanishingIdeal_eq_closure, mem_zeroLocus,
     vanishingIdeal_singleton]
-  simp only [as_ideal_le_as_ideal, coe_subset_coe]
+  simp [as_ideal_le_as_ideal, coe_subset_coe]
 
 end Order
 

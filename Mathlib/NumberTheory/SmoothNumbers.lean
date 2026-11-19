@@ -111,7 +111,7 @@ lemma mem_factoredNumbers_iff_primeFactors_subset {s : Finset ℕ} {m : ℕ} :
 @[simp]
 lemma factoredNumbers_empty : factoredNumbers ∅ = {1} := by
   ext m
-  simp only [mem_factoredNumbers, Finset.notMem_empty, ← List.eq_nil_iff_forall_not_mem,
+  simp [mem_factoredNumbers, Finset.notMem_empty, ← List.eq_nil_iff_forall_not_mem,
     primeFactorsList_eq_nil, and_or_left, not_and_self_iff, ne_and_eq_iff_right zero_ne_one,
     false_or, Set.mem_singleton_iff]
 
@@ -246,7 +246,7 @@ lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ 
 /-- The `n`-smooth numbers agree with the `Finset.range n`-factored numbers. -/
 lemma smoothNumbers_eq_factoredNumbers (n : ℕ) :
     smoothNumbers n = factoredNumbers (Finset.range n) := by
-  simp only [smoothNumbers, ne_eq, mem_primeFactorsList', and_imp, factoredNumbers,
+  simp [smoothNumbers, ne_eq, mem_primeFactorsList', and_imp, factoredNumbers,
     Finset.mem_range]
 
 /-- The `n`-smooth numbers agree with the `primesBelow n`-factored numbers. -/
@@ -271,11 +271,11 @@ lemma mem_smoothNumbers_of_dvd {n m k : ℕ} (h : m ∈ smoothNumbers n) (h' : k
 are less than `n`. -/
 lemma mem_smoothNumbers_iff_forall_le {n m : ℕ} :
     m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ≤ m, p.Prime → p ∣ m → p < n := by
-  simp only [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers_iff_forall_le, Finset.mem_range]
+  simp [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers_iff_forall_le, Finset.mem_range]
 
 /-- `m` is `n`-smooth if and only if all prime divisors of `m` are less than `n`. -/
 lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
-  simp only [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers', Finset.mem_range]
+  simp [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers', Finset.mem_range]
 
 /-- The `Finset` of prime factors of an `n`-smooth number is contained in the `Finset`
 of primes below `n`. -/
@@ -301,7 +301,7 @@ lemma ne_zero_of_mem_smoothNumbers {n m : ℕ} (h : m ∈ smoothNumbers n) : m �
 
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
-  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_zero, factoredNumbers_empty]
+  simp [smoothNumbers_eq_factoredNumbers, Finset.range_zero, factoredNumbers_empty]
 
 /-- The product of two `n`-smooth numbers is an `n`-smooth number. -/
 theorem mul_mem_smoothNumbers {m₁ m₂ n : ℕ}
@@ -312,15 +312,15 @@ theorem mul_mem_smoothNumbers {m₁ m₂ n : ℕ}
 /-- The product of the prime factors of `n` that are less than `N` is an `N`-smooth number. -/
 lemma prod_mem_smoothNumbers (n N : ℕ) :
     (n.primeFactorsList.filter (· < N)).prod ∈ smoothNumbers N := by
-  simp only [smoothNumbers_eq_factoredNumbers, ← Finset.mem_range, prod_mem_factoredNumbers]
+  simp [smoothNumbers_eq_factoredNumbers, ← Finset.mem_range, prod_mem_factoredNumbers]
 
 /-- The sets of `N`-smooth and of `(N+1)`-smooth numbers are the same when `N` is not prime.
 See `Nat.equivProdNatSmoothNumbers` for when `N` is prime. -/
 lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : (N + 1).smoothNumbers = N.smoothNumbers := by
-  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_add_one, factoredNumbers_insert _ hN]
+  simp [smoothNumbers_eq_factoredNumbers, Finset.range_add_one, factoredNumbers_insert _ hN]
 
 @[simp] lemma smoothNumbers_one : smoothNumbers 1 = {1} := by
-  simp +decide only [not_false_eq_true, smoothNumbers_succ, smoothNumbers_zero]
+  simp +decide [not_false_eq_true, smoothNumbers_succ, smoothNumbers_zero]
 
 @[gcongr] lemma smoothNumbers_mono {N M : ℕ} (hNM : N ≤ M) : N.smoothNumbers ⊆ M.smoothNumbers :=
   fun _ hx ↦ ⟨hx.1, fun p hp => (hx.2 p hp).trans_le hNM⟩
@@ -408,10 +408,10 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
     have hn' (n) : n ∈ smoothNumbers k ∨ n ≠ 0 ∧ n ∉ smoothNumbers k ↔ n ≠ 0 := by
       have : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
       refine ⟨fun H ↦ Or.elim H this fun H ↦ H.1, fun H ↦ ?_⟩
-      simp only [ne_eq, H, not_false_eq_true, true_and, or_not]
+      simp [ne_eq, H, not_false_eq_true, true_and, or_not]
     rwa [Finset.filter_congr (s := Finset.range (succ N)) fun n _ ↦ hn' n]
   rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
-  simp only [Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
+  simp [Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 
 /-- A `k`-smooth number can be written as a square times a product of distinct primes `< k`. -/
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :
@@ -453,7 +453,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :
     #(smoothNumbersUpTo N k) ≤ 2 ^ #k.primesBelow * N.sqrt := by
   convert (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans Finset.card_image_le
-  simp only [Finset.card_product, Finset.card_powerset, Finset.mem_range, zero_lt_succ,
+  simp [Finset.card_product, Finset.card_powerset, Finset.mem_range, zero_lt_succ,
     Finset.card_erase_of_mem, Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 
 /-- The set of `k`-rough numbers `≤ N` can be written as the union of the sets of multiples `≤ N`

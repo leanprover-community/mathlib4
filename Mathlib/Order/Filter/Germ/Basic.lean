@@ -203,7 +203,7 @@ theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
 /-- Lift a binary function `β → γ → δ` to a function `Germ l β → Germ l γ → Germ l δ`. -/
 def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
   Quotient.map₂ (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
-    Hg.mp <| Hf.mono fun x Hf Hg => by simp only [Hf, Hg]
+    Hg.mp <| Hf.mono fun x Hf Hg => by simp [Hf, Hg]
 
 @[simp]
 theorem map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
@@ -627,7 +627,7 @@ instance instMulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) whe
 
 @[to_additive]
 instance instMulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
-  one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
+  one_smul f := inductionOn f fun f => by simp [← coe_one, ← coe_smul', one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast
@@ -639,7 +639,7 @@ instance instDistribMulAction [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     inductionOn₂ f g fun f g => by
       norm_cast
       simp [smul_add]
-  smul_zero c := by simp only [← coe_zero, ← coe_smul, smul_zero]
+  smul_zero c := by simp [← coe_zero, ← coe_smul, smul_zero]
 
 instance instDistribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     DistribMulAction (Germ l M) (Germ l N) where
@@ -647,7 +647,7 @@ instance instDistribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     inductionOn₃ c f g fun c f g => by
       norm_cast
       simp [smul_add]
-  smul_zero c := inductionOn c fun c => by simp only [← coe_zero, ← coe_smul', smul_zero]
+  smul_zero c := inductionOn c fun c => by simp [← coe_zero, ← coe_smul', smul_zero]
 
 instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
   add_smul c₁ c₂ f :=
@@ -665,7 +665,7 @@ instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast
       simp [add_smul]
-  zero_smul f := inductionOn f fun f => by simp only [← coe_zero, ← coe_smul', zero_smul]
+  zero_smul f := inductionOn f fun f => by simp [← coe_zero, ← coe_smul', zero_smul]
 
 end Module
 

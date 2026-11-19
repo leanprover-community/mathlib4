@@ -224,9 +224,9 @@ lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_in
       (summable_f_nat k (1 - a) ht).hasSum).summable.norm
   intro n
   rcases n with - | m
-  · simp only [f_int, f_nat, Int.ofNat_eq_natCast, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
+  · simp [f_int, f_nat, Int.ofNat_eq_natCast, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
       abs_abs]
-  · simp only [f_int, f_nat, Int.cast_negSucc, norm_mul, norm_eq_abs, abs_pow, abs_abs,
+  · simp [f_int, f_nat, Int.cast_negSucc, norm_mul, norm_eq_abs, abs_pow, abs_abs,
       (by { push_cast; ring } : -↑(m + 1) + a = -(m + (1 - a))), abs_neg, neg_sq]
 
 /-- The sum to be bounded (`ℤ` version). -/
@@ -234,7 +234,7 @@ def F_int (k : ℕ) (a : UnitAddCircle) (t : ℝ) : ℝ :=
   (show Function.Periodic (fun b ↦ ∑' (n : ℤ), f_int k b t n) 1 by
     intro b
     simp_rw [← (Equiv.addRight (1 : ℤ)).tsum_eq (f := fun n ↦ f_int k b t n)]
-    simp only [f_int, ← add_assoc, add_comm, Equiv.coe_addRight, Int.cast_add, Int.cast_one]).lift a
+    simp [f_int, ← add_assoc, add_comm, Equiv.coe_addRight, Int.cast_add, Int.cast_one]).lift a
 
 lemma F_int_eq_of_mem_Icc (k : ℕ) {a : ℝ} (ha : a ∈ Icc 0 1) {t : ℝ} (ht : 0 < t) :
     F_int k a t = (F_nat k a t) + (F_nat k (1 - a) t) := by

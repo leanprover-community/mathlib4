@@ -99,7 +99,7 @@ lemma interedges_eq_biUnion :
 theorem interedges_biUnion_left (s : Finset ι) (t : Finset β) (f : ι → Finset α) :
     interedges r (s.biUnion f) t = s.biUnion fun a ↦ interedges r (f a) t := by
   ext
-  simp only [mem_biUnion, mem_interedges_iff, exists_and_right, ← and_assoc]
+  simp [mem_biUnion, mem_interedges_iff, exists_and_right, ← and_assoc]
 
 theorem interedges_biUnion_right (s : Finset α) (t : Finset ι) (f : ι → Finset β) :
     interedges r s (t.biUnion f) = t.biUnion fun b ↦ interedges r s (f b) := by

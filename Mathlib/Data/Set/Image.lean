@@ -464,7 +464,7 @@ theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by grind
 
 theorem image_preimage_inter (f : α → β) (s : Set α) (t : Set β) :
-    f '' (f ⁻¹' t ∩ s) = t ∩ f '' s := by simp only [inter_comm, image_inter_preimage]
+    f '' (f ⁻¹' t ∩ s) = t ∩ f '' s := by simp [inter_comm, image_inter_preimage]
 
 @[simp]
 theorem image_inter_nonempty_iff {f : α → β} {s : Set α} {t : Set β} :
@@ -660,7 +660,7 @@ theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
 
 theorem range_subset_range_iff_exists_comp {f : α → γ} {g : β → γ} :
     range f ⊆ range g ↔ ∃ h : α → β, f = g ∘ h := by
-  simp only [range_subset_iff, mem_range, Classical.skolem, funext_iff, (· ∘ ·), eq_comm]
+  simp [range_subset_iff, mem_range, Classical.skolem, funext_iff, (· ∘ ·), eq_comm]
 
 theorem range_eq_iff (f : α → β) (s : Set β) :
     range f = s ↔ (∀ a, f a ∈ s) ∧ ∀ b ∈ s, ∃ a, f a = b := by grind
@@ -724,7 +724,7 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
 @[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
-  rw [← forall_mem_range, range_image]; simp only [mem_powerset_iff]
+  rw [← forall_mem_range, range_image]; simp [mem_powerset_iff]
 
 @[simp]
 theorem preimage_subset_preimage_iff {s t : Set α} {f : β → α} (hs : s ⊆ range f) :
@@ -885,7 +885,7 @@ theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h
     range (Subtype.map f h) = (↑) ⁻¹' f '' { x | p x } := by
   ext ⟨x, hx⟩
   simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map]
-  simp only [Subtype.mk.injEq, exists_prop, mem_ofPred_eq]
+  simp [Subtype.mk.injEq, exists_prop, mem_ofPred_eq]
 
 theorem image_swap_eq_preimage_swap : image (@Prod.swap α β) = preimage Prod.swap :=
   image_eq_preimage_of_inverse Prod.swap_leftInverse Prod.swap_rightInverse

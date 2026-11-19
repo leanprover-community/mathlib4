@@ -99,13 +99,13 @@ variable (h₁ h₂)
 lemma leftHomologyMap'_neg :
     leftHomologyMap' (-φ) h₁ h₂ = -leftHomologyMap' φ h₁ h₂ := by
   have γ : LeftHomologyMapData φ h₁ h₂ := default
-  simp only [γ.leftHomologyMap'_eq, γ.neg.leftHomologyMap'_eq, LeftHomologyMapData.neg_φH]
+  simp [γ.leftHomologyMap'_eq, γ.neg.leftHomologyMap'_eq, LeftHomologyMapData.neg_φH]
 
 @[simp]
 lemma cyclesMap'_neg :
     cyclesMap' (-φ) h₁ h₂ = -cyclesMap' φ h₁ h₂ := by
   have γ : LeftHomologyMapData φ h₁ h₂ := default
-  simp only [γ.cyclesMap'_eq, γ.neg.cyclesMap'_eq, LeftHomologyMapData.neg_φK]
+  simp [γ.cyclesMap'_eq, γ.neg.cyclesMap'_eq, LeftHomologyMapData.neg_φK]
 
 @[simp]
 lemma leftHomologyMap'_add :
@@ -113,7 +113,7 @@ lemma leftHomologyMap'_add :
       leftHomologyMap' φ' h₁ h₂ := by
   have γ : LeftHomologyMapData φ h₁ h₂ := default
   have γ' : LeftHomologyMapData φ' h₁ h₂ := default
-  simp only [γ.leftHomologyMap'_eq, γ'.leftHomologyMap'_eq,
+  simp [γ.leftHomologyMap'_eq, γ'.leftHomologyMap'_eq,
     (γ.add γ').leftHomologyMap'_eq, LeftHomologyMapData.add_φH]
 
 @[simp]
@@ -122,20 +122,20 @@ lemma cyclesMap'_add :
       cyclesMap' φ' h₁ h₂ := by
   have γ : LeftHomologyMapData φ h₁ h₂ := default
   have γ' : LeftHomologyMapData φ' h₁ h₂ := default
-  simp only [γ.cyclesMap'_eq, γ'.cyclesMap'_eq,
+  simp [γ.cyclesMap'_eq, γ'.cyclesMap'_eq,
     (γ.add γ').cyclesMap'_eq, LeftHomologyMapData.add_φK]
 
 @[simp]
 lemma leftHomologyMap'_sub :
     leftHomologyMap' (φ - φ') h₁ h₂ = leftHomologyMap' φ h₁ h₂ -
       leftHomologyMap' φ' h₁ h₂ := by
-  simp only [sub_eq_add_neg, leftHomologyMap'_add, leftHomologyMap'_neg]
+  simp [sub_eq_add_neg, leftHomologyMap'_add, leftHomologyMap'_neg]
 
 @[simp]
 lemma cyclesMap'_sub :
     cyclesMap' (φ - φ') h₁ h₂ = cyclesMap' φ h₁ h₂ -
       cyclesMap' φ' h₁ h₂ := by
-  simp only [sub_eq_add_neg, cyclesMap'_add, cyclesMap'_neg]
+  simp [sub_eq_add_neg, cyclesMap'_add, cyclesMap'_neg]
 
 variable (φ φ')
 
@@ -207,13 +207,13 @@ variable (h₁ h₂)
 lemma rightHomologyMap'_neg :
     rightHomologyMap' (-φ) h₁ h₂ = -rightHomologyMap' φ h₁ h₂ := by
   have γ : RightHomologyMapData φ h₁ h₂ := default
-  simp only [γ.rightHomologyMap'_eq, γ.neg.rightHomologyMap'_eq, RightHomologyMapData.neg_φH]
+  simp [γ.rightHomologyMap'_eq, γ.neg.rightHomologyMap'_eq, RightHomologyMapData.neg_φH]
 
 @[simp]
 lemma opcyclesMap'_neg :
     opcyclesMap' (-φ) h₁ h₂ = -opcyclesMap' φ h₁ h₂ := by
   have γ : RightHomologyMapData φ h₁ h₂ := default
-  simp only [γ.opcyclesMap'_eq, γ.neg.opcyclesMap'_eq, RightHomologyMapData.neg_φQ]
+  simp [γ.opcyclesMap'_eq, γ.neg.opcyclesMap'_eq, RightHomologyMapData.neg_φQ]
 
 @[simp]
 lemma rightHomologyMap'_add :
@@ -221,7 +221,7 @@ lemma rightHomologyMap'_add :
       rightHomologyMap' φ' h₁ h₂ := by
   have γ : RightHomologyMapData φ h₁ h₂ := default
   have γ' : RightHomologyMapData φ' h₁ h₂ := default
-  simp only [γ.rightHomologyMap'_eq, γ'.rightHomologyMap'_eq,
+  simp [γ.rightHomologyMap'_eq, γ'.rightHomologyMap'_eq,
     (γ.add γ').rightHomologyMap'_eq, RightHomologyMapData.add_φH]
 
 @[simp]
@@ -230,20 +230,20 @@ lemma opcyclesMap'_add :
       opcyclesMap' φ' h₁ h₂ := by
   have γ : RightHomologyMapData φ h₁ h₂ := default
   have γ' : RightHomologyMapData φ' h₁ h₂ := default
-  simp only [γ.opcyclesMap'_eq, γ'.opcyclesMap'_eq,
+  simp [γ.opcyclesMap'_eq, γ'.opcyclesMap'_eq,
     (γ.add γ').opcyclesMap'_eq, RightHomologyMapData.add_φQ]
 
 @[simp]
 lemma rightHomologyMap'_sub :
     rightHomologyMap' (φ - φ') h₁ h₂ = rightHomologyMap' φ h₁ h₂ -
       rightHomologyMap' φ' h₁ h₂ := by
-  simp only [sub_eq_add_neg, rightHomologyMap'_add, rightHomologyMap'_neg]
+  simp [sub_eq_add_neg, rightHomologyMap'_add, rightHomologyMap'_neg]
 
 @[simp]
 lemma opcyclesMap'_sub :
     opcyclesMap' (φ - φ') h₁ h₂ = opcyclesMap' φ h₁ h₂ -
       opcyclesMap' φ' h₁ h₂ := by
-  simp only [sub_eq_add_neg, opcyclesMap'_add, opcyclesMap'_neg]
+  simp [sub_eq_add_neg, opcyclesMap'_add, opcyclesMap'_neg]
 
 variable (φ φ')
 
@@ -732,12 +732,12 @@ variable (S : ShortComplex C) [S.HasLeftHomology] {A : C}
 lemma add_liftCycles :
     S.liftCycles k hk + S.liftCycles k' hk' =
       S.liftCycles (k + k') (by rw [add_comp, hk, hk', add_zero]) := by
-  simp only [← cancel_mono S.iCycles, liftCycles_i, add_comp]
+  simp [← cancel_mono S.iCycles, liftCycles_i, add_comp]
 
 lemma sub_liftCycles :
     S.liftCycles k hk - S.liftCycles k' hk' =
       S.liftCycles (k - k') (by rw [sub_comp, hk, hk', sub_zero]) := by
-  simp only [← cancel_mono S.iCycles, liftCycles_i, sub_comp]
+  simp [← cancel_mono S.iCycles, liftCycles_i, sub_comp]
 
 end
 

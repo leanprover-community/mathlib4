@@ -127,7 +127,7 @@ theorem isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨ Prime
 theorem prime_span_singleton_iff {a : A} : Prime (span {a}) ↔ Prime a := by
   rcases eq_or_ne a 0 with rfl | ha
   · rw [Set.singleton_zero, span_zero, ← zero_eq_bot, ← not_iff_not]
-    simp only [not_prime_zero, not_false_eq_true]
+    simp [not_prime_zero, not_false_eq_true]
   · have ha' : span {a} ≠ ⊥ := by simpa only [ne_eq, span_singleton_eq_bot] using ha
     rw [prime_iff_isPrime ha', span_singleton_prime ha]
 
@@ -143,7 +143,7 @@ nonrec theorem mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) :
   rw [← dvd_iff_le]
   by_cases hp : p = 0
   · rw [← zero_eq_bot] at hI
-    simp only [hp, zero_notMem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
+    simp [hp, zero_notMem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
       not_false_eq_true, implies_true]
   · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
 
@@ -273,14 +273,14 @@ lemma mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal A) :
 
 lemma iInf_mul (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal A) :
     (⨅ i, J i) * I = ⨅ i, J i * I := by
-  simp only [mul_iInf, mul_comm _ I]
+  simp [mul_iInf, mul_comm _ I]
 
 lemma mul_inf (I J K : Ideal A) : I * (J ⊓ K) = I * J ⊓ I * K := by
   rw [inf_eq_iInf, mul_iInf, inf_eq_iInf]
   congr! 2 with ⟨⟩
 
 lemma inf_mul (I J K : Ideal A) : (I ⊓ J) * K = I * K ⊓ J * K := by
-  simp only [mul_inf, mul_comm _ K]
+  simp [mul_inf, mul_comm _ K]
 
 end Ideal
 
@@ -329,8 +329,8 @@ noncomputable instance : StrongNormalizedGCDMonoid (Ideal A) :=
       simp only [dvd_iff_le]
       exact fun h1 h2 => @sup_le (Ideal A) _ _ _ _ h1 h2
     lcm := (· ⊓ ·)
-    lcm_zero_left := fun _ => by simp only [zero_eq_bot, bot_inf_eq]
-    lcm_zero_right := fun _ => by simp only [zero_eq_bot, inf_bot_eq]
+    lcm_zero_left := fun _ => by simp [zero_eq_bot, bot_inf_eq]
+    lcm_zero_right := fun _ => by simp [zero_eq_bot, inf_bot_eq]
     gcd_mul_lcm := fun _ _ => by rw [associated_iff_eq, sup_mul_inf]
     normalize_gcd := fun _ _ => normalize_eq _
     normalize_lcm := fun _ _ => normalize_eq _ }
@@ -631,7 +631,7 @@ theorem idealFactorsFunOfQuotHom_id :
     idealFactorsFunOfQuotHom (RingHom.id (A ⧸ J)).surjective = OrderHom.id :=
   OrderHom.ext _ _
     (funext fun X => by
-      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id,
+      simp [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id,
         comap_map_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective, ←
         RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
         sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])
@@ -1007,7 +1007,7 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
         (prime_of_normalized_factor i hi).ne_zero).irreducible ?_
       · obtain ⟨a, ha, ha'⟩ := this
         use ⟨a, ha⟩
-        simp only [← span_singleton_eq_span_singleton.mpr ha',
+        simp [← span_singleton_eq_span_singleton.mpr ha',
             span_singleton_generator]
       · exact (Submodule.IsPrincipal.mem_iff_generator_dvd i).mp
           ((show span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))
@@ -1022,7 +1022,7 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplici
     emultiplicity d r =
       emultiplicity (normalizedFactorsEquivSpanNormalizedFactors hr ⟨d, hd⟩ : Ideal R)
         (span {r}) := by
-  simp only [normalizedFactorsEquivSpanNormalizedFactors, emultiplicity_span_eq_emultiplicity,
+  simp [normalizedFactorsEquivSpanNormalizedFactors, emultiplicity_span_eq_emultiplicity,
     Subtype.coe_mk, Equiv.ofBijective_apply]
 
 /-- The bijection `normalized_factors_equiv_span_normalized_factors.symm` between the set of prime
@@ -1049,8 +1049,8 @@ theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) 
   rw [emultiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
     emultiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
     normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
-  · simp only [normalize_apply, this]
-  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
+  · simp [normalize_apply, this]
+  · simp [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
   · simpa only [prime_span_singleton_iff]
 
 theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}

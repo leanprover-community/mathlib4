@@ -91,7 +91,7 @@ theorem FactorSet.prod_eq_zero_iff [IsCancelMulZero α] [Nontrivial α] (p : Fac
     p.prod = 0 ↔ p = ⊤ := by
   unfold FactorSet at p
   induction p  -- TODO: `induction_eliminator` doesn't work with `abbrev`
-  · simp only [Associates.prod_top]
+  · simp [Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false, not_exists]
     exact fun a => not_and_of_not_right _ a.prop.ne_zero
@@ -117,11 +117,11 @@ def count (p : Associates α) : FactorSet α → ℕ :=
 @[simp]
 theorem count_some (hp : Irreducible p) (s : Multiset _) :
     count p (WithTop.some s) = s.count ⟨p, hp⟩ := by
-  simp only [count, dite_eq_left hp, bcount]
+  simp [count, dite_eq_left hp, bcount]
 
 @[simp]
 theorem count_zero (hp : Irreducible p) : count p (0 : FactorSet α) = 0 := by
-  simp only [count, dite_eq_left hp, bcount, Multiset.count_zero]
+  simp [count, dite_eq_left hp, bcount, Multiset.count_zero]
 
 theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dite_eq_right hp
 
@@ -217,7 +217,7 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
   apply Function.hfunext
   · have : a ~ᵤ 0 ↔ b ~ᵤ 0 := Iff.intro (fun ha0 => hab.symm.trans ha0) fun hb0 => hab.trans hb0
     simp only [associated_zero_iff_eq_zero] at this
-    simp only [quotient_mk_eq_mk, this, mk_eq_zero]
+    simp [quotient_mk_eq_mk, this, mk_eq_zero]
   exact fun ha hb _ => heq_of_eq congr(some $(factors'_cong hab))
 
 @[simp]
@@ -561,7 +561,7 @@ theorem is_pow_of_dvd_count {a : Associates α}
   rw [factors_mk a0 hz] at hk
   have hk' : ∀ p, p ∈ factors' a0 → k ∣ (factors' a0).count p := by
     rintro p -
-    have pp : p = ⟨p.val, p.2⟩ := by simp only [Subtype.coe_eta]
+    have pp : p = ⟨p.val, p.2⟩ := by simp [Subtype.coe_eta]
     rw [pp, ← count_some p.2]
     exact hk p.val p.2
   obtain ⟨u, hu⟩ := Multiset.exists_smul_of_dvd_count _ hk'

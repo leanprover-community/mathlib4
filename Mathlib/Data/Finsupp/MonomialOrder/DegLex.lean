@@ -138,7 +138,7 @@ theorem le_iff {x y : DegLex (α →₀ ℕ)} :
   · simp [h]
   · by_cases k : (ofDegLex x).degree < (ofDegLex y).degree
     · simp [k]
-    · simp only [h, k, false_or]
+    · simp [h, k, false_or]
 
 instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
   le_of_add_le_add_left a b c h := by
@@ -151,7 +151,7 @@ instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
 
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
   intro _ _ h
-  simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, Lex.single_lt_iff, h,
+  simp [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, Lex.single_lt_iff, h,
     and_self, or_true]
 
 theorem single_antitone : Antitone (fun (a : α) ↦ toDegLex (single a 1)) :=

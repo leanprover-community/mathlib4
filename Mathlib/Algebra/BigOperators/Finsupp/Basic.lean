@@ -537,7 +537,7 @@ theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
       Disjoint f1.support f2.support → (∏ x ∈ f1.support, g x (f1 x + f2 x)) = f1.prod g :=
     fun hd =>
     Finset.prod_congr rfl fun x hx => by
-      simp only [notMem_support_iff.mp (disjoint_left.mp hd hx), add_zero]
+      simp [notMem_support_iff.mp (disjoint_left.mp hd hx), add_zero]
   classical simp_rw [← this hd, ← this hd.symm, add_comm (f2 _), Finsupp.prod, support_add_eq hd,
       prod_union hd, add_apply]
 
@@ -619,10 +619,10 @@ section
 variable [Zero M] [NonUnitalNonAssocSemiring S]
 
 theorem Finsupp.sum_mul (b : S) (s : α →₀ M) {f : α → M → S} :
-    s.sum f * b = s.sum fun a c => f a c * b := by simp only [Finsupp.sum, Finset.sum_mul]
+    s.sum f * b = s.sum fun a c => f a c * b := by simp [Finsupp.sum, Finset.sum_mul]
 
 theorem Finsupp.mul_sum (b : S) (s : α →₀ M) {f : α → M → S} :
-    b * s.sum f = s.sum fun a c => b * f a c := by simp only [Finsupp.sum, Finset.mul_sum]
+    b * s.sum f = s.sum fun a c => b * f a c := by simp [Finsupp.sum, Finset.mul_sum]
 
 end
 

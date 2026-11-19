@@ -595,12 +595,12 @@ theorem snd_star [Star R] [Star A] (x : Unitization R A) : (star x).snd = star x
 @[simp]
 theorem inl_star [Star R] [AddMonoid A] [StarAddMonoid A] (r : R) :
     inl (star r) = star (inl r : Unitization R A) :=
-  Unitization.ext rfl (by simp only [snd_star, star_zero, snd_inl])
+  Unitization.ext rfl (by simp [snd_star, star_zero, snd_inl])
 
 @[simp, norm_cast]
 theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
     ↑(star a) = star (a : Unitization R A) :=
-  Unitization.ext (by simp only [fst_star, star_zero, fst_inr]) rfl
+  Unitization.ext (by simp [fst_star, star_zero, fst_inr]) rfl
 
 instance instStarAddMonoid [AddMonoid R] [AddMonoid A] [StarAddMonoid R] [StarAddMonoid A] :
     StarAddMonoid (Unitization R A) where
@@ -735,12 +735,12 @@ theorem algHom_ext {F : Type*}
     φ = ψ := by
   refine DFunLike.ext φ ψ (fun x ↦ ?_)
   induction x
-  simp only [map_add, ← algebraMap_eq_inl, h, h']
+  simp [map_add, ← algebraMap_eq_inl, h, h']
 
 lemma algHom_ext'' {F : Type*}
     [FunLike F (Unitization R A) C] [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
-  algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
+  algHom_ext h (fun r => by simp [AlgHomClass.commutes])
 
 /-- See note [partially-applied ext lemmas] -/
 @[ext 1100]
@@ -758,7 +758,7 @@ reasons. -/
 @[simps]
 def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
   toFun := fun x => algebraMap R C x.fst + φ x.snd
-  map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
+  map_one' := by simp [fst_one, map_one, snd_one, φ.map_zero, add_zero]
   map_mul' := fun x y => by
     induction x with
     | inl_add_inr x_r x_a =>
@@ -768,8 +768,8 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
           map_mul, zero_add, map_add, map_smul φ]
         rw [add_mul, mul_add, mul_add]
         rw [← Algebra.commutes _ (φ x_a)]
-        simp only [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
-  map_zero' := by simp only [fst_zero, map_zero, snd_zero, φ.map_zero, add_zero]
+        simp [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
+  map_zero' := by simp [fst_zero, map_zero, snd_zero, φ.map_zero, add_zero]
   map_add' := fun x y => by
     induction x with
     | inl_add_inr =>
@@ -779,7 +779,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
           zero_add, φ.map_add]
         rw [add_add_add_comm]
   commutes' := fun r => by
-    simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
+    simp [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
 
 
 set_option backward.isDefEq.respectTransparency false in
@@ -920,7 +920,7 @@ variable {R A : Type*} [Star R] [AddMonoid A] [StarAddMonoid A] {r : R}
 
 @[simp]
 lemma isSelfAdjoint_inl : IsSelfAdjoint (inl r : Unitization R A) ↔ IsSelfAdjoint r := by
-  simp only [isSelfAdjoint_iff, ← inl_star, inl_injective.eq_iff]
+  simp [isSelfAdjoint_iff, ← inl_star, inl_injective.eq_iff]
 
 alias ⟨_root_.IsSelfAdjoint.of_inl, _⟩ := isSelfAdjoint_inl
 
@@ -938,7 +938,7 @@ variable [StarAddMonoid R] [Star A] {a : A}
 
 @[simp]
 lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
-  simp only [isSelfAdjoint_iff, ← inr_star, inr_injective.eq_iff]
+  simp [isSelfAdjoint_iff, ← inr_star, inr_injective.eq_iff]
 
 alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
 
@@ -959,7 +959,7 @@ variable [AddCommMonoid A] [Mul A] [SMulWithZero R A]
 
 @[simp]
 lemma isStarNormal_inr : IsStarNormal (a : Unitization R A) ↔ IsStarNormal a := by
-  simp only [isStarNormal_iff, commute_iff_eq, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+  simp [isStarNormal_iff, commute_iff_eq, ← inr_star, ← inr_mul, inr_injective.eq_iff]
 
 alias ⟨_root_.IsStarNormal.of_inr, _⟩ := isStarNormal_inr
 
@@ -984,7 +984,7 @@ end StarNormalSnd
 lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
     [AddZeroClass A] [Mul A] [SMulWithZero R A] {a : A} :
     IsIdempotentElem (a : Unitization R A) ↔ IsIdempotentElem a := by
-  simp only [IsIdempotentElem, ← inr_mul, inr_injective.eq_iff]
+  simp [IsIdempotentElem, ← inr_mul, inr_injective.eq_iff]
 
 alias ⟨_, IsIdempotentElem.inr⟩ := isIdempotentElem_inr_iff
 

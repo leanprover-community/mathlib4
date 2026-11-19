@@ -446,7 +446,7 @@ theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ #f.suppor
           rw [← insert_erase (mem_support.2 hx.1), support_swap_mul_eq _ _ h1,
             card_insert_of_notMem (notMem_erase _ _), sdiff_singleton_eq_erase]
         rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul hx.1 h1).sign, ← h]
-        simp only [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
+        simp [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
 termination_by #f.support
 
 theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^ n).support) :
@@ -961,12 +961,12 @@ namespace Equiv.Perm
 theorem subtypePerm_apply_pow_of_mem {g : Perm α} {s : Finset α}
     (hs : ∀ x : α, g x ∈ s ↔ x ∈ s) {n : ℕ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ n) (⟨x, hx⟩ : s) : α) = (g ^ n) x := by
-  simp only [subtypePerm_pow, subtypePerm_apply]
+  simp [subtypePerm_pow, subtypePerm_apply]
 
 theorem subtypePerm_apply_zpow_of_mem {g : Perm α} {s : Finset α}
     (hs : ∀ x : α, g x ∈ s ↔ x ∈ s) {i : ℤ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ i) (⟨x, hx⟩ : s) : α) = (g ^ i) x := by
-  simp only [subtypePerm_zpow, subtypePerm_apply]
+  simp [subtypePerm_zpow, subtypePerm_apply]
 
 variable [Fintype α] [DecidableEq α]
 
@@ -1010,7 +1010,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
     by_cases hx : x ∈ c.support
     · suffices hi' : ∀ x ∈ c.support, g x = (c ^ i) x by
         rw [hi' x hx, hi' (c x) (apply_mem_support.mpr hx)]
-        simp only [← mul_apply, ← zpow_add_one, ← zpow_one_add, add_comm]
+        simp [← mul_apply, ← zpow_add_one, ← zpow_one_add, add_comm]
       intro x hx
       have hix := congr($hi ⟨x, hx⟩)
       simp only [← Subtype.coe_inj, subtypePermOfSupport, subtypePerm_apply,
@@ -1078,10 +1078,10 @@ theorem cycle_zpow_mem_support_iff {g : Perm α}
       simp only [IsCycle.pow_eq_one_iff hg]
       use x
     · intro hgm
-      simp only [hgm, coe_one, id_eq]
+      simp [hgm, coe_one, id_eq]
   rw [this]
   by_cases hm0 : m = 0
-  · simp only [hm0, pow_zero]
+  · simp [hm0, pow_zero]
   · simp only [hm0, iff_false]
     exact pow_ne_one_of_lt_orderOf hm0 div_euc.2
 

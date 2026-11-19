@@ -89,15 +89,15 @@ theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
 
 @[to_additive]
 protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b := by
-  simp only [mul_assoc, h.eq]
+  simp [mul_assoc, h.eq]
 
 @[to_additive]
 protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) := by
-  simp only [← mul_assoc, h.eq]
+  simp [← mul_assoc, h.eq]
 
 @[to_additive]
 protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
-    a * b * (c * d) = a * c * (b * d) := by simp only [hbc.left_comm, mul_assoc]
+    a * b * (c * d) = a * c * (b * d) := by simp [hbc.left_comm, mul_assoc]
 
 end Semigroup
 
@@ -150,7 +150,7 @@ theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
 
 @[to_additive] lemma mul_pow (h : Commute a b) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
   | 0 => by rw [pow_zero, pow_zero, pow_zero, one_mul]
-  | n + 1 => by simp only [pow_succ', h.mul_pow n, ← mul_assoc, (h.pow_left n).right_comm]
+  | n + 1 => by simp [pow_succ', h.mul_pow n, ← mul_assoc, (h.pow_left n).right_comm]
 
 end Monoid
 

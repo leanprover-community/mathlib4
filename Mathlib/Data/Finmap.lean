@@ -128,7 +128,7 @@ def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
       a₁.entries ~ a₂.entries → b₁.entries ~ b₂.entries → f a₁ b₁ = f a₂ b₂) : γ :=
   liftOn s₁ (fun l₁ => liftOn s₂ (f l₁) fun _ _ p => H _ _ _ _ (Perm.refl _) p) fun a₁ a₂ p => by
     have H' : f a₁ = f a₂ := funext fun _ => H _ _ _ _ p (Perm.refl _)
-    simp only [H']
+    simp [H']
 
 @[simp]
 theorem liftOn₂_toFinmap {γ} (s₁ s₂ : AList β) (f : AList β → AList β → γ) (H) :
@@ -316,13 +316,13 @@ def keysLookupEquiv :
     ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
       (keysLookupEquiv.symm f).keys = f.1.1 :=
   keysLookupEquiv.surjective.forall.2 fun _ => by
-    simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_fst]
+    simp [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_fst]
 
 @[simp] lemma keysLookupEquiv_symm_apply_lookup :
     ∀ (f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1}) a,
       (keysLookupEquiv.symm f).lookup a = f.1.2 a :=
   keysLookupEquiv.surjective.forall.2 fun _ _ => by
-    simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_snd]
+    simp [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_snd]
 
 /-! ### replace -/
 
@@ -405,7 +405,7 @@ theorem lookup_erase_ne {a a'} {s : Finmap β} (h : a ≠ a') : lookup a (erase 
   induction_on s fun _ => AList.lookup_erase_ne h
 
 theorem erase_erase {a a' : α} {s : Finmap β} : erase a (erase a' s) = erase a' (erase a s) :=
-  induction_on s fun s => ext (by simp only [AList.erase_erase, erase_toFinmap])
+  induction_on s fun s => ext (by simp [AList.erase_erase, erase_toFinmap])
 
 /-! ### sdiff -/
 
@@ -441,22 +441,22 @@ theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b'
 
 @[simp]
 theorem lookup_insert {a} {b : β a} (s : Finmap β) : lookup a (insert a b s) = some b :=
-  induction_on s fun s => by simp only [insert_toFinmap, lookup_toFinmap, AList.lookup_insert]
+  induction_on s fun s => by simp [insert_toFinmap, lookup_toFinmap, AList.lookup_insert]
 
 @[simp]
 theorem lookup_insert_of_ne {a a'} {b : β a} (s : Finmap β) (h : a' ≠ a) :
     lookup a' (insert a b s) = lookup a' s :=
-  induction_on s fun s => by simp only [insert_toFinmap, lookup_toFinmap, lookup_insert_ne h]
+  induction_on s fun s => by simp [insert_toFinmap, lookup_toFinmap, lookup_insert_ne h]
 
 @[simp]
 theorem insert_insert {a} {b b' : β a} (s : Finmap β) :
     (s.insert a b).insert a b' = s.insert a b' :=
-  induction_on s fun s => by simp only [insert_toFinmap, AList.insert_insert]
+  induction_on s fun s => by simp [insert_toFinmap, AList.insert_insert]
 
 theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : Finmap β) (h : a ≠ a') :
     (s.insert a b).insert a' b' = (s.insert a' b').insert a b :=
   induction_on s fun s => by
-    simp only [insert_toFinmap, AList.toFinmap_eq, AList.insert_insert_of_ne _ h]
+    simp [insert_toFinmap, AList.toFinmap_eq, AList.insert_insert_of_ne _ h]
 
 theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
     List.toFinmap (⟨a, b⟩ :: xs) = insert a b xs.toFinmap :=
@@ -465,17 +465,17 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
   induction xs with
-  | nil => simp only [toFinmap_nil, notMem_empty, not_mem_nil, exists_false]
+  | nil => simp [toFinmap_nil, notMem_empty, not_mem_nil, exists_false]
   | cons x xs =>
     obtain ⟨fst_i, snd_i⟩ := x
     simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
     refine (or_congr_left <| and_iff_left_of_imp ?_).symm
     rintro rfl
-    simp only [exists_eq, heq_iff_eq]
+    simp [exists_eq, heq_iff_eq]
 
 @[simp]
 theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b') = singleton a b := by
-  simp only [singleton, Finmap.insert_toFinmap, AList.insert_singleton_eq]
+  simp [singleton, Finmap.insert_toFinmap, AList.insert_singleton_eq]
 
 /-! ### extract -/
 
@@ -543,7 +543,7 @@ theorem insert_union {a} {b : β a} {s₁ s₂ : Finmap β} : insert a b (s₁ �
 
 theorem union_assoc {s₁ s₂ s₃ : Finmap β} : s₁ ∪ s₂ ∪ s₃ = s₁ ∪ (s₂ ∪ s₃) :=
   induction_on₃ s₁ s₂ s₃ fun s₁ s₂ s₃ => by
-    simp only [AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    simp [AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
 
 @[simp]
 theorem empty_union {s₁ : Finmap β} : ∅ ∪ s₁ = s₁ :=
@@ -601,7 +601,7 @@ theorem disjoint_union_right (x y z : Finmap β) :
 theorem union_comm_of_disjoint {s₁ s₂ : Finmap β} : Disjoint s₁ s₂ → s₁ ∪ s₂ = s₂ ∪ s₁ :=
   induction_on₂ s₁ s₂ fun s₁ s₂ => by
     intro h
-    simp only [AList.toFinmap_eq, union_toFinmap, AList.union_comm_of_disjoint h]
+    simp [AList.toFinmap_eq, union_toFinmap, AList.union_comm_of_disjoint h]
 
 theorem union_cancel {s₁ s₂ s₃ : Finmap β} (h : Disjoint s₁ s₃) (h' : Disjoint s₂ s₃) :
     s₁ ∪ s₃ = s₂ ∪ s₃ ↔ s₁ = s₂ :=

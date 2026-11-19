@@ -86,7 +86,7 @@ def ofOplaxFromUnit (F : LocallyDiscrete (Discrete Unit) ⥤ᵒᵖᴸ B) :
     simp only [tensorObj_def, MonoidalCategory.whiskerLeft_comp, whiskerLeft_def, Category.assoc,
       MonoidalCategory.comp_whiskerRight, whiskerRight_def, associator_def]
     rw [← F.mapComp_naturality_left_assoc, ← F.mapComp_naturality_right_assoc]
-    simp only [whiskerLeft_rightUnitor_inv, PrelaxFunctor.map₂_comp, Category.assoc,
+    simp [whiskerLeft_rightUnitor_inv, PrelaxFunctor.map₂_comp, Category.assoc,
       OplaxFunctor.map₂_associator, whiskerRight_id, Iso.hom_inv_id_assoc]
   counit_comul := by
     simp only [tensorUnit_def, tensorObj_def, whiskerRight_def, Category.assoc, leftUnitor_def]

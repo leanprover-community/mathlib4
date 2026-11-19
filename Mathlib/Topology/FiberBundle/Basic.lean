@@ -528,7 +528,7 @@ theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
 theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
     p ∈ (Z.localTrivAsPartialEquiv i).target ↔ p.1 ∈ Z.baseSet i := by
   rw [localTrivAsPartialEquiv, mem_prod]
-  simp only [and_true, mem_univ]
+  simp [and_true, mem_univ]
 
 theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.proj, Z.coordChange (Z.indexAt p.proj) i p.proj p.snd⟩ :=
@@ -547,7 +547,7 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
       Prod.mk_inj, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
       mem_preimage, proj, mem_univ, (· ∘ ·),
       PartialEquiv.coe_trans] at hx ⊢
-    simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
+    simp [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
 
 /-- Topological structure on the total space of a fiber bundle created from core, designed so
 that all the local trivialization are continuous. -/
@@ -562,7 +562,7 @@ theorem open_source' (i : ι) : IsOpen (Z.localTrivAsPartialEquiv i).source := b
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine ⟨i, Z.baseSet i ×ˢ univ, (Z.isOpen_baseSet i).prod isOpen_univ, ?_⟩
   ext p
-  simp only [localTrivAsPartialEquiv_apply, prodMk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
+  simp [localTrivAsPartialEquiv_apply, prodMk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
     mem_localTrivAsPartialEquiv_source, and_true, mem_univ, mem_preimage]
 
 /-- Extended version of the local trivialization of a fiber bundle constructed from core,
@@ -703,7 +703,7 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
   exact Z.mem_baseSet_at b
 
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
-  simp only [mfld_simps]
+  simp [mfld_simps]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A fiber bundle constructed from core is indeed a fiber bundle. -/
@@ -778,7 +778,7 @@ theorem isOpen_source (e : Pretrivialization F (π F E)) :
   refine isOpen_iSup_iff.mpr fun e' => isOpen_iSup_iff.mpr fun _ => ?_
   refine isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, ?_⟩)
   ext ⟨x, hx⟩
-  simp only [mem_preimage, Pretrivialization.setSymm, domRestrict, e.mem_target, e.mem_source,
+  simp [mem_preimage, Pretrivialization.setSymm, domRestrict, e.mem_target, e.mem_source,
     e'.proj_symm_apply hx]
 
 theorem isOpen_target_of_mem_pretrivializationAtlas_inter (e e' : Pretrivialization F (π F E))

@@ -157,10 +157,10 @@ theorem mul_abs_sin_le_norm_circleMap_zero_sub (r θ : ℝ) (a : ℂ) :
     sq_nonneg (r - ‖a‖), mul_nonneg hr (norm_nonneg a)]
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
-  simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
+  simp [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
 
 lemma circleMap_neg_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (-π / 2) = c - R * I := by
-  simp only [circleMap, ofReal_div, ofReal_neg, ofReal_ofNat, exp_neg_pi_div_two_mul_I, mul_neg,
+  simp [circleMap, ofReal_div, ofReal_neg, ofReal_ofNat, exp_neg_pi_div_two_mul_I, mul_neg,
     sub_eq_add_neg]
 
 /-- `circleMap` is `2π`-periodic. -/

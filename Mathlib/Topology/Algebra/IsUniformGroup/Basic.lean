@@ -47,7 +47,7 @@ theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : �
   { comap_uniformity := by
       nth_rw 1 [← uniformity_translate_mul a, comap_map]
       rintro ⟨p₁, p₂⟩ ⟨q₁, q₂⟩
-      simp only [Prod.mk.injEq, mul_left_inj, imp_self]
+      simp [Prod.mk.injEq, mul_left_inj, imp_self]
     injective := mul_left_injective a }
 
 section Cauchy

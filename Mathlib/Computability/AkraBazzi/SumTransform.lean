@@ -134,7 +134,7 @@ lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n
   rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
   calc (b i : ℝ) * n - r i n
     _ = ‖b i * n‖ - ‖(r i n : ℝ)‖ := by
-      simp only [norm_mul, RCLike.norm_natCast, Real.norm_of_nonneg h₁]
+      simp [norm_mul, RCLike.norm_natCast, Real.norm_of_nonneg h₁]
     _ ≤ ‖(b i * n : ℝ) - r i n‖ := norm_sub_norm_le _ _
     _ = ‖(r i n : ℝ) - b i * n‖ := norm_sub_rev _ _
     _ ≤ n / log n ^ 2 := hn i
@@ -470,7 +470,7 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
   calc (fun (n : ℕ) => ε (b i * n) - ε n)
     _ =Θ[atTop] fun n => (-log (b i)) / (log n) ^ 2 :=
       (R.isEquivalent_smoothingFn_sub_self i).isTheta
-    _ = fun (n : ℕ) => (-log (b i)) * 1 / (log n) ^ 2 := by simp only [mul_one]
+    _ = fun (n : ℕ) => (-log (b i)) * 1 / (log n) ^ 2 := by simp [mul_one]
     _ = fun (n : ℕ) => -log (b i) * (1 / (log n) ^ 2) := by simp_rw [← mul_div_assoc]
     _ =Θ[atTop] fun (n : ℕ) => 1 / (log n) ^ 2 := by
       have : -log (b i) ≠ 0 := by
@@ -621,7 +621,7 @@ lemma eventually_atTop_sumTransform_le :
          _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
           congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
          _ ≤ n ^ (p a b) * n * (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
-          gcongr; simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg]
+          gcongr; simp [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg]
          _ ≤ n ^ (p a b) * n * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by
           gcongr; exact hn₁ i
          _ = c₂ * g n * n ^ ((p a b) + 1) / (c₁ * n) ^ ((p a b) + 1) := by
@@ -659,7 +659,7 @@ lemma eventually_atTop_sumTransform_le :
       _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / n ^ ((p a b) + 1)) := by
         congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
       _ ≤ n ^ (p a b) * n * (c₂ * g n / n ^ ((p a b) + 1)) := by
-        gcongr; simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg]
+        gcongr; simp [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg]
       _ = c₂ * (n ^ ((p a b) + 1) / n ^ ((p a b) + 1)) * g n := by
         rw [← Real.rpow_add_one (by positivity) (p a b)]; ring
       _ = c₂ * g n := by rw [div_self (by positivity), mul_one]

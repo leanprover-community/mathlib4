@@ -77,7 +77,7 @@ lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
   simp only [Scheme.Hom.comp_app, TopologicalSpace.Opens.map_top, Category.assoc,
     Scheme.ΓSpecIso_naturality, Scheme.Opens.topIso_hom]
   rw [← Scheme.Hom.appTop, U.2.isoSpec_inv_appTop, Category.assoc, Iso.inv_hom_id_assoc]
-  simp only [Scheme.Opens.topIso_hom]
+  simp [Scheme.Opens.topIso_hom]
 
 set_option backward.isDefEq.respectTransparency.types false in
 open scoped Set.Notation in
@@ -121,7 +121,7 @@ lemma isLocalization_away {U V : X.affineOpens}
   refine IsLocalization.of_surjective _ _ _ Ideal.Quotient.mk_surjective _
     Ideal.Quotient.mk_surjective ?_ ?_
   · simp [RingHom.algebraMap_toAlgebra, Ideal.quotientMap_comp_mk]; rfl
-  · simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
+  · simp [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
 
 instance isOpenImmersion_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
     IsOpenImmersion (I.glueDataObjMap (X.affineBasicOpen_le f)) := by
@@ -218,7 +218,7 @@ noncomputable def glueDataT (U V : X.affineOpens) :
       simp_rw [F, ← pullback.condition]
       simp only [Scheme.Opens.ι_app, CommRingCat.hom_comp, RingHom.coe_comp,
         Function.comp_apply, Scheme.Hom.appLE, Scheme.Hom.comp_app, Category.assoc] at this ⊢
-      simp only [this, map_zero]
+      simp [this, map_zero]
   · conv_lhs => enter [2]; rw [glueDataObjι]
     rw [Scheme.Hom.liftQuotient_comp_assoc, Category.assoc, Category.assoc, Iso.hom_inv_id,
       Category.comp_id, Category.assoc, X.homOfLE_homOfLE]
@@ -380,7 +380,7 @@ private lemma gluedTo_injective :
   simp only [Scheme.affineBasicOpen_coe, Scheme.Hom.comp_base, TopCat.comp_app,
     Scheme.homOfLE_apply, SetLike.coe_eq_coe] at this
   obtain rfl := (I.glueDataObjι (X.affineBasicOpen f)).isEmbedding.injective this
-  simp only [glueDataObjMap_ι]
+  simp [glueDataObjMap_ι]
 
 lemma range_glueDataObjι_ι_eq_support_inter (U : X.affineOpens) :
     Set.range (I.glueDataObjι U ≫ U.1.ι) = (I.support : Set X) ∩ U :=
@@ -417,7 +417,7 @@ private noncomputable
 def glueDataObjIso (U : X.affineOpens) :
     I.glueDataObj U ≅ I.gluedTo ⁻¹ᵁ U :=
   IsOpenImmersion.isoOfRangeEq (I.glueData.ι U) (Scheme.Opens.ι _) (by
-    simp only [Scheme.Opens.range_ι, TopologicalSpace.Opens.map_coe, range_glueData_ι])
+    simp [Scheme.Opens.range_ι, TopologicalSpace.Opens.map_coe, range_glueData_ι])
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]

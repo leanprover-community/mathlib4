@@ -423,7 +423,7 @@ and an injective ring hom `g : A →+* L` where `L` is a field,
 field hom induced from `K` to `L` maps `f x / f y` to `g x / g y` for all
 `x : A, y ∈ NonZeroDivisors A`. -/
 theorem lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) :
-    lift hg (mk' K x y) = g x / g y := by simp only [mk'_eq_div, map_div₀, lift_algebraMap]
+    lift hg (mk' K x y) = g x / g y := by simp [mk'_eq_div, map_div₀, lift_algebraMap]
 
 /-- Given commutative rings `A, B` where `B` is an integral domain, with fraction rings `K`, `L`
 and an injective ring hom `j : A →+* B`, we get a ring hom

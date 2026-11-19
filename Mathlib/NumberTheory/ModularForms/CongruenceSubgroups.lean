@@ -59,7 +59,7 @@ theorem Gamma_one_top : Gamma 1 = ⊤ := by
   simp [eq_iff_true_of_subsingleton]
 
 lemma mem_Gamma_one (γ : SL(2, ℤ)) : γ ∈ Γ(1) := by
-  simp only [Gamma_one_top, Subgroup.mem_top]
+  simp [Gamma_one_top, Subgroup.mem_top]
 
 /-- The GL-image of `Γ(1)` equals `𝒮ℒ` (the image of `SL(2, ℤ)` in `GL(2, ℝ)`). -/
 theorem Gamma_one_coe_eq_SL : (↑(Gamma 1) : Subgroup (GL (Fin 2) ℝ)) = 𝒮ℒ := by
@@ -97,7 +97,7 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
   map_one' := by simp
   map_mul' := by
     rintro ⟨A, hA⟩ ⟨B, _⟩
-    simp only [MulMemClass.mk_mul_mk, Fin.isValue, coe_mul, (two_mul_expl A.1 B).2.2.2,
+    simp [MulMemClass.mk_mul_mk, Fin.isValue, coe_mul, (two_mul_expl A.1 B).2.2.2,
       Int.cast_add, Int.cast_mul, Gamma0_mem.mp hA, zero_mul, zero_add]
 
 /-- The congruence subgroup `Gamma1` (as a subgroup of `Gamma0`) of matrices whose bottom
@@ -115,7 +115,7 @@ theorem Gamma1_to_Gamma0_mem {N} (A : Gamma0 N) :
       ∧ ((A.1 1 0 : ℤ) : ZMod N) = 0 := by
   constructor
   · intro ha
-    have adet : (A.1.1.det : ZMod N) = 1 := by simp only [A.1.property, Int.cast_one]
+    have adet : (A.1.1.det : ZMod N) = 1 := by simp [A.1.property, Int.cast_one]
     rw [Matrix.det_fin_two] at adet
     simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub,
       Int.cast_mul] at *
@@ -236,7 +236,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   -- Give names to the numerators and denominators of `g` and `g⁻¹`
   let A₁ := g.val
   let A₂ := (g⁻¹).val
-  have hA₁₂ : A₁ * A₂ = 1 := by simp only [← Matrix.GeneralLinearGroup.coe_mul,
+  have hA₁₂ : A₁ * A₂ = 1 := by simp [← Matrix.GeneralLinearGroup.coe_mul,
     mul_inv_cancel, Matrix.GeneralLinearGroup.coe_one, A₁, A₂]
   let a₁ := A₁.den
   let a₂ := A₂.den

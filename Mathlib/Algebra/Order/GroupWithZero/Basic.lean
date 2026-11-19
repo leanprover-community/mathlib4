@@ -735,10 +735,10 @@ lemma pow_lt_one_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : a ^ n < 1 ↔ a <
   lt_iff_lt_of_le_iff_le (one_le_pow_iff_of_nonneg ha hn)
 
 lemma one_lt_pow_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : 1 < a ^ n ↔ 1 < a := by
-  simp only [← not_le, pow_le_one_iff_of_nonneg ha hn]
+  simp [← not_le, pow_le_one_iff_of_nonneg ha hn]
 
 lemma pow_eq_one_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  simp only [le_antisymm_iff, pow_le_one_iff_of_nonneg ha hn, one_le_pow_iff_of_nonneg ha hn]
+  simp [le_antisymm_iff, pow_le_one_iff_of_nonneg ha hn, one_le_pow_iff_of_nonneg ha hn]
 
 lemma sq_le_one_iff₀ (ha : 0 ≤ a) : a ^ 2 ≤ 1 ↔ a ≤ 1 :=
   pow_le_one_iff_of_nonneg ha (Nat.succ_ne_zero _)
@@ -859,7 +859,7 @@ variable [PosMulReflectLT G₀] {a b c : G₀}
 
 alias ⟨_, inv_pos_of_pos⟩ := inv_pos
 
-@[simp] lemma inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
+@[simp] lemma inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
 
 alias ⟨_, inv_nonneg_of_nonneg⟩ := inv_nonneg
 
@@ -1115,7 +1115,7 @@ theorem _root_.MulPosReflectLT.toMulPosStrictMono : MulPosStrictMono G₀ where
   mul_lt_mul_of_pos_right a ha b c hbc :=
     lt_of_mul_lt_mul_right (by simpa [ha.ne']) (inv_pos.2 ha).le
 
-lemma inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
+lemma inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
 
 end Right
 
@@ -1276,7 +1276,7 @@ lemma lt_inv_of_lt_inv₀ (ha : 0 < a) (h : a < b⁻¹) : b < a⁻¹ :=
 
 lemma div_le_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_iff_right₀ ha, inv_le_inv₀ hb hc]
+  simp [div_eq_mul_inv, mul_le_mul_iff_right₀ ha, inv_le_inv₀ hb hc]
 
 lemma div_lt_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b :=
   lt_iff_lt_of_le_iff_le' (div_le_div_iff_of_pos_left ha hc hb)
@@ -1319,10 +1319,10 @@ section PosMulMono
 variable [PosMulMono G₀]
 
 @[simp] lemma inv_neg'' : a⁻¹ < 0 ↔ a < 0 := by
-  have := PosMulMono.toPosMulReflectLT (α := G₀); simp only [← not_le, inv_nonneg]
+  have := PosMulMono.toPosMulReflectLT (α := G₀); simp [← not_le, inv_nonneg]
 
 @[simp] lemma inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by
-  have := PosMulMono.toPosMulReflectLT (α := G₀); simp only [← not_lt, inv_pos]
+  have := PosMulMono.toPosMulReflectLT (α := G₀); simp [← not_lt, inv_pos]
 
 alias inv_lt_zero := inv_neg''
 
@@ -1354,7 +1354,7 @@ lemma inv_lt_one_iff₀ : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
   simp_rw [← not_le, one_le_inv_iff₀, not_and_or, not_lt]
 
 lemma inv_le_one_iff₀ : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
-  simp only [← not_lt, one_lt_inv_iff₀, not_and_or]
+  simp [← not_lt, one_lt_inv_iff₀, not_and_or]
 
 lemma zpow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective fun n : ℤ ↦ a ^ n := by
   obtain ha₁ | ha₁ := ha₁.lt_or_gt

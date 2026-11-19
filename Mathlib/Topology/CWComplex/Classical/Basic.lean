@@ -281,7 +281,7 @@ lemma RelCWComplex.cellFrontier_union_openCell_eq_closedCell [RelCWComplex C D] 
 lemma RelCWComplex.map_zero_mem_openCell [RelCWComplex C D] (n : ℕ) (i : cell C n) :
     map n i 0 ∈ openCell n i := by
   apply mem_image_of_mem
-  simp only [mem_ball, dist_self, zero_lt_one]
+  simp [mem_ball, dist_self, zero_lt_one]
 
 @[alias_in CWComplex]
 lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cell C n) :
@@ -558,7 +558,7 @@ lemma CWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell
     IsClosed (A ∩ closedCell m j)) (j : cell C (n + 1)) :
     IsClosed (A ∩ cellFrontier (n + 1) j) :=
   RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell hn j
-    (by simp only [inter_empty, isClosed_empty])
+    (by simp [inter_empty, isClosed_empty])
 
 /-- If for every cell either `A ∩ openCell n j` or `A ∩ closedCell n j` is closed then
 `A` is closed. -/

@@ -92,12 +92,12 @@ protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ
 @[simp]
 theorem iUnion_left_iff {ι : Sort*} [Countable ι] {s : ι → Set α} :
     AEDisjoint μ (⋃ i, s i) t ↔ ∀ i, AEDisjoint μ (s i) t := by
-  simp only [AEDisjoint, iUnion_inter, measure_iUnion_null_iff]
+  simp [AEDisjoint, iUnion_inter, measure_iUnion_null_iff]
 
 @[simp]
 theorem iUnion_right_iff {ι : Sort*} [Countable ι] {t : ι → Set α} :
     AEDisjoint μ s (⋃ i, t i) ↔ ∀ i, AEDisjoint μ s (t i) := by
-  simp only [AEDisjoint, inter_iUnion, measure_iUnion_null_iff]
+  simp [AEDisjoint, inter_iUnion, measure_iUnion_null_iff]
 
 @[simp]
 theorem union_left_iff : AEDisjoint μ (s ∪ t) u ↔ AEDisjoint μ s u ∧ AEDisjoint μ t u := by

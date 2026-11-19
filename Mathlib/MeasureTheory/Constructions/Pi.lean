@@ -250,7 +250,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
         measure_mono (pi_mono fun i _ => subset_toMeasurable _ _)
       _ = ∏ i, μ i (toMeasurable (μ i) ((hμ i).set (e n i))) :=
         (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
-      _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
+      _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp [measure_toMeasurable]
       _ < ∞ := ENNReal.prod_lt_top fun i _ => (hμ i).finite _
   · simp_rw [(surjective_decode_getD (ι → ℕ) default).iUnion_comp fun x =>
         Set.pi univ fun i => (hμ i).set (x i),
@@ -309,7 +309,7 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsFiniteMeasur
 
 instance pi.instIsProbabilityMeasure [∀ i, IsProbabilityMeasure (μ i)] :
     IsProbabilityMeasure (Measure.pi μ) :=
-  ⟨by simp only [Measure.pi_univ, measure_univ, Finset.prod_const_one]⟩
+  ⟨by simp [Measure.pi_univ, measure_univ, Finset.prod_const_one]⟩
 
 @[simp]
 theorem pi_pi_finset [∀ i, IsProbabilityMeasure (μ i)] (f : (i : ι) → Set (α i)) (s : Finset ι) :
@@ -461,7 +461,7 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
     simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, mem_prod]
     refine ⟨by tauto, fun _ i ↦ ?_⟩
     rcases i <;> tauto
-  simp only [e_meas, me.map_apply, univ_option, Finset.prod_insertNone, this,
+  simp [e_meas, me.map_apply, univ_option, Finset.prod_insertNone, this,
     prod_prod, pi_pi, mul_comm]
 
 section Intervals
@@ -937,7 +937,7 @@ theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype
   convert
     (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
       (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
-  simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,
+  simp [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,
     comp_def, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft,
     Equiv.piCongrLeft, Equiv.symm_symm, Equiv.piCongrLeft', eq_rec_constant, Equiv.coe_fn_symm_mk]
 

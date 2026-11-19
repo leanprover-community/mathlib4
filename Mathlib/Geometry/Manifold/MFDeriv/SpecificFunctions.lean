@@ -126,7 +126,7 @@ theorem hasMFDerivAt_id (x : M) :
     apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin x)
     mfld_set_tac
   apply HasFDerivWithinAt.congr_of_eventuallyEq (hasFDerivWithinAt_id _ _) this
-  simp only [mfld_simps]
+  simp [mfld_simps]
 
 theorem hasMFDerivWithinAt_id (s : Set M) (x : M) :
     HasMFDerivAt[s] (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace% x)) :=
@@ -663,7 +663,7 @@ theorem mdifferentiableWithinAt_pi_iff :
 theorem mdifferentiableWithinAt_pi_space :
     MDifferentiableWithinAt I 𝓘(𝕜, ∀ i, Ei i) φ s x ↔
       ∀ i, MDifferentiableWithinAt I 𝓘(𝕜, Ei i) (fun x => φ x i) s x := by
-  simp only [mdifferentiableWithinAt_iff, continuousWithinAt_pi, differentiableWithinAt_pi,
+  simp [mdifferentiableWithinAt_iff, continuousWithinAt_pi, differentiableWithinAt_pi,
     forall_and, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
 theorem mdifferentiableAt_pi_iff :

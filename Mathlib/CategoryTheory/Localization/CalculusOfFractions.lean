@@ -314,8 +314,8 @@ lemma comp₀_rel [W.HasLeftCalculusOfFractions]
   obtain ⟨Y, t, ht, fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ z₁.hs eq
   simp only [assoc] at fac'
   refine ⟨Y, z₄.f ≫ t, z₄.s ≫ t, ?_, ?_, ?_⟩
-  · simp only [comp₀, assoc, reassoc_of% fac]
-  · simp only [comp₀, assoc, fac']
+  · simp [comp₀, assoc, reassoc_of% fac]
+  · simp [comp₀, assoc, fac']
   · simp only [comp₀, assoc, ← reassoc_of% fac]
     exact W.comp_mem _ _ z₂.hs (W.comp_mem _ _ z₃'.hs (W.comp_mem _ _ z₄.hs ht))
 
@@ -372,10 +372,10 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
     apply Quot.sound
     refine ⟨Z, w₁.f ≫ u.f ≫ p, w₂.f ≫ u.s ≫ p, ?_, ?_, ?_⟩
     · dsimp
-      simp only [assoc, ← reassoc_of% fac₁', ← reassoc_of% fac₂',
+      simp [assoc, ← reassoc_of% fac₁', ← reassoc_of% fac₂',
         reassoc_of% hst, reassoc_of% fac₃]
     · dsimp
-      simp only [assoc, fac₄]
+      simp [assoc, fac₄]
     · dsimp
       simp only [assoc]
       rw [← reassoc_of% fac₁', ← reassoc_of% fac₃, ← assoc]
@@ -400,9 +400,9 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       simp only [assoc] at fac₃
       refine ⟨Z, w₁.s ≫ u, u, ?_, ?_, ?_⟩
       · dsimp [p₁]
-        simp only [assoc]
+        simp [assoc]
       · dsimp [p₁]
-        simp only [assoc, fac₃]
+        simp [assoc, fac₃]
       · dsimp
         simp only [assoc]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₁.hs (W.comp_mem _ _ w₁.hs hu))
@@ -415,7 +415,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₄
       refine ⟨Z, q.f ≫ u, q.s ≫ u, ?_, ?_, ?_⟩
-      · simp only [p₁, p₂, assoc, reassoc_of% fac₃]
+      · simp [p₁, p₂, assoc, reassoc_of% fac₃]
       · rw [assoc, assoc, assoc, assoc, fac₄, reassoc_of% hft]
       · simp only [p₁, assoc, ← reassoc_of% fac₃]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs
@@ -426,9 +426,9 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       simp only [assoc] at fac₄
       refine ⟨Z, u, w₂.s ≫ u, ?_, ?_, ?_⟩
       · dsimp [p₁, p₂]
-        simp only [assoc]
+        simp [assoc]
       · dsimp [p₁, p₂]
-        simp only [assoc, fac₄]
+        simp [assoc, fac₄]
       · dsimp [p₁, p₂]
         simp only [assoc]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs (W.comp_mem _ _ w₂.hs hu))
@@ -455,13 +455,13 @@ noncomputable instance : Category (Localization W) where
     obtain ⟨z, rfl⟩ := Hom.mk_surjective f
     rw [Hom.comp_eq, comp_eq z (ofHom W (𝟙 Y)) (ofInv z.s z.hs) (by simp)]
     dsimp [comp₀]
-    simp only [comp_id, id_comp]
+    simp [comp_id, id_comp]
   id_comp := by
     rintro (X Y : C) f
     obtain ⟨z, rfl⟩ := Hom.mk_surjective f
     rw [Hom.comp_eq, comp_eq (ofHom W (𝟙 X)) z (ofHom W z.f) (by simp)]
     dsimp
-    simp only [id_comp, comp_id]
+    simp [id_comp, comp_id]
   assoc := by
     rintro (X₁ X₂ X₃ X₄ : C) f₁ f₂ f₃
     obtain ⟨z₁, rfl⟩ := Hom.mk_surjective f₁
@@ -492,7 +492,7 @@ noncomputable def Q : C ⥤ Localization W where
   map_comp {X Y Z} f g := by
     change _ = Hom.comp _ _
     rw [Hom.comp_eq, comp_eq (ofHom W f) (ofHom W g) (ofHom W g) (by simp)]
-    simp only [ofHom, comp₀, comp_id]
+    simp [ofHom, comp₀, comp_id]
 
 /-- The morphism on `Localization W` that is induced by a left fraction. -/
 noncomputable abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y :=
@@ -778,7 +778,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
     dsimp at t₁ t₂ hst hft ht
     grind
   · rintro ⟨Z, s, hs, fac⟩
-    simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
+    simp [← cancel_mono (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -795,7 +795,7 @@ lemma Localization.essSurj_mapArrow :
     refine ⟨Arrow.mk φ.f, ⟨Iso.symm ?_⟩⟩
     refine Arrow.isoMk eX.symm (eY.symm ≪≫ Localization.isoOfHom L W φ.s φ.hs) ?_
     dsimp
-    simp only [← cancel_epi eX.hom, Iso.hom_inv_id_assoc, reassoc_of% hφ,
+    simp [← cancel_epi eX.hom, Iso.hom_inv_id_assoc, reassoc_of% hφ,
       MorphismProperty.LeftFraction.map_comp_map_s]
 
 end
@@ -991,7 +991,7 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
     dsimp at t₁ t₂ hst hft ht
     grind
   · rintro ⟨Z, s, hs, fac⟩
-    simp only [← cancel_epi (Localization.isoOfHom L W s hs).hom,
+    simp [← cancel_epi (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
 include W in

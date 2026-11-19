@@ -56,7 +56,7 @@ lemma ε_app (X₁ : C₁) :
         F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
   let : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
     Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso.symm
-  simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
+  simp [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
     Functor.id_obj, Functor.comp_obj, Functor.rightUnitor_hom_app,
       whiskerRight_app, CatCommSq.hComp_iso_hom_app, id_comp]
 
@@ -73,7 +73,7 @@ lemma η_app (X₂ : C₂) :
         L₂.map (adj.counit.app X₂) := by
   let : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso.symm
-  simp only [η, liftNatTrans_app, Lifting.iso, Iso.symm, CatCommSq.hComp_iso_inv_app,
+  simp [η, liftNatTrans_app, Lifting.iso, Iso.symm, CatCommSq.hComp_iso_inv_app,
     whiskerRight_app, Functor.rightUnitor_inv_app, comp_id, assoc]
 
 end Localization

@@ -56,7 +56,7 @@ theorem isIso_iff_ne_zero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X 
   ⟨fun I => by
     intro h
     apply id_ne_zero X
-    simp only [← IsIso.hom_inv_id f, h, zero_comp],
+    simp [← IsIso.hom_inv_id f, h, zero_comp],
    fun w => isIso_of_hom_simple w⟩
 
 @[deprecated (since := "2026-10-13")] alias isIso_iff_nonzero := isIso_iff_ne_zero

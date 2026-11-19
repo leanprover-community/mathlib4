@@ -237,7 +237,7 @@ lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
   rw [NatTrans.naturality_assoc]
   dsimp
   rw [← Functor.map_comp_assoc, φ.comm, Functor.map_comp_assoc, mapComp'_inv_naturality]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 /-- Constructor for isomorphisms in the category `F.DescentData' sq sq₃`. -/
 @[simps]

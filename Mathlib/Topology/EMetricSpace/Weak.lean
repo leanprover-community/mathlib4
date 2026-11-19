@@ -283,7 +283,7 @@ theorem edist_le_iff_le_add_left (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a �
   simp [edist_eq_max]
 
 theorem edist_le_iff_le_add_right (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
-  simp only [edist_le_iff_le_add_left, add_comm]
+  simp [edist_le_iff_le_add_left, add_comm]
 
 theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ edist a b := by
   grw [edist_eq_max, ← le_max_left]
@@ -302,12 +302,12 @@ theorem edist_zero_right (a : ℝ≥0∞) : edist a 0 = a := by
 @[simp]
 theorem edist_add_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     edist (c + a) (c + b) = edist a b := by
-  simp only [edist_eq_max, add_sub_add_eq_sub_left hc]
+  simp [edist_eq_max, add_sub_add_eq_sub_left hc]
 
 @[simp]
 theorem edist_add_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     edist (a + c) (b + c) = edist a b := by
-  simp only [edist_eq_max, add_sub_add_eq_sub_right hc]
+  simp [edist_eq_max, add_sub_add_eq_sub_right hc]
 
 theorem edist_mul_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     edist (c * a) (c * b) = c * edist a b := by

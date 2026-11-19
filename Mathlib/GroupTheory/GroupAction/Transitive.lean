@@ -68,7 +68,7 @@ theorem IsPretransitive.of_surjective_map {φ : M → N} {f : α →ₑ[φ] β}
   obtain ⟨x', rfl⟩ := hf x
   obtain ⟨y', rfl⟩ := hf y
   obtain ⟨g, rfl⟩ := h.exists_smul_eq x' y'
-  exact ⟨φ g, by simp only [map_smulₛₗ]⟩
+  exact ⟨φ g, by simp [map_smulₛₗ]⟩
 
 @[to_additive]
 theorem isPretransitive_congr {φ : M → N} {f : α →ₑ[φ] β}
@@ -83,6 +83,6 @@ theorem isPretransitive_congr {φ : M → N} {f : α →ₑ[φ] β}
     obtain ⟨g, rfl⟩ := hφ k
     use g
     apply hf.injective
-    simp only [hk, map_smulₛₗ]
+    simp [hk, map_smulₛₗ]
 
 end MulAction

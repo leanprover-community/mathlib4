@@ -120,7 +120,7 @@ def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def ltTopHomeomorphNNReal : { a | a < ∞ } ≃ₜ ℝ≥0 := by
   refine (Homeomorph.setCongr ?_).trans neTopHomeomorphNNReal
-  simp only [lt_top_iff_ne_top]
+  simp [lt_top_iff_ne_top]
 
 theorem nhds_top : 𝓝 ∞ = ⨅ (a) (_ : a ≠ ∞), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp [lt_top_iff_ne_top, Ioi]
@@ -133,7 +133,7 @@ theorem nhds_top_basis : (𝓝 ∞).HasBasis (fun a => a < ∞) fun a => Ioi a :
 
 theorem tendsto_nhds_top_iff_nnreal {m : α → ℝ≥0∞} {f : Filter α} :
     Tendsto m f (𝓝 ∞) ↔ ∀ x : ℝ≥0, ∀ᶠ a in f, ↑x < m a := by
-  simp only [nhds_top', tendsto_iInf, tendsto_principal, mem_Ioi]
+  simp [nhds_top', tendsto_iInf, tendsto_principal, mem_Ioi]
 
 theorem tendsto_nhds_top_iff_nat {m : α → ℝ≥0∞} {f : Filter α} :
     Tendsto m f (𝓝 ∞) ↔ ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a :=
@@ -235,7 +235,7 @@ protected theorem tendsto_nhds_of_Icc {f : Filter α} {u : α → ℝ≥0∞} {a
 for a version with strict inequalities. -/
 protected theorem tendsto_nhds {f : Filter α} {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha : a ≠ ∞) :
     Tendsto u f (𝓝 a) ↔ ∀ ε > 0, ∀ᶠ x in f, u x ∈ Icc (a - ε) (a + ε) := by
-  simp only [nhds_of_ne_top ha, tendsto_iInf, tendsto_principal]
+  simp [nhds_of_ne_top ha, tendsto_iInf, tendsto_principal]
 
 protected theorem tendsto_nhds_zero {f : Filter α} {u : α → ℝ≥0∞} :
     Tendsto u f (𝓝 0) ↔ ∀ ε > 0, ∀ᶠ x in f, u x ≤ ε :=
@@ -292,7 +292,7 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
 
 theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
     Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 - p.2) (𝓝 (a, b)) (𝓝 (a - b))
-  | ∞, ∞, h => by simp only [ne_eq, not_true_eq_false, or_self] at h
+  | ∞, ∞, h => by simp [ne_eq, not_true_eq_false, or_self] at h
   | ∞, (b : ℝ≥0), _ => by
     rw [top_sub_coe, tendsto_nhds_top_iff_nnreal]
     refine fun x => ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
@@ -334,7 +334,7 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a �
       simpa [Function.comp_def, mul_comm, mul_top ha]
         using (ht a ha).comp (continuous_swap.tendsto (ofNNReal a, ∞))
     | coe b =>
-      simp only [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, Function.comp_def,
+      simp [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, Function.comp_def,
         tendsto_mul]
 
 protected theorem Tendsto.mul {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
@@ -410,11 +410,11 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
     simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
     intro x
     refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
-    · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
+    · simp [H, zero_ne_top, Ne, or_true, not_false_iff]
     · exact Or.inl fun h => H (eq_zero_of_pow_eq_zero h)
-    · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, not_true, Ne,
+    · simp [H, pow_eq_top_iff, zero_ne_top, false_or, not_true, Ne,
         not_false_iff, false_and]
-    · simp only [H, true_or, Ne, not_false_iff]
+    · simp [H, true_or, Ne, not_false_iff]
 
 theorem continuousOn_sub :
     ContinuousOn (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) { p : ℝ≥0∞ × ℝ≥0∞ | p ≠ ⟨∞, ∞⟩ } := by
@@ -426,7 +426,7 @@ theorem continuousOn_sub :
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
   change Continuous (Function.uncurry Sub.sub ∘ (a, ·))
   refine continuousOn_sub.comp_continuous (.prodMk_right a) fun x => ?_
-  simp only [a_ne_top, Ne, mem_ofPred_eq, Prod.mk_inj, false_and, not_false_iff]
+  simp [a_ne_top, Ne, mem_ofPred_eq, Prod.mk_inj, false_and, not_false_iff]
 
 theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a : ℝ≥0∞) - x :=
   continuous_sub_left coe_ne_top
@@ -443,7 +443,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply continuousOn_sub.comp_continuous (by fun_prop)
     intro x
-    simp only [a_infty, Ne, mem_ofPred_eq, Prod.mk_inj, and_false, not_false_iff]
+    simp [a_infty, Ne, mem_ofPred_eq, Prod.mk_inj, and_false, not_false_iff]
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
@@ -587,7 +587,7 @@ open EMetric
 
 theorem tendsto_iff_edist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
     Tendsto f l (𝓝 y) ↔ Tendsto (fun x => edist (f x) y) l (𝓝 0) := by
-  simp only [Metric.nhds_basis_eball.tendsto_right_iff, Metric.mem_eball,
+  simp [Metric.nhds_basis_eball.tendsto_right_iff, Metric.mem_eball,
     @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and]
 
 /-- Yet another metric characterization of Cauchy sequences on integers. This one is often the
@@ -654,7 +654,7 @@ theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
 
 @[simp]
 theorem Metric.diam_closure {α : Type*} [PseudoMetricSpace α] (s : Set α) :
-    Metric.diam (closure s) = diam s := by simp only [Metric.diam, Metric.ediam_closure]
+    Metric.diam (closure s) = diam s := by simp [Metric.diam, Metric.ediam_closure]
 
 theorem isClosed_setOfPred_lipschitzOnWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     (K : ℝ≥0)
@@ -669,7 +669,7 @@ alias isClosed_setOf_lipschitzOnWith := isClosed_setOfPred_lipschitzOnWith
 theorem isClosed_setOfPred_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     (K : ℝ≥0) :
     IsClosed { f : α → β | LipschitzWith K f } := by
-  simp only [← lipschitzOnWith_univ, isClosed_setOfPred_lipschitzOnWith]
+  simp [← lipschitzOnWith_univ, isClosed_setOfPred_lipschitzOnWith]
 
 @[deprecated (since := "2026-07-09")]
 alias isClosed_setOf_lipschitzWith := isClosed_setOfPred_lipschitzWith
@@ -844,7 +844,7 @@ lemma liminf_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
     exact hi.1.trans hi.2
   have aux : ∀ᶠ i in f, (u i).toReal = ENNReal.truncateToReal b (u i) := by
     filter_upwards [le_b] with i i_le_b
-    simp only [truncateToReal_eq_toReal b_ne_top i_le_b]
+    simp [truncateToReal_eq_toReal b_ne_top i_le_b]
   have aux' : (f.liminf u).toReal = ENNReal.truncateToReal b (f.liminf u) := by
     rw [truncateToReal_eq_toReal b_ne_top liminf_le]
   simp_rw [liminf_congr aux, aux']
@@ -860,7 +860,7 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
     f.limsup (fun i ↦ (u i).toReal) = (f.limsup u).toReal := by
   have aux : ∀ᶠ i in f, (u i).toReal = ENNReal.truncateToReal b (u i) := by
     filter_upwards [le_b] with i i_le_b
-    simp only [truncateToReal_eq_toReal b_ne_top i_le_b]
+    simp [truncateToReal_eq_toReal b_ne_top i_le_b]
   have aux' : (f.limsup u).toReal = ENNReal.truncateToReal b (f.limsup u) := by
     rw [truncateToReal_eq_toReal b_ne_top (limsup_le_of_le ⟨0, by simp⟩ le_b)]
   simp_rw [limsup_congr aux, aux']

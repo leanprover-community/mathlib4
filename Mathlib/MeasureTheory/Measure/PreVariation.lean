@@ -90,7 +90,7 @@ noncomputable abbrev _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpar
 lemma sum_le' {s : Set X} (hs : MeasurableSet s)
     (P : Finpartition s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
-  simp only [P.sum_eq_sum_finpartition_subtype (by measurability) (by measurability)
+  simp [P.sum_eq_sum_finpartition_subtype (by measurability) (by measurability)
     (by measurability) hs hP f, sum_le f hs (P.toMeasurableSet hs hP)]
 
 /-- If `P` is a partition of `s₁` and `s₁ ⊆ s₂` then

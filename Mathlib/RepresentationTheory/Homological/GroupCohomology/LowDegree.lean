@@ -139,7 +139,7 @@ def d₂₃ : ModuleCat.of k (G × G → A) ⟶ ModuleCat.of k (G × G × G → 
         dsimp
         rw [map_add, add_sub_add_comm (A.ρ _ _), add_sub_assoc, add_sub_add_comm, add_add_add_comm,
           add_sub_assoc, add_sub_assoc]
-    map_smul' r x := funext fun g => by dsimp; simp only [map_smul, smul_add, smul_sub] }
+    map_smul' r x := funext fun g => by dsimp; simp [map_smul, smul_add, smul_sub] }
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `d₀₁` gives a simpler expression for the 0th differential: that is, the following
@@ -331,7 +331,7 @@ theorem cocycles₁_map_mul_of_isTrivial [A.IsTrivial] (f : cocycles₁ A) (g h 
 theorem mem_cocycles₁_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ cocycles₁ A :=
   (mem_cocycles₁_iff _).2 fun g h => by
-    simp only [Function.comp_apply, ofMul_mul, map_add,
+    simp [Function.comp_apply, ofMul_mul, map_add,
       isTrivial_apply A.ρ g (f (Additive.ofMul h)), add_comm (f (Additive.ofMul g))]
 
 variable (A) in

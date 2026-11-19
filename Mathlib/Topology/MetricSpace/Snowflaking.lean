@@ -362,7 +362,7 @@ theorem image_ofSnowflaking_closedEBall (x : Snowflaking X α hα₀ hα₁) (d 
 theorem ediam_image_ofSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
     ediam (ofSnowflaking '' s) = ediam s ^ α⁻¹ := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  simp only [ENNReal.rpow_inv_le_iff hα₀, ediam_le_iff, Set.forall_mem_image,
+  simp [ENNReal.rpow_inv_le_iff hα₀, ediam_le_iff, Set.forall_mem_image,
     edist_ofSnowflaking_ofSnowflaking]
 
 @[simp]

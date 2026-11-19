@@ -265,46 +265,46 @@ attribute [nolint unusedHavesSuffices]
 
 /-! ### `ℕ` -/
 
-example : Icc 1 0 = ∅ := by simp only [Icc_ofNat_ofNat]
-example : Icc 1 1 = {1} := by simp only [Icc_ofNat_ofNat]
-example : Icc 1 2 = {1, 2} := by simp only [Icc_ofNat_ofNat]
+example : Icc 1 0 = ∅ := by simp [Icc_ofNat_ofNat]
+example : Icc 1 1 = {1} := by simp [Icc_ofNat_ofNat]
+example : Icc 1 2 = {1, 2} := by simp [Icc_ofNat_ofNat]
 
-example : Ico 1 1 = ∅ := by simp only [Ico_ofNat_ofNat]
-example : Ico 1 2 = {1} := by simp only [Ico_ofNat_ofNat]
-example : Ico 1 3 = {1, 2} := by simp only [Ico_ofNat_ofNat]
+example : Ico 1 1 = ∅ := by simp [Ico_ofNat_ofNat]
+example : Ico 1 2 = {1} := by simp [Ico_ofNat_ofNat]
+example : Ico 1 3 = {1, 2} := by simp [Ico_ofNat_ofNat]
 
-example : Ioc 1 1 = ∅ := by simp only [Ioc_ofNat_ofNat]
-example : Ioc 1 2 = {2} := by simp only [Ioc_ofNat_ofNat]
-example : Ioc 1 3 = {2, 3} := by simp only [Ioc_ofNat_ofNat]
+example : Ioc 1 1 = ∅ := by simp [Ioc_ofNat_ofNat]
+example : Ioc 1 2 = {2} := by simp [Ioc_ofNat_ofNat]
+example : Ioc 1 3 = {2, 3} := by simp [Ioc_ofNat_ofNat]
 
-example : Ioo 1 2 = ∅ := by simp only [Ioo_ofNat_ofNat]
-example : Ioo 1 3 = {2} := by simp only [Ioo_ofNat_ofNat]
-example : Ioo 1 4 = {2, 3} := by simp only [Ioo_ofNat_ofNat]
+example : Ioo 1 2 = ∅ := by simp [Ioo_ofNat_ofNat]
+example : Ioo 1 3 = {2} := by simp [Ioo_ofNat_ofNat]
+example : Ioo 1 4 = {2, 3} := by simp [Ioo_ofNat_ofNat]
 
-example : Iic 0 = {0} := by simp only [Iic_ofNat]
-example : Iic 1 = {0, 1} := by simp only [Iic_ofNat]
-example : Iic 2 = {0, 1, 2} := by simp only [Iic_ofNat]
+example : Iic 0 = {0} := by simp [Iic_ofNat]
+example : Iic 1 = {0, 1} := by simp [Iic_ofNat]
+example : Iic 2 = {0, 1, 2} := by simp [Iic_ofNat]
 
-example : Iio 0 = ∅ := by simp only [Iio_ofNat]
-example : Iio 1 = {0} := by simp only [Iio_ofNat]
-example : Iio 2 = {0, 1} := by simp only [Iio_ofNat]
+example : Iio 0 = ∅ := by simp [Iio_ofNat]
+example : Iio 1 = {0} := by simp [Iio_ofNat]
+example : Iio 2 = {0, 1} := by simp [Iio_ofNat]
 
 /-! ### `ℤ` -/
 
-example : Icc (1 : ℤ) 0 = ∅ := by simp only [Icc_ofNat_ofNat]
-example : Icc (1 : ℤ) 1 = {1} := by simp only [Icc_ofNat_ofNat]
-example : Icc (1 : ℤ) 2 = {1, 2} := by simp only [Icc_ofNat_ofNat]
+example : Icc (1 : ℤ) 0 = ∅ := by simp [Icc_ofNat_ofNat]
+example : Icc (1 : ℤ) 1 = {1} := by simp [Icc_ofNat_ofNat]
+example : Icc (1 : ℤ) 2 = {1, 2} := by simp [Icc_ofNat_ofNat]
 
-example : Ico (1 : ℤ) 1 = ∅ := by simp only [Ico_ofNat_ofNat]
-example : Ico (1 : ℤ) 2 = {1} := by simp only [Ico_ofNat_ofNat]
-example : Ico (1 : ℤ) 3 = {1, 2} := by simp only [Ico_ofNat_ofNat]
+example : Ico (1 : ℤ) 1 = ∅ := by simp [Ico_ofNat_ofNat]
+example : Ico (1 : ℤ) 2 = {1} := by simp [Ico_ofNat_ofNat]
+example : Ico (1 : ℤ) 3 = {1, 2} := by simp [Ico_ofNat_ofNat]
 
-example : Ioc (1 : ℤ) 1 = ∅ := by simp only [Ioc_ofNat_ofNat]
-example : Ioc (1 : ℤ) 2 = {2} := by simp only [Ioc_ofNat_ofNat]
-example : Ioc (1 : ℤ) 3 = {2, 3} := by simp only [Ioc_ofNat_ofNat]
+example : Ioc (1 : ℤ) 1 = ∅ := by simp [Ioc_ofNat_ofNat]
+example : Ioc (1 : ℤ) 2 = {2} := by simp [Ioc_ofNat_ofNat]
+example : Ioc (1 : ℤ) 3 = {2, 3} := by simp [Ioc_ofNat_ofNat]
 
-example : Ioo (1 : ℤ) 2 = ∅ := by simp only [Ioo_ofNat_ofNat]
-example : Ioo (1 : ℤ) 3 = {2} := by simp only [Ioo_ofNat_ofNat]
-example : Ioo (1 : ℤ) 4 = {2, 3} := by simp only [Ioo_ofNat_ofNat]
+example : Ioo (1 : ℤ) 2 = ∅ := by simp [Ioo_ofNat_ofNat]
+example : Ioo (1 : ℤ) 3 = {2} := by simp [Ioo_ofNat_ofNat]
+example : Ioo (1 : ℤ) 4 = {2, 3} := by simp [Ioo_ofNat_ofNat]
 
 end Finset

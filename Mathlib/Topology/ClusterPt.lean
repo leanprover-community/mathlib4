@@ -36,7 +36,7 @@ variable {X : Type u} [TopologicalSpace X] {Y : Type v} {ι : Sort w} {α β : T
 protected lemma ClusterPt.top : ClusterPt x ⊤ := by simp [ClusterPt]
 
 theorem clusterPt_sup {F G : Filter X} : ClusterPt x (F ⊔ G) ↔ ClusterPt x F ∨ ClusterPt x G := by
-  simp only [ClusterPt, inf_sup_left, sup_neBot]
+  simp [ClusterPt, inf_sup_left, sup_neBot]
 
 theorem ClusterPt.neBot {F : Filter X} (h : ClusterPt x F) : NeBot (𝓝 x ⊓ F) :=
   h
@@ -48,7 +48,7 @@ theorem Filter.HasBasis.clusterPt_iff {ιX ιF} {pX : ιX → Prop} {sX : ιX �
 
 theorem Filter.HasBasis.clusterPt_iff_frequently {ι} {p : ι → Prop} {s : ι → Set X} {F : Filter X}
     (hx : (𝓝 x).HasBasis p s) : ClusterPt x F ↔ ∀ i, p i → ∃ᶠ x in F, x ∈ s i := by
-  simp only [hx.clusterPt_iff F.basis_sets, Filter.frequently_iff, inter_comm (s _),
+  simp [hx.clusterPt_iff F.basis_sets, Filter.frequently_iff, inter_comm (s _),
     Set.Nonempty, id, mem_inter_iff]
 
 theorem clusterPt_iff_frequently {F : Filter X} : ClusterPt x F ↔ ∀ s ∈ 𝓝 x, ∃ᶠ y in F, y ∈ s :=
@@ -98,7 +98,7 @@ theorem clusterPt_principal_iff :
 
 theorem clusterPt_principal_iff_frequently :
     ClusterPt x (𝓟 s) ↔ ∃ᶠ y in 𝓝 x, y ∈ s := by
-  simp only [clusterPt_principal_iff, frequently_iff, Set.Nonempty, mem_inter_iff]
+  simp [clusterPt_principal_iff, frequently_iff, Set.Nonempty, mem_inter_iff]
 
 theorem ClusterPt.of_le_nhds {f : Filter X} (H : f ≤ 𝓝 x) [NeBot f] : ClusterPt x f := by
   rwa [ClusterPt, inf_eq_right.mpr H]
@@ -108,7 +108,7 @@ theorem ClusterPt.of_le_nhds' {f : Filter X} (H : f ≤ 𝓝 x) (_hf : NeBot f) 
   ClusterPt.of_le_nhds H
 
 theorem ClusterPt.of_nhds_le {f : Filter X} (H : 𝓝 x ≤ f) : ClusterPt x f := by
-  simp only [ClusterPt, inf_eq_left.mpr H, nhds_neBot]
+  simp [ClusterPt, inf_eq_left.mpr H, nhds_neBot]
 
 theorem ClusterPt.mono {f g : Filter X} (H : ClusterPt x f) (h : f ≤ g) : ClusterPt x g :=
   NeBot.mono H <| inf_le_inf_left _ h
@@ -129,7 +129,7 @@ alias ⟨MapClusterPt.clusterPt, _⟩ := mapClusterPt_def
 
 theorem Filter.EventuallyEq.mapClusterPt_iff {v : α → X} (h : u =ᶠ[F] v) :
     MapClusterPt x F u ↔ MapClusterPt x F v := by
-  simp only [mapClusterPt_def, map_congr h]
+  simp [mapClusterPt_def, map_congr h]
 
 alias ⟨MapClusterPt.congrFun, _⟩ := Filter.EventuallyEq.mapClusterPt_iff
 
@@ -194,7 +194,7 @@ end MapClusterPt
 
 theorem accPt_sup {x : X} {F G : Filter X} :
     AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
-  simp only [AccPt, inf_sup_left, sup_neBot]
+  simp [AccPt, inf_sup_left, sup_neBot]
 
 theorem accPt_iff_clusterPt {x : X} {F : Filter X} : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
@@ -222,7 +222,7 @@ punctured neighborhoods are frequently contained in `C`.
 theorem accPt_iff_frequently_nhdsNE {X : Type*} [TopologicalSpace X] {x : X} {C : Set X} :
     AccPt x (𝓟 C) ↔ ∃ᶠ (y : X) in 𝓝[≠] x, y ∈ C := by
   have : (∃ᶠ z in 𝓝[≠] x, z ∈ C) ↔ ∃ᶠ z in 𝓝 x, z ∈ C ∧ z ∈ ({x} : Set X)ᶜ :=
-    frequently_inf_principal.trans <| by simp only [and_comm]
+    frequently_inf_principal.trans <| by simp [and_comm]
   rw [accPt_iff_frequently, this]
   congr! 2
   tauto
@@ -302,7 +302,7 @@ theorem mem_closure_iff_nhds : x ∈ closure s ↔ ∀ t ∈ 𝓝 x, (t ∩ s).N
   mem_closure_iff_clusterPt.trans clusterPt_principal_iff
 
 theorem mem_closure_iff_nhds' : x ∈ closure s ↔ ∀ t ∈ 𝓝 x, ∃ y : s, ↑y ∈ t := by
-  simp only [mem_closure_iff_nhds, Set.inter_nonempty_iff_exists_right, SetCoe.exists, exists_prop]
+  simp [mem_closure_iff_nhds, Set.inter_nonempty_iff_exists_right, SetCoe.exists, exists_prop]
 
 theorem mem_closure_iff_comap_neBot :
     x ∈ closure s ↔ NeBot (comap ((↑) : s → X) (𝓝 x)) := by
@@ -312,12 +312,12 @@ theorem mem_closure_iff_comap_neBot :
 theorem mem_closure_iff_nhds_basis' {p : ι → Prop} {s : ι → Set X} (h : (𝓝 x).HasBasis p s) :
     x ∈ closure t ↔ ∀ i, p i → (s i ∩ t).Nonempty :=
   mem_closure_iff_clusterPt.trans <|
-    (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp only [forall_const]
+    (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp [forall_const]
 
 theorem mem_closure_iff_nhds_basis {p : ι → Prop} {s : ι → Set X} (h : (𝓝 x).HasBasis p s) :
     x ∈ closure t ↔ ∀ i, p i → ∃ y ∈ t, y ∈ s i :=
   (mem_closure_iff_nhds_basis' h).trans <| by
-    simp only [Set.Nonempty, mem_inter_iff, and_comm]
+    simp [Set.Nonempty, mem_inter_iff, and_comm]
 
 theorem clusterPt_iff_lift'_closure {F : Filter X} :
     ClusterPt x F ↔ pure x ≤ (F.lift' closure) := by
@@ -343,7 +343,7 @@ theorem clusterPt_lift'_closure_iff {F : Filter X} :
 theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s :=
   calc
     IsClosed s ↔ closure s ⊆ s := closure_subset_iff_isClosed.symm
-    _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
+    _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp [subset_def, mem_closure_iff_clusterPt]
 
 theorem isClosed_iff_accPt : IsClosed s ↔ ∀ a, AccPt a (𝓟 s) → a ∈ s := by
   simp [isClosed_iff_clusterPt, clusterPt_principal, or_imp]

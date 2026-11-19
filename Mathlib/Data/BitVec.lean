@@ -30,7 +30,7 @@ open Fin.CommRing in
 theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2 ^ w)) = ↑z := by
   cases w
   case zero =>
-    simp only [eq_nil]
+    simp [eq_nil]
   case succ w =>
     apply BitVec.eq_of_toInt_eq
     rw [toInt_ofFin, Fin.val_intCast, Int.natCast_pow, Nat.cast_ofNat, Int.ofNat_toNat,
@@ -63,12 +63,12 @@ open Fin.NatCast
 lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin :=
   toFin_mul _ _ |>.trans <| by
     open scoped Fin.CommRing in
-    simp only [natCast_eq_ofNat, toFin_ofNat, Fin.ofNat_eq_cast, nsmul_eq_mul]
+    simp [natCast_eq_ofNat, toFin_ofNat, Fin.ofNat_eq_cast, nsmul_eq_mul]
 
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
   toFin_mul _ _ |>.trans <| by
     open scoped Fin.CommRing in
-    simp only [zsmul_eq_mul, toFin_intCast]
+    simp [zsmul_eq_mul, toFin_intCast]
 
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with

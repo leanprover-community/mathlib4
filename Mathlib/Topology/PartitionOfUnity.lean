@@ -187,7 +187,7 @@ def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 @[simp]
 theorem mem_finsupport (x₀ : X) {i} :
     i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
-  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_ofPred_eq]
+  simp [finsupport, mem_support, Finite.mem_toFinset, mem_ofPred_eq]
 
 @[simp]
 theorem coe_finsupport (x₀ : X) :
@@ -565,7 +565,7 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
   sum_eq_one' x hx := by
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_eq_self]
     apply finprod_eq_zero (fun i => 1 - f i x) (f.ind x hx)
-    · simp only [f.ind_apply x hx, sub_self]
+    · simp [f.ind_apply x hx, sub_self]
     · rw [HasFiniteMulSupport, mulSupport_one_sub]
       exact f.point_finite x
   sum_le_one' x := by

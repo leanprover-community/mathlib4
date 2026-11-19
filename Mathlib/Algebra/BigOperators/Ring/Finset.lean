@@ -84,7 +84,7 @@ lemma sum_range_succ_mul_sum_range_succ (m n : ℕ) (f g : ℕ → R) :
     (∑ i ∈ range (m + 1), f i) * ∑ i ∈ range (n + 1), g i =
       (∑ i ∈ range m, f i) * ∑ i ∈ range n, g i +
         f m * ∑ i ∈ range n, g i + (∑ i ∈ range m, f i) * g n + f m * g n := by
-  simp only [add_mul, mul_add, add_assoc, sum_range_succ]
+  simp [add_mul, mul_add, add_assoc, sum_range_succ]
 
 end NonUnitalNonAssocSemiring
 
@@ -159,7 +159,7 @@ lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f
 over `univ`. -/
 lemma prod_univ_sum {κ : ι → Type*} [Fintype ι] (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R) :
     ∏ i, ∑ j ∈ t i, f i j = ∑ x ∈ piFinset t, ∏ i, f i (x i) := by
-  simp only [prod_attach_univ, prod_sum, Finset.sum_univ_pi]
+  simp [prod_attach_univ, prod_sum, Finset.sum_univ_pi]
 
 lemma sum_prod_piFinset [Fintype ι] (s : Finset κ) (g : ι → κ → R) :
     ∑ f ∈ piFinset fun _ : ι ↦ s, ∏ i, g i (f i) = ∏ i, ∑ j ∈ s, g i j := by
@@ -198,11 +198,11 @@ end DecidableEq
 
 theorem prod_one_add {f : ι → R} (s : Finset ι) :
     ∏ i ∈ s, (1 + f i) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
-  classical simp only [add_comm (1 : R), prod_add, prod_const_one, mul_one]
+  classical simp [add_comm (1 : R), prod_add, prod_const_one, mul_one]
 
 theorem prod_add_one {f : ι → R} (s : Finset ι) :
     ∏ i ∈ s, (f i + 1) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
-  classical simp only [prod_add, prod_const_one, mul_one]
+  classical simp [prod_add, prod_const_one, mul_one]
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
 @[to_dual prod_add_ordered']

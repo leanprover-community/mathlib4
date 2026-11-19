@@ -245,7 +245,7 @@ theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [IsDomain R] [Ad
       simpa only [mul_smul, one_smul]
     · rw [← hb] at hy
       apply smul_left_injective R (smul_ne_zero_iff.1 hy).2
-      simp only [mul_smul, one_smul, hb]
+      simp [mul_smul, one_smul, hb]
   · rintro ⟨u, rfl⟩
     exact (span_singleton_group_smul_eq _ _ _).symm
 

@@ -238,13 +238,13 @@ theorem transHomeomorph_eq_trans (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ 
 theorem transHomeomorph_transHomeomorph (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z)
     (f'' : Z ≃ₜ Z') :
     (e.transHomeomorph f').transHomeomorph f'' = e.transHomeomorph (f'.trans f'') := by
-  simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toOpenPartialHomeomorph]
+  simp [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toOpenPartialHomeomorph]
 
 @[simp, mfld_simps]
 theorem trans_transHomeomorph (e : OpenPartialHomeomorph X Y) (e' : OpenPartialHomeomorph Y Z)
     (f'' : Z ≃ₜ Z') :
     (e.trans e').transHomeomorph f'' = e.trans (e'.transHomeomorph f'') := by
-  simp only [transHomeomorph_eq_trans, trans_assoc]
+  simp [transHomeomorph_eq_trans, trans_assoc]
 
 end transHomeomorph
 
@@ -275,7 +275,7 @@ theorem subtypeRestr_coe :
 
 @[simp, mfld_simps]
 theorem subtypeRestr_source : (e.subtypeRestr hs).source = (↑) ⁻¹' e.source := by
-  simp only [subtypeRestr_def, mfld_simps]
+  simp [subtypeRestr_def, mfld_simps]
 
 theorem map_subtype_source {x : s} (hxe : (x : X) ∈ e.source) :
     e x ∈ (e.subtypeRestr hs).target := by
@@ -307,7 +307,7 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : OpenPartialHomeomorph X Y) 
   refine EqOnSource.trans' (eqOnSource_refl _) ?_
   -- f has been eliminated !!!
   refine Setoid.trans (symm_trans_self (s.openPartialHomeomorphSubtypeCoe hs)) ?_
-  simp only [mfld_simps, Setoid.refl]
+  simp [mfld_simps, Setoid.refl]
 
 theorem subtypeRestr_symm_apply {U : Opens X} (hU : Nonempty U)
     {y : Y} (hy : y ∈ (e.subtypeRestr hU).target) :

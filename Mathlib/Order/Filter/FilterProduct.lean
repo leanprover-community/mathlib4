@@ -44,7 +44,7 @@ instance instGroupWithZero [GroupWithZero β] : GroupWithZero β* where
   __ := instMonoidWithZero
   mul_inv_cancel f := inductionOn f fun f hf ↦ coe_eq.2 <| (φ.em fun y ↦ f y = 0).elim
     (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun _ ↦ mul_inv_cancel₀
-  inv_zero := coe_eq.2 <| by simp only [Function.comp_def, inv_zero, EventuallyEq.rfl]
+  inv_zero := coe_eq.2 <| by simp [Function.comp_def, inv_zero, EventuallyEq.rfl]
 
 instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := instSemiring
@@ -67,7 +67,7 @@ instance instField [Field β] : Field β* where
   __ := instDivisionRing
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
-  simp only [lt_iff_le_not_ge, eventually_and, coe_le, eventually_not, EventuallyLE]
+  simp [lt_iff_le_not_ge, eventually_and, coe_le, eventually_not, EventuallyLE]
 
 theorem coe_pos [Preorder β] [Zero β] {f : α → β} : 0 < (f : β*) ↔ ∀* x, 0 < f x :=
   coe_lt

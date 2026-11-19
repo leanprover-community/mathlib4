@@ -198,7 +198,7 @@ lemma ite_zero_mul : ite P a 0 * b = ite P (a * b) 0 := by simp
 lemma mul_ite_zero : a * ite P b 0 = ite P (a * b) 0 := by simp
 
 lemma ite_zero_mul_ite_zero : ite P a 0 * ite Q b 0 = ite (P ∧ Q) (a * b) 0 := by
-  simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
+  simp [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
 
 end MulZeroClass
 
@@ -253,10 +253,10 @@ section CommSemiring
 variable [CommSemiring α]
 
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
-  simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
+  simp [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
 
 lemma add_sq (a b : α) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
-  simp only [sq, add_mul_self_eq]
+  simp [sq, add_mul_self_eq]
 
 lemma add_sq' (a b : α) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
   rw [add_sq, add_assoc, add_comm _ (b ^ 2), add_assoc]

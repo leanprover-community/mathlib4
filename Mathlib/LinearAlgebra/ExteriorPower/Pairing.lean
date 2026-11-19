@@ -35,7 +35,7 @@ lemma toTensorPower_apply_ιMulti {n : ℕ} (v : Fin n → M) :
     toTensorPower R M n (ιMulti R n v) =
       ∑ σ : Perm (Fin n), Perm.sign σ • PiTensorProduct.tprod R (fun i ↦ v (σ i)) := by
   dsimp [toTensorPower]
-  simp only [alternatingMapLinearEquiv_apply_ιMulti,
+  simp [alternatingMapLinearEquiv_apply_ιMulti,
     MultilinearMap.alternatization_apply, MultilinearMap.domDomCongr_apply]
 
 /-- The canonical `n`-alternating map from the dual of the `R`-module `M`
@@ -100,7 +100,7 @@ lemma pairingDual_apply_apply_eq_one (a : Fin n ↪o ι) :
   dsimp
   by_cases hij : i = j
   · subst hij
-    simp only [h₁, Matrix.one_apply_eq]
+    simp [h₁, Matrix.one_apply_eq]
   · rw [h₀ (by simpa using Ne.symm hij), Matrix.one_apply_ne hij]
 
 include h₀ in
@@ -127,7 +127,7 @@ lemma pairingDual_apply_apply_eq_one_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
     simp only [Equiv.symm_apply_apply]
     by_contra! h
     obtain rfl : i = j := σ.injective (le_antisymm hij (hσ h.le))
-    simp only [lt_self_iff_false] at h
+    simp [lt_self_iff_false] at h
   obtain rfl : σ = 1 := by
     ext i : 1
     congrm $(Subsingleton.elim (σ.toOrderIso hσ hσ') (OrderIso.refl _)) i

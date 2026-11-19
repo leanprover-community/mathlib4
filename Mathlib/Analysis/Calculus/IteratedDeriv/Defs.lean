@@ -114,7 +114,7 @@ theorem iteratedDerivWithin_one :
     iteratedDerivWithin 1 f s = derivWithin f s := by
   ext x
   by_cases hsx : AccPt x (𝓟 s)
-  · simp only [iteratedDerivWithin, iteratedFDerivWithin_one_apply hsx.uniqueDiffWithinAt,
+  · simp [iteratedDerivWithin, iteratedFDerivWithin_one_apply hsx.uniqueDiffWithinAt,
       derivWithin]
   · simp [derivWithin_zero_of_not_accPt hsx, iteratedDerivWithin, iteratedFDerivWithin,
       fderivWithin_zero_of_not_accPt hsx]
@@ -169,7 +169,7 @@ reformulated in terms of the one-dimensional derivative on sets with unique deri
 theorem contDiffOn_iff_continuousOn_differentiableOn_deriv {n : ℕ∞} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔ (∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (iteratedDerivWithin m f s) s) ∧
       ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s := by
-  simp only [contDiffOn_iff_continuousOn_differentiableOn hs, iteratedFDerivWithin_eq_equiv_comp,
+  simp [contDiffOn_iff_continuousOn_differentiableOn hs, iteratedFDerivWithin_eq_equiv_comp,
     LinearIsometryEquiv.comp_continuousOn_iff, LinearIsometryEquiv.comp_differentiableOn_iff]
 
 /-- The property of being `C^n`, initially defined in terms of the Fréchet derivative, can be
@@ -262,7 +262,7 @@ reformulated in terms of the one-dimensional derivative. -/
 theorem contDiff_iff_iteratedDeriv {n : ℕ∞} : ContDiff 𝕜 n f ↔
     (∀ m : ℕ, (m : ℕ∞) ≤ n → Continuous (iteratedDeriv m f)) ∧
       ∀ m : ℕ, (m : ℕ∞) < n → Differentiable 𝕜 (iteratedDeriv m f) := by
-  simp only [contDiff_iff_continuous_differentiable, iteratedFDeriv_eq_equiv_comp,
+  simp [contDiff_iff_continuous_differentiable, iteratedFDeriv_eq_equiv_comp,
     LinearIsometryEquiv.comp_continuous_iff, LinearIsometryEquiv.comp_differentiable_iff]
 
 /-- The property of being `C^n`, initially defined in terms of the Fréchet derivative, can be

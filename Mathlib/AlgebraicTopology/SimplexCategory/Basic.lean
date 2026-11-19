@@ -377,7 +377,7 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   ext k : 3
   dsimp [σ]
   cases k using Fin.lastCases with
-  | last => simp only [len_mk, Fin.predAbove_right_last]
+  | last => simp [len_mk, Fin.predAbove_right_last]
   | cast k =>
     cases k using Fin.cases with
     | zero =>
@@ -628,7 +628,7 @@ theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
     Mono f ↔ Function.Injective f.toOrderHom := by
   rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  simp only [skeletalFunctor_obj, skeletalFunctor_map,
+  simp [skeletalFunctor_obj, skeletalFunctor_map,
     NonemptyFinLinOrd.mono_iff_injective, NonemptyFinLinOrd.coe_of, ConcreteCategory.hom_ofHom]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -638,7 +638,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
     Epi f ↔ Function.Surjective f.toOrderHom := by
   rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  simp only [skeletalFunctor_obj, skeletalFunctor_map,
+  simp [skeletalFunctor_obj, skeletalFunctor_map,
     NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of, ConcreteCategory.hom_ofHom]
 
 /-- A monomorphism in `SimplexCategory` must increase lengths -/

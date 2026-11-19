@@ -200,7 +200,7 @@ Lie module `M` over `L`, we may regard `M` as a Lie module over `s` by restricti
 instance lieModule {s : StrictLieRinehartIdeal A L} : LieModule R s M where
   smul_lie t x m := by
     rw [bracket_coe, Submodule.coe_smul_of_tower, smul_lie, bracket_coe]
-  lie_smul t x m := by simp only [bracket_coe, lie_smul]
+  lie_smul t x m := by simp [bracket_coe, lie_smul]
 
 end LieModule
 

@@ -65,7 +65,7 @@ def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
 
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
-  simp only [moment, hp, zero_pow, Ne, not_false_iff, Pi.zero_apply, integral_const,
+  simp [moment, hp, zero_pow, Ne, not_false_iff, Pi.zero_apply, integral_const,
     smul_eq_mul, mul_zero]
 
 @[simp]
@@ -73,7 +73,7 @@ lemma moment_zero_measure : moment X p (0 : Measure Ω) = 0 := by simp [moment]
 
 @[simp]
 theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
-  simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
+  simp [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
     mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne, not_false_iff]
 
 lemma moment_one (X : Ω → ℝ) (μ : Measure Ω) :
@@ -87,7 +87,7 @@ theorem centralMoment_one' [IsFiniteMeasure μ] (h_int : Integrable X μ) :
     centralMoment X 1 μ = (1 - μ.real Set.univ) * μ[X] := by
   simp only [centralMoment, Pi.sub_apply, pow_one]
   rw [integral_sub h_int (integrable_const _)]
-  simp only [sub_mul, integral_const, smul_eq_mul, one_mul]
+  simp [sub_mul, integral_const, smul_eq_mul, one_mul]
 
 @[simp]
 theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ = 0 := by
@@ -128,10 +128,10 @@ def cgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
 
 @[simp]
 theorem mgf_zero_fun : mgf 0 μ t = μ.real Set.univ := by
-  simp only [mgf, Pi.zero_apply, mul_zero, exp_zero, integral_const, smul_eq_mul, mul_one]
+  simp [mgf, Pi.zero_apply, mul_zero, exp_zero, integral_const, smul_eq_mul, mul_one]
 
 @[simp]
-theorem cgf_zero_fun : cgf 0 μ t = log (μ.real Set.univ) := by simp only [cgf, mgf_zero_fun]
+theorem cgf_zero_fun : cgf 0 μ t = log (μ.real Set.univ) := by simp [cgf, mgf_zero_fun]
 
 @[simp]
 theorem mgf_zero_measure : mgf X (0 : Measure Ω) = 0 := by ext; simp [mgf]
@@ -141,7 +141,7 @@ theorem cgf_zero_measure : cgf X (0 : Measure Ω) = 0 := by ext; simp [cgf]
 
 @[simp]
 theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = μ.real Set.univ * exp (t * c) := by
-  simp only [mgf, integral_const, smul_eq_mul]
+  simp [mgf, integral_const, smul_eq_mul]
 
 theorem mgf_const (c : ℝ) [IsProbabilityMeasure μ] : mgf (fun _ => c) μ t = exp (t * c) := by
   simp
@@ -153,30 +153,30 @@ theorem cgf_const' [IsFiniteMeasure μ] (hμ : μ ≠ 0) (c : ℝ) :
   rw [log_mul _ (exp_pos _).ne']
   · rw [log_exp _]
   · rw [Ne, measureReal_eq_zero_iff, Measure.measure_univ_eq_zero]
-    simp only [hμ, not_false_iff]
+    simp [hμ, not_false_iff]
 
 @[simp]
 theorem cgf_const [IsProbabilityMeasure μ] (c : ℝ) : cgf (fun _ => c) μ t = t * c := by
-  simp only [cgf, mgf_const, log_exp]
+  simp [cgf, mgf_const, log_exp]
 
 @[simp]
 theorem mgf_zero' : mgf X μ 0 = μ.real Set.univ := by
-  simp only [mgf, zero_mul, exp_zero, integral_const, smul_eq_mul, mul_one]
+  simp [mgf, zero_mul, exp_zero, integral_const, smul_eq_mul, mul_one]
 
 theorem mgf_zero [IsProbabilityMeasure μ] : mgf X μ 0 = 1 := by
   simp [mgf_zero']
 
-theorem cgf_zero' : cgf X μ 0 = log (μ.real Set.univ) := by simp only [cgf, mgf_zero']
+theorem cgf_zero' : cgf X μ 0 = log (μ.real Set.univ) := by simp [cgf, mgf_zero']
 
 @[simp]
 theorem cgf_zero [IsZeroOrProbabilityMeasure μ] : cgf X μ 0 = 0 := by
   rcases eq_zero_or_isProbabilityMeasure μ with rfl | h <;> simp [cgf_zero']
 
 theorem mgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : mgf X μ t = 0 := by
-  simp only [mgf, integral_undef hX]
+  simp [mgf, integral_undef hX]
 
 theorem cgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : cgf X μ t = 0 := by
-  simp only [cgf, mgf_undef hX, log_zero]
+  simp [cgf, mgf_undef hX, log_zero]
 
 theorem mgf_nonneg : 0 ≤ mgf X μ t := by
   unfold mgf; positivity
@@ -185,7 +185,7 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
     0 < mgf X μ t := by
   simp_rw [mgf]
   have : ∫ x : Ω, exp (t * X x) ∂μ = ∫ x : Ω in Set.univ, exp (t * X x) ∂μ := by
-    simp only [Measure.restrict_univ]
+    simp [Measure.restrict_univ]
   rw [this, setIntegral_pos_iff_support_of_nonneg_ae _ _]
   · have h_eq_univ : (Function.support fun x : Ω => exp (t * X x)) = Set.univ := by
       ext1 x
@@ -193,7 +193,7 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
       exact (exp_pos _).ne'
     rw [h_eq_univ, Set.inter_univ _]
     refine Ne.bot_lt ?_
-    simp only [hμ, ENNReal.bot_eq_zero, Ne, Measure.measure_univ_eq_zero, not_false_iff]
+    simp [hμ, ENNReal.bot_eq_zero, Ne, Measure.measure_univ_eq_zero, not_false_iff]
   · filter_upwards with x
     rw [Pi.zero_apply]
     exact (exp_pos _).le
@@ -246,7 +246,7 @@ theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α)
   rw [mul_add, exp_add]
 
 theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t * exp (t * α) := by
-  simp only [add_comm, mgf_const_add, mul_comm]
+  simp [add_comm, mgf_const_add, mul_comm]
 
 lemma mgf_add_measure {ν : Measure Ω}
     (hμ : Integrable (fun ω ↦ exp (t * X ω)) μ) (hν : Integrable (fun ω ↦ exp (t * X ω)) ν) :
@@ -454,7 +454,7 @@ theorem measure_le_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
     μ.real {ω | X ω ≤ ε} ≤ exp (-t * ε) * mgf X μ t := by
   rw [← neg_neg t, ← mgf_neg, neg_neg, ← neg_mul_neg (-t)]
   refine Eq.trans_le ?_ (measure_ge_le_exp_mul_mgf (-ε) (neg_nonneg.mpr ht) ?_)
-  · simp only [Pi.neg_apply, neg_le_neg_iff]
+  · simp [Pi.neg_apply, neg_le_neg_iff]
   · simp_rw [Pi.neg_apply, neg_mul_neg]
     exact h_int
 

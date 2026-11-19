@@ -97,7 +97,7 @@ lemma homEquiv_naturality_one (f₁ : X₁ ⟶ Y₁) (g : (F.obj Y₁).obj X₂ 
       adj₂.homEquiv g ≫ (G.map f₁.op).app X₃ := by
   have := congr($(adj₂.unit_whiskerRight_map f₁).app X₂)
   dsimp at this
-  simp only [homEquiv_eq, Adjunction.homEquiv_unit, Functor.comp_obj, Functor.map_comp,
+  simp [homEquiv_eq, Adjunction.homEquiv_unit, Functor.comp_obj, Functor.map_comp,
     Category.assoc, NatTrans.naturality, reassoc_of% this]
 
 @[reassoc]

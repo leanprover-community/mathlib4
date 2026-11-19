@@ -114,7 +114,7 @@ lemma isSheaf_of_nat_equiv (hP₁ : Presieve.IsSheaf J P₁) :
 include he in
 lemma isSheaf_iff_of_nat_equiv :
     Presieve.IsSheaf J P₁ ↔ Presieve.IsSheaf J P₂ := by
-  simp only [Presieve.IsSheaf, Presieve.isSheafFor_iff_of_nat_equiv e he]
+  simp [Presieve.IsSheaf, Presieve.isSheafFor_iff_of_nat_equiv e he]
 
 end
 

@@ -107,7 +107,7 @@ attribute [reassoc] comp_τl comp_τr
 
 @[ext]
 lemma hom₂_ext {α β : a ⟶ b} {x y : α ⟶ β} (hl : x.τl = y.τl) : x = y :=
-  Hom₂.ext hl (by simp only [← Hom₂.conjugateEquiv_τl, hl])
+  Hom₂.ext hl (by simp [← Hom₂.conjugateEquiv_τl, hl])
 
 instance : Category (a ⟶ b) where
 

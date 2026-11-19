@@ -133,7 +133,7 @@ theorem IsTheta.of_norm_eventuallyEq_norm (h : (fun x ↦ ‖f x‖) =ᶠ[l] fun
   ⟨.of_bound' h.le, .of_bound' h.symm.le⟩
 
 theorem IsTheta.of_norm_eventuallyEq {g : α → ℝ} (h : (fun x ↦ ‖f' x‖) =ᶠ[l] g) : f' =Θ[l] g :=
-  of_norm_eventuallyEq_norm <| h.mono fun x hx ↦ by simp only [← hx, norm_norm]
+  of_norm_eventuallyEq_norm <| h.mono fun x hx ↦ by simp [← hx, norm_norm]
 
 theorem IsTheta.isLittleO_congr_left (h : f' =Θ[l] g') : f' =o[l] k ↔ g' =o[l] k :=
   ⟨h.symm.trans_isLittleO, h.trans_isLittleO⟩
@@ -168,16 +168,16 @@ theorem IsTheta.eq_zero_iff (h : f'' =Θ[l] g'') : ∀ᶠ x in l, f'' x = 0 ↔ 
 
 theorem IsTheta.tendsto_zero_iff (h : f'' =Θ[l] g'') :
     Tendsto f'' l (𝓝 0) ↔ Tendsto g'' l (𝓝 0) := by
-  simp only [← isLittleO_one_iff ℝ, h.isLittleO_congr_left]
+  simp [← isLittleO_one_iff ℝ, h.isLittleO_congr_left]
 
 theorem IsTheta.tendsto_norm_atTop_iff (h : f' =Θ[l] g') :
     Tendsto (norm ∘ f') l atTop ↔ Tendsto (norm ∘ g') l atTop := by
-  simp only [Function.comp_def, ← isLittleO_const_left_of_ne (one_ne_zero' ℝ),
+  simp [Function.comp_def, ← isLittleO_const_left_of_ne (one_ne_zero' ℝ),
     h.isLittleO_congr_right]
 
 theorem IsTheta.isBoundedUnder_le_iff (h : f' =Θ[l] g') :
     IsBoundedUnder (· ≤ ·) l (norm ∘ f') ↔ IsBoundedUnder (· ≤ ·) l (norm ∘ g') := by
-  simp only [← isBigO_const_of_ne (one_ne_zero' ℝ), h.isBigO_congr_left]
+  simp [← isBigO_const_of_ne (one_ne_zero' ℝ), h.isBigO_congr_left]
 
 theorem IsTheta.smul [NormedSpace 𝕜 E'] [NormedSpace 𝕜' F'] {f₁ : α → 𝕜} {f₂ : α → 𝕜'} {g₁ : α → E'}
     {g₂ : α → F'} (hf : f₁ =Θ[l] f₂) (hg : g₁ =Θ[l] g₂) :
@@ -236,7 +236,7 @@ theorem isTheta_const_const_iff [NeBot l] {c₁ : E''} {c₂ : F''} :
 
 @[simp]
 theorem isTheta_zero_left : (fun _ ↦ (0 : E')) =Θ[l] g'' ↔ g'' =ᶠ[l] 0 := by
-  simp only [IsTheta, isBigO_zero, isBigO_zero_right_iff, true_and]
+  simp [IsTheta, isBigO_zero, isBigO_zero_right_iff, true_and]
 
 @[simp]
 theorem isTheta_zero_right : (f'' =Θ[l] fun _ ↦ (0 : F')) ↔ f'' =ᶠ[l] 0 :=

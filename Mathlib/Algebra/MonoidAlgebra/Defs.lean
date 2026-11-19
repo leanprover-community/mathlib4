@@ -529,7 +529,7 @@ lemma coeff_mul_antidiag (x y : R[M]) (m : M) (s : Finset (M × M))
     _ = ∑ p ∈ x.coeff.support ×ˢ y.coeff.support with p.1 * p.2 = m, x.coeff p.1 * y.coeff p.2 := by
       rw [Finset.sum_filter, Finset.sum_product]
     _ = ∑ p ∈ s with p.1 ∈ x.coeff.support ∧ p.2 ∈ y.coeff.support, x.coeff p.1 * y.coeff p.2 := by
-      congr! 1; ext; simp only [mem_filter, mem_product, hs, and_comm]
+      congr! 1; ext; simp [mem_filter, mem_product, hs, and_comm]
     _ = ∑ p ∈ s, x.coeff p.1 * y.coeff p.2 :=
       sum_subset (filter_subset _ _) fun p hps hp => by
         simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢

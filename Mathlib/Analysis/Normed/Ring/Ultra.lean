@@ -66,7 +66,7 @@ variable (R)
 lemma nnNorm_natCast_le_one (n : ℕ) :
     ‖(n : R)‖₊ ≤ 1 := by
   induction n with
-  | zero => simp only [Nat.cast_zero, nnNorm_zero, zero_le]
+  | zero => simp [Nat.cast_zero, nnNorm_zero, zero_le]
   | succ n hn => simpa only [Nat.cast_add, Nat.cast_one, hn, max_eq_right] using
     nnNorm_add_one_le_max_nnNorm_one (n : R)
 

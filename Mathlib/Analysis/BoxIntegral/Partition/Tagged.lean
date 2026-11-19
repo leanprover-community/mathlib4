@@ -184,7 +184,7 @@ theorem infPrepartition_toPrepartition (π : TaggedPrepartition I) (π' : Prepar
 
 theorem mem_infPrepartition_comm :
     J ∈ π₁.infPrepartition π₂.toPrepartition ↔ J ∈ π₂.infPrepartition π₁.toPrepartition := by
-  simp only [← mem_toPrepartition, infPrepartition_toPrepartition, inf_comm]
+  simp [← mem_toPrepartition, infPrepartition_toPrepartition, inf_comm]
 
 theorem IsPartition.infPrepartition (h₁ : π₁.IsPartition) {π₂ : Prepartition I}
     (h₂ : π₂.IsPartition) : (π₁.infPrepartition π₂).IsPartition :=

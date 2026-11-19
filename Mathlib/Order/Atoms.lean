@@ -85,7 +85,7 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
     forall_congr' fun b => by
-      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_ge]
+      simp [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_ge]
 
 @[to_dual]
 lemma IsAtom.ne_bot (ha : IsAtom a) : a ≠ ⊥ := ha.1
@@ -136,7 +136,7 @@ lemma Set.Iio_eq_singleton_bot_iff : Iio a = {⊥} ↔ IsAtom a := by
 
 @[to_dual (attr := simp) covBy_top_iff]
 theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
-  simp only [CovBy, bot_lt_iff_ne_bot, IsAtom, not_imp_not]
+  simp [CovBy, bot_lt_iff_ne_bot, IsAtom, not_imp_not]
 
 @[to_dual] alias ⟨CovBy.isAtom, _⟩ := bot_covBy_iff
 @[to_dual covBy_top] alias ⟨_, IsAtom.bot_covBy⟩ := bot_covBy_iff
@@ -442,7 +442,7 @@ abbrev toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic
     CompleteAtomicBooleanAlgebra α where
   __ := ‹CompleteBooleanAlgebra α›
   iInf_iSup_eq f := BooleanAlgebra.eq_iff_atom_le_iff.2 fun a ha => by
-    simp only [le_iInf_iff, ha.le_iSup, Classical.skolem]
+    simp [le_iInf_iff, ha.le_iSup, Classical.skolem]
 
 end CompleteBooleanAlgebra
 
@@ -933,7 +933,7 @@ theorem isSimpleOrder [BoundedOrder α] [BoundedOrder β] [h : IsSimpleOrder β]
 @[to_dual]
 protected theorem isAtomic_iff [OrderBot α] [OrderBot β] (f : α ≃o β) :
     IsAtomic α ↔ IsAtomic β := by
-  simp only [isAtomic_iff, f.surjective.forall, f.surjective.exists, ← map_bot f, f.eq_iff_eq,
+  simp [isAtomic_iff, f.surjective.forall, f.surjective.exists, ← map_bot f, f.eq_iff_eq,
     f.le_iff_le, f.isAtom_iff]
 
 end OrderIso
@@ -1053,7 +1053,7 @@ protected theorem eq_bot_iff [∀ i, Bot (π i)] {f : ∀ i, π i} : f = ⊥ ↔
 
 theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] :
     IsAtom f ↔ ∃ i, IsAtom (f i) ∧ ∀ j, j ≠ i → f j = ⊥ := by
-  simp only [← bot_covBy_iff, Pi.covBy_iff, bot_apply, eq_comm]
+  simp [← bot_covBy_iff, Pi.covBy_iff, bot_apply, eq_comm]
 
 theorem isAtom_single {i : ι} [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)]
     {a : π i} (h : IsAtom a) : IsAtom (Function.update (⊥ : ∀ i, π i) i a) :=

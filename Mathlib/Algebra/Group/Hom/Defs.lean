@@ -1074,7 +1074,7 @@ theorem one_comp [MulOne M] [MulOne N] [MulOneClass P] (f : M →* N) :
 theorem comp_one [MulOne M] [MulOneClass N] [MulOneClass P] (f : N →* P) :
     f.comp (1 : M →* N) = 1 := by
   ext
-  simp only [map_one, coe_comp, Function.comp_apply, one_apply]
+  simp [map_one, coe_comp, Function.comp_apply, one_apply]
 
 /-- Group homomorphisms preserve inverse. -/
 @[to_additive /-- Additive group homomorphisms preserve negation. -/]

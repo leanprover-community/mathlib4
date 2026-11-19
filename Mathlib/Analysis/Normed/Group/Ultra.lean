@@ -109,7 +109,7 @@ alias isUltrametricDist_iff_isNonarchimedean_nnnorm := isUltrametricDist_iff_isN
 lemma norm_mul_eq_max_of_norm_ne_norm
     {x y : S} (h : ‖x‖ ≠ ‖y‖) : ‖x * y‖ = max ‖x‖ ‖y‖ := by
   rw [← inv_inv x, ← dist_eq_norm_inv_mul, dist_eq_max_of_dist_ne_dist _ 1 _ (by simp [h])]
-  simp only [dist_one_right, dist_one_left, norm_inv']
+  simp [dist_one_right, dist_one_left, norm_inv']
 
 @[to_additive]
 lemma norm_eq_of_mul_norm_lt_max {x y : S} (h : ‖x * y‖ < max ‖x‖ ‖y‖) :
@@ -191,7 +191,7 @@ def ball_openSubgroup {r : ℝ} (hr : 0 < r) : OpenSubgroup S where
     simp only [Metric.mem_ball, dist_eq_norm_inv_mul', inv_one, one_mul] at hx hy ⊢
     exact (norm_mul_le_max x y).trans_lt (max_lt hx hy)
   one_mem' := Metric.mem_ball_self hr
-  inv_mem' := by simp only [Metric.mem_ball, dist_one_right, norm_inv', imp_self, implies_true]
+  inv_mem' := by simp [Metric.mem_ball, dist_one_right, norm_inv', imp_self, implies_true]
   isOpen' := Metric.isOpen_ball
 
 /--
@@ -205,7 +205,7 @@ def closedBall_openSubgroup {r : ℝ} (hr : 0 < r) : OpenSubgroup S where
     simp only [Metric.mem_closedBall, dist_eq_norm_inv_mul', inv_one, one_mul] at hx hy ⊢
     exact (norm_mul_le_max x y).trans (max_le hx hy)
   one_mem' := Metric.mem_closedBall_self hr.le
-  inv_mem' := by simp only [mem_closedBall, dist_one_right, norm_inv', imp_self, implies_true]
+  inv_mem' := by simp [mem_closedBall, dist_one_right, norm_inv', imp_self, implies_true]
   isOpen' := IsUltrametricDist.isOpen_closedBall _ hr.ne'
 
 end nonarch
@@ -234,7 +234,7 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
     ‖∏ i ∈ s, f i‖ ≤ s.sup' hs (‖f ·‖) := by
   simp only [Finset.le_sup'_iff]
   induction hs using Finset.Nonempty.cons_induction with
-  | singleton j => simp only [Finset.mem_singleton, Finset.prod_singleton, exists_eq_left, le_refl]
+  | singleton j => simp [Finset.mem_singleton, Finset.prod_singleton, exists_eq_left, le_refl]
   | cons j t hj _ IH =>
       simp only [Finset.prod_cons, Finset.mem_cons, exists_eq_or_imp]
       refine (le_total ‖∏ i ∈ t, f i‖ ‖f j‖).imp ?_ ?_ <;> intro h
@@ -341,7 +341,7 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
 lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := by
   rcases isEmpty_or_nonempty ι with hι | hι
   · -- Silly case #1 : the index type is empty
-    simp only [tprod_empty, norm_one', Real.iSup_of_isEmpty, le_refl]
+    simp [tprod_empty, norm_one', Real.iSup_of_isEmpty, le_refl]
   by_cases h : Multipliable f; swap
   · -- Silly case #2 : the product is divergent
     rw [tprod_eq_one_of_not_multipliable h, norm_one']

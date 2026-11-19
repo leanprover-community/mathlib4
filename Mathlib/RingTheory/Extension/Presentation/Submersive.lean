@@ -366,7 +366,7 @@ private lemma jacobiMatrix_comp_₂₂_det :
   generalize P.jacobiMatrix i j = p
   induction p using MvPolynomial.induction_on with
   | C a =>
-    simp only [algHom_C, algebraMap_eq, eval₂_C]
+    simp [algHom_C, algebraMap_eq, eval₂_C]
   | add p q hp hq => simp [hp, hq]
   | mul_X p i hp =>
     simp only [map_mul, eval₂_mul, hp]
@@ -422,7 +422,7 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
   have h : (baseChange T P).jacobiMatrix =
       (MvPolynomial.map (algebraMap R T)).mapMatrix P.jacobiMatrix := by
     ext i j : 1
-    simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
+    simp [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
       RingHom.mapMatrix_apply, Matrix.map_apply,
       Presentation.baseChange_toGenerators, MvPolynomial.pderiv_map]
   rw [h, ← RingHom.map_det, Generators.algebraMap_apply, aeval_map_algebraMap, P.algebraMap_apply]

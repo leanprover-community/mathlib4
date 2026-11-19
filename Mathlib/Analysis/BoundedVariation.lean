@@ -168,7 +168,7 @@ variable {μ : Measure α} {f : α → E}
 
 theorem memLp_top (hf : BoundedVariationOn f univ) : MemLp f ∞ μ := by
   rcases isEmpty_or_nonempty α with hα | ⟨⟨x⟩⟩
-  · simp only [MemLp.of_discrete]
+  · simp [MemLp.of_discrete]
   apply memLp_top_of_bound hf.stronglyMeasurable.aestronglyMeasurable
     (‖f x‖ + (eVariationOn f univ).toReal)
   filter_upwards with y
@@ -189,7 +189,7 @@ theorem intervalIntegrable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ} [IsLoc
   have hmaps : MapsTo φ univ (uIcc a b) := fun _ _ ↦
     ⟨le_sup_left, sup_le inf_le_sup inf_le_left⟩
   have heq : EqOn (f ∘ φ) f (uIcc a b) := fun x hx ↦ by
-    simp only [Function.comp_apply, φ, inf_eq_right.2 hx.2, sup_eq_right.2 hx.1]
+    simp [Function.comp_apply, φ, inf_eq_right.2 hx.2, sup_eq_right.2 hx.1]
   have hg : BoundedVariationOn (f ∘ φ) univ :=
     ne_top_of_le_ne_top hf (eVariationOn.comp_le_of_monotoneOn f φ (hφ.monotoneOn univ) hmaps)
   have : IsFiniteMeasure (μ.restrict (uIcc a b)) :=

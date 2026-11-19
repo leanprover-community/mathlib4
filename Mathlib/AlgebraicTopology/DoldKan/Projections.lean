@@ -57,7 +57,7 @@ theorem P_f_0_eq (q : ℕ) : ((P q).f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ :=
   induction q with
   | zero => rfl
   | succ q hq =>
-    simp only [P_succ, HomologicalComplex.add_f_apply, HomologicalComplex.comp_f,
+    simp [P_succ, HomologicalComplex.add_f_apply, HomologicalComplex.comp_f,
       HomologicalComplex.id_f, id_comp, hq, Hσ_eq_zero, add_zero]
 
 /-- `Q q` is the complement projection associated to `P q` -/
@@ -82,7 +82,7 @@ theorem Q_succ (q : ℕ) : (Q (q + 1) : K[X] ⟶ _) = Q q - P q ≫ Hσ q := by
 /-- All the `Q q` coincide with `0` in degree 0. -/
 @[simp]
 theorem Q_f_0_eq (q : ℕ) : ((Q q).f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 0 := by
-  simp only [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, Q, P_f_0_eq, sub_self]
+  simp [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, Q, P_f_0_eq, sub_self]
 
 namespace HigherFacesVanish
 
@@ -113,7 +113,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
         simp only [hnaq, add_assoc]
         rfl)
       simp only [Fin.succ_mk] at eq
-      simp only [eq, zero_comp]
+      simp [eq, zero_comp]
 
 end HigherFacesVanish
 
@@ -154,7 +154,7 @@ def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
     induction q with
     | zero =>
       dsimp [alternatingFaceMapComplex]
-      simp only [P_zero, id_comp, comp_id]
+      simp [P_zero, id_comp, comp_id]
     | succ q hq =>
       simp only [P_succ, add_comp, comp_add, assoc, comp_id, hq, reassoc_of% hq]
       -- `erw` is needed to see through `natTransHσ q).app = Hσ q`
@@ -173,7 +173,7 @@ theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
   simp only [Q, HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, comp_sub, P_f_naturality,
     sub_comp, sub_left_inj]
   dsimp
-  simp only [comp_id, id_comp]
+  simp [comp_id, id_comp]
 
 /-- For each `q`, `Q q` is a natural transformation. -/
 @[simps]
@@ -188,7 +188,7 @@ theorem map_P {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additiv
     simp only [P_zero]
     apply G.map_id
   | succ q hq =>
-    simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
+    simp [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
       comp_id, Functor.map_add, Functor.map_comp, hq, map_Hσ]
 
 theorem map_Q {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]

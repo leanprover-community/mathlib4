@@ -49,7 +49,7 @@ theorem mk_mem_sym2_iff : s(a, b) ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
 @[simp, grind =]
 theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
-  simp only [mem_val]
+  simp [mem_val]
 
 @[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
   Set.ext fun z ↦ z.ind fun a b => by simp
@@ -84,7 +84,7 @@ instance _root_.Sym2.instFintype [Fintype α] : Fintype (Sym2 α) where
 theorem sym2_univ [Fintype α] (inst : Fintype (Sym2 α) := Sym2.instFintype) :
     (univ : Finset α).sym2 = univ := by
   ext
-  simp only [mem_sym2_iff, mem_univ, implies_true]
+  simp [mem_sym2_iff, mem_univ, implies_true]
 
 @[simp, mono]
 theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := by
@@ -104,7 +104,7 @@ theorem sym2_toFinset [DecidableEq α] (m : Multiset α) :
     m.toFinset.sym2 = m.sym2.toFinset := by
   ext z
   refine z.ind fun x y ↦ ?_
-  simp only [mk_mem_sym2_iff, Multiset.mem_toFinset, Multiset.mk_mem_sym2_iff]
+  simp [mk_mem_sym2_iff, Multiset.mem_toFinset, Multiset.mk_mem_sym2_iff]
 
 @[simp]
 theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
@@ -253,7 +253,7 @@ theorem sym_mono (h : s ⊆ t) (n : ℕ) : s.sym n ⊆ t.sym n := fun _m hm ↦
 @[simp]
 theorem sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).sym n = s.sym n ∩ t.sym n := by
   ext m
-  simp only [mem_inter, mem_sym_iff, imp_and, forall_and]
+  simp [mem_inter, mem_sym_iff, imp_and, forall_and]
 
 @[simp]
 theorem sym_union (s t : Finset α) (n : ℕ) : s.sym n ∪ t.sym n ⊆ (s ∪ t).sym n :=

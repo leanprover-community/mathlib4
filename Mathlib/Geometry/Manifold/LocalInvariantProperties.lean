@@ -463,7 +463,7 @@ theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ 
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
   refine ⟨h.continuousWithinAt.mono hts, mono (fun y hy ↦ ?_) h.prop⟩
   simp only [mfld_simps] at hy
-  simp only [hy, hts _, mfld_simps]
+  simp [hy, hts _, mfld_simps]
 
 theorem liftPropWithinAt_of_liftPropAt (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropAt P g x) : LiftPropWithinAt P g s x := by
@@ -495,10 +495,10 @@ theorem liftPropAt_symm_of_mem_maximalAtlas {x : H}
     (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) (he : e ∈ maximalAtlas M G)
     (hx : x ∈ e.target) : LiftPropAt Q e.symm x := by
   suffices h : Q (e ∘ e.symm) univ x by
-    have : e.symm x ∈ e.source := by simp only [hx, mfld_simps]
+    have : e.symm x ∈ e.source := by simp [hx, mfld_simps]
     rw [LiftPropAt, hG.liftPropWithinAt_indep_chart G.id_mem_maximalAtlas (mem_univ _) he this]
     refine ⟨(e.symm.continuousAt hx).continuousWithinAt, ?_⟩
-    simp only [h, mfld_simps]
+    simp [h, mfld_simps]
   exact hG.congr' (e.eventually_right_inverse hx) (hQ x)
 
 theorem liftPropOn_symm_of_mem_maximalAtlas (hG : G.LocalInvariantProp G Q)
@@ -609,7 +609,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
         · exact closedUnderRestriction' heG isOpen_interior
         · have : s ∩ u ∩ e.source = s ∩ (e.source ∩ u) := by mfld_set_tac
           simpa only [this, interior_interior, hu.interior_eq, mfld_simps] using hef
-        · simp only [*, hu.interior_eq, mfld_simps]
+        · simp [*, hu.interior_eq, mfld_simps]
     right_invariance' := by
       intro s x f e' he'G he'x h hx
       have hxs : x ∈ s := by simpa only [e'.left_inv he'x, mfld_simps] using hx
@@ -617,8 +617,8 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
       refine ⟨e'.symm.trans e, G.trans (G.symm he'G) heG, ?_, ?_⟩
       · intro y hy
         simp only [mfld_simps] at hy
-        simp only [hef ⟨hy.1, hy.2.2⟩, mfld_simps]
-      · simp only [hex, he'x, mfld_simps]
+        simp [hef ⟨hy.1, hy.2.2⟩, mfld_simps]
+      · simp [hex, he'x, mfld_simps]
     congr_of_forall := by
       intro s x f g hfgs _ h hx
       rcases h hx with ⟨e, heG, hef, hex⟩
@@ -631,7 +631,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
       refine ⟨e.trans e', G.trans heG he'G, ?_, ?_⟩
       · intro y hy
         simp only [mfld_simps] at hy
-        simp only [hef ⟨hy.1, hy.2.1⟩, mfld_simps]
+        simp [hef ⟨hy.1, hy.2.1⟩, mfld_simps]
       · simpa only [hex, hef ⟨hx, hex⟩, mfld_simps] using hfx }
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is an open partial homeomorph.
@@ -692,10 +692,10 @@ theorem HasGroupoid.comp
       apply G₁.locality
       intro x hx
       simp only [mfld_simps] at hx
-      have hxs : x ∈ f.symm ⁻¹' (e.symm ≫ₕ e').source := by simp only [hx, mfld_simps]
+      have hxs : x ∈ f.symm ⁻¹' (e.symm ≫ₕ e').source := by simp [hx, mfld_simps]
       have hxs' : x ∈ f.target ∩
           f.symm ⁻¹' ((e.symm ≫ₕ e').source ∩ e.symm ≫ₕ e' ⁻¹' f'.source) := by
-        simp only [hx, mfld_simps]
+        simp [hx, mfld_simps]
       obtain ⟨φ, hφG₁, hφ, hφ_dom⟩ := LocalInvariantProp.liftPropOn_indep_chart
         (isLocalStructomorphWithinAt_localInvariantProp G₁) (G₁.subset_maximalAtlas hf)
         (G₁.subset_maximalAtlas hf') (H _ (G₂.compatible he he')) hxs' hxs
@@ -705,7 +705,7 @@ theorem HasGroupoid.comp
       have hs : IsOpen (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').source :=
         (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').open_source
       refine ⟨_, hs.inter φ.open_source, ?_, ?_⟩
-      · simp only [hx, hφ_dom, mfld_simps]
+      · simp [hx, hφ_dom, mfld_simps]
       · refine G₁.mem_of_eqOnSource (closedUnderRestriction' hφG₁ hs) ?_
         rw [OpenPartialHomeomorph.restr_source_inter]
         refine OpenPartialHomeomorph.Set.EqOn.restr_eqOn_source (hφ.mono ?_)

@@ -447,7 +447,7 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s,
     apply hpq.imp <;> rintro rfl <;> simp
 
 theorem forall_mem_pair {P : α → Prop} {a b : α} : (∀ x ∈ s(a, b), P x) ↔ P a ∧ P b := by
-  simp only [mem_iff, forall_eq_or_imp, forall_eq]
+  simp [mem_iff, forall_eq_or_imp, forall_eq]
 
 lemma pair_eq_pmap {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : P a) (h' : P b) :
     s(f a h, f b h') = pmap f s(a, b) (forall_mem_pair.mpr ⟨h, h'⟩) := rfl

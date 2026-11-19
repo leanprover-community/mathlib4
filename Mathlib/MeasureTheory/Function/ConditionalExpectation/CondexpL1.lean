@@ -157,15 +157,15 @@ variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 theorem condExpIndL1_of_measurableSet_of_measure_ne_top (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : condExpIndL1 hm μ s x = condExpIndL1Fin hm hs hμs x := by
-  simp only [condExpIndL1, And.intro hs hμs, dite_eq_left, Ne, not_false_iff, and_self_iff]
+  simp [condExpIndL1, And.intro hs hμs, dite_eq_left, Ne, not_false_iff, and_self_iff]
 
 theorem condExpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condExpIndL1 hm μ s x = 0 := by
-  simp only [condExpIndL1, hμs, not_true, Ne, dite_eq_right, not_false_iff,
+  simp [condExpIndL1, hμs, not_true, Ne, dite_eq_right, not_false_iff,
     and_false]
 
 theorem condExpIndL1_of_not_measurableSet (hs : ¬MeasurableSet s) (x : G) :
     condExpIndL1 hm μ s x = 0 := by
-  simp only [condExpIndL1, hs, dite_eq_right, not_false_iff, false_and]
+  simp [condExpIndL1, hs, dite_eq_right, not_false_iff, false_and]
 
 theorem condExpIndL1_add (x y : G) :
     condExpIndL1 hm μ s (x + y) = condExpIndL1 hm μ s x + condExpIndL1 hm μ s y := by
@@ -419,7 +419,7 @@ theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condExpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
   let g := lpMeasToLpTrimLie F' ℝ 1 μ hm f
   have hfg : f = (lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g := by
-    simp only [g, LinearIsometryEquiv.symm_apply_apply]
+    simp [g, LinearIsometryEquiv.symm_apply_apply]
   rw [hfg]
   refine @Lp.induction α F' m _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
     condExpL1CLM F' hm μ ((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g : α →₁[μ] F') =

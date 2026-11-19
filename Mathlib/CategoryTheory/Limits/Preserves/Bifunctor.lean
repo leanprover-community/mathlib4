@@ -40,7 +40,7 @@ def Functor.mapCocone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ 
       naturality := by
         rintro ⟨j₁, j₂⟩ ⟨k₁, k₂⟩ ⟨f₁, f₂⟩
         dsimp
-        simp only [assoc, comp_id, NatTrans.naturality_assoc,
+        simp [assoc, comp_id, NatTrans.naturality_assoc,
           ← Functor.map_comp, NatTrans.naturality, const_obj_map, const_obj_obj,
           ← NatTrans.comp_app_assoc, c₁.w] }
 
@@ -57,7 +57,7 @@ def Functor.mapCone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ : 
       naturality := by
         rintro ⟨j₁, j₂⟩ ⟨k₁, k₂⟩ ⟨f₁, f₂⟩
         dsimp
-        simp only [assoc, id_comp, NatTrans.naturality_assoc,
+        simp [assoc, id_comp, NatTrans.naturality_assoc,
           ← Functor.map_comp,
           ← NatTrans.comp_app_assoc, c₁.w, c₂.w] }
 
@@ -229,7 +229,7 @@ instance of_preservesColimits_in_each_variable
           intro j₂
           have := (P j₁).fac s j₂
           simp only [Functor.mapCocone_pt, Functor.mapCocone_ι_app, Q₀, s] at this
-          simp only [Functor.mapCocone_pt,
+          simp [Functor.mapCocone_pt,
             Functor.mapCocone_ι_app, NatTrans.naturality, this, Q₀, s])
     ⟨IsColimit.ofCoconeUncurry P <| IsColimit.precomposeHomEquiv E₀ _ <|
       IsColimit.ofIsoColimit (isColimitOfPreserves _ hc₁) E₁.symm⟩
@@ -364,7 +364,7 @@ instance of_preservesLimits_in_each_variable
           have := (P j₁).fac s j₂
           simp only [whiskeringLeft₂_obj_obj_obj_obj_obj,
             Functor.mapCone_pt, Functor.mapCone_π_app, s, Q₀] at this
-          simp only [whiskeringLeft₂_obj_obj_obj_obj_obj,
+          simp [whiskeringLeft₂_obj_obj_obj_obj_obj,
             Functor.mapCone_pt, Functor.mapCone_π_app, this, Q₀, s])
     ⟨IsLimit.ofConeOfConeUncurry P <| IsLimit.postcomposeHomEquiv E₀ _ <|
       IsLimit.ofIsoLimit (isLimitOfPreserves _ hc₁) E₁.symm⟩

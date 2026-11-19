@@ -85,7 +85,7 @@ public lemma faithful_pullFunctor :
         F.mapComp'_id_comp_hom_app_assoc]
     replace hφ := congr($(hφ).hom j)
     dsimp at hφ
-    simp only [this, hφ]
+    simp [this, hφ]
 
 namespace full_pullFunctor
 
@@ -169,7 +169,7 @@ lemma mor_precomp ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ 
     ← D₂.pullHom_hom r (q ≫ f i) _ rfl (a ≫ p' j) q (by cat_disch) rfl _ r' rfl hr']
   have := F.mapComp'_naturality_2 a.op.toLoc r.op.toLoc a'.op.toLoc (by cat_disch) (φ.hom j)
   dsimp [pullHom] at this ⊢
-  simp only [Category.assoc, Functor.map_comp, ← this,
+  simp [Category.assoc, Functor.map_comp, ← this,
     Cat.Hom.inv_hom_id_toNatTrans_app_assoc,
     mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom_app_assoc F
     (p' j).op.toLoc a.op.toLoc r.op.toLoc ((p' j).op.toLoc ≫ a.op.toLoc) a'.op.toLoc

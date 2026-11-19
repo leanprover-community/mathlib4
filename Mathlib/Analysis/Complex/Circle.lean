@@ -135,7 +135,7 @@ theorem exp_zero : exp 0 = 1 :=
 @[simp]
 theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y :=
   Subtype.ext <| by
-    simp only [coe_exp, ofReal_add, add_mul, Complex.exp_add, coe_mul]
+    simp [coe_exp, ofReal_add, add_mul, Complex.exp_add, coe_mul]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
@@ -167,7 +167,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma star_addChar (x : ℝ) : star ((e x) : ℂ) = e (-x) := by
   have h := Circle.coe_inv_eq_conj ⟨e x, ?_⟩
   · simp [← h, e.map_neg_eq_inv]
-  · simp only [Submonoid.unitSphere, SetLike.coe_mem]
+  · simp [Submonoid.unitSphere, SetLike.coe_mem]
 
 @[simp]
 lemma starRingEnd_addChar (x : ℝ) : starRingEnd ℂ (e x) = e (-x) := star_addChar x

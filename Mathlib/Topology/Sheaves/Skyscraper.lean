@@ -69,7 +69,7 @@ def skyscraperPresheaf : Presheaf C X where
   map_comp {U V W} iVU iWV := by
     by_cases hW : p₀ ∈ unop W
     · have hV : p₀ ∈ unop V := leOfHom iWV.unop hW
-      simp only [dite_eq_left hW, dite_eq_left hV, eqToHom_trans]
+      simp [dite_eq_left hW, dite_eq_left hV, eqToHom_trans]
     · dsimp; rw [dite_eq_right hW]; apply ((ite_eq_right hW).symm.ndrec terminalIsTerminal).hom_ext
 
 theorem skyscraperPresheaf_eq_pushforward
@@ -96,7 +96,7 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
     simp only [skyscraperPresheaf_map]
     by_cases hV : p₀ ∈ V.unop
     · have hU : p₀ ∈ U.unop := leOfHom i.unop hV
-      simp only [skyscraperPresheaf_obj, hU, hV, ↓reduceDIte, eqToHom_trans_assoc, Category.assoc,
+      simp [skyscraperPresheaf_obj, hU, hV, ↓reduceDIte, eqToHom_trans_assoc, Category.assoc,
         eqToHom_trans]
     · apply ((ite_eq_right hV).symm.ndrec terminalIsTerminal).hom_ext
 
@@ -162,7 +162,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     rw [← c.w (homOfLE (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dite_eq_left]
-    · simp only [eqToHom_trans_assoc,
+    · simp [eqToHom_trans_assoc,
         eqToHom_refl, Category.id_comp, op_unop]
     · exact h.mem_open U.unop.1.is_open' U.unop.2
   uniq c f h := by
@@ -299,7 +299,7 @@ def fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p�
           rw [Category.comp_id, ← Category.assoc, comp_eqToHom_iff, Category.assoc,
             eqToHom_trans, f.naturality, skyscraperPresheaf_map]
           have hV : p₀ ∈ (OpenNhds.inclusion p₀).obj V.unop := V.unop.2
-          simp only [dite_eq_left hV] }
+          simp [dite_eq_left hV] }
   colimit.desc _ χ
 
 @[reassoc (attr := simp)]
@@ -336,7 +336,7 @@ protected def unit :
   naturality 𝓕 𝓖 f := by
     ext U; dsimp
     split_ifs with h
-    · simp only [Category.id_comp, Category.assoc, eqToHom_trans_assoc, eqToHom_refl,
+    · simp [Category.id_comp, Category.assoc, eqToHom_trans_assoc, eqToHom_refl,
         Presheaf.stalkFunctor_map_germ_assoc, Presheaf.stalkFunctor_obj]
     · apply ((ite_eq_right h).symm.ndrec terminalIsTerminal).hom_ext
 

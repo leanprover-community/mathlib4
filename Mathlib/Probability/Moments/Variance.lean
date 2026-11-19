@@ -192,7 +192,7 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 
 @[simp]
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
-  simp only [variance, evariance_zero, ENNReal.toReal_zero]
+  simp [variance, evariance_zero, ENNReal.toReal_zero]
 
 lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
     cov[X, X; μ] = Var[X; μ] := by
@@ -220,8 +220,8 @@ theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
   convert variance_smul (algebraMap A ℝ c) X μ using 1
-  · simp only [algebraMap_smul]
-  · simp only [Algebra.smul_def, map_pow]
+  · simp [algebraMap_smul]
+  · simp [Algebra.smul_def, map_pow]
 
 theorem variance_eq_sub [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2 μ) :
     variance X μ = μ[X ^ 2] - μ[X] ^ 2 := by
@@ -342,7 +342,7 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
     (hm : AEStronglyMeasurable X μ) : variance X μ ≤ μ[X ^ 2] := by
   by_cases hX : MemLp X 2 μ
   · rw [variance_eq_sub hX]
-    simp only [sq_nonneg, sub_le_self_iff]
+    simp [sq_nonneg, sub_le_self_iff]
   rw [variance, evariance_eq_lintegral_ofReal, ← integral_eq_lintegral_of_nonneg_ae]
   · by_cases hint : Integrable X μ; swap
     · simp only [integral_undef hint, Pi.pow_apply, sub_zero]

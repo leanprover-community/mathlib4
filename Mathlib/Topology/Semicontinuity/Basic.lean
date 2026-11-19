@@ -183,7 +183,7 @@ theorem LowerSemicontinuous.isOpen_preimage (hf : LowerSemicontinuous f) (y : β
 
 theorem lowerSemicontinuousOn_iff_preimage_Ioi :
     LowerSemicontinuousOn f s ↔ ∀ b, ∃ u, IsOpen u ∧ s ∩ f ⁻¹' Set.Ioi b = s ∩ u := by
-  simp only [← lowerSemicontinuous_restrict_iff, domRestrict_eq,
+  simp [← lowerSemicontinuous_restrict_iff, domRestrict_eq,
     lowerSemicontinuous_iff_isOpen_preimage, preimage_comp, isOpen_induced_iff,
     Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
 
@@ -232,7 +232,7 @@ variable {γ : Type*} [LinearOrder γ]
 theorem lowerSemicontinuous_iff_isClosed_preimage {f : α → γ} :
     LowerSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Iic y) := by
   rw [lowerSemicontinuous_iff_isOpen_preimage]
-  simp only [← isOpen_compl_iff, ← preimage_compl, compl_Iic]
+  simp [← isOpen_compl_iff, ← preimage_compl, compl_Iic]
 
 theorem LowerSemicontinuous.isClosed_preimage {f : α → γ} (hf : LowerSemicontinuous f) (y : γ) :
     IsClosed (f ⁻¹' Iic y) :=
@@ -240,7 +240,7 @@ theorem LowerSemicontinuous.isClosed_preimage {f : α → γ} (hf : LowerSemicon
 
 theorem lowerSemicontinuousOn_iff_preimage_Iic {f : α → γ} :
     LowerSemicontinuousOn f s ↔ ∀ b, ∃ v, IsClosed v ∧ s ∩ f ⁻¹' Set.Iic b = s ∩ v := by
-  simp only [← lowerSemicontinuous_restrict_iff, domRestrict_eq,
+  simp [← lowerSemicontinuous_restrict_iff, domRestrict_eq,
       lowerSemicontinuous_iff_isClosed_preimage, preimage_comp,
       isClosed_induced_iff, Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
 
@@ -288,13 +288,13 @@ alias ⟨LowerSemicontinuousAt.le_liminf, _⟩ := lowerSemicontinuousAt_iff_le_l
 
 theorem lowerSemicontinuous_iff_le_liminf {f : α → γ} :
     LowerSemicontinuous f ↔ ∀ x, f x ≤ liminf f (𝓝 x) := by
-  simp only [← lowerSemicontinuousAt_iff_le_liminf, lowerSemicontinuous_iff]
+  simp [← lowerSemicontinuousAt_iff_le_liminf, lowerSemicontinuous_iff]
 
 alias ⟨LowerSemicontinuous.le_liminf, _⟩ := lowerSemicontinuous_iff_le_liminf
 
 theorem lowerSemicontinuousOn_iff_le_liminf {f : α → γ} :
     LowerSemicontinuousOn f s ↔ ∀ x ∈ s, f x ≤ liminf f (𝓝[s] x) := by
-  simp only [← lowerSemicontinuousWithinAt_iff_le_liminf, lowerSemicontinuousOn_iff]
+  simp [← lowerSemicontinuousWithinAt_iff_le_liminf, lowerSemicontinuousOn_iff]
 
 alias ⟨LowerSemicontinuousOn.le_liminf, _⟩ := lowerSemicontinuousOn_iff_le_liminf
 
@@ -811,7 +811,7 @@ variable {γ : Type*} [LinearOrder γ]
 theorem upperSemicontinuous_iff_isClosed_preimage {f : α → γ} :
     UpperSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Ici y) := by
   rw [upperSemicontinuous_iff_isOpen_preimage]
-  simp only [← isOpen_compl_iff, ← preimage_compl, compl_Ici]
+  simp [← isOpen_compl_iff, ← preimage_compl, compl_Ici]
 
 theorem UpperSemicontinuous.isClosed_preimage {f : α → γ} (hf : UpperSemicontinuous f) (y : γ) :
     IsClosed (f ⁻¹' Ici y) :=

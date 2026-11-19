@@ -98,7 +98,7 @@ def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
   haveI H_eq : (IsLocalization.lift (S := L) H).comp (algebraMap K L) = (algebraMap K L₂) := by
     apply IsLocalization.ringHom_ext A⁰
     ext
-    simp only [RingHom.coe_comp, Function.comp_apply, ← IsScalarTower.algebraMap_apply A K L,
+    simp [RingHom.coe_comp, Function.comp_apply, ← IsScalarTower.algebraMap_apply A K L,
       ← IsScalarTower.algebraMap_apply A K L₂,
       IsScalarTower.algebraMap_apply A B L, IsScalarTower.algebraMap_apply A B₂ L₂,
       IsLocalization.lift_eq, RingHom.coe_coe, AlgHom.commutes]
@@ -210,7 +210,7 @@ lemma prod_galRestrict_eq_norm [IsGalois K L] [IsIntegrallyClosed A] (x : B) :
       (Algebra.isIntegral_norm K (IsIntegralClosure.isIntegral A L x).algebraMap)) := by
   apply IsIntegralClosure.algebraMap_injective B A L
   rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_eq A K L]
-  simp only [map_prod, algebraMap_galRestrict_apply, IsIntegralClosure.algebraMap_mk',
+  simp [map_prod, algebraMap_galRestrict_apply, IsIntegralClosure.algebraMap_mk',
     Algebra.norm_eq_prod_automorphisms, RingHom.coe_comp, Function.comp_apply]
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
@@ -439,7 +439,7 @@ lemma Algebra.intNorm_eq_zero [FiniteDimensional (FractionRing A) (FractionRing 
     Algebra.intNorm A B x = 0 ↔ x = 0 := by
   rw [← (IsFractionRing.injective A (FractionRing A)).eq_iff,
     ← (IsFractionRing.injective B (FractionRing B)).eq_iff]
-  simp only [algebraMap_intNorm_fractionRing, map_zero, norm_eq_zero_iff]
+  simp [algebraMap_intNorm_fractionRing, map_zero, norm_eq_zero_iff]
 
 lemma Algebra.intNorm_ne_zero [FiniteDimensional (FractionRing A) (FractionRing B)] {x : B} :
     Algebra.intNorm A B x ≠ 0 ↔ x ≠ 0 := by simp

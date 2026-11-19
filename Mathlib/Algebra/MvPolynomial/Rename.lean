@@ -67,9 +67,9 @@ lemma rename_zero (f : σ → τ) : (0 : MvPolynomial σ R).rename f = 0 := rfl
 theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPolynomial σ R) :
     map f (rename g p) = rename g (map f p) := by
   apply MvPolynomial.induction_on p
-    (fun a => by simp only [map_C, rename_C])
-    (fun p q hp hq => by simp only [hp, hq, map_add]) fun p n hp => by
-    simp only [hp, rename_X, map_X, map_mul]
+    (fun a => by simp [map_C, rename_C])
+    (fun p q hp hq => by simp [hp, hq, map_add]) fun p n hp => by
+    simp [hp, rename_X, map_X, map_mul]
 
 lemma map_comp_rename (f : R →+* S) (g : σ → τ) :
     (map f).comp (rename g).toRingHom = (rename g).toRingHom.comp (map f) :=
@@ -287,14 +287,14 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
     refine ⟨s ∪ t, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p + rename (Subtype.map id ?_) q <;>
-        simp +contextual only [id, true_or, or_true,
+        simp +contextual [id, true_or, or_true,
           Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, map_add]
       rfl
   · rintro p n ⟨s, p, rfl⟩
     refine ⟨insert n s, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p * X ⟨n, s.mem_insert_self n⟩
-      simp +contextual only [id, or_true, Finset.mem_insert, forall_true_iff]
+      simp +contextual [id, or_true, Finset.mem_insert, forall_true_iff]
     · simp only [rename_rename, rename_X, map_mul]
       rfl
 
@@ -320,7 +320,7 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
   let e := Fintype.equivFin { x // x ∈ s }
   refine ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective, rename e q, ?_⟩
   rw [← rename_rename, rename_rename e]
-  simp only [Function.comp_def, Equiv.symm_apply_apply, rename_rename]
+  simp [Function.comp_def, Equiv.symm_apply_apply, rename_rename]
 
 /-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
 many of the variables from `τ`.
@@ -401,9 +401,9 @@ theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolyno
   induction φ using MvPolynomial.induction_on' with
   | monomial u r =>
     rw [rename_monomial, coeff_monomial, coeff_monomial]
-    simp only [(Finsupp.mapDomain_injective hf).eq_iff]
+    simp [(Finsupp.mapDomain_injective hf).eq_iff]
   | add =>
-    simp only [*, map_add, coeff_add, Finsupp.add_apply]
+    simp [*, map_add, coeff_add, Finsupp.add_apply]
 
 @[simp]
 theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
@@ -432,11 +432,11 @@ theorem constantCoeff_rename {τ : Type*} (f : σ → τ) (φ : MvPolynomial σ 
     constantCoeff (rename f φ) = constantCoeff φ := by
   apply φ.induction_on
   · intro a
-    simp only [constantCoeff_C, rename_C]
+    simp [constantCoeff_C, rename_C]
   · intro p q hp hq
-    simp only [hp, hq, map_add]
+    simp [hp, hq, map_add]
   · intro p n hp
-    simp only [hp, rename_X, constantCoeff_X, map_mul]
+    simp [hp, rename_X, constantCoeff_X, map_mul]
 
 end Coeff
 

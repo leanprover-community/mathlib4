@@ -232,13 +232,13 @@ lemma alternatingMapLinearEquiv_apply_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) (a 
 lemma alternatingMapLinearEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin n → M) :
     alternatingMapLinearEquiv.symm F m = F.compAlternatingMap (ιMulti R n) m := by
   obtain ⟨f, rfl⟩ := alternatingMapLinearEquiv.surjective F
-  simp only [LinearEquiv.symm_apply_apply, alternatingMapLinearEquiv_comp_ιMulti]
+  simp [LinearEquiv.symm_apply_apply, alternatingMapLinearEquiv_comp_ιMulti]
 
 @[simp]
 lemma alternatingMapLinearEquiv_ιMulti :
     alternatingMapLinearEquiv (ιMulti R n (M := M)) = LinearMap.id := by
   ext
-  simp only [alternatingMapLinearEquiv_comp_ιMulti, ιMulti_apply_coe,
+  simp [alternatingMapLinearEquiv_comp_ιMulti, ιMulti_apply_coe,
     LinearMap.compAlternatingMap_apply, LinearMap.id_coe, id_eq]
 
 /-- If `f` is an alternating map from `M` to `N`,
@@ -249,7 +249,7 @@ map `g.comp (alternatingMapLinearEquiv f)` on `⋀[R]^n M`. -/
 lemma alternatingMapLinearEquiv_comp (g : N →ₗ[R] N') (f : M [⋀^Fin n]→ₗ[R] N) :
     alternatingMapLinearEquiv (g.compAlternatingMap f) = g.comp (alternatingMapLinearEquiv f) := by
   ext
-  simp only [alternatingMapLinearEquiv_comp_ιMulti, LinearMap.compAlternatingMap_apply,
+  simp [alternatingMapLinearEquiv_comp_ιMulti, LinearMap.compAlternatingMap_apply,
     LinearMap.coe_comp, comp_apply, alternatingMapLinearEquiv_apply_ιMulti]
 
 /-! Functoriality of the exterior powers. -/
@@ -261,17 +261,17 @@ noncomputable def map (f : M →ₗ[R] N) : ⋀[R]^n M →ₗ[R] ⋀[R]^n N :=
 
 @[simp] lemma alternatingMapLinearEquiv_symm_map (f : M →ₗ[R] N) :
     alternatingMapLinearEquiv.symm (map n f) = (ιMulti R n).compLinearMap f := by
-  simp only [map, LinearEquiv.symm_apply_apply]
+  simp [map, LinearEquiv.symm_apply_apply]
 
 @[simp]
 theorem map_comp_ιMulti (f : M →ₗ[R] N) :
     (map n f).compAlternatingMap (ιMulti R n) = (ιMulti R n).compLinearMap f := by
-  simp only [map, alternatingMapLinearEquiv_comp_ιMulti]
+  simp [map, alternatingMapLinearEquiv_comp_ιMulti]
 
 @[simp]
 theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
     map n f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
-  simp only [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply,
+  simp [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply,
     Function.comp_def]
 
 @[simp]
@@ -355,7 +355,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
     rw [isUnit_iff_exists_inv]
     use (σ.sign : R)
     norm_cast
-    simp only [Int.units_mul_self, Units.val_one, Int.cast_one]
+    simp [Int.units_mul_self, Units.val_one, Int.cast_one]
   have α_card : (Finset.image α Finset.univ).card = n :=
     (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)
   use (Finset.orderIsoOfFin (Finset.image α Finset.univ) α_card).toEquiv.trans
@@ -433,8 +433,8 @@ variable (R M) in
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
   .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
-      map_add' := by intros; simp only [add_smul]
-      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
+      map_add' := by intros; simp [add_smul]
+      map_smul' := by intros; simp [smul_eq_mul, mul_smul, RingHom.id_apply] }
     (by aesop) (by aesop)
 
 @[simp]
@@ -458,11 +458,11 @@ noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
       { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
         map_add' := fun m₁ m₂ ↦ by
           rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
-          simp only [Fin.isValue, AlternatingMap.map_update_add]
+          simp [Fin.isValue, AlternatingMap.map_update_add]
         map_smul' := fun r m ↦ by
           dsimp
           rw [h]; nth_rw 2 [h]
-          simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+          simp [Fin.isValue, AlternatingMap.map_update_smul] })
   (by aesop) (by aesop)
 
 @[simp]

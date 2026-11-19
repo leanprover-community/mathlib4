@@ -181,7 +181,7 @@ lemma jointly_surjective₃' (r : cR.pt) (m₁ : ModuleColimit hcR hcM) (m₂ : 
 noncomputable instance : Module cR.pt (ModuleColimit hcR hcM) where
   mul_smul r₁ r₂ m := by
     obtain ⟨U, r₁, r₂, m, rfl, rfl, rfl⟩ := jointly_surjective₃ r₁ r₂ m
-    simp only [smul_eq, ← mul_smul, ← map_mul]
+    simp [smul_eq, ← mul_smul, ← map_mul]
   one_smul m := by
     obtain ⟨U, m, rfl⟩ := ιM_jointly_surjective m
     simpa using smul_eq hcR hcM 1 m
@@ -193,10 +193,10 @@ noncomputable instance : Module cR.pt (ModuleColimit hcR hcM) where
     simpa using smul_eq hcR hcM r 0
   smul_add r m₁ m₂ := by
     obtain ⟨U, r, m₁, m₂, rfl, rfl, rfl⟩ := jointly_surjective₃' r m₁ m₂
-    simp only [smul_eq, smul_add, ← map_add]
+    simp [smul_eq, smul_add, ← map_add]
   add_smul r₁ r₂ m := by
     obtain ⟨U, r₁, r₂, m, rfl, rfl, rfl⟩ := jointly_surjective₃ r₁ r₂ m
-    simp only [smul_eq, ← map_add, add_smul]
+    simp [smul_eq, ← map_add, add_smul]
 
 /-- Auxiliary definition for `homEquiv`. This is the universal property
 of `PresheafOfModules.ModuleColimit`, as an abelian group. -/

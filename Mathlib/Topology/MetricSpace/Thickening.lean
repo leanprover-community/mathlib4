@@ -76,7 +76,7 @@ theorem isOpen_thickening {δ : ℝ} {E : Set α} : IsOpen (thickening δ E) :=
 /-- The (open) thickening of the empty set is empty. -/
 @[simp]
 theorem thickening_empty (δ : ℝ) : thickening δ (∅ : Set α) = ∅ := by
-  simp only [thickening, ofPred_false, infEDist_empty, not_top_lt]
+  simp [thickening, ofPred_false, infEDist_empty, not_top_lt]
 
 theorem thickening_of_nonpos (hδ : δ ≤ 0) (s : Set α) : thickening δ s = ∅ :=
   eq_empty_of_forall_notMem fun _ => ((ENNReal.ofReal_of_nonpos hδ).trans_le bot_le).not_gt
@@ -214,7 +214,7 @@ theorem isClosed_cthickening {δ : ℝ} {E : Set α} : IsClosed (cthickening δ 
 /-- The closed thickening of the empty set is empty. -/
 @[simp]
 theorem cthickening_empty (δ : ℝ) : cthickening δ (∅ : Set α) = ∅ := by
-  simp only [cthickening, ENNReal.ofReal_ne_top, ofPred_false, infEDist_empty, top_le_iff]
+  simp [cthickening, ENNReal.ofReal_ne_top, ofPred_false, infEDist_empty, top_le_iff]
 
 theorem cthickening_of_nonpos {δ : ℝ} (hδ : δ ≤ 0) (E : Set α) : cthickening δ E = closure E := by
   ext x
@@ -243,8 +243,8 @@ theorem cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) {δ :
 theorem closedBall_subset_cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) (δ : ℝ) :
     closedBall x δ ⊆ cthickening δ ({x} : Set α) := by
   rcases lt_or_ge δ 0 with (hδ | hδ)
-  · simp only [closedBall_eq_empty.mpr hδ, empty_subset]
-  · simp only [cthickening_singleton x hδ, Subset.rfl]
+  · simp [closedBall_eq_empty.mpr hδ, empty_subset]
+  · simp [cthickening_singleton x hδ, Subset.rfl]
 
 /-- The closed thickening `Metric.cthickening δ E` with a fixed thickening radius `δ` is
 an increasing function of the subset `E`. -/
@@ -334,7 +334,7 @@ theorem thickening_iUnion (δ : ℝ) (f : ι → Set α) :
   simp_rw [thickening, infEDist_iUnion, iInf_lt_iff, ofPred_exists]
 
 lemma thickening_biUnion {ι : Type*} (δ : ℝ) (f : ι → Set α) (I : Set ι) :
-    thickening δ (⋃ i ∈ I, f i) = ⋃ i ∈ I, thickening δ (f i) := by simp only [thickening_iUnion]
+    thickening δ (⋃ i ∈ I, f i) = ⋃ i ∈ I, thickening δ (f i) := by simp [thickening_iUnion]
 
 theorem ediam_cthickening_le (ε : ℝ≥0) :
     ediam (cthickening ε s) ≤ ediam s + 2 * ε := by
@@ -552,7 +552,7 @@ theorem _root_.IsCompact.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoM
     {δ : ℝ} {E : Set α} (hE : IsCompact E) (hδ : 0 ≤ δ) :
     cthickening δ E = ⋃ x ∈ E, closedBall x δ := by
   rcases eq_empty_or_nonempty E with (rfl | hne)
-  · simp only [cthickening_empty, biUnion_empty]
+  · simp [cthickening_empty, biUnion_empty]
   refine Subset.antisymm (fun x hx ↦ ?_)
     (iUnion₂_subset fun x hx ↦ closedBall_subset_cthickening hx _)
   obtain ⟨y, yE, hy⟩ : ∃ y ∈ E, infEDist x E = edist x y := hE.exists_infEDist_eq_edist hne _
@@ -565,7 +565,7 @@ theorem _root_.IsCompact.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoM
 theorem cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α] [ProperSpace α]
     (E : Set α) (hδ : 0 ≤ δ) : cthickening δ E = ⋃ x ∈ closure E, closedBall x δ := by
   rcases eq_empty_or_nonempty E with (rfl | hne)
-  · simp only [cthickening_empty, biUnion_empty, closure_empty]
+  · simp [cthickening_empty, biUnion_empty, closure_empty]
   rw [← cthickening_closure]
   refine Subset.antisymm (fun x hx ↦ ?_)
     (iUnion₂_subset fun x hx ↦ closedBall_subset_cthickening hx _)
@@ -601,9 +601,9 @@ theorem infEDist_le_infEDist_thickening_add :
 theorem thickening_thickening_subset (ε δ : ℝ) (s : Set α) :
     thickening ε (thickening δ s) ⊆ thickening (ε + δ) s := by
   obtain hε | hε := le_total ε 0
-  · simp only [thickening_of_nonpos hε, empty_subset]
+  · simp [thickening_of_nonpos hε, empty_subset]
   obtain hδ | hδ := le_total δ 0
-  · simp only [thickening_of_nonpos hδ, thickening_empty, empty_subset]
+  · simp [thickening_of_nonpos hδ, thickening_empty, empty_subset]
   intro x
   simp_rw [mem_thickening_iff_exists_edist_lt, ENNReal.ofReal_add hε hδ]
   exact fun ⟨y, ⟨z, hz, hy⟩, hx⟩ =>
@@ -614,7 +614,7 @@ theorem thickening_thickening_subset (ε δ : ℝ) (s : Set α) :
 theorem thickening_cthickening_subset (ε : ℝ) (hδ : 0 ≤ δ) (s : Set α) :
     thickening ε (cthickening δ s) ⊆ thickening (ε + δ) s := by
   obtain hε | hε := le_total ε 0
-  · simp only [thickening_of_nonpos hε, empty_subset]
+  · simp [thickening_of_nonpos hε, empty_subset]
   intro x
   simp_rw [mem_thickening_iff_exists_edist_lt, mem_cthickening_iff, ← infEDist_lt_iff,
     ENNReal.ofReal_add hε hδ]
@@ -627,7 +627,7 @@ theorem thickening_cthickening_subset (ε : ℝ) (hδ : 0 ≤ δ) (s : Set α) :
 theorem cthickening_thickening_subset (hε : 0 ≤ ε) (δ : ℝ) (s : Set α) :
     cthickening ε (thickening δ s) ⊆ cthickening (ε + δ) s := by
   obtain hδ | hδ := le_total δ 0
-  · simp only [thickening_of_nonpos hδ, cthickening_empty, empty_subset]
+  · simp [thickening_of_nonpos hδ, cthickening_empty, empty_subset]
   intro x
   simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ]
   exact fun hx => infEDist_le_infEDist_thickening_add.trans (by grw [hx])

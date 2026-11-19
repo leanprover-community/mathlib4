@@ -132,7 +132,7 @@ def transposeInvertibleEquivInvertible : Invertible Aᵀ ≃ Invertible A where
   right_inv _ := Subsingleton.elim _ _
 
 @[simp] lemma isUnit_transpose : IsUnit Aᵀ ↔ IsUnit A := by
-  simp only [← nonempty_invertible_iff_isUnit,
+  simp [← nonempty_invertible_iff_isUnit,
     (transposeInvertibleEquivInvertible A).nonempty_congr]
 
 end CommSemiring
@@ -160,7 +160,7 @@ lemma add_mul_mul_invOf_mul_eq_one :
       rw [sub_right_inj, Matrix.add_mul, Matrix.add_mul, Matrix.add_mul]
     _ = 1 + U*C*V*⅟A - U*C*(⅟C + V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
       congr
-      simp only [Matrix.mul_add, Matrix.mul_invOf_cancel_right, ← Matrix.mul_assoc]
+      simp [Matrix.mul_add, Matrix.mul_invOf_cancel_right, ← Matrix.mul_assoc]
     _ = 1 := by
       rw [Matrix.mul_invOf_cancel_right]
       abel
@@ -181,7 +181,7 @@ lemma add_mul_mul_invOf_mul_eq_one' :
       rw [sub_right_inj, Matrix.mul_add]
       simp_rw [Matrix.mul_assoc]
     _ = 1 + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*(⅟C + V*⅟A*U)*C*V := by
-      simp only [Matrix.mul_add, Matrix.add_mul, ← Matrix.mul_assoc,
+      simp [Matrix.mul_add, Matrix.add_mul, ← Matrix.mul_assoc,
         Matrix.invOf_mul_cancel_right]
     _ = 1 := by
       rw [Matrix.invOf_mul_cancel_right]
@@ -218,7 +218,7 @@ lemma add_mul_mul_mul_invOf_eq_one :
   simp only [← Matrix.add_mul]
   congr
   rw [← Matrix.mul_right_eq_iff_eq_mul_invOf]
-  simp only [Matrix.add_mul, Matrix.mul_add, Matrix.mul_assoc]
+  simp [Matrix.add_mul, Matrix.mul_add, Matrix.mul_assoc]
 
 lemma add_mul_mul_mul_invOf_eq_one' :
     (⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A) * (A + U * C * V) = 1 := by
@@ -229,7 +229,7 @@ lemma add_mul_mul_mul_invOf_eq_one' :
   rw [eq_sub_iff_add_eq, ← Matrix.mul_add]
   rw [Matrix.invOf_mul_eq_iff_eq_mul_left]
   simp only [Matrix.add_mul, invOf_mul_self', Matrix.mul_one, add_right_inj]
-  simp only [Matrix.mul_assoc]
+  simp [Matrix.mul_assoc]
 
 /-- If matrices `A` and `C + C * V * A⁻¹ * U * C` are invertible, then so is `A + U * C * V`. -/
 @[implicit_reducible]

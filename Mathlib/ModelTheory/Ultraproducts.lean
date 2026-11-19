@@ -54,7 +54,7 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
     fun_equiv := fun {n} f x y xy => by
       refine mem_of_superset (iInter_mem.2 xy) fun a ha => ?_
       simp only [Set.mem_iInter, Set.mem_ofPred_eq] at ha
-      simp only [Set.mem_ofPred_eq, ha]
+      simp [Set.mem_ofPred_eq, ha]
     rel_equiv := fun {n} r x y xy => by
       rw [← iff_eq_eq]
       refine ⟨fun hx => ?_, fun hy => ?_⟩
@@ -98,7 +98,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
         (fun i => (v i : (u : Filter α).Product M))) ↔
       ∀ᶠ a : α in u, φ.Realize (fun i : β => x i a) fun i => v i a := by
   induction φ with
-  | falsum => simp only [BoundedFormula.Realize, eventually_const]
+  | falsum => simp [BoundedFormula.Realize, eventually_const]
   | equal =>
     have h2 : ∀ a : α, (Sum.elim (fun i : β => x i a) fun i => v i a) = fun i => Sum.elim x v i a :=
       fun a => funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
@@ -128,8 +128,8 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
         (fun i : Fin (k + 1) => (Fin.snoc v m : _ → ∀ a, M a) i a) =
           Fin.snoc (fun i : Fin k => v i a) (m a) := by
       refine fun m a => funext (Fin.reverseInduction ?_ fun i _ => ?_)
-      · simp only [Fin.snoc_last]
-      · simp only [Fin.snoc_castSucc]
+      · simp [Fin.snoc_last]
+      · simp [Fin.snoc_castSucc]
     simp only [← Fin.comp_snoc]
     simp only [Function.comp_def, ih, h']
     refine ⟨fun h => ?_, fun h m => ?_⟩

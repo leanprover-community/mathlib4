@@ -204,7 +204,7 @@ instance stableUnderBaseChange : ValuativeCriterion.Existence.IsStableUnderBaseC
     K := commSq.K
     i₁ := commSq.i₁ ≫ X'_to_X
     i₂ := commSq.i₂ ≫ Y'_to_Y
-    commSq := ⟨by simp only [Category.assoc, hP.w, reassoc_of% commSq.commSq.w]⟩ }
+    commSq := ⟨by simp [Category.assoc, hP.w, reassoc_of% commSq.commSq.w]⟩ }
   obtain ⟨l₀, hl₁, hl₂⟩ := (hf commSq').exists_lift
   refine ⟨⟨⟨hP.lift l₀ commSq.i₂ (by simp_all only [commSq']), ?_, hP.lift_snd _ _ _⟩⟩⟩
   apply hP.hom_ext

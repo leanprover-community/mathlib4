@@ -227,16 +227,16 @@ theorem geom_mean_eq_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : �
     · apply Eq.congr <;>
       [apply prod_congr rfl; apply sum_congr rfl] <;>
       intro i hi <;>
-      simp only [exp_mul, exp_log (hz' i hi)]
+      simp [exp_mul, exp_log (hz' i hi)]
     · constructor <;> intro h j hj
       · rw [← arith_mean_weighted_of_constant s w _ (log (z j)) hw' fun i _ => congrFun rfl]
         apply sum_congr rfl
         intro x hx
-        simp only [mul_comm, h j hj, h x hx]
+        simp [mul_comm, h j hj, h x hx]
       · rw [← arith_mean_weighted_of_constant s w _ (z j) hw' fun i _ => congrFun rfl]
         apply sum_congr rfl
         intro x hx
-        simp only [log_injOn_pos (hz' j hj) (hz' x hx), h j hj, h x hx]
+        simp [log_injOn_pos (hz' j hj) (hz' x hx), h j hj, h x hx]
 
 @[deprecated (since := "2026-06-07")]
 alias geom_mean_eq_arith_mean_weighted_iff' := geom_mean_eq_arith_mean_weighted_iff_of_pos'
@@ -334,7 +334,7 @@ theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀
     by_contra! h
     apply le_antisymm this at h
     apply (geom_mean_eq_arith_mean_weighted_iff_of_pos' s w z hw hw' hz).mp at h
-    simp only [h j hjs, h k hks, ne_eq, not_true_eq_false] at hzjk
+    simp [h j hjs, h k hks, ne_eq, not_true_eq_false] at hzjk
 
 /-- **AM-GM inequality - strict inequality condition**.
 The condition is that not all elements of `z` with a nonzero weight are equal to each other;
@@ -942,7 +942,7 @@ with real-valued functions. -/
 theorem inner_le_Lp_mul_Lq (hpq : HolderConjugate p q) :
     ∑ i ∈ s, f i * g i ≤ (∑ i ∈ s, |f i| ^ p) ^ (1 / p) * (∑ i ∈ s, |g i| ^ q) ^ (1 / q) := by
   refine le_trans (sum_le_sum fun i _ ↦ ?_) (by simpa using Lr_rpow_le_Lp_mul_Lq s f g hpq)
-  simp only [← abs_mul, le_abs_self]
+  simp [← abs_mul, le_abs_self]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For `1 ≤ p`, the `p`-th power of the sum of `f i` is bounded above by a constant times the
@@ -977,7 +977,7 @@ theorem inner_le_Lp_mul_Lq_of_nonneg (hpq : HolderConjugate p q) (hf : ∀ i ∈
     (hg : ∀ i ∈ s, 0 ≤ g i) :
     ∑ i ∈ s, f i * g i ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := by
   convert inner_le_Lp_mul_Lq s f g hpq using 3 <;> apply sum_congr rfl <;> intro i hi <;>
-    simp only [abs_of_nonneg, hf i hi, hg i hi]
+    simp [abs_of_nonneg, hf i hi, hg i hi]
 
 /-- **Hölder inequality**: the sum of (the `r`-power of) the product of two functions is bounded
 by (the `r`-power of) the product of their `L^p` and `L^q` norms, when `p`, `q`, `r` form a
@@ -1108,7 +1108,7 @@ functions. -/
 theorem rpow_sum_le_const_mul_sum_rpow_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ s, 0 ≤ f i) :
     (∑ i ∈ s, f i) ^ p ≤ (#s : ℝ) ^ (p - 1) * ∑ i ∈ s, f i ^ p := by
   convert rpow_sum_le_const_mul_sum_rpow s f hp using 2 <;> apply sum_congr rfl <;> intro i hi <;>
-    simp only [abs_of_nonneg, hf i hi]
+    simp [abs_of_nonneg, hf i hi]
 
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `ℝ`-valued nonnegative
@@ -1118,7 +1118,7 @@ theorem Lp_add_le_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ s, 0 ≤ f i) (hg : �
       (∑ i ∈ s, f i ^ p) ^ (1 / p) + (∑ i ∈ s, g i ^ p) ^ (1 / p) := by
   convert Lp_add_le s f g hp using 2 <;> [skip; congr 1; congr 1] <;> apply sum_congr rfl <;>
       intro i hi <;>
-    simp only [abs_of_nonneg, hf i hi, hg i hi, add_nonneg]
+    simp [abs_of_nonneg, hf i hi, hg i hi, add_nonneg]
 
 /-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both

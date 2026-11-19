@@ -752,7 +752,7 @@ def invertibleEquivInvertibleFst (x : tsze R M) : Invertible x ≃ Invertible x.
 
 /-- When lowered to a prop, `Matrix.invertibleEquivInvertibleFst` forms an `iff`. -/
 theorem isUnit_iff_isUnit_fst {x : tsze R M} : IsUnit x ↔ IsUnit x.fst := by
-  simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivInvertibleFst x).nonempty_congr]
+  simp [← nonempty_invertible_iff_isUnit, (invertibleEquivInvertibleFst x).nonempty_congr]
 
 @[simp]
 theorem isUnit_inl_iff {r : R} : IsUnit (inl r : tsze R M) ↔ IsUnit r := by
@@ -1109,12 +1109,12 @@ theorem sndHom_comp_map (f : M →ₗ[R'] N) :
 @[simp]
 theorem map_id : map (LinearMap.id : M →ₗ[R'] M) = AlgHom.id R' _ := by
   apply algHom_ext
-  simp only [map_inr, LinearMap.id_coe, id_eq, AlgHom.coe_id, forall_const]
+  simp [map_inr, LinearMap.id_coe, id_eq, AlgHom.coe_id, forall_const]
 
 theorem map_comp_map (f : M →ₗ[R'] N) (g : N →ₗ[R'] P) :
     map (g.comp f) = (map g).comp (map f) := by
   apply algHom_ext
-  simp only [map_inr, LinearMap.coe_comp, Function.comp_apply, AlgHom.coe_comp, forall_const]
+  simp [map_inr, LinearMap.coe_comp, Function.comp_apply, AlgHom.coe_comp, forall_const]
 
 end map
 

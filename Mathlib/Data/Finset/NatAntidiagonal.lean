@@ -56,12 +56,12 @@ lemma antidiagonal_eq_map' (n : ℕ) :
 set_option backward.isDefEq.respectTransparency false in
 lemma antidiagonal_eq_image (n : ℕ) :
     antidiagonal n = (range (n + 1)).image fun i ↦ (i, n - i) := by
-  simp only [antidiagonal_eq_map, map_eq_image, Function.Embedding.coeFn_mk]
+  simp [antidiagonal_eq_map, map_eq_image, Function.Embedding.coeFn_mk]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma antidiagonal_eq_image' (n : ℕ) :
     antidiagonal n = (range (n + 1)).image fun i ↦ (n - i, i) := by
-  simp only [antidiagonal_eq_map', map_eq_image, Function.Embedding.coeFn_mk]
+  simp [antidiagonal_eq_map', map_eq_image, Function.Embedding.coeFn_mk]
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]

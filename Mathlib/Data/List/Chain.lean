@@ -78,7 +78,7 @@ theorem IsChain.iff_mem_mem_tail {l : List α} :
   IsChain.iff_of_mem_tail_imp <| by grind
 
 theorem isChain_pair {x y} : IsChain R [x, y] ↔ R x y := by
-  simp only [IsChain.singleton, isChain_cons_cons, and_true]
+  simp [IsChain.singleton, isChain_cons_cons, and_true]
 
 theorem isChain_isInfix : ∀ l : List α, IsChain (fun x y => [x, y] <:+: l) l
   | [] => .nil

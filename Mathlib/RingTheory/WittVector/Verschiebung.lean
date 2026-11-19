@@ -41,7 +41,7 @@ def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
 
 theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n = if n = 0 then 0 else x.coeff (n - 1) := by
-  simp only [verschiebungFun]
+  simp [verschiebungFun]
 
 theorem verschiebungFun_coeff_zero (x : 𝕎 R) : (verschiebungFun x).coeff 0 = 0 := by
   rw [verschiebungFun_coeff, ite_eq_left rfl]
@@ -65,7 +65,7 @@ theorem ghostComponent_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) (n : ℕ
     zero_pow (pow_ne_zero _ hp.out.ne_zero), mul_zero, add_zero, Finset.mul_sum,
     Finset.sum_congr rfl]
   rintro i -
-  simp only [pow_succ', verschiebungFun_coeff_succ, Nat.succ_sub_succ_eq_sub, mul_assoc]
+  simp [pow_succ', verschiebungFun_coeff_succ, Nat.succ_sub_succ_eq_sub, mul_assoc]
 
 /-- The 0th Verschiebung polynomial is 0. For `n > 0`, the `n`th Verschiebung polynomial is the
 variable `X (n-1)`.
@@ -80,7 +80,7 @@ theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   rcases n with - | n
-  · simp only [verschiebungPoly, ite_true, map_zero, verschiebungFun_coeff_zero]
+  · simp [verschiebungPoly, ite_true, map_zero, verschiebungFun_coeff_zero]
   · rw [verschiebungPoly, verschiebungFun_coeff_succ, ite_eq_right n.succ_ne_zero, aeval_X,
       add_tsub_cancel_right]
 
@@ -90,7 +90,7 @@ variable (p)
 -/
 instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
   use verschiebungPoly
-  simp only [aeval_verschiebung_poly', forall₃_true_iff]
+  simp [aeval_verschiebung_poly', forall₃_true_iff]
 
 -- We add this example as a verification that Lean 4's instance resolution can handle the `IsPoly`
 -- typeclass, whereas Lean 3 needed a bespoke `@[is_poly]` attribute.
@@ -111,7 +111,7 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   toFun := verschiebungFun
   map_zero' := by
     ext ⟨⟩ <;> rw [verschiebungFun_coeff] <;>
-      simp only [zero_coeff, ite_self]
+      simp [zero_coeff, ite_self]
   map_add' := by
     ghost_calc _ _
     rintro ⟨⟩ <;> ghost_simp
@@ -157,7 +157,7 @@ theorem verschiebung_injective : Function.Injective (verschiebung : 𝕎 R → �
   intro w h
   ext n
   rw [← verschiebung_coeff_succ, h]
-  simp only [zero_coeff]
+  simp [zero_coeff]
 
 theorem aeval_verschiebungPoly (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebung x).coeff n :=
@@ -170,7 +170,7 @@ theorem aeval_verschiebungPoly_wittPolynomial (n : ℕ) :
   apply MvPolynomial.funext
   intro x
   split_ifs with hn
-  · simp only [hn, wittPolynomial_zero, aeval_X, verschiebungPoly_zero, map_zero]
+  · simp [hn, wittPolynomial_zero, aeval_X, verschiebungPoly_zero, map_zero]
   · obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
     rw [Nat.succ_eq_add_one, add_tsub_cancel_right]
     simp only [map_mul]

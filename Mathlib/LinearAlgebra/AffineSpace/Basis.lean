@@ -193,7 +193,7 @@ theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := 
 
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
-  simp only [coord, Basis.coe_sumCoords, map_zero, sub_zero,
+  simp [coord, Basis.coe_sumCoords, map_zero, sub_zero,
     AffineMap.coe_mk, Finsupp.sum_zero_index, vsub_self]
 
 @[simp]
@@ -207,14 +207,14 @@ theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j the
 @[simp]
 theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = w i := by
-  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_true,
+  classical simp [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_true,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
 @[simp]
 theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
-  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_false,
+  classical simp [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
@@ -249,7 +249,7 @@ theorem linear_combination_coord_eq_self [Fintype ι] (b : AffineBasis ι k V) (
 theorem ext_elem [Finite ι] {q₁ q₂ : P} (h : ∀ i, b.coord i q₁ = b.coord i q₂) : q₁ = q₂ := by
   cases nonempty_fintype ι
   rw [← b.affineCombination_coord_eq_self q₁, ← b.affineCombination_coord_eq_self q₂]
-  simp only [h]
+  simp [h]
 
 @[simp]
 theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i : P → k) = 1 := by
@@ -283,7 +283,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
   linear :=
     { toFun := fun v i => -(b.basisOf i).sumCoords v
-      map_add' := fun v w => by ext; simp only [map_add, Pi.add_apply, neg_add]
+      map_add' := fun v w => by ext; simp [map_add, Pi.add_apply, neg_add]
       map_smul' := fun t v => by ext; simp }
   map_vadd' p v := by ext; simp
 

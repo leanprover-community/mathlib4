@@ -126,7 +126,7 @@ where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   rcases a with - | a
-  · simp only [Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
+  · simp [Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
       Nat.pos_of_ne_zero n0, Nat.div_self]
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 
@@ -619,7 +619,7 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
 
 @[simp]
 theorem natCast_toNat (p : ℕ) : ∀ {z : ℤ} (_h : 0 ≤ z), (z.toNat : ZMod p) = z
-  | (n : ℕ), _h => by simp only [Int.cast_natCast, Int.toNat_natCast]
+  | (n : ℕ), _h => by simp [Int.cast_natCast, Int.toNat_natCast]
   | Int.negSucc n, h => by simp at h
 
 theorem val_injective (n : ℕ) [NeZero n] : Function.Injective (val : ZMod n → ℕ) := by
@@ -979,7 +979,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
   | 0, hn, _
   | 1, hn, _ => by simp at hn
-  | n + 2, _, _ => by simp only [val, ZMod, Fin.ext_iff, Fin.val_one]
+  | n + 2, _, _ => by simp [val, ZMod, Fin.ext_iff, Fin.val_one]
 
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
@@ -1066,7 +1066,7 @@ theorem val_pow {m n : ℕ} {a : ZMod n} [ilt : Fact (1 < n)] (h : a.val ^ m < n
       obtain rfl | ha := eq_or_ne a 0
       · by_cases hm : m = 0
         · cases hm; simp [ilt.out]
-        · simp only [val_zero, ne_eq, hm, not_false_eq_true, zero_pow, Nat.zero_lt_of_lt h]
+        · simp [val_zero, ne_eq, hm, not_false_eq_true, zero_pow, Nat.zero_lt_of_lt h]
       · exact lt_of_le_of_lt
          (Nat.pow_le_pow_right (by rwa [gt_iff_lt, ZMod.val_pos]) (Nat.le_succ m)) h
     rw [pow_succ, ZMod.val_mul, ih this, ← pow_succ, Nat.mod_eq_of_lt h]
@@ -1154,7 +1154,7 @@ def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
         rw [ker_intCastAddHom]
         constructor
         · rintro hf _ ⟨x, rfl⟩
-          simp only [f.map_zsmul, zsmul_zero, f.mem_ker, hf]
+          simp [f.map_zsmul, zsmul_zero, f.mem_ker, hf]
         · intro h
           exact h (AddSubgroup.mem_zmultiples _)).trans <|
     (Int.castAddHom (ZMod n)).liftOfRightInverse cast intCast_zmod_cast
@@ -1178,7 +1178,7 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 
 lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
     Injective (lift n f) ↔ ∀ m, f.1 m = 0 → (m : ZMod n) = 0 := by
-  simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, IsConcreteLE.le_iff,
+  simp [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, IsConcreteLE.le_iff,
     ZMod.intCast_surjective.forall, ZMod.lift_coe, AddMonoidHom.mem_ker, AddSubgroup.mem_bot]
 
 end lift
@@ -1302,9 +1302,9 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
   left_inv n := by simpa only [val_natCast] using mod_add_div n N
   right_inv p := by
     ext1
-    · simp only [add_comm p.1.val, cast_add, cast_mul, natCast_self, zero_mul, natCast_val,
+    · simp [add_comm p.1.val, cast_add, cast_mul, natCast_self, zero_mul, natCast_val,
         cast_id', id_eq, zero_add]
-    · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
+    · simp [add_comm p.1.val, mul_add_div (NeZero.pos _),
         (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
 
 -- there is a faster proof with Module.toAddMonoidEnd

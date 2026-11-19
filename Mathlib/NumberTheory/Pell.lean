@@ -253,7 +253,7 @@ theorem y_mul_pos {a b : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (hbx : 0
 have positive `x`. -/
 theorem x_pow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℕ) : 0 < (a ^ n).x := by
   induction n with
-  | zero => simp only [pow_zero, x_one, zero_lt_one]
+  | zero => simp [pow_zero, x_one, zero_lt_one]
   | succ n ih => rw [pow_succ]; exact x_mul_pos ih hax
 
 /-- If `(x, y)` is a solution with `x` and `y` positive, then all its powers with positive
@@ -261,7 +261,7 @@ natural exponents have positive `y`. -/
 theorem y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : ℕ) :
     0 < (a ^ n.succ).y := by
   induction n with
-  | zero => simp only [pow_one, hay]
+  | zero => simp [pow_one, hay]
   | succ n ih => rw [pow_succ']; exact y_mul_pos hax hay (x_pow_pos hax _) ih
 
 /-- If `(x, y)` is a solution with `x` and `y` positive, then all its powers with positive
@@ -348,7 +348,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.num ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
     contrapose! hM
     refine (congr_arg _ (ext fun x => ?_)).mp (Finite.biUnion (finite_Ioo (-M) M) fun m _ => hM m)
-    simp only [abs_lt, mem_ofPred, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']
+    simp [abs_lt, mem_ofPred, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']
   have hm₀ : m ≠ 0 := by
     rintro rfl
     obtain ⟨q, hq⟩ := hm.nonempty
@@ -490,13 +490,13 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
       add_pos_of_pos_of_nonneg (mul_pos (x_zpow_pos h.x_pos _) h.2.1)
         (mul_nonneg ?_ (by rw [sub_nonneg]; exact h.1.le))
     rcases hn.eq_or_lt with (rfl | hn)
-    · simp only [zpow_zero, y_one, le_refl]
+    · simp [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
   refine strictMono_int_of_lt_succ fun n => ?_
   rcases le_or_gt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
-    have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
+    have hm : n = -m - 1 := by simp [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
     exact H _ (by lia)
 

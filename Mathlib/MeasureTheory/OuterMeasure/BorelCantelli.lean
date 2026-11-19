@@ -115,6 +115,6 @@ theorem liminf_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
     (h : ∀ n, s n =ᵐ[μ] t) : liminf (α := Set α) s atTop =ᵐ[μ] t := by
   simp only [eventuallyEqSet_iff, ← eventually_countable_forall] at h
   refine eventuallyEqSet_iff.2 <| h.mono fun x hx ↦ ?_
-  simp only [mem_liminf_iff_eventually_mem, hx, eventually_const]
+  simp [mem_liminf_iff_eventually_mem, hx, eventually_const]
 
 end MeasureTheory

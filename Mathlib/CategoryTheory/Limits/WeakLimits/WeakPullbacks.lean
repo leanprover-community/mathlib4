@@ -123,7 +123,7 @@ abbrev weakPullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [Has
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
     weakPullback f₁ f₂ ⟶ weakPullback g₁ g₂ :=
   weakPullback.lift (weakPullback.fst f₁ f₂ ≫ i₁) (weakPullback.snd f₁ f₂ ≫ i₂)
-    (by simp only [Category.assoc, ← eq₁, ← eq₂, weakPullback.condition_assoc])
+    (by simp [Category.assoc, ← eq₁, ← eq₂, weakPullback.condition_assoc])
 
 /-- A morphism from the weak pullback of `W ⟶ S` and `X ⟶ S` to the weak pullback of
 `Y ⟶ T` and `Z ⟶ T` given `S ⟶ T`. -/

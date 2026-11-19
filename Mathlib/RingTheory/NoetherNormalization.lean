@@ -141,7 +141,7 @@ private lemma leadingCoeff_finSuccEquiv_varChange :
       · simp only [MvPolynomial.aeval_X, ite_eq_right h, one_smul, map_add, map_pow]
         obtain ⟨i, rfl⟩ := Fin.exists_succ_eq.mpr h
         simp [finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
-    simp only [this, one_pow, Finset.prod_const_one, mul_one]
+    simp [this, one_pow, Finset.prod_const_one, mul_one]
   exact fun i ↦ pow_zero _
 
 /-- `varChange f` maps `f` into some polynomial in `X_0` such that the leading coefficient is
@@ -203,7 +203,7 @@ private noncomputable abbrev eqv1 :
     g.toRingEquiv.symm_toRingHom_comp_toRingHom
   calc
     _ = Ideal.map ((RingHom.id _).comp <| varChange f) I := by rw [id_comp, Ideal.map_coe]
-    _ = (I.map (varChange f)).map (RingHom.id _) := by simp only [← Ideal.map_map, Ideal.map_coe]
+    _ = (I.map (varChange f)).map (RingHom.id _) := by simp [← Ideal.map_map, Ideal.map_coe]
     _ = (I.map (varChange f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
       congr(Ideal.map $(this.symm) (I.map (varChange f)))
     _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]

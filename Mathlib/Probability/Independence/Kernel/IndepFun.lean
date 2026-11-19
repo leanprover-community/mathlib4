@@ -730,7 +730,7 @@ lemma iIndepFun.cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
       calc
         _ = (⋂ i, Y i ⁻¹' t i) ∩ ⋂ i, if i ∈ s then f i else .univ := by
           congr 1
-          simp only [Set.iInter_ite, Set.iInter_univ, Set.inter_univ]
+          simp [Set.iInter_ite, Set.iInter_univ, Set.inter_univ]
         _ = ⋂ i, Y i ⁻¹' t i ∩ (if i ∈ s then f i else .univ) := by rw [Set.iInter_inter_distrib]
         _ = _ := Set.iInter_congr fun i ↦ by by_cases hi : i ∈ s <;> simp [hi, g]
     _ = (∏ i, κ a (Y i ⁻¹' t i))⁻¹ * κ a (⋂ i, g i) := by
@@ -743,8 +743,8 @@ lemma iIndepFun.cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
     _ = ∏ i, if i ∈ s then (κ a)[f i | Y i ⁻¹' t i] else 1 := by
       refine Finset.prod_congr rfl fun i _ ↦ ?_
       by_cases hi : i ∈ s
-      · simp only [hi, ↓reduceIte, g, cond_apply (hY i (ht i))]
-      · simp only [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top _ _)]
+      · simp [hi, ↓reduceIte, g, cond_apply (hY i (ht i))]
+      · simp [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top _ _)]
     _ = _ := by simp
 
 -- TODO: We can't state `Kernel.iIndepFun.cond` (the `Kernel` analogue of

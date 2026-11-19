@@ -68,12 +68,12 @@ theorem Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : �
   hs.induction_on (holderOnWith_empty C r f) (holderOnWith_singleton C r f)
 
 theorem holderOnWith_univ {C r : ℝ≥0} {f : X → Y} : HolderOnWith C r f univ ↔ HolderWith C r f := by
-  simp only [HolderOnWith, HolderWith, mem_univ, true_imp_iff]
+  simp [HolderOnWith, HolderWith, mem_univ, true_imp_iff]
 
 @[simp]
 theorem holderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
     HolderOnWith C 1 f s ↔ LipschitzOnWith C f s := by
-  simp only [HolderOnWith, LipschitzOnWith, NNReal.coe_one, ENNReal.rpow_one]
+  simp [HolderOnWith, LipschitzOnWith, NNReal.coe_one, ENNReal.rpow_one]
 
 alias ⟨_, LipschitzOnWith.holderOnWith⟩ := holderOnWith_one
 
@@ -279,7 +279,7 @@ theorem ediam_image_le (hf : HolderWith C r f) (s : Set X) :
 
 lemma const {y : Y} :
     HolderWith C r (Function.const X y) := fun x₁ x₂ => by
-  simp only [Function.const_apply, edist_self, zero_le]
+  simp [Function.const_apply, edist_self, zero_le]
 
 lemma zero [Zero Y] : HolderWith C r (0 : X → Y) := .const
 
@@ -397,7 +397,7 @@ lemma holderWith_zero_iff : HolderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ 
   · specialize h x₁ x₂
     simp [ENNReal.coe_zero, zero_mul, nonpos_iff_eq_zero, edist_eq_zero] at h
     assumption
-  · simp only [edist_self, ENNReal.coe_zero, zero_mul, le_refl]
+  · simp [edist_self, ENNReal.coe_zero, zero_mul, le_refl]
 
 end Metric
 

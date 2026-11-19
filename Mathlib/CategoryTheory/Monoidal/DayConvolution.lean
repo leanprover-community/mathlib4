@@ -383,7 +383,7 @@ lemma pentagon (H K : C ⥤ V)
     conv_rhs => simp only [Functor.comp_obj, tensor_obj, NatTrans.naturality,
       associator_inv_unit_unit_assoc, externalProductBifunctor_obj_obj, Iso.hom_inv_id_map,
       Category.comp_id]
-    simp only [tensor_whiskerLeft_symm, Category.assoc, Iso.hom_inv_id_assoc,
+    simp [tensor_whiskerLeft_symm, Category.assoc, Iso.hom_inv_id_assoc,
     ← tensorHom_def'_assoc]
   dsimp
   simp only [MonoidalCategory.whiskerLeft_id, Category.comp_id, unit_app_map_app_assoc,

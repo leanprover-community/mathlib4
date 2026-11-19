@@ -132,7 +132,7 @@ theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEnd R L M x
   obtain ⟨n, hn⟩ := hnp
   obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R I M
   have hk' : I.lcs M k = ⊥ := by
-    simp only [← toSubmodule_inj, I.coe_lcs_eq, hk, bot_toSubmodule]
+    simp [← toSubmodule_inj, I.coe_lcs_eq, hk, bot_toSubmodule]
   suffices ∀ l, lowerCentralSeries R L M (l * n) ≤ I.lcs M l by
     rw [isNilpotent_iff R]
     use k * n

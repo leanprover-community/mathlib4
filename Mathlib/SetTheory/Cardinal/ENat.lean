@@ -185,7 +185,7 @@ theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ 
   | inr hx => simp [toENatAux_eq_top hx, natCast_lt_aleph0.trans_le hx]
 
 lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := by
-  simp only [le_antisymm_iff, toENatAux_le_nat, ← toENatAux_gc _, ofENat_nat]
+  simp [le_antisymm_iff, toENatAux_le_nat, ← toENatAux_gc _, ofENat_nat]
 
 lemma toENatAux_eq_zero {x : Cardinal} : toENatAux x = 0 ↔ x = 0 := toENatAux_eq_nat
 
@@ -200,7 +200,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
     cases lt_or_ge y ℵ₀ with
     | inl hy =>
       lift x to ℕ using hle.trans_lt hy; lift y to ℕ using hy
-      simp only [← Nat.cast_mul, toENatAux_nat]
+      simp [← Nat.cast_mul, toENatAux_nat]
     | inr hy =>
       rcases eq_or_ne x 0 with rfl | hx
       · simp
@@ -213,7 +213,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
     cases lt_or_ge y ℵ₀ with
     | inl hy =>
       lift x to ℕ using hle.trans_lt hy; lift y to ℕ using hy
-      simp only [← Nat.cast_add, toENatAux_nat]
+      simp [← Nat.cast_add, toENatAux_nat]
     | inr hy =>
       simp only [toENatAux_eq_top hy, add_top]
       exact toENatAux_eq_top <| le_add_left hy

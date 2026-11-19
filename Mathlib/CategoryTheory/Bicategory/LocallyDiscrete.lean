@@ -160,6 +160,6 @@ lemma CategoryTheory.CommSq.toLoc {C : Type*} [Category C] {X₁ X₂ X₃ X₄ 
     {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
     (h : CommSq t l r b) :
     CommSq t.toLoc l.toLoc r.toLoc b.toLoc :=
-  ⟨by simp only [← Quiver.Hom.comp_toLoc, h.w]⟩
+  ⟨by simp [← Quiver.Hom.comp_toLoc, h.w]⟩
 
 end

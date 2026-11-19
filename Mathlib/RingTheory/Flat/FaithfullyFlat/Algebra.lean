@@ -105,7 +105,7 @@ instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by
   apply Module.FaithfullyFlat.tensorProduct_mk_injective (A := A) (B := B) A
   simp only [TensorProduct.mk_apply]
   rw [← mul_one a₁, ← mul_one a₂]
-  simp only [← smul_eq_mul, ← TensorProduct.smul_tmul, ha (1 : B)]
+  simp [← smul_eq_mul, ← TensorProduct.smul_tmul, ha (1 : B)]
 
 open Algebra.TensorProduct in
 /-- If `B` is a faithfully flat `A`-algebra, the preimage of the pushforward of any

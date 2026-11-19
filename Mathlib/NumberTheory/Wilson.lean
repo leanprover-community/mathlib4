@@ -83,8 +83,8 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
     refine ⟨Units.mk0 b ?_, Finset.mem_univ _, ?_⟩
     · intro h; apply hb.1; apply_fun val at h
       simpa only [val_cast_of_lt hb.right, val_zero] using h
-    · simp only [val_cast_of_lt hb.right, Units.val_mk0]
-  · rintro a -; simp only [cast_id, natCast_val]
+    · simp [val_cast_of_lt hb.right, Units.val_mk0]
+  · rintro a -; simp [cast_id, natCast_val]
 
 variable {p} in
 /-- Let `p` be prime with `p % 4 ≠ 3`. Then `((p - 1) / 2)!` is a specified square root of `-1`

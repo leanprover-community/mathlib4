@@ -58,11 +58,11 @@ instance comp (τ' : F₂ ⟶ F₃) [IsMonoidal τ] [IsMonoidal τ'] :
 instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' : G₁ ⟶ G₂)
     [IsMonoidal τ] [IsMonoidal τ'] : IsMonoidal (τ ◫ τ') where
   unit := by
-    simp only [comp_obj, comp_ε, hcomp_app, assoc, naturality_assoc, unit_assoc, ← map_comp, unit]
+    simp [comp_obj, comp_ε, hcomp_app, assoc, naturality_assoc, unit_assoc, ← map_comp, unit]
   tensor X Y := by
     simp only [comp_obj, comp_μ, hcomp_app, assoc, naturality_assoc,
       tensor_assoc, ← tensorHom_comp_tensorHom, μ_natural_assoc]
-    simp only [← map_comp, tensor]
+    simp [← map_comp, tensor]
 
 instance whiskerRight {G₁ : D ⥤ E} [G₁.LaxMonoidal] [IsMonoidal τ] :
     IsMonoidal (Functor.whiskerRight τ G₁) := by
@@ -82,10 +82,10 @@ instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom w
 instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoidal] [H.LaxMonoidal] :
     NatTrans.IsMonoidal (Functor.associator F G H).hom where
   unit := by
-    simp only [comp_obj, comp_ε, assoc, Functor.map_comp, associator_hom_app, comp_id,
+    simp [comp_obj, comp_ε, assoc, Functor.map_comp, associator_hom_app, comp_id,
       Functor.comp_map]
   tensor X Y := by
-    simp only [comp_obj, comp_μ, associator_hom_app, Functor.comp_map, map_comp,
+    simp [comp_obj, comp_μ, associator_hom_app, Functor.comp_map, map_comp,
       comp_id, tensorHom_id, id_whiskerRight, assoc, id_comp]
 
 end IsMonoidal
@@ -100,9 +100,9 @@ instance {F G : C ⥤ D} {H K : C ⥤ E} (α : F ⟶ G) (β : H ⟶ K)
     · rw [prod_comp_snd, prod'_ε_snd, prod'_ε_snd, prod'_app_snd, IsMonoidal.unit]
   tensor X Y := by
     ext
-    · simp only [prod_comp_fst, prod'_μ_fst, prod'_app_fst,
+    · simp [prod_comp_fst, prod'_μ_fst, prod'_app_fst,
         prodMonoidal_tensorHom, IsMonoidal.tensor]
-    · simp only [prod_comp_snd, prod'_μ_snd, prod'_app_snd,
+    · simp [prod_comp_snd, prod'_μ_snd, prod'_app_snd,
         prodMonoidal_tensorHom, IsMonoidal.tensor]
 
 end NatTrans

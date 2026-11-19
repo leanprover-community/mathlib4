@@ -73,7 +73,7 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
         exact subset_span ⟨_, ‹_›, _, ‹_›, rfl⟩
     all_goals
       intros
-      simp only [*, add_mem, smul_mem, zero_mem, map_zero, map_add,
+      simp [*, add_mem, smul_mem, zero_mem, map_zero, map_add,
         LinearMap.zero_apply, LinearMap.add_apply, LinearMap.smul_apply, map_smul]
   · rw [span_le, image2_subset_iff]
     intro a ha b hb
@@ -83,7 +83,7 @@ theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : m
   eq_bot_iff.2 <|
     map₂_le.2 fun m _hm n hn => by
       rw [Submodule.mem_bot] at hn
-      rw [hn, map_zero]; simp only [mem_bot]
+      rw [hn, map_zero]; simp [mem_bot]
 
 @[simp]
 theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : map₂ f ⊥ q = ⊥ :=

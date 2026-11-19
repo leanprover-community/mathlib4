@@ -90,7 +90,7 @@ instance _root_.Prefunctor.mapReverseComp
     (φ : U ⥤q V) (ψ : V ⥤q W) [φ.MapReverse] [ψ.MapReverse] :
     (φ ⋙q ψ).MapReverse where
   map_reverse' e := by
-    simp only [Prefunctor.comp_map, Prefunctor.MapReverse.map_reverse']
+    simp [Prefunctor.comp_map, Prefunctor.MapReverse.map_reverse']
 
 instance _root_.Prefunctor.mapReverseId :
     (Prefunctor.id U).MapReverse where

@@ -85,8 +85,8 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {A : Type*}
 def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (ContinuousMap.prodMk f₀ g₀) (ContinuousMap.prodMk f₁ g₁) where
   toFun t := (F t, G t)
-  map_zero_left x := by simp only [prod_eval, Homotopy.apply_zero]
-  map_one_left x := by simp only [prod_eval, Homotopy.apply_one]
+  map_zero_left x := by simp [prod_eval, Homotopy.apply_zero]
+  map_one_left x := by simp [prod_eval, Homotopy.apply_one]
 
 /-- The relative product of homotopies `F` and `G`,
   where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
@@ -183,7 +183,7 @@ This is `trans_prod_eq_prod_trans` descended to the quotient. -/
 theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
   induction q₁, q₂ using Path.Homotopic.Quotient.ind₂
   induction r₁, r₂ using Path.Homotopic.Quotient.ind₂
-  simp only [prod_lift, ← Path.Homotopic.Quotient.mk_trans, Path.trans_prod_eq_prod_trans]
+  simp [prod_lift, ← Path.Homotopic.Quotient.mk_trans, Path.trans_prod_eq_prod_trans]
 
 variable {c₁ c₂ : α × β}
 

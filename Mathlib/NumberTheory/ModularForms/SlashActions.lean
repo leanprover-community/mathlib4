@@ -73,8 +73,8 @@ def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H
     [SlashAction β G α] (h : H →* G) : SlashAction β H α where
   map k g := SlashAction.map k (h g)
   zero_slash k g := SlashAction.zero_slash k (h g)
-  slash_one k a := by simp only [map_one, SlashAction.slash_one]
-  slash_mul k g gg a := by simp only [map_mul, SlashAction.slash_mul]
+  slash_one k a := by simp [map_one, SlashAction.slash_one]
+  slash_mul k g gg a := by simp [map_mul, SlashAction.slash_mul]
   add_slash _ g _ _ := SlashAction.add_slash _ (h g) _ _
 
 @[simp]
@@ -146,7 +146,7 @@ theorem slash_apply (g : GL (Fin 2) ℝ) (τ : ℍ) :
 theorem smul_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) (c : ℂ) :
     (c • f) ∣[k] A = σ A c • f ∣[k] A := by
   ext τ : 1
-  simp only [slash_apply, Pi.smul_apply, smul_eq_mul, map_mul, mul_assoc]
+  simp [slash_apply, Pi.smul_apply, smul_eq_mul, map_mul, mul_assoc]
 
 theorem slash_neg_one (f : ℍ → ℂ) (k : ℤ) :
     f ∣[k] (-1 : GL (Fin 2) ℝ) = (-1) ^ k * f := by

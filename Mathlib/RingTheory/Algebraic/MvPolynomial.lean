@@ -50,7 +50,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
     apply Subtype.val_injective.comp
     simp only [EquivLike.comp_injective]
     apply hf.comp
-    simp only [EquivLike.comp_injective, EquivLike.injective]
+    simp [EquivLike.comp_injective, EquivLike.injective]
   have h1 : Polynomial.aeval (X i : MvPolynomial σ R) = ((Subalgebra.val _).comp
       (supportedEquivMvPolynomial _).symm.toAlgHom |>.comp
       (Polynomial.aeval (X ⟨i, s.mem_insert i⟩ : MvPolynomial ↑(insert i s) R))) := by

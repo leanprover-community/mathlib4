@@ -42,6 +42,6 @@ instance : ProperSpace ℕ+ where
     exact ((Set.finite_Icc _ _).preimage PNat.coe_injective.injOn).isCompact
 
 instance : NoncompactSpace ℕ+ :=
-  noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
+  noncompactSpace_of_neBot <| by simp [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
 
 end PNat

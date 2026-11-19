@@ -531,7 +531,7 @@ def piCongrLeft' {ι ι' : Type*} (R : ι → Type*) (e : ι ≃ ι')
 @[simp]
 theorem piCongrLeft'_symm {R : Type*} [NonUnitalNonAssocSemiring R] (e : α ≃ β) :
     (RingEquiv.piCongrLeft' (fun _ => R) e).symm = RingEquiv.piCongrLeft' _ e.symm := by
-  simp only [piCongrLeft', RingEquiv.symm, MulEquiv.symm, Equiv.piCongrLeft'_symm]
+  simp [piCongrLeft', RingEquiv.symm, MulEquiv.symm, Equiv.piCongrLeft'_symm]
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -574,10 +574,10 @@ def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAss
     R × S ≃+* R' × S' where
   toEquiv := Equiv.prodCongr f g
   map_mul' _ _ := by
-    simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
+    simp [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
       Prod.map, map_mul, Prod.mk_mul_mk]
   map_add' _ _ := by
-    simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
+    simp [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
       Prod.map, map_add, Prod.mk_add_mk]
 
 @[simp]

@@ -222,7 +222,7 @@ theorem coeff_hsum_eq_sum_of_subset {s : SummableFamily Γ R α} {g : Γ} {t : F
 
 theorem coeff_hsum_eq_sum {s : SummableFamily Γ R α} {g : Γ} :
     s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
-  simp only [coeff_hsum, finsum_eq_sum _ (s.finite_co_support _), coeff_support]
+  simp [coeff_hsum, finsum_eq_sum _ (s.finite_co_support _), coeff_support]
 
 /-- The summable family made of a single Hahn series. -/
 @[simps]
@@ -256,7 +256,7 @@ def const (ι) [Finite ι] (x : R⟦Γ⟧) : SummableFamily Γ R ι where
 @[simp]
 theorem hsum_unique {ι} [Unique ι] (x : SummableFamily Γ R ι) : x.hsum = x default := by
   ext g
-  simp only [coeff_hsum, finsum_unique]
+  simp [coeff_hsum, finsum_unique]
 
 /-- A summable family induced by an equivalence of the parametrizing type. -/
 @[simps]
@@ -628,7 +628,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
         by_cases hb : b ∈ Set.range f
         · simp only [Ne, Set.mem_ofPred_eq, dite_eq_left hb] at h
           exact ⟨Classical.choose hb, h, Classical.choose_spec hb⟩
-        · simp only [Ne, Set.mem_ofPred_eq, dite_eq_right hb, coeff_zero, not_true_eq_false] at h)
+        · simp [Ne, Set.mem_ofPred_eq, dite_eq_right hb, coeff_zero, not_true_eq_false] at h)
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
@@ -797,7 +797,7 @@ theorem unit_aux (x : R⟦Γ⟧) {r : R} (hr : r * x.leadingCoeff = 1)
   by_cases hy : y = 0
   · have hrx : (single oinv) r * x = 1 := by
       rw [eq_of_sub_eq_zero hy, single_mul_single, hxo, hr, single_zero_one]
-    simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
+    simp [hrx, sub_self, orderTop_zero, WithTop.top_pos]
   · have hr' : IsRegular r := IsUnit.isRegular <| .of_mul_eq_one x.leadingCoeff hr
     have hy' : 0 < (single oinv r * y).order := by
       rw [(order_single_mul_of_isRegular hr' hy)]

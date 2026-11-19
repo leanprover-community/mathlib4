@@ -105,7 +105,7 @@ private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffin
   have h2 : snd (snd π (𝒰.f i)) _ ≫ fst _ _ = map _ _ _ _ (fst _ _) (fst _ _) _
     condition.symm condition.symm ≫ snd π π := by simp
   obtain ⟨u, hu⟩ := of_isAffine_target (pullback.snd π (𝒰.f i)) f' <| by
-    simp only [← cancel_mono (Scheme.Opens.ι i.1.2.1),
+    simp [← cancel_mono (Scheme.Opens.ι i.1.2.1),
       Category.assoc, IsOpenImmersion.lift_fac, f', reassoc_of% h1, reassoc_of% h2, hf]
   refine ⟨u ≫ Scheme.Opens.ι _, ?_⟩
   simp [reassoc_of% hu, f']

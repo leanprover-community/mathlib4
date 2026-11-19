@@ -167,7 +167,7 @@ instance instAdd : Add (Seminorm 𝕜 E) where
   add p q :=
     { p.toAddGroupSeminorm + q.toAddGroupSeminorm with
       toFun := fun x => p x + q x
-      smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
+      smul' := fun a x => by simp [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
 instance : IsAddApply (Seminorm 𝕜 E) where
 
@@ -272,7 +272,7 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
   { p.toAddGroupSeminorm.comp f.toAddMonoidHom with
     toFun := fun x => p (f x)
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
-    smul' _ _ := by simp only [map_smulₛₗ _, map_smul_eq_mul, RingHomIsometric.norm_map] }
+    smul' _ _ := by simp [map_smulₛₗ _, map_smul_eq_mul, RingHomIsometric.norm_map] }
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
   rfl
@@ -673,14 +673,14 @@ theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Non
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons _ _ _ hs ih =>
-    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, ih]
+    simp [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, ih]
 
 theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E)
     (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons _ _ _ hs ih =>
-    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, ih]
+    simp [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, ih]
 
 @[gcongr]
 theorem ball_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : p.ball x r₁ ⊆ p.ball x r₂ :=
@@ -761,11 +761,11 @@ variable (p : Seminorm 𝕜 E)
 
 theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
-  simp only [mem_ofPred, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
+  simp [mem_ofPred, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
 
 theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
-  simp only [mem_ofPred, mem_preimage, mem_closedBall_zero_iff,
+  simp [mem_ofPred, mem_preimage, mem_closedBall_zero_iff,
     Real.norm_of_nonneg (apply_nonneg p _)]
 
 theorem ball_zero_eq_preimage_ball {r : ℝ} : p.ball 0 r = p ⁻¹' Metric.ball 0 r := by
@@ -865,10 +865,10 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
   exact (norm_nonneg _).trans ha
 
 theorem neg_mem_ball_zero {r : ℝ} {x : E} : -x ∈ ball p 0 r ↔ x ∈ ball p 0 r := by
-  simp only [mem_ball_zero, map_neg_eq_map]
+  simp [mem_ball_zero, map_neg_eq_map]
 
 theorem neg_mem_closedBall_zero {r : ℝ} {x : E} : -x ∈ closedBall p 0 r ↔ x ∈ closedBall p 0 r := by
-  simp only [mem_closedBall_zero, map_neg_eq_map]
+  simp [mem_closedBall_zero, map_neg_eq_map]
 
 @[simp]
 theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
@@ -983,7 +983,7 @@ theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove
     exact closedBall_bot _ hr
   · ext x
     have := Seminorm.bddAbove_range_iff.mp hp (x - e)
-    simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
+    simp [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
 
 end NormedField
 

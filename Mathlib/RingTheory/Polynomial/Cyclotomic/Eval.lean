@@ -31,7 +31,7 @@ open Finset Nat
 @[simp]
 theorem eval_one_cyclotomic_prime {R : Type*} [CommRing R] {p : ℕ} [hn : Fact p.Prime] :
     eval 1 (cyclotomic p R) = p := by
-  simp only [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finsetSum,
+  simp [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finsetSum,
     Finset.card_range, smul_one_eq_cast]
 
 theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S) {p : ℕ}
@@ -40,7 +40,7 @@ theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f 
 @[simp]
 theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : ℕ)
     [hn : Fact p.Prime] : eval 1 (cyclotomic (p ^ (k + 1)) R) = p := by
-  simp only [cyclotomic_prime_pow_eq_geom_sum hn.out, eval_X, one_pow, Finset.sum_const, eval_pow,
+  simp [cyclotomic_prime_pow_eq_geom_sum hn.out, eval_X, one_pow, Finset.sum_const, eval_pow,
     eval_finsetSum, Finset.card_range, smul_one_eq_cast]
 
 theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S)
@@ -113,7 +113,7 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
     [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n)
-  · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
+  · simp [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
   · simp
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
@@ -183,7 +183,7 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
     refine ⟨ζ, (mem_primitiveRoots hn).mpr hζ, ?_⟩
     suffices ¬SameRay ℝ (q : ℂ) ζ by
       convert lt_norm_sub_of_not_sameRay this <;>
-        simp only [hζ.norm'_eq_one hn.ne', Real.norm_of_nonneg hq.le, Complex.norm_real]
+        simp [hζ.norm'_eq_one hn.ne', Real.norm_of_nonneg hq.le, Complex.norm_real]
     rw [Complex.sameRay_iff]
     push Not
     refine ⟨mod_cast hq.ne', hζ.ne_zero hn.ne', ?_⟩
@@ -203,7 +203,7 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
     nnNorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod (M := NNRealˣ) _ _
   swap; · exact fun _ => Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq'])
-  · simp only [Complex.card_primitiveRoots, prod_const, card_attach]
+  · simp [Complex.card_primitiveRoots, prod_const, card_attach]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, norm_nonneg, Units.val_mk0,
       Real.coe_toNNReal', coe_nnNorm, max_le_iff, tsub_le_iff_right]
@@ -215,8 +215,8 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
 
 theorem sub_one_pow_totient_le_cyclotomic_eval {q : ℝ} (hq' : 1 < q) :
     ∀ n, (q - 1) ^ totient n ≤ (cyclotomic n ℝ).eval q
-  | 0 => by simp only [totient_zero, _root_.pow_zero, cyclotomic_zero, eval_one, le_refl]
-  | 1 => by simp only [totient_one, pow_one, cyclotomic_one, eval_sub, eval_X, eval_one, le_refl]
+  | 0 => by simp [totient_zero, _root_.pow_zero, cyclotomic_zero, eval_one, le_refl]
+  | 1 => by simp [totient_one, pow_one, cyclotomic_one, eval_sub, eval_X, eval_one, le_refl]
   | _ + 2 => (sub_one_pow_totient_lt_cyclotomic_eval le_add_self hq').le
 
 theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ n) (hq' : 1 < q) :

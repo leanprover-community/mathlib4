@@ -109,7 +109,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
       ?_ (-2 * π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
     rwa [neg_div, neg_re, neg_lt_zero]
   convert Real.tsum_eq_tsum_fourier_of_rpow_decay (by fun_prop) one_lt_two f_bd Ff_bd 0 using 1
-  · simp only [f, zero_add, ofReal_intCast]
+  · simp [f, zero_add, ofReal_intCast]
   · simp [← tsum_mul_left, hFf]
 
 theorem Complex.tsum_exp_neg_mul_int_sq {a : ℂ} (ha : 0 < a.re) :

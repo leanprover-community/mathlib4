@@ -43,7 +43,7 @@ noncomputable def shrinkCoyonedaCocone :
   ι.app x := shrinkCoyonedaEquiv.symm x.unop.val
   ι.naturality x y f := by
     dsimp
-    simp only [← f.unop.map_val, shrinkCoyonedaEquiv_symm_map.{w}, Category.comp_id]
+    simp [← f.unop.map_val, shrinkCoyonedaEquiv_symm_map.{w}, Category.comp_id]
 
 @[reassoc]
 lemma shrinkYoneda_map_app_shrinkCoyonedaCocone_ι_app_app

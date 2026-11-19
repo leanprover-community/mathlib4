@@ -80,7 +80,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
   rcases n with - | n
   -- If the vector space is 0-dimensional, the result is trivial.
   · rw [← top_le_iff]
-    simp only [Submodule.finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
+    simp [Submodule.finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
   -- Otherwise the vector space is nontrivial.
   · have : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
     -- Hence, `f` has an eigenvalue `μ₀`.
@@ -112,7 +112,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
     -- The induction hypothesis gives us a statement about subspaces of `ER`. We can transfer this
     -- to a statement about subspaces of `V` via `Submodule.subtype`:
     have ih_ER' : ⨆ (μ : K), (f'.maxGenEigenspace μ).map ER.subtype = ER := by
-      simp only [(Submodule.map_iSup _ _).symm, ih_ER, Submodule.map_subtype_top ER]
+      simp [(Submodule.map_iSup _ _).symm, ih_ER, Submodule.map_subtype_top ER]
     -- Moreover, every generalized eigenspace of `f'` is contained in the corresponding generalized
     -- eigenspace of `f`.
     have hff' :
@@ -153,7 +153,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
   by_cases hμ : μ ∈ m.support; swap
-  · simp only [Finsupp.notMem_support_iff.mp hμ, p.zero_mem]
+  · simp [Finsupp.notMem_support_iff.mp hμ, p.zero_mem]
   have hm₂_aux := hm₂
   simp_rw [Module.End.mem_genEigenspace] at hm₂_aux
   choose l hlk hl using hm₂_aux

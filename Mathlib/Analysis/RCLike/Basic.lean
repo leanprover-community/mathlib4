@@ -221,7 +221,7 @@ theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
 
 @[rclike_simps]
 theorem re_ofReal_mul (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
-  simp only [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
+  simp [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
 
 @[rclike_simps]
 theorem re_mul_ofReal (z : K) (r : ℝ) : re (z * ↑r) = re z * r := by
@@ -229,7 +229,7 @@ theorem re_mul_ofReal (z : K) (r : ℝ) : re (z * ↑r) = re z * r := by
 
 @[rclike_simps]
 theorem im_ofReal_mul (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
-  simp only [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
+  simp [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
 
 @[rclike_simps]
 theorem im_mul_ofReal (z : K) (r : ℝ) : im (z * ↑r) = im z * r := by
@@ -290,7 +290,7 @@ theorem I_im' (z : K) : im (I : K) * im z = im z := by rw [mul_comm, I_im]
 -- Not `@[simp]` since `simp` can prove this.
 @[rclike_simps]
 theorem I_mul_re (z : K) : re (I * z) = -im z := by
-  simp only [I_re, zero_sub, I_im', zero_mul, mul_re]
+  simp [I_re, zero_sub, I_im', zero_mul, mul_re]
 
 theorem I_mul_I : (I : K) = 0 ∨ (I : K) * I = -1 :=
   I_mul_I_ax
@@ -314,7 +314,7 @@ theorem conj_I : conj (I : K) = -I :=
 @[simp, rclike_simps]
 theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
-  simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
+  simp [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
 theorem conj_natCast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 
@@ -375,7 +375,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
     _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_tfae z).out 1 2
-    _ ↔ _                    := by simp only [eq_comm]
+    _ ↔ _                    := by simp [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
   (is_real_tfae z).out 1 3
@@ -410,8 +410,8 @@ variable {K} {z : K}
 /-- The norm squared function. -/
 def normSq : K →*₀ ℝ where
   toFun z := re z * re z + im z * im z
-  map_zero' := by simp only [add_zero, mul_zero, map_zero]
-  map_one' := by simp only [one_im, add_zero, mul_one, one_re, mul_zero]
+  map_zero' := by simp [add_zero, mul_zero, map_zero]
+  map_one' := by simp [one_im, add_zero, mul_one, one_re, mul_zero]
   map_mul' z w := by
     simp only [mul_im, mul_re]
     ring
@@ -446,11 +446,11 @@ theorem normSq_pos {z : K} : 0 < normSq z ↔ z ≠ 0 := by
   rw [lt_iff_le_and_ne, Ne, eq_comm]; simp [normSq_nonneg]
 
 @[simp, rclike_simps]
-theorem normSq_neg (z : K) : normSq (-z) = normSq z := by simp only [normSq_eq_def', norm_neg]
+theorem normSq_neg (z : K) : normSq (-z) = normSq z := by simp [normSq_eq_def', norm_neg]
 
 @[simp, rclike_simps]
 theorem normSq_conj (z : K) : normSq (conj z) = normSq z := by
-  simp only [normSq_apply, neg_mul, mul_neg, neg_neg, rclike_simps]
+  simp [normSq_apply, neg_mul, mul_neg, neg_neg, rclike_simps]
 
 -- Not `@[simp]` since `simp` can prove this.
 @[rclike_simps]
@@ -476,7 +476,7 @@ lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z :=
   inv_eq_of_mul_eq_one_left <| by simp_rw [conj_mul, hz, algebraMap.coe_one, one_pow]
 
 theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z * conj w) := by
-  simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
+  simp [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
 
 theorem sqrt_normSq_eq_norm {z : K} : √(normSq z) = ‖z‖ := by
   rw [normSq_eq_def', Real.sqrt_sq (norm_nonneg _)]
@@ -503,11 +503,11 @@ theorem inv_im (z : K) : im z⁻¹ = -im z / normSq z := by
   rw [inv_def, normSq_eq_def', mul_comm, im_ofReal_mul, conj_im, div_eq_inv_mul]
 
 theorem div_re (z w : K) : re (z / w) = re z * re w / normSq w + im z * im w / normSq w := by
-  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg,
+  simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg,
     rclike_simps]
 
 theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / normSq w := by
-  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg,
+  simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg,
     rclike_simps]
 
 -- Not `@[simp]` since `simp` can prove this
@@ -565,7 +565,7 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 
 @[simp 1100, rclike_simps]
-theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
+theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp [← sqrt_normSq_eq_norm, normSq_conj]
 
 @[simp 1100, rclike_simps] lemma nnNorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnNorm]
 
@@ -808,20 +808,20 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   re := AddMonoidHom.id ℝ
   im := 0
   I := 0
-  I_re_ax := by simp only [map_zero]
+  I_re_ax := by simp [map_zero]
   I_mul_I_ax := Or.intro_left _ rfl
   re_add_im_ax z := by
-    simp only [add_zero, mul_zero, Algebra.algebraMap_self, RingHom.id_apply, AddMonoidHom.id_apply]
+    simp [add_zero, mul_zero, Algebra.algebraMap_self, RingHom.id_apply, AddMonoidHom.id_apply]
   ofReal_re_ax _ := rfl
   ofReal_im_ax _ := rfl
-  mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
-  mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
-  conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
-  conj_im_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]
-  conj_I_ax := by simp only [map_zero, neg_zero]
-  norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
+  mul_re_ax z w := by simp [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
+  mul_im_ax z w := by simp [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
+  conj_re_ax z := by simp [starRingEnd_apply, star_id_of_comm]
+  conj_im_ax _ := by simp [neg_zero, AddMonoidHom.zero_apply]
+  conj_I_ax := by simp [map_zero, neg_zero]
+  norm_sq_eq_def_ax z := by simp [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
-  mul_im_I_ax _ := by simp only [mul_zero, AddMonoidHom.zero_apply]
+  mul_im_I_ax _ := by simp [mul_zero, AddMonoidHom.zero_apply]
   le_iff_re_im := (and_iff_left rfl).symm
 
 end Instances
@@ -1013,10 +1013,10 @@ theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
     0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
   simp only [pos_iff (K := K), neg_iff (K := K), re_ofReal_mul, im_ofReal_mul]
   obtain hx | hx | hx := lt_trichotomy x 0
-  · simp only [mul_pos_iff, not_lt_of_gt hx, false_and, hx, true_and, false_or, mul_eq_zero, hx.ne,
+  · simp [mul_pos_iff, not_lt_of_gt hx, false_and, hx, true_and, false_or, mul_eq_zero, hx.ne,
       or_false]
-  · simp only [hx, zero_mul, lt_self_iff_false, false_and, false_or]
-  · simp only [mul_pos_iff, hx, true_and, not_lt_of_gt hx, false_and, or_false, mul_eq_zero,
+  · simp [hx, zero_mul, lt_self_iff_false, false_and, false_or]
+  · simp [mul_pos_iff, hx, true_and, not_lt_of_gt hx, false_and, or_false, mul_eq_zero,
       hx.ne', false_or]
 
 theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :

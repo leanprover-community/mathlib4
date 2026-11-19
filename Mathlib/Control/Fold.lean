@@ -243,8 +243,8 @@ open Function hiding const
 set_option backward.isDefEq.respectTransparency.types false in
 def mapFold [Monoid α] [Monoid β] (f : α →* β) : ApplicativeTransformation (Const α) (Const β) where
   app _ := f
-  preserves_seq' := by intros; simp only [Seq.seq, map_mul]
-  preserves_pure' := by intros; simp only [map_one, pure]
+  preserves_seq' := by intros; simp [Seq.seq, map_mul]
+  preserves_pure' := by intros; simp [map_one, pure]
 
 theorem Free.map_eq_map (f : α → β) (xs : List α) :
     f <$> xs = (FreeMonoid.toList (FreeMonoid.map f (FreeMonoid.ofList xs))) :=
@@ -319,12 +319,12 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
 set_option backward.isDefEq.respectTransparency.types false in
 theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
     foldMap g (f <$> xs) = foldMap (g ∘ f) xs := by
-  simp only [foldMap, traverse_map, Function.comp_def]
+  simp [foldMap, traverse_map, Function.comp_def]
 
 theorem foldl_toList (f : α → β → α) (xs : t β) (x : α) :
     foldl f x xs = List.foldl f x (toList xs) := by
   rw [← FreeMonoid.toList_ofList (toList xs), ← foldl.unop_ofFreeMonoid]
-  simp only [foldl, toList_spec, foldMap_hom_free, foldl.ofFreeMonoid_comp_of, Foldl.get,
+  simp [foldl, toList_spec, foldMap_hom_free, foldl.ofFreeMonoid_comp_of, Foldl.get,
     FreeMonoid.ofList_toList]
 
 theorem foldr_toList (f : α → β → β) (xs : t α) (x : β) :
@@ -334,18 +334,18 @@ theorem foldr_toList (f : α → β → β) (xs : t α) (x : β) :
     foldr.ofFreeMonoid_comp_of]
 
 theorem toList_map (f : α → β) (xs : t α) : toList (f <$> xs) = f <$> toList xs := by
-  simp only [toList_spec, Free.map_eq_map, foldMap_hom, foldMap_map, FreeMonoid.ofList_toList,
+  simp [toList_spec, Free.map_eq_map, foldMap_hom, foldMap_map, FreeMonoid.ofList_toList,
     FreeMonoid.map_of, Function.comp_def]
 
 @[simp]
 theorem foldl_map (g : β → γ) (f : α → γ → α) (a : α) (l : t β) :
     foldl f a (g <$> l) = foldl (fun x y => f x (g y)) a l := by
-  simp only [foldl, foldMap_map, Function.comp_def, Function.flip_def]
+  simp [foldl, foldMap_map, Function.comp_def, Function.flip_def]
 
 @[simp]
 theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
     foldr f a (g <$> l) = foldr (f ∘ g) a l := by
-  simp only [foldr, foldMap_map, Function.comp_def]
+  simp [foldr, foldMap_map, Function.comp_def]
 
 @[simp]
 theorem toList_eq_self {xs : List α} : toList xs = xs := by
@@ -371,25 +371,25 @@ theorem foldlM_toList {f : α → β → m α} {x : α} {xs : t β} :
     foldlM f x xs = List.foldlM f x (toList xs) :=
   calc foldlM f x xs
     _ = (unop (Monoid.foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs))).asHom x := by
-      simp only [foldlM, toList_spec, foldMap_hom_free (Monoid.foldlM.ofFreeMonoid f),
+      simp [foldlM, toList_spec, foldMap_hom_free (Monoid.foldlM.ofFreeMonoid f),
         foldlM.ofFreeMonoid_comp_of, Monoid.foldlM.get, FreeMonoid.ofList_toList]
     _ = List.foldlM f x (toList xs) := by simp [Monoid.foldlM.ofFreeMonoid, unop_op, flip]
 
 theorem foldrM_toList (f : α → β → m β) (x : β) (xs : t α) :
     foldrM f x xs = List.foldrM f x (toList xs) := by
   change _ = (Monoid.foldrM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)).asHom x
-  simp only [foldrM, toList_spec, foldMap_hom_free (Monoid.foldrM.ofFreeMonoid f),
+  simp [foldrM, toList_spec, foldMap_hom_free (Monoid.foldrM.ofFreeMonoid f),
     foldrM.ofFreeMonoid_comp_of, Monoid.foldrM.get, FreeMonoid.ofList_toList]
 
 @[simp]
 theorem foldlM_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) :
     foldlM f a (g <$> l) = foldlM (fun x y => f x (g y)) a l := by
-  simp only [foldlM, foldMap_map, Function.comp_def, Function.flip_def]
+  simp [foldlM, foldMap_map, Function.comp_def, Function.flip_def]
 
 @[simp]
 theorem foldrM_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
     foldrM f a (g <$> l) = foldrM (f ∘ g) a l := by
-  simp only [foldrM, foldMap_map, Function.comp_def]
+  simp [foldrM, foldMap_map, Function.comp_def]
 
 @[deprecated (since := "2026-10-08")]
 alias foldlm.ofFreeMonoid_comp_of := foldlM.ofFreeMonoid_comp_of

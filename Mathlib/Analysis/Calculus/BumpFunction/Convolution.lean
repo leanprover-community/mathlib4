@@ -118,7 +118,7 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
       hg.integrableOn_isCompact (isCompact_closedBall _ _)
   · apply tendsto_const_nhds.congr (fun i ↦ ?_)
     rw [← integral_neg_eq_self]
-    simp only [sub_neg_eq_add, integral_add_left_eq_self, integral_normed]
+    simp [sub_neg_eq_add, integral_add_left_eq_self, integral_normed]
   · filter_upwards with i
     change support ((ContDiffBump.normed (φ i) μ) ∘ (fun y ↦ x₀ - y)) ⊆ closedBall x₀ (φ i).rOut
     simp only [support_comp_eq_preimage, support_normed_eq]

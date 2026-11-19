@@ -109,7 +109,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
   · simp
-  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
+  · have hc' : 1 < ‖σ c‖ := by simp [RingHomIsometric.norm_map, hc]
     rcases rescale_to_shell hc' (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
     let δ := ‖d‖ * ‖y‖ / 4
     have δpos : 0 < δ := by positivity
@@ -181,7 +181,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction n with
-    | zero => simp only [one_div, one_mul, iterate_zero_apply, pow_zero, le_rfl]
+    | zero => simp [one_div, one_mul, iterate_zero_apply, pow_zero, le_rfl]
     | succ n IH =>
       rw [iterate_succ']
       apply le_trans (hle _) _
@@ -470,7 +470,7 @@ lemma _root_.ContinuousLinearMap.isUnit_iff_bijective {f : E →L[𝕜] E} :
   · rintro ⟨f, rfl⟩
     exact ofUnit f |>.bijective
   · refine fun h ↦ ⟨toUnit <| .ofBijective f ?_ ?_, rfl⟩ <;>
-    simp only [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]
+    simp [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]
 
 end ContinuousLinearEquiv
 
@@ -637,7 +637,7 @@ lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
   case eq_top => simpa [SetLike.ext'_iff] using! h.2.denseRange.closure_eq
   case anti =>
     refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitzWith⟩ <;>
-    simp only [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]
+    simp [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]
   case surj => rwa [← f.coe_coe, ← LinearMap.range_eq_top, ← closed_range_of_antilipschitz hf]
 
 end ContinuousLinearMap

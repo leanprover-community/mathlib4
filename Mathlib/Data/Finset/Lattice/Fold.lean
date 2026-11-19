@@ -373,11 +373,11 @@ theorem sup_inf_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
 
 @[to_dual]
 protected theorem disjoint_sup_right : Disjoint a (s.sup f) ↔ ∀ ⦃i⦄, i ∈ s → Disjoint a (f i) := by
-  simp only [disjoint_iff, sup_inf_distrib_left, Finset.sup_eq_bot_iff]
+  simp [disjoint_iff, sup_inf_distrib_left, Finset.sup_eq_bot_iff]
 
 @[to_dual]
 protected theorem disjoint_sup_left : Disjoint (s.sup f) a ↔ ∀ ⦃i⦄, i ∈ s → Disjoint (f i) a := by
-  simp only [disjoint_iff, sup_inf_distrib_right, Finset.sup_eq_bot_iff]
+  simp [disjoint_iff, sup_inf_distrib_right, Finset.sup_eq_bot_iff]
 
 end OrderBot
 
@@ -493,7 +493,7 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
 theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
   classical
   induction s using Finset.induction with
-  | empty => simp only [Finset.not_nonempty_empty] at hs
+  | empty => simp [Finset.not_nonempty_empty] at hs
   | insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
     cases s.eq_empty_or_nonempty with
@@ -610,7 +610,7 @@ theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
     s.sup' H f = t.sup' (h₁ ▸ H) g := by
   subst s
   refine eq_of_forall_ge_iff fun c => ?_
-  simp +contextual only [sup'_le_iff, h₂]
+  simp +contextual [sup'_le_iff, h₂]
 
 @[to_dual]
 theorem apply_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
@@ -685,7 +685,7 @@ lemma sup'_eq_one [One α] [IsBotOneClass α] (hs) : s.sup' hs f = 1 ↔ ∀ i �
 
 @[to_dual]
 theorem coe_sup_of_nonempty (h : s.Nonempty) (f : β → α) :
-    (↑(s.sup f) : WithBot α) = s.sup ((↑) ∘ f) := by simp only [← sup'_eq_sup h, coe_sup' h]
+    (↑(s.sup f) : WithBot α) = s.sup ((↑) ∘ f) := by simp [← sup'_eq_sup h, coe_sup' h]
 
 end Sup
 
@@ -811,7 +811,7 @@ theorem sup_singleton_apply (s : Finset β) (f : β → α) :
     (s.sup fun b => {f b}) = s.image f := by
   ext a
   rw [mem_sup, mem_image]
-  simp only [mem_singleton, eq_comm]
+  simp [mem_singleton, eq_comm]
 
 @[simp]
 theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=

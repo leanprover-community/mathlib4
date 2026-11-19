@@ -47,7 +47,7 @@ variable (f : E →L[𝕜] F) {x : E} {s : Set E} {L : Filter (E × E)}
 
 protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f L :=
   .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
-    simp only [f.map_sub, sub_self, Pi.zero_apply]
+    simp [f.map_sub, sub_self, Pi.zero_apply]
 
 @[fun_prop]
 protected theorem hasStrictFDerivAt : HasStrictFDerivAt f f x :=

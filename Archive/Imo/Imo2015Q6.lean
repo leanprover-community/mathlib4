@@ -71,7 +71,7 @@ section Pool
 
 lemma exists_add_eq_of_mem_pool {z : ℤ} (hz : z ∈ pool a t) : ∃ u < t, u + a u = t + z := by
   induction t generalizing z with
-  | zero => simp only [pool, notMem_empty] at hz
+  | zero => simp [pool, notMem_empty] at hz
   | succ t ih =>
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hz
     obtain ⟨y, my, ey⟩ := hz

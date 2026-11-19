@@ -79,15 +79,15 @@ theorem find_lt_iff (n : ℕ+) : PNat.find h < n ↔ ∃ m < n, p m :=
 
 @[simp]
 theorem find_le_iff (n : ℕ+) : PNat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [← lt_add_one_iff, find_lt_iff]
+  simp [← lt_add_one_iff, find_lt_iff]
 
 @[simp]
 theorem le_find_iff (n : ℕ+) : n ≤ PNat.find h ↔ ∀ m < n, ¬p m := by
-  simp only [← not_lt, find_lt_iff, not_exists, not_and]
+  simp [← not_lt, find_lt_iff, not_exists, not_and]
 
 @[simp]
 theorem lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
-  simp only [← add_one_le_iff, le_find_iff, add_le_add_iff_right]
+  simp [← add_one_le_iff, le_find_iff, add_le_add_iff_right]
 
 @[simp]
 theorem find_eq_one : PNat.find h = 1 ↔ p 1 := by simp [find_eq_iff]

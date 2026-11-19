@@ -101,7 +101,7 @@ lemma coequifibered_normalizationDiagramMap :
   have : IsScalarTower Γ(Y, U.1) Γ(X, f ⁻¹ᵁ U.1) Γ(X, f ⁻¹ᵁ Y.basicOpen r) := .of_algebraMap_eq' rfl
   have : IsScalarTower Γ(Y, U.1) Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r) :=
     .of_algebraMap_eq' <| by
-      simp only [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, Scheme.Hom.app_eq_appLE,
+      simp [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, Scheme.Hom.app_eq_appLE,
         Scheme.Hom.map_appLE, AffineZariskiSite.basicOpen]
   have : IsScalarTower (integralClosure Γ(Y, U.1) Γ(X, f ⁻¹ᵁ U.1))
     (integralClosure Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r))
@@ -376,7 +376,7 @@ def normalizationDesc (H : f = f₁ ≫ f₂) : f.normalization ⟶ T := by
   · algebraize [(f.app U.1).hom, (f₂.app U.1).hom,
       (f₁.appLE (f₂ ⁻¹ᵁ U.1) (f ⁻¹ᵁ U.1) (by simp [H])).hom]
     have : IsScalarTower Γ(Y, U.1) Γ(T, f₂ ⁻¹ᵁ U.1) Γ(X, f ⁻¹ᵁ U.1) := .of_algebraMap_eq' <| by
-      simp only [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp,
+      simp [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp,
         Hom.app_eq_appLE, Hom.appLE_comp_appLE, ← H]
     exact .algebraMap (R := Γ(Y, U.1)) (B := Γ(X, f ⁻¹ᵁ U.1)) (f₂.isIntegral_app U.1 U.2 x)
   · intros U V i
@@ -388,7 +388,7 @@ def normalizationDesc (H : f = f₁ ≫ f₂) : f.normalization ⟶ T := by
     ext i
     apply Subtype.ext
     dsimp [normalizationDiagram]
-    simp only [← CommRingCat.comp_apply, appLE_map, map_appLE]
+    simp [← CommRingCat.comp_apply, appLE_map, map_appLE]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -449,11 +449,11 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       simp only [← Scheme.Hom.comp_preimage, f₀, Category.assoc,
         hf₁, toNormalization_fromNormalization]; rfl
     have h₁' : f ⁻¹ᵁ U.1 = toNormalization f ⁻¹ᵁ f₂ ⁻¹ᵁ g ⁻¹ᵁ U.1 := by
-      simp only [← Scheme.Hom.comp_preimage, hf₂, toNormalization_fromNormalization]
+      simp [← Scheme.Hom.comp_preimage, hf₂, toNormalization_fromNormalization]
     have h₂ : fromNormalization f ⁻¹ᵁ U.1 = f₁ ⁻¹ᵁ g ⁻¹ᵁ U.1 := by
-      simp only [← Scheme.Hom.comp_preimage, hf₁]
+      simp [← Scheme.Hom.comp_preimage, hf₁]
     have h₂' : fromNormalization f ⁻¹ᵁ U.1 = f₂ ⁻¹ᵁ g ⁻¹ᵁ U.1 := by
-      simp only [← Scheme.Hom.comp_preimage, hf₂]
+      simp [← Scheme.Hom.comp_preimage, hf₂]
     have h₃ : f ⁻¹ᵁ U.1 = toNormalization f ⁻¹ᵁ fromNormalization f ⁻¹ᵁ U.1 := by
       simp [← Scheme.Hom.comp_preimage]
     trans Spec.map (f₀.appLE (g ⁻¹ᵁ U.val) (f ⁻¹ᵁ U.val) h₁) ≫ (U.prop.preimage g).fromSpec
@@ -639,7 +639,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     (RingEquiv.ofBijective ψ.toRingHom hψ).toCommRingCatIso.hom ≫
     ((pullback.snd f g).normalizationObjIso hV).inv ≫
     (pullback.snd f g).normalization.presheaf.map (eqToHom
-      (by simp only [W, ← Scheme.Hom.comp_preimage, Scheme.Hom.normalizationPullback_snd])).op
+      (by simp [W, ← Scheme.Hom.comp_preimage, Scheme.Hom.normalizationPullback_snd])).op
   convert show IsIso φ by dsimp only [φ]; infer_instance using 1
   ext1
   · dsimp [φ]

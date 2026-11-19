@@ -103,7 +103,7 @@ def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
-  (DFunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros; simp only [map_mul, *]
+  (DFunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros; simp [map_mul, *]
 
 end FreeMagma
 
@@ -262,15 +262,15 @@ instance : LawfulTraversable FreeMagma.{u} :=
         rw [traverse_mul, ih1, ih2, seq_pure, map_pure, map_pure]
     comp_traverse := fun f g x ↦
       FreeMagma.recOnPure x
-        (fun x ↦ by simp only [Function.comp_def, traverse_pure, functor_norm])
+        (fun x ↦ by simp [Function.comp_def, traverse_pure, functor_norm])
         (fun x y ih1 ih2 ↦ by
           rw [traverse_mul, ih1, ih2, traverse_mul]
           simp [Functor.Comp.map_mk, Functor.map_map, Function.comp_def, Comp.seq_mk, seq_map_assoc,
             map_seq, traverse_mul])
     naturality := fun η α β f x ↦
       FreeMagma.recOnPure x
-        (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp_apply])
-        (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
+        (fun x ↦ by simp [traverse_pure, functor_norm, Function.comp_apply])
+        (fun x y ih1 ih2 ↦ by simp [traverse_mul, functor_norm, ih1, ih2])
     traverse_eq_map_id := fun f x ↦
       FreeMagma.recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, map_mul', map_pure, seq_pure, map_pure] }
@@ -353,7 +353,7 @@ instance : Semigroup (AssocQuotient α) where
       · exact quot_mk_assoc_left _ _ _ _
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]
     · rintro a₁ a₂ b (⟨c, d, e⟩ | ⟨c, d, e, f⟩)
-      · simp only [quot_mk_assoc, quot_mk_assoc_left]
+      · simp [quot_mk_assoc, quot_mk_assoc_left]
       · rw [quot_mk_assoc, quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc_left,
           quot_mk_assoc_left, ← quot_mk_assoc c d, ← quot_mk_assoc c d, quot_mk_assoc_left]
   mul_assoc x y z :=
@@ -385,7 +385,7 @@ additive semigroup homomorphism `AddMagma.AssocQuotient α → β` given an addi
 def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β) where
   toFun f :=
   { toFun := fun x ↦
-      Quot.liftOn x f <| by rintro a b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only [map_mul, mul_assoc]
+      Quot.liftOn x f <| by rintro a b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp [map_mul, mul_assoc]
     map_mul' := fun x y ↦ Quot.induction_on₂ x y (map_mul f) }
   invFun f := f.comp of
 
@@ -510,7 +510,7 @@ protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (DFunLike.ext _ _) fun x ↦
-    FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
+    FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp [map_mul, *]
 
 section lift
 
@@ -558,7 +558,7 @@ theorem map_of (x) : map f (of x) = of (f x) := rfl
 
 @[to_additive (attr := simp)]
 theorem length_map (x) : (map f x).length = x.length :=
-  FreeSemigroup.recOnMul x (fun _ ↦ rfl) (fun x y hx hy ↦ by simp only [map_mul, length_mul, *])
+  FreeSemigroup.recOnMul x (fun _ ↦ rfl) (fun x y hx hy ↦ by simp [map_mul, length_mul, *])
 
 end Map
 
@@ -635,7 +635,7 @@ theorem traverse_mul (x y : FreeSemigroup α) :
     (fun hd tl ih x ↦ show
         (· * ·) <$> pure <$> F x <*> traverse F (mk hd tl * mk y L2) =
           (· * ·) <$> ((· * ·) <$> pure <$> F x <*> traverse F (mk hd tl)) <*> traverse F (mk y L2)
-        by rw [ih]; simp only [Function.comp_def, (mul_assoc _ _ _).symm, functor_norm])
+        by rw [ih]; simp [Function.comp_def, (mul_assoc _ _ _).symm, functor_norm])
     x
 
 @[to_additive (attr := simp)]
@@ -656,13 +656,13 @@ instance : LawfulTraversable FreeSemigroup.{u} :=
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, seq_pure, map_pure, map_pure]
     comp_traverse := fun f g x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp_def])
+      recOnPure x (fun x ↦ by simp [traverse_pure, functor_norm, Function.comp_def])
         fun x y ih1 ih2 ↦ by
           rw [traverse_mul, ih1, ih2, traverse_mul, Functor.Comp.map_mk]
-          simp only [Function.comp_def, functor_norm, traverse_mul]
+          simp [Function.comp_def, functor_norm, traverse_mul]
     naturality := fun η α β f x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp])
-          (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
+      recOnPure x (fun x ↦ by simp [traverse_pure, functor_norm, Function.comp])
+          (fun x y ih1 ih2 ↦ by simp [traverse_mul, functor_norm, ih1, ih2])
     traverse_eq_map_id := fun f x ↦
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, map_mul', map_pure, seq_pure, map_pure] }

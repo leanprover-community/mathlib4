@@ -593,7 +593,7 @@ theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
     F.map (f ⊗ₘ g) ≫ prodComparison F A' B' =
       prodComparison F A B ≫ (F.map f ⊗ₘ F.map g) := by
   apply hom_ext <;>
-  simp only [Category.assoc, prodComparison_fst, tensorHom_fst, prodComparison_fst_assoc,
+  simp [Category.assoc, prodComparison_fst, tensorHom_fst, prodComparison_fst_assoc,
     prodComparison_snd, tensorHom_snd, prodComparison_snd_assoc, ← F.map_comp]
 
 /-- Naturality of the `prodComparison` morphism in the right argument. -/
@@ -654,7 +654,7 @@ def prodComparisonNatTrans (A : C) :
   app B := prodComparison F A B
   naturality x y f := by
     apply hom_ext <;>
-    simp only [Functor.comp_obj, curriedTensor_obj_obj,
+    simp [Functor.comp_obj, curriedTensor_obj_obj,
       Functor.comp_map, curriedTensor_obj_map, Category.assoc, prodComparison_fst, whiskerLeft_fst,
       prodComparison_snd, prodComparison_snd_assoc, whiskerLeft_snd, ← F.map_comp]
 

@@ -190,7 +190,7 @@ lemma smul_extMk {R₀ : Type*} [Ring R₀] [Linear R₀ C]
     (hf : f ≫ R.cocomplex.d n m = 0) :
     r • R.extMk f m hm hf =
       R.extMk (r • f) m hm (by simp [hf]) := by
-  simp only [extMk, Linear.smul_comp, ← extEquivCohomologyClass_symm_smul,
+  simp [extMk, Linear.smul_comp, ← extEquivCohomologyClass_symm_smul,
     ← CohomologyClass.mk_smul, ← Cocycle.fromSingleMk_smul]
 
 lemma extMk_hom
@@ -217,7 +217,7 @@ lemma extMk_eq_zero_iff (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
   rw [Cocycle.fromSingleMk_mem_coboundaries_iff _ _ _ _ _ p (by lia),
     R.cochainComplex_d _ _ _ _ rfl rfl]
   exact ⟨fun ⟨g, hg⟩ ↦ ⟨g ≫ (R.cochainComplexXIso p p rfl).hom,
-      by simp only [← cancel_mono (R.cochainComplexXIso n n rfl).inv, Category.assoc, hg]⟩,
+      by simp [← cancel_mono (R.cochainComplexXIso n n rfl).inv, Category.assoc, hg]⟩,
     fun ⟨g, hg⟩ ↦ ⟨g ≫ (R.cochainComplexXIso p p rfl).inv, by simp [← hg]⟩⟩
 
 lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :

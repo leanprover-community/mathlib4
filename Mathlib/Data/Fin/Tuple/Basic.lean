@@ -292,7 +292,7 @@ theorem cons_le [∀ i, Preorder (α i)] {x : α 0} {q : ∀ i, α i} {p : ∀ i
 
 theorem cons_le_cons [∀ i, Preorder (α i)] {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
     cons x₀ x ≤ cons y₀ y ↔ x₀ ≤ y₀ ∧ x ≤ y :=
-  forall_fin_succ.trans <| and_congr_right' <| by simp only [cons_succ, Pi.le_def]
+  forall_fin_succ.trans <| and_congr_right' <| by simp [cons_succ, Pi.le_def]
 
 end Preorder
 
@@ -1261,7 +1261,7 @@ theorem get_find?_eq_find_of_eq_true {p : Fin n → Bool} (h : p i) :
 
 theorem find?_decide_get_eq_find (h : ∃ i, p i) :
     (find? (p ·)).get (isSome_find?_of_eq_true (i := h.choose)
-    (by simp only [h.choose_spec, decide_true])) = Fin.find p h := by
+    (by simp [h.choose_spec, decide_true])) = Fin.find p h := by
   simp_rw [find?_decide_eq_dite, Option.get_dite]
 
 theorem find_mem_find?_decide (h : ∃ i, p i) :
@@ -1318,9 +1318,9 @@ lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β 
     f ∘ contractNth j opα g = contractNth j opβ (f ∘ g) := by
   ext x
   rcases lt_trichotomy (x : ℕ) j with (h | h | h)
-  · simp only [Function.comp_apply, contractNth_apply_of_lt, h]
-  · simp only [Function.comp_apply, contractNth_apply_of_eq, h, hf]
-  · simp only [Function.comp_apply, contractNth_apply_of_gt, h]
+  · simp [Function.comp_apply, contractNth_apply_of_lt, h]
+  · simp [Function.comp_apply, contractNth_apply_of_eq, h, hf]
+  · simp [Function.comp_apply, contractNth_apply_of_gt, h]
 
 end ContractNth
 

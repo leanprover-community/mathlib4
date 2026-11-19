@@ -84,7 +84,7 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
-      simp +unfoldPartialApp only [← image_vadd, ← image_smul, ← range_comp,
+      simp +unfoldPartialApp [← image_vadd, ← image_smul, ← range_comp,
         vadd_eq_add, circleMap, comp_def, real_smul]
     _ = sphere c |R| := by
       rw [range_exp_mul_I, smul_sphere R 0 zero_le_one]
@@ -345,7 +345,7 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
   apply (intervalIntegrable_congr_codiscreteWithin _).1 hf₁
   rw [eventuallyEq_iff_exists_mem]
   exact ⟨(circleMap c R)⁻¹' {z | f₁ z = f₂ z},
-    codiscreteWithin_mono (by simp only [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf),
+    codiscreteWithin_mono (by simp [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf),
     by tauto⟩
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
@@ -471,7 +471,7 @@ theorem integral_radius_zero (f : ℂ → E) (c : ℂ) : (∮ z in C(c, 0), f z)
 
 theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h : EqOn f g (sphere c R)) :
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), g z :=
-  intervalIntegral.integral_congr fun θ _ => by simp only [h (circleMap_mem_sphere _ hR _)]
+  intervalIntegral.integral_congr fun θ _ => by simp [h (circleMap_mem_sphere _ hR _)]
 
 /-- Circle integrals are invariant when functions change along discrete sets. -/
 theorem circleIntegral_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
@@ -485,11 +485,11 @@ theorem circleIntegral_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : �
 
 theorem integral_sub_inv_smul_sub_smul (f : ℂ → E) (c w : ℂ) (R : ℝ) :
     (∮ z in C(c, R), (z - w)⁻¹ • (z - w) • f z) = ∮ z in C(c, R), f z := by
-  rcases eq_or_ne R 0 with (rfl | hR); · simp only [integral_radius_zero]
+  rcases eq_or_ne R 0 with (rfl | hR); · simp [integral_radius_zero]
   have : (circleMap c R ⁻¹' {w}).Countable := (countable_singleton _).preimage_circleMap c hR
   refine intervalIntegral.integral_congr_ae ((this.ae_notMem _).mono fun θ hθ _' => ?_)
   change circleMap c R θ ≠ w at hθ
-  simp only [inv_smul_smul₀ (sub_ne_zero.2 hθ)]
+  simp [inv_smul_smul₀ (sub_ne_zero.2 hθ)]
 
 theorem integral_undef {f : ℂ → E} {c : ℂ} {R : ℝ} (hf : ¬CircleIntegrable f c R) :
     (∮ z in C(c, R), f z) = 0 :=
@@ -498,17 +498,17 @@ theorem integral_undef {f : ℂ → E} {c : ℂ} {R : ℝ} (hf : ¬CircleIntegra
 theorem integral_add {f g : ℂ → E} {c : ℂ} {R : ℝ} (hf : CircleIntegrable f c R)
     (hg : CircleIntegrable g c R) :
     (∮ z in C(c, R), f z + g z) = (∮ z in C(c, R), f z) + (∮ z in C(c, R), g z) := by
-  simp only [circleIntegral, smul_add, intervalIntegral.integral_add hf.out hg.out]
+  simp [circleIntegral, smul_add, intervalIntegral.integral_add hf.out hg.out]
 
 theorem integral_sub {f g : ℂ → E} {c : ℂ} {R : ℝ} (hf : CircleIntegrable f c R)
     (hg : CircleIntegrable g c R) :
     (∮ z in C(c, R), f z - g z) = (∮ z in C(c, R), f z) - ∮ z in C(c, R), g z := by
-  simp only [circleIntegral, smul_sub, intervalIntegral.integral_sub hf.out hg.out]
+  simp [circleIntegral, smul_sub, intervalIntegral.integral_sub hf.out hg.out]
 
 theorem integral_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E} {c : ℂ} {R : ℝ}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     (∮ z in C(c, R), ∑ i ∈ s, f i z) = ∑ i ∈ s, ∮ z in C(c, R), f i z := by
-  simp only [circleIntegral, Finset.smul_sum,
+  simp [circleIntegral, Finset.smul_sum,
     intervalIntegral.integral_finsetSum fun i hi ↦ (h i hi).out]
 
 theorem norm_integral_le_of_norm_le_const' {f : ℂ → E} {c : ℂ} {R C : ℝ}
@@ -563,12 +563,12 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
 @[simp]
 theorem integral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂ → E) (c : ℂ) (R : ℝ) : (∮ z in C(c, R), a • f z) = a • ∮ z in C(c, R), f z := by
-  simp only [circleIntegral, ← smul_comm a (_ : ℂ) (_ : E), intervalIntegral.integral_smul]
+  simp [circleIntegral, ← smul_comm a (_ : ℂ) (_ : E), intervalIntegral.integral_smul]
 
 @[simp]
 theorem integral_smul_const [CompleteSpace E] (f : ℂ → ℂ) (a : E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z • a) = (∮ z in C(c, R), f z) • a := by
-  simp only [circleIntegral, intervalIntegral.integral_smul_const, ← smul_assoc]
+  simp [circleIntegral, intervalIntegral.integral_smul_const, ← smul_assoc]
 
 @[simp]
 theorem integral_const_mul (a : ℂ) (f : ℂ → ℂ) (c : ℂ) (R : ℝ) :

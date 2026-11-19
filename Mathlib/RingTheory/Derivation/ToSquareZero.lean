@@ -92,7 +92,7 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : D
         Submodule.coe_smul_of_tower, Algebra.smul_def, this]
       ring
     commutes' := fun r => by
-      simp only [Derivation.map_algebraMap, zero_add, Submodule.coe_zero, ←
+      simp [Derivation.map_algebraMap, zero_add, Submodule.coe_zero, ←
         IsScalarTower.algebraMap_apply R A B r]
     map_zero' := ((I.restrictScalars R).subtype.comp f.toLinearMap +
       (IsScalarTower.toAlgHom R A B).toLinearMap).map_zero }
@@ -106,7 +106,7 @@ theorem liftOfDerivationToSquareZero_mk_apply [IsScalarTower R A B] (d : Derivat
 @[simp]
 theorem liftOfDerivationToSquareZero_mk_apply' (d : Derivation R A I) (x : A) :
     (Ideal.Quotient.mk I) (d x) + (algebraMap A (B ⧸ I)) x = algebraMap A (B ⧸ I) x := by
-  simp only [Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop, zero_add]
+  simp [Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop, zero_add]
 
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : Ideal B`,
 there is a 1-1 correspondence between `R`-derivations from `A` to `I` and

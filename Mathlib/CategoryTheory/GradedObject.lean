@@ -166,8 +166,8 @@ pulling back along two propositionally equal functions.
 -/
 @[simps]
 def comapEq {β γ : Type w} {f g : β → γ} (h : f = g) : comap C f ≅ comap C g where
-  hom := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
-  inv := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
+  hom := { app := fun X b => eqToHom (by dsimp; simp [h]) }
+  inv := { app := fun X b => eqToHom (by dsimp; simp [h]) }
 
 theorem comapEq_symm {β γ : Type w} {f g : β → γ} (h : f = g) :
     comapEq C h.symm = (comapEq C h).symm := by cat_disch
@@ -385,7 +385,7 @@ noncomputable def mapMap : X.mapObj p ⟶ Y.mapObj p := fun j =>
 @[reassoc (attr := simp)]
 lemma ι_mapMap (i : I) (j : J) (hij : p i = j) :
     X.ιMapObj p i j hij ≫ mapMap φ p j = φ i ≫ Y.ιMapObj p i j hij := by
-  simp only [mapMap, ι_descMapObj]
+  simp [mapMap, ι_descMapObj]
 
 lemma congr_mapMap (φ₁ φ₂ : X ⟶ Y) (h : φ₁ = φ₂) : mapMap φ₁ p = mapMap φ₂ p := by
   subst h
@@ -453,7 +453,7 @@ def isColimitCofanMapObjComp :
     (fun s => Cofan.IsColimit.desc hc'
       (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
         (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
-          simp only [Set.mem_preimage, Set.mem_singleton_iff, ← hpqr, hi, hj]⟩)))
+          simp [Set.mem_preimage, Set.mem_singleton_iff, ← hpqr, hi, hj]⟩)))
     (fun s ⟨i, (hi : r i = k)⟩ => by simp)
     (fun s m hm => by
       apply Cofan.IsColimit.hom_ext hc'
@@ -489,8 +489,8 @@ variable {X Y} in
 lemma ιMapObjOrZero_mapMap :
     X.ιMapObjOrZero p i j ≫ mapMap φ p j = φ i ≫ Y.ιMapObjOrZero p i j := by
   by_cases h : p i = j
-  · simp only [ιMapObjOrZero_eq _ _ _ _ h, ι_mapMap]
-  · simp only [ιMapObjOrZero_eq_zero _ _ _ _ h, zero_comp, comp_zero]
+  · simp [ιMapObjOrZero_eq _ _ _ _ h, ι_mapMap]
+  · simp [ιMapObjOrZero_eq_zero _ _ _ _ h, zero_comp, comp_zero]
 
 end GradedObject
 

@@ -146,11 +146,11 @@ theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = ofFractionRing (0 : FractionRing K
 
 theorem mk_coe_def (p : K[X]) (q : K[X]⁰) :
     RatFunc.mk p q = ofFractionRing (IsLocalization.mk' _ p q) := by
-  simp only [mk_eq_div', ← Localization.mk_eq_mk', FractionRing.mk_eq_div]
+  simp [mk_eq_div', ← Localization.mk_eq_mk', FractionRing.mk_eq_div]
 
 theorem mk_def_of_mem (p : K[X]) {q} (hq : q ∈ K[X]⁰) :
     RatFunc.mk p q = ofFractionRing (IsLocalization.mk' (FractionRing K[X]) p ⟨q, hq⟩) := by
-  simp only [← mk_coe_def]
+  simp [← mk_coe_def]
 
 theorem mk_def_of_ne (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     RatFunc.mk p q =
@@ -180,9 +180,9 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ 
     (RatFunc.mk p q).liftOn f @H = f p q := by
   by_cases hq : q = 0
   · subst hq
-    simp only [mk_zero, f0, ← Localization.mk_zero 1,
+    simp [mk_zero, f0, ← Localization.mk_zero 1,
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
-  · simp only [mk_eq_localization_mk _ hq, liftOn_ofFractionRing_mk]
+  · simp [mk_eq_localization_mk _ hq, liftOn_ofFractionRing_mk]
 
 /-- Non-dependent recursion principle for `K⟮X⟯`: if `f p q : P` for all `p q`,
 such that `f (a * p) (a * q) = f p q`, then we can find a value of `P`

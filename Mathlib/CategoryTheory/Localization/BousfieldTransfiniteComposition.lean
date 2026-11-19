@@ -63,7 +63,7 @@ instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT 
             dsimp
             simpa only [Category.comp_id] using! σ.2 f.op }
       exact ⟨hf.isColimit.desc c, by
-        simp only [← hf.fac, Category.assoc, hf.isColimit.fac c ⊥, c, σ,
+        simp [← hf.fac, Category.assoc, hf.isColimit.fac c ⊥, c, σ,
           d.sectionsMk_val_op_bot, Iso.inv_hom_id_assoc]⟩
 
 instance : MorphismProperty.IsStableUnderTransfiniteComposition.{w} P.isLocal where

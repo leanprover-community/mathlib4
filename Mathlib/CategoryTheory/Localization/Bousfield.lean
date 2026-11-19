@@ -72,10 +72,10 @@ lemma isoClosure_isLocal : P.isoClosure.isLocal = P.isLocal := by
     · intro g₁ g₂ eq
       rw [← cancel_mono e.hom]
       apply (hf _ hZ').1
-      simp only [reassoc_of% eq]
+      simp [reassoc_of% eq]
     · intro g
       obtain ⟨a, h⟩ := (hf _ hZ').2 (g ≫ e.hom)
-      exact ⟨a ≫ e.inv, by simp only [reassoc_of% h, e.hom_inv_id, comp_id]⟩
+      exact ⟨a ≫ e.inv, by simp [reassoc_of% h, e.hom_inv_id, comp_id]⟩
 
 instance : P.isLocal.IsMultiplicative where
   id_mem X Z _ := by simpa [id_comp] using! Function.bijective_id
@@ -102,7 +102,7 @@ lemma isLocal_iff_isIso {X Y : C} (f : X ⟶ Y) (hX : P X) (hY : P Y) :
   constructor
   · intro hf
     obtain ⟨g, hg⟩ := (hf _ hX).2 (𝟙 X)
-    exact ⟨g, hg, (hf _ hY).1 (by simp only [reassoc_of% hg, comp_id])⟩
+    exact ⟨g, hg, (hf _ hY).1 (by simp [reassoc_of% hg, comp_id])⟩
   · apply isLocal_of_isIso
 
 instance : P.isLocal.RespectsIso where

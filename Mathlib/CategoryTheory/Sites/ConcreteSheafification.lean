@@ -95,7 +95,7 @@ theorem pullback_refine {Y X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (h : S �
 /-- Make a term of `Meq P S`. -/
 def mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj (op X))) : Meq P S :=
   ⟨fun I => P.map I.f.op x, fun I => by
-    simp only [← ConcreteCategory.comp_apply, ← P.map_comp, ← op_comp, I.r.w]⟩
+    simp [← ConcreteCategory.comp_apply, ← P.map_comp, ← op_comp, I.r.w]⟩
 
 theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj (op X))) (I : S.Arrow) :
     mk S x I = P.map I.f.op x :=

@@ -386,11 +386,11 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     · -- This unfolds `X.sheaf`
       change (X.presheaf.map _) _ = (X.presheaf.map _) _
       rw [add_assoc, add_comm n₁]
-      simp only [pow_add, map_pow, map_mul, hy₁, ← CommRingCat.comp_apply, ← mul_assoc,
+      simp [pow_add, map_pow, map_mul, hy₁, ← CommRingCat.comp_apply, ← mul_assoc,
         ← Functor.map_comp, ← op_comp, homOfLE_comp]
     · -- This unfolds `X.sheaf`
       change (X.presheaf.map _) _ = (X.presheaf.map _) _
-      simp only [pow_add, map_pow, map_mul, hy₂, ← CommRingCat.comp_apply, ← mul_assoc,
+      simp [pow_add, map_pow, map_mul, hy₂, ← CommRingCat.comp_apply, ← mul_assoc,
         ← Functor.map_comp, ← op_comp, homOfLE_comp]
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.

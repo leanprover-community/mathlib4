@@ -383,7 +383,7 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
       -- But then `kernel.ι g` can be expressed using all of the maps of the pullback square, and we
       -- are done.
       rw [(Iso.eq_inv_comp (asIso j)).2 pullback.condition.symm]
-      simp only [Category.assoc, kernel.condition, HasZeroMorphisms.comp_zero])
+      simp [Category.assoc, kernel.condition, HasZeroMorphisms.comp_zero])
 
 end
 

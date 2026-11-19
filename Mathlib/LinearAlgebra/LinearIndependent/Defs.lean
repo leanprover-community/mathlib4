@@ -259,7 +259,7 @@ theorem not_linearIndependent_iffₛ :
     ¬LinearIndependent R v ↔ ∃ s : Finset ι,
       ∃ f g : ι → R, ∑ i ∈ s, f i • v i = ∑ i ∈ s, g i • v i ∧ ∃ i ∈ s, f i ≠ g i := by
   rw [linearIndependent_iff'ₛ]
-  simp only [exists_prop, not_forall]
+  simp [exists_prop, not_forall]
 
 theorem Fintype.linearIndependent_iffₛ [Fintype ι] :
     LinearIndependent R v ↔ ∀ f g : ι → R, ∑ i, f i • v i = ∑ i, g i • v i → ∀ i, f i = g i := by
@@ -409,7 +409,7 @@ theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
     h _ (by simp +contextual) _ (by simp +contextual) ?_
   simp_rw [Finsupp.embDomain_eq_mapDomain]
   rwa [Finsupp.sum_mapDomain_index, Finsupp.sum_mapDomain_index] <;>
-    intros <;> simp only [zero_smul, add_smul]
+    intros <;> simp [zero_smul, add_smul]
 
 /-- An indexed set of vectors is linearly dependent iff there are two distinct
 `Finsupp.LinearCombination`s of the vectors with the same value. -/
@@ -503,7 +503,7 @@ theorem LinearIndependent.span_repr_eq [Nontrivial R] (x) :
       hv.repr x := by
     apply (LinearIndependent.linearCombinationEquiv hv).injective
     ext
-    simp only [LinearIndependent.linearCombinationEquiv_apply_coe, Equiv.self_comp_ofInjective_symm,
+    simp [LinearIndependent.linearCombinationEquiv_apply_coe, Equiv.self_comp_ofInjective_symm,
       LinearIndependent.linearCombination_repr, Finsupp.linearCombination_equivMapDomain,
       Span.finsupp_linearCombination_repr]
   ext ⟨_, ⟨i, rfl⟩⟩
@@ -731,7 +731,7 @@ theorem linearIndependent_iff' :
   refine ⟨fun h s f ↦ ?_, fun h s f g ↦ ?_⟩
   · convert h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
-    convert h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
+    convert h s (f - g) using 3; simp [Pi.sub_apply, sub_smul, sub_eq_zero]
 
 /-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
 of a function with support contained in the `Finset`. -/
@@ -763,7 +763,7 @@ theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔
       ∃ s : Finset ι, ∃ g : ι → R, ∑ i ∈ s, g i • v i = 0 ∧ ∃ i ∈ s, g i ≠ 0 := by
   rw [linearIndependent_iff']
-  simp only [exists_prop, not_forall]
+  simp [exists_prop, not_forall]
 
 theorem Fintype.linearIndependent_iff [Fintype ι] :
     LinearIndependent R v ↔ ∀ g : ι → R, ∑ i, g i • v i = 0 → ∀ i, g i = 0 := by

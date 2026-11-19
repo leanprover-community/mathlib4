@@ -200,12 +200,12 @@ theorem map₂Right_cons_cons :
   rfl
 
 theorem map₂Right_eq_map₂Right' : map₂Right f as bs = (map₂Right' f as bs).fst := by
-  simp only [map₂Right, map₂Right', map₂Left_eq_map₂Left']
+  simp [map₂Right, map₂Right', map₂Left_eq_map₂Left']
 
 theorem map₂Right_eq_zipWith (h : length bs ≤ length as) :
     map₂Right f as bs = zipWith (fun a b => f (some a) b) as bs := by
   have : (fun a b => flip f a (some b)) = flip fun a b => f (some a) b := rfl
-  simp only [map₂Right, map₂Left_eq_zipWith, zipWith_flip, *]
+  simp [map₂Right, map₂Left_eq_zipWith, zipWith_flip, *]
 
 end Map₂Right
 

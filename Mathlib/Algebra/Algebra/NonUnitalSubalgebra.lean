@@ -780,7 +780,7 @@ theorem coe_sInf (S : Set (NonUnitalSubalgebra R A)) : (↑(sInf S) : Set A) = �
 
 @[simp]
 theorem mem_sInf {S : Set (NonUnitalSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
-  simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
+  simp [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
 @[simp]
 theorem sInf_toSubmodule (S : Set (NonUnitalSubalgebra R A)) :
@@ -798,7 +798,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} :
 
 @[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} {x : A} :
-    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι]
     [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B)
@@ -822,7 +822,7 @@ theorem mem_bot {x : A} : x ∈ (⊥ : NonUnitalSubalgebra R A) ↔ x = 0 :=
 
 theorem toSubmodule_bot : (⊥ : NonUnitalSubalgebra R A).toSubmodule = ⊥ := by
   ext
-  simp only [mem_bot, NonUnitalSubalgebra.mem_toSubmodule, Submodule.mem_bot]
+  simp [mem_bot, NonUnitalSubalgebra.mem_toSubmodule, Submodule.mem_bot]
 
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : NonUnitalSubalgebra R A) : Set A) = {0} := by
@@ -877,7 +877,7 @@ theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) =
     (NonUnitalAlgHom.coe_range <| NonUnitalSubalgebraClass.subtype S).trans Subtype.range_val
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
-  ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+  ⟨fun B C => ext fun x => by simp [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 
 variable [NonUnitalNonAssocSemiring B] [Module R B]
 
@@ -1047,7 +1047,7 @@ theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
 theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by
   ext
-  simp only [NonUnitalAlgHom.comp_apply, iSupLift_inclusion]
+  simp [NonUnitalAlgHom.comp_apply, iSupLift_inclusion]
 
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :

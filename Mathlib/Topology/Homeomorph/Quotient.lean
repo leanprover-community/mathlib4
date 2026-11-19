@@ -35,7 +35,7 @@ protected def congrRight {r r' : X → X → Prop} (eq : ∀ x₁ x₂, r x₁ x
 by a relation `rX` and the quotient space of `Y` by the image of this relation under `e`. -/
 protected def congrLeft {r : X → X → Prop} (e : X ≃ₜ Y) :
     Quot r ≃ₜ Quot fun y₁ y₂ ↦ r (e.symm y₁) (e.symm y₂) :=
-  Quot.congr e fun _ _ ↦ by simp only [e.symm_apply_apply]
+  Quot.congr e fun _ _ ↦ by simp [e.symm_apply_apply]
 
 end Quot
 

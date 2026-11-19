@@ -282,7 +282,7 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : R⟦Γ⟧}
   · simp_all only [Pi.add_apply, HahnSeries.coeff_add']
     rw [coeff_smul_left hwf Set.subset_union_right,
       coeff_smul_left hwf Set.subset_union_left]
-    simp only [sum_add_distrib]
+    simp [sum_add_distrib]
   · exact support_add_subset _ _
 
 theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : HahnModule Γ' R V}
@@ -555,7 +555,7 @@ theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
 
 theorem leadingCoeff_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
-  simp only [leadingCoeff_eq, order_mul_of_ne_zero h, coeff_mul_order_add_order]
+  simp [leadingCoeff_eq, order_mul_of_ne_zero h, coeff_mul_order_add_order]
 
 @[simp]
 theorem leadingCoeff_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
@@ -776,7 +776,7 @@ variable [Semiring R]
 @[simp]
 theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
   induction n with
-  | zero => ext; simp only [pow_zero, coeff_one, zero_smul, coeff_single]
+  | zero => ext; simp [pow_zero, coeff_one, zero_smul, coeff_single]
   | succ n IH => rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
 
 end Semiring

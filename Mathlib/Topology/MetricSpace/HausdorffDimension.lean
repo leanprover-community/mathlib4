@@ -211,7 +211,7 @@ theorem dimH_union (s t : Set X) : dimH (s ∪ t) = max (dimH s) (dimH t) := by
   rw [union_eq_iUnion, dimH_iUnion, iSup_bool_eq, cond, cond]
 
 theorem dimH_countable {s : Set X} (hs : s.Countable) : dimH s = 0 :=
-  biUnion_of_singleton s ▸ by simp only [dimH_bUnion hs, dimH_singleton, ENNReal.iSup_zero]
+  biUnion_of_singleton s ▸ by simp [dimH_bUnion hs, dimH_singleton, ENNReal.iSup_zero]
 
 alias Set.Countable.dimH_zero := dimH_countable
 
@@ -455,7 +455,7 @@ theorem dimH_ball_pi_fin {n : ℕ} (x : Fin n → ℝ) {r : ℝ} (hr : 0 < r) :
     dimH (Metric.ball x r) = n := by rw [dimH_ball_pi x hr, Fintype.card_fin]
 
 theorem dimH_univ_pi (ι : Type*) [Fintype ι] : dimH (univ : Set (ι → ℝ)) = Fintype.card ι := by
-  simp only [← Metric.iUnion_ball_nat_succ (0 : ι → ℝ), dimH_iUnion,
+  simp [← Metric.iUnion_ball_nat_succ (0 : ι → ℝ), dimH_iUnion,
     dimH_ball_pi _ (Nat.cast_add_one_pos _), iSup_const]
 
 theorem dimH_univ_pi_fin (n : ℕ) : dimH (univ : Set (Fin n → ℝ)) = n := by

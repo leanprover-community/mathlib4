@@ -1055,7 +1055,7 @@ def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R]
   { LinearEquiv.prodAssoc R E E₂ E₃ with
     norm_map' := by
       rintro ⟨⟨e, f⟩, g⟩
-      simp only [LinearEquiv.prodAssoc_apply, AddEquiv.toEquiv_eq_coe,
+      simp [LinearEquiv.prodAssoc_apply, AddEquiv.toEquiv_eq_coe,
         Equiv.toFun_as_coe, EquivLike.coe_coe, AddEquiv.coe_prodAssoc,
         Equiv.prodAssoc_apply, Prod.norm_def, max_assoc] }
 

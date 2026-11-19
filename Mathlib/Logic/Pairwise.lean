@@ -74,7 +74,7 @@ theorem pairwise_fin_succ_iff {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop}
 
 theorem pairwise_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} [Std.Symm R] :
     Pairwise R ↔ (∀ j, R 0 (Fin.succ j)) ∧ Pairwise fun i j => R (Fin.succ i) (Fin.succ j) := by
-  simp only [pairwise_fin_succ_iff, comm (b := 0) (r := R), and_self_left]
+  simp [pairwise_fin_succ_iff, comm (b := 0) (r := R), and_self_left]
 
 namespace Set
 

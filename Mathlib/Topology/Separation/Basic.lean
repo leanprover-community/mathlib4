@@ -81,7 +81,7 @@ theorem t0Space_iff_inseparable (X : Type u) [TopologicalSpace X] :
 
 theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun x y : X => ¬Inseparable x y := by
-  simp only [t0Space_iff_inseparable, Ne, not_imp_not, Pairwise]
+  simp [t0Space_iff_inseparable, Ne, not_imp_not, Pairwise]
 
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
@@ -134,7 +134,7 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
 
 theorem t0Space_iff_exists_isOpen_xor_mem (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) := by
-  simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
+  simp [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_isOpen, Pairwise]
 
 theorem exists_isOpen_xor_mem [T0Space X] {x y : X} (h : x ≠ y) :
@@ -228,7 +228,7 @@ instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
 
 theorem t0Space_iff_or_notMem_closure (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
-  simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
+  simp [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 
 instance Prod.instT0Space [TopologicalSpace Y] [T0Space X] [T0Space Y] : T0Space (X × Y) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
@@ -438,18 +438,18 @@ theorem t1Space_tfae (X : Type u) [TopologicalSpace X] :
       T0Space X ∧ R0Space X] := by
   tfae_have 1 ↔ 2 := ⟨fun h => h.t1, fun h => ⟨h⟩⟩
   tfae_have 2 ↔ 3 := by
-    simp only [isOpen_compl_iff]
+    simp [isOpen_compl_iff]
   tfae_have 5 ↔ 3 := by
     refine forall_comm.trans ?_
-    simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
+    simp [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
   tfae_have 5 ↔ 6 := by
-    simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
+    simp [← subset_compl_singleton_iff, exists_mem_subset_iff]
   tfae_have 5 ↔ 7 := by
-    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, and_assoc,
+    simp [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, and_assoc,
       and_left_comm]
   tfae_have 5 ↔ 8 := by
-    simp only [← principal_singleton, disjoint_principal_right]
-  tfae_have 8 ↔ 9 := forall_comm.trans (by simp only [disjoint_comm, ne_comm])
+    simp [← principal_singleton, disjoint_principal_right]
+  tfae_have 8 ↔ 9 := forall_comm.trans (by simp [disjoint_comm, ne_comm])
   tfae_have 1 → 4 := by
     simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
@@ -461,7 +461,7 @@ theorem t1Space_tfae (X : Type u) [TopologicalSpace X] :
     rw [← CofiniteTopology.of.preimage_image {x}]
     exact (Set.Finite.isClosed <| by simp) |>.preimage h
   tfae_have 2 ↔ 10 := by
-    simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
+    simp [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
       mem_singleton_iff, eq_comm]
   tfae_have 10 ↔ 11 :=
     ⟨fun h => ⟨⟨fun _ _ h₂ => h h₂.specializes⟩, ⟨⟨fun _ _ h₂ => specializes_of_eq (h h₂).symm⟩⟩⟩,
@@ -535,7 +535,7 @@ theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [Topological
 theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     {f : X → Y} {x x' : X} {y : Y} (hne : x' ≠ x) :
     ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' := by
-  simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
+  simp [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
 
 theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
     {s : Set X} {x : X} {y : Y} :
@@ -821,7 +821,7 @@ theorem tendsto_const_nhds_iff [T1Space X] {l : Filter Y} [NeBot l] {c d : X} :
 /-- A point with a finite neighborhood has to be isolated. -/
 theorem isOpen_singleton_of_finite_mem_nhds [T1Space X] (x : X)
     {s : Set X} (hs : s ∈ 𝓝 x) (hsf : s.Finite) : IsOpen ({x} : Set X) := by
-  have A : {x} ⊆ s := by simp only [singleton_subset_iff, mem_of_mem_nhds hs]
+  have A : {x} ⊆ s := by simp [singleton_subset_iff, mem_of_mem_nhds hs]
   have B : IsClosed (s \ {x}) := (hsf.subset sdiff_subset).isClosed
   have C : (s \ {x})ᶜ ∈ 𝓝 x := B.isOpen_compl.mem_nhds fun h => h.2 rfl
   have D : {x} ∈ 𝓝 x := by simpa only [← sdiff_eq, sdiff_sdiff_cancel_left A] using inter_mem hs C
@@ -990,14 +990,14 @@ theorem tendsto_nhds_unique_inseparable {f : Y → X} {l : Filter Y} {a b : X} [
   .of_nhds_neBot <| neBot_of_le <| le_inf ha hb
 
 theorem isClosed_setOfPred_specializes : IsClosed { p : X × X | p.1 ⤳ p.2 } := by
-  simp only [← isOpen_compl_iff, compl_ofPred, ← disjoint_nhds_nhds_iff_not_specializes,
+  simp [← isOpen_compl_iff, compl_ofPred, ← disjoint_nhds_nhds_iff_not_specializes,
     isOpen_setOfPred_disjoint_nhds_nhds]
 
 @[deprecated (since := "2026-07-09")]
 alias isClosed_setOf_specializes := isClosed_setOfPred_specializes
 
 theorem isClosed_setOfPred_inseparable : IsClosed { p : X × X | Inseparable p.1 p.2 } := by
-  simp only [← specializes_iff_inseparable, isClosed_setOfPred_specializes]
+  simp [← specializes_iff_inseparable, isClosed_setOfPred_specializes]
 
 @[deprecated (since := "2026-07-09")]
 alias isClosed_setOf_inseparable := isClosed_setOfPred_inseparable
@@ -1021,7 +1021,7 @@ theorem IsCompact.closure_eq_biUnion_inseparable {K : Set X} (hK : IsCompact K) 
 /-- In an R₁ space, the closure of a compact set is the union of the closures of its points. -/
 theorem IsCompact.closure_eq_biUnion_closure_singleton {K : Set X} (hK : IsCompact K) :
     closure K = ⋃ x ∈ K, closure {x} := by
-  simp only [hK.closure_eq_biUnion_inseparable, ← specializes_iff_inseparable,
+  simp [hK.closure_eq_biUnion_inseparable, ← specializes_iff_inseparable,
     specializes_iff_mem_closure, ofPred_mem_eq]
 
 /-- In an R₁ space, if a compact set `K` is contained in an open set `U`,
@@ -1090,13 +1090,13 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
     refine ⟨update K x K₁, ?_, ?_, ?_⟩
     · intro i
       rcases eq_or_ne i x with rfl | hi
-      · simp only [update_self, h1K₁]
-      · simp only [update_of_ne hi, h1K]
+      · simp [update_self, h1K₁]
+      · simp [update_of_ne hi, h1K]
     · intro i
       rcases eq_or_ne i x with rfl | hi
-      · simp only [update_self, h2K₁]
-      · simp only [update_of_ne hi, h2K]
-    · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
+      · simp [update_self, h2K₁]
+      · simp [update_of_ne hi, h2K]
+    · simp [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 
 theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
     (hspec : ∀ x y, f x ⤳ f y → x ⤳ y) : R1Space Y where

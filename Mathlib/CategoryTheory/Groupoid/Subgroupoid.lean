@@ -117,7 +117,7 @@ theorem mem_objs_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : d ∈
 theorem id_mem_of_nonempty_isotropy (c : C) : c ∈ objs S → 𝟙 c ∈ S.arrows c c := by
   rintro ⟨γ, hγ⟩
   convert S.mul hγ (S.inv hγ)
-  simp only [inv_eq_inv, IsIso.hom_inv_id]
+  simp [inv_eq_inv, IsIso.hom_inv_id]
 
 theorem id_mem_of_src {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 c ∈ S.arrows c c :=
   id_mem_of_nonempty_isotropy S c (mem_objs_of_src S h)
@@ -141,7 +141,7 @@ instance coe : Groupoid S.objs where
 @[simp]
 theorem coe_inv_coe' {c d : S.objs} (p : c ⟶ d) :
     (CategoryTheory.inv p).val = CategoryTheory.inv p.val := by
-  simp only [← inv_eq_inv, coe_inv_coe]
+  simp [← inv_eq_inv, coe_inv_coe]
 
 /-- The embedding of the coerced subgroupoid to its parent -/
 def hom : S.objs ⥤ C where
@@ -190,7 +190,7 @@ theorem mem_top {c d : C} (f : c ⟶ d) : f ∈ (⊤ : Subgroupoid C).arrows c d
 
 theorem mem_top_objs (c : C) : c ∈ (⊤ : Subgroupoid C).objs := by
   dsimp [Top.top, objs]
-  simp only [univ_nonempty]
+  simp [univ_nonempty]
 
 instance : Bot (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => ∅
@@ -224,7 +224,7 @@ theorem mem_sInf {s : Set (Subgroupoid C)} {p : Σ c d : C, c ⟶ d} :
 
 instance : CompleteLattice (Subgroupoid C) :=
   { completeLatticeOfInf (Subgroupoid C) (by
-      refine fun s => ⟨fun S Ss F => ?_, fun T Tl F fT => ?_⟩ <;> simp only [mem_sInf]
+      refine fun s => ⟨fun S Ss F => ?_, fun T Tl F fT => ?_⟩ <;> simp [mem_sInf]
       exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with
     bot := ⊥
     bot_le := fun _ => empty_subset _
@@ -313,7 +313,7 @@ theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
     ⟨p ≫ δ ≫ Groupoid.inv p, Sn.conj' p δS, ?_⟩⟩
   · simpa only [inv_eq_inv, Category.assoc, IsIso.hom_inv_id, Category.comp_id,
       IsIso.hom_inv_id_assoc] using p ≫= h =≫ inv p
-  · simp only [inv_eq_inv, Category.assoc, IsIso.inv_hom_id, Category.comp_id,
+  · simp [inv_eq_inv, Category.assoc, IsIso.inv_hom_id, Category.comp_id,
       IsIso.inv_hom_id_assoc]
 
 theorem top_isNormal : IsNormal (⊤ : Subgroupoid C) :=
@@ -492,11 +492,11 @@ theorem mem_im_iff (hφ : Function.Injective φ.obj) {c d : D} (f : c ⟶ d) :
     f ∈ (im φ hφ).arrows c d ↔
       ∃ (a b : C) (g : a ⟶ b) (ha : φ.obj a = c) (hb : φ.obj b = d),
         f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb := by
-  convert! Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
+  convert! Map.arrows_iff φ hφ ⊤ f; simp [Top.top, mem_univ, exists_true_left]
 
 theorem mem_im_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
     d ∈ (im φ hφ).objs ↔ ∃ c : C, φ.obj c = d := by
-  simp only [im, mem_map_objs_iff, mem_top_objs, true_and]
+  simp [im, mem_map_objs_iff, mem_top_objs, true_and]
 
 theorem obj_surjective_of_im_eq_top (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) :
     Function.Surjective φ.obj := by
@@ -599,12 +599,12 @@ theorem mem_full_objs_iff {c : C} : c ∈ (full D).objs ↔ c ∈ D := by rw [fu
 @[simp]
 theorem full_empty : full ∅ = (⊥ : Subgroupoid C) := by
   ext
-  simp only [Bot.bot, mem_full_iff, mem_empty_iff_false, and_self_iff]
+  simp [Bot.bot, mem_full_iff, mem_empty_iff_false, and_self_iff]
 
 @[simp]
 theorem full_univ : full Set.univ = (⊤ : Subgroupoid C) := by
   ext
-  simp only [mem_full_iff, mem_univ, and_self, mem_top]
+  simp [mem_full_iff, mem_univ, and_self, mem_top]
 
 theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
   rw [le_iff]

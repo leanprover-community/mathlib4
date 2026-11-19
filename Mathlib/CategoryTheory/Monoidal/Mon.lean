@@ -409,7 +409,7 @@ lemma mul_associator {M N P : C} [MonObj M] [MonObj N] [MonObj P] :
   slice_rhs 3 4 => rw [← Category.id_comp μ, ← tensorHom_comp_tensorHom]
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 1 3 => rw [associator_monoidal]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 @[to_additive]
 lemma mul_leftUnitor {M : C} [MonObj M] :
@@ -419,7 +419,7 @@ lemma mul_leftUnitor {M : C} [MonObj M] :
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 3 4 => rw [leftUnitor_naturality]
   slice_lhs 1 3 => rw [← leftUnitor_monoidal]
-  simp only [Category.id_comp]
+  simp [Category.id_comp]
 
 @[to_additive]
 lemma mul_rightUnitor {M : C} [MonObj M] :
@@ -429,7 +429,7 @@ lemma mul_rightUnitor {M : C} [MonObj M] :
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 3 4 => rw [rightUnitor_naturality]
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
-  simp only [Category.id_comp]
+  simp [Category.id_comp]
 
 namespace tensorObj
 
@@ -458,7 +458,7 @@ instance {f : X ⟶ Y} {g : Z ⟶ W} [IsMonHom f] [IsMonHom g] : IsMonHom (f ⊗
     dsimp [tensorObj.mul_def]
     slice_rhs 1 2 => rw [tensorμ_natural]
     slice_lhs 2 3 => rw [tensorHom_comp_tensorHom, mul_hom, mul_hom, ← tensorHom_comp_tensorHom]
-    simp only [Category.assoc]
+    simp [Category.assoc]
 
 @[to_additive]
 instance : IsMonHom (𝟙 X) where
@@ -780,7 +780,7 @@ lemma mul_braiding (X Y : C) [MonObj X] [MonObj Y] :
     rw [← associator_naturality_right]
   slice_lhs 1 2 =>
     rw [← tensorHom_def]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 @[to_additive]
 instance {X Y : C} [MonObj X] [MonObj Y] : IsMonHom (β_ X Y).hom :=
@@ -1227,12 +1227,12 @@ end IsCommMonObj
 variable (M) in
 @[to_additive (attr := reassoc (attr := simp))]
 lemma MonObj.mul_mul_mul_comm [IsCommMonObj M] :
-    tensorμ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
+    tensorμ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp [mon_tauto]
 
 variable (M) in
 @[to_additive (attr := reassoc (attr := simp))]
 lemma MonObj.mul_mul_mul_comm' [IsCommMonObj M] :
-    tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
+    tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp [mon_tauto]
 
 end
 

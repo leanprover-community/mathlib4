@@ -121,7 +121,7 @@ lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [IsLieTower L₁ L₂ M]
     (x : L₁) (y : L₂) (m : M) : ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
   have h1 := leibniz_lie x y m
   have h2 := leibniz_lie y x m
-  convert congr($h1.symm - $h2) <;> simp only [add_sub_cancel_right, sub_add_cancel_right]
+  convert congr($h1.symm - $h2) <;> simp [add_sub_cancel_right, sub_add_cancel_right]
 
 end IsLieTower
 
@@ -252,7 +252,7 @@ instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
         simp only [lie_add, map_add]
         abel
       map_smul' := fun t m => by
-        simp only [smul_sub, map_smul, lie_smul, RingHom.id_apply] }
+        simp [smul_sub, map_smul, lie_smul, RingHom.id_apply] }
   add_lie x y f := by
     ext n
     simp only [add_lie, coe_mk, AddHom.coe_mk, LinearMap.add_apply, map_add]
@@ -475,8 +475,8 @@ See note [reducible non-instances]. -/
 def LieRingModule.compLieHom : LieRingModule L₁ M where
   bracket x m := ⁅f x, m⁆
   lie_add x := lie_add (f x)
-  add_lie x y m := by simp only [map_add, add_lie]
-  leibniz_lie x y m := by simp only [lie_lie, sub_add_cancel, LieHom.map_lie]
+  add_lie x y m := by simp [map_add, add_lie]
+  leibniz_lie x y m := by simp [lie_lie, sub_add_cancel, LieHom.map_lie]
 
 theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
     haveI := LieRingModule.compLieHom M f
@@ -488,9 +488,9 @@ theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
   { __ := LieRingModule.compLieHom M f
     smul_lie := fun t x m => by
-      simp only [LieRingModule.compLieHom_apply, smul_lie, map_smul]
+      simp [LieRingModule.compLieHom_apply, smul_lie, map_smul]
     lie_smul := fun t x m => by
-      simp only [LieRingModule.compLieHom_apply, lie_smul] }
+      simp [LieRingModule.compLieHom_apply, lie_smul] }
 
 end ModulePullBack
 
@@ -712,7 +712,7 @@ theorem map_lie (f : M →ₗ⁅R,L⁆ N) (x : L) (m : M) : f ⁅x, m⁆ = ⁅x,
 
 variable [LieAlgebra R L] [LieModule R L N] [LieModule R L P] in
 theorem map_lie₂ (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) (x : L) (m : M) (n : N) :
-    ⁅x, f m n⁆ = f ⁅x, m⁆ n + f m ⁅x, n⁆ := by simp only [sub_add_cancel, map_lie, LieHom.lie_apply]
+    ⁅x, f m n⁆ = f ⁅x, m⁆ n + f m ⁅x, n⁆ := by simp [sub_add_cancel, map_lie, LieHom.lie_apply]
 
 /-- The identity map is a morphism of Lie modules. -/
 def id : M →ₗ⁅R,L⁆ M :=

@@ -142,7 +142,7 @@ lemma symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
 
 @[simp]
 theorem symm_le_symm {i j : I} : σ i ≤ σ j ↔ j ≤ i := by
-  simp only [symm, Subtype.mk_le_mk, sub_le_sub_iff, add_le_add_iff_left, Subtype.coe_le_coe]
+  simp [symm, Subtype.mk_le_mk, sub_le_sub_iff, add_le_add_iff_left, Subtype.coe_le_coe]
 
 theorem le_symm_comm {i j : I} : i ≤ σ j ↔ j ≤ σ i := by
   rw [← symm_le_symm, symm_symm]
@@ -152,7 +152,7 @@ theorem symm_le_comm {i j : I} : σ i ≤ j ↔ σ j ≤ i := by
 
 @[simp]
 theorem symm_lt_symm {i j : I} : σ i < σ j ↔ j < i := by
-  simp only [symm, Subtype.mk_lt_mk, sub_lt_sub_iff_left, Subtype.coe_lt_coe]
+  simp [symm, Subtype.mk_lt_mk, sub_lt_sub_iff_left, Subtype.coe_lt_coe]
 
 theorem lt_symm_comm {i j : I} : i < σ j ↔ j < σ i := by
   rw [← symm_lt_symm, symm_symm]

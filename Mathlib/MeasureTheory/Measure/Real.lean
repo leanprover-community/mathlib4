@@ -96,12 +96,12 @@ theorem measureReal_eq_measureReal_iff {m : MeasurableSpace β} {ν : Measure β
 
 theorem measureReal_restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) :
     (μ.restrict s).real t = μ.real (t ∩ s) := by
-  simp only [measureReal_def, restrict_apply₀ ht]
+  simp [measureReal_def, restrict_apply₀ ht]
 
 @[simp]
 theorem measureReal_restrict_apply (ht : MeasurableSet t) :
     (μ.restrict s).real t = μ.real (t ∩ s) := by
-  simp only [measureReal_def, restrict_apply ht]
+  simp [measureReal_def, restrict_apply ht]
 
 theorem measureReal_restrict_apply_univ (s : Set α) : (μ.restrict s).real univ = μ.real s := by
   simp
@@ -109,10 +109,10 @@ theorem measureReal_restrict_apply_univ (s : Set α) : (μ.restrict s).real univ
 @[simp]
 theorem measureReal_restrict_apply' (hs : MeasurableSet s) :
     (μ.restrict s).real t = μ.real (t ∩ s) := by
-  simp only [measureReal_def, restrict_apply' hs]
+  simp [measureReal_def, restrict_apply' hs]
 
 theorem measureReal_restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
-  simp only [restrict_apply₀' hs]
+  simp [restrict_apply₀' hs]
 
 @[simp]
 theorem measureReal_restrict_apply_self (s : Set α) : (μ.restrict s).real s = μ.real s := by
@@ -285,7 +285,7 @@ theorem measureReal_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ)
     (h : ∀ b ∈ s, μ (f b) ≠ ∞ := by finiteness) :
     μ.real (⋃ b ∈ s, f b) = ∑ p ∈ s, μ.real (f p) := by
-  simp only [measureReal_def, measure_biUnion_finset₀ hd hm, ENNReal.toReal_sum h]
+  simp [measureReal_def, measure_biUnion_finset₀ hd hm, ENNReal.toReal_sum h]
 
 theorem measureReal_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
     (hm : ∀ b ∈ s, MeasurableSet (f b)) (h : ∀ b ∈ s, μ (f b) ≠ ∞ := by finiteness) :
@@ -297,7 +297,7 @@ of the fibers `f ⁻¹' {y}`. -/
 theorem sum_measureReal_preimage_singleton (s : Finset β) {f : α → β}
     (hf : ∀ y ∈ s, MeasurableSet (f ⁻¹' {y})) (h : ∀ a ∈ s, μ (f ⁻¹' {a}) ≠ ∞ := by finiteness) :
     (∑ b ∈ s, μ.real (f ⁻¹' {b})) = μ.real (f ⁻¹' s) := by
-  simp only [measureReal_def, ← sum_measure_preimage_singleton s hf, ENNReal.toReal_sum h]
+  simp [measureReal_def, ← sum_measure_preimage_singleton s hf, ENNReal.toReal_sum h]
 
 /-- If `s` is a `Finset`, then the sums of the real measures of the singletons in the set is the
 real measure of the set. -/
@@ -435,7 +435,7 @@ theorem sum_measureReal_le_measureReal_univ [IsFiniteMeasure μ] {s : Finset ι}
 theorem measureReal_add_apply {μ₁ μ₂ : Measure α} (h₁ : μ₁ s ≠ ∞ := by finiteness)
     (h₂ : μ₂ s ≠ ∞ := by finiteness) :
     (μ₁ + μ₂).real s = μ₁.real s + μ₂.real s := by
-  simp only [measureReal_def, add_apply, ENNReal.toReal_add h₁ h₂]
+  simp [measureReal_def, add_apply, ENNReal.toReal_add h₁ h₂]
 
 /-- Pigeonhole principle for measure spaces: if `s` is a `Finset` and
 `∑ i ∈ s, μ.real (t i) > μ.real univ`, then one of the intersections `t i ∩ t j` is not empty. -/

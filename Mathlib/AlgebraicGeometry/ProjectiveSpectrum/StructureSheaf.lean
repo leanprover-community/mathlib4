@@ -123,7 +123,7 @@ theorem neg_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : 
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, nin, hy⟩
   refine ⟨V, m, i, j, ⟨-r, neg_mem r_mem⟩, ⟨s, s_mem⟩, nin, fun y => ?_⟩
   simp only [ext_iff_val, val_mk] at hy
-  simp only [Pi.neg_apply, ext_iff_val, val_neg, hy, val_mk, neg_mk]
+  simp [Pi.neg_apply, ext_iff_val, val_neg, hy, val_mk, neg_mk]
 
 theorem mul_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :

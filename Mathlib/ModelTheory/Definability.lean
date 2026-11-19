@@ -60,7 +60,7 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
   obtain ⟨ψ, rfl⟩ := h
   refine ⟨(φ.addConstants A).onFormula ψ, ?_⟩
   ext x
-  simp only [mem_ofPred_eq, LHom.realize_onFormula]
+  simp [mem_ofPred_eq, LHom.realize_onFormula]
 
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
@@ -174,7 +174,7 @@ theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Defi
   obtain ⟨φ, rfl⟩ := h
   refine ⟨φ.relabel f, ?_⟩
   ext
-  simp only [Set.preimage_ofPred_eq, mem_ofPred_eq, Formula.realize_relabel]
+  simp [Set.preimage_ofPred_eq, mem_ofPred_eq, Formula.realize_relabel]
 
 theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f : α ≃ β) :
     A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
@@ -182,7 +182,7 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
   rw [image_eq_preimage_of_inverse]
   · intro i
     ext b
-    simp only [Function.comp_apply, Equiv.apply_symm_apply]
+    simp [Function.comp_apply, Equiv.apply_symm_apply]
   · intro i
     ext a
     simp

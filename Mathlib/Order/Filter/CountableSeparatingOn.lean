@@ -167,8 +167,8 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
     simp only [mem_sInter, mem_inter_iff, mem_iInter, mem_compl_iff] at hx hy
     refine hS x hx.1.1 y hy.1.1 (fun s hsS ↦ ?_)
     cases hl s (hSp s hsS) with
-    | inl hsl => simp only [hx.1.2 s ⟨hsS, hsl⟩, hy.1.2 s ⟨hsS, hsl⟩]
-    | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]
+    | inl hsl => simp [hx.1.2 s ⟨hsS, hsl⟩, hy.1.2 s ⟨hsS, hsl⟩]
+    | inr hsl => simp [hx.2 s hsS hsl, hy.2 s hsS hsl]
   · exact inter_mem
       (inter_mem hs ((countable_sInter_mem (hSc.mono inter_subset_left)).2 fun _ h ↦ h.2))
       ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem'.2 id)

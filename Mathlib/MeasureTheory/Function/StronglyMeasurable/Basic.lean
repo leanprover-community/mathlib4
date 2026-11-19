@@ -1110,7 +1110,7 @@ end StronglyMeasurable
 theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measure α} [Zero β]
     [TopologicalSpace β] : FinStronglyMeasurable (0 : α → β) μ :=
   ⟨0, by
-    simp only [Pi.zero_apply, FunLike.coe_zero, support_zero, measure_empty,
+    simp [Pi.zero_apply, FunLike.coe_zero, support_zero, measure_empty,
       zero_lt_top, forall_const],
     fun _ => tendsto_const_nhds⟩
 

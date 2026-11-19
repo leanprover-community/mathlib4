@@ -52,16 +52,16 @@ theorem Rel.add_right {r : R → R → Prop} ⦃a b c : R⦄ (h : Rel r b c) : R
   exact Rel.add_left h
 
 theorem Rel.neg {R : Type uR} [Ring R] {r : R → R → Prop} ⦃a b : R⦄ (h : Rel r a b) :
-    Rel r (-a) (-b) := by simp only [neg_eq_neg_one_mul a, neg_eq_neg_one_mul b, Rel.mul_right h]
+    Rel r (-a) (-b) := by simp [neg_eq_neg_one_mul a, neg_eq_neg_one_mul b, Rel.mul_right h]
 
 theorem Rel.sub_left {R : Type uR} [Ring R] {r : R → R → Prop} ⦃a b c : R⦄ (h : Rel r a b) :
-    Rel r (a - c) (b - c) := by simp only [sub_eq_add_neg, h.add_left]
+    Rel r (a - c) (b - c) := by simp [sub_eq_add_neg, h.add_left]
 
 theorem Rel.sub_right {R : Type uR} [Ring R] {r : R → R → Prop} ⦃a b c : R⦄ (h : Rel r b c) :
-    Rel r (a - b) (a - c) := by simp only [sub_eq_add_neg, h.neg.add_right]
+    Rel r (a - b) (a - c) := by simp [sub_eq_add_neg, h.neg.add_right]
 
 theorem Rel.smul {r : A → A → Prop} (k : S) ⦃a b : A⦄ (h : Rel r a b) : Rel r (k • a) (k • b) := by
-  simp only [Algebra.smul_def, Rel.mul_right h]
+  simp [Algebra.smul_def, Rel.mul_right h]
 
 /-- `EqvGen (RingQuot.Rel r)` is a ring congruence. -/
 def ringCon (r : R → R → Prop) : RingCon R where
@@ -206,67 +206,67 @@ theorem smul_quot [Algebra S R] {n : S} {a : R} :
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp [RingQuot.smul_quot, smul_assoc]⟩
 
 instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm s t]⟩
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp [RingQuot.smul_quot, smul_comm s t]⟩
 
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
   add_assoc := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp only [add_quot, add_assoc]
+    simp [add_quot, add_assoc]
   zero_add := by
     rintro ⟨⟨⟩⟩
     simp [add_quot, ← zero_quot, zero_add]
   add_zero := by
     rintro ⟨⟨⟩⟩
-    simp only [add_quot, ← zero_quot, add_zero]
+    simp [add_quot, ← zero_quot, add_zero]
   add_comm := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp only [add_quot, add_comm]
+    simp [add_quot, add_comm]
   nsmul := (· • ·)
   nsmul_zero := by
     rintro ⟨⟨⟩⟩
-    simp only [smul_quot, zero_smul, zero_quot]
+    simp [smul_quot, zero_smul, zero_quot]
   nsmul_succ := by
     rintro n ⟨⟨⟩⟩
-    simp only [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
+    simp [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
                add_comm, add_quot]
 
 instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r) where
   mul_assoc := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp only [mul_quot, mul_assoc]
+    simp [mul_quot, mul_assoc]
   one_mul := by
     rintro ⟨⟨⟩⟩
-    simp only [mul_quot, ← one_quot, one_mul]
+    simp [mul_quot, ← one_quot, one_mul]
   mul_one := by
     rintro ⟨⟨⟩⟩
-    simp only [mul_quot, ← one_quot, mul_one]
+    simp [mul_quot, ← one_quot, mul_one]
   zero_mul := by
     rintro ⟨⟨⟩⟩
-    simp only [mul_quot, ← zero_quot, zero_mul]
+    simp [mul_quot, ← zero_quot, zero_mul]
   mul_zero := by
     rintro ⟨⟨⟩⟩
-    simp only [mul_quot, ← zero_quot, mul_zero]
+    simp [mul_quot, ← zero_quot, mul_zero]
   npow n x := x ^ n
   npow_zero := by
     rintro ⟨⟨⟩⟩
-    simp only [pow_quot, ← one_quot, pow_zero]
+    simp [pow_quot, ← one_quot, pow_zero]
   npow_succ := by
     rintro n ⟨⟨⟩⟩
-    simp only [pow_quot, mul_quot, pow_succ]
+    simp [pow_quot, mul_quot, pow_succ]
 
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   natCast_zero := by simp +instances [instNatCast, natCast, ← zero_quot]
   natCast_succ := by simp +instances [instNatCast, natCast, ← one_quot, add_quot]
   left_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp only [mul_quot, add_quot, left_distrib]
+    simp [mul_quot, add_quot, left_distrib]
   right_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp only [mul_quot, add_quot, right_distrib]
+    simp [mul_quot, add_quot, right_distrib]
 
 -- Has to be exposed, otherwise we get diamonds in ℤ-algebras.
 /-- The `intCast` function for `RingQuot`. -/
@@ -358,14 +358,14 @@ variable [Semiring T]
           | mul_left _ r' => rw [map_mul, map_mul, r']
           | mul_right _ r' => rw [map_mul, map_mul, r'])
         x.toQuot
-    map_zero' := by simp only [← zero_quot, f.map_zero]
+    map_zero' := by simp [← zero_quot, f.map_zero]
     map_add' := by
       rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-      simp only [add_quot, f.map_add x y]
-    map_one' := by simp only [← one_quot, f.map_one]
+      simp [add_quot, f.map_add x y]
+    map_one' := by simp [← one_quot, f.map_one]
     map_mul' := by
       rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-      simp only [mul_quot, f.map_mul x y] }
+      simp [mul_quot, f.map_mul x y] }
 
 /-- Any ring homomorphism `f : R →+* T` which respects a relation `r : R → R → Prop`
 factors uniquely through a morphism `RingQuot r →+* T`.
@@ -483,18 +483,18 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
               rintro _ _ r
               induction r with
               | of r => exact h r
-              | add_left _ r' => simp only [map_add, r']
-              | mul_left _ r' => simp only [map_mul, r']
-              | mul_right _ r' => simp only [map_mul, r'])
+              | add_left _ r' => simp [map_add, r']
+              | mul_left _ r' => simp [map_mul, r']
+              | mul_right _ r' => simp [map_mul, r'])
             x.toQuot
-  map_zero' := by simp only [← zero_quot, map_zero]
+  map_zero' := by simp [← zero_quot, map_zero]
   map_add' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [add_quot, map_add _ x y]
-  map_one' := by simp only [← one_quot, map_one]
+    simp [add_quot, map_add _ x y]
+  map_one' := by simp [← one_quot, map_one]
   map_mul' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [mul_quot, map_mul _ x y]
+    simp [mul_quot, map_mul _ x y]
   commutes' := by
     rintro x
     simp [← one_quot, smul_quot, Algebra.algebraMap_eq_smul_one] }

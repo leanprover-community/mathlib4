@@ -368,7 +368,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_eNorm_of_pos (p : ℝ≥0∞) (b :
     eLpNorm (fun x ↦ b (f x) (g x)) p μ ≤ c * eLpNorm g ∞ μ * eLpNorm f p μ :=
       eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_eNorm_of_pos p (flip b) c (fun hf hg ↦ hb hg hf) (by
         convert! h using 3 with x
-        simp only [mul_assoc, mul_comm ‖f x‖ₑ]) hp
+        simp [mul_assoc, mul_comm ‖f x‖ₑ]) hp
     _ = c * eLpNorm f p μ * eLpNorm g ∞ μ := by
       simp only [mul_assoc]; rw [mul_comm (eLpNorm _ _ _)]
 
@@ -393,7 +393,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_eNorm (p : ℝ≥0∞) (b : ε →
     eLpNorm (fun x ↦ b (f x) (g x)) p μ ≤ c * eLpNorm g ∞ μ * eLpNorm f p μ :=
       eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_eNorm p (flip b) c (fun hf hg ↦ hb hg hf) hg <| by
         convert! h using 3 with x
-        simp only [mul_assoc, mul_comm ‖f x‖ₑ]
+        simp [mul_assoc, mul_comm ‖f x‖ₑ]
     _ = c * eLpNorm f p μ * eLpNorm g ∞ μ := by
       simp only [mul_assoc]; rw [mul_comm (eLpNorm _ _ _)]
 

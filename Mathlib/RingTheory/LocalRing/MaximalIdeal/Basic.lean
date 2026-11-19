@@ -80,7 +80,7 @@ An element `x` of a commutative local semiring is not contained in the maximal i
 iff it is a unit.
 -/
 theorem notMem_maximalIdeal {x : R} : x ∉ maximalIdeal R ↔ IsUnit x := by
-  simp only [mem_maximalIdeal, mem_nonunits_iff, not_not]
+  simp [mem_maximalIdeal, mem_nonunits_iff, not_not]
 
 theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
   not_iff_not.mp

@@ -124,8 +124,8 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
   by_cases hf1 : f 1 = 0
   · calc
       f (a * b) = f (a * b * 1) := by rw [mul_one]
-      _ = 0 := by simp only [h1 isUnit_one, hf1, mul_zero]
-      _ = f a * f (b * 1) := by simp only [h1 isUnit_one, hf1, mul_zero]
+      _ = 0 := by simp [h1 isUnit_one, hf1, mul_zero]
+      _ = f a * f (b * 1) := by simp [h1 isUnit_one, hf1, mul_zero]
       _ = f a * f b := by rw [mul_one]
   have : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
   let : StrongNormalizationMonoid α := UniqueFactorizationMonoid.strongNormalizationMonoid

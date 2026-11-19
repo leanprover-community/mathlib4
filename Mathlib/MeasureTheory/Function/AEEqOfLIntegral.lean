@@ -62,7 +62,7 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     have A : (∫⁻ x in s, g x ∂μ) + ε * μ s ≤ (∫⁻ x in s, g x ∂μ) + 0 :=
       calc
         (∫⁻ x in s, g x ∂μ) + ε * μ s = (∫⁻ x in s, g x ∂μ) + ∫⁻ _ in s, ε ∂μ := by
-          simp only [lintegral_const, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
+          simp [lintegral_const, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
         _ = ∫⁻ x in s, g x + ε ∂μ := (lintegral_add_right _ measurable_const).symm
         _ ≤ ∫⁻ x in s, f x ∂μ :=
           setLIntegral_mono_ae hf.restrict <| ae_of_all _ fun x hx => hx.1.1
@@ -98,7 +98,7 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
   calc
     μ {x : α | (fun x : α => f x ≤ g x) x}ᶜ ≤ μ (⋃ n, s n) := measure_mono B
     _ ≤ ∑' n, μ (s n) := measure_iUnion_le _
-    _ = 0 := by simp only [μs, tsum_zero]
+    _ = 0 := by simp [μs, tsum_zero]
 
 theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f)

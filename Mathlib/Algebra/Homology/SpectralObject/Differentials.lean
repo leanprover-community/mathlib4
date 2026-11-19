@@ -63,7 +63,7 @@ lemma toCycles_πE_d
         X.δ f₁₂ f₃₄ n₁ n₂ hn₂ ≫ X.toCycles f₁ f₂ f₁₂ h₁₂ n₂ ≫
           X.πE f₁ f₂ f₃ n₁ n₂ n₃ hn₂ hn₃ := by
   subst h₁₂ h₃₄
-  simp only [d, δ_toCycles_assoc, toCycles_πE_descE]
+  simp [d, δ_toCycles_assoc, toCycles_πE_descE]
 
 include h₃₄ in
 @[reassoc]
@@ -126,7 +126,7 @@ lemma toCycles_Ψ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.toCycles f₂ f₃ f₂₃ h₂₃ n₀ ≫ X.Ψ f₁ f₂ f₃ n₀ n₁ hn₁ =
       X.δ f₁ f₂₃ n₀ n₁ hn₁ ≫ X.pOpcycles f₁ f₂ n₁ := by
   subst h₂₃
-  simp only [Ψ, toCycles_descCycles]
+  simp [Ψ, toCycles_descCycles]
 
 @[reassoc (attr := simp)]
 lemma Ψ_fromOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :

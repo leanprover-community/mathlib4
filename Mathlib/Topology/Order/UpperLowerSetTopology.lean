@@ -264,7 +264,7 @@ interval $(-∞,a]$.
   rfl
 
 lemma specializes_iff_le {a b : α} : a ⤳ b ↔ b ≤ a := by
-  simp only [specializes_iff_closure_subset, closure_singleton, Iic_subset_Iic]
+  simp [specializes_iff_closure_subset, closure_singleton, Iic_subset_Iic]
 
 lemma nhdsKer_eq_upperClosure (s : Set α) : nhdsKer s = ↑(upperClosure s) := by
   ext; simp [mem_nhdsKer_iff_specializes, specializes_iff_le]
@@ -360,7 +360,7 @@ interval $(-∞,a]$.
   rfl
 
 lemma specializes_iff_le {a b : α} : a ⤳ b ↔ a ≤ b := by
-  simp only [specializes_iff_closure_subset, closure_singleton, Ici_subset_Ici]
+  simp [specializes_iff_closure_subset, closure_singleton, Ici_subset_Ici]
 
 lemma nhdsKer_eq_lowerClosure (s : Set α) : nhdsKer s = ↑(lowerClosure s) := by
   ext; simp [mem_nhdsKer_iff_specializes, specializes_iff_le]

@@ -261,7 +261,7 @@ theorem tendsto_atTop_of_geom_le {v : ℕ → ℝ} {c : ℝ} (h₀ : 0 < v 0) (h
 theorem NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0} (hr : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   NNReal.tendsto_coe.1 <| by
-    simp only [NNReal.coe_pow, NNReal.coe_zero,
+    simp [NNReal.coe_pow, NNReal.coe_zero,
       _root_.tendsto_pow_atTop_nhds_zero_of_lt_one r.coe_nonneg hr]
 
 @[simp]
@@ -411,7 +411,7 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
       _ ≤ ∑ i ∈ range n, r ^ i := by gcongr; apply one_le_pow₀ hr
 
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
-  simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
+  simp [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
 
 lemma ENNReal.tsum_two_zpow_neg_add_one :
     ∑' m : ℕ, 2 ^ (-1 - m : ℤ) = (1 : ℝ≥0∞) := by
@@ -464,7 +464,7 @@ include hu in
 theorem edist_le_of_edist_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     edist (f n) a ≤ C * r ^ n / (1 - r) := by
   convert edist_le_tsum_of_edist_le_of_tendsto _ hu ha _
-  simp only [pow_add, ENNReal.tsum_mul_left, ENNReal.tsum_geometric, div_eq_mul_inv, mul_assoc]
+  simp [pow_add, ENNReal.tsum_mul_left, ENNReal.tsum_geometric, div_eq_mul_inv, mul_assoc]
 
 include hu in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
@@ -709,7 +709,7 @@ lemma tendsto_nat_ceil_atTop {α : Type*}
     [Semiring α] [LinearOrder α] [FloorSemiring α] :
     Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
   refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
-  simp only [Nat.ceil_natCast, le_refl]
+  simp [Nat.ceil_natCast, le_refl]
 
 lemma tendsto_nat_floor_mul_atTop {α : Type _}
     [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [FloorSemiring α]

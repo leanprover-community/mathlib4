@@ -223,7 +223,7 @@ theorem aeval_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : ℕ)
   apply eval₂Hom_congr' rfl _ rfl
   rintro i hi -
   rw [wittPolynomial_vars, Finset.mem_range] at hi
-  simp only [IH i hi]
+  simp [IH i hi]
 
 @[deprecated aeval_rename_expand_wittPolynomial +typeChanged (since := "2026-09-02")]
 theorem bind₁_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : ℕ)
@@ -352,7 +352,7 @@ theorem witt_structure_prop (Φ : MvPolynomial idx ℤ) (n) :
       rw [map_aeval] <;>
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   · rfl
-  · simp only [map_rename, map_wittPolynomial]
+  · simp [map_rename, map_wittPolynomial]
 
 theorem wittStructureInt_rename {σ : Type*} (Φ : MvPolynomial idx ℤ) (f : idx → σ) (n : ℕ) :
     wittStructureInt p (rename f Φ) n = rename (Prod.map f id) (wittStructureInt p Φ n) := by
@@ -364,13 +364,13 @@ theorem wittStructureInt_rename {σ : Type*} (Φ : MvPolynomial idx ℤ) (f : id
 @[simp]
 theorem constantCoeff_wittStructureRat_zero (Φ : MvPolynomial idx ℚ) :
     constantCoeff (wittStructureRat p Φ 0) = constantCoeff Φ := by
-  simp only [wittStructureRat, map_aeval, xInTermsOfW_zero, constantCoeff_rename,
+  simp [wittStructureRat, map_aeval, xInTermsOfW_zero, constantCoeff_rename,
     constantCoeff_wittPolynomial, aeval_X, constantCoeff_comp_algebraMap, eval₂Hom_zero'_apply,
     RingHom.id_apply]
 
 theorem constantCoeff_wittStructureRat (Φ : MvPolynomial idx ℚ) (h : constantCoeff Φ = 0) (n : ℕ) :
     constantCoeff (wittStructureRat p Φ n) = 0 := by
-  simp only [wittStructureRat, eval₂Hom_zero'_apply, h, map_aeval, constantCoeff_rename,
+  simp [wittStructureRat, eval₂Hom_zero'_apply, h, map_aeval, constantCoeff_rename,
     constantCoeff_wittPolynomial, constantCoeff_comp_algebraMap, RingHom.id_apply,
     constantCoeff_xInTermsOfW]
 

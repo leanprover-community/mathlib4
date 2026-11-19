@@ -25,7 +25,7 @@ lemma mul_right_mem_add_closure (ha : a ∈ closure (S : Set R)) (hb : b ∈ S) 
     a * b ∈ closure (S : Set R) := by
   induction ha using closure_induction with
   | mem r hr => exact mem_closure.mpr fun y hy => hy (mul_mem hr hb)
-  | zero => simp only [zero_mul, zero_mem _]
+  | zero => simp [zero_mul, zero_mem _]
   | add r s _ _ hr hs => simpa only [add_mul] using add_mem hr hs
 
 /-- The product of two elements of the additive closure of a submonoid `M` is an element of the
@@ -34,7 +34,7 @@ lemma mul_mem_add_closure (ha : a ∈ closure (S : Set R))
     (hb : b ∈ closure (S : Set R)) : a * b ∈ closure (S : Set R) := by
   induction hb using closure_induction with
   | mem r hr => exact MulMemClass.mul_right_mem_add_closure ha hr
-  | zero => simp only [mul_zero, zero_mem _]
+  | zero => simp [mul_zero, zero_mem _]
   | add r s _ _ hr hs => simpa only [mul_add] using add_mem hr hs
 
 /-- The product of an element of `S` and an element of the additive closure of a multiplicative

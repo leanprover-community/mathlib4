@@ -453,7 +453,7 @@ instance [T2Space β] : T2Space (α →ᵤ β) :=
 protected theorem tendsto_iff_tendstoUniformly {F : ι → α →ᵤ β} {f : α →ᵤ β} :
     Tendsto F p (𝓝 f) ↔ TendstoUniformly (toFun ∘ F) (toFun f) p := by
   rw [(UniformFun.hasBasis_nhds α β f).tendsto_right_iff, TendstoUniformly]
-  simp only [mem_ofPred, UniformFun.gen, Function.comp_def]
+  simp [mem_ofPred, UniformFun.gen, Function.comp_def]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
@@ -1033,13 +1033,13 @@ protected theorem continuousOn_eval₂ [TopologicalSpace α] (h𝔖 : ∀ x, ∃
 of `TendstoUniformlyOn`) for all `S ∈ 𝔖`. -/
 protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β} {f : α →ᵤ[𝔖] β} :
     Tendsto F p (𝓝 f) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (toFun 𝔖 ∘ F) (toFun 𝔖 f) p s := by
-  simp only [UniformOnFun.nhds_eq, tendsto_iInf, tendsto_principal, TendstoUniformlyOn,
+  simp [UniformOnFun.nhds_eq, tendsto_iInf, tendsto_principal, TendstoUniformlyOn,
     Function.comp_apply, mem_ofPred]
 
 protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (α →ᵤ[𝔖] β)} :
     Continuous f ↔ ∀ s ∈ 𝔖,
       Continuous (UniformFun.ofFun ∘ s.domRestrict ∘ UniformOnFun.toFun 𝔖 ∘ f) := by
-  simp only [continuous_iff_continuousAt, ContinuousAt,
+  simp [continuous_iff_continuousAt, ContinuousAt,
     UniformOnFun.tendsto_iff_tendstoUniformlyOn, UniformFun.tendsto_iff_tendstoUniformly,
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_comm X,
     Function.comp_def, domRestrict_eq, UniformFun.toFun_ofFun]

@@ -44,7 +44,7 @@ namespace Function
 protected theorem Periodic.const_smul₀ [AddCommMonoid α] [DivisionSemiring γ] [Module γ α]
     (h : Periodic f c) (a : γ) : Periodic (fun x => f (a • x)) (a⁻¹ • c) := fun x => by
   by_cases ha : a = 0
-  · simp only [ha, zero_smul]
+  · simp [ha, zero_smul]
   · simpa only [smul_add, smul_inv_smul₀ ha] using h (a • x)
 
 protected theorem Periodic.const_mul [DivisionSemiring α] (h : Periodic f c) (a : α) :

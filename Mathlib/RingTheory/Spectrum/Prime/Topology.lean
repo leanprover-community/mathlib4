@@ -515,7 +515,7 @@ theorem isOpen_basicOpen {a : R} : IsOpen (basicOpen a : Set (PrimeSpectrum R)) 
 @[simp]
 theorem basicOpen_eq_zeroLocus_compl (r : R) :
     (basicOpen r : Set (PrimeSpectrum R)) = (zeroLocus {r})ᶜ :=
-  Set.ext fun x => by simp only [SetLike.mem_coe, mem_basicOpen, Set.mem_compl_iff, mem_zeroLocus,
+  Set.ext fun x => by simp [SetLike.mem_coe, mem_basicOpen, Set.mem_compl_iff, mem_zeroLocus,
     Set.singleton_subset_iff]
 
 @[simp]
@@ -618,7 +618,7 @@ lemma iSup_basicOpen_eq_top_iff {ι : Type*} {f : ι → R} :
   simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Opens.coe_top, ← Set.compl_iInter,
     ← PrimeSpectrum.zeroLocus_iUnion]
   rw [← PrimeSpectrum.zeroLocus_empty_iff_eq_top, compl_involutive.eq_iff]
-  simp only [Set.iUnion_singleton_eq_range, Set.compl_univ, PrimeSpectrum.zeroLocus_span]
+  simp [Set.iUnion_singleton_eq_range, Set.compl_univ, PrimeSpectrum.zeroLocus_span]
 
 lemma iSup_basicOpen_eq_top_iff' {s : Set R} :
     (⨆ i ∈ s, PrimeSpectrum.basicOpen i) = ⊤ ↔ Ideal.span s = ⊤ := by
@@ -1016,7 +1016,7 @@ lemma basicOpen_eq_zeroLocus_of_mul_add (e f : R) (mul : e * f = 0) (add : e + f
 
 lemma zeroLocus_eq_basicOpen_of_mul_add (e f : R) (mul : e * f = 0) (add : e + f = 1) :
     zeroLocus {e} = basicOpen f := by
-  rw [basicOpen_eq_zeroLocus_of_mul_add f e] <;> simp only [mul, add, mul_comm, add_comm]
+  rw [basicOpen_eq_zeroLocus_of_mul_add f e] <;> simp [mul, add, mul_comm, add_comm]
 
 lemma isClopen_basicOpen_of_mul_add (e f : R) (mul : e * f = 0) (add : e + f = 1) :
     IsClopen (basicOpen e : Set (PrimeSpectrum R)) :=
@@ -1087,7 +1087,7 @@ lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = basicOpen e := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · have ⟨e, f, h⟩ := exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen h
-    exact ⟨e, f, by simp only [h, and_self]⟩
+    exact ⟨e, f, by simp [h, and_self]⟩
   rintro ⟨e, f, mul, add, rfl⟩
   exact isClopen_basicOpen_of_mul_add e f mul add
 

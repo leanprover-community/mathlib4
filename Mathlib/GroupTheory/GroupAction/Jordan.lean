@@ -108,7 +108,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
   have hs_ne_univ : s ≠ Set.univ := by
     intro hs
     rw [hs, Set.ncard_univ] at hsn
-    simp only [hsn, add_lt_add_iff_left, Nat.not_ofNat_lt_one] at hsn'
+    simp [hsn, add_lt_add_iff_left, Nat.not_ofNat_lt_one] at hsn'
   have hs_nonempty : s.Nonempty := by
     simp [← Set.ncard_pos s.toFinite, hsn]
   -- The result is assumed by induction for sets of ncard ≤ n
@@ -421,7 +421,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
     suffices 3 = orderOf (⟨g, hg⟩ : G) by
       rw [this, Nat.card_eq_fintype_card]
       exact orderOf_dvd_card
-    simp only [orderOf_mk, h3g.orderOf]
+    simp [orderOf_mk, h3g.orderOf]
     -- important case : Nat.card α ≥ 4
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα4
   apply IsMultiplyPretransitive.alternatingGroup_le

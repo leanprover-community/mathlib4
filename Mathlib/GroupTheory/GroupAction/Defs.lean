@@ -236,11 +236,11 @@ theorem orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
 
 @[to_additive]
 theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by
-  simp only [orbit_smul, mem_orbit_self]
+  simp [orbit_smul, mem_orbit_self]
 
 @[to_additive]
 theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) := by
-  simp only [orbit_smul, mem_orbit]
+  simp [orbit_smul, mem_orbit]
 
 @[to_additive]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
@@ -316,7 +316,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     refine ⟨g⁻¹ • a, ?_, by simp +instances [f, orbitRel, Quotient.eq']⟩
     rw [← hu₂]
     convert hu₁
-    simp only [inv_smul_smul]
+    simp [inv_smul_smul]
 
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set α} :

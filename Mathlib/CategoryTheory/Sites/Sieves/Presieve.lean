@@ -221,7 +221,7 @@ theorem ofArrows_surj {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) {Z : C}
     (hg : ofArrows Y f g) : ∃ (i : ι) (h : Y i = Z),
     g = eqToHom h.symm ≫ f i := by
   obtain ⟨i⟩ := hg
-  exact ⟨i, rfl, by simp only [eqToHom_refl, id_comp]⟩
+  exact ⟨i, rfl, by simp [eqToHom_refl, id_comp]⟩
 
 lemma exists_eq_ofArrows (R : Presieve X) :
     ∃ (ι : Type (max u₁ v₁)) (Y : ι → C) (f : ∀ i, Y i ⟶ X), R = .ofArrows Y f := by

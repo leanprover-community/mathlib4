@@ -165,7 +165,7 @@ theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
   exact ENNReal.div_le_of_le_mul' (h x y)
 
 protected theorem of_edist_le (h : ∀ x y, edist (f x) (f y) ≤ edist x y) : LipschitzWith 1 f :=
-  fun x y => by simp only [ENNReal.coe_one, one_mul, h]
+  fun x y => by simp [ENNReal.coe_one, one_mul, h]
 
 protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') : LipschitzWith K' f :=
   fun x y => le_trans (hf x y) <| mul_left_mono (ENNReal.coe_le_coe.2 h)
@@ -193,10 +193,10 @@ protected theorem continuous (hf : LipschitzWith K f) : Continuous f :=
 
 /-- Constant functions are Lipschitz (with any constant). -/
 protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y => by
-  simp only [edist_self, zero_le]
+  simp [edist_self, zero_le]
 
 protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => b := fun x y => by
-  simp only [edist_self, zero_le]
+  simp [edist_self, zero_le]
 
 @[simp]
 lemma zero_iff {β : Type*} [EMetricSpace β] (f : α → β) : LipschitzWith 0 f ↔ ∀ x y, f x = f y := by

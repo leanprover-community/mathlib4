@@ -147,7 +147,7 @@ theorem mapsTo_iInter {s : Set α} {t : ι → Set β} {f : α → β} :
 
 theorem mapsTo_iInter₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → β} :
     MapsTo f s (⋂ (i) (j), t i j) ↔ ∀ i j, MapsTo f s (t i j) := by
-  simp only [mapsTo_iInter]
+  simp [mapsTo_iInter]
 
 theorem mapsTo_iInter_iInter {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋂ i, s i) (⋂ i, t i) :=
@@ -224,7 +224,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
     apply hx
   replace hx : ∀ i, x i ∈ ⋃ j, s j := fun i => (subset_iUnion _ _) (hx i)
   apply h (hx _) (hx _)
-  simp only [hy]
+  simp [hy]
 
 theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ i, p i → Set α} (hp : ∃ i, p i)
     {f : α → β} (h : InjOn f (⋃ (i) (hi), s i hi)) :
@@ -313,7 +313,7 @@ section Image
 
 theorem image_iUnion {f : α → β} {s : ι → Set α} : (f '' ⋃ i, s i) = ⋃ i, f '' s i := by
   ext1 x
-  simp only [mem_image, mem_iUnion, ← exists_and_right, exists_comm (α := α)]
+  simp [mem_image, mem_iUnion, ← exists_and_right, exists_comm (α := α)]
 
 theorem image_iUnion₂ (f : α → β) (s : ∀ i, κ i → Set α) :
     (f '' ⋃ (i) (j), s i j) = ⋃ (i) (j), f '' s i j := by simp_rw [image_iUnion]
@@ -443,7 +443,7 @@ theorem iUnion₂_prod_const {s : ∀ i, κ i → Set α} {t : Set β} :
 
 theorem sUnion_prod_const {C : Set (Set α)} {t : Set β} :
     ⋃₀ C ×ˢ t = ⋃₀ ((fun s : Set α => s ×ˢ t) '' C) := by
-  simp only [sUnion_eq_biUnion, iUnion₂_prod_const, biUnion_image]
+  simp [sUnion_eq_biUnion, iUnion₂_prod_const, biUnion_image]
 
 theorem iUnion_prod {ι ι' α β} (s : ι → Set α) (t : ι' → Set β) :
     ⋃ x : ι × ι', s x.1 ×ˢ t x.2 = (⋃ i : ι, s i) ×ˢ ⋃ i : ι', t i := by
@@ -516,18 +516,18 @@ theorem image2_eq_iUnion (s : Set α) (t : Set β) : image2 f s t = ⋃ (i ∈ s
   ext; simp [eq_comm]
 
 theorem iUnion_image_left : ⋃ a ∈ s, f a '' t = image2 f s t := by
-  simp only [image2_eq_iUnion, image_eq_iUnion]
+  simp [image2_eq_iUnion, image_eq_iUnion]
 
 theorem iUnion_image_right : ⋃ b ∈ t, (f · b) '' s = image2 f s t := by
   rw [image2_swap, iUnion_image_left]
 
 theorem image2_iUnion_left (s : ι → Set α) (t : Set β) :
     image2 f (⋃ i, s i) t = ⋃ i, image2 f (s i) t := by
-  simp only [← image_prod, iUnion_prod_const, image_iUnion]
+  simp [← image_prod, iUnion_prod_const, image_iUnion]
 
 theorem image2_iUnion_right (s : Set α) (t : ι → Set β) :
     image2 f s (⋃ i, t i) = ⋃ i, image2 f s (t i) := by
-  simp only [← image_prod, prod_iUnion, image_iUnion]
+  simp [← image_prod, prod_iUnion, image_iUnion]
 
 theorem image2_sUnion_left (S : Set (Set α)) (t : Set β) :
     image2 f (⋃₀ S) t = ⋃ s ∈ S, image2 f s t := by
@@ -608,7 +608,7 @@ theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
     f '' seq s t = seq ((f ∘ ·) '' s) t := by
-  simp only [seq, image_image2, image2_image_left, comp_apply]
+  simp [seq, image_image2, image2_image_left, comp_apply]
 
 theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t := by
   rw [seq_eq_image2, image2_image_left, image2_mk_eq_prod]

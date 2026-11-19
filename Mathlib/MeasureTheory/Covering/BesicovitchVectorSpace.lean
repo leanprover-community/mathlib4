@@ -138,10 +138,10 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
         rw [hA, measure_biUnion_finset D fun c _ => measurableSet_ball]
         have I : 0 < δ := by norm_num
         simp only [μ.addHaar_ball_of_pos _ I]
-        simp only [Finset.sum_const, nsmul_eq_mul, mul_assoc]
+        simp [Finset.sum_const, nsmul_eq_mul, mul_assoc]
       _ ≤ μ (ball (0 : E) ρ) := measure_mono A_subset
       _ = ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) := by
-        simp only [μ.addHaar_ball_of_pos _ ρpos]
+        simp [μ.addHaar_ball_of_pos _ ρpos]
   have J : (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) ≤ ENNReal.ofReal (ρ ^ finrank ℝ E) :=
     (ENNReal.mul_le_mul_iff_left (measure_ball_pos _ _ zero_lt_one).ne' measure_ball_lt_top.ne).1 I
   have K : (s.card : ℝ) ≤ (5 : ℝ) ^ finrank ℝ E := by
@@ -204,7 +204,7 @@ theorem exists_goodδ :
       exists_seq_strictAnti_tendsto (0 : ℝ)
     have A : ∀ n, F (u n) ∈ closedBall (0 : Fin N → E) 2 := by
       intro n
-      simp only [pi_norm_le_iff_of_nonneg zero_le_two, mem_closedBall, dist_zero_right,
+      simp [pi_norm_le_iff_of_nonneg zero_le_two, mem_closedBall, dist_zero_right,
         (hF (u n) (zero_lt_u n)).left, forall_const]
     obtain ⟨f, fmem, φ, φ_mono, hf⟩ :
       ∃ f ∈ closedBall (0 : Fin N → E) 2,
@@ -230,7 +230,7 @@ theorem exists_goodδ :
   let s := Finset.image f Finset.univ
   have s_card : s.card = N := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin N
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [s, hf, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
+    simp [s, hf, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖ := by
     simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
@@ -277,7 +277,7 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
   let s := Finset.image f Finset.univ
   have s_card : s.card = n := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin n
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [s, h, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ,
+    simp [s, h, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, imp_true_iff, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 - goodδ E ≤ ‖c - d‖ := by
     simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
@@ -383,7 +383,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
   have : a.r j - δ ≤ ‖a.c i - d‖ + (a.r j - 1) :=
     calc
       a.r j - δ ≤ ‖a.c i - a.c j‖ := A
-      _ ≤ ‖a.c i - d‖ + ‖d - a.c j‖ := by simp only [← dist_eq_norm, dist_triangle]
+      _ ≤ ‖a.c i - d‖ + ‖d - a.c j‖ := by simp [← dist_eq_norm, dist_triangle]
       _ ≤ ‖a.c i - d‖ + (a.r j - 1) := by
         gcongr
         have A : 0 ≤ 1 - 2 / ‖a.c j‖ := by simpa [div_le_iff₀ (zero_le_two.trans_lt hj)] using hj.le

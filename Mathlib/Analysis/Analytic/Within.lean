@@ -42,7 +42,7 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
   rcases mem_nhdsWithin.mp h with ⟨t, ot, xt, st⟩
   rcases Metric.mem_nhds_iff.mp (ot.mem_nhds xt) with ⟨r, r0, rt⟩
   exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r,
-  { r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
+  { r_le := by simp [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
     r_pos := by positivity
     hasSum := by
       intro y ys yr
@@ -54,7 +54,7 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
         · exact st (x + y) (rt (by simpa using yr)) ys
       simp only [this]
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
-      simp only [eball_top, mem_univ] }⟩
+      simp [eball_top, mem_univ] }⟩
 
 /-- If `f` is `AnalyticOn` near each point in a set, it is `AnalyticOn` the set -/
 lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
@@ -76,8 +76,8 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
           · simp
           · simp only [mem_insert_iff, add_eq_left, mem_inter_iff, ys, true_and]
             apply Or.inr (ru ?_)
-            simp only [mem_ball, dist_self_add_left, yr]
-        · simp only [mem_eball, yr] }⟩
+            simp [mem_ball, dist_self_add_left, yr]
+        · simp [mem_eball, yr] }⟩
 
 /-- On open sets, `AnalyticOnNhd` and `AnalyticOn` coincide -/
 lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen s) :
@@ -95,7 +95,7 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
       refine fp.hasSum ?_ ym.2
       apply mem_insert_of_mem
       apply rs
-      simp only [mem_ball, dist_self_add_left, ym.1] }⟩
+      simp [mem_ball, dist_self_add_left, ym.1] }⟩
 
 /-!
 ### Equivalence to analyticity of a local extension

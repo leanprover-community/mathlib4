@@ -150,7 +150,7 @@ noncomputable def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (�
     rw [comp_zero]
     split_ifs with hk
     · subst hk
-      simp only [XIsoOfEq_rfl, Iso.refl_hom, id_comp, reassoc_of% hφ i hik, zero_comp]
+      simp [XIsoOfEq_rfl, Iso.refl_hom, id_comp, reassoc_of% hφ i hik, zero_comp]
     · apply (isZero_single_obj_X c j A k hk).eq_of_tgt
 
 @[simp]
@@ -174,7 +174,7 @@ noncomputable def mkHomFromSingle {K : HomologicalComplex V c} {j : ι} {A : V} 
     rw [zero_comp]
     split_ifs with hi
     · subst hi
-      simp only [XIsoOfEq_rfl, Iso.refl_inv, comp_id, assoc, hφ k hik, comp_zero]
+      simp [XIsoOfEq_rfl, Iso.refl_inv, comp_id, assoc, hφ k hik, comp_zero]
     · apply (isZero_single_obj_X c j A i hi).eq_of_src
 
 @[simp]

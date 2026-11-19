@@ -264,7 +264,7 @@ namespace mkMetric'
 variable {m : Set X → ℝ≥0∞} {r : ℝ≥0∞} {μ : OuterMeasure X} {s : Set X}
 
 theorem le_pre : μ ≤ pre m r ↔ ∀ s : Set X, ediam s ≤ r → μ s ≤ m s := by
-  simp only [pre, le_boundedBy, extend, le_iInf_iff]
+  simp [pre, le_boundedBy, extend, le_iInf_iff]
 
 theorem pre_le (hs : ediam s ≤ r) : pre m r s ≤ m s :=
   (boundedBy_le _).trans <| iInf_le _ hs
@@ -359,7 +359,7 @@ theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (h
     simp only [extend, le_iInf_iff]
     intro ht
     apply le_trans _ (h_mono (ediam_mono hst))
-    simp only [(ediam_mono hst).trans ht, le_refl, ciInf_pos]
+    simp [(ediam_mono hst).trans ht, le_refl, ciInf_pos]
 
 theorem mkMetric_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) (hc' : c ≠ 0) :
     (mkMetric (c • m) : OuterMeasure X) = c • mkMetric m := by
@@ -478,7 +478,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
   by_cases htr : ∀ n, ediam (t n) ≤ r
   · rw [iInf_eq_if, ite_eq_left htr]
     congr 1 with n : 1
-    simp only [iInf_eq_if, htr n, ite_true]
+    simp [iInf_eq_if, htr n, ite_true]
   · rw [iInf_eq_if, ite_eq_right htr]
     push Not at htr; rcases htr with ⟨n, hn⟩
     refine tsum_eq_top_of_eq_top ⟨n, ?_⟩
@@ -586,8 +586,8 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
     ← ENNReal.div_le_iff_le_mul (Or.inr ENNReal.coe_ne_top) (Or.inr <| mt ENNReal.coe_eq_zero.1 hc)]
   rcases eq_or_ne r 0 with (rfl | hr₀)
   · rcases lt_or_ge 0 d₂ with (h₂ | h₂)
-    · simp only [h₂, ENNReal.zero_rpow_of_pos, zero_le, ENNReal.zero_div, ENNReal.coe_zero]
-    · simp only [h.trans_le h₂, ENNReal.div_top, zero_le, ENNReal.zero_rpow_of_neg,
+    · simp [h₂, ENNReal.zero_rpow_of_pos, zero_le, ENNReal.zero_div, ENNReal.coe_zero]
+    · simp [h.trans_le h₂, ENNReal.div_top, zero_le, ENNReal.zero_rpow_of_neg,
         ENNReal.coe_zero]
   · have : (r : ℝ≥0∞) ≠ 0 := by simpa only [ENNReal.coe_eq_zero, Ne] using hr₀
     rw [← ENNReal.rpow_sub _ _ this ENNReal.coe_ne_top]
@@ -618,7 +618,7 @@ theorem nullSingletonClass_hausdorff {d : ℝ} (hd : 0 < d) :
   rw [← nonpos_iff_eq_zero, hausdorffMeasure_apply]
   refine iSup₂_le fun ε _ => iInf₂_le_of_le (fun _ => {x}) ?_ <| iInf_le_of_le (fun _ => ?_) ?_
   · exact subset_iUnion (fun _ => {x} : ℕ → Set X) 0
-  · simp only [ediam_singleton, zero_le]
+  · simp [ediam_singleton, zero_le]
   · simp [hd]
 
 @[deprecated (since := "2026-06-09")]
@@ -630,7 +630,7 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
   · let r : ℕ → ℝ≥0∞ := fun _ => 0
     let t : ℕ → Unit → Set X := fun _ _ => {x}
     have ht : ∀ᶠ n in atTop, ∀ i, ediam (t n i) ≤ r n := by
-      simp only [t, r, imp_true_iff, ediam_singleton, eventually_atTop,
+      simp [t, r, imp_true_iff, ediam_singleton, eventually_atTop,
         nonpos_iff_eq_zero, exists_const]
     simpa [t, liminf_const] using hausdorffMeasure_le_liminf_sum 0 {x} r tendsto_const_nhds t ht
   · rw [hausdorffMeasure_apply]
@@ -657,12 +657,12 @@ theorem one_le_hausdorffMeasure_zero_of_nonempty {s : Set X} (h : s.Nonempty) : 
 theorem hausdorffMeasure_le_one_of_subsingleton {s : Set X} (hs : s.Subsingleton) {d : ℝ}
     (hd : 0 ≤ d) : μH[d] s ≤ 1 := by
   rcases eq_empty_or_nonempty s with (rfl | ⟨x, hx⟩)
-  · simp only [measure_empty, zero_le]
+  · simp [measure_empty, zero_le]
   · rw [(subsingleton_iff_singleton hx).1 hs]
     rcases eq_or_lt_of_le hd with (rfl | dpos)
-    · simp only [le_refl, hausdorffMeasure_zero_singleton]
+    · simp [le_refl, hausdorffMeasure_zero_singleton]
     · have := nullSingletonClass_hausdorff X dpos
-      simp only [zero_le, measure_singleton]
+      simp [zero_le, measure_singleton]
 
 end Measure
 
@@ -690,7 +690,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
   -- We start with the trivial case `C = 0`
   rcases eq_zero_or_pos C with (rfl | hC0)
   · rcases eq_empty_or_nonempty s with (rfl | ⟨x, hx⟩)
-    · simp only [measure_empty, nonpos_iff_eq_zero, mul_zero, image_empty]
+    · simp [measure_empty, nonpos_iff_eq_zero, mul_zero, image_empty]
     have : f '' s = {f x} :=
       have : (f '' s).Subsingleton := by simpa [ediam_eq_zero_iff] using h.ediam_image_le
       (subsingleton_iff_singleton (mem_image_of_mem f hx)).1 this
@@ -700,7 +700,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
       rw [hausdorffMeasure_zero_singleton]
       exact one_le_hausdorffMeasure_zero_of_nonempty ⟨x, hx⟩
     · have := nullSingletonClass_hausdorff Y h'd
-      simp only [zero_le, measure_singleton]
+      simp [zero_le, measure_singleton]
   -- Now assume `C ≠ 0`
   · have hCd0 : (C : ℝ≥0∞) ^ d ≠ 0 := by simp [hC0.ne']
     have hCd : (C : ℝ≥0∞) ^ d ≠ ∞ := by simp [hd]
@@ -777,7 +777,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
     μH[d] (f ⁻¹' s) ≤ (K : ℝ≥0∞) ^ d * μH[d] s := by
   rcases eq_or_ne K 0 with (rfl | h0)
   · rcases eq_empty_or_nonempty (f ⁻¹' s) with (hs | ⟨x, hx⟩)
-    · simp only [hs, measure_empty, zero_le]
+    · simp [hs, measure_empty, zero_le]
     have : f ⁻¹' s = {x} := by
       have : Subsingleton X := hf.subsingleton
       have : (f ⁻¹' s).Subsingleton := subsingleton_univ.anti (subset_univ _)
@@ -788,7 +788,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
       rw [hausdorffMeasure_zero_singleton]
       exact one_le_hausdorffMeasure_zero_of_nonempty ⟨f x, hx⟩
     · have := nullSingletonClass_hausdorff X h'd
-      simp only [zero_le, measure_singleton]
+      simp [zero_le, measure_singleton]
   have hKd0 : (K : ℝ≥0∞) ^ d ≠ 0 := by simp [h0]
   have hKd : (K : ℝ≥0∞) ^ d ≠ ∞ := by simp [hd]
   simp only [hausdorffMeasure_apply, ENNReal.mul_iSup, ENNReal.mul_iInf_of_ne hKd0 hKd,
@@ -914,12 +914,12 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
   let t : ∀ n : ℕ, γ n → Set (ι → ℝ) := fun n f =>
     Set.pi univ fun i => Icc (a i + f i / n) (a i + (f i + 1) / n)
   have A : Tendsto (fun n : ℕ => 1 / (n : ℝ≥0∞)) atTop (𝓝 0) := by
-    simp only [one_div, ENNReal.tendsto_inv_nat_nhds_zero]
+    simp [one_div, ENNReal.tendsto_inv_nat_nhds_zero]
   have B : ∀ᶠ n in atTop, ∀ i : γ n, ediam (t n i) ≤ 1 / n := by
     refine eventually_atTop.2 ⟨1, fun n hn => ?_⟩
     intro f
     refine ediam_pi_le_of_le fun b => ?_
-    simp only [Real.ediam_Icc, add_div, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), le_refl,
+    simp [Real.ediam_Icc, add_div, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), le_refl,
       add_sub_add_left_eq_sub, add_sub_cancel_left, ENNReal.ofReal_one, ENNReal.ofReal_natCast]
   have C : ∀ᶠ n in atTop, (Set.pi univ fun i : ι => Ioo (a i : ℝ) (b i)) ⊆ ⋃ i : γ n, t n i := by
     refine eventually_atTop.2 ⟨1, fun n hn => ?_⟩
@@ -959,7 +959,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
-      simp only [γ, Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,
+      simp [γ, Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,
         nsmul_eq_mul, Fintype.card_pi, div_eq_mul_inv, Finset.prod_mul_distrib, Finset.prod_const]
     _ = ∏ i : ι, volume (Ioo (a i : ℝ) (b i)) := by
       simp only [Real.volume_Ioo]
@@ -971,9 +971,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
               ((tendsto_nat_ceil_mul_div_atTop (I i)).comp tendsto_natCast_atTop_atTop))
         apply eventually_atTop.2 ⟨1, fun n hn => _⟩
         intro n hn
-        simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
+        simp [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
           ENNReal.ofReal_natCast]
-      · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
+      · simp [ENNReal.ofReal_ne_top, Ne, not_false_iff]
 
 instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]

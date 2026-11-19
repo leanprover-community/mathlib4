@@ -104,7 +104,7 @@ instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : A
   commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [Algebra.commutes]
 
 instance : StarModule ℝ ℂ :=
-  ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
+  ⟨fun r x => by simp [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
 
 @[simp]
 theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
@@ -133,7 +133,7 @@ theorem _root_.AlgHom.map_coe_real_complex (f : ℂ →ₐ[ℝ] A) (x : ℝ) : f
 @[ext]
 theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
   ext ⟨x, y⟩
-  simp only [mk_eq_add_mul_I, map_add, AlgHom.map_coe_real_complex, map_mul, h]
+  simp [mk_eq_add_mul_I, map_add, AlgHom.map_coe_real_complex, map_mul, h]
 
 end
 
@@ -482,7 +482,7 @@ lemma realPart_surjective : Function.Surjective (realPart (A := A)) :=
 
 lemma imaginaryPart_surjective : Function.Surjective (imaginaryPart (A := A)) :=
   fun x ↦
-    ⟨I • (x : A), Subtype.ext <| by simp only [imaginaryPart_I_smul, x.property.coe_realPart]⟩
+    ⟨I • (x : A), Subtype.ext <| by simp [imaginaryPart_I_smul, x.property.coe_realPart]⟩
 
 lemma ComplexStarModule.ext {x y : A} (h₁ : ℜ x = ℜ y) (h₂ : ℑ x = ℑ y) : x = y := by
   rw [← realPart_add_I_smul_imaginaryPart x, ← realPart_add_I_smul_imaginaryPart y, h₁, h₂]

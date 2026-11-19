@@ -575,10 +575,10 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
   invFun f := (e₄₃.symm : M₃ →SL[σ₃₄] M₄).comp (f.comp (e₁₂ : M₁ →SL[σ₁₂] M₂))
   left_inv f :=
     ContinuousLinearMap.ext fun x => by
-      simp only [ContinuousLinearMap.comp_apply, symm_apply_apply, coe_coe]
+      simp [ContinuousLinearMap.comp_apply, symm_apply_apply, coe_coe]
   right_inv f :=
     ContinuousLinearMap.ext fun x => by
-      simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
+      simp [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
 
 /-- A pair of continuous (semi)linear equivalences generates a linear equivalence between the spaces
 of continuous linear maps. See also `ContinuousLinearEquiv.arrowCongr`. -/

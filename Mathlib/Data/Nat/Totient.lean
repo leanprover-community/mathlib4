@@ -54,8 +54,8 @@ theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n �
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
       invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
-      left_inv := fun m => by simp only [Subtype.coe_eta]
-      right_inv := fun m => by simp only }
+      left_inv := fun m => by simp [Subtype.coe_eta]
+      right_inv := fun m => by simp }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=
@@ -131,7 +131,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
 theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
     rcases Nat.mul_eq_zero.1 hmn0 with h | h <;>
-      simp only [totient_zero, mul_zero, zero_mul, h]
+      simp [totient_zero, mul_zero, zero_mul, h]
   else by
     have : NeZero (m * n) := ⟨hmn0⟩
     have : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩

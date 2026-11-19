@@ -29,7 +29,7 @@ come from the fact that `C(X, ℝ)` is lattice and an additive group. -/
 private lemma realToRCLike_posPart_negPart :
     (f.realToRCLike ℂ)⁺ = f⁺.realToRCLike ℂ ∧ (f.realToRCLike ℂ)⁻ = f⁻.realToRCLike ℂ := by
   refine CFC.posPart_negPart_unique ?_ ?_ ?_ ?_ <;> simp_rw [← realToRCLikeStarAlgHom_apply]
-  · simp only [← map_sub, posPart_sub_negPart]
+  · simp [← map_sub, posPart_sub_negPart]
   · rw [← map_mul, ← map_zero (realToRCLikeStarAlgHom X ℂ)]
     congr!
     ext x

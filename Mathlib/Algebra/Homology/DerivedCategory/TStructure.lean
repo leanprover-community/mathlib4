@@ -131,14 +131,14 @@ lemma isGE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).IsGE n ↔ K.IsGE n := by
   have eq := fun i ↦ ((homologyFunctorFactors C i).app K).isZero_iff
   simp only [Functor.comp_obj, HomologicalComplex.homologyFunctor_obj] at eq
-  simp only [isGE_iff, CochainComplex.isGE_iff,
+  simp [isGE_iff, CochainComplex.isGE_iff,
     HomologicalComplex.exactAt_iff_isZero_homology, eq]
 
 lemma isLE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).IsLE n ↔ K.IsLE n := by
   have eq := fun i ↦ ((homologyFunctorFactors C i).app K).isZero_iff
   simp only [Functor.comp_obj, HomologicalComplex.homologyFunctor_obj] at eq
-  simp only [isLE_iff, CochainComplex.isLE_iff,
+  simp [isLE_iff, CochainComplex.isLE_iff,
     HomologicalComplex.exactAt_iff_isZero_homology, eq]
 
 instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsGE n] :

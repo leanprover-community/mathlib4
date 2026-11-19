@@ -179,10 +179,10 @@ set_option backward.isDefEq.respectTransparency.types false in
   `f : K →+* L` to `𝓞 K`. -/
 def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) where
   toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
-  map_zero' := by ext; simp only [map_mk, map_zero]
-  map_one' := by ext; simp only [map_mk, map_one]
-  map_add' x y := by ext; simp only [map_mk, map_add]
-  map_mul' x y := by ext; simp only [map_mk, map_mul]
+  map_zero' := by ext; simp [map_mk, map_zero]
+  map_one' := by ext; simp [map_mk, map_one]
+  map_add' x y := by ext; simp [map_mk, map_add]
+  map_mul' x y := by ext; simp [map_mk, map_mul]
 
 @[simp]
 theorem mapRingHom_apply {K L : Type*} [Field K] [Field L] (f : K →+* L) (x : 𝓞 K) :

@@ -372,10 +372,10 @@ instance _root_.MeasureTheory.Measure.condKernel.instIsCondKernel (ρ : Measure 
   disintegrate := by
     have h1 : const Unit (Measure.fst ρ) = fst (const Unit ρ) := by
       ext
-      simp only [fst_apply, Measure.fst, const_apply]
+      simp [fst_apply, Measure.fst, const_apply]
     have h2 : prodMkLeft Unit (Measure.condKernel ρ) = condKernelUnitBorel (const Unit ρ) := by
       ext
-      simp only [prodMkLeft_apply, Measure.condKernel_apply]
+      simp [prodMkLeft_apply, Measure.condKernel_apply]
     rw [Measure.compProd, h1, h2, disintegrate]
     simp
 

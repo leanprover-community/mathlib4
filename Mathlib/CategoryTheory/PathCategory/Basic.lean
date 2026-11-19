@@ -186,7 +186,7 @@ theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.o
     | nil => erw [F.map_id, G.map_id, Category.id_comp, eqToHom_trans, eqToHom_refl]
     | cons g e ih =>
       erw [F.map_comp g (Quiver.Hom.toPath e), G.map_comp g (Quiver.Hom.toPath e), ih, h]
-      simp only [Category.id_comp, eqToHom_refl, eqToHom_trans_assoc, Category.assoc]
+      simp [Category.id_comp, eqToHom_refl, eqToHom_trans_assoc, Category.assoc]
 
 end Paths
 

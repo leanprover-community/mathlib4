@@ -129,7 +129,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       A.det • a i = ∑ j, (B * A) i j • a j := ?_
       _ = ∑ k, B i k • ∑ j, A k j • a j := ?_
       _ = 0 := Finset.sum_eq_zero fun k _ => ?_
-    · simp only [B, Matrix.adjugate_mul, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, ite_true,
+    · simp [B, Matrix.adjugate_mul, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, ite_true,
         mul_ite, mul_one, mul_zero, ite_smul, zero_smul, Finset.sum_ite_eq, Finset.mem_univ]
     · simp only [Matrix.mul_apply, Finset.smul_sum, Finset.sum_smul, smul_smul]
       rw [Finset.sum_comm]
@@ -214,7 +214,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     intro i hi
     rw [map_smul, ← IsScalarTower.algebraMap_smul K, hg' i hi, ← smul_assoc,
       smul_eq_mul, Function.comp_apply]
-  simp only [IsScalarTower.algebraMap_smul, ← map_smul, ← map_sum,
+  simp [IsScalarTower.algebraMap_smul, ← map_smul, ← map_sum,
     (F.map_eq_zero_iff hf).mp eq, map_zero, (· ∘ ·)]
 
 variable (L)
@@ -351,7 +351,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
   toFun := quotientToQuotientRangePowQuotSuccAux p P a_mem
   map_add' x y := by
     induction x, y using Quotient.inductionOn₂' with | _ x y
-    simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
+    simp [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add, map_add, map_mul, AddMemClass.mk_add_mk]
   map_smul' x y := by
     induction x, y using Quotient.inductionOn₂' with | _ x y
@@ -489,7 +489,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
     apply @Nat.cast_injective Cardinal
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
-  simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
+  simp [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
     mul_zero]
 
 end FactLeComap

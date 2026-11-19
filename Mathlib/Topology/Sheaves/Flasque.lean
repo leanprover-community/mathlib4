@@ -143,7 +143,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S
     | 1 => t₁ + (S.f.hom.app (op W)) t₄
     have : sf 0 |_ (t.right.obj.unop ⊓ W) = sf 1 |_ (t.right.obj.unop ⊓ W) := by
       dsimp [sf, f]
-      simp only [restrict_sum, ← map_restrict, ht₄, ht₃, t₂, add_sub_cancel]
+      simp [restrict_sum, ← map_restrict, ht₄, ht₃, t₂, add_sub_cancel]
     -- We glue `t.right.2` and `t₁ + (S.f.hom.app (op W)) t₄` together to form `t₅`
     obtain ⟨t₅, ht₅, _⟩ : ∃! t₅, IsGluing S.X₂.obj f sf t₅ := by
       apply Sheaf.existsUnique_gluing

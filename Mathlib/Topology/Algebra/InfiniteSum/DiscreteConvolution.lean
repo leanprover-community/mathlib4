@@ -235,7 +235,7 @@ variable [Monoid M] [Finset.HasMulAntidiagonal M]
 private lemma mulFiber_eq_mulAntidiagonal (x : M) :
     mulFiber x = ↑(Finset.mulAntidiagonal x) := by
   ext ab
-  simp only [Finset.mem_coe, Finset.mem_mulAntidiagonal, mem_mulFiber]
+  simp [Finset.mem_coe, Finset.mem_mulAntidiagonal, mem_mulFiber]
 
 /-- Multiplication fibers are finite when the index monoid has `Finset.HasMulAntidiagonal`. -/
 @[to_additive

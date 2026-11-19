@@ -993,7 +993,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     -- with `t < b` admits another point in `s` slightly to its right
     -- (this is a sort of real induction).
     refine s_closed.Icc_subset_of_forall_exists_gt
-      (by simp only [integral_same, mem_ofPred_eq, sub_self, le_rfl]) fun t ht v t_lt_v => ?_
+      (by simp [integral_same, mem_ofPred_eq, sub_self, le_rfl]) fun t ht v t_lt_v => ?_
     obtain ⟨y, g'_lt_y', y_lt_G'⟩ : ∃ y : ℝ, (g' t : EReal) < y ∧ (y : EReal) < G' t :=
       EReal.lt_iff_exists_real_btwn.1 ((EReal.coe_le_coe_iff.2 (hφg t ht.2)).trans_lt (f_lt_G' t))
     -- bound from below the increase of `∫ x in a..u, G' x` on the right of `t`, using the lower
@@ -1006,7 +1006,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       have I : Icc t u ⊆ Icc a b := Icc_subset_Icc ht.2.1 (hu.2.le.trans (min_le_right _ _))
       calc
         (u - t) * y = ∫ _ in Icc t u, y := by
-          simp only [MeasureTheory.integral_const, MeasurableSet.univ, measureReal_restrict_apply,
+          simp [MeasureTheory.integral_const, MeasurableSet.univ, measureReal_restrict_apply,
             univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul]
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
@@ -1020,7 +1020,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
             filter_upwards [C1, C2] with x G'x hx
             apply EReal.coe_le_coe_iff.1
             have : x ∈ Ioo m M := by
-              simp only [hm.trans_le hx.left,
+              simp [hm.trans_le hx.left,
                 (hx.right.trans_lt hu.right).trans_le (min_le_left M b), mem_Ioo, and_self_iff]
             refine (H this).out.le.trans_eq ?_
             exact (EReal.coe_toReal G'x.ne (f_lt_G' x).ne_bot).symm
@@ -1057,7 +1057,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     _ ≤ (∫ y in a..b, φ y) + ε := by
       convert hG'.le <;>
         · rw [intervalIntegral.integral_of_le hab]
-          simp only [integral_Icc_eq_integral_Ioc', Real.volume_singleton]
+          simp [integral_Icc_eq_integral_Ioc', Real.volume_singleton]
 
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.
@@ -1211,7 +1211,7 @@ lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E]
     simp [hasDerivAt_iff_isLittleO, sub_smul]
   convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
   · simp_rw [← integral_smul, Function.comp_apply, γ]
-  · simp only [γ, Function.comp_apply, one_smul, zero_smul, add_zero]
+  · simp [γ, Function.comp_apply, one_smul, zero_smul, add_zero]
 
 /-!
 ### Automatic integrability for nonnegative derivatives
@@ -1248,7 +1248,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     refine integral_le_sub_of_hasDeriv_right_of_le hab.le hcont hderiv ?_ fun x hx => ?_
     · rwa [integrableOn_Icc_iff_integrableOn_Ioo]
     · convert! NNReal.coe_le_coe.2 (fle x)
-      simp only [Real.norm_of_nonneg (g'pos x hx), coe_nnNorm]
+      simp [Real.norm_of_nonneg (g'pos x hx), coe_nnNorm]
   exact lt_irrefl _ (hf.trans_le (ENNReal.ofReal_le_ofReal B))
 
 /-- When the derivative of a function is nonnegative, then it is automatically integrable,

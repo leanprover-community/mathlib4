@@ -81,7 +81,7 @@ variable {f x}
 defined in `Mathlib/LinearAlgebra/TensorProduct/Vanishing.lean`. -/
 theorem isTrivialRelation_iff_vanishesTrivially :
     IsTrivialRelation f x ↔ VanishesTrivially R f x := by
-  simp only [IsTrivialRelation, VanishesTrivially, smul_eq_mul, mul_comm]
+  simp [IsTrivialRelation, VanishesTrivially, smul_eq_mul, mul_comm]
 
 theorem _root_.Equiv.isTrivialRelation_comp {κ} [Fintype κ] (e : κ ≃ ι) :
     IsTrivialRelation (f ∘ e) (x ∘ e) ↔ IsTrivialRelation f x := by
@@ -244,7 +244,7 @@ private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K :
       simp_rw [comp_assoc]
       exact ⟨trivial, sup_le (ha₁.trans (ker_le_ker_comp _ _)) ha₂⟩
   convert! this ⊤ Finite.fg_top
-  simp only [top_le_iff, ker_eq_top]
+  simp [top_le_iff, ker_eq_top]
 
 /-- Let $M$ be a flat module. Let $K$ and $N$ be finite $R$-modules with $N$
 free, and let $f \colon K \to N$ and $x \colon N \to M$ be linear maps such that

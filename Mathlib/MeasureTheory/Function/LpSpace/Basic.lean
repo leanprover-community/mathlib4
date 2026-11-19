@@ -445,7 +445,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
-        neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
+        neg' := by simp [norm_neg, implies_true] -- squeezed for performance reasons
         add_le' := fun f g => by
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
@@ -541,7 +541,7 @@ theorem MemLp.eNorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
   rw [memLp_iff]
   by_cases q_top : q = ∞
   · subst q
-    simp only [ENNReal.toReal_top, ENNReal.rpow_zero, ENNReal.div_top,
+    simp [ENNReal.toReal_top, ENNReal.rpow_zero, ENNReal.div_top,
       eLpNorm_exponent_zero aestronglyMeasurable_const, ENNReal.zero_lt_top]
   by_cases q_zero : q = 0
   · subst q
@@ -550,7 +550,7 @@ theorem MemLp.eNorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
       simpa only [ENNReal.toReal_zero] using hfrpow
     by_cases p_zero : p = 0
     · subst p
-      simp only [ENNReal.zero_div, eLpNorm_exponent_zero hfrpow_zero,
+      simp [ENNReal.zero_div, eLpNorm_exponent_zero hfrpow_zero,
         ENNReal.zero_lt_top]
     rw [ENNReal.div_zero p_zero]
     simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using
@@ -570,14 +570,14 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
   rw [memLp_iff]
   by_cases q_top : q = ∞
   · subst q
-    simp only [ENNReal.toReal_top, Real.rpow_zero, ENNReal.div_top,
+    simp [ENNReal.toReal_top, Real.rpow_zero, ENNReal.div_top,
       eLpNorm_exponent_zero aestronglyMeasurable_const, ENNReal.zero_lt_top]
   by_cases q_zero : q = 0
   · subst q
     simp only [ENNReal.toReal_zero, Real.rpow_zero]
     by_cases p_zero : p = 0
     · subst p
-      simp only [ENNReal.zero_div, eLpNorm_exponent_zero aestronglyMeasurable_const,
+      simp [ENNReal.zero_div, eLpNorm_exponent_zero aestronglyMeasurable_const,
         ENNReal.zero_lt_top]
     rw [ENNReal.div_zero p_zero]
     exact (memLp_top_const (1 : ℝ)).eLpNorm_lt_top
@@ -786,7 +786,7 @@ theorem compLp_zero (hg : LipschitzWith c g) (g0 : g 0 = 0) : hg.compLp g0 (0 : 
   rw [Lp.eq_zero_iff_ae_eq_zero]
   apply (coeFn_compLp _ _ _).trans
   filter_upwards [Lp.coeFn_zero E p μ] with _ ha
-  simp only [ha, g0, Function.comp_apply, Pi.zero_apply]
+  simp [ha, g0, Function.comp_apply, Pi.zero_apply]
 
 theorem norm_compLp_sub_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f f' : Lp E p μ) :
     ‖hg.compLp g0 f - hg.compLp g0 f'‖ ≤ c * ‖f - f'‖ := by
@@ -804,7 +804,7 @@ theorem norm_compLp_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) :
 theorem lipschitzWith_compLp [Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
     LipschitzWith c (hg.compLp g0 : Lp E p μ → Lp F p μ) :=
   -- squeezed for performance reasons
-  LipschitzWith.of_dist_le_mul fun f g => by simp only [dist_eq_norm, norm_compLp_sub_le]
+  LipschitzWith.of_dist_le_mul fun f g => by simp [dist_eq_norm, norm_compLp_sub_le]
 
 theorem continuous_compLp [Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
     Continuous (hg.compLp g0 : Lp E p μ → Lp F p μ) :=
@@ -885,12 +885,12 @@ variable (μ p)
     filter_upwards [Lp.coeFn_add f g, coeFn_compLp L (f + g), coeFn_compLp L f,
       coeFn_compLp L g, Lp.coeFn_add (L.compLp f) (L.compLp g)]
     intro a ha1 ha2 ha3 ha4 ha5
-    simp only [ha1, ha2, ha3, ha4, ha5, map_add, Pi.add_apply]
+    simp [ha1, ha2, ha3, ha4, ha5, map_add, Pi.add_apply]
   map_smul' c f := by
     ext1
     filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul (σ c) (L.compLp f),
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
-    simp only [ha1, ha2, ha3, ha4, Pi.smul_apply, map_smulₛₗ]
+    simp [ha1, ha2, ha3, ha4, Pi.smul_apply, map_smulₛₗ]
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
 `Lp E p μ`. See also the similar
@@ -938,7 +938,7 @@ variable (μ p) in
     filter_upwards [(B (g + h)).coeFn_compLp f, (B g).coeFn_compLp f, (B h).coeFn_compLp f,
       Lp.coeFn_add ((B g).compLp f) ((B h).compLp f)] with x hx hg hh hadd
     simp only [compLpₗ_apply, LinearMap.add_apply, hx, hadd]
-    simp only [map_add, add_apply, Pi.add_apply, hg, hh]
+    simp [map_add, add_apply, Pi.add_apply, hg, hh]
   map_smul' c g := by
     ext f
     filter_upwards [(c • B g).coeFn_compLp f, (B g).coeFn_compLp f,

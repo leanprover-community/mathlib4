@@ -118,8 +118,8 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
   · have : x - t ∉ support g := by
       refine mt (fun hxt => hu ?_) ht
       refine ⟨_, Set.neg_mem_neg.mpr (subset_closure hxt), _, hx, ?_⟩
-      simp only [neg_sub, sub_add_cancel]
-    simp only [notMem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
+      simp [neg_sub, sub_add_cancel]
+    simp [notMem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
 
 theorem _root_.HasCompactSupport.convolution_integrand_bound_right_of_subset
     (hcg : HasCompactSupport g) (hg : Continuous g)
@@ -311,7 +311,7 @@ theorem _root_.HasCompactSupport.convolutionExistsAt {x₀ : G}
           v.measurableEmbedding).1
       A
   ext x
-  simp only [v, Homeomorph.neg, sub_eq_add_neg, val_toAddUnits_apply, Homeomorph.trans_apply,
+  simp [v, Homeomorph.neg, sub_eq_add_neg, val_toAddUnits_apply, Homeomorph.trans_apply,
     Equiv.neg_apply, Homeomorph.homeomorph_mk_coe, Homeomorph.coe_addLeft]
 
 theorem _root_.HasCompactSupport.convolutionExists_right (hcg : HasCompactSupport g)
@@ -435,10 +435,10 @@ section Group
 variable {L} [AddGroup G]
 
 theorem smul_convolution [SMulCommClass ℝ 𝕜 F] {y : 𝕜} : y • f ⋆[L, μ] g = y • (f ⋆[L, μ] g) := by
-  ext; simp only [Pi.smul_apply, convolution_def, ← integral_smul, L.map_smul₂]
+  ext; simp [Pi.smul_apply, convolution_def, ← integral_smul, L.map_smul₂]
 
 theorem convolution_smul [SMulCommClass ℝ 𝕜 F] {y : 𝕜} : f ⋆[L, μ] y • g = y • (f ⋆[L, μ] g) := by
-  ext; simp only [Pi.smul_apply, convolution_def, ← integral_smul, (L _).map_smul]
+  ext; simp [Pi.smul_apply, convolution_def, ← integral_smul, (L _).map_smul]
 
 @[simp]
 theorem zero_convolution : 0 ⋆[L, μ] g = 0 := by
@@ -453,7 +453,7 @@ theorem convolution_zero : f ⋆[L, μ] 0 = 0 := by
 theorem ConvolutionExistsAt.distrib_add {x : G} (hfg : ConvolutionExistsAt f g x L μ)
     (hfg' : ConvolutionExistsAt f g' x L μ) :
     (f ⋆[L, μ] (g + g')) x = (f ⋆[L, μ] g) x + (f ⋆[L, μ] g') x := by
-  simp only [convolution_def, (L _).map_add, Pi.add_apply, integral_add hfg hfg']
+  simp [convolution_def, (L _).map_add, Pi.add_apply, integral_add hfg hfg']
 
 theorem ConvolutionExists.distrib_add (hfg : ConvolutionExists f g L μ)
     (hfg' : ConvolutionExists f g' L μ) : f ⋆[L, μ] (g + g') = f ⋆[L, μ] g + f ⋆[L, μ] g' := by
@@ -463,7 +463,7 @@ theorem ConvolutionExists.distrib_add (hfg : ConvolutionExists f g L μ)
 theorem ConvolutionExistsAt.add_distrib {x : G} (hfg : ConvolutionExistsAt f g x L μ)
     (hfg' : ConvolutionExistsAt f' g x L μ) :
     ((f + f') ⋆[L, μ] g) x = (f ⋆[L, μ] g) x + (f' ⋆[L, μ] g) x := by
-  simp only [convolution_def, L.map_add₂, Pi.add_apply, integral_add hfg hfg']
+  simp [convolution_def, L.map_add₂, Pi.add_apply, integral_add hfg hfg']
 
 theorem ConvolutionExists.add_distrib (hfg : ConvolutionExists f g L μ)
     (hfg' : ConvolutionExists f' g L μ) : (f + f') ⋆[L, μ] g = f ⋆[L, μ] g + f' ⋆[L, μ] g := by
@@ -636,7 +636,7 @@ theorem continuousOn_convolution_right_with_param_comp {s : Set P} {v : P → G}
   apply
     (continuousOn_convolution_right_with_param L hk hgs hf hg).comp (continuousOn_id.prodMk hv)
   intro x hx
-  simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
+  simp [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 
 /-- The convolution is continuous if one function is locally integrable and the other has compact
 support and is continuous. -/
@@ -716,7 +716,7 @@ theorem convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀�
       simp_rw [ht, ← h't, neg_add']
     _ = ∫ t : G, (L (f t)) (g (x - t)) ∂μ := by
       rw [← integral_neg_eq_self]
-      simp only [neg_neg, ← sub_eq_add_neg]
+      simp [neg_neg, ← sub_eq_add_neg]
 
 end Measurable
 
@@ -954,7 +954,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     rw [← h3] at this
     convert this.comp_measurable (measurable_sub.prodMk measurable_snd)
     ext ⟨x, y⟩
-    simp +unfoldPartialApp only [uncurry, Function.comp_apply,
+    simp +unfoldPartialApp [uncurry, Function.comp_apply,
       sub_sub_sub_cancel_right]
   simp_rw [integrable_prod_iff' h_meas]
   refine ⟨((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht =>

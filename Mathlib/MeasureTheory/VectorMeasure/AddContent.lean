@@ -351,7 +351,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
         apply ae_mono m'_le
         apply ae_eq_trim_of_measurable _ (by fun_prop) (by fun_prop)
         apply condExp_tsum (fun i ↦ ?_)
-        · simp only [eNorm_indicator_eq_indicator_eNorm, Pi.one_apply, eNorm_one, f_meas,
+        · simp [eNorm_indicator_eq_indicator_eNorm, Pi.one_apply, eNorm_one, f_meas,
             lintegral_indicator, lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
             Set.univ_inter, one_mul, ne_eq, ← measure_iUnion hf f_meas, measure_ne_top,
             not_false_eq_true]

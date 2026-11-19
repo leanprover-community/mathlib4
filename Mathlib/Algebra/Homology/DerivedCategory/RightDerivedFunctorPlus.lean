@@ -177,7 +177,7 @@ lemma rightDerivedFunctorPlus_fac_app (τ : F₁ ⟶ F₂) (K : CochainComplex.P
     F₁.rightDerivedFunctorPlusUnit.app K ≫ τ.rightDerivedFunctorPlus.app _ =
       DerivedCategory.Plus.Q.map (τ.mapCochainComplexPlus.app K) ≫
         F₂.rightDerivedFunctorPlusUnit.app K := by
-  simp only [rightDerivedFunctorPlusUnit_app, comp_obj, Category.assoc, naturality,
+  simp [rightDerivedFunctorPlusUnit_app, comp_obj, Category.assoc, naturality,
     rightDerivedFunctorPlus_fach_app_assoc, naturality_assoc, Functor.comp_map,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app_assoc,
     NatTrans.mapHomotopyCategoryPlus_app_quotient_obj]

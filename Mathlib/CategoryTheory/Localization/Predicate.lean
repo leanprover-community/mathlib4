@@ -117,9 +117,9 @@ theorem IsLocalization.mk' (h₁ : Localization.StrictUniversalPropertyFixedTarg
   { inverts := h₁.inverts
     isEquivalence := IsEquivalence.mk' (h₂.lift W.Q W.Q_inverts)
       (eqToIso (Localization.Construction.uniq _ _ (by
-        simp only [← Functor.assoc, Localization.Construction.fac, h₂.fac, Functor.comp_id])))
+        simp [← Functor.assoc, Localization.Construction.fac, h₂.fac, Functor.comp_id])))
       (eqToIso (h₁.uniq _ _ (by
-        simp only [← Functor.assoc, h₂.fac, Localization.Construction.fac, Functor.comp_id]))) }
+        simp [← Functor.assoc, h₂.fac, Localization.Construction.fac, Functor.comp_id]))) }
 
 theorem IsLocalization.for_id (hW : W ≤ MorphismProperty.isomorphisms C) : (𝟭 C).IsLocalization W :=
   IsLocalization.mk' _ _ (Localization.strictUniversalPropertyFixedTargetId W _ hW)
@@ -339,7 +339,7 @@ theorem comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ 
     liftNatTrans L W F₁ F₂ F₁' F₂' τ ≫ liftNatTrans L W F₂ F₃ F₂' F₃' τ' =
       liftNatTrans L W F₁ F₃ F₁' F₃' (τ ≫ τ') :=
   natTrans_ext L W fun X => by
-    simp only [NatTrans.comp_app, liftNatTrans_app, assoc, Iso.inv_hom_id_app_assoc]
+    simp [NatTrans.comp_app, liftNatTrans_app, assoc, Iso.inv_hom_id_app_assoc]
 
 @[simp]
 theorem liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :

@@ -323,10 +323,10 @@ theorem smul_eval (n : ℕ) (r : AdicCompletion I R) (x : AdicCompletion I M) :
 instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
   one_smul b := by
     ext n
-    simp only [smul_eval, val_one, one_smul]
+    simp [smul_eval, val_one, one_smul]
   mul_smul r s x := by
     ext n
-    simp only [smul_eval, val_mul, mul_smul]
+    simp [smul_eval, val_mul, mul_smul]
   smul_zero r := by ext n; simp
   smul_add r x y := by ext n; simp
   add_smul r s x := by ext n; simp [add_smul]

@@ -119,7 +119,7 @@ noncomputable
 instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     OrderBot (Kernel α β) where
   bot := 0
-  bot_le κ a := by simp only [zero_apply, Measure.zero_le]
+  bot_le κ a := by simp [zero_apply, Measure.zero_le]
 
 @[deprecated (since := "2026-06-30")] alias coeAddHom := FunLike.coe_coeAddMonoidHom
 
@@ -323,7 +323,7 @@ theorem sum_comm [Countable ι] (κ : ι → ι → Kernel α β) :
 @[simp]
 theorem sum_fintype [Fintype ι] (κ : ι → Kernel α β) : Kernel.sum κ = ∑ i, κ i := by
   ext a s hs
-  simp only [sum_apply' κ a hs, finsetSum_apply' _ κ a s, tsum_fintype]
+  simp [sum_apply' κ a hs, finsetSum_apply' _ κ a s, tsum_fintype]
 
 theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by

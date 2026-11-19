@@ -398,7 +398,7 @@ theorem lift_sum {ι : Type u} (f : ι → Cardinal.{v}) :
 theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
     Cardinal.sum f = f 0 + Cardinal.sum fun i => f (i + 1) := by
   refine (Equiv.sigmaNatSucc fun i => Quotient.out (f i)).cardinal_eq.trans ?_
-  simp only [mk_sum, mk_out, lift_id, mk_sigma]
+  simp [mk_sum, mk_out, lift_id, mk_sigma]
 
 /-! ### Indexed cardinal `prod` -/
 
@@ -451,7 +451,7 @@ theorem prod_const' (ι : Type u) (a : Cardinal.{u}) : (prod fun _ : ι => a) = 
 @[simp]
 theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i = 0 := by
   lift f to ι → Type u using fun _ => trivial
-  simp only [mk_eq_zero_iff, ← mk_pi, isEmpty_pi]
+  simp [mk_eq_zero_iff, ← mk_pi, isEmpty_pi]
 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
 

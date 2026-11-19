@@ -135,7 +135,7 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
     RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul, PiLp.toLp_single,
     Function.comp_apply, mul_one]
   apply PiLp.ext fun j ↦ ?_
-  simp only [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  simp [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
 /-- **Diagonalization theorem**, **spectral theorem** for matrices; A Hermitian matrix can be
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
@@ -149,7 +149,7 @@ theorem eigenvalues_eq (i : n) :
     (hA.eigenvalues i) = RCLike.re (dotProduct (star ⇑(hA.eigenvectorBasis i))
     (A *ᵥ ⇑(hA.eigenvectorBasis i))) := by
   rw [dotProduct_comm]
-  simp only [mulVec_eigenvectorBasis, smul_dotProduct, ← EuclideanSpace.inner_eq_star_dotProduct,
+  simp [mulVec_eigenvectorBasis, smul_dotProduct, ← EuclideanSpace.inner_eq_star_dotProduct,
     inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 

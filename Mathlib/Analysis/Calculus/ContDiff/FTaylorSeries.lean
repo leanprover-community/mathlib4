@@ -162,7 +162,7 @@ theorem HasFTaylorSeriesUpToOn.congr (h : HasFTaylorSeriesUpToOn n f p s)
 theorem HasFTaylorSeriesUpToOn.congr_series {q} (hp : HasFTaylorSeriesUpToOn n f p s)
     (hpq : ∀ m : ℕ, m ≤ n → EqOn (p · m) (q · m) s) :
     HasFTaylorSeriesUpToOn n f q s where
-  zero_eq x hx := by simp only [← hpq 0 zero_le hx, hp.zero_eq x hx]
+  zero_eq x hx := by simp [← hpq 0 zero_le hx, hp.zero_eq x hx]
   fderivWithin m hm x hx := by
     refine ((hp.fderivWithin m hm x hx).congr' (hpq m hm.le).symm hx).congr_fderiv ?_
     refine congrArg _ (hpq (m + 1) ?_ hx)
@@ -419,7 +419,7 @@ theorem iteratedFDerivWithin_zero_eq_comp :
 theorem dist_iteratedFDerivWithin_zero (f : E → F) (s : Set E) (x : E)
     (g : E → F) (t : Set E) (y : E) :
     dist (iteratedFDerivWithin 𝕜 0 f s x) (iteratedFDerivWithin 𝕜 0 g t y) = dist (f x) (g y) := by
-  simp only [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.dist_map]
+  simp [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.dist_map]
 
 @[simp]
 theorem norm_iteratedFDerivWithin_zero : ‖iteratedFDerivWithin 𝕜 0 f s x‖ = ‖f x‖ := by
@@ -543,7 +543,7 @@ theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (
   | succ n ihn =>
     have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
     refine this.mono fun y hy => ?_
-    simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
+    simp [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
 
 variable (𝕜) in
 /-- If two functions agree in a neighborhood within `s`, then so do their iterated derivatives. -/
@@ -743,7 +743,7 @@ theorem hasFTaylorSeriesUpTo_zero_iff :
 
 theorem hasFTaylorSeriesUpTo_top_iff (hN : ∞ ≤ N) :
     HasFTaylorSeriesUpTo N f p ↔ ∀ n : ℕ, HasFTaylorSeriesUpTo n f p := by
-  simp only [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff hN]
+  simp [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff hN]
 
 /-- In the case that `n = ∞` we don't need the continuity assumption in
 `HasFTaylorSeriesUpTo`. -/
@@ -751,7 +751,7 @@ theorem hasFTaylorSeriesUpTo_top_iff' (hN : ∞ ≤ N) :
     HasFTaylorSeriesUpTo N f p ↔
       (∀ x, (p x 0).curry0 = f x) ∧
         ∀ (m : ℕ) (x), HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x := by
-  simp only [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff' hN, mem_univ,
+  simp [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff' hN, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
 
 /-- If a function has a Taylor series at order at least `1`, then the term of order `1` of this
@@ -772,7 +772,7 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
         (∀ x, HasFDerivAt (fun y => p y 0) (p x 1).curryLeft x) ∧
           HasFTaylorSeriesUpTo n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1)) fun x =>
             (p x).shift := by
-  simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
+  simp [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
 
 lemma HasFTaylorSeriesUpTo.tsupport_mono {k m : ℕ} (h : k ≤ m) (h2 : m ≤ n)
@@ -1003,7 +1003,7 @@ theorem iteratedFDerivWithin_comp_const_sub {f : 𝕜 → F} {s : Set 𝕜} (n :
       fun x ↦ (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (c +ᵥ -s) (c - x) := by
   ext a
   have : (fun z : 𝕜 => f (c - z)) = fun z => (fun w => f (c + w)) (-z) := by
-    simp only [sub_eq_add_neg]
+    simp [sub_eq_add_neg]
   rw [this, iteratedFDerivWithin_comp_neg (f := fun w => f (c + w)) n a,
     iteratedFDerivWithin_comp_add_left]
   ring_nf

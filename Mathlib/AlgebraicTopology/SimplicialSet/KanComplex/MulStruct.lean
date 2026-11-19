@@ -46,7 +46,7 @@ def equiv₀ : X.PtSimplex 0 x ≃ X _⦋0⦌ where
   toFun f := yonedaEquiv f.map
   invFun y := { map := yonedaEquiv.symm y }
   left_inv f := by simp
-  right_inv y := by simp only [Equiv.apply_symm_apply]
+  right_inv y := by simp [Equiv.apply_symm_apply]
 
 lemma map_eq_const_equiv₀ (s : X.PtSimplex 0 x) :
     s.map = const (equiv₀ _ s) := by

@@ -159,7 +159,7 @@ theorem count_singleton_self (a : α) : count a ({a} : Multiset α) = 1 :=
   count_eq_one_of_mem (nodup_singleton a) <| mem_singleton_self a
 
 theorem count_singleton (a b : α) : count a ({b} : Multiset α) = if a = b then 1 else 0 := by
-  simp only [count_cons, ← cons_zero, count_zero, Nat.zero_add]
+  simp [count_cons, ← cons_zero, count_zero, Nat.zero_add]
 
 @[simp]
 lemma count_attach (a : {x // x ∈ s}) : s.attach.count a = s.count ↑a :=

@@ -207,7 +207,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_measurable_edist [IsFiniteMeasure μ]
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
   refine fun ε hε => ENNReal.tendsto_atTop_zero.mpr fun δ hδ => ?_
   by_cases hδi : δ = ∞
-  · simp only [hδi, imp_true_iff, le_top, exists_const]
+  · simp [hδi, imp_true_iff, le_top, exists_const]
   obtain ⟨t, _, ht, hunif⟩ :=
     tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' hf hfg hδ
   rw [EMetric.tendstoUniformlyOn_iff] at hunif

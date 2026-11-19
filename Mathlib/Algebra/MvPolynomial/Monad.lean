@@ -139,7 +139,7 @@ theorem bind₂_comp_C (f : R →+* MvPolynomial σ S) : (bind₂ f).comp C = f 
 
 @[deprecated eval_map +typeChanged (since := "2026-09-02")]
 theorem join₂_map (f : R →+* MvPolynomial σ S) (φ : MvPolynomial σ R) :
-    join₂ (map f φ) = bind₂ f φ := by simp only [join₂, bind₂, eval₂Hom_map_hom, RingHom.id_comp]
+    join₂ (map f φ) = bind₂ f φ := by simp [join₂, bind₂, eval₂Hom_map_hom, RingHom.id_comp]
 
 @[deprecated eval_comp_map +typeChanged (since := "2026-09-02")]
 theorem join₂_comp_map (f : R →+* MvPolynomial σ S) : join₂.comp (map f) = bind₂ f :=
@@ -210,7 +210,7 @@ theorem map_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* T) (φ : MvPoly
     map g (bind₂ f φ) = bind₂ ((map g).comp f) φ := by
   simp only [bind₂, eval₂_comp_right, coe_eval₂Hom, eval₂_map]
   congr 1 with : 1
-  simp only [Function.comp_apply, map_X]
+  simp [Function.comp_apply, map_X]
 
 @[deprecated aeval_comp_rename +typeChanged (since := "2026-09-02")]
 theorem bind₁_comp_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) :
@@ -285,13 +285,13 @@ alias eval₂Hom_C_left := eval₂Hom_C_eq_bind₁
 @[deprecated aeval_monomial +typeChanged (since := "2026-09-02")]
 theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r : R) :
     bind₁ f (monomial d r) = C r * ∏ i ∈ d.support, f i ^ d i := by
-  simp only [monomial_eq, map_mul, bind₁_C_right, Finsupp.prod, map_prod,
+  simp [monomial_eq, map_mul, bind₁_C_right, Finsupp.prod, map_prod,
     map_pow, bind₁_X_right]
 
 @[deprecated eval₂Hom_monomial +typeChanged (since := "2026-09-02")]
 theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r : R) :
     bind₂ f (monomial d r) = f r * monomial d 1 := by
-  simp only [monomial_eq, map_mul, bind₂_C_right, Finsupp.prod, map_prod,
+  simp [monomial_eq, map_mul, bind₂_C_right, Finsupp.prod, map_prod,
     map_pow, bind₂_X_right, C_1, one_mul]
 
 theorem eval₂_X_monomial_one (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) :

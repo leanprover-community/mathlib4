@@ -100,7 +100,7 @@ lemma TensorProduct.equivFinsuppOfBasisRight_apply_tmul_apply
     (m : M) (n : N) (i : κ) :
     (TensorProduct.equivFinsuppOfBasisRight 𝒞) (m ⊗ₜ n) i =
     𝒞.repr n i • m := by
-  simp only [equivFinsuppOfBasisRight_apply_tmul, Finsupp.mapRange_apply]
+  simp [equivFinsuppOfBasisRight_apply_tmul, Finsupp.mapRange_apply]
 
 lemma TensorProduct.equivFinsuppOfBasisRight_symm :
     (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.toLinearMap =
@@ -142,7 +142,7 @@ lemma TensorProduct.equivFinsuppOfBasisLeft_apply_tmul_apply
     (m : M) (n : N) (i : ι) :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ) (m ⊗ₜ n) i =
     ℬ.repr m i • n := by
-  simp only [equivFinsuppOfBasisLeft_apply_tmul, Finsupp.mapRange_apply]
+  simp [equivFinsuppOfBasisLeft_apply_tmul, Finsupp.mapRange_apply]
 
 /-- Given a basis `𝒞` of `N`, `x ∈ M ⊗ N` can be written as `∑ᵢ mᵢ ⊗ 𝒞 i`. The coefficient `mᵢ`
 equals the `i`-th coordinate functional applied to the right tensor factor. -/

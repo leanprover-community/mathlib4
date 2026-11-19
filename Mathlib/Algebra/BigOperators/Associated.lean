@@ -124,7 +124,7 @@ theorem Multiset.prod_primes_dvd [CommMonoidWithZero M₀] [IsCancelMulZero M₀
     [∀ a : M₀, DecidablePred (Associated a)] {s : Multiset M₀} (n : M₀) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
   induction s using Multiset.induction_on generalizing n with
-  | empty => simp only [Multiset.prod_zero, one_dvd]
+  | empty => simp [Multiset.prod_zero, one_dvd]
   | cons a s induct =>
     rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
@@ -148,7 +148,7 @@ theorem Finset.prod_primes_dvd [CommMonoidWithZero M₀] [IsCancelMulZero M₀] 
       Multiset.prod_primes_dvd n (by simpa only [Multiset.map_id', Finset.mem_def] using h)
         (by simpa only [Multiset.map_id', Finset.mem_def] using div)
         (by
-          simp only [Multiset.map_id', associated_eq_eq, Multiset.countP_eq_card_filter,
+          simp [Multiset.map_id', associated_eq_eq, Multiset.countP_eq_card_filter,
             ← s.val.count_eq_card_filter_eq, ← Multiset.nodup_iff_count_le_one, s.nodup])
 
 namespace Associates
@@ -168,7 +168,7 @@ theorem finsetProd_mk {p : Finset ι} {f : ι → M} :
 theorem rel_associated_iff_map_eq_map {p q : Multiset M} :
     Multiset.Rel Associated p q ↔ p.map Associates.mk = q.map Associates.mk := by
   rw [← Multiset.rel_eq, Multiset.rel_map]
-  simp only [mk_eq_mk_iff_associated]
+  simp [mk_eq_mk_iff_associated]
 
 theorem prod_eq_one_iff {p : Multiset (Associates M)} :
     p.prod = 1 ↔ ∀ a ∈ p, (a : Associates M) = 1 :=

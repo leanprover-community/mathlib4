@@ -174,7 +174,7 @@ theorem rel_sup_mul [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : M 
     (m_iSup : ∀ s : ℕ → α, R (m (⨆ i, s i)) (∏' i, m (s i))) (s₁ s₂ : α) :
     R (m (s₁ ⊔ s₂)) (m s₁ * m s₂) := by
   convert rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
-  · simp only [iSup_bool_eq, cond]
+  · simp [iSup_bool_eq, cond]
   · rw [tprod_fintype, Fintype.prod_bool, cond, cond]
 
 end Countable
@@ -329,7 +329,7 @@ lemma HasProd.nat_mul_neg_add_one {f : ℤ → M} (hf : HasProd f m) :
     · exact Or.inr ⟨_, hv' (by simpa using Or.inr hx), rfl⟩
   · rw [prod_union, prod_image Nat.cast_injective.injOn, prod_image this.injOn,
       prod_mul_distrib]
-    simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
+    simp [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, reduceCtorEq]
 
 @[to_additive Summable.nat_add_neg_add_one]
@@ -415,9 +415,9 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
     simp only [u1, u2, mem_union, mem_image]
     rcases le_total 0 x with (h'x | h'x)
     · refine Or.inl ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
-      simp only [Int.natCast_natAbs, abs_eq_self, h'x]
+      simp [Int.natCast_natAbs, abs_eq_self, h'x]
     · refine Or.inr ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
-      simp only [abs_of_nonpos h'x, Int.natCast_natAbs, neg_neg]
+      simp [abs_of_nonpos h'x, Int.natCast_natAbs, neg_neg]
   exact ⟨_, A, calc
     (∏ x ∈ u1 ∪ u2, (f x * if x = 0 then f 0 else 1)) =
         (∏ x ∈ u1 ∪ u2, f x) * ∏ x ∈ u1 ∩ u2, f x := by
@@ -425,12 +425,12 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       congr 1
       refine (prod_subset_one_on_sdiff inter_subset_union ?_ ?_).symm
       · intro x hx
-        suffices x ≠ 0 by simp only [this, ite_false]
+        suffices x ≠ 0 by simp [this, ite_false]
         rintro rfl
         simp [u1, u2] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image] at hx
-        suffices x = 0 by simp only [this, ite_true]
+        suffices x = 0 by simp [this, ite_true]
         lia
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by simp [u1, u2]

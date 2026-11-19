@@ -394,7 +394,7 @@ instance : Star C_c(α, β) where
         rw [HasCompactSupport, tsupport]
         have support_star : (Function.support fun (x : α) => star (f x)) = Function.support f := by
           ext x
-          simp only [Function.mem_support, ne_eq, star_eq_zero]
+          simp [Function.mem_support, ne_eq, star_eq_zero]
         rw [support_star]
         exact f.hasCompactSupport' }
 

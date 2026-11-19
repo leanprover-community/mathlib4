@@ -339,7 +339,7 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
   let C₂ := ∫ t in Set.Ioi (m : ℝ), ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖
   refine summable_of_sum_range_norm_le (c := max (C₁ + C₂) 1) fun n ↦ ?_
   cases n with
-  | zero => simp only [range_zero, norm_mul, sum_empty, le_sup_iff, zero_le_one, or_true]
+  | zero => simp [range_zero, norm_mul, sum_empty, le_sup_iff, zero_le_one, or_true]
   | succ n =>
       rw [Nat.range_eq_Icc_zero_sub_one _ n.add_one_ne_zero, add_tsub_cancel_right]
       calc
@@ -391,7 +391,7 @@ theorem summable_mul_of_bigO_atTop'
   simp_rw [h] at h_bdd hg₁
   refine Summable.congr_atTop (summable_mul_of_bigO_atTop_aux (fun n ↦ if n = 0 then 0 else c n) 1
     h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂) ?_
-  · exact mod_cast sum_mul_eq_sub_integral_mul₀' _ (by simp only [reduceIte, norm_zero]) n
+  · exact mod_cast sum_mul_eq_sub_integral_mul₀' _ (by simp [reduceIte, norm_zero]) n
       (fun _ ht ↦ hf_diff _ ht.1)
       (hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc)
   · filter_upwards [eventually_ne_atTop 0] with k hk

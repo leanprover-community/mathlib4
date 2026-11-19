@@ -70,7 +70,7 @@ lemma type_lex_sum (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β]
 instance : AddMonoid OrderType.{u} where
   add_assoc o₁ o₂ o₃ :=
     inductionOn₃ o₁ o₂ o₃ fun α _ β _ γ _ ↦ by
-      simp only [← type_lex_sum, (OrderIso.sumLexAssoc α β γ).type_congr]
+      simp [← type_lex_sum, (OrderIso.sumLexAssoc α β γ).type_congr]
   zero_add o :=
     inductionOn o (fun α _ ↦ by
       simp only [show 0 = type PEmpty by rfl, ← type_lex_sum]

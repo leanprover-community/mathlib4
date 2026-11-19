@@ -55,7 +55,7 @@ lemma Module.notMem_support_iff :
 
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
-  simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
+  simp [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
 
 lemma Module.mem_support_iff' :
@@ -118,7 +118,7 @@ lemma Module.support_eq_empty_iff :
   rw [← Set.subset_empty_iff, ← PrimeSpectrum.zeroLocus_singleton_one,
     ← LocalizedModule.subsingleton_iff_support_subset, LocalizedModule.subsingleton_iff,
     subsingleton_iff_forall_eq 0]
-  simp only [Submonoid.powers_one, Submonoid.mem_bot, exists_eq_left, one_smul]
+  simp [Submonoid.powers_one, Submonoid.mem_bot, exists_eq_left, one_smul]
 
 lemma Module.nonempty_support_iff :
     (Module.support R M).Nonempty ↔ Nontrivial M := by

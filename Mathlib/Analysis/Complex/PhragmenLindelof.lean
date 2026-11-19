@@ -770,7 +770,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   -- Consider $g_n(z)=e^{nz}f(z)$.
   set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z
   have hg : ∀ n z, ‖g n z‖ = expR z.re ^ n * ‖f z‖ := fun n z ↦ by
-    simp only [g, norm_smul, norm_pow, norm_exp]
+    simp [g, norm_smul, norm_pow, norm_exp]
   intro z hz
   -- Since `e^{nz} → ∞` as `n → ∞`, it suffices to show that each `g_n` is bounded from above by `C`
   suffices H : ∀ n : ℕ, ‖g n z‖ ≤ C by

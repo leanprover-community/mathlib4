@@ -61,13 +61,13 @@ def lifts (f : R →+* S) : Subsemiring S[X] :=
   RingHom.rangeS (mapRingHom f)
 
 theorem mem_lifts (p : S[X]) : p ∈ lifts f ↔ ∃ q : R[X], map f q = p := by
-  simp only [coe_mapRingHom, lifts, RingHom.mem_rangeS]
+  simp [coe_mapRingHom, lifts, RingHom.mem_rangeS]
 
 theorem lifts_iff_set_range (p : S[X]) : p ∈ lifts f ↔ p ∈ Set.range (map f) := by
-  simp only [coe_mapRingHom, lifts, Set.mem_range, RingHom.mem_rangeS]
+  simp [coe_mapRingHom, lifts, Set.mem_range, RingHom.mem_rangeS]
 
 theorem lifts_iff_ringHom_rangeS (p : S[X]) : p ∈ lifts f ↔ p ∈ (mapRingHom f).rangeS := by
-  simp only [coe_mapRingHom, lifts, RingHom.mem_rangeS]
+  simp [coe_mapRingHom, lifts, RingHom.mem_rangeS]
 
 theorem lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coeff n ∈ Set.range f := by
   rw [lifts_iff_ringHom_rangeS, mem_map_rangeS f]
@@ -91,36 +91,36 @@ theorem mem_lifts_of_surjective (hf : Function.Surjective f) (p : S[X]) : p ∈ 
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
   ⟨C r, by
-    simp only [coe_mapRingHom, map_C]⟩
+    simp [coe_mapRingHom, map_C]⟩
 
 /-- If `(s : S)` is in the image of `f`, then `C s` lifts. -/
 theorem C'_mem_lifts {f : R →+* S} {s : S} (h : s ∈ Set.range f) : C s ∈ lifts f := by
   obtain ⟨r, rfl⟩ := Set.mem_range.1 h
   use C r
-  simp only [coe_mapRingHom, map_C]
+  simp [coe_mapRingHom, map_C]
 
 /-- The polynomial `X` lifts. -/
 theorem X_mem_lifts (f : R →+* S) : (X : S[X]) ∈ lifts f :=
   ⟨X, by
-    simp only [coe_mapRingHom, map_X]⟩
+    simp [coe_mapRingHom, map_X]⟩
 
 /-- The polynomial `X ^ n` lifts. -/
 theorem X_pow_mem_lifts (f : R →+* S) (n : ℕ) : (X ^ n : S[X]) ∈ lifts f :=
   ⟨X ^ n, by
-    simp only [coe_mapRingHom, map_pow, map_X]⟩
+    simp [coe_mapRingHom, map_pow, map_X]⟩
 
 /-- If `p` lifts and `(r : R)` then `r * p` lifts. -/
 theorem base_mul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts f) : C (f r) * p ∈ lifts f := by
   simp only [lifts, RingHom.mem_rangeS] at hp ⊢
   obtain ⟨p₁, rfl⟩ := hp
   use C r * p₁
-  simp only [coe_mapRingHom, map_C, map_mul]
+  simp [coe_mapRingHom, map_C, map_mul]
 
 /-- If `(s : S)` is in the image of `f`, then `monomial n s` lifts. -/
 theorem monomial_mem_lifts {s : S} (n : ℕ) (h : s ∈ Set.range f) : monomial n s ∈ lifts f := by
   obtain ⟨r, rfl⟩ := Set.mem_range.1 h
   use monomial n r
-  simp only [coe_mapRingHom, map_monomial]
+  simp [coe_mapRingHom, map_monomial]
 
 /-- If `p` lifts then `p.erase n` lifts. -/
 theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈ lifts f := by
@@ -208,7 +208,7 @@ def liftsRing (f : R →+* S) : Subring S[X] :=
 /-- If `R` and `S` are rings, `p` is in the subring of polynomials that lift if and only if it is in
 the subsemiring of polynomials that lift. -/
 theorem lifts_iff_liftsRing (p : S[X]) : p ∈ lifts f ↔ p ∈ liftsRing f := by
-  simp only [lifts, liftsRing, RingHom.mem_range, RingHom.mem_rangeS]
+  simp [lifts, liftsRing, RingHom.mem_range, RingHom.mem_rangeS]
 
 end Ring
 
@@ -219,7 +219,7 @@ variable {R : Type u} [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
 /-- A polynomial `p` lifts if and only if it is in the image of `mapAlg`. -/
 theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
     (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _) := by
-  simp only [coe_mapRingHom, lifts, mapAlg_eq_map, AlgHom.mem_range, RingHom.mem_rangeS]
+  simp [coe_mapRingHom, lifts, mapAlg_eq_map, AlgHom.mem_range, RingHom.mem_rangeS]
 
 /-- If `p` lifts and `(r : R)` then `r • p` lifts. -/
 theorem smul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts (algebraMap R S)) :

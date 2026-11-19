@@ -96,7 +96,7 @@ theorem compClosure_eq_self :
     CompClosure r = r := by
   dsimp [HomRel]
   ext
-  simp only [compClosure_iff_self]
+  simp [compClosure_iff_self]
 
 end
 

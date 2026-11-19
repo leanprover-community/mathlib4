@@ -52,7 +52,7 @@ theorem IsUpperTriangular.isUpperHessenberg {M : Matrix m m R} (h : M.IsUpperTri
 
 theorem isUpperHessenberg_fin_iff {n : ℕ} {M : Matrix (Fin n) (Fin n) R} :
     M.IsUpperHessenberg ↔ ∀ i j : Fin n, (j : ℕ) + 1 < i → M i j = 0 := by
-  simp only [IsUpperHessenberg, Fin.orderSucc_lt_iff]
+  simp [IsUpperHessenberg, Fin.orderSucc_lt_iff]
 
 end Matrix
 

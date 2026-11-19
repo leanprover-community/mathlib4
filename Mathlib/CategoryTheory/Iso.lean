@@ -159,7 +159,7 @@ theorem trans_symm (α : X ≅ Y) (β : Y ≅ Z) : (α ≪≫ β).symm = β.symm
 @[simp, grind _=_]
 theorem trans_assoc {Z' : C} (α : X ≅ Y) (β : Y ≅ Z) (γ : Z ≅ Z') :
     (α ≪≫ β) ≪≫ γ = α ≪≫ β ≪≫ γ := by
-  ext; simp only [trans_hom, Category.assoc]
+  ext; simp [trans_hom, Category.assoc]
 
 @[simp]
 theorem refl_trans (α : X ≅ Y) : Iso.refl X ≪≫ α = α := by ext; apply Category.id_comp
@@ -264,7 +264,7 @@ end IsIso
 
 @[to_dual isIso_inv]
 instance Iso.isIso_hom (e : X ≅ Y) : IsIso e.hom :=
-  ⟨e.inv, by simp only [hom_inv_id], by simp⟩
+  ⟨e.inv, by simp [hom_inv_id], by simp⟩
 
 open IsIso
 
@@ -421,12 +421,12 @@ Presumably we could write `X ↪ Y` and `X ↠ Y`.
 @[to_dual (attr := simp) (reorder := f g' g) cancel_iso_inv_right]
 theorem cancel_iso_hom_left {X Y Z : C} (f : X ≅ Y) (g g' : Y ⟶ Z) :
     f.hom ≫ g = f.hom ≫ g' ↔ g = g' := by
-  simp only [cancel_epi]
+  simp [cancel_epi]
 
 @[to_dual (attr := simp) (reorder := f f' g) cancel_iso_inv_left]
 theorem cancel_iso_hom_right {X Y Z : C} (f f' : X ⟶ Y) (g : Y ≅ Z) :
     f ≫ g.hom = f' ≫ g.hom ↔ f = f' := by
-  simp only [cancel_mono]
+  simp [cancel_mono]
 
 /-
 Unfortunately cancelling an isomorphism from the right of a chain of compositions is awkward.
@@ -438,12 +438,12 @@ but then stop.
 @[simp, to_dual none]
 theorem cancel_iso_hom_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) (h : Y ≅ Z) : f ≫ g ≫ h.hom = f' ≫ g' ≫ h.hom ↔ f ≫ g = f' ≫ g' := by
-  simp only [← Category.assoc, cancel_mono]
+  simp [← Category.assoc, cancel_mono]
 
 @[simp, to_dual none]
 theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) (h : Z ≅ Y) : f ≫ g ≫ h.inv = f' ≫ g' ≫ h.inv ↔ f ≫ g = f' ≫ g' := by
-  simp only [← Category.assoc, cancel_mono]
+  simp [← Category.assoc, cancel_mono]
 
 section
 

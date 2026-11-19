@@ -109,7 +109,7 @@ variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {C : Type u₃} [Category.{v₃} C] {F :
 /-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
 we get an induced functor `C ⥤ Fiber p S` that `F` factors through. -/
 def inducedFunctor : C ⥤ Fiber p S where
-  obj x := ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
+  obj x := ⟨F.obj x, by simp [← comp_obj, hF, const_obj_obj]⟩
   map φ := ⟨F.map φ, of_commsq _ _ _ (congr_obj hF _) (congr_obj hF _) <|
     by simpa using (eqToIso hF).hom.naturality φ⟩
 

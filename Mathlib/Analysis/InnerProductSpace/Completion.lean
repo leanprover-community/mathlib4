@@ -92,19 +92,19 @@ protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α 
 instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
   norm_sq_eq_re_inner x :=
     Completion.induction_on x (isClosed_eq (by fun_prop) (by fun_prop))
-      fun a => by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
+      fun a => by simp [norm_coe, inner_coe, inner_self_eq_norm_sq]
   conj_inner_symm x y :=
     Completion.induction_on₂ x y
       (isClosed_eq (continuous_conj.comp (by fun_prop)) (by fun_prop))
-      fun a b => by simp only [inner_coe, inner_conj_symm]
+      fun a b => by simp [inner_coe, inner_conj_symm]
   add_left x y z :=
     Completion.induction_on₃ x y z (isClosed_eq (by fun_prop) (by fun_prop))
-      fun a b c => by simp only [← coe_add, inner_coe, inner_add_left]
+      fun a b c => by simp [← coe_add, inner_coe, inner_add_left]
   smul_left x y c :=
     Completion.induction_on₂ x y
       (isClosed_eq (Continuous.inner (continuous_fst.const_smul c) continuous_snd)
         ((continuous_const_mul _).comp (by fun_prop)))
-      fun a b => by simp only [← coe_smul c a, inner_coe, inner_smul_left]
+      fun a b => by simp [← coe_smul c a, inner_coe, inner_smul_left]
 
 end UniformSpace.Completion
 

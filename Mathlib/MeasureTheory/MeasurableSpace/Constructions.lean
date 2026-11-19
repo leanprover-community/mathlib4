@@ -37,7 +37,7 @@ theorem measurable_to_countable [MeasurableSpace α] [Countable α] [MeasurableS
   by_cases hyf : y ∈ range f
   · rcases hyf with ⟨y, rfl⟩
     apply h
-  · simp only [preimage_singleton_eq_empty.2 hyf, MeasurableSet.empty]
+  · simp [preimage_singleton_eq_empty.2 hyf, MeasurableSet.empty]
 
 theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [MeasurableSpace β] {f : β → α}
     (h : ∀ x, MeasurableSet (f ⁻¹' {x})) : Measurable f :=
@@ -245,7 +245,7 @@ alias Measurable.subtype_val := Measurable.subtypeVal
 @[fun_prop]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
-  hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
+  hs.2 ▸ by simp [← preimage_comp, Function.comp_def, hf hs.1]
 
 @[fun_prop]
 theorem Measurable.codRestrict {s : Set β} {f : α → β} (hf : Measurable f)

@@ -78,7 +78,7 @@ def lattice : Submodule ℤ ℂ := Submodule.span ℤ {L.ω₁, L.ω₂}
 
 lemma mem_lattice {L : PeriodPair} {x : ℂ} :
     x ∈ L.lattice ↔ ∃ m n : ℤ, m * L.ω₁ + n * L.ω₂ = x := by
-  simp only [lattice, Submodule.mem_span_pair, zsmul_eq_mul]
+  simp [lattice, Submodule.mem_span_pair, zsmul_eq_mul]
 
 lemma ω₁_mem_lattice : L.ω₁ ∈ L.lattice := Submodule.subset_span (by simp)
 lemma ω₂_mem_lattice : L.ω₂ ∈ L.lattice := Submodule.subset_span (by simp)
@@ -272,7 +272,7 @@ lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
   trans ℘[L - l₀] z + ∑' i : L.lattice, if i = l₀.1 then (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) else 0
   · simp
   rw [weierstrassPExcept, ← Summable.tsum_add]
-  · congr with w; split_ifs <;> simp only [zero_add, add_zero, *]
+  · congr with w; split_ifs <;> simp [zero_add, add_zero, *]
   · exact ⟨_, L.hasSum_weierstrassPExcept _ _⟩
   · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp))
 
@@ -432,7 +432,7 @@ lemma derivWeierstrassPExcept_add_coe (l₀ : ℂ) (z : ℂ) (l : L.lattice) :
     ℘'[L - l₀] (z + l) = ℘'[L - (l₀ - l)] z := by
   simp only [derivWeierstrassPExcept]
   rw [← (Equiv.addRight l).tsum_eq]
-  simp only [Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub, eq_sub_iff_add_eq]
+  simp [Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub, eq_sub_iff_add_eq]
 
 -- Subsumed by `weierstrassP_add_coe`
 private lemma weierstrassPExcept_add_coe_aux
@@ -523,7 +523,7 @@ lemma derivWeierstrassPExcept_sub (l₀ : L.lattice) (z : ℂ) :
   trans ℘'[L - l₀] z + ∑' i : L.lattice, if i.1 = l₀.1 then (- 2 / (z - l₀) ^ 3) else 0
   · simp [sub_eq_add_neg, neg_div]
   rw [derivWeierstrassP, derivWeierstrassPExcept, ← Summable.tsum_add, ← tsum_neg]
-  · congr with w; split_ifs <;> simp only [zero_add, add_zero, *, neg_div]
+  · congr with w; split_ifs <;> simp [zero_add, add_zero, *, neg_div]
   · exact ⟨_, L.hasSum_derivWeierstrassPExcept _ _⟩
   · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp))
 
@@ -569,7 +569,7 @@ lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
     ℘'[L] (z + l) = ℘'[L] z := by
   simp only [derivWeierstrassP]
   rw [← (Equiv.addRight l).tsum_eq]
-  simp only [← tsum_neg, ← div_neg, Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub]
+  simp [← tsum_neg, ← div_neg, Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub]
 
 lemma periodic_derivWeierstrassP (l : L.lattice) : ℘'[L].Periodic l :=
   (L.derivWeierstrassP_add_coe · l)
@@ -640,7 +640,7 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
         · simp_rw [Subtype.ext_iff, zpow_neg]
           congr with l
           split_ifs with e
-          · simp only [e, zpow_natCast, sub_self, mul_zero]
+          · simp [e, zpow_natCast, sub_self, mul_zero]
           · dsimp; norm_cast; ring
         · exact summable_of_hasFiniteSupport ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp))
     · have h₁ (l : L.lattice) : l.1 ≠ l₀ := fun e ↦ hl₀ (e ▸ l.2)
@@ -721,7 +721,7 @@ lemma weierstrassPExcept_eq_tsum (l₀ z x : ℂ)
       (by simpa [sub_eq_zero] using (norm_nonneg _).trans_lt (hx l h))).hasSum (y := z - x)
       (by simpa [eNorm_eq_nnNorm] using hx _ h)).tsum_eq.symm
   trans ∑' (l : ↥L.lattice) (i : ℕ), L.weierstrassPExceptSummand l₀ x i l * (z - x) ^ i
-  · simp only [weierstrassPExceptSummand, ite_mul, zero_mul]
+  · simp [weierstrassPExceptSummand, ite_mul, zero_mul]
   · simp_rw [coeff_weierstrassPExceptSeries, ← tsum_mul_right]
     apply Summable.tsum_comm
     exact L.summable_weierstrassPExceptSummand l₀ z x hx
@@ -949,7 +949,7 @@ lemma sumInvPow_zero : L.sumInvPow 0 = L.G := by
 lemma G_eq_zero_of_odd (n : ℕ) (hn : Odd n) : L.G n = 0 := by
   rw [← CharZero.eq_neg_self_iff, G, ← tsum_neg, ← (Equiv.neg _).tsum_eq]
   congr with l
-  simp only [Equiv.neg_apply, NegMemClass.coe_neg, neg_inv, hn.neg_pow]
+  simp [Equiv.neg_apply, NegMemClass.coe_neg, neg_inv, hn.neg_pow]
 
 /-- The lattice invariant `g₂ := 60 G₄`. -/
 def g₂ : ℂ := 60 * L.G 4

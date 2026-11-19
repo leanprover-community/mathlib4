@@ -176,7 +176,7 @@ def toIterate [PartialOrder Γ'] (x : R⟦Γ ×ₗ Γ'⟧) : R⟦Γ'⟧⟦Γ⟧ 
     have h₁ : (Function.support fun g => HahnSeries.mk (fun g' => x.coeff (g, g'))
         (Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g)) = Function.support
         fun g => fun g' => x.coeff (g, g') := by
-      simp only [Function.support, ne_eq, mk_eq_zero]
+      simp [Function.support, ne_eq, mk_eq_zero]
     rw [h₁, Function.support_fun_curry x.coeff]
     exact Set.PartiallyWellOrderedOn.imageProdLex x.isPWO_support'
 
@@ -308,7 +308,7 @@ theorem orderTop_single (h : r ≠ 0) : (single a r).orderTop = a :=
 
 theorem orderTop_single_le : a ≤ (single a r).orderTop := by
   by_cases hr : r = 0
-  · simp only [hr, map_zero, orderTop_zero, le_top]
+  · simp [hr, map_zero, orderTop_zero, le_top]
   · rw [orderTop_single hr]
 
 theorem lt_orderTop_single {g g' : Γ} (hgg' : g < g') : g < (single g' r).orderTop :=

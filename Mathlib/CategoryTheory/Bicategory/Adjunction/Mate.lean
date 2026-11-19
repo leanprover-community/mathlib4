@@ -550,7 +550,7 @@ theorem conjugateEquiv_symm_comp (α : r₁ ⟶ r₂) (β : r₂ ⟶ r₃) :
     (conjugateEquiv adj₂ adj₃).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α =
       (conjugateEquiv adj₁ adj₃).symm (α ≫ β) := by
   rw [Equiv.eq_symm_apply, ← conjugateEquiv_comp _ adj₂]
-  simp only [Equiv.apply_symm_apply]
+  simp [Equiv.apply_symm_apply]
 
 theorem conjugateEquiv_comm {α : l₂ ⟶ l₁} {β : l₁ ⟶ l₂} (βα : β ≫ α = 𝟙 _) :
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₁ β = 𝟙 _ := by
@@ -622,10 +622,10 @@ def conjugateIsoEquiv : (l₂ ≅ l₁) ≃ (r₁ ≅ r₂) where
         rw [conjugateEquiv_symm_comp, Iso.hom_inv_id, conjugateEquiv_symm_id] }
   left_inv := by
     intro α
-    simp only [Equiv.symm_apply_apply]
+    simp [Equiv.symm_apply_apply]
   right_inv := by
     intro α
-    simp only [Equiv.apply_symm_apply]
+    simp [Equiv.apply_symm_apply]
 
 end ConjugateIsomorphism
 
@@ -658,7 +658,7 @@ theorem iterated_mateEquiv_conjugateEquiv_symm (α : u₂ ≫ r₁ ⟶ r₂ ≫ 
     (mateEquiv adj₁ adj₂).symm ((mateEquiv adj₄ adj₃).symm α) =
       (conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂)).symm α := by
   rw [Equiv.eq_symm_apply, ← iterated_mateEquiv_conjugateEquiv]
-  simp only [Equiv.apply_symm_apply]
+  simp [Equiv.apply_symm_apply]
 
 end IteratedMateEquiv
 

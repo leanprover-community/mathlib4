@@ -479,7 +479,7 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow {n : ℤ} {f : 𝕜 → 𝕜
       (h₁g.zpow h₂g (n := n)).meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE
         (n := (meromorphicOrderAt (f ^ n) x).untop₀)
         (by simp_all [zpow_ne_zero])]
-    · simp only [Pi.pow_apply]
+    · simp [Pi.pow_apply]
     · filter_upwards [h₃g] with a ha
       simp_all [mul_zpow, ← zpow_mul, meromorphicOrderAt_zpow h₁, mul_comm]
 

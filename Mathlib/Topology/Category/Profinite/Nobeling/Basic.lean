@@ -153,7 +153,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext ⟨x, y, hy, rfl⟩ i
-  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, ite_true]
+  simp +contextual [π, Proj, ProjRestricts_coe, id_eq, ite_true]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
@@ -189,7 +189,7 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
     · congrm $h ⟨i, hi⟩
     · rcases a with ⟨_, c, hc, rfl⟩
       rcases b with ⟨_, d, hd, rfl⟩
-      simp only [Proj, ite_eq_right hi]
+      simp [Proj, ite_eq_right hi]
   · refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
     · rcases a with ⟨_, y, hy, rfl⟩
       exact ⟨y, hy, rfl⟩
@@ -397,7 +397,7 @@ theorem eval_eq (l : Products I) (x : C) :
     push Not at h
     convert! h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
-    simp only [ite_eq_right_iff, one_ne_zero]
+    simp [ite_eq_right_iff, one_ne_zero]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem evalFacProp {l : Products I} (J : I → Prop)
@@ -490,12 +490,12 @@ variable {I}
 
 theorem term_ord_aux {i : I} (ho : ord I i < Ordinal.type ((· < ·) : I → I → Prop)) :
     term I ho = i := by
-  simp only [term, ord, Ordinal.enum_typein]
+  simp [term, ord, Ordinal.enum_typein]
 
 @[simp]
 theorem ord_term_aux {o : Ordinal} (ho : o < Ordinal.type ((· < ·) : I → I → Prop)) :
     ord I (term I ho) = o := by
-  simp only [ord, term, Ordinal.typein_enum]
+  simp [ord, term, Ordinal.typein_enum]
 
 theorem ord_term {o : Ordinal} (ho : o < Ordinal.type ((· < ·) : I → I → Prop)) (i : I) :
     ord I i = o ↔ term I ho = i := by

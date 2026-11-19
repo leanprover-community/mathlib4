@@ -139,7 +139,7 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticMap R M N) (f : M₁ ≃ₗ[R] 
   { f.symm with
     map_app' := by
       intro
-      simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
+      simp [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
         f.apply_symm_apply] }
 
 variable [Finite ι]
@@ -204,7 +204,7 @@ def isometryEquivWeightedSumSquaresWeightedSumSquares (u : ι → Sˣ) (h : ∀ 
   map_add' x y := by simp
   map_smul' v x := by
     ext i
-    simp only [Pi.smul_apply', Pi.smul_apply, RingHom.id_apply, smul_comm]
+    simp [Pi.smul_apply', Pi.smul_apply, RingHom.id_apply, smul_comm]
   map_app' x := by
     simp only [weightedSumSquares_apply, Pi.smul_apply']
     refine Finset.sum_congr rfl fun j hj => ?_

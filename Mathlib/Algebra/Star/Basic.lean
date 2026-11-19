@@ -173,7 +173,7 @@ theorem star_mul' [CommMagma R] [StarMul R] (x y : R) : star (x * y) = star x * 
 def starMulEquiv [Mul R] [StarMul R] : R ≃* Rᵐᵒᵖ :=
   { (InvolutiveStar.star_involutive.toPerm star).trans opEquiv with
     toFun := fun x => MulOpposite.op (star x)
-    map_mul' := fun x y => by simp only [star_mul, op_mul] }
+    map_mul' := fun x y => by simp [star_mul, op_mul] }
 
 /-- `star` as a `MulAut` for commutative `R`. -/
 @[simps apply]
@@ -271,7 +271,7 @@ theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x 
   starAddEquiv.map_eq_zero_iff (M := R)
 
 theorem star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 := by
-  simp only [ne_eq, star_eq_zero]
+  simp [ne_eq, star_eq_zero]
 
 @[simp]
 theorem star_neg [AddGroup R] [StarAddMonoid R] (r : R) : star (-r) = -star r :=
@@ -361,7 +361,7 @@ instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveSta
   star_involutive := by
     intro
     ext
-    simp only [RingHom.coe_comp, Function.comp_apply, starRingEnd_self_apply]
+    simp [RingHom.coe_comp, Function.comp_apply, starRingEnd_self_apply]
 
 theorem RingHom.star_def {S : Type*} [NonAssocSemiring S] (f : S →+* R) :
     Star.star f = RingHom.comp (starRingEnd R) f := rfl

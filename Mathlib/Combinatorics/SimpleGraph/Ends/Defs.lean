@@ -243,7 +243,7 @@ instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K 
     have : Finite (Set.range touch) := by
       refine @Subtype.finite _ (Set.Finite.to_subtype ?_) _
       apply Set.Finite.ofFinset (K.biUnion (fun v => G.neighborFinset v))
-      simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_ofPred_eq, implies_true]
+      simp [Finset.mem_biUnion, mem_neighborFinset, Set.mem_ofPred_eq, implies_true]
     -- hence `touch` has a finite domain
     apply Finite.of_injective_finite_range touch_inj
 

@@ -95,7 +95,7 @@ theorem zero_eq_eval [AddMonoid M] : (0:M) = NF.eval (R := ℕ) (M := M) [] := r
 theorem add_eq_eval₁ [AddMonoid M] [SMul R M] (a₁ : R × M) {a₂ : R × M} {l₁ l₂ l : NF R M}
     (h : l₁.eval + (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval + (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
-  simp only [eval_cons, ← h, add_assoc]
+  simp [eval_cons, ← h, add_assoc]
 
 theorem add_eq_eval₂ [Semiring R] [AddCommMonoid M] [Module R M] (r₁ r₂ : R) (x : M)
     {l₁ l₂ l : NF R M} (h : l₁.eval + l₂.eval = l.eval) :
@@ -125,7 +125,7 @@ theorem add_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [Semiring R] [Module R
 theorem sub_eq_eval₁ [SMul R M] [AddGroup M] (a₁ : R × M) {a₂ : R × M} {l₁ l₂ l : NF R M}
     (h : l₁.eval - (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval - (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
-  simp only [eval_cons, ← h, sub_eq_add_neg, add_assoc]
+  simp [eval_cons, ← h, sub_eq_add_neg, add_assoc]
 
 theorem sub_eq_eval₂ [Ring R] [AddCommGroup M] [Module R M] (r₁ r₂ : R) (x : M) {l₁ l₂ l : NF R M}
     (h : l₁.eval - l₂.eval = l.eval) :
@@ -160,7 +160,7 @@ theorem neg_cons [Neg R] (p : R × M) (l : NF R M) : -(p ::ᵣ l) = (-p.1, p.2) 
 theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
   induction l with
   | nil => exact neg_zero.symm
-  | cons p l ih => simp only [eval_cons, neg_add, neg_cons, ih, neg_smul]
+  | cons p l ih => simp [eval_cons, neg_add, neg_cons, ih, neg_smul]
 
 theorem zero_sub_eq_eval [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) :
     0 - l.eval = (-l).eval := by
@@ -185,7 +185,7 @@ theorem eval_smul [AddCommMonoid M] [Semiring R] [Module R M] {l : NF R M} {x : 
   subst h
   induction l with
   | nil => exact (smul_zero r).symm
-  | cons p l ih => simp only [smul_cons, eval_cons, ih, smul_add, mul_smul]
+  | cons p l ih => simp [smul_cons, eval_cons, ih, smul_add, mul_smul]
 
 theorem smul_eq_eval {R₀ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₀]
     [Module R₀ M] [Semiring S] [Module S M] {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
@@ -232,7 +232,7 @@ theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M
     (l.algebraMap R).eval = l.eval := by
   induction l with
   | nil => rfl
-  | cons p l ih => simp only [algebraMap_cons, eval_cons, ih, IsScalarTower.algebraMap_smul]
+  | cons p l ih => simp [algebraMap_cons, eval_cons, ih, IsScalarTower.algebraMap_smul]
 
 end NF
 end

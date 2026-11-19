@@ -78,13 +78,13 @@ lemma XOpIso_hom_d_op (i j : Option ι) :
       d K.op i j ≫ (XOpIso K j).hom :=
   match i, j with
   | none, _ => by
-      simp only [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
+      simp [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
   | some i, some j => by
       dsimp [XOpIso]
       simp only [d_eq _ rfl rfl, op_comp, assoc, id_comp, comp_id]
       rfl
   | some _, none => by
-      simp only [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
+      simp [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
 
 variable {K L}
 
@@ -187,7 +187,7 @@ noncomputable def extendMap : K.extend e ⟶ L.extend e where
         rw [K.extend_d_eq e hi hj, L.extend_d_eq e hi hj,
           extend.mapX_some φ (e.r_eq_some hi),
           extend.mapX_some φ (e.r_eq_some hj)]
-        simp only [extendXIso, assoc, Iso.inv_hom_id_assoc, Hom.comm_assoc]
+        simp [extendXIso, assoc, Iso.inv_hom_id_assoc, Hom.comm_assoc]
       · have hj' := e.r_eq_none j' (fun j'' hj'' => hj ⟨j'', hj''⟩)
         dsimp [extend]
         rw [extend.d_none_eq_zero' _ _ _ hj', extend.d_none_eq_zero' _ _ _ hj',

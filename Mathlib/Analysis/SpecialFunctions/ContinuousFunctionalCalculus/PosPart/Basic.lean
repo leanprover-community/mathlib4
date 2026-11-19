@@ -245,7 +245,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     all_goals
       refine g.mul_nonUnitalStarAlgHom_apply_eq_zero _ _ ?_ ?_
         (cfcₙHomSuperset_continuous hc' hcs)
-      all_goals simp only [star_trivial, cfcₙHomSuperset_id hb' hbs,
+      all_goals simp [star_trivial, cfcₙHomSuperset_id hb' hbs,
         cfcₙHomSuperset_id hc' hcs, mul_neg, hbc, neg_zero]
   have mul₂ (f g : C(s, ℝ)₀) : (cfcₙHomSuperset hc' hcs f) * (cfcₙHomSuperset hb' hbs g) = 0 := by
     simpa only [star_mul, star_zero, ← map_star, star_trivial] using congr(star $(mul₁ g f))
@@ -258,7 +258,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
       toFun := cfcₙHomSuperset hb' hbs + cfcₙHomSuperset hc' hcs
       map_zero' := by simp [-cfcₙHomSuperset_apply]
       map_mul' := fun f g ↦ by
-        simp only [Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁,
+        simp [Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁,
           zero_add]
       map_star' := fun f ↦ by simp [← map_star] }
   have key : (cfcₙHomSuperset ha has) = ψ :=

@@ -244,12 +244,12 @@ variable [ConditionallyCompleteLinearOrder β] {x : β} {f : α → β}
 theorem essSup_eq_sInf {m : MeasurableSpace α} (μ : Measure α) (f : α → β) :
     essSup f μ = sInf { a | μ { x | a < f x } = 0 } := by
   dsimp [essSup, limsup, limsSup]
-  simp only [eventually_map, ae_iff, not_le]
+  simp [eventually_map, ae_iff, not_le]
 
 theorem essInf_eq_sSup {m : MeasurableSpace α} (μ : Measure α) (f : α → β) :
     essInf f μ = sSup { a | μ { x | f x < a } = 0 } := by
   dsimp [essInf, liminf, limsInf]
-  simp only [eventually_map, ae_iff, not_le]
+  simp [eventually_map, ae_iff, not_le]
 
 theorem ae_lt_of_essSup_lt (hx : essSup f μ < x)
     (hf : IsBoundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault) :

@@ -127,7 +127,7 @@ theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen 
 theorem TopologicalSpace.ext_iff_isClosed {X} {t₁ t₂ : TopologicalSpace X} :
     t₁ = t₂ ↔ ∀ s, IsClosed[t₁] s ↔ IsClosed[t₂] s := by
   rw [TopologicalSpace.ext_iff, compl_surjective.forall]
-  simp only [@isOpen_compl_iff _ _ t₁, @isOpen_compl_iff _ _ t₂]
+  simp [@isOpen_compl_iff _ _ t₁, @isOpen_compl_iff _ _ t₂]
 
 alias ⟨_, TopologicalSpace.ext_isClosed⟩ := TopologicalSpace.ext_iff_isClosed
 

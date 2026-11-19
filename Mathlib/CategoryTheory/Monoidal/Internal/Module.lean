@@ -157,7 +157,7 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
     dsimp only [id_coe, id_eq]
     erw [TensorProduct.mk_apply, TensorProduct.mk_apply, mul'_apply, LinearMap.id_apply, mul'_apply]
-    simp only [_root_.mul_assoc]
+    simp [_root_.mul_assoc]
 
 attribute [local instance] inverseObj
 

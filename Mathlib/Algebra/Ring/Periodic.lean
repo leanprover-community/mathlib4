@@ -51,7 +51,7 @@ protected theorem Periodic.comp [Add α] (h : Periodic f c) (g : β → γ) : Pe
 
 theorem Periodic.comp_addHom [Add α] [Add γ] (h : Periodic f c) (g : AddHom γ α) (g_inv : α → γ)
     (hg : RightInverse g_inv g) : Periodic (f ∘ g) (g_inv c) := fun x => by
-  simp only [hg c, h (g x), map_add, comp_apply]
+  simp [hg c, h (g x), map_add, comp_apply]
 
 @[to_additive]
 protected theorem Periodic.mul [Add α] [Mul β] (hf : Periodic f c) (hg : Periodic g c) :
@@ -117,7 +117,7 @@ theorem Periodic.add_const [AddCommSemigroup α] (h : Periodic f c) (a : α) :
 
 theorem Periodic.const_sub [AddCommGroup α] (h : Periodic f c) (a : α) :
     Periodic (fun x => f (a - x)) c := fun x => by
-  simp only [← sub_sub, h.sub_eq]
+  simp [← sub_sub, h.sub_eq]
 
 theorem Periodic.sub_const [SubtractionCommMonoid α] (h : Periodic f c) (a : α) :
     Periodic (fun x => f (x - a)) c := by
@@ -199,7 +199,7 @@ iff `a` is a periodic point for `f`. -/
 theorem periodic_iterate_iff {f : α → α} {n : ℕ} {a : α} :
     Periodic (f^[·] a) n ↔ IsPeriodicPt f n a := by
   refine ⟨fun h ↦ h.eq, fun h k ↦ ?_⟩
-  simp only [Function.iterate_add_apply, h.eq]
+  simp [Function.iterate_add_apply, h.eq]
 
 alias ⟨Periodic.isPeriodicPt, IsPeriodicPt.periodic_iterate⟩ := periodic_iterate_iff
 
@@ -293,7 +293,7 @@ theorem Antiperiodic.int_odd_mul_antiperiodic [NonAssocRing α] [InvolutiveNeg �
   rw [← add_assoc, h, h.int_even_mul_periodic]
 
 theorem Antiperiodic.sub_eq [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f c) (x : α) :
-    f (x - c) = -f x := by simp only [← neg_eq_iff_eq_neg, ← h (x - c), sub_add_cancel]
+    f (x - c) = -f x := by simp [← neg_eq_iff_eq_neg, ← h (x - c), sub_add_cancel]
 
 theorem Antiperiodic.sub_eq' [SubtractionCommMonoid α] [Neg β] (h : Antiperiodic f c) :
     f (c - x) = -f (-x) := by simpa only [sub_eq_neg_add] using h (-x)
@@ -368,7 +368,7 @@ theorem Antiperiodic.add_const [AddCommSemigroup α] [Neg β] (h : Antiperiodic 
 
 theorem Antiperiodic.const_sub [AddCommGroup α] [InvolutiveNeg β] (h : Antiperiodic f c) (a : α) :
     Antiperiodic (fun x => f (a - x)) c := fun x => by
-  simp only [← sub_sub, h.sub_eq]
+  simp [← sub_sub, h.sub_eq]
 
 theorem Antiperiodic.sub_const [SubtractionCommMonoid α] [Neg β] (h : Antiperiodic f c) (a : α) :
     Antiperiodic (fun x => f (x - a)) c := by

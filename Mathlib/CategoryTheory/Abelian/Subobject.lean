@@ -44,11 +44,11 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     · exact (Abelian.epiDesc f.unop _ (cokernel.condition (kernel.ι f.unop))).op
     · exact (cokernel.desc _ _ (kernel.condition f.unop)).op
     · rw [← cancel_epi (cokernel.π (kernel.ι f.unop))]
-      simp only [unop_comp, Quiver.Hom.unop_op, unop_id_op, cokernel.π_desc_assoc,
+      simp [unop_comp, Quiver.Hom.unop_op, unop_id_op, cokernel.π_desc_assoc,
         comp_epiDesc, Category.comp_id]
-    · simp only [← cancel_epi f.unop, unop_comp, Quiver.Hom.unop_op, unop_id, comp_epiDesc_assoc,
+    · simp [← cancel_epi f.unop, unop_comp, Quiver.Hom.unop_op, unop_id, comp_epiDesc_assoc,
         cokernel.π_desc, Category.comp_id]
-    · exact Quiver.Hom.unop_inj (by simp only [unop_comp, Quiver.Hom.unop_op, comp_epiDesc])
+    · exact Quiver.Hom.unop_inj (by simp [unop_comp, Quiver.Hom.unop_op, comp_epiDesc])
   · change (kernelOrderHom X).comp (cokernelOrderHom X) = _
     refine OrderHom.ext _ _ (funext (Subobject.ind _ ?_))
     intro A f hf
@@ -57,10 +57,10 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     refine Subobject.mk_eq_mk_of_comm _ _ ⟨?_, ?_, ?_, ?_⟩ ?_
     · exact Abelian.monoLift f _ (kernel.condition (cokernel.π f))
     · exact kernel.lift _ _ (cokernel.condition f)
-    · simp only [← cancel_mono (kernel.ι (cokernel.π f)), Category.assoc, image.fac, monoLift_comp,
+    · simp [← cancel_mono (kernel.ι (cokernel.π f)), Category.assoc, image.fac, monoLift_comp,
         Category.id_comp]
-    · simp only [← cancel_mono f, Category.assoc, monoLift_comp, image.fac, Category.id_comp]
-    · simp only [monoLift_comp]
+    · simp [← cancel_mono f, Category.assoc, monoLift_comp, image.fac, Category.id_comp]
+    · simp [monoLift_comp]
 
 /-- A well-powered abelian category is also well-copowered. -/
 instance wellPowered_opposite [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} C] :

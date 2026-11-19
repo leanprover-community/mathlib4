@@ -126,7 +126,7 @@ noncomputable def invOneSubPow : ℕ → S⟦X⟧ˣ
 
 theorem invOneSubPow_zero : invOneSubPow S 0 = 1 := by
   delta invOneSubPow
-  simp only
+  simp
 
 theorem invOneSubPow_val_eq_mk_sub_one_add_choose_of_pos (h : 0 < d) :
     (invOneSubPow S d).val = (mk fun n => Nat.choose (d - 1 + n) (d - 1) : S⟦X⟧) := by
@@ -164,7 +164,7 @@ theorem invOneSubPow_inv_eq_one_sub_pow :
 
 theorem invOneSubPow_inv_zero_eq_one : (invOneSubPow S 0).inv = 1 := by
   delta invOneSubPow
-  simp only [Units.inv_eq_val_inv, inv_one, Units.val_one]
+  simp [Units.inv_eq_val_inv, inv_one, Units.val_one]
 
 theorem mk_add_choose_mul_one_sub_pow_eq_one :
     (mk fun n ↦ Nat.choose (d + n) d : S⟦X⟧) * ((1 - X) ^ (d + 1)) = 1 :=

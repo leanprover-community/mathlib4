@@ -257,7 +257,7 @@ lemma map_radical (I : Ideal R) :
 theorem ideal_eq_iInf_under_map_away {S : Finset R} (hS : Ideal.span (α := R) S = ⊤) (I : Ideal R) :
     I = ⨅ f ∈ S, (I.map (algebraMap R (Localization.Away f))).under R := by
   apply le_antisymm
-  · simp only [le_iInf₂_iff, ← Ideal.map_le_iff_le_comap, le_refl, implies_true]
+  · simp [le_iInf₂_iff, ← Ideal.map_le_iff_le_comap, le_refl, implies_true]
   · intro x hx
     apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ _ hS
     rintro ⟨s, hs⟩
@@ -349,7 +349,7 @@ lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {R
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
     (algebraMap R S) (Submonoid.le_comap_map M) := by
     apply IsLocalization.ringHom_ext M
-    simp only [IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
+    simp [IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
   rw [Module.isTorsionFree_iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
     RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx

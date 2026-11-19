@@ -79,7 +79,7 @@ lemma isSMulRegular_submodule_iff_right_eq_zero_of_smul :
     IsSMulRegular N r ↔ ∀ x ∈ N, r • x = 0 → x = 0 :=
   isSMulRegular_iff_right_eq_zero_of_smul.trans <|
     Subtype.forall.trans <| by
-      simp only [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
+      simp [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
 
 lemma isSMulRegular_quotient_iff_mem_of_smul_mem :
     IsSMulRegular (M ⧸ N) r ↔ ∀ x : M, r • x ∈ N → x ∈ N :=

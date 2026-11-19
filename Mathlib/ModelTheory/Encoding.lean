@@ -87,9 +87,9 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     simp only [h, length_append, length_map, length_finRange, le_add_iff_nonneg_right,
       _root_.zero_le, ↓reduceDIte, getElem_fin, cons.injEq, func.injEq, heq_eq_eq, true_and]
     refine ⟨funext (fun i => ?_), ?_⟩
-    · simp only [length_map, length_finRange, is_lt, getElem_append_left, getElem_map,
+    · simp [length_map, length_finRange, is_lt, getElem_append_left, getElem_map,
       getElem_finRange, cast_mk, Fin.eta]
-    · simp only [length_map, length_finRange, drop_left']
+    · simp [length_map, length_finRange, drop_left']
 
 /-- An encoding of terms as lists. -/
 @[simps]
@@ -99,7 +99,7 @@ protected def encoding : Encoding (L.Term α) (α ⊕ (Σ i, L.Functions i)) whe
   decode_encode t := by
     have h := listDecode_encode_list [t]
     rw [flatMap_singleton] at h
-    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
+    simp [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 theorem listEncode_injective :
@@ -135,15 +135,15 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
       · simp only [Sum.elim_inl, Sigma.mk.inj_iff, heq_eq_eq, var.injEq, Sum.inl.injEq, true_and]
           at h
         rw [h]
-      · simp only [Sum.elim_inl, Sum.elim_inr, Sigma.mk.inj_iff, false_and, reduceCtorEq] at h
-      · simp only [Sum.elim_inr, Sum.elim_inl, Sigma.mk.inj_iff, false_and, reduceCtorEq] at h
+      · simp [Sum.elim_inl, Sum.elim_inr, Sigma.mk.inj_iff, false_and, reduceCtorEq] at h
+      · simp [Sum.elim_inr, Sum.elim_inl, Sigma.mk.inj_iff, false_and, reduceCtorEq] at h
       · simp only [Sum.elim_inr, Sigma.mk.inj_iff, heq_eq_eq, func.injEq, true_and] at h
         rw [Sigma.ext_iff.2 ⟨h.1, h.2.1⟩]
 
 instance [Encodable α] [Encodable (Σ i, L.Functions i)] : Encodable (L.Term α) :=
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     rw [← flatMap_singleton listEncode, listDecode_encode_list]
-    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
+    simp [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 instance [h1 : Countable α] [h2 : Countable (Σ l, L.Functions l)] : Countable (L.Term α) := by
@@ -188,7 +188,7 @@ def sigmaImp : (Σ n, L.BoundedFormula α n) → (Σ n, L.BoundedFormula α n) �
 @[simp]
 lemma sigmaImp_apply {n} {φ ψ : L.BoundedFormula α n} :
     sigmaImp ⟨n, φ⟩ ⟨n, ψ⟩ = ⟨n, φ.imp ψ⟩ := by
-  simp only [sigmaImp, ↓reduceDIte, eq_mp_eq_cast, cast_eq]
+  simp [sigmaImp, ↓reduceDIte, eq_mp_eq_cast, cast_eq]
 
 /-- Decodes a list of symbols as a list of formulas. -/
 def listDecode :
@@ -227,8 +227,8 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
   | equal =>
     intro l
     rw [listEncode, cons_append, cons_append, listDecode, dite_eq_left]
-    · simp only [eq_mp_eq_cast, cast_eq, nil_append]
-    · simp only
+    · simp [eq_mp_eq_cast, cast_eq, nil_append]
+    · simp
   | @rel φ_n φ_l φ_R ts =>
     intro l
     rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
@@ -240,8 +240,8 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
         getElem?_eq_some_iff, length_append, length_map, length_finRange, exists_eq_right]
       refine ⟨lt_of_lt_of_le i.2 le_self_add, ?_⟩
       rw [getElem_append_left, getElem_map]
-      · simp only [getElem_finRange, cast_mk, Fin.eta, Function.comp_apply, Sum.getLeft?_inl]
-      · simp only [length_map, length_finRange, is_lt]
+      · simp [getElem_finRange, cast_mk, Fin.eta, Function.comp_apply, Sum.getLeft?_inl]
+      · simp [length_map, length_finRange, is_lt]
     rw [dite_eq_left]
     swap
     · exact fun i => Option.isSome_iff_exists.2 ⟨⟨_, ts i⟩, h i⟩
@@ -263,13 +263,13 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
     intro l
     simp only at *
     rw [listEncode, List.append_assoc, cons_append, listDecode]
-    simp only [ih1, ih2, length_cons, le_add_iff_nonneg_left, _root_.zero_le, ↓reduceDIte,
+    simp [ih1, ih2, length_cons, le_add_iff_nonneg_left, _root_.zero_le, ↓reduceDIte,
       getElem_cons_zero, getElem_cons_succ, sigmaImp_apply, drop_succ_cons, drop_zero]
   | all _ ih =>
     intro l
     simp only at *
     rw [listEncode, cons_append, listDecode]
-    simp only [ih, length_cons, le_add_iff_nonneg_left, _root_.zero_le, ↓reduceDIte,
+    simp [ih, length_cons, le_add_iff_nonneg_left, _root_.zero_le, ↓reduceDIte,
       getElem_cons_zero, sigmaAll_apply, drop_succ_cons, drop_zero]
 
 /-- An encoding of bounded formulas as lists. -/

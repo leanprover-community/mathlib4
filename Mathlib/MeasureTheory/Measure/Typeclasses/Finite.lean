@@ -275,7 +275,7 @@ theorem FiniteAtFilter.exists_mem_basis {f : Filter α} (hμ : FiniteAtFilter μ
   (hf.exists_iff fun {_s _t} hst ht => (measure_mono hst).trans_lt ht).1 hμ
 
 theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFilter ⊥ :=
-  ⟨∅, mem_bot, by simp only [measure_empty, zero_lt_top]⟩
+  ⟨∅, mem_bot, by simp [measure_empty, zero_lt_top]⟩
 
 /-- `μ` has finite spanning sets in `C` if there is a countable sequence of sets in `C` that have
   finite measures. This structure is a type, which is useful if we want to record extra properties
@@ -640,7 +640,7 @@ sequence of open sets. -/
         spanning := ?_ }⟩
   refine eq_univ_of_forall fun x => ?_
   obtain ⟨t, tT, xt⟩ : ∃ t : Set α, t ∈ range f ∧ x ∈ t := by
-    have : x ∈ ⋃₀ T := by simp only [hT, mem_univ]
+    have : x ∈ ⋃₀ T := by simp [hT, mem_univ]
     simpa only [mem_sUnion, exists_prop, ← hf]
   obtain ⟨n, rfl⟩ : ∃ n : ℕ, f n = t := by simpa only using! tT
   exact mem_iUnion_of_mem _ xt

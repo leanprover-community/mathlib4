@@ -53,7 +53,7 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
     ext i
     exact (ha i).symm
   · convert! Independent.mk _ _ h
-    · simp only [mk_rep, Function.comp_apply]
+    · simp [mk_rep, Function.comp_apply]
     · intro i
       apply rep_ne_zero
 
@@ -84,9 +84,9 @@ theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
     convert hh1.units_smul a⁻¹
     ext i
-    simp only [← ha, inv_smul_smul, Pi.smul_apply', Pi.inv_apply, Function.comp_apply]
+    simp [← ha, inv_smul_smul, Pi.smul_apply', Pi.inv_apply, Function.comp_apply]
   · convert! Dependent.mk _ _ h
-    · simp only [mk_rep, Function.comp_apply]
+    · simp [mk_rep, Function.comp_apply]
     · exact fun i => rep_ne_zero (f i)
 
 /-- Dependence is the negation of independence. -/

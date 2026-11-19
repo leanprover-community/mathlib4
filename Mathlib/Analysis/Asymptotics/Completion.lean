@@ -28,11 +28,11 @@ namespace Asymptotics
 
 @[simp, norm_cast]
 lemma isBigO_completion_left : (fun x ↦ g x : α → F̂) =O[l] f ↔ g =O[l] f := by
-  simp only [isBigO_iff, norm_coe]
+  simp [isBigO_iff, norm_coe]
 
 @[simp, norm_cast]
 lemma isBigO_completion_right : f =O[l] (fun x ↦ g x : α → F̂) ↔ f =O[l] g := by
-  simp only [isBigO_iff, norm_coe]
+  simp [isBigO_iff, norm_coe]
 
 @[simp, norm_cast]
 lemma isTheta_completion_left : (fun x ↦ g x : α → F̂) =Θ[l] f ↔ g =Θ[l] f :=
@@ -44,10 +44,10 @@ lemma isTheta_completion_right : f =Θ[l] (fun x ↦ g x : α → F̂) ↔ f =Θ
 
 @[simp, norm_cast]
 lemma isLittleO_completion_left : (fun x ↦ g x : α → F̂) =o[l] f ↔ g =o[l] f := by
-  simp only [isLittleO_iff, norm_coe]
+  simp [isLittleO_iff, norm_coe]
 
 @[simp, norm_cast]
 lemma isLittleO_completion_right : f =o[l] (fun x ↦ g x : α → F̂) ↔ f =o[l] g := by
-  simp only [isLittleO_iff, norm_coe]
+  simp [isLittleO_iff, norm_coe]
 
 end Asymptotics

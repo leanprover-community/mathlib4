@@ -181,7 +181,7 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
     exact ⟨t, h_dyncover t <| by simpa using ht⟩
   · rw [toFinset_card]
     apply (Fintype.card_range_le dyncover).trans
-    simp only [Fintype.card_fun, Fintype.card_coe, Fintype.card_fin, le_refl]
+    simp [Fintype.card_fun, Fintype.card_coe, Fintype.card_fin, le_refl]
 
 lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X]
     (F_comp : IsCompact F) (h : UniformContinuous T) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
@@ -381,12 +381,12 @@ lemma coverEntropyEntourage_nonneg (T : X → X) (h : F.Nonempty) (U : SetRel X 
 lemma coverEntropyEntourage_univ (T : X → X) (h : F.Nonempty) :
     coverEntropyEntourage T F univ = 0 := by
   rw [← expGrowthSup_const one_ne_zero one_ne_top, coverEntropyEntourage]
-  simp only [coverMincard_univ T h, ENat.toENNReal_one]
+  simp [coverMincard_univ T h, ENat.toENNReal_one]
 
 lemma coverEntropyInfEntourage_univ (T : X → X) (h : F.Nonempty) :
     coverEntropyInfEntourage T F univ = 0 := by
   rw [← expGrowthInf_const one_ne_zero one_ne_top, coverEntropyInfEntourage]
-  simp only [coverMincard_univ T h, ENat.toENNReal_one]
+  simp [coverMincard_univ T h, ENat.toENNReal_one]
 
 lemma coverEntropyEntourage_le_log_coverMincard_div (F_inv : MapsTo T F F) [U.IsSymm]
     (n_pos : n ≠ 0) :
@@ -485,11 +485,11 @@ lemma coverEntropyInf_le_coverEntropy (T : X → X) (F : Set X) :
 
 @[simp]
 lemma coverEntropy_empty : coverEntropy T ∅ = ⊥ := by
-  simp only [coverEntropy, coverEntropyEntourage_empty, iSup_bot]
+  simp [coverEntropy, coverEntropyEntourage_empty, iSup_bot]
 
 @[simp]
 lemma coverEntropyInf_empty : coverEntropyInf T ∅ = ⊥ := by
-  simp only [coverEntropyInf, coverEntropyInfEntourage_empty, iSup_bot]
+  simp [coverEntropyInf, coverEntropyInfEntourage_empty, iSup_bot]
 
 lemma coverEntropyInf_nonneg (T : X → X) (h : F.Nonempty) : 0 ≤ coverEntropyInf T F :=
   (coverEntropyInfEntourage_le_coverEntropyInf T F univ_mem).trans_eq'

@@ -409,7 +409,7 @@ variable {A M : Type*} [AddGroup A] [DivisionMonoid M]
 /-- An additive character maps negatives to inverses (when defined) -/
 lemma map_neg_eq_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
   apply eq_inv_of_mul_eq_one_left
-  simp only [← map_add_eq_mul, neg_add_cancel, map_zero_eq_one]
+  simp [← map_add_eq_mul, neg_add_cancel, map_zero_eq_one]
 
 /-- An additive character maps integer scalar multiples to integer powers. -/
 lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
@@ -489,7 +489,7 @@ theorem mulShift_mul (ψ : AddChar R M) (r s : R) :
 lemma mulShift_mulShift (ψ : AddChar R M) (r s : R) :
     mulShift (mulShift ψ r) s = mulShift ψ (r * s) := by
   ext
-  simp only [mulShift_apply, mul_assoc]
+  simp [mulShift_apply, mul_assoc]
 
 /-- `mulShift ψ 0` is the trivial character. -/
 @[simp]

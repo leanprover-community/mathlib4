@@ -46,7 +46,7 @@ protected theorem isOpen_iff (hS : IsCoherentWith S) :
 
 protected theorem isClosed_iff (hS : IsCoherentWith S) :
     IsClosed t ↔ ∀ s ∈ S, IsClosed ((↑) ⁻¹' t : Set s) := by
-  simp only [← isOpen_compl_iff, hS.isOpen_iff, preimage_compl]
+  simp [← isOpen_compl_iff, hS.isOpen_iff, preimage_compl]
 
 protected theorem continuous_iff {Y : Type*} [TopologicalSpace Y] {f : X → Y}
     (hS : IsCoherentWith S) :

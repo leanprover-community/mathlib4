@@ -427,7 +427,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace �
     · simp [Finset.mem_singleton.mp hx, hij.symm, ht₂]
   have h_inter : ⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂ =
       ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ := by
-    simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
+    simp [Finset.set_biInter_singleton, Finset.set_biInter_insert]
   filter_upwards [h_indep {i, j} hf_m] with a h_indep'
   grind
 
@@ -494,7 +494,7 @@ theorem IndepSets.indep_aux {m₂ m : MeasurableSpace Ω}
     rw [← ae_all_iff] at ihf
     filter_upwards [ihf] with a ha
     rw [inter_iUnion, measure_iUnion, measure_iUnion hfd fun i ↦ h2 _ (hfm i)]
-    · simp only [ENNReal.tsum_mul_left, ha]
+    · simp [ENNReal.tsum_mul_left, ha]
     · exact hfd.mono fun i j h ↦ (h.inter_left' _).inter_right' _
     · exact fun i ↦ .inter ht1m (h2 _ <| hfm i)
 
@@ -509,7 +509,7 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : Kernel α Ω} {μ :
   intro t1 t2 ht1 ht2
   induction t1, ht1 using induction_on_inter hpm1 hp1 with
   | empty =>
-    simp only [Set.empty_inter, measure_empty, zero_mul, Filter.eventually_true]
+    simp [Set.empty_inter, measure_empty, zero_mul, Filter.eventually_true]
   | basic t ht =>
     refine IndepSets.indep_aux h2 hp2 hpm2 hyp ht (h1 _ ?_) ht2
     rw [hpm1]
@@ -579,7 +579,7 @@ theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
     dsimp only [g]
     split_ifs with h1 h2
     · exact absurd rfl (Set.disjoint_iff_forall_ne.mp hST (hp1 h1) (hp2 h2))
-    all_goals simp only [measure_univ, one_mul, mul_one, Set.inter_univ, Set.univ_inter]
+    all_goals simp [measure_univ, one_mul, mul_one, Set.inter_univ, Set.univ_inter]
   simp_rw [h_P_inter, h_μg, Finset.prod_mul_distrib,
     Finset.prod_ite_mem (p1 ∪ p2) p1 (fun x ↦ κ a (f1 x)), Finset.union_inter_cancel_left,
     Finset.prod_ite_mem (p1 ∪ p2) p2 (fun x => κ a (f2 x)), Finset.union_inter_cancel_right, ht1_eq,
@@ -649,7 +649,7 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { i } {j | j < i}
       (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
-  simp only [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
+  simp [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
@@ -657,7 +657,7 @@ theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { k } {j | j ≤ i}
       (Set.disjoint_singleton_left.mpr hk.not_ge) using 1
-  simp only [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
+  simp [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le_nat {s : ℕ → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (n : ℕ) :

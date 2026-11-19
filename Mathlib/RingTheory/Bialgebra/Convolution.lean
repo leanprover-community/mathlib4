@@ -74,7 +74,7 @@ lemma toLinearMap_convMul (f g : WithConv <| C →ₐ[R] A) :
 lemma toLinearMap_convPow (f : WithConv <| C →ₐ[R] A) :
     ∀ n : ℕ, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n
   | 0 => rfl
-  | n + 1 => by simp only [convPow_succ, toLinearMap_convMul, toLinearMap_convPow, pow_succ]
+  | n + 1 => by simp [convPow_succ, toLinearMap_convMul, toLinearMap_convPow, pow_succ]
 
 lemma convMul_comp_bialgHom_distrib [Bialgebra R B] (f g : WithConv <| C →ₐ[R] A) (h : B →ₐc[R] C) :
     AlgHom.comp (f * g).ofConv (h : B →ₐ[R] C) =
@@ -158,13 +158,13 @@ lemma toAlgHom_convMul (f g : WithConv <| C →ₐc[R] A) :
 lemma toLinearMap_convPow (f : WithConv <| C →ₐc[R] A) :
     ∀ n, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n
   | 0 => rfl
-  | n + 1 => by simp only [convPow_succ, pow_succ, toLinearMap_convMul, toLinearMap_convPow]
+  | n + 1 => by simp [convPow_succ, pow_succ, toLinearMap_convMul, toLinearMap_convPow]
 
 @[simp]
 lemma toAlgHom_convPow (f : WithConv <| C →ₐc[R] A) :
     ∀ n, toConv (f ^ n).ofConv.toAlgHom = toConv f.ofConv.toAlgHom ^ n
   | 0 => rfl
-  | n + 1 => by simp only [convPow_succ, pow_succ, toAlgHom_convMul, toAlgHom_convPow]
+  | n + 1 => by simp [convPow_succ, pow_succ, toAlgHom_convMul, toAlgHom_convPow]
 
 instance : CommMonoid (WithConv <| C →ₐc[R] A) := fast_instance%
   (toConv_injective.comp <| coe_linearMap_injective.comp ofConv_injective).commMonoid _

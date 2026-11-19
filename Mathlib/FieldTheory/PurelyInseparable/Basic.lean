@@ -215,7 +215,7 @@ theorem isPurelyInseparable_iff_pow_mem :
       simpa only [expand_aeval, minpoly.aeval] using congr(aeval x $h2)⟩
   have hdeg := (minpoly.natSepDegree_eq_one_iff_pow_mem q).2 (h x)
   have halg : IsIntegral F x := by_contra fun h' ↦ by
-    simp only [minpoly.eq_zero h', natSepDegree_zero, zero_ne_one] at hdeg
+    simp [minpoly.eq_zero h', natSepDegree_zero, zero_ne_one] at hdeg
   refine ⟨halg, fun hsep ↦ ?_⟩
   rwa [hsep.natSepDegree_eq_natDegree, minpoly.natDegree_eq_one_iff] at hdeg
 
@@ -627,7 +627,7 @@ theorem adjoin_eq_of_isAlgebraic [Algebra.IsAlgebraic F E] :
   rw [lift_top, lift_adjoin] at h
   have : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
-  simp only [S, coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
+  simp [S, coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
 
 end separableClosure
 

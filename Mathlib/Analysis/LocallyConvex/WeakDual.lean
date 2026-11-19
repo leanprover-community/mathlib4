@@ -71,12 +71,12 @@ theorem toSeminorm_apply {f : E →ₗ[𝕜] 𝕜} {x : E} : f.toSeminorm x = �
 
 theorem toSeminorm_ball_zero {f : E →ₗ[𝕜] 𝕜} {r : ℝ} :
     Seminorm.ball f.toSeminorm 0 r = { x : E | ‖f x‖ < r } := by
-  simp only [Seminorm.ball_zero_eq, toSeminorm_apply]
+  simp [Seminorm.ball_zero_eq, toSeminorm_apply]
 
 theorem toSeminorm_comp (f : F →ₗ[𝕜] 𝕜) (g : E →ₗ[𝕜] F) :
     f.toSeminorm.comp g = (f.comp g).toSeminorm := by
   ext
-  simp only [Seminorm.comp_apply, toSeminorm_apply, coe_comp, Function.comp_apply]
+  simp [Seminorm.comp_apply, toSeminorm_apply, coe_comp, Function.comp_apply]
 
 /-- Construct a family of seminorms from a bilinear form. -/
 def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily 𝕜 E F := fun y =>

@@ -324,7 +324,7 @@ theorem smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
           fun hh => ⟨(MulAut.conj g)⁻¹ h, hh, MulAut.apply_inv_self G (MulAut.conj g) h⟩⟩
 
 theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] : g • P = P := by
-  simp only [smul_eq_iff_mem_normalizer, ← P.coe_coe, P.normalizer_eq_top, mem_top]
+  simp [smul_eq_iff_mem_normalizer, ← P.coe_coe, P.normalizer_eq_top, mem_top]
 
 end Sylow
 

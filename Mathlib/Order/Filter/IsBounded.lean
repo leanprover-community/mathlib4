@@ -377,7 +377,7 @@ theorem isBounded_le_of_top [LE α] [OrderTop α] {f : Filter α} : f.IsBounded 
 theorem _root_.OrderIso.isBoundedUnder_le_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (Function.Surjective.exists e.surjective).trans <|
-    exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
+    exists_congr fun a => by simp [eventually_map, e.le_iff_le]
 
 -- TODO: use `to_dual` in combination with `to_additive`
 @[to_additive (attr := simp)]
@@ -463,7 +463,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
     apply hb c
     rw [eventually_map] at hc ⊢
     refine hc.mono (fun _ ↦ ?_)
-    simp +contextual only [implies_true, max_le_iff]
+    simp +contextual [implies_true, max_le_iff]
 
 open Finset
 

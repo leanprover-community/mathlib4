@@ -180,13 +180,13 @@ theorem map_frobeniusPoly (n : ℕ) :
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
   rw [frobeniusPoly, map_add, map_pow, map_mul, map_X, map_C]
-  simp only [Int.cast_natCast, add_zero, eq_intCast, ZMod.natCast_self, zero_mul, C_0]
+  simp [Int.cast_natCast, add_zero, eq_intCast, ZMod.natCast_self, zero_mul, C_0]
 
 @[simp]
 theorem aeval_frobeniusPoly_wittPolynomial (n : ℕ) :
     aeval (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [map_aeval_eq_aeval_map_map, map_frobeniusPoly, aeval_frobeniusPolyRat_wittPolynomial,
+  simp [map_aeval_eq_aeval_map_map, map_frobeniusPoly, aeval_frobeniusPolyRat_wittPolynomial,
     map_wittPolynomial]
 
 @[deprecated aeval_frobeniusPoly_wittPolynomial +typeChanged (since := "2026-09-09")]
@@ -216,7 +216,7 @@ instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
     ghostComponent n (frobeniusFun x) = ghostComponent (n + 1) x := by
-  simp only [ghostComponent_apply, frobeniusFun, ← aeval_frobeniusPoly_wittPolynomial,
+  simp [ghostComponent_apply, frobeniusFun, ← aeval_frobeniusPoly_wittPolynomial,
     comp_aeval_apply]
 
 /-- If `R` has characteristic `p`, then there is a ring endomorphism
@@ -280,11 +280,11 @@ theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x
 
 theorem frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius R p) := by
   ext (x n)
-  simp only [coeff_frobenius_charP, map_coeff, frobenius_def]
+  simp [coeff_frobenius_charP, map_coeff, frobenius_def]
 
 @[simp]
 theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
-  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card,
+  simp [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card,
     forall_const]
 
 variable (R)

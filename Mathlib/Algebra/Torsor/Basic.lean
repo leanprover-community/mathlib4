@@ -278,7 +278,7 @@ abbrev Function.Injective.torsor {G P Q : Type*}
     (smul : ∀ (c : G) (x : Q), f (c • x) = c • f x)
     (sdiv : ∀ (x y : Q), x /ₛ y = f x /ₛ f y) : Torsor G Q where
   __ := hf.mulAction f smul
-  sdiv_smul' x y := hf <| by simp only [sdiv, smul, sdiv_smul]
+  sdiv_smul' x y := hf <| by simp [sdiv, smul, sdiv_smul]
   smul_sdiv' c x := by simp [sdiv, smul]
 
 /-- Pushforward of a torsor along a surjective map. -/

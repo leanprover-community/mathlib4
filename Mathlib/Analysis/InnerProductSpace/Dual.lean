@@ -177,7 +177,7 @@ theorem toDual_apply_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ := rfl
 @[simp]
 theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply_apply]
-  simp only [LinearIsometryEquiv.apply_symm_apply]
+  simp [LinearIsometryEquiv.apply_symm_apply]
 
 @[simp]
 lemma toLinearIsometry_toDual :

@@ -438,11 +438,11 @@ theorem cosh_lt_cosh : cosh x < cosh y ↔ |x| < |y| :=
 
 @[simp]
 theorem one_le_cosh (x : ℝ) : 1 ≤ cosh x :=
-  cosh_zero ▸ cosh_le_cosh.2 (by simp only [_root_.abs_zero, _root_.abs_nonneg])
+  cosh_zero ▸ cosh_le_cosh.2 (by simp [_root_.abs_zero, _root_.abs_nonneg])
 
 @[simp]
 theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
-  cosh_zero ▸ cosh_lt_cosh.trans (by simp only [_root_.abs_zero, abs_pos])
+  cosh_zero ▸ cosh_lt_cosh.trans (by simp [_root_.abs_zero, abs_pos])
 
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   refine strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) ?_

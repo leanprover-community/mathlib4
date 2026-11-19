@@ -277,7 +277,7 @@ lemma length_eq [Nonempty R] (s : Set R) :
   simp [length]
 
 lemma length_eq_of_isEmpty [IsEmpty R] (s : Set R) : f.length s = 0 := by
-  simp only [length, ite_eq_left]
+  simp [length, ite_eq_left]
 
 @[simp]
 theorem length_empty : f.length ∅ = 0 := by
@@ -342,7 +342,7 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
         (fun (i : ℕ) (_ : i ∈ univ) => @isOpen_Iotop _ _ _ _ (c i) (d i)) (by simpa using ss) with
       ⟨s, _, hf, hs⟩
     have e : ⋃ i ∈ (hf.toFinset : Set ℕ), Iotop (c i) (d i) = ⋃ i ∈ s, Iotop (c i) (d i) := by
-      simp only [Finset.set_biUnion_coe,
+      simp [Finset.set_biUnion_coe,
         Finite.mem_toFinset]
     rw [tsum_eq_iSup_sum]
     refine le_trans ?_ (le_iSup _ hf.toFinset)
@@ -440,7 +440,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       (add_le_add (f.length_subadditive_Icc_Ioo I_subset) (ENNReal.ofReal_le_ofReal ha'.le))
     _ ≤ ∑' i, (f.length (s i) + ε' i) + δ :=
       (add_le_add (tsum_le_tsum fun i => (hg i).2.le)
-        (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
+        (by simp [ENNReal.ofReal_coe_nnreal, le_rfl]))
     _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [tsum_add]
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
@@ -456,15 +456,15 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
     sdiff_sdiff_comm]
   grw [h]
   rcases le_total a c with hac | hac <;> rcases le_total b c with hbc | hbc
-  · simp only [Ioc_inter_Ioi, f.length_Ioc, hac, hbc, le_refl, Ioc_eq_empty,
+  · simp [Ioc_inter_Ioi, f.length_Ioc, hac, hbc, le_refl, Ioc_eq_empty,
       max_eq_right, min_eq_left, Ioc_sdiff_Ioi, f.length_empty, zero_add, not_lt]
-  · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_sdiff_Ioi, f.length_Ioc, min_eq_right,
+  · simp [hac, hbc, Ioc_inter_Ioi, Ioc_sdiff_Ioi, f.length_Ioc, min_eq_right,
       ← ENNReal.ofReal_add, f.mono hac, f.mono hbc, sub_nonneg,
       sub_add_sub_cancel, le_refl,
       max_eq_right]
-  · simp only [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_sdiff_Ioi,
+  · simp [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_sdiff_Ioi,
       f.length_empty, zero_add, or_true, le_sup_iff, f.length_Ioc, not_lt]
-  · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_sdiff_Ioi, f.length_Ioc, min_eq_right,
+  · simp [hac, hbc, Ioc_inter_Ioi, Ioc_sdiff_Ioi, f.length_Ioc, min_eq_right,
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 
 theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
@@ -591,8 +591,8 @@ theorem measure_Ioo {a b : R} : f.measure (Ioo a b) = ofReal (leftLim f b - f a)
       measure_union A (measurableSet_singleton b), Icc_self] at this
     rw [D, ENNReal.ofReal_add, add_comm] at this
     · simpa only [ENNReal.add_right_inj ENNReal.ofReal_ne_top]
-    · simp only [f.mono.leftLim_le le_rfl, sub_nonneg]
-    · simp only [f.mono.le_leftLim hab, sub_nonneg]
+    · simp [f.mono.leftLim_le le_rfl, sub_nonneg]
+    · simp [f.mono.le_leftLim hab, sub_nonneg]
 
 @[simp]
 theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by

@@ -30,7 +30,7 @@ lemma ciSup_mul (hf : BddAbove (range f)) (a : G) : (⨆ i, f i) * a = ⨆ i, f 
 
 @[to_additive]
 lemma ciSup_div (hf : BddAbove (range f)) (a : G) : (⨆ i, f i) / a = ⨆ i, f i / a := by
-  simp only [div_eq_mul_inv, ciSup_mul hf]
+  simp [div_eq_mul_inv, ciSup_mul hf]
 
 @[to_additive]
 lemma ciInf_mul (hf : BddBelow (range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f i * a :=
@@ -38,7 +38,7 @@ lemma ciInf_mul (hf : BddBelow (range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f 
 
 @[to_additive]
 lemma ciInf_div (hf : BddBelow (range f)) (a : G) : (⨅ i, f i) / a = ⨅ i, f i / a := by
-  simp only [div_eq_mul_inv, ciInf_mul hf]
+  simp [div_eq_mul_inv, ciInf_mul hf]
 
 end Right
 

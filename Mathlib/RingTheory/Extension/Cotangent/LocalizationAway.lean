@@ -72,7 +72,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
     compLocalizationAwayAlgHom T g P (((localizationAway T g).toComp P).toAlgHom x) =
       algebraMap P.Ring _ x := by
-  simp only [toComp_toAlgHom, compLocalizationAwayAlgHom, comp,
+  simp [toComp_toAlgHom, compLocalizationAwayAlgHom, comp,
     localizationAway, AlgHom.toRingHom_eq_coe, aeval_rename,
     Sum.elim_comp_inr, ← IsScalarTower.toAlgHom_apply (R := R), ← comp_aeval_apply,
     aeval_X_left_apply]

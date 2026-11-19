@@ -340,7 +340,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
   have : t ∈ generatePiSystem (⋃ b : s, (g ∘ Subtype.val) b) := by
     suffices h1 : ⋃ b : s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
     ext x
-    simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists]
+    simp [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists]
   rcases @mem_generatePiSystem_iUnion_elim α s (g ∘ Subtype.val)
       (fun b => h_pi b.val b.property) t this with
     ⟨T, ⟨f, ⟨rfl, h_t'⟩⟩⟩
@@ -403,7 +403,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
       · rw [Finset.coe_singleton]
       · rw [Finset.mem_singleton] at hx
         rwa [hx]
-      · simp only [Finset.mem_singleton, iInter_iInter_eq_left]
+      · simp [Finset.mem_singleton, iInter_iInter_eq_left]
     · refine ⟨∅, ?_⟩
       simpa only [Finset.coe_empty, subset_singleton_iff, mem_empty_iff_false, IsEmpty.forall_iff,
         imp_true_iff, Finset.notMem_empty, iInter_false, iInter_univ, true_and,
@@ -428,7 +428,7 @@ theorem generateFrom_piiUnionInter_singleton_left (s : ι → Set α) (S : Set �
     · rw [Finset.mem_coe, Finset.mem_singleton] at hm
       rwa [hm]
     · exact Set.mem_singleton _
-    · simp only [Finset.mem_singleton, Set.iInter_iInter_eq_left]
+    · simp [Finset.mem_singleton, Set.iInter_iInter_eq_left]
 
 /-- If `π` is a family of π-systems, then `piiUnionInter π S` is a π-system. -/
 theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSystem (π x)) (S : Set ι) :
@@ -438,7 +438,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
   simp_rw [piiUnionInter, Set.mem_ofPred_eq]
   let g n := ite (n ∈ p1) (f1 n) Set.univ ∩ ite (n ∈ p2) (f2 n) Set.univ
   have hp_union_ss : ↑(p1 ∪ p2) ⊆ S := by
-    simp only [hp1S, hp2S, Finset.coe_union, union_subset_iff, and_self_iff]
+    simp [hp1S, hp2S, Finset.coe_union, union_subset_iff, and_self_iff]
   use p1 ∪ p2, hp_union_ss, g
   have h_inter_eq : t1 ∩ t2 = ⋂ i ∈ p1 ∪ p2, g i := by
     rw [ht1_eq, ht2_eq]

@@ -50,7 +50,7 @@ theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂
 
 theorem eq_const_iff {f : α → β} {b : β} :
     f = const α b ↔ ∀ a : α, f a = b := by
-  simp only [funext_iff, const_apply]
+  simp [funext_iff, const_apply]
 
 section onFun
 
@@ -189,7 +189,7 @@ protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injec
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
 
 theorem not_injective_iff : ¬ Injective f ↔ ∃ a b, f a = f b ∧ a ≠ b := by
-  simp only [Injective, not_forall, exists_prop]
+  simp [Injective, not_forall, exists_prop]
 
 @[simp] lemma not_injective_const {α β : Type*} [Nontrivial α] {b : β} :
     ¬ Injective (fun _ : α ↦ b) := by
@@ -315,7 +315,7 @@ theorem injective_comp_right_iff_surjective {γ : Type*} [Nontrivial γ] :
   have ⟨b₀, hb⟩ := not_forall.mp not_surj
   classical have := inj (a₁ := fun _ ↦ c) (a₂ := (if · = b₀ then c' else c)) ?_
   · simpa using congr_fun this b₀
-  ext a; simp only [comp_apply, ite_eq_right fun h ↦ hb ⟨a, h⟩]
+  ext a; simp [comp_apply, ite_eq_right fun h ↦ hb ⟨a, h⟩]
 
 protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : β → γ} :
     g₁ ∘ f = g₂ ∘ f ↔ g₁ = g₂ :=
@@ -523,7 +523,7 @@ noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β �
   fun y ↦ if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
 
 theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b := by
-  simp only [invFun, dite_eq_left h, h.choose_spec]
+  simp [invFun, dite_eq_left h, h.choose_spec]
 
 theorem apply_invFun_apply {α β : Type*} {f : α → β} {a : α} :
     f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
@@ -894,7 +894,7 @@ theorem Injective.extend_comp {α₁ α₂ α₃ : Sort*} {f₁₂ : α₁ → �
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
   ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
-      funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
+      funext (fun x => by simp [comp_apply, hf.extend_apply])⟩,
   fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
 
 lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β → γ) (b : β) :
@@ -953,7 +953,7 @@ theorem surjective_comp_right_iff_injective {γ : Type*} [Nontrivial γ] :
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g ↦
     ⟨g ∘ surjInv hf.surjective,
-     by simp only [comp_assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
+     by simp [comp_assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
 
 end Extend
 

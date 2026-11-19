@@ -394,8 +394,8 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
     simp only [Sum.elim_inl, Sum.elim_inr, Set.mem_range]
     rw [Homeomorph.symm_apply_apply]
     obtain (x | x) := x
-    · simp only [Sum.elim_inl, coprodMk_inl, exists_apply_eq_apply]
-    · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
+    · simp [Sum.elim_inl, coprodMk_inl, exists_apply_eq_apply]
+    · simp [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
 
 /-- If `X` and `Y` are open disjoint and covering open subschemes of `S`,
 `S` is the disjoint union of `X` and `Y`. -/

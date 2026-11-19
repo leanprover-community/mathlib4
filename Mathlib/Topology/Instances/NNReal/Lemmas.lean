@@ -142,7 +142,7 @@ theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < 
 @[norm_cast]
 theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} :
     HasSum (fun a => (f a : ℝ)) (r : ℝ) L ↔ HasSum f r L := by
-  simp only [HasSum, ← coe_sum, tendsto_coe]
+  simp [HasSum, ← coe_sum, tendsto_coe]
 
 protected theorem _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
     (hy : HasSum f y L) : HasSum (fun x => Real.toNNReal (f x)) y.toNNReal L := by
@@ -181,11 +181,11 @@ theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
 
 nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) :
     ∑'[L] x, a * f x = a * ∑'[L] x, f x :=
-  NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
+  NNReal.eq <| by simp [coe_tsum, NNReal.coe_mul, tsum_mul_left]
 
 nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) :
     ∑'[L] x, f x * a = (∑'[L] x, f x) * a :=
-  NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
+  NNReal.eq <| by simp [coe_tsum, NNReal.coe_mul, tsum_mul_right]
 
 theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
     (hi : Function.Injective i) : Summable (f ∘ i) := by

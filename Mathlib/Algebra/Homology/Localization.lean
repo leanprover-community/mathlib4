@@ -111,7 +111,7 @@ lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L)
     quasiIso C c ((quotient C c).map f) ↔ HomologicalComplex.quasiIso C c f := by
   have eq := fun (i : ι) => NatIso.isIso_map_iff (homologyFunctorFactors C c i) f
   dsimp at eq
-  simp only [HomologicalComplex.mem_quasiIso_iff, mem_quasiIso_iff, quasiIso_iff,
+  simp [HomologicalComplex.mem_quasiIso_iff, mem_quasiIso_iff, quasiIso_iff,
     quasiIsoAt_iff_isIso_homologyMap, eq]
 
 variable (C c)
@@ -415,7 +415,7 @@ lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex 
   simp only [Category.comp_id, Category.id_comp]
   change _ = (F.mapHomologicalComplexUpToQuasiIso c).map (𝟙 _) ≫ _ ≫ 𝟙 _ ≫
     HomologicalComplexUpToQuasiIso.Qh.map (𝟙 _)
-  simp only [map_id, Category.comp_id, Category.id_comp]
+  simp [map_id, Category.comp_id, Category.id_comp]
 
 end
 

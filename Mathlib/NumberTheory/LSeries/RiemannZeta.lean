@@ -198,7 +198,7 @@ theorem completedZeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
     ← tsum_mul_left]
   congr 1 with n
   split_ifs with h
-  · simp only [h, Nat.cast_zero, zero_cpow (Complex.ne_zero_of_one_lt_re hs), div_zero]
+  · simp [h, Nat.cast_zero, zero_cpow (Complex.ne_zero_of_one_lt_re hs), div_zero]
   · rfl
 
 /-- The Riemann zeta function agrees with the naive Dirichlet-series definition when the latter
@@ -222,7 +222,7 @@ theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
 function can be expressed using naïve `pow` rather than `cpow`. -/
 theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
     riemannZeta k = ∑' n : ℕ, 1 / (n : ℂ) ^ k := by
-  simp only [zeta_eq_tsum_one_div_nat_cpow
+  simp [zeta_eq_tsum_one_div_nat_cpow
       (by rwa [← ofReal_natCast, ofReal_re, ← Nat.cast_one, Nat.cast_lt] : 1 < re k),
     cpow_natCast]
 
@@ -258,5 +258,5 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
   have : Tendsto (fun s : ℝ ↦ (s : ℂ)) (𝓝[>] 1) (𝓝[{s | 1 < re s}] 1) :=
     continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin (fun _ _ ↦ by simp_all)
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
-  simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
+  simp [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
     ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]

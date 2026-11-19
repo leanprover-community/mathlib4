@@ -102,7 +102,7 @@ lemma OrthogonalIdempotents.equiv {J} (i : J ≃ I) :
 
 lemma OrthogonalIdempotents.unique [Unique I] :
     OrthogonalIdempotents e ↔ IsIdempotentElem (e default) := by
-  simp only [orthogonalIdempotents_iff, Unique.forall_iff, Subsingleton.pairwise, and_true]
+  simp [orthogonalIdempotents_iff, Unique.forall_iff, Subsingleton.pairwise, and_true]
 
 lemma OrthogonalIdempotents.option (he : OrthogonalIdempotents e) [Fintype I] (x)
     (hx : IsIdempotentElem x) (hx₁ : x * ∑ i, e i = 0) (hx₂ : (∑ i, e i) * x = 0) :
@@ -165,7 +165,7 @@ lemma CompleteOrthogonalIdempotents.single {I : Type*} [Fintype I] [DecidableEq 
 lemma CompleteOrthogonalIdempotents.map (he : CompleteOrthogonalIdempotents e) :
     CompleteOrthogonalIdempotents (f ∘ e) where
   __ := he.toOrthogonalIdempotents.map f
-  complete := by simp only [Function.comp_apply, ← map_sum, he.complete, map_one]
+  complete := by simp [Function.comp_apply, ← map_sum, he.complete, map_one]
 
 lemma CompleteOrthogonalIdempotents.map_injective_iff (hf : Function.Injective f) :
     CompleteOrthogonalIdempotents (f ∘ e) ↔ CompleteOrthogonalIdempotents e := by
@@ -174,7 +174,7 @@ lemma CompleteOrthogonalIdempotents.map_injective_iff (hf : Function.Injective f
 
 lemma CompleteOrthogonalIdempotents.equiv {J} [Fintype J] (i : J ≃ I) :
     CompleteOrthogonalIdempotents (e ∘ i) ↔ CompleteOrthogonalIdempotents e := by
-  simp only [completeOrthogonalIdempotents_iff, OrthogonalIdempotents.equiv, Function.comp_apply,
+  simp [completeOrthogonalIdempotents_iff, OrthogonalIdempotents.equiv, Function.comp_apply,
     Fintype.sum_equiv i _ e (fun _ ↦ rfl)]
 
 @[nontriviality]
@@ -221,7 +221,7 @@ theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent_aux
   refine ⟨_, isIdempotentElem_one_sub_one_sub_pow_pow _ _ hn, ?_, ?_⟩
   · rcases n with - | n
     · simp at hn
-    simp only [map_sub, map_one, map_pow, ha, he₁.pow_succ_eq,
+    simp [map_sub, map_one, map_pow, ha, he₁.pow_succ_eq,
       he₁.one_sub.pow_succ_eq, sub_sub_cancel]
   · obtain ⟨k, hk⟩ := (Commute.one_left (MulOpposite.op <| 1 - a ^ n)).sub_dvd_pow_sub_pow n
     apply_fun MulOpposite.unop at hk

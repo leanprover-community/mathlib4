@@ -111,7 +111,7 @@ instance : LawfulMonad Set where
   bind_pure_comp _ _ := (image_eq_iUnion _ _).symm
   bind_map _ _ := seq_def.symm
   pure_bind := biUnion_singleton
-  bind_assoc _ _ _ := by simp only [bind_def, biUnion_iUnion]
+  bind_assoc _ _ _ := by simp [bind_def, biUnion_iUnion]
 
 /-! ### Monadic coercion lemmas -/
 

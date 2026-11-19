@@ -124,7 +124,7 @@ def invFun (p : A[X]) : A ⊗[R] R[X] :=
 
 @[simp]
 theorem invFun_add {p q} : invFun R A (p + q) = invFun R A p + invFun R A q := by
-  simp only [invFun, eval₂_add]
+  simp [invFun, eval₂_add]
 
 theorem invFun_monomial (n : ℕ) (a : A) :
     invFun R A (monomial n a) = (a ⊗ₜ[R] 1) * 1 ⊗ₜ[R] X ^ n :=
@@ -142,12 +142,12 @@ theorem left_inv (x : A ⊗ R[X]) : invFun R A ((toFunAlgHom R A) x) = x := by
     simp only [Algebra.smul_def]
     rfl
   · intro p q hp hq
-    simp only [map_add, invFun_add, hp, hq]
+    simp [map_add, invFun_add, hp, hq]
 
 theorem right_inv (x : A[X]) : (toFunAlgHom R A) (invFun R A x) = x := by
   refine Polynomial.induction_on' x ?_ ?_
   · intro p q hp hq
-    simp only [invFun_add, map_add, hp, hq]
+    simp [invFun_add, map_add, hp, hq]
   · intro n a
     rw [invFun_monomial, Algebra.TensorProduct.tmul_pow,
         one_pow, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul, toFunAlgHom_apply_tmul,

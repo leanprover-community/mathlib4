@@ -135,29 +135,29 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     use Limits.prod.lift (factorThru (g ≫ Limits.prod.fst) f) (factorThru (g ≫ Limits.prod.snd) f)
     simp only [prod.comp_lift, comp_factorThru]
     ext
-    · simp only [prod.lift_fst]
-    · simp only [prod.lift_snd]
+    · simp [prod.lift_fst]
+    · simp [prod.lift_snd]
 
 instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
     refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
     ext b
-    simp only [Category.assoc, limit.lift_π, Fan.mk_π_app, comp_factorThru]
+    simp [Category.assoc, limit.lift_π, Fan.mk_π_app, comp_factorThru]
 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [Injective Q] :
     Injective (P ⊞ Q) where
   factors g f mono := by
     refine ⟨biprod.lift (factorThru (g ≫ biprod.fst) f) (factorThru (g ≫ biprod.snd) f), ?_⟩
     ext
-    · simp only [Category.assoc, biprod.lift_fst, comp_factorThru]
-    · simp only [Category.assoc, biprod.lift_snd, comp_factorThru]
+    · simp [Category.assoc, biprod.lift_fst, comp_factorThru]
+    · simp [Category.assoc, biprod.lift_snd, comp_factorThru]
 
 instance {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀ b, Injective (c b)] :
     Injective (⨁ c) where
   factors g f mono := by
     refine ⟨biproduct.lift fun b => factorThru (g ≫ biproduct.π _ _) f, ?_⟩
     ext
-    simp only [Category.assoc, biproduct.lift_π, comp_factorThru]
+    simp [Category.assoc, biproduct.lift_π, comp_factorThru]
 
 instance {P : Cᵒᵖ} [Projective P] : Injective no_index (unop P) where
   factors g f mono :=

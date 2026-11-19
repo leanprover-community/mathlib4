@@ -127,7 +127,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     suffices (iP ≫ g' ≫ F.map (c'.ι.app none)) x = α.app c'.pt x by
       simpa [RingHom.liftOfRightInverse_comp_apply] using! this
     rw [← Category.assoc, hg'', ← NatTrans.naturality]
-    simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+    simp [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
   · ext x
     obtain ⟨x, rfl⟩ := hπ x
     suffices (π ≫ g) x = (g' ≫ F.map (c'.ι.app none) ≫ c.ι.app _) x by

@@ -148,7 +148,7 @@ theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv i (X j) = (0 : MvPowerS
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
     pderiv i (X j) = Pi.single (M := fun _ => MvPowerSeries σ R) i 1 j := by
   by_cases h : i = j
-  · subst h; simp only [pderiv_X_self, Pi.single_eq_same]
+  · subst h; simp [pderiv_X_self, Pi.single_eq_same]
   · grind [pderiv_X_of_ne]
 
 theorem trunc_pderiv [DecidableEq σ] {i : σ} (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :

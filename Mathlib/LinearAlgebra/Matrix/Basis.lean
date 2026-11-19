@@ -143,7 +143,7 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
   right_inv := by
     intro m
     ext k l
-    simp only [e.toMatrix_apply, ← e.equivFun_apply, ← e.equivFun_symm_apply,
+    simp [e.toMatrix_apply, ← e.equivFun_apply, ← e.equivFun_symm_apply,
       LinearEquiv.apply_symm_apply]
 
 variable (R₂) in
@@ -249,7 +249,7 @@ theorem toMatrix_mul_toMatrix {ι'' : Type*} [Fintype ι'] (b'' : ι'' → M) :
   have := Classical.decEq ι'
   have := Classical.decEq ι''
   ext i j
-  simp only [Matrix.mul_apply, toMatrix_apply, sum_repr_mul_repr]
+  simp [Matrix.mul_apply, toMatrix_apply, sum_repr_mul_repr]
 
 /-- `b.toMatrix b'` and `b'.toMatrix b` are inverses. -/
 theorem toMatrix_mul_toMatrix_flip [DecidableEq ι] [Fintype ι'] :
@@ -271,7 +271,7 @@ theorem toMatrix_reindex (b : Basis ι R M) (v : κ → M) (e : ι ≃ ι') :
 theorem toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι' → N) :
     (b.map f).toMatrix v = b.toMatrix (f.symm ∘ v) := by
   ext
-  simp only [toMatrix_apply, Basis.map, LinearEquiv.trans_apply, (· ∘ ·)]
+  simp [toMatrix_apply, Basis.map, LinearEquiv.trans_apply, (· ∘ ·)]
 
 lemma _root_.LinearMap.toMatrix_eq_basisToMatrix [Fintype ι] [DecidableEq ι] [Finite κ] :
     f.toMatrix b c = c.toMatrix (f ∘ b) := by ext; simp [LinearMap.toMatrix_apply, toMatrix_apply]

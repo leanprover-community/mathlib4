@@ -244,7 +244,7 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
     ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.num,
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
         induction n with
-        | zero => simp only [coe_gnpow, pow_zero, one_mem]
+        | zero => simp [coe_gnpow, pow_zero, one_mem]
         | succ n ih => simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
@@ -488,7 +488,7 @@ instance homogeneousLocalizationAlgebra :
 
 lemma mk_eq_zero_of_num (f : NumDenSameDeg 𝒜 x) (h : f.num = 0) : mk f = 0 := by
   apply val_injective
-  simp only [val_mk, val_zero, h, ZeroMemClass.coe_zero, Localization.mk_zero]
+  simp [val_mk, val_zero, h, ZeroMemClass.coe_zero, Localization.mk_zero]
 
 lemma mk_eq_zero_of_den (f : NumDenSameDeg 𝒜 x) (h : f.den = 0) : mk f = 0 := by
   have := subsingleton 𝒜 (h ▸ f.den_mem)
@@ -1013,7 +1013,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
     conv => enter [1, 1, 2, i]; rw [← Nat.mod_add_div (ai i) d]
     simp_rw [smul_eq_mul, add_mul, Finset.sum_add_distrib,
       mul_assoc, ← Finset.mul_sum, mul_comm d, mul_comm (_ / _)]
-    simp only [add_tsub_cancel_right]
+    simp [add_tsub_cancel_right]
   have H : Away.mk 𝒜 hf a (∏ i, v i ^ ai i)
       (hai ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i) =
       Away.mk 𝒜 hf (a - ∑ i : ι', dv i * (ai i / d)) (∏ i, v i ^ (ai i % d))

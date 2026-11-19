@@ -455,7 +455,7 @@ theorem ofFinset_indep' [DecidableEq α] (E : Set α) Indep indep_empty indep_su
     subset_ground {I : Set α} : (IndepMatroid.ofFinset
       E Indep indep_empty indep_subset indep_aug subset_ground).Indep I ↔
         ∀ (J : Finset α), (J : Set α) ⊆ I → Indep J := by
-  simp only [IndepMatroid.ofFinset, ofFinitaryCardAugment_indep]
+  simp [IndepMatroid.ofFinset, ofFinitaryCardAugment_indep]
 
 end IndepMatroid
 

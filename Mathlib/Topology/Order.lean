@@ -378,7 +378,7 @@ theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [
 
 theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, {x} ∈ 𝓝 x := by
-  simp only [discreteTopology_iff_isOpen_singleton,
+  simp [discreteTopology_iff_isOpen_singleton,
     isOpen_iff_mem_nhds, mem_singleton_iff, forall_eq]
 
 /-- This lemma characterizes discrete topological spaces as those whose singletons are
@@ -391,7 +391,7 @@ theorem discreteTopology_iff_nhds [TopologicalSpace α] :
 
 theorem discreteTopology_iff_nhds_ne [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝[≠] x = ⊥ := by
-  simp only [discreteTopology_iff_singleton_mem_nhds, nhdsWithin, inf_principal_eq_bot, compl_compl]
+  simp [discreteTopology_iff_singleton_mem_nhds, nhdsWithin, inf_principal_eq_bot, compl_compl]
 
 /-- If the codomain of a continuous injective function has discrete topology,
 then so does the domain.
@@ -417,7 +417,7 @@ theorem isClosed_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → 
     IsClosed[t.induced f] s ↔ ∃ t, IsClosed t ∧ f ⁻¹' t = s := by
   let := t.induced f
   simp only [← isOpen_compl_iff, isOpen_induced_iff]
-  exact compl_surjective.exists.trans (by simp only [preimage_compl, compl_inj_iff])
+  exact compl_surjective.exists.trans (by simp [preimage_compl, compl_inj_iff])
 
 theorem isOpen_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} :
     IsOpen[t.coinduced f] s ↔ IsOpen (f ⁻¹' s) :=
@@ -425,7 +425,7 @@ theorem isOpen_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} 
 
 theorem isClosed_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} :
     IsClosed[t.coinduced f] s ↔ IsClosed (f ⁻¹' s) := by
-  simp only [← isOpen_compl_iff, isOpen_coinduced (f := f), preimage_compl]
+  simp [← isOpen_compl_iff, isOpen_coinduced (f := f), preimage_compl]
 
 theorem preimage_nhds_coinduced [TopologicalSpace α] {π : α → β} {s : Set β} {a : α}
     (hs : s ∈ @nhds β (TopologicalSpace.coinduced π ‹_›) (π a)) : π ⁻¹' s ∈ 𝓝 a := by
@@ -520,7 +520,7 @@ theorem Equiv.induced_symm {α β : Type*} (e : α ≃ β) :
     TopologicalSpace.induced e.symm = TopologicalSpace.coinduced e := by
   ext t U
   rw [isOpen_induced_iff, isOpen_coinduced]
-  simp only [e.symm.preimage_eq_iff_eq_image, exists_eq_right, Equiv.image_symm_eq_preimage]
+  simp [e.symm.preimage_eq_iff_eq_image, exists_eq_right, Equiv.image_symm_eq_preimage]
 
 theorem Equiv.coinduced_symm {α β : Type*} (e : α ≃ β) :
     TopologicalSpace.coinduced e.symm = TopologicalSpace.induced e :=
@@ -701,7 +701,7 @@ theorem le_nhdsAdjoint_iff' {a : α} {f : Filter α} {t : TopologicalSpace α} :
 
 theorem le_nhdsAdjoint_iff {α : Type*} (a : α) (f : Filter α) (t : TopologicalSpace α) :
     t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, IsOpen[t] {b} := by
-  simp only [le_nhdsAdjoint_iff', @isOpen_singleton_iff_nhds_eq_pure α t]
+  simp [le_nhdsAdjoint_iff', @isOpen_singleton_iff_nhds_eq_pure α t]
 
 theorem nhds_iInf {ι : Sort*} {t : ι → TopologicalSpace α} {a : α} :
     @nhds α (iInf t) a = ⨅ i, @nhds α (t i) a :=
@@ -772,7 +772,7 @@ theorem continuous_iff_le_induced {t₁ : TopologicalSpace α} {t₂ : Topologic
 lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
     Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
   rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
-  simp only [isOpen_coinduced, subset_def, mem_ofPred_eq]
+  simp [isOpen_coinduced, subset_def, mem_ofPred_eq]
 
 @[continuity, fun_prop]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
@@ -780,7 +780,7 @@ theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f 
 
 theorem continuous_induced_rng {g : γ → α} {t₂ : TopologicalSpace β} {t₁ : TopologicalSpace γ} :
     Continuous[t₁, induced f t₂] g ↔ Continuous[t₁, t₂] (f ∘ g) := by
-  simp only [continuous_iff_le_induced, induced_compose]
+  simp [continuous_iff_le_induced, induced_compose]
 
 theorem continuous_coinduced_rng {t : TopologicalSpace α} :
     Continuous[t, coinduced f t] f :=
@@ -788,7 +788,7 @@ theorem continuous_coinduced_rng {t : TopologicalSpace α} :
 
 theorem continuous_coinduced_dom {g : β → γ} {t₁ : TopologicalSpace α} {t₂ : TopologicalSpace γ} :
     Continuous[coinduced f t₁, t₂] g ↔ Continuous[t₁, t₂] (g ∘ f) := by
-  simp only [continuous_iff_coinduced_le, coinduced_compose]
+  simp [continuous_iff_coinduced_le, coinduced_compose]
 
 theorem continuous_le_dom {t₁ t₂ : TopologicalSpace α} {t₃ : TopologicalSpace β} (h₁ : t₂ ≤ t₁)
     (h₂ : Continuous[t₁, t₃] f) : Continuous[t₂, t₃] f := by
@@ -802,7 +802,7 @@ theorem continuous_le_rng {t₁ : TopologicalSpace α} {t₂ t₃ : TopologicalS
 
 theorem continuous_sup_dom {t₁ t₂ : TopologicalSpace α} {t₃ : TopologicalSpace β} :
     Continuous[t₁ ⊔ t₂, t₃] f ↔ Continuous[t₁, t₃] f ∧ Continuous[t₂, t₃] f := by
-  simp only [continuous_iff_le_induced, sup_le_iff]
+  simp [continuous_iff_le_induced, sup_le_iff]
 
 theorem continuous_sup_rng_left {t₁ : TopologicalSpace α} {t₃ t₂ : TopologicalSpace β} :
     Continuous[t₁, t₂] f → Continuous[t₁, t₂ ⊔ t₃] f :=
@@ -814,7 +814,7 @@ theorem continuous_sup_rng_right {t₁ : TopologicalSpace α} {t₃ t₂ : Topol
 
 theorem continuous_sSup_dom {T : Set (TopologicalSpace α)} {t₂ : TopologicalSpace β} :
     Continuous[sSup T, t₂] f ↔ ∀ t ∈ T, Continuous[t, t₂] f := by
-  simp only [continuous_iff_le_induced, sSup_le_iff]
+  simp [continuous_iff_le_induced, sSup_le_iff]
 
 theorem continuous_sSup_rng {t₁ : TopologicalSpace α} {t₂ : Set (TopologicalSpace β)}
     {t : TopologicalSpace β} (h₁ : t ∈ t₂) (hf : Continuous[t₁, t] f) :
@@ -823,7 +823,7 @@ theorem continuous_sSup_rng {t₁ : TopologicalSpace α} {t₂ : Set (Topologica
 
 theorem continuous_iSup_dom {t₁ : ι → TopologicalSpace α} {t₂ : TopologicalSpace β} :
     Continuous[iSup t₁, t₂] f ↔ ∀ i, Continuous[t₁ i, t₂] f := by
-  simp only [continuous_iff_le_induced, iSup_le_iff]
+  simp [continuous_iff_le_induced, iSup_le_iff]
 
 theorem continuous_iSup_rng {t₁ : TopologicalSpace α} {t₂ : ι → TopologicalSpace β} {i : ι}
     (h : Continuous[t₁, t₂ i] f) : Continuous[t₁, iSup t₂] f :=
@@ -831,7 +831,7 @@ theorem continuous_iSup_rng {t₁ : TopologicalSpace α} {t₂ : ι → Topologi
 
 theorem continuous_inf_rng {t₁ : TopologicalSpace α} {t₂ t₃ : TopologicalSpace β} :
     Continuous[t₁, t₂ ⊓ t₃] f ↔ Continuous[t₁, t₂] f ∧ Continuous[t₁, t₃] f := by
-  simp only [continuous_iff_coinduced_le, le_inf_iff]
+  simp [continuous_iff_coinduced_le, le_inf_iff]
 
 theorem continuous_inf_dom_left {t₁ t₂ : TopologicalSpace α} {t₃ : TopologicalSpace β} :
     Continuous[t₁, t₃] f → Continuous[t₁ ⊓ t₂, t₃] f :=
@@ -848,7 +848,7 @@ theorem continuous_sInf_dom {t₁ : Set (TopologicalSpace α)} {t₂ : Topologic
 
 theorem continuous_sInf_rng {t₁ : TopologicalSpace α} {T : Set (TopologicalSpace β)} :
     Continuous[t₁, sInf T] f ↔ ∀ t ∈ T, Continuous[t₁, t] f := by
-  simp only [continuous_iff_coinduced_le, le_sInf_iff]
+  simp [continuous_iff_coinduced_le, le_sInf_iff]
 
 theorem continuous_iInf_dom {t₁ : ι → TopologicalSpace α} {t₂ : TopologicalSpace β} {i : ι} :
     Continuous[t₁ i, t₂] f → Continuous[iInf t₁, t₂] f :=
@@ -856,7 +856,7 @@ theorem continuous_iInf_dom {t₁ : ι → TopologicalSpace α} {t₂ : Topologi
 
 theorem continuous_iInf_rng {t₁ : TopologicalSpace α} {t₂ : ι → TopologicalSpace β} :
     Continuous[t₁, iInf t₂] f ↔ ∀ i, Continuous[t₁, t₂ i] f := by
-  simp only [continuous_iff_coinduced_le, le_iInf_iff]
+  simp [continuous_iff_coinduced_le, le_iInf_iff]
 
 @[continuity, fun_prop]
 theorem continuous_bot {t : TopologicalSpace β} : Continuous[⊥, t] f :=
@@ -890,7 +890,7 @@ theorem nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) :
 
 theorem induced_iff_nhds_eq [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : β → α) :
     tβ = tα.induced f ↔ ∀ b, 𝓝 b = comap f (𝓝 <| f b) := by
-  simp only [ext_iff_nhds, nhds_induced]
+  simp [ext_iff_nhds, nhds_induced]
 
 theorem map_nhds_induced_of_surjective [T : TopologicalSpace α] {f : β → α} (hf : Surjective f)
     (a : β) : map f (@nhds β (TopologicalSpace.induced f T) a) = 𝓝 (f a) := by
@@ -933,11 +933,11 @@ theorem map_nhds_induced_of_mem {a : α} (h : range f ∈ 𝓝 (f a)) :
 
 theorem closure_induced {f : α → β} {a : α} {s : Set α} :
     a ∈ @closure α (t.induced f) s ↔ f a ∈ closure (f '' s) := by
-  simp only [mem_closure_iff_frequently, nhds_induced, frequently_comap, mem_image, and_comm]
+  simp [mem_closure_iff_frequently, nhds_induced, frequently_comap, mem_image, and_comm]
 
 theorem isClosed_induced_iff' {f : α → β} {s : Set α} :
     IsClosed[t.induced f] s ↔ ∀ a, f a ∈ closure (f '' s) → a ∈ s := by
-  simp only [← closure_subset_iff_isClosed, subset_def, closure_induced]
+  simp [← closure_subset_iff_isClosed, subset_def, closure_induced]
 
 end Induced
 
@@ -1039,13 +1039,13 @@ theorem isOpen_iSup_iff {s : Set α} : IsOpen[⨆ i, t i] s ↔ ∀ i, IsOpen[t 
 
 theorem isOpen_sSup_iff {s : Set α} {T : Set (TopologicalSpace α)} :
     IsOpen[sSup T] s ↔ ∀ t ∈ T, IsOpen[t] s := by
-  simp +instances only [sSup_eq_iSup, isOpen_iSup_iff]
+  simp +instances [sSup_eq_iSup, isOpen_iSup_iff]
 
 theorem isClosed_iSup_iff {s : Set α} : IsClosed[⨆ i, t i] s ↔ ∀ i, IsClosed[t i] s := by
-  simp only [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
+  simp [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
 
 theorem isClosed_sSup_iff {s : Set α} {T : Set (TopologicalSpace α)} :
     IsClosed[sSup T] s ↔ ∀ t ∈ T, IsClosed[t] s := by
-  simp +instances only [sSup_eq_iSup, isClosed_iSup_iff]
+  simp +instances [sSup_eq_iSup, isClosed_iSup_iff]
 
 end iInf

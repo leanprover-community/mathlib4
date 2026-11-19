@@ -44,7 +44,7 @@ protected instance functor : Functor Finset where map f s := s.image f
 instance lawfulFunctor : LawfulFunctor Finset where
   id_map _ := image_id
   comp_map _ _ _ := image_image.symm
-  map_const {α} {β} := by simp only [Functor.mapConst, Functor.map]
+  map_const {α} {β} := by simp [Functor.mapConst, Functor.map]
 
 @[simp]
 theorem fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
@@ -119,7 +119,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         obtain ⟨b, hb, rfl⟩ := ha
         obtain ⟨_, _, rfl⟩ := hf
         exact hb
-    pure_seq := fun f s => by simp only [pure_def, seq_def, sup_singleton, fmap_def]
+    pure_seq := fun f s => by simp [pure_def, seq_def, sup_singleton, fmap_def]
     map_pure := fun _ _ => image_singleton _ _
     seq_pure := fun _ _ => sup_singleton_apply _ _
     seq_assoc := fun s t u => by
@@ -161,7 +161,7 @@ instance : LawfulMonad Finset :=
     bind_pure_comp := fun _ _ => sup_singleton_apply _ _
     bind_map := fun _ _ => rfl
     pure_bind := fun _ _ => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, sup_eq_biUnion, biUnion_biUnion] }
+    bind_assoc := fun s f g => by simp [bind, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 
@@ -219,7 +219,7 @@ open scoped Classical in
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
-  simp only [Functor.map_map, fmap_def, map_comp_coe_apply, Multiset.fmap_def, ←
+  simp [Functor.map_map, fmap_def, map_comp_coe_apply, Multiset.fmap_def, ←
     Multiset.map_traverse]
 
 end Traversable

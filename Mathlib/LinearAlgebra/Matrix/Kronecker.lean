@@ -158,7 +158,7 @@ theorem kroneckerMap_diagonal_left [Zero α] [Zero γ] [DecidableEq l] (f : α �
 theorem kroneckerMap_one_one [Zero α] [Zero β] [Zero γ] [One α] [One β] [One γ] [DecidableEq m]
     [DecidableEq n] (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0)
     (hf₃ : f 1 1 = 1) : kroneckerMap f (1 : Matrix m m α) (1 : Matrix n n β) = 1 :=
-  (kroneckerMap_diagonal_diagonal _ hf₁ hf₂ _ _).trans <| by simp only [hf₃, diagonal_one]
+  (kroneckerMap_diagonal_diagonal _ hf₁ hf₂ _ _).trans <| by simp [hf₃, diagonal_one]
 
 theorem kroneckerMap_reindex (f : α → β → γ) (el : l ≃ l') (em : m ≃ m') (en : n ≃ n') (ep : p ≃ p')
     (M : Matrix l m α) (N : Matrix n p β) :
@@ -572,7 +572,7 @@ theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n
   refine (det_kroneckerMapBilinear (TensorProduct.mk R α β) tmul_mul_tmul _ _).trans ?_
   simp -eta only [mk_apply, ← includeLeft_apply (S := R), ← includeRight_apply]
   simp only [← AlgHom.mapMatrix_apply, ← AlgHom.map_det]
-  simp only [includeLeft_apply, includeRight_apply, tmul_pow, tmul_mul_tmul, one_pow,
+  simp [includeLeft_apply, includeRight_apply, tmul_pow, tmul_mul_tmul, one_pow,
     _root_.mul_one, _root_.one_mul]
 
 end CommRing

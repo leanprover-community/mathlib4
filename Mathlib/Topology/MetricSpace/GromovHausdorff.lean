@@ -345,7 +345,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
         _ = dist (Φ x) (Ψ y) := rfl
         _ = dist z (f (inr y)) := by rw [hx]
         _ ≤ r := le_of_lt hz
-    simp only [HD, ciSup_le I1, ciSup_le I2, max_le_iff, and_self_iff]
+    simp [HD, ciSup_le I1, ciSup_le I2, max_le_iff, and_self_iff]
   /- Get the same inequality for any coupling. If the coupling is quite good, the desired
     inequality has been proved above. If it is bad, then the inequality is obvious. -/
   have B :
@@ -412,8 +412,8 @@ instance : MetricSpace GHSpace where
             Prod.swap ''
           { a | ⟦a⟧ = x } ×ˢ { b | ⟦b⟧ = y } := by
       ext
-      simp only [comp_apply, Prod.fst_swap, Prod.snd_swap, hausdorffDist_comm]
-    simp only [dist, A, image_comp, image_swap_prod]
+      simp [comp_apply, Prod.fst_swap, Prod.snd_swap, hausdorffDist_comm]
+    simp [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
     /- To show that two spaces at zero distance are isometric,
        we argue that the distance is realized by some coupling.
@@ -474,7 +474,7 @@ instance : MetricSpace GHSpace where
               (toGlueL hΦ hΨ '' range (optimalGHInjr X Y)) +
             hausdorffDist (toGlueR hΦ hΨ '' range (optimalGHInjl Y Z))
               (toGlueR hΦ hΨ '' range (optimalGHInjr Y Z)) := by
-        simp only [← range_comp, Comm]
+        simp [← range_comp, Comm]
       _ = hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) +
             hausdorffDist (range (optimalGHInjl Y Z)) (range (optimalGHInjr Y Z)) := by
         rw [hausdorffDist_image (toGlueL_isometry hΦ hΨ),
@@ -680,20 +680,20 @@ instance : SecondCountableTopology GHSpace := by
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
+      have i' : i = (E q) (Ψ x) := by simp [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
       have j' : j = ((E q) (Ψ y)).1 := by
-        simp only [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
+        simp [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- Express `dist x y` in terms of `F p`
       have : (F p).2 ((E p) x) ((E p) y) = ⌊ε⁻¹ * dist x y⌋ := by
-        simp only [F, (E p).symm_apply_apply]
+        simp [F, (E p).symm_apply_apply]
       have Ap : (F p).2 ⟨i, hip⟩ ⟨j, hjp⟩ = ⌊ε⁻¹ * dist x y⌋ := by rw [← this]
       -- Express `dist (Φ x) (Φ y)` in terms of `F q`
       have : (F q).2 ((E q) (Ψ x)) ((E q) (Ψ y)) = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋ := by
-        simp only [F, (E q).symm_apply_apply]
+        simp [F, (E q).symm_apply_apply]
       have Aq : (F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋ := by
         simp [← this, *]
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
@@ -765,7 +765,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]
       obtain ⟨E⟩ := Quotient.exact this
       use s, N, scard, E
-      simp only [scover, imp_true_iff]
+      simp [scover, imp_true_iff]
   choose s N hN E hs using this
   -- Define a function `F` taking values in a finite type and associating to `p` enough data
   -- to reconstruct it up to `ε`, namely the (discretized) distances between elements of `s p`.
@@ -822,18 +822,18 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
+      have i' : i = (E q) (Ψ x) := by simp [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
-      have j' : j = (E q) (Ψ y) := by simp only [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
+      have j' : j = (E q) (Ψ y) := by simp [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- Express `dist x y` in terms of `F p`
       have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ⌊ε⁻¹ * dist x y⌋₊ :=
         calc
           ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F p).2 ((E p) x) ((E p) y)).1 := by
             congr
-          _ = min M ⌊ε⁻¹ * dist x y⌋₊ := by simp only [F, (E p).symm_apply_apply]
+          _ = min M ⌊ε⁻¹ * dist x y⌋₊ := by simp [F, (E p).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist x y⌋₊ := by
             refine min_eq_right (Nat.floor_mono ?_)
             refine mul_le_mul_of_nonneg_left (le_trans ?_ (le_max_left _ _)) (inv_pos.2 εpos).le
@@ -845,7 +845,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
         calc
           ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 = ((F q).2 ((E q) (Ψ x)) ((E q) (Ψ y))).1 := by
             congr!
-          _ = min M ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by simp only [F, (E q).symm_apply_apply]
+          _ = min M ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by simp [F, (E q).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by
             refine min_eq_right (Nat.floor_mono ?_)
             refine mul_le_mul_of_nonneg_left (le_trans ?_ (le_max_left _ _)) (inv_pos.2 εpos).le
@@ -976,7 +976,7 @@ instance : CompleteSpace GHSpace := by
       optimalGHInjl (X n) (X n.succ))
     simp only [X2, Φ]
     rw [← toInductiveLimit_commute I]
-    simp only [f, ← toGlue_commute, Function.comp_assoc]
+    simp [f, ← toGlue_commute, Function.comp_assoc]
   have X2nsucc : ∀ n, X2 n.succ =
       range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
         (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjr (X n) (X n.succ)) := by

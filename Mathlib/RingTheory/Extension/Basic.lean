@@ -473,7 +473,7 @@ def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
       val_of, ← (Ideal.toCotangent _).map_smul]
     congr 1
     ext1
-    simp only [SetLike.val_smul, smul_eq_mul, map_mul, Hom.toAlgHom_apply]
+    simp [SetLike.val_smul, smul_eq_mul, map_mul, Hom.toAlgHom_apply]
 
 @[simp]
 lemma Cotangent.map_mk (f : Hom P P') (x) :
@@ -486,7 +486,7 @@ lemma Cotangent.map_id :
     Cotangent.map (.id P) = LinearMap.id := by
   ext x
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-  simp only [map_mk, Hom.toAlgHom_id, AlgHom.coe_id, id_eq, Subtype.coe_eta, val_mk,
+  simp [map_mk, Hom.toAlgHom_id, AlgHom.coe_id, id_eq, Subtype.coe_eta, val_mk,
     LinearMap.id_coe]
 
 variable [Algebra R R''] [IsScalarTower R R' R''] [IsScalarTower R' R'' S'']
@@ -496,7 +496,7 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
     Cotangent.map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext x
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-  simp only [map_mk, Hom.toAlgHom_apply, Hom.comp_toRingHom, RingHom.coe_comp, Function.comp_apply,
+  simp [map_mk, Hom.toAlgHom_apply, Hom.comp_toRingHom, RingHom.coe_comp, Function.comp_apply,
     val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars]
 
 lemma Cotangent.finite (hP : P.ker.FG) :

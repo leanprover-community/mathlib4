@@ -635,7 +635,7 @@ lemma colimitsOfShape_le_coproducts (J : Type w) :
 
 lemma coproducts_iff {X Y : C} (f : X ⟶ Y) :
     coproducts.{w} W f ↔ ∃ (J : Type w), W.colimitsOfShape (Discrete J) f := by
-  simp only [coproducts, iSup_iff]
+  simp [coproducts, iSup_iff]
 
 lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
     (hf : W.colimitsOfShape (Discrete J) f) [Small.{w} J] :

@@ -38,7 +38,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : ι) :
     (basisSpanSingleton b hx i : S) = x * b i := by
-  simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
+  simp [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
     LinearEquiv.restrictScalars_apply, LinearMap.mulLeft_apply]
 

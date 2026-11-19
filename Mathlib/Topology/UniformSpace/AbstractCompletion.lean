@@ -322,7 +322,7 @@ theorem compare_comp_eq_compare (γ : Type uγ) [TopologicalSpace γ]
       pkg.isDenseInducing.extend f ∘ pkg'.compare pkg = pkg'.isDenseInducing.extend f := by
   intro h
   have (x : α) : (pkg.isDenseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
-    simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f]
+    simp [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f]
   apply (IsDenseInducing.extend_unique (AbstractCompletion.isDenseInducing _) this
     (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous)).symm
   apply IsDenseInducing.continuous_extend

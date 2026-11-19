@@ -574,7 +574,7 @@ theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
   rw [← γ.extend_range]
   simp only [range_subset_iff, SetCoe.forall]
   intro x _hx
-  simp only [DFunLike.coe, Path.truncate, mem_range_self]
+  simp [DFunLike.coe, Path.truncate, mem_range_self]
 
 /-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we mean
 the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s` is continuous. -/

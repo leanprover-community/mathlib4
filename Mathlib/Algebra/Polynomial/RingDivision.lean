@@ -288,7 +288,7 @@ lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S
   by_contra! ⟨hp, hq⟩
   rcases h with ⟨_, _, h⟩
   apply_fun aeval s at h
-  simp only [map_add, map_mul, map_one, hp, hq, mul_zero, add_zero, zero_ne_one] at h
+  simp [map_add, map_mul, map_one, hp, hq, mul_zero, add_zero, zero_ne_one] at h
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=

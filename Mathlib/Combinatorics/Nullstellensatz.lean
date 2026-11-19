@@ -80,7 +80,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       intro s
       simp only [Function.comp_apply]
       convert hx (e.symm s)
-      simp only [Equiv.apply_symm_apply]
+      simp [Equiv.apply_symm_apply]
   | h_empty =>
     suffices P = C (constantCoeff P) by
       specialize Heval default (fun i ↦ PEmpty.elim i)
@@ -98,7 +98,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       · intro y hy
         rw [← optionEquivLeft_elim_eval]
         apply Heval
-        simp only [Option.forall, Option.elim_none, hy, Option.elim_some, hx, implies_true,
+        simp [Option.forall, Option.elim_none, hy, Option.elim_some, hx, implies_true,
           and_self]
       · apply lt_of_le_of_lt _ (Hdeg none)
         rw [Polynomial.natDegree_le_iff_coeff_eq_zero]
@@ -205,7 +205,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
       f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
   let : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
-      (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
+      (fun i ↦ by simp [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
   use h
   suffices r = 0 by
     rw [this, add_zero] at hf
@@ -254,7 +254,7 @@ theorem combinatorial_nullstellensatz_exists_eval_ne_zero [IsDomain R]
     exact hh i
   -- one could simplify this by proving `totalDegree_mul_eq` (at least in a domain)
   rw [hg, ← degree_degLexDegree,
-    degree_mul_of_isRegular_right hi (by simp only [(Alon.monic_P ..).leadingCoeff_eq_one,
+    degree_mul_of_isRegular_right hi (by simp [(Alon.monic_P ..).leadingCoeff_eq_one,
       isRegular_one]),
     Alon.degree_P, map_add, degree_degLexDegree, degree_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]

@@ -113,7 +113,7 @@ theorem l_iSup₂ {f : ∀ i, κ i → α} :
 
 @[to_dual]
 theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
-  simp only [sSup_eq_iSup, gc.l_iSup]
+  simp [sSup_eq_iSup, gc.l_iSup]
 
 @[to_dual]
 theorem l_sSup_eq_sSup_image {s : Set α} : l (sSup s) = sSup (l '' s) := by
@@ -259,7 +259,7 @@ theorem l_sup_u [SemilatticeSup α] [SemilatticeSup β] (gi : GaloisInsertion l 
     l (u a ⊔ u b) = a ⊔ b :=
   calc
     l (u a ⊔ u b) = l (u a) ⊔ l (u b) := gi.gc.l_sup
-    _ = a ⊔ b := by simp only [gi.l_u_eq]
+    _ = a ⊔ b := by simp [gi.l_u_eq]
 
 @[to_dual]
 theorem l_iSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
@@ -271,7 +271,7 @@ theorem l_iSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion
 @[to_dual]
 theorem l_biSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
     {p : ι → Prop} (f : ∀ i, p i → β) : l (⨆ (i) (hi), u (f i hi)) = ⨆ (i) (hi), f i hi := by
-  simp only [iSup_subtype', gi.l_iSup_u]
+  simp [iSup_subtype', gi.l_iSup_u]
 
 @[to_dual]
 theorem l_sSup_u_image [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u)
@@ -282,7 +282,7 @@ theorem l_inf_u [SemilatticeInf α] [SemilatticeInf β] (gi : GaloisInsertion l 
     l (u a ⊓ u b) = a ⊓ b :=
   calc
     l (u a ⊓ u b) = l (u (a ⊓ b)) := congr_arg l gi.gc.u_inf.symm
-    _ = a ⊓ b := by simp only [gi.l_u_eq]
+    _ = a ⊓ b := by simp [gi.l_u_eq]
 
 @[to_dual]
 theorem l_iInf_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
@@ -294,7 +294,7 @@ theorem l_iInf_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion
 @[to_dual]
 theorem l_biInf_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
     {p : ι → Prop} (f : ∀ (i) (_ : p i), β) : l (⨅ (i) (hi), u (f i hi)) = ⨅ (i) (hi), f i hi := by
-  simp only [iInf_subtype', gi.l_iInf_u]
+  simp [iInf_subtype', gi.l_iInf_u]
 
 @[to_dual]
 theorem l_sInf_u_image [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u)

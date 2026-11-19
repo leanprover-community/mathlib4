@@ -640,7 +640,7 @@ equals the product of `f i` divided by the product of `g i`. -/
       equals the sum of `f i` minus the sum of `g i`. -/]
 theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
-  simp only [div_eq_mul_inv, finprod_mul_distrib hf hg.fun_inv, finprod_inv_distrib]
+  simp [div_eq_mul_inv, finprod_mul_distrib hf hg.fun_inv, finprod_inv_distrib]
 
 /-- A more general version of `finprod_mem_mul_distrib` that only requires `s ∩ mulSupport f` and
 `s ∩ mulSupport g` rather than `s` to be finite. -/
@@ -650,7 +650,7 @@ theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : HasFin
 theorem finprod_mem_mul_distrib' (hf : (s ∩ mulSupport f).Finite) (hg : (s ∩ mulSupport g).Finite) :
     ∏ᶠ i ∈ s, f i * g i = (∏ᶠ i ∈ s, f i) * ∏ᶠ i ∈ s, g i := by
   rw [← mulSupport_mulIndicator] at hf hg
-  simp only [finprod_mem_def, mulIndicator_mul, finprod_mul_distrib hf hg]
+  simp [finprod_mem_def, mulIndicator_mul, finprod_mul_distrib hf hg]
 
 /-- The product of the constant function `1` over any set equals `1`. -/
 @[to_additive /-- The sum of the constant function `0` over any set equals `0`. -/]
@@ -717,7 +717,7 @@ than `s` to be finite. -/
 theorem MonoidHom.map_finprod_mem' {f : α → M} (g : M →* N) (h₀ : (s ∩ mulSupport f).Finite) :
     g (∏ᶠ j ∈ s, f j) = ∏ᶠ i ∈ s, g (f i) := by
   rw [g.map_finprod]
-  · simp only [g.map_finprod_Prop]
+  · simp [g.map_finprod_Prop]
   · simpa only [finprod_eq_mulIndicator_apply, HasFiniteMulSupport, mulSupport_mulIndicator]
 
 /-- Given a monoid homomorphism `g : M →* N` and a function `f : α → M`, the value of `g` at the
@@ -746,7 +746,7 @@ over `i ∈ s` divided by the product of `g i` over `i ∈ s`. -/
       over `i ∈ s` minus the sum of `g i` over `i ∈ s`. -/]
 theorem finprod_mem_div_distrib [DivisionCommMonoid G] (f g : α → G) (hs : s.Finite) :
     ∏ᶠ i ∈ s, f i / g i = (∏ᶠ i ∈ s, f i) / ∏ᶠ i ∈ s, g i := by
-  simp only [div_eq_mul_inv, finprod_mem_mul_distrib hs, finprod_mem_inv_distrib g hs]
+  simp [div_eq_mul_inv, finprod_mem_mul_distrib hs, finprod_mem_inv_distrib g hs]
 
 /-!
 ### `∏ᶠ x ∈ s, f x` and set operations
@@ -775,7 +775,7 @@ theorem finprod_mem_union_inter (hs : s.Finite) (ht : t.Finite) :
   lift s to Finset α using hs; lift t to Finset α using ht
   classical
     rw [← Finset.coe_union, ← Finset.coe_inter]
-    simp only [finprod_mem_coe_finset, Finset.prod_union_inter]
+    simp [finprod_mem_coe_finset, Finset.prod_union_inter]
 
 /-- A more general version of `finprod_mem_union_inter` that requires `s ∩ mulSupport f` and
 `t ∩ mulSupport f` rather than `s` and `t` to be finite. -/
@@ -1022,7 +1022,7 @@ theorem finprod_mem_iUnion [Finite ι] {t : ι → Set α} (h : Pairwise (Disjoi
   classical
     rw [← biUnion_univ, ← Finset.coe_univ, ← Finset.coe_biUnion, finprod_mem_coe_finset,
       Finset.prod_biUnion]
-    · simp only [finprod_mem_coe_finset, finprod_eq_prod_of_fintype]
+    · simp [finprod_mem_coe_finset, finprod_eq_prod_of_fintype]
     · exact fun x _ y _ hxy => Finset.disjoint_coe.1 (h hxy)
 
 /-- Given a family of sets `t : ι → Set α`, a finite set `I` in the index type such that all sets

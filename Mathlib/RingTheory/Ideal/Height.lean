@@ -310,7 +310,7 @@ lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal
       Ideal.comap_minimalPrimes_eq_of_surjective (f := (↑e : R →+* S)) e.surjective]
     exact e.idealComapOrderIso.injective.mem_set_image.symm
   · have : J.IsPrime := h.isPrime
-    simp only [EquivLike.coe_coe, RingEquiv.idealComapOrderIso_apply,
+    simp [EquivLike.coe_coe, RingEquiv.idealComapOrderIso_apply,
       ← Ideal.height_eq_primeHeight, RingEquiv.height_comap_of_isPrime]
 
 @[simp]
@@ -501,4 +501,4 @@ lemma Ideal.eq_span_singleton_of_height_eq_one [IsDomain R] {p : Ideal R} [p.IsP
   apply hxp.ne_zero
   rw [← span_singleton_eq_bot, ← height_eq_zero_iff_eq_bot, ← Order.lt_one_iff, ← h1]
   refine height_strict_mono_of_isPrime_of_isPrime (lt_of_le_of_ne ?_ hne.symm)
-  simp only [p.span_singleton_le_iff_mem, hx]
+  simp [p.span_singleton_le_iff_mem, hx]

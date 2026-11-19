@@ -178,7 +178,7 @@ theorem inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (l
   · exact a.inter i H
   · have I : i = last N := top_le_iff.1 H
     have := (a.rpos (last N)).le
-    simp only [I, add_nonneg this this, dist_self]
+    simp [I, add_nonneg this this, dist_self]
 
 theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := by
   rcases lt_or_ge i (last N) with (H | H)
@@ -372,13 +372,13 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
   have color_G : ∀ n, n ≤ N → p.color (G n) = n := by
     intro n hn
     rcases hn.eq_or_lt with (rfl | H)
-    · simp only [G]; simp only [color_i, Inf_eq_N, ite_true]
-    · simp only [G]; simp only [H.ne, (hg n H).right.right.symm, ite_false]
+    · simp only [G]; simp [color_i, Inf_eq_N, ite_true]
+    · simp only [G]; simp [H.ne, (hg n H).right.right.symm, ite_false]
   have G_lt_last : ∀ n, n ≤ N → G n < p.lastStep := by
     intro n hn
     rcases hn.eq_or_lt with (rfl | H)
-    · simp only [G]; simp only [hi, ite_true]
-    · simp only [G]; simp only [H.ne, (hg n H).left.trans hi, ite_false]
+    · simp only [G]; simp [hi, ite_true]
+    · simp only [G]; simp [H.ne, (hg n H).left.trans hi, ite_false]
   have fGn :
       ∀ n, n ≤ N →
         p.c (p.index (G n)) ∉ p.iUnionUpTo (G n) ∧ p.R (G n) ≤ p.τ * p.r (p.index (G n)) := by
@@ -439,7 +439,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       inter := by
         intro a ha
         have I : (a : ℕ) < N := ha
-        have J : G (Fin.last N) = i := by dsimp; simp only [G, ite_true]
+        have J : G (Fin.last N) = i := by dsimp; simp [G, ite_true]
         have K : G a = g a := by simp [G, I.ne]
         convert dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
   -- this is a contradiction
@@ -535,10 +535,10 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
   -- exclude the trivial case where `μ s = 0`.
   rcases le_or_gt (μ s) 0 with (hμs | hμs)
   · have : μ s = 0 := le_bot_iff.1 hμs
-    refine ⟨∅, by simp only [Finset.coe_empty, empty_subset], ?_, ?_⟩
-    · simp only [this, Finset.notMem_empty, sdiff_empty, iUnion_false, iUnion_empty,
+    refine ⟨∅, by simp [Finset.coe_empty, empty_subset], ?_, ?_⟩
+    · simp [this, Finset.notMem_empty, sdiff_empty, iUnion_false, iUnion_empty,
         nonpos_iff_eq_zero, mul_zero]
-    · simp only [Finset.coe_empty, pairwiseDisjoint_empty]
+    · simp [Finset.coe_empty, pairwiseDisjoint_empty]
   cases isEmpty_or_nonempty α
   · simp only [eq_empty_of_isEmpty s, measure_empty] at hμs
     exact (lt_irrefl _ hμs).elim
@@ -580,7 +580,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       ∑ _i : Fin N, μ s / N = μ s := by
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul]
         rw [ENNReal.mul_div_cancel]
-        · simp only [Npos, Ne, Nat.cast_eq_zero, not_false_iff]
+        · simp [Npos, Ne, Nat.cast_eq_zero, not_false_iff]
         · finiteness
       _ ≤ ∑ i, μ (s ∩ v i) := by
         conv_lhs => rw [A]
@@ -593,7 +593,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     grw [← hi, ← _root_.zero_lt_one, add_zero] <;> finiteness
   have B : μ (o ∩ v i) = ∑' x : u i, μ (o ∩ closedBall x (r x)) := by
     have : o ∩ v i = ⋃ (x : s) (_ : x ∈ u i), o ∩ closedBall x (r x) := by
-      simp only [v, inter_iUnion]
+      simp [v, inter_iUnion]
     rw [this, measure_biUnion (u_count i)]
     · exact (hu i).mono fun k => inter_subset_right
     · exact fun b _ => omeas.inter measurableSet_closedBall
@@ -611,7 +611,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
   -- show that the finset is included in `s`.
   · simp only [image_subset_iff, Finset.coe_image]
     intro y _
-    simp only [Subtype.coe_prop, mem_preimage]
+    simp [Subtype.coe_prop, mem_preimage]
   -- show that it covers a large enough proportion of `s`. For measure computations, we do not
   -- use `s` (which might not be measurable), but its measurable superset `o`. Since their measures
   -- are the same, this does not spoil the estimates
@@ -692,7 +692,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       have xs : x ∈ s := ((mem_sdiff x).1 hx).1
       rcases eq_empty_or_nonempty B with (hB | hB)
       · rcases hf x xs 1 zero_lt_one with ⟨r, hr, h'r⟩
-        exact ⟨r, ⟨hr, h'r⟩, by simp only [hB, empty_disjoint]⟩
+        exact ⟨r, ⟨hr, h'r⟩, by simp [hB, empty_disjoint]⟩
       · let r := infDist x B
         have : 0 < min r 1 :=
           lt_min ((B_closed.notMem_iff_infDist_pos hB).1 ((mem_sdiff x).1 hx).2) zero_lt_one
@@ -741,13 +741,13 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
   choose! F hF using this
   let u n := F^[n] ∅
   have u_succ : ∀ n : ℕ, u n.succ = F (u n) := fun n => by
-    simp only [u, Function.comp_apply, Function.iterate_succ']
+    simp [u, Function.comp_apply, Function.iterate_succ']
   have Pu : ∀ n, P (u n) := by
     intro n
     induction n with
     | zero =>
       simp only [P, u, Prod.forall, id, Function.iterate_zero]
-      simp only [Finset.notMem_empty, IsEmpty.forall_iff, Finset.coe_empty, forall₂_true_iff,
+      simp [Finset.notMem_empty, IsEmpty.forall_iff, Finset.coe_empty, forall₂_true_iff,
         and_self_iff, pairwiseDisjoint_empty]
     | succ n IH =>
       rw [u_succ]
@@ -771,7 +771,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
           (N / (N + 1) : ℝ≥0∞) ^ n * μ s := fun n ↦ by
       induction n with
       | zero =>
-        simp only [u, le_refl, sdiff_empty, one_mul, iUnion_false, iUnion_empty, pow_zero,
+        simp [u, le_refl, sdiff_empty, one_mul, iUnion_false, iUnion_empty, pow_zero,
           Function.iterate_zero, id, Finset.notMem_empty]
       | succ n IH =>
         calc
@@ -887,7 +887,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
     HasBesicovitchCovering.no_satelliteConfig
   obtain ⟨v, s'v, v_open, μv⟩ : ∃ v, v ⊇ s' ∧ IsOpen v ∧ μ v ≤ μ s' + ε / 2 / N :=
     Set.exists_isOpen_le_add _ _
-      (by simp only [ne_eq, ENNReal.div_eq_zero_iff, hε, ENNReal.ofNat_ne_top, or_self,
+      (by simp [ne_eq, ENNReal.div_eq_zero_iff, hε, ENNReal.ofNat_ne_top, or_self,
           ENNReal.natCast_ne_top, not_false_eq_true])
   have : ∀ x ∈ s', ∃ r1 ∈ f x ∩ Ioo (0 : ℝ) 1, closedBall x r1 ⊆ v := by
     intro x hx
@@ -938,7 +938,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         simp only [mem_iUnion, mem_image] at hx
         rcases hx with ⟨i, y, _, rfl⟩
         exact y.2
-      simp only [r, ite_eq_left h'x, (hr1 x h'x).1.1]
+      simp [r, ite_eq_left h'x, (hr1 x h'x).1.1]
   · intro x hx
     by_cases h'x : x ∈ s'
     · obtain ⟨i, y, ySi, xy⟩ : ∃ (i : Fin N) (y : ↥s'), y ∈ S i ∧ x ∈ ball (y : α) (r1 y) := by
@@ -1010,7 +1010,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         apply B
       _ ≤ μ s + ε / 2 + ε / 2 := by
         gcongr
-        simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul, ENNReal.mul_div_le]
+        simp [Finset.card_fin, Finset.sum_const, nsmul_eq_mul, ENNReal.mul_div_le]
       _ = μ s + ε := by rw [add_assoc, ENNReal.add_halves]
 
 /-! ### Consequences on differentiation of measures -/

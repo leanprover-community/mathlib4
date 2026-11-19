@@ -192,7 +192,7 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
         map_comp, comp_apply, d.map_succ, ← e.map_succ i hij,
         ← homOfLE_comp (Order.succ_le_of_lt hij) (Order.le_succ j), op_comp,
         map_comp, comp_apply, d.map_succ]
-    · simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom, d.map_succ]
+    · simp [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom, d.map_succ]
   map_limit i hi hij := by
     obtain hij | rfl := hij.lt_or_eq
     · have hij' : i ≤ j := (Order.lt_succ_iff_of_not_isMax hj).mp hij

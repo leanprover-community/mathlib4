@@ -92,7 +92,7 @@ theorem comp_differentiableAt_iff {f : G → E} {x : G} :
 theorem comp_differentiableOn_iff {f : G → E} {s : Set G} :
     DifferentiableOn 𝕜 (iso ∘ f) s ↔ DifferentiableOn 𝕜 f s := by
   rw [DifferentiableOn, DifferentiableOn]
-  simp only [iso.comp_differentiableWithinAt_iff]
+  simp [iso.comp_differentiableWithinAt_iff]
 
 theorem comp_differentiable_iff {f : G → E} : Differentiable 𝕜 (iso ∘ f) ↔ Differentiable 𝕜 f := by
   rw [← differentiableOn_univ, ← differentiableOn_univ]
@@ -170,7 +170,7 @@ theorem comp_right_differentiableWithinAt_iff {f : F → G} {s : Set F} {x : E} 
 
 theorem comp_right_differentiableAt_iff {f : F → G} {x : E} :
     DifferentiableAt 𝕜 (f ∘ iso) x ↔ DifferentiableAt 𝕜 f (iso x) := by
-  simp only [← differentiableWithinAt_univ, ← iso.comp_right_differentiableWithinAt_iff,
+  simp [← differentiableWithinAt_univ, ← iso.comp_right_differentiableWithinAt_iff,
     preimage_univ]
 
 theorem comp_right_differentiableOn_iff {f : F → G} {s : Set F} :
@@ -182,7 +182,7 @@ theorem comp_right_differentiableOn_iff {f : F → G} {s : Set F} :
 
 theorem comp_right_differentiable_iff {f : F → G} :
     Differentiable 𝕜 (f ∘ iso) ↔ Differentiable 𝕜 f := by
-  simp only [← differentiableOn_univ, ← iso.comp_right_differentiableOn_iff, preimage_univ]
+  simp [← differentiableOn_univ, ← iso.comp_right_differentiableOn_iff, preimage_univ]
 
 theorem comp_right_hasFDerivWithinAt_iff {f : F → G} {s : Set F} {x : E} {f' : F →L[𝕜] G} :
     HasFDerivWithinAt (f ∘ iso) (f'.comp (iso : E →L[𝕜] F)) (iso ⁻¹' s) x ↔
@@ -201,7 +201,7 @@ theorem comp_right_hasFDerivWithinAt_iff {f : F → G} {s : Set F} {x : E} {f' :
 
 theorem comp_right_hasFDerivAt_iff {f : F → G} {x : E} {f' : F →L[𝕜] G} :
     HasFDerivAt (f ∘ iso) (f'.comp (iso : E →L[𝕜] F)) x ↔ HasFDerivAt f f' (iso x) := by
-  simp only [← hasFDerivWithinAt_univ, ← comp_right_hasFDerivWithinAt_iff, preimage_univ]
+  simp [← hasFDerivWithinAt_univ, ← comp_right_hasFDerivWithinAt_iff, preimage_univ]
 
 theorem comp_right_hasFDerivWithinAt_iff' {f : F → G} {s : Set F} {x : E} {f' : E →L[𝕜] G} :
     HasFDerivWithinAt (f ∘ iso) f' (iso ⁻¹' s) x ↔
@@ -211,7 +211,7 @@ theorem comp_right_hasFDerivWithinAt_iff' {f : F → G} {s : Set F} {x : E} {f' 
 
 theorem comp_right_hasFDerivAt_iff' {f : F → G} {x : E} {f' : E →L[𝕜] G} :
     HasFDerivAt (f ∘ iso) f' x ↔ HasFDerivAt f (f'.comp (iso.symm : F →L[𝕜] E)) (iso x) := by
-  simp only [← hasFDerivWithinAt_univ, ← iso.comp_right_hasFDerivWithinAt_iff', preimage_univ]
+  simp [← hasFDerivWithinAt_univ, ← iso.comp_right_hasFDerivWithinAt_iff', preimage_univ]
 
 theorem comp_right_fderivWithin {f : F → G} {s : Set F} {x : E}
     (hxs : UniqueDiffWithinAt 𝕜 (iso ⁻¹' s) x) :

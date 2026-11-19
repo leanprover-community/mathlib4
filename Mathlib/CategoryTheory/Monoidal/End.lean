@@ -211,7 +211,7 @@ theorem obj_ε_app (n : M) (X : C) [F.Monoidal] :
     (F.obj n).map ((ε F).app X) = (F.map (λ_ n).inv).app X ≫ (δ F (𝟙_ M) n).app X := by
   rw [map_leftUnitor_inv]
   dsimp
-  simp only [Category.id_comp, Category.assoc, μ_δ_app, endofunctorMonoidalCategory_tensorObj_obj,
+  simp [Category.id_comp, Category.assoc, μ_δ_app, endofunctorMonoidalCategory_tensorObj_obj,
     Category.comp_id]
 
 @[simp, reassoc]
@@ -230,7 +230,7 @@ theorem ε_app_obj (n : M) (X : C) [F.Monoidal] :
     (ε F).app ((F.obj n).obj X) = (F.map (ρ_ n).inv).app X ≫ (δ F n (𝟙_ M)).app X := by
   rw [map_rightUnitor_inv]
   dsimp
-  simp only [Category.id_comp, Category.assoc, μ_δ_app,
+  simp [Category.id_comp, Category.assoc, μ_δ_app,
     endofunctorMonoidalCategory_tensorObj_obj, Category.comp_id]
 
 @[simp]
@@ -238,7 +238,7 @@ theorem η_app_obj (n : M) (X : C) [F.Monoidal] :
     (η F).app ((F.obj n).obj X) = (μ F n (𝟙_ M)).app X ≫ (F.map (ρ_ n).hom).app X := by
   rw [map_rightUnitor]
   dsimp
-  simp only [Category.comp_id, μ_δ_app_assoc]
+  simp [Category.comp_id, μ_δ_app_assoc]
 
 set_option backward.isDefEq.respectTransparency false in -- Needed below
 @[reassoc]
@@ -267,7 +267,7 @@ theorem obj_μ_inv_app (m₁ m₂ m₃ : M) (X : C) [F.Monoidal] :
           (δ F m₁ (m₂ ⊗ m₃)).app X ≫ (δ F m₂ m₃).app ((F.obj m₁).obj X) := by
   rw [map_associator]
   dsimp
-  simp only [Category.id_comp, Category.assoc, μ_δ_app_assoc, μ_δ_app,
+  simp [Category.id_comp, Category.assoc, μ_δ_app_assoc, μ_δ_app,
     endofunctorMonoidalCategory_tensorObj_obj, Category.comp_id]
 
 @[reassoc (attr := simp)]
@@ -308,7 +308,7 @@ noncomputable def equivOfTensorIsoUnit (m n : M) (h₁ : m ⊗ n ≅ 𝟙_ M) (h
     simp only [μ_naturalityᵣ_assoc, μ_naturalityₗ_assoc, η_app_obj, Category.assoc,
       obj_μ_inv_app, Functor.map_comp, δ_μ_app_assoc, obj_ε_app,
       unitOfTensorIsoUnit_inv_app]
-    simp only [← NatTrans.comp_app, ← F.map_comp, ← H, inv_hom_whiskerRight_assoc,
+    simp [← NatTrans.comp_app, ← F.map_comp, ← H, inv_hom_whiskerRight_assoc,
       Iso.inv_hom_id, Functor.map_id, NatTrans.id_app]
 
 end CategoryTheory

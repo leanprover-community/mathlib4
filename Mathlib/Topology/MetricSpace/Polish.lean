@@ -189,8 +189,8 @@ This definition ensures the `TopologicalSpace` structure on
 instance instMetricSpace : MetricSpace (CompleteCopy s) := by
   refine @MetricSpace.ofT0PseudoMetricSpace (CompleteCopy s)
     (.ofDistTopology dist (fun _ ↦ ?_) (fun _ _ ↦ ?_) (fun x y z ↦ ?_) fun t ↦ ?_) _
-  · simp only [dist_eq, dist_self, one_div, sub_self, abs_zero, add_zero]
-  · simp only [dist_eq, dist_comm, abs_sub_comm]
+  · simp [dist_eq, dist_self, one_div, sub_self, abs_zero, add_zero]
+  · simp [dist_eq, dist_comm, abs_sub_comm]
   · calc
       dist x z = dist x.1 z.1 + |1 / infDist x.1 sᶜ - 1 / infDist z.1 sᶜ| := rfl
       _ ≤ dist x.1 y.1 + dist y.1 z.1 + (|1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ| +
@@ -284,7 +284,7 @@ theorem range_gδEmbedding (hUo : ∀ i, IsOpen (U i)) :
   ext q
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨x, rfl⟩ i
-    simp only [gδEmbedding, ENNReal.coe_toNNReal (inv_infEDist_compl_ne_top hUo x i)]
+    simp [gδEmbedding, ENNReal.coe_toNNReal (inv_infEDist_compl_ne_top hUo x i)]
   · have hmem (i : ι) : q.1 ∈ U i := by
       by_contra hq
       simpa [infEDist_zero_of_mem (mem_compl hq)] using h i

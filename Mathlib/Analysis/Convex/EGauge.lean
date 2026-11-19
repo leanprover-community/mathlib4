@@ -199,7 +199,7 @@ lemma le_egauge_smul_right (c : 𝕜) (s : Set E) (x : E) :
   · refine ENNReal.mul_le_of_le_div' <| le_trans ?_ ENNReal.coe_div_le
     rw [div_eq_inv_mul, ← nnNorm_inv, ← nnNorm_mul]
     refine egauge_le_of_mem_smul ⟨y, hy, ?_⟩
-    simp only [mul_smul, hxy, inv_smul_smul₀ hc]
+    simp [mul_smul, hxy, inv_smul_smul₀ hc]
 
 lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     egauge 𝕜 s (c • x) = ‖c‖ₑ * egauge 𝕜 s x := by

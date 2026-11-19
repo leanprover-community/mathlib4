@@ -259,7 +259,7 @@ theorem continuousAt_const_smul_iff (c : G) :
 
 @[to_additive]
 theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ Continuous f := by
-  simp only [continuous_iff_continuousAt, continuousAt_const_smul_iff]
+  simp [continuous_iff_continuousAt, continuousAt_const_smul_iff]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The homeomorphism given by scalar multiplication by a given element of a group `Γ` acting on

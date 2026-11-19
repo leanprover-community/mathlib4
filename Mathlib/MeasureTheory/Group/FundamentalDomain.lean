@@ -245,7 +245,7 @@ theorem setLIntegral_eq_tsum (h : IsFundamentalDomain G s μ) (f : α → ℝ≥
   calc
     ∫⁻ x in t, f x ∂μ = ∑' g : G, ∫⁻ x in g • s, f x ∂μ.restrict t :=
       h.lintegral_eq_tsum_of_ac restrict_le_self.absolutelyContinuous _
-    _ = ∑' g : G, ∫⁻ x in t ∩ g • s, f x ∂μ := by simp only [h.restrict_restrict, inter_comm]
+    _ = ∑' g : G, ∫⁻ x in t ∩ g • s, f x ∂μ := by simp [h.restrict_restrict, inter_comm]
 
 @[to_additive]
 theorem setLIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) (t : Set α) :
@@ -253,7 +253,7 @@ theorem setLIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ�
   calc
     ∫⁻ x in t, f x ∂μ = ∑' g : G, ∫⁻ x in t ∩ g • s, f x ∂μ := h.setLIntegral_eq_tsum f t
     _ = ∑' g : G, ∫⁻ x in t ∩ g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
-    _ = ∑' g : G, ∫⁻ x in g⁻¹ • (g • t ∩ s), f x ∂μ := by simp only [smul_set_inter, inv_smul_smul]
+    _ = ∑' g : G, ∫⁻ x in g⁻¹ • (g • t ∩ s), f x ∂μ := by simp [smul_set_inter, inv_smul_smul]
     _ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := tsum_congr fun g => Eq.symm <|
       (measurePreserving_smul g⁻¹ μ).setLIntegral_comp_emb (measurableEmbedding_const_smul _) _ _
 
@@ -299,7 +299,7 @@ protected theorem setLIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFund
     ∫⁻ x in s, f x ∂μ = ∫⁻ x in t, f x ∂μ :=
   calc
     ∫⁻ x in s, f x ∂μ = ∑' g : G, ∫⁻ x in s ∩ g • t, f x ∂μ := ht.setLIntegral_eq_tsum _ _
-    _ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := by simp only [hf, inter_comm]
+    _ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := by simp [hf, inter_comm]
     _ = ∫⁻ x in t, f x ∂μ := (hs.setLIntegral_eq_tsum' _ _).symm
 
 @[to_additive]
@@ -326,21 +326,21 @@ protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
   calc
     AEStronglyMeasurable f (μ.restrict s) ↔
         AEStronglyMeasurable f (Measure.sum fun g : G => μ.restrict (g • t ∩ s)) := by
-      simp only [← ht.restrict_restrict,
+      simp [← ht.restrict_restrict,
         ht.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g • (g⁻¹ • s ∩ t))) := by
-      simp only [smul_set_inter, inter_comm, smul_inv_smul, aestronglyMeasurable_sum_measure_iff]
+      simp [smul_set_inter, inter_comm, smul_inv_smul, aestronglyMeasurable_sum_measure_iff]
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g⁻¹ • (g⁻¹⁻¹ • s ∩ t))) :=
       inv_surjective.forall
-    _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g⁻¹ • (g • s ∩ t))) := by simp only [inv_inv]
+    _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g⁻¹ • (g • s ∩ t))) := by simp [inv_inv]
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g • s ∩ t)) := by
       refine forall_congr' fun g => ?_
       have he : MeasurableEmbedding (g⁻¹ • · : α → α) := measurableEmbedding_const_smul _
       rw [← image_smul, ← ((measurePreserving_smul g⁻¹ μ).restrict_image_emb he
         _).aestronglyMeasurable_comp_iff he]
-      simp only [Function.comp_def, hf]
+      simp [Function.comp_def, hf]
     _ ↔ AEStronglyMeasurable f (μ.restrict t) := by
-      simp only [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
+      simp [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
         hs.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
 
 @[to_additive]
@@ -390,7 +390,7 @@ theorem setIntegral_eq_tsum (h : IsFundamentalDomain G s μ) {f : α → E} {t :
     ∫ x in t, f x ∂μ = ∑' g : G, ∫ x in g • s, f x ∂μ.restrict t :=
       h.integral_eq_tsum_of_ac restrict_le_self.absolutelyContinuous f hf
     _ = ∑' g : G, ∫ x in t ∩ g • s, f x ∂μ := by
-      simp only [h.restrict_restrict, inter_comm]
+      simp [h.restrict_restrict, inter_comm]
 
 @[to_additive]
 theorem setIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) {f : α → E} {t : Set α}
@@ -398,7 +398,7 @@ theorem setIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) {f : α → E} {t 
   calc
     ∫ x in t, f x ∂μ = ∑' g : G, ∫ x in t ∩ g • s, f x ∂μ := h.setIntegral_eq_tsum hf
     _ = ∑' g : G, ∫ x in t ∩ g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
-    _ = ∑' g : G, ∫ x in g⁻¹ • (g • t ∩ s), f x ∂μ := by simp only [smul_set_inter, inv_smul_smul]
+    _ = ∑' g : G, ∫ x in g⁻¹ • (g • t ∩ s), f x ∂μ := by simp [smul_set_inter, inv_smul_smul]
     _ = ∑' g : G, ∫ x in g • t ∩ s, f (g⁻¹ • x) ∂μ :=
       tsum_congr fun g =>
         (measurePreserving_smul g⁻¹ μ).setIntegral_image_emb (measurableEmbedding_const_smul _) _ _
@@ -410,7 +410,7 @@ protected theorem setIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFunda
   · have hft : IntegrableOn f t μ := by rwa [ht.integrableOn_iff hs hf]
     calc
       ∫ x in s, f x ∂μ = ∑' g : G, ∫ x in s ∩ g • t, f x ∂μ := ht.setIntegral_eq_tsum hfs
-      _ = ∑' g : G, ∫ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := by simp only [hf, inter_comm]
+      _ = ∑' g : G, ∫ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := by simp [hf, inter_comm]
       _ = ∫ x in t, f x ∂μ := (hs.setIntegral_eq_tsum' hft).symm
   · rw [integral_undef hfs, integral_undef]
     rwa [hs.integrableOn_iff ht hf] at hfs
@@ -464,7 +464,7 @@ theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → �
   intro γ
   ext x
   rw [mem_smul_set_iff_inv_smul_mem]
-  simp only [mem_ofPred_eq, hf γ⁻¹ x]
+  simp [mem_ofPred_eq, hf γ⁻¹ x]
 
 end IsFundamentalDomain
 
@@ -640,7 +640,7 @@ lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] {s t : Set α}
     have : Quotient.mk α_mod_G (g • x) = Quotient.mk α_mod_G x := by
       apply Quotient.sound
       use g
-    simp only [mem_preimage, this]
+    simp [mem_preimage, this]
 
 end FundamentalDomainMeasure
 

@@ -193,7 +193,7 @@ theorem IsUnit.isRegular (ua : IsUnit a) : IsRegular a := by
 /-- Any power of a left-regular element is left-regular. -/
 @[to_additive]
 lemma IsLeftRegular.pow (n : ℕ) (rla : IsLeftRegular a) : IsLeftRegular (a ^ n) := by
-  simp only [IsLeftRegular, ← mul_left_iterate, rla.iterate n]
+  simp [IsLeftRegular, ← mul_left_iterate, rla.iterate n]
 
 /-- Any power of a right-regular element is right-regular. -/
 @[to_additive]

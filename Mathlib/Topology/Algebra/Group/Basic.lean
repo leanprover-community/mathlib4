@@ -402,7 +402,7 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
   refine disjoint_left.2 fun a ha h'a => hg ?_
   rcases h'a with ⟨b, bL, rfl⟩
   refine ⟨g * b, ha, b⁻¹, by simpa only [Set.mem_inv, inv_inv] using bL, ?_⟩
-  simp only [mul_inv_cancel_right]
+  simp [mul_inv_cancel_right]
 
 end
 

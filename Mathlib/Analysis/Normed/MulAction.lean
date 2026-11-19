@@ -158,7 +158,7 @@ instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
 
 instance Prod.instNormSMulClass {γ : Type*} [SeminormedAddGroup γ] [SMul α γ] [NormSMulClass α γ] :
     NormSMulClass α (β × γ) where
-  norm_smul := fun r ⟨v₁, v₂⟩ ↦ by simp only [smul_def, ← coe_nnNorm, nnNorm_def,
+  norm_smul := fun r ⟨v₁, v₂⟩ ↦ by simp [smul_def, ← coe_nnNorm, nnNorm_def,
     nnNorm_smul r, ← NNReal.coe_mul, NNReal.mul_sup]
 
 instance ULift.instNormSMulClass : NormSMulClass α (ULift β) where
@@ -177,7 +177,7 @@ theorem nndist_smul₀ (s : α) (x y : β) : nndist (s • x) (s • y) = ‖s�
   NNReal.eq <| dist_smul₀ s x y
 
 theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
-  simp only [edist_nndist, nndist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
+  simp [edist_nndist, nndist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
 
 instance NormSMulClass.toIsBoundedSMul : IsBoundedSMul α β :=
   .of_norm_smul_le fun r x ↦ (norm_smul r x).le

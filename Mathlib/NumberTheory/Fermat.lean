@@ -41,7 +41,7 @@ def fermatNumber (n : ℕ) : ℕ := 2 ^ (2 ^ n) + 1
 
 theorem fermatNumber_strictMono : StrictMono fermatNumber := by
   intro m n
-  simp only [fermatNumber, add_lt_add_iff_right, Nat.pow_lt_pow_iff_right (one_lt_two : 1 < 2),
+  simp [fermatNumber, add_lt_add_iff_right, Nat.pow_lt_pow_iff_right (one_lt_two : 1 < 2),
     imp_self]
 
 lemma fermatNumber_mono : Monotone fermatNumber := fermatNumber_strictMono.monotone
@@ -91,7 +91,7 @@ theorem Int.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq 
     (fermatNumber (n + 2) : ℤ) = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
   rw [Nat.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq,
     Nat.cast_sub <| two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq n]
-  simp only [fermatNumber, push_cast, add_tsub_cancel_right]
+  simp [fermatNumber, push_cast, add_tsub_cancel_right]
 
 namespace Nat
 

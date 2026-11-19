@@ -59,7 +59,7 @@ theorem weightedTotalDegree_singleton [DecidableEq σ] (p : MvPolynomial σ R) :
   where all of the weights are `1`. -/
 theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
-  simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
+  simp [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
     linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id, smul_eq_mul, mul_one]
 
@@ -172,7 +172,7 @@ variable {σ}
 
 theorem isHomogeneous_X (i : σ) : IsHomogeneous (X i : MvPolynomial σ R) 1 := by
   apply isHomogeneous_monomial
-  simp only [degree_apply, Finsupp.support_single _ one_ne_zero, Finset.sum_singleton,
+  simp [degree_apply, Finsupp.support_single _ one_ne_zero, Finset.sum_singleton,
     single_eq_same]
 
 variable {R} in
@@ -233,7 +233,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
   revert h
   refine Finset.induction_on s ?_ ?_
   · intro
-    simp only [isHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
+    simp [isHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
   · intro i s his IH h
     simp only [his, Finset.prod_insert, Finset.sum_insert, not_false_iff]
     apply (h i (by grind)).mul (IH _)
@@ -353,7 +353,7 @@ theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
   intro d hd
   apply (Finsupp.sum_mapDomain_index_addMonoidHom fun _ ↦ .id ℕ).trans
   convert h (mem_support_iff.mp hd)
-  simp only [weight_apply, AddMonoidHom.id_apply, Pi.one_apply, smul_eq_mul, mul_one]
+  simp [weight_apply, AddMonoidHom.id_apply, Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
     (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by

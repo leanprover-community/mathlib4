@@ -512,7 +512,7 @@ theorem hasFDerivAtFilter_finCons
       HasFDerivAtFilter φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') l := by
   rw [hasFDerivAtFilter_pi', Fin.forall_fin_succ, hasFDerivAtFilter_pi']
   dsimp [ContinuousLinearMap.comp, LinearMap.comp, Function.comp_def]
-  simp only [Fin.cons_zero, Fin.cons_succ]
+  simp [Fin.cons_zero, Fin.cons_succ]
 
 /-- A variant of `hasFDerivAtFilter_finCons` where the derivative variables are free on the RHS
 instead. -/
@@ -596,7 +596,7 @@ theorem differentiableWithinAt_finCons :
     DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x ↔
       DifferentiableWithinAt 𝕜 φ s x ∧ DifferentiableWithinAt 𝕜 φs s x := by
   rw [differentiableWithinAt_pi, Fin.forall_fin_succ, differentiableWithinAt_pi]
-  simp only [Fin.cons_zero, Fin.cons_succ]
+  simp [Fin.cons_zero, Fin.cons_succ]
 
 @[deprecated (since := "2026-08-08")]
 alias differentiableWithinAt_finCons' := differentiableWithinAt_finCons
@@ -611,7 +611,7 @@ theorem differentiableAt_finCons :
     DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x ↔
       DifferentiableAt 𝕜 φ x ∧ DifferentiableAt 𝕜 φs x := by
   rw [differentiableAt_pi, Fin.forall_fin_succ, differentiableAt_pi]
-  simp only [Fin.cons_zero, Fin.cons_succ]
+  simp [Fin.cons_zero, Fin.cons_succ]
 
 @[deprecated (since := "2026-08-08")]
 alias differentiableAt_finCons' := differentiableAt_finCons
@@ -626,7 +626,7 @@ theorem differentiableOn_finCons :
     DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s ↔
       DifferentiableOn 𝕜 φ s ∧ DifferentiableOn 𝕜 φs s := by
   rw [differentiableOn_pi, Fin.forall_fin_succ, differentiableOn_pi]
-  simp only [Fin.cons_zero, Fin.cons_succ]
+  simp [Fin.cons_zero, Fin.cons_succ]
 
 @[deprecated (since := "2026-08-08")]
 alias differentiableOn_finCons' := differentiableOn_finCons
@@ -641,7 +641,7 @@ theorem differentiable_finCons :
     Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) ↔
       Differentiable 𝕜 φ ∧ Differentiable 𝕜 φs := by
   rw [differentiable_pi, Fin.forall_fin_succ, differentiable_pi]
-  simp only [Fin.cons_zero, Fin.cons_succ]
+  simp [Fin.cons_zero, Fin.cons_succ]
 
 @[deprecated (since := "2026-08-08")]
 alias differentiable_finCons' := differentiable_finCons

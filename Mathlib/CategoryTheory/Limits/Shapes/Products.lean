@@ -197,7 +197,7 @@ instance {f : β → C} [HasProduct f] : IsIso (Pi.lift (Pi.π f)) := by
 @[to_dual (attr := reassoc, elementwise) ι_comp_desc]
 theorem Pi.lift_comp_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
     Pi.lift p ≫ Pi.π f b = p b := by
-  simp only [limit.lift_π, Fan.mk_π_app]
+  simp [limit.lift_π, Fan.mk_π_app]
 
 @[deprecated (since := "2026-08-17")] alias Pi.lift_π_apply := Pi.lift_comp_π_apply
 @[deprecated (since := "2026-08-17")] alias Pi.lift_π_assoc := Pi.lift_comp_π_assoc
@@ -458,7 +458,7 @@ theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b
 theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
   ext j
-  simp only [Category.assoc, piComparison_comp_π, ← G.map_comp,
+  simp [Category.assoc, piComparison_comp_π, ← G.map_comp,
     limit.lift_π, Fan.mk_π_app]
 
 /-- `F.mapCone c` being limiting is the same as the induced fan being limiting. -/

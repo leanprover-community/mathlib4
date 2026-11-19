@@ -272,11 +272,11 @@ theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ L.noBotOrderSentence :=
 
 theorem noTopOrder_of_dlo [M ⊨ L.dlo] : NoTopOrder M :=
   realize_noTopOrder_iff.1 (L.dlo.realize_sentence_of_mem (by
-    simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or]))
+    simp [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or]))
 
 theorem noBotOrder_of_dlo [M ⊨ L.dlo] : NoBotOrder M :=
   realize_noBotOrder_iff.1 (L.dlo.realize_sentence_of_mem (by
-    simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
+    simp [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
 
 end LE
 
@@ -320,7 +320,7 @@ variable (L) (M)
 
 theorem denselyOrdered_of_dlo [M ⊨ L.dlo] : DenselyOrdered M :=
   realize_denselyOrdered_iff.1 (L.dlo.realize_sentence_of_mem (by
-    simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
+    simp [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
 
 end Preorder
 
@@ -419,13 +419,13 @@ instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :
 set_option backward.isDefEq.respectTransparency.types false in
 instance : Language.order.StrongHomClass (M ↪o N) M N :=
   ⟨fun _ => isEmptyElim,
-    by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
+    by simp [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
     Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance [EquivLike F M N] [OrderIsoClass F M N] : Language.order.StrongHomClass F M N :=
   ⟨fun _ => isEmptyElim,
-    by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
+    by simp [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
       Function.comp_apply, map_le_map_iff, implies_true]⟩
 
 end order
@@ -492,7 +492,7 @@ lemma dlo_isExtensionPair
         LowerAdjoint.closure_eq_self_of_mem_closed _
           (Substructure.mem_closed_of_isRelational Language.order
             ((insert m hS.toFinset : Finset M) : Set M))
-      simp only [Finset.coe_insert, Set.Finite.coe_toFinset, Substructure.closure_insert,
+      simp [Finset.coe_insert, Set.Finite.coe_toFinset, Substructure.closure_insert,
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'
   ext ⟨x, xS⟩

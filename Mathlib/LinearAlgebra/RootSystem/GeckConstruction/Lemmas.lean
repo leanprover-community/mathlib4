@@ -373,7 +373,7 @@ lemma chainBotCoeff_mul_chainTopCoeff :
     split at this <;> simp [this]
   have aux₄ : P.chainBotCoeff j (-l) = 0 ∨ P.chainBotCoeff j (-l) = 1 := by
     have := P.chainBotCoeff_if_one_zero hjl_mem
-    split at this <;> simp only [this, true_or, or_true]
+    split at this <;> simp [this, true_or, or_true]
   lia
 
 end chainBotCoeff_mul_chainTopCoeff

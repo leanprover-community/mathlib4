@@ -116,19 +116,19 @@ instance Category.opposite : Category.{v₁} Cᵒᵖ where
   __ := CategoryStruct.opposite
   comp_id f := by rw [← op_comp_unop, unop_id, id_comp, Quiver.Hom.op_unop]
   id_comp f := by rw [← op_comp_unop, unop_id, comp_id, Quiver.Hom.op_unop]
-  assoc f g h := by simp only [← op_comp_unop, Quiver.Hom.unop_op, assoc]
+  assoc f g h := by simp [← op_comp_unop, Quiver.Hom.unop_op, assoc]
 
 -- Note: these need to be proven manually as the original lemmas are only stated in terms
 -- of `CategoryStruct`s!
 @[to_dual none]
 theorem op_comp_assoc {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {Z' : Cᵒᵖ} {h : op X ⟶ Z'} :
     (f ≫ g).op ≫ h = g.op ≫ f.op ≫ h := by
-  simp only [op_comp, Category.assoc]
+  simp [op_comp, Category.assoc]
 
 @[to_dual none]
 theorem unop_comp_assoc {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} {Z' : C} {h : unop X ⟶ Z'} :
     (f ≫ g).unop ≫ h = g.unop ≫ f.unop ≫ h := by
-  simp only [unop_comp, Category.assoc]
+  simp [unop_comp, Category.assoc]
 
 section
 
@@ -588,8 +588,8 @@ protected def op (α : X ≅ Y) : op Y ≅ op X where
 def unop {X Y : Cᵒᵖ} (f : X ≅ Y) : Y.unop ≅ X.unop where
   hom := f.hom.unop
   inv := f.inv.unop
-  hom_inv_id := by simp only [← unop_comp, f.inv_hom_id, unop_id]
-  inv_hom_id := by simp only [← unop_comp, f.hom_inv_id, unop_id]
+  hom_inv_id := by simp [← unop_comp, f.inv_hom_id, unop_id]
+  inv_hom_id := by simp [← unop_comp, f.hom_inv_id, unop_id]
 
 @[simp]
 theorem unop_op {X Y : Cᵒᵖ} (f : X ≅ Y) : f.unop.op = f := by (ext; rfl)

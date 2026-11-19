@@ -218,13 +218,13 @@ theorem R_apply : (𝑹 I g) h = h * g :=
 theorem L_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I ∞ G]
     (g h : G) : 𝑳 I (g * h) = (𝑳 I g).comp (𝑳 I h) := by
   ext
-  simp only [ContMDiffMap.comp_apply, L_apply, mul_assoc]
+  simp [ContMDiffMap.comp_apply, L_apply, mul_assoc]
 
 @[simp]
 theorem R_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I ∞ G]
     (g h : G) : 𝑹 I (g * h) = (𝑹 I h).comp (𝑹 I g) := by
   ext
-  simp only [ContMDiffMap.comp_apply, R_apply, mul_assoc]
+  simp [ContMDiffMap.comp_apply, R_apply, mul_assoc]
 
 section
 
@@ -265,7 +265,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
 
 @[to_additive]
 theorem contMDiff_pow : ∀ i : ℕ, CMDiff n fun a : G ↦ a ^ i
-  | 0 => by simp only [pow_zero, contMDiff_const]
+  | 0 => by simp [pow_zero, contMDiff_const]
   | k + 1 => by simpa [pow_succ] using! (contMDiff_pow _).mul contMDiff_id
 
 /-- Morphism of additive `C^n` monoids. -/

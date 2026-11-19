@@ -426,7 +426,7 @@ private theorem tendsto_integral_G_mul :
   simp only [max_self, ofReal_one] at this
   refine (this.mono_left nhdsWithin_le_nhds).congr' ?_
   filter_upwards [self_mem_nhdsWithin] with σ (hσ : 1 < σ)
-  simp only [max_eq_left hσ.le]
+  simp [max_eq_left hσ.le]
 
 include bound hG hG' hpos hΨ in
 private lemma tendsto_S_one_fourier_of_hasCompactSupport :

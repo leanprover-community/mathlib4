@@ -181,7 +181,7 @@ for all `b`, exactly one of `a + b` and `b` belong to `H`. -/]
 theorem index_eq_two_iff' : H.index = 2 ↔ ∃ a, ∀ b, Xor (a * b ∈ H) (b ∈ H) := by
   rw [index_eq_two_iff, (Equiv.inv G).exists_congr]
   refine fun a ↦ (Equiv.inv G).forall_congr fun b ↦ ?_
-  simp only [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
+  simp [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
 
 /-- A subgroup `H` has index two if and only if there exists `a ∉ H` such that for all `b`, one
 of `b * a` and `b` belongs to `H`. -/
@@ -225,7 +225,7 @@ lemma relIndex_eq_two_iff_exists_notMem_and :
   rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and]
   simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
   refine exists_congr fun g ↦ ?_
-  simp only [and_left_comm]
+  simp [and_left_comm]
 
 /-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and'`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and'`. -/]
@@ -234,12 +234,12 @@ lemma relIndex_eq_two_iff_exists_notMem_and' :
   rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and']
   simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
   refine exists_congr fun g ↦ ?_
-  simp only [and_left_comm]
+  simp [and_left_comm]
 
 @[to_additive]
 theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (a ∈ H ↔ b ∈ H) := by
-  by_cases ha : a ∈ H; · simp only [ha, true_iff, mul_mem_cancel_left ha]
-  by_cases hb : b ∈ H; · simp only [hb, iff_true, mul_mem_cancel_right hb]
+  by_cases ha : a ∈ H; · simp [ha, true_iff, mul_mem_cancel_left ha]
+  by_cases hb : b ∈ H; · simp [hb, iff_true, mul_mem_cancel_right hb]
   simp only [ha, hb, iff_true]
   rcases index_eq_two_iff.1 h with ⟨c, hc⟩
   refine (hc _).or.resolve_left ?_
@@ -520,7 +520,7 @@ that for all `b`, at least one of `a + b` and `b` belongs to `H`. -/]
 theorem index_dvd_two_iff' : H.index ∣ 2 ↔ ∃ a, ∀ b, (a * b ∈ H) ∨ (b ∈ H) := by
   rw [index_dvd_two_iff, (Equiv.inv G).exists_congr]
   refine fun a ↦ (Equiv.inv G).forall_congr fun b ↦ ?_
-  simp only [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
+  simp [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
 
 /-- Relative version of `Subgroup.index_dvd_two_iff`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_dvd_two_iff`. -/]

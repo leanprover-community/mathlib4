@@ -48,13 +48,13 @@ theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.
   induction fuel generalizing k <;> rw [minFacAux, Nat.minFacAux]
   case zero =>
     rw [Nat.zero_add, Nat.sqrt_lt] at h
-    simp only [h, ite_true]
+    simp [h, ite_true]
   case succ fuel ih =>
     simp_rw [← mul_to_nat]
     simp only [cast_lt, dvd_to_nat]
     split_ifs <;> try rfl
     rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
-      simp only [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
+      simp [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
         add_left_comm, ← one_add_one_eq_two]
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
@@ -76,7 +76,7 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
     rw [Nat.sqrt_lt]
     calc
       (n : ℕ) + (n : ℕ) + 1 ≤ (n : ℕ) + (n : ℕ) + (n : ℕ) := by simp
-      _ = (n : ℕ) * (1 + 1 + 1) := by simp only [mul_add, mul_one]
+      _ = (n : ℕ) * (1 + 1 + 1) := by simp [mul_add, mul_one]
       _ < _ := by simp [mul_lt_mul]
   · rw [minFac, Nat.minFac_eq, ite_eq_left]
     · rfl

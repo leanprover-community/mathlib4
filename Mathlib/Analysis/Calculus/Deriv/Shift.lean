@@ -60,16 +60,16 @@ lemma deriv_comp_neg : deriv (fun x ↦ f (-x)) x = -deriv f (-x) := by
 /-- Translation in the domain does not change the derivative. -/
 lemma derivWithin_comp_const_add :
     derivWithin (f <| a + ·) s x = derivWithin f (a +ᵥ s) (a + x) := by
-  simp only [derivWithin, fderivWithin_comp_add_left]
+  simp [derivWithin, fderivWithin_comp_add_left]
 
 /-- Translation in the domain does not change the derivative. -/
 lemma deriv_comp_const_add : deriv (fun x ↦ f (a + x)) x = deriv f (a + x) := by
-  simp only [deriv, fderiv_comp_add_left]
+  simp [deriv, fderiv_comp_add_left]
 
 /-- Translation in the domain does not change the derivative. -/
 lemma derivWithin_comp_add_const :
     derivWithin (f <| · + a) s x = derivWithin f (a +ᵥ s) (x + a) := by
-  simp only [derivWithin, fderivWithin_comp_add_right]
+  simp [derivWithin, fderivWithin_comp_add_right]
 
 /-- Translation in the domain does not change the derivative. -/
 lemma deriv_comp_add_const : deriv (fun x ↦ f (x + a)) x = deriv f (x + a) := by

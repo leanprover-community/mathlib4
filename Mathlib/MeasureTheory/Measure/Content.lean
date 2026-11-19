@@ -166,7 +166,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
   have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i => μ (K i) := by
     intro t K
     refine Finset.induction_on t ?_ ?_
-    · simp only [μ.empty, nonpos_iff_eq_zero, Finset.sum_empty, Finset.sup_empty]
+    · simp [μ.empty, nonpos_iff_eq_zero, Finset.sum_empty, Finset.sup_empty]
     · intro n s hn ih
       grw [Finset.sup_insert, Finset.sum_insert hn, μ.sup_le, ih]
   refine iSup₂_le fun K hK => ?_
@@ -221,7 +221,7 @@ theorem innerContent_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup 
   refine (μ.le_innerContent _ _ this).trans ?_
   refine
     (rel_iSup_sum μ.innerContent μ.innerContent_bot (· ≤ ·) μ.innerContent_iSup_nat _ _).trans ?_
-  simp only [μ.is_mul_left_invariant_innerContent h3, Finset.sum_const, nsmul_eq_mul, le_refl]
+  simp [μ.is_mul_left_invariant_innerContent h3, Finset.sum_const, nsmul_eq_mul, le_refl]
 
 @[deprecated innerContent_mono (since := "2026-11-16")]
 theorem innerContent_mono' ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 : U ⊆ V) :

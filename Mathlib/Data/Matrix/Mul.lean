@@ -136,7 +136,7 @@ theorem sumElim_dotProduct_sumElim : Sum.elim u x ⬝ᵥ Sum.elim v y = u ⬝ᵥ
 @[simp]
 theorem comp_equiv_symm_dotProduct (e : m ≃ n) : u ∘ e.symm ⬝ᵥ x = u ⬝ᵥ x ∘ e :=
   (e.sum_comp _).symm.trans <|
-    Finset.sum_congr rfl fun _ _ => by simp only [Function.comp, Equiv.symm_apply_apply]
+    Finset.sum_congr rfl fun _ _ => by simp [Function.comp, Equiv.symm_apply_apply]
 
 /-- Permuting a vector on the right of a dot product can be transferred to the left. -/
 @[simp]
@@ -669,7 +669,7 @@ theorem vecMulVec_ne_zero [Mul α] [Zero α] [NoZeroDivisors α] {a : m → α} 
 
 @[simp] theorem vecMulVec_eq_zero [MulZeroClass α] [NoZeroDivisors α] {a : m → α} {b : n → α} :
     vecMulVec a b = 0 ↔ a = 0 ∨ b = 0 := by
-  simp only [← ext_iff, vecMulVec_apply, Matrix.zero_apply, mul_eq_zero, funext_iff, Pi.zero_apply,
+  simp [← ext_iff, vecMulVec_apply, Matrix.zero_apply, mul_eq_zero, funext_iff, Pi.zero_apply,
     forall_or_left, forall_or_right]
 
 theorem add_vecMulVec [Mul α] [Add α] [RightDistribClass α] (w₁ w₂ : m → α) (v : n → α) :
@@ -1274,9 +1274,9 @@ theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [Decidabl
   cases nonempty_fintype o
   let A := M.submatrix id e₁.symm
   have : M = A.submatrix id e₁ := by
-    simp only [A, submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
+    simp [A, submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
   rw [this, submatrix_mul_equiv]
-  simp only [A, Matrix.mul_one, submatrix_submatrix, Function.comp_id, submatrix_id_id,
+  simp [A, Matrix.mul_one, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 
 theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : l → o)
@@ -1285,9 +1285,9 @@ theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [Decidabl
   cases nonempty_fintype o
   let A := M.submatrix e₂.symm id
   have : M = A.submatrix e₂ id := by
-    simp only [A, submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
+    simp [A, submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
   rw [this, submatrix_mul_equiv]
-  simp only [A, Matrix.one_mul, submatrix_submatrix, Function.comp_id, submatrix_id_id,
+  simp [A, Matrix.one_mul, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 
 theorem submatrix_mul_transpose_submatrix [Fintype n] [Fintype o] [AddCommMonoid α] [Mul α]
@@ -1327,14 +1327,14 @@ theorem map_matrix_mul (M : Matrix m n α) (N : Matrix n o α) (i : m) (j : o) (
 
 theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (v w : n → R) :
     f (v ⬝ᵥ w) = f ∘ v ⬝ᵥ f ∘ w := by
-  simp only [dotProduct, map_sum f, f.map_mul, Function.comp]
+  simp [dotProduct, map_sum f, f.map_mul, Function.comp]
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)
     (v : n → R) (i : m) : f ((v ᵥ* M) i) = ((f ∘ v) ᵥ* M.map f) i := by
-  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
+  simp [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix m n R)
     (v : n → R) (i : m) : f ((M *ᵥ v) i) = (M.map f *ᵥ (f ∘ v)) i := by
-  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
+  simp [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 end RingHom

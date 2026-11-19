@@ -654,7 +654,7 @@ theorem card_C_inter_Icc_eq (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
   set int : Finset Hollom := (Icc (xl, yl) (xh, yh)).image (embed n)
   set I : Finset Hollom := {x ∈ int | x ∈ C}
   have int_eq : int = Set.Icc h(xl, yl, n) h(xh, yh, n) := by
-    simp only [coe_image, coe_Icc, int, embed_image_Icc]
+    simp [coe_image, coe_Icc, int, embed_image_Icc]
   have hI : IsChain (· ≤ ·) I := hC.mono (by simp [Set.subset_def, I])
   have hIn : ↑I ⊆ level n := by simp +contextual [Set.subset_def, I, int, embed_apply]
   have : Set.MapsTo line int (Icc (xl + yl) (xh + yh)) := by
@@ -690,7 +690,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
   -- Previous results give an exact expression for `#I`.
   have cI : #I = xh + yh + 1 - (xl + yl) := card_C_inter_Icc_eq f hC hx hy hlo hhi
   have int_eq : int = Set.Icc h(xl, yl, n) h(xh, yh, n) := by
-    simp only [coe_image, coe_Icc, int, embed_image_Icc]
+    simp [coe_image, coe_Icc, int, embed_image_Icc]
   -- Write `B` for the union of chains `(xl, yl, n)` to `(x, y, n)` and `(x + 1, y + 1, n)`
   -- to `(xh, yh, n)`, observing that adding either of `(x + 1, y, n)` or `(x, y + 1, n)` would
   -- make `B` into a maximal chain.

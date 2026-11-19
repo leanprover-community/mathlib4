@@ -220,7 +220,7 @@ theorem whiskerLeft_π_actLeft :
     (R.X ◁ coequalizer.π _ _) ≫ actLeft P Q =
       (α_ _ _ _).inv ≫ (P.actLeft ▷ Q.X) ≫ coequalizer.π _ _ := by
   erw [map_π_preserves_coequalizer_inv_colimMap (tensorLeft _)]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 theorem one_act_left' : (η ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
@@ -277,7 +277,7 @@ theorem π_tensor_id_actRight :
     (coequalizer.π _ _ ▷ T.X) ≫ actRight P Q =
       (α_ _ _ _).hom ≫ (P.X ◁ Q.actRight) ≫ coequalizer.π _ _ := by
   erw [map_π_preserves_coequalizer_inv_colimMap (tensorRight _)]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 theorem actRight_one' : (_ ◁ η) ≫ actRight P Q = (ρ_ _).hom := by
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
@@ -640,7 +640,7 @@ theorem hom_right_act_hom' :
   slice_lhs 1 4 => rw [π_tensor_id_preserves_coequalizer_inv_colimMap_desc]
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   slice_rhs 1 2 => rw [middle_assoc]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 end LeftUnitorBimod
 
@@ -972,7 +972,7 @@ theorem triangle_bimod {X Y Z : Mon C} (M : Bimod X Y) (N : Bimod Y Z) :
   slice_lhs 2 3 => rw [← whiskerLeft_comp, coequalizer.π_desc]
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   slice_rhs 1 2 => rw [coequalizer.condition]
-  simp only [Category.assoc]
+  simp [Category.assoc]
 
 /-- The bicategory of algebras (monoids) and bimodules, all internal to some monoidal category. -/
 @[instance_reducible]

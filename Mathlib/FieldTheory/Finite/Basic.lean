@@ -193,7 +193,7 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
       (fun x : ↥G => (((x : Kˣ) : K) * ((a : Kˣ) : K)) ^ k)
         = (fun x : ↥G => ((x : Kˣ) : K) ^ k) ∘ fun x : ↥G => x * a := by
       funext x
-      simp only [Function.comp_apply, Subgroup.coe_mul, Units.val_mul]
+      simp [Function.comp_apply, Subgroup.coe_mul, Units.val_mul]
     rw [as_comp, ← Multiset.map_map]
     congr
     rw [eq_comm]
@@ -310,7 +310,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
 is equal to `0` if `i < q - 1`. -/
 theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0 := by
   by_cases hi : i = 0
-  · simp only [hi, nsmul_one, sum_const, pow_zero, card_univ, cast_card_eq_zero]
+  · simp [hi, nsmul_one, sum_const, pow_zero, card_univ, cast_card_eq_zero]
   classical
     have hiq : ¬q - 1 ∣ i := by contrapose! h; exact Nat.le_of_dvd (Nat.pos_of_ne_zero hi) h
     let φ : Kˣ ↪ K := ⟨fun x ↦ x, Units.val_injective⟩

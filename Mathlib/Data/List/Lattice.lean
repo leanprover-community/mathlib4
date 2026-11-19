@@ -66,10 +66,10 @@ theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ 
     let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
     if h : a ∈ l₁ ∪ l₂ then
       ⟨t, sublist_cons_of_sublist _ s, by
-        simp only [e, cons_union, insert_of_mem h]⟩
+        simp [e, cons_union, insert_of_mem h]⟩
     else
       ⟨a :: t, s.cons_cons _, by
-        simp only [cons_append, cons_union, e, insert_of_not_mem h]⟩
+        simp [cons_append, cons_union, e, insert_of_not_mem h]⟩
 
 theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
   (sublist_suffix_of_union l₁ l₂).imp fun _ => And.right
@@ -79,7 +79,7 @@ theorem union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l�
   e ▸ (append_sublist_append_right _).2 s
 
 theorem forall_mem_union : (∀ x ∈ l₁ ∪ l₂, p x) ↔ (∀ x ∈ l₁, p x) ∧ ∀ x ∈ l₂, p x := by
-  simp only [mem_union_iff, or_imp, forall_and]
+  simp [mem_union_iff, or_imp, forall_and]
 
 theorem forall_mem_of_forall_mem_union_left (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₁, p x :=
   (forall_mem_union.1 h).1
@@ -154,7 +154,7 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
 
 @[simp]
 theorem inter_reverse {xs ys : List α} : xs ∩ ys.reverse = xs ∩ ys := by
-  simp only [List.inter_def, elem_eq_mem, mem_reverse]
+  simp [List.inter_def, elem_eq_mem, mem_reverse]
 
 theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs :=
   List.filter_eq_self.mpr fun _ ha => elem_eq_true_of_mem (h ha)

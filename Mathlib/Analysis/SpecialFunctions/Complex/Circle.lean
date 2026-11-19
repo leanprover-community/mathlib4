@@ -321,14 +321,14 @@ lemma not_isPreconnected_compl_pair (hxy : x ≠ y) : ¬ IsPreconnected {x, y}�
   simp only [isPreconnected_iff_subset_of_disjoint_closed, not_forall, not_or, exists_and_left]
   refine ⟨range (path x y), ?_, range (path y x), (isCompact_range (path x y).continuous).isClosed,
     (isCompact_range (path y x).continuous).isClosed, ?_, ?_, ?_⟩
-  · rw [compl_subset_iff_union, union_eq_right.mpr (by simp only [pair_subset_iff,
+  · rw [compl_subset_iff_union, union_eq_right.mpr (by simp [pair_subset_iff,
       (path x y).source_mem_range, (path x y).target_mem_range, and_self])]
     exact (range_path_ssubset_univ x y).ne
   · rw [range_path_union_range_path hxy]
     exact subset_univ _
   · rw [range_path_inter_range_path hxy]
     exact compl_inter_self {x, y}
-  rw [compl_subset_iff_union, union_eq_right.mpr (by simp only [pair_subset_iff,
+  rw [compl_subset_iff_union, union_eq_right.mpr (by simp [pair_subset_iff,
       (path y x).source_mem_range, (path y x).target_mem_range, and_self])]
   exact (range_path_ssubset_univ y x).ne
 

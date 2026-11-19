@@ -70,7 +70,7 @@ theorem abs_neg_one_zpow (p : ℤ) : |(-1 : α) ^ p| = 1 := by simp
 
 omit [IsStrictOrderedRing α] in
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
-  rcases abs_choice a with h | h <;> simp only [h, hp.neg_zpow _]
+  rcases abs_choice a with h | h <;> simp [h, hp.neg_zpow _]
 
 lemma zpow_eq_zpow_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
   match n with

@@ -66,7 +66,7 @@ def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) wher
     simp_rw [Category.assoc, inv_comp, ← Category.assoc, inv_comp, Category.id_comp,
       Category.comp_id]
   map_mul' γ₁ γ₂ := by
-    simp only [vertexGroup_mul, inv_eq_inv, Category.assoc, IsIso.hom_inv_id_assoc]
+    simp [vertexGroup_mul, inv_eq_inv, Category.assoc, IsIso.hom_inv_id_assoc]
 
 /-- A path in the groupoid defines an isomorphism between its endpoints.
 -/

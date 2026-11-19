@@ -155,7 +155,7 @@ theorem factorization_eq_zero_of_remainder {p r : ℕ} (i : ℕ) (hr : ¬p ∣ r
 theorem factorization_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).factorization = a.factorization + b.factorization := by
   ext p
-  simp only [Finsupp.add_apply, ← primeFactorsList_count_eq,
+  simp [Finsupp.add_apply, ← primeFactorsList_count_eq,
     perm_iff_count.mp (perm_primeFactorsList_mul ha hb) p, count_append]
 
 theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
@@ -311,7 +311,7 @@ def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ // ∀ p ∈ f.support, P
 /-- For coprime `a` and `b`, the power of `p` in `a * b` is the sum of the powers in `a` and `b` -/
 theorem factorization_mul_apply_of_coprime {p a b : ℕ} (hab : Coprime a b) :
     (a * b).factorization p = a.factorization p + b.factorization p := by
-  simp only [← primeFactorsList_count_eq,
+  simp [← primeFactorsList_count_eq,
     perm_iff_count.mp (perm_primeFactorsList_mul_of_coprime hab), count_append]
 
 /-- For coprime `a` and `b`, the power of `p` in `a * b` is the sum of the powers in `a` and `b` -/

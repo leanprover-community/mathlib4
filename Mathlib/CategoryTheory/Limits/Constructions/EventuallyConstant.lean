@@ -122,7 +122,7 @@ noncomputable def isLimitCone : IsLimit h.cone where
     dsimp [coneπApp]
     rw [← s.w (IsCofiltered.minToLeft i₀ j), ← s.w (IsCofiltered.minToRight i₀ j), assoc,
       isoMap_hom_inv_id_assoc]
-  uniq s m hm := by simp only [← hm i₀, cone_π_app, coneπApp_eq_id, cone_pt, comp_id]
+  uniq s m hm := by simp [← hm i₀, cone_π_app, coneπApp_eq_id, cone_pt, comp_id]
 
 lemma hasLimit : HasLimit F := ⟨_, h.isLimitCone⟩
 
@@ -232,7 +232,7 @@ noncomputable def isColimitCocone : IsColimit h.cocone where
     dsimp [coconeιApp]
     rw [← s.w (IsFiltered.rightToMax i₀ j), ← s.w (IsFiltered.leftToMax i₀ j), assoc,
       isoMap_inv_hom_id_assoc]
-  uniq s m hm := by simp only [← hm i₀, cocone_ι_app, coconeιApp_eq_id, id_comp]
+  uniq s m hm := by simp [← hm i₀, cocone_ι_app, coconeιApp_eq_id, id_comp]
 
 lemma hasColimit : HasColimit F := ⟨_, h.isColimitCocone⟩
 

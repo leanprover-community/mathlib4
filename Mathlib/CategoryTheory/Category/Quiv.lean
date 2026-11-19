@@ -114,7 +114,7 @@ def freeMapCompIso {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
     freeMap (F ⋙q G) ≅ freeMap F ⋙ freeMap G :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun f ↦ by
     dsimp
-    simp only [Category.comp_id, Category.id_comp, Prefunctor.mapPath_comp_apply])
+    simp [Category.comp_id, Category.id_comp, Prefunctor.mapPath_comp_apply])
 
 theorem freeMap_comp {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
     [Quiver.{v₁} V₁] [Quiver.{v₂} V₂] [Quiver.{v₃} V₃]

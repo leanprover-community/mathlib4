@@ -48,13 +48,13 @@ end Computation
 open Polynomial
 
 theorem cyclotomic_3 : cyclotomic 3 ℤ = 1 + X + X ^ 2 := by
-  simp only [cyclotomic_prime, sum_range_succ, range_one, sum_singleton, pow_zero, pow_one]
+  simp [cyclotomic_prime, sum_range_succ, range_one, sum_singleton, pow_zero, pow_one]
 
 theorem cyclotomic_5 : cyclotomic 5 ℤ = 1 + X + X ^ 2 + X ^ 3 + X ^ 4 := by
-  simp only [cyclotomic_prime, sum_range_succ, range_one, sum_singleton, pow_zero, pow_one]
+  simp [cyclotomic_prime, sum_range_succ, range_one, sum_singleton, pow_zero, pow_one]
 
 theorem cyclotomic_7 : cyclotomic 7 ℤ = 1 + X + X ^ 2 + X ^ 3 + X ^ 4 + X ^ 5 + X ^ 6 := by
-  simp only [cyclotomic_prime, sum_range_succ, range_one, sum_singleton, pow_zero, pow_one]
+  simp [cyclotomic_prime, sum_range_succ, range_one, sum_singleton, pow_zero, pow_one]
 
 theorem cyclotomic_15 : cyclotomic 15 ℤ = 1 - X + X ^ 3 - X ^ 4 + X ^ 5 - X ^ 7 + X ^ 8 := by
   refine ((eq_cyclotomic_iff (by simp) _).2 ?_).symm

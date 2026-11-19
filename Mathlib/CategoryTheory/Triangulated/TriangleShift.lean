@@ -52,10 +52,10 @@ noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C wh
       hom₃ := f.hom₃⟦n⟧'
       comm₁ := by
         dsimp
-        simp only [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp, f.comm₁]
+        simp [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp, f.comm₁]
       comm₂ := by
         dsimp
-        simp only [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp, f.comm₂]
+        simp [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp, f.comm₂]
       comm₃ := by
         dsimp
         rw [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp_assoc, ← f.comm₃,
@@ -69,7 +69,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
       ((CategoryTheory.shiftFunctorZero C ℤ).app _) ((CategoryTheory.shiftFunctorZero C ℤ).app _)
       (by simp) (by simp) (by
         dsimp
-        simp only [one_smul, assoc, shiftFunctorComm_zero_hom_app,
+        simp [one_smul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
           comp_id, NatTrans.naturality, Functor.id_map]))
       (by cat_disch)
@@ -101,7 +101,7 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         rw [Linear.units_smul_comp, Linear.comp_units_smul, Functor.map_units_smul,
           Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, assoc, Functor.map_comp, assoc,
           ← dsimp% (CategoryTheory.shiftFunctorAdd' C a b (a + b) rfl).hom.naturality_assoc]
-        simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
+        simp [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
     (by intros; ext <;> simp)
 

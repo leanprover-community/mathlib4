@@ -85,7 +85,7 @@ theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.upper fun j y => I.lower j < y).2
         ⟨h.1, fun _ _ => I.lower_lt_upper _⟩) :
     I.splitLower i x = (⟨I.lower, update I.upper i x, h'⟩ : Box ι) := by
-  simp +unfoldPartialApp only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
+  simp +unfoldPartialApp [splitLower, mk'_eq_coe, min_eq_left h.2.le,
     update, and_self]
 
 open scoped Classical in
@@ -124,7 +124,7 @@ theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.lower fun j y => y < I.upper j).2
         ⟨h.2, fun _ _ => I.lower_lt_upper _⟩) :
     I.splitUpper i x = (⟨update I.lower i x, I.upper, h'⟩ : Box ι) := by
-  simp +unfoldPartialApp only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
+  simp +unfoldPartialApp [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
     update, and_self]
 
 theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
@@ -240,7 +240,7 @@ theorem splitMany_le_split (I : Box ι) {s : Finset (ι × ℝ)} {p : ι × ℝ}
 
 theorem isPartition_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : IsPartition (splitMany I s) := by
   classical
-  exact Finset.induction_on s (by simp only [splitMany_empty, isPartitionTop]) fun a s _ hs => by
+  exact Finset.induction_on s (by simp [splitMany_empty, isPartitionTop]) fun a s _ hs => by
     simpa only [splitMany_insert, inf_split] using hs.biUnion fun J _ => isPartitionSplit _ _ _
 
 @[simp]

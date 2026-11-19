@@ -36,7 +36,7 @@ lemma countP'_one : (1 : FreeMonoid α).countP' p = 0 := rfl
 @[to_additive]
 lemma countP'_mul (l₁ l₂ : FreeMonoid α) : (l₁ * l₂).countP' p = l₁.countP' p + l₂.countP' p := by
   dsimp [countP']
-  simp only [List.countP_append]
+  simp [List.countP_append]
 
 /-- `List.countP` as a bundled multiplicative monoid homomorphism. -/
 def countP : FreeMonoid α →* Multiplicative ℕ where
@@ -51,7 +51,7 @@ theorem countP_apply (l : FreeMonoid α) : l.countP p = .ofAdd (l.toList.countP 
 lemma countP_of (x : α) : (of x).countP p =
     if p x then Multiplicative.ofAdd 1 else Multiplicative.ofAdd 0 := by
   rw [countP_apply, toList_of, List.countP_singleton, apply_ite (Multiplicative.ofAdd)]
-  simp only [decide_eq_true_eq]
+  simp [decide_eq_true_eq]
 
 
 /-- `List.count` as a bundled additive monoid homomorphism. -/
@@ -78,7 +78,7 @@ theorem countP_apply (l : FreeAddMonoid α) : l.countP p = l.toList.countP p := 
 
 theorem countP_of (x : α) : countP p (of x) = if p x then 1 else 0 := by
   rw [countP_apply, toList_of, List.countP_singleton]
-  simp only [decide_eq_true_eq]
+  simp [decide_eq_true_eq]
 
 /-- `List.count` as a bundled additive monoid homomorphism. -/
 def count [DecidableEq α] (x : α) : FreeAddMonoid α →+ ℕ := countP (· = x)

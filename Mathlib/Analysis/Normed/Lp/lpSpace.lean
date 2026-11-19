@@ -284,7 +284,7 @@ theorem finsetSum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s
   have : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
-  · simp only [zero_mem_ℓp', Finset.sum_empty, imp_true_iff]
+  · simp [zero_mem_ℓp', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
@@ -530,9 +530,9 @@ theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
-  · simp only [norm_eq_card_dsupport, coeFn_neg, Pi.neg_apply, ne_eq, neg_eq_zero]
+  · simp [norm_eq_card_dsupport, coeFn_neg, Pi.neg_apply, ne_eq, neg_eq_zero]
   · cases isEmpty_or_nonempty α
-    · simp only [lp.eq_zero' f, neg_zero, norm_zero]
+    · simp [lp.eq_zero' f, neg_zero, norm_zero]
     apply (lp.isLUB_norm (-f)).unique
     simpa only [coeFn_neg, Pi.neg_apply, norm_neg] using lp.isLUB_norm f
   · suffices ‖-f‖ ^ p.toReal = ‖f‖ ^ p.toReal by
@@ -548,7 +548,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
       add_le' := fun f g => by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
-          · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
+          · simp [lp.eq_zero' f, zero_add, norm_zero, le_refl]
           refine (lp.isLUB_norm (f + g)).2 ?_
           rintro x ⟨i, rfl⟩
           refine le_trans ?_ (add_mem_upperBounds_add
@@ -821,8 +821,8 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · exfalso
       have := ENNReal.toReal_mono ENNReal.zero_ne_top hp.elim
       norm_num at this
-    · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
-    · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
+    · simp [lp.norm_eq_ciSup, lp.star_apply, norm_star]
+    · simp [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
 variable [Star 𝕜] [NormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
@@ -1151,7 +1151,7 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
     suffices ‖f i‖ ^ p.toReal - ‖f i - ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 by
       simpa only [coeFn_sub, coeFn_sum, lp.coeFn_single, Pi.sub_apply, Finset.sum_apply,
         Finset.sum_pi_single, F] using this
-    simp only [ite_eq_right hi, sub_zero, sub_self]
+    simp [ite_eq_right hi, sub_zero, sub_self]
   have hF' : ∀ i ∈ s, F i = ‖f i‖ ^ p.toReal := by
     intro i hi
     simp only [F, coeFn_sum, lp.single_apply, ite_eq_left hi, sub_self, coeFn_sub,
@@ -1185,7 +1185,7 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
   rw [← H] at hs
   have : |‖(∑ i ∈ s, lp.single p i (f i : E i)) - f‖ ^ p.toReal| =
       ‖(∑ i ∈ s, lp.single p i (f i : E i)) - f‖ ^ p.toReal := by
-    simp only [Real.abs_rpow_of_nonneg (norm_nonneg _), abs_norm]
+    simp [Real.abs_rpow_of_nonneg (norm_nonneg _), abs_norm]
   exact this ▸ hs
 
 /-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.

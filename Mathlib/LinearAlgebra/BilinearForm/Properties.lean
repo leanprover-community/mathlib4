@@ -359,7 +359,7 @@ lemma apply_toDual_symm_apply {B : BilinForm K V} {hB : B.Nondegenerate}
     (f : Module.Dual K V) (v : V) :
     B ((B.toDual hB).symm f) v = f v := by
   change B.toDual hB ((B.toDual hB).symm f) v = f v
-  simp only [LinearEquiv.apply_symm_apply]
+  simp [LinearEquiv.apply_symm_apply]
 
 end FiniteDimensional
 

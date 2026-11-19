@@ -401,7 +401,7 @@ theorem HasProd.update' [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α]
     intro b'
     split_ifs with hb'
     · simpa only [Function.update_apply, hb', eq_self_iff_true] using! mul_comm (f b) x
-    · simp only [Function.update_apply, hb', ite_false]
+    · simp [Function.update_apply, hb', ite_false]
   have h := hf.mul (hasProd_ite_eq b x L)
   simp_rw [this] at h
   exact HasProd.unique h (hf'.mul (hasProd_ite_eq b (f b) L))
@@ -639,7 +639,7 @@ alias tprod_eq_tprod_diff_singleton := tprod_eq_tprod_sdiff_singleton
 theorem tprod_eq_tprod_of_ne_one_bij {g : γ → α} (i : mulSupport g → β) (hi : Injective i)
     (hf : mulSupport f ⊆ Set.range i) (hfg : ∀ x, f (i x) = g x) : ∏' x, f x = ∏' y, g y := by
   rw [← tprod_subtype_mulSupport g, ← hi.tprod_eq hf]
-  simp only [hfg]
+  simp [hfg]
 
 @[to_additive]
 theorem Equiv.tprod_eq_tprod_of_mulSupport {f : β → α} {g : γ → α}
@@ -689,7 +689,7 @@ lemma mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport (s : γ → Set β)
     (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : β) :
     (⋃ d, s d).mulIndicator f i = ∏' d, (s d).mulIndicator f i := by
   by_cases h₀ : i ∈ ⋃ d, s d
-  · simp only [h₀, hs, Set.mulIndicator_of_mem, tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem]
+  · simp [h₀, hs, Set.mulIndicator_of_mem, tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem]
   · aesop
 
 @[to_additive]
@@ -756,7 +756,7 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] [L.LeAtT
       congr
       exact tprod_eq_mulSingle b fun b' hb' ↦ ite_eq_right hb'
     _ = f b * ∏'[L] x, ite (x = b) 1 (f x) := by
-      simp only [update, ite_true, eq_rec_constant, dite_eq_ite]
+      simp [update, ite_true, eq_rec_constant, dite_eq_ite]
 
 @[to_additive]
 protected theorem Multipliable.tprod_mul_tprod_compl {s : Set β}

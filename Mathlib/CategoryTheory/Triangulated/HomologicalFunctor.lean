@@ -66,7 +66,7 @@ def homologicalKernel : ObjectProperty C :=
 
 lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
     F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
-  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
+  simp [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
     homologicalKernel, comp_obj]
 
 section Pretriangulated
@@ -225,7 +225,7 @@ lemma homologySequence_exact₁ :
   refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by lia)).app _))
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
-  simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
+  simp [homologySequenceδ, neg_comp, map_neg, comp_id,
     F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁
       (by lia)]
 

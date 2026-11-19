@@ -89,7 +89,7 @@ theorem regularSpace_tfae (X : Type u) [TopologicalSpace X] :
       ∀ x : X, (𝓝 x).lift' closure = 𝓝 x] := by
   tfae_have 1 ↔ 5 := by
     rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_comm]
-    simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
+    simp [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
       (nhds_basis_opens _).disjoint_iff_right, ← subset_interior_iff_mem_nhdsSet,
       interior_compl, compl_subset_compl]

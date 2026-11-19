@@ -144,7 +144,7 @@ theorem toComplex_ι (r : ℝ) : toComplex (ι Q r) = r • Complex.I :=
 theorem toComplex_involute (c : CliffordAlgebra Q) :
     toComplex (involute c) = conj (toComplex c) := by
   have : toComplex (involute (ι Q 1)) = conj (toComplex (ι Q 1)) := by
-    simp only [involute_ι, toComplex_ι, map_neg, one_smul, Complex.conj_I]
+    simp [involute_ι, toComplex_ι, map_neg, one_smul, Complex.conj_I]
   suffices toComplex.comp involute = Complex.conjAe.toAlgHom.comp toComplex by
     congrm $this c
   ext : 2

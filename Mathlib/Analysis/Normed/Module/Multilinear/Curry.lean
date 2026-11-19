@@ -496,7 +496,7 @@ variable (𝕜 G G')
 @[simp]
 theorem norm_domDomCongr (σ : ι ≃ ι') (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :
     ‖domDomCongr σ f‖ = ‖f‖ := by
-  simp only [norm_def, ← σ.prod_comp,
+  simp [norm_def, ← σ.prod_comp,
     (σ.arrowCongr (Equiv.refl G)).surjective.forall, domDomCongr_apply, Equiv.arrowCongr_apply,
     Equiv.coe_refl, comp_apply, Equiv.symm_apply_apply, id]
 

@@ -509,7 +509,7 @@ lemma mem_commutatorSet_of_isConj_sq {g : G} (hg : IsConj g (g ^ 2)) : g ∈ com
   obtain ⟨h, hg⟩ := hg
   use h, g
   rw [commutatorElement_def, hg]
-  simp only [IsUnit.mul_inv_cancel_right, Units.isUnit, mul_inv_eq_iff_eq_mul, pow_two]
+  simp [IsUnit.mul_inv_cancel_right, Units.isUnit, mul_inv_eq_iff_eq_mul, pow_two]
 
 variable {G} in
 @[to_additive]

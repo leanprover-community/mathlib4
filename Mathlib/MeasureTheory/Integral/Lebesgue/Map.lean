@@ -34,7 +34,7 @@ theorem lintegral_map {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f
   rw [lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
   congr with n : 1
   convert SimpleFunc.lintegral_map _ hg
-  ext1 x; simp only [eapprox_comp hf hg, coe_comp]
+  ext1 x; simp [eapprox_comp hf hg, coe_comp]
 
 theorem lintegral_map' {f : β → ℝ≥0∞} {g : α → β}
     (hf : AEMeasurable f (Measure.map g μ)) (hg : AEMeasurable g μ) :

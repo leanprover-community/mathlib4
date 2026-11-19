@@ -102,6 +102,6 @@ theorem find?_eq_choose {s : Multiset α} (hp : ∃! x, x ∈ s ∧ p x) :
     s.find? p hp.setSubsingleton = some (s.choose p hp) := by
   ext a
   refine find?_eq_some_iff _ |>.trans ?_
-  simp only [Option.some.injEq, choose_eq_iff]
+  simp [Option.some.injEq, choose_eq_iff]
 
 end Multiset

@@ -409,7 +409,7 @@ lemma IsBigOTVS.comp_tendsto {k : β → α} {lb : Filter β} (h : f =O[𝕜; l]
   isBigOTVS_map.mp (h.mono hk)
 
 lemma isLittleOTVS_sup : f =o[𝕜; l₁ ⊔ l₂] g ↔ f =o[𝕜; l₁] g ∧ f =o[𝕜; l₂] g := by
-  simp only [isLittleOTVS_iff_smallSets, ← forall_and, ← eventually_and, eventually_sup]
+  simp [isLittleOTVS_iff_smallSets, ← forall_and, ← eventually_and, eventually_sup]
 
 lemma IsLittleOTVS.sup (hf₁ : f =o[𝕜; l₁] g) (hf₂ : f =o[𝕜; l₂] g) : f =o[𝕜; l₁ ⊔ l₂] g :=
   isLittleOTVS_sup.mpr ⟨hf₁, hf₂⟩

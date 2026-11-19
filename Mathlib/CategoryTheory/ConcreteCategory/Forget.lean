@@ -135,7 +135,7 @@ def HasForget₂.trans (E : Type*) [Category* E] {FE : outParam <| E → E → T
   forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
   forget_comp := by
     change (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
-    simp only [HasForget₂.forget_comp]
+    simp [HasForget₂.forget_comp]
 
 lemma ConcreteCategory.forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) (x : ToType ((forget₂ C D).obj X)) :

@@ -175,7 +175,7 @@ theorem Specializes.map (h : x ⤳ y) (hf : Continuous f) : f x ⤳ f y :=
   h.map_of_continuousAt hf.continuousAt
 
 theorem Topology.IsInducing.specializes_iff (hf : IsInducing f) : f x ⤳ f y ↔ x ⤳ y := by
-  simp only [specializes_iff_mem_closure, hf.closure_eq_preimage_closure_image, image_singleton,
+  simp [specializes_iff_mem_closure, hf.closure_eq_preimage_closure_image, image_singleton,
     mem_preimage]
 
 theorem subtype_specializes_iff {p : X → Prop} (x y : Subtype p) : x ⤳ y ↔ (x : X) ⤳ y :=
@@ -189,7 +189,7 @@ lemma specializationPreorder_subtype (p : X → Prop) :
 
 @[simp]
 theorem specializes_prod {x₁ x₂ : X} {y₁ y₂ : Y} : (x₁, y₁) ⤳ (x₂, y₂) ↔ x₁ ⤳ x₂ ∧ y₁ ⤳ y₂ := by
-  simp only [Specializes, nhds_prod_eq, prod_le_prod]
+  simp [Specializes, nhds_prod_eq, prod_le_prod]
 
 theorem Specializes.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ⤳ x₂) (hy : y₁ ⤳ y₂) :
     (x₁, y₁) ⤳ (x₂, y₂) :=
@@ -200,7 +200,7 @@ theorem Specializes.snd {a b : X × Y} (h : a ⤳ b) : a.2 ⤳ b.2 := (specializ
 
 @[simp]
 theorem specializes_pi {f g : ∀ i, A i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
-  simp only [Specializes, nhds_pi, pi_le_pi]
+  simp [Specializes, nhds_pi, pi_le_pi]
 
 theorem not_specializes_iff_exists_open : ¬x ⤳ y ↔ ∃ S : Set X, IsOpen S ∧ y ∈ S ∧ x ∉ S := by
   rw [specializes_iff_forall_open]
@@ -320,7 +320,7 @@ lemma stableUnderGeneralization_iInter {ι : Sort*} (S : ι → Set X)
 
 lemma Union_closure_singleton_eq_iff {s : Set X} :
     (⋃ x ∈ s, closure {x}) = s ↔ StableUnderSpecialization s :=
-  show _ ↔ IsLowerSet s by simp only [closure_singleton_eq_Iic, ← lowerClosure_eq, coe_lowerClosure]
+  show _ ↔ IsLowerSet s by simp [closure_singleton_eq_Iic, ← lowerClosure_eq, coe_lowerClosure]
 
 lemma stableUnderSpecialization_iff_Union_eq {s : Set X} :
     StableUnderSpecialization s ↔ (⋃ x ∈ s, closure {x}) = s :=
@@ -467,7 +467,7 @@ theorem Specializes.antisymm (h₁ : x ⤳ y) (h₂ : y ⤳ x) : x ~ᵢ y :=
   le_antisymm h₁ h₂
 
 theorem inseparable_iff_forall_isOpen : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s → (x ∈ s ↔ y ∈ s) := by
-  simp only [inseparable_iff_specializes_and, specializes_iff_forall_open, ← forall_and, ← iff_def,
+  simp [inseparable_iff_specializes_and, specializes_iff_forall_open, ← forall_and, ← iff_def,
     Iff.comm]
 
 theorem not_inseparable_iff_exists_open :
@@ -475,29 +475,29 @@ theorem not_inseparable_iff_exists_open :
   simp [inseparable_iff_forall_isOpen, ← xor_iff_not_iff]
 
 theorem inseparable_iff_forall_isClosed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by
-  simp only [inseparable_iff_specializes_and, specializes_iff_forall_closed, ← forall_and, ←
+  simp [inseparable_iff_specializes_and, specializes_iff_forall_closed, ← forall_and, ←
     iff_def]
 
 theorem inseparable_iff_mem_closure :
     (x ~ᵢ y) ↔ x ∈ closure ({y} : Set X) ∧ y ∈ closure ({x} : Set X) :=
-  inseparable_iff_specializes_and.trans <| by simp only [specializes_iff_mem_closure, and_comm]
+  inseparable_iff_specializes_and.trans <| by simp [specializes_iff_mem_closure, and_comm]
 
 theorem inseparable_iff_closure_eq : (x ~ᵢ y) ↔ closure ({x} : Set X) = closure {y} := by
-  simp only [inseparable_iff_specializes_and, specializes_iff_closure_subset, ← subset_antisymm_iff,
+  simp [inseparable_iff_specializes_and, specializes_iff_closure_subset, ← subset_antisymm_iff,
     eq_comm]
 
 theorem inseparable_of_nhdsWithin_eq (hx : x ∈ s) (hy : y ∈ s) (h : 𝓝[s] x = 𝓝[s] y) : x ~ᵢ y :=
   (specializes_of_nhdsWithin h.le hx).antisymm (specializes_of_nhdsWithin h.ge hy)
 
 theorem Topology.IsInducing.inseparable_iff (hf : IsInducing f) : (f x ~ᵢ f y) ↔ (x ~ᵢ y) := by
-  simp only [inseparable_iff_specializes_and, hf.specializes_iff]
+  simp [inseparable_iff_specializes_and, hf.specializes_iff]
 
 theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) ↔ ((x : X) ~ᵢ y) :=
   IsInducing.subtypeVal.inseparable_iff.symm
 
 @[simp] theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} :
     ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) := by
-  simp only [Inseparable, nhds_prod_eq, Filter.prod_inj]
+  simp [Inseparable, nhds_prod_eq, Filter.prod_inj]
 
 theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (hy : y₁ ~ᵢ y₂) :
     (x₁, y₁) ~ᵢ (x₂, y₂) :=
@@ -505,7 +505,7 @@ theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (
 
 @[simp]
 theorem inseparable_pi {f g : ∀ i, A i} : (f ~ᵢ g) ↔ ∀ i, f i ~ᵢ g i := by
-  simp only [Inseparable, nhds_pi, funext_iff, pi_inj]
+  simp [Inseparable, nhds_pi, funext_iff, pi_inj]
 
 namespace Inseparable
 
@@ -718,13 +718,13 @@ theorem lift_comp_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : l
 @[simp]
 theorem tendsto_lift_nhds_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {l : Filter α} :
     Tendsto (lift f hf) (𝓝 <| mk x) l ↔ Tendsto f (𝓝 x) l := by
-  simp only [← map_mk_nhds, tendsto_map'_iff, lift_comp_mk]
+  simp [← map_mk_nhds, tendsto_map'_iff, lift_comp_mk]
 
 @[simp]
 theorem tendsto_lift_nhdsWithin_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
     {s : Set (SeparationQuotient X)} {l : Filter α} :
     Tendsto (lift f hf) (𝓝[s] mk x) l ↔ Tendsto f (𝓝[mk ⁻¹' s] x) l := by
-  simp only [← map_mk_nhdsWithin_preimage, tendsto_map'_iff, lift_comp_mk]
+  simp [← map_mk_nhdsWithin_preimage, tendsto_map'_iff, lift_comp_mk]
 
 @[simp]
 theorem continuousAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
@@ -740,12 +740,12 @@ theorem continuousWithinAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
 @[simp]
 theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (SeparationQuotient X)} :
     ContinuousOn (lift f hf) s ↔ ContinuousOn f (mk ⁻¹' s) := by
-  simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
+  simp [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 
 @[simp]
 theorem continuous_lift_iff {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
-  simp only [← continuousOn_univ, continuousOn_lift, preimage_univ]
+  simp [← continuousOn_univ, continuousOn_lift, preimage_univ]
 
 alias ⟨_, continuous_lift⟩ := continuous_lift_iff
 attribute [fun_prop] continuous_lift
@@ -799,7 +799,7 @@ theorem continuousOn_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) �
 @[simp]
 theorem continuous_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d} :
     Continuous (uncurry <| lift₂ f hf) ↔ Continuous (uncurry f) := by
-  simp only [← continuousOn_univ, continuousOn_lift₂, preimage_univ]
+  simp [← continuousOn_univ, continuousOn_lift₂, preimage_univ]
 
 end SeparationQuotient
 

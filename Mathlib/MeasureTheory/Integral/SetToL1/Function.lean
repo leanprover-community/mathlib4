@@ -163,7 +163,7 @@ theorem setToFun_finsetSum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fin
   revert hf
   refine Finset.induction_on s ?_ ?_
   · intro _
-    simp only [setToFun_zero, Finset.sum_empty]
+    simp [setToFun_zero, Finset.sum_empty]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     rw [setToFun_add hT (hf i (Finset.mem_insert_self i s)) _]

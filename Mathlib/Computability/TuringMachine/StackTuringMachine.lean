@@ -203,7 +203,7 @@ noncomputable def stmts₁ : Stmt Γ Λ σ → Finset (Stmt Γ Λ σ)
   | Q@halt => {Q}
 
 theorem stmts₁_self {q : Stmt Γ Λ σ} : q ∈ stmts₁ q := by
-  cases q <;> simp only [Finset.mem_insert_self, Finset.mem_singleton_self, stmts₁]
+  cases q <;> simp [Finset.mem_insert_self, Finset.mem_singleton_self, stmts₁]
 
 theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ := by
   classical
@@ -526,7 +526,7 @@ noncomputable def trStmts₁ : TM2.Stmt Γ Λ σ → Finset (Λ' K Γ Λ σ)
 theorem trStmts₁_run {k : K} {s : StAct K Γ σ k} {q : TM2.Stmt Γ Λ σ} :
     open scoped Classical in
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
-  cases s <;> simp only [trStmts₁, stRun]
+  cases s <;> simp [trStmts₁, stRun]
 
 theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ} {v : σ}
     {S : ∀ k, List (Γ k)} {L : ListBlank (∀ k, Option (Γ k))}
@@ -557,7 +557,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
       split_ifs with h
         <;> simp only [List.reverse_cons, Function.update_self, ListBlank.nth_mk, List.map]
       · rw [List.getI_eq_getElem _, List.getElem_append_right] <;>
-        simp only [List.length_append, List.length_reverse, List.length_map, ← h,
+        simp [List.length_append, List.length_reverse, List.length_map, ← h,
           Nat.sub_self, List.length_singleton, List.getElem_singleton,
           le_refl, Nat.lt_succ_self]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
@@ -565,7 +565,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
       · rw [List.getI_append]
         simpa only [List.length_map, List.length_reverse] using h
       · rw [List.getI_eq_default, List.getI_eq_default] <;>
-          simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
+          simp [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
             List.length_append, List.length_map]
     · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
       rw [Function.update_of_ne h']
@@ -607,7 +607,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
         · rw [List.getI_append]
           simpa only [List.length_map, List.length_reverse] using h
         · rw [List.getI_eq_default, List.getI_eq_default] <;>
-            simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
+            simp [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
               List.length_append, List.length_map]
       · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
         rw [Function.update_of_ne h']
@@ -740,7 +740,7 @@ theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr 
   obtain ⟨c₂, h₂, rfl⟩ := (Part.mem_map_iff _).1 H₂
   obtain ⟨_, ⟨L', hT⟩, h₃⟩ := StateTransition.tr_eval (tr_respects M) (trCfg_init k L) h₂
   cases Part.mem_unique h₁ h₃
-  exact ⟨_, L', by simp only [Tape.mk'_right₀], hT, rfl⟩
+  exact ⟨_, L', by simp [Tape.mk'_right₀], hT, rfl⟩
 
 end
 

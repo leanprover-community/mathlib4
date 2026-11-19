@@ -790,9 +790,9 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   set t' := t ∩ (extChartAt I' (f x₀)).source with ht'
   calc mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t) s' x₀ := by
-    simp only [mpullbackWithin, hs', mfderivWithin_inter u_mem]
+    simp [mpullbackWithin, hs', mfderivWithin_inter u_mem]
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t') s' x₀ := by
-    simp only [mpullbackWithin, ht', mlieBracketWithin_inter (extChartAt_source_mem_nhds (f x₀))]
+    simp [mpullbackWithin, ht', mlieBracketWithin_inter (extChartAt_source_mem_nhds (f x₀))]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s' x₀ := by
     apply mpullbackWithin_mlieBracketWithin_aux (t := t') (hV.mono inter_subset_left)
       (hW.mono inter_subset_left) (hu.inter u_open) u_smooth ⟨hx₀, x₀u⟩ inter_subset_right
@@ -804,7 +804,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
     filter_upwards [this] with y hy
     simp [-extChartAt, hy]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s x₀ := by
-    simp only [hs', mlieBracketWithin_inter u_mem]
+    simp [hs', mlieBracketWithin_inter u_mem]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
     apply Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem _ _ hx₀
     · apply nhdsWithin_le_nhds

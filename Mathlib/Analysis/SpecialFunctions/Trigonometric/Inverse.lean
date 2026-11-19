@@ -173,7 +173,7 @@ theorem lt_arcsin_iff_sin_lt' {x y : ℝ} (hx : x ∈ Ico (-(π / 2)) (π / 2)) 
 
 theorem arcsin_eq_iff_eq_sin {x y : ℝ} (hy : y ∈ Ioo (-(π / 2)) (π / 2)) :
     arcsin x = y ↔ x = sin y := by
-  simp only [le_antisymm_iff, arcsin_le_iff_le_sin' (mem_Ico_of_Ioo hy),
+  simp [le_antisymm_iff, arcsin_le_iff_le_sin' (mem_Ico_of_Ioo hy),
     le_arcsin_iff_sin_le' (mem_Ioc_of_Ioo hy)]
 
 @[simp]

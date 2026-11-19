@@ -148,8 +148,8 @@ lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f 
 
 /-- The multiplicative action for a Jacobian point representative on a Weierstrass curve. -/
 scoped instance : MulAction R <| Fin 3 → R where
-  one_smul _ := by simp only [smul_fin3, one_pow, one_mul, fin3_def]
-  mul_smul _ _ _ := by simp only [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
+  one_smul _ := by simp [smul_fin3, one_pow, one_mul, fin3_def]
+  mul_smul _ _ _ := by simp [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
 /-- The equivalence setoid for a Jacobian point representative on a Weierstrass curve. -/
 @[reducible]
@@ -185,7 +185,7 @@ lemma equiv_iff_eq_of_Z_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hz : P z = Q 
 
 lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
   rcases h with ⟨_, rfl⟩
-  simp only [Units.smul_def, smul_fin3_ext, Units.mul_right_eq_zero]
+  simp [Units.smul_def, smul_fin3_ext, Units.mul_right_eq_zero]
 
 lemma X_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P x * Q z ^ 2 = Q x * P z ^ 2 := by
   rcases h with ⟨u, rfl⟩
@@ -212,7 +212,7 @@ lemma not_equiv_of_Y_ne {P Q : Fin 3 → R} (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 
 lemma equiv_of_X_eq_of_Y_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3) : P ≈ Q := by
   use Units.mk0 _ hPz / Units.mk0 _ hQz
-  simp only [Units.smul_def, smul_fin3, Units.val_div_eq_div_val, Units.val_mk0, div_pow, mul_comm,
+  simp [Units.smul_def, smul_fin3, Units.val_div_eq_div_val, Units.val_mk0, div_pow, mul_comm,
     mul_div, ← hx, ← hy, mul_div_cancel_right₀ _ <| pow_ne_zero _ hQz, mul_div_cancel_right₀ _ hQz,
     fin3_def]
 
@@ -280,13 +280,13 @@ lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'
 
 lemma equation_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
     W'.Equation P ↔ P y ^ 2 = P x ^ 3 := by
-  simp only [equation_iff, hPz, add_zero, mul_zero, zero_pow <| OfNat.ofNat_ne_zero _, sub_eq_zero]
+  simp [equation_iff, hPz, add_zero, mul_zero, zero_pow <| OfNat.ofNat_ne_zero _, sub_eq_zero]
 
 lemma equation_zero : W'.Equation ![1, 1, 0] := by
-  simp only [equation_of_Z_eq_zero, fin3_def_ext, one_pow]
+  simp [equation_of_Z_eq_zero, fin3_def_ext, one_pow]
 
 lemma equation_some (a b : R) : W'.Equation ![a, b, 1] ↔ W'.toAffine.Equation a b := by
-  simp only [equation_iff, Affine.equation_iff', fin3_def_ext, one_pow, mul_one]
+  simp [equation_iff, Affine.equation_iff', fin3_def_ext, one_pow, mul_one]
 
 lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Equation P ↔ W.toAffine.Equation (P x / P z ^ 2) (P y / P z ^ 3) :=
@@ -403,7 +403,7 @@ lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P 
 
 lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
     W'.Nonsingular P ↔ W'.Equation P ∧ (3 * P x ^ 2 ≠ 0 ∨ 2 * P y ≠ 0 ∨ W'.a₁ * P x * P y ≠ 0) := by
-  simp only [nonsingular_iff, hPz, add_zero, sub_zero, zero_sub, mul_zero,
+  simp [nonsingular_iff, hPz, add_zero, sub_zero, zero_sub, mul_zero,
     zero_pow <| OfNat.ofNat_ne_zero _, neg_ne_zero]
 
 lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![1, 1, 0] := by
@@ -530,25 +530,25 @@ variable {f} in
 @[simp]
 lemma map_equation (hf : Function.Injective f) (P : Fin 3 → R) :
     (W'.map f).Equation (f ∘ P) ↔ W'.Equation P := by
-  simp only [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
+  simp [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
 
 @[simp]
 lemma map_polynomialX : (W'.map f).polynomialX = .map f W'.polynomialX := by
-  simp only [polynomialX, map_polynomial, pderiv_map]
+  simp [polynomialX, map_polynomial, pderiv_map]
 
 @[simp]
 lemma map_polynomialY : (W'.map f).polynomialY = .map f W'.polynomialY := by
-  simp only [polynomialY, map_polynomial, pderiv_map]
+  simp [polynomialY, map_polynomial, pderiv_map]
 
 @[simp]
 lemma map_polynomialZ : (W'.map f).polynomialZ = .map f W'.polynomialZ := by
-  simp only [polynomialZ, map_polynomial, pderiv_map]
+  simp [polynomialZ, map_polynomial, pderiv_map]
 
 variable {f} in
 @[simp]
 lemma map_nonsingular (hf : Function.Injective f) (P : Fin 3 → R) :
     (W'.map f).Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
-  simp only [Nonsingular, W'.map_equation hf, map_polynomialX, map_polynomialY, map_polynomialZ,
+  simp [Nonsingular, W'.map_equation hf, map_polynomialX, map_polynomialY, map_polynomialZ,
     eval_map, ← eval₂_comp, map_ne_zero_iff f hf]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]

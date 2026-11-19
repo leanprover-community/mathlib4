@@ -118,7 +118,7 @@ theorem not_isUniform_iff :
     ¬G.IsUniform ε s t ↔ ∃ s', s' ⊆ s ∧ ∃ t', t' ⊆ t ∧ #s * ε ≤ #s' ∧
       #t * ε ≤ #t' ∧ ε ≤ |G.edgeDensity s' t' - G.edgeDensity s t| := by
   unfold IsUniform
-  simp only [not_forall, not_lt, exists_prop, Rat.cast_abs, Rat.cast_sub]
+  simp [not_forall, not_lt, exists_prop, Rat.cast_abs, Rat.cast_sub]
 
 variable (G)
 
@@ -340,7 +340,7 @@ lemma IsEquipartition.card_biUnion_offDiag_le' (hP : P.IsEquipartition) :
     rwa [Nat.mul_sub_right_distrib, one_mul, ← offDiag_card] at this
   have := hP.card_part_le_average_add_one hU
   refine Nat.mul_le_mul ((Nat.sub_le_sub_right this 1).trans ?_) this
-  simp only [Nat.add_succ_sub_one, add_zero, le_rfl]
+  simp [Nat.add_succ_sub_one, add_zero, le_rfl]
 
 lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquipartition)
     (hP' : 4 / ε ≤ #P.parts) : #(P.parts.biUnion offDiag) ≤ ε / 2 * #A ^ 2 := by

@@ -54,7 +54,7 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
   | zero => rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero, Fin.last_zero]
   | succ n IH =>
     rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero, Fin.succ_last]
-    simp only [succ_eq_add_one, Fin.castSucc_succ]
+    simp [succ_eq_add_one, Fin.castSucc_succ]
 
 @[simp]
 theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
@@ -118,7 +118,7 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 @[simp]
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
-  simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
+  simp [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
     Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
@@ -143,7 +143,7 @@ lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
 lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
     (h : Function.Injective f) :
     (ofFn f).find? p = some (f i) ↔ p (f i) = true ∧ ∀ j < i, ¬(p (f j) = true) := by
-  simp only [find?_ofFn_eq_some, h.eq_iff, Bool.not_eq_true, exists_eq_left]
+  simp [find?_ofFn_eq_some, h.eq_iff, Bool.not_eq_true, exists_eq_left]
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]

@@ -108,7 +108,7 @@ theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n :
     fun H ↦ ?_⟩
   induction n using induction_on_primes with
   | zero => exact False.elim (hn.ne_zero rfl)
-  | one => exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
+  | one => exact ⟨0, by simp [mul_zero, eq_iff_true_of_subsingleton]⟩
   | prime_mul p n hpp ih =>
     have : Fact p.Prime := ⟨hpp⟩
     have hcp : p.Coprime n := by

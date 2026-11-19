@@ -283,7 +283,7 @@ theorem nhds_eq_comap_uniformity {x : α} : 𝓝 x = (𝓤 α).comap (Prod.mk x)
 
 theorem isOpen_uniformity {s : Set α} :
     IsOpen s ↔ ∀ x ∈ s, { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α := by
-  simp only [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap_prodMk]
+  simp [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap_prodMk]
 
 theorem refl_le_uniformity : 𝓟 SetRel.id ≤ 𝓤 α :=
   (@UniformSpace.toCore α _).refl
@@ -508,12 +508,12 @@ open SetRel
 
 theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α := by
-  simp only [nhds_eq_comap_uniformity, mem_comap_prodMk]
+  simp [nhds_eq_comap_uniformity, mem_comap_prodMk]
 
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by
   rw [uniformity_eq_symm, mem_nhds_uniformity_iff_right]
-  simp only [mem_map, preimage_ofPred_eq, Prod.snd_swap, Prod.fst_swap]
+  simp [mem_map, preimage_ofPred_eq, Prod.snd_swap, Prod.fst_swap]
 
 theorem nhdsWithin_eq_comap_uniformity_of_mem {x : α} {T : Set α} (hx : x ∈ T) (S : Set α) :
     𝓝[S] x = (𝓤 α ⊓ 𝓟 (T ×ˢ S)).comap (Prod.mk x) := by
@@ -719,7 +719,7 @@ theorem Filter.HasBasis.uniformContinuous_iff {ι'} {p : ι → Prop}
     {s : ι → SetRel α α} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} :
     UniformContinuous f ↔ ∀ i, q i → ∃ j, p j ∧ ∀ x y, (x, y) ∈ s j → (f x, f y) ∈ t i :=
-  (ha.tendsto_iff hb).trans <| by simp only [Prod.forall]
+  (ha.tendsto_iff hb).trans <| by simp [Prod.forall]
 
 theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} {p : ι → Prop}
     {s : ι → SetRel α α} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}

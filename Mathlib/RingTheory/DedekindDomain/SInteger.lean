@@ -200,7 +200,7 @@ def unit : Subgroup Kˣ :=
   (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.unitGroup).copy
       {x : Kˣ | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation K x = 1} <|
     Set.ext fun _ => by
-      simp only [mem_ofPred, SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
+      simp [mem_ofPred, SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
 
 theorem unit_eq :
     S.unit K = ⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.unitGroup :=

@@ -63,7 +63,7 @@ lemma of_equiv {ι' : Type w''} (e : ι' ≃ ι) :
 
 lemma image {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') :
     (G.image f).IsGeneratedBy (fun i ↦ f.app _ (x i)) := by
-  simp only [isGeneratedBy_iff, ← h.iSup_eq, image_iSup, ofSection_image]
+  simp [isGeneratedBy_iff, ← h.iSup_eq, image_iSup, ofSection_image]
 
 end IsGeneratedBy
 

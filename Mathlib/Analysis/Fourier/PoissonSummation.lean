@@ -150,10 +150,10 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atBot] fun x : ℝ => |x| ^ (-b) := by
   have h1 : (f.comp (ContinuousMap.mk _ continuous_neg)) =O[atTop] fun x : ℝ => |x| ^ (-b) := by
     convert! hf.comp_tendsto tendsto_neg_atTop_atBot using 1
-    ext1 x; simp only [Function.comp_apply, abs_neg]
+    ext1 x; simp [Function.comp_apply, abs_neg]
   have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_atBot_atTop
   have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by
-    ext1 x; simp only [Function.comp_apply, abs_neg]
+    ext1 x; simp [Function.comp_apply, abs_neg]
   rw [this] at h2
   refine (isBigO_of_le _ fun x => ?_).trans h2
   -- equality holds, but less work to prove `≤` alone

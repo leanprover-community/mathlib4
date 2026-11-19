@@ -313,7 +313,7 @@ theorem fderivWithin_add_const (c : F) :
 
 @[simp]
 theorem fderiv_add_const (c : F) : fderiv 𝕜 (fun y => f y + c) x = fderiv 𝕜 f x := by
-  simp only [← fderivWithin_univ, fderivWithin_add_const]
+  simp [← fderivWithin_univ, fderivWithin_add_const]
 
 @[simp]
 theorem hasFDerivAtFilter_const_add_iff (c : F) :
@@ -384,7 +384,7 @@ theorem fderivWithin_const_add (c : F) :
 
 @[simp]
 theorem fderiv_const_add (c : F) : fderiv 𝕜 (fun y => c + f y) x = fderiv 𝕜 f x := by
-  simp only [add_comm c, fderiv_add_const]
+  simp [add_comm c, fderiv_add_const]
 
 end AddConst
 
@@ -603,17 +603,17 @@ lemma DifferentiableAt.add_iff_left (hg : DifferentiableAt 𝕜 g x) :
 @[to_fun (attr := simp)]
 lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (f + g) x ↔ DifferentiableAt 𝕜 g x := by
-  simp only [add_comm f, hg.add_iff_left]
+  simp [add_comm f, hg.add_iff_left]
 
 @[to_fun (attr := simp)]
 lemma DifferentiableAt.sub_iff_left (hg : DifferentiableAt 𝕜 g x) :
     DifferentiableAt 𝕜 (f - g) x ↔ DifferentiableAt 𝕜 f x := by
-  simp only [sub_eq_add_neg, differentiableAt_neg_iff, hg, add_iff_left]
+  simp [sub_eq_add_neg, differentiableAt_neg_iff, hg, add_iff_left]
 
 @[to_fun (attr := simp)]
 lemma DifferentiableAt.sub_iff_right (hg : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (f - g) x ↔ DifferentiableAt 𝕜 g x := by
-  simp only [sub_eq_add_neg, hg, add_iff_right, differentiableAt_neg_iff]
+  simp [sub_eq_add_neg, hg, add_iff_right, differentiableAt_neg_iff]
 
 @[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.sub (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s) :
@@ -628,17 +628,17 @@ lemma DifferentiableOn.add_iff_left (hg : DifferentiableOn 𝕜 g s) :
 @[to_fun (attr := simp)]
 lemma DifferentiableOn.add_iff_right (hg : DifferentiableOn 𝕜 f s) :
     DifferentiableOn 𝕜 (f + g) s ↔ DifferentiableOn 𝕜 g s := by
-  simp only [add_comm f, hg.add_iff_left]
+  simp [add_comm f, hg.add_iff_left]
 
 @[to_fun (attr := simp)]
 lemma DifferentiableOn.sub_iff_left (hg : DifferentiableOn 𝕜 g s) :
     DifferentiableOn 𝕜 (f - g) s ↔ DifferentiableOn 𝕜 f s := by
-  simp only [sub_eq_add_neg, differentiableOn_neg_iff, hg, add_iff_left]
+  simp [sub_eq_add_neg, differentiableOn_neg_iff, hg, add_iff_left]
 
 @[to_fun (attr := simp)]
 lemma DifferentiableOn.sub_iff_right (hg : DifferentiableOn 𝕜 f s) :
     DifferentiableOn 𝕜 (f - g) s ↔ DifferentiableOn 𝕜 g s := by
-  simp only [sub_eq_add_neg, differentiableOn_neg_iff, hg, add_iff_right]
+  simp [sub_eq_add_neg, differentiableOn_neg_iff, hg, add_iff_right]
 
 @[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.sub (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g) :
@@ -653,17 +653,17 @@ lemma Differentiable.add_iff_left (hg : Differentiable 𝕜 g) :
 @[to_fun (attr := simp)]
 lemma Differentiable.add_iff_right (hg : Differentiable 𝕜 f) :
     Differentiable 𝕜 (f + g) ↔ Differentiable 𝕜 g := by
-  simp only [add_comm f, hg.add_iff_left]
+  simp [add_comm f, hg.add_iff_left]
 
 @[to_fun (attr := simp)]
 lemma Differentiable.sub_iff_left (hg : Differentiable 𝕜 g) :
     Differentiable 𝕜 (f - g) ↔ Differentiable 𝕜 f := by
-  simp only [sub_eq_add_neg, differentiable_neg_iff, hg, add_iff_left]
+  simp [sub_eq_add_neg, differentiable_neg_iff, hg, add_iff_left]
 
 @[to_fun (attr := simp)]
 lemma Differentiable.sub_iff_right (hg : Differentiable 𝕜 f) :
     Differentiable 𝕜 (f - g) ↔ Differentiable 𝕜 g := by
-  simp only [sub_eq_add_neg, differentiable_neg_iff, hg, add_iff_right]
+  simp [sub_eq_add_neg, differentiable_neg_iff, hg, add_iff_right]
 
 theorem fderivWithin_fun_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
     (hg : DifferentiableWithinAt 𝕜 g s x) :
@@ -690,7 +690,7 @@ section SubConst
 @[simp]
 theorem hasFDerivAtFilter_sub_const_iff (c : F) :
     HasFDerivAtFilter (f · - c) f' L ↔ HasFDerivAtFilter f f' L := by
-  simp only [sub_eq_add_neg, hasFDerivAtFilter_add_const_iff]
+  simp [sub_eq_add_neg, hasFDerivAtFilter_add_const_iff]
 
 alias ⟨_, HasFDerivAtFilter.sub_const⟩ := hasFDerivAtFilter_sub_const_iff
 
@@ -733,7 +733,7 @@ theorem DifferentiableWithinAt.sub_const (hf : DifferentiableWithinAt 𝕜 f s x
 @[simp]
 theorem differentiableWithinAt_sub_const_iff (c : F) :
     DifferentiableWithinAt 𝕜 (fun y => f y - c) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  simp only [sub_eq_add_neg, differentiableWithinAt_add_const_iff]
+  simp [sub_eq_add_neg, differentiableWithinAt_add_const_iff]
 
 @[fun_prop]
 theorem DifferentiableAt.sub_const (hf : DifferentiableAt 𝕜 f x) (c : F) :
@@ -750,10 +750,10 @@ theorem Differentiable.sub_const (hf : Differentiable 𝕜 f) (c : F) :
 
 theorem fderivWithin_sub_const (c : F) :
     fderivWithin 𝕜 (fun y => f y - c) s x = fderivWithin 𝕜 f s x := by
-  simp only [sub_eq_add_neg, fderivWithin_add_const]
+  simp [sub_eq_add_neg, fderivWithin_add_const]
 
 theorem fderiv_sub_const (c : F) : fderiv 𝕜 (fun y => f y - c) x = fderiv 𝕜 f x := by
-  simp only [sub_eq_add_neg, fderiv_add_const]
+  simp [sub_eq_add_neg, fderiv_add_const]
 
 theorem HasFDerivAtFilter.const_sub (hf : HasFDerivAtFilter f f' L) (c : F) :
     HasFDerivAtFilter (fun x => c - f x) (-f') L := by
@@ -799,7 +799,7 @@ theorem Differentiable.const_sub (hf : Differentiable 𝕜 f) (c : F) :
 
 theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     fderivWithin 𝕜 (fun y => c - f y) s x = -fderivWithin 𝕜 f s x := by
-  simp only [sub_eq_add_neg, fderivWithin_const_add, fderivWithin_fun_neg, hxs]
+  simp [sub_eq_add_neg, fderivWithin_const_add, fderivWithin_fun_neg, hxs]
 
 theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv 𝕜 f x := by
   simp [← fderivWithin_univ, fderivWithin_const_sub]
@@ -841,7 +841,7 @@ theorem differentiableWithinAt_comp_add_right (a : E) :
 
 theorem fderivWithin_comp_add_right (a : E) :
     fderivWithin 𝕜 (fun x ↦ f (x + a)) s x = fderivWithin 𝕜 f (a +ᵥ s) (x + a) := by
-  simp only [add_comm _ a, fderivWithin_comp_add_left]
+  simp [add_comm _ a, fderivWithin_comp_add_left]
 
 theorem hasFDerivAt_comp_add_right (a : E) :
     HasFDerivAt (fun x ↦ f (x + a)) f' x ↔ HasFDerivAt f f' (x + a) := by

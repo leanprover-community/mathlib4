@@ -343,7 +343,7 @@ theorem updateRow_submatrix_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m 
     (r : o → α) (e : l ≃ m) (f : o ≃ n) :
     updateRow (A.submatrix e f) i r = (A.updateRow (e i) fun j => r (f.symm j)).submatrix e f := by
   ext i' j
-  simp only [submatrix_apply, updateRow_apply, Equiv.apply_eq_iff_eq, Equiv.symm_apply_apply]
+  simp [submatrix_apply, updateRow_apply, Equiv.apply_eq_iff_eq, Equiv.symm_apply_apply]
 
 theorem submatrix_updateRow_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : m)
     (r : n → α) (e : l ≃ m) (f : o ≃ n) :

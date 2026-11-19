@@ -192,7 +192,7 @@ lemma compr₂_mul_counit_bijective : (⇑((mul R A).compr₂ ε)).Bijective := 
     simp only [LinearMap.ext_iff, compr₂_apply, mul_apply_apply] at h
     simp [← h, sum_counit_mul_left_smul_of_comul_one hS]
   · calc _ = ∑ x ∈ S, (ε (x.2 * b) : R) • f x.1 := by simp [mul_comm (f _)]
-      _ = _ := by simp only [← map_smul, ← map_sum, sum_counit_mul_right_smul_of_comul_one hS]
+      _ = _ := by simp [← map_smul, ← map_sum, sum_counit_mul_right_smul_of_comul_one hS]
 
 end nonAssoc
 

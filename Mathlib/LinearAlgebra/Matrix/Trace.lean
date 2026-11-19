@@ -44,7 +44,7 @@ def trace (A : Matrix n n R) : R :=
 
 @[simp] lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
     trace (diagonal d) = ∑ i, d i := by
-  simp only [trace, diag_apply, diagonal_apply_eq]
+  simp [trace, diag_apply, diagonal_apply_eq]
 
 variable (n R)
 

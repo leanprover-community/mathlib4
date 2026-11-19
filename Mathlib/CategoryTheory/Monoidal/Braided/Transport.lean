@@ -69,7 +69,7 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
           Functor.LaxMonoidal.μ (((e' e).functor ⋙ (e' e).inverse)) X Y ≫
             ((e' e).functor ⋙ (e' e).inverse).map (β_ X Y).hom ≫
               Functor.OplaxMonoidal.δ ((e' e).functor ⋙ (e' e).inverse) Y X := by
-      simp only [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
+      simp [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
         assoc, Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
     simp_all
 

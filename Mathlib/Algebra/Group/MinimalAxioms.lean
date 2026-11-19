@@ -49,7 +49,7 @@ abbrev Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
           _ = ((a * a⁻¹)⁻¹ * (a * a⁻¹)) * (a * a⁻¹) := by
             rw [inv_mul_cancel]
           _ = (a * a⁻¹)⁻¹ * (a * ((a⁻¹ * a) * a⁻¹)) := by
-            simp only [assoc]
+            simp [assoc]
           _ = 1 := by
             rw [inv_mul_cancel, one_mul, inv_mul_cancel]
       rw [← inv_mul_cancel a, ← assoc, mul_inv_cancel a, one_mul] }
@@ -72,7 +72,7 @@ abbrev Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
       _ = (a⁻¹ * a) * ((a⁻¹ * a) * (a⁻¹ * a)⁻¹) := by
         rw [mul_inv_cancel]
       _ = ((a⁻¹ * (a * a⁻¹)) * a) * (a⁻¹ * a)⁻¹ := by
-        simp only [assoc]
+        simp [assoc]
       _ = 1 := by
         rw [mul_inv_cancel, mul_one, mul_inv_cancel]
   { mul_assoc := assoc,

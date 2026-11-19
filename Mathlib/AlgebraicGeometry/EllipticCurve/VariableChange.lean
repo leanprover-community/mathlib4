@@ -104,9 +104,9 @@ lemma inv_def : C⁻¹ = {
 
 instance : Group (VariableChange R) where
   one_mul C := by
-    simp only [mul_def, one_def, zero_add, zero_mul, mul_zero, one_mul]
+    simp [mul_def, one_def, zero_add, zero_mul, mul_zero, one_mul]
   mul_one C := by
-    simp only [mul_def, one_def, add_zero, mul_zero, one_mul, mul_one, one_pow, Units.val_one]
+    simp [mul_def, one_def, add_zero, mul_zero, one_mul, mul_one, one_pow, Units.val_one]
   inv_mul_cancel C := by
     rw [mul_def, one_def, inv_def]
     ext <;> dsimp only
@@ -295,16 +295,16 @@ def mapHom : VariableChange R →* VariableChange A where
   toFun C := C.map φ
   map_one' := by
     simp only [one_def, map]
-    ext <;> simp only [map_one, Units.val_one, map_zero]
+    ext <;> simp [map_one, Units.val_one, map_zero]
   map_mul' C C' := by
     simp only [mul_def, map]
-    ext <;> map_simp <;> simp only [Units.coe_map, MonoidHom.coe_ofClass]
+    ext <;> map_simp <;> simp [Units.coe_map, MonoidHom.coe_ofClass]
 
 end VariableChange
 
 lemma map_variableChange : (C.map φ) • (W.map φ) = (C • W).map φ := by
   simp only [map, variableChange_def, VariableChange.map]
-  ext <;> map_simp <;> simp only [Units.coe_map_inv, MonoidHom.coe_ofClass]
+  ext <;> map_simp <;> simp [Units.coe_map_inv, MonoidHom.coe_ofClass]
 
 end BaseChange
 

@@ -114,7 +114,7 @@ theorem lintegral_iInf_directed_of_measurable [Countable β]
     ∫⁻ a, ⨅ b, f b a ∂μ = ⨅ b, ∫⁻ a, f b a ∂μ := by
   cases nonempty_encodable β
   cases isEmpty_or_nonempty β
-  · simp only [iInf_of_empty, lintegral_const,
+  · simp [iInf_of_empty, lintegral_const,
       ENNReal.top_mul (Measure.measure_univ_ne_zero.mpr hμ)]
   inhabit β
   have : ∀ a, ⨅ b, f b a = ⨅ n, f (h_directed.sequence f n) a := by
@@ -124,7 +124,7 @@ theorem lintegral_iInf_directed_of_measurable [Countable β]
     exact h_directed.sequence_le b a
   calc
     ∫⁻ a, ⨅ b, f b a ∂μ
-    _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
+    _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp [this, Function.comp_apply]
     _ = ⨅ n, ∫⁻ a, (f ∘ h_directed.sequence f) n a ∂μ := by
       rw [lintegral_iInf ?_ h_directed.sequence_anti]
       · exact hf_int _

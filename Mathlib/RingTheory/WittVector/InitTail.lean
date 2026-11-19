@@ -144,7 +144,7 @@ def tail (n : ℕ) : 𝕎 R → 𝕎 R :=
 
 @[simp]
 theorem init_add_tail (x : 𝕎 R) (n : ℕ) : init n x + tail n x = x := by
-  simp only [init, tail, ← not_lt, select_add_select_not]
+  simp [init, tail, ← not_lt, select_add_select_not]
 
 end
 

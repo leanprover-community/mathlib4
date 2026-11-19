@@ -84,7 +84,7 @@ def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G �
       intro _ _ f
       apply limit.hom_ext; intro j
       dsimp
-      simp only [preservesLimitIso_hom_π, Functor.whiskerRight_app, limMap_π, Category.assoc,
+      simp [preservesLimitIso_hom_π, Functor.whiskerRight_app, limMap_π, Category.assoc,
         preservesLimitIso_hom_π_assoc, ← G.map_comp])
 
 end

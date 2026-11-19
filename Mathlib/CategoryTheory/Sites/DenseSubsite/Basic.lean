@@ -168,7 +168,7 @@ theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y)
       ℱ'.obj.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
     congrm $((α.naturality i.op).symm) x
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
-  simp only [← Functor.map_comp_apply, ← op_comp, ← e, this]
+  simp [← Functor.map_comp_apply, ← op_comp, ← e, this]
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -195,7 +195,7 @@ theorem pushforwardFamily_apply [G.IsLocallyFull K]
   simp only [pushforwardFamily_def, op_obj]
   generalize Nonempty.some (Presieve.in_coverByImage G f) = l
   obtain ⟨W, iYW, iWX, rfl⟩ := l
-  simp only [← op_comp, ← Functor.map_comp_apply, naturality_apply]
+  simp [← op_comp, ← Functor.map_comp_apply, naturality_apply]
 
 variable [G.IsCoverDense K] [G.IsLocallyFull K]
 
@@ -215,7 +215,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     exact this _ _ _ _ (by simpa only [Category.assoc] using e)
   introv e
   refine ext G _ _ fun V iVZ ↦ ?_
-  simp only [← op_comp, ← Functor.map_comp_apply, naturality_apply,
+  simp [← op_comp, ← Functor.map_comp_apply, naturality_apply,
     Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
@@ -594,7 +594,7 @@ lemma map_eq_of_eq {X Y : C} (f₁ f₂ : X ⟶ Y)
     ⟨_, IsDenseSubsite.equalizer_mem J K G _ _ h⟩ _ _ (by
       rintro ⟨W₀, a, ha⟩
       dsimp at ha ⊢
-      simp only [← Functor.map_comp, ← op_comp, ha])
+      simp [← Functor.map_comp, ← op_comp, ha])
 
 /-- If `G : C ⥤ D` is a dense subsite and `F` a sheaf on `C`, this is the morphism
 `F.val.obj (op Y) ⟶ F.val.obj (op X)` induced by a morphism
@@ -654,7 +654,7 @@ lemma mapPreimage_comp {X Y Z : C} (f : G.obj X ⟶ G.obj Y)
         mapPreimage_map_of_fac K G F f (c ≫ a) (c ≫ b),
         mapPreimage_map_of_fac K G F g (c ≫ b) d]
       all_goals
-        simp only [Functor.map_comp, Category.assoc, fac₁, fac₂])
+        simp [Functor.map_comp, Category.assoc, fac₁, fac₂])
 
 @[reassoc]
 lemma mapPreimage_comp_map {X Y Z : C} (f : G.obj X ⟶ G.obj Y)

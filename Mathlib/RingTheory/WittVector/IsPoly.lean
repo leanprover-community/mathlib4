@@ -165,7 +165,7 @@ class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop wh
 
 /-- The identity function on Witt vectors is a polynomial function. -/
 instance idIsPoly : IsPoly p fun _ _ => id :=
-  ⟨⟨X, by intros; simp only [aeval_X, id]⟩⟩
+  ⟨⟨X, by intros; simp [aeval_X, id]⟩⟩
 
 instance idIsPolyI' : IsPoly p fun _ _ a => a :=
   WittVector.idIsPoly _
@@ -209,7 +209,7 @@ instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
   obtain ⟨ψ, hg⟩ := hg
   use fun n => aeval φ (ψ n)
   intros
-  simp only [comp_aeval_apply, Function.comp, hg, hf]
+  simp [comp_aeval_apply, Function.comp, hg, hf]
 
 end IsPoly
 
@@ -255,7 +255,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   obtain ⟨ψ, hg⟩ := hg
   use fun n => aeval φ (ψ n)
   intros
-  simp only [peval, comp_aeval_apply, hg, hf]
+  simp [peval, comp_aeval_apply, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
@@ -281,7 +281,7 @@ section ZeroOne
 we model them as constant unary functions. -/
 /-- The function that is constantly zero on Witt vectors is a polynomial function. -/
 instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
-  ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, map_zero, zero_coeff]⟩⟩
+  ⟨⟨0, by intros; funext n; simp [Pi.zero_apply, map_zero, zero_coeff]⟩⟩
 
 theorem aeval_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     aeval (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
@@ -300,9 +300,9 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem aeval_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     aeval onePoly (wittPolynomial p ℤ n) = 1 := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum, Finset.sum_eq_single 0]
-  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, aeval_X, ite_true]
+  · simp [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, aeval_X, ite_true]
   · intro i _hi hi0
-    simp only [onePoly, ite_eq_right hi0, zero_pow (pow_ne_zero _ hp.out.ne_zero), mul_zero,
+    simp [onePoly, ite_eq_right hi0, zero_pow (pow_ne_zero _ hp.out.ne_zero), mul_zero,
       map_pow, aeval_X, map_mul]
   · simp
 
@@ -315,8 +315,8 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · simp only [one_coeff_zero, onePoly, ite_true, map_one]
-      · simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
+      · simp [one_coeff_zero, onePoly, ite_true, map_one]
+      · simp [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩
 

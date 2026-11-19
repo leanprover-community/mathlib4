@@ -187,7 +187,7 @@ def head (x : M F) :=
 /-- return all the subtrees of the root of a tree `x : M F` -/
 def children (x : M F) (i : F.B (head x)) : M F :=
   have H := fun n : ℕ => @head_succ' _ n 0 x.approx x.consistent
-  { approx := fun n => children' (x.approx _) (cast (congr_arg _ <| by simp only [head, H]) i)
+  { approx := fun n => children' (x.approx _) (cast (congr_arg _ <| by simp [head, H]) i)
     consistent := by
       intro n
       have P' := x.consistent (succ n)
@@ -200,7 +200,7 @@ def children (x : M F) (i : F.B (head x)) : M F :=
 /-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
 def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.Idx) (x : M F) : M F :=
-  if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H']) i.2)
+  if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp [head, H']) i.2)
   else default
 
 theorem head_succ (n m : ℕ) (x : M F) : head' (x.approx (succ n)) = head' (x.approx (succ m)) :=
@@ -426,7 +426,7 @@ theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) 
 @[simp]
 theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F) {i} :
     iselect (⟨a, i⟩ :: ps) (M.mk (.mk a f)) = iselect ps (f i) := by
-  simp only [iselect, isubtree_cons]
+  simp [iselect, isubtree_cons]
 
 theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
   dsimp only [M.corec, M.mk]
@@ -448,7 +448,7 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     induction y using PFunctor.M.casesOn'
     simp only [iselect_nil] at hrec
     subst hrec
-    simp only [approx_mk, heq_iff_eq, CofixA.intro.injEq,
+    simp [approx_mk, heq_iff_eq, CofixA.intro.injEq,
       eq_iff_true_of_subsingleton, and_self]
   | succ n n_ih =>
     cases hx
@@ -545,7 +545,7 @@ theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂,
     exact H.left
   · rw [not_or] at h
     obtain ⟨h₀, h₁⟩ := h
-    simp only [iselect_eq_default, *, not_false_iff]
+    simp [iselect_eq_default, *, not_false_iff]
 
 end Bisim
 

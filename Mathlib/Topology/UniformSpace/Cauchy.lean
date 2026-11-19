@@ -40,7 +40,7 @@ theorem Filter.HasBasis.cauchy_iff {ι} {p : ι → Prop} {s : ι → SetRel α 
     Cauchy f ↔ NeBot f ∧ ∀ i, p i → ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, (x, y) ∈ s i :=
   and_congr Iff.rfl <|
     (f.basis_sets.prod_self.le_basis_iff h).trans <| by
-      simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, forall_mem_comm]
+      simp [subset_def, Prod.forall, mem_prod_eq, and_imp, id, forall_mem_comm]
 
 theorem cauchy_iff' {f : Filter α} :
     Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α, ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, (x, y) ∈ s :=
@@ -48,11 +48,11 @@ theorem cauchy_iff' {f : Filter α} :
 
 theorem cauchy_iff {f : Filter α} : Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α, ∃ t ∈ f, t ×ˢ t ⊆ s :=
   cauchy_iff'.trans <| by
-    simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, forall_mem_comm]
+    simp [subset_def, Prod.forall, mem_prod_eq, and_imp, forall_mem_comm]
 
 lemma cauchy_iff_le {l : Filter α} [hl : l.NeBot] :
     Cauchy l ↔ l ×ˢ l ≤ 𝓤 α := by
-  simp only [Cauchy, hl, true_and]
+  simp [Cauchy, hl, true_and]
 
 theorem Cauchy.ultrafilter_of {l : Filter α} (h : Cauchy l) :
     Cauchy (@Ultrafilter.of _ l h.1 : Filter α) := by
@@ -207,7 +207,7 @@ theorem cauchySeq_const [SemilatticeSup β] [Nonempty β] (x : α) : CauchySeq f
 
 theorem cauchySeq_iff_tendsto [Nonempty β] [SemilatticeSup β] {u : β → α} :
     CauchySeq u ↔ Tendsto (Prod.map u u) atTop (𝓤 α) :=
-  cauchy_map_iff'.trans <| by simp only [prod_atTop_atTop_eq, Prod.map_def]
+  cauchy_map_iff'.trans <| by simp [prod_atTop_atTop_eq, Prod.map_def]
 
 theorem CauchySeq.comp_tendsto {γ} [Preorder β] [SemilatticeSup γ] [Nonempty γ] {f : β → α}
     (hf : CauchySeq f) {g : γ → β} (hg : Tendsto g atTop atTop) : CauchySeq (f ∘ g) :=
@@ -236,7 +236,7 @@ theorem cauchySeq_iff' {u : ℕ → α} :
 
 theorem cauchySeq_iff {u : ℕ → α} :
     CauchySeq u ↔ ∀ V ∈ 𝓤 α, ∃ N, ∀ k ≥ N, ∀ l ≥ N, (u k, u l) ∈ V := by
-  simp only [cauchySeq_iff', Filter.eventually_atTop_prod_self', mem_preimage, Prod.map_apply]
+  simp [cauchySeq_iff', Filter.eventually_atTop_prod_self', mem_preimage, Prod.map_apply]
 
 theorem CauchySeq.prodMap {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ] {u : γ → α} {v : δ → β}
     (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq (Prod.map u v) := by
@@ -295,7 +295,7 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
     CauchySeq u ↔ ∀ i, p i → ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → (u m, u n) ∈ s i := by
   rw [cauchySeq_iff_tendsto, ← prod_atTop_atTop_eq]
   refine (atTop_basis.prod_self.tendsto_iff h).trans ?_
-  simp only [true_and, Prod.forall, mem_prod_eq,
+  simp [true_and, Prod.forall, mem_prod_eq,
     mem_Ici, and_imp, Prod.map, @forall_comm (_ ≤ _) β]
 
 theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u : β → α}
@@ -334,7 +334,7 @@ theorem isComplete_iff_ultrafilter {s : Set α} :
 
 theorem isComplete_iff_ultrafilter' {s : Set α} :
     IsComplete s ↔ ∀ l : Ultrafilter α, Cauchy (l : Filter α) → s ∈ l → ∃ x ∈ s, ↑l ≤ 𝓝 x :=
-  isComplete_iff_ultrafilter.trans <| by simp only [le_principal_iff, Ultrafilter.mem_coe]
+  isComplete_iff_ultrafilter.trans <| by simp [le_principal_iff, Ultrafilter.mem_coe]
 
 protected theorem IsComplete.union {s t : Set α} (hs : IsComplete s) (ht : IsComplete t) :
     IsComplete (s ∪ t) := by
@@ -491,7 +491,7 @@ protected def Filter.TotallyBounded (f : Filter α) :=
 
 theorem Filter.totallyBounded_principal_iff {s : Set α} :
     (𝓟 s).TotallyBounded ↔ TotallyBounded s := by
-  simp only [Filter.TotallyBounded, mem_principal, SetRel.preimage_eq_biUnion, TotallyBounded]
+  simp [Filter.TotallyBounded, mem_principal, SetRel.preimage_eq_biUnion, TotallyBounded]
 
 theorem Filter.TotallyBounded.exists_subset_of_mem {f : Filter α} (hf : f.TotallyBounded)
     {s : Set α} (hs : s ∈ f) {U : SetRel α α} (hU : U ∈ 𝓤 α) :

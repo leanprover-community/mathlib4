@@ -160,7 +160,7 @@ theorem comap_map_mkQ : comap p.mkQ (map p.mkQ p') = p ⊔ p' := by simp [comap_
 
 @[simp]
 theorem map_mkQ_eq_top : map p.mkQ p' = ⊤ ↔ p ⊔ p' = ⊤ := by
-  simp only [LinearMap.map_eq_top_iff p.range_mkQ, sup_comm, ker_mkQ]
+  simp [LinearMap.map_eq_top_iff p.range_mkQ, sup_comm, ker_mkQ]
 
 variable (q : Submodule R₂ M₂)
 

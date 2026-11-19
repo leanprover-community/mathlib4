@@ -33,7 +33,7 @@ abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R
     [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
-  mul_smul := hf.forall₂.mpr fun a b x ↦ by simp only [← f.map_mul, hsmul, mul_smul]
+  mul_smul := hf.forall₂.mpr fun a b x ↦ by simp [← f.map_mul, hsmul, mul_smul]
 
 namespace MulAction
 

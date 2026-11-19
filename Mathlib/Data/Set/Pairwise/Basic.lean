@@ -142,7 +142,7 @@ theorem pairwise_union :
 
 theorem pairwise_union_of_symm [Std.Symm r] :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
-  pairwise_union.trans <| by simp only [Std.Symm.iff, and_self_iff]
+  pairwise_union.trans <| by simp [Std.Symm.iff, and_self_iff]
 
 theorem pairwise_union_of_symm_of_refl [Std.Symm r] [Std.Refl r] :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, r a b := by
@@ -154,7 +154,7 @@ theorem pairwise_union_of_symm_of_refl [Std.Symm r] [Std.Refl r] :
 
 theorem pairwise_insert :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
-  simp only [insert_eq, pairwise_union, pairwise_singleton, true_and, mem_singleton_iff, forall_eq]
+  simp [insert_eq, pairwise_union, pairwise_singleton, true_and, mem_singleton_iff, forall_eq]
 
 theorem pairwise_insert_of_notMem (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b ∧ r b a :=
@@ -172,7 +172,7 @@ theorem Pairwise.insert_of_notMem (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b �
 
 theorem pairwise_insert_of_symm [Std.Symm r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
-  simp only [pairwise_insert, Std.Symm.iff a, and_self_iff]
+  simp [pairwise_insert, Std.Symm.iff a, and_self_iff]
 
 theorem pairwise_insert_of_symm_of_refl [Std.Symm r] [Std.Refl r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
@@ -183,7 +183,7 @@ theorem pairwise_insert_of_symm_of_refl [Std.Symm r] [Std.Refl r] :
 
 theorem pairwise_insert_of_symm_of_notMem [Std.Symm r] (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
-  simp only [pairwise_insert_of_notMem ha, Std.Symm.iff a, and_self_iff]
+  simp [pairwise_insert_of_notMem ha, Std.Symm.iff a, and_self_iff]
 
 @[deprecated (since := "2026-06-10")]
 alias pairwise_insert_of_symmetric_of_notMem := pairwise_insert_of_symm_of_notMem
@@ -210,7 +210,7 @@ theorem pairwise_pair_of_symm_of_refl [Std.Symm r] [Std.Refl r] :
 @[deprecated (since := "2026-06-10")] alias pairwise_pair_of_symmetric := pairwise_pair_of_symm
 
 theorem pairwise_univ : (univ : Set α).Pairwise r ↔ Pairwise r := by
-  simp only [Set.Pairwise, Pairwise, mem_univ, forall_const]
+  simp [Set.Pairwise, Pairwise, mem_univ, forall_const]
 
 @[simp]
 theorem pairwise_bot_iff : s.Pairwise (⊥ : α → α → Prop) ↔ (s : Set α).Subsingleton :=
@@ -220,7 +220,7 @@ alias ⟨Pairwise.subsingleton, _⟩ := pairwise_bot_iff
 
 /-- See also `Function.injective_iff_pairwise_ne` -/
 lemma injOn_iff_pairwise_ne {s : Set ι} : InjOn f s ↔ s.Pairwise (f · ≠ f ·) := by
-  simp only [InjOn, Set.Pairwise, not_imp_not]
+  simp [InjOn, Set.Pairwise, not_imp_not]
 
 alias ⟨InjOn.pairwise_ne, _⟩ := injOn_iff_pairwise_ne
 
@@ -241,7 +241,7 @@ end Pairwise
 
 theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) :
     (Pairwise fun (x : s) (y : s) => r x y) ↔ s.Pairwise r := by
-  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff]
+  simp [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff]
 
 alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
 

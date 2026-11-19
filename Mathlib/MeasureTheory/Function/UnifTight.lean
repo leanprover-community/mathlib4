@@ -141,7 +141,7 @@ protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
   refine ⟨s, hμs, fun n ↦ ?_⟩
   have hind : sᶜ.indicator (f n) =ᵐ[μ] sᶜ.indicator (g n) := by
     filter_upwards [hfg n] with x hx
-    simp only [indicator, mem_compl_iff, hx]
+    simp [indicator, mem_compl_iff, hx]
   exact (le_of_eq <| eLpNorm_congr_ae hind.symm).trans (hfε n)
 
 protected theorem comp {ι' : Type*} (g : ι' → ι) (hf : UnifTight f p μ) :
@@ -337,7 +337,7 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
     _ ≤ eLpNorm (indicator Eᶜ (f n - g)) p μ + eLpNorm (indicator E (f n - g)) p μ := by
         apply eLpNorm_add_le hp
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
-    _ = ε := by simp only [add_thirds]
+    _ = ε := by simp [add_thirds]
 
 @[deprecated "Formerly invoked in the proof of `tendsto_Lp_of_tendsto_ae`." (since := "2026-09-15")]
 private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)

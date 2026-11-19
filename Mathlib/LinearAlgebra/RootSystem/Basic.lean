@@ -107,7 +107,7 @@ protected lemma ext [CharZero R] [IsDomain R]
     refine P₁.root.injective ?_
     conv_rhs => rw [hr]
     simp only [root_reflectionPerm, reflection_apply, coroot']
-    simp only [hr, he, hc']
+    simp [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
     obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂
     #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166

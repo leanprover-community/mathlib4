@@ -353,12 +353,12 @@ theorem iInf_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
 theorem coe_sInf (S : Set (LieSubmodule R L M)) : (↑(sInf S) : Set M) = ⋂ s ∈ S, (s : Set M) := by
   rw [← LieSubmodule.coe_toSubmodule, sInf_toSubmodule, Submodule.coe_sInf]
   ext m
-  simp only [mem_iInter, mem_ofPred_eq, forall_apply_eq_imp_iff₂, exists_imp,
+  simp [mem_iInter, mem_ofPred_eq, forall_apply_eq_imp_iff₂, exists_imp,
     and_imp, SetLike.mem_coe, mem_toSubmodule]
 
 @[simp]
 theorem coe_iInf {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
-  rw [iInf, coe_sInf]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
+  rw [iInf, coe_sInf]; simp [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
 
 @[simp]
 theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
@@ -586,7 +586,7 @@ theorem inclusion_apply (m : N) : inclusion h m = ⟨m.1, h m.2⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by
-  simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
+  simp [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
 end InclusionMaps
 
@@ -807,7 +807,7 @@ theorem map_comp
     {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
     N.map (g.comp f) = (N.map f).map g :=
   SetLike.coe_injective <| by
-    simp only [← Set.image_comp, coe_map, LieModuleHom.coe_comp]
+    simp [← Set.image_comp, coe_map, LieModuleHom.coe_comp]
 
 @[simp]
 theorem map_id : N.map LieModuleHom.id = N := by ext; simp
@@ -822,7 +822,7 @@ lemma map_le_map_iff (hf : Function.Injective f) :
 
 lemma map_injective_of_injective (hf : Function.Injective f) :
     Function.Injective (map f) := fun {N N'} h ↦
-  SetLike.coe_injective <| hf.image_injective <| by simp only [← coe_map, h]
+  SetLike.coe_injective <| hf.image_injective <| by simp [← coe_map, h]
 
 /-- An injective morphism of Lie modules embeds the lattice of submodules of the domain into that
 of the target. -/

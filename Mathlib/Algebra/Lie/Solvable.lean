@@ -140,7 +140,7 @@ open TensorProduct in
       (derivedSeriesOfIdeal R L k I).baseChange A := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, LieSubmodule.lie_baseChange]
+  | succ k ih => simp [derivedSeriesOfIdeal_succ, ih, LieSubmodule.lie_baseChange]
 
 open TensorProduct in
 @[simp] theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
@@ -159,7 +159,7 @@ variable {R L}
 theorem derivedSeries_eq_derivedSeriesOfIdeal_comap (k : ℕ) :
     derivedSeries R I k = (derivedSeriesOfIdeal R L k I).comap I.incl := by
   induction k with
-  | zero => simp only [derivedSeries_def, comap_incl_self, derivedSeriesOfIdeal_zero]
+  | zero => simp [derivedSeries_def, comap_incl_self, derivedSeriesOfIdeal_zero]
   | succ k ih =>
     simp only [derivedSeries_def, derivedSeriesOfIdeal_succ] at ih ⊢; rw [ih]
     exact comap_bracket_incl_of_le I (derivedSeriesOfIdeal_le_self I k)
@@ -185,7 +185,7 @@ theorem derivedSeries_add_eq_bot {k l : ℕ} {I J : LieIdeal R L} (hI : derivedS
 
 theorem derivedSeries_map_le (k : ℕ) : (derivedSeries R L' k).map f ≤ derivedSeries R L k := by
   induction k with
-  | zero => simp only [derivedSeries_def, derivedSeriesOfIdeal_zero, le_top]
+  | zero => simp [derivedSeries_def, derivedSeriesOfIdeal_zero, le_top]
   | succ k ih =>
     simp only [derivedSeries_def, derivedSeriesOfIdeal_succ] at ih ⊢
     exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie ih ih)
@@ -197,7 +197,7 @@ theorem derivedSeries_map_eq (k : ℕ) (h : Function.Surjective f) :
     change (⊤ : LieIdeal R L').map f = ⊤
     rw [← f.idealRange_eq_map]
     exact f.idealRange_eq_top_of_surjective h
-  | succ k ih => simp only [derivedSeries_def, map_bracket_eq f h, ih, derivedSeriesOfIdeal_succ]
+  | succ k ih => simp [derivedSeries_def, map_bracket_eq f h, ih, derivedSeriesOfIdeal_succ]
 
 theorem derivedSeries_succ_eq_top_iff (n : ℕ) :
     derivedSeries R L (n + 1) = ⊤ ↔ derivedSeries R L 1 = ⊤ := by
@@ -333,7 +333,7 @@ theorem Surjective.lieAlgebra_isSolvable [hL' : IsSolvable L'] (h : Surjective f
   apply hL'.imp
   intro k hk
   rw [← LieIdeal.derivedSeries_map_eq k h, hk]
-  simp only [LieIdeal.map_eq_bot_iff, bot_le]
+  simp [LieIdeal.map_eq_bot_iff, bot_le]
 
 end Function
 
@@ -461,7 +461,7 @@ theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable 
   · rename_i k h
     obtain ⟨_, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
     have h₃ : I ≠ ⊥ := by rintro rfl; apply h₂; apply derivedSeries_of_bot_eq_bot
-    simp only [h₂, h₃]
+    simp [h₂, h₃]
 
 theorem isSolvable_of_isSolvable_ideal_quotient
     (Isol : IsSolvable I) (quotsol : IsSolvable (L ⧸ I)) :

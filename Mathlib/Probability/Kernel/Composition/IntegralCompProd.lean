@@ -134,7 +134,7 @@ theorem integrable_compProd_iff ⦃f : β × γ → E⦄ (hf : AEStronglyMeasura
     Integrable f ((κ ⊗ₖ η) a) ↔
       (∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x))) ∧
         Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
-  simp only [Integrable, hasFiniteIntegral_compProd_iff' hf, hf.norm.integral_kernel_compProd,
+  simp [Integrable, hasFiniteIntegral_compProd_iff' hf, hf.norm.integral_kernel_compProd,
     hf, hf.compProd_mk_left, eventually_and, true_and]
 
 theorem _root_.MeasureTheory.Integrable.ae_of_compProd ⦃f : β × γ → E⦄
@@ -321,7 +321,7 @@ theorem hasFiniteIntegral_comp_iff' ⦃f : γ → E⦄ (hf : AEStronglyMeasurabl
 theorem integrable_comp_iff ⦃f : γ → E⦄ (hf : AEStronglyMeasurable f ((η ∘ₖ κ) a)) :
     Integrable f ((η ∘ₖ κ) a) ↔
     (∀ᵐ y ∂κ a, Integrable f (η y)) ∧ Integrable (fun y ↦ ∫ z, ‖f z‖ ∂η y) (κ a) := by
-  simp only [Integrable, hf, hasFiniteIntegral_comp_iff' hf, true_and, eventually_and, hf.comp,
+  simp [Integrable, hf, hasFiniteIntegral_comp_iff' hf, true_and, eventually_and, hf.comp,
     hf.norm.integral_kernel_comp]
 
 protected lemma _root_.MeasureTheory.Measure.integrable_comp_iff {μ : Measure α} {f : β → E}

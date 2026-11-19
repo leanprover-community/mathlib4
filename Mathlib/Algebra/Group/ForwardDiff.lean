@@ -67,7 +67,7 @@ lemma fwdDiff_smul {R : Type*} [Ring R] [Module R G] (f : M → R) (g : M → G)
 @[simp] lemma fwdDiff_smul_const {R : Type*} [Ring R] [Module R G] (f : M → R) (g : G) :
     Δ_[h] (fun y ↦ f y • g) = Δ_[h] f • fun _ ↦ g := by
   ext y
-  simp only [fwdDiff, Pi.smul_apply', sub_smul]
+  simp [fwdDiff, Pi.smul_apply', sub_smul]
 
 end smul
 
@@ -121,8 +121,8 @@ open fwdDiff_aux
 @[simp] lemma fwdDiff_iter_const_smul {R : Type*} [Monoid R] [DistribMulAction R G]
     (r : R) (f : M → G) (n : ℕ) : Δ_[h]^[n] (r • f) = r • Δ_[h]^[n] f := by
   induction n generalizing f with
-  | zero => simp only [iterate_zero, id_eq]
-  | succ n IH => simp only [iterate_succ_apply, fwdDiff_const_smul, IH]
+  | zero => simp [iterate_zero, id_eq]
+  | succ n IH => simp [iterate_succ_apply, fwdDiff_const_smul, IH]
 
 @[simp] lemma fwdDiff_iter_finsetSum {α : Type*} (s : Finset α) (f : α → M → G) (n : ℕ) :
     Δ_[h]^[n] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h]^[n] (f k) := by
@@ -137,12 +137,12 @@ Express the `n`-th forward difference of `f` at `y` in terms of the values `f (y
 theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     Δ_[h]^[n] f y = ∑ k ∈ range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • f (y + k • h) := by
   -- rewrite in terms of `(shiftₗ - 1) ^ n`
-  have : fwdDiffₗ M G h = shiftₗ M G h - 1 := by simp only [shiftₗ, add_sub_cancel_right]
+  have : fwdDiffₗ M G h = shiftₗ M G h - 1 := by simp [shiftₗ, add_sub_cancel_right]
   rw [← coe_fwdDiffₗ, this, ← pow_apply_eq_iterate]
   -- use binomial theorem `Commute.add_pow` to expand this
   have : Commute (shiftₗ M G h) (-1) := (Commute.one_right _).neg_right
   convert congr($(this.add_pow n) f y)
-  · simp only [sub_eq_add_neg]
+  · simp [sub_eq_add_neg]
   · rw [LinearMap.sum_apply, Finset.sum_apply]
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
@@ -177,14 +177,14 @@ variable {R : Type*} [CommRing R]
 
 lemma fwdDiff_choose (j : ℕ) : Δ_[1] (fun x ↦ x.choose (j + 1) : ℕ → R) = fun x ↦ x.choose j := by
   ext n
-  simp only [fwdDiff, choose_succ_succ' n j, cast_add, add_sub_cancel_right]
+  simp [fwdDiff, choose_succ_succ' n j, cast_add, add_sub_cancel_right]
 
 lemma fwdDiff_iter_choose (j k : ℕ) :
     Δ_[1]^[k] (fun x ↦ x.choose (k + j) : ℕ → R) = fun x ↦ x.choose j := by
   induction k generalizing j with
-  | zero => simp only [zero_add, iterate_zero, id_eq]
+  | zero => simp [zero_add, iterate_zero, id_eq]
   | succ k IH =>
-    simp only [iterate_succ_apply', add_assoc, add_comm 1 j, IH, fwdDiff_choose]
+    simp [iterate_succ_apply', add_assoc, add_comm 1 j, IH, fwdDiff_choose]
 
 lemma fwdDiff_iter_choose_zero (m n : ℕ) :
     Δ_[1]^[n] (fun x ↦ x.choose m : ℕ → R) 0 = if n = m then 1 else 0 := by
@@ -193,7 +193,7 @@ lemma fwdDiff_iter_choose_zero (m n : ℕ) :
     simp_rw [hmn.ne', ite_false, (by ring : m + k + 1 = k + 1 + m), iterate_add_apply,
       add_zero m ▸ fwdDiff_iter_choose 0 m, choose_zero_right, iterate_one, cast_one, fwdDiff_const,
       fwdDiff_iter_eq_sum_shift, smul_zero, sum_const_zero]
-  · simp only [ite_true, add_zero m ▸ fwdDiff_iter_choose 0 m, choose_zero_right, cast_one]
+  · simp [ite_true, add_zero m ▸ fwdDiff_iter_choose 0 m, choose_zero_right, cast_one]
   · rcases Nat.exists_eq_add_of_lt hnm with ⟨k, rfl⟩
     simp_rw [hnm.ne, ite_false, add_assoc n k 1, fwdDiff_iter_choose, choose_zero_succ, cast_zero]
 

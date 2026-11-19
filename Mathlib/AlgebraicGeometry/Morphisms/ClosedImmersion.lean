@@ -278,7 +278,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
       ← Scheme.Hom.map_appLE _ le_rfl w.op]
     simp only [CommRingCat.comp_apply]
     rw [hg]
-    simp only [map_zero]
+    simp [map_zero]
   have h1 (i : 𝒰.I₀) : ∃ n, (res i) (φ (s ^ n * g)) = 0 := by
     obtain ⟨n, hn⟩ := exists_of_res_zero_of_qcqs_of_top (s := ((res i) (φ s))) (h0 i)
     exact ⟨n, by rwa [map_mul, map_mul, map_pow, map_pow]⟩

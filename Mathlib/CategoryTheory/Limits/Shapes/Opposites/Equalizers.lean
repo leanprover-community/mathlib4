@@ -323,7 +323,7 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
     {X Y : C} {f : X ⟶ Y} [HasPullback f f] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.op pushout.condition) where
   toFun h := Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitOp f f
-    pullback.condition (by simp only [← op_comp, pullback.condition]) rfl h) _ (.refl _)
+    pullback.condition (by simp [← op_comp, pullback.condition]) rfl h) _ (.refl _)
       (pullbackIsoUnopPushout f f).op.symm (.refl _)
         (by simp [← op_comp]) (by simp [← op_comp]) (by simp)
   invFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f.op f.op
@@ -338,7 +338,7 @@ def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
     {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPullback f f] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.unop pushout.condition) where
   toFun h := Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitUnop f f pullback.condition
-    (by simp only [← unop_comp, pullback.condition]) rfl h) _ (.refl _)
+    (by simp [← unop_comp, pullback.condition]) rfl h) _ (.refl _)
       (pullbackIsoOpPushout f f).unop.symm (.refl _)
         (by simp [← unop_comp]) (by simp [← unop_comp]) (by simp)
   invFun h :=
@@ -358,12 +358,12 @@ def isLimitForkPushoutEquivIsColimitForkOpPullback
     {X Y : C} {f : X ⟶ Y} [HasPushout f f] :
     IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.op pullback.condition) where
   toFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitOp f f
-    pushout.condition (by simp only [← op_comp, pushout.condition]) rfl h) _
+    pushout.condition (by simp [← op_comp, pushout.condition]) rfl h) _
       ((pushoutIsoUnopPullback f f).op.symm ≪≫ eqToIso rfl) (.refl _) (.refl _)
         (by simp) (by simp) (by simp)
   invFun h := by
     refine Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitUnop f.op f.op
-      pullback.condition (by simp only [← unop_comp, pullback.condition]) rfl h) _ (.refl _)
+      pullback.condition (by simp [← unop_comp, pullback.condition]) rfl h) _ (.refl _)
         ((pushoutIsoUnopPullback f f).symm) (.refl _) ?_ ?_ (by simp)
     · rw [Iso.symm_hom, ← Quiver.Hom.unop_op (pushoutIsoUnopPullback f f).inv, ← unop_comp,
         pushoutIsoUnopPullback_inv_fst, Quiver.Hom.unop_op, Iso.refl_hom, Category.id_comp]
@@ -378,12 +378,12 @@ def isLimitForkPushoutEquivIsColimitForkUnopPullback
     {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPushout f f] :
     IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.unop pullback.condition) where
   toFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f f pushout.condition
-    (by simp only [← unop_comp, pushout.condition]) rfl h) _
+    (by simp [← unop_comp, pushout.condition]) rfl h) _
       ((pushoutIsoOpPullback f f).unop.symm ≪≫ eqToIso rfl) (.refl _) (.refl _)
         (by simp) (by simp) (by simp)
   invFun h := by
     refine Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitOp f.unop f.unop pullback.condition
-      (by simp only [← op_comp, pullback.condition]) rfl h) _ (.refl _)
+      (by simp [← op_comp, pullback.condition]) rfl h) _ (.refl _)
         ((pushoutIsoOpPullback f f).symm) (.refl _) ?_ ?_ (by simp)
     · rw [Iso.symm_hom, ← Quiver.Hom.op_unop (pushoutIsoOpPullback f f).inv, ← op_comp,
         pushoutIsoOpPullback_inv_fst, Quiver.Hom.op_unop, Iso.refl_hom, Category.id_comp]

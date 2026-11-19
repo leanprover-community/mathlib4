@@ -52,7 +52,7 @@ lemma mulSupport_iSup [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι →
     mulSupport (fun x ↦ ⨆ i, f i x) ⊆ ⋃ i, mulSupport (f i) := by
   simp only [mulSupport_subset_iff', mem_iUnion, not_exists, notMem_mulSupport]
   intro x hx
-  simp only [hx, ciSup_const]
+  simp [hx, ciSup_const]
 
 @[to_additive]
 lemma mulSupport_iInf [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
@@ -179,7 +179,7 @@ lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
   · rw [mulIndicator_of_notMem hx]
     simp only [mem_iInter, not_forall] at hx
     rcases hx with ⟨j, hj⟩
-    refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
+    refine le_antisymm (by simp [← h1, le_iInf_iff, bot_le, forall_const]) ?_
     simpa [mulIndicator_of_notMem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
 
 @[to_additive]

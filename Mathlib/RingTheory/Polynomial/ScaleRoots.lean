@@ -81,7 +81,7 @@ theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree 
 
 @[simp]
 theorem natDegree_scaleRoots (p : R[X]) (s : R) : natDegree (scaleRoots p s) = natDegree p := by
-  simp only [natDegree, degree_scaleRoots]
+  simp [natDegree, degree_scaleRoots]
 
 @[simp]
 lemma leadingCoeff_scaleRoots (p : R[X]) (r : R) :
@@ -89,7 +89,7 @@ lemma leadingCoeff_scaleRoots (p : R[X]) (r : R) :
   rw [leadingCoeff, natDegree_scaleRoots, coeff_scaleRoots_natDegree]
 
 theorem monic_scaleRoots_iff {p : R[X]} (s : R) : Monic (scaleRoots p s) ↔ Monic p := by
-  simp only [Monic, leadingCoeff_scaleRoots]
+  simp [Monic, leadingCoeff_scaleRoots]
 
 theorem map_scaleRoots (p : R[X]) (x : R) (f : R →+* S) (h : f p.leadingCoeff ≠ 0) :
     (p.scaleRoots x).map f = (p.map f).scaleRoots (f x) := by
@@ -203,7 +203,7 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
     r ^ (natDegree p + natDegree q - n)
   · rw [← coeff_mul]
     cases lt_or_ge (natDegree (p * q)) n with
-    | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
+    | inl h => simp [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
     | inr h =>
       rw [mul_comm, mul_assoc, ← pow_add, add_comm, tsub_add_tsub_cancel natDegree_mul_le h]
   · rw [coeff_mul, Finset.sum_mul]
@@ -211,10 +211,10 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
     simp only [Finset.mem_antidiagonal, coeff_scaleRoots, Prod.forall]
     intro a b e
     cases lt_or_ge (natDegree p) a with
-    | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul]
+    | inl h => simp [coeff_eq_zero_of_natDegree_lt h, zero_mul]
     | inr ha =>
       cases lt_or_ge (natDegree q) b with
-      | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
+      | inl h => simp [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
       | inr hb =>
         simp only [← e, mul_assoc, mul_comm (r ^ (_ - a)), ← pow_add]
         rw [add_comm (_ - _), tsub_add_tsub_comm ha hb]
@@ -228,7 +228,7 @@ lemma mul_scaleRoots_of_noZeroDivisors (p q : R[X]) (r : R) [NoZeroDivisors R] :
   by_cases hp : p = 0; · simp [hp]
   by_cases hq : q = 0; · simp [hq]
   apply mul_scaleRoots'
-  simp only [ne_eq, mul_eq_zero, leadingCoeff_eq_zero, hp, hq, or_self, not_false_eq_true]
+  simp [ne_eq, mul_eq_zero, leadingCoeff_eq_zero, hp, hq, or_self, not_false_eq_true]
 
 lemma pow_scaleRoots' (p : R[X]) (r : R) (n : ℕ)
     (hp : p.leadingCoeff ^ n ≠ 0) :
@@ -258,7 +258,7 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = nat
   but this now causes a max rec depth error. -/
   rw [mul_assoc, ← pow_add]
   cases lt_or_ge (natDegree (p + q)) n with
-  | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
+  | inl hn => simp [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
   | inr hn =>
       rw [add_comm (_ - n), tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]
 
@@ -291,7 +291,7 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
     rw [e, natDegree_one]
   use s ^ natDegree (a * p) • s ^ (natDegree a + natDegree p - natDegree (a * p)) • a.scaleRoots r
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
-  simp only [smul_smul, smul_mul_assoc, ← mul_scaleRoots, mul_assoc, ← mul_pow, IsUnit.val_inv_mul,
+  simp [smul_smul, smul_mul_assoc, ← mul_scaleRoots, mul_assoc, ← mul_pow, IsUnit.val_inv_mul,
     one_pow, mul_one, ← smul_add, ← add_scaleRoots_of_natDegree_eq _ _ _ this, e, natDegree_one,
     Nat.sub_zero, one_scaleRoots, one_smul, s]
 

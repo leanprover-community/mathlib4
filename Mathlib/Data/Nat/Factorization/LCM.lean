@@ -46,14 +46,14 @@ lemma factorizationLCMLeft_pos : 0 < factorizationLCMLeft a b := by
   by_cases h : b.factorization p ≤ a.factorization p
   · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
-  · simp only [h, reduceIte, one_ne_zero] at H
+  · simp [h, reduceIte, one_ne_zero] at H
 
 lemma factorizationLCMRight_pos : 0 < factorizationLCMRight a b := by
   apply Nat.pos_of_ne_zero
   rw [factorizationLCMRight, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
-  · simp only [h, reduceIte, reduceCtorEq] at H
+  · simp [h, reduceIte, reduceCtorEq] at H
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
 
@@ -78,7 +78,7 @@ variable (a b)
 
 lemma factorizationLCMLeft_dvd_left : factorizationLCMLeft a b ∣ a := by
   rcases eq_or_ne a 0 with rfl | ha
-  · simp only [dvd_zero]
+  · simp [dvd_zero]
   rcases eq_or_ne b 0 with rfl | hb
   · simp [factorizationLCMLeft]
   nth_rewrite 2 [← prod_factorization_pow_eq_self ha]
@@ -94,7 +94,7 @@ lemma factorizationLCMRight_dvd_right : factorizationLCMRight a b ∣ b := by
   rcases eq_or_ne a 0 with rfl | ha
   · simp [factorizationLCMRight]
   rcases eq_or_ne b 0 with rfl | hb
-  · simp only [dvd_zero]
+  · simp [dvd_zero]
   nth_rewrite 2 [← prod_factorization_pow_eq_self hb]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
   · apply Finset.prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le

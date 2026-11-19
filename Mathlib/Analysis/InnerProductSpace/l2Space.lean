@@ -129,13 +129,13 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
       calc
         conj _ = conj (∑' i, ⟪g i, f i⟫) := by congr
         _ = ∑' i, conj ⟪g i, f i⟫ := RCLike.conjCLE.map_tsum
-        _ = ∑' i, ⟪f i, g i⟫ := by simp only [inner_conj_symm]
+        _ = ∑' i, ⟪f i, g i⟫ := by simp [inner_conj_symm]
         _ = _ := by congr
     add_left := fun f₁ f₂ g => by
       calc
         _ = ∑' i, ⟪(f₁ + f₂) i, g i⟫ := ?_
         _ = ∑' i, (⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫) := by
-          simp only [inner_add_left, Pi.add_apply, coeFn_add]
+          simp [inner_add_left, Pi.add_apply, coeFn_add]
         _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := Summable.tsum_add ?_ ?_
         _ = _ := by congr
       · congr
@@ -144,10 +144,10 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
     smul_left := fun f g c => by
       calc
         _ = ∑' i, ⟪c • f i, g i⟫ := ?_
-        _ = ∑' i, conj c * ⟪f i, g i⟫ := by simp only [inner_smul_left]
+        _ = ∑' i, conj c * ⟪f i, g i⟫ := by simp [inner_smul_left]
         _ = conj c * ∑' i, ⟪f i, g i⟫ := tsum_mul_left
         _ = _ := ?_
-      · simp only [coeFn_smul, Pi.smul_apply]
+      · simp [coeFn_smul, Pi.smul_apply]
       · congr }
 
 theorem inner_eq_tsum (f g : lp G 2) : ⟪f, g⟫ = ∑' i, ⟪f i, g i⟫ :=
@@ -192,7 +192,7 @@ subspaces into `E`. -/
 protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
   toFun f := ∑' i, V i (f i)
   map_add' f g := by
-    simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
+    simp [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
       LinearIsometry.map_add]
   map_smul' c f := by
     simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using!
@@ -326,7 +326,7 @@ elements of `E`. -/
 protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
     [DecidableEq ι] [∀ i, DecidableEq (G i)] (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
-  simp only [map_dfinsuppSum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
+  simp [map_dfinsuppSum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
@@ -411,7 +411,7 @@ protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E)
 
 protected theorem repr_self [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
-  simp only [LinearIsometryEquiv.apply_symm_apply, ← b.repr_symm_single]
+  simp [LinearIsometryEquiv.apply_symm_apply, ← b.repr_symm_single]
 
 protected theorem repr_apply_apply (b : HilbertBasis ι 𝕜 E) (v : E) (i : ι) :
     b.repr v i = ⟪b i, v⟫ := by

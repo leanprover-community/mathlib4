@@ -39,7 +39,7 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 theorem inv_norm_smul_mem_unitClosedBall (x : E) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : E) 1 := by
-  simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← div_eq_inv_mul,
+  simp [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← div_eq_inv_mul,
     div_self_le_one]
 
 theorem norm_smul_of_nonneg {t : ℝ} (ht : 0 ≤ t) (x : E) : ‖t • x‖ = t * ‖x‖ := by

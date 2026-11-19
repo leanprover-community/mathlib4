@@ -204,7 +204,7 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   simp only [orthogonal_carrier, Set.mem_ofPred_eq]
   intro z hz
   rw [← neg_eq_zero, ← hΦ_inv]
-  suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
+  suffices ⁅(x : L), z⁆ = 0 by simp [this, map_zero, LinearMap.zero_apply]
   rw [← LieSubmodule.mem_bot (R := K) (L := L), ← (hJ.disjoint_of_ne hI hJI).eq_bot]
   apply lie_le_inf
   exact lie_mem_lie x.2 hz

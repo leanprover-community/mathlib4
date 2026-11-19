@@ -88,11 +88,11 @@ def mapTrifunctorMapNatTrans (α : F ⟶ F') (I₁ I₂ I₃ : Type*) :
       naturality := fun {X₂ Y₂} φ => by
         ext X₃ ⟨i₁, i₂, i₃⟩
         dsimp
-        simp only [← NatTrans.comp_app, NatTrans.naturality] }
+        simp [← NatTrans.comp_app, NatTrans.naturality] }
   naturality := fun {X₁ Y₁} φ => by
     ext X₂ X₃ ⟨i₁, i₂, i₃⟩
     dsimp
-    simp only [← NatTrans.comp_app, NatTrans.naturality]
+    simp [← NatTrans.comp_app, NatTrans.naturality]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -106,11 +106,11 @@ def mapTrifunctorMapIso (e : F ≅ F') (I₁ I₂ I₃ : Type*) :
   hom_inv_id := by
     ext X₁ X₂ X₃ ⟨i₁, i₂, i₃⟩
     dsimp
-    simp only [← NatTrans.comp_app, e.hom_inv_id, NatTrans.id_app]
+    simp [← NatTrans.comp_app, e.hom_inv_id, NatTrans.id_app]
   inv_hom_id := by
     ext X₁ X₂ X₃ ⟨i₁, i₂, i₃⟩
     dsimp
-    simp only [← NatTrans.comp_app, e.inv_hom_id, NatTrans.id_app]
+    simp [← NatTrans.comp_app, e.inv_hom_id, NatTrans.id_app]
 
 end
 
@@ -198,11 +198,11 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
       map := fun {_ _} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ
       map_id := fun X₃ => by
         ext j i₁ i₂ i₃ h
-        simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+        simp [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, id_comp, comp_id]
       map_comp := fun {X₃ Y₃ Z₃} φ ψ => by
         ext j i₁ i₂ i₃ h
-        simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+        simp [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, assoc, id_comp,
           ι_mapTrifunctorMapMap_assoc] }
   map {X₂ Y₂} φ :=
@@ -210,15 +210,15 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
       naturality := fun {X₃ Y₃} ψ => by
         ext j i₁ i₂ i₃ h
         dsimp
-        simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
+        simp [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_assoc] }
   map_id X₂ := by
     ext X₃ j i₁ i₂ i₃ h
-    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+    simp [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
       NatTrans.id_app, id_comp, comp_id]
   map_comp {X₂ Y₂ Z₂} φ ψ := by
     ext X₃ j i₁ i₂ i₃
-    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+    simp [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
       NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
       id_comp, assoc, ι_mapTrifunctorMapMap_assoc]
 
@@ -241,13 +241,13 @@ noncomputable def mapTrifunctorMap
             dsimp
             ext j i₁ i₂ i₃ h
             dsimp
-            simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
+            simp [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
               NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_assoc] }
       naturality := fun {X₂ Y₂} ψ => by
         ext X₃ j
         dsimp
         ext i₁ i₂ i₃ h
-        simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
+        simp [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp,
           NatTrans.naturality_app_assoc] }
 

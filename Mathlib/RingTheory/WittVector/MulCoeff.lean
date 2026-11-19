@@ -73,7 +73,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
   apply Subset.trans (vars_mul _ _)
   refine union_subset ?_ ?_
   · apply Subset.trans (vars_pow _ _)
-    have : (p : 𝕄) = C (p : ℤ) := by simp only [Int.cast_natCast, eq_intCast]
+    have : (p : 𝕄) = C (p : ℤ) := by simp [Int.cast_natCast, eq_intCast]
     rw [this, vars_C]
     apply empty_subset
   · apply Subset.trans (vars_pow _ _)
@@ -123,7 +123,7 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
       simp only [and_true, Finsupp.single_eq_same, Ne]
       exact pow_ne_zero _ hp.out.ne_zero
     rw [aeval_monomial, Finsupp.prod_single_index (by simp), map_pow, map_natCast]
-  · simp only [map_mul, aeval_X]
+  · simp [map_mul, aeval_X]
 
 theorem mul_polyOfInterest_aux2 (n : ℕ) :
     (p : 𝕄) ^ n * wittMul p n + wittPolyProdRemainder p n = wittPolyProd p n := by

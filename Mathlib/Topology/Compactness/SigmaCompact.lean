@@ -44,7 +44,7 @@ lemma isSigmaCompact_empty : IsSigmaCompact (∅ : Set X) :=
 lemma isSigmaCompact_iUnion_of_isCompact [hι : Countable ι] (s : ι → Set X)
     (hcomp : ∀ i, IsCompact (s i)) : IsSigmaCompact (⋃ i, s i) := by
   rcases isEmpty_or_nonempty ι
-  · simp only [iUnion_of_empty, isSigmaCompact_empty]
+  · simp [iUnion_of_empty, isSigmaCompact_empty]
   · -- If ι is non-empty, choose a surjection f : ℕ → ι, this yields a map ℕ → Set X.
     obtain ⟨f, hf⟩ := countable_iff_exists_surjective.mp hι
     exact ⟨s ∘ f, fun n ↦ hcomp (f n), Function.Surjective.iUnion_comp hf _⟩
@@ -225,7 +225,7 @@ theorem exists_mem_compactCovering (x : X) : ∃ n, x ∈ compactCovering X n :=
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
   ⟨⟨fun n => compactCovering X n ×ˢ compactCovering Y n, fun _ =>
       (isCompact_compactCovering _ _).prod (isCompact_compactCovering _ _), by
-      simp only [iUnion_prod_of_monotone (compactCovering_subset X) (compactCovering_subset Y),
+      simp [iUnion_prod_of_monotone (compactCovering_subset X) (compactCovering_subset Y),
         iUnion_compactCovering, univ_prod_univ]⟩⟩
 
 instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SigmaCompactSpace (X i)] :
@@ -233,14 +233,14 @@ instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, 
   refine ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
     fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, ?_⟩⟩
   rw [iUnion_univ_pi_of_monotone]
-  · simp only [iUnion_compactCovering, pi_univ]
+  · simp [iUnion_compactCovering, pi_univ]
   · exact fun i => compactCovering_subset (X i)
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (X ⊕ Y) :=
   ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
       ((isCompact_compactCovering X n).image continuous_inl).union
         ((isCompact_compactCovering Y n).image continuous_inr),
-      by simp only [iUnion_union_distrib, ← image_iUnion, iUnion_compactCovering, image_univ,
+      by simp [iUnion_union_distrib, ← image_iUnion, iUnion_compactCovering, image_univ,
         range_inl_union_range_inr]⟩⟩
 
 instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
@@ -407,7 +407,7 @@ theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by
 
 theorem mem_sdiff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,
-    mt K.shiftr.mem_iff_find_le.1 <| by simp only [find_shiftr, not_le, Nat.lt_succ_self]⟩
+    mt K.shiftr.mem_iff_find_le.1 <| by simp [find_shiftr, not_le, Nat.lt_succ_self]⟩
 
 @[deprecated (since := "2026-06-03")] alias mem_diff_shiftr_find := mem_sdiff_shiftr_find
 

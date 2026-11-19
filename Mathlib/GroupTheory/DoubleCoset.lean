@@ -43,7 +43,7 @@ lemma doubleCoset_eq_image2 (a : α) (s t : Set α) :
 
 lemma mem_doubleCoset {s t : Set α} {a b : α} :
     b ∈ doubleCoset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y := by
-  simp only [doubleCoset_eq_image2, Set.mem_image2, eq_comm]
+  simp [doubleCoset_eq_image2, Set.mem_image2, eq_comm]
 
 lemma mem_doubleCoset_self (H K : Subgroup G) (a : G) : a ∈ doubleCoset a H K :=
   mem_doubleCoset.mpr ⟨1, H.one_mem, 1, K.one_mem, (one_mul a).symm.trans (mul_one (1 * a)).symm⟩
@@ -177,10 +177,10 @@ lemma doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
   constructor
   · rintro ⟨y, h_h⟩
     refine ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.2, ?_⟩
-    simp only [← mul_assoc, inv_mul_cancel_right, InvMemClass.coe_inv]
+    simp [← mul_assoc, inv_mul_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine ⟨⟨y, hy⟩, ?_⟩
-    simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right]
+    simp [hxy, ← mul_assoc, hx, mul_inv_cancel_right]
 
 lemma doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
     ⋃ h : H, (h * a : G) • ↑K = doubleCoset a H K := by
@@ -189,10 +189,10 @@ lemma doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
   constructor
   · rintro ⟨y, h_h⟩
     refine ⟨y, y.2, a⁻¹ * y⁻¹ * x, h_h, ?_⟩
-    simp only [← mul_assoc, one_mul, mul_inv_cancel, mul_inv_cancel_right, InvMemClass.coe_inv]
+    simp [← mul_assoc, one_mul, mul_inv_cancel, mul_inv_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine ⟨⟨x, hx⟩, ?_⟩
-    simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, inv_mul_cancel_right]
+    simp [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, inv_mul_cancel_right]
 
 open Quotient QuotientGroup
 

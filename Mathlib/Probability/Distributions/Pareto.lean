@@ -44,11 +44,11 @@ lemma paretoPDF_eq (t r x : ℝ) :
     paretoPDF t r x = ENNReal.ofReal (if t ≤ x then r * t ^ r * x ^ (-(r + 1)) else 0) := rfl
 
 lemma paretoPDF_of_lt (hx : x < t) : paretoPDF t r x = 0 := by
-  simp only [paretoPDF_eq, ite_eq_right (not_le.mpr hx), ENNReal.ofReal_zero]
+  simp [paretoPDF_eq, ite_eq_right (not_le.mpr hx), ENNReal.ofReal_zero]
 
 lemma paretoPDF_of_le (hx : t ≤ x) :
     paretoPDF t r x = ENNReal.ofReal (r * t ^ r * x ^ (-(r + 1))) := by
-  simp only [paretoPDF_eq, ite_eq_left hx]
+  simp [paretoPDF_eq, ite_eq_left hx]
 
 /-- The Lebesgue integral of the Pareto pdf over reals `≤ t` equals `0`. -/
 lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
@@ -129,7 +129,7 @@ lemma cdf_paretoMeasure_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
   rw [cdf_eq_real, paretoMeasure, measureReal_def, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
-  · exact ae_of_all _ fun _ ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
+  · exact ae_of_all _ fun _ ↦ by simp [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
   · fun_prop
 
 lemma cdf_paretoMeasure_eq_lintegral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :

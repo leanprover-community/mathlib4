@@ -107,7 +107,7 @@ lemma Ideal.le_ker_atPrime_of_forall_exists_eq_mul {I : Ideal R}
     rw [← sub_add_cancel 1 y]
     exact Ideal.add_mem _ hz (hle hy)
   have hzero : x * (1 - y) = 0 := by simp [mul_sub, ← heq]
-  simp only [RingHom.mem_ker, ← this.mul_left_eq_zero, ← RingHom.map_mul, hzero, RingHom.map_zero]
+  simp [RingHom.mem_ker, ← this.mul_left_eq_zero, ← RingHom.map_mul, hzero, RingHom.map_zero]
 
 lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     RingHom.ker

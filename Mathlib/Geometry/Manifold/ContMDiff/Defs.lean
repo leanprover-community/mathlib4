@@ -103,7 +103,7 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ 
       (ContDiffWithinAtProp I I' m) where
   is_local {s x u f} u_open xu := by
     have : I.symm ⁻¹' (s ∩ u) ∩ range I = I.symm ⁻¹' s ∩ range I ∩ I.symm ⁻¹' u := by
-      simp only [inter_right_comm, preimage_inter]
+      simp [inter_right_comm, preimage_inter]
     rw [ContDiffWithinAtProp, ContDiffWithinAtProp, this]
     symm
     apply contDiffWithinAt_inter
@@ -113,12 +113,12 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ 
     apply ContinuousAt.preimage_mem_nhds I.continuous_symm.continuousAt this
   right_invariance' {s x f e} he hx h := by
     rw [ContDiffWithinAtProp] at h ⊢
-    have : I x = (I ∘ e.symm ∘ I.symm) (I (e x)) := by simp only [hx, mfld_simps]
+    have : I x = (I ∘ e.symm ∘ I.symm) (I (e x)) := by simp [hx, mfld_simps]
     rw [this] at h
-    have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
+    have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
     convert (h.comp_inter _ (this.of_le hmn)).mono_of_mem_nhdsWithin _ using 1
-    · ext y; simp only [mfld_simps]
+    · ext y; simp [mfld_simps]
     refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
         simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], ?_⟩
@@ -127,15 +127,15 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ 
     apply hf.congr
     · intro y hy
       simp only [mfld_simps] at hy
-      simp only [h, hy, mfld_simps]
-    · simp only [hx, mfld_simps]
+      simp [h, hy, mfld_simps]
+    · simp [hx, mfld_simps]
   left_invariance' {s x f e'} he' hs hx h := by
     rw [ContDiffWithinAtProp] at h ⊢
     have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ range I' := by
-      simp only [hx, mfld_simps]
+      simp [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
     convert (this.of_le hmn).comp _ h _
-    · ext y; simp only [mfld_simps]
+    · ext y; simp [mfld_simps]
     · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 
 /-- Being `Cⁿ` in the model space is a local property, invariant under `C^n` maps. Therefore,
@@ -156,8 +156,8 @@ theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x :
   simp only [ContDiffWithinAtProp, id_comp, preimage_univ, univ_inter]
   have : ContDiffWithinAt 𝕜 n id (range I) (I x) := contDiff_id.contDiffAt.contDiffWithinAt
   refine this.congr (fun y hy => ?_) ?_
-  · simp only [ModelWithCorners.right_inv I hy, mfld_simps]
-  · simp only [mfld_simps]
+  · simp [ModelWithCorners.right_inv I hy, mfld_simps]
+  · simp [mfld_simps]
 
 variable (I I') in
 /-- `ContMDiffWithinAt I I' n f x` indicates that the function `f : M → M'` between manifolds
@@ -239,7 +239,7 @@ theorem contMDiffWithinAt_univ : ContMDiffWithinAt I I' n f univ x ↔ ContMDiff
 theorem contMDiffOn_empty : ContMDiffOn I I' n f ∅ := fun _x hx ↦ hx.elim
 
 theorem contMDiffOn_univ : ContMDiffOn I I' n f univ ↔ ContMDiff I I' n f := by
-  simp only [ContMDiffOn, ContMDiff, contMDiffWithinAt_univ, forall_prop_of_true, mem_univ]
+  simp [ContMDiffOn, ContMDiff, contMDiffWithinAt_univ, forall_prop_of_true, mem_univ]
 
 /-- One can reformulate being `C^n` within a set at a point as continuity within this set at this
 point, and being `C^n` in the corresponding extended chart. -/
@@ -321,7 +321,7 @@ theorem contMDiffWithinAt_iff_source :
       ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm)
         ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
   simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff', ← continuousWithinAt_iff_source]
-  simp only [ContDiffWithinAtProp, mfld_simps, preimage_comp, comp_assoc]
+  simp [ContDiffWithinAtProp, mfld_simps, preimage_comp, comp_assoc]
 
 /-- One can reformulate being `Cⁿ` at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
@@ -526,18 +526,18 @@ theorem contMDiffOn_iff [IsManifold I n M] [IsManifold I' n M'] :
     refine ⟨fun x hx => (h x hx).continuousWithinAt, fun x y z hz => ?_⟩
     simp only [mfld_simps] at hz
     let w := (extChartAt I x).symm z
-    have : w ∈ s := by simp only [w, hz, mfld_simps]
+    have : w ∈ s := by simp [w, hz, mfld_simps]
     specialize h w this
-    have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
-    have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
+    have w1 : w ∈ (chartAt H x).source := by simp [w, hz, mfld_simps]
+    have w2 : f w ∈ (chartAt H' y).source := by simp [w, hz, mfld_simps]
     convert ((contMDiffWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
-    · simp only [w, hz, mfld_simps]
+    · simp [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_iff.mpr ?_
     refine ⟨hcont x hx, ?_⟩
     dsimp [ContDiffWithinAtProp]
-    convert! hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
+    convert! hdiff x (f x) (extChartAt I x x) (by simp [hx, mfld_simps]) using 1
     mfld_set_tac
 
 /-- zero-smoothness on a set is equivalent to continuity on this set. -/
@@ -703,7 +703,7 @@ theorem contMDiffWithinAt_insert_self :
     ContMDiffWithinAt I I' n f (insert x s) x ↔ ContMDiffWithinAt I I' n f s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_insert_self]
   refine Iff.rfl.and <| (contDiffWithinAt_congr_set ?_).trans contDiffWithinAt_insert_self
-  simp only [← map_extChartAt_nhdsWithin, nhdsWithin_insert, Filter.map_sup, Filter.map_pure,
+  simp [← map_extChartAt_nhdsWithin, nhdsWithin_insert, Filter.map_sup, Filter.map_pure,
     ← nhdsWithin_eq_iff_eventuallyEqSet]
 
 alias ⟨ContMDiffWithinAt.of_insert, _⟩ := contMDiffWithinAt_insert_self

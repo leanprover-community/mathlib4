@@ -456,10 +456,10 @@ theorem fderiv_apply_one_eq_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
   rw [← fderiv_apply_one_eq_deriv, ← map_smul]
-  simp only [smul_eq_mul, mul_one]
+  simp [smul_eq_mul, mul_one]
 
 theorem toSpanSingleton_deriv : toSpanSingleton 𝕜 (deriv f x) = fderiv 𝕜 f x := by
-  simp only [deriv, ContinuousLinearMap.toSpanSingleton_apply_map_one]
+  simp [deriv, ContinuousLinearMap.toSpanSingleton_apply_map_one]
 
 lemma fderiv_eq_deriv_mul {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
   simp [mul_comm]
@@ -486,10 +486,10 @@ theorem derivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
   ((DifferentiableWithinAt.hasDerivWithinAt h).mono st).derivWithin ht
 
 theorem derivWithin_congr_set' (y : 𝕜) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    derivWithin f s x = derivWithin f t x := by simp only [derivWithin, fderivWithin_congr_set' y h]
+    derivWithin f s x = derivWithin f t x := by simp [derivWithin, fderivWithin_congr_set' y h]
 
 theorem derivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : derivWithin f s x = derivWithin f t x := by
-  simp only [derivWithin, fderivWithin_congr_set h]
+  simp [derivWithin, fderivWithin_congr_set h]
 
 @[simp]
 theorem derivWithin_univ : derivWithin f univ = deriv f := by
@@ -502,7 +502,7 @@ theorem derivWithin_inter (ht : t ∈ 𝓝 x) : derivWithin f (s ∩ t) x = deri
   rw [fderivWithin_inter ht]
 
 theorem derivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : derivWithin f s x = deriv f x := by
-  simp only [derivWithin, deriv, fderivWithin_of_mem_nhds h]
+  simp [derivWithin, deriv, fderivWithin_of_mem_nhds h]
 
 theorem derivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x :=
   derivWithin_of_mem_nhds (hs.mem_nhds hx)

@@ -37,7 +37,7 @@ variable {C : Type*} [Category* C] [Preadditive C] {X : SimplicialObject C}
 theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
     ((P (q + 1)).f n : X _⦋n⦌ ⟶ _) = (P q).f n := by
   cases n with
-  | zero => simp only [P_f_0_eq]
+  | zero => simp [P_f_0_eq]
   | succ n =>
     simp only [P_succ, comp_add, comp_id, HomologicalComplex.add_f_apply, HomologicalComplex.comp_f,
       add_eq_left]
@@ -45,7 +45,7 @@ theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
 
 theorem Q_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
     ((Q (q + 1)).f n : X _⦋n⦌ ⟶ _) = (Q q).f n := by
-  simp only [Q, HomologicalComplex.sub_f_apply, P_is_eventually_constant hqn]
+  simp [Q, HomologicalComplex.sub_f_apply, P_is_eventually_constant hqn]
 
 /-- The endomorphism `PInfty : K[X] ⟶ K[X]` obtained from the `P q` by passing to the limit. -/
 noncomputable def PInfty : K[X] ⟶ K[X] :=
@@ -66,7 +66,7 @@ theorem PInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ X _⦋n⦌) = (P n).f 
 @[simp]
 theorem QInfty_f_0 : (QInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 0 := by
   dsimp [QInfty]
-  simp only [sub_self]
+  simp [sub_self]
 
 theorem QInfty_f (n : ℕ) : (QInfty.f n : X _⦋n⦌ ⟶ X _⦋n⦌) = (Q n).f n :=
   rfl
@@ -89,7 +89,7 @@ theorem QInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
 
 @[reassoc (attr := simp)]
 theorem PInfty_f_idem (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ _) ≫ PInfty.f n = PInfty.f n := by
-  simp only [PInfty_f, P_f_idem]
+  simp [PInfty_f, P_f_idem]
 
 @[reassoc (attr := simp)]
 theorem PInfty_idem : (PInfty : K[X] ⟶ _) ≫ PInfty = PInfty := by
@@ -108,7 +108,7 @@ theorem QInfty_idem : (QInfty : K[X] ⟶ _) ≫ QInfty = QInfty := by
 @[reassoc (attr := simp)]
 theorem PInfty_f_comp_QInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ _) ≫ QInfty.f n = 0 := by
   dsimp only [QInfty]
-  simp only [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, comp_sub, comp_id,
+  simp [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, comp_sub, comp_id,
     PInfty_f_idem, sub_self]
 
 @[reassoc (attr := simp)]
@@ -119,7 +119,7 @@ theorem PInfty_comp_QInfty : (PInfty : K[X] ⟶ _) ≫ QInfty = 0 := by
 @[reassoc (attr := simp)]
 theorem QInfty_f_comp_PInfty_f (n : ℕ) : (QInfty.f n : X _⦋n⦌ ⟶ _) ≫ PInfty.f n = 0 := by
   dsimp only [QInfty]
-  simp only [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, sub_comp, id_comp,
+  simp [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, sub_comp, id_comp,
     PInfty_f_idem, sub_self]
 
 @[reassoc (attr := simp)]
@@ -130,7 +130,7 @@ theorem QInfty_comp_PInfty : (QInfty : K[X] ⟶ _) ≫ PInfty = 0 := by
 @[simp]
 theorem PInfty_add_QInfty : (PInfty : K[X] ⟶ _) + QInfty = 𝟙 _ := by
   dsimp only [QInfty]
-  simp only [add_sub_cancel]
+  simp [add_sub_cancel]
 
 theorem PInfty_f_add_QInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ _) + QInfty.f n = 𝟙 _ :=
   congr($(PInfty_add_QInfty).f n)
@@ -161,7 +161,7 @@ theorem map_PInfty_f {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.
     (X : SimplicialObject C) (n : ℕ) :
     (PInfty : K[((whiskering C D).obj G).obj X] ⟶ _).f n =
       G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) := by
-  simp only [PInfty_f, map_P]
+  simp [PInfty_f, map_P]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

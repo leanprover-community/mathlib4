@@ -117,13 +117,13 @@ theorem det_bordered_expand (α : Fin (p + 1) → Fin n) (i j : Fin n) :
         ∑ s : Fin (p + 1),
           ((-1 : R) ^ (s.val + 1) *
             (A.submatrix (Fin.cons i (s.removeNth α)) α).det) * A (α s) j := by
-    simp only [mul_comm (A i j), mul_right_comm]
+    simp [mul_comm (A i j), mul_right_comm]
   _ = pminor A α * A i j +
       ∑ s : Fin (p + 1), -(bminor A i (α s) (s.removeNth α) * A (α s) j) := by
     simp only [det_submatrix_removeNth_eq_sign_mul_bminor, ← mul_assoc, ← pow_add]; aesop
   _ = pminor A α * A i j -
       ∑ s : Fin (p + 1), bminor A i (α s) (s.removeNth α) * A (α s) j := by
-    simp only [Finset.sum_neg_distrib, sub_eq_add_neg]
+    simp [Finset.sum_neg_distrib, sub_eq_add_neg]
 
 /-- A bordered minor is zero when its border column already occurs in the word. -/
 theorem bminor_eq_zero_of_mem_range

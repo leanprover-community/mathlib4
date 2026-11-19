@@ -95,9 +95,9 @@ theorem bell_mul_eq (m : Multiset ℕ) :
     congr! 1 with x hx
     rw [← mul_assoc, bell_mul_eq_lemma]
     simp only [Finset.mem_erase, ne_eq, mem_toFinset] at hx
-    simp only [ne_eq, hx.1, not_false_eq_true]
+    simp [ne_eq, hx.1, not_false_eq_true]
   · rw [Finset.sum_multiset_count]
-    simp only [smul_eq_mul, mul_comm]
+    simp [smul_eq_mul, mul_comm]
 
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map fun j ↦ j !).prod * ∏ j ∈ m.toFinset.erase 0, (m.count j)!) := by
@@ -164,26 +164,26 @@ theorem uniformBell_zero_right (m : ℕ) : uniformBell m 0 = 1 := by
 
 theorem uniformBell_succ_left (m n : ℕ) :
     uniformBell (m + 1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
-  simp only [uniformBell_eq, Finset.prod_range_succ, mul_comm]
+  simp [uniformBell_eq, Finset.prod_range_succ, mul_comm]
 
 theorem uniformBell_one_left (n : ℕ) : uniformBell 1 n = 1 := by
-  simp only [uniformBell_eq, Finset.range_one, Finset.prod_singleton, zero_mul,
+  simp [uniformBell_eq, Finset.range_one, Finset.prod_singleton, zero_mul,
     zero_add, choose_self]
 
 theorem uniformBell_one_right (m : ℕ) : uniformBell m 1 = 1 := by
-  simp only [uniformBell_eq, mul_one, add_tsub_cancel_right, le_refl,
+  simp [uniformBell_eq, mul_one, add_tsub_cancel_right, le_refl,
     tsub_eq_zero_of_le, choose_zero_right, Finset.prod_const_one]
 
 theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     uniformBell m n * n ! ^ m * m ! = (m * n)! := by
   convert! bell_mul_eq (replicate m n)
-  · simp only [map_replicate, prod_replicate]
+  · simp [map_replicate, prod_replicate]
   · simp only [toFinset_replicate]
     split_ifs with hm
     · rw [hm, factorial_zero, eq_comm]
       rw [show (∅ : Finset ℕ).erase 0 = ∅ from rfl, Finset.prod_empty]
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
-      simp only [Finset.prod_singleton, count_replicate_self]
+      simp [Finset.prod_singleton, count_replicate_self]
   · simp
 
 theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :

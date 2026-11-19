@@ -249,7 +249,7 @@ theorem iff_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) :
     simp only [union_singleton, mem_insert_iff, mem_ofPred_eq] at hx ⊢
     obtain ⟨m, rfl | hm, hxpow⟩ := hx
     · obtain ⟨y, ⟨hy, hy', ⟨z, rfl⟩⟩⟩ := h
-      exact ⟨_, ⟨hy, hy', by simp only [pow_mul, hxpow, one_pow]⟩⟩
+      exact ⟨_, ⟨hy, hy', by simp [pow_mul, hxpow, one_pow]⟩⟩
     · exact ⟨m, ⟨hm, hxpow⟩⟩
 
 variable (n S)
@@ -820,12 +820,12 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
       refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
       rw [map_mul, add_mul, ← mul_assoc, ha,
         mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
-      simp only [map_add, map_mul]
+      simp [map_add, map_mul]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
       refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
       rw [map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]
-      simp only [map_mul]
+      simp [map_mul]
   exists_of_eq {x y} h := ⟨1, by rw [adjoin_algebra_injective n A K h]⟩
 
 theorem eq_adjoin_primitive_root {μ : CyclotomicField n K} (h : IsPrimitiveRoot μ n) :

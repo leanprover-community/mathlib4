@@ -151,7 +151,7 @@ theorem top_mem_range_supTransfiniteIterate {i₀ : I}
     grind [Function.Injective]
   by_contra!
   suffices supTransfiniteIterate φ j₁ i₀ < supTransfiniteIterate φ j₂ i₀ by
-    simp only [eq, lt_self_iff_false] at this
+    simp [eq, lt_self_iff_false] at this
   have hj₁ : ¬ IsMax j₁ := by
     simp only [not_isMax_iff]
     exact ⟨_, hj⟩

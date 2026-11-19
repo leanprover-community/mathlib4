@@ -62,7 +62,7 @@ theorem mem_offDiag_iff_getElem {x : α × α} :
     x ∈ l.offDiag ↔ ∃ (i : ℕ) (_ : i < l.length) (j : ℕ) (_ : j < l.length),
       i ≠ j ∧ l[i] = x.1 ∧ l[j] = x.2 := by
   rcases x with ⟨x, y⟩
-  simp only [offDiag, exists_mem_zipIdx, mem_eraseIdx_iff_getElem, mem_flatMap, mem_map,
+  simp [offDiag, exists_mem_zipIdx, mem_eraseIdx_iff_getElem, mem_flatMap, mem_map,
     Nat.zero_add, Prod.ext_iff, ← exists_and_right, exists_and_left, @exists_comm α, and_assoc,
     exists_eq_left', ne_comm]
 

@@ -80,7 +80,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       y ∈ D n i ↔ ∃ x : α, ind x = i ∧ eball x (3 * 2⁻¹ ^ n) ⊆ s i ∧
         (∀ m < n, ∀ (j : ι), x ∉ D m j) ∧ edist y x < 2⁻¹ ^ n := by
     rw [Dn n i]
-    simp only [mem_iUnion, mem_eball, exists_prop]
+    simp [mem_iUnion, mem_eball, exists_prop]
   -- The sets `D n i` cover the whole space. Indeed, for each `x` we can choose `n` such that
   -- `ball x (3 / 2 ^ n) ⊆ s (ind x)`, then either `x ∈ D n i`, or `x ∈ D m i` for some `m < n`.
   have Dcov (x) : ∃ n i, x ∈ D n i := by
@@ -150,7 +150,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
           (add_le_add (edist_triangle_left _ _ _) (edist_triangle_left _ _ _))
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) + (2⁻¹ ^ (n + k + 1) + 2⁻¹ ^ m) := by
           apply_rules [ENNReal.add_lt_add]
-        _ = 2 * (2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1)) := by simp only [two_mul, add_comm]
+        _ = 2 * (2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1)) := by simp [two_mul, add_comm]
         _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) := by
           gcongr 2 * (_ + ?_); exact hpow_le (add_le_add hm le_rfl)
         _ = 3 * 2⁻¹ ^ m := by

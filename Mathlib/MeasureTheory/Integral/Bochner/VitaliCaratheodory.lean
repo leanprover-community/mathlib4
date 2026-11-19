@@ -98,7 +98,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     by_cases h : ∫⁻ x, f x ∂μ = ⊤
     · refine
         ⟨fun _ => c, fun x => ?_, lowerSemicontinuous_const, by
-          simp only [f, _root_.top_add, le_top, h]⟩
+          simp [f, _root_.top_add, le_top, h]⟩
       simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, FunLike.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
       exact Set.indicator_le_self _ _ _
@@ -108,7 +108,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
           FunLike.coe_zero, Set.piecewise_eq_indicator,
           SimpleFunc.coe_piecewise, nonpos_iff_eq_zero]
-      · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
+      · simp [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have ne_top : μ s ≠ ⊤ := by
       simpa [f, hs, hc, lt_top_iff_ne_top, SimpleFunc.coe_const,
         Function.const_apply, lintegral_const, ENNReal.coe_indicator, Set.univ_inter,
@@ -244,9 +244,9 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
         · convert g0_int using 2
           exact lintegral_congr_ae (fmeas.ae_eq_mk.fun_comp _)
         · convert g1_int
-          simp only [smeas, μs, lintegral_const, Set.univ_inter, MeasurableSet.univ,
+          simp [smeas, μs, lintegral_const, Set.univ_inter, MeasurableSet.univ,
             lintegral_indicator, mul_zero, restrict_apply]
-      _ = (∫⁻ x, f x ∂μ) + ε := by simp only [add_assoc, ENNReal.add_halves, zero_add]
+      _ = (∫⁻ x, f x ∂μ) + ε := by simp [add_assoc, ENNReal.add_halves, zero_add]
 
 variable {μ}
 
@@ -263,7 +263,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
       Integrable (fun x => (g x).toReal) μ ∧ (∫ x, (g x).toReal ∂μ) < (∫ x, ↑(f x) ∂μ) + ε := by
   have fmeas : AEMeasurable f μ := by
     convert! fint.aestronglyMeasurable.real_toNNReal.aemeasurable
-    simp only [Real.toNNReal_coe]
+    simp [Real.toNNReal_coe]
   lift ε to ℝ≥0 using εpos.le
   obtain ⟨δ, δpos, hδε⟩ : ∃ δ : ℝ≥0, 0 < δ ∧ δ < ε := exists_between εpos
   have int_f_ne_top : (∫⁻ a : α, f a ∂μ) ≠ ∞ :=
@@ -276,7 +276,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
   have Ig : (∫⁻ a : α, ENNReal.ofReal (g a).toReal ∂μ) = ∫⁻ a : α, g a ∂μ := by
     apply lintegral_congr_ae
     filter_upwards [g_lt_top] with _ hx
-    simp only [hx.ne, ENNReal.ofReal_toReal, Ne, not_false_iff]
+    simp [hx.ne, ENNReal.ofReal_toReal, Ne, not_false_iff]
   refine ⟨g, f_lt_g, gcont, g_lt_top, ?_, ?_⟩
   · refine ⟨gcont.measurable.ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
     simp only [hasFiniteIntegral_iff_norm, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
@@ -367,7 +367,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
     refine ⟨fs, fun x => by simpa only [ENNReal.coe_le_coe] using fs_le_f x, ?_⟩
     convert int_fs.le
     rw [← SimpleFunc.lintegral_eq_lintegral]
-    simp only [SimpleFunc.coe_map, Function.comp_apply]
+    simp [SimpleFunc.coe_map, Function.comp_apply]
   have int_fs_lt_top : (∫⁻ x, fs x ∂μ) ≠ ∞ := by
     refine ne_top_of_le_ne_top int_f (lintegral_mono fun x => ?_)
     simpa only [ENNReal.coe_le_coe] using fs_le_f x
@@ -458,7 +458,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
         _ < (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ∫ x : α, ↑(gm x) ∂μ := by
           apply sub_lt_sub_right
           convert! gpint
-          simp only [EReal.toReal_coe_ennreal]
+          simp [EReal.toReal_coe_ennreal]
         _ ≤ (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ((∫ x : α, ↑(fm x) ∂μ) - δ) := sub_le_sub_left gmint _
         _ = (∫ x : α, f x ∂μ) + 2 * δ := by
           simp_rw [integral_eq_integral_pos_part_sub_integral_neg_part hf]; ring
@@ -466,7 +466,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
   case aelt =>
     show ∀ᵐ x : α ∂μ, g x < ⊤
     filter_upwards [gp_lt_top] with ?_ hx
-    simp only [g, sub_eq_add_neg, Ne, (EReal.add_lt_top _ _).ne, lt_top_iff_ne_top,
+    simp [g, sub_eq_add_neg, Ne, (EReal.add_lt_top _ _).ne, lt_top_iff_ne_top,
       lt_top_iff_ne_top.1 hx, EReal.coe_ennreal_eq_top_iff, not_false_iff, EReal.neg_eq_top_iff,
       EReal.coe_ennreal_ne_bot]
   case lt =>

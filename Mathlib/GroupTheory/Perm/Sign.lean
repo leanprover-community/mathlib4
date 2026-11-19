@@ -105,7 +105,7 @@ theorem swap_induction_on [Finite α] {motive : Perm α → Prop} (f : Perm α)
   obtain ⟨l, hl⟩ := (truncSwapFactors f).out
   induction l generalizing f with
   | nil =>
-    simp only [one, hl.left.symm, List.prod_nil]
+    simp [one, hl.left.symm, List.prod_nil]
   | cons g l ih =>
     rcases hl.2 g (by simp) with ⟨x, y, hxy⟩
     rw [← hl.1, List.prod_cons, hxy.2]
@@ -167,7 +167,7 @@ def finPairsLT (n : ℕ) : Finset (Σ _ : Fin n, Fin n) :=
   (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.2
 
 theorem mem_finPairsLT {n : ℕ} {a : Σ _ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
-  simp only [finPairsLT, Fin.lt_def, true_and, mem_attachFin, mem_range, mem_univ,
+  simp [finPairsLT, Fin.lt_def, true_and, mem_attachFin, mem_range, mem_univ,
     mem_sigma]
 
 /-- `signAux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
@@ -256,7 +256,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
       rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, ite_eq_right this.not_ge]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
       have lt : 1 < a₁ := le.trans_lt ha₁
-      have h01 : Equiv.swap (0 : Fin (n + 2)) 1 1 = 0 := by simp only [swap_apply_right]
+      have h01 : Equiv.swap (0 : Fin (n + 2)) 1 1 = 0 := by simp [swap_apply_right]
       rcases le.eq_or_lt with (rfl | lt')
       · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, ite_eq_right H.not_ge]
       · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
@@ -274,7 +274,7 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (sw
   | 0, x, y => by intro; exact Fin.elim0 x
   | 1, x, y => by
     dsimp [signAux, swap, swapCore]
-    simp only [eq_iff_true_of_subsingleton, not_true,
+    simp [eq_iff_true_of_subsingleton, not_true,
                IsEmpty.forall_iff]
   | n + 2, x, y => fun hxy => by
     have h2n : 2 ≤ n + 2 := by exact le_add_self
@@ -313,7 +313,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
         split_ifs <;> rfl
       have hefx : e x ≠ e (f x) := mt e.injective.eq_iff.1 hfx
       rw [ite_eq_right hfx, ← signAux_eq_signAux2 _ _ e hy, this, signAux_mul, signAux_swap hefx]
-      simp only [neg_neg, one_mul, neg_mul]
+      simp [neg_neg, one_mul, neg_mul]
 
 /-- When the multiset `s : Multiset α` contains all nonfixed points of the permutation `f : Perm α`,
   `signAux2 f _` recursively calculates the sign of `f`. -/
@@ -583,7 +583,7 @@ theorem sign_subtypeCongr {p : α → Prop} [DecidablePred p] (ep : Perm { a // 
 @[simp]
 theorem sign_extendDomain (e : Perm α) {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p) :
     Equiv.Perm.sign (e.extendDomain f) = Equiv.Perm.sign e := by
-  simp only [Equiv.Perm.extendDomain, sign_subtypeCongr, sign_permCongr, sign_refl, mul_one]
+  simp [Equiv.Perm.extendDomain, sign_subtypeCongr, sign_permCongr, sign_refl, mul_one]
 
 @[simp]
 theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] [Fintype (Subtype p)]

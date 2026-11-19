@@ -74,7 +74,7 @@ lemma finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
 theorem finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
     finsuppLeft R S M N ι t i = rTensor N (Finsupp.lapply i) t := by
   induction t with
-  | tmul f n => simp only [finsuppLeft_apply_tmul_apply, rTensor_tmul, Finsupp.lapply_apply]
+  | tmul f n => simp [finsuppLeft_apply_tmul_apply, rTensor_tmul, Finsupp.lapply_apply]
   | add x y hx hy => simp [map_add, hx, hy]
 
 @[simp]

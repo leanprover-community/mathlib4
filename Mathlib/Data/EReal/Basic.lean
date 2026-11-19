@@ -365,7 +365,7 @@ lemma toReal_eq_zero_iff {x : EReal} : x.toReal = 0 ↔ x = 0 ∨ x = ⊤ ∨ x 
   cases x <;> simp
 
 lemma toReal_ne_zero_iff {x : EReal} : x.toReal ≠ 0 ↔ x ≠ 0 ∧ x ≠ ⊤ ∧ x ≠ ⊥ := by
-  simp only [ne_eq, toReal_eq_zero_iff, not_or]
+  simp [ne_eq, toReal_eq_zero_iff, not_or]
 
 lemma toReal_eq_toReal {x y : EReal} (hx_top : x ≠ ⊤) (hx_bot : x ≠ ⊥)
     (hy_top : y ≠ ⊤) (hy_bot : y ≠ ⊥) :
@@ -426,13 +426,13 @@ theorem coe_toReal {x : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) : (x.toReal : 
 
 theorem le_coe_toReal {x : EReal} (h : x ≠ ⊤) : x ≤ x.toReal := by
   by_cases h' : x = ⊥
-  · simp only [h', bot_le]
-  · simp only [le_refl, coe_toReal h h']
+  · simp [h', bot_le]
+  · simp [le_refl, coe_toReal h h']
 
 theorem coe_toReal_le {x : EReal} (h : x ≠ ⊥) : ↑x.toReal ≤ x := by
   by_cases h' : x = ⊤
-  · simp only [h', le_top]
-  · simp only [le_refl, coe_toReal h' h]
+  · simp [h', le_top]
+  · simp [le_refl, coe_toReal h' h]
 
 theorem eq_top_iff_forall_lt (x : EReal) : x = ⊤ ↔ ∀ y : ℝ, (y : EReal) < x := by
   constructor
@@ -511,37 +511,37 @@ lemma image_coe_Iio (x : ℝ) : Real.toEReal '' Iio x = Ioo ⊥ ↑x := by
 lemma preimage_coe_Ici (x : ℝ) : Real.toEReal ⁻¹' Ici x = Ici x := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Ici (WithBot.some (WithTop.some x))) = _
   refine preimage_comp.trans ?_
-  simp only [WithBot.preimage_coe_Ici, WithTop.preimage_coe_Ici]
+  simp [WithBot.preimage_coe_Ici, WithTop.preimage_coe_Ici]
 
 @[simp]
 lemma preimage_coe_Ioi (x : ℝ) : Real.toEReal ⁻¹' Ioi x = Ioi x := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi (WithBot.some (WithTop.some x))) = _
   refine preimage_comp.trans ?_
-  simp only [WithBot.preimage_coe_Ioi, WithTop.preimage_coe_Ioi]
+  simp [WithBot.preimage_coe_Ioi, WithTop.preimage_coe_Ioi]
 
 @[simp]
 lemma preimage_coe_Ioi_bot : Real.toEReal ⁻¹' Ioi ⊥ = univ := by
   change ((WithBot.some ∘ WithTop.some) ⁻¹' (Ioi (⊥ : WithBot (WithTop ℝ))) : Set ℝ) = _
   refine preimage_comp.trans ?_
-  simp only [WithBot.preimage_coe_Ioi_bot, preimage_univ]
+  simp [WithBot.preimage_coe_Ioi_bot, preimage_univ]
 
 @[simp]
 lemma preimage_coe_Iic (y : ℝ) : Real.toEReal ⁻¹' Iic y = Iic y := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Iic (WithBot.some (WithTop.some y))) = _
   refine preimage_comp.trans ?_
-  simp only [WithBot.preimage_coe_Iic, WithTop.preimage_coe_Iic]
+  simp [WithBot.preimage_coe_Iic, WithTop.preimage_coe_Iic]
 
 @[simp]
 lemma preimage_coe_Iio (y : ℝ) : Real.toEReal ⁻¹' Iio y = Iio y := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some (WithTop.some y))) = _
   refine preimage_comp.trans ?_
-  simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
+  simp [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
 
 @[simp]
 lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some (⊤ : WithTop ℝ))) = _
   refine preimage_comp.trans ?_
-  simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio_top]
+  simp [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio_top]
 
 @[simp]
 lemma preimage_coe_Icc (x y : ℝ) : Real.toEReal ⁻¹' Icc x y = Icc x y := by
@@ -707,7 +707,7 @@ theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) =
   | (x : ℝ≥0), ⊤ => by
     rw [mul_comm, coe_ennreal_top_mul, EReal.mul_comm, coe_ennreal_top]
   | (x : ℝ≥0), (y : ℝ≥0) => by
-    simp only [← ENNReal.coe_mul, coe_nnreal_eq_coe_real, NNReal.coe_mul, EReal.coe_mul]
+    simp [← ENNReal.coe_mul, coe_nnreal_eq_coe_real, NNReal.coe_mul, EReal.coe_mul]
 
 @[norm_cast]
 theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = n • (x : EReal) :=

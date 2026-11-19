@@ -139,13 +139,13 @@ theorem isCompact_iff_ultrafilter_le_nhds :
   refine (forall_neBot_le_iff ?_).trans ?_
   · rintro f g hle ⟨x, hxs, hxf⟩
     exact ⟨x, hxs, hxf.mono hle⟩
-  · simp only [Ultrafilter.clusterPt_iff]
+  · simp [Ultrafilter.clusterPt_iff]
 
 alias ⟨IsCompact.ultrafilter_le_nhds, _⟩ := isCompact_iff_ultrafilter_le_nhds
 
 theorem isCompact_iff_ultrafilter_le_nhds' :
     IsCompact s ↔ ∀ f : Ultrafilter X, s ∈ f → ∃ x ∈ s, ↑f ≤ 𝓝 x := by
-  simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff, Ultrafilter.mem_coe]
+  simp [isCompact_iff_ultrafilter_le_nhds, le_principal_iff, Ultrafilter.mem_coe]
 
 alias ⟨IsCompact.ultrafilter_le_nhds', _⟩ := isCompact_iff_ultrafilter_le_nhds'
 
@@ -414,7 +414,7 @@ theorem IsCompact.nhdsSet_prod_eq_biSup {K : Set X} (hK : IsCompact K) {Y} (l : 
 
 theorem IsCompact.prod_nhdsSet_eq_biSup {K : Set Y} (hK : IsCompact K) {X} (l : Filter X) :
     l ×ˢ (𝓝ˢ K) = ⨆ y ∈ K, l ×ˢ 𝓝 y := by
-  simp only [prod_comm (f := l), hK.nhdsSet_prod_eq_biSup, map_iSup]
+  simp [prod_comm (f := l), hK.nhdsSet_prod_eq_biSup, map_iSup]
 
 /-- If `s : Set (X × Y)` belongs to `l ×ˢ 𝓝 y` for all `y` from a compact set `K`,
 then it belongs to `l ×ˢ (𝓝ˢ K)`,
@@ -433,7 +433,7 @@ theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filte
 
 theorem IsCompact.inf_nhdsSet_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
     l ⊓ (𝓝ˢ K) = ⨆ x ∈ K, l ⊓ 𝓝 x := by
-  simp only [inf_comm l, hK.nhdsSet_inf_eq_biSup]
+  simp [inf_comm l, hK.nhdsSet_inf_eq_biSup]
 
 /-- If `s : Set X` belongs to `𝓝 x ⊓ l` for all `x` from a compact set `K`,
 then it belongs to `(𝓝ˢ K) ⊓ l`,
@@ -600,7 +600,7 @@ theorem cocompact_le_cofinite : cocompact X ≤ cofinite := fun s hs =>
 
 theorem cocompact_eq_cofinite (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     cocompact X = cofinite := by
-  simp only [cocompact, hasBasis_cofinite.eq_biInf, isCompact_iff_finite]
+  simp [cocompact, hasBasis_cofinite.eq_biInf, isCompact_iff_finite]
 
 /-- A filter is disjoint from the cocompact filter if and only if it contains a compact set. -/
 theorem disjoint_cocompact_left (f : Filter X) :
@@ -902,7 +902,7 @@ theorem not_compactSpace_iff : ¬CompactSpace X ↔ NoncompactSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
 instance : NoncompactSpace ℤ :=
-  noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
+  noncompactSpace_of_neBot <| by simp [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
 
 -- Note: We can't make this into an instance because it loops with `Finite.compactSpace`.
 /-- A compact discrete space is finite. -/
@@ -1230,7 +1230,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
         · exact isOpen_sUnion fun _ h => (hc h).2.1
         · convert_to (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty
           · ext
-            simp only [not_exists, not_and, Set.mem_iInter, Subtype.forall,
+            simp [not_exists, not_and, Set.mem_iInter, Subtype.forall,
               mem_compl_iff, mem_sUnion]
           apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
           · rintro ⟨U, hU⟩ ⟨U', hU'⟩
@@ -1249,7 +1249,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
   have : V'ᶜ = U := by
     refine h.eq_of_ge ⟨?_, isOpen_compl_iff.mpr V'cls, ?_⟩ (subset_compl_comm.2 V'sub)
     · exact Set.Subset.trans Uc (Set.subset_compl_comm.mp V'sub)
-    · simp only [compl_compl, V'ne]
+    · simp [compl_compl, V'ne]
   rw [← this, compl_compl]
 
 end Compact

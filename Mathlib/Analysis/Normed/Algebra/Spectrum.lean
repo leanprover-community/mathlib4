@@ -380,7 +380,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
     hasSum := fun {y} hy => by
       have norm_lt : ‖y • a‖ < 1 := by
         by_cases h : ‖a‖₊ = 0
-        · simp only [nnNorm_eq_zero.mp h, norm_zero, zero_lt_one, smul_zero]
+        · simp [nnNorm_eq_zero.mp h, norm_zero, zero_lt_one, smul_zero]
         · have nnNorm_lt : ‖y‖₊ < ‖a‖₊⁻¹ := by
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.eball_coe] using! hy
           rwa [← coe_nnNorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnNorm_smul,
@@ -391,7 +391,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
 theorem isUnit_one_sub_smul_of_lt_inv_radius {a : A} {z : 𝕜} (h : ↑‖z‖₊ < (spectralRadius 𝕜 a)⁻¹) :
     IsUnit (1 - z • a) := by
   by_cases hz : z = 0
-  · simp only [hz, isUnit_one, sub_zero, zero_smul]
+  · simp [hz, isUnit_one, sub_zero, zero_smul]
   · let u := Units.mk0 z hz
     suffices hu : IsUnit (u⁻¹ • (1 : A) - a) by
       rwa [IsUnit.smul_sub_iff_sub_inv_smul, inv_inv u] at hu
@@ -429,7 +429,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
   have h₃ : exp (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum 𝕜]
     convert (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
-    · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
+    · simp [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · exact h₀.symm
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
     Commute.isUnit_mul_iff (Algebra.commutes (exp z) (exp (a - ↑ₐ z) - 1)).symm,

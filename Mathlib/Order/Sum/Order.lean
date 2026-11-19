@@ -765,11 +765,11 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
     cases a <;> cases b
-    · simp only [elim_inr, lex_inl_inl, bot_le]
-    · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
+    · simp [elim_inr, lex_inl_inl, bot_le]
+    · simp [elim_inr, elim_inl, Lex.sep, bot_le]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
-    · simp only [elim_inl, lex_inr_inr, coe_le_coe]
+    · simp [elim_inl, lex_inr_inr, coe_le_coe]
   ⟩
 
 @[simp]
@@ -801,11 +801,11 @@ def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Lex.toLex_le_toLex, le_refl]
     cases a <;> cases b
-    · simp only [lex_inr_inr, le_top]
+    · simp [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _
-    · simp only [Lex.sep, le_top]
-    · simp only [lex_inl_inl, coe_le_coe]⟩
+    · simp [Lex.sep, le_top]
+    · simp [lex_inl_inl, coe_le_coe]⟩
 
 @[simp]
 theorem orderIsoSumLexPUnit_top : @orderIsoSumLexPUnit α _ ⊤ = toLex (inr PUnit.unit) :=

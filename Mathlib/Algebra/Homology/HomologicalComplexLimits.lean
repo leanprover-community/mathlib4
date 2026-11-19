@@ -52,7 +52,7 @@ def isLimitOfEval (s : Cone F)
     apply (hs i).uniq ((eval C c i).mapCone t)
     intro j
     dsimp
-    simp only [← comp_f, hm]
+    simp [← comp_f, hm]
 
 variable [∀ (n : ι), HasLimit (F ⋙ eval C c n)]
 
@@ -128,7 +128,7 @@ def isColimitOfEval (s : Cocone F)
     apply (hs i).uniq ((eval C c i).mapCocone t)
     intro j
     dsimp
-    simp only [← comp_f, hm]
+    simp [← comp_f, hm]
 
 
 variable [∀ (n : ι), HasColimit (F ⋙ HomologicalComplex.eval C c n)]

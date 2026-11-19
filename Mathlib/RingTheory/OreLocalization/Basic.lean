@@ -142,7 +142,7 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
       simp only [smul_add]
       use sd, 1
       simp only [one_smul, one_mul, mul_smul, ← hb, Submonoid.smul_def, ← mul_assoc, and_true]
-      simp only [smul_smul, hd])
+      simp [smul_smul, hd])
 
 @[no_expose]
 instance : Add X[S⁻¹] :=
@@ -226,7 +226,7 @@ protected theorem smul_add (z : R[S⁻¹]) (x y : X[S⁻¹]) :
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
   rw [← Subtype.coe_eq_of_eq_mk ha]
   repeat rw [oreDiv_smul_oreDiv]
-  simp only [smul_add, add_oreDiv]
+  simp [smul_add, add_oreDiv]
 
 instance : DistribMulAction R[S⁻¹] X[S⁻¹] where
   smul_zero := OreLocalization.smul_zero
@@ -236,7 +236,7 @@ instance {R₀} [Monoid R₀] [MulAction R₀ X] [MulAction R₀ R]
     [IsScalarTower R₀ R X] [IsScalarTower R₀ R R] :
     DistribMulAction R₀ X[S⁻¹] where
   smul_zero _ := by rw [← smul_one_oreDiv_one_smul, smul_zero]
-  smul_add _ _ _ := by simp only [← smul_one_oreDiv_one_smul, smul_add]
+  smul_add _ _ _ := by simp [← smul_one_oreDiv_one_smul, smul_add]
 
 end DistribMulAction
 

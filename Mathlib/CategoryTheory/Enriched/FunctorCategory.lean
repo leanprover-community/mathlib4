@@ -87,10 +87,10 @@ noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁
   toFun τ := end_.lift (fun j ↦ eHomEquiv V (τ.app j)) (fun i j f ↦ by
     trans eHomEquiv V (τ.app i ≫ F₂.map f)
     · dsimp
-      simp only [eHomEquiv_comp, tensorHom_def_assoc, MonoidalCategory.whiskerRight_id,
+      simp [eHomEquiv_comp, tensorHom_def_assoc, MonoidalCategory.whiskerRight_id,
         ← unitors_equal, assoc, Iso.inv_hom_id_assoc, eHomWhiskerLeft]
     · dsimp
-      simp only [← NatTrans.naturality, eHomEquiv_comp, tensorHom_def', id_whiskerLeft,
+      simp [← NatTrans.naturality, eHomEquiv_comp, tensorHom_def', id_whiskerLeft,
         assoc, Iso.inv_hom_id_assoc, eHomWhiskerRight])
   invFun g :=
     { app := fun j ↦ (eHomEquiv V).symm (g ≫ end_.π _ j)
@@ -180,7 +180,7 @@ lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
     (homEquiv V) (f ≫ g) = (λ_ (𝟙_ V)).inv ≫ ((homEquiv V) f ⊗ₘ (homEquiv V) g) ≫
     enrichedComp V F₁ F₂ F₃ := by
   ext j
-  simp only [homEquiv_apply_π, NatTrans.comp_app, eHomEquiv_comp, assoc,
+  simp [homEquiv_apply_π, NatTrans.comp_app, eHomEquiv_comp, assoc,
     enrichedComp_π, Functor.op_obj, tensorHom_comp_tensorHom_assoc]
 
 end

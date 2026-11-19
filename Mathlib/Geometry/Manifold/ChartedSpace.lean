@@ -199,7 +199,7 @@ theorem iUnion_source_chartAt : (⋃ x : M, (chartAt H x).source) = (univ : Set 
 theorem ChartedSpace.isOpen_iff (s : Set M) :
     IsOpen s ↔ ∀ x : M, IsOpen <| chartAt H x '' ((chartAt H x).source ∩ s) := by
   rw [isOpen_iff_of_cover (fun i ↦ (chartAt H i).open_source) (iUnion_source_chartAt H M)]
-  simp only [(chartAt H _).isOpen_image_iff_of_subset_source inter_subset_left]
+  simp [(chartAt H _).isOpen_image_iff_of_subset_source inter_subset_left]
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
 Especially useful for working with `BasicContMDiffVectorBundleCore`. -/
@@ -295,7 +295,7 @@ def ChartedSpace.comp (H : Type*) [TopologicalSpace H] (H' : Type*) [Topological
     ChartedSpace H M where
   atlas := image2 OpenPartialHomeomorph.trans (atlas H' M) (atlas H H')
   chartAt p := (chartAt H' p).trans (chartAt H (chartAt H' p p))
-  mem_chart_source p := by simp only [mfld_simps]
+  mem_chart_source p := by simp [mfld_simps]
   chart_mem_atlas p := ⟨chartAt _ p, chart_mem_atlas _ p, chartAt _ _, chart_mem_atlas _ _, rfl⟩
 
 theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
@@ -649,7 +649,7 @@ theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.sourc
   apply TopologicalSpace.GenerateOpen.basic
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine ⟨e, he, univ, isOpen_univ, ?_⟩
-  simp only [Set.univ_inter, Set.preimage_univ]
+  simp [Set.univ_inter, Set.preimage_univ]
 
 theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
   have E : e.target ∩ e.symm ⁻¹' e.source = e.target :=

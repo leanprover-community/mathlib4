@@ -147,7 +147,7 @@ notation3 "∯ " (...) " in " "T(" c ", " R ")" ", " r:(scoped f => torusIntegra
 
 theorem torusIntegral_radius_zero (hn : n ≠ 0) (f : ℂⁿ → E) (c : ℂⁿ) :
     (∯ x in T(c, 0), f x) = 0 := by
-  simp only [torusIntegral, Pi.zero_apply, ofReal_zero, zero_mul, Fin.prod_const,
+  simp [torusIntegral, Pi.zero_apply, ofReal_zero, zero_mul, Fin.prod_const,
     zero_pow hn, zero_smul, integral_zero]
 
 theorem torusIntegral_neg (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :
@@ -164,7 +164,7 @@ theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
 
 theorem torusIntegral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
-  simp only [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
+  simp [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
 
 theorem torusIntegral_const_mul (a : ℂ) (f : ℂⁿ → ℂ) (c : ℂⁿ) (R : ℝⁿ) :
     (∯ x in T(c, R), a * f x) = a * ∯ x in T(c, R), f x :=
@@ -182,13 +182,13 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
               (∏ i : Fin n, |R i|) * ‖f (torusMap c R θ)‖ := by simp [norm_smul]
           _ ≤ (∏ i : Fin n, |R i|) * C := mul_le_mul_of_nonneg_left (hf _) <| by positivity
     _ = ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C := by
-      simp only [Pi.zero_def, Real.volume_Icc_pi_toReal fun _ => Real.two_pi_pos.le, sub_zero,
+      simp [Pi.zero_def, Real.volume_Icc_pi_toReal fun _ => Real.two_pi_pos.le, sub_zero,
         Fin.prod_const, mul_assoc, mul_comm ((2 * π) ^ (n : ℕ))]
 
 @[simp]
 theorem torusIntegral_dim0 [CompleteSpace E]
     (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
-  simp only [torusIntegral, Fin.prod_univ_zero, one_smul,
+  simp [torusIntegral, Fin.prod_univ_zero, one_smul,
     Subsingleton.elim (fun _ : Fin 0 => 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
     integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
     Measure.dirac_apply_of_mem (mem_singleton _), Subsingleton.elim (torusMap c R 0) c]
@@ -229,7 +229,7 @@ theorem torusIntegral_succAbove
     simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,
       i.insertNth_apply_succAbove, (· ∘ ·), Fin.insertNthEquiv, Equiv.coe_fn_mk]
     congr 2
-    simp only [funext_iff, i.forall_iff_succAbove, circleMap, Fin.insertNth_apply_same,
+    simp [funext_iff, i.forall_iff_succAbove, circleMap, Fin.insertNth_apply_same,
       Fin.insertNth_apply_succAbove, imp_true_iff, and_self_iff]
   · have := hf.function_integrable
     rwa [← hem.integrableOn_comp_preimage e.measurableEmbedding, heπ] at this

@@ -170,7 +170,7 @@ theorem aeval_minpolyGen (pb : PowerBasis A S) : aeval pb.gen (minpolyGen pb) = 
   simp_rw [minpolyGen, map_sub, map_sum, map_mul, map_pow, aeval_C, ← Algebra.smul_def, aeval_X]
   refine sub_eq_zero.mpr ((pb.basis.linearCombination_repr (pb.gen ^ pb.dim)).symm.trans ?_)
   rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype] <;>
-    simp only [pb.coe_basis, zero_smul, imp_true_iff]
+    simp [pb.coe_basis, zero_smul, imp_true_iff]
 
 theorem minpolyGen_monic (pb : PowerBasis A S) : Monic (minpolyGen pb) := by
   nontriviality A
@@ -252,7 +252,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
   · rw [(Subsingleton.elim _ _ : f = 0), aeval_zero, map_zero, aeval_zero]
   rw [← aeval_modByMonic_eq_self_of_root (minpoly.aeval _ _), ← aeval_modByMonic_eq_self_of_root hy]
   by_cases hf : f %ₘ minpoly A pb.gen = 0
-  · simp only [hf, map_zero]
+  · simp [hf, map_zero]
   have : (f %ₘ minpoly A pb.gen).natDegree < pb.dim := by
     rw [← pb.natDegree_minpoly]
     apply natDegree_lt_natDegree hf
@@ -277,7 +277,7 @@ theorem constr_pow_mul (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A p
       pb.basis.constr A (fun i => y ^ (i : ℕ)) x * pb.basis.constr A (fun i => y ^ (i : ℕ)) x' := by
   obtain ⟨f, rfl⟩ := pb.exists_eq_aeval' x
   obtain ⟨g, rfl⟩ := pb.exists_eq_aeval' x'
-  simp only [← aeval_mul, pb.constr_pow_aeval hy]
+  simp [← aeval_mul, pb.constr_pow_aeval hy]
 
 /-- `pb.lift y hy` is the algebra map sending `pb.gen` to `y`,
 where `hy` states the higher powers of `y` are the same as the higher powers of `pb.gen`.
@@ -434,7 +434,7 @@ theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
   have := minpoly.monic hx
   refine ⟨f %ₘ minpoly R x, (degree_modByMonic_lt _ this).trans_le degree_le_natDegree, ?_⟩
   conv_lhs => rw [← modByMonic_add_div f (minpoly R x)]
-  simp only [add_zero, zero_mul, minpoly.aeval, aeval_add, map_mul]
+  simp [add_zero, zero_mul, minpoly.aeval, aeval_add, map_mul]
 
 namespace PowerBasis
 

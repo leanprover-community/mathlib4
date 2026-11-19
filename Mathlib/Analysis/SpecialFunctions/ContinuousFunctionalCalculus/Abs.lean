@@ -112,7 +112,7 @@ lemma abs_nnrpow_two_mul (a : A) (x : ℝ≥0) :
 
 lemma abs_nnrpow (a : A) (x : ℝ≥0) :
     abs a ^ x = (star a * a) ^ (x / 2) := by
-  simp only [← abs_nnrpow_two_mul, mul_div_left_comm, ne_eq, OfNat.ofNat_ne_zero,
+  simp [← abs_nnrpow_two_mul, mul_div_left_comm, ne_eq, OfNat.ofNat_ne_zero,
     not_false_eq_true, div_self, mul_one]
 
 @[grind =]

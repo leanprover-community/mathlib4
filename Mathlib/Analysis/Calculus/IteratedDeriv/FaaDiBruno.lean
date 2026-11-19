@@ -139,7 +139,7 @@ theorem iteratedDerivWithin_scomp_eq_sum_orderedFinpartition
         (∏ j, iteratedDerivWithin (c.partSize j) f s x) •
           iteratedDerivWithin c.length g t (f x) := by
   rw [iteratedDerivWithin_vcomp_eq_sum_orderedFinpartition hg hf ht hs hx hst hi]
-  simp only [iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
+  simp [iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
 
 theorem iteratedDeriv_scomp_eq_sum_orderedFinpartition
     (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContDiffAt 𝕜 n f x) (hi : i ≤ n) :
@@ -147,7 +147,7 @@ theorem iteratedDeriv_scomp_eq_sum_orderedFinpartition
       ∑ c : OrderedFinpartition i,
         (∏ j, iteratedDeriv (c.partSize j) f x) • iteratedDeriv c.length g (f x) := by
   rw [iteratedDeriv_vcomp_eq_sum_orderedFinpartition hg hf hi]
-  simp only [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod]
+  simp [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod]
 
 theorem iteratedDerivWithin_scomp_two
     (hg : ContDiffWithinAt 𝕜 2 g t (f x)) (hf : ContDiffWithinAt 𝕜 2 f s x)
@@ -200,7 +200,7 @@ theorem iteratedDerivWithin_comp_eq_sum_orderedFinpartition
       ∑ c : OrderedFinpartition i,
         iteratedDerivWithin c.length g t (f x) * ∏ j, iteratedDerivWithin (c.partSize j) f s x := by
   rw [iteratedDerivWithin_scomp_eq_sum_orderedFinpartition hg hf ht hs hx hst hi]
-  simp only [smul_eq_mul, mul_comm]
+  simp [smul_eq_mul, mul_comm]
 
 theorem iteratedDeriv_comp_eq_sum_orderedFinpartition
     (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContDiffAt 𝕜 n f x) (hi : i ≤ n) :
@@ -208,7 +208,7 @@ theorem iteratedDeriv_comp_eq_sum_orderedFinpartition
       ∑ c : OrderedFinpartition i,
         iteratedDeriv c.length g (f x) * ∏ j, iteratedDeriv (c.partSize j) f x := by
   rw [iteratedDeriv_scomp_eq_sum_orderedFinpartition hg hf hi]
-  simp only [smul_eq_mul, mul_comm]
+  simp [smul_eq_mul, mul_comm]
 
 theorem iteratedDerivWithin_comp_two
     (hg : ContDiffWithinAt 𝕜 2 g t (f x)) (hf : ContDiffWithinAt 𝕜 2 f s x)
@@ -217,7 +217,7 @@ theorem iteratedDerivWithin_comp_two
       iteratedDerivWithin 2 g t (f x) * derivWithin f s x ^ 2 +
       derivWithin g t (f x) * iteratedDerivWithin 2 f s x := by
   rw [iteratedDerivWithin_scomp_two hg hf ht hs hx hst]
-  simp only [smul_eq_mul, mul_comm]
+  simp [smul_eq_mul, mul_comm]
 
 theorem iteratedDeriv_comp_two (hg : ContDiffAt 𝕜 2 g (f x)) (hf : ContDiffAt 𝕜 2 f x) :
     iteratedDeriv 2 (g ∘ f) x =

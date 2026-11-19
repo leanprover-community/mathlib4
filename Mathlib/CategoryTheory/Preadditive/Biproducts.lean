@@ -514,7 +514,7 @@ def isBilimitBinaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSpli
         splitEpiOfIdempotentOfIsColimitCofork_section_]
       dsimp only [binaryBiconeOfIsSplitMonoOfCokernel_pt]
       rw [isColimitCoforkOfCokernelCofork_desc, isCokernelEpiComp_desc]
-      simp only [binaryBiconeOfIsSplitMonoOfCokernel_inl, Cofork.IsColimit.π_desc,
+      simp [binaryBiconeOfIsSplitMonoOfCokernel_inl, Cofork.IsColimit.π_desc,
         cokernelCoforkOfCofork_π, Cofork.π_ofπ, add_sub_cancel])
 
 set_option backward.isDefEq.respectTransparency false in
@@ -608,7 +608,7 @@ def binaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f] {c :
       dsimp only [kernelForkOfFork_ι]
       let := mono_of_isLimit_fork i
       apply zero_of_comp_mono c.ι
-      simp only [comp_sub, Category.comp_id, Category.assoc, sub_self, Fork.IsLimit.lift_ι,
+      simp [comp_sub, Category.comp_id, Category.assoc, sub_self, Fork.IsLimit.lift_ι,
         Fork.ι_ofι, IsSplitEpi.id_assoc]
     inr_snd := by simp }
 
@@ -695,7 +695,7 @@ theorem Biprod.ofComponents_eq (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) :
         (biprod.inr ≫ f ≫ biprod.fst) (biprod.inr ≫ f ≫ biprod.snd) =
       f := by
   ext <;>
-    simp only [Category.comp_id, biprod.inr_fst, biprod.inr_snd, biprod.inl_snd, add_zero, zero_add,
+    simp [Category.comp_id, biprod.inr_fst, biprod.inr_snd, biprod.inl_snd, add_zero, zero_add,
       Biprod.inl_ofComponents, Biprod.inr_ofComponents, Category.assoc,
       comp_zero, biprod.inl_fst, Preadditive.add_comp]
 
@@ -708,7 +708,7 @@ theorem Biprod.ofComponents_comp {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} (f₁₁ : 
         (f₂₁ ≫ g₁₂ + f₂₂ ≫ g₂₂) := by
   dsimp [Biprod.ofComponents]
   ext <;>
-    simp only [add_comp, comp_add, add_zero, zero_add, biprod.inl_fst,
+    simp [add_comp, comp_add, add_zero, zero_add, biprod.inl_fst,
       biprod.inl_snd, biprod.inr_fst, biprod.inr_snd, biprod.inl_fst_assoc, biprod.inl_snd_assoc,
       biprod.inr_fst_assoc, biprod.inr_snd_assoc, comp_zero, zero_comp, Category.assoc]
 
@@ -807,7 +807,7 @@ theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [Is
     conv_lhs =>
       slice 1 3
       rw [a₁]
-    simp only [zero_comp]
+    simp [zero_comp]
   exact nz (h₁.symm.trans h₀)
 
 end

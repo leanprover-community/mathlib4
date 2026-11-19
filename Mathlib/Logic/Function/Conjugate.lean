@@ -49,7 +49,7 @@ protected theorem eq (h : Semiconj f ga gb) (x : α) : f (ga x) = gb (f x) :=
 then it semiconjugates `ga ∘ ga'` to `gb ∘ gb'`. -/
 theorem comp_right (h : Semiconj f ga gb) (h' : Semiconj f ga' gb') :
     Semiconj f (ga ∘ ga') (gb ∘ gb') := fun x ↦ by
-  simp only [comp_apply, h.eq, h'.eq]
+  simp [comp_apply, h.eq, h'.eq]
 
 /-- If `fab : α → β` semiconjugates `ga` to `gb` and `fbc : β → γ` semiconjugates `gb` to `gc`,
 then `fbc ∘ fab` semiconjugates `ga` to `gc`.
@@ -57,7 +57,7 @@ then `fbc ∘ fab` semiconjugates `ga` to `gc`.
 See also `Function.Semiconj.comp_left` for a version with reversed arguments. -/
 protected theorem trans (hab : Semiconj fab ga gb) (hbc : Semiconj fbc gb gc) :
     Semiconj (fbc ∘ fab) ga gc := fun x ↦ by
-  simp only [comp_apply, hab.eq, hbc.eq]
+  simp [comp_apply, hab.eq, hbc.eq]
 
 /-- If `fbc : β → γ` semiconjugates `gb` to `gc` and `fab : α → β` semiconjugates `ga` to `gb`,
 then `fbc ∘ fab` semiconjugates `ga` to `gc`.
@@ -168,19 +168,19 @@ protected theorem comp_eq (h : Semiconj₂ f ga gb) : bicompr f ga = bicompl gb 
 theorem id_left (op : α → α → α) : Semiconj₂ id op op := fun _ _ ↦ rfl
 
 theorem comp {f' : β → γ} {gc : γ → γ → γ} (hf' : Semiconj₂ f' gb gc) (hf : Semiconj₂ f ga gb) :
-    Semiconj₂ (f' ∘ f) ga gc := fun x y ↦ by simp only [hf'.eq, hf.eq, comp_apply]
+    Semiconj₂ (f' ∘ f) ga gc := fun x y ↦ by simp [hf'.eq, hf.eq, comp_apply]
 
 theorem isAssociative_right [Std.Associative ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
     Std.Associative gb :=
-  ⟨h_surj.forall₃.2 fun x₁ x₂ x₃ ↦ by simp only [← h.eq, Std.Associative.assoc (op := ga)]⟩
+  ⟨h_surj.forall₃.2 fun x₁ x₂ x₃ ↦ by simp [← h.eq, Std.Associative.assoc (op := ga)]⟩
 
 theorem isAssociative_left [Std.Associative gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
     Std.Associative ga :=
-  ⟨fun x₁ x₂ x₃ ↦ h_inj <| by simp only [h.eq, Std.Associative.assoc (op := gb)]⟩
+  ⟨fun x₁ x₂ x₃ ↦ h_inj <| by simp [h.eq, Std.Associative.assoc (op := gb)]⟩
 
 theorem isIdempotent_right [Std.IdempotentOp ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
     Std.IdempotentOp gb :=
-  ⟨h_surj.forall.2 fun x ↦ by simp only [← h.eq, Std.IdempotentOp.idempotent (op := ga)]⟩
+  ⟨h_surj.forall.2 fun x ↦ by simp [← h.eq, Std.IdempotentOp.idempotent (op := ga)]⟩
 
 theorem isIdempotent_left [Std.IdempotentOp gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
     Std.IdempotentOp ga :=

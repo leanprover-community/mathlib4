@@ -108,7 +108,7 @@ theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _⦋n⦌) :
       rw [← h', assoc, QInfty_f, decomposition_Q, Preadditive.sum_comp, Preadditive.comp_sum,
         Finset.sum_eq_zero]
       intro i _
-      simp only [assoc, σ_comp_πSummand_id_eq_zero, comp_zero]
+      simp [assoc, σ_comp_πSummand_id_eq_zero, comp_zero]
   · intro h
     rw [← comp_id f, assoc, s.decomposition_id, Preadditive.sum_comp, Preadditive.comp_sum,
       Fintype.sum_eq_zero]
@@ -117,7 +117,7 @@ theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _⦋n⦌) :
     · dsimp at hA
       subst hA
       rw [assoc, reassoc_of% h, zero_comp]
-    · simp only [assoc, s.cofan_inj_comp_PInfty_eq_zero A hA, comp_zero]
+    · simp [assoc, s.cofan_inj_comp_PInfty_eq_zero A hA, comp_zero]
 
 @[reassoc (attr := simp)]
 theorem PInfty_comp_πSummand_id (n : ℕ) :
@@ -162,7 +162,7 @@ as the normalized chain complex of `X` because of the isomorphism
 noncomputable def nondegComplex : ChainComplex C ℕ where
   X := s.N
   d := s.d
-  shape i j hij := by simp only [d, K[X].shape i j hij, zero_comp, comp_zero]
+  shape i j hij := by simp [d, K[X].shape i j hij, zero_comp, comp_zero]
   d_comp_d' i j k _ _ := by
     simp only [d, assoc]
     have eq : K[X].d i j ≫ 𝟙 (X.obj (op ⦋j⦌)) ≫ K[X].d j k ≫
@@ -175,7 +175,7 @@ noncomputable def nondegComplex : ChainComplex C ℕ where
     swap
     · intro A hA
       simp only [Finset.mem_compl, Finset.mem_singleton] at hA
-      simp only [assoc, ιSummand_comp_d_comp_πSummand_eq_zero _ _ _ _ hA, comp_zero]
+      simp [assoc, ιSummand_comp_d_comp_πSummand_eq_zero _ _ _ _ hA, comp_zero]
     rw [eq, comp_zero]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -207,12 +207,12 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
             rw [s.decomposition_id, sum_comp, sum_comp, Finset.sum_eq_single (IndexSet.id (op ⦋i⦌)),
                 assoc, assoc]
             · intro A _ hA
-              simp only [assoc, s.ιSummand_comp_d_comp_πSummand_eq_zero _ _ _ hA, comp_zero]
-            · simp only [Finset.mem_univ, not_true, IsEmpty.forall_iff] }
+              simp [assoc, s.ιSummand_comp_d_comp_πSummand_eq_zero _ _ _ hA, comp_zero]
+            · simp [Finset.mem_univ, not_true, IsEmpty.forall_iff] }
       comm := by
         ext n
         dsimp
-        simp only [comp_id, PInfty_comp_πSummand_id] }
+        simp [comp_id, PInfty_comp_πSummand_id] }
   hom_inv_id := by
     ext n
     simp only [assoc, PInfty_comp_πSummand_id, Karoubi.comp_f, HomologicalComplex.comp_f,
@@ -220,7 +220,7 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
     rfl
   inv_hom_id := by
     ext n
-    simp only [πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty, Karoubi.comp_f,
+    simp [πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty, Karoubi.comp_f,
       HomologicalComplex.comp_f, N₁_obj_p, Karoubi.id_f]
 
 @[reassoc (attr := simp)]

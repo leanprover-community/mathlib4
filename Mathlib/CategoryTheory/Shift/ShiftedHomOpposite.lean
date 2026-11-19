@@ -51,7 +51,7 @@ lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
   rw [ShiftedHom.opEquiv_symm_apply, ShiftedHom.opEquiv_symm_apply,
     ShiftedHom.comp]
   dsimp
-  simp only [assoc, Functor.map_comp]
+  simp [assoc, Functor.map_comp]
 
 lemma opEquiv_symm_comp {a b : ℤ}
     (f : ShiftedHom (Opposite.op Z) (Opposite.op Y) a)

@@ -31,7 +31,7 @@ private lemma isRestricted_comp_uniqueEquiv :
     (fun (t : Unit →₀ ℕ) ↦ ‖MvPowerSeries.coeff t f‖ * t.prod (fun _ x ↦ c ^ x)) =
     (fun (n : ℕ) ↦ ‖coeff n f‖ * c ^ n) ∘ Finsupp.uniqueEquiv () := by
   funext t
-  simp only [Function.comp_apply, Finsupp.uniqueEquiv_apply, PUnit.default_eq_unit,
+  simp [Function.comp_apply, Finsupp.uniqueEquiv_apply, PUnit.default_eq_unit,
     Finsupp.prod_pow, Finset.univ_unique, Finset.prod_singleton, coeff,
     show (Finsupp.single () (t ())) = t by grind]
 

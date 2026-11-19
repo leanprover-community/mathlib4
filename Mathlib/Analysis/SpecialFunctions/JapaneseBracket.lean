@@ -68,7 +68,7 @@ variable (E)
 theorem closedBall_rpow_sub_one_eq_empty_aux {r t : ℝ} (hr : 0 < r) (ht : 1 < t) :
     Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1) = ∅ := by
   rw [Metric.closedBall_eq_empty, sub_neg]
-  exact Real.rpow_lt_one_of_one_lt_of_neg ht (by simp only [hr, Right.neg_neg_iff, inv_pos])
+  exact Real.rpow_lt_one_of_one_lt_of_neg ht (by simp [hr, Right.neg_neg_iff, inv_pos])
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable {E}
@@ -125,7 +125,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
       (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr) measure_ball_lt_top
   · -- The integral from 1 to ∞ is zero:
     have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
-      simp only [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
+      simp [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
     -- The integral over the constant zero function is finite:
     rw [setLIntegral_congr_fun measurableSet_Ioi h_int'', lintegral_const 0,
       zero_mul]

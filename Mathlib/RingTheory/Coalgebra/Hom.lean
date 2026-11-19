@@ -199,7 +199,7 @@ equalities. -/
 protected def copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₗc[R] B :=
   { toLinearMap := (f : A →ₗ[R] B).copy f' h
     counit_comp := by ext; simp_all
-    map_comp_comul := by simp only [(f : A →ₗ[R] B).copy_eq f' h,
+    map_comp_comul := by simp [(f : A →ₗ[R] B).copy_eq f' h,
       CoalgHomClass.map_comp_comul] }
 
 @[simp]
@@ -215,7 +215,7 @@ variable (R A)
 @[simps!] protected def id : A →ₗc[R] A :=
   { LinearMap.id with
     counit_comp := by ext; rfl
-    map_comp_comul := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
+    map_comp_comul := by simp [map_id, LinearMap.id_comp, LinearMap.comp_id] }
 
 variable {R A}
 
@@ -290,7 +290,7 @@ noncomputable def counitCoalgHom : A →ₗc[R] R :=
     counit_comp := by ext; simp
     map_comp_comul := by
       ext
-      simp only [LinearMap.coe_comp, Function.comp_apply, CommSemiring.comul_apply,
+      simp [LinearMap.coe_comp, Function.comp_apply, CommSemiring.comul_apply,
         ← LinearMap.lTensor_comp_rTensor, rTensor_counit_comul, LinearMap.lTensor_tmul] }
 
 @[simp]

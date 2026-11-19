@@ -545,7 +545,7 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
   | (s : NonemptyInterval α), (t : NonemptyInterval α) => by
     simp only [coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc, inf_coe]
     split_ifs with h
-    · simp only [coe_coe, NonemptyInterval.coe_def]
+    · simp [coe_coe, NonemptyInterval.coe_def]
     · refine (Icc_eq_empty <| mt ?_ h).symm
       exact fun h ↦ ⟨le_sup_left.trans <| h.trans inf_le_right,
         le_sup_right.trans <| h.trans inf_le_left⟩

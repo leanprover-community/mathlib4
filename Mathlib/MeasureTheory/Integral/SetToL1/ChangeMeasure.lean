@@ -110,7 +110,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
       (fun f : α →₁[μ] G =>
           (Integrable.of_measure_le_smul hc' hμ'_le (L1.integrable_coeFn f)).toL1 f) =
         0 := by
-      ext1 f; ext1; simp_rw [hμ'0]; simp only [ae_zero, EventuallyEq, eventually_bot]
+      ext1 f; ext1; simp_rw [hμ'0]; simp [ae_zero, EventuallyEq, eventually_bot]
     rw [h_im_zero]
     exact continuous_zero
   rw [Metric.continuous_iff]

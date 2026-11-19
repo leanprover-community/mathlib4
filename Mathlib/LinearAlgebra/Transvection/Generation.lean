@@ -132,7 +132,7 @@ theorem fixedSubmodule_transvection_mul {f : Dual K V} {v : V}
     simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap, mul_apply_eq_comp]
     suffices transvection hfv x = x by
       simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap] at hx
-      simp only [hx, this]
+      simp [hx, this]
     rw [← LinearEquiv.coe_toLinearMap, ← mem_fixedSubmodule_iff]
     exact ht hx
   · -- u ∈ e.fixedSubmodule
@@ -334,7 +334,7 @@ private theorem exists_dual_of_fixedReduce_ne_smul
       ← mul_smul, mul_inv_cancel₀ hfu]
   rw [← hspan, ← le_ker_iff_map] at hf
   refine ⟨f, v, ?_, hf,
-    by simp only [_root_.map_smul, smul_eq_mul, v_def, inv_mul_cancel₀ hfu]⟩
+    by simp [_root_.map_smul, smul_eq_mul, v_def, inv_mul_cancel₀ hfu]⟩
   rw [← LinearIndependent.pair_smul_smul_iff (Ne.isUnit hfu).inv (Ne.isUnit hfu).inv] at hu
   simpa only [← LinearMap.map_smul, ← LinearEquiv.map_smul, ← v_def] using hu
 

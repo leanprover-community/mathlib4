@@ -116,23 +116,23 @@ variable (α : F ≅ G)
 
 @[to_dual (attr := simp) cancel_natIso_inv_right]
 theorem cancel_natIso_hom_left {X : C} {Y : D} (g g' : G.obj X ⟶ Y) :
-    α.hom.app X ≫ g = α.hom.app X ≫ g' ↔ g = g' := by simp only [cancel_epi, refl]
+    α.hom.app X ≫ g = α.hom.app X ≫ g' ↔ g = g' := by simp [cancel_epi, refl]
 
 @[to_dual (attr := simp) cancel_natIso_hom_right]
 theorem cancel_natIso_inv_left {X : C} {Y : D} (g g' : F.obj X ⟶ Y) :
-    α.inv.app X ≫ g = α.inv.app X ≫ g' ↔ g = g' := by simp only [cancel_epi, refl]
+    α.inv.app X ≫ g = α.inv.app X ≫ g' ↔ g = g' := by simp [cancel_epi, refl]
 
 @[simp, to_dual none]
 theorem cancel_natIso_hom_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ F.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ F.obj Y) :
     f ≫ g ≫ α.hom.app Y = f' ≫ g' ≫ α.hom.app Y ↔ f ≫ g = f' ≫ g' := by
-  simp only [← Category.assoc, cancel_mono, refl]
+  simp [← Category.assoc, cancel_mono, refl]
 
 @[simp, to_dual none]
 theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ G.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ G.obj Y) :
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
-  simp only [← Category.assoc, cancel_mono, refl]
+  simp [← Category.assoc, cancel_mono, refl]
 
 @[to_dual (attr := simp) inv_hom_app]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by

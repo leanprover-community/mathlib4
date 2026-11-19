@@ -94,7 +94,7 @@ theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDi
 @[simp]
 theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < m := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [properDivisors]
-  simp only [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
+  simp [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
   rw [divisors, properDivisors,
@@ -221,7 +221,7 @@ theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divis
 theorem card_divisors_le_self (n : ℕ) : #n.divisors ≤ n := calc
   _ ≤ #(Ico 1 (n + 1)) := by
     apply card_le_card
-    simp only [divisors, filter_subset]
+    simp [divisors, filter_subset]
   _ = n := by rw [card_Ico, add_tsub_cancel_right]
 
 theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) (hdiff : m ≠ n) :

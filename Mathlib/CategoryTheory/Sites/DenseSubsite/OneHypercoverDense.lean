@@ -238,7 +238,7 @@ lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) 
     rw [Functor.functorPushforward_mem_iff J₀]
     let str := Presieve.getFunctorPushforwardStructure hg.bindStruct.hg
     apply data.mem₁₀
-    simp only [str.cover.1.choose_spec, str.cover.2.choose_spec, assoc, w])
+    simp [str.cover.1.choose_spec, str.cover.2.choose_spec, assoc, w])
   refine J.superset_covering ?_ hT
   rintro U f ⟨V, a, b, hb, h, _, rfl⟩
   let str := Presieve.getFunctorPushforwardStructure hb.bindStruct.hg
@@ -334,7 +334,7 @@ private noncomputable def liftAux (i : (data X).I₀) : s.pt ⟶ G.obj (op (F.ob
         { fst := ⟨_, _, ha⟩
           snd := ⟨_, _, hb⟩
           r := ⟨_, F.map p₁, F.map p₂, by
-              simp only [← Functor.map_comp_assoc, fac]⟩ })
+              simp [← Functor.map_comp_assoc, fac]⟩ })
 
 private lemma liftAux_fac {i : (data X).I₀} {W₀ : C₀} (a : W₀ ⟶ (data X).X i)
     (ha : S (F.map a ≫ (data X).f i)) :
@@ -391,7 +391,7 @@ private lemma fac (a : S.Arrow) :
           { fst := { hf := he, .. }
             snd := a
             r := ⟨_, 𝟙 _, F.map d ≫ F.map b ≫ (data a.Y).f i, by
-              simp only [fac₁, fac₂, assoc, id_comp]⟩ }))
+              simp [fac₁, fac₂, assoc, id_comp]⟩ }))
 
 set_option backward.isDefEq.respectTransparency false in
 variable {s} in
@@ -482,7 +482,7 @@ lemma presheafObj_mapPreimage_condition
       (IsDenseSubsite.imageSieve_mem J₀ J F p₂)⟩ _ _ ?_
   intro ⟨W₀, a, ⟨b₁, h₁⟩, ⟨b₂, h₂⟩⟩
   refine Presheaf.IsSheaf.hom_ext G₀.property
-    ⟨_, (data X).mem₁₀ i₁ i₂ b₁ b₂ (by simp only [h₁, h₂, assoc, fac])⟩ _ _ ?_
+    ⟨_, (data X).mem₁₀ i₁ i₂ b₁ b₂ (by simp [h₁, h₂, assoc, fac])⟩ _ _ ?_
   intro ⟨U₀, c, ⟨j, t, fac₁, fac₂⟩⟩
   simp only [assoc, ← Functor.map_comp, ← op_comp,
     IsDenseSubsite.mapPreimage_map_of_fac J F G₀ p₁ (c ≫ a) (c ≫ b₁) (by simp [← h₁]),
@@ -548,12 +548,12 @@ noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
       rintro ⟨W₀, a, ⟨q₁, w₁⟩, ⟨q₂, w₂⟩⟩
       refine Presheaf.IsSheaf.hom_ext G₀.property
         ⟨_, (data X).mem₁₀ h₁.i₀ h₂.i₀ q₁ q₂ (by
-        simp only [w₁, w₂, assoc, h₁.fac, h₂.fac, ← Functor.map_comp_assoc, w])⟩ _ _ ?_
+        simp [w₁, w₂, assoc, h₁.fac, h₂.fac, ← Functor.map_comp_assoc, w])⟩ _ _ ?_
       rintro ⟨U₀, b, hb⟩
       dsimp
       simp only [assoc, restriction.res, IsDenseSubsite.mapPreimage_comp_map]
       apply presheafObj_mapPreimage_condition
-      simp only [assoc, h₁.fac, h₂.fac, ← Functor.map_comp_assoc, w])
+      simp [assoc, h₁.fac, h₂.fac, ← Functor.map_comp_assoc, w])
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
@@ -708,7 +708,7 @@ lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (
   dsimp
   simp only [assoc, IsDenseSubsite.mapPreimage_comp_map, ← hc,
     IsDenseSubsite.mapPreimage_map]
-  exact hom_map data G₀ c _ (by simp only [assoc, fac, hc])
+  exact hom_map data G₀ c _ (by simp [assoc, fac, hc])
 
 variable (X₀)
 

@@ -55,7 +55,7 @@ lemma isoClosure_sup : (P ⊔ Q).isoClosure = P.isoClosure ⊔ Q.isoClosure := b
 
 instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     (P ⊔ Q).IsClosedUnderIsomorphisms := by
-  simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self, isoClosure_sup, isoClosure_eq_self]
+  simp [isClosedUnderIsomorphisms_iff_isoClosure_eq_self, isoClosure_sup, isoClosure_eq_self]
 
 instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     IsClosedUnderIsomorphisms (P ⊓ Q) where
@@ -93,7 +93,7 @@ lemma isoClosure_iSup :
 
 instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     ((⨆ (a : α), P a)).IsClosedUnderIsomorphisms := by
-  simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self,
+  simp [isClosedUnderIsomorphisms_iff_isoClosure_eq_self,
     isoClosure_iSup, isoClosure_eq_self]
 
 instance [∀ a, (P a).IsClosedUnderIsomorphisms] :

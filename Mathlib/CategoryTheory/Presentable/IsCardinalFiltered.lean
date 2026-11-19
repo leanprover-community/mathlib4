@@ -224,7 +224,7 @@ instance isCardinalFiltered_under
               ext
               have := c.w f
               dsimp at this ⊢
-              simp only [reassoc_of% this, Category.comp_id] } }⟩
+              simp [reassoc_of% this, Category.comp_id] } }⟩
 
 instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     [Category.{v} J₁] [Category.{v'} J₂] (κ : Cardinal.{w}) [Fact κ.IsRegular]

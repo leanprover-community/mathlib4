@@ -74,7 +74,7 @@ theorem subsingleton_iff_exists_le_pure [Nonempty α] : l.Subsingleton ↔ ∃ a
   · simp [subsingleton_iff_bot_or_pure, ← hbot.le_pure_iff, hbot.ne]
 
 theorem subsingleton_iff_exists_singleton_mem [Nonempty α] : l.Subsingleton ↔ ∃ a, {a} ∈ l := by
-  simp only [subsingleton_iff_exists_le_pure, le_pure_iff]
+  simp [subsingleton_iff_exists_le_pure, le_pure_iff]
 
 /-- A subsingleton filter on a nonempty type is less than or equal to `pure a` for some `a`. -/
 alias ⟨Subsingleton.exists_le_pure, _⟩ := subsingleton_iff_exists_le_pure

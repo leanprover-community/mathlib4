@@ -29,7 +29,7 @@ lemma Nat.divisors_mul (m n : ℕ) : divisors (m * n) = divisors m * divisors n 
   ext k
   simp_rw [mem_mul, mem_divisors, Nat.dvd_mul, mul_ne_zero_iff, ← exists_and_left,
     ← exists_and_right]
-  simp only [and_assoc, and_comm, and_left_comm]
+  simp [and_assoc, and_comm, and_left_comm]
 
 /-- `Nat.divisors` as a `MonoidHom`. -/
 @[simps]

@@ -372,7 +372,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
       rw [← lie_skew, h_lie_eq_smul, h_chi_h_zero, zero_smul, neg_zero]
     exact h_bracket_elem
   rw [h_bracket_sum, h_pos_zero, h_neg_zero, h_bracket_zero]
-  simp only [add_zero, zero_mem]
+  simp [add_zero, zero_mem]
 
 end
 
@@ -451,12 +451,12 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       induction hm using LieSubmodule.iSup_induction' with
       | mem α m_α hm_α => exact invtSubmoduleToLieIdeal_aux q hq χ x_χ m_α hx_χ α.1 α.2.1 α.2.2 hm_α
       | zero =>
-        simp only [Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
+        simp [Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
       | add m₁ m₂ _ _ ih₁ ih₂ =>
         simp only [lie_add, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
         exact add_mem ih₁ ih₂
     | zero =>
-      simp only [Submodule.carrier_eq_coe, zero_lie, SetLike.mem_coe, zero_mem]
+      simp [Submodule.carrier_eq_coe, zero_lie, SetLike.mem_coe, zero_mem]
     | add x₁ x₂ _ _ ih₁ ih₂ =>
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂

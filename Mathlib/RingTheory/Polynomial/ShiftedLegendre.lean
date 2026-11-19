@@ -76,7 +76,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
     norm_cast
     rw [mul_comm, ← Nat.mul_div_assoc]
     · rw [mul_comm, Nat.mul_div_mul_right _ _ (by positivity)]
-    · simp only [factorial_mul_factorial_dvd_factorial_add]
+    · simp [factorial_mul_factorial_dvd_factorial_add]
   _ = (n ! : ℤ[X]) * (shiftedLegendre n) := by simp [← mul_assoc, shiftedLegendre, mul_sum]
 
 /-- The coefficient of the shifted Legendre polynomial at `k` is

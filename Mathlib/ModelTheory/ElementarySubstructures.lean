@@ -109,7 +109,7 @@ theorem realize_sentence (S : L.ElementarySubstructure M) (φ : L.Sentence) : S 
 
 @[simp]
 theorem theory_model_iff (S : L.ElementarySubstructure M) (T : L.Theory) : S ⊨ T ↔ M ⊨ T := by
-  simp only [Theory.model_iff, realize_sentence]
+  simp [Theory.model_iff, realize_sentence]
 
 instance theory_model {T : L.Theory} [h : M ⊨ T] {S : L.ElementarySubstructure M} : S ⊨ T :=
   (theory_model_iff S T).2 h

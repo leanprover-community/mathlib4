@@ -458,7 +458,7 @@ is recommended to use the ring endomorphism version `starRingEnd`, available und
 notation `conj` in the scope `ComplexConjugate`. -/
 instance : StarRing ℂ where
   star z := ⟨z.re, -z.im⟩
-  star_involutive x := by simp only [eta, neg_neg]
+  star_involutive x := by simp [eta, neg_neg]
   star_mul a b := by ext <;> simp [add_comm] <;> ring
   star_add a b := by ext <;> simp [add_comm]
 
@@ -791,11 +791,11 @@ instance instCharZero : CharZero ℂ :=
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  simp only [add_conj, ofReal_mul, ofReal_ofNat, mul_div_cancel_left₀ (z.re : ℂ) two_ne_zero]
+  simp [add_conj, ofReal_mul, ofReal_ofNat, mul_div_cancel_left₀ (z.re : ℂ) two_ne_zero]
 
 /-- A complex number `z` minus its conjugate `conj z` is `2i` times its imaginary part. -/
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
-  simp only [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
+  simp [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
     mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 
 /-- Show the imaginary number ⟨x, y⟩ as an `"x + y*I"` string

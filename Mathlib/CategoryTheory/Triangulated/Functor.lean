@@ -44,11 +44,11 @@ def mapTriangle : Triangle C ⥤ Triangle D where
     { hom₁ := F.map f.hom₁
       hom₂ := F.map f.hom₂
       hom₃ := F.map f.hom₃
-      comm₁ := by dsimp; simp only [← F.map_comp, f.comm₁]
-      comm₂ := by dsimp; simp only [← F.map_comp, f.comm₂]
+      comm₁ := by dsimp; simp [← F.map_comp, f.comm₁]
+      comm₂ := by dsimp; simp [← F.map_comp, f.comm₂]
       comm₃ := by
         dsimp [Functor.comp]
-        simp only [Category.assoc, ← NatTrans.naturality,
+        simp [Category.assoc, ← NatTrans.naturality,
           ← F.map_comp_assoc, f.comm₃] }
 
 instance [Faithful F] : Faithful F.mapTriangle where
@@ -148,7 +148,7 @@ def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ
   NatIso.ofComponents (fun T =>
     Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
       dsimp
-      simp only [assoc, NatTrans.shift_app_comm e.hom (1 : ℤ) T.obj₁,
+      simp [assoc, NatTrans.shift_app_comm e.hom (1 : ℤ) T.obj₁,
         NatTrans.naturality_assoc])) (by cat_disch)
 
 end Additive
@@ -197,10 +197,10 @@ noncomputable instance [F.IsTriangulated] :
       comm₁ := by
         dsimp
         ext
-        · simp only [assoc, prodComparison_fst, prod.comp_lift, comp_id, comp_zero,
+        · simp [assoc, prodComparison_fst, prod.comp_lift, comp_id, comp_zero,
             limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
             ← F.map_comp, F.map_id]
-        · simp only [assoc, prodComparison_snd, prod.comp_lift, comp_id, comp_zero,
+        · simp [assoc, prodComparison_snd, prod.comp_lift, comp_id, comp_zero,
             limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
             ← F.map_comp, F.map_zero]
       comm₂ := by simp

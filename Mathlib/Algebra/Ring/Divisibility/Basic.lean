@@ -90,14 +90,14 @@ variable [Semigroup α] [HasDistribNeg α] {a b : α}
 @[simp]
 theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
   (Equiv.neg _).exists_congr_left.trans <| by
-    simp only [Equiv.neg_symm, Equiv.neg_apply, mul_neg, neg_inj, Dvd.dvd]
+    simp [Equiv.neg_symm, Equiv.neg_apply, mul_neg, neg_inj, Dvd.dvd]
 
 /-- The negation of an element `a` of a semigroup with a distributive negation divides another
 element `b` iff `a` divides `b`. -/
 @[simp]
 theorem neg_dvd : -a ∣ b ↔ a ∣ b :=
   (Equiv.neg _).exists_congr_left.trans <| by
-    simp only [Equiv.neg_symm, Equiv.neg_apply, mul_neg, neg_mul, neg_neg, Dvd.dvd]
+    simp [Equiv.neg_symm, Equiv.neg_apply, mul_neg, neg_mul, neg_neg, Dvd.dvd]
 
 alias ⟨Dvd.dvd.of_neg_left, Dvd.dvd.neg_left⟩ := neg_dvd
 
@@ -174,6 +174,6 @@ theorem dvd_mul_sub_mul {k a b x y : α} (hab : k ∣ a - b) (hxy : k ∣ x - y)
     k ∣ a * x - b * y := by
   convert dvd_add (hxy.mul_left a) (hab.mul_right y)
   rw [mul_sub_left_distrib, mul_sub_right_distrib]
-  simp only [sub_eq_add_neg, add_assoc, neg_add_cancel_left]
+  simp [sub_eq_add_neg, add_assoc, neg_add_cancel_left]
 
 end NonUnitalCommRing

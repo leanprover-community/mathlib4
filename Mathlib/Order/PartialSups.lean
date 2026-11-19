@@ -127,7 +127,7 @@ def partialSups.gi :
 protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, SemilatticeSup (π t)]
     (f : ι → (t : τ) → π t) (i : ι) (t : τ) :
     partialSups f i t = partialSups (f · t) i := by
-  simp only [partialSups_apply, Finset.sup'_apply]
+  simp [partialSups_apply, Finset.sup'_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
@@ -143,7 +143,7 @@ end Preorder
 theorem partialSups_succ [LinearOrder ι] [LocallyFiniteOrderBot ι] [SuccOrder ι]
     (f : ι → α) (i : ι) :
     partialSups f (Order.succ i) = partialSups f i ⊔ f (Order.succ i) := by
-  suffices Iic (Order.succ i) = Iic i ∪ {Order.succ i} by simp only [partialSups_apply, this,
+  suffices Iic (Order.succ i) = Iic i ∪ {Order.succ i} by simp [partialSups_apply, this,
     sup'_union nonempty_Iic ⟨_, mem_singleton_self _⟩ f, sup'_singleton]
   ext
   simp only [mem_Iic, mem_union, mem_singleton]
@@ -156,8 +156,8 @@ theorem partialSups_bot [PartialOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
     (f : ι → α) : partialSups f ⊥ = f ⊥ := by
   simp only [partialSups_apply]
   -- should we add a lemma `Finset.Iic_bot`?
-  suffices Iic (⊥ : ι) = {⊥} by simp only [this, sup'_singleton]
-  simp only [← coe_eq_singleton, coe_Iic, Set.Iic_bot]
+  suffices Iic (⊥ : ι) = {⊥} by simp [this, sup'_singleton]
+  simp [← coe_eq_singleton, coe_Iic, Set.Iic_bot]
 
 /-!
 ### Functions out of `ℕ`

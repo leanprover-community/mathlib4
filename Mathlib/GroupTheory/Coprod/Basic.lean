@@ -296,10 +296,10 @@ theorem clift_mk :
 by applying `Sum.map f g` to each element of the underlying list. -/]
 def map (f : M →* M') (g : N →* N') : M ∗ N →* M' ∗ N' :=
   clift (mk.comp <| FreeMonoid.map <| Sum.map f g)
-    (by simp only [MonoidHom.comp_apply, map_of, Sum.map_inl, map_one, mk_of_inl])
-    (by simp only [MonoidHom.comp_apply, map_of, Sum.map_inr, map_one, mk_of_inr])
-    (fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.map_inl, map_mul, mk_of_inl])
-    fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.map_inr, map_mul, mk_of_inr]
+    (by simp [MonoidHom.comp_apply, map_of, Sum.map_inl, map_one, mk_of_inl])
+    (by simp [MonoidHom.comp_apply, map_of, Sum.map_inr, map_one, mk_of_inr])
+    (fun x y => by simp [MonoidHom.comp_apply, map_of, Sum.map_inl, map_mul, mk_of_inl])
+    fun x y => by simp [MonoidHom.comp_apply, map_of, Sum.map_inr, map_mul, mk_of_inr]
 
 @[to_additive (attr := simp)]
 theorem map_mk_ofList (f : M →* M') (g : N →* N') (l : List (M ⊕ N)) :
@@ -343,10 +343,10 @@ See also `MulEquiv.coprodComm` for a `MulEquiv` version. -/
 See also `AddEquiv.coprodComm` for an `AddEquiv` version. -/]
 def swap : M ∗ N →* N ∗ M :=
   clift (mk.comp <| FreeMonoid.map Sum.swap)
-    (by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inl, mk_of_inr, map_one])
-    (by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inr, mk_of_inl, map_one])
-    (fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inl, mk_of_inr, map_mul])
-    (fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inr, mk_of_inl, map_mul])
+    (by simp [MonoidHom.comp_apply, map_of, Sum.swap_inl, mk_of_inr, map_one])
+    (by simp [MonoidHom.comp_apply, map_of, Sum.swap_inr, mk_of_inl, map_one])
+    (fun x y => by simp [MonoidHom.comp_apply, map_of, Sum.swap_inl, mk_of_inr, map_mul])
+    (fun x y => by simp [MonoidHom.comp_apply, map_of, Sum.swap_inr, mk_of_inl, map_mul])
 
 @[to_additive (attr := simp)]
 theorem swap_comp_swap : (swap M N).comp (swap N M) = .id _ := hom_ext rfl rfl

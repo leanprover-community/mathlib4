@@ -200,7 +200,7 @@ theorem linearMapLeftRightHom_toMatrix (f : M →ₗ[R] N) :
     (linearMapLeftRightHom ibcM β f).toMatrix (ibcM.basis b) (ibcN.basis c) =
       (f.toMatrix b c).map (algebraMap R S) := by
   ext i j
-  simp only [toMatrix_apply, Matrix.map_apply, basis_apply,
+  simp [toMatrix_apply, Matrix.map_apply, basis_apply,
     linearMapLeftRightHom_comp_apply, basis_repr_comp_apply]
 
 theorem endHom_toMatrix (f : M →ₗ[R] M) :
@@ -208,7 +208,7 @@ theorem endHom_toMatrix (f : M →ₗ[R] M) :
       (f.toMatrix b b).map (algebraMap R S) := by
   ext i j
   simp only [toMatrix_apply, Matrix.map_apply]
-  simp only [basis_apply, endHom_comp_apply, basis_repr_comp_apply]
+  simp [basis_apply, endHom_comp_apply, basis_repr_comp_apply]
 
 
 end Matrix

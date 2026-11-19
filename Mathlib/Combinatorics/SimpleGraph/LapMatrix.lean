@@ -165,7 +165,7 @@ theorem lapMatrix_top [AddGroupWithOne R] :
 
 theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
     x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
-  simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
+  simp [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
 
 variable (R)
 
@@ -249,7 +249,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
     simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk]
     repeat rw [AddSubmonoid.coe_finsetSum]
     ext i
-    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero, sum_ite_eq,
+    simp [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero, sum_ite_eq,
       mem_univ, ↓reduceIte]
   rw [h] at h0
   intro c

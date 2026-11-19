@@ -173,9 +173,9 @@ theorem smul_rootsEquivRoots [Fact (map (algebraMap F E) p).Splits]
 
 /-- The action of `gal p` on the roots of `p` in `E`. -/
 instance galAction [Fact ((p.map (algebraMap F E)).Splits)] : MulAction p.Gal (rootSet p E) where
-  one_smul _ := by simp only [smul_def, Equiv.apply_symm_apply, one_smul]
+  one_smul _ := by simp [smul_def, Equiv.apply_symm_apply, one_smul]
   mul_smul _ _ _ := by
-    simp only [smul_def, Equiv.symm_apply_apply, mul_smul]
+    simp [smul_def, Equiv.symm_apply_apply, mul_smul]
 
 lemma galAction_isPretransitive [Fact ((p.map (algebraMap F E)).Splits)] (hp : Irreducible p) :
     MulAction.IsPretransitive p.Gal (p.rootSet E) := by

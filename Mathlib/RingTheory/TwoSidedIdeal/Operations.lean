@@ -217,7 +217,7 @@ lemma subset_mul_set {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R)
 lemma mem_span_iff_mem_addSubgroup_closure_nonunital {s : Set R} {z : R} :
     z ∈ span s ↔ z ∈ AddSubgroup.closure (s ∪ s * univ ∪ univ * s ∪ univ * s * univ) := by
   trans z ∈ span (s ∪ s * univ ∪ univ * s ∪ univ * s * univ)
-  · refine ⟨(span_mono (by simp only [Set.union_assoc, Set.subset_union_left]) ·), fun h ↦ ?_⟩
+  · refine ⟨(span_mono (by simp [Set.union_assoc, Set.subset_union_left]) ·), fun h ↦ ?_⟩
     refine mem_span_iff.mp h (span s) ?_
     simp only [union_subset_iff, union_assoc]
     exact ⟨subset_span, subset_mul_set subset_span _, set_mul_subset subset_span _,

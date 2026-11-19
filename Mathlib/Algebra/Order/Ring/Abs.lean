@@ -30,7 +30,7 @@ variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n
   · obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le n0
-    simp only [mabs_pow, zpow_natCast, Nat.abs_cast]
+    simp [mabs_pow, zpow_natCast, Nat.abs_cast]
   · obtain ⟨m, h⟩ := Int.eq_ofNat_of_zero_le (neg_nonneg.2 n0)
     rw [← mabs_inv, ← zpow_neg, ← abs_neg, h, zpow_natCast, Nat.abs_cast, zpow_natCast]
     exact mabs_pow m _
@@ -38,7 +38,7 @@ variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 end LinearOrderedAddCommGroup
 
 lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
-  rcases abs_choice a with h | h <;> simp only [h, odd_neg]
+  rcases abs_choice a with h | h <;> simp [h, odd_neg]
 
 section LinearOrderedRing
 
@@ -52,7 +52,7 @@ lemma abs_two : |(2 : α)| = 2 := abs_of_nonneg zero_le_two
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
-    simp only [abs_of_nonpos, abs_of_nonneg, true_or, or_true, neg_mul, mul_neg, neg_neg, *]
+    simp [abs_of_nonpos, abs_of_nonneg, true_or, or_true, neg_mul, mul_neg, neg_neg, *]
 
 /-- `abs` as a `MonoidWithZeroHom`. -/
 def absHom : α →*₀ α where
@@ -141,7 +141,7 @@ lemma abs_le_of_sq_le_sq' (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : -b ≤ a ∧ a 
   abs_le.1 <| abs_le_of_sq_le_sq h hb
 
 lemma sq_eq_sq_iff_abs_eq_abs (a b : α) : a ^ 2 = b ^ 2 ↔ |a| = |b| := by
-  simp only [le_antisymm_iff, sq_le_sq]
+  simp [le_antisymm_iff, sq_le_sq]
 
 @[simp] lemma sq_le_one_iff_abs_le_one (a : α) : a ^ 2 ≤ 1 ↔ |a| ≤ 1 := by
   simpa only [one_pow, abs_one] using sq_le_sq (a := a) (b := 1)
@@ -163,7 +163,7 @@ variable [CommRing α] [LinearOrder α] (a b : α) (n : ℕ)
 
 theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
-  simp only [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
+  simp [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
     neg_add_rev, neg_neg, add_assoc]
 
 lemma abs_unit_intCast [IsOrderedRing α] (a : ℤˣ) : |((a : ℤ) : α)| = 1 := by
@@ -205,14 +205,14 @@ variable [Ring α] [LinearOrder α]
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
-  rcases abs_choice a with h | h <;> simp only [h, neg_dvd]
+  rcases abs_choice a with h | h <;> simp [h, neg_dvd]
 
 theorem abs_dvd_self (a : α) : |a| ∣ a :=
   (abs_dvd a a).mpr (dvd_refl a)
 
 @[simp]
 theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
-  rcases abs_choice b with h | h <;> simp only [h, dvd_neg]
+  rcases abs_choice b with h | h <;> simp [h, dvd_neg]
 
 theorem self_dvd_abs (a : α) : a ∣ |a| :=
   (dvd_abs a a).mpr (dvd_refl a)
@@ -229,7 +229,7 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} 
 
 lemma pow_eq_pow_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
   match n.even_xor_odd with
-  | .inl hne => by simp only [*, and_true, ← abs_eq_abs,
+  | .inl hne => by simp [*, and_true, ← abs_eq_abs,
     ← pow_left_inj₀ (abs_nonneg a) (abs_nonneg b) hn, hne.1.pow_abs]
   | .inr hn => by simp [hn, (hn.1.strictMono_pow (R := R)).injective.eq_iff]
 
@@ -248,7 +248,7 @@ lemma pow_eq_neg_pow_iff (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
     suffices a ^ n > -b ^ n by simpa [he, not_odd_iff_even.2 he] using this.ne'
     lt_of_lt_of_le (by simp [he.pow_pos hb]) (he.pow_nonneg _)
   | .inr ho => by
-    simp only [ho, and_true, ← ho.neg_pow, (ho.strictMono_pow (R := R)).injective.eq_iff]
+    simp [ho, and_true, ← ho.neg_pow, (ho.strictMono_pow (R := R)).injective.eq_iff]
 
 lemma pow_eq_neg_one_iff : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
   simpa using pow_eq_neg_pow_iff (R := R) one_ne_zero

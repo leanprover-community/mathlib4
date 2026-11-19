@@ -838,7 +838,7 @@ theorem equiv_of_mem {s t : Computation α} {a} (h1 : a ∈ s) (h2 : a ∈ t) : 
   ⟨fun ma => by rw [mem_unique ma h1]; exact h2, fun ma => by rw [mem_unique ma h2]; exact h1⟩
 
 theorem terminates_congr {c₁ c₂ : Computation α} (h : c₁ ~ c₂) : Terminates c₁ ↔ Terminates c₂ := by
-  simp only [terminates_iff, exists_congr h]
+  simp [terminates_iff, exists_congr h]
 
 theorem promises_congr {c₁ c₂ : Computation α} (h : c₁ ~ c₂) (a) : c₁ ~> a ↔ c₂ ~> a :=
   forall_congr' fun a' => imp_congr (h a') Iff.rfl
@@ -1004,7 +1004,7 @@ theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Com
 
 theorem LiftRelAux.swap (R : α → β → Prop) (C) (a b) :
     LiftRelAux (swap R) (swap C) b a = LiftRelAux R C a b := by
-  rcases a with a | ca <;> rcases b with b | cb <;> simp only [LiftRelAux]
+  rcases a with a | ca <;> rcases b with b | cb <;> simp [LiftRelAux]
 
 @[simp]
 theorem LiftRelAux.ret_right (R : α → β → Prop) (C : Computation α → Computation β → Prop) (b ca) :

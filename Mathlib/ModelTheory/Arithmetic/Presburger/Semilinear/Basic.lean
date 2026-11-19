@@ -381,7 +381,7 @@ private theorem linearIndepOn_toRatVec {s : Set (ι → ℕ)} (hs : LinearIndepO
     rw [← sub_eq_zero, ← Finset.sum_sub_distrib, ← heq]
     refine Finset.sum_congr rfl fun j hj => ?_
     conv_rhs => rw [← (f j).toNat_sub_toNat_neg]
-    simp only [sub_smul, map_nsmul, natCast_zsmul, Function.comp_apply, id_eq]
+    simp [sub_smul, map_nsmul, natCast_zsmul, Function.comp_apply, id_eq]
   · rw [← (f i).toNat_sub_toNat_neg, sub_eq_zero, Int.natCast_inj]
     simpa using hs
 

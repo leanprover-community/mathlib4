@@ -207,7 +207,7 @@ theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
   have h₂ := congr(↑nc * $h₂ * (⅟↑da * ⅟↑db * ⅟↑dc : α))
   simp only [H, mul_invOf_cancel_right', Nat.cast_mul, ← mul_assoc] at h₁ h₂
   rw [h₁, h₂, Nat.cast_commute]
-  simp only [mul_invOf_cancel_right,
+  simp [mul_invOf_cancel_right,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
@@ -229,7 +229,7 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   have h₂ := congr(↑nc * $h₂ * (⅟↑da * ⅟↑db * ⅟↑dc : α))
   simp only [H, mul_invOf_cancel_right', Nat.cast_mul, ← mul_assoc] at h₁ h₂
   rw [h₁, h₂, Nat.cast_commute]
-  simp only [mul_invOf_cancel_right,
+  simp [mul_invOf_cancel_right,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
@@ -455,7 +455,7 @@ theorem isNNRat_mul {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
   have h₂ := congr(↑nc * $h₂ * (⅟↑da * ⅟↑db * ⅟↑dc : α))
   simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
   simp only [mul_invOf_cancel_right'] at h₂; rw [h₂, Nat.cast_commute]
-  simp only [mul_invOf_cancel_right',
+  simp [mul_invOf_cancel_right',
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
@@ -475,7 +475,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   have h₂ := congr(↑nc * $h₂ * (⅟↑da * ⅟↑db * ⅟↑dc : α))
   simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
   simp only [mul_invOf_cancel_right'] at h₂; rw [h₂, Nat.cast_commute]
-  simp only [mul_invOf_cancel_right,
+  simp [mul_invOf_cancel_right,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 

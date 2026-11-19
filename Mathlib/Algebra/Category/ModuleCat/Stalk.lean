@@ -68,18 +68,18 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
       (rightToMax (max U₁ U₂) V) (rightToMax U₂ V ≫ rightToMax U₁ (max U₂ V))
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
     dsimp
-    simp only [map_mul, ← ConcreteCategory.comp_apply, ← Functor.map_comp, mul_smul, *]
+    simp [map_mul, ← ConcreteCategory.comp_apply, ← Functor.map_comp, mul_smul, *]
   one_smul m := Quot.induction_on m <| by
     rintro ⟨V, b⟩
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _) (rightToMax _ _) ?_
     dsimp
-    simp only [map_one, ← ConcreteCategory.comp_apply, ← Functor.map_comp, one_smul,
+    simp [map_one, ← ConcreteCategory.comp_apply, ← Functor.map_comp, one_smul,
       Category.comp_id]
   smul_zero r := Quot.induction_on r <| by
     rintro ⟨U, a⟩
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _) (rightToMax _ _) ?_
     dsimp
-    simp only [map_zero, smul_zero]
+    simp [map_zero, smul_zero]
   smul_add r m n := Quot.induction_on₃ r m n <| by
     rintro ⟨U, a⟩ ⟨V₁, b₁⟩ ⟨V₂, b₂⟩
     obtain ⟨s, α, β, h₁, h₂, h₃, h₄⟩ := crown₄
@@ -95,7 +95,7 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
     rw [H, H, H]
     simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp]
     simp only [map_add, ← ConcreteCategory.comp_apply, ← Functor.map_comp, h₁, h₂, h₃, h₄, H]
-    simp only [Functor.map_comp, RingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
+    simp [Functor.map_comp, RingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
       Category.assoc, AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, smul_add]
   add_smul r s m := Quot.induction_on₃ r s m <| by
     rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩
@@ -108,12 +108,12 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
       (rightToMax U₁ U₂ ≫ leftToMax (max U₁ U₂) V)
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ β α ?_
     dsimp
-    simp only [add_smul, map_add, ← ConcreteCategory.comp_apply, ← Functor.map_comp, *]
+    simp [add_smul, map_add, ← ConcreteCategory.comp_apply, ← Functor.map_comp, *]
   zero_smul m := Quot.induction_on m <| by
     rintro ⟨V, b⟩
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _) (leftToMax _ _) ?_
     dsimp
-    simp only [map_zero, zero_smul]
+    simp [map_zero, zero_smul]
 
 /-- Given a cofiltered diagram of rings `R`, and a module `M` over `R`,
 this is the `colim R`-module structure of `colim M`. -/
@@ -146,7 +146,7 @@ lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
   obtain ⟨s, α, H⟩ := IsFilteredOrEmpty.cocone_maps (leftToMax i i) (rightToMax i i)
   refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (leftToMax _ _ ≫ α) α ?_
   dsimp
-  simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp, *]
+  simp [← ConcreteCategory.comp_apply, ← Functor.map_comp, *]
 
 end CategoryTheory.Limits
 

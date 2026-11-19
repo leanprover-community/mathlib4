@@ -679,7 +679,7 @@ theorem fundamentalGroupToMulOpposite_toPermFiber :
     hp.fundamentalGroupToMulOpposite (hp.toPermFiber x g e) γ =
       MulOpposite.op (g * (hp.fundamentalGroupToMulOpposite e γ).unop * g⁻¹) := by
   rw [fundamentalGroupToMulOpposite_apply_eq_iff, hp.monodromy_toPermFiber]
-  simp only [MulOpposite.unop_op, toPermFiber_apply_apply_coe,
+  simp [MulOpposite.unop_op, toPermFiber_apply_apply_coe,
     ← hp.unop_fundamentalGroupToMulOpposite_smul, mul_smul, inv_smul_smul]
 
 /-- If `G` is commutative, `fundamentalGroupToMulOpposite` does not depend on the choice of the

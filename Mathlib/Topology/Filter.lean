@@ -69,11 +69,11 @@ theorem isTopologicalBasis_Iic_principal :
 
 theorem isOpen_iff {s : Set (Filter α)} : IsOpen s ↔ ∃ T : Set (Set α), s = ⋃ t ∈ T, Iic (𝓟 t) :=
   isTopologicalBasis_Iic_principal.open_iff_eq_sUnion.trans <| by
-    simp only [exists_subset_range_and_iff, sUnion_image, (· ∘ ·)]
+    simp [exists_subset_range_and_iff, sUnion_image, (· ∘ ·)]
 
 theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
   nhds_generateFrom.trans <| by
-    simp only [mem_ofPred_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
+    simp [mem_ofPred_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
       (· ∘ ·), mem_Iic, le_principal_iff]
 
 theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } := by
@@ -81,7 +81,7 @@ theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } :
 
 protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Filter β} :
     Tendsto f la (𝓝 lb) ↔ ∀ s ∈ lb, ∀ᶠ a in la, s ∈ f a := by
-  simp only [nhds_eq', tendsto_lift', mem_ofPred_eq]
+  simp [nhds_eq', tendsto_lift', mem_ofPred_eq]
 
 protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis (𝓝 l) p fun i => Iic (𝓟 (s i)) := by
@@ -152,7 +152,7 @@ protected theorem mem_interior {s : Set (Filter α)} {l : Filter α} :
 
 protected theorem mem_closure {s : Set (Filter α)} {l : Filter α} :
     l ∈ closure s ↔ ∀ t ∈ l, ∃ l' ∈ s, t ∈ l' := by
-  simp only [closure_eq_compl_interior_compl, Filter.mem_interior, mem_compl_iff, not_exists,
+  simp [closure_eq_compl_interior_compl, Filter.mem_interior, mem_compl_iff, not_exists,
     not_forall, Classical.not_not, exists_prop, not_and, and_comm, subset_def, mem_Iic,
     le_principal_iff]
 
@@ -163,18 +163,18 @@ protected theorem closure_singleton (l : Filter α) : closure {l} = Ici l := by
 
 @[simp]
 theorem specializes_iff_le {l₁ l₂ : Filter α} : l₁ ⤳ l₂ ↔ l₁ ≤ l₂ := by
-  simp only [specializes_iff_closure_subset, Filter.closure_singleton, Ici_subset_Ici]
+  simp [specializes_iff_closure_subset, Filter.closure_singleton, Ici_subset_Ici]
 
 instance : T0Space (Filter α) :=
   ⟨fun _ _ h => (specializes_iff_le.1 h.specializes).antisymm
     (specializes_iff_le.1 h.symm.specializes)⟩
 
 theorem nhds_atTop [Preorder α] : 𝓝 atTop = ⨅ x : α, 𝓟 (Iic (𝓟 (Ici x))) := by
-  simp only [atTop, Filter.nhds_iInf, nhds_principal]
+  simp [atTop, Filter.nhds_iInf, nhds_principal]
 
 protected theorem tendsto_nhds_atTop_iff [Preorder β] {l : Filter α} {f : α → Filter β} :
     Tendsto f l (𝓝 atTop) ↔ ∀ y, ∀ᶠ a in l, Ici y ∈ f a := by
-  simp only [nhds_atTop, tendsto_iInf, tendsto_principal, mem_Iic, le_principal_iff]
+  simp [nhds_atTop, tendsto_iInf, tendsto_principal, mem_Iic, le_principal_iff]
 
 theorem nhds_atBot [Preorder α] : 𝓝 atBot = ⨅ x : α, 𝓟 (Iic (𝓟 (Iic x))) :=
   @nhds_atTop αᵒᵈ _
@@ -187,12 +187,12 @@ variable [TopologicalSpace X]
 
 theorem nhds_nhds (x : X) :
     𝓝 (𝓝 x) = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 (Iic (𝓟 s)) := by
-  simp only [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
+  simp [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
 
 theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
   isInducing_iff_nhds.2 fun x =>
     (nhds_def' _).trans <| by
-      simp +contextual only [nhds_nhds, comap_iInf, comap_principal,
+      simp +contextual [nhds_nhds, comap_iInf, comap_principal,
         Iic_principal, preimage_ofPred_eq, ← mem_interior_iff_mem_nhds, ofPred_mem_eq,
         IsOpen.interior_eq]
 

@@ -111,7 +111,7 @@ theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
 theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
     X.δ j.succ ≫ X.δ i = X.δ (Fin.castSucc i) ≫ X.δ j := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ H]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ H]
 
 @[reassoc]
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
@@ -119,20 +119,20 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
       X.δ (Fin.castSucc i) ≫
         X.δ (j.pred H.ne_zero) := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
 @[reassoc]
 theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
     X.δ j.succ ≫ X.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) =
       X.δ i ≫ X.δ j := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ'' H]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ'' H]
 
 /-- The special case of the first simplicial identity -/
 @[reassoc]
 theorem δ_comp_δ_self {n} {i : Fin (n + 2)} :
     X.δ (Fin.castSucc i) ≫ X.δ i = X.δ i.succ ≫ X.δ i := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ_self]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ_self]
 
 @[reassoc]
 theorem δ_comp_δ_self' {n} {j : Fin (n + 3)} {i : Fin (n + 2)} (H : j = Fin.castSucc i) :
@@ -145,13 +145,13 @@ theorem δ_comp_δ_self' {n} {j : Fin (n + 3)} {i : Fin (n + 2)} (H : j = Fin.ca
 theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.castSucc j) :
     X.σ j.succ ≫ X.δ (Fin.castSucc i) = X.δ i ≫ X.σ j := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_le H]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_le H]
 
 /-- The first part of the third simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_self {n} {i : Fin (n + 1)} : X.σ i ≫ X.δ (Fin.castSucc i) = 𝟙 _ := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_self, op_id, X.map_id]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_self, op_id, X.map_id]
 
 @[reassoc]
 theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i) :
@@ -163,7 +163,7 @@ theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.ca
 @[reassoc]
 theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : X.σ i ≫ X.δ i.succ = 𝟙 _ := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_succ, op_id, X.map_id]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_succ, op_id, X.map_id]
 
 @[reassoc]
 theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) :
@@ -176,7 +176,7 @@ theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ
 theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSucc j < i) :
     X.σ (Fin.castSucc j) ≫ X.δ i.succ = X.δ i ≫ X.σ j := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt H]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt H]
 
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
@@ -184,14 +184,14 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
       X.δ (i.pred H.ne_zero) ≫
         X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 
 /-- The fifth simplicial identity -/
 @[reassoc]
 theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
     X.σ j ≫ X.σ (Fin.castSucc i) = X.σ i ≫ X.σ j.succ := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.σ_comp_σ H]
+  simp [← X.map_comp, ← op_comp, SimplexCategory.σ_comp_σ H]
 
 open Simplicial
 
@@ -576,7 +576,7 @@ theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
 theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
     X.δ i ≫ X.δ j.succ = X.δ j ≫ X.δ (Fin.castSucc i) := by
   dsimp [δ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_δ H]
+  simp [← X.map_comp, SimplexCategory.δ_comp_δ H]
 
 @[reassoc]
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
@@ -584,21 +584,21 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
       X.δ (j.pred H.ne_zero) ≫
         X.δ (Fin.castSucc i) := by
   dsimp [δ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_δ' H]
+  simp [← X.map_comp, SimplexCategory.δ_comp_δ' H]
 
 @[reassoc]
 theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
     X.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ X.δ j.succ =
       X.δ j ≫ X.δ i := by
   dsimp [δ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_δ'' H]
+  simp [← X.map_comp, SimplexCategory.δ_comp_δ'' H]
 
 /-- The special case of the first cosimplicial identity -/
 @[reassoc]
 theorem δ_comp_δ_self {n} {i : Fin (n + 2)} :
     X.δ i ≫ X.δ (Fin.castSucc i) = X.δ i ≫ X.δ i.succ := by
   dsimp [δ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_δ_self]
+  simp [← X.map_comp, SimplexCategory.δ_comp_δ_self]
 
 @[reassoc]
 theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.castSucc i) :
@@ -611,13 +611,13 @@ theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.ca
 theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.castSucc j) :
     X.δ (Fin.castSucc i) ≫ X.σ j.succ = X.σ j ≫ X.δ i := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_le H]
+  simp [← X.map_comp, SimplexCategory.δ_comp_σ_of_le H]
 
 /-- The first part of the third cosimplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_self {n} {i : Fin (n + 1)} : X.δ (Fin.castSucc i) ≫ X.σ i = 𝟙 _ := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_σ_self, X.map_id]
+  simp [← X.map_comp, SimplexCategory.δ_comp_σ_self, X.map_id]
 
 @[reassoc]
 theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i) :
@@ -629,7 +629,7 @@ theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.ca
 @[reassoc]
 theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : X.δ i.succ ≫ X.σ i = 𝟙 _ := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_σ_succ, X.map_id]
+  simp [← X.map_comp, SimplexCategory.δ_comp_σ_succ, X.map_id]
 
 @[reassoc]
 theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) :
@@ -642,7 +642,7 @@ theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ
 theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSucc j < i) :
     X.δ i.succ ≫ X.σ (Fin.castSucc j) = X.σ j ≫ X.δ i := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt H]
+  simp [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt H]
 
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
@@ -650,14 +650,14 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
       X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
         X.δ (i.pred H.ne_zero) := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
+  simp [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 
 /-- The fifth cosimplicial identity -/
 @[reassoc]
 theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
     X.σ (Fin.castSucc i) ≫ X.σ j = X.σ j.succ ≫ X.σ i := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, SimplexCategory.σ_comp_σ H]
+  simp [← X.map_comp, SimplexCategory.σ_comp_σ H]
 
 @[reassoc (attr := simp)]
 theorem δ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 2)) :

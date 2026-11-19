@@ -90,7 +90,7 @@ lemma isoAdd_hom_app {a b : A}
       (CommShift.isoAdd e₁ e₂).hom.app X =
         F.map ((shiftFunctorAdd C a b).hom.app X) ≫ e₂.hom.app ((shiftFunctor C a).obj X) ≫
           (shiftFunctor D b).map (e₁.hom.app X) ≫ (shiftFunctorAdd D a b).inv.app (F.obj X) := by
-  simp only [isoAdd, isoAdd'_hom_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
+  simp [isoAdd, isoAdd'_hom_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
 
 @[simp, reassoc]
 lemma isoAdd_inv_app {a b : A}
@@ -99,7 +99,7 @@ lemma isoAdd_inv_app {a b : A}
       (CommShift.isoAdd e₁ e₂).inv.app X = (shiftFunctorAdd D a b).hom.app (F.obj X) ≫
         (shiftFunctor D b).map (e₁.inv.app X) ≫ e₂.inv.app ((shiftFunctor C a).obj X) ≫
         F.map ((shiftFunctorAdd C a b).inv.app X) := by
-  simp only [isoAdd, isoAdd'_inv_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
+  simp [isoAdd, isoAdd'_inv_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
 
 lemma isoAdd'_isoZero {a : A}
     (e : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a) :
@@ -181,7 +181,7 @@ lemma commShiftIso_zero' (a : A) (h : a = 0) :
 lemma commShiftIso_add' {a b c : A} (h : a + b = c) :
     F.commShiftIso c = CommShift.isoAdd' h (F.commShiftIso a) (F.commShiftIso b) := by
   subst h
-  simp only [commShiftIso_add, CommShift.isoAdd]
+  simp [commShiftIso_add, CommShift.isoAdd]
 
 end
 
@@ -200,7 +200,7 @@ instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
   commShiftIso_zero := by
     ext X
     dsimp
-    simp only [id_comp, comp_id, commShiftIso_zero, isoZero_hom_app, ← Functor.map_comp_assoc,
+    simp [id_comp, comp_id, commShiftIso_zero, isoZero_hom_app, ← Functor.map_comp_assoc,
       assoc, Iso.inv_hom_id_app, id_obj, comp_map, comp_obj]
   commShiftIso_add := fun a b => by
     ext X
@@ -208,7 +208,7 @@ instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
     simp only [commShiftIso_add, isoAdd_hom_app]
     dsimp
     simp only [comp_id, id_comp, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app, comp_obj]
-    simp only [map_comp, assoc, commShiftIso_hom_naturality_assoc]
+    simp [map_comp, assoc, commShiftIso_hom_naturality_assoc]
 
 end CommShift
 
@@ -235,7 +235,7 @@ lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
     ← reassoc_of% eq, shiftFunctorComm_eq C a b _ rfl]
   dsimp
   rw [Functor.map_comp]
-  simp only [congr($(F.commShiftIso_add' (add_comm b a)).hom.app X),
+  simp [congr($(F.commShiftIso_add' (add_comm b a)).hom.app X),
     CommShift.isoAdd'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
     Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
@@ -250,7 +250,7 @@ lemma map_shiftFunctorCompIsoId_hom_app [F.CommShift A] (X : C) (a b : A) (h : a
   simp only [commShiftIso_zero, comp_obj, CommShift.isoZero_hom_app,
     CommShift.isoAdd'_hom_app] at eq
   rw [← cancel_epi (F.map ((shiftFunctorAdd' C a b 0 h).hom.app X)), ← reassoc_of% eq, F.map_comp]
-  simp only [Iso.inv_hom_id_app, id_obj, Category.comp_id, ← F.map_comp_assoc, Iso.hom_inv_id_app,
+  simp [Iso.inv_hom_id_app, id_obj, Category.comp_id, ← F.map_comp_assoc, Iso.hom_inv_id_app,
     F.map_id, Category.id_comp]
 
 @[simp, reassoc]
@@ -260,7 +260,7 @@ lemma map_shiftFunctorCompIsoId_inv_app [F.CommShift A] (X : C) (a b : A) (h : a
         ((F.commShiftIso a).inv.app X)⟦b⟧' ≫ (F.commShiftIso b).inv.app (X⟦a⟧) := by
   rw [← cancel_epi (F.map ((shiftFunctorCompIsoId C a b h).hom.app X)), ← F.map_comp,
     Iso.hom_inv_id_app, F.map_id, map_shiftFunctorCompIsoId_hom_app]
-  simp only [comp_obj, id_obj, Category.assoc, Iso.hom_inv_id_app_assoc,
+  simp [comp_obj, id_obj, Category.assoc, Iso.hom_inv_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp]
 
 end Functor
@@ -413,7 +413,7 @@ instance comp [NatTrans.CommShift τ A] [NatTrans.CommShift τ' A] :
 instance whiskerRight [NatTrans.CommShift τ A] :
     NatTrans.CommShift (Functor.whiskerRight τ G) A := ⟨fun a => by
   ext X
-  simp only [Functor.whiskerRight_twice, comp_app, Functor.commShiftIso_comp_hom_app,
+  simp [Functor.whiskerRight_twice, comp_app, Functor.commShiftIso_comp_hom_app,
     Functor.associator_hom_app, Functor.whiskerRight_app, Functor.comp_map,
     Functor.associator_inv_app, comp_id, id_comp, assoc, ← Functor.commShiftIso_hom_naturality, ←
     G.map_comp_assoc, shift_app_comm, Functor.whiskerLeft_app]⟩
@@ -467,7 +467,7 @@ def ofIso : G.CommShift A where
       isoAdd_hom_app, whiskerRight_app, assoc, map_comp, NatTrans.naturality_assoc,
       NatIso.cancel_natIso_inv_left]
     simp only [← Functor.map_comp_assoc, e.hom_inv_id_app_assoc]
-    simp only [← NatTrans.naturality, comp_obj, comp_map, map_comp, assoc]
+    simp [← NatTrans.naturality, comp_obj, comp_map, map_comp, assoc]
 
 lemma ofIso_compatibility :
     letI := ofIso e A

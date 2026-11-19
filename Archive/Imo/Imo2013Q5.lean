@@ -49,7 +49,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
     calc
       (x - y) * (n : ℝ) = (n : ℝ) * (x - y) := by ring
       _ = (∑ _i ∈ Finset.range n, (1 : ℝ)) * (x - y) := by
-        simp only [mul_one, Finset.sum_const, nsmul_eq_mul, Finset.card_range]
+        simp [mul_one, Finset.sum_const, nsmul_eq_mul, Finset.card_range]
       _ ≤ (∑ i ∈ Finset.range n, x ^ i * y ^ (n - 1 - i)) * (x - y) := by
         gcongr with i hi; apply hterm i hi
       _ = x ^ n - y ^ n := geom_sum₂_mul x y n

@@ -59,7 +59,7 @@ protected theorem add_smul (y z : R[S⁻¹]) (x : X[S⁻¹]) :
   simp only [smul_eq_mul, one_smul, Submonoid.smul_def, mul_add, Submonoid.coe_mul] at hb hc ⊢
   rw [mul_assoc, hb, mul_assoc, ← mul_assoc _ ra, hc, ← mul_assoc, ← add_mul]
   rw [OreLocalization.smul_cancel']
-  simp only [add_smul, ← mul_assoc, smul_smul]
+  simp [add_smul, ← mul_assoc, smul_smul]
 
 end Module
 
@@ -90,7 +90,7 @@ instance : Module R[S⁻¹] X[S⁻¹] where
 instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
     [IsScalarTower R₀ R X] [IsScalarTower R₀ R R] :
     Module R₀ X[S⁻¹] where
-  add_smul r s x := by simp only [← smul_one_oreDiv_one_smul, add_smul, ← add_oreDiv]
+  add_smul r s x := by simp [← smul_one_oreDiv_one_smul, add_smul, ← add_oreDiv]
   zero_smul x := by rw [← smul_one_oreDiv_one_smul, zero_smul, zero_oreDiv, zero_smul]
 
 @[simp]
@@ -153,7 +153,7 @@ def universalHom : R[S⁻¹] →+* T :=
       have h₃' := Subtype.coe_eq_of_eq_mk h₃
       rw [← Units.val_mul, ← mul_inv_rev, ← fS.map_mul, h₃']
       rw [Units.inv_mul_eq_iff_eq_mul, Units.eq_mul_inv_iff_mul_eq, ← hf, ← hf]
-      simp only [map_mul] }
+      simp [map_mul] }
 
 theorem universalHom_apply {r : R} {s : S} :
     universalHom f fS hf (r /ₒ s) = ((fS s)⁻¹ : Units T) * f r :=

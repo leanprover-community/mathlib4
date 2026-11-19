@@ -105,7 +105,7 @@ theorem cramer_transpose_row_self (i : n) : Aᵀ.cramer (A i) = Pi.single i A.de
   split_ifs with h
   · -- i = j: this entry should be `A.det`
     subst h
-    simp only [updateCol_transpose, det_transpose, updateRow_eq_self]
+    simp [updateCol_transpose, det_transpose, updateRow_eq_self]
   · -- i ≠ j: this entry should be 0
     rw [updateCol_transpose, det_transpose]
     apply det_zero_of_row_eq h
@@ -468,7 +468,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
     refine Polynomial.Monic.isRegular ?_
-    simp only [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
+    simp [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
   rw [← f'_adj, ← f'_adj, ← f'_adj, ← f'.map_mul, ←
     adjugate_mul_distrib_aux _ _ (hu A).left (hu B).left, RingHom.map_adjugate,
     RingHom.map_adjugate, f'_inv, f'_g_mul]

@@ -19,4 +19,4 @@ variable (R : Type*) [CommRing R]
 lemma Finsupp.submodule_smul {M : Type*} [AddCommGroup M] [Module R M]
     (ι : Type*) (p : ι → Submodule R M) (I : Ideal R) :
     Finsupp.submodule (fun i ↦ I • p i) = I • Finsupp.submodule p := by
-  simp only [Finsupp.submodule_eq_iSup, Submodule.map_smul'', ← Submodule.smul_iSup]
+  simp [Finsupp.submodule_eq_iSup, Submodule.map_smul'', ← Submodule.smul_iSup]

@@ -240,7 +240,7 @@ theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → �
   simp_rw [← Finset.sum_neg_distrib, ← Finset.sum_add_distrib, Complex.exp_sum, ← neg_mul]
   apply Integrable.fintype_prod (f := fun i (v : ℝ) ↦ cexp (-b i * v ^ 2 + c i * v)) (fun i ↦ ?_)
   convert! integrable_cexp_quadratic (hb i) (c i) 0 using 3 with x
-  simp only [add_zero]
+  simp [add_zero]
 
 theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
     Integrable (fun (v : ι → ℝ) ↦ cexp (-b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)) := by
@@ -269,7 +269,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add (hb : 0 < b.re) (c : ℂ) (w : V) :
   let e := (stdOrthonormalBasis ℝ V).repr.symm
   rw [← e.measurePreserving.integrable_comp_emb e.toHomeomorph.measurableEmbedding]
   convert! integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace hb c (e.symm w) with v
-  simp only [neg_mul, Function.comp_apply, LinearIsometryEquiv.norm_map,
+  simp [neg_mul, Function.comp_apply, LinearIsometryEquiv.norm_map,
     LinearIsometryEquiv.symm_symm,
     LinearIsometryEquiv.inner_map_eq_flip]
 

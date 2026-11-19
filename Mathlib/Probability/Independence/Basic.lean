@@ -159,7 +159,7 @@ variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {_ : Measura
 lemma iIndepSets_iff (π : ι → Set (Set Ω)) (μ : Measure Ω) :
     iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
       μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
-  simp only [iIndepSets, Kernel.iIndepSets, ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
+  simp [iIndepSets, Kernel.iIndepSets, ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
 
 lemma iIndepSets.meas_biInter (h : iIndepSets π μ) (s : Finset ι) {f : ι → Set Ω}
     (hf : ∀ i, i ∈ s → f i ∈ π i) : μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) :=
@@ -173,11 +173,11 @@ lemma iIndepSets.meas_iInter [Fintype ι] (h : iIndepSets π μ) (hs : ∀ i, s 
 
 lemma IndepSets_iff (s1 s2 : Set (Set Ω)) (μ : Measure Ω) :
     IndepSets s1 s2 μ ↔ ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (μ (t1 ∩ t2) = μ t1 * μ t2) := by
-  simp only [IndepSets, Kernel.IndepSets, ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
+  simp [IndepSets, Kernel.IndepSets, ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
 
 lemma iIndep_iff_iIndepSets (m : ι → MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω) :
     iIndep m μ ↔ iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
-  simp only [iIndep, iIndepSets, Kernel.iIndep]
+  simp [iIndep, iIndepSets, Kernel.iIndep]
 
 lemma iIndep.iIndepSets' {m : ι → MeasurableSpace Ω}
     {_ : MeasurableSpace Ω} {μ : Measure Ω} (hμ : iIndep m μ) :
@@ -199,7 +199,7 @@ lemma iIndep.meas_iInter [Fintype ι] (hμ : iIndep m μ) (hs : ∀ i, Measurabl
 
 lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
-  simp only [Indep, IndepSets, Kernel.Indep]
+  simp [Indep, IndepSets, Kernel.Indep]
 
 lemma Indep_iff (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω) :
     Indep m₁ m₂ μ
@@ -208,7 +208,7 @@ lemma Indep_iff (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ
 
 lemma iIndepSet_iff_iIndep (s : ι → Set Ω) (μ : Measure Ω) :
     iIndepSet s μ ↔ iIndep (fun i ↦ generateFrom {s i}) μ := by
-  simp only [iIndepSet, iIndep, Kernel.iIndepSet]
+  simp [iIndepSet, iIndep, Kernel.iIndepSet]
 
 lemma iIndepSet.isProbabilityMeasure (h : iIndepSet s μ) : IsProbabilityMeasure μ :=
   ((iIndepSet_iff_iIndep _ _).1 h).isProbabilityMeasure
@@ -217,21 +217,21 @@ lemma iIndepSet_iff (s : ι → Set Ω) (μ : Measure Ω) :
     iIndepSet s μ ↔ ∀ (s' : Finset ι) {f : ι → Set Ω}
       (_H : ∀ i, i ∈ s' → MeasurableSet[generateFrom {s i}] (f i)),
       μ (⋂ i ∈ s', f i) = ∏ i ∈ s', μ (f i) := by
-  simp only [iIndepSet_iff_iIndep, iIndep_iff]
+  simp [iIndepSet_iff_iIndep, iIndep_iff]
 
 lemma IndepSet_iff_Indep (s t : Set Ω) (μ : Measure Ω) :
     IndepSet s t μ ↔ Indep (generateFrom {s}) (generateFrom {t}) μ := by
-  simp only [IndepSet, Indep, Kernel.IndepSet]
+  simp [IndepSet, Indep, Kernel.IndepSet]
 
 lemma IndepSet_iff (s t : Set Ω) (μ : Measure Ω) :
     IndepSet s t μ ↔ ∀ t1 t2, MeasurableSet[generateFrom {s}] t1
       → MeasurableSet[generateFrom {t}] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
-  simp only [IndepSet_iff_Indep, Indep_iff]
+  simp [IndepSet_iff_Indep, Indep_iff]
 
 lemma iIndepFun_iff_iIndep {β : ι → Type*}
     (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (μ : Measure Ω) :
     iIndepFun f μ ↔ iIndep (fun x ↦ (m x).comap (f x)) μ := by
-  simp only [iIndepFun, iIndep, Kernel.iIndepFun]
+  simp [iIndepFun, iIndep, Kernel.iIndepFun]
 
 @[nontriviality, simp]
 lemma iIndepSets.of_subsingleton [Subsingleton ι] {m : ι → Set (Set Ω)} [IsProbabilityMeasure μ] :
@@ -255,7 +255,7 @@ lemma iIndepFun_iff {β : ι → Type*}
     iIndepFun f μ ↔ ∀ (s : Finset ι) {f' : ι → Set Ω}
       (_H : ∀ i, i ∈ s → MeasurableSet[(m i).comap (f i)] (f' i)),
       μ (⋂ i ∈ s, f' i) = ∏ i ∈ s, μ (f' i) := by
-  simp only [iIndepFun_iff_iIndep, iIndep_iff]
+  simp [iIndepFun_iff_iIndep, iIndep_iff]
 
 lemma iIndepFun.meas_biInter {m : ∀ i, MeasurableSpace (κ i)} {f : ∀ x : ι, Ω → κ x}
     (hf : iIndepFun f μ) (hs : ∀ i, i ∈ S → MeasurableSet[(m i).comap (f i)] (s i)) :
@@ -268,7 +268,7 @@ lemma iIndepFun.meas_iInter [Fintype ι] {m : ∀ i, MeasurableSpace (κ i)} {f 
 lemma IndepFun_iff_Indep [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :
     f ⟂ᵢ[μ] g ↔ Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) μ := by
-  simp only [IndepFun, Indep, Kernel.IndepFun]
+  simp [IndepFun, Indep, Kernel.IndepFun]
 
 lemma IndepFun_iff {β γ} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :
@@ -418,7 +418,7 @@ theorem IndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
 
 theorem indepSets_singleton_iff {s t : Set Ω} :
     IndepSets {s} {t} μ ↔ μ (s ∩ t) = μ s * μ t := by
-  simp only [IndepSets, Kernel.indepSets_singleton_iff, ae_dirac_eq, Filter.eventually_pure,
+  simp [IndepSets, Kernel.indepSets_singleton_iff, ae_dirac_eq, Filter.eventually_pure,
     Kernel.const_apply]
 
 lemma indepSets_iff_singleton_indepSets {𝒜 ℬ : Set (Set Ω)} :
@@ -644,7 +644,7 @@ theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
     f ⟂ᵢ[μ] g ↔
       ∀ s t, MeasurableSet s → MeasurableSet t
         → μ (f ⁻¹' s ∩ g ⁻¹' t) = μ (f ⁻¹' s) * μ (g ⁻¹' t) := by
-  simp only [IndepFun, Kernel.indepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
+  simp [IndepFun, Kernel.indepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
     Filter.eventually_pure, Kernel.const_apply]
 
 alias ⟨IndepFun.measure_inter_preimage_eq_mul, _⟩ := indepFun_iff_measure_inter_preimage_eq_mul
@@ -654,7 +654,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     iIndepFun f μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
         μ (⋂ i ∈ S, f i ⁻¹' sets i) = ∏ i ∈ S, μ (f i ⁻¹' sets i) := by
-  simp only [iIndepFun, Kernel.iIndepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
+  simp [iIndepFun, Kernel.iIndepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
     Filter.eventually_pure, Kernel.const_apply]
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
@@ -680,7 +680,7 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
     [IsZeroOrProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
     f ⟂ᵢ[μ] g ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → IndepSet (f ⁻¹' s) (g ⁻¹' t) μ := by
-  simp only [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg]
+  simp [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg]
 
 theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
@@ -1055,7 +1055,7 @@ lemma cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
       congr
       calc
         _ = (⋂ i, Y i ⁻¹' t i) ∩ ⋂ i, if i ∈ s then f i else .univ := by
-          simp only [Set.iInter_ite, Set.iInter_univ, Set.inter_univ]
+          simp [Set.iInter_ite, Set.iInter_univ, Set.inter_univ]
         _ = ⋂ i, Y i ⁻¹' t i ∩ (if i ∈ s then f i else .univ) := by rw [Set.iInter_inter_distrib]
         _ = _ := Set.iInter_congr fun i ↦ by by_cases hi : i ∈ s <;> simp [hi, g]
     _ = (∏ i, μ (Y i ⁻¹' t i))⁻¹ * μ (⋂ i, g i) := by
@@ -1075,8 +1075,8 @@ lemma cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
     _ = ∏ i, if i ∈ s then μ[f i | Y i ⁻¹' t i] else 1 := by
       refine Finset.prod_congr rfl fun i _ ↦ ?_
       by_cases hi : i ∈ s
-      · simp only [hi, ↓reduceIte, g, cond_apply (hY i (ht i))]
-      · simp only [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top μ _)]
+      · simp [hi, ↓reduceIte, g, cond_apply (hY i (ht i))]
+      · simp [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top μ _)]
     _ = _ := by simp
 
 lemma iIndepFun.cond [Finite ι] (hY : ∀ i, Measurable (Y i))

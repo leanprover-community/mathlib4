@@ -102,7 +102,7 @@ variable {F} in
 lemma linear_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Linear R] : G.Linear R := by
   exact
     { map_smul := fun f r => by
-        simp only [← NatIso.naturality_1 e (r • f), F.map_smul, Linear.smul_comp,
+        simp [← NatIso.naturality_1 e (r • f), F.map_smul, Linear.smul_comp,
           NatTrans.naturality, Linear.comp_smul, Iso.inv_hom_id_app_assoc] }
 
 section InducedCategory

@@ -346,7 +346,7 @@ theorem support_gen_of_gen' {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
   suffices of' R M '' ⋃ f ∈ S, (f.coeff.support : Set M) = ⋃ f ∈ S, of' R M '' f.coeff.support by
     rw [this]
     exact support_gen_of_gen hS
-  simp only [Set.image_iUnion]
+  simp [Set.image_iUnion]
 
 end Semiring
 
@@ -362,7 +362,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
   let : DecidableEq M := Classical.decEq M
   use Finset.biUnion S fun f => f.coeff.support
   have : S.biUnion (fun f => f.coeff.support) = ⋃ f ∈ S, (f.coeff.support : Set M) := by
-    simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
+    simp [Finset.set_biUnion_coe, Finset.coe_biUnion]
   rw [this]
   exact support_gen_of_gen' hS
 
@@ -445,7 +445,7 @@ theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
   obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ h
   refine AddMonoid.isAddFG_iff.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
   have hm : of' R M m ∈ Subalgebra.toSubmodule (adjoin R (of' R M '' ↑S)) := by
-    simp only [hS, top_toSubmodule, Submodule.mem_top]
+    simp [hS, top_toSubmodule, Submodule.mem_top]
   rw [adjoin_eq_span] at hm
   exact mem_closure_of_mem_span_closure hm
 
@@ -495,7 +495,7 @@ theorem support_gen_of_gen' {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
   suffices of R M '' ⋃ f ∈ S, f.coeff.support = ⋃ f ∈ S, of R M '' f.coeff.support by
     rw [this]
     exact support_gen_of_gen hS
-  simp only [Set.image_iUnion]
+  simp [Set.image_iUnion]
 
 end Semiring
 
@@ -511,7 +511,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
   let : DecidableEq M := Classical.decEq M
   use Finset.biUnion S fun f => f.coeff.support
   have : S.biUnion (fun f => f.coeff.support) = ⋃ f ∈ S, (f.coeff.support : Set M) := by
-    simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
+    simp [Finset.set_biUnion_coe, Finset.coe_biUnion]
   rw [this]
   exact support_gen_of_gen' hS
 

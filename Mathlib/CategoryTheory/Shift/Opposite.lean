@@ -133,14 +133,14 @@ lemma oppositeShiftFunctorAdd'_inv_app :
     (shiftFunctorAdd' (OppositeShift C A) a b c h).inv.app X =
       ((shiftFunctorAdd' C a b c h).hom.app X.unop).op := by
   subst h
-  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_inv_app]
+  simp [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_inv_app]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma oppositeShiftFunctorAdd'_hom_app :
     (shiftFunctorAdd' (OppositeShift C A) a b c h).hom.app X =
       ((shiftFunctorAdd' C a b c h).inv.app X.unop).op := by
   subst h
-  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_hom_app]
+  simp [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_hom_app]
 
 end
 

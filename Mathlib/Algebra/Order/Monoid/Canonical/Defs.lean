@@ -117,7 +117,7 @@ variable [CommMagma α] [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
-  simp only [mul_comm _ a, le_iff_exists_mul]
+  simp [mul_comm _ a, le_iff_exists_mul]
 
 end CommMagma
 
@@ -208,7 +208,7 @@ variable [PartialOrder α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
-  simp only [one_lt_iff_ne_one, Ne, mul_eq_one, not_and_or]
+  simp [one_lt_iff_ne_one, Ne, mul_eq_one, not_and_or]
 
 end PartialOrder
 

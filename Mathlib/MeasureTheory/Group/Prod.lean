@@ -199,7 +199,7 @@ theorem measure_mul_right_null (y : G) : μ ((fun x => x * y) ⁻¹' s) = 0 ↔ 
   calc
     μ ((fun x => x * y) ⁻¹' s) = 0 ↔ μ ((fun x => y⁻¹ * x) ⁻¹' s⁻¹)⁻¹ = 0 := by
       simp_rw [← inv_preimage, preimage_preimage, mul_inv_rev, inv_inv]
-    _ ↔ μ s = 0 := by simp only [measure_inv_null μ, measure_preimage_mul]
+    _ ↔ μ s = 0 := by simp [measure_inv_null μ, measure_preimage_mul]
 
 @[to_additive]
 theorem measure_mul_right_ne_zero (h2s : μ s ≠ 0) (y : G) : μ ((fun x => x * y) ⁻¹' s) ≠ 0 :=

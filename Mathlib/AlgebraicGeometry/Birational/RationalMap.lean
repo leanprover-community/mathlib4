@@ -293,7 +293,7 @@ lemma equiv.trans {f g h : X.PartialMap Y} : f.equiv g → g.equiv h → f.equiv
   dsimp at e₁ e₂
   simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
     Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
-  simp only [homOfLE_homOfLE_assoc]
+  simp [homOfLE_homOfLE_assoc]
 
 lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
   refl := equiv.refl

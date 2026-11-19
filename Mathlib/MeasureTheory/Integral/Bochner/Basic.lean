@@ -289,7 +289,7 @@ theorem integral_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
   integral_smul r f
 
 theorem integral_mul_const {L : Type*} [RCLike L] (r : L) (f : α → L) :
-    ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by simp only [mul_comm, integral_const_mul r f]
+    ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by simp [mul_comm, integral_const_mul r f]
 
 theorem integral_div {L : Type*} [RCLike L] (r : L) (f : α → L) :
     ∫ a, f a / r ∂μ = (∫ a, f a ∂μ) / r := by
@@ -522,7 +522,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
       · refine hf.mono ?_
         simp only [Pi.zero_apply]
         intro a h
-        simp only [h, neg_nonpos, ofReal_eq_zero]
+        simp [h, neg_nonpos, ofReal_eq_zero]
       · exact measurable_ofReal.comp_aemeasurable hfm.aemeasurable.neg
     rw [h_min, toReal_zero, _root_.sub_zero]
   · rw [integral_undef hfi]
@@ -775,7 +775,7 @@ theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f)
     ← ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, not_true_eq_false, or_false]
   rw [lintegral_eq_zero_iff']
   · rw [← hf.ge_iff_eq', Filter.EventuallyEq, Filter.EventuallyLE]
-    simp only [Pi.zero_apply, ofReal_eq_zero]
+    simp [Pi.zero_apply, ofReal_eq_zero]
   · exact (ENNReal.measurable_ofReal.comp_aemeasurable hfi.1.aemeasurable)
 
 theorem integral_eq_zero_iff_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi : Integrable f μ) :
@@ -806,7 +806,7 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
   rw [integral_pos_iff_support_of_nonneg (fun x ↦ (Real.exp_pos _).le) hf]
   suffices (Function.support fun x ↦ Real.exp (f x)) = Set.univ by simp [this, hμ.out]
   ext1 x
-  simp only [Function.mem_support, ne_eq, (Real.exp_pos _).ne', not_false_eq_true, Set.mem_univ]
+  simp [Function.mem_support, ne_eq, (Real.exp_pos _).ne', not_false_eq_true, Set.mem_univ]
 
 /-- Monotone convergence theorem for real-valued functions and Bochner integrals -/
 lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
@@ -896,7 +896,7 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   have h_bound : ∀ᵐ a ∂μ, ∀ i, f' i a ≤ F' a := by
     filter_upwards [hf_bound] with a ha_bound i
     refine ENNReal.ofReal_le_ofReal ?_
-    simp only [tsub_le_iff_right, sub_add_cancel, ha_bound i]
+    simp [tsub_le_iff_right, sub_add_cancel, ha_bound i]
   -- use the corresponding lemma for `ℝ≥0∞`
   have h := tendsto_of_lintegral_tendsto_of_monotone ?_ h_tendsto h_mono h_bound ?_
   rotate_left
@@ -1261,12 +1261,12 @@ theorem integral_mul_le_Lp_mul_Lq_of_nonneg {p q : ℝ} (hpq : p.HolderConjugate
 
 theorem integral_singleton' {μ : Measure α} {f : α → E} (hf : StronglyMeasurable f) (a : α) :
     ∫ a in {a}, f a ∂μ = μ.real {a} • f a := by
-  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf,
+  simp [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf,
     measureReal_def]
 
 theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → E) (a : α) :
     ∫ a in {a}, f a ∂μ = μ.real {a} • f a := by
-  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, measureReal_def]
+  simp [Measure.restrict_singleton, integral_smul_measure, integral_dirac, measureReal_def]
 
 theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = μ.real univ • f default :=
   calc

@@ -537,7 +537,7 @@ theorem inv_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ =
 
 theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
     tan x ^ 2 / (1 + tan x ^ 2) = sin x ^ 2 := by
-  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
+  simp [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 
 theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
   rw [← cosh_mul_I, mul_assoc, cosh_three_mul, cosh_mul_I]
@@ -638,7 +638,7 @@ theorem cos_neg : cos (-x) = cos x := by simp [cos]
 
 @[simp]
 theorem cos_abs : cos |x| = cos x := by
-  cases le_total x 0 <;> simp only [*, abs_of_nonneg, abs_of_nonpos, cos_neg]
+  cases le_total x 0 <;> simp [*, abs_of_nonneg, abs_of_nonpos, cos_neg]
 
 nonrec theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y :=
   ofReal_injective <| by simp [cos_add]
@@ -674,7 +674,7 @@ theorem two_mul_sin_mul_cos (x y : ℝ) : 2 * sin x * cos y = sin (x - y) + sin 
   ring
 
 nonrec theorem tan_eq_sin_div_cos : tan x = sin x / cos x :=
-  ofReal_injective <| by simp only [ofReal_tan, tan_eq_sin_div_cos, ofReal_div, ofReal_sin,
+  ofReal_injective <| by simp [ofReal_tan, tan_eq_sin_div_cos, ofReal_div, ofReal_sin,
     ofReal_cos]
 
 nonrec theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
@@ -711,10 +711,10 @@ theorem cos_sq_le_one : cos x ^ 2 ≤ 1 := by
   rw [← sin_sq_add_cos_sq x]; exact le_add_of_nonneg_left (sq_nonneg _)
 
 theorem abs_sin_le_one : |sin x| ≤ 1 :=
-  abs_le_one_iff_mul_self_le_one.2 <| by simp only [← sq, sin_sq_le_one]
+  abs_le_one_iff_mul_self_le_one.2 <| by simp [← sq, sin_sq_le_one]
 
 theorem abs_cos_le_one : |cos x| ≤ 1 :=
-  abs_le_one_iff_mul_self_le_one.2 <| by simp only [← sq, cos_sq_le_one]
+  abs_le_one_iff_mul_self_le_one.2 <| by simp [← sq, cos_sq_le_one]
 
 theorem sin_le_one : sin x ≤ 1 :=
   (abs_le.1 (abs_sin_le_one _)).2
@@ -767,7 +767,7 @@ theorem inv_one_add_tan_sq {x : ℝ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ =
 
 theorem tan_sq_div_one_add_tan_sq {x : ℝ} (hx : cos x ≠ 0) :
     tan x ^ 2 / (1 + tan x ^ 2) = sin x ^ 2 := by
-  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
+  simp [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 
 theorem inv_sqrt_one_add_tan_sq {x : ℝ} (hx : 0 < cos x) : (√(1 + tan x ^ 2))⁻¹ = cos x := by
   rw [← sqrt_sq hx.le, ← sqrt_inv, inv_one_add_tan_sq hx.ne']

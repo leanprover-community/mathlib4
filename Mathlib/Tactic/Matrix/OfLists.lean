@@ -87,7 +87,7 @@ theorem ofLists_mul [Mul α] [AddCommMonoid α] (l m n : ℕ) (A B : List (List 
     ofLists l m A * ofLists m n B = ofLists l n (ListMatrix.mul l m n A B) := by
   ext i j
   rw [mul_apply', ← col_apply' (ofLists m n B) j]
-  simp only [← row_transpose, ← ofLists_transpose, row_apply', ofLists_apply, ofList_apply,
+  simp [← row_transpose, ← ofLists_transpose, row_apply', ofLists_apply, ofList_apply,
     ← ListMatrix.dotProduct_eq, ListMatrix.getD_mul A B i.isLt j.isLt]
 
 private theorem getD_flatten_of_forall_length_eq {n i j : ℕ} {rows : List (List α)}

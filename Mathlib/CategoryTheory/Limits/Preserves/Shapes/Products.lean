@@ -98,7 +98,7 @@ lemma PreservesProduct.of_iso_comparison [i : IsIso (piComparison G f)] :
 lemma inv_piComparison_comp_map_π [IsIso (piComparison G f)] (j : J) :
      inv (piComparison G f) ≫ G.map (Pi.π _ j) =
       Pi.π (fun x ↦ (G.obj (f x))) j := by
-  simp only [IsIso.inv_comp_eq, piComparison_comp_π]
+  simp [IsIso.inv_comp_eq, piComparison_comp_π]
 
 variable [PreservesLimit (Discrete.functor f) G]
 

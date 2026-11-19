@@ -93,22 +93,22 @@ but, the real infimum of the empty set in Lean being defined as `0`, it holds un
 theorem gauge_zero : gauge s 0 = 0 := by
   rw [gauge_def']
   by_cases h : (0 : E) ∈ s
-  · simp only [smul_zero, sep_true, h, csInf_Ioi]
-  · simp only [smul_zero, sep_false, h, Real.sInf_empty]
+  · simp [smul_zero, sep_true, h, csInf_Ioi]
+  · simp [smul_zero, sep_false, h, Real.sInf_empty]
 
 @[simp]
 theorem gauge_zero' : gauge (0 : Set E) = 0 := by
   ext x
   rw [gauge_def']
   obtain rfl | hx := eq_or_ne x 0
-  · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, sep_true, smul_zero]
+  · simp [csInf_Ioi, mem_zero, Pi.zero_apply, sep_true, smul_zero]
   · have (r : ℝ) : ¬ (0 < r ∧ r = 0) := by grind
     simp [*]
 
 @[simp]
 theorem gauge_empty : gauge (∅ : Set E) = 0 := by
   ext
-  simp only [gauge_def', Real.sInf_empty, mem_empty_iff_false, Pi.zero_apply, sep_false]
+  simp [gauge_def', Real.sInf_empty, mem_empty_iff_false, Pi.zero_apply, sep_false]
 
 theorem gauge_of_subset_zero (h : s ⊆ 0) : gauge s = 0 := by
   obtain rfl | rfl := subset_singleton_iff_eq.1 h
@@ -366,7 +366,7 @@ theorem gauge_eq_zero (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s
 
 theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
     0 < gauge s x ↔ x ≠ 0 := by
-  simp only [(gauge_nonneg _).lt_iff_ne', Ne, gauge_eq_zero hs hb]
+  simp [(gauge_nonneg _).lt_iff_ne', Ne, gauge_eq_zero hs hb]
 
 end TopologicalSpace
 

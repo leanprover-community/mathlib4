@@ -122,7 +122,7 @@ lemma ab_exact_iff_function_exact :
   · intro h
     refine ⟨h, ?_⟩
     rintro ⟨x₁, rfl⟩
-    simp only [ab_zero_apply]
+    simp [ab_zero_apply]
   · tauto
 
 variable {S}

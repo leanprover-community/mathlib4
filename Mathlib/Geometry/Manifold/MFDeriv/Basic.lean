@@ -168,7 +168,7 @@ theorem mdifferentiableWithinAt_iff_target_inter {f : M → M'} {s : Set M} {x :
   rw [mdifferentiableWithinAt_iff']
   refine and_congr Iff.rfl (exists_congr fun f' => ?_)
   rw [inter_comm]
-  simp only [HasFDerivWithinAt, nhdsWithin_inter, nhdsWithin_extChartAt_target_eq]
+  simp [HasFDerivWithinAt, nhdsWithin_inter, nhdsWithin_extChartAt_target_eq]
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in the corresponding extended chart. -/
@@ -389,18 +389,18 @@ theorem mdifferentiableOn_iff :
     refine ⟨fun x hx => (h x hx).continuousWithinAt, fun x y z hz => ?_⟩
     simp only [mfld_simps] at hz
     let w := (extChartAt I x).symm z
-    have : w ∈ s := by simp only [w, hz, mfld_simps]
+    have : w ∈ s := by simp [w, hz, mfld_simps]
     specialize h w this
-    have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
-    have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
+    have w1 : w ∈ (chartAt H x).source := by simp [w, hz, mfld_simps]
+    have w2 : f w ∈ (chartAt H' y).source := by simp [w, hz, mfld_simps]
     convert ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
-    · simp only [w, hz, mfld_simps]
+    · simp [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine differentiableWithinAt_localInvariantProp.liftPropWithinAt_iff.mpr ?_
     refine ⟨hcont x hx, ?_⟩
     dsimp [DifferentiableWithinAtProp]
-    convert! hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
+    convert! hdiff x (f x) (extChartAt I x x) (by simp [hx, mfld_simps]) using 1
     mfld_set_tac
 
 /-- One can reformulate smoothness on a set as continuity on this set, and smoothness in any
@@ -516,10 +516,10 @@ theorem mfderivWithin_univ : mfderiv[univ] f = mfderiv% f := by
 
 theorem mfderivWithin_zero_of_not_mdifferentiableWithinAt (h : ¬MDiffAt[s] f x) :
     mfderiv[s] f x = 0 := by
-  simp only [mfderivWithin, h, ite_eq_right, not_false_iff]
+  simp [mfderivWithin, h, ite_eq_right, not_false_iff]
 
 theorem mfderiv_zero_of_not_mdifferentiableAt (h : ¬MDiffAt f x) :
-    mfderiv% f x = 0 := by simp only [mfderiv, h, ite_eq_right, not_false_iff]
+    mfderiv% f x = 0 := by simp [mfderiv, h, ite_eq_right, not_false_iff]
 
 @[nontriviality]
 theorem mdifferentiable_of_subsingleton [Subsingleton E] : MDiff f := by
@@ -574,7 +574,7 @@ theorem HasMFDerivAt.mdifferentiableAt (h : HasMFDerivAt% f x f') : MDiffAt f x 
 
 @[simp, mfld_simps]
 theorem hasMFDerivWithinAt_univ : HasMFDerivAt[univ] f x f' ↔ HasMFDerivAt% f x f' := by
-  simp only [HasMFDerivWithinAt, HasMFDerivAt, continuousWithinAt_univ, mfld_simps]
+  simp [HasMFDerivWithinAt, HasMFDerivAt, continuousWithinAt_univ, mfld_simps]
 
 theorem hasMFDerivAt_unique (h₀ : HasMFDerivAt% f x f₀') (h₁ : HasMFDerivAt% f x f₁') :
     f₀' = f₁' := by
@@ -598,7 +598,7 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivAt[s] f x f') (ht : HasMFDerivA
   constructor
   · exact ContinuousWithinAt.union hs.1 ht.1
   · convert HasFDerivWithinAt.union hs.2 ht.2 using 1
-    simp only [union_inter_distrib_right, preimage_union]
+    simp [union_inter_distrib_right, preimage_union]
 
 theorem HasMFDerivWithinAt.mono_of_mem_nhdsWithin (h : HasMFDerivAt[s] f x f') (ht : s ∈ 𝓝[t] x) :
     HasMFDerivAt[t] f x f' :=
@@ -637,7 +637,7 @@ protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDiffAt[s] f x) :
       ((tangentSpaceCastModel I' (f x)).symm) ∘L
       (fderivWithin 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
         ((extChartAt I x) x)) ∘L (tangentSpaceCastModel I x) := by
-  simp only [mfderivWithin, h, ite_eq_left]
+  simp [mfderivWithin, h, ite_eq_left]
 
 /-- Formula for the manifold derivative of a map within a set, abusing the defeq between the tangent
 space and the model space. Use instead `MDifferentiableWithinAt.mfderivWithin`, unless you have
@@ -658,7 +658,7 @@ protected theorem MDifferentiableAt.mfderiv (h : MDiffAt f x) :
       ((tangentSpaceCastModel I' (f x)).symm) ∘L
       fderivWithin 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) ∘L
       (tangentSpaceCastModel I x) := by
-  simp only [mfderiv, h, ite_eq_left]
+  simp [mfderiv, h, ite_eq_left]
 
 /-- Formula for the manifold derivative of a map, abusing the defeq between the tangent space
 and the model space. Use instead `MDifferentiableAt.mfderiv`, unless you have good reasons not
@@ -832,7 +832,7 @@ theorem tangentMapWithin_subset
 
 theorem tangentMapWithin_univ : tangentMap[(univ : Set M)] f = tangentMap% f := by
   ext p : 1
-  simp only [tangentMapWithin, tangentMap, mfld_simps]
+  simp [tangentMapWithin, tangentMap, mfld_simps]
 
 theorem tangentMapWithin_eq_tangentMap {p : TangentBundle I M} (hs : UniqueMDiffAt[s] p.proj)
     (h : MDiffAt f p.proj) : tangentMap[s] f p = tangentMap% f p := by
@@ -956,8 +956,8 @@ theorem HasMFDerivWithinAt.congr_of_eventuallyEq
         𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
       extChartAt_preimage_mem_nhdsWithin h₁
     apply Filter.mem_of_superset this fun y => _
-    simp +contextual only [hx, mfld_simps]
-  · simp only [hx, mfld_simps]
+    simp +contextual [hx, mfld_simps]
+  · simp [hx, mfld_simps]
 
 theorem HasMFDerivWithinAt.congr_mono
     (h : HasMFDerivAt[s] f x f') (ht : ∀ x ∈ t, f₁ x = f x) (hx : f₁ x = f x) (h₁ : t ⊆ s) :
@@ -1147,9 +1147,9 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivAt[u] g (f x) g')
     intro y hy
     simp only [mfld_simps] at hy
     have : f (((chartAt H x).symm : H → M) (I.symm y)) ∈ u := hst hy.1.1
-    simp only [hy, this, mfld_simps]
+    simp [hy, this, mfld_simps]
   apply A.congr_of_eventuallyEq (writtenInExtChartAt_comp hf.1)
-  simp only [mfld_simps]
+  simp [mfld_simps]
 
 /-- The **chain rule for manifolds**. -/
 theorem HasMFDerivAt.comp (hg : HasMFDerivAt% g (f x) g') (hf : HasMFDerivAt% f x f') :

@@ -259,7 +259,7 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
         _ = (F₁ ⋙ L').map (F₁.preimage φ.left) ≫ α.app Y.left ≫ F.map Y.hom ≫ β.app Y.right := by
           rw [← Functor.comp_map, ← α.naturality_assoc]
         _ = α.app X.left ≫ F.map X.hom ≫ β.app X.right ≫ (F₂ ⋙ R').map (F₂.preimage φ.right) := by
-          simp only [Functor.comp_map, Functor.map_preimage, ← map_obj_hom α β Y, φ.w,
+          simp [Functor.comp_map, Functor.map_preimage, ← map_obj_hom α β Y, φ.w,
             map_obj_hom α β X, assoc]
         _ = _ := by rw [← Functor.comp_map, β.naturality] )},
       by cat_disch⟩
@@ -406,7 +406,7 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
   map f :=
     { left := f.left
       right := f.right
-      w := by simp only [Functor.comp_map, ← F.map_comp, f.w] }
+      w := by simp [Functor.comp_map, ← F.map_comp, f.w] }
 
 attribute [to_dual existing] post_obj_left
 attribute [to_dual self] post_obj_hom

@@ -267,7 +267,7 @@ abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPull
     (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : pullback f₁ f₂ ⟶ pullback g₁ g₂ :=
   pullback.lift (pullback.fst f₁ f₂ ≫ i₁) (pullback.snd f₁ f₂ ≫ i₂)
-    (by simp only [Category.assoc, ← eq₁, ← eq₂, pullback.condition_assoc])
+    (by simp [Category.assoc, ← eq₁, ← eq₂, pullback.condition_assoc])
 
 /-- The canonical map `X ×ₛ Y ⟶ X ×ₜ Y` given `S ⟶ T`. -/
 abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [HasPullback f g]
@@ -304,7 +304,7 @@ abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPusho
     (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
     (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) : pushout f₁ f₂ ⟶ pushout g₁ g₂ :=
   pushout.desc (i₁ ≫ pushout.inl _ _) (i₂ ≫ pushout.inr _ _)
-    (by simp only [reassoc_of% eq₁, reassoc_of% eq₂, condition])
+    (by simp [reassoc_of% eq₁, reassoc_of% eq₂, condition])
 
 /-- The canonical map `X ⨿ₛ Y ⟶ X ⨿ₜ Y` given `S ⟶ T`. -/
 abbrev pushout.mapLift {X Y S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) [HasPushout f g]
@@ -401,7 +401,7 @@ This is an isomorphism iff `G` preserves the pullback of `f,g`; see
 def pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [HasPullback (G.map f) (G.map g)] :
     G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g) :=
   pullback.lift (G.map (pullback.fst f g)) (G.map (pullback.snd f g))
-    (by simp only [← G.map_comp, pullback.condition])
+    (by simp [← G.map_comp, pullback.condition])
 
 @[reassoc (attr := simp)]
 theorem pullbackComparison_comp_fst (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
@@ -419,7 +419,7 @@ theorem pullbackComparison_comp_snd (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
 theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPullback (G.map f) (G.map g)] {W : C} {h : W ⟶ X} {k : W ⟶ Y} (w : h ≫ f = k ≫ g) :
     G.map (pullback.lift _ _ w) ≫ pullbackComparison G f g =
-      pullback.lift (G.map h) (G.map k) (by simp only [← G.map_comp, w]) := by
+      pullback.lift (G.map h) (G.map k) (by simp [← G.map_comp, w]) := by
   ext <;> simp [← G.map_comp]
 
 @[reassoc]
@@ -442,7 +442,7 @@ This is an isomorphism iff `G` preserves the pushout of `f,g`; see
 def pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] [HasPushout (G.map f) (G.map g)] :
     pushout (G.map f) (G.map g) ⟶ G.obj (pushout f g) :=
   pushout.desc (G.map (pushout.inl _ _)) (G.map (pushout.inr _ _))
-    (by simp only [← G.map_comp, pushout.condition])
+    (by simp [← G.map_comp, pushout.condition])
 
 @[reassoc (attr := simp)]
 theorem inl_comp_pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
@@ -460,7 +460,7 @@ theorem inr_comp_pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
 theorem pushoutComparison_map_desc (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
     [HasPushout (G.map f) (G.map g)] {W : C} {h : Y ⟶ W} {k : Z ⟶ W} (w : f ≫ h = g ≫ k) :
     pushoutComparison G f g ≫ G.map (pushout.desc _ _ w) =
-      pushout.desc (G.map h) (G.map k) (by simp only [← G.map_comp, w]) := by
+      pushout.desc (G.map h) (G.map k) (by simp [← G.map_comp, w]) := by
   ext <;> simp [← G.map_comp]
 
 end

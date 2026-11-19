@@ -380,7 +380,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           simp only [← Set.range_comp, comp_def, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
             hq₁g₁ _ hxT₁, Set.image_singleton, map_mul, ← hf₁, mul_comm x.f, ← mul_assoc,
             ← pow_succ']
-          simp only [← smul_eq_mul, ← Set.smul_set_range, ← Set.smul_set_singleton,
+          simp [← smul_eq_mul, ← Set.smul_set_range, ← Set.smul_set_singleton,
             zeroLocus_smul_of_isUnit ((isUnit_of_invertible (q₁ c)).pow _)]
     · convert! congr(comap q₂.toRingHom '' $hT₂)
       · rw [Set.preimage_sdiff, preimage_comap_zeroLocus, preimage_comap_zeroLocus,
@@ -561,7 +561,7 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
       ∀ i, C.g i ∈ M ^ S.degBound ^ S.degBound := by
   choose f hf₁ hf₂ hf₃ using fun C : BasicConstructibleSetData R[X] ↦ statement (R₀ := ℤ) ⟨C.g⟩ C.f
   refine ⟨S.biUnion f, ?_, ?_⟩
-  · simp only [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion,
+  · simp [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion,
       Finset.set_biUnion_biUnion, hf₁]
   · simp only [Finset.mem_biUnion, forall_exists_index, and_imp]
     intro x y hy hx
@@ -842,7 +842,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
       | add p q hp hq =>
         obtain ⟨q₁, q₂, hq₁, rfl⟩ := hp
         obtain ⟨q₃, q₄, hq₃, rfl⟩ := hq
-        refine ⟨q₁ + q₃, q₂ + q₄, add_mem hq₁ hq₃, by simp only [map_add, add_add_add_comm]⟩
+        refine ⟨q₁ + q₃, q₂ + q₄, add_mem hq₁ hq₃, by simp [map_add, add_add_add_comm]⟩
       | mul_X p i hp =>
         obtain ⟨q₁, q₂, hq₁, rfl⟩ := hp
         simp only [← (commAlgEquiv R (Fin n) (Fin m)).injective.eq_iff,
@@ -860,7 +860,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
     · rw [Set.preimage_image_eq _ (comap_injective_of_surjective g hg'),
         Set.preimage_inter, hs, Set.preimage_range, Set.inter_univ,
         ← Set.preimage_comp, ← comap_comp, hσ]
-      simp only [comap_id, Set.preimage_id']
+      simp [comap_id, Set.preimage_id']
   have hS' : comap g '' S.toSet = S'.toSet := by
     simp only [S', BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion₂,
       Finset.set_biUnion_finset_image, ← comp_def (g := finSumFinEquiv.symm), Set.range_comp,

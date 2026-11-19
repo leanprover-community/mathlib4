@@ -116,7 +116,7 @@ theorem ordConnectedProj_eq {x y : s} :
   · rw [← mem_ordConnectedComponent, ← ordConnectedComponent_ordConnectedProj, h,
       ordConnectedComponent_ordConnectedProj, self_mem_ordConnectedComponent]
     exact y.2
-  · simp only [ordConnectedProj, ordConnectedComponent_eq h]
+  · simp [ordConnectedProj, ordConnectedComponent_eq h]
 
 /-- A set that intersects each order connected component of a set by a single point. Defined as the
 range of `Set.ordConnectedProj s`. -/
@@ -166,7 +166,7 @@ theorem disjoint_right_ordSeparatingSet : Disjoint t (ordSeparatingSet s t) :=
 
 theorem dual_ordSeparatingSet :
     ordSeparatingSet (ofDual ⁻¹' s) (ofDual ⁻¹' t) = ofDual ⁻¹' ordSeparatingSet s t := by
-  simp only [ordSeparatingSet, mem_preimage, ← toDual.surjective.iUnion_comp, ofDual_toDual,
+  simp [ordSeparatingSet, mem_preimage, ← toDual.surjective.iUnion_comp, ofDual_toDual,
     dual_ordConnectedComponent, ← preimage_compl, preimage_inter, preimage_iUnion]
 
 /-- An auxiliary neighborhood that will be used in the proof of

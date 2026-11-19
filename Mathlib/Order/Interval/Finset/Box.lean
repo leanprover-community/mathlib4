@@ -45,7 +45,7 @@ omit [IsOrderedRing α] in
 lemma box_succ_eq_sdiff (n : ℕ) :
     box (n + 1) = Icc (-n.succ : α) n.succ \ Icc (-n) n := by
   rw [box, Icc_neg_mono.disjointed_add_one]
-  simp only [Nat.cast_add_one, Nat.succ_eq_add_one]
+  simp [Nat.cast_add_one, Nat.succ_eq_add_one]
 
 lemma disjoint_box_succ_prod (n : ℕ) : Disjoint (box (n + 1)) (Icc (-n : α) n) := by
   rw [box_succ_eq_sdiff]; exact disjoint_sdiff_self_left
@@ -108,6 +108,6 @@ lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
 
 -- TODO: Can this be generalised to locally finite archimedean ordered rings?
 lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by
-  use max x.1.natAbs x.2.natAbs; simp only [mem_box, and_self_iff, forall_eq']
+  use max x.1.natAbs x.2.natAbs; simp [mem_box, and_self_iff, forall_eq']
 
 end Int

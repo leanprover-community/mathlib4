@@ -60,29 +60,29 @@ def t (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
 @[simp, reassoc]
 theorem t_fst_fst (i j : 𝒰.I₀) : t 𝒰 f g i j ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
     pullback.snd _ _ := by
-  simp only [t, Category.assoc, pullbackSymmetry_hom_comp_fst_assoc, pullbackAssoc_hom_snd_fst,
+  simp [t, Category.assoc, pullbackSymmetry_hom_comp_fst_assoc, pullbackAssoc_hom_snd_fst,
     pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_snd, pullbackAssoc_inv_fst_fst,
     pullbackSymmetry_hom_comp_fst]
 
 @[simp, reassoc]
 theorem t_fst_snd (i j : 𝒰.I₀) :
     t 𝒰 f g i j ≫ pullback.fst _ _ ≫ pullback.snd _ _ = pullback.fst _ _ ≫ pullback.snd _ _ := by
-  simp only [t, Category.assoc, pullbackSymmetry_hom_comp_fst_assoc, pullbackAssoc_hom_snd_snd,
+  simp [t, Category.assoc, pullbackSymmetry_hom_comp_fst_assoc, pullbackAssoc_hom_snd_snd,
     pullback.lift_snd, Category.comp_id, pullbackAssoc_inv_snd, pullbackSymmetry_hom_comp_snd_assoc]
 
 @[simp, reassoc]
 theorem t_snd (i j : 𝒰.I₀) : t 𝒰 f g i j ≫ pullback.snd _ _ =
     pullback.fst _ _ ≫ pullback.fst _ _ := by
-  simp only [t, Category.assoc, pullbackSymmetry_hom_comp_snd, pullbackAssoc_hom_fst,
+  simp [t, Category.assoc, pullbackSymmetry_hom_comp_snd, pullbackAssoc_hom_fst,
     pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_fst, pullbackAssoc_inv_fst_snd,
     pullbackSymmetry_hom_comp_snd_assoc]
 
 theorem t_id (i : 𝒰.I₀) : t 𝒰 f g i i = 𝟙 _ := by
   apply pullback.hom_ext <;> rw [Category.id_comp]
   · apply pullback.hom_ext
-    · rw [← cancel_mono (𝒰.f i)]; simp only [pullback.condition, Category.assoc, t_fst_fst]
-    · simp only [Category.assoc, t_fst_snd]
-  · rw [← cancel_mono (𝒰.f i)]; simp only [pullback.condition, t_snd, Category.assoc]
+    · rw [← cancel_mono (𝒰.f i)]; simp [pullback.condition, Category.assoc, t_fst_fst]
+    · simp [Category.assoc, t_fst_snd]
+  · rw [← cancel_mono (𝒰.f i)]; simp [pullback.condition, t_snd, Category.assoc]
 
 /-- The inclusion map of `V i j = (Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ Uᵢ ×[Z] Y` -/
 abbrev fV (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ pullback (𝒰.f i ≫ f) g :=
@@ -103,7 +103,7 @@ def t' (i j k : 𝒰.I₀) :
 theorem t'_fst_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ pullback.snd _ _ := by
-  simp only [t', Category.assoc, pullbackSymmetry_hom_comp_fst_assoc,
+  simp [t', Category.assoc, pullbackSymmetry_hom_comp_fst_assoc,
     pullbackRightPullbackFstIso_inv_snd_fst_assoc, pullback.lift_fst_assoc, t_fst_fst,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
@@ -111,7 +111,7 @@ theorem t'_fst_fst_fst (i j k : 𝒰.I₀) :
 theorem t'_fst_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ := by
-  simp only [t', Category.assoc, pullbackSymmetry_hom_comp_fst_assoc,
+  simp [t', Category.assoc, pullbackSymmetry_hom_comp_fst_assoc,
     pullbackRightPullbackFstIso_inv_snd_fst_assoc, pullback.lift_fst_assoc, t_fst_snd,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
@@ -119,7 +119,7 @@ theorem t'_fst_fst_snd (i j k : 𝒰.I₀) :
 theorem t'_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.snd _ _ := by
-  simp only [t', Category.assoc, pullbackSymmetry_hom_comp_fst_assoc,
+  simp [t', Category.assoc, pullbackSymmetry_hom_comp_fst_assoc,
     pullbackRightPullbackFstIso_inv_snd_snd, pullback.lift_snd, Category.comp_id,
     pullbackRightPullbackFstIso_hom_snd]
 
@@ -127,7 +127,7 @@ theorem t'_fst_snd (i j k : 𝒰.I₀) :
 theorem t'_snd_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ pullback.snd _ _ := by
-  simp only [t', Category.assoc, pullbackSymmetry_hom_comp_snd_assoc,
+  simp [t', Category.assoc, pullbackSymmetry_hom_comp_snd_assoc,
     pullbackRightPullbackFstIso_inv_fst_assoc, pullback.lift_fst_assoc, t_fst_fst,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
@@ -135,7 +135,7 @@ theorem t'_snd_fst_fst (i j k : 𝒰.I₀) :
 theorem t'_snd_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ := by
-  simp only [t', Category.assoc, pullbackSymmetry_hom_comp_snd_assoc,
+  simp [t', Category.assoc, pullbackSymmetry_hom_comp_snd_assoc,
     pullbackRightPullbackFstIso_inv_fst_assoc, pullback.lift_fst_assoc, t_fst_snd,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
@@ -143,39 +143,39 @@ theorem t'_snd_fst_snd (i j k : 𝒰.I₀) :
 theorem t'_snd_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
       pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ := by
-  simp only [t', Category.assoc, pullbackSymmetry_hom_comp_snd_assoc,
+  simp [t', Category.assoc, pullbackSymmetry_hom_comp_snd_assoc,
     pullbackRightPullbackFstIso_inv_fst_assoc, pullback.lift_fst_assoc, t_snd,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
 theorem cocycle_fst_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst _ _ ≫ pullback.fst _ _ ≫
       pullback.fst _ _ = pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ := by
-  simp only [t'_fst_fst_fst, t'_fst_snd, t'_snd_snd]
+  simp [t'_fst_fst_fst, t'_fst_snd, t'_snd_snd]
 
 theorem cocycle_fst_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst _ _ ≫ pullback.fst _ _ ≫
       pullback.snd _ _ = pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ := by
-  simp only [t'_fst_fst_snd]
+  simp [t'_fst_fst_snd]
 
 theorem cocycle_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.fst _ _ ≫ pullback.snd _ _ := by
-  simp only [t'_fst_snd, t'_snd_snd, t'_fst_fst_fst]
+  simp [t'_fst_snd, t'_snd_snd, t'_fst_fst_fst]
 
 theorem cocycle_snd_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫
       pullback.fst _ _ = pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ := by
-  simp only [pullback.condition_assoc, t'_snd_fst_fst, t'_fst_snd, t'_snd_snd]
+  simp [pullback.condition_assoc, t'_snd_fst_fst, t'_fst_snd, t'_snd_snd]
 
 theorem cocycle_snd_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫
       pullback.snd _ _ = pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ := by
-  simp only [pullback.condition_assoc, t'_snd_fst_snd]
+  simp [pullback.condition_assoc, t'_snd_fst_snd]
 
 theorem cocycle_snd_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.snd _ _ := by
-  simp only [t'_snd_snd, t'_fst_fst_fst, t'_fst_snd]
+  simp [t'_snd_snd, t'_fst_fst_fst, t'_fst_snd]
 
 -- `by tidy` should solve it, but it times out.
 theorem cocycle (i j k : 𝒰.I₀) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j = 𝟙 _ := by
@@ -208,7 +208,7 @@ def gluing : Scheme.GlueData.{u} where
     apply pullback.hom_ext
     on_goal 1 => apply pullback.hom_ext
     all_goals
-      simp only [t'_snd_fst_fst, t'_snd_fst_snd, t'_snd_snd, t_fst_fst, t_fst_snd, t_snd,
+      simp [t'_snd_fst_fst, t'_snd_fst_snd, t'_snd_snd, t_fst_fst, t_fst_snd, t_snd,
         Category.assoc]
   cocycle i j k := cocycle 𝒰 f g i j k
 
@@ -250,7 +250,7 @@ def gluedLiftPullbackMap (i j : 𝒰.I₀) :
   · exact (pullbackSymmetry _ _).hom ≫
       pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
   · simpa using! pullback.condition
-  · simp only [Category.comp_id, Category.id_comp]
+  · simp [Category.comp_id, Category.id_comp]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -574,7 +574,7 @@ def openCoverOfBase' (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
         (limit.isoLimitCone ⟨_, this.isLimit⟩).inv ≫
         pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) inferInstance
   · simp [← pullback.condition]
-  · simp only [Category.comp_id, Category.id_comp]
+  · simp [Category.comp_id, Category.id_comp]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where

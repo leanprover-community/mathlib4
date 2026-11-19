@@ -122,7 +122,7 @@ theorem sub (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (
 theorem smul (c : ℝ) (hf : Martingale f ℱ μ) : Martingale (c • f) ℱ μ := by
   refine ⟨hf.stronglyAdapted.smul c, fun i j hij => ?_⟩
   refine (condExp_smul ..).trans ((hf.2 i j hij).mono fun x hx => ?_)
-  simp only [Pi.smul_apply, hx]
+  simp [Pi.smul_apply, hx]
 
 theorem supermartingale [Preorder E] (hf : Martingale f ℱ μ) : Supermartingale f ℱ μ :=
   ⟨hf.1, fun i j hij => (hf.2 i j hij).le, fun i => hf.integrable i⟩

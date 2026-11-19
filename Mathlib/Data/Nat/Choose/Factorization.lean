@@ -59,7 +59,7 @@ theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
 the sum of base `p` digits of `n`. -/
 theorem sub_one_mul_factorization_factorial {n p : ℕ} (hp : p.Prime) :
     (p - 1) * (n)!.factorization p = n - (p.digits n).sum := by
-  simp only [factorization_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
+  simp [factorization_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
     ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
@@ -102,10 +102,10 @@ lemma multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
         #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} :=
   calc
     ∑ i ∈ Finset.Ico 1 b, n / p ^ i = ∑ i ∈ Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
-      simp only [add_tsub_cancel_of_le hkn]
+      simp [add_tsub_cancel_of_le hkn]
     _ = ∑ i ∈ Finset.Ico 1 b,
           (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) := by
-      simp only [Nat.add_div (pow_pos hp.pos _)]
+      simp [Nat.add_div (pow_pos hp.pos _)]
     _ = _ := by simp [sum_add_distrib, sum_boole]
 
 /-- The factorization of `p` in `choose (n + k) k` is the number of carries when `k` and `n` are
@@ -122,7 +122,7 @@ theorem factorization_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
       coe_add, Pi.add_apply, factorization_factorial hp ((log_mono_right (le_add_left k n)).trans_lt
       hnb), factorization_factorial hp ((log_mono_right (le_add_left n k)).trans_lt
       (add_comm n k ▸ hnb)), multiplicity_choose_aux hp (le_add_left k n)]
-    simp only [add_tsub_cancel_right, add_comm]
+    simp [add_tsub_cancel_right, add_comm]
   exact Nat.add_right_cancel h₁
 
 /-- The factorization of `p` in `choose n k` is the number of carries when `k` and `n - k`

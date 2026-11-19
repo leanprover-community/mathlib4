@@ -265,7 +265,7 @@ def integerSet : Set (mixedSpace K) :=
 
 theorem mem_integerSet {a : mixedSpace K} :
     a ∈ integerSet K ↔ a ∈ fundamentalCone K ∧ ∃ x : 𝓞 K, mixedEmbedding K x = a := by
-  simp only [integerSet, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
+  simp [integerSet, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
     AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, RingHom.coe_comp, Function.comp_apply]
 
 /-- If `a` is in `integerSet`, then there is a *unique* algebraic integer in `𝓞 K` such

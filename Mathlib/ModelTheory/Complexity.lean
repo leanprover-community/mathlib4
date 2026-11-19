@@ -358,7 +358,7 @@ lemma IsAtomic.realize_comp_of_injective {φ : L.BoundedFormula α n} (hA : φ.I
     [L.HomClass F M N] {f : F} (hInj : Function.Injective f) {v : α → M} {xs : Fin n → M} :
     φ.Realize v xs → φ.Realize (f ∘ v) (f ∘ xs) := by
   induction hA with
-  | equal t₁ t₂ => simp only [realize_bdEqual, ← Sum.comp_elim, HomClass.realize_term, hInj.eq_iff,
+  | equal t₁ t₂ => simp [realize_bdEqual, ← Sum.comp_elim, HomClass.realize_term, hInj.eq_iff,
     imp_self]
   | rel R ts =>
     simp only [realize_rel, ← Sum.comp_elim, HomClass.realize_term]
@@ -377,12 +377,12 @@ lemma IsQF.realize_embedding {φ : L.BoundedFormula α n} (hQF : φ.IsQF)
   induction hQF with
   | falsum => rfl
   | of_isAtomic hA => induction hA with
-    | equal t₁ t₂ => simp only [realize_bdEqual, ← Sum.comp_elim, HomClass.realize_term,
+    | equal t₁ t₂ => simp [realize_bdEqual, ← Sum.comp_elim, HomClass.realize_term,
         (EmbeddingLike.injective f).eq_iff]
     | rel R ts =>
       simp only [realize_rel, ← Sum.comp_elim, HomClass.realize_term]
       exact StrongHomClass.map_rel f R (fun i => Term.realize (Sum.elim v xs) (ts i))
-  | imp _ _ ihφ ihψ => simp only [realize_imp, ihφ, ihψ]
+  | imp _ _ ihφ ihψ => simp [realize_imp, ihφ, ihψ]
 
 lemma IsUniversal.realize_embedding {φ : L.BoundedFormula α n} (hU : φ.IsUniversal)
     (f : F) {v : α → M} {xs : Fin n → M} :

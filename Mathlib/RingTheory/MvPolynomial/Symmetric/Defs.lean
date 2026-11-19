@@ -79,7 +79,7 @@ lemma esymm_of_card_lt {s : Multiset R} {n : ℕ} (h : s.card < n) :
 theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
     (s.val.map f).esymm n = (s.powersetCard n).sum fun t => t.prod f := by
   simp only [esymm, powersetCard_map, ← Finset.map_val_val_powersetCard, map_map]
-  simp only [Function.comp_apply, Finset.prod_map_val, Finset.sum_map_val]
+  simp [Function.comp_apply, Finset.prod_map_val, Finset.sum_map_val]
 
 lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
     (s : S) (n : ℕ) (m : Multiset R) :
@@ -228,7 +228,7 @@ theorem esymm_eq_sum_monomial (n : ℕ) :
 
 @[simp]
 theorem esymm_zero : esymm σ R 0 = 1 := by
-  simp only [esymm, powersetCard_zero, sum_singleton, prod_empty]
+  simp [esymm, powersetCard_zero, sum_singleton, prod_empty]
 
 @[simp]
 theorem esymm_one : esymm σ R 1 = ∑ i, X i := by simp [esymm, powersetCard_one]
@@ -321,7 +321,7 @@ theorem hsymm_zero : hsymm σ R 0 = 1 := by simp [hsymm, eq_nil_of_card_zero]
 theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
   symm
   apply Fintype.sum_equiv oneEquiv
-  simp only [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton, implies_true]
+  simp [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton, implies_true]
 
 theorem hsymmPart_zero : hsymmPart σ R (.indiscrete 0) = 1 := by simp [hsymmPart]
 

@@ -97,7 +97,7 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
     (fun F ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _) (by
       rintro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ ⟨f₁, f₂⟩
       dsimp at f₁ f₂ ⊢
-      simp only [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp]))
+      simp [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp]))
 
 /-- The equivalence of functor categories given by flipping. -/
 @[implicit_reducible, simps!]
@@ -167,7 +167,7 @@ variable {B C D E}
 lemma uncurry_obj_curry_obj (F : B × C ⥤ D) : uncurry.obj (curry.obj F) = F :=
   Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
     dsimp
-    simp only [← F.map_comp, Category.id_comp, Category.comp_id, prod_comp])
+    simp [← F.map_comp, Category.id_comp, Category.comp_id, prod_comp])
 
 lemma curry_obj_injective {F₁ F₂ : C × D ⥤ E} (h : curry.obj F₁ = curry.obj F₂) :
     F₁ = F₂ := by
@@ -190,13 +190,13 @@ lemma uncurry_obj_curry_obj_flip_flip (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C �
     uncurry.obj (F₂ ⋙ (F₁ ⋙ curry.obj G).flip).flip = (F₁.prod F₂) ⋙ G :=
   Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
     dsimp
-    simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
+    simp [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 
 lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
     uncurry.obj (F₁ ⋙ (F₂ ⋙ (curry.obj G).flip).flip) = (F₁.prod F₂) ⋙ G :=
   Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
     dsimp
-    simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
+    simp [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 
 /-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
 @[implicit_reducible, simps!]

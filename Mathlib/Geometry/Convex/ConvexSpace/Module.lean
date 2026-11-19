@@ -191,7 +191,7 @@ instance _root_.SMulCommClass.toIsConvexCombComm : IsConvexCombComm R S M where
   iConvexComb_comm' f g := by
     simp only [iConvexComb_eq_sum, Finsupp.sum, Finset.smul_sum]
     rw [Finset.sum_comm]
-    simp only [smul_comm]
+    simp [smul_comm]
 
 end IsConvexCombComm
 

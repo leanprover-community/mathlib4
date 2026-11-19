@@ -134,7 +134,7 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
   classical
   revert hSp h_disj
   refine Finset.induction_on sι ?_ ?_
-  · simp only [Finset.notMem_empty, IsEmpty.forall_iff, iUnion_false, iUnion_empty, sum_empty,
+  · simp [Finset.notMem_empty, IsEmpty.forall_iff, iUnion_false, iUnion_empty, sum_empty,
       imp_true_iff, T_empty]
   intro a s has h hps h_disj
   rw [Finset.sum_insert has, ← h]
@@ -385,7 +385,7 @@ theorem setToSimpleFunc_congr' (T : Set α → E →L[ℝ] F) (h_add : FinMeasAd
           congr; rw [pair_preimage_singleton f g]
         rw [h_eq]
         exact h eq
-      simp only [this, zero_apply, pair_apply]
+      simp [this, zero_apply, pair_apply]
 
 theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
@@ -494,7 +494,7 @@ theorem setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMea
       rw [smul_eq_map c f, map_setToSimpleFunc T h_add hf]; rw [smul_zero]
     _ = ∑ x ∈ f.range, c • T (f ⁻¹' {x}) x :=
       (Finset.sum_congr rfl fun b _ => by rw [map_smul (T (f ⁻¹' {b})) c b])
-    _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum]
+    _ = c • setToSimpleFunc T f := by simp [setToSimpleFunc, smul_sum]
 
 theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [SMulZeroClass 𝕜 E]
     [NormedSpace ℝ E] [DistribSMul 𝕜 F] (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T)
@@ -504,7 +504,7 @@ theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [SMulZeroClass 𝕜 E]
     setToSimpleFunc T (c • f) = ∑ x ∈ f.range, T (f ⁻¹' {x}) (c • x) := by
       rw [smul_eq_map c f, map_setToSimpleFunc T h_add hf]; rw [smul_zero]
     _ = ∑ x ∈ f.range, c • T (f ⁻¹' {x}) x := Finset.sum_congr rfl fun b _ => by rw [h_smul]
-    _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum]
+    _ = c • setToSimpleFunc T f := by simp [setToSimpleFunc, smul_sum]
 
 section Order
 
@@ -602,7 +602,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
       T s x := by
   classical
   obtain rfl | hs_empty := s.eq_empty_or_nonempty
-  · simp only [hT_empty, zero_apply, piecewise_empty, const_zero,
+  · simp [hT_empty, zero_apply, piecewise_empty, const_zero,
       setToSimpleFunc_zero_apply]
   simp_rw [setToSimpleFunc]
   obtain rfl | hs_univ := eq_or_ne s univ
@@ -625,7 +625,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
 
 theorem setToSimpleFunc_const' [Nonempty α] (T : Set α → F →L[ℝ] F') (x : F)
     {m : MeasurableSpace α} : SimpleFunc.setToSimpleFunc T (SimpleFunc.const α x) = T univ x := by
-  simp only [setToSimpleFunc, range_const, Set.mem_singleton, preimage_const_of_mem,
+  simp [setToSimpleFunc, range_const, Set.mem_singleton, preimage_const_of_mem,
     sum_singleton, ← Function.const_def, coe_const]
 
 theorem setToSimpleFunc_const (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0) (x : F)
@@ -633,7 +633,7 @@ theorem setToSimpleFunc_const (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ 
   cases isEmpty_or_nonempty α
   · have h_univ_empty : (univ : Set α) = ∅ := Subsingleton.elim _ _
     rw [h_univ_empty, hT_empty]
-    simp only [setToSimpleFunc, zero_apply, sum_empty,
+    simp [setToSimpleFunc, zero_apply, sum_empty,
       range_eq_empty_of_isEmpty]
   · exact setToSimpleFunc_const' T x
 

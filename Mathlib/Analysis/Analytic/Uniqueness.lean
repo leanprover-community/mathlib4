@@ -97,7 +97,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
     funext z
     refine Finset.sum_eq_single _ (fun b hb hnb => ?_) fun hn => ?_
     · have := Finset.mem_range_succ_iff.mp hb
-      simp only [hk b (this.lt_of_ne hnb)]
+      simp [hk b (this.lt_of_ne hnb)]
     · exact False.elim (hn (Finset.mem_range.mpr (lt_add_one k)))
   replace h := h.isBigO_sub_partialSum_pow k.succ
   simp only [psum_eq, zero_sub, Pi.zero_apply, Asymptotics.isBigO_neg_left] at h
@@ -212,7 +212,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
   have A : EqOn (e ∘ f) 0 U := by
     apply eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux this hU h₀
     filter_upwards [hfz₀] with x hx
-    simp only [hx, Function.comp_apply, Pi.zero_apply, map_zero]
+    simp [hx, Function.comp_apply, Pi.zero_apply, map_zero]
   intro z hz
   have : e (f z) = e 0 := by simpa only using! A hz
   exact UniformSpace.Completion.coe_injective F this
