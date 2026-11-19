@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 /-!
 # Being an isomorphism is local at the target
-
 -/
 
 universe u

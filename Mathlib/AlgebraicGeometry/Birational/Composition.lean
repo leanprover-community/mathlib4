@@ -24,7 +24,6 @@ This file defines composition for partial maps and rational maps between schemes
 - `Scheme.PartialMap.comp_equiv_of_equiv`: Composition respects equivalence of partial maps.
 - `Scheme.PartialMap.comp_assoc`: Composition of partial maps is associative.
 - `Scheme.RationalMap.comp_assoc`: Composition of rational maps is associative.
-
 -/
 
 @[expose] public section

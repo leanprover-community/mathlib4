@@ -49,7 +49,6 @@ The file also contains an identification between the definitions in
 
 * The relationship between `H2` and group extensions
 * Nonabelian group cohomology
-
 -/
 
 @[expose] public section

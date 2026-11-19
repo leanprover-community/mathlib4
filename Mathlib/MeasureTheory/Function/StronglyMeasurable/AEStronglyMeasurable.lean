@@ -39,7 +39,6 @@ measurable functions, as a basis for the Bochner integral.
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 @[expose] public section
@@ -625,7 +624,7 @@ theorem comp_measurable {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpa
 theorem comp_quasiMeasurePreserving {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}
     {f : γ → α} {μ : Measure γ} {ν : Measure α} (hg : AEStronglyMeasurable g ν)
     (hf : QuasiMeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
-  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
+  (hg.mono_ac hf.absolutelyContinuous).comp_aemeasurable hf.aemeasurable
 
 theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
     ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by

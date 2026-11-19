@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
@@ -1496,3 +1497,5 @@ def range (f : (Π i, M i) →ₘₗ[R] N) : SubMulAction R N :=
 end Submodule
 
 end MultilinearMap
+
+set_option linter.style.longFile 1700

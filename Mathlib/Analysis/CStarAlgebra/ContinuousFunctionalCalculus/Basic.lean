@@ -47,7 +47,6 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
   elements in a unital C⋆-algebra over `ℂ`.
 * `CStarAlgebra.instNonnegSpectrumClass`: In a unital C⋆-algebra over `ℂ` which is also a
   `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
-
 -/
 
 @[expose] public section

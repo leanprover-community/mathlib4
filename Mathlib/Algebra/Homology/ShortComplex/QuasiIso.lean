@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.Homology
 This file introduces the typeclass `QuasiIso φ` for a morphism `φ : S₁ ⟶ S₂`
 of short complexes (which have homology): the condition is that the induced
 morphism `homologyMap φ` in homology is an isomorphism.
-
 -/
 
 public section

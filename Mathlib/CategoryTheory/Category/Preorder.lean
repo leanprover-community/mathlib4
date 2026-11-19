@@ -24,7 +24,6 @@ categories.
 * `homOfLE` and `leOfHom` provide translations between inequalities in the preorder, and
   morphisms in the associated category.
 * `Monotone.functor` is the functor associated to a monotone function.
-
 -/
 
 @[expose] public section

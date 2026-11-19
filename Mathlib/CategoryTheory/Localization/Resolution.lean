@@ -34,7 +34,6 @@ Similar definitions are done for left resolutions.
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 @[expose] public section

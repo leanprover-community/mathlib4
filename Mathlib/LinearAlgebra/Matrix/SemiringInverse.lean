@@ -17,7 +17,6 @@ import Mathlib.Tactic.Abel
 # Nonsingular inverses over semirings
 
 This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
-
 -/
 
 @[expose] public section

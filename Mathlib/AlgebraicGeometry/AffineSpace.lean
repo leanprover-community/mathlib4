@@ -21,7 +21,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 - `AlgebraicGeometry.AffineSpace.homOverEquiv`:
   `S`-morphisms into `Spec 𝔸(n; S)` are equivalent to the choice of `n` global sections.
 - `AlgebraicGeometry.AffineSpace.SpecIso`: `𝔸(n; Spec R) ≅ Spec R[n]`
-
 -/
 
 @[expose] public section

@@ -180,7 +180,7 @@ section kronecker
 
 omit [Fintype n]
 
-variable [Finite n] {m : Type*} [Finite m]
+variable {m : Type*}
 
 open scoped Kronecker
 
@@ -188,20 +188,33 @@ open scoped Kronecker
 theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
   classical
-  have := Fintype.ofFinite n; have := Fintype.ofFinite m
-  obtain ⟨a, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
-  obtain ⟨b, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hy.nonneg
-  simpa [mul_kronecker_mul, ← conjTranspose_kronecker, star_eq_conjTranspose] using
-    posSemidef_conjTranspose_mul_self _
+  rw [posSemidef_iff_submatrix_of_forall_finset
+    (fun p : Finset n × Finset m ↦ Prod.map ((↑) : p.1 → n) ((↑) : p.2 → m))]
+  · rintro ⟨s, t⟩
+    obtain ⟨a, ha⟩ :=
+      CStarAlgebra.nonneg_iff_eq_star_mul_self.mp (hx.submatrix ((↑) : s → n)).nonneg
+    obtain ⟨b, hb⟩ :=
+      CStarAlgebra.nonneg_iff_eq_star_mul_self.mp (hy.submatrix ((↑) : t → m)).nonneg
+    simpa [← kroneckerMap_submatrix_submatrix, ha, hb, mul_kronecker_mul, ← conjTranspose_kronecker,
+      star_eq_conjTranspose] using posSemidef_conjTranspose_mul_self _
+  · intro s
+    exact ⟨(s.image Prod.fst, s.image Prod.snd), fun _ ↦ by simp [Set.range_prodMap]; grind⟩
 
 open Matrix in
 /-- The kronecker of two positive definite matrices is positive definite. -/
 theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
   classical
-  have := Fintype.ofFinite n; have := Fintype.ofFinite m
-  exact hx.posSemidef.kronecker hy.posSemidef |>.posDef_iff_isUnit.mpr <|
-    hx.isUnit.kronecker hy.isUnit
+  rw [posDef_iff_submatrix_of_forall_finset
+    (fun p : Finset n × Finset m ↦ Prod.map ((↑) : p.1 → n) ((↑) : p.2 → m))
+    (fun _ ↦ Subtype.coe_injective.prodMap Subtype.coe_injective)]
+  · rintro ⟨s, t⟩
+    have hx' := hx.submatrix (Subtype.coe_injective (p := (· ∈ s)))
+    have hy' := hy.submatrix (Subtype.coe_injective (p := (· ∈ t)))
+    exact (hx'.posSemidef.kronecker hy'.posSemidef).posDef_iff_isUnit.mpr
+      (hx'.isUnit.kronecker hy'.isUnit)
+  · intro s
+    exact ⟨(s.image Prod.fst, s.image Prod.snd), fun _ ↦ by simp [Set.range_prodMap]; grind⟩
 
 end kronecker
 
@@ -212,39 +225,14 @@ variable {ι : Type*}
 /-- [**Schur product theorem**][schur1911] (positive semidefinite version): the Hadamard (entrywise)
 product of positive semidefinite matrices is positive semidefinite. -/
 theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
-    (hA : A.PosSemidef) (hB : B.PosSemidef) : (A ⊙ B).PosSemidef := by
-  classical
-  refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x ↦ ?_⟩
-  have hAB : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosSemidef := by
-    have hAs := hA.submatrix ((↑) : x.support → ι)
-    have hBs := hB.submatrix ((↑) : x.support → ι)
-    rw [submatrix_hadamard, posSemidef_iff_dotProduct_mulVec]
-    refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y ↦ ?_⟩
-    rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
-    exact (hAs.kronecker hBs).dotProduct_mulVec_nonneg _
-  simpa [Finsupp.sum, ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
-    ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain] using hAB.2 _
+    (hA : A.PosSemidef) (hB : B.PosSemidef) : (A ⊙ B).PosSemidef :=
+  (hA.kronecker hB).submatrix fun i ↦ (i, i)
 
 /-- **Schur product theorem**: the Hadamard (entrywise) product of positive definite
 matrices is positive definite. -/
 theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
-    (hA : A.PosDef) (hB : B.PosDef) : (A ⊙ B).PosDef := by
-  classical
-  refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x hx ↦ ?_⟩
-  have hAB : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosDef := by
-    have hAs : (A.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
-      hA.submatrix Subtype.coe_injective
-    have hBs : (B.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
-      hB.submatrix Subtype.coe_injective
-    rw [submatrix_hadamard, posDef_iff_dotProduct_mulVec]
-    refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y hy ↦ ?_⟩
-    rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
-    exact (hAs.kronecker hBs).dotProduct_mulVec_pos <| by simpa
-  simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum,
-    ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
-    ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
-  refine hAB.2 ?_
-  simpa [← Finsupp.support_nonempty_iff] using Finsupp.support_nonempty_iff.mpr hx
+    (hA : A.PosDef) (hB : B.PosDef) : (A ⊙ B).PosDef :=
+  (hA.kronecker hB).submatrix (e := fun i ↦ (i, i)) fun _ _ h ↦ congrArg Prod.fst h
 
 end hadamard
 

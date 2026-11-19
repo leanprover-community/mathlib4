@@ -14,7 +14,6 @@ public import Mathlib.Order.Interval.Set.Defs
 
 This file contains lemmas about integers, which require further imports than
 `Data.Int.Basic` or `Data.Int.Order`.
-
 -/
 
 public section

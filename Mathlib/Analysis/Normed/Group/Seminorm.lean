@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group

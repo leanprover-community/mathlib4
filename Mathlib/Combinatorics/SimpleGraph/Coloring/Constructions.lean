@@ -18,7 +18,6 @@ This file defines colorings for some common graphs.
 ## Main declarations
 
 * `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph.
-
 -/
 
 @[expose] public section

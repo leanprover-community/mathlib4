@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Derivation.Basic
 ## Main statements
 
 - `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
-
 -/
 
 @[expose] public section

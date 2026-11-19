@@ -19,7 +19,6 @@ then there is an isomorphism `K.totalFlipIso c : K.flip.total c ≅ K.total c`.
 Moreover, if we also have `[TotalComplexShapeSymmetry c₂ c₁ c]` and that the signs
 are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomorphisms
 `K.totalFlipIso c` and `K.flip.totalFlipIso c` are inverse to each other.
-
 -/
 
 @[expose] public section

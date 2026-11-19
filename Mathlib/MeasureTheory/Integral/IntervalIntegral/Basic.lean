@@ -1071,7 +1071,6 @@ end Comp
 In this section we prove that `∫ x in a..b, f x ∂μ + ∫ x in b..c, f x ∂μ = ∫ x in a..c, f x ∂μ`
 as well as a few other identities trivially equivalent to this one. We also prove that
 `∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ` provided that `support f ⊆ Ioc a b`.
-
 -/
 
 section OrderClosedTopology

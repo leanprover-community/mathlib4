@@ -31,7 +31,6 @@ under continuous maps.
 Because several properties often rely on the fact that the limit exists, we also define a predicate
 `HasLimitProcess X 𝓕 P` which states that `X` does converge `P`-almost surely towards a
 `⨆ t, 𝓕 t`-strongly measurable function.
-
 -/
 
 public section

@@ -43,7 +43,6 @@ spaces instead of matrices, and allow the codomain to have infinite dimension.
   values.
 * `LinearMap.hausdorffMeasure_image`: `LinearMap.normDet` is the volume factor for Hausdorff
   measure.
-
 -/
 
 public section
