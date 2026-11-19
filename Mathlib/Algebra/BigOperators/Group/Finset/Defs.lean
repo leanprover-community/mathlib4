@@ -39,7 +39,6 @@ Let `s` be a `Finset ι`, and `f : ι → β` a function.
 The first arguments in all definitions and lemmas is the codomain of the function of the big
 operator. This is necessary for the heuristic in `@[to_additive]`.
 See the documentation of `to_additive.attr` for more information.
-
 -/
 
 @[expose] public section
@@ -629,7 +628,7 @@ the property is additive and holds on summands. -/]
 theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : ι → M) (p : M → Prop)
     (hom : ∀ a b, p a → p b → p (a * b)) (nonempty : s.Nonempty) (base : ∀ x ∈ s, p <| f x) :
     p <| ∏ x ∈ s, f x :=
-  Multiset.prod_induction_nonempty p hom (by simp [nonempty_iff_ne_empty.mp nonempty])
+  Multiset.prod_induction_nonempty p hom (by simp [nonempty])
     (Multiset.forall_mem_map_iff.mpr base)
 
 @[to_additive]

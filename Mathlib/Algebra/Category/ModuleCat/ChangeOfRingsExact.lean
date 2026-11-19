@@ -16,7 +16,6 @@ short exact sequences.
 Note : previously exactness of `ModuleCat.restrictScalars` is synthesized via being adjoint functor,
 however this needs the universe level to be some `max u v`, where `u` is the universe level
 of the ring.
-
 -/
 
 public section

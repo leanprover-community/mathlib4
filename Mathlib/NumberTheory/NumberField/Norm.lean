@@ -21,7 +21,6 @@ rings of integers.
 ## Main results
 * `NumberField.RingOfIntegers.dvd_norm` : if `L/K` is a finite Galois extension of fields, then,
   for all `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
-
 -/
 
 @[expose] public section
@@ -51,7 +50,7 @@ variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L]
 noncomputable def norm : 𝓞 L →* 𝓞 K :=
   RingOfIntegers.restrict_monoidHom
     ((Algebra.norm K).comp (algebraMap (𝓞 L) L : (𝓞 L) →* L))
-    fun x => isIntegral_norm K x.2
+    fun x => isIntegral_norm K x.property
 
 @[simp] lemma coe_norm (x : 𝓞 L) : norm K x = Algebra.norm K (x : L) :=
   rfl

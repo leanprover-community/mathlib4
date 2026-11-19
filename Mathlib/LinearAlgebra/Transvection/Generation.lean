@@ -53,7 +53,6 @@ Let `K` be a division ring and `V` be a `K`-module.
 * In the statements above, the dilatransvection is at the right of the product;
   show that it can be inserted anywhere.
   (The point is that transvections normalize dilatransvections.)
-
 -/
 
 public section

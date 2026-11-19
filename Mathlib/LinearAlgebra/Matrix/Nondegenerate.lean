@@ -10,11 +10,13 @@ public import Mathlib.LinearAlgebra.Matrix.Adjugate
 /-!
 # Matrices associated with non-degenerate bilinear forms
 
+Note that while the definitions in this file could be made for `NonUnitalNonAssocSemiring`,
+we require associativity to avoid having to distinguish `v ⬝ᵥ M *ᵥ w` and `v ᵥ* M ⬝ᵥ w`.
+
 ## Main definitions
 
 * `Matrix.Nondegenerate A`: the proposition that when interpreted as a bilinear form, the matrix `A`
   is nondegenerate.
-
 -/
 
 @[expose] public section
@@ -24,7 +26,7 @@ namespace Matrix
 
 section Finite
 
-variable {m n R A : Type*} [NonUnitalNonAssocSemiring R] [Finite m] [Finite n] (M : Matrix m n R)
+variable {m n R A : Type*} [NonUnitalSemiring R] [Finite m] [Finite n] (M : Matrix m n R)
 
 attribute [local instance] Fintype.ofFinite
 
@@ -46,53 +48,85 @@ structure Nondegenerate (M : Matrix m n R) : Prop where
 
 end Finite
 
-section CommSemiring
+section NonUnitalSemiring
+variable {m n R : Type*} [NonUnitalSemiring R] {M : Matrix m n R}
 
-variable {m n R : Type*} [CommSemiring R] {M : Matrix m n R}
+section Fintype
+variable [Fintype m] [Fintype n]
 
-lemma separatingRight_def [Fintype m] [Fintype n] :
-    M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
+lemma separatingRight_def : M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   refine forall_congr' fun w ↦ ⟨fun hM hw ↦ hM ?_, fun hM hw ↦ hM ?_⟩ <;>
   convert hw
 
-lemma separatingLeft_def [Fintype m] [Fintype n] :
-    M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
+lemma separatingLeft_def : M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
   refine forall_congr' fun v ↦ ⟨fun hM hv ↦ hM ?_, fun hM hv ↦ hM ?_⟩ <;>
   convert hv
 
-lemma nondegenerate_def [Fintype m] [Fintype n] :
+lemma nondegenerate_def :
     M.Nondegenerate ↔
       (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) ∧ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   rw [nondegenerate_iff, separatingLeft_def, separatingRight_def]
 
+/-- If `M` is nondegenerate and `v * M * w = 0` for all `w`, then `v = 0`. -/
+theorem Nondegenerate.eq_zero_of_ortho (hM : Nondegenerate M) {v : m → R}
+    (hv : ∀ w, v ⬝ᵥ M *ᵥ w = 0) : v = 0 :=
+  (nondegenerate_def.mp hM).1 v hv
+
+/-- If `M` is nondegenerate and `v ≠ 0`, then there is some `w` such that `v * M * w ≠ 0`. -/
+theorem Nondegenerate.exists_not_ortho_of_ne_zero (hM : Nondegenerate M)
+    {v : m → R} (hv : v ≠ 0) : ∃ w, v ⬝ᵥ M *ᵥ w ≠ 0 :=
+  not_forall.mp (mt hM.eq_zero_of_ortho hv)
+
+/-- If `M` is nondegenerate and `v * M * w = 0` for all `v`, then `w = 0`. -/
+theorem Nondegenerate.eq_zero_of_ortho' (hM : Nondegenerate M) {w : n → R}
+    (hw : ∀ v, v ⬝ᵥ M *ᵥ w = 0) : w = 0 :=
+  (nondegenerate_def.mp hM).2 w hw
+
+/-- If `M` is nondegenerate and `w ≠ 0`, then there is some `v` such that `v * M * w ≠ 0`. -/
+theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n → R} (hw : w ≠ 0) :
+    ∃ v, v ⬝ᵥ M *ᵥ w ≠ 0 :=
+  not_forall.mp (mt hM.eq_zero_of_ortho' hw)
+
+end Fintype
+
+theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Fintype m] [Finite n] (hM : M.SeparatingLeft)
+    {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
+  have := Fintype.ofFinite n
+  separatingLeft_def.mp hM _ fun _ ↦ by simp [dotProduct_mulVec, hv]
+
+theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] [Fintype n] (hM : M.SeparatingRight)
+    {v : n → R} (hv : M *ᵥ v = 0) : v = 0 :=
+  have := Fintype.ofFinite m
+  separatingRight_def.mp hM _ fun _ ↦ by simp [hv]
+
+end NonUnitalSemiring
+
+section Semiring
+variable {m n R : Type*} [Semiring R] {M : Matrix m n R}
+
 theorem separatingLeft_iff_forall_vecMul_eq_zero [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
   have := Fintype.ofFinite n
-  rw [separatingLeft_def]
-  refine ⟨fun h v hv ↦ h v fun w ↦ ?_, fun h w hw ↦ h w <| funext fun i ↦ ?_⟩
-  · simp [dotProduct_mulVec, hv]
-  · classical simpa using! hw <| Pi.single i 1
+  refine ⟨fun h _ ↦ h.eq_zero_of_vecMul_eq_zero, fun h ↦ separatingLeft_def.2 fun w hw ↦ h w ?_⟩
+  ext i
+  classical simpa using! hw <| Pi.single i 1
 
 theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] [Fintype n] :
     M.SeparatingRight ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   have := Fintype.ofFinite m
-  rw [separatingRight_def]
-  refine ⟨fun h v hv ↦ h v fun w ↦ ?_, fun h w hw ↦ h w <| funext fun i ↦ ?_⟩
-  · simp [hv]
-  · classical simpa using hw <| Pi.single i 1
-
-theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Fintype m] [Finite n] (hM : M.SeparatingLeft)
-    {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
-  separatingLeft_iff_forall_vecMul_eq_zero.mp hM v hv
-
-theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] [Fintype n] (hM : M.SeparatingRight)
-    {v : n → R} (hv : M *ᵥ v = 0) : v = 0 :=
-  separatingRight_iff_forall_mulVec_eq_zero.mp hM v hv
+  refine ⟨fun h _ ↦ h.eq_zero_of_mulVec_eq_zero, fun h ↦ separatingRight_def.2 fun w hw ↦ h w ?_⟩
+  ext i
+  classical simpa using hw <| Pi.single i 1
 
 theorem nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero [Fintype m] [Fintype n] :
     M.Nondegenerate ↔ (∀ v, v ᵥ* M = 0 → v = 0) ∧ (∀ v, M *ᵥ v = 0 → v = 0) := by
   rw [nondegenerate_iff, separatingLeft_iff_forall_vecMul_eq_zero,
     separatingRight_iff_forall_mulVec_eq_zero]
+
+end Semiring
+
+section NonUnitalCommSemiring
+variable {m n R : Type*} [NonUnitalCommSemiring R] {M : Matrix m n R}
 
 @[simp]
 theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
@@ -118,29 +152,7 @@ theorem nondegenerate_transpose_iff [Finite m] [Finite n] : Mᵀ.Nondegenerate �
 
 alias ⟨_, Nondegenerate.transpose⟩ := nondegenerate_transpose_iff
 
-variable [Fintype m] [Fintype n]
-
-/-- If `M` is nondegenerate and `w * M * v = 0` for all `w`, then `v = 0`. -/
-theorem Nondegenerate.eq_zero_of_ortho (hM : Nondegenerate M) {v : m → R}
-    (hv : ∀ w, v ⬝ᵥ M *ᵥ w = 0) : v = 0 :=
-  (nondegenerate_def.mp hM).1 v hv
-
-/-- If `M` is nondegenerate and `v ≠ 0`, then there is some `w` such that `w * M * v ≠ 0`. -/
-theorem Nondegenerate.exists_not_ortho_of_ne_zero (hM : Nondegenerate M)
-    {v : m → R} (hv : v ≠ 0) : ∃ w, v ⬝ᵥ M *ᵥ w ≠ 0 :=
-  not_forall.mp (mt hM.eq_zero_of_ortho hv)
-
-/-- If `M` is nondegenerate and `w * M * v = 0` for all `v`, then `w = 0`. -/
-theorem Nondegenerate.eq_zero_of_ortho' (hM : Nondegenerate M) {w : n → R}
-    (hw : ∀ v, v ⬝ᵥ M *ᵥ w = 0) : w = 0 :=
-  (nondegenerate_def.mp hM).2 w hw
-
-/-- If `M` is nondegenerate and `w ≠ 0`, then there is some `v` such that `v * M * w ≠ 0`. -/
-theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n → R} (hw : w ≠ 0) :
-    ∃ v, v ⬝ᵥ M *ᵥ w ≠ 0 :=
-  not_forall.mp (mt hM.eq_zero_of_ortho' hw)
-
-end CommSemiring
+end NonUnitalCommSemiring
 
 section Determinant
 variable {m R : Type*} [CommRing R] [Fintype m] [DecidableEq m] {M : Matrix m m R}
@@ -158,10 +170,13 @@ theorem Nondegenerate.of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) : M.Nonde
 /-- If `M` is square and has nonzero determinant, then `M` as a bilinear form on `n → R` is
 nondegenerate. The "iff" implication, `nondegenerate_iff_det_ne_zero`, is proved in a later file.
 
-See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDetNeZero`.
+See also `LinearMap.BilinForm.Nondegenerate.of_det_ne_zero`.
 -/
-theorem nondegenerate_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : M.Nondegenerate :=
+theorem Nondegenerate.of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : M.Nondegenerate :=
   .of_det_mem_nonZeroDivisors <| mem_nonZeroDivisors_of_ne_zero hM
+
+@[deprecated (since := "2026-11-13")] alias nondegenerate_of_det_ne_zero :=
+  Nondegenerate.of_det_ne_zero
 
 theorem eq_zero_of_det_mem_nonZeroDivisors_of_vecMul_eq_zero (hM : M.det ∈ R⁰)
     {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
@@ -169,7 +184,7 @@ theorem eq_zero_of_det_mem_nonZeroDivisors_of_vecMul_eq_zero (hM : M.det ∈ R�
 
 theorem eq_zero_of_vecMul_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m → R}
     (hv : v ᵥ* M = 0) : v = 0 :=
-  nondegenerate_of_det_ne_zero hM |>.separatingLeft.eq_zero_of_vecMul_eq_zero hv
+  Nondegenerate.of_det_ne_zero hM |>.separatingLeft.eq_zero_of_vecMul_eq_zero hv
 
 theorem eq_zero_of_det_mem_nonZeroDivisors_of_mulVec_eq_zero (hM : M.det ∈ R⁰)
     {v : m → R} (hv : M *ᵥ v = 0) : v = 0 :=
@@ -177,7 +192,7 @@ theorem eq_zero_of_det_mem_nonZeroDivisors_of_mulVec_eq_zero (hM : M.det ∈ R�
 
 theorem eq_zero_of_mulVec_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m → R}
     (hv : M *ᵥ v = 0) : v = 0 :=
-  nondegenerate_of_det_ne_zero hM |>.separatingRight.eq_zero_of_mulVec_eq_zero hv
+  Nondegenerate.of_det_ne_zero hM |>.separatingRight.eq_zero_of_mulVec_eq_zero hv
 
 /-- See also `Matrix.mulVec_injective_iff_isUnit` when working over a field. -/
 theorem mulVec_injective_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) :

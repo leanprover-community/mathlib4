@@ -46,7 +46,6 @@ separable closure, separably closed
 
 - `Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed`: an algebraic extension of a separably
   closed field is purely inseparable.
-
 -/
 
 @[expose] public section
@@ -256,7 +255,7 @@ variable {k} {K}
 
 theorem isSepClosure_iff [Algebra k K] :
     IsSepClosure k K ↔ IsSepClosed K ∧ Algebra.IsSeparable k K :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+  ⟨fun h ↦ ⟨h.sep_closed, h.separable⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 namespace IsSepClosure
 

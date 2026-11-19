@@ -115,7 +115,7 @@ theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, I
   by_cases hne : ∃ i, S i = ∅
   · simp [hne, univ_pi_eq_empty_iff.2 hne]
   · simp only [hne, false_or]
-    simp only [not_exists, ← nonempty_iff_ne_empty, ← univ_pi_nonempty_iff] at hne
+    simp only [not_exists, ne_empty_iff_nonempty, ← univ_pi_nonempty_iff] at hne
     exact isBounded_pi_of_nonempty hne
 
 /-!
@@ -127,9 +127,12 @@ theorem isBounded_induced {α β : Type*} [Bornology β] {f : α → β} {s : Se
     @IsBounded α (Bornology.induced f) s ↔ IsBounded (f '' s) :=
   compl_mem_comap
 
-theorem isBounded_image_subtype_val {p : α → Prop} {s : Set { x // p x }} :
+theorem isBounded_image_subtypeVal {p : α → Prop} {s : Set { x // p x }} :
     IsBounded (Subtype.val '' s) ↔ IsBounded s :=
   isBounded_induced.symm
+
+@[deprecated (since := "2026-11-10")]
+alias isBounded_image_subtype_val := isBounded_image_subtypeVal
 
 end Bornology
 

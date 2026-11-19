@@ -24,7 +24,6 @@ This file defines composition for partial maps and rational maps between schemes
 - `Scheme.PartialMap.comp_equiv_of_equiv`: Composition respects equivalence of partial maps.
 - `Scheme.PartialMap.comp_assoc`: Composition of partial maps is associative.
 - `Scheme.RationalMap.comp_assoc`: Composition of rational maps is associative.
-
 -/
 
 @[expose] public section
@@ -49,9 +48,9 @@ viewed as an open subscheme of `X`. Requires `f.hom` to be dominant so that the 
 noncomputable def comp (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z) :
     X.PartialMap Z where
   domain := f.domain.ι ''ᵁ f.hom ⁻¹ᵁ g.domain
-  dense_domain := (f.domain.ι ''ᵁ f.hom ⁻¹ᵁ g.domain).2.dense <| by
+  dense_domain := (f.domain.ι ''ᵁ f.hom ⁻¹ᵁ g.domain).is_open'.dense <| by
     simpa [← Set.nonempty_preimage_iff] using
-      f.hom.denseRange.inter_open_nonempty _ g.domain.2 g.dense_domain.nonempty
+      f.hom.denseRange.inter_open_nonempty _ g.domain.is_open' g.dense_domain.nonempty
   hom := (f.domain.ι.isoImage _).inv ≫ f.hom ∣_ g.domain ≫ g.hom
 
 set_option backward.isDefEq.respectTransparency false in
@@ -59,7 +58,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma comp_restrict_left (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) (g : Y.PartialMap Z) :
     (f.restrict U hU hU').comp g = (f.comp g).restrict (f.domain.ι ''ᵁ f.hom ⁻¹ᵁ g.domain ⊓ U)
-      ((f.comp g).dense_domain.inter_of_isOpen_right hU U.2) inf_le_left := by
+      ((f.comp g).dense_domain.inter_of_isOpen_right hU U.is_open') inf_le_left := by
   ext
   · simp [ι_image_homOfLE_eq_ι_image_inf]
   · simp [morphismRestrict_comp, isoImage_ι_inv_morphismRestrict_homOfLE_assoc, isoOfEq_hom]
@@ -69,9 +68,9 @@ set_option backward.defeqAttrib.useBackward true in
 lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z)
     (V : Y.Opens) (hV : Dense (V : Set Y)) (hV' : V ≤ g.domain) :
     f.comp (g.restrict V hV hV') = (f.comp g).restrict
-      (f.domain.ι ''ᵁ (f.hom ⁻¹ᵁ V)) ((f.domain.ι ''ᵁ f.hom ⁻¹ᵁ V).2.dense <| by
+      (f.domain.ι ''ᵁ (f.hom ⁻¹ᵁ V)) ((f.domain.ι ''ᵁ f.hom ⁻¹ᵁ V).is_open'.dense <| by
         simpa [← Set.nonempty_preimage_iff] using
-          f.hom.denseRange.inter_open_nonempty _ V.2 hV.nonempty)
+          f.hom.denseRange.inter_open_nonempty _ V.is_open' hV.nonempty)
       (f.domain.ι.image_mono (f.hom.preimage_mono hV')) := by
   ext
   · simp
@@ -190,11 +189,11 @@ lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [Irr
   apply PartialMap.comp_equiv_of_equiv_right
   rw [toRationalMap_representative]
 
-instance isOver_comp {S : Scheme.{u}} [IrreducibleSpace Y] [Nonempty Z] [X.Over S] [Y.Over S]
-    [Z.Over S] (f : X ⤏ Y) [f.IsDominant] [f.IsOver S] (g : Y ⤏ Z) [g.IsDominant] [g.IsOver S] :
-    (f.comp g).IsOver S := by
+lemma isOver_comp {S : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
+    [IrreducibleSpace Y] [Nonempty Z] (f : X ⤏ Y) [f.IsDominant] (hf : f.IsOver sX sY)
+    (g : Y ⤏ Z) [g.IsDominant] (hg : g.IsOver sY sZ) : (f.comp g).IsOver sX sZ := by
   rw [isOver_iff, ← comp_toRationalMap, comp_assoc, comp_toRationalMap,
-    isOver_iff.mp ‹g.IsOver S›, comp_toRationalMap, RationalMap.isOver_iff.mp ‹f.IsOver S›]
+    isOver_iff.mp hg, comp_toRationalMap, RationalMap.isOver_iff.mp hf]
 
 end RationalMap
 

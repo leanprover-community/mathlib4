@@ -29,7 +29,6 @@ use this to show the comultiplication and counit on a tensor product of coalgebr
 the coalgebra axioms, but our actual `MonoidalCategory` instance on `CoalgCat` is
 constructed in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` to have better
 definitional equalities.
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ Given a linearly ordered type `J` with `SuccOrder J`, `j : J` that is not maxima
 we define the extension of a functor `F : Set.Iic j ⥤ C` as a
 functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 `τ : F.obj ⟨j, _⟩ ⟶ X` is given.
-
 -/
 
 @[expose] public section
@@ -41,14 +40,14 @@ set_option backward.privateInPublic true in
 /-- `extendToSucc`, on objects: it coincides with `F.obj` for `i ≤ j`, and
 it sends `Order.succ j` to the given object `X`. -/
 def obj (i : Set.Iic (Order.succ j)) : C :=
-  if hij : i.1 ≤ j then F.obj ⟨i.1, hij⟩ else X
+  if hij : i.val ≤ j then F.obj ⟨i.val, hij⟩ else X
 
 lemma obj_eq (i : Set.Iic j) :
-    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ = F.obj i := dite_eq_left i.2
+    obj F X ⟨i, i.property.trans (Order.le_succ j)⟩ = F.obj i := dite_eq_left i.property
 
 /-- The isomorphism `obj F X ⟨i, _⟩ ≅ F.obj i` when `i : Set.Iic j`. -/
 def objIso (i : Set.Iic j) :
-    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ ≅ F.obj i :=
+    obj F X ⟨i, i.property.trans (Order.le_succ j)⟩ ≅ F.obj i :=
   eqToIso (obj_eq _ _ _)
 
 include hj in
@@ -126,9 +125,10 @@ include hj in
 when we specify a morphism `F.obj ⟨j, _⟩ ⟶ X`. -/
 def extendToSucc : Set.Iic (Order.succ j) ⥤ C where
   obj := obj F X
-  map {i₁ i₂} f := map hj F τ i₁ i₂ (leOfHom f) i₂.2
+  map {i₁ i₂} f := map hj F τ i₁ i₂ (leOfHom f) i₂.property
   map_id _ := extendToSucc.map_id _ F τ _ _
-  map_comp {i₁ i₂ i₃} f g := extendToSucc.map_comp hj F τ i₁ i₂ i₃ (leOfHom f) (leOfHom g) i₃.2
+  map_comp {i₁ i₂ i₃} f g :=
+    extendToSucc.map_comp hj F τ i₁ i₂ i₃ (leOfHom f) (leOfHom g) i₃.property
 
 lemma extendToSucc_obj_eq (i : J) (hi : i ≤ j) :
     (extendToSucc hj F τ).obj ⟨i, hi.trans (Order.le_succ j)⟩ = F.obj ⟨i, hi⟩ :=
@@ -161,7 +161,7 @@ lemma extendToSuccObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi
 @[simps!]
 def extendToSuccRestrictionLEIso :
     SmallObject.restrictionLE (extendToSucc hj F τ) (Order.le_succ j) ≅ F :=
-  NatIso.ofComponents (fun i ↦ extendToSuccObjIso hj F τ i.1 i.2) (by
+  NatIso.ofComponents (fun i ↦ extendToSuccObjIso hj F τ i.val i.property) (by
     rintro ⟨i₁, h₁⟩ ⟨i₂, h₂⟩ f
     apply extendToSuccObjIso_hom_naturality)
 

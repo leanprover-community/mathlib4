@@ -902,7 +902,7 @@ theorem mem_closure_image_of (f : R →+* S) {s : Set R} {x : R} (hx : x ∈ Sub
 
 /-- The ring homomorphism associated to an inclusion of subrings. -/
 def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.property
 
 @[simp]
 theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
