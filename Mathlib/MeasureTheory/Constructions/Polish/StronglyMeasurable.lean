@@ -63,7 +63,7 @@ protected theorem limUnder [hE : Nonempty E] [IsCompletelyMetrizableSpace E]
   have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
   have hconv : StronglyMeasurable (fun x : conv ↦ limUnder l (f · x)) := by
     refine stronglyMeasurable_of_tendsto l
-      (fun i ↦ (hf i).comp_measurable measurable_subtype_coe) ?_
+      (fun i ↦ (hf i).comp_measurable measurable_subtypeVal) ?_
     refine tendsto_pi_nhds.2 fun x ↦ ?_
     obtain ⟨c, hc⟩ := x.2
     rwa [hc.limUnder_eq]
@@ -74,7 +74,7 @@ protected theorem limUnder [hE : Nonempty E] [IsCompletelyMetrizableSpace E]
     · rw [Function.extend_val_apply hx]
     · rw [Function.extend_val_apply' hx, limUnder_of_not_tendsto hx]
   rw [this]
-  exact (MeasurableEmbedding.subtype_coe mconv).stronglyMeasurable_extend hconv
+  exact (MeasurableEmbedding.subtypeVal mconv).stronglyMeasurable_extend hconv
     stronglyMeasurable_const
 
 end MeasureTheory.StronglyMeasurable
