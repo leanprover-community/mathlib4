@@ -60,12 +60,7 @@ instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) :=
 open Function in
 theorem swap_lex (r : ι → ι → Prop) (s : (i : ι) → α i → α i → Prop) :
     swap (Lex r s) = Lex (swap r) fun i ↦ swap (s i) := by
-  ext a b
-  constructor <;>
-  · intro h
-    cases h with
-    | left i j hij => exact left _ _ hij
-    | right i hij => exact right _ hij
+  grind [PSigma.lex_iff]
 
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) :=
   { Lex.le, Lex.lt with

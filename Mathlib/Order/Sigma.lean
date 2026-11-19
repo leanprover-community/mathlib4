@@ -142,12 +142,7 @@ theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
 open Function in
 theorem swap_lex (r : ι → ι → Prop) (s : (i : ι) → α i → α i → Prop) :
     swap (Lex r s) = Lex (swap r) fun i ↦ swap (s i) := by
-  ext a b
-  constructor <;>
-  · intro h
-    cases h with
-    | left i j hij => exact left _ _ hij
-    | right i j hij => exact right _ _ hij
+  grind [Sigma.lex_iff]
 
 /-- The lexicographical preorder on a sigma type. -/
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
