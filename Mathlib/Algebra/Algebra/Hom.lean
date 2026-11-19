@@ -36,7 +36,7 @@ lemma map_smul_of_commutes {R : Type u} {A : Type v} {B : Type w}
 
 /-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends RingHom A B where
+    [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
   map_smul' : ∀ r : R, ∀ a : A, toFun (r • a) = r • toFun a :=
     map_smul_of_commutes toFun map_mul' commutes'

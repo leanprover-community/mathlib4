@@ -732,4 +732,4 @@ nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     (f : K →+* L) (g : L →+* A) (hfg : (g.comp f).FiniteType) :
     f.Finite := by
   algebraize [f, (g.comp f)]
-  exact finite_of_algHom_finiteType_of_isJacobsonRing ⟨g, fun _ ↦ rfl, fun _ _ ↦ map_mul g _ _⟩
+  exact finite_of_algHom_finiteType_of_isJacobsonRing { toRingHom := g, commutes' _ := rfl }
