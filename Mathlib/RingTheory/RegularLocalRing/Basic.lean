@@ -145,13 +145,6 @@ lemma quotient_span_singleton [IsRegularLocalRing R] {x : R} (mem : x ∈ maxima
   apply ((quotient_isRegularLocalRing_tfae R {x} (by simpa)).out 2 3).mp
   simpa [← LinearMap.mem_ker, Ideal.mem_toCotangent_ker] using nmem
 
-lemma FiniteRingKrullDim.ringKrullDim_eq_nat [FiniteRingKrullDim R] :
-    ∃ n : ℕ, ringKrullDim R = n := by
-  obtain ⟨m, hm⟩ := WithBot.ne_bot_iff_exists.mp (ringKrullDim_ne_bot (R := R))
-  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp
-    (WithBot.coe_inj.not.mp (ne_of_eq_of_ne hm ringKrullDim_ne_top))
-  exact ⟨n, ((WithBot.coe_inj.mpr hn).trans hm).symm⟩
-
 variable {R} in
 theorem Ideal.span_singleton_mul_eq_self_of_isPrime {p : Ideal R} [p.IsPrime]
     (x : R) (hx : x ∉ p) (hp : p ≤ Ideal.span {x}) : Ideal.span {x} * p = p := by
