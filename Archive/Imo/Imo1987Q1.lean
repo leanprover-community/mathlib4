@@ -75,12 +75,11 @@ to the set of pairs `(x : α, σ : Perm α)` such that `σ x = x`. The equivalen
 It is easy to see that the cardinality of the LHS is given by
 `∑ k : Fin (card α + 1), k * p α k`. -/
 def fixedPointsEquiv' :
-    (Σ (k : Fin (card α + 1)) (σ : fiber α k), fixedPoints σ.1) ≃
+    (Σ (k : Fin (card α + 1)) (σ : fiber α k), fixedPoints σ.val) ≃
       { σx : α × Perm α // σx.2 σx.1 = σx.1 } where
-  toFun p := ⟨⟨p.2.2, p.2.1⟩, p.2.2.2⟩
-  invFun p :=
-    ⟨⟨card (fixedPoints p.1.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.1.2, rfl⟩,
-      ⟨p.1.1, p.2⟩⟩
+  toFun p := ⟨⟨p.2.2, p.2.1⟩, p.2.2.property⟩
+  invFun p := ⟨⟨card (fixedPoints p.val.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩,
+    ⟨p.val.2, rfl⟩, ⟨p.val.1, p.property⟩⟩
   left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
     simp only [mem_fiber] at hσ
     subst k; rfl
@@ -88,7 +87,7 @@ def fixedPointsEquiv' :
 
 /-- Main statement for any `(α : Type*) [Fintype α]`. -/
 theorem main_fintype : ∑ k ∈ range (card α + 1), k * p α k = card α * (card α - 1)! := by
-  have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.2
+  have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.property
   simpa [A, ← Fin.sum_univ_eq_sum_range, -card_ofFinset, Finset.card_univ, card_fixed_points,
     mul_comm] using! card_congr (fixedPointsEquiv' α)
 

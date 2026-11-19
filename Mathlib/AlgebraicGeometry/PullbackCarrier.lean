@@ -386,7 +386,8 @@ lemma pullbackComparison_forget_surjective {X Y S : Scheme.{u}} (f : X ⟶ S) (g
     Function.Surjective (pullbackComparison forget f g) := by
   refine .of_comp_left (fun x ↦ ?_) <|
     injective_of_mono (Types.pullbackIsoPullback (forget.map f) (forget.map g)).hom
-  obtain ⟨z, h1, h2⟩ := Pullback.exists_preimage_pullback (f := f) (g := g) x.1.1 x.1.2 x.2
+  obtain ⟨z, h1, h2⟩ :=
+    Pullback.exists_preimage_pullback (f := f) (g := g) x.val.1 x.val.2 x.property
   use z
   ext
   · simp only [Function.comp_apply, Types.pullbackIsoPullback_hom_fst]

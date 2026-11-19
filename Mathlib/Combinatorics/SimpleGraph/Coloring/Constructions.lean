@@ -39,7 +39,7 @@ theorem IsBipartite.pathGraph (n : ℕ) : (pathGraph n).IsBipartite := by
 
 /-- Embedding of `pathGraph 2` into the first two elements of `pathGraph n` for `2 ≤ n` -/
 def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph n where
-  toFun v := ⟨v, trans v.2 h⟩
+  toFun v := ⟨v, trans v.isLt h⟩
   inj' := by
     rintro v w
     rw [Fin.mk.injEq]
