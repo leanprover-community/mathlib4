@@ -54,6 +54,9 @@ class AlgEquivClass (F : Type*) (R A B : outParam (Type*))
     [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
     [EquivLike F A B] extends RingEquivClass F A B, MulActionHomClass F R A B where
 
+@[deprecated (since := "2026-11-19")]
+protected alias AlgEquivClass.commutes := AlgHomClass.commutes
+
 namespace AlgEquivClass
 
 instance (priority := 100) toLinearEquivClass (F R A B : Type*) [Semiring R]
@@ -208,7 +211,7 @@ theorem commutes {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semirin
 
 @[deprecated (since := "2026-11-16")] alias commutes' := commutes
 
-section toAlgHom
+section Algebra
 variable {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
   [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
@@ -220,6 +223,9 @@ lemma ofCommutes_symm_apply (e' : A₁ ≃+* A₂) (h_comm) (x : A₂) :
 
 lemma toEquiv_ofCommutes (e' : A₁ ≃+* A₂) (h_comm) :
     (ofCommutes e' h_comm : A₁ ≃ₐ[R] A₂).toEquiv = e'.toEquiv := rfl
+
+lemma toRingEquiv_ofCommutes (e' : A₁ ≃+* A₂) (h_comm) :
+    (ofCommutes e' h_comm : A₁ ≃ₐ[R] A₂).toRingEquiv = e' := rfl
 
 @[deprecated toRingEquiv_injective (since := "2026-05-05")]
   alias coe_ringEquiv_injective := toRingEquiv_injective
@@ -259,7 +265,7 @@ theorem toRingHom_toAlgHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := toRingHom_toAlgHom
 
-end toAlgHom
+end Algebra
 
 end coe
 
@@ -686,10 +692,8 @@ variable [NonUnitalNonAssocSemiring A₁] [NonUnitalNonAssocSemiring A₂]
 variable [Module R A₁] [Module R A₂] (e : A₁ ≃ₐ[R] A₂)
 variable (l : A₁ ≃ₗ[R] A₂) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
 
-/--
-Upgrade a linear equivalence to an algebra equivalence,
-given that it distributes over multiplication and the identity
--/
+/-- Upgrade a linear equivalence to an algebra equivalence,
+given that it distributes over multiplication. -/
 @[simps apply]
 def ofLinearEquiv : A₁ ≃ₐ[R] A₂ :=
   { l with
@@ -699,6 +703,7 @@ def ofLinearEquiv : A₁ ≃ₐ[R] A₂ :=
     map_smul' := map_smul l }
 
 /-- Auxiliary definition to avoid looping in `dsimp` with `AlgEquiv.ofLinearEquiv_symm`. -/
+@[deprecated "Use `(ofLinearEquiv ..).symm` instead." (since := "2026-11-19")]
 protected def ofLinearEquiv_symm.aux := (ofLinearEquiv l map_mul).symm
 
 @[simp]
