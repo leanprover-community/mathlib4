@@ -203,7 +203,7 @@ lemma map_ncard_setBernoulli_singleton {u : Set ι} (hu : u.Finite) (p : I) (k :
     map_ncard_setBernoulli_real_singleton hu]
 
 @[simp]
-lemma setBernoulli_empty : setBer((∅ : Set ι), p) = Measure.dirac ∅ := by
+lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
   ext s hs
   rw [setBernoulli_apply_eq_apply_subsets]
   by_cases h : ∅ ∈ s
