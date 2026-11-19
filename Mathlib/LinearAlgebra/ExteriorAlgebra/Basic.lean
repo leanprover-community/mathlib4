@@ -347,7 +347,7 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
   rw [exteriorPower, Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
   obtain ⟨f, rfl⟩ := Set.mem_pow.mp hu
-  refine ⟨fun i => ιInv (f i).1, ?_⟩
+  refine ⟨fun i => ιInv (f i).val, ?_⟩
   rw [ιMulti_apply]
   congr with i
   obtain ⟨v, hv⟩ := (f i).prop

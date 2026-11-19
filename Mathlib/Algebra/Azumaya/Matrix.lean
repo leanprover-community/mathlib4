@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Matrix algebra is an Azumaya algebra over R
@@ -17,7 +18,6 @@ is an Azumaya algebra where `R` is a commutative ring.
 ## Main Results
 
 - `IsAzumaya.Matrix`: Finite-dimensional matrix algebra over `R` is Azumaya.
-
 -/
 
 public section

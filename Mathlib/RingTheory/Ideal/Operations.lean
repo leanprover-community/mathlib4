@@ -1189,9 +1189,6 @@ theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
   ⟨fun h => span_singleton_le_span_singleton.mp (le_of_dvd h),
    fun ⟨c, hc⟩ => ⟨span {c}, by rw [hc, span_singleton_mul_span_singleton]⟩⟩
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
-
 /-- Every ideal has multiplicity `0` in `⊤`, the unit ideal. -/
 @[simp]
 theorem multiplicity_top_right (I : Ideal R) : multiplicity I ⊤ = 0 := by
@@ -1232,7 +1229,7 @@ theorem range_finsuppTotal :
     LinearMap.range (finsuppTotal ι M I v) = I • Submodule.span R (Set.range v) := by
   ext
   rw [Submodule.mem_ideal_smul_span_iff_exists_sum]
-  refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
+  refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).property, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
     refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0)

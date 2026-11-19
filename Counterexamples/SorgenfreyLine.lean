@@ -31,7 +31,6 @@ second countable.
 ## TODO
 
 Prove that the Sorgenfrey line is a paracompact space.
-
 -/
 
 @[expose] public noncomputable section
@@ -71,7 +70,8 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
   have : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
     refine (IsLeast.isGLB ?_).iInf_eq
-    exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
+    exact ⟨⟨⟨a, le_rfl⟩, rfl⟩,
+      forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.property⟩
   simp only [mem_ofPred_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
     iInf_iInf_eq_right, mem_Ico]
   simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal,
@@ -103,7 +103,7 @@ theorem nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
 theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
-    (fun k _l hkl => inv_anti₀ (Nat.cast_pos.2 k.2)
+    (fun k _l hkl => inv_anti₀ (Nat.cast_pos.2 k.property)
       (Nat.mono_cast <| Subtype.coe_le_coe.2 hkl)) _⟩
 
 theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
@@ -209,7 +209,7 @@ theorem isClopen_Ici_prod (x : ℝₗ × ℝₗ) : IsClopen (Ici x) :=
 
 theorem cardinal_antidiagonal (c : ℝₗ) : #{x : ℝₗ × ℝₗ | x.1 + x.2 = c} = 𝔠 := by
   rw [← Cardinal.mk_real]
-  exact Equiv.cardinal_eq ⟨fun x ↦ toReal x.1.1,
+  exact Equiv.cardinal_eq ⟨fun x ↦ toReal x.val.1,
     fun x ↦ ⟨(toReal.symm x, c - toReal.symm x), by simp⟩,
     fun ⟨x, hx⟩ ↦ by ext <;> simp [← hx.out], fun x ↦ rfl⟩
 
@@ -307,7 +307,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   · exact Ioo_subset_Ico_self hxn
   · exact left_mem_Ico.2 h₀'
   · exact left_mem_Ico.2 h₀'
-  · refine (nhds_antitone_basis_Ico_inv_pnat (-x)).2 hnN ⟨neg_le_neg hxn.1.le, ?_⟩
+  · refine (nhds_antitone_basis_Ico_inv_pnat (-x)).antitone hnN ⟨neg_le_neg hxn.1.le, ?_⟩
     simp only [add_neg_lt_iff_le_add', lt_neg_add_iff_add_lt]
     exact hxn.2
 

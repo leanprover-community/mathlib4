@@ -30,7 +30,6 @@ We prove a variety of API lemmas, see `Mathlib/Data/Finsupp/Fin.lean` for compar
 ## Implementation notes
 
 This file is a `noncomputable theory` and uses classical logic throughout.
-
 -/
 
 @[expose] public section

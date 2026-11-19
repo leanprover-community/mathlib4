@@ -11,7 +11,6 @@ public import Mathlib.ModelTheory.Algebra.Field.CharP
 public import Mathlib.ModelTheory.Satisfiability
 
 /-!
-
 # The First-Order Theory of Algebraically Closed Fields
 
 This file defines the theory of algebraically closed fields of characteristic `p`, as well
@@ -40,7 +39,6 @@ The first-order theory of algebraically closed fields, along with the Lefschetz 
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
-
 -/
 
 @[expose] public section
@@ -62,7 +60,7 @@ noncomputable def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
 
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n + 1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
-    (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
+    (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).val.eval
       (v (Fin.last _)) := by
   simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finsetSum]
 
@@ -72,7 +70,7 @@ noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
 
 theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
-      ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
+      ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.val.eval x = 0 := by
   rw [Equiv.forall_congr_left ((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 
@@ -206,12 +204,12 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
         realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
       exact hqp <| CharP.eq K this inferInstance
-  let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
+  let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.val (hT0 φ.property))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
     intro p ψ hψ hpψ
     simp only [s, Finset.mem_biUnion, Finset.mem_attach, true_and,
       Subtype.exists, not_exists] at hpψ
-    exact (f ψ (hT0 hψ)).2 p (hpψ _ hψ)
+    exact (f ψ (hT0 hψ)).property p (hpψ _ hψ)
   refine Set.Finite.subset (Finset.finite_toSet s)
     ((Set.compl_subset_comm (s := {p : Nat.Primes | Theory.ACF ↑p ⊨ᵇ φ})).2 ?_)
   intro p hp
@@ -226,7 +224,7 @@ theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sent
       (finite_ACF_prime_not_realize_of_ACF_zero_realize φ h),
     not_imp_not.1 ?_⟩
   simpa [(ACF_isComplete (Or.inr rfl)).models_not_iff,
-      fun p : Nat.Primes => (ACF_isComplete (Or.inl p.2)).models_not_iff] using
+      fun p : Nat.Primes => (ACF_isComplete (Or.inl p.property)).models_not_iff] using
     finite_ACF_prime_not_realize_of_ACF_zero_realize φ.not
 
 /-- Another statement of the **Lefschetz principle**. A first-order sentence is modeled by the

@@ -11,7 +11,6 @@ public import Mathlib.Data.Set.Basic
 import Batteries.Tactic.Congr
 
 /-!
-
 # Partial Equivalences
 
 In this file, we define partial equivalences `PEquiv`, which are a bijection between a subset of `α`
@@ -39,7 +38,6 @@ a definition of `⊥`, which is the empty `PEquiv` (sends all to `none`), which 
 ## Tags
 
 pequiv, partial equivalence
-
 -/
 
 @[expose] public section
@@ -98,15 +96,15 @@ protected def refl (α : Type*) : α ≃. α where
 /-- The inverse partial equivalence. -/
 @[symm]
 protected def symm (f : α ≃. β) : β ≃. α where
-  toFun := f.2
-  invFun := f.1
+  toFun := f.invFun
+  invFun := f.toFun
   inv _ _ := (f.inv _ _).symm
 
 theorem mem_iff_mem (f : α ≃. β) : ∀ {a : α} {b : β}, a ∈ f.symm b ↔ b ∈ f a :=
-  f.3 _ _
+  f.inv _ _
 
 theorem eq_some_iff (f : α ≃. β) : ∀ {a : α} {b : β}, f.symm b = some a ↔ f a = some b :=
-  f.3 _ _
+  f.inv _ _
 
 /-- Composition of partial equivalences `f : α ≃. β` and `g : β ≃. γ`. -/
 @[trans]

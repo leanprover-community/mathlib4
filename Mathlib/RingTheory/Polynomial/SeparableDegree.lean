@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.Separable
 
 /-!
-
 # Separable degree
 
 This file contains basics about the separable degree of a polynomial.

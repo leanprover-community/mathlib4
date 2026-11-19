@@ -24,7 +24,6 @@ or mutually singular.
 ## Main statements
 
 * `absolutelyContinuous_compProd_iff'`: `μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ ∀ᵐ a ∂μ, κ a ≪ η a`.
-
 -/
 
 public section

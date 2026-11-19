@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 - `TrivSqZeroExt.kerIdeal`: the ideal in the trivial square-zero extension
 
 - `TrivSqZeroExt.kerIdeal_sq `: this ideal has square zero.
-
 -/
 
 @[expose] public section
