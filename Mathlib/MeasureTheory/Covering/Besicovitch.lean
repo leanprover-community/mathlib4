@@ -982,11 +982,8 @@ instance closedBallCoveringMeasure (μ : Measure α) [SFinite μ] [μ.OuterRegul
   .of_vitaliFamily (Besicovitch.vitaliFamily μ) (tendsto_filterAt μ)
     fun _ hε f _ hs hf ↦ exists_closedBall_covering_tsum_measure_le_of_measure_eq_zero μ hε f hs hf
 
-/-- In a space with the Besicovitch property, any set `s` can be covered with balls whose measures
-add up to at most `μ s + ε`, for any positive `ε`. This works even if one restricts the set of
-allowed radii around a point `x` to a set `f x` which accumulates at `0`.
-
-This is a special case of `MeasureTheory.Measure.exists_closedBall_covering_tsum_measure_le`. -/
+@[deprecated MeasureTheory.Measure.exists_closedBall_covering_tsum_measure_le +typeChanged
+  (since := "2026-11-18")]
 theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ]
     [Measure.OuterRegular μ] {ε : ℝ≥0∞} (hε : ε ≠ 0) (f : α → Set ℝ) (s : Set α)
     (hf : ∀ x ∈ s, ∀ δ > 0, (f x ∩ Ioo 0 δ).Nonempty) :
